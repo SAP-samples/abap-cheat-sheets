@@ -1,0 +1,4 @@
+@EndUserText.label: 'Service definition for RAP Calculator'
+define service ZDEMO_ABAP_RAP_CALC_SD {
+  expose ZDEMO_ABAP_RAP_DRAFT_M;
+}
