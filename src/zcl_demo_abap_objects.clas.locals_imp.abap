@@ -1,4 +1,14 @@
 *&--------------------------------------------------------------------*
+*& Custom exception classes
+*&--------------------------------------------------------------------*
+
+CLASS cx_afternoon DEFINITION INHERITING FROM cx_static_check.
+ENDCLASS.
+
+CLASS cx_night DEFINITION INHERITING FROM cx_static_check.
+ENDCLASS.
+
+*&--------------------------------------------------------------------*
 *& Class to demonstrate various method parameters
 *& All formal parameters are passed by reference except the
 *& returning parameter.
@@ -50,13 +60,9 @@ CLASS lcl_demo DEFINITION.
                RETURNING VALUE(r_div_result) TYPE decfloat34
                RAISING   cx_sy_arithmetic_error,
 
-      "Includes EXCEPTIONS
-      "Note: This example with EXCEPTIONS is considered for the unrestricted language scope.
-      "If you are in an environment allowing unrestricted language scope,
-      "you can comment the following statements in.
-*      check_daytime IMPORTING  time      TYPE t
-*                    EXPORTING  greetings TYPE string
-*                    EXCEPTIONS afternoon night,
+      check_daytime IMPORTING time      TYPE t
+                    EXPORTING greetings TYPE string
+                    RAISING   cx_afternoon cx_night,
 
       "Include parameters with generic types
       generic_data IMPORTING i_data TYPE data,
@@ -118,51 +124,45 @@ CLASS lcl_demo IMPLEMENTATION.
 
   ENDMETHOD.
 
-  "Note: The check_daytime method is declared with EXCEPTIONS. It is considered for the unrestricted language scope.
-  "If you are in an environment allowing unrestricted language scope,
-  "you can comment the following statements in.
+  METHOD check_daytime.
+   CLEAR string.
 
-*  METHOD check_daytime.
-*    CLEAR string.
-*
-*    DATA subrc LIKE sy-subrc.
-*
-*    "Morning: 5 am to 12 pm
-*    IF time BETWEEN '050001' AND '120000'.
-*      subrc = 0.
-*    ENDIF.
-*
-*    "Afternoon: 12 pm to 5 pm.
-*    IF time BETWEEN '120001' AND '170000'.
-*      subrc = 11.
-*    ENDIF.
-*
-*    "Evening 5 pm to 9 pm.
-*    "Commented out on purpose to have a time range for OTHERS :)
-*    "IF time BETWEEN '170001' AND '210000'.
-*    "  subrc = 22.
-*    "ENDIF.
-*
-*    "Night: 9 pm to 4 am.
-*    IF time BETWEEN '210001' AND '050000'.
-*      subrc = 33.
-*    ENDIF.
-*
-*    IF subrc <> 0.
-*      CASE subrc.
-*        WHEN 11.
-*          greetings = |Good afternoon.|.
-*        WHEN 55.
-*          greetings = |Good night.|.
-*        WHEN OTHERS.
-*          greetings = |It's neither morning, afternoon or night. | &&
-*                      |Hence, wishing you a good evening.|.
-*      ENDCASE.
-*    ELSE.
-*      greetings = |Good morning.|.
-*    ENDIF.
-*
-*  ENDMETHOD.
+    "Morning: 5 am to 12 pm
+    IF time BETWEEN '050001' AND '120000'.
+      DATA(subrc) = 0.
+    ENDIF.
+
+    "Afternoon: 12 pm to 5 pm.
+    IF time BETWEEN '120001' AND '170000'.
+      subrc = 11.
+    ENDIF.
+
+    "Evening 5 pm to 9 pm.
+    "Commented out on purpose to have a time range for OTHERS :)
+    "IF time BETWEEN '170001' AND '210000'.
+    " subrc = 22.
+    "ENDIF.
+
+    "Night: 9 pm to 4 am.
+    IF time BETWEEN '210001' AND '050000'.
+      subrc = 33.
+    ENDIF.
+
+    IF subrc <> 0.
+      CASE subrc.
+        WHEN 11.
+          greetings = |Good afternoon.|.
+        WHEN 33.
+          greetings = |Good night.|.
+        WHEN OTHERS.
+          greetings = |It's neither morning, afternoon or night. | &&
+                      |Hence, wishing you a good evening.|.
+      ENDCASE.
+    ELSE.
+      greetings = |Good morning.|.
+    ENDIF.
+
+  ENDMETHOD.
 
   METHOD generic_data.
     "A data reference variable is created that has the type of the

@@ -445,19 +445,13 @@ CLASS ZCL_DEMO_ABAP_OBJECTS IMPLEMENTATION.
 
     output->next_section( `13) Calling methods: Examples with error handling` ).
 
-    "The example below shows two method calls for a method that includes a
+    "The examples show two method calls for a method that includes a
     "raising parameter. For this method, a class-based exception is
-    "specified. The exception is raised for demonstration purposes
-    "for the second method call.
-    "The other method calls demonstrate the use of non-class based
-    "exceptions for a method that includes the addition EXCEPTIONS.
-    "You may find this definition especially in older classes. The
-    "exceptions are based on the system field sy-subrc and raised according
-    "to setting this field. You can then check the value of sy-subrc and
-    "act accordingly. If you do not want to handle the exceptions
-    "specifically, you can use the generic OTHERS. The example just gives
-    "a rough idea how it works: The current time is checked and if it is
-    "currently a certain time of the day, an exception is raised.
+    "specified. The exception is raised for the second method
+    "call. The third method call just gives
+    "a rough idea on raising exceptions: The current time is checked
+    "and if it is currently a certain time of the day, an exception
+    "is raised.
 
     "Method with raising parameter (class-based exception)
     DATA(div_result1) = lcl_demo=>division( i_div1 = 5
@@ -476,19 +470,18 @@ CLASS ZCL_DEMO_ABAP_OBJECTS IMPLEMENTATION.
       output->display( |Calculation error: { lcl_demo=>string }| ).
     ENDIF.
 
-    "Method with EXCEPTIONS addition (non-class based exceptions)
-    "Note: This example with EXCEPTIONS is considered for the unrestricted language scope.
-    "If you are in an environment allowing unrestricted language scope,
-    "you can comment in the following statements and the respective method in the CCIMP include.
-*    DATA(syst_time) = cl_abap_context_info=>get_system_time( ).
-*
-*    lcl_demo=>check_daytime( EXPORTING time = syst_time
-*                             IMPORTING greetings = DATA(greets)
-*                             EXCEPTIONS afternoon = 11
-*                                        night = 33
-*                                        OTHERS = 99 ).
-*
-*    output->display( input = greets name = `greets` ).
+    "Method with RAISING addition (class-based exceptions)
+    TRY.
+        lcl_demo=>check_daytime(
+          EXPORTING time = cl_abap_context_info=>get_system_time( )
+          IMPORTING greetings = DATA(greets) ).
+      CATCH cx_afternoon.
+        DATA(subrc) = 11.
+      CATCH cx_night.
+        subrc = 33.
+    ENDTRY.
+
+    output->display( input = greets name = `greets` ).
 
     output->next_section( `14) Constructors` ).
 

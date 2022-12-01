@@ -25,12 +25,10 @@
 
    PROTECTED SECTION.
    PRIVATE SECTION.
- ENDCLASS.
+ENDCLASS.
 
 
-
- CLASS zcl_demo_abap_objects_friend IMPLEMENTATION.
-
+CLASS ZCL_DEMO_ABAP_OBJECTS_FRIEND IMPLEMENTATION.
 
    METHOD get_strings.
      "Getting the strings and put them in the string table
@@ -38,4 +36,5 @@
      APPEND zcl_demo_abap_objects=>protected_string TO res_string.
      APPEND zcl_demo_abap_objects=>private_string TO res_string.
    ENDMETHOD.
- ENDCLASS.
+
+ENDCLASS.
