@@ -1,0 +1,9 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: abap-cheat-sheets
+Upstream-Contact: SAP Open Source Program Office ospo@sap.com
+Source: https://github.com/sap-samples/abap-cheat-sheets
+
+Files: *
+Copyright: 2022 SAP SE or an SAP affiliate company and abap-cheat-sheets contributors.
+License: Apache-2.0
+
