@@ -124,7 +124,7 @@ The following points are meant to touch on RAP-related buzzwords like
         development needed.
     -   The transactional buffer is provided, too. You do not need to
         create the buffer yourself.
-    -   [Note:] Usually, the behavior of a RAP BO requires some
+    -   Note: Usually, the behavior of a RAP BO requires some
         additional implementations also in the context of managed RAP
         BOs. For example, non-standard operations or feature controls
         must be self-implemented in [ABAP behavior
@@ -167,7 +167,7 @@ The following points are meant to touch on RAP-related buzzwords like
         here). Local handler classes are, as mentioned above, usually
         needed in managed RAP BOs if implementations are required that
         go beyond standard operations.
-    -   [Note:] In more complex scenarios, with RAP BOs that
+    -   Note: In more complex scenarios, with RAP BOs that
         consist of many entities, you can define behavior pools for
         individual entities by adding the syntax to the [`define
         behavior
@@ -1050,7 +1050,7 @@ instances](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?
         `%tky` is handy because it includes both components. You
         must ensure that `%tky` in total uniquely identifies the
         instances.
-    -   **Note:** A further component group to refer to the keys is available: [`%pky`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?     file=abapderived_types_pky.htm). `%pky` contains `%pid` and `%key` in late numbering scenarios. In non-late numbering scenarios, it just contains `%key`. `%pky` itself is contained in `%tky`. There are contexts, for example, particular actions, where `%tky` is not available but `%pky` is. This way, there is still the option to summarize `%pid` and `%key` in one component group in the absence of `%tky`.
+    -   **Note:** A further component group to refer to the keys is available: [`%pky`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapderived_types_pky.htm). `%pky` contains `%pid` and `%key` in late numbering scenarios. In non-late numbering scenarios, it just contains `%key`. `%pky` itself is contained in `%tky`. There are contexts, for example, particular actions, where `%tky` is not available but `%pky` is. This way, there is still the option to summarize `%pid` and `%key` in one component group in the absence of `%tky`.
 
 **General rule**: A RAP BO instance must always be uniquely
 identifiable by its transactional key (`%tky`) for internal
@@ -1122,7 +1122,7 @@ contains all relevant components for the chosen scenario.
     `%tky`.
 
 > **💡 Note**<br>
-> Late numbering and identification in the late phase of the RAP save sequence]
+> Late numbering and identification in the late phase of the RAP save sequence
 >-   Context: RAP saver method
 >    [`adjust_numbers`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensaver_adjust_numbers.htm)
 >    in which the final key values are assigned; the preliminary keys can

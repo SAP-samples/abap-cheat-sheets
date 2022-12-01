@@ -12,11 +12,11 @@
     <!--<a href=""><strong>Expore ABAP syntax in a nutshell & executable examples</strong></a>
     <br />-->
     <br />
-    <a href="#how-to-use">How to Use</a>
+    <a href="#🏗️-how-to-use">How to Use</a>
     ·
-    <a href="#abap-cheat-sheets-overview">Cheat Sheets</a>
+    <a href="#📝-abap-cheat-sheets-overview">Cheat Sheets</a>
     ·
-    <a href="#getting-started-with-the-examples">Examples</a>
+    <a href="#🎬-getting-started-with-the-examples">Examples</a>
   </p>
 </div>
 <br>
@@ -32,8 +32,9 @@ ABAP cheat sheets[^1] ...
 
 <details>
 <summary>💡 Note</summary>
+<br>
 
-- Since the currently available ABAP cheat sheets provide information in a nutshell, they do not claim to be exhaustive as far as the described syntax and concepts are concerned. If you want to go more into the details, just consult the ABAP Keyword Documentation, for example, by choosing `F1` for a keyword in your code or directly researching via the online version or the system-internal version.
+- Since the ABAP cheat sheets provide information in a nutshell, they do not claim to be exhaustive as far as the described syntax and concepts are concerned. If you want to go more into the details, just consult the ABAP Keyword Documentation, for example, by choosing `F1` for a keyword in your code or directly researching via the online version or the system-internal version.
 - The content of this repository is relevant for these ABAP language versions:
   - [Standard ABAP](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenstandard_abap_glosry.htm): Unrestricted ABAP language scope, for example, for developments in an on-premise ABAP system → [Online version of the documentation (latest version)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenabap.htm)
   - [ABAP for Cloud Development](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenabap_for_sap_cloud_glosry.htm): Restricted ABAP language scope for developments in the [SAP BTP ABAP environment](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abensap_btp_abap_env_glosry.htm) → [Online version of the documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm)
@@ -44,8 +45,8 @@ ABAP cheat sheets[^1] ...
 
 ## 🏗️ How to Use
 
-1. **ABAP syntax info**: Get info in a nutshell on ABAP syntax and concepts related to various ABAP topics in the [ABAP cheat sheets](#abap-cheat-sheets-overview).
-2. **Demo examples**: Import the ABAP development objects of this repository into your system using [abapGit](https://abapgit.org/) as described [here](#getting-started-with-the-examples) and run the demo classes by choosing `F9` in the [ABAP Development Tools (ADT)](https://tools.eu1.hana.ondemand.com/) for checking out the ABAP syntax in action.
+1. **ABAP syntax info**: Get info in a nutshell on ABAP syntax and concepts related to various ABAP topics in the [ABAP cheat sheets](#📝-abap-cheat-sheets-overview).
+2. **Demo examples**: Import the ABAP development objects of this repository into your system using [abapGit](https://abapgit.org/) as described [here](#🎬-getting-started-with-the-examples) and run the demo classes by choosing `F9` in the [ABAP Development Tools (ADT)](https://tools.eu1.hana.ondemand.com/) for checking out the ABAP syntax in action.
 
 
 ## 📝 ABAP Cheat Sheets Overview
@@ -62,7 +63,7 @@ ABAP cheat sheets[^1] ...
 |[ABAP for RAP: Entity Manipulation Language (ABAP EML)](08_EML_ABAP_for_RAP.md)| Setting EML in the context of RAP, standard (create, read, update, delete) and non-standard operations (actions) | <ul><li>[Demo RAP scenario with a managed RAP BO, external numbering (zcl_demo_abap_rap_ext_num_m)](./src/zcl_demo_abap_rap_ext_num_m.clas.abap)</li><br><li>[Demo RAP scenario with an unmanaged RAP BO, external numbering (zcl_demo_abap_rap_ext_num_u)](./src/zcl_demo_abap_rap_ext_num_u.clas.abap)</li><br><li>[Demo RAP scenario ("RAP calculator") with a managed, draft-enabled RAP BO,  late numbering (zcl_demo_abap_rap_draft_ln_m)](./src/zcl_demo_abap_rap_draft_ln_m.clas.abap) <br>Note that this example can also be checked out using the preview version of an SAP Fiori UI. Check the comments in the class for the steps.</li></ul>  |
 |[Excursion Down to Bits and Bytes](09_Bits_and_Bytes.md)|Touches on the technical background of data types and data objects|-|
 |[ABAP SQL: Working with Hierarchies](10_ABAP_SQL_Hierarchies.md)|Summarizes the functions ABAP SQL offers together with ABAP CDS for working with hierarchical data that is stored in database tables|-|
-|[ABAP SQL: Grouping Internal Tables](11_ABAP_SQL_Grouping_Internal_Tables.md)|Touches on the `GROUP BY` clause in ABAP SQL|[zcl_demo_abap_sql_group_by](./src/zcl_demo_abap_sql_group_by.clas.abap)|
+|[ABAP SQL: Grouping Internal Tables](11_ABAP_SQL_Grouping_Internal_Tables.md)|Touches on the `GROUP BY` clause in ABAP SQL|[zcl_demo_abap_sql_group_by](./src/zcl_demo_abap_sql_group_by.clas.abap)
 
 ## 🎬 Getting Started with the Examples
 
@@ -70,6 +71,7 @@ The executable examples are implemented in classes to be fit for both on-premise
 
 <details>
   <summary>1) General info</summary>
+  <br>
 
 - A few **DDIC artifacts**, for example, database tables, are part of the repository. They are used by the examples to ensure self-contained examples. For all examples to work, all artifacts must be imported.
 - All examples are designed to **display some output in the ADT console**. Once successfully imported, you can **execute** the examples in ADT by choosing `F9` to display the output in the ADT console.
@@ -78,6 +80,7 @@ The executable examples are implemented in classes to be fit for both on-premise
 
 <details>
   <summary>2a) SAP BTP ABAP environment</summary>
+  <br>
 
 **Prerequisites**
 - [x] Before importing the code, you have made a system-wide search for, for example, classes named `ZCL_DEMO_ABAP*` so as not to run into issues when you try to import the code. If someone has already imported the content in the system, you can simply check out that imported version and proceed with the step *3) Run the code*.
@@ -119,12 +122,13 @@ https://github.com/SAP-samples/abap-cheat-sheets.git
 
 <details>
   <summary>2b) Application Server ABAP On-Premise</summary>
+<br>
 
 **Prerequisites**
 - [x] Before importing the code, you have made a system-wide search for, for example, classes named `ZCL_DEMO_ABAP*` so as not to run into issues when you try to import the code. If someone has already imported the content in the system, you can simply check out that imported version and proceed with the step *3) Run the code*.
 - [x] You have downloaded and installed ABAP Development Tools (ADT). Make sure that you use the most recent version as indicated on the [installation page](https://tools.hana.ondemand.com/#abap).
 - [x] You have created an ABAP Project in ADT that allows you to access your Application Server as mentioned above. Your logon language is English.
-- [x] You have downloaded and installed the standalone version of the abapGit report. Make sure that you use the most recent version as indicated on the [installation page](https://docs.abapgit.org/). You can create a report, for example, `zabapgit_standalone` and copy and paste [this code](https://raw.githubusercontent.com/abapGit/build/main/zabapgit.abap) into the program.
+- [x] You have downloaded and installed the standalone version of the abapGit report. Make sure that you use the most recent version as indicated on the [installation page](https://docs.abapgit.org/). You can create a report, for example, `zabapgit_standalone` and copy and paste [this code](https://raw.githubusercontent.com/abapGit/build/main/zabapgit_standalone.prog.abap) into the program.
 - [x] You have installed the certificate files for github.com, see [abapGit Documentation](https://docs.abapgit.org/guide-ssl-setup.html).
 
 **Import Code**
@@ -153,15 +157,16 @@ Use the standalone version of the abapGit report to import the demo examples of 
 
 <details>
   <summary>3) Run the code</summary>
+<br>
 
 - Open your created package containing the imported ABAP artifacts in the ABAP Development Tools (ADT).
-- Open an ABAP cheat sheet example class as listed in the [ABAP Cheat Sheets Overview](#abap-cheat-sheets-overview) section, for example, `zcl_demo_abap_string_proc`. The classes are contained in folder `Source Code Library` → `Classes`.
+- Open an ABAP cheat sheet example class as listed in the [ABAP Cheat Sheets Overview](#📝-abap-cheat-sheets-overview) section, for example, `zcl_demo_abap_string_proc`. The classes are contained in folder `Source Code Library` → `Classes`.
 - Choose `F9` to run the class. Alternatively, choose `Run` → `Run As` → `2 ABAP Application (Console)` from the menu.
 - Check the console output.
 
 > **💡 Note**<br>
->- Check notes on the the context and the ABAP syntax used included in the class as comments.
->- Due to the amount of output in the console, the examples include numbers (e. g. 1) ..., 2) ..., 3) ...) representing the header of the individual example code sections. Plus, the variable name is displayed in the console in most cases. Hence, to easier and faster find the relevant output in the console, just search in the console for the number (e. g. search for `3)` for the particular output) or variable name (`STRG+F` in the console) or use break points in the code to check variables in the the debugger.
+>- Check notes on the context and the ABAP syntax used included in the class as comments.
+>- Due to the amount of output in the console, the examples include numbers (e. g. 1) ..., 2) ..., 3) ...) representing the header of the individual example code sections. Plus, the variable name is displayed in the console in most cases. Hence, to easier and faster find the relevant output in the console, just search in the console for the number (e. g. search for `3)` for the particular output) or variable name (`STRG+F` in the console) or use break points in the code to check variables in the debugger.
 >- You might want to clear the console by making a right-click within the console and choosing `Clear` before running another demo class so as not to confuse the output of multiple classes.
 </details>
 
@@ -171,13 +176,13 @@ Use the standalone version of the abapGit report to import the demo examples of 
 - Only one user on the system may import this repository as all object names must be globally unique. If you receive an error that the objects already exist when trying to import, search the system for classes named `ZCL_DEMO_ABAP*`. Someone has already imported the content in the system and you can simply check out that imported version.
 - Since the repository contains self-contained examples, i. e. they work, for example, with demo database tables included in the repository (note that these tables are filled in the course of method executions), all demo artifacts must be imported so that all examples work.
 - For the use in an on-premise system, note the following: The demos cover ABAP syntax irrespective of the release and may include syntax that is not yet available with the ABAP version of your on-premise system. In that case, you might want to comment out affected code sections if an activation fails.
-- Regarding potential code check warnings, for example, for the many strings in the code, not using an `ORDER BY` clause or messages regarding using `SELECT *`, the code purposely renounces pragmas and pseudo comments to keep the code fairly simple and to focus on the available ABAP syntax. See the [Disclaimer](#disclaimer).
+- Regarding potential code check warnings, for example, for the many strings in the code, not using an `ORDER BY` clause or messages regarding using `SELECT *`, the code purposely renounces pragmas and pseudo comments to keep the code fairly simple and to focus on the available ABAP syntax. See the [Disclaimer](#⚠️-disclaimer).
 
 ## 🛈 Further information
 - Regarding the system-internal version of the ABAP Keyword Documentation in your
   - ... **on-premise system**: Access the documentation in SAP GUI via the transactions `ABAPDOCU` (opens the documentation directly) and `ABAPHELP` (opens an input field with which you can search the documentation content, for example, you can search for a keyword like `SELECT`). Or, certainly, in your code, choose `F1` for a keyword. If you are in SAP GUI (e. g. in `SE80`), the system-internal version is opened. If you are in ADT, the documentation is opened in the *ABAP Language Help* view.
   - ... **SAP BTP ABAP environment**: In ADT, you find the documentation in the *ABAP Language Help* view where you can also search. When choosing `F1` for a keyword in your code, the documentation is opened there accordingly.
-- Links to the online version of the the ABAP Keyword Documentation for:
+- Links to the online version of the ABAP Keyword Documentation for:
   - **Standard ABAP**: Unrestricted ABAP language scope, for example, for developments in an on-premise ABAP system → [Online version of the documentation (latest version)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenabap.htm)
   - **ABAP for Cloud Development**: Restricted ABAP language scope for developments in the SAP BTP ABAP environment → [Online version of the documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm)
 - Regarding demonstration examples of the ABAP Keyword Documentation in your on-premise system: Have you ever checked out the package `SABAPDEMOS`? This package contains all the examples used in the ABAP Keyword Documentation. To get the context, program names etc., check out the [example page](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenabap_examples.htm) (which is also available in the system-internal SAP GUI version as node in the topic tree) summarizing executable examples. Certainly, you also find the example topics in the context of the individual ABAP Keyword Documentation topic. The example topics have a ⚙️ sign:

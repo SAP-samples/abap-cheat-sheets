@@ -54,6 +54,9 @@ stay in the comfortable ABAP world and nevertheless have access to most
 modern features. All you have to do, is to understand some concepts and
 learn some additional syntax and then you can start right away.
 
+> **💡 Note**<br>
+> The examples in this cheat sheet are only relevant for [standard ABAP](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenstandard_abap_glosry.htm), i. e. the unrestricted ABAP language scope.
+
 ## SQL Hierarchies
 
 With [SQL
