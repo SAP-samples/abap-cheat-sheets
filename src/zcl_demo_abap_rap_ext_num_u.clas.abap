@@ -992,90 +992,90 @@ CLASS ZCL_DEMO_ABAP_RAP_EXT_NUM_U IMPLEMENTATION.
 *   links are returned. The parameter for RESULT will be empty.
 **********************************************************************
 
-    output->next_section( `12) Excursion: Read and read-by-association ` &&
-                     `operations using dynamic EML` ).
-
-    DATA:
-      op_tab          TYPE abp_behv_retrievals_tab,
-      read_dyn        TYPE TABLE FOR READ IMPORT zdemo_abap_rap_ro_u,
-      read_dyn_result TYPE TABLE FOR READ RESULT zdemo_abap_rap_ro_u,
-      rba_dyn         TYPE TABLE FOR READ IMPORT
-                        zdemo_abap_rap_ro_u\_child,
-      rba_dyn_result  TYPE TABLE FOR READ RESULT
-                        zdemo_abap_rap_ro_u\_child,
-      rba_dyn_link    TYPE TABLE FOR READ LINK zdemo_abap_rap_ro_u\_child.
-
-    read_dyn = VALUE #(
-      ( %key-key_field = 1
-        %control = VALUE #(
-          field1 = if_abap_behv=>mk-on
-          field2 = if_abap_behv=>mk-on
-          field3 = if_abap_behv=>mk-on
-          field4 = if_abap_behv=>mk-on ) )
-      ( %key-key_field = 2
-        %control = VALUE #(
-          field1 = if_abap_behv=>mk-on
-          field2 = if_abap_behv=>mk-on
-          field3 = if_abap_behv=>mk-on
-          field4 = if_abap_behv=>mk-on ) ) ).
-
-    rba_dyn = VALUE #(
-     ( %key-key_field = 1
-       %control = VALUE #(
-          key_field = if_abap_behv=>mk-on
-          key_ch    = if_abap_behv=>mk-on
-          field_ch1 = if_abap_behv=>mk-on
-          field_ch2 = if_abap_behv=>mk-on ) )
-      ( %key-key_field = 2
-        %control = VALUE #(
-          key_field = if_abap_behv=>mk-on
-          key_ch    = if_abap_behv=>mk-on
-          field_ch1 = if_abap_behv=>mk-on
-          field_ch2 = if_abap_behv=>mk-on ) ) ).
-
-    output->display( `Result if FULL parameter is ` &&
-                  `not flagged for RBA` ).
-
-    op_tab = VALUE #(
-       ( op = if_abap_behv=>op-r-read
-         entity_name = 'ZDEMO_ABAP_RAP_RO_U'
-         instances   = REF #( read_dyn )
-         results     = REF #( read_dyn_result ) )
-       ( op = if_abap_behv=>op-r-read_ba
-         entity_name = 'ZDEMO_ABAP_RAP_RO_U'
-         sub_name    = '_CHILD'
-         full        = abap_false
-         instances   = REF #( rba_dyn )
-         results     = REF #( rba_dyn_result )
-         links       = REF #( rba_dyn_link ) ) ).
-
-    READ ENTITIES OPERATIONS op_tab.
-
-    output->display( input = read_dyn_result name = `read_dyn_result` ).
-    output->display( input = rba_dyn_result name = `rba_dyn_result` ).
-    output->display( input = rba_dyn_link name = `rba_dyn_link` ).
-
-    output->display( `Result if FULL parameter is ` &&
-                  `flagged for RBA` ).
-
-    op_tab = VALUE #(
-           ( op = if_abap_behv=>op-r-read
-             entity_name = 'ZDEMO_ABAP_RAP_RO_U'
-             instances   = REF #( read_dyn )
-             results     = REF #( read_dyn_result ) )
-           ( op = if_abap_behv=>op-r-read_ba
-             entity_name = 'ZDEMO_ABAP_RAP_RO_U'
-             sub_name    = '_CHILD'
-             full        = abap_true
-             instances   = REF #( rba_dyn )
-             results     = REF #( rba_dyn_result )
-             links       = REF #( rba_dyn_link ) ) ).
-
-    READ ENTITIES OPERATIONS op_tab.
-
-    output->display( input = read_dyn_result name = `read_dyn_result` ).
-    output->display( input = rba_dyn_result name = `rba_dyn_result` ).
-    output->display( input = rba_dyn_link name = `rba_dyn_link` ).
+*    output->next_section( `12) Excursion: Read and read-by-association ` &&
+*                     `operations using dynamic EML` ).
+*
+*    DATA:
+*      op_tab          TYPE abp_behv_retrievals_tab,
+*      read_dyn        TYPE TABLE FOR READ IMPORT zdemo_abap_rap_ro_u,
+*      read_dyn_result TYPE TABLE FOR READ RESULT zdemo_abap_rap_ro_u,
+*      rba_dyn         TYPE TABLE FOR READ IMPORT
+*                        zdemo_abap_rap_ro_u\_child,
+*      rba_dyn_result  TYPE TABLE FOR READ RESULT
+*                        zdemo_abap_rap_ro_u\_child,
+*      rba_dyn_link    TYPE TABLE FOR READ LINK zdemo_abap_rap_ro_u\_child.
+*
+*    read_dyn = VALUE #(
+*      ( %key-key_field = 1
+*        %control = VALUE #(
+*          field1 = if_abap_behv=>mk-on
+*          field2 = if_abap_behv=>mk-on
+*          field3 = if_abap_behv=>mk-on
+*          field4 = if_abap_behv=>mk-on ) )
+*      ( %key-key_field = 2
+*        %control = VALUE #(
+*          field1 = if_abap_behv=>mk-on
+*          field2 = if_abap_behv=>mk-on
+*          field3 = if_abap_behv=>mk-on
+*          field4 = if_abap_behv=>mk-on ) ) ).
+*
+*    rba_dyn = VALUE #(
+*     ( %key-key_field = 1
+*       %control = VALUE #(
+*          key_field = if_abap_behv=>mk-on
+*          key_ch    = if_abap_behv=>mk-on
+*          field_ch1 = if_abap_behv=>mk-on
+*          field_ch2 = if_abap_behv=>mk-on ) )
+*      ( %key-key_field = 2
+*        %control = VALUE #(
+*          key_field = if_abap_behv=>mk-on
+*          key_ch    = if_abap_behv=>mk-on
+*          field_ch1 = if_abap_behv=>mk-on
+*          field_ch2 = if_abap_behv=>mk-on ) ) ).
+*
+*    output->display( `Result if FULL parameter is ` &&
+*                  `not flagged for RBA` ).
+*
+*    op_tab = VALUE #(
+*       ( op = if_abap_behv=>op-r-read
+*         entity_name = 'ZDEMO_ABAP_RAP_RO_U'
+*         instances   = REF #( read_dyn )
+*         results     = REF #( read_dyn_result ) )
+*       ( op = if_abap_behv=>op-r-read_ba
+*         entity_name = 'ZDEMO_ABAP_RAP_RO_U'
+*         sub_name    = '_CHILD'
+*         full        = abap_false
+*         instances   = REF #( rba_dyn )
+*         results     = REF #( rba_dyn_result )
+*         links       = REF #( rba_dyn_link ) ) ).
+*
+*    READ ENTITIES OPERATIONS op_tab.
+*
+*    output->display( input = read_dyn_result name = `read_dyn_result` ).
+*    output->display( input = rba_dyn_result name = `rba_dyn_result` ).
+*    output->display( input = rba_dyn_link name = `rba_dyn_link` ).
+*
+*    output->display( `Result if FULL parameter is ` &&
+*                  `flagged for RBA` ).
+*
+*    op_tab = VALUE #(
+*           ( op = if_abap_behv=>op-r-read
+*             entity_name = 'ZDEMO_ABAP_RAP_RO_U'
+*             instances   = REF #( read_dyn )
+*             results     = REF #( read_dyn_result ) )
+*           ( op = if_abap_behv=>op-r-read_ba
+*             entity_name = 'ZDEMO_ABAP_RAP_RO_U'
+*             sub_name    = '_CHILD'
+*             full        = abap_true
+*             instances   = REF #( rba_dyn )
+*             results     = REF #( rba_dyn_result )
+*             links       = REF #( rba_dyn_link ) ) ).
+*
+*    READ ENTITIES OPERATIONS op_tab.
+*
+*    output->display( input = read_dyn_result name = `read_dyn_result` ).
+*    output->display( input = rba_dyn_result name = `rba_dyn_result` ).
+*    output->display( input = rba_dyn_link name = `rba_dyn_link` ).
 
   ENDMETHOD.
 
