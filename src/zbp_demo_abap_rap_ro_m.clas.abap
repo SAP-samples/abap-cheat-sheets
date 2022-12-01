@@ -10,11 +10,11 @@
 "! The class represents a RAP BO provider (i. e. an ABAP behavior pool/ABP) for a RAP demo scenario
 "! (managed RAP BO with external numbering).
 CLASS zbp_demo_abap_rap_ro_m DEFINITION PUBLIC ABSTRACT FINAL FOR BEHAVIOR OF zdemo_abap_rap_ro_m.
-protected section.
-private section.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
 ENDCLASS.
 
 
 
-CLASS ZBP_DEMO_ABAP_RAP_RO_M IMPLEMENTATION.
+CLASS zbp_demo_abap_rap_ro_m IMPLEMENTATION.
 ENDCLASS.
