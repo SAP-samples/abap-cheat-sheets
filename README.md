@@ -23,6 +23,8 @@
 <hr>
 <br>
 
+[![REUSE status](https://api.reuse.software/badge/github.com/SAP-samples/abap-cheat-sheets)](https://api.reuse.software/info/github.com/SAP-samples/abap-cheat-sheets)
+
 ABAP cheat sheets[^1] ...
 - provide a **collection of information on selected ABAP topics** in a nutshell for your reference.
 - focus on **ABAP syntax**.
