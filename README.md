@@ -4,7 +4,7 @@
     <img src="./files/ABAP_Keyword_Documentation.png" alt="ABAP Keyword Documentation" >
   </a>
 
-  <h3 align="center" style="font-size: 40px; color: #FCB913;">ABAP Cheat Sheets</h3>
+  <p align="center" style="font-size: 40px; color: #FCB913; font-weight: bold;">ABAP Cheat Sheets</p>
 
   <p align="center">
     Explore ABAP syntax in a nutshell & executable examples
