@@ -8,7 +8,6 @@
 *   demonstrates various RAP BO standard operations and non-standard
 *   operations using ABAP EML in the context of an unmanaged RAP business
 *   object with RAP external numbering.
-*   See also the ABAP for RAP (EML) ABAP cheat sheet.
 * - Topics covered: RAP BO operations like create, update, delete,
 *   executing actions, instance and global feature control, instance
 *   authorization, create-by-association (parent to child), read,

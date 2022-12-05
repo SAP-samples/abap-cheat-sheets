@@ -4,8 +4,8 @@
 *
 * -------------------------- PURPOSE ----------------------------------
 * - Example to demonstrate various syntactical options for processing
-*   character strings as outlined in the respective ABAP cheat sheet.
-* - Topics covered: creating strings and assigning values, chaining strings,
+*   character strings.
+* - Topics covered: Creating strings and assigning values, chaining strings,
 *   string templates, concatenating/splitting/modifying strings, searching
 *   and replacing, regular expressions
 *

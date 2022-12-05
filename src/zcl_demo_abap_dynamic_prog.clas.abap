@@ -4,8 +4,8 @@
 *
 * -------------------------- PURPOSE ----------------------------------
 * - Example to demonstrate various syntactical options and concepts related
-*   to dynamic programming as outlined in the respective ABAP cheat sheet.
-* - Topics covered: field symbols and data references (both as supporting
+*   to dynamic programming.
+* - Topics covered: Field symbols and data references (both as supporting
 *   elements for dynamic programming), dynamic ABAP syntax components,
 *   runtime type services (RTTS), i. e. runtime type identification (RTTI)
 *   and runtime type creation (RTTC)
@@ -13,7 +13,7 @@
 *   includes local classes in the CCIMP include (local types tab in ADT)
 *   whose methods return character-like content to be used in the tokens
 *   of ABAP statements. The content is predefined in these classes but
-*   the content that is actually used in the end is completely random.
+*   the content that is actually used in the end is random.
 *
 * ----------------------- GETTING STARTED -----------------------------
 * - Open the class with the ABAP Development Tools (ADT).

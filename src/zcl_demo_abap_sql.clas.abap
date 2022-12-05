@@ -5,8 +5,7 @@
 *
 * -------------------------- PURPOSE ----------------------------------
 * - Example to demonstrate various syntactical options for working with
-*   persisted data in database tables using ABAP SQL as outlined in the
-*   respective ABAP cheat sheet.
+*   persisted data in database tables using ABAP SQL.
 * - Topics covered: reading from database tables using SELECT, changing
 *   data in database tables using INSERT, UPDATE, MODIFY and DELETE
 *

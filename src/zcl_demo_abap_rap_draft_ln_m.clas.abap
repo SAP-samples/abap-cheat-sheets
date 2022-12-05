@@ -1,6 +1,6 @@
 ***********************************************************************
 *
-*        RAP BO consumer for a RAP demo scenario
+*           RAP BO consumer for a RAP demo scenario
 * ABAP EML in use: RAP calculator (managed, draft-enabled RAP BO with
 * late numbering
 *
@@ -16,7 +16,7 @@
 * - Underlying data model: Consists of a root entity alone.
 *   The BDEF defines the behavior for this entity. The definitions in the
 *   BDEF determine which methods must be implemented in the ABAP behavior
-*   pool (ABP). Note that the view consists many annotations for the SAP
+*   pool (ABP). Note that the view contains many annotations for the SAP
 *   Fiori UI.
 * - ABP for this scenario: zbp_demo_abap_rap_draft_m
 *
@@ -37,7 +37,7 @@
 *   console) or use the debugger.
 *
 * ----------------------- GETTING STARTED (2) -------------------------
-* Using the preview version of an SAP Fiori Elements as RAP BO consumer
+* Using the preview version of an SAP Fiori Elements UI as RAP BO consumer
 *
 * Create a service binding:
 * 1. Find the service definition ZDEMO_ABAP_RAP_CALC_SD in the imported

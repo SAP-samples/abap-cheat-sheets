@@ -4,7 +4,7 @@
 *
 * -------------------------- PURPOSE ----------------------------------
 * - Example to demonstrate various syntactical options for working with
-*   structures as outlined in the respective ABAP cheat sheet.
+*   structures.
 * - Topics covered: creating structures and structured types, variants
 *   of structures, accessing components of structures, filling structures,
 *   clearing structures, structures in use in the context of tables

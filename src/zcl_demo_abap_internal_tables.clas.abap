@@ -4,8 +4,8 @@
 *
 * -------------------------- PURPOSE ----------------------------------
 * - Example to demonstrate various syntactical options for working with
-*   internal tables as outlined in the respective ABAP cheat sheet.
-* - Topics covered: creating, filling, reading from, sorting, modifying
+*   internal tables.
+* - Topics covered: Creating, filling, reading from, sorting, modifying
 *   internal tables
 *
 * ----------------------- GETTING STARTED -----------------------------

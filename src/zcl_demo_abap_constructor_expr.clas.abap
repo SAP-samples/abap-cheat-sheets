@@ -3,11 +3,10 @@
 *           ABAP cheat sheet: Constructor expressions
 *
 * -------------------------- PURPOSE ----------------------------------
-* - Example to demonstrate the use of constructor expressions as outlined
-*   in the respective ABAP cheat sheet.
+* - Example to demonstrate the use of constructor expressions.
 * - Topics covered: Operators VALUE, CORRESPONDING, NEW, CONV, EXACT, REF,
-*   CAST, COND, SWITCH, FILTER, REDUCE, Iteration Expressions with FOR,
-*   LET Expressions
+*   CAST, COND, SWITCH, FILTER, REDUCE, iteration expressions with FOR,
+*   LET expressions
 *
 * ----------------------- GETTING STARTED -----------------------------
 * - Open the class with the ABAP Development Tools (ADT).

@@ -4,16 +4,17 @@
 *
 * -------------------------- PURPOSE ----------------------------------
 * - Example to demonstrate various syntactical options and concepts related
-*   to ABAP object orientation as outlined in the related ABAP cheat sheet.
+*   to ABAP object orientation.
+* - Topics covered: "orking with objects and components, method redefinition
+*   in inheritance, working with interfaces, upcast and downcast, concepts
+*   like factory methods, singleton and abstract classes, using events.
 * - The CCIMP include (local types tab in ADT) includes multiple local
 *   classes to support the example.
-* - A separate global interface is used to demonstrate working with
-*   interfaces: zdemo_abap_objects_interface
-* - Another global class is used to demonstrate the concept of friendship:
-*   zcl_demo_abap_objects_friend
-* - Topics covered: working with objects and components, method redefinition
-*   in inheritance, working with interfaces, upcast and downcast, concepts
-*   like factory methods, singleton and abstract classes, using events
+* - Artifacts related to this example:
+*   - zdemo_abap_objects_interface: Separate global interface to demonstrate
+*     working with
+*   - zcl_demo_abap_objects_friend: Another global class used to demonstrate
+*     the concept of friendship
 *
 * ----------------------- GETTING STARTED -----------------------------
 * - Open the class with the ABAP Development Tools (ADT).
