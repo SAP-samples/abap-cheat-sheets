@@ -5,7 +5,7 @@
 * -------------------------- PURPOSE ----------------------------------
 * - Example to demonstrate various syntactical options and concepts related
 *   to ABAP object orientation.
-* - Topics covered: "orking with objects and components, method redefinition
+* - Topics covered: Working with objects and components, method redefinition
 *   in inheritance, working with interfaces, upcast and downcast, concepts
 *   like factory methods, singleton and abstract classes, using events.
 * - The CCIMP include (local types tab in ADT) includes multiple local
