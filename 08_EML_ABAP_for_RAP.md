@@ -1180,4 +1180,4 @@ This cheat sheet is supported by different executable examples demonstrating var
 >- The examples do not represent real life scenarios and are not suitable as role models for proper RAP scenarios. They rather focus on the technical side by giving an idea how the communication and data exchange between a RAP BO consumer and RAP BO provider can work. Additionally, the examples show how the methods for non-standard RAP BO operations might be self-implemented in an ABAP behavior pool.
 >- Due to the simplification, the examples might not fully meet the requirements of the [RAP BO contract](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenrap_bo_contract_glosry.htm) in many respects.
 >- The "RAP calculator" example can be checked out using the preview version of an SAP Fiori Elements UI. See the comments in the class for more information.
->- See the steps outlined [here](README.md#🎬-getting-started-with-the-examples) about how to import and run the code.
+>- See the steps outlined [here](README.md#-getting-started-with-the-examples) about how to import and run the code.

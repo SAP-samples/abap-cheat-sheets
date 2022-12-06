@@ -1496,4 +1496,4 @@ Find more information on the topics covered here or not (e. g. topics like [tabl
 ## Executable Example
 [zcl_demo_abap_sql](./src/zcl_demo_abap_sql.clas.abap)
 
-Note the steps outlined [here](README.md#🎬-getting-started-with-the-examples) about how to import and run the code.
+Note the steps outlined [here](README.md#-getting-started-with-the-examples) about how to import and run the code.

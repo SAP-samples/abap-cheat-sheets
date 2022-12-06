@@ -1460,4 +1460,4 @@ Tables](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?fil
 ## Executable Example
 [zcl_demo_abap_internal_tables](./src/zcl_demo_abap_internal_tables.clas.abap)
 
-Note the steps outlined [here](README.md#🎬-getting-started-with-the-examples) about how to import and run the code.
+Note the steps outlined [here](README.md#-getting-started-with-the-examples) about how to import and run the code.

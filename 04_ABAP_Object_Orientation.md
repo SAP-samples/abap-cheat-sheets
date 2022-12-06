@@ -1210,4 +1210,4 @@ SET HANDLER handler_meth.                      "For static events
 ## Executable Example
 [zcl_demo_abap_objects](./src/zcl_demo_abap_objects.clas.abap)
 
-Note the steps outlined [here](README.md#🎬-getting-started-with-the-examples) about how to import and run the code.
+Note the steps outlined [here](README.md#-getting-started-with-the-examples) about how to import and run the code.

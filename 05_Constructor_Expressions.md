@@ -896,4 +896,4 @@ DATA(a) = COND #( LET b = c IN
 ## Executable Example
 [zcl_demo_abap_constructor_expr](./src/zcl_demo_abap_constructor_expr.clas.abap)
 
-Note the steps outlined [here](README.md#🎬-getting-started-with-the-examples) about how to import and run the code.
+Note the steps outlined [here](README.md#-getting-started-with-the-examples) about how to import and run the code.

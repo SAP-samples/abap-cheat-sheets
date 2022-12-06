@@ -666,4 +666,4 @@ for more information.
 ## Executable Example
 [zcl_demo_abap_structures](./src/zcl_demo_abap_structures.clas.abap)
 
-Note the steps outlined [here](README.md#🎬-getting-started-with-the-examples) about how to import and run the code.
+Note the steps outlined [here](README.md#-getting-started-with-the-examples) about how to import and run the code.
