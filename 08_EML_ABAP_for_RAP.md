@@ -1041,7 +1041,7 @@ instances](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?
         the RAP interaction phase and the early phase of the [RAP save sequence](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_save_seq_glosry.htm "Glossary Entry").
     -   In this case, you can use `%key` to hold the preliminary
         keys or use a preliminary ID in the dedicated component
-        [`%key`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapderived_types_pid.htm)
+        [`%pid`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapderived_types_pid.htm)
         which is of type `ABP_BEHV_PID` and
         only available in late numbering scenarios.
     -   Similar to above, to uniquely identify RAP BO instances in late
