@@ -447,7 +447,7 @@ DATA(it_inline3) = VALUE table_type( ( ... ) ).
 "Table declared inline in the context of a SELECT statement;
 "a prior extra declaration of an internal table is not needed.
 
-DATA it TYPE TABLE OF zdemo_abap_fli EMPTY KEY.
+DATA it TYPE TABLE OF zdemo_abap_fli WITH EMPTY KEY.
 
 SELECT * FROM zdemo_abap_fli INTO TABLE @it.
 
@@ -987,9 +987,9 @@ READ TABLE it FROM pr_keys INTO wa.
 
 "If USING KEY is not specified, the primary table key is used.
 "If it is used, the specified table key is used.
-READ TABLE it FROM pr_keys USING KEY primary_key wa.
+READ TABLE it FROM pr_keys USING KEY primary_key INTO wa.
 
-READ TABLE it FROM sec_keys USING KEY sec_key wa.
+READ TABLE it FROM sec_keys USING KEY sec_key INTO wa.
 
 "alias
 READ TABLE it FROM sec_keys USING KEY sk INTO wa.
