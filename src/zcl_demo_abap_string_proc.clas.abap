@@ -1045,11 +1045,70 @@ CLASS ZCL_DEMO_ABAP_STRING_PROC IMPLEMENTATION.
       email = |{ email } is not a valid email address.|.
     ENDIF.
 
+    "Example with a false email
+    DATA(false_email) = `jon.doe@email.abcdef`.
+
+    IF matches( val   = false_email
+                pcre = `\w+(\.\w+)*@(\w+\.)+(\w{2,4})` ).
+      false_email = |{ false_email } is a valid email address.|.
+    ELSE.
+      false_email = |{ false_email } is not a valid email address.|.
+    ENDIF.
+
+    "Examples with the FIND statement
+    "Storing submatches in variables.
+    "Pattern: anything before and after ' on '
+    FIND PCRE `(.*)\son\s(.*)` IN str_s1 IGNORING CASE SUBMATCHES DATA(subm_s1) DATA(subm_s2).
+
+    "Determining the number of letters in a string
+    FIND ALL OCCURRENCES OF PCRE `[A-Za-z]` IN str_s1 MATCH COUNT DATA(count_s).
+
+    "Extracting all findings of a certain pattern in a string and
+    "storing them in an internal table
+    DATA findings_s TYPE string_table.
+
+    "Pattern: An 'a' followed by any two characters
+    FIND ALL OCCURRENCES OF PCRE `a..` IN str_s1 RESULTS DATA(res_s1).
+
+    "The internal table includes the offset and length information of the individual findings.
+    "The substrings are extracted from the original string based on that information and
+    "added to an internal table of type string.
+    LOOP AT res_s1 ASSIGNING FIELD-SYMBOL(<fs_s>).
+      APPEND substring( val = str_s1 off = <fs_s>-offset len = <fs_s>-length ) TO findings_s.
+    ENDLOOP.
+
+    "Searching in an internal table and retrieving line, offset, length information
+    DATA(itab_s) = VALUE string_table( ( `Cathy's black cat on the mat played with the friend of Matt.` )
+                                       ( `Later that day, the cat played with Matt.` ) ).
+
+    "Pattern: any character + 'y' followed by any character that is not a word character
+    "Only the first occurrence is searched. The search is specified as case-insensitive (which is not relevant here).
+    FIND FIRST OCCURRENCE OF PCRE `.y\W` IN TABLE itab_s
+      IGNORING CASE MATCH LINE DATA(line_s) MATCH OFFSET DATA(off_s) MATCH LENGTH DATA(length_s).
+
+    "Pattern: any character + 'y' followed by any character that is not a word character
+    "Here, all occurrences are searched and the result is stored in an internal table specified
+    "after the RESULTS addition. Since a group is included in the PCRE pattern denoted by the
+    "parentheses (\W), the resulting internal table includes entries in the 'submatches'
+    "component holding offset/length information for the particular match.
+    FIND ALL OCCURRENCES OF PCRE `.y(\W)` IN TABLE itab_s
+      IGNORING CASE RESULTS DATA(res_s2).
+
     output->display( input = off_s1 name = `off_s1` ).
     output->display( input = cnt_s1 name = `cnt_s1` ).
     output->display( input = cnt_s2 name = `cnt_s2` ).
     output->display( input = str_s2 name = `str_s2` ).
     output->display( input = email name = `email` ).
+    output->display( input = false_email name = `false_email` ).
+    output->display( input = subm_s1 name = `subm_s1` ).
+    output->display( input = subm_s2 name = `subm_s2` ).
+    output->display( input = count_s name = `count_s` ).
+    output->display( input = findings_s name = `findings_s` ).
+    output->display( input = line_s name = `line_s` ).
+    output->display( input = off_s name = `off_s` ).
+    output->display( input = length_s name = `length_s` ).
+    output->display( input = length_s name = `length_s` ).
+    output->display( input = res_s2 name = `res_s2` ).
 
     output->next_section( `20) Replacing Using Regular Expressions` ).
 
