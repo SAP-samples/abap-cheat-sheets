@@ -66,7 +66,7 @@ Built-in character-like types in ABAP are as follows:
 |---|---|---|---|
 | `string` | Variable, i. e. the length of [data objects](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendata_object_glosry.htm "Glossary Entry") of this type can change during the execution during the execution of ABAP programs (hence, they are also referred to as [dynamic data objects](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendynamic_data_object_glosry.htm "Glossary Entry")); no standard length | Any characters | Empty string with length 0 |
 | `c` | Data objects of this type contain a string of fixed length (between 1 and 262143 characters); standard length: 1 | Any characters | blank for every position |
-| `n` | Same as for c | Any characters; valid values are only the digits 0 to 9.<br><br> Note that the restrictions for this type to only accept digits are not enforced, hence, fields may contain invalid data. The type is especially used for digits that are not meant for arithmetic calculations like zip codes or article numbers. | "0" for every position |
+| `n` | Same as for `c` | Any characters; valid values are only the digits 0 to 9.<br><br> Note that the restrictions for this type to only accept digits are not enforced, hence, fields may contain invalid data. The type is especially used for digits that are not meant for arithmetic calculations like zip codes or article numbers. | 0 for every position |
 
 > **💡 Note**<br>
 > [Byte-like data
@@ -137,7 +137,7 @@ Syntax examples:
 "Type declarations using built-in types
 
 TYPES: c_type   TYPE c LENGTH 3, "Explicit length specification
-        str_type  TYPE string.
+       str_type TYPE string.
 
 "Data object declarations using built-in, local and DDIC types
 
@@ -147,13 +147,16 @@ DATA: flag  TYPE c LENGTH 1,   "Built-in type
       str2  LIKE str1,         "Deriving type from a local data object
       str3  TYPE str_type,     "Local type
       char2 TYPE s_toairp,     "DDIC type (used e. g. for a field in a demo table)
-      char3 TYPE spfli-carrid. "Using the type of a DDIC table component
+      char3 TYPE zdemo_abap_flsch-carrid. "Using the type of a DDIC table component
 
 "You might also stumble upon declarations with type c and the length
 "specified in parentheses. It is not recommended so as not to confuse
 "with the use of parentheses in dynamic programming.
 
 DATA char(4) TYPE c.
+
+"Just a TYPE c specification without length means LENGTH 1.
+DATA char_len_one TYPE c.
 ```
 
 <p align="right">(<a href="#top">back to top</a>)</p>
@@ -263,15 +266,15 @@ Syntax examples:
 DATA(s1) = |Hallo { cl_abap_context_info=>get_user_technical_name( ) }!|.
 
 DATA(s2) = `How are you?`. "Literal text only with backquotes
-DATA(s3) = |{ s1 } { s2 }|. "Hallo ...! How are you?
+DATA(s3) = |{ s1 } { s2 }|. "Hallo NAME! How are you?
 
 "Chaining of string templates using &&
-DATA(s4) = |{ s1 }| && ` ` && |{ s2 }|. "Hallo ...! How are you?
+DATA(s4) = |{ s1 }| && ` ` && |{ s2 }|. "Hallo NAME! How are you?
 ```
 
 String templates interpret certain character combinations as [control
 characters](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenstring_templates_separators.htm).
-For example, `n` is interpreted as line feed. A new line is
+For example, `\n` is interpreted as line feed. A new line is
 set. Plus, string templates support various [formatting
 options](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapcompute_string_format_options.htm).
 Check the ABAP Keyword Documentation for all options.
@@ -310,7 +313,7 @@ s1 = |{ CONV decfloat34( - 1 / 3 ) DECIMALS = 3 }|. "'-0.333'
 ```
 
 > **💡 Note**<br>
-> Escape `|{}` in string templates using `\`, i. e. `\\` means `\`.
+> Escape `\|{}` in string templates using `\`, i. e. `\\` means `\`.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -489,7 +492,8 @@ s3 = s2.
 SHIFT s2 LEFT DELETING LEADING ` `. "'hallo   '
 SHIFT s3 RIGHT DELETING TRAILING ` `. "'      hallo' (length is kept)
 
-"Removing trailing blanks for strings without leading blanks with this sequence
+"Removing trailing blanks in strings without leading blanks; 
+"you can use the following sequence of statements
 s4 = `hallo   `.
 SHIFT s4 RIGHT DELETING TRAILING ` `. "'   hallo'
 SHIFT s4 LEFT  DELETING LEADING ` `. "'hallo'
@@ -550,8 +554,10 @@ s2 = condense( val = `##see###you##` del = `#` ). "see###you
 "characters specified in del are first removed. Then, in the remaining string, all
 "substrings composed of characters specified in from are replaced with
 "the first character of the string specified in the to parameter
-s2 = condense( val  = `  Rock'xxx'Roller` del  = `re `
-               from = `x` to = `n` ). "Rock'n'Roll
+s2 = condense( val  = `  Rock'xxx'Roller` 
+               del  = `re `
+               from = `x` 
+               to   = `n` ). "Rock'n'Roll
 ```
 
 **Reversing Strings**
@@ -617,9 +623,9 @@ for example,
 and
 [`substring_to`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensubstring_functions.htm).
 
-These functions offer more options in terms of parameters, for example,
-a [PCRE regular
-expression](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenpcre_regex_glosry.htm "Glossary Entry")
+These functions offer more options in terms of parameters, for example, using 
+[PCRE regular
+expressions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenpcre_regex_glosry.htm "Glossary Entry"),
 which are dealt with further down.
 
 Syntax examples:
@@ -738,7 +744,7 @@ expressions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.ht
     (contains not only) in comparison expressions.
     -   Regarding `CO`, a comparison is true if the left operand
         only contains characters that are also contained in the right
-        operand. If the comparison is not true, you can get the position
+        operand. If the comparison returns false, you can get the position
         of the first character from text that is not contained in the
         character set via `sy-fdpos`. Regarding `CN`, a
         comparison is true if a string not only contains characters from
@@ -756,8 +762,8 @@ s2 = find_any_not_of( val = s1 sub = `c` ). "1
 s2 = count_any_of( val = s1  sub = `e` ). "2
 s2 = count_any_not_of( val = s1  sub = `s` ). "5
 
-IF s1 CO `rs` ... "not true, sy-fdpos = 0
-IF s1 CN `cheers` ... "not true, sy-fdpos = 6
+IF s1 CO `rs` ... "false, sy-fdpos = 0
+IF s1 CN `cheers` ... "false, sy-fdpos = 6
 ```
 
 <p align="right">(<a href="#top">back to top</a>)</p>
@@ -832,7 +838,7 @@ s3 = `cheers`.
 
 IF s3 CS `rs` ... "true, sy-fdpos = 4
 
-IF s3 NA `xyz`... "not true, sy-fdpos = 6
+IF s3 NA `xyz`... "false, sy-fdpos = 6
 
 "String function find
 s1 = `Pieces of cakes.`.
@@ -857,27 +863,43 @@ FIND `def` IN s1.
 IF sy-subrc = 0. "If there is an occurrence, sy-subrc is set to 0.
  ... "Some action
 ENDIF.
-FIND SUBSTRING `abc` IN s1. "Addition SUBSTRING is optional
 
-FIND `aBC` IN s1 IGNORING CASE. "Case-insensitive search
+"Addition SUBSTRING is optional; same as above
+FIND SUBSTRING `abc` IN s1. 
+
+"Case-insensitive search; same as above
+FIND `aBC` IN s1 IGNORING CASE. 
+
+"Case-sensitive search; here, sy-subrc is 4 since `aBC` is not found
+FIND `aBC` IN s1 RESPECTING CASE.
 
 "MATCH additions can be specified individually or combined
-FIND ALL OCCURRENCES OF `abc` IN s1
-  MATCH COUNT DATA(fcnt)  "2 (number of occurrences)
-  MATCH OFFSET DATA(foff) "12 (offset of last occurrence)
-  MATCH LENGTH DATA(flen). "3 (length of last occurrence)
+"All occurrences
+FIND ALL OCCURRENCES OF `abc` IN s1 
+  MATCH COUNT DATA(fcnt).  "2 (number of occurrences)
 
 "Finding the first occurrence
-FIND FIRST OCCURRENCE OF `abc` IN s1 MATCH OFFSET foff. "0
+FIND FIRST OCCURRENCE OF `abc` IN s1  
+  MATCH OFFSET DATA(foff)  "0
+  MATCH LENGTH DATA(flen). "3
 
-"Returning all of these pieces of information in a table for all occurrences
+"All occurrences
+FIND ALL OCCURRENCES OF `abc` IN s1
+  MATCH COUNT DATA(fcnt2)  "2 (number of occurrences)
+  MATCH OFFSET DATA(foff2) "12 (Note: offset of last occurrence only)
+  MATCH LENGTH DATA(flen2). "3 (Note: length of last occurrence only)
+
+"Returning offset/length information in a table for all occurrences
+"The internal table following the RESULTS keyword includes more information
+"as shown further down.
 FIND ALL OCCURRENCES OF `abc` IN s1 RESULTS DATA(fres).
 
 "Restricting the search area (OFFSET/LENGTH can be specified individually)
 FIND `abc` IN SECTION OFFSET 4 LENGTH 11 OF s1
   MATCH OFFSET foff. "12
 
-"Searching in internal tables; search results are returned in an internal table
+"Searching in internal tables; search results are returned in an internal table.
+"Here, the search is case-sensitive.
 DATA(str_table) = VALUE string_table( ( `ZxZ` ) ( `yZ` ) ( `Zz` ) ).
 
 FIND ALL OCCURRENCES OF `Z` IN TABLE str_table RESULTS
@@ -1011,14 +1033,14 @@ Characters and character types
 
 | Expression | Represents | Example | Matches | Does not Match |
 |---|---|---|---|---|
-| `.` | Any single character | `.` | a, 9, Ä, # | aa, empty |
+| `.` | Any single character | `.` | a, 9, Ä, #, a blank | aa, bbb |
 | `\d` | Any digit (0-9) | `\d` | 1, 3, 7 | A, b, c |
 | `\D` | Any character that is not a digit, equivalent to `[^0-9]` | `\D` | D, e, f | 4, 5, 8 |
 | `\s` | Any whitespace character such as a blank, tab and new line | `\s` <br>(example string: hi there) | the blank in between | hi |
 | `\S` | Any character that is not a whitespace | `\S` <br>(example string: a 1) | a, 1 | the blank in between |
 | `\w` | Any word character (letter, digit or the underscore), equivalent to `[a-zA-Z0-9_]` | `\w` <br>(example string: ab 12) | a, b, 1, 2 | the blank in between |
 | `\W` | Any character that is not a word character, equivalent to `[^a-zA-Z0-9_]` | `\W` <br>(example string: cd 34) | the blank in between | c, d, 3, 4 |
-| `\...` | To include special characters like <code>[] \ / ^</code>, use `\` to escape them. Use `\.` to match a period ("."). | `\\` | `\` | `/` |
+| `\` | To include special characters like `[] \ / ^`, use `\` to escape them. Use `\.` to match a period ("."). | `\\` | `\` | `/` |
 
 
 Repetitions and Alternatives
@@ -1163,8 +1185,10 @@ s2 = replace( val = s1 pcre = `(.*?)p` with = `#`  ). "#ppc app
 
 "Replacements with subgroups
 "Replaces 'pp' (case-insensitive here) with '#', the content before and after 'pp' is switched
-s2 = replace( val  = s1       pcre = `(.*?)PP(.*)`
-              with = `$2#$1` case = abap_false ). "pc app#ab a
+s2 = replace( val  = s1      
+              pcre = `(.*?)PP(.*)`
+              with = `$2#$1` 
+              case = abap_false ). "pc app#ab a
 
 "Changing the source field directly with a REPLACE statement; same as above
 REPLACE PCRE `(.*?)PP(.*)` IN s1 WITH `$2#$1` IGNORING CASE. "pc app#ab a
