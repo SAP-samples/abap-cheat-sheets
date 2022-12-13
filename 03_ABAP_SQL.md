@@ -87,7 +87,7 @@ ABAP](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=
     conditions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenjoin_condition_glosry.htm "Glossary Entry").
 -   Note:
     -   Similar to database tables, the columns of such a view form a
-        flat structure. Hence, the view's name can be used to declare
+        flat structure. Hence, the view's name can be used, for example, to declare
         data objects, too.
     -   The views can be accessed by ABAP SQL, especially for reading
         purposes using `SELECT`.
@@ -233,7 +233,7 @@ SELECT FROM source   "What db table or view to read from
     internal tables as targets, the resulting table is a standard table
     and has an empty key which might have an impact when further
     processing the internal table entries. Find more information in the
-    ABAP cheat sheet [Working with Internal Tables](01_Internal_Tables.md).
+    ABAP cheat sheet [Working with Internal Tables](01_Internal_Tables.md). Apart from `DATA`, you can also make use of the declaration operator [`FINAL`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenfinal_inline.htm) in newer ABAP releases with which you can create [immutable variables](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenimmutable_variable_glosry.htm).
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -261,7 +261,9 @@ SELECT SINGLE FROM dbtab
 
 "Alternative syntax without the FIELDS addition
 "When reading into an existing target variable on the basis of a selected
-"set of fields, use a CORRESPONDING addition in the INTO clause
+"set of fields, use a CORRESPONDING addition in the INTO clause so as not
+"to mess up the read result if not all fields of a structure are present 
+"in the SELECT list.
 
 SELECT SINGLE comp1, comp2, comp3       "Selected set of fields
   FROM dbtab
@@ -393,7 +395,7 @@ target table (provided that there will not be an issue regarding the
 type).
 ``` abap
 SELECT FROM dbtab
-  FIELDS comp1 AS alias1, comp2 AS alias2, comp3 AS alias3
+  FIELDS comp1 AS comp_a, comp2 AS comp_b, comp3 AS comp_b
   WHERE ...
   INTO CORRESPONDING FIELDS OF TABLE @itab.
 ```
@@ -593,7 +595,7 @@ SELECT FROM zdemo_abap_flsch
 
   char`X` AS flag, "Typed literal
 
-  @upto as num, "Host variable
+  @upto AS num, "Host variable
 
   @( cl_abap_context_info=>get_system_date( ) ) as date "Host expression
 
@@ -716,7 +718,7 @@ SELECT SINGLE
   "case-sensitive by default (case_sensitive parameter can be specified)
   "Notes on the result: 1 = found, 0 = not found
   "Result: 1
-  like_regexpr( pcre  = '..',  "Period that is followed by any character
+  like_regexpr( pcre  = '\..',  "Period that is followed by any character
                 value = url ) AS like_regex,
 
   "Returns position of a substring in an expression,
@@ -728,7 +730,7 @@ SELECT SINGLE
   "Searches a PCRE pattern, returns offset of match;
   "many optional parameters: occurrence, case_sensitive, start, group
   "Result: 21
-  locate_regexpr( pcre = '..', "Period followed by any character
+  locate_regexpr( pcre = '\..', "Period followed by any character
                   value = url,
                   occurrence = 2 ) "2nd occurrence in the string
                  AS locate_regexpr,
@@ -747,7 +749,7 @@ SELECT SINGLE
 
   "Counts all occurrences of found PCRE patterns
   "Result: 2
-  occurrences_regexpr( pcre = '..',
+  occurrences_regexpr( pcre = '\..', "Period that is followed by any character
                        value = url ) AS occ_regex,
 
   "Replaces the 2nd argument with the 3rd in an expression
@@ -757,7 +759,7 @@ SELECT SINGLE
   "Replaces a found PCRE expression;
   "more parameters possible: occurrence, case_sensitive, start
    "Result: http://www#ufthansa#om
-  replace_regexpr( pcre = '..',
+  replace_regexpr( pcre = '\..', "Period that is followed by any character
                    value = url,
                    with = '#' ) AS replace_regex,
 
@@ -785,7 +787,7 @@ SELECT SINGLE
   "Searches for a PCRE expression and returns the matched substring
   "More parameters possible: occurrence, case_sensitive, start, group
   "Result:.lu
-  substring_regexpr( pcre = '...',
+  substring_regexpr( pcre = '\...', "Period that is followed by any two characters
                      value = url ) AS substring_regexpr,
 
   "All lower case letters are transformed to upper case letters
@@ -897,7 +899,7 @@ SELECT
 -   [Arithmetic
     expressions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensql_arith.htm)
     to perform arithmetic calculations using the operators `+`,
-    `-`, [`*]`, `/`,
+    `-`, `*`, `/`,
 -   [Cast
     expressions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensql_cast.htm)
     to convert the value of operands to a dedicated dictionary type.
@@ -1113,6 +1115,7 @@ SELECT FROM dbtab
 
         "(Not) between a value range
         "comp1 BETWEEN 1 AND 10
+        "comp1 NOT BETWEEN 1 AND 10
 
         "A character literal has a certain pattern, preceded and
         "followed by any string.
@@ -1131,7 +1134,7 @@ SELECT FROM dbtab
          "comp1 IS INITIAL
 
         "Combination of logical expression using AND, OR and parentheses
-        "( comp1 = a AND comp2 < b ) OR ( comp3> c AND comp4 <> d )
+        "( comp1 = a AND comp2 < b ) OR ( comp3 > c AND comp4 <> d )
 
   INTO TABLE @DATA(itab_where).
 ```
@@ -1228,8 +1231,7 @@ When used:
 
 -   Whenever you need intermediate results in a `SELECT`
     statement and especially if you need them more than once.
--   You get the option of selecting directly from a subquery [SELECT
-    FROM subquery], which is not possible in ABAP SQL.
+-   You get the option of selecting directly from a subquery (`SELECT FROM subquery`), which is not possible in ABAP SQL.
 
 How it works:
 
