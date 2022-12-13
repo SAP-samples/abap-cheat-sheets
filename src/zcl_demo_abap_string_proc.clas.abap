@@ -1105,8 +1105,7 @@ CLASS ZCL_DEMO_ABAP_STRING_PROC IMPLEMENTATION.
     output->display( input = count_s name = `count_s` ).
     output->display( input = findings_s name = `findings_s` ).
     output->display( input = line_s name = `line_s` ).
-    output->display( input = off_s name = `off_s` ).
-    output->display( input = length_s name = `length_s` ).
+    output->display( input = off_s name = `off_s` ).    
     output->display( input = length_s name = `length_s` ).
     output->display( input = res_s2 name = `res_s2` ).
 
