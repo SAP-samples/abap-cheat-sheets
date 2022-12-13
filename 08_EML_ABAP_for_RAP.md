@@ -318,7 +318,7 @@ METHODS some_action FOR MODIFY
         [`%cid`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapderived_types_cid.htm)).
     -   `failed`: Information for identifying the data set for
         which an error occurred in a RAP operation
-    -   `reported`: Used to exchange error messages for each
+    -   `reported`: Used to exchange, for example, error messages for each
         entity defined in the BDEF and [not related to a specific
         entity](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapderived_types_other.htm).
     -   Example: Technically, the `reported` parameter is a
@@ -1160,9 +1160,9 @@ contains all relevant components for the chosen scenario.
     Objects](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_for_rap_bos.htm)
     in the ABAP Keyword Documentation including EML
 -   [Development guide for the ABAP RESTful Application Programming
-    Model](https://help.sap.com/http.svc/ahp2/DRAFT/SAP_S4HANA_ON-PREMISE/2022.000/EN/28/9477a81eec4d4e84c0302fb6835035/frameset.htm)
+    Model](https://help.sap.com/docs/ABAP_PLATFORM_NEW/fc4c71aa50014fd1b43721701471913d/289477a81eec4d4e84c0302fb6835035.html)
 -   [RAP
-    Contract](https://help.sap.com/http.svc/ahp2/DRAFT/SAP_S4HANA_ON-PREMISE/2022.000/EN/3a/402c5cf6a74bc1a1de080b2a7c6978/frameset.htm):
+    Contract](https://help.sap.com/docs/ABAP_PLATFORM_NEW/fc4c71aa50014fd1b43721701471913d/3a402c5cf6a74bc1a1de080b2a7c6978.html):
     Rules for the RAP BO provider and consumer implementation to ensure
     consistency and reliability
 
