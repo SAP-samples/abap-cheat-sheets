@@ -28,7 +28,7 @@
     themselves be, for example, structures or [internal
     tables](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abeninternal_table_glosry.htm "Glossary Entry").
 -   summarize different pieces of information, that is, data objects,
-    that belong together. A typical example is the following: an address
+    that belong together. A typical example is the following: An address
     has several components like name, street, city, and so on.
 -   mostly serve as line types of internal tables and [database
     tables](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendatabase_table_glosry.htm "Glossary Entry").
@@ -109,11 +109,9 @@ TYPES: BEGIN OF struc_type,
          comp1 TYPE i,                       "elementary type
          comp2 TYPE c LENGTH 5,              "elementary type
          comp3 TYPE local_structured_type,   "local structured type
-
          comp4 TYPE itab_type,               "internal table type
-
          comp5 TYPE ddic_type,               "DDIC type
-         comp6 TYPE REF TO i,                "reference
+         comp6 TYPE REF TO i,                "data reference
          comp7 LIKE data_object,             "deriving type from a data object
          ...,
        END OF struc_type.
@@ -126,7 +124,7 @@ There are multiple ways to create structures in a program using a `DATA` stateme
 - Creating a structure either based on a local type or a globally available type from the DDIC:
 
     ``` abap
-        DATA ls_from_local TYPE struc_type,
+        DATA ls_from_local  TYPE struc_type,
              ls_from_global TYPE ddic_type.
     ```
 
@@ -138,7 +136,7 @@ There are multiple ways to create structures in a program using a `DATA` stateme
             comp1 TYPE ...,
             comp2 TYPE ... VALUE ...,
             comp3 TYPE i VALUE 99,
-            comp4 TYPE i VALUE IS INITIAL,
+            comp4 TYPE i VALUE IS INITIAL,  "Without the addition VALUE, or if IS INITIAL is specified, the content is initial.
             comp5 TYPE local_structured_type,
             ...,
           END OF struc.
@@ -161,7 +159,7 @@ There are multiple ways to create structures in a program using a `DATA` stateme
 
     DATA struc2 LIKE LINE OF itab.
     ```
-- Creating a structure by inline declaration, e. g. using `DATA( ... )`.
+- Creating a structure by inline declaration, e. g. using `DATA( ... )`. Note that in newer ABAP releases, the declaration operator [`FINAL`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenfinal_inline.htm) is available with which you can create [immutable variables](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenimmutable_variable_glosry.htm).
     ``` abap
     "Type is derived from the right-hand structure;
     "the content of struc is assigned, too.
@@ -209,7 +207,7 @@ DATA: BEGIN OF structure,
       END OF structure.
 ```
 > **💡 Note**<br>
-> Nesting does not play a role in this context. Even a nested structure is flat unless a substructure contains a deep component.
+> Nesting does not play a role in this context. Even a nested structure is considered flat unless a substructure contains a deep component.
 
 **Nested structure**
 
@@ -291,7 +289,7 @@ address_n-name-title ...
 
 ### Filling Structures
 
-Filling structure components using the component selector.
+Filling structure components using the component selector in the context of an assignment using the [assignment operator](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenassignment_operator_glosry.htm) `=`..
 ``` abap
 address-name   = `Mr. Duncan Pea`.
 
@@ -325,10 +323,10 @@ DATA(add2) = VALUE address_type( name   = `Mrs. Jane Pea`
                                  street = `Vegetable Lane 11`.
                                  city   = `349875 Botanica` ).
 ```
-Copying the content of a structure to another one that has the same type. For value assignments, generally
+Copying the content of a structure to another one. In the example below, the assumption is that target and source structure have the same type. For value assignments, generally
 bear in mind that there are special [conversion](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconversion_struc.htm)
 and [comparison rules](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenlogexp_rules_operands_struc.htm)
-that apply to assignments involving structures..
+that apply to assignments involving structures.
 ``` abap
 address = add2.
 
@@ -499,7 +497,7 @@ SELECT SINGLE FROM zdemo_abap_fli
     WHERE carrid = 'LH'
     INTO @DATA(ls_fli2).
 ```
-**Reading a line from a database table into a structure that has a different type**.
+**Reading a line from a database table into a structure that has a different type**. Components in the structure having identical names are filled.
 ``` abap
 SELECT SINGLE FROM zdemo_abap_fli
     FIELDS *
@@ -525,7 +523,7 @@ and a [data reference
 variable](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendata_reference_variable_glosry.htm "Glossary Entry"),
 all representing structured data objects and declared inline below. In
 the example below, the reading of a line is based on the line number by
-specifying `INDEX`. See the section `Determining the target area` in the cheat sheet [Working with Internal Tables](01_Internal_Tables.md#) for more details.
+specifying `INDEX`. See the section *Determining the target area* in the cheat sheet [Working with Internal Tables](01_Internal_Tables.md#) for more details.
 ``` abap
 READ TABLE itab INTO DATA(wa) INDEX 1.
 
