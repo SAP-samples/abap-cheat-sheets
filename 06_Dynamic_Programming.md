@@ -30,12 +30,11 @@ Some considerations regarding "dynamic" in contrast to "static" aspects:
     **are not known or not yet determined at compile time** at all.
 -   They are **only known at a program's runtime**, i. e. the
     properties are defined and passed to programs at runtime.
--   Consider a program that does not work with a specific kind of table
-    but should be able to work with any kind of table, for example, a
-    user must input the table name first in a UI. The tables to be used
-    in the program certainly have different properties, line types,
+-   Consider a UI that allows a user to make an entry in a field. By choosing a button, some action is triggered.  
+    The underlying program must be able to work with whatever was inserted. Assume the program expects the name of a database table to be inserted. 
+    However, the tables certainly have different properties, line types,
     field names, number of rows, and so on. Nevertheless, the program
-    must be able to work with all of them, no matter what table is
+    must be able to work with whatever table name was inserted and no matter what table is
     processed.
 -   You might also need to determine information about data types and
     data objects at runtime or even create them.
@@ -156,6 +155,10 @@ ASSIGN number TO FIELD-SYMBOL(<fs_inl>). "Field symbol declared inline
 ASSIGN COMPONENT 2 OF STRUCTURE struc TO <fs_gen>.
 
 ASSIGN COMPONENT 'CARRID' OF STRUCTURE struc TO <fs_gen>.
+
+"In newer ABAP releases, you can dynamically specify components
+"as follows:
+ASSIGN struc-(comp1) TO <fs_gen>. 
 ```
 
 > **💡 Note**<br>
@@ -315,7 +318,7 @@ DATA(ref3) = REF string( `hallo` ).
 "GET REFERENCE OF num INTO DATA(ref4).
 ```
 
-**Creating new data objects at runtime**: You create a [anonymous
+**Creating new data objects at runtime**: You create an [anonymous
 data
 object](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenanonymous_data_object_glosry.htm "Glossary Entry")
 at runtime by placing the reference in the variable and providing the
@@ -398,8 +401,8 @@ operators](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?
 either with the [constructor
 operator](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconstructor_operator_glosry.htm "Glossary Entry")
 [`CAST`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconstructor_expression_cast.htm)
-or the older
-[`?=`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapmove_cast.htm),
+(in older code you might see 
+[`?=`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapmove_cast.htm)),
 for the assignment of data reference variables.
 - See more information in
 the topic [Assignment Rules for Reference
@@ -442,7 +445,7 @@ DATA ref6 TYPE REF TO data.
 ref6 = NEW i( 654 ).
 ref5 = CAST #( ref6 ).
 
-"Alternative syntax to the CAST operator
+"Alternative, yet old syntax to the CAST operator
 ref5 ?= ref6.
 ```
 
@@ -604,7 +607,7 @@ Dynamically](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/ind
 
 ## Dynamic ABAP Statements
 
-Dynamic aspects come particularly into the picture when considering the
+Dynamic aspects particularly enter the picture when considering the
 options of dynamic ABAP statements. In this context, you can make use of
 [tokens](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentoken_glosry.htm "Glossary Entry")
 put within parentheses and included as operands in many ABAP statements
@@ -642,7 +645,7 @@ The name of a data or object type is determined at runtime.
 Examples:
 ``` abap
 "Anonymous data objects are created using a type determined at runtime.
-"Note that the NEW operator cannot be used here!
+"Note that the NEW operator cannot be used here.
 
 CREATE DATA ref TYPE (some_type).
 CREATE DATA ref TYPE TABLE OF (some_type).
@@ -836,7 +839,7 @@ DATA(line_type) =  CAST cl_abap_structdescr(
 "Defining primary table keys of internal table type to be created
 
 DATA(key_tab) = VALUE abap_keydescr_tab( ( name = 'CARRID' )
-                                          ( name = 'CARRNAME' ) ).
+                                         ( name = 'CARRNAME' ) ).
 
 "Creating internal table type
 
