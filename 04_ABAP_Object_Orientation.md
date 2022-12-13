@@ -89,7 +89,6 @@ classes</a></td>
 </table>
 
 > **💡 Note**<br>
-> - Regarding the names of global and local classes and usage of classes in ABAP programs when, for example, calling methods, the system searches for a local class with the specific name at first. Then, if a local class with that name is not found, the systems searches for a global class.
 > - The class design must be done with care. If a class is only used in one program (or class), choosing a local class is enough. However, global
 classes must be prepared to be used anywhere. A later change of that class, especially regarding the visibility of components (see
 further down) or the data types of attributes that are used in other programs might cause problems.
@@ -213,7 +212,7 @@ kind of components are to be distinguished:
 
 **Attributes**
 
--   The attributes of a class mean the data objects declared within a
+-   The attributes of a class (or interace) mean the data objects declared within a
     class (or interface).
 -   [Static
     attributes](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenstatic_attribute_glosry.htm "Glossary Entry")
@@ -413,7 +412,7 @@ CLASS local_class DEFINITION.
                      "Formal parameter definitions
                      stat_meth3 IMPORTING VALUE(m) TYPE i       "pass by value
                                           REFERENCE(n) TYPE i   "pass by reference
-                                          o TYPE i,             "same as n
+                                          o TYPE i,             "same as n; the specification of REFERENCE(...) is optional
 
                      "OPTIONAL/DEFAULT additions
                      stat_meth4 IMPORTING p TYPE i DEFAULT 123
@@ -441,7 +440,7 @@ must be declared. Such an [object reference
 variable](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenobject_refer_variable_glosry.htm "Glossary Entry")
 is also necessary for accessing objects and their components, i. e.
 objects are not directly accessed but only via references that point to
-those objects. This reference is stored in the reference variables.
+those objects. This reference is stored in the reference variable.
 ``` abap
 DATA: ref1 TYPE REF TO local_class,
       ref2 TYPE REF TO global_class,
@@ -552,7 +551,7 @@ within the class in which it is declared, the static method can also be
 called without `class_name=>...`. You might also see method
 calls with [`CALL METHOD`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapcall_method_static.htm)
 statements which are not used here (however, these statements are the
-only option in the context of dynamic programming.
+only option in the context of dynamic programming).
 When methods are called, the parameters must be specified within the
 parentheses.
 
@@ -578,7 +577,7 @@ class_name=>stat_meth( ).
 
 "Note that in the method call, the caller exports values to the
 "method having importing parameters defined; hence, the ABAP word
-"EXPORTING is relevant. The three following method calls are the same
+"EXPORTING is relevant. The following three method calls are the same
 
 "Explicit use of EXPORTING.
 class_name=>meth( EXPORTING a = b ).
@@ -587,7 +586,8 @@ class_name=>meth( EXPORTING a = b ).
 
 class_name=>meth( a = b ).
 
-"Only a single value must be passed: parameter name (a) and EXPORTING not needed
+"Only a single value must be passed: 
+"the formal parameter name (a) and EXPORTING not needed
 
 stat_meth( b ).
 
@@ -619,6 +619,7 @@ class_name=>meth( CHANGING g = h ).
 DATA(result) = class_name=>meth( i = j k = l )
 
 "They can be used with other statements, e. g. logical expressions.
+"In the example below, the assumption is that the returning parameter is of type i.
 IF class_name=>meth( i = j k = l ) > 100.
   ...
 ENDIF.
@@ -683,7 +684,7 @@ ENDMETHOD.
     -   can only handle components in the `PROTECTED` and
         `PUBLIC` section of superclasses.
     -   know their direct superclass but they do not know which classes
-        inherit from them. [Note:] Handle component definitions
+        inherit from them. Note: Handle component definitions
         and implementations in the superclass with great care since a
         change might have undesired consequences for the subclasses.
 -   Components ...
@@ -714,8 +715,7 @@ ENDMETHOD.
     by default.
 -   The addition
     [`ABSTRACT`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapmethods_abstract_final.htm)
-    is meant for abstract classes.
--   The addition `ABSTRACT` enters the picture in the context of
+    enters the picture in the context of
     abstract classes. These classes are used if you want to have a
     template for subclasses and you do not need instances of such
     classes. Instances are only possible for their subclasses. Instance
@@ -724,14 +724,12 @@ ENDMETHOD.
     declarations](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapclass_options&sap-language=EN&sap-client=000&version=X&anchor=!ABAP_ADDITION_3@3@&tree=X)
     (e. g. `CLASS cl DEFINITION ABSTRACT. ...`) and [method
     declarations](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapmethods_abstract_final&sap-language=EN&sap-client=000&version=X&anchor=!ABAP_ADDITION_1@1@&tree=X)
-    (e. g. `METHODS meth ABSTRACT. ...`). Abstract methods can
-    only be declared within abstract classes. They are not implemented
-    in the implementation part of the abstract class. Instead, they must
+    (e. g. `METHODS meth ABSTRACT. ...`). Abstract methods are not implemented
+    in the implementation part of abstract classes. Instead, they must
     be redefined in subclasses. Note that in abstract classes,
     non-abstract methods can also be declared and that private methods
     cannot be redefined, i. e. methods in this section cannot be
-    declared as abstract. See a high-level comparison of abstract
-    classes and interfaces further down.
+    declared as abstract. 
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -799,8 +797,8 @@ Note the concept of static and dynamic type in this context:
     either with the [constructor
     operator](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconstructor_operator_glosry.htm "Glossary Entry")
     [`CAST`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconstructor_expression_cast.htm)
-    or the older
-    [`?=`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapmove_cast.htm),
+    (or you might see code using the older
+    [`?=`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapmove_cast.htm)),
     for the assignment of object or interface reference variables.
 -   See more information in the topic [Assignment Rules for Reference
     Variables](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconversion_references.htm).
@@ -839,7 +837,7 @@ does not work. A syntax error occurs saying the right-hand variable's
 type cannot be converted to the left-hand variable's type.
 
 If you indeed want to carry out this casting, you must use
-`CAST` or `?=` to overcome this syntax error (but just
+`CAST` (or you might see code using the older `?=`) to overcome this syntax error (but just
 the syntax error!). Note: You might also use these two
 operators for the upcasts. That means, `oref_super =
 oref_sub.` has the same effect as `oref_super = CAST #(
@@ -847,7 +845,7 @@ oref_sub ).`. This syntax is usually not necessary.
 
 At runtime, the assignment is checked and if the conversion does not
 work, you face a (catchable) runtime error. Even more so, the assignment
-`oref_sub ?= oref_super.` does not throw a syntax error but it
+`oref_sub = CAST #( oref_super ).` does not throw a syntax error but it
 does not work in this example either because it violates the rule
 mentioned above (`oref_sub` is more specific than
 `oref_super`). To check whether such an assignment is possible
@@ -1084,8 +1082,7 @@ includes differences between abstract classes and interfaces that should
 be considered when creating them:
 >-   Abstract classes can have components (including abstract and
     non-abstract methods) in other visibility sections than only public.
->-   Multiple inheritance is impossible with abstract classes since there
-    can be only one abstract class as superclass.
+>-   Multiple inheritance is impossible with abstract classes. Only a single abstract class can act as superclass.
 >-   Non-abstract methods in abstract classes can be implemented whereas
     interfaces do not allow any method implementations.
 
