@@ -55,7 +55,7 @@
     concept is very handy particularly in this context: [Inline
     declaration](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abeninline_declaration_glosry.htm "Glossary Entry").
     -   This means that you can declare a variable using
-        `DATA(var)` (or an immutable variable
+        `DATA(var)` (or, in newer ABAP releases, an immutable variable
         [`FINAL(var)`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenfinal_inline.htm))
         as an operand in the current [write
         position](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenwrite_position_glosry.htm "Glossary Entry").
@@ -152,8 +152,8 @@ DATA(num2) = VALUE i( ).
 ```
 
 Regarding internal tables, the line specifications are enclosed in an
-inner pair of parentheses `( ... )`. In the following examples,
-three lines are added to a table.
+inner pair of parentheses `( ... )`. In the following example,
+three lines are added to an internal table.
 
 ``` abap
 "Creating an internal table type and an internal table
@@ -374,7 +374,7 @@ two statements are  not the same:
     -   non-generic data types which creates a [data reference
         variable](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendata_reference_variable_glosry.htm "Glossary Entry")
         pointing to the anonymous data object.
-    -   classes which creates objects of these classes. The result is a
+    -   classes which creates objects of these classes. The result is an
         [object reference
         variable](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenobject_refer_variable_glosry.htm "Glossary Entry")
         pointing to an object.
@@ -475,7 +475,7 @@ DATA(oref3) = NEW cl2( p1 = ... p2 = ... ).
 "Method chaining
 ... NEW some_class( ... )->meth( ... ).
 
-"Chained attribute accesses
+"Chained attribute access
 ... NEW some_class( ... )->attr ...
 ```
 
@@ -778,8 +778,7 @@ DATA(sum) = REDUCE i( INIT s = 0
     [`WHILE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapwhile.htm))
     or [table
     iterations](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentable_iteration_glosry.htm "Glossary Entry")
-    (having the semantics of [[LOOP
-    AT]](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abaploop_at_itab_variants.htm);
+    (having the semantics of [`LOOP AT`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abaploop_at_itab_variants.htm);
     the expressions include the ABAP word `IN`).
 -   Such expressions are possible in the following contexts:
     -   `REDUCE`: The reduction result is created in the
