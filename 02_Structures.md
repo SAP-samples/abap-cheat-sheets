@@ -546,6 +546,7 @@ DATA(ls_table_exp) = itab[ 3 ].
 
 ... a database table into a structure. A `SELECT` loop can be specified by using the syntax `SELECT ... ENDSELECT.`.
 In the simple example below, the line that is found and returned in a structure, which is declared inline, can be further processed.
+From performance perspective, it is advised to avoid of this syntax.
 A `SELECT` loop might also have an internal table as data source.
 ``` abap
 SELECT FROM zdemo_abap_fli
