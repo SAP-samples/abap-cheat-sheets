@@ -450,6 +450,7 @@ ENDCLASS.
 *& and an abstract class.
 *&--------------------------------------------------------------------*
 
+"Using the addition CREATE PRIVATE, objects can only be created by the class itself.
 CLASS lcl_singleton DEFINITION CREATE PRIVATE.
   PUBLIC SECTION.
 
@@ -461,8 +462,7 @@ CLASS lcl_singleton DEFINITION CREATE PRIVATE.
 
     CLASS-METHODS:
       "Factory method that returns an instance of the class.
-      factory_method RETURNING VALUE(res_instance)
-                                 TYPE REF TO lcl_singleton.
+      get_instance RETURNING VALUE(res_instance) TYPE REF TO lcl_singleton.
 
     CLASS-DATA: "Holds the number of overall instances.
                 no_of_instances TYPE i READ-ONLY.
@@ -476,12 +476,12 @@ ENDCLASS.
 
 CLASS lcl_singleton IMPLEMENTATION.
 
-  METHOD factory_method.
+  METHOD get_instance.
     "Checking if an instance of the class already exists.
     "An instance should only be created if no instance exists
     "to make sure that there is only a single instance overall.
-    IF obj IS INITIAL.
-      CREATE OBJECT obj.
+    IF obj IS NOT BOUND.
+      obj = NEW #( ).
     ENDIF.
     "In case an instance already exists, the existing one is
     "always returned.

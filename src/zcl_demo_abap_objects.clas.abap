@@ -81,7 +81,7 @@ ENDCLASS.
 
 
 
-CLASS ZCL_DEMO_ABAP_OBJECTS IMPLEMENTATION.
+CLASS ZCL_demo_ABAP_OBJECTS IMPLEMENTATION.
 
 
   METHOD hallo_instance_method.
@@ -741,105 +741,90 @@ CLASS ZCL_DEMO_ABAP_OBJECTS IMPLEMENTATION.
 
     output->display( input = dc_check name = `dc_check` ).
 
-    output->next_section( `19) Working with interfaces` ).
+    output->next_section( `19) Interfaces` ).
 
-    "The code demonstrates multiple things when working with interfaces.
-    "1. Accessing static methods and attributes using the interface
-    "component selector ~.
-    "2. Accessing instance methods and attributes via class references.
-    "3. Accessing instance methods and attributes via class references and
-    "using an alias name.
-    "4. Accessing instance methods and attributes via interface references.
-    "In this case, the object component selector is used to access the
-    "components without the interface name. Before making use of interface
-    "references, an interface reference variable must be created. Interfaces
-    "cannot be instantiated, i. e. an object cannot be created, however,
-    "interface references can point to the objects of any class that
-    "includes the interface so that interface components (and only them) can
-    "be accessed via the variable. The assignment of an object reference to
-    "an interface references called upcast (or widening cast).
-    "The other way round, i. e. the assignment of an interface reference to
-    "an object reference, is also possible. This concept is called downcast
-    "(or narrowing cast). However, this assignment can be problematic since
-    "a successful assignment is dependent on whether the object the
-    "interface reference points to is actually an object of the implementing
-    "class. If this is not the case, a runtime error occurs. A downcast can
-    "be done using the casting operator CAST. In older code, you might
-    "stumble on the operator ?= for downcasting. To prevent a runtime
-    "error, you can implement a check using the statement IS INSTANCE OF.
-
-    "Accessing static method and attribute
-    DATA(res_halve) = zdemo_abap_objects_interface~halve( 10 ).
-
-    DATA(intro_static) = zdemo_abap_objects_interface~stat_str.
-
-    "Access instance method and attribute ...
-    "... via class reference.
-    DATA(ref_cl) = NEW zcl_demo_abap_objects( ).
-
-    DATA(res_double1) = ref_cl->zdemo_abap_objects_interface~double( 5 ).
-
-    DATA(intro_inst1) = ref_cl->zdemo_abap_objects_interface~in_str.
-
-    "Using alias name
-    DATA(res_triple) = ref_cl->triple( 100 ).
-
-    DATA(intro_inst4) = ref_cl->zdemo_abap_objects_interface~in_str.
-
-    "... via interface reference.
+    "Addressing instance interface components using interface reference variable
+    DATA ref_if1 TYPE REF TO zdemo_abap_objects_interface.
     DATA ref_if2 TYPE REF TO zdemo_abap_objects_interface.
 
-    DATA ref_cl2 TYPE REF TO zcl_demo_abap_objects.
+    "Object reference variable for a class implementing the interface
+    DATA ref_cl1 TYPE REF TO zcl_demo_abap_objects.
 
-    "Upcast (1): Convert object references to an interface reference
+    "An interface variable can contain references to objects of classes
+    "that implement the corresponding interface.
+    "Creating an object
+    ref_cl1 = NEW zcl_demo_abap_objects( ).
+
+    "Assigning the object reference to the interface object variable
+    ref_if1 = ref_cl1.
+
+    "This can also be done directly, i. e. directly creating an object to
+    "which the interface reference variable points
     ref_if2 = NEW zcl_demo_abap_objects( ).
 
-    DATA(res_double2) = ref_if2->double( 10 ).
+    "Instance method via the interface reference variable (i_ref->meth( ))
+    DATA(inst_intf_meth_via_iref1) = ref_if1->double( 5 ).
+    DATA(inst_intf_meth_via_iref2) = ref_if2->double( 10 ).
 
-    DATA(intro_inst2) = ref_if2->in_str.
+    "Instance attribute via the interface reference variable (i_ref->attr)
+    DATA(inst_intf_attr_via_iref) = ref_if1->in_str.
 
-    ref_cl2 = NEW #( ).
+    "Addressing instance components using the class reference variable
+    "is also possible but it's not the recommended way
+    "c_ref->intf~meth
+    DATA(inst_intf_meth_via_cref) = ref_cl1->zdemo_abap_objects_interface~double( 20 ).
 
-    "Upcast (2)
-    ref_if2 = ref_cl2.
+    "c_ref->intf~attr
+    DATA(inst_intf_attr_via_cref) = ref_cl1->zdemo_abap_objects_interface~in_str.
 
-    DATA(res_upcast) = ref_if2->double( 50 ).
+    "Addressing static interface components
+    "Static methods
+    "class=>intf~meth( )
+    DATA(stat_intf_meth1) = zcl_demo_abap_objects=>zdemo_abap_objects_interface~halve( 10 ).
 
-    DATA(intro_inst_up) = ref_if2->in_str.
+    "Since we are in this very class here, the class name can be dropped.
+    DATA(stat_intf_meth2) = zdemo_abap_objects_interface~halve( 100 ).
 
-    "Downcast
-    DATA(ref_cl_down) = NEW zcl_demo_abap_objects( ).
+    "Just for the record: Static methods can be called via reference variables, too.
+    DATA(stat_intf_meth3) = ref_if2->halve( 50 ).
+    DATA(stat_intf_meth4) = ref_cl1->zdemo_abap_objects_interface~halve( 70 ).
 
-    IF ref_if2 IS INSTANCE OF zcl_demo_abap_objects.
-      ref_cl_down = CAST #( ref_if2 ).
+    "Static attributes
+    "class=>intf~attr
+    DATA(stat_intf_attr1) = zcl_demo_abap_objects=>zdemo_abap_objects_interface~stat_str.
+    DATA(stat_intf_attr2) = zdemo_abap_objects_interface~stat_str.
+    "Accessing static attribute via reference variable
+    DATA(stat_intf_attr3) = ref_if2->stat_str.
 
-      "Old syntax:
-      "ref_if2 ?=  ref_cl_down .
+    "Constants
+    "Can be accessed directly using this pattern: intf=>const
+    DATA(intf_const1) = zdemo_abap_objects_interface=>const_intf.
+    "Other options are possible
+    DATA(intf_const2) = zcl_demo_abap_objects=>zdemo_abap_objects_interface~const_intf.
+    DATA(intf_const3) = ref_if2->const_intf.
 
-      DATA(res_downcast) = ref_cl_down->zdemo_abap_objects_interface~double( 100 ).
+    output->display( input = inst_intf_attr_via_iref name = `inst_intf_attr_via_iref` ).
+    output->display( input = inst_intf_meth_via_iref1 name = `inst_intf_meth_via_iref1` ).
+    output->display( input = inst_intf_meth_via_iref2 name = `inst_intf_meth_via_iref2` ).
+    output->display( input = inst_intf_attr_via_cref name = `inst_intf_attr_via_cref` ).
+    output->display( input = inst_intf_meth_via_cref name = `inst_intf_meth_via_cref` ).
 
-      DATA(intro_inst_down) = ref_cl_down->zdemo_abap_objects_interface~in_str.
-    ELSE.
-      output->display( `Downcast not possible.` ).
-    ENDIF.
+    output->display( input = stat_intf_attr1 name = `stat_intf_attr1` ).
+    output->display( input = stat_intf_meth1 name = `stat_intf_meth1` ).
+    output->display( input = stat_intf_meth2 name = `stat_intf_meth2` ).
+    output->display( input = stat_intf_attr2 name = `stat_intf_attr2` ).
+    output->display( input = stat_intf_meth3 name = `stat_intf_meth3` ).
+    output->display( input = stat_intf_meth4 name = `stat_intf_meth4` ).
 
-    output->display( input = intro_static name = `intro_static` ).
-    output->display( input = res_halve name = `res_halve` ).
-    output->display( input = intro_inst1 name = `intro_inst1` ).
-    output->display( input = res_double1 name = `res_double1` ).
-    output->display( input = intro_inst4 name = `intro_inst4` ).
-    output->display( input = res_triple name = `res_triple` ).
-    output->display( input = intro_inst2 name = `intro_inst2` ).
-    output->display( input = res_double2 name = `res_double2` ).
-    output->display( input = intro_inst_up name = `intro_inst_up` ).
-    output->display( input = res_upcast name = `res_upcast` ).
-    output->display( input = intro_inst_down name = `intro_inst_down` ).
-    output->display( input = res_downcast name = `res_downcast` ).
+    output->display( input = intf_const1 name = `intf_const1` ).
+    output->display( input = intf_const2 name = `intf_const2` ).
+    output->display( input = intf_const3 name = `intf_const3` ).
 
-    output->next_section( `20) Using a factory method in a singleton class` ).
+    output->next_section( `20) Singleton` ).
 
-    "The example demonstrates a factory method in a singleton class. An
-    "instance is tried to be created three times. The factory method is
+    "The demonstrates an implementation of the singleton design pattern.
+    "A static method allows access to the only object of the class.
+    "An instance is tried to be created three times. The method is
     "implemented in a way that prevents the creation of more than one
     "instance of the class. Hence, the result of all three method call shows
     "the same values (the time stamp that is set initially and the number of
@@ -849,7 +834,7 @@ CLASS ZCL_DEMO_ABAP_OBJECTS IMPLEMENTATION.
           obj2 LIKE obj1.
 
     "Getting an instance of the class lcl_singleton
-    obj1 = lcl_singleton=>factory_method( ).
+    obj1 = lcl_singleton=>get_instance( ).
 
     "Setting a time stamp
     obj1->set_timestamp( ).
@@ -862,7 +847,7 @@ CLASS ZCL_DEMO_ABAP_OBJECTS IMPLEMENTATION.
     output->display( input = no_of_instances name = `no_of_instances` ).
 
     "Trying to get another instance
-    obj2 = lcl_singleton=>factory_method( ).
+    obj2 = lcl_singleton=>get_instance( ).
 
     "Getting time stamp and the overall number of instances of the class
     timestamp =  obj2->get_timestamp( ).
@@ -872,11 +857,10 @@ CLASS ZCL_DEMO_ABAP_OBJECTS IMPLEMENTATION.
     output->display( input = no_of_instances name = `no_of_instances` ).
 
     "Trying to get another instance
-    DATA(obj3) = lcl_singleton=>factory_method( ).
+    DATA(obj3) = lcl_singleton=>get_instance( ).
 
     "Getting time stamp and the overall number of instances of the class
-    timestamp =  obj2->get_timestamp( ).
-
+    timestamp =  obj3->get_timestamp( ).
     no_of_instances = lcl_singleton=>no_of_instances.
 
     output->display( input = timestamp name = `timestamp` ).

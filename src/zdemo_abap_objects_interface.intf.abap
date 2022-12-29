@@ -19,19 +19,21 @@
 "! <p class="shorttext synchronized">Interface for ABAP cheat sheet example</p>
 "! The interface supporta the ABAP cheat sheet on object orientation and demonstrates the use of interfaces.
 INTERFACE zdemo_abap_objects_interface
-  PUBLIC .
+  PUBLIC.
 
   METHODS: double IMPORTING i_op            TYPE i
                   RETURNING VALUE(r_double) TYPE i,
 
-    triple DEFAULT IGNORE IMPORTING i_op            TYPE i
-                          RETURNING VALUE(r_triple) TYPE i .
+           triple DEFAULT IGNORE IMPORTING i_op TYPE i
+                  RETURNING VALUE(r_triple)     TYPE i .
 
-  DATA: in_str TYPE string.
+  DATA in_str TYPE string.
 
   CLASS-METHODS: halve IMPORTING i_op           TYPE i
                        RETURNING VALUE(r_halve) TYPE i.
 
   CLASS-DATA: stat_str TYPE string.
+
+  CONSTANTS const_intf TYPE i VALUE 987.
 
 ENDINTERFACE.

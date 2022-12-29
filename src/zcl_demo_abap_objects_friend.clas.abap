@@ -23,18 +23,21 @@
    PUBLIC SECTION.
      CLASS-METHODS get_strings RETURNING VALUE(res_string) TYPE string_table.
 
-   PROTECTED SECTION.
-   PRIVATE SECTION.
 ENDCLASS.
 
 
 CLASS ZCL_DEMO_ABAP_OBJECTS_FRIEND IMPLEMENTATION.
 
-   METHOD get_strings.
-     "Getting the strings and put them in the string table
-     APPEND zcl_demo_abap_objects=>public_string TO res_string.
-     APPEND zcl_demo_abap_objects=>protected_string TO res_string.
-     APPEND zcl_demo_abap_objects=>private_string TO res_string.
-   ENDMETHOD.
+  METHOD get_strings.
+    "Getting the strings and adding them to the string table.
+    "Accessing an attribute in a public visibility section.
+    APPEND zcl_demo_abap_objects=>public_string TO res_string.
+
+    "Accessing an attribute in a protected visibility section.
+    APPEND zcl_demo_abap_objects=>protected_string TO res_string.
+
+    "Accessing an attribute in a private visibility section.
+    APPEND zcl_demo_abap_objects=>private_string TO res_string.
+  ENDMETHOD.
 
 ENDCLASS.
