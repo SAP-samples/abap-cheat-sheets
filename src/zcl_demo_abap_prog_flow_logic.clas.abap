@@ -344,7 +344,7 @@ CLASS zcl_demo_abap_prog_flow_logic IMPLEMENTATION.
     "CASE statements are used for case distinctions. If the content of an operand
     "specified after WHEN matches the content specified after CASE, the statement
     "block is executed. Constant values should be specified as operands.
-    "The example is basically the same as
+    "The example is basically the same as above.
 
 
     DATA(op) = '-'.
@@ -1203,7 +1203,7 @@ CLASS zcl_demo_abap_prog_flow_logic IMPLEMENTATION.
     "DATA(zero_division) = 1 / 0.
     "DATA(nope) = str_table[ 12345 ].
 
-    "Not handling predefined exception classes
+    "Not handling self-defined exception classes
     "Causes runtime error UNCAUGHT_EXCEPTION
 
     "DATA(is_email_valid) = validate_email( email = `john.doe@email.c##` ).
@@ -1226,26 +1226,16 @@ CLASS zcl_demo_abap_prog_flow_logic IMPLEMENTATION.
     ENDIF.
   ENDMETHOD.
 
-
   METHOD addition.
     res = num1 + num2.
   ENDMETHOD.
 
-
   METHOD calc.
-    "purposely without TRY ENDTRY block for simple example
 
     DATA calc_if TYPE string.
     DATA calc_case TYPE string.
     DATA calc_cond TYPE string.
     DATA calc_switch TYPE string.
-    "DATA overall_results type string.
-
-
-*    IF operator = '+'
-*    OR operator = '-'
-*    OR operator = '*'
-*    OR operator = '/'.
 
     "IF statements
 
@@ -1266,27 +1256,7 @@ CLASS zcl_demo_abap_prog_flow_logic IMPLEMENTATION.
       calc_if = |Operator { operator } not possible.|.
     ENDIF.
 
-
     prep_calc_result( CHANGING res = calc_if ).
-
-*    FIND PCRE `-$` IN calc_if.  "trailing minus
-*    "negative number since it's string
-*    IF sy-subrc = 0.
-*      SHIFT calc_if BY 1 PLACES RIGHT CIRCULAR.
-*    ENDIF.
-
-    "add result to itab
-
-*         TYPES: BEGIN OF calc_results_struc,
-*             calculation   TYPE string,
-*             result   TYPE string,
-*           END OF calc_results_struc.
-*
-*data calc_result type table of calc_results_struc with empty key.
-
-
-
-    "overall_results = overall_results && `IF: ` && result && ` / `.
 
     "CASE
 
@@ -1310,22 +1280,9 @@ CLASS zcl_demo_abap_prog_flow_logic IMPLEMENTATION.
         calc_case = |Check the operator { operator }.|.
     ENDCASE.
 
-*    FIND PCRE `-$` IN calc_case.  "trailing minus
-*    "negative number since it's string
-*    IF sy-subrc = 0.
-*      SHIFT calc_case BY 1 PLACES RIGHT CIRCULAR.
-*    ENDIF.
-
     prep_calc_result( CHANGING res = calc_case ).
 
-    "overall_results = overall_results && `CASE: ` && result && ` / `.
-
-
-
     "COND
-
-
-    "message = COND #(  ).
 
     calc_cond = COND #( WHEN operator = '+'
                   THEN num1 + num2
@@ -1340,15 +1297,6 @@ CLASS zcl_demo_abap_prog_flow_logic IMPLEMENTATION.
 
     prep_calc_result( CHANGING res = calc_cond ).
 
-*    FIND PCRE `-$` IN calc_cond.  "trailing minus
-*    "negative number since it's string
-*    IF sy-subrc = 0.
-*      SHIFT calc_cond BY 1 PLACES RIGHT CIRCULAR.
-*    ENDIF.
-
-    "overall_results = overall_results && `COND: ` && result && ` / `.
-
-
     "SWITCH
 
     calc_switch = SWITCH #( operator
@@ -1360,28 +1308,12 @@ CLASS zcl_demo_abap_prog_flow_logic IMPLEMENTATION.
 
     prep_calc_result( CHANGING res = calc_switch ).
 
-*    FIND PCRE `-$` IN calc_switch.  "trailing minus
-*    "negative number since it's string
-*    IF sy-subrc = 0.
-*      SHIFT calc_switch BY 1 PLACES RIGHT CIRCULAR.
-*    ENDIF.
-
-    "overall_results = overall_results && `SWITCH: ` && result && ` / `.
-
-
-
-
     res = VALUE #(  calculation = |{ num1 } { operator } { num2 }|
       res_if = calc_if
       res_case = calc_case
       res_cond = calc_cond
       res_switch = calc_switch
       ).
-
-
-*    ELSE.
-*      result = |Hmmm... nothing was flagged in how_to_calc.|.
-*    ENDIF.
 
   ENDMETHOD.
 
@@ -1398,7 +1330,6 @@ CLASS zcl_demo_abap_prog_flow_logic IMPLEMENTATION.
 
   ENDMETHOD.
 
-
   METHOD validate_email.
 
     IF matches( val   = email
@@ -1409,12 +1340,10 @@ CLASS zcl_demo_abap_prog_flow_logic IMPLEMENTATION.
 
     ENDIF.
 
-
   ENDMETHOD.
 
 
   METHOD whats_my_user.
-
 
     IF get_name = abap_true.
       name = sy-uname.
@@ -1432,10 +1361,8 @@ CLASS zcl_demo_abap_prog_flow_logic IMPLEMENTATION.
 
   METHOD prep_calc_result.
 
-    "condense res no-gaps.
-
     FIND PCRE `-$` IN res.  "trailing minus
-    "negative number since it's string
+    
     IF sy-subrc = 0.
       SHIFT res BY 1 PLACES RIGHT CIRCULAR.
     ENDIF.
