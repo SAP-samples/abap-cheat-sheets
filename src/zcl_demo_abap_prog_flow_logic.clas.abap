@@ -1253,7 +1253,7 @@ CLASS zcl_demo_abap_prog_flow_logic IMPLEMENTATION.
         calc_if = num1 / num2.
       ENDIF.
     ELSE.
-      calc_if = |Operator { operator } not possible.|.
+      calc_if = |Check the operator { operator }.|.
     ENDIF.
 
     prep_calc_result( CHANGING res = calc_if ).
