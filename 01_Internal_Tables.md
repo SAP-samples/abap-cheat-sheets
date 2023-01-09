@@ -798,7 +798,7 @@ either the primary table key used without specifying USING KEY or by specifying 
 or a secondary table key used by specifying its name after USING KEY.
 
 ``` abap
-DATA(filter3) = FILTER #( itab IN filter_tab WHERE comp1 < i ).
+DATA(filter3) = FILTER #( itab IN filter_tab WHERE comp1 = table_line ).
 ```
 
 *Excursion:* Collecting values
