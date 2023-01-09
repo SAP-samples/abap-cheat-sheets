@@ -4,8 +4,8 @@
 
 - [String Processing](#string-processing)
   - [Introduction](#introduction)
-    - [Variable Length and Fixed Length Character Strings](#variable-length-and-fixed-length-character-strings)
-  - [Declaring Character-Like Data Types and Objects](#declaring-character-like-data-types-and-objects)
+    - [Data Types for Character Strings](#data-types-for-character-strings)
+  - [Declaring Character-Like Data Objects](#declaring-character-like-data-objects)
   - [Assigning Values](#assigning-values)
   - [String Templates](#string-templates)
   - [Determining the Length of Strings](#determining-the-length-of-strings)
@@ -28,109 +28,92 @@
 
 ## Introduction
 
-ABAP offers plenty of options for processing [character
-strings](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencharacter_string_glosry.htm "Glossary Entry").
-The options include ABAP statements (e. g.
-[`FIND`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapfind.htm)),
-[character string
-expressions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenstring_expression_glosry.htm "Glossary Entry")
-(e. g. [string
-templates](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenstring_template_glosry.htm "Glossary Entry"))
-and built-in [string
-functions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenstring_function_glosry.htm "Glossary Entry")
-(e. g.
-[`strlen`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenlength_functions.htm)).
+ABAP offers plenty of options for processing [character strings](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencharacter_string_glosry.htm "Glossary Entry").
+The options include ABAP statements (e. g. [`FIND`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapfind.htm)),
+[character string expressions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenstring_expression_glosry.htm "Glossary Entry")
+([concatenations](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconcatenation_glosry.htm) and [string templates](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenstring_template_glosry.htm "Glossary Entry"))
+and built-in [string functions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenstring_function_glosry.htm "Glossary Entry")
+(e. g. [`strlen`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenlength_functions.htm)).
 
 > **💡 Note**<br>
->-   Expressions and string functions can help make your ABAP code more
+>-  Compared to statements, expressions and string functions can help make your ABAP code more
     concise and straightforward. For example, string operations can be
     done directly in [operand
     position](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenoperand_position_glosry.htm "Glossary Entry")
     and, thus, you can avoid temporary variables.
->-   In ABAP statements, modify operations on strings are frequently done
-    on the source field which is the target field at the same time.
-    String functions never modify the source field. Instead, the
-    modified string is provided as a [return
-    value](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenreturn_value_glosry.htm "Glossary Entry").
+>-   In ABAP statements, modification operations on strings are frequently done in read/write positions, meaning that the source field and the target
+    fields of an operation are the same. When working with string functions, the source field is passed as an input parameter and the modified value is returned as a [return value](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenreturn_value_glosry.htm "Glossary Entry"), meaning that the function itself does not modify the source field. Of course, you can assign the function to the source field to achieve its modification.
 >-   In most cases, string functions offer the same functionality as the
-    corresponding ABAP statements. The return value of string functions
+    corresponding ABAP statements or even more. The return value of string functions
     that return character strings is always of type `string`.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
-### Variable Length and Fixed Length Character Strings
+### Data Types for Character Strings
 
-Built-in character-like types in ABAP are as follows:
+ABAP mainly offers the following built-in data types for data objects that contain character strings. They can be distinguished as follows:
 
-| Type | Length | Value Range | Initial Value |
-|---|---|---|---|
-| `string` | Variable, i. e. the length of [data objects](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendata_object_glosry.htm "Glossary Entry") of this type can change during the execution during the execution of ABAP programs (hence, they are also referred to as [dynamic data objects](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendynamic_data_object_glosry.htm "Glossary Entry")); no standard length | Any characters | Empty string with length 0 |
-| `c` | Data objects of this type contain a string of fixed length (between 1 and 262143 characters); standard length: 1 | Any characters | blank for every position |
-| `n` | Same as for `c` | Any characters; valid values are only the digits 0 to 9.<br><br> Note that the restrictions for this type to only accept digits are not enforced, hence, fields may contain invalid data. The type is especially used for digits that are not meant for arithmetic calculations like zip codes or article numbers. | 0 for every position |
+| Type | Details | Length | Value Range | Initial Value |
+|---|---|---|---|---|
+| `string` | For variable length character strings. [Data objects](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendata_object_glosry.htm "Glossary Entry") of this type are [dynamic data objects](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendynamic_data_object_glosry.htm "Glossary Entry"), i. e. the length of a variable can change during the execution of an ABAP program and thus it can contain character strings of different lengths. A data object of type `string` is called *text string* or, in short, just *string*. | No standard length; length is variable | Any [Unicode](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenunicode_glosry.htm) characters that can be encoded in ABAP language's code page [UCS-2](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenucs2_glosry.htm). The most common content are alphanumeric characters or special characters.  | Empty string with length 0 |
+| `c` | For fixed length character strings. Data objects of this type are [static data objects](http://ldcialx.wdf.sap.corp:50018/sap/public/bc/abap/docu?sap-language=EN&object=abenstatic_data_object_glosry&version=X&sap-client=000), i. e. the length of a variable must be defined during its declaration and does not change during the execution of an ABAP program. Thus, it always contains character strings of the same length. A data object of type `c` is called *text field*.|Data objects of this type can contain a string of fixed length (between 1 and 262143 characters); standard length: 1 | Same as for `string` | A blank for each position |
 
-> **💡 Note**<br>
-> [Byte-like data
-types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbyte_like_data_typ_glosry.htm "Glossary Entry")
-(`x`, `xstring`) and types that are specializations of
-the type `c` (`n`, `d` referring to date and
-`t` referring to time) are not covered in this cheat sheet.
+Besides these main data types for character strings, there are some other fixed length data types with special meanings:
 
-> **⚡ Differences between variable length and fixed length strings**<br>
->-   **Initial value**: The initial value of variable length strings is an
-    empty string with length 0. Fixed length strings have a standard
-    length of 1 character.
->-   **Performance**: Data objects of both type `c` and
-    `string` are considered as [elementary data
-    objects](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenelementary_data_object_glosry.htm "Glossary Entry").
-    However, data objects of type `string` are internally
-    managed as
-    [references](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenreference_glosry.htm "Glossary Entry")
-    and are, thus, considered as
-    [deep](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendeep_glosry.htm "Glossary Entry").
-    This fact enables the performance boosting concept of
-    [sharing](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensharing_glosry.htm "Glossary Entry")
-    for data objects of this type when making value assignments.
->-   **Length**: Theoretically, a variable length string can use up to 2 GB.
-    The maximum length of a fixed length string is 262143 characters.
->-   **Handling trailing blanks**: Usually, the [operand
-    position](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenoperand_position_glosry.htm "Glossary Entry")
-    determines whether trailing blanks are respected or not. Fixed
-    length strings usually ignore trailing blanks; variable length
-    strings respect them. For example, if a fixed length string is
-    assigned to a variable length string, the target string does not
-    contain any trailing blanks. Note in this context the section
-    *Condensing Strings*.
->-   **Flexibility**: Variable length strings are more flexible than fixed
-    length strings because you can easily shorten or extend them without
+-	`n` for fixed length numerical character strings
+    - Data objects of this type are technically almost the same as text fields. However, valid characters are only the digits 0 to 9. The validity is not checked when assigning values in a regular way but only for [lossless assignments](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenlossless_assignment_glosry.htm). Thus, such numeric text fields can contain invalid data, but should only be used for digits that are not meant for arithmetic calculations like zip codes or article numbers. The initial value is 0 for each position.
+-	`d` and `t` for date and time fields
+    - These data types have a predefiend length of 6 and 8. Data objects of these types are used for character representaions of dates and times in a predefined format. You can use them directly in date and time calculations. However, these fields can contain invalid values, too.
+
+These data types are not covered further in this cheat sheet. The same is true for the [byte-like data types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbyte_like_data_typ_glosry.htm "Glossary Entry") `x` and `xstring` that are closely related to `c` and `string` but contain raw [byte strings](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbyte_string_glosry.htm).
+
+> **⚡ Differences between text strings (variable length) and text fields (fixed length)**<br>
+>-   **Initial value**: The initial value of a text string is an
+    empty string with length 0. A text field's initial value is represented by blanks for each position.
+>-   **Internal representation**: Data objects of type `c` and `string` are both [elementary data objects](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenelementary_data_object_glosry.htm "Glossary Entry").
+    However, while text fields occupy a block of memory according to their length, text strings are so-called [deep](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendeep_glosry.htm "Glossary Entry") data objects. Internally, they are managed by a [reference](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenreference_glosry.htm "Glossary Entry") that points to the actual character. This fact has restricting consequences for using strings as components of structures but can also boost the performance of assignments because of the concept of [sharing](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensharing_glosry.htm "Glossary Entry") of deep data objects.
+>-   **Length**: Theoretically, a text string can use up to 2 GB (one character occupies 2 bytes).
+    The maximum length of a text field is 262143 characters.
+>-   **Trailing blanks**: For text strings, trailing blanks are preserved in all operations. For text fields, it depends on the [operand
+    position](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenoperand_position_glosry.htm "Glossary Entry") whether trailing blanks are respected or not. In most operand positions, trailing blanks are truncated when working with text fields, even when using [text field literals](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abentext_field_literal_glosry.htm). For example, if a text field is assigned to a text string, the resulting target string never contains any trailing blanks. Note in this context the section *Condensing Strings*.
+>-   **Flexibility**: Text strings are more flexible than text fields
+    because you can easily shorten or extend them without
     worrying that, for example, parts of the character string are
-    truncated when processing.
->-   **Specifying values** for character strings in the ABAP source code
-    ([literals](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenliteral_glosry.htm "Glossary Entry"))
-    with the types `c` and `string`: With quotes
-    (`'...'`), you create [text field
-    literals](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentext_field_literal_glosry.htm "Glossary Entry")
-    of type `c`, with backquotes (<code>\`...\`</code>), you create [text
-    string
-    literals](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentext_string_literal_glosry.htm "Glossary Entry")
-    of type `string`.
+    truncated when processing. On the other hand, when accessing substrings of a string, you must take care that the string is long enough, while for text fields you always know their length.
 
-So, when to actually use what? Fixed length strings make sense when
+So, when to actually use what? Text fields make sense when
 actually determining a maximum or mandatory length, e. g. a country code
 that must consist of a maximum of two characters or input fields in
 forms that should not exceed a certain length. If restricting a string
-is not relevant, variable length strings are a good choice.
+is not relevant, text strings are a good choice.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
-## Declaring Character-Like Data Types and Objects
+## Declaring Character-Like Data Objects
 
-Character-like data types and objects are declared like other types and
-objects using
-[`TYPES`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abaptypes.htm)
-and
-[`DATA`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapdata.htm)
-statements. This cheat sheet focuses on the built-in types `c`
-and especially on `string` in most examples.
+For working with character strings, you need character-like data objects, that are based on the above mentioned character-like types.
+
+The simplest way of producing text in an ABAP program are [character literals](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencharacter_literal_glosry.htm).
+The following code snippet shows a global class implementing the interface `if_oo_adt_classrun`. Using the `write` method, you can display output in the ADT console. In the example, two [untyped literals](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenuntyped_literal_glosry.htm) without a dedicated name ([unnamed data object](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenunnamed_data_object_glosry.htm)) are included. In the case below, the data type of the character literals are defined by the delimiters.
+Text string literals are enclosed in backquotes (<code>\`...\`</code>) and have the data type `string`. Text field literals are enclosed in single quotes (`'...'`) and have the data type `c`. The literals can be (but should not according to the [programming guidelines on literals (F1 docu for standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenliterals_guidl.htm)) used like constants of these types in [operand positions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenoperand_position_glosry.htm). They should be only used for start values when declaring [named data objects](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abennamed_data_object_glosry.htm).
+
+```abap
+CLASS zcl_some_test_class DEFINITION PUBLIC FINAL CREATE PUBLIC.
+  PUBLIC SECTION.
+    INTERFACES if_oo_adt_classrun.
+ENDCLASS.
+
+CLASS zcl_some_test_class IMPLEMENTATION.
+  METHOD if_oo_adt_classrun~main.
+    out->write( `I am a text string literal` ).  "text string literal of type string
+    out->write( 'I am a text field literal' ).   "text field literal of type c
+  ENDMETHOD.
+ENDCLASS.
+```
+
+[Named](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abennamed_data_object_glosry.htm) character-like data types and objects can be declared like other types and objects using [`TYPES`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abaptypes.htm), [`DATA`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapdata.htm) [`CONSTANTS`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapconstants.htm) and by referring to a character-like data type.
+
+Furthermore, character-like data objects can be declared inline with the operators `DATA` and, in newer ABAP releases, `FINAL` as shown further down.
 
 Syntax examples:
 ``` abap
@@ -164,16 +147,12 @@ DATA char_len_one TYPE c.
 ## Assigning Values
 
 When declaring character-like data objects, you can directly provide
-default values. For the assignment of values, you can, for example, use
-the [assignment
-operator](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenassignment_operator_glosry.htm "Glossary Entry")
-`=`. To do both data object declaration and value assignment in
-one go, you can make use of [inline
-declaration](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendata_inline.htm)
-that supports declarations in [write
-positions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenwrite_position_glosry.htm "Glossary Entry").
-In doing so, a variable specified in parentheses preceded by
-`DATA` on the left side of the assignment operator automatically
+start values. For the assignment of values, you can, for example, use
+the [assignment operator](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenassignment_operator_glosry.htm "Glossary Entry")
+`=`.
+As mentioned above, character-like data objects can be declared inline with the operators `DATA` or, in newer ABAP releases, `FINAL`. You can use the operators at many [write positions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenwrite_position_glosry.htm "Glossary Entry"). Compared to the `VALUE` addition of the declaration statements, inline declarations allow you to declare variables for results of expressions or in other positions where character strings are returned.
+In the case below, a variable specified in parentheses preceded by
+`DATA` (or `FINAL`) on the left side of the assignment operator automatically
 derives a data type from the operand on the right. This helps make your
 programs leaner.
 
@@ -186,6 +165,9 @@ DATA: flag TYPE c LENGTH 1 VALUE 'X',
 "Examples for type n
 DATA zip_code TYPE n LENGTH 5 VALUE '12345'.
 DATA isbn_number TYPE n LENGTH 13 VALUE '1234567890123'.
+
+"Constant; content cannot be changed at runtime
+CONSTANTS pi TYPE p LENGTH 8 DECIMALS 14 VALUE '3.14159265358979'.
 
 "More data object declarations
 DATA: char1  TYPE c LENGTH 5,
@@ -208,6 +190,9 @@ DATA str4 TYPE string VALUE -1.  "type i
 "Inline declarations
 DATA(char2) = 'abcd'. "Type c length 4
 DATA(str5)  = `efgh`.
+
+"In newer ABAP releases, you can use FINAL to create immutable variables.
+FINAL(final_string)  = `zyx`.
 
 "Since char2 is of type c length 4 (the length is also derived),
 "characters are truncated in the following example assignment
@@ -492,7 +477,7 @@ s3 = s2.
 SHIFT s2 LEFT DELETING LEADING ` `. "'hallo   '
 SHIFT s3 RIGHT DELETING TRAILING ` `. "'      hallo' (length is kept)
 
-"Removing trailing blanks in strings without leading blanks; 
+"Removing trailing blanks in strings without leading blanks;
 "you can use the following sequence of statements
 s4 = `hallo   `.
 SHIFT s4 RIGHT DELETING TRAILING ` `. "'   hallo'
@@ -554,9 +539,9 @@ s2 = condense( val = `##see###you##` del = `#` ). "see###you
 "characters specified in del are first removed. Then, in the remaining string, all
 "substrings composed of characters specified in from are replaced with
 "the first character of the string specified in the to parameter
-s2 = condense( val  = `  Rock'xxx'Roller` 
+s2 = condense( val  = `  Rock'xxx'Roller`
                del  = `re `
-               from = `x` 
+               from = `x`
                to   = `n` ). "Rock'n'Roll
 ```
 
@@ -623,7 +608,7 @@ for example,
 and
 [`substring_to`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensubstring_functions.htm).
 
-These functions offer more options in terms of parameters, for example, using 
+These functions offer more options in terms of parameters, for example, using
 [PCRE regular
 expressions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenpcre_regex_glosry.htm "Glossary Entry"),
 which are dealt with further down.
@@ -865,21 +850,21 @@ IF sy-subrc = 0. "If there is an occurrence, sy-subrc is set to 0.
 ENDIF.
 
 "Addition SUBSTRING is optional; same as above
-FIND SUBSTRING `abc` IN s1. 
+FIND SUBSTRING `abc` IN s1.
 
 "Case-insensitive search; same as above
-FIND `aBC` IN s1 IGNORING CASE. 
+FIND `aBC` IN s1 IGNORING CASE.
 
 "Case-sensitive search; here, sy-subrc is 4 since `aBC` is not found
 FIND `aBC` IN s1 RESPECTING CASE.
 
 "MATCH additions can be specified individually or combined
 "All occurrences
-FIND ALL OCCURRENCES OF `abc` IN s1 
+FIND ALL OCCURRENCES OF `abc` IN s1
   MATCH COUNT DATA(fcnt).  "2 (number of occurrences)
 
 "Finding the first occurrence
-FIND FIRST OCCURRENCE OF `abc` IN s1  
+FIND FIRST OCCURRENCE OF `abc` IN s1
   MATCH OFFSET DATA(foff)  "0
   MATCH LENGTH DATA(flen). "3
 
@@ -1185,9 +1170,9 @@ s2 = replace( val = s1 pcre = `(.*?)p` with = `#`  ). "#ppc app
 
 "Replacements with subgroups
 "Replaces 'pp' (case-insensitive here) with '#', the content before and after 'pp' is switched
-s2 = replace( val  = s1      
+s2 = replace( val  = s1
               pcre = `(.*?)PP(.*)`
-              with = `$2#$1` 
+              with = `$2#$1`
               case = abap_false ). "pc app#ab a
 
 "Changing the source field directly with a REPLACE statement; same as above
