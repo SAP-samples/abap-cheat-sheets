@@ -792,8 +792,13 @@ DATA(filter2) = FILTER #( itab EXCEPT WHERE comp1 < i ).
 ```
 
 ... by using a filter table.
+
+The filter table filter_tab must have at least one sorted key or one hash key used for access. This can be
+either the primary table key used without specifying USING KEY or by specifying its name primary_key after USING KEY,
+or a secondary table key used by specifying its name after USING KEY.
+
 ``` abap
-DATA(filter3) = FILTER #( itab IN filter_tab WHERE comp1 < i.
+DATA(filter3) = FILTER #( itab IN filter_tab WHERE comp1 < i ).
 ```
 
 *Excursion:* Collecting values
