@@ -1,9 +1,8 @@
 <a name="top"></a>
 
-# ABAP SQL: Working with Persisted Data in Database Tables
+# ABAP SQL in Use
 
-- [ABAP SQL: Working with Persisted Data in Database Tables](#abap-sql-working-with-persisted-data-in-database-tables)
-  - [Database Tables in AS ABAP in a Nutshell](#database-tables-in-as-abap-in-a-nutshell)
+- [ABAP SQL in Use](#abap-sql-in-use)
   - [ABAP SQL Intro](#abap-sql-intro)
   - [Reading Data Using SELECT](#reading-data-using-select)
     - [Basic Syntax](#basic-syntax)
@@ -23,72 +22,59 @@
   - [Executable Example](#executable-example)
 
 
-## Database Tables in AS ABAP in a Nutshell
+## ABAP SQL Intro
 
-Database tables in [AS
-ABAP](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenas_abap_glosry.htm "Glossary Entry")
-...
+-   [ABAP SQL](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensql_glosry.htm) is a subset of [SQL](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensql_glosry.htm "Glossary Entry")
+    which is the standardized language for accessing databases.
+-   The main ABAP SQL keywords to read and change data are the
+    following:
 
--   are objects of the [ABAP Dictionary
-    (DDIC)](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_dictionary_glosry.htm "Glossary Entry")
--   consist of table rows and columns; each row represents a data record
-    whose components (or fields) are available in columns; each
-    component has a data type.
--   are [relational
-    database](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrelational_database_glosry.htm "Glossary Entry")
-    tables, i. e. information can be stored in multiple database tables
-    that are related to each other.
-    -   For example, there might be a table containing information on
-        flight connections, flight destinations and times, another table
-        is related to this one and includes further details on the
-        flights like occupied seats in the plane or price details.
-    -   Such tables define a relationship using [foreign
-        key](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenddic_database_tables_forkeyrel.htm)
-        relations.
--   have at least one key, i.e. the [primary
-    key](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenprimary_key_glosry.htm "Glossary Entry"),
-    to uniquely identify table rows; this might be one or more columns
-    at the beginning of each database table.
--   are either
-    cross-[client](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenclient_glosry.htm "Glossary Entry")
-    or client-specific to keep the data separated; client-specific
-    tables, which are the vast majority of database tables, include a
-    client field (often named `MANDT`) as their first key
-    field.
-    -   Note: ABAP SQL ensures that a statement only
-        manipulates data from the current client.
--   have a [flat
-    structure](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenflat_structure_glosry.htm "Glossary Entry")
-    type.
--   are physically created on the database when activated - in contrast
-    to [internal
-    tables](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abeninternal_table_glosry.htm "Glossary Entry").
-    Plus, a globally available [structured
-    type](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenstructured_type_glosry.htm "Glossary Entry")
-    of the same name is created, too. Hence, in an ABAP program, a
-    database table's name can be used to declare data objects, for
-    example, internal tables. These can be accessed by ABAP SQL, too.
--   are primarily processed through ABAP SQL statements that use
-    [structures](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenstructure_glosry.htm "Glossary Entry")
-    for single rows and internal tables for multiple rows to be
-    processed.
+    | Keyword  | Purpose                                                                   |
+    | -------- | ------------------------------------------------------------------------- |
+    | `SELECT` | Reads data from database tables                                           |
+    | `INSERT` | Adds rows to database tables                                              |
+    | `UPDATE` | Changes the content of rows of database tables                            |
+    | `MODIFY` | Inserts rows into database tables or changes the content of existing rows |
+    | `DELETE` | Deletes rows from database tables                                         |
+
+- ABAP SQL statements use the ABAP SQL interface. This interface transforms all ABAP SQL statements that access the standard database of an AS ABAP to  platform-dependent SQL and forwards the results to the database system.
+
+- Find more information in the (sub)topics in the ABAP Keyword Documentation [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_sql.htm).
+- Generally bear in mind the [performance notes ](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_sql_perfo.htm) when using
+    ABAP SQL. The considerations there are not relevant for this cheat sheet since
+    the focus is on syntactical options.
+
 
 <details>
-  <summary>Excursion: Views</summary>
+  <summary>Excursion: Database Tables and Views</summary>
 <br>
+
+This section provides bullet points on database tables and views which contain persisted data. Note that the code snippets in this cheat sheet focus on database tables as [data source](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendata_source_glosry.htm "Glossary Entry") for ABAP SQL statements.
+
+**Database tables in [AS ABAP](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenas_abap_glosry.htm "Glossary Entry") ...**
+
+- are objects of the [ABAP Dictionary (DDIC)](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_dictionary_glosry.htm "Glossary Entry"). The term *database table* describes a physical database table in the current [standard database](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenstandard_db_glosry.htm).
+- are two-dimensional matrices consisting of rows and columns.
+- contain a [table key](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentable_key_glosry.htm), i. e. a field or a combination of fields uniquely identifies every row in a table. A [primary key](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenprimary_key_glosry.htm) must exist for every database table.
+  - Note the concept of [foreign keys](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenforeign_key_glosry.htm) in which one or more columns of a database table can be primary keys of another table. See more information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenddic_database_tables_forkey.htm).
+- have a [flat structure](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenflat_structure_glosry.htm "Glossary Entry")
+    type. Plus, the definition of database tables consists of [technical](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenddic_database_tables_techstruc.htm) and [semantic](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenddic_database_tables_semastruc.htm) properties.
+- can be referenced as a data type and can be accessed using ABAP SQL.
+
+Find more information in the respective (sub)topics in the ABAP Keyword Documentation [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenddic_database_tables.htm).
+
 
 **Views ...**
 
--   are further ABAP Dictionary objects for grouping particular data.
--   combine columns of one or more database tables.
+-   are further ABAP Dictionary objects for grouping columns from one or more database tables, among others.
 -   usually realize a
     [join](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenjoin_glosry.htm "Glossary Entry")
     with defined [join
     conditions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenjoin_condition_glosry.htm "Glossary Entry").
 -   Note:
     -   Similar to database tables, the columns of such a view form a
-        flat structure. Hence, the view's name can be used, for example, to declare
-        data objects, too.
+        flat structure. Hence, the view's name can be used, for example, as [data types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendata_type_glosry.htm) to declare
+        [data objects](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendata_object_glosry.htm), too.
     -   The views can be accessed by ABAP SQL, especially for reading
         purposes using `SELECT`.
 
@@ -137,48 +123,9 @@ Views](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm
         editor)
     -   are, in contrast to External Views, supported by all database
         systems (that support the ABAP CDS characteristics).
-
-> **💡 Note**<br>
-> The code snippets below focus on database tables as [data
-source](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendata_source_glosry.htm "Glossary Entry")
-for ABAP SQL statements.
 </details>
 
 <p align="right">(<a href="#top">back to top</a>)</p>
-
-## ABAP SQL Intro
-
--   ABAP-specific form of standard [Structured Query Language
-    (SQL)](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensql_glosry.htm "Glossary Entry")
-    which is the common language to access database tables.
--   What happens behind the scenes when using an ABAP SQL statement?
-    -   Generally speaking, tables in relational database systems have a
-        programming interface allowing table access using standard SQL,
-        however, these interfaces are not entirely uniform and can have
-        individual characteristics.
-    -   To make AS ABAP independent of the database used, the ABAP SQL
-        statements are converted to the corresponding [Native
-        SQL](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abennative_sql_glosry.htm "Glossary Entry")
-        statements of the current database system. In doing so, ABAP SQL
-        allows a hassle-free and uniform access to the database tables
-        no matter what database system is used.
--   The main ABAP SQL keywords to read and change data are the
-    following:
-
-    | Keyword  | Purpose                                                                   |
-    | -------- | ------------------------------------------------------------------------- |
-    | `SELECT` | Reads data from database tables                                           |
-    | `INSERT` | Adds rows to database tables                                              |
-    | `UPDATE` | Changes the content of rows of database tables                            |
-    | `MODIFY` | Inserts rows into database tables or changes the content of existing rows |
-    | `DELETE` | Deletes rows from database tables                                         |
-
--   For a good level of performance of your ABAP programs when using
-    ABAP SQL, you should follow the rules in the performance notes
-    outlined
-    [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_sql_perfo.htm).
-    The considerations there are not relevant for this cheat sheet since
-    the focus is on syntactical options.
 
 ## Reading Data Using SELECT
 
