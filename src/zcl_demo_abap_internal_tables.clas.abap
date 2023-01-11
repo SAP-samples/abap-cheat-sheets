@@ -19,7 +19,7 @@
 *   numbers (e. g. 1) ..., 2) ..., 3) ...) for the individual example
 *   sections. Plus, the variable name is displayed in most cases. Hence,
 *   to easier and faster find the relevant output in the console, just
-*   search in the console for the number/variable name (STRG+F in the
+*   search in the console for the number/variable name (CTRL+F in the
 *   console) or use the debugger.
 *
 * ----------------------------- NOTE -----------------------------------
@@ -620,43 +620,102 @@ CLASS ZCL_DEMO_ABAP_INTERNAL_TABLES IMPLEMENTATION.
 
     output->next_section( `22) FILTER: Filtering internal table by condition` ).
 
-    TYPES t_itab2filter TYPE SORTED TABLE OF zdemo_abap_tab1
-      WITH NON-UNIQUE KEY key_field.
+    "This section covers multiple examples demonstrating the syntactical variety
+    "of the FILTER operator.
 
-    DATA itab2filter TYPE t_itab2filter.
+    TYPES: BEGIN OF fi_str,
+             a TYPE i,
+             b TYPE c LENGTH 3,
+             c TYPE c LENGTH 3,
+           END OF fi_str.
 
-    "Retrieving data for the example in an internal table
-    SELECT key_field, char1, char2, num1, num2
-     FROM zdemo_abap_tab1
-     INTO CORRESPONDING FIELDS OF TABLE @itab2filter UP TO 4 ROWS.
+    "basic form, condition created with single values
+    "itab must have at least one sorted key or one hash key used for access.
+    "This variant of the filter operator is not possible for an internal table itab without a sorted key or hash key.
+    DATA fi_tab1 TYPE SORTED TABLE OF fi_str WITH NON-UNIQUE KEY a.
+    DATA fi_tab2 TYPE STANDARD TABLE OF fi_str WITH NON-UNIQUE SORTED KEY sec_key COMPONENTS a.
+    DATA fi_tab3 TYPE HASHED TABLE OF fi_str WITH UNIQUE KEY a.
 
-    "New internal table is constructed by filtering out lines from
-    "another one.
-    DATA(filtered1) = FILTER #( itab2filter WHERE key_field < 400 ).
+    "Filling internal tables
+    fi_tab1 = VALUE #( ( a = 1  b = 'aaa' c = 'abc' )
+                       ( a = 2  b = 'bbb' c = 'def' )
+                       ( a = 3  b = 'ccc' c = 'hij' )
+                       ( a = 4  b = 'ddd' c = 'klm' )
+                       ( a = 5  b = 'eee' c = 'nop' ) ).
 
-    output->display( input = filtered1 name = `filtered1` ).
+    fi_tab2 = fi_tab1.
+    fi_tab3 = fi_tab1.
 
-    output->next_section( `23) FILTER: Filtering internal table by ` &&
-    `condition with the addition EXCEPT that excludes data ` &&
-    `according to condition` ).
+    "The lines meeting the condition are respected.
+    "Note: The source table must have at least one sorted or hashed key.
+    "Here, the primary key is used
+    DATA(f1) = FILTER #( fi_tab1 WHERE a >= 3 ).
 
-    DATA(filtered2) = FILTER #( itab2filter
-                                 EXCEPT WHERE key_field < 300 ).
+    output->display( input = f1 name = `f1` ).
 
-    output->display( input = filtered2 name = `filtered2` ).
+    "USING KEY primary_key explicitly specified; same as above
+    DATA(f2) = FILTER #( fi_tab1 USING KEY primary_key WHERE a >= 3 ).
 
-    output->next_section( `24) FILTER: Filtering internal table by ` &&
-    `using another filter table` ).
+    output->display( input = f2 name = `f2` ).
 
-    "Filling the filter table.
-    DATA(extract) = VALUE t_itab2filter( ( key_field = 100 )
-                                          ( key_field = 300 ) ).
+    "EXCEPT addition
+    DATA(f3) = FILTER #( fi_tab1 EXCEPT WHERE a >= 3 ).
 
-    DATA(filtered3) = FILTER #( itab2filter IN extract
-                                 WHERE key_field = key_field ).
+    output->display( input = f3 name = `f3` ).
 
-    output->display( input = filtered3 name = `filtered3` ).
+    DATA(f4) = FILTER #( fi_tab1 EXCEPT USING KEY primary_key WHERE a >= 3 ).
 
+    output->display( input = f4 name = `f4` ).
+
+    "Secondary table key specified after USING KEY
+    DATA(f5) = FILTER #( fi_tab2 USING KEY sec_key WHERE a >= 4 ).
+
+    output->display( input = f5 name = `f5` ).
+
+    DATA(f6) = FILTER #( fi_tab2 EXCEPT USING KEY sec_key WHERE a >= 3 ).
+
+    output->display( input = f6 name = `f6` ).
+
+    "Note: In case of a hash key, exactly one comparison expression for each key
+    "component is allowed; only = as comparison operator possible.
+    DATA(f7) = FILTER #( fi_tab3 WHERE a = 3 ).
+
+    output->display( input = f7 name = `f7` ).
+
+    "Using a filter table
+    "In the WHERE condition, the columns of source and filter table are compared.
+    "Those lines in the source table are used for which at least one line in the
+    "filter table meets the condition. EXCEPT and USING KEY are also possible.
+
+    "Declaring and filling filter tables
+    DATA filter_tab1 TYPE SORTED TABLE OF i
+      WITH NON-UNIQUE KEY table_line.
+
+    DATA filter_tab2 TYPE STANDARD TABLE OF i
+        WITH EMPTY KEY
+        WITH UNIQUE SORTED KEY line COMPONENTS table_line.
+
+    filter_tab1 = VALUE #( ( 3 ) ( 5 ) ).
+    filter_tab2 = filter_tab1.
+
+    DATA(f8) = FILTER #( fi_tab1 IN filter_tab1 WHERE a = table_line ).
+
+    output->display( input = f8 name = `f8` ).
+
+    "EXCEPT addition
+    DATA(f9) = FILTER #( fi_tab1 EXCEPT IN filter_tab1 WHERE a = table_line ).
+
+    output->display( input = f9 name = `f9` ).
+
+    "USING KEY is specified for the filter table
+    DATA(f10) = FILTER #( fi_tab2 IN filter_tab2 USING KEY line WHERE a = table_line ).
+
+    output->display( input = f10 name = `f10` ).
+
+    "USING KEY is specified for the source table, including EXCEPT
+    DATA(f11) = FILTER #( fi_tab2 USING KEY sec_key EXCEPT IN filter_tab2 WHERE a = table_line ).
+
+    output->display( input = f11 name = `f11` ).
 
     output->next_section(  `25) Inserting data into an internal table ` &&
     `using a COLLECT statement` ).

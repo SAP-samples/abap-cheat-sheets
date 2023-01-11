@@ -776,24 +776,71 @@ ENDIF.
 ```
 
 Creating an internal table by copying data from another internal table
-filtering out lines that do not match the `WHERE` condition.
-Using the [`FILTER`
-operator](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconstructor_expression_filter.htm)
-to extract data from internal tables ...
+filtering out lines that do not match the `WHERE` condition using the [`FILTER`
+operator](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconstructor_expression_filter.htm).
 
-... by condition.
-``` abap
-DATA(filter1) = FILTER #( itab WHERE comp1 < i ).
-```
+-   The
+    `FILTER` operator constructs an internal table according to a specified type (which can be an explicitly specified, non-generic table type or the # character as a symbol for the [operand type](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenoperand_type_glosry.htm) before the first parenthesis).
+- The lines for the new internal table are taken from an
+    existing internal table based on conditions specified in a `WHERE` clause. Note that the table type of the existing internal table must be convertible to the specified target type.
+-   The conditions can either be based on single values or a [filter
+    table](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconstructor_expr_filter_table.htm).
+- Additions:
 
-... by condition with the addition `EXCEPT` that excludes data according to a condition.
-``` abap
-DATA(filter2) = FILTER #( itab EXCEPT WHERE comp1 < i ).
-```
+|Addition |Details |
+|---|---|
+|`USING KEY`  | Specifies the [table key](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentable_key_glosry.htm "Glossary Entry") with which the `WHERE` condition is evaluated: either a [sorted key](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensorted_key_glosry.htm "Glossary Entry") or a [hash key](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenhash_key_glosry.htm "Glossary Entry"). If the internal table has neither of them, a [secondary table key](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensecondary_table_key_glosry.htm "Glossary Entry") must be available for the internal table which must then be specified after `USING KEY`.  |
+| `EXCEPT`   | The specification of `EXCEPT` means that those lines of the existing table are used that do not meet the condition specified in the `WHERE` clause. Hence, if `EXCEPT` is not specified, the lines of the existing table are used that meet the condition.  |
 
-... by using a filter table.
-``` abap
-DATA(filter3) = FILTER #( itab IN filter_tab WHERE comp1 < i.
+Examples:
+```abap
+"FILTER an conditions based on single values
+"Assumption the component num is of type i.
+DATA itab1 TYPE SORTED TABLE OF struc WITH NON-UNIQUE KEY num.
+DATA itab2 TYPE STANDARD TABLE OF struc WITH NON-UNIQUE SORTED KEY sec_key COMPONENTS num.
+DATA itab3 TYPE HASHED TABLE OF struc WITH UNIQUE KEY num.
+
+"The lines meeting the condition are respected.
+"Note: The source table must have at least one sorted or hashed key.
+"Here, the primary key is used
+DATA(f1) = FILTER #( itab1 WHERE num >= 3 ).
+
+"USING KEY primary_key explicitly specified; same as above
+DATA(f2) = FILTER #( itab1 USING KEY primary_key WHERE num >= 3 ).
+
+"EXCEPT addition
+DATA(f3) = FILTER #( itab1 EXCEPT WHERE num >= 3 ).
+DATA(f4) = FILTER #( itab1 EXCEPT USING KEY primary_key WHERE num >= 3 ).
+
+"Secondary table key specified after USING KEY
+DATA(f5) = FILTER #( itab2 USING KEY sec_key WHERE num >= 4 ).
+DATA(f6) = FILTER #( itab2 EXCEPT USING KEY sec_key WHERE num >= 3 ).
+
+"Note: In case of a hash key, exactly one comparison expression for each key component is allowed;
+"only = as comparison operator possible.
+DATA(f7) = FILTER #( itab3 WHERE num = 3 ).
+
+"Using a filter table
+"In the WHERE condition, the columns of source and filter table are compared. Those lines in the source table
+"are used for which at least one line in the filter table meets the condition. EXCEPT and USING KEY are also possible.
+
+DATA filter_tab1 TYPE SORTED TABLE OF i
+      WITH NON-UNIQUE KEY table_line.
+
+DATA filter_tab2 TYPE STANDARD TABLE OF i
+        WITH EMPTY KEY
+        WITH UNIQUE SORTED KEY line COMPONENTS table_line.
+
+DATA(f8) = FILTER #( itab1 IN filter_tab1 WHERE num = table_line ).
+
+"EXCEPT addition
+DATA(f9) = FILTER #( itab1 EXCEPT IN filter_tab1 WHERE num = table_line ).
+
+"USING KEY is specified for the filter table
+DATA(f10) = FILTER #( itab2 IN filter_tab2 USING KEY line WHERE num = table_line ).
+
+"USING KEY is specified for the source table, including EXCEPT
+DATA(f11) = FILTER #( itab2 USING KEY sec_key EXCEPT IN filter_tab2 WHERE num = table_line ).
 ```
 
 *Excursion:* Collecting values
