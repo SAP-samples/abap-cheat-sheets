@@ -318,7 +318,7 @@ METHODS some_action FOR MODIFY
         [`%cid`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapderived_types_cid.htm)).
     -   `failed`: Information for identifying the data set for
         which an error occurred in a RAP operation
-    -   `reported`: Used to exchange, for example, error messages for each
+    -   `reported`: Used, for example, to exchange error messages for each
         entity defined in the BDEF and [not related to a specific
         entity](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapderived_types_other.htm).
     -   Example: Technically, the `reported` parameter is a
@@ -969,15 +969,11 @@ instances](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?
     `key` in the underlying [CDS view entity](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_v2_view_glosry.htm "Glossary Entry")
     of the RAP BO.
 -   The primary key uniquely identifies each RAP BO entity instance.
--   After the creation of an instance and the primary key during a [RAP create operation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_create_operation_glosry.htm "Glossary Entry"),
-    the primary key cannot be changed.
-    -   Note the concept of [late numbering](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenlate_numbering_glosry.htm "Glossary Entry")
-        where newly created entity instances are given their final key
-        only shortly before saving in the database. Until then, the
-        business logic uses a temporary key that has to be replaced.
+-   After the creation of an instance including the primary key during a [RAP create operation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_create_operation_glosry.htm "Glossary Entry"),
+    the primary key can no longer be changed.
+    -   Note that there are different numbering concepts, such as [early](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_early_numbering_glosry.htm) and [late numbering](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenlate_numbering_glosry.htm "Glossary Entry"). In the latter concept, newly created entity instances are given their final key only shortly before saving in the database. Until then, the business logic uses a temporary key that has to be replaced.
 -   If a data set with a particular primary key already exists in the
-    persistent database table, the saving of a RAP BO instance with a
-    duplicate primary key is rejected.
+    persistent database table, the saving of a RAP BO instance is rejected because of a duplicate primary key.
 
 **How can a RAP BO instance be uniquely identified?**
 
@@ -1017,12 +1013,7 @@ instances](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?
     -   Used as a unique and preliminary identifier for RAP BO instances
         in RAP create operations, especially where no primary key exists
         for the particular instance.
-    -   For newly created instances, the ID can then be used for
-        performing further, referencing modifications on those instances
-        using
-        [`%cid_ref`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapderived_types_cid_ref.htm)
-        (which has the same value as `%cid` is then used, for
-        example, in RAP operations using [`CREATE BY`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapmodify_entity_entities_op.htm), [`UPDATE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapmodify_entity_entities_op.htm)
+    -   For newly created instances, the ID can then be used for performing further modifications, referencing to those instances using [`%cid_ref`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapderived_types_cid_ref.htm) (which has the same value as %cid), for example, in RAP operations using [`CREATE BY`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapmodify_entity_entities_op.htm), [`UPDATE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapmodify_entity_entities_op.htm)
         and
         [`DELETE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapmodify_entity_entities_op.htm),
         as well as
@@ -1033,7 +1024,7 @@ instances](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?
         `%pid` for late numbering scenarios, `%cid` (and
         `%cid_ref`) are only available on a short-term basis
         for the current ABAP EML request within the [RAP interaction phase](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_int_phase_glosry.htm "Glossary Entry") in one [RAP LUW](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_luw_glosry.htm "Glossary Entry").
-    -   **Note:** The specification of `%cid` should be done even if there are no further operations referring to it.
+    -   **Note:**  Specify `%cid` even if there are no further operations referring to it.
 -   Special case: Late numbering
     -   As mentioned above, in late numbering scenarios newly created
         entity instances are given their final key only shortly before
@@ -1107,14 +1098,8 @@ contains all relevant components for the chosen scenario.
     in order to allow transactions to expand over different ABAP
     sessions.
 -   Like the concepts mentioned above, a RAP BO can be draft-enabled in
-    the BDEF. This concept enters the picture, for example, if you have
-    an application allowing data modifications and the temporary storage
-    of modifications but does not yet persist them to the database. You
-    can continue modifying this data later and you might even use a
-    different device from the one where you modified the data
-    previously.
--   The draft indicator `%is_draft` enters the picture here for
-    RAP BO instance identification. It is used to indicate if a RAP BO
+    the BDEF. If enabled, the application allows data modifications and the temporary storage of modifications but does not yet persist them to the database. The users of the application can continue modifying this data later and they might even use a different device from the one where they modified the data previously.
+-   The draft indicator `%is_draft` is available for RAP BO instance identification. It is used to indicate if a RAP BO
     instance is a [draft instance](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_draft_instance_glosry.htm "Glossary Entry")
     or an [active instance](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_active_instance_glosry.htm "Glossary Entry").
     Conveniently, the component group `%tky` contains

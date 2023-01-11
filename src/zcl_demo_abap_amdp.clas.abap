@@ -29,7 +29,7 @@
 *   numbers (e. g. 1) ..., 2) ..., 3) ...) for the individual example
 *   sections. Plus, the variable name is displayed in most cases. Hence,
 *   to easier and faster find the relevant output in the console, just
-*   search in the console for the number/variable name (STRG+F in the
+*   search in the console for the number/variable name (CTRL+F in the
 *   console) or use the debugger.
 *
 * ----------------------------- NOTE -----------------------------------
@@ -224,7 +224,7 @@ CLASS zcl_demo_abap_amdp IMPLEMENTATION.
 
     "Note: When commented in, the following code results in a runtime
     "error since you cannot call an AMDP function in ABAP directly.
-*        NEW ZCL_demo_ABAP_AMDP( )->get_carr_fli(
+*        NEW zcl_demo_abap_amdp( )->get_carr_fli(
 *          EXPORTING carrid = 'LH' ).
 
 **********************************************************************

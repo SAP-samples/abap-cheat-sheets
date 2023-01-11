@@ -262,7 +262,7 @@ SELECT SINGLE FROM dbtab
 "Alternative syntax without the FIELDS addition
 "When reading into an existing target variable on the basis of a selected
 "set of fields, use a CORRESPONDING addition in the INTO clause so as not
-"to mess up the read result if not all fields of a structure are present 
+"to mess up the read result if not all fields of a structure are present
 "in the SELECT list.
 
 SELECT SINGLE comp1, comp2, comp3       "Selected set of fields
@@ -796,7 +796,7 @@ SELECT SINGLE
 
   FROM zdemo_abap_carr
   WHERE carrid = 'LH'
-  INTO @FINAL(string_functions).
+  INTO @DATA(string_functions).
 ```
 
 Example: [Special functions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_sql_special_functions.htm)
@@ -845,7 +845,7 @@ SELECT SINGLE
   is_valid( @( cl_abap_context_info=>get_system_time( ) ) ) AS time_is_valid
 
 FROM zdemo_abap_carr
-INTO @FINAL(special_functions).
+INTO @DATA(special_functions).
 ```
 
 [Aggregate expressions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapselect_aggregate.htm)
@@ -891,7 +891,7 @@ SELECT
   FROM zdemo_abap_flsch
   WHERE carrid = 'LH'
   GROUP BY carrid
-  INTO TABLE @FINAL(agg_exp).
+  INTO TABLE @DATA(agg_exp).
 ```
 
 **More SQL Expressions**

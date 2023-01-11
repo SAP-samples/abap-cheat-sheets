@@ -192,7 +192,7 @@ METHOD amdp_meth
                          
 "Beginning of the SQLScript code (note that it is not ABAP code although it looks similar)
 
-  ... "Here goes SAPScript code
+  ... "Here goes SQLScript code
       "Note that an AMDP method implementation must not be empty.
 
 "End of the SQLScript code
@@ -288,7 +288,7 @@ METHOD amdp_func
 
 "Beginning of the SQLScript code (note that it is not ABAP code although it looks similar)
 
-  ... "Here goes SAPScript code;
+  ... "Here goes SQLScript code;
       "AMDP table function to be called by other AMDP methods only
 
 "End of the SQLScript code

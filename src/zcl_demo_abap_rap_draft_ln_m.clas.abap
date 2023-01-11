@@ -33,7 +33,7 @@
 *   numbers (e. g. 1) ..., 2) ..., 3) ...) for the individual example
 *   sections. Plus, the variable name is displayed in most cases. Hence,
 *   to easier and faster find the relevant output in the console, just
-*   search in the console for the number/variable name (STRG+F in the
+*   search in the console for the number/variable name (CTRL+F in the
 *   console) or use the debugger.
 *
 * ----------------------- GETTING STARTED (2) -------------------------
@@ -64,9 +64,9 @@
 *     columns are displayed, choose the 'Settings' button and select the
 *     desired columns.
 *     Choosing the 'Go' button refreshes the list. At first use, there
-*     might not any entry. You can create an entry choosing the 'Create'
+*     might not be any entry. You can create an entry choosing the 'Create'
 *     button.
-*     The late numbering aspects comes into the picture when you, for
+*     The late numbering aspects enters the picture when you, for
 *     example, create a new instance, i. e. create a new calculation, and
 *     you keep a draft version of it instead of saving it to the database.
 *     The calculation ID which represents the key of the instance has an

@@ -507,8 +507,7 @@ Regarding the exiting of procedures, note the hint mentioned above. The use of `
   "Multiple classes in a list and CATCH blocks can be specified
   "Note: If there are multiple CATCH blocks for exceptions that are in an inheritance
   "relationship, you must pay attention that the more special exceptions are specified
-  "before the more general ones. Otherwise, a handler for a more general exception
-  "is called before the more special one.
+  "before the more general ones.
   TRY.
       ... "TRY block
     CATCH cx_abc cx_bla cx_blabla.
@@ -637,7 +636,7 @@ RAISE EXCEPTION TYPE cx_sy_zerodivide.
 - Runtime errors are caused by uncatchable exceptions when a program is executed, when a catchable exception is not caught, or they can be forced by, for example, using [`ASSERT`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapassert.htm) statements.
 - Every runtime error terminates the program, which in turn raises a [database rollback](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendatabase_rollback_glosry.htm) and is documented by default in a [short dump](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenshort_dump_glosry.htm).
 
-- Regarding `ASSERT` statements: `ASSERT` is followed by a logical expression. If the expression is false, the program is terminated and an uncatchable exception is raised resulting in the runtime error `ASSERTION_FAILED`. Note that each runtime error is identified by a name and assigned to a specific error situation. It leads to a .
+- Regarding `ASSERT` statements: `ASSERT` is followed by a logical expression. If the expression is false, the program is terminated and an uncatchable exception is raised resulting in the runtime error `ASSERTION_FAILED`. Note that each runtime error is identified by a name and assigned to a specific error situation.
 
 ```abap
 "The ASSERT keyword is followed by a logical expression.

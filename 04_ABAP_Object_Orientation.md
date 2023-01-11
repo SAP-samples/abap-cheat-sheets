@@ -1183,7 +1183,7 @@ ENDCLASS.
 
 CLASS class IMPLEMENTATION.
   METHOD factory_method.
-    IF par =
+    IF par = ...
        obj = NEW class( ).
       ELSE.
       ...

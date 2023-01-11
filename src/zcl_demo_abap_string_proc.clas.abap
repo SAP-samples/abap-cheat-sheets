@@ -20,7 +20,7 @@
 *   numbers (e. g. 1) ..., 2) ..., 3) ...) for the individual example
 *   sections. Plus, the variable name is displayed in most cases. Hence,
 *   to easier and faster find the relevant output in the console, just
-*   search in the console for the number/variable name (STRG+F in the
+*   search in the console for the number/variable name (CTRL+F in the
 *   console) or use the debugger.
 *
 * ----------------------------- NOTE -----------------------------------
@@ -1105,7 +1105,7 @@ CLASS ZCL_DEMO_ABAP_STRING_PROC IMPLEMENTATION.
     output->display( input = count_s name = `count_s` ).
     output->display( input = findings_s name = `findings_s` ).
     output->display( input = line_s name = `line_s` ).
-    output->display( input = off_s name = `off_s` ).    
+    output->display( input = off_s name = `off_s` ).
     output->display( input = length_s name = `length_s` ).
     output->display( input = res_s2 name = `res_s2` ).
 

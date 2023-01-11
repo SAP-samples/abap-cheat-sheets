@@ -15,7 +15,7 @@
 * and data exchange between a RAP BO consumer, which is a class
 * in this case, and RAP BO provider can work. Additionally, it shows
 * how the methods for non-standard RAP BO operations might be
-* self-implemented in an ABP. The example is is intentionally kept
+* self-implemented in an ABP. The example is intentionally kept
 * short and simple and focuses on specific RAP aspects. For this reason,
 * the example might not fully meet the requirements of the RAP BO contract.
 *
@@ -738,7 +738,7 @@ CLASS lhc_root IMPLEMENTATION.
       <f>-%action-multiply_by_3 = if_abap_behv=>mk-on.
     ENDLOOP.
 
-    "Multiply integer values by 2
+    "Multiply integer values by 3
     MODIFY ENTITIES OF zdemo_abap_rap_ro_u IN LOCAL MODE
       ENTITY root
       UPDATE FIELDS ( field3 field4 ) WITH VALUE #( FOR key IN result ( %tky   = key-%tky

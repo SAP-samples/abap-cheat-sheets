@@ -203,7 +203,7 @@ The code examples presented in this repository are only syntax examples and are 
 SAP does not guarantee either the correctness or the completeness of the code. In addition, SAP takes no legal responsibility or liability for possible errors or their consequences, which occur through the use of the example programs.
 
 ## 📟 How to Obtain Support
-This project is provided "as-is": there is no guarantee that raised issues will be answered or addressed in future releases.
+Please do not create pull requests. If you like to address issues or suggestions, please create an issue. However, this project is provided "as-is": there is no guarantee that raised issues will be answered or addressed in future releases.
 
 ## 📜 License
 Copyright (c) 2022 SAP SE or an SAP affiliate company. All rights reserved. This project is licensed under the Apache Software License, version 2.0 except as noted otherwise in the [LICENSE](LICENSE) file.

@@ -210,7 +210,7 @@ side. Various expressions and strings can be chained using the
 operator](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconcatenation_operator_glosry.htm "Glossary Entry")
 `&&`. Alternatively, you might chain strings using [string
 templates](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenstring_template_glosry.htm "Glossary Entry")
-and as outlined in the section [Concatenating Strings]. `Concatenating Strings`.
+and as outlined in the section *Concatenating Strings*.
 ``` abap
 str5 = str3 && ` ` && str4 && `!`. "X 1-!
 "Note the output for str4 that includes the conversion of type i to
@@ -629,17 +629,17 @@ s2 = substring( val = s1 len = 5 ). "Lorem
 "Specifying both off and len parameters
 s2 = substring( val = s1 off = 6 len = 5 ). "ipsum
 
-DATA(ch5) = 'Lorem ipsum dolor sit amet'. "Type c
+DATA(txt) = 'Lorem ipsum dolor sit amet'. "Type c
 
 "Offset and length specification using the + sign after a variable
-DATA(ch6) = ch2+0(5). "Lorem
+DATA(ch6) = txt+0(5). "Lorem
 
 "* means respecting the rest of the remaining string
-DATA(ch7) = ch2+12(*). "dolor sit amet
+DATA(ch7) = txt+12(*). "dolor sit amet
 
-CLEAR ch5+11(*). "Lorem ipsum
+CLEAR txt+11(*). "Lorem ipsum
 
-ch5+0(5) = 'Hallo'. "Hallo ipsum dolor sit amet
+txt+0(5) = 'Hallo'. "Hallo ipsum dolor sit amet
 
 "Further string functions
 s1 = `aa1bb2aa3bb4`.

@@ -552,7 +552,7 @@ CLASS zcl_demo_abap_prog_flow_logic IMPLEMENTATION.
     "substring. Then, a REPLACE statement is used and that only replaces
     "the substring according to the values. The condition for WHILE is
     "tailored in a way that the loop is terminated if there are no more
-    "findings. The number of findings are also output - a number that
+    "findings. The number of findings is also displayed - a number that
     "corresponds to the number of loop passes.
 
     DATA(while_string) = `##abap####abap#abap######abap###abapabap##abap`.
@@ -1061,7 +1061,7 @@ CLASS zcl_demo_abap_prog_flow_logic IMPLEMENTATION.
     "specified for the RAISING addition. If an actual parameter has a certain
     "value, the method raises an exception.
     "You can comment in the following line of code to see the enforcement.
-    "A syntax warning is displayed since, there is no proper exception handling.
+    "A syntax warning is displayed since there is no proper exception handling.
 
     "DATA(my_user_a) = whats_my_user( get_name = abap_false ).
 
@@ -1362,7 +1362,7 @@ CLASS zcl_demo_abap_prog_flow_logic IMPLEMENTATION.
   METHOD prep_calc_result.
 
     FIND PCRE `-$` IN res.  "trailing minus
-    
+
     IF sy-subrc = 0.
       SHIFT res BY 1 PLACES RIGHT CIRCULAR.
     ENDIF.

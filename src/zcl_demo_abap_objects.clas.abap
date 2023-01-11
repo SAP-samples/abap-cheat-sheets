@@ -81,7 +81,7 @@ ENDCLASS.
 
 
 
-CLASS ZCL_demo_ABAP_OBJECTS IMPLEMENTATION.
+CLASS zcl_demo_abap_objects IMPLEMENTATION.
 
 
   METHOD hallo_instance_method.
