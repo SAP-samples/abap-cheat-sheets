@@ -1282,61 +1282,61 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
 
 **********************************************************************
 
-output->next_section( `31) RTTC: Dynamically Creating Internal Table (2)` ).
+    output->next_section( `31) RTTC: Dynamically Creating Internal Table (2)` ).
 
-"In the example an internal table type is created based on a DDIC type.
-"See the comments in the code.
+    "In the example an internal table type is created based on a DDIC type.
+    "See the comments in the code.
 
-"Retrieving table name
-DATA(table_name) = lcl_det_at_runtime=>get_dyn_table_name( ).
+    "Retrieving table name
+    DATA(table_name) = lcl_det_at_runtime=>get_dyn_table_name( ).
 
-"Retrieving type information using RTTI
-DATA(st) =  CAST cl_abap_structdescr(
-         cl_abap_tabledescr=>describe_by_name( table_name ) ).
+    "Retrieving type information using RTTI
+    DATA(st) =  CAST cl_abap_structdescr(
+            cl_abap_tabledescr=>describe_by_name( table_name ) ).
 
-"Declaring an internal table to hold the components;
-"it will include the component name and the component type
-DATA comp_table TYPE cl_abap_structdescr=>component_table.
+    "Declaring an internal table to hold the components;
+    "it will include the component name and the component type
+    DATA comp_table TYPE cl_abap_structdescr=>component_table.
 
-"Looping across the retrieved field list to extract information
-"In principle, you could also just use method get_components( ) :)
-LOOP AT st->components ASSIGNING FIELD-SYMBOL(<field>).
+    "Looping across the retrieved field list to extract information
+    "In principle, you could also just use method get_components( ) :)
+    LOOP AT st->components ASSIGNING FIELD-SYMBOL(<field>).
 
-  "Adding name of the component and its type, which is retrieved using the
-  "get_component_type method, are added to the internal table that holds the components
-  APPEND VALUE #( name = <field>-name
-                  type = st->get_component_type( <field>-name ) ) TO comp_table.
+      "Adding name of the component and its type, which is retrieved using the
+      "get_component_type method, are added to the internal table that holds the components
+      APPEND VALUE #( name = <field>-name
+                      type = st->get_component_type( <field>-name ) ) TO comp_table.
 
-  "Just for fun. The SELECT statement further down includes a dynamic specification
-  "of the ORDER BY clause :)
-  "In this case, just using the second field since MANDT is the first.
-  IF sy-tabix = 2.
-    DATA(dyn_order_by) = <field>-name.
-  ENDIF.
+      "Just for fun. The SELECT statement further down includes a dynamic specification
+      "of the ORDER BY clause :)
+      "In this case, just using the second field since MANDT is the first.
+      IF sy-tabix = 2.
+        DATA(dyn_order_by) = <field>-name.
+      ENDIF.
 
-ENDLOOP.
+    ENDLOOP.
 
-"Creating an internal table type
-"Note: The parameter p_key is not filled here, i. e. the default key is used.
-DATA(itab_type) = cl_abap_tabledescr=>create(
-    p_line_type  = st
-    p_table_kind = cl_abap_tabledescr=>tablekind_sorted
-    p_unique     = cl_abap_typedescr=>true ).
+    "Creating an internal table type
+    "Note: The parameter p_key is not filled here, i. e. the default key is used.
+    DATA(itab_type) = cl_abap_tabledescr=>create(
+        p_line_type  = st
+        p_table_kind = cl_abap_tabledescr=>tablekind_sorted
+        p_unique     = cl_abap_typedescr=>true ).
 
-"Creating an internal table based on the created table type
-DATA ref_tab TYPE REF TO data.
-CREATE DATA ref_tab TYPE HANDLE itab_type.
+    "Creating an internal table based on the created table type
+    DATA ref_tab TYPE REF TO data.
+    CREATE DATA ref_tab TYPE HANDLE itab_type.
 
-"Filling an internal table
-SELECT *
-  FROM (table_name)
-  ORDER BY (dyn_order_by)
-  INTO CORRESPONDING FIELDS OF TABLE @ref_tab->*
-  UP TO 3 ROWS.
+    "Filling an internal table
+    SELECT *
+      FROM (table_name)
+      ORDER BY (dyn_order_by)
+      INTO CORRESPONDING FIELDS OF TABLE @ref_tab->*
+      UP TO 3 ROWS.
 
-output->display( |Type/Database table name determined at runtime: { table_name }| ).
-output->display( |Internal table entries (ordered by { dyn_order_by }):| ).
-output->display( input = ref_tab->* name = `ref_tab->*` ).
+    output->display( |Type/Database table name determined at runtime: { table_name }| ).
+    output->display( |Internal table entries (ordered by { dyn_order_by }):| ).
+    output->display( input = ref_tab->* name = `ref_tab->*` ).
 
   ENDMETHOD.
 ENDCLASS.
