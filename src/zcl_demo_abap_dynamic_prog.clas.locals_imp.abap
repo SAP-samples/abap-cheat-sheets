@@ -2,23 +2,36 @@ CLASS lcl_det_at_runtime DEFINITION.
 
   PUBLIC SECTION.
 
-   CLASS-METHODS:
-    get_dyn_table_name RETURNING VALUE(tab) TYPE string,
-    get_dyn_dobj RETURNING VALUE(dobj) TYPE string,
-    get_dyn_field RETURNING VALUE(field) TYPE string,
-    get_dyn_select_list RETURNING VALUE(list) TYPE string,
-    get_dyn_where_clause RETURNING VALUE(clause_tab) TYPE string_table,
-    get_dyn_class RETURNING VALUE(cl) TYPE string,
-    get_random_type RETURNING VALUE(random_type) TYPE string.
+    CLASS-DATA: string1              TYPE string,
+                string2              TYPE string,
+                string3              TYPE string,
+                dyn_meth_call_result TYPE string.
 
-  CLASS-DATA: string1 TYPE string,
-              string2 TYPE string,
-              string3 TYPE string.
+    TYPES: type_p     TYPE p LENGTH 8 DECIMALS 2, "elementary type
+           type_struc TYPE zdemo_abap_carr, "structure type
+           "internal table type
+           type_itab  TYPE SORTED TABLE OF zdemo_abap_flsch WITH NON-UNIQUE KEY carrid connid                         "primary key
+                                                            WITH UNIQUE SORTED KEY cities COMPONENTS cityfrom cityto, "secondary key
+           type_ref   TYPE REF TO lcl_det_at_runtime. "reference type
 
-   TYPES: type1 TYPE p LENGTH 8 DECIMALS 2, "elementary type
-          type2 TYPE zdemo_abap_carr, "structure type
-          type3 TYPE TABLE OF zdemo_abap_flsch, "internal table type
-          type4 TYPE REF TO lcl_det_at_runtime. "reference type
+    TYPES: BEGIN OF struc_builtin,
+             builtin_type TYPE c LENGTH 10,
+             len          TYPE i,
+             dec          TYPE i,
+           END OF struc_builtin.
+
+    CLASS-METHODS:
+      get_dyn_table_name RETURNING VALUE(tab) TYPE string,
+      get_dyn_dobj RETURNING VALUE(dobj) TYPE string,
+      get_dyn_field RETURNING VALUE(field) TYPE string,
+      get_dyn_select_list RETURNING VALUE(list) TYPE string,
+      get_dyn_where_clause RETURNING VALUE(clause_tab) TYPE string_table,
+      get_random_type RETURNING VALUE(random_type) TYPE string,
+      get_builtin_type RETURNING VALUE(builtin_type) TYPE struc_builtin,
+      get_dyn_class_meth EXPORTING cl   TYPE string
+                                   meth TYPE string
+                                   ptab TYPE abap_parmbind_tab,
+      fill_string.
 
   PROTECTED SECTION.
   PRIVATE SECTION.
@@ -32,22 +45,52 @@ CLASS lcl_det_at_runtime IMPLEMENTATION.
      ( `ZDEMO_ABAP_CARR` ) ( `ZDEMO_ABAP_FLSCH` ) ( `ZDEMO_ABAP_FLI` ) ).
 
     "Getting random number to determine the table index at runtime.
-    DATA(random) = cl_abap_random_int=>create(
+    DATA(idx) = cl_abap_random_int=>create(
       seed = cl_abap_random=>seed( ) min = 1
-                                     max = lines( flight_tables ) ).
-    DATA(idx) = random->get_next( ).
+                                     max = lines( flight_tables ) )->get_next( ).
 
     "Returning parameter to receive the random table name.
+    tab = VALUE #( flight_tables[ idx ] DEFAULT `ZDEMO_ABAP_CARR`  ).
+
+  ENDMETHOD.
+
+  METHOD get_builtin_type.
+
+    "Providing the names of built-in types in a string table to be selected from.
+    TYPES tabtyp TYPE TABLE OF struc_builtin-builtin_type WITH EMPTY KEY.
+
+    DATA(built) = VALUE tabtyp(
+     ( 'd' )
+     ( 'decfloat16' )
+     ( 'decfloat34' )
+     ( 'f' )
+     ( 'i' )
+     ( 'string' )
+     ( 't' )
+     ( 'xstring' )
+     ( 'c' )
+     ( 'n' )
+     ( 'x' )
+     ( 'p' )
+     ).
+
+    "Getting random number to determine the table index at runtime
+    DATA(idx) = cl_abap_random_int=>create(
+      seed = cl_abap_random=>seed( ) min = 1
+                                     max = lines( built ) )->get_next( ).
+
+    "Providing the returning parameter with a random table name
     TRY.
-        tab = flight_tables[ idx ].
-      CATCH cx_sy_itab_line_not_found INTO DATA(error).
+        builtin_type = VALUE #( builtin_type = built[ idx ] dec = idx len = idx ).
+      CATCH cx_sy_itab_line_not_found.
+        builtin_type = VALUE #( builtin_type = `p` dec = 5 len = 5 ).
     ENDTRY.
 
   ENDMETHOD.
 
   METHOD get_dyn_dobj.
 
-    "Providing strings with demo content.
+    "Providing strings with demo content
     string1 = |Hallo, { sy-uname }. | &&
               |This is string1.|.
     string2 = |Hallo, { sy-uname }. | &&
@@ -55,21 +98,17 @@ CLASS lcl_det_at_runtime IMPLEMENTATION.
     string3 = |Hallo, { sy-uname }. | &&
               |This is string3.|.
 
-    "Filling table with data object names.
+    "Filling table with data object names
     DATA(str_tab) = VALUE string_table(
       ( `STRING1` ) ( `STRING2` ) ( `STRING3` ) ).
 
-    "Getting random number to determine the table index at runtime.
-    DATA(random) = cl_abap_random_int=>create(
+    "Getting random number to determine the table index at runtime
+    DATA(idx) = cl_abap_random_int=>create(
       seed = cl_abap_random=>seed( ) min = 1
-                                     max = lines( str_tab ) ).
-    DATA(idx) = random->get_next( ).
+                                     max = lines( str_tab ) )->get_next( ).
 
-    "Returning parameter to receive the random data object name.
-    TRY.
-        dobj = str_tab[ idx ].
-      CATCH cx_sy_itab_line_not_found INTO DATA(error).
-    ENDTRY.
+    "Providing the returning parameter with a random data object name
+    dobj = VALUE #( str_tab[ idx ] DEFAULT |Hallo, { sy-uname }. This is a string.| ).
 
   ENDMETHOD.
 
@@ -81,24 +120,20 @@ CLASS lcl_det_at_runtime IMPLEMENTATION.
                           'ZDEMO_ABAP_CARR' )
                             )->components.
 
-    "Getting random number to determine the table index at runtime.
-    "Starting from 2 to exclude MANDT field
-    DATA(random) = cl_abap_random_int=>create(
+    "Getting random number to determine the table index at runtime;
+    "starting from 2 to exclude MANDT field
+    DATA(idx) = cl_abap_random_int=>create(
       seed = cl_abap_random=>seed( ) min = 2
-                                     max = lines( comp ) ).
-    DATA(idx) = random->get_next( ).
+                                     max = lines( comp ) )->get_next( ).
 
-    "Returning parameter to receive the random component name.
-    TRY.
-        field = comp[ idx ]-name.
-      CATCH cx_sy_itab_line_not_found INTO DATA(error).
-    ENDTRY.
+    "Providing the returning parameter with a random component name
+    field = VALUE #( comp[ idx ]-name DEFAULT `CARRID`  ).
 
   ENDMETHOD.
 
   METHOD get_dyn_select_list.
 
-    "Providing SELECT lists in a string table to be selected from.
+    "Providing SELECT lists in a string table to be selected from
     DATA sel_list_tab TYPE string_table.
     sel_list_tab = VALUE #(
       ( `CARRID, CONNID, COUNTRYFR, COUNTRYTO` )
@@ -108,23 +143,19 @@ CLASS lcl_det_at_runtime IMPLEMENTATION.
         `FLTIME, DEPTIME, ARRTIME, DISTANCE` )
      ).
 
-    "Getting random number to determine the table index at runtime.
-    DATA(random) = cl_abap_random_int=>create(
+    "Getting random number to determine the table index at runtime
+    DATA(idx) = cl_abap_random_int=>create(
       seed = cl_abap_random=>seed( ) min = 1
-                                     max = lines( sel_list_tab ) ).
-    DATA(idx) = random->get_next( ).
+                                     max = lines( sel_list_tab ) )->get_next( ).
 
-    "Returning parameter to receive the random SELECT list.
-    TRY.
-        list = sel_list_tab[ idx ].
-      CATCH cx_sy_itab_line_not_found INTO DATA(error).
-    ENDTRY.
+    "Providing the returning parameter with a random SELECT list
+    list = VALUE #( sel_list_tab[ idx ] DEFAULT `CARRID, CONNID, COUNTRYFR, COUNTRYTO`  ).
 
   ENDMETHOD.
 
   METHOD get_dyn_where_clause.
 
-    "Providing WHERE clauses in a table to be selected from.
+    "Providing WHERE clauses in a table to be selected from
     DATA: BEGIN OF where_struc,
             where_clause_tab TYPE string_table,
           END OF where_struc.
@@ -139,90 +170,183 @@ CLASS lcl_det_at_runtime IMPLEMENTATION.
       ( where_clause_tab =
           VALUE #( ( `DISTANCE > 500 AND DISTID = 'KM'` ) ) )  ).
 
-    "Getting random number to determine the table index at runtime.
-    DATA(random) = cl_abap_random_int=>create(
+    "Getting random number to determine the table index at runtime
+    DATA(idx) = cl_abap_random_int=>create(
       seed = cl_abap_random=>seed( ) min = 1
-                                     max = lines( where_itab ) ).
-    DATA(idx) = random->get_next( ).
+                                     max = lines( where_itab ) )->get_next( ).
 
-    "Returning parameter to receive the random WHERE clause.
-    TRY.
-        clause_tab = where_itab[ idx ]-where_clause_tab.
-      CATCH cx_sy_itab_line_not_found INTO DATA(error).
-    ENDTRY.
-
-  ENDMETHOD.
-
-  METHOD get_dyn_class.
-
-    "Providing class names in a string table to be selected from.
-    DATA(class_tab) = VALUE string_table(
-      ( `LCL_DET_AT_RUNTIME` )
-      ( `LCL_DUMMY` ) ).
-
-    "Getting random number to determine the table index at runtime.
-    DATA(random) = cl_abap_random_int=>create(
-      seed = cl_abap_random=>seed( ) min = 1
-                                     max = lines( class_tab ) ).
-    DATA(idx) = random->get_next( ).
-
-    "Returning parameter to receive the random class name.
-    TRY.
-        cl = class_tab[ idx ].
-      CATCH cx_sy_itab_line_not_found INTO DATA(error).
-    ENDTRY.
+    "Providing the returning parameter with a random WHERE clause
+    clause_tab = VALUE #( where_itab[ idx ]-where_clause_tab DEFAULT VALUE #( ( `CARRID = 'LH'` ) ( `OR CARRID = 'AA'` ) )  ).
 
   ENDMETHOD.
 
   METHOD get_random_type.
 
-    "Providing names of classes in a string table to be selected from.
-    "Note that in this example types are defined in the public section
-    "of a class and the program logic is included in another class.
-    "To be able to refer to the types, the class name is added.
+    "Providing names of classes in a string table to be selected from
+    "In this example, some types are defined in the public section
+    "of a local class. The class name is added here since the names
+    "are used in the global class.
     DATA(str_tab) = VALUE string_table(
-      ( `LCL_DET_AT_RUNTIME=>TYPE1` )
-      ( `LCL_DET_AT_RUNTIME=>TYPE2` )
-      ( `LCL_DET_AT_RUNTIME=>TYPE3` )
-      ( `LCL_DET_AT_RUNTIME=>TYPE4` )
+      ( `LCL_DET_AT_RUNTIME=>TYPE_P` )
+      ( `LCL_DET_AT_RUNTIME=>TYPE_STRUC` )
+      ( `LCL_DET_AT_RUNTIME=>TYPE_ITAB` )
+      ( `LCL_DET_AT_RUNTIME=>TYPE_REF` )
       ( `LCL_DET_AT_RUNTIME` )
-      ( `IF_OO_ADT_CLASSRUN` ) ).
+      ( `IF_OO_ADT_CLASSRUN` )
+      ).
 
-    "Getting random number to determine the table index at runtime.
-    DATA(random) = cl_abap_random_int=>create(
+    "Getting random number to determine the table index at runtime
+    DATA(idx) = cl_abap_random_int=>create(
       seed = cl_abap_random=>seed( ) min = 1
-                                     max = lines( str_tab ) ).
-    DATA(idx) = random->get_next( ).
+                                     max = lines( str_tab ) )->get_next( ).
 
-    "Returning parameter to receive the random type name.
-    TRY.
-        random_type = str_tab[ idx ].
-      CATCH cx_sy_itab_line_not_found INTO DATA(error).
-    ENDTRY.
+    "Providing the returning parameter with a random type name
+    random_type = VALUE #( str_tab[ idx ] DEFAULT `LCL_DET_AT_RUNTIME=>TYPE_STRUC` ).
 
+  ENDMETHOD.
+
+  METHOD get_dyn_class_meth.
+
+    "Providing class names in a string table to be selected from
+    DATA(class_tab) = VALUE string_table(
+      ( `LCL_DEMO1` )
+      ( `LCL_DEMO2` ) ).
+
+    "Getting random number to determine the table index at runtime
+    DATA(idx) = cl_abap_random_int=>create(
+      seed = cl_abap_random=>seed( ) min = 1
+                                     max = lines( class_tab ) )->get_next( ).
+
+    "Provide the exporting parameter with the random class name
+    cl = VALUE #( class_tab[ idx ] DEFAULT `LCL_DEMO1` ).
+
+    "Getting method names using RTTI
+    DATA(methods) = CAST cl_abap_classdescr( cl_abap_typedescr=>describe_by_name( cl ) )->methods.
+
+    "Getting random number to determine the table index at runtime
+    idx = cl_abap_random_int=>create(
+      seed = cl_abap_random=>seed( ) min = 1
+                                     max = lines( methods ) )->get_next( ).
+
+    "Provide the exporting parameter with the random method name
+    meth = VALUE #( methods[ idx ]-name DEFAULT `METH_A` ).
+
+    "Data reference objects for the value parameter in the parameter table
+    DATA(ref_imp) = NEW string( `hi` ).
+    DATA(ref_exp) = NEW string( `hallo` ).
+    DATA(ref_ch) = NEW string( `salut` ).
+    DATA(ref_ret) = NEW string( `ciao` ).
+
+    "Filling the parameter tables
+    "Note: If the method signature has an importing parameter,
+    "it must be specified as exporting parameter here.
+    "Same is true for the exporting parameter in the signature
+    "that must be specified as importing parameter.
+
+    CASE meth.
+
+      WHEN `METH_A`.
+
+        ptab = VALUE #( ( name  = 'A'
+                          kind  = cl_abap_objectdescr=>exporting
+                          value = ref_exp )
+                        ( name  = 'B'
+                          kind  = cl_abap_objectdescr=>importing
+                          value = ref_imp ) ).
+
+      WHEN `METH_B`.
+
+        ptab = VALUE #( ( name  = 'C'
+                          kind  = cl_abap_objectdescr=>changing
+                          value = ref_ch )
+                        ( name  = 'D'
+                          kind  = cl_abap_objectdescr=>returning
+                          value = ref_ret ) ).
+
+      WHEN `METH_C`.
+
+        ptab = VALUE #( ( name  = 'E'
+                          kind  = cl_abap_objectdescr=>exporting
+                          value = ref_exp )
+                        ( name  = 'F'
+                          kind  = cl_abap_objectdescr=>importing
+                          value = ref_imp ) ).
+
+      WHEN `METH_D`.
+
+        ptab = VALUE #( ( name  = 'G'
+                          kind  = cl_abap_objectdescr=>changing
+                          value = ref_ch )
+                        ( name  = 'H'
+                          kind  = cl_abap_objectdescr=>returning
+                          value = ref_ret ) ).
+
+    ENDCASE.
+
+  ENDMETHOD.
+
+  METHOD fill_string.
+    dyn_meth_call_result = |Hallo { sy-uname }. The string was filled at { utclong_current( ) }.|.
   ENDMETHOD.
 
 ENDCLASS.
 
-CLASS lcl_dummy DEFINITION.
-
+CLASS lcl_demo1 DEFINITION.
+"Note that this is just a demo class with demo methods to work with in the example.
   PUBLIC SECTION.
 
     CLASS-METHODS:
-      meth_a IMPORTING imp TYPE i
-             EXPORTING exp TYPE i
-             RETURNING VALUE(str) TYPE string,
-      meth_b CHANGING ch TYPE string
-             RETURNING VALUE(str) TYPE string.
+      meth_a IMPORTING a TYPE string
+             EXPORTING b TYPE string,
+      meth_b CHANGING  c        TYPE string
+             RETURNING VALUE(d) TYPE string.
+
 ENDCLASS.
 
-CLASS lcl_dummy IMPLEMENTATION.
+CLASS lcl_demo1 IMPLEMENTATION.
   METHOD meth_a.
-    str = |Hallo from meth_a.|.
+    b = |Hallo from meth_a. '{ a }' was input.|.
+
+    "Filling an attribute for the output in the global class.
+    lcl_det_at_runtime=>dyn_meth_call_result = b.
   ENDMETHOD.
 
   METHOD meth_b.
-    str = |Hallo from meth_b.|.
+    c = `#` && c && `#`.
+    d = |Hallo from meth_b. Actual parameter of changing parameter: '{ c }'|.
+
+    "Filling an attribute for the output in the global class.
+    lcl_det_at_runtime=>dyn_meth_call_result = d.
+  ENDMETHOD.
+
+ENDCLASS.
+
+CLASS lcl_demo2 DEFINITION.
+"Note that this is just a demo class with demo methods to work with in the example.
+  PUBLIC SECTION.
+
+    CLASS-METHODS:
+      meth_c IMPORTING e TYPE string
+             EXPORTING f TYPE string,
+      meth_d CHANGING  g        TYPE string
+             RETURNING VALUE(h) TYPE string.
+
+ENDCLASS.
+
+CLASS lcl_demo2 IMPLEMENTATION.
+  METHOD meth_c.
+    f = |Hallo from meth_c. '{ e }' was input.|.
+
+    "Filling an attribute for the output in the global class.
+    lcl_det_at_runtime=>dyn_meth_call_result = f.
+  ENDMETHOD.
+
+  METHOD meth_d.
+    g = `*` && g && `*`.
+    h = |Hallo from meth_d. Actual parameter of changing parameter: '{ g }'|.
+
+    "Filling an attribute for the output in the global class.
+    lcl_det_at_runtime=>dyn_meth_call_result = h.
   ENDMETHOD.
 
 ENDCLASS.
