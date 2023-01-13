@@ -1282,76 +1282,61 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
 
 **********************************************************************
 
-    output->next_section( `31) RTTC: Dynamically Creating Internal Table (2)` ).
+output->next_section( `31) RTTC: Dynamically Creating Internal Table (2)` ).
 
-    "In the example an internal table type is created based on a DDIC type.
-    "See the comments in the code.
+"In the example an internal table type is created based on a DDIC type.
+"See the comments in the code.
 
-    "Retrieving table name
-    DATA(table_name) = lcl_det_at_runtime=>get_dyn_table_name( ).
+"Retrieving table name
+DATA(table_name) = lcl_det_at_runtime=>get_dyn_table_name( ).
 
-    "Retrieving type information using RTTI
-    DATA(st) =  CAST cl_abap_structdescr(
-             cl_abap_tabledescr=>describe_by_name( table_name ) ).
+"Retrieving type information using RTTI
+DATA(st) =  CAST cl_abap_structdescr(
+         cl_abap_tabledescr=>describe_by_name( table_name ) ).
 
-    "Retrieving primary keys of the database table
-    DATA(field_list) = st->get_ddic_field_list( ).
+"Declaring an internal table to hold the components;
+"it will include the component name and the component type
+DATA comp_table TYPE cl_abap_structdescr=>component_table.
 
-    "Declaring internal table to hold the primary keys
-    DATA itab_keys TYPE abap_keydescr_tab.
+"Looping across the retrieved field list to extract information
+"In principle, you could also just use method get_components( ) :)
+LOOP AT st->components ASSIGNING FIELD-SYMBOL(<field>).
 
-    "Declaring an internal table to hold the components;
-    "it will include the component name and the component type
-    DATA comp_table TYPE cl_abap_structdescr=>component_table.
+  "Adding name of the component and its type, which is retrieved using the
+  "get_component_type method, are added to the internal table that holds the components
+  APPEND VALUE #( name = <field>-name
+                  type = st->get_component_type( <field>-name ) ) TO comp_table.
 
-    "Looping across the retrieved field list to extract information
-    LOOP AT field_list ASSIGNING FIELD-SYMBOL(<field>).
+  "Just for fun. The SELECT statement further down includes a dynamic specification
+  "of the ORDER BY clause :)
+  "In this case, just using the second field since MANDT is the first.
+  IF sy-tabix = 2.
+    DATA(dyn_order_by) = <field>-name.
+  ENDIF.
 
-      "Adding name of the component and its type, which is retrieved using the
-      "get_component_type method, are added to the internal table that holds the components
-      APPEND VALUE #( name = <field>-fieldname
-                      type = st->get_component_type( <field>-fieldname ) ) TO comp_table.
+ENDLOOP.
 
-      "The keyflag field determines whether a field is key field or not.
-      "Here, it is jsut meant to have the same keys for the internal table
-      "as the database table.
-      IF <field>-keyflag = 'X'.
-        "Adding the name of the field to the internal table holding the primary keys
-        APPEND VALUE #( name = <field>-fieldname ) TO itab_keys.
-      ENDIF.
+"Creating an internal table type
+"Note: The parameter p_key is not filled here, i. e. the default key is used.
+DATA(itab_type) = cl_abap_tabledescr=>create(
+    p_line_type  = st
+    p_table_kind = cl_abap_tabledescr=>tablekind_sorted
+    p_unique     = cl_abap_typedescr=>true ).
 
-      "Just for fun. The SELECT statement further down includes a dynamic specification
-      "of the ORDER BY clause :)
-      "In this case, just using the second field since MANDT is the first.
-      IF sy-tabix = 2.
-        DATA(dyn_order_by) = <field>-fieldname.
-      ENDIF.
+"Creating an internal table based on the created table type
+DATA ref_tab TYPE REF TO data.
+CREATE DATA ref_tab TYPE HANDLE itab_type.
 
-    ENDLOOP.
+"Filling an internal table
+SELECT *
+  FROM (table_name)
+  ORDER BY (dyn_order_by)
+  INTO CORRESPONDING FIELDS OF TABLE @ref_tab->*
+  UP TO 3 ROWS.
 
-    "Creating an internal table type
-    DATA(itab_type) = cl_abap_tabledescr=>create(
-        p_line_type  = st
-        p_table_kind = cl_abap_tabledescr=>tablekind_sorted
-        p_unique     = cl_abap_typedescr=>true
-        p_key        = itab_keys ).
-
-    "Creating an internal table based on the created table type
-    DATA ref_tab TYPE REF TO data.
-    CREATE DATA ref_tab TYPE HANDLE itab_type.
-
-    "Filling an internal table
-    SELECT *
-      FROM (table_name)
-      ORDER BY (dyn_order_by)
-      INTO CORRESPONDING FIELDS OF TABLE @ref_tab->*
-      UP TO 3 ROWS.
-
-    output->display( |Type/Database table name determined at runtime: { table_name }| ).
-    output->display( |Primary table keys of the created table type:| ).
-    output->display( input = itab_type->get_keys( ) name = `itab_type->get_keys( )` ).
-    output->display( |Internal table entries (ordered by { dyn_order_by }):| ).
-    output->display( input = ref_tab->* name = `ref_tab->*` ).
+output->display( |Type/Database table name determined at runtime: { table_name }| ).
+output->display( |Internal table entries (ordered by { dyn_order_by }):| ).
+output->display( input = ref_tab->* name = `ref_tab->*` ).
 
   ENDMETHOD.
 ENDCLASS.
