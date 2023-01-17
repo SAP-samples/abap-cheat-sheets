@@ -11,13 +11,14 @@
     - [Further Clauses](#further-clauses)
     - [Excursion: Operands and Expressions in ABAP SQL Statements](#excursion-operands-and-expressions-in-abap-sql-statements)
     - [Excursion: SQL Conditions](#excursion-sql-conditions)
-    - [Using SELECT when Reading from Multiple Tables](#using-select-when-reading-from-multiple-tables)
+    - [WHERE clause variants: Selecting Data by Evaluating the Content of other Tables](#where-clause-variants-selecting-data-by-evaluating-the-content-of-other-tables)
+    - [Combining Data of Multiple Database Tables](#combining-data-of-multiple-database-tables)
       - [Excursion: Using Common Table Expressions (CTE)](#excursion-using-common-table-expressions-cte)
   - [Changing Data in Database Tables](#changing-data-in-database-tables)
-    - [Using INSERT](#using-insert)
-    - [Using UPDATE](#using-update)
-    - [Using MODIFY](#using-modify)
-    - [Using DELETE](#using-delete)
+    - [Using `INSERT`](#using-insert)
+    - [Using `UPDATE`](#using-update)
+    - [Using `MODIFY`](#using-modify)
+    - [Using `DELETE`](#using-delete)
   - [Further Information](#further-information)
   - [Executable Example](#executable-example)
 
@@ -38,9 +39,7 @@
     | `DELETE` | Deletes rows from database tables                                         |
 
 - ABAP SQL statements use the ABAP SQL interface. This interface transforms all ABAP SQL statements that access the standard database of an AS ABAP to  platform-dependent SQL and forwards the results to the database system.
-
-- Find more information in the (sub)topics in the ABAP Keyword Documentation [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_sql.htm).
-- Generally bear in mind the [performance notes ](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_sql_perfo.htm) when using
+- Generally bear in mind the [performance notes](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_sql_perfo.htm) when using
     ABAP SQL. The considerations there are not relevant for this cheat sheet since
     the focus is on syntactical options.
 
@@ -73,7 +72,7 @@ Find more information in the respective (sub)topics in the ABAP Keyword Document
     conditions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenjoin_condition_glosry.htm "Glossary Entry").
 -   Note:
     -   Similar to database tables, the columns of such a view form a
-        flat structure. Hence, the view's name can be used, for example, as [data types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendata_type_glosry.htm) to declare
+        flat structure. The view's name can be used, for example, as [data types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendata_type_glosry.htm) to declare
         [data objects](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendata_object_glosry.htm), too.
     -   The views can be accessed by ABAP SQL, especially for reading
         purposes using `SELECT`.
@@ -108,10 +107,7 @@ Views](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm
     ...
     -   serve the purpose of defining semantically rich data models.
     -   have a lot more options than classic views, for example, they
-        support annotations (provide information about views or
-        individual fields), data sources can be combined using
-        associations, unions are possible, or views can be defined with
-        input parameters.
+        support [annotations](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_annotation_glosry.htm). Data sources can be combined using [associations](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_association_glosry.htm), views can be defined with input parameters, and more.
     -   are used like a classic database view as structured data types
         and used as a source for reading operations with ABAP SQL (using
         [`SELECT`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapselect.htm)).
@@ -120,8 +116,8 @@ Views](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm
         in the
         [ADT](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenadt_glosry.htm "Glossary Entry")
         (that is, a source code editor, in contrast to a form-based
-        editor)
-    -   are, in contrast to External Views, supported by all database
+        editor).
+    -   are, in contrast to external views, supported by all database
         systems (that support the ABAP CDS characteristics).
 </details>
 
@@ -131,46 +127,38 @@ Views](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm
 
 ### Basic Syntax
 
-You use ABAP SQL `SELECT` statements to read records from the
-database, either by accessing a database table directly or via a view.
+You use ABAP SQL `SELECT` statements to read data from one or more database tables (or views). This can be done to create a multirow or single row result set by assigning the result set to a suitable data object, i. e. you can store the multirow read result in an internal table or the single row result in a structure.
 The `SELECT` statement includes several clauses that serve
 different purposes. The following code snippet shows the basic syntax:
 ``` abap
-SELECT FROM source   "What db table or view to read from
+SELECT FROM source   "What database table or view to read from
   FIELDS field_list  "What columns should be read
   WHERE condition    "Specifies conditions on which a row/rows should be read
-  INTO target.       "Data object into which data should be read
+  INTO @target.      "Data object to which the result set is assigned (preceded by @)
 ```
 > **💡 Note**<br>
 >-   There are further clauses available of which some are dealt with
-    further down.
+    further down. In general, the recommendation is to hit `F1` for the keywords and additions to get the all the details in the ABAP Keyword Documentation.
 >-   Especially in older ABAP programs, you will see other forms of the
-    `SELECT` syntax that you should no longer use. Depending on
-    the ABAP release in your on-premise system, strict syntax check modes might enforce the use
-    of specific ABAP SQL syntax. For example, the `INTO` clause
-    should be placed after the other clauses. This was not possible for
-    older statements. Furthermore, [host
-    variables](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenhost_variable_glosry.htm "Glossary Entry")
-    or [host
-    expressions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenhost_expression_glosry.htm "Glossary Entry")
-    are required for variables and expressions, i. e. variables and
-    expressions must be preceded by `@` or `@( ... )`.
-    This is also true for other ABAP SQL statements further down.
-    Further information: [Release-Dependent Syntax Check
-    Modes](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenabap_sql_strict_modes.htm).
->-   The list of fields can also directly follow the `SELECT`
-    keyword and be positioned before the `FROM` clause. In this
-    case, a separate `FIELDS` clause cannot be specified. The
-    following two code snippets are basically the same:
->   ``` abap
->    SELECT FROM dbtab
->      FIELDS comp1, comp2, comp3
->      ...
+    `SELECT` syntax that you should no longer use. Strict syntax check modes might enforce the use
+    of specific ABAP SQL syntax. For example, the `INTO` clause should be placed after the other clauses. Furthermore, [host variables](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenhost_variable_glosry.htm "Glossary Entry") or [host expressions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenhost_expression_glosry.htm "Glossary Entry") are required for data objects and expressions, i. e. they must be preceded by `@` or `@( ... )`. Further information: [Release-Dependent Syntax Check Modes (F1 docu for standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenabap_sql_strict_modes.htm).
+>- Regarding host variables as in `SELECT ... INTO @target.` and since they are used in most examples below: A host variable is a data object that is
+>     - declared in the ABAP program
+>     - prefixed with the `@` character and
+>     - specified in an [operand position](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenoperand_position_glosry.htm) of an ABAP SQL statement.
+> See more information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenhost_variable_glosry.htm).
+>-  The `SELECT` list, i. e. the fields that are specified, can also be specified following the `SELECT`
+    keyword before the `FROM` clause - without `FIELDS`. The
+    following two `SELECT` statements are basically the same but differently arranged:
+>      ``` abap
+>       SELECT FROM dbtab
+>         FIELDS comp1, comp2, comp3
+>         ...
 >
->    SELECT comp1, comp2, comp3
->      FROM dbtab
->      ...
->   ```
+>       SELECT comp1, comp2, comp3
+>         FROM dbtab
+>         ...
+>      ```
 >-   Regarding the target into which data is read: Instead of using a
     variable that is (extra) declared beforehand, you can also make use
     of [inline
@@ -180,19 +168,21 @@ SELECT FROM source   "What db table or view to read from
     internal tables as targets, the resulting table is a standard table
     and has an empty key which might have an impact when further
     processing the internal table entries. Find more information in the
-    ABAP cheat sheet [Working with Internal Tables](01_Internal_Tables.md). Apart from `DATA`, you can also make use of the declaration operator [`FINAL`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenfinal_inline.htm) in newer ABAP releases with which you can create [immutable variables](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenimmutable_variable_glosry.htm).
+    ABAP cheat sheet [Working with Internal Tables](01_Internal_Tables.md). In newer ABAP releases, the declaration operator [`FINAL`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenfinal_inline.htm) can be used to declare immutable variables.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
 ### Using SELECT for Multiple Purposes
 
-**Reading a single row into a structure**. The read result can, for
-example, be stored in an existing structure (`struc`) or a
-structure that is declared inline. Specifying an asterisk (`*`) indicates
-that all fields are to be read. Alternatively, you can list all the
-fields separated by comma.
+**Reading a single row into a structure**
 ``` abap
-"Reading all fields of a single row
+"SINGLE addition
+"Here, all fields of a single row a read. Specifying an
+"asterisk * indicates that all fields are to be read.
+"Alternatively, you can list all the fields separated by comma.
+"Note that if the selection covers more than one row, e. g. in case
+"of a non-unique WHERE clause, one of these rows is included in
+"the result.
 
 SELECT SINGLE FROM dbtab
   FIELDS *
@@ -207,10 +197,9 @@ SELECT SINGLE FROM dbtab
   INTO @DATA(struc2).    "Structure declared inline
 
 "Alternative syntax without the FIELDS addition
-"When reading into an existing target variable on the basis of a selected
-"set of fields, use a CORRESPONDING addition in the INTO clause so as not
-"to mess up the read result if not all fields of a structure are present
-"in the SELECT list.
+"Here, the CORRESPONDING FIELDS OF addition is used. Only the content of
+"columns that have identically named components in the target data object
+"is assigned.
 
 SELECT SINGLE comp1, comp2, comp3       "Selected set of fields
   FROM dbtab
@@ -218,21 +207,12 @@ SELECT SINGLE comp1, comp2, comp3       "Selected set of fields
   INTO CORRESPONDING FIELDS OF @struc.  "Existing structure
 ```
 > **💡 Note**<br>
->-   When listing the fields, only those fields that are really of
-    interest should be read as a rule for performance reasons.
->-   It makes a lot of sense to further restrict the read result, for
-    example and although it is optional, a `WHERE` clause should
-    always be specified for performance reasons too to restrict the read
-    result.
->-   The addition `CORRESPONDING FIELDS OF` in the `INTO`
-    clause is required when using an existing variable as target and
-    listing the fields, otherwise a type compatibility issue might arise
-    because the variable is filled from left to right beginning with the
-    first field in the list of fields.
+>-  Although its use is optional, a `WHERE` clause should be specified to further restrict the read result.
+>-  Regarding the addition `CORRESPONDING FIELDS OF` in the `INTO`
+    clause: As mentioned, only the content of columns for which there are identically named components in the target are assigned. However, if you want to read data into an existing data object and particular fields are specified in the `SELECT` list and if the addition is **not** specified, you might stumble on undesired results. The target data object must contain enough components and the content of the columns are assigned to the components of the target from left to right in the order specified after `SELECT`. The content of surplus components of the target is not changed. Plus, pay attention to [assignment rules](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenselect_into_conversion.htm). Basic rule: Without `CORRESPONDING ...`, column names do not play a role but only the position. With `CORRESPONDING ...`, the position of the columns does not play a role but only the name.
+>-   Find more information regarding the addition `INTO` [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapinto_clause.htm).
 
-**Reading multiple rows into an internal table**. The read result
-can, for example, be stored in an existing internal table
-(`itab`) or an internal table that is declared inline.
+**Reading multiple rows into an internal table**.
 ``` abap
 SELECT FROM dbtab
   FIELDS *              "All fields
@@ -246,7 +226,8 @@ SELECT comp1, comp2, comp3          "Selected set of fields
   WHERE ...
   INTO TABLE @DATA(lv_itab).        "Internal table declared inline
 
-"Reading a selected set of fields into an existing variable
+"Selected set of fields, existing variable
+"See the note on CORRESPONDING FIELDS OF above
 
 SELECT FROM dbtab
   FIELDS comp1, comp2, comp3                "Selected set of fields
@@ -254,7 +235,13 @@ SELECT FROM dbtab
   INTO CORRESPONDING FIELDS OF TABLE @itab.
 ```
 
-`SELECT` **loop: Sequentially reading multiple rows into a structure**. If the row is found, the system field `sy-subrc` is set to `0`.
+**`SELECT` loop: Sequentially reading multiple rows**.
+- A `SELECT` loop can be opened if the assignment is made to a structure and the addition `SINGLE` is not used.
+- If the row is found, the system field `sy-subrc` is set to `0`.
+- The loop must be closed using `ENDSELECT`.
+- To terminate the loop completely, you can use the statement [`EXIT`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapexit_loop.htm).
+- Note: As touched on further down, when using the addition `PACKAGE SIZE` and storing the result in a table, a loop is opened, too.
+
 ``` abap
 SELECT FROM dbtab
   FIELDS *
@@ -265,54 +252,15 @@ SELECT FROM dbtab
     ENDIF.
 ENDSELECT.
 ```
-
-**Reading into an existing target variable that does not have a matching type**. If you choose to store the result in a variable that has
-not a matching type, the `CORRESPONDING FIELDS OF` addition
-should be used so as not to mess up the result. Note that this addition
-is also valid for `SELECT` statements that use an existing
-target variable and only a selected set of fields should be read into
-the target variable.
-
-``` abap
-"Reading a single row into an existing structure that does not have a matching type
-
-SELECT SINGLE FROM dbtab
-  FIELDS comp1, comp2, comp3
-  WHERE ...
-  INTO CORRESPONDING FIELDS OF @diff_struc.
-
-"Reading multiple rows into an existing internal table that does not
-"have a matching type. Note that the target table is initialized
-"with this addition.
-
-SELECT FROM dbtab
-  FIELDS comp1, comp2, comp3
-  WHERE ...
-  INTO CORRESPONDING FIELDS OF TABLE @diff_itab.
-```
-
-> **💡 Note**<br>
->-   If only `INTO` is used, the selected columns must be in the
-    correct order fitting to the structure type of the target variable.
-    Only the content of columns for which there are components of the
-    same name in the structure of the target is read from the result
-    set.
->-   If identically named components have different types, the system
-    tries to convert the content of source fields into the type of the
-    target field. In this case, there is a risk of data loss and runtime
-    errors due to conversion errors.
->-   Find more information regarding the addition
-    [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapinto_clause.htm).
-
 <p align="right">(<a href="#top">back to top</a>)</p>
 
 ### Clause Variations and Additions in SELECT Statements
 
-`SELECT`/`FROM` clause:
+`SELECT`/`FROM` clauses:
 
 **Checking the existence of a row in a database table**
 ``` abap
-"Instead of @abap_true, you could use 'X'
+"Instead of @abap_true, you could also use 'X'.
 
 SELECT SINGLE @abap_true
   FROM dbtab
@@ -324,87 +272,184 @@ IF exists = abap_true.
 ENDIF.
 ```
 
-**Reading multiple rows into an internal table by excluding duplicate rows from the multiline result set** using `DISTINCT`.
-The duplicate entries might occur due to a non-unique `WHERE` clause.
+**Removing rows that occur more than once in a multirow result set** using the `DISTINCT` addition.
+- Cannot be used with the addition `SINGLE`.
+- See more information here [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapselect_clause.htm).
 ``` abap
 SELECT DISTINCT comp1
   FROM dbtab
   WHERE ...
   INTO TABLE @itab.
 ```
-**Setting new field names by specifying an alias name** with [`AS`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapselect_list.htm)].
 
-The alias name can be helpful for a situation like this: Data from a
-database table is to be read into an existing table but the line type
-does not match, some fields might have different names. Using an alias
-name, you can read the data into the corresponding field names of the
-target table (provided that there will not be an issue regarding the
-type).
+**SELECT list variants** (some of them are already outlined above)
+
+The following specifications can also be combined:
+- `SELECT * ...`: As outlined above, the `*` character defines all columns to be read from a data source (in the order specified there).
+- `SELECT col1, col2, col3 ...`: A comma-separated list of individual column names.
+- `SELECT data_source~col1, data_source~col2, data_source~col3 ...`: A comma-separated list of individual column names. Here, the name of the data source is explicitly specified and precedes the column name, separated by a tilde.
+- `SELECT data_source~* ...`: In this case, the name of the data source is followed by a tilde and the `*` character to specify all columns. Note that there are [special conditions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapselect_list.htm#!ABAP_VARIANT_1@1@) when using this variant.
+- `SELECT col1 AS al1, col2 AS al2, col3 AS al3 ...`:
+  - Defining alias names for individual columns of the result set with [`AS`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapselect_list.htm).
+  - Make sure that you use an alias name only once here. In the statement, the alias name can only be used after an `ORDER BY` clause.
+  - As shown further down, in some cases (e. g. when using SQL expressions) the specification of an alias name is required. Setting an alias name for the data source is also possible (`SELECT FROM dbtab AS alias_name ...`). See the section on joins further down.
+
+> **💡 Note**<br>
+> You have plenty of options regarding the specification of the columns in the `SELECT` list, among them, the outlined direct specification of the column name. SQL expressions can be specified, too. See more details [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapselect_clause_col_spec.htm) and in the sections on SQL expressions further down.
+
+
 ``` abap
+"All fields
+SELECT * FROM dbtab
+  WHERE ...
+  INTO ...
+
+"Comma-separated list
+SELECT col1, col2, col3
+  FROM dbtab
+  WHERE ...
+  INTO ...
+
+"Comma-separated list, data source explicitly specified
+SELECT dbtab~col1, dbtab~col2, col3
+  FROM dbtab
+  WHERE ...
+  INTO ...
+
+"Data source explicitly specified, all fields
+SELECT dbtab~*
+  FROM dbtab
+  WHERE ...
+  INTO ...
+
+"Data source explicitly specified, all fields
+SELECT dbtab~*
+  FROM dbtab
+  WHERE ...
+  INTO ...
+
+"Alias names
+"Consider the following: You want to read data from a database table into a target data
+"object but, for example, a name in the target is different. Provided that there will
+"not be an issue regarding the type (conversion) when the values are assigned, you might
+"specify an alias name for the database column to match a component's name in the target data object.
+
 SELECT FROM dbtab
   FIELDS comp1 AS comp_a, comp2 AS comp_b, comp3 AS comp_b
   WHERE ...
   INTO CORRESPONDING FIELDS OF TABLE @itab.
+
+"Alias name also possible for the data source
+SELECT ds~col1, ds~col2, ds~col3
+  FROM dbtab AS ds
+  WHERE ...
+  INTO ...
 ```
 
-**Getting data from a database table in another client** (not available in SAP BTP ABAP environments). Note that there are several variants of the `USING CLIENT` addition, for example, you can also specify `ALL CLIENTS` to select from database tables in all clients. Furthermore, the `USING CLIENT` addition is also available for the ABAP SQL statements that modify database table entries further down.
+**Reading data from a database table in another client** (not available in SAP BTP ABAP environments). Note that there are several variants of the `USING ...` addition for switching the [implicit client handling (F1 docu for standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenabap_sql_client_handling.htm) from the current client to other clients. See more information [here (F1 docu for standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapselect_client.htm).
 ``` abap
-"Not available in SAP BTP ABAP environments
+"Some examples; not available in SAP BTP ABAP environments
+
+"Replaces the current client with the specified client
 SELECT *
   FROM dbtab USING CLIENT '000'            
   WHERE ...
   INTO TABLE @itab.
 
+"Selects data of any number of clients
 SELECT *
   FROM dbtab USING ALL CLIENTS
   WHERE ...
   INTO TABLE @itab.
 ```
 
+**Reading data from an internal table as data source** using `SELECT`. Note that an alias name must be specified for the internal table used as data source.
+Find more information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapselect_itab.htm).
+
+``` abap
+SELECT *
+  FROM @itab1 AS tab
+  WHERE ...
+  INTO TABLE @DATA(itab2).
+```
+
+
 `INTO` **clause**:
 
-**Restricting the absolute number of returned table rows** using the addition [`UP TO n
+**Limiting the number of returned table rows** using the optional addition [`UP TO n
 ROWS`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapselect_up_to_offset.htm).
-In the example below, only five rows are to be returned at most.
+
 ``` abap
+"A maximum of five rows are to be returned
+"If the INTO clause is the last clause, the UP TO clause must be positioned after it.
 SELECT * FROM dbtab
   WHERE ...
   INTO TABLE @DATA(itab_upto)
   UP TO 5 ROWS.
 ```
-**Appending the result set to an existing internal table**. By appending, you avoid the deletion of existing lines in internal tables.
+
+**Returning only the table rows after a row with a specified count from the result set** using the optional addition [`OFFSET n`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapselect_up_to_offset.htm#!ABAP_ADDITION_2@2@). You can only use the addition, if an `ORDER BY` clause is specified.
+
 ``` abap
-"itab has a matching line type
-SELECT * FROM dbtab
-  WHERE ...
-  APPENDING TABLE @itab.
+"In the example, data of all flights are retrieved, except for the 2 flights
+"with the shortest flight time.
+SELECT *
+  FROM ztest_abap_flsch
+  WHERE carrid = 'LH'
+  ORDER BY fltime ASCENDING
+  INTO TABLE @DATA(itab)
+  OFFSET 2.
 ```
 
-If the target table does not have a matching type, you can use the addition `CORRESPONDING FIELDS OF`.
-``` abap
-SELECT * FROM dbtab
-  WHERE ...
-  APPENDING CORRESPONDING FIELDS OF TABLE @diff_itab.
-```
-**Reading single fields into individual variables**. Note that the number of columns specified (here, in the `FIELDS` clause) must match the number of elements in the `INTO` clause.
+**Reading into individual elementary data objects**.
+Apart from reading into structures and internal tables outlined above, you can also read into individual elementary data objects.
+Here, the individual elementary data objects as target objects are specified in a comma-separated list (e. g. as existing host variables or declared inline with `@DATA(...)`) and put between a pair of parentheses.
+Note:
+- The comma-separated list must have the same number of elements as columns in the result set.
+- The content of the columns in the result set is assigned to the data objects specified in the list from left to right in accordance with the order specified in the `SELECT` list.
+- Note the [assignment rules](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenselect_into_conversion.htm) also in this context.
+- More information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapinto_clause.htm#!ABAP_ALTERNATIVE_1@1@).
+
+
 ``` abap
 SELECT FROM dbtab
   FIELDS comp1, comp2, comp3
   WHERE ...
   INTO (@res1,@res2,@res3).
+ "INTO (@DATA(res1),@DATA(res2),@DATA(res3)). "Using inline declarations
 ```
-**Reading into packages when reading into internal tables**. The
-[package
-size](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapinto_clause.htm)
-defines how many rows should be selected in one iteration. This is handy
-in case a very large amount of data has to be processed that might be
-too large for the memory capacity of an internal table, thus avoiding
-program termination. The package size is specified by an integer value.
+
+**Appending the result set to an existing internal table**.
+The addition `INTO` initializes the target object. When using the addition `APPENDING`, you can retain existing lines in internal tables. `APPENDING` is also possible with the addition `CORRESPONDING FIELDS OF TABLE`.
+
+``` abap
+SELECT * FROM dbtab
+  WHERE ...
+  APPENDING TABLE @itab.
+
+SELECT * FROM dbtab
+  WHERE ...
+  APPENDING CORRESPONDING FIELDS OF TABLE @diff_itab.
+```
+
+**Reading into packages of a specified number of rows** when reading into internal tables. The addition [`PACKAGE SIZE n`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapinto_clause.htm#!ABAP_ONE_ADD@1@) can be specified after `INTO TABLE` and `APPENDING TABLE`. A `SELECT` loop ist opened. After `PACKAGE SIZE`, the number of rows is specified (which can be a host variable, host expression or a literal of type `i`) denoting the number of rows to be inserted in the target object per iteration.
 ``` abap
 SELECT FROM dbtab
   FIELDS comp1, comp2, comp3
   WHERE ...
-  INTO TABLE @DATA(itab_pack) PACKAGE SIZE i.
+  INTO TABLE @DATA(itab_pack) PACKAGE SIZE n.
+...
+ENDSELECT.
+```
+
+**Specifying an [anonymous data object](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenanonymous_data_object_glosry.htm) as target object** using the addition [`NEW`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapselect_into_target.htm#!ABAP_ALTERNATIVE_3@3@). Only to be used after `INTO` and not `APPENDING`.
+
+``` abap
+"Here, the target object is an anonymous data object declared inline.
+SELECT FROM dbtab
+  FIELDS comp1, comp2, comp3
+  WHERE ...
+  INTO TABLE NEW @DATA(dref).
 ...
 ENDSELECT.
 ```
@@ -476,6 +521,15 @@ SELECT FROM dbtab
 >- Not specifying `ORDER BY` means that the order of entries in the result set is undefined.
 >- If `ORDER BY` and `GROUP BY` clauses are used, all columns specified after `ORDER BY` must also be specified after `GROUP BY`.
 >- If aggregate functions are specified after `SELECT`, all columns that are specified after `ORDER BY` and that do not have an alias name for an aggregate function must also be specified after `SELECT` and after the `GROUP BY` clause which is required in this case, too.
+
+[`WHERE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapwhere.htm) clause: Restricts the number of rows that are included in the result set using a logical expression. See further information on them in the following sections.
+``` abap
+SELECT FROM dbtab
+  FIELDS comp1, comp2, comp3
+  WHERE comp1 = 'abc'
+    AND comp2 < 123    
+  INTO ...
+```
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -1086,12 +1140,16 @@ SELECT FROM dbtab
   INTO TABLE @DATA(itab_where).
 ```
 
-
-### Using SELECT when Reading from Multiple Tables
+### WHERE clause variants: Selecting Data by Evaluating the Content of other Tables
 
 [`FOR ALL ENTRIES`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenwhere_all_entries.htm)
-addition: Reading data from a database table depending on the
-content of an internal table.
+addition:
+- Components of an internal table can be used in the `WHERE` clause in logical expressions for comparisons with a column of the data source.
+- The logical expression is evaluated for each individual row of the internal table.
+- The result set of the `SELECT` statement is the union set of the result sets produced by the individual evaluations. Rows that occur more than once are removed from the result set automatically. The entire content of a row is respected.
+- If `FOR ALL ENTRIES` is specified, there must be at least one comparison with a column of the internal table.
+- For more information, especially restricitions and things to pay attention to (e. g. making sure that the internal table is not initial), see [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenwhere_all_entries.htm).
+
 ``` abap
 "Checking that table is not initial
 IF ( 0 < lines( itab2 ) ).
@@ -1105,32 +1163,29 @@ IF ( 0 < lines( itab2 ) ).
 ENDIF.
 ```
 
+**Checking the result set of a subquery** with the addition [`EXISTS`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenwhere_logexp_exists.htm)
 
-> **💡 Note**<br>
->- The entire logical expression after `WHERE` is evaluated for each individual line in the internal table.
->- There must be at least one comparison with a column of the internal
-table in the `WHERE` clause.
->- Ensure that the internal table from which to read is not initial. It is recommended that you use a subquery, which is shown in the next example, and a `SELECT` statement that reads from the internal table (`... ( SELECT ... FROM itab2 WHERE ...`).
+See possible clauses and additions of a [subquery](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensubquery_glosry.htm) in a condition in ABAP SQL [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenwhere_logexp_subquery.htm).
 
-**Using a subquery** with the addition `EXISTS` to read data from a database table depending
-on data of another database table. More information:
-[`EXISTS`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenwhere_logexp_exists.htm). The components of the table are referenced by `~`.
+The following code snippet includes a parenthesized subquery following `EXISTS`. Data is only selected from `dbtab1` if the relational expression (`WHERE EXISTS ...`) is true, i. e. if the result set of the subquery contains at least one row. Note the components of the table that are referenced using a tilde.
+
 ``` abap
 SELECT comp1, comp2, comp3
-  FROM dbtab AS tab1
+  FROM dbtab1 AS tab1
   WHERE EXISTS
    ( SELECT comp1 FROM dbtab2
      WHERE comp1 = tab1~comp1 AND comp2 = tab1~comp2 )
   INTO ...
 ```
 
-**Combining data of multiple database tables ...**
+### Combining Data of Multiple Database Tables
 
-**... using an inner join**. In this kind of join, columns with rows of the left-hand side and those of the right-hand side are only joined if the rows meet join conditions (`ON ...`). If there are no equivalent entries in the first or second table, the rows are not joined.
-
-If the same column name appears in multiple data sources of a single
-join expression, these sources must be identified in all other additions
-of the `SELECT` statement using the [column
+**Using an [inner join](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abeninner_join_glosry.htm)**:
+- Columns of two or more data sources in a result set can be joined.
+- Result set:
+  - Columns of the rows in the result set of the left side with the columns of the rows in the result set of the right side are joined into a single result set.
+  - Contains all combinations of rows for whose columns the join condition is true.
+- If there are identical column names in multiple data sources, use the [column
 selector](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentable_comp_selector_glosry.htm "Glossary Entry")
 `~`.
 ``` abap
@@ -1144,8 +1199,15 @@ SELECT a~comp1, a~comp2, b~comp3, c~comp4
   INTO ...
 ```
 
-**... using a left outer join**. The columns of each row on the right-hand side that do not meet the `ON` condition are filled with initial values and linked with the columns of the left-hand side. If the conditions of the `WHERE` clause are met, each row on the left-hand side of the left outer join produces at least one row in the selection, irrespective of the `ON` condition.
+**Using an [outer join](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenouter_join_glosry.htm)**:
+- Realized by either a [left outer join](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenleft_outer_join_glosry.htm) or
+a [right outer join](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenright_outer_join_glosry.htm).
+- Result set:
+  - Same result set as the inner join.
+  - Difference: For each selected row on the left side as `LEFT OUTER JOIN` or on the right side as `RIGHT OUTER JOIN`, at least one row is created in the result set even if no rows on the other side meet the condition. The columns on the other side that do not meet the condition are filled with [null values](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abennull_value_glosry.htm).
+
 ``` abap
+"Example for a left outer join
 SELECT a~comp1, a~comp2, b~comp3,
   FROM dbtab1 AS a
   LEFT OUTER JOIN dbtab2 AS b
@@ -1153,8 +1215,14 @@ SELECT a~comp1, a~comp2, b~comp3,
   WHERE ...
   INTO ...
 ```
+> **💡 Note**<br>
+> There are more join variants available. See the ABAP
+Keyword Documentation on
+[joins](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapselect_join.htm)
+for more information.
 
-**... using a union**. The columns of the result set keep the names defined in the statement on the left of `UNION`. The result set of rows of the `SELECT` statement on the right of `UNION` are inserted into the results set of the `SELECT` statement on the left of `UNION`.
+**Merging the result sets of multiple queries into a single result set** using the [set operator](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_set_operators_glosry.htm) [`UNION`](http://ldcialx.wdf.sap.corp:50018/sap/public/bc/abap/docu?object=abapunion&sap-language=EN&sap-client=000&version=A&tree=X). In this case, the rows of the result set of the query after `UNION` are inserted into the result set of the query in front of `UNION`.
+
 ``` abap
 SELECT FROM dbtab1
   FIELDS ...
@@ -1165,12 +1233,6 @@ UNION
    WHERE ...
   INTO ...
 ```
-> **💡 Note**<br>
-> There are more join variants available. See the ABAP
-Keyword Documentation on
-[joins](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapselect_join.htm)
-for more information.
-
 
 #### Excursion: Using Common Table Expressions (CTE)
 
@@ -1256,25 +1318,21 @@ SELECT *
 
 ## Changing Data in Database Tables
 
-### Using INSERT
+### Using [`INSERT`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapinsert_dbtab.htm)
 
-Using the ABAP SQL statement
-[`INSERT`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapinsert_dbtab.htm),
-you can insert one or more rows into a database table (or a [DDIC table
-view](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abentable_view_glosry.htm "Glossary Entry")).
-As mentioned above, structures and internal tables from which to insert
-content should be specified as host variables (with `@`) or host
-expressions (with `@( ... )`) depending on your ABAP release
-and strict syntax enforcement. The examples below all use the preceding
-`@`. The system fields `sy-subrc` (0 = single row or all
-rows inserted successfully, 4 = row not or not all rows inserted) and
-`sy-dbcnt` (number of rows that are inserted) are set.
+- Inserts one or more rows into a database table specified.
+- The rows to be inserted are taken from a structure, an internal table, or the result set of an embedded subquery.
+- As mentioned above, structures and internal tables from which to insert content should be specified as host variables (with `@`) or host
+expressions (with `@( ... )`).
+- The system fields `sy-subrc` (0 = single row or all rows inserted successfully, 4 = row not or not all rows inserted) and `sy-dbcnt` (number of rows that are inserted) are set.
 
 ``` abap
 "Inserting a single row into a database table
 
 INSERT dbtab FROM @row.
-INSERT INTO dbtab VALUES @row. "Alternative syntax, same effect
+
+"Alternative syntax, same effect
+INSERT INTO dbtab VALUES @row.
 
 "Line is created inline using the VALUE operator as part of a host expression
 
@@ -1306,18 +1364,12 @@ INSERT dbtab FROM ( SELECT ... ).
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
-### Using UPDATE
-
-Using the ABAP SQL statement
-[`UPDATE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapupdate.htm),
-you can update one or more rows in a database table. Similar to
-`INSERT`, `sy-subrc` and `sy-dbcnt` are set.
-After `FROM`, you can specify a structure or an internal table
-as host variable (with `@`) or a host expression (with `@( ... )`).
-
+### Using [`UPDATE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapupdate.htm)
+- Changes the content of one or more rows of a database table specified.
+- Similar to `INSERT`, `sy-subrc` and `sy-dbcnt` are set.
 
 ``` abap
-"Changing content by overwriting entire rows based on a work area
+"Changing content by overwriting entire rows based on a structure
 
 UPDATE dbtab FROM @row.
 UPDATE dbtab FROM @( VALUE #( comp1 = ... comp2 = ... ) ). "Using a host expression
@@ -1366,15 +1418,9 @@ UPDATE dbtab SET comp2 = ... .
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
-### Using MODIFY
-
-Using the ABAP SQL statement
-[`MODIFY`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapmodify_dbtab.htm),
-you can insert one or more rows in a database table or overwrite
-existing ones. Similar to the statements above, `sy-subrc` and
-`sy-dbcnt` are set. After `FROM`, you can specify a
-structure or an internal table as host variable (with `@`) or a
-host expression (with `@( ... )`).
+### Using [`MODIFY`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapmodify_dbtab.htm)
+- Inserts one or more rows into a database table specified or overwrites existing ones.
+- As above, `sy-subrc` and `sy-dbcnt` are set.
 
 ``` abap
 "Inserting a single row into a database table or changing an existing row
@@ -1401,12 +1447,9 @@ MODIFY dbtab FROM ( SELECT ... ).
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
-### Using DELETE
-
-Using the ABAP SQL statement
-[`DELETE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapdelete_dbtab.htm),
-you can delete one or more rows in a database table. Similar to the
-statements above, `sy-subrc` and `sy-dbcnt` are set.
+### Using [`DELETE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapdelete_dbtab.htm)
+- Deletes one or more rows from a database table specified.
+- As above, `sy-subrc` and `sy-dbcnt` are set.
 
 ``` abap
 "Variant DELETE FROM ...: Either all rows are deleted or restricted
@@ -1439,8 +1482,17 @@ DELETE dbtab FROM TABLE @( VALUE #( ( comp1 = ... )
 <p align="right">(<a href="#top">back to top</a>)</p>
 
 ## Further Information
-Find more information on the topics covered here or not (e. g. topics like [table buffering](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensap_puffering.htm)) in the respective sections in the ABAP Keyword Documentation.
+- Note that ABAP SQL statements offer syntax options for dynamic programming. For example, you can specify the data source to read from dynamically. See more information in the ABAP Keyword Documentation or the [ABAP cheat sheet on dynamic programming](06_Dynamic_Programming.md).
+    ```abap
+    DATA(dbtab) = 'ZDEMO_ABAP_FLSCH'.
 
+    "Selecting from a dynamically specified database table.
+    SELECT *
+    FROM (dbtab)
+    WHERE ...
+    INTO ...
+    ```
+- [This topic](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_sql.htm) serves as the entry point for topics about ABAP SQL in the ABAP Keyword Documentation. For the full details, check the subtopics there, especially topics not covered in this cheat sheet.
 
 ## Executable Example
 [zcl_demo_abap_sql](./src/zcl_demo_abap_sql.clas.abap)
