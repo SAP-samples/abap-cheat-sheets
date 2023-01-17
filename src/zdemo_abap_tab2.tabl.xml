@@ -72,15 +72,6 @@
      <MASK>  INT8</MASK>
     </DD03P>
    </DD03P_TABLE>
-   <I18N_LANGS>
-    <LANGU>늑</LANGU>
-   </I18N_LANGS>
-   <DD02_TEXTS>
-    <item>
-     <DDLANGUAGE>늑</DDLANGUAGE>
-     <DDTEXT>TABT ZDEMO_ABAP_TAB2</DDTEXT>
-    </item>
-   </DD02_TEXTS>
    <TABL_EXTRAS>
     <TDDAT>
      <TABNAME>ZDEMO_ABAP_TAB2</TABNAME>
