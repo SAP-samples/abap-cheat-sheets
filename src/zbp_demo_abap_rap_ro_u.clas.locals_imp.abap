@@ -880,8 +880,6 @@ CLASS lsc_zdemo_abap_rap_ro_u IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD cleanup_finalize.
-    CLEAR lcl_buffer=>root_buffer.
-    CLEAR lcl_buffer=>child_buffer.
   ENDMETHOD.
 
 ENDCLASS.
