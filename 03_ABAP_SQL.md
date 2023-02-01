@@ -450,8 +450,6 @@ SELECT FROM dbtab
   FIELDS comp1, comp2, comp3
   WHERE ...
   INTO TABLE NEW @DATA(dref).
-...
-ENDSELECT.
 ```
 
 <p align="right">(<a href="#top">back to top</a>)</p>
