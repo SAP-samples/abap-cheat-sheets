@@ -72,7 +72,7 @@ ABAP cheat sheets[^1] ...
 
 ## 🎬 Getting Started with the Examples
 
-The executable examples are especially targeted at being imported into the SAP BTP ABAP environment, however, they are basically fit for both on-premise systems and the SAP BTP ABAP environment (that's why there are no ABAP programs included). Hence, check the info in the following collapsible sections for your system environment and carry out the prerequisite steps.
+The executable examples are especially targeted at being imported into the SAP BTP ABAP environment, however, they are basically fit for both on-premise systems and the SAP BTP ABAP environment (that's why there are no ABAP reports included). Hence, check the info in the following collapsible sections for your system environment and carry out the prerequisite steps.
 
 <details>
   <summary>1) General info</summary>
