@@ -362,11 +362,9 @@ METHODS some_action FOR MODIFY
     of RAP BO instances as import parameter. Therefore, instance data
     must be handled via the transactional buffer when self-implementing
     the saver methods.
--   All saver methods are called after at least one successful
-    modification of data in the current RAP LUW, for example, by
-    triggering the save sequence using a [`COMMIT
+-   Saver methods are called when the RAP save sequence has been triggered a [`COMMIT
     ENTITIES`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapcommit_entities.htm)
-    statement.
+    statement. Note that in natively supported RAP scenarios, for example, an SAP Fiori app using OData, the `COMMIT ENTITIES` call is performed implicitly and automatically by the [RAP runtime engine](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_runtime_engine_glosry.htm).
 -   Find more information on RAP saver methods
     [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabp_saver_class.htm).
 
@@ -878,13 +876,13 @@ READ ENTITIES OF root_ent
     ENTITIES`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapcommit_entities.htm)
     statement triggers the RAP save sequence. Without such a statement,
     the modified RAP BO instances that are available in the
-    transactional buffer are not persisted to the database.
+    transactional buffer are not persisted to the database. As mentioned above, in case of a natively supported RAP
+    scenario (for example, when using OData), the `COMMIT
+    ENTITIES` request is executed automatically.
 -   `COMMIT ENTITIES` implicitly includes [`COMMIT
     WORK`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapcommit.htm).
 -   Note: `COMMIT ENTITIES` statements cannot be used
-    in behavior implementations. In case of a natively supported RAP
-    scenario (for example, when using OData), the `COMMIT
-    ENTITIES` request is executed automatically.
+    in behavior implementations. 
 -   There a multiple variants available for the statement as described
     in the ABAP Keyword Documentation
     [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapcommit_entities.htm).

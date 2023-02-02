@@ -25,7 +25,7 @@
 
    - The name `itab` of the data object is determined at compile time and remains stable throughout the execution of the program.
 - However, there can also be use cases where the attributes of such a data object are not statically determined. This is where dynamic aspects enter the picture: Attributes, names, types etc. are not determined at compile time but rather at runtime.
-- There are ABAP statements that include these dynamic aspects in the syntax. Assume you have simple program and a UI that includes an input field storing the input in a data object named `dbtab`. As input, you expect the name of a database table to be provided. In the end, you want to retrieve all entries of the database table and store them in an internal table. This table should be displayed. So, there is random input at runtime and your program must be able deal with.
+- There are ABAP statements that include these dynamic aspects in the syntax. Assume you have simple program and a UI that includes an input field storing the input in a data object named `dbtab`. As input, you expect the name of a database table to be provided. In the end, you want to retrieve all entries of the database table and store them in an internal table. This table should be displayed. So, there is random input at runtime and your program must be able to deal with it.
    - See the following `SELECT` statement. As also shown further down, the `FROM` clause does not include a statically defined table to be selected from. Instead, there is a pair of parentheses including a data object. Assume the data object holds the name of the database table. At runtime, the data retrieval happens from the database table that was inserted in the input field.
 
         ```abap
@@ -100,7 +100,7 @@ ENDLOOP.
 **Assigning data objects**
 
 [`ASSIGN`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapassign.htm)
-statements assigns the memory area of a data object to a field symbol.
+statements assign the memory area of a data object to a field symbol.
 Once the memory area is assigned, you can work with the content.
 
 ``` abap
@@ -538,6 +538,9 @@ For the rich variety of options (where dynamic specification is possible for ABA
 
     "In newer ABAP releases, you can dynamically specify structure components using this syntax
     ASSIGN struc-(comp1) TO <fs>.
+
+    "Accessing components of structures that are referenced by a data reference variable
+    ASSIGN dref->(comp1) TO <fs>.
     ```
 
 - Dynamically specifying data types

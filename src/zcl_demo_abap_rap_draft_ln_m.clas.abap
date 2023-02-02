@@ -66,7 +66,7 @@
 *     Choosing the 'Go' button refreshes the list. At first use, there
 *     might not be any entry. You can create an entry choosing the 'Create'
 *     button.
-*     The late numbering aspects enters the picture when you, for
+*     The late numbering aspects enter the picture when you, for
 *     example, create a new instance, i. e. create a new calculation, and
 *     you keep a draft version of it instead of saving it to the database.
 *     The calculation ID which represents the key of the instance has an

@@ -606,7 +606,7 @@ SELECT FROM zdemo_abap_flsch
 
   "The following clause shows all options having the same effect
   UP TO 3 ROWS.             "Untyped numeric literal
-  "UP TO int4`3` ROWS.      "Typed numerice literal
+  "UP TO int4`3` ROWS.      "Typed numeric literal
   "UP TO @upto ROWS.        "Host variable
   "UP TO @( 10 - 7 ) ROWS.  "Host expression
 ```
@@ -1087,7 +1087,7 @@ topic.
  | `<=`, `LE`         |               The content of one operand is less than or equal to the content of the other operand.|
  | `>=`, `GE`        |                The content of one operand is greater than or equal to the content of the other operand.|
  | `... [NOT] BETWEEN ... AND ...` |  The value of an operand is (not) between the value of the two other operands.|
- | `... [NOT] LIKE ...`         |      The content of an operand matches (does not match) a specified pattern. The pattern can be specified by using wildcard characters. `%` stands for any character string, including an empty string.◾`_` stands for any character.|
+ | `... [NOT] LIKE ...`         |      The content of an operand matches (does not match) a specified pattern. The pattern can be specified by using wildcard characters. `%` stands for any character string, including an empty string. `_` stands for any character.|
  | `... IS [NOT] INITIAL ...`   |      The value of an operand is (not) the initial value of its built-in dictionary type.|
  | `... EXISTS ...`           |              Checks the result set of a [subquery](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensubquery_glosry.htm "Glossary Entry"). The expression is true if the result set contains at least one row. See more information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenwhere_logexp_subquery.htm).|
  | `... [NOT] IN ( ... )`      |       Checks whether the operands on the left side match a value from a set of values specified in parentheses. On the left side, a single operand or an operand list are possible. On the right side, a comma-separated lists or subqueries can be specified.|

@@ -719,7 +719,7 @@ DATA(b) = SWITCH #( a
 
 Examples:
 ```abap
-"FILTER an conditions based on single values
+"FILTER and conditions based on single values
 "Assumption the component num is of type i.
 DATA itab1 TYPE SORTED TABLE OF struc WITH NON-UNIQUE KEY num.
 DATA itab2 TYPE STANDARD TABLE OF struc WITH NON-UNIQUE SORTED KEY sec_key COMPONENTS num.
