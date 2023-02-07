@@ -14,7 +14,10 @@
     - [EML Syntax for Reading Operations](#eml-syntax-for-reading-operations)
     - [Persisting to the Database](#persisting-to-the-database)
     - [EML Statements in ABAP Behavior Pools](#eml-statements-in-abap-behavior-pools)
-  - [Excursion: Using Keys and Identifying RAP BO Instances in a Nutshell / RAP Concepts](#excursion-using-keys-and-identifying-rap-bo-instances-in-a-nutshell--rap-concepts)
+  - [RAP Excursions](#rap-excursions)
+    - [Using Keys and Identifying RAP BO Instances in a Nutshell](#using-keys-and-identifying-rap-bo-instances-in-a-nutshell)
+    - [RAP Concepts](#rap-concepts)
+    - [Ensuring Data Consistency in a RAP Transaction](#ensuring-data-consistency-in-a-rap-transaction)
   - [Further Information](#further-information)
   - [Executable Examples](#executable-examples)
 
@@ -945,11 +948,12 @@ MODIFY ENTITIES OF root_ent IN LOCAL MODE
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
+## RAP Excursions
 
-## Excursion: Using Keys and Identifying RAP BO Instances in a Nutshell / RAP Concepts
+### Using Keys and Identifying RAP BO Instances in a Nutshell
 
 <details>
-  <summary>Using Keys and Identifying RAP BO Instances in a Nutshell</summary>
+  <summary>Expand to view the details</summary>
 
 <br>
 
@@ -1048,9 +1052,10 @@ contains all relevant components for the chosen scenario.
 
 </details>
 
+### RAP Concepts
 
 <details>
-  <summary>RAP Concepts</summary>
+  <summary>Expand to view the details</summary>
 
 <br>
 
@@ -1132,6 +1137,91 @@ contains all relevant components for the chosen scenario.
 >    you must ensure that `%pre` in total (since it contains both
 >    `%pid` and `%tmp`) is unique and mapped to the final
 >    keys that are to be contained in `%key`.
+
+</details>
+
+### Ensuring Data Consistency in a RAP Transaction
+
+<details>
+  <summary>Expand to view the details</summary>
+
+<br>
+
+The [LUW](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenluw_glosry.htm) concept, which deals with the transfer of data from one consistent state to another, applies to applications using RAP. RAP comes with a special [RAP LUW](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_luw_glosry.htm) that is integrated with the [SAP LUW](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensap_luw_glosry.htm), which is a prerequisite for transactional consistency. RAP provides a standardized approach and rules ([RAP BO contract](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_bo_contract_glosry.htm)) for the [RAP business object](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_bo_glosry.htm) (BO) runtime to ensure that the RAP LUW is correctly implemented, data inconsistencies are avoided, and the SAP LUW is successfully completed.  
+
+**Phases of the RAP LUW**
+
+The RAP LUW is divided into two phases during the runtime of a RAP BO, while the second phase can be divided into two subphases that serve different purposes. 
+
+![Phases of the RAP LUW](files/phases_of_rap_luw.png)
+
+[RAP interaction phase](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_int_phase_glosry.htm): 
+- [RAP handler method](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabp_handler_method_glosry.htm) are called in a [RAP handler class](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabp_handler_class_glosry.htm) that inherits from `CL_ABAP_BEHAVIOR_HANDLER`. 
+- New data, i.e. RAP BO instances, are created in the [RAP transactional buffer](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentransactional_buffer_glosry.htm), or persisted data is retrieved and inserted into the transactional buffer for further processing. 
+- The state of the data may become inconsistent in the transactional buffer during this phase. However, the data remains consistent in the database because changes are made only in the transactional buffer. 
+
+[RAP save sequence](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_save_seq_glosry.htm): 
+- The RAP save sequence is triggered by a `COMMIT ENTITIES` statement. In natively supported RAP scenarios, such as an SAP Fiori application using OData, the `COMMIT ENTITIES` call is implicitly and automatically performed by the RAP runtime engine. 
+- RAP saver methods are called in the RAP saver class, which inherits from the base class `CL_ABAP_BEHAVIOR_SAVER`. 
+- Is divided into the [RAP early save phase](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenearly_rap_save_phase_glosry.htm) (ensures that the RAP BO instances in the transactional buffer - all RAP BOs in the current RAP LUW are involved - are in a consistent state so that they can be saved to the database) and the [RAP late save phase](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenlate_rap_save_phase_glosry.htm) (to finally save data from the transactional buffer to the database). 
+
+(Optional:) Saver methods called in the RAP early save phase: 
+1. [`finalize`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensaver_finalize.htm): For final calculations and data changes before saving. In managed scenarios, determinations specified with `ON SAVE` are called when reaching this method. 
+
+2. [`check_before_save`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensaver_check_before_save.htm): For data consistency checks in the transactional buffer. In managed scenarios, validations specified with `ON SAVE` are called when this method is reached. 
+ 
+3. [`cleanup_finalize`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapsaver_class_cleanup_finalize.htm): If there are failures in at least one of the previous saver methods, further processing with the RAP late save phase is rejected and the transaction returns to the interaction phase. Before that, this saver method is called, allowing changes made in the finalize method to be rolled back. 
+
+If there are errors in the early save phase, `sy-subrc` returns the value 4 after `COMMIT ENTITIES` statements. If the data in the transactional buffer is consistent after the early save phase, the late save phase is processed, which also means that a point of no return has been reached. Unlike the early save phase, you cannot return to the interaction phase when you reach the late save phase. Either the RAP LUW ends with a successful commit, or the changes are rolled back and a runtime error occurs. 
+
+Saver methods called in the RAP late save phase: 
+1. [`adjust_numbers`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensaver_adjust_numbers.htm): Provides RAP BO instances with their final numbers. This method is available only in late numbering scenarios. 
+2. [`save`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensaver_method_save.htm) (or [`save_modified`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abaprap_saver_meth_save_modified.htm) in managed scenarios with an unmanaged or additional save): Used to save data from the transactional buffer to the database. If there are no issues, the final database commit is triggered and an implicit `COMMIT WORK` is executed. 
+3. [`cleanup`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensaver_method_cleanup.htm): Clears the transactional buffer. It completes the save sequence. 
+
+**Commit and Rollback in the RAP LUW**  
+The default ABAP statements for RAP are `COMMIT ENTITIES` (triggers the RAP save sequence and the final database commit; as mentioned above, in natively supported RAP scenarios, the commit is performed implicitly and automatically by the RAP runtime engine) and `ROLLBACK ENTITIES` (rolls back all changes of the current RAP LUW, i.e. the transactional buffer is cleared by calling the `cleanup` method). Both are RAP-specific and end the RAP LUW. 
+
+*Notes on `COMMIT ...` and `ROLLBACK ...` statements due to the integration of the RAP LUW into the SAP LUW:* 
+
+- `COMMIT ENTITIES` implicitly triggers `COMMIT WORK`. 
+- Using `COMMIT WORK` in RAP (instead of `COMMIT ENTITIES`) also triggers the RAP save sequence. If there are no errors in the RAP save sequence, the final database commit is successful. Only in this best-case scenario does `COMMIT WORK` have the same effect as `COMMIT ENTITIES`. However, if there are errors in the save sequence, a runtime error occurs in any case, while a return to the interaction phase is still possible when using `COMMIT ENTITIES`. 
+- `COMMIT ENTITIES` provides RAP-specific functionality with various additions that are not possible with `COMMIT WORK`, such as RAP responses can be retrieved, key conversion in late numbering scenarios, checking a RAP transaction in a simulation mode. 
+- There are short, long, and dynamic forms of `COMMIT ENTITIES` statements. 
+- `COMMIT ENTITIES` statements implicitly enforce local updates with `COMMIT WORK`, or `COMMIT WORK AND WAIT` if the local update fails. Therefore, the update is either a local update or a synchronous update, but never an asynchronous update. When `COMMIT WORK` is used, the RAP BO consumer can choose between synchronous and asynchronous update for RAP BO entities. 
+- `ROLLBACK ENTITIES` implicitly triggers `ROLLBACK WORK`. Both have the same effect when used in RAP. Therefore, they are interchangeable. 
+
+**Special Case: Failures in the Late Save Phase**
+
+> **💡 Note**<br>
+> Only relevant in the unrestricted ABAP language scope. The class  `CL_ABAP_BEHAVIOR_SAVER_FAILED` is currently not available in SAP BTP ABAP environments. 
+
+- In exceptional cases, for example, when [BAPIs](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenbapi_glosry.htm) are called to save RAP BO instances in the late save phase, it may happen that the basic rule that failures must not occur in the RAP late save phase and be detected in the RAP early save phase is violated. 
+- In such cases, the base class `CL_ABAP_BEHAVIOR_SAVER_FAILED` can be used for the RAP saver class. 
+- RAP BO consumers can be informed by filling the RAP response parameters (some of which are not available when using `CL_ABAP_BEHAVIOR_SAVER` as the base class) in the saver method implementation so that they can react accordingly. 
+- After a `COMMIT ENTITIES` statement and a failure in the late save phase, `sy-subrc` is set to 8. 
+- A subsequent RAP operation may result in a runtime error. If the RAP BO consumer is to continue after an error in the late phase of the RAP save sequence, an explicit `ROLLBACK ENTITIES` is required. 
+
+**Allowed/Forbidden Operations in a Behavior Implementation in the RAP LUW**
+
+The following restrictions apply to operations and/or statements in the individual phases of the RAP LUW in ABAP behavior implementations. Note that, depending on setting the strict mode in the BDEF, runtime errors may occur due to the use of forbidden statements, or static code checks may be applied. Note that most operations/statements refer to the use in the unrestricted ABAP language scope.
+
+|Operations/Statements|Interaction phase|Early save phase|Late save phase|Notes|
+|---|---|---|---|---| 
+|[Database commits](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendatabase_commit_glosry.htm) using [secondary connections](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensecondary_db_connection_glosry.htm) <br><br>(unrestricted ABAP language scope)| X| X| X |Secondary connections are allowed for infrastructure purposes, for example. They can be used to store data that is not part of the main transaction, such as application logs, traces, or number ranges. |
+|Database commits using the [standard connection](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenstandard_db_connection_glosry.htm) <br><br>(unrestricted ABAP language scope)| X| X| -| Database commits can be made in phases other than the late phase, for example, by calling external services or using a `WAIT` statement.| 
+|[sRFC](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abensrfc_glosry.htm) (`CALL FUNCTION ... DESTINATION`), [aRFC](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenarfc_glosry.htm) (`CALL FUNCTION ... STARTING NEW TASK`) <br><br>(unrestricted ABAP language scope)| X |X |-| Allowed in phases other than the late save phase, e.g. for the purpose of parallelization within the application. It is up to the application to ensure consistency, e.g. to ensure read-only access, to handle a potential two-phase commit, or to provide a proper error handling. |
+|Database modifications |- |-| X| Only allowed in the late save phase because the data being processed is always potentially inconsistent. Database changes in other phases would result in multiple database transactions instead of one transaction, which would disrupt the SAP LUW. |
+|[Update function module](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenupdate_function_module_glosry.htm) (`CALL FUNCTION ... IN UPDATE TASK`) <br><br>(unrestricted ABAP language scope)|-| -| X |Can be used to ensure that there is only one database transaction. In addition, registering function modules for update tasks at stages other than the late save phase would interfere with RAP draft scenarios, for example, where data is stored in draft tables. There is no way to unregister function modules once they have been registered. |
+|[bgRFC](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenbgrfc_glosry.htm) (`CALL FUNCTION ... IN BACKGROUND UNIT`) <br><br>(unrestricted ABAP language scope)| -| -| X| |  
+|[tRFC](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abentrfc_2_glosry.htm), [qRFC](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenqrfc_glosry.htm) (`CALL FUNCTION ... IN BACKGROUND TASK`) <br><br>(unrestricted ABAP language scope)| -| -| - |Obsolete technologies. |
+|`PERFORM ON COMMIT`, `PERFORM ON ROLLBACK` <br><br>(unrestricted ABAP language scope)|(X) |(X) |X |Basically possible in all phases, but should be reserved for the late save. Note: The use of these statements indicates improper integration with RAP. It is especially important to check draft scenarios when calling legacy code and using these statements. Instead, ABAP EML or procedure calls that do not include a `COMMIT WORK` should be used. |
+|Transaction control `COMMIT WORK`, `ROLLBACK WORK` |-| -| - |Not allowed in ABAP behavior implementations. The use of these statements is always up to the RAP BO consumer, i.e. outside the ABAP behavior implementation. |
+|[Dynpro](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abendynpro_glosry.htm) processing (e.g.  `SET SCREEN`, `CALL SCREEN`, `LEAVE SCREEN`, `CALL DIALOG`, `SUPPRESS DIALOG`, `MESSAGE` without `INTO`, `WRITE`, `STOP`) <br><br>(unrestricted ABAP language scope)|- |- |- |Not allowed in ABAP behavior implementations. Results in a runtime error. |
+|Transaction processing (`CALL TRANSACTION`, `LEAVE TRANSACTION`) <br><br>(unrestricted ABAP language scope)| -| -| - |Not allowed to prevent (unwanted) integration of other LUWs. |
+|Raising an exception (`RAISE EXCEPTION`) |-| -| - |It is not allowed to leave a RAP transaction this way. |
+|Report processing (`SUBMIT ...`) <br><br>(unrestricted ABAP language scope)|- |- |- |Not allowed in ABAP behavior implementations. Results in a runtime error. `SUBMIT ... AND RETURN` does not currently return an error, but it leads to potentially unwanted screen processing, and because of the missing return channel, there is no proper error handling. |
+
 
 </details>
 
