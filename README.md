@@ -174,7 +174,7 @@ Use the standalone version of the abapGit report to import the demo examples of 
 
 > **💡 Note**<br>
 >- Check the notes on the context and the ABAP syntax used that are included as comments in the class.
->- Due to the amount of output in the console, the examples include numbers (e.g. 1) ..., 2) ..., 3) ...) that represent the header of eaxh example code section. Also, in most cases, the variable name is displayed in the console. Therefore, to find the relevant output in the console more easily and quickly, simply search the console for the number (e.g. search for `3)` for the particular output) or variable name (`CTRL+F` in the console), or use breakpoints in the code to check variables in the debugger.
+>- Due to the amount of output in the console, the examples include numbers (e.g. 1) ..., 2) ..., 3) ...) that represent the header of each example code section. Also, in most cases, the variable name is displayed in the console. Therefore, to find the relevant output in the console more easily and quickly, simply search the console for the number (e.g. search for `3)` for the particular output) or variable name (`CTRL+F` in the console), or use breakpoints in the code to check variables in the debugger.
 >- You may want to clear the console by right-clicking in the console and choosing `Clear` before running another demo class to avoid confusing the output of multiple classes.
 </details>
 

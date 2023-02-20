@@ -546,7 +546,7 @@ in [late
 numbering](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_late_numbering_glosry.htm "Glossary Entry")
 scenarios. The draft indicator
 [`%is_draft`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapderived_types_is_draft.htm)
-is only available in the context of
+is only reelvant in the context of
 [draft](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbdl_with_draft.htm).
 
 Find more details on the available components in section [Components of
@@ -584,7 +584,7 @@ Bullet points on selected `%` components:
         draft scenario. In doing so, you can avoid lots of adaptations
         in your code by manually adding the indicator.
 -   [`%control`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapderived_types_control.htm)
-    -   Component group that, for example, contains the names of all key
+    -   Component group that, in certain contexts and for example (it depends on the context what it contains), contains the names of all key
         and data fields of a RAP BO instance which indicate flags.
     -   Used to get information on which fields are provided or set a
         flag for which fields are requested by RAP BO providers or RAP

@@ -11,7 +11,7 @@
   - [Handling Dependencies](#handling-dependencies)
     - [Test Seams](#test-seams)
   - [Running and Evaluating ABAP Unit Tests](#running-and-evaluating-abap-unit-tests)
-  - [More information](#more-information)
+  - [More Information](#more-information)
   - [Executable Example](#executable-example)
  
 
@@ -19,7 +19,7 @@ This cheat sheet contains basic information about [unit testing](https://help.sa
 
 > **💡 Note**<br>
 > - This cheat sheet focuses on testing methods. 
-> - See the [More Information](#-more-information) section for links to more in-depth information.
+> - See the [More Information](#more-information) section for links to more in-depth information.
 > - The executable examples are **not** suitable role models for ABAP unit tests. They are intended to give you a rough idea. You should always work out your own solution for each individual case.
 
 ## Unit Tests in ABAP 
@@ -577,7 +577,7 @@ For more information about evaluating ABAP unit test results, see [here](https:/
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
-## More information
+## More Information
 
 - [ABAP Unit in the ABAP Keyword Documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_unit.htm)
 - [openSAP course: Writing Testable Code for ABAP](https://open.sap.com/courses/wtc1.OpenSAP+WTC1_W1U5+Writing+Testable+Code+for+ABAPComent)
