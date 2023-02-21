@@ -64,7 +64,7 @@ Test classes ...
 
 The skeleton of a test class might look like this:
 ``` abap
-"This code
+"Test class in the test include
 CLASS ltc_test_class DEFINITION 
   FOR TESTING                     "Defines a class to be used in ABAP Unit
   RISK LEVEL HARMLESS             "Defines risk level, options: HARMLESS/CRITICAL/DANGEROUS

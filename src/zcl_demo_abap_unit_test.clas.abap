@@ -325,6 +325,8 @@ CLASS zcl_demo_abap_unit_test IMPLEMENTATION.
   METHOD get_common_div_and_gcd.
     "Calculates the common divisors and the greatest common divisor of two numbers
 
+    CLEAR: common_divisors, gcd.
+
     CHECK a >= 1.
     CHECK b >= 1.
 
@@ -363,6 +365,8 @@ CLASS zcl_demo_abap_unit_test IMPLEMENTATION.
 
   METHOD get_digit_sum.
     "Calculates the digit sum of a number
+
+    CLEAR digit_sum.
 
     CHECK num >= 0.
 

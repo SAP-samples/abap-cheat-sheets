@@ -383,20 +383,12 @@ CLASS ltc_test_dummy DEFINITION FOR TESTING
 
   PRIVATE SECTION.
 
-    DATA: ref_cut TYPE REF TO zcl_demo_abap_unit_test.
-
     METHODS: test_multiple_asserts_ok FOR TESTING,
-             test_multiple_asserts_fail FOR TESTING,
-             setup.
+             test_multiple_asserts_fail FOR TESTING.
 
 ENDCLASS.
 
 CLASS ltc_test_dummy IMPLEMENTATION.
-
-  METHOD setup.
-    "Creating an object of the class under test
-    ref_cut = NEW #( ).
-  ENDMETHOD.
 
   METHOD test_multiple_asserts_ok.
     "This method does not test a method of the class under test.
@@ -614,7 +606,7 @@ CLASS ltc_test_doc_seam IMPLEMENTATION.
                                                num1           = DATA(num1)
                                                num2           = DATA(num2) ).
 
-    "AssertionS
+    "Assertions
     cl_abap_unit_assert=>assert_equals(
         act = occupancy_rate
         exp = expected_occupancy_rate
