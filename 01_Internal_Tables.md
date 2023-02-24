@@ -136,7 +136,7 @@
   - are optional for all table categories.
   - can be unique/non-unique sorted keys or unique hash keys.
   - have a self-defined name. An alias name can also be specified.
-- A secondary table index is created internally for each sorted secondary key. This allows index access to hashed tables via the secondary table key is possible. In this case, `sy-tabix` is set.
+- A secondary table index is created internally for each sorted secondary key. This allows index access to hashed tables via the secondary table key. In this case, `sy-tabix` is set.
 - When accessing internal tables using the secondary table key, the key name (or the alias if specified) must be specified. They are not selected automatically. If no secondary key is specified in a processing statement, the primary key or primary table index is always used. If you want to make use of this key in ABAP statements, for example, `READ`, `LOOP AT` or `MODIFY` statements, you must specify the key explicitly using the appropriate additions, for example, `WITH ... KEY ... COMPONENTS` or `USING KEY`.
 - Use cases:
   - To improve read performance.
@@ -1416,7 +1416,7 @@ the content are removed, but the memory space initially requested remains
 allocated. If the table is filled again later, the memory space is still
 available, which is a performance advantag over 
 clearing an internal table with `FREE`. Such a statement also
-deleted the table content, but it also releases the memory
+deletes the table content, but it also releases the memory
 space.
 
 ``` abap

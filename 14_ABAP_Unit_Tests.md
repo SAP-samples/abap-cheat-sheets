@@ -422,94 +422,13 @@ There are multiple ways to implement test doubles manually:
 **Injecting the test doubles**
 
 As described [here](https://help.sap.com/docs/ABAP_PLATFORM_NEW/c238d694b825421f940829321ffa326a/04a2d0fc9cd940db8aedf3fa29e5f07e.html?locale=en-US), there are multiple techniques for injecting test doubles to ensure that the test doubles are used during the test run. 
-To name two of them: 
-- Constructor injection
-- Back door injection
-  
 
-*Constructor injection*
-- This injection mechanism means that the test double is passed as a parameter to the instance constructor `constructor` of the class under test.
-- `constructor` declaration: 
-  - Has an optional importing parameter for the DOC. 
-  - The parameter is typed with reference to the test double, i.e. an object of the test double is passed.
-- `constructor` implementation: 
-  - In the example beloew, it is assumed that an interface exists for the DOC, and a test double has been implemented that implements that interface.
-  - A reference variable with a type reference to the interface is declared in the declaration part of the class under test. 
-  - When the unit test is executed, an object of the test double is created in the test method. This object is then passed to the `constructor`. A check is implemented to determine if the reference variable is bound. During the unit test execution, it is indeed bound, and the test double is injected. If the unit test is not run and the class is executed, an object of the *regular data provider* (e.g. a class that implements the interface for production use) is created. Therefore, it is ensured that the test double is only used in the context of a unit test run.
-
-Such a constructor injection might look like this. 
-
-``` abap
-"See the executable example for the complete picture.
-"The code in this snippet refers to the production code.
-...
-"Class declaration part
-    DATA ref_data_provider TYPE REF TO if_data,
-
-    "Optional parameter for passing an object of the test touble 
-    METHODS constructor
-      IMPORTING iref_data_prov TYPE REF TO tld_test_double OPTIONAL.
-
-....
-
-"Class implementation part
-METHOD constructor.
-  "If the object of the test touble is not passed, an object is created for the actual data provider
-  
-  IF iref_data_prov IS BOUND.
-        
-    "Note: The parameter is only bound when running in ABAP unit test
-    ref_data_provider = iref_data_prov.
+Among them, there are the following. They are demonstrated in the executable example. Check the code and comments in the [global class](./src/zcl_demo_abap_unit_test.clas.abap) and [test include](./src/zcl_demo_abap_unit_test.clas.testclasses.abap) of the example.
+- Constructor injection: The test double is passed as a parameter to the instance constructor `constructor` of the class under test.
+- Setter injection: The test double is passed as a parameter to a setter method.
+- Parameter injection: The test double is passed as a parameter to the tested method (i.e. an optional importing parameter) in the class under test. 
+- Back door injection: A *back door* is created to inject a test double into the class under test. This *back door* is implemented by granting [friendship](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenfriend_glosry.htm) to the test class. This makes internal attributes of the class under test accessible from the test class.
  
-  ELSE.
-
-    ref_data_provider = NEW cl_data_provider( ).
-
-  ENDIF.
-ENDMETHOD.
-```
-    
-
-*Back door injection*
-- This injection mechanism means that a *back door* is created to inject a test double into the class under test.
-- This *back door* is implemented by granting [friendship](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenfriend_glosry.htm) to the test class. This makes internal attributes of the class under test accessible from the test class. 
-- The back door injection enters the picture when internal attributes of the class under test are changed during the test run. That is, in the production code, you have declared a reference variable with a type reference to the data provider in the private section, for example. 
-  - Note: Similar to above, in the example below, it is assumed that there is an interface for the DOC and that a test double has been implemented that implements that interface.
-- When the unit test is executed, the private attribute of the class under test is changed, and an object of the test double is injected.
-
-
-``` abap
-"See the executable example for the complete picture.
-"The code in this snippet refers to the test class.
-
-"Test class declaration part
-...
-
-"class under test
-DATA ref_cut TYPE REF TO cl_class_under_test.   
-
-"if_data_provider: interface with which local test data are created 
-"by implementing an interface method
-DATA ref_data_prov TYPE REF TO if_data_provider.  
-
-...
-
-  "Implementation of the setup method in the test class
-  METHOD setup.
- 
-    ref_cut = NEW #( ).
-
-    "Assumption: The local test double ltd_test_double implements the interface if_data_provider
-    ref_data_prov = new ltd_test_double( ).
-
-    "Back door injection
-    "The reference variable declared in the class under test is assigned an object
-    "of the test double. In the class under test, the reference variable is defined
-    "with type TYPE REF TO if_data_provider.
-    ref_cut->ref_var_defined_in_cut = ref_data_prov. 
-  ENDMETHOD.  
-```
-
 <p align="right">(<a href="#top">back to top</a>)</p>
 
 ### Test Seams
