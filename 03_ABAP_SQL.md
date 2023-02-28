@@ -11,7 +11,7 @@
     - [Further Clauses](#further-clauses)
     - [Excursion: Operands and Expressions in ABAP SQL Statements](#excursion-operands-and-expressions-in-abap-sql-statements)
     - [Excursion: SQL Conditions](#excursion-sql-conditions)
-    - [WHERE clause variants: Selecting Data by Evaluating the Content of other Tables](#where-clause-variants-selecting-data-by-evaluating-the-content-of-other-tables)
+    - [Selecting Data by Evaluating the Content of other Tables](#selecting-data-by-evaluating-the-content-of-other-tables)
     - [Combining Data of Multiple Database Tables](#combining-data-of-multiple-database-tables)
       - [Excursion: Using Common Table Expressions (CTE)](#excursion-using-common-table-expressions-cte)
   - [Changing Data in Database Tables](#changing-data-in-database-tables)
@@ -1138,7 +1138,7 @@ SELECT FROM dbtab
   INTO TABLE @DATA(itab_where).
 ```
 
-### WHERE clause variants: Selecting Data by Evaluating the Content of other Tables
+### Selecting Data by Evaluating the Content of other Tables
 
 [`FOR ALL ENTRIES`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenwhere_all_entries.htm)
 addition:
