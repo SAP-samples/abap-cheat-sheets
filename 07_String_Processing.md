@@ -21,8 +21,9 @@
   - [Pattern-Based Searching and Replacing in Strings](#pattern-based-searching-and-replacing-in-strings)
     - [Simple Pattern-Based Searching Using Comparison Operators](#simple-pattern-based-searching-using-comparison-operators)
     - [Complex Searching and Replacing Using Regular Expressions](#complex-searching-and-replacing-using-regular-expressions)
-    - [Searching Using Regular Expressions](#searching-using-regular-expressions)
-    - [Replacing Using Regular Expressions](#replacing-using-regular-expressions)
+      - [Excursion: Common Regular Expressions](#excursion-common-regular-expressions)
+      - [Searching Using Regular Expressions](#searching-using-regular-expressions)
+      - [Replacing Using Regular Expressions](#replacing-using-regular-expressions)
   - [Executable Example](#executable-example)
 
 
@@ -1010,64 +1011,70 @@ IF s1 NP `i+`. ... "true; sy-fdpos = 11 (length of searched string)
 
 ### Complex Searching and Replacing Using Regular Expressions
 
-**Excursion: Common Regular Expressions**
+#### Excursion: Common Regular Expressions
 
-There are various options to carry out complex searching in strings using PCRE expressions. They can be fairly complex. The following overview shows common PCRE expressions with simple examples.
+There are several ways to perform complex searches in strings using PCRE expressions. They can be quite complex. The following overview shows common PCRE expressions with simple examples.
 
 Characters and character types
 
-| Expression | Represents | Example | Matches | Does not Match |
-|---|---|---|---|---|
-| `.` | Any single character | `.` | a, 9, Ä, #, a blank | aa, bbb |
-| `\d` | Any digit (0-9) | `\d` | 1, 3, 7 | A, b, c |
-| `\D` | Any character that is not a digit, equivalent to `[^0-9]` | `\D` | D, e, f | 4, 5, 8 |
-| `\s` | Any whitespace character such as a blank, tab and new line | `\s` <br>(example string: hi there) | the blank in between | hi |
-| `\S` | Any character that is not a whitespace | `\S` <br>(example string: a 1) | a, 1 | the blank in between |
-| `\w` | Any word character (letter, digit or the underscore), equivalent to `[a-zA-Z0-9_]` | `\w` <br>(example string: ab 12) | a, b, 1, 2 | the blank in between |
-| `\W` | Any character that is not a word character, equivalent to `[^a-zA-Z0-9_]` | `\W` <br>(example string: cd 34) | the blank in between | c, d, 3, 4 |
-| `\` | To include special characters like `[] \ / ^`, use `\` to escape them. Use `\.` to match a period ("."). | `\\` | `\` | `/` |
-
+| Expression | Represents | Example Regex | Example String | Matches | Does not Match |
+|---|---|---|---|---|---|
+| `x` | Specific character | `a` | abcdef | a | Anything else |
+| `.` | Anything except a line break | `.` | ab 1# | a, b, the blank, 1, # | ab, 1# |
+| `\d` | Any digit (0-9), alternative: `[0-9]` | `\d` | a1-b2 3-4c9 | 1, 2, 3, 4, 9 | a, b, c, the blank and hyphens |
+| `\D` | Any non-digit, alternative: `[^0-9]` | `\D` | a1-b2 3-4c9 | a, b, c, the blank and hyphens | 1, 2, 3, 4, 9 |
+| `\s` | Any whitespace character such as a blank, tab and new line | `\s` | (hi X ) | The blanks | h, i, X, (, ) |
+| `\S` | Any character that is not a whitespace | `\S` | (hi X ) | h, i, X, (, ) | The blanks |
+| `\w` | Any word character (letter, digit or the underscore), alternative: `[a-zA-Z0-9_]` | `\w` | (ab 12_c) | a, b, c, 1, 2, _ | (, ), the blank |
+| `\W` | Any character that is not a word character, alternative: `[^a-zA-Z0-9_]` | `\W` | (ab 12_c) | (, ), the blank | a, b, c, 1, 2, _ |
+| `\` | To include special characters like `[] \ / ^`, use `\` to escape them. Use `\.` to match a period ("."). | `.\.` | ab.cd.ef |  a<ins>**b.**</ins>c<ins>**d.**</ins>ef | ab<ins>**.c**</ins>d<ins>**.e**</ins>f |
 
 Repetitions and Alternatives
 
-| Expression | Represents | Example | Matches | Does not Match |
-|---|---|---|---|---|
-| `r*` | Zero or more repetitions of `r` | `ab*` | a, ab, abb, abbb | b, aba |
-| `r+` | One or more repetitions of `r` | `ab+` | ab, abb, abbb | a, b, aba |
-| `r{m,n}` | Between `m` and `n` repetitions | `a{2,4}` | aa, aaa, aaaa | a, aaaaa, aba |
-| `r{m}` | Exactly `m` repetitions | `a{3}` | aaa | a, aa, aaaa, bbb |
-| `r?` | Optional `r` | `ab?a` | aa, aba | abba, aca |
-| `r\|s` | Matching alternatives, i. e. `r` or `s` | `a+\|b+` | a, b, aa, bb, aaa | ab, aabb |
-
+| Expression | Represents | Example Regex | Example String | Matches | Does not Match |
+|---|---|---|---|---|---|
+| `x*` | Zero or more repetitions of `x` | `ab*` | abc abbc abbbc a ac | <ins>**ab**</ins>c <ins>**abb**</ins>c <ins>**abbb**</ins>c <ins>**a**</ins> <ins>**a**</ins>c | <ins>**abc**</ins> <ins>**abbc**</ins> <ins>**abbbc**</ins> a <ins>**ac**</ins> |
+| `x+` | One or more repetitions of `x` | `ab+` | abc abbc abbbc a ac | <ins>**ab**</ins>c <ins>**abb**</ins>c <ins>**abbb**</ins>c a ac | ... <ins>**a**</ins> <ins>**a**</ins>c |
+| `x{m,n}` | Between `m` and `n` repetitions of `x` | `ab{2,3}` | abc abbc abbbc a ac | abc <ins>**abb**</ins>c <ins>**abbb**</ins>c a ac  | <ins>**ab**</ins>c ... |
+| `x{m}` | Exactly `m` repetitions | `ab{3}` | abc abbc abbbc a ac | abc abbc <ins>**abbb**</ins>c a ac | abc <ins>**abb**</ins>c ... |
+| `x{m,}` | Exactly `m` or more repetitions | `ab{2,}` | abc abbc abbbc a ac | abc <ins>**abb**</ins>c <ins>**abbb**</ins>c a ac  | <ins>**ab**</ins>c ... |
+| `x?` | Optional `x`, i.e. zero or one time  | `ab?` | abc abbc abbbc a ac | <ins>**ab**</ins>c <ins>**ab**</ins>bc <ins>**ab**</ins>bbc <ins>**a**</ins> <ins>**a**</ins>c  | ... <ins>**ac**</ins>  |
+| `x\|y` | Matching alternatives, i. e. `x` or `y` | 1) `b\|2` <br> 2) `b(a\|u)t`  | 1) abc 123 <br> 2) bit bat but bet |  1) b, 2 <br> 2) bat, but | 1) a, c, 1, 3 <br> 2) bit, bet | 
+| `x*?` | `x*` captures greedily, i.e. as much as possible, while `x*?` captures non-greedily, i.e. as few as possible  | 1) `bc*?` <br> 2) `a(.*?)#` (includes a capturing group)  | 1) abcd abccccd <br> 2) abc#defgh#i | 1) a<ins>**b**</ins>cd a<ins>**b**</ins>ccccd <br> 2) <ins>**abc#**</ins>defgh#i | 1) a<ins>**bc**</ins>d a<ins>**bcccc**</ins>d (result for `bc*`) <br> 2) <ins>**abc#defgh#**</ins>i (result for `a(.*)#`) |
+| `x+?` | Same as above: `x+` (greedy), `x+?` (non-greedy) | 1) `bc+?` <br> 2) `<.+?>` | 1) abcd abccccd <br> 2) &lt;span>Hallo&lt;/span> html. | 1) a<ins>**bc**</ins>d a<ins>**bc**</ins>cccd <br> 2) <ins>**&lt;span>**</ins>Hallo<ins>**&lt;/span>**</ins> html. | 1) a<ins>**bc**</ins>d a<ins>**bcccc**</ins>d (result for `bc+`) <br> 2) <ins>**&lt;span>Hallo&lt;/span>**</ins> html.  (result for `<.+>`) |
 
 Character Sets, Ranges, Subgroups and Lookarounds
-| Expression | Represents | Example | Matches | Does not Match |
-|---|---|---|---|---|
-| `[aA1-]` | Character set, matches a single character present in the list | `[aA1-]` | a, A, 1, - | b, B, cc, 3 |
-| `[a-z0-9]` | Character range, matches a single character in the specified range, note that ranges may be locale-dependent | `[a-c0-5]` | b, c, 2, 4 | d, Z, x, 9 |
-| `[^aA1]` | Negation, matches any single character not present in the list | `[^aA1]` | b, C, 3, - | a, A, 1 |
-| `[^0-9]` | Negation, matches any single character not within the range | `[^0-9]` | a, B, c | 1, 2, 3 |
-| `(...)` | Capturing group to group parts of patterns together | `a(b\|c)a` | aba, aca | aa, abca |
-| `(?=...)` | Positive lookahead, returns characters that are followed by a specified pattern without including this pattern | `a(?=b)` <br>(example string: abc ade) | the first a | the second a |
-| `(?!...)` | Negative lookahead, returns characters that are not followed by a specified pattern without including this pattern | `a(?!b)` <br>(example string: abc ade) | the second a | the first a |
-| `(?<=...)` | Positive lookbehind, returns characters that are preceded by a specified pattern without including this pattern | `(?<=\s)c` <br>(example string: ab c abcd) | the first c since it is preceded by a blank | the second c |
-| `(?<!...)` | Negative lookbehind, returns characters that are not preceded by a specified pattern without including this pattern | `(?<!\s)c` <br>example string: ab c abcd) | the second c since it is not preceded by a blank | the first c |
+| Expression | Represents | Example Regex | Example String | Matches | Does not Match |
+|---|---|---|---|---|---|
+| `[xy]` | Character set, matches a single character present in the list | `b[iu]` | bit bat but bet | <ins>**bi**</ins>t bat <ins>**bu**</ins>t bet  | bit <ins>**ba**</ins>t but <ins>**be**</ins>t |
+| `[x-y]` | Character range, matches a single character in the specified range, note that ranges may be locale-dependent | `a[a-c0-5]` | aa1 ab2 ba3 cac4 da56 a7 |<ins>**aa**</ins>1 <ins>**ab**</ins>2 b<ins>**a3**</ins> c<ins>**ac**</ins>4 d<ins>**a5**</ins>6 a7 | aa1 ab2 ba3 cac4 da56 <ins>**a7**</ins> |
+| `[^xy]` | Negation, matches any single character not present in the list | `[^Ap]` | ABap | B, a | A, p |
+| `[^x-y]` | Negation, matches any single character not within the range | `[^A-Ca-c1-4]` | ABCDabcd123456 | D, d, 5, 6 | A, B, C, a, b, c, 1, 2, 3, 4 |
+| `(...)` | Capturing group to group parts of patterns together | `b(a\|u)t` | bit bat but bet | bat, but | bit, bet |
+| `(?=...)` | Positive lookahead, returns characters that are followed by a specified pattern without including this pattern | `a(?=b)` | abc ade | <ins>**a**</ins>bc ade | abc <ins>**a**</ins>de |
+| `(?!...)` | Negative lookahead, returns characters that are not followed by a specified pattern without including this pattern | `a(?!b)` | abc ade | abc <ins>**a**</ins>de | <ins>**a**</ins>bc ade |
+| `(?<=...)` | Positive lookbehind, returns characters that are preceded by a specified pattern without including this pattern | `(?<=\s)c` | ab c abcd | ab <ins>**c**</ins> abcd (it is preceded by a blank) | ab c ab<ins>**c**</ins>d |
+| `(?<!...)` | Negative lookbehind, returns characters that are not preceded by a specified pattern without including this pattern | `(?<!\s)c` | ab c abcd | ab c ab<ins>**c**</ins>d (it is not preceded by a blank) | ab <ins>**c**</ins> abcd |
+| `\n` | Refers to a previous capturing group; n represents the number of the group index that starts with 1 | `(a.)(\w*)\1` | abcdefabghij | <ins>**abcdefab**</ins>ghij <br>Note: Capturing group 1 holds `ab` in the example. The second capturing group captures all word characters up to `ab` is found. | <ins>**ab**</ins>cdefabghij |
+| `\K` | Resets the starting point of a match, i.e. findings are excluded from the final match | `a.\Kc` | abcd | ab<ins>**c**</ins>d | <ins>**abc**</ins>d |
 
 > **💡 Note**<br>
-> Subgroups are handy in replacements. Using an expression with `$` and a number, e. g. `$1`, you can refer to a particular group. For example, you have a string `abcde`. A PCRE expression might be
+> - Subgroups are handy in replacements. Using an expression with `$` and a number, e. g. `$1`, you can refer to a particular group. For example, you have a string `abcde`. A PCRE expression might be
 `(ab|xy)c(d.)`, i. e. there are two subgroups specified within two pairs of parentheses. In a replacement pattern, you can refer to the first group using `$1` and the second group using `$2`. Hence, the replacement pattern `$2Z$1` results in `deZab`.
+> - `(?:x)` creates a group but it is not captured. Example regular expression: `(?:ab)(ap)`. Example string: 'abap'. It matches 'abap' but `$1` will only hold 'ap'. 
 
 Anchors and Positions
 
-| Expression | Represents | Example | Matches | Does not Match |
-|---|---|---|---|---|
-| `^` | Beginning of line, alternative: `\A` | `^a.` <br>(example string: abcde) | ab | bc |
-| `$` | End of line, alternative: `\Z` | `$` <br>(example string: abcde) | the position right after e | any other position |
-| `\b` | beginning and end of word | 1) `\ba\d` <br>2) `\Dd\b` <br>(example string: abcd a12d) | 1) `a1` <br>2) `cd` | 1) `ab` <br> 2) `2d` |
+| Expression | Represents | Example Regex | Example String | Matches | Does not Match |
+|---|---|---|---|---|---|
+| `^` | Start of line, alternative: `\A` | `^.` or `\A.` | abc def | <ins>**a**</ins>bc def | abc <ins>**d**</ins>ef  |
+| `$` | End of line, alternative: `\Z` | `.$` or `.\Z` | abc def | abc de<ins>**f**</ins> | <ins>**a**</ins>bc def |
+| `\b` | Start or end of word | 1) `\ba.` <br>2) `\Dd\b` <br>3) `\b.d\b` | abcd a12d ed | 1) <ins>**ab**</ins>cd <ins>**a1**</ins>2d ed <br>2) ab<ins>**cd**</ins> a12d <ins>**ed**</ins> <br> 3) abcd a12d <ins>**ed**</ins> | 1) ab<ins>**cd**</ins> a1<ins>**2d**</ins> ed <br> 2) abcd a1<ins>**2d**</ins> ed <br> 3) <ins>**abcd**</ins> <ins>**a12d**</ins> ed |
+| `\B` | Negation of `\b`, not at the start or end of words | `\Be\B` | see an elefant | s<ins>**e**</ins>e an el<ins>**e**</ins>fant  | s<ins>**ee**</ins> an <ins>**e**</ins>lefant |
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
-### Searching Using Regular Expressions
+#### Searching Using Regular Expressions
 
 Multiple string functions support PCRE expressions by offering the
 parameter `pcre` with which you can specify such an expression.
@@ -1128,7 +1135,7 @@ FIND FIRST OCCURRENCE OF PCRE `\bt.` IN TABLE itab
 ```
 <p align="right">(<a href="#top">back to top</a>)</p>
 
-### Replacing Using Regular Expressions
+#### Replacing Using Regular Expressions
 
 To carry out replacement operations using regular expressions both
 string function `replace` and `REPLACE` statements can
