@@ -1727,7 +1727,7 @@ CLASS zcl_demo_abap_string_proc IMPLEMENTATION.
     DATA str_tab_reg_find TYPE string_table.
 
     DATA(matcher_2) = cl_abap_regex=>create_pcre( pattern = 'A(.*?)B(.*?)C(.*?)'
-                              ignore_case = abap_false )->create_matcher( text = 'AzyBxwvCutsr' ).
+                                                  ignore_case = abap_false )->create_matcher( text = 'AzyBxwvCuDtsErq' ).
 
     IF matcher_2->match( ).
       DO.
