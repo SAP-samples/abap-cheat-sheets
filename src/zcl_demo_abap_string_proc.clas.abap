@@ -47,20 +47,18 @@ CLASS zcl_demo_abap_string_proc DEFINITION
   PUBLIC SECTION.
     INTERFACES: if_oo_adt_classrun.
 
-protected section.
-private section.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
 ENDCLASS.
 
-
-
-CLASS ZCL_DEMO_ABAP_STRING_PROC IMPLEMENTATION.
+CLASS zcl_demo_abap_string_proc IMPLEMENTATION.
 
 
   METHOD if_oo_adt_classrun~main.
 
     DATA(output) = NEW zcl_demo_abap_display( out ).
 
-    output->display( `Demo: String Processing` ).
+    output->display( `ABAP Cheat Sheet Demo Example: String Processing` ).
     output->display( `1) Creating Strings and Assigning Values` ).
 
     "Data object declarations providing default values
@@ -119,6 +117,8 @@ CLASS ZCL_DEMO_ABAP_STRING_PROC IMPLEMENTATION.
     output->display( input = str_a7 name = `str_a7` ).
     output->display( input = str_a8 name = `str_a8` ).
 
+**********************************************************************
+
     output->next_section( `2) Chaining Strings` ).
 
     DATA(str_b1) = `Hallo`.
@@ -137,6 +137,8 @@ CLASS ZCL_DEMO_ABAP_STRING_PROC IMPLEMENTATION.
     output->display( input = str_b4 name = `str_b4` ).
     output->display( input = char_b1 name = `char_b1` ).
 
+**********************************************************************
+
     output->next_section( `3) String Templates (1): Constructing Strings` ).
 
     "The expression must be convertible to a string. A blank (not
@@ -154,6 +156,8 @@ CLASS ZCL_DEMO_ABAP_STRING_PROC IMPLEMENTATION.
 
     output->display( input = str_c4 name = `str_c4` ).
     output->display( input = str_c5 name = `str_c5` ).
+
+**********************************************************************
 
     output->next_section( `4) String Templates (2): Formatting Options` ).
     "Time, date
@@ -180,18 +184,6 @@ CLASS ZCL_DEMO_ABAP_STRING_PROC IMPLEMENTATION.
                         CONV decfloat34( - 2 / 3 ) DECIMALS = 3 }, {
                         CONV          f( - 2 / 3 ) DECIMALS = 3 }|.
 
-    "Country-specific format
-    "The example shows USA and Germany.
-    "Note: This example is only possible in unrestricted language scope.
-    "If you are in an environment allowing unrestricted language scope,
-    "you can comment the following statements in. In that case, also
-    "comment in the display methods for these data objects further down.
-*    SET COUNTRY 'US' .
-*    DATA(str_d12) = |{ 1000000 NUMBER = ENVIRONMENT }|.
-*
-*    SET COUNTRY 'DE' .
-*    DATA(str_d13) = |{ 1000000 NUMBER = ENVIRONMENT }|.
-
     "Escaping \|{}  in string templates
     DATA(str_d14) = |\\ \| \{ \}|.
 
@@ -205,9 +197,9 @@ CLASS ZCL_DEMO_ABAP_STRING_PROC IMPLEMENTATION.
     output->display( input = str_d9 name = `str_d9` ).
     output->display( input = str_d10 name = `str_d10` ).
     output->display( input = str_d11 name = `str_d11` ).
-*    output->display( input = str_d12 name = `str_d12` ).
-*    output->display( input = str_d13 name = `str_d13` ).
     output->display( input = str_d14 name = `str_d14` ).
+
+**********************************************************************
 
     output->next_section( `5) Determining the Length of Strings` ).
 
@@ -249,6 +241,8 @@ CLASS ZCL_DEMO_ABAP_STRING_PROC IMPLEMENTATION.
     output->display( input = length_e4 name = `length_e4` ).
     output->display( input = int_e1 name = `int_e1` ).
     output->display( input = int_e2 name = `int_e2` ).
+
+**********************************************************************
 
     output->next_section( `6) Concatenating Strings` ).
 
@@ -317,6 +311,8 @@ CLASS ZCL_DEMO_ABAP_STRING_PROC IMPLEMENTATION.
     output->display( input = alphabet4 name = `alphabet4` ).
     output->display( input = alphabet5 name = `alphabet5` ).
 
+**********************************************************************
+
     output->next_section( `7) Splitting Strings` ).
 
     DATA(str_g1) = `Hallo,world,12345`.
@@ -372,6 +368,8 @@ CLASS ZCL_DEMO_ABAP_STRING_PROC IMPLEMENTATION.
     output->display( input = itab_g2 name = `itab_g2` ).
     output->display( input = seg_nom name = `seg_nom` ).
 
+**********************************************************************
+
     output->next_section( `Modifying Strings` ).
     output->display( `8) Transforming to Lower and Upper Case` ).
 
@@ -412,6 +410,8 @@ CLASS ZCL_DEMO_ABAP_STRING_PROC IMPLEMENTATION.
     output->display( input = str_h7 name = `str_h7` ).
     output->display( input = str_h8 name = `str_h8` ).
     output->display( input = str_h9 name = `str_h9` ).
+
+**********************************************************************
 
     output->next_section( `9) Shifting Content in Strings` ).
 
@@ -476,7 +476,7 @@ CLASS ZCL_DEMO_ABAP_STRING_PROC IMPLEMENTATION.
     "sub: Specifying a substring; all substrings in the string that
     "match the value are removed (sub also available for shift_left)
     DATA(str_i13) = shift_right( val = str_i12
-                                  sub = ` and trailing blanks  ` ).
+                                 sub = ` and trailing blanks  ` ).
 
     DATA(str_i14) = shift_right( val = str_i12  sub = ` ` ).
 
@@ -500,6 +500,8 @@ CLASS ZCL_DEMO_ABAP_STRING_PROC IMPLEMENTATION.
     output->display( input = str_i13 name = `str_i13` ).
     output->display( input = str_i14 name = `str_i14` ).
     output->display( input = str_i15 name = `str_i15` ).
+
+**********************************************************************
 
     output->next_section( `10) Condensing Strings` ).
 
@@ -575,11 +577,15 @@ CLASS ZCL_DEMO_ABAP_STRING_PROC IMPLEMENTATION.
     output->display( input = str_j6 name = `str_j6` ).
     output->display( input = str_j7 name = `str_j7` ).
 
+**********************************************************************
+
     output->next_section( `11) Reversing Strings` ).
 
     DATA(str_k) = reverse( `ollah` ).
 
     output->display( input = str_k name = `str_k` ).
+
+**********************************************************************
 
     output->next_section( `12) Inserting Substrings into Strings` ).
 
@@ -598,7 +604,29 @@ CLASS ZCL_DEMO_ABAP_STRING_PROC IMPLEMENTATION.
     output->display( input = str_l3 name = `str_l3` ).
     output->display( input = str_l4 name = `str_l4` ).
 
-    output->next_section( `13) Processing Substrings` ).
+**********************************************************************
+
+    output->next_section( `13) Overlaying Content` ).
+
+    DATA(incl) = '==============================CP'.
+    DATA(cl_name) = 'CL_SOME_CLASS                   '.
+
+    "Addition ONLY is not specified: All blanks are replaced
+    OVERLAY cl_name WITH incl.
+
+    DATA(t1) = 'a.b.c.a.b.c.A'.
+    DATA(t2) = 'z.x.y.Z.x.y.z'.
+
+    "Addition ONLY is specified: All characters that are specified after ONLY and that
+    "occur in the operand are replaced. Note that this is case-sensitive.
+    OVERLAY t1 WITH t2 ONLY 'ab'.
+
+    output->display( input = cl_name name = `cl_name` ).
+    output->display( input = t1 name = `t1` ).
+
+**********************************************************************
+
+    output->next_section( `14) Processing Substrings` ).
 
     DATA(str_m1) = `Lorem ipsum dolor sit amet`.
 
@@ -675,9 +703,11 @@ CLASS ZCL_DEMO_ABAP_STRING_PROC IMPLEMENTATION.
     output->display( input = str_m12 name = `str_m12` ).
     output->display( input = str_m13 name = `str_m13` ).
 
+**********************************************************************
+
     output->next_section( `Searching and Replacing in Strings` ).
-    output->display( `14) Searching Specific Characters in Strings ` &&
-                  `Using Comparison Operators` ).
+    output->display( `15) Searching Specific Characters in Strings ` &&
+                     `Using Comparison Operators and String Functions` ).
 
     DATA(str_n1) = `cheers`.
 
@@ -703,24 +733,6 @@ CLASS ZCL_DEMO_ABAP_STRING_PROC IMPLEMENTATION.
        |The position of the first found character is { sy-fdpos }.| ).
     ENDIF.
 
-    "String functions to determine the offset of any character ...
-    "Note: If nothing is found, the value -1 is returned.
-    "There are more parameters possible.
-    "... contained in a substring
-    DATA(off_n1) = find_any_of( val = str_n1  sub = `aeiou` ).
-    output->display( input = off_n1 name = `off_n1` ).
-
-    "... not contained in a substring
-    DATA(off_n2) = find_any_not_of( val = str_n1  sub = `xyz` ).
-    output->display( input = off_n2 name = `off_n2` ).
-
-    "String functions to determine the total number of occurrences
-    DATA(occ_n1) = count_any_of( val = str_n1  sub = `e` ).
-    output->display( input = occ_n1 name = `occ_n1` ).
-
-    DATA(occ_n2) = count_any_not_of( val = str_n1  sub = `s` ).
-    output->display( input = occ_n2 name = `occ_n2` ).
-
     "Determining if a string is exclusively composed of a certain
     "character set
     IF str_n1 CO `rs`.
@@ -743,7 +755,49 @@ CLASS ZCL_DEMO_ABAP_STRING_PROC IMPLEMENTATION.
       && |The length of str_n1 is { sy-fdpos }.| ).
     ENDIF.
 
-    output->next_section( `15) Replacing Specific Characters in Strings` ).
+   "String functions
+    DATA(str_n2) = `Pieces of cakes.`.
+
+    "find_end returns the sum of the offset of the occurrence
+    DATA(res_n3) = find_end( val = str_n2 sub = `of` ). "9
+
+    "find_any_of returns the offset of the occurrence of any character contained in substring
+    "The search is always case-sensitive.
+    DATA(res_n4) = find_any_of( val = str_n2 sub = `x523z4e` ).
+    DATA(res_n5) = find_any_of( val = str_n2 sub = `zwq85t` ).
+
+    "find_any_not_of: Negation of the one above
+    "The search is always case-sensitive.
+    DATA(res_n6) = find_any_not_of( val = str_n2 sub = `ieces` ).
+    DATA(res_n7) = find_any_not_of( val = str_n2 sub = `P` ).
+
+    "count returns the number of all occurrences
+    DATA(res_n8) = count( val = str_n2 sub = `e` ).
+    DATA(res_n9) = count( val = str_n2 sub = `x` ).
+
+    "count_any_of
+    DATA(res_n10) = count_any_of( val = str_n2 sub = `x523z4e` ).
+    DATA(res_n11) = count_any_of( val = str_n2 sub = `eco` ).
+
+    "count_any_not_of
+    DATA(res_n12) = count_any_not_of( val = str_n2 sub = `fP` ).
+    DATA(res_n13) = count_any_not_of( val = str_n2 sub = `Piecs ofak.` ).
+
+    output->display( input = res_n3 name = `res_n3` ).
+    output->display( input = res_n4 name = `res_n4` ).
+    output->display( input = res_n5 name = `res_n5` ).
+    output->display( input = res_n6 name = `res_n6` ).
+    output->display( input = res_n7 name = `res_n7` ).
+    output->display( input = res_n8 name = `res_n8` ).
+    output->display( input = res_n9 name = `res_n9` ).
+    output->display( input = res_n10 name = `res_n10` ).
+    output->display( input = res_n11 name = `res_n11` ).
+    output->display( input = res_n12 name = `res_n12` ).
+    output->display( input = res_n13 name = `res_n13` ).
+
+**********************************************************************
+
+    output->next_section( `16) Replacing Specific Characters in Strings` ).
 
     DATA(str_o1) = `___abc_def_____ghi_`.
 
@@ -771,7 +825,11 @@ CLASS ZCL_DEMO_ABAP_STRING_PROC IMPLEMENTATION.
     output->display( input = str_o3 name = `str_o3` ).
     output->display( input = str_o1 name = `str_o1` ).
 
-    output->next_section( `16) Searching for Substrings in Strings` ).
+**********************************************************************
+
+    output->next_section( `Searching for Substrings in Strings` ).
+    output->display( `17) Substring Search: Simple Search Using Comparison Operators` ).
+
     DATA(str_p1) = `cheers`.
 
     "CS (contains string)
@@ -779,211 +837,478 @@ CLASS ZCL_DEMO_ABAP_STRING_PROC IMPLEMENTATION.
     "If the substring is not found, sy-fdpos contains the length of the
     "searched string.
     IF str_p1 CS `rs`.
-      output->display( |CS: str_p contains the substring. |
+      output->display( |CS: The string contains the substring. |
       && |The offset is { sy-fdpos }.| ).
     ELSE.
-      output->display( |CS: str_p does not contain the substring. |
-      && |The length of str_p is { sy-fdpos }.| ).
+      output->display( |CS: The string does not contain the substring. |
+      && |The length of the string is { sy-fdpos }.| ).
     ENDIF.
 
     "NS (contains no string)
     IF str_p1 NS `abc`.
-      output->display( |NS: str_p does not contain the substring. |
-      && |The length of str_p is { sy-fdpos }.| ).
+      output->display( |NS: The string does not contain the substring. |
+      && |The length of the string is { sy-fdpos }.| ).
     ELSE.
-      output->display( |NS: str_p contains the substring. |
+      output->display( |NS: The string contains the substring. |
        && |The offset is { sy-fdpos }.| ).
     ENDIF.
 
-    DATA(str_p2) = `Pieces of cakes.`.
+**********************************************************************
 
-    "Specifying case-sensitivity
-    DATA(off_p1) = find( val = str_p2  sub = `OF` case = abap_false ).
+    output->next_section( `18) Substring Search in Strings ` &&
+    `Using FIND Statements` ).
+    "The code examples demonstrate different additions.
 
-    "No finding, result: -1
-    DATA(off_p2) = find( val = str_p2  sub = `hallo` ).
+    DATA(str_qa) = `She sells seashells by the seashore.`.
 
-    "Specifying the offset and length
-    DATA(off_p3) = find( val = str_p2  sub = `ce` off = 1 len = 7 ).
-
-    "Parameter occ: A positive value means the nth position from the
-    "left, a negative value the nth position from the right.
-    DATA(off_p4) = find( val = str_p2  sub = `es` occ = -1 ).
-
-    "Determining how often a substring occurs
-    DATA(cnt_p1) = count( val = str_p2  sub = `es` ).
-
-    "FIND statements
-    DATA(str_p3) = `abc def ghi abc`.
-
-    "sy-subrc is set on which you can react.
-    FIND `def` IN str_p3.
+    "Determining if a substring is found
+    "Simple find statement
+    FIND `se` IN str_qa.
 
     IF sy-subrc = 0.
-      DATA(str_p4) = `"def" was found`.
+      output->display( `'se' found in the string` ).
     ELSE.
-      str_p4 = `"def" was not found`.
+      output->display( `'se' not found in the string` ).
     ENDIF.
 
     "Addition SUBSTRING is optional
-    FIND SUBSTRING `abc` IN str_p3.
+    FIND SUBSTRING `hi` IN str_qa.
 
     IF sy-subrc = 0.
-      DATA(str_p5) = `"abc" was found`.
+      output->display( `'hi' Found in the string` ).
     ELSE.
-      str_p5 = `"abc" was not found`.
+      output->display( `'hi' not found in the string` ).
     ENDIF.
 
-    "Case-insensitive search
-    FIND `aBC` IN str_p3 IGNORING CASE.
+    "The following examples use the additions MATCH COUNT and MATCH OFFSET
+    "to determine the number of occurrences and offset and for display purposes.
 
-    IF sy-subrc = 0.
-      DATA(str_p6) = `"aBC" was found ignoring the case`.
-    ELSE.
-      str_p6 = `"aBC" was not found ignoring the case`.
-    ENDIF.
+    "Addition FIRST OCCURRENCE OF: Explicit specification to search
+    "for the first occurrence
+    FIND FIRST OCCURRENCE OF `se` IN str_qa
+      MATCH COUNT DATA(cnt_q1)
+      MATCH OFFSET DATA(off_q2).
 
-    "MATCH additions can be specified individually or combined
-    FIND ALL OCCURRENCES OF `abc` IN str_p3
-      MATCH COUNT DATA(cnt_p2)   "number of findings
-      MATCH OFFSET DATA(off_p5)  "offset of last finding
-      MATCH LENGTH DATA(len_p1). "length of last finding
+    "Omitting FIRST OCCURRENCE OF and ALL OCCURRENCES OF addition means
+    "searching for the first occurrence by default; same effect as the
+    "previous statement
+    FIND `se` IN str_qa
+      MATCH COUNT DATA(cnt_q3)
+      MATCH OFFSET DATA(off_q4).
 
-    "Finding the first occurrence and returning the offset
-    FIND FIRST OCCURRENCE OF `abc` IN str_p3 MATCH OFFSET DATA(off_p6).
+    "Addition ALL OCCURRENCES: Searching for all occurrences
+    FIND ALL OCCURRENCES OF `se` IN str_qa
+      MATCH COUNT DATA(cnt_q5)
+      MATCH OFFSET DATA(off_q6). "value for the last occurrence
 
-    "Returning all of these pieces of information in a table for all
-    "findings
-    FIND ALL OCCURRENCES OF `abc` IN str_p3 RESULTS DATA(res_p1).
+    "Addition IN SECTION ... OF:
+    "Searching in a specified section; both additions OFFSET and LENGTH
+    "are specified
+    FIND ALL OCCURRENCES OF `se`
+      IN SECTION OFFSET 9 LENGTH 5 OF str_qa
+      MATCH COUNT DATA(cnt_q7)
+      MATCH OFFSET DATA(off_q8).
 
-    "Restricting the search area (OFFSET/LENGTH can be specified
-    "individually)
-    FIND `abc` IN SECTION OFFSET 4 LENGTH 11 OF str_p3
-      MATCH OFFSET DATA(off_p7). "12
+    "Only LENGTH specified (OFFSET is 0 by default)
+    FIND ALL OCCURRENCES OF `se`
+      IN SECTION LENGTH 7 OF str_qa
+      MATCH COUNT DATA(cnt_q9)
+      MATCH OFFSET DATA(off_q10).
 
-    "Searching in internal tables; search results are returned in an
-    "internal table
-    DATA(str_table) = VALUE string_table( ( `ZxZ` ) ( `yZ` ) ( `Zz` ) ).
+    "Only OFFSET specified (LENGTH: up to end of string)
+    FIND ALL OCCURRENCES OF `se`
+      IN SECTION OFFSET 7 OF str_qa
+      MATCH COUNT DATA(cnt_q11).
 
-    FIND ALL OCCURRENCES OF `Z` IN TABLE str_table RESULTS
-      DATA(res_p2) RESPECTING CASE.
+    "Another string to be searched
+    DATA(str_qb) = `abap ABAP abap`.
 
-    output->display( input = off_p1 name = `off_p1` ).
-    output->display( input = off_p2 name = `off_p2` ).
-    output->display( input = off_p3 name = `off_p3` ).
-    output->display( input = off_p4 name = `off_p4` ).
-    output->display( input = cnt_p1 name = `cnt_p1` ).
-    output->display( input = str_p4 name = `str_p4` ).
-    output->display( input = str_p5 name = `str_p5` ).
-    output->display( input = str_p6 name = `str_p6` ).
-    output->display( input = cnt_p2 name = `cnt_p2` ).
-    output->display( input = off_p5 name = `off_p5` ).
-    output->display( input = len_p1 name = `len_p1` ).
-    output->display( input = off_p6 name = `off_p6` ).
-    output->display( input = res_p1 name = `res_p1` ).
-    output->display( input = off_p7 name = `off_p7` ).
-    output->display( input = res_p2 name = `res_p2` ).
+    "Further additional options for advanced evaluation options
 
-    output->next_section( `17) Replacing Substrings in Strings` ).
+    "Specifying the case-sensitivity of the search
+    "Not specifying the CASE addition means RESPECTING CASE is used by default.
+    "Here, it is explicitly specified.
+    FIND FIRST OCCURRENCE OF `A` IN str_qb
+      MATCH OFFSET DATA(off_q12)
+      RESPECTING CASE.
 
-    DATA(str_q1) = `abc def ghi abc`.
+    "Making search case-insensitive
+    FIND FIRST OCCURRENCE OF `A` IN str_qb
+      MATCH OFFSET DATA(off_q13)
+      IGNORING CASE.
 
-    "replace function
-    "occ: Specifies the number of occurrences of the substring. The
-    "default value is 1, i. e. the first occurrence starting from the
-    "left. Setting occ to 0 means that all occurrences are respected.
-    DATA(str_q2) = replace( val  = str_q1
-                            sub  = `abc`
-                            with = `###` ).
+    "MATCH LENGTH addition
+    "The example uses a regular expression: Non-greedy search for
+    "a substring starting with lower case a up to an upper case P
+    FIND FIRST OCCURRENCE OF PCRE `a.*?P` IN str_qb
+      MATCH LENGTH DATA(len_q14) "9
+      RESPECTING CASE.
 
-    "Specifying case (case sensitivity) and occ
-    DATA(str_q3) = replace( val  = str_q1
-                            sub  = `ABC`
-                            with = `###`
-                            case = abap_false
-                            occ  = 2 ).
+    "RESULTS addition
+    "Example: Because of using ALL OCCURRENCES, the data object declared
+    "inline automatically has the type match_result_tab
+    FIND ALL OCCURRENCES OF `ab` IN str_qb
+      RESULTS DATA(res_q15)
+      IGNORING CASE.
 
-    "All occurrences are respected
-    DATA(str_q4) = replace( val  = str_q1
-                            sub  = `abc`
-                            with = `###`
-                            occ  = 0 ).
+    "Because of searching for the first occurrence, the data object declared
+    "inline automatically has the type match_result
+    FIND FIRST OCCURRENCE OF `ab` IN str_qb
+      RESULTS DATA(res_q16)
+      IGNORING CASE.
 
-    DATA(str_q5) = str_q1.
-    DATA(str_q6) = str_q1.
-    DATA(str_q7) = str_q1.
-    DATA(str_q8) = str_q1.
-    DATA(str_q9) = str_q1.
-    DATA(str_q10) = str_q1.
-    DATA(str_q11) = str_q1.
-    DATA(str_q12) = str_q1.
-    DATA(str_q13) = str_q1.
-
-    "REPLACE statements with selected additions
-    REPLACE `def` IN str_q5 WITH `###`. "abc ### ghi abc
-
-    "### def ghi abc (explicitly using FIRST OCCURRENCE; first found
-    "is replaced)
-    REPLACE FIRST OCCURRENCE OF `abc` IN str_q6 WITH `###`.
-
-    "### def ghi abc (first found is replaced)
-    REPLACE `abc` IN str_q7 WITH `###`.
-
-    "### def ghi abc (SUBSTRING is optional)
-    REPLACE SUBSTRING `abc` IN str_q8 WITH `###`.
-
-    "### def ghi ### (all occurrences are respected)
-    REPLACE ALL OCCURRENCES OF `abc` IN str_q9 WITH `###`.
-
-    REPLACE `aBC` IN str_q10 WITH `###` IGNORING CASE. "### def ghi abc
-
-    "REPLACEMENT additions; can be specified individually or combined
-    "### def ghi ###
-    REPLACE ALL OCCURRENCES OF `abc` IN  str_q11 WITH `###`
-      REPLACEMENT COUNT  DATA(cnt_q1)  "number of replacements
-      REPLACEMENT OFFSET DATA(off_q1)  "offset of last replacement
-      REPLACEMENT LENGTH DATA(len_q1). "length of last substr. inserted
-
-    "Returning all of these pieces of information in a table for all
-    " replacements
-    REPLACE ALL OCCURRENCES OF `abc` IN  str_q12 WITH `###`
-          RESULTS DATA(res_q1). "### def ghi ###
-
-    "Position-based replacement (OFFSET/LENGTH can be specified
-    "individually)
-    "abc ### abc
-    REPLACE SECTION OFFSET 4 LENGTH 7 OF str_q13 WITH `###`.
-
-    "Replacements in internal tables
-    DATA(str_tab) = VALUE string_table( ( `ZxZ` ) ( `yZ` ) ( `Zz` ) ).
-
-    REPLACE ALL OCCURRENCES OF `Z`
-      IN TABLE str_tab WITH ``
-      RESPECTING CASE. "x / y / z
-
-    output->display( input = str_q2 name = `str_q2` ).
-    output->display( input = str_q3 name = `str_q3` ).
-    output->display( input = str_q4 name = `str_q4` ).
-    output->display( input = str_q5 name = `str_q5` ).
-    output->display( input = str_q6 name = `str_q6` ).
-    output->display( input = str_q7 name = `str_q7` ).
-    output->display( input = str_q8 name = `str_q8` ).
-    output->display( input = str_q9 name = `str_q9` ).
-    output->display( input = str_q10 name = `str_q10` ).
-    output->display( input = str_q11 name = `str_q11` ).
     output->display( input = cnt_q1 name = `cnt_q1` ).
-    output->display( input = off_q1 name = `off_q1` ).
-    output->display( input = len_q1 name = `len_q1` ).
-    output->display( input = str_q12 name = `str_q12` ).
-    output->display( input = res_q1 name = `res_q1` ).
-    output->display( input = str_q13 name = `str_q13` ).
-    output->display( input = str_tab name = `str_tab` ).
+    output->display( input = off_q2 name = `off_q2` ).
+    output->display( input = cnt_q3 name = `cnt_q3` ).
+    output->display( input = off_q4 name = `off_q4` ).
+    output->display( input = cnt_q5 name = `cnt_q5` ).
+    output->display( input = off_q6 name = `off_q6` ).
+    output->display( input = cnt_q7 name = `cnt_q7` ).
+    output->display( input = off_q8 name = `off_q8` ).
+    output->display( input = cnt_q9 name = `cnt_q9` ).
+    output->display( input = off_q10 name = `off_q10` ).
+    output->display( input = cnt_q11 name = `cnt_q11` ).
+    output->display( input = off_q12 name = `off_q12` ).
+    output->display( input = off_q13 name = `off_q13` ).
+    output->display( input = len_q14 name = `len_q14` ).
+    output->display( input = res_q15 name = `res_q15` ).
+    output->display( input = res_q16 name = `res_q16` ).
+
+**********************************************************************
+
+    output->next_section( `19) Substring Search in Internal Tables ` &&
+    `Using FIND ... IN TABLE Statements` ).
+
+    DATA(str_table_r) = VALUE string_table( ( `aZbzZ` ) ( `cdZze` ) ( `Zzzf` ) ( `ghz` ) ).
+
+    "Finding all occurrences in a table
+    "Note: res_tab is of type match_result_tab
+    "You can also restrict the search range in an internal table; see an example
+    "in the context of REPLACE ... IN TABLE
+    FIND ALL OCCURRENCES OF `Z`
+      IN TABLE str_table_r
+      RESULTS DATA(res_r1)
+      RESPECTING CASE.
+
+    "Finding the first occurrence in a table
+    "Note: res_struc, which is declared inline here, is of type match_result
+    FIND FIRST OCCURRENCE OF `Z`
+      IN TABLE str_table_r
+      RESULTS DATA(res_r2)
+      RESPECTING CASE.
+
+    "Alternative to the statement above (storing the information in individual data objects)
+    FIND FIRST OCCURRENCE OF `Z`
+      IN TABLE str_table_r
+      MATCH LINE DATA(line_r3)
+      MATCH OFFSET DATA(off_r4)
+      MATCH LENGTH DATA(len_r5)
+      RESPECTING CASE.
+
+    output->display( input = res_r1 name = `res_r1` ).
+    output->display( input = res_r2 name = `res_r2` ).
+    output->display( input = line_r3 name = `line_r3` ).
+    output->display( input = off_r4 name = `off_r4` ).
+    output->display( input = len_r5 name = `len_r5` ).
+
+**********************************************************************
+
+    output->next_section( `20) Substring Search in Strings ` &&
+    `Using the String Function find` ).
+
+    DATA(str_s) = `Pieces of cakes.`.
+
+    "Searching for substring
+    "Returns offset of substring found
+    DATA(res_s1) = find( val = str_s sub = `ca` ).
+
+    "Substring not found returns -1
+    DATA(res_s2) = find( val = str_s sub = `xy` ).
+
+    "Actual parameter of sub must not be initial when using the find function
+    TRY.
+        DATA(res_s3) = find( val = str_s sub = `` ).
+      CATCH cx_sy_strg_par_val.
+        "Nope!
+    ENDTRY.
+
+    "The search is case-sensitive by default
+    DATA(res_s4) = find( val = str_s sub = `OF` ).
+    "Making search case-insensitive
+    DATA(res_s5) = find( val = str_s sub = `OF` case = abap_false ).
+
+    "Specifying occ
+    DATA(res_s6) = find( val = str_s sub = `c` ).
+    DATA(res_s7) = find( val = str_s sub = `c` occ = 2 ).
+    DATA(res_s8) = find( val = str_s sub = `e` occ = -1 ).
+    DATA(res_s9) = find( val = str_s sub = `e` occ = -3 ).
+
+    "Specifying off and len
+    "Specifying a subarea in which a string is searched
+    DATA(res_s10) = find( val = str_s sub = `e` off = 5 ).
+    DATA(res_s11) = find( val = str_s sub = `e` off = 5 len = 7 ).
+    DATA(res_s12) = find( val = str_s sub = `e` len = 2  ).
+
+    output->display( input = res_s1 name = `res_s1` ).
+    output->display( input = res_s2 name = `res_s2` ).
+    output->display( input = res_s3 name = `res_s3` ).
+    output->display( input = res_s4 name = `res_s4` ).
+    output->display( input = res_s5 name = `res_s5` ).
+    output->display( input = res_s6 name = `res_s6` ).
+    output->display( input = res_s7 name = `res_s7` ).
+    output->display( input = res_s8 name = `res_s8` ).
+    output->display( input = res_s9 name = `res_s9` ).
+    output->display( input = res_s10 name = `res_s10` ).
+    output->display( input = res_s11 name = `res_s11` ).
+    output->display( input = res_s12 name = `res_s12` ).
+
+    "Demonstrating a false range to be searched
+    TRY.
+        DATA(res_s13) = find( val = str_s sub = `e` off = 5 len = 15 ).
+      CATCH cx_sy_range_out_of_bounds.
+        output->display( `The exception cx_sy_range_out_of_bounds was raised.` ).
+    ENDTRY.
+
+***********************************************************************
+
+    output->next_section( `21) Replacing Substrings in Strings Using REPLACE Statments` ).
+
+    DATA(str_t) = `abap ABAP abap`.
+    DATA(str_t1) = str_t.
+
+    "Simple REPLACE statement
+    "Omitting the FIRST OCCURRENCE and ALL OCCURRENCES OF additions means
+    "replacing the first occurrence by default.
+    REPLACE `ab` IN str_t1 WITH `##`.
+
+    output->display( input = str_t1 name = `str_t1` ).
+    DATA(str_t2) = str_t.
+
+    "Addition SUBSTRING is optional; same effect as the statement above
+    REPLACE SUBSTRING `ab` IN str_t2 WITH `##`.
+
+    output->display( input = str_t2 name = `str_t2` ).
+    DATA(str_t3) = str_t.
+
+    "Addition FIRST OCCURRENCE OF: Explicit specification to replace the
+    "first occurrence; same effect as the statements above
+    REPLACE FIRST OCCURRENCE OF `ab` IN str_t3 WITH `##`.
+
+    output->display( input = str_t3 name = `str_t3` ).
+    DATA(str_t4) = str_t.
+
+    "Addition ALL OCCURRENCES OF: All occurrences are replaced
+    "Note that the replacement is case-sensitive by default.
+    REPLACE ALL OCCURRENCES OF `ab` IN str_t4 WITH `##`.
+
+    output->display( input = str_t4 name = `str_t4` ).
+    DATA(str_t5) = str_t.
+
+    "Further additional options for advanced evaluation options
+
+    "IGNORING CASE addition: Making replacements case-insensitive
+    REPLACE ALL OCCURRENCES OF `ab`
+      IN str_t5 WITH `##`
+      IGNORING CASE.
+
+    output->display( input = str_t5 name = `str_t5` ).
+    DATA(str_t6) = str_t.
+
+    "REPLACEMENT COUNT addition
+    REPLACE ALL OCCURRENCES OF `ab`
+      IN str_t6 WITH `##`
+      REPLACEMENT COUNT DATA(cnt_t7)
+      IGNORING CASE.
+
+    output->display( input = str_t6 name = `str_t6` ).
+    output->display( input = cnt_t7 name = `cnt_t7` ).
+    DATA(str_t8) = str_t.
+
+    "REPLACEMENT OFFSET and LENGTH additions
+    REPLACE FIRST OCCURRENCE OF `ap`
+      IN str_t8 WITH `##`
+      REPLACEMENT COUNT DATA(cnt_t9) "always 1 for replaced first occurrence
+      REPLACEMENT OFFSET DATA(off_t10)
+      REPLACEMENT LENGTH DATA(len_t11)
+      IGNORING CASE.
+
+    output->display( input = str_t8 name = `str_t8` ).
+    output->display( input = cnt_t9 name = `cnt_t9` ).
+    output->display( input = off_t10 name = `off_t10` ).
+    output->display( input = len_t11 name = `len_t11` ).
+    DATA(str_t12) = str_t.
+
+    "SECTION ... OF addition: Replacing within a specified area
+    REPLACE ALL OCCURRENCES OF `ap`
+      IN SECTION OFFSET 4 LENGTH 5
+      OF str_t12 WITH `##`
+      REPLACEMENT COUNT DATA(cnt_t13)
+      REPLACEMENT OFFSET DATA(off_t14)
+      REPLACEMENT LENGTH DATA(len_t15)
+      IGNORING CASE.
+
+    output->display( input = str_t12 name = `str_t12` ).
+    output->display( input = cnt_t13 name = `cnt_t13` ).
+    output->display( input = off_t14 name = `off_t14` ).
+    output->display( input = len_t15 name = `len_t15` ).
+    DATA(str_t16) = str_t.
+
+    "RESULTS additions with ...
+    "... ALL OCCURRENCES OF
+    "Note: The data object, which is declared inline here, is of type repl_result_tab.
+    REPLACE ALL OCCURRENCES OF `ap`
+      IN str_t16 WITH `##`
+      RESULTS DATA(tab_t17)
+      IGNORING CASE.
+
+    output->display( input = str_t16 name = `str_t16` ).
+    output->display( input = tab_t17 name = `tab_t17` ).
+    DATA(str_t18) = str_t.
+
+    "... FIRST OCCURRENCE OF
+    "Note: The data object, which is declared inline here, is of type repl_result.
+    REPLACE FIRST OCCURRENCE OF `ap`
+      IN str_t18 WITH `##`
+      RESULTS DATA(struc_t19)
+      IGNORING CASE.
+
+    output->display( input = str_t18 name = `str_t18` ).
+    output->display( input = struc_t19 name = `struc_t19` ).
+
+***********************************************************************
+
+    output->next_section( `21) Position-Based Replacements with REPLACE SECTION ... OF` ).
+
+    DATA(str_u) = `abap ABAP abap`.
+    DATA(str_u1) = str_u.
+
+    "OFFSET and LENGTH specified
+    REPLACE SECTION OFFSET 5 LENGTH 4 OF str_u1 WITH `#`.
+
+    output->display( input = str_u1 name = `str_u1` ).
+    DATA(str_u2) = str_u.
+
+    "Only OFFSET specified, LENGTH: up to the end of the string
+    REPLACE SECTION OFFSET 5 OF str_u2 WITH `#`.
+
+    output->display( input = str_u2 name = `str_u2` ).
+    DATA(str_u3) = str_u.
+
+    "Only LENGTH specified, OFFSET: starting from the leftmost position
+    REPLACE SECTION LENGTH 6 OF str_u3 WITH `#`.
+
+    output->display( input = str_u3 name = `str_u3` ).
+
+***********************************************************************
+
+    output->next_section( `22) Replacements in Internal Tables with REPLACE ... IN TABLE` ).
+
+    DATA(tab_v) = VALUE string_table( ( `aZbzZ` ) ( `cdZze` ) ( `Zzzf` ) ( `ghz` ) ).
+    DATA(tab_v1) = tab_v.
+
+    "Replacing all occurrences in a table
+    "RESULTS addition: Storing information in an internal table of type repl_result_tab
+    REPLACE ALL OCCURRENCES OF `Z`
+      IN TABLE tab_v1
+      WITH `#`
+      RESULTS DATA(res_v2)
+      RESPECTING CASE.
+
+    output->display( input = tab_v1 name = `tab_v1` ).
+    output->display( input = res_v2 name = `res_v2` ).
+    DATA(tab_v3) = tab_v.
+
+    "Replacing the first occurrence in a table
+    "RESULTS addition: Storing information in a structure of type repl_result
+    REPLACE FIRST OCCURRENCE OF `Z`
+      IN TABLE tab_v3
+      WITH `#`
+      RESULTS DATA(res_v4)
+      RESPECTING CASE.
+
+    output->display( input = tab_v3 name = `tab_v3` ).
+    output->display( input = res_v4 name = `res_v4` ).
+    DATA(tab_v5) = tab_v.
+
+    "Restricting the search range in an internal table
+    REPLACE ALL OCCURRENCES OF `Z`
+      IN TABLE tab_v5
+      FROM 1 TO 2
+      WITH `#`
+      RESPECTING CASE.
+
+    output->display( input = tab_v5 name = `tab_v5` ).
+    DATA(tab_v6) = tab_v.
+
+    "Offsets can be optionally specified (also only the offset of start or end line possible)
+    REPLACE ALL OCCURRENCES OF `Z`
+      IN TABLE tab_v6
+      FROM 1 OFFSET 3 TO 2 OFFSET 2
+      WITH `#`
+      RESPECTING CASE.
+
+    output->display( input = tab_v6 name = `tab_v6` ).
+
+***********************************************************************
+
+    output->next_section( `23) Replacing Substrings in Strings Using the String Function replace` ).
+
+    DATA(str_w) = `abap ABAP abap`.
+
+    "Note that here only the first occurrence is replaced.
+    DATA(str_w_1) = replace( val = str_w sub = `ap` with = `#` ).
+
+    "Making the search case-insensitive
+    DATA(str_w_2) = replace( val = str_w sub = `AB` with = `#` case = abap_false ).
+
+    "Setting occ
+    DATA(str_w_3) = replace( val = str_w sub = `ab` with = `#` occ = 2 case = abap_false ).
+
+    "Replacing all occurrences: Setting occ to 0
+    DATA(str_w_4) = replace( val = str_w sub = `ab` with = `#` occ = 0 case = abap_false ).
+
+    "Negative value for occ: Occurrences are counted from the right
+    DATA(str_w_5) = replace( val = str_w sub = `ab` with = `#` occ = -1  ).
+
+    "Setting off and len for determining a subarea for replacements
+    "Note: When using off/len, sub and occ cannot be specified.
+    "Specifying both off and len
+    DATA(str_w_6) = replace( val = str_w  with = `#` off = 5 len = 3  ).
+
+    "Specifying only off (len is 0 by default)
+    DATA(str_w_7) = replace( val = str_w  with = `#` off = 2 ).
+
+    "Note: When specifying only off and not specifying len or len = 0,
+    "replace works like insert
+    DATA(str_w_8) = insert( val = str_w sub = `#` off = 2  ).
+
+    "Specifying only len (off is 0 by default): First segment of length in len is replaced
+    DATA(str_w_9) = replace( val = str_w  with = `#` len = 3 ).
+
+    "Special case
+    "- off: equal to the length of the string
+    "- len: not specified or 0
+    "- Result: Value specified for 'with' is appended to the end of the string
+    DATA(str_w_10) = replace( val = str_w  with = `#` off = strlen( str_w ) ).
+
+    output->display( input = str_w_1 name = `str_w_1` ).
+    output->display( input = str_w_2 name = `str_w_2` ).
+    output->display( input = str_w_3 name = `str_w_3` ).
+    output->display( input = str_w_4 name = `str_w_4` ).
+    output->display( input = str_w_5 name = `str_w_5` ).
+    output->display( input = str_w_6 name = `str_w_6` ).
+    output->display( input = str_w_7 name = `str_w_7` ).
+    output->display( input = str_w_8 name = `str_w_8` ).
+    output->display( input = str_w_9 name = `str_w_9` ).
+    output->display( input = str_w_10 name = `str_w_10` ).
+
+***********************************************************************
 
     output->next_section( `Pattern-Based Searching and Replacing in Strings` ).
-    output->display( `18) Simple Pattern-Based Searching ` &&
-      `Using Logical Operators` ).
+    output->display( `24) Simple Pattern-Based Searching ` &&
+                     `Using Logical Operators` ).
 
-    DATA(str_r1) = `abc_def_ghi`.
+    DATA(str_x) = `abc_def_ghi`.
 
     "CP (conforms to pattern)
     "*: Any character sequence (including blanks).
@@ -994,161 +1319,206 @@ CLASS ZCL_DEMO_ABAP_STRING_PROC IMPLEMENTATION.
     "by #. If a pattern is found, the system variable sy-fdpos returns
     "the offset of the first finding. Otherwise, it contains the length
     "of the searched string.
-    IF str_r1 CP `*f#_*`.
-      output->display( |CP: str_r1 covers the pattern. |
+    IF str_x CP `*f#_*`.
+      output->display( |CP: The string covers the pattern. |
       && |The offset is { sy-fdpos }.| ).
     ELSE.
-      output->display( |CP: str_r1 does not cover the pattern. |
-      && |The length of str_r1 is { sy-fdpos }.| ).
+      output->display( |CP: The string does not cover the pattern. |
+      && |The length of the string is { sy-fdpos }.| ).
     ENDIF.
 
     "NP (does not conform to pattern)
-    IF str_r1 NP `i+`.
-      output->display( |NP: str_r1 does not cover the pattern. |
-      && |The length of str_r1 is { sy-fdpos }.| ).
+    IF str_x NP `i+`.
+      output->display( |NP: The string does not cover the pattern. |
+      && |The length of the string is { sy-fdpos }.| ).
     ELSE.
-      output->display( |NP: str_r1 covers the pattern. |
+      output->display( |NP: The string covers the pattern. |
       && |The offset is { sy-fdpos }.| ).
     ENDIF.
 
-    output->next_section( `19) Complex Searching Using ` &&
+***********************************************************************
+
+    output->next_section( `25) Complex Searching Using ` &&
     `Regular Expressions` ).
 
-    DATA(str_s1) = `Cathy's black cat was fast asleep on the mat. ` &&
-                    `Later that day, the cat played with Matt.`.
+    DATA(str_y) = `Cathy's black cat was fast asleep on the mat. ` &&
+                  `Later that day, the cat played with Matt.`.
+
+    "Using string functions
 
     "Determining the position of the first finding
     "here, parameter occ is 1 by default
-    DATA(off_s1) = find( val = str_s1  pcre = `at.` ).
+    DATA(off_y1) = find( val = str_y  pcre = `at.` ).
 
     "Determining the number of findings
     "Considers all 'a' characters not followed by 't',
     "all 'at' plus 'att'
-    DATA(cnt_s1) = count( val = str_s1  pcre = `at*` ).
+    DATA(cnt_y2) = count( val = str_y  pcre = `at*` ).
     "Considers all 'at' plus 'att' and so on
-    DATA(cnt_s2) = count( val = str_s1  pcre = `at+` ).
+    DATA(cnt_y3) = count( val = str_y  pcre = `at+` ).
 
     "String function match
     "Extracting a substring matching a given pattern
-    DATA(str_w_email) = `The email address is jon.doe@email.com.`.
-    DATA(str_s2) = match( val   = str_w_email
+    DATA(str_y_email1) = `The email address is jon.doe@email.com.`.
+    DATA(str_y4) = match( val   = str_y_email1
                           pcre = `\w+(\.\w+)*@(\w+\.)+(\w{2,4})` ).
 
     "Predicate function matches
     "Checking a string if it matches a given pattern
-    DATA(email) = `jon.doe@email.com`.
+    DATA(str_y_email2) = `jon.doe@email.com`.
 
-    IF matches( val   = email
+    IF matches( val   = str_y_email2
                 pcre = `\w+(\.\w+)*@(\w+\.)+(\w{2,4})` ).
-      email = |{ email } is a valid email address.|.
+      DATA(str_y5) = |{ str_y_email2 } is a valid email address.|.
     ELSE.
-      email = |{ email } is not a valid email address.|.
+      str_y5 = |{ str_y_email2 } is not a valid email address.|.
     ENDIF.
 
     "Example with a false email
-    DATA(false_email) = `jon.doe@email.abcdef`.
+    DATA(str_y_email3) = `jon.doe@email.abcdef`.
 
-    IF matches( val   = false_email
+    IF matches( val   = str_y_email3
                 pcre = `\w+(\.\w+)*@(\w+\.)+(\w{2,4})` ).
-      false_email = |{ false_email } is a valid email address.|.
+      DATA(str_y6) = |{ str_y_email3 } is a valid email address.|.
     ELSE.
-      false_email = |{ false_email } is not a valid email address.|.
+      str_y6 = |{ str_y_email3 } is not a valid email address.|.
     ENDIF.
 
     "Examples with the FIND statement
     "Storing submatches in variables.
     "Pattern: anything before and after ' on '
-    FIND PCRE `(.*)\son\s(.*)` IN str_s1 IGNORING CASE SUBMATCHES DATA(subm_s1) DATA(subm_s2).
+    FIND PCRE `(.*)\son\s(.*)` IN str_y
+      SUBMATCHES DATA(subm_y7) DATA(subm_y8)
+      IGNORING CASE.
 
     "Determining the number of letters in a string
-    FIND ALL OCCURRENCES OF PCRE `[A-Za-z]` IN str_s1 MATCH COUNT DATA(count_s).
+    FIND ALL OCCURRENCES OF PCRE `[A-Za-z]`
+      IN str_y
+      MATCH COUNT DATA(cnt_y9).
 
     "Extracting all findings of a certain pattern in a string and
     "storing them in an internal table
-    DATA findings_s TYPE string_table.
+    DATA tab_y10 TYPE string_table.
 
     "Pattern: An 'a' followed by any two characters
-    FIND ALL OCCURRENCES OF PCRE `a..` IN str_s1 RESULTS DATA(res_s1).
+    FIND ALL OCCURRENCES OF PCRE `a..` IN str_y
+      RESULTS DATA(res_y11).
 
     "The internal table includes the offset and length information of the individual findings.
     "The substrings are extracted from the original string based on that information and
     "added to an internal table of type string.
-    LOOP AT res_s1 ASSIGNING FIELD-SYMBOL(<fs_s>).
-      APPEND substring( val = str_s1 off = <fs_s>-offset len = <fs_s>-length ) TO findings_s.
+    LOOP AT res_y11 ASSIGNING FIELD-SYMBOL(<fs_y>).
+      APPEND substring( val = str_y off = <fs_y>-offset len = <fs_y>-length ) TO tab_y10.
     ENDLOOP.
 
     "Searching in an internal table and retrieving line, offset, length information
-    DATA(itab_s) = VALUE string_table( ( `Cathy's black cat on the mat played with the friend of Matt.` )
-                                       ( `Later that day, the cat played with Matt.` ) ).
+    DATA(tab_y12) = VALUE string_table( ( `Cathy's black cat on the mat played with the friend of Matt.` )
+                                        ( `Later that day, the cat played with Matt.` ) ).
 
     "Pattern: any character + 'y' followed by any character that is not a word character
     "Only the first occurrence is searched. The search is specified as case-insensitive (which is not relevant here).
-    FIND FIRST OCCURRENCE OF PCRE `.y\W` IN TABLE itab_s
-      IGNORING CASE MATCH LINE DATA(line_s) MATCH OFFSET DATA(off_s) MATCH LENGTH DATA(length_s).
+    FIND FIRST OCCURRENCE OF PCRE `.y\W` IN TABLE tab_y12
+       MATCH LINE DATA(line_y13)
+       MATCH OFFSET DATA(off_y14)
+       MATCH LENGTH DATA(len_y15)
+       IGNORING CASE.
 
     "Pattern: any character + 'y' followed by any character that is not a word character
     "Here, all occurrences are searched and the result is stored in an internal table specified
     "after the RESULTS addition. Since a group is included in the PCRE pattern denoted by the
     "parentheses (\W), the resulting internal table includes entries in the 'submatches'
     "component holding offset/length information for the particular match.
-    FIND ALL OCCURRENCES OF PCRE `.y(\W)` IN TABLE itab_s
-      IGNORING CASE RESULTS DATA(res_s2).
+    FIND ALL OCCURRENCES OF PCRE `.y(\W)` IN TABLE tab_y12
+      RESULTS DATA(res_y16)
+      IGNORING CASE.
 
-    output->display( input = off_s1 name = `off_s1` ).
-    output->display( input = cnt_s1 name = `cnt_s1` ).
-    output->display( input = cnt_s2 name = `cnt_s2` ).
-    output->display( input = str_s2 name = `str_s2` ).
-    output->display( input = email name = `email` ).
-    output->display( input = false_email name = `false_email` ).
-    output->display( input = subm_s1 name = `subm_s1` ).
-    output->display( input = subm_s2 name = `subm_s2` ).
-    output->display( input = count_s name = `count_s` ).
-    output->display( input = findings_s name = `findings_s` ).
-    output->display( input = line_s name = `line_s` ).
-    output->display( input = off_s name = `off_s` ).
-    output->display( input = length_s name = `length_s` ).
-    output->display( input = res_s2 name = `res_s2` ).
+    "Extracting all findings of certain patterns in a string and
+    "storing them in an internal table; the capturing groups are
+    "also evaluated
+    DATA tab_y17 TYPE string_table.
+    DATA(str_y18) = `az.ay.bx.bw.cv.cu.dt.ds.ar.bq`.
 
-    output->next_section( `20) Replacing Using Regular Expressions` ).
+    FIND ALL OCCURRENCES OF PCRE `(a.)|(b.)|(c.)`
+      IN str_y18
+      RESULTS DATA(res_y17)
+      IGNORING CASE.
 
-    DATA(str_t) = `Cathy's black cat was fast asleep on the mat. ` &&
+    LOOP AT res_y17 ASSIGNING FIELD-SYMBOL(<fs_y19>).
+      LOOP AT <fs_y19>-submatches ASSIGNING FIELD-SYMBOL(<fs_y20>).
+        "Group 1
+        IF sy-tabix = 1 AND <fs_y20>-offset <> -1.
+          APPEND |Substring "{ substring( val = str_y18 off = <fs_y20>-offset len = <fs_y20>-length ) }" found, capturing group 1| TO tab_y17.
+          EXIT.
+          "Group 2
+        ELSEIF sy-tabix = 2 AND <fs_y20>-offset <> -1.
+          APPEND |Substring "{ substring( val = str_y18 off = <fs_y20>-offset len = <fs_y20>-length ) }" found, capturing group 2| TO tab_y17.
+          EXIT.
+          "Group 3
+        ELSEIF sy-tabix = 3 AND <fs_y20>-offset <> -1.
+          APPEND |Substring "{ substring( val = str_y18 off = <fs_y20>-offset len = <fs_y20>-length ) }" found, capturing group 3| TO tab_y17.
+          EXIT.
+        ENDIF.
+      ENDLOOP.
+    ENDLOOP.
+
+    output->display( input = off_y1 name = `off_y1` ).
+    output->display( input = cnt_y2 name = `cnt_y2` ).
+    output->display( input = cnt_y3 name = `cnt_y3` ).
+    output->display( input = str_y4 name = `str_y4` ).
+    output->display( input = str_y5 name = `str_y5` ).
+    output->display( input = str_y6 name = `str_y6` ).
+    output->display( input = subm_y7 name = `subm_y7` ).
+    output->display( input = subm_y8 name = `subm_y8` ).
+    output->display( input = cnt_y9 name = `cnt_y9` ).
+    output->display( input = tab_y10 name = `tab_y10` ).
+    output->display( input = line_y13 name = `line_y13` ).
+    output->display( input = off_y14 name = `off_y14` ).
+    output->display( input = len_y15 name = `len_y15` ).
+    output->display( input = res_y16 name = `res_y16` ).
+    output->display( input = tab_y17 name = `tab_y17` ).
+
+***********************************************************************
+
+    output->next_section( `26) Replacing Using Regular Expressions` ).
+
+    DATA(str_z) = `Cathy's black cat was fast asleep on the mat. ` &&
                    `Later that day, the cat played with Matt.`.
 
     "Considers all 'a' characters not followed by 't',
     "all 'at' plus 'att'
     "occ = 0 -> replaces all occurrences
-    DATA(str_t1) = replace( val  = str_t
+    DATA(str_z1) = replace( val  = str_z
                             pcre = `at*`
                             with = `#`
                             occ  = 0 ).
 
     "Considers all 'at' plus 'att'
-    DATA(str_t2) = replace( val  = str_t
+    DATA(str_z2) = replace( val  = str_z
                             pcre = `at+`
                             with = `#`
                             occ  = 0 ).
 
     "Replaces 2 'e' characters in a row
-    DATA(str_t3) = replace( val  = str_t
+    DATA(str_z3) = replace( val  = str_z
                             pcre = `e{2}`
                             with = `#`
                             occ = 0 ).
 
     "Replaces 'ay'. Preceding d is optional ('day' is replaced too)
-    DATA(str_t4) = replace( val  = str_t
+    DATA(str_z4) = replace( val  = str_z
                             pcre = `d?ay`
                             with = `#`
                             occ  = 0 ).
 
     "Subgroup specified, replacement happens if 'at' is followed
     "by 'h' or 't'
-    DATA(str_t5) = replace( val  = str_t
+    DATA(str_z5) = replace( val  = str_z
                             pcre = `at(h|t)`
                             with = `#`
                             occ  = 0 ).
 
     "Replaces 'at' when followed by any whitespace character
-    DATA(str_t6) = replace( val  = str_t
+    DATA(str_z6) = replace( val  = str_z
                             pcre = `at\s`
                             with = `#`
                             occ = 0 ).
@@ -1156,19 +1526,19 @@ CLASS ZCL_DEMO_ABAP_STRING_PROC IMPLEMENTATION.
     "Replacement starts at beginning of string that is followed by 'c'
     "Marked as not case sensitive
     "Instead of ^, you could also use \A
-    DATA(str_t7) = replace( val  = str_t
+    DATA(str_z7) = replace( val  = str_z
                             pcre = `^c`
                             with = `#`
                             case = abap_false ).
 
     "Replacement starts at end of string
     "Instead of $, you could also use \Z
-    DATA(str_t8) = replace( val  = str_t
+    DATA(str_z8) = replace( val  = str_z
                             pcre = `$`
                             with = ` Awesome!` ).
 
     "Replaces words starting with 'ma', ending with another character
-    DATA(str_t9) = replace( val  = str_t
+    DATA(str_z9) = replace( val  = str_z
                             pcre = `\bma.\b`
                             with = `#`
                             case = abap_false
@@ -1177,7 +1547,7 @@ CLASS ZCL_DEMO_ABAP_STRING_PROC IMPLEMENTATION.
     "Replaces the beginning of words with 'ma' followed by another
     "character.
     "Marked as not case sensitive, hence 'Mat' is considered, too.
-    DATA(str_t10) = replace( val  = str_t
+    DATA(str_z10) = replace( val  = str_z
                              pcre = `\bma.`
                              with = `#`
                              case = abap_false
@@ -1185,37 +1555,37 @@ CLASS ZCL_DEMO_ABAP_STRING_PROC IMPLEMENTATION.
 
     "Replaces a specified set of literals; if 'case = abap_false'
     "is not specified, case sensitivity is respected
-    DATA(str_t11) = replace( val = str_t
+    DATA(str_z11) = replace( val = str_z
                              pcre = `[eC'.,]`
                              with = `#`
                              occ = 0 ).
 
     "Replaces a specified value range
-    DATA(str_t12) = replace( val  = str_t
+    DATA(str_z12) = replace( val  = str_z
                              pcre = `[a-eA-C0-9]`
                              with = `#`
                              occ  = 0 ).
 
     "Replaces a specified value range. The example is the negation
     "of the previous example.
-    DATA(str_t13) = replace( val  = str_t
+    DATA(str_z13) = replace( val  = str_z
                              pcre = `[^a-eA-C0-9]`
                              with = `#`
                              occ = 0 ).
 
-    DATA(str_t14) = `<p><i>Date:</i> 12/16/2022</p>` &&
+    DATA(str_zb) = `<p><i>Date:</i> 12/16/2022</p>` &&
                      `<br><p>Time: 10:30</p>`.
 
     "Replacements considering subgroups
     "Example switches the date format from US to European
     "Sequences of digits are specified as subgroups followed by /
-    DATA(str_t15) = replace( val  = str_t14
+    DATA(str_z15) = replace( val  = str_zb
                              pcre = `(\d+)/(\d+)/`
                              with = `$2.$1.` ).
 
     "Regex pitfall: Watch greediness when using PCRE expressions
     "Example: Replacing all HTML tags in a string
-    DATA(str_t16) = replace( val  = str_t14
+    DATA(str_z16) = replace( val  = str_zb
                              pcre = `<.*>`
                              with = ``
                              occ  = 0 ). "Whole string replaced
@@ -1223,46 +1593,46 @@ CLASS ZCL_DEMO_ABAP_STRING_PROC IMPLEMENTATION.
     "The following pattern considers '<' not followed by '>' which is
     "specified in a negated definition for a single character in the
     "brackets. Then '*' greedily, matches anything until the next '>'.
-    DATA(str_t17) = replace( val  = str_t14
+    DATA(str_z17) = replace( val  = str_zb
                              pcre = `<[^>]*>`
                              with = ``
                              occ = 0 ).
 
     "Positive lookahead: Replaces colons followed by digits
-    DATA(str_t18) = replace( val  = str_t14
+    DATA(str_z18) = replace( val  = str_zb
                              pcre = `:(?=\d+)`
                              with = `.`
                              occ  = 0 ).
 
     "Negative lookahead: Removes colons not followed by digits
     ":(?!(\d+))
-    DATA(str_t19) = replace( val  = str_t14
+    DATA(str_z19) = replace( val  = str_zb
                              pcre = `:(?!\d+)`
                              with = ``
                              occ  = 0 ).
 
     "Positive Lookbehind: Replaces a digit preceded by a blank
-    DATA(str_t20) = replace( val  = str_t14
+    DATA(str_z20) = replace( val  = str_zb
                              pcre = `(?<=\s)\d`
                              with = `0`
                              occ  = 0 ).
 
     "Negative lookbehind: Determines the position before closing p tags
     "not preceded by 4 digits
-    DATA(str_t21) = replace( val  = str_t14
+    DATA(str_z21) = replace( val  = str_zb
                              pcre = `(?<!\d{4})(<\/p>)`
                              with = `:00$1`
                              occ  = 0 ).
 
-    DATA(str_t22) = `ab apppc app`.
+    DATA(str_zc) = `ab apppc app`.
 
     "Greedy search
     "The pattern matches anything before 'p'. The matching is carried
     "out as often as possible. Hence, in this example the match
     "stretches until the end of the string since 'p' is the final
     "character, i. e. this 'p' and anything before is replaced).
-    DATA(str_t23) = replace( val  = str_t22
-                             pcre = `(.*)p`
+    DATA(str_z23) = replace( val  = str_zc
+                             pcre = `.*p`
                              with = `#` ).
 
     "Non-greedy search (denoted by '?' below)
@@ -1270,59 +1640,106 @@ CLASS ZCL_DEMO_ABAP_STRING_PROC IMPLEMENTATION.
     "until the first 'p' is found and does not go beyond (matching as
     "few as possible). Hence, the first found 'p' including the content
     "before is replaced.
-    DATA(str_t24) = replace( val  = str_t22
-                             pcre = `(.*?)p`
+    DATA(str_z24) = replace( val  = str_zc
+                             pcre = `.*?p`
                              with = `#` ).
 
     "Replacements with subgroups
     "Replaces 'PP' (case-insensitive) with '#', the content before and
     "after 'PP' is switched
-    DATA(str_t25) = replace( val  = str_t22
+    DATA(str_z25) = replace( val  = str_zc
                              pcre = `(.*?)PP(.*)`
                              with = `$2#$1`
                              case = abap_false ).
 
     "REPLACE statement: Changing the source field directly
-    REPLACE PCRE `(.*?)PP(.*)` IN str_t22 WITH `$2#$1` IGNORING CASE.
+    REPLACE PCRE `(.*?)PP(.*)` IN str_zc WITH `$2#$1` IGNORING CASE.
 
     "Replacements in internal tables
-    DATA(itab_t) = VALUE
-      string_table( ( `Cathy's black cat was fast asleep on the mat.` )
-                    ( `Later that day, the cat played with Matt.` )
-                    ( `How about that?` ) ).
+    DATA(itab_z) = VALUE string_table( ( `Cathy's black cat was fast asleep on the mat.` )
+                                       ( `Later that day, the cat played with Matt.` )
+                                       ( `How about that?` ) ).
 
     "Replaces all 'th' occurrences in words beginning with 'th'
-    REPLACE ALL OCCURRENCES OF PCRE `\bth` IN TABLE itab_t WITH `#`
-     IGNORING CASE REPLACEMENT COUNT DATA(count_t).
+    REPLACE ALL OCCURRENCES OF PCRE `\bth`
+     IN TABLE itab_z WITH `#`
+     REPLACEMENT COUNT DATA(cnt_z26)
+     IGNORING CASE .
 
-    output->display( input = |Original str_t: { str_t }| ).
-    output->display( input = str_t1 name = `str_t1` ).
-    output->display( input = str_t2 name = `str_t2` ).
-    output->display( input = str_t3 name = `str_t3` ).
-    output->display( input = str_t4 name = `str_t4` ).
-    output->display( input = str_t5 name = `str_t5` ).
-    output->display( input = str_t6 name = `str_t6` ).
-    output->display( input = str_t7 name = `str_t7` ).
-    output->display( input = str_t8 name = `str_t8` ).
-    output->display( input = str_t9 name = `str_t9` ).
-    output->display( input = str_t10 name = `str_t10` ).
-    output->display( input = str_t11 name = `str_t11` ).
-    output->display( input = str_t12 name = `str_t12` ).
-    output->display( input = str_t13 name = `str_t13` ).
-    output->display( input = |Original str_t14: { str_t14 }| ).
-    output->display( input = str_t15 name = `str_t15` ).
-    output->display( input = str_t16 name = `str_t16` ).
-    output->display( input = str_t17 name = `str_t17` ).
-    output->display( input = str_t18 name = `str_t18` ).
-    output->display( input = str_t19 name = `str_t19` ).
-    output->display( input = str_t20 name = `str_t20` ).
-    output->display( input = str_t21 name = `str_t21` ).
-    output->display( input = str_t23 name = `str_t23` ).
-    output->display( input = str_t24 name = `str_t24` ).
-    output->display( input = str_t25 name = `str_t25` ).
-    output->display( input = str_t22 name = `str_t22` ).
-    output->display( input = itab_t name = `itab_t` ).
-    output->display( input = |Number of replacements in itab (count_t): { count_t }| ).
+    output->display( input = |Original str_z: { str_z }| ).
+    output->display( input = str_z1 name = `str_z1` ).
+    output->display( input = str_z2 name = `str_z2` ).
+    output->display( input = str_z3 name = `str_z3` ).
+    output->display( input = str_z4 name = `str_z4` ).
+    output->display( input = str_z5 name = `str_z5` ).
+    output->display( input = str_z6 name = `str_z6` ).
+    output->display( input = str_z7 name = `str_z7` ).
+    output->display( input = str_z8 name = `str_z8` ).
+    output->display( input = str_z9 name = `str_z9` ).
+    output->display( input = str_z10 name = `str_z10` ).
+    output->display( input = str_z11 name = `str_z11` ).
+    output->display( input = str_z12 name = `str_z12` ).
+    output->display( input = str_z3 name = `str_z13` ).
+    output->display( input = |Original str_zb: { str_zb }| ).
+    output->display( input = str_z15 name = `str_z15` ).
+    output->display( input = str_z16 name = `str_z16` ).
+    output->display( input = str_z17 name = `str_z17` ).
+    output->display( input = str_z18 name = `str_z18` ).
+    output->display( input = str_z19 name = `str_z19` ).
+    output->display( input = str_z20 name = `str_z20` ).
+    output->display( input = str_z21 name = `str_z21` ).
+    output->display( input = |Original str_zc: { str_zc }| ).
+    output->display( input = str_z23 name = `str_z23` ).
+    output->display( input = str_z24 name = `str_z24` ).
+    output->display( input = str_z25 name = `str_z25` ).
+    output->display( input = str_zb name = `str_zb` ).
+    output->display( input = itab_z name = `itab_z` ).
+    output->display( input = |Number of replacements in itab (cnt_z26): { cnt_z26 }| ).
+
+***********************************************************************
+
+    output->next_section( `27) Excursion: System Classes for Regular Expressions` ).
+
+    "Searching for all occurrences
+    DATA(some_string) = `a1 # B2 ? cd . E3`.
+
+    "Creating a regex instance for PCRE regular expressions
+    "In the example, regex_inst has the type ref to cl_abap_regex.
+    DATA(regex_inst) =  cl_abap_regex=>create_pcre( pattern = `\D\d`           "any-non digit followed by a digit
+                                                    ignore_case = abap_true ).
+
+    "Creating an instance of CL_ABAP_MATCHER using the method CREATE_MATCHER of the class CL_ABAP_REGEX
+    DATA(matcher_1) = regex_inst->create_matcher( text = some_string ).
+
+    "Searching for all occurrences using the 'find_all' method
+    "In the example, result has the type match_result_tab containing the findings.
+    DATA(result1) = matcher_1->find_all( ).
+
+    output->display( input = result1 name = `result1` ).
+
+    "You can also use method chaining to save lines of code
+    DATA(result2) = cl_abap_regex=>create_pcre( pattern = `\s\w`       "any blank followed by any word character
+                                                ignore_case = abap_true )->create_matcher( text = some_string )->find_all( ).
+
+    output->display( input = result2 name = `result2` ).
+
+    "Retrieving submatches using the 'get_submatch' method
+    DATA str_tab_reg_find TYPE string_table.
+
+    DATA(matcher_2) = cl_abap_regex=>create_pcre( pattern = 'A(.*?)B(.*?)C(.*?)'
+                              ignore_case = abap_false )->create_matcher( text = 'AzyBxwvCutsr' ).
+
+    IF matcher_2->match( ).
+      DO.
+        TRY.
+            APPEND matcher_2->get_submatch( sy-index ) TO str_tab_reg_find.
+          CATCH cx_sy_invalid_submatch cx_sy_no_current_match.
+            EXIT.
+        ENDTRY.
+      ENDDO.
+    ENDIF.
+
+    output->display( input = str_tab_reg_find name = `str_tab_reg_find` ).
 
   ENDMETHOD.
 ENDCLASS.

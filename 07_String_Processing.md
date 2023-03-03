@@ -4,7 +4,7 @@
 
 - [String Processing](#string-processing)
   - [Introduction](#introduction)
-    - [Data Types for Character Strings](#data-types-for-character-strings)
+  - [Data Types for Character Strings](#data-types-for-character-strings)
   - [Declaring Character-Like Data Objects](#declaring-character-like-data-objects)
   - [Assigning Values](#assigning-values)
   - [String Templates](#string-templates)
@@ -16,13 +16,14 @@
   - [Searching and Replacing](#searching-and-replacing)
     - [Searching for Specific Characters](#searching-for-specific-characters)
     - [Replacing Specific Characters in Strings](#replacing-specific-characters-in-strings)
-    - [Searching for Substrings in Strings](#searching-for-substrings-in-strings)
-    - [Replacing Substrings in Strings](#replacing-substrings-in-strings)
+    - [Searching for Substrings in Strings (and Tables)](#searching-for-substrings-in-strings-and-tables)
+    - [Replacing Substrings in Strings (and Tables)](#replacing-substrings-in-strings-and-tables)
   - [Pattern-Based Searching and Replacing in Strings](#pattern-based-searching-and-replacing-in-strings)
     - [Simple Pattern-Based Searching Using Comparison Operators](#simple-pattern-based-searching-using-comparison-operators)
     - [Complex Searching and Replacing Using Regular Expressions](#complex-searching-and-replacing-using-regular-expressions)
       - [Excursion: Common Regular Expressions](#excursion-common-regular-expressions)
       - [Searching Using Regular Expressions](#searching-using-regular-expressions)
+        - [Excursion: System Classes for Regular Expressions](#excursion-system-classes-for-regular-expressions)
       - [Replacing Using Regular Expressions](#replacing-using-regular-expressions)
   - [Executable Example](#executable-example)
 
@@ -38,65 +39,67 @@ and built-in [string functions](https://help.sap.com/doc/abapdocu_cp_index_htm/C
 
 > **💡 Note**<br>
 >-  Compared to statements, expressions and string functions can help make your ABAP code more
-    concise and straightforward. For example, string operations can be
-    done directly in [operand
-    position](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenoperand_position_glosry.htm "Glossary Entry")
-    and, thus, you can avoid temporary variables.
->-   In ABAP statements, modification operations on strings are frequently done in read/write positions, meaning that the source field and the target
+    concise and straightforward. For example, you can perform string operations directly in [operand
+    position](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenoperand_position_glosry.htm "Glossary Entry"),
+    allowing you to avoid temporary variables.
+>-   In ABAP statements, modification operations on strings are often performed in read/write positions, meaning that the source and target
     fields of an operation are the same. When working with string functions, the source field is passed as an input parameter and the modified value is returned as a [return value](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenreturn_value_glosry.htm "Glossary Entry"), meaning that the function itself does not modify the source field. Of course, you can assign the function to the source field to achieve its modification.
->-   In most cases, string functions offer the same functionality as the
-    corresponding ABAP statements or even more. The return value of string functions
+>-   In most cases, string functions provide the same functionality as the
+    corresponding ABAP statements, or even more. The return value of string functions
     that return character strings is always of type `string`.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
-### Data Types for Character Strings
+## Data Types for Character Strings
 
-ABAP mainly offers the following built-in data types for data objects that contain character strings. They can be distinguished as follows:
+ABAP provides the following built-in data types for data objects that contain character strings. They are distinguished as follows:
 
 | Type | Details | Length | Value Range | Initial Value |
 |---|---|---|---|---|
 | `string` | For variable length character strings. [Data objects](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendata_object_glosry.htm "Glossary Entry") of this type are [dynamic data objects](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendynamic_data_object_glosry.htm "Glossary Entry"), i. e. the length of a variable can change during the execution of an ABAP program and thus it can contain character strings of different lengths. A data object of type `string` is called *text string* or, in short, just *string*. | No standard length; length is variable | Any [Unicode](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenunicode_glosry.htm) characters that can be encoded in ABAP language's code page [UCS-2](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenucs2_glosry.htm). The most common content are alphanumeric characters or special characters.  | Empty string with length 0 |
 | `c` | For fixed length character strings. Data objects of this type are [static data objects](http://ldcialx.wdf.sap.corp:50018/sap/public/bc/abap/docu?sap-language=EN&object=abenstatic_data_object_glosry&version=X&sap-client=000), i. e. the length of a variable must be defined during its declaration and does not change during the execution of an ABAP program. Thus, it always contains character strings of the same length. A data object of type `c` is called *text field*.|Data objects of this type can contain a string of fixed length (between 1 and 262143 characters); standard length: 1 | Same as for `string` | A blank for each position |
 
-Besides these main data types for character strings, there are some other fixed length data types with special meanings:
+In addition to these main data types for character strings, there are several other fixed length data types with special meanings:
 
 -	`n` for fixed length numerical character strings
-    - Data objects of this type are technically almost the same as text fields. However, valid characters are only the digits 0 to 9. The validity is not checked when assigning values in a regular way but only for [lossless assignments](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenlossless_assignment_glosry.htm). Thus, such numeric text fields can contain invalid data, but should only be used for digits that are not meant for arithmetic calculations like zip codes or article numbers. The initial value is 0 for each position.
+    - Data objects of this type are technically almost the same as text fields. However, the only valid characters are the digits 0 to 9. Validity is not checked for assigning values in a regular way but only for [lossless assignments](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenlossless_assignment_glosry.htm). Thus, such numeric text fields can contain invalid data, but should only be used for digits that are not intended for arithmetic calculations, such as zip codes or article numbers. The initial value for each position is 0.
 -	`d` and `t` for date and time fields
-    - These data types have a predefiend length of 6 and 8. Data objects of these types are used for character representaions of dates and times in a predefined format. You can use them directly in date and time calculations. However, these fields can contain invalid values, too.
+    - These data types have a predefiend length of 6 and 8. Data objects of these types are used for character representations of dates and times in a predefined format. You can use them directly in date and time calculations. However, these fields can also contain invalid values.
 
 These data types are not covered further in this cheat sheet. The same is true for the [byte-like data types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbyte_like_data_typ_glosry.htm "Glossary Entry") `x` and `xstring` that are closely related to `c` and `string` but contain raw [byte strings](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbyte_string_glosry.htm).
 
 > **⚡ Differences between text strings (variable length) and text fields (fixed length)**<br>
 >-   **Initial value**: The initial value of a text string is an
-    empty string with length 0. A text field's initial value is represented by blanks for each position.
+    empty string of length 0. The initial value of text field is represented by blanks at each position.
 >-   **Internal representation**: Data objects of type `c` and `string` are both [elementary data objects](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenelementary_data_object_glosry.htm "Glossary Entry").
-    However, while text fields occupy a block of memory according to their length, text strings are so-called [deep](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendeep_glosry.htm "Glossary Entry") data objects. Internally, they are managed by a [reference](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenreference_glosry.htm "Glossary Entry") that points to the actual character. This fact has restricting consequences for using strings as components of structures but can also boost the performance of assignments because of the concept of [sharing](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensharing_glosry.htm "Glossary Entry") of deep data objects.
+    However, while text fields occupy a block of memory according to their length, text strings are so-called [deep](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendeep_glosry.htm "Glossary Entry") data objects. Internally, they are managed by a [reference](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenreference_glosry.htm "Glossary Entry") that points to the actual character. This fact has restrictive consequences for the use of strings as components of structures, but can also improve the performance of assignments due to the concept of [sharing](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensharing_glosry.htm "Glossary Entry") of deep data objects.
 >-   **Length**: Theoretically, a text string can use up to 2 GB (one character occupies 2 bytes).
     The maximum length of a text field is 262143 characters.
 >-   **Trailing blanks**: For text strings, trailing blanks are preserved in all operations. For text fields, it depends on the [operand
-    position](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenoperand_position_glosry.htm "Glossary Entry") whether trailing blanks are respected or not. In most operand positions, trailing blanks are truncated when working with text fields, even when using [text field literals](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abentext_field_literal_glosry.htm). For example, if a text field is assigned to a text string, the resulting target string never contains any trailing blanks. Note in this context the section *Condensing Strings*.
+    position](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenoperand_position_glosry.htm "Glossary Entry") whether trailing blanks are respected or not. In most operand positions, trailing blanks are truncated when working with text fields, even when using [text field literals](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abentext_field_literal_glosry.htm). For example, if a text field is assigned to a text string, the resulting target string will never contain trailing blanks. See the *Condensing Strings* section in this context.
 >-   **Flexibility**: Text strings are more flexible than text fields
-    because you can easily shorten or extend them without
-    worrying that, for example, parts of the character string are
-    truncated when processing. On the other hand, when accessing substrings of a string, you must take care that the string is long enough, while for text fields you always know their length.
+    because you can easily shorten or lengthen them without
+    worrying that, for example, parts of the character string will be
+    truncated during processing. On the other hand, when accessing substrings of a string, you have to make sure that the string is long enough, whereas with text fields you always know their length.
 
-So, when to actually use what? Text fields make sense when
-actually determining a maximum or mandatory length, e. g. a country code
-that must consist of a maximum of two characters or input fields in
-forms that should not exceed a certain length. If restricting a string
+So, when to use what? Text fields are useful when
+actually specifying a maximum or mandatory length, e.g. a country code
+that must be a maximum of two characters, or for input fields in
+forms that should not exceed a certain length. If limiting a string
 is not relevant, text strings are a good choice.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
 ## Declaring Character-Like Data Objects
 
-For working with character strings, you need character-like data objects, that are based on the above mentioned character-like types.
-
-The simplest way of producing text in an ABAP program are [character literals](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencharacter_literal_glosry.htm).
-The following code snippet shows a global class implementing the interface `if_oo_adt_classrun`. Using the `write` method, you can display output in the ADT console. In the example, two [untyped literals](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenuntyped_literal_glosry.htm) without a dedicated name ([unnamed data object](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenunnamed_data_object_glosry.htm)) are included. In the case below, the data type of the character literals are defined by the delimiters.
-Text string literals are enclosed in backquotes (<code>\`...\`</code>) and have the data type `string`. Text field literals are enclosed in single quotes (`'...'`) and have the data type `c`. The literals can be (but should not according to the [programming guidelines on literals (F1 docu for standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenliterals_guidl.htm)) used like constants of these types in [operand positions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenoperand_position_glosry.htm). They should be only used for start values when declaring [named data objects](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abennamed_data_object_glosry.htm).
+- To work with character strings, you need character-like data objects based on the character-like types mentioned above.
+- The simplest way of producing text in an ABAP program are [character literals](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencharacter_literal_glosry.htm).
+The following code snippet shows a global class implementing the interface `if_oo_adt_classrun`. 
+  - Using the `write` method, you can display output in the ADT console. In the example, two [untyped literals](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenuntyped_literal_glosry.htm) without a dedicated name ([unnamed data object](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenunnamed_data_object_glosry.htm)) are included. 
+  - In the case below, the data type of the character literals are defined by the delimiters.
+- Text string literals are enclosed in backquotes (<code>\`...\`</code>) and have the data type `string`. 
+- Text field literals are enclosed in single quotes (`'...'`) and have the data type `c`. 
+- The literals can be (but should not according to the [programming guidelines on literals (F1 docu for standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenliterals_guidl.htm)) used like constants of these types in [operand positions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenoperand_position_glosry.htm). They should be only used for start values when declaring [named data objects](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abennamed_data_object_glosry.htm).
 
 ```abap
 CLASS zcl_some_test_class DEFINITION PUBLIC FINAL CREATE PUBLIC.
@@ -112,9 +115,8 @@ CLASS zcl_some_test_class IMPLEMENTATION.
 ENDCLASS.
 ```
 
-[Named](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abennamed_data_object_glosry.htm) character-like data types and objects can be declared like other types and objects using [`TYPES`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abaptypes.htm), [`DATA`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapdata.htm) [`CONSTANTS`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapconstants.htm) and by referring to a character-like data type.
-
-Furthermore, character-like data objects can be declared inline with the operators `DATA` and, in newer ABAP releases, `FINAL` as shown further down.
+- [Named](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abennamed_data_object_glosry.htm) character-like data types and objects can be declared like other types and objects using [`TYPES`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abaptypes.htm), [`DATA`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapdata.htm) [`CONSTANTS`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapconstants.htm) and by referring to a character-like data type.
+- In addition, character-like data objects can be declared inline with the operators `DATA` and, in newer ABAP releases, `FINAL`, as shown below.
 
 Syntax examples:
 ``` abap
@@ -133,8 +135,8 @@ DATA: flag  TYPE c LENGTH 1,   "Built-in type
       char2 TYPE s_toairp,     "DDIC type (used e. g. for a field in a demo table)
       char3 TYPE zdemo_abap_flsch-carrid. "Using the type of a DDIC table component
 
-"You might also stumble upon declarations with type c and the length
-"specified in parentheses. It is not recommended so as not to confuse
+"You may also encounter declarations with type c and the length
+"specified in parentheses. This is not recommended, to avoid confusion
 "with the use of parentheses in dynamic programming.
 
 DATA char(4) TYPE c.
@@ -147,14 +149,13 @@ DATA char_len_one TYPE c.
 
 ## Assigning Values
 
-When declaring character-like data objects, you can directly provide
-start values. For the assignment of values, you can, for example, use
+- When you declare character-like data objects, you can specify start values directly. For example, you can use
 the [assignment operator](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenassignment_operator_glosry.htm "Glossary Entry")
 `=`.
-As mentioned above, character-like data objects can be declared inline with the operators `DATA` or, in newer ABAP releases, `FINAL`. You can use the operators at many [write positions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenwrite_position_glosry.htm "Glossary Entry"). Compared to the `VALUE` addition of the declaration statements, inline declarations allow you to declare variables for results of expressions or in other positions where character strings are returned.
-In the case below, a variable specified in parentheses preceded by
-`DATA` (or `FINAL`) on the left side of the assignment operator automatically
-derives a data type from the operand on the right. This helps make your
+- As mentioned above, you can declare character-like data objects inline using the operators `DATA` or, in newer ABAP releases, `FINAL`. 
+- You can use the operators at many [write positions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenwrite_position_glosry.htm "Glossary Entry"). 
+- Unlike the `VALUE` addition of the declaration statements, inline declarations allow you to declare variables for the results of expressions or at other positions where character strings are returned.
+- In the case below, a variable specified in parentheses preceded by `DATA` (or `FINAL`) on the left side of the assignment operator automatically derives a data type from the operand on the right. This helps to make your
 programs leaner.
 
 Syntax examples:
@@ -205,13 +206,13 @@ DATA(str6)  = `cdefgh`.
 str6 = char3. "'ab' (trailing blanks are not respected due to conversion rule)
 ```
 
-When assigning strings, not only data objects can be placed on the right
-side. Various expressions and strings can be chained using the
+- When assigning strings, not only data objects can be placed on the right
+side. Various expressions and strings can be concatenated using the
 [concatenation
 operator](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconcatenation_operator_glosry.htm "Glossary Entry")
-`&&`. Alternatively, you might chain strings using [string
-templates](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenstring_template_glosry.htm "Glossary Entry")
-and as outlined in the section *Concatenating Strings*.
+`&&`. 
+- Alternatively, you can concatenate strings using [string
+templates](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenstring_template_glosry.htm "Glossary Entry"), as described in the *Concatenating Strings* section.
 ``` abap
 str5 = str3 && ` ` && str4 && `!`. "X 1-!
 "Note the output for str4 that includes the conversion of type i to
@@ -230,19 +231,18 @@ to `&&`.
 <p align="right">(<a href="#top">back to top</a>)</p>
 
 ## String Templates
-Using string templates, you can construct strings very elegantly from
-literal text and - which is the primary use case - by also including
+- Using string templates, you can construct strings very elegantly from
+literal text and - which is the primary use case - by including
 embedded ABAP
-[expression](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenexpression_glosry.htm "Glossary Entry")
-within a pair of delimiter characters: `|...|` if these expressions can be converted to `string`. To embed expressions, you include them within curly brackets: `{ ... }`.
+[expressions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenexpression_glosry.htm "Glossary Entry")
+within a pair of delimiters (`|...|`) if these expressions can be converted to `string`. 
+- To embed expressions, you enclose them in curly brackets: `{ ... }`.
 
 > **💡 Note**<br>
 > String templates form a [string
 expression](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenstring_expression_glosry.htm "Glossary Entry")
-that is compiled at runtime. Hence, a string template that only contains
-literal text is handled like an expression which has impact on the
-performance. In such a case, using a text string literal with backquotes
-is preferable.
+that is compiled at runtime. Therefore, a string template that contains only
+literal text is treated as an expression, which has a performance impact. In such a case, it is preferable to use a text string literal with backquotes.
 
 Syntax examples:
 ``` abap
@@ -258,12 +258,13 @@ DATA(s3) = |{ s1 } { s2 }|. "Hallo NAME! How are you?
 DATA(s4) = |{ s1 }| && ` ` && |{ s2 }|. "Hallo NAME! How are you?
 ```
 
-String templates interpret certain character combinations as [control
+- String templates interpret certain character combinations as [control
 characters](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenstring_templates_separators.htm).
-For example, `\n` is interpreted as line feed. A new line is
-set. Plus, string templates support various [formatting
+- For example, `\n` is interpreted as a newline. A new line is
+started. 
+- String templates also support various [formatting
 options](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapcompute_string_format_options.htm).
-Check the ABAP Keyword Documentation for all options.
+- Refer to the ABAP Keyword Documentation for all options.
 
 Syntax examples:
 ``` abap
@@ -305,14 +306,12 @@ s1 = |{ CONV decfloat34( - 1 / 3 ) DECIMALS = 3 }|. "'-0.333'
 
 ## Determining the Length of Strings
 
-To determine the length of a string you can use the string function
+- To determine the length of a string, you can use the string function
 [`strlen`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenlength_functions.htm).
-Note that the result depends on the type of the string, i. e. the result
-for a data object of type `string` includes trailing blanks. A
-fixed length string does not include them. To exclude trailing blanks in
-all cases irrespective of the data type, you can use the built-in
-function
-[`numofchar`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenlength_functions.htm).
+- Note that the result depends on the type of the string, i. e. the result for a data object of type `string` includes trailing blanks. A
+fixed-length string does not include them. 
+- To exclude trailing blanks in all cases, regardless of the data type, you can use the built-in
+[`numofchar`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenlength_functions.htm) function.
 
 Syntax examples:
 ``` abap
@@ -329,11 +328,13 @@ len_str = numofchar( `abc   ` ). "3
 
 ## Concatenating Strings
 
-Two or more strings can be concatenated using the concatenation operator
+- Two or more strings can be concatenated using the concatenation operator
 `&&` and string templates. Alternatively, you can use
 [`CONCATENATE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapconcatenate.htm)
-statements. It is also possible to concatenate lines of internal tables
-into a string to avoid a loop. In a more modern way, you can make use of
+statements. 
+- It is also possible to concatenate lines from internal tables
+into a string to avoid a loop. 
+- A more modern way is to use
 the string function
 [`concat_lines_of`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconcatenation_functions.htm).
 
@@ -373,19 +374,19 @@ s1 = concat_lines_of( table = itab sep = ` ` ). "With separator
 
 ## Splitting Strings
 
-You can use
+- You can use
 [`SPLIT`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapsplit.htm)
-statements to split strings in multiple segments. The result of the
-splitting can be stored in separate data objects or internal tables that
-have a character-like line type. Note that if the specified targets are
-fewer than the segments retrieved by the splitting, the last target is
-given the rest of the segments that have not yet been split. If there
-are more targets specified, the targets not given a segment are
-initialized. Hence, specifying individual targets with `SPLIT`
+statements to split strings in multiple segments. 
+- The result of the
+split can be stored in separate data objects or internal tables that
+have a character-like line type. 
+- Note that if the number of specified targets is
+less than the number of segments returned by the split, the last target receives the remaining unsplit segements. If more targets are specified, the targets that do not receive a segment are
+initialized. 
+- Therefore, specifying individual targets with `SPLIT`
 statements is useful if the number of expected segments is known.
 Otherwise, splitting into tables is a good choice.
-
-If you want to get the value of a specific segment, you can use the
+- If you want to get the value of a particular segment, you can use the
 string function
 [`segment`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensegment_functions.htm).
 
@@ -412,13 +413,13 @@ s2 = segment( val = s1 index = 2 sep = `,` ). "world
 ## Modifying Strings
 **Transforming to Lowercase and Uppercase**
 
-The string functions
+- The string functions
 [`to_lower`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencase_functions.htm)
 and
 [`to_upper`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencase_functions.htm)
 transform characters of a string to either lowercase or uppercase and
-store the result in a target variable. If the transformation should be
-applied to the source directly, you can use
+store the result in a target variable. 
+- If you want ot apply the transformation directly to the source directly, you can use
 [`TRANSLATE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abaptranslate.htm)
 statements.
 
@@ -436,19 +437,18 @@ TRANSLATE s1 TO LOWER CASE. "hallo
 
 **Shifting Content**
 
-You can shift content within a string to a specific position on the left
+- You can shift content within a string to a specific position on the left
 or right of a string.
 [`SHIFT`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapshift.htm)
-statements have different additions for specific use cases.
-
-In a more modern way, you can use the string functions
+statements have various additions for specific use cases.
+- In a more modern way, you can use the string functions
 [`shift_left`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenshift_functions.htm)
 and
-[`shift_right`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenshift_functions.htm)
-that store the result in a variable. These functions offer an additional
+[`shift_right`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenshift_functions.htm), which store the result in a variable. 
+  - These functions provide additional
 functionality. The `sub` parameter can be used to specify a
-substring. All substrings in the string that match the specified value
-in `sub` either on the left or right side of the string are
+substring. All substrings in the string that match the value specified
+in `sub` on either the left or right side of the string are
 removed.
 
 Syntax examples:
@@ -498,13 +498,13 @@ s2 = shift_right( val = `abc   ` ). "'abc' (same result as above)
 
 **Condensing Strings**
 
-You can use
+- You can use
 [`CONDENSE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapcondense.htm)
 statements or the string function
 [`condense`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencondense_functions.htm)
-to remove blanks in strings. The advantage of using the string function
-is that you can also specify any characters to be removed and not only
-blanks.
+to remove blanks from strings. 
+- The advantage of using the string function
+is that you can specify any character to remove, not just blanks.
 
 Syntax examples:
 ``` abap
@@ -556,16 +556,15 @@ reverses a string:
 s1 = reverse( `paba` ).
 ```
 
-**Inserting Content**
+**Inserting Substrings into Strings**
 
-The string function
+- The string function
 [`insert`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abeninsert_functions.htm)
-inserts a substring into any position within a given string. Using
-various parameters, you can construct your desired string:
-
-- `val`: Original string.
-- `sub`: Substring.
-- `off`: Optionally sets the offset, i. e. the position where  to add the substring. The default value is 0. When using the function with the default value, the result is like concatenating a  string with `&&` (like `res = sub && text`).
+inserts a substring at any position within a given string. You can use various parameters to construct the string you want:
+  - `val`: Original string.
+  - `sub`: Substring.
+  - `off`: Optionally sets the offset, i.e. the position where the substring should be added. The default value is 0. When using the function with the default value, the result is like concatenating a  string with `&&` (like `res = sub && text`).
+- Inserting substrings can also be accomplished using the string function `replace` or `REPLACE` statements, which are are covered below.
 
 Syntax examples:
 ``` abap
@@ -576,43 +575,62 @@ s1 = insert( val = `abcghi` sub = `def` off = 3 ).
 s1 = insert( val = `abcghi` sub = `def` ).
 ```
 
+**Overlaying Content**
+
+You can use [`OVERLAY`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapoverlay.htm) statements to replace characters in one variable with characters in another variable that are in the same place there.
+
+Syntax examples:
+``` abap
+DATA(incl) = '==============================CP'.
+DATA(cl_name) = 'CL_SOME_CLASS                   '.
+
+"Addition ONLY is not specified: All blanks are replaced
+OVERLAY cl_name WITH incl. 
+"cl_name: CL_SOME_CLASS=================CP
+
+
+DATA(txt1) = 'a.b.c.a.b.c.A'.
+DATA(txt2) = 'z.x.y.Z.x.y.z'.
+
+"Addition ONLY is specified: All characters that are specified after ONLY and that 
+"occur in the operand are replaced. Note that this is case-sensitive.
+OVERLAY txt1 WITH txt2 ONLY 'ab'.
+"txt1: z.x.c.Z.x.c.A
+```
+
 <p align="right">(<a href="#top">back to top</a>)</p>
 
 ## Processing Substrings
 
-Using the string function
-[`substring`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensubstring_functions.htm),
-you can specify the position (parameter `off`) and the length
-(`len`) of a substring that should be extracted from a given
-string (`val`). At least one of the two parameters `off`
+- The string function
+[`substring`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensubstring_functions.htm) allows you to specify the position (parameter `off`) and the length
+(`len`) of a substring to be extracted from a given
+string (`val`). 
+  - At least one of the two parameters `off`
 or `len` must be specified. The default value of `off`
-is 0, i. e. when using the default value, the substring is extracted
-from the beginning of the string. Not specifying `len` means
-that the rest of the remaining characters are respected. If the offset
+is 0, i.e. when using the default value, the substring is extracted
+from the beginning of the string. 
+  - If `len` is not specified, the rest of the remaining characters are respected. If the offset
 and length are greater than the actual length of the string, the
 exception `CX_SY_RANGE_OUT_OF_BOUNDS` is raised.
-
-You might also stumble on the syntax for accessing substrings via offset
-and length specification using the `+` character after a variable. Here, the
-length is specified within parentheses. Providing an asterisk (`*`) means
-that the rest of the remaining string is respected. This syntax option
-even enables write access on substrings for fixed length strings. Read
-access is possible for both fixed length and variable length strings.
-However, this syntax might be confused with the use of tokens in the
+- You may also encounter the syntax for accessing substrings by specifying the offset
+and length using the `+` character after a variable. 
+  - The length is specified in parentheses. Specifying an asterisk (`*`) means
+that the rest of the remaining string is respected. 
+  - This syntax option
+even allows write access to substrings for fixed-length strings. Read
+access is possible for both fixed-length and variable-length strings.
+  - However, this syntax can be confused with the use of tokens in the
 context of  dynamic programming.
-
-There are further string functions available to deal with substrings,
-for example,
+- There are other string functions available for dealing with substrings, such as 
 [`substring_after`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensubstring_functions.htm),
 [`substring_before`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensubstring_functions.htm),
 [`substring_from`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensubstring_functions.htm)
 and
 [`substring_to`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensubstring_functions.htm).
-
-These functions offer more options in terms of parameters, for example, using
-[PCRE regular
+  - These functions offer more options in terms of parameters, such as the use of [PCRE regular
 expressions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenpcre_regex_glosry.htm "Glossary Entry"),
-which are dealt with further down.
+which are covered below.
 
 Syntax examples:
 ``` abap
@@ -669,10 +687,10 @@ s2 = substring_to( val = s1 sub = `3b` ). "aa1bb2aa3b
 
 ## Searching and Replacing
 
-In ABAP, there are a lot of options to carry out search and replace
-operations with strings. This includes the use of [comparison
+- In ABAP, there are many ways to perform search and replace
+operations on strings. These include the use of [comparison
 operators](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencomp_operator_glosry.htm "Glossary Entry")
-or the prominent ABAP statements
+or the ABAP statements
 [`FIND`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapfind.htm)
 and
 [`REPLACE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapreplace.htm),
@@ -680,9 +698,9 @@ or the more modern built-in string functions
 [`find`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensearch_functions.htm)
 and
 [`replace`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenreplace_functions.htm),
-among others, with their considerable amount of additions or parameters
-respectively. Many of these options support rather simple operations
-with respect to only single characters or more complex, pattern-based
+among others, with their considerable number of additions and parameters. 
+- Many of these options support rather simple operations
+on single characters only or more complex, pattern-based
 operations on character sequences using [PCRE regular
 expressions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenpcre_regex_glosry.htm "Glossary Entry").
 
@@ -697,44 +715,42 @@ expressions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.ht
     [`NA`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenlogexp_strings.htm)
     (contains not any) in [comparison
     expressions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencomparison_expression_glosry.htm "Glossary Entry")
-    to determine if any character of a given character set is contained
+    to determine whether any character of a given character set is contained
     in a string. Such an expression is true if at least one character is
     found.
     -   The search is case-sensitive.
     -   The system variable `sy-fdpos` contains the offset of
-        the first found character. If nothing is found,
+        the first character found. If nothing is found,
         `sy-fdpos` contains the length of the string.
-    -   Note that offset 0 stands for the very first position.
+    -   Note that offset 0 represents the very first position.
 -   The string functions
     [`find_any_of`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensearch_functions.htm)
-    or its negation
+    and its negation
     [`find_any_not_of`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensearch_functions.htm)
     return the offset of the occurrence of any character contained in a
-    substring.
-    -   If nothing is found, the value -1 is returned
-    -   There are further optional parameters possible. For example, the
+    substring. They are special variants of the string function `find`, which is shown below.
+    -   If nothing is found, the value -1 is returned.
+    -   Other optional parameters are possible. For example, the
         specification of `occ` determines the search
-        direction, i. e. a positive value means the search is performed
-        from left to right. A negative value means searching from right
+        direction, i.e. a positive value means that the search is performed
+        from left to right. A negative value means to search from right
         to left.
--   If the position of characters is not of interest but rather how
-    often characters occur in a string, you can use the string functions
-    [`count_any_of`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensearch_functions.htm)
-    or its negation
-    [`count_any_not_of`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensearch_functions.htm).
--   To determine if a string only contains a specific set of characters,
+-   If you are not interested in the position of characters, but rather how
+    often they occur in a string, you can use the string function
+    [`count`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencount_functions.htm), as well as the special variants `count_any_of` and its negation `count_any_not_of`.
+-   To determine whether a string contains only a certain set of characters,
     you can use the comparison operators
     [`CO`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenlogexp_strings.htm)
     (contains only) or its negation
     [`CN`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenlogexp_strings.htm)
     (contains not only) in comparison expressions.
-    -   Regarding `CO`, a comparison is true if the left operand
-        only contains characters that are also contained in the right
-        operand. If the comparison returns false, you can get the position
+    -   For `CO`, a comparison is true if the left operand
+        contains only characters that are also contained in the right
+        operand. If the comparison returns false, you can use `sy-fdpos` to get the position
         of the first character from text that is not contained in the
-        character set via `sy-fdpos`. Regarding `CN`, a
-        comparison is true if a string not only contains characters from
-        the character set.
+        character. 
+     - For `CN`, a
+        comparison is true if a string contains characters other than those in the character set.
 
 Syntax examples:
 ``` abap
@@ -742,35 +758,64 @@ s1 = `cheers`.
 IF s1 CA `aeiou` ... "true, sy-fdpos = 2
 IF s1 NA `xyz`... "true, sy-fdpos = 6
 
-s2 = find_any_of( val = s1 sub = `aeiou` ). "2
-s2 = find_any_not_of( val = s1 sub = `c` ). "1
-
-s2 = count_any_of( val = s1  sub = `e` ). "2
-s2 = count_any_not_of( val = s1  sub = `s` ). "5
-
 IF s1 CO `rs` ... "false, sy-fdpos = 0
 IF s1 CN `cheers` ... "false, sy-fdpos = 6
 ```
+
+Built-in functions:
+
+``` abap
+"Note that the functions may contain more parameters than those covered in the snippet.
+DATA(str) = `Pieces of cakes.`.
+DATA res TYPE i.
+
+"find_end returns the sum of the offset of the occurrence
+res = find_end( val = str sub = `of` ). "9
+
+"find_any_of returns the offset of the occurrence of any character contained in substring
+"The search is always case-sensitive.
+res = find_any_of( val = str sub = `x523z4e` ). "2 (character e is found)
+res = find_any_of( val = str sub = `zwq85t` ). "-1
+
+"find_any_not_of: Negation of the one above
+"The search is always case-sensitive.
+res = find_any_not_of( val = str sub = `ieces` ). "0 (very first character in the searched string)
+res = find_any_not_of( val = str sub = `P` ). "1
+
+"count returns the number of all occurrences
+res = count( val = str sub = `e` ). "3
+res = count( val = str sub = `x` ). "0
+
+"count_any_of
+res = count_any_of( val = str sub = `x523z4e` ). "3
+res = count_any_of( val = str sub = `eco` ). "6
+
+"count_any_not_of
+res = count_any_not_of( val = str sub = `fP` ). "14
+res = count_any_not_of( val = str sub = `Piecs ofak.` ). "0
+```
+
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
 ### Replacing Specific Characters in Strings
 
-You can use the string function
+- You can use the string function
 [`translate`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentranslate_functions.htm)
-to replace specific characters by others. Here, the parameter
-`from` denotes the characters to be placed in a string and
-`to` specifies the target characters. Note: The
-replacement is done as follows: Each character specified in
-`from` is replaced by the character in `to` that is on
-the same position, i. e. the second character in `from` is
+to replace certain characters with others. 
+  - The 
+`from` parameter specifies the characters to be placed in a string, and
+the `to` parameter specifies the target characters. 
+  - Note: The
+replacement is performed as follows: Each character specified in
+`from` is replaced by the character in `to` that is at
+the same position, i.e. the second character in `from` is
 replaced by the second character specified in `to`. If there is
 no equivalent in `to`, the character in `from` is
 removed from the result.
-
-Using
+- You can use 
 [`TRANSLATE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abaptranslate.htm)
-statements, you can carry out replacements directly on the source field.
+statements to perform replacements directly on the source field.
 
 Syntax examples:
 ``` abap
@@ -787,7 +832,7 @@ TRANSLATE s1 USING `_.a#g+`. "...#bc.def.....+hi.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
-### Searching for Substrings in Strings
+### Searching for Substrings in Strings (and Tables)
 
 -   For simple substring searches, you can use the [comparison
     operators](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencomp_operator_glosry.htm "Glossary Entry")
@@ -796,172 +841,559 @@ TRANSLATE s1 USING `_.a#g+`. "...#bc.def.....+hi.
     [`NS`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenlogexp_strings.htm)
     (contains no string) in [comparison
     expressions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencomparison_expression_glosry.htm "Glossary Entry").
-    Here, the search is not case-sensitive. The system variable
+    The search is not case-sensitive. 
+- The system variable
     `sy-fdpos` contains the offset of the found substring. If
     the substring is not found, `sy-fdpos` contains the length
     of the searched string.
--   For more complex and iterating search operations, it can be
-    beneficial to use `FIND` statements or the string function
-    [`find`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensearch_functions.htm).
-    If you are only interested in the offset of a substring within a
-    string, the string function offers more options than using the
-    logical operator, for example, you can specify if the search should
-    be case-sensitive or not. You can also further restrict the search
-    using parameters.
--   Find out how often a substring occurs using the string function
-    [`count`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencount_functions.htm).
-    Special variants are available:
-    [`count_any_of`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencount_functions.htm),
-    [`count_any_not_of`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencount_functions.htm).
--   Since the string function `find` is derived from the ABAP
-    statement `FIND`, `FIND` covers the same
-    functionality as mentioned above and beyond using the many addition
-    options.
 
-Syntax examples:
 ``` abap
 s3 = `cheers`.
 
-IF s3 CS `rs` ... "true, sy-fdpos = 4
+IF s3 CS `rs` ... "true, sy-fdpos = 4 (offset) 
 
-IF s3 NA `xyz`... "false, sy-fdpos = 6
+IF s3 CS `xy`...  "false, sy-fdpos = 6 (length of string) 
 
-"String function find
-s1 = `Pieces of cakes.`.
+IF s3 NS `ee`...  "false, sy-fdpos = 2 (offset)
 
-s2 = find( val = s1 sub = `OF` case = abap_false  ). "7
+IF s3 NS `xy`...  "true, sy-fdpos = 6 (length of string) 
+```
 
-s2 = find( val = s1 sub = `hallo` ). "-1 (no occurrence returns -1)
+For more complex and iterative searches, you may want to use `FIND` statements or the string functions below.
 
-s2 = find( val = s1 sub = `ce` off = 1 len = 7 ). "3
+- `FIND`
+  - Used to search for a character sequence.
+  - Has a rich set of additions, a selection of which is covered in this cheat sheet. See [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapfind.htm) for more information. Byte string processing is not included (there are special additions).
+  - Sets the system fields `sy-subrc`: 0 (search pattern found at least once) or 4 (search pattern not found).
 
-"Parameter occ: Positive value means the nth position from the left,
-"a negative value the nth position from the right
-s2 = find( val = s1 sub = `es` occ = -1 ). "13
+Syntax Overview (see the syntax diagram in the [ABAP Keyword Documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapfind.htm)):
 
-"String function count
-s2 = count( val = s1 sub = `es` ). "2
+``` abap
+FIND 
+  FIRST OCCURRENCE OF | ALL OCCURRENCES OF
+    "1. Only the first occurrence is searched
+    "2. All occurrences are searched
+    "Note: If none of these two additions is specified, only the first occurrence is searched for.
+  
+  SUBSTRING some_substring | PCRE some_regex  
+    "1. Searching for exactly one string, specifying SUBSTRING is optional (e.g. for emphasis);
+    "   some_substring is a character-like operand; note: Trailing blanks are not ignored if it is of type string
+    "2. Searching for a substring matching a regular expression; only the PCRE addition should be used;  
+    "   some_regex = character-like operand; note: PCRE syntax is compiled in an extended mode, i.e. unescaped whitespaces
+    "   are ignored; if the regex is too complex, a catchable exception of the class CX_SY_REGEX_TOO_COMPLEX is raised
 
-"FIND statements with selected additions
-s1 = `abc def ghi abc`.
+IN 
+  SECTION 
+    OFFSET off | LENGTH len
+  OF   
+    "- Restricting the search to a specific section from an offset specified in off with the length len 
+    "- When using SECTION, at least one of the two options must be specified
+    "  - No OFFSET specification: offset 0 is used implicitly
+    "  - No LENGTH specification: search from specified offset to end of string
+    "  - Note: off and len are of type i; it must be a positive integer value; 
+    "    exception: len = -1 (same effect as not using the LENGTH addition)
+    "- Without the addition SECTION ... OF, the entire data object dobj is searched
 
-FIND `def` IN s1.
-IF sy-subrc = 0. "If there is an occurrence, sy-subrc is set to 0.
- ... "Some action
+"Character-like data object
+dobj 
+
+  "Further additional options for advanced evaluation options:
+  "Specifying whether the search is case-sensitive; not specified means RESEPECTING CASE by default
+  RESPECTING CASE | IGNORING CASE  
+
+  "Determining the number of sequences found, number stored in cnt that is of type i (e.g. a variable declared inline)
+  "When searching for the first occurrence, the value is always 1 (not found -> 0)
+  MATCH COUNT cnt 
+
+  "Determining position of sequences found
+  "Note: off holds the position of the last occurrence when searching for all occurrences and if 
+  "there are multiple occurrences (not found -> 0 or the previous value of a finding is retained). 
+  MATCH OFFSET off 
+
+  "Determining the length of sequences found
+  "Note: Similar to above, not finding an occurrence means 0 for len or the previous value of a finding is retained 
+  MATCH LENGTH len
+    
+  "Storing offset, length, submatches (only relevant for regular expressions) information in a table or a structure
+  "tab: of type MATCH_RESULT_TAB; especially for using with ALL OCCURRENCES
+  "struc: of type MATCH_RESULT; especially for using with FIRST OCCURRENCE
+  "Note on submatches: table of type SUBMATCH_RESULT_TAB; holds offset and length information of substrings of occurrences
+  "that are stored in subgroup registers of regular expressions; in FIND IN TABLE statements, the additional component LINE
+  "is available
+  RESULTS tab | RESULTS struc
+ 
+  "Storing content of subgroup register of a regular expression in character-like data objects;
+  "only to be used if a regular expression pattern is specified.
+  "Note: Only the last occurrence is evaluated when using ALL OCCURRENCES; the number of the operands specified should match 
+  "the number of subgroups specified 
+  SUBMATCHES sub1 sub2 ...
+.
+```
+
+Examples: 
+
+``` abap
+"Note: The code snippets mainly use inline declarations.
+
+DATA(str) = `She sells seashells by the seashore.`.
+
+"Determining if a substring is found
+"Simple find statement
+FIND `se` IN str.
+
+IF sy-subrc = 0.
+  "found
+ELSE.
+  "not found
 ENDIF.
 
-"Addition SUBSTRING is optional; same as above
-FIND SUBSTRING `abc` IN s1.
+"Addition SUBSTRING is optional
+FIND SUBSTRING `hi` IN str.
 
-"Case-insensitive search; same as above
-FIND `aBC` IN s1 IGNORING CASE.
+IF sy-subrc = 0.
+  "found
+ELSE.
+  "not found
+ENDIF.
 
-"Case-sensitive search; here, sy-subrc is 4 since `aBC` is not found
-FIND `aBC` IN s1 RESPECTING CASE.
+"The following examples use the additions MATCH COUNT and MATCH OFFSET to determine 
+"the number of occurrences and offset
 
-"MATCH additions can be specified individually or combined
-"All occurrences
-FIND ALL OCCURRENCES OF `abc` IN s1
-  MATCH COUNT DATA(fcnt).  "2 (number of occurrences)
+"Addition FIRST OCCURRENCE OF: Explicit specification to search for the first occurrence
+FIND FIRST OCCURRENCE OF `se` IN str
+  MATCH COUNT DATA(cnt2)   "1 (always 1 when searching and find the first occurrence)
+  MATCH OFFSET DATA(off2). "4
 
-"Finding the first occurrence
-FIND FIRST OCCURRENCE OF `abc` IN s1
-  MATCH OFFSET DATA(foff)  "0
-  MATCH LENGTH DATA(flen). "3
+"Omitting FIRST OCCURRENCE OF and ALL OCCURRENCES OF addition means searching for the 
+"first occurrence by default; same effect as the previous statement
+FIND `se` IN str
+  MATCH COUNT DATA(cnt1)   "1
+  MATCH OFFSET DATA(off1). "4
 
-"All occurrences
-FIND ALL OCCURRENCES OF `abc` IN s1
-  MATCH COUNT DATA(fcnt2)  "2 (number of occurrences)
-  MATCH OFFSET DATA(foff2) "12 (Note: offset of last occurrence only)
-  MATCH LENGTH DATA(flen2). "3 (Note: length of last occurrence only)
+"Addition ALL OCCURRENCES: Searching for all occurrences
+FIND ALL OCCURRENCES OF `se` IN str
+  MATCH COUNT DATA(cnt3)   "3
+  MATCH OFFSET DATA(off3). "27 (value for the last occurrence)
 
-"Returning offset/length information in a table for all occurrences
-"The internal table following the RESULTS keyword includes more information
-"as shown further down.
-FIND ALL OCCURRENCES OF `abc` IN s1 RESULTS DATA(fres).
+"Addition IN SECTION ... OF:
+"Searching in a specified section; both additions OFFSET and LENGTH are specified
+FIND ALL OCCURRENCES OF `se`
+  IN SECTION OFFSET 9 LENGTH 5 OF str
+  MATCH COUNT DATA(cnt4)   "1
+  MATCH OFFSET DATA(off4). "10
 
-"Restricting the search area (OFFSET/LENGTH can be specified individually)
-FIND `abc` IN SECTION OFFSET 4 LENGTH 11 OF s1
-  MATCH OFFSET foff. "12
+"Only LENGTH specified (OFFSET is 0 by default)
+FIND ALL OCCURRENCES OF `se`
+  IN SECTION LENGTH 7 OF str
+  MATCH COUNT DATA(cnt5)   "1
+  MATCH OFFSET DATA(off5). "4
 
-"Searching in internal tables; search results are returned in an internal table.
-"Here, the search is case-sensitive.
-DATA(str_table) = VALUE string_table( ( `ZxZ` ) ( `yZ` ) ( `Zz` ) ).
+"Only OFFSET specified (LENGTH: up to end of string)
+FIND ALL OCCURRENCES OF `se`
+  IN SECTION OFFSET 7 OF str
+  MATCH COUNT DATA(cnt6).  "2
 
-FIND ALL OCCURRENCES OF `Z` IN TABLE str_table RESULTS
-  DATA(findings) RESPECTING CASE.
+"Another string to be searched
+DATA(str_abap) = `abap ABAP abap`.
+
+"Further additional options for advanced evaluation options
+
+"Specifying the case-sensitivity of the search
+"Not specifying the CASE addition means RESPECTING CASE is used by default. 
+"Here, it is explicitly specified.
+FIND FIRST OCCURRENCE OF `A` IN str_abap
+  MATCH OFFSET DATA(off7)  "5
+  RESPECTING CASE.
+
+"Making search case-insensitive
+FIND FIRST OCCURRENCE OF `A` IN str_abap
+  MATCH OFFSET DATA(off8)  "0
+  IGNORING CASE.
+
+"MATCH LENGTH addition
+"The example uses a regular expression: Non-greedy search for
+"a substring starting with lower case a up to an upper case P
+FIND FIRST OCCURRENCE OF PCRE `a.*?P` IN str_abap
+  MATCH LENGTH DATA(len8) "9
+  RESPECTING CASE.
+
+"RESULTS addition
+"Example: Because of using ALL OCCURRENCES, the data object declared inline automatically 
+"has the type match_result_tab
+FIND ALL OCCURRENCES OF `ab` IN str_abap
+  RESULTS DATA(res9)
+  IGNORING CASE.
+
+"3 entries in table res9 (tables in SUBMATCHES are initial since no regular expression is used)
+"line: always 0 (it's not a table); length: always 2 (search for concrete occurrence of `se`)
+"1. line: 0, offset: 0, length: 2, submatches: (initial)
+"2. line: 0, offset: 5, length: 2, ...
+"3. line: 0, offset: 10, length: 2, ...
+
+"Example: Because of using FIRST OCCURRENCE, the data object declared inline automatically 
+"has the type match_result
+FIND FIRST OCCURRENCE OF `ab` IN str_abap
+  RESULTS DATA(res10)
+  IGNORING CASE.
+
+"res10: line: 0, offset: 0, length: 2, submatches: (initial)
+```
+
+You can use [`FIND ... IN TABLE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapfind_itab.htm) statements to search for substrings in internal tables (standard tables without secondary table keys; with character-like line type) line by line. 
+
+``` abap
+DATA(str_table) = VALUE string_table( ( `aZbzZ` ) ( `cdZze` ) ( `Zzzf` ) ( `ghz` ) ).
+
+"Finding all occurrences in a table
+"Note: res_tab is of type match_result_tab 
+"You can also restrict the search range in an internal table; see an example in REPLACE ... IN TABLE
+FIND ALL OCCURRENCES OF `Z`
+  IN TABLE str_table
+  RESULTS DATA(res_tab)
+  RESPECTING CASE.
+
+"4 entries in table res_tab (tables in SUBMATCHES are initial since no regular expression is used)
+"1. line: 1, offset: 1, length: 1, submatches: (initial)
+"2. line: 1, offset: 4, length: 1, ...
+"3. line: 2, offset: 2, length: 1, ...
+"4. line: 3, offset: 0, length: 1, ...
+
+"Finding the first occurrence in a table
+"Note: res_struc, which is declared inline here, is of type match_result 
+FIND FIRST OCCURRENCE OF `Z`
+  IN TABLE str_table
+  RESULTS DATA(res_struc)
+  RESPECTING CASE.
+
+"Entries in structure res_struc 
+"line: 1, offset: 1, length: 1, submatches: (initial)
+
+"Alternative to the statement above (storing the information in individual data objects)
+FIND FIRST OCCURRENCE OF `Z`
+  IN TABLE str_table
+  MATCH LINE DATA(line)    "1
+  MATCH OFFSET DATA(off)   "1 
+  MATCH LENGTH DATA(len)   "1
+  RESPECTING CASE.
+```
+
+**Built-in search functions**
+- Built-in search functions, such as `find`, are available for searching strings.
+- They return a return value of type i and contain multiple (optional) parameters.
+- `FIND` covers the same functionality and more with the many addition options.
+- Fore more information, see [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensearch_functions.htm)
+
+Parameters of the `find` function:
+- `val`: 
+  - Character-like data object
+  - Note: If a fixed length string is specified, any trailing blanks are ignored. 
+- `sub`: 
+  - Contains what is searched for
+  - A character like expression position; expects arguments with elementary types
+  - Similar to above, trailing blanks are ignored in fixed length strings
+- `case`: 
+  - Search is case-sensitive by default
+- `occ`: 
+  - Specifies the occurrence of a match
+  - Must be of type `i`
+  - Values: 
+    - 1: default value, searches for the first occurrence from the left
+    - any positive value: searches for the nth occurrence from the left
+    - any negative value: searches for the nth occurrence from the right
+    - 0: raises an exception (`CX_SY_STRG_PAR_VAL`), note: in the context of the `replace` function, 0 means replace all occurrences
+  - Note: Specifying `occ` affects the default values of `off` and `len`
+- `off`: 
+  - Specifies the offset   
+  - Must be of type `i` 
+  - The default value is 0 (search from the beginning of the string)
+  - Exception `CX_SY_RANGE_OUT_OF_BOUNDS` is raised for a negative offset specified and an offset that is longer than the searched string
+- `len`: 
+  - Specifies the length 
+  - Must be of type `i`
+  - The fefault value is the length of the string (minus a defined offset in `off`)
+  - The exception `CX_SY_RANGE_OUT_OF_BOUNDS` is raised if the offset is negative and a range is not contained in the searched string
+- `pcre`: Regular expression
+
+``` abap
+DATA(str) = `Pieces of cakes.`.
+DATA res TYPE i.
+
+"Searching for substring
+"Returns offset of substring found
+res = find( val = str sub = `ca` ). "10
+
+"Substring not found returns -1
+res = find( val = str sub = `xy` ). "-1
+
+"Actual parameter of sub must not be initial when using the find function
+TRY.
+    res = find( val = str sub = `` ).
+  CATCH cx_sy_strg_par_val. 
+    "Nope!
+ENDTRY.
+
+"The search is case-sensitive by default
+res = find( val = str sub = `OF` ). "-1
+"Making search case-insensitive
+res = find( val = str sub = `OF` case = abap_false ). "7
+
+"Specifying occ
+res = find( val = str sub = `c` ). "3
+res = find( val = str sub = `c` occ = 2 ).  "10
+res = find( val = str sub = `e` occ = -1 ). "13
+res = find( val = str sub = `e` occ = -3 ). "2
+
+"Specifying off and len
+"Specifying a subarea in which a string is searched
+res = find( val = str sub = `e` off = 5 ). "13
+res = find( val = str sub = `e` off = 5 len = 7 ). "-1
+res = find( val = str sub = `e` len = 2  ). "-1
+
+TRY.
+    res = find( val = str sub = `e` off = 5 len = 15 ).
+  CATCH cx_sy_range_out_of_bounds.
+    "Nope!
+ENDTRY.
 ```
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
-### Replacing Substrings in Strings
+### Replacing Substrings in Strings (and Tables)
 
-Using the string function
+- [`REPLACE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapreplace.htm) and [`REPLACE ... IN TABLE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapreplace_itab.htm) statements have a similar syntax as `FIND` and `FIND ... IN TABLE` statements. Refer to the ABAP Keyword Documentation for all possible additions. The following code snippets cover a selection.
+- `sy-subrc` is set: 0 (search pattern or section was replaced by the specified content, result was not truncated on the right), 2 (search pattern or section was replaced, result was truncated on the right), 4	(search pattern was not found).
+-  `REPLACE` statements can be used to directly replace strings (including substrings, which is not possible with the string function).   
+
+``` abap
+"Examples for pattern-based replacements in which data objects are searched for character strings 
+"specified in a pattern and the occurrences are replaced
+
+DATA(str_original) = `abap ABAP abap`.
+DATA(str) = str_original.
+
+"Simple REPLACE statement
+"Omitting the FIRST OCCURRENCE and ALL OCCURRENCES OF additions means
+"replacing the first occurrence by default.
+REPLACE `ab` IN str WITH `##`. "##ap ABAP abap
+
+str = str_original.
+
+"Addition SUBSTRING is optional
+REPLACE SUBSTRING `ab` IN str WITH `##`. "##ap ABAP abap
+
+str = str_original.
+
+"Addition FIRST OCCURRENCE OF: Explicit specification to replace the
+"first occurrence; same effect as the statements above
+REPLACE FIRST OCCURRENCE OF `ab` IN str WITH `##`. "##ap ABAP abap
+
+str = str_original.
+
+"Addition ALL OCCURRENCES OF: All occurrences are replaced
+"Note that the replacement is case-sensitive by default.
+REPLACE ALL OCCURRENCES OF `ab` IN str WITH `##`. "##ap ABAP ##ap
+
+str = str_original.
+
+"Further additional options for advanced evaluation options
+
+"IGNORING CASE addition: Making replacements case-insensitive
+REPLACE ALL OCCURRENCES OF `ab`
+  IN str WITH `##`
+  IGNORING CASE. "##ap ##AP ##ap
+
+str = str_original.
+
+"REPLACEMENT COUNT addition
+REPLACE ALL OCCURRENCES OF `ab`
+  IN str WITH `##`
+  REPLACEMENT COUNT DATA(cnt1) "3
+  IGNORING CASE.
+
+str = str_original.
+
+"REPLACEMENT OFFSET and LENGTH additions
+REPLACE FIRST OCCURRENCE OF `ap`
+  IN str WITH `##`
+  REPLACEMENT COUNT DATA(cnt2) "1 (always 1 for replaced first occurrence)
+  REPLACEMENT OFFSET DATA(off2) "2
+  REPLACEMENT LENGTH DATA(len2) "2
+  IGNORING CASE. "ab## ABAP abap
+
+str = str_original.
+
+"SECTION ... OF addition: Replacing within a specified area
+REPLACE ALL OCCURRENCES OF `ap`
+  IN SECTION OFFSET 4 LENGTH 5
+  OF str WITH `##`
+  REPLACEMENT COUNT DATA(cnt3)  "1
+  REPLACEMENT OFFSET DATA(off3) "2
+  REPLACEMENT LENGTH DATA(len3) "2
+  IGNORING CASE.   "abap AB## abap
+
+str = str_original.
+
+"RESULTS additions with ...
+"... ALL OCCURRENCES OF
+"Note: repl_tab, which is declared inline here, is of type repl_result_tab
+REPLACE ALL OCCURRENCES OF `ap`
+  IN str WITH `##`
+  RESULTS DATA(repl_tab)
+  IGNORING CASE. "ab## AB## ab##
+
+"repl_tab:
+"LINE  OFFSET  LENGTH
+"0     2       2
+"0     7       2
+"0     12      2
+
+str = str_original.
+
+"... FIRST OCCURRENCE OF
+"Note: repl_struc, which is declared inline here, is of type repl_result
+REPLACE FIRST OCCURRENCE OF `ap`
+  IN str WITH `##`
+  RESULTS DATA(repl_struc)
+  IGNORING CASE.
+
+"repl_struc:
+"LINE  OFFSET  LENGTH
+"0     2       2
+```
+
+You can use [`REPLACE SECTION ... OF`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapfind_section_of.htm) statements for position-based replacements, that is, to replace a section in a string starting at a specified offset for a specified length.
+
+``` abap
+DATA(str_original) = `abap ABAP abap`.
+DATA(str) = str_original.
+
+"OFFSET + LENGTH specified
+REPLACE SECTION OFFSET 5 LENGTH 4 OF str WITH `#`. "abap # abap
+
+str = str_original.
+
+"Only OFFSET (LENGTH: up to the end of the string)
+REPLACE SECTION OFFSET 5 OF str WITH `#`. "abap #
+
+str = str_original.
+
+"Only LENGTH (OFFSET: starting from the leftmost position)
+REPLACE SECTION LENGTH 6 OF str WITH `#`. "#BAP abap
+```
+
+Replacements in internal tables with `REPLACE ... IN TABLE`:
+``` abap
+DATA(str_table_original) = VALUE string_table( ( `aZbzZ` ) ( `cdZze` ) ( `Zzzf` ) ( `ghz` ) ).
+DATA(str_table) = str_table_original.
+
+"Replacing all occurrences in a table
+"RESULTS addition: Storing information in an internal table of type repl_result_tab
+REPLACE ALL OCCURRENCES OF `Z`
+  IN TABLE str_table
+  WITH `#`
+  RESULTS DATA(res_table)
+  RESPECTING CASE.
+
+"str_table: a#bz# / cd#ze / #zzf / ghz
+"res_table:
+"LINE  OFFSET  LENGTH
+"1     1       1
+"1     4       1
+"2     2       1
+"3     0       1
+
+str_table = str_table_original.
+
+"Replacing the first occurrence in a table
+"RESULTS addition: Storing information in a structure of type repl_result
+REPLACE FIRST OCCURRENCE OF `Z`
+  IN TABLE str_table
+  WITH `#`
+  RESULTS DATA(res_structure)
+  RESPECTING CASE.
+
+"str_table: a#bzZ / cdZze / Zzzf / ghz
+"res_structure:
+"LINE  OFFSET  LENGTH
+"1     1       1
+
+str_table = str_table_original.
+
+"Restricting the search range in an internal table
+REPLACE ALL OCCURRENCES OF `Z`
+  IN TABLE str_table
+  FROM 1 TO 2
+  WITH `#`
+  RESPECTING CASE.
+
+"str_table: a#bz# / cd#ze / Zzzf / ghz
+
+str_table = str_table_original.
+
+"Offsets can be optionally specified (also only the offset of start or end line possible)
+REPLACE ALL OCCURRENCES OF `Z`
+  IN TABLE str_table
+  FROM 1 OFFSET 3 TO 2 OFFSET 2
+  WITH `#`
+  RESPECTING CASE.
+
+"str_table: aZbz# / cdZze / Zzzf / ghz
+```
+
+- The string function
 [`replace`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenreplace_functions.htm),
-you can store the result of a substring replacement in a separate
-variable. What makes it very powerful in particular is the fact that it
-returns a value and can, thus, be used in almost all [read
+allows you to store the result of a substring replacement in a separate
+variable. 
+- What makes it particularly powerful in particular is that it
+returns a value, so it can be used at almost any [read
 positions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenread_position_glosry.htm "Glossary Entry").
-Using
-[`REPLACE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapreplace.htm)
-statements, you can carry out replacements on strings directly
-(including substrings, which is not possible with the string function).
-Regarding the multiple additions `REPLACE` offers,
-`REPLACE` is syntactically similar to `FIND`. Regarding
-the parameters of `replace`:
-- `with`: The replacement text.
-- `sub`: Specifies the substring to be replaced.
-- `case`: Sets the case sensitivity.
-- `occ`: Specifies the number of occurrences of a substring. The default value is `1`, i. e. the first occurrence starting from the left. Setting `occ` to `0` means that all occurrences are respected for the replacement.
+- The parameters of the `replace` string functions are similar to those of the `find` function. In addition, there is the `with` parameter for the replacement. Setting `occ` to `0` means that all occurrences are respected for the replacement.
 
 Syntax examples:
 ``` abap
-s1 = `abc def ghi abc`.
+DATA(str) = `abap ABAP abap`.
+DATA res TYPE string.
 
-s2 = replace( val = s1 sub = `def` with = `###` ). "abc ### ghi abc
+"Note that here only the first occurrence is replaced.
+res = replace( val = str sub = `ap` with = `#` ). "ab# ABAP abap
 
-s2 = replace( val = s1 sub = `ABC` with = `###` case = abap_false occ = 2 ). "abc def ghi ###
+"Making the search case-insensitive
+res = replace( val = str sub = `AB` with = `#` case = abap_false ). "#ap ABAP abap
 
-s2 = replace( val = s1 sub = `abc` with = `###` occ = 0 ). "### def ghi ###
+"Setting occ
+res = replace( val = str sub = `ab` with = `#` occ = 2 case = abap_false ). "abap #AP abap
 
-"REPLACE statements with selected additions
-"Note that all results below refer to s1 = `abc def ghi abc`.
-REPLACE `def` IN s1 WITH `###`. "abc ### ghi abc
+"Replacing all occurrences: Setting occ to 0
+res = replace( val = str sub = `ab` with = `#` occ = 0 case = abap_false ). "#ap #AP #ap
 
-REPLACE FIRST OCCURRENCE OF `abc` IN s1 WITH `###`. "### def ghi abc
+"Negative value for occ: Occurrences are counted from the right
+res = replace( val = str sub = `ab` with = `#` occ = -1  ). "abap ABAP #ap
 
-REPLACE `abc` IN s1 WITH `###`. "### def ghi abc (first found is replaced)
+"Setting off and len for determining a subarea for replacements
+"Note: When using off/len, sub and occ cannot be specified.
+"Specifying both off and len
+res = replace( val = str  with = `#` off = 5 len = 3  ). "abap #P abap
 
-REPLACE SUBSTRING `abc` IN s1 WITH `###`. "### def ghi abc (SUBSTRING is optional)
+"Specifying only off (len is 0 by default)
+res = replace( val = str  with = `#` off = 2 ). "ab#ap ABAP abap
 
-REPLACE ALL OCCURRENCES OF `abc` IN s1 WITH `###`. "### def ghi ###
+"Note: When specifying only off and not specifying len or len = 0,
+"replace works like insert
+res = insert( val = str sub = `#` off = 2  ). "ab#ap ABAP abap
 
-REPLACE `aBC` IN s1 WITH `###` IGNORING CASE. "### def ghi abc
+"Specifying only len (off is 0 by default): First segment of length in len is replaced
+res = replace( val = str  with = `#` len = 3 ). "#p ABAP abap
 
-"REPLACEMENT additions; can be specified individually or combined
-REPLACE ALL OCCURRENCES OF `abc` IN  s1 WITH `###`   "### def ghi ###
-  REPLACEMENT COUNT  DATA(cnt)  "2 (number of replacements)
-  REPLACEMENT OFFSET DATA(off)  "12 (offset of last replacement)
-  REPLACEMENT LENGTH DATA(len). "3 (length of last substring inserted)
-
-"Returning all of these pieces of information in a table for all replacements
-REPLACE ALL OCCURRENCES OF `abc` IN  s1 WITH `###`
-      RESULTS DATA(res). "### def ghi ###
-
-"Position-based replacement (OFFSET/LENGTH can be specified individually )
-REPLACE SECTION OFFSET 4 LENGTH 7 OF s1 WITH `###`. "abc ### abc
-
-"Replacements in internal tables
-DATA(str_tab) = VALUE string_table( ( `ZxZ` ) ( `yZ` ) ( `Zz` ) ).
-
-REPLACE ALL OCCURRENCES OF `Z`
-        IN TABLE str_tab WITH ``
-        RESPECTING CASE. "x / y / z
+"Special case
+"- off: equal to the length of the string
+"- len: not specified or 0
+"- Result: Value specified for 'with' is appended to the end of the string
+res = replace( val = str  with = `#` off = strlen( str ) ). "abap ABAP abap#
 ```
 
 ## Pattern-Based Searching and Replacing in Strings
 
-You can carry out complex search and replace operations based on
+You can perform complex search and replace operations based on
 patterns. [PCRE regular
 expressions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenpcre_regex_glosry.htm "Glossary Entry")
 help you process strings effectively.
@@ -969,7 +1401,7 @@ help you process strings effectively.
 > Do not use [POSIX
 regular
 expressions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenposix_regex_glosry.htm "Glossary Entry")
-any more since they are obsolete.
+anymore, they are obsolete.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -982,9 +1414,9 @@ operators](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?
 [`NP`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenlogexp_strings.htm)
 (does not conform to pattern) in [comparison
 expressions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencomparison_expression_glosry.htm "Glossary Entry")
-to determine if a set of characters is contained in a string that
-matches a certain pattern. For the patterns, you can use the following
-special characters:
+to determine whether a set of characters is contained in a string that
+matches a particular pattern. You can use the following
+special characters as patterns:
 
 | Special Character | Details |
 |---|---|
@@ -992,7 +1424,7 @@ special characters:
 | `+` | Any character (only one character, including blanks). |
 | `#` | Escape character. The following character is marked for an exact comparison. |
 
-Patterns are not case-sensitive except for characters marked by
+Patterns are not case-sensitive except for characters marked with
 `#`. If a pattern is found, the system variable
 `sy-fdpos` returns the offset of the first occurrence.
 Otherwise, it contains the length of the searched string.
@@ -1014,6 +1446,7 @@ IF s1 NP `i+`. ... "true; sy-fdpos = 11 (length of searched string)
 #### Excursion: Common Regular Expressions
 
 There are several ways to perform complex searches in strings using PCRE expressions. They can be quite complex. The following overview shows common PCRE expressions with simple examples.
+For more information, see [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenregex_pcre_syntax_specials.htm).
 
 Characters and character types
 
@@ -1039,9 +1472,9 @@ Repetitions and Alternatives
 | `x{m}` | Exactly `m` repetitions | `ab{3}` | abc abbc abbbc a ac | abc abbc <ins>**abbb**</ins>c a ac | abc <ins>**abb**</ins>c ... |
 | `x{m,}` | Exactly `m` or more repetitions | `ab{2,}` | abc abbc abbbc a ac | abc <ins>**abb**</ins>c <ins>**abbb**</ins>c a ac  | <ins>**ab**</ins>c ... |
 | `x?` | Optional `x`, i.e. zero or one time  | `ab?` | abc abbc abbbc a ac | <ins>**ab**</ins>c <ins>**ab**</ins>bc <ins>**ab**</ins>bbc <ins>**a**</ins> <ins>**a**</ins>c  | ... <ins>**ac**</ins>  |
-| `x\|y` | Matching alternatives, i. e. `x` or `y` | 1) `b\|2` <br> 2) `b(a\|u)t`  | 1) abc 123 <br> 2) bit bat but bet |  1) b, 2 <br> 2) bat, but | 1) a, c, 1, 3 <br> 2) bit, bet | 
-| `x*?` | `x*` captures greedily, i.e. as much as possible, while `x*?` captures non-greedily, i.e. as few as possible  | 1) `bc*?` <br> 2) `a(.*?)#`  | 1) abcd abccccd <br> 2) abc#defgh#i | 1) a<ins>**b**</ins>cd a<ins>**b**</ins>ccccd <br> 2) <ins>**abc#**</ins>defgh#i | 1) a<ins>**bc**</ins>d a<ins>**bcccc**</ins>d (result for `bc*`) <br> 2) <ins>**abc#defgh#**</ins>i (result for `a(.*)#`) |
-| `x+?` | Same as above: `x+` (greedy), `x+?` (non-greedy) | 1) `bc+?` <br> 2) `<.+?>` | 1) abcd abccccd <br> 2) &lt;span>Hallo&lt;/span> html. | 1) a<ins>**bc**</ins>d a<ins>**bc**</ins>cccd <br> 2) <ins>**&lt;span>**</ins>Hallo<ins>**&lt;/span>**</ins> html. | 1) a<ins>**bc**</ins>d a<ins>**bcccc**</ins>d (result for `bc+`) <br> 2) <ins>**&lt;span>Hallo&lt;/span>**</ins> html.  (result for `<.+>`) |
+| `x\|y` | Matching alternatives, i. e. `x` or `y` | 1. `b\|2` <br> 2. `b(a\|u)t`  | 1. abc 123 <br> 2. bit bat but bet |  1. b, 2 <br> 2. bat, but | 1. a, c, 1, 3 <br> 2. bit, bet | 
+| `x*?` | `x*` captures greedily, i.e. as much as possible, while `x*?` captures non-greedily, i.e. as few as possible  | 1. `bc*?` <br> 2. `a(.*?)#`  | 1. abcd abccccd <br> 2. abc#defgh#i | 1. a<ins>**b**</ins>cd a<ins>**b**</ins>ccccd <br> 2. <ins>**abc#**</ins>defgh#i | 1. a<ins>**bc**</ins>d a<ins>**bcccc**</ins>d (result for `bc*`) <br> 2. <ins>**abc#defgh#**</ins>i (result for `a(.*)#`) |
+| `x+?` | Same as above: `x+` (greedy), `x+?` (non-greedy) | 1. `bc+?` <br> 2. `<.+?>` | 1. abcd abccccd <br> 2. &lt;span>Hallo&lt;/span> html. | 1. a<ins>**bc**</ins>d a<ins>**bc**</ins>cccd <br> 2. <ins>**&lt;span>**</ins>Hallo<ins>**&lt;/span>**</ins> html. | 1. a<ins>**bc**</ins>d a<ins>**bcccc**</ins>d (result for `bc+`) <br> 2. <ins>**&lt;span>Hallo&lt;/span>**</ins> html.  (result for `<.+>`) |
 
 Character Sets, Ranges, Subgroups and Lookarounds
 | Expression | Represents | Example Regex | Example String | Matches | Does not Match |
@@ -1055,13 +1488,13 @@ Character Sets, Ranges, Subgroups and Lookarounds
 | `(?!...)` | Negative lookahead, returns characters that are not followed by a specified pattern without including this pattern | `a(?!b)` | abc ade | abc <ins>**a**</ins>de | <ins>**a**</ins>bc ade |
 | `(?<=...)` | Positive lookbehind, returns characters that are preceded by a specified pattern without including this pattern | `(?<=\s)c` | ab c abcd | ab <ins>**c**</ins> abcd (it is preceded by a blank) | ab c ab<ins>**c**</ins>d |
 | `(?<!...)` | Negative lookbehind, returns characters that are not preceded by a specified pattern without including this pattern | `(?<!\s)c` | ab c abcd | ab c ab<ins>**c**</ins>d (it is not preceded by a blank) | ab <ins>**c**</ins> abcd |
-| `\n` | Refers to a previous capturing group; n represents the number of the group index that starts with 1 | `(a.)(\w*)\1` | abcdefabghij | <ins>**abcdefab**</ins>ghij <br>Note: Capturing group 1 holds `ab` in the example. The second capturing group captures all word characters up to `ab` is found. | <ins>**ab**</ins>cdefabghij |
+| `\n` | Backreference, refers to a previous capturing group; n represents the number of the group index that starts with 1 | `(a.)(\w*)\1` | abcdefabghij | <ins>**abcdefab**</ins>ghij <br>Note: Capturing group 1 holds `ab` in the example. The second capturing group captures all word characters up to `ab` is found. | <ins>**ab**</ins>cdefabghij |
 | `\K` | Resets the starting point of a match, i.e. findings are excluded from the final match | `a.\Kc` | abcd | ab<ins>**c**</ins>d | <ins>**abc**</ins>d |
 
 > **💡 Note**<br>
-> - Subgroups are handy in replacements. Using an expression with `$` and a number, e. g. `$1`, you can refer to a particular group. For example, you have a string `abcde`. A PCRE expression might be
-`(ab|xy)c(d.)`, i. e. there are two subgroups specified within two pairs of parentheses. In a replacement pattern, you can refer to the first group using `$1` and the second group using `$2`. Hence, the replacement pattern `$2Z$1` results in `deZab`.
-> - `(?:x)` creates a group but it is not captured. Example regular expression: `(?:ab)(ap)`. Example string: 'abap'. It matches 'abap' but `$1` will only hold 'ap'. 
+> - Subgroups are useful in replacements. By using an expression with `$` and a number, such as `$1`, you can refer to a specific group. For example, you have a string `abcde`. A PCRE expression might be
+`(ab|xy)c(d.)`, where two subgroups are specified within two pairs of parentheses. In a replacement pattern, you can refer to the first group with `$1` and the second group with `$2`. Thus, the replacement pattern `$2Z$1` results in `deZab`.
+> - `(?:x)` creates a group but it is not captured. Example regular expression: `(?:ab)(ap)`. Example string: 'abap'. It matches 'abap', but `$1` will only contain 'ap'. 
 
 Anchors and Positions
 
@@ -1069,26 +1502,25 @@ Anchors and Positions
 |---|---|---|---|---|---|
 | `^` | Start of line, alternative: `\A` | `^.` or `\A.` | abc def | <ins>**a**</ins>bc def | abc <ins>**d**</ins>ef  |
 | `$` | End of line, alternative: `\Z` | `.$` or `.\Z` | abc def | abc de<ins>**f**</ins> | <ins>**a**</ins>bc def |
-| `\b` | Start or end of word | 1) `\ba.` <br>2) `\Dd\b` <br>3) `\b.d\b` | abcd a12d ed | 1) <ins>**ab**</ins>cd <ins>**a1**</ins>2d ed <br>2) ab<ins>**cd**</ins> a12d <ins>**ed**</ins> <br> 3) abcd a12d <ins>**ed**</ins> | 1) ab<ins>**cd**</ins> a1<ins>**2d**</ins> ed <br> 2) abcd a1<ins>**2d**</ins> ed <br> 3) <ins>**abcd**</ins> <ins>**a12d**</ins> ed |
+| `\b` | Start or end of word | 1. `\ba.` <br>2. `\Dd\b` <br>3. `\b.d\b` | abcd a12d ed | 1. <ins>**ab**</ins>cd <ins>**a1**</ins>2d ed <br>2. ab<ins>**cd**</ins> a12d <ins>**ed**</ins> <br> 3. abcd a12d <ins>**ed**</ins> | 1. ab<ins>**cd**</ins> a1<ins>**2d**</ins> ed <br> 2. abcd a1<ins>**2d**</ins> ed <br> 3. <ins>**abcd**</ins> <ins>**a12d**</ins> ed |
 | `\B` | Negation of `\b`, not at the start or end of words | `\Be\B` | see an elefant | s<ins>**e**</ins>e an el<ins>**e**</ins>fant  | s<ins>**ee**</ins> an <ins>**e**</ins>lefant |
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
 #### Searching Using Regular Expressions
 
-Multiple string functions support PCRE expressions by offering the
-parameter `pcre` with which you can specify such an expression.
+- Multiple string functions support PCRE expressions by offering the
+ `pcre` parameter, which you can use to specify such an expression. 
 `FIND` and `REPLACE` statements support regular
-expressions with the `PCRE` addition.
-
-The string function
+expressions with the `PCRE` addition. 
+- The string function
 [`match`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenmatch_functions.htm)
-exclusively works with regular expressions. It returns a substring that
-matches a regular expression within a string. For comparisons, you could
+works only with regular expressions. It returns a substring that
+matches a regular expression within a string. 
+- For comparisons, you can
 also use the [predicate
 function](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenpredicate_function_glosry.htm "Glossary Entry")
-[`matches`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenmatches_functions.htm)
-that returns true or false if a string matches a given pattern or not.
+[`matches`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenmatches_functions.htm), which returns true or false if a string matches a given pattern or not.
 
 Syntax examples:
 ``` abap
@@ -1119,12 +1551,12 @@ IF matches( val  = s1
 ENDIF.
 
 "Examples with the FIND statement
-"Storing submatches in variables.
+"SUBMATCHES addition: Storing submatches in variables
 "Pattern: anything before and after ' on '
 FIND PCRE `(.*)\son\s(.*)` IN s1 IGNORING CASE SUBMATCHES DATA(a) DATA(b).
-"a = 'Cathy's black cat' / b = 'the mat played with Matt'.
+"a: 'Cathy's black cat' / b: 'the mat played with Matt'.
 
-"Determinging the number of letters in a string
+"Determining the number of letters in a string
 FIND ALL OCCURRENCES OF PCRE `[A-Za-z]` IN s1 MATCH COUNT DATA(c). "36
 
 "Searching in an internal table and retrieving line, offset, length information
@@ -1135,18 +1567,49 @@ FIND FIRST OCCURRENCE OF PCRE `\bt.` IN TABLE itab
 ```
 <p align="right">(<a href="#top">back to top</a>)</p>
 
+##### Excursion: System Classes for Regular Expressions
+
+
+- You can create an object-oriented representation of regular expressions using the `CL_ABAP_REGEX` system class.
+- For example, the `CREATE_PCRE` method creates instances of regular expressions with PCRE syntax.
+- The instances can be used, for example, with the `CL_ABAP_MATCHER` class, which applies the regular expressions.
+- A variety of methods and parameters can be specified to accomplish various things and to further specify the handling of the regular expression.
+- More information can be found [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenregex_system_classes.htm) and in the class documentation (choose F2 on the class in ADT).
+
+
+``` abap
+DATA(str) = `a1 # B2 ? cd . E3`.
+
+"Creating a regex instance for PCRE regular expressions
+"In the example, regex_inst has the type ref to cl_abap_regex. 
+DATA(regex_inst) =  cl_abap_regex=>create_pcre( pattern = `\D\d`           "any-non digit followed by a digit
+                                                ignore_case = abap_true ).
+
+"Creating an instance of CL_ABAP_MATCHER using the method CREATE_MATCHER of the class CL_ABAP_REGEX
+"You can also specify internal tables with the 'table' parameter and more.
+DATA(matcher) = regex_inst->create_matcher( text = str ).
+
+"Finding all results using the 'find_all' method
+"In the example, result has the type match_result_tab containing the findings.
+DATA(result) = matcher->find_all( ).
+
+"Using method chaining
+DATA(res) = cl_abap_regex=>create_pcre( pattern = `\s\w`       "any blank followed by any word character
+                                        ignore_case = abap_true )->create_matcher( text = str )->find_all( ).
+```
+
+<p align="right">(<a href="#top">back to top</a>)</p>
+
 #### Replacing Using Regular Expressions
 
-To carry out replacement operations using regular expressions both
-string function `replace` and `REPLACE` statements can
-be used with the `pcre` parameter or the `PCRE` addition
-respectively. Similar to the `find` function, among others, and
+- To perform replacement operations using regular expressions, you can use both
+the string function `replace` and `REPLACE` statements with the `pcre` parameter or the `PCRE` addition. 
+- Like the `find` function, among others, and
 `FIND` statements, the `replace` function and
-`REPLACE` statements offer a variety of parameters or additions
-respectively to further restrict the area to be replaced. Check the ABAP
-Keyword Documentation for a more detailed insight. The executable
-example covers numerous PCRE expressions listed above with the
-`replace` function.
+`REPLACE` statements offer a number of parameters and additions that you can use to further restrict the area to be replaced. 
+- For more detailed information, refer to the ABAP
+Keyword Documentation. 
+- The executable example covers many of the PCRE expressions listed above.
 
 Syntax examples:
 ``` abap
@@ -1155,7 +1618,7 @@ s1 = `ab apppc app`.
 "Replaces 'p' with 2 - 4 repetitions, all occurences
 s2 = replace( val = s1 pcre = `p{2,4}` with = `#` occ = 0 ). "ab a#c a#
 
-"Replaces any single character not present in the list, all occurences)
+"Replaces any single character not present in the list, all occurences
 s2 = replace( val = s1 pcre = `[^ac]` with = `#` occ = 0 ). " "a##a###c#a##
 
 "Replaces first occurence of a blank
@@ -1166,14 +1629,14 @@ s2 = replace( val = s1 pcre = `\s` with = `#` ). "ab#apppc app
 "often as possible. Hence, in this example the search stretches until the
 "end of the string since 'p' is the final character, i. e. this 'p' and
 "anything before is replaced.
-s2 = replace( val = s1 pcre = `(.*)p` with = `#` ). "#
+s2 = replace( val = s1 pcre = `.*p` with = `#` ). "#
 
-"Non-greedy search (denoted by '?' below)
+"Non-greedy search
 "The pattern matches anything before 'p'. The matching proceeds until
 "the first 'p' is found and does not go beyond. It matches as few as
 "possible. Hence, the first found 'p' including the content before
 "is replaced.
-s2 = replace( val = s1 pcre = `(.*?)p` with = `#`  ). "#ppc app
+s2 = replace( val = s1 pcre = `.*?p` with = `#`  ). "#ppc app
 
 "Replacements with subgroups
 "Replaces 'pp' (case-insensitive here) with '#', the content before and after 'pp' is switched
@@ -1191,4 +1654,4 @@ REPLACE PCRE `(.*?)PP(.*)` IN s1 WITH `$2#$1` IGNORING CASE. "pc app#ab a
 ## Executable Example
 [zcl_demo_abap_string_proc](./src/zcl_demo_abap_string_proc.clas.abap)
 
-Note the steps outlined [here](README.md#-getting-started-with-the-examples) about how to import and run the code.
+Follow the steps outlined [here](README.md#-getting-started-with-the-examples) to import and run the code.
