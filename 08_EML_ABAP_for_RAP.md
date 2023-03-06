@@ -572,7 +572,7 @@ Bullet points on selected `%` components:
         to refer to the content ID `%cid` as the name implies.
     -   Note: You should always fill `%cid` even if not
         needed. The specified content ID is only valid within one ABAP
-        EML request.
+        EML request. You can use the optional addition [`AUTO FILL CID`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapmodify_entity_entities_fields.htm#!ABAP_ONE_ADD@1@) in EML modify operations to create `%cid` automatically. However, if you use this addition, you cannot refer to `%cid` in subsequent operations.
 -   [`%key`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapderived_types_key.htm)/[`%tky`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapderived_types_tky.htm)
     -   Both are component groups summarizing all primary keys of a RAP
         BO instance.
