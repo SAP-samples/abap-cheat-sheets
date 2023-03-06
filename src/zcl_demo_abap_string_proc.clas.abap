@@ -1440,23 +1440,13 @@ CLASS zcl_demo_abap_string_proc IMPLEMENTATION.
 
     FIND ALL OCCURRENCES OF PCRE `(a.)|(b.)|(c.)`
       IN str_y18
-      RESULTS DATA(res_y17)
+      RESULTS DATA(res_y19)
       IGNORING CASE.
 
-    LOOP AT res_y17 ASSIGNING FIELD-SYMBOL(<fs_y19>).
-      LOOP AT <fs_y19>-submatches ASSIGNING FIELD-SYMBOL(<fs_y20>).
-        "Group 1
-        IF sy-tabix = 1 AND <fs_y20>-offset <> -1.
-          APPEND |Substring "{ substring( val = str_y18 off = <fs_y20>-offset len = <fs_y20>-length ) }" found, capturing group 1| TO tab_y17.
-          EXIT.
-          "Group 2
-        ELSEIF sy-tabix = 2 AND <fs_y20>-offset <> -1.
-          APPEND |Substring "{ substring( val = str_y18 off = <fs_y20>-offset len = <fs_y20>-length ) }" found, capturing group 2| TO tab_y17.
-          EXIT.
-          "Group 3
-        ELSEIF sy-tabix = 3 AND <fs_y20>-offset <> -1.
-          APPEND |Substring "{ substring( val = str_y18 off = <fs_y20>-offset len = <fs_y20>-length ) }" found, capturing group 3| TO tab_y17.
-          EXIT.
+    LOOP AT res_y19 ASSIGNING FIELD-SYMBOL(<fs_y20>).
+      LOOP AT <fs_y20>-submatches ASSIGNING FIELD-SYMBOL(<fs_y21>).
+        IF <fs_y21>-offset <> -1.
+          APPEND |Substring "{ substring( val = str_y18 off = <fs_y21>-offset len = <fs_y21>-length ) }" found, capturing group { sy-tabix }| TO tab_y17.
         ENDIF.
       ENDLOOP.
     ENDLOOP.
@@ -1692,7 +1682,7 @@ CLASS zcl_demo_abap_string_proc IMPLEMENTATION.
     output->display( input = str_z23 name = `str_z23` ).
     output->display( input = str_z24 name = `str_z24` ).
     output->display( input = str_z25 name = `str_z25` ).
-    output->display( input = str_zb name = `str_zb` ).
+    output->display( input = str_zc name = `str_zc` ).
     output->display( input = itab_z name = `itab_z` ).
     output->display( input = |Number of replacements in itab (cnt_z26): { cnt_z26 }| ).
 
@@ -1727,7 +1717,7 @@ CLASS zcl_demo_abap_string_proc IMPLEMENTATION.
     DATA str_tab_reg_find TYPE string_table.
 
     DATA(matcher_2) = cl_abap_regex=>create_pcre( pattern = 'A(.*?)B(.*?)C(.*?)'
-                                                  ignore_case = abap_false )->create_matcher( text = 'AzyBxwvCuDtsErq' ).
+                                                  ignore_case = abap_false )->create_matcher( text = 'A.12az.B.34by.C.56cx.D.78dw.E' ).
 
     IF matcher_2->match( ).
       DO.
