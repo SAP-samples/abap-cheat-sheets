@@ -20,6 +20,15 @@ CLASS lcl_det_at_runtime DEFINITION.
              dec          TYPE i,
            END OF struc_builtin.
 
+    TYPES: BEGIN OF struc_dyn,
+            table        TYPE string,
+            select_list  TYPE string,
+            where_clause TYPE string_table,
+            order_by     TYPE string,
+            target       TYPE REF TO data,
+            rows         TYPE i,
+          END OF struc_dyn.
+
     CLASS-METHODS:
       get_dyn_table_name RETURNING VALUE(tab) TYPE string,
       get_dyn_dobj RETURNING VALUE(dobj) TYPE string,
@@ -31,6 +40,7 @@ CLASS lcl_det_at_runtime DEFINITION.
       get_dyn_class_meth EXPORTING cl   TYPE string
                                    meth TYPE string
                                    ptab TYPE abap_parmbind_tab,
+      get_dyn_syntax_elements RETURNING VALUE(syntax_elements) TYPE struc_dyn,                                   
       fill_string.
 
   PROTECTED SECTION.
@@ -287,6 +297,81 @@ CLASS lcl_det_at_runtime IMPLEMENTATION.
 
   METHOD fill_string.
     dyn_meth_call_result = |Hallo { sy-uname }. The string was filled at { utclong_current( ) }.|.
+  ENDMETHOD.
+
+  METHOD get_dyn_syntax_elements.
+
+    "FROM clause
+    DATA(flight_tables) = VALUE string_table(
+         ( `ZDEMO_ABAP_CARR` ) ( `ZDEMO_ABAP_FLSCH` ) ( `ZDEMO_ABAP_FLI` ) ).
+
+    "Getting random number to determine the table index at runtime.
+    DATA(idx_table) = cl_abap_random_int=>create(
+          seed = cl_abap_random=>seed( )
+          min  = 1
+          max  = lines( flight_tables ) )->get_next( ).
+
+    syntax_elements-table = VALUE #( flight_tables[ idx_table ] DEFAULT `ZDEMO_ABAP_CARR`  ).
+
+    "SELECT list
+    DATA(comp) = CAST cl_abap_structdescr(
+      cl_abap_typedescr=>describe_by_name( syntax_elements-table ) )->components.
+
+    "At least 3 components
+    DATA(idx_comp) = cl_abap_random_int=>create(
+          seed = cl_abap_random=>seed( )
+          min  = 3
+          max  = lines( comp ) )->get_next( ).
+
+    DELETE comp FROM idx_comp + 1 TO lines( comp ).
+
+    LOOP AT comp ASSIGNING FIELD-SYMBOL(<comp>).
+      syntax_elements-select_list = syntax_elements-select_list && `, ` && <comp>-name.
+    ENDLOOP.
+
+    "Replacing initial comma
+    REPLACE PCRE `^,\s` IN syntax_elements-select_list WITH ``.
+
+    "WHERE clause
+    "Excluding the client field
+    DELETE comp WHERE name = 'MANDT'.
+
+    "A maximum of 4 fields are to be respected because that is the maximum of possible fields
+    "available in table zdemo_abap_carr (without the client field)
+    DATA(idx_where) = cl_abap_random_int=>create(
+          seed = cl_abap_random=>seed( )
+          min  = 1
+          max  = 4 )->get_next( ).
+
+    "In the example, the WHERE clause consists of an internal table of type string.
+    "The clause is set up with fields and only IS NOT INITIAL to be on the safe side for a
+    "somewhat 'meaningful' clause and in the interest of simplicity.
+    LOOP AT comp ASSIGNING FIELD-SYMBOL(<where>) TO idx_where.
+      IF sy-tabix = 1.
+        APPEND <where>-name && ` IS NOT INITIAL` TO syntax_elements-where_clause.
+      ELSE.
+        APPEND `OR ` && <where>-name && ` IS NOT INITIAL` TO syntax_elements-where_clause.
+      ENDIF.
+    ENDLOOP.
+
+    "ORDER BY clause
+    DATA(idx_order) = cl_abap_random_int=>create(
+          seed = cl_abap_random=>seed( )
+          min  = 1
+          max  = lines( comp ) )->get_next( ).
+
+    syntax_elements-order_by = VALUE #( comp[ idx_order ]-name DEFAULT `CARRID`  ).
+
+    "INTO clause
+    CREATE DATA syntax_elements-target TYPE TABLE OF (syntax_elements-table).
+
+    "UP TO ... ROWS
+    "A minimum of 2 and a maximum of 6 rows are to be retrieved by the SELECT statement
+    syntax_elements-rows = cl_abap_random_int=>create(
+            seed = cl_abap_random=>seed( )
+            min  = 2
+            max  = 6 )->get_next( ).
+
   ENDMETHOD.
 
 ENDCLASS.

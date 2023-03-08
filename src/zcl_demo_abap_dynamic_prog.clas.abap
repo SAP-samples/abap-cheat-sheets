@@ -942,7 +942,44 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
 
 **********************************************************************
 
-    output->next_section( `25) Dynamic Invoke` ).
+    output->next_section( `25) Excursion: Multiple Dynamically Specified ` &&
+                          `Clauses in an ABAP SQL SELECT Statement` ).
+
+    "In this nonsense example, multiple clauses in a SELECT statement are
+    "determined at runtime to demonstrate the rich variety of possibilities.
+    "Note: The rows and target table specifications are not real dynamic specifications in the
+    "SELECT statement in the sense of syntax elements enclosed by parentheses. Here, they are just
+    "included to provide some more 'dynamic' touch of the statement :)
+
+    "Getting all clauses of the SELECT statement
+    DATA(dyn_syntax_elem) = lcl_det_at_runtime=>get_dyn_syntax_elements( ).
+
+    IF dyn_syntax_elem-table IS NOT INITIAL
+    AND dyn_syntax_elem-select_list IS NOT INITIAL
+    AND dyn_syntax_elem-where_clause IS NOT INITIAL
+    AND dyn_syntax_elem-order_by IS NOT INITIAL
+    AND dyn_syntax_elem-target IS BOUND
+    AND dyn_syntax_elem-rows IS NOT INITIAL.
+
+      output->display( `Dynamically determined syntax elements:` ).
+      output->display( input = dyn_syntax_elem name = `dyn_syntax_elem` ).
+
+      SELECT (dyn_syntax_elem-select_list)
+        FROM (dyn_syntax_elem-table)
+        WHERE (dyn_syntax_elem-where_clause)
+        ORDER BY (dyn_syntax_elem-order_by)
+        INTO CORRESPONDING FIELDS OF TABLE @dyn_syntax_elem-target->*
+        UP TO @dyn_syntax_elem-rows ROWS.
+
+      output->display( input = dyn_syntax_elem-target->* name = `dyn_syntax_elem-target->*` ).
+
+    ELSE.
+      output->display( `There's an issue with syntax elements.` ).
+    ENDIF.
+
+**********************************************************************
+
+    output->next_section( `26) Dynamic Invoke` ).
 
     "In the example, both class and method are determined at runtime for
     "the method call. The suitable parameter table is filled in the
@@ -983,7 +1020,7 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
 
 **********************************************************************
 
-    output->next_section( `26) RTTI: Determining Data and Object Types at Runtime` ).
+    output->next_section( `27) RTTI: Determining Data and Object Types at Runtime` ).
 
     "The example demonstrates RTTI as follows:
     "- The method call takes care of providing the name of a type. It is implemented
@@ -1122,7 +1159,7 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
 
 **********************************************************************
 
-    output->next_section( `27) RTTC: Dynamically Creating Elementary Data Objects` ).
+    output->next_section( `28) RTTC: Dynamically Creating Elementary Data Objects` ).
 
     "The example demonstrates RTTC as follows:
     "- The method call takes care of providing the name of a built-in data type and more
@@ -1161,7 +1198,7 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
 
 **********************************************************************
 
-    output->next_section( `28) RTTC: Dynamically Creating Structured Data Object (1)` ).
+    output->next_section( `29) RTTC: Dynamically Creating Structured Data Object (1)` ).
 
     "The example demonstrates RTTC as follows:
     "- The method call takes care of providing the name of a database table name.
@@ -1199,7 +1236,7 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
 
 **********************************************************************
 
-    output->next_section( `29) RTTC: Dynamically Creating Structured Data Object (2)` ).
+    output->next_section( `30) RTTC: Dynamically Creating Structured Data Object (2)` ).
 
     "This example includes the dynamic definition of a structure with three components
     "using the GET method of the CL_ABAP_STRUCTDESCR class.
@@ -1255,7 +1292,7 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
 
 **********************************************************************
 
-    output->next_section( `30) RTTC: Dynamically Creating Internal Table (1)` ).
+    output->next_section( `31) RTTC: Dynamically Creating Internal Table (1)` ).
 
     "The example demonstrates RTTC as follows:
     "- The method call takes care of providing the name of a database table name.
@@ -1282,7 +1319,7 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
 
 **********************************************************************
 
-    output->next_section( `31) RTTC: Dynamically Creating Internal Table (2)` ).
+    output->next_section( `32) RTTC: Dynamically Creating Internal Table (2)` ).
 
     "In the example an internal table type is created based on a DDIC type.
     "See the comments in the code.
