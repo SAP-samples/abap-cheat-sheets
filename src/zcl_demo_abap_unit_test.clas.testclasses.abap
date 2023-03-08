@@ -66,7 +66,7 @@
 "In this example, multiple test classes are created in the test include.
 "Because private attributes are not accessible in local test classes,
 "the local test classes are declared as local friends of the global class.
-"in the example, a combined friendship declaration for all test classes is placed
+"In the example, a combined friendship declaration for all test classes is placed
 "at the top of the test include. Prepending the friendship declaration with
 "test class definitions and the DEFERRED addition makes the the test classes
 "'known' at this stage and can thus be specified as local friends there.

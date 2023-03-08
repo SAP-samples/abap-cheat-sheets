@@ -159,7 +159,7 @@ Use the standalone version of the abapGit report to import the demo examples of 
 8.  Choose the `Pull` button. The import of the artifacts is triggered. This may take several minutes.
 9. If the `Inactive Objects` popup is displayed, select all artifacts and choose `Continue` (✔️).
 10.	When the cloning is complete, refresh your project tree. For example, in ADT, right-click on the package and choose `Refresh` or `F5`. The package should contain all artifacts from the GitHub repository.
-11. Make sure that all artifacts are active. To activate all inactive development objects, choose the `Activate all inactive ABAP development objects` button from the (or choose `CTRL+Shift+F3`).
+11. Make sure that all artifacts are active. To activate all inactive development objects, choose the `Activate all inactive ABAP development objects` button from the menu (or choose `CTRL+Shift+F3`).
 
 </details>
 
@@ -174,7 +174,7 @@ Use the standalone version of the abapGit report to import the demo examples of 
 
 > **💡 Note**<br>
 >- Check the notes on the context and the ABAP syntax used that are included as comments in the class.
->- Due to the amount of output in the console, the examples include numbers (e.g. 1) ..., 2) ..., 3) ...) that represent the header of each example code section. Also, in most cases, the variable name is displayed in the console. Therefore, to find the relevant output in the console more easily and quickly, simply search the console for the number (e.g. search for `3)` for the particular output) or variable name (`CTRL+F` in the console), or use breakpoints in the code to check variables in the debugger.
+>- Due to the amount of output in the console, the examples include numbers (e.g. 1) ..., 2) ..., 3) ...) that represent the headers of each example code section. Also, in most cases, the variable name is displayed in the console. Therefore, to find the relevant output in the console more easily and quickly, simply search the console for the number (e.g. search for `3)` for the particular output) or variable name (`CTRL+F` in the console), or use breakpoints in the code to check variables in the debugger.
 >- You may want to clear the console by right-clicking in the console and choosing `Clear` before running another demo class to avoid confusing the output of multiple classes.
 </details>
 
@@ -182,7 +182,7 @@ Use the standalone version of the abapGit report to import the demo examples of 
 
 ## ⚡ Known Issues
 - Only one user on the system can import this repository because all object names must be globally unique. If you get an error that the objects already exist when you try to import, search the system for classes named `ZCL_DEMO_ABAP*`. Someone has already imported the content into the system and you can simply check out that imported version.
-- Since the repository contains self-contained examples, i.e. they work with demo database tables included in the repository (note that these tables are populated during method executions), all demo artifacts must be imported for all examples to work.
+- Since the repository contains self-contained examples, i.e. some of them work with demo database tables included in the repository (note that these tables are populated during method executions), all demo artifacts must be imported for all examples to work.
 - When importing into an on-premise system, note the following: The demos cover ABAP syntax regardless of the ABAP release to avoid scattering information and to get the information in one go. Therefore, there may be syntax that is not yet available in the ABAP version of your on-premise system. In this case, you may want to comment out the affected code sections and/or ignore the  affected artifacts if an activation fails. Note that the RAP examples in particular require at least ABAP version 7.56. 
 - Regarding possible code check warnings, e.g. for the many strings in the code, not using an `ORDER BY` clause, or messages regarding using `SELECT *`, the code deliberately avoids pragmas and pseudo comments in order to keep the code simple and to focus on the available ABAP syntax. See also the [Disclaimer](#%EF%B8%8F-disclaimer).
 
@@ -204,7 +204,7 @@ The code examples presented in this repository are only syntax examples and are 
 SAP does not guarantee either the correctness or the completeness of the code. In addition, SAP takes no legal responsibility or liability for possible errors or their consequences, which occur through the use of the example programs.
 
 ## 📟 How to Obtain Support
-Please do not create pull requests. If you like to address issues or suggestions, please create an issue. However, this project is provided "as-is": there is no guarantee that raised issues will be answered or addressed in future releases.
+This is not intended to be a contribution repository, so please do not create pull requests. If you like to address issues or suggestions, please create an issue. However, this project is provided "as-is": there is no guarantee that raised issues will be answered or addressed in future releases.
 
 ## 📜 License
 Copyright (c) 2022 SAP SE or an SAP affiliate company. All rights reserved. This project is licensed under the Apache Software License, version 2.0 except as noted otherwise in the [LICENSE](LICENSE) file.

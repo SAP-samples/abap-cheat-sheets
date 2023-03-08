@@ -341,9 +341,9 @@ the string function
 Syntax examples:
 ``` abap
 "&& and string template
-s1 = `AB` && `AP`. "ABAP
-s2 = `ab` && `ap` && ` ` && s1. "abap ABAP
-s3 = |{ s1 }. { s2 }!|. "ABAP. abap ABAP!
+DATA(s1) = `AB` && `AP`. "ABAP
+DATA(s2) = `ab` && `ap` && ` ` && s1. "abap ABAP
+DATA(s3) = |{ s1 }. { s2 }!|. "ABAP. abap ABAP!
 
 "CONCATENATE statements
 CONCATENATE s1 s2 INTO s3. "ABAPabap ABAP
@@ -392,7 +392,10 @@ string function
 
 Syntax examples:
 ``` abap
-s1 = `Hallo,world,123`.
+DATA(s1) = `Hallo,world,123`.
+DATA: s2 TYPE string, 
+      s3 TYPE string,
+      s4 TYPE string.
 
 SPLIT s1 AT `,` INTO s2 s3 s4. "s2 = Hallo / s3 = world / s4 = 123
 
@@ -426,7 +429,7 @@ statements.
 Syntax examples:
 ``` abap
 "String functions
-s1 = to_upper( `abap` ). "ABAP
+DATA(s1) = to_upper( `abap` ). "ABAP
 s1 = to_lower( `SOME_FILE.Txt` ). "some_file.txt
 
 "TRANSLATE statements
@@ -455,7 +458,7 @@ Syntax examples:
 ``` abap
 "SHIFT statements
 "Note that all results below refer to s1 = `hallo`.
-s1 = `hallo`. "Type string
+DATA(s1) = `hallo`. "Type string
 
 SHIFT s1. "No addition; string shifted one place to the left: allo
 SHIFT s1 BY 2 PLACES. "Without direction, left by default: llo
@@ -472,15 +475,15 @@ SHIFT ch4 BY 3 PLACES LEFT CIRCULAR. "lohal
 SHIFT ch4 UP TO `ll`. "Shift characters up to a specific character set: llo
 
 "Deleting leading and trailing characters
-s2 = `   hallo   `.
-s3 = s2.
+DATA(s2) = `   hallo   `.
+DATA(s3) = s2.
 
 SHIFT s2 LEFT DELETING LEADING ` `. "'hallo   '
 SHIFT s3 RIGHT DELETING TRAILING ` `. "'      hallo' (length is kept)
 
 "Removing trailing blanks in strings without leading blanks;
 "you can use the following sequence of statements
-s4 = `hallo   `.
+DATA(s4) = `hallo   `.
 SHIFT s4 RIGHT DELETING TRAILING ` `. "'   hallo'
 SHIFT s4 LEFT  DELETING LEADING ` `. "'hallo'
 
@@ -509,9 +512,9 @@ is that you can specify any character to remove, not just blanks.
 Syntax examples:
 ``` abap
 "CONDENSE statements
-s1 = ` ab cd `.
-s2 = `    ef   gh ij   `.
-s3 = ` kl  mn   op `.
+DATA(s1) = ` ab cd `.
+DATA(s2) = `    ef   gh ij   `.
+DATA(s3) = ` kl  mn   op `.
 
 CONDENSE s1. "Trailing and leading blanks are removed: 'ab cd'
 CONDENSE s2. "It also replaces sequences of multiple blanks with a single blank: 'ef gh ij'
@@ -553,7 +556,7 @@ The string function
 reverses a string:
 ``` abap
 "Result: 'abap'
-s1 = reverse( `paba` ).
+DATA(s1) = reverse( `paba` ).
 ```
 
 **Inserting Substrings into Strings**
@@ -569,7 +572,7 @@ inserts a substring at any position within a given string. You can use various p
 Syntax examples:
 ``` abap
 "Result: 'abcdefghi'
-s1 = insert( val = `abcghi` sub = `def` off = 3 ).
+DATA(s1) = insert( val = `abcghi` sub = `def` off = 3 ).
 
 "Result: 'defabcghi'
 s1 = insert( val = `abcghi` sub = `def` ).
@@ -587,7 +590,6 @@ DATA(cl_name) = 'CL_SOME_CLASS                   '.
 "Addition ONLY is not specified: All blanks are replaced
 OVERLAY cl_name WITH incl. 
 "cl_name: CL_SOME_CLASS=================CP
-
 
 DATA(txt1) = 'a.b.c.a.b.c.A'.
 DATA(txt2) = 'z.x.y.Z.x.y.z'.
@@ -634,12 +636,12 @@ which are covered below.
 
 Syntax examples:
 ``` abap
-s1 = `Lorem ipsum dolor sit amet`. "Type string
+DATA(s1) = `Lorem ipsum dolor sit amet`. "Type string
 
 "Extracting substring starting at a specific position
 "'len' not specified means the rest of the remaining characters are
 "respected
-s2 = substring( val = s1 off = 6 ). "ipsum dolor sit amet
+DATA(s2) = substring( val = s1 off = 6 ). "ipsum dolor sit amet
 
 "Extracting substring with a specific length
 "'off' is not specified and has the default value 0.
@@ -754,7 +756,7 @@ expressions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.ht
 
 Syntax examples:
 ``` abap
-s1 = `cheers`.
+DATA(s1) = `cheers`.
 IF s1 CA `aeiou` ... "true, sy-fdpos = 2
 IF s1 NA `xyz`... "true, sy-fdpos = 6
 
@@ -819,9 +821,9 @@ statements to perform replacements directly on the source field.
 
 Syntax examples:
 ``` abap
-s1 = `___abc_def_____ghi_`.
-s2 = translate( val = s1 from = `hi_` to = `##` ). "abcdefg##
-s2 = translate( val = s1 from = `_`  to = `##` ). "###abc#def#####ghi#
+DATA(s1) = `___abc_def_____ghi_`.
+DATA(s2) = translate( val = s1 from = `hi_` to = `##` ). "abcdefg##
+s2 = translate( val = s1 from = `_`  to = `##` ).  "###abc#def#####ghi#
 
 "TRANSLATE statement. The value after USING is interpreted as a string composed of character pairs.
 "Starting with the first pair, a search is performed in text for the
@@ -848,7 +850,7 @@ TRANSLATE s1 USING `_.a#g+`. "...#bc.def.....+hi.
     of the searched string.
 
 ``` abap
-s3 = `cheers`.
+DATA(s3) = `cheers`.
 
 IF s3 CS `rs` ... "true, sy-fdpos = 4 (offset) 
 

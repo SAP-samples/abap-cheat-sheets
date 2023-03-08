@@ -25,7 +25,7 @@
 
    - The name `itab` of the data object is determined at compile time and remains stable throughout the execution of the program.
 - However, there can also be use cases where the attributes of such a data object are not statically determined. This is where dynamic aspects enter the picture: Attributes, names, types etc. are not determined at compile time but rather at runtime.
-- There are ABAP statements that include these dynamic aspects in the syntax. Assume you have simple program and a UI that includes an input field storing the input in a data object named `dbtab`. As input, you expect the name of a database table to be provided. In the end, you want to retrieve all entries of the database table and store them in an internal table. This table should be displayed. So, there is random input at runtime and your program must be able to deal with it.
+- There are ABAP statements that include these dynamic aspects in the syntax. Assume you have a simple program and a UI that includes an input field storing the input in a data object named `dbtab`. As input, you expect the name of a database table to be provided. In the end, you want to retrieve all entries of the database table and store them in an internal table. This table should be displayed. So, there is random input at runtime and your program must be able to deal with it.
    - See the following `SELECT` statement. As also shown further down, the `FROM` clause does not include a statically defined table to be selected from. Instead, there is a pair of parentheses including a data object. Assume the data object holds the name of the database table. At runtime, the data retrieval happens from the database table that was inserted in the input field.
 
         ```abap
@@ -106,12 +106,12 @@ Once the memory area is assigned, you can work with the content.
 ``` abap
 "Some data object declarations to be used
 DATA: number TYPE i,
-      struc  TYPE sflight,
+      struc  TYPE zdemo_abap_fli,  "Demo database table
       tab    TYPE string_table.
 
 "Declaring field symbols with complete types
 FIELD-SYMBOLS: <fs_i>     TYPE i,
-               <fs_struc> TYPE sflight,
+               <fs_struc> TYPE zdemo_abap_fli,
                <fs_tab>   TYPE string_table.
 
 "Declaring field symbols with generic type
@@ -168,7 +168,7 @@ ASSIGN chars TO <fs2> CASTING TYPE c_len_3.
 
 ``` abap
 "For example, in assignments
-DATA: number TYPE i VALUE 1.
+DATA number TYPE i VALUE 1.
 FIELD-SYMBOLS <fs_i> TYPE i.
 ASSIGN number TO <fs_i>.
 
@@ -321,7 +321,7 @@ Excursion: Static vs. dynamic type, upcasts and downcasts
 - For an assignment to work, the differentiation is particularly relevant since the following basic rule applies: The static type of the target reference variable must be more general than or the same as the dynamic type of the source reference variable.
 
 - This is where the concepts of [upcast](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenup_cast_glosry.htm "Glossary Entry") and [downcast](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendown_cast_glosry.htm "Glossary Entry") enter the picture.
-  - Up and and down? It originates from the idea of moving up or down in an [inheritance tree](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abeninheritance_tree_glosry.htm). In an assignment between reference variables, the target variable inherits the dynamic type of the source variable.
+  - Up and down? This concept originates from the idea of moving up or down in an [inheritance tree](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abeninheritance_tree_glosry.htm). In an assignment between reference variables, the target variable inherits the dynamic type of the source variable.
   - Upcast: If the static type of the target variables is **less specific or the same** as the static type of the source variable, an assignment is possible. This includes, for example, assignments with the [assignment operator](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenassignment_operator_glosry.htm) `=`.
   - Downcast: If the static type of the target variable is **more specific** than the static type of the source variable, a check must be made at runtime before the assignment is done. If you indeed want to trigger such a downcast, you must do it explicitly in your code. You can do this, for example, using the
   [constructor operator](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconstructor_operator_glosry.htm "Glossary Entry")

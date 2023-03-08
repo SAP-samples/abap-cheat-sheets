@@ -365,7 +365,7 @@ METHODS some_action FOR MODIFY
     of RAP BO instances as import parameter. Therefore, instance data
     must be handled via the transactional buffer when self-implementing
     the saver methods.
--   Saver methods are called when the RAP save sequence has been triggered a [`COMMIT
+-   Saver methods are called when the RAP save sequence has been triggered by a [`COMMIT
     ENTITIES`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapcommit_entities.htm)
     statement. Note that in natively supported RAP scenarios, for example, an SAP Fiori app using OData, the `COMMIT ENTITIES` call is performed implicitly and automatically by the [RAP runtime engine](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_runtime_engine_glosry.htm).
 -   Find more information on RAP saver methods
@@ -546,7 +546,7 @@ in [late
 numbering](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_late_numbering_glosry.htm "Glossary Entry")
 scenarios. The draft indicator
 [`%is_draft`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapderived_types_is_draft.htm)
-is only reelvant in the context of
+is only relevant in the context of
 [draft](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbdl_with_draft.htm).
 
 Find more details on the available components in section [Components of
@@ -642,7 +642,7 @@ DATA: cr_tab        TYPE TABLE FOR CREATE root_ent,    "input derived type
 "Input derived type for the EML statement is filled using the VALUE operator
 "Assumption: key_field is the key field having type i,
 "field1 and field2 are data fields with character-like data type.
-"Specify %cid even if not used or of interest; it must be unique within a RAP LUW
+"Specify %cid even if not used or of interest; it must be unique within a request
 
 cr_tab = VALUE #(
         ( %cid   = 'cid1' key_field = 1
