@@ -584,7 +584,7 @@ For the rich variety of options (where dynamic specification is possible for ABA
       INTO TABLE ...
 
     "Excursion: Dynamic FROM clause and compatible target data object
-    DATA(db_table) = 'ZDEMO_ABAP_CARR'.
+    DATA(db_table) = `ZDEMO_ABAP_CARR`.
 
     DATA itab TYPE REF TO data.
     CREATE DATA itab TYPE TABLE OF (db_table).
