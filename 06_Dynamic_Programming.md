@@ -572,26 +572,36 @@ For the rich variety of options (where dynamic specification is possible for ABA
     DATA(select_list) = `CARRID, CONNID, COUNTRYFR, COUNTRYTO`.
 
     SELECT (select_list)
-    FROM zdemo_abap_fli
-    INTO TABLE @itab.
+      FROM zdemo_abap_fli
+      INTO TABLE ...
 
     "Dynamic FROM clause
 
     DATA(table) = `ZDEMO_ABAP_FLI`.
 
     SELECT *
-    FROM (table)
-    INTO TABLE @itab.
+      FROM (table)
+      INTO TABLE ...
+
+    "Excursion: Dynamic FROM clause and compatible target data object
+    DATA(db_table) = 'ZDEMO_ABAP_CARR'.
+
+    DATA itab TYPE REF TO data.
+    CREATE DATA itab TYPE TABLE OF (db_table).
+
+    SELECT * 
+      FROM (db_table) 
+      INTO TABLE @itab->*.
 
     "Dynamic WHERE clause
     "This is an example for using an internal table with a character-like row type
     DATA(where_clause) = VALUE string_table( ( `CARRID = 'LH'` )
-                                            ( `OR CARRID = 'AA'` ) ).
+                                             ( `OR CARRID = 'AA'` ) ).
 
     SELECT *
-    FROM zdemo_abap_fli
-    WHERE (where_clause)
-    INTO TABLE @itab.
+      FROM zdemo_abap_fli
+      WHERE (where_clause)
+      INTO TABLE ...
     ```
 
 - Dynamic invoke: Dynamically specifying [procedure](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenprocedure_glosry.htm "Glossary Entry") calls
