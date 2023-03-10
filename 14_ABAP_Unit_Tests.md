@@ -222,7 +222,7 @@ ENDCLASS.
 
 **Implementing Test Methods**
 - The implementation ideally follows the *given-when-then* pattern.
-  - *given*: Preparing the test, e.g. creating an instance of the class under test and a local test double (to inject test test double into the class under test)
+  - *given*: Preparing the test, e.g. creating an instance of the class under test and a local test double (to inject the test double into the class under test)
   - *when*: Calling the procedure to be tested
   - *then*: Checking and evaluating the test result using the static methods of the `CL_ABAP_UNIT_ASSERT` class
 - A selection of static methods of the class `CL_ABAP_UNIT_ASSERT` that can be used for the checks:

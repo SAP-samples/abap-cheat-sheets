@@ -1182,7 +1182,7 @@ CLASS zcl_demo_abap_prog_flow_logic IMPLEMENTATION.
     "ASSERT statements are followed by a logical expression. If the expression is false,
     "the program is terminated and an uncatchable exception is raised resulting in the
     "runtime error ASSERTION_FAILED.
-    "You can comment out the code below to check out the effect.
+    "You can comment in the code that is commented out below to check out the effect.
     "In ADT, you will see a message popping up and informing you about the runtime error.
     "You can check the details by choosing the "Show" button in the pop-up. Furthermore,
     "you can check the content of the "Feed Reader" tab in ADT. There, just expand your

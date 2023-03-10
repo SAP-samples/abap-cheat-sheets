@@ -564,7 +564,7 @@ Regarding the exiting of procedures, note the hint mentioned above. The use of `
 <p align="right">(<a href="#top">back to top</a>)</p>
 
 #### Notes on Exception Classes
-- To distinguish exception classes from "normal" classes, use the naming convention `CX` as prefix and not `CL`.
+- To distinguish exception classes from *regular* classes, use the naming convention `CX` as prefix and not `CL`.
 - All exception classes (also the self-defined ones) are directly or indirectly derived from three abstract subclasses: `CX_STATIC_CHECK`, `CX_DYNAMIC_CHECK` and `CX_NO_CHECK`. These three "exception class categories" have different properties.
 - The class `CX_ROOT` is the root class. Directly deriving from `CX_ROOT` is not possible.
 - Apart from global classes, exception classes can also be defined as local classes within an ABAP program.

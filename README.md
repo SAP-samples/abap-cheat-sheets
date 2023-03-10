@@ -51,6 +51,7 @@ ABAP cheat sheets[^1] ...
 1. **ABAP syntax info**: Get info in a nutshell on ABAP syntax and concepts related to various ABAP topics in the [ABAP cheat sheets](#-abap-cheat-sheets-overview).
 2. **Demo examples**: Import the ABAP development objects of this repository into your system using [abapGit](https://abapgit.org/) as described [here](#-getting-started-with-the-examples) and run the demo classes by choosing `F9` in the [ABAP Development Tools (ADT)](https://tools.eu1.hana.ondemand.com/) for checking out the ABAP syntax in action.
 
+<br>
 
 ## 📝 ABAP Cheat Sheets Overview
 
@@ -70,6 +71,8 @@ ABAP cheat sheets[^1] ...
 |[A Glimpse on AMDP](12_AMDP.md)|Covers ABAP Managed Database Procedures (AMDP): AMDP Procedures and AMDP Functions (including CDS Table Functions)|[zcl_demo_abap_amdp](./src/zcl_demo_abap_amdp.clas.abap)|
 |[Program Flow Logic](13_Program_Flow_Logic.md)|Deals with control structures (`IF`, `CASE`), loops (`DO`, `WHILE`) and exception handling|[zcl_demo_abap_prog_flow_logic](./src/zcl_demo_abap_prog_flow_logic.clas.abap)|
 |[A Glimpse on ABAP Unit Tests](14_ABAP_Unit_Tests.md)|Contains basic information about unit testing in ABAP|[zcl_demo_abap_unit_test](./src/zcl_demo_abap_unit_test.clas.abap)|
+
+<br>
 
 ## 🎬 Getting Started with the Examples
 
@@ -186,7 +189,9 @@ Use the standalone version of the abapGit report to import the demo examples of 
 - When importing into an on-premise system, note the following: The demos cover ABAP syntax regardless of the ABAP release to avoid scattering information and to get the information in one go. Therefore, there may be syntax that is not yet available in the ABAP version of your on-premise system. In this case, you may want to comment out the affected code sections and/or ignore the  affected artifacts if an activation fails. Note that the RAP examples in particular require at least ABAP version 7.56. 
 - Regarding possible code check warnings, e.g. for the many strings in the code, not using an `ORDER BY` clause, or messages regarding using `SELECT *`, the code deliberately avoids pragmas and pseudo comments in order to keep the code simple and to focus on the available ABAP syntax. See also the [Disclaimer](#%EF%B8%8F-disclaimer).
 
-## 🛈 Further Information
+<br>
+
+## ℹ️ Further Information
 - For the system-internal version of the ABAP Keyword Documentation in your
   - ... **on-premise system**: Access the documentation in the SAP GUI via the transactions `ABAPDOCU` (opens the documentation directly) and `ABAPHELP` (opens an input field with which you can search the documentation content, for example, you can search for a keyword such as `SELECT`). Or, of course, choose `F1` on a keyword in your code. If you are in the SAP GUI (e.g. in `SE80`), the system-internal version opens. If you are in ADT, the documentation opens in the *ABAP Language Help* view.
   - ... **SAP BTP ABAP environment**: In ADT, the documentation is in the *ABAP Language Help* view, where you can also search. If you choose `F1` on a keyword in your code, the documentation opens there.
@@ -199,12 +204,18 @@ Use the standalone version of the abapGit report to import the demo examples of 
 
 - [This blog](https://blogs.sap.com/2021/04/28/video-tutorials-on-how-to-use-the-abap-keyword-documentation-abap-f1-help/) features videos about the ABAP Keyword Documentation in the [SAP Help Portal](https://www.youtube.com/watch?v=a4ckF1XkfG8),  [SAP GUI](https://www.youtube.com/watch?v=fsX-085MlD8), and [ADT](https://www.youtube.com/watch?v=hNGEYFpWwh0).
 
+<br>
+
 ## ⚠️ Disclaimer
 The code examples presented in this repository are only syntax examples and are not intended for direct use in a production system environment. The code examples are primarily intended to provide a better explanation and visualization of the syntax and semantics of ABAP statements and not to solve concrete programming tasks. For production application programs, a dedicated solution should therefore always be worked out for each individual case.
-SAP does not guarantee either the correctness or the completeness of the code. In addition, SAP takes no legal responsibility or liability for possible errors or their consequences, which occur through the use of the example programs.
+There is no guarantee for either the correctness or the completeness of the code. In addition, there is no legal responsibility or liability for possible errors or their consequences, which occur through the use of the example code.
+
+<br>
 
 ## 📟 How to Obtain Support
 This is not intended to be a contribution repository, so please do not create pull requests. If you like to address issues or suggestions, please create an issue. However, this project is provided "as-is": there is no guarantee that raised issues will be answered or addressed in future releases.
+
+<br>
 
 ## 📜 License
 Copyright (c) 2022 SAP SE or an SAP affiliate company. All rights reserved. This project is licensed under the Apache Software License, version 2.0 except as noted otherwise in the [LICENSE](LICENSE) file.
