@@ -34,7 +34,7 @@
 *
 ***********************************************************************
 "! <p class="shorttext synchronized">ABAP cheat sheet: ABAP SQL - Grouping Internal Tables</p>
-"! Example to demonstrate working with structures.<br>Choose F9 in ADT to run the class.
+"! Example to demonstrate grouping internal tables.<br>Choose F9 in ADT to run the class.
 CLASS zcl_demo_abap_sql_group_by DEFINITION
   PUBLIC
   FINAL

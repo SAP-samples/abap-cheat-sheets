@@ -607,10 +607,11 @@ For the rich variety of options (where dynamic specification is possible for ABA
 - Dynamic invoke: Dynamically specifying [procedure](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenprocedure_glosry.htm "Glossary Entry") calls
 
     ``` abap
-    "Note that dynamic method calls require a CALL METHOD statement.
+    "Notes:
+    "- Dynamic method calls require a CALL METHOD statement.
+    "- The first 3 examples assume that there are no mandatory parameters defined for the method.
+    "- The example covers only static methods. Dynamic method calls for instance methods are also possible.
 
-    "Note: The following 3 examples assume that there are no
-    "mandatory parameters defined for the method.
     "Method dynamically specified
     CALL METHOD class=>(meth).
 
