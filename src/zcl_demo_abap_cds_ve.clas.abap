@@ -242,11 +242,11 @@ CLASS zcl_demo_abap_cds_ve IMPLEMENTATION.
 
     ELSEIF cds_joins = sql_right_outer_join.
 
-      output->display( `In the example CDS view entity, you have the right outer join example is commented in.` ).
+      output->display( `In the example CDS view entity, the right outer join example is commented in.` ).
 
     ELSEIF cds_joins = sql_cross_join.
 
-      output->display( `In the example CDS view entity, you have the cross join example is commented in.` ).
+      output->display( `In the example CDS view entity, the cross join example is commented in.` ).
 
     ELSE.
 
