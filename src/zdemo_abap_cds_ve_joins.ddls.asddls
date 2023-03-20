@@ -14,7 +14,7 @@
 //     respective code sections (select the lines and choose CTRL + 7).
 //   - The example for inner joins is commented in by default. The relevant
 //     code sections are marked with "COMMENT IN/OUT ... START" and
-//     "COMMENT IN/OUT ... START" in both SELECT and element list
+//     "COMMENT IN/OUT ... END" in both SELECT and element list
 //     (inner joins -> 1a / 1b). To test the left outer joins, for example,
 //     comment out the respective sections of the inner join and comment in
 //     the sections for left outer joins (2a, 2b), and so on.

@@ -28,7 +28,7 @@
 @AccessControl.authorizationCheck: #NOT_REQUIRED
 
 // Example for an entity annotation (annotations that can be used in all CDS entities)
-// The following annotation provdes a translatable short text of the CDS entity.
+// The following annotation provides a translatable short text of the CDS entity.
 @EndUserText.label: 'CDS view entity: Operands/Expressions'
 define view entity zdemo_abap_cds_ve_sel
   with parameters
@@ -107,8 +107,6 @@ define view entity zdemo_abap_cds_ve_sel
       // The following example uses the prefix $projection. which defines reuse expressions.
       // That is, you can refer to an element defined previously in the SELECT list of the same CDS view entity.
       // Note that this is only possible in dedicated positions. One of them is a cast expression.
-      //cast( $projection.date_lit as abap.int4 ) as cast_dats,
-      //cast( $projection.curr as abap.int4 ) as cast_curr,
       cast( $projection.date_lit as abap.char(8) ) as cast_dats2c,
 
       // -------- Arithmetic expressions  --------

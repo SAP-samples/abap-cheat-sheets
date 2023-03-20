@@ -1,11 +1,10 @@
-# CDS view entities
+# CDS View Entities
 
-- [CDS view entities](#cds-view-entities)
+- [CDS View Entities](#cds-view-entities)
   - [More Information](#more-information)
   - [Executable Example](#executable-example)
 
 Core data services (CDS) are an infrastructure for defining and consuming semantically rich data models on the [standard database](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenstandard_db_glosry.htm) of an [AS ABAP](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenas_abap_glosry.htm).
-CDS basically is an enhancement of ABAP SQL to reduce the rich variety of syntax.
 
 > **💡 Note**<br>
 > - For cheat sheet content on CDS views, check out [this blog](https://blogs.sap.com/2022/10/24/feature-matrix-data-modeling-with-abap-core-data-services/).

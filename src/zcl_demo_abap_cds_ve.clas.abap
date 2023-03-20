@@ -159,9 +159,6 @@ CLASS zcl_demo_abap_cds_ve IMPLEMENTATION.
 
     output->next_section( `4) Excursion: ABAP SQL and joins` ).
 
-    "The following ABAP SQL SELECT statements uses a CDS view entity as
-    "the data source. The sample CDS view entity contains multiple
-    "joins.
     "The following ABAP SQL SELECT statements are intended to reproduce
     "the different joins that are performed by the CDS view entity.
     "Inner, left and right outer, and cross joins are covered. The data
@@ -170,8 +167,8 @@ CLASS zcl_demo_abap_cds_ve IMPLEMENTATION.
     "- The prefix ~ is used in the ABAP SQL statements instead of . in
     "  the CDS view entity.
     "- To demonstrate the handling of null values, some SELECT statements
-    "contain the coalesce function and CASE expressions similar to the
-    "CDS view entity.
+    "  contain the coalesce function and CASE expressions similar to the
+    "  CDS view entity.
 
     output->display( `----- Inner join -----` ).
 
@@ -299,6 +296,7 @@ CLASS zcl_demo_abap_cds_ve IMPLEMENTATION.
     "  is used in the SELECT list of an ABAP SQL SELECT statement (where
     "  fields are specified), a LEFT OUTER JOIN is used by default.
     "- The coalesce function is included for a field to handle null values.
+
     SELECT carrier,
            \_carr3-carrname,
            coalesce( \_carr3-url, '###' ) AS cityto_lo
@@ -388,12 +386,12 @@ CLASS zcl_demo_abap_cds_ve IMPLEMENTATION.
           "Without specifying the cardinality, the following warning
           "occurs: Using association "_FLI" can increase the cardinality
           "of the results set
-          "\_fli-fldate
+          "\_fli-fldate AS flightdate
 
           \_fli[ (*) ]-fldate AS flightdate
           "The specification above corresponds to the following specification
           "that includes an explicit specification of LEFT OUTER
-          "\_fli[ (*) LEFT OUTER ]-fldate
+          "\_fli[ (*) LEFT OUTER ]-fldate AS flightdate
        FROM zdemo_abap_cds_ve_assoc_e
        ORDER BY carrid, connid, flightdate
        INTO TABLE @DATA(assoc_attr_card).

@@ -41,7 +41,7 @@ ABAP cheat sheets[^1] ...
   - [ABAP for Cloud Development](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenabap_for_sap_cloud_glosry.htm): Restricted ABAP language scope for developments in the [SAP BTP ABAP environment](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abensap_btp_abap_env_glosry.htm) → [Online version of the documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm)
   - [Standard ABAP](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenstandard_abap_glosry.htm): Unrestricted ABAP language scope, for example, for developments in an on-premise ABAP system → [Online version of the documentation (latest version)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenabap.htm)
 - Check the [Known Issues](#-known-issues) and [Disclaimer](#%EF%B8%8F-disclaimer).
-- The cheat sheets provide links to glossary entries and topics in the ABAP Keyword Documentation. Note that in most case, these links refer to the ABAP for Cloud Development version.
+- The cheat sheets provide links to glossary entries and topics in the ABAP Keyword Documentation. Note that in most cases, these links refer to the ABAP for Cloud Development version.
 </details>
 
 <br>
@@ -71,13 +71,13 @@ ABAP cheat sheets[^1] ...
 |[A Glimpse on AMDP](12_AMDP.md)|Covers ABAP Managed Database Procedures (AMDP): AMDP Procedures and AMDP Functions (including CDS Table Functions)|[zcl_demo_abap_amdp](./src/zcl_demo_abap_amdp.clas.abap)|
 |[Program Flow Logic](13_Program_Flow_Logic.md)|Deals with control structures (`IF`, `CASE`), loops (`DO`, `WHILE`) and exception handling|[zcl_demo_abap_prog_flow_logic](./src/zcl_demo_abap_prog_flow_logic.clas.abap)|
 |[A Glimpse on ABAP Unit Tests](14_ABAP_Unit_Tests.md)|Contains basic information about unit testing in ABAP|[zcl_demo_abap_unit_test](./src/zcl_demo_abap_unit_test.clas.abap)|
-|[CDS View Entities](15_CDS_view_entities.md)|Note that cheat sheet content is available in [this blog](https://blogs.sap.com/2022/10/24/feature-matrix-data-modeling-with-abap-core-data-services/). The focus here is on the example CDS artifacts and the [executable example class](./src/zcl_demo_abap_cds_ve.clas.abap), which include comments.|[zcl_demo_abap_cds_ve](./src/zcl_demo_abap_cds_ve.clas.abap)|
+|[CDS View Entities](15_CDS_View_Entities.md)|Note that cheat sheet content is available in [this blog](https://blogs.sap.com/2022/10/24/feature-matrix-data-modeling-with-abap-core-data-services/). The focus here is on the example CDS artifacts and the [executable example class](./src/zcl_demo_abap_cds_ve.clas.abap), which include comments.|[zcl_demo_abap_cds_ve](./src/zcl_demo_abap_cds_ve.clas.abap)|
 
 <br>
 
 ## 🎬 Getting Started with the Examples
 
-The executable examples are designed to be imported into the SAP BTP ABAP environment, but they are basically suitable for both on-premise systems and the SAP BTP ABAP environment (hence there are no ABAP reports included). Therefore, check the information in the following collapsible sections for your system environment and perform the required steps.
+The executable examples are designed to be imported into the SAP BTP ABAP environment, but they are basically suitable for both on-premise systems (ABAP release > 7.56; especially the RAP examples) and the SAP BTP ABAP environment (hence there are no ABAP reports included). Therefore, check the information in the following collapsible sections for your system environment and perform the required steps.
 
 <details>
   <summary>1) General info</summary>
@@ -137,7 +137,7 @@ https://github.com/SAP-samples/abap-cheat-sheets.git
 <br>
 
 **Prerequisites**
-- [x] It is assumed that you are running the latest [ABAP release](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abennews-75.htm). The content has also been tested with release 7.56. Note that the RAP examples require at least ABAP version 7.56.
+- [x] It is assumed that you are running the latest [ABAP release](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abennews-75.htm). Note that the RAP examples, for example, require at least ABAP version 7.56.
 - [x] Before importing the code, you have performed a system-wide search for classes named `ZCL_DEMO_ABAP*`, for example, to avoid errors when you try to import the code. If someone has already imported the content into the system, you can simply check out that imported version and proceed to the step *3) Run the code*.
 - [x] You have downloaded and installed the ABAP Development Tools (ADT). Make sure that you are using the latest version, as indicated on the [installation page](https://tools.hana.ondemand.com/#abap).
 - [x] You have created an ABAP project in ADT that allows you to access your application server as mentioned above. Your login language is English.
@@ -188,7 +188,7 @@ Use the standalone version of the abapGit report to import the demo examples of 
 - Only one user on the system can import this repository because all object names must be globally unique. If you get an error that the objects already exist when you try to import, search the system for classes named `ZCL_DEMO_ABAP*`. Someone has already imported the content into the system and you can simply check out that imported version.
 - Since the repository contains self-contained examples, i.e. some of them work with demo database tables included in the repository (note that these tables are populated during method executions), all demo artifacts must be imported for all examples to work.
 - When importing into an on-premise system, note the following: The demos cover ABAP syntax regardless of the ABAP release to avoid scattering information and to get the information in one go. Therefore, there may be syntax that is not yet available in the ABAP version of your on-premise system. In this case, you may want to comment out the affected code sections and/or ignore the  affected artifacts if an activation fails. Note that the RAP examples in particular require at least ABAP version 7.56. 
-- Regarding possible code check warnings, e.g. for the many strings in the code, not using an `ORDER BY` clause, or messages regarding using `SELECT *`, the code deliberately avoids pragmas and pseudo comments in order to keep the code simple and to focus on the available ABAP syntax. See also the [Disclaimer](#%EF%B8%8F-disclaimer).
+- Regarding possible code check warnings, e.g. for the many strings in the code, not using an `ORDER BY` clause, or messages regarding using `SELECT *`, the code deliberately avoids [pragmas](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenpragma_glosry.htm) and [pseudo comments](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenpseudo_comment_glosry.htm) in order to focus on the available ABAP syntax. See also the [Disclaimer](#%EF%B8%8F-disclaimer).
 
 <br>
 

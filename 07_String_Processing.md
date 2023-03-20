@@ -963,7 +963,7 @@ ENDIF.
 
 "Addition FIRST OCCURRENCE OF: Explicit specification to search for the first occurrence
 FIND FIRST OCCURRENCE OF `se` IN str
-  MATCH COUNT DATA(cnt2)   "1 (always 1 when searching and find the first occurrence)
+  MATCH COUNT DATA(cnt2)   "1 (always 1 when searching and finding the first occurrence)
   MATCH OFFSET DATA(off2). "4
 
 "Omitting FIRST OCCURRENCE OF and ALL OCCURRENCES OF addition means searching for the 
@@ -1490,7 +1490,7 @@ Character Sets, Ranges, Subgroups and Lookarounds
 | `(?!...)` | Negative lookahead, returns characters that are not followed by a specified pattern without including this pattern | `a(?!b)` | abc ade | abc <ins>**a**</ins>de | <ins>**a**</ins>bc ade |
 | `(?<=...)` | Positive lookbehind, returns characters that are preceded by a specified pattern without including this pattern | `(?<=\s)c` | ab c abcd | ab <ins>**c**</ins> abcd (it is preceded by a blank) | ab c ab<ins>**c**</ins>d |
 | `(?<!...)` | Negative lookbehind, returns characters that are not preceded by a specified pattern without including this pattern | `(?<!\s)c` | ab c abcd | ab c ab<ins>**c**</ins>d (it is not preceded by a blank) | ab <ins>**c**</ins> abcd |
-| `\n` | Backreference, refers to a previous capturing group; n represents the number of the group index that starts with 1 | `(a.)(\w*)\1` | abcdefabghij | <ins>**abcdefab**</ins>ghij <br>Note: Capturing group 1 holds `ab` in the example. The second capturing group captures all word characters up to `ab` is found. | <ins>**ab**</ins>cdefabghij |
+| `\n` | Backreference, refers to a previous capturing group; n represents the number of the group index that starts with 1 | `(a.)(\w*)\1` | abcdefabghij | <ins>**abcdefab**</ins>ghij <br>Note: Capturing group 1 holds `ab` in the example. The second capturing group captures all word characters until `ab` is found. | <ins>**ab**</ins>cdefabghij |
 | `\K` | Resets the starting point of a match, i.e. findings are excluded from the final match | `a.\Kc` | abcd | ab<ins>**c**</ins>d | <ins>**abc**</ins>d |
 
 > **💡 Note**<br>

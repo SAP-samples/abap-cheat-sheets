@@ -28,8 +28,8 @@ define view entity zdemo_abap_cds_ve_assoc
   // 1) One use case of assocations, which is not covered here, can be the use in the FROM clause.
   //    - That is, you can use an association as data source by specifying a path expression.
   //    - For example, the CDS view entity zdemo_abap_cds_ve_assoc_e exposes an association
-  //      _carr_exp1. Therefore, a FROM clause as follows is possible:
-  // ... as select from zdemo_abap_cds_ve_assoc_e._carr_exp1 as _flsch ...
+  //      _carr_exp. Therefore, a FROM clause as follows is possible:
+  // ... as select from zdemo_abap_cds_ve_assoc_e._carr_exp as _flsch ...
 
   // 2) Adding fields of an association target to the element list (of the same CDS view entity)
   //    - In this case, since data is requested, a join is carried out. 
@@ -141,4 +141,4 @@ define view entity zdemo_abap_cds_ve_assoc
 //   - Maximum values greater than 1 can lead to syntax errors or warnings. Generally, a non-matching cardinality
 //     usually produces a warning.
 //   - If the cardinality is not specified, it is to one by default [x..1].
-// - Compositions and to-parent associations are special kinds of CDS associations. They are not covered in the example. 
+// - Compositions and to-parent associations are special kinds of CDS associations. See the ABAP Keyword Documentation. 
