@@ -22,14 +22,14 @@ define view entity zdemo_abap_cds_ve_agg_exp
 
 {
 
-      // The SELECT list intentionally includes few fields only to focus on the effect of aggregate expressions.
+      // The element list intentionally includes few fields only to focus on the effect of aggregate expressions.
   key carrid,
       currency,
 
       // -------- Aggregate expressions --------
-      // - Aggregate expressions can be used as elements of a SELECT list. Other positions are possible.
+      // - Aggregate expressions can be used as elements of an element list. Other positions are possible.
       // - An alias name must be specified.
-      // - A GROUP BY clause is required. It must list all non-aggregated fields from the SELECT list.
+      // - A GROUP BY clause is required. It must list all non-aggregated fields from the element list.
       // - Additions: If ALL is used, all rows in the result set are respected. This the default setting.
       //              If DISTINCT is used, only distinct values of an argument are respected.
 
@@ -55,7 +55,7 @@ define view entity zdemo_abap_cds_ve_agg_exp
                                                                                    //e.g. if 3 is returned, it means there are 3 different plane types among the result set
 
 }
-//GROUP BY clause that lists all non-aggregated fields from the SELECT list
+//GROUP BY clause that lists all non-aggregated fields from the element list
 group by
   carrid,
   currency

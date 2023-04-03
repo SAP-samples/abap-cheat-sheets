@@ -1390,7 +1390,7 @@ DELETE ADJACENT DUPLICATES FROM it.
 
 DELETE ADJACENT DUPLICATES FROM it COMPARING ALL FIELDS.
 
-"Only lines are delete with matching content in specific fields
+"Only lines are deleted with matching content in specific fields
 
 DELETE ADJACENT DUPLICATES FROM it COMPARING a c.
 

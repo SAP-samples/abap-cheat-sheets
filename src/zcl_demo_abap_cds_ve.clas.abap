@@ -6,7 +6,7 @@
 * - Example to demonstrate CDS view entities. See the CDS view entities
 *   that are used in the example for more details.
 * - Topics covered: Operands, expressions, and built-in functions in the
-*   SELECT list of CDS view entities, input parameters, joins,
+*   element list of CDS view entities, input parameters, joins,
 *   associations
 * - Note: In ADT, check out the CDS view entities used in this example
 *   by holding down CTRL and clicking on the CDS view entity. This will

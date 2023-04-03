@@ -62,7 +62,7 @@ define view entity zdemo_abap_cds_ve_joins
   // - The join selects all entries on the left side. Entries that match the ON condition have the same content as in the inner join.
   //   In entries that do not match the ON condition, the elements on the right side have the null value.
   // - To demonstrate the effect, the table zdemo_abap_carr contains entries for carrid that are not present in zdemo_abap_flsch.
-  // - Example in the SELECT list:
+  // - Example in the element list:
   //   - The coalesce function can be used to prevent null values in the result set.
   //   - In the example, the function is used for an element to prevent null values.
 
@@ -75,7 +75,7 @@ define view entity zdemo_abap_cds_ve_joins
   // - The join selects all entries on the right side. Entries that match the ON condition have the same content as in the inner join.
   //   In entries that do not match the ON condition, the elements on the left side have the null value.
   // - To demonstrate the effect, the table zdemo_abap_carr contains entries for carrid that are not present in zdemo_abap_flsch.
-  // - Example in the SELECT list:
+  // - Example in the element list:
   //   - Instead of the coalesce function, you can also use a CASE expression using a logical expression with IS [NOT] NULL
   //     to prevent null values in the result set.
   //   - In the example, a CASE expression is used for an element to prevent null values.

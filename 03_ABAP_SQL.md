@@ -322,12 +322,6 @@ SELECT dbtab~*
   WHERE ...
   INTO ...
 
-"Data source explicitly specified, all fields
-SELECT dbtab~*
-  FROM dbtab
-  WHERE ...
-  INTO ...
-
 "Alias names
 "Consider the following: You want to read data from a database table into a target data
 "object but, for example, a name in the target is different. Provided that there will
@@ -335,7 +329,7 @@ SELECT dbtab~*
 "specify an alias name for the database column to match a component's name in the target data object.
 
 SELECT FROM dbtab
-  FIELDS comp1 AS comp_a, comp2 AS comp_b, comp3 AS comp_b
+  FIELDS comp1 AS comp_a, comp2 AS comp_b, comp3 AS comp_c
   WHERE ...
   INTO CORRESPONDING FIELDS OF TABLE @itab.
 
@@ -520,7 +514,7 @@ SELECT FROM dbtab
 >- If `ORDER BY` and `GROUP BY` clauses are used, all columns specified after `ORDER BY` must also be specified after `GROUP BY`.
 >- If aggregate functions are specified after `SELECT`, all columns that are specified after `ORDER BY` and that do not have an alias name for an aggregate function must also be specified after `SELECT` and after the `GROUP BY` clause which is required in this case, too.
 
-[`WHERE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapwhere.htm) clause: Restricts the number of rows that are included in the result set using a logical expression. See further information on them in the following sections.
+[`WHERE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapwhere.htm) clause: Restricts the number of rows that are included in the result set using logical expressions. See further information on them in the following sections.
 ``` abap
 SELECT FROM dbtab
   FIELDS comp1, comp2, comp3
@@ -587,7 +581,7 @@ SELECT FROM zdemo_abap_flsch
   "Column selector ~ can be used to prefix every specified column.
   "Here, it is optional. It is non-optional, e. g., if multiple data
   "sources in an ABAP SQL statement are edited and the column name
-  "is not unique. ]
+  "is not unique.
    zdemo_abap_flsch~cityto,
 
   'Lufthansa' AS name, "Untyped literal

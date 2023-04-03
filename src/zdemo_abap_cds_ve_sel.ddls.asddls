@@ -38,7 +38,7 @@ define view entity zdemo_abap_cds_ve_sel
   as select from zdemo_abap_fli //Selection from a demo database table;
                                 //an alias name can be also specified ... as _fli, for example
 
-  // The following SELECT list demonstrates possible elements, operands and expressions.
+  // The following element list demonstrates possible elements, operands and expressions.
   // Note: Many of the operands and expressions demonstrated below can occur in multiple positions.
   //       Refer to the ABAP Keyword Documentation for the details.
 {
@@ -105,7 +105,7 @@ define view entity zdemo_abap_cds_ve_sel
       cast( price as abap.dec(15,2) ) as cast_curr2dec,
       
       // The following example uses the prefix $projection. which defines reuse expressions.
-      // That is, you can refer to an element defined previously in the SELECT list of the same CDS view entity.
+      // That is, you can refer to an element defined previously in the element list of the same CDS view entity.
       // Note that this is only possible in dedicated positions. One of them is a cast expression.
       cast( $projection.date_lit as abap.char(8) ) as cast_dats2c,
 

@@ -81,7 +81,7 @@ ENDIF.
 - The components of such relational expressions can be [comparisons](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencomparison_glosry.htm) or [predicates](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenpredicate_glosry.htm). Note that for [comparison expressions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencomparison_expression_glosry.htm),
 the comparisons are carried out according to [comparison rules](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenlogexp_rules.htm).
 
-The following code snippet shows a selection of possible expressions and operands of such expressions using a big `IF` statement. Certainly, such a huge statement is far from ideal. Here, it is just meant to touch on many syntax options in one go for demonstration purposes.
+The following code snippet shows a selection of possible expressions and operands of such expressions using a big `IF` statement. Certainly, such a huge statement is far from ideal. Here, the intention is to just cover many syntax options in one go for demonstration purposes.
 
 ```abap
 "Some declarations to be used in the IF statement below
@@ -426,7 +426,7 @@ Further keywords for defining loops are as follows. They are not dealt with here
 
 - [`LOOP ... ENDLOOP`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abaploop_at_itab.htm) statements are meant for loops across internal tables. See also the cheat sheet on internal tables.
   - In contrast to the loops above, the system field `sy-index` is not set. Instead, the system field `sy-tabix` is set and which contains the table index of the current table line in the loop pass.
-  - You can also realize loops using iteration expressions with `VALUE` and `REDUCE`. See the cheat sheet example on internal tables, too.
+  - You can also realize loops using iteration expressions with `VALUE` and `REDUCE`. See the example class for the internal table cheat sheet.
 - [`SELECT ... ENDSELECT`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapselect.htm) statements loop across the result set of a database access. See also the cheat sheet on ABAP SQL.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
@@ -496,8 +496,8 @@ Regarding the exiting of procedures, note the hint mentioned above. The use of `
     "In the following CATCH block, the predefined exception class cx_sy_arithmetic_error
     "is specified. cx_sy_zerodivide is derived from cx_sy_arithmetic_error.
     "Hence, cx_sy_arithmetic_error can be specified and handle the exception, too.
-    "Basically, using the exception root class cx_root would be possible, too, however,
-    "that would not be ideal(see the notes further down).
+    "Basically, using the exception root class cx_root would be also possible. However, 
+    "choosing an appropriate exception class is recommended. See further down.
 
     CATCH cx_sy_arithmetic_error.
       ... "CATCH block
