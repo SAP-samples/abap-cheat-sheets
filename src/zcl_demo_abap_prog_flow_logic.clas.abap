@@ -113,8 +113,16 @@ CLASS zcl_demo_abap_prog_flow_logic IMPLEMENTATION.
     "Simple control structure realized by an IF ... ELSEIF ... ELSE ... ENDIF.
     "statement. Multiple statement blocks can be included, of which only 1 is
     "executed at most and depending on conditions.
+    
+    "Determining some operators for a calculation
+    DATA(operators) = VALUE string_table( ( `+` ) ( `-` ) ( `?` ) ).
 
-    DATA(operator) = `+`.
+    "Getting a random operator from the table
+    DATA(idx) = cl_abap_random_int=>create(
+      seed = cl_abap_random=>seed( ) min = 1
+                                     max = lines( operators ) )->get_next( ).
+
+    DATA(operator) = operators[ idx ].
     DATA(num1) = 5.
     DATA(num2) = 7.
 
@@ -346,8 +354,15 @@ CLASS zcl_demo_abap_prog_flow_logic IMPLEMENTATION.
     "block is executed. Constant values should be specified as operands.
     "The example is basically the same as above.
 
+    "Determining some operators for a calculation
+    operators = VALUE string_table( ( `+` ) ( `-` ) ( `#` ) ).
 
-    DATA(op) = '-'.
+    "Getting a random operator from the table
+    idx = cl_abap_random_int=>create(
+      seed = cl_abap_random=>seed( ) min = 1
+                                     max = lines( operators ) )->get_next( ).
+
+    DATA(op) = operators[ idx ].
     DATA(n1) = 8.
     DATA(n2) = 3.
 
