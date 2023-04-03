@@ -145,6 +145,13 @@ CLASS ZCL_DEMO_ABAP_CONSTRUCTOR_EXPR IMPLEMENTATION.
 
     output->display( input = struc name = `struc` ).
 
+    "You can use the BASE addition to retain existing content
+    "Compare with the BASE example further down regarding internal tables: There are
+    "no extra parentheses within the outer pair of parentheses.    
+    struc = VALUE #( BASE struc char2 = 'xyz' ).
+
+    output->display( input = struc name = `struc` ).
+
 **********************************************************************
 
     output->next_section( `3) Structures: Inline declaration, explicit type specification` ).
