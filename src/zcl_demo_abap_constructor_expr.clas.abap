@@ -12,28 +12,28 @@
 * - Open the class with the ABAP Development Tools (ADT).
 * - Choose F9 to run the class.
 * - Check the console output.
-* - To understand the context and the ABAP syntax used, check the notes
-*   included in the class as comments or refer to the respective topic
-*   in the ABAP Keyword Documentation.
-* - Due to the amount of output in the console, the examples include
-*   numbers (e. g. 1) ..., 2) ..., 3) ...) for the individual example
-*   sections. Plus, the variable name is displayed in most cases. Hence,
-*   to easier and faster find the relevant output in the console, just
-*   search in the console for the number/variable name (CTRL+F in the
-*   console) or use the debugger.
+* - To understand the context and the ABAP syntax used, refer to the
+*   notes included in the class as comments or refer to the respective
+*   topic in the ABAP Keyword Documentation.
+* - Due to the amount of console output, the examples contain numbers
+*   (e.g. 1) ..., 2) ..., 3) ...) for the individual example sections.
+*   Also, the variable name is displayed in most cases. So to find
+*   the relevant output in the console easier and faster, just search
+*   for the number/variable name in the console (CTRL+F in the console)
+*   or use the debugger.
 *
 * ----------------------------- NOTE -----------------------------------
-* The code presented in this class is only meant for supporting the ABAP
-* cheat sheets. It is not intended for direct use in a
-* production system environment. The code examples in the ABAP cheat
-* sheets are primarily intended to provide a better explanation and
-* visualization of the syntax and semantics of ABAP statements and not to
-* solve concrete programming tasks. For production application programs,
-* a dedicated solution should therefore always be worked out for each
-* individual case. There is no guarantee for either the correctness or
-* the completeness of the code. In addition, there is no legal
-* responsibility or liability for possible errors or their consequences
-* which occur through the use of the example code.
+* The code presented in this class is intended only to support the ABAP
+* cheat sheets. It is not intended for direct use in a production system
+* environment. The code examples in the ABAP cheat sheets are primarily
+* intended to provide a better explanation and visualization of the
+* syntax and semantics of ABAP statements, not to solve concrete
+* programming tasks. For production application programs, you should
+* always work out your own solution for each individual case. There is
+* no guarantee for the correctness or completeness of the code.
+* Furthermore, there is no legal responsibility or liability for any
+* errors or their consequences that may occur when using the the example
+* code.
 *
 ***********************************************************************
 "! <p class="shorttext synchronized">ABAP cheat sheet: Constructor expressions</p>
@@ -105,78 +105,21 @@ protected section.
 ENDCLASS.
 
 
-
 CLASS ZCL_DEMO_ABAP_CONSTRUCTOR_EXPR IMPLEMENTATION.
-
-
-  METHOD fill_deep_structures.
-    "Clearing all contents of struc2
-    CLEAR struc2.
-    "Filling nested tables in deep structures
-    struc2-struc_nested = VALUE #( comp1 = `aaa`
-                                   comp2 = `bbb`
-                                   comp3 = `ccc`).
-
-    struc1-itab = VALUE #(
-      ( col1 = 111 col2 = 222 )
-      ( col1 = 333 col2 = 444
-      ) ).
-
-    struc2-itab = VALUE #(
-      ( col2 = 1 col3 = 2 col4 = 3 )
-      ( col2 = 4 col3 = 5 col4 = 6 )
-      ( col2 = 7 col3 = 8 col4 = 9 )
-      ).
-
-    "Filling individual component that is not shared by both structures
-    struc2-comp4 = 999.
-  ENDMETHOD.
-
-
-  METHOD fill_struc_and_tab.
-    CLEAR: s1, s2, tab1, tab2, tab3.
-
-    s1 = VALUE #( comp1 = 'A' comp2 = `bbb` comp3 = 1 ).
-
-    s2 = VALUE #( comp1 = `ccc` comp2 = 'D' comp3 = 2 comp4 = 3 ).
-
-    tab1 = VALUE #(
-      ( comp1 = 'A' comp2 = `bbb` comp3 = 1 )
-      ( comp1 = 'B' comp2 = `ccc` comp3 = 2 )
-      ( comp1 = 'C' comp2 = `ddd` comp3 = 3 ) ).
-
-    tab2 = VALUE #(
-      ( comp1 = `eee` comp2 = 'F' comp3 = 4 comp4 = 5 )
-      ( comp1 = `ggg` comp2 = 'H' comp3 = 6 comp4 = 7 )
-      ( comp1 = `iii` comp2 = 'J' comp3 = 8 comp4 = 9 ) ).
-
-    tab3 = VALUE #(
-      ( comp1 = `aaa` comp2 = 'B' comp3 = 1 comp4 = 2 )
-      ( comp1 = `ccc` comp2 = 'D' comp3 = 3 comp4 = 4 )
-      ( comp1 = `eee` comp2 = 'F' comp3 = 5 comp4 = 6 )
-      ( comp1 = `ggg` comp2 = 'H' comp3 = 7 comp4 = 8 )
-      ( comp1 = `iii` comp2 = 'J' comp3 = 9 comp4 = 10 ) ).
-
-    tab4 = tab3.
-  ENDMETHOD.
-
 
   METHOD if_oo_adt_classrun~main.
 
     DATA(output) = NEW zcl_demo_abap_display( out ).
 
-    output->display( `Demo: Constructor Expressions` ).
+    output->display( `ABAP Cheat Sheet: Constructor Expressions` ).
 
+    output->next_section( `VALUE` ).
+    output->display( `1) Structures: Populating a flat structure` ).
 
-    output->display( `1. VALUE` ).
-    output->display( `1.1 VALUE: Structures` ).
-
-    "1) A flat structure is created based on a data type defined with a
+    "A flat structure is created based on a data type defined with a
     "TYPES statement. The structure is then filled using a constructor
     "expression with VALUE by specifying the components and assigning
-    "values. Here, the type can be inferred, hence, a # symbol can be used.
-
-    output->display( `1.1.1 Flat structure` ).
+    "values. Here, the type can be inferred, hence, a # character can be used.
 
     TYPES: BEGIN OF struc_type,
              num   TYPE i,
@@ -191,23 +134,27 @@ CLASS ZCL_DEMO_ABAP_CONSTRUCTOR_EXPR IMPLEMENTATION.
 
     output->display( input = struc name = `struc` ).
 
-    "2) The same structure is then filled purposely omitting components, i.
-    "e. these components remain initial.
+**********************************************************************
 
-    output->next_section( `1.1.2 Omitting value assignment to components` ).
+    output->next_section( `2) Structures: Omitting value assignment to components` ).
+
+    "The same structure is then filled purposely omitting components, i.
+    "e. these components remain initial.
 
     struc = VALUE #( char1 = 'bbb' ).
 
     output->display( input = struc name = `struc` ).
 
-    "3) The example demonstrates a variable that is declared inline. Here,
+**********************************************************************
+
+    output->next_section( `3) Structures: Inline declaration, explicit type specification` ).
+
+    "The example demonstrates a variable that is declared inline. Here,
     "the result is a structure which is filled using a constructor
     "expression with VALUE and by specifying the components and assigning
     "values in parentheses. The structure type is specified explicitly.
     "The # symbol would not work since no type can be inferred from the
     "specified parameters.
-
-    output->next_section( `1.1.3 Structure declared inline, explicit type specification` ).
 
     DATA(struc_inl) = VALUE struc_type( num   = 3
                                         char1 = 'ccc'
@@ -215,18 +162,17 @@ CLASS ZCL_DEMO_ABAP_CONSTRUCTOR_EXPR IMPLEMENTATION.
 
     output->display( input = struc_inl name = `struc_inl` ).
 
+**********************************************************************
 
-    output->next_section( `1.2 VALUE: Internal tables` ).
+    output->next_section( `4) Internal tables: Declaration and population` ).
 
-    "1) The example demonstrates the declaration of an internal table. The
+    "The example demonstrates the declaration of an internal table. The
     "internal table is then filled using a constructor expression with
     "VALUE.
     "The type can be inferred here and need not be specified explicitly.
     "Note the extra pair of parentheses in which the components are
     "specified and assigned values. In the example, 3 lines are added to
     "the table. For one line, some components are purposely not assigned.
-
-    output->display( `1.2.1 Declaration and filling of an internal table` ).
 
     DATA itab TYPE TABLE OF struc_type WITH EMPTY KEY.
 
@@ -236,12 +182,14 @@ CLASS ZCL_DEMO_ABAP_CONSTRUCTOR_EXPR IMPLEMENTATION.
 
     output->display( input = itab name = `itab` ).
 
-    "2) The example demonstrates an internal table declared inline that is
+**********************************************************************
+
+    output->next_section( `5) Internal tables: Inline declaration, explicit type specification` ).
+
+    "The example demonstrates an internal table declared inline that is
     "filled using a constructor expression with VALUE by specifying the
     "internal table type explicitly. Note that the internal table type
     "cannot be generic in this context.
-
-    output->next_section( `1.2.2 Table declared inline, explicitly specified table type` ).
 
     TYPES: itab_type TYPE STANDARD TABLE OF struc_type
                         WITH NON-UNIQUE KEY num.
@@ -250,15 +198,24 @@ CLASS ZCL_DEMO_ABAP_CONSTRUCTOR_EXPR IMPLEMENTATION.
                     ( num = 4 char1 = 'ddd' char2 = 'ghi' )
                     ( num = 5 char1 = 'eee'  char2 = 'jkl' ) ).
 
-    output->display( input = itab2 name = `itab2` ).
 
-    "3) Using the LINES OF addition, you can add lines of other tables.
+    DATA(str_table) = VALUE string_table( ( `this` )
+                                          ( `is a` )
+                                          ( `table` )
+                                          ( `of type string` ) ).
+
+    output->display( input = itab2 name = `itab2` ).
+    output->display( input = str_table name = `str_table` ).
+
+**********************************************************************
+
+    output->next_section( `6) LINES OF addition` ).
+
+    "Using the LINES OF addition, you can add lines of other tables.
     "Note: The line type of the other internal table must match the one of
     "the target internal table. Using FROM/TO, the table line selection can
     "be further restricted. Without FROM/TO, all lines of the table are
     "respected.
-
-    output->next_section( `1.2.3 LINES OF addition` ).
 
     itab2 = VALUE #( ( num = 6 char1 = 'fff'  char2 = 'mno' )
                      ( LINES OF itab )
@@ -266,47 +223,78 @@ CLASS ZCL_DEMO_ABAP_CONSTRUCTOR_EXPR IMPLEMENTATION.
 
     output->display( input = itab2 name = `itab2` ).
 
-    "4) Using the BASE addition, you can keep existing content of the source
+**********************************************************************
+
+    output->next_section( `7) BASE addition for keeping existing data` ).
+
+    "Using the BASE addition, you can keep existing content of the source
     "internal table.
 
-    output->next_section( `1.2.4 BASE addition for keeping existing data` ).
-
-    itab2 = VALUE #( BASE itab2 ( num = 7 char1 = 'ggg'
-                                  char2 = 'pqr' ) ).
+    itab2 = VALUE #( BASE itab2 ( num = 7 char1 = 'ggg' char2 = 'pqr' ) ).
 
     output->display( input = itab2 name = `itab2` ).
 
-    "5) Various examples using ABAP (SQL) statements in which table lines
-    "are constructed inline.
+**********************************************************************
 
-    output->next_section( `ABAP statements and ABAP SQL statements` ).
-    output->display( `1.2.5 Modifying internal table from a structure created inline` ).
+    output->next_section( `8) Assignemnt with the VALUE operator without specifying content in parentheses` ).
 
-    MODIFY TABLE itab2 FROM VALUE #( num   = 7
-                                     char1 = 'hhh'
-                                     char2 = 'stu' ).
+    "Using the VALUE operator without populating anything in the parentheses,
+    "data objects are initialized.
+
+    "elementary types
+    DATA(some_num) = 123.
+    some_num = VALUE #( ).
+
+    DATA(another_num) = VALUE i( ).
+
+    DATA(some_str) = `hallo`.
+    some_str = VALUE #( ).
+
+    "Initializing internal table/structure
+    str_table = VALUE #( ).
+    struc = VALUE #( ).
+
+    output->display( input = some_num name = `some_num` ).
+    output->display( input = another_num name = `another_num` ).
+    output->display( input = some_str name = `some_str` ).
+    output->display( input = str_table name = `str_table` ).
+    output->display( input = struc name = `struc` ).
+
+**********************************************************************
+
+    output->next_section( `Excursions: VALUE operator in use with ABAP statements and ABAP SQL statements` ).
+
+    "The following examples use ABAP and ABAP SQL statements in which table lines
+    "are constructed inline using the VALUE operator.
+
+    output->display( `9) Modifying internal table from a structure created inline` ).
+
+    MODIFY TABLE itab2 FROM VALUE #( num   = 7 char1 = 'hhh' char2 = 'stu' ).
 
     output->display( input = itab2 name = `itab2` ).
 
+**********************************************************************
 
-    output->next_section( `1.2.6 Inserting a table line that is created inline into an internal table` ).
+    output->next_section( `10) Inserting a table line that is created inline into an internal table` ).
 
-    INSERT VALUE #( num = 8 char1 = 'iii'  char2 = 'vwx' )
-      INTO TABLE itab2.
+    INSERT VALUE #( num = 8 char1 = 'iii'  char2 = 'vwx' ) INTO TABLE itab2.
 
     output->display( input = itab2 name = `itab2` ).
 
+**********************************************************************
 
-    output->next_section( `1.2.7 Deleting a table entry based on a line created inline` ).
+    output->next_section( `11) Deleting a table entry based on a line created inline` ).
 
     DELETE TABLE itab2 FROM VALUE #( num = 3 ).
 
     output->display( input = itab2 name = `itab2` ).
 
-    "Delete demo database table entries for demo below
-    DELETE FROM zdemo_abap_carr.
+**********************************************************************
 
-    output->next_section( `1.2.8 Modifying a database table based on an internal table created inline` ).
+    output->next_section( `12) Modifying a database table based on an internal table created inline` ).
+
+    "Deleting demo database table entries for the following example
+    DELETE FROM zdemo_abap_carr.
 
     MODIFY zdemo_abap_carr FROM TABLE @( VALUE #(
            ( carrid = 'CO'
@@ -327,14 +315,15 @@ CLASS ZCL_DEMO_ABAP_CONSTRUCTOR_EXPR IMPLEMENTATION.
 
     output->display( input = itab_carr name = `itab_carr` ).
 
-    output->next_section( `1.3 Excursion: Deep structures and tables` ).
+**********************************************************************
 
-    "1) The example demonstrates the use of constructor expressions with
+    output->next_section( `Excursion: Deep structures and tables` ).
+    output->display( `13) Deep structure` ).
+
+    "The example demonstrates the use of constructor expressions with
     "VALUE in the context of a deep structure. Here, a structure is declared
     "inline and filled. The structure type includes a nested structure. The
     "nested structure is filled using a nested VALUE expression.
-
-    output->display( `1.3.1 Deep structure` ).
 
     TYPES: BEGIN OF deep_struc_ty,
              num   TYPE i,
@@ -351,10 +340,12 @@ CLASS ZCL_DEMO_ABAP_CONSTRUCTOR_EXPR IMPLEMENTATION.
 
     output->display( input = deep_struc name = `deep_struc` ).
 
-    "2) A deep internal table is created. Also here, nested VALUE
-    "expressions are demonstrated.
+**********************************************************************
 
-    output->next_section( `1.3.2 Deep internal table` ).
+    output->next_section( `14) Deep internal table` ).
+
+    "A deep internal table is created. Also here, nested VALUE
+    "expressions are demonstrated.
 
     TYPES: BEGIN OF deep_struc_ty2,
              char TYPE c LENGTH 3,
@@ -370,34 +361,37 @@ CLASS ZCL_DEMO_ABAP_CONSTRUCTOR_EXPR IMPLEMENTATION.
 
     output->display( input = deep_itab name = `deep_itab` ).
 
-    output->next_section( `2. CORRESPONDING` ).
+**********************************************************************
 
-    output->display( `2.1 CORRESPONDING: Simple Examples with ` &&
-    `Structures and Internal Tables` ).
-
-    "1) Displaying the original structures and tables that are filled in the
-    "course of a method call. The structures and tables are filled anew
-    "throughout the examples so that all CORRESPONDING expressions are based
-    "on the same values.
+    output->next_section( `CORRESPONDING` ).
+    output->display( `Simple Examples with structures and internal tables` ).
 
     "Method to fill demo structures and internal tables
     "with values to work with
     fill_struc_and_tab( ).
 
-    output->display( `2.1.1 Original structure and table content` ).
+    output->display( `15) Original structure and table content` ).
+
+    "Displaying the original structures and tables that are filled in the
+    "course of a method call. The structures and tables are filled anew
+    "throughout the examples so that all CORRESPONDING expressions are based
+    "on the same values.
+
     output->display( input = s1 name = `s1` ).
     output->display( input = s2 name = `s2` ).
     output->display( input = tab1 name = `tab1` ).
     output->display( input = tab2 name = `it_st` ).
 
-    "2) The target structure and table have a different type but identically
+**********************************************************************
+
+    output->next_section( `16) CORRESPONDING without addition` ).
+
+    "The target structure and table have a different type but identically
     "named components. The identically named components are filled. Note
     "that the target variables are initialized here. Also note the effect
     "of an automatic conversion of a variable-length string to a
     "fixed-length string (one component is typed with c, the other,
     "identically named component, is of type string).
-
-    output->next_section( `2.1.2 CORRESPONDING without addition` ).
 
     s2 = CORRESPONDING #( s1 ).
 
@@ -406,13 +400,15 @@ CLASS ZCL_DEMO_ABAP_CONSTRUCTOR_EXPR IMPLEMENTATION.
     output->display( input = s2 name = `s2` ).
     output->display( input = tab2 name = `tab2` ).
 
-    fill_struc_and_tab( ).
+**********************************************************************
 
-    "3) The BASE addition keeps the original content. Structure: The non-
+    output->next_section( `17) BASE addition for keeping original content` ).
+
+    "The BASE addition keeps the original content. Structure: The non-
     "identical component name retains its value. Internal table: Existing
     "table lines are kept.
 
-    output->next_section( `2.1.3 BASE addition for keeping original content` ).
+    fill_struc_and_tab( ).
 
     s2 = CORRESPONDING #( BASE ( s2 ) s1 ).
 
@@ -421,14 +417,16 @@ CLASS ZCL_DEMO_ABAP_CONSTRUCTOR_EXPR IMPLEMENTATION.
     output->display( input = s2 name = `s2` ).
     output->display( input = tab2 name = `tab2` ).
 
-    fill_struc_and_tab( ).
+**********************************************************************
 
-    "4) The example demonstrates the additions MAPPING and EXCEPT. MAPPING:
+    output->next_section( `18) MAPPING/EXCEPT additions` ).
+
+    "The example demonstrates the additions MAPPING and EXCEPT. MAPPING:
     "One component of the target structure is assigned the value of a
     "dedicated component of the source structure. EXCEPT: All corresponding
     "components are assigned except a specific one.
 
-    output->next_section( `2.1.4 MAPPING/EXCEPT additions` ).
+    fill_struc_and_tab( ).
 
     s2 = CORRESPONDING #( s1 MAPPING comp4 = comp3 ).
 
@@ -437,8 +435,12 @@ CLASS ZCL_DEMO_ABAP_CONSTRUCTOR_EXPR IMPLEMENTATION.
     output->display( input = s2 name = `s2` ).
     output->display( input = tab2 name = `tab2` ).
 
-    output->next_section( `2.2 CORRESPONDING: Demonstrating Various` &&
-    ` Additions Using Deep Structures` ).
+**********************************************************************
+
+    output->next_section( `CORRESPONDING: Demonstrating various` &&
+    ` additions using deep structures` ).
+
+    output->display( `19) Original content of deep structures` ).
 
     "Displaying the original deep structures and tables that are filled in
     "the course of a method call. The deep structures and tables are filled
@@ -449,9 +451,12 @@ CLASS ZCL_DEMO_ABAP_CONSTRUCTOR_EXPR IMPLEMENTATION.
     "with values to work with
     fill_deep_structures( ).
 
-    output->display( `2.2.1 Original content of deep structures` ).
     output->display( input = struc1 name = `struc1` ).
     output->display( input = struc2 name = `struc2` ).
+
+**********************************************************************
+
+    output->next_section( `20) CORRESPONDING without addition` ).
 
     "CORRESPONDING operator without addition
     "Existing contents of identically named components are replaced.
@@ -468,13 +473,13 @@ CLASS ZCL_DEMO_ABAP_CONSTRUCTOR_EXPR IMPLEMENTATION.
     "column of the source structure. Check the conversion rules for
     "internal tables.
 
-    output->next_section( `2.2.2 CORRESPONDING without addition` ).
-
     struc2 = CORRESPONDING #( struc1 ).
 
     output->display( input = struc2 name = `struc2` ).
 
-    fill_deep_structures( ).
+**********************************************************************
+
+    output->next_section( `21) DEEP addition` ).
 
     "CORRESPONDING operator with the addition DEEP
     "Existing contents of identically named components are replaced.
@@ -489,13 +494,15 @@ CLASS ZCL_DEMO_ABAP_CONSTRUCTOR_EXPR IMPLEMENTATION.
     "identically named components in the nested table. Hence, only col2 as
     "the only shared and identically named component is filled.
 
-    output->next_section( `2.2.3 DEEP addition` ).
+    fill_deep_structures( ).
 
     struc2 = CORRESPONDING #( DEEP struc1 ).
 
     output->display( input = struc2 name = `struc2` ).
 
-    fill_deep_structures( ).
+**********************************************************************
+
+    output->next_section( `22) BASE addition` ).
 
     "CORRESPONDING operator with the addition BASE
     "Existing contents of identically named components are replaced.
@@ -513,13 +520,15 @@ CLASS ZCL_DEMO_ABAP_CONSTRUCTOR_EXPR IMPLEMENTATION.
     "assigned starting with the first column of the source structure. Check
     "the conversion rules for internal tables.
 
-    output->next_section( `2.2.4 BASE addition` ).
+    fill_deep_structures( ).
 
     struc2 = CORRESPONDING #( BASE ( struc2 ) struc1 ).
 
     output->display( input = struc2 name = `struc2` ).
 
-    fill_deep_structures( ).
+**********************************************************************
+
+    output->next_section( `23) DEEP BASE addition` ).
 
     "CORRESPONDING operator with the additions DEEP BASE
     "Existing contents of identically named components are replaced.
@@ -535,13 +544,15 @@ CLASS ZCL_DEMO_ABAP_CONSTRUCTOR_EXPR IMPLEMENTATION.
     "assignment happens for identically named components in the nested table.
     "Hence, only col2 as the only shared and identically named component is filled.
 
-    output->next_section( `2.2.5 DEEP BASE addition` ).
+    fill_deep_structures( ).
 
     struc2 = CORRESPONDING #( DEEP BASE ( struc2 ) struc1 ).
 
     output->display( input = struc2 name = `struc2` ).
 
-    fill_deep_structures( ).
+**********************************************************************
+
+    output->next_section( `24) APPENDING addition` ).
 
     "CORRESPONDING operator with the addition APPENDING
     "Existing contents of identically named components are replaced.
@@ -559,13 +570,15 @@ CLASS ZCL_DEMO_ABAP_CONSTRUCTOR_EXPR IMPLEMENTATION.
     "values are assigned starting with the first column of the source
     "structure. Check the conversion rules for internal tables.
 
-    output->next_section( `2.2.6 APPENDING addition` ).
+    fill_deep_structures( ).
 
     struc2 = CORRESPONDING #( APPENDING ( struc2 ) struc1 ).
 
     output->display( input = struc2 name = `struc2` ).
 
-    fill_deep_structures( ).
+**********************************************************************
+
+    output->next_section( `25) DEEP APPENDING` ).
 
     "CORRESPONDING operator with the additions DEEP APPENDING
     "Existing contents of identically named components are replaced.
@@ -582,14 +595,16 @@ CLASS ZCL_DEMO_ABAP_CONSTRUCTOR_EXPR IMPLEMENTATION.
     "table. Hence, only col2 as the only shared and identically named
     "component is filled.
 
-    output->next_section( `2.2.7 DEEP APPENDING` ).
+    fill_deep_structures( ).
 
     struc2 = CORRESPONDING #( DEEP APPENDING ( struc2 ) struc1 ).
 
     output->display( input = struc2 name = `struc2` ).
 
-    output->next_section( `3. NEW` ).
-    output->display( `3.1 NEW: Creating Anonymous Data Objects` ).
+**********************************************************************
+
+    output->next_section( `NEW` ).
+    output->display( `26) Creating Anonymous Data Objects` ).
 
     "The examples show the creation of anonymous data objects.
     "First, data reference variables are declared using a DATA statement.
@@ -613,9 +628,9 @@ CLASS ZCL_DEMO_ABAP_CONSTRUCTOR_EXPR IMPLEMENTATION.
     dref2 = NEW string( ).
 
     IF dref1->* = 0 AND dref2->* = ``.
-      DATA(val) = `Initial values!`.
+      DATA(val) = `Initial values`.
     ELSE.
-      val = `No initial values!`.
+      val = `No initial values`.
     ENDIF.
 
     "Directly assigning values within the parentheses.
@@ -644,7 +659,9 @@ CLASS ZCL_DEMO_ABAP_CONSTRUCTOR_EXPR IMPLEMENTATION.
     output->display( input = dref5 name = `dref5` ).
     output->display( input = dref6 name = `dref6` ).
 
-    output->next_section( `3.2 NEW: Creating Instances of Classes` ).
+**********************************************************************
+
+    output->next_section( `27) Creating Instances of Classes` ).
 
     "The example demonstrates the creation of instances of classes.
     "First, an object reference variable is declared with a DATA statement.
@@ -679,12 +696,13 @@ CLASS ZCL_DEMO_ABAP_CONSTRUCTOR_EXPR IMPLEMENTATION.
     output->display( input = oref2 name = `oref2` ).
 
     "Method chaining
-    DATA(result) = NEW local_class( `Ciao` )->double(
-                        int = NEW #( 5 ) ).
+    DATA(result) = NEW local_class( `Ciao` )->double( int = NEW #( 5 ) ).
 
     output->display( input = result name = `result` ).
 
-    output->next_section( `4. CONV` ).
+**********************************************************************
+
+    output->next_section( `28) CONV` ).
 
     "The examples show the effect of the CONV operator.
     "A variable of type i is declared and assigned a value. Then,
@@ -740,7 +758,9 @@ CLASS ZCL_DEMO_ABAP_CONSTRUCTOR_EXPR IMPLEMENTATION.
       output->display( `txt is not equal to converted str.`  ).
     ENDIF.
 
-    output->next_section( `5. EXACT` ).
+**********************************************************************
+
+    output->next_section( `29) EXACT` ).
 
     "The examples show the effect of the EXACT operator that enforces either
     "a lossless assignment or a lossless calculation.
@@ -798,7 +818,9 @@ CLASS ZCL_DEMO_ABAP_CONSTRUCTOR_EXPR IMPLEMENTATION.
 
     output->display( input = conv_comp name = `conv_comp` ).
 
-    output->next_section( `6. REF` ).
+**********************************************************************
+
+    output->next_section( `30) REF` ).
 
     "The example includes the declaration of a data object and some data
     "reference variables. One data reference variable is typed with a
@@ -837,7 +859,9 @@ CLASS ZCL_DEMO_ABAP_CONSTRUCTOR_EXPR IMPLEMENTATION.
     output->display( input = dref_d name = `dref_d` ).
     output->display( input = oref_b name = `oref_b` ).
 
-    output->next_section( `7. CAST` ).
+**********************************************************************
+
+    output->next_section( `31) CAST` ).
 
     "The example demonstrates the CAST operator in the context of Run Time
     "Type Identification (RTTI).
@@ -862,7 +886,7 @@ CLASS ZCL_DEMO_ABAP_CONSTRUCTOR_EXPR IMPLEMENTATION.
                   cl_abap_objectdescr=>describe_by_name( 'LOCAL_CLASS' )
                      )->methods.
 
-    "Using ?=
+    "Excursion: Using the older cast operator ?=
     "Retrieving structure components
     "Note: More lines of code, helper variables needed
     DATA structdescr TYPE REF TO cl_abap_structdescr.
@@ -885,7 +909,9 @@ CLASS ZCL_DEMO_ABAP_CONSTRUCTOR_EXPR IMPLEMENTATION.
     output->display( input = components_s1 name = `components_s1` ).
     output->display( input = dref_i name = `dref_i` ).
 
-    output->next_section( `8. COND` ).
+**********************************************************************
+
+    output->next_section( `32) COND` ).
 
     "The example demonstrates the use of the COND operator. The syntax
     "includes several WHEN and THEN expressions.
@@ -911,7 +937,9 @@ CLASS ZCL_DEMO_ABAP_CONSTRUCTOR_EXPR IMPLEMENTATION.
 
     output->display( input = greets name = `greets` ).
 
-    output->next_section( `9. SWITCH` ).
+**********************************************************************
+
+    output->next_section( `33) SWITCH` ).
 
     "The example demonstrates the use of the SWITCH operator. Here,
     "calculations are carried out. For this
@@ -946,7 +974,9 @@ CLASS ZCL_DEMO_ABAP_CONSTRUCTOR_EXPR IMPLEMENTATION.
       ENDTRY.
     ENDLOOP.
 
-    output->next_section( `10. FILTER` ).
+**********************************************************************
+
+    output->next_section( `34) FILTER` ).
 
     "This section covers multiple examples demonstrating the syntactical variety
     "of the FILTER operator.
@@ -1045,23 +1075,28 @@ CLASS ZCL_DEMO_ABAP_CONSTRUCTOR_EXPR IMPLEMENTATION.
 
     output->display( input = f11 name = `f11` ).
 
-    output->next_section( `11. Iteration Expressions with FOR` ).
+**********************************************************************
+
+    output->next_section( `Iteration Expressions with FOR` ).
 
     "The examples demonstrate iteration expressions with FOR. The examples
     "are based on demo internal tables that are filled using a method. The
     "tables are displayed to show the original content of the internal
     "tables that are to be processed.
 
+    output->display( `35) Original table content` ).
+
     "Method to fill demo internal tables with values to work with.
     "Tables are displayed showing the values.
     fill_struc_and_tab( ).
 
-    output->display( `11.1 Original table content` ).
     output->display( input = tab1 name = `tab1` ).
     output->display( input = tab2 name = `tab2` ).
     output->display( input = tab3 name = `tab3` ).
 
-    output->next_section( `11.2 FOR ... IN ... (LOOP Semantics)` ).
+**********************************************************************
+
+    output->next_section( `36) FOR ... IN ... (LOOP Semantics)` ).
 
     "Examples demonstrating FOR ... IN ... that has the semantics of LOOP.
     "1) An internal table is looped across. The whole line is stored in a
@@ -1135,7 +1170,9 @@ CLASS ZCL_DEMO_ABAP_CONSTRUCTOR_EXPR IMPLEMENTATION.
 
     output->display( input = for4 name = `for4` ).
 
-    output->next_section( `11.2 FOR ... WHILE/UNTIL ... ` &&
+**********************************************************************
+
+    output->next_section( `37) FOR ... WHILE/UNTIL ... ` &&
     `(DO/WHILE Semantics)` ).
 
     "Examples demonstrating FOR ... WHILE/UNTIL ... that has the semantics
@@ -1168,7 +1205,9 @@ CLASS ZCL_DEMO_ABAP_CONSTRUCTOR_EXPR IMPLEMENTATION.
     output->display( input = for5 name = `for5` ).
     output->display( input = for6 name = `for6` ).
 
-    output->next_section( `12. REDUCE` ).
+**********************************************************************
+
+    output->next_section( `38) REDUCE (1)` ).
 
     "The examples demonstrate the REDUCE operator using values contained in
     "an internal table column. Here, the table is of type string.
@@ -1210,6 +1249,10 @@ CLASS ZCL_DEMO_ABAP_CONSTRUCTOR_EXPR IMPLEMENTATION.
     output->display( input = a_word name = `a_word` ).
     output->display( input = sentence name = `sentence` ).
 
+**********************************************************************
+
+    output->next_section( `39) REDUCE (2)` ).
+
     "The examples demonstrate summations using the REDUCE operator.
     "1) Example using FOR ... UNTIL .... It calculates the total of the
     "numbers from 1 to 10. The resulting number is stored in a variable that
@@ -1237,6 +1280,10 @@ CLASS ZCL_DEMO_ABAP_CONSTRUCTOR_EXPR IMPLEMENTATION.
     output->display( input = sum1 name = `sum1` ).
     output->display( input = sum2 name = `sum2` ).
 
+**********************************************************************
+
+    output->next_section( `40) REDUCE (3)` ).
+
     "The examples demonstrate the concatenation of strings
     "1) without the addition THEN
     "2) with the addition THEN
@@ -1262,7 +1309,9 @@ CLASS ZCL_DEMO_ABAP_CONSTRUCTOR_EXPR IMPLEMENTATION.
     output->display( input = conc2 name = `conc2` ).
     output->display( input = conc3 name = `conc3` ).
 
-    output->next_section( `13. LET Expressions` ).
+**********************************************************************
+
+    output->next_section( `41) LET Expressions (1)` ).
 
     "The examples demonstrate LET expressions in different contexts.
 
@@ -1278,6 +1327,8 @@ CLASS ZCL_DEMO_ABAP_CONSTRUCTOR_EXPR IMPLEMENTATION.
                       ( |Do { it } do { it } do| ) ).
 
     output->display( input = str_tab name = `str_tab` ).
+
+    output->next_section( `42) LET Expressions (2)` ).
 
     "2) LET within a constructor expression with COND: 12 o'clock is
     "specified as value for the LET expression. Based on this value, checks
@@ -1295,6 +1346,8 @@ CLASS ZCL_DEMO_ABAP_CONSTRUCTOR_EXPR IMPLEMENTATION.
               ELSE |?| ).
 
     output->display( input = time name = `time` ).
+
+    output->next_section( `43) LET Expressions (3)` ).
 
     "3) An internal table that includes three components is created and
     "filled. A loop across this table is carried out. The purpose of the
@@ -1334,4 +1387,55 @@ CLASS ZCL_DEMO_ABAP_CONSTRUCTOR_EXPR IMPLEMENTATION.
     output->display( input = stringtab name = `stringtab` ).
 
   ENDMETHOD.
+
+  METHOD fill_deep_structures.
+    "Clearing all contents of struc2
+    CLEAR struc2.
+    "Filling nested tables in deep structures
+    struc2-struc_nested = VALUE #( comp1 = `aaa`
+                                   comp2 = `bbb`
+                                   comp3 = `ccc`).
+
+    struc1-itab = VALUE #(
+      ( col1 = 111 col2 = 222 )
+      ( col1 = 333 col2 = 444
+      ) ).
+
+    struc2-itab = VALUE #(
+      ( col2 = 1 col3 = 2 col4 = 3 )
+      ( col2 = 4 col3 = 5 col4 = 6 )
+      ( col2 = 7 col3 = 8 col4 = 9 )
+      ).
+
+    "Filling individual component that is not shared by both structures
+    struc2-comp4 = 999.
+  ENDMETHOD.
+
+  METHOD fill_struc_and_tab.
+    CLEAR: s1, s2, tab1, tab2, tab3.
+
+    s1 = VALUE #( comp1 = 'A' comp2 = `bbb` comp3 = 1 ).
+
+    s2 = VALUE #( comp1 = `ccc` comp2 = 'D' comp3 = 2 comp4 = 3 ).
+
+    tab1 = VALUE #(
+      ( comp1 = 'A' comp2 = `bbb` comp3 = 1 )
+      ( comp1 = 'B' comp2 = `ccc` comp3 = 2 )
+      ( comp1 = 'C' comp2 = `ddd` comp3 = 3 ) ).
+
+    tab2 = VALUE #(
+      ( comp1 = `eee` comp2 = 'F' comp3 = 4 comp4 = 5 )
+      ( comp1 = `ggg` comp2 = 'H' comp3 = 6 comp4 = 7 )
+      ( comp1 = `iii` comp2 = 'J' comp3 = 8 comp4 = 9 ) ).
+
+    tab3 = VALUE #(
+      ( comp1 = `aaa` comp2 = 'B' comp3 = 1 comp4 = 2 )
+      ( comp1 = `ccc` comp2 = 'D' comp3 = 3 comp4 = 4 )
+      ( comp1 = `eee` comp2 = 'F' comp3 = 5 comp4 = 6 )
+      ( comp1 = `ggg` comp2 = 'H' comp3 = 7 comp4 = 8 )
+      ( comp1 = `iii` comp2 = 'J' comp3 = 9 comp4 = 10 ) ).
+
+    tab4 = tab3.
+  ENDMETHOD.
+
 ENDCLASS.
