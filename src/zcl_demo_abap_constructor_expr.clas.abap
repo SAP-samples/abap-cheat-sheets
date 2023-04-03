@@ -136,7 +136,7 @@ CLASS ZCL_DEMO_ABAP_CONSTRUCTOR_EXPR IMPLEMENTATION.
 
 **********************************************************************
 
-    output->next_section( `2) Structures: Omitting value assignment to components` ).
+    output->next_section( `2) Structures: Omitting value assignment to components / BASE addition` ).
 
     "The same structure is then filled purposely omitting components, i.
     "e. these components remain initial.
