@@ -1161,15 +1161,11 @@ CLASS zcl_demo_abap_prog_flow_logic IMPLEMENTATION.
         "Here, it is COMPUTE_SQRT_DOMAIN.
         output->display( input = exception->previous name = `exception->previous`).
 
-        "For demo purposes, RTTI is used here to retrieve the absolute name of the type,
-        "i. e. the exception class that was raised. The replace function is only used
-        "to clear the section 'sub' (which includes '\CLASS=') in 'val'.
-        DATA(absolute_name) = replace(
-             val = cl_abap_typedescr=>describe_by_object_ref( exception->previous )->absolute_name
-             sub = `\CLASS=`
-             with = `` ).
+        "For demo purposes, RTTI is used here to retrieve the relative name of the type,
+        "i. e. the exception class that was raised.
+        DATA(relative_name) = cl_abap_typedescr=>describe_by_object_ref( exception->previous )->get_relative_name( ).
 
-        output->display( input = absolute_name name = `absolute_name`).
+        output->display( input = relative_name name = `relative_name`).
 
     ENDTRY.
 
