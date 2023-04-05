@@ -25,13 +25,13 @@
 * ----------------------------- NOTE -----------------------------------
 * The code presented in this class is intended only to support the ABAP
 * cheat sheets. It is not intended for direct use in a production system
-* environment. The code examples in the ABAP cheat sheets are primarily
-* intended to provide a better explanation and visualization of the
-* syntax and semantics of ABAP statements, not to solve concrete
-* programming tasks. For production application programs, you should
-* always work out your own solution for each individual case. There is
-* no guarantee for the correctness or completeness of the code.
-* Furthermore, there is no legal responsibility or liability for any
+* environment. The code examples in the ABAP cheat sheets are primarily 
+* intended to provide a better explanation and visualization of the 
+* syntax and semantics of ABAP statements, not to solve concrete 
+* programming tasks. For production application programs, you should  
+* always work out your own solution for each individual case. There is 
+* no guarantee for the correctness or completeness of the code.  
+* Furthermore, there is no legal responsibility or liability for any 
 * errors or their consequences that may occur when using the the example
 * code.
 *
@@ -105,13 +105,13 @@ protected section.
 ENDCLASS.
 
 
-CLASS ZCL_DEMO_ABAP_CONSTRUCTOR_EXPR IMPLEMENTATION.
+CLASS zcl_demo_abap_constructor_expr IMPLEMENTATION.
 
   METHOD if_oo_adt_classrun~main.
 
     DATA(output) = NEW zcl_demo_abap_display( out ).
 
-    output->display( `ABAP Cheat Sheet: Constructor Expressions` ).
+    output->display( `ABAP cheat sheet: Constructor expressions` ).
 
     output->next_section( `VALUE` ).
     output->display( `1) Structures: Populating a flat structure` ).

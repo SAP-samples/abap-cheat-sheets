@@ -1,23 +1,24 @@
 ***********************************************************************
 *
-*                Class for ABAP cheat sheet examples
+*   Class for ABAP cheat sheet examples designed to support displaying
+*   output in the ADT console
 *
 * -------------------------- NOTE -------------------------------------
-* The code presented in this class is only meant for supporting the ABAP
-* cheat sheets. It is not intended for direct use in a
-* production system environment. The code examples in the ABAP cheat
-* sheets are primarily intended to provide a better explanation and
-* visualization of the syntax and semantics of ABAP statements and not to
-* solve concrete programming tasks. For production application programs,
-* a dedicated solution should therefore always be worked out for each
-* individual case. There is no guarantee for either the correctness or
-* the completeness of the code. In addition, there is no legal
-* responsibility or liability for possible errors or their consequences
-* which occur through the use of the example code.
+* The code presented in this class is intended only to support the ABAP
+* cheat sheets. It is not intended for direct use in a production system
+* environment. The code examples in the ABAP cheat sheets are primarily 
+* intended to provide a better explanation and visualization of the 
+* syntax and semantics of ABAP statements, not to solve concrete 
+* programming tasks. For production application programs, you should  
+* always work out your own solution for each individual case. There is 
+* no guarantee for the correctness or completeness of the code.  
+* Furthermore, there is no legal responsibility or liability for any 
+* errors or their consequences that may occur when using the the example
+* code.
 *
 ***********************************************************************
-"! <p class="shorttext synchronized">Class for ABAP cheat sheet examples</p>
-"! The class supports the displaying of output of the ABAP cheat sheet examples.
+"! <p class="shorttext synchronized">Class supporting ABAP cheat sheet examples</p>
+"! The class supports displaying output of the ABAP cheat sheet examples in the ADT console.
 CLASS zcl_demo_abap_display DEFINITION
   PUBLIC
   FINAL
@@ -50,11 +51,9 @@ ENDCLASS.
 
 CLASS ZCL_DEMO_ABAP_DISPLAY IMPLEMENTATION.
 
-
   METHOD constructor.
     mo_out = io_out.
   ENDMETHOD.
-
 
   METHOD display.
 
@@ -187,7 +186,6 @@ CLASS ZCL_DEMO_ABAP_DISPLAY IMPLEMENTATION.
     ENDIF.
 
   ENDMETHOD.
-
 
   METHOD next_section.
 

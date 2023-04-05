@@ -18,7 +18,7 @@
     - [Using Keys and Identifying RAP BO Instances in a Nutshell](#using-keys-and-identifying-rap-bo-instances-in-a-nutshell)
     - [RAP Concepts](#rap-concepts)
     - [Ensuring Data Consistency in a RAP Transaction](#ensuring-data-consistency-in-a-rap-transaction)
-  - [Further Information](#further-information)
+  - [More Information](#more-information)
   - [Executable Examples](#executable-examples)
 
 ## Excursion: EML in the Context of RAP
@@ -1227,7 +1227,7 @@ The following restrictions apply to operations and/or statements in the individu
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
-## Further Information
+## More Information
 
 -   Section [ABAP for RAP Business
     Objects](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_for_rap_bos.htm)

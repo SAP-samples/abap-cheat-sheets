@@ -26,7 +26,7 @@ ancestors of a given hierarchy node or to aggregate values of subtrees.
     - [Hierarchy Node Navigator HIERARCHY\_ANCESTORS](#hierarchy-node-navigator-hierarchy_ancestors)
     - [Hierarchy Node Navigator HIERARCHY\_SIBLINGS](#hierarchy-node-navigator-hierarchy_siblings)
     - [Hierarchy Aggregate Navigators](#hierarchy-aggregate-navigators)
-  - [Further Information](#further-information)
+  - [More Information](#more-information)
 
 
 ## Overview
@@ -699,5 +699,5 @@ Running `CL_DEMO_SQL_HIERARCHIES` shows the
 result. It also shows the result of the joined data source, where you
 can check that the calculated values are correct.
 
-## Further Information
+## More Information
 For the complete reference documentation about SQL hierarchies, see [`SELECT, FROM hierarchy_data`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenselect_hierarchy_data.htm).

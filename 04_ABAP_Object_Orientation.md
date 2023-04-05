@@ -17,7 +17,7 @@
   - [Notes on Inheritance](#notes-on-inheritance)
   - [Notes on Polymorphism and Casting](#notes-on-polymorphism-and-casting)
   - [Notes on Interfaces](#notes-on-interfaces)
-  - [Further Notes](#further-notes)
+  - [Additional Notes](#additional-notes)
     - [Friendship](#friendship)
     - [Events](#events)
     - [Excursion: Factory Methods and Singletons as Design Patterns](#excursion-factory-methods-and-singletons-as-design-patterns)
@@ -1045,7 +1045,7 @@ i_ref = NEW class( ).
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
-## Further Notes
+## Additional Notes
 
 ### Friendship
 

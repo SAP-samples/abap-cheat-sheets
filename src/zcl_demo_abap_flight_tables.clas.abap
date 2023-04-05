@@ -1,7 +1,7 @@
 ***********************************************************************
 *
-*    Class for clearing and filling demo database tables used in the
-*    context of ABAP cheat sheets
+*   Class for ABAP cheat sheet examples designed to clear and populate
+*   demo database tables
 *
 * -------------------------- NOTE -------------------------------------
 * The code presented in this class is only meant for supporting the ABAP
@@ -17,8 +17,8 @@
 * which occur through the use of the example code.
 *
 ***********************************************************************
-"! <p class="shorttext synchronized">Class for ABAP cheat sheet examples</p>
-"! The class is meant to clear and fill demo database tables used in the context of ABAP cheat sheet examples.
+"! <p class="shorttext synchronized">Class supporting ABAP cheat sheet examples</p>
+"! The class supports the ABAP cheat examples by clearing and populating demo database tables that are used there.
 "! The demo database tables contain airline and flight information.
 CLASS zcl_demo_abap_flight_tables DEFINITION
   PUBLIC
@@ -35,7 +35,7 @@ ENDCLASS.
 
 
 
-CLASS ZCL_DEMO_ABAP_FLIGHT_TABLES IMPLEMENTATION.
+CLASS zcl_demo_abap_flight_tables IMPLEMENTATION.
 
 
   METHOD clear_dbtabs.

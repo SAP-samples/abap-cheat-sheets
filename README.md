@@ -192,7 +192,7 @@ Use the standalone version of the abapGit report to import the demo examples of 
 
 <br>
 
-## ℹ️ Further Information
+## ℹ️ More Information
 - For the system-internal version of the ABAP Keyword Documentation in your
   - ... **on-premise system**: Access the documentation in the SAP GUI via the transactions `ABAPDOCU` (opens the documentation directly) and `ABAPHELP` (opens an input field with which you can search the documentation content, for example, you can search for a keyword such as `SELECT`). Or, of course, choose `F1` on a keyword in your code. If you are in the SAP GUI (e.g. in `SE80`), the system-internal version opens. If you are in ADT, the documentation opens in the *ABAP Language Help* view.
   - ... **SAP BTP ABAP environment**: In ADT, the documentation is in the *ABAP Language Help* view, where you can also search. If you choose `F1` on a keyword in your code, the documentation opens there.
@@ -213,7 +213,7 @@ There is no guarantee for either the correctness or the completeness of the code
 
 <br>
 
-## 📟 How to Obtain Support
+## 📟 Support and Contribution
 This is not intended to be a contribution repository, so please do not create pull requests. If you like to address issues or suggestions, please create an issue. However, this project is provided "as-is": there is no guarantee that raised issues will be answered or addressed in future releases.
 
 <br>

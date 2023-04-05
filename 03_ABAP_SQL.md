@@ -8,7 +8,7 @@
     - [Basic Syntax](#basic-syntax)
     - [Using SELECT for Multiple Purposes](#using-select-for-multiple-purposes)
     - [Clause Variations and Additions in SELECT Statements](#clause-variations-and-additions-in-select-statements)
-    - [Further Clauses](#further-clauses)
+    - [More Clauses](#more-clauses)
     - [Excursion: Operands and Expressions in ABAP SQL Statements](#excursion-operands-and-expressions-in-abap-sql-statements)
     - [Excursion: SQL Conditions](#excursion-sql-conditions)
     - [Selecting Data by Evaluating the Content of other Tables](#selecting-data-by-evaluating-the-content-of-other-tables)
@@ -19,7 +19,7 @@
     - [Using `UPDATE`](#using-update)
     - [Using `MODIFY`](#using-modify)
     - [Using `DELETE`](#using-delete)
-  - [Further Information](#further-information)
+  - [More Information](#more-information)
   - [Executable Example](#executable-example)
 
 
@@ -448,7 +448,7 @@ SELECT FROM dbtab
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
-### Further Clauses
+### More Clauses
 
 [`GROUP BY`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapgroupby_clause.htm)
 clause: Combining groups of table rows in the result set. You
@@ -1473,7 +1473,7 @@ DELETE dbtab FROM TABLE @( VALUE #( ( comp1 = ... )
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
-## Further Information
+## More Information
 - Note that ABAP SQL statements offer syntax options for dynamic programming. For example, you can specify the data source to read from dynamically. See more information in the ABAP Keyword Documentation or the [ABAP cheat sheet on dynamic programming](06_Dynamic_Programming.md).
     ```abap
     DATA(dbtab) = 'ZDEMO_ABAP_FLSCH'.

@@ -1,6 +1,6 @@
 ***********************************************************************
 *
-*           ABAP cheat sheet: ABAP object orientation
+*             ABAP cheat sheet: ABAP object orientation
 *
 * -------------------------- PURPOSE ----------------------------------
 * - Example to demonstrate various syntactical options and concepts related
@@ -20,31 +20,31 @@
 * - Open the class with the ABAP Development Tools (ADT).
 * - Choose F9 to run the class.
 * - Check the console output.
-* - To understand the context and the ABAP syntax used, check the notes
-*   included in the class as comments or refer to the respective topic
-*   in the ABAP Keyword Documentation.
-* - Due to the amount of output in the console, the examples include
-*   numbers (e. g. 1) ..., 2) ..., 3) ...) for the individual example
-*   sections. Plus, the variable name is displayed in most cases. Hence,
-*   to easier and faster find the relevant output in the console, just
-*   search in the console for the number/variable name (STRG+F in the
-*   console) or use the debugger.
+* - To understand the context and the ABAP syntax used, refer to the 
+*   notes included in the class as comments or refer to the respective 
+*   topic in the ABAP Keyword Documentation.
+* - Due to the amount of console output, the examples contain numbers 
+*   (e.g. 1) ..., 2) ..., 3) ...) for the individual example sections. 
+*   Also, the variable name is displayed in most cases. So to find 
+*   the relevant output in the console easier and faster, just search 
+*   for the number/variable name in the console (CTRL+F in the console) 
+*   or use the debugger.
 *
 * ----------------------------- NOTE -----------------------------------
-* The code presented in this class is only meant for supporting the ABAP
-* cheat sheets. It is not intended for direct use in a
-* production system environment. The code examples in the ABAP cheat
-* sheets are primarily intended to provide a better explanation and
-* visualization of the syntax and semantics of ABAP statements and not to
-* solve concrete programming tasks. For production application programs,
-* a dedicated solution should therefore always be worked out for each
-* individual case. There is no guarantee for either the correctness or
-* the completeness of the code. In addition, there is no legal
-* responsibility or liability for possible errors or their consequences
-* which occur through the use of the example code.
+* The code presented in this class is intended only to support the ABAP
+* cheat sheets. It is not intended for direct use in a production system
+* environment. The code examples in the ABAP cheat sheets are primarily 
+* intended to provide a better explanation and visualization of the 
+* syntax and semantics of ABAP statements, not to solve concrete 
+* programming tasks. For production application programs, you should  
+* always work out your own solution for each individual case. There is 
+* no guarantee for the correctness or completeness of the code.  
+* Furthermore, there is no legal responsibility or liability for any 
+* errors or their consequences that may occur when using the the example
+* code.
 *
 ***********************************************************************
-"! <p class="shorttext synchronized">ABAP cheat sheet: ABAP Object Orientation</p>
+"! <p class="shorttext synchronized">ABAP cheat sheet: ABAP object orientation</p>
 "! Example to demonstrate concepts related to ABAP object orientation.<br>Choose F9 in ADT to run the class.
 CLASS zcl_demo_abap_objects DEFINITION
   PUBLIC
@@ -83,18 +83,15 @@ ENDCLASS.
 
 CLASS zcl_demo_abap_objects IMPLEMENTATION.
 
-
   METHOD hallo_instance_method.
     string = |Hallo { sy-uname }. | &&
              |I'm an instance method of class zcl_demo_abap_objects.|.
   ENDMETHOD.
 
-
   METHOD hallo_static_method.
     string = |Hallo { sy-uname }. | &&
              |I'm a static method of class zcl_demo_abap_objects.|.
   ENDMETHOD.
-
 
   METHOD if_oo_adt_classrun~main.
 

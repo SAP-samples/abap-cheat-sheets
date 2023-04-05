@@ -9,7 +9,7 @@
   - [AMDP Procedures](#amdp-procedures)
   - [AMDP Functions](#amdp-functions)
     - [CDS Table Functions](#cds-table-functions)
-  - [Further Information](#further-information)
+  - [More Information](#more-information)
   - [Executable Example](#executable-example)
 
 
@@ -374,7 +374,7 @@ You can then use the CDS table function as source for a
 
 
 
-## Further Information
+## More Information
 
 Notes on using AMDP in environments with restricted language version (in
 contrast unrestricted language version):
