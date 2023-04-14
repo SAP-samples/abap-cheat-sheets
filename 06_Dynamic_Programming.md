@@ -513,32 +513,48 @@ world. Recommended read: [Accessing Data Objects Dynamically (F1 docu for standa
 
 ## Dynamic ABAP Statements
 
-As already touched on above, there are ABAP statements that support the dynamic specification of syntax elements.
-In this context, you can use character-like data objects (or, for example, in the `SELECT` list, a standard table with a character-like row type) - the content is usually provided in capital letters - specified within a pair of parentheses. They can be included as operands in many ABAP statements
-(e. g. `SORT table BY (field_name).`).
+As already dealt with above, there are ABAP statements that support the dynamic specification of syntax elements.
+In this context, you can usually use elementary, character-like data objects - the content is usually provided in capital letters - specified within a pair of parentheses. In the `SELECT` list of an ABAP SQL `SELECT` statement, for example, you can use a standard table with a character-like row type. The dynamically specified syntax elements can be included as operands in various. The following code snippets are intended to give you an idea and rough overview. Check the ABAP Keyword Documentation for dynamic syntax options. 
 
-Note that this has downsides, too. Consider some erroneous character-like content of such data objects. There is no syntax warning. At runtime, it can lead to  runtime errors.
-For the rich variety of options (where dynamic specification is possible for ABAP statements), check the ABAP Keyword Documentation. The following snippets are meant to give you an idea and overview.
+Note that dynamically specifying syntax elements has downsides, too. Consider some erroneous character-like content of such data objects. There is no syntax warning. At runtime, it can lead to  runtime errors. 
 
-- Dynamically specifying data objects
+- Dynamically specifying components
 
-    ``` abap
-    "Here, the names of fields are stored in a character-like data object
+    ``` abap    
+    "SORT statements: Sorting an internal table by dynamically specifying the component
+    
+    "Populating an internal table
+    SELECT *
+      FROM zdemo_abap_carr
+      INTO TABLE @DATA(itab).
 
-    "The sorting is done by a field that is determined at runtime.
-    DATA(field_name) = 'SOME_FIELD'. "maybe the data object/field name is changed at runtime
-    ...
+    "Dynamically specifying component name to be sorted for
+    "Named data object
+    DATA(field_name) = 'CARRNAME'.
     SORT itab BY (field_name).
 
-    "A field symbol is assigned a data object; here, an attribute of a class
+    "Unnamed data object
+    SORT itab BY ('CURRCODE').
 
-    ASSIGN class=>(attribute_name) TO FIELD-SYMBOL(<fs>).
+    "ASSIGN statements 
 
-    "In newer ABAP releases, you can dynamically specify structure components using this syntax
-    ASSIGN struc-(comp1) TO <fs>.
+    "Declaring a field symbol
+    FIELD-SYMBOLS <fs> type any.
 
-    "Accessing components of structures that are referenced by a data reference variable
-    ASSIGN dref->(comp1) TO <fs>.
+    "Dynamically specifying components of structures
+    ASSIGN itab[ 1 ]-('CURRCODE') to <fs>.
+
+    DATA(struc) = itab[ 2 ].
+    ASSIGN struc-(field_name) to <fs>.
+
+    "Dynamically specifying components of structures that are referenced by
+    "a data reference variable
+    DATA(dref) = REF #( struc ).
+    ASSIGN dref->('URL') to <fs>.
+
+    "Dynamically specifying component of a class/interface
+    "In the example, the field symbol is declared inline.
+    ASSIGN zdemo_abap_objects_interface=>('CONST_INTF') TO FIELD-SYMBOL(<fs_inl>).
     ```
 
 - Dynamically specifying data types
@@ -550,21 +566,15 @@ For the rich variety of options (where dynamic specification is possible for ABA
     CREATE DATA ref TYPE (some_type).
     CREATE DATA ref TYPE TABLE OF (some_type).
 
-    "Assigning a data object to a field symbol casting a type
+    "Assigning a data object to a field symbol casting a dynamically specified type
 
     ASSIGN dobj TO <fs> CASTING TYPE (some_type).
-
-    "Assigning a structure component dynamically to a field symbol that is declared inline
-
-    DATA struct TYPE zdemo_abap_flsch.
-
-    ASSIGN struct-('CARRID') TO FIELD-SYMBOL(<fs>).
     ```
 
-- Dynamic specification of clauses in ABAP SQL statements
-
+- Dynamically specifying clauses in ABAP SQL statements
 
     ``` abap
+    "This snippet demonstrates a selection of possible dynamic specifications in ABAP SQL SELECT statements.
     "Dynamic SELECT list
 
     DATA(select_list) = `CARRID, CONNID, COUNTRYFR, COUNTRYTO`.
