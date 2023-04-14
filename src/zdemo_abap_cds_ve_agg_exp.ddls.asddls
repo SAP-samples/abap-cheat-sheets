@@ -30,7 +30,7 @@ define view entity zdemo_abap_cds_ve_agg_exp
       // - Aggregate expressions can be used as elements of an element list. Other positions are possible.
       // - An alias name must be specified.
       // - A GROUP BY clause is required. It must list all non-aggregated fields from the element list.
-      // - Additions: If ALL is used, all rows in the result set are respected. This the default setting.
+      // - Additions: If ALL is used, all rows in the result set are respected. This is the default setting.
       //              If DISTINCT is used, only distinct values of an argument are respected.
 
       // AVG (Returns the average value of an argument)

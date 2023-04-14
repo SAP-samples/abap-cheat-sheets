@@ -243,7 +243,7 @@ CLASS zcl_demo_abap_sql IMPLEMENTATION.
      INTO @DATA(exists).
 
     IF exists = abap_true.
-      output->display( |A line was found.| ).
+      output->display( `A line was found.` ).
     ELSE.
       output->display( `Nothing found.` ).
     ENDIF.
@@ -546,7 +546,6 @@ CLASS zcl_demo_abap_sql IMPLEMENTATION.
       UP TO 2 ROWS.
 
     output->display( input = dref->* name = `dref->*` ).
-
 
 **********************************************************************
 

@@ -77,7 +77,7 @@ ABAP cheat sheets[^1] ...
 
 ## 🎬 Getting Started with the Examples
 
-The executable examples are designed to be imported into the SAP BTP ABAP environment, but they are basically suitable for both on-premise systems (ABAP release > 7.56; especially the RAP examples) and the SAP BTP ABAP environment (hence there are no ABAP reports included). Therefore, check the information in the following collapsible sections for your system environment and perform the required steps.
+The executable examples are designed to be imported into the SAP BTP ABAP environment, but they are basically suitable for both on-premise systems (ABAP release >= 7.56; especially the RAP examples) and the SAP BTP ABAP environment (hence there are no ABAP reports included). Therefore, check the information in the following collapsible sections for your system environment and perform the required steps.
 
 <details>
   <summary>1) General info</summary>
@@ -185,9 +185,9 @@ Use the standalone version of the abapGit report to import the demo examples of 
 <br>
 
 ## ⚡ Known Issues
-- Only one user on the system can import this repository because all object names must be globally unique. If you get an error that the objects already exist when you try to import, search the system for classes named `ZCL_DEMO_ABAP*`. Someone has already imported the content into the system and you can simply check out that imported version.
+- Only one user on the system can import this repository because all object names must be globally unique. Before importing the code, you should perform a system-wide search for classes named `ZCL_DEMO_ABAP*`, for example. If someone has already imported the content into the system, you can simply check out that imported code.
 - Since the repository contains self-contained examples, i.e. some of them work with demo database tables included in the repository (note that these tables are populated during method executions), all demo artifacts must be imported for all examples to work.
-- When importing into an on-premise system, note the following: The demos cover ABAP syntax regardless of the ABAP release to avoid scattering information and to get the information in one go. Therefore, there may be syntax that is not yet available in the ABAP version of your on-premise system. In this case, you may want to comment out the affected code sections and/or ignore the  affected artifacts if an activation fails. Note that the RAP examples in particular require at least ABAP version 7.56. 
+- When importing into an on-premise system, note the following: The demos cover ABAP syntax regardless of the ABAP release to avoid scattering information and to have the information in one go. Therefore and if you are not running the latest ABAP version, there may be syntax that is not yet available in the ABAP version of your on-premise system. In this case, you may want to comment out the affected code sections or ignore the affected artifacts if an activation fails. Note that the RAP examples in particular require at least ABAP version 7.56. 
 - Regarding possible code check warnings, e.g. for the many strings in the code, not using an `ORDER BY` clause, or messages regarding using `SELECT *`, the code deliberately avoids [pragmas](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenpragma_glosry.htm) and [pseudo comments](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenpseudo_comment_glosry.htm) in order to focus on the available ABAP syntax. See also the [Disclaimer](#%EF%B8%8F-disclaimer).
 
 <br>

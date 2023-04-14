@@ -779,7 +779,7 @@ SELECT SINGLE
 
   "Searches for a PCRE expression and returns the matched substring
   "More parameters possible: occurrence, case_sensitive, start, group
-  "Result:.lu
+  "Result: .lu
   substring_regexpr( pcre = '\...', "Period that is followed by any two characters
                      value = url ) AS substring_regexpr,
 

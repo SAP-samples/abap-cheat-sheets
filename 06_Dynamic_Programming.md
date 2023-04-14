@@ -300,6 +300,8 @@ TYPES i_table TYPE STANDARD TABLE OF i WITH EMPTY KEY.
 DATA(ref3) = NEW i_table( ( 1 ) ( 2 ) ( 3 ) ( 4 ) ( 5 ) ).
 
 "CREATE DATA statements (older syntax)
+"Unlike above, the older syntax is not commented out. CREATE DATA is used for dynamic 
+"type specification as shown further down.
 DATA ref4 TYPE REF TO string.
 DATA ref5 TYPE REF TO data.
 
@@ -326,7 +328,7 @@ Excursion: Static vs. dynamic type, upcasts and downcasts
   - Downcast: If the static type of the target variable is **more specific** than the static type of the source variable, a check must be made at runtime before the assignment is done. If you indeed want to trigger such a downcast, you must do it explicitly in your code. You can do this, for example, using the
   [constructor operator](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconstructor_operator_glosry.htm "Glossary Entry")
 [`CAST`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconstructor_expression_cast.htm). In older code, you might see
-the operator [`?=`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapmove_cast.htm)).
+the operator [`?=`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapmove_cast.htm).
   - In contrast to a downcast, an upcast does not have to be done explicitly. However, you can - but need not - use the mentioned operators for upcasts, too.
 
 
@@ -362,8 +364,8 @@ DATA ref6 TYPE REF TO data.
 ref6 = NEW i( 654 ).
 ref5 = CAST #( ref6 ).
 
-"Old casting operator
-ref5 ?= ref6.
+"Casting operator: Older syntax 
+"ref5 ?= ref6.
 ```
 
 **Addressing data references**
@@ -402,7 +404,6 @@ DATA(calc) = 1 + ref_gen->*.
 "Structure
 "Complete structure
 DATA(struc) = ref_carr->*.
-
 
 "When dereferencing a data reference variable that has a structured
 "data type, you can use the component selector -> to address individual components
@@ -492,15 +493,12 @@ DATA: BEGIN OF struc,
 
 "Some value assignment
 
-struc2 = VALUE #( num = 1 ref = NEW #( 2 ) ).
+struc = VALUE #( num = 1 ref = NEW #( 2 ) ).
 
 "Internal table
 
 DATA itab LIKE TABLE OF struc WITH EMPTY KEY.
-
-"Some value assignment in the first table line
-"assuming the table is filled and a line is available.
-
+APPEND struc TO itab.
 itab[ 1 ]-ref->* = 123.
 ```
 

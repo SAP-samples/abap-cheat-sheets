@@ -309,7 +309,7 @@ The following example shows the pattern and various examples of declaring intern
 
 Steps: 
 1. Define a structured data type (locally or globally). 
-   This is not necessary if you use, for example, you use the name of a database table or [CDS view](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_view_glosry.htm) in the internal table declaration. In these cases their line type is used automatically.
+   This is not necessary if you use, for example, the name of a database table or [CDS view](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_view_glosry.htm) in the internal table declaration. In these cases their line type is used automatically.
 2. Define an internal table type.
 3. Create the internal table, i.e. a data object that uses this type.
 
@@ -344,7 +344,7 @@ TYPES:
 
   "Based on database table (could also be, e. g. a CDS view)
   "In this case, the line type of the table is automatically used.
-  tt_gl_tab TYPE TABLE OF zdemo_abap_fli WITH NON-UNIQUE KEY key_field,
+  tt_gl_tab TYPE TABLE OF zdemo_abap_fli WITH NON-UNIQUE KEY carrid,
 
   "Based on an elementary type
   tt_el_type TYPE TABLE OF i.
@@ -508,7 +508,7 @@ other line is constructed inline.
 
 
 > **💡 Note**<br>
-> The extra pair of parentheses represents a table line. The # sign indicates that the line type can be derived from the context. The assignment deletes the existing content of the internal table on the left side.
+> The extra pair of parentheses represents a table line. The `#` character indicates that the line type can be derived from the context. The assignment deletes the existing content of the internal table on the left side.
 
 ``` abap
 itab = VALUE #( ( line )
@@ -521,7 +521,7 @@ itab = VALUE #( ( line )
 TYPES it_type LIKE itab.
 
 "Inline declaration
-"The # sign would not be possible here since the line type
+"The # character would not be possible here since the line type
 "cannot be derived from the context.
 
 DATA(it_in) = VALUE it_type( ( comp1 = a comp2 = b ... )
@@ -800,6 +800,8 @@ There are three different ways to specify the line to read:
 - by index (only index tables)
 - by table keys (only tables for which a key is defined)
 - by free key
+
+The following code snippets include [`READ TABLE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapread_table.htm) statements and [table expressions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentable_expressions.htm) to read from internal tables.
 
 **Reading single lines**
 

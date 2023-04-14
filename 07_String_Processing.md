@@ -1112,7 +1112,7 @@ Parameters of the `find` function:
 - `len`: 
   - Specifies the length 
   - Must be of type `i`
-  - The fefault value is the length of the string (minus a defined offset in `off`)
+  - The default value is the length of the string (minus a defined offset in `off`)
   - The exception `CX_SY_RANGE_OUT_OF_BOUNDS` is raised if the offset is negative and a range is not contained in the searched string
 - `pcre`: Regular expression
 
