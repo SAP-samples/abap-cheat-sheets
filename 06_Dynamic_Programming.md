@@ -513,10 +513,10 @@ world. Recommended read: [Accessing Data Objects Dynamically (F1 docu for standa
 
 ## Dynamic ABAP Statements
 
-As already dealt with above, there are ABAP statements that support the dynamic specification of syntax elements.
-In this context, you can usually use elementary, character-like data objects - the content is usually provided in capital letters - specified within a pair of parentheses. In the `SELECT` list of an ABAP SQL `SELECT` statement, for example, you can use a standard table with a character-like row type. The dynamically specified syntax elements can be included as operands in various. The following code snippets are intended to give you an idea and rough overview. Check the ABAP Keyword Documentation for dynamic syntax options. 
+As already mentioned above, there are ABAP statements that support the dynamic specification of syntax elements.
+In this context, you can usually use elementary, character-like data objects - the content is usually provided in capital letters - specified within a pair of parentheses. In the `SELECT` list of an ABAP SQL `SELECT` statement, for example, you can use a standard table with a character-like row type. The dynamically specified syntax elements can be included as operands in various ABAP statements. The following code snippets are intended to give you an idea and rough overview. 
 
-Note that dynamically specifying syntax elements has downsides, too. Consider some erroneous character-like content of such data objects. There is no syntax warning. At runtime, it can lead to  runtime errors. 
+Note that dynamically specifying syntax elements has downsides, too. Consider some erroneous character-like content of such data objects. There is no syntax warning. At runtime, it can lead to runtime errors. 
 
 - Dynamically specifying components
 
