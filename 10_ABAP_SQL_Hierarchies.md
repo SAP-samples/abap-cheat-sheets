@@ -113,7 +113,7 @@ cannot be anything else but a CDS view that exposes a [hierarchy
 association](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenhierarchy_association_glosry.htm "Glossary Entry").
 Here is a very simple example for that:
 
-``` abap
+``` 
 @AccessControl.authorizationCheck: #NOT_REQUIRED
 define view entity DEMO_CDS_SIMPLE_TREE_VIEW
   as select from demo_simple_tree
@@ -145,7 +145,7 @@ more complex than shown in the simple example here.
 Now we can use the above CDS view as the hierarchy source of a CDS
 hierarchy that can be defined as follows:
 
-``` abap
+``` 
 define hierarchy DEMO_CDS_SIMPLE_TREE
   with parameters
     p_id : abap.int4
@@ -218,18 +218,18 @@ DATA root_id type demo_cds_simple_tree_view-id.
 ...
 
 SELECT FROM demo_cds_simple_tree( p_id = @root_id )
-       FIELDS id,
-              parent,
-              name,
-              hierarchy_rank,
-              hierarchy_tree_size,
-              hierarchy_parent_rank,
-              hierarchy_level,
-              hierarchy_is_cycle,
-              hierarchy_is_orphan,
-              node_id,
-              parent_id
-           INTO TABLE @FINAL(cds_result).
+  FIELDS id,
+         parent,
+         name,
+         hierarchy_rank,
+         hierarchy_tree_size,
+         hierarchy_parent_rank,
+         hierarchy_level,
+         hierarchy_is_cycle,
+         hierarchy_is_orphan,
+         node_id,
+         parent_id
+  INTO TABLE @FINAL(cds_result).
 ```
 
 And although we did not define any hierarchy attributes in the element
@@ -270,7 +270,6 @@ SELECT FROM HIERARCHY( SOURCE demo_cds_simple_tree_view
                        START WHERE id = @root_id
                        SIBLINGS ORDER BY id
                        MULTIPLE PARENTS NOT ALLOWED ) "hierarchy
-]
        FIELDS id,
               parent,
               name,
@@ -321,12 +320,11 @@ WITH
         WITH ASSOCIATIONS (
           JOIN TO MANY +cte_simple_tree_source AS _tree
             ON +cte_simple_tree_source~parent = _tree~id )
-  SELECT FROM HIERARCHY( SOURCE +cte_simple_tree_source
+  SELECT FROM HIERARCHY( SOURCE +cte_simple_tree_source
                          CHILD TO PARENT ASSOCIATION _tree
                          START WHERE id = @root_id
                          SIBLINGS ORDER BY id
                          MULTIPLE PARENTS NOT ALLOWED ) "hierarchy
-]
          FIELDS id,
                 parent,
                 name,
@@ -338,7 +336,7 @@ WITH
                 hierarchy_is_orphan,
                 node_id,
                 parent_id
-         INTO TABLE @FINAL(asql_cte_result). ]
+         INTO TABLE @FINAL(asql_cte_result). 
 
 ASSERT asql_cte_result = cds_result.
 ```
@@ -390,7 +388,7 @@ WITH
         ( SELECT FROM demo_cds_simple_tree( p_id = @root_id )
                  FIELDS * )
           WITH HIERARCHY demo_cds_simple_tree
-      SELECT FROM  +tree "hierarchy ]
+      SELECT FROM  +tree "hierarchy ]
              FIELDS id,
                     parent,
                     name,
@@ -418,7 +416,7 @@ WITH
                    parent,
                    name )
           WITH HIERARCHY asql_hierarchy
-      SELECT FROM +tree "hierarchy ]
+       SELECT FROM +tree "hierarchy ]
              FIELDS id,
                     parent,
                     name,
@@ -454,7 +452,7 @@ WITH
                    parent,
                    name  )
             WITH HIERARCHY cte_hierarchy
-      SELECT FROM +tree "hierarchy ]
+      SELECT FROM +tree "hierarchy ]
              FIELDS id,
                     parent,
                     name,
@@ -522,11 +520,11 @@ DATA sub_id TYPE demo_cds_simple_tree_view-id.
 SELECT FROM HIERARCHY_DESCENDANTS(
               SOURCE demo_cds_simple_tree( p_id = @root_id )
               START WHERE id = @sub_id  )
-  FIELDS id,
+  FIELDS id,
          parent_id,
          name,
          hierarchy_distance
-  INTO TABLE @FINAL(descendants).
+  INTO TABLE @FINAL(descendants).
 ```
 
 Our CDS hierarchy `DEMO_CDS_SIMPLE_TREE_VIEW` is used to
@@ -554,11 +552,11 @@ DATA max_id TYPE demo_cds_simple_tree_view-id.
 SELECT FROM HIERARCHY_ANCESTORS(
               SOURCE demo_cds_simple_tree( p_id = @root_id )
               START WHERE id = @max_id )
-  FIELDS id,
+  FIELDS id,
           parent_id,
           name,
           hierarchy_distance
-  INTO TABLE @FINAL(ancestors).
+  INTO TABLE @FINAL(ancestors).
 ```
 
 Looking at the result when running
@@ -587,11 +585,11 @@ DATA sibl_id TYPE demo_cds_simple_tree_view-id.
 SELECT FROM HIERARCHY_SIBLINGS(
               SOURCE demo_cds_simple_tree( p_id = @root_id )
               START WHERE id = @sibl_id )
-  FIELDS id,
+  FIELDS id,
           parent_id,
           name,
           hierarchy_sibling_distance
-  INTO TABLE @FINAL(siblings).
+  INTO TABLE @FINAL(siblings).
 ```
 
 You see that this function adds another hierarchy column
@@ -646,11 +644,11 @@ SELECT FROM HIERARCHY_DESCENDANTS_AGGREGATE(
               WHERE hierarchy_rank > 1
               WITH SUBTOTAL
               WITH BALANCE )
-  FIELDS id,
+  FIELDS id,
          amount_sum,
          hierarchy_rank,
          hierarchy_aggregate_type
-  INTO TABLE @FINAL(descendants_aggregate).
+  INTO TABLE @FINAL(descendants_aggregate).
 ```
 
 In our example, we join an internal table `value_tab` of the

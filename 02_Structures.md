@@ -103,7 +103,7 @@ DATA: BEGIN OF struc,
                                         "the content is initial.
         comp5 TYPE local_structured_type,
         ...,
-      END OF struc.
+      END OF struc.
 ```
 
 Alternatively, you can use the following syntax. Similar to above, a chained statement provides better readability.
@@ -127,7 +127,7 @@ Creating structures using existing structured types:
 TYPES: BEGIN OF struc_type,
          comp1 TYPE i,                            
          comp2 TYPE c LENGTH 5,   
-       END OF struc_type.
+       END OF struc_type.
 
 "Creating a structure using a local structured type
 DATA struc_1 TYPE struc_type.
@@ -205,50 +205,50 @@ or a [deep structure](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US
 
 - **Flat structures** contain only elementary types that have a fixed length, that is, there are no internal tables, reference types or strings as components. Nesting does not matter in this context. Even a nested structure is considered flat unless a substructure contains a deep component.
     ``` abap
-    DATA: BEGIN OF structure,
+    DATA: BEGIN OF struc,
             comp1 TYPE i,
             comp2 TYPE c LENGTH 15,
             comp3 TYPE p LENGTH 8 DECIMALS 2,
             ...,
-          END OF structure.
+          END OF struc.
     ```    
 
 - **Nested structures**: At least one component of a structure is a [substructure](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensubstructure_glosry.htm "Glossary Entry"),
 that is, it refers to another structure. The following example has multiple substructures.
     ``` abap
     DATA: BEGIN OF address_n,
-            BEGIN OF name,
-              title   TYPE string VALUE `Mr.`,
-              prename TYPE string VALUE `Duncan`,
-              surname TYPE string VALUE `Pea`,
-            END OF name,
-            BEGIN OF street,
-              name   TYPE string VALUE `Vegetable Lane`,
-              number TYPE string VALUE `11`,
-            END OF street,
-            BEGIN OF city,
-              zipcode TYPE string VALUE `349875`,
-              name    TYPE string VALUE `Botanica`,
-            END OF city,
-          END OF address_n.
+            BEGIN OF name,
+              title   TYPE string VALUE `Mr.`,
+              prename TYPE string VALUE `Duncan`,
+              surname TYPE string VALUE `Pea`,
+            END OF name,
+            BEGIN OF street,
+              name TYPE string VALUE `Vegetable Lane`,
+              num  TYPE string VALUE `11`,
+            END OF street,
+            BEGIN OF city,
+              zipcode TYPE string VALUE `349875`,
+              name    TYPE string VALUE `Botanica`,
+            END OF city,
+        END OF address_n.
     ```
 
 - **Deep structures**: Contains at least one internal table, reference type, or string as a component.
     ``` abap
     DATA: BEGIN OF address_d,
-            name    TYPE string VALUE `Mr. Duncan Pea`,
-            street  TYPE string VALUE `Vegetable Lane 11`,
-            city    TYPE string VALUE `349875 Botanica`,
-            details TYPE TABLE OF some_table WITH EMPTY KEY,
-          END OF address_d.
+            name    TYPE string VALUE `Mr. Duncan Pea`, 
+            street  TYPE string VALUE `Vegetable Lane 11`, 
+            city    TYPE string VALUE `349875 Botanica`, 
+            details TYPE TABLE OF some_table WITH EMPTY KEY, 
+          END OF address_d.
     ```
   Although the following structure looks quite simple, it is not a flat structure, but a deep structure, because it contains strings.
     ``` abap
     DATA: BEGIN OF address,
-            name   TYPE string VALUE `Mr. Duncan Pea`,
-            street TYPE string VALUE `Vegetable Lane 11`,
-            city   TYPE string VALUE `349875 Botanica`,
-          END OF address.
+            name   TYPE string VALUE `Mr. Duncan Pea`,
+            street TYPE string VALUE `Vegetable Lane 11`,
+            city   TYPE string VALUE `349875 Botanica`,
+          END OF address.
     ```
 
 > **💡 Note**<br>
@@ -265,28 +265,28 @@ that is, it refers to another structure. The following example has multiple subs
 - ADT and the ABAP Editor provide code completion for structure components after the component selectors.
 ``` abap
 "Addressing components via the structure component selector
-... structure-comp1 ...
-... structure-comp2 ...
-... structure-comp3 ...
+... struc-comp1 ...
+... struc-comp2 ...
+... struc-comp3 ...
 
 "Examples for addressing the whole structure and individual components
-IF structure IS INITIAL. 
+IF struc IS INITIAL. 
   ...
 ENDIF.
 
-IF structure-comp1 = 1. 
+IF struc-comp1 = 1. 
   ...
 ENDIF.
 
-DATA(complete_struc) = structure.
-DATA(comp_value) = structure-comp2.
+DATA(complete_struc) = struc.
+DATA(comp_value) = struc-comp2.
 
 "Type and data declarations
 TYPES: type_1 TYPE structured_type-comp1,
-       type_2 LIKE structure-comp1.
+       type_2 LIKE struc-comp1.
 
 DATA: var_1 TYPE structured_type-comp1,
-      var_2 LIKE structure-comp1.
+      var_2 LIKE struc-comp1.
 
 "Variables with reference to a structured data object
 DATA ref_struc_1 TYPE REF TO structured_type.
@@ -302,7 +302,7 @@ DATA(ref_struc_2) = NEW structured_type( ).
 
 Nested components can be addressed using chaining:
 ``` abap
-... structure-substructure-comp1 ...
+... struc-substructure-comp1 ...
 ... address_n-name-title ...
 ```
 
@@ -351,8 +351,8 @@ address-city   = `349875 Botanica`.
 ``` abap
 "# used: type of the operand can be implicitly derived
 address = VALUE #( name   = `Mr. Duncan Pea`
-                     street = `Vegetable Lane 11`.
-                     city   = `349875 Botanica` ).
+                   street = `Vegetable Lane 11`.
+                   city   = `349875 Botanica` ).
 
 "Declaring a structure inline
 "Type used explicitly: type of the operand cannot be implicitly derived
@@ -425,13 +425,11 @@ diff_struc = CORRESPONDING #( BASE ( diff_struc ) struc ).
 "assigned to the components of a target structure in mapping
 "relationships.
 
-diff_struc = CORRESPONDING #( BASE ( diff_struc )
-                              struc MAPPING comp1 = compa ).
+diff_struc = CORRESPONDING #( BASE ( diff_struc ) struc MAPPING comp1 = compa ).
 
 "EXCEPT addition: Excluding components from the assignment.
 
-diff_struc = CORRESPONDING #( BASE ( diff_struc )
-                              struc EXCEPT comp1 ).
+diff_struc = CORRESPONDING #( BASE ( diff_struc ) struc EXCEPT comp1 ).
 ```
 
 Value assignments in deep structures 
@@ -449,22 +447,19 @@ MOVE-CORRESPONDING deep_struc TO diff_deep_struc.
 "Existing internal table content is replaced but the value
 "assignment happens for identically named components only.
 
-MOVE-CORRESPONDING deep_struc TO diff_deep_struc
-        EXPANDING NESTED TABLES.
+MOVE-CORRESPONDING deep_struc TO diff_deep_struc EXPANDING NESTED TABLES.
 
 "Existing internal table content is kept; table content of the source
 "structure are added but the value assignment happens like the first
 "MOVE-CORRESPONDING statement without further syntax additions.
 
-MOVE-CORRESPONDING deep_struc TO diff_deep_struc
-        KEEPING TARGET LINES.
+MOVE-CORRESPONDING deep_struc TO diff_deep_struc KEEPING TARGET LINES.
 
 "Existing internal table content is kept; table content of the source
 "structure are added; the value assignment happens like the statement
 "MOVE-CORRESPONDING ... EXPANDING NESTED TABLES.
 
-MOVE-CORRESPONDING deep_struc TO diff_deep_struc
-    EXPANDING NESTED TABLES KEEPING TARGET LINES.
+MOVE-CORRESPONDING deep_struc TO diff_deep_struc EXPANDING NESTED TABLES KEEPING TARGET LINES.
 
 "Target structure is initialized; the value assignment for an internal
 "table happens irrespective of identically named components.
@@ -506,14 +501,13 @@ diff_deep_struc = CORRESPONDING #( DEEP APPENDING BASE ( diff_struc ) deep_struc
 ## Clearing Structures
 You can reset individual components to their initial values and clear the
 entire structure using the [`CLEAR`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapclear.htm) keyword.
-```
-CLEAR structure-component.
+``` abap
+CLEAR struc-component.
 
-CLEAR structure.
+CLEAR struc.
 
-"Note: Watch out when using the VALUE operator. An assignment as follows also 
-"clears the structure. 
-structure = VALUE #( ). 
+"Note: An assignment using the VALUE operator without entries in the parentheses clears the structure. 
+struc = VALUE #( ). 
 ```
 
 ## Processing Structures
@@ -529,34 +523,34 @@ addition reads only a single row into the structure. It returns the first entry 
 DATA ls_fli1 TYPE zdemo_abap_fli.
 
 SELECT SINGLE FROM zdemo_abap_fli
-    FIELDS *
-    WHERE carrid = 'LH'
-    INTO @ls_fli1.
+  FIELDS *
+  WHERE carrid = 'LH'
+  INTO @ls_fli1.
 
 "Target structure declared inline
 SELECT SINGLE FROM zdemo_abap_fli
-    FIELDS *
-    WHERE carrid = 'LH'
-    INTO @DATA(ls_fli2).
+  FIELDS *
+  WHERE carrid = 'LH'
+  INTO @DATA(ls_fli2).
 ```
 **Reading a row from a database table into a structure that has an incompatible type**. 
 Components in the structure with identical names are filled.
 
 ``` abap
 SELECT SINGLE FROM zdemo_abap_fli
-    FIELDS *
-    WHERE carrid = 'AA'
-    INTO CORRESPONDING FIELDS OF @ls_fli_diff.
+  FIELDS *
+  WHERE carrid = 'AA'
+  INTO CORRESPONDING FIELDS OF @ls_fli_diff.
 ```
 **Reading a line from an internal table into a structure** ...
 
 ... using a `SELECT` statement. Note the specified alias name and that ABAP variables like internal tables must be escaped with `@`. The addition `INTO CORRESPONDING FIELDS OF` also applies here.
 ``` abap
 SELECT SINGLE FROM @itab AS itab_alias
-    FIELDS *
-    WHERE ...
-    INTO @DATA(ls_struc).
-    "INTO CORRESPONDING FIELDS OF @some_existing_struc.
+  FIELDS *
+  WHERE ...
+  INTO @DATA(ls_struc).
+  "INTO CORRESPONDING FIELDS OF @some_existing_struc.
 ```
 ... using a `READ TABLE` statement. The code snippet below shows the reading of a line into a [work area](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenwork_area_glosry.htm "Glossary Entry"), a [field symbol](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenfield_symbol_glosry.htm "Glossary Entry"), and a [data reference variable](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendata_reference_variable_glosry.htm "Glossary Entry"), all of which 
 represent structured data objects that are declared inline. In the following example, a line is read based on the line number by
@@ -580,20 +574,20 @@ DATA(ls_table_exp) = itab[ 3 ].
 In the following example, the row found and returned in a structure declared inline can be processed further.
 ``` abap
 SELECT FROM zdemo_abap_fli
-  FIELDS *
-  WHERE carrid = 'AZ'
-  INTO @DATA(ls_sel_loop).
+  FIELDS *
+  WHERE carrid = 'AZ'
+  INTO @DATA(ls_sel_loop).
       
   IF sy-subrc = 0.
-        ...
-  ENDIF.
+    ...
+  ENDIF.
 ENDSELECT.
 ```
 ... a line from an internal table into a structure using a [`LOOP AT`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abaploop_at_itab_variants.htm) statement. There are many ways to specify the condition on which the loop is based. The following example covers the option of reading all lines sequentially into a field symbol  declared inline. When using a field symbol, you can, for example, directly modify components.
 ``` abap
 LOOP AT itab ASSIGNING FIELD-SYMBOL(<fs>).
-   <fs>-comp1 = ...
-   ...
+  <fs>-comp1 = ...
+  ...
 ENDLOOP.
 ```
 
@@ -601,15 +595,15 @@ ENDLOOP.
 [`INSERT`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapinsert_dbtab.htm). The following statements can be considered as alternatives. The third statement shows that instead of inserting a row from an existing structure, you can create and fill a structure directly.
 Note that you should avoid inserting a row with a particular key into the database table if a row with the same key already exists.
 ``` abap
-INSERT INTO dbtab VALUES @structure.
+INSERT INTO dbtab VALUES @struc.
 
-INSERT dbtab FROM @structure.
+INSERT dbtab FROM @struc.
 
 INSERT dbtab FROM @( VALUE #( comp1 = ... comp2 = ... ) ).
 ```
 **Updating a single row in a database table from a structure** using ABAP SQL statements with [`UPDATE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapupdate.htm). Note that this syntax changes the entire row and all of its components.
 ``` abap
-UPDATE dbtab FROM @structure.
+UPDATE dbtab FROM @struc.
 
 UPDATE dbtab FROM @( VALUE #( comp1 = ... comp2 = ... ) ).
 ```
@@ -625,7 +619,7 @@ UPDATE dbtab FROM @( VALUE #( BASE wa comp2 = ... comp4 = ... ) ).
 **Updating or creating a single row in a database table from a structure** using ABAP SQL statements with
 [`MODIFY`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapmodify_dbtab.htm). If a row with the same key as specified in the structure already exists in the database table, the row is updated. If no row with the keys specified in the structure exists, a new row is created in the database table.
 ``` abap
-MODIFY dbtab FROM @structure.
+MODIFY dbtab FROM @struc.
 
 MODIFY dbtab FROM @( VALUE #( comp1 = ... comp2 = ... ) ).
 ```
@@ -638,11 +632,11 @@ internal table, `INSERT` can be used to add lines at a specific position in the 
 - Statements using the `VALUE` operator to directly create and populate the structures are also possible. For more information and code
 snippets, see the [Working with Internal Tables](01_Internal_Tables.md#) cheat sheet.
 ``` abap
-INSERT structure INTO TABLE itab.
+INSERT struc INTO TABLE itab.
 
-APPEND structure TO itab.
+APPEND struc TO itab.
 
-MODIFY TABLE itab FROM structure.
+MODIFY TABLE itab FROM struc.
 ```
 
 ## Excursion: Including Structures
@@ -664,25 +658,25 @@ in the context of local structures.
 The following example shows how structured types and data objects are included in another structure. First, three structured types and a structured data object based on one of these types are created. Then, the types and the structure are included in the structured type `address_type`. The executable example demonstrates a structure that includes other structures in this way.
 ``` abap
 TYPES: BEGIN OF name_type,
-        title   TYPE string,
-        prename TYPE string,
-        surname TYPE string,
-      END OF name_type,
-      BEGIN OF street_type,
-        name   TYPE string,
-        number TYPE string,
-      END OF street_type,
-      BEGIN OF city_type,
-        zipcode TYPE string,
-        name    TYPE string,
-      END OF city_type.
+        title   TYPE string,
+        prename TYPE string,
+        surname TYPE string,
+      END OF name_type,
+      BEGIN OF street_type,
+        name TYPE string,
+        num  TYPE string,
+      END OF street_type,
+      BEGIN OF city_type,
+        zipcode TYPE string,
+        name    TYPE string,
+      END OF city_type.
 
 DATA city_struc TYPE city_type.
 
 TYPES BEGIN OF address_type.
-      INCLUDE TYPE name_type AS name.
-      INCLUDE TYPE street_type AS street RENAMING WITH SUFFIX _street.
-      INCLUDE STRUCTURE city_struc AS city RENAMING WITH SUFFIX _city.
+      INCLUDE TYPE name_type AS name.
+      INCLUDE TYPE street_type AS street RENAMING WITH SUFFIX _street.
+      INCLUDE STRUCTURE city_struc AS city RENAMING WITH SUFFIX _city.
 TYPES END OF address_type.
 ```
 

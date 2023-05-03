@@ -162,12 +162,12 @@ or [`LIKE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm
 
 ``` abap
 TYPES itab_type1 TYPE STANDARD TABLE OF data_type ...   "Standard table type
-TYPES itab_type2 LIKE SORTED   TABLE OF data_object ... "Sorted table type
+TYPES itab_type2 LIKE SORTED   TABLE OF data_object ... "Sorted table type
 
-DATA  itab1      TYPE          TABLE OF data_type ...   "Standard table by default
-DATA  itab2      TYPE HASHED   TABLE OF data_type ...   "Hashed table
-DATA  itab3      TYPE                   table_type ...  "Based on an existing internal table type 
-DATA  itab4      LIKE                   table ...       "Based on an existing internal table     
+DATA  itab1      TYPE          TABLE OF data_type ...   "Standard table by default
+DATA  itab2      TYPE HASHED   TABLE OF data_type ...   "Hashed table
+DATA  itab3      TYPE                   table_type ...  "Based on an existing internal table type 
+DATA  itab4      LIKE                   tab ...         "Based on an existing internal table       
 ```
 
 > **💡 Note**<br>
@@ -617,23 +617,23 @@ for example, based on a condition. In the case below, the internal table
 is created inline. 
 ``` abap
 SELECT FROM dbtab
-  FIELDS comp1, comp2 ...
-  WHERE ...
-  INTO TABLE @DATA(itab_sel).
+  FIELDS comp1, comp2 ...
+  WHERE ...
+  INTO TABLE @DATA(itab_sel).
 ```
 
 **Sequentially adding multiple rows** from a database table to an internal table using `SELECT ... ENDSELECT.`, for example, based on a condition. In this case, the selected data is first stored in a structure that can be further processed and added to an internal table.
 
 ``` abap
-SELECT FROM dbtab
-  FIELDS comp1, comp2 ...
-  WHERE ...
-  INTO @DATA(struc_sel).
+SELECT FROM dbtab 
+  FIELDS comp1, comp2 ...
+  WHERE ...
+  INTO @DATA(struc_sel).
 
-  IF sy-subrc = 0.
-    APPEND struc_sel TO itab.
+  IF sy-subrc = 0.
+    APPEND struc_sel TO itab.
   ...
-  ENDIF.
+  ENDIF.
 ENDSELECT.
 ```
 
@@ -642,21 +642,21 @@ The `APPENDING CORRESPONDING FIELDS INTO TABLE` addition appends the selected da
 table entries. The `INTO CORRESPONDING FIELDS OF TABLE` addition adds lines and deletes existing table entries.
 ``` abap
 SELECT FROM dbtab2
-  FIELDS *
-  WHERE ...
-  APPENDING CORRESPONDING FIELDS OF TABLE @itab.
+  FIELDS *
+  WHERE ...
+  APPENDING CORRESPONDING FIELDS OF TABLE @itab.
 
 SELECT FROM dbtab2
-  FIELDS *
-  WHERE ...
-  INTO CORRESPONDING FIELDS OF TABLE @itab.
+  FIELDS *
+  WHERE ...
+  INTO CORRESPONDING FIELDS OF TABLE @itab.
 ```
 Adding multiple lines from an internal table to another internal table using `SELECT`. Note the alias name that must be defined for the
 internal table.
 ``` abap
 SELECT comp1, comp2, ...
-  FROM @itab2 AS it_alias
-  INTO TABLE @DATA(itab_sel).
+  FROM @itab2 AS it_alias
+  INTO TABLE @DATA(itab_sel).
 ```
 
 **Combining data from multiple tables into one internal table** using an [inner
@@ -665,9 +665,9 @@ The following example joins data of an internal and a database table
 using a `SELECT` statement and the [`INNER JOIN`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapselect_join.htm) addition. Note that the field list includes fields from both tables. The fields are referred to using `~`.
 ``` abap
 SELECT it_alias~comp1, it_alias~comp2, dbtab~comp3 ...
-  FROM @itab AS it_alias
-  INNER JOIN dbtab ON it_alias~comp1 = dbtab~comp1
-  INTO TABLE @DATA(it_join_result).
+  FROM @itab AS it_alias
+  INNER JOIN dbtab ON it_alias~comp1 = dbtab~comp1
+  INTO TABLE @DATA(it_join_result).
 ```
 
 Filling an internal table from a database table using
@@ -682,15 +682,15 @@ a table based on the specified conditions.
 
 ``` abap
 SELECT comp1, comp2, ...
-  FROM dbtab
-  WHERE comp1 NOT IN ( a, b, c ... )
-  INTO TABLE @DATA(it_subquery_result1).
+  FROM dbtab
+  WHERE comp1 NOT IN ( a, b, c ... )
+  INTO TABLE @DATA(it_subquery_result1).
 
 SELECT comp1, comp2, ...
-  FROM dbtab
-  WHERE EXISTS ( SELECT 'X' FROM @itab AS itab_alias
-                 WHERE comp1 = dbtab~comp1 )
-  INTO TABLE @DATA(it_subquery_result2).
+  FROM dbtab
+  WHERE EXISTS ( SELECT 'X' FROM @itab AS itab_alias
+                 WHERE comp1 = dbtab~comp1 )
+  INTO TABLE @DATA(it_subquery_result2).
 ```
 
 Filling internal table from a table based on the existence of data in
@@ -701,11 +701,13 @@ another table using the [`FOR ALL ENTRIES`](https://help.sap.com/doc/abapdocu_cp
 
 ``` abap
 IF itab IS NOT INITIAL.
-SELECT dbtab~comp1, dbtab~comp2, ...
-  FROM dbtab
-  FOR ALL ENTRIES IN @itab
-  WHERE comp1 = @itab-comp1
-  INTO TABLE @DATA(it_select_result).
+
+  SELECT dbtab~comp1, dbtab~comp2, ...
+    FROM dbtab
+    FOR ALL ENTRIES IN @itab
+    WHERE comp1 = @itab-comp1
+    INTO TABLE @DATA(it_select_result).
+
 ENDIF.
 ```
 
@@ -762,11 +764,11 @@ DATA(f7) = FILTER #( itab3 WHERE num = 3 ).
 "table meets the condition. EXCEPT and USING KEY are also possible.
 
 DATA filter_tab1 TYPE SORTED TABLE OF i
-      WITH NON-UNIQUE KEY table_line.
+  WITH NON-UNIQUE KEY table_line.
 
 DATA filter_tab2 TYPE STANDARD TABLE OF i
-        WITH EMPTY KEY
-        WITH UNIQUE SORTED KEY line COMPONENTS table_line.
+  WITH EMPTY KEY
+  WITH UNIQUE SORTED KEY line COMPONENTS table_line.
 
 DATA(f8) = FILTER #( itab1 IN filter_tab1 WHERE num = table_line ).
 
@@ -1162,7 +1164,7 @@ TYPES ttype like it.
 DATA(tab1) = VALUE ttype( FOR ls IN it ( a = ls-a b = 9 ) ).
 
 DATA(tab2) = VALUE ttype( FOR ls IN it WHERE ( a < 7 )
-                             ( a = ls-a b = ls-b + 5  ) ).
+                            ( a = ls-a b = ls-b + 5  ) ).
 ```
 
 <p align="right">(<a href="#top">back to top</a>)</p>

@@ -774,9 +774,8 @@ EML statement including the execution of an action:
 MODIFY ENTITIES OF root_ent
   ENTITY root
   EXECUTE some_action
-      FROM action_tab
-    RESULT DATA(action_result) "Assumption: The action is defined with a
-                               "result parameter.
+  FROM action_tab
+  RESULT DATA(action_result) "Assumption: The action is defined with a result parameter.
     ...
 ```
 
@@ -837,8 +836,7 @@ is available for reading all field values.
 READ ENTITIES OF root_ent
   ENTITY root_ent
   ALL FIELDS WITH
-  VALUE #( ( key_field = 1 )   "Derived type TYPE TABLE FOR READ IMPORT
-                               "only includes the keys
+  VALUE #( ( key_field = 1 )   "Derived type TYPE TABLE FOR READ IMPORT only includes the keys
            ( key_field = 2 ) )
   RESULT DATA(result)
   FAILED DATA(f)

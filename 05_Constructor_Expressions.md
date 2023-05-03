@@ -107,9 +107,9 @@ Example: Structure
 ``` abap
 "Creating a structured type
 TYPES: BEGIN OF struc_type,
-          a   TYPE i,
-          b   TYPE c LENGTH 3,
-        END OF struc_type.
+         a TYPE i,
+         b TYPE c LENGTH 3,
+       END OF struc_type.
 
 DATA struc TYPE struc_type. "Structured data object
 
@@ -186,12 +186,12 @@ demonstrates a nested structure.
 ``` abap
 "Creating a nested structure
 DATA: BEGIN OF nested_struc,
-        a TYPE i,
-        BEGIN OF struct,
-          b TYPE i,
-          c TYPE c LENGTH 3,
-        END OF struct,
-      END OF nested_struc.
+        a TYPE i,
+        BEGIN OF struct,
+          b TYPE i,
+          c TYPE c LENGTH 3,
+        END OF struct,
+      END OF nested_struc.
 
 "Filling the deep structure
 nested_struc = VALUE #( a = 1 struct = VALUE #( b = 2 c = 'abc' ) ).
@@ -366,10 +366,8 @@ two statements are  not the same:
     you get a [reference
     variable](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenreference_variable_glosry.htm "Glossary Entry")
     that points to the created object. In doing so, the operator
-    basically replaces [CREATE
-    DATA](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapcreate_data.htm)
-    and [CREATE
-    OBJECT](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapcreate_object.htm).
+    basically replaces [`CREATE DATA`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapcreate_data.htm)
+    and [`CREATE OBJECT`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapcreate_object.htm).
 -   For the type specification preceding the parentheses, you can use
     -   non-generic data types which creates a [data reference
         variable](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendata_reference_variable_glosry.htm "Glossary Entry")
@@ -556,14 +554,14 @@ Examples:
 ``` abap
 "Leads to a data loss when converting to a data object accepting only a single character
 TRY.
-  DATA(exact1) = EXACT abap_bool( 'XY' ).
-  CATCH CX_SY_CONVERSION_DATA_LOSS INTO DATA(error1).
+  DATA(exact1) = EXACT abap_bool( 'XY' ).
+  CATCH CX_SY_CONVERSION_DATA_LOSS INTO DATA(error1).
 ENDTRY.
 
 "The calculation cannot be executed exactly; a rounding is necessary
 TRY.
-  DATA(exact2) = EXACT decfloat34( 1 / 3 ).
-  CATCH CX_SY_CONVERSION_ROUNDING INTO DATA(error2).
+  DATA(exact2) = EXACT decfloat34( 1 / 3 ).
+  CATCH CX_SY_CONVERSION_ROUNDING INTO DATA(error2).
 ENDTRY.
 ```
 
@@ -591,7 +589,7 @@ Examples:
 "Data references
 "Declaring data object and assign value
 
-DATA number TYPE i VALUE 5.
+DATA num TYPE i VALUE 5.
 
 "Declaring data reference variable
 
@@ -599,7 +597,7 @@ DATA dref_a TYPE REF TO i.
 
 "Getting references
 
-dref_a = REF #( number ).
+dref_a = REF #( num ).
 
 "Inline declaration and explicit type specification
 DATA(dref_b) = REF string( `hallo` ).
@@ -640,14 +638,12 @@ DATA(oref_b) = REF #( oref_a ).
 examples:
 ``` abap
 "Getting component information
-DATA(components) =
-  CAST cl_abap_structdescr(
-    cl_abap_typedescr=>describe_by_data( some_object ) )->components.
+DATA(components) = CAST cl_abap_structdescr(
+  cl_abap_typedescr=>describe_by_data( some_object ) )->components.
 
 "Getting method information
-DATA(methods) =
-  CAST cl_abap_objectdescr(
-    cl_abap_objectdescr=>describe_by_name( 'LOCAL_CLASS' ) )->methods.
+DATA(methods) = CAST cl_abap_objectdescr(
+  cl_abap_objectdescr=>describe_by_name( 'LOCAL_CLASS' ) )->methods.
 ```
 
 <p align="right">(<a href="#top">back to top</a>)</p>
@@ -674,9 +670,9 @@ DATA(methods) =
 Example:
 ``` abap
 DATA(b) = COND #( WHEN a BETWEEN 1 AND 3 THEN w
-                  WHEN a > 4 THEN x
-                  WHEN a IS INITIAL THEN y
-                  ELSE z ).
+                  WHEN a > 4 THEN x
+                  WHEN a IS INITIAL THEN y
+                  ELSE z ).
 ```
 
 <p align="right">(<a href="#top">back to top</a>)</p>
@@ -693,10 +689,10 @@ checked in the case distinction.
 
 ``` abap
 DATA(b) = SWITCH #( a
-                    WHEN 1 THEN w
-                    WHEN 2 THEN x
-                    WHEN 3 THEN y
-                    ELSE z ).
+                    WHEN 1 THEN w
+                    WHEN 2 THEN x
+                    WHEN 3 THEN y
+                    ELSE z ).
 ```
 
 <p align="right">(<a href="#top">back to top</a>)</p>
@@ -750,11 +746,11 @@ DATA(f7) = FILTER #( itab3 WHERE num = 3 ).
 "are used for which at least one line in the filter table meets the condition. EXCEPT and USING KEY are also possible.
 
 DATA filter_tab1 TYPE SORTED TABLE OF i
-      WITH NON-UNIQUE KEY table_line.
+  WITH NON-UNIQUE KEY table_line.
 
 DATA filter_tab2 TYPE STANDARD TABLE OF i
-        WITH EMPTY KEY
-        WITH UNIQUE SORTED KEY line COMPONENTS table_line.
+  WITH EMPTY KEY
+  WITH UNIQUE SORTED KEY line COMPONENTS table_line.
 
 DATA(f8) = FILTER #( itab1 IN filter_tab1 WHERE num = table_line ).
 
@@ -784,9 +780,10 @@ DATA(f11) = FILTER #( itab2 USING KEY sec_key EXCEPT IN filter_tab2 WHERE num = 
 The following example calculates the total of the numbers from 1 to 10
 using the `REDUCE` operator:
 ``` abap
+"sum: 55
 DATA(sum) = REDUCE i( INIT s = 0
-                      FOR  i = 1 UNTIL i > 10
-                      NEXT s += i ) ).   "sum: 55
+                      FOR  i = 1 UNTIL i > 10
+                      NEXT s += i ) ).   
 ```
 
 > **💡 Note**<br>
@@ -830,8 +827,8 @@ has the same effect as the example using `UNTIL` shown above.
 
 ``` abap
 DATA(sum) = REDUCE i( INIT y = 0
-                      FOR n = 1 THEN n + 1 WHILE n < 11
-                      NEXT y += n ).
+                      FOR n = 1 THEN n + 1 WHILE n < 11
+                      NEXT y += n ).
 ```
 
 `FOR ... UNTIL`: See the example in the `REDUCE`
@@ -865,17 +862,17 @@ tables:
 TYPES t_type LIKE itab.
 
 ... = VALUE t_type( FOR wa IN itab
-                    "WHERE ( comp1 > 2 )
-                    ( wa ) ).
+                    "WHERE ( comp1 > 2 )
+                    ( wa ) ).
 
 "Storing specific components having different names by specifying the assignment
 "individually; assumption: the target type is not compatible to the type of itab;
 "a field mapping is provided; pay attention to potential type conversion
 
 ... = VALUE t_type( FOR wa IN itab
-                    "WHERE ( comp1 > 2 )
-                    ( compX = wa-comp1
-                      compY = wa-comp2 ) ).
+                    "WHERE ( comp1 > 2 )
+                    ( compX = wa-comp1
+                      compY = wa-comp2 ) ).
 
 "Storing specific components having the same names;
 "assumption: Target type is not compatible to the type of itab;
@@ -883,17 +880,17 @@ TYPES t_type LIKE itab.
 "also use CORRESPONDING
 
 ... = VALUE t_type( FOR wa IN itab
-                    "WHERE ( comp1 > 2 )
-                    ( CORRESPONDING #( wa ) ) ).
+                    "WHERE ( comp1 > 2 )
+                    ( CORRESPONDING #( wa ) ) ).
 
 "Multiple iteration expressions
 
 ... = VALUE t_type( FOR wa1 IN itab1 WHERE ( comp1 = 4 )
-                    FOR wa2 IN itab2 WHERE ( comp2 > 5 )
-                    FOR wa3 IN itab3 WHERE ( comp3 < 3 )
-                    ( compX = wa1-comp1
-                      compY = wa2-comp2
-                      compZ = wa3-comp3 ) ).
+                    FOR wa2 IN itab2 WHERE ( comp2 > 5 )
+                    FOR wa3 IN itab3 WHERE ( comp3 < 3 )
+                    ( compX = wa1-comp1
+                      compY = wa2-comp2
+                      compZ = wa3-comp3 ) ).
 ```
 
 <p align="right">(<a href="#top">back to top</a>)</p>
@@ -922,10 +919,10 @@ DATA(str_tab) = VALUE string_table( LET it = `be` IN
 "Conditional expressions
 
 DATA(a) = COND #( LET b = c IN
-                  WHEN b > x THEN ...
-                  WHEN b < y THEN ...
-                  ...
-                  ELSE ... ).
+                  WHEN b > x THEN ...
+                  WHEN b < y THEN ...
+                  ...
+                  ELSE ... ).
 ```
 
 <p align="right">(<a href="#top">back to top</a>)</p>

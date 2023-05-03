@@ -132,9 +132,9 @@ The `SELECT` statement includes several clauses that serve
 different purposes. The following code snippet shows the basic syntax:
 ``` abap
 SELECT FROM source   "What database table or view to read from
-  FIELDS field_list  "What columns should be read
-  WHERE condition    "Specifies conditions on which a row/rows should be read
-  INTO @target.      "Data object to which the result set is assigned (preceded by @)
+  FIELDS field_list  "What columns should be read
+  WHERE condition    "Specifies conditions on which a row/rows should be read
+  INTO @target.      "Data object to which the result set is assigned (preceded by @)
 ```
 > **💡 Note**<br>
 >-   There are further clauses available of which some are dealt with
@@ -151,12 +151,12 @@ SELECT FROM source   "What database table or view to read from
     keyword before the `FROM` clause - without `FIELDS`. The
     following two `SELECT` statements are basically the same but differently arranged:
 >      ``` abap
->       SELECT FROM dbtab
->         FIELDS comp1, comp2, comp3
+>      SELECT FROM dbtab
+>        FIELDS comp1, comp2, comp3
 >         ...
 >
 >       SELECT comp1, comp2, comp3
->         FROM dbtab
+>         FROM dbtab
 >         ...
 >      ```
 >-   Regarding the target into which data is read: Instead of using a
@@ -185,16 +185,16 @@ SELECT FROM source   "What database table or view to read from
 "the result.
 
 SELECT SINGLE FROM dbtab
-  FIELDS *
-  WHERE ...
-  INTO @struc.        "Existing structure of dbtab's row type
+  FIELDS *
+  WHERE ...
+  INTO @struc.        "Existing structure of dbtab's row type
 
 "Reading a selected set of fields of a single row
 
 SELECT SINGLE FROM dbtab
-  FIELDS comp1, comp2, comp3
-  WHERE ...
-  INTO @DATA(struc2).    "Structure declared inline
+  FIELDS comp1, comp2, comp3
+  WHERE ...
+  INTO @DATA(struc2).    "Structure declared inline
 
 "Alternative syntax without the FIELDS addition
 "Here, the CORRESPONDING FIELDS OF addition is used. Only the content of
@@ -202,9 +202,9 @@ SELECT SINGLE FROM dbtab
 "is assigned.
 
 SELECT SINGLE comp1, comp2, comp3       "Selected set of fields
-  FROM dbtab
-  WHERE ...
-  INTO CORRESPONDING FIELDS OF @struc.  "Existing structure
+  FROM dbtab
+  WHERE ...
+  INTO CORRESPONDING FIELDS OF @struc.  "Existing structure
 ```
 > **💡 Note**<br>
 >-  Although its use is optional, a `WHERE` clause should be specified to further restrict the read result.
@@ -215,24 +215,24 @@ SELECT SINGLE comp1, comp2, comp3       "Selected set of fields
 **Reading multiple rows into an internal table**.
 ``` abap
 SELECT FROM dbtab
-  FIELDS *              "All fields
-  WHERE ...
-  INTO TABLE @itab.     "itab has an appropriate row type
+  FIELDS *              "All fields
+  WHERE ...
+  INTO TABLE @itab.     "itab has an appropriate row type
 
 "Alternative syntax without the FIELDS addition
 
 SELECT comp1, comp2, comp3          "Selected set of fields
-  FROM dbtab
-  WHERE ...
-  INTO TABLE @DATA(lv_itab).        "Internal table declared inline
+  FROM dbtab
+  WHERE ...
+  INTO TABLE @DATA(lv_itab).        "Internal table declared inline
 
 "Selected set of fields, existing variable
 "See the note on CORRESPONDING FIELDS OF above
 
 SELECT FROM dbtab
-  FIELDS comp1, comp2, comp3                "Selected set of fields
-  WHERE ...
-  INTO CORRESPONDING FIELDS OF TABLE @itab.
+  FIELDS comp1, comp2, comp3                "Selected set of fields
+  WHERE ...
+  INTO CORRESPONDING FIELDS OF TABLE @itab.
 ```
 
 **`SELECT` loop: Sequentially reading multiple rows**.
@@ -244,12 +244,15 @@ SELECT FROM dbtab
 
 ``` abap
 SELECT FROM dbtab
-  FIELDS *
-  WHERE ...
-  INTO @struc.
-    IF sy-subrc = 0.
+  FIELDS *
+  WHERE ...
+  INTO @struc.
+
+    IF sy-subrc = 0.
       ...  "For example, making changes on data and adding the row to an internal table.
-    ENDIF.
+
+    ENDIF.
+
 ENDSELECT.
 ```
 <p align="right">(<a href="#top">back to top</a>)</p>
@@ -263,9 +266,9 @@ ENDSELECT.
 "Instead of @abap_true, you could also use 'X'.
 
 SELECT SINGLE @abap_true
-  FROM dbtab
-  WHERE ...
-  INTO @DATA(exists).
+  FROM dbtab
+  WHERE ...
+  INTO @DATA(exists).
 
 IF exists = abap_true.
   ...
@@ -277,9 +280,9 @@ ENDIF.
 - See more information here [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapselect_clause.htm).
 ``` abap
 SELECT DISTINCT comp1
-  FROM dbtab
-  WHERE ...
-  INTO TABLE @itab.
+  FROM dbtab
+  WHERE ...
+  INTO TABLE @itab.
 ```
 
 **SELECT list variants** (some of them are already outlined above)
@@ -329,9 +332,9 @@ SELECT dbtab~*
 "specify an alias name for the database column to match a component's name in the target data object.
 
 SELECT FROM dbtab
-  FIELDS comp1 AS comp_a, comp2 AS comp_b, comp3 AS comp_c
-  WHERE ...
-  INTO CORRESPONDING FIELDS OF TABLE @itab.
+  FIELDS comp1 AS comp_a, comp2 AS comp_b, comp3 AS comp_c
+  WHERE ...
+  INTO CORRESPONDING FIELDS OF TABLE @itab.
 
 "Alias name also possible for the data source
 SELECT ds~col1, ds~col2, ds~col3
@@ -346,15 +349,15 @@ SELECT ds~col1, ds~col2, ds~col3
 
 "Replaces the current client with the specified client
 SELECT *
-  FROM dbtab USING CLIENT '000'            
-  WHERE ...
-  INTO TABLE @itab.
+  FROM dbtab USING CLIENT '000'            
+  WHERE ...
+  INTO TABLE @itab.
 
 "Selects data of any number of clients
 SELECT *
-  FROM dbtab USING ALL CLIENTS
-  WHERE ...
-  INTO TABLE @itab.
+  FROM dbtab USING ALL CLIENTS
+  WHERE ...
+  INTO TABLE @itab.
 ```
 
 **Reading data from an internal table as data source** using `SELECT`. Note that an alias name must be specified for the internal table used as data source.
@@ -362,9 +365,9 @@ Find more information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOU
 
 ``` abap
 SELECT *
-  FROM @itab1 AS tab
-  WHERE ...
-  INTO TABLE @DATA(itab2).
+  FROM @itab1 AS tab
+  WHERE ...
+  INTO TABLE @DATA(itab2).
 ```
 
 
@@ -377,9 +380,9 @@ ROWS`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file
 "A maximum of five rows are to be returned
 "If the INTO clause is the last clause, the UP TO clause must be positioned after it.
 SELECT * FROM dbtab
-  WHERE ...
-  INTO TABLE @DATA(itab_upto)
-  UP TO 5 ROWS.
+  WHERE ...
+  INTO TABLE @DATA(itab_upto)
+  UP TO 5 ROWS.
 ```
 
 **Returning only the table rows after a row with a specified count from the result set** using the optional addition [`OFFSET n`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapselect_up_to_offset.htm#!ABAP_ADDITION_2@2@). You can only use the addition, if an `ORDER BY` clause is specified.
@@ -407,10 +410,10 @@ Note:
 
 ``` abap
 SELECT FROM dbtab
-  FIELDS comp1, comp2, comp3
-  WHERE ...
-  INTO (@res1,@res2,@res3).
- "INTO (@DATA(res1),@DATA(res2),@DATA(res3)). "Using inline declarations
+  FIELDS comp1, comp2, comp3
+  WHERE ...
+  INTO (@res1,@res2,@res3).
+  "INTO (@DATA(res1),@DATA(res2),@DATA(res3)). "Using inline declarations
 ```
 
 **Appending the result set to an existing internal table**.
@@ -418,20 +421,20 @@ The addition `INTO` initializes the target object. When using the addition `APPE
 
 ``` abap
 SELECT * FROM dbtab
-  WHERE ...
-  APPENDING TABLE @itab.
+  WHERE ...
+  APPENDING TABLE @itab.
 
 SELECT * FROM dbtab
-  WHERE ...
-  APPENDING CORRESPONDING FIELDS OF TABLE @diff_itab.
+  WHERE ...
+  APPENDING CORRESPONDING FIELDS OF TABLE @diff_itab.
 ```
 
 **Reading into packages of a specified number of rows** when reading into internal tables. The addition [`PACKAGE SIZE n`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapinto_clause.htm#!ABAP_ONE_ADD@1@) can be specified after `INTO TABLE` and `APPENDING TABLE`. A `SELECT` loop ist opened. After `PACKAGE SIZE`, the number of rows is specified (which can be a host variable, host expression or a literal of type `i`) denoting the number of rows to be inserted in the target object per iteration.
 ``` abap
 SELECT FROM dbtab
-  FIELDS comp1, comp2, comp3
-  WHERE ...
-  INTO TABLE @DATA(itab_pack) PACKAGE SIZE n.
+  FIELDS comp1, comp2, comp3
+  WHERE ...
+  INTO TABLE @DATA(itab_pack) PACKAGE SIZE n.
 ...
 ENDSELECT.
 ```
@@ -441,8 +444,8 @@ ENDSELECT.
 ``` abap
 "Here, the target object is an anonymous data object declared inline.
 SELECT FROM dbtab
-  FIELDS comp1, comp2, comp3
-  WHERE ...
+  FIELDS comp1, comp2, comp3
+  WHERE ...
   INTO TABLE NEW @DATA(dref).
 ```
 
@@ -470,10 +473,10 @@ as shown in the following example.
 In the example below, the database table rows that have the same content in column `comp1` are combined. The lowest and highest values in column `comp2` are determined for each of these groups and placed into the combined row.
 ``` abap
 SELECT FROM dbtab
-  FIELDS comp1, MIN( comp2 ) AS min, MAX( comp2 ) AS max
-  WHERE ...
-  GROUP BY comp1
-  INTO ...
+  FIELDS comp1, MIN( comp2 ) AS min, MAX( comp2 ) AS max
+  WHERE ...
+  GROUP BY comp1
+  INTO ...
 ```
 
 [`HAVING`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abaphaving_clause.htm)
@@ -483,11 +486,11 @@ logical expression is true are inserted in the target variable. Note
 that `HAVING` can only be used together with `GROUP BY`.
 ``` abap
 SELECT FROM dbtab
-  FIELDS comp1, MIN( comp2 ) AS min, MAX( comp3 ) AS max
-  WHERE ...
-  GROUP BY comp1
-  HAVING comp1 LIKE '%XYZ%' AND SUM( comp4 ) > 100
-  INTO ...
+  FIELDS comp1, MIN( comp2 ) AS min, MAX( comp3 ) AS max
+  WHERE ...
+  GROUP BY comp1
+  HAVING comp1 LIKE '%XYZ%' AND SUM( comp4 ) > 100
+  INTO ...
 ```
 
 [`ORDER BY`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abaporderby_clause.htm)
@@ -501,12 +504,12 @@ order. There are more ordering options, for example, by using SQL
 expressions.
 ``` abap
 SELECT FROM dbtab
-  FIELDS comp1, comp2, comp3
-  WHERE ...
-  ORDER BY PRIMARY KEY
-           "comp2 ASCENDING
-           "comp2 DESCENDING
-  INTO ...
+  FIELDS comp1, comp2, comp3
+  WHERE ...
+  ORDER BY PRIMARY KEY
+           "comp2 ASCENDING
+           "comp2 DESCENDING
+  INTO ...
 ```
 
 > **💡 Note**<br>
@@ -517,10 +520,10 @@ SELECT FROM dbtab
 [`WHERE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapwhere.htm) clause: Restricts the number of rows that are included in the result set using logical expressions. See further information on them in the following sections.
 ``` abap
 SELECT FROM dbtab
-  FIELDS comp1, comp2, comp3
-  WHERE comp1 = 'abc'
+  FIELDS comp1, comp2, comp3
+  WHERE comp1 = 'abc'
     AND comp2 < 123    
-  INTO ...
+  INTO ...
 ```
 
 <p align="right">(<a href="#top">back to top</a>)</p>
@@ -574,35 +577,35 @@ Example demonstrating possible operands:
 DATA upto TYPE i VALUE 3.
 
 SELECT FROM zdemo_abap_flsch
-  FIELDS
+  FIELDS
   "Specifies a column of a data source directly using its name
-  cityfrom,
+  cityfrom,
 
   "Column selector ~ can be used to prefix every specified column.
   "Here, it is optional. It is non-optional, e. g., if multiple data
   "sources in an ABAP SQL statement are edited and the column name
   "is not unique.
-   zdemo_abap_flsch~cityto,
+  zdemo_abap_flsch~cityto,
 
-  'Lufthansa' AS name, "Untyped literal
+  'Lufthansa' AS name, "Untyped literal
 
-  char`X` AS flag, "Typed literal
+  char`X` AS flag, "Typed literal
 
-  @upto AS num, "Host variable
+  @upto AS num, "Host variable
 
-  @( cl_abap_context_info=>get_system_date( ) ) as date "Host expression
+  @( cl_abap_context_info=>get_system_date( ) ) as date "Host expression
 
-  WHERE carrid = 'LH'          "Untyped literal
-    AND countryfr = char`DE`   "Typed literal
+  WHERE carrid = 'LH'          "Untyped literal
+    AND countryfr = char`DE`   "Typed literal
 
   "Data object created inline and escaped with @
-  INTO TABLE @DATA(it)
+  INTO TABLE @DATA(it)
 
   "The following clause shows all options having the same effect
-  UP TO 3 ROWS.             "Untyped numeric literal
-  "UP TO int4`3` ROWS.      "Typed numeric literal
-  "UP TO @upto ROWS.        "Host variable
-  "UP TO @( 10 - 7 ) ROWS.  "Host expression
+  UP TO 3 ROWS.             "Untyped numeric literal
+  "UP TO int4`3` ROWS.      "Typed numeric literal
+  "UP TO @upto ROWS.        "Host variable
+  "UP TO @( 10 - 7 ) ROWS.  "Host expression
 ```
 
 **SQL Expressions**
@@ -637,40 +640,40 @@ SELECT FROM zdemo_abap_flsch
 Example: [Numeric functions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensql_arith_func.htm)
 ``` abap
 SELECT SINGLE
-   carrname,
+  carrname,
 
-   "Division, result rounded to an integer
-   "Result: 2
-   div( 4, 2 ) AS div,
+  "Division, result rounded to an integer
+  "Result: 2
+  div( 4, 2 ) AS div,
 
-   "Division, 3rd argument: result is rounded to the specified
-   "number of decimals
-   "Result: 0.33
-   division( 1, 3, 2 ) AS division,
+  "Division, 3rd argument: result is rounded to the specified
+  "number of decimals
+  "Result: 0.33
+  division( 1, 3, 2 ) AS division,
 
-   "Result is rounded to first greater integer
-   "Result: 2
-   ceil( decfloat34`1.333` ) AS ceil,
+  "Result is rounded to first greater integer
+  "Result: 2
+  ceil( decfloat34`1.333` ) AS ceil,
 
-   "Result is the remainder of division
-   "Result: 1
-   mod( 3, 2 ) AS mod,
+  "Result is the remainder of division
+  "Result: 1
+  mod( 3, 2 ) AS mod,
 
-   "Result: Largest integer value not greater than the specified value
-   "Result: 1
-   floor( decfloat34`1.333` ) AS floor,
+  "Result: Largest integer value not greater than the specified value
+  "Result: 1
+  floor( decfloat34`1.333` ) AS floor,
 
-   "Returns the absolute number
-   "Result: 2
-   abs( int4`-2` ) AS abs,
+  "Returns the absolute number
+  "Result: 2
+  abs( int4`-2` ) AS abs,
 
-   "Result is rounded to the specified position after the decimal separator
-   "Result: 1.34
-   round( decfloat34`1.337`, 2 ) AS round
+  "Result is rounded to the specified position after the decimal separator
+  "Result: 1.34
+  round( decfloat34`1.337`, 2 ) AS round
 
-   FROM zdemo_abap_carr
-   WHERE carrid = 'AA'
-   INTO @DATA(numeric_functions).
+  FROM zdemo_abap_carr
+  WHERE carrid = 'AA'
+  INTO @DATA(numeric_functions).
 ```
 
 Example: [String functions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensql_string_func.htm)
@@ -726,7 +729,7 @@ SELECT SINGLE
   locate_regexpr( pcre = '\..', "Period followed by any character
                   value = url,
                   occurrence = 2 ) "2nd occurrence in the string
-                 AS locate_regexpr,
+                  AS locate_regexpr,
 
   "Searches a PCRE pattern, returns offset of match + 1;
   "many optional parameters: occurrence, case_sensitive, start, group
@@ -796,7 +799,7 @@ Example: [Special functions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOU
 
 ``` abap
 SELECT SINGLE
-  carrid,
+  carrid,
 
   "Conversion functions
   "When used: Special conversions that cannot be handled in a general
@@ -804,27 +807,27 @@ SELECT SINGLE
 
   "Type conversion: string of fixed length (e.g. of type c) to variable
   "length string of type string
-  to_clob( carrid ) AS clob,
+  to_clob( carrid ) AS clob,
 
   "Byte string -> character string
-  bintohex( raw`3599421128650F4EE00008000978B976` ) AS bintohex,
+  bintohex( raw`3599421128650F4EE00008000978B976` ) AS bintohex,
 
   "Character string -> byte string
-  hextobin( char`3599421128650F4EE00008000978B976` ) AS hextobin,
+  hextobin( char`3599421128650F4EE00008000978B976` ) AS hextobin,
 
   "Byte field of type RAW to a byte string (BLOB) of type RAWSTRING
-  to_blob( raw`3599421128650F4EE00008000978B976` ) AS blob,
+  to_blob( raw`3599421128650F4EE00008000978B976` ) AS blob,
 
   "Unit and currency conversion functions
   "More parameters are available.
 
   "Converts miles to kilometers
-  unit_conversion( quantity = d34n`1`,
+  unit_conversion( quantity = d34n`1`,
                    source_unit = unit`MI`,
                    target_unit = unit`KM` ) AS miles_to_km,
 
   "Converts Euro to US dollars using today's rate
-  currency_conversion(
+  currency_conversion(
     amount = d34n`1`,
     source_currency = char`EUR`,
     target_currency = char`USD`,
@@ -921,7 +924,7 @@ SELECT SINGLE
   "A cast expression converts the value of the operands to the
   "specified dictionary type. The result is a representation of the
   "source value in the specified type.
-  CAST( 1 AS D34N ) / CAST( 2 AS D34N ) AS ratio,
+  CAST( 1 AS D34N ) / CAST( 2 AS D34N ) AS ratio,
 
   "String expression using && to concatenate two character strings;
   "the result of the concatenation must not be longer than
@@ -934,22 +937,22 @@ SELECT SINGLE
   "operands. Result: The first operand after THEN for which the
   "comparison is true. If no matches are found, the result specified
   "after ELSE is selected.
-  CASE currcode
-       WHEN 'EUR' THEN 'A'
-       WHEN 'USD' THEN 'B'
-       ELSE 'C'
-  END AS case_simple,
+  CASE currcode
+    WHEN 'EUR' THEN 'A'
+    WHEN 'USD' THEN 'B'
+    ELSE 'C'
+  END AS case_simple,
 
   "Complex case distinction
   "The expression evaluates logical expressions. Result: The first
   "operand after THEN for which the logical expression is true. If no
   "logical expressions are true, the result specified after ELSE is
   "selected.
-  CASE WHEN length( carrname ) <= 5 THEN 'small'
-       WHEN length( carrname ) BETWEEN 6 AND 10 THEN 'mid'
-       WHEN length( carrname ) BETWEEN 11 AND 15 THEN 'large'
-       ELSE 'huge'
-  END AS case_complex
+  CASE WHEN length( carrname ) <= 5 THEN 'small'
+       WHEN length( carrname ) BETWEEN 6 AND 10 THEN 'mid'
+       WHEN length( carrname ) BETWEEN 11 AND 15 THEN 'large'
+       ELSE 'huge'
+  END AS case_complex
 
 FROM zdemo_abap_carr
 WHERE carrid = 'AA'
@@ -1004,40 +1007,37 @@ Examples:
 "Example 1: A simple window is constructed in the OVER clause;
 "window functions - here aggregate functions - are applied
 SELECT carrid, currency,
-    SUM( paymentsum ) OVER( PARTITION BY carrid ) AS sum,
-    AVG( price AS DEC( 14,2 ) ) OVER( PARTITION BY carrid ) AS avg,
-    MAX( price ) OVER( PARTITION BY carrid ) AS max
-    FROM zdemo_abap_fli
-    ORDER BY carrid
-    INTO TABLE @DATA(win).
+  SUM( paymentsum ) OVER( PARTITION BY carrid ) AS sum,
+  AVG( price AS DEC( 14,2 ) ) OVER( PARTITION BY carrid ) AS avg,
+  MAX( price ) OVER( PARTITION BY carrid ) AS max
+  FROM zdemo_abap_fli
+  ORDER BY carrid
+  INTO TABLE @DATA(win).
 
 "Example 2:
 SELECT carrid, currency, fldate,
   "Sorts the rows by some columns and counts the number of rows from
   "the first row of the window to the current row.
-  COUNT( * ) OVER( ORDER BY currency, fldate
-                    ROWS BETWEEN
-                     "UNBOUNDED PRECEDING: frame starts at the
-                     "first row of the window
-                    UNBOUNDED PRECEDING
-                     "CURRENT ROW: determines starting or ending
-                     "at the current row; here, it ends
-                    AND CURRENT ROW ) AS count1,
+  COUNT( * ) OVER( ORDER BY currency, fldate
+                   ROWS BETWEEN
+                   "UNBOUNDED PRECEDING: frame starts at the first row of the window
+                   UNBOUNDED PRECEDING
+                   "CURRENT ROW: determines starting or ending at the current row; here, it ends
+                   AND CURRENT ROW ) AS count1,
 
   "If no window frame is used, the default window frame is
   "BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW,
   "i. e. the result of count1 equals the result of count2.
-  COUNT( * ) OVER( ORDER BY currency, fldate ) AS count2,
+  COUNT( * ) OVER( ORDER BY currency, fldate ) AS count2,
 
   "Sorts the rows by some columns and counts the number of rows from
   "the current row to the last row of the window.
   "The result is reverse numbering.
-  COUNT( * ) OVER( ORDER BY currency, fldate
-                   ROWS BETWEEN CURRENT ROW
-                    "UNBOUND FOLLOWING:
-                    "Determines the ending frame boundary,
-                    "this addition specifies the last row of the window
-                   AND UNBOUNDED FOLLOWING ) AS count_reverse,
+  COUNT( * ) OVER( ORDER BY currency, fldate
+                   ROWS BETWEEN CURRENT ROW
+                   UNBOUND FOLLOWING:
+                   "Determines the ending frame boundary, this addition specifies the last row of the window
+                   AND UNBOUNDED FOLLOWING ) AS count_reverse,
 
   "Sorts the rows by some columns and calculates the rolling averages
   "of a subset of rows from column price. The subset consists of the
@@ -1045,17 +1045,15 @@ SELECT carrid, currency, fldate,
   "case as below example that uses prices would be that, for example,
   "you can calculate the 3-day-average temperature for every day from
   "a list of temperature data.
-  AVG( price AS DEC( 14,2 ) ) OVER( ORDER BY currency, fldate
-       ROWS BETWEEN
-        "n PRECEDING: for both start and end of frame;
-        "frame to start/end n rows above the current row
-       1 PRECEDING
-        "n FOLLOWING: for both start and end of frame;
-        "frame to start/end n rows beneath the current row
-       AND 1 FOLLOWING ) AS avg
+  AVG( price AS DEC( 14,2 ) ) OVER( ORDER BY currency, fldate
+       ROWS BETWEEN
+       "n PRECEDING: for both start and end of frame; frame to start/end n rows above the current row
+       1 PRECEDING
+       "n FOLLOWING: for both start and end of frame; frame to start/end n rows beneath the current row
+       AND 1 FOLLOWING ) AS avg
 
-  FROM zdemo_abap_fli
-  INTO TABLE @DATA(result).
+  FROM zdemo_abap_fli
+  INTO TABLE @DATA(result).
 ```
 
 ### Excursion: SQL Conditions
@@ -1096,40 +1094,40 @@ The clause parts that are commented out in the following code snippet
 just demonstrate how the `WHERE` clause might look like.
 
 ``` abap
-SELECT FROM dbtab
-  FIELDS comp1, comp2, comp3
-  WHERE comp1 = 'abc' "Equals some value
+SELECT * 
+  FROM dbtab
+  WHERE comp1 = 'abc' "Equals some value
 
         "More example WHERE conditions:
-        "comp2 > 100 "Greater than some value; alternatively GT is possible
+        comp2 > 100 "Greater than some value; alternatively GT is possible
 
         "Not equals plus an additional condition that must be respected
-        "comp2 <> 100 AND comp4 = 'xyz'
+        comp3 <> 100 AND comp4 = 'xyz'
 
         "(Not) between a value range
-        "comp1 BETWEEN 1 AND 10
-        "comp1 NOT BETWEEN 1 AND 10
+        comp5 BETWEEN 1 AND 10
+        comp6 NOT BETWEEN 1 AND 10
 
         "A character literal has a certain pattern, preceded and
         "followed by any string.
-        "comp1 LIKE '%XYZ%'
+        "comp7 LIKE '%XYZ%'
 
         "The second character is not Y. _ stands for any character.
-        "comp1 NOT LIKE '_Y%'
+        comp8 NOT LIKE '_Y%'
 
         "Contains one of the values specified in the parentheses
-        "comp1 IN ( 'ABC', 'DEF', 'GHI' )
+        comp9 IN ( 'ABC', 'DEF', 'GHI' )
 
         "Does not contain one of the values specified in the parentheses
-        "comp1 NOT IN ( 'JKL', 'MNO' )
+        comp10 NOT IN ( 'JKL', 'MNO' )
 
-         "Checking if an operand has an initial value
-         "comp1 IS INITIAL
+        "Checking if an operand has an initial value
+        comp11 IS INITIAL
 
         "Combination of logical expression using AND, OR and parentheses
-        "( comp1 = a AND comp2 < b ) OR ( comp3 > c AND comp4 <> d )
+        ( comp12 = a AND comp13 < b ) OR ( comp14 > c AND comp15 <> d )
 
-  INTO TABLE @DATA(itab_where).
+  INTO TABLE @DATA(itab_where).
 ```
 
 ### Selecting Data by Evaluating the Content of other Tables
@@ -1146,11 +1144,11 @@ addition:
 "Checking that table is not initial
 IF ( 0 < lines( itab2 ) ).
 
-  SELECT comp1, comp2, comp3
-    FROM dbtab
-    FOR ALL ENTRIES IN @itab2      "Host variable before internal table
-    WHERE comp1 = @itab2-comp1 ... "Relational expression on the right side of a comparison
-    INTO TABLE @itab1
+  SELECT comp1, comp2, comp3
+    FROM dbtab
+    FOR ALL ENTRIES IN @itab2      "Host variable before internal table
+    WHERE comp1 = @itab2-comp1 ... "Relational expression on the right side of a comparison
+    INTO TABLE @itab1
 
 ENDIF.
 ```
@@ -1163,11 +1161,11 @@ The following code snippet includes a parenthesized subquery following `EXISTS`.
 
 ``` abap
 SELECT comp1, comp2, comp3
-  FROM dbtab1 AS tab1
-  WHERE EXISTS
-   ( SELECT comp1 FROM dbtab2
-     WHERE comp1 = tab1~comp1 AND comp2 = tab1~comp2 )
-  INTO ...
+  FROM dbtab1 AS tab1
+  WHERE EXISTS
+    ( SELECT comp1 FROM dbtab2
+      WHERE comp1 = tab1~comp1 AND comp2 = tab1~comp2 )
+  INTO ...
 ```
 
 ### Combining Data of Multiple Database Tables
@@ -1182,13 +1180,11 @@ selector](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?f
 `~`.
 ``` abap
 SELECT a~comp1, a~comp2, b~comp3, c~comp4
-  FROM dbtab1 AS a
-  INNER JOIN dbtab2 AS b
-   ON a~comp1 = b~comp1 AND a~comp2 = b~comp2
-  INNER JOIN dbtab3 AS c
-   ON a~comp1 = c~comp1
-  WHERE ...
-  INTO ...
+  FROM dbtab1 AS a
+  INNER JOIN dbtab2 AS b ON a~comp1 = b~comp1 AND a~comp2 = b~comp2
+  INNER JOIN dbtab3 AS c ON a~comp1 = c~comp1
+  WHERE ...
+  INTO ...
 ```
 
 **Using an [outer join](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenouter_join_glosry.htm)**:
@@ -1201,11 +1197,10 @@ a [right outer join](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/
 ``` abap
 "Example for a left outer join
 SELECT a~comp1, a~comp2, b~comp3,
-  FROM dbtab1 AS a
-  LEFT OUTER JOIN dbtab2 AS b
-   ON a~comp1 = b~comp1
-  WHERE ...
-  INTO ...
+  FROM dbtab1 AS a
+  LEFT OUTER JOIN dbtab2 AS b ON a~comp1 = b~comp1
+  WHERE ...
+  INTO ...
 ```
 > **💡 Note**<br>
 > There are more join variants available. See the ABAP
@@ -1217,13 +1212,13 @@ for more information.
 
 ``` abap
 SELECT FROM dbtab1
-  FIELDS ...
-  WHERE ...
+  FIELDS ...
+  WHERE ...
 UNION
-  SELECT FROM dbtab2
-   FIELDS ...
-   WHERE ...
-  INTO ...
+  SELECT FROM dbtab2
+  FIELDS ...
+  WHERE ...
+  INTO ...
 ```
 
 #### Excursion: Using Common Table Expressions (CTE)
@@ -1283,28 +1278,26 @@ internal table.
 ``` abap
 WITH
 +connections AS (
-    SELECT zdemo_abap_flsch~carrid, carrname, connid, cityfrom, cityto
-        FROM zdemo_abap_flsch
-        INNER JOIN zdemo_abap_carr
-            ON zdemo_abap_carr~carrid = zdemo_abap_flsch~carrid
-        WHERE zdemo_abap_flsch~carrid BETWEEN 'AA' AND 'JL' ),
+  SELECT zdemo_abap_flsch~carrid, carrname, connid, cityfrom, cityto
+    FROM zdemo_abap_flsch
+    INNER JOIN zdemo_abap_carr
+    ON zdemo_abap_carr~carrid = zdemo_abap_flsch~carrid
+    WHERE zdemo_abap_flsch~carrid BETWEEN 'AA' AND 'JL' ),
 +sum_seats AS (
-    SELECT carrid, connid, SUM( seatsocc ) AS sum_seats
-        FROM zdemo_abap_fli
-        WHERE carrid BETWEEN 'AA' AND 'JL'
-        GROUP BY carrid, connid ),
+  SELECT carrid, connid, SUM( seatsocc ) AS sum_seats
+    FROM zdemo_abap_fli
+    WHERE carrid BETWEEN 'AA' AND 'JL'
+    GROUP BY carrid, connid ),
 +result( name, connection, departure, arrival, occupied ) AS (
-    SELECT carrname, c~connid, cityfrom, cityto, sum_seats
-        FROM +connections AS c
-            INNER JOIN +sum_seats AS s
-            ON c~carrid = s~carrid AND
-                c~connid = s~connid )
+  SELECT carrname, c~connid, cityfrom, cityto, sum_seats
+    FROM +connections AS c
+    INNER JOIN +sum_seats AS s
+    ON c~carrid = s~carrid AND c~connid = s~connid )
 SELECT *
-        FROM +result
-        ORDER BY name, connection
-        INTO TABLE @DATA(result).
+  FROM +result
+  ORDER BY name, connection
+  INTO TABLE @DATA(result).
 ```
-
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -1393,13 +1386,11 @@ ind_tab = VALUE #(
        ( comp1 = ... comp2 = ... comp_ind-comp2 = abap_true )
        ( comp1 = ... comp2 = ... comp_ind-comp2 = abap_true ) ).
 
-UPDATE dbtab FROM TABLE @ind_tab
-             INDICATORS SET STRUCTURE comp_ind.
+UPDATE dbtab FROM TABLE @ind_tab INDICATORS SET STRUCTURE comp_ind.
 
 "Reverses the logic
 
-UPDATE dbtab FROM TABLE @ind_tab
-             INDICATORS NOT SET STRUCTURE comp_ind.
+UPDATE dbtab FROM TABLE @ind_tab INDICATORS NOT SET STRUCTURE comp_ind.
 
 "SET addition: Changing values of specific fields in all table rows
 "There are mutliple options for the value assignment. E. g. you can use
@@ -1480,9 +1471,9 @@ DELETE dbtab FROM TABLE @( VALUE #( ( comp1 = ... )
 
     "Selecting from a dynamically specified database table.
     SELECT *
-    FROM (dbtab)
-    WHERE ...
-    INTO ...
+      FROM (dbtab)
+      WHERE ...
+      INTO ...
     ```
 - [This topic](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_sql.htm) serves as the entry point for topics about ABAP SQL in the ABAP Keyword Documentation. For the full details, check the subtopics there, especially topics not covered in this cheat sheet.
 

@@ -95,7 +95,7 @@ CLASS cl_some_amdp_class DEFINITION
 
   PUBLIC SECTION.
     "Specifying the interface is mandatory
-    INTERFACES if_amdp_marker_hdb.
+    INTERFACES if_amdp_marker_hdb.
 ...
 ENDCLASS.
 ```
@@ -122,12 +122,12 @@ methods:
 ...
 PUBLIC SECTION.
 
-  METHODS some_amdp_meth
+  METHODS some_amdp_meth
     ... "Here go the parameters
 
 PRIVATE SECTION.
 
-  CLASS-METHODS another_amdp_meth
+  CLASS-METHODS another_amdp_meth
     ... "Here go the parameters
 
 ...
@@ -167,11 +167,11 @@ Example for an AMDP procedure's declaration part:
 PUBLIC SECTION.
 
   "Table type with a structured row type
-  TYPES tab_type TYPE STANDARD TABLE OF dbtab WITH EMPTY KEY.
+  TYPES tab_type TYPE STANDARD TABLE OF dbtab WITH EMPTY KEY.
 
-  METHODS amdp_meth
-    IMPORTING VALUE(num) TYPE i,
-    EXPORTING VALUE(tab) TYPE tab_type.
+  METHODS amdp_meth
+    IMPORTING VALUE(num) TYPE i,
+    EXPORTING VALUE(tab) TYPE tab_type.
 
 ...
 ```
@@ -185,10 +185,10 @@ following <code>METHOD</code> and the method name:
 ...
 METHOD amdp_meth
   BY DATABASE PROCEDURE
-  FOR HDB  
-  LANGUAGE SQLSCRIPT  
-  OPTIONS READ-ONLY
-  USING db_object.   "see comments further down
+  FOR HDB  
+  LANGUAGE SQLSCRIPT  
+  OPTIONS READ-ONLY
+  USING db_object.   "see comments further down
                          
 "Beginning of the SQLScript code (note that it is not ABAP code although it looks similar)
 
@@ -221,8 +221,6 @@ Note:
     scope, more syntax options are allowed for AMDP method declaration
     and implementation parts. Check the ABAP Keyword Documentation for
     more details as touched on further down.
-
-
 
 ## AMDP Functions
 
@@ -264,12 +262,12 @@ Example for an AMDP function's declaration part:
 PUBLIC SECTION.
 
   "Table type with a structured row type
-  TYPES tab_type TYPE STANDARD TABLE OF dbtab WITH EMPTY KEY.
+  TYPES tab_type TYPE STANDARD TABLE OF dbtab WITH EMPTY KEY.
 
-  METHODS amdp_func
-    IMPORTING VALUE(num)       TYPE i,
-              VALUE(some_elem) TYPE c LENGTH 3,
-    RETURNING VALUE(tab)       TYPE tab_type.
+  METHODS amdp_func
+    IMPORTING VALUE(num)       TYPE i,
+              VALUE(some_elem) TYPE c LENGTH 3,
+    RETURNING VALUE(tab)       TYPE tab_type.
 
 ...
 ```
@@ -280,11 +278,11 @@ AMDP procedure as shown above. The difference is the use of `BY DATABASE FUNCTIO
 ```abap
 ...
 METHOD amdp_func
-  BY DATABASE FUNCTION    
-  FOR HDB
-  LANGUAGE SQLSCRIPT
-  OPTIONS READ-ONLY
-  USING db_object.
+  BY DATABASE FUNCTION    
+  FOR HDB
+  LANGUAGE SQLSCRIPT
+  OPTIONS READ-ONLY
+  USING db_object.
 
 "Beginning of the SQLScript code (note that it is not ABAP code although it looks similar)
 
@@ -331,8 +329,8 @@ function:
 ...
 PUBLIC SECTION.
 
-  CLASS-METHODS:
-    table_func FOR TABLE FUNCTION some_ddl_source.
+  CLASS-METHODS:
+    table_func FOR TABLE FUNCTION some_ddl_source.
 
 ...
 ```
@@ -357,7 +355,7 @@ source of a CDS table function:
 
 The CDS DDL source might look like this:
 
-```abap
+```
 //Here go annotations.
 define table function some_ddl_source
   returns
@@ -411,11 +409,11 @@ snippet:
 
 ```abap
 IF NOT cl_abap_dbfeatures=>use_features(
-   EXPORTING requested_features =
-        VALUE #( ( cl_abap_dbfeatures=>call_amdp_method ) ) ).
+    EXPORTING requested_features =
+      VALUE #( ( cl_abap_dbfeatures=>call_amdp_method ) ) ).
 
   "Result: Current database system does not support AMDP procedures
-  RETURN.
+  RETURN.
 ENDIF.
 ```
 
@@ -429,7 +427,6 @@ input parameter for the client ID. See more information
 [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenamdp_client_handling.htm) (or [here for the F1 docu for standard ABAP](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenamdp_client_handling.htm)).
 The client handling is not dealt with in this cheat sheet and not
 relevant in the executable example.
-
 
 ## Executable Example
 [zcl_demo_abap_amdp](./src/zcl_demo_abap_amdp.clas.abap)

@@ -119,9 +119,9 @@ possible for the declaration part.
 ``` abap
 "Declaration part
 CLASS global_class DEFINITION
-  PUBLIC           "Makes the class a global class in the class library.
-  FINAL            "Means that no subclasses can be derived from this class.
-  CREATE PUBLIC.   "This class can be instantiated anywhere it is visible.
+  PUBLIC                       "Makes the class a global class in the class library.
+  FINAL                        "Means that no subclasses can be derived from this class.
+  CREATE PUBLIC.               "This class can be instantiated anywhere it is visible.
 
     ... "Here go the declarations for all components and visibility sections.
 
@@ -1148,18 +1148,18 @@ The following code snippet shows an implementation of the singleton design patte
 "Using the addition CREATE PRIVATE, objects can only be created by the class itself.
 CLASS singleton_class DEFINITION CREATE PRIVATE.
   PUBLIC SECTION.
-    CLASS-METHODS get_instance RETURNING VALUE(inst) TYPE REF TO singleton_class.
+    CLASS-METHODS get_instance RETURNING VALUE(ret) TYPE REF TO singleton_class.
 
   PRIVATE SECTION.
-    CLASS-DATA instance TYPE REF TO singleton_class.
+    CLASS-DATA inst TYPE REF TO singleton_class.
 ENDCLASS.
 
 CLASS singleton_class IMPLEMENTATION.
   METHOD get_instance.
-    IF instance IS NOT BOUND.
-      instance = NEW #( ).
+    IF inst IS NOT BOUND.
+      inst = NEW #( ).
     ENDIF.
-    inst = instance.
+    ret = inst.
   ENDMETHOD.
 ENDCLASS.
 ```

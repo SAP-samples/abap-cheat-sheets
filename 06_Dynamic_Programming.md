@@ -29,9 +29,11 @@
    - See the following `SELECT` statement. As also shown further down, the `FROM` clause does not include a statically defined table to be selected from. Instead, there is a pair of parentheses including a data object. Assume the data object holds the name of the database table. At runtime, the data retrieval happens from the database table that was inserted in the input field.
 
         ```abap
+        DATA(dbtab) = `ZDEMO_ABAP_FLI`.
+        
         SELECT *
-        FROM (dbtab)
-        INTO TABLE @DATA(some_itab).
+          FROM (dbtab)
+          INTO TABLE @DATA(some_itab).
         ```
 
 - Further aspects for dynamic programming in ABAP enter the picture if you want to determine information about data types and data objects at runtime ([RTTI](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrun_time_type_identific_glosry.htm)) or even create them ([RTTC](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrun_time_type_creation_glosry.htm)).
@@ -105,9 +107,9 @@ Once the memory area is assigned, you can work with the content.
 
 ``` abap
 "Some data object declarations to be used
-DATA: number TYPE i,
-      struc  TYPE zdemo_abap_fli,  "Demo database table
-      tab    TYPE string_table.
+DATA: num   TYPE i,
+      struc TYPE zdemo_abap_fli,  "Demo database table
+      tab   TYPE string_table.
 
 "Declaring field symbols with complete types
 FIELD-SYMBOLS: <fs_i>     TYPE i,
@@ -119,14 +121,14 @@ FIELD-SYMBOLS <fs_gen> TYPE data.
 
 "Assigning data objects to field symbols
 "Note: In this case, the field symbols have an appropriate type.
-ASSIGN number TO <fs_i>.
-ASSIGN struc  TO <fs_struc>.
-ASSIGN tab    TO <fs_tab>.
-ASSIGN number TO <fs_gen>.               "Could be any of the data objects
+ASSIGN num   TO <fs_i>.
+ASSIGN struc TO <fs_struc>.
+ASSIGN tab   TO <fs_tab>.
+ASSIGN num   TO <fs_gen>.               "Could be any of the data objects
 
 "Inline declaration is possible, too. The type
 "is automatically derived.
-ASSIGN number TO FIELD-SYMBOL(<fs_inl>).
+ASSIGN num TO FIELD-SYMBOL(<fs_inl>).
 
 "You can also assign a particular component of a structure.
 "Second component of the structure
@@ -168,17 +170,18 @@ ASSIGN chars TO <fs2> CASTING TYPE c_len_3.
 
 ``` abap
 "For example, in assignments
-DATA number TYPE i VALUE 1.
+DATA num TYPE i VALUE 1.
 FIELD-SYMBOLS <fs_i> TYPE i.
-ASSIGN number TO <fs_i>.
+ASSIGN num TO <fs_i>.
 
 <fs_i> = 2.
-"The data object 'number' has now the value 2.
+"The data object 'num' has now the value 2.
 
 "Loops
 "Here, field symbols are handy since you can avoid an
 "actual copying of the table line to boost performance.
-SELECT * FROM zdemo_abap_fli
+SELECT * 
+  FROM zdemo_abap_fli
   INTO TABLE @DATA(itab).
 
 FIELD-SYMBOLS <fs1> LIKE LINE OF itab.
@@ -261,8 +264,7 @@ DATA(ref2) = REF #( num ).
 
 DATA(ref3) = REF string( `hallo` ).
 
-"The older syntax GET REFERENCE having the same effect
-"should not be used anymore.
+"The older syntax GET REFERENCE having the same effect should not be used anymore.
 "GET REFERENCE OF num INTO ref1.
 "GET REFERENCE OF num INTO DATA(ref4).
 ```
@@ -272,8 +274,7 @@ data object](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.ht
 at runtime by assigning the reference to the data object of a data reference variable. You can use the [instance
 operator](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abeninstance_operator_glosry.htm "Glossary Entry")
 [`NEW`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconstructor_expression_new.htm).
-The older syntax [`CREATE DATA`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapcreate_data.htm)
-has the same effect as using the newer instance operator.
+It replaces the older syntax [`CREATE DATA`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapcreate_data.htm). However, as shown further, `CREATE DATA` is required for specifying a dynamically determined type.
 
 ``` abap
 "Declaring data reference variables
@@ -300,17 +301,15 @@ TYPES i_table TYPE STANDARD TABLE OF i WITH EMPTY KEY.
 DATA(ref3) = NEW i_table( ( 1 ) ( 2 ) ( 3 ) ( 4 ) ( 5 ) ).
 
 "CREATE DATA statements (older syntax)
-"Unlike above, the older syntax is not commented out. CREATE DATA is used for dynamic 
-"type specification as shown further down.
-DATA ref4 TYPE REF TO string.
-DATA ref5 TYPE REF TO data.
+"DATA ref4 TYPE REF TO string.
+"DATA ref5 TYPE REF TO data.
 
-CREATE DATA ref4.
+"CREATE DATA ref4.
 
 "Note: TYPE ... needed because of generic type data
-CREATE DATA ref5 TYPE p LENGTH 6 DECIMALS 2.
+"CREATE DATA ref5 TYPE p LENGTH 6 DECIMALS 2.
 
-CREATE DATA ref5 LIKE ref4.
+"CREATE DATA ref5 LIKE ref4.
 ```
 
 **Assigning existing data references** to other data references. As mentioned above regarding the assignment, note that static types of both data
@@ -327,8 +326,8 @@ Excursion: Static vs. dynamic type, upcasts and downcasts
   - Upcast: If the static type of the target variables is **less specific or the same** as the static type of the source variable, an assignment is possible. This includes, for example, assignments with the [assignment operator](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenassignment_operator_glosry.htm) `=`.
   - Downcast: If the static type of the target variable is **more specific** than the static type of the source variable, a check must be made at runtime before the assignment is done. If you indeed want to trigger such a downcast, you must do it explicitly in your code. You can do this, for example, using the
   [constructor operator](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconstructor_operator_glosry.htm "Glossary Entry")
-[`CAST`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconstructor_expression_cast.htm). In older code, you might see
-the operator [`?=`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapmove_cast.htm).
+[`CAST`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconstructor_expression_cast.htm). In older code, you may see the use of
+ [`?=`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapmove_cast.htm) operator.
   - In contrast to a downcast, an upcast does not have to be done explicitly. However, you can - but need not - use the mentioned operators for upcasts, too.
 
 
@@ -364,7 +363,7 @@ DATA ref6 TYPE REF TO data.
 ref6 = NEW i( 654 ).
 ref5 = CAST #( ref6 ).
 
-"Casting operator: Older syntax 
+"Casting operator in older syntax
 "ref5 ?= ref6.
 ```
 
@@ -430,11 +429,11 @@ Some example contexts of using data references are as follows:
 
 **Overwriting data reference variables**:
 ``` abap
-ref = NEW i( 1 ).
+dref = NEW i( 1 ).
 
 "ref is overwritten here because a new object is created
 "with a data reference variable already pointing to a data object
-ref = NEW i( 2 ).
+dref = NEW i( 2 ).
 ```
 
 **Retaining data references**:
@@ -444,20 +443,20 @@ ref = NEW i( 2 ).
 "with the same reference variable. Storing them in an internal table
 "using the TYPE TABLE OF REF TO prevents the overwriting.
 
-DATA: ref    TYPE REF TO data,
-      itab   TYPE TABLE OF REF TO data,
-      number TYPE i VALUE 0.
+DATA: dref TYPE REF TO data,
+      itab TYPE TABLE OF REF TO data,
+      num  TYPE i VALUE 0.
 
 DO 3 TIMES.
   "Adding up 1 to demonstrate a changed data object.
-  number += 1.
+  num += 1.
 
   "Creating data reference and assigning value.
   "In the course of the loop, the variable gets overwritten.
-  ref = NEW i( number ).
+  dref = NEW i( num ).
 
   "Adding the reference to itab
-  itab = VALUE #( BASE itab ( ref ) ).
+  itab = VALUE #( BASE itab ( dref ) ).
 ENDDO.
 ```
 
@@ -469,7 +468,8 @@ ENDDO.
 "instead of actually copying the content to boost performance.
 
 "Filling an internal table.
-SELECT * FROM zdemo_abap_fli
+SELECT * 
+  FROM zdemo_abap_fli
   INTO TABLE @DATA(fli_tab).
 
 LOOP AT fli_tab REFERENCE INTO DATA(ref).
@@ -563,8 +563,8 @@ Note that dynamically specifying syntax elements has downsides, too. Consider so
     "Anonymous data objects are created using a type determined at runtime.
     "Note that the NEW operator cannot be used here.
 
-    CREATE DATA ref TYPE (some_type).
-    CREATE DATA ref TYPE TABLE OF (some_type).
+    CREATE DATA dref TYPE (some_type).
+    CREATE DATA dref TYPE TABLE OF (some_type).
 
     "Assigning a data object to a field symbol casting a dynamically specified type
 

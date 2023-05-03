@@ -50,12 +50,12 @@ representative binding.
 To access the members of a group, a member loop can be inserted into the
 group loop:
 ``` abap
-LOOP AT spfli_tab INTO wa
-                  GROUP BY wa-carrid.
+LOOP AT spfli_tab INTO wa 
+                  GROUP BY wa-carrid.
   ...
-  LOOP AT GROUP wa INTO DATA(member).
+  LOOP AT GROUP wa INTO DATA(member).
     ... member-... ...
-  ENDLOOP.
+  ENDLOOP.
   ...
 ENDLOOP.
 ```
@@ -71,8 +71,8 @@ defined as follows. In the simplest case, the grouping criteria are
 columns of the internal table:
 
 ``` abap
-LOOP AT spfli_tab INTO wa
-                  GROUP BY ( key1 = wa-carrid key2 = wa-airpfrom ).
+LOOP AT spfli_tab INTO wa 
+                  GROUP BY ( key1 = wa-carrid key2 = wa-airpfrom ).
   ... wa-carrid ... wa-airpfrom ...
 ENDLOOP.
 ```
@@ -92,9 +92,9 @@ of the representative binding in which the output area of the group loop
 is reused:
 
 ``` abap
-LOOP AT spfli_tab INTO wa
-                  GROUP BY wa-carrid
-                  INTO DATA(key).
+LOOP AT spfli_tab INTO wa 
+                  GROUP BY wa-carrid 
+                  INTO DATA(key).
   ... key ...
 ENDLOOP.
 ```
@@ -118,13 +118,13 @@ binding, with the difference that a group is now addressed by
 `key` instead of `wa`.
 
 ``` abap
-LOOP AT spfli_tab INTO wa
-                  GROUP BY wa-carrid
-                  INTO key.
+LOOP AT spfli_tab INTO wa 
+                  GROUP BY wa-carrid 
+                  INTO key.
   ...
-  LOOP AT GROUP key INTO member.
+  LOOP AT GROUP key INTO member.
     ... members ...
-  ENDLOOP.
+  ENDLOOP.
   ...
 ENDLOOP.
 ```
@@ -134,8 +134,8 @@ Finally, the group key binding for structured group keys:
 
 ``` abap
 LOOP AT spfli_tab INTO wa
-                  GROUP BY ( key1 = wa-carrid key2 = wa-airpfrom )
-                  INTO DATA(key).
+                  GROUP BY ( key1 = wa-carrid key2 = wa-airpfrom )
+                  INTO DATA(key).
   ... key-key1 ... key-key2 ...
 ENDLOOP.
 ```
@@ -150,10 +150,10 @@ can be used to save time and memory.
 
 ``` abap
 LOOP AT spfli_tab INTO wa
-                  GROUP BY ( key1 = wa-carrid key2 = wa-airpfrom
-                             index = GROUP INDEX size = GROUP SIZE )
-                  WITHOUT MEMBERS
-                  INTO DATA(key).
+                  GROUP BY ( key1 = wa-carrid key2 = wa-airpfrom
+                             index = GROUP INDEX size = GROUP SIZE )
+                  WITHOUT MEMBERS
+                  INTO DATA(key).
   ... key-key1 ... key-key2 ... key-index ... key-size ...
 ENDLOOP.
 ```

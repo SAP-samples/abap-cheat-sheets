@@ -172,9 +172,9 @@ DATA isbn_number TYPE n LENGTH 13 VALUE '1234567890123'.
 CONSTANTS pi TYPE p LENGTH 8 DECIMALS 14 VALUE '3.14159265358979'.
 
 "More data object declarations
-DATA: char1  TYPE c LENGTH 5,
-      html   TYPE string,
-      str2   LIKE html.
+DATA: char1 TYPE c LENGTH 5,
+      html  TYPE string,
+      str2  LIKE html.
 
 "Value assignments
 char1 = 'ab123'.
@@ -485,7 +485,7 @@ SHIFT s3 RIGHT DELETING TRAILING ` `. "'      hallo' (length is kept)
 "you can use the following sequence of statements
 DATA(s4) = `hallo   `.
 SHIFT s4 RIGHT DELETING TRAILING ` `. "'   hallo'
-SHIFT s4 LEFT  DELETING LEADING ` `. "'hallo'
+SHIFT s4 LEFT DELETING LEADING ` `. "'hallo'
 
 "String functions with parameters
 s1 = `hallo`.
@@ -872,12 +872,12 @@ Syntax Overview (see the syntax diagram in the [ABAP Keyword Documentation](http
 
 ``` abap
 FIND 
-  FIRST OCCURRENCE OF | ALL OCCURRENCES OF
+  FIRST OCCURRENCE OF "(or) ALL OCCURRENCES OF
     "1. Only the first occurrence is searched
     "2. All occurrences are searched
     "Note: If none of these two additions is specified, only the first occurrence is searched for.
   
-  SUBSTRING some_substring | PCRE some_regex  
+  SUBSTRING some_substring "(or) PCRE some_regex  
     "1. Searching for exactly one string, specifying SUBSTRING is optional (e.g. for emphasis);
     "   some_substring is a character-like operand; note: Trailing blanks are not ignored if it is of type string
     "2. Searching for a substring matching a regular expression; only the PCRE addition should be used;  
@@ -886,7 +886,8 @@ FIND
 
 IN 
   SECTION 
-    OFFSET off | LENGTH len
+    OFFSET off 
+    LENGTH len
   OF   
     "- Restricting the search to a specific section from an offset specified in off with the length len 
     "- When using SECTION, at least one of the two options must be specified
@@ -901,7 +902,7 @@ dobj
 
   "Further additional options for advanced evaluation options:
   "Specifying whether the search is case-sensitive; not specified means RESEPECTING CASE by default
-  RESPECTING CASE | IGNORING CASE  
+  RESPECTING CASE "(or) IGNORING CASE  
 
   "Determining the number of sequences found, number stored in cnt that is of type i (e.g. a variable declared inline)
   "When searching for the first occurrence, the value is always 1 (not found -> 0)
@@ -922,7 +923,7 @@ dobj
   "Note on submatches: table of type SUBMATCH_RESULT_TAB; holds offset and length information of substrings of occurrences
   "that are stored in subgroup registers of regular expressions; in FIND IN TABLE statements, the additional component LINE
   "is available
-  RESULTS tab | RESULTS struc
+  RESULTS tab "(or) RESULTS struc
  
   "Storing content of subgroup register of a regular expression in character-like data objects;
   "only to be used if a regular expression pattern is specified.
@@ -1131,7 +1132,7 @@ res = find( val = str sub = `xy` ). "-1
 TRY.
     res = find( val = str sub = `` ).
   CATCH cx_sy_strg_par_val. 
-    "Nope!
+    ...
 ENDTRY.
 
 "The search is case-sensitive by default
@@ -1154,7 +1155,7 @@ res = find( val = str sub = `e` len = 2  ). "-1
 TRY.
     res = find( val = str sub = `e` off = 5 len = 15 ).
   CATCH cx_sy_range_out_of_bounds.
-    "Nope!
+    ...
 ENDTRY.
 ```
 
