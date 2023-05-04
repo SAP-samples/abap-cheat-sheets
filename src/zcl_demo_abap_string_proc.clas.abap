@@ -138,7 +138,7 @@ CLASS zcl_demo_abap_string_proc IMPLEMENTATION.
 
 **********************************************************************
 
-    output->next_section( `3) String Templates (1): Constructing Strings` ).
+    output->next_section( `3a) String Templates (1): Constructing Strings` ).
 
     "The expression must be convertible to a string. A blank (not
     "within the curly brackets) means a blank in the resulting string.
@@ -148,6 +148,10 @@ CLASS zcl_demo_abap_string_proc IMPLEMENTATION.
     DATA(str_c4) = |{ str_c1 } { sy-uname }, | &&
                    |{ str_c2 } { str_c3 } you?|.
 
+**********************************************************************
+
+    output->next_section( `3b) String Templates (2): Control Characters` ).
+
     "Interpretation of character combinations as control characters
     "\n interpreted as a line break
     DATA(str_c5) = |{ str_c1 }\n{ sy-uname },| &&
@@ -156,9 +160,26 @@ CLASS zcl_demo_abap_string_proc IMPLEMENTATION.
     output->display( input = str_c4 name = `str_c4` ).
     output->display( input = str_c5 name = `str_c5` ).
 
+    "Excursion: Class CL_ABAP_CHAR_UTILITIES provides attributes and methods as utilities for string processing.
+    "See the class documentation.
+    "The following examples demonstrate that attributes that contain control characters can be replaced by
+    "a representation of control characters in a string template.
+    DATA(str_c6) = |{ str_c1 }{ cl_abap_char_utilities=>newline }{ sy-uname }|.
+    DATA(str_c7) = |{ str_c1 }\n{ sy-uname }|.
+    DATA(str_c8) = |{ str_c1 }{ cl_abap_char_utilities=>horizontal_tab }{ sy-uname }|.
+    DATA(str_c9) = |{ str_c1 }\t{ sy-uname }|.
+    DATA(str_c10) = |{ str_c1 }{ cl_abap_char_utilities=>cr_lf  }{ sy-uname }|.
+    DATA(str_c11) = |{ str_c1 }\r\n{ sy-uname }|.
+    ASSERT str_c10 = str_c11.
+
+    output->display( input = str_c6 name = `str_c6` ).
+    output->display( input = str_c7 name = `str_c7` ).
+    output->display( input = str_c8 name = `str_c8` ).
+    output->display( input = str_c9 name = `str_c9` ).    
+
 **********************************************************************
 
-    output->next_section( `4) String Templates (2): Formatting Options` ).
+    output->next_section( `4) String Templates (3): Formatting Options` ).
     "Time, date
     DATA(str_d1) =
     |Date: { cl_abap_context_info=>get_system_date( ) DATE = USER }\n| &&

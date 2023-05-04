@@ -613,7 +613,7 @@ SELECT FROM zdemo_abap_flsch
 -   Expressions in an ABAP SQL statement that are passed to the database
     system for evaluation.
 -   For example, SQL expressions can be specified as columns in the
-    `SELECT` as demonstrated in most of the following examples.
+    `SELECT` list as demonstrated in most of the following examples.
     Find information on more possible positions and general information
     on SQL expressions
     [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapsql_expr.htm)
@@ -1097,36 +1097,36 @@ just demonstrate how the `WHERE` clause might look like.
 SELECT * 
   FROM dbtab
   WHERE comp1 = 'abc' "Equals some value
-
-        "More example WHERE conditions:
-        comp2 > 100 "Greater than some value; alternatively GT is possible
-
-        "Not equals plus an additional condition that must be respected
-        comp3 <> 100 AND comp4 = 'xyz'
-
-        "(Not) between a value range
-        comp5 BETWEEN 1 AND 10
+        
+        "More example WHERE conditions:
+        comp2 > 100 "Greater than some value; alternatively GT is possible
+        
+        "Not equals plus an additional condition that must be respected
+        comp3 <> 100 AND comp4 = 'xyz'
+        
+        "(Not) between a value range
+        comp5 BETWEEN 1 AND 10
         comp6 NOT BETWEEN 1 AND 10
-
-        "A character literal has a certain pattern, preceded and
-        "followed by any string.
-        "comp7 LIKE '%XYZ%'
-
-        "The second character is not Y. _ stands for any character.
-        comp8 NOT LIKE '_Y%'
-
-        "Contains one of the values specified in the parentheses
-        comp9 IN ( 'ABC', 'DEF', 'GHI' )
-
-        "Does not contain one of the values specified in the parentheses
-        comp10 NOT IN ( 'JKL', 'MNO' )
-
-        "Checking if an operand has an initial value
-        comp11 IS INITIAL
-
-        "Combination of logical expression using AND, OR and parentheses
-        ( comp12 = a AND comp13 < b ) OR ( comp14 > c AND comp15 <> d )
-
+        
+        "A character literal has a certain pattern, preceded and
+        "followed by any string.
+        "comp7 LIKE '%XYZ%'
+        
+        "The second character is not Y. _ stands for any character.
+        comp8 NOT LIKE '_Y%'
+        
+        "Contains one of the values specified in the parentheses
+        comp9 IN ( 'ABC', 'DEF', 'GHI' )
+                        
+        "Does not contain one of the values specified in the parentheses
+        comp10 NOT IN ( 'JKL', 'MNO' )
+        
+        "Checking if an operand has an initial value
+        comp11 IS INITIAL
+        
+        "Combination of logical expression using AND, OR and parentheses
+        ( comp12 = a AND comp13 < b ) OR ( comp14 > c AND comp15 <> d )
+        
   INTO TABLE @DATA(itab_where).
 ```
 

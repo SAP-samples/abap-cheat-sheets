@@ -389,13 +389,13 @@ CLASS zcl_demo_abap_prog_flow_logic IMPLEMENTATION.
 
     CASE TYPE OF oref_check.
       WHEN TYPE zcl_demo_abap_prog_flow_logic.
-        output->display( |Type zcl_demo_abap_prog_flow_logic? True!| ).
+        output->display( `Type zcl_demo_abap_prog_flow_logic? True!` ).
       WHEN TYPE if_oo_adt_classrun.
-        output->display( |Type if_oo_adt_classrun? True!| ).
+        output->display( `Type if_oo_adt_classrun? True!` ).
       WHEN TYPE zcl_demo_abap_sql.
-        output->display( |Type zcl_demo_abap_sql? True!| ).
+        output->display( `Type zcl_demo_abap_sql? True!` ).
       WHEN OTHERS.
-        output->display( |Other type.| ).
+        output->display( `Other type.` ).
     ENDCASE.
 
     "The same logic as above is realized in the following IF statements
@@ -404,13 +404,13 @@ CLASS zcl_demo_abap_prog_flow_logic IMPLEMENTATION.
     "This type is also true for the object reference variable. This class
     "implements the interface.
     IF oref_check IS INSTANCE OF if_oo_adt_classrun.
-      output->display( |Type if_oo_adt_classrun? True!| ).
+      output->display( `Type if_oo_adt_classrun? True!` ).
     ELSEIF oref_check IS INSTANCE OF zcl_demo_abap_prog_flow_logic.
-      output->display( |Type zcl_demo_abap_prog_flow_logic? True!| ).
+      output->display( `Type zcl_demo_abap_prog_flow_logic? True!` ).
     ELSEIF oref_check IS INSTANCE OF zcl_demo_abap_sql.
-      output->display( |Type zcl_demo_abap_sql? True!| ).
+      output->display( `Type zcl_demo_abap_sql? True!` ).
     ELSE.
-      output->display( |Other type.| ).
+      output->display( `Other type.` ).
     ENDIF.
 
 **********************************************************************

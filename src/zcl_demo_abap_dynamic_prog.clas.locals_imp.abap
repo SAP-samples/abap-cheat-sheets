@@ -89,7 +89,7 @@ CLASS lcl_det_at_runtime IMPLEMENTATION.
       seed = cl_abap_random=>seed( ) min = 1
                                      max = lines( built ) )->get_next( ).
 
-    "Providing the returning parameter with a random table name
+    "Providing the returning parameter with a random type name
     TRY.
         builtin_type = VALUE #( builtin_type = built[ idx ] dec = idx len = idx ).
       CATCH cx_sy_itab_line_not_found.

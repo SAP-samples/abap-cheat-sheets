@@ -295,9 +295,9 @@ ref_struc_1 = NEW #( ).
 DATA(ref_struc_2) = NEW structured_type( ).
 
 ... ref_struc_1->comp1 ...
-... ref_struc_1->*comp1 ...  "Using the dereferencing operator
+... ref_struc_1->*-comp1 ...  "Using the dereferencing operator
 ... ref_struc_2->-comp2 ... 
-... ref_struc_2->*-comp2 ... "Using the dereferencing operator
+... ref_struc_2->*-comp2 ...  "Using the dereferencing operator
 ```
 
 Nested components can be addressed using chaining:

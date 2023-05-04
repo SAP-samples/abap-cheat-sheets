@@ -117,7 +117,6 @@ CLASS zcl_demo_abap_objects IMPLEMENTATION.
     TYPES: ref_type TYPE REF TO local_class.
     DATA: ref1d TYPE ref_type.
 
-
     IF  ref1a IS INITIAL
     AND ref1b IS INITIAL
     AND ref1c IS INITIAL
@@ -127,6 +126,8 @@ CLASS zcl_demo_abap_objects IMPLEMENTATION.
       output->display( `One or more of the declared reference ` &&
                     `variables are not initial.` ).
     ENDIF.
+    
+**********************************************************************
 
     output->next_section( `2) Creating objects` ).
 
@@ -145,9 +146,8 @@ CLASS zcl_demo_abap_objects IMPLEMENTATION.
     ref2a = NEW #( ).
     DATA(ref2b) = NEW local_class( ).
 
-    "Alternative syntax.
+    "NEW replaces the following statement
     CREATE OBJECT ref2a.
-
 
     IF ref2a IS INSTANCE OF local_class
     AND ref2b IS INSTANCE OF local_class.
@@ -157,7 +157,8 @@ CLASS zcl_demo_abap_objects IMPLEMENTATION.
       output->display( `One or more of the reference variables ` &&
       `do not point to instances of the class local_class.` ).
     ENDIF.
-
+    
+**********************************************************************
 
     output->next_section( `3) Assigning object references` ).
 
@@ -176,6 +177,8 @@ CLASS zcl_demo_abap_objects IMPLEMENTATION.
     ELSE.
       output->display( `ref3b has not been assigned to ref3a.` ).
     ENDIF.
+    
+**********************************************************************
 
     output->next_section( `4) Overwriting object references` ).
 
@@ -194,6 +197,8 @@ CLASS zcl_demo_abap_objects IMPLEMENTATION.
     ref4 = NEW #( ).
 
     output->display( input = ref4->no_of_instances name = `ref4->no_of_instances` ).
+    
+**********************************************************************
 
     output->next_section( `5) Keeping references variables in internal tables` ).
 
@@ -214,6 +219,8 @@ CLASS zcl_demo_abap_objects IMPLEMENTATION.
     ENDDO.
 
     output->display( input = itab5 name = `itab5` ).
+    
+**********************************************************************
 
     output->next_section( `6) Clearing object references` ).
 
@@ -234,6 +241,8 @@ CLASS zcl_demo_abap_objects IMPLEMENTATION.
     ELSE.
       output->display( `ref6 is not initial.` ).
     ENDIF.
+    
+**********************************************************************
 
     output->next_section( `7) Accessing and using attributes` ).
 
@@ -262,6 +271,8 @@ CLASS zcl_demo_abap_objects IMPLEMENTATION.
     output->display( input = obj_instance_attr name = `obj_instance_attr` ).
     output->display( input = obj_static_attr_obj name = `obj_static_attr_obj` ).
     output->display( input = class_static_attr name = `class_static_attr` ).
+    
+**********************************************************************
 
     output->next_section( `8) Calling static and instance methods` ).
 
@@ -296,6 +307,8 @@ CLASS zcl_demo_abap_objects IMPLEMENTATION.
     hallo_static_method( ).
 
     output->display( input = string name = `string` ).
+    
+**********************************************************************
 
     output->next_section( `9) Calling methods: Examples` &&
                   ` with importing parameters` ).
@@ -340,6 +353,8 @@ CLASS zcl_demo_abap_objects IMPLEMENTATION.
     lcl_demo=>addition_optional( i_add_mand = 1 ).
 
     output->display( input = lcl_demo=>calc_result name = `lcl_demo=>calc_result` ).
+    
+**********************************************************************
 
     output->next_section( `10) Calling methods: Examples ` &&
                   `with exporting parameters` ).
@@ -366,6 +381,8 @@ CLASS zcl_demo_abap_objects IMPLEMENTATION.
 
     output->display( input = hallo name = `hallo` ).
     output->display( input = subtraction_result name = `subtraction_result` ).
+    
+**********************************************************************
 
     output->next_section( `11) Calling methods: Example with changing parameter` ).
 
@@ -378,6 +395,8 @@ CLASS zcl_demo_abap_objects IMPLEMENTATION.
     lcl_demo=>square_root( CHANGING i_sqr = num ).
 
     output->display( input = num name = `num` ).
+    
+**********************************************************************
 
     output->next_section( `12) Calling methods: Examples with returning parameters` ).
 
@@ -440,6 +459,8 @@ CLASS zcl_demo_abap_objects IMPLEMENTATION.
     output->display( input = random_no1 name = `random_no1` ).
     output->display( input = random_no2 name = `random_no2` ).
     output->display( input = random_no3 name = `random_no3` ).
+    
+**********************************************************************
 
     output->next_section( `13) Calling methods: Examples with error handling` ).
 
@@ -480,6 +501,8 @@ CLASS zcl_demo_abap_objects IMPLEMENTATION.
     ENDTRY.
 
     output->display( input = greets name = `greets` ).
+    
+**********************************************************************
 
     output->next_section( `14) Constructors` ).
 
@@ -530,6 +553,8 @@ CLASS zcl_demo_abap_objects IMPLEMENTATION.
 
     output->display( input = lcl_constructors=>stat_text name = `lcl_constructors=>stat_text` ).
     output->display( input = lcl_constructors=>stat_number name = `lcl_constructors=>stat_number` ).
+    
+**********************************************************************
 
     output->next_section( `15) Parameters: Generic types` ).
 
@@ -568,6 +593,8 @@ CLASS zcl_demo_abap_objects IMPLEMENTATION.
     lcl_demo=>generic_tab( EXPORTING i_anytab = c_tab ).
 
     output->display( input = lcl_demo=>some_data->* name = `lcl_demo=>some_data->*` ).
+    
+**********************************************************************
 
     output->next_section( `16) Inheritance: Method redefinition` ).
 
@@ -597,6 +624,8 @@ CLASS zcl_demo_abap_objects IMPLEMENTATION.
     output->display( input = first_string name = `first_string` ).
     output->display( input = second_string name = `second_string` ).
     output->display( input = third_string name = `third_string` ).
+    
+**********************************************************************
 
     output->next_section( `17) Polymorphism and Casting` ).
 
@@ -637,7 +666,9 @@ CLASS zcl_demo_abap_objects IMPLEMENTATION.
     output->display( input = str1 name = `str1` ).
     output->display( input = str2 name = `str2` ).
 
-    output->next_section( `18) Downcast` ).
+**********************************************************************
+
+    output->next_section( `18a) Downcast` ).
 
     "In this example, the possibility of downcasts are checked, i. e. the
     "assignment of a more generic object reference variable to a specific
@@ -738,6 +769,34 @@ CLASS zcl_demo_abap_objects IMPLEMENTATION.
 
     output->display( input = dc_check name = `dc_check` ).
 
+**********************************************************************
+
+    output->next_section( `18b) Excursion RTTI: Downcasts and Method Chaining` ).
+
+    "Downcasts particularly play, for example, a role in the context of
+    "retrieving type information using RTTI. Method chaining is handy
+    "because it reduces the lines of code in this case.
+    "The example contains the retrieval of type information for a
+    "structure (structure components).
+    "Due to the method chaining in the second example, the three
+    "statements in the first example are reduced to one statement.
+
+    DATA struct4cast TYPE zdemo_abap_carr.
+
+    DATA(rtti_a) = cl_abap_typedescr=>describe_by_data( struct4cast ).
+    DATA(rtti_b) = CAST cl_abap_structdescr( rtti_a ).
+    DATA(rtti_c) = rtti_b->components.
+
+    output->display( input = rtti_c name = `rtti_c` ).
+
+    DATA(rtti_d) = CAST cl_abap_structdescr(
+      cl_abap_typedescr=>describe_by_data( struct4cast )
+          )->components.
+
+    output->display( input = rtti_d name = `rtti_d` ).
+
+**********************************************************************
+
     output->next_section( `19) Interfaces` ).
 
     "Addressing instance interface components using interface reference variable
@@ -816,6 +875,8 @@ CLASS zcl_demo_abap_objects IMPLEMENTATION.
     output->display( input = intf_const1 name = `intf_const1` ).
     output->display( input = intf_const2 name = `intf_const2` ).
     output->display( input = intf_const3 name = `intf_const3` ).
+    
+**********************************************************************
 
     output->next_section( `20) Singleton` ).
 
@@ -862,6 +923,8 @@ CLASS zcl_demo_abap_objects IMPLEMENTATION.
 
     output->display( input = timestamp name = `timestamp` ).
     output->display( input = no_of_instances name = `no_of_instances` ).
+    
+**********************************************************************
 
     output->next_section( `21) Factory method in an abstract class` ).
 
@@ -895,6 +958,8 @@ CLASS zcl_demo_abap_objects IMPLEMENTATION.
     ENDTRY.
 
     output->display( input = lcl_abstract=>message name = `lcl_abstract=>message` ).
+    
+**********************************************************************
 
     output->next_section( `22) Friendship: Accessing components of friends` ).
 
@@ -912,6 +977,8 @@ CLASS zcl_demo_abap_objects IMPLEMENTATION.
     DATA(string_table) = zcl_demo_abap_objects_friend=>get_strings( ).
 
     output->display( input = string_table name = `string_table` ).
+    
+**********************************************************************
 
     output->next_section( `23) Self-reference me` ).
 
@@ -930,6 +997,8 @@ CLASS zcl_demo_abap_objects IMPLEMENTATION.
 
     output->display( input = string_without_me name = `string_without_me` ).
     output->display( input = string_with_me name = `string_with_me` ).
+    
+**********************************************************************
 
     output->next_section( `24) Events` ).
 

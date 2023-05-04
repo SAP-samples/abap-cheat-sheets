@@ -32,6 +32,8 @@ define view entity zdemo_abap_cds_ve_agg_exp
       // - A GROUP BY clause is required. It must list all non-aggregated fields from the element list.
       // - Additions: If ALL is used, all rows in the result set are respected. This is the default setting.
       //              If DISTINCT is used, only distinct values of an argument are respected.
+      // - Note: There may or may not be spaces between the parentheses following avg, min, etc., and the 
+      //   content specified within.
 
       // AVG (Returns the average value of an argument)
       avg( seatsocc as abap.dec(15,2))                            as avg_seats_occ,

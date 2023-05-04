@@ -4,6 +4,9 @@
 *   output in the ADT console
 *
 * -------------------------- NOTE -------------------------------------
+* This class is used to display deep types contained in the cheat sheet
+* example classes in older ABAP releases. 
+*
 * The code presented in this class is intended only to support the ABAP
 * cheat sheets. It is not intended for direct use in a production system
 * environment. The code examples in the ABAP cheat sheets are primarily 

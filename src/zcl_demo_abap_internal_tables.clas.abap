@@ -110,15 +110,11 @@ protected section.
 
 ENDCLASS.
 
-
-
 CLASS ZCL_DEMO_ABAP_INTERNAL_TABLES IMPLEMENTATION.
-
 
   METHOD class_constructor.
     fill_dbtabs( ).
   ENDMETHOD.
-
 
   METHOD fill_dbtabs.
     "Initializing and filling of database tables to have data to work with
@@ -140,7 +136,6 @@ CLASS ZCL_DEMO_ABAP_INTERNAL_TABLES IMPLEMENTATION.
         ) ).
 
   ENDMETHOD.
-
 
   METHOD fill_itabs_for_corresponding.
     tab1 = VALUE #( ( a = 1 b = 'aaa' c = 'aaa' d = 'A' )
@@ -182,7 +177,6 @@ CLASS ZCL_DEMO_ABAP_INTERNAL_TABLES IMPLEMENTATION.
 
   ENDMETHOD.
 
-
   METHOD if_oo_adt_classrun~main.
 
     DATA(output) = NEW zcl_demo_abap_display( out ).
@@ -221,6 +215,8 @@ CLASS ZCL_DEMO_ABAP_INTERNAL_TABLES IMPLEMENTATION.
     output->display( input = it_st name = `it_st` ).
     output->display( input = it_so name = `it_so` ).
 
+**********************************************************************
+
     output->next_section( `2) Adding initial line` ).
 
     APPEND INITIAL LINE TO it_st.
@@ -230,6 +226,8 @@ CLASS ZCL_DEMO_ABAP_INTERNAL_TABLES IMPLEMENTATION.
     output->display( input = it_st name = `it_st` ).
     output->display( input = it_so name = `it_so` ).
 
+**********************************************************************
+    
     output->next_section( `3) Adding mutliple lines of an internal table to` &&
     ` another one` ).
 
@@ -249,6 +247,8 @@ CLASS ZCL_DEMO_ABAP_INTERNAL_TABLES IMPLEMENTATION.
     output->display( input = it_st name = `it_st` ).
     output->display( input = it_so name = `it_so` ).
 
+**********************************************************************
+
     output->next_section( `4) Adding lines of an internal table to` &&
     ` another one by specifying the index range.` ).
 
@@ -263,6 +263,8 @@ CLASS ZCL_DEMO_ABAP_INTERNAL_TABLES IMPLEMENTATION.
 
     output->display( input = it_st name = `it_st` ).
 
+**********************************************************************    
+
     output->next_section( `5) Inserting lines of an internal table` &&
     ` into another one at a specific position` ).
 
@@ -275,6 +277,8 @@ CLASS ZCL_DEMO_ABAP_INTERNAL_TABLES IMPLEMENTATION.
 
     output->display( input = it_st name = `it_st` ).
 
+**********************************************************************
+
     output->next_section( `6) Adding lines using constructor expressions` ).
 
     "Creating a line to be added to an internal table.
@@ -286,6 +290,8 @@ CLASS ZCL_DEMO_ABAP_INTERNAL_TABLES IMPLEMENTATION.
                      ( a = 2 b = 'ddd' c = 'eee' d = 'fff' ) ).
 
     output->display( input = it_st name = `it_st` ).
+
+**********************************************************************
 
     output->next_section( `7) Creating a new table inline and adding lines` &&
     ` using a constructor expression` ).
@@ -301,6 +307,8 @@ CLASS ZCL_DEMO_ABAP_INTERNAL_TABLES IMPLEMENTATION.
 
     output->display( input = it_st2 name = `it_st2` ).
 
+**********************************************************************
+
     output->next_section( `8) Adding lines using constructor expressions ` &&
     `and keeping existing table content` ).
 
@@ -310,6 +318,8 @@ CLASS ZCL_DEMO_ABAP_INTERNAL_TABLES IMPLEMENTATION.
                    ).
 
     output->display( input = it_st name = `it_st` ).
+
+**********************************************************************
 
     output->next_section( `9) Adding lines from other internal tables using` &&
     ` constructor expressions` ).
@@ -323,6 +333,8 @@ CLASS ZCL_DEMO_ABAP_INTERNAL_TABLES IMPLEMENTATION.
 
     output->display( input = it_st name = `it_st` ).
 
+**********************************************************************
+
     output->next_section( `10) Copying table content (without constructor ` &&
                   `expression)` ).
 
@@ -330,6 +342,8 @@ CLASS ZCL_DEMO_ABAP_INTERNAL_TABLES IMPLEMENTATION.
     it_st = it_st2.
 
     output->display( input = it_st name = `it_st` ).
+
+**********************************************************************
 
     output->next_section( `11) CORRESPONDING Operator and MOVE-CORRESPONDING` ).
     output->display( `Internal table content before assignments` ).
@@ -343,6 +357,8 @@ CLASS ZCL_DEMO_ABAP_INTERNAL_TABLES IMPLEMENTATION.
     output->display( input = tab3 name = `tab3` ).
     output->display( input = tab4 name = `tab4` ).
 
+**********************************************************************
+
     output->next_section( `Copying content from another table that has ` &&
         `a different line type ...` ).
     output->display( `11a) ... and deleting existing table content ` &&
@@ -354,6 +370,8 @@ CLASS ZCL_DEMO_ABAP_INTERNAL_TABLES IMPLEMENTATION.
 
     fill_itabs_for_corresponding( ).
 
+**********************************************************************
+
     output->next_section( `11b) ... and deleting existing table content ` &&
     `using MOVE-CORRESPONDING` ).
 
@@ -362,6 +380,8 @@ CLASS ZCL_DEMO_ABAP_INTERNAL_TABLES IMPLEMENTATION.
     output->display( input = tab1 name = `tab1` ).
 
     fill_itabs_for_corresponding( ).
+
+**********************************************************************
 
     output->next_section( `11c) ... and keeping existing table ` &&
     `content using the CORRESPONDING operator` ).
@@ -372,6 +392,8 @@ CLASS ZCL_DEMO_ABAP_INTERNAL_TABLES IMPLEMENTATION.
 
     fill_itabs_for_corresponding( ).
 
+**********************************************************************
+
     output->next_section( `11d) ... and keeping existing table ` &&
     `content using MOVE-CORRESPONDING`  ).
 
@@ -380,6 +402,8 @@ CLASS ZCL_DEMO_ABAP_INTERNAL_TABLES IMPLEMENTATION.
     output->display( input = tab1 name = `tab1` ).
 
     fill_itabs_for_corresponding( ).
+
+**********************************************************************
 
     output->next_section( `11e) ... respecting component ` &&
     `mapping`  ).
@@ -391,6 +415,8 @@ CLASS ZCL_DEMO_ABAP_INTERNAL_TABLES IMPLEMENTATION.
     output->display( input = tab1 name = `tab1` ).
 
     fill_itabs_for_corresponding( ).
+
+**********************************************************************
 
     output->next_section( `11f) ... excluding components` ).
 
@@ -406,6 +432,8 @@ CLASS ZCL_DEMO_ABAP_INTERNAL_TABLES IMPLEMENTATION.
     output->display( input = tab1 name = `tab1` ).
 
     fill_itabs_for_corresponding( ).
+
+**********************************************************************
 
     output->next_section( `11h) ... discarding duplicates` ).
 
@@ -423,12 +451,16 @@ CLASS ZCL_DEMO_ABAP_INTERNAL_TABLES IMPLEMENTATION.
 
     output->display( input = tab3 name = `tab3` ).
 
+**********************************************************************
+
     output->next_section( `11i) Copying data from a deep ` &&
     `internal table to another deep internal table` ).
     output->display( `Original table content` ).
 
     output->display( input = itab_nested1 name = `itab_nested1` ).
     output->display( input = itab_nested2 name = `itab_nested2` ).
+
+**********************************************************************
 
     output->next_section( `11j) ... deleting ` &&
     `existing content (CORRESPONDING operator)` ).
@@ -438,6 +470,8 @@ CLASS ZCL_DEMO_ABAP_INTERNAL_TABLES IMPLEMENTATION.
     output->display( input = itab_nested2 name = `itab_nested2` ).
 
     fill_itabs_for_corresponding( ).
+
+**********************************************************************
 
     output->next_section( `11k) ... deleting ` &&
     `existing content (MOVE-CORRESPONDING)` ).
@@ -449,6 +483,8 @@ CLASS ZCL_DEMO_ABAP_INTERNAL_TABLES IMPLEMENTATION.
 
     fill_itabs_for_corresponding( ).
 
+**********************************************************************
+
     output->next_section( `11l) ... keeping ` &&
     `existing content (CORRESPONDING operator)` ).
 
@@ -459,6 +495,8 @@ CLASS ZCL_DEMO_ABAP_INTERNAL_TABLES IMPLEMENTATION.
 
     fill_itabs_for_corresponding( ).
 
+**********************************************************************
+
     output->next_section( `11m) ... keeping ` &&
     `existing content (MOVE-CORRESPONDING)` ).
 
@@ -466,6 +504,8 @@ CLASS ZCL_DEMO_ABAP_INTERNAL_TABLES IMPLEMENTATION.
      EXPANDING NESTED TABLES KEEPING TARGET LINES.
 
     output->display( input = itab_nested2 name = `itab_nested2` ).
+
+**********************************************************************
 
     output->next_section( `Filling internal tables: Excursions` ).
     output->display( `12) Selecting multiple rows from a database ` &&
@@ -477,6 +517,8 @@ CLASS ZCL_DEMO_ABAP_INTERNAL_TABLES IMPLEMENTATION.
       INTO TABLE @DATA(itab_select1).
 
     output->display( input = itab_select1 name = `itab_select1` ).
+
+**********************************************************************
 
     output->next_section( `13) Sequentially adding multiple rows from ` &&
     `a database table to an internal table` ).
@@ -500,6 +542,8 @@ CLASS ZCL_DEMO_ABAP_INTERNAL_TABLES IMPLEMENTATION.
 
     output->display( input = itab name = `itab` ).
 
+**********************************************************************
+
     output->next_section( `14) Adding multiple rows from a database table ` &&
     `to an internal table that has a different line type than the ` &&
     `database table and keeping existing table content` ).
@@ -510,6 +554,8 @@ CLASS ZCL_DEMO_ABAP_INTERNAL_TABLES IMPLEMENTATION.
       APPENDING CORRESPONDING FIELDS OF TABLE @itab.
 
     output->display( input = itab name = `itab` ).
+
+**********************************************************************
 
     output->next_section( `15) Adding multiple rows from a database table ` &&
     `to an internal table that has a different line type than the ` &&
@@ -522,6 +568,8 @@ CLASS ZCL_DEMO_ABAP_INTERNAL_TABLES IMPLEMENTATION.
 
     output->display( input = itab name = `itab` ).
 
+**********************************************************************
+
     output->next_section( `16) Adding multiple rows from an internal table ` &&
     `to an internal table using SELECT` ).
 
@@ -530,6 +578,8 @@ CLASS ZCL_DEMO_ABAP_INTERNAL_TABLES IMPLEMENTATION.
       INTO TABLE @DATA(itab_clone).
 
     output->display( input = itab_clone name = `itab_clone` ).
+
+**********************************************************************
 
     output->next_section( `17) Combining data of multiple tables into an` &&
     ` internal table using an inner join` ).
@@ -552,6 +602,8 @@ CLASS ZCL_DEMO_ABAP_INTERNAL_TABLES IMPLEMENTATION.
 
     output->display( input = join_result name = `join_result` ).
 
+**********************************************************************
+
     output->next_section( `18) Filling internal table ` &&
     `using a subquery (1)` ).
 
@@ -565,6 +617,8 @@ CLASS ZCL_DEMO_ABAP_INTERNAL_TABLES IMPLEMENTATION.
       INTO TABLE @DATA(subquery_result1).
 
     output->display( input = subquery_result1 name = `subquery_result1` ).
+
+**********************************************************************
 
     output->next_section( `19) Filling internal table ` &&
     `using a subquery (2)` ).
@@ -582,6 +636,8 @@ CLASS ZCL_DEMO_ABAP_INTERNAL_TABLES IMPLEMENTATION.
       INTO TABLE @DATA(subquery_result2).
 
     output->display( input = subquery_result2 name = `subquery_result2` ).
+
+**********************************************************************
 
     output->next_section( `20) Filling an internal table from a table ` &&
     `depending on the existence of data in another internal table ` &&
@@ -602,6 +658,8 @@ CLASS ZCL_DEMO_ABAP_INTERNAL_TABLES IMPLEMENTATION.
 
     output->display( input = select_result name = `select_result` ).
 
+**********************************************************************
+
     output->next_section( `21) Adding content from a database to internal` &&
     ` table by using alias names in the SELECT list` ).
 
@@ -617,6 +675,8 @@ CLASS ZCL_DEMO_ABAP_INTERNAL_TABLES IMPLEMENTATION.
       INTO CORRESPONDING FIELDS OF TABLE @itab2 UP TO 3 ROWS.
 
     output->display( input = itab2 name = `itab2` ).
+
+**********************************************************************
 
     output->next_section( `22) FILTER: Filtering internal table by condition` ).
 
@@ -717,6 +777,8 @@ CLASS ZCL_DEMO_ABAP_INTERNAL_TABLES IMPLEMENTATION.
 
     output->display( input = f11 name = `f11` ).
 
+**********************************************************************
+
     output->next_section(  `25) Inserting data into an internal table ` &&
     `using a COLLECT statement` ).
 
@@ -734,6 +796,8 @@ CLASS ZCL_DEMO_ABAP_INTERNAL_TABLES IMPLEMENTATION.
       INTO itab_num.
 
     output->display( input = itab_num name = `itab_num` ).
+
+**********************************************************************
 
     output->next_section( `Reading from internal tables` ).
 
@@ -766,6 +830,8 @@ CLASS ZCL_DEMO_ABAP_INTERNAL_TABLES IMPLEMENTATION.
 
     output->display( input = it_so_sec name = `it_so_sec` ).
     output->display( input = it_ha_sec name = `it_ha_sec` ).
+
+**********************************************************************
 
     output->next_section( `26) Reading a single line into target area` ).
 
@@ -801,6 +867,8 @@ CLASS ZCL_DEMO_ABAP_INTERNAL_TABLES IMPLEMENTATION.
     output->display( input = dref->* name = `dref->*` ).
     output->display( input = dref2->* name = `dref2->*` ).
 
+**********************************************************************
+
     output->next_section( `Reading a single line via index ...` ).
     output->display( `27) ... using READ TABLE` ).
 
@@ -829,6 +897,8 @@ CLASS ZCL_DEMO_ABAP_INTERNAL_TABLES IMPLEMENTATION.
     output->display( input = wa6 name = `wa6` ).
     output->display( input = wa7 name = `wa7` ).
     output->display( input = wa8 name = `wa8` ).
+
+**********************************************************************
 
     output->next_section( `28) ... table expressions (1)` ).
 
@@ -867,6 +937,8 @@ CLASS ZCL_DEMO_ABAP_INTERNAL_TABLES IMPLEMENTATION.
     output->display( input = lv4 name = `lv4` ).
     output->display( input = lv5 name = `lv5` ).
 
+**********************************************************************
+
     output->next_section( `29) ... table expressions (2)` ).
 
     "Copying a table line via table expression and embedding in
@@ -887,6 +959,8 @@ CLASS ZCL_DEMO_ABAP_INTERNAL_TABLES IMPLEMENTATION.
     output->display( input = dref3->* name = `dref3->*` ).
     output->display( input = lv7 name = `lv7` ).
     output->display( input = lv8 name = `lv8` ).
+
+**********************************************************************
 
     output->next_section( `Reading a single line via table keys ...` ).
     output->display( `30) ... using READ TABLE (1)` ).
@@ -915,6 +989,8 @@ CLASS ZCL_DEMO_ABAP_INTERNAL_TABLES IMPLEMENTATION.
     output->display( input = wa12 name = `wa12` ).
     output->display( input = wa13 name = `wa13` ).
 
+**********************************************************************
+
     output->next_section( `31) ... using READ TABLE (2)` ).
 
     "Reading a line based on keys specified in a work area
@@ -941,6 +1017,8 @@ CLASS ZCL_DEMO_ABAP_INTERNAL_TABLES IMPLEMENTATION.
     output->display( input = wa15 name = `wa15` ).
     output->display( input = wa16 name = `wa16` ).
 
+**********************************************************************
+
     output->next_section( `32) ... using table expressions` ).
     "Primary table key (COMPONENTS addition is optional)
     DATA(lv9) = it_so_sec[ KEY primary_key COMPONENTS a = 1 ].
@@ -960,6 +1038,8 @@ CLASS ZCL_DEMO_ABAP_INTERNAL_TABLES IMPLEMENTATION.
     output->display( input = lv12 name = `lv12` ).
     output->display( input = lv13 name = `lv13` ).
 
+**********************************************************************
+
     output->next_section( `33) Reading a single line via free key` ).
     "Note: If there a multiple matching entries, the first found
     "is returned.
@@ -969,6 +1049,8 @@ CLASS ZCL_DEMO_ABAP_INTERNAL_TABLES IMPLEMENTATION.
 
     output->display( input = wa17 name = `wa17` ).
     output->display( input = lv14 name = `lv14` ).
+
+**********************************************************************
 
     output->next_section( `34) Excursion: Addressing individual components` ).
     "Addressing a component using the component selector
@@ -989,6 +1071,8 @@ CLASS ZCL_DEMO_ABAP_INTERNAL_TABLES IMPLEMENTATION.
     output->display( input = comp2 name = `comp2` ).
     output->display( input = comp3 name = `comp3` ).
     output->display( input = comp4 name = `comp4` ).
+
+**********************************************************************
 
     output->next_section( `35) Checking if a line exists in an internal table` ).
 
@@ -1012,6 +1096,8 @@ CLASS ZCL_DEMO_ABAP_INTERNAL_TABLES IMPLEMENTATION.
     ELSE.
       output->display( |Line { key1 } does not exist in internal table.| ).
     ENDIF.
+
+**********************************************************************
 
     output->next_section( `36) Checking the index of a ` &&
     `specific line` ).
@@ -1077,9 +1163,11 @@ CLASS ZCL_DEMO_ABAP_INTERNAL_TABLES IMPLEMENTATION.
     output->display( |The internal table consists of { itab_lines } | &&
                      |lines.| ).
 
+**********************************************************************
+
     output->next_section( `Processing multiple internal table lines ` &&
                      `sequentially` ).
-    output->display( `38) Reading a complete table by sequentially ` &&
+    output->display( `38a) Reading a complete table by sequentially ` &&
                   `reading all lines` ).
 
     "No further addition: All lines are respected.
@@ -1089,6 +1177,83 @@ CLASS ZCL_DEMO_ABAP_INTERNAL_TABLES IMPLEMENTATION.
     ENDLOOP.
 
     output->display( input = it_so_sec name = `it_so_sec` ).
+
+**********************************************************************
+
+    output->display( `38b) LOOP AT statements with different targets` ).
+
+    "The following examples demonstrate the different targets that
+    "are possible for LOOP AT statements. In the example above,
+    "a field symbol is created inline.
+    "As above, there are no additions to the loop statement, i.e. all lines
+    "are processed.
+
+    DATA(lines_in_table) = lines( it_so_sec ).
+    output->display( |There should be { lines_in_table } iterations per loop.| ).
+
+    "Target: Existing work area
+    output->display( `---- Loop target: Existing work area ----` ).
+    DATA wa_lo LIKE LINE OF it_so_sec.
+
+    LOOP AT it_so_sec INTO wa_lo.
+      IF sy-tabix = 1.
+        output->display( |This text is displayed when reaching line { sy-tabix }.| ).
+      ELSEIF sy-tabix = lines_in_table.
+        output->display( |This text is displayed when reaching line { sy-tabix }.| ).
+      ENDIF.
+    ENDLOOP.
+
+    output->display( `---- Loop target: Work area created inline ----` ).
+    LOOP AT it_so_sec INTO DATA(wa_inl).
+      IF sy-tabix = 1.
+        output->display( |This text is displayed when reaching line { sy-tabix }.| ).
+      ELSEIF sy-tabix = lines_in_table.
+        output->display( |This text is displayed when reaching line { sy-tabix }.| ).
+      ENDIF.
+    ENDLOOP.
+
+    output->display( `---- Loop target: Existing field symbol ----` ).
+    FIELD-SYMBOLS <fs_lo> LIKE LINE OF it_so_sec.
+
+    LOOP AT it_so_sec ASSIGNING <fs>.
+      IF sy-tabix = 1.
+        output->display( |This text is displayed when reaching line { sy-tabix }.| ).
+      ELSEIF sy-tabix = lines_in_table.
+        output->display( |This text is displayed when reaching line { sy-tabix }.| ).
+      ENDIF.
+
+    ENDLOOP.
+
+    output->display( `---- Loop target: Field symbol created inline ----` ).
+    LOOP AT it_so_sec ASSIGNING FIELD-SYMBOL(<fs_inl>).
+      IF sy-tabix = 1.
+        output->display( |This text is displayed when reaching line { sy-tabix }.| ).
+      ELSEIF sy-tabix = lines_in_table.
+        output->display( |This text is displayed when reaching line { sy-tabix }.| ).
+      ENDIF.
+    ENDLOOP.
+
+    output->display( `---- Loop target: Existing data reference variable ----` ).
+    DATA dref_lo TYPE REF TO struc1 .
+
+    LOOP AT it_so_sec REFERENCE INTO dref_lo.
+      IF sy-tabix = 1.
+        output->display( |This text is displayed when reaching line { sy-tabix }.| ).
+      ELSEIF sy-tabix = lines_in_table.
+        output->display( |This text is displayed when reaching line { sy-tabix }.| ).
+      ENDIF.
+    ENDLOOP.
+
+    output->display( `Loop target: Data reference variable created inline` ).
+    LOOP AT it_so_sec REFERENCE INTO DATA(dref_inl).
+      IF sy-tabix = 1.
+        output->display( |This text is displayed when reaching line { sy-tabix }.| ).
+      ELSEIF sy-tabix = lines_in_table.
+        output->display( |This text is displayed when reaching line { sy-tabix }.| ).
+      ENDIF.
+    ENDLOOP.
+
+**********************************************************************
 
     output->next_section( `39) Reading multiple lines by an index range` ).
 
@@ -1101,6 +1266,8 @@ CLASS ZCL_DEMO_ABAP_INTERNAL_TABLES IMPLEMENTATION.
 
     output->display( input = it_so_sec name = `it_so_sec` ).
 
+**********************************************************************
+
     output->next_section( `40) Reading multiple lines by condition` ).
 
     LOOP AT it_so_sec ASSIGNING FIELD-SYMBOL(<fs6>) WHERE a < 3.
@@ -1109,6 +1276,8 @@ CLASS ZCL_DEMO_ABAP_INTERNAL_TABLES IMPLEMENTATION.
     ENDLOOP.
 
     output->display( input = it_so_sec name = `it_so_sec` ).
+
+**********************************************************************
 
     output->next_section( `41) Looping across a table without an interest` &&
                      ` in the table content` ).
@@ -1120,6 +1289,8 @@ CLASS ZCL_DEMO_ABAP_INTERNAL_TABLES IMPLEMENTATION.
 
     output->display( |There are { num } lines in the table | &&
                      |fulfilling the condition.| ).
+
+**********************************************************************
 
     output->next_section( `42) Loop with table key specification` ).
 
@@ -1135,6 +1306,8 @@ CLASS ZCL_DEMO_ABAP_INTERNAL_TABLES IMPLEMENTATION.
     ENDLOOP.
 
     output->display( input = it_st_em name = `it_st_em` ).
+
+**********************************************************************
 
     output->next_section( `Creating and filling tables using table ` &&
                   `iterations with FOR and VALUE` ).
@@ -1152,6 +1325,8 @@ CLASS ZCL_DEMO_ABAP_INTERNAL_TABLES IMPLEMENTATION.
 
     output->display( input = lv_num_a name = `lv_num_a` ).
 
+**********************************************************************
+
     output->next_section( `44) Retrieving values of one column in ` &&
     `an internal table based on conditions` ).
 
@@ -1160,6 +1335,7 @@ CLASS ZCL_DEMO_ABAP_INTERNAL_TABLES IMPLEMENTATION.
 
     output->display( input = lv_num_b name = `lv_num_b` ).
 
+**********************************************************************
 
     output->next_section( `45) Looping across 2 tables ` &&
                   `and retrieving values based on conditions` ).
@@ -1173,6 +1349,8 @@ CLASS ZCL_DEMO_ABAP_INTERNAL_TABLES IMPLEMENTATION.
         ( a = ls3-a b = ls4-b c = ls3-c d = ls4-d ) ).
 
     output->display( input = itab_for_2tab name = `itab_for_2tab` ).
+
+**********************************************************************
 
     output->next_section( `46) Retrieving and changing values from an ` &&
                   `internal tables sequentially` ).
@@ -1218,12 +1396,16 @@ CLASS ZCL_DEMO_ABAP_INTERNAL_TABLES IMPLEMENTATION.
     output->display( input = it1 name = `it1` ).
     output->display( input = it2 name = `it2` ).
 
+**********************************************************************
+
     output->next_section( `47) Sorting by primary table key` ).
 
     "Primary key: component a
     SORT it1.
 
     output->display( input = it1 name = `it1` ).
+
+**********************************************************************
 
     output->next_section( `48) Sorting by primary table key in ascending` &&
                   ` order` ).
@@ -1233,6 +1415,8 @@ CLASS ZCL_DEMO_ABAP_INTERNAL_TABLES IMPLEMENTATION.
     SORT it1 ASCENDING.
 
     output->display( input = it1 name = `it1` ).
+
+**********************************************************************
 
     output->next_section( `49) Sorting by primary table key respecting all ` &&
     `non-numeric fields` ).
@@ -1248,6 +1432,8 @@ CLASS ZCL_DEMO_ABAP_INTERNAL_TABLES IMPLEMENTATION.
     "SORT it3.
     "output->display( input = it3 name = `it3` ).
 
+**********************************************************************
+
     output->next_section( `50) Sorting by primary table key in ` &&
                   `descending order` ).
 
@@ -1256,6 +1442,8 @@ CLASS ZCL_DEMO_ABAP_INTERNAL_TABLES IMPLEMENTATION.
 
     output->display( input = it1 name = `it1` ).
 
+**********************************************************************
+
     output->next_section( `51) Sorting by explicitly specified component (1)` ).
     "Here, the component is the primary table key.
     "The sorting result is the same as above.
@@ -1263,12 +1451,16 @@ CLASS ZCL_DEMO_ABAP_INTERNAL_TABLES IMPLEMENTATION.
 
     output->display( input = it1 name = `it1` ).
 
+**********************************************************************
+
     output->next_section( `52) Sorting by explicitly specified component (2)` ).
 
     "Sorting by arbitrary, non-key field
     SORT it1 BY d DESCENDING.
 
     output->display( input = it1 name = `it1` ).
+
+**********************************************************************
 
     output->next_section( `53) Sorting by multiple explicitly specified` &&
                   ` components` ).
@@ -1278,6 +1470,8 @@ CLASS ZCL_DEMO_ABAP_INTERNAL_TABLES IMPLEMENTATION.
 
     output->display( input = it1 name = `it1` ).
 
+**********************************************************************
+
     output->next_section( `54) Sorting by respecting the values of all` &&
                   ` components` ).
 
@@ -1285,6 +1479,8 @@ CLASS ZCL_DEMO_ABAP_INTERNAL_TABLES IMPLEMENTATION.
     SORT it1 BY table_line.
 
     output->display( input = it1 name = `it1` ).
+
+**********************************************************************
 
     output->next_section( `Modifying internal table content` ).
     output->display( `Internal table content before modifications` ).
@@ -1297,6 +1493,8 @@ CLASS ZCL_DEMO_ABAP_INTERNAL_TABLES IMPLEMENTATION.
 
     "Hashed table
     output->display( input = it_ha_sec name = `it_ha_sec` ).
+
+**********************************************************************
 
     output->next_section( `55) Directly modifying recently read table lines` ).
 
@@ -1314,6 +1512,8 @@ CLASS ZCL_DEMO_ABAP_INTERNAL_TABLES IMPLEMENTATION.
 
     output->display( input = it_so_sec[ 1 ] name = `it_so_sec[ 1 ]` ).
     output->display( input = it_st[ 1 ] name = `it_st[ 1 ]` ).
+
+**********************************************************************
 
     output->next_section( `56) Modifying internal table content using MODIFY` ).
     "Modifying table lines via key values
@@ -1367,6 +1567,8 @@ CLASS ZCL_DEMO_ABAP_INTERNAL_TABLES IMPLEMENTATION.
     output->display( input = it_so_sec name = `it_so_sec` ).
     output->display( input = it_ha_sec name = `it_ha_sec` ).
 
+**********************************************************************
+
     output->next_section( `57) Deleting internal table content using DELETE` ).
     "Deleting via index
     "Primary table index is used implicitly.
@@ -1406,6 +1608,8 @@ CLASS ZCL_DEMO_ABAP_INTERNAL_TABLES IMPLEMENTATION.
     output->display( input = it_so_sec name = `it_so_sec` ).
     output->display( input = it_ha_sec name = `it_ha_sec` ).
 
+**********************************************************************
+
     output->next_section( `Deleting adjacent duplicate entries` ).
     output->display( `Original table content (restored before` &&
                   ` each of the following examples)` ).
@@ -1429,6 +1633,7 @@ CLASS ZCL_DEMO_ABAP_INTERNAL_TABLES IMPLEMENTATION.
 
     output->display( input = it_st2 name = `it_st2` ).
 
+**********************************************************************
 
     output->display( `58) Deleting adjacent duplicates based on` &&
                   ` primary table key` ).
@@ -1441,6 +1646,8 @@ CLASS ZCL_DEMO_ABAP_INTERNAL_TABLES IMPLEMENTATION.
 
     it_st2 = it_st.
 
+**********************************************************************
+
     output->next_section( `59) Deleting adjacent duplicates by comparing ` &&
                   `all field values` ).
 
@@ -1449,6 +1656,8 @@ CLASS ZCL_DEMO_ABAP_INTERNAL_TABLES IMPLEMENTATION.
     output->display( input = it_st2 name = `it_st2` ).
 
     it_st2 = it_st.
+
+**********************************************************************
 
     output->next_section( `60) Deleting adjacent duplicates by comparing ` &&
                   `specific field values` ).
@@ -1459,6 +1668,8 @@ CLASS ZCL_DEMO_ABAP_INTERNAL_TABLES IMPLEMENTATION.
 
     it_st2 = it_st.
 
+**********************************************************************
+
     output->next_section( `61) Deleting adjacent duplicates by using a` &&
                   ` table key` ).
 
@@ -1467,6 +1678,8 @@ CLASS ZCL_DEMO_ABAP_INTERNAL_TABLES IMPLEMENTATION.
 
     output->display( input = it_st2 name = `it_st2` ).
 
+**********************************************************************
+
     output->next_section( `62) Deleting the entire internal table content` ).
 
     CLEAR it_st.
@@ -1474,8 +1687,17 @@ CLASS ZCL_DEMO_ABAP_INTERNAL_TABLES IMPLEMENTATION.
     "Additionally, FREE releases memory space.
     FREE it_st2.
 
+    "Excursion: Assigning an empty constructor expression with VALUE clears
+    "the internal table.
+    DATA(it_str) = VALUE string_table( ( `a` ) ( `b` ) ( `c` ) ).
+
+    it_str = VALUE #( ).        
+
     output->display( input = it_st name = `it_st` ).
     output->display( input = it_st2 name = `it_st2` ).
+    output->display( input = it_str name = `it_str` ).
+
+**********************************************************************
 
     output->next_section( `Excursions` ).
     output->display( `63) Secondary table keys and hashed tables` ).
@@ -1514,6 +1736,8 @@ CLASS ZCL_DEMO_ABAP_INTERNAL_TABLES IMPLEMENTATION.
     DATA(line_of_ht) = hashed_tab[ KEY sec_key INDEX 2 ].
 
     output->display( input = line_of_ht name = `line_of_ht` ).
+
+**********************************************************************
 
     output->next_section( `64) Empty keys in internal table created inline` ).
     "This example visualizes the fact that when using an inline

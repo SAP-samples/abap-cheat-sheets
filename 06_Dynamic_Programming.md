@@ -714,6 +714,7 @@ chaining](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?f
 comes in handy, too.
 ``` abap
 "The properties of a type are retrieved using RTTI
+"In ADT, you may want to choose CTRL + SPACE after ...=> to explore the options.
 
 DATA(some_type) = cl_abap_typedescr=>describe_by_data( var ).
 
@@ -730,6 +731,12 @@ DATA(components) = CAST cl_abap_structdescr(
 DATA(attributes) = CAST cl_abap_classdescr(
   cl_abap_classdescr=>describe_by_name( 'CL_SOME_CLASS' )
       )->attributes.
+
+"Casting and method chaining as above in contrast to the following extra declarations
+"If the variables were not declared inline as in the example, there would be even more lines of code.
+DATA(a) = cl_abap_typedescr=>describe_by_data( some_struc ).
+DATA(b) = CAST cl_abap_structdescr( a ).
+DATA(c) = b->components.
 ```
 
 The following example demonstrates the dynamic creation of data objects.

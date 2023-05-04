@@ -271,6 +271,14 @@ Syntax examples:
 "Control characters
 s4 = |{ s1 }\n{ s2 }\nSee you.|. "\n is interpreted as a line feed
 
+"Excursion: Class CL_ABAP_CHAR_UTILITIES provides attributes and methods as utilities for string processing.
+"See the class documentation
+"The following examples demonstrate that attributes that contain control characters can be replaced by
+"a representation of control characters in a string template.
+ASSERT cl_abap_char_utilities=>newline        = |\n|.
+ASSERT cl_abap_char_utilities=>horizontal_tab = |\t|.
+ASSERT cl_abap_char_utilities=>cr_lf          = |\r\n|.
+
 "Various formatting options
 "Time and date
 "Formatting according to the user master data
@@ -1432,7 +1440,7 @@ Patterns are not case-sensitive except for characters marked with
 `sy-fdpos` returns the offset of the first occurrence.
 Otherwise, it contains the length of the searched string.
 ``` abap
-s1 = `abc_def_ghi`.
+DATA(s1) = `abc_def_ghi`.
 
 "Pattern: f is preceded by any character sequence, must be followed
 "by '_' and then followed by any character sequence
@@ -1527,28 +1535,26 @@ function](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?f
 
 Syntax examples:
 ``` abap
-s1 = `Cathy's black cat on the mat played with Matt.`.
+DATA(s1) = `Cathy's black cat on the mat played with Matt.`.
 
 "Determining the position of the first occurrence
 "Here, the parameter occ is 1 by default.
-s2 = find( val = s1 pcre = `at.` ). "1
+DATA(int) = find( val = s1 pcre = `at.` ). "1
 
 "Determining the number of all occurrences.
 "Respects all 'a' characters not followed by 't', all 'at' plus 'att'
-s2 = count( val = s1  pcre = `at*` ). "6
+int = count( val = s1  pcre = `at*` ). "6
 
 "Respects all 'at' plus 'att'
-s2 = count( val = s1 pcre = `at+` ). "4
+int = count( val = s1 pcre = `at+` ). "4
 
 "Extracting a substring matching a given pattern
-s1 = `The email address is jon.doe@email.com.`.
-s2 = match( val = s1
-            pcre = `\w+(\.\w+)*@(\w+\.)+(\w{2,4})` ). "jon.doe@email.com
+DATA(s2) = match( val = `The email address is jon.doe@email.com.`
+                  pcre = `\w+(\.\w+)*@(\w+\.)+(\w{2,4})` ). "jon.doe@email.com
 
 "Predicate function matches
 "Checking the validitiy of an email address
-s1 = `jon.doe@email.com`.
-IF matches( val  = s1
+IF matches( val  = `jon.doe@email.com`
             pcre = `\w+(\.\w+)*@(\w+\.)+(\w{2,4})` ).  "true
 ...
 ENDIF.
@@ -1557,7 +1563,7 @@ ENDIF.
 "SUBMATCHES addition: Storing submatches in variables
 "Pattern: anything before and after ' on '
 FIND PCRE `(.*)\son\s(.*)` IN s1 IGNORING CASE SUBMATCHES DATA(a) DATA(b).
-"a: 'Cathy's black cat' / b: 'the mat played with Matt'.
+"a: 'Cathy's black cat' / b: 'the mat played with Matt.'.
 
 "Determining the number of letters in a string
 FIND ALL OCCURRENCES OF PCRE `[A-Za-z]` IN s1 MATCH COUNT DATA(c). "36
@@ -1616,7 +1622,8 @@ Keyword Documentation.
 
 Syntax examples:
 ``` abap
-s1 = `ab apppc app`.
+DATA(s1) = `ab apppc app`.
+DATA s2 TYPE string.
 
 "Replaces 'p' with 2 - 4 repetitions, all occurences
 s2 = replace( val = s1 pcre = `p{2,4}` with = `#` occ = 0 ). "ab a#c a#

@@ -200,7 +200,7 @@ All components, i. e.
 - attributes (using `TYPES`, `DATA`, `CLASS-DATA`, and `CONSTANTS` for data types and data
 objects),
 - methods (using `METHODS` and `CLASS-METHODS`),
-- events `EVENTS` and `CLASS-EVENTS` as well as
+- events (using `EVENTS` and `CLASS-EVENTS`) as well as
 - interfaces,
 
 are declared in the declaration part of the class. There, they must be
@@ -627,10 +627,10 @@ stat_meth( b ).
 class_name=>meth( EXPORTING a = b c = d     "a/c: importing parameters in the method signature
                   IMPORTING e = f ).        "e: exporting parameter in the method signature
 
-"If f is not yet available, you could also declare it inline to store the value.
+"To store the value of the parameter, you may also declare it inline.
 
 class_name=>meth( EXPORTING a = b c = d
-                  IMPORTING e = DATA(f) ).  "f receives type of e
+                  IMPORTING e = DATA(z) ).  
 
 "Calling (static) methods having a changing parameter;
 "should be reserved for changing an existing local variable and value
@@ -806,7 +806,7 @@ Note the concept of static and dynamic type in this context:
     must be triggered explicitly using the [casting
     operator](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencasting_operator_glosry.htm "Glossary Entry")
     [`CAST`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconstructor_expression_cast.htm). You might see code using the older
-    [`?=`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapmove_cast.htm)).
+    operator [`?=`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapmove_cast.htm).
 -   See more information in the topic [Assignment Rules for Reference
     Variables](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconversion_references.htm).
 
@@ -833,7 +833,7 @@ super_ref = NEW lcl_sub( ).
 manually. Just an assignment like `oref_sub = oref_super.`
 does not work. A syntax error occurs saying the right-hand variable's type cannot be converted to the left-hand variable's type.
 - If you indeed want to carry out this casting, you must use
-`CAST` (or you might see code using the older `?=`) to overcome this syntax error (but just the syntax error!). Note: You might also use these casting operators for the upcasts. That means `oref_super = oref_sub.` has the same effect as `oref_super = CAST #( oref_sub ).`. Using the casting operator for upcasts is usually not necessary.
+`CAST` (or you might see code using the older operator `?=`) to overcome this syntax error (but just the syntax error!). Note: You might also use these casting operators for the upcasts. That means `oref_super = oref_sub.` has the same effect as `oref_super = CAST #( oref_sub ).`. Using the casting operator for upcasts is usually not necessary.
 - At runtime, the assignment is checked and if the conversion does not work, you face a (catchable) exception. Even more so, the assignment `oref_sub = CAST #( oref_super ).` does not throw a syntax error but it does not work in this example either because it violates the rule mentioned above (`oref_sub` is more specific than `oref_super`).
 - To check whether such an assignment is possible
 on specific classes, you can use the predicate expression [`IS INSTANCE OF`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenlogexp_instance_of.htm)
@@ -863,6 +863,25 @@ IF oref_super IS INSTANCE OF lcl_sub.
   oref_sub = CAST #( oref_super ).
   ...
 ENDIF.
+
+"Excursion RTTI: Downcasts, CAST and method chaining
+"Downcasts particularly play, for example, a role in the context of
+"retrieving type information using RTTI. Method chaining is handy
+"because it reduces the lines of code in this case.
+"The example below shows the retrieval of type information
+"regarding the components of a structure. 
+"Due to the method chaining in the second example, the three
+"statements in the first example are reduced to one statement.
+
+DATA struct4cast TYPE zdemo_abap_carr.
+
+DATA(rtti_a) = cl_abap_typedescr=>describe_by_data( struct4cast ).
+DATA(rtti_b) = CAST cl_abap_structdescr( rtti_a ).
+DATA(rtti_c) = rtti_b->components.
+
+DATA(rtti_d) = CAST cl_abap_structdescr(
+  cl_abap_typedescr=>describe_by_data( struct4cast )
+      )->components.
 ```
 
 <p align="right">(<a href="#top">back to top</a>)</p>
@@ -884,7 +903,7 @@ Interfaces ...
 -   are different from classes in the following ways:
     -   They only consist of a part declaring the components without an
         implementation part. The implementation is done in classes that use the interface.
-    -   There a no visibility sections. All components of an interface are visible.
+    -   There are no visibility sections. All components of an interface are visible.
     -   No instances can be created from interfaces.
     -   Declarations as mentioned for classes, e. g. `DATA`,
         `CLASS-DATA`, `METHODS`,
@@ -1086,7 +1105,7 @@ can trigger the processing of [processing blocks](https://help.sap.com/doc/abapd
         [`EVENTS`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapevents.htm)
         statement. Note that they can only be raised in instance methods of the same class.
  -  static event using
-        ([`CLASS-EVENTS`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapclass-events.htm)). They can be raised in all methods of the same class or of a class that implements the interface. Static event handlers can be called by the event independently of an instance of the class.
+        [`CLASS-EVENTS`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapclass-events.htm). They can be raised in all methods of the same class or of a class that implements the interface. Static event handlers can be called by the event independently of an instance of the class.
 
 ``` abap
 "Declaration part of a class/interface

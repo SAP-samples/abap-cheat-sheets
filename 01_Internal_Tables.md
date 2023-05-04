@@ -721,7 +721,7 @@ operator](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?f
     `FILTER` operator constructs an internal table according to a specified type (which can be an explicitly specified, non-generic table type or the `#` character as a symbol for the [operand type](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenoperand_type_glosry.htm) before the first parenthesis).
 - The lines for the new internal table are taken from an
     existing internal table based on conditions specified in a `WHERE` clause. Note that the table type of the existing internal table must be convertible into the specified target type.
--   The conditions can either be based on wither single values or a [filter
+-   The conditions can either be based on either single values or a [filter
     table](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconstructor_expr_filter_table.htm).
 - Additions:
 
@@ -732,7 +732,7 @@ operator](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?f
 
 Examples:
 ```abap
-"FILTER an conditions based on single values
+"FILTER on conditions based on single values
 "Assumption the component num is of type i.
 DATA itab1 TYPE SORTED TABLE OF struc WITH NON-UNIQUE KEY num.
 DATA itab2 TYPE STANDARD TABLE OF struc WITH NON-UNIQUE SORTED KEY sec_key COMPONENTS num.
@@ -831,7 +831,7 @@ The following code snippets include [`READ TABLE`](https://help.sap.com/doc/abap
     for example, using an inline declaration (`ASSIGNING <fs>`). When you then access the field symbol, it means that you access the found table line. There is no actual copying of
     content. Therefore, modifying the field symbol means
     modifying the table line directly. Note that you cannot use the 
-    `TRANSPORTING` addition, since the entire table is
+    `TRANSPORTING` addition since the entire table is
     assigned to the field symbol.
 
     ``` abap
@@ -853,7 +853,7 @@ The following code snippets include [`READ TABLE`](https://help.sap.com/doc/abap
     ```
 
 **Which to use then?** Since all syntax options provide the same
-functionality, it depends on you and your use case. For example, the
+functionality, your use case, the
 performance or readability of the code may play a role. For more information, see 
 the programming guidelines for the [target
 area (F1 docu for standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abentable_output_guidl.htm "Guideline").
@@ -1005,8 +1005,8 @@ READ TABLE it ASSIGNING FIELD-SYMBOL(<fs>) WITH KEY b = 2.
 DATA(comp3) = <fs>-c.
 
 READ TABLE it REFERENCE INTO DATA(dref) WITH KEY b = 2.
-DATA(comp4) = dref->*-c.
-"Note: dref->c, which is more comfortable, also works
+DATA(comp4) = dref->c.
+"Note: The syntax dref->*-c is also possible.
 ```
 
 <p align="right">(<a href="#top">back to top</a>)</p>
@@ -1078,21 +1078,50 @@ table content or in specific parts of it, you can use [`LOOP
 AT`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abaploop_at_itab.htm)
 statements to process table lines sequentially. As above, you
 can use multiple options for target areas: work area, field
-symbol, data reference. The following snippets contain only the work
-area. There are multiple additions to the `LOOP AT`
+symbol, data reference. There are multiple additions to the `LOOP AT`
 statements to further restrict the table content to be processed.
 
 Simple form:
 ``` abap
-LOOP AT it INTO wa. "Inline declarations possible: INTO DATA(wa)
+"The target is an existing work area.
+DATA wa LIKE LINE OF it.
+
+LOOP AT it INTO wa. 
   "No addition of the loop statement; all lines are processed
   "Statements in this block are relevant for each individual table line.
+  ...
+ENDLOOP.
+
+"Work area declared inline
+LOOP AT itab INTO DATA(wa_inl).
+  ...
+ENDLOOP.
+
+"Field symbols
+FIELD-SYMBOLS <fs> LIKE LINE OF it.
+
+LOOP AT it ASSIGNING <fs>.
+  ...
+ENDLOOP.
+
+LOOP AT it ASSIGNING FIELD-SYMBOL(<fs_inl>).
+  ...
+ENDLOOP.
+
+"Data reference variables
+DATA dref TYPE REF TO dbtab.
+
+LOOP AT it REFERENCE INTO dref.
+  ...
+ENDLOOP.
+
+LOOP AT it REFERENCE INTO DATA(dref_inl).
   ...
 ENDLOOP.
 ```
 
 - The order in which tables are iterated depends on the table category. 
-- Index tables are looped thorugh in ascending order by the index. 
+- Index tables are looped over in ascending order by the index. 
 - Hashed tables are looped in the order in which the lines were added to the table. You can also sort the table before the loop. 
 - During the loop, the system field `sy-tabix` is set to the number of the currently processed table
 line. This is not true for hashed tables. There, `sy-tabix` is `0`. 
@@ -1384,7 +1413,7 @@ DELETE TABLE it_sec WITH TABLE KEY sec_key COMPONENTS ...
 DELETE it WHERE a < 6.
 ```
 
-`DELETE ADJACENT DUPLICATES` statements allow you to delete all adjacent lines except for the first line that have the same content in certain components. You usually need to doe some appropriate sorting before using these statements.
+`DELETE ADJACENT DUPLICATES` statements allow you to delete all adjacent lines except for the first line that have the same content in certain components. You usually need to perform some appropriate sorting before using these statements.
 ``` abap
 "Implicitly uses the primary table key
 
@@ -1421,13 +1450,17 @@ allocated. If the table is filled again later, the memory space is still
 available, which is a performance advantag over 
 clearing an internal table with `FREE`. Such a statement also
 deletes the table content, but it also releases the memory
-space.
+space. 
+Note that an assignment using the `VALUE` operator without entries in the parentheses clears the internal table. 
 
 ``` abap
 CLEAR it.
 
-"Additionally, it releases memory space.
+"This statement additionally releases memory space.
 FREE it.
+
+"Assignment using the VALUE operator without entries in the parentheses
+it = VALUE #( ). 
 ```
 <p align="right">(<a href="#top">back to top</a>)</p>
 

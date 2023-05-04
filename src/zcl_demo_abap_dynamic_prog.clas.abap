@@ -390,7 +390,7 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
       <fs_tab_f> = VALUE #( BASE <fs_tab_f> ( <fs_struc_f> ) ).
     ENDLOOP.
 
-    output->display( input = tab_f1 ).
+    output->display( input = tab_f1 name = `tab_f1` ).
 
     "Regarding the field symbol, the data type is derived automatically.
     LOOP AT <fs_tab_f> ASSIGNING FIELD-SYMBOL(<fs_struc_f2>).
@@ -862,7 +862,7 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
 
 **********************************************************************
 
-    output->next_section( `21) Dynamically Specifying a Data Object` ).
+    output->next_section( `21) Dynamically Specifying Components` ).
 
     "A field is determined at runtime on whose basis a sorting is done on an
     "internal table.
@@ -945,7 +945,7 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
     output->next_section( `25) Excursion: Multiple Dynamically Specified ` &&
                           `Clauses in an ABAP SQL SELECT Statement` ).
 
-    "In this nonsense example, multiple clauses in a SELECT statement are
+    "In this example, multiple clauses in a SELECT statement are
     "determined at runtime to demonstrate the rich variety of possibilities.
     "Note: The rows and target table specifications are not real dynamic specifications in the
     "SELECT statement in the sense of syntax elements enclosed by parentheses. Here, they are just
@@ -1005,7 +1005,7 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
 
     DATA method TYPE string VALUE `FILL_STRING`.
 
-    "Note that method has no parameters in this example.
+    "Note that the method has no parameters in this example.
     "Similar to above. The method stores some text in a string which is
     "displayed to see the effect of the dynamic method call.
     CALL METHOD lcl_det_at_runtime=>(method).

@@ -21,6 +21,11 @@
 * short and simple and focuses on specific RAP aspects. For this reason,
 * the example might not fully meet the requirements of the RAP BO contract.
 *
+* In newer ABAP releases, you can use side effects to trigger data
+* changes (in terms of this example, the recalculation of the calculation 
+* result) and other things based on data changes in UI scenarios with 
+* draft-enabled BOs.
+*
 * The code presented in this class is intended only to support the ABAP
 * cheat sheets. It is not intended for direct use in a production system
 * environment. The code examples in the ABAP cheat sheets are primarily 
