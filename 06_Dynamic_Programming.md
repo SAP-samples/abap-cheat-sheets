@@ -130,12 +130,6 @@ ASSIGN num   TO <fs_gen>.               "Could be any of the data objects
 "is automatically derived.
 ASSIGN num TO FIELD-SYMBOL(<fs_inl>).
 
-"You can also assign a particular component of a structure.
-"Second component of the structure
-ASSIGN COMPONENT 2 OF STRUCTURE struc TO <fs_gen>.
-
-ASSIGN COMPONENT 'CARRID' OF STRUCTURE struc TO <fs_gen>.
-
 "CASTING addition for matching types of data object and field symbol
 "when assigning memory areas
 TYPES c_len_3 TYPE c LENGTH 3.
@@ -409,7 +403,7 @@ DATA(struc) = ref_carr->*.
 DATA(carrid) = ref_carr->carrid.
 ref_carr->carrid = 'UA'.
 
-"This syntax also works but it is less "comfortable".
+"This longer syntax with the dereferencing operator also works.
 ref_carr->*-carrname = 'United Airlines'.
 
 "Checking if a data reference variable can be dereferenced.
@@ -421,6 +415,37 @@ ENDIF.
 "However, the garbage collector takes care of removing the references
 "automatically once the data is not used any more by a reference.
 CLEAR ref_carr.
+
+******************************************************
+"Excursion: Generic data references in older ABAP releases
+
+"Non-generic type
+DATA ref_int TYPE REF TO i.
+ref_int = NEW #( ).
+ref_int->* = 123.
+
+"Generic type
+DATA ref_generic TYPE REF TO data.
+ref_generic = NEW i( ).
+
+"In older ABAP releases, CREATE DATA statements were needed.
+CREATE DATA ref_generic TYPE i.
+
+"The only option to access the variable in older releases was via field symbols.
+ASSIGN ref_generic->* TO FIELD-SYMBOL(<fs_generic>).
+<fs_generic> = 123.
+
+"An access as the following, as it is possible in modern ABAP, was not possible.
+ref_generic->* = 123.
+
+"As shown in the example below, using dereferenced generic references is possible 
+"in various places in modern ABAP.
+DATA ref_sel TYPE REF TO data.
+CREATE DATA ref_sel TYPE TABLE OF zdemo_abap_carr.
+
+SELECT * 
+  FROM zdemo_abap_carr
+  INTO TABLE @ref_sel->*.
 ```
 
 **Data references in use**
@@ -518,44 +543,105 @@ In this context, you can usually use elementary, character-like data objects - t
 
 Note that dynamically specifying syntax elements has downsides, too. Consider some erroneous character-like content of such data objects. There is no syntax warning. At runtime, it can lead to runtime errors. 
 
-- Dynamically specifying components
+- Dynamic specifications in ...
+    - statements for processing internal tables
 
-    ``` abap    
-    "SORT statements: Sorting an internal table by dynamically specifying the component
-    
-    "Populating an internal table
-    SELECT *
-      FROM zdemo_abap_carr
-      INTO TABLE @DATA(itab).
+      ``` abap    
+      "SORT: Dynamically specifying component name to be sorted for
+      
+      "Populating an internal table
+      SELECT *
+        FROM zdemo_abap_carr
+        INTO TABLE @DATA(itab).
 
-    "Dynamically specifying component name to be sorted for
-    "Named data object
-    DATA(field_name) = 'CARRNAME'.
-    SORT itab BY (field_name).
+      "Named data object
+      DATA(field_name) = 'CARRNAME'.
+      SORT itab BY (field_name).
 
-    "Unnamed data object
-    SORT itab BY ('CURRCODE').
+      "Unnamed data object
+      SORT itab BY ('CURRCODE').
 
-    "ASSIGN statements 
+      "READ TABLE: Dynamically specifying keys
+      READ TABLE itab INTO DATA(wa) WITH KEY (field_name) = ...
 
-    "Declaring a field symbol
-    FIELD-SYMBOLS <fs> type any.
+      "MODIFY: Dynamically specifying WHERE conditions
+      DATA(condition) = ( `CARRID = 'LH'` ).
 
-    "Dynamically specifying components of structures
-    ASSIGN itab[ 1 ]-('CURRCODE') to <fs>.
+      MODIFY itab FROM ... TRANSPORTING ... WHERE (condition).
 
-    DATA(struc) = itab[ 2 ].
-    ASSIGN struc-(field_name) to <fs>.
+      "DELETE: Dynamically specifying WHERE conditions
+      DELETE itab USING KEY ... WHERE (condition).
 
-    "Dynamically specifying components of structures that are referenced by
-    "a data reference variable
-    DATA(dref) = REF #( struc ).
-    ASSIGN dref->('URL') to <fs>.
+      "LOOP: Dynamically specifying keys
+      DATA(k) = `SOME_KEY`.
 
-    "Dynamically specifying component of a class/interface
-    "In the example, the field symbol is declared inline.
-    ASSIGN zdemo_abap_objects_interface=>('CONST_INTF') TO FIELD-SYMBOL(<fs_inl>).
-    ```
+      LOOP AT itab INTO DATA(wa_lo) USING KEY (k).
+        ...    
+      ENDLOOP.
+      ```
+
+    - ASSIGN statements
+
+      ``` abap    
+      "Accessing components of structures dynamically    
+
+      "Populating a structure
+      SELECT SINGLE *
+        FROM zdemo_abap_carr
+        INTO @DATA(wa).
+      
+      "Declaring a field symbol
+      FIELD-SYMBOLS <fs> type any.
+
+      DATA(comp_name) = 'CARRNAME'. 
+      ASSIGN wa-(comp_name) TO <fs>. "named data object
+      ASSIGN wa-('CARRID') TO <fs>.  "unnamed data object 
+      
+      "The statements set sy-subrc value. No exception occurs in case of an unsuccessful assignment.
+      ASSIGN wa-('XYZ') TO <fs>. 
+      IF sy-subrc <> 0.
+        ...
+      ENDIF.
+
+      "Numeric expressions are possible. Its value is interpreted as the position
+      "of the component in the structure.
+      ASSIGN wa-(4) TO <fs>.
+
+      "If the value is 0, the memory area of the entire structure is assigned to the field symbol.
+      ASSIGN wa-(0) TO <fs>.
+
+      "The statements above replace the following, older statements. 
+      ASSIGN COMPONENT 'CARRID' OF STRUCTURE wa TO <fs>.
+      ASSIGN COMPONENT 5 OF STRUCTURE wa TO <fs>.
+
+      "Populating a structure that is referenced by a data reference variable
+      SELECT SINGLE *
+        FROM zdemo_abap_carr
+        INTO NEW @DATA(ref_struc).
+
+      "Note the object component selector. The field symbol is created inline here.
+      ASSIGN ref_struc->('CARRNAME') TO FIELD-SYMBOL(<fs_inl>). 
+
+      *************************************************************
+
+      "Dynamically specifying attributes of classes/interfaces
+      DATA(cl_name) = 'CL_SOME_CLASS'.
+      DATA(dobj) = 'SOME_DOBJ'.
+
+      ASSIGN cl_some_class=>(dobj) TO <fs>.
+      ASSIGN (cl_name)=>some_dobj TO <fs>.
+      ASSIGN (cl_name)=>(dobj) TO <fs>.
+
+      "Class reference variable pointing to an object that contains attributes
+      "and that are specified dynamically.
+      DATA cl_ref TYPE REF TO cl_some_class.
+      cl_ref = NEW #( ).
+      ASSIGN cl_ref->('some_attribute') TO FIELD-SYMBOL(<another_fs>).
+
+      "If ELSE UNASSIGN is specified, no memory area is assigned to the field symbol. 
+      "It has the state unassigned after the ASSIGN statement.
+      ASSIGN cl_ref->('attr_xyz') TO FIELD-SYMBOL(<attr>) ELSE UNASSIGN.
+      ```
 
 - Dynamically specifying data types
 
@@ -600,6 +686,12 @@ Note that dynamically specifying syntax elements has downsides, too. Consider so
     SELECT * 
       FROM (db_table) 
       INTO TABLE @itab->*.
+
+    "Similar to the NEW operator, you can use the addition NEW here to create an anonymous data object 
+    "in place. The advantage is that the data type is constructed in a suitable way.
+    SELECT *
+      FROM (db_table)
+      INTO TABLE NEW @DATA(a_dobj).
 
     "Dynamic WHERE clause
     "This is an example for using an internal table with a character-like row type

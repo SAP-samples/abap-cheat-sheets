@@ -3,42 +3,47 @@
 *           ABAP cheat sheet: Dynamic programming
 *
 * -------------------------- PURPOSE ----------------------------------
-* - Example to demonstrate various syntactical options and concepts related
+* - Example to demonstrate various syntax options and concepts related
 *   to dynamic programming.
 * - Topics covered: Field symbols and data references (both as supporting
 *   elements for dynamic programming), dynamic ABAP syntax components,
 *   runtime type services (RTTS), i. e. runtime type identification (RTTI)
 *   and runtime type creation (RTTC)
-* - To provide a "real" dynamic determination at runtime, the example
-*   includes local classes in the CCIMP include (local types tab in ADT)
-*   whose methods return character-like content to be used in the
-*   ABAP statements. The content is predefined in these classes but
-*   the content that is actually used in the end is random.
+* - To provide a "real" dynamic determination at runtime for several code
+*   examples in this class, the example class includes local classes
+*   in the CCIMP include (local types tab in ADT) whose methods return
+*   character-like content to be used in the ABAP statements. The content
+*   is predefined in these classes but the content that is actually used
+*   in the end is random.
 *
 * ----------------------- GETTING STARTED -----------------------------
 * - Open the class with the ABAP Development Tools (ADT).
 * - Choose F9 to run the class.
 * - Check the console output.
-* - To understand the context and the ABAP syntax used, refer to the 
-*   notes included in the class as comments or refer to the respective 
+* - To understand the context and the ABAP syntax used, refer to the
+*   notes included in the class as comments or refer to the respective
 *   topic in the ABAP Keyword Documentation.
-* - Due to the amount of console output, the examples contain numbers 
-*   (e.g. 1) ..., 2) ..., 3) ...) for the individual example sections. 
-*   Also, the variable name is displayed in most cases. So to find 
-*   the relevant output in the console easier and faster, just search 
-*   for the number/variable name in the console (CTRL+F in the console) 
+* - Due to the amount of console output, the examples contain numbers
+*   (e.g. 1) ..., 2) ..., 3) ...) for the individual example sections.
+*   Also, the variable name is displayed in most cases. So to find
+*   the relevant output in the console easier and faster, just search
+*   for the number/variable name in the console (CTRL+F in the console)
 *   or use the debugger.
 *
 * ----------------------------- NOTE -----------------------------------
+* Some code sections are commented out. The syntax is only available in 
+* newer ABAP releases. Comment them in if you are running a newer
+* ABAP release, for example, in the SAP BTP environment. 
+*
 * The code presented in this class is intended only to support the ABAP
 * cheat sheets. It is not intended for direct use in a production system
-* environment. The code examples in the ABAP cheat sheets are primarily 
-* intended to provide a better explanation and visualization of the 
-* syntax and semantics of ABAP statements, not to solve concrete 
-* programming tasks. For production application programs, you should  
-* always work out your own solution for each individual case. There is 
-* no guarantee for the correctness or completeness of the code.  
-* Furthermore, there is no legal responsibility or liability for any 
+* environment. The code examples in the ABAP cheat sheets are primarily
+* intended to provide a better explanation and visualization of the
+* syntax and semantics of ABAP statements, not to solve concrete
+* programming tasks. For production application programs, you should
+* always work out your own solution for each individual case. There is
+* no guarantee for the correctness or completeness of the code.
+* Furthermore, there is no legal responsibility or liability for any
 * errors or their consequences that may occur when using the the example
 * code.
 *
@@ -154,12 +159,6 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
 
     "Inline declaration is possible, too. The type is automatically derived.
     ASSIGN num_a TO FIELD-SYMBOL(<fs_inl>).
-
-    "Assigning structure components to field symbols
-    "Component position
-    ASSIGN COMPONENT 2 OF STRUCTURE struc_a TO <fs_data_a>.
-    "Component name
-    ASSIGN COMPONENT 'CONNID' OF STRUCTURE struc_a TO <fs_data_a>.
 
     output->display( `No output for this section. See the code.` ).
 
@@ -435,7 +434,12 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
 
     DO.
       "sy-index represents the position of a structure component
+      "NOTE: The following statement is replaced by the newer syntax that is
+      "commented out below. Therefore, it is recommended that you use this
+      "syntax in newer ABAP releases.
       ASSIGN COMPONENT sy-index OF STRUCTURE <struct> TO <comp>.
+
+      "ASSIGN <struct>-(sy-index) to <comp>.
 
       IF sy-subrc <> 0.
         "If all components are processed, the loop is exited.
@@ -846,23 +850,133 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
 **********************************************************************
 
     output->next_section( `Dynamic ABAP Statements` ).
-    output->display( `20) Assignment of Dynamically ` &&
-    `Determined Data Objects to Field Symbols` ).
+    output->display( `20a) Dynamic Specifications in ASSIGN Statements (1) - Attributes of Classes/Interfaces` ).
 
-    "A dynamically determined data object is assigned to a field symbol.
-    "In this case, data objects that are declared in the public section of
-    "the local demo class are assigned to a field symbol.
+    "The following examples demonstrate a selection of various dynamic specifications
+    "that are possible with ASSIGN statements.
+
+    "Dynamic specification of attributes of classes/interfaces that are assigned to a field symbol.
 
     DATA(dobj_name) = lcl_det_at_runtime=>get_dyn_dobj( ).
 
-    ASSIGN lcl_det_at_runtime=>(dobj_name) TO FIELD-SYMBOL(<fs_m>).
+    ASSIGN lcl_det_at_runtime=>(dobj_name) TO FIELD-SYMBOL(<fs_m1>).
 
     output->display( |Data object name determined at runtime: { dobj_name } | ).
-    output->display( |The content of the data object is: { <fs_m> } | ).
+    output->display( |The content of the data object is: { <fs_m1> } | ).
+
+    dobj_name = lcl_det_at_runtime=>get_dyn_dobj( ).
+
+    "Completely dynamic assign
+    ASSIGN ('lcl_det_at_runtime')=>(dobj_name) TO FIELD-SYMBOL(<fs_m2>).
+    output->display( input = <fs_m2> name = `<fs_m2>` ).
+
+    ASSIGN ('zdemo_abap_objects_interface')=>('const_intf') TO FIELD-SYMBOL(<fs_m3>).
+    output->display( input = <fs_m3> name = `<fs_m3>` ).
+
+    "Class/interface reference variables pointing to an object that contains attributes
+    "and that are specified dynamically.
+    DATA iref TYPE REF TO zdemo_abap_objects_interface.
+    DATA(cl_ref) = NEW zcl_demo_abap_objects( ).
+    iref = cl_ref.
+
+    ASSIGN iref->('const_intf') TO FIELD-SYMBOL(<fs_m4>).
+
+    output->display( input = <fs_m4> name = `<fs_m4>` ).
+
+    ASSIGN cl_ref->('another_string') TO FIELD-SYMBOL(<fs_m5>).
+
+    output->display( input = <fs_m5> name = `<fs_m5>` ).
+
+**********************************************************************
+"Note: Comment in the following example in newer ABAP releases and in the SAP BTP environment.
+
+*    output->next_section( `20b) Dynamic Specifications in ASSIGN Statements (2) - Setting sy-subrc/ELSE UNASSIGN` ).
+*
+*    "In dynamic assignments, the statement ASSIGN sets the return code sy-subrc.
+*    "If ELSE UNASSIGN is specified, no memory area is assigned to the field symbol. It has the state unassigned after the ASSIGN statement.
+*
+*    DATA(attr) = VALUE string_table( ( `another_string` ) ( `public_string` ) ( `this_will_fail` ) ).
+*
+*    LOOP AT attr INTO DATA(attribute).
+*
+*      ASSIGN cl_ref->(attribute) TO FIELD-SYMBOL(<attr>) ELSE UNASSIGN.
+*      IF sy-subrc = 0.
+*        output->display( |Successful assignment for attribute "{ attribute }". sy-subrc = { sy-subrc }. | ).
+*        output->display( input = <attr> name = `<attr>` ).
+*      ELSE.
+*        output->display( |Assignment not successful for attribute "{ attribute }". sy-subrc = { sy-subrc }. | ).
+*      ENDIF.
+*
+*      IF <attr> IS ASSIGNED.
+*        output->display( `The field symbol is assigned.` ).
+*        output->display( `--------------------` ).
+*      ELSE.
+*        output->display( `The field symbol is not assigned.` ).
+*      ENDIF.
+*
+*    ENDLOOP.
+
+**********************************************************************
+"Note: The following code contains syntax that is only available in
+"newer ABAP releases and in the SAP BTP environment. In these contexts,
+"you can comment in the code.
+
+    output->next_section( `20c) Dynamic Specifications in ASSIGN Statements (3) - Structure Components` ).
+
+    "Dynamic specification of structure components that are assigned to a field symbol.
+
+    SELECT SINGLE * FROM zdemo_abap_carr INTO @DATA(wa).
+    "Reading into data reference variable
+    SELECT SINGLE * FROM zdemo_abap_carr INTO NEW @DATA(ref_m).
+
+    DATA(comp_name) = lcl_det_at_runtime=>get_dyn_field( ).
+
+*    ASSIGN wa-(comp_name) TO FIELD-SYMBOL(<fs_m6>).
+*
+*    ASSIGN wa-('CARRNAME') TO FIELD-SYMBOL(<fs_m7>).
+*
+*    IF sy-subrc = 0.
+*      DATA(subrc1) = sy-subrc.
+*    ENDIF.
+*
+*    "No exception occurs in case of an unsuccessful assignment.
+*    ASSIGN wa-('CRRNM') TO FIELD-SYMBOL(<fs_m8>).
+*
+*    IF sy-subrc <> 0.
+*      DATA(subrc2) = sy-subrc.
+*    ENDIF.
+*
+*    "Numeric expressions are possible. Its value is interpreted as the position
+*    "of the component in the structure.
+*    ASSIGN wa-(4) TO FIELD-SYMBOL(<fs_m9>).
+*
+*    "If the value is 0, the memory area of the entire structure is assigned to the field symbol.
+*    ASSIGN wa-(0) TO FIELD-SYMBOL(<fs_m10>).
+
+    "The above statements replace the following syntax syntax
+    ASSIGN COMPONENT 'CARRID' OF STRUCTURE wa TO FIELD-SYMBOL(<fs_m11>).
+
+    ASSIGN COMPONENT 5 OF STRUCTURE wa TO FIELD-SYMBOL(<fs_m12>).
+
+    "Dynamically specifying components of structures that are referenced by
+    "a data reference variable
+
+    ASSIGN ref_m->('CARRNAME') TO FIELD-SYMBOL(<fs_m13>).
+
+*    output->display( input = <fs_m6> name = `<fs_m6>` ).
+*    output->display( input = <fs_m7> name = `<fs_m7>` ).
+*    output->display( input = subrc1 name = `subrc1` ).
+*    output->display( input = subrc2 name = `subrc2` ).
+*    output->display( input = <fs_m9> name = `<fs_m9>` ).
+*    output->display( input = <fs_m10> name = `<fs_m10>` ).
+    output->display( input = <fs_m11> name = `<fs_m11>` ).
+    output->display( input = <fs_m12> name = `<fs_m12>` ).
+    output->display( input = <fs_m13> name = `<fs_m13>` ).
 
 **********************************************************************
 
-    output->next_section( `21) Dynamically Specifying Components` ).
+    output->next_section( `Dynamically Specifying Components/Clauses in Statements for Processing Internal Tables with ...` ).
+    output->display( `21) SORT` ).
 
     "A field is determined at runtime on whose basis a sorting is done on an
     "internal table.
@@ -883,8 +997,170 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
 
 **********************************************************************
 
+    output->next_section( `22) READ TABLE` ).
+
+    "Dynamic key specification in READ TABLE statements
+
+    TYPES: BEGIN OF s,
+             comp  TYPE string,
+             value TYPE string,
+           END OF s.
+
+    TYPES comps_type TYPE TABLE OF s WITH EMPTY KEY.
+
+    "Providing components and values for READ TABLE statement
+    DATA(comps) = VALUE comps_type( ( comp = `CARRID` value = `LH` )
+                                    ( comp = `CONNID` value = `0555` )
+                                    ( comp = `SEATSOCC` value = `115` )
+                                    ( comp = `CARRID` value = `XY` ) ). "not found
+
+    SELECT *
+      FROM zdemo_abap_fli
+      INTO TABLE @DATA(itab_read_tab_dyn).
+
+    LOOP AT comps INTO DATA(wa_comps).
+      READ TABLE itab_read_tab_dyn
+        INTO DATA(read_line)
+        WITH KEY (wa_comps-comp) = wa_comps-value.
+
+      IF sy-subrc = 0.
+        output->display( input = wa_comps-comp name = `wa_comps-comp` ).
+        output->display( input = wa_comps-value name = `wa_comps-value` ).
+        output->display( input = read_line name = `read_line` ).
+        CLEAR read_line.
+      ELSE.
+        output->display( input = wa_comps-comp name = `wa_comps-comp` ).
+        output->display( input = wa_comps-value name = `wa_comps-value` ).
+        output->display( `Line not found.` ).
+      ENDIF.
+
+    ENDLOOP.
+
+**********************************************************************
+
+    output->next_section( `23) MODIFY` ).
+
+    "Dynamic WHERE condition in MODIFY statements
+    "Note:
+    "- The addition WHERE can only be specified together with the addition TRANSPORTING.
+    "- Invalid logical expressions raise an exception from the class CX_SY_ITAB_DYN_LOOP.
+
+    TYPES:
+      BEGIN OF line,
+        col1 TYPE c LENGTH 1,
+        col2 TYPE i,
+      END OF line.
+
+    DATA itab_mod_tab_dyn TYPE SORTED TABLE OF line
+                   WITH UNIQUE KEY col1.
+
+    itab_mod_tab_dyn = VALUE #( ( col1 = 'A' col2 = 1 )
+                                ( col1 = 'B' col2 = 10 )
+                                ( col1 = 'C' col2 = 100 ) ).
+
+    output->display( `Internal table content before modifications:` ).
+    output->display( input = itab_mod_tab_dyn name = `itab_mod_tab_dyn` ).
+
+    "Providing conditions for MODIFY statement
+    DATA(conditions) = VALUE string_table( ( `col2 < 5` )
+                                           ( `col2 = 10` )
+                                           ( `colxyz > 50` ) ). "to fail
+
+    LOOP AT itab_mod_tab_dyn INTO DATA(wa_mod_dyn).
+      TRY.
+
+          DATA(condition) = conditions[ sy-tabix ].
+
+          MODIFY itab_mod_tab_dyn
+            FROM VALUE line( col2 = wa_mod_dyn-col2 * 2 )
+            TRANSPORTING col2
+            WHERE (condition).
+
+        CATCH cx_sy_itab_dyn_loop.
+          output->display( |Invalid WHERE condition "{ condition }".| ).
+      ENDTRY.
+    ENDLOOP.
+
+    output->display( `Internal table content after modifications:` ).
+    output->display( input = itab_mod_tab_dyn name = `itab_mod_tab_dyn` ).
+
+**********************************************************************
+
+    output->next_section( `24) DELETE` ).
+
+    "Dynamic WHERE condition in DELETE statements
+
+    DATA itab_del_tab_dyn TYPE TABLE OF i WITH EMPTY KEY
+                   WITH NON-UNIQUE SORTED KEY skey COMPONENTS table_line.
+
+    itab_del_tab_dyn = VALUE #( ( 100 )
+                                ( 200 )
+                                ( 300 )
+                                ( 400 )
+                                ( 500 )
+                                ( 600 ) ).
+
+          output->display( `Internal table content before modifications:` ).
+          output->display( input = itab_del_tab_dyn name = `itab_del_tab_dyn` ).
+
+    DO 3 TIMES.
+      TRY.
+
+          CASE sy-index.
+            WHEN 1.
+              condition = `table_line <= 200`.
+            WHEN 2.
+              condition = `table_line >= 500`.
+            WHEN 3.
+              condition = `col1 = 600`.
+          ENDCASE.
+
+          DELETE itab_del_tab_dyn
+            USING KEY skey
+            WHERE (condition).
+
+          output->display( |Condition: { condition }| ).
+          output->display( input = itab_del_tab_dyn name = `itab_del_tab_dyn` ).
+
+        CATCH cx_sy_itab_dyn_loop.
+          output->display( |Invalid WHERE condition "{ condition }".| ).
+      ENDTRY.
+    ENDDO.
+
+**********************************************************************
+
+    output->next_section( `25) LOOP` ).
+
+    "Dynamic specification of the key in LOOP statements
+    "In the example, the loop can be executed with the entries 'skey' and 'primary_key'.
+    "This is not case sensitive. Any other entries produce a runtime error.
+
+    DATA(keys) = VALUE string_table( ( `primary_key` ) ( `SKEY` ) ).
+
+    DATA itab_loop TYPE TABLE OF i
+              WITH NON-UNIQUE KEY primary_key COMPONENTS table_line
+              WITH NON-UNIQUE SORTED KEY skey COMPONENTS table_line.
+
+    itab_loop = VALUE #( ( 3 ) ( 2 ) ( 1 ) ).
+
+    DATA itab_dyn_key LIKE itab_loop.
+
+    LOOP AT keys INTO DATA(k).
+
+      LOOP AT itab_loop INTO DATA(wa_lo) USING KEY (k).
+        APPEND wa_lo TO itab_dyn_key.
+      ENDLOOP.
+
+      output->display( |Loop over internal table using key "{ k }".| ).
+      output->display( input = itab_dyn_key name = `itab_dyn_key` ).
+      CLEAR itab_dyn_key.
+
+    ENDLOOP.
+
+**********************************************************************
+
     output->next_section( `Dynamically Specifying Clauses in ABAP SQL SELECT Statements` ).
-    output->display( `22) SELECT List` ).
+    output->display( `26) SELECT List` ).
 
     "In the example, the SELECT list that is used in a SELECT statement is
     "determined at runtime.
@@ -904,7 +1180,7 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
 
 **********************************************************************
 
-    output->next_section( `23) FROM Clause` ).
+    output->next_section( `27) FROM Clause` ).
 
     "In the example, the FROM clause that is used in a SELECT statement is
     "determined at runtime. Here, the number of entries of a database table
@@ -921,7 +1197,7 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
 
 **********************************************************************
 
-    output->next_section( `24) WHERE Clause` ).
+    output->next_section( `28) WHERE Clause` ).
 
     "In the example, the WHERE clause that is used in a SELECT statement is
     "determined at runtime. Here, the WHERE clause is based on a string
@@ -942,7 +1218,7 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
 
 **********************************************************************
 
-    output->next_section( `25) Excursion: Multiple Dynamically Specified ` &&
+    output->next_section( `29) Excursion: Multiple Dynamically Specified ` &&
                           `Clauses in an ABAP SQL SELECT Statement` ).
 
     "In this example, multiple clauses in a SELECT statement are
@@ -979,7 +1255,7 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
 
 **********************************************************************
 
-    output->next_section( `26) Dynamic Invoke` ).
+    output->next_section( `30) Dynamic Invoke` ).
 
     "In the example, both class and method are determined at runtime for
     "the method call. The suitable parameter table is filled in the
@@ -1020,7 +1296,7 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
 
 **********************************************************************
 
-    output->next_section( `27) RTTI: Determining Data and Object Types at Runtime` ).
+    output->next_section( `31) RTTI: Determining Data and Object Types at Runtime` ).
 
     "The example demonstrates RTTI as follows:
     "- The method call takes care of providing the name of a type. It is implemented
@@ -1159,7 +1435,7 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
 
 **********************************************************************
 
-    output->next_section( `28) RTTC: Dynamically Creating Elementary Data Objects` ).
+    output->next_section( `32) RTTC: Dynamically Creating Elementary Data Objects` ).
 
     "The example demonstrates RTTC as follows:
     "- The method call takes care of providing the name of a built-in data type and more
@@ -1198,7 +1474,7 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
 
 **********************************************************************
 
-    output->next_section( `29) RTTC: Dynamically Creating Structured Data Object (1)` ).
+    output->next_section( `33) RTTC: Dynamically Creating Structured Data Object (1)` ).
 
     "The example demonstrates RTTC as follows:
     "- The method call takes care of providing the name of a database table name.
@@ -1236,7 +1512,7 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
 
 **********************************************************************
 
-    output->next_section( `30) RTTC: Dynamically Creating Structured Data Object (2)` ).
+    output->next_section( `34) RTTC: Dynamically Creating Structured Data Object (2)` ).
 
     "This example includes the dynamic definition of a structure with three components
     "using the GET method of the CL_ABAP_STRUCTDESCR class.
@@ -1292,7 +1568,7 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
 
 **********************************************************************
 
-    output->next_section( `31) RTTC: Dynamically Creating Internal Table (1)` ).
+    output->next_section( `35) RTTC: Dynamically Creating Internal Table (1)` ).
 
     "The example demonstrates RTTC as follows:
     "- The method call takes care of providing the name of a database table name.
@@ -1319,7 +1595,7 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
 
 **********************************************************************
 
-    output->next_section( `32) RTTC: Dynamically Creating Internal Table (2)` ).
+    output->next_section( `36) RTTC: Dynamically Creating Internal Table (2)` ).
 
     "In the example an internal table type is created based on a DDIC type.
     "See the comments in the code.
