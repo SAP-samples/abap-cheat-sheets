@@ -1,8 +1,8 @@
 <a name="top"></a>
 
-# A Glimpse on ABAP Unit Tests
+# ABAP Unit Tests
 
-- [A Glimpse on ABAP Unit Tests](#a-glimpse-on-abap-unit-tests)
+- [ABAP Unit Tests](#abap-unit-tests)
   - [Unit Tests in ABAP](#unit-tests-in-abap)
   - [High-Level Steps for ABAP Unit Tests](#high-level-steps-for-abap-unit-tests)
   - [Creating Test Classes](#creating-test-classes)

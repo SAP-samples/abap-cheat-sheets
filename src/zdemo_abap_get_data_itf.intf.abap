@@ -1,6 +1,6 @@
 ***********************************************************************
 * ---------------------------- PURPOSE --------------------------------
-* Interface to support the ABAP cheat sheet: A Glimpse on ABAP Unit Tests
+* Interface to support the ABAP cheat sheet: ABAP Unit Tests
 *
 * ----------------------------- NOTE ----------------------------------
 * The code presented in this class is only meant for supporting the ABAP
@@ -17,7 +17,7 @@
 *
 ***********************************************************************
 "! <p class="shorttext synchronized">Interface for ABAP cheat sheet example</p>
-"! The interface supports the ABAP cheat sheet: A Glimpse on ABAP Unit Tests.
+"! The interface supports the ABAP cheat sheet: ABAP Unit Tests.
 INTERFACE zdemo_abap_get_data_itf
   PUBLIC.
 

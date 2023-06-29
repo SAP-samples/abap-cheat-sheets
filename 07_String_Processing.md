@@ -430,7 +430,7 @@ and
 [`to_upper`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencase_functions.htm)
 transform characters of a string to either lowercase or uppercase and
 store the result in a target variable. 
-- If you want ot apply the transformation directly to the source directly, you can use
+- If you want to apply the transformation to the source directly, you can use
 [`TRANSLATE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abaptranslate.htm)
 statements.
 

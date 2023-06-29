@@ -388,7 +388,7 @@ WITH
         ( SELECT FROM demo_cds_simple_tree( p_id = @root_id )
                  FIELDS * )
           WITH HIERARCHY demo_cds_simple_tree
-      SELECT FROM  +tree "hierarchy ]
+      SELECT FROM  +tree "hierarchy 
              FIELDS id,
                     parent,
                     name,
@@ -416,7 +416,7 @@ WITH
                    parent,
                    name )
           WITH HIERARCHY asql_hierarchy
-       SELECT FROM +tree "hierarchy ]
+       SELECT FROM +tree "hierarchy 
              FIELDS id,
                     parent,
                     name,
@@ -452,7 +452,7 @@ WITH
                    parent,
                    name  )
             WITH HIERARCHY cte_hierarchy
-      SELECT FROM +tree "hierarchy ]
+      SELECT FROM +tree "hierarchy 
              FIELDS id,
                     parent,
                     name,

@@ -90,8 +90,7 @@ ENDLOOP.
 > **💡 Note**<br>
 >- After its declaration, a field symbol is initial, i. e. a memory area is not (yet) assigned to it (apart from the inline declaration). If you use an unassigned field symbol, an exception is raised.
 >-   There are plenty of options for generic ABAP types. A prominent one
-    is `data` that stands for any data type (the older generic
-    type `any` has the same effect). See more information in the
+    is `data` that stands for any data type. See more information in the
     topic [Generic ABAP
     Types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbuilt_in_types_generic.htm).
 >-   Field symbols cannot be declared in the declaration part of
@@ -268,7 +267,7 @@ data object](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.ht
 at runtime by assigning the reference to the data object of a data reference variable. You can use the [instance
 operator](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abeninstance_operator_glosry.htm "Glossary Entry")
 [`NEW`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconstructor_expression_new.htm).
-It replaces the older syntax [`CREATE DATA`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapcreate_data.htm). However, as shown further, `CREATE DATA` is required for specifying a dynamically determined type.
+It replaces the older syntax [`CREATE DATA`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapcreate_data.htm). However, as shown below, `CREATE DATA` is required for specifying a dynamically determined type.
 
 ``` abap
 "Declaring data reference variables
@@ -365,7 +364,7 @@ ref5 = CAST #( ref6 ).
 
 Before addressing the content of data objects a data reference points to, you must dereference data reference variables. Use the
 [dereferencing operator](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendereferencing_operat_glosry.htm "Glossary Entry")
-`->*`. To check if dereferncing works, you can use a logical expression with [`IS BOUND`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenlogexp_bound.htm).
+`->*`. To check if dereferencing works, you can use a logical expression with [`IS BOUND`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenlogexp_bound.htm).
 
 ``` abap
 "Creating data reference variables and assign values
@@ -580,10 +579,10 @@ Note that dynamically specifying syntax elements has downsides, too. Consider so
       ENDLOOP.
       ```
 
-    - ASSIGN statements
+    - `ASSIGN` statements
 
       ``` abap    
-      "Accessing components of structures dynamically    
+      "Dynamically accessing components of structures   
 
       "Populating a structure
       SELECT SINGLE *
@@ -691,7 +690,7 @@ Note that dynamically specifying syntax elements has downsides, too. Consider so
     "in place. The advantage is that the data type is constructed in a suitable way.
     SELECT *
       FROM (db_table)
-      INTO TABLE NEW @DATA(a_dobj).
+      INTO TABLE NEW @DATA(dref_tab).
 
     "Dynamic WHERE clause
     "This is an example for using an internal table with a character-like row type

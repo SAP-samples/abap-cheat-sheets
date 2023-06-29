@@ -501,7 +501,7 @@ Examples:
 "Result: 0.2
 DATA(a) = CONV decfloat34( 1 / 5 ).
 
-"Comparison with an expression without CONV; the result is 0
+"Comparison with an expression without CONV; the result is 0, the data type is i
 DATA(b) = 1 / 5.
 ```
 
@@ -519,13 +519,16 @@ DATA(c) = CONV decfloat34( '0.4' ).
 
 "Instead of
 DATA d TYPE decfloat34 VALUE '0.4'.
+"or
+DATA e TYPE decfloat34.
+e = '0.4'.
 
 "Redundant conversion
 "Derives the string type automatically
-DATA(e) = `hallo`.
+DATA(f) = `hallo`.
 
 "Produces a syntax warning
-"DATA(f) = CONV string( `hallo` ).
+"DATA(g) = CONV string( `hallo` ).
 ```
 
 

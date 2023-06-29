@@ -138,7 +138,7 @@ SELECT FROM source   "What database table or view to read from
 ```
 > **💡 Note**<br>
 >-   There are further clauses available of which some are dealt with
-    further down. In general, the recommendation is to hit `F1` for the keywords and additions to get the all the details in the ABAP Keyword Documentation.
+    further down. In general, the recommendation is to hit `F1` for the keywords and additions to get all the details in the ABAP Keyword Documentation.
 >-   Especially in older ABAP programs, you will see other forms of the
     `SELECT` syntax that you should no longer use. Strict syntax check modes might enforce the use
     of specific ABAP SQL syntax. For example, the `INTO` clause should be placed after the other clauses. Furthermore, [host variables](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenhost_variable_glosry.htm "Glossary Entry") or [host expressions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenhost_expression_glosry.htm "Glossary Entry") are required for data objects and expressions, i. e. they must be preceded by `@` or `@( ... )`. Further information: [Release-Dependent Syntax Check Modes (F1 docu for standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenabap_sql_strict_modes.htm).
@@ -1099,33 +1099,33 @@ SELECT *
   WHERE comp1 = 'abc' "Equals some value
         
         "More example WHERE conditions:
-        comp2 > 100 "Greater than some value; alternatively GT is possible
+        AND comp2 > 100 "Greater than some value; alternatively GT is possible
         
         "Not equals plus an additional condition that must be respected
-        comp3 <> 100 AND comp4 = 'xyz'
+        AND comp3 <> 100 AND comp4 = 'xyz'
         
         "(Not) between a value range
-        comp5 BETWEEN 1 AND 10
-        comp6 NOT BETWEEN 1 AND 10
+        AND comp5 BETWEEN 1 AND 10
+        AND comp6 NOT BETWEEN 1 AND 10
         
         "A character literal has a certain pattern, preceded and
         "followed by any string.
-        "comp7 LIKE '%XYZ%'
+        AND comp7 LIKE '%XYZ%'
         
         "The second character is not Y. _ stands for any character.
-        comp8 NOT LIKE '_Y%'
+        AND comp8 NOT LIKE '_Y%'
         
         "Contains one of the values specified in the parentheses
-        comp9 IN ( 'ABC', 'DEF', 'GHI' )
+        AND comp9 IN ( 'ABC', 'DEF', 'GHI' )
                         
         "Does not contain one of the values specified in the parentheses
-        comp10 NOT IN ( 'JKL', 'MNO' )
+        AND comp10 NOT IN ( 'JKL', 'MNO' )
         
         "Checking if an operand has an initial value
-        comp11 IS INITIAL
+        AND comp11 IS INITIAL
         
         "Combination of logical expression using AND, OR and parentheses
-        ( comp12 = a AND comp13 < b ) OR ( comp14 > c AND comp15 <> d )
+        AND  ( comp12 = a AND comp13 < b ) OR ( comp14 > c AND comp15 <> d )
         
   INTO TABLE @DATA(itab_where).
 ```

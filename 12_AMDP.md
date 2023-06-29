@@ -1,8 +1,8 @@
 <a name="top"></a>
 
-# A Glimpse on AMDP
+# ABAP Managed Database Procedures (AMDP)
 
-- [A Glimpse on AMDP](#a-glimpse-on-amdp)
+- [ABAP Managed Database Procedures (AMDP)](#abap-managed-database-procedures-amdp)
   - [About AMDP](#about-amdp)
   - [AMDP Classes](#amdp-classes)
   - [AMDP Methods](#amdp-methods)

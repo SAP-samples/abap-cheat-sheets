@@ -721,7 +721,7 @@ operator](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?f
     `FILTER` operator constructs an internal table according to a specified type (which can be an explicitly specified, non-generic table type or the `#` character as a symbol for the [operand type](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenoperand_type_glosry.htm) before the first parenthesis).
 - The lines for the new internal table are taken from an
     existing internal table based on conditions specified in a `WHERE` clause. Note that the table type of the existing internal table must be convertible into the specified target type.
--   The conditions can either be based on either single values or a [filter
+-   The conditions can be based on either single values or a [filter
     table](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconstructor_expr_filter_table.htm).
 - Additions:
 
@@ -733,7 +733,7 @@ operator](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?f
 Examples:
 ```abap
 "FILTER on conditions based on single values
-"Assumption the component num is of type i.
+"Assumption: The component num is of type i.
 DATA itab1 TYPE SORTED TABLE OF struc WITH NON-UNIQUE KEY num.
 DATA itab2 TYPE STANDARD TABLE OF struc WITH NON-UNIQUE SORTED KEY sec_key COMPONENTS num.
 DATA itab3 TYPE HASHED TABLE OF struc WITH UNIQUE KEY num.
@@ -857,10 +857,10 @@ functionality, your use case, the
 performance or readability of the code may play a role. For more information, see 
 the programming guidelines for the [target
 area (F1 docu for standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abentable_output_guidl.htm "Guideline").
-An obvious use case for `INTO dobj` is when the table should
+A use case for `INTO dobj` is when the table should
 not be changed using the copied table line. However, copying comes
 at a performance cost. Imagine that your table contains many columns or
-nested components. In this case, it is better not to copy at all (although you can of course use 
+nested components. In this case, it is better not to copy at all (although you can use 
 the `TRANSPORTING` addition to restrict the fields to be copied).
 
 <p align="right">(<a href="#top">back to top</a>)</p>
@@ -871,6 +871,7 @@ The following example shows `READ TABLE` statements to read a single line from a
 key, the addition can be specified and the line to be read is then determined from its secondary table index. If the primary table key is
 specified by its name `primary_key`, the table must be an index table, and the behavior is the same as if `USING KEY` was
 not specified.
+Note that the examples only show reading into a work area. Other targets are possible as shown above. 
 ``` abap
 READ TABLE itab INTO wa INDEX i.
 
@@ -885,21 +886,22 @@ not found results in an runtime error. To avoid an error, you can
 use a [`TRY ... CATCH ... ENDTRY.`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abaptry.htm) block.
 
 ``` abap
-DATA(lv1) = itab[ i ].
+"In the examples, integer values are specified for the index.
+DATA(lv1) = itab[ 1 ].
 
 TRY.
-  DATA(lv2) = itab[ i ].
+  DATA(lv2) = itab[ 2 ].
   CATCH cx_sy_itab_line_not_found.
   ...
 ENDTRY.
 
-DATA(lv3) = itab[ KEY primary_key INDEX i ].
+DATA(lv3) = itab[ KEY primary_key INDEX 3 ].
 
 "Copying a table line via table expression and embedding in constructor expression
-DATA(lv4) = VALUE #( itab[ i ] ).
+DATA(lv4) = VALUE #( itab[ 4 ] ).
 
 "Reading into data reference variable using the REF operator
-DATA(lv5_ref) = REF #( itab[ i ] ).
+DATA(lv5_ref) = REF #( itab[ 5 ] ).
 ```
 
 When you read a non-existent line using a table expression, you may not want to throw an exception. You can also embed the table expression
@@ -909,9 +911,9 @@ Alternatively, you can use the `DEFAULT` addition to return a
 default line in case of an unsuccessful read operation, which can also be another table expression or constructor expression.
 
 ``` abap
-DATA(line1) = VALUE #( itab[ i ] OPTIONAL ).
+DATA(line1) = VALUE #( itab[ 6 ] OPTIONAL ).
 
-DATA(line2) = VALUE #( itab[ i ] DEFAULT itab[ i2 ]  ).
+DATA(line2) = VALUE #( itab[ 7 ] DEFAULT itab[ 8 ]  ).
 ```
 
 <p align="right">(<a href="#top">back to top</a>)</p>
@@ -921,7 +923,7 @@ DATA(line2) = VALUE #( itab[ i ] DEFAULT itab[ i2 ]  ).
 Lines can be read by explicitly specifying the table keys or the alias names, if any.
 ```abap
 "Example internal table with primary and secondary key and alias names
-"Assumption: all components are of type i
+"Assumption: All components are of type i
 
 DATA it TYPE SORTED TABLE OF struc
   WITH NON-UNIQUE KEY primary_key ALIAS pk COMPONENTS a b
@@ -1131,7 +1133,8 @@ should do so immediately after the `LOOP` statement to avoid possible overwritin
 *Restricting the area of the table to be looped over*
 
 The additions of `LOOP` statements come into play when you want to restrict the table content to be respected by the loop because
-you do not want to loop over the entire table.
+you do not want to loop over the entire table. Note that the examples only show work areas as target objects to hold the table line read. 
+Other options are possible as shown above.
 
 ``` abap
 "FROM/TO: Only for index tables
@@ -1447,7 +1450,7 @@ statements allow you to delete the entire table content.
 The difference between the two is in the handling of the memory space originally allocated to the table. When a table is cleared with `CLEAR`,
 the content are removed, but the memory space initially requested remains
 allocated. If the table is filled again later, the memory space is still
-available, which is a performance advantag over 
+available, which is a performance advantage over 
 clearing an internal table with `FREE`. Such a statement also
 deletes the table content, but it also releases the memory
 space. 
