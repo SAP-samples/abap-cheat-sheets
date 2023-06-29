@@ -57,6 +57,7 @@ ABAP cheat sheets[^1] ...
 
 | Cheat Sheet        | Topics Covered           |  Demo Example  |
 | ------------- | ------------- | ----- |
+|[Data Types and Data Objects](16_Data_Types_and_Objects.md)| The basics of data types and data objects in ABAP.  | [zcl_demo_abap_dtype_dobj](./src/zcl_demo_abap_dtype_dobj.clas.abap)   |
 |[Working with Internal Tables](01_Internal_Tables.md)| Creating, filling, reading from, sorting, modifying internal tables  | [zcl_demo_abap_internal_tables](./src/zcl_demo_abap_internal_tables.clas.abap)   |
 |[Working with Structures](02_Structures.md)| Creating structures and structured types, variants of structures, accessing components of structures, filling structures, clearing structures, structures in use in the context of tables   |  [zcl_demo_abap_structures](./src/zcl_demo_abap_structures.clas.abap)  |
 |[ABAP SQL in Use](03_ABAP_SQL.md)| Reading from database tables using `SELECT`, changing data in database tables using `INSERT`, `UPDATE`, `MODIFY` and `DELETE`    | [zcl_demo_abap_sql](./src/zcl_demo_abap_sql.clas.abap)   |
