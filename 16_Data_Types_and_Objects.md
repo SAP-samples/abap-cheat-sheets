@@ -1146,13 +1146,8 @@ The declaration context of data types (and objects) determines the validity and 
 ## Excursion: Enumerated Types and Objects
 - ABAP supports the concept of enumerations. 
 - Enumerations are a mixture of types and constants.
-- Enumerated objects are mainly used to check allowed values. This usually restricts the actual parameters passed to methods to the enumerated values defined in the class.
-
-An enumerated type specifies a value set in addition to the actual type properties. 
-
-enumerated object:
-Data object with an enumerated type. An enumerated object can only contain the enumerated values of the enumerated type. The data type of an enumerated object is the enumerated type. The technical data type of the content is the base type of the enumerated type. Enumerated variables are variable enumerated objects that can only contain the associated enumerated values. Enumerated constants and components of enumerated structures are special enumerated objects that define the value set of an enumerated type.
-
+- An [enumerated type](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenenum_type_glosry.htm) specifies a value set in addition to the actual type properties. 
+- [Enumerated objects](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenenumerated_object_glosry.htm) - data objects with an enumerated type - are mainly used to check allowed values. This usually restricts the actual parameters passed to methods to the enumerated values defined in the class. [Enumerated variables](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenenumerated_variable_glosry.htm) are variable enumerated objects. They can only contain the associated enumerated values. 
 
 Syntax:
 
