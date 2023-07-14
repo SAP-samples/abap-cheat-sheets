@@ -19,6 +19,7 @@
   - [Type Conversion](#type-conversion)
   - [Glossary Terms in a Nutshell](#glossary-terms-in-a-nutshell)
   - [Notes on the Declaration Context](#notes-on-the-declaration-context)
+  - [Excursion: Enumerated Types and Objects](#excursion-enumerated-types-and-objects)
   - [Executable Example](#executable-example)
 
 
@@ -93,7 +94,7 @@ For an overview, see the [ABAP Type Hierarchy](https://help.sap.com/doc/abapdocu
 - The following complex data types are available: 
    - [Structured types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenstructured_type_glosry.htm): Represent a sequence of arbitrary data type (i.e., they can be elementary, reference, or complex data types). The typical syntax element for the local definition of a structure is `... BEGIN OF ... END OF ...`.
    - [Table types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentable_type_glosry.htm): Consist of a sequence of any number of lines of the same data type. It can be any elementary type, reference type, or complex data type. The type definition includes other properties such as the [table category](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentable_category_glosry.htm) (defines how tables can be accessed) and [table key](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentable_key_glosry.htm) (to identify the table lines). The typical syntax element is `... TABLE OF ...`.
-   - [Enumerated types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenenum_type_glosry.htm): Specify a set of values in addition to the actual type properties. The typical syntax element is `... BEGIN OF ENUM ... END OF ENUM ...`. See more information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenenumerated_types_usage.htm).  
+   - [Enumerated types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenenum_type_glosry.htm): Specify a set of values in addition to the actual type properties. The typical syntax element is `... BEGIN OF ENUM ... END OF ENUM ...`. See more information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenenumerated_types_usage.htm) and further down.  
    - [Mesh types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenmesh_type_glosry.htm): Special structured type that contains only table types with structured line types as components that can be linked using mesh associations. The typical syntax element is `... BEGIN OF MESH ... END OF MESH ...`. See more information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abaptypes_mesh.htm).  
    - [BDEF derived types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_derived_type_glosry.htm): RAP-specific structured and table types. The typical syntax elements are `... TYPE STRUCTURE FOR ...` and `... TYPE TABLE FOR ...`. More information can be found [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrpm_derived_types.htm) and in the ABAP cheat sheet on ABAP EML.
 - A data object of a complex type can be accessed as a whole or by component. 
@@ -1139,6 +1140,69 @@ The declaration context of data types (and objects) determines the validity and 
     - The DDIC has many more [built-in types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbuiltin_ddic_type_glosry.htm) than ABAP. These types have other names. They cannot be used in ABAP programs. 
     - The DDIC provides many options for defining types, including elementary data types (defined as data elements), reference types, complex types such as structured types and table types. Note that the name of a database table or a view can be used in type declarations to address the line type of these repository objects (for example, a structure: `DATA a TYPE some_db_table.`).
     - Note the following trap: Local declarations hide global declarations of the same name. 
+
+<p align="right">(<a href="#top">back to top</a>)</p>
+
+## Excursion: Enumerated Types and Objects
+- ABAP supports the concept of enumerations. 
+- Enumerations are a mixture of types and constants.
+- Enumerated objects are mainly used to check allowed values. This usually restricts the actual parameters passed to methods to the enumerated values defined in the class.
+
+An enumerated type specifies a value set in addition to the actual type properties. 
+
+enumerated object:
+Data object with an enumerated type. An enumerated object can only contain the enumerated values of the enumerated type. The data type of an enumerated object is the enumerated type. The technical data type of the content is the base type of the enumerated type. Enumerated variables are variable enumerated objects that can only contain the associated enumerated values. Enumerated constants and components of enumerated structures are special enumerated objects that define the value set of an enumerated type.
+
+
+Syntax:
+
+```abap
+"The definition of an enumerated type in ABAP declares its enumerated constants (these are special enumerated objects).
+"a) In the case below, no explicit base type is specified. Then, the standard base type of the constants is i. The 
+"   enumerated values are counted up starting with 0 (a -> 0, b -> 1 ...).
+
+TYPES: BEGIN OF ENUM t_enum,
+         a,
+         b,
+         c,
+         d,
+       END OF ENUM t_enum.
+
+"a) Explicit base type is specified and start values provided using the VALUE addition
+"   Note that one value must be initial.
+
+TYPES: basetype TYPE c LENGTH 2,
+       BEGIN OF ENUM t_enum_base BASE TYPE basetype,         
+          e VALUE IS INITIAL,
+          f VALUE 'u',
+          g VALUE 'v',
+          h VALUE 'wx',
+          i VALUE 'yz',
+       END OF ENUM t_enum_base.
+
+"c) Optionally an enumerated structure can be declared in the context of the type declaration.
+"   A component of an enumerated structure: An enumerated constant that exists as a component 
+"   of a constant structure, not as a single data object.
+    
+TYPES: BEGIN OF ENUM t_enum_struc STRUCTURE en_struc BASE TYPE basetype,
+          j VALUE IS INITIAL,
+          k VALUE 'hi',
+          l VALUE 'ab',
+          m VALUE 'ap',
+        END OF ENUM t_enum_struc STRUCTURE en_struc.
+```
+
+
+Enumerated variables can be declared by referring to the enumerated type.
+They can only be assigned the enumerated values defined there that exist as the content of enumerated constants or components of an enumerated structure.
+
+```abap
+DATA dobj_enum TYPE enum_type.
+
+dobj_enum = a.
+```
+
+Find more information on enumerated types in the (commented code of the) cheat sheet example and [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenenumerated_types_usage.htm). 
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 

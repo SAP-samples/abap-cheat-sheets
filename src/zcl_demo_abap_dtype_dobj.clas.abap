@@ -69,6 +69,51 @@ CLASS zcl_demo_abap_dtype_dobj DEFINITION
                                                 num2          TYPE numeric
                                       RETURNING VALUE(result) TYPE decfloat34.
 
+**********************************************************************
+
+    "Types and methods for demonstrating enumerated types and objects
+
+    "The definition of an enumerated type in ABAP declares its enumerated constants (these are special enumerated objects).
+    "a) In the case below, no explicit base type is specified. Then, the standard base type of the constants is i. The
+    "   enumerated values are counted up starting with 0 (a -> 0, b -> 1 ...).
+
+    TYPES: BEGIN OF ENUM t_enum,
+             a,
+             b,
+             c,
+             d,
+           END OF ENUM t_enum.
+
+
+    "a) For the following enumerated type, an explicit base type is specified and start values provided using the VALUE addition
+    "   Note that one value must be initial.
+
+    TYPES: basetype TYPE c LENGTH 2,
+           BEGIN OF ENUM t_enum_base BASE TYPE basetype,
+             "If VALUE is specified explicitly, VALUE IS INITIAL must be used exactly once.
+             e VALUE IS INITIAL,
+             f VALUE 'u',
+             g VALUE 'v',
+             h VALUE 'wx',
+             i VALUE 'yz',
+           END OF ENUM t_enum_base.
+
+    "c) Optionally an enumerated structure can be declared in the context of the type declaration.
+    "Use case: If you have more than one enumerated type within one context. In doing so, you declare a constant enumeration structure.
+    "The components of the structure are the enumeration constants of the enumerated type.
+    TYPES: BEGIN OF ENUM t_enum_struc STRUCTURE en_struc BASE TYPE basetype,
+             j VALUE IS INITIAL,
+             k VALUE 'hi',
+             l VALUE 'ab',
+             m VALUE 'ap',
+           END OF ENUM t_enum_struc STRUCTURE en_struc.
+
+
+    METHODS enum_meth_params IMPORTING char          TYPE t_enum
+                             RETURNING VALUE(output) TYPE string.
+    METHODS enum_processing RETURNING VALUE(output) TYPE string_table.
+    METHODS rtti_enum RETURNING VALUE(output) TYPE string_table.
+
 ENDCLASS.
 
 
@@ -91,7 +136,7 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
     "  CDS entity, which is not covered in this demo example.
     "- In ADT and because of the many type declarations, you may want to press
     "  F2 on the types to get more information.
-    "- The examples show a selection. 
+    "- The examples show a selection.
     "- Only non-generic types can be used.
 
     output->display( `1) Declaring data types based on elementary types` ).
@@ -184,8 +229,8 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
     TYPES te_const_in_tp LIKE abap_true.
 
     output->display( `No output for this section. Check out the code, `
-    && `for example, when running the class in the debugger after setting `
-    && `a breakpoint, or the F2 information in ADT when selecting a type.` ).
+      && `for example, when running the class in the debugger after setting `
+      && `a breakpoint, or the F2 information in ADT when selecting a type.` ).
 
 **********************************************************************
 
@@ -254,8 +299,8 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
     TYPES tt_elem_type_from_itf TYPE TABLE OF zdemo_abap_get_data_itf=>occ_rate.
 
     output->display( `No output for this section. Check out the code, `
-    && `for example, when running the class in the debugger after setting `
-    && `a breakpoint, or the F2 information in ADT when selecting a type.` ).
+      && `for example, when running the class in the debugger after setting `
+      && `a breakpoint, or the F2 information in ADT when selecting a type.` ).
 
 **********************************************************************
 
@@ -291,8 +336,8 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
     TYPES tr_like_table_ref LIKE TABLE OF ref TO itab_str.
 
     output->display( `No output for this section. Check out the code, `
-    && `for example, when running the class in the debugger after setting `
-    && `a breakpoint, or the F2 information in ADT when selecting a type.` ).
+      && `for example, when running the class in the debugger after setting `
+      && `a breakpoint, or the F2 information in ADT when selecting a type.` ).
 
 **********************************************************************
 
@@ -389,8 +434,8 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
     ENDIF.
 
     output->display( `No output for this section. Check out the code, `
-    && `for example, when running the class in the debugger after setting `
-    && `a breakpoint, or the F2 information in ADT when selecting a type.` ).
+      && `for example, when running the class in the debugger after setting `
+      && `a breakpoint, or the F2 information in ADT when selecting a type.` ).
 
 **********************************************************************
 
@@ -449,8 +494,8 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
     DATA struc_like_line LIKE LINE OF itab_ddic_tab.
 
     output->display( `No output for this section. Check out the code, `
-    && `for example, when running the class in the debugger after setting `
-    && `a breakpoint, or the F2 information in ADT when selecting a type.` ).
+      && `for example, when running the class in the debugger after setting `
+      && `a breakpoint, or the F2 information in ADT when selecting a type.` ).
 
 **********************************************************************
 
@@ -482,8 +527,8 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
     DATA dref_tab_str LIKE TABLE OF REF TO do_some_string.
 
     output->display( `No output for this section. Check out the code, `
-    && `for example, when running the class in the debugger after setting `
-    && `a breakpoint, or the F2 information in ADT when selecting a type.` ).
+      && `for example, when running the class in the debugger after setting `
+      && `a breakpoint, or the F2 information in ADT when selecting a type.` ).
 
 **********************************************************************
 
@@ -522,8 +567,9 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
     "A random integer that is in the specified value range is assigned to the data object
     "on the left side.
     num = cl_abap_random_int=>create(
-            seed = cl_abap_random=>seed( ) min = 1
-                                           max = 10 )->get_next( ).
+      seed = cl_abap_random=>seed( )
+      min  = 1
+      max  = 10 )->get_next( ).
 
     "Built-in functions as source of the assignment
     "There are plenty of functions available.
@@ -556,7 +602,7 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
     "type-specific ininial value.
     DATA some_itab TYPE TABLE OF zdemo_abap_carr WITH EMPTY KEY.
     some_itab = VALUE #( ( carrid = 'XY' carrname = 'XY Airways' )
-                         ( carrid = 'AB' carrname = 'ABAP Airlines' ) ) .
+                         ( carrid = 'AB' carrname = 'ABAP Airlines' ) ).
 
     "Table expressions as source of the assignment
     "A structure is assigned an internal table line
@@ -584,8 +630,8 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
     str_a2 = some_itab[ 2 ]-carrname.
 
     output->display( `No output for this section. Check out the code, `
-    && `for example, when running the class in the debugger after setting `
-    && `a breakpoint, or the F2 information in ADT when selecting a type.` ).
+      && `for example, when running the class in the debugger after setting `
+      && `a breakpoint, or the F2 information in ADT when selecting a type.` ).
 
 **********************************************************************
 
@@ -682,8 +728,8 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
     SELECT * FROM zdemo_abap_carr INTO TABLE @DATA(itab_b3).
 
     output->display( `No output for this section. Check out the code, `
-    && `for example, when running the class in the debugger after setting `
-    && `a breakpoint, or the F2 information in ADT when selecting a type.` ).
+      && `for example, when running the class in the debugger after setting `
+      && `a breakpoint, or the F2 information in ADT when selecting a type.` ).
 
 **********************************************************************
 
@@ -789,8 +835,8 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
     dref_1_i = CAST #( dref_6_i ).
 
     output->display( `No output for this section. Check out the code, `
-    && `for example, when running the class in the debugger after setting `
-    && `a breakpoint, or the F2 information in ADT when selecting a type.` ).
+      && `for example, when running the class in the debugger after setting `
+      && `a breakpoint, or the F2 information in ADT when selecting a type.` ).
 
 **********************************************************************
 
@@ -893,8 +939,8 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
       INTO TABLE NEW @DATA(dref_14_inline).
 
     output->display( `No output for this section. Check out the code, `
-    && `for example, when running the class in the debugger after setting `
-    && `a breakpoint, or the F2 information in ADT when selecting a type.` ).
+      && `for example, when running the class in the debugger after setting `
+      && `a breakpoint, or the F2 information in ADT when selecting a type.` ).
 
 **********************************************************************
 
@@ -1024,13 +1070,14 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
     DATA(some_string) = `Hi there!`.
 
     DATA(xstr) =
-      cl_abap_conv_codepage=>create_out( codepage = `UTF-8`
-        )->convert( source = some_string ).
+      cl_abap_conv_codepage=>create_out(
+      codepage = `UTF-8`
+                 )->convert( source = some_string ).
 
     output->display( input = xstr name = `xstr` ).
 
     DATA(xstring2string) = cl_abap_conv_codepage=>create_in( codepage = `UTF-8`
-        )->convert( source = xstr ).
+                                                                        )->convert( source = xstr ).
 
     output->display( input = xstring2string name = `xstring2string` ).
 
@@ -1166,20 +1213,20 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
     "Filling internal table
     tt_conv_tab = VALUE #(
     "c
-    ( to_be_converted = REF #( 'abc' ) type = `C LENGTH 3`)
-    ( to_be_converted = REF #( '11111111' ) type = `C LENGTH 8`)
+    ( to_be_converted = REF #( 'abc' )         type = `C LENGTH 3` )
+    ( to_be_converted = REF #( '11111111' )    type = `C LENGTH 8` )
     "d
-    ( to_be_converted = REF #( d_to_conv ) type = `D`)
+    ( to_be_converted = REF #( d_to_conv )     type = `D` )
     "t
-    ( to_be_converted = REF #( t_to_conv ) type = `T`)
+    ( to_be_converted = REF #( t_to_conv )     type = `T` )
     "decfloat34
-    ( to_be_converted = REF #( dec34_to_conv ) type = `DECFLOAT34`)
+    ( to_be_converted = REF #( dec34_to_conv ) type = `DECFLOAT34` )
     "i
-    ( to_be_converted = REF #( 12345678 ) type = `I`)
-    ( to_be_converted = REF #( -321 ) type = `I`)
+    ( to_be_converted = REF #( 12345678 )      type = `I` )
+    ( to_be_converted = REF #( -321 )          type = `I` )
     "string
-    ( to_be_converted = REF #( `hello abap` ) type = `STRING`)
-    ( to_be_converted = REF #( `12345` ) type = `STRING`)
+    ( to_be_converted = REF #( `hello abap` )  type = `STRING` )
+    ( to_be_converted = REF #( `12345` )       type = `STRING` )
     ).
 
     LOOP AT tt_conv_tab ASSIGNING FIELD-SYMBOL(<con>).
@@ -1251,38 +1298,36 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
     "Using RTTI to check type compatibility
     "In the following example the applies_to_data method of the RTTI class
     "cl_abap_datadescr is used to check the compatibility of generically typed
-    "field symbols pointing to different data objects.
-    "An assignment of <fs1> to <fs3> would raise an uncatchable exception.
+    "data reference variables pointing to different data objects.
+    "An assignment of ref1->* to ref3->* would raise an uncatchable exception.
 
     DATA num1 TYPE i.
     DATA num2 TYPE i.
     DATA itab_i TYPE TABLE OF i WITH EMPTY KEY.
 
-    FIELD-SYMBOLS:
-      <fs1> TYPE data,
-      <fs2> TYPE data,
-      <fs3> TYPE data.
+    DATA ref1 TYPE REF TO data.
+    DATA ref2 TYPE REF TO data.
+    DATA ref3 TYPE REF TO data.
 
-    ASSIGN num1 TO <fs1>.
-    ASSIGN num2 TO <fs2>.
-    ASSIGN itab_i TO <fs3>.
+    ref1 = REF #( num1 ).
+    ref2 = REF #( num2 ).
+    ref3 = REF #( itab_i ).
 
-    IF CAST cl_abap_datadescr( cl_abap_typedescr=>describe_by_data( <fs1> )
-        )->applies_to_data( <fs2> ).
-      <fs1> = <fs2>.
-      output->display( `The types of <fs1> and <fs2> are compatible.` ).
+    IF CAST cl_abap_datadescr( cl_abap_typedescr=>describe_by_data( ref1->* )
+        )->applies_to_data( ref2->* ).
+      ref1->* = ref2->*.
+      output->display( `The types of ref1->* and ref2->* are compatible.` ).
     ELSE.
-      output->display( `The types of <fs1> and <fs2> are not compatible.` ).
+      output->display( `The types of ref1->* and ref2->* are not compatible.` ).
     ENDIF.
 
-    IF CAST cl_abap_datadescr( cl_abap_typedescr=>describe_by_data( <fs1> )
-        )->applies_to_data( <fs3> ).
-      <fs1> = <fs3>.
-      output->display( `The types of <fs1> and <fs3> are compatible.` ).
+    IF CAST cl_abap_datadescr( cl_abap_typedescr=>describe_by_data( ref1->* )
+        )->applies_to_data( ref3->* ).
+      ref1->* = ref3->*.
+      output->display( `The types of ref1->* and ref3->* are compatible.` ).
     ELSE.
-      output->display( `The types of <fs1> and <fs3> are not compatible.` ).
+      output->display( `The types of ref1->* and ref3->* are not compatible.` ).
     ENDIF.
-
 
     "Using RTTI to get type descriptions
     "In the following example, an internal table that has been filled in
@@ -1305,8 +1350,8 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
           cl_abap_typedescr=>describe_by_data( <type>-to_be_converted->* ) ).
 
       APPEND VALUE #( absolute_name = rtti->absolute_name
-                      kind = rtti->kind
-                      type_kind = rtti->type_kind ) TO rtti_tab.
+                      kind          = rtti->kind
+                      type_kind     = rtti->type_kind ) TO rtti_tab.
 
     ENDLOOP.
 
@@ -1349,8 +1394,8 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
 *    SELECT * FROM zdemo_abap_carr INTO TABLE @FINAL(itab_final_inl).
 
     output->display( `No output for this section. Check out the code, `
-    && `for example, when running the class in the debugger after setting `
-    && `a breakpoint, or the F2 information in ADT when selecting a type.` ).
+      && `for example, when running the class in the debugger after setting `
+      && `a breakpoint, or the F2 information in ADT when selecting a type.` ).
 
 **********************************************************************
 
@@ -1592,10 +1637,10 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
 
     DATA tab_num TYPE TABLE OF str_num WITH EMPTY KEY.
 
-    tab_num = VALUE #( ( num1 = NEW i( 1 ) num2 = NEW i( 2 ) )
+    tab_num = VALUE #( ( num1 = NEW i( 1 )               num2 = NEW i( 2 ) )
                        ( num1 = NEW decfloat34( '1.74' ) num2 = NEW decfloat34( '4.04' ) )
-                       ( num1 = NEW i( 11 ) num2 = NEW decfloat34( '10.621' ) )
-                       ( num1 = NEW string( `nope` ) num2 = NEW string( `does not work` ) ) ).
+                       ( num1 = NEW i( 11 )              num2 = NEW decfloat34( '10.621' ) )
+                       ( num1 = NEW string( `nope` )     num2 = NEW string( `does not work` ) ) ).
 
     LOOP AT tab_num ASSIGNING FIELD-SYMBOL(<f>).
 
@@ -1739,6 +1784,41 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
     ENDDO.
     output->display( input = number_b name = `number_b` ).
 
+**********************************************************************
+
+    output->display( `23) Enumerated Types and Objects` ).
+
+    "Examples for enurmerated types and objects are contained in
+    "separate methods. Check the comments there.
+    "Note that the output that is created in the methods is combined
+    "in a string (table).
+
+    "The enum_meth_params method demonstrates the use of enumerated objects
+    "when comparing them with the respective enumeration constants to branch
+    "to some functionality (CASE statement in the method implementation).
+    "In typing the formal parameter this way, it is guaranteed that only
+    "enumerated values of the enumerated type can be passed to the parameter.
+    DATA enum_var1 TYPE t_enum VALUE a.
+    DATA(output_for_enum_var1) = enum_meth_params( enum_var1 ).
+    output->display( input = output_for_enum_var1 name = `output_for_enum_var1` ).
+
+    DATA enum_var2 TYPE t_enum VALUE b.
+    DATA(output_for_enum_var2) = enum_meth_params( enum_var2 ).
+    output->display( input = output_for_enum_var2 name = `output_for_enum_var2` ).
+
+    DATA enum_var3 TYPE t_enum VALUE d.
+    DATA(output_for_enum_var3) = enum_meth_params( enum_var3 ).
+    output->display( input = output_for_enum_var3 name = `output_for_enum_var3` ).
+
+    "The enum_processing method demonstrates various ways of processing enumerated
+    "objects.
+    DATA(output_for_enum_processing) = enum_processing(  ).
+    output->display( input = output_for_enum_processing name = `output_for_enum_processing` ).
+
+    "The rtti_enum method demonstrates the RTTI class cl_abap_enumdescr.
+    DATA(output_for_rtti_enum) = rtti_enum( ).
+    output->display( input = output_for_rtti_enum name = `output_for_rtti_enum` ).
+
   ENDMETHOD.
 
   METHOD adapt_text.
@@ -1756,6 +1836,167 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
 
   METHOD addition_with_generic_num.
     result = num1 + num2.
+  ENDMETHOD.
+
+  METHOD enum_meth_params.
+
+    CASE char.
+      WHEN a.
+        output = a.
+      WHEN b.
+        output = b.
+      WHEN OTHERS.
+        output = `Either c or d : ` && char.
+    ENDCASE.
+
+  ENDMETHOD.
+
+  METHOD enum_processing.
+
+    "Read and write positions of enumerated objects
+    "Enumerated objects can be used in all read positions in which the operand
+    "type is their enumerated type.
+    "Likewise, enumerated variables can only be used in write positions in which
+    "the operand type is the enumerated type and only the associated enumerated
+    "values can be written.
+    "So, assignments are possible only from one enumerated type to the same (with one
+    "exception -> assignment to character-like variables of the types c and string)
+    DATA do_enum TYPE t_enum.
+    do_enum = a.
+    APPEND |do_enum: { do_enum }| TO output.
+
+    DATA do_enum_2 LIKE do_enum.
+    do_enum_2 = do_enum.
+    APPEND |do_enum_2: { do_enum_2 }| TO output.
+
+    "Assignment to character-like variables of the types c and string.
+    "In this case, the target field is assigned the name of the enumerated constant or
+    "the component of the enumerated structure under which the enumerated value of the
+    "source field is defined in the enumerated type.
+    DATA do_a_string TYPE string.
+    do_a_string = do_enum.
+    APPEND |do_a_string: { do_a_string }| TO output.
+
+    "Or using the CONV operator as follows
+    DATA(do_next_string) = CONV string( do_enum ).
+    APPEND |do_next_string: { do_next_string }| TO output.
+
+    "Enumerated constants are converted implicitly to the type string
+    "before the concatenation in the string template.
+    DATA(str_from_enum) = |{ a }{ b }{ c }{ d }|.
+    APPEND |str_from_enum: { str_from_enum }| TO output.
+
+    "Note that only the enumerated type itself is relevant. Usually, the contents
+    "of an enumerated object is not of interest.
+    "The enumerated value in the base type can be accessed using the constructor
+    "operators CONV and EXACT only. The base type is i in this case.
+    DATA(conv_value) = CONV i( do_enum ).
+    APPEND |conv_value: { conv_value }| TO output.
+
+    "Converting the other way round.
+    DATA(another_conv) = CONV t_enum( 3 ).
+    APPEND |another_conv: { another_conv }| TO output.
+
+    "If known statically, an attempt to assign a value other than a valid enumerated value
+    "to an enumerated variable produces a syntax error.
+    "If not known statically, an exception is raised.
+    "The following produces a syntax error
+    "do_enum = f.
+
+    "The following example shows raising an exception.
+    DATA dobj TYPE t_enum.
+    dobj = a.
+
+    TYPES t_int_tab TYPE TABLE OF i WITH EMPTY KEY.
+    DATA(int_tab) = VALUE t_int_tab( ( 0 ) ( 1 ) ( 2 ) ( 3 ) ( 4 ) ).
+
+    DATA str_tab TYPE TABLE OF string.
+    LOOP AT int_tab ASSIGNING FIELD-SYMBOL(<fs>).
+      TRY.
+          dobj = CONV t_enum( <fs> ).
+          APPEND dobj TO str_tab.
+        CATCH cx_sy_conversion_no_enum_value INTO DATA(error_enum).
+          APPEND error_enum->get_text( ) TO str_tab.
+      ENDTRY.
+    ENDLOOP.
+
+    APPEND `------------- Output for str_tab -------------` TO output.
+    APPEND LINES OF str_tab TO output.
+    APPEND `^^^^^^^^^^^^^ Output for str_tab ^^^^^^^^^^^^^` TO output.
+
+    "An enumerated variable can be set to the initial value of its base type
+    "using CLEAR.
+    CLEAR do_enum.
+    APPEND |do_enum: { do_enum }| TO output.
+
+    "Enumerated structures
+    DATA do_enum_s TYPE t_enum_struc.
+
+    "The enumerated structure en_struc was decalred in the public section.
+    "Using the addition LIKE, a second structure is created referring to the enumerated structure.
+    "Note that the second structure is not a constant structure.
+    "The components of the constant structure contain the enumerated values of the enumerated type.
+    "All the components of the variable structure declared by LIKE contain the initial values.
+    DATA do_s LIKE en_struc.
+    APPEND |do_s: { do_s-j } / { do_s-k } / { do_s-l } / { do_s-m }| TO output.
+
+    DATA(do_en) = en_struc.
+    APPEND |do_en: { do_en-j } / { do_en-k } / { do_en-l } / { do_en-m }| TO output.
+
+    "Accessing structure components using the component selector
+    DATA(do_en_k) = en_struc-k.
+    APPEND |do_en_k: { do_en_k }| TO output.
+
+    DATA(do_s_m) = do_s-m.
+    APPEND |do_s_m: { do_s_m }| TO output.
+    "Assigning enumerated constants to the variable structure
+    do_s = en_struc.
+    APPEND |do_s: { do_s-j } / { do_s-k } / { do_s-l } / { do_s-m }| TO output.
+
+  ENDMETHOD.
+
+  METHOD rtti_enum.
+
+    DATA enum1 TYPE t_enum.
+    enum1 = d.
+
+    DATA enum2 TYPE t_enum_base.
+    enum2 = f.
+
+    "Return type information
+    DATA(enum_descr) = CAST cl_abap_enumdescr(
+          cl_abap_typedescr=>describe_by_data( enum1 ) ).
+
+    APPEND `------ Properties for enum1 ------` TO output.
+
+    APPEND ` kind: ` && enum_descr->kind TO output.
+    APPEND ` type_kind: ` && enum_descr->type_kind TO output.
+    APPEND ` base_type_kind: ` && enum_descr->base_type_kind TO output.
+
+    DATA mem_string TYPE string.
+
+    LOOP AT enum_descr->members ASSIGNING FIELD-SYMBOL(<mem>).
+      mem_string = mem_string && ` / Name: ` && <mem>-name && `; Value: ` && <mem>-value.
+    ENDLOOP.
+
+    REPLACE FIRST OCCURRENCE OF PCRE `/\s` IN mem_string WITH ``.
+    APPEND ` members:` && mem_string TO output.
+    CLEAR mem_string.
+
+    enum_descr = CAST cl_abap_enumdescr(
+         cl_abap_typedescr=>describe_by_data( enum2 ) ).
+
+    APPEND `------ Properties for enum2 ------` TO output.
+    APPEND ` kind: ` && enum_descr->kind TO output.
+    APPEND ` type_kind: ` && enum_descr->type_kind TO output.
+    APPEND ` base_type_kind: ` && enum_descr->base_type_kind TO output.
+
+    LOOP AT enum_descr->members ASSIGNING <mem>.
+      mem_string = mem_string && ` / Name: ` && <mem>-name && `; Value: ` && <mem>-value.
+    ENDLOOP.
+
+    REPLACE FIRST OCCURRENCE OF PCRE `/\s` IN mem_string WITH ``.
+    APPEND ` members:` && mem_string TO output.
   ENDMETHOD.
 
 ENDCLASS.
