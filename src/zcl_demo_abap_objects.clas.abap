@@ -97,7 +97,7 @@ CLASS zcl_demo_abap_objects IMPLEMENTATION.
 
     DATA(output) = NEW zcl_demo_abap_display( out ).
 
-    output->display( `Demo: ABAP Object Orientation` ).
+    output->display( `ABAP Cheat Sheet Example: ABAP Object Orientation` ).
     output->display( `Working with objects and components` ).
     output->display( `1) Declaring reference variables` ).
 

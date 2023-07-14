@@ -159,7 +159,7 @@ CLASS zcl_demo_abap_amdp IMPLEMENTATION.
 
     DATA(output) = NEW zcl_demo_abap_display( out ).
 
-    output->display( `Demo: ABAP AMDP` ).
+    output->display( `ABAP Cheat Sheet Example: ABAP AMDP` ).
 
     output->display( `1. AMDP procedure` ).
 

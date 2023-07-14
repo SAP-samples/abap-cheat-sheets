@@ -149,10 +149,9 @@ DATA char_len_one TYPE c.
 
 ## Assigning Values
 
-- When you declare character-like data objects, you can specify start values directly. For example, you can use
-the [assignment operator](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenassignment_operator_glosry.htm "Glossary Entry")
-`=`.
-- As mentioned above, you can declare character-like data objects inline using the operators `DATA` or, in newer ABAP releases, `FINAL`. 
+- When you declare character-like data objects, you can specify start values directly with the `VALUE` addition, e.g. `DATA chars TYPE c LENGTH 3 VALUE 'abc'.`. 
+- You can do value assignments to data objects using the the [assignment operator](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenassignment_operator_glosry.htm "Glossary Entry") `=`.
+- As mentioned above, you can declare character-like data objects inline using the operators `DATA` or `FINAL`. 
 - You can use the operators at many [write positions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenwrite_position_glosry.htm "Glossary Entry"). 
 - Unlike the `VALUE` addition of the declaration statements, inline declarations allow you to declare variables for the results of expressions or at other positions where character strings are returned.
 - In the case below, a variable specified in parentheses preceded by `DATA` (or `FINAL`) on the left side of the assignment operator automatically derives a data type from the operand on the right. This helps to make your
@@ -161,6 +160,8 @@ programs leaner.
 Syntax examples:
 ``` abap
 "Data object declarations including default values with VALUE
+"Note the chained statement: DATA followed by a colon, listing the data object declarations,
+"separated by a comma.
 DATA: flag TYPE c LENGTH 1 VALUE 'X',
       str1 TYPE string VALUE `Hallo!`.
 

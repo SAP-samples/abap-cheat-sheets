@@ -114,7 +114,7 @@ CLASS zcl_demo_abap_structures IMPLEMENTATION.
 
     DATA(output) = NEW zcl_demo_abap_display( out ).
 
-    output->display( `ABAP Cheat Sheet Demonstration Example: Working with Structures` ).
+    output->display( `ABAP Cheat Sheet Example: Working with Structures` ).
 
 **********************************************************************
 

@@ -16,6 +16,7 @@ Core data services (CDS) are an infrastructure for defining and consuming semant
 - [Feature Matrix: Data Modeling with ABAP Core Data Services](https://blogs.sap.com/2022/10/24/feature-matrix-data-modeling-with-abap-core-data-services/)
 - [ABAP CDS Cheat Sheet: Amounts and Quantities in ABAP CDS](https://blogs.sap.com/2022/07/07/abap-cds-cheat-sheet-amounts-and-quantities-in-abap-cds/)
 - [Section *ABAP - Core Data Services (ABAP CDS)* in the ABAP Keyword Documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds.htm)
+- [ABAP Data Models Guide](https://blogs.sap.com/2023/05/09/abap-data-models-guide/)
 
 ## Executable Example
 [zcl_demo_abap_cds_ve](./src/zcl_demo_abap_cds_ve.clas.abap)

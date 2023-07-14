@@ -79,21 +79,21 @@ CLASS ltc_test_class IMPLEMENTATION.
 ENDCLASS.  
 ```
 
-Notes: 
-- `FOR TESTING` can be used for multiple purposes:
-  - Creating a test class containing test methods
-  - Creating a test double
-  - Creating helper methods to support ABAP unit tests
-  - Note the possible [syntax options](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapclass_options.htm) before `FOR TESTING` 
-- Optional addition `RISK LEVEL ...`: 
-  - `CRITICAL`: test changes system settings or customizing data (default)
-  - `DANGEROUS`: test changes persistent data
-  - `HARMLESS`: test does not change system settings or persistent data  
-- Optional addition `DURATION ...`:
-  - `SHORT`: execution time of only a few seconds is expected
-  - `MEDIUM`: execution time of about one minute is expected
-  - `LONG`: execution time of more than one minute is expected  
-
+> **💡 Note**<br>
+> - `FOR TESTING` can be used for multiple purposes:
+>   - Creating a test class containing test methods
+>   - Creating a test double
+>   - Creating helper methods to support ABAP unit tests
+>   - Note the possible [syntax options](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapclass_options.htm) before `FOR TESTING` 
+> - Optional addition `RISK LEVEL ...`: 
+>   - `CRITICAL`: test changes system settings or customizing data (default)
+>   - `DANGEROUS`: test changes persistent data
+>   - `HARMLESS`: test does not change system settings or persistent data  
+> - Optional addition `DURATION ...`:
+>   - `SHORT`: execution time of only a few seconds is expected
+>   - `MEDIUM`: execution time of about one minute is expected
+>   - `LONG`: execution time of more than one minute is expected  
+> - To create a class in ADT, type "test" in the "Test Class" tab and choose `CTRL` and `SPACE` to display the templates suggestions. You can then choose "testClass – Test class (ABAP Unit)". The skeleton of a test class is automatically generated. 
 
 To test protected or private methods, you must declare [friendship](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenfriend_glosry.htm) with the class to be tested (class under test).
 Example:

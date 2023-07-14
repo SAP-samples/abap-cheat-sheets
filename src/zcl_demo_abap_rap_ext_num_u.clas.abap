@@ -193,7 +193,7 @@ CLASS zcl_demo_abap_rap_ext_num_u IMPLEMENTATION.
 
     DATA(output) = NEW zcl_demo_abap_display( out ).
 
-    output->display( `RAP Demo: RAP BO Operations Using an ` &&
+    output->display( `ABAP Cheat Sheet Example: RAP BO Operations Using an ` &&
                      `Unmanaged RAP BO (External Numbering)` ).
 
 **********************************************************************

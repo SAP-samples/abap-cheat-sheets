@@ -181,7 +181,7 @@ CLASS ZCL_DEMO_ABAP_INTERNAL_TABLES IMPLEMENTATION.
 
     DATA(output) = NEW zcl_demo_abap_display( out ).
 
-    output->display( `Demo: Working with Internal Tables` ).
+    output->display( `ABAP Cheat Sheet Example: Working with Internal Tables` ).
     output->display( `Filling and Copying Internal Table Content` ).
     output->display( `1) Adding single lines using APPEND/INSERT` ).
 

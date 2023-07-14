@@ -145,7 +145,7 @@ CLASS ZCL_DEMO_ABAP_RAP_DRAFT_LN_M IMPLEMENTATION.
 
     DATA(output) = NEW zcl_demo_abap_display( out ).
 
-    output->display( `RAP Demo: RAP Calculator Using Managed, ` &&
+    output->display( `ABAP Cheat Sheet Example: RAP Calculator Using Managed, ` &&
                       `Draft-Enabled RAP BO (Late Numbering)` ).
     output->display( `1) Creating Instances and ` &&
                        `Saving to the database` ).

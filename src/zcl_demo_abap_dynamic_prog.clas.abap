@@ -77,7 +77,7 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
 
     DATA(output) = NEW zcl_demo_abap_display( out ).
 
-    output->display( `ABAP Cheat Sheet: Dynamic Programming` ).
+    output->display( `ABAP Cheat Sheet Example: Dynamic Programming` ).
 
 **********************************************************************
 
@@ -953,7 +953,7 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
 *    "If the value is 0, the memory area of the entire structure is assigned to the field symbol.
 *    ASSIGN wa-(0) TO FIELD-SYMBOL(<fs_m10>).
 
-    "The above statements replace the following syntax syntax
+    "The above statements replace the following syntax
     ASSIGN COMPONENT 'CARRID' OF STRUCTURE wa TO FIELD-SYMBOL(<fs_m11>).
 
     ASSIGN COMPONENT 5 OF STRUCTURE wa TO FIELD-SYMBOL(<fs_m12>).

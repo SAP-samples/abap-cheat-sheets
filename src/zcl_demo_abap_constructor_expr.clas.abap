@@ -111,7 +111,7 @@ CLASS zcl_demo_abap_constructor_expr IMPLEMENTATION.
 
     DATA(output) = NEW zcl_demo_abap_display( out ).
 
-    output->display( `ABAP cheat sheet: Constructor expressions` ).
+    output->display( `ABAP Cheat Sheet Example: Constructor expressions` ).
 
     output->next_section( `VALUE` ).
     output->display( `1) Structures: Populating a flat structure` ).
@@ -341,9 +341,9 @@ CLASS zcl_demo_abap_constructor_expr IMPLEMENTATION.
              END OF substruc,
            END OF deep_struc_ty.
 
-    DATA(deep_struc) = VALUE deep_struc_ty( num = 1 char1 = 'aaa'
-
-    substruc = VALUE #( int = 123 str = `hallo` ) ).
+    DATA(deep_struc) = VALUE deep_struc_ty( num = 1 
+                                            char1 = 'aaa'
+                                            substruc = VALUE #( int = 123 str = `hallo` ) ).
 
     output->display( input = deep_struc name = `deep_struc` ).
 
@@ -1335,6 +1335,8 @@ CLASS zcl_demo_abap_constructor_expr IMPLEMENTATION.
 
     output->display( input = str_tab name = `str_tab` ).
 
+**********************************************************************    
+
     output->next_section( `42) LET Expressions (2)` ).
 
     "2) LET within a constructor expression with COND: 12 o'clock is
@@ -1353,6 +1355,8 @@ CLASS zcl_demo_abap_constructor_expr IMPLEMENTATION.
               ELSE |?| ).
 
     output->display( input = time name = `time` ).
+
+**********************************************************************
 
     output->next_section( `43) LET Expressions (3)` ).
 

@@ -57,7 +57,7 @@ CLASS zcl_demo_abap_string_proc IMPLEMENTATION.
 
     DATA(output) = NEW zcl_demo_abap_display( out ).
 
-    output->display( `ABAP Cheat Sheet Demo Example: String Processing` ).
+    output->display( `ABAP Cheat Sheet Example: String Processing` ).
     output->display( `1) Creating Strings and Assigning Values` ).
 
     "Data object declarations providing default values

@@ -184,7 +184,7 @@ CLASS ZCL_DEMO_ABAP_RAP_EXT_NUM_M IMPLEMENTATION.
 
     DATA(output) = NEW zcl_demo_abap_display( out ).
 
-    output->display( `RAP Demo: RAP BO Operations Using a Managed ` &&
+    output->display( `ABAP Cheat Sheet Example: RAP BO Operations Using a Managed ` &&
                       `RAP BO` ).
 
 **********************************************************************

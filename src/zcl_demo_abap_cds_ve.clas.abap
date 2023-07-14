@@ -98,7 +98,7 @@ CLASS zcl_demo_abap_cds_ve IMPLEMENTATION.
 
     DATA(output) = NEW zcl_demo_abap_display( out ).
 
-    output->display( `ABAP cheat sheet: CDS view entities` ).
+    output->display( `ABAP Cheat Sheet Example: CDS view entities` ).
 
     output->display( `1) Operands, expressions and built-in functions ` &&
     `in a CDS view entity` ).

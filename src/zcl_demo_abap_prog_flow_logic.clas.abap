@@ -104,7 +104,7 @@ CLASS zcl_demo_abap_prog_flow_logic IMPLEMENTATION.
 
     DATA(output) = NEW zcl_demo_abap_display( out ).
 
-    output->display( `ABAP Cheat Sheet Demonstration Example: Program Flow Logic` ).
+    output->display( `ABAP Cheat Sheet Example: Program Flow Logic` ).
 
 **********************************************************************
 

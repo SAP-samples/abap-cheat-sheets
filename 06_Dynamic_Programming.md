@@ -79,8 +79,7 @@ FIELD-SYMBOLS <fs_data>      TYPE data.
 FIELD-SYMBOLS <fs_any_table> TYPE any table.
 
 "Declaring field symbols inline
-"The typing of the field symbol is determined using the statically
-"known type of the assigned memory area.
+"In an inline declaration, the typing of the field symbol is done with the generic type data.
 "Prominent use case: Inline declaration of a field symbol for an internal table.
 LOOP AT itab ASSIGNING FIELD-SYMBOL(<line>).
   ...
@@ -358,6 +357,9 @@ ref5 = CAST #( ref6 ).
 
 "Casting operator in older syntax
 "ref5 ?= ref6.
+
+"Note: The cast operators can also but need not be specified for upcasts.
+ref4 = CAST #( ref3 ).
 ```
 
 **Addressing data references**

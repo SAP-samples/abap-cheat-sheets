@@ -3,7 +3,7 @@
 # ABAP for RAP: Entity Manipulation Language (ABAP EML)
 
 - [ABAP for RAP: Entity Manipulation Language (ABAP EML)](#abap-for-rap-entity-manipulation-language-abap-eml)
-  - [Excursion: EML in the Context of RAP](#excursion-eml-in-the-context-of-rap)
+  - [RAP Buzzwords](#rap-buzzwords)
   - [ABAP Behavior Pools (ABP)](#abap-behavior-pools-abp)
     - [RAP Handler Classes and Methods](#rap-handler-classes-and-methods)
     - [RAP Saver Class and Saver Methods](#rap-saver-class-and-saver-methods)
@@ -21,11 +21,10 @@
   - [More Information](#more-information)
   - [Executable Examples](#executable-examples)
 
-## Excursion: EML in the Context of RAP
+## RAP Buzzwords
 
 [ABAP Entity Manipulation Language](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenaeml_glosry.htm) (or EML for short) is a subset of ABAP that allows you to access the data of [RAP](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenarap_glosry.htm) business objects in an ABAP program.
-The following points are meant to touch on RAP-related buzzwords like
-*RAP business objects* and others for setting the context:
+The following points touch on RAP-related buzzwords such as *RAP business objects* and others for setting the context:
 
 -   RAP business objects (RAP BO)
     -   A RAP BO is based on a special, tree-like hierarchical structure
@@ -140,8 +139,8 @@ The following points are meant to touch on RAP-related buzzwords like
         provided or self-implemented by developers in an ABAP behavior
         implementation
     -   Unmanaged RAP BOs are, for example, relevant for brownfield
-        scenarios, i. e. in scenarios in which business logic is already
-        available and should be embedded in the RAP world.
+        scenarios, i. e. in scenarios in which transactional buffers and application logic is already
+        available and should be embedded in the RAP world. Note that it is possible to have a managed RAP BO with unamanged parts, e.g. unamanged save or additional save. Find more information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbdl_rap_bo.htm).
 -   ABAP behavior implementation in an ABAP behavior pool (ABP)
     -   An [ABAP behavior
         pool](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbehavior_pool_glosry.htm "Glossary Entry")
@@ -625,7 +624,7 @@ the additions
 BY`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapmodify_entity_entities_op.htm),
 [`UPDATE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapmodify_entity_entities_op.htm),
 and
-[`DELETE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapmodify_entity_entities_op.htm)
+[`DELETE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapmodify_entity_entities_op.htm))
 and non-standard operations (actions) using the addition
 [`EXECUTE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapmodify_entity_entities_op.htm).
 All EML statements for the mentioned operations begin with

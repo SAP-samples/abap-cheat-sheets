@@ -69,7 +69,7 @@ CLASS zcl_demo_abap_sql_group_by IMPLEMENTATION.
 
     DATA(output) = NEW zcl_demo_abap_display( out ).
 
-    output->display( `Demo: Grouping Internal Tables` ).
+    output->display( `ABAP Cheat Sheet Example: Grouping Internal Tables` ).
 
     SELECT *
            FROM zdemo_abap_flsch

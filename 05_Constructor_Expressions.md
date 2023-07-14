@@ -4,19 +4,19 @@
 
 - [Working with Constructor Expressions](#working-with-constructor-expressions)
   - [Introduction](#introduction)
-  - [`VALUE`](#value)
-  - [`CORRESPONDING`](#corresponding)
-  - [`NEW`](#new)
-  - [`CONV`](#conv)
-  - [`EXACT`](#exact)
-  - [`REF`](#ref)
-  - [`CAST`](#cast)
-  - [`COND`](#cond)
-  - [`SWITCH`](#switch)
-  - [`FILTER`](#filter)
-  - [`REDUCE`](#reduce)
-  - [Iteration Expressions with `FOR`](#iteration-expressions-with-for)
-  - [`LET Expressions`](#let-expressions)
+  - [VALUE](#value)
+  - [CORRESPONDING](#corresponding)
+  - [NEW](#new)
+  - [CONV](#conv)
+  - [EXACT](#exact)
+  - [REF](#ref)
+  - [CAST](#cast)
+  - [COND](#cond)
+  - [SWITCH](#switch)
+  - [FILTER](#filter)
+  - [REDUCE](#reduce)
+  - [Iteration Expressions with FOR](#iteration-expressions-with-for)
+  - [LET Expressions](#let-expressions)
   - [Executable Example](#executable-example)
 
 ## Introduction
@@ -72,7 +72,7 @@ initialization can be avoided.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
-## `VALUE`
+## VALUE
 
 -   Expressions with the
     [`VALUE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconstructor_expression_value.htm)
@@ -275,7 +275,7 @@ options of the constructor operators in the ABAP Keyword Documentation.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
-## `CORRESPONDING`
+## CORRESPONDING
 
 -   Expressions with the
     [`CORRESPONDING`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconstructor_expr_corresponding.htm)
@@ -354,7 +354,7 @@ two statements are  not the same:
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
-## `NEW`
+## NEW
 
 -   Using the instance operator
     [`NEW`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconstructor_expression_new.htm),
@@ -479,7 +479,7 @@ DATA(oref3) = NEW cl2( p1 = ... p2 = ... ).
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
-## `CONV`
+## CONV
 
 -   The
     [`CONV`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconstructor_expression_conv.htm)
@@ -534,7 +534,7 @@ DATA(f) = `hallo`.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
-## `EXACT`
+## EXACT
 
 -   The
     [`EXACT`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconstructor_expression_exact.htm)
@@ -570,7 +570,7 @@ ENDTRY.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
-## `REF`
+## REF
 
 -   The
     [`REF`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconstructor_expression_ref.htm)
@@ -586,6 +586,7 @@ ENDTRY.
     and is particularly useful for avoiding the declaration of helper
     variables that are only necessary, for example, to specify data
     reference variables as actual parameters.
+- The following can be specified after `REF` before the first parenthesis: A non-generic data type that satisfies the rules of [upcasts in data references](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconversion_references_data.htm), the generic type `data`, the `#` character if the type can be derived from the context.
 
 Examples:
 ``` abap
@@ -614,7 +615,7 @@ DATA(oref_b) = REF #( oref_a ).
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
-## `CAST`
+## CAST
 
 -   Using the
     [`CAST`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconstructor_expression_cast.htm)
@@ -651,7 +652,7 @@ DATA(methods) = CAST cl_abap_objectdescr(
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
-## `COND`
+## COND
 
 -   The
     [`COND`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconditional_expression_cond.htm)
@@ -680,7 +681,7 @@ DATA(b) = COND #( WHEN a BETWEEN 1 AND 3 THEN w
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
-## `SWITCH`
+## SWITCH
 
 The
 [`SWITCH`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconditional_expression_switch.htm)
@@ -700,7 +701,7 @@ DATA(b) = SWITCH #( a
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
-## `FILTER`
+## FILTER
 
 -   The
     `FILTER` operator constructs an internal table according to a specified type (which can be an explicitly specified, non-generic table type or the # character as a symbol for the [operand type](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenoperand_type_glosry.htm) before the first parenthesis).
@@ -769,7 +770,7 @@ DATA(f11) = FILTER #( itab2 USING KEY sec_key EXCEPT IN filter_tab2 WHERE num = 
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
-## `REDUCE`
+## REDUCE
 
 -   The
     [`REDUCE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconstructor_expression_reduce.htm)
@@ -801,7 +802,7 @@ DATA(sum) = REDUCE i( INIT s = 0
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
-## Iteration Expressions with `FOR`
+## Iteration Expressions with FOR
 
 -   Using [iteration
     expressions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abeniteration_expression_glosry.htm "Glossary Entry")
@@ -898,7 +899,7 @@ TYPES t_type LIKE itab.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
-## `LET Expressions`
+## LET Expressions
 
 -   [`LET`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abaplet.htm)
     expressions allow you to declare local helper fields (variables or

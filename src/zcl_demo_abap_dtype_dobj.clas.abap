@@ -40,7 +40,7 @@
 * code.
 *
 ***********************************************************************
-"! <p class="shorttext synchronized">ABAP cheat sheets: Data types and data objects</p>
+"! <p class="shorttext synchronized">ABAP cheat sheet: Data types and data objects</p>
 "! Example to demonstrate data types and data objects in ABAP.<br>Choose F9 in ADT to run the class.
 CLASS zcl_demo_abap_dtype_dobj DEFINITION
   PUBLIC
@@ -91,8 +91,7 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
     "  CDS entity, which is not covered in this demo example.
     "- In ADT and because of the many type declarations, you may want to press
     "  F2 on the types to get more information.
-    "- The examples show a selection. For more information, chheck out the
-    "  ABAP Keyword Documentation.
+    "- The examples show a selection. 
     "- Only non-generic types can be used.
 
     output->display( `1) Declaring data types based on elementary types` ).
@@ -760,7 +759,6 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
     "- Must always be performed explicitly using the casting operator ?= and the casting
     "  operator CAST.
 
-
     "The following example would result in a syntax error due to type incompatibility.
     "dref_1_i = dref_3_data.
 
@@ -775,7 +773,7 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
     dref_1_i = CAST #( dref_3_data ).
 
     "If not caught, the following would result in a runtime error.
-    "dref_3_data points to a reference of type i, the static type is dref_2_str is string.
+    "dref_3_data points to a reference of type i, the static type of dref_2_str is string.
     "So, the downcast does not work.
     TRY.
         dref_2_str = CAST #( dref_3_data ).
@@ -973,7 +971,7 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
 
 **********************************************************************
 
-    output->display( `1) Character strings and text field strings` ).
+    output->display( `12) Character strings and text field strings` ).
 
     "The following example shows the difference between text field strings
     "of type c and character strings of type string when it comes to trailing
@@ -990,7 +988,7 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
 
 **********************************************************************
 
-    output->display( `12) Floating point numbers` ).
+    output->display( `13) Floating point numbers` ).
 
     "The following example shows the difference between binary and decimal
     "floating point numbers.
@@ -1005,9 +1003,9 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
 
 **********************************************************************
 
-    output->display( `13) Byte-like types` ).
+    output->display( `14) Byte-like types` ).
 
-    "The following example shows byte-like types x and xstring..
+    "The following example shows byte-like types x and xstring.
 
     "A byte string is filled with binary data created from a string
     "using the convert_out method of the cl_abap_codepage class.
@@ -1058,7 +1056,7 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
 
 **********************************************************************
 
-    output->display( `14) Date and time` ).
+    output->display( `15) Date and time` ).
 
     "In the example, date and time fields are assigned the current values
     "using the cl_abap_context_info class. Calculations follow. The date of next
@@ -1093,7 +1091,7 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
 
 **********************************************************************
 
-    output->display( `15) Type conversion rules` ).
+    output->display( `16) Type conversion rules` ).
 
     "The purpose of this example is to emphasize the conversion rules
     "that should be noted when performing conversions.
@@ -1248,7 +1246,7 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
 
 **********************************************************************
 
-    output->display( `16) Excursion: RTTI` ).
+    output->display( `17) Excursion: RTTI` ).
 
     "Using RTTI to check type compatibility
     "In the following example the applies_to_data method of the RTTI class
@@ -1316,7 +1314,7 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
 
 **********************************************************************
 
-    output->display( `17) Constants and immutable variables` ).
+    output->display( `18) Constants and immutable variables` ).
 
     "As mentioned above, constants cannot be changed at runtime.
     CONSTANTS con_str TYPE string VALUE `hallo`.
@@ -1356,7 +1354,7 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
 
 **********************************************************************
 
-    output->display( `18) Various ABAP glossary terms on data types and objects in a nutshell` ).
+    output->display( `19) Various ABAP glossary terms on data types and objects in a nutshell` ).
 
     "Standalone and bound data types
     "Standalone: Data type that is defined using the statement TYPES in an ABAP program, as
@@ -1570,7 +1568,7 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
 
 **********************************************************************
 
-    output->display( `19) Generic ABAP types for formal parameters of methods` ).
+    output->display( `20) Generic ABAP types for formal parameters of methods` ).
 
     "Generic data types have already been covered above.
     "A generic data type is an incomplete type specification that covers multiple
@@ -1615,7 +1613,7 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
 
 **********************************************************************
 
-    output->display( `20) Built-in data objects` ).
+    output->display( `21) Built-in data objects` ).
 
     "This example demonstrates the availability of built-in data objects in ABAP..
 
@@ -1697,7 +1695,7 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
 
 **********************************************************************
 
-    output->display( `21) Declaration context` ).
+    output->display( `22) Declaration context` ).
 
     "The declaration context of data objects can be problematic.
     "The example deals with local declarations and control structures.

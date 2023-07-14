@@ -31,7 +31,7 @@ Note that the topics covered here are also partly covered in other ABAP cheat sh
 Data types
 - Define technical properties of all data objects that have these data types, such as the maximum length of a [text field](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentext_field_glosry.htm). 
 - Are descriptions only, with no data memory attached except for administrative information. 
-- Can occur in A[ABAP programs](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_program_glosry.htm) as [bound data types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbound_data_type_glosry.htm), that is, the type is a property of a data object, or as a [standalone data type](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenstand-alone_data_type_glosry.htm), that is, the data type is defined independently. 
+- Can occur in [ABAP programs](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_program_glosry.htm) as [bound data types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbound_data_type_glosry.htm), that is, the type is a property of a data object, or as a [standalone data type](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenstand-alone_data_type_glosry.htm), that is, the data type is defined independently. 
 - Can be defined locally in an ABAP program or globally in classes, interfaces and in the [ABAP Dictionary (DDIC)](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_dictionary_glosry.htm). 
 > **💡 Note**<br>
 > - Note: Data types in the ABAP Dictionary are either created directly as [repository objects](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrepository_object_glosry.htm) ([DDIC data elements](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendata_element_glosry.htm)) or in a type pool (only in [Standard ABAP](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenstandard_abap_glosry.htm)). [Database table](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendatabase_table_glosry.htm), [CDS entities](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_entity_glosry.htm) and their components can also be used as data types in ABAP programs.
@@ -46,7 +46,7 @@ Data objects:
 
 
 > **💡 Note**<br>
-> There are several differentations that further distinguish and characterize data types and objects (see [here](#glossary-terms-in-a-nutshell)).
+> There are several differentations that further distinguish and characterize data types and objects. See [here](#glossary-terms-in-a-nutshell).
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -61,7 +61,7 @@ Data types can be divided into three groups:
 For an overview, see the [ABAP Type Hierarchy](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentype_hierarchy.htm) in the ABAP Keyword Documentation.
 
 ### Elementary Data Types
-- Elementary (or scalar) data types are based directly on a set of [built-in ABAP types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbuiltin_abap_type_glosry.htm)
+- Elementary (or scalar) data types are based directly on a set of [built-in ABAP types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbuiltin_abap_type_glosry.htm).
 - Are not composed of of other data types. 
 - Are types for holding numeric values, text information, binary data and special types for date and time.
 - Are further divided into elementary types of fixed and variable length.
@@ -82,7 +82,7 @@ For an overview, see the [ABAP Type Hierarchy](https://help.sap.com/doc/abapdocu
 > - The numeric data types `b` and `s` cannot be specified directly in ABAP programs for short integers. Alternative [built-in DDIC types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbuiltin_ddic_type_glosry.htm) are available.
 > - `decfloat16` and `decfloat34` for decimal floating point numbers can be regarded as more modern versions of `p` and `f`, combining their advantages.
 > - Although they are character-like, `t` and `d` can be used for calculations.
-> - See the ABAP Keyword Documentation [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbuilt_in_types.htm) for more information about the initial values of the data types, how long they can be, and so on.
+> - See the ABAP Keyword Documentation [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbuilt_in_types.htm) for more information about the initial values of the data types, the standard length, and so on.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -117,7 +117,7 @@ For an overview, see the [ABAP Type Hierarchy](https://help.sap.com/doc/abapdocu
 ### Declaring Data Types
 
 Data types are defined in an ABAP program using the [`TYPES`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abaptypes.htm) statement. Depending on the declaration context, the types can be accessed either locally or globally. As mentioned, data types can also be declared in the ABAP Dictionary. The focus here is on data type declarations in ABAP programs using `TYPES` statements.
-You can use built-in and user-defined data types can be used to create data types (and data objects). 
+You can use built-in and user-defined data types to create data types (and data objects). 
 
 The following code snippet shows various syntax options for declaring data types:
 
@@ -146,7 +146,7 @@ TYPES: te_c5  TYPE c LENGTH 5,
        te_str TYPE string.
 
 "Byte-like types
-TYPES te_do_string TYPE x LENGTH 2.
+TYPES te_x_l2 TYPE x LENGTH 2.
 TYPES te_xstr TYPE xstring.
 
 "Types for date and time
@@ -260,7 +260,7 @@ TYPES ts_ddic_tab TYPE zdemo_abap_carr.
 "Internal table type based on internal type that exists in a gloabl interface
 TYPES tt_tab_type_from_itf TYPE zdemo_abap_get_data_itf=>carr_tab.
 
-"Internal table types with an elementary line type based globally available types
+"Internal table types with an elementary line type based on globally available types
 "Elementary table type
 TYPES tt_strtab TYPE string_table.
 "Elementary line type; the type is available in a global interface
@@ -433,7 +433,7 @@ DATA struc_like_line LIKE LINE OF itab_ddic_tab.
 
 
 > **💡 Note**<br>
-> The above data objects are declared by assigning a dedicated name. These data objects can be addressed by taht name. This is not true for [anonymous data objects](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenanonymous_data_object_glosry.htm), which can only be addressed through reference variables. This is covered below.
+> The above data objects are declared by assigning a dedicated name. These data objects can be addressed by that name. This is not true for [anonymous data objects](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenanonymous_data_object_glosry.htm), which can only be addressed through reference variables. This is covered [below](#assigning-references-to-data-reference-variables).
 
 
 Data reference variables:
@@ -444,7 +444,7 @@ DATA dref_int TYPE REF TO i.
 DATA dref_str TYPE REF TO string.
 DATA dref_ddic_tab TYPE REF TO zdemo_abap_carr.
 "Using a generic type as static type
-DATA dref_8_dataa TYPE REF TO data.
+DATA dref_data TYPE REF TO data.
 
 "Referring to an existing reference type
 TYPES tr_int TYPE REF TO i.
@@ -574,8 +574,8 @@ An [inline declaration](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-
 
 > **💡 Note**<br>
 > - In an assignment, if the data object is declared inline on the left side, there are many options for what can be placed on the right side as shown in the previous section. The date type of the variable is determined by the operand type. It must be possible to derive this type completely statically.
-> - For more information about the possible declaration positions, see [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendeclaration_position_glosry.htm).    
-> - You can use the [`FINAL`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenfinal_inline.htm) declaration operator to create [immutable variables](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenimmutable_variable_glosry.htm), as shon below.
+> - For more information about the possible declaration positions, see [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendeclaration_positions.htm).    
+> - You can use the [`FINAL`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenfinal_inline.htm) declaration operator to create [immutable variables](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenimmutable_variable_glosry.htm), as shown below.
 > - [Programming guidelines for inline declarations (F1 for Standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abendeclaration_inline_guidl.htm)
 
  
@@ -663,13 +663,13 @@ SELECT * FROM zdemo_abap_carr INTO TABLE @DATA(itab_b3).
 
 ### Assigning References to Data Reference Variables
     
-- As with other data objects and types, there are special assignment rules for [data reference variable](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendata_reference_variable_glosry.htm). See the ABAP Keyword Documentation.
+- As with other data objects and types, there are [special assignment rules](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconversion_references.htm) for [data reference variable](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendata_reference_variable_glosry.htm). See the ABAP Keyword Documentation.
 - An initial reference variable contains the [null reference](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abennull_reference_glosry.htm), which does not point to any objects. This means that it has neither a data type nor a class as a [dynamic type](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendynamic_type_glosry.htm).
-- The concepts of [upcast](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenup_cast_glosry.htm) and [downcast](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendown_cast_glosry.htm) enter the picture here. For more information, see the ABAP Keyword Documentation and  the following code snippet.
+- The concepts of [upcast](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenup_cast_glosry.htm) and [downcast](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendown_cast_glosry.htm) enter the picture here. See the following code snippet.
 
 ```abap
 "Declaring data reference variables with static types
-"At this stage, initial references variables contains null references.
+"At this stage, initial references variables contain null references.
 DATA dref_1_i TYPE REF TO i.
 DATA dref_2_str TYPE REF TO string.
 "Generic type as static type
@@ -974,7 +974,8 @@ DATA: BEGIN OF struc_a,
 "Complete: Non-generic data type
 "Generic:
 "- Data type that does not set all properties of a data object.
-"- Can only be used for the typing of formal parameters and field symbols.
+"- Can only be used for the typing of formal parameters and field symbols, except for
+"  data reference variables using the generic type 'data'.
 
 "Complete data type
 DATA do_d_i TYPE i.
@@ -1052,7 +1053,6 @@ DATA do_j_i TYPE i VALUE 3.
 DATA do_k_str TYPE string VALUE `hallo`.
 
 "Dynamic types
-"Set a break point here and check the Variables tab in ADT how the value and the information changes.
 dref_a_i = REF #( do_j_i ). "Only type i possible; the dynamic type is the same
 
 "The dynamic type is more special than the static type (which is the generic type data in this case)
@@ -1074,7 +1074,7 @@ dref_b_data  = REF #( dref_a_i ).
 "- Structures that do not contain any deep components are flat structures. Structures that contain 
 "  at least one deep component are deep structures.
 
-"Flat data object
+"Flat elementary data object
 DATA do_l_i TYPE i.
 
 "Flat structure
@@ -1083,7 +1083,7 @@ DATA: BEGIN OF struc_b_flat,
         comp2 TYPE c LENGTH 3,
       END OF struc_b_flat.
 
-"Deep data object
+"Deep elementary data object
 DATA do_m_str TYPE string.
 
 "Deep structure
@@ -1106,7 +1106,7 @@ DATA do_n_i TYPE i.
 CONSTANTS con_b_str TYPE string VALUE `hi`.
 
 "Unnamed data objects
-"Literal that is output. It is cannot be addressed via a dedicated name.
+"Literal that is output. It cannot be addressed via a dedicated name.
 output->display( `I'm a literal...` ).
 
 "Anonymous data object created using the NEW operator
@@ -1137,7 +1137,7 @@ The declaration context of data types (and objects) determines the validity and 
   - Declarations in the ABAP Dictionary, which is a special storage for the declarations of data types that are visible in all repository objects, provided that the [package](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenpackage_glosry.htm) check allows this.
     - The data types of the ABAP Dictionary are not declared with the `TYPES` statement, but using ADT tools (and/or SAP GUI tools in systems where SAP GUI is available).
     - The DDIC has many more [built-in types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbuiltin_ddic_type_glosry.htm) than ABAP. These types have other names. They cannot be used in ABAP programs. 
-    - The DDIC provides many options for defining types, including elementary data types (defined as data elements), reference types, complex types such as structured types and table types. Note that the name of a database table or a view can be used in type declarations to address the line type of these repository objects (for example, a structure: `DATA a TYPE some_db_table.).
+    - The DDIC provides many options for defining types, including elementary data types (defined as data elements), reference types, complex types such as structured types and table types. Note that the name of a database table or a view can be used in type declarations to address the line type of these repository objects (for example, a structure: `DATA a TYPE some_db_table.`).
     - Note the following trap: Local declarations hide global declarations of the same name. 
 
 <p align="right">(<a href="#top">back to top</a>)</p>

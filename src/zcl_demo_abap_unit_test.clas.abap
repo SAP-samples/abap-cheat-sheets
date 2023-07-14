@@ -178,7 +178,7 @@ METHOD if_oo_adt_classrun~main.
 
   DATA(output) = NEW zcl_demo_abap_display( out ).
 
-  output->display( `ABAP Cheat Sheet Demonstration Example: ABAP Unit Tests` ).
+  output->display( `ABAP Cheat Sheet Example: ABAP Unit Tests` ).
   output->display( `1) get_sum Method` ).
   "This method demonstrates the use of the setup and teardown methods in the test class.
 
