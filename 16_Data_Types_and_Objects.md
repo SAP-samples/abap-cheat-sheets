@@ -1187,7 +1187,6 @@ TYPES: BEGIN OF ENUM t_enum_struc STRUCTURE en_struc BASE TYPE basetype,
         END OF ENUM t_enum_struc STRUCTURE en_struc.
 ```
 
-
 Enumerated variables can be declared by referring to the enumerated type.
 They can only be assigned the enumerated values defined there that exist as the content of enumerated constants or components of an enumerated structure.
 
