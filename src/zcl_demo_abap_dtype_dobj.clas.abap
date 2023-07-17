@@ -332,7 +332,7 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
     "Reference table types
     TYPES tr_tab_ref_i TYPE TABLE OF REF TO i.
     DATA itab_str TYPE TABLE OF string.
-    TYPES tr_like_table_ref LIKE TABLE OF ref TO itab_str.
+    TYPES tr_like_table_ref LIKE TABLE OF REF TO itab_str.
 
     output->display( `No output for this section. Check out the code, `
       && `for example, when running the class in the debugger after setting `
@@ -1795,7 +1795,7 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
 
     output->display( `23) Enumerated Types and Objects` ).
 
-    "Examples for enurmerated types and objects are contained in
+    "Examples for enumerated types and objects are contained in
     "separate methods. Check the comments there.
     "Note that the output that is created in the methods is combined
     "in a string (table).
