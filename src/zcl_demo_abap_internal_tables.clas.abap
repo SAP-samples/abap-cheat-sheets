@@ -1,6 +1,6 @@
 ***********************************************************************
 *
-*           ABAP cheat sheet: Working with internal tables
+*           ABAP cheat sheet: Internal tables
 *
 * -------------------------- PURPOSE ----------------------------------
 * - Example to demonstrate various syntactical options for working with
@@ -9,7 +9,7 @@
 *   internal tables
 *
 * ----------------------- GETTING STARTED -----------------------------
-* - Open the class with the ABAP Development Tools (ADT).
+* - Open the class with the ABAP development tools for Eclipse (ADT).
 * - Choose F9 to run the class.
 * - Check the console output.
 * - To understand the context and the ABAP syntax used, refer to the 
@@ -181,7 +181,7 @@ CLASS ZCL_DEMO_ABAP_INTERNAL_TABLES IMPLEMENTATION.
 
     DATA(output) = NEW zcl_demo_abap_display( out ).
 
-    output->display( `ABAP Cheat Sheet Example: Working with Internal Tables` ).
+    output->display( `ABAP Cheat Sheet Example: Internal Tables` ).
     output->display( `Filling and Copying Internal Table Content` ).
     output->display( `1) Adding single lines using APPEND/INSERT` ).
 

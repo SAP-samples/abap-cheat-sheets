@@ -87,7 +87,6 @@ For an overview, see the [ABAP Type Hierarchy](https://help.sap.com/doc/abapdocu
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
-
 ### Complex Data Types
 
 - Are composed of other types. 
@@ -111,7 +110,8 @@ For an overview, see the [ABAP Type Hierarchy](https://help.sap.com/doc/abapdocu
 - The typical syntax element is `... REF TO ...`.
 
 > **💡 Note**<br>
-> There are [generic ABAP types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abengeneric_abap_type_glosry.htm). Generic data types are types that do not define all of the properties of a data object. They can only be used for the typing [formal parameters](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenformal_parameter_glosry.htm) and [field symbols](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenfield_symbol_glosry.htm). When you declare reference types and data reference variables, you can use the generic ABAP type `data`.
+> There are [generic ABAP types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abengeneric_abap_type_glosry.htm). Generic data types are types that do not define all of the properties of a data object. They can only be used for the typing [formal parameters](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenformal_parameter_glosry.htm) and [field symbols](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenfield_symbol_glosry.htm). 
+The only generic types that can be used after `TYPE REF TO` are `data`, for the generic typing of data references, and `object`, for the generic typing of object references.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -247,7 +247,7 @@ TYPES tt_another_type TYPE tt_w_like.
 TYPES ts_type_line TYPE LINE OF tt_w_like.
 TYPES ts_like_line LIKE LINE OF itab_local_ts.
 
-"Internal table type with internal table as line type
+"Internal table typed with internal table as line type
 TYPES tt_like_table LIKE TABLE OF itab_local_ts.
 
 "Referring to global types
@@ -274,7 +274,7 @@ Reference types:
 TYPES tr_i TYPE REF TO i.
 TYPES tr_str TYPE REF TO string.
 TYPES tr_ddic_tab TYPE REF TO zdemo_abap_carr.
-"Using a generic type as static type
+"Using the generic type data as static type
 TYPES tr_data TYPE REF TO data.
 
 "Referring to an existing reference type
@@ -295,7 +295,7 @@ TYPES tr_like_ref2str LIKE REF TO str.
 "Reference table types
 TYPES tr_tab_ref_i TYPE TABLE OF REF TO i.
 DATA itab_str TYPE TABLE OF string.
-TYPES tr_like_table_ref LIKE TABLE OF ref TO itab_str.
+TYPES tr_like_table_ref LIKE TABLE OF REF TO itab_str.
 ```
 
 <p align="right">(<a href="#top">back to top</a>)</p>
@@ -344,7 +344,7 @@ DATA do_c.
 "Start values can be set for the data objects when they are declared.
 "Without the addition VALUE, data objects are filled with their type-specific initial values.
 "The start value can either be specified as a literal or as a predefined constant.
-"Note: The value addition is not to be confused with the VALUE operator that can be used to
+"Note: The VALUE addition is not to be confused with the VALUE operator that can be used to
 "construct the content of complex data objects as shown below.
 DATA do_c_l2 TYPE c LENGTH 2 VALUE 'hi'.
 DATA do_i_val TYPE i VALUE 123.
@@ -391,7 +391,8 @@ DATA: BEGIN OF a_structure,
       END OF a_structure.
 
 "Creating a structure based on a global type. In this case, it is a DDIC database
-"table whose line type is used. You can also use a CDS view, for example.
+"table whose line type is used. You can also use a CDS view or a dedicated structured type
+"from the DDIC, for example.
 DATA struc_ddic_tab TYPE zdemo_abap_carr.
 
 "Creating a structure as a constant. Providing values is mandatory.
@@ -413,8 +414,8 @@ DATA struc_init_val LIKE con_struc VALUE IS INITIAL.
 DATA itab_ddic_tab TYPE TABLE OF zdemo_abap_carr WITH EMPTY KEY.
 "Based on an elementary type
 DATA itab_tab_i TYPE TABLE OF i.
-"The elementary type is declared in a global interface
-DATA itab_elem_type_from_itf TYPE zdemo_abap_get_data_itf=>carr_tab.
+"The table type is declared in a global interface
+DATA itab_tab_type_from_itf TYPE zdemo_abap_get_data_itf=>carr_tab.
 "Based on globally available DDIC internal table type; explicitly specifying as initial
 DATA itab_ddic_tab_type TYPE string_table VALUE IS INITIAL.
 "Based on locally available structured data object
@@ -444,7 +445,7 @@ Data reference variables:
 DATA dref_int TYPE REF TO i.
 DATA dref_str TYPE REF TO string.
 DATA dref_ddic_tab TYPE REF TO zdemo_abap_carr.
-"Using a generic type as static type
+"Using generic type data as static type
 DATA dref_data TYPE REF TO data.
 
 "Referring to an existing reference type
@@ -556,7 +557,8 @@ num = num + 1.
 "String expressions as source of the assignment
 str_a2 = str_a1 && ` blabla`. "Strings are appended using the && operator
 str_a2 = |{ str_a1 } some more bla.|. "String templates. Note: Data objects are specified
-                                      "in curly brackets. The content is converted to type string.
+                                      "in curly brackets. The content is converted to type string
+                                      "Note that it must be convertible to type string.
 
 "An elementary data object is assigned a component of a specific table line 
 "using a table expression.
@@ -574,7 +576,7 @@ str_a2 = some_itab[ 2 ]-carrname.
 An [inline declaration](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abeninline_declaration_glosry.htm) is made using the declaration operator [`DATA`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendata_inline.htm). It can be specified in any designated [declaration position](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendeclaration_position_glosry.htm). The result of the declaration is used in the current operand position, is  statically visible from the current position, and is valid in the current context.
 
 > **💡 Note**<br>
-> - In an assignment, if the data object is declared inline on the left side, there are many options for what can be placed on the right side as shown in the previous section. The date type of the variable is determined by the operand type. It must be possible to derive this type completely statically.
+> - In an assignment, if the data object is declared inline on the left side, there are many options for what can be placed on the right side as shown in the previous section. The data type of the variable is determined by the operand type. It must be possible to derive this type completely statically.
 > - For more information about the possible declaration positions, see [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendeclaration_positions.htm).    
 > - You can use the [`FINAL`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenfinal_inline.htm) declaration operator to create [immutable variables](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenimmutable_variable_glosry.htm), as shown below.
 > - [Programming guidelines for inline declarations (F1 for Standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abendeclaration_inline_guidl.htm)
@@ -616,7 +618,8 @@ TYPES: BEGIN OF ts_struc,
 "type specified before the parentheses.
 DATA(struc_b1) = VALUE ts_struc( comp1 = 1 comp2 = `A` ).
 "No components specified and values assigned means an initial structure. This syntax is also possible
-"for declaring data objects with elementary types and explicitly specifiying initial values.
+"for declaring data objects with elementary types and explicitly specifiying initial values, but only 
+"for initial values. See the CONV operator.
 DATA(struc_b2) = VALUE ts_struc( ).
 DATA(elem_init) = VALUE i( ).
 "Note that components that are not specified and assigned a value remain initial.
@@ -642,22 +645,37 @@ DATA(itab_b2) = VALUE tt_b1( ( comp1 = 1 comp2 = `a` )
                               ( comp1 = 2 comp2 = `b` )
                               ( comp1 = 3 comp2 = `c` ) ).
 
-"In the context of other ABAP statements such as LOOP, READ TABLE or ABAP SQL SELECT statements,
-"inline declarations are useful for creating target variables with appropriate data types in place.
-"A structure to hold the current internal table line is created inline.
+"In the context of other ABAP statements such as LOOP, READ TABLE or ABAP SQL
+"SELECT statements, inline declarations are useful for creating target variables with
+"appropriate data types in place. This includes data reference variables and field
+"symbols. Field symbols are not covered below.
+
+"A work area/structure to hold the current internal table line is created inline.
 LOOP AT itab_b2 INTO DATA(wa_b1).
+  wa_b1-comp1 = 12345.
+  ...
+ENDLOOP.
+
+"Using the REFERENCE addition, a data reference variable can be created inline.
+LOOP AT itab_b2 REFERENCE INTO DATA(wa_ref_b1).
+  wa_ref_b1->comp1 = 67890.
   ...
 ENDLOOP.
 
 "A structure to hold the internal table line read is created inline.
 READ TABLE itab_b2 INTO DATA(wa_b2) INDEX 2.
+"Data reference variable
+READ TABLE itab_b2 REFERENCE INTO DATA(wa_ref_b2) INDEX 2.
 
 "ABAP SQL statements
 "A structure as target data object is created inline.
 SELECT SINGLE * FROM zdemo_abap_carr INTO @DATA(struc_b5).
+"NEW addition of the INTO clause creates a data reference variable
+SELECT SINGLE * FROM zdemo_abap_carr INTO NEW @DATA(struc_ref).
 
 "Internal table as target data object is created inline.
 SELECT * FROM zdemo_abap_carr INTO TABLE @DATA(itab_b3).
+SELECT * FROM zdemo_abap_carr INTO TABLE NEW @DATA(itab_ref).
 ```
 
 <p align="right">(<a href="#top">back to top</a>)</p>
@@ -670,7 +688,7 @@ SELECT * FROM zdemo_abap_carr INTO TABLE @DATA(itab_b3).
 
 ```abap
 "Declaring data reference variables with static types
-"At this stage, initial references variables contain null references.
+"At this stage, initial reference variables contain null references.
 DATA dref_1_i TYPE REF TO i.
 DATA dref_2_str TYPE REF TO string.
 "Generic type as static type
@@ -685,7 +703,7 @@ DATA dref_3_data TYPE REF TO data.
 DATA do_number TYPE i VALUE 987.
 DATA do_string TYPE string VALUE `abc`.
 
-"After the assignment the data reference variable points to the values.
+"After the assignment, the data reference variable points to the values.
 "The data type is derived (dynamic type).
 dref_1_i = REF #( do_number ). "Dynamic type is the same as the static type in this case
 dref_2_str = REF #( do_string ). "Dynamic type is the same as the static type in this case
@@ -711,10 +729,10 @@ DATA(dref_6_i) = REF #( do_number ).
 "- Assignment operator used: =
 "- Note that the operators for downcasts can also be used explicitly here, but it is usually not needed.
 "- In this example, elementary data types are covered. An upcast works ...
-"  - if the data types have identical type properties (i.e. the built-in type match as well as length and decimal places).
+"  - if the data types have identical type properties (i.e. the built-in types match as well as length and decimal places).
 "  - the static type of the source variable is completely typed, and the static type of the target variable is generic.
 
-"The following upcasts work. Both are of type i or string.
+"The following upcasts work. Both point to data objects of type i or string.
 dref_1_i = dref_6_i.
 "The source on the right side is completely typed (type i),
 "the target on the left side is a generic type (type data).
@@ -723,7 +741,7 @@ dref_3_data = dref_1_i.
 "Downcasts
 "- The static type of the target variable is more specific than the static type of the source variable.
 "- The assignability is not checked until runtime.
-"- Must always be performed explicitly using the casting operator ?= and the casting operator CAST.
+"- Must always be performed explicitly using the casting operator ?= or the more modern casting operator CAST.
 
 "The following example would result in a syntax error due to type incompatibility.
 "dref_1_i = dref_3_data.
@@ -734,12 +752,12 @@ dref_3_data = dref_1_i.
 "Note:
 "- The assignability is still not checked. This is done at runtime.
 "  In this example, it works since the dynamic type of the source is also of type i.
-"- An advantage of the CAST operator compared to ?=  is that the operator enables downcasts in operand positions,
+"- An advantage of the CAST operator compared to ?= is that the operator enables downcasts in operand positions,
 "  which helps reduce helper variables.
 dref_1_i = CAST #( dref_3_data ).
 
 "If not caught, the following would result in a runtime error.
-"dref_3_data points to a reference of type i, the static type is dref_2_str is string.
+"dref_3_data points to a data object of type i, the static type is dref_2_str is string.
 "So, the downcast does not work.
 TRY.
     dref_2_str = CAST #( dref_3_data ).
@@ -751,7 +769,7 @@ ENDTRY.
 dref_1_i ?= dref_3_data.
 
 "For upcasts, the operators can be used, too, but they are usually not necessary.
-"So, an assignment as follows is possible but not needed.
+"So, an assignment as follows is possible but not needed. Only using = is sufficient.
 dref_1_i = CAST #( dref_6_i ).
 ```
 
@@ -761,7 +779,7 @@ dref_1_i = CAST #( dref_6_i ).
 
 [Anonymous data objects](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenanonymous_data_object_glosry.htm) are a topic related to data reference variables.
 These data objects are [unnamed data objects](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenunnamed_data_object_glosry.htm).
-Most of the data objects in the snippets above are named data objects, meaning that they can be addressed by a specific name. Unnamed data objects are literals and anonymous data objects. Anonymous data objects can be addressed using data reference variables.
+Most of the data objects in the snippets above are named data objects (excluding the data reference variables), meaning that they can be addressed by a specific name. Unnamed data objects are literals and anonymous data objects. Anonymous data objects can be addressed using data reference variables.
 Unlike data objects created with the `DATA` statement, anonymous data objects are created at runtime. Data objects declared with `DATA` are created when the program is loaded.
 
 There are several ways to create anonymous data objects:
@@ -780,7 +798,7 @@ DATA dref_7_str TYPE REF TO string.
 CREATE DATA dref_7_str.
 
 "Note: If you want to assign a value to the data object, this can't be done directly.
-"The data reference variable must be dereferenced first using using the dereferencing operator.
+"The data reference variable must be dereferenced first using the dereferencing operator.
 dref_7_str->* = `hi`.
 
 "Creating an anonymous data object with an explicitly specified data type
@@ -982,6 +1000,11 @@ DATA: BEGIN OF struc_a,
 DATA do_d_i TYPE i.
 
 "Field symbols typed with generic data types
+"Note: A field symbol is a symbolic name for a data object to which actual 
+"memory can be assigned at runtime. A field symbol can be used as a placeholder 
+"for a data object at an operand position. For more information, see the ABAP 
+"Cheat Sheet on dynamic programming. Field symbols are used in this example 
+"to demonstrate generic types other than just data.
 FIELD-SYMBOLS <fs_a> TYPE clike.
 FIELD-SYMBOLS <fs_b> TYPE data.
 
@@ -1163,7 +1186,7 @@ TYPES: BEGIN OF ENUM t_enum,
          d,
        END OF ENUM t_enum.
 
-"a) Explicit base type is specified and start values provided using the VALUE addition
+"b) Explicit base type is specified and start values provided using the VALUE addition
 "   Note that one value must be initial.
 
 TYPES: basetype TYPE c LENGTH 2,

@@ -1,6 +1,6 @@
-# Working with Structures
+# Structures
 
-- [Working with Structures](#working-with-structures)
+- [Structures](#structures)
   - [Structures ...](#structures-)
   - [Creating Structures and Structured Types](#creating-structures-and-structured-types)
   - [Variants of Structures](#variants-of-structures)
@@ -554,7 +554,7 @@ SELECT SINGLE FROM @itab AS itab_alias
 ```
 ... using a `READ TABLE` statement. The code snippet below shows the reading of a line into a [work area](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenwork_area_glosry.htm "Glossary Entry"), a [field symbol](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenfield_symbol_glosry.htm "Glossary Entry"), and a [data reference variable](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendata_reference_variable_glosry.htm "Glossary Entry"), all of which 
 represent structured data objects that are declared inline. In the following example, a line is read based on the line number by
-specifying `INDEX`. For more details, see the section *Determining the target area* in the cheat sheet [Working with Internal Tables](01_Internal_Tables.md#).
+specifying `INDEX`. For more details, see the section *Determining the target area* in the cheat sheet [Internal Tables](01_Internal_Tables.md#).
 ``` abap
 READ TABLE itab INTO DATA(wa) INDEX 1.
 
@@ -630,7 +630,7 @@ MODIFY dbtab FROM @( VALUE #( comp1 = ... comp2 = ... ) ).
 internal table, `INSERT` can be used to add lines at a specific position in the table. If you do not specify the position, the lines are also added at the bottom of the table. However, unlike `APPEND`, `INSERT` does not set `sy-tabix`. 
 - `MODIFY` changes the content of an internal table entry.
 - Statements using the `VALUE` operator to directly create and populate the structures are also possible. For more information and code
-snippets, see the [Working with Internal Tables](01_Internal_Tables.md#) cheat sheet.
+snippets, see the [Internal Tables](01_Internal_Tables.md#) cheat sheet.
 ``` abap
 INSERT struc INTO TABLE itab.
 

@@ -66,7 +66,7 @@ in the ABAP Keyword Documentation.
 >- The use of AMDP is not recommended if the same task can be
         achieved using [ABAP
         SQL](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_sql_glosry.htm "Glossary Entry").
->- AMDP classes can only be edited with the [ABAP Development Tools
+>- AMDP classes can only be edited with the [ABAP development tools for Eclipse
         (ADT)](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenadt_glosry.htm "Glossary Entry").
 
 ## AMDP Classes

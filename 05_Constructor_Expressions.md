@@ -1,8 +1,8 @@
 <a name="top"></a>
 
-# Working with Constructor Expressions
+# Constructor Expressions
 
-- [Working with Constructor Expressions](#working-with-constructor-expressions)
+- [Constructor Expressions](#constructor-expressions)
   - [Introduction](#introduction)
   - [VALUE](#value)
   - [CORRESPONDING](#corresponding)

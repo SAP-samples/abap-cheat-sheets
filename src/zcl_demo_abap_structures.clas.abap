@@ -1,6 +1,6 @@
 ***********************************************************************
 *
-*           ABAP cheat sheet: Working with structures
+*           ABAP cheat sheet: Structures
 *
 * -------------------------- PURPOSE ----------------------------------
 * - Example to demonstrate various syntactical options for working with
@@ -10,7 +10,7 @@
 *   clearing structures, structures in use in the context of tables
 *
 * ----------------------- GETTING STARTED -----------------------------
-* - Open the class with the ABAP Development Tools (ADT).
+* - Open the class with the ABAP development tools for Eclipse (ADT).
 * - Choose F9 to run the class.
 * - Check the console output.
 * - To understand the context and the ABAP syntax used, refer to the 
@@ -114,7 +114,7 @@ CLASS zcl_demo_abap_structures IMPLEMENTATION.
 
     DATA(output) = NEW zcl_demo_abap_display( out ).
 
-    output->display( `ABAP Cheat Sheet Example: Working with Structures` ).
+    output->display( `ABAP Cheat Sheet Example: Structures` ).
 
 **********************************************************************
 

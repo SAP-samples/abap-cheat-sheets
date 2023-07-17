@@ -9,11 +9,17 @@
     - [Using SELECT for Multiple Purposes](#using-select-for-multiple-purposes)
     - [Clause Variations and Additions in SELECT Statements](#clause-variations-and-additions-in-select-statements)
     - [More Clauses](#more-clauses)
-    - [Excursion: Operands and Expressions in ABAP SQL Statements](#excursion-operands-and-expressions-in-abap-sql-statements)
-    - [Excursion: SQL Conditions](#excursion-sql-conditions)
-    - [Selecting Data by Evaluating the Content of other Tables](#selecting-data-by-evaluating-the-content-of-other-tables)
+    - [Operands and Expressions in ABAP SQL Statements](#operands-and-expressions-in-abap-sql-statements)
+      - [SQL operands](#sql-operands)
+      - [SQL Expressions](#sql-expressions)
+        - [Elementary Expressions](#elementary-expressions)
+        - [SQL Functions](#sql-functions)
+        - [More SQL Expressions](#more-sql-expressions)
+        - [Window Expressions](#window-expressions)
+    - [SQL Conditions](#sql-conditions)
+    - [Selecting Data by Evaluating the Content of Other Tables](#selecting-data-by-evaluating-the-content-of-other-tables)
     - [Combining Data of Multiple Database Tables](#combining-data-of-multiple-database-tables)
-      - [Excursion: Using Common Table Expressions (CTE)](#excursion-using-common-table-expressions-cte)
+      - [Common Table Expressions (CTE)](#common-table-expressions-cte)
   - [Changing Data in Database Tables](#changing-data-in-database-tables)
     - [Using `INSERT`](#using-insert)
     - [Using `UPDATE`](#using-update)
@@ -21,7 +27,6 @@
     - [Using `DELETE`](#using-delete)
   - [More Information](#more-information)
   - [Executable Example](#executable-example)
-
 
 ## ABAP SQL Intro
 
@@ -168,7 +173,7 @@ SELECT FROM source   "What database table or view to read from
     internal tables as targets, the resulting table is a standard table
     and has an empty key which might have an impact when further
     processing the internal table entries. Find more information in the
-    ABAP cheat sheet [Working with Internal Tables](01_Internal_Tables.md). In newer ABAP releases, the declaration operator [`FINAL`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenfinal_inline.htm) can be used to declare immutable variables.
+    ABAP cheat sheet [Internal Tables](01_Internal_Tables.md). In newer ABAP releases, the declaration operator [`FINAL`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenfinal_inline.htm) can be used to declare immutable variables.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -528,7 +533,7 @@ SELECT FROM dbtab
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
-### Excursion: Operands and Expressions in ABAP SQL Statements
+### Operands and Expressions in ABAP SQL Statements
 
 ABAP offers plenty of [SQL
 operands](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensql_operand_glosry.htm "Glossary Entry")
@@ -544,7 +549,7 @@ overview of important operand positions in ABAP SQL
 [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensql_operand_positions_oview.htm).
 Due to the rich variety of options, the cheat sheet covers a selection.
 
-**SQL operands**
+#### SQL operands
 
 -   Are elementary operands in an ABAP SQL statement
 -   Can be database table or view columns, a
@@ -608,7 +613,7 @@ SELECT FROM zdemo_abap_flsch
   "UP TO @( 10 - 7 ) ROWS.  "Host expression
 ```
 
-**SQL Expressions**
+#### SQL Expressions
 
 -   Expressions in an ABAP SQL statement that are passed to the database
     system for evaluation.
@@ -619,7 +624,7 @@ SELECT FROM zdemo_abap_flsch
     [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapsql_expr.htm)
     and the subtopics there.
 
-**Elementary expressions**
+##### Elementary Expressions
 
 -   An elementary expression represents one of the four mentioned
     operands above: A value from the database (the column name) or
@@ -629,7 +634,7 @@ SELECT FROM zdemo_abap_flsch
 -   See more information
     [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensql_elem.htm).
 
-**SQL functions**
+##### SQL Functions
 
 -   You can use built-in functions in ABAP SQL.
 -   Result: Value with the associated dictionary type.
@@ -890,7 +895,7 @@ SELECT
   INTO TABLE @DATA(agg_exp).
 ```
 
-**More SQL Expressions**
+##### More SQL Expressions
 
 -   [Arithmetic
     expressions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensql_arith.htm)
@@ -959,9 +964,9 @@ WHERE carrid = 'AA'
 INTO @DATA(more_sql_expr).
 ```
 
-[Window expressions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenwindow_expression_glosry.htm "Glossary Entry")
+##### Window Expressions
 
-How they work:
+How [window expressions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenwindow_expression_glosry.htm "Glossary Entry") work:
 
 -   Defines a subset of the result set (i. e. the
     "[window](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenwindow_glosry.htm "Glossary Entry")")
@@ -1056,7 +1061,7 @@ SELECT carrid, currency, fldate,
   INTO TABLE @DATA(result).
 ```
 
-### Excursion: SQL Conditions
+### SQL Conditions
 
 You can formulate conditions in ABAP SQL statements, i. e. [logical
 expressions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenlogical_expression_glosry.htm "Glossary Entry"),
@@ -1069,20 +1074,19 @@ conditions. For more information, see the subtopics of the [SQL
 Conditions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenasql_cond.htm)
 topic.
 
-
 | Operator   |      Meaning      |
 |----------|:-------------:|
- | `=`, `EQ`        |                  The content of two operands is equal.|
+| `=`, `EQ`        |                  The content of two operands is equal.|
 |  `<>`, `NE`        |               The content of two operands is not equal.|
- | `<`, `LT`         |                The content of one operand is less than the content of the other operand.|
- | `>`, `GT`          |               The content of one operand is greater than the content of the other operand.|
- | `<=`, `LE`         |               The content of one operand is less than or equal to the content of the other operand.|
- | `>=`, `GE`        |                The content of one operand is greater than or equal to the content of the other operand.|
- | `... [NOT] BETWEEN ... AND ...` |  The value of an operand is (not) between the value of the two other operands.|
- | `... [NOT] LIKE ...`         |      The content of an operand matches (does not match) a specified pattern. The pattern can be specified by using wildcard characters. `%` stands for any character string, including an empty string. `_` stands for any character.|
- | `... IS [NOT] INITIAL ...`   |      The value of an operand is (not) the initial value of its built-in dictionary type.|
- | `... EXISTS ...`           |              Checks the result set of a [subquery](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensubquery_glosry.htm "Glossary Entry"). The expression is true if the result set contains at least one row. See more information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenwhere_logexp_subquery.htm).|
- | `... [NOT] IN ( ... )`      |       Checks whether the operands on the left side match a value from a set of values specified in parentheses. On the left side, a single operand or an operand list are possible. On the right side, a comma-separated lists or subqueries can be specified.|
+| `<`, `LT`         |                The content of one operand is less than the content of the other operand.|
+| `>`, `GT`          |               The content of one operand is greater than the content of the other operand.|
+| `<=`, `LE`         |               The content of one operand is less than or equal to the content of the other operand.|
+| `>=`, `GE`        |                The content of one operand is greater than or equal to the content of the other operand.|
+| `... [NOT] BETWEEN ... AND ...` |  The value of an operand is (not) between the value of the two other operands.|
+| `... [NOT] LIKE ...`         |      The content of an operand matches (does not match) a specified pattern. The pattern can be specified by using wildcard characters. `%` stands for any character string, including an empty string. `_` stands for any character.|
+| `... IS [NOT] INITIAL ...`   |      The value of an operand is (not) the initial value of its built-in dictionary type.|
+| `... EXISTS ...`           |              Checks the result set of a [subquery](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensubquery_glosry.htm "Glossary Entry"). The expression is true if the result set contains at least one row. See more information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenwhere_logexp_subquery.htm).|
+| `... [NOT] IN ( ... )`      |       Checks whether the operands on the left side match a value from a set of values specified in parentheses. On the left side, a single operand or an operand list are possible. On the right side, a comma-separated lists or subqueries can be specified.|
 
 > **💡 Note**<br>
 >You can combine multiple logical expressions into one
@@ -1130,7 +1134,7 @@ SELECT *
   INTO TABLE @DATA(itab_where).
 ```
 
-### Selecting Data by Evaluating the Content of other Tables
+### Selecting Data by Evaluating the Content of Other Tables
 
 [`FOR ALL ENTRIES`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenwhere_all_entries.htm)
 addition:
@@ -1221,9 +1225,9 @@ UNION
   INTO ...
 ```
 
-#### Excursion: Using Common Table Expressions (CTE)
+#### Common Table Expressions (CTE)
 
-When used:
+When to use [Common Table Expressions (CTE)](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencommon_table_expression_glosry.htm):
 
 -   Whenever you need intermediate results in a `SELECT`
     statement and especially if you need them more than once.
@@ -1244,7 +1248,7 @@ How it works:
     e. a `SELECT` statement accesses the result of the
     expressions.
 
-Setup of a statement with CTEs:
+Setup of a statement with CTE:
 
 -   Introductory keyword `WITH`
 -   A comma-separated list with at least one definition of a CTE

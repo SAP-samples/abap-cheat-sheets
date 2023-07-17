@@ -9,7 +9,7 @@
 *   back door injection, test seams)
 *
 * ----------------------- RUN ABAP UNIT TEST---------------------------
-* - Open the class with the ABAP Development Tools (ADT).
+* - Open the class with the ABAP development tools for Eclipse (ADT).
 * - Choose Ctrl/Cmd + Shift + F10 to launch all tests in the class.
 *   You can also right-click somewhere in the class and choose
 *   Run as -> ABAP Unit Test.
@@ -23,7 +23,7 @@
 *   what code is tested and what not.
 *
 * ----------------------- RUN CLASS -----------------------------
-* - Open the class with the ABAP Development Tools (ADT).
+* - Open the class with the ABAP development tools for Eclipse (ADT).
 * - Choose F9 to run the class.
 * - Check the console output.
 * - To understand the context and the ABAP syntax used, check the notes

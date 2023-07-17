@@ -13,7 +13,7 @@
 *   information.
 *
 * ----------------------- GETTING STARTED -----------------------------
-* - Open the class with the ABAP Development Tools (ADT).
+* - Open the class with the ABAP development tools for Eclipse (ADT).
 * - Choose F9 to run the class.
 * - Check the console output.
 * - To understand the context and the ABAP syntax used, refer to the
@@ -84,8 +84,7 @@ CLASS zcl_demo_abap_dtype_dobj DEFINITION
              d,
            END OF ENUM t_enum.
 
-
-    "a) For the following enumerated type, an explicit base type is specified and start values provided using the VALUE addition
+    "b) For the following enumerated type, an explicit base type is specified and start values provided using the VALUE addition
     "   Note that one value must be initial.
 
     TYPES: basetype TYPE c LENGTH 2,
@@ -278,7 +277,7 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
     TYPES ts_type_line TYPE LINE OF tt_w_like.
     TYPES ts_like_line LIKE LINE OF itab_local_ts.
 
-    "Internal table type with internal table as line type
+    "Internal table typed with internal table as line type
     TYPES tt_like_table LIKE TABLE OF itab_local_ts.
 
     "Referring to global types
@@ -292,7 +291,7 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
     "Internal table type based on internal type that exists in a gloabl interface
     TYPES tt_tab_type_from_itf TYPE zdemo_abap_get_data_itf=>carr_tab.
 
-    "Internal table types with an elementary line type based globally available types
+    "Internal table types with an elementary line type based on globally available types
     "Elementary table type
     TYPES tt_strtab TYPE string_table.
     "Elementary line type; the type is available in a global interface
@@ -310,7 +309,7 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
     TYPES tr_i TYPE REF TO i.
     TYPES tr_str TYPE REF TO string.
     TYPES tr_ddic_tab TYPE REF TO zdemo_abap_carr.
-    "Using a generic type as static type
+    "Using the generic type data as static type
     TYPES tr_data TYPE REF TO data.
 
     "Referring to an existing reference type
@@ -356,7 +355,7 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
     "  are covered below.
     "- In ADT and because of the many type declarations, you may want to press F2 on
     "  the types to get more information.
-    "- The examples show a selection. For more information, chheck out the ABAP
+    "- The examples show a selection. For more information, check out the ABAP
     "  Keyword Documentation.
 
     output->display( `4) Declaring data objects based on elementary data types` ).
@@ -394,7 +393,7 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
     "Without the addition VALUE, data objects are filled with their type-specific
     "initial values. The start value can either be specified as a literal or as a
     "predefined constant.
-    "Note: The value addition is not to be confused with the VALUE operator that
+    "Note: The VALUE addition is not to be confused with the VALUE operator that
     "can be used to construct the content of complex data objects as shown below.
     DATA do_c_l2 TYPE c LENGTH 2 VALUE 'hi'.
     DATA do_i_val TYPE i VALUE 123.
@@ -453,7 +452,8 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
           END OF a_structure.
 
     "Creating a structure based on a global type. In this case, it is a DDIC database
-    "table whose line type is used. You can also use a CDS view, for example.
+    "table whose line type is used. You can also use a CDS view or a dedicated structured type
+    "from the DDIC, for example.
     DATA struc_ddic_tab TYPE zdemo_abap_carr.
 
     "Creating a structure as a constant. Providing values is mandatory.
@@ -475,8 +475,8 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
     DATA itab_ddic_tab TYPE TABLE OF zdemo_abap_carr WITH EMPTY KEY.
     "Based on an elementary type
     DATA itab_tab_i TYPE TABLE OF i.
-    "The elementary type is declared in a global interface
-    DATA itab_elem_type_from_itf TYPE zdemo_abap_get_data_itf=>carr_tab.
+    "The table type is declared in a global interface
+    DATA itab_tab_type_from_itf TYPE zdemo_abap_get_data_itf=>carr_tab.
     "Based on globally available DDIC internal table type; explicitly specifying as initial
     DATA itab_ddic_tab_type TYPE string_table VALUE IS INITIAL.
     "Based on locally available structured data object
@@ -505,7 +505,7 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
     DATA dref_int TYPE REF TO i.
     DATA dref_str TYPE REF TO string.
     DATA dref_ddic_tab TYPE REF TO zdemo_abap_carr.
-    "Using a generic type as static type
+    "Using the generic type data as static type
     DATA dref_8_dataa TYPE REF TO data.
 
     "Referring to an existing reference type
@@ -609,7 +609,7 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
     some_struc = some_itab[ 2 ].
 
     "Calculation expressions as source of the assignment
-    "arithmetic expressions
+    "Arithmetic expressions
     num = 1 + 2.
     "A calculation assignment as follows
     num += 1.
@@ -619,8 +619,9 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
 
     "String expressions as source of the assignment
     str_a2 = str_a1 && ` blabla`. "Strings are appended using the && operator
-    str_a2 = |{ str_a1 } some more bla.|. "String templates.
+    str_a2 = |{ str_a1 } some more bla.|. "String templates
     "Note: Data objects are specified in curly brackets. The content is converted to type string.
+    "      It must be convertible to type string.
 
     "An elementary data object is assigned a component of a specific table line using
     "a table expression. Note: In the following case, the types of source and target are not
@@ -638,7 +639,7 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
     output->display( `8) Creating data objects by inline declaration` ).
 
     "The declaration operator DATA can be specified in any designated declaration position.
-    "The date type of the variable is determined by the operand type. It must be possible
+    "The data type of the variable is determined by the operand type. It must be possible
     "to derive this type completely statically.
     "Note:
     "- In newer ABAP releases, the FINAL declaration operator is available for creating
@@ -683,7 +684,8 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
     DATA(struc_b1) = VALUE ts_struc( comp1 = 1 comp2 = `A` ).
     "No components specified and values assigned means an initial structure.
     "This syntax is also possible for declaring data objects with elementary types
-    "and explicitly specifiying initial values.
+    "and explicitly specifiying initial values, but only for initial values.
+    "See the CONV operator below.
     DATA(struc_b2) = VALUE ts_struc( ).
     DATA(elem_init) = VALUE i( ).
     "Note that components that are not specified and assigned a value remain initial.
@@ -711,8 +713,8 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
 
     "In the context of other ABAP statements such as LOOP, READ TABLE or ABAP SQL
     "SELECT statements, inline declarations are useful for creating target variables with
-    "appropriate data types in place. A structure to hold the current internal table line
-    "is created inline.
+    "appropriate data types in place. In the following example, a structure to hold the
+    "current internal table line is created inline.
     LOOP AT itab_b2 INTO DATA(wa_b1).
       ...
     ENDLOOP.
@@ -742,9 +744,8 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
     "  to any objects. This means that it does not have a data type or a class as
     "  a dynamic type.
 
-
     "Declaring data reference variables with static types
-    "At this stage, initial references variables contains null references.
+    "At this stage, initial reference variables contain null references.
     DATA dref_1_i TYPE REF TO i.
     DATA dref_2_str TYPE REF TO string.
     "Generic type as static type
@@ -753,13 +754,13 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
     "References in data reference variables can point to existing data objects.
     "For assigning the reference, you can use the REF operator.
     "There is also an ABAP statement available doing the same: GET REFERENCE.
-    "It should not be used anymore, especially in ABAP for Cloud development
+    "It should not be used anymore, especially in ABAP for Cloud development.
 
     "Creating data objects to refer to and providing a start value
     DATA do_number TYPE i VALUE 987.
     DATA do_string TYPE string VALUE `abc`.
 
-    "After the assignment the data reference variable points to the values.
+    "After the assignment, the data reference variable points to the values.
     "The data type is derived (dynamic type).
     dref_1_i = REF #( do_number ). "Dynamic type is the same as the static type in this case
     dref_2_str = REF #( do_string ). "Dynamic type is the same as the static type in this case
@@ -792,7 +793,7 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
     "  - the static type of the source variable is completely typed, and the static type
     "    of the target variable is generic.
 
-    "The following upcasts work. Both are of type i or string.
+    "The following upcasts work. Both point to data objects of type i or string.
     dref_1_i = dref_6_i.
     "The source on the right side is completely typed (type i),
     "the target on the left side is a generic type (type data).
@@ -802,8 +803,8 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
     "- The static type of the target variable is more specific than the static type of the
     "  source variable.
     "- The assignability is not checked until runtime.
-    "- Must always be performed explicitly using the casting operator ?= and the casting
-    "  operator CAST.
+    "- Must always be performed explicitly using the casting operator ?= or the more
+    "  modern casting operator CAST.
 
     "The following example would result in a syntax error due to type incompatibility.
     "dref_1_i = dref_3_data.
@@ -814,12 +815,12 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
     "Note:
     "- The assignability is still not checked. This is done at runtime.
     "  In this example, it works since the dynamic type of the source is also of type i.
-    "- An advantage of the CAST operator compared to ?=  is that the operator enables downcasts
+    "- An advantage of the CAST operator compared to ?= is that the operator enables downcasts
     "  in operand positions, which helps reduce helper variables.
     dref_1_i = CAST #( dref_3_data ).
 
     "If not caught, the following would result in a runtime error.
-    "dref_3_data points to a reference of type i, the static type of dref_2_str is string.
+    "dref_3_data points to a data object of type i, the static type of dref_2_str is string.
     "So, the downcast does not work.
     TRY.
         dref_2_str = CAST #( dref_3_data ).
@@ -831,7 +832,7 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
     dref_1_i ?= dref_3_data.
 
     "For upcasts, the operators can be used, too, but they are usually not necessary.
-    "So, an assignment as follows is possible but not needed.
+    "So, an assignment as follows is possible but not needed. Only using = is sufficient.
     dref_1_i = CAST #( dref_6_i ).
 
     output->display( `No output for this section. Check out the code, `
@@ -867,7 +868,7 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
     CREATE DATA dref_7_str.
 
     "Note: If you want to assign a value to the data object, this can't be done directly.
-    "The data reference variable must be dereferenced first using using the dereferencing operator.
+    "The data reference variable must be dereferenced first using the dereferencing operator.
     dref_7_str->* = `hi`.
 
     "Creating an anonymous data object with an explicitly specified data type
@@ -882,7 +883,8 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
     "Using the LIKE addition to refer to an existing internal table
     CREATE DATA dref_8_data LIKE it.
 
-    "Using the anonymous data object as target in the INTO clause of a SELECT statement
+    "Using the anonymous data object as target in the INTO clause of a SELECT statement.
+    "As above, note the dereferencing.
     SELECT *
       FROM zdemo_abap_carr
       INTO TABLE @dref_8_data->*.
@@ -944,9 +946,9 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
 
 **********************************************************************
 
-    output->display( `Excursions: Type conversions with elementary types: ...` ).
+    output->display( `Excursions: Elementary types and type conversions` ).
 
-    output->display( `11) ... Implicit and explicit conversion` ).
+    output->display( `11) Implicit and explicit conversion` ).
 
     "Implicit conversions are performed in assignments using the assignment operator =
     "The content of a data object is converted according to the associated conversion rules.
@@ -1003,7 +1005,7 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
     output->display( input = do_8_i name = `do_8_i` ).
 
     "CONV operator for creating data objects inline with elementary data types
-    "Assume, you want a data object type with decfloat34.
+    "Assume, you want a data object typed with decfloat34.
     "The following example assigns a text field literal to the left side.
     DATA(do_9_c4) = '4.56'. "It is type c
 
@@ -1141,7 +1143,8 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
     output->display( `16) Type conversion rules` ).
 
     "The purpose of this example is to emphasize the conversion rules
-    "that should be noted when performing conversions.
+    "that should be noted when performing conversions. The example
+    "uses only a selection of elementary data types.
     "The result of the conversion may be unexpected or surprising.
     "For all the details, check the ABAP Keyword Documentation.
     "In the following example, a structured type is created.
@@ -1151,10 +1154,9 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
     "- If there is a conversion error, the conv_err* components hold
     "  the error message.
     "An internal table is created based on this structured type.
-    "For the data objects to be created, several data objects are
-    "inserted into the internal table.
-    "This table is looped over. Implicit conversions are performed
-    "using the assignment operator.
+    "Several data objects are inserted into the internal table, on the
+    "basis of which a conversion is performed. The table is looped over.
+    "Implicit conversions are performed using the assignment operator.
 
     "Some noteworthy type conversions:
     "Conversion of d to decfloat34 and i:
@@ -1229,62 +1231,62 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
     ( to_be_converted = REF #( `12345` )       type = `STRING` )
     ).
 
-    LOOP AT tt_conv_tab ASSIGNING FIELD-SYMBOL(<con>).
+    LOOP AT tt_conv_tab INTO DATA(wa_con).
       TRY.
-          <con>-conv_c_len2 = <con>-to_be_converted->*.
-          <con>-conv_err_c_len2 = `-`.
+          wa_con-conv_c_len2 = wa_con-to_be_converted->*.
+          wa_con-conv_err_c_len2 = `-`.
         CATCH cx_root INTO err.
-          <con>-conv_err_c_len2 = err->get_text( ).
+          wa_con-conv_err_c_len2 = err->get_text( ).
       ENDTRY.
 
-      IF <con>-type = `T`.
-        <con>-conv_err_d = `Move error: T to D. Otherwise, a runtime error is caused.`.
+      IF wa_con-type = `T`.
+        wa_con-conv_err_d = `Move error: T to D. Otherwise, a runtime error is caused.`.
       ELSE.
         TRY.
-            <con>-conv_d = <con>-to_be_converted->*.
-            <con>-conv_err_d = `-`.
+            wa_con-conv_d = wa_con-to_be_converted->*.
+            wa_con-conv_err_d = `-`.
           CATCH cx_root INTO err.
-            <con>-conv_err_d = err->get_text( ).
+            wa_con-conv_err_d = err->get_text( ).
         ENDTRY.
       ENDIF.
 
       TRY.
-          <con>-conv_n_len3 = <con>-to_be_converted->*.
-          <con>-conv_err_n_len3 = `-`.
+          wa_con-conv_n_len3 = wa_con-to_be_converted->*.
+          wa_con-conv_err_n_len3 = `-`.
         CATCH cx_root INTO err.
-          <con>-conv_err_n_len3 = err->get_text( ).
+          wa_con-conv_err_n_len3 = err->get_text( ).
       ENDTRY.
 
-      IF <con>-type = `D`.
-        <con>-conv_err_t = `Move error: D to T. Otherwise, a runtime error is caused.`.
+      IF wa_con-type = `D`.
+        wa_con-conv_err_t = `Move error: D to T. Otherwise, a runtime error is caused.`.
       ELSE.
         TRY.
-            <con>-conv_t = <con>-to_be_converted->*.
-            <con>-conv_err_t = `-`.
+            wa_con-conv_t = wa_con-to_be_converted->*.
+            wa_con-conv_err_t = `-`.
           CATCH cx_root INTO err.
-            <con>-conv_err_t = err->get_text( ).
+            wa_con-conv_err_t = err->get_text( ).
         ENDTRY.
       ENDIF.
 
       TRY.
-          <con>-conv_decfl34 = <con>-to_be_converted->*.
-          <con>-conv_err_decfl34 = `-`.
+          wa_con-conv_decfl34 = wa_con-to_be_converted->*.
+          wa_con-conv_err_decfl34 = `-`.
         CATCH cx_root INTO err.
-          <con>-conv_err_decfl34 = err->get_text( ).
+          wa_con-conv_err_decfl34 = err->get_text( ).
       ENDTRY.
 
       TRY.
-          <con>-conv_i = <con>-to_be_converted->*.
-          <con>-conv_err_i = `-`.
+          wa_con-conv_i = wa_con-to_be_converted->*.
+          wa_con-conv_err_i = `-`.
         CATCH cx_root INTO err.
-          <con>-conv_err_i = err->get_text( ).
+          wa_con-conv_err_i = err->get_text( ).
       ENDTRY.
 
       TRY.
-          <con>-conv_str = <con>-to_be_converted->*.
-          <con>-conv_err_str = `-`.
+          wa_con-conv_str = wa_con-to_be_converted->*.
+          wa_con-conv_err_str = `-`.
         CATCH cx_root INTO err.
-          <con>-conv_err_str = err->get_text( ).
+          wa_con-conv_err_str = err->get_text( ).
       ENDTRY.
 
     ENDLOOP.
@@ -1344,10 +1346,10 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
 
     DATA rtti_tab TYPE TABLE OF ts_rtti WITH EMPTY KEY.
 
-    LOOP AT tt_conv_tab ASSIGNING FIELD-SYMBOL(<type>).
+    LOOP AT tt_conv_tab REFERENCE INTO DATA(wa_ref).
 
       DATA(rtti) = CAST cl_abap_datadescr(
-          cl_abap_typedescr=>describe_by_data( <type>-to_be_converted->* ) ).
+          cl_abap_typedescr=>describe_by_data( wa_ref->to_be_converted->* ) ).
 
       APPEND VALUE #( absolute_name = rtti->absolute_name
                       kind          = rtti->kind
@@ -1446,6 +1448,11 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
     DATA do_d_i TYPE i.
 
     "Field symbols typed with generic data types
+    "Note: A field symbol is a symbolic name for a data object to which actual
+    "memory can be assigned at runtime. A field symbol can be used as a placeholder
+    "for a data object at an operand position. For more information, see the ABAP
+    "Cheat Sheet on dynamic programming. Field symbols are used in this example
+    "to demonstrate generic types other than just data.
     FIELD-SYMBOLS <fs_a> TYPE clike.
     FIELD-SYMBOLS <fs_b> TYPE data.
 
@@ -1592,7 +1599,7 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
     CONSTANTS con_b_str TYPE string VALUE `hi`.
 
     "Unnamed data objects
-    "Literal that is output. It is cannot be addressed via a dedicated name.
+    "Literal that is output. It cannot be addressed via a dedicated name.
     output->display( `I'm a literal...` ).
 
     "Anonymous data object created using the NEW operator
@@ -1619,11 +1626,11 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
     "A generic data type is an incomplete type specification that covers multiple
     "complete type specifications.
     "This example demonstrates generic ABAP types in the context of formal parameters
-    "of methods. The use with field symbols has been touched above.
+    "of methods.
     "Unlike data objects, where the data type has a specific property and is always
     "completely known, formal parameters and field symbols that are generically typed
     "receive their complete data type only when an actual parameter is passed in a method
-    "call (or when a memory area is assigned using ASSIGN).
+    "call, or, regarding field symbols, when a memory area is assigned.
     "In the following example, a method is called that has two importing parameters typed
     "with the generic type numeric. An internal table is filled with values on whose basis
     "the method is provided with actual parameters. Intentionally, various numeric values
@@ -1642,10 +1649,10 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
                        ( num1 = NEW i( 11 )              num2 = NEW decfloat34( '10.621' ) )
                        ( num1 = NEW string( `nope` )     num2 = NEW string( `does not work` ) ) ).
 
-    LOOP AT tab_num ASSIGNING FIELD-SYMBOL(<f>).
+    LOOP AT tab_num INTO DATA(fp).
 
       TRY.
-          <f>-result = addition_with_generic_num( num1 = <f>-num1->* num2 = <f>-num2->* ).
+          fp-result = addition_with_generic_num( num1 = fp-num1->* num2 = fp-num2->* ).
         CATCH cx_sy_dyn_call_illegal_type INTO DATA(error).
 
       ENDTRY.
@@ -1660,7 +1667,7 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
 
     output->display( `21) Built-in data objects` ).
 
-    "This example demonstrates the availability of built-in data objects in ABAP..
+    "This example demonstrates the availability of built-in data objects in ABAP.
 
     "System fields are filled by the ABAP runtime framework and can be used in an ABAP
     "program to query various things.
@@ -1742,11 +1749,11 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
 
     output->display( `22) Declaration context` ).
 
-    "The declaration context of data objects can be problematic.
-    "The example deals with local declarations and control structures.
-    "A data object of type i is declared within the control structure.
-    "However, it is valid globally in this ABAP program, i.e. in the whole method
-    "here.
+    "The purpose of this example is to emphasize the importance of where
+    "data objects are decalred. The example deals with local declarations 
+    "and control structures. A data object of type i is declared within 
+    "the control structure. However, it is valid globally in this ABAP 
+    "program, i.e. in the whole method here.
     "The value of the data object is not set to 10 in each loop pass.
     "Furthermore, the data object can also be used in the second DO loop.
 
@@ -1846,7 +1853,7 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
       WHEN b.
         output = b.
       WHEN OTHERS.
-        output = `Either c or d : ` && char.
+        output = `Either c or d: ` && char.
     ENDCASE.
 
   ENDMETHOD.
@@ -1886,7 +1893,7 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
     DATA(str_from_enum) = |{ a }{ b }{ c }{ d }|.
     APPEND |str_from_enum: { str_from_enum }| TO output.
 
-    "Note that only the enumerated type itself is relevant. Usually, the contents
+    "Note that only the enumerated type itself is relevant. Usually, the content
     "of an enumerated object is not of interest.
     "The enumerated value in the base type can be accessed using the constructor
     "operators CONV and EXACT only. The base type is i in this case.
@@ -1905,7 +1912,6 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
 
     "The following example shows raising an exception.
     DATA dobj TYPE t_enum.
-    dobj = a.
 
     TYPES t_int_tab TYPE TABLE OF i WITH EMPTY KEY.
     DATA(int_tab) = VALUE t_int_tab( ( 0 ) ( 1 ) ( 2 ) ( 3 ) ( 4 ) ).
@@ -1920,9 +1926,9 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
       ENDTRY.
     ENDLOOP.
 
-    APPEND `------------- Output for str_tab -------------` TO output.
+    APPEND `------------- START: Output for str_tab -------------` TO output.
     APPEND LINES OF str_tab TO output.
-    APPEND `^^^^^^^^^^^^^ Output for str_tab ^^^^^^^^^^^^^` TO output.
+    APPEND `^^^^^^^^^^^^^ END: Output for str_tab ^^^^^^^^^^^^^` TO output.
 
     "An enumerated variable can be set to the initial value of its base type
     "using CLEAR.
@@ -1975,6 +1981,7 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
 
     DATA mem_string TYPE string.
 
+    "For output purposes, the table content is put in a string.
     LOOP AT enum_descr->members ASSIGNING FIELD-SYMBOL(<mem>).
       mem_string = mem_string && ` / Name: ` && <mem>-name && `; Value: ` && <mem>-value.
     ENDLOOP.
@@ -1991,6 +1998,7 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
     APPEND ` type_kind: ` && enum_descr->type_kind TO output.
     APPEND ` base_type_kind: ` && enum_descr->base_type_kind TO output.
 
+    "For output purposes, the table content is put in a string.
     LOOP AT enum_descr->members ASSIGNING <mem>.
       mem_string = mem_string && ` / Name: ` && <mem>-name && `; Value: ` && <mem>-value.
     ENDLOOP.

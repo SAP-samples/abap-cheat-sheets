@@ -1,8 +1,8 @@
 <a name="top"></a>
 
-# Working with Internal Tables
+# Internal Tables
 
-- [Working with Internal Tables](#working-with-internal-tables)
+- [Internal Tables](#internal-tables)
   - [Internal Tables ...](#internal-tables-)
   - [Basic Properties of Internal Tables](#basic-properties-of-internal-tables)
   - [Excursion: Table Keys in Internal Tables (Primary, Secondary, Standard, Empty)](#excursion-table-keys-in-internal-tables-primary-secondary-standard-empty)

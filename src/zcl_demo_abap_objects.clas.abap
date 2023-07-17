@@ -17,7 +17,7 @@
 *     the concept of friendship
 *
 * ----------------------- GETTING STARTED -----------------------------
-* - Open the class with the ABAP Development Tools (ADT).
+* - Open the class with the ABAP development tools for Eclipse (ADT).
 * - Choose F9 to run the class.
 * - Check the console output.
 * - To understand the context and the ABAP syntax used, refer to the 
