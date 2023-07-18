@@ -4,13 +4,12 @@
 *
 * -------------------------- PURPOSE ----------------------------------
 * - Example to demonstrate data types and data objects.
-* - Compared to other ABAP cheat sheet executable examples, this one
-*   does not have as many things to be output. The focus is on syntax
-*   options and declarations. In the class, you can set breakpoints and
-*   use the debugger to check out data objects. You can also use the F2
-*   information for the many types and data objects. Simply select a
-*   type or object in the code and press F2 in ADT to check out the
-*   information.
+* - Note that in many cases there is no output displayed because the
+*   focus is on syntax options and declarations. In the class, you can
+*   set breakpoints and use the debugger to check out data objects.
+*   You can also use the F2 information for the many types and data
+*   objects. Simply select a type or object in the code and press F2
+*   in ADT to check out the information.
 *
 * ----------------------- GETTING STARTED -----------------------------
 * - Open the class with the ABAP development tools for Eclipse (ADT).
@@ -40,7 +39,7 @@
 * code.
 *
 ***********************************************************************
-"! <p class="shorttext synchronized">ABAP cheat sheet: Data types and data objects</p>
+"! <p class="shorttext synchronized">ABAP Cheat Sheet: Data Types and Data Objects</p>
 "! Example to demonstrate data types and data objects in ABAP.<br>Choose F9 in ADT to run the class.
 CLASS zcl_demo_abap_dtype_dobj DEFINITION
   PUBLIC
@@ -602,7 +601,7 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
     "type-specific ininial value.
     DATA some_itab TYPE TABLE OF zdemo_abap_carr WITH EMPTY KEY.
     some_itab = VALUE #( ( carrid = 'XY' carrname = 'XY Airways' )
-                         ( carrid = 'AB' carrname = 'ABAP Airlines' ) ).
+                         ( carrid = 'ZZ' carrname = 'ZZ Airlines' ) ).
 
     "Table expressions as source of the assignment
     "A structure is assigned an internal table line
@@ -713,21 +712,36 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
 
     "In the context of other ABAP statements such as LOOP, READ TABLE or ABAP SQL
     "SELECT statements, inline declarations are useful for creating target variables with
-    "appropriate data types in place. In the following example, a structure to hold the
-    "current internal table line is created inline.
+    "appropriate data types in place. This includes data reference variables and field
+    "symbols. Field symbols are not covered below.
+
+    "A work area/structure to hold the current internal table line is created inline.
     LOOP AT itab_b2 INTO DATA(wa_b1).
+      wa_b1-comp1 = 12345.
+      ...
+    ENDLOOP.
+
+    "Using the REFERENCE addition, a data reference variable can be created inline.
+    LOOP AT itab_b2 REFERENCE INTO DATA(wa_ref_b1).
+      wa_ref_b1->comp1 = 67890.
       ...
     ENDLOOP.
 
     "A structure to hold the internal table line read is created inline.
     READ TABLE itab_b2 INTO DATA(wa_b2) INDEX 2.
+    "Data reference variable
+    READ TABLE itab_b2 REFERENCE INTO DATA(wa_ref_b2) INDEX 2.
 
     "ABAP SQL statements
     "A structure as target data object is created inline.
     SELECT SINGLE * FROM zdemo_abap_carr INTO @DATA(struc_b5).
+    "NEW addition of the INTO clause creates a data reference variable
+    SELECT SINGLE * FROM zdemo_abap_carr INTO NEW @DATA(struc_ref).
 
     "Internal table as target data object is created inline.
     SELECT * FROM zdemo_abap_carr INTO TABLE @DATA(itab_b3).
+    "NEW addition
+    SELECT * FROM zdemo_abap_carr INTO TABLE NEW @DATA(itab_ref).
 
     output->display( `No output for this section. Check out the code, `
       && `for example, when running the class in the debugger after setting `
@@ -835,10 +849,6 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
     "So, an assignment as follows is possible but not needed. Only using = is sufficient.
     dref_1_i = CAST #( dref_6_i ).
 
-    output->display( `No output for this section. Check out the code, `
-      && `for example, when running the class in the debugger after setting `
-      && `a breakpoint, or the F2 information in ADT when selecting a type.` ).
-
 **********************************************************************
 
     output->display( `10) Creating anonymous data objects` ).
@@ -934,8 +944,8 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
     dref_13_ddic_tab = NEW #( carrid = 'AB' carrname = 'AB Airlines'  ).
 
     "ABAP SQL SELECT statement
-    "Using the NEW addition in the INTO clause, an anonymous data object with
-    "suitable type can be created in place.
+    "As shown above, using the NEW addition in the INTO clause, an anonymous data
+    "object with suitable type can be created in place.
     SELECT *
       FROM zdemo_abap_carr
       INTO TABLE NEW @DATA(dref_14_inline).
@@ -1132,10 +1142,10 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
     |Next Hour: { next_hour }| ).
 
     DATA date TYPE d.
-    date = '20140226'.
+    date = '20240101'.
     output->display( input = date name = `date` ).
 
-    date = 20140226.
+    date = 20240101.
     output->display( input = date name = `date` ).
 
 **********************************************************************
@@ -1231,62 +1241,62 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
     ( to_be_converted = REF #( `12345` )       type = `STRING` )
     ).
 
-    LOOP AT tt_conv_tab INTO DATA(wa_con).
+    LOOP AT tt_conv_tab REFERENCE INTO DATA(wa_ref_con).
       TRY.
-          wa_con-conv_c_len2 = wa_con-to_be_converted->*.
-          wa_con-conv_err_c_len2 = `-`.
+          wa_ref_con->conv_c_len2 = wa_ref_con->to_be_converted->*.
+          wa_ref_con->conv_err_c_len2 = `-`.
         CATCH cx_root INTO err.
-          wa_con-conv_err_c_len2 = err->get_text( ).
+          wa_ref_con->conv_err_c_len2 = err->get_text( ).
       ENDTRY.
 
-      IF wa_con-type = `T`.
-        wa_con-conv_err_d = `Move error: T to D. Otherwise, a runtime error is caused.`.
+      IF wa_ref_con->type = `T`.
+        wa_ref_con->conv_err_d = `Move error: T to D. Otherwise, a runtime error is caused.`.
       ELSE.
         TRY.
-            wa_con-conv_d = wa_con-to_be_converted->*.
-            wa_con-conv_err_d = `-`.
+            wa_ref_con->conv_d = wa_ref_con->to_be_converted->*.
+            wa_ref_con->conv_err_d = `-`.
           CATCH cx_root INTO err.
-            wa_con-conv_err_d = err->get_text( ).
+            wa_ref_con->conv_err_d = err->get_text( ).
         ENDTRY.
       ENDIF.
 
       TRY.
-          wa_con-conv_n_len3 = wa_con-to_be_converted->*.
-          wa_con-conv_err_n_len3 = `-`.
+          wa_ref_con->conv_n_len3 = wa_ref_con->to_be_converted->*.
+          wa_ref_con->conv_err_n_len3 = `-`.
         CATCH cx_root INTO err.
-          wa_con-conv_err_n_len3 = err->get_text( ).
+          wa_ref_con->conv_err_n_len3 = err->get_text( ).
       ENDTRY.
 
-      IF wa_con-type = `D`.
-        wa_con-conv_err_t = `Move error: D to T. Otherwise, a runtime error is caused.`.
+      IF wa_ref_con->type = `D`.
+        wa_ref_con->conv_err_t = `Move error: D to T. Otherwise, a runtime error is caused.`.
       ELSE.
         TRY.
-            wa_con-conv_t = wa_con-to_be_converted->*.
-            wa_con-conv_err_t = `-`.
+            wa_ref_con->conv_t = wa_ref_con->to_be_converted->*.
+            wa_ref_con->conv_err_t = `-`.
           CATCH cx_root INTO err.
-            wa_con-conv_err_t = err->get_text( ).
+            wa_ref_con->conv_err_t = err->get_text( ).
         ENDTRY.
       ENDIF.
 
       TRY.
-          wa_con-conv_decfl34 = wa_con-to_be_converted->*.
-          wa_con-conv_err_decfl34 = `-`.
+          wa_ref_con->conv_decfl34 = wa_ref_con->to_be_converted->*.
+          wa_ref_con->conv_err_decfl34 = `-`.
         CATCH cx_root INTO err.
-          wa_con-conv_err_decfl34 = err->get_text( ).
+          wa_ref_con->conv_err_decfl34 = err->get_text( ).
       ENDTRY.
 
       TRY.
-          wa_con-conv_i = wa_con-to_be_converted->*.
-          wa_con-conv_err_i = `-`.
+          wa_ref_con->conv_i = wa_ref_con->to_be_converted->*.
+          wa_ref_con->conv_err_i = `-`.
         CATCH cx_root INTO err.
-          wa_con-conv_err_i = err->get_text( ).
+          wa_ref_con->conv_err_i = err->get_text( ).
       ENDTRY.
 
       TRY.
-          wa_con-conv_str = wa_con-to_be_converted->*.
-          wa_con-conv_err_str = `-`.
+          wa_ref_con->conv_str = wa_ref_con->to_be_converted->*.
+          wa_ref_con->conv_err_str = `-`.
         CATCH cx_root INTO err.
-          wa_con-conv_err_str = err->get_text( ).
+          wa_ref_con->conv_err_str = err->get_text( ).
       ENDTRY.
 
     ENDLOOP.
@@ -1452,13 +1462,21 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
     "memory can be assigned at runtime. A field symbol can be used as a placeholder
     "for a data object at an operand position. For more information, see the ABAP
     "Cheat Sheet on dynamic programming. Field symbols are used in this example
-    "to demonstrate generic types other than just data.
+    "to demonstrate generic types other than just data with which data reference
+    "variables can be typed.
+    "As the name implies, clike expects character-like data types. data can
+    "expect any data type. This is shown in the example. Apart from the
+    "character-like types, internal table types are also accepted.
     FIELD-SYMBOLS <fs_a> TYPE clike.
     FIELD-SYMBOLS <fs_b> TYPE data.
 
-    "Field symbols with generic data types can be assigned appropriate values
+    "Data object declarations
     DATA do_e_c5 TYPE c LENGTH 5 VALUE 'abcde'.
     DATA do_f_str TYPE string VALUE `Hallo, how are you?`.
+    DATA(itab_a) = VALUE string_table( ( `a` ) ( `b` ) ( `c` ) ).
+
+    "Generic type clike
+    "Field symbols with generic data types can be assigned appropriate values
     ASSIGN do_e_c5 TO <fs_a>.
 
     output->display( input = <fs_a> name = `<fs_a>` ).
@@ -1467,7 +1485,7 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
 
     output->display( input = <fs_a> name = `<fs_a>` ).
 
-    DATA(itab_a) = VALUE string_table( ( `a` ) ( `b` ) ( `c` ) ).
+    "Generic type data
     ASSIGN do_e_c5 TO <fs_b>.
 
     output->display( input = <fs_b> name = `<fs_b>` ).
@@ -1492,7 +1510,8 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
     do_g_i = 456.
 
     CONSTANTS con_a_i TYPE i VALUE 789.
-    "Not changeable
+    "An assignment as follows is not possible. The data object cannot be
+    "modified.
     "con_a_i = 321.
 
 **********************************************************************
@@ -1644,19 +1663,16 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
 
     DATA tab_num TYPE TABLE OF str_num WITH EMPTY KEY.
 
-    tab_num = VALUE #( ( num1 = NEW i( 1 )               num2 = NEW i( 2 ) )
-                       ( num1 = NEW decfloat34( '1.74' ) num2 = NEW decfloat34( '4.04' ) )
-                       ( num1 = NEW i( 11 )              num2 = NEW decfloat34( '10.621' ) )
-                       ( num1 = NEW string( `nope` )     num2 = NEW string( `does not work` ) ) ).
+    tab_num = VALUE #( ( num1 = NEW i( 1 )                  num2 = NEW i( 2 ) )
+                       ( num1 = NEW decfloat34( '1.74' )    num2 = NEW decfloat34( '4.04' ) )
+                       ( num1 = NEW i( 11 )                 num2 = NEW decfloat34( '10.621' ) )
+                       ( num1 = NEW string( `Some string` ) num2 = NEW i( 2 ) ) ).
 
-    LOOP AT tab_num INTO DATA(fp).
-
+    LOOP AT tab_num REFERENCE INTO DATA(fp_ref).
       TRY.
-          fp-result = addition_with_generic_num( num1 = fp-num1->* num2 = fp-num2->* ).
+          fp_ref->result = addition_with_generic_num( num1 = fp_ref->num1->* num2 = fp_ref->num2->* ).
         CATCH cx_sy_dyn_call_illegal_type INTO DATA(error).
-
       ENDTRY.
-
     ENDLOOP.
 
     output->display( input = tab_num name = `tab_num` ).
@@ -1701,12 +1717,9 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
     READ TABLE syidx INDEX 6 INTO DATA(wa_sy2).
 
     IF sy-subrc = 0.
-
       output->display( |Yes, the table line was found. sy-subrc value that was returned is { sy-subrc }.| ).
-
     ELSE.
       output->display( |No, the table line was not found. sy-subrc value that was returned is { sy-subrc }.| ).
-
     ENDIF.
 
     "The program-global constant space has the data type c, length 1, and contains a blank character.
@@ -1750,9 +1763,9 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
     output->display( `22) Declaration context` ).
 
     "The purpose of this example is to emphasize the importance of where
-    "data objects are decalred. The example deals with local declarations 
-    "and control structures. A data object of type i is declared within 
-    "the control structure. However, it is valid globally in this ABAP 
+    "data objects are decalred. The example deals with local declarations
+    "and control structures. A data object of type i is declared within
+    "the control structure. However, it is valid globally in this ABAP
     "program, i.e. in the whole method here.
     "The value of the data object is not set to 10 in each loop pass.
     "Furthermore, the data object can also be used in the second DO loop.
@@ -1917,9 +1930,9 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
     DATA(int_tab) = VALUE t_int_tab( ( 0 ) ( 1 ) ( 2 ) ( 3 ) ( 4 ) ).
 
     DATA str_tab TYPE TABLE OF string.
-    LOOP AT int_tab ASSIGNING FIELD-SYMBOL(<fs>).
+    LOOP AT int_tab INTO DATA(wa_en).
       TRY.
-          dobj = CONV t_enum( <fs> ).
+          dobj = CONV t_enum( wa_en ).
           APPEND dobj TO str_tab.
         CATCH cx_sy_conversion_no_enum_value INTO DATA(error_enum).
           APPEND error_enum->get_text( ) TO str_tab.
@@ -1982,8 +1995,11 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
     DATA mem_string TYPE string.
 
     "For output purposes, the table content is put in a string.
-    LOOP AT enum_descr->members ASSIGNING FIELD-SYMBOL(<mem>).
-      mem_string = mem_string && ` / Name: ` && <mem>-name && `; Value: ` && <mem>-value.
+    "Note the object component selector -> when reading into data reference variables
+    "and accessing componts. You can also use the dereferencing operator followed by the
+    "structure component selector ref->*-comp.
+    LOOP AT enum_descr->members REFERENCE INTO DATA(ref_en1).
+      mem_string = mem_string && ` / Name: ` && ref_en1->name && `; Value: ` && ref_en1->*-value.
     ENDLOOP.
 
     REPLACE FIRST OCCURRENCE OF PCRE `/\s` IN mem_string WITH ``.
@@ -1999,8 +2015,8 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
     APPEND ` base_type_kind: ` && enum_descr->base_type_kind TO output.
 
     "For output purposes, the table content is put in a string.
-    LOOP AT enum_descr->members ASSIGNING <mem>.
-      mem_string = mem_string && ` / Name: ` && <mem>-name && `; Value: ` && <mem>-value.
+    LOOP AT enum_descr->members REFERENCE INTO DATA(ref_en2).
+      mem_string = mem_string && ` / Name: ` && ref_en2->name && `; Value: ` && ref_en2->value.
     ENDLOOP.
 
     REPLACE FIRST OCCURRENCE OF PCRE `/\s` IN mem_string WITH ``.
