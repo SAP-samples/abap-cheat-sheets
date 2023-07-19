@@ -91,8 +91,7 @@ The following points touch on RAP-related buzzwords such as *RAP business object
         its data. This data is available in the [RAP transactional
         buffer](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentransactional_buffer_glosry.htm "Glossary Entry").
     -   It is a storage for a RAP BO's data that is used and worked on
-        during a [RAP
-        LUW](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_luw_glosry.htm "Glossary Entry").
+        during an [SAP LUW](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensap_luw_glosry.htm).
     -   This data includes [RAP BO
         instances](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_bo_instance_glosry.htm "Glossary Entry")
         (i. e. concrete data sets of an entity). This is where EML
@@ -635,6 +634,17 @@ and [long
 form](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapmodify_entities_long.htm)
 of EML `MODIFY` statements.
 
+> **💡 Note**<br>
+> Unlike reading operations, modifying operations are not enabled by default. You must make the respective notations in the BDEF: 
+> ```
+> ...
+> create;
+> update;
+> delete;
+> action some_act;
+> ...
+> ```
+
 Create operation for creating new instances of a RAP BO entity:
 
 ``` abap
@@ -890,9 +900,9 @@ READ ENTITIES OF root_ent
     WORK`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapcommit.htm).
 -   Note: `COMMIT ENTITIES` statements cannot be used
     in behavior implementations. 
--   There a multiple variants available for the statement as described
+-   There are multiple variants available for the statement as described
     in the ABAP Keyword Documentation
-    [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapcommit_entities.htm).
+    [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapcommit_entities.htm). For example, RAP responses can be retrieved, key conversion in late numbering scenarios, checking a RAP transaction in a simulation mode. 
 -   `COMMIT ENTITIES` statements set the system field
     `sy-subrc`. When using `COMMIT ENTITIES`, it is not
     guaranteed that `COMMIT WORK` is carried out successfully.
@@ -1196,16 +1206,13 @@ The default ABAP statements for RAP are `COMMIT ENTITIES` (triggers the RAP save
 - `COMMIT ENTITIES` statements implicitly enforce local updates with `COMMIT WORK`, or `COMMIT WORK AND WAIT` if the local update fails. Therefore, the update is either a local update or a synchronous update, but never an asynchronous update. When `COMMIT WORK` is used, the RAP BO consumer can choose between synchronous and asynchronous update for RAP BO entities. 
 - `ROLLBACK ENTITIES` implicitly triggers `ROLLBACK WORK`. Both have the same effect when used in RAP. Therefore, they are interchangeable. 
 
-**Special Case: Failures in the Late Save Phase**
-
 > **💡 Note**<br>
-> Only relevant in the unrestricted ABAP language scope. The class  `CL_ABAP_BEHAVIOR_SAVER_FAILED` is currently not available in SAP BTP ABAP environments. 
-
-- In exceptional cases, for example, when [BAPIs](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenbapi_glosry.htm) are called to save RAP BO instances in the late save phase, it may happen that the basic rule that failures must not occur in the RAP late save phase and be detected in the RAP early save phase is violated. 
-- In such cases, the base class `CL_ABAP_BEHAVIOR_SAVER_FAILED` can be used for the RAP saver class. 
-- RAP BO consumers can be informed by filling the RAP response parameters (some of which are not available when using `CL_ABAP_BEHAVIOR_SAVER` as the base class) in the saver method implementation so that they can react accordingly. 
-- After a `COMMIT ENTITIES` statement and a failure in the late save phase, `sy-subrc` is set to 8. 
-- A subsequent RAP operation may result in a runtime error. If the RAP BO consumer is to continue after an error in the late phase of the RAP save sequence, an explicit `ROLLBACK ENTITIES` is required. 
+> Special Case: Failures in the Late Save Phase
+> - In exceptional cases, for example, when [BAPIs](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenbapi_glosry.htm) are called to save RAP BO instances in the late save phase, it may happen that the basic rule that failures must not occur in the RAP late save phase and be detected in the RAP early save phase is violated. 
+> - In such cases, the base class `CL_ABAP_BEHAVIOR_SAVER_FAILED` can be used for the RAP saver class. 
+> - RAP BO consumers can be informed by filling the RAP response parameters (some of which are not available when using `CL_ABAP_BEHAVIOR_SAVER` as the base class) in the saver method implementation so that they can react accordingly. 
+> - After a `COMMIT ENTITIES` statement and a failure in the late save phase, `sy-subrc` is set to 8. 
+> - A subsequent RAP operation may result in a runtime error. If the RAP BO consumer is to continue after an error in the late phase of the RAP save sequence, an explicit `ROLLBACK ENTITIES` is required. 
 
 **Allowed/Forbidden Operations in a Behavior Implementation in a RAP Transaction**
 
