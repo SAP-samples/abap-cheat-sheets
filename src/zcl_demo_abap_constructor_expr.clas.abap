@@ -1405,7 +1405,7 @@ CLASS zcl_demo_abap_constructor_expr IMPLEMENTATION.
     "Filling nested tables in deep structures
     struc2-struc_nested = VALUE #( comp1 = `aaa`
                                    comp2 = `bbb`
-                                   comp3 = `ccc`).
+                                   comp3 = `ccc` ).
 
     struc1-itab = VALUE #(
       ( col1 = 111 col2 = 222 )

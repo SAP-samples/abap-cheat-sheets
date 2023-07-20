@@ -182,7 +182,7 @@ CLASS zcl_demo_abap_prog_flow_logic IMPLEMENTATION.
                               THEN |It's { syst_time TIME = ISO }. Good night, { sy-uname }.|
                               ELSE |It's { syst_time TIME = ISO }. Hallo, { sy-uname }.| ).
 
-    output->display( input = greetings name = `greetings`).
+    output->display( input = greetings name = `greetings` ).
 
 **********************************************************************
 
@@ -339,11 +339,11 @@ CLASS zcl_demo_abap_prog_flow_logic IMPLEMENTATION.
 
     DATA(is_supplied) = check_is_supplied( num1 = 123 ).
 
-    output->display( input = is_supplied name = `is_supplied`).
+    output->display( input = is_supplied name = `is_supplied` ).
 
     is_supplied = check_is_supplied( num2 = 456 ).
 
-    output->display( input = is_supplied name = `is_supplied`).
+    output->display( input = is_supplied name = `is_supplied` ).
 
 **********************************************************************
 
@@ -439,7 +439,7 @@ CLASS zcl_demo_abap_prog_flow_logic IMPLEMENTATION.
                                   WHEN '12' THEN `December`
                                   ELSE `Oops ...` ).
 
-    output->display( input = switch_res name = `switch_res`).
+    output->display( input = switch_res name = `switch_res` ).
 
 **********************************************************************
 
@@ -460,8 +460,8 @@ CLASS zcl_demo_abap_prog_flow_logic IMPLEMENTATION.
       do_sy_index = do_sy_index && sy-index && ` `.
     ENDDO.
 
-    output->display( input = do_counter name = `do_counter`).
-    output->display( input = do_sy_index name = `do_sy_index`).
+    output->display( input = do_counter name = `do_counter` ).
+    output->display( input = do_sy_index name = `do_sy_index` ).
 
 **********************************************************************
 
@@ -481,8 +481,8 @@ CLASS zcl_demo_abap_prog_flow_logic IMPLEMENTATION.
       ENDIF.
     ENDDO.
 
-    output->display( input = do_counter name = `do_counter`).
-    output->display( input = do_sy_index name = `do_sy_index`).
+    output->display( input = do_counter name = `do_counter` ).
+    output->display( input = do_sy_index name = `do_sy_index` ).
 
 **********************************************************************
 
@@ -514,8 +514,8 @@ CLASS zcl_demo_abap_prog_flow_logic IMPLEMENTATION.
 
     ENDDO.
 
-    output->display( input = do_counter name = `do_counter`).
-    output->display( input = do_sy_index name = `do_sy_index`).
+    output->display( input = do_counter name = `do_counter` ).
+    output->display( input = do_sy_index name = `do_sy_index` ).
 
 **********************************************************************
 
@@ -530,11 +530,11 @@ CLASS zcl_demo_abap_prog_flow_logic IMPLEMENTATION.
 
     DATA(return1) = meth_with_return( 81 ).
 
-    output->display( input = return1 name = `return1`).
+    output->display( input = return1 name = `return1` ).
 
     DATA(return2) = meth_with_return( -9 ).
 
-    output->display( input = return2 name = `return2`).
+    output->display( input = return2 name = `return2` ).
 
 **********************************************************************
 
@@ -554,7 +554,7 @@ CLASS zcl_demo_abap_prog_flow_logic IMPLEMENTATION.
 
     ENDWHILE.
 
-    output->display( input = int_itab name = `int_itab`).
+    output->display( input = int_itab name = `int_itab` ).
 
 **********************************************************************
 
@@ -602,9 +602,9 @@ CLASS zcl_demo_abap_prog_flow_logic IMPLEMENTATION.
 
     ENDWHILE.
 
-    output->display( input = count_occ_via_sy_index name = `count_occ_via_sy_index`).
-    output->display( input = count_occ name = `count_occ`).
-    output->display( input = while_string name = `while_string`).
+    output->display( input = count_occ_via_sy_index name = `count_occ_via_sy_index` ).
+    output->display( input = count_occ name = `count_occ` ).
+    output->display( input = while_string name = `while_string` ).
 
 **********************************************************************
 
@@ -638,8 +638,8 @@ CLASS zcl_demo_abap_prog_flow_logic IMPLEMENTATION.
 
     ENDWHILE.
 
-    output->display( input = while_cnt name = `while_cnt`).
-    output->display( input = while_sy_index name = `while_sy_index`).
+    output->display( input = while_cnt name = `while_cnt` ).
+    output->display( input = while_sy_index name = `while_sy_index` ).
 
 
 **********************************************************************
@@ -703,7 +703,7 @@ CLASS zcl_demo_abap_prog_flow_logic IMPLEMENTATION.
 
     ENDLOOP.
 
-    output->display( input = calc_results name = `calc_results`).
+    output->display( input = calc_results name = `calc_results` ).
 
 **********************************************************************
 
@@ -764,7 +764,7 @@ CLASS zcl_demo_abap_prog_flow_logic IMPLEMENTATION.
 
     ENDSELECT.
 
-    output->display( input = itab_select_loop name = `itab_select_loop`).
+    output->display( input = itab_select_loop name = `itab_select_loop` ).
 
 **********************************************************************
 
@@ -783,17 +783,17 @@ CLASS zcl_demo_abap_prog_flow_logic IMPLEMENTATION.
     TRY.
 
         DATA(div1) = 4 / 2.
-        output->display( input = div1 name = `div1`).
+        output->display( input = div1 name = `div1` ).
 
         DATA(div2) = 4 / 0.
-        output->display( input = div2 name = `div2`).
+        output->display( input = div2 name = `div2` ).
 
         DATA(div3) = 9 / 3.
-        output->display( input = div3 name = `div3`).
+        output->display( input = div3 name = `div3` ).
 
       CATCH cx_sy_zerodivide.
 
-        output->display( `0 division. The exception was caught.`).
+        output->display( `0 division. The exception was caught.` ).
 
     ENDTRY.
 
@@ -809,7 +809,7 @@ CLASS zcl_demo_abap_prog_flow_logic IMPLEMENTATION.
         "and the runtime error ITAB_LINE_NOT_FOUND occurs.
       CATCH cx_sy_itab_line_not_found.
 
-        output->display( `The line was not found. The exception was caught.`).
+        output->display( `The line was not found. The exception was caught.` ).
 
     ENDTRY.
 
@@ -837,20 +837,20 @@ CLASS zcl_demo_abap_prog_flow_logic IMPLEMENTATION.
 
           DATA(calc1) = CONV decfloat34( 1 / <fs_int> ).
 
-          output->display( input = calc1 name = `calc1`).
+          output->display( input = calc1 name = `calc1` ).
 
           DATA(calc2) = ipow( base = <fs_int> exp = 2 ).
 
-          output->display( input = calc2 name = `calc2`).
+          output->display( input = calc2 name = `calc2` ).
 
 
         CATCH cx_sy_arithmetic_overflow lcx_calc_error.
 
-          output->display( `Arithmetic overflow. The exception was caught.`).
+          output->display( `Arithmetic overflow. The exception was caught.` ).
 
         CATCH cx_sy_zerodivide lcx_some_error.
 
-          output->display( `0 division. The exception was caught.`).
+          output->display( `0 division. The exception was caught.` ).
 
       ENDTRY.
 
@@ -875,16 +875,16 @@ CLASS zcl_demo_abap_prog_flow_logic IMPLEMENTATION.
 
           calc1 = 1 / <fs_int_inh>.
 
-          output->display( input = calc1 name = `calc1`).
+          output->display( input = calc1 name = `calc1` ).
 
           calc2 = ipow( base = <fs_int_inh> exp = 2 ).
 
-          output->display( input = calc2 name = `calc2`).
+          output->display( input = calc2 name = `calc2` ).
 
 
         CATCH cx_sy_arithmetic_error.
 
-          output->display( `Arithmetic error. The exception was caught.`).
+          output->display( `Arithmetic error. The exception was caught.` ).
 
       ENDTRY.
 
@@ -910,11 +910,11 @@ CLASS zcl_demo_abap_prog_flow_logic IMPLEMENTATION.
 
           calc1 = 1 / <fs_int_into>.
 
-          output->display( input = calc1 name = `calc1`).
+          output->display( input = calc1 name = `calc1` ).
 
           calc2 = ipow( base = <fs_int_into> exp = 2 ).
 
-          output->display( input = calc2 name = `calc2`).
+          output->display( input = calc2 name = `calc2` ).
 
 
         CATCH cx_sy_arithmetic_error INTO exception.
@@ -925,7 +925,7 @@ CLASS zcl_demo_abap_prog_flow_logic IMPLEMENTATION.
           "Retrieving and displaying exception text
           exception_text = exception->get_text( ).
 
-          output->display( input = exception_text name = `exception_text`).
+          output->display( input = exception_text name = `exception_text` ).
 
       ENDTRY.
 
@@ -943,7 +943,7 @@ CLASS zcl_demo_abap_prog_flow_logic IMPLEMENTATION.
     "here.
     DATA(division) = 0 / 0.
 
-    output->display( input = division name = `division`).
+    output->display( input = division name = `division` ).
 
     "In this example, the appropriate exception - the predefined exception
     "class cx_sy_zerodivide - is raised.
@@ -957,7 +957,7 @@ CLASS zcl_demo_abap_prog_flow_logic IMPLEMENTATION.
 
         exception_text = error_oref->get_text( ).
 
-        output->display( input = exception_text name = `exception_text`).
+        output->display( input = exception_text name = `exception_text` ).
 
     ENDTRY.
 
@@ -972,8 +972,8 @@ CLASS zcl_demo_abap_prog_flow_logic IMPLEMENTATION.
 
         exception_text = exception->get_text( ).
 
-        output->display( `Default exception text for a local exception class:`).
-        output->display( input = exception_text name = `exception_text`).
+        output->display( `Default exception text for a local exception class:` ).
+        output->display( input = exception_text name = `exception_text` ).
 
     ENDTRY.
 
@@ -985,11 +985,11 @@ CLASS zcl_demo_abap_prog_flow_logic IMPLEMENTATION.
         TRY.
             RAISE EXCEPTION TYPE lcx_some_error.
           CATCH lcx_some_error INTO DATA(error_inner_catch).
-            output->display( `Inner CATCH`).
+            output->display( `Inner CATCH` ).
             RAISE EXCEPTION error_inner_catch.
         ENDTRY.
       CATCH lcx_some_error.
-        output->display( `Outer CATCH`).
+        output->display( `Outer CATCH` ).
     ENDTRY.
 
 **********************************************************************
@@ -1006,13 +1006,13 @@ CLASS zcl_demo_abap_prog_flow_logic IMPLEMENTATION.
                                    WHEN number = 2 THEN `two`
                                    ELSE THROW lcx_some_error( ) ).
 
-        output->display( input = cond_raise name = `cond_raise`).
+        output->display( input = cond_raise name = `cond_raise` ).
 
       CATCH lcx_some_error INTO exception.
 
         exception_text = exception->get_text( ).
 
-        output->display( input = exception_text name = `exception_text`).
+        output->display( input = exception_text name = `exception_text` ).
 
     ENDTRY.
 
@@ -1062,7 +1062,7 @@ CLASS zcl_demo_abap_prog_flow_logic IMPLEMENTATION.
 
     ENDLOOP.
 
-    output->display( input = itab_email_check name = `itab_email_check`).
+    output->display( input = itab_email_check name = `itab_email_check` ).
 
 **********************************************************************
 
@@ -1085,17 +1085,17 @@ CLASS zcl_demo_abap_prog_flow_logic IMPLEMENTATION.
 
         DATA(my_user_b) = whats_my_user( get_name = abap_true ).
 
-        output->display( input = my_user_b name = `my_user_b`).
+        output->display( input = my_user_b name = `my_user_b` ).
 
         DATA(my_user_c) = whats_my_user( get_name = abap_false ).
 
-        output->display( input = my_user_c name = `my_user_c`).
+        output->display( input = my_user_c name = `my_user_c` ).
 
       CATCH lcx_static_exc_class INTO exception.
 
         exception_text = exception->get_text( ).
 
-        output->display( input = exception_text name = `exception_texts`).
+        output->display( input = exception_text name = `exception_texts` ).
 
     ENDTRY.
 
@@ -1128,17 +1128,17 @@ CLASS zcl_demo_abap_prog_flow_logic IMPLEMENTATION.
 
         DATA(res1) = power2_and_sqrt( num = 4 ).
 
-        output->display( input = res1 name = `res1`).
+        output->display( input = res1 name = `res1` ).
 
         DATA(res2) = power2_and_sqrt( num = 123456789 ).
 
-        output->display( input = res2 name = `res2`).
+        output->display( input = res2 name = `res2` ).
 
       CATCH cx_sy_arithmetic_overflow INTO exception.
 
         exception_text = exception->get_text( ).
 
-        output->display( input = exception_text name = `exception_text`).
+        output->display( input = exception_text name = `exception_text` ).
 
     ENDTRY.
 
@@ -1151,11 +1151,11 @@ CLASS zcl_demo_abap_prog_flow_logic IMPLEMENTATION.
 
         DATA(res3) = power2_and_sqrt( num = 16 ).
 
-        output->display( input = res3 name = `res3`).
+        output->display( input = res3 name = `res3` ).
 
         DATA(res4) = power2_and_sqrt( num = -1 ).
 
-        output->display( input = res4 name = `res4`).
+        output->display( input = res4 name = `res4` ).
 
       "The specification of the suitable exception class does not help here.
       "The error is raised while processing the method.
@@ -1163,24 +1163,24 @@ CLASS zcl_demo_abap_prog_flow_logic IMPLEMENTATION.
 
         exception_text = exception->get_text( ).
 
-        output->display( input = exception_text name = `exception_text`).
+        output->display( input = exception_text name = `exception_text` ).
 
       CATCH cx_sy_no_handler INTO exception.
 
         exception_text = exception->get_text( ).
 
-        output->display( input = exception_text name = `exception_text`).
+        output->display( input = exception_text name = `exception_text` ).
 
         "Attribute 'previous'
         "In this case, the information of the actual runtime error is provided:
         "Here, it is COMPUTE_SQRT_DOMAIN.
-        output->display( input = exception->previous name = `exception->previous`).
+        output->display( input = exception->previous name = `exception->previous` ).
 
         "For demo purposes, RTTI is used here to retrieve the relative name of the type,
         "i. e. the exception class that was raised.
         DATA(relative_name) = cl_abap_typedescr=>describe_by_object_ref( exception->previous )->get_relative_name( ).
 
-        output->display( input = relative_name name = `relative_name`).
+        output->display( input = relative_name name = `relative_name` ).
 
     ENDTRY.
 

@@ -747,7 +747,7 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
 
 **********************************************************************
 
-    output->next_section( `17) Retaining Data References`).
+    output->next_section( `17) Retaining Data References` ).
 
     "Storing data reference variables in an internal table using
     "TYPE TABLE OF REF TO prevents the overwriting.

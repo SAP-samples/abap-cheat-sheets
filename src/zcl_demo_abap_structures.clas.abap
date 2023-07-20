@@ -1129,7 +1129,7 @@ CLASS zcl_demo_abap_structures IMPLEMENTATION.
     "Filling nested tables in deep structures
     gs_deep2-substruc = VALUE #( comp1 = `aaa`
                                  comp2 = `bbb`
-                                 comp3 = `ccc`).
+                                 comp3 = `ccc` ).
 
     gs_deep1-itab = VALUE #(
       ( col1 = 111 col2 = 222 )
