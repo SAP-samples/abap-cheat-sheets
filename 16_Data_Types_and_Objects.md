@@ -53,7 +53,7 @@ Data objects:
 
 ## ABAP Data Types
 
-ABAP is rich in built-in data types and offers a wide range of options for defining data types and data objects in in different contexts.
+ABAP is rich in built-in data types and offers a wide range of options for defining data types and data objects in different contexts.
 Data types can be divided into three groups: 
 - [Elementary data types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenelementary_data_type_glosry.htm)
 - [Complex data types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencomplex_data_type_glosry.htm)
@@ -63,7 +63,7 @@ For an overview, see the [ABAP Type Hierarchy](https://help.sap.com/doc/abapdocu
 
 ### Elementary Data Types
 - Elementary (or scalar) data types are based directly on a set of [built-in ABAP types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbuiltin_abap_type_glosry.htm).
-- Are not composed of of other data types. 
+- Are not composed of other data types. 
 - Are types for holding numeric values, text information, binary data and special types for date and time.
 - Are further divided into elementary types of fixed and variable length.
   - Note: The length and the memory requirements of data objects of fixed length data types are fixed, that is, they cannot change at runtime. The length and memory requirements of data objects of variable length data types can actually change at runtime, depending on their contents.

@@ -9,6 +9,9 @@
     - [Data References](#data-references)
   - [Dynamic ABAP Statements](#dynamic-abap-statements)
   - [Runtime Type Services (RTTS)](#runtime-type-services-rtts)
+    - [Getting Type Information at Runtime](#getting-type-information-at-runtime)
+    - [Dynamically Creating Data Types at Runtime](#dynamically-creating-data-types-at-runtime)
+    - [Dynamically Creating Data Objects at Runtime](#dynamically-creating-data-objects-at-runtime)
   - [More Information](#more-information)
   - [Executable Example](#executable-example)
 
@@ -26,7 +29,7 @@
    - The name `itab` of the data object is determined at compile time and remains stable throughout the execution of the program.
 - However, there can also be use cases where the attributes of such a data object are not statically determined. This is where dynamic aspects enter the picture: Attributes, names, types etc. are not determined at compile time but rather at runtime.
 - There are ABAP statements that include these dynamic aspects in the syntax. Assume you have a simple program and a UI that includes an input field storing the input in a data object named `dbtab`. As input, you expect the name of a database table to be provided. In the end, you want to retrieve all entries of the database table and store them in an internal table. This table should be displayed. So, there is random input at runtime and your program must be able to deal with it.
-   - See the following `SELECT` statement. As also shown further down, the `FROM` clause does not include a statically defined table to be selected from. Instead, there is a pair of parentheses including a data object. Assume the data object holds the name of the database table. At runtime, the data retrieval happens from the database table that was inserted in the input field.
+   - See the following `SELECT` statement. The `FROM` clause does not include a statically defined table to be selected from. Instead, there is a pair of parentheses including a data object. It is a character-like data object. Assume the data object holds the name of the database table. At runtime, the data retrieval happens from the database table that was inserted in the input field.
 
         ```abap
         DATA(dbtab) = `ZDEMO_ABAP_FLI`.
@@ -38,8 +41,8 @@
 
 - Further aspects for dynamic programming in ABAP enter the picture if you want to determine information about data types and data objects at runtime ([RTTI](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrun_time_type_identific_glosry.htm)) or even create them ([RTTC](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrun_time_type_creation_glosry.htm)).
 
-- In general, dynamic programming also comes with some downsides. For example, the ABAP compiler cannot check the dynamic programming feature like the `SELECT` statement mentioned above. There is no syntax warning or suchlike. The checks are performed at runtime only which has an impact on the performance. Plus, the  testing of [procedures](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenprocedure_glosry.htm "Glossary Entry")
-that include dynamic programming features is difficult.
+- In general, dynamic programming also comes with some downsides. For example, the ABAP compiler cannot check the dynamic programming feature like the `SELECT` statement mentioned above. There is no syntax warning or suchlike. The checks are performed only at runtime, which has an impact on the performance. Plus, the  testing of [procedures](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenprocedure_glosry.htm "Glossary Entry")
+that include dynamic programming features may be difficult.
 
 
 <p align="right">(<a href="#top">back to top</a>)</p>
@@ -47,7 +50,7 @@ that include dynamic programming features is difficult.
 ## Excursion: Field Symbols and Data References
 
 [Field symbols](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenfield_symbol_glosry.htm "Glossary Entry")
-and [data references](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendata_reference_glosry.htm "Glossary Entry") are dealt with here since they are supporting elements for dynamic programming.
+and [data references](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendata_reference_glosry.htm "Glossary Entry") are covered here since they are supporting elements for dynamic programming.
 
 ### Field Symbols
 
@@ -58,7 +61,7 @@ Field symbols ...
 - can be used as placeholders for a data object at an [operand position](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenoperand_position_glosry.htm).
    - Consider there is a data object in your program. A field symbol is also available that is assigned the memory area of this data object. Accessing a field symbol is like accessing the [named data object](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abennamed_data_object_glosry.htm) or part of the object itself.
 - do not reserve physical space in the [data area](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendata_area_glosry.htm) of a program like a data object. Instead, they work as dynamic identifiers of a memory area in which a specific data object or part of an object is located.
-- can be typed either with [generic data types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abengeneric_data_type_glosry.htm "Glossary Entry") or [complete data types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencomplete_data_type_glosry.htm "Glossary Entry").
+- can be typed either with [generic data types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abengeneric_data_type_glosry.htm "Glossary Entry") or [complete data types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencomplete_data_type_glosry.htm "Glossary Entry"). 
 - are declared using the statement [`FIELD-SYMBOLS`](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapfield-symbols.htm) or the [declaration operator](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendeclaration_operator_glosry.htm) [`FIELD-SYMBOL`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenfield-symbol_inline.htm). Their names must be included between angle brackets.
 
 **Declaring field symbols**
@@ -75,12 +78,15 @@ FIELD-SYMBOLS: <fs_i>        TYPE i,
                <fs_like>     LIKE some_data_object.
 
 "Examples for generic types
-FIELD-SYMBOLS <fs_data>      TYPE data.
-FIELD-SYMBOLS <fs_any_table> TYPE any table.
+FIELD-SYMBOLS <fs_c>         TYPE c.           "Text field with a generic length
+FIELD-SYMBOLS <fs_cseq>      TYPE csequence.   "Text-like (c, string)
+FIELD-SYMBOLS <fs_data>      TYPE data.        "Any data type
+FIELD-SYMBOLS <fs_any_table> TYPE any table.   "Internal table with any table type
 
 "Declaring field symbols inline
-"In an inline declaration, the typing of the field symbol is done with the generic type data.
-"Prominent use case: Inline declaration of a field symbol for an internal table.
+"In an inline declaration, the typing of the field symbol is done 
+"with the generic type data.
+"Example use case: Inline declaration of a field symbol for an internal table.
 LOOP AT itab ASSIGNING FIELD-SYMBOL(<line>).
   ...
 ENDLOOP.
@@ -122,14 +128,14 @@ FIELD-SYMBOLS <fs_gen> TYPE data.
 ASSIGN num   TO <fs_i>.
 ASSIGN struc TO <fs_struc>.
 ASSIGN tab   TO <fs_tab>.
-ASSIGN num   TO <fs_gen>.               "Could be any of the data objects
+ASSIGN num   TO <fs_gen>.   "Could be any of the data objects
 
 "Inline declaration is possible, too. The type
 "is automatically derived.
 ASSIGN num TO FIELD-SYMBOL(<fs_inl>).
 
-"CASTING addition for matching types of data object and field symbol
-"when assigning memory areas
+"CASTING addition for matching types of data object and field
+"symbol when assigning memory areas
 TYPES c_len_3 TYPE c LENGTH 3.
 DATA(chars) = 'abcdefg'.
 
@@ -142,6 +148,9 @@ FIELD-SYMBOLS <fs2> TYPE data.
 
 "Explicit casting
 ASSIGN chars TO <fs2> CASTING TYPE c_len_3.
+
+DATA chars_l4 TYPE c LENGTH 4.
+ASSIGN chars TO <fs2> CASTING LIKE chars_l4.
 ```
 
 > **💡 Note**<br>
@@ -158,10 +167,10 @@ ASSIGN chars TO <fs2> CASTING TYPE c_len_3.
 >   ```
 >- See more information on the addition `CASTING` [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapassign_casting.htm).
 
-**Field symbols in use**
+**Examples using field symbols**
 
 ``` abap
-"For example, in assignments
+"Assignments
 DATA num TYPE i VALUE 1.
 FIELD-SYMBOLS <fs_i> TYPE i.
 ASSIGN num TO <fs_i>.
@@ -171,7 +180,7 @@ ASSIGN num TO <fs_i>.
 
 "Loops
 "Here, field symbols are handy since you can avoid an
-"actual copying of the table line to boost performance.
+"actual copying of the table line.
 SELECT * 
   FROM zdemo_abap_fli
   INTO TABLE @DATA(itab).
@@ -181,11 +190,12 @@ FIELD-SYMBOLS <fs1> LIKE LINE OF itab.
 LOOP AT itab ASSIGNING <fs1>.
   <fs1>-carrid = ... "The field symbol represents a line of the table.
   <fs1>-connid = ... "Components are accessed with the component selector.
-                     "Here, a new value is assigned.
+                     "Here, it is assumed that a new value is assigned.
   ...
 ENDLOOP.
 
-"Inline declaration of field symbol
+"Inline declaration of a field symbol. It receives a suitable
+"type automatically.
 LOOP AT itab ASSIGNING FIELD-SYMBOL(<fs2>).
   <fs2>-carrid = ...
   <fs2>-connid = ...
@@ -201,8 +211,7 @@ ENDLOOP.
 ...
 
 -   are references that point to any data object or to their parts (for example, components, lines of internal tables).
--   are contained in [data reference
-    variables](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendata_reference_variable_glosry.htm "Glossary Entry")
+-   are contained in [data reference variables](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendata_reference_variable_glosry.htm "Glossary Entry")
     in ABAP programs.
 
 [Data reference variables](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendata_reference_variable_glosry.htm "Glossary Entry")
@@ -216,95 +225,153 @@ ENDLOOP.
 
 > **💡 Note**<br>
 > [Object references](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenobject_reference_glosry.htm "Glossary Entry")
-and [object reference variables](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenobject_refer_variable_glosry.htm "Glossary Entry") are not part of this cheat sheet. To get more details, refer to the ABAP Keyword Documentation or the cheat sheet [ABAP Object Orientation](04_ABAP_Object_Orientation.md).
+and [object reference variables](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenobject_refer_variable_glosry.htm "Glossary Entry") are not part of this cheat sheet. To get more details, refer to the [ABAP Keyword Documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenobject_reference_type.htm) or the cheat sheet [ABAP Object Orientation](04_ABAP_Object_Orientation.md).
 
 **Declaring data reference variables**
 
 ``` abap
-"Example declarations of data reference variables
-"Note that they do not yet point to a data object.
-DATA: ref1 TYPE REF TO i,                 "Complete data type
-      ref2 TYPE REF TO some_dbtab,        "Complete data type
-      ref3 LIKE REF TO some_data_object,
-      ref4 TYPE REF TO data.              "Generic data type
+"Example declarations of data reference variables with static types.
+"The static types can be complete or generic (but only data can be used). 
+"Note that they do not yet point to a data object. At this stage, 
+"initial reference variables contain null references.
+DATA: ref_a TYPE REF TO i,                 "Complete data type
+      ref_b TYPE REF TO some_dbtab,        "Complete data type
+      ref_c LIKE REF TO some_data_object,
+      ref_d TYPE REF TO data,              "Generic data type
+      ref_e LIKE ref_a.                    "Referring to an existing data reference variable                  
 ```
 
-**Creating data references to existing data objects** using the
+As shown below, instead of the explicit declaration, inline declarations are also possible. 
+See also the cheat sheet [Data Types and Data Objects](16_Data_Types_and_Objects.md).
+
+**Assigning references to existing data objects** using the
 [reference operator](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenreference_operator_glosry.htm "Glossary Entry")
 `REF`.
 ``` abap
 "Declaring a data object
-
 DATA num TYPE i VALUE 5.
 
 "Declaring data reference variables
-
 DATA ref1    TYPE REF TO i.
 DATA ref_gen TYPE REF TO data.
 
 "Creating data references to data objects.
-"The # sign means that the type is derived from the context.
+"The # character stands for a data type that is determined in the 
+"following hierarchy: 
+"- If the data type required in an operand position is unique and 
+"  known completely, the operand type is used.
+"- If the operand type cannot be derived from the context, the 
+"  data type of the data object within the parentheses is used.
+"- If the data type of the data object within the parentheses is 
+"  not known statically, the generic type data is used.
 
 ref1    = REF #( num ).
 ref_gen = REF #( num ).
 
-"You can also use inline declarations to omit the explicit declaration.
-
+"Creating a data reference variable inline. 
+"Note: No empty parentheses can be specified after REF.
 DATA(ref2) = REF #( num ).
 
-"You can explicitly specify the data type after REF.
+"Data reference variable of type ref to data by specifying the 
+"generic type data after REF 
+DATA(ref3) = REF data( ... ).
 
-DATA(ref3) = REF string( `hallo` ).
+"A non-generic type can be used; only if an upcast works (see 
+"upcasts below)
+DATA(ref3) = REF some_type( ... ).
 
-"The older syntax GET REFERENCE having the same effect should not be used anymore.
+"The older syntax GET REFERENCE having the same effect should 
+"not be used anymore.
 "GET REFERENCE OF num INTO ref1.
-"GET REFERENCE OF num INTO DATA(ref4).
+"GET REFERENCE OF num INTO DATA(ref5).
 ```
 
-**Creating new data objects at runtime**: You create an [anonymous
-data object](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenanonymous_data_object_glosry.htm "Glossary Entry")
-at runtime by assigning the reference to the data object of a data reference variable. You can use the [instance
-operator](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abeninstance_operator_glosry.htm "Glossary Entry")
-[`NEW`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconstructor_expression_new.htm).
-It replaces the older syntax [`CREATE DATA`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapcreate_data.htm). However, as shown below, `CREATE DATA` is required for specifying a dynamically determined type.
+**Creating new data objects at runtime**: 
+[Anonymous data objects](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenanonymous_data_object_glosry.htm "Glossary Entry") ...
+- are dynamically created at runtime. 
+- are relevant if the data type is only known when the program is executed.
+- cannot be addressed by a name (-> "anonymous"). 
+- expect a data reference variable when declared. The content of an anonymous data object can only be accessed using dereferenced variables as shown below or field symbols.
+- can be created using the statement [`CREATE DATA`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapcreate_data.htm), the instance operator [`NEW`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconstructor_expression_new.htm), or the addition [`NEW`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapselect_into_target.htm) of the `INTO` clause in a `SELECT` statement. 
 
-``` abap
-"Declaring data reference variables
+> **💡 Note**<br>
+> The following snippet covers statically defined types. Data objects can also be created with `CREATE DATA` dynamically using dynamic type definitions (the type name is specified within a pair of parentheses) and type description objects ([`TYPE HANDLE` addition](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapcreate_data_handle.htm)) as shown further down. 
+> Using [`CREATE OBJECT`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapcreate_object.htm) statements, you can create an object as an instance of a class and assign the reference to the object to an [object reference variable](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenobject_refer_variable_glosry.htm). Find more information in the [ABAP Keyword Documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapcreate_object.htm).
 
-DATA ref1    TYPE REF TO i.    "Complete type
-DATA ref_gen TYPE REF TO data. "Generic type
+```abap
+"CREATE DATA statements
+"Note that there are many additions available. The examples 
+"show a selection. Behind TYPE and LIKE, the syntax offers 
+"the same possibilities as the DATA statement.
 
-"Creating anonymous data objects
-"Using the # sign and the explicit type: see REF #( ) above.
+"Creating an anonymous data object with an implicit type.
+"If neither of the additions TYPE or LIKE are specified, the 
+"data reference variable must be completely typed.
+DATA dref_1 TYPE REF TO string.
+CREATE DATA dref_1.
 
-ref1    = NEW #( ).
-ref_gen = NEW string( ).
+"Creating anonymous data objects with explicit data type 
+"specification. 
+"Data reference variable with a generic type to be used in 
+"the following examples for the anonymous data object.
+DATA dref_2 TYPE REF TO data.
 
-"For directly assigning values, insert the values within the parentheses.
+"Elementary, built-in ABAP type
+CREATE DATA dref_2 TYPE p LENGTH 8 DECIMALS 3.
 
-ref1 = NEW #( 123 ).
+"Anomyous internal table ...
+"using the LIKE addition to refer to an existing internal table
+DATA itab TYPE TABLE OF zdemo_abap_carr.
+CREATE DATA dref_2 LIKE itab.
 
-"Using inline declarations to omit a prior declaration of a variable.
+"by specifying the entire table type
+CREATE DATA dref_2 TYPE HASHED TABLE OF zdemo_abap_carr 
+  WITH UNIQUE KEY carrid.
 
-DATA(ref2) = NEW i( 456 ).
+"Anonymous structures
+CREATE DATA dref_2 LIKE LINE OF itab.
+CREATE DATA dref_2 TYPE zdemo_abap_carr.
 
-TYPES i_table TYPE STANDARD TABLE OF i WITH EMPTY KEY.
+"Creating reference variable
+CREATE DATA dref_2 TYPE REF TO itab.
 
-DATA(ref3) = NEW i_table( ( 1 ) ( 2 ) ( 3 ) ( 4 ) ( 5 ) ).
+"NEW operator
+"- Works like CREATE DATA dref TYPE type statements and can 
+"  be used in general expression positions.
+"- Allows to assign values to the new anonymous data objects 
+"  in parentheses
 
-"CREATE DATA statements (older syntax)
-"DATA ref4 TYPE REF TO string.
-"DATA ref5 TYPE REF TO data.
+"Creating data reference variables
+DATA: dref_3 TYPE REF TO i,
+      dref_4 TYPE REF TO data.
 
-"CREATE DATA ref4.
+"# character after NEW if the data type can be identified 
+"completely instead of the explicit type specification (only 
+"non-generic types possible)
+dref_3 = NEW #( 123 ).
+dref_3 = NEW i( 456 ).
+dref_4 = NEW zdemo_abap_carr( ). "not assigning any values
+dref_4 = NEW string( `hi` ).
 
-"Note: TYPE ... needed because of generic type data
-"CREATE DATA ref5 TYPE p LENGTH 6 DECIMALS 2.
+"Creating anonymous data objects inline
+"In doing so, you can omit a prior declaration of a variable.
+DATA(dref_5) = NEW i( 789 ).
+DATA(dref_6) = NEW zdemo_abap_carr( carrid   = 'AB' 
+                                    carrname = 'AB Airlines' ).
 
-"CREATE DATA ref5 LIKE ref4.
-```
+"ABAP SQL SELECT statements
+"Using the NEW addition in the INTO clause, an anonymous data
+"object with a suitable type can be created in place.
+SELECT *
+  FROM zdemo_abap_carr
+  INTO TABLE NEW @DATA(dref_7). "internal table
 
-**Assigning existing data references** to other data references. As mentioned above regarding the assignment, note that static types of both data
+SELECT SINGLE *
+  FROM zdemo_abap_carr
+  INTO NEW @DATA(dref_8). "structure
+```  
+
+**Assignments between two data reference variables**. As mentioned above regarding the assignment, note that static types of both data
 reference variables must be compatible. As a result of an assignment, both the target reference variable and the source reference variable point to the same data object.
 
 Excursion: Static vs. dynamic type, upcasts and downcasts
@@ -432,6 +499,8 @@ ref_generic = NEW i( ).
 "In older ABAP releases, CREATE DATA statements were needed.
 CREATE DATA ref_generic TYPE i.
 
+"As mentioned above, the content of anonymous data objects can only be 
+"accessed using dereferenced data variables and field symbols.
 "The only option to access the variable in older releases was via field symbols.
 ASSIGN ref_generic->* TO FIELD-SYMBOL(<fs_generic>).
 <fs_generic> = 123.
@@ -449,11 +518,11 @@ SELECT *
   INTO TABLE @ref_sel->*.
 ```
 
-**Data references in use**
+**Examples using data references**
 
 Some example contexts of using data references are as follows:
 
-**Overwriting data reference variables**:
+*Overwriting data reference variables*:
 ``` abap
 dref = NEW i( 1 ).
 
@@ -462,7 +531,7 @@ dref = NEW i( 1 ).
 dref = NEW i( 2 ).
 ```
 
-**Retaining data references**:
+*Retaining data references*:
 
 ``` abap
 "This snippet shows that three data references are created
@@ -486,12 +555,13 @@ DO 3 TIMES.
 ENDDO.
 ```
 
-**Processing internal tables**:
+*Processing internal tables*:
 
 ``` abap
 "Similar use case to using field symbols: In a loop across an internal table,
-"you can store the content of the line in a data reference variable
+"you assign the content of the line in a data reference variable
 "instead of actually copying the content to boost performance.
+"Again, the inline declaration comes in handy.
 
 "Filling an internal table.
 SELECT * 
@@ -500,15 +570,17 @@ SELECT *
 
 LOOP AT fli_tab REFERENCE INTO DATA(ref).
 
-  "A component of the table line might be addressed.
+  "A component of the table line may be addressed.
+  "Note the object component selector; the dereferencing operator together
+  "with the component selector is also possible: ->*-
   ref->carrid = ...
   ...
 ENDLOOP.
 ```
 
-**Data reference variables as part of structures and internal tables**:
+*Data reference variables as part of structures and internal tables*:
 ``` abap
-"In contrast to field symbols, data reference variables can be used as
+"Unlike field symbols, data reference variables can be used as
 "components of structures or columns in internal tables.
 
 "Structure
@@ -529,8 +601,8 @@ itab[ 1 ]-ref->* = 123.
 ```
 
 > **✔️ Hint**<br>
-> The question might now arise when to actually use either a field symbol
-or a data reference variable. It depends on your use case. However, data
+> When to actually use either a field symbol
+or a data reference variable? It depends on your use case. However, data
 reference variables are more powerful as far as their usage options are
 concerned, and they better fit into the modern (object-oriented) ABAP
 world. Recommended read: [Accessing Data Objects Dynamically (F1 docu for standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abendyn_access_data_obj_guidl.htm "Guideline").
@@ -540,7 +612,18 @@ world. Recommended read: [Accessing Data Objects Dynamically (F1 docu for standa
 ## Dynamic ABAP Statements
 
 As already mentioned above, there are ABAP statements that support the dynamic specification of syntax elements.
-In this context, you can usually use elementary, character-like data objects - the content is usually provided in capital letters - specified within a pair of parentheses. In the `SELECT` list of an ABAP SQL `SELECT` statement, for example, you can use a standard table with a character-like row type. The dynamically specified syntax elements can be included as operands in various ABAP statements. The following code snippets are intended to give you an idea and rough overview. 
+In this context, you can usually use elementary, character-like data objects - the content is usually provided in capital letters - specified within a pair of parentheses. 
+``` abap  
+"Named, character-like data object specified within parenteses
+"used by an ABAP statement
+DATA(field_name) = 'CARRNAME'.
+SORT itab BY (field_name).      
+
+"Unnamed, character-like data object specified within parenteses
+SORT itab BY ('CURRCODE').
+``` 
+      
+In the `SELECT` list of an ABAP SQL `SELECT` statement, for example, you can use a standard table with a character-like row type. The dynamically specified syntax elements can be included as operands in various ABAP statements. The following code snippets are intended to provide a rough overview. 
 
 Note that dynamically specifying syntax elements has downsides, too. Consider some erroneous character-like content of such data objects. There is no syntax warning. At runtime, it can lead to runtime errors. 
 
@@ -555,11 +638,11 @@ Note that dynamically specifying syntax elements has downsides, too. Consider so
         FROM zdemo_abap_carr
         INTO TABLE @DATA(itab).
 
-      "Named data object
+      "Named data object specified within parenteses
       DATA(field_name) = 'CARRNAME'.
-      SORT itab BY (field_name).
+      SORT itab BY (field_name).      
 
-      "Unnamed data object
+      "Unnamed data object specified within parenteses
       SORT itab BY ('CURRCODE').
 
       "READ TABLE: Dynamically specifying keys
@@ -584,7 +667,7 @@ Note that dynamically specifying syntax elements has downsides, too. Consider so
     - `ASSIGN` statements
 
       ``` abap    
-      "Dynamically accessing components of structures   
+      "Dynamically assigning components of structures   
 
       "Populating a structure
       SELECT SINGLE *
@@ -598,29 +681,33 @@ Note that dynamically specifying syntax elements has downsides, too. Consider so
       ASSIGN wa-(comp_name) TO <fs>. "named data object
       ASSIGN wa-('CARRID') TO <fs>.  "unnamed data object 
       
-      "The statements set sy-subrc value. No exception occurs in case of an unsuccessful assignment.
+      "The statements set sy-subrc value. No exception occurs in 
+      "case of an unsuccessful assignment.
       ASSIGN wa-('XYZ') TO <fs>. 
       IF sy-subrc <> 0.
         ...
       ENDIF.
 
-      "Numeric expressions are possible. Its value is interpreted as the position
-      "of the component in the structure.
+      "Numeric expressions are possible. Its value is interpreted 
+      "as the position of the component in the structure.
       ASSIGN wa-(4) TO <fs>.
 
-      "If the value is 0, the memory area of the entire structure is assigned to the field symbol.
+      "If the value is 0, the memory area of the entire structure is 
+      "assigned to the field symbol.
       ASSIGN wa-(0) TO <fs>.
 
       "The statements above replace the following, older statements. 
       ASSIGN COMPONENT 'CARRID' OF STRUCTURE wa TO <fs>.
       ASSIGN COMPONENT 5 OF STRUCTURE wa TO <fs>.
 
-      "Populating a structure that is referenced by a data reference variable
+      "Populating a structure that is referenced by a data reference 
+      "variable
       SELECT SINGLE *
         FROM zdemo_abap_carr
         INTO NEW @DATA(ref_struc).
 
-      "Note the object component selector. The field symbol is created inline here.
+      "Note the object component selector. The field symbol is created 
+      "inline here.
       ASSIGN ref_struc->('CARRNAME') TO FIELD-SYMBOL(<fs_inl>). 
 
       *************************************************************
@@ -633,35 +720,57 @@ Note that dynamically specifying syntax elements has downsides, too. Consider so
       ASSIGN (cl_name)=>some_dobj TO <fs>.
       ASSIGN (cl_name)=>(dobj) TO <fs>.
 
-      "Class reference variable pointing to an object that contains attributes
-      "and that are specified dynamically.
+      "Class reference variable pointing to an object that contains 
+      "attributes and that are specified dynamically.
       DATA cl_ref TYPE REF TO cl_some_class.
       cl_ref = NEW #( ).
       ASSIGN cl_ref->('some_attribute') TO FIELD-SYMBOL(<another_fs>).
 
-      "If ELSE UNASSIGN is specified, no memory area is assigned to the field symbol. 
-      "It has the state unassigned after the ASSIGN statement.
+      "If ELSE UNASSIGN is specified, no memory area is assigned to 
+      "the field symbol. It has the state unassigned after the ASSIGN 
+      "statement.
       ASSIGN cl_ref->('attr_xyz') TO FIELD-SYMBOL(<attr>) ELSE UNASSIGN.
       ```
 
-- Dynamically specifying data types
+- Dynamically specifying data types/creating (data) objects
+
+  > **💡 Note**<br>
+  > - For dynamic syntax elements in `CREATE OBJECT` statements, find more information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapcreate_object_explicit.htm) (note that parameters can be specified dynamically, too).
+  > - In addition to character-like data objects for the type name specified in the parentheses, you can also use [absolute type names](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabsolute_typename_glosry.htm) (see the information about RTTI below).
 
     ``` abap
-    "Anonymous data objects are created using a type determined at runtime.
-    "Note that the NEW operator cannot be used here.
-
+    "Anonymous data objects are created using a type determined at 
+    "runtime. See more information below. Note that the NEW operator 
+    "cannot be used here.
     CREATE DATA dref TYPE (some_type).
     CREATE DATA dref TYPE TABLE OF (some_type).
+    CREATE DATA dref TYPE REF TO (some_type).
 
-    "Assigning a data object to a field symbol casting a dynamically specified type
-
+    "Assigning a data object to a field symbol casting a dynamically 
+    "specified type
     ASSIGN dobj TO <fs> CASTING TYPE (some_type).
+
+    "Dynamically creating an object as an instance of a class and 
+    "assigning the reference to the object to an object reference 
+    "variable. oref can be an object or interface reference variable.
+    "The reference variable is created here with the generic 'object'.
+    DATA oref TYPE REF TO object. 
+    CREATE OBJECT oref TYPE (some_class).
+
+    "Note: As covered further down and in the executable example,
+    "CREATE DATA/OBJECT and ASSIGN statements have the HANDLE addition
+    "after which dynmically created types can be specified. A type 
+    "description object is expected.
+    CREATE DATA dref TYPE HANDLE type_descr_obj.
+    CREATE OBJECT oref TYPE HANDLE type_descr_obj.
+    ASSIGN dobj TO <fs> CASTING TYPE HANDLE type_descr_obj.
     ```
 
 - Dynamically specifying clauses in ABAP SQL statements
 
     ``` abap
-    "This snippet demonstrates a selection of possible dynamic specifications in ABAP SQL SELECT statements.
+    "This snippet demonstrates a selection of possible dynamic 
+    "specifications in ABAP SQL SELECT statements.
     "Dynamic SELECT list
 
     DATA(select_list) = `CARRID, CONNID, COUNTRYFR, COUNTRYTO`.
@@ -688,14 +797,16 @@ Note that dynamically specifying syntax elements has downsides, too. Consider so
       FROM (db_table) 
       INTO TABLE @itab->*.
 
-    "Similar to the NEW operator, you can use the addition NEW here to create an anonymous data object 
-    "in place. The advantage is that the data type is constructed in a suitable way.
+    "Similar to the NEW operator, you can use the addition NEW here 
+    "to create an anonymous data object in place. The advantage is 
+    "that the data type is constructed in a suitable way.
     SELECT *
       FROM (db_table)
       INTO TABLE NEW @DATA(dref_tab).
 
     "Dynamic WHERE clause
-    "This is an example for using an internal table with a character-like row type
+    "This is an example for using an internal table with a 
+    "character-like row type
     DATA(where_clause) = VALUE string_table( ( `CARRID = 'LH'` )
                                              ( `OR CARRID = 'AA'` ) ).
 
@@ -710,8 +821,10 @@ Note that dynamically specifying syntax elements has downsides, too. Consider so
     ``` abap
     "Notes:
     "- Dynamic method calls require a CALL METHOD statement.
-    "- The first 3 examples assume that there are no mandatory parameters defined for the method.
-    "- The example covers only static methods. Dynamic method calls for instance methods are also possible.
+    "- The first 3 examples assume that there are no mandatory 
+    "  parameters defined for the method.
+    "- The example covers only static methods. Dynamic method calls 
+    "  for instance methods are also possible.
 
     "Method dynamically specified
     CALL METHOD class=>(meth).
@@ -733,8 +846,8 @@ Note that dynamically specifying syntax elements has downsides, too. Consider so
     CALL METHOD class=>(meth) PARAMETER-TABLE ptab.
 
     "Notes on PARAMETER-TABLE ptab
-    "- The table (of type abap_parmbind_tab; line type is abap_parmbind) must
-    "  be filled and have a line for all non-optional parameters.
+    "- The table (of type abap_parmbind_tab; line type is abap_parmbind) 
+    "  must be filled and have a line for all non-optional parameters.
     "- Components: name -> formal parameter name
     "              kind -> kind of parameter, e. g. importing
     "              value -> pointer to appropriate actual parameter,
@@ -747,18 +860,12 @@ Note that dynamically specifying syntax elements has downsides, too. Consider so
 ## Runtime Type Services (RTTS)
 
 [RTTS](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrun_time_type_services_glosry.htm "Glossary Entry")
-represent a hierarchy of [type description
-classes](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentype_class_glosry.htm "Glossary Entry")
-containing methods for [Runtime Type Creation
-(RTTC)](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrun_time_type_creation_glosry.htm "Glossary Entry")
-and [Runtime Type Identification
-(RTTI)](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrun_time_type_identific_glosry.htm "Glossary Entry").
-Using these classes, you can ...
-
--   get type information on data objects, data types or
+represent a hierarchy of [type description classes](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentype_class_glosry.htm "Glossary Entry")
+containing methods for 
+-   getting type information on data objects, data types or
     [instances](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abeninstance_glosry.htm "Glossary Entry")
-    at runtime.
--   define and create new data types at runtime.
+    at runtime ([Runtime Type Identification (RTTI)](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrun_time_type_identific_glosry.htm "Glossary Entry")).
+-   defining and creating new data types as [type description objects](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentype_object_glosry.htm) at runtime ([Runtime Type Creation (RTTC)](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrun_time_type_creation_glosry.htm "Glossary Entry")).
 
 The hierarchy of type description classes is as follows.
 
@@ -798,88 +905,368 @@ F2 help information in
 [ADT](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenadt_glosry.htm "Glossary Entry"),
 for more details.
 
-The following examples show the retrieval of information. Instead of the
+<p align="right">(<a href="#top">back to top</a>)</p>
+
+### Getting Type Information at Runtime
+
+With RTTI, you can determine data types at runtime using description methods in type description classes.
+To get the type information, you can get a reference to a type description object of a type, that is, an instance of a type description class.
+The type properties are represented by attributes that are accessible through the type description object.
+
+
+> **💡 Note**<br>
+> - For each type, there is exactly one type description object. 
+> - For each type category (elementary type, table, and so on), there is a type description class (e.g. `CL_ABAP_STRUCTDESCR` for structures, as shown in the hierarchy tree above) that has special attributes (i.e. the properties of the respective types). 
+> - References to type description objects can be used, for example, after the `TYPE HANDLE` addition of the `CREATE DATA` and `ASSIGN` statements.
+
+The following examples show the retrieval of type information. Instead of the
 cumbersome extra declaration of data reference variables, you can use
-[inline
-declarations](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abeninline_declaration_glosry.htm "Glossary Entry").
-[Method
-chaining](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenmethod_chaining_glosry.htm "Glossary Entry")
+[inline declarations](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abeninline_declaration_glosry.htm "Glossary Entry").
+[Method chaining](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenmethod_chaining_glosry.htm "Glossary Entry")
 comes in handy, too.
-``` abap
-"The properties of a type are retrieved using RTTI
-"In ADT, you may want to choose CTRL + SPACE after ...=> to explore the options.
 
-DATA(some_type) = cl_abap_typedescr=>describe_by_data( var ).
+```abap
+"Getting a reference to a type description object of a type.
+"i.e. getting an instance of a type description class.
+"To do so, the static methods of the class CL_ABAP_TYPEDESCR can be used.
+"As shown below, the type decription object can be used to create data
+"objects dynamically. Note that instances of classes are not covered.
 
-"The components of a structure are retrieved.
-"Like above, the describe_by_data method is used together with a variable.
+"Type for which information should be retrieved
+TYPES elem_type TYPE c LENGTH 5.
 
-DATA(components) = CAST cl_abap_structdescr(
-  cl_abap_typedescr=>describe_by_data( some_struc )
-      )->components.
+"Creating a data reference variable to hold the reference to
+"the type description object
+DATA type_descr_obj_elem TYPE REF TO cl_abap_elemdescr.
 
-"The attributes of a global class are retrieved. In contrast to the
-"example above the describe_by_name method is used together with the actual name.
+"Retrieving type information by creating an instance of a type description
+"class. As the name implies, the describe_by_name method expects the name
+"of the type. In the following example, the reference to the type object is
+"assigned using a downcast to the reference variable of type CL_ABAP_ELEMDESCR
+"created above.
+type_descr_obj_elem = CAST #( cl_abap_typedescr=>describe_by_name( 'ELEM_TYPE' ) ).
 
-DATA(attributes) = CAST cl_abap_classdescr(
-  cl_abap_classdescr=>describe_by_name( 'CL_SOME_CLASS' )
-      )->attributes.
+"Using the older cast operator ?=
+type_descr_obj_elem ?= cl_abap_typedescr=>describe_by_name( 'ELEM_TYPE' ).
 
-"Casting and method chaining as above in contrast to the following extra declarations
-"If the variables were not declared inline as in the example, there would be even more lines of code.
-DATA(a) = cl_abap_typedescr=>describe_by_data( some_struc ).
-DATA(b) = CAST cl_abap_structdescr( a ).
-DATA(c) = b->components.
-```
+"Inline declaration is handy to avoid helper variables.
+DATA(type_descr_obj_inl_1) = CAST cl_abap_elemdescr(
+  cl_abap_typedescr=>describe_by_name( 'ELEM_TYPE' ) ).
 
-The following example demonstrates the dynamic creation of data objects.
-Note the [`TYPE HANDLE`](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapcreate_data_handle.htm)
-addition as part of the `CREATE DATA` statement that is used when referring to dynamically created data types.
+"You may want to check the type description object in the debugger.
+"Various methods/attributes provide you with detailed information.
+"The following examples show a selection:
+"Kind/Type kind/Output length
+DATA(kind) = type_descr_obj_inl_1->kind. "E (elementary)
+DATA(type_kind) = type_descr_obj_inl_1->type_kind. "C
+DATA(output_length) = type_descr_obj_inl_1->output_length. "5
 
-``` abap
-"RTTC examples
+"In the following example, the type properties are retrieved
+"without casting. The data object has the type ref to
+"cl_abap_typedescr. See the hierarchy tree above.
+"The reference in the type description object references an
+"object from one of the classes CL_ABAP_ELEMDESCR, CL_ABAP_ENUMDESCR,
+"CL_ABAP_REFDESCR, CL_ABAP_STRUCTDESCR, CL_ABAP_TABLEDSECR,
+"CL_ABAP_CLASSDESCR, or CL_ABAP_INTFDESCR.
+"In the following case, it is CL_ABAP_ELEMDESCR.
+"Note that in most of the following examples, the explicit
+"casting is included when retrieving a reference to the type
+"description object.
+TYPES another_elem_type TYPE n LENGTH 3.
+DATA(type_descr_obj_inl_2) = cl_abap_typedescr=>describe_by_name( 'ANOTHER_ELEM_TYPE' ).
 
-"Creation of an anonymous data object using a type description object for a
-"dictionary structure that is obtained using RTTI
-
-"Declaring a data reference variable with a generic type
-DATA dref TYPE REF TO data.
-
-"Getting type description using RTTI
-DATA(type) = CAST cl_abap_datadescr(
+"More types
+"Structured data type (here, using the name of a database table)
+DATA(type_descr_obj_struc) = CAST cl_abap_structdescr(
   cl_abap_typedescr=>describe_by_name( 'ZDEMO_ABAP_CARR' ) ).
 
-"Creating an anonymous data object using the retrieved type description
-CREATE DATA dref TYPE HANDLE type.
+"Various attributes/methods available for detailed information
+"Kind
+DATA(struc_kind) = type_descr_obj_struc->kind. "S
 
-"Creating an internal table dynamically
+"Getting components of the structure (e.g. the component names
+"and type description objects for the individual components)
+DATA(comps_struc) = type_descr_obj_struc->get_components( ).
 
-"Getting type description using RTTI
-DATA(line_type) =  CAST cl_abap_structdescr(
-  cl_abap_tabledescr=>describe_by_name( `ZDEMO_ABAP_CARR` ) ).
+"The follwing attribute also lists the component names and types
+"(but not the type desription objects as is the case above)
+DATA(comps_struc2) = type_descr_obj_struc->components.
 
-"Defining primary table keys of internal table type to be created
-DATA(itab_keys) = VALUE abap_keydescr_tab( ( name = 'CARRID' )
-                                           ( name = 'CARRNAME' ) ).
+"Kind of structure
+DATA(struct_kind) = type_descr_obj_struc->struct_kind. "F (flat)
 
-"Creating internal table type using the create method of cl_abap_tabledescr
-DATA(table_type) = cl_abap_tabledescr=>create(
-    p_line_type  = line_type
-    p_table_kind = cl_abap_tabledescr=>tablekind_sorted
-    p_unique     = cl_abap_typedescr=>true
-    p_key        = itab_keys ).
+"Internal table type
+TYPES tab_type TYPE SORTED TABLE OF zdemo_abap_carr
+  WITH UNIQUE KEY carrid.
 
-"Creating internal table based on the created table type
-DATA ref_tab TYPE REF TO data.
+DATA(type_descr_obj_tab) = CAST cl_abap_tabledescr(
+  cl_abap_typedescr=>describe_by_name( 'TAB_TYPE' ) ).
 
-CREATE DATA ref_tab TYPE HANDLE table_type.
+"Kind
+DATA(tab_kind) = type_descr_obj_tab->kind. "T
+
+"The following method returns more information than the attribute
+"below (e.g. key kind, i.e. if it is a unique key, etc.)
+DATA(tab_keys) = type_descr_obj_tab->get_keys( ).
+DATA(tab_keys2) = type_descr_obj_tab->key.
+
+"Getting internal table components
+"The method get_table_line_type returns a variable of type ref to
+"cl_abap_datadescr. This way you can retrieve the table components.
+"Method chaining is useful here.
+DATA(tab_comps) = CAST cl_abap_structdescr(
+  type_descr_obj_tab->get_table_line_type( ) )->get_components( ).
+
+"Reference type
+TYPES ref_str TYPE REF TO string.
+DATA(type_descr_obj_ref) = CAST cl_abap_refdescr(
+  cl_abap_typedescr=>describe_by_name( 'REF_STR' ) ).
+
+"Returns the type description object of the referenced type
+DATA(ref_type) = type_descr_obj_ref->get_referenced_type( ).
+
+"Getting the absolute type name
+DATA(ref_type_abs_name) =
+  type_descr_obj_ref->get_referenced_type( )->absolute_name. "\TYPE=STRING
+
+"Kind/Type kind
+DATA(ref_kind) = type_descr_obj_ref->kind. "R
+DATA(ref_type_type_kind) =
+  type_descr_obj_ref->get_referenced_type( )->type_kind. "g (string)
+
+"Getting a reference to a type description object of an existing
+"data object. Instead of referring to the name of a type, referring
+"to a data object here. The relevant method is describe_by_data.
+
+"Elementary data object
+DATA dobj_elem type i.
+DATA(ty_des_obj_el) = CAST cl_abap_elemdescr(
+  cl_abap_typedescr=>describe_by_data( dobj_elem ) ).
+
+"Structure
+DATA dobj_struc type zdemo_abap_carr.
+DATA(ty_des_obj_struc) = CAST cl_abap_structdescr(
+  cl_abap_typedescr=>describe_by_data( dobj_struc ) ).
+
+"Internal table
+DATA dobj_itab type table of zdemo_abap_carr with empty key.
+DATA(ty_des_obj_itab) = CAST cl_abap_tabledescr(
+  cl_abap_typedescr=>describe_by_data( dobj_itab ) ).
+
+"Reference variable
+DATA dref_var type ref to string.
+DATA(ty_des_obj_dref) = CAST cl_abap_refdescr(
+  cl_abap_typedescr=>describe_by_data( dref_var ) ).
+```
+
+Excursions: 
+
+```abap
+"Casting and method chaining as above in contrast to the following 
+"extra declarations. If the variables were not declared inline as 
+"in the example, there would be even more lines of code.
+DATA(a) = cl_abap_typedescr=>describe_by_data( some_struc ).
+DATA(b) = CAST cl_abap_structdescr( a ).
+DATA(c) = b->components.  
+
+"As mentioned earlier about type name specifications for statements 
+"such as CREATE DATA, in addition to character-like data objects for 
+"the type name specified in the parentheses, you can also use absolute 
+"type names.
+
+"Type to refer to 
+TYPES type4abs TYPE p LENGTH 4 DECIMALS 3.
+
+"Data and object reference variables with generic types
+DATA dref4abs TYPE REF TO data.
+DATA oref4abs TYPE REF TO object.
+
+"Getting absolute names
+DATA(abs_name_type) = cl_abap_typedescr=>describe_by_name( 
+   'TYPE4ABS' )->absolute_name.
+DATA(abs_name_cl) = cl_abap_typedescr=>describe_by_name(
+   'ZCL_DEMO_ABAP_DYNAMIC_PROG' )->absolute_name.
+
+"Data references
+"Named data object holding the absolute name
+CREATE DATA dref4abs TYPE (abs_name_type).
+
+"Unnamed data object
+CREATE DATA dref4abs TYPE ('\TYPE=STRING').
+
+"Object references
+"Named data object
+CREATE OBJECT oref4abs TYPE (abs_name_cl).
+
+"Unnamed data object
+CREATE OBJECT oref4abs TYPE ('\CLASS=ZCL_DEMO_ABAP_DYNAMIC_PROG').
+```
+
+<p align="right">(<a href="#top">back to top</a>)</p>
+
+### Dynamically Creating Data Types at Runtime
+You can create data types at program runtime using methods of the type description classes of RTTS.
+These types are only valid locally in the program. They are also anonymous, i.e. they are only accessible through type description objects.
+As shown above, you can get a reference to a type description object of a type using the static methods of the class `CL_ABAP_TYPEDESCR`.
+```abap
+"For example, a structured type
+DATA(type_descr_obj) = CAST cl_abap_structdescr(
+  cl_abap_typedescr=>describe_by_name( 'SOME_STRUC_TYPE' ) ).
+```
+
+The focus here is on using RTTC methods such as `get...`.
+
+```abap
+"Creating type description objects using ...
+"... elementary data types
+"Conceptually, all elementary, built-in ABAP types already 
+"exist and can be accessed by the corresponding get_* methods.
+"In ADT, click CTRL + space after cl_abap_elemdescr=>... 
+"to check out the options. The following examples show a 
+"selection.
+
+DATA(tdo_elem_i) = cl_abap_elemdescr=>get_i( ).
+DATA(tdo_elem_string) = cl_abap_elemdescr=>get_string( ).
+
+"For the length specification of type c and others, there is 
+"an importing parameter available.
+DATA(tdo_elem_c_l20) = cl_abap_elemdescr=>get_c( 10 ).
+
+"Type p with two parameters to be specified.
+DATA(tdo_elem_p) = cl_abap_elemdescr=>get_p( p_length   = 3 
+                                             p_decimals = 2 ).
+
+"Note: Instead of calling get_i() and others having no importing 
+"parameters, you could also call the describe_by_name( ) method 
+"and pass the type names (I‚ STRING etc.) as arguments.
+"DATA(tdo_elem_i_2) = CAST cl_abap_elemdescr(
+"  cl_abap_typedescr=>describe_by_name( 'I' ) ).
+"DATA(tdo_elem_string_2) = CAST cl_abap_elemdescr(
+"  cl_abap_typedescr=>describe_by_name( 'STRING' ) ).
+
+"... structured data types
+"They are created based on a component description table.
+
+"A structured type such as the following shall be created dynamically
+"using a type description object.
+TYPES: BEGIN OF struc_type,
+        a TYPE string,
+        b TYPE i,
+        c TYPE c LENGTH 5,
+        d TYPE p LENGTH 4 DECIMALS 3,
+      END OF struc_type.
+
+"Creating a type description object using RTTC method
+"Using the get method, you can create the type description object
+"dynamically based on a component table. The component table is 
+"of type abap_component_tab. In this example, the component table 
+"is created inline.
+DATA(tdo_struc) = cl_abap_structdescr=>get(
+    VALUE #(
+      ( name = 'A' type = cl_abap_elemdescr=>get_string( ) )
+      ( name = 'B' type = cl_abap_elemdescr=>get_i( ) )
+      ( name = 'C' type = cl_abap_elemdescr=>get_c( 5 ) )
+      ( name = 'D' type = cl_abap_elemdescr=>get_p( p_length   = 4 
+                                                    p_decimals = 3 ) ) ) ).
+
+"... internal table types
+"Note: Specifying the line type is mandatory, the rest is optional.
+
+"An internal table type such as the following shall be created dynamically
+"using a type description object.
+TYPES std_tab_type_std_key TYPE STANDARD TABLE OF string 
+  WITH DEFAULT KEY.
+
+"Creating a type description object using RTTC method
+"Not specifying the other optional parameters means that the
+"default values are used, for example, standard table is the
+"default value for p_table_kind.
+DATA(tdo_tab_1) = cl_abap_tabledescr=>get(
+        p_line_type  = cl_abap_elemdescr=>get_string( ) ).
+
+"Another internal table type for which more parameter specifications 
+"are needed. The following internal table type shall be created using 
+"a type description object.
+TYPES so_table_type TYPE SORTED TABLE OF zdemo_abap_flsch 
+  WITH UNIQUE KEY carrid connid.
+
+"Creating a type description object using RTTC method
+"The following example also demonstrates how comfortably constructor
+"operators can be used at these positions.
+DATA(tdo_tab_2) = cl_abap_tabledescr=>get(
+        p_line_type  = CAST cl_abap_structdescr( 
+                         cl_abap_tabledescr=>describe_by_name( 'ZDEMO_ABAP_FLSCH' ) )
+        p_table_kind = cl_abap_tabledescr=>tablekind_sorted
+        p_key        = VALUE #( ( name = 'CARRID' ) ( name = 'CONNID' ) )
+        p_unique     = cl_abap_typedescr=>true ).
+
+" ... reference types
+"Reference types such as the following shall be created using a 
+"type description object.
+TYPES some_ref_type2t TYPE REF TO t.
+TYPES some_ref_type2cl TYPE REF TO zcl_demo_abap_dynamic_prog.
+
+"Using RTTC methods
+"You can create a reference type from a base type. This base type
+"may be class, interface or data type.
+DATA(tdo_ref_1) = cl_abap_refdescr=>get( cl_abap_elemdescr=>get_t( ) ).
+DATA(tdo_ref_2) = cl_abap_refdescr=>get( 
+                    cl_abap_typedescr=>describe_by_name( 'ZCL_DEMO_ABAP_DYNAMIC_PROG' ) ).
+"Alternative: get_by_name method
+DATA(tdo_ref_3) = cl_abap_refdescr=>get_by_name( 'T' ).
+DATA(tdo_ref_4) = cl_abap_refdescr=>get_by_name( 'ZCL_DEMO_ABAP_DYNAMIC_PROG' ).
+```
+
+<p align="right">(<a href="#top">back to top</a>)</p>
+
+### Dynamically Creating Data Objects at Runtime
+
+As shown above, anonymous data objects can be dynamically created using `CREATE DATA` statements in many ways by specifying the type ...
+- statically: `CREATE DATA dref TYPE string.`
+- dynamically: `CREATE DATA dref TYPE (some_type).`
+
+Another way to dynamically create data objects with dynamic type specification is to use types created at runtime with RTTC methods.
+The `CREATE DATA` statement provides the [`TYPE HANDLE`](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapcreate_data_handle.htm) addition after which you can specify type description objects. 
+
+``` abap
+DATA dref_cr TYPE REF TO data.
+
+"Elementary data object
+"Type description object for an elementary type
+DATA(tdo_elem_c_l20) = cl_abap_elemdescr=>get_c( 10 ).
+"Creating an elementary data object based on a type description object
+CREATE DATA dref_cr TYPE HANDLE tdo_elem_c_l20.
+
+"Structure
+DATA(tdo_struc) = cl_abap_structdescr=>get(
+        VALUE #(
+          ( name = 'COMP1' type = cl_abap_elemdescr=>get_string( ) )
+          ( name = 'COMP2' type = cl_abap_elemdescr=>get_i( ) )
+          ( name = 'COMP3' type = cl_abap_elemdescr=>get_c( 3 ) ) ) ).
+
+"Creating a structure based on a type description object
+CREATE DATA dref_cr TYPE HANDLE tdo_struc.
+
+"Internal table
+"In the case below, it is a standard table with standard key by 
+"default because the other parameters are not specified.
+DATA(tdo_tab) = cl_abap_tabledescr=>get(
+  p_line_type  = CAST cl_abap_structdescr( 
+                       cl_abap_tabledescr=>describe_by_name( 'ZDEMO_ABAP_CARR' ) ) ).
+
+"Creating an internal table based on a type description object
+CREATE DATA dref_cr TYPE HANDLE tdo_tab.
+
+"Data reference
+DATA(tdo_ref) = cl_abap_refdescr=>get( cl_abap_elemdescr=>get_t( ) ). 
+CREATE DATA dref_cr TYPE HANDLE tdo_ref.
 ```
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
 ## More Information
 - It is recommended that you also consult section [Dynamic Programming Techniques (F1 docu for standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abendynamic_prog_technique_gdl.htm) in the ABAP Keyword Documentation since it provides important aspects that should be considered when dealing with dynamic programming in general (e. g. security aspects or runtime error prevention).
-- There are even further dynamic programming techniques in the unrestricted language scope like the
+- There are even further dynamic programming techniques in the unrestricted language scope such as the
 generation or execution of programs at runtime. They are not part of this cheat sheet. Find more details on the related syntax (e. g. `GENERATE SUBROUTINE POOL`, `READ REPORT` and `INSERT REPORT` in the ABAP Keyword Documentation for Standard ABAP: [Dynamic Program Development (F1 docu for standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenabap_language_dynamic.htm)
 
 ## Executable Example
