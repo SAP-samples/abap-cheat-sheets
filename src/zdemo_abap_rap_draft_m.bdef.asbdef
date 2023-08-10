@@ -22,6 +22,10 @@ late numbering
   determination det_modify on modify { field num1, num2, arithm_op; }
   draft action Resume;
   draft action Edit;
+  //As of release 2308: Draft action "Activate" should be defined as "optimized" 
+  //to enable optimized execution of determinations and validations.
+  //Comment in the following notation, comment out the one below.
+  //draft action Activate optimized;
   draft action Activate;
   draft action Discard;
   draft determine action Prepare

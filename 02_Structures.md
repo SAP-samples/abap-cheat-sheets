@@ -1,7 +1,7 @@
 # Structures
 
 - [Structures](#structures)
-  - [Structures ...](#structures-)
+  - [Introduction](#introduction)
   - [Creating Structures and Structured Types](#creating-structures-and-structured-types)
   - [Variants of Structures](#variants-of-structures)
   - [Accessing (Components of) Structures](#accessing-components-of-structures)
@@ -13,7 +13,8 @@
   - [Excursion: Including Structures](#excursion-including-structures)
   - [Executable Example](#executable-example)
 
-## Structures ...
+## Introduction
+Structures ...
 
 -   are [data objects](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendata_object_glosry.htm "Glossary Entry")
     with [structured data types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenstructured_type_glosry.htm "Glossary Entry") (which is a [complex data type](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencomplex_data_type_glosry.htm "Glossary Entry") because it is composed of other data types). 

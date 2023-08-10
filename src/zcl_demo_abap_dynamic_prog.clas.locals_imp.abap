@@ -370,7 +370,7 @@ CLASS lcl_det_at_runtime IMPLEMENTATION.
     syntax_elements-rows = cl_abap_random_int=>create(
             seed = cl_abap_random=>seed( )
             min  = 2
-            max  = 6 )->get_next( ).
+            max  = 5 )->get_next( ).
 
   ENDMETHOD.
 

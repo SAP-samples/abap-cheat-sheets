@@ -23,6 +23,7 @@
     - [Excursion: Factory Methods and Singletons as Design Patterns](#excursion-factory-methods-and-singletons-as-design-patterns)
   - [More Information](#more-information)
   - [Executable Example](#executable-example)
+
 ## Classes and Objects
 
 Object-oriented programming in ABAP means dealing with

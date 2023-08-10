@@ -1020,13 +1020,11 @@ CLASS zcl_demo_abap_rap_ext_num_u IMPLEMENTATION.
 *    rba_dyn = VALUE #(
 *     ( %key-key_field = 1
 *       %control = VALUE #(
-*          key_field = if_abap_behv=>mk-on
 *          key_ch    = if_abap_behv=>mk-on
 *          field_ch1 = if_abap_behv=>mk-on
 *          field_ch2 = if_abap_behv=>mk-on ) )
 *      ( %key-key_field = 2
 *        %control = VALUE #(
-*          key_field = if_abap_behv=>mk-on
 *          key_ch    = if_abap_behv=>mk-on
 *          field_ch1 = if_abap_behv=>mk-on
 *          field_ch2 = if_abap_behv=>mk-on ) ) ).

@@ -1,9 +1,9 @@
 <a name="top"></a>
 
-# ABAP SQL in Use
+# ABAP SQL
 
-- [ABAP SQL in Use](#abap-sql-in-use)
-  - [ABAP SQL Intro](#abap-sql-intro)
+- [ABAP SQL](#abap-sql)
+  - [Introduction](#introduction)
   - [Reading Data Using SELECT](#reading-data-using-select)
     - [Basic Syntax](#basic-syntax)
     - [Using SELECT for Multiple Purposes](#using-select-for-multiple-purposes)
@@ -28,7 +28,7 @@
   - [More Information](#more-information)
   - [Executable Example](#executable-example)
 
-## ABAP SQL Intro
+## Introduction
 
 -   [ABAP SQL](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensql_glosry.htm) is a subset of [SQL](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensql_glosry.htm "Glossary Entry")
     which is the standardized language for accessing databases.

@@ -3,7 +3,7 @@
 # Internal Tables
 
 - [Internal Tables](#internal-tables)
-  - [Internal Tables ...](#internal-tables-)
+  - [Introduction](#introduction)
   - [Basic Properties of Internal Tables](#basic-properties-of-internal-tables)
   - [Excursion: Table Keys in Internal Tables (Primary, Secondary, Standard, Empty)](#excursion-table-keys-in-internal-tables-primary-secondary-standard-empty)
   - [Creating Internal Tables and Types](#creating-internal-tables-and-types)
@@ -18,7 +18,9 @@
   - [Executable Example](#executable-example)
 
 
-## Internal Tables ...
+## Introduction
+
+Internal Tables ...
 
 - are [dynamic data objects](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendynamic_data_object_glosry.htm), i.e. all properties except the [ABAP memory](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_memory_glosry.htm) consumption are determined statically by the [data type](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendata_type_glosry.htm).
 - consist of a variable sequence of lines of the same data type. 
@@ -56,7 +58,7 @@
 | Category | Internally managed by | Access | Primary table key | When to use | Hints |
 |---|---|---|---|---|---|
 |`STANDARD`|Primary table index (that's why these tables are called [index tables](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenindex_table_glosry.htm))|<ul><li>Table index</li><li>Table key</li></ul>|<ul><li>Always non-unique, i.e. duplicate entries are always allowed</li><li>Definition of an empty key is possible if the key is not relevant(`WITH EMPTY KEY`)</li></ul>|<ul><li>If you primarily access the table content for sequential processing or via the table index.</li><li>Response time for accessing the table using the primary key: This kind of table access is optimized only for sorted and hashed tables. For standard tables, primary key access uses a linear search across all lines. That means that large standard tables (more than 100 lines) are not ideal if the you primarily access the table using the table key.</></ul>|<ul><li>There is no particular sort order, but the tables can be sorted using `SORT`.</li><li>Filling this kind of table: Lines are either appended at the end of the table or inserted at a specific position.</li><li>[Secondary table keys](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensecondary_table_key_glosry.htm) can be defined to make key access to standard tables more efficient.</li><li>Standard and sorted tables have the least [administration costs (F1 docu for standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenadmin_costs_dyn_mem_obj_guidl.htm).</li></ul>|
-|`SORTED`|Primary table index (that's why these tables are called [index tables](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenindex_table_glosry.htm))|<ul><li>Table index</li><li>Table key</li></ul>|<ul><li>Non-unique</li><li>Unique</li><br>... used to sort the table in ascending order.</ul>|<ul><li>Enables an optimized access to table content using table key and index.</li><li>If access via table key is the main access method, but no unqiue key can be defined.</li></ul>|<ul><li>Sorting is done automatically when lines are inserted or deleted. As a consequnce, the table index must usually be reorganized. </li><li>The response time for accessing the table using the primary key depends logarithmically on the number of table entries, since a binary search is used.</li><li>Standard and sorted tables have the least administration costs.</li></ul>|
+|`SORTED`|Primary table index (that's why these tables are called [index tables](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenindex_table_glosry.htm))|<ul><li>Table index</li><li>Table key</li></ul>|<ul><li>Non-unique</li><li>Unique</li><br>... used to sort the table in ascending order.</ul>|<ul><li>Enables an optimized access to table content using table key and index.</li><li>If access via table key is the main access method, but no unique key can be defined.</li></ul>|<ul><li>Sorting is done automatically when lines are inserted or deleted. As a consequnce, the table index must usually be reorganized. </li><li>The response time for accessing the table using the primary key depends logarithmically on the number of table entries, since a binary search is used.</li><li>Standard and sorted tables have the least administration costs.</li></ul>|
 |`HASHED`|Hash algorithm |<ul><li>Table key</li><li>[Secondary table index](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensecondary_table_index_glosry.htm)</li></ul>|Always unique|<ul><li>For large internal tables.</li><li>Optimized for key access. Access to table content via table key is the main access method and a unique key can be defined.</li></ul>|<ul><li>The response time for primary key access is constant and independent of the number of entries in the table.</li><li>Hashed tables have the highest administration costs.</li></ul>|
 
 
@@ -115,7 +117,7 @@
   - Sorting of a table can produce unexpected results.
   - Since the standard key can consist of many fields, it affects the performance when accessing the internal table via the keys.
   - The key fields of the primary table key of sorted and hashed tables are always read-only, i.e. using the standard key with these table categories and then (unintentionally) modifying fields can cause unexpected runtime errors.
-  - Explicit specifying keys has the advantage of making your code more readable, and of preventing the standard key from being set by mistake.
+  - Specifying keys explicitly has the advantage of making the code more readable and preventing the standard key from being set by mistake.
 
 **Empty key**
 - The primary table key of a standard table can be empty, i.e. it does not contain any key fields.
@@ -141,8 +143,8 @@
 - Use cases:
   - To improve read performance.
   - For very large internal tables (that are filled once and changed very often) 
-  - Standard tables, whose primary table keys cannot be unique, can be provided with a means of ensuring that unqiue table entries are read. 
- - Note that defining secondary table keys involves additional administration costs (additional memory consumption). Therefore, the use of secondary table keys should be reserved for cases where the benefits outweigh the extra cost. 
+  - Standard tables, whose primary table keys cannot be unique, can be provided with a means of ensuring that unique table entries are read. 
+ - Note that defining secondary table keys involves additional administration costs (additional memory consumption). Therefore, the use of secondary table keys should be reserved for cases where the benefits outweigh the extra costs. 
 - For more details, see the programming guidelines for secondary keys: [Secondary
     Key (F1 docu for standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abensecondary_key_guidl.htm "Guideline").
 
@@ -156,7 +158,7 @@
 
 ## Creating Internal Tables and Types
 
-You can declare internal tables and internal table types in [ABAP programs](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_program_glosry.htm) using the [`TYPES`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abaptypes.htm) and [`DATA`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapdata.htm) statements. The relevant syntactic elements for internal tables are `TABLE OF` in combination 
+You can declare internal tables and internal table types in [ABAP programs](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_program_glosry.htm) using the [`TYPES`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abaptypes.htm) and [`DATA`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapdata.htm) statements. The relevant syntax elements for internal tables are `TABLE OF` in combination 
 with the additions [`TYPE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapdata_simple.htm)
 or [`LIKE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapdata_referring.htm).
 
@@ -166,8 +168,8 @@ TYPES itab_type2 LIKE SORTED   TABLE OF data_object ... "Sorted table type
 
 DATA  itab1      TYPE          TABLE OF data_type ...   "Standard table by default
 DATA  itab2      TYPE HASHED   TABLE OF data_type ...   "Hashed table
-DATA  itab3      TYPE                   table_type ...  "Based on an existing internal table type 
-DATA  itab4      LIKE                   tab ...         "Based on an existing internal table       
+DATA  itab3      TYPE                   itab_type1 ...  "Based on an existing internal table type 
+DATA  itab4      LIKE                   itab1 ...       "Based on an existing internal table       
 ```
 
 > **💡 Note**<br>
@@ -544,15 +546,21 @@ itab = VALUE #( ( comp1 = a comp2 = b ...)
                 ( LINES OF itab2 )
                 ... ).
 ```
-A simple assignment without a constructor expression that **copies the content of another internal table** (note that the existing content in `itab` are deleted). The example below assumes that the source and target table have compatible line types. Otherwise, assignment rules must be considered.
+A simple assignment without a constructor expression that **copies the content of another internal table** (note that the existing content in `itab` are deleted). The example below assumes that the source and target table have compatible line types. 
 ``` abap
 itab = itab2.
 ```
+> **💡 Note**<br>
+> - Internal tables can only be assigned to internal tables. 
+> - Internal tables can be assigned to each other if their line types are [compatible](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencompatible_glosry.htm) or [convertible](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconvertible_glosry.htm).
+> - An assignment can trigger an uncatchable exception if, for example, the target table is assigned a duplicate of a unique primary table key or secondary table.
+> More information: [Conversion Rules for Internal Tables](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconversion_itab.htm)
+
 **Copying the content of another internal table** using the
 [`CORRESPONDING`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconstructor_expr_corresponding.htm) operator. 
 - Note that the existing content are deleted.
 - As an alternative to the `CORRESPONDING` operator, you can use [`MOVE-CORRESPONDING`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapmove-corresponding.htm) statements. 
-- The example assumes that the line types of the source and target table are not compatible. However, if the line types are the same, the syntax will also work.
+- The example assumes that the line types of the source and target table are not compatible. However, if the line types are compatible, the syntax will also work.
 
 ``` abap
 itab = CORRESPONDING #( itab3 ).
@@ -842,9 +850,7 @@ The following code snippets include [`READ TABLE`](https://help.sap.com/doc/abap
 
 -   Reading a line into a [data reference
     variable](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendata_reference_variable_glosry.htm "Glossary Entry")
-    using `REFERENCE INTO`. In this case, no copying takes place. You cannot modify the table using the [data
-    reference](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendata_reference_glosry.htm "Glossary Entry"),
-    and you cannot use the addition `TRANSPORTING`.
+    using `REFERENCE INTO`. In this case, no copying takes place. If you want to address the line, you must first [dereference](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendereferencing_operat_glosry.htm) the data reference. You cannot use the addition `TRANSPORTING`.
 
     ``` abap
     READ TABLE itab REFERNCE INTO dref ...

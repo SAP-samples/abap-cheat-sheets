@@ -12,6 +12,7 @@
   - [EML Syntax](#eml-syntax)
     - [EML Syntax for Modifying Operations](#eml-syntax-for-modifying-operations)
     - [EML Syntax for Reading Operations](#eml-syntax-for-reading-operations)
+      - [Dynamic Forms of EML Statements](#dynamic-forms-of-eml-statements)
     - [Persisting to the Database](#persisting-to-the-database)
     - [EML Statements in ABAP Behavior Pools](#eml-statements-in-abap-behavior-pools)
   - [RAP Excursions](#rap-excursions)
@@ -887,6 +888,103 @@ READ ENTITIES OF root_ent
 ```
 <p align="right">(<a href="#top">back to top</a>)</p>
 
+#### Dynamic Forms of EML Statements
+
+In addition to the short and long forms described above, various ABAP EML statements also have dynamic forms. 
+Taking EML read operations as an example, the following code snippet shows a dynamic EML [`READ ENTITIES`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapread_entities_operations.htm) statement. The relevant syntax element is the `OPERATIONS` addition.
+The dynamic form allows the collection of read operations for multiple RAP BOs in one EML statement.
+For more information, see the ABAP keyword documentation and the comments in the snippet.
+
+```abap
+"The statement is taken from the executable example. The example has a 
+"root entity and a child entity. For both entities, RAP BO instances
+"are to be read (read and read-by-association operation).
+
+DATA:
+    "The following data object is the operand of the dynamic EML statement
+    "It is an internal table and has a special, RAP-specific type.
+    op_tab          TYPE abp_behv_retrievals_tab,
+
+    "More data object declarations (internal tables typed with BDEF
+    "derived types) that are relevant for the EML statement.
+    "For both entities (root and child), RAP BO instances are to be 
+    "read. The internal tables are used for components of the internal
+    "table op_tab further down.
+    read_dyn        TYPE TABLE FOR READ IMPORT zdemo_abap_rap_ro_m,
+    read_dyn_result TYPE TABLE FOR READ RESULT zdemo_abap_rap_ro_m,
+    rba_dyn         TYPE TABLE FOR READ IMPORT zdemo_abap_rap_ro_m\_child,
+    rba_dyn_result  TYPE TABLE FOR READ RESULT zdemo_abap_rap_ro_m\_child,
+    rba_dyn_link    TYPE TABLE FOR READ LINK zdemo_abap_rap_ro_m\_child.
+
+"Filling the internal tables, i.e. which instances are to be read
+"Root entity
+"Example:
+"- The key is comprised of the field 'key_field'. It is of type i.
+"- The %control structure is filled, flagging those fields that
+"  are to be read. Flagging the key field is not required.
+read_dyn = VALUE #(
+    ( %key-key_field = 1
+      %control = VALUE #(
+        field1 = if_abap_behv=>mk-on
+        field2 = if_abap_behv=>mk-on
+        field3 = if_abap_behv=>mk-on
+        field4 = if_abap_behv=>mk-on ) )
+    ( %key-key_field = 2
+      %control = VALUE #(
+        field1 = if_abap_behv=>mk-on
+        field2 = if_abap_behv=>mk-on
+        field3 = if_abap_behv=>mk-on
+        field4 = if_abap_behv=>mk-on ) ) ).
+
+"Child entity
+"Instances to be read for a read-by-association operation
+"The shared key is 'key_field'.
+rba_dyn = VALUE #(
+    ( %key-key_field = 1
+      %control = VALUE #(
+        key_ch    = if_abap_behv=>mk-on        
+        field_ch1 = if_abap_behv=>mk-on
+        field_ch2 = if_abap_behv=>mk-on ) )
+    ( %key-key_field = 2
+      %control = VALUE #(
+        key_ch    = if_abap_behv=>mk-on
+        field_ch1 = if_abap_behv=>mk-on
+        field_ch2 = if_abap_behv=>mk-on ) ) ).
+
+"Filling the internal table that is the operand of the
+"dynamic EML statement
+"This table has optional and mandatory components.
+op_tab = VALUE #(
+    ( "op: Specifies the operation to be executed; is mandatory;
+        "    can be set with the predefined constants, e.g. OP-R-READ
+        "    etc., of interface IF_ABAP_BEHV
+        op = if_abap_behv=>op-r-read
+        "entity_name: Specifies the name of the RAP BO entity for which
+        "             the operation is executed; is mandatory
+        entity_name = 'ZDEMO_ABAP_RAP_RO_M'
+        "instances: Specifies a reference to an internal table holding
+        "           the input keys; must be appropriately typed; is mandatory
+        instances   = REF #( read_dyn )
+        "results: Specifies a reference to an internal table with the required
+        "         BDEF derived type for the read results; is mandatory
+        results     = REF #( read_dyn_result ) )
+    ( op = if_abap_behv=>op-r-read_ba
+        entity_name = 'ZDEMO_ABAP_RAP_RO_M'
+        "sub_name: Only relevant for specifying association names in
+        "          read-by-association operations; in that context, it is mandatory
+        sub_name    = '_CHILD'
+        "full: Optional flag; specifies if all target instances are to be retrieved
+        full        = abap_true
+        instances   = REF #( rba_dyn )
+        results     = REF #( rba_dyn_result )
+        "links: Reference to internal table holding the key pairs of the source and
+        "       target
+        links       = REF #( rba_dyn_link ) ) ).
+
+READ ENTITIES OPERATIONS op_tab.
+```
+<p align="right">(<a href="#top">back to top</a>)</p>
+
 ### Persisting to the Database
 
 -   A [`COMMIT
@@ -1059,10 +1157,26 @@ instances](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?
         instances.
     -   **Note:** A further component group to refer to the keys is available: [`%pky`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapderived_types_pky.htm). `%pky` contains `%pid` and `%key` in late numbering scenarios. In non-late numbering scenarios, it just contains `%key`. `%pky` itself is contained in `%tky`. There are contexts, for example, particular actions, where `%tky` is not available but `%pky` is. This way, there is still the option to summarize `%pid` and `%key` in one component group in the absence of `%tky`.
 
-**General rule**: A RAP BO instance must always be uniquely
+**General rule**: A RAP BO instance must - where available - always be uniquely
 identifiable by its transactional key (`%tky`) for internal
 processing during the RAP interaction phase. `%tky` always
 contains all relevant components for the chosen scenario.
+
+> **💡 Note**<br>
+> Assignment of Key Component Groups
+> 
+> As a general best practice, you should use a RAP BO instance key component group when referring to the entire key, rather than listing the individual key fields. It is  recommended that you use `%tky` whenever possible. 
+> In the following cases, type compatibility cannot be guaranteed in component group assignments:
+> - Mixing key component groups when they refer to the same RAP BO entity, e.g. `wa-%tky = wa-%key`. Such an assignment should also be avoided when both component groups have an identical scope in terms of components (e.g. `%tky` and `%key` in non-late-numbering and non-draft scenarios).
+> - Mixing the same key component groups when referring to two different RAP BO entities, for example, `wa_root-%tky = wa_child-%tky`. In this case, adding more components later may cause syntax errors for an assignment that worked previously.
+> - Defining structured types that have the same components as key component groups, and then assigning data objects of that type to those of the respective, original key component group.
+> In the above cases, the `CORRESPONDING` operator can be used to ensure type compatibility in assignments to key component groups:
+> ```abap 
+>... %tky = CORRESPONDING #( wa-%tky ) ...
+>... %key = CORRESPONDING #( wa-%key ) ...
+>... %pky = CORRESPONDING #( wa-%pky ) ...
+>```
+> In cases where different data objects of key component groups of a BDEF derived type are to be assigned to the same key component group of the same entity, a direct assignment works without a syntax warning because the content is identical. A direct assignment is recommended (`...wa1_root-%tky = wa2_root-%tky ...`). The use of the `CORRESPONDING` operator is unnecessary and less performant. This is true, for example, for key component group assignments in the context of RAP response parameters failed and reported.
 
 </details>
 

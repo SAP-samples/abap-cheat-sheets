@@ -194,7 +194,7 @@ CLASS zcl_demo_abap_amdp IMPLEMENTATION.
 
       CATCH cx_amdp_execution_error INTO DATA(error1).
 
-        out->write( error1->get_text( ) ).
+        output->display( error1->get_text( ) ).
 
     ENDTRY.
 

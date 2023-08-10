@@ -3,7 +3,7 @@
 # Program Flow Logic
 
 - [Program Flow Logic](#program-flow-logic)
-  - [Intro](#intro)
+  - [Introduction](#introduction)
   - [Expressions and Functions for Conditions](#expressions-and-functions-for-conditions)
   - [Control Structures](#control-structures)
     - [`IF` Statements](#if-statements)
@@ -27,7 +27,7 @@ This cheat sheet gathers information on program flow logic. Find more details
 [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_flow_logic.htm)
 in the ABAP Keyword Documentation.
 
-## Intro
+## Introduction
 
 In ABAP, the flow of a program is controlled by [control structures](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencontrol_structure_glosry.htm), [procedure](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenprocedure_glosry.htm) calls and the raising or handling of [exceptions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenexception_glosry.htm).
 

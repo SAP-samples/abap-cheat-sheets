@@ -1,6 +1,6 @@
 ***********************************************************************
 *
-*              ABAP cheat sheet: ABAP SQL in Use
+*                   ABAP cheat sheet: ABAP SQL
 *
 * -------------------------- PURPOSE ----------------------------------
 * - Example to demonstrate various syntactical options for working with
@@ -72,7 +72,7 @@ CLASS zcl_demo_abap_sql IMPLEMENTATION.
 
     DATA(output) = NEW zcl_demo_abap_display( out ).
 
-    output->display( `ABAP Cheat Sheet Example: ABAP SQL in Use` ).
+    output->display( `ABAP Cheat Sheet Example: ABAP SQL` ).
     output->display( `Using SELECT for multiple purposes` ).
     output->display( `1) Reading a single row from database table ` &&
       `into a structure` ).

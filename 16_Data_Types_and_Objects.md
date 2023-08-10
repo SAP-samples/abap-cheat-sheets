@@ -3,6 +3,7 @@
 # Data Types and Data Objects
 
 - [Data Types and Data Objects](#data-types-and-data-objects)
+  - [Introduction](#introduction)
   - [Data Types and Objects: Definition](#data-types-and-objects-definition)
   - [ABAP Data Types](#abap-data-types)
     - [Elementary Data Types](#elementary-data-types)
@@ -17,12 +18,14 @@
     - [Creating Anonymous Data Objects](#creating-anonymous-data-objects)
     - [Constants and Immutable Variables](#constants-and-immutable-variables)
   - [Type Conversion](#type-conversion)
-  - [Glossary Terms in a Nutshell](#glossary-terms-in-a-nutshell)
+  - [Terms Related to Types and Data Objects in a Nutshell](#terms-related-to-types-and-data-objects-in-a-nutshell)
   - [Notes on the Declaration Context](#notes-on-the-declaration-context)
-  - [Excursion: Enumerated Types and Objects](#excursion-enumerated-types-and-objects)
+  - [Excursions](#excursions)
+    - [Enumerated Types and Objects](#enumerated-types-and-objects)
+    - [Getting Type Information and Creating Types at Runtime](#getting-type-information-and-creating-types-at-runtime)
   - [Executable Example](#executable-example)
 
-
+## Introduction
 [ABAP statements](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_statement_glosry.htm) usually work with [data objects](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendata_object_glosry.htm), that is, with transient data that occupies memory space while the [data type](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendata_type_glosry.htm) defines the technical properties of the data objects.
 Since data types and data objects are closely related, this cheat sheet covers both topics. 
 Note that the topics covered here are also partly covered in other ABAP cheat sheets. The purpose of this cheat sheet is to summarize the basics.
@@ -35,7 +38,7 @@ Data types
 - Can occur in [ABAP programs](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_program_glosry.htm) as [bound data types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbound_data_type_glosry.htm), that is, the type is a property of a data object, or as a [standalone data type](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenstand-alone_data_type_glosry.htm), that is, the data type is defined independently. 
 - Can be defined locally in an ABAP program or globally in classes, interfaces and in the [ABAP Dictionary (DDIC)](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_dictionary_glosry.htm). 
 > **💡 Note**<br>
-> - Note: Data types in the ABAP Dictionary are either created directly as [repository objects](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrepository_object_glosry.htm) ([DDIC data elements](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendata_element_glosry.htm)) or in a type pool (only in [Standard ABAP](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenstandard_abap_glosry.htm)). [Database table](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendatabase_table_glosry.htm), [CDS entities](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_entity_glosry.htm) and their components can also be used as data types in ABAP programs.
+> - Note: Data types in the ABAP Dictionary are either created directly as [repository objects](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrepository_object_glosry.htm) ([DDIC data elements](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendata_element_glosry.htm)) or in a type pool (only in [Standard ABAP](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenstandard_abap_glosry.htm)). [Database tables](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendatabase_table_glosry.htm), [CDS entities](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_entity_glosry.htm) and their components can also be used as data types in ABAP programs.
 > - Their existence and visibility depends on the declaration context.
 
 Data objects: 
@@ -110,8 +113,8 @@ For an overview, see the [ABAP Type Hierarchy](https://help.sap.com/doc/abapdocu
 - The typical syntax element is `... REF TO ...`.
 
 > **💡 Note**<br>
-> There are [generic ABAP types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abengeneric_abap_type_glosry.htm). Generic data types are types that do not define all of the properties of a data object. They can only be used for the typing [formal parameters](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenformal_parameter_glosry.htm) and [field symbols](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenfield_symbol_glosry.htm). 
-The only generic types that can be used after `TYPE REF TO` are `data`, for the generic typing of data references, and `object`, for the generic typing of object references.
+> There are [generic ABAP types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abengeneric_abap_type_glosry.htm). Generic data types are types that do not define all of the properties of a data object. They can only be used for the typing of [formal parameters](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenformal_parameter_glosry.htm) and [field symbols](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenfield_symbol_glosry.htm). 
+The only generic types that can be used after `TYPE REF TO` are `data` for the generic typing of data references, and `object`, for the generic typing of object references.
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
@@ -473,10 +476,11 @@ DATA dref_tab_str LIKE TABLE OF REF TO do_some_string.
 An assignment passes the contents of a source to a target data object.
 
 > **💡 Note**<br>
-> - There are conversion rules when assigning a source to a target data object that have different types. See below.
-> - In old ABAP code, you may see `MOVE ... TO ...` statements for value assignments. These statements are obsolete. They are not to be confused with `MOVE-CORRESPONDING` statements for complex types. These are not obsolete.
+> - There are conversion rules when assigning a source to a target data object that have different types. For more information, see the topic [Assignment and Conversion Rules](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconversion_rules.htm) in the ABAP Keyword Documentation, especially for complex types, since elementary types are usually demonstrated in the cheat sheet.
+> - There are many ways to assigning values to data objects in ABAP. Assignments with the assignment operator `=` are mostly used here.
+> - In older ABAP code, you may see `MOVE ... TO ...` statements for value assignments. These statements are obsolete. They are not to be confused with `MOVE-CORRESPONDING` statements for complex types. These are not obsolete.
 
-The following code snippet shows various ways of assigning values to data objects. 
+The following code snippet shows several ways to assign values to data objects. 
 
 ```abap
 "As mentioned, a start value can be directly assigned when declaring a data object.
@@ -924,7 +928,7 @@ See the conversion rules for the different data types here: [Assignment and Conv
 > - Typically, assignements are made using the assignment operator `=`. If necessary and applicable, the type is converted implicitly. However, you can also use the conversion operator [`CONV`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconstructor_expression_conv.htm) to convert types explicitly.
 > - For [lossless assignments](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenlossless_assignment_glosry.htm), the lossless operator [`EXACT`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconstructor_expression_exact.htm) can be used to perform checks before the conversion is performed to ensure that only valid values are assigned and that no values are lost in assignments.
 > - In general, no checks are performed on assignments between compatible data objects. If a data object already contains an invalid value, for example, an invalid date or time in a date or time field, it is passed a valid value when the assignment is made to a compatible data object.
-> - The `applies_to_data` method of the [RTTI](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrun_time_type_identific_glosry.htm) class `cl_abap_datadescr` can be used to check type compatibility. See the  executable example.
+> - The `applies_to_data` method of the [RTTI](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrun_time_type_identific_glosry.htm) class `cl_abap_datadescr` can be used to check type compatibility. See the executable example.
     
 
 ```abap
@@ -953,12 +957,13 @@ DATA(i2str) = CONV string( -10 ).
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
-## Glossary Terms in a Nutshell
+## Terms Related to Types and Data Objects in a Nutshell
 
 ```abap
 "Standalone and bound data types
-"Standalone: Data type that is defined using the statement TYPES in an ABAP program, as a data type
-"            of the ABAP Dictionary or as an CDS entity.
+"Standalone: Data type that is defined using the statement TYPES in an 
+"            ABAP program, as a data type of the ABAP Dictionary or as 
+"            an CDS entity.
 "Bound: Data type that only exists as a property of a data object.
 
 "Standalone data type
@@ -972,8 +977,10 @@ TYPES te_b_like LIKE do_a_c20.
 **********************************************************************
 
 "Complex and elementary data type/object
-"Elementary: Data type of fixed or variable length that is neither structured, nor a table type or a reference type.
-"Complex: Made up of other data types, for example structured data type/objects, a table type/internal tables
+"Elementary: Data type of fixed or variable length that is neither 
+"            structured, nor a table type or a reference type.
+"Complex: Made up of other data types, for example structured data 
+"         type/objects, a table type/internal tables
 
 "Elementary
 DATA do_c_i TYPE i.
@@ -993,8 +1000,8 @@ DATA: BEGIN OF struc_a,
 "Complete: Non-generic data type
 "Generic:
 "- Data type that does not set all properties of a data object.
-"- Can only be used for the typing of formal parameters and field symbols, except for
-"  data reference variables using the generic type 'data'.
+"- Can only be used for the typing of formal parameters and field symbols, 
+"  except for data reference variables using the generic type 'data'.
 
 "Complete data type
 DATA do_d_i TYPE i.
@@ -1022,7 +1029,8 @@ ASSIGN itab_a TO <fs_b>.
 **********************************************************************
 
 "Variable and constant data objects
-"Variable: Named data object whose value can be changed during the runtime of an ABAP program.
+"Variable: Named data object whose value can be changed during the runtime 
+"          of an ABAP program.
 "Constant: Named data object whose value cannot be changed at runtime.
 
 "Variable
@@ -1037,12 +1045,15 @@ CONSTANTS con_a_i TYPE i VALUE 789.
 
 "Static and dynamic data objects
 "Static:
-"- Data object for which all attributes, including memory use, are specified statically by the data type.
+"- Data object for which all attributes, including memory use, are specified 
+"  statically by the data type.
 "- Apart from reference variables, all static data objects are flat.
 "Dynamic:
-"- Data object for which all properties apart from the memory consumption are statically determined by the data type.
-"- Dynamic data objects are strings and internal tables. They belong to the deep data objects. Structures that contain
-"  dynamic components are also dynamic data objects.
+"- Data object for which all properties apart from the memory consumption are 
+"  statically determined by the data type.
+"- Dynamic data objects are strings and internal tables. They belong to the 
+"  deep data objects. Structures that contain dynamic components are also 
+"  dynamic data objects.
 
 "Static data object
 DATA do_h_c5 TYPE c LENGTH 3.
@@ -1061,12 +1072,12 @@ do_i_str = `efghijklmnopqrstuvwxyz`.
 **********************************************************************
 
 "Static type and dynamic type
-"Both are data types of a reference variable (reference type) that determine the objects 
-"a reference variable can point to.
-"Static type: For data reference variables, the static type is a data type that is 
-"             always more general than or the same as the dynamic type.
-"Dynamic type: For a reference variable, the dynamic type is always more special than 
-"              or equal to the static type.
+"Both are data types of a reference variable (reference type) that determine 
+"the objects a reference variable can point to.
+"Static type: For data reference variables, the static type is a data type 
+"             that is always more general than or the same as the dynamic type.
+"Dynamic type: For a reference variable, the dynamic type is always more special 
+"              than or equal to the static type.
 
 "Static type
 DATA dref_a_i TYPE REF TO i. "Static type is i
@@ -1079,7 +1090,8 @@ DATA do_k_str TYPE string VALUE `hallo`.
 "Dynamic types
 dref_a_i = REF #( do_j_i ). "Only type i possible; the dynamic type is the same
 
-"The dynamic type is more special than the static type (which is the generic type data in this case)
+"The dynamic type is more special than the static type (which is the generic 
+"type data in this case)
 dref_b_data  = REF #( do_j_i ).
 dref_b_data  = REF #( do_k_str ).
 dref_b_data  = REF #( dref_a_i ).
@@ -1088,15 +1100,16 @@ dref_b_data  = REF #( dref_a_i ).
 
 "Flat and deep data objects
 "Flat:
-"- Property of a data type, where the content of its data objects represents the actual work data.
+"- Property of a data type, where the content of its data objects represents 
+"  the actual work data.
 "- All elementary data types except string and xstring are flat
 "Deep:
-"- Dynamic data objects and reference variables are deep, and they contain references that refer 
-"  to the actual content.
-"- The handling of references is implicit for dynamic data objects (strings and internal tables), 
-"  and explicit for reference variables.
-"- Structures that do not contain any deep components are flat structures. Structures that contain 
-"  at least one deep component are deep structures.
+"- Dynamic data objects and reference variables are deep, and they contain 
+"  references that refer to the actual content.
+"- The handling of references is implicit for dynamic data objects (strings 
+"  and internal tables), and explicit for reference variables.
+"- Structures that do not contain any deep components are flat structures. 
+"  Structures that contain at least one deep component are deep structures.
 
 "Flat elementary data object
 DATA do_l_i TYPE i.
@@ -1122,8 +1135,8 @@ DATA: BEGIN OF struc_c_deep,
 
 "Named and unnamed data object
 "Named: Data object that can be identified via a name.
-"Unnamed: Data object that cannot be addressed by a name. Unnamed data objects are literals 
-"         and anonymous data objects.
+"Unnamed: Data object that cannot be addressed by a name. Unnamed data 
+"         objects are literals and anonymous data objects.
 
 "Named data objects
 DATA do_n_i TYPE i.
@@ -1138,11 +1151,45 @@ output->display( `I'm a literal...` ).
 
 DATA(dref_c_str) = NEW string( `hi` ).
 
-"Anonymous data object created inline using the NEW addition to the INTO clause of a SELECT statement
+"Anonymous data object created inline using the NEW addition to the INTO 
+"clause of a SELECT statement
 SELECT *
   FROM zdemo_abap_carr
   INTO TABLE NEW @DATA(dref_d_tab)
   UP TO 3 ROWS.
+
+**********************************************************************
+
+"Source and target data objectsCompatibility, convertibility and 
+"conversion
+"1. Source and target are compatible, all technical type properties 
+"   match
+DATA some_dobj TYPE c LENGTH 1 VALUE 'A'.
+DATA flag TYPE abap_bool VALUE 'X'.
+
+"Assignment of compatible types; content transferred without
+"conversion
+some_dobj = flag.
+
+"2. Source and target are not compatible but can be converted.
+"   Content of source is converted according to conversion rules
+"   and then transferred to the target. Two data types are
+"   convertible if a conversion rule exists for them.
+DATA another_char TYPE c LENGTH 3 VALUE 'abc'.
+DATA some_str     TYPE string VALUE `defghij`.
+
+another_char = some_str.
+
+"3. Data objects are neither compatible nor convertible. No
+"   assignment possible. If recognized by the syntax check, a
+"   syntax error is raised, otherwise an uncatchable exception
+"   is raised when the program is executed.
+DATA some_number TYPE i VALUE 123.
+DATA itab_str    TYPE string_table.
+
+"Type conversion not possible
+"itab_str = some_number.
+"some_number = itab_str.  
 ```
 
 <p align="right">(<a href="#top">back to top</a>)</p>
@@ -1166,7 +1213,8 @@ The declaration context of data types (and objects) determines the validity and 
 
 <p align="right">(<a href="#top">back to top</a>)</p>
 
-## Excursion: Enumerated Types and Objects
+## Excursions
+### Enumerated Types and Objects
 - ABAP supports the concept of enumerations. 
 - Enumerations are a mixture of types and constants.
 - An [enumerated type](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenenum_type_glosry.htm) specifies a value set in addition to the actual type properties. 
@@ -1222,6 +1270,13 @@ dobj_enum = a.
 Find more information on enumerated types in the (commented code of the) cheat sheet example and [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenenumerated_types_usage.htm). 
 
 <p align="right">(<a href="#top">back to top</a>)</p>
+
+### Getting Type Information and Creating Types at Runtime
+Using [Runtime Type Identification (RTTI)](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrun_time_type_identific_glosry.htm "Glossary Entry"), you can get type information on data objects, data types or [instances](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abeninstance_glosry.htm "Glossary Entry") at runtime ([Runtime Type Identification (RTTI)](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrun_time_type_identific_glosry.htm "Glossary Entry")).
+Using [Runtime Type Creation (RTTC)](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrun_time_type_creation_glosry.htm "Glossary Entry"), you an define and create new data types as [type description objects](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentype_object_glosry.htm) at runtime.
+
+Find more information in the [cheat sheet about dynamic programming](06_Dynamic_Programming.md#runtime-type-services-rtts). 
+
 
 ## Executable Example
 [zcl_demo_abap_dtype_dobj](./src/zcl_demo_abap_dtype_dobj.clas.abap)

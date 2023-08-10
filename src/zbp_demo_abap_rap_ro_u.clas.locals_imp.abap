@@ -510,7 +510,7 @@ CLASS lhc_root IMPLEMENTATION.
           "Filling the table for the RESULT parameter based on the FULL parameter
           "Note: If the FULL parameter is initial, only the LINK parameter should be provided
           IF result_requested = abap_true.
-            APPEND VALUE #( %tky   = <rba>-%tky
+            APPEND VALUE #( %tky   = CORRESPONDING #( <rba>-%tky )
                             key_ch = COND #( WHEN <rba>-%control-key_ch NE if_abap_behv=>mk-off
                                              THEN <ch>-instance-key_ch )
                             field_ch1 = COND #( WHEN <rba>-%control-field_ch1 NE if_abap_behv=>mk-off
@@ -967,7 +967,7 @@ CLASS lhc_child IMPLEMENTATION.
       AND line_exists( lcl_buffer=>child_buffer[ instance-key_field = <rba>-key_field instance-key_ch = <rba>-key_ch ] ).
 
         "Filling the LINK parameter
-        INSERT VALUE #( target-%tky = <rba>-%tky
+        INSERT VALUE #( target-%tky = CORRESPONDING #( <rba>-%tky )
                         source-%tky = VALUE #( key_field = <rba>-key_field
                                                 key_ch    = <rba>-key_ch )
                     ) INTO TABLE association_links.
@@ -979,7 +979,7 @@ CLASS lhc_child IMPLEMENTATION.
 
           IF sy-subrc = 0.
 
-            APPEND VALUE #( %tky   = <rba>-%tky
+            APPEND VALUE #( %tky   = CORRESPONDING #( <rba>-%tky )
                             field1 = COND #( WHEN <rba>-%control-field1 NE if_abap_behv=>mk-off
                                              THEN <fs_rp>-instance-field1 )
                             field2 = COND #( WHEN <rba>-%control-field2 NE if_abap_behv=>mk-off

@@ -898,8 +898,8 @@ CLASS ZCL_DEMO_ABAP_RAP_EXT_NUM_M IMPLEMENTATION.
 
 **********************************************************************
 *
-* Excursion: Read and read-by-association operation using dynamic
-* EML statements
+* Excursion: Read and read-by-association operation using a dynamic
+* EML statement
 *
 **********************************************************************
 
@@ -932,14 +932,12 @@ CLASS ZCL_DEMO_ABAP_RAP_EXT_NUM_M IMPLEMENTATION.
 *    rba_dyn = VALUE #(
 *     ( %key-key_field = 1
 *       %control = VALUE #(
-*          key_field = if_abap_behv=>mk-on
 *          key_ch    = if_abap_behv=>mk-on
 *          field_ch1 = if_abap_behv=>mk-on
 *          field_ch2 = if_abap_behv=>mk-on ) )
 *      ( %key-key_field = 2
 *        %control = VALUE #(
-*          key_field = if_abap_behv=>mk-on
-*          key_ch    = if_abap_behv=>mk-on
+*          key_ch    = if_abap_behv=>mk-on  
 *          field_ch1 = if_abap_behv=>mk-on
 *          field_ch2 = if_abap_behv=>mk-on ) ) ).
 *

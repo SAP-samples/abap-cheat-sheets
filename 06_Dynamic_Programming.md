@@ -3,7 +3,7 @@
 # Dynamic Programming
 
 - [Dynamic Programming](#dynamic-programming)
-  - [Notes on Dynamic Programming](#notes-on-dynamic-programming)
+  - [Introduction](#introduction)
   - [Excursion: Field Symbols and Data References](#excursion-field-symbols-and-data-references)
     - [Field Symbols](#field-symbols)
     - [Data References](#data-references)
@@ -15,7 +15,7 @@
   - [More Information](#more-information)
   - [Executable Example](#executable-example)
 
-## Notes on Dynamic Programming
+## Introduction
 
 -  Regarding "dynamic" in contrast to "static" aspects, [ABAP programs](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_program_glosry.htm) can include both dynamic and static parts.
 - Consider a [data object](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendata_object_glosry.htm "Glossary Entry") in your program:
@@ -614,12 +614,12 @@ world. Recommended read: [Accessing Data Objects Dynamically (F1 docu for standa
 As already mentioned above, there are ABAP statements that support the dynamic specification of syntax elements.
 In this context, you can usually use elementary, character-like data objects - the content is usually provided in capital letters - specified within a pair of parentheses. 
 ``` abap  
-"Named, character-like data object specified within parenteses
+"Named, character-like data object specified within parentheses
 "used by an ABAP statement
 DATA(field_name) = 'CARRNAME'.
 SORT itab BY (field_name).      
 
-"Unnamed, character-like data object specified within parenteses
+"Unnamed, character-like data object specified within parentheses
 SORT itab BY ('CURRCODE').
 ``` 
       
@@ -759,7 +759,7 @@ Note that dynamically specifying syntax elements has downsides, too. Consider so
 
     "Note: As covered further down and in the executable example,
     "CREATE DATA/OBJECT and ASSIGN statements have the HANDLE addition
-    "after which dynmically created types can be specified. A type 
+    "after which dynamically created types can be specified. A type 
     "description object is expected.
     CREATE DATA dref TYPE HANDLE type_descr_obj.
     CREATE OBJECT oref TYPE HANDLE type_descr_obj.
@@ -1226,7 +1226,7 @@ As shown above, anonymous data objects can be dynamically created using `CREATE 
 - dynamically: `CREATE DATA dref TYPE (some_type).`
 
 Another way to dynamically create data objects with dynamic type specification is to use types created at runtime with RTTC methods.
-The `CREATE DATA` statement provides the [`TYPE HANDLE`](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapcreate_data_handle.htm) addition after which you can specify type description objects. 
+The `CREATE DATA` statement provides the [`TYPE HANDLE`](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapcreate_data_handle.htm) addition after which you can specify type description objects. A reference variable of the static type of class `CL_ABAP_DATADESCR` or its subclasses that points to a type description object can be specified after `TYPE HANDLE`.
 
 ``` abap
 DATA dref_cr TYPE REF TO data.

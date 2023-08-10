@@ -3,7 +3,7 @@
 # ABAP Managed Database Procedures (AMDP)
 
 - [ABAP Managed Database Procedures (AMDP)](#abap-managed-database-procedures-amdp)
-  - [About AMDP](#about-amdp)
+  - [Introduction](#introduction)
   - [AMDP Classes](#amdp-classes)
   - [AMDP Methods](#amdp-methods)
   - [AMDP Procedures](#amdp-procedures)
@@ -20,7 +20,7 @@ Find more details
 [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenamdp.htm)
 in the ABAP Keyword Documentation.
 
-## About AMDP
+## Introduction
 
 -   AMDP are a class-based framework for managing and calling
 
