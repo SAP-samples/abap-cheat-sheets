@@ -1,5 +1,3 @@
-<a name="top"></a>
-
 # Excursion Down to Bits and Bytes
 
 This sheet goes a bit into the technical background of data types and

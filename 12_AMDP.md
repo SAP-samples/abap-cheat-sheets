@@ -69,6 +69,8 @@ in the ABAP Keyword Documentation.
 >- AMDP classes can only be edited with the [ABAP development tools for Eclipse
         (ADT)](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenadt_glosry.htm "Glossary Entry").
 
+<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
+
 ## AMDP Classes
 
 -   As mentioned above, an [AMDP
@@ -100,6 +102,7 @@ CLASS cl_some_amdp_class DEFINITION
 ENDCLASS.
 ```
 
+<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
 
 ## AMDP Methods
 
@@ -133,6 +136,7 @@ PRIVATE SECTION.
 ...
 ```
 
+<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
 
 ## AMDP Procedures
 
@@ -222,6 +226,8 @@ Note:
     and implementation parts. Check the ABAP Keyword Documentation for
     more details as touched on further down.
 
+<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
+
 ## AMDP Functions
 
 [Scalar](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenamdp_scalar_function_glosry.htm "Glossary Entry")
@@ -298,6 +304,8 @@ ENDMETHOD.
 ...
 ```
 
+<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
+
 ### CDS Table Functions
 
 -   Each [CDS table
@@ -370,7 +378,7 @@ define table function some_ddl_source
 You can then use the CDS table function as source for a
 `SELECT` statement, for example: `SELECT * FROM some_ddl_source INTO ...`.
 
-
+<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
 
 ## More Information
 
@@ -427,6 +435,8 @@ input parameter for the client ID. See more information
 [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenamdp_client_handling.htm) (or [here for the F1 docu for standard ABAP](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenamdp_client_handling.htm)).
 The client handling is not dealt with in this cheat sheet and not
 relevant in the executable example.
+
+<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
 
 ## Executable Example
 [zcl_demo_abap_amdp](./src/zcl_demo_abap_amdp.clas.abap)

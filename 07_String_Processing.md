@@ -48,7 +48,7 @@ and built-in [string functions](https://help.sap.com/doc/abapdocu_cp_index_htm/C
     corresponding ABAP statements, or even more. The return value of string functions
     that return character strings is always of type `string`.
 
-<p align="right">(<a href="#top">back to top</a>)</p>
+<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
 
 ## Data Types for Character Strings
 
@@ -88,7 +88,7 @@ that must be a maximum of two characters, or for input fields in
 forms that should not exceed a certain length. If limiting a string
 is not relevant, text strings are a good choice.
 
-<p align="right">(<a href="#top">back to top</a>)</p>
+<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
 
 ## Declaring Character-Like Data Objects
 
@@ -145,7 +145,7 @@ DATA char(4) TYPE c.
 DATA char_len_one TYPE c.
 ```
 
-<p align="right">(<a href="#top">back to top</a>)</p>
+<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
 
 ## Assigning Values
 
@@ -229,7 +229,7 @@ however, with [significant
 differences](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenliteral_operator.htm)
 to `&&`.
 
-<p align="right">(<a href="#top">back to top</a>)</p>
+<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
 
 ## String Templates
 - Using string templates, you can construct strings very elegantly from
@@ -311,7 +311,7 @@ s1 = |{ CONV decfloat34( - 1 / 3 ) DECIMALS = 3 }|. "'-0.333'
 > **💡 Note**<br>
 > Escape `\|{}` in string templates using `\`, i. e. `\\` means `\`.
 
-<p align="right">(<a href="#top">back to top</a>)</p>
+<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
 
 ## Determining the Length of Strings
 
@@ -333,7 +333,7 @@ len_c   = numofchar( 'abc   ' ). "3
 len_str = numofchar( `abc   ` ). "3
 ```
 
-<p align="right">(<a href="#top">back to top</a>)</p>
+<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
 
 ## Concatenating Strings
 
@@ -379,7 +379,7 @@ s1 = concat_lines_of( table = itab ). "Without separator
 s1 = concat_lines_of( table = itab sep = ` ` ). "With separator
 ```
 
-<p align="right">(<a href="#top">back to top</a>)</p>
+<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
 
 ## Splitting Strings
 
@@ -420,7 +420,7 @@ SPLIT s1 AT ',' INTO TABLE itab. "Strings are added to itab in individual lines 
 s2 = segment( val = s1 index = 2 sep = `,` ). "world
 ```
 
-<p align="right">(<a href="#top">back to top</a>)</p>
+<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
 
 ## Modifying Strings
 **Transforming to Lowercase and Uppercase**
@@ -609,7 +609,7 @@ OVERLAY txt1 WITH txt2 ONLY 'ab'.
 "txt1: z.x.c.Z.x.c.A
 ```
 
-<p align="right">(<a href="#top">back to top</a>)</p>
+<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
 
 ## Processing Substrings
 
@@ -694,7 +694,7 @@ s2 = substring_from( val = s1 sub = `a3` ). "a3bb4
 s2 = substring_to( val = s1 sub = `3b` ). "aa1bb2aa3b
 ```
 
-<p align="right">(<a href="#top">back to top</a>)</p>
+<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
 
 ## Searching and Replacing
 
@@ -715,7 +715,7 @@ on single characters only or more complex, pattern-based
 operations on character sequences using [PCRE regular
 expressions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenpcre_regex_glosry.htm "Glossary Entry").
 
-<p align="right">(<a href="#top">back to top</a>)</p>
+<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
 
 ### Searching for Specific Characters
 
@@ -807,7 +807,7 @@ res = count_any_not_of( val = str sub = `Piecs ofak.` ). "0
 ```
 
 
-<p align="right">(<a href="#top">back to top</a>)</p>
+<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
 
 ### Replacing Specific Characters in Strings
 
@@ -841,7 +841,7 @@ s2 = translate( val = s1 from = `_`  to = `##` ).  "###abc#def#####ghi#
 TRANSLATE s1 USING `_.a#g+`. "...#bc.def.....+hi.
 ```
 
-<p align="right">(<a href="#top">back to top</a>)</p>
+<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
 
 ### Searching for Substrings in Strings (and Tables)
 
@@ -1168,7 +1168,7 @@ TRY.
 ENDTRY.
 ```
 
-<p align="right">(<a href="#top">back to top</a>)</p>
+<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
 
 ### Replacing Substrings in Strings (and Tables)
 
@@ -1415,7 +1415,7 @@ regular
 expressions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenposix_regex_glosry.htm "Glossary Entry")
 anymore, they are obsolete.
 
-<p align="right">(<a href="#top">back to top</a>)</p>
+<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
 
 ### Simple Pattern-Based Searching Using Comparison Operators
 
@@ -1451,7 +1451,7 @@ IF s1 CP `*f#_*`. ... "true; sy-fdpos = 6
 IF s1 NP `i+`. ... "true; sy-fdpos = 11 (length of searched string)
 ```
 
-<p align="right">(<a href="#top">back to top</a>)</p>
+<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
 
 ### Complex Searching and Replacing Using Regular Expressions
 
@@ -1517,7 +1517,7 @@ Anchors and Positions
 | `\b` | Start or end of word | 1. `\ba.` <br>2. `\Dd\b` <br>3. `\b.d\b` | abcd a12d ed | 1. <ins>**ab**</ins>cd <ins>**a1**</ins>2d ed <br>2. ab<ins>**cd**</ins> a12d <ins>**ed**</ins> <br> 3. abcd a12d <ins>**ed**</ins> | 1. ab<ins>**cd**</ins> a1<ins>**2d**</ins> ed <br> 2. abcd a1<ins>**2d**</ins> ed <br> 3. <ins>**abcd**</ins> <ins>**a12d**</ins> ed |
 | `\B` | Negation of `\b`, not at the start or end of words | `\Be\B` | see an elefant | s<ins>**e**</ins>e an el<ins>**e**</ins>fant  | s<ins>**ee**</ins> an <ins>**e**</ins>lefant |
 
-<p align="right">(<a href="#top">back to top</a>)</p>
+<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
 
 #### Searching Using Regular Expressions
 
@@ -1575,7 +1575,7 @@ DATA(itab) = value string_table( ( `Cathy's black cat on the mat played with the
 FIND FIRST OCCURRENCE OF PCRE `\bt.` IN TABLE itab
   IGNORING CASE MATCH LINE DATA(d) MATCH OFFSET DATA(e) MATCH LENGTH DATA(f). "d: 1, e: 21, f: 2
 ```
-<p align="right">(<a href="#top">back to top</a>)</p>
+<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
 
 ##### Excursion: System Classes for Regular Expressions
 
@@ -1608,7 +1608,7 @@ DATA(res) = cl_abap_regex=>create_pcre( pattern = `\s\w`       "any blank follow
                                         ignore_case = abap_true )->create_matcher( text = str )->find_all( ).
 ```
 
-<p align="right">(<a href="#top">back to top</a>)</p>
+<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
 
 #### Replacing Using Regular Expressions
 
@@ -1660,7 +1660,7 @@ s2 = replace( val  = s1
 REPLACE PCRE `(.*?)PP(.*)` IN s1 WITH `$2#$1` IGNORING CASE. "pc app#ab a
 ```
 
-<p align="right">(<a href="#top">back to top</a>)</p>
+<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
 
 ## Executable Example
 [zcl_demo_abap_string_proc](./src/zcl_demo_abap_string_proc.clas.abap)

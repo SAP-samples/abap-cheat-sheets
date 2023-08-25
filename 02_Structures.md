@@ -1,3 +1,5 @@
+<a name="top"></a>
+
 # Structures
 
 - [Structures](#structures)
@@ -26,6 +28,8 @@ Structures ...
     - [Database tables](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenddic_db_table_glosry.htm) defined in the ABAP Dictionary can be used as data types just like DDIC structures in an ABAP program. This means that when you create a structure in your ABAP program, for example, you can simply use the name of a database table to address the line type of the table. The structure you created will then have the same structured type as the database table. Typically, you use the database tables to create structures of such a type, or internal tables of such a structured line type, to process data read from the database table in structures or internal tables.     
     -  A [CDS entity](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_entity_glosry.htm) such as a [CDS view](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_view_glosry.htm) also represents a structured data type and can be used as such in ABAP programs (but not in the ABAP Dictionary). The same applies to [DDIC views](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenddic_view_glosry.htm) that are only available in [Standard ABAP](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenstandard_abap_glosry.htm).
     - Structures and structured data types can also be defined in the public [visibility section](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenvisibility_section_glosry.htm) of [global classes](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenglobal_class_glosry.htm) or in [global interfaces](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenglobal_interface_glosry.htm) and then used globally.
+
+<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
 
 ## Creating Structures and Structured Types
 
@@ -198,6 +202,8 @@ LOOP AT itab INTO DATA(wa_2).
 ENDLOOP.
 ```
 
+<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
+
 ## Variants of Structures
 
 Depending on the component type, the structure can be a [flat structure](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenflat_structure_glosry.htm "Glossary Entry"),
@@ -257,6 +263,8 @@ that is, it refers to another structure. The following example has multiple subs
 >- [Work areas](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenwork_area_glosry.htm) of ABAP SQL statements cannot contain any deep components other than strings among others.
 >- Especially for assignments and comparisons of deep structures, the compatibility of the source and target structure must be taken into account.
 
+<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
+
 ## Accessing (Components of) Structures
 
 - Structures can be accessed as a whole. You can also address the individual components of structures at the appropriate operand positions. 
@@ -310,6 +318,8 @@ Nested components can be addressed using chaining:
 > **💡 Note**<br>
 > The [`ASSIGN`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapassign_dynamic_components.htm) statement has special variants for dynamically accessing structure components.
 
+<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
+
 ## Populating Structures 
 
 You can copy the content of a structure to another using the [assignment operator](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenassignment_operator_glosry.htm) `=`. 
@@ -339,6 +349,8 @@ address-street = `Vegetable Lane 11`.
 
 address-city   = `349875 Botanica`.
 ```
+
+<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
 
 ### Using the VALUE Operator
 
@@ -391,6 +403,8 @@ DATA(str_ref) = NEW struc_nested( a        = 1
                                   nested_1 = VALUE #( b = 2 c = 3 ) 
                                   nested_2 = VALUE #( d = 4 e = 5 ) ).
 ```
+
+<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
 
 ### Using the CORRESPONDING Operator and MOVE-CORRESPONDING Statements
 
@@ -498,6 +512,8 @@ diff_deep_struc = CORRESPONDING #( APPENDING BASE ( diff_struc ) deep_struc ).
 
 diff_deep_struc = CORRESPONDING #( DEEP APPENDING BASE ( diff_struc ) deep_struc ).
 ```
+
+<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
                                   
 ## Clearing Structures
 You can reset individual components to their initial values and clear the
@@ -510,6 +526,8 @@ CLEAR struc.
 "Note: An assignment using the VALUE operator without entries in the parentheses clears the structure. 
 struc = VALUE #( ). 
 ```
+
+<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
 
 ## Processing Structures
 Structures are primarily used to process data from tables. In this context, structures often take on the role of a [work area](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenwork_area_glosry.htm "Glossary Entry"). 
@@ -640,6 +658,8 @@ APPEND struc TO itab.
 MODIFY TABLE itab FROM struc.
 ```
 
+<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
+
 ## Excursion: Including Structures
 
 - Although their use is not recommended in the ABAP programming
@@ -680,6 +700,8 @@ TYPES BEGIN OF address_type.
       INCLUDE STRUCTURE city_struc AS city RENAMING WITH SUFFIX _city.
 TYPES END OF address_type.
 ```
+
+<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
 
 ## Executable Example
 [zcl_demo_abap_structures](./src/zcl_demo_abap_structures.clas.abap)

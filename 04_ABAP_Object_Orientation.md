@@ -64,7 +64,7 @@ Classes ...
         that determine the behavior of an object
     -   [Events](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenevent_glosry.htm "Glossary Entry") to trigger the processing of ABAP code
 
-<p align="right">(<a href="#top">back to top</a>)</p>
+<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
 
 ### Creating Classes
 
@@ -145,7 +145,7 @@ of the class itself, and of its
 be instantiated in methods of the class itself or of its friends. Hence,
 it cannot be instantiated as an inherited component of subclasses.
 
-<p align="right">(<a href="#top">back to top</a>)</p>
+<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
 
 ### Visibility of Components
 
@@ -193,7 +193,7 @@ CLASS local_class DEFINITION.
 ENDCLASS.
 ```
 
-<p align="right">(<a href="#top">back to top</a>)</p>
+<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
 
 ### Defining Components
 
@@ -278,7 +278,7 @@ CLASS local_class IMPLEMENTATION.
 ENDCLASS.
 ```
 
-<p align="right">(<a href="#top">back to top</a>)</p>
+<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
 
 **Methods**
 
@@ -357,7 +357,7 @@ In the simplest form, methods can have no parameter at all. Apart from that, met
     However, when using this addition, as the name implies, a default
     value is set.
 
-<p align="right">(<a href="#top">back to top</a>)</p>
+<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
 
 **Constructors**
 
@@ -436,7 +436,7 @@ CLASS local_class IMPLEMENTATION.
 ENDCLASS.
 ```
 
-<p align="right">(<a href="#top">back to top</a>)</p>
+<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
 
 ## Working with Objects and Components
 
@@ -692,7 +692,7 @@ METHOD me_ref.
 ENDMETHOD.
 ```
 
-<p align="right">(<a href="#top">back to top</a>)</p>
+<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
 
 ## Notes on Inheritance
 
@@ -714,7 +714,7 @@ ENDMETHOD.
         [`FINAL`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapmethods_abstract_final.htm#!ABAP_ADDITION_2@2@)
         (e. g. `CLASS global_class DEFINITION PUBLIC FINAL CREATE PUBLIC. ...`).
 
-<p align="right">(<a href="#top">back to top</a>)</p>
+<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
 
 **Excursion: Additions `ABSTRACT` and `FINAL`**
 -  Both classes and methods can be defined with the additions `ABSTRACT` and `FINAL`.
@@ -746,7 +746,7 @@ CLASS cls2 IMPLEMENTATION.
 ENDCLASS.
 ```
 
-<p align="right">(<a href="#top">back to top</a>)</p>
+<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
 
 **Redefining Methods**
 
@@ -769,7 +769,7 @@ ENDCLASS.
 > - Regarding the static constructor: When calling a subclass for the first time, the preceding static constructors of all of the entire inheritance tree must have been called first.
 > - More information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abeninheritance_constructors.htm).
 
-<p align="right">(<a href="#top">back to top</a>)</p>
+<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
 
 ## Notes on Polymorphism and Casting
 
@@ -885,7 +885,7 @@ DATA(rtti_d) = CAST cl_abap_structdescr(
       )->components.
 ```
 
-<p align="right">(<a href="#top">back to top</a>)</p>
+<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
 
 ## Notes on Interfaces
 
@@ -911,7 +911,7 @@ Interfaces ...
         `CLASS-METHODS`, are possible. Constructors are not
         possible.
 
-<p align="right">(<a href="#top">back to top</a>)</p>
+<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
 
 Defining interfaces:
 - Can be done either globally in the repository or locally in an ABAP program.
@@ -1063,7 +1063,7 @@ i_ref = NEW class( ).
 ... intf=>const ...
 ```
 
-<p align="right">(<a href="#top">back to top</a>)</p>
+<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
 
 ## Additional Notes
 
@@ -1095,7 +1095,7 @@ CLASS lo_class DEFINITION CREATE PRIVATE FRIENDS other_class ... .
 CLASS global_class DEFINITION CREATE PUBLIC FRIENDS other_global_class ... .
 ```
 
-<p align="right">(<a href="#top">back to top</a>)</p>
+<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
 
 ### Events
 
@@ -1151,7 +1151,7 @@ SET HANDLER handler3.
 "Note that multiple handler methods can be specified.
 ```
 
-<p align="right">(<a href="#top">back to top</a>)</p>
+<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
 
 ### Excursion: Factory Methods and Singletons as Design Patterns
 
@@ -1217,7 +1217,7 @@ DATA obj_factory TYPE REF TO class.
 obj_factory = class=>factory_method( par = ... ).
 ```
 
-<p align="right">(<a href="#top">back to top</a>)</p>
+<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
 
 ## More Information
 You can check the subtopics of

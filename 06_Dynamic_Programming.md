@@ -45,7 +45,7 @@
 that include dynamic programming features may be difficult.
 
 
-<p align="right">(<a href="#top">back to top</a>)</p>
+<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
 
 ## Excursion: Field Symbols and Data References
 
@@ -203,7 +203,7 @@ LOOP AT itab ASSIGNING FIELD-SYMBOL(<fs2>).
 ENDLOOP.
 ```
 
-<p align="right">(<a href="#top">back to top</a>)</p>
+<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
 
 ### Data References
 
@@ -607,7 +607,7 @@ reference variables are more powerful as far as their usage options are
 concerned, and they better fit into the modern (object-oriented) ABAP
 world. Recommended read: [Accessing Data Objects Dynamically (F1 docu for standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abendyn_access_data_obj_guidl.htm "Guideline").
 
-<p align="right">(<a href="#top">back to top</a>)</p>
+<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
 
 ## Dynamic ABAP Statements
 
@@ -855,7 +855,7 @@ Note that dynamically specifying syntax elements has downsides, too. Consider so
     "The addition EXCEPTION-TABLE for exceptions is not dealt with here.
     ```
 
-<p align="right">(<a href="#top">back to top</a>)</p>
+<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
 
 ## Runtime Type Services (RTTS)
 
@@ -905,7 +905,7 @@ F2 help information in
 [ADT](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenadt_glosry.htm "Glossary Entry"),
 for more details.
 
-<p align="right">(<a href="#top">back to top</a>)</p>
+<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
 
 ### Getting Type Information at Runtime
 
@@ -1102,7 +1102,7 @@ CREATE OBJECT oref4abs TYPE (abs_name_cl).
 CREATE OBJECT oref4abs TYPE ('\CLASS=ZCL_DEMO_ABAP_DYNAMIC_PROG').
 ```
 
-<p align="right">(<a href="#top">back to top</a>)</p>
+<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
 
 ### Dynamically Creating Data Types at Runtime
 You can create data types at program runtime using methods of the type description classes of RTTS.
@@ -1217,7 +1217,7 @@ DATA(tdo_ref_3) = cl_abap_refdescr=>get_by_name( 'T' ).
 DATA(tdo_ref_4) = cl_abap_refdescr=>get_by_name( 'ZCL_DEMO_ABAP_DYNAMIC_PROG' ).
 ```
 
-<p align="right">(<a href="#top">back to top</a>)</p>
+<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
 
 ### Dynamically Creating Data Objects at Runtime
 
@@ -1262,7 +1262,7 @@ DATA(tdo_ref) = cl_abap_refdescr=>get( cl_abap_elemdescr=>get_t( ) ).
 CREATE DATA dref_cr TYPE HANDLE tdo_ref.
 ```
 
-<p align="right">(<a href="#top">back to top</a>)</p>
+<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
 
 ## More Information
 - It is recommended that you also consult section [Dynamic Programming Techniques (F1 docu for standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abendynamic_prog_technique_gdl.htm) in the ABAP Keyword Documentation since it provides important aspects that should be considered when dealing with dynamic programming in general (e. g. security aspects or runtime error prevention).
