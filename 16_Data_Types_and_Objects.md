@@ -525,7 +525,7 @@ str_a1 = to_upper( str_a2 ).
 
 "Constructor expressions as source of the assignment
 "There are various options and expressions available (with many additions). Check the
-"ABAP Keyword Documentation and the ABAP cheat sheet abouot constructor expressions.
+"ABAP Keyword Documentation and the ABAP cheat sheet about constructor expressions.
 "Here, taking the VALUE operator as an example. This operator is very handy especially
 "for complex types.
 
@@ -539,7 +539,7 @@ some_struc = VALUE #( carrid = 'XY' carrname = 'XY Airways' ).
 
 "Creating an internal table and assigning values
 "Note that components that are not specified and assigned a value retain their
-"type-specific ininial value.
+"type-specific initial value.
 DATA some_itab TYPE TABLE OF zdemo_abap_carr WITH EMPTY KEY.
 some_itab = VALUE #( ( carrid = 'XY' carrname = 'XY Airways' )
                      ( carrid = 'AB' carrname = 'ABAP Airlines' ) ) .
