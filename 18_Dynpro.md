@@ -710,6 +710,7 @@ PROCESS AFTER INPUT.
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## More Information
+
 - [SAP GUI User Dialogs](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenabap_screens.htm) in the ABAP Keyword Documentation as the entry topic for dynpro-related topics
 - Documentation about the [screen painter in the Help Portal](https://help.sap.com/docs/ABAP_PLATFORM_NEW/bd833c8355f34e96a6e83096b38bf192/d1801b50454211d189710000e8322d00)
 - Documentation about the [menu painter in the Help Portal](https://help.sap.com/docs/ABAP_PLATFORM_NEW/bd833c8355f34e96a6e83096b38bf192/d1801ce8454211d189710000e8322d00)

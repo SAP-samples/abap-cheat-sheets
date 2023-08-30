@@ -128,6 +128,7 @@ Views](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
+
 ## Reading Data Using SELECT
 
 ### Basic Syntax

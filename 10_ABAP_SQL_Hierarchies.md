@@ -719,5 +719,6 @@ can check that the calculated values are correct.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
+
 ## More Information
 For the complete reference documentation about SQL hierarchies, see [`SELECT, FROM hierarchy_data`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenselect_hierarchy_data.htm).

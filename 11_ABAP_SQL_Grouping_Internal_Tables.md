@@ -174,6 +174,7 @@ SIZE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## Executable Example
+
 [zcl_demo_abap_sql_group_by](./src/zcl_demo_abap_sql_group_by.clas.abap)
 
 Note the steps outlined [here](README.md#-getting-started-with-the-examples) about how to import and run the code.

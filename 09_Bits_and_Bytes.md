@@ -10,6 +10,7 @@ is usable in its context (procedure, class, program) according to its
 type. For example, a numeric data object can be assigned the result of a
 calculation:
 
+
 > **💡 Note**<br>
 > For checking out the code snippets in an SAP BTP ABAP environment, you can use the interface `if_oo_adt_classrun` in a class by implementing the method `if_oo_adt_classrun~main`.
 

@@ -204,8 +204,6 @@ Use the standalone version of the abapGit report to import the demo examples of 
 - Regarding possible code check warnings, e.g. for the many strings in the code, not using an `ORDER BY` clause, or messages regarding using `SELECT *`, the code deliberately avoids [pragmas](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenpragma_glosry.htm) and [pseudo comments](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenpseudo_comment_glosry.htm) in order to focus on the available ABAP syntax. See also the [Disclaimer](#%EF%B8%8F-disclaimer).
 - Regarding the examples to be imported into on-premise systems, note the following: The cheat sheet documents cover ABAP syntax regardless of the ABAP release to avoid scattering information and to have the information in one place. Therefore, the lower the release, the fewer syntax options and examples are available. For example, the RAP examples in particular require at least ABAP version 7.56.
 
-
-
 <br>
 
 ## ℹ️ More Information

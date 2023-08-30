@@ -1663,6 +1663,7 @@ REPLACE PCRE `(.*?)PP(.*)` IN s1 WITH `$2#$1` IGNORING CASE. "pc app#ab a
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## Executable Example
+
 [zcl_demo_abap_string_proc](./src/zcl_demo_abap_string_proc.clas.abap)
 
 Follow the steps outlined [here](README.md#-getting-started-with-the-examples) to import and run the code.

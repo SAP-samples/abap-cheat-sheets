@@ -19,6 +19,7 @@ Core data services (CDS) are an infrastructure for defining and consuming semant
 - [ABAP Data Models Guide](https://blogs.sap.com/2023/05/09/abap-data-models-guide/)
 
 ## Executable Example
+
 [zcl_demo_abap_cds_ve](./src/zcl_demo_abap_cds_ve.clas.abap)
 
 The example covers the following topics: 

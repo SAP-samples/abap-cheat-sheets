@@ -66,6 +66,7 @@ Classes ...
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
+
 ### Creating Classes
 
 You can either create local or global classes:
