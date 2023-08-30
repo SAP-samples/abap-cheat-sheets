@@ -1,0 +1,26 @@
+unmanaged implementation in class zbp_demo_abap_rap_ro_u unique;
+strict(2);
+
+define behavior for ZDEMO_ABAP_RAP_RO_U alias root
+lock master
+authorization master ( global, instance )
+
+{
+  create;
+  update;
+  delete;
+  association _child { create; }
+  action multiply_by_2;
+  action ( features : instance ) multiply_by_3;
+  action ( features : global ) set_z;
+  field ( readonly:update ) key_field;
+}
+
+define behavior for ZDEMO_ABAP_RAP_CH_U alias child
+lock dependent by _parent
+authorization dependent by _parent
+{
+  field ( readonly ) key_field;
+  field ( readonly : update ) key_ch;
+  association _parent;
+}

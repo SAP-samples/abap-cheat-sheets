@@ -1,0 +1,30 @@
+managed implementation in class zbp_demo_abap_rap_ro_m unique;
+strict(2);
+
+define behavior for ZDEMO_ABAP_RAP_RO_M alias root
+persistent table zdemo_abap_rapt1
+lock master
+authorization master ( global )
+
+{
+  create;
+  update;
+  delete;
+  association _child { create; }
+  action multiply_by_2;
+  validation val on save { field field3; }
+  determination det_add_text on save { create; }
+  field ( readonly:update ) key_field;
+}
+
+define behavior for ZDEMO_ABAP_RAP_CH_M alias child
+persistent table zdemo_abap_rapt2
+lock dependent by _parent
+authorization dependent by _parent
+{
+  update;
+  delete;
+  field ( readonly ) key_field;
+  field ( readonly:update ) key_ch;
+  association _parent;
+}
