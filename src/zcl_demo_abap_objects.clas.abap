@@ -20,26 +20,26 @@
 * - Open the class with the ABAP development tools for Eclipse (ADT).
 * - Choose F9 to run the class.
 * - Check the console output.
-* - To understand the context and the ABAP syntax used, refer to the 
-*   notes included in the class as comments or refer to the respective 
+* - To understand the context and the ABAP syntax used, refer to the
+*   notes included in the class as comments or refer to the respective
 *   topic in the ABAP Keyword Documentation.
-* - Due to the amount of console output, the examples contain numbers 
-*   (e.g. 1) ..., 2) ..., 3) ...) for the individual example sections. 
-*   Also, the variable name is displayed in most cases. So to find 
-*   the relevant output in the console easier and faster, just search 
-*   for the number/variable name in the console (CTRL+F in the console) 
+* - Due to the amount of console output, the examples contain numbers
+*   (e.g. 1) ..., 2) ..., 3) ...) for the individual example sections.
+*   Also, the variable name is displayed in most cases. So to find
+*   the relevant output in the console easier and faster, just search
+*   for the number/variable name in the console (CTRL+F in the console)
 *   or use the debugger.
 *
 * ----------------------------- NOTE -----------------------------------
 * The code presented in this class is intended only to support the ABAP
 * cheat sheets. It is not intended for direct use in a production system
-* environment. The code examples in the ABAP cheat sheets are primarily 
-* intended to provide a better explanation and visualization of the 
-* syntax and semantics of ABAP statements, not to solve concrete 
-* programming tasks. For production application programs, you should  
-* always work out your own solution for each individual case. There is 
-* no guarantee for the correctness or completeness of the code.  
-* Furthermore, there is no legal responsibility or liability for any 
+* environment. The code examples in the ABAP cheat sheets are primarily
+* intended to provide a better explanation and visualization of the
+* syntax and semantics of ABAP statements, not to solve concrete
+* programming tasks. For production application programs, you should
+* always work out your own solution for each individual case. There is
+* no guarantee for the correctness or completeness of the code.
+* Furthermore, there is no legal responsibility or liability for any
 * errors or their consequences that may occur when using the the example
 * code.
 *
@@ -81,17 +81,20 @@ ENDCLASS.
 
 
 
-CLASS zcl_demo_abap_objects IMPLEMENTATION.
+CLASS ZCL_DEMO_ABAP_OBJECTS IMPLEMENTATION.
+
 
   METHOD hallo_instance_method.
     string = |Hallo { sy-uname }. | &&
              |I'm an instance method of class zcl_demo_abap_objects.|.
   ENDMETHOD.
 
+
   METHOD hallo_static_method.
     string = |Hallo { sy-uname }. | &&
              |I'm a static method of class zcl_demo_abap_objects.|.
   ENDMETHOD.
+
 
   METHOD if_oo_adt_classrun~main.
 
@@ -126,7 +129,7 @@ CLASS zcl_demo_abap_objects IMPLEMENTATION.
       output->display( `One or more of the declared reference ` &&
                     `variables are not initial.` ).
     ENDIF.
-    
+
 **********************************************************************
 
     output->next_section( `2) Creating objects` ).
@@ -157,7 +160,7 @@ CLASS zcl_demo_abap_objects IMPLEMENTATION.
       output->display( `One or more of the reference variables ` &&
       `do not point to instances of the class local_class.` ).
     ENDIF.
-    
+
 **********************************************************************
 
     output->next_section( `3) Assigning object references` ).
@@ -177,7 +180,7 @@ CLASS zcl_demo_abap_objects IMPLEMENTATION.
     ELSE.
       output->display( `ref3b has not been assigned to ref3a.` ).
     ENDIF.
-    
+
 **********************************************************************
 
     output->next_section( `4) Overwriting object references` ).
@@ -197,7 +200,7 @@ CLASS zcl_demo_abap_objects IMPLEMENTATION.
     ref4 = NEW #( ).
 
     output->display( input = ref4->no_of_instances name = `ref4->no_of_instances` ).
-    
+
 **********************************************************************
 
     output->next_section( `5) Keeping references variables in internal tables` ).
@@ -219,7 +222,7 @@ CLASS zcl_demo_abap_objects IMPLEMENTATION.
     ENDDO.
 
     output->display( input = itab5 name = `itab5` ).
-    
+
 **********************************************************************
 
     output->next_section( `6) Clearing object references` ).
@@ -241,7 +244,7 @@ CLASS zcl_demo_abap_objects IMPLEMENTATION.
     ELSE.
       output->display( `ref6 is not initial.` ).
     ENDIF.
-    
+
 **********************************************************************
 
     output->next_section( `7) Accessing and using attributes` ).
@@ -271,7 +274,7 @@ CLASS zcl_demo_abap_objects IMPLEMENTATION.
     output->display( input = obj_instance_attr name = `obj_instance_attr` ).
     output->display( input = obj_static_attr_obj name = `obj_static_attr_obj` ).
     output->display( input = class_static_attr name = `class_static_attr` ).
-    
+
 **********************************************************************
 
     output->next_section( `8) Calling static and instance methods` ).
@@ -307,7 +310,7 @@ CLASS zcl_demo_abap_objects IMPLEMENTATION.
     hallo_static_method( ).
 
     output->display( input = string name = `string` ).
-    
+
 **********************************************************************
 
     output->next_section( `9) Calling methods: Examples` &&
@@ -353,7 +356,7 @@ CLASS zcl_demo_abap_objects IMPLEMENTATION.
     lcl_demo=>addition_optional( i_add_mand = 1 ).
 
     output->display( input = lcl_demo=>calc_result name = `lcl_demo=>calc_result` ).
-    
+
 **********************************************************************
 
     output->next_section( `10) Calling methods: Examples ` &&
@@ -381,7 +384,7 @@ CLASS zcl_demo_abap_objects IMPLEMENTATION.
 
     output->display( input = hallo name = `hallo` ).
     output->display( input = subtraction_result name = `subtraction_result` ).
-    
+
 **********************************************************************
 
     output->next_section( `11) Calling methods: Example with changing parameter` ).
@@ -395,7 +398,7 @@ CLASS zcl_demo_abap_objects IMPLEMENTATION.
     lcl_demo=>square_root( CHANGING i_sqr = num ).
 
     output->display( input = num name = `num` ).
-    
+
 **********************************************************************
 
     output->next_section( `12) Calling methods: Examples with returning parameters` ).
@@ -459,7 +462,7 @@ CLASS zcl_demo_abap_objects IMPLEMENTATION.
     output->display( input = random_no1 name = `random_no1` ).
     output->display( input = random_no2 name = `random_no2` ).
     output->display( input = random_no3 name = `random_no3` ).
-    
+
 **********************************************************************
 
     output->next_section( `13) Calling methods: Examples with error handling` ).
@@ -501,7 +504,7 @@ CLASS zcl_demo_abap_objects IMPLEMENTATION.
     ENDTRY.
 
     output->display( input = greets name = `greets` ).
-    
+
 **********************************************************************
 
     output->next_section( `14) Constructors` ).
@@ -553,7 +556,7 @@ CLASS zcl_demo_abap_objects IMPLEMENTATION.
 
     output->display( input = lcl_constructors=>stat_text name = `lcl_constructors=>stat_text` ).
     output->display( input = lcl_constructors=>stat_number name = `lcl_constructors=>stat_number` ).
-    
+
 **********************************************************************
 
     output->next_section( `15) Parameters: Generic types` ).
@@ -593,7 +596,7 @@ CLASS zcl_demo_abap_objects IMPLEMENTATION.
     lcl_demo=>generic_tab( EXPORTING i_anytab = c_tab ).
 
     output->display( input = lcl_demo=>some_data->* name = `lcl_demo=>some_data->*` ).
-    
+
 **********************************************************************
 
     output->next_section( `16) Inheritance: Method redefinition` ).
@@ -624,7 +627,7 @@ CLASS zcl_demo_abap_objects IMPLEMENTATION.
     output->display( input = first_string name = `first_string` ).
     output->display( input = second_string name = `second_string` ).
     output->display( input = third_string name = `third_string` ).
-    
+
 **********************************************************************
 
     output->next_section( `17) Polymorphism and Casting` ).
@@ -875,7 +878,7 @@ CLASS zcl_demo_abap_objects IMPLEMENTATION.
     output->display( input = intf_const1 name = `intf_const1` ).
     output->display( input = intf_const2 name = `intf_const2` ).
     output->display( input = intf_const3 name = `intf_const3` ).
-    
+
 **********************************************************************
 
     output->next_section( `20) Singleton` ).
@@ -923,7 +926,7 @@ CLASS zcl_demo_abap_objects IMPLEMENTATION.
 
     output->display( input = timestamp name = `timestamp` ).
     output->display( input = no_of_instances name = `no_of_instances` ).
-    
+
 **********************************************************************
 
     output->next_section( `21) Factory method in an abstract class` ).
@@ -958,7 +961,7 @@ CLASS zcl_demo_abap_objects IMPLEMENTATION.
     ENDTRY.
 
     output->display( input = lcl_abstract=>message name = `lcl_abstract=>message` ).
-    
+
 **********************************************************************
 
     output->next_section( `22) Friendship: Accessing components of friends` ).
@@ -977,7 +980,7 @@ CLASS zcl_demo_abap_objects IMPLEMENTATION.
     DATA(string_table) = zcl_demo_abap_objects_friend=>get_strings( ).
 
     output->display( input = string_table name = `string_table` ).
-    
+
 **********************************************************************
 
     output->next_section( `23) Self-reference me` ).
@@ -997,7 +1000,7 @@ CLASS zcl_demo_abap_objects IMPLEMENTATION.
 
     output->display( input = string_without_me name = `string_without_me` ).
     output->display( input = string_with_me name = `string_with_me` ).
-    
+
 **********************************************************************
 
     output->next_section( `24) Events` ).

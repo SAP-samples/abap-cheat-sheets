@@ -49,7 +49,7 @@ ELSE.
 ENDIF.
 ```
 
-<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## Expressions and Functions for Conditions
 - So, such control structures are executed depending on conditions as specified above: `... num = 2 ...` - a [logical expression](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenlogical_expression_glosry.htm).
@@ -226,7 +226,7 @@ ENDIF.
 > **💡 Note**<br>
 > Logical expressions and functions can also be used in other ABAP statements.
 
-<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## Control Structures
 
@@ -295,7 +295,7 @@ ENDIF.
 >   sure - as implied in the example's `ELSE` statement above. However, an `ELSE` statement that is never executed might be a hint that
 >   logical expressions might partly be redundant.
 
-<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 #### Excursion: `COND` Operator
 
@@ -311,7 +311,7 @@ ENDIF.
                ELSE resultn ) ...
 ```
 
-<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ### `CASE`: Case Distinctions
 
@@ -350,7 +350,7 @@ CASE TYPE OF oref.
 ENDCASE.
 ```
 
-<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 #### Excursion: `SWITCH` Operator
 
@@ -365,7 +365,7 @@ The conditional operator [`SWITCH`](https://help.sap.com/doc/abapdocu_cp_index_h
                  ELSE resultn ) ...
 ```
 
-<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ### Loops
 
@@ -389,7 +389,7 @@ The conditional operator [`SWITCH`](https://help.sap.com/doc/abapdocu_cp_index_h
   ```
 - The value of the system field `sy-index` within the statement block contains the number of previous loop passes including the current pass.
 
-<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 #### Interrupting and Exiting Loops
 
@@ -405,7 +405,7 @@ The following ABAP keywords are available for interrupting and exiting loops:
 > - [`RETURN`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapreturn.htm) statements immediately terminate the current processing block. However, according to the [guidelines (F1 docu for standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenexit_procedure_guidl.htm), `RETURN` should only be used to exit procedures like methods.
 > - `EXIT` and `CHECK` might also be used for exiting procedures. However, their use inside loops is recommended.
 
-<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 #### `WHILE`: Conditional Loops
 
@@ -419,7 +419,7 @@ WHILE log_exp.
 ENDWHILE.
 ```
 
-<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 #### Loops Across Tables
 Further keywords for defining loops are as follows. They are not dealt with here since they are touched on in other ABAP cheat sheets.
@@ -429,7 +429,7 @@ Further keywords for defining loops are as follows. They are not dealt with here
   - You can also realize loops using iteration expressions with `VALUE` and `REDUCE`. See the example class for the internal table cheat sheet.
 - [`SELECT ... ENDSELECT`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapselect.htm) statements loop across the result set of a database access. See also the cheat sheet on ABAP SQL.
 
-<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## Calling Procedures
 
@@ -440,7 +440,7 @@ However, ...
 
 Regarding the exiting of procedures, note the hint mentioned above. The use of `RETURN` is recommended.
 
-<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## Handling Exceptions
 - [Exceptions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenexception_glosry.htm) ...
@@ -561,7 +561,7 @@ Regarding the exiting of procedures, note the hint mentioned above. The use of `
 >- For all exceptions that are raised by the ABAP runtime environment and that are not handled, there is a corresponding runtime error. For example, in the case of exception class `CX_SY_ZERODIVIDE`, it is the runtime error `COMPUTE_INT_ZERODIVIDE`. For self-defined exception classes, an exception that is not handled generally triggers the runtime error `UNCAUGHT_EXCEPTION`.
 > - For `TRY` control structures, there are further additions available dealing with more advanced error handling, e. g. [resumable exceptions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapresume.htm).
 
-<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 #### Notes on Exception Classes
 - To distinguish exception classes from *regular* classes, use the naming convention `CX` as prefix and not `CL`.
@@ -607,7 +607,7 @@ Regarding the exiting of procedures, note the hint mentioned above. The use of `
 > - Each exception has a an [exception text](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenexception_text_glosry.htm) that describes the error situation and that you can retrieve as outlined above. It helps you analyze the error. Plus, imagine using exceptions in the context of user interfaces. If a user faces an error situation, such exception texts may be displayed on the UI.
 > - Find more information on exception texts [here](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenexception_texts.htm) in the ABAP Keyword Documentation.
 
-<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ### Raising Exceptions
 
@@ -630,7 +630,7 @@ RAISE EXCEPTION TYPE cx_sy_zerodivide.
               ELSE THROW cx_some_error( ) ).
 ```
 
-<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## Excursion: Runtime Errors and Terminating Programs
 - Runtime errors are caused by uncatchable exceptions when a program is executed, when a catchable exception is not caught, or they can be forced by, for example, using [`ASSERT`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapassert.htm) statements.
@@ -652,7 +652,7 @@ ASSERT flag = abap_true.
 > - Each runtime error is identified by a name and assigned to a specific error situation.
 > - In ADT, you will see a message popping up and informing you about the runtime error. You can check the details by choosing the "Show" button in the pop-up. Furthermore, you can check the content of the "Feed Reader" tab in ADT. There, just expand your project and find the runtime errors caused by you.
 
-<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## Executable Example
 [zcl_demo_abap_prog_flow_logic](./src/zcl_demo_abap_prog_flow_logic.clas.abap)

@@ -25,13 +25,13 @@
 * ----------------------------- NOTE -----------------------------------
 * The code presented in this class is intended only to support the ABAP
 * cheat sheets. It is not intended for direct use in a production system
-* environment. The code examples in the ABAP cheat sheets are primarily 
-* intended to provide a better explanation and visualization of the 
-* syntax and semantics of ABAP statements, not to solve concrete 
-* programming tasks. For production application programs, you should  
-* always work out your own solution for each individual case. There is 
-* no guarantee for the correctness or completeness of the code.  
-* Furthermore, there is no legal responsibility or liability for any 
+* environment. The code examples in the ABAP cheat sheets are primarily
+* intended to provide a better explanation and visualization of the
+* syntax and semantics of ABAP statements, not to solve concrete
+* programming tasks. For production application programs, you should
+* always work out your own solution for each individual case. There is
+* no guarantee for the correctness or completeness of the code.
+* Furthermore, there is no legal responsibility or liability for any
 * errors or their consequences that may occur when using the the example
 * code.
 *
@@ -96,7 +96,8 @@ protected section.
       tab1 TYPE TABLE OF s1_type WITH EMPTY KEY,
       tab2 TYPE TABLE OF s2_type WITH EMPTY KEY,
       tab3 TYPE TABLE OF s2_type WITH EMPTY KEY,
-      tab4 TYPE SORTED TABLE OF s2_type WITH NON-UNIQUE KEY comp3.
+      tab4 TYPE SORTED TABLE OF s2_type WITH NON-UNIQUE KEY comp3,
+      nl TYPE string..
 
     CLASS-METHODS:
       fill_deep_structures,
@@ -105,7 +106,61 @@ protected section.
 ENDCLASS.
 
 
+
 CLASS zcl_demo_abap_constructor_expr IMPLEMENTATION.
+
+
+  METHOD fill_deep_structures.
+    "Clearing all contents of struc2
+    CLEAR struc2.
+    "Filling nested tables in deep structures
+    struc2-struc_nested = VALUE #( comp1 = `aaa`
+                                   comp2 = `bbb`
+                                   comp3 = `ccc` ).
+
+    struc1-itab = VALUE #(
+      ( col1 = 111 col2 = 222 )
+      ( col1 = 333 col2 = 444
+     ) ).
+
+    struc2-itab = VALUE #(
+      ( col2 = 1 col3 = 2 col4 = 3 )
+      ( col2 = 4 col3 = 5 col4 = 6 )
+      ( col2 = 7 col3 = 8 col4 = 9 )
+     ).
+
+    "Filling individual component that is not shared by both structures
+    struc2-comp4 = 999.
+  ENDMETHOD.
+
+
+  METHOD fill_struc_and_tab.
+    CLEAR: s1, s2, tab1, tab2, tab3.
+
+    s1 = VALUE #( comp1 = 'A' comp2 = `bbb` comp3 = 1 ).
+
+    s2 = VALUE #( comp1 = `ccc` comp2 = 'D' comp3 = 2 comp4 = 3 ).
+
+    tab1 = VALUE #(
+      ( comp1 = 'A' comp2 = `bbb` comp3 = 1 )
+      ( comp1 = 'B' comp2 = `ccc` comp3 = 2 )
+      ( comp1 = 'C' comp2 = `ddd` comp3 = 3 ) ).
+
+    tab2 = VALUE #(
+      ( comp1 = `eee` comp2 = 'F' comp3 = 4 comp4 = 5 )
+      ( comp1 = `ggg` comp2 = 'H' comp3 = 6 comp4 = 7 )
+      ( comp1 = `iii` comp2 = 'J' comp3 = 8 comp4 = 9 ) ).
+
+    tab3 = VALUE #(
+      ( comp1 = `aaa` comp2 = 'B' comp3 = 1 comp4 = 2 )
+      ( comp1 = `ccc` comp2 = 'D' comp3 = 3 comp4 = 4 )
+      ( comp1 = `eee` comp2 = 'F' comp3 = 5 comp4 = 6 )
+      ( comp1 = `ggg` comp2 = 'H' comp3 = 7 comp4 = 8 )
+      ( comp1 = `iii` comp2 = 'J' comp3 = 9 comp4 = 10 ) ).
+
+    tab4 = tab3.
+  ENDMETHOD.
+
 
   METHOD if_oo_adt_classrun~main.
 
@@ -113,7 +168,7 @@ CLASS zcl_demo_abap_constructor_expr IMPLEMENTATION.
 
     output->display( `ABAP Cheat Sheet Example: Constructor expressions` ).
 
-    output->next_section( `VALUE` ).
+    output->display( `VALUE` ).
     output->display( `1) Structures: Populating a flat structure` ).
 
     "A flat structure is created based on a data type defined with a
@@ -147,7 +202,7 @@ CLASS zcl_demo_abap_constructor_expr IMPLEMENTATION.
 
     "You can use the BASE addition to retain existing content
     "Compare with the BASE example further down regarding internal tables: There are
-    "no extra parentheses within the outer pair of parentheses.    
+    "no extra parentheses within the outer pair of parentheses.
     struc = VALUE #( BASE struc char2 = 'xyz' ).
 
     output->display( input = struc name = `struc` ).
@@ -185,7 +240,7 @@ CLASS zcl_demo_abap_constructor_expr IMPLEMENTATION.
 
     itab = VALUE #( ( num = 1 char1 = 'aaa'  char2 = 'abc' )
                     ( num = 2 char1 = 'bbb'  char2 = 'def' )
-                    ( num = 3 char1 = 'ccc'                  ) ).
+                    ( num = 3 char1 = 'ccc'                 ) ).
 
     output->display( input = itab name = `itab` ).
 
@@ -312,7 +367,7 @@ CLASS zcl_demo_abap_constructor_expr IMPLEMENTATION.
              carrname = 'Singapore Airlines'
              currcode = 'SGD'
              url =  'http://www.singaporeair.com' )
-            ) ).
+           ) ).
 
     "Retrieving table entries for display purposes
     SELECT FROM zdemo_abap_carr
@@ -341,7 +396,7 @@ CLASS zcl_demo_abap_constructor_expr IMPLEMENTATION.
              END OF substruc,
            END OF deep_struc_ty.
 
-    DATA(deep_struc) = VALUE deep_struc_ty( num = 1 
+    DATA(deep_struc) = VALUE deep_struc_ty( num = 1
                                             char1 = 'aaa'
                                             substruc = VALUE #( int = 123 str = `hallo` ) ).
 
@@ -744,25 +799,25 @@ CLASS zcl_demo_abap_constructor_expr IMPLEMENTATION.
     output->display( input = dec_num name = `dec_num` ).
 
     "Declaring data objects
-    DATA(txt) = VALUE abap_bool(  ).
+    DATA(txt) = VALUE abap_bool( ).
 
     DATA(str) = ` `.
 
     "Comparing the data objects with and without conversion
-    output->display( `Without conversion:`  ).
+    output->display( `Without conversion:` ).
 
     IF txt = str.
-      output->display( `txt is equal to str.`  ).
+      output->display( `txt is equal to str.` ).
     ELSE.
-      output->display( `txt is not equal to str.`  ).
+      output->display( `txt is not equal to str.` ).
     ENDIF.
 
-    output->display( `With conversion:`  ).
+    output->display( `With conversion:` ).
 
     IF txt = CONV abap_bool( str ).
-      output->display( `txt is equal to converted str.`  ).
+      output->display( `txt is equal to converted str.` ).
     ELSE.
-      output->display( `txt is not equal to converted str.`  ).
+      output->display( `txt is not equal to converted str.` ).
     ENDIF.
 
 **********************************************************************
@@ -806,13 +861,13 @@ CLASS zcl_demo_abap_constructor_expr IMPLEMENTATION.
     DATA(conv_comp) = CONV numtext( '2 Apples + 5 Oranges' ).
 
     IF ex1 IS INITIAL.
-      output->display( |ex2: { ex2 }; { t1 }|  ).
+      output->display( |ex2: { ex2 }; { t1 }| ).
     ELSE.
       output->display( ex1 ).
     ENDIF.
 
     IF ex3 IS INITIAL.
-      output->display( |ex4: { ex4 }; { t2 }|  ).
+      output->display( |ex4: { ex4 }; { t2 }| ).
     ELSE.
       output->display( input = ex3 name = `ex3` ).
     ENDIF.
@@ -891,7 +946,7 @@ CLASS zcl_demo_abap_constructor_expr IMPLEMENTATION.
     DATA(methods) =
          CAST cl_abap_objectdescr(
                   cl_abap_objectdescr=>describe_by_name( 'LOCAL_CLASS' )
-                     )->methods.
+                    )->methods.
 
     "Excursion: Using the older cast operator ?=
     "Retrieving structure components
@@ -940,7 +995,7 @@ CLASS zcl_demo_abap_constructor_expr IMPLEMENTATION.
               THEN |It's { syst_time TIME = ISO }. | &&
                    |Good night, { sy-uname }.|
               ELSE |Hallo, { sy-uname }.|
-              ).
+             ).
 
     output->display( input = greets name = `greets` ).
 
@@ -1173,7 +1228,7 @@ CLASS zcl_demo_abap_constructor_expr IMPLEMENTATION.
       FOR wa3 IN tab3 WHERE ( comp3 < 4 )
       ( compX = wa1-comp1
         compY = wa2-comp1
-        compZ = wa3-comp3  ) ).
+        compZ = wa3-comp3 ) ).
 
     output->display( input = for4 name = `for4` ).
 
@@ -1202,12 +1257,12 @@ CLASS zcl_demo_abap_constructor_expr IMPLEMENTATION.
     "FOR ... WHILE ...
     DATA(for5) = VALUE t_type4(
           FOR x = 11 THEN x + 10 WHILE x < 40
-          ( col1 = x col2 = x + 1 col3 = x + 2  ) ).
+          ( col1 = x col2 = x + 1 col3 = x + 2 ) ).
 
     "FOR ... UNTIL ...
     DATA(for6) = VALUE t_type4(
           FOR y = 31 THEN y - 10 UNTIL y < 10
-          ( col1 = y col2 = y + 1 col3 = y + 2  ) ).
+          ( col1 = y col2 = y + 1 col3 = y + 2 ) ).
 
     output->display( input = for5 name = `for5` ).
     output->display( input = for6 name = `for6` ).
@@ -1242,7 +1297,7 @@ CLASS zcl_demo_abap_constructor_expr IMPLEMENTATION.
     DATA(a_word) =
           REDUCE string( INIT text = ``
             FOR word IN tab
-            NEXT text = |{ text }{ word }|  ).
+            NEXT text = |{ text }{ word }| ).
 
     "Example 2
     tab = VALUE #( ( `Some` ) ( `cool` ) ( `stuff` )
@@ -1335,7 +1390,7 @@ CLASS zcl_demo_abap_constructor_expr IMPLEMENTATION.
 
     output->display( input = str_tab name = `str_tab` ).
 
-**********************************************************************    
+**********************************************************************
 
     output->next_section( `42) LET Expressions (2)` ).
 
@@ -1389,7 +1444,7 @@ CLASS zcl_demo_abap_constructor_expr IMPLEMENTATION.
         LET <date>  = dates[ sy-index ]
             separator   =   '-'
          IN  <date>-year && separator && <date>-month &&
-             separator && <date>-day  ).
+             separator && <date>-day ).
 
       "Adding line to table
       stringtab = VALUE #( BASE stringtab ( isodate ) ).
@@ -1398,55 +1453,4 @@ CLASS zcl_demo_abap_constructor_expr IMPLEMENTATION.
     output->display( input = stringtab name = `stringtab` ).
 
   ENDMETHOD.
-
-  METHOD fill_deep_structures.
-    "Clearing all contents of struc2
-    CLEAR struc2.
-    "Filling nested tables in deep structures
-    struc2-struc_nested = VALUE #( comp1 = `aaa`
-                                   comp2 = `bbb`
-                                   comp3 = `ccc` ).
-
-    struc1-itab = VALUE #(
-      ( col1 = 111 col2 = 222 )
-      ( col1 = 333 col2 = 444
-      ) ).
-
-    struc2-itab = VALUE #(
-      ( col2 = 1 col3 = 2 col4 = 3 )
-      ( col2 = 4 col3 = 5 col4 = 6 )
-      ( col2 = 7 col3 = 8 col4 = 9 )
-      ).
-
-    "Filling individual component that is not shared by both structures
-    struc2-comp4 = 999.
-  ENDMETHOD.
-
-  METHOD fill_struc_and_tab.
-    CLEAR: s1, s2, tab1, tab2, tab3.
-
-    s1 = VALUE #( comp1 = 'A' comp2 = `bbb` comp3 = 1 ).
-
-    s2 = VALUE #( comp1 = `ccc` comp2 = 'D' comp3 = 2 comp4 = 3 ).
-
-    tab1 = VALUE #(
-      ( comp1 = 'A' comp2 = `bbb` comp3 = 1 )
-      ( comp1 = 'B' comp2 = `ccc` comp3 = 2 )
-      ( comp1 = 'C' comp2 = `ddd` comp3 = 3 ) ).
-
-    tab2 = VALUE #(
-      ( comp1 = `eee` comp2 = 'F' comp3 = 4 comp4 = 5 )
-      ( comp1 = `ggg` comp2 = 'H' comp3 = 6 comp4 = 7 )
-      ( comp1 = `iii` comp2 = 'J' comp3 = 8 comp4 = 9 ) ).
-
-    tab3 = VALUE #(
-      ( comp1 = `aaa` comp2 = 'B' comp3 = 1 comp4 = 2 )
-      ( comp1 = `ccc` comp2 = 'D' comp3 = 3 comp4 = 4 )
-      ( comp1 = `eee` comp2 = 'F' comp3 = 5 comp4 = 6 )
-      ( comp1 = `ggg` comp2 = 'H' comp3 = 7 comp4 = 8 )
-      ( comp1 = `iii` comp2 = 'J' comp3 = 9 comp4 = 10 ) ).
-
-    tab4 = tab3.
-  ENDMETHOD.
-
 ENDCLASS.

@@ -17,7 +17,7 @@
 *   and can be evaluated. The Failure Trace section provides information
 *   on errors found.
 * - If you are interested in test coverage, you can choose
-*   Ctrl/Cmd  + Shift + F11, or make a right-click, choose Run as ->
+*   Ctrl/Cmd + Shift + F11, or make a right-click, choose Run as ->
 *   ABAP Unit Test With..., select the Coverage checkbox and choose
 *   Execute. You can then check the results in the ABAP Coverage tab,
 *   what code is tested and what not.
@@ -39,13 +39,13 @@
 * ----------------------------- NOTE -----------------------------------
 * The code presented in this class is intended only to support the ABAP
 * cheat sheets. It is not intended for direct use in a production system
-* environment. The code examples in the ABAP cheat sheets are primarily 
-* intended to provide a better explanation and visualization of the 
-* syntax and semantics of ABAP statements, not to solve concrete 
-* programming tasks. For production application programs, you should  
-* always work out your own solution for each individual case. There is 
-* no guarantee for the correctness or completeness of the code.  
-* Furthermore, there is no legal responsibility or liability for any 
+* environment. The code examples in the ABAP cheat sheets are primarily
+* intended to provide a better explanation and visualization of the
+* syntax and semantics of ABAP statements, not to solve concrete
+* programming tasks. For production application programs, you should
+* always work out your own solution for each individual case. There is
+* no guarantee for the correctness or completeness of the code.
+* Furthermore, there is no legal responsibility or liability for any
 * errors or their consequences that may occur when using the the example
 * code.
 *
@@ -165,7 +165,338 @@ PRIVATE SECTION.
 
 ENDCLASS.
 
-CLASS zcl_demo_abap_unit_test IMPLEMENTATION.
+
+
+CLASS ZCL_DEMO_ABAP_UNIT_TEST IMPLEMENTATION.
+
+
+METHOD class_constructor.
+  "Filling demo database tables.
+  zcl_demo_abap_flight_tables=>fill_dbtabs( ).
+
+  "Preparing a demo database table for this example (get_sum method)
+  DELETE FROM zdemo_abap_tab1.
+  INSERT zdemo_abap_tab1 FROM @(
+    VALUE #( key_field = 1 char1 = 'aaa' char2 = 'bbb' num1 = 25 num2 = 75 ) ).
+ENDMETHOD.
+
+
+METHOD constructor.
+
+  "For demonstrating the back door injection
+  data_provider_local_itf = NEW lcl_data_prov_local_itf( ).
+
+  "For demonstrating the constructor injection
+  IF iref_data_prov IS BOUND.
+    "Note: The parameter is only bound when you run the unit test.
+    "When you run the unit test and you debug, you will see that iref_data_prov
+    "has a type reference to LTD_TEST_DATA_GLOBAL_INTF.
+
+    data_provider_global_itf = iref_data_prov.
+
+  ELSE.
+
+    data_provider_global_itf = NEW lcl_data_prov_glo_itf( ).
+
+  ENDIF.
+
+  "Object creation for the method call in the get_occ_rate_setter_inj method
+  data_provider_setter_inj = NEW lcl_data_prov_glo_itf( ).
+
+ENDMETHOD.
+
+
+METHOD get_common_div_and_gcd.
+  "Calculates the common divisors and the greatest common divisor of two numbers
+
+  CLEAR: common_divisors, gcd.
+
+  CHECK a >= 1.
+  CHECK b >= 1.
+
+  IF a >= b.
+    DATA(greater_num) = a.
+    DATA(lower_num) = b.
+  ELSE.
+    greater_num = b.
+    lower_num = a.
+  ENDIF.
+
+  "Getting common divisors
+  DATA(div) = 1.
+
+  WHILE div <= lower_num.
+    IF lower_num MOD div = 0.
+      DATA(divisor) = lower_num / div.
+      INSERT divisor INTO TABLE common_divisors.
+    ENDIF.
+
+    div += 1.
+  ENDWHILE.
+
+  LOOP AT common_divisors ASSIGNING FIELD-SYMBOL(<i>).
+
+    IF greater_num MOD <i> <> 0.
+      DELETE common_divisors WHERE table_line = <i>.
+    ENDIF.
+
+  ENDLOOP.
+
+  "Extracting the greatest common divisor from the list of common divisors
+  gcd = common_divisors[ lines( common_divisors ) ].
+
+ENDMETHOD.
+
+
+METHOD get_digit_sum.
+  "Calculates the digit sum of a number
+
+  CLEAR digit_sum.
+
+  CHECK num >= 0.
+
+  DATA(converted_int) = CONV string( num ).
+  DATA(len) = strlen( converted_int ).
+
+  DO len TIMES.
+    DATA(idx) = sy-index - 1.
+    digit_sum = digit_sum + converted_int+idx(1).
+  ENDDO.
+
+ENDMETHOD.
+
+
+METHOD get_occ_rate_global_itf.
+    "Method to demonstrate test double injection using constructor injection
+    "and a global interface
+
+  DATA total_seatsmax_global_itf TYPE i.
+  DATA total_seatsocc_global_itf TYPE i.
+
+  "Assumption: The original code in this method was as follows (the line commented out).
+  "It was identified as DOC (reading data from a database table).
+
+  "DATA(flight_data) = select_flight_data( carrier = carrier_id ).
+
+  "Instead of a method call like above and for a proper unit testing, a global interface
+  "is provided.
+  "In the example, an interface method is implemented in a local class in the local types
+  "tab (CCIMP include): lcl_data_prov_glo_itf
+
+  "When the class is executed using F9, the object used here refers to type lcl_data_prov_glo_itf.
+  "When the unit test is executed, the object used here refers to type ltd_test_data_global_intf,
+  "i.e. the local test double is injected.
+  DATA(flight_data) = data_provider_global_itf->select_flight_data( carrier = carrier_id ).
+
+  LOOP AT flight_data ASSIGNING FIELD-SYMBOL(<l>).
+
+    total_seatsmax_global_itf = total_seatsmax_global_itf + <l>-seatsmax.
+    total_seatsocc_global_itf = total_seatsocc_global_itf + <l>-seatsocc.
+
+  ENDLOOP.
+
+  occupancy_rate = total_seatsocc_global_itf / total_seatsmax_global_itf * 100.
+
+ENDMETHOD.
+
+
+METHOD get_occ_rate_local_itf.
+  "Method to demonstrate test double injection using back door
+  "injection and a local interface
+
+  DATA total_seatsmax_local_itf TYPE i.
+  DATA total_seatsocc_local_itf TYPE i.
+
+  "Assumption: The original code in this method was as follows (the line commented out).
+  "It was identified as DOC (reading data from a database table).
+
+  "DATA(flight_data) = select_flight_data( carrier = carrier_id ).
+
+  "Instead of a method call like above and for a proper unit testing - a global interface
+  "is not available - a local interface is created, and
+  "an interface method is implemented. In this example, the local interface is
+  "created in the local types tab (CCIMP include): lif_get_data
+  "A local class (lcl_data_prov_local_itf) is also created in the CCIMP include. It
+  "implements the local interface.
+
+  "When the class is executed using F9, the object used here refers to type lcl_data_prov_local_itf.
+  "When the unit test is executed, the object used here refers to type ltd_test_data_local_itf,
+  "i.e. the local test double is injected.
+  DATA(flight_data) = data_provider_local_itf->select_flight_data( carrier = carrier_id ).
+
+  LOOP AT flight_data ASSIGNING FIELD-SYMBOL(<k>).
+
+    total_seatsmax_local_itf = total_seatsmax_local_itf + <k>-seatsmax.
+    total_seatsocc_local_itf = total_seatsocc_local_itf + <k>-seatsocc.
+
+  ENDLOOP.
+
+  occupancy_rate = total_seatsocc_local_itf / total_seatsmax_local_itf * 100.
+
+ENDMETHOD.
+
+
+METHOD get_occ_rate_param_inj.
+    "This method demonstrates test double injection using parameter injection.
+
+  DATA total_seatsmax_param_inj TYPE i.
+  DATA total_seatsocc_param_inj TYPE i.
+
+  "Assumption: The original code in this method was as follows (the line commented out).
+  "It was identified as DOC (reading data from a database table).
+
+  "DATA(flight_data) = select_flight_data( carrier = carrier_id ).
+
+  "Instead of a method call like above and for a proper unit testing, a global interface
+  "is provided.
+  "In the example, an interface method is implemented in a local class in the local types
+  "tab (CCIMP include): lcl_data_prov_glo_itf
+
+  "The method has an optional importing parameter. When the unit test is executed,
+  "the parameter is bound. An object of the test double class is passed in that case.
+  "Otherwise, when the class is executed using F9, an object of the actual data provider
+  "is created.
+  IF data_prov IS BOUND.
+    data_provider_param_inj = data_prov.
+  ELSE.
+    data_provider_param_inj = NEW lcl_data_prov_glo_itf( ).
+  ENDIF.
+
+  DATA(flight_data) = data_provider_param_inj->select_flight_data( carrier = carrier_id ).
+
+  LOOP AT flight_data ASSIGNING FIELD-SYMBOL(<o>).
+
+    total_seatsmax_param_inj = total_seatsmax_param_inj + <o>-seatsmax.
+    total_seatsocc_param_inj = total_seatsocc_param_inj + <o>-seatsocc.
+
+  ENDLOOP.
+
+  occupancy_rate = total_seatsocc_param_inj / total_seatsmax_param_inj * 100.
+
+ENDMETHOD.
+
+
+METHOD get_occ_rate_setter_inj.
+    "This method demonstrates test double injection using setting injection.
+    "See the setter_meth method.
+
+  DATA total_seatsmax_setter_inj TYPE i.
+  DATA total_seatsocc_setter_inj TYPE i.
+
+  "Assumption: The original code in this method was as follows (the line commented out).
+  "It was identified as DOC (reading data from a database table).
+
+  "DATA(flight_data) = select_flight_data( carrier = carrier_id ).
+
+  "Instead of a method call like above and for a proper unit testing, a global interface
+  "is provided.
+  "In the example, an interface method is implemented in a local class in the local types
+  "tab (CCIMP include): lcl_data_prov_glo_itf
+
+  "See the comment in the setter_meth method
+  DATA(flight_data) = data_provider_setter_inj->select_flight_data( carrier = carrier_id ).
+
+  LOOP AT flight_data ASSIGNING FIELD-SYMBOL(<n>).
+
+    total_seatsmax_setter_inj = total_seatsmax_setter_inj + <n>-seatsmax.
+    total_seatsocc_setter_inj = total_seatsocc_setter_inj + <n>-seatsocc.
+
+  ENDLOOP.
+
+  occupancy_rate = total_seatsocc_setter_inj / total_seatsmax_setter_inj * 100.
+
+ENDMETHOD.
+
+
+METHOD get_occ_rate_test_seam.
+"Method to demonstrate test double injection using test seams
+"Note: The code is just for demonstration purposes. Of course, the result can be
+"achieved more elegantly using SQL expressions, for example.
+
+  TEST-SEAM select_flights.
+    "DOC
+    SELECT seatsmax, seatsocc
+      FROM zdemo_abap_fli
+      WHERE carrid = @carrier_id
+      INTO CORRESPONDING FIELDS OF TABLE @seats_table.
+  END-TEST-SEAM.
+
+  DATA total_seatsmax_tm TYPE i.
+  DATA total_seatsocc_tm TYPE i.
+
+  LOOP AT seats_table ASSIGNING FIELD-SYMBOL(<j>).
+
+    total_seatsmax_tm = total_seatsmax_tm + <j>-seatsmax.
+    total_seatsocc_tm = total_seatsocc_tm + <j>-seatsocc.
+
+  ENDLOOP.
+
+  occupancy_rate = total_seatsocc_tm / total_seatsmax_tm * 100.
+
+  "Further examples for test seams
+  DATA(var) = 0.
+
+  "Empty test seam; code is injected during unit test
+  "Check the output when running the class using F9 and
+  "the test results when running the unit test.
+  TEST-SEAM num1.
+  END-TEST-SEAM.
+
+  IF var = 0.
+    num1 = 1.
+  ELSE.
+    num1 = 999.
+  ENDIF.
+
+  num2 = 0.
+
+  "Empty injection
+  "See the test class: The code that is included in the test
+  "seam should be excluded from the test. Therefore, the
+  "test injection block in the test class is empty.
+  "Check the output when running the class using F9 and
+  "the test results when running the unit test.
+  TEST-SEAM num2.
+    num2 = 123.
+  END-TEST-SEAM.
+
+ENDMETHOD.
+
+
+METHOD get_occ_rate_using_meth.
+  "This method demonstrates test double injection using inheritance and method redefinition.
+
+  DATA total_seatsmax_no TYPE i.
+  DATA total_seatsocc_no TYPE i.
+
+  "During the unit test, the redefined method in the test class is called.
+  DATA(flight_data) = select_flight_data( carrier = carrier_id ).
+
+  LOOP AT flight_data ASSIGNING FIELD-SYMBOL(<m>).
+
+    total_seatsmax_no = total_seatsmax_no + <m>-seatsmax.
+    total_seatsocc_no = total_seatsocc_no + <m>-seatsocc.
+
+  ENDLOOP.
+
+  occupancy_rate = total_seatsocc_no / total_seatsmax_no * 100.
+
+ENDMETHOD.
+
+
+METHOD get_sum.
+  "The method selects a record from a database table and sums the values
+  "of two fields, both are of type i.
+
+  SELECT SINGLE
+          FROM zdemo_abap_tab1
+          FIELDS num1 + num2 AS sum
+          WHERE key_field = @key
+          AND char1 = @char
+          INTO @sum.
+
+ENDMETHOD.
+
 
 METHOD if_oo_adt_classrun~main.
   "Note: The example includes a couple of implementations for the methods
@@ -179,6 +510,11 @@ METHOD if_oo_adt_classrun~main.
   DATA(output) = NEW zcl_demo_abap_display( out ).
 
   output->display( `ABAP Cheat Sheet Example: ABAP Unit Tests` ).
+
+  output->display( `************************************************************************` ).
+  output->display( `---> Choose Ctrl/Cmd + Shift + F10 to launch all tests in the class <---` ).
+  output->display( `************************************************************************` ).
+
   output->display( `1) get_sum Method` ).
   "This method demonstrates the use of the setup and teardown methods in the test class.
 
@@ -327,232 +663,6 @@ METHOD if_oo_adt_classrun~main.
 
 ENDMETHOD.
 
-METHOD class_constructor.
-  "Filling demo database tables.
-  zcl_demo_abap_flight_tables=>fill_dbtabs( ).
-
-  "Preparing a demo database table for this example (get_sum method)
-  DELETE FROM zdemo_abap_tab1.
-  INSERT zdemo_abap_tab1 FROM @(
-    VALUE #( key_field = 1 char1 = 'aaa' char2 = 'bbb' num1 = 25 num2 = 75 ) ).
-ENDMETHOD.
-
-METHOD constructor.
-
-  "For demonstrating the back door injection
-  data_provider_local_itf = NEW lcl_data_prov_local_itf( ).
-
-  "For demonstrating the constructor injection
-  IF iref_data_prov IS BOUND.
-    "Note: The parameter is only bound when you run the unit test.
-    "When you run the unit test and you debug, you will see that iref_data_prov
-    "has a type reference to LTD_TEST_DATA_GLOBAL_INTF.
-
-    data_provider_global_itf = iref_data_prov.
-
-  ELSE.
-
-    data_provider_global_itf = NEW lcl_data_prov_glo_itf( ).
-
-  ENDIF.
-
-  "Object creation for the method call in the get_occ_rate_setter_inj method
-  data_provider_setter_inj = NEW lcl_data_prov_glo_itf( ).
-
-ENDMETHOD.
-
-METHOD get_sum.
-  "The method selects a record from a database table and sums the values
-  "of two fields, both are of type i.
-
-  SELECT SINGLE
-          FROM zdemo_abap_tab1
-          FIELDS num1 + num2 AS sum
-          WHERE key_field = @key
-          AND char1 = @char
-          INTO @sum.
-
-ENDMETHOD.
-
-METHOD get_common_div_and_gcd.
-  "Calculates the common divisors and the greatest common divisor of two numbers
-
-  CLEAR: common_divisors, gcd.
-
-  CHECK a >= 1.
-  CHECK b >= 1.
-
-  IF a >= b.
-    DATA(greater_num) = a.
-    DATA(lower_num) = b.
-  ELSE.
-    greater_num = b.
-    lower_num = a.
-  ENDIF.
-
-  "Getting common divisors
-  DATA(div) = 1.
-
-  WHILE div <= lower_num.
-    IF lower_num MOD div = 0.
-      DATA(divisor) = lower_num / div.
-      INSERT divisor INTO TABLE common_divisors.
-    ENDIF.
-
-    div += 1.
-  ENDWHILE.
-
-  LOOP AT common_divisors ASSIGNING FIELD-SYMBOL(<i>).
-
-    IF greater_num MOD <i> <> 0.
-      DELETE common_divisors WHERE table_line = <i>.
-    ENDIF.
-
-  ENDLOOP.
-
-  "Extracting the greatest common divisor from the list of common divisors
-  gcd = common_divisors[ lines( common_divisors ) ].
-
-ENDMETHOD.
-
-METHOD get_digit_sum.
-  "Calculates the digit sum of a number
-
-  CLEAR digit_sum.
-
-  CHECK num >= 0.
-
-  DATA(converted_int) = CONV string( num ).
-  DATA(len) = strlen( converted_int ).
-
-  DO len TIMES.
-    DATA(idx) = sy-index - 1.
-    digit_sum = digit_sum + converted_int+idx(1).
-  ENDDO.
-
-ENDMETHOD.
-
-METHOD get_occ_rate_test_seam.
-"Method to demonstrate test double injection using test seams
-"Note: The code is just for demonstration purposes. Of course, the result can be
-"achieved more elegantly using SQL expressions, for example.
-
-  TEST-SEAM select_flights.
-    "DOC
-    SELECT seatsmax, seatsocc
-      FROM zdemo_abap_fli
-      WHERE carrid = @carrier_id
-      INTO CORRESPONDING FIELDS OF TABLE @seats_table.
-  END-TEST-SEAM.
-
-  DATA total_seatsmax_tm TYPE i.
-  DATA total_seatsocc_tm TYPE i.
-
-  LOOP AT seats_table ASSIGNING FIELD-SYMBOL(<j>).
-
-    total_seatsmax_tm = total_seatsmax_tm + <j>-seatsmax.
-    total_seatsocc_tm = total_seatsocc_tm + <j>-seatsocc.
-
-  ENDLOOP.
-
-  occupancy_rate = total_seatsocc_tm / total_seatsmax_tm * 100.
-
-  "Further examples for test seams
-  DATA(var) = 0.
-
-  "Empty test seam; code is injected during unit test
-  "Check the output when running the class using F9 and
-  "the test results when running the unit test.
-  TEST-SEAM num1.
-  END-TEST-SEAM.
-
-  IF var = 0.
-    num1 = 1.
-  ELSE.
-    num1 = 999.
-  ENDIF.
-
-  num2 = 0.
-
-  "Empty injection
-  "See the test class: The code that is included in the test
-  "seam should be excluded from the test. Therefore, the
-  "test injection block in the test class is empty.
-  "Check the output when running the class using F9 and
-  "the test results when running the unit test.
-  TEST-SEAM num2.
-    num2 = 123.
-  END-TEST-SEAM.
-
-ENDMETHOD.
-
-METHOD get_occ_rate_local_itf.
-  "Method to demonstrate test double injection using back door
-  "injection and a local interface
-
-  DATA total_seatsmax_local_itf TYPE i.
-  DATA total_seatsocc_local_itf TYPE i.
-
-  "Assumption: The original code in this method was as follows (the line commented out).
-  "It was identified as DOC (reading data from a database table).
-
-  "DATA(flight_data) = select_flight_data( carrier = carrier_id ).
-
-  "Instead of a method call like above and for a proper unit testing - a global interface
-  "is not available - a local interface is created, and
-  "an interface method is implemented. In this example, the local interface is
-  "created in the local types tab (CCIMP include): lif_get_data
-  "A local class (lcl_data_prov_local_itf) is also created in the CCIMP include. It
-  "implements the local interface.
-
-  "When the class is executed using F9, the object used here refers to type lcl_data_prov_local_itf.
-  "When the unit test is executed, the object used here refers to type ltd_test_data_local_itf,
-  "i.e. the local test double is injected.
-  DATA(flight_data) = data_provider_local_itf->select_flight_data( carrier = carrier_id ).
-
-  LOOP AT flight_data ASSIGNING FIELD-SYMBOL(<k>).
-
-    total_seatsmax_local_itf = total_seatsmax_local_itf + <k>-seatsmax.
-    total_seatsocc_local_itf = total_seatsocc_local_itf + <k>-seatsocc.
-
-  ENDLOOP.
-
-  occupancy_rate = total_seatsocc_local_itf / total_seatsmax_local_itf * 100.
-
-ENDMETHOD.
-
-METHOD get_occ_rate_global_itf.
-    "Method to demonstrate test double injection using constructor injection
-    "and a global interface
-
-  DATA total_seatsmax_global_itf TYPE i.
-  DATA total_seatsocc_global_itf TYPE i.
-
-  "Assumption: The original code in this method was as follows (the line commented out).
-  "It was identified as DOC (reading data from a database table).
-
-  "DATA(flight_data) = select_flight_data( carrier = carrier_id ).
-
-  "Instead of a method call like above and for a proper unit testing, a global interface
-  "is provided.
-  "In the example, an interface method is implemented in a local class in the local types
-  "tab (CCIMP include): lcl_data_prov_glo_itf
-
-  "When the class is executed using F9, the object used here refers to type lcl_data_prov_glo_itf.
-  "When the unit test is executed, the object used here refers to type ltd_test_data_global_intf,
-  "i.e. the local test double is injected.
-  DATA(flight_data) = data_provider_global_itf->select_flight_data( carrier = carrier_id ).
-
-  LOOP AT flight_data ASSIGNING FIELD-SYMBOL(<l>).
-
-    total_seatsmax_global_itf = total_seatsmax_global_itf + <l>-seatsmax.
-    total_seatsocc_global_itf = total_seatsocc_global_itf + <l>-seatsocc.
-
-  ENDLOOP.
-
-  occupancy_rate = total_seatsocc_global_itf / total_seatsmax_global_itf * 100.
-
-ENDMETHOD.
 
 METHOD select_flight_data.
 "Method that is identified as DOC in the method implementations above.
@@ -564,56 +674,6 @@ METHOD select_flight_data.
     INTO CORRESPONDING FIELDS OF TABLE @flight_data.
 ENDMETHOD.
 
-METHOD get_occ_rate_using_meth.
-  "This method demonstrates test double injection using inheritance and method redefinition.
-
-  DATA total_seatsmax_no TYPE i.
-  DATA total_seatsocc_no TYPE i.
-
-  "During the unit test, the redefined method in the test class is called.
-  DATA(flight_data) = select_flight_data( carrier = carrier_id ).
-
-  LOOP AT flight_data ASSIGNING FIELD-SYMBOL(<m>).
-
-    total_seatsmax_no = total_seatsmax_no + <m>-seatsmax.
-    total_seatsocc_no = total_seatsocc_no + <m>-seatsocc.
-
-  ENDLOOP.
-
-  occupancy_rate = total_seatsocc_no / total_seatsmax_no * 100.
-
-ENDMETHOD.
-
-METHOD get_occ_rate_setter_inj.
-    "This method demonstrates test double injection using setting injection.
-    "See the setter_meth method.
-
-  DATA total_seatsmax_setter_inj TYPE i.
-  DATA total_seatsocc_setter_inj TYPE i.
-
-  "Assumption: The original code in this method was as follows (the line commented out).
-  "It was identified as DOC (reading data from a database table).
-
-  "DATA(flight_data) = select_flight_data( carrier = carrier_id ).
-
-  "Instead of a method call like above and for a proper unit testing, a global interface
-  "is provided.
-  "In the example, an interface method is implemented in a local class in the local types
-  "tab (CCIMP include): lcl_data_prov_glo_itf
-
-  "See the comment in the setter_meth method
-  DATA(flight_data) = data_provider_setter_inj->select_flight_data( carrier = carrier_id ).
-
-  LOOP AT flight_data ASSIGNING FIELD-SYMBOL(<n>).
-
-    total_seatsmax_setter_inj = total_seatsmax_setter_inj + <n>-seatsmax.
-    total_seatsocc_setter_inj = total_seatsocc_setter_inj + <n>-seatsocc.
-
-  ENDLOOP.
-
-  occupancy_rate = total_seatsocc_setter_inj / total_seatsmax_setter_inj * 100.
-
-ENDMETHOD.
 
 METHOD setter_meth.
   "Method to demonstrate the test double injection using setter injection
@@ -623,44 +683,4 @@ METHOD setter_meth.
   "i.e. the local test double is injected.
   data_provider_setter_inj =  data_prov.
 ENDMETHOD.
-
-METHOD get_occ_rate_param_inj.
-    "This method demonstrates test double injection using parameter injection.
-
-  DATA total_seatsmax_param_inj TYPE i.
-  DATA total_seatsocc_param_inj TYPE i.
-
-  "Assumption: The original code in this method was as follows (the line commented out).
-  "It was identified as DOC (reading data from a database table).
-
-  "DATA(flight_data) = select_flight_data( carrier = carrier_id ).
-
-  "Instead of a method call like above and for a proper unit testing, a global interface
-  "is provided.
-  "In the example, an interface method is implemented in a local class in the local types
-  "tab (CCIMP include): lcl_data_prov_glo_itf
-
-  "The method has an optional importing parameter. When the unit test is executed,
-  "the parameter is bound. An object of the test double class is passed in that case.
-  "Otherwise, when the class is executed using F9, an object of the actual data provider
-  "is created.
-  IF data_prov IS BOUND.
-    data_provider_param_inj = data_prov.
-  ELSE.
-    data_provider_param_inj = NEW lcl_data_prov_glo_itf( ).
-  ENDIF.
-
-  DATA(flight_data) = data_provider_param_inj->select_flight_data( carrier = carrier_id ).
-
-  LOOP AT flight_data ASSIGNING FIELD-SYMBOL(<o>).
-
-    total_seatsmax_param_inj = total_seatsmax_param_inj + <o>-seatsmax.
-    total_seatsocc_param_inj = total_seatsocc_param_inj + <o>-seatsocc.
-
-  ENDLOOP.
-
-  occupancy_rate = total_seatsocc_param_inj / total_seatsmax_param_inj * 100.
-
-ENDMETHOD.
-
 ENDCLASS.

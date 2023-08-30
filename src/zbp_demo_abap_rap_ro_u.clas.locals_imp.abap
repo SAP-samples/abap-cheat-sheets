@@ -25,13 +25,13 @@
 *
 * The code presented in this class is intended only to support the ABAP
 * cheat sheets. It is not intended for direct use in a production system
-* environment. The code examples in the ABAP cheat sheets are primarily 
-* intended to provide a better explanation and visualization of the 
-* syntax and semantics of ABAP statements, not to solve concrete 
-* programming tasks. For production application programs, you should  
-* always work out your own solution for each individual case. There is 
-* no guarantee for the correctness or completeness of the code.  
-* Furthermore, there is no legal responsibility or liability for any 
+* environment. The code examples in the ABAP cheat sheets are primarily
+* intended to provide a better explanation and visualization of the
+* syntax and semantics of ABAP statements, not to solve concrete
+* programming tasks. For production application programs, you should
+* always work out your own solution for each individual case. There is
+* no guarantee for the correctness or completeness of the code.
+* Furthermore, there is no legal responsibility or liability for any
 * errors or their consequences that may occur when using the the example
 * code.
 *

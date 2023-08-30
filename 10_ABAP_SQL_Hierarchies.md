@@ -59,7 +59,7 @@ learn some additional syntax and then you can start right away.
 > **💡 Note**<br>
 > The examples in this cheat sheet are only relevant for [standard ABAP](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenstandard_abap_glosry.htm), i. e. the unrestricted ABAP language scope. Find the artifacts used in the code snippets in your on-premise system.
 
-<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## SQL Hierarchies
 
@@ -103,7 +103,7 @@ for each row. For creating a SQL hierarchy, you need the following:
 The following topics show you step-by-step how SQL hierarchies can be
 created and accessed.
 
-<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## Creating SQL Hierarchies
 
@@ -258,7 +258,7 @@ From the ABAP language point of view, CDS hierarchies are the most
 convenient way of using SQL hierarchies. Now let us turn to other ways,
 involving more ABAP, until we do not use any CDS more in the end.
 
-<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ### ABAP SQL Hierarchy Generator HIERARCHY
 The ABAP SQL [hierarchy
@@ -375,7 +375,7 @@ not least we will use CTEs as hierarchies themselves. You might skip the
 following section and turn directly to the hierarchy navigators if you
 are not too interested in this syntactic gimmicks.
 
-<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ### ABAP CTE Hierarchies
 
@@ -489,7 +489,7 @@ hierarchy association. Running
 `CL_DEMO_SQL_HIERARCHIES` shows that all
 assertions are fulfilled.
 
-<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## Hierarchy Navigators
 
@@ -513,7 +513,7 @@ or a CTE hierarchy. Check the examples of the
 [documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenselect_hierarchy_navigators.htm),
 where this is also shown.
 
-<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ### Hierarchy Node Navigator HIERARCHY_DESCENDANTS
 
@@ -550,7 +550,7 @@ distance to the respective start node. A further parameter
 `DISTANCE` - not shown here - allows you to restrict the
 distance to the respective start node.
 
-<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ### Hierarchy Node Navigator HIERARCHY_ANCESTORS
 
@@ -582,7 +582,7 @@ aggregate functions or evaluating the internal result table, you can now
 easily extract further information like the number of ancestors and so
 on.
 
-<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ### Hierarchy Node Navigator HIERARCHY_SIBLINGS
 
@@ -616,7 +616,7 @@ the respective start node. Running
 `CL_DEMO_SQL_HIERARCHIES`, where we start with
 a node that definitely has some siblings, shows the result.
 
-<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ### Hierarchy Aggregate Navigators
 
@@ -717,7 +717,7 @@ Running `CL_DEMO_SQL_HIERARCHIES` shows the
 result. It also shows the result of the joined data source, where you
 can check that the calculated values are correct.
 
-<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## More Information
 For the complete reference documentation about SQL hierarchies, see [`SELECT, FROM hierarchy_data`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenselect_hierarchy_data.htm).

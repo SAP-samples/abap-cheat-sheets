@@ -16,26 +16,26 @@
 * - Open the class with the ABAP development tools for Eclipse (ADT).
 * - Choose F9 to run the class.
 * - Check the console output.
-* - To understand the context and the ABAP syntax used, refer to the 
-*   notes included in the class as comments or refer to the respective 
+* - To understand the context and the ABAP syntax used, refer to the
+*   notes included in the class as comments or refer to the respective
 *   topic in the ABAP Keyword Documentation.
-* - Due to the amount of console output, the examples contain numbers 
-*   (e.g. 1) ..., 2) ..., 3) ...) for the individual example sections. 
-*   Also, the variable name is displayed in most cases. So to find 
-*   the relevant output in the console easier and faster, just search 
-*   for the number/variable name in the console (CTRL+F in the console) 
+* - Due to the amount of console output, the examples contain numbers
+*   (e.g. 1) ..., 2) ..., 3) ...) for the individual example sections.
+*   Also, the variable name is displayed in most cases. So to find
+*   the relevant output in the console easier and faster, just search
+*   for the number/variable name in the console (CTRL+F in the console)
 *   or use the debugger.
 *
 * ----------------------------- NOTE -----------------------------------
 * The code presented in this class is intended only to support the ABAP
 * cheat sheets. It is not intended for direct use in a production system
-* environment. The code examples in the ABAP cheat sheets are primarily 
-* intended to provide a better explanation and visualization of the 
-* syntax and semantics of ABAP statements, not to solve concrete 
-* programming tasks. For production application programs, you should  
-* always work out your own solution for each individual case. There is 
-* no guarantee for the correctness or completeness of the code.  
-* Furthermore, there is no legal responsibility or liability for any 
+* environment. The code examples in the ABAP cheat sheets are primarily
+* intended to provide a better explanation and visualization of the
+* syntax and semantics of ABAP statements, not to solve concrete
+* programming tasks. For production application programs, you should
+* always work out your own solution for each individual case. There is
+* no guarantee for the correctness or completeness of the code.
+* Furthermore, there is no legal responsibility or liability for any
 * errors or their consequences that may occur when using the the example
 * code.
 *
@@ -50,6 +50,7 @@ CLASS zcl_demo_abap_prog_flow_logic DEFINITION
   PUBLIC SECTION.
     INTERFACES: if_oo_adt_classrun.
 
+protected section.
   PRIVATE SECTION.
 
     "Structured type for calculation example
@@ -98,7 +99,118 @@ CLASS zcl_demo_abap_prog_flow_logic DEFINITION
 
 ENDCLASS.
 
-CLASS zcl_demo_abap_prog_flow_logic IMPLEMENTATION.
+
+
+CLASS ZCL_DEMO_ABAP_PROG_FLOW_LOGIC IMPLEMENTATION.
+
+
+  METHOD addition.
+    res = num1 + num2.
+  ENDMETHOD.
+
+
+  METHOD calc.
+
+    DATA calc_if TYPE string.
+    DATA calc_case TYPE string.
+    DATA calc_cond TYPE string.
+    DATA calc_switch TYPE string.
+
+    "IF statements
+
+    IF operator = `+`.
+      calc_if = num1 + num2.
+    ELSEIF operator = `-`.
+      calc_if = num1 - num2.
+    ELSEIF operator = `*`.
+      calc_if = num1 * num2.
+    ELSEIF operator = `/`.
+
+      IF num2 = 0.
+        calc_if = `Division by 0`.
+      ELSE.
+        calc_if = num1 / num2.
+      ENDIF.
+    ELSE.
+      calc_if = |Check the operator { operator }.|.
+    ENDIF.
+
+    prep_calc_result( CHANGING res = calc_if ).
+
+    "CASE
+
+    CASE operator.
+      WHEN '+'.
+        calc_case = num1 + num2.
+      WHEN '-'.
+        calc_case = num1 - num2.
+      WHEN '*'.
+        calc_case = num1 * num2.
+      WHEN '/'.
+
+        CASE num2.
+          WHEN 0.
+            calc_case = `Division by 0`.
+          WHEN OTHERS.
+            calc_case = num1 / num2.
+        ENDCASE.
+
+      WHEN OTHERS.
+        calc_case = |Check the operator { operator }.|.
+    ENDCASE.
+
+    prep_calc_result( CHANGING res = calc_case ).
+
+    "COND
+
+    calc_cond = COND #( WHEN operator = '+'
+                  THEN num1 + num2
+                  WHEN operator = '-'
+                  THEN num1 - num2
+                  WHEN operator = '*'
+                  THEN num1 * num2
+                  WHEN operator = '/' AND num2 = 0 THEN `Division by 0`
+                  WHEN operator = '/' AND num2 <> 0 THEN num1 / num2
+                  ELSE |Check the operator { operator }.|
+     ).
+
+    prep_calc_result( CHANGING res = calc_cond ).
+
+    "SWITCH
+
+    calc_switch = SWITCH #( operator
+                  WHEN '+' THEN num1 + num2
+                  WHEN '-' THEN num1 - num2
+                  WHEN '*' THEN num1 * num2
+                  WHEN '/' THEN SWITCH #( num2 WHEN 0 THEN `Division by 0` ELSE num1 / num2 )
+                  ELSE |Check the operator { operator }.| ).
+
+    prep_calc_result( CHANGING res = calc_switch ).
+
+    res = VALUE #(  calculation = |{ num1 } { operator } { num2 }|
+      res_if = calc_if
+      res_case = calc_case
+      res_cond = calc_cond
+      res_switch = calc_switch
+      ).
+
+  ENDMETHOD.
+
+
+  METHOD check_is_supplied.
+    IF num1 IS SUPPLIED.
+      APPEND `num1 is supplied` TO res.
+    ELSE.
+      APPEND `num1 is not supplied` TO res.
+    ENDIF.
+
+    IF num2 IS NOT SUPPLIED.
+      APPEND `num2 is not supplied` TO res.
+    ELSE.
+      APPEND `num2 is supplied` TO res.
+    ENDIF.
+  ENDMETHOD.
+
 
   METHOD if_oo_adt_classrun~main.
 
@@ -113,7 +225,7 @@ CLASS zcl_demo_abap_prog_flow_logic IMPLEMENTATION.
     "Simple control structure realized by an IF ... ELSEIF ... ELSE ... ENDIF.
     "statement. Multiple statement blocks can be included, of which only 1 is
     "executed at most and depending on conditions.
-    
+
     "Determining some operators for a calculation
     DATA(operators) = VALUE string_table( ( `+` ) ( `-` ) ( `?` ) ).
 
@@ -1223,111 +1335,6 @@ CLASS zcl_demo_abap_prog_flow_logic IMPLEMENTATION.
 
   ENDMETHOD.
 
-  METHOD check_is_supplied.
-    IF num1 IS SUPPLIED.
-      APPEND `num1 is supplied` TO res.
-    ELSE.
-      APPEND `num1 is not supplied` TO res.
-    ENDIF.
-
-    IF num2 IS NOT SUPPLIED.
-      APPEND `num2 is not supplied` TO res.
-    ELSE.
-      APPEND `num2 is supplied` TO res.
-    ENDIF.
-  ENDMETHOD.
-
-  METHOD addition.
-    res = num1 + num2.
-  ENDMETHOD.
-
-  METHOD calc.
-
-    DATA calc_if TYPE string.
-    DATA calc_case TYPE string.
-    DATA calc_cond TYPE string.
-    DATA calc_switch TYPE string.
-
-    "IF statements
-
-    IF operator = `+`.
-      calc_if = num1 + num2.
-    ELSEIF operator = `-`.
-      calc_if = num1 - num2.
-    ELSEIF operator = `*`.
-      calc_if = num1 * num2.
-    ELSEIF operator = `/`.
-
-      IF num2 = 0.
-        calc_if = `Division by 0`.
-      ELSE.
-        calc_if = num1 / num2.
-      ENDIF.
-    ELSE.
-      calc_if = |Check the operator { operator }.|.
-    ENDIF.
-
-    prep_calc_result( CHANGING res = calc_if ).
-
-    "CASE
-
-    CASE operator.
-      WHEN '+'.
-        calc_case = num1 + num2.
-      WHEN '-'.
-        calc_case = num1 - num2.
-      WHEN '*'.
-        calc_case = num1 * num2.
-      WHEN '/'.
-
-        CASE num2.
-          WHEN 0.
-            calc_case = `Division by 0`.
-          WHEN OTHERS.
-            calc_case = num1 / num2.
-        ENDCASE.
-
-      WHEN OTHERS.
-        calc_case = |Check the operator { operator }.|.
-    ENDCASE.
-
-    prep_calc_result( CHANGING res = calc_case ).
-
-    "COND
-
-    calc_cond = COND #( WHEN operator = '+'
-                  THEN num1 + num2
-                  WHEN operator = '-'
-                  THEN num1 - num2
-                  WHEN operator = '*'
-                  THEN num1 * num2
-                  WHEN operator = '/' AND num2 = 0 THEN `Division by 0`
-                  WHEN operator = '/' AND num2 <> 0 THEN num1 / num2
-                  ELSE |Check the operator { operator }.|
-     ).
-
-    prep_calc_result( CHANGING res = calc_cond ).
-
-    "SWITCH
-
-    calc_switch = SWITCH #( operator
-                  WHEN '+' THEN num1 + num2
-                  WHEN '-' THEN num1 - num2
-                  WHEN '*' THEN num1 * num2
-                  WHEN '/' THEN SWITCH #( num2 WHEN 0 THEN `Division by 0` ELSE num1 / num2 )
-                  ELSE |Check the operator { operator }.| ).
-
-    prep_calc_result( CHANGING res = calc_switch ).
-
-    res = VALUE #(  calculation = |{ num1 } { operator } { num2 }|
-      res_if = calc_if
-      res_case = calc_case
-      res_cond = calc_cond
-      res_switch = calc_switch
-      ).
-
-  ENDMETHOD.
-
 
   METHOD meth_with_return.
 
@@ -1340,6 +1347,36 @@ CLASS zcl_demo_abap_prog_flow_logic IMPLEMENTATION.
     res = `The method call was not terminated. The square root of ` && num && ` is ` && sqr_res.
 
   ENDMETHOD.
+
+
+  METHOD power2_and_sqrt.
+
+    result = |Calculation result:\n{ num } powered by 2 = { ipow( base = num exp = 2 ) }\nSquare root of { num } = { sqrt( num ) }|.
+
+  ENDMETHOD.
+
+
+  METHOD prep_calc_result.
+
+    FIND PCRE `-$` IN res.  "trailing minus
+
+    IF sy-subrc = 0.
+      SHIFT res BY 1 PLACES RIGHT CIRCULAR.
+    ENDIF.
+
+    "trailing .0
+    IF res CP `*.0*`.
+      SHIFT res RIGHT DELETING TRAILING ` `.
+      SHIFT res LEFT  DELETING LEADING ` `.
+      FIND PCRE `\.0$` IN res.
+
+      IF sy-subrc = 0.
+        REPLACE `.0` IN res WITH ``.
+      ENDIF.
+    ENDIF.
+
+  ENDMETHOD.
+
 
   METHOD validate_email.
 
@@ -1363,32 +1400,4 @@ CLASS zcl_demo_abap_prog_flow_logic IMPLEMENTATION.
     ENDIF.
 
   ENDMETHOD.
-
-  METHOD power2_and_sqrt.
-
-    result = |Calculation result:\n{ num } powered by 2 = { ipow( base = num exp = 2 ) }\nSquare root of { num } = { sqrt( num ) }|.
-
-  ENDMETHOD.
-
-  METHOD prep_calc_result.
-
-    FIND PCRE `-$` IN res.  "trailing minus
-
-    IF sy-subrc = 0.
-      SHIFT res BY 1 PLACES RIGHT CIRCULAR.
-    ENDIF.
-
-    "trailing .0
-    IF res CP `*.0*`.
-      SHIFT res RIGHT DELETING TRAILING ` `.
-      SHIFT res LEFT  DELETING LEADING ` `.
-      FIND PCRE `\.0$` IN res.
-
-      IF sy-subrc = 0.
-        REPLACE `.0` IN res WITH ``.
-      ENDIF.
-    ENDIF.
-
-  ENDMETHOD.
-
 ENDCLASS.

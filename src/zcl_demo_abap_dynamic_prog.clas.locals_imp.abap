@@ -40,7 +40,7 @@ CLASS lcl_det_at_runtime DEFINITION.
       get_dyn_class_meth EXPORTING cl   TYPE string
                                    meth TYPE string
                                    ptab TYPE abap_parmbind_tab,
-      get_dyn_syntax_elements RETURNING VALUE(syntax_elements) TYPE struc_dyn,                                   
+      get_dyn_syntax_elements RETURNING VALUE(syntax_elements) TYPE struc_dyn,
       fill_string.
 
   PROTECTED SECTION.

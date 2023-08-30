@@ -31,10 +31,6 @@
 *   or use the debugger.
 *
 * ----------------------------- NOTE -----------------------------------
-* Some code sections are commented out. The syntax is only available in
-* newer ABAP releases. Comment them in if you are running a newer
-* ABAP release, for example, in the SAP BTP environment.
-*
 * The code presented in this class is intended only to support the ABAP
 * cheat sheets. It is not intended for direct use in a production system
 * environment. The code examples in the ABAP cheat sheets are primarily
@@ -60,18 +56,18 @@ CLASS zcl_demo_abap_dynamic_prog DEFINITION
 
     CLASS-METHODS:
       class_constructor.
-
-  PROTECTED SECTION.
-  PRIVATE SECTION.
-
 ENDCLASS.
 
+
+
 CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
+
 
   METHOD class_constructor.
     "Filling demo database tables.
     zcl_demo_abap_flight_tables=>fill_dbtabs( ).
   ENDMETHOD.
+
 
   METHOD if_oo_adt_classrun~main.
 
@@ -463,12 +459,11 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
 
     DO.
       "sy-index represents the position of a structure component
-      "NOTE: The following statement is replaced by the newer syntax that is
-      "commented out below. Therefore, it is recommended that you use this
-      "syntax in newer ABAP releases.
-      ASSIGN COMPONENT sy-index OF STRUCTURE <struct> TO <comp>.
 
-      "ASSIGN <struct>-(sy-index) to <comp>.
+      ASSIGN <struct>-(sy-index) to <comp>.
+
+      "Old syntax
+      "ASSIGN COMPONENT sy-index OF STRUCTURE <struct> TO <comp>.
 
       IF sy-subrc <> 0.
         "If all components are processed, the loop is exited.
@@ -959,38 +954,34 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
     output->display( input = <fs_m5> name = `<fs_m5>` ).
 
 **********************************************************************
-    "Note: Comment in the following example in newer ABAP releases and in the SAP BTP environment.
 
-*    output->next_section( `21) Dynamic Specifications in ASSIGN Statements (2) - Setting sy-subrc/ELSE UNASSIGN` ).
-*
-*    "In dynamic assignments, the statement ASSIGN sets the return code sy-subrc.
-*    "If ELSE UNASSIGN is specified, no memory area is assigned to the field symbol. It has the state unassigned after the ASSIGN statement.
-*
-*    DATA(attr) = VALUE string_table( ( `another_string` ) ( `public_string` ) ( `this_will_fail` ) ).
-*
-*    LOOP AT attr INTO DATA(attribute).
-*
-*      ASSIGN cl_ref->(attribute) TO FIELD-SYMBOL(<attr>) ELSE UNASSIGN.
-*      IF sy-subrc = 0.
-*        output->display( |Successful assignment for attribute "{ attribute }". sy-subrc = { sy-subrc }. | ).
-*        output->display( input = <attr> name = `<attr>` ).
-*      ELSE.
-*        output->display( |Assignment not successful for attribute "{ attribute }". sy-subrc = { sy-subrc }. | ).
-*      ENDIF.
-*
-*      IF <attr> IS ASSIGNED.
-*        output->display( `The field symbol is assigned.` ).
-*        output->display( `--------------------` ).
-*      ELSE.
-*        output->display( `The field symbol is not assigned.` ).
-*      ENDIF.
-*
-*    ENDLOOP.
+    output->next_section( `21) Dynamic Specifications in ASSIGN Statements (2) - Setting sy-subrc/ELSE UNASSIGN` ).
+
+    "In dynamic assignments, the statement ASSIGN sets the return code sy-subrc.
+    "If ELSE UNASSIGN is specified, no memory area is assigned to the field symbol. It has the state unassigned after the ASSIGN statement.
+
+    DATA(attr) = VALUE string_table( ( `another_string` ) ( `public_string` ) ( `this_will_fail` ) ).
+
+    LOOP AT attr INTO DATA(attribute).
+
+      ASSIGN cl_ref->(attribute) TO FIELD-SYMBOL(<attr>) ELSE UNASSIGN.
+      IF sy-subrc = 0.
+        output->display( |Successful assignment for attribute "{ attribute }". sy-subrc = { sy-subrc }. | ).
+        output->display( input = <attr> name = `<attr>` ).
+      ELSE.
+        output->display( |Assignment not successful for attribute "{ attribute }". sy-subrc = { sy-subrc }. | ).
+      ENDIF.
+
+      IF <attr> IS ASSIGNED.
+        output->display( `The field symbol is assigned.` ).
+        output->display( `--------------------` ).
+      ELSE.
+        output->display( `The field symbol is not assigned.` ).
+      ENDIF.
+
+    ENDLOOP.
 
 **********************************************************************
-    "Note: The following code contains syntax that is only available in
-    "newer ABAP releases and in the SAP BTP environment. In these contexts,
-    "you can comment in the code.
 
     output->next_section( `22) Dynamic Specifications in ASSIGN Statements (3) - Structure Components` ).
 
@@ -1002,29 +993,29 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
 
     DATA(comp_name) = lcl_det_at_runtime=>get_dyn_field( ).
 
-*    ASSIGN wa-(comp_name) TO FIELD-SYMBOL(<fs_m6>).
-*
-*    ASSIGN wa-('CARRNAME') TO FIELD-SYMBOL(<fs_m7>).
-*
-*    IF sy-subrc = 0.
-*      DATA(subrc1) = sy-subrc.
-*    ENDIF.
-*
-*    "No exception occurs in case of an unsuccessful assignment.
-*    ASSIGN wa-('CRRNM') TO FIELD-SYMBOL(<fs_m8>).
-*
-*    IF sy-subrc <> 0.
-*      DATA(subrc2) = sy-subrc.
-*    ENDIF.
-*
-*    "Numeric expressions are possible. Its value is interpreted as the position
-*    "of the component in the structure.
-*    ASSIGN wa-(4) TO FIELD-SYMBOL(<fs_m9>).
-*
-*    "If the value is 0, the memory area of the entire structure is assigned to the field symbol.
-*    ASSIGN wa-(0) TO FIELD-SYMBOL(<fs_m10>).
+    ASSIGN wa-(comp_name) TO FIELD-SYMBOL(<fs_m6>).
 
-    "The above statements replace the following syntax
+    ASSIGN wa-('CARRNAME') TO FIELD-SYMBOL(<fs_m7>).
+
+    IF sy-subrc = 0.
+      DATA(subrc1) = sy-subrc.
+    ENDIF.
+
+    "No exception occurs in case of an unsuccessful assignment.
+    ASSIGN wa-('CRRNM') TO FIELD-SYMBOL(<fs_m8>).
+
+    IF sy-subrc <> 0.
+      DATA(subrc2) = sy-subrc.
+    ENDIF.
+
+    "Numeric expressions are possible. Its value is interpreted as the position
+    "of the component in the structure.
+    ASSIGN wa-(4) TO FIELD-SYMBOL(<fs_m9>).
+
+    "If the value is 0, the memory area of the entire structure is assigned to the field symbol.
+    ASSIGN wa-(0) TO FIELD-SYMBOL(<fs_m10>).
+
+    "Old syntax
     ASSIGN COMPONENT 'CARRID' OF STRUCTURE wa TO FIELD-SYMBOL(<fs_m11>).
 
     ASSIGN COMPONENT 5 OF STRUCTURE wa TO FIELD-SYMBOL(<fs_m12>).
@@ -1034,12 +1025,12 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
 
     ASSIGN ref_m->('CARRNAME') TO FIELD-SYMBOL(<fs_m13>).
 
-*    output->display( input = <fs_m6> name = `<fs_m6>` ).
-*    output->display( input = <fs_m7> name = `<fs_m7>` ).
-*    output->display( input = subrc1 name = `subrc1` ).
-*    output->display( input = subrc2 name = `subrc2` ).
-*    output->display( input = <fs_m9> name = `<fs_m9>` ).
-*    output->display( input = <fs_m10> name = `<fs_m10>` ).
+    output->display( input = <fs_m6> name = `<fs_m6>` ).
+    output->display( input = <fs_m7> name = `<fs_m7>` ).
+    output->display( input = subrc1 name = `subrc1` ).
+    output->display( input = subrc2 name = `subrc2` ).
+    output->display( input = <fs_m9> name = `<fs_m9>` ).
+    output->display( input = <fs_m10> name = `<fs_m10>` ).
     output->display( input = <fs_m11> name = `<fs_m11>` ).
     output->display( input = <fs_m12> name = `<fs_m12>` ).
     output->display( input = <fs_m13> name = `<fs_m13>` ).

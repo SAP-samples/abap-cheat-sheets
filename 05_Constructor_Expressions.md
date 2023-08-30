@@ -70,7 +70,7 @@ implies that the data object is initialized. However, for some
 constructor operators, there is an addition with which the
 initialization can be avoided.
 
-<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## VALUE
 
@@ -273,7 +273,7 @@ also valid for other constructor expressions further down but not
 necessarily mentioned explicitly. See the details on the syntactical
 options of the constructor operators in the ABAP Keyword Documentation.
 
-<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## CORRESPONDING
 
@@ -352,7 +352,7 @@ two statements are  not the same:
 >MOVE-CORRESPONDING struc1 TO struc2.
 >```
 
-<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## NEW
 
@@ -477,7 +477,7 @@ DATA(oref3) = NEW cl2( p1 = ... p2 = ... ).
 ... NEW some_class( ... )->attr ...
 ```
 
-<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## CONV
 
@@ -532,7 +532,7 @@ DATA(f) = `hallo`.
 ```
 
 
-<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## EXACT
 
@@ -568,7 +568,7 @@ TRY.
 ENDTRY.
 ```
 
-<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## REF
 
@@ -613,7 +613,7 @@ DATA(oref_a) = NEW some_class( ).
 DATA(oref_b) = REF #( oref_a ).
 ```
 
-<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## CAST
 
@@ -650,7 +650,7 @@ DATA(methods) = CAST cl_abap_objectdescr(
   cl_abap_objectdescr=>describe_by_name( 'LOCAL_CLASS' ) )->methods.
 ```
 
-<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## COND
 
@@ -679,7 +679,7 @@ DATA(b) = COND #( WHEN a BETWEEN 1 AND 3 THEN w
                   ELSE z ).
 ```
 
-<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## SWITCH
 
@@ -699,7 +699,7 @@ DATA(b) = SWITCH #( a
                     ELSE z ).
 ```
 
-<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## FILTER
 
@@ -768,7 +768,7 @@ DATA(f10) = FILTER #( itab2 IN filter_tab2 USING KEY line WHERE num = table_line
 DATA(f11) = FILTER #( itab2 USING KEY sec_key EXCEPT IN filter_tab2 WHERE num = table_line ).
 ```
 
-<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## REDUCE
 
@@ -800,7 +800,7 @@ DATA(sum) = REDUCE i( INIT s = 0
 >-   Once the loop has finished, the target variable is assigned the
     resulting value.
 
-<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## Iteration Expressions with FOR
 
@@ -897,7 +897,7 @@ TYPES t_type LIKE itab.
                       compZ = wa3-comp3 ) ).
 ```
 
-<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## LET Expressions
 
@@ -929,7 +929,7 @@ DATA(a) = COND #( LET b = c IN
                   ELSE ... ).
 ```
 
-<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## Executable Example
 [zcl_demo_abap_constructor_expr](./src/zcl_demo_abap_constructor_expr.clas.abap)

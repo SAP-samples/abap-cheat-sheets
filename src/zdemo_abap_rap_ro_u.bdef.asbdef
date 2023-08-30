@@ -1,5 +1,5 @@
 unmanaged implementation in class zbp_demo_abap_rap_ro_u unique;
-strict;
+strict(2);
 
 define behavior for ZDEMO_ABAP_RAP_RO_U alias root
 lock master

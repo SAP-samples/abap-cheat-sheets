@@ -31,7 +31,7 @@ Internal Tables ...
 - are used when a variable data set of a random data type needs to be processed in a structured way.
 - allow access to individual table lines via a [table index](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentable_index_glosry.htm) or a [table key](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentable_key_glosry.htm).
 
-<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## Basic Properties of Internal Tables
 
@@ -83,7 +83,7 @@ Internal Tables ...
 - [Programming guidelines: Internal Tables (F1 docu for standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenadmin_costs_dyn_mem_obj_guidl.htm)
 </details>
 
-<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## Table Keys in Internal Tables (Primary, Secondary, Standard, Empty)
 
@@ -153,7 +153,7 @@ Internal Tables ...
  
 </details>
 
-<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 
 ## Creating Internal Tables and Types
@@ -397,7 +397,7 @@ SELECT * FROM zdemo_abap_fli INTO TABLE @it_sel.
 SELECT * FROM zdemo_abap_fli INTO TABLE @FINAL(it_inline5).
 ```
 
-<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## Filling and Copying Internal Tables
 
@@ -492,7 +492,7 @@ INSERT lv_struc INTO itab2 INDEX i.
 INSERT LINES OF itab2 INTO itab INDEX i.
 ```
 
-<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 **Adding lines using constructor expressions**
 
@@ -614,7 +614,7 @@ MOVE-CORRESPONDING itab_nested1 TO itab_nested2 EXPANDING NESTED TABLES.
 MOVE-CORRESPONDING itab_nested1 TO itab_nested2 EXPANDING NESTED TABLES KEEPING TARGET LINES.
 ```
 
-<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ### Excursions with Internal Tables
 For more details on ABAP SQL, see the cheat sheet on [ABAP SQL](03_ABAP_SQL.md).
@@ -801,7 +801,7 @@ tables with a unique primary key, especially hashed tables.
 COLLECT VALUE dtype( comp1 = a comp2 = b ... ) INTO itab.
 ```
 
-<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## Reading from Internal Tables
 
@@ -869,7 +869,7 @@ at a performance cost. Imagine that your table contains many columns or
 nested components. In this case, it is better not to copy at all (although you can use 
 the `TRANSPORTING` addition to restrict the fields to be copied).
 
-<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 *Reading a single line by index*
 
@@ -922,7 +922,7 @@ DATA(line1) = VALUE #( itab[ 6 ] OPTIONAL ).
 DATA(line2) = VALUE #( itab[ 7 ] DEFAULT itab[ 8 ]  ).
 ```
 
-<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 *Reading single lines using table keys*
 
@@ -984,7 +984,7 @@ READ TABLE it FROM sec_keys USING KEY sec_key INTO wa.
 READ TABLE it FROM sec_keys USING KEY sk INTO wa.
 ```
 
-<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 **Reading a single line using a free key**
 
@@ -1017,7 +1017,7 @@ DATA(comp4) = dref->c.
 "Note: The syntax dref->*-c is also possible.
 ```
 
-<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 **Checking the existence and the index of a line in an internal table**
 
@@ -1077,7 +1077,7 @@ DATA(idx) = line_index( it[ b = 2 ] ).
 DATA(number_of_lines) = lines( it ).
 ```
 
-<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## Processing Multiple Internal Table Lines Sequentially
 
@@ -1205,7 +1205,7 @@ DATA(tab2) = VALUE ttype( FOR ls IN it WHERE ( a < 7 )
                             ( a = ls-a b = ls-b + 5  ) ).
 ```
 
-<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## Sorting Internal Tables
 
@@ -1272,7 +1272,7 @@ SORT itab BY a b ASCENDING c DESCENDING.
 SORT itab BY table_line.
 ```
 
-<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## Modifying Internal Table Content
 
@@ -1373,7 +1373,7 @@ MODIFY it FROM line TRANSPORTING b c WHERE a < 5.
 > **💡 Note**<br>
 > The system field `sy-subrc` is set to `0` if at least one line was changed. It is set to `4` if no lines were changed.
 
-<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## Deleting Internal Table Content
 
@@ -1471,7 +1471,7 @@ FREE it.
 "Assignment using the VALUE operator without entries in the parentheses
 it = VALUE #( ). 
 ```
-<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## More Information
 Topic [Internal

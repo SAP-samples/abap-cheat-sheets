@@ -30,13 +30,13 @@
 * ----------------------------- NOTE -----------------------------------
 * The code presented in this class is intended only to support the ABAP
 * cheat sheets. It is not intended for direct use in a production system
-* environment. The code examples in the ABAP cheat sheets are primarily 
-* intended to provide a better explanation and visualization of the 
-* syntax and semantics of ABAP statements, not to solve concrete 
-* programming tasks. For production application programs, you should  
-* always work out your own solution for each individual case. There is 
-* no guarantee for the correctness or completeness of the code.  
-* Furthermore, there is no legal responsibility or liability for any 
+* environment. The code examples in the ABAP cheat sheets are primarily
+* intended to provide a better explanation and visualization of the
+* syntax and semantics of ABAP statements, not to solve concrete
+* programming tasks. For production application programs, you should
+* always work out your own solution for each individual case. There is
+* no guarantee for the correctness or completeness of the code.
+* Furthermore, there is no legal responsibility or liability for any
 * errors or their consequences that may occur when using the the example
 * code.
 *
@@ -53,10 +53,12 @@ CLASS zcl_demo_abap_cds_ve DEFINITION
       if_oo_adt_classrun.
 
     CLASS-METHODS class_constructor.
-
 ENDCLASS.
 
+
+
 CLASS zcl_demo_abap_cds_ve IMPLEMENTATION.
+
 
   METHOD class_constructor.
     "Filling demo database tables.
@@ -91,8 +93,8 @@ CLASS zcl_demo_abap_cds_ve IMPLEMENTATION.
         period = 0 ) ) ).
 
     MODIFY zdemo_abap_fli FROM TABLE @( VALUE #( ( carrid = 'UA' ) ) ).
-
   ENDMETHOD.
+
 
   METHOD if_oo_adt_classrun~main.
 
@@ -101,7 +103,7 @@ CLASS zcl_demo_abap_cds_ve IMPLEMENTATION.
     output->display( `ABAP Cheat Sheet Example: CDS view entities` ).
 
     output->display( `1) Operands, expressions and built-in functions ` &&
-    `in a CDS view entity` ).
+    `in a CDS view entity`  ).
 
     "The following ABAP SQL SELECT statement uses a CDS view entity as
     "the data source. All data is retrieved. The sample CDS view entity
@@ -170,7 +172,7 @@ CLASS zcl_demo_abap_cds_ve IMPLEMENTATION.
     "  contain the coalesce function and CASE expressions similar to the
     "  CDS view entity.
 
-    output->display( `----- Inner join -----` ).
+    output->display( `---------- Inner join ----------` ).
 
     SELECT _carr~carrid,
            _carr~carrname,
@@ -184,7 +186,7 @@ CLASS zcl_demo_abap_cds_ve IMPLEMENTATION.
 
     output->display( input = sql_inner_join name = `sql_inner_join` ).
 
-    output->display( `----- Left outer join -----` ).
+    output->display( `---------- Left outer join ----------` ).
 
     SELECT _carr~carrid,
            _carr~carrname,
@@ -198,7 +200,7 @@ CLASS zcl_demo_abap_cds_ve IMPLEMENTATION.
 
     output->display( input = sql_left_outer_join name = `sql_left_outer_join` ).
 
-    output->display( `----- Right outer join -----` ).
+    output->display( `---------- Right outer join ----------` ).
 
     SELECT _carr~carrid,
            _carr~carrname,
@@ -215,7 +217,7 @@ CLASS zcl_demo_abap_cds_ve IMPLEMENTATION.
 
     output->display( input = sql_right_outer_join name = `sql_right_outer_join` ).
 
-    output->display( `----- Cross join -----` ).
+    output->display( `---------- Cross join ----------` ).
 
     SELECT _carr~carrid,
            _carr~carrname,
@@ -255,7 +257,7 @@ CLASS zcl_demo_abap_cds_ve IMPLEMENTATION.
 
     output->next_section( `Associations` ).
 
-    output->display( `5) Selecting data from a CDS view that contains associations` ).
+    output->display( `5) Selecting data from a CDS view that contains associations`  ).
 
     "The following ABAP SQL SELECT statement uses a CDS view entity as
     "the data source. All data is retrieved. The sample CDS view entity
@@ -281,7 +283,7 @@ CLASS zcl_demo_abap_cds_ve IMPLEMENTATION.
     "The following examples use path expressions to access the association
     "targets of exposed associations.
 
-    output->display( `6) ... SELECT clause` ).
+    output->display( `6) ... SELECT clause`  ).
 
     "The following ABAP SQL SELECT statement uses a CDS view entity as
     "the data source. The statement uses an exposed association.
@@ -359,7 +361,7 @@ CLASS zcl_demo_abap_cds_ve IMPLEMENTATION.
 
 **********************************************************************
 
-    output->next_section( `8) ... Specifying attributes ` ).
+    output->next_section( `8) ... Specifying attributes` ).
 
     "The following ABAP SQL SELECT statement uses a CDS view entity as
     "the data source. The statement uses an exposed association.
@@ -460,5 +462,4 @@ CLASS zcl_demo_abap_cds_ve IMPLEMENTATION.
     output->display( input = assoc_exp_where name = `assoc_exp_where` ).
 
   ENDMETHOD.
-
 ENDCLASS.

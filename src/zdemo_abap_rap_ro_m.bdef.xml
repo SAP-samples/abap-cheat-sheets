@@ -15,12 +15,6 @@
       <TITLE>Historic versions</TITLE>
      </item>
      <item>
-      <HREF>/sap/bc/adt/repository/informationsystem/abaplanguageversions?uri=%2Fsap%2Fbc%2Fadt%2Fbo%2Fbehaviordefinitions%2Fzdemo_abap_rap_ro_m</HREF>
-      <REL>http://www.sap.com/adt/relations/informationsystem/abaplanguageversions</REL>
-      <TYPE>application/vnd.sap.adt.nameditems.v1+xml</TYPE>
-      <TITLE>Allowed ABAP language versions</TITLE>
-     </item>
-     <item>
       <HREF>./zdemo_abap_rap_ro_m/source/main</HREF>
       <REL>http://www.sap.com/adt/relations/source</REL>
       <TYPE>text/plain</TYPE>
@@ -31,11 +25,6 @@
       <REL>http://www.sap.com/adt/relations/source</REL>
       <TYPE>text/html</TYPE>
       <TITLE>Source Content (HTML)</TITLE>
-     </item>
-     <item>
-      <HREF>./zdemo_abap_rap_ro_m/objectstructure</HREF>
-      <REL>http://www.sap.com/adt/relations/objectstructure</REL>
-      <TITLE>Object Structure</TITLE>
      </item>
     </LINKS>
     <MASTER_LANGUAGE>EN</MASTER_LANGUAGE>

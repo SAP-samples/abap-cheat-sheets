@@ -126,7 +126,7 @@ Views](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm
         systems (that support the ABAP CDS characteristics).
 </details>
 
-<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## Reading Data Using SELECT
 
@@ -175,7 +175,7 @@ SELECT FROM source   "What database table or view to read from
     processing the internal table entries. Find more information in the
     ABAP cheat sheet [Internal Tables](01_Internal_Tables.md). In newer ABAP releases, the declaration operator [`FINAL`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenfinal_inline.htm) can be used to declare immutable variables.
 
-<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ### Using SELECT for Multiple Purposes
 
@@ -260,7 +260,7 @@ SELECT FROM dbtab
 
 ENDSELECT.
 ```
-<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ### Clause Variations and Additions in SELECT Statements
 
@@ -454,7 +454,7 @@ SELECT FROM dbtab
   INTO TABLE NEW @DATA(dref).
 ```
 
-<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ### More Clauses
 
@@ -531,7 +531,7 @@ SELECT FROM dbtab
   INTO ...
 ```
 
-<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ### Operands and Expressions in ABAP SQL Statements
 
@@ -1303,7 +1303,7 @@ SELECT *
   INTO TABLE @DATA(result).
 ```
 
-<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## Changing Data in Database Tables
 
@@ -1351,7 +1351,7 @@ INSERT dbtab FROM TABLE @itab ACCEPTING DUPLICATE KEYS.
 INSERT dbtab FROM ( SELECT ... ).
 ```
 
-<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ### Using [`UPDATE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapupdate.htm)
 - Changes the content of one or more rows of a database table specified.
@@ -1403,7 +1403,7 @@ UPDATE dbtab FROM TABLE @ind_tab INDICATORS NOT SET STRUCTURE comp_ind.
 UPDATE dbtab SET comp2 = ... .
 ```
 
-<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ### Using [`MODIFY`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapmodify_dbtab.htm)
 - Inserts one or more rows into a database table specified or overwrites existing ones.
@@ -1432,7 +1432,7 @@ MODIFY dbtab FROM TABLE @( VALUE #( ( comp1 = ... comp2 = ... )
 MODIFY dbtab FROM ( SELECT ... ).
 ```
 
-<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ### Using [`DELETE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapdelete_dbtab.htm)
 - Deletes one or more rows from a database table specified.
@@ -1466,7 +1466,7 @@ DELETE dbtab FROM TABLE @( VALUE #( ( comp1 = ... )
                                     ( comp1 = ... ) ) ).
 ```
 
-<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## More Information
 - Note that ABAP SQL statements offer syntax options for dynamic programming. For example, you can specify the data source to read from dynamically. See more information in the ABAP Keyword Documentation or the [ABAP cheat sheet on dynamic programming](06_Dynamic_Programming.md).

@@ -64,7 +64,7 @@ The member loop is executed using the group represented by `wa`
 and its members are assigned to `member` and are available in
 the member loop.
 
-<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## Grouping by More than One Column
 
@@ -85,7 +85,7 @@ This is also a representative binding in which the work area
 To access the members of the groups, the exact same member loop can be
 inserted as when grouping by one column.
 
-<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## Group Key Binding when Grouping by One Column
 
@@ -133,7 +133,7 @@ LOOP AT spfli_tab INTO wa 
 ENDLOOP.
 ```
 
-<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## Group Key Binding when Grouping by More than One Column
 Finally, the group key binding for structured group keys:
@@ -171,7 +171,7 @@ INDEX`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?fil
 [`GROUP
 SIZE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abaploop_at_itab_group_by_key.htm).
 
-<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## Executable Example
 [zcl_demo_abap_sql_group_by](./src/zcl_demo_abap_sql_group_by.clas.abap)

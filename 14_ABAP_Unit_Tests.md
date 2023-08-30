@@ -30,7 +30,7 @@ This cheat sheet contains basic information about [unit testing](https://help.sa
 - In ABAP, developers have [ABAP Unit](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_unit_glosry.htm) - a test tool integrated into the ABAP runtime framework - at their disposal. It can be used to run individual or mass tests, and to evaluate test results. Note that comprehensive test runs can be performed using the [ABAP Test Cockpit](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_test_cockpit_glosry.htm)
 - In ABAP programs, individual unit tests are implemented as [test methods](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentest_method_glosry.htm) of local [test classes](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentest_class_glosry.htm). 
 
-<p align="right">(<a href="#top">⬆️ back to top</a>)</p>  
+<p align="right"><a href="#top">⬆️ back to top</a></p>  
 
 ## High-Level Steps for ABAP Unit Tests
 
@@ -47,7 +47,7 @@ This cheat sheet contains basic information about [unit testing](https://help.sa
 > **💡 Note**<br>
 > Of course, if there are no dependend-on components in your production code, you can skip the considerations of dependency isolation, test doubles and their injection into the production code.
 
-<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## Creating Test Classes
 
@@ -174,7 +174,7 @@ CLASS ltd_test_double IMPLEMENTATION.
 ENDCLASS.
 ```
 
-<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## Creating and Implementing Test Methods
 
@@ -313,7 +313,7 @@ CLASS ltc_test_class IMPLEMENTATION.
 ENDCLASS.  
 ```
 
-<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ### Special Methods for Implementing the Test Fixture
 - Special private methods for implementing the test [fixture](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenfixture_glosry.htm), which may include test data and test objects among others, can be included in the local test class.
@@ -395,7 +395,7 @@ ENDCLASS.
 > **💡 Note**<br>
 > You can also specify helper methods, for example, for recurring tasks such as the assertions.
 
-<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## Handling Dependencies 
 
@@ -429,7 +429,7 @@ Among them, there are the following. They are demonstrated in the executable exa
 - Parameter injection: The test double is passed as a parameter to the tested method (i.e. an optional importing parameter) in the class under test. 
 - Back door injection: A *back door* is created to inject a test double into the class under test. This *back door* is implemented by granting [friendship](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenfriend_glosry.htm) to the test class. This makes internal attributes of the class under test accessible from the test class.
  
-<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ### Test Seams
 - Seams are sections of the production source code that can be dynamically included or replaced. 
@@ -481,7 +481,7 @@ END-TEST-INJECTION.
 ...
 ```
 
-<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## Running and Evaluating ABAP Unit Tests
 There are many ways to run ABAP unit tests as described [here](https://help.sap.com/docs/ABAP_PLATFORM_NEW/c238d694b825421f940829321ffa326a/4ec4c6c66e391014adc9fffe4e204223.html?locale=en-US).
@@ -494,7 +494,7 @@ If you are interested in the test coverage, you can choose `Ctrl + Shift + F11`,
 
 For more information about evaluating ABAP unit test results, see [here](https://help.sap.com/docs/ABAP_PLATFORM_NEW/c238d694b825421f940829321ffa326a/4ec49c5b6e391014adc9fffe4e204223.html?locale=en-US).
 
-<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## More Information
 
@@ -507,7 +507,7 @@ For more information about evaluating ABAP unit test results, see [here](https:/
 - [Testing repository objects](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentest_relations.htm) (ABAP Keyword Documentation)
 - [Development Guide for the ABAP RESTful Application Programming Model: Testing different artifacts of RAP business objects and related OData services](https://help.sap.com/docs/btp/sap-abap-restful-application-programming-model/test?locale=en-US)
 
-<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## Executable Example
 [zcl_demo_abap_unit_test](./src/zcl_demo_abap_unit_test.clas.abap)

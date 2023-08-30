@@ -35,13 +35,13 @@ In modern UI technologies, this can be achieved through [events](https://help.sa
 In the early days of ABAP, classes, methods, and events did not exist. Program flow control had to be achieved in other ways. 
 This is where [dynpros](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abendynpro_glosry.htm) (dynamic programs) representing a classic ABAP UI technology come into play.
 
-This cheat sheet provides a high-level introduction to dynpro topics with a focus on dynpro-related statements, supported by an executable example to check the syntax in action.
+This cheat sheet provides a high-level overview of classic dynpro topics with a focus on dynpro-related statements, supported by an executable example to check the syntax in action.
 
 > **💡 Note**<br>
 > - Classic dynpros are outdated for application programs. New developments should use web-based UIs, such as SAPUI5 or Web Dynpro. 
 > - Dynpros cannot be created in ABAP Cloud.
 > - This cheat sheet ...
->   - is not intended to encourage you to start creating dynpros for programming new applications.  
+>   - is not intended to encourage you to start creating classic dynpros for programming new applications.  
 >   - does not cover all facets, techniques, and keywords in great detail. 
 >   - is intended to touch on a selection of dynpro-related topics and syntax that you may encounter in older ABAP code. If you need more information, always consult the ABAP Keyword Documentation.
 > - Some of the statements described here - the ones used in the dynpro flow logic - are programmed in a special programming language. Although it looks like ABAP, it is not ABAP.
@@ -69,7 +69,7 @@ This cheat sheet provides a high-level introduction to dynpro topics with a focu
 > **💡 Note**<br>
 > There are special dynpros ([selection screens](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenselection_screen_glosry.htm), [classic lists](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenclassic_list_glosry.htm)). They are created implicitly.
 
-<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## Dynpro Flow Logic
 
@@ -123,7 +123,7 @@ The following statements are among the non-ABAP statements in the dynpro flow lo
 -	`LOOP` and `ENDLOOP` for processing lines of a table control (similar to the ABAP statement `LOOP`)
 -	`CALL SUBSCREEN` for calling the flow logic of a subscreen
 
-<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## Dialog Modules
 
@@ -164,7 +164,7 @@ MODULE pai_9000 INPUT.
 ENDMODULE.
 ```
 
-<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## Transporting Data between Dynpros and the ABAP Program
 
@@ -222,7 +222,7 @@ ENDCLASS.
 - Notes on working with the *OK field*:
   - As with the other dynpro fields, a data object must be created in the ABAP program.
   - The system field `sy-ucomm` automatically receives the value of the function code. However, it is recommended that you work with the *OK field* instead of `sy-ucomm`. You have full control over the fields you declare. Also, the value of an ABAP system field should not be changed.
-  - It is recommended that you store the function code in an auxiliary variable and initialize the*OK field* field in an ABAP program. This ensures that the function code of a dynpro is not filled with an unwanted value in the PBO event (for example, the next PAI event can be triggered with an empty function code). You can then read the function code from the auxiliary variable (for example, using a `CASE` structure) and control the program flow from there.
+  - It is recommended that you store the function code in an auxiliary variable and initialize the *OK field* field in an ABAP program. This ensures that the function code of a dynpro is not filled with an unwanted value in the PBO event (for example, the next PAI event can be triggered with an empty function code). You can then read the function code from the auxiliary variable (for example, using a `CASE` structure) and control the program flow from there.
   - The *OK field* field can have a different name on each dynpro. However, it is recommended that you use the same name for the field in each dynpro of an ABAP program. This way, you only need one field with the same name in the ABAP program, in which the function code is placed and from which you can read it.
   - In addition to screen elements, function codes can also be linked to various things in the dynpro, e.g. the definition of the menu bar takes place in the GUI status. They also trigger a PAI event.
 
@@ -267,7 +267,7 @@ ENDMODULE.
 ...
 ```
 
-<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ### Program-Controlled Data Transport
 
@@ -284,14 +284,14 @@ Example:
 "See some of them below and more details in the ABAP Keyword Documentation.
 
 PROCESS AFTER INPUT.
-  MODULE pai_9000.  "both field_a and field_b are not available
+  MODULE pai_9000.  "neither field_a nor field_b are available
   FIELD field_a.
   MODULE module_a.  "field_a is available, field_b is not
   FIELD field_b.
   MODULE module_b.  "both field_a and field_b are available
 ```
 
-<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ### Calling Dialog Modules Conditionally 
 
@@ -321,7 +321,7 @@ PROCESS AFTER INPUT.
   ENDCHAIN.
   ```
 
-<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## Input Checks
 
@@ -366,7 +366,7 @@ PROCESS AFTER INPUT.
 
   - If a warning or error message is triggered in the `mod` dialog module, all fields listed in the processing chain are ready for input again. In this way, users can correct an input that consists of several closely related individual fields, and where it is not clear from the start which of the individual fields users must change in order to create a valid input as a whole.
 
-<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## Field and Input Help
 
@@ -396,7 +396,7 @@ PROCESS AFTER INPUT.
     - A special form that can be linked to an input field.    
     - When an input field is linked to a dropdown list box, the input value can only be selected from the list. Dropdown list boxes are therefore suitable for cases where the list of values is not too extensive and no other values than those in the list are allowed.
 
-<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## Dnypro Sequence, Calling and Leaving Dynpros
 
@@ -416,7 +416,7 @@ PROCESS AFTER INPUT.
 - The simplest dynpro sequence consists of a single dynpro with 0 as the next dynpro.
 - When the current dynpro sequence is finished, the system returns to the previous dynpro sequence if the current dynpro sequence was nested.
 
-<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ### ABAP Statements for Calling and Leaving Dynpros
 
@@ -498,7 +498,7 @@ SET SCREEN 0.
   LEAVE SCREEN.
   ```
 
-<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## Modifying Static Attributes of Screen Elements
 
@@ -529,7 +529,7 @@ MODULE pbo_9000 OUTPUT.
 ENDMODULE.
 ```
  
-<p align="right">(<a href="#top">⬆️ back to top</a>)</p> 
+<p align="right"><a href="#top">⬆️ back to top</a></p> 
 
 
 ## Statements for the GUI Status and Title 
@@ -589,7 +589,7 @@ ENDMODULE.
 > **💡 Note**<br>
 >  By separating the GUI status and title from the dynpro itself, the screen layout can remain constant when switching dynpros, and only the title and available functions can be changed.
 
-<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## Controls
 
@@ -646,7 +646,7 @@ REFRESH CONTROL contr FROM SCREEN dynnr.
 ...
 ```
 
-<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ### Tabstrips Controls
 - Allow tab pages to be displayed on dynpros
@@ -692,7 +692,7 @@ PROCESS AFTER INPUT.
 
 ```
 
-<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ### GUI Controls
 - Are components of the presentation view of an AS ABAP. 
@@ -707,7 +707,7 @@ PROCESS AFTER INPUT.
   - Tree control: Are available in different versions (for example, `CL_GUI_SIMPLE_TREE`). They allow hierarchical relationships to be displayed in tree structures. 
   - ALV Grid control: Is the replacement for classic lists. It provides functions such as searching, sorting, and printing the content of the list. However, the associated class `CL_GUI_ALV_GRID` should no longer be used directly for new developments. Classes such as `CL_SALV_TABLE` encapsulate the use of the ALV Grid control and simplify the integration.
 
-<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## More Information
 - [SAP GUI User Dialogs](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenabap_screens.htm) in the ABAP Keyword Documentation as the entry topic for dynpro-related topics
@@ -716,4 +716,51 @@ PROCESS AFTER INPUT.
 - In ADT, in your system, choose `CTRL+SHIFT+A` to open the search. Insert `demo_dynpro*` to get a list of dynpro examples of the ABAP Keyword Documentation.
 
 ## Example
-Coming soon ...
+
+After importing, find the program in ADT using the search: Press `CTRL+SHIFT+A` and enter `zdemo_abap_dynpro`. Open the program and run it by pressing `F8`.
+
+
+> **💡 Note**<br>
+> - The steps about how to import and run the code are outlined [here](README.md#-getting-started-with-the-examples). 
+> - The executable example ...
+>   - does not claim to include meaningful dynpros with meaningful dynpro sequences (branching to new dynpro sequences occur through using appropriate statements).
+>   - is not intended to be a role model for proper dynpro design.   
+>   - is not intended to solve concrete programming tasks. You should always work out your own solution for each individual case.
+>   - is only intended to demonstrate a selection of keywords and visualize dynpro-related syntax in action on a high level. 
+> - See notes on the executable example in the expandable section below. 
+
+
+<br>
+<details>
+  <summary>Expand to see explanations of the executable example</summary>
+  <!-- -->
+  <br>
+Th example demonstrates dynpro-related statements. In the dynpros, you can select various options for checking out the effect of the syntax. 
+It covers the following aspects:
+
+- Dynpro flow logic and related statements (`MODULE`, `FIELD`, `CHAIN`/`ENDCHAIN`, `LOOP`/`ENDLOOP`, `CALL SUBSCREEN`)
+- ABAP statements for calling and leaving dynpros (`SET SCREEN`, `CALL SCREEN`, `LEAVE
+SCREEN`)
+- Modifying static attributes (`LOOP AT SCREEN`, `MODIFY SCREEN`),
+- Statements related to the GUI status and title (`GET`/`SET PF-STATUS`, `SET TITLEBAR`)
+- Controls (table and tabstrip controls)
+
+**First dynpro** (the "home page"):
+- Selection options for what can be explored in other dynpros
+- Choose the *Go* button to switch to another dynpro
+
+**Dynpro "Example of screen elements"**:
+- Demonstrates several screen elements
+- Pushbuttons, input field, boxes, checkboxes, radio buttons
+
+**Dynpro "Statements I"**:
+- Selection options for various dynpro-related ABAP statements
+- When you choose a radio button and *Go*, a message is displayed providing some information. 
+
+**Dynpro "Statements II"**:
+- Covers statements in the flow logic
+- The option `MODULE ... AT EXIT-COMMAND` opens another dynpro. It demonstrates the exit command. The input field is required to be filled. This denies the processing after choosing the *Close 1* and *Cancel* buttons. This is not true for the *Close 2* button.
+
+**Dynpro "Controls"**:
+- Shows several controls: Table and tabstrip controls as well as an ALV Grid control as an example for a GUI control
+</details>

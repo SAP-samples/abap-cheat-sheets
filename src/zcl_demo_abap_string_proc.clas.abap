@@ -13,26 +13,26 @@
 * - Open the class with the ABAP development tools for Eclipse (ADT).
 * - Choose F9 to run the class.
 * - Check the console output.
-* - To understand the context and the ABAP syntax used, refer to the 
-*   notes included in the class as comments or refer to the respective 
+* - To understand the context and the ABAP syntax used, refer to the
+*   notes included in the class as comments or refer to the respective
 *   topic in the ABAP Keyword Documentation.
-* - Due to the amount of console output, the examples contain numbers 
-*   (e.g. 1) ..., 2) ..., 3) ...) for the individual example sections. 
-*   Also, the variable name is displayed in most cases. So to find 
-*   the relevant output in the console easier and faster, just search 
-*   for the number/variable name in the console (CTRL+F in the console) 
+* - Due to the amount of console output, the examples contain numbers
+*   (e.g. 1) ..., 2) ..., 3) ...) for the individual example sections.
+*   Also, the variable name is displayed in most cases. So to find
+*   the relevant output in the console easier and faster, just search
+*   for the number/variable name in the console (CTRL+F in the console)
 *   or use the debugger.
 *
 * ----------------------------- NOTE -----------------------------------
 * The code presented in this class is intended only to support the ABAP
 * cheat sheets. It is not intended for direct use in a production system
-* environment. The code examples in the ABAP cheat sheets are primarily 
-* intended to provide a better explanation and visualization of the 
-* syntax and semantics of ABAP statements, not to solve concrete 
-* programming tasks. For production application programs, you should  
-* always work out your own solution for each individual case. There is 
-* no guarantee for the correctness or completeness of the code.  
-* Furthermore, there is no legal responsibility or liability for any 
+* environment. The code examples in the ABAP cheat sheets are primarily
+* intended to provide a better explanation and visualization of the
+* syntax and semantics of ABAP statements, not to solve concrete
+* programming tasks. For production application programs, you should
+* always work out your own solution for each individual case. There is
+* no guarantee for the correctness or completeness of the code.
+* Furthermore, there is no legal responsibility or liability for any
 * errors or their consequences that may occur when using the the example
 * code.
 *
@@ -51,7 +51,10 @@ CLASS zcl_demo_abap_string_proc DEFINITION
   PRIVATE SECTION.
 ENDCLASS.
 
-CLASS zcl_demo_abap_string_proc IMPLEMENTATION.
+
+
+CLASS ZCL_DEMO_ABAP_STRING_PROC IMPLEMENTATION.
+
 
   METHOD if_oo_adt_classrun~main.
 
@@ -142,11 +145,13 @@ CLASS zcl_demo_abap_string_proc IMPLEMENTATION.
 
     "The expression must be convertible to a string. A blank (not
     "within the curly brackets) means a blank in the resulting string.
-    DATA(str_c1) = `Hallo`. "String created with backquotes
-    DATA(str_c2) = `how`.  "Strings created with pipes
+    DATA(str_c1) = `Hallo`.
+    DATA(str_c2) = `how`.
     DATA(str_c3) = `are`.
     DATA(str_c4) = |{ str_c1 } { sy-uname }, | &&
                    |{ str_c2 } { str_c3 } you?|.
+
+    output->display( input = str_c4 name = `str_c4` ).
 
 **********************************************************************
 
@@ -157,7 +162,6 @@ CLASS zcl_demo_abap_string_proc IMPLEMENTATION.
     DATA(str_c5) = |{ str_c1 }\n{ sy-uname },| &&
                    |\n{ str_c2 }\n{ str_c3 }\nyou?|.
 
-    output->display( input = str_c4 name = `str_c4` ).
     output->display( input = str_c5 name = `str_c5` ).
 
     "Excursion: Class CL_ABAP_CHAR_UTILITIES provides attributes and methods as utilities for string processing.
@@ -175,7 +179,7 @@ CLASS zcl_demo_abap_string_proc IMPLEMENTATION.
     output->display( input = str_c6 name = `str_c6` ).
     output->display( input = str_c7 name = `str_c7` ).
     output->display( input = str_c8 name = `str_c8` ).
-    output->display( input = str_c9 name = `str_c9` ).    
+    output->display( input = str_c9 name = `str_c9` ).
 
 **********************************************************************
 

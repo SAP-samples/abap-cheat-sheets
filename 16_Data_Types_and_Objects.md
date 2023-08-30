@@ -52,7 +52,7 @@ Data objects:
 > **💡 Note**<br>
 > There are several differentations that further distinguish and characterize data types and objects. See [here](#glossary-terms-in-a-nutshell).
 
-<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## ABAP Data Types
 
@@ -88,7 +88,7 @@ For an overview, see the [ABAP Type Hierarchy](https://help.sap.com/doc/abapdocu
 > - Although they are character-like, `t` and `d` can be used for calculations.
 > - See the ABAP Keyword Documentation [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbuilt_in_types.htm) for more information about the initial values of the data types, the standard length, and so on.
 
-<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ### Complex Data Types
 
@@ -104,7 +104,7 @@ For an overview, see the [ABAP Type Hierarchy](https://help.sap.com/doc/abapdocu
 > **💡 Note**<br>
 > Structured and table types are used in this cheat sheet as examples for complex types. For more information, see the ABAP Keyword Documentation and the ABAP cheat sheets for structures and internal tables.
 
-<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ### Reference Types
 - Describe data objects that contain [references](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenreference_glosry.htm) to other objects (data objects and instances of classes), which are known as [reference variables](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenreference_variable_glosry.htm). 
@@ -116,7 +116,7 @@ For an overview, see the [ABAP Type Hierarchy](https://help.sap.com/doc/abapdocu
 > There are [generic ABAP types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abengeneric_abap_type_glosry.htm). Generic data types are types that do not define all of the properties of a data object. They can only be used for the typing of [formal parameters](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenformal_parameter_glosry.htm) and [field symbols](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenfield_symbol_glosry.htm). 
 The only generic types that can be used after `TYPE REF TO` are `data` for the generic typing of data references, and `object`, for the generic typing of object references.
 
-<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ### Declaring Data Types
 
@@ -301,7 +301,7 @@ DATA itab_str TYPE TABLE OF string.
 TYPES tr_like_table_ref LIKE TABLE OF REF TO itab_str.
 ```
 
-<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## Data Objects
 
@@ -469,7 +469,7 @@ DATA dref_tab_i TYPE TABLE OF REF TO i.
 DATA dref_tab_str LIKE TABLE OF REF TO do_some_string.
 ```
 
-<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ### Assigning Values to Data Objects
 
@@ -573,7 +573,7 @@ str_a2 = |{ str_a1 } some more bla.|. "String templates. Note: Data objects are 
 str_a2 = some_itab[ 2 ]-carrname.
 ```
 
-<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ### Creating Data Objects Using Inline Declaration
 
@@ -682,7 +682,7 @@ SELECT * FROM zdemo_abap_carr INTO TABLE @DATA(itab_b3).
 SELECT * FROM zdemo_abap_carr INTO TABLE NEW @DATA(itab_ref).
 ```
 
-<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ### Assigning References to Data Reference Variables
     
@@ -765,8 +765,7 @@ dref_1_i = CAST #( dref_3_data ).
 "So, the downcast does not work.
 TRY.
     dref_2_str = CAST #( dref_3_data ).
-  CATCH cx_sy_move_cast_error INTO DATA(e).
-    output->display( input = e->get_text( ) name = `e->get_text( )` ).
+  CATCH cx_sy_move_cast_error INTO DATA(e).    
 ENDTRY.
 
 "Old syntax using the ?= operator
@@ -777,7 +776,7 @@ dref_1_i ?= dref_3_data.
 dref_1_i = CAST #( dref_6_i ).
 ```
 
-<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ### Creating Anonymous Data Objects
 
@@ -872,7 +871,7 @@ SELECT *
   INTO TABLE NEW @DATA(dref_14_inline).
 ```
 
-<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ### Constants and Immutable Variables
 
@@ -912,7 +911,7 @@ ENDLOOP.
 SELECT * FROM zdemo_abap_carr INTO TABLE @FINAL(itab_final_inl).
 ```
 
-<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## Type Conversion
 A value assignment means that the value of a data object is transferred to a target data object. If the data types of the source and target are compatible, the content is copied unchanged. If they are incompatible and a suitable [conversion rule](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconversion_rule_glosry.htm) exists, the content is converted.
@@ -955,7 +954,7 @@ DATA(i2str) = CONV string( -10 ).
 "Result: i2str: `10-`
 ```
 
-<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## Terms Related to Data Types and Objects in a Nutshell
 
@@ -1144,7 +1143,7 @@ CONSTANTS con_b_str TYPE string VALUE `hi`.
 
 "Unnamed data objects
 "Literal that is output. It cannot be addressed via a dedicated name.
-output->display( `I'm a literal...` ).
+out->write( `I'm a literal...` ).
 
 "Anonymous data object created using the NEW operator
 "Can be addressed using reference variables or field symbols.
@@ -1192,7 +1191,7 @@ DATA itab_str    TYPE string_table.
 "some_number = itab_str.  
 ```
 
-<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## Notes on the Declaration Context
 
@@ -1211,7 +1210,7 @@ The declaration context of data types (and objects) determines the validity and 
     - The DDIC provides many options for defining types, including elementary data types (defined as data elements), reference types, complex types such as structured types and table types. Note that the name of a database table or a view can be used in type declarations to address the line type of these repository objects (for example, a structure: `DATA a TYPE some_db_table.`).
     - Note the following trap: Local declarations hide global declarations of the same name. 
 
-<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## Excursions
 ### Enumerated Types and Objects
@@ -1269,7 +1268,7 @@ dobj_enum = a.
 
 Find more information on enumerated types in the (commented code of the) cheat sheet example and [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenenumerated_types_usage.htm). 
 
-<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ### Getting Type Information and Creating Types at Runtime
 Using [Runtime Type Identification (RTTI)](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrun_time_type_identific_glosry.htm "Glossary Entry"), you can get type information on data objects, data types or [instances](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abeninstance_glosry.htm "Glossary Entry") at runtime ([Runtime Type Identification (RTTI)](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrun_time_type_identific_glosry.htm "Glossary Entry")).

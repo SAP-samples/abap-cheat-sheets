@@ -193,7 +193,7 @@ that handles requests from outside the AS ABAP or, from inside AS ABAP,
 an ABAP program using ABAP EML (which this cheat sheet and the examples
 focus on).
 
-<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## ABAP Behavior Pools (ABP)
 
@@ -234,7 +234,7 @@ sequence](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?f
 methods](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabp_saver_method_glosry.htm "Glossary Entry")
 to save data from the transactional buffer to the database).
 
-<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ### RAP Handler Classes and Methods
 
@@ -342,7 +342,7 @@ METHODS some_action FOR MODIFY
         UI if something goes wrong to inform the user.
 
 
-<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ### RAP Saver Class and Saver Methods
 
@@ -403,7 +403,7 @@ CLASS lsc_bdef DEFINITION INHERITING FROM cl_abap_behavior_saver.
 ENDCLASS.
 ```
 
-<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## BDEF Derived Types
 
@@ -508,7 +508,7 @@ DATA rep TYPE RESPONSE FOR REPORTED entity.
 > **💡 Note**<br>
 > Some of the derived types can only be created and accessed in implementation classes.
 
-<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ### Components of BDEF Derived Types
 
@@ -606,7 +606,7 @@ Bullet points on selected `%` components:
         `if_abap_behv=>mk-off`, the values of these fields
         are not returned in the result.
 
-<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## EML Syntax
 
@@ -825,7 +825,7 @@ MODIFY ENTITIES OF root_ent
 ...
 ```
 
-<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ### EML Syntax for Reading Operations
 
@@ -886,7 +886,7 @@ READ ENTITIES OF root_ent
   LINK DATA(links2).
   ...
 ```
-<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 #### Dynamic Forms of EML Statements
 
@@ -983,7 +983,7 @@ op_tab = VALUE #(
 
 READ ENTITIES OPERATIONS op_tab.
 ```
-<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ### Persisting to the Database
 
@@ -1029,7 +1029,7 @@ IF sy-subrc <> 0.
 ENDIF.
 ```
 
-<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ### EML Statements in ABAP Behavior Pools
 
@@ -1058,7 +1058,7 @@ MODIFY ENTITIES OF root_ent IN LOCAL MODE
   ...
 ```
 
-<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## RAP Excursions
 
@@ -1351,7 +1351,7 @@ The following restrictions apply to operations and/or statements in the individu
 
 </details>
 
-<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## More Information
 
@@ -1366,7 +1366,7 @@ The following restrictions apply to operations and/or statements in the individu
     consistency and reliability
 
 
-<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## Executable Examples
 This cheat sheet is supported by different executable examples demonstrating various scenarios:

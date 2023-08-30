@@ -16,7 +16,7 @@
 
 ⚠️ Most of the content of this cheat sheet is only relevant to [classic ABAP](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenclassic_abap_glosry.htm).
 
-This cheat sheet provides a high-level introduction to the [SAP LUW](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abensap_luw_glosry.htm) concept that deals with data consistency with a focus on SAP LUW-related statements, supported by an executable example to check the syntax in action.
+This cheat sheet provides a high-level overview of the [SAP LUW](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abensap_luw_glosry.htm) concept that deals with data consistency with a focus on SAP LUW-related statements, supported by an executable example to check the syntax in action.
 
 When you run an application, you typically change data in a [transaction](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abentransaction_glosry.htm), which may be temporarily stored in transactional buffers. 
 This data may be temporarily inconsistent in the buffers, but it is important that the data be in a consistent state at the end of the transaction so that it can be saved to the database.
@@ -120,9 +120,9 @@ The following bundling techniques are available for classic ABAP. This means tha
 - Are specially marked, i.e. the *update module* property is marked  
 - Can be given specific attributes to determine the priority with which they are processed in the update work process
 - Usually contain database modification operations/statements
-- [CALL FUNCTION ... IN UPDATE TASK](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapcall_function_update.htm) statements are used to register the update function modules for later execution; the actual execution is triggered by a `COMMIT WORK` statement
+- [`CALL FUNCTION ... IN UPDATE TASK`](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapcall_function_update.htm) statements are used to register the update function modules for later execution; the actual execution is triggered by a `COMMIT WORK` statement
 
-- Example of a simple update function module that has an importing parameter (a structure that is used to modify a database table)
+- Example of a simple function module that has an importing parameter (a structure that is used to modify a database table). Example function modules in the repository are marked as update function modules.
   ```abap
   FUNCTION zsome_update_fu_mod
     IMPORTING
@@ -282,7 +282,7 @@ The limitations include the fact that the above bundling techniques are not avai
 In fact, RAP is the transactional programming model for ABAP Cloud.
 And RAP comes with a well-defined transactional model and follows the rules of the SAP LUW. At the end of an SAP LUW in RAP, database modification operations should be performed in a final step in the [RAP late save phase](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenlate_rap_save_phase_glosry.htm) by persisting the consistent data in the [RAP transactional buffer](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abentransactional_buffer_glosry.htm) to the database.
 
-There are RAP-specific, [ABAP EML](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenabap_eml_glosry.htm) statements for commit and rollback: 
+There are RAP-specific [ABAP EML](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenabap_eml_glosry.htm) statements for commit and rollback: 
 - [`COMMIT ENTITIES`](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapcommit_entities.htm) implicitly triggers `COMMIT WORK`. Furthermore, `COMMIT ENTITIES` provides RAP-specific functionality with various additions. These EML statements implicitly enforce local updates with `COMMIT WORK`, or `COMMIT WORK AND WAIT` if the local update fails. Therefore, the update is either a local update or a synchronous update, but never an asynchronous update. 
 - [`ROLLBACK ENTITIES`](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abaprollback_entities.htm): Resets all changes of the current transaction and clears the transactional buffer. The statement triggers `ROLLBACK WORK`. 
 
@@ -294,4 +294,80 @@ There are RAP-specific, [ABAP EML](https://help.sap.com/doc/abapdocu_latest_inde
 <p align="right">(<a href="#top">⬆️ back to top</a>)
 
 ## Executable Example
-Coming soon ...
+After importing, find the program in ADT using search: Press `CTRL+SHIFT+A` and enter `zdemo_abap_sap_luw`. Open the program and run it by pressing `F8`.
+
+> **💡 Note**<br>
+> - The steps about how to import and run the code are outlined [here](README.md#-getting-started-with-the-examples). 
+> - The SAP LUW is demonstrated using classic dynpros to provide a self-contained example (i.e., so as not to have more artifacts, service creation, etc.) that highlights the considerations regarding implicit database commits - without putting the spotlight on dynpros. Note that classic dynpros are outdated for application programs. New developments should use web-based UIs, such as SAPUI5 or Web Dynpro. 
+> - Dynpros cannot be created in ABAP Cloud. As mentioned earlier, RAP is the transactional programming model for ABAP Cloud. It comes with a well-defined transactional model and follows the rules of the SAP LUW. See the links in the *More Information* section.
+>  - The example ... 
+>    - does not claim to include meaningful dynpros with meaningful dynpro sequences and is not intended to be a role model for proper dynpro design.   
+>    - is not intended to solve concrete programming tasks. You should always work out your own solution for each individual case.
+>    - is only intended to demonstrate a selection of keywords and visualize SAP LUW-related syntax in action on a high level. 
+> - See notes on the executable example in the expandable section below. 
+
+<br>
+<details>
+  <summary>Expand to see explanations of the executable example</summary>
+  <!-- -->
+  <br>
+Th example demonstrates the SAP LUW using dynpros and bundling techniques with update function modules and subroutines. In the dynpros, you can select various options that determine how the program runs. It covers the following aspects:
+
+- Demonstrating synchronous update, asynchronous update, and local update triggered by `COMMIT WORK`, `COMMIT WORK AND WAIT`, and `SET UPDATE TASK LOCAL` using update function modules.
+- Demonstrating the statements `PERFORM ... ON COMMIT` and `PERFORM ... ON ROLLBACK` using subroutines.
+
+
+
+The selection options follow this pattern:
+
+**First dynpro**:   
+- The SAP LUW is started.
+- The entries in a database table are displayed. There are four entries in total. 
+- After you have selected an option to continue with either the update task, or the update task and perform a local update, or subroutines, an update function module or subroutine is registered to delete all entries from the database table.
+
+**Second dynpro**: 
+- You can create a new database table entry by making entries in input fields displayed on the dynpro. 
+- When the program continues, it registers an update function module or subroutine that inserts the new entry into the database table.
+
+**Third dynpro**: 
+- The SAP LUW is ended. You have several options for ending the SAP LUW. 
+- In addition to the `COMMIT WORK` and `COMMIT WORK AND WAIT` statements, you can use `ROLLBACK WORK` to roll back the changes. 
+- Another option is to deliberately make the current SAP LUW fail. If a type A message is triggered, the SAP LUW is also terminated.
+
+During program execution, logs are collected and eventually written to a database table (also using an update function module or subroutine). These logs document the progress of the transaction with various pieces of information. These include work process information, SAP LUW key retrieval, and transaction state retrieval (using methods of the `CL_SYSTEM_TRANSACTION_STATE` class).
+
+If the program is not terminated immediately and the SAP LUW has ended, another program is called that displays a dynpro. 
+
+**Fourth dynpro** (part of a new program that is started):
+- The database table entries and logs are displayed. 
+- If the transaction was successful, a single entry (the one created during the execution of the previous program) should be displayed for the modified database table, as well as the entries of the log table.
+- Note that a helper class is available for this example. Methods perform various tasks, such as retrieving work process information.
+
+**Notes on the various options for checking out the SAP LUW:**
+  - **Asynchronous update** with `COMMIT WORK`: Immediately after the `COMMIT WORK` statement, a `SELECT` statement is executed, retrieving all the entries of the database table. In this case, the number of the retrieved entries should be the number of the original database table entries, i.e. 4 entries, and not 1, demonstrating the asynchronous update. The current number of records is displayed in a message. Result: The database table is deleted and a single new entry is added.
+The log shows the value 1 for the transaction state after the update task is executed and the update function modules are called.
+  - **Synchronous update** with `COMMIT WORK AND WAIT`: Immediately after the `COMMIT WORK AND WAIT` statement, a `SELECT` statement is executed to retrieve all the entries in the database table. In this case, there should be one entry instead of four to demonstrate the synchronous update. The current number of records is displayed in a message.
+  - **Local update** using a `SET UPDATE TASK LOCAL` statement: Once the local update is enabled, it does not matter whether you choose `COMMIT WORK` or `COMMIT WORK AND WAIT` in the next step. It will be a synchronous update, so the number of current database table entries displayed in the message will be 1 in both cases. The log will show the value 1 for the transaction state after the `SET UPDATE TASK LOCAL` statement has been executed.
+  - **Rolling back changes**: Although update function modules and subroutines are registered, none of them affect the database. All changes are rolled back. Result: The database table is not deleted, no new entry is created. The original content of the database table should be displayed.
+  - **Causing a failure in the current SAP LUW**: An update function module intentionally includes a statement that causes a runtime error if not caught (zero division). All changes are rolled back implicitly. If the local update is active, you should be informed of the problem directly. The program is terminated. In this case, you can check the database table entries that remain unchanged. You can also use transaction ST22 to display the runtime error that occurred. In the case of a non-local update, you should receive a mail in the Business Workplace informing you of the problem in the SAP LUW. The original content of the database table should be displayed on the next screen. In this case, you can also check transaction ST22 for the runtime error.
+  - **Terminating the program with an error message** of type A: This option only indicates that if such a message is generated, the program is terminated and all changes are implicitly rolled back. In this case, you may want to check the database table entries that remain unchanged.
+- **Using subroutines**: 
+  - Note that subroutines are considered obsolete and should no longer be used. This is to demonstrate the effect as a bundling technique in an SAP LUW. Selecting this option triggers the registration of subroutines for commit (to delete the database table entry, insert a newly created entry, insert entries in the log table) and rollback (this subroutine does nothing specific; it is just to demonstrate that the subroutine is called in the event of a rollback).
+  - When you select the commit options, the subroutines registered with ON COMMIT are executed in the current work process.
+  - Choosing `COMMIT WORK` or `COMMIT WORK AND WAIT` has the same effect: When these statements are called and a `SELECT` statement follows, the number of database table entries is 1 in both cases.
+  - If the rollback option is selected, the subroutine registered with `ON ROLLBACK` is executed in the current work process.
+  - The transaction state in the log is 1 for `ON COMMIT` or `ON ROLLBACK` when the corresponding subroutines are called.
+  - Note that registered subroutines cannot have a parameter interface, so no parameters can be passed in this type of bundling. Therefore, data can only be passed through external interfaces, such as ABAP memory. In this example, the database table entry created is passed to and from ABAP memory using `EXPORT` and `IMPORT` statements. The subroutines themselves do not implement the writes themselves, but instead call methods of a class.
+- The following aspects are valid for all selected options regarding the logs:
+  - Before the commit is triggered (in the last PAI), the transaction state shows the value 0 for all retrieved transaction states.
+  - The work process information may change due to the fact that database commits are triggered when completing a dialog step. So you might expect different numbers there, but not necessarily. The new free work process can also be the same as the one before it was freed. However, there will be no different work process information for the update. The numbers will be the same because the update is performed in a single work process.
+  - Before calling the program that displays database entries and the log, the SAP LUW key is the same throughout the transaction. It does not change until a new SAP LUW is opened. See and compare the last entry for the SAP LUW key in the log that is retrieved for the program submitted.
+</details>
+
+
+
+
+
+
+
+

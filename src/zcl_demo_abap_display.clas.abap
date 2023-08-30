@@ -5,7 +5,7 @@
 *
 * -------------------------- NOTE -------------------------------------
 * This helper class is only used to display complex types contained in
-* the example classes of the ABAP cheat sheets in older ABAP releases. 
+* the example classes of the ABAP cheat sheets in older ABAP releases.
 * In newer ABAP releases, this helper class is, in principle, not needed.
 * You can use the write method of the classrun interface directly and
 * display all types.
@@ -45,21 +45,24 @@ CLASS zcl_demo_abap_display DEFINITION
         IMPORTING
           heading TYPE string.
 
-protected section.
+  PROTECTED SECTION.
   PRIVATE SECTION.
     DATA:
       mo_out TYPE REF TO if_oo_adt_classrun_out,
       offset TYPE i.
 
+    CONSTANTS nl TYPE string VALUE cl_abap_char_utilities=>newline.
 ENDCLASS.
 
 
 
-CLASS ZCL_DEMO_ABAP_DISPLAY IMPLEMENTATION.
+CLASS zcl_demo_abap_display IMPLEMENTATION.
+
 
   METHOD constructor.
     mo_out = io_out.
   ENDMETHOD.
+
 
   METHOD display.
     "Checking data type
@@ -97,7 +100,7 @@ CLASS ZCL_DEMO_ABAP_DISPLAY IMPLEMENTATION.
       WHEN cl_abap_typedescr=>kind_intf.
         to_be_serialized = abap_true.
       WHEN cl_abap_typedescr=>kind_elem.
-        display = mo_out->get( data = COND string( WHEN name IS INITIAL THEN input ELSE `"` && name && `":` && cl_abap_char_utilities=>newline && input ) ).
+        display = mo_out->get( data = COND string( WHEN name IS INITIAL THEN input ELSE `"` && name && `":` && nl && input ) ).
       WHEN cl_abap_typedescr=>kind_ref.
         "Checking for data references
         IF type_descr->type_kind = cl_abap_typedescr=>typekind_dref.
@@ -105,7 +108,7 @@ CLASS ZCL_DEMO_ABAP_DISPLAY IMPLEMENTATION.
           DATA(type_check_dref) = cl_abap_typedescr=>describe_by_data( input->* ).
           "Processing (non-)elementary types
           IF type_check_dref->kind = type_descr->kind_elem.
-            display = mo_out->get( data = COND string( WHEN name IS INITIAL THEN input->* ELSE `"` && name && `":` && cl_abap_char_utilities=>newline && input->* ) ).
+            display = mo_out->get( data = COND string( WHEN name IS INITIAL THEN input->* ELSE `"` && name && `":` && nl && input->* ) ).
           ELSE.
             to_be_serialized = abap_true.
           ENDIF.
@@ -127,29 +130,31 @@ CLASS ZCL_DEMO_ABAP_DISPLAY IMPLEMENTATION.
                                             assoc_arrays_opt = abap_true ).
       IF to_be_serialized = abap_true.
         IF name IS INITIAL.
-          REPLACE PCRE `^` IN display WITH json && cl_abap_char_utilities=>newline.
+          REPLACE PCRE `^` IN display WITH json && nl.
         ELSE.
-          REPLACE PCRE `^` IN display WITH `"` && name && `":` && cl_abap_char_utilities=>newline && json && cl_abap_char_utilities=>newline.
+          REPLACE PCRE `^` IN display WITH `"` && name && `":` && nl && json && nl.
         ENDIF.
-      "substring found
+        "substring found
       ELSE.
         IF name IS INITIAL.
-          REPLACE SECTION OFFSET off LENGTH len OF display WITH json && cl_abap_char_utilities=>newline.
+          REPLACE SECTION OFFSET off LENGTH len OF display WITH json && nl.
         ELSE.
-          REPLACE SECTION OFFSET off LENGTH len OF display WITH `"` && name && `":` && cl_abap_char_utilities=>newline && json && cl_abap_char_utilities=>newline.
+          REPLACE SECTION OFFSET off LENGTH len OF display WITH `"` && name && `":` && nl && json && nl.
         ENDIF.
       ENDIF.
-      mo_out->write( display ).
+      mo_out->write( display && nl ).
     ELSE.
-      mo_out->write( display ).
+      mo_out->write( display && nl ).
     ENDIF.
   ENDMETHOD.
 
+
   METHOD next_section.
     mo_out->write( `_________________________________________________________________________________`
-                && cl_abap_char_utilities=>newline
-                && cl_abap_char_utilities=>newline
+                && nl
+                && nl
                 && heading
-                && cl_abap_char_utilities=>newline ).
+                && nl
+                && nl ).
   ENDMETHOD.
 ENDCLASS.

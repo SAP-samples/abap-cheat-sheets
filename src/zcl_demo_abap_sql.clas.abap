@@ -12,26 +12,26 @@
 * - Open the class with the ABAP development tools for Eclipse (ADT).
 * - Choose F9 to run the class.
 * - Check the console output.
-* - To understand the context and the ABAP syntax used, refer to the 
-*   notes included in the class as comments or refer to the respective 
+* - To understand the context and the ABAP syntax used, refer to the
+*   notes included in the class as comments or refer to the respective
 *   topic in the ABAP Keyword Documentation.
-* - Due to the amount of console output, the examples contain numbers 
-*   (e.g. 1) ..., 2) ..., 3) ...) for the individual example sections. 
-*   Also, the variable name is displayed in most cases. So to find 
-*   the relevant output in the console easier and faster, just search 
-*   for the number/variable name in the console (CTRL+F in the console) 
+* - Due to the amount of console output, the examples contain numbers
+*   (e.g. 1) ..., 2) ..., 3) ...) for the individual example sections.
+*   Also, the variable name is displayed in most cases. So to find
+*   the relevant output in the console easier and faster, just search
+*   for the number/variable name in the console (CTRL+F in the console)
 *   or use the debugger.
 *
 * ----------------------------- NOTE -----------------------------------
 * The code presented in this class is intended only to support the ABAP
 * cheat sheets. It is not intended for direct use in a production system
-* environment. The code examples in the ABAP cheat sheets are primarily 
-* intended to provide a better explanation and visualization of the 
-* syntax and semantics of ABAP statements, not to solve concrete 
-* programming tasks. For production application programs, you should  
-* always work out your own solution for each individual case. There is 
-* no guarantee for the correctness or completeness of the code.  
-* Furthermore, there is no legal responsibility or liability for any 
+* environment. The code examples in the ABAP cheat sheets are primarily
+* intended to provide a better explanation and visualization of the
+* syntax and semantics of ABAP statements, not to solve concrete
+* programming tasks. For production application programs, you should
+* always work out your own solution for each individual case. There is
+* no guarantee for the correctness or completeness of the code.
+* Furthermore, there is no legal responsibility or liability for any
 * errors or their consequences that may occur when using the the example
 * code.
 *
@@ -61,12 +61,14 @@ ENDCLASS.
 
 
 
-CLASS zcl_demo_abap_sql IMPLEMENTATION.
+CLASS ZCL_DEMO_ABAP_SQL IMPLEMENTATION.
+
 
   METHOD class_constructor.
     "Filling demo database tables.
     zcl_demo_abap_flight_tables=>fill_dbtabs( ).
   ENDMETHOD.
+
 
   METHOD if_oo_adt_classrun~main.
 
@@ -1587,6 +1589,7 @@ CLASS zcl_demo_abap_sql IMPLEMENTATION.
     output->display( input = itab_res name = `itab_res` ).
 
   ENDMETHOD.
+
 
   METHOD select_from_dbtab.
     SELECT *

@@ -69,7 +69,7 @@ in the ABAP Keyword Documentation.
 >- AMDP classes can only be edited with the [ABAP development tools for Eclipse
         (ADT)](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenadt_glosry.htm "Glossary Entry").
 
-<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## AMDP Classes
 
@@ -102,7 +102,7 @@ CLASS cl_some_amdp_class DEFINITION
 ENDCLASS.
 ```
 
-<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## AMDP Methods
 
@@ -136,7 +136,7 @@ PRIVATE SECTION.
 ...
 ```
 
-<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## AMDP Procedures
 
@@ -226,7 +226,7 @@ Note:
     and implementation parts. Check the ABAP Keyword Documentation for
     more details as touched on further down.
 
-<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## AMDP Functions
 
@@ -304,7 +304,7 @@ ENDMETHOD.
 ...
 ```
 
-<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ### CDS Table Functions
 
@@ -378,7 +378,7 @@ define table function some_ddl_source
 You can then use the CDS table function as source for a
 `SELECT` statement, for example: `SELECT * FROM some_ddl_source INTO ...`.
 
-<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## More Information
 
@@ -436,7 +436,7 @@ input parameter for the client ID. See more information
 The client handling is not dealt with in this cheat sheet and not
 relevant in the executable example.
 
-<p align="right">(<a href="#top">⬆️ back to top</a>)</p>
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## Executable Example
 [zcl_demo_abap_amdp](./src/zcl_demo_abap_amdp.clas.abap)

@@ -115,7 +115,147 @@ CLASS zcl_demo_abap_dtype_dobj DEFINITION
 ENDCLASS.
 
 
-CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
+
+CLASS ZCL_DEMO_ABAP_DTYPE_DOBJ IMPLEMENTATION.
+
+
+  METHOD adapt_text.
+    DATA text TYPE t_pub_text_c30.
+
+    text = cl_text && comma && sy-uname && me->text.
+
+    str = text && |\n(Note: The value of me->text is "{ me->text }")|.
+  ENDMETHOD.
+
+
+  METHOD addition_with_generic_num.
+    result = num1 + num2.
+  ENDMETHOD.
+
+
+  METHOD class_constructor.
+    "Filling demo database tables.
+    zcl_demo_abap_flight_tables=>fill_dbtabs( ).
+  ENDMETHOD.
+
+
+  METHOD enum_meth_params.
+
+    CASE char.
+      WHEN a.
+        output = a.
+      WHEN b.
+        output = b.
+      WHEN OTHERS.
+        output = `Either c or d: ` && char.
+    ENDCASE.
+
+  ENDMETHOD.
+
+
+  METHOD enum_processing.
+
+    "Read and write positions of enumerated objects
+    "Enumerated objects can be used in all read positions in which the operand
+    "type is their enumerated type.
+    "Likewise, enumerated variables can only be used in write positions in which
+    "the operand type is the enumerated type and only the associated enumerated
+    "values can be written.
+    "So, assignments are possible only from one enumerated type to the same (with one
+    "exception -> assignment to character-like variables of the types c and string)
+    DATA do_enum TYPE t_enum.
+    do_enum = a.
+    APPEND |do_enum: { do_enum }| TO output.
+
+    DATA do_enum_2 LIKE do_enum.
+    do_enum_2 = do_enum.
+    APPEND |do_enum_2: { do_enum_2 }| TO output.
+
+    "Assignment to character-like variables of the types c and string.
+    "In this case, the target field is assigned the name of the enumerated constant or
+    "the component of the enumerated structure under which the enumerated value of the
+    "source field is defined in the enumerated type.
+    DATA do_a_string TYPE string.
+    do_a_string = do_enum.
+    APPEND |do_a_string: { do_a_string }| TO output.
+
+    "Or using the CONV operator as follows
+    DATA(do_next_string) = CONV string( do_enum ).
+    APPEND |do_next_string: { do_next_string }| TO output.
+
+    "Enumerated constants are converted implicitly to the type string
+    "before the concatenation in the string template.
+    DATA(str_from_enum) = |{ a }{ b }{ c }{ d }|.
+    APPEND |str_from_enum: { str_from_enum }| TO output.
+
+    "Note that only the enumerated type itself is relevant. Usually, the content
+    "of an enumerated object is not of interest.
+    "The enumerated value in the base type can be accessed using the constructor
+    "operators CONV and EXACT only. The base type is i in this case.
+    DATA(conv_value) = CONV i( do_enum ).
+    APPEND |conv_value: { conv_value }| TO output.
+
+    "Converting the other way round.
+    DATA(another_conv) = CONV t_enum( 3 ).
+    APPEND |another_conv: { another_conv }| TO output.
+
+    "If known statically, an attempt to assign a value other than a valid enumerated value
+    "to an enumerated variable produces a syntax error.
+    "If not known statically, an exception is raised.
+    "The following produces a syntax error
+    "do_enum = f.
+
+    "The following example shows raising an exception.
+    DATA dobj TYPE t_enum.
+
+    TYPES t_int_tab TYPE TABLE OF i WITH EMPTY KEY.
+    DATA(int_tab) = VALUE t_int_tab( ( 0 ) ( 1 ) ( 2 ) ( 3 ) ( 4 ) ).
+
+    DATA str_tab TYPE TABLE OF string.
+    LOOP AT int_tab INTO DATA(wa_en).
+      TRY.
+          dobj = CONV t_enum( wa_en ).
+          APPEND dobj TO str_tab.
+        CATCH cx_sy_conversion_no_enum_value INTO DATA(error_enum).
+          APPEND error_enum->get_text( ) TO str_tab.
+      ENDTRY.
+    ENDLOOP.
+
+    APPEND `------------- START: Output for str_tab -------------` TO output.
+    APPEND LINES OF str_tab TO output.
+    APPEND `^^^^^^^^^^^^^ END: Output for str_tab ^^^^^^^^^^^^^` TO output.
+
+    "An enumerated variable can be set to the initial value of its base type
+    "using CLEAR.
+    CLEAR do_enum.
+    APPEND |do_enum: { do_enum }| TO output.
+
+    "Enumerated structures
+    DATA do_enum_s TYPE t_enum_struc.
+
+    "The enumerated structure en_struc was decalred in the public section.
+    "Using the addition LIKE, a second structure is created referring to the enumerated structure.
+    "Note that the second structure is not a constant structure.
+    "The components of the constant structure contain the enumerated values of the enumerated type.
+    "All the components of the variable structure declared by LIKE contain the initial values.
+    DATA do_s LIKE en_struc.
+    APPEND |do_s: { do_s-j } / { do_s-k } / { do_s-l } / { do_s-m }| TO output.
+
+    DATA(do_en) = en_struc.
+    APPEND |do_en: { do_en-j } / { do_en-k } / { do_en-l } / { do_en-m }| TO output.
+
+    "Accessing structure components using the component selector
+    DATA(do_en_k) = en_struc-k.
+    APPEND |do_en_k: { do_en_k }| TO output.
+
+    DATA(do_s_m) = do_s-m.
+    APPEND |do_s_m: { do_s_m }| TO output.
+    "Assigning enumerated constants to the variable structure
+    do_s = en_struc.
+    APPEND |do_s: { do_s-j } / { do_s-k } / { do_s-l } / { do_s-m }| TO output.
+
+  ENDMETHOD.
+
 
   METHOD if_oo_adt_classrun~main.
 
@@ -232,7 +372,7 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
 
 **********************************************************************
 
-    output->display( `2) Declaring data types based on complex types` ).
+    output->next_section( `2) Declaring data types based on complex types` ).
 
     "Structure and internal table types as examples for complex types
 
@@ -302,7 +442,7 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
 
 **********************************************************************
 
-    output->display( `3) Declaring reference types` ).
+    output->next_section( `3) Declaring reference types` ).
 
     "Declaring reference types with static types
     TYPES tr_i TYPE REF TO i.
@@ -339,7 +479,7 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
 
 **********************************************************************
 
-    output->display( `Declaring data objects` ).
+    output->next_section( `Declaring data objects` ).
 
     "The following examples deal with the declaration of data ojects.
     "They show how data objects can be declared locally in an ABAP program.
@@ -437,7 +577,7 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
 
 **********************************************************************
 
-    output->display( `5) Declaring structures and internal tables as examples for complex types` ).
+    output->next_section( `5) Declaring structures and internal tables as examples for complex types` ).
 
     "Note: See more details and examples in the ABAP Keyword Documentations and in the
     "respective ABAP cheat sheets.
@@ -498,7 +638,7 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
 
 **********************************************************************
 
-    output->display( `6) Declaring data reference variables` ).
+    output->next_section( `6) Declaring data reference variables` ).
 
     "Declaring data reference variables types with static types
     DATA dref_int TYPE REF TO i.
@@ -531,7 +671,7 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
 
 **********************************************************************
 
-    output->display( `7) Assigning values to data objects` ).
+    output->next_section( `7) Assigning values to data objects` ).
 
     "An assignment passes the content of a source to a target data object.
     "Note:
@@ -635,13 +775,13 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
 
 **********************************************************************
 
-    output->display( `8) Creating data objects by inline declaration` ).
+    output->next_section( `8) Creating data objects by inline declaration` ).
 
     "The declaration operator DATA can be specified in any designated declaration position.
     "The data type of the variable is determined by the operand type. It must be possible
     "to derive this type completely statically.
     "Note:
-    "- In newer ABAP releases, the FINAL declaration operator is available for creating
+    "- The FINAL declaration operator is available for creating
     "  immutable variables as shon below.
     "- As shown in the previous section, there are many options for what can be placed on
     "  the right side.
@@ -749,7 +889,7 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
 
 **********************************************************************
 
-    output->display( `9) Assigning references to data reference variables` ).
+    output->next_section( `9) Assigning references to data reference variables` ).
 
     "Note:
     "- As is true for other data object and types, there are special assignment rules
@@ -851,7 +991,7 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
 
 **********************************************************************
 
-    output->display( `10) Creating anonymous data objects` ).
+    output->next_section( `10) Creating anonymous data objects` ).
 
     "Anonymous data objects are a topic related to data reference variables.
     "These data objects are unnamed data objects.
@@ -956,7 +1096,7 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
 
 **********************************************************************
 
-    output->display( `Excursions: Elementary types and type conversions` ).
+    output->next_section( `Excursions: Elementary types and type conversions` ).
 
     output->display( `11) Implicit and explicit conversion` ).
 
@@ -1029,7 +1169,7 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
 
 **********************************************************************
 
-    output->display( `12) Character strings and text field strings` ).
+    output->next_section( `12) Character strings and text field strings` ).
 
     "The following example shows the difference between text field strings
     "of type c and character strings of type string when it comes to trailing
@@ -1046,7 +1186,7 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
 
 **********************************************************************
 
-    output->display( `13) Floating point numbers` ).
+    output->next_section( `13) Floating point numbers` ).
 
     "The following example shows the difference between binary and decimal
     "floating point numbers.
@@ -1061,7 +1201,7 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
 
 **********************************************************************
 
-    output->display( `14) Byte-like types` ).
+    output->next_section( `14) Byte-like types` ).
 
     "The following example shows byte-like types x and xstring.
 
@@ -1115,11 +1255,11 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
 
 **********************************************************************
 
-    output->display( `15) Date and time` ).
+    output->next_section( `15) Date and time` ).
 
-    "In the example, date and time fields are assigned the current values
-    "using the cl_abap_context_info class. Calculations follow. The date of next
-    "day and the next hour are calculated.
+    "In the example, a date field is assigned the current values
+    "using the cl_abap_context_info class. A calculation follows. The date of next
+    "day is calculated.
     "Note: The data types behave like numeric values in the context of calculations.
     "In assignments and in the output, they behave like character-like types.
     "The second example shows an undesired result for a conversion of type i to d.
@@ -1128,18 +1268,12 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
     "In such a case, the date field is assigned the invalid value '00000000'.
 
     DATA: today     TYPE d,
-          tomorrow  TYPE d,
-          now       TYPE t,
-          next_hour TYPE t.
-    today = cl_abap_context_info=>get_system_date( ).
-    now = cl_abap_context_info=>get_system_time( ).
-    tomorrow = today + 1.
-    next_hour = ( now + 3600 ) / 3600 * 3600.
+          tomorrow  TYPE d.
+    today = cl_abap_context_info=>get_system_date( ).    
+    tomorrow = today + 1.    
     output->display(
-    |Today: { today }\n| &&
-    |Now: { now }\n\n| &&
-    |Tommorow: { tomorrow }\n| &&
-    |Next Hour: { next_hour }| ).
+    |Today: { today }\n| &&    
+    |Tommorow: { tomorrow }| ).
 
     DATA date TYPE d.
     date = '20240101'.
@@ -1150,7 +1284,7 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
 
 **********************************************************************
 
-    output->display( `16) Type conversion rules` ).
+    output->next_section( `16) Type conversion rules` ).
 
     "The purpose of this example is to emphasize the conversion rules
     "that should be noted when performing conversions. The example
@@ -1305,7 +1439,7 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
 
 **********************************************************************
 
-    output->display( `17) Excursion: RTTI` ).
+    output->next_section( `17) Excursion: RTTI` ).
 
     "Using RTTI to check type compatibility
     "In the following example the applies_to_data method of the RTTI class
@@ -1371,7 +1505,7 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
 
 **********************************************************************
 
-    output->display( `18) Constants and immutable variables` ).
+    output->next_section( `18) Constants and immutable variables` ).
 
     "As mentioned above, constants cannot be changed at runtime.
     CONSTANTS con_str TYPE string VALUE `hallo`.
@@ -1381,29 +1515,28 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
     DATA str_w_con_as_start_value TYPE string VALUE con_underscores.
 
     "Immutable variables
-    "In newer ABAP releases, comment the code in.
-*    FINAL(do_final_inl) = 1.
-*    DATA(do_data_inl) = 1 + do_final_inl.
-*    "not possible
-*    "do_final_inl = 2.
-*
-*    SELECT * FROM zdemo_abap_carr INTO TABLE @DATA(itab_data_inl).
-*
-*    DATA itab_like_inline LIKE itab_data_inl.
-*
-*    "Using an inline declaration as target of a LOOP statement
-*    "A value is assigned multiple times, but it cannot be changed in any other
-*    "write positions.
-*    LOOP AT itab_data_inl INTO FINAL(wa_final).
-*
-*      "The following is not possible
-*      "wa_final-carrid = 'd'.
-*      "only read access
-*      APPEND wa_final TO itab_like_inline.
-*    ENDLOOP.
-*
-*    "SELECT statement with a an immutable target table declared inline
-*    SELECT * FROM zdemo_abap_carr INTO TABLE @FINAL(itab_final_inl).
+    FINAL(do_final_inl) = 1.
+    DATA(do_data_inl) = 1 + do_final_inl.
+    "not possible
+    "do_final_inl = 2.
+
+    SELECT * FROM zdemo_abap_carr INTO TABLE @DATA(itab_data_inl).
+
+    DATA itab_like_inline LIKE itab_data_inl.
+
+    "Using an inline declaration as target of a LOOP statement
+    "A value is assigned multiple times, but it cannot be changed in any other
+    "write positions.
+    LOOP AT itab_data_inl INTO FINAL(wa_final).
+
+      "The following is not possible
+      "wa_final-carrid = 'd'.
+      "only read access
+      APPEND wa_final TO itab_like_inline.
+    ENDLOOP.
+
+    "SELECT statement with a an immutable target table declared inline
+    SELECT * FROM zdemo_abap_carr INTO TABLE @FINAL(itab_final_inl).
 
     output->display( `No output for this section. Check out the code, `
       && `for example, when running the class in the debugger after setting `
@@ -1411,7 +1544,7 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
 
 **********************************************************************
 
-    output->display( `19) Various ABAP glossary terms on data types and objects in a nutshell` ).
+    output->next_section( `19) Various ABAP glossary terms on data types and objects in a nutshell` ).
 
     "Standalone and bound data types
     "Standalone: Data type that is defined using the statement TYPES in an ABAP program, as
@@ -1639,7 +1772,7 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
 
 **********************************************************************
 
-    output->display( `20) Generic ABAP types for formal parameters of methods` ).
+    output->next_section( `20) Generic ABAP types for formal parameters of methods` ).
 
     "Generic data types have already been covered above.
     "A generic data type is an incomplete type specification that covers multiple
@@ -1681,7 +1814,7 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
 
 **********************************************************************
 
-    output->display( `21) Built-in data objects` ).
+    output->next_section( `21) Built-in data objects` ).
 
     "This example demonstrates the availability of built-in data objects in ABAP.
 
@@ -1760,7 +1893,7 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
 
 **********************************************************************
 
-    output->display( `22) Declaration context` ).
+    output->next_section( `22) Declaration context` ).
 
     "The purpose of this example is to emphasize the importance of where
     "data objects are decalred. The example deals with local declarations
@@ -1806,7 +1939,7 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
 
 **********************************************************************
 
-    output->display( `23) Enumerated Types and Objects` ).
+    output->next_section( `23) Enumerated Types and Objects` ).
 
     "Examples for enumerated types and objects are contained in
     "separate methods. Check the comments there.
@@ -1841,138 +1974,6 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
 
   ENDMETHOD.
 
-  METHOD adapt_text.
-    DATA text TYPE t_pub_text_c30.
-
-    text = cl_text && comma && sy-uname && me->text.
-
-    str = text && |\n(Note: The value of me->text is "{ me->text }")|.
-  ENDMETHOD.
-
-  METHOD class_constructor.
-    "Filling demo database tables.
-    zcl_demo_abap_flight_tables=>fill_dbtabs( ).
-  ENDMETHOD.
-
-  METHOD addition_with_generic_num.
-    result = num1 + num2.
-  ENDMETHOD.
-
-  METHOD enum_meth_params.
-
-    CASE char.
-      WHEN a.
-        output = a.
-      WHEN b.
-        output = b.
-      WHEN OTHERS.
-        output = `Either c or d: ` && char.
-    ENDCASE.
-
-  ENDMETHOD.
-
-  METHOD enum_processing.
-
-    "Read and write positions of enumerated objects
-    "Enumerated objects can be used in all read positions in which the operand
-    "type is their enumerated type.
-    "Likewise, enumerated variables can only be used in write positions in which
-    "the operand type is the enumerated type and only the associated enumerated
-    "values can be written.
-    "So, assignments are possible only from one enumerated type to the same (with one
-    "exception -> assignment to character-like variables of the types c and string)
-    DATA do_enum TYPE t_enum.
-    do_enum = a.
-    APPEND |do_enum: { do_enum }| TO output.
-
-    DATA do_enum_2 LIKE do_enum.
-    do_enum_2 = do_enum.
-    APPEND |do_enum_2: { do_enum_2 }| TO output.
-
-    "Assignment to character-like variables of the types c and string.
-    "In this case, the target field is assigned the name of the enumerated constant or
-    "the component of the enumerated structure under which the enumerated value of the
-    "source field is defined in the enumerated type.
-    DATA do_a_string TYPE string.
-    do_a_string = do_enum.
-    APPEND |do_a_string: { do_a_string }| TO output.
-
-    "Or using the CONV operator as follows
-    DATA(do_next_string) = CONV string( do_enum ).
-    APPEND |do_next_string: { do_next_string }| TO output.
-
-    "Enumerated constants are converted implicitly to the type string
-    "before the concatenation in the string template.
-    DATA(str_from_enum) = |{ a }{ b }{ c }{ d }|.
-    APPEND |str_from_enum: { str_from_enum }| TO output.
-
-    "Note that only the enumerated type itself is relevant. Usually, the content
-    "of an enumerated object is not of interest.
-    "The enumerated value in the base type can be accessed using the constructor
-    "operators CONV and EXACT only. The base type is i in this case.
-    DATA(conv_value) = CONV i( do_enum ).
-    APPEND |conv_value: { conv_value }| TO output.
-
-    "Converting the other way round.
-    DATA(another_conv) = CONV t_enum( 3 ).
-    APPEND |another_conv: { another_conv }| TO output.
-
-    "If known statically, an attempt to assign a value other than a valid enumerated value
-    "to an enumerated variable produces a syntax error.
-    "If not known statically, an exception is raised.
-    "The following produces a syntax error
-    "do_enum = f.
-
-    "The following example shows raising an exception.
-    DATA dobj TYPE t_enum.
-
-    TYPES t_int_tab TYPE TABLE OF i WITH EMPTY KEY.
-    DATA(int_tab) = VALUE t_int_tab( ( 0 ) ( 1 ) ( 2 ) ( 3 ) ( 4 ) ).
-
-    DATA str_tab TYPE TABLE OF string.
-    LOOP AT int_tab INTO DATA(wa_en).
-      TRY.
-          dobj = CONV t_enum( wa_en ).
-          APPEND dobj TO str_tab.
-        CATCH cx_sy_conversion_no_enum_value INTO DATA(error_enum).
-          APPEND error_enum->get_text( ) TO str_tab.
-      ENDTRY.
-    ENDLOOP.
-
-    APPEND `------------- START: Output for str_tab -------------` TO output.
-    APPEND LINES OF str_tab TO output.
-    APPEND `^^^^^^^^^^^^^ END: Output for str_tab ^^^^^^^^^^^^^` TO output.
-
-    "An enumerated variable can be set to the initial value of its base type
-    "using CLEAR.
-    CLEAR do_enum.
-    APPEND |do_enum: { do_enum }| TO output.
-
-    "Enumerated structures
-    DATA do_enum_s TYPE t_enum_struc.
-
-    "The enumerated structure en_struc was decalred in the public section.
-    "Using the addition LIKE, a second structure is created referring to the enumerated structure.
-    "Note that the second structure is not a constant structure.
-    "The components of the constant structure contain the enumerated values of the enumerated type.
-    "All the components of the variable structure declared by LIKE contain the initial values.
-    DATA do_s LIKE en_struc.
-    APPEND |do_s: { do_s-j } / { do_s-k } / { do_s-l } / { do_s-m }| TO output.
-
-    DATA(do_en) = en_struc.
-    APPEND |do_en: { do_en-j } / { do_en-k } / { do_en-l } / { do_en-m }| TO output.
-
-    "Accessing structure components using the component selector
-    DATA(do_en_k) = en_struc-k.
-    APPEND |do_en_k: { do_en_k }| TO output.
-
-    DATA(do_s_m) = do_s-m.
-    APPEND |do_s_m: { do_s_m }| TO output.
-    "Assigning enumerated constants to the variable structure
-    do_s = en_struc.
-    APPEND |do_s: { do_s-j } / { do_s-k } / { do_s-l } / { do_s-m }| TO output.
-
-  ENDMETHOD.
 
   METHOD rtti_enum.
 
@@ -2022,5 +2023,4 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
     REPLACE FIRST OCCURRENCE OF PCRE `/\s` IN mem_string WITH ``.
     APPEND ` members:` && mem_string TO output.
   ENDMETHOD.
-
 ENDCLASS.

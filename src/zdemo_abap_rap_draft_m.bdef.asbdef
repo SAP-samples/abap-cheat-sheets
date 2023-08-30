@@ -1,5 +1,5 @@
 managed implementation in class zbp_demo_abap_rap_draft_m unique;
-strict;
+strict(2);
 with draft;
 
 define behavior for ZDEMO_ABAP_RAP_DRAFT_M alias calc
@@ -22,11 +22,7 @@ late numbering
   determination det_modify on modify { field num1, num2, arithm_op; }
   draft action Resume;
   draft action Edit;
-  //As of release 2308: Draft action "Activate" should be defined as "optimized" 
-  //to enable optimized execution of determinations and validations.
-  //Comment in the following notation, comment out the one below.
-  //draft action Activate optimized;
-  draft action Activate;
+  draft action Activate optimized;
   draft action Discard;
   draft determine action Prepare
   {

@@ -35,7 +35,7 @@ ENDCLASS.
 
 
 
-CLASS zcl_demo_abap_flight_tables IMPLEMENTATION.
+CLASS ZCL_DEMO_ABAP_FLIGHT_TABLES IMPLEMENTATION.
 
 
   METHOD clear_dbtabs.

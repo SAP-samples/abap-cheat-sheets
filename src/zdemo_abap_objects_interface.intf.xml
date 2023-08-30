@@ -8,7 +8,7 @@
     <DESCRIPT>Interface for ABAP cheat sheet example</DESCRIPT>
     <EXPOSURE>2</EXPOSURE>
     <STATE>1</STATE>
-    <UNICODE>5</UNICODE>
+    <UNICODE>X</UNICODE>
    </VSEOINTERF>
   </asx:values>
  </asx:abap>
