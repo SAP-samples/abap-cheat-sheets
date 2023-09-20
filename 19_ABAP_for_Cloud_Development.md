@@ -52,7 +52,7 @@ It provides references to more detailed information on the topic.
 
     ![Released APIs](./files/released_APIs.png)
 
-    As an example of a released API, consider the `CL_ABAP_RANDOM_INT` class (computes random integers). In ADT, once you have opened the class, check the *Properties* tab. Click *API State* on the left to display information about the release contracts. In this case, it is C1. As mentioned above, see [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_versions_and_apis.htm#@@ITOC@@ABENABAP_VERSIONS_AND_APIS_2) for more information on C1, and so on. This is also true for ABAP Repository objects in on-premises systems.
+    As an example of a released API, consider the `CL_ABAP_RANDOM_INT` class (computes random integers). In ADT, once you have opened the class, check the *Properties* tab. Click *API State* on the left to display information about the release contracts. In this case, it is C1. As mentioned above, see [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_versions_and_apis.htm#@@ITOC@@ABENABAP_VERSIONS_AND_APIS_2) for more information on C1, and so on. This is also true for ABAP Repository objects in on-premise systems.
    
     ![Release contract](./files/release_contract.png)
 
@@ -146,7 +146,7 @@ It provides references to more detailed information on the topic.
     - For the example class created, check the information in the *Properties* tab. Choose *General*. The *ABAP Language Version* is maintained as *Standard ABAP*: 
      ![Standard ABAP](./files/standard.png)
      
-    c) Verify that your code in an on-premises ABAP system is cloud-ready
+    c) Verify that your code in an on-premise ABAP system is cloud-ready
      - You have walked through b), created a class, inserted the code from above, and activated the class. The *ABAP Language Version* is maintained as *Standard ABAP* in the *Properties* tab. 
      - Verifying if your code is cloud-ready
        - You can use ATC check variant `ABAP_CLOUD_READINESS` for this purpose.
