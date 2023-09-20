@@ -89,7 +89,8 @@ It provides references to more detailed information on the topic.
         "Dynamic ABAP SQL statements
         "In ABAP Cloud, no syntax error will be displayed. However, a runtime error
         "will occur when running the class. 
-        "Note: Check out the CL_ABAP_DYN_PRG class, which supports dynamic programming "      by checking the validity of dynamic specifications.
+        "Note: Check out the CL_ABAP_DYN_PRG class, which supports dynamic programming 
+        "by checking the validity of dynamic specifications.
         SELECT SINGLE carrid, connid FROM ('SPFLI') WHERE carrid = 'LH' INTO NEW @DATA(ref_a).
         "No runtime error if you have imported the ABAP cheat sheet repository objects
         SELECT SINGLE carrid, connid FROM ('ZDEMO_ABAP_FLI') WHERE carrid = 'LH' INTO NEW @DATA(ref_b).
