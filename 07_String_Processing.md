@@ -116,7 +116,7 @@ ENDCLASS.
 ```
 
 - [Named](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abennamed_data_object_glosry.htm) character-like data types and objects can be declared like other types and objects using [`TYPES`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abaptypes.htm), [`DATA`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapdata.htm) [`CONSTANTS`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapconstants.htm) and by referring to a character-like data type.
-- In addition, character-like data objects can be declared inline with the operators `DATA` and, in newer ABAP releases, `FINAL`, as shown below.
+- In addition, character-like data objects can be declared inline with the operators `DATA` and [`FINAL`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenfinal_inline.htm).
 
 Syntax examples:
 ``` abap
@@ -194,7 +194,7 @@ DATA str4 TYPE string VALUE -1.  "type i
 DATA(char2) = 'abcd'. "Type c length 4
 DATA(str5)  = `efgh`.
 
-"In newer ABAP releases, you can use FINAL to create immutable variables.
+"You can use FINAL to create immutable variables.
 FINAL(final_string)  = `zyx`.
 
 "Since char2 is of type c length 4 (the length is also derived),

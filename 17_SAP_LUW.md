@@ -14,7 +14,7 @@
 
 ## Introduction
 
-⚠️ Most of the content of this cheat sheet is only relevant to [classic ABAP](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenclassic_abap_glosry.htm).
+⚠️ The concept is relevant to both ABAP Cloud and classic ABAP, but some of the statements covered in the cheat sheet and executable example are only relevant to [classic ABAP](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenclassic_abap_glosry.htm).
 
 This cheat sheet provides a high-level overview of the [SAP LUW](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abensap_luw_glosry.htm) concept that deals with data consistency with a focus on SAP LUW-related statements, supported by an executable example to check the syntax in action.
 
@@ -93,7 +93,7 @@ The following terms are related to the concept of the SAP LUW and try to give yo
   - A work process can execute only a single database LUW. It cannot interfere with the database LUWs of other work processes.
 
 
-<p align="right">(<a href="#top">⬆️ back to top</a>)
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 
 ## SAP LUW Overview
@@ -111,7 +111,7 @@ Using the above bank transfer as an example:
 - You cannot debit account A in one work process and then credit account B in a separate work process. When the work process changes, new totals would be available in one account, but not in the other. Consider the consequences if an error occurs and the new totals for account B cannot be updated, and so on. You would no longer be able to easily roll back the changes.
 - Consider prematurely updating the database and notifying the users or processing the data while the logical unit has not been successfully completed.
 
-<p align="right">(<a href="#top">⬆️ back to top</a>)
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ### Bundling Techniques
 The following bundling techniques are available for classic ABAP. This means that programming units are registered in different work processes, but are executed by a single work process. All database changes are put into one database LUW, and all changes are committed in one final database commit.
@@ -122,13 +122,13 @@ The following bundling techniques are available for classic ABAP. This means tha
 - Usually contain database modification operations/statements
 - [`CALL FUNCTION ... IN UPDATE TASK`](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapcall_function_update.htm) statements are used to register the update function modules for later execution; the actual execution is triggered by a `COMMIT WORK` statement
 
-- Example of a simple function module that has an importing parameter (a structure that is used to modify a database table). Example function modules in the repository are marked as update function modules.
+- Example of a simple function module that has an importing parameter (a structure that is used to modify a database table). It simply shows a database modifying statement contained in a function module. The code alone does not distinguish it as an update function module. You can open the imported example function modules from the repository. They are marked as update function modules.
   ```abap
   FUNCTION zsome_update_fu_mod
     IMPORTING
       VALUE(values) TYPE some_dbtab.
 
-    MODIFY some_dbtab FROM values.
+    MODIFY some_dbtab FROM @values.
 
   ENDFUNCTION.
   ```
@@ -210,7 +210,7 @@ The following bundling techniques are available for classic ABAP. This means tha
   - In the current work process, before update function modules.
   - When they are registered in an update function module with `ON COMMIT`, they are executed at the end of the update. This happens in the update work process for non-local updates, and in the current work process for local updates.
 
-<p align="right">(<a href="#top">⬆️ back to top</a>)
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ### Related ABAP Statements
 
@@ -240,7 +240,7 @@ The statements to end an SAP LUW have already been mentioned above: [`COMMIT WOR
 > - Within the SAP LUW, database changes and commits are allowed on service connections or through secondary database connections.
 
 
-<p align="right">(<a href="#top">⬆️ back to top</a>)
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## Concepts Related to the SAP LUW
 The following concepts are related to the SAP LUW to ensure transactional consistency. They are not discussed in detail here. For more information, see the links.
@@ -267,12 +267,14 @@ The following concepts are related to the SAP LUW to ensure transactional consis
   - contain the key fields on which a lock is to be set. 
 - When a lock object is created, two [lock function modules](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenlock_function_module_glosry.htm) (`ENQUEUE_...` and `DEQUEUE_...`) are automatically generated. They are executed in a special enqueue work process. When a record is locked during a transaction (by the enqueue function module), a central lock table is filled with the table name and key field information. Unlike database locks, a locked entry in a lock object does not necessarily have to exist in a database table. Also, the locking must be done proactively, i. e. there is no automatic locking. You must make sure that the application implementation checks the lock entries. 
 - At the end of an SAP LUW, all locks should be released, either automatically during the database update or explicitly when you call the corresponding dequeue function module.
-- More information: [SAP Locks](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abensap_lock.htm)  
+- More information: 
+  - [SAP Locks](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abensap_lock.htm)  
+  - Also note the information on the [`CL_ABAP_LOCK_OBJECT_FACTORY`](https://help.sap.com/docs/sap-btp-abap-environment/abap-environment/lock-objects) class 
 
 > **💡 Note**<br>
 > RAP comes with its own implementation features to cover these concepts. See the topics [Authorization Control](https://help.sap.com/docs/SAP_S4HANA_CLOUD/e5522a8a7b174979913c99268bc03f1a/375a8124b22948688ac1c55297868d06.html) and [Concurrency Control](https://help.sap.com/docs/SAP_S4HANA_CLOUD/e5522a8a7b174979913c99268bc03f1a/d315c13677d94a6891beb3418e3e02ed.html) in the *Development guide for the ABAP RESTful Application Programming Model*.
 
-<p align="right">(<a href="#top">⬆️ back to top</a>)
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## Notes on the SAP LUW in ABAP Cloud and RAP
 
@@ -289,9 +291,9 @@ There are RAP-specific [ABAP EML](https://help.sap.com/doc/abapdocu_latest_index
 ## More Information
 - [The RAP Transactional Model and the SAP LUW](https://help.sap.com/docs/SAP_S4HANA_CLOUD/e5522a8a7b174979913c99268bc03f1a/ccda1094b0f845e28b88f9f50a68dfc4.html) (Development guide for the ABAP RESTful Application Programming Model)
 - [The SAP LUW in ABAP Cloud](https://blogs.sap.com/2022/12/05/the-sap-luw-in-abap-cloud/) (blog)
-- [Cheat sheet about ABAP EML](08_EML_ABAP_for_RAP.md)
+- [SAP LUW in the ABAP Keyword Documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensap_luw.htm)
 
-<p align="right">(<a href="#top">⬆️ back to top</a>)
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## Executable Example
 
@@ -312,7 +314,7 @@ After importing, find the program in ADT using search: Press `CTRL+SHIFT+A` and 
   <summary>Expand to see explanations of the executable example</summary>
   <!-- -->
   <br>
-Th example demonstrates the SAP LUW using dynpros and bundling techniques with update function modules and subroutines. In the dynpros, you can select various options that determine how the program runs. It covers the following aspects:
+The example demonstrates the SAP LUW using dynpros and bundling techniques with update function modules and subroutines. In the dynpros, you can select various options that determine how the program runs. It covers the following aspects:
 
 - Demonstrating synchronous update, asynchronous update, and local update triggered by `COMMIT WORK`, `COMMIT WORK AND WAIT`, and `SET UPDATE TASK LOCAL` using update function modules.
 - Demonstrating the statements `PERFORM ... ON COMMIT` and `PERFORM ... ON ROLLBACK` using subroutines.
@@ -354,7 +356,7 @@ The log shows the value 1 for the transaction state after the update task is exe
   - **Terminating the program with an error message** of type A: This option only indicates that if such a message is generated, the program is terminated and all changes are implicitly rolled back. In this case, you may want to check the database table entries that remain unchanged.
 - **Using subroutines**: 
   - Note that subroutines are considered obsolete and should no longer be used. This is to demonstrate the effect as a bundling technique in an SAP LUW. Selecting this option triggers the registration of subroutines for commit (to delete the database table entry, insert a newly created entry, insert entries in the log table) and rollback (this subroutine does nothing specific; it is just to demonstrate that the subroutine is called in the event of a rollback).
-  - When you select the commit options, the subroutines registered with ON COMMIT are executed in the current work process.
+  - When you select the commit options, the subroutines registered with `ON COMMIT` are executed in the current work process.
   - Choosing `COMMIT WORK` or `COMMIT WORK AND WAIT` has the same effect: When these statements are called and a `SELECT` statement follows, the number of database table entries is 1 in both cases.
   - If the rollback option is selected, the subroutine registered with `ON ROLLBACK` is executed in the current work process.
   - The transaction state in the log is 1 for `ON COMMIT` or `ON ROLLBACK` when the corresponding subroutines are called.

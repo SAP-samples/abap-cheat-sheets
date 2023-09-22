@@ -130,7 +130,7 @@ define view entity zdemo_abap_cds_ve_sel
         else 'Z'
       end as case1,
 
-      // In newer ABAP releases, you can use the ELSE NULL addition that returns the null value.
+      // You can use the ELSE NULL addition that returns the null value.
       // Note: If ELSE is not specified, the null value is returned as a result.
       // case $projection.case1
       //  when 'X' then 'A'

@@ -24,11 +24,11 @@
     - [Tabstrips Controls](#tabstrips-controls)
     - [GUI Controls](#gui-controls)
   - [More Information](#more-information)
-  - [Example](#example)
+  - [Executable Example](#executable-example)
  
 ## Introduction
 
-⚠️ The content of this cheat sheet is only relevant to [classic ABAP](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenclassic_abap_glosry.htm).
+⚠️ The content of this cheat sheet and the executable example are only relevant to [classic ABAP](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenclassic_abap_glosry.htm).
 
 [User interfaces (UI)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenuser_interface_glosry.htm) are not limited to displaying some information, they must also allow the user to interact with the program. 
 In modern UI technologies, this can be achieved through [events](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenevent_glosry.htm), i.e. [user actions](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenuser_action_glosry.htm) on a UI trigger events, and UI methods register these events and react accordingly. In this way, users control the program flow through their actions.
@@ -53,7 +53,7 @@ This cheat sheet provides a high-level overview of classic dynpro topics with a 
   - Can only be defined in [function groups](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenfunction_group_glosry.htm), [module pools](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenmodul_pool_glosry.htm) (not [class pools](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenclass_pool_glosry.htm)) and [executable program](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenexecutable_program_glosry.htm) (*reports*; the focus in the cheat sheet is on the latter)
   - Can be identified by a unique, four-digit [dynpro number](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abendynpro_number_glosry.htm) in an [ABAP program](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenabap_program_glosry.htm). Note that leading zeros need not be specified when calling the dynpro. Number 1000 is reserved, as are other dynpro number ranges (e.g. used by SAP). The current dynpro can be retrieved using `sy-dynnr`.
   - Is displayed in a window of [SAP GUI](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abensap_gui_glosry.htm)  
-  - Consists of 3 main aspects: 
+  - Consists of the following main aspects: 
     - Specific characteristics when creating the dynpro. To name a few: 
       - Dynpro type: Defines whether the dynpro is displayed in the full GUI window (if *Normal* is selected), in a pop-up window (*Modal Dialog Box*), or as a subscreen in a specific area within another dynpro in the same ABAP program.
       - [Next dynpro](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abennext_dynpro_glosry.htm): Statically specifies the next dynpro to be displayed in a [dynpro sequence](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abendynpro_sequence_glosry.htm). Setting the next dynpro to 0 or leaving the attribute blank will make the current dynpro the last dynpro in the sequence. If the next dynpro number is the same as the current dynpro, the dynpro continues to be called. The static next dynpro can be overwritten temporarily and dynamically in the ABAP program.
@@ -714,12 +714,11 @@ PROCESS AFTER INPUT.
 - [SAP GUI User Dialogs](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenabap_screens.htm) in the ABAP Keyword Documentation as the entry topic for dynpro-related topics
 - Documentation about the [screen painter in the Help Portal](https://help.sap.com/docs/ABAP_PLATFORM_NEW/bd833c8355f34e96a6e83096b38bf192/d1801b50454211d189710000e8322d00)
 - Documentation about the [menu painter in the Help Portal](https://help.sap.com/docs/ABAP_PLATFORM_NEW/bd833c8355f34e96a6e83096b38bf192/d1801ce8454211d189710000e8322d00)
-- In ADT, in your system, choose `CTRL+SHIFT+A` to open the search. Insert `demo_dynpro*` to get a list of dynpro examples of the ABAP Keyword Documentation.
+- Find more dynpro examples in the ABAP Keyword Documentation. In ADT, in your system, choose `CTRL + SHIFT + A` to open the search. Insert `demo_dynpro*` to get a list of dynpro examples.
 
-## Example
+## Executable Example
 
-After importing, find the program in ADT using the search: Press `CTRL+SHIFT+A` and enter `zdemo_abap_dynpro`. Open the program and run it by pressing `F8`.
-
+After importing, find the program in ADT using the search: Choose `CTRL + SHIFT + A` and enter `zdemo_abap_dynpro`. Open the program and run it by choosing `F8`.
 
 > **💡 Note**<br>
 > - The steps about how to import and run the code are outlined [here](README.md#-getting-started-with-the-examples). 
@@ -729,6 +728,7 @@ After importing, find the program in ADT using the search: Press `CTRL+SHIFT+A` 
 >   - is not intended to solve concrete programming tasks. You should always work out your own solution for each individual case.
 >   - is only intended to demonstrate a selection of keywords and visualize dynpro-related syntax in action on a high level. 
 > - See notes on the executable example in the expandable section below. 
+
 
 
 <br>

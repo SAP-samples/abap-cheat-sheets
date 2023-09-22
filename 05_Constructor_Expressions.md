@@ -55,7 +55,7 @@
     concept is very handy particularly in this context: [Inline
     declaration](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abeninline_declaration_glosry.htm "Glossary Entry").
     -   This means that you can declare a variable using
-        `DATA(var)` (or, in newer ABAP releases, an immutable variable
+        `DATA(var)` (or an immutable variable
         [`FINAL(var)`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenfinal_inline.htm))
         as an operand in the current [write
         position](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenwrite_position_glosry.htm "Glossary Entry").

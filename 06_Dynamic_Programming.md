@@ -649,7 +649,7 @@ Note that dynamically specifying syntax elements has downsides, too. Consider so
       READ TABLE itab INTO DATA(wa) WITH KEY (field_name) = ...
 
       "MODIFY: Dynamically specifying WHERE conditions
-      DATA(condition) = ( `CARRID = 'LH'` ).
+      DATA(condition) = `CARRID = 'LH'`.
 
       MODIFY itab FROM ... TRANSPORTING ... WHERE (condition).
 
@@ -724,12 +724,12 @@ Note that dynamically specifying syntax elements has downsides, too. Consider so
       "attributes and that are specified dynamically.
       DATA cl_ref TYPE REF TO cl_some_class.
       cl_ref = NEW #( ).
-      ASSIGN cl_ref->('some_attribute') TO FIELD-SYMBOL(<another_fs>).
+      ASSIGN cl_ref->(SOME_ATTRIBUTE') TO FIELD-SYMBOL(<another_fs>).
 
       "If ELSE UNASSIGN is specified, no memory area is assigned to 
       "the field symbol. It has the state unassigned after the ASSIGN 
       "statement.
-      ASSIGN cl_ref->('attr_xyz') TO FIELD-SYMBOL(<attr>) ELSE UNASSIGN.
+      ASSIGN cl_ref->('SOME_ATTRIBUTE') TO FIELD-SYMBOL(<attr>) ELSE UNASSIGN.
       ```
 
 - Dynamically specifying data types/creating (data) objects
@@ -1208,7 +1208,7 @@ TYPES some_ref_type2cl TYPE REF TO zcl_demo_abap_dynamic_prog.
 
 "Using RTTC methods
 "You can create a reference type from a base type. This base type
-"may be class, interface or data type.
+"may be a class, interface or data type.
 DATA(tdo_ref_1) = cl_abap_refdescr=>get( cl_abap_elemdescr=>get_t( ) ).
 DATA(tdo_ref_2) = cl_abap_refdescr=>get( 
                     cl_abap_typedescr=>describe_by_name( 'ZCL_DEMO_ABAP_DYNAMIC_PROG' ) ).

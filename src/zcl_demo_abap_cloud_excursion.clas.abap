@@ -241,7 +241,7 @@ CLASS zcl_demo_abap_cloud_excursion IMPLEMENTATION.
 **********************************************************************
 
     out->write( heading( `Excursions into the XCO Library` ) ).
-    "The following code snippets focuse on the XCO library that provides
+    "The following code snippets focus on the XCO library that provides
     "predefined functionality and can be used in ABAP for Cloud Development.
     "The examples cover a selection of options for you to explore. For more
     "detailed information and more code snippets, see the SAP Help Portal
@@ -326,14 +326,14 @@ CLASS zcl_demo_abap_cloud_excursion IMPLEMENTATION.
     DATA(filter1) = xco_cp_abap_repository=>object_name->get_filter(
         xco_cp_abap_sql=>constraint->contains_pattern( 'ZDEMO_ABAP_RAP_R%' ) ).
 
-    "Getting all accessible BDEFs that start with ZDEMO_ABAP_RAP_R in a particular package
+    "Getting all accessible BDEFs that start with ZDEMO_ABAP_RAP_R in the entire system
     "As shown above, loop over the handler to get more detailed information. You can also set
     "a break point to check out the content of the variable in the debugger.
     IF package_exists = abap_true.
       DATA(bdefs_in_package) = xco_cp_abap_repository=>objects->bdef->where( VALUE #( ( filter1 )
         ) )->in( xco_cp_abap=>repository )->get( ).
 
-      out->write( |\nThere are { lines( bdefs_in_package ) } accessible BDEFs with the specified name pattern in the specified package.| ).
+      out->write( |\nThere are { lines( bdefs_in_package ) } accessible BDEFs with the specified name pattern in the entire system.| ).
     ENDIF.
 
     "Getting all accessible interfaces with a particular name pattern in the entire system
@@ -422,7 +422,7 @@ CLASS zcl_demo_abap_cloud_excursion IMPLEMENTATION.
       DATA(b10_rel_state) = b1_handler->get_api_state( )->get_release_state( )->value.
 
       CLEAR str.
-      "Getting information about the Visibilities of the repository object
+      "Getting information about the visibility of the repository object
       LOOP AT b9_vis INTO DATA(vis_b).
         CASE abap_true.
           WHEN vis_b->use_in_key_user_apps( ).
@@ -510,7 +510,7 @@ CLASS zcl_demo_abap_cloud_excursion IMPLEMENTATION.
       DATA(d8_type_outp_len) = d1_handler->content( )->get_underlying_built_in_type( )->abap_type->get_type_descriptor( )->output_length.
 
       CLEAR str.
-      "Processing Visibilities information
+      "Processing visibility information
       LOOP AT d4_vis INTO DATA(vis_d).
         CASE abap_true.
           WHEN vis_d->use_in_key_user_apps( ).
@@ -553,7 +553,7 @@ CLASS zcl_demo_abap_cloud_excursion IMPLEMENTATION.
       DATA(e9_type_abs_name) = e1_handler->content( )->get_row_type( )->get_built_in_type( )->abap_type->get_type_descriptor( )->absolute_name.
 
       CLEAR str.
-      "Processing Visibilities information
+      "Processing visibility information
       LOOP AT e4_vis INTO DATA(vis_e).
         CASE abap_true.
           WHEN vis_e->use_in_key_user_apps( ).
@@ -894,7 +894,7 @@ CLASS zcl_demo_abap_cloud_excursion IMPLEMENTATION.
 
 **********************************************************************
 
-    out->write( heading( `11) Getting sy-Related Information Using XCO` ) ).
+    out->write( heading( `11) Getting Date and Time Information Using XCO` ) ).
     "Among others, the examples cover time and date-related information.
 
     "Creating a time stamp
@@ -936,7 +936,7 @@ CLASS zcl_demo_abap_cloud_excursion IMPLEMENTATION.
     "Calculations
     DATA(m18_add_date) = xco_cp=>sy->date( )->add( iv_day = 1 iv_month = 1 iv_year = 1 )->as( xco_cp_time=>format->iso_8601_extended )->value.
     DATA(m19_subtract_date) = xco_cp=>sy->date( )->subtract( iv_day = 1 iv_month = 1 iv_year = 1 )->as( xco_cp_time=>format->iso_8601_extended )->value.
-    "Getting technical name of user, see also the API cl_abap_context_info
+    "You can also get more pieces of information using "sy" such as the technical name of your user (see also the class cl_abap_context_info)
     DATA(m20_user_name) = xco_cp=>sy->user( )->name.
 
     out->write( data = m1_user_time_zone name = `m1_user_time_zone` ).
@@ -969,16 +969,16 @@ CLASS zcl_demo_abap_cloud_excursion IMPLEMENTATION.
     "To carry out the object generation, make sure that you meet the following
     "prerequisites:
     "1) You have a modifiable transport request (suitable for demo content). In
-    "   ADT, got to the Transport Organizer tab, check that you have a transport
+    "   ADT, go to the Transport Organizer tab, check that you have a transport
     "   request available under "Modifiable". Otherwise, create a new transport
     "   request.
     "   Copy the ID of the transport request and insert it in the constant "tr_req_id"
-    "   that is available in the private Visibilities section of the class.
+    "   that is available in the private visibility section of the class.
     "
     "2) You have specified a package for demo content, for example, the
     "   package of the ABAP cheat sheets, which is "ZABAP_CHEAT_SHEETS" in the example.
     "   Make sure that you have assigned the constant "package4gen" a value
-    "   with a valid package iin which you want to create the demo repository
+    "   with a valid package in which you want to create the demo repository
     "   objects.
     "
     "3) You have provided suitable names for the demo objects. Check and, if need be,
@@ -996,7 +996,7 @@ CLASS zcl_demo_abap_cloud_excursion IMPLEMENTATION.
         DATA(n1_handler) = xco_cp_cts=>transport->for( tr_req_id ).
         DATA(n2_exists) = n1_handler->exists( ).
         DATA(n3_status) = n1_handler->get_status( ).
-      CATCH CX_root INTO DATA(e).
+      CATCH cx_root INTO DATA(e).
     ENDTRY.
 
     "Checking if repository objects with the names specified already exist in the system
@@ -1014,7 +1014,7 @@ CLASS zcl_demo_abap_cloud_excursion IMPLEMENTATION.
       WHEN OTHERS.
     ENDCASE.
 
-    "Checking if pacakge exists
+    "Checking if package exists
     DATA(n9_exists_devc) = xco_cp_abap_repository=>package->for( package4gen )->exists( ).
 
     IF n2_exists IS NOT INITIAL
