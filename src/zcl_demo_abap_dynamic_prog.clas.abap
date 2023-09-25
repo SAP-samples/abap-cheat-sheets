@@ -1381,7 +1381,7 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
 
 **********************************************************************
 
-    output->next_section( `37) Excursion: Multiple Dynamically Specified ` &&
+    output->next_section( `37a) Excursion: Multiple Dynamically Specified ` &&
                           `Clauses in an ABAP SQL SELECT Statement` ).
 
     "In this example, multiple clauses in a SELECT statement are
@@ -1420,6 +1420,48 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
     ELSE.
       output->display( `There's an issue with syntax elements.` ).
     ENDIF.
+
+**********************************************************************
+
+    output->next_section( `37b) Excursion: Checking the validity of dynamic specifications` ).
+    "The following example uses the CL_ABAP_DYN_PRG class, which supports
+    "dynamic programming by checking the validity of dynamic specifications.
+    "Check out the class documentation for more information.
+    "In the example, several table names are provided in a string table that
+    "is looped over. Some wrong table names are intentionally included.
+    "You can provide the "packages" formal parameter with a table that contains
+    "the names of packages in which the tables should be included. The
+    "assumption is that you imported the repository into the package
+    "specified. If you imported it into a package with a different name,
+    "change the value accordingly. Otherwise, none of the tables is found.
+
+    DATA(table_names) = VALUE string_table( ( `ZDEMO_ABAP_CARR` )
+                                            ( `ZDEMO_ABAP_FLI` )
+                                            ( `NO_DBTAB` )
+                                            ( `ZDEMO_ABAP_FLSCH` )
+                                            ( `ZDEMO_ABAP_FLI2` )
+                                            ( `WRONG_DBTAB` ) ).
+
+    DATA(check_packages) = VALUE string_hashed_table( ( `TEST_ABAP_CHEAT_SHEETS` ) ).
+
+    DATA dbtab TYPE string.
+
+    LOOP AT table_names INTO DATA(wa_tab).
+      TRY.
+          dbtab = cl_abap_dyn_prg=>check_table_name_tab( val      = to_upper( wa_tab )
+                                                         packages = check_packages ).
+
+          SELECT SINGLE * FROM (dbtab) INTO NEW @DATA(ref_wa).
+
+          output->display( |Result for { wa_tab }| ).
+          FIELD-SYMBOLS <p> TYPE data.
+          ASSIGN ref_wa->* TO <p>.
+          output->display( <p> ).
+        CATCH cx_abap_not_a_table cx_abap_not_in_package INTO DATA(err).
+          output->display( |Result for { wa_tab }| ).
+          output->display( err->get_text( ) ).
+      ENDTRY.
+    ENDLOOP.
 
 **********************************************************************
 
@@ -1945,4 +1987,3 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
 
   ENDMETHOD.
 ENDCLASS.
-
