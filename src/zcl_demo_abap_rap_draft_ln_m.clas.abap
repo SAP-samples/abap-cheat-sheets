@@ -46,7 +46,7 @@
 * 3. In the New Service Binding pop-up, make the following entries:
 *   - Name: ZDEMO_ABAP_RAP_CALC_SB
 *   - Description: Service binding for demo
-*   - Binding type: OData V2 - UI
+*   - Binding type: OData V4 - UI
 *   - Service Definition: ZDEMO_ABAP_RAP_CALC_SD (should be already filled)
 * 4. Choose Next.
 * 5. Assign a transport request and choose Finish.
@@ -72,6 +72,9 @@
 *     The calculation ID which represents the key of the instance has an
 *     initial value. Only when you save the instance to the database, the
 *     final key is set.
+*     The effect of side effects can be explored as follows: Make an entry 
+*     in an input field, click another input field (e.g. to make a new entry 
+*     there), and check how the value for the result changes.
 *
 * ----------------------------- NOTE -----------------------------------
 * This simplified example is not a real life scenario and rather
