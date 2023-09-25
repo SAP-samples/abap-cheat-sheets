@@ -41,7 +41,7 @@
 
 - Further aspects for dynamic programming in ABAP enter the picture if you want to determine information about data types and data objects at runtime ([RTTI](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrun_time_type_identific_glosry.htm)) or even create them ([RTTC](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrun_time_type_creation_glosry.htm)).
 
-- In general, dynamic programming also comes with some downsides. For example, the ABAP compiler cannot check the dynamic programming feature like the `SELECT` statement mentioned above. There is no syntax warning or suchlike. The checks are performed only at runtime, which has an impact on the performance. Plus, the  testing of [procedures](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenprocedure_glosry.htm "Glossary Entry")
+- In general, dynamic programming also comes with some downsides. For example, the ABAP compiler cannot check the dynamic programming feature like the `SELECT` statement mentioned above. There is no syntax warning or suchlike (note the `CL_ABAP_DYN_PRG` class that supports dynamic programming). The checks are performed only at runtime, which has an impact on the performance. Plus, the  testing of [procedures](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenprocedure_glosry.htm "Glossary Entry")
 that include dynamic programming features may be difficult.
 
 
@@ -854,6 +854,24 @@ Note that dynamically specifying syntax elements has downsides, too. Consider so
     "                       is of type REF TO data
     "The addition EXCEPTION-TABLE for exceptions is not dealt with here.
     ```
+
+Excursion: Checking the validity of dynamic specifications
+
+The following example uses the `CL_ABAP_DYN_PRG` class, which supports dynamic programming by checking the validity of dynamic specifications.
+See the class documentation for more information. There are several methods that can be used for different use cases. In the example below, a method is used to check the database table name. To do this, the database table name is provided (`val` parameter), as well as the package in which it should be included (`packages` parameter). You can pass the `packages` formal parameter a table containing the names of packages in which the specified table should be included. Assuming you provide incorrect input for the table name, or the table is not contained in the specified packages, you can expect an exception to be raied.
+
+```abap
+DATA dbtab TYPE string.
+TRY.
+    dbtab = cl_abap_dyn_prg=>check_table_name_tab( 
+      val      = `ZDEMO_ABAP_FLI`
+      packages = VALUE #( ( `TEST_ABAP_CHEAT_SHEETS` ) ) ).
+
+    SELECT SINGLE * FROM (dbtab) INTO NEW @DATA(ref_wa).
+  CATCH cx_abap_not_a_table cx_abap_not_in_package INTO DATA(err).
+    ...
+ENDTRY.
+```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
