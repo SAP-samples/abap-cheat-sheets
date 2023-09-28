@@ -14,7 +14,7 @@
 
 ## Introduction
 
-⚠️ The concept is relevant to both ABAP Cloud and classic ABAP, but some of the statements covered in the cheat sheet and executable example are only relevant to [classic ABAP](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenclassic_abap_glosry.htm).
+⚠️ The concept is relevant to both ABAP Cloud and classic ABAP, but some of the statements covered in the cheat sheet and the executable example are only relevant to [classic ABAP](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenclassic_abap_glosry.htm).
 
 This cheat sheet provides a high-level overview of the [SAP LUW](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abensap_luw_glosry.htm) concept that deals with data consistency with a focus on SAP LUW-related statements, supported by an executable example to check the syntax in action.
 
@@ -185,8 +185,10 @@ The following bundling techniques are available for classic ABAP. This means tha
 
     ...
 
-    "The update will be synchronous.
+    "The update will be synchronous no matter if you use the COMMIT WORK 
+    "statement with or without the addition AND WAIT.
     COMMIT WORK.
+    "COMMIT WORK AND WAIT.
     ```
 
 > **💡 Note**<br>
@@ -199,6 +201,7 @@ The following bundling techniques are available for classic ABAP. This means tha
 - More information:
   - [SAP Help Portal documentation about RFC](https://help.sap.com/docs/ABAP_PLATFORM_NEW/753088fc00704d0a80e7fbd6803c8adb/4888068AD9134076E10000000A42189D)
   - [`CALL FUNCTION ... IN BACKGROUND UNIT`](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapcall_function_background_unit.htm)
+  - Note the [background processing framework (bgPF)](https://help.sap.com/docs/abap-cloud/abap-concepts/background-processing-framework) as a successor technology 
 
 **Using [subroutines](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abensubroutine_glosry.htm)**
 - Subroutines that are no longer recommended for use can be registered for later execution.
@@ -269,7 +272,7 @@ The following concepts are related to the SAP LUW to ensure transactional consis
 - At the end of an SAP LUW, all locks should be released, either automatically during the database update or explicitly when you call the corresponding dequeue function module.
 - More information: 
   - [SAP Locks](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abensap_lock.htm)  
-  - Also note the information on the [`CL_ABAP_LOCK_OBJECT_FACTORY`](https://help.sap.com/docs/sap-btp-abap-environment/abap-environment/lock-objects) class 
+  - Note the information on the `CL_ABAP_LOCK_OBJECT_FACTORY` class that is related to this context [here](https://help.sap.com/docs/sap-btp-abap-environment/abap-environment/lock-objects). 
 
 > **💡 Note**<br>
 > RAP comes with its own implementation features to cover these concepts. See the topics [Authorization Control](https://help.sap.com/docs/SAP_S4HANA_CLOUD/e5522a8a7b174979913c99268bc03f1a/375a8124b22948688ac1c55297868d06.html) and [Concurrency Control](https://help.sap.com/docs/SAP_S4HANA_CLOUD/e5522a8a7b174979913c99268bc03f1a/d315c13677d94a6891beb3418e3e02ed.html) in the *Development guide for the ABAP RESTful Application Programming Model*.
@@ -287,17 +290,22 @@ And RAP comes with a well-defined transactional model and follows the rules of t
 There are RAP-specific [ABAP EML](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenabap_eml_glosry.htm) statements for commit and rollback: 
 - [`COMMIT ENTITIES`](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapcommit_entities.htm) implicitly triggers `COMMIT WORK`. Furthermore, `COMMIT ENTITIES` provides RAP-specific functionality with various additions. These EML statements implicitly enforce local updates with `COMMIT WORK`, or `COMMIT WORK AND WAIT` if the local update fails. Therefore, the update is either a local update or a synchronous update, but never an asynchronous update. 
 - [`ROLLBACK ENTITIES`](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abaprollback_entities.htm): Resets all changes of the current transaction and clears the transactional buffer. The statement triggers `ROLLBACK WORK`. 
+- Find more information in the [ABAP cheat sheet about EML](08_EML_ABAP_for_RAP.md).
 
 ## More Information
 - [The RAP Transactional Model and the SAP LUW](https://help.sap.com/docs/SAP_S4HANA_CLOUD/e5522a8a7b174979913c99268bc03f1a/ccda1094b0f845e28b88f9f50a68dfc4.html) (Development guide for the ABAP RESTful Application Programming Model)
 - [The SAP LUW in ABAP Cloud](https://blogs.sap.com/2022/12/05/the-sap-luw-in-abap-cloud/) (blog)
 - [SAP LUW in the ABAP Keyword Documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensap_luw.htm)
+- [Controlled SAP LUW](https://help.sap.com/docs/abap-cloud/abap-concepts/controlled-sap-luw) as an enhancement of the SAP LUW concept
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## Executable Example
 
-After importing, find the program in ADT using search: Press `CTRL+SHIFT+A` and enter `zdemo_abap_sap_luw`. Open the program and run it by pressing `F8`.
+After the import of the repository, proceed as follows: 
+- Find the program in ADT using the search by choosing `CTRL + SHIFT + A`.
+- Enter `zdemo_abap_sap_luw` and open the program. 
+- Run the program by choosing `F8`.
 
 > **💡 Note**<br>
 > - The steps about how to import and run the code are outlined [here](README.md#-getting-started-with-the-examples). 

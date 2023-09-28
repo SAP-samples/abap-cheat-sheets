@@ -86,7 +86,7 @@ classes</a></td>
 
 > **💡 Note**<br>
 > - If a class is only used in one ABAP program, creating a local class is enough. However, if you choose to create a global class, you must bear in mind that such a class can be used everywhere. Consider the impact on the users of the global class when you change, for example, the visibility section of a component or you delete it.
-> - Apart from ADT, global classes can also be created in the ABAP Workbench (`SE80`) or with transaction `SE24` in on-premise systems.
+> - Apart from ADT, global classes can also be created in the ABAP Workbench (`SE80`) or with transaction `SE24` in [classic ABAP](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenclassic_abap_glosry.htm).
 
 Basic structure of classes:
 - [Declaration part](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendeclaration_part_glosry.htm "Glossary Entry") that includes declarations of the class components.
@@ -409,9 +409,9 @@ CLASS local_class DEFINITION.
 
               constructor IMPORTING j TYPE i.                   "instance constructor with importing parameter
 
-      CLASS-METHODS: stat_meth1,
+      CLASS-METHODS: stat_meth1,                                "static methods  
 
-                     stat_meth2 IMPORTING k TYPE i              "static methods
+                     stat_meth2 IMPORTING k TYPE i              
                                 EXPORTING l TYPE i,
 
                      class_constructor,                         "static constructor

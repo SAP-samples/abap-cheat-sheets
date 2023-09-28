@@ -85,7 +85,7 @@ This cheat sheet provides a high-level overview of classic dynpro topics with a 
     - Dialog modules can be called at the PBO event. They are mainly used to prepare the dynpro display, for example, by pre-populating input/output fields.    
     - When the dynpro is presented to the user, and the user has made entries and wants to leave the dynpro, the PAI event is triggered, for example, when a button is clicked.
     
-  - `PROCESS AFTER INPUT` (PAI), 
+  - `PROCESS AFTER INPUT` (PAI): 
     - Processed after a user action on the dynpro
     - The dialog modules called at PAI evaluate the user entries and process them. 
     - When the processing is complete, the processing of the current dynpro ends and the next dynpro is called.
@@ -718,7 +718,10 @@ PROCESS AFTER INPUT.
 
 ## Executable Example
 
-After importing, find the program in ADT using the search: Choose `CTRL + SHIFT + A` and enter `zdemo_abap_dynpro`. Open the program and run it by choosing `F8`.
+After the import of the repository, proceed as follows: 
+- Find the program in ADT using the search by choosing `CTRL + SHIFT + A`.
+- Enter `zdemo_abap_dynpro` and open the program. 
+- Run the program by choosing `F8`.
 
 > **💡 Note**<br>
 > - The steps about how to import and run the code are outlined [here](README.md#-getting-started-with-the-examples). 

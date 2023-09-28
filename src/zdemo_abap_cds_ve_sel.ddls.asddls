@@ -132,10 +132,10 @@ define view entity zdemo_abap_cds_ve_sel
 
       // You can use the ELSE NULL addition that returns the null value.
       // Note: If ELSE is not specified, the null value is returned as a result.
-      // case $projection.case1
-      //  when 'X' then 'A'
-      //  else null
-      // end as case2,
+      case $projection.case1
+        when 'X' then 'A'
+        else null
+      end as case2,
 
       // Complex case distinction (searched case) for evaluating conditions
       case 

@@ -1085,7 +1085,7 @@ CLASS ZCL_DEMO_ABAP_DTYPE_DOBJ IMPLEMENTATION.
 
     "ABAP SQL SELECT statement
     "As shown above, using the NEW addition in the INTO clause, an anonymous data
-    "object with suitable type can be created in place.
+    "object can be created in place.
     SELECT *
       FROM zdemo_abap_carr
       INTO TABLE NEW @DATA(dref_14_inline).

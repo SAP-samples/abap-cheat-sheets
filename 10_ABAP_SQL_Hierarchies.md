@@ -46,7 +46,7 @@ offers a lot of helpful features. Among other things, you will find a
 set of hierarchy functions there that allow you to deal with
 hierarchical data directly on the database and that you can look up in
 the [SAP HANA
-documentation](https://help.sap.com/http.svc/ahp2/DRAFT/SAP_S4HANA_ON-PREMISE/2022.000/EN/20/ff532c751910148657c32fe3431a9/frameset.htm).
+documentation](https://help.sap.com/docs/SAP_HANA_PLATFORM/4fe29514fd584807ac9f2a04f6754767/2969da89b87f4abd85fd0b5f9f5bc395.html?version=2.0.06&locale=en-US).
 Now you might expect that you must use
 [AMDP](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenamdp.htm)
 in order to access these functions from your ABAP programs, but no need
@@ -57,7 +57,7 @@ modern features. All you have to do, is to understand some concepts and
 learn some additional syntax and then you can start right away.
 
 > **💡 Note**<br>
-> The examples in this cheat sheet are only relevant for [standard ABAP](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenstandard_abap_glosry.htm), i. e. the unrestricted ABAP language scope. Find the artifacts used in the code snippets in your on-premise system.
+> The examples in this cheat sheet are only relevant for [standard ABAP](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenstandard_abap_glosry.htm), i. e. the unrestricted ABAP language scope. Find the artifacts used in the code snippets in your on-premise ABAP system.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 

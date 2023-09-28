@@ -45,11 +45,11 @@ It provides references to more detailed information on the topic.
 
 1) If available to you, you have accessed an SAP BTP ABAP environment using ADT.
 
-    Access to SAP-provided repository objects is restricted to objects that have been released for ABAP for Cloud Development (released APIs). You can find the released APIs in the *Project Explorer* view in ADT under *Released Objects*:
+    Access to SAP-provided repository objects is restricted to objects that have been released for ABAP for Cloud Development (released APIs). You can find the released repository objects in the *Project Explorer* view in ADT under *Released Objects*:
 
     ![Released APIs](./files/released_APIs.png)
 
-    As an example of a released API, consider the `CL_ABAP_RANDOM_INT` class (computes random integers). In ADT, once you have opened the class, check the *Properties* tab. Click *API State* on the left to display information about the release contracts. In this case, it is C1. As mentioned above, see [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_versions_and_apis.htm#@@ITOC@@ABENABAP_VERSIONS_AND_APIS_2) for more information on C1, and so on. This is also true for ABAP repository objects in on-premise systems.
+    As an example of a released API, consider the `CL_ABAP_RANDOM_INT` class (computes random integers). In ADT, once you have opened the class, check the *Properties* tab. Click *API State* on the left to display information about the release contracts. In this case, it is C1. As mentioned above, see [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_versions_and_apis.htm#@@ITOC@@ABENABAP_VERSIONS_AND_APIS_2) for more information on C1, and so on. This is also true for ABAP repository objects in classic ABAP.
    
     ![Release contract](./files/release_contract.png)
 
@@ -59,9 +59,9 @@ It provides references to more detailed information on the topic.
     > **💡 Note**<br>
     > - The `IF_OO_ADT_CLASSRUN` interface is a released API. As the name implies, you can implement this interface to run an ABAP class. In ADT you can do this with *F9*. Of course, the example below will not run. The class cannot be activated because of the syntax errors. Note: To output the content of data objects, you can use `out->write( ... ).` in the `main` method.
     > - About the errros/warnings:
-    >   - The first two ABAP SQL statements select from demo database tables. The first is a demo table provided by SAP. This table is not directly accessible in ABAP Cloud (unlike in on-premise systems) and therefore cannot be used as a data source to select from. The second one is a database table from the ABAP cheat sheet GitHub repository. If you have imported the repository into the system, you can use it as a data source.
+    >   - The first two ABAP SQL statements select from demo database tables. The first is a demo table provided by SAP. This table is not directly accessible in ABAP Cloud (unlike in classic ABAP) and therefore cannot be used as a data source to select from. The second one is a database table from the ABAP cheat sheet GitHub repository. If you have imported the repository into the system, you can use it as a data source.
     >   - The next set of ABAP SQL statements are dynamic statements. This is just to emphasize that you should be careful with dynamic statements. You will not get a syntax error at compile time. You can try out the following: Comment out all code except the lines with the dynamic statements, activate the code and run the class with `F9`. The result is a [runtime error](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenruntime_error_glosry.htm) because you cannot select from the data source.
-    >   - The examples for deprecated and invalid syntax in ABAP for Cloud Development include the invalid statement `MOVE ... TO` and others. To set breakpoints in ADT, double-click the area to the left of the code line number.
+    >   - Examples for deprecated and invalid syntax in ABAP for Cloud Development are included. Among them, the invalid statement `MOVE ... TO` and others which are just included for demonstration purposes. To set breakpoints in ADT, double-click the area to the left of the code line number.
 
     ```abap
     CLASS zcl_demo_abap_temp DEFINITION
@@ -84,12 +84,12 @@ It provides references to more detailed information on the topic.
         SELECT carrid, connid FROM zdemo_abap_fli WHERE carrid = 'LH' INTO TABLE @DATA(it2).
         
         "Dynamic ABAP SQL statements
-        "In ABAP Cloud, no syntax error will be displayed. However, a runtime error
-        "will occur when running the class. 
+        "No syntax error will be displayed for the dynamic statements. 
+        "However, a runtime error will occur when running the class (in ABAP Cloud). 
         "Note: Check out the CL_ABAP_DYN_PRG class, which supports dynamic programming 
         "by checking the validity of dynamic specifications.
         SELECT SINGLE carrid, connid FROM ('SPFLI') WHERE carrid = 'LH' INTO NEW @DATA(ref_a).
-        "No runtime error if you have imported the ABAP cheat sheet repository objects
+        "No runtime error if you have imported the ABAP cheat sheet repository objects.
         SELECT SINGLE carrid, connid FROM ('ZDEMO_ABAP_FLI') WHERE carrid = 'LH' INTO NEW @DATA(ref_b).
 
         "Examples for deprecated and invalid syntax in ABAP for Cloud Development  
@@ -133,20 +133,20 @@ It provides references to more detailed information on the topic.
     - Create a global class and insert the code from above. Depending on the name of the class you created, replace the class name in the snippet.
     - If you have not imported the ABAP cheat sheet GitHub repository, remove the lines of code using artifacts from that repository, i.e. change the `SELECT` and  `READ REPORT` statemnets. You should not see any syntax errors. Activate the class.
     - Run the class with *F9*. The code should have been processed up to the `BREAK-POINT` statement and the debugger should have started. You may want to check the content of the variables in the debugger. Choose *Terminate* to exit the debugger.
-    - So, unlike in the case of ABAP Cloud above, the code should work without restrictions.
+    - So, unlike in the case of ABAP Cloud above, the code should not cause any problems (other than the fact that it does not make a lot of sense).
     - For the example class created, check the information in the *Properties* tab. Choose *General*. The *ABAP Language Version* is maintained as *Standard ABAP*: 
      ![Standard ABAP](./files/standard.png)
      
-    c) Verify that your code in an on-premise ABAP system is cloud-ready
+    c) Verify that your code in classic ABAP is cloud-ready
      - You have walked through b), created a class, inserted the code from above, and activated the class. The *ABAP Language Version* is maintained as *Standard ABAP* in the *Properties* tab. 
      - Verifying if your code is cloud-ready
        - You can use ATC check variant `ABAP_CLOUD_READINESS` for this purpose.
        - For example, in your class, right-click and choose *Run As* → *4 ABAP Test Cockpit With...*. Enter `ABAP_CLOUD_READINESS` in the pop-up window and choose *Ok*. The ATC check run is started. 
        - As a result of the ATC check run (note that it may take a while to complete), the *ATC Problems* tab in ADT should display results. In this case, these are the errors and warnings mentioned above, indicating that the code is not cloud-ready in various places. Double-click on the findings for more detailed information. 
 
-    d) Develop in an on-premise ABAP system in a cloud-ready manner
+    d) Develop in clasic ABAP in a cloud-ready manner
      - You have walked through b), created a class, inserted the code from above, and activated the class. The *ABAP Language Version* is maintained as *Standard ABAP* in the *Properties* tab under *General*. 
-     - Suppose you want to develop in a cloud-ready way and use ABAP for Cloud Development, i.e. the restricted ABAP language version, in an on-premise ABAP system that allows the unrestricted ABAP language version. 
+     - Suppose you want to develop in a cloud-ready manner and use ABAP for Cloud Development, i.e. the restricted ABAP language version, in classic ABAP (e.g. an on-premise ABAP system that allows the unrestricted ABAP language version). 
      - Open the *Properties* tab and choose *General* for this purpose. 
      - Choose the *Edit...* button to the right of the *ABAP Language Version* property.
      - Select *ABAP for Cloud Development* in the pop-up window and choose *Ok*.

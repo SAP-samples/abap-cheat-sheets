@@ -290,7 +290,7 @@ DATA(ref3) = REF some_type( ... ).
 [Anonymous data objects](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenanonymous_data_object_glosry.htm "Glossary Entry") ...
 - are dynamically created at runtime. 
 - are relevant if the data type is only known when the program is executed.
-- cannot be addressed by a name (-> "anonymous"). 
+- cannot be addressed by a name ("anonymous"). 
 - expect a data reference variable when declared. The content of an anonymous data object can only be accessed using dereferenced variables as shown below or field symbols.
 - can be created using the statement [`CREATE DATA`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapcreate_data.htm), the instance operator [`NEW`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconstructor_expression_new.htm), or the addition [`NEW`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapselect_into_target.htm) of the `INTO` clause in a `SELECT` statement. 
 
@@ -361,7 +361,7 @@ DATA(dref_6) = NEW zdemo_abap_carr( carrid   = 'AB'
 
 "ABAP SQL SELECT statements
 "Using the NEW addition in the INTO clause, an anonymous data
-"object with a suitable type can be created in place.
+"object can be created in place.
 SELECT *
   FROM zdemo_abap_carr
   INTO TABLE NEW @DATA(dref_7). "internal table

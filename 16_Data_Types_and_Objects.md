@@ -864,8 +864,7 @@ DATA dref_13_ddic_tab TYPE REF TO zdemo_abap_carr.
 dref_13_ddic_tab = NEW #( carrid = 'AB' carrname = 'AB Airlines'  ).
 
 "ABAP SQL SELECT statement
-"Using the NEW addition in the INTO clause, an anonymous data object with
-"suitable type can be created in place.
+"Using the NEW addition in the INTO clause, an anonymous data object can be created in place.
 SELECT *
   FROM zdemo_abap_carr
   INTO TABLE NEW @DATA(dref_14_inline).

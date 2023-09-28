@@ -15,7 +15,7 @@
 *      environment. For example, in SAP BTP ABAP environment only
 *      read-only operations are possible. In general, there are more
 *      syntax options available in the unrestricted ABAP language scope
-*      in on-premise ABAP systems. Check the ABAP Keyword Documentation
+*      in classic ABAP. Check the ABAP Keyword Documentation
 *      for more details and examples.
 *
 * ----------------------- GETTING STARTED -----------------------------

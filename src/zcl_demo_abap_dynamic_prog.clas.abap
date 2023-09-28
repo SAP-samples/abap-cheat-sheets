@@ -601,8 +601,8 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
     DATA(dref_c6) = NEW zdemo_abap_carr( carrid = 'AB' carrname = 'AB Airlines' ).
 
     "ABAP SQL SELECT statements
-    "Using the NEW addition in the INTO clause, an anonymous data object with
-    "suitable type can be created in place.
+    "Using the NEW addition in the INTO clause, an anonymous data object 
+    "can be created in place.
     SELECT *
       FROM zdemo_abap_carr
       INTO TABLE NEW @DATA(dref_c7)   "Internal table

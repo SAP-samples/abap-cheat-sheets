@@ -94,8 +94,8 @@ CLASS zcl_demo_abap_cloud_excursion IMPLEMENTATION.
     "displayed.
     "Notes about the errors/warnings:
     "- Using ABAP SQL statements, data is retrieved from database tables. The first table
-    "  is a demo table provided by SAP. This table cannot be accessed directly (unlike in on-premise
-    "  systems) and therefore cannot be used as a data source from which to select. The second
+    "  is a demo table provided by SAP. This table cannot be accessed directly (unlike in classic
+    "  ABAP) and therefore cannot be used as a data source from which to select. The second
     "  is a database table from the ABAP Cheat Sheet GitHub repository. If you have imported
     "  the repository into the system, you can use it as a data source.
     "- The example includes dynamic ABAP SQL statements. This is just to emphasize that such
@@ -984,12 +984,11 @@ CLASS zcl_demo_abap_cloud_excursion IMPLEMENTATION.
     "3) You have provided suitable names for the demo objects. Check and, if need be,
     "   change the constant values for gen_dtel, gen_doma, gen_tabl.
     "
-    "4) To "enable" the generation, assign the constant "generation_ok" the value
+    "4) To enable the generation, assign the constant "generation_ok" the value
     "   "abap_true".
     "
     "The generation of the objects is only carried out if all of the mentioned
-    "prerequisites are met. Find more code snippets about repository object
-    "generation in the SAP Help Portal documentation.
+    "prerequisites are met. 
 
     "Checking validity of the specified transport request ID
     TRY.

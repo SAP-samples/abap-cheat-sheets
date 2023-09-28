@@ -408,7 +408,7 @@ AMDP methods ...
 As mentioned above and hinted in the bullet points above, AMDP has more
 options regarding the unrestricted language version. Check the subtopics
 [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenamdp.htm).
-A fundamental question in on-premise ABAP systems with an unrestricted
+A fundamental question in [classic ABAP](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenclassic_abap_glosry.htm) with an unrestricted
 language scope can be whether AMDP is supported at all. The constant
 `CALL_AMDP_METHOD` of the class
 `CL_ABAP_DBFEATURES` can be used to query
