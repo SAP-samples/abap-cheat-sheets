@@ -1130,6 +1130,7 @@ ENDLOOP.
 ```
 
 - The order in which tables are iterated depends on the table category. 
+  - Note the [`STEP`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abaploop_at_itab_cond.htm#!ABAP_ADDITION_3@3@) addition, which is also available for other ABAP statements.  
 - Index tables are looped over in ascending order by the index. 
 - Hashed tables are looped in the order in which the lines were added to the table. You can also sort the table before the loop. 
 - During the loop, the system field `sy-tabix` is set to the number of the currently processed table
@@ -1182,6 +1183,32 @@ LOOP AT it INTO wa USING KEY primary_key.
 "LOOP AT it INTO wa USING KEY pk.            "primary key alias
 "LOOP AT it INTO wa USING KEY sec_key.       "secondary key
 "LOOP AT it INTO wa USING KEY sk.            "secondary key alias
+  ...
+ENDLOOP.
+
+"STEP addition for defining the step size and the direction of the loop
+"- Step size: Specified by the absolute value of an integer
+"- Direction: Specified by a positive (forward loop) or negative 
+"  (loop in reverse order) integer 
+
+"Reversing the loop order using a negative integer
+"Each line is read indicated by the absolute value 1
+LOOP AT it INTO wa STEP -1.
+  ...
+ENDLOOP.
+
+"Forward loop by specifiying a positive integer
+"In the example, every second line is read.
+"Note: Omitting STEP means STEP 1 by default.
+LOOP AT it INTO wa STEP 2.
+  ...
+ENDLOOP.
+
+"STEP with other additions
+"The example uses the additions FROM and TO.
+"Note: If the value after STEP is negative, the value
+"after FROM must be greater than the value after TO.
+LOOP AT it INTO wa FROM 6 TO 3 STEP -2.
   ...
 ENDLOOP.
 ```
