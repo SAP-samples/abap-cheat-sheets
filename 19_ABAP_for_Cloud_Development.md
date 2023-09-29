@@ -111,9 +111,9 @@ It provides references to more detailed information on the topic.
         DATA: ref1 TYPE REF TO i,
               ref2 TYPE REF TO i.    
         "Deprecated statement
-        GET REFERENCE OF num1 INTO ref2.
+        GET REFERENCE OF num1 INTO ref1.
         "Alternative that can be used
-        ref1 = REF #( num1 ). 
+        ref2 = REF #( num1 ). 
 
         DATA str_itab TYPE string_table. 
         "The following statements are invalid
