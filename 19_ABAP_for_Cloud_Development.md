@@ -18,7 +18,7 @@ It provides references to more detailed information on the topic.
   - Progamming paradigm for state-of-the-art, cloud-ready and upgrade-stable solutions 
   - Based on a usage type of the [ABAP Platform](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_platform_glosry.htm), where the following restrictions apply:
     - [ABAP language version](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_version_glosry.htm): 
-      - The available ABAP language version is [ABAP for Cloud Development](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_for_cloud_dev_glosry.htm) that presents a [restricted ABAP language version](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrestricted_version_glosry.htm) (for example, dynpro-related statements are not allowed).
+      - The available ABAP language version is [ABAP for Cloud Development](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_for_cloud_dev_glosry.htm) that presents a [restricted ABAP language version](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrestricted_version_glosry.htm).
     - [Released APIs](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenreleased_api_glosry.htm):
       - Access to SAP-delivered repository objects is restricted to objects released for ABAP for Cloud Development
       - For example, most of the database tables provided by SAP cannot be read directly (although there are abstractions for many that can be accessed).
@@ -53,7 +53,7 @@ It provides references to more detailed information on the topic.
    
     ![Release contract](./files/release_contract.png)
 
-    For deprecated and invalid syntax, see the following code.
+    For deprecated and invalid syntax in ABAP for Cloud Development, see the following code.
     For example, create a demo class and insert the code contained in the implementation into the `if_oo_adt_classrun~main` method. You will see several syntax errors.
 
     > **💡 Note**<br>
@@ -144,7 +144,7 @@ It provides references to more detailed information on the topic.
        - For example, in your class, right-click and choose *Run As* → *4 ABAP Test Cockpit With...*. Enter `ABAP_CLOUD_READINESS` in the pop-up window and choose *Ok*. The ATC check run is started. 
        - As a result of the ATC check run (note that it may take a while to complete), the *ATC Problems* tab in ADT should display results. In this case, these are the errors and warnings mentioned above, indicating that the code is not cloud-ready in various places. Double-click on the findings for more detailed information. 
 
-    d) Develop in clasic ABAP in a cloud-ready manner
+    d) Develop in classic ABAP in a cloud-ready manner
      - You have walked through b), created a class, inserted the code from above, and activated the class. The *ABAP Language Version* is maintained as *Standard ABAP* in the *Properties* tab under *General*. 
      - Suppose you want to develop in a cloud-ready manner and use ABAP for Cloud Development, i.e. the restricted ABAP language version, in classic ABAP (e.g. an on-premise ABAP system that allows the unrestricted ABAP language version). 
      - Open the *Properties* tab and choose *General* for this purpose. 

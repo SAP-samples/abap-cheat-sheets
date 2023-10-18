@@ -724,7 +724,7 @@ Note that dynamically specifying syntax elements has downsides, too. Consider so
       "attributes and that are specified dynamically.
       DATA cl_ref TYPE REF TO cl_some_class.
       cl_ref = NEW #( ).
-      ASSIGN cl_ref->(SOME_ATTRIBUTE') TO FIELD-SYMBOL(<another_fs>).
+      ASSIGN cl_ref->('SOME_ATTRIBUTE') TO FIELD-SYMBOL(<another_fs>).
 
       "If ELSE UNASSIGN is specified, no memory area is assigned to 
       "the field symbol. It has the state unassigned after the ASSIGN 

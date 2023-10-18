@@ -122,7 +122,7 @@ The following bundling techniques are available for classic ABAP. This means tha
 - Usually contain database modification operations/statements
 - [`CALL FUNCTION ... IN UPDATE TASK`](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapcall_function_update.htm) statements are used to register the update function modules for later execution; the actual execution is triggered by a `COMMIT WORK` statement
 
-- Example of a simple function module that has an importing parameter (a structure that is used to modify a database table). It simply shows a database modifying statement contained in a function module. The code alone does not distinguish it as an update function module. You can open the imported example function modules from the repository. They are marked as update function modules.
+- Example of a simple function module that has an importing parameter (a structure that is used to modify a database table). It simply shows a database modifying statement contained in a function module. The code alone does not distinguish it as an update function module. For example, check the example function modules from the imported repository that are used in the executable example. In ADT, right-click a function module and choose *Open with → SAP GUI*. In SAP GUI, choose the *Attributes* tab. The *Update Module* checkbox is selected.
   ```abap
   FUNCTION zsome_update_fu_mod
     IMPORTING
@@ -204,7 +204,7 @@ The following bundling techniques are available for classic ABAP. This means tha
   - Note the [background processing framework (bgPF)](https://help.sap.com/docs/abap-cloud/abap-concepts/background-processing-framework) as a successor technology 
 
 **Using [subroutines](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abensubroutine_glosry.htm)**
-- Subroutines that are no longer recommended for use can be registered for later execution.
+- Subroutines (that are no longer recommended for use ⚠️) can be registered for later execution.
 
 - They are registered with the [`PERFORM ... ON COMMIT`](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapperform_on_commit.htm) statement. These subroutines are executed when a `COMMIT WORK` statement is called.
 - An addition is available to control the order of execution.

@@ -425,8 +425,7 @@ IF NOT cl_abap_dbfeatures=>use_features(
 ENDIF.
 ```
 
-This check is not required (and possible) for the SAP BTP ABAP Environment since those
-environments are SAP HANA-only anyway and database connections are not
+This check is not required (and possible) for [ABAP Cloud](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_cloud_glosry.htm) since it is SAP HANA-only anyway and database connections are not
 possible. Furthermore, another topic that should be noted is that AMDP
 does not support [implicit client
 handling](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_sql_client_handling.htm).

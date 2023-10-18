@@ -85,7 +85,7 @@ Find more information in the respective (sub)topics in the ABAP Keyword Document
 **"Classic"** [DDIC
 Views](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenddic_view_glosry.htm "Glossary Entry") ...
 
-- are the oldest form of views and are not available in SAP BTP ABAP environments.
+- are the oldest form of views and are not available in [ABAP Cloud](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_cloud_glosry.htm).
 - can be accessed by ABAP SQL for read and write operations, however, writing is only supported if the view is created with only one database table.
 - can only be created in the [ABAP Workbench](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenabap_workbench_glosry.htm).
 
@@ -349,9 +349,9 @@ SELECT ds~col1, ds~col2, ds~col3
   INTO ...
 ```
 
-**Reading data from a database table in another client** (not available in SAP BTP ABAP environments). Note that there are several variants of the `USING ...` addition for switching the [implicit client handling (F1 docu for standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenabap_sql_client_handling.htm) from the current client to other clients. See more information [here (F1 docu for standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapselect_client.htm).
+**Reading data from a database table in another client** ([classic ABAP](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenclassic_abap_glosry.htm) only ). Note that there are several variants of the `USING ...` addition for switching the [implicit client handling (F1 docu for standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenabap_sql_client_handling.htm) from the current client to other clients. See more information [here (F1 docu for standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapselect_client.htm).
 ``` abap
-"Some examples; not available in SAP BTP ABAP environments
+"Some examples; not available in ABAP for Cloud Development
 
 "Replaces the current client with the specified client
 SELECT *

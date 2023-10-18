@@ -13,10 +13,12 @@ Core data services (CDS) are an infrastructure for defining and consuming semant
 
 ## More Information
 
-- [Feature Matrix: Data Modeling with ABAP Core Data Services](https://blogs.sap.com/2022/10/24/feature-matrix-data-modeling-with-abap-core-data-services/)
-- [ABAP CDS Cheat Sheet: Amounts and Quantities in ABAP CDS](https://blogs.sap.com/2022/07/07/abap-cds-cheat-sheet-amounts-and-quantities-in-abap-cds/)
-- [Section *ABAP - Core Data Services (ABAP CDS)* in the ABAP Keyword Documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds.htm)
-- [ABAP Data Models Guide](https://blogs.sap.com/2023/05/09/abap-data-models-guide/)
+- Blogs:
+  - [Feature Matrix: Data Modeling with ABAP Core Data Services](https://blogs.sap.com/2022/10/24/feature-matrix-data-modeling-with-abap-core-data-services/)
+  - [ABAP CDS Cheat Sheet: Amounts and Quantities in ABAP CDS](https://blogs.sap.com/2022/07/07/abap-cds-cheat-sheet-amounts-and-quantities-in-abap-cds/)
+  - [ABAP Data Models Guide](https://blogs.sap.com/2023/05/09/abap-data-models-guide/) (includes a link to the guide on the SAP Help Portal)
+- ABAP Keyword Documentation: [ABAP - Core Data Services (ABAP CDS)](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds.htm)
+
 
 ## Executable Example
 
@@ -24,7 +26,7 @@ Core data services (CDS) are an infrastructure for defining and consuming semant
 
 The example covers the following topics: 
 - Operands, expressions, built-in functions, and input parameters in CDS view entities
-  - Selecting data from CDS view entities using ABAP SQL SELECT statements
+  - Selecting data from CDS view entities using ABAP SQL `SELECT` statements
 - Joins  
   - Note: A sample CDS view entity contains multiple joins. You can comment in/out code sections to see the effect. See the notes in the view. 
   - Excursion: Joins in ABAP SQL
@@ -34,5 +36,5 @@ The example covers the following topics:
   - Using exposed associations in ABAP statements
 
 Note ...
-- the comments in the example CDS view entities (zdemo_abap_cds_ve...) and the [class](./src/zcl_demo_abap_cds_ve.clas.abap).
+- the comments in the example CDS view entities (`zdemo_abap_cds_ve...`) and the [class](./src/zcl_demo_abap_cds_ve.clas.abap).
 - the steps outlined [here](README.md#-getting-started-with-the-examples) about how to import and run the code.

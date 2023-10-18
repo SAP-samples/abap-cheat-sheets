@@ -11,12 +11,11 @@
 *    - The purpose is to give you a rough idea about AMDP. Therefore,
 *      the SQLScript code used in the method implementations is
 *      fairly simple. AMDP is not needed in simple cases like these.
-*    - The example is primarily intended for the SAP BTP ABAP
-*      environment. For example, in SAP BTP ABAP environment only
-*      read-only operations are possible. In general, there are more
-*      syntax options available in the unrestricted ABAP language scope
-*      in classic ABAP. Check the ABAP Keyword Documentation
-*      for more details and examples.
+*    - The example is primarily intended for ABAP Cloud.
+*      For example, in ABAP Cloud only read-only operations are possible.
+*      In general, there are more syntax options available in classic 
+*      ABAP. Check the ABAP Keyword Documentation for more details and 
+*      examples.
 *
 * ----------------------- GETTING STARTED -----------------------------
 * - Open the class with the ABAP development tools for Eclipse (ADT).

@@ -844,9 +844,9 @@ The following code snippets include [`READ TABLE`](https://help.sap.com/doc/abap
     assigned to the field symbol.
 
     ``` abap
-    READ TABLE itab ASSIGNING <fs1> ...
+    READ TABLE itab ASSIGNING <fs1> ...                 "The field symbol must have an appropriate type.
 
-    READ TABLE itab ASSIGNING FIELD-SYMBOL(<fs2>) ...
+    READ TABLE itab ASSIGNING FIELD-SYMBOL(<fs2>) ...   "The field symbol is created inline.
     ```
 
 -   Reading a line into a [data reference

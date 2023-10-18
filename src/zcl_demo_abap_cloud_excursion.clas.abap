@@ -168,7 +168,7 @@ CLASS zcl_demo_abap_cloud_excursion IMPLEMENTATION.
     DATA number TYPE int4.
     number = lines( future_leap_years ).
 
-    out->write( |\nBetween { current_year } and 2050, there are { number } leap years.| ).
+    out->write( |\nBetween { current_year } and { up_to_year }, there are { number } leap years.| ).
 
     "Using a released API as data source of a SELECT statement
     "Among others, the month names of specified languages are retrieved in the example.

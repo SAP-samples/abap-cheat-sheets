@@ -29,7 +29,7 @@ ABAP cheat sheets[^1] ...
 - provide a **collection of information on selected ABAP topics** in a nutshell for your reference.
 - focus on **ABAP syntax**.
 - include **code snippets**.
-- are supported by easy-to-consume **demonstration examples** that you can import into your [SAP BTP ABAP environment](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensap_btp_abap_env_glosry.htm) (*main* branch) or [classic ABAP](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenclassic_abap_glosry.htm) (on-premise ABAP system) (other branches) using [abapGit](https://abapgit.org/) to run and check out ABAP syntax in action in simple contexts.
+- are supported by easy-to-consume **demonstration examples** that you can import into your [SAP BTP ABAP environment](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensap_btp_abap_env_glosry.htm) (*main* branch) or on-premise ABAP system ([classic ABAP](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenclassic_abap_glosry.htm); the repository branches other than *main*) using [abapGit](https://abapgit.org/) to run and check out ABAP syntax in action in simple contexts.
 - are enriched by links to glossary entries and chapters of the **ABAP Keyword Documentation** (the *F1 help*) for you to deep dive into the respective ABAP topics and get more comprehensive information.
 
 <details>
@@ -214,11 +214,9 @@ Use the standalone version of the abapGit report to import the demo examples of 
 - Links to the online version of the ABAP Keyword Documentation for:
   - **Standard ABAP**: Unrestricted ABAP language scope for [classic ABAP](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenclassic_abap_glosry.htm) → [Online version of the documentation (latest version)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenabap.htm). To access the online documentation for a specific ABAP version, e.g. 7.54, you can select the version from the drop-down list [here](https://help.sap.com/docs/ABAP?locale=en-US) (*latest* is preselected). The *ABAP* link under *Development* will take you to the documentation of choice.
   - **ABAP for Cloud Development**: Restricted ABAP language scope for developments, for example, in the SAP BTP ABAP environment → [Online version of the documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm)
-- Regarding demonstration examples of the ABAP Keyword Documentation in classic ABAP: Have you ever checked out the package `SABAPDEMOS`? This package contains all the examples used in the ABAP Keyword Documentation. To get the context, program names, etc., see the [example page](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenabap_examples.htm) (also available in the system-internal SAP GUI version as a node in the topic tree), which summarizes the executable examples. Of course, you can also find the example topics in the context of the individual ABAP Keyword Documentation topic. The example topics are marked with a ⚙️ icon:
+- For demonstration examples of the ABAP Keyword Documentation in classic ABAP, see the `SABAPDEMOS` package.  This package contains all the examples used in the ABAP Keyword Documentation. For the context, class/program name, etc., see the [example page](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenabap_examples.htm), which is also available in the system-internal SAP GUI version as a node in the topic tree and which summarizes the executable examples. Of course, you can also find the example topics in the context of the individual topic of the ABAP keyword documentation. The example topics are marked with a ⚙️ icon:
 
   ![](./files/example_topics.png)
-
-- [This blog](https://blogs.sap.com/2021/04/28/video-tutorials-on-how-to-use-the-abap-keyword-documentation-abap-f1-help/) features videos about the ABAP Keyword Documentation in the [SAP Help Portal](https://www.youtube.com/watch?v=a4ckF1XkfG8), [SAP GUI](https://www.youtube.com/watch?v=fsX-085MlD8), and [ADT](https://www.youtube.com/watch?v=hNGEYFpWwh0).
 
 <br>
 

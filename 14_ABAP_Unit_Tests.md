@@ -498,14 +498,15 @@ For more information about evaluating ABAP unit test results, see [here](https:/
 
 ## More Information
 
-- [ABAP Unit in the ABAP Keyword Documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_unit.htm)
-- [openSAP course: Writing Testable Code for ABAP](https://open.sap.com/courses/wtc1.OpenSAP+WTC1_W1U5+Writing+Testable+Code+for+ABAPComent)
-- Information on the SAP Help Portal: 
+- openSAP course: [Writing Testable Code for ABAP](https://open.sap.com/courses/wtc1.OpenSAP+WTC1_W1U5+Writing+Testable+Code+for+ABAPComent)
+- ABAP Keyword Documentation
+  - [ABAP Unit](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_unit.htm)
+  - [Testing repository objects](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentest_relations.htm)
+- SAP Help Portal: 
   - [Unit Testing with ABAP Unit](https://help.sap.com/docs/ABAP_PLATFORM_NEW/c238d694b825421f940829321ffa326a/08c60b52cb85444ea3069779274b43db.html?locale=en-US)
   - [ABAP Unit](https://help.sap.com/docs/ABAP_PLATFORM_NEW/ba879a6e2ea04d9bb94c7ccd7cdac446/491cfd8926bc14cde10000000a42189b.html?locale=en-US)
-- The [ABAP OO Test Double Framework](https://help.sap.com/docs/ABAP_PLATFORM_NEW/c238d694b825421f940829321ffa326a/804c251e9c19426cadd1395978d3f17b.html?locale=en-US) based on class `CL_ABAP_TESTDOUBLE` simplifies and standardizes the creation and configuration of test doubles.
-- [Testing repository objects](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentest_relations.htm) (ABAP Keyword Documentation)
-- [Development Guide for the ABAP RESTful Application Programming Model: Testing different artifacts of RAP business objects and related OData services](https://help.sap.com/docs/btp/sap-abap-restful-application-programming-model/test?locale=en-US)
+  - The [ABAP OO Test Double Framework](https://help.sap.com/docs/ABAP_PLATFORM_NEW/c238d694b825421f940829321ffa326a/804c251e9c19426cadd1395978d3f17b.html?locale=en-US) based on class `CL_ABAP_TESTDOUBLE` simplifies and standardizes the creation and configuration of test doubles. 
+  - Development Guide for the ABAP RESTful Application Programming Model: [Testing different artifacts of RAP business objects and related OData services](https://help.sap.com/docs/btp/sap-abap-restful-application-programming-model/test?locale=en-US)
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
