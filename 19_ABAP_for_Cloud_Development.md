@@ -21,7 +21,7 @@ It provides references to more detailed information on the topic.
       - The available ABAP language version is [ABAP for Cloud Development](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_for_cloud_dev_glosry.htm) that presents a [restricted ABAP language version](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrestricted_version_glosry.htm).
     - [Released APIs](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenreleased_api_glosry.htm):
       - Access to SAP-delivered repository objects is restricted to objects released for ABAP for Cloud Development
-      - For example, most of the database tables provided by SAP cannot be read directly (although there are abstractions for many that can be accessed).
+      - For example, most of the database tables provided by SAP cannot be read directly (although there are abstractions/CDS view entities for many that can be accessed).
       - Libraries are available with predefined functionality.
       - Note that repository objects can be classified by a [release contract](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrelease_contract_glosry.htm) (e.g. C0, C1 etc.). 
     - Tools:
@@ -116,7 +116,8 @@ It provides references to more detailed information on the topic.
         ref2 = REF #( num1 ). 
 
         DATA str_itab TYPE string_table. 
-        "The following statements are invalid
+        "The following statements are invalid (the pointless WRITE statement here
+        "just represents invalid classic ABAP UI-related statements)
         READ REPORT 'ZCL_DEMO_ABAP_UNIT_TEST=======CCAU' INTO str_itab.
         WRITE 'hi'.
         BREAK-POINT.
@@ -124,7 +125,7 @@ It provides references to more detailed information on the topic.
     ENDCLASS.
     ```   
 
-2) If available to you, you have accessed an on-premise ABAP system using ADT. 
+2) If available to you, you have accessed an on-premise ABAP system using ADT. It is assumed that the latest ABAP release is available. 
 
     a)  Check API Status information 
     - Choose `CTRL + SHIFT + A` to open the search in ADT. Search the class `CL_ABAP_RANDOM_INT`. Once you have opened the class, check the *Properties* tab and find the API status information. 

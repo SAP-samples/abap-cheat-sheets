@@ -253,7 +253,7 @@ Declaring attributes in visibility sections. In the code snippet below, all attr
 CLASS local_class DEFINITION.
 
     PUBLIC SECTION.
-      TYPES: some_type TYPE c LENGTH 3.              "Type declaration
+      TYPES some_type TYPE c LENGTH 3.              "Type declaration
 
       DATA: inst_number TYPE i,                      "Instance attributes
             inst_string TYPE string,
@@ -262,7 +262,7 @@ CLASS local_class DEFINITION.
       CLASS-DATA: stat_number TYPE i,                "Static attributes
                   stat_char   TYPE c LENGTH 3.
 
-      CONSTANTS: const_num TYPE i VALUE 123.         "Non-changeable constant
+      CONSTANTS const_num TYPE i VALUE 123.         "Non-changeable constant
 
     PROTECTED SECTION.
       "Here go more attributes if needed.

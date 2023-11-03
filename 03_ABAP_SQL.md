@@ -128,7 +128,6 @@ Views](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-
 ## Reading Data Using SELECT
 
 ### Basic Syntax
@@ -349,6 +348,8 @@ SELECT ds~col1, ds~col2, ds~col3
   INTO ...
 ```
 
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
 **Reading data from a database table in another client** ([classic ABAP](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenclassic_abap_glosry.htm) only ). Note that there are several variants of the `USING ...` addition for switching the [implicit client handling (F1 docu for standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenabap_sql_client_handling.htm) from the current client to other clients. See more information [here (F1 docu for standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapselect_client.htm).
 ``` abap
 "Some examples; not available in ABAP for Cloud Development
@@ -376,6 +377,7 @@ SELECT *
   INTO TABLE @DATA(itab2).
 ```
 
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 `INTO` **clause**:
 
@@ -614,6 +616,8 @@ SELECT FROM zdemo_abap_flsch
   "UP TO @( 10 - 7 ) ROWS.  "Host expression
 ```
 
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
 #### SQL Expressions
 
 -   Expressions in an ABAP SQL statement that are passed to the database
@@ -681,6 +685,8 @@ SELECT SINGLE
   WHERE carrid = 'AA'
   INTO @DATA(numeric_functions).
 ```
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 Example: [String functions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensql_string_func.htm)
 
@@ -801,6 +807,8 @@ SELECT SINGLE
   INTO @DATA(string_functions).
 ```
 
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
 Example: [Special functions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_sql_special_functions.htm)
 
 ``` abap
@@ -850,6 +858,8 @@ FROM zdemo_abap_carr
 INTO @DATA(special_functions).
 ```
 
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
 [Aggregate expressions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapselect_aggregate.htm)
 
 -   Consist of [aggregate
@@ -895,6 +905,8 @@ SELECT
   GROUP BY carrid
   INTO TABLE @DATA(agg_exp).
 ```
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ##### More SQL Expressions
 
@@ -964,6 +976,8 @@ FROM zdemo_abap_carr
 WHERE carrid = 'AA'
 INTO @DATA(more_sql_expr).
 ```
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ##### Window Expressions
 
@@ -1062,6 +1076,8 @@ SELECT carrid, currency, fldate,
   INTO TABLE @DATA(result).
 ```
 
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
 ### SQL Conditions
 
 You can formulate conditions in ABAP SQL statements, i. e. [logical
@@ -1135,6 +1151,8 @@ SELECT *
   INTO TABLE @DATA(itab_where).
 ```
 
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
 ### Selecting Data by Evaluating the Content of Other Tables
 
 [`FOR ALL ENTRIES`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenwhere_all_entries.htm)
@@ -1172,6 +1190,8 @@ SELECT comp1, comp2, comp3
       WHERE comp1 = tab1~comp1 AND comp2 = tab1~comp2 )
   INTO ...
 ```
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ### Combining Data of Multiple Database Tables
 
@@ -1225,6 +1245,8 @@ UNION
   WHERE ...
   INTO ...
 ```
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 #### Common Table Expressions (CTE)
 

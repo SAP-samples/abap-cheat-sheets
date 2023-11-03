@@ -143,6 +143,8 @@ DATA char(4) TYPE c.
 
 "Just a TYPE c specification without length means LENGTH 1.
 DATA char_len_one TYPE c.
+"No type and length specification: TYPE c LENGTH 1 by default
+DATA char_no_type_len.
 ```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>

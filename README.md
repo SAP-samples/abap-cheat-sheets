@@ -43,6 +43,7 @@ ABAP cheat sheets[^1] ...
 - Check the [Known Issues](#-known-issues) and [Disclaimer](#%EF%B8%8F-disclaimer).
 - The cheat sheets provide links to glossary entries and topics in the ABAP Keyword Documentation. Note that unlike the classic ABAP-only cheat sheets, in most cases these links refer to ABAP for Cloud Development.
 - [Here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrestricted_abap_elements.htm) is an overview of the different ABAP language elements in the different ABAP versions, i.e. what is allowed in ABAP Cloud and what is not. See also the released APIs [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenreleased_apis.htm).
+- In order to have all ABAP cheat sheet documents in one place, the *main* branch (for ABAP Cloud examples) also contains the ABAP cheat sheet documents that are only relevant for classic ABAP. 
 </details>
 
 <br>
