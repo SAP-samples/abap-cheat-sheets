@@ -958,9 +958,9 @@ After the import of the repository, proceed as follows:
 
 > **💡 Note**<br>
 > - The steps about how to import and run the code are outlined [here](README.md#-getting-started-with-the-examples). 
-> - The executable example ...
->   - does not claim to include meaningful selection screens and lists.
->   - is not intended to be a role model for proper selection screen and list design.   
->   - is not intended to solve concrete programming tasks. You should always work out your own solution for each individual case.
->   - is only intended to demonstrate a selection of keywords and visualize related syntax in action on a high level. 
+> - The executable examples ...
+>   - do not claim to include meaningful selection screens and lists.
+>   - are not intended to be a role model for proper selection screen and list design.   
+>   - are not intended to solve concrete programming tasks. You should always work out your own solution for each individual case.
+>   - are only intended to demonstrate a selection of keywords and visualize related syntax in action on a high level. 
 > - Find comments in the program code. 
