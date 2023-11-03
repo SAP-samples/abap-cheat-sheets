@@ -1,8 +1,8 @@
 <a name="top"></a>
 
-# Selection Screens and Lists
+# Selection Screens and Classic Lists
 
-- [Selection Screens and Lists](#selection-screens-and-lists)
+- [Selection Screens and Classic Lists](#selection-screens-and-classic-lists)
   - [Introduction](#introduction)
   - [Terms](#terms)
     - [Selection screens](#selection-screens)
