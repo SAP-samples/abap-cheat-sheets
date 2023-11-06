@@ -20,7 +20,7 @@
     - [Reading and Modifying in Lists](#reading-and-modifying-in-lists)
   - [Event Blocks](#event-blocks)
   - [More Information](#more-information)
-  - [Example](#example)
+  - [Executable Examples](#executable-examples)
 
 
 ## Introduction
@@ -48,7 +48,7 @@ For more detailed information and syntax options, see the topics [Selection Scre
 
 ### Selection screens
 - Are special [dynpros](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abendynpro_glosry.htm) in [executable programs](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenexecutable_program_glosry.htm) (*"reports"*; they're also possible in [function groups](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenfunction_group_glosry.htm) and [module pools](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenmodul_pool_glosry.htm), but the focus here is on executable programs).
-- Used for data entry in an executable program, i.e. they allow the user to ...
+- Used for data entry in an executable program, i.e. they allow users to ...
   - enter parameters (for entering single values).
   - provide selection criteria (complex selection options for value lists and value ranges) that can be used to supply an executable program with values to work with.
 - Can be created using special ABAP statements in the global declaration part of executable programs 
@@ -713,7 +713,7 @@ WRITE / 'COL_TOTAL (3)' COLOR COL_TOTAL. "3 (yellow)
 WRITE / 'COL_KEY (4)' COLOR COL_KEY. "4 (blue-green)
 WRITE / 'COL_POSITIVE (5)' COLOR COL_POSITIVE. "5 (green)
 WRITE / 'COL_NEGATIVE (6)' COLOR COL_NEGATIVE. "6 (red)
-WRITE / 'COL_GROUP (7)' COLOR COL_GROUP. "7 (purple/orange)
+WRITE / 'COL_GROUP (7)' COLOR COL_GROUP. "7 (orange)
 WRITE / 'COLOR 7 OFF' COLOR 7 OFF. "default color
 
 "Setting the intensity of the background color.
@@ -873,7 +873,8 @@ READ CURRENT LINE FIELD VALUE val1 INTO dobj1 val2 INTO dobj2.
 "READ LINE statement)
 MODIFY CURRENT LINE.
 MODIFY LINE 2.
-"Specifying content to overwrite an existing line
+"Specifying content to overwrite an existing line; the following examples
+"only use the addition CURRENT LINE
 "Overwrites the entire list line with the content
 MODIFY CURRENT LINE LINE VALUE FROM 'hi'.
 "Overwrite a specific field with specified content
@@ -918,11 +919,11 @@ MODIFY CURRENT LINE FIELD FORMAT a COLOR 5 b COLOR 6 LINE FORMAT COLOR 7.
     - Although it is optional, it is recommended that you specify the statement explicitly to improve readability.
 - Selection screen events 
   - Used to individually evaluate selection screen elements, e.g. a specific parameter.
-  - In many cases, the events can be used for input validation (this should not wait until `START-OF-SELECTION`). If your custom input validation fails on an input, you can raise a message (e.g. a message of type `E`: `MESSAGE 'Error' TYPE 'E'.`) and allow the user to edit the input again.  
+  - In many cases, the events can be used for input validation (this should not wait until `START-OF-SELECTION`). If your custom input validation fails on an input, you can raise a message (e.g. a message of type `E`: `MESSAGE 'Error' TYPE 'E'.`) and allow users to edit the input again.  
   - `AT SELECTION-SCREEN OUTPUT` <br>Called by the dynpro event PBO of a selection screen after `INITIALIZATION`; can be used for modifying screen elements (e.g. using `MODIFY SCREEN`)
   - `AT SELECTION-SCREEN ON par` <br>Called when values for a parameter or selection criteria were passed to the program; note: the syntax is also available for selection criteria; an additional variant `... ON END OF ...` is available (this event block is called when the selection table is passed completely allowing to check the entire selection table content) 
   - `AT SELECTION-SCREEN ON BLOCK bl` <br>Called when all input for a block is passed to the program
-  - `AT SELECTION-SCREEN ON RADIOBUTTON GROUP gr` <br>Called when the values for a radio button group wer passed
+  - `AT SELECTION-SCREEN ON RADIOBUTTON GROUP gr` <br>Called when the values for a radio button group were passed
   - `AT SELECTION-SCREEN ON EXIT-COMMAND` <br>Called by *Back*, *Exit*, or *Cancel* (e.g. used for cleanup tasks)
   - `AT SELECTION-SCREEN ON HELP-REQUEST | VALUE-REQUEST` <br>Relates to field (F1) and input (F4) help
   - `AT SELECTION-SCREEN.` <br>Called as last event in the selection screen processing when all input values are passed to the program
@@ -943,7 +944,7 @@ ABAP Keyword Documentation:
 - [Selection Screens](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenselection_screen.htm) 
 - [Classic Lists](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenabap_dynpro_list.htm)
 
-## Example
+## Executable Examples
 
 After the import of the repository, proceed as follows: 
 - Find the program in ADT using the search by choosing `CTRL + SHIFT + A`.
@@ -960,7 +961,7 @@ After the import of the repository, proceed as follows:
 > - The steps about how to import and run the code are outlined [here](README.md#-getting-started-with-the-examples). 
 > - The executable examples ...
 >   - do not claim to include meaningful selection screens and lists.
->   - are not intended to be a role model for proper selection screen and list design.   
+>   - are not intended to be role models for proper selection screen and list design.   
 >   - are not intended to solve concrete programming tasks. You should always work out your own solution for each individual case.
 >   - are only intended to demonstrate a selection of keywords and visualize related syntax in action on a high level. 
 > - Find comments in the program code. 
