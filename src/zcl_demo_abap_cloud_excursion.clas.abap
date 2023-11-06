@@ -83,7 +83,15 @@ CLASS zcl_demo_abap_cloud_excursion DEFINITION
 
 ENDCLASS.
 
+
+
 CLASS zcl_demo_abap_cloud_excursion IMPLEMENTATION.
+
+
+  METHOD heading.
+    output = |\n_________________________________________________________________________________\n\n{ text }\n\n|.
+  ENDMETHOD.
+
 
   METHOD if_oo_adt_classrun~main.
     out->write( |ABAP Cheat Sheet Example: Excursions into ABAP for Cloud Development\n| ).
@@ -194,20 +202,14 @@ CLASS zcl_demo_abap_cloud_excursion IMPLEMENTATION.
       APPEND |{ month_wa-CalendarMonth } { month_wa-CalendarMonthName } ({ month_wa-Language })| TO string_tab.
     ENDLOOP.
 
-    "Using a released API, the data is serialized
-    DATA(json_str) = /ui2/cl_json=>serialize( data             = string_tab
-                                              pretty_name      = /ui2/cl_json=>pretty_mode-low_case
-                                              compress         = abap_false
-                                              hex_as_base64    = abap_false
-                                              format_output    = abap_true
-                                              assoc_arrays     = abap_true
-                                              assoc_arrays_opt = abap_true ).
+    "Creating a JSON string from a data object using a released API
+    DATA(json_str) = xco_cp_json=>data->from_abap( months )->to_string( ).
 
     out->write( |\nNumber of months per language: { number_of_months }| ).
     out->write( |\nMonths returned:| ).
-    out->write( data = string_tab ).
-    out->write( |\nMonths returned (serialized data object):| ).
-    out->write( data = json_str ).
+    out->write( data = string_tab name = `string_tab` ).
+    out->write( |\nMonths returned (JSON string):| ).
+    out->write( data = json_str name = `json_str` ).
 
     "Getting APIs for use in ABAP for Cloud Development
     "The released CDS view contains the relevant information. In the example,
@@ -940,24 +942,43 @@ CLASS zcl_demo_abap_cloud_excursion IMPLEMENTATION.
     DATA(m20_user_name) = xco_cp=>sy->user( )->name.
 
     out->write( data = m1_user_time_zone name = `m1_user_time_zone` ).
+    out->write( |\n| ).
     out->write( data = m2_moment_string name = `m2_moment_string` ).
+    out->write( |\n| ).
     out->write( data = m3_moment_format_a name = `m3_moment_format_a` ).
+    out->write( |\n| ).
     out->write( data = m4_moment_format_b name = `m4_moment_format_b` ).
+    out->write( |\n| ).
     out->write( data = m5_cur_moment4user name = `m5_cur_moment4user` ).
+    out->write( |\n| ).
     out->write( data = m6_cur_moment_utc name = `m6_cur_moment_utc` ).
+    out->write( |\n| ).
     out->write( data = m7_unix_tstmp name = `m7_unix_tstmp` ).
+    out->write( |\n| ).
     out->write( data = m8_time name = `m8_time` ).
+    out->write( |\n| ).
     out->write( data = m9_seconds name = `m9_seconds` ).
+    out->write( |\n| ).
     out->write( data = m10_minutes name = `m10_minutes` ).
+    out->write( |\n| ).
     out->write( data = m11_hours name = `m11_hours` ).
+    out->write( |\n| ).
     out->write( data = m12_add_time name = `m12_add_time` ).
+    out->write( |\n| ).
     out->write( data = m13_subtract_time name = `m13_subtract_time` ).
+    out->write( |\n| ).
     out->write( data = m14_date name = `m14_date` ).
+    out->write( |\n| ).
     out->write( data = m15_day name = `m15_day` ).
+    out->write( |\n| ).
     out->write( data = m16_month name = `m16_month` ).
+    out->write( |\n| ).
     out->write( data = m17_year name = `m17_year` ).
+    out->write( |\n| ).
     out->write( data = m18_add_date name = `m18_add_date` ).
+    out->write( |\n| ).
     out->write( data = m19_subtract_date name = `m19_subtract_date` ).
+    out->write( |\n| ).
     out->write( data = m20_user_name name = `m20_user_name` ).
 
 **********************************************************************
@@ -988,7 +1009,7 @@ CLASS zcl_demo_abap_cloud_excursion IMPLEMENTATION.
     "   "abap_true".
     "
     "The generation of the objects is only carried out if all of the mentioned
-    "prerequisites are met. 
+    "prerequisites are met.
 
     "Checking validity of the specified transport request ID
     TRY.
@@ -1098,8 +1119,5 @@ CLASS zcl_demo_abap_cloud_excursion IMPLEMENTATION.
       `in the private section to "abap_true" to carry out the generation.` ) ).
       out->write( details_tab ).
     ENDIF.
-  ENDMETHOD.
-  METHOD heading.
-    output = |\n_________________________________________________________________________________\n\n{ text }\n\n|.
   ENDMETHOD.
 ENDCLASS.

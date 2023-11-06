@@ -53,15 +53,13 @@ ENDCLASS.
 
 
 
-CLASS ZCL_DEMO_ABAP_STRING_PROC IMPLEMENTATION.
+CLASS zcl_demo_abap_string_proc IMPLEMENTATION.
 
 
   METHOD if_oo_adt_classrun~main.
 
-    DATA(output) = NEW zcl_demo_abap_display( out ).
-
-    output->display( `ABAP Cheat Sheet Example: String Processing` ).
-    output->display( `1) Creating Strings and Assigning Values` ).
+    out->write( |ABAP Cheat Sheet Example: String Processing\n\n| ).
+    out->write( |1) Creating Strings and Assigning Values\n\n| ).
 
     "Data object declarations providing default values
     DATA: flag   TYPE c LENGTH 1 VALUE 'X',    "Single quotes
@@ -114,14 +112,17 @@ CLASS ZCL_DEMO_ABAP_STRING_PROC IMPLEMENTATION.
     "Note the conversion result of str_a5 above (i to string)
     DATA(str_a8) = str_a4 && ` ` && str_a5 && `!`.
 
-    output->display( input = str_a3 name = `str_a3` ).
-    output->display( input = char_a2 name = `char_a2` ).
-    output->display( input = str_a7 name = `str_a7` ).
-    output->display( input = str_a8 name = `str_a8` ).
+    out->write( data = str_a3 name = `str_a3` ).
+    out->write( |\n| ).
+    out->write( data = char_a2 name = `char_a2` ).
+    out->write( |\n| ).
+    out->write( data = str_a7 name = `str_a7` ).
+    out->write( |\n| ).
+    out->write( data = str_a8 name = `str_a8` ).
 
 **********************************************************************
 
-    output->next_section( `2) Chaining Strings` ).
+    out->write( zcl_demo_abap_aux=>heading( `2) Chaining Strings` ) ).
 
     DATA(str_b1) = `Hallo`.
     DATA(str_b2) = `how`.
@@ -136,12 +137,13 @@ CLASS ZCL_DEMO_ABAP_STRING_PROC IMPLEMENTATION.
 
     DATA(str_b5) = `AB` & `AP  `.
 
-    output->display( input = str_b4 name = `str_b4` ).
-    output->display( input = char_b1 name = `char_b1` ).
+    out->write( data = str_b4 name = `str_b4` ).
+    out->write( |\n| ).
+    out->write( data = char_b1 name = `char_b1` ).
 
 **********************************************************************
 
-    output->next_section( `3a) String Templates (1): Constructing Strings` ).
+    out->write( zcl_demo_abap_aux=>heading( `3a) String Templates (1): Constructing Strings` ) ).
 
     "The expression must be convertible to a string. A blank (not
     "within the curly brackets) means a blank in the resulting string.
@@ -151,18 +153,19 @@ CLASS ZCL_DEMO_ABAP_STRING_PROC IMPLEMENTATION.
     DATA(str_c4) = |{ str_c1 } { sy-uname }, | &&
                    |{ str_c2 } { str_c3 } you?|.
 
-    output->display( input = str_c4 name = `str_c4` ).
+    out->write( data = str_c4 name = `str_c4` ).
 
 **********************************************************************
 
-    output->next_section( `3b) String Templates (2): Control Characters` ).
+    out->write( zcl_demo_abap_aux=>heading( `3b) String Templates (2): Control Characters` ) ).
 
     "Interpretation of character combinations as control characters
     "\n interpreted as a line break
     DATA(str_c5) = |{ str_c1 }\n{ sy-uname },| &&
                    |\n{ str_c2 }\n{ str_c3 }\nyou?|.
 
-    output->display( input = str_c5 name = `str_c5` ).
+    out->write( data = str_c5 name = `str_c5` ).
+    out->write( |\n| ).
 
     "Excursion: Class CL_ABAP_CHAR_UTILITIES provides attributes and methods as utilities for string processing.
     "See the class documentation.
@@ -176,19 +179,21 @@ CLASS ZCL_DEMO_ABAP_STRING_PROC IMPLEMENTATION.
     DATA(str_c11) = |{ str_c1 }\r\n{ sy-uname }|.
     ASSERT str_c10 = str_c11.
 
-    output->display( input = str_c6 name = `str_c6` ).
-    output->display( input = str_c7 name = `str_c7` ).
-    output->display( input = str_c8 name = `str_c8` ).
-    output->display( input = str_c9 name = `str_c9` ).
+    out->write( data = str_c6 name = `str_c6` ).
+    out->write( |\n| ).
+    out->write( data = str_c7 name = `str_c7` ).
+    out->write( |\n| ).
+    out->write( data = str_c8 name = `str_c8` ).
+    out->write( |\n| ).
+    out->write( data = str_c9 name = `str_c9` ).
 
 **********************************************************************
 
-    output->next_section( `4) String Templates (3): Formatting Options` ).
+    out->write( zcl_demo_abap_aux=>heading( `4) String Templates (3): Formatting Options` ) ).
     "Time, date
-    DATA(str_d1) =
-    |Date: { cl_abap_context_info=>get_system_date( ) DATE = USER }\n| &&
-    |Time: { cl_abap_context_info=>get_system_time( ) TIME = ISO }\n| &&
-    |Timestamp: { utclong_current( ) TIMESTAMP = SPACE }|.
+    DATA(str_d1a) = |Date: { cl_abap_context_info=>get_system_date( ) DATE = USER }|.
+    DATA(str_d1b) = |Time: { cl_abap_context_info=>get_system_time( ) TIME = ISO }|.
+    DATA(str_d1c) = |Timestamp: { utclong_current( ) TIMESTAMP = SPACE }|.
 
     "Upper, lower case
     DATA(str_d2) = |AbCdEfG|.
@@ -211,21 +216,35 @@ CLASS ZCL_DEMO_ABAP_STRING_PROC IMPLEMENTATION.
     "Escaping \|{}  in string templates
     DATA(str_d14) = |\\ \| \{ \}|.
 
-    output->display( input = str_d1 name = `str_d1` ).
-    output->display( input = str_d3 name = `str_d3` ).
-    output->display( input = str_d4 name = `str_d4` ).
-    output->display( input = str_d5 name = `str_d5` ).
-    output->display( input = str_d6 name = `str_d6` ).
-    output->display( input = str_d7 name = `str_d7` ).
-    output->display( input = str_d8 name = `str_d8` ).
-    output->display( input = str_d9 name = `str_d9` ).
-    output->display( input = str_d10 name = `str_d10` ).
-    output->display( input = str_d11 name = `str_d11` ).
-    output->display( input = str_d14 name = `str_d14` ).
+    out->write( data = str_d1a name = `str_d1a` ).
+    out->write( |\n| ).
+    out->write( data = str_d1b name = `str_d1b` ).
+    out->write( |\n| ).
+    out->write( data = str_d1c name = `str_d1c` ).
+    out->write( |\n| ).
+    out->write( data = str_d3 name = `str_d3` ).
+    out->write( |\n| ).
+    out->write( data = str_d4 name = `str_d4` ).
+    out->write( |\n| ).
+    out->write( data = str_d5 name = `str_d5` ).
+    out->write( |\n| ).
+    out->write( data = str_d6 name = `str_d6` ).
+    out->write( |\n| ).
+    out->write( data = str_d7 name = `str_d7` ).
+    out->write( |\n| ).
+    out->write( data = str_d8 name = `str_d8` ).
+    out->write( |\n| ).
+    out->write( data = str_d9 name = `str_d9` ).
+    out->write( |\n| ).
+    out->write( data = str_d10 name = `str_d10` ).
+    out->write( |\n| ).
+    out->write( data = str_d11 name = `str_d11` ).
+    out->write( |\n| ).
+    out->write( data = str_d14 name = `str_d14` ).
 
 **********************************************************************
 
-    output->next_section( `5) Determining the Length of Strings` ).
+    out->write( zcl_demo_abap_aux=>heading( `5) Determining the Length of Strings` ) ).
 
     DATA(str_e1)  = `abc def ghi   `.
     DATA(char_e1) = 'abc def ghi   '.
@@ -259,16 +278,21 @@ CLASS ZCL_DEMO_ABAP_STRING_PROC IMPLEMENTATION.
       int_e2 += 1.
     ENDDO.
 
-    output->display( input = length_e1 name = `length_e1` ).
-    output->display( input = length_e2 name = `length_e2` ).
-    output->display( input = length_e3 name = `length_e3` ).
-    output->display( input = length_e4 name = `length_e4` ).
-    output->display( input = int_e1 name = `int_e1` ).
-    output->display( input = int_e2 name = `int_e2` ).
+    out->write( data = length_e1 name = `length_e1` ).
+    out->write( |\n| ).
+    out->write( data = length_e2 name = `length_e2` ).
+    out->write( |\n| ).
+    out->write( data = length_e3 name = `length_e3` ).
+    out->write( |\n| ).
+    out->write( data = length_e4 name = `length_e4` ).
+    out->write( |\n| ).
+    out->write( data = int_e1 name = `int_e1` ).
+    out->write( |\n| ).
+    out->write( data = int_e2 name = `int_e2` ).
 
 **********************************************************************
 
-    output->next_section( `6) Concatenating Strings` ).
+    out->write( zcl_demo_abap_aux=>heading( `6) Concatenating Strings` ) ).
 
     DATA(str_f1) = `Hallo`.
     DATA(str_f2) = `world`.
@@ -321,23 +345,35 @@ CLASS ZCL_DEMO_ABAP_STRING_PROC IMPLEMENTATION.
     "sep parameter specifying the separation sign
     DATA(alphabet5) = concat_lines_of( table = itab_g sep = `,` ).
 
-    output->display( input = str_f3 name = `str_f3` ).
-    output->display( input = str_f4 name = `str_f4` ).
-    output->display( input = str_f5 name = `str_f5` ).
-    output->display( input = str_f6 name = `str_f6` ).
-    output->display( input = str_f7 name = `str_f7` ).
-    output->display( input = str_f8 name = `str_f8` ).
-    output->display( input = char_f4 name = `char_f4` ).
-    output->display( input = char_f5 name = `char_f5` ).
-    output->display( input = alphabet1 name = `alphabet1` ).
-    output->display( input = alphabet2 name = `alphabet2` ).
-    output->display( input = alphabet3 name = `alphabet3` ).
-    output->display( input = alphabet4 name = `alphabet4` ).
-    output->display( input = alphabet5 name = `alphabet5` ).
+    out->write( data = str_f3 name = `str_f3` ).
+    out->write( |\n| ).
+    out->write( data = str_f4 name = `str_f4` ).
+    out->write( |\n| ).
+    out->write( data = str_f5 name = `str_f5` ).
+    out->write( |\n| ).
+    out->write( data = str_f6 name = `str_f6` ).
+    out->write( |\n| ).
+    out->write( data = str_f7 name = `str_f7` ).
+    out->write( |\n| ).
+    out->write( data = str_f8 name = `str_f8` ).
+    out->write( |\n| ).
+    out->write( data = char_f4 name = `char_f4` ).
+    out->write( |\n| ).
+    out->write( data = char_f5 name = `char_f5` ).
+    out->write( |\n| ).
+    out->write( data = alphabet1 name = `alphabet1` ).
+    out->write( |\n| ).
+    out->write( data = alphabet2 name = `alphabet2` ).
+    out->write( |\n| ).
+    out->write( data = alphabet3 name = `alphabet3` ).
+    out->write( |\n| ).
+    out->write( data = alphabet4 name = `alphabet4` ).
+    out->write( |\n| ).
+    out->write( data = alphabet5 name = `alphabet5` ).
 
 **********************************************************************
 
-    output->next_section( `7) Splitting Strings` ).
+    out->write( zcl_demo_abap_aux=>heading( `7) Splitting Strings` ) ).
 
     DATA(str_g1) = `Hallo,world,12345`.
 
@@ -381,21 +417,30 @@ CLASS ZCL_DEMO_ABAP_STRING_PROC IMPLEMENTATION.
       ENDTRY.
     ENDDO.
 
-    output->display( input = str_g2 name = `str_g2` ).
-    output->display( input = str_g3 name = `str_g3` ).
-    output->display( input = str_g4 name = `str_g4` ).
-    output->display( input = str_g5 name = `str_g5` ).
-    output->display( input = str_g6 name = `str_g6` ).
-    output->display( input = itab_g1 name = `itab_g1` ).
-    output->display( input = str_g7 name = `str_g7` ).
-    output->display( input = str_g8 name = `str_g8` ).
-    output->display( input = itab_g2 name = `itab_g2` ).
-    output->display( input = seg_nom name = `seg_nom` ).
+    out->write( data = str_g2 name = `str_g2` ).
+    out->write( |\n| ).
+    out->write( data = str_g3 name = `str_g3` ).
+    out->write( |\n| ).
+    out->write( data = str_g4 name = `str_g4` ).
+    out->write( |\n| ).
+    out->write( data = str_g5 name = `str_g5` ).
+    out->write( |\n| ).
+    out->write( data = str_g6 name = `str_g6` ).
+    out->write( |\n| ).
+    out->write( data = itab_g1 name = `itab_g1` ).
+    out->write( |\n| ).
+    out->write( data = str_g7 name = `str_g7` ).
+    out->write( |\n| ).
+    out->write( data = str_g8 name = `str_g8` ).
+    out->write( |\n| ).
+    out->write( data = itab_g2 name = `itab_g2` ).
+    out->write( |\n| ).
+    out->write( data = seg_nom name = `seg_nom` ).
 
 **********************************************************************
 
-    output->next_section( `Modifying Strings` ).
-    output->display( `8) Transforming to Lower and Upper Case` ).
+    out->write( zcl_demo_abap_aux=>heading( `Modifying Strings` ) ).
+    out->write( |8) Transforming to Lower and Upper Case\n\n| ).
 
     DATA(str_h1) = `It's a string`.
     DATA(str_h2) = str_h1.
@@ -426,18 +471,25 @@ CLASS ZCL_DEMO_ABAP_STRING_PROC IMPLEMENTATION.
     DATA(str_h9) = from_mixed( val = `someGreatString` sep = ` `
                                case = 'a' min = 4 ).
 
-    output->display( input = str_h3 name = `str_h3` ).
-    output->display( input = str_h4 name = `str_h4` ).
-    output->display( input = str_h1 name = `str_h1` ).
-    output->display( input = str_h2 name = `str_h2` ).
-    output->display( input = str_h6 name = `str_h6` ).
-    output->display( input = str_h7 name = `str_h7` ).
-    output->display( input = str_h8 name = `str_h8` ).
-    output->display( input = str_h9 name = `str_h9` ).
+    out->write( data = str_h3 name = `str_h3` ).
+    out->write( |\n| ).
+    out->write( data = str_h4 name = `str_h4` ).
+    out->write( |\n| ).
+    out->write( data = str_h1 name = `str_h1` ).
+    out->write( |\n| ).
+    out->write( data = str_h2 name = `str_h2` ).
+    out->write( |\n| ).
+    out->write( data = str_h6 name = `str_h6` ).
+    out->write( |\n| ).
+    out->write( data = str_h7 name = `str_h7` ).
+    out->write( |\n| ).
+    out->write( data = str_h8 name = `str_h8` ).
+    out->write( |\n| ).
+    out->write( data = str_h9 name = `str_h9` ).
 
 **********************************************************************
 
-    output->next_section( `9) Shifting Content in Strings` ).
+    out->write( zcl_demo_abap_aux=>heading( `9) Shifting Content in Strings` ) ).
 
     DATA(str_i1) = `hallo`.
     DATA(str_i2) = str_i1.
@@ -506,28 +558,43 @@ CLASS ZCL_DEMO_ABAP_STRING_PROC IMPLEMENTATION.
 
     DATA(str_i15) = shift_right( val = str_i12 ). "Same effect as above
 
-    output->display( `SHIFT statements:` ).
-    output->display( input = str_i2 name = `str_i2` ).
-    output->display( input = str_i3 name = `str_i3` ).
-    output->display( input = str_i4 name = `str_i4` ).
-    output->display( input = char_i1 name = `char_i1` ).
-    output->display( input = str_i5 name = `str_i5` ).
-    output->display( input = char_i2 name = `char_i2` ).
-    output->display( input = char_i3 name = `char_i3` ).
-    output->display( input = str_i6 name = `str_i6` ).
-    output->display( input = str_i7 name = `str_i7` ).
+    out->write( |SHIFT statements:\n\n| ).
+    out->write( data = str_i2 name = `str_i2` ).
+    out->write( |\n| ).
+    out->write( data = str_i3 name = `str_i3` ).
+    out->write( |\n| ).
+    out->write( data = str_i4 name = `str_i4` ).
+    out->write( |\n| ).
+    out->write( data = char_i1 name = `char_i1` ).
+    out->write( |\n| ).
+    out->write( data = str_i5 name = `str_i5` ).
+    out->write( |\n| ).
+    out->write( data = char_i2 name = `char_i2` ).
+    out->write( |\n| ).
+    out->write( data = char_i3 name = `char_i3` ).
+    out->write( |\n| ).
+    out->write( data = str_i6 name = `str_i6` ).
+    out->write( |\n| ).
+    out->write( data = str_i7 name = `str_i7` ).
+    out->write( |\n| ).
 
-    output->display( `String functions:` ).
-    output->display( input = str_i9 name = `str_i9` ).
-    output->display( input = str_i10 name = `str_i10` ).
-    output->display( input = str_i11 name = `str_i11` ).
-    output->display( input = str_i13 name = `str_i13` ).
-    output->display( input = str_i14 name = `str_i14` ).
-    output->display( input = str_i15 name = `str_i15` ).
+    out->write( |String functions:\n\n| ).
+    out->write( |\n| ).
+    out->write( data = str_i9 name = `str_i9` ).
+    out->write( |\n| ).
+    out->write( data = str_i10 name = `str_i10` ).
+    out->write( |\n| ).
+    out->write( data = str_i11 name = `str_i11` ).
+    out->write( |\n| ).
+    out->write( data = str_i13 name = `str_i13` ).
+    out->write( |\n| ).
+    out->write( data = str_i14 name = `str_i14` ).
+    out->write( |\n| ).
+    out->write( data = str_i15 name = `str_i15` ).
 
 **********************************************************************
 
-    output->next_section( `10) Condensing Strings` ).
+    out->write( zcl_demo_abap_aux=>heading( `10) Condensing Strings` ) ).
 
     DATA(char_j1) = ' some text '.
     DATA(char_j2) = '    some     more text   '.
@@ -589,29 +656,38 @@ CLASS ZCL_DEMO_ABAP_STRING_PROC IMPLEMENTATION.
                              from = `Z`
                              to   = ` abc` ).
 
-    output->display( `CONDENSE statements:` ).
-    output->display( input = char_j1 name = `char_j1` ).
-    output->display( input = char_j2 name = `char_j2` ).
-    output->display( input = char_j3 name = `char_j3` ).
-    output->display( input = str_j name = `str_j` ).
-    output->next_section( `String function condense:` ).
-    output->display( input = str_j2 name = `str_j2` ).
-    output->display( input = str_j3 name = `str_j3` ).
-    output->display( input = str_j4 name = `str_j4` ).
-    output->display( input = str_j6 name = `str_j6` ).
-    output->display( input = str_j7 name = `str_j7` ).
+    out->write( |CONDENSE statements:\n| ).
+    out->write( |\n| ).
+    out->write( data = char_j1 name = `char_j1` ).
+    out->write( |\n| ).
+    out->write( data = char_j2 name = `char_j2` ).
+    out->write( |\n| ).
+    out->write( data = char_j3 name = `char_j3` ).
+    out->write( |\n| ).
+    out->write( data = str_j name = `str_j` ).
+    out->write( |\n| ).
+    out->write( zcl_demo_abap_aux=>heading( `String function condense:` ) ).
+    out->write( data = str_j2 name = `str_j2` ).
+    out->write( |\n| ).
+    out->write( data = str_j3 name = `str_j3` ).
+    out->write( |\n| ).
+    out->write( data = str_j4 name = `str_j4` ).
+    out->write( |\n| ).
+    out->write( data = str_j6 name = `str_j6` ).
+    out->write( |\n| ).
+    out->write( data = str_j7 name = `str_j7` ).
 
 **********************************************************************
 
-    output->next_section( `11) Reversing Strings` ).
+    out->write( zcl_demo_abap_aux=>heading( `11) Reversing Strings` ) ).
 
     DATA(str_k) = reverse( `ollah` ).
 
-    output->display( input = str_k name = `str_k` ).
+    out->write( data = str_k name = `str_k` ).
 
 **********************************************************************
 
-    output->next_section( `12) Inserting Substrings into Strings` ).
+    out->write( zcl_demo_abap_aux=>heading( `12) Inserting Substrings into Strings` ) ).
 
     DATA(str_l1) = `abcghi`.
 
@@ -624,13 +700,15 @@ CLASS ZCL_DEMO_ABAP_STRING_PROC IMPLEMENTATION.
 
     DATA(str_l4) = `def` && str_l1.
 
-    output->display( input = str_l2 name = `str_l2` ).
-    output->display( input = str_l3 name = `str_l3` ).
-    output->display( input = str_l4 name = `str_l4` ).
+    out->write( data = str_l2 name = `str_l2` ).
+    out->write( |\n| ).
+    out->write( data = str_l3 name = `str_l3` ).
+    out->write( |\n| ).
+    out->write( data = str_l4 name = `str_l4` ).
 
 **********************************************************************
 
-    output->next_section( `13) Overlaying Content` ).
+    out->write( zcl_demo_abap_aux=>heading( `13) Overlaying Content` ) ).
 
     DATA(incl) = '==============================CP'.
     DATA(cl_name) = 'CL_SOME_CLASS                   '.
@@ -645,12 +723,13 @@ CLASS ZCL_DEMO_ABAP_STRING_PROC IMPLEMENTATION.
     "occur in the operand are replaced. Note that this is case-sensitive.
     OVERLAY t1 WITH t2 ONLY 'ab'.
 
-    output->display( input = cl_name name = `cl_name` ).
-    output->display( input = t1 name = `t1` ).
+    out->write( data = cl_name name = `cl_name` ).
+    out->write( |\n| ).
+    out->write( data = t1 name = `t1` ).
 
 **********************************************************************
 
-    output->next_section( `14) Processing Substrings` ).
+    out->write( zcl_demo_abap_aux=>heading( `14) Processing Substrings` ) ).
 
     DATA(str_m1) = `Lorem ipsum dolor sit amet`.
 
@@ -713,25 +792,36 @@ CLASS ZCL_DEMO_ABAP_STRING_PROC IMPLEMENTATION.
     "aa1bb2aa3b
     DATA(str_m13) = substring_to( val = str_m8 sub = `3b` ).
 
-    output->display( input = str_m2 name = `str_m2` ).
-    output->display( input = str_m3 name = `str_m3` ).
-    output->display( input = str_m4 name = `str_m4` ).
-    output->display( input = str_m5 name = `str_m5` ).
-    output->display( input = str_m6 name = `str_m6` ).
-    output->display( input = str_m7 name = `str_m7` ).
-    output->display( input = char_m2 name = `char_m2` ).
-    output->display( input = char_m3 name = `char_m3` ).
-    output->display( input = str_m9 name = `str_m9` ).
-    output->display( input = str_m10 name = `str_m10` ).
-    output->display( input = str_m11 name = `str_m11` ).
-    output->display( input = str_m12 name = `str_m12` ).
-    output->display( input = str_m13 name = `str_m13` ).
+    out->write( data = str_m2 name = `str_m2` ).
+    out->write( |\n| ).
+    out->write( data = str_m3 name = `str_m3` ).
+    out->write( |\n| ).
+    out->write( data = str_m4 name = `str_m4` ).
+    out->write( |\n| ).
+    out->write( data = str_m5 name = `str_m5` ).
+    out->write( |\n| ).
+    out->write( data = str_m6 name = `str_m6` ).
+    out->write( |\n| ).
+    out->write( data = str_m7 name = `str_m7` ).
+    out->write( |\n| ).
+    out->write( data = char_m2 name = `char_m2` ).
+    out->write( |\n| ).
+    out->write( data = char_m3 name = `char_m3` ).
+    out->write( |\n| ).
+    out->write( data = str_m9 name = `str_m9` ).
+    out->write( |\n| ).
+    out->write( data = str_m10 name = `str_m10` ).
+    out->write( |\n| ).
+    out->write( data = str_m11 name = `str_m11` ).
+    out->write( |\n| ).
+    out->write( data = str_m12 name = `str_m12` ).
+    out->write( |\n| ).
+    out->write( data = str_m13 name = `str_m13` ).
 
 **********************************************************************
 
-    output->next_section( `Searching and Replacing in Strings` ).
-    output->display( `15) Searching Specific Characters in Strings ` &&
-                     `Using Comparison Operators and String Functions` ).
+    out->write( zcl_demo_abap_aux=>heading( `Searching and Replacing in Strings` ) ).
+    out->write( |15) Searching Specific Characters in Strings Using Comparison Operators and String Functions\n| ).
 
     DATA(str_n1) = `cheers`.
 
@@ -740,46 +830,52 @@ CLASS ZCL_DEMO_ABAP_STRING_PROC IMPLEMENTATION.
     "If nothing is found, sy-fdpos contains the length of the string.
     "Note that position 0 stands for the very first position.
     IF str_n1 CA `aeiou`.
-      output->display( |CA: str_n1 contains any of the characters. | &&
+      out->write( |CA: str_n1 contains any of the characters. | &&
        |The position of the first found character is { sy-fdpos }.| ).
+      out->write( |\n| ).
     ELSE.
-      output->display( |CA: str_n1 does not contain any of the characters. | &&
+      out->write( |CA: str_n1 does not contain any of the characters. | &&
              |The length of str_n1 is { sy-fdpos }.| ).
+      out->write( |\n| ).
     ENDIF.
 
     "NA (contains not any)
     IF str_n1 NA `xyz`.
-      output->display( |NA: str_n1 does not contain any of the characters.| &&
-             |The length of str_n1 is { sy-fdpos }.|
-             ).
+      out->write( |NA: str_n1 does not contain any of the characters.| &&
+             |The length of str_n1 is { sy-fdpos }.| ).
+      out->write( |\n| ).
     ELSE.
-      output->display( |NA: str_n1 contains any of the characters. | &&
+      out->write( |NA: str_n1 contains any of the characters. | &&
        |The position of the first found character is { sy-fdpos }.| ).
+      out->write( |\n| ).
     ENDIF.
 
     "Determining if a string is exclusively composed of a certain
     "character set
     IF str_n1 CO `rs`.
-      output->display( |CO: str_n1 contains only the characters. |
+      out->write( |CO: str_n1 contains only the characters. |
       && |The length of str_n1 is { sy-fdpos }.| ).
+      out->write( |\n| ).
     ELSE.
-      output->display( |CO: str_n1 does not contain only the characters. |
+      out->write( |CO: str_n1 does not contain only the characters. |
       && |Offset of the first character in str_n1 that is not |
       && |contained in the second operand: { sy-fdpos }.| ).
+      out->write( |\n| ).
     ENDIF.
 
     "Negation of CO
     IF str_n1 CN `chers`.
-      output->display( |CN: str_n1 does not contain only the characters. |
+      out->write( |CN: str_n1 does not contain only the characters. |
        && |Offset of the first character in str_n1 that is |
-       && |not contained in the second operand: { sy-fdpos }.|
-        ).
+       && |not contained in the second operand: { sy-fdpos }.| ).
+      out->write( |\n| ).
     ELSE.
-      output->display( |CN: str_n1 contains only the characters. |
+      out->write( |CN: str_n1 contains only the characters. |
       && |The length of str_n1 is { sy-fdpos }.| ).
+      out->write( |\n| ).
     ENDIF.
 
-   "String functions
+    "String functions
     DATA(str_n2) = `Pieces of cakes.`.
 
     "find_end returns the sum of the offset of the occurrence
@@ -807,21 +903,31 @@ CLASS ZCL_DEMO_ABAP_STRING_PROC IMPLEMENTATION.
     DATA(res_n12) = count_any_not_of( val = str_n2 sub = `fP` ).
     DATA(res_n13) = count_any_not_of( val = str_n2 sub = `Piecs ofak.` ).
 
-    output->display( input = res_n3 name = `res_n3` ).
-    output->display( input = res_n4 name = `res_n4` ).
-    output->display( input = res_n5 name = `res_n5` ).
-    output->display( input = res_n6 name = `res_n6` ).
-    output->display( input = res_n7 name = `res_n7` ).
-    output->display( input = res_n8 name = `res_n8` ).
-    output->display( input = res_n9 name = `res_n9` ).
-    output->display( input = res_n10 name = `res_n10` ).
-    output->display( input = res_n11 name = `res_n11` ).
-    output->display( input = res_n12 name = `res_n12` ).
-    output->display( input = res_n13 name = `res_n13` ).
+    out->write( data = res_n3 name = `res_n3` ).
+    out->write( |\n| ).
+    out->write( data = res_n4 name = `res_n4` ).
+    out->write( |\n| ).
+    out->write( data = res_n5 name = `res_n5` ).
+    out->write( |\n| ).
+    out->write( data = res_n6 name = `res_n6` ).
+    out->write( |\n| ).
+    out->write( data = res_n7 name = `res_n7` ).
+    out->write( |\n| ).
+    out->write( data = res_n8 name = `res_n8` ).
+    out->write( |\n| ).
+    out->write( data = res_n9 name = `res_n9` ).
+    out->write( |\n| ).
+    out->write( data = res_n10 name = `res_n10` ).
+    out->write( |\n| ).
+    out->write( data = res_n11 name = `res_n11` ).
+    out->write( |\n| ).
+    out->write( data = res_n12 name = `res_n12` ).
+    out->write( |\n| ).
+    out->write( data = res_n13 name = `res_n13` ).
 
 **********************************************************************
 
-    output->next_section( `16) Replacing Specific Characters in Strings` ).
+    out->write( zcl_demo_abap_aux=>heading( `16) Replacing Specific Characters in Strings` ) ).
 
     DATA(str_o1) = `___abc_def_____ghi_`.
 
@@ -845,14 +951,16 @@ CLASS ZCL_DEMO_ABAP_STRING_PROC IMPLEMENTATION.
     "...Zbc.def.....Yhi.
     TRANSLATE str_o1 USING `_.aZgY`.
 
-    output->display( input = str_o2 name = `str_o2` ).
-    output->display( input = str_o3 name = `str_o3` ).
-    output->display( input = str_o1 name = `str_o1` ).
+    out->write( data = str_o2 name = `str_o2` ).
+    out->write( |\n| ).
+    out->write( data = str_o3 name = `str_o3` ).
+    out->write( |\n| ).
+    out->write( data = str_o1 name = `str_o1` ).
 
 **********************************************************************
 
-    output->next_section( `Searching for Substrings in Strings` ).
-    output->display( `17) Substring Search: Simple Search Using Comparison Operators` ).
+    out->write( zcl_demo_abap_aux=>heading( `Searching for Substrings in Strings` ) ).
+    out->write( |17) Substring Search: Simple Search Using Comparison Operators\n| ).
 
     DATA(str_p1) = `cheers`.
 
@@ -861,26 +969,30 @@ CLASS ZCL_DEMO_ABAP_STRING_PROC IMPLEMENTATION.
     "If the substring is not found, sy-fdpos contains the length of the
     "searched string.
     IF str_p1 CS `rs`.
-      output->display( |CS: The string contains the substring. |
+      out->write( |CS: The string contains the substring. |
       && |The offset is { sy-fdpos }.| ).
+      out->write( |\n| ).
     ELSE.
-      output->display( |CS: The string does not contain the substring. |
+      out->write( |CS: The string does not contain the substring. |
       && |The length of the string is { sy-fdpos }.| ).
+      out->write( |\n| ).
     ENDIF.
 
     "NS (contains no string)
     IF str_p1 NS `abc`.
-      output->display( |NS: The string does not contain the substring. |
+      out->write( |NS: The string does not contain the substring. |
       && |The length of the string is { sy-fdpos }.| ).
+      out->write( |\n| ).
     ELSE.
-      output->display( |NS: The string contains the substring. |
+      out->write( |NS: The string contains the substring. |
        && |The offset is { sy-fdpos }.| ).
+      out->write( |\n| ).
     ENDIF.
 
 **********************************************************************
 
-    output->next_section( `18) Substring Search in Strings ` &&
-    `Using FIND Statements` ).
+    out->write( zcl_demo_abap_aux=>heading( `18) Substring Search in Strings ` &&
+    `Using FIND Statements` ) ).
     "The code examples demonstrate different additions.
 
     DATA(str_qa) = `She sells seashells by the seashore.`.
@@ -890,19 +1002,24 @@ CLASS ZCL_DEMO_ABAP_STRING_PROC IMPLEMENTATION.
     FIND `se` IN str_qa.
 
     IF sy-subrc = 0.
-      output->display( `'se' found in the string` ).
+      out->write( `'se' found in the string` ).
     ELSE.
-      output->display( `'se' not found in the string` ).
+      out->write( `'se' not found in the string` ).
     ENDIF.
+
+    out->write( |\n| ).
 
     "Addition SUBSTRING is optional
     FIND SUBSTRING `hi` IN str_qa.
 
     IF sy-subrc = 0.
-      output->display( `'hi' Found in the string` ).
+      out->write( `'hi' Found in the string` ).
     ELSE.
-      output->display( `'hi' not found in the string` ).
+      out->write( `'hi' not found in the string` ).
     ENDIF.
+
+    out->write( |\n| ).
+    out->write( |\n| ).
 
     "The following examples use the additions MATCH COUNT and MATCH OFFSET
     "to determine the number of occurrences and offset and for display purposes.
@@ -981,27 +1098,42 @@ CLASS ZCL_DEMO_ABAP_STRING_PROC IMPLEMENTATION.
       RESULTS DATA(res_q16)
       IGNORING CASE.
 
-    output->display( input = cnt_q1 name = `cnt_q1` ).
-    output->display( input = off_q2 name = `off_q2` ).
-    output->display( input = cnt_q3 name = `cnt_q3` ).
-    output->display( input = off_q4 name = `off_q4` ).
-    output->display( input = cnt_q5 name = `cnt_q5` ).
-    output->display( input = off_q6 name = `off_q6` ).
-    output->display( input = cnt_q7 name = `cnt_q7` ).
-    output->display( input = off_q8 name = `off_q8` ).
-    output->display( input = cnt_q9 name = `cnt_q9` ).
-    output->display( input = off_q10 name = `off_q10` ).
-    output->display( input = cnt_q11 name = `cnt_q11` ).
-    output->display( input = off_q12 name = `off_q12` ).
-    output->display( input = off_q13 name = `off_q13` ).
-    output->display( input = len_q14 name = `len_q14` ).
-    output->display( input = res_q15 name = `res_q15` ).
-    output->display( input = res_q16 name = `res_q16` ).
+    out->write( data = cnt_q1 name = `cnt_q1` ).
+    out->write( |\n| ).
+    out->write( data = off_q2 name = `off_q2` ).
+    out->write( |\n| ).
+    out->write( data = cnt_q3 name = `cnt_q3` ).
+    out->write( |\n| ).
+    out->write( data = off_q4 name = `off_q4` ).
+    out->write( |\n| ).
+    out->write( data = cnt_q5 name = `cnt_q5` ).
+    out->write( |\n| ).
+    out->write( data = off_q6 name = `off_q6` ).
+    out->write( |\n| ).
+    out->write( data = cnt_q7 name = `cnt_q7` ).
+    out->write( |\n| ).
+    out->write( data = off_q8 name = `off_q8` ).
+    out->write( |\n| ).
+    out->write( data = cnt_q9 name = `cnt_q9` ).
+    out->write( |\n| ).
+    out->write( data = off_q10 name = `off_q10` ).
+    out->write( |\n| ).
+    out->write( data = cnt_q11 name = `cnt_q11` ).
+    out->write( |\n| ).
+    out->write( data = off_q12 name = `off_q12` ).
+    out->write( |\n| ).
+    out->write( data = off_q13 name = `off_q13` ).
+    out->write( |\n| ).
+    out->write( data = len_q14 name = `len_q14` ).
+    out->write( |\n| ).
+    out->write( data = res_q15 name = `res_q15` ).
+    out->write( |\n| ).
+    out->write( data = res_q16 name = `res_q16` ).
 
 **********************************************************************
 
-    output->next_section( `19) Substring Search in Internal Tables ` &&
-    `Using FIND ... IN TABLE Statements` ).
+    out->write( zcl_demo_abap_aux=>heading( `19) Substring Search in Internal Tables ` &&
+    `Using FIND ... IN TABLE Statements` ) ).
 
     DATA(str_table_r) = VALUE string_table( ( `aZbzZ` ) ( `cdZze` ) ( `Zzzf` ) ( `ghz` ) ).
 
@@ -1029,16 +1161,20 @@ CLASS ZCL_DEMO_ABAP_STRING_PROC IMPLEMENTATION.
       MATCH LENGTH DATA(len_r5)
       RESPECTING CASE.
 
-    output->display( input = res_r1 name = `res_r1` ).
-    output->display( input = res_r2 name = `res_r2` ).
-    output->display( input = line_r3 name = `line_r3` ).
-    output->display( input = off_r4 name = `off_r4` ).
-    output->display( input = len_r5 name = `len_r5` ).
+    out->write( data = res_r1 name = `res_r1` ).
+    out->write( |\n| ).
+    out->write( data = res_r2 name = `res_r2` ).
+    out->write( |\n| ).
+    out->write( data = line_r3 name = `line_r3` ).
+    out->write( |\n| ).
+    out->write( data = off_r4 name = `off_r4` ).
+    out->write( |\n| ).
+    out->write( data = len_r5 name = `len_r5` ).
 
 **********************************************************************
 
-    output->next_section( `20) Substring Search in Strings ` &&
-    `Using the String Function find` ).
+    out->write( zcl_demo_abap_aux=>heading( `20) Substring Search in Strings ` &&
+    `Using the String Function find` ) ).
 
     DATA(str_s) = `Pieces of cakes.`.
 
@@ -1073,29 +1209,41 @@ CLASS ZCL_DEMO_ABAP_STRING_PROC IMPLEMENTATION.
     DATA(res_s11) = find( val = str_s sub = `e` off = 5 len = 7 ).
     DATA(res_s12) = find( val = str_s sub = `e` len = 2  ).
 
-    output->display( input = res_s1 name = `res_s1` ).
-    output->display( input = res_s2 name = `res_s2` ).
-    output->display( input = res_s3 name = `res_s3` ).
-    output->display( input = res_s4 name = `res_s4` ).
-    output->display( input = res_s5 name = `res_s5` ).
-    output->display( input = res_s6 name = `res_s6` ).
-    output->display( input = res_s7 name = `res_s7` ).
-    output->display( input = res_s8 name = `res_s8` ).
-    output->display( input = res_s9 name = `res_s9` ).
-    output->display( input = res_s10 name = `res_s10` ).
-    output->display( input = res_s11 name = `res_s11` ).
-    output->display( input = res_s12 name = `res_s12` ).
+    out->write( data = res_s1 name = `res_s1` ).
+    out->write( |\n| ).
+    out->write( data = res_s2 name = `res_s2` ).
+    out->write( |\n| ).
+    out->write( data = res_s3 name = `res_s3` ).
+    out->write( |\n| ).
+    out->write( data = res_s4 name = `res_s4` ).
+    out->write( |\n| ).
+    out->write( data = res_s5 name = `res_s5` ).
+    out->write( |\n| ).
+    out->write( data = res_s6 name = `res_s6` ).
+    out->write( |\n| ).
+    out->write( data = res_s7 name = `res_s7` ).
+    out->write( |\n| ).
+    out->write( data = res_s8 name = `res_s8` ).
+    out->write( |\n| ).
+    out->write( data = res_s9 name = `res_s9` ).
+    out->write( |\n| ).
+    out->write( data = res_s10 name = `res_s10` ).
+    out->write( |\n| ).
+    out->write( data = res_s11 name = `res_s11` ).
+    out->write( |\n| ).
+    out->write( data = res_s12 name = `res_s12` ).
+    out->write( |\n| ).
 
     "Demonstrating a false range to be searched
     TRY.
         DATA(res_s13) = find( val = str_s sub = `e` off = 5 len = 15 ).
       CATCH cx_sy_range_out_of_bounds.
-        output->display( `The exception cx_sy_range_out_of_bounds was raised.` ).
+        out->write( `The exception cx_sy_range_out_of_bounds was raised.` ).
     ENDTRY.
 
 ***********************************************************************
 
-    output->next_section( `21) Replacing Substrings in Strings Using REPLACE Statments` ).
+    out->write( zcl_demo_abap_aux=>heading( `21) Replacing Substrings in Strings Using REPLACE Statments` ) ).
 
     DATA(str_t) = `abap ABAP abap`.
     DATA(str_t1) = str_t.
@@ -1105,27 +1253,31 @@ CLASS ZCL_DEMO_ABAP_STRING_PROC IMPLEMENTATION.
     "replacing the first occurrence by default.
     REPLACE `ab` IN str_t1 WITH `##`.
 
-    output->display( input = str_t1 name = `str_t1` ).
+    out->write( data = str_t1 name = `str_t1` ).
+    out->write( |\n| ).
     DATA(str_t2) = str_t.
 
     "Addition SUBSTRING is optional; same effect as the statement above
     REPLACE SUBSTRING `ab` IN str_t2 WITH `##`.
 
-    output->display( input = str_t2 name = `str_t2` ).
+    out->write( data = str_t2 name = `str_t2` ).
+    out->write( |\n| ).
     DATA(str_t3) = str_t.
 
     "Addition FIRST OCCURRENCE OF: Explicit specification to replace the
     "first occurrence; same effect as the statements above
     REPLACE FIRST OCCURRENCE OF `ab` IN str_t3 WITH `##`.
 
-    output->display( input = str_t3 name = `str_t3` ).
+    out->write( data = str_t3 name = `str_t3` ).
+    out->write( |\n| ).
     DATA(str_t4) = str_t.
 
     "Addition ALL OCCURRENCES OF: All occurrences are replaced
     "Note that the replacement is case-sensitive by default.
     REPLACE ALL OCCURRENCES OF `ab` IN str_t4 WITH `##`.
 
-    output->display( input = str_t4 name = `str_t4` ).
+    out->write( data = str_t4 name = `str_t4` ).
+    out->write( |\n| ).
     DATA(str_t5) = str_t.
 
     "Further additional options for advanced evaluation options
@@ -1135,7 +1287,8 @@ CLASS ZCL_DEMO_ABAP_STRING_PROC IMPLEMENTATION.
       IN str_t5 WITH `##`
       IGNORING CASE.
 
-    output->display( input = str_t5 name = `str_t5` ).
+    out->write( data = str_t5 name = `str_t5` ).
+    out->write( |\n| ).
     DATA(str_t6) = str_t.
 
     "REPLACEMENT COUNT addition
@@ -1144,8 +1297,10 @@ CLASS ZCL_DEMO_ABAP_STRING_PROC IMPLEMENTATION.
       REPLACEMENT COUNT DATA(cnt_t7)
       IGNORING CASE.
 
-    output->display( input = str_t6 name = `str_t6` ).
-    output->display( input = cnt_t7 name = `cnt_t7` ).
+    out->write( data = str_t6 name = `str_t6` ).
+    out->write( |\n| ).
+    out->write( data = cnt_t7 name = `cnt_t7` ).
+    out->write( |\n| ).
     DATA(str_t8) = str_t.
 
     "REPLACEMENT OFFSET and LENGTH additions
@@ -1156,10 +1311,14 @@ CLASS ZCL_DEMO_ABAP_STRING_PROC IMPLEMENTATION.
       REPLACEMENT LENGTH DATA(len_t11)
       IGNORING CASE.
 
-    output->display( input = str_t8 name = `str_t8` ).
-    output->display( input = cnt_t9 name = `cnt_t9` ).
-    output->display( input = off_t10 name = `off_t10` ).
-    output->display( input = len_t11 name = `len_t11` ).
+    out->write( data = str_t8 name = `str_t8` ).
+    out->write( |\n| ).
+    out->write( data = cnt_t9 name = `cnt_t9` ).
+    out->write( |\n| ).
+    out->write( data = off_t10 name = `off_t10` ).
+    out->write( |\n| ).
+    out->write( data = len_t11 name = `len_t11` ).
+    out->write( |\n| ).
     DATA(str_t12) = str_t.
 
     "SECTION ... OF addition: Replacing within a specified area
@@ -1171,10 +1330,14 @@ CLASS ZCL_DEMO_ABAP_STRING_PROC IMPLEMENTATION.
       REPLACEMENT LENGTH DATA(len_t15)
       IGNORING CASE.
 
-    output->display( input = str_t12 name = `str_t12` ).
-    output->display( input = cnt_t13 name = `cnt_t13` ).
-    output->display( input = off_t14 name = `off_t14` ).
-    output->display( input = len_t15 name = `len_t15` ).
+    out->write( data = str_t12 name = `str_t12` ).
+    out->write( |\n| ).
+    out->write( data = cnt_t13 name = `cnt_t13` ).
+    out->write( |\n| ).
+    out->write( data = off_t14 name = `off_t14` ).
+    out->write( |\n| ).
+    out->write( data = len_t15 name = `len_t15` ).
+    out->write( |\n| ).
     DATA(str_t16) = str_t.
 
     "RESULTS additions with ...
@@ -1185,8 +1348,10 @@ CLASS ZCL_DEMO_ABAP_STRING_PROC IMPLEMENTATION.
       RESULTS DATA(tab_t17)
       IGNORING CASE.
 
-    output->display( input = str_t16 name = `str_t16` ).
-    output->display( input = tab_t17 name = `tab_t17` ).
+    out->write( data = str_t16 name = `str_t16` ).
+    out->write( |\n| ).
+    out->write( data = tab_t17 name = `tab_t17` ).
+    out->write( |\n| ).
     DATA(str_t18) = str_t.
 
     "... FIRST OCCURRENCE OF
@@ -1196,12 +1361,13 @@ CLASS ZCL_DEMO_ABAP_STRING_PROC IMPLEMENTATION.
       RESULTS DATA(struc_t19)
       IGNORING CASE.
 
-    output->display( input = str_t18 name = `str_t18` ).
-    output->display( input = struc_t19 name = `struc_t19` ).
+    out->write( data = str_t18 name = `str_t18` ).
+    out->write( |\n| ).
+    out->write( data = struc_t19 name = `struc_t19` ).
 
 ***********************************************************************
 
-    output->next_section( `21) Position-Based Replacements with REPLACE SECTION ... OF` ).
+    out->write( zcl_demo_abap_aux=>heading( `21) Position-Based Replacements with REPLACE SECTION ... OF` ) ).
 
     DATA(str_u) = `abap ABAP abap`.
     DATA(str_u1) = str_u.
@@ -1209,23 +1375,25 @@ CLASS ZCL_DEMO_ABAP_STRING_PROC IMPLEMENTATION.
     "OFFSET and LENGTH specified
     REPLACE SECTION OFFSET 5 LENGTH 4 OF str_u1 WITH `#`.
 
-    output->display( input = str_u1 name = `str_u1` ).
+    out->write( data = str_u1 name = `str_u1` ).
+    out->write( |\n| ).
     DATA(str_u2) = str_u.
 
     "Only OFFSET specified, LENGTH: up to the end of the string
     REPLACE SECTION OFFSET 5 OF str_u2 WITH `#`.
 
-    output->display( input = str_u2 name = `str_u2` ).
+    out->write( data = str_u2 name = `str_u2` ).
+    out->write( |\n| ).
     DATA(str_u3) = str_u.
 
     "Only LENGTH specified, OFFSET: starting from the leftmost position
     REPLACE SECTION LENGTH 6 OF str_u3 WITH `#`.
 
-    output->display( input = str_u3 name = `str_u3` ).
+    out->write( data = str_u3 name = `str_u3` ).
 
 ***********************************************************************
 
-    output->next_section( `22) Replacements in Internal Tables with REPLACE ... IN TABLE` ).
+    out->write( zcl_demo_abap_aux=>heading( `22) Replacements in Internal Tables with REPLACE ... IN TABLE` ) ).
 
     DATA(tab_v) = VALUE string_table( ( `aZbzZ` ) ( `cdZze` ) ( `Zzzf` ) ( `ghz` ) ).
     DATA(tab_v1) = tab_v.
@@ -1238,8 +1406,10 @@ CLASS ZCL_DEMO_ABAP_STRING_PROC IMPLEMENTATION.
       RESULTS DATA(res_v2)
       RESPECTING CASE.
 
-    output->display( input = tab_v1 name = `tab_v1` ).
-    output->display( input = res_v2 name = `res_v2` ).
+    out->write( data = tab_v1 name = `tab_v1` ).
+    out->write( |\n| ).
+    out->write( data = res_v2 name = `res_v2` ).
+    out->write( |\n| ).
     DATA(tab_v3) = tab_v.
 
     "Replacing the first occurrence in a table
@@ -1250,8 +1420,10 @@ CLASS ZCL_DEMO_ABAP_STRING_PROC IMPLEMENTATION.
       RESULTS DATA(res_v4)
       RESPECTING CASE.
 
-    output->display( input = tab_v3 name = `tab_v3` ).
-    output->display( input = res_v4 name = `res_v4` ).
+    out->write( data = tab_v3 name = `tab_v3` ).
+    out->write( |\n| ).
+    out->write( data = res_v4 name = `res_v4` ).
+    out->write( |\n| ).
     DATA(tab_v5) = tab_v.
 
     "Restricting the search range in an internal table
@@ -1261,7 +1433,8 @@ CLASS ZCL_DEMO_ABAP_STRING_PROC IMPLEMENTATION.
       WITH `#`
       RESPECTING CASE.
 
-    output->display( input = tab_v5 name = `tab_v5` ).
+    out->write( data = tab_v5 name = `tab_v5` ).
+    out->write( |\n| ).
     DATA(tab_v6) = tab_v.
 
     "Offsets can be optionally specified (also only the offset of start or end line possible)
@@ -1271,11 +1444,11 @@ CLASS ZCL_DEMO_ABAP_STRING_PROC IMPLEMENTATION.
       WITH `#`
       RESPECTING CASE.
 
-    output->display( input = tab_v6 name = `tab_v6` ).
+    out->write( data = tab_v6 name = `tab_v6` ).
 
 ***********************************************************************
 
-    output->next_section( `23) Replacing Substrings in Strings Using the String Function replace` ).
+    out->write( zcl_demo_abap_aux=>heading( `23) Replacing Substrings in Strings Using the String Function replace` ) ).
 
     DATA(str_w) = `abap ABAP abap`.
 
@@ -1315,21 +1488,30 @@ CLASS ZCL_DEMO_ABAP_STRING_PROC IMPLEMENTATION.
     "- Result: Value specified for 'with' is appended to the end of the string
     DATA(str_w_10) = replace( val = str_w  with = `#` off = strlen( str_w ) ).
 
-    output->display( input = str_w_1 name = `str_w_1` ).
-    output->display( input = str_w_2 name = `str_w_2` ).
-    output->display( input = str_w_3 name = `str_w_3` ).
-    output->display( input = str_w_4 name = `str_w_4` ).
-    output->display( input = str_w_5 name = `str_w_5` ).
-    output->display( input = str_w_6 name = `str_w_6` ).
-    output->display( input = str_w_7 name = `str_w_7` ).
-    output->display( input = str_w_8 name = `str_w_8` ).
-    output->display( input = str_w_9 name = `str_w_9` ).
-    output->display( input = str_w_10 name = `str_w_10` ).
+    out->write( data = str_w_1 name = `str_w_1` ).
+    out->write( |\n| ).
+    out->write( data = str_w_2 name = `str_w_2` ).
+    out->write( |\n| ).
+    out->write( data = str_w_3 name = `str_w_3` ).
+    out->write( |\n| ).
+    out->write( data = str_w_4 name = `str_w_4` ).
+    out->write( |\n| ).
+    out->write( data = str_w_5 name = `str_w_5` ).
+    out->write( |\n| ).
+    out->write( data = str_w_6 name = `str_w_6` ).
+    out->write( |\n| ).
+    out->write( data = str_w_7 name = `str_w_7` ).
+    out->write( |\n| ).
+    out->write( data = str_w_8 name = `str_w_8` ).
+    out->write( |\n| ).
+    out->write( data = str_w_9 name = `str_w_9` ).
+    out->write( |\n| ).
+    out->write( data = str_w_10 name = `str_w_10` ).
 
 ***********************************************************************
 
-    output->next_section( `Pattern-Based Searching and Replacing in Strings` ).
-    output->display( `24) Simple Pattern-Based Searching ` &&
+    out->write( zcl_demo_abap_aux=>heading( `Pattern-Based Searching and Replacing in Strings` ) ).
+    out->write( `24) Simple Pattern-Based Searching ` &&
                      `Using Logical Operators` ).
 
     DATA(str_x) = `abc_def_ghi`.
@@ -1344,26 +1526,28 @@ CLASS ZCL_DEMO_ABAP_STRING_PROC IMPLEMENTATION.
     "the offset of the first finding. Otherwise, it contains the length
     "of the searched string.
     IF str_x CP `*f#_*`.
-      output->display( |CP: The string covers the pattern. |
+      out->write( |CP: The string covers the pattern. |
       && |The offset is { sy-fdpos }.| ).
     ELSE.
-      output->display( |CP: The string does not cover the pattern. |
+      out->write( |CP: The string does not cover the pattern. |
       && |The length of the string is { sy-fdpos }.| ).
     ENDIF.
 
+    out->write( |\n| ).
+
     "NP (does not conform to pattern)
     IF str_x NP `i+`.
-      output->display( |NP: The string does not cover the pattern. |
+      out->write( |NP: The string does not cover the pattern. |
       && |The length of the string is { sy-fdpos }.| ).
     ELSE.
-      output->display( |NP: The string covers the pattern. |
+      out->write( |NP: The string covers the pattern. |
       && |The offset is { sy-fdpos }.| ).
     ENDIF.
 
 ***********************************************************************
 
-    output->next_section( `25) Complex Searching Using ` &&
-    `Regular Expressions` ).
+    out->write( zcl_demo_abap_aux=>heading( `25) Complex Searching Using ` &&
+    `Regular Expressions` ) ).
 
     DATA(str_y) = `Cathy's black cat was fast asleep on the mat. ` &&
                   `Later that day, the cat played with Matt.`.
@@ -1475,25 +1659,39 @@ CLASS ZCL_DEMO_ABAP_STRING_PROC IMPLEMENTATION.
       ENDLOOP.
     ENDLOOP.
 
-    output->display( input = off_y1 name = `off_y1` ).
-    output->display( input = cnt_y2 name = `cnt_y2` ).
-    output->display( input = cnt_y3 name = `cnt_y3` ).
-    output->display( input = str_y4 name = `str_y4` ).
-    output->display( input = str_y5 name = `str_y5` ).
-    output->display( input = str_y6 name = `str_y6` ).
-    output->display( input = subm_y7 name = `subm_y7` ).
-    output->display( input = subm_y8 name = `subm_y8` ).
-    output->display( input = cnt_y9 name = `cnt_y9` ).
-    output->display( input = tab_y10 name = `tab_y10` ).
-    output->display( input = line_y13 name = `line_y13` ).
-    output->display( input = off_y14 name = `off_y14` ).
-    output->display( input = len_y15 name = `len_y15` ).
-    output->display( input = res_y16 name = `res_y16` ).
-    output->display( input = tab_y17 name = `tab_y17` ).
+    out->write( data = off_y1 name = `off_y1` ).
+    out->write( |\n| ).
+    out->write( data = cnt_y2 name = `cnt_y2` ).
+    out->write( |\n| ).
+    out->write( data = cnt_y3 name = `cnt_y3` ).
+    out->write( |\n| ).
+    out->write( data = str_y4 name = `str_y4` ).
+    out->write( |\n| ).
+    out->write( data = str_y5 name = `str_y5` ).
+    out->write( |\n| ).
+    out->write( data = str_y6 name = `str_y6` ).
+    out->write( |\n| ).
+    out->write( data = subm_y7 name = `subm_y7` ).
+    out->write( |\n| ).
+    out->write( data = subm_y8 name = `subm_y8` ).
+    out->write( |\n| ).
+    out->write( data = cnt_y9 name = `cnt_y9` ).
+    out->write( |\n| ).
+    out->write( data = tab_y10 name = `tab_y10` ).
+    out->write( |\n| ).
+    out->write( data = line_y13 name = `line_y13` ).
+    out->write( |\n| ).
+    out->write( data = off_y14 name = `off_y14` ).
+    out->write( |\n| ).
+    out->write( data = len_y15 name = `len_y15` ).
+    out->write( |\n| ).
+    out->write( data = res_y16 name = `res_y16` ).
+    out->write( |\n| ).
+    out->write( data = tab_y17 name = `tab_y17` ).
 
 ***********************************************************************
 
-    output->next_section( `26) Replacing Using Regular Expressions` ).
+    out->write( zcl_demo_abap_aux=>heading( `26) Replacing Using Regular Expressions` ) ).
 
     DATA(str_z) = `Cathy's black cat was fast asleep on the mat. ` &&
                    `Later that day, the cat played with Matt.`.
@@ -1680,39 +1878,67 @@ CLASS ZCL_DEMO_ABAP_STRING_PROC IMPLEMENTATION.
      REPLACEMENT COUNT DATA(cnt_z26)
      IGNORING CASE .
 
-    output->display( input = |Original str_z: { str_z }| ).
-    output->display( input = str_z1 name = `str_z1` ).
-    output->display( input = str_z2 name = `str_z2` ).
-    output->display( input = str_z3 name = `str_z3` ).
-    output->display( input = str_z4 name = `str_z4` ).
-    output->display( input = str_z5 name = `str_z5` ).
-    output->display( input = str_z6 name = `str_z6` ).
-    output->display( input = str_z7 name = `str_z7` ).
-    output->display( input = str_z8 name = `str_z8` ).
-    output->display( input = str_z9 name = `str_z9` ).
-    output->display( input = str_z10 name = `str_z10` ).
-    output->display( input = str_z11 name = `str_z11` ).
-    output->display( input = str_z12 name = `str_z12` ).
-    output->display( input = str_z3 name = `str_z13` ).
-    output->display( input = |Original str_zb: { str_zb }| ).
-    output->display( input = str_z15 name = `str_z15` ).
-    output->display( input = str_z16 name = `str_z16` ).
-    output->display( input = str_z17 name = `str_z17` ).
-    output->display( input = str_z18 name = `str_z18` ).
-    output->display( input = str_z19 name = `str_z19` ).
-    output->display( input = str_z20 name = `str_z20` ).
-    output->display( input = str_z21 name = `str_z21` ).
-    output->display( input = |Original str_zc: { str_zc }| ).
-    output->display( input = str_z23 name = `str_z23` ).
-    output->display( input = str_z24 name = `str_z24` ).
-    output->display( input = str_z25 name = `str_z25` ).
-    output->display( input = str_zc name = `str_zc` ).
-    output->display( input = itab_z name = `itab_z` ).
-    output->display( input = |Number of replacements in itab (cnt_z26): { cnt_z26 }| ).
+    out->write( data = |Original str_z: { str_z }\n| ).
+    out->write( |\n| ).
+    out->write( data = str_z1 name = `str_z1` ).
+    out->write( |\n| ).
+    out->write( data = str_z2 name = `str_z2` ).
+    out->write( |\n| ).
+    out->write( data = str_z3 name = `str_z3` ).
+    out->write( |\n| ).
+    out->write( data = str_z4 name = `str_z4` ).
+    out->write( |\n| ).
+    out->write( data = str_z5 name = `str_z5` ).
+    out->write( |\n| ).
+    out->write( data = str_z6 name = `str_z6` ).
+    out->write( |\n| ).
+    out->write( data = str_z7 name = `str_z7` ).
+    out->write( |\n| ).
+    out->write( data = str_z8 name = `str_z8` ).
+    out->write( |\n| ).
+    out->write( data = str_z9 name = `str_z9` ).
+    out->write( |\n| ).
+    out->write( data = str_z10 name = `str_z10` ).
+    out->write( |\n| ).
+    out->write( data = str_z11 name = `str_z11` ).
+    out->write( |\n| ).
+    out->write( data = str_z12 name = `str_z12` ).
+    out->write( |\n| ).
+    out->write( data = str_z3 name = `str_z13` ).
+    out->write( |\n| ).
+    out->write( data = |Original str_zb: { str_zb }\n| ).
+    out->write( |\n| ).
+    out->write( data = str_z15 name = `str_z15` ).
+    out->write( |\n| ).
+    out->write( data = str_z16 name = `str_z16` ).
+    out->write( |\n| ).
+    out->write( data = str_z17 name = `str_z17` ).
+    out->write( |\n| ).
+    out->write( data = str_z18 name = `str_z18` ).
+    out->write( |\n| ).
+    out->write( data = str_z19 name = `str_z19` ).
+    out->write( |\n| ).
+    out->write( data = str_z20 name = `str_z20` ).
+    out->write( |\n| ).
+    out->write( data = str_z21 name = `str_z21` ).
+    out->write( |\n| ).
+    out->write( data = |Original str_zc: { str_zc }\n| ).
+    out->write( |\n| ).
+    out->write( data = str_z23 name = `str_z23` ).
+    out->write( |\n| ).
+    out->write( data = str_z24 name = `str_z24` ).
+    out->write( |\n| ).
+    out->write( data = str_z25 name = `str_z25` ).
+    out->write( |\n| ).
+    out->write( data = str_zc name = `str_zc` ).
+    out->write( |\n| ).
+    out->write( data = itab_z name = `itab_z` ).
+    out->write( |\n| ).
+    out->write( data = |Number of replacements in itab (cnt_z26): { cnt_z26 }| ).
 
 ***********************************************************************
 
-    output->next_section( `27) Excursion: System Classes for Regular Expressions` ).
+    out->write( zcl_demo_abap_aux=>heading( `27) Excursion: System Classes for Regular Expressions` ) ).
 
     "Searching for all occurrences
     DATA(some_string) = `a1 # B2 ? cd . E3`.
@@ -1729,13 +1955,15 @@ CLASS ZCL_DEMO_ABAP_STRING_PROC IMPLEMENTATION.
     "In the example, result has the type match_result_tab containing the findings.
     DATA(result1) = matcher_1->find_all( ).
 
-    output->display( input = result1 name = `result1` ).
+    out->write( data = result1 name = `result1` ).
+    out->write( |\n| ).
 
     "You can also use method chaining to save lines of code
     DATA(result2) = cl_abap_regex=>create_pcre( pattern = `\s\w`       "any blank followed by any word character
                                                 ignore_case = abap_true )->create_matcher( text = some_string )->find_all( ).
 
-    output->display( input = result2 name = `result2` ).
+    out->write( data = result2 name = `result2` ).
+    out->write( |\n| ).
 
     "Retrieving submatches using the 'get_submatch' method
     DATA str_tab_reg_find TYPE string_table.
@@ -1753,7 +1981,7 @@ CLASS ZCL_DEMO_ABAP_STRING_PROC IMPLEMENTATION.
       ENDDO.
     ENDIF.
 
-    output->display( input = str_tab_reg_find name = `str_tab_reg_find` ).
+    out->write( data = str_tab_reg_find name = `str_tab_reg_find` ).
 
   ENDMETHOD.
 ENDCLASS.

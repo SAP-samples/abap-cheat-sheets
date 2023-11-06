@@ -61,29 +61,27 @@ CLASS ZCL_DEMO_ABAP_SQL_GROUP_BY IMPLEMENTATION.
 
   METHOD class_constructor.
     "Fill demo database tables.
-    zcl_demo_abap_flight_tables=>fill_dbtabs( ).
+    zcl_demo_abap_aux=>fill_dbtabs( ).
   ENDMETHOD.
 
 
   METHOD if_oo_adt_classrun~main.
 
-    DATA(output) = NEW zcl_demo_abap_display( out ).
-
-    output->display( `ABAP Cheat Sheet Example: Grouping Internal Tables` ).
+    out->write( |ABAP Cheat Sheet Example: Grouping Internal Tables\n\n| ).
 
     SELECT *
            FROM zdemo_abap_flsch
            INTO TABLE @DATA(fli_tab).
 
-    output->display( `1) Representative Binding` ).
-    output->display( `1a) Grouping by one column` ).
+    out->write( |1) Representative Binding\n| ).
+    out->write( |1a) Grouping by one column\n| ).
 
     LOOP AT fli_tab INTO wa
                       GROUP BY wa-carrid.
-      output->display( wa-carrid ).
+      out->write( wa-carrid ).
     ENDLOOP.
 
-    output->next_section( `1b) Members of one column groups` ).
+    out->write( zcl_demo_abap_aux=>heading( `1b) Members of one column groups` ) ).
 
     LOOP AT fli_tab INTO wa
                       GROUP BY wa-carrid.
@@ -92,18 +90,20 @@ CLASS ZCL_DEMO_ABAP_SQL_GROUP_BY IMPLEMENTATION.
         members = VALUE #( BASE members ( member ) ).
       ENDLOOP.
 
-      output->display( members ).
+      out->write( members ).
+      out->write( |\n| ).
     ENDLOOP.
 
-    output->next_section( `1c) Grouping by two columns` ).
+    out->write( zcl_demo_abap_aux=>heading( `1c) Grouping by two columns` ) ).
 
     LOOP AT fli_tab INTO wa
                       GROUP BY ( key1 = wa-carrid key2 = wa-airpfrom ).
 
-     output->display( |{ wa-carrid } { wa-airpfrom }| ).
+     out->write( |{ wa-carrid } { wa-airpfrom }| ).
+     out->write( |\n| ).
     ENDLOOP.
 
-    output->next_section( `1d) Members of two column groups` ).
+    out->write( zcl_demo_abap_aux=>heading( `1d) Members of two column groups` ) ).
 
     LOOP AT fli_tab INTO wa
                       GROUP BY ( key1 = wa-carrid key2 = wa-airpfrom ).
@@ -112,20 +112,22 @@ CLASS ZCL_DEMO_ABAP_SQL_GROUP_BY IMPLEMENTATION.
         members = VALUE #( BASE members ( member ) ).
       ENDLOOP.
 
-      output->display( members ).
+      out->write( members ).
+      out->write( |\n| ).
     ENDLOOP.
 
-    output->next_section( `2) Group Key Binding` ).
-    output->display( `2a) Grouping by one column` ).
+    out->write( zcl_demo_abap_aux=>heading( `2) Group Key Binding` ) ).
+    out->write( |2a) Grouping by one column\n| ).
 
     LOOP AT fli_tab INTO wa
                       GROUP BY wa-carrid
                       INTO DATA(key).
 
-      output->display( key ).
+      out->write( key ).
+      out->write( |\n| ).
     ENDLOOP.
 
-    output->next_section( `2b) Members of one column groups` ).
+    out->write( zcl_demo_abap_aux=>heading( `2b) Members of one column groups` ) ).
 
     LOOP AT fli_tab INTO wa
                       GROUP BY wa-carrid
@@ -135,19 +137,21 @@ CLASS ZCL_DEMO_ABAP_SQL_GROUP_BY IMPLEMENTATION.
         members = VALUE #( BASE members ( member ) ).
       ENDLOOP.
 
-      output->display( members ).
+      out->write( members ).
+      out->write( |\n| ).
     ENDLOOP.
 
-    output->next_section( `2c) Grouping by two columns` ).
+    out->write( zcl_demo_abap_aux=>heading( `2c) Grouping by two columns` ) ).
 
     LOOP AT fli_tab INTO wa
                       GROUP BY ( key1 = wa-carrid key2 = wa-airpfrom )
                       INTO DATA(keys).
 
-      output->display( keys ).
+      out->write( keys ).
+      out->write( |\n| ).
     ENDLOOP.
 
-    output->next_section( `2d) Members of two column groups` ).
+    out->write( zcl_demo_abap_aux=>heading( `2d) Members of two column groups` ) ).
 
     LOOP AT fli_tab INTO wa
                       GROUP BY ( key1 = wa-carrid key2 = wa-airpfrom )
@@ -157,10 +161,11 @@ CLASS ZCL_DEMO_ABAP_SQL_GROUP_BY IMPLEMENTATION.
         members = VALUE #( BASE members ( member ) ).
       ENDLOOP.
 
-      output->display( members ).
+      out->write( members ).
+      out->write( |\n| ).
     ENDLOOP.
 
-    output->next_section( `2e) Two column groups without members` ).
+    out->write( zcl_demo_abap_aux=>heading( `2e) Two column groups without members` ) ).
 
     LOOP AT fli_tab INTO wa
                       GROUP BY ( key1 = wa-carrid key2 = wa-airpfrom
@@ -168,7 +173,8 @@ CLASS ZCL_DEMO_ABAP_SQL_GROUP_BY IMPLEMENTATION.
                       WITHOUT MEMBERS
                       INTO DATA(keysplus).
 
-      output->display( keysplus ).
+      out->write( keysplus ).
+      out->write( |\n| ).
     ENDLOOP.
 
   ENDMETHOD.

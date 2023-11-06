@@ -13,8 +13,8 @@
 *      fairly simple. AMDP is not needed in simple cases like these.
 *    - The example is primarily intended for ABAP Cloud.
 *      For example, in ABAP Cloud only read-only operations are possible.
-*      In general, there are more syntax options available in classic 
-*      ABAP. Check the ABAP Keyword Documentation for more details and 
+*      In general, there are more syntax options available in classic
+*      ABAP. Check the ABAP Keyword Documentation for more details and
 *      examples.
 *
 * ----------------------- GETTING STARTED -----------------------------
@@ -150,12 +150,12 @@ ENDCLASS.
 
 
 
-CLASS zcl_demo_abap_amdp IMPLEMENTATION.
+CLASS ZCL_DEMO_ABAP_AMDP IMPLEMENTATION.
 
 
   METHOD class_constructor.
     "Filling demo database tables.
-    zcl_demo_abap_flight_tables=>fill_dbtabs( ).
+    zcl_demo_abap_aux=>fill_dbtabs( ).
   ENDMETHOD.
 
 
@@ -253,11 +253,9 @@ CLASS zcl_demo_abap_amdp IMPLEMENTATION.
 
   METHOD if_oo_adt_classrun~main.
 
-    DATA(output) = NEW zcl_demo_abap_display( out ).
+    out->write( `ABAP Cheat Sheet Example: ABAP AMDP` ).
 
-    output->display( `ABAP Cheat Sheet Example: ABAP AMDP` ).
-
-    output->display( `1) AMDP procedure` ).
+    out->write( |\n1) AMDP Procedure\n\n| ).
 
     "Declaring an internal table to store the data that are
     "returned by the following method.
@@ -272,11 +270,11 @@ CLASS zcl_demo_abap_amdp IMPLEMENTATION.
     NEW zcl_demo_abap_amdp( )->select_carriers(
       IMPORTING carr_tab = amdp_proc_res ).
 
-    output->display( input = amdp_proc_res name = `amdp_proc_res` ).
+    out->write( data = amdp_proc_res name = `amdp_proc_res` ).
 
 **********************************************************************
 
-    output->next_section( `2) Calling an AMDP Procedure from SQLScript` ).
+    out->write( zcl_demo_abap_aux=>heading( `2) Calling an AMDP Procedure from SQLScript` ) ).
 
     "As can be seen in the method implementation part, this AMDP procedure
     "includes an AMDP procedure call from SQLScript.
@@ -290,16 +288,16 @@ CLASS zcl_demo_abap_amdp IMPLEMENTATION.
 
       CATCH cx_amdp_execution_error INTO DATA(error1).
 
-        output->display( error1->get_text( ) ).
+        out->write( error1->get_text( ) ).
 
     ENDTRY.
 
-    output->display( input = call_amdp_res name = `call_amdp_res` ).
+    out->write( data = call_amdp_res name = `call_amdp_res` ).
 
 
 **********************************************************************
 
-    output->next_section( `3) AMDP Table Function for AMDP Method` ).
+    out->write( zcl_demo_abap_aux=>heading( `3) AMDP Table Function for AMDP Method` ) ).
 
     "The AMDP procedure select_get_carr_fli calls the AMDP table function
     "get_carr_fli in the implementation part. AMDP table functions can
@@ -316,7 +314,7 @@ CLASS zcl_demo_abap_amdp IMPLEMENTATION.
 
     ENDTRY.
 
-    output->display( input = amdp_tab_func name = `amdp_tab_func` ).
+    out->write( data = amdp_tab_func name = `amdp_tab_func` ).
 
     "Note: When commented in, the following code results in a runtime
     "error since you cannot call an AMDP function in ABAP directly.
@@ -325,8 +323,7 @@ CLASS zcl_demo_abap_amdp IMPLEMENTATION.
 
 **********************************************************************
 
-    output->next_section( `4) AMDP Table Function for CDS Table Function` ).
-
+    out->write( zcl_demo_abap_aux=>heading( `4) AMDP Table Function for CDS Table Function` ) ).
 
     "The example demonstrates that a CDS table function can be used as a
     "data source of ABAP SQL read statements.
@@ -343,7 +340,7 @@ CLASS zcl_demo_abap_amdp IMPLEMENTATION.
     SELECT * FROM zdemo_abap_table_function
       INTO TABLE @DATA(cds_tab_func).
 
-    output->display( input = cds_tab_func name = `cds_tab_func` ).
+    out->write( data = cds_tab_func name = `cds_tab_func` ).
 
   ENDMETHOD.
 

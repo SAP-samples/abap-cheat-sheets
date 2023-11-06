@@ -49,7 +49,7 @@ CLASS zcl_demo_abap_structures DEFINITION
 
     CLASS-METHODS: class_constructor.
 
-protected section.
+  PROTECTED SECTION.
   PRIVATE SECTION.
     "Creating structured data types
     TYPES: "Flat structure
@@ -109,14 +109,14 @@ ENDCLASS.
 
 
 
-CLASS ZCL_DEMO_ABAP_STRUCTURES IMPLEMENTATION.
+CLASS zcl_demo_abap_structures IMPLEMENTATION.
 
 
   METHOD class_constructor.
     initialize_dbtabs( ).
     fill_deep_structures( ).
     "Filling demo database tables.
-    zcl_demo_abap_flight_tables=>fill_dbtabs( ).
+    zcl_demo_abap_aux=>fill_dbtabs( ).
   ENDMETHOD.
 
 
@@ -146,13 +146,11 @@ CLASS ZCL_DEMO_ABAP_STRUCTURES IMPLEMENTATION.
 
   METHOD if_oo_adt_classrun~main.
 
-    DATA(output) = NEW zcl_demo_abap_display( out ).
-
-    output->display( `ABAP Cheat Sheet Example: Structures` ).
+    out->write( |ABAP Cheat Sheet Example: Structures\n\n| ).
 
 **********************************************************************
 
-    output->display( `1) Creating structures and structured types` ).
+    out->write( |1) Creating structures and structured types\n| ).
 
     "The following declarations are just included for demonstration purposes
     "to show how declarations of local structures and structured
@@ -215,12 +213,12 @@ CLASS ZCL_DEMO_ABAP_STRUCTURES IMPLEMENTATION.
     "Declaring structure inline and populating it using the VALUE operator
     DATA(struc_inl2) = VALUE lty_struc( num1 = 1 num2 = 2 ).
 
-    output->display( `No output for this section. See the code.` ).
+    out->write( `No output for this section. See the code.` ).
 
 **********************************************************************
 
-    output->next_section( `Variants of structures` ).
-    output->display( `2) Flat structure with default values` ).
+    out->write( zcl_demo_abap_aux=>heading( `Variants of structures` ) ).
+    out->write( |2) Flat structure with default values\n\n| ).
 
     "Flat structures only contain elementary data types
 
@@ -233,11 +231,11 @@ CLASS ZCL_DEMO_ABAP_STRUCTURES IMPLEMENTATION.
             pnum  TYPE p LENGTH 8 DECIMALS 2 VALUE '123.45',
           END OF ls_flat.
 
-    output->display( input = ls_flat name = `ls_flat` ).
+    out->write( data = ls_flat name = `ls_flat` ).
 
 **********************************************************************
 
-    output->next_section( `3) Nested structure` ).
+    out->write( zcl_demo_abap_aux=>heading( `3) Nested structure` ) ).
 
     "Nested structures contain at least one structure as component
 
@@ -258,11 +256,11 @@ CLASS ZCL_DEMO_ABAP_STRUCTURES IMPLEMENTATION.
             END OF city,
           END OF ls_nested_address.
 
-    output->display( input = ls_nested_address name = `ls_nested_address` ).
+    out->write( data = ls_nested_address name = `ls_nested_address` ).
 
 **********************************************************************
 
-    output->next_section( `4) Deep structure with strings` ).
+    out->write( zcl_demo_abap_aux=>heading( `4) Deep structure with strings` ) ).
 
     "Deep structures contain at least one deep component, for
     "example, internal tables, strings.
@@ -274,11 +272,11 @@ CLASS ZCL_DEMO_ABAP_STRUCTURES IMPLEMENTATION.
             city   TYPE string VALUE `349875 Botanica`,
           END OF ls_flat_address.
 
-    output->display( input = ls_flat_address name = `ls_flat_address` ).
+    out->write( data = ls_flat_address name = `ls_flat_address` ).
 
 **********************************************************************
 
-    output->next_section( `5) Deep structure with internal table as component` ).
+    out->write( zcl_demo_abap_aux=>heading( `5) Deep structure with internal table as component` ) ).
 
     "Structured type for nested internal table
     TYPES: BEGIN OF lty_flights,
@@ -305,13 +303,12 @@ CLASS ZCL_DEMO_ABAP_STRUCTURES IMPLEMENTATION.
       INTO CORRESPONDING FIELDS OF TABLE @ls_flights-lt_flights
       UP TO 4 ROWS.
 
-    output->display( input = ls_flights name = `ls_flights` ).
+    out->write( data = ls_flights name = `ls_flights` ).
 
 **********************************************************************
 
-    output->next_section( `Accessing and populating structures` ).
-    output->display( `6) Populating structure components` &&
-   ` using the component selector` ).
+    out->write( zcl_demo_abap_aux=>heading( `Accessing and populating structures` ) ).
+    out->write( |6) Populating structure components using the component selector\n\n| ).
 
     gs_struc-num1  = 1.
     gs_struc-num2  = 2.
@@ -319,12 +316,12 @@ CLASS ZCL_DEMO_ABAP_STRUCTURES IMPLEMENTATION.
     gs_struc-char2 = 'bbb'.
     gs_struc-pnum  = '333.33'.
 
-    output->display( input = gs_struc name = `gs_struc` ).
+    out->write( data = gs_struc name = `gs_struc` ).
 
 **********************************************************************
 
-    output->next_section( `7) Populating structure components ` &&
-    `using the VALUE operator` ).
+    out->write( zcl_demo_abap_aux=>heading( `7) Populating structure components ` &&
+    `using the VALUE operator` ) ).
 
     "Value assignments by addressing the structure components individually
     "can be very bulky. Hence, the use of the VALUE operator is
@@ -368,14 +365,16 @@ CLASS ZCL_DEMO_ABAP_STRUCTURES IMPLEMENTATION.
                                   cityto    = 'New York'
                                   airpto    = 'JFK' ) ) ).
 
-    output->display( input = gs_struc name = `gs_struc` ).
-    output->display( input = ls_nested_address name = `ls_nested_address` ).
-    output->display( input = ls_flights name = `ls_flights` ).
+    out->write( data = gs_struc name = `gs_struc` ).
+    out->write( |\n| ).
+    out->write( data = ls_nested_address name = `ls_nested_address` ).
+    out->write( |\n| ).
+    out->write( data = ls_flights name = `ls_flights` ).
 
 **********************************************************************
 
-    output->next_section( `8) Creating and populating a new structure ` &&
-    `using the VALUE operator` ).
+    out->write( zcl_demo_abap_aux=>heading( `8) Creating and populating a new structure ` &&
+    `using the VALUE operator` ) ).
 
     "In the example below in which a new structure is created by declaring
     "a variable inline the '#' sign cannot be used before the parentheses
@@ -388,12 +387,12 @@ CLASS ZCL_DEMO_ABAP_STRUCTURES IMPLEMENTATION.
                                      char2 = 'hhh'
                                      pnum  = '555.55' ).
 
-    output->display( input = ls_copy name = `ls_copy` ).
+    out->write( data = ls_copy name = `ls_copy` ).
 
 **********************************************************************
 
-    output->next_section( `9) Accessing individual components using the ` &&
-    `component selector` ).
+    out->write( zcl_demo_abap_aux=>heading( `9) Accessing individual components using the ` &&
+    `component selector` ) ).
 
     "Assigning value of individual component to a variable
     DATA(lv_copy) = gs_struc-num1.
@@ -405,14 +404,16 @@ CLASS ZCL_DEMO_ABAP_STRUCTURES IMPLEMENTATION.
     "The table line is determined using a table expression.
     ls_flights-lt_flights[ 1 ]-cityto = 'San Fran'.
 
-    output->display( input = lv_copy name = `lv_copy` ).
-    output->display( input = ls_nested_address-name-first_name name = `ls_nested_address-name-first_name` ).
-    output->display( input = ls_flights-lt_flights[ 1 ]-cityto name = `ls_flights-lt_flights[ 1 ]-cityto` ).
+    out->write( data = lv_copy name = `lv_copy` ).
+    out->write( |\n| ).
+    out->write( data = ls_nested_address-name-first_name name = `ls_nested_address-name-first_name` ).
+    out->write( |\n| ).
+    out->write( data = ls_flights-lt_flights[ 1 ]-cityto name = `ls_flights-lt_flights[ 1 ]-cityto` ).
 
 **********************************************************************
 
-    output->next_section( `10) Excursion: Addressing components of a variable` &&
-    ` referring to a structure ` ).
+    out->write( zcl_demo_abap_aux=>heading( `10) Excursion: Addressing components of a variable` &&
+    ` referring to a structure ` ) ).
 
     "Creating a data reference variable.
     DATA(ref) = NEW gty_struc( ).
@@ -426,13 +427,14 @@ CLASS ZCL_DEMO_ABAP_STRUCTURES IMPLEMENTATION.
     "The following syntax is also possible but less comfortable.
     DATA(ref_comp2) = ref->*-char2.
 
-    output->display( input = ref_comp1 name = `ref_comp1` ).
-    output->display( input = ref_comp2 name = `ref_comp2` ).
+    out->write( data = ref_comp1 name = `ref_comp1` ).
+    out->write( |\n| ).
+    out->write( data = ref_comp2 name = `ref_comp2` ).
 
 **********************************************************************
 
-    output->next_section( `11) Using structure components for ` &&
-    `data type and data object declarations` ).
+    out->write( zcl_demo_abap_aux=>heading( `11) Using structure components for ` &&
+    `data type and data object declarations` ) ).
 
     TYPES: lty_1 TYPE gty_struc-num1,
            lty_2 LIKE gs_struc-num2.
@@ -440,13 +442,14 @@ CLASS ZCL_DEMO_ABAP_STRUCTURES IMPLEMENTATION.
     DATA: lv_num1 TYPE gty_struc-num1 VALUE 123,
           lv_num2 LIKE gs_struc-num2 VALUE 456.
 
-    output->display( input = lv_num1 name = `lv_num1` ).
-    output->display( input = lv_num2 name = `lv_num2` ).
+    out->write( data = lv_num1 name = `lv_num1` ).
+    out->write( |\n| ).
+    out->write( data = lv_num2 name = `lv_num2` ).
 
 **********************************************************************
 
-    output->next_section( `12) Copying content of a structure to another ` &&
-    ` that has the same type using the assignment operator` ).
+    out->write( zcl_demo_abap_aux=>heading( `12) Copying content of a structure to another ` &&
+    ` that has the same type using the assignment operator` ) ).
 
     "Note: In the case below, a MOVE-CORRESPONDING statement as shown
     "further down would have the same effect:
@@ -456,13 +459,13 @@ CLASS ZCL_DEMO_ABAP_STRUCTURES IMPLEMENTATION.
 
     gs_struc_2 = gs_struc.
 
-    output->display( input = gs_struc_2 name = `gs_struc_2` ).
+    out->write( data = gs_struc_2 name = `gs_struc_2` ).
 
 **********************************************************************
 
-    output->next_section( `13) Copying content of a structure to another` &&
+    out->write( zcl_demo_abap_aux=>heading( `13) Copying content of a structure to another` &&
     ` that has an incompatible type using` &&
-    ` MOVE-CORRESPONDING statemtns and the CORRESPONDING operator` ).
+    ` MOVE-CORRESPONDING statemtns and the CORRESPONDING operator` ) ).
 
     "Both statements with MOVE-CORRESPONDING and the CORRESPONDING
     "operator are used to assign identically named components of
@@ -486,9 +489,11 @@ CLASS ZCL_DEMO_ABAP_STRUCTURES IMPLEMENTATION.
     DATA(gs_struc_diff4) = gs_struc_diff.
     DATA(gs_struc_diff5) = gs_struc_diff.
 
-    output->display( `Original content of structures:` ).
-    output->display( input = gs_struc name = `gs_struc` ).
-    output->display( input = gs_struc_diff name = `gs_struc_diff` ).
+    out->write( |Original content of structures:\n\n| ).
+    out->write( data = gs_struc name = `gs_struc` ).
+    out->write( |\n| ).
+    out->write( data = gs_struc_diff name = `gs_struc_diff` ).
+    out->write( |\n| ).
 
     "Identically named components are moved...
     "... and the content in nonidentical components of the target
@@ -514,28 +519,33 @@ CLASS ZCL_DEMO_ABAP_STRUCTURES IMPLEMENTATION.
     gs_struc_diff5 = CORRESPONDING #( BASE ( gs_struc_diff5 )
                                       gs_struc EXCEPT num2 ).
 
-    output->display( `Results of statements:` ).
-    output->display( input = gs_struc_diff name = `gs_struc_diff` ).
-    output->display( input = gs_struc_diff2 name = `gs_struc_diff2` ).
-    output->display( input = gs_struc_diff3 name = `gs_struc_diff3` ).
-    output->display( input = gs_struc_diff4 name = `gs_struc_diff4` ).
-    output->display( input = gs_struc_diff5 name = `gs_struc_diff5` ).
+    out->write( |Results of statements:\n\n| ).
+    out->write( data = gs_struc_diff name = `gs_struc_diff` ).
+    out->write( |\n| ).
+    out->write( data = gs_struc_diff2 name = `gs_struc_diff2` ).
+    out->write( |\n| ).
+    out->write( data = gs_struc_diff3 name = `gs_struc_diff3` ).
+    out->write( |\n| ).
+    out->write( data = gs_struc_diff4 name = `gs_struc_diff4` ).
+    out->write( |\n| ).
+    out->write( data = gs_struc_diff5 name = `gs_struc_diff5` ).
 
 **********************************************************************
 
-    output->next_section( `14) Copying content of a deep ` &&
-    `structure to another` ).
-    output->display( 'Original content of deep structures:' ).
+    out->write( zcl_demo_abap_aux=>heading( `14) Copying content of a deep ` &&
+    `structure to another` ) ).
+    out->write( |Original content of deep structures:\n\n| ).
 
     "Note: The example purposely uses non-fitting components
     "to emphasize conversion and assignment rules.
 
-    output->display( input = gs_deep1 name = `gs_deep1` ).
-    output->display( input = gs_deep2 name = `gs_deep2` ).
+    out->write( data = gs_deep1 name = `gs_deep1` ).
+    out->write( |\n| ).
+    out->write( data = gs_deep2 name = `gs_deep2` ).
 
 **********************************************************************
 
-    output->next_section( `15) MOVE-CORRESPONDING without additions` ).
+    out->write( zcl_demo_abap_aux=>heading( `15) MOVE-CORRESPONDING without additions` ) ).
 
     "Notes on the result:
     "- Existing content of identically named components is replaced.
@@ -553,14 +563,14 @@ CLASS ZCL_DEMO_ABAP_STRUCTURES IMPLEMENTATION.
 
     MOVE-CORRESPONDING gs_deep1 TO gs_deep2.
 
-    output->display( input = gs_deep2 name = `gs_deep2` ).
+    out->write( data = gs_deep2 name = `gs_deep2` ).
 
     fill_deep_structures( ).
 
 **********************************************************************
 
-    output->next_section( `16) MOVE-CORRESPONDING with the ` &&
-    `EXPANDING NESTED TABLES addition` ).
+    out->write( zcl_demo_abap_aux=>heading( `16) MOVE-CORRESPONDING with the ` &&
+    `EXPANDING NESTED TABLES addition` ) ).
 
     "Notes on the result:
     "- Existing content of identically named components is replaced.
@@ -575,14 +585,14 @@ CLASS ZCL_DEMO_ABAP_STRUCTURES IMPLEMENTATION.
 
     MOVE-CORRESPONDING gs_deep1 TO gs_deep2 EXPANDING NESTED TABLES.
 
-    output->display( input = gs_deep2 name = `gs_deep2` ).
+    out->write( data = gs_deep2 name = `gs_deep2` ).
 
     fill_deep_structures( ).
 
 **********************************************************************
 
-    output->next_section( `17) MOVE-CORRESPONDING with the` &&
-    ` KEEPING TARGET LINES addition` ).
+    out->write( zcl_demo_abap_aux=>heading( `17) MOVE-CORRESPONDING with the` &&
+    ` KEEPING TARGET LINES addition` ) ).
 
     "Notes on the result:
     "- Existing content of identically named components is replaced.
@@ -599,14 +609,14 @@ CLASS ZCL_DEMO_ABAP_STRUCTURES IMPLEMENTATION.
 
     MOVE-CORRESPONDING gs_deep1 TO gs_deep2 KEEPING TARGET LINES.
 
-    output->display( input = gs_deep2 name = `gs_deep2` ).
+    out->write( data = gs_deep2 name = `gs_deep2` ).
 
     fill_deep_structures( ).
 
 **********************************************************************
 
-    output->next_section( `18) MOVE-CORRESPONDING with the ` &&
-    `EXPANDING NESTED TABLES KEEPING TARGET LINES addition` ).
+    out->write( zcl_demo_abap_aux=>heading( `18) MOVE-CORRESPONDING with the ` &&
+    `EXPANDING NESTED TABLES KEEPING TARGET LINES addition` ) ).
 
     "Notes on the result:
     "- Existing content of identically named components is replaced.
@@ -624,13 +634,13 @@ CLASS ZCL_DEMO_ABAP_STRUCTURES IMPLEMENTATION.
     MOVE-CORRESPONDING gs_deep1 TO gs_deep2
       EXPANDING NESTED TABLES KEEPING TARGET LINES.
 
-    output->display( input = gs_deep2 name = `gs_deep2` ).
+    out->write( data = gs_deep2 name = `gs_deep2` ).
 
     fill_deep_structures( ).
 
 **********************************************************************
 
-    output->next_section( `19) CORRESPONDING operator without additions` ).
+    out->write( zcl_demo_abap_aux=>heading( `19) CORRESPONDING operator without additions` ) ).
 
     "Notes on the result:
     "- Existing content of identically named components is replaced.
@@ -645,14 +655,14 @@ CLASS ZCL_DEMO_ABAP_STRUCTURES IMPLEMENTATION.
 
     gs_deep2 = CORRESPONDING #( gs_deep1 ).
 
-    output->display( input = gs_deep2 name = `gs_deep2` ).
+    out->write( data = gs_deep2 name = `gs_deep2` ).
 
     fill_deep_structures( ).
 
 **********************************************************************
 
-    output->next_section( `20) CORRESPONDING operator with the` &&
-    ` DEEP addition` ).
+    out->write( zcl_demo_abap_aux=>heading( `20) CORRESPONDING operator with the` &&
+    ` DEEP addition` ) ).
 
     "Notes on the result:
     "- Existing content of identically named components is replaced.
@@ -667,14 +677,14 @@ CLASS ZCL_DEMO_ABAP_STRUCTURES IMPLEMENTATION.
 
     gs_deep2 = CORRESPONDING #( DEEP gs_deep1 ).
 
-    output->display( input = gs_deep2 name = `gs_deep2` ).
+    out->write( data = gs_deep2 name = `gs_deep2` ).
 
     fill_deep_structures( ).
 
 **********************************************************************
 
-    output->next_section( `21) CORRESPONDING operator with the` &&
-    ` BASE addition` ).
+    out->write( zcl_demo_abap_aux=>heading( `21) CORRESPONDING operator with the` &&
+    ` BASE addition` ) ).
 
     "Notes on the result:
     "- Existing content of identically named components is replaced.
@@ -691,14 +701,14 @@ CLASS ZCL_DEMO_ABAP_STRUCTURES IMPLEMENTATION.
 
     gs_deep2 = CORRESPONDING #( BASE ( gs_deep2 ) gs_deep1 ).
 
-    output->display( input = gs_deep2 name = `gs_deep2` ).
+    out->write( data = gs_deep2 name = `gs_deep2` ).
 
     fill_deep_structures( ).
 
 **********************************************************************
 
-    output->next_section( `22) CORRESPONDING operator with the ` &&
-    `DEEP BASE addition` ).
+    out->write( zcl_demo_abap_aux=>heading( `22) CORRESPONDING operator with the ` &&
+    `DEEP BASE addition` ) ).
 
     "Notes on the result:
     "- Existing content of identically named components is replaced.
@@ -714,14 +724,14 @@ CLASS ZCL_DEMO_ABAP_STRUCTURES IMPLEMENTATION.
 
     gs_deep2 = CORRESPONDING #( DEEP BASE ( gs_deep2 ) gs_deep1 ).
 
-    output->display( input = gs_deep2 name = `gs_deep2` ).
+    out->write( data = gs_deep2 name = `gs_deep2` ).
 
     fill_deep_structures( ).
 
 **********************************************************************
 
-    output->next_section( `23) CORRESPONDING operator with the ` &&
-    `APPENDING addition` ).
+    out->write( zcl_demo_abap_aux=>heading( `23) CORRESPONDING operator with the ` &&
+    `APPENDING addition` ) ).
 
     "Notes on the result:
     "- Existing content of identically named components is replaced.
@@ -738,14 +748,14 @@ CLASS ZCL_DEMO_ABAP_STRUCTURES IMPLEMENTATION.
 
     gs_deep2 = CORRESPONDING #( APPENDING ( gs_deep2 ) gs_deep1 ).
 
-    output->display( input = gs_deep2 name = `gs_deep2` ).
+    out->write( data = gs_deep2 name = `gs_deep2` ).
 
     fill_deep_structures( ).
 
 **********************************************************************
 
-    output->next_section( `24) CORRESPONDING operator with the ` &&
-    `DEEP APPENDING addition` ).
+    out->write( zcl_demo_abap_aux=>heading( `24) CORRESPONDING operator with the ` &&
+    `DEEP APPENDING addition` ) ).
 
     "Notes on the result:
     "- Existing content of identically named components is replaced.
@@ -763,29 +773,29 @@ CLASS ZCL_DEMO_ABAP_STRUCTURES IMPLEMENTATION.
     gs_deep2 = CORRESPONDING #( DEEP APPENDING ( gs_deep2 )
                                 gs_deep1 ).
 
-    output->display( input = gs_deep2 name = `gs_deep2` ).
+    out->write( data = gs_deep2 name = `gs_deep2` ).
 
 **********************************************************************
 
-    output->next_section( `25) Clearing individual components of a ` &&
-    `structure and the complete structure` ).
+    out->write( zcl_demo_abap_aux=>heading( `25) Clearing individual components of a ` &&
+    `structure and the complete structure` ) ).
 
     "Clearing individual component
     CLEAR gs_struc-char1.
 
-    output->display( input = gs_struc name = `gs_struc` ).
+    out->write( data = gs_struc name = `gs_struc` ).
+    out->write( |\n| ).
 
     "Clearing the whole structure
     CLEAR gs_struc.
 
-    output->display( input = gs_struc name = `gs_struc` ).
+    out->write( data = gs_struc name = `gs_struc` ).
 
 **********************************************************************
 
-    output->next_section( `Processing structures` ).
-    output->display( `Reading a row from a database table into a ` &&
-    `structure ...` ).
-    output->display( `26) ... that has a compatible type` ).
+    out->write( zcl_demo_abap_aux=>heading( `Processing structures` ) ).
+    out->write( |Reading a row from a database table into a structure ...\n\n| ).
+    out->write( |26) ... that has a compatible type\n\n| ).
 
     "The first entry that is found according to the WHERE condition is
     "returned. Instead of creating a structure having a compatible type,
@@ -803,12 +813,13 @@ CLASS ZCL_DEMO_ABAP_STRUCTURES IMPLEMENTATION.
       WHERE carrid = 'LH' AND connid = '0400'
       INTO @DATA(ls_flsch2).
 
-    output->display( input = ls_flsch1 name = `ls_flsch1` ).
-    output->display( input = ls_flsch2 name = `ls_flsch2` ).
+    out->write( data = ls_flsch1 name = `ls_flsch1` ).
+    out->write( |\n| ).
+    out->write( data = ls_flsch2 name = `ls_flsch2` ).
 
 **********************************************************************
 
-    output->next_section( `27) ... that has a different type` ).
+    out->write( zcl_demo_abap_aux=>heading( `27) ... that has a different type` ) ).
 
     "Creating structure having a different type.
     DATA: BEGIN OF ls_fli_diff,
@@ -826,12 +837,12 @@ CLASS ZCL_DEMO_ABAP_STRUCTURES IMPLEMENTATION.
       WHERE carrid = 'JL' AND connid = '0408'
       INTO CORRESPONDING FIELDS OF @ls_fli_diff.
 
-    output->display( input = ls_fli_diff name = `ls_fli_diff` ).
+    out->write( data = ls_fli_diff name = `ls_fli_diff` ).
 
 **********************************************************************
 
-    output->next_section( `Reading a line from an internal table into a structure ...` ).
-    output->display( `28) ... using a SELECT statement` ).
+    out->write( zcl_demo_abap_aux=>heading( `Reading a line from an internal table into a structure ...` ) ).
+    out->write( |28) ... using a SELECT statement\n\n| ).
 
     "Creating and filling an internal table to be read from
     DATA itab TYPE TABLE OF zdemo_abap_flsch WITH EMPTY KEY.
@@ -847,11 +858,11 @@ CLASS ZCL_DEMO_ABAP_STRUCTURES IMPLEMENTATION.
       WHERE carrid = 'LH'
       INTO @DATA(ls_select_itab).
 
-    output->display( input = ls_select_itab name = `ls_select_itab` ).
+    out->write( data = ls_select_itab name = `ls_select_itab` ).
 
 **********************************************************************
 
-    output->next_section( `29) ... using a READ TABLE statement` ).
+    out->write( zcl_demo_abap_aux=>heading( `29) ... using a READ TABLE statement` ) ).
 
     "The example shows the reading of one line into a work area, field
     "symbol and a data reference variable, all representing structured
@@ -867,24 +878,26 @@ CLASS ZCL_DEMO_ABAP_STRUCTURES IMPLEMENTATION.
     "Reading into a data reference variable
     READ TABLE itab REFERENCE INTO DATA(dref) INDEX 3.
 
-    output->display( input = ls_read_table name = `ls_read_table` ).
-    output->display( input = <fs1> name = `<fs1>` ).
-    output->display( input = dref->* name = `dref->*` ).
+    out->write( data = ls_read_table name = `ls_read_table` ).
+    out->write( |\n| ).
+    out->write( data = <fs1> name = `<fs1>` ).
+    out->write( |\n| ).
+    out->write( data = dref->* name = `dref->*` ).
 
 **********************************************************************
 
-    output->next_section( `30) ... using a table expression` ).
+    out->write( zcl_demo_abap_aux=>heading( `30) ... using a table expression` ) ).
     "The line number, that is, the index, is specified in square
     "brackets.
 
     DATA(ls_table_exp) = itab[ 3 ].
 
-    output->display( input = ls_table_exp name = `ls_table_exp` ).
+    out->write( data = ls_table_exp name = `ls_table_exp` ).
 
 **********************************************************************
 
-    output->next_section( `Sequentially reading ...` ).
-    output->display( `31) ... a row from a database table into a structure` ).
+    out->write( zcl_demo_abap_aux=>heading( `Sequentially reading ...` ) ).
+    out->write( |31) ... a row from a database table into a structure\n\n| ).
 
     "In the given simple example, the line that is found and returned
     "in a structure, that is declared inline, is simply added to an
@@ -899,11 +912,11 @@ CLASS ZCL_DEMO_ABAP_STRUCTURES IMPLEMENTATION.
       ENDIF.
     ENDSELECT.
 
-    output->display( input = itab name = `itab` ).
+    out->write( data = itab name = `itab` ).
 
 **********************************************************************
 
-    output->next_section( `32) ... a line from an internal table into a structure` ).
+    out->write( zcl_demo_abap_aux=>heading( `32) ... a line from an internal table into a structure` ) ).
 
     "The given example covers the reading of a line into a field symbol.
     "Within the loop, a modification is carried out on a component
@@ -913,12 +926,12 @@ CLASS ZCL_DEMO_ABAP_STRUCTURES IMPLEMENTATION.
       <fs_loop>-carrid = 'XY'.
     ENDLOOP.
 
-    output->display( input = itab name = `itab` ).
+    out->write( data = itab name = `itab` ).
 
 **********************************************************************
 
-    output->next_section( `33) Inserting a single row ` &&
-    `into a database table from a structure` ).
+    out->write( zcl_demo_abap_aux=>heading( `33) Inserting a single row ` &&
+    `into a database table from a structure` ) ).
 
     "The statements in the given example can be considered as
     "alternatives. The third statement demonstrates that the structure
@@ -952,12 +965,12 @@ CLASS ZCL_DEMO_ABAP_STRUCTURES IMPLEMENTATION.
                                             num2      = 7 ) ).
 
     select_from_dbtab( ).
-    output->display( input = gt_tab name = `gt_tab` ).
+    out->write( data = gt_tab name = `gt_tab` ).
 
 **********************************************************************
 
-    output->next_section( `34) Updating a single row ` &&
-    `in a database table from a structure` ).
+    out->write( zcl_demo_abap_aux=>heading( `34) Updating a single row ` &&
+    `in a database table from a structure` ) ).
 
     ls_struc_db = VALUE #( key_field = 2
                            char1     = 'GGG'
@@ -974,13 +987,13 @@ CLASS ZCL_DEMO_ABAP_STRUCTURES IMPLEMENTATION.
                                             num2      = 11 ) ).
 
     select_from_dbtab( ).
-    output->display( input = gt_tab name = `gt_tab` ).
+    out->write( data = gt_tab name = `gt_tab` ).
 
 **********************************************************************
 
-    output->next_section( `35) Updating a single row ` &&
+    out->write( zcl_demo_abap_aux=>heading( `35) Updating a single row ` &&
     `in a database table from a structure without overwriting specific ` &&
-    `components` ).
+    `components` ) ).
 
     "If you want to update a database table row from a structure by
     "specifying components to be changed without overwriting other
@@ -997,12 +1010,12 @@ CLASS ZCL_DEMO_ABAP_STRUCTURES IMPLEMENTATION.
     UPDATE zdemo_abap_tab1 FROM @( VALUE #( BASE wa char2 = '###' ) ).
 
     select_from_dbtab( ).
-    output->display( input = gt_tab name = `gt_tab` ).
+    out->write( data = gt_tab name = `gt_tab` ).
 
 **********************************************************************
 
-    output->next_section( `36) Updating or creating a single` &&
-    ` row in a database table from a structure using MODIFY` ).
+    out->write( zcl_demo_abap_aux=>heading( `36) Updating or creating a single` &&
+    ` row in a database table from a structure using MODIFY` ) ).
 
     "You can update or create an individual row in a database table
     "from a structure using ABAP SQL statements with MODIFY. If a
@@ -1039,12 +1052,12 @@ CLASS ZCL_DEMO_ABAP_STRUCTURES IMPLEMENTATION.
                                             num2      = 17 ) ).
 
     select_from_dbtab( ).
-    output->display( input = gt_tab name = `gt_tab` ).
+    out->write( data = gt_tab name = `gt_tab` ).
 
 **********************************************************************
 
-    output->next_section( `36) Adding rows to and updating single rows` &&
-    ` in an internal table from a structure` ).
+    out->write( zcl_demo_abap_aux=>heading( `36) Adding rows to and updating single rows` &&
+    ` in an internal table from a structure` ) ).
 
     "INSERT and MODIFY are ABAP statements in this context, not ABAP SQL
     "statements. Both INSERT and APPEND add one line (or more) to an
@@ -1094,11 +1107,11 @@ CLASS ZCL_DEMO_ABAP_STRUCTURES IMPLEMENTATION.
                                       num1      = 28
                                       num2      = 29 ).
 
-    output->display( input = gt_tab name = `gt_tab` ).
+    out->write( data = gt_tab name = `gt_tab` ).
 
 **********************************************************************
 
-    output->next_section( `37) Including structures` ).
+    out->write( zcl_demo_abap_aux=>heading( `37) Including structures` ) ).
 
     "The example shows the inclusion of structured types and data
     "objects in another structure. First, three structured types as
@@ -1146,8 +1159,7 @@ CLASS ZCL_DEMO_ABAP_STRUCTURES IMPLEMENTATION.
     address-zipcode_city = `349875`.
     address-name_city = `Botanica`.
 
-    output->display( input = address name = `address` ).
-
+    out->write( data = address name = `address` ).
   ENDMETHOD.
 
 

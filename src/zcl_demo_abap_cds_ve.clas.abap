@@ -53,16 +53,18 @@ CLASS zcl_demo_abap_cds_ve DEFINITION
       if_oo_adt_classrun.
 
     CLASS-METHODS class_constructor.
+protected section.
+private section.
 ENDCLASS.
 
 
 
-CLASS zcl_demo_abap_cds_ve IMPLEMENTATION.
+CLASS ZCL_DEMO_ABAP_CDS_VE IMPLEMENTATION.
 
 
   METHOD class_constructor.
     "Filling demo database tables.
-    zcl_demo_abap_flight_tables=>fill_dbtabs( ).
+     zcl_demo_abap_aux=>fill_dbtabs( ).
 
     "Some more database table insertions for this particular example
     MODIFY zdemo_abap_carr FROM TABLE @( VALUE #(
@@ -98,12 +100,10 @@ CLASS zcl_demo_abap_cds_ve IMPLEMENTATION.
 
   METHOD if_oo_adt_classrun~main.
 
-    DATA(output) = NEW zcl_demo_abap_display( out ).
+    out->write( |ABAP Cheat Sheet Example: CDS view entities\n\n| ).
 
-    output->display( `ABAP Cheat Sheet Example: CDS view entities` ).
-
-    output->display( `1) Operands, expressions and built-in functions ` &&
-    `in a CDS view entity`  ).
+    out->write( `1) Operands, expressions and built-in functions ` &&
+    |in a CDS view entity\n\n|  ).
 
     "The following ABAP SQL SELECT statement uses a CDS view entity as
     "the data source. All data is retrieved. The sample CDS view entity
@@ -120,11 +120,11 @@ CLASS zcl_demo_abap_cds_ve IMPLEMENTATION.
       ORDER BY CarrierId
       INTO TABLE @DATA(select_from_cds).
 
-    output->display( input = select_from_cds name = `select_from_cds` ).
+    out->write( data = select_from_cds name = `select_from_cds` ).
 
 **********************************************************************
 
-    output->next_section( `2) Aggregate Expressions` ).
+    out->write( zcl_demo_abap_aux=>heading( `2) Aggregate Expressions` ) ).
 
     "The following ABAP SQL SELECT statement uses a CDS view entity as
     "the data source. All data is retrieved. The sample CDS view entity
@@ -135,11 +135,11 @@ CLASS zcl_demo_abap_cds_ve IMPLEMENTATION.
       ORDER BY carrid
       INTO TABLE @DATA(agg_expr).
 
-    output->display( input = agg_expr name = `agg_expr` ).
+    out->write( data = agg_expr name = `agg_expr` ).
 
 **********************************************************************
 
-    output->next_section( `3) Joins` ).
+    out->write( zcl_demo_abap_aux=>heading( `3) Joins` ) ).
 
     "The following ABAP SQL SELECT statement uses a CDS view entity as
     "the data source. All data is retrieved. The sample CDS view entity
@@ -155,11 +155,11 @@ CLASS zcl_demo_abap_cds_ve IMPLEMENTATION.
       ORDER BY carrid
       INTO TABLE @DATA(cds_joins).
 
-    output->display( input = cds_joins name = `cds_joins` ).
+    out->write( data = cds_joins name = `cds_joins` ).
 
 **********************************************************************
 
-    output->next_section( `4) Excursion: ABAP SQL and joins` ).
+    out->write( zcl_demo_abap_aux=>heading( `4) Excursion: ABAP SQL and joins` ) ).
 
     "The following ABAP SQL SELECT statements are intended to reproduce
     "the different joins that are performed by the CDS view entity.
@@ -172,7 +172,9 @@ CLASS zcl_demo_abap_cds_ve IMPLEMENTATION.
     "  contain the coalesce function and CASE expressions similar to the
     "  CDS view entity.
 
-    output->display( `---------- Inner join ----------` ).
+    out->write( `---------- Inner join ----------` ).
+    out->write( |\n| ).
+    out->write( |\n| ).
 
     SELECT _carr~carrid,
            _carr~carrname,
@@ -184,9 +186,12 @@ CLASS zcl_demo_abap_cds_ve IMPLEMENTATION.
       ORDER BY _carr~carrid
       INTO TABLE @DATA(sql_inner_join).
 
-    output->display( input = sql_inner_join name = `sql_inner_join` ).
+    out->write( data = sql_inner_join name = `sql_inner_join` ).
 
-    output->display( `---------- Left outer join ----------` ).
+    out->write( |\n| ).
+    out->write( `---------- Left outer join ----------` ).
+    out->write( |\n| ).
+    out->write( |\n| ).
 
     SELECT _carr~carrid,
            _carr~carrname,
@@ -198,9 +203,12 @@ CLASS zcl_demo_abap_cds_ve IMPLEMENTATION.
       ORDER BY _carr~carrid
       INTO TABLE @DATA(sql_left_outer_join).
 
-    output->display( input = sql_left_outer_join name = `sql_left_outer_join` ).
+    out->write( data = sql_left_outer_join name = `sql_left_outer_join` ).
 
-    output->display( `---------- Right outer join ----------` ).
+    out->write( |\n| ).
+    out->write( `---------- Right outer join ----------` ).
+    out->write( |\n| ).
+    out->write( |\n| ).
 
     SELECT _carr~carrid,
            _carr~carrname,
@@ -215,9 +223,12 @@ CLASS zcl_demo_abap_cds_ve IMPLEMENTATION.
       ORDER BY _carr~carrid
       INTO TABLE @DATA(sql_right_outer_join).
 
-    output->display( input = sql_right_outer_join name = `sql_right_outer_join` ).
+    out->write( data = sql_right_outer_join name = `sql_right_outer_join` ).
 
-    output->display( `---------- Cross join ----------` ).
+    out->write( |\n| ).
+    out->write( `---------- Cross join ----------` ).
+    out->write( |\n| ).
+    out->write( |\n| ).
 
     SELECT _carr~carrid,
            _carr~carrname,
@@ -228,36 +239,37 @@ CLASS zcl_demo_abap_cds_ve IMPLEMENTATION.
       ORDER BY _carr~carrid
       INTO TABLE @DATA(sql_cross_join).
 
-    output->display( input = sql_cross_join name = `sql_cross_join` ).
+    out->write( data = sql_cross_join name = `sql_cross_join` ).
+    out->write( |\n| ).
 
     "Just a check what join example is currently commented in
     IF cds_joins = sql_inner_join.
 
-      output->display( `In the example CDS view entity, the inner join example is commented in.` ).
+      out->write( `In the example CDS view entity, the inner join example is commented in.` ).
 
     ELSEIF cds_joins = sql_left_outer_join.
 
-      output->display( `In the example CDS view entity, the left outer join example is commented in.` ).
+      out->write( `In the example CDS view entity, the left outer join example is commented in.` ).
 
     ELSEIF cds_joins = sql_right_outer_join.
 
-      output->display( `In the example CDS view entity, the right outer join example is commented in.` ).
+      out->write( `In the example CDS view entity, the right outer join example is commented in.` ).
 
     ELSEIF cds_joins = sql_cross_join.
 
-      output->display( `In the example CDS view entity, the cross join example is commented in.` ).
+      out->write( `In the example CDS view entity, the cross join example is commented in.` ).
 
     ELSE.
 
-      output->display( `In the example CDS view entity, there is some other code present.` ).
+      out->write( `In the example CDS view entity, there is some other code present.` ).
 
     ENDIF.
 
 **********************************************************************
 
-    output->next_section( `Associations` ).
+    out->write( zcl_demo_abap_aux=>heading( `Associations` ) ).
 
-    output->display( `5) Selecting data from a CDS view that contains associations`  ).
+    out->write( |5) Selecting data from a CDS view that contains associations\n\n|  ).
 
     "The following ABAP SQL SELECT statement uses a CDS view entity as
     "the data source. All data is retrieved. The sample CDS view entity
@@ -274,16 +286,16 @@ CLASS zcl_demo_abap_cds_ve IMPLEMENTATION.
       ORDER BY carrier
       INTO TABLE @DATA(assoc).
 
-    output->display( input = assoc name = `assoc` ).
+    out->write( data = assoc name = `assoc` ).
 
 **********************************************************************
 
-    output->next_section( `Using exposed associations in ABAP SQL statements: ...` ).
+    out->write( zcl_demo_abap_aux=>heading( `Using exposed associations in ABAP SQL statements: ...` ) ).
 
     "The following examples use path expressions to access the association
     "targets of exposed associations.
 
-    output->display( `6) ... SELECT clause`  ).
+    out->write( |6) ... SELECT clause\n\n|  ).
 
     "The following ABAP SQL SELECT statement uses a CDS view entity as
     "the data source. The statement uses an exposed association.
@@ -306,11 +318,11 @@ CLASS zcl_demo_abap_cds_ve IMPLEMENTATION.
       ORDER BY carrier
       INTO TABLE @DATA(assoc_exp_select).
 
-    output->display( input = assoc_exp_select name = `assoc_exp_select` ).
+    out->write( data = assoc_exp_select name = `assoc_exp_select` ).
 
 **********************************************************************
 
-    output->next_section( `7) ... FROM clause` ).
+    out->write( zcl_demo_abap_aux=>heading( `7) ... FROM clause` ) ).
 
     "The following ABAP SQL SELECT statement uses a CDS view entity as
     "the data source. All data is retrieved.
@@ -329,7 +341,8 @@ CLASS zcl_demo_abap_cds_ve IMPLEMENTATION.
       ORDER BY carrid
       INTO TABLE @DATA(assoc_exp_from).
 
-    output->display( input = assoc_exp_from name = `assoc_exp_from` ).
+    out->write( data = assoc_exp_from name = `assoc_exp_from` ).
+    out->write( |\n| ).
 
     "The following ABAP SQL SELECT statement is intended to reproduce
     "the data retrieval as above.
@@ -351,17 +364,18 @@ CLASS zcl_demo_abap_cds_ve IMPLEMENTATION.
       ORDER BY _carr~carrid
       INTO TABLE @DATA(sql_repr).
 
-    output->display( input = sql_repr name = `sql_repr` ).
+    out->write( data = sql_repr name = `sql_repr` ).
+    out->write( |\n| ).
 
     IF sql_repr = assoc_exp_from.
-      output->display( `The result sets are the same.` ).
+      out->write( `The result sets are the same.` ).
     ELSE.
-      output->display( `The result sets are differrent.` ).
+      out->write( `The result sets are differrent.` ).
     ENDIF.
 
 **********************************************************************
 
-    output->next_section( `8) ... Specifying attributes` ).
+    out->write( zcl_demo_abap_aux=>heading( `8) ... Specifying attributes` ) ).
 
     "The following ABAP SQL SELECT statement uses a CDS view entity as
     "the data source. The statement uses an exposed association.
@@ -398,7 +412,8 @@ CLASS zcl_demo_abap_cds_ve IMPLEMENTATION.
        ORDER BY carrid, connid, flightdate
        INTO TABLE @DATA(assoc_attr_card).
 
-    output->display( input = assoc_attr_card name = `assoc_attr_card` ).
+    out->write( data = assoc_attr_card name = `assoc_attr_card` ).
+    out->write( |\n| ).
 
     "Specifying the join type explicitly
     "- INNER, LEFT/RIGHT OUTER are possible
@@ -415,7 +430,8 @@ CLASS zcl_demo_abap_cds_ve IMPLEMENTATION.
       ORDER BY carrid, connid, flightdate
       INTO TABLE @DATA(assoc_attr_joty).
 
-    output->display( input = assoc_attr_joty name = `assoc_attr_joty` ).
+    out->write( data = assoc_attr_joty name = `assoc_attr_joty` ).
+    out->write( |\n| ).
 
     "Specifying conditions
     "- Filter conditions can be specified for the current association
@@ -439,11 +455,11 @@ CLASS zcl_demo_abap_cds_ve IMPLEMENTATION.
       ORDER BY carrid, connid, flightdate
       INTO TABLE @DATA(assoc_attr_where).
 
-    output->display( input = assoc_attr_where name = `assoc_attr_where` ).
+    out->write( data = assoc_attr_where name = `assoc_attr_where` ).
 
 **********************************************************************
 
-    output->next_section( `9) ... WHERE clause` ).
+    out->write( zcl_demo_abap_aux=>heading( `9) ... WHERE clause` ) ).
 
     "The following ABAP SQL SELECT statement uses a CDS view entity as
     "the data source. The statement uses an exposed association.
@@ -459,7 +475,7 @@ CLASS zcl_demo_abap_cds_ve IMPLEMENTATION.
       ORDER BY carrid, connid
       INTO TABLE @DATA(assoc_exp_where).
 
-    output->display( input = assoc_exp_where name = `assoc_exp_where` ).
+    out->write( data = assoc_exp_where name = `assoc_exp_where` ).
 
   ENDMETHOD.
 ENDCLASS.

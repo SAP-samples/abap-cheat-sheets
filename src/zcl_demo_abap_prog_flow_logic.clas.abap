@@ -50,7 +50,7 @@ CLASS zcl_demo_abap_prog_flow_logic DEFINITION
   PUBLIC SECTION.
     INTERFACES: if_oo_adt_classrun.
 
-protected section.
+  PROTECTED SECTION.
   PRIVATE SECTION.
 
     "Structured type for calculation example
@@ -95,13 +95,13 @@ protected section.
                       RAISING   cx_sy_arithmetic_overflow.
 
     CLASS-DATA: exception_text TYPE string,
-                exception  TYPE REF TO cx_root.
+                exception      TYPE REF TO cx_root.
 
 ENDCLASS.
 
 
 
-CLASS ZCL_DEMO_ABAP_PROG_FLOW_LOGIC IMPLEMENTATION.
+CLASS zcl_demo_abap_prog_flow_logic IMPLEMENTATION.
 
 
   METHOD addition.
@@ -214,13 +214,11 @@ CLASS ZCL_DEMO_ABAP_PROG_FLOW_LOGIC IMPLEMENTATION.
 
   METHOD if_oo_adt_classrun~main.
 
-    DATA(output) = NEW zcl_demo_abap_display( out ).
-
-    output->display( `ABAP Cheat Sheet Example: Program Flow Logic` ).
+    out->write( |ABAP Cheat Sheet Example: Program Flow Logic\n\n| ).
 
 **********************************************************************
 
-    output->display( `1) Control Structure with IF` ).
+    out->write( |1) Control Structure with IF\n| ).
 
     "Simple control structure realized by an IF ... ELSEIF ... ELSE ... ENDIF.
     "statement. Multiple statement blocks can be included, of which only 1 is
@@ -239,22 +237,16 @@ CLASS ZCL_DEMO_ABAP_PROG_FLOW_LOGIC IMPLEMENTATION.
     DATA(num2) = 7.
 
     IF operator = `+`.
-
-      output->display( |The result of { num1 } { operator } { num2 } is { num1 + num2 }. | ).
-
+      out->write( |The result of { num1 } { operator } { num2 } is { num1 + num2 }. | ).
     ELSEIF operator = `-`.
-
-      output->display( |The result of { num1 } { operator } { num2 } is { num1 - num2 }. | ).
-
+      out->write( |The result of { num1 } { operator } { num2 } is { num1 - num2 }. | ).
     ELSE.
-
-      output->display( |The operator { operator } is not possible.| ).
-
+      out->write( |The operator { operator } is not possible.| ).
     ENDIF.
 
 **********************************************************************
 
-    output->next_section( `2) IF: Checking sy-subrc` ).
+    out->write( zcl_demo_abap_aux=>heading( `2) IF: Checking sy-subrc` ) ).
 
     "A prominent use case for IF statements: Checking sy-subrc.
     "In the case below, a FIND statement is used. If there is a finding,
@@ -266,18 +258,14 @@ CLASS ZCL_DEMO_ABAP_PROG_FLOW_LOGIC IMPLEMENTATION.
     FIND to_be_found IN string_to_search.
 
     IF sy-subrc = 0.
-
-      output->display( |'{ to_be_found }' was found in the string '{ string_to_search }'.| ).
-
+      out->write( |'{ to_be_found }' was found in the string '{ string_to_search }'.| ).
     ELSE.
-
-      output->display( |'{ to_be_found }' was not found in the string '{ string_to_search }'.| ).
-
+      out->write( |'{ to_be_found }' was not found in the string '{ string_to_search }'.| ).
     ENDIF.
 
 **********************************************************************
 
-    output->next_section( `3) Excursion: COND Operator` ).
+    out->write( zcl_demo_abap_aux=>heading( `3) Excursion: COND Operator` ) ).
 
     "The conditional operator COND can also be used to implement branches in operand positions
     "that are based on logical expressions. Such conditional expressions have a result that
@@ -294,11 +282,11 @@ CLASS ZCL_DEMO_ABAP_PROG_FLOW_LOGIC IMPLEMENTATION.
                               THEN |It's { syst_time TIME = ISO }. Good night, { sy-uname }.|
                               ELSE |It's { syst_time TIME = ISO }. Hallo, { sy-uname }.| ).
 
-    output->display( input = greetings name = `greetings` ).
+    out->write( data = greetings name = `greetings` ).
 
 **********************************************************************
 
-    output->next_section( `4) Expressions and Functions for Conditions` ).
+    out->write( zcl_demo_abap_aux=>heading( `4) Expressions and Functions for Conditions` ) ).
 
     "Control structures are generally controlled by logical expressions that
     "define conditions for operands. The result of such an expression is either true or false.
@@ -432,16 +420,14 @@ CLASS ZCL_DEMO_ABAP_PROG_FLOW_LOGIC IMPLEMENTATION.
 
     "Table expression
     AND str_table[ 2 ] = `b`.
-
-      output->display( `All of the logical expressions are true.` ).
-
+      out->write( `All of the logical expressions are true.` ).
     ELSE.
-      output->display( `At least one of the logical expressions is false.` ).
+      out->write( `At least one of the logical expressions is false.` ).
     ENDIF.
 
 **********************************************************************
 
-    output->next_section( `5) Predicate Expression with IS SUPPLIED` ).
+    out->write( zcl_demo_abap_aux=>heading( `5) Predicate Expression with IS SUPPLIED` ) ).
 
     "The predicate expression IS SUPPLIED is available in method implementations
     "and checks whether a formal parameter of a procedure is filled or requested.
@@ -451,15 +437,16 @@ CLASS ZCL_DEMO_ABAP_PROG_FLOW_LOGIC IMPLEMENTATION.
 
     DATA(is_supplied) = check_is_supplied( num1 = 123 ).
 
-    output->display( input = is_supplied name = `is_supplied` ).
+    out->write( data = is_supplied name = `is_supplied` ).
+    out->write( |\n| ).
 
     is_supplied = check_is_supplied( num2 = 456 ).
 
-    output->display( input = is_supplied name = `is_supplied` ).
+    out->write( data = is_supplied name = `is_supplied` ).
 
 **********************************************************************
 
-    output->next_section( `6) Control Structure with CASE` ).
+    out->write( zcl_demo_abap_aux=>heading( `6) Control Structure with CASE` ) ).
 
     "CASE statements are used for case distinctions. If the content of an operand
     "specified after WHEN matches the content specified after CASE, the statement
@@ -482,16 +469,16 @@ CLASS ZCL_DEMO_ABAP_PROG_FLOW_LOGIC IMPLEMENTATION.
 
     CASE op.
       WHEN '+'.
-        output->display( |The result of { n1 } { op } { n2 } is { n1 + n2 }. | ).
+        out->write( |The result of { n1 } { op } { n2 } is { n1 + n2 }. | ).
       WHEN '-'.
-        output->display( |The result of { n1 } { op } { n2 } is { n1 - n2 }. | ).
+        out->write( |The result of { n1 } { op } { n2 } is { n1 - n2 }. | ).
       WHEN OTHERS.
-        output->display( |The operator { op } is not possible.| ).
+        out->write( |The operator { op } is not possible.| ).
     ENDCASE.
 
 **********************************************************************
 
-    output->next_section( `7) CASE TYPE OF` ).
+    out->write( zcl_demo_abap_aux=>heading( `7) CASE TYPE OF` ) ).
 
     "CASE TYPE OF: Checks the type of object reference variables
 
@@ -501,14 +488,16 @@ CLASS ZCL_DEMO_ABAP_PROG_FLOW_LOGIC IMPLEMENTATION.
 
     CASE TYPE OF oref_check.
       WHEN TYPE zcl_demo_abap_prog_flow_logic.
-        output->display( `Type zcl_demo_abap_prog_flow_logic? True!` ).
+        out->write( `Type zcl_demo_abap_prog_flow_logic? True!` ).
       WHEN TYPE if_oo_adt_classrun.
-        output->display( `Type if_oo_adt_classrun? True!` ).
+        out->write( `Type if_oo_adt_classrun? True!` ).
       WHEN TYPE zcl_demo_abap_sql.
-        output->display( `Type zcl_demo_abap_sql? True!` ).
+        out->write( `Type zcl_demo_abap_sql? True!` ).
       WHEN OTHERS.
-        output->display( `Other type.` ).
+        out->write( `Other type.` ).
     ENDCASE.
+
+    out->write( |\n| ).
 
     "The same logic as above is realized in the following IF statements
     "using IS INSTANCE OF.
@@ -516,18 +505,18 @@ CLASS ZCL_DEMO_ABAP_PROG_FLOW_LOGIC IMPLEMENTATION.
     "This type is also true for the object reference variable. This class
     "implements the interface.
     IF oref_check IS INSTANCE OF if_oo_adt_classrun.
-      output->display( `Type if_oo_adt_classrun? True!` ).
+      out->write( `Type if_oo_adt_classrun? True!` ).
     ELSEIF oref_check IS INSTANCE OF zcl_demo_abap_prog_flow_logic.
-      output->display( `Type zcl_demo_abap_prog_flow_logic? True!` ).
+      out->write( `Type zcl_demo_abap_prog_flow_logic? True!` ).
     ELSEIF oref_check IS INSTANCE OF zcl_demo_abap_sql.
-      output->display( `Type zcl_demo_abap_sql? True!` ).
+      out->write( `Type zcl_demo_abap_sql? True!` ).
     ELSE.
-      output->display( `Other type.` ).
+      out->write( `Other type.` ).
     ENDIF.
 
 **********************************************************************
 
-    output->next_section( `8) Excursion: SWITCH Operator` ).
+    out->write( zcl_demo_abap_aux=>heading( `8) Excursion: SWITCH Operator` ) ).
 
     "The conditional operator SWITCH can also be used to make case
     "distinctions in operand positions. Such conditional expressions have
@@ -551,13 +540,13 @@ CLASS ZCL_DEMO_ABAP_PROG_FLOW_LOGIC IMPLEMENTATION.
                                   WHEN '12' THEN `December`
                                   ELSE `Oops ...` ).
 
-    output->display( input = switch_res name = `switch_res` ).
+    out->write( data = switch_res name = `switch_res` ).
 
 **********************************************************************
 
-    output->next_section( `Loops (Iterations)` ).
+    out->write( zcl_demo_abap_aux=>heading( `Loops (Iterations)` ) ).
 
-    output->display( `9) Unconditional Loops with DO` ).
+    out->write( |9) Unconditional Loops with DO\n| ).
 
     "The example demonstrate the restriction of loop passes by specifying
     "a number (of maximum loop passes) and the TIMES addition in a DO loop.
@@ -572,12 +561,13 @@ CLASS ZCL_DEMO_ABAP_PROG_FLOW_LOGIC IMPLEMENTATION.
       do_sy_index = do_sy_index && sy-index && ` `.
     ENDDO.
 
-    output->display( input = do_counter name = `do_counter` ).
-    output->display( input = do_sy_index name = `do_sy_index` ).
+    out->write( data = do_counter name = `do_counter` ).
+    out->write( |\n| ).
+    out->write( data = do_sy_index name = `do_sy_index` ).
 
 **********************************************************************
 
-    output->next_section( `10) Terminating Loops Completely Using EXIT` ).
+    out->write( zcl_demo_abap_aux=>heading( `10) Terminating Loops Completely Using EXIT` ) ).
 
     "Using the EXIT statement, you can terminate a loop completely.
     "The program flow resumes after the closing statement of the loop.
@@ -593,12 +583,13 @@ CLASS ZCL_DEMO_ABAP_PROG_FLOW_LOGIC IMPLEMENTATION.
       ENDIF.
     ENDDO.
 
-    output->display( input = do_counter name = `do_counter` ).
-    output->display( input = do_sy_index name = `do_sy_index` ).
+    out->write( data = do_counter name = `do_counter` ).
+    out->write( |\n| ).
+    out->write( data = do_sy_index name = `do_sy_index` ).
 
 **********************************************************************
 
-    output->next_section( `11) Terminating Loop Passes` ).
+    out->write( zcl_demo_abap_aux=>heading( `11) Terminating Loop Passes` ) ).
 
     "CONTINUE: The current loop pass is terminated immediately and the
     "          program flow is continued with the next loop pass.
@@ -609,7 +600,6 @@ CLASS ZCL_DEMO_ABAP_PROG_FLOW_LOGIC IMPLEMENTATION.
     CLEAR: do_counter, do_sy_index.
 
     DO.
-
       IF sy-index = 2. "skipped
         CONTINUE.
       ENDIF.
@@ -621,17 +611,16 @@ CLASS ZCL_DEMO_ABAP_PROG_FLOW_LOGIC IMPLEMENTATION.
       ENDIF.
 
       do_counter += 1.
-
       do_sy_index = do_sy_index && sy-index && ` `.
-
     ENDDO.
 
-    output->display( input = do_counter name = `do_counter` ).
-    output->display( input = do_sy_index name = `do_sy_index` ).
+    out->write( data = do_counter name = `do_counter` ).
+    out->write( |\n| ).
+    out->write( data = do_sy_index name = `do_sy_index` ).
 
 **********************************************************************
 
-    output->next_section( `12) Excursion: Terminating Procedures Using RETURN` ).
+    out->write( zcl_demo_abap_aux=>heading( `12) Excursion: Terminating Procedures Using RETURN` ) ).
 
     "RETURN statements immediately terminate the current processing block.
     "However, according to the guidelines, RETURN should only be used to exit
@@ -642,17 +631,18 @@ CLASS ZCL_DEMO_ABAP_PROG_FLOW_LOGIC IMPLEMENTATION.
 
     DATA(return1) = meth_with_return( 81 ).
 
-    output->display( input = return1 name = `return1` ).
+    out->write( data = return1 name = `return1` ).
+    out->write( |\n| ).
 
     DATA(return2) = meth_with_return( -9 ).
 
-    output->display( input = return2 name = `return2` ).
+    out->write( data = return2 name = `return2` ).
 
 **********************************************************************
 
-    output->next_section( `Conditional Loops with WHILE` ).
+    out->write( zcl_demo_abap_aux=>heading( `Conditional Loops with WHILE` ) ).
 
-    output->display( `13) WHILE Example 1` ).
+    out->write( |13) WHILE Example 1\n| ).
 
     "The following example highlights the setting of sy-index within loop passes.
     "The value is added to an internal table. The loop iteration stops when
@@ -661,16 +651,14 @@ CLASS ZCL_DEMO_ABAP_PROG_FLOW_LOGIC IMPLEMENTATION.
     DATA int_itab TYPE TABLE OF i.
 
     WHILE lines( int_itab ) < 10.
-
       int_itab = VALUE #( BASE int_itab ( sy-index ) ).
-
     ENDWHILE.
 
-    output->display( input = int_itab name = `int_itab` ).
+    out->write( data = int_itab name = `int_itab` ).
 
 **********************************************************************
 
-    output->display( `14) WHILE Example 2` ).
+    out->write( zcl_demo_abap_aux=>heading( `14) WHILE Example 2` ) ).
 
     "In the following example, all occurrences of a certain substring
     "should be replaced by another string. Instead of, for example, using
@@ -689,7 +677,6 @@ CLASS ZCL_DEMO_ABAP_PROG_FLOW_LOGIC IMPLEMENTATION.
     DATA(subrc) = 0. "separate dobj to store the sy-subrc value
 
     WHILE subrc = 0.
-
       FIND FIRST OCCURRENCE OF `abap` IN while_string
         MATCH LENGTH DATA(len)
         MATCH OFFSET DATA(off)
@@ -703,24 +690,22 @@ CLASS ZCL_DEMO_ABAP_PROG_FLOW_LOGIC IMPLEMENTATION.
       subrc = sy-subrc.
 
       IF subrc = 0.
-
         count_occ_via_sy_index = sy-index. "to hold the
         "To hold the total number of findings from left to right of the string
         count_occ = count_occ + cnt.
-
         REPLACE SECTION OFFSET off LENGTH len OF while_string WITH `ABAP`.
-
       ENDIF.
-
     ENDWHILE.
 
-    output->display( input = count_occ_via_sy_index name = `count_occ_via_sy_index` ).
-    output->display( input = count_occ name = `count_occ` ).
-    output->display( input = while_string name = `while_string` ).
+    out->write( data = count_occ_via_sy_index name = `count_occ_via_sy_index` ).
+    out->write( |\n| ).
+    out->write( data = count_occ name = `count_occ` ).
+    out->write( |\n| ).
+    out->write( data = while_string name = `while_string` ).
 
 **********************************************************************
 
-    output->display( `15) WHILE Example 3` ).
+    out->write( zcl_demo_abap_aux=>heading( `15) WHILE Example 3` ) ).
 
     "The example demonstrates the 3 options for loop terminations
     "in the context of a WHILE ... ENDWHILE statement.
@@ -731,7 +716,6 @@ CLASS ZCL_DEMO_ABAP_PROG_FLOW_LOGIC IMPLEMENTATION.
     DATA(index) = 0.
 
     WHILE index <> 10.
-
       index = sy-index.
 
       IF sy-index = 2. "Skips loop pass
@@ -745,20 +729,19 @@ CLASS ZCL_DEMO_ABAP_PROG_FLOW_LOGIC IMPLEMENTATION.
       ENDIF.
 
       while_cnt += 1.
-
       while_sy_index = while_sy_index && sy-index && ` `.
-
     ENDWHILE.
 
-    output->display( input = while_cnt name = `while_cnt` ).
-    output->display( input = while_sy_index name = `while_sy_index` ).
+    out->write( data = while_cnt name = `while_cnt` ).
+    out->write( |\n| ).
+    out->write( data = while_sy_index name = `while_sy_index` ).
 
 
 **********************************************************************
 
-    output->next_section( `Loops across Tables` ).
+    out->write( zcl_demo_abap_aux=>heading( `Loops across Tables` ) ).
 
-    output->display( `16) Loop across Internal Table Using LOOP ... ENDLOOP` ).
+    out->write( |16) Loop across Internal Table Using LOOP ... ENDLOOP\n\n| ).
 
     "LOOP ... ENDLOOP statements are meant for loops across internal tables.
     "For more examples, see the cheat sheet example on internal tables.
@@ -802,7 +785,6 @@ CLASS ZCL_DEMO_ABAP_PROG_FLOW_LOGIC IMPLEMENTATION.
     DATA calc_results TYPE TABLE OF calc_results_struc WITH EMPTY KEY.
 
     LOOP AT calc_itab ASSIGNING FIELD-SYMBOL(<calc>).
-
       "Method call to calculate and return the result
       DATA(res) = calc( num1     = <calc>-num1
                         operator = <calc>-operator
@@ -810,16 +792,14 @@ CLASS ZCL_DEMO_ABAP_PROG_FLOW_LOGIC IMPLEMENTATION.
 
       "Adding the sy-tabix value to the table, too.
       res-sy_tabix = sy-tabix.
-
       APPEND res TO calc_results.
-
     ENDLOOP.
 
-    output->display( input = calc_results name = `calc_results` ).
+    out->write( data = calc_results name = `calc_results` ).
 
 **********************************************************************
 
-    output->display( `17) SELECT Loop` ).
+    out->write( zcl_demo_abap_aux=>heading( `17) SELECT Loop`  ) ).
 
     "SELECT ... ENDSELECT statements loop across the result set of a database access.
     "For more examples, see the cheat sheet example on ABAP SQL.
@@ -849,40 +829,29 @@ CLASS ZCL_DEMO_ABAP_PROG_FLOW_LOGIC IMPLEMENTATION.
       INTO @DATA(wa).
 
       IF sy-subrc = 0.
-
         "Loop pass stored and representing the table index value for the
         "ABAP SQL statement further down.
         loop_pass += 1.
-
         IF loop_pass <= 3.
-
           wa-calc_result = wa-num * 5.
-
         ELSEIF loop_pass = 6.
-
           "No calculation for this loop pass. Loop is terminated.
           EXIT.
-
         ELSE.
-
           wa-calc_result = wa-num * 100.
-
         ENDIF.
-
         "Inserting calculation result in table
         MODIFY itab_select_loop FROM wa INDEX loop_pass TRANSPORTING calc_result.
-
       ENDIF.
-
     ENDSELECT.
 
-    output->display( input = itab_select_loop name = `itab_select_loop` ).
+    out->write( data = itab_select_loop name = `itab_select_loop` ).
 
 **********************************************************************
 
-    output->next_section( `Exception Handling` ).
+    out->write( zcl_demo_abap_aux=>heading( `Exception Handling` ) ).
 
-    output->display( `18) TRY Control Structures` ).
+    out->write( |18) TRY Control Structures\n\n| ).
 
     "TRY control structures are meant for handling catchable exceptions locally
     "The example shows divisions. The predefined exception class cx_sy_zerodivide
@@ -893,26 +862,26 @@ CLASS ZCL_DEMO_ABAP_PROG_FLOW_LOGIC IMPLEMENTATION.
     "left due to the previous erroneous 0 division.
 
     TRY.
-
         DATA(div1) = 4 / 2.
-        output->display( input = div1 name = `div1` ).
+        out->write( data = div1 name = `div1` ).
+        out->write( |\n| ).
 
         DATA(div2) = 4 / 0.
-        output->display( input = div2 name = `div2` ).
+        out->write( data = div2 name = `div2` ).
+        out->write( |\n| ).
 
         DATA(div3) = 9 / 3.
-        output->display( input = div3 name = `div3` ).
+        out->write( data = div3 name = `div3` ).
+        out->write( |\n| ).
 
       CATCH cx_sy_zerodivide.
-
-        output->display( `0 division. The exception was caught.` ).
-
+        out->write( `0 division. The exception was caught.` ).
+        out->write( |\n| ).
     ENDTRY.
 
     "The following example shows a catchable exception that is
     "raised if a line is not found when using table expressions.
     TRY.
-
         DATA(line) = str_table[ 12345 ].
 
         "The predefined exception class cx_sy_itab_line_not_found
@@ -920,14 +889,12 @@ CLASS ZCL_DEMO_ABAP_PROG_FLOW_LOGIC IMPLEMENTATION.
         "If the exception is not handled, the program is terminated
         "and the runtime error ITAB_LINE_NOT_FOUND occurs.
       CATCH cx_sy_itab_line_not_found.
-
-        output->display( `The line was not found. The exception was caught.` ).
-
+        out->write( `The line was not found. The exception was caught.` ).
     ENDTRY.
 
 **********************************************************************
 
-    output->next_section( `19) Multiple CATCH Blocks` ).
+    out->write( zcl_demo_abap_aux=>heading( `19) Multiple CATCH Blocks` ) ).
 
     "It is possible to specify multiple exception classes in a list and
     "multiple CATCH blocks.
@@ -942,35 +909,29 @@ CLASS ZCL_DEMO_ABAP_PROG_FLOW_LOGIC IMPLEMENTATION.
     int_itab = VALUE #( ( 5 ) ( 0 ) ( 987654321 ) ).
 
     LOOP AT int_itab ASSIGNING FIELD-SYMBOL(<fs_int>).
-
       TRY.
-
-          output->display( |--- Calculations with { <fs_int> } ---| ).
+          out->write( |--- Calculations with { <fs_int> } ---| ).
 
           DATA(calc1) = CONV decfloat34( 1 / <fs_int> ).
 
-          output->display( input = calc1 name = `calc1` ).
+          out->write( data = calc1 name = `calc1` ).
+          out->write( |\n| ).
 
           DATA(calc2) = ipow( base = <fs_int> exp = 2 ).
 
-          output->display( input = calc2 name = `calc2` ).
-
-
+          out->write( data = calc2 name = `calc2` ).
+          out->write( |\n| ).
         CATCH cx_sy_arithmetic_overflow lcx_calc_error.
-
-          output->display( `Arithmetic overflow. The exception was caught.` ).
-
+          out->write( `Arithmetic overflow. The exception was caught.` ).
         CATCH cx_sy_zerodivide lcx_some_error.
-
-          output->display( `0 division. The exception was caught.` ).
-
+          out->write( `0 division. The exception was caught.` ).
       ENDTRY.
-
+      out->write( |\n| ).
     ENDLOOP.
 
 **********************************************************************
 
-    output->next_section( `20) Using an Exception Class Higher Up in the Inheritance Tree` ).
+    out->write( zcl_demo_abap_aux=>heading( `20) Using an Exception Class Higher Up in the Inheritance Tree` ) ).
 
     "In the following CATCH block, the predefined exception class cx_sy_arithmetic_error
     "is specified. Both cx_sy_zerodivide and cx_sy_arithmetic_overflow are derived from
@@ -980,31 +941,27 @@ CLASS ZCL_DEMO_ABAP_PROG_FLOW_LOGIC IMPLEMENTATION.
     "class is specified.
 
     LOOP AT int_itab ASSIGNING FIELD-SYMBOL(<fs_int_inh>).
-
       TRY.
-
-          output->display( |--- Calculations with { <fs_int_inh> } ---| ).
+          out->write( |--- Calculations with { <fs_int_inh> } ---| ).
 
           calc1 = 1 / <fs_int_inh>.
 
-          output->display( input = calc1 name = `calc1` ).
+          out->write( data = calc1 name = `calc1` ).
+          out->write( |\n| ).
 
           calc2 = ipow( base = <fs_int_inh> exp = 2 ).
 
-          output->display( input = calc2 name = `calc2` ).
-
-
+          out->write( data = calc2 name = `calc2` ).
+          out->write( |\n| ).
         CATCH cx_sy_arithmetic_error.
-
-          output->display( `Arithmetic error. The exception was caught.` ).
-
+          out->write( `Arithmetic error. The exception was caught.` ).
       ENDTRY.
-
+       out->write( |\n| ).
     ENDLOOP.
 
 **********************************************************************
 
-    output->next_section( `21) Storing a Reference to the Exception Object` ).
+    out->write( zcl_demo_abap_aux=>heading( `21) Storing a Reference to the Exception Object` ) ).
 
     "You can use the addition INTO plus an object reference variable to store
     "a reference to an exception object. It is, for example, relevant to
@@ -1017,18 +974,17 @@ CLASS ZCL_DEMO_ABAP_PROG_FLOW_LOGIC IMPLEMENTATION.
     LOOP AT int_itab ASSIGNING FIELD-SYMBOL(<fs_int_into>).
 
       TRY.
-
-          output->display( |--- Calculations with { <fs_int_into> } ---| ).
+          out->write( |--- Calculations with { <fs_int_into> } ---| ).
 
           calc1 = 1 / <fs_int_into>.
 
-          output->display( input = calc1 name = `calc1` ).
+          out->write( data = calc1 name = `calc1` ).
+          out->write( |\n| ).
 
           calc2 = ipow( base = <fs_int_into> exp = 2 ).
 
-          output->display( input = calc2 name = `calc2` ).
-
-
+          out->write( data = calc2 name = `calc2` ).
+          out->write( |\n| ).
         CATCH cx_sy_arithmetic_error INTO exception.
           "Note:
           "- The object reference variable is of type cx_root.
@@ -1037,15 +993,14 @@ CLASS ZCL_DEMO_ABAP_PROG_FLOW_LOGIC IMPLEMENTATION.
           "Retrieving and displaying exception text
           exception_text = exception->get_text( ).
 
-          output->display( input = exception_text name = `exception_text` ).
-
+          out->write( data = exception_text name = `exception_text` ).
       ENDTRY.
-
+      out->write( |\n| ).
     ENDLOOP.
 
 **********************************************************************
 
-    output->next_section( `22) Raising Exceptions Programmatically` ).
+    out->write( zcl_demo_abap_aux=>heading( `22) Raising Exceptions Programmatically` ) ).
 
     "The following examples demonstrate the ABAP statement RAISE EXCEPTION
     "using the addition TYPE. Note there are more additions available that
@@ -1055,7 +1010,8 @@ CLASS ZCL_DEMO_ABAP_PROG_FLOW_LOGIC IMPLEMENTATION.
     "here.
     DATA(division) = 0 / 0.
 
-    output->display( input = division name = `division` ).
+    out->write( data = division name = `division` ).
+    out->write( |\n| ).
 
     "In this example, the appropriate exception - the predefined exception
     "class cx_sy_zerodivide - is raised.
@@ -1066,11 +1022,9 @@ CLASS ZCL_DEMO_ABAP_PROG_FLOW_LOGIC IMPLEMENTATION.
         RAISE EXCEPTION TYPE cx_sy_zerodivide.
 
       CATCH cx_sy_zerodivide INTO DATA(error_oref).
-
         exception_text = error_oref->get_text( ).
-
-        output->display( input = exception_text name = `exception_text` ).
-
+        out->write( data = exception_text name = `exception_text` ).
+        out->write( |\n| ).
     ENDTRY.
 
     "The following example just demonstrates a locally defined
@@ -1079,34 +1033,31 @@ CLASS ZCL_DEMO_ABAP_PROG_FLOW_LOGIC IMPLEMENTATION.
     "the tab 'Class-relevant Local Types'.
     TRY.
         RAISE EXCEPTION TYPE lcx_some_error.
-
       CATCH lcx_some_error INTO exception.
-
         exception_text = exception->get_text( ).
 
-        output->display( `Default exception text for a local exception class:` ).
-        output->display( input = exception_text name = `exception_text` ).
-
+        out->write( `Default exception text for a local exception class:` ).
+        out->write( data = exception_text name = `exception_text` ).
     ENDTRY.
 
 **********************************************************************
 
-    output->next_section( `23) Nested TRY Control Structure` ).
+    out->write( zcl_demo_abap_aux=>heading( `23) Nested TRY Control Structure` ) ).
 
     TRY.
         TRY.
             RAISE EXCEPTION TYPE lcx_some_error.
           CATCH lcx_some_error INTO DATA(error_inner_catch).
-            output->display( `Inner CATCH` ).
+            out->write( `Inner CATCH` ).
             RAISE EXCEPTION error_inner_catch.
         ENDTRY.
       CATCH lcx_some_error.
-        output->display( `Outer CATCH` ).
+        out->write( `Outer CATCH` ).
     ENDTRY.
 
 **********************************************************************
 
-    output->next_section( `24) Raising an Exception in the Context of Conditional Expressions` ).
+    out->write( zcl_demo_abap_aux=>heading( `24) Raising an Exception in the Context of Conditional Expressions` ) ).
 
     "In this example, the optional addition THROW is used in a conditional
     "expression. A self-defined local exception class is used.
@@ -1118,19 +1069,15 @@ CLASS ZCL_DEMO_ABAP_PROG_FLOW_LOGIC IMPLEMENTATION.
                                    WHEN number = 2 THEN `two`
                                    ELSE THROW lcx_some_error( ) ).
 
-        output->display( input = cond_raise name = `cond_raise` ).
-
+        out->write( data = cond_raise name = `cond_raise` ).
       CATCH lcx_some_error INTO exception.
-
         exception_text = exception->get_text( ).
-
-        output->display( input = exception_text name = `exception_text` ).
-
+        out->write( data = exception_text name = `exception_text` ).
     ENDTRY.
 
 **********************************************************************
 
-    output->next_section( `25) RAISING Parameter in Method Delcarations` ).
+    out->write( zcl_demo_abap_aux=>heading( `25) RAISING Parameter in Method Delcarations` ) ).
 
     "In the following example, a string table is looped across. The table
     "includes valid and invalid email addresses. The validity is checked
@@ -1156,29 +1103,24 @@ CLASS ZCL_DEMO_ABAP_PROG_FLOW_LOGIC IMPLEMENTATION.
     DATA itab_email_check TYPE TABLE OF struc_email_check WITH EMPTY KEY.
 
     LOOP AT str_table ASSIGNING FIELD-SYMBOL(<email>).
-
       TRY.
           DATA(email_valid) = validate_email( email = <email> ).
           DATA(exc_raised) = abap_false.
-
         CATCH lcx_invalid_email.
-
           email_valid = abap_false.
           exc_raised = abap_true.
-
       ENDTRY.
 
       APPEND VALUE #( email = <email>
                       is_email_valid = email_valid
                       exception_raised = exc_raised ) TO itab_email_check.
-
     ENDLOOP.
 
-    output->display( input = itab_email_check name = `itab_email_check` ).
+    out->write( data = itab_email_check name = `itab_email_check` ).
 
 **********************************************************************
 
-    output->next_section( `Exception Classes Derived from CX_STATIC_CHECK` ).
+    out->write( zcl_demo_abap_aux=>heading( `26) Exception Classes Derived from CX_STATIC_CHECK` ) ).
 
     "Exception Classes of type cx_static_check force users to handle exceptions.
     "Exceptions that are declared in the method signature make users aware of which
@@ -1194,26 +1136,22 @@ CLASS ZCL_DEMO_ABAP_PROG_FLOW_LOGIC IMPLEMENTATION.
 
     "Method call with a proper exception handling
     TRY.
-
         DATA(my_user_b) = whats_my_user( get_name = abap_true ).
 
-        output->display( input = my_user_b name = `my_user_b` ).
+        out->write( data = my_user_b name = `my_user_b` ).
+        out->write( |\n| ).
 
         DATA(my_user_c) = whats_my_user( get_name = abap_false ).
 
-        output->display( input = my_user_c name = `my_user_c` ).
-
+        out->write( data = my_user_c name = `my_user_c` ).
       CATCH lcx_static_exc_class INTO exception.
-
         exception_text = exception->get_text( ).
-
-        output->display( input = exception_text name = `exception_texts` ).
-
+        out->write( data = exception_text name = `exception_texts` ).
     ENDTRY.
 
 **********************************************************************
 
-    output->next_section( `Exception Classes Derived from CX_DYNAMIC_CHECK` ).
+    out->write( zcl_demo_abap_aux=>heading( `27) Exception Classes Derived from CX_DYNAMIC_CHECK` ) ).
 
     "Exception Classes derived from cx_dynamic_check are for exceptions that
     "can be checked and avoided by preconditions.
@@ -1237,21 +1175,20 @@ CLASS ZCL_DEMO_ABAP_PROG_FLOW_LOGIC IMPLEMENTATION.
     "there would not be a syntax warning. Actually, you could
     "prevent a calculation failure by setting appropriate values.
     TRY.
-
         DATA(res1) = power2_and_sqrt( num = 4 ).
 
-        output->display( input = res1 name = `res1` ).
+        out->write( data = res1 name = `res1` ).
+        out->write( |\n| ).
 
         DATA(res2) = power2_and_sqrt( num = 123456789 ).
 
-        output->display( input = res2 name = `res2` ).
+        out->write( data = res2 name = `res2` ).
+        out->write( |\n| ).
 
       CATCH cx_sy_arithmetic_overflow INTO exception.
-
         exception_text = exception->get_text( ).
-
-        output->display( input = exception_text name = `exception_text` ).
-
+        out->write( data = exception_text name = `exception_text` ).
+        out->write( |\n| ).
     ENDTRY.
 
     "This TRY control structure demonstrates the following:
@@ -1260,47 +1197,47 @@ CLASS ZCL_DEMO_ABAP_PROG_FLOW_LOGIC IMPLEMENTATION.
     "exception is raised - a new exception of type cx_sy_no_handler is raised. In this
     "case, the attribute 'previous' contains a reference to the original exception.
     TRY.
-
         DATA(res3) = power2_and_sqrt( num = 16 ).
 
-        output->display( input = res3 name = `res3` ).
+        out->write( data = res3 name = `res3` ).
+        out->write( |\n| ).
 
         DATA(res4) = power2_and_sqrt( num = -1 ).
 
-        output->display( input = res4 name = `res4` ).
+        out->write( data = res4 name = `res4` ).
+        out->write( |\n| ).
 
-      "The specification of the suitable exception class does not help here.
-      "The error is raised while processing the method.
+        "The specification of the suitable exception class does not help here.
+        "The error is raised while processing the method.
       CATCH cx_sy_arg_out_of_domain INTO exception.
-
         exception_text = exception->get_text( ).
 
-        output->display( input = exception_text name = `exception_text` ).
-
+        out->write( data = exception_text name = `exception_text` ).
+        out->write( |\n| ).
       CATCH cx_sy_no_handler INTO exception.
-
         exception_text = exception->get_text( ).
 
-        output->display( input = exception_text name = `exception_text` ).
+        out->write( data = exception_text name = `exception_text` ).
+        out->write( |\n| ).
 
         "Attribute 'previous'
         "In this case, the information of the actual runtime error is provided:
         "Here, it is COMPUTE_SQRT_DOMAIN.
-        output->display( input = exception->previous name = `exception->previous` ).
+        out->write( data = exception->previous name = `exception->previous` ).
+        out->write( |\n| ).
 
         "For demo purposes, RTTI is used here to retrieve the relative name of the type,
         "i. e. the exception class that was raised.
         DATA(relative_name) = cl_abap_typedescr=>describe_by_object_ref( exception->previous )->get_relative_name( ).
 
-        output->display( input = relative_name name = `relative_name` ).
-
+        out->write( data = relative_name name = `relative_name` ).
     ENDTRY.
 
 **********************************************************************
 
     "Excursion: Runtime Errors and Terminating Programs
 
-    output->next_section( `Excursion: Runtime Errors and Terminating Programs` ).
+    out->write( zcl_demo_abap_aux=>heading( `28) Excursion: Runtime Errors and Terminating Programs` ) ).
 
     "ASSERT statements are followed by a logical expression. If the expression is false,
     "the program is terminated and an uncatchable exception is raised resulting in the
@@ -1331,13 +1268,10 @@ CLASS ZCL_DEMO_ABAP_PROG_FLOW_LOGIC IMPLEMENTATION.
 
     "DATA(is_email_valid) = validate_email( email = `john.doe@email.c##` ).
 
-    output->display( `This text is displayed if you left all statements causing a runtime error commented out :)` ).
-
+    out->write( `This text is displayed if you left all statements causing a runtime error commented out :)` ).
   ENDMETHOD.
 
-
   METHOD meth_with_return.
-
     IF num >= 0.
       DATA(sqr_res) = sqrt( num ).
     ELSE.
@@ -1345,19 +1279,14 @@ CLASS ZCL_DEMO_ABAP_PROG_FLOW_LOGIC IMPLEMENTATION.
     ENDIF.
 
     res = `The method call was not terminated. The square root of ` && num && ` is ` && sqr_res.
-
   ENDMETHOD.
 
-
   METHOD power2_and_sqrt.
-
-    result = |Calculation result:\n{ num } powered by 2 = { ipow( base = num exp = 2 ) }\nSquare root of { num } = { sqrt( num ) }|.
-
+    result = |{ num } powered by 2 = { ipow( base = num exp = 2 ) } / Square root of { num } = { sqrt( num ) }|.
   ENDMETHOD.
 
 
   METHOD prep_calc_result.
-
     FIND PCRE `-$` IN res.  "trailing minus
 
     IF sy-subrc = 0.
@@ -1374,30 +1303,23 @@ CLASS ZCL_DEMO_ABAP_PROG_FLOW_LOGIC IMPLEMENTATION.
         REPLACE `.0` IN res WITH ``.
       ENDIF.
     ENDIF.
-
   ENDMETHOD.
 
 
   METHOD validate_email.
-
     IF matches( val   = email
                 pcre = `\w+(\.\w+)*@(\w+\.)+(\w{2,4})` ).
       is_valid_email = abap_true.
     ELSE.
       RAISE EXCEPTION TYPE lcx_invalid_email.
-
     ENDIF.
-
   ENDMETHOD.
 
-
   METHOD whats_my_user.
-
     IF get_name = abap_true.
       name = sy-uname.
     ELSE.
       RAISE EXCEPTION TYPE lcx_static_exc_class.
     ENDIF.
-
   ENDMETHOD.
 ENDCLASS.

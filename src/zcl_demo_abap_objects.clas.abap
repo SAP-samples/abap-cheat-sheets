@@ -81,7 +81,7 @@ ENDCLASS.
 
 
 
-CLASS ZCL_DEMO_ABAP_OBJECTS IMPLEMENTATION.
+CLASS zcl_demo_abap_objects IMPLEMENTATION.
 
 
   METHOD hallo_instance_method.
@@ -98,11 +98,9 @@ CLASS ZCL_DEMO_ABAP_OBJECTS IMPLEMENTATION.
 
   METHOD if_oo_adt_classrun~main.
 
-    DATA(output) = NEW zcl_demo_abap_display( out ).
-
-    output->display( `ABAP Cheat Sheet Example: ABAP Object Orientation` ).
-    output->display( `Working with objects and components` ).
-    output->display( `1) Declaring reference variables` ).
+    out->write( |ABAP Cheat Sheet Example: ABAP Object Orientation\n\n| ).
+    out->write( |Working with objects and components\n\n| ).
+    out->write( |1) Declaring reference variables\n\n| ).
 
     "To create an object, a reference variable must be declared. This
     "variable is also necessary for accessing objects, i. e. objects
@@ -124,15 +122,15 @@ CLASS ZCL_DEMO_ABAP_OBJECTS IMPLEMENTATION.
     AND ref1b IS INITIAL
     AND ref1c IS INITIAL
     AND ref1d IS INITIAL.
-      output->display( `The declared reference variables are initial.` ).
+      out->write( `The declared reference variables are initial.` ).
     ELSE.
-      output->display( `One or more of the declared reference ` &&
+      out->write( `One or more of the declared reference ` &&
                     `variables are not initial.` ).
     ENDIF.
 
 **********************************************************************
 
-    output->next_section( `2) Creating objects` ).
+    out->write( zcl_demo_abap_aux=>heading( `2) Creating objects` ) ).
 
     "You create an object in the memory of an application by using the
     "instance operator NEW. In doing so, a new instance of a
@@ -154,16 +152,16 @@ CLASS ZCL_DEMO_ABAP_OBJECTS IMPLEMENTATION.
 
     IF ref2a IS INSTANCE OF local_class
     AND ref2b IS INSTANCE OF local_class.
-      output->display( `ref2a and ref2b point to instances ` &&
+      out->write( `ref2a and ref2b point to instances ` &&
                     `of the class local_class.` ).
     ELSE.
-      output->display( `One or more of the reference variables ` &&
+      out->write( `One or more of the reference variables ` &&
       `do not point to instances of the class local_class.` ).
     ENDIF.
 
 **********************************************************************
 
-    output->next_section( `3) Assigning object references` ).
+    out->write( zcl_demo_abap_aux=>heading( `3) Assigning object references` ) ).
 
     "Without an assignment, the reference variable is empty.
     "To assign or copy reference variable, use the assignment operator
@@ -176,14 +174,14 @@ CLASS ZCL_DEMO_ABAP_OBJECTS IMPLEMENTATION.
     ref3a = ref3b.
 
     IF ref3a = ref3b.
-      output->display( `ref3b has been assigned to ref3a.` ).
+      out->write( `ref3b has been assigned to ref3a.` ).
     ELSE.
-      output->display( `ref3b has not been assigned to ref3a.` ).
+      out->write( `ref3b has not been assigned to ref3a.` ).
     ENDIF.
 
 **********************************************************************
 
-    output->next_section( `4) Overwriting object references` ).
+    out->write( zcl_demo_abap_aux=>heading( `4) Overwriting object references` ) ).
 
     "An object reference is overwritten when a new object is created
     "with a reference variable already pointing to an instance.
@@ -195,15 +193,16 @@ CLASS ZCL_DEMO_ABAP_OBJECTS IMPLEMENTATION.
 
     ref4 = NEW #( ).
 
-    output->display( input = ref4->no_of_instances name = `ref4->no_of_instances` ).
+    out->write( data = ref4->no_of_instances name = `ref4->no_of_instances` ).
+    out->write( |\n| ).
 
     ref4 = NEW #( ).
 
-    output->display( input = ref4->no_of_instances name = `ref4->no_of_instances` ).
+    out->write( data = ref4->no_of_instances name = `ref4->no_of_instances` ).
 
 **********************************************************************
 
-    output->next_section( `5) Keeping references variables in internal tables` ).
+    out->write( zcl_demo_abap_aux=>heading( `5) Keeping references variables in internal tables` ) ).
 
     "The following code shows that the reference variable is
     "overwritten in the course of the loop multiple times.
@@ -221,11 +220,11 @@ CLASS ZCL_DEMO_ABAP_OBJECTS IMPLEMENTATION.
       itab5 = VALUE #( BASE itab5 ( ref5 ) ).
     ENDDO.
 
-    output->display( input = itab5 name = `itab5` ).
+    out->write( data = itab5 name = `itab5` ).
 
 **********************************************************************
 
-    output->next_section( `6) Clearing object references` ).
+    out->write( zcl_demo_abap_aux=>heading( `6) Clearing object references` ) ).
 
     "Use CLEAR statements to explicitly clear a reference variable.
     "Since objects use up space in the memory, they should be cleared
@@ -240,14 +239,14 @@ CLASS ZCL_DEMO_ABAP_OBJECTS IMPLEMENTATION.
     CLEAR ref6.
 
     IF ref6 IS INITIAL.
-      output->display( `ref6 is initial.` ).
+      out->write( `ref6 is initial.` ).
     ELSE.
-      output->display( `ref6 is not initial.` ).
+      out->write( `ref6 is not initial.` ).
     ENDIF.
 
 **********************************************************************
 
-    output->next_section( `7) Accessing and using attributes` ).
+    out->write( zcl_demo_abap_aux=>heading( `7) Accessing and using attributes` ) ).
 
     "Instance attributes are accessed using the object component
     "selector -> via a reference variable. Visible static attributes
@@ -271,13 +270,15 @@ CLASS ZCL_DEMO_ABAP_OBJECTS IMPLEMENTATION.
     DATA  some_other_int TYPE local_class=>type_i.
     TYPES int_type       TYPE local_class=>type_i.
 
-    output->display( input = obj_instance_attr name = `obj_instance_attr` ).
-    output->display( input = obj_static_attr_obj name = `obj_static_attr_obj` ).
-    output->display( input = class_static_attr name = `class_static_attr` ).
+    out->write( data = obj_instance_attr name = `obj_instance_attr` ).
+    out->write( |\n| ).
+    out->write( data = obj_static_attr_obj name = `obj_static_attr_obj` ).
+    out->write( |\n| ).
+    out->write( data = class_static_attr name = `class_static_attr` ).
 
 **********************************************************************
 
-    output->next_section( `8) Calling static and instance methods` ).
+    out->write( zcl_demo_abap_aux=>heading( `8) Calling static and instance methods` ) ).
 
     "Similar to accessing attributes, instance methods are called
     "using -> via a reference variable. Static methods are called
@@ -296,12 +297,14 @@ CLASS ZCL_DEMO_ABAP_OBJECTS IMPLEMENTATION.
     DATA(ref8) = NEW zcl_demo_abap_objects( ).
     ref8->hallo_instance_method( ).
 
-    output->display( input = string name = `string` ).
+    out->write( data = string name = `string` ).
+    out->write( |\n| ).
 
     "Static methods
     lcl_demo=>hallo_static_ext( ).
 
-    output->display( input = lcl_demo=>string name = `lcl_demo=>string` ).
+    out->write( data = lcl_demo=>string name = `lcl_demo=>string` ).
+    out->write( |\n| ).
 
     "If methods are within the class where they are called,
     "the class name can be omitted.
@@ -309,12 +312,12 @@ CLASS ZCL_DEMO_ABAP_OBJECTS IMPLEMENTATION.
 
     hallo_static_method( ).
 
-    output->display( input = string name = `string` ).
+    out->write( data = string name = `string` ).
 
 **********************************************************************
 
-    output->next_section( `9) Calling methods: Examples` &&
-                  ` with importing parameters` ).
+    out->write( zcl_demo_abap_aux=>heading( `9) Calling methods: Examples` &&
+                  ` with importing parameters` ) ).
 
     "The example shows method calls. The methods used have only one or
     "two importing parameters.
@@ -338,29 +341,33 @@ CLASS ZCL_DEMO_ABAP_OBJECTS IMPLEMENTATION.
     "Method with one importing parameter.
     lcl_demo=>powers_of_two( 4 ).
 
-    output->display( input = lcl_demo=>calc_result name = `lcl_demo=>calc_result` ).
+    out->write( data = lcl_demo=>calc_result name = `lcl_demo=>calc_result` ).
+    out->write( |\n| ).
 
     lcl_demo=>powers_of_two( i_pow = 5 ).
 
-    output->display( input = lcl_demo=>calc_result name = `lcl_demo=>calc_result` ).
+    out->write( data = lcl_demo=>calc_result name = `lcl_demo=>calc_result` ).
+    out->write( |\n| ).
 
     lcl_demo=>powers_of_two( EXPORTING i_pow = 6 ).
 
-    output->display( input = lcl_demo=>calc_result name = `lcl_demo=>calc_result` ).
+    out->write( data = lcl_demo=>calc_result name = `lcl_demo=>calc_result` ).
+    out->write( |\n| ).
 
     "Method with two importing parameters
     lcl_demo=>addition( i_add1 = 1 i_add2 = 4 ).
 
-    output->display( input = lcl_demo=>calc_result name = `lcl_demo=>calc_result` ).
+    out->write( data = lcl_demo=>calc_result name = `lcl_demo=>calc_result` ).
+    out->write( |\n| ).
 
     lcl_demo=>addition_optional( i_add_mand = 1 ).
 
-    output->display( input = lcl_demo=>calc_result name = `lcl_demo=>calc_result` ).
+    out->write( data = lcl_demo=>calc_result name = `lcl_demo=>calc_result` ).
 
 **********************************************************************
 
-    output->next_section( `10) Calling methods: Examples ` &&
-                  `with exporting parameters` ).
+    out->write( zcl_demo_abap_aux=>heading( `10) Calling methods: Examples ` &&
+                  `with exporting parameters` ) ).
 
     "Note: The methods have exporting parameters defined in the signature,
     "hence, when calling the method, the ABAP word IMPORTING must be used to
@@ -382,12 +389,13 @@ CLASS ZCL_DEMO_ABAP_OBJECTS IMPLEMENTATION.
     lcl_demo=>subtraction( EXPORTING i_sub1 = 10 i_sub2 = 7
                            IMPORTING e_sub_result = DATA(subtraction_result) ).
 
-    output->display( input = hallo name = `hallo` ).
-    output->display( input = subtraction_result name = `subtraction_result` ).
+    out->write( data = hallo name = `hallo` ).
+    out->write( |\n| ).
+    out->write( data = subtraction_result name = `subtraction_result` ).
 
 **********************************************************************
 
-    output->next_section( `11) Calling methods: Example with changing parameter` ).
+    out->write( zcl_demo_abap_aux=>heading( `11) Calling methods: Example with changing parameter` ) ).
 
     "Changing parameters define one or multiple parameters that can
     "be both imported and exported. They should be reserved for
@@ -397,11 +405,11 @@ CLASS ZCL_DEMO_ABAP_OBJECTS IMPLEMENTATION.
 
     lcl_demo=>square_root( CHANGING i_sqr = num ).
 
-    output->display( input = num name = `num` ).
+    out->write( data = num name = `num` ).
 
 **********************************************************************
 
-    output->next_section( `12) Calling methods: Examples with returning parameters` ).
+    out->write( zcl_demo_abap_aux=>heading( `12) Calling methods: Examples with returning parameters` ) ).
 
     "Methods having a returning parameter are called functional methods.
     "Returning parameters are preferable to exporting parameters since they
@@ -420,28 +428,33 @@ CLASS ZCL_DEMO_ABAP_OBJECTS IMPLEMENTATION.
     DATA(mult_result) = lcl_demo=>multiplication( i_mult1 = 4
                                                    i_mult2 = 5 ).
 
-    output->display( input = mult_result name = `mult_result` ).
+    out->write( data = mult_result name = `mult_result` ).
+    out->write( |\n| ).
 
     "Comparing a method having exporting parameters doing the same.
     lcl_demo=>multiplication_exp_param( EXPORTING i_multa = 5
                                                   i_multb = 6
                                         IMPORTING e_mult_result = DATA(mult_res_exp) ).
 
-    output->display( input = mult_res_exp name = `mult_res_exp` ).
+    out->write( data = mult_res_exp name = `mult_res_exp` ).
+    out->write( |\n| ).
 
     "Example with a logical expression
     IF lcl_demo=>multiplication( i_mult1 = 5 i_mult2 = 3 ) < 20.
-      output->display( |The value is lower than 20.| ).
+      out->write( |The value is lower than 20.| ).
     ELSE.
-      output->display( |The value is greater than 20.| ).
+      out->write( |The value is greater than 20.| ).
     ENDIF.
+
+    out->write( |\n| ).
 
     "Receiving parameter
     lcl_demo=>multiplication( EXPORTING i_mult1 = 10
                                         i_mult2 = 11
                               RECEIVING r_mult_result = DATA(res_received) ).
 
-    output->display( input = res_received name = `res_received` ).
+    out->write( data = res_received name = `res_received` ).
+    out->write( |\n| ).
 
     "Example for method chaining using a global class.
     DATA(random_no1) = cl_abap_random_int=>create( )->get_next( ).
@@ -459,13 +472,15 @@ CLASS ZCL_DEMO_ABAP_OBJECTS IMPLEMENTATION.
 
     DATA(random_no3) = ref_randnom_no->get_next( ).
 
-    output->display( input = random_no1 name = `random_no1` ).
-    output->display( input = random_no2 name = `random_no2` ).
-    output->display( input = random_no3 name = `random_no3` ).
+    out->write( data = random_no1 name = `random_no1` ).
+    out->write( |\n| ).
+    out->write( data = random_no2 name = `random_no2` ).
+    out->write( |\n| ).
+    out->write( data = random_no3 name = `random_no3` ).
 
 **********************************************************************
 
-    output->next_section( `13) Calling methods: Examples with error handling` ).
+    out->write( zcl_demo_abap_aux=>heading( `13) Calling methods: Examples with error handling` ) ).
 
     "The examples show two method calls for a method that includes a
     "raising parameter. For this method, a class-based exception is
@@ -480,17 +495,21 @@ CLASS ZCL_DEMO_ABAP_OBJECTS IMPLEMENTATION.
                                             i_div2 = 2 ).
 
     IF lcl_demo=>string IS INITIAL.
-      output->display( input = div_result1 name = `div_result1` ).
+      out->write( data = div_result1 name = `div_result1` ).
     ELSE.
-      output->display( |Calculation error: { lcl_demo=>string }| ).
+      out->write( |Calculation error: { lcl_demo=>string }| ).
     ENDIF.
+
+    out->write( |\n| ).
 
     DATA(div_result2) = lcl_demo=>division( i_div1 = 1 i_div2 = 0 ).
     IF lcl_demo=>string IS INITIAL.
-      output->display( input = div_result2 name = `div_result2` ).
+      out->write( data = div_result2 name = `div_result2` ).
     ELSE.
-      output->display( |Calculation error: { lcl_demo=>string }| ).
+      out->write( |Calculation error: { lcl_demo=>string }| ).
     ENDIF.
+
+    out->write( |\n| ).
 
     "Method with RAISING addition (class-based exceptions)
     TRY.
@@ -503,11 +522,11 @@ CLASS ZCL_DEMO_ABAP_OBJECTS IMPLEMENTATION.
         subrc = 33.
     ENDTRY.
 
-    output->display( input = greets name = `greets` ).
+    out->write( data = greets name = `greets` ).
 
 **********************************************************************
 
-    output->next_section( `14) Constructors` ).
+    out->write( zcl_demo_abap_aux=>heading( `14) Constructors` ) ).
 
     "Constructors cannot be explicitly called like other methods.
     "The examples demonstrate instance and static constructors.
@@ -530,36 +549,40 @@ CLASS ZCL_DEMO_ABAP_OBJECTS IMPLEMENTATION.
     TRY.
         DATA(ref14a) = NEW lcl_constructors( num1 = 10 num2 = 5 ).
       CATCH cx_sy_zerodivide INTO DATA(error).
-        output->display( input = error->get_text( ) name = `error->get_text( )` ).
+        out->write( data = error->get_text( ) name = `error->get_text( )` ).
     ENDTRY.
 
-    output->display( input = ref14a name = `ref14a` ).
+    out->write( data = ref14a name = `ref14a` ).
+    out->write( |\n| ).
 
     TRY.
         DATA(ref14b) = NEW lcl_constructors( num1 = 18 num2 = 6 ).
       CATCH cx_sy_zerodivide INTO error.
-        output->display( input = error->get_text( ) name = `error->get_text( )` ).
+        out->write( data = error->get_text( ) name = `error->get_text( )` ).
     ENDTRY.
 
-    output->display( input = ref14b name = `ref14b` ).
+    out->write( data = ref14b name = `ref14b` ).
+    out->write( |\n| ).
 
     TRY.
         DATA(ref14c) = NEW lcl_constructors( num1 = 1 num2 = 0 ).
       CATCH cx_sy_zerodivide INTO error.
-        output->display( |Error with ref14c: { error->get_text( ) }| ).
+        out->write( |Error with ref14c: { error->get_text( ) }| ).
     ENDTRY.
 
-    output->display( input = ref14c name = `ref14c` ).
+    out->write( data = ref14c name = `ref14c` ).
+    out->write( |\n| ).
 
     "Static constructor
     lcl_constructors=>add_1( ).
 
-    output->display( input = lcl_constructors=>stat_text name = `lcl_constructors=>stat_text` ).
-    output->display( input = lcl_constructors=>stat_number name = `lcl_constructors=>stat_number` ).
+    out->write( data = lcl_constructors=>stat_text name = `lcl_constructors=>stat_text` ).
+    out->write( |\n| ).
+    out->write( data = lcl_constructors=>stat_number name = `lcl_constructors=>stat_number` ).
 
 **********************************************************************
 
-    output->next_section( `15) Parameters: Generic types` ).
+    out->write( zcl_demo_abap_aux=>heading( `15) Parameters: Generic types` ) ).
 
     "The use of generic types in method signatures is particularly relevant
     "for dynamic programming. The code shows various examples of parameters
@@ -571,7 +594,8 @@ CLASS ZCL_DEMO_ABAP_OBJECTS IMPLEMENTATION.
 
     lcl_demo=>generic_data( EXPORTING i_data = int ).
 
-    output->display( input = lcl_demo=>some_data->* name = `lcl_demo=>some_data->*` ).
+    out->write( data = lcl_demo=>some_data->* name = `lcl_demo=>some_data->*` ).
+    out->write( |\n| ).
 
     DATA strtab TYPE TABLE OF string.
 
@@ -579,7 +603,8 @@ CLASS ZCL_DEMO_ABAP_OBJECTS IMPLEMENTATION.
 
     lcl_demo=>generic_data( EXPORTING i_data = strtab ).
 
-    output->display( input = lcl_demo=>some_data->* name = `lcl_demo=>some_data->*` ).
+    out->write( data = lcl_demo=>some_data->* name = `lcl_demo=>some_data->*` ).
+    out->write( |\n| ).
 
     DATA int_tab TYPE TABLE OF i.
 
@@ -591,15 +616,17 @@ CLASS ZCL_DEMO_ABAP_OBJECTS IMPLEMENTATION.
 
     lcl_demo=>generic_tab( EXPORTING i_anytab = int_tab ).
 
-    output->display( input = lcl_demo=>some_data->* name = `lcl_demo=>some_data->*` ).
+    out->write( data = lcl_demo=>some_data->* name = `lcl_demo=>some_data->*` ).
+    out->write( |\n| ).
 
     lcl_demo=>generic_tab( EXPORTING i_anytab = c_tab ).
 
-    output->display( input = lcl_demo=>some_data->* name = `lcl_demo=>some_data->*` ).
+    out->write( data = lcl_demo=>some_data->* name = `lcl_demo=>some_data->*` ).
+    out->write( |\n| ).
 
 **********************************************************************
 
-    output->next_section( `16) Inheritance: Method redefinition` ).
+    out->write( zcl_demo_abap_aux=>heading( `16) Inheritance: Method redefinition` ) ).
 
     "The example demonstrates inheritance in a very rudimentary way.
     "Class 1 is the superclass of class 2 that inherits from class 1. The
@@ -624,13 +651,15 @@ CLASS ZCL_DEMO_ABAP_OBJECTS IMPLEMENTATION.
 
     DATA(third_string) = ref_inh3->get_string( ).
 
-    output->display( input = first_string name = `first_string` ).
-    output->display( input = second_string name = `second_string` ).
-    output->display( input = third_string name = `third_string` ).
+    out->write( data = first_string name = `first_string` ).
+    out->write( |\n| ).
+    out->write( data = second_string name = `second_string` ).
+    out->write( |\n| ).
+    out->write( data = third_string name = `third_string` ).
 
 **********************************************************************
 
-    output->next_section( `17) Polymorphism and Casting` ).
+    out->write( zcl_demo_abap_aux=>heading( `17) Polymorphism and Casting` ) ).
 
     "The ref_pol1 object reference variable is created and points to class
     "lcl_class1, i. e. the superclass. The ref_pol2 object reference
@@ -666,12 +695,13 @@ CLASS ZCL_DEMO_ABAP_OBJECTS IMPLEMENTATION.
 
     ref_pol_super = NEW lcl_class2a( ).
 
-    output->display( input = str1 name = `str1` ).
-    output->display( input = str2 name = `str2` ).
+    out->write( data = str1 name = `str1` ).
+    out->write( |\n| ).
+    out->write( data = str2 name = `str2` ).
 
 **********************************************************************
 
-    output->next_section( `18a) Downcast` ).
+    out->write( zcl_demo_abap_aux=>heading( `18a) Downcast` ) ).
 
     "In this example, the possibility of downcasts are checked, i. e. the
     "assignment of a more generic object reference variable to a specific
@@ -770,11 +800,11 @@ CLASS ZCL_DEMO_ABAP_OBJECTS IMPLEMENTATION.
       ENDIF.
     ENDLOOP.
 
-    output->display( input = dc_check name = `dc_check` ).
+    out->write( data = dc_check name = `dc_check` ).
 
 **********************************************************************
 
-    output->next_section( `18b) Excursion RTTI: Downcasts and Method Chaining` ).
+    out->write( zcl_demo_abap_aux=>heading( `18b) Excursion RTTI: Downcasts and Method Chaining` ) ).
 
     "Downcasts particularly play, for example, a role in the context of
     "retrieving type information using RTTI. Method chaining is handy
@@ -790,17 +820,18 @@ CLASS ZCL_DEMO_ABAP_OBJECTS IMPLEMENTATION.
     DATA(rtti_b) = CAST cl_abap_structdescr( rtti_a ).
     DATA(rtti_c) = rtti_b->components.
 
-    output->display( input = rtti_c name = `rtti_c` ).
+    out->write( data = rtti_c name = `rtti_c` ).
+    out->write( |\n| ).
 
     DATA(rtti_d) = CAST cl_abap_structdescr(
       cl_abap_typedescr=>describe_by_data( struct4cast )
           )->components.
 
-    output->display( input = rtti_d name = `rtti_d` ).
+    out->write( data = rtti_d name = `rtti_d` ).
 
 **********************************************************************
 
-    output->next_section( `19) Interfaces` ).
+    out->write( zcl_demo_abap_aux=>heading( `19) Interfaces` ) ).
 
     "Addressing instance interface components using interface reference variable
     DATA ref_if1 TYPE REF TO zdemo_abap_objects_interface.
@@ -862,26 +893,38 @@ CLASS ZCL_DEMO_ABAP_OBJECTS IMPLEMENTATION.
     DATA(intf_const2) = zcl_demo_abap_objects=>zdemo_abap_objects_interface~const_intf.
     DATA(intf_const3) = ref_if2->const_intf.
 
-    output->display( input = inst_intf_attr_via_iref name = `inst_intf_attr_via_iref` ).
-    output->display( input = inst_intf_meth_via_iref1 name = `inst_intf_meth_via_iref1` ).
-    output->display( input = inst_intf_meth_via_iref2 name = `inst_intf_meth_via_iref2` ).
-    output->display( input = inst_intf_attr_via_cref name = `inst_intf_attr_via_cref` ).
-    output->display( input = inst_intf_meth_via_cref name = `inst_intf_meth_via_cref` ).
+    out->write( data = inst_intf_attr_via_iref name = `inst_intf_attr_via_iref` ).
+    out->write( |\n| ).
+    out->write( data = inst_intf_meth_via_iref1 name = `inst_intf_meth_via_iref1` ).
+    out->write( |\n| ).
+    out->write( data = inst_intf_meth_via_iref2 name = `inst_intf_meth_via_iref2` ).
+    out->write( |\n| ).
+    out->write( data = inst_intf_attr_via_cref name = `inst_intf_attr_via_cref` ).
+    out->write( |\n| ).
+    out->write( data = inst_intf_meth_via_cref name = `inst_intf_meth_via_cref` ).
+    out->write( |\n| ).
 
-    output->display( input = stat_intf_attr1 name = `stat_intf_attr1` ).
-    output->display( input = stat_intf_meth1 name = `stat_intf_meth1` ).
-    output->display( input = stat_intf_meth2 name = `stat_intf_meth2` ).
-    output->display( input = stat_intf_attr2 name = `stat_intf_attr2` ).
-    output->display( input = stat_intf_meth3 name = `stat_intf_meth3` ).
-    output->display( input = stat_intf_meth4 name = `stat_intf_meth4` ).
+    out->write( data = stat_intf_attr1 name = `stat_intf_attr1` ).
+    out->write( |\n| ).
+    out->write( data = stat_intf_meth1 name = `stat_intf_meth1` ).
+    out->write( |\n| ).
+    out->write( data = stat_intf_meth2 name = `stat_intf_meth2` ).
+    out->write( |\n| ).
+    out->write( data = stat_intf_attr2 name = `stat_intf_attr2` ).
+    out->write( |\n| ).
+    out->write( data = stat_intf_meth3 name = `stat_intf_meth3` ).
+    out->write( |\n| ).
+    out->write( data = stat_intf_meth4 name = `stat_intf_meth4` ).
 
-    output->display( input = intf_const1 name = `intf_const1` ).
-    output->display( input = intf_const2 name = `intf_const2` ).
-    output->display( input = intf_const3 name = `intf_const3` ).
+    out->write( data = intf_const1 name = `intf_const1` ).
+    out->write( |\n| ).
+    out->write( data = intf_const2 name = `intf_const2` ).
+    out->write( |\n| ).
+    out->write( data = intf_const3 name = `intf_const3` ).
 
 **********************************************************************
 
-    output->next_section( `20) Singleton` ).
+    out->write( zcl_demo_abap_aux=>heading( `20) Singleton` ) ).
 
     "The demonstrates an implementation of the singleton design pattern.
     "A static method allows access to the only object of the class.
@@ -904,8 +947,10 @@ CLASS ZCL_DEMO_ABAP_OBJECTS IMPLEMENTATION.
     DATA(timestamp) = obj1->get_timestamp( ).
     DATA(no_of_instances) = lcl_singleton=>no_of_instances.
 
-    output->display( input = timestamp name = `timestamp` ).
-    output->display( input = no_of_instances name = `no_of_instances` ).
+    out->write( data = timestamp name = `timestamp` ).
+    out->write( |\n| ).
+    out->write( data = no_of_instances name = `no_of_instances` ).
+    out->write( |\n| ).
 
     "Trying to get another instance
     obj2 = lcl_singleton=>get_instance( ).
@@ -914,8 +959,10 @@ CLASS ZCL_DEMO_ABAP_OBJECTS IMPLEMENTATION.
     timestamp =  obj2->get_timestamp( ).
     no_of_instances = lcl_singleton=>no_of_instances.
 
-    output->display( input = timestamp name = `timestamp` ).
-    output->display( input = no_of_instances name = `no_of_instances` ).
+    out->write( data = timestamp name = `timestamp` ).
+    out->write( |\n| ).
+    out->write( data = no_of_instances name = `no_of_instances` ).
+    out->write( |\n| ).
 
     "Trying to get another instance
     DATA(obj3) = lcl_singleton=>get_instance( ).
@@ -924,12 +971,13 @@ CLASS ZCL_DEMO_ABAP_OBJECTS IMPLEMENTATION.
     timestamp =  obj3->get_timestamp( ).
     no_of_instances = lcl_singleton=>no_of_instances.
 
-    output->display( input = timestamp name = `timestamp` ).
-    output->display( input = no_of_instances name = `no_of_instances` ).
+    out->write( data = timestamp name = `timestamp` ).
+    out->write( |\n| ).
+    out->write( data = no_of_instances name = `no_of_instances` ).
 
 **********************************************************************
 
-    output->next_section( `21) Factory method in an abstract class` ).
+    out->write( zcl_demo_abap_aux=>heading( `21) Factory method in an abstract class` ) ).
 
     "The example demonstrates a factory method in an abstract class. An
     "instance is tried to be created two times. The factory method is
@@ -938,33 +986,40 @@ CLASS ZCL_DEMO_ABAP_OBJECTS IMPLEMENTATION.
     "is only allowed if the value '1' is passed to the factory method. The
     "second instance creation fails on purpose.
 
-    output->display( `First try: inst_1` ).
+    out->write( `First try: inst_1` ).
+    out->write( |\n| ).
+    out->write( |\n| ).
 
     TRY.
         DATA(inst_1) = lcl_abstract=>factory_method( 1 ).
         DATA(str_1) = inst_1->return_string( `inst_1` ).
-        output->display( input = str_1 name = `str_1` ).
+        out->write( data = str_1 name = `str_1` ).
       CATCH cx_sy_ref_is_initial INTO DATA(error1).
-        output->display( |Error message: { error1->get_text( ) }| ).
+        out->write( |Error message: { error1->get_text( ) }| ).
     ENDTRY.
 
-    output->display( input = lcl_abstract=>message name = `lcl_abstract=>message` ).
+    out->write( |\n| ).
+    out->write( data = lcl_abstract=>message name = `lcl_abstract=>message` ).
+    out->write( |\n| ).
 
-    output->display( `Second try: inst_2` ).
+    out->write( `Second try: inst_2` ).
+    out->write( |\n| ).
 
     TRY.
         DATA(inst_2) = lcl_abstract=>factory_method( 2 ).
         DATA(str_2) = inst_2->return_string( `inst_2` ).
-        output->display( input = str_2 name = `str_2` ).
+        out->write( data = str_2 name = `str_2` ).
       CATCH cx_sy_ref_is_initial INTO DATA(error2).
-        output->display( |Error message: { error2->get_text( ) }| ).
+        out->write( |Error message: { error2->get_text( ) }| ).
     ENDTRY.
 
-    output->display( input = lcl_abstract=>message name = `lcl_abstract=>message` ).
+    out->write( |\n| ).
+    out->write( |\n| ).
+    out->write( data = lcl_abstract=>message name = `lcl_abstract=>message` ).
 
 **********************************************************************
 
-    output->next_section( `22) Friendship: Accessing components of friends` ).
+    out->write( zcl_demo_abap_aux=>heading( `22) Friendship: Accessing components of friends` ) ).
 
     "Classes can grant friendship to other classes and interfaces to enable
     "the access to protected and private components. However, the friendship
@@ -979,11 +1034,11 @@ CLASS ZCL_DEMO_ABAP_OBJECTS IMPLEMENTATION.
 
     DATA(string_table) = zcl_demo_abap_objects_friend=>get_strings( ).
 
-    output->display( input = string_table name = `string_table` ).
+    out->write( data = string_table name = `string_table` ).
 
 **********************************************************************
 
-    output->next_section( `23) Self-reference me` ).
+    out->write( zcl_demo_abap_aux=>heading( `23) Self-reference me` ) ).
 
     "This example demonstrates the use of the self-reference 'me' in an
     "instance method. The method implementation includes a variable of type
@@ -998,12 +1053,13 @@ CLASS ZCL_DEMO_ABAP_OBJECTS IMPLEMENTATION.
     ref_var->me_ref_meth( IMPORTING e1 = DATA(string_without_me)
                                     e2 = DATA(string_with_me) ).
 
-    output->display( input = string_without_me name = `string_without_me` ).
-    output->display( input = string_with_me name = `string_with_me` ).
+    out->write( data = string_without_me name = `string_without_me` ).
+    out->write( |\n| ).
+    out->write( data = string_with_me name = `string_with_me` ).
 
 **********************************************************************
 
-    output->next_section( `24) Events` ).
+    out->write( zcl_demo_abap_aux=>heading( `24) Events` ) ).
 
     "The example covers the use of instance events. Event handler methods
     "are registered for a particular instance. Events are raised in a method
@@ -1022,7 +1078,7 @@ CLASS ZCL_DEMO_ABAP_OBJECTS IMPLEMENTATION.
     "Calling method that raises an event
     ref_events->greetings( ).
 
-    output->display( input = ref_events->greets name = `ref_events->greets` ).
+    out->write( data = ref_events->greets name = `ref_events->greets` ).
 
   ENDMETHOD.
 

@@ -107,7 +107,7 @@ ENDCLASS.
 
 
 
-CLASS zcl_demo_abap_constructor_expr IMPLEMENTATION.
+CLASS ZCL_DEMO_ABAP_CONSTRUCTOR_EXPR IMPLEMENTATION.
 
 
   METHOD fill_deep_structures.
@@ -164,12 +164,10 @@ CLASS zcl_demo_abap_constructor_expr IMPLEMENTATION.
 
   METHOD if_oo_adt_classrun~main.
 
-    DATA(output) = NEW zcl_demo_abap_display( out ).
+    out->write( `ABAP Cheat Sheet Example: Constructor Expressions` ).
 
-    output->display( `ABAP Cheat Sheet Example: Constructor expressions` ).
-
-    output->display( `VALUE` ).
-    output->display( `1) Structures: Populating a flat structure` ).
+    out->write( |\nVALUE\n| ).
+    out->write( |1) Structures: Populating a flat structure\n\n| ).
 
     "A flat structure is created based on a data type defined with a
     "TYPES statement. The structure is then filled using a constructor
@@ -187,29 +185,30 @@ CLASS zcl_demo_abap_constructor_expr IMPLEMENTATION.
     "Filling structure
     struc = VALUE #( num = 1 char1 = 'aaa'  char2 = 'abc' ).
 
-    output->display( input = struc name = `struc` ).
+    out->write( data = struc name = `struc` ).
 
 **********************************************************************
 
-    output->next_section( `2) Structures: Omitting value assignment to components / BASE addition` ).
+    out->write( zcl_demo_abap_aux=>heading( `2) Structures: Omitting value assignment to components / BASE addition` ) ).
 
     "The same structure is then filled purposely omitting components, i.
     "e. these components remain initial.
 
     struc = VALUE #( char1 = 'bbb' ).
 
-    output->display( input = struc name = `struc` ).
+    out->write( data = struc name = `struc` ).
 
     "You can use the BASE addition to retain existing content
     "Compare with the BASE example further down regarding internal tables: There are
     "no extra parentheses within the outer pair of parentheses.
     struc = VALUE #( BASE struc char2 = 'xyz' ).
 
-    output->display( input = struc name = `struc` ).
+    out->write( |\n| ).
+    out->write( data = struc name = `struc` ).
 
 **********************************************************************
 
-    output->next_section( `3) Structures: Inline declaration, explicit type specification` ).
+    out->write( zcl_demo_abap_aux=>heading( `3) Structures: Inline declaration, explicit type specification` ) ).
 
     "The example demonstrates a variable that is declared inline. Here,
     "the result is a structure which is filled using a constructor
@@ -222,11 +221,11 @@ CLASS zcl_demo_abap_constructor_expr IMPLEMENTATION.
                                         char1 = 'ccc'
                                         char2 = 'def' ).
 
-    output->display( input = struc_inl name = `struc_inl` ).
+    out->write( data = struc_inl name = `struc_inl` ).
 
 **********************************************************************
 
-    output->next_section( `4) Internal tables: Declaration and population` ).
+out->write( zcl_demo_abap_aux=>heading( `4) Internal tables: Declaration and population` ) ).
 
     "The example demonstrates the declaration of an internal table. The
     "internal table is then filled using a constructor expression with
@@ -242,11 +241,11 @@ CLASS zcl_demo_abap_constructor_expr IMPLEMENTATION.
                     ( num = 2 char1 = 'bbb'  char2 = 'def' )
                     ( num = 3 char1 = 'ccc'                 ) ).
 
-    output->display( input = itab name = `itab` ).
+    out->write( data = itab name = `itab` ).
 
 **********************************************************************
 
-    output->next_section( `5) Internal tables: Inline declaration, explicit type specification` ).
+    out->write( zcl_demo_abap_aux=>heading( `5) Internal tables: Inline declaration, explicit type specification` ) ).
 
     "The example demonstrates an internal table declared inline that is
     "filled using a constructor expression with VALUE by specifying the
@@ -266,12 +265,13 @@ CLASS zcl_demo_abap_constructor_expr IMPLEMENTATION.
                                           ( `table` )
                                           ( `of type string` ) ).
 
-    output->display( input = itab2 name = `itab2` ).
-    output->display( input = str_table name = `str_table` ).
+    out->write( data = itab2 name = `itab2` ).
+    out->write( |\n| ).
+    out->write( data = str_table name = `str_table` ).
 
 **********************************************************************
 
-    output->next_section( `6) LINES OF addition` ).
+    out->write( zcl_demo_abap_aux=>heading( `6) LINES OF addition` ) ).
 
     "Using the LINES OF addition, you can add lines of other tables.
     "Note: The line type of the other internal table must match the one of
@@ -283,22 +283,22 @@ CLASS zcl_demo_abap_constructor_expr IMPLEMENTATION.
                      ( LINES OF itab )
                      ( LINES OF itab FROM 1 TO 2 ) ).
 
-    output->display( input = itab2 name = `itab2` ).
+    out->write( data = itab2 name = `itab2` ).
 
 **********************************************************************
 
-    output->next_section( `7) BASE addition for keeping existing data` ).
+    out->write( zcl_demo_abap_aux=>heading( `7) BASE addition for keeping existing data` ) ).
 
     "Using the BASE addition, you can keep existing content of the source
     "internal table.
 
     itab2 = VALUE #( BASE itab2 ( num = 7 char1 = 'ggg' char2 = 'pqr' ) ).
 
-    output->display( input = itab2 name = `itab2` ).
+    out->write( data = itab2 name = `itab2` ).
 
 **********************************************************************
 
-    output->next_section( `8) Assignemnt with the VALUE operator without specifying content in parentheses` ).
+    out->write( zcl_demo_abap_aux=>heading( `8) Assignemnt with the VALUE operator without specifying content in parentheses` ) ).
 
     "Using the VALUE operator without populating anything in the parentheses,
     "data objects are initialized.
@@ -316,44 +316,48 @@ CLASS zcl_demo_abap_constructor_expr IMPLEMENTATION.
     str_table = VALUE #( ).
     struc = VALUE #( ).
 
-    output->display( input = some_num name = `some_num` ).
-    output->display( input = another_num name = `another_num` ).
-    output->display( input = some_str name = `some_str` ).
-    output->display( input = str_table name = `str_table` ).
-    output->display( input = struc name = `struc` ).
+    out->write( data = some_num name = `some_num` ).
+    out->write( |\n| ).
+    out->write( data = another_num name = `another_num` ).
+    out->write( |\n| ).
+    out->write( data = some_str name = `some_str` ).
+    out->write( |\n| ).
+    out->write( data = str_table name = `str_table` ).
+    out->write( |\n| ).
+    out->write( data = struc name = `struc` ).
 
 **********************************************************************
 
-    output->next_section( `Excursions: VALUE operator in use with ABAP statements and ABAP SQL statements` ).
+    out->write( zcl_demo_abap_aux=>heading( `Excursions: VALUE operator in use with ABAP statements and ABAP SQL statements` ) ).
 
     "The following examples use ABAP and ABAP SQL statements in which table lines
     "are constructed inline using the VALUE operator.
 
-    output->display( `9) Modifying internal table from a structure created inline` ).
+    out->write( `9) Modifying internal table from a structure created inline` && |\n\n| ).
 
     MODIFY TABLE itab2 FROM VALUE #( num   = 7 char1 = 'hhh' char2 = 'stu' ).
 
-    output->display( input = itab2 name = `itab2` ).
+    out->write( data = itab2 name = `itab2` ).
 
 **********************************************************************
 
-    output->next_section( `10) Inserting a table line that is created inline into an internal table` ).
+    out->write( zcl_demo_abap_aux=>heading( `10) Inserting a table line that is created inline into an internal table` ) ).
 
     INSERT VALUE #( num = 8 char1 = 'iii'  char2 = 'vwx' ) INTO TABLE itab2.
 
-    output->display( input = itab2 name = `itab2` ).
+    out->write( data = itab2 name = `itab2` ).
 
 **********************************************************************
 
-    output->next_section( `11) Deleting a table entry based on a line created inline` ).
+    out->write( zcl_demo_abap_aux=>heading( `11) Deleting a table entry based on a line created inline` ) ).
 
     DELETE TABLE itab2 FROM VALUE #( num = 3 ).
 
-    output->display( input = itab2 name = `itab2` ).
+    out->write( data = itab2 name = `itab2` ).
 
 **********************************************************************
 
-    output->next_section( `12) Modifying a database table based on an internal table created inline` ).
+    out->write( zcl_demo_abap_aux=>heading( `12) Modifying a database table based on an internal table created inline` ) ).
 
     "Deleting demo database table entries for the following example
     DELETE FROM zdemo_abap_carr.
@@ -375,12 +379,12 @@ CLASS zcl_demo_abap_constructor_expr IMPLEMENTATION.
            ORDER BY carrid
            INTO TABLE @DATA(itab_carr).
 
-    output->display( input = itab_carr name = `itab_carr` ).
+    out->write( data = itab_carr name = `itab_carr` ).
 
 **********************************************************************
 
-    output->next_section( `Excursion: Deep structures and tables` ).
-    output->display( `13) Deep structure` ).
+    out->write( zcl_demo_abap_aux=>heading( `Excursion: Deep structures and tables` ) ).
+    out->write( |13) Deep structure\n| ).
 
     "The example demonstrates the use of constructor expressions with
     "VALUE in the context of a deep structure. Here, a structure is declared
@@ -400,11 +404,11 @@ CLASS zcl_demo_abap_constructor_expr IMPLEMENTATION.
                                             char1 = 'aaa'
                                             substruc = VALUE #( int = 123 str = `hallo` ) ).
 
-    output->display( input = deep_struc name = `deep_struc` ).
+    out->write( data = deep_struc name = `deep_struc` ).
 
 **********************************************************************
 
-    output->next_section( `14) Deep internal table` ).
+    out->write( zcl_demo_abap_aux=>heading( `14) Deep internal table` ) ).
 
     "A deep internal table is created. Also here, nested VALUE
     "expressions are demonstrated.
@@ -421,32 +425,35 @@ CLASS zcl_demo_abap_constructor_expr IMPLEMENTATION.
       ( char = 'aaa' tab = VALUE #( ( 1 ) ( 2 ) ( 3 ) ) )
       ( char = 'bbb' tab = VALUE #( ( 4 ) ( 5 ) ( 6 ) ) ) ).
 
-    output->display( input = deep_itab name = `deep_itab` ).
+    out->write( data = deep_itab name = `deep_itab` ).
 
 **********************************************************************
 
-    output->next_section( `CORRESPONDING` ).
-    output->display( `Simple Examples with structures and internal tables` ).
+    out->write( zcl_demo_abap_aux=>heading( `CORRESPONDING` ) ).
+    out->write( |Simple Examples with structures and internal tables\n| ).
 
     "Method to fill demo structures and internal tables
     "with values to work with
     fill_struc_and_tab( ).
 
-    output->display( `15) Original structure and table content` ).
+    out->write( `15) Original structure and table content` && |\n\n| ).
 
     "Displaying the original structures and tables that are filled in the
     "course of a method call. The structures and tables are filled anew
     "throughout the examples so that all CORRESPONDING expressions are based
     "on the same values.
 
-    output->display( input = s1 name = `s1` ).
-    output->display( input = s2 name = `s2` ).
-    output->display( input = tab1 name = `tab1` ).
-    output->display( input = tab2 name = `it_st` ).
+    out->write( data = s1 name = `s1` ).
+    out->write( |\n| ).
+    out->write( data = s2 name = `s2` ).
+    out->write( |\n| ).
+    out->write( data = tab1 name = `tab1` ).
+    out->write( |\n| ).
+    out->write( data = tab2 name = `it_st` ).
 
 **********************************************************************
 
-    output->next_section( `16) CORRESPONDING without addition` ).
+    out->write( zcl_demo_abap_aux=>heading( `16) CORRESPONDING without addition` ) ).
 
     "The target structure and table have a different type but identically
     "named components. The identically named components are filled. Note
@@ -459,12 +466,13 @@ CLASS zcl_demo_abap_constructor_expr IMPLEMENTATION.
 
     tab2 = CORRESPONDING #( tab1 ).
 
-    output->display( input = s2 name = `s2` ).
-    output->display( input = tab2 name = `tab2` ).
+    out->write( data = s2 name = `s2` ).
+    out->write( |\n| ).
+    out->write( data = tab2 name = `tab2` ).
 
 **********************************************************************
 
-    output->next_section( `17) BASE addition for keeping original content` ).
+    out->write( zcl_demo_abap_aux=>heading( `17) BASE addition for keeping original content` ) ).
 
     "The BASE addition keeps the original content. Structure: The non-
     "identical component name retains its value. Internal table: Existing
@@ -476,12 +484,13 @@ CLASS zcl_demo_abap_constructor_expr IMPLEMENTATION.
 
     tab2 = CORRESPONDING #( BASE ( tab2 ) tab1 ).
 
-    output->display( input = s2 name = `s2` ).
-    output->display( input = tab2 name = `tab2` ).
+    out->write( data = s2 name = `s2` ).
+    out->write( |\n| ).
+    out->write( data = tab2 name = `tab2` ).
 
 **********************************************************************
 
-    output->next_section( `18) MAPPING/EXCEPT additions` ).
+    out->write( zcl_demo_abap_aux=>heading( `18) MAPPING/EXCEPT additions` ) ).
 
     "The example demonstrates the additions MAPPING and EXCEPT. MAPPING:
     "One component of the target structure is assigned the value of a
@@ -494,15 +503,16 @@ CLASS zcl_demo_abap_constructor_expr IMPLEMENTATION.
 
     tab2 = CORRESPONDING #( tab1 EXCEPT comp1 ).
 
-    output->display( input = s2 name = `s2` ).
-    output->display( input = tab2 name = `tab2` ).
+    out->write( data = s2 name = `s2` ).
+    out->write( |\n| ).
+    out->write( data = tab2 name = `tab2` ).
 
 **********************************************************************
 
-    output->next_section( `CORRESPONDING: Demonstrating various` &&
-    ` additions using deep structures` ).
+    out->write( zcl_demo_abap_aux=>heading( `CORRESPONDING: Demonstrating various` &&
+    ` additions using deep structures` ) ).
 
-    output->display( `19) Original content of deep structures` ).
+    out->write( `19) Original content of deep structures` && |\n\n| ).
 
     "Displaying the original deep structures and tables that are filled in
     "the course of a method call. The deep structures and tables are filled
@@ -513,12 +523,13 @@ CLASS zcl_demo_abap_constructor_expr IMPLEMENTATION.
     "with values to work with
     fill_deep_structures( ).
 
-    output->display( input = struc1 name = `struc1` ).
-    output->display( input = struc2 name = `struc2` ).
+    out->write( data = struc1 name = `struc1` ).
+    out->write( |\n| ).
+    out->write( data = struc2 name = `struc2` ).
 
 **********************************************************************
 
-    output->next_section( `20) CORRESPONDING without addition` ).
+    out->write( zcl_demo_abap_aux=>heading( `20) CORRESPONDING without addition` ) ).
 
     "CORRESPONDING operator without addition
     "Existing contents of identically named components are replaced.
@@ -537,11 +548,11 @@ CLASS zcl_demo_abap_constructor_expr IMPLEMENTATION.
 
     struc2 = CORRESPONDING #( struc1 ).
 
-    output->display( input = struc2 name = `struc2` ).
+    out->write( data = struc2 name = `struc2` ).
 
 **********************************************************************
 
-    output->next_section( `21) DEEP addition` ).
+    out->write( zcl_demo_abap_aux=>heading( `21) DEEP addition` ) ).
 
     "CORRESPONDING operator with the addition DEEP
     "Existing contents of identically named components are replaced.
@@ -560,11 +571,11 @@ CLASS zcl_demo_abap_constructor_expr IMPLEMENTATION.
 
     struc2 = CORRESPONDING #( DEEP struc1 ).
 
-    output->display( input = struc2 name = `struc2` ).
+    out->write( data = struc2 name = `struc2` ).
 
 **********************************************************************
 
-    output->next_section( `22) BASE addition` ).
+    out->write( zcl_demo_abap_aux=>heading( `22) BASE addition` ) ).
 
     "CORRESPONDING operator with the addition BASE
     "Existing contents of identically named components are replaced.
@@ -586,11 +597,11 @@ CLASS zcl_demo_abap_constructor_expr IMPLEMENTATION.
 
     struc2 = CORRESPONDING #( BASE ( struc2 ) struc1 ).
 
-    output->display( input = struc2 name = `struc2` ).
+    out->write( data = struc2 name = `struc2` ).
 
 **********************************************************************
 
-    output->next_section( `23) DEEP BASE addition` ).
+    out->write( zcl_demo_abap_aux=>heading( `23) DEEP BASE addition` ) ).
 
     "CORRESPONDING operator with the additions DEEP BASE
     "Existing contents of identically named components are replaced.
@@ -610,11 +621,11 @@ CLASS zcl_demo_abap_constructor_expr IMPLEMENTATION.
 
     struc2 = CORRESPONDING #( DEEP BASE ( struc2 ) struc1 ).
 
-    output->display( input = struc2 name = `struc2` ).
+    out->write( data = struc2 name = `struc2` ).
 
 **********************************************************************
 
-    output->next_section( `24) APPENDING addition` ).
+    out->write( zcl_demo_abap_aux=>heading( `24) APPENDING addition` ) ).
 
     "CORRESPONDING operator with the addition APPENDING
     "Existing contents of identically named components are replaced.
@@ -636,11 +647,11 @@ CLASS zcl_demo_abap_constructor_expr IMPLEMENTATION.
 
     struc2 = CORRESPONDING #( APPENDING ( struc2 ) struc1 ).
 
-    output->display( input = struc2 name = `struc2` ).
+    out->write( data = struc2 name = `struc2` ).
 
 **********************************************************************
 
-    output->next_section( `25) DEEP APPENDING` ).
+    out->write( zcl_demo_abap_aux=>heading( `25) DEEP APPENDING` ) ).
 
     "CORRESPONDING operator with the additions DEEP APPENDING
     "Existing contents of identically named components are replaced.
@@ -661,12 +672,12 @@ CLASS zcl_demo_abap_constructor_expr IMPLEMENTATION.
 
     struc2 = CORRESPONDING #( DEEP APPENDING ( struc2 ) struc1 ).
 
-    output->display( input = struc2 name = `struc2` ).
+    out->write( data = struc2 name = `struc2` ).
 
 **********************************************************************
 
-    output->next_section( `NEW` ).
-    output->display( `26) Creating Anonymous Data Objects` ).
+    out->write( zcl_demo_abap_aux=>heading( `NEW` ) ).
+    out->write( `26) Creating Anonymous Data Objects` && |\n\n| ).
 
     "The examples show the creation of anonymous data objects.
     "First, data reference variables are declared using a DATA statement.
@@ -713,17 +724,23 @@ CLASS zcl_demo_abap_constructor_expr IMPLEMENTATION.
     DATA(dref6) = NEW zdemo_abap_carr( carrid   = 'AA'
                                        carrname = 'American Airlines' ).
 
-    output->display( input = val name = `val` ).
-    output->display( input = dref1 name = `dref1` ).
-    output->display( input = dref2 name = `dref2` ).
-    output->display( input = dref3 name = `dref3` ).
-    output->display( input = dref4 name = `dref4` ).
-    output->display( input = dref5 name = `dref5` ).
-    output->display( input = dref6 name = `dref6` ).
+    out->write( data = val name = `val` ).
+    out->write( |\n| ).
+    out->write( data = dref1 name = `dref1` ).
+    out->write( |\n| ).
+    out->write( data = dref2 name = `dref2` ).
+    out->write( |\n| ).
+    out->write( data = dref3 name = `dref3` ).
+    out->write( |\n| ).
+    out->write( data = dref4 name = `dref4` ).
+    out->write( |\n| ).
+    out->write( data = dref5 name = `dref5` ).
+    out->write( |\n| ).
+    out->write( data = dref6 name = `dref6` ).
 
 **********************************************************************
 
-    output->next_section( `27) Creating Instances of Classes` ).
+    out->write( zcl_demo_abap_aux=>heading( `27) Creating Instances of Classes` ) ).
 
     "The example demonstrates the creation of instances of classes.
     "First, an object reference variable is declared with a DATA statement.
@@ -749,22 +766,25 @@ CLASS zcl_demo_abap_constructor_expr IMPLEMENTATION.
     "in the parentheses
     oref1 = NEW #( txt = `Hallo` ).
 
-    output->display( input = oref1 name = `oref1` ).
+    out->write( data = oref1 name = `oref1` ).
+    out->write( |\n| ).
 
     "Creating an instance of a class, object reference variable
     "is declared inline, explicit type specification
     DATA(oref2) = NEW local_class( `Salut` ).
 
-    output->display( input = oref2 name = `oref2` ).
+    out->write( data = oref2 name = `oref2` ).
+    out->write( |\n| ).
 
     "Method chaining
     DATA(result) = NEW local_class( `Ciao` )->double( int = NEW #( 5 ) ).
 
-    output->display( input = result name = `result` ).
+    out->write( data = result name = `result` ).
+    out->write( |\n| ).
 
 **********************************************************************
 
-    output->next_section( `28) CONV` ).
+    out->write( zcl_demo_abap_aux=>heading( `28) CONV` ) ).
 
     "The examples show the effect of the CONV operator.
     "A variable of type i is declared and assigned a value. Then,
@@ -795,8 +815,10 @@ CLASS zcl_demo_abap_constructor_expr IMPLEMENTATION.
     "... with conversion using an appropriate type
     DATA(dec_num) = CONV decfloat34( num / 4 ).
 
-    output->display( input = i name = `i` ).
-    output->display( input = dec_num name = `dec_num` ).
+    out->write( data = i name = `i` ).
+    out->write( |\n| ).
+    out->write( data = dec_num name = `dec_num` ).
+    out->write( |\n| ).
 
     "Declaring data objects
     DATA(txt) = VALUE abap_bool( ).
@@ -804,25 +826,26 @@ CLASS zcl_demo_abap_constructor_expr IMPLEMENTATION.
     DATA(str) = ` `.
 
     "Comparing the data objects with and without conversion
-    output->display( `Without conversion:` ).
+    out->write( `Without conversion:` ).
 
     IF txt = str.
-      output->display( `txt is equal to str.` ).
+      out->write( `txt is equal to str.` ).
     ELSE.
-      output->display( `txt is not equal to str.` ).
+      out->write( `txt is not equal to str.` ).
     ENDIF.
 
-    output->display( `With conversion:` ).
+    out->write( |\n| ).
+    out->write( `With conversion:` ).
 
     IF txt = CONV abap_bool( str ).
-      output->display( `txt is equal to converted str.` ).
+      out->write( `txt is equal to converted str.` ).
     ELSE.
-      output->display( `txt is not equal to converted str.` ).
+      out->write( `txt is not equal to converted str.` ).
     ENDIF.
 
 **********************************************************************
 
-    output->next_section( `29) EXACT` ).
+    out->write( zcl_demo_abap_aux=>heading( `29) EXACT` ) ).
 
     "The examples show the effect of the EXACT operator that enforces either
     "a lossless assignment or a lossless calculation.
@@ -861,28 +884,34 @@ CLASS zcl_demo_abap_constructor_expr IMPLEMENTATION.
     DATA(conv_comp) = CONV numtext( '2 Apples + 5 Oranges' ).
 
     IF ex1 IS INITIAL.
-      output->display( |ex2: { ex2 }; { t1 }| ).
+      out->write( |ex2: "{ ex2 }"; t1: "{ t1 }"| ).
     ELSE.
-      output->display( ex1 ).
+      out->write( ex1 ).
     ENDIF.
+
+    out->write( |\n| ).
 
     IF ex3 IS INITIAL.
-      output->display( |ex4: { ex4 }; { t2 }| ).
+      out->write( |ex4: "{ ex4 }"; t2: "{ t2 }"| ).
     ELSE.
-      output->display( input = ex3 name = `ex3` ).
+      out->write( data = ex3 name = `ex3` ).
     ENDIF.
+
+    out->write( |\n| ).
+    out->write( |\n| ).
 
     IF ex5 IS INITIAL.
-      output->display( input = t3 name = `t3` ).
+      out->write( data = t3 name = `t3` ).
     ELSE.
-      output->display( input = ex5 name = `ex5` ).
+      out->write( data = ex5 name = `ex5` ).
     ENDIF.
 
-    output->display( input = conv_comp name = `conv_comp` ).
+    out->write( |\n| ).
+    out->write( data = conv_comp name = `conv_comp` ).
 
 **********************************************************************
 
-    output->next_section( `30) REF` ).
+    out->write( zcl_demo_abap_aux=>heading( `30) REF` ) ).
 
     "The example includes the declaration of a data object and some data
     "reference variables. One data reference variable is typed with a
@@ -915,15 +944,19 @@ CLASS zcl_demo_abap_constructor_expr IMPLEMENTATION.
     DATA(oref_a) = NEW local_class( `Ciao` ).
     DATA(oref_b) = REF #( oref_a ).
 
-    output->display( input = dref_a name = `dref_a` ).
-    output->display( input = dref_b name = `dref_b` ).
-    output->display( input = dref_c name = `dref_c` ).
-    output->display( input = dref_d name = `dref_d` ).
-    output->display( input = oref_b name = `oref_b` ).
+    out->write( data = dref_a name = `dref_a` ).
+    out->write( |\n| ).
+    out->write( data = dref_b name = `dref_b` ).
+    out->write( |\n| ).
+    out->write( data = dref_c name = `dref_c` ).
+    out->write( |\n| ).
+    out->write( data = dref_d name = `dref_d` ).
+    out->write( |\n| ).
+    out->write( data = oref_b name = `oref_b` ).
 
 **********************************************************************
 
-    output->next_section( `31) CAST` ).
+    out->write( zcl_demo_abap_aux=>heading( `31) CAST` ) ).
 
     "The example demonstrates the CAST operator in the context of Run Time
     "Type Identification (RTTI).
@@ -966,14 +999,17 @@ CLASS zcl_demo_abap_constructor_expr IMPLEMENTATION.
 
     dref_i = CAST #( dref_data ).
 
-    output->display( input = components_s2 name = `components_s2` ).
-    output->display( input = methods name = `methods` ).
-    output->display( input = components_s1 name = `components_s1` ).
-    output->display( input = dref_i name = `dref_i` ).
+    out->write( data = components_s2 name = `components_s2` ).
+    out->write( |\n| ).
+    out->write( data = methods name = `methods` ).
+    out->write( |\n| ).
+    out->write( data = components_s1 name = `components_s1` ).
+    out->write( |\n| ).
+    out->write( data = dref_i name = `dref_i` ).
 
 **********************************************************************
 
-    output->next_section( `32) COND` ).
+    out->write( zcl_demo_abap_aux=>heading( `32) COND` ) ).
 
     "The example demonstrates the use of the COND operator. The syntax
     "includes several WHEN and THEN expressions.
@@ -997,11 +1033,11 @@ CLASS zcl_demo_abap_constructor_expr IMPLEMENTATION.
               ELSE |Hallo, { sy-uname }.|
              ).
 
-    output->display( input = greets name = `greets` ).
+    out->write( data = greets name = `greets` ).
 
 **********************************************************************
 
-    output->next_section( `33) SWITCH` ).
+    out->write( zcl_demo_abap_aux=>heading( `33) SWITCH` ) ).
 
     "The example demonstrates the use of the SWITCH operator. Here,
     "calculations are carried out. For this
@@ -1030,15 +1066,15 @@ CLASS zcl_demo_abap_constructor_expr IMPLEMENTATION.
                          WHEN '*' THEN CONV decfloat34( num1 * num2 )
                          WHEN '/' THEN CONV decfloat34( num1 / num2 )
                          ELSE `That doesn't work.` ).
-          output->display( |{ num1 } { <fs> } { num2 } = { calc_result }| ).
+          out->write( |{ num1 } { <fs> } { num2 } = { calc_result }| ).
         CATCH cx_sy_arithmetic_error INTO DATA(error).
-          output->display( |Arithmetic error. { error->get_text( ) }| ).
+          out->write( |Arithmetic error. { error->get_text( ) }| ).
       ENDTRY.
     ENDLOOP.
 
 **********************************************************************
 
-    output->next_section( `34) FILTER` ).
+    out->write( zcl_demo_abap_aux=>heading( `34) FILTER` ) ).
 
     "This section covers multiple examples demonstrating the syntactical variety
     "of the FILTER operator.
@@ -1071,36 +1107,43 @@ CLASS zcl_demo_abap_constructor_expr IMPLEMENTATION.
     "Here, the primary key is used
     DATA(f1) = FILTER #( fi_tab1 WHERE a >= 3 ).
 
-    output->display( input = f1 name = `f1` ).
+    out->write( data = f1 name = `f1` ).
+    out->write( |\n| ).
 
     "USING KEY primary_key explicitly specified; same as above
     DATA(f2) = FILTER #( fi_tab1 USING KEY primary_key WHERE a >= 3 ).
 
-    output->display( input = f2 name = `f2` ).
+    out->write( data = f2 name = `f2` ).
+    out->write( |\n| ).
 
     "EXCEPT addition
     DATA(f3) = FILTER #( fi_tab1 EXCEPT WHERE a >= 3 ).
 
-    output->display( input = f3 name = `f3` ).
+    out->write( data = f3 name = `f3` ).
+    out->write( |\n| ).
 
     DATA(f4) = FILTER #( fi_tab1 EXCEPT USING KEY primary_key WHERE a >= 3 ).
 
-    output->display( input = f4 name = `f4` ).
+    out->write( data = f4 name = `f4` ).
+    out->write( |\n| ).
 
     "Secondary table key specified after USING KEY
     DATA(f5) = FILTER #( fi_tab2 USING KEY sec_key WHERE a >= 4 ).
 
-    output->display( input = f5 name = `f5` ).
+    out->write( data = f5 name = `f5` ).
+    out->write( |\n| ).
 
     DATA(f6) = FILTER #( fi_tab2 EXCEPT USING KEY sec_key WHERE a >= 3 ).
 
-    output->display( input = f6 name = `f6` ).
+    out->write( data = f6 name = `f6` ).
+    out->write( |\n| ).
 
     "Note: In case of a hash key, exactly one comparison expression for each key
     "component is allowed; only = as comparison operator possible.
     DATA(f7) = FILTER #( fi_tab3 WHERE a = 3 ).
 
-    output->display( input = f7 name = `f7` ).
+    out->write( data = f7 name = `f7` ).
+    out->write( |\n| ).
 
     "Using a filter table
     "In the WHERE condition, the columns of source and filter table are compared.
@@ -1120,45 +1163,51 @@ CLASS zcl_demo_abap_constructor_expr IMPLEMENTATION.
 
     DATA(f8) = FILTER #( fi_tab1 IN filter_tab1 WHERE a = table_line ).
 
-    output->display( input = f8 name = `f8` ).
+    out->write( data = f8 name = `f8` ).
+    out->write( |\n| ).
 
     "EXCEPT addition
     DATA(f9) = FILTER #( fi_tab1 EXCEPT IN filter_tab1 WHERE a = table_line ).
 
-    output->display( input = f9 name = `f9` ).
+    out->write( data = f9 name = `f9` ).
+    out->write( |\n| ).
 
     "USING KEY is specified for the filter table
     DATA(f10) = FILTER #( fi_tab2 IN filter_tab2 USING KEY line WHERE a = table_line ).
 
-    output->display( input = f10 name = `f10` ).
+    out->write( data = f10 name = `f10` ).
+    out->write( |\n| ).
 
     "USING KEY is specified for the source table, including EXCEPT
     DATA(f11) = FILTER #( fi_tab2 USING KEY sec_key EXCEPT IN filter_tab2 WHERE a = table_line ).
 
-    output->display( input = f11 name = `f11` ).
+    out->write( data = f11 name = `f11` ).
+    out->write( |\n| ).
 
 **********************************************************************
 
-    output->next_section( `Iteration Expressions with FOR` ).
+    out->write( zcl_demo_abap_aux=>heading( `Iteration Expressions with FOR` ) ).
 
     "The examples demonstrate iteration expressions with FOR. The examples
     "are based on demo internal tables that are filled using a method. The
     "tables are displayed to show the original content of the internal
     "tables that are to be processed.
 
-    output->display( `35) Original table content` ).
+    out->write( |35) Original table content\n\n| ).
 
     "Method to fill demo internal tables with values to work with.
     "Tables are displayed showing the values.
     fill_struc_and_tab( ).
 
-    output->display( input = tab1 name = `tab1` ).
-    output->display( input = tab2 name = `tab2` ).
-    output->display( input = tab3 name = `tab3` ).
+    out->write( data = tab1 name = `tab1` ).
+    out->write( |\n| ).
+    out->write( data = tab2 name = `tab2` ).
+    out->write( |\n| ).
+    out->write( data = tab3 name = `tab3` ).
 
 **********************************************************************
 
-    output->next_section( `36) FOR ... IN ... (LOOP Semantics)` ).
+    out->write( zcl_demo_abap_aux=>heading( `36) FOR ... IN ... (LOOP Semantics)` ) ).
 
     "Examples demonstrating FOR ... IN ... that has the semantics of LOOP.
     "1) An internal table is looped across. The whole line is stored in a
@@ -1202,9 +1251,12 @@ CLASS zcl_demo_abap_constructor_expr IMPLEMENTATION.
                                   comp2 = `hallo`
                                   comp3 = wa-comp4 ) ).
 
-    output->display( input = for1 name = `for1` ).
-    output->display( input = for2 name = `for2` ).
-    output->display( input = for3 name = `for3` ).
+    out->write( data = for1 name = `for1` ).
+    out->write( |\n| ).
+    out->write( data = for2 name = `for2` ).
+    out->write( |\n| ).
+    out->write( data = for3 name = `for3` ).
+    out->write( |\n| ).
 
     "The example demonstrates multiple iteration expressions with FOR. Here,
     "a new table is created that is declared inline. Three tables are
@@ -1230,12 +1282,12 @@ CLASS zcl_demo_abap_constructor_expr IMPLEMENTATION.
         compY = wa2-comp1
         compZ = wa3-comp3 ) ).
 
-    output->display( input = for4 name = `for4` ).
+    out->write( data = for4 name = `for4` ).
 
 **********************************************************************
 
-    output->next_section( `37) FOR ... WHILE/UNTIL ... ` &&
-    `(DO/WHILE Semantics)` ).
+    out->write( zcl_demo_abap_aux=>heading( `37) FOR ... WHILE/UNTIL ... ` &&
+    `(DO/WHILE Semantics)` ) ).
 
     "Examples demonstrating FOR ... WHILE/UNTIL ... that has the semantics
     "of DO/WHILE.
@@ -1264,12 +1316,13 @@ CLASS zcl_demo_abap_constructor_expr IMPLEMENTATION.
           FOR y = 31 THEN y - 10 UNTIL y < 10
           ( col1 = y col2 = y + 1 col3 = y + 2 ) ).
 
-    output->display( input = for5 name = `for5` ).
-    output->display( input = for6 name = `for6` ).
+    out->write( data = for5 name = `for5` ).
+    out->write( |\n| ).
+    out->write( data = for6 name = `for6` ).
 
 **********************************************************************
 
-    output->next_section( `38) REDUCE (1)` ).
+    out->write( zcl_demo_abap_aux=>heading( `38) REDUCE (1)` ) ).
 
     "The examples demonstrate the REDUCE operator using values contained in
     "an internal table column. Here, the table is of type string.
@@ -1308,12 +1361,13 @@ CLASS zcl_demo_abap_constructor_expr IMPLEMENTATION.
             FOR word IN tab
             NEXT text = |{ text }{ sep }{ word }| sep = ` ` ) && '.'.
 
-    output->display( input = a_word name = `a_word` ).
-    output->display( input = sentence name = `sentence` ).
+    out->write( data = a_word name = `a_word` ).
+    out->write( |\n| ).
+    out->write( data = sentence name = `sentence` ).
 
 **********************************************************************
 
-    output->next_section( `39) REDUCE (2)` ).
+    out->write( zcl_demo_abap_aux=>heading( `39) REDUCE (2)` ) ).
 
     "The examples demonstrate summations using the REDUCE operator.
     "1) Example using FOR ... UNTIL .... It calculates the total of the
@@ -1339,12 +1393,13 @@ CLASS zcl_demo_abap_constructor_expr IMPLEMENTATION.
                            FOR z IN itab_i
                            NEXT x = x + z ).
 
-    output->display( input = sum1 name = `sum1` ).
-    output->display( input = sum2 name = `sum2` ).
+    out->write( data = sum1 name = `sum1` ).
+    out->write( |\n| ).
+    out->write( data = sum2 name = `sum2` ).
 
 **********************************************************************
 
-    output->next_section( `40) REDUCE (3)` ).
+    out->write( zcl_demo_abap_aux=>heading( `40) REDUCE (3)` ) ).
 
     "The examples demonstrate the concatenation of strings
     "1) without the addition THEN
@@ -1367,13 +1422,15 @@ CLASS zcl_demo_abap_constructor_expr IMPLEMENTATION.
                                              UNTIL strlen( t ) > 10
                                  NEXT text &&= |{ t } | ).
 
-    output->display( input = conc1 name = `conc1` ).
-    output->display( input = conc2 name = `conc2` ).
-    output->display( input = conc3 name = `conc3` ).
+    out->write( data = conc1 name = `conc1` ).
+    out->write( |\n| ).
+    out->write( data = conc2 name = `conc2` ).
+    out->write( |\n| ).
+    out->write( data = conc3 name = `conc3` ).
 
 **********************************************************************
 
-    output->next_section( `41) LET Expressions (1)` ).
+    out->write( zcl_demo_abap_aux=>heading( `41) LET Expressions (1)` ) ).
 
     "The examples demonstrate LET expressions in different contexts.
 
@@ -1388,11 +1445,11 @@ CLASS zcl_demo_abap_constructor_expr IMPLEMENTATION.
                       ( |To do is to { it }| )
                       ( |Do { it } do { it } do| ) ).
 
-    output->display( input = str_tab name = `str_tab` ).
+    out->write( data = str_tab name = `str_tab` ).
 
 **********************************************************************
 
-    output->next_section( `42) LET Expressions (2)` ).
+    out->write( zcl_demo_abap_aux=>heading( `42) LET Expressions (2)` ) ).
 
     "2) LET within a constructor expression with COND: 12 o'clock is
     "specified as value for the LET expression. Based on this value, checks
@@ -1409,11 +1466,11 @@ CLASS zcl_demo_abap_constructor_expr IMPLEMENTATION.
               WHEN system_time = tm THEN |High Noon|
               ELSE |?| ).
 
-    output->display( input = time name = `time` ).
+    out->write( data = time name = `time` ).
 
 **********************************************************************
 
-    output->next_section( `43) LET Expressions (3)` ).
+    out->write( zcl_demo_abap_aux=>heading( `43) LET Expressions (3)` ) ).
 
     "3) An internal table that includes three components is created and
     "filled. A loop across this table is carried out. The purpose of the
@@ -1450,7 +1507,7 @@ CLASS zcl_demo_abap_constructor_expr IMPLEMENTATION.
       stringtab = VALUE #( BASE stringtab ( isodate ) ).
     ENDDO.
 
-    output->display( input = stringtab name = `stringtab` ).
+    out->write( data = stringtab name = `stringtab` ).
 
   ENDMETHOD.
 ENDCLASS.

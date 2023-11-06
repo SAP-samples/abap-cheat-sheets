@@ -39,7 +39,7 @@
 * code.
 *
 ***********************************************************************
-"! <p class="shorttext synchronized">ABAP Cheat Sheet: Data Types and Data Objects</p>
+"! <p class="shorttext synchronized">ABAP cheat sheet: Data Types and Data Objects</p>
 "! Example to demonstrate data types and data objects in ABAP.<br>Choose F9 in ADT to run the class.
 CLASS zcl_demo_abap_dtype_dobj DEFINITION
   PUBLIC
@@ -67,6 +67,8 @@ CLASS zcl_demo_abap_dtype_dobj DEFINITION
     METHODS addition_with_generic_num IMPORTING num1          TYPE numeric
                                                 num2          TYPE numeric
                                       RETURNING VALUE(result) TYPE decfloat34.
+
+    constants no_output type string value `No output for this section. Check out the types in the code e.g. using the F2 information.`.
 
 **********************************************************************
 
@@ -116,7 +118,7 @@ ENDCLASS.
 
 
 
-CLASS ZCL_DEMO_ABAP_DTYPE_DOBJ IMPLEMENTATION.
+CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
 
 
   METHOD adapt_text.
@@ -124,7 +126,7 @@ CLASS ZCL_DEMO_ABAP_DTYPE_DOBJ IMPLEMENTATION.
 
     text = cl_text && comma && sy-uname && me->text.
 
-    str = text && |\n(Note: The value of me->text is "{ me->text }")|.
+    str = text && | (Note: The value of me->text is "{ me->text }")|.
   ENDMETHOD.
 
 
@@ -135,7 +137,7 @@ CLASS ZCL_DEMO_ABAP_DTYPE_DOBJ IMPLEMENTATION.
 
   METHOD class_constructor.
     "Filling demo database tables.
-    zcl_demo_abap_flight_tables=>fill_dbtabs( ).
+    zcl_demo_abap_aux=>fill_dbtabs( ).
   ENDMETHOD.
 
 
@@ -259,13 +261,11 @@ CLASS ZCL_DEMO_ABAP_DTYPE_DOBJ IMPLEMENTATION.
 
   METHOD if_oo_adt_classrun~main.
 
-    DATA(output) = NEW zcl_demo_abap_display( out ).
-
-    output->display( `ABAP Cheat Sheet Example: Data Types and Data Objects` ).
+    out->write( |ABAP Cheat Sheet Example: Data Types and Data Objects\n\n| ).
 
 **********************************************************************
 
-    output->display( `Declaring data types` ).
+    out->write( |Declaring data types\n\n| ).
 
     "The following examples deal with the declaration of data types.
     "They show how data types can be declared locally in an ABAP program.
@@ -277,7 +277,7 @@ CLASS ZCL_DEMO_ABAP_DTYPE_DOBJ IMPLEMENTATION.
     "- The examples show a selection.
     "- Only non-generic types can be used.
 
-    output->display( `1) Declaring data types based on elementary types` ).
+    out->write( |1) Declaring data types based on elementary types\n\n| ).
 
     "See the ABAP Keyword Documentation for the value ranges that are
     "accepted by these types.
@@ -366,13 +366,11 @@ CLASS ZCL_DEMO_ABAP_DTYPE_DOBJ IMPLEMENTATION.
     TYPES te_tp TYPE abap_bool.
     TYPES te_const_in_tp LIKE abap_true.
 
-    output->display( `No output for this section. Check out the code, `
-      && `for example, when running the class in the debugger after setting `
-      && `a breakpoint, or the F2 information in ADT when selecting a type.` ).
+    out->write( no_output ).
 
 **********************************************************************
 
-    output->next_section( `2) Declaring data types based on complex types` ).
+    out->write( zcl_demo_abap_aux=>heading( `2) Declaring data types based on complex types` ) ).
 
     "Structure and internal table types as examples for complex types
 
@@ -436,13 +434,11 @@ CLASS ZCL_DEMO_ABAP_DTYPE_DOBJ IMPLEMENTATION.
     "Elementary line type; the type is available in a global interface
     TYPES tt_elem_type_from_itf TYPE TABLE OF zdemo_abap_get_data_itf=>occ_rate.
 
-    output->display( `No output for this section. Check out the code, `
-      && `for example, when running the class in the debugger after setting `
-      && `a breakpoint, or the F2 information in ADT when selecting a type.` ).
+    out->write( no_output ).
 
 **********************************************************************
 
-    output->next_section( `3) Declaring reference types` ).
+    out->write( zcl_demo_abap_aux=>heading( `3) Declaring reference types` ) ).
 
     "Declaring reference types with static types
     TYPES tr_i TYPE REF TO i.
@@ -471,15 +467,13 @@ CLASS ZCL_DEMO_ABAP_DTYPE_DOBJ IMPLEMENTATION.
     "Reference table types
     TYPES tr_tab_ref_i TYPE TABLE OF REF TO i.
     DATA itab_str TYPE TABLE OF string.
-    TYPES tr_like_table_ref LIKE TABLE OF REF TO itab_str.
+    TYPES tr_like_table_ref LIKE TABLE OF ref TO itab_str.
 
-    output->display( `No output for this section. Check out the code, `
-      && `for example, when running the class in the debugger after setting `
-      && `a breakpoint, or the F2 information in ADT when selecting a type.` ).
+    out->write( no_output ).
 
 **********************************************************************
 
-    output->next_section( `Declaring data objects` ).
+    out->write( zcl_demo_abap_aux=>heading( `Declaring data objects` ) ).
 
     "The following examples deal with the declaration of data ojects.
     "They show how data objects can be declared locally in an ABAP program.
@@ -497,7 +491,7 @@ CLASS ZCL_DEMO_ABAP_DTYPE_DOBJ IMPLEMENTATION.
     "- The examples show a selection. For more information, check out the ABAP
     "  Keyword Documentation.
 
-    output->display( `4) Declaring data objects based on elementary data types` ).
+    out->write( |4) Declaring data objects based on elementary data types\n\n| ).
 
     "The elementary, built-in data types can be used as shown for data type
     " declarations. Chained statements are also possible with DATA.
@@ -571,13 +565,11 @@ CLASS ZCL_DEMO_ABAP_DTYPE_DOBJ IMPLEMENTATION.
       ...
     ENDIF.
 
-    output->display( `No output for this section. Check out the code, `
-      && `for example, when running the class in the debugger after setting `
-      && `a breakpoint, or the F2 information in ADT when selecting a type.` ).
+    out->write( no_output ).
 
 **********************************************************************
 
-    output->next_section( `5) Declaring structures and internal tables as examples for complex types` ).
+    out->write( zcl_demo_abap_aux=>heading( `5) Declaring structures and internal tables as examples for complex types` ) ).
 
     "Note: See more details and examples in the ABAP Keyword Documentations and in the
     "respective ABAP cheat sheets.
@@ -632,13 +624,11 @@ CLASS ZCL_DEMO_ABAP_DTYPE_DOBJ IMPLEMENTATION.
     DATA struc_from_itab_type TYPE LINE OF tt_ddic_tab.
     DATA struc_like_line LIKE LINE OF itab_ddic_tab.
 
-    output->display( `No output for this section. Check out the code, `
-      && `for example, when running the class in the debugger after setting `
-      && `a breakpoint, or the F2 information in ADT when selecting a type.` ).
+    out->write( no_output ).
 
 **********************************************************************
 
-    output->next_section( `6) Declaring data reference variables` ).
+    out->write( zcl_demo_abap_aux=>heading( `6) Declaring data reference variables` ) ).
 
     "Declaring data reference variables types with static types
     DATA dref_int TYPE REF TO i.
@@ -665,13 +655,11 @@ CLASS ZCL_DEMO_ABAP_DTYPE_DOBJ IMPLEMENTATION.
     DATA dref_tab_i TYPE TABLE OF REF TO i.
     DATA dref_tab_str LIKE TABLE OF REF TO do_some_string.
 
-    output->display( `No output for this section. Check out the code, `
-      && `for example, when running the class in the debugger after setting `
-      && `a breakpoint, or the F2 information in ADT when selecting a type.` ).
+    out->write( no_output ).
 
 **********************************************************************
 
-    output->next_section( `7) Assigning values to data objects` ).
+    out->write( zcl_demo_abap_aux=>heading( `7) Assigning values to data objects` ) ).
 
     "An assignment passes the content of a source to a target data object.
     "Note:
@@ -769,13 +757,11 @@ CLASS ZCL_DEMO_ABAP_DTYPE_DOBJ IMPLEMENTATION.
     "with the conversion rules.
     str_a2 = some_itab[ 2 ]-carrname.
 
-    output->display( `No output for this section. Check out the code, `
-      && `for example, when running the class in the debugger after setting `
-      && `a breakpoint, or the F2 information in ADT when selecting a type.` ).
+    out->write( no_output ).
 
 **********************************************************************
 
-    output->next_section( `8) Creating data objects by inline declaration` ).
+    out->write( zcl_demo_abap_aux=>heading( `8) Creating data objects by inline declaration` ) ).
 
     "The declaration operator DATA can be specified in any designated declaration position.
     "The data type of the variable is determined by the operand type. It must be possible
@@ -883,13 +869,11 @@ CLASS ZCL_DEMO_ABAP_DTYPE_DOBJ IMPLEMENTATION.
     "NEW addition
     SELECT * FROM zdemo_abap_carr INTO TABLE NEW @DATA(itab_ref).
 
-    output->display( `No output for this section. Check out the code, `
-      && `for example, when running the class in the debugger after setting `
-      && `a breakpoint, or the F2 information in ADT when selecting a type.` ).
+    out->write( no_output ).
 
 **********************************************************************
 
-    output->next_section( `9) Assigning references to data reference variables` ).
+    out->write( zcl_demo_abap_aux=>heading( `9) Assigning references to data reference variables` ) ).
 
     "Note:
     "- As is true for other data object and types, there are special assignment rules
@@ -979,7 +963,7 @@ CLASS ZCL_DEMO_ABAP_DTYPE_DOBJ IMPLEMENTATION.
     TRY.
         dref_2_str = CAST #( dref_3_data ).
       CATCH cx_sy_move_cast_error INTO DATA(e).
-        output->display( input = e->get_text( ) name = `e->get_text( )` ).
+        out->write( data = e->get_text( ) name = `e->get_text( )` ).
     ENDTRY.
 
     "Old syntax using the ?= operator
@@ -991,7 +975,7 @@ CLASS ZCL_DEMO_ABAP_DTYPE_DOBJ IMPLEMENTATION.
 
 **********************************************************************
 
-    output->next_section( `10) Creating anonymous data objects` ).
+    out->write( zcl_demo_abap_aux=>heading( `10) Creating anonymous data objects` ) ).
 
     "Anonymous data objects are a topic related to data reference variables.
     "These data objects are unnamed data objects.
@@ -1090,15 +1074,13 @@ CLASS ZCL_DEMO_ABAP_DTYPE_DOBJ IMPLEMENTATION.
       FROM zdemo_abap_carr
       INTO TABLE NEW @DATA(dref_14_inline).
 
-    output->display( `No output for this section. Check out the code, `
-      && `for example, when running the class in the debugger after setting `
-      && `a breakpoint, or the F2 information in ADT when selecting a type.` ).
+    out->write( no_output ).
 
 **********************************************************************
 
-    output->next_section( `Excursions: Elementary types and type conversions` ).
+    out->write( zcl_demo_abap_aux=>heading( `Excursions: Elementary types and type conversions` ) ).
 
-    output->display( `11) Implicit and explicit conversion` ).
+    out->write( |11) Implicit and explicit conversion\n\n| ).
 
     "Implicit conversions are performed in assignments using the assignment operator =
     "The content of a data object is converted according to the associated conversion rules.
@@ -1110,20 +1092,23 @@ CLASS ZCL_DEMO_ABAP_DTYPE_DOBJ IMPLEMENTATION.
     DATA do_2_c3 TYPE c LENGTH 3.
     do_2_c3 = do_1_str.
 
-    output->display( input = do_2_c3 name = `do_2_c3` ).
+    out->write( data = do_2_c3 name = `do_2_c3` ).
+    out->write( |\n| ).
 
     "Conversions with the types i and decfloat34
     DATA do_4_i TYPE i.
     DATA do_5_dcfl34 TYPE decfloat34 VALUE '4.56'.
     do_4_i = do_5_dcfl34.
 
-    output->display( input = do_4_i name = `do_4_i` ).
+    out->write( data = do_4_i name = `do_4_i` ).
+    out->write( |\n| ).
 
     "Conversions with the types i and string
     do_4_i = -5.
     do_1_str = do_4_i.
 
-    output->display( input = do_1_str name = `do_1_str` ).
+    out->write( data = do_1_str name = `do_1_str` ).
+    out->write( |\n| ).
 
     "Explicit type conversions can be performed with the CONV operator
     "It converts the value specified within the parentheses to the data type specified
@@ -1137,22 +1122,25 @@ CLASS ZCL_DEMO_ABAP_DTYPE_DOBJ IMPLEMENTATION.
     DATA do_6_dcfl34 TYPE decfloat34 VALUE '2.78'.
     DATA(do_7_i) = CONV i( do_6_dcfl34 ).
 
-    output->display( input = do_7_i name = `do_7_i` ).
+    out->write( data = do_7_i name = `do_7_i` ).
+    out->write( |\n| ).
 
     "# character when the type can be derived
     DATA do_8_i TYPE i.
     do_8_i = CONV #( do_6_dcfl34 ).
 
-    output->display( input = do_8_i name = `do_8_i` ).
+    out->write( data = do_8_i name = `do_8_i` ).
+    out->write( |\n| ).
 
     "The following two calculations yield different results
     do_8_i = sqrt( 5 ) + sqrt( 6 ).
 
-    output->display( input = do_8_i name = `do_8_i` ).
+    out->write( data = do_8_i name = `do_8_i` ).
+    out->write( |\n| ).
 
     do_8_i = CONV i( sqrt( 5 ) ) + CONV i( sqrt( 6 ) ).
 
-    output->display( input = do_8_i name = `do_8_i` ).
+    out->write( data = do_8_i name = `do_8_i` ).
 
     "CONV operator for creating data objects inline with elementary data types
     "Assume, you want a data object typed with decfloat34.
@@ -1169,7 +1157,7 @@ CLASS ZCL_DEMO_ABAP_DTYPE_DOBJ IMPLEMENTATION.
 
 **********************************************************************
 
-    output->next_section( `12) Character strings and text field strings` ).
+    out->write( zcl_demo_abap_aux=>heading( `12) Character strings and text field strings` ) ).
 
     "The following example shows the difference between text field strings
     "of type c and character strings of type string when it comes to trailing
@@ -1182,11 +1170,11 @@ CLASS ZCL_DEMO_ABAP_DTYPE_DOBJ IMPLEMENTATION.
     result3 = '-->' && text_space && '<--'.
     result4 = '-->' && string_space && '<--'.
 
-    output->display( |{ result3 }\n{ result4 }| ).
+    out->write( |{ result3 }\n{ result4 }| ).
 
 **********************************************************************
 
-    output->next_section( `13) Floating point numbers` ).
+    out->write( zcl_demo_abap_aux=>heading( `13) Floating point numbers` ) ).
 
     "The following example shows the difference between binary and decimal
     "floating point numbers.
@@ -1196,12 +1184,12 @@ CLASS ZCL_DEMO_ABAP_DTYPE_DOBJ IMPLEMENTATION.
     result1 = 815 / 1000.
     result2 = 815 / 1000.
 
-    output->display( |Binary floating point: { result1 }\n| &&
+    out->write( |Binary floating point: { result1 }\n| &&
     |Decimal floating point: { result2 }\n| ).
 
 **********************************************************************
 
-    output->next_section( `14) Byte-like types` ).
+    out->write( zcl_demo_abap_aux=>heading( `14) Byte-like types` ) ).
 
     "The following example shows byte-like types x and xstring.
 
@@ -1226,12 +1214,14 @@ CLASS ZCL_DEMO_ABAP_DTYPE_DOBJ IMPLEMENTATION.
       codepage = `UTF-8`
                  )->convert( source = some_string ).
 
-    output->display( input = xstr name = `xstr` ).
+    out->write( data = xstr name = `xstr` ).
+    out->write( |\n| ).
 
     DATA(xstring2string) = cl_abap_conv_codepage=>create_in( codepage = `UTF-8`
                                                                         )->convert( source = xstr ).
 
-    output->display( input = xstring2string name = `xstring2string` ).
+    out->write( data = xstring2string name = `xstring2string` ).
+    out->write( |\n| ).
 
     DATA line_feed_hex TYPE x LENGTH 1 VALUE '0A'.
 
@@ -1241,8 +1231,10 @@ CLASS ZCL_DEMO_ABAP_DTYPE_DOBJ IMPLEMENTATION.
     ASSERT line_feed_str = |\n|.
     ASSERT line_feed_str = cl_abap_char_utilities=>newline.
 
-    output->display( `Y-->` && line_feed_str && `<--` ).
-    output->display( `Y-->` && |\n| && `<--` ).
+    out->write( `Y-->` && line_feed_str && `<--` ).
+    out->write( |\n| ).
+    out->write( `Y-->` && |\n| && `<--` ).
+    out->write( |\n| ).
 
     DATA a_blank_x TYPE x LENGTH 1 VALUE '20'.
 
@@ -1251,11 +1243,11 @@ CLASS ZCL_DEMO_ABAP_DTYPE_DOBJ IMPLEMENTATION.
 
     ASSERT blank =  ` `.
 
-    output->display( `-->` && blank && `<--` ).
+    out->write( `-->` && blank && `<--` ).
 
 **********************************************************************
 
-    output->next_section( `15) Date and time` ).
+    out->write( zcl_demo_abap_aux=>heading( `15) Date and time` ) ).
 
     "In the example, a date field is assigned the current values
     "using the cl_abap_context_info class. A calculation follows. The date of next
@@ -1267,24 +1259,26 @@ CLASS ZCL_DEMO_ABAP_DTYPE_DOBJ IMPLEMENTATION.
     "calendar. In this case, the date would exceeed the maximum value '99991231'.
     "In such a case, the date field is assigned the invalid value '00000000'.
 
-    DATA: today     TYPE d,
-          tomorrow  TYPE d.
-    today = cl_abap_context_info=>get_system_date( ).    
-    tomorrow = today + 1.    
-    output->display(
-    |Today: { today }\n| &&    
-    |Tommorow: { tomorrow }| ).
+    DATA: today    TYPE d,
+          tomorrow TYPE d.
+    today = cl_abap_context_info=>get_system_date( ).
+    tomorrow = today + 1.
+    out->write( data = today name = `today` ).
+    out->write( |\n| ).
+    out->write( data = tomorrow name = `tomorrow` ).
+    out->write( |\n| ).
 
     DATA date TYPE d.
     date = '20240101'.
-    output->display( input = date name = `date` ).
+    out->write( data = date name = `date` ).
+    out->write( |\n| ).
 
     date = 20240101.
-    output->display( input = date name = `date` ).
+    out->write( data = date name = `date` ).
 
 **********************************************************************
 
-    output->next_section( `16) Type conversion rules` ).
+    out->write( zcl_demo_abap_aux=>heading( `16) Type conversion rules` ) ).
 
     "The purpose of this example is to emphasize the conversion rules
     "that should be noted when performing conversions. The example
@@ -1384,7 +1378,7 @@ CLASS ZCL_DEMO_ABAP_DTYPE_DOBJ IMPLEMENTATION.
       ENDTRY.
 
       IF wa_ref_con->type = `T`.
-        wa_ref_con->conv_err_d = `Move error: T to D. Otherwise, a runtime error is caused.`.
+        wa_ref_con->conv_err_d = `T to D not possible.`.
       ELSE.
         TRY.
             wa_ref_con->conv_d = wa_ref_con->to_be_converted->*.
@@ -1402,7 +1396,7 @@ CLASS ZCL_DEMO_ABAP_DTYPE_DOBJ IMPLEMENTATION.
       ENDTRY.
 
       IF wa_ref_con->type = `D`.
-        wa_ref_con->conv_err_t = `Move error: D to T. Otherwise, a runtime error is caused.`.
+        wa_ref_con->conv_err_t = `D to T not possible.`.
       ELSE.
         TRY.
             wa_ref_con->conv_t = wa_ref_con->to_be_converted->*.
@@ -1435,11 +1429,11 @@ CLASS ZCL_DEMO_ABAP_DTYPE_DOBJ IMPLEMENTATION.
 
     ENDLOOP.
 
-    output->display( input = tt_conv_tab name = `tt_conv_tab` ).
+    out->write( data = tt_conv_tab name = `tt_conv_tab` ).
 
 **********************************************************************
 
-    output->next_section( `17) Excursion: RTTI` ).
+    out->write( zcl_demo_abap_aux=>heading( `17) Excursion: RTTI` ) ).
 
     "Using RTTI to check type compatibility
     "In the following example the applies_to_data method of the RTTI class
@@ -1462,18 +1456,23 @@ CLASS ZCL_DEMO_ABAP_DTYPE_DOBJ IMPLEMENTATION.
     IF CAST cl_abap_datadescr( cl_abap_typedescr=>describe_by_data( ref1->* )
         )->applies_to_data( ref2->* ).
       ref1->* = ref2->*.
-      output->display( `The types of ref1->* and ref2->* are compatible.` ).
+      out->write( `The types of ref1->* and ref2->* are compatible.` ).
     ELSE.
-      output->display( `The types of ref1->* and ref2->* are not compatible.` ).
+      out->write( `The types of ref1->* and ref2->* are not compatible.` ).
     ENDIF.
+
+    out->write( |\n| ).
 
     IF CAST cl_abap_datadescr( cl_abap_typedescr=>describe_by_data( ref1->* )
         )->applies_to_data( ref3->* ).
       ref1->* = ref3->*.
-      output->display( `The types of ref1->* and ref3->* are compatible.` ).
+      out->write( `The types of ref1->* and ref3->* are compatible.` ).
     ELSE.
-      output->display( `The types of ref1->* and ref3->* are not compatible.` ).
+      out->write( `The types of ref1->* and ref3->* are not compatible.` ).
     ENDIF.
+
+    out->write( |\n| ).
+    out->write( |\n| ).
 
     "Using RTTI to get type descriptions
     "In the following example, an internal table that has been filled in
@@ -1501,11 +1500,11 @@ CLASS ZCL_DEMO_ABAP_DTYPE_DOBJ IMPLEMENTATION.
 
     ENDLOOP.
 
-    output->display( input = rtti_tab name = `rtti_tab` ).
+    out->write( data = rtti_tab name = `rtti_tab` ).
 
 **********************************************************************
 
-    output->next_section( `18) Constants and immutable variables` ).
+    out->write( zcl_demo_abap_aux=>heading( `18) Constants and immutable variables` ) ).
 
     "As mentioned above, constants cannot be changed at runtime.
     CONSTANTS con_str TYPE string VALUE `hallo`.
@@ -1538,13 +1537,11 @@ CLASS ZCL_DEMO_ABAP_DTYPE_DOBJ IMPLEMENTATION.
     "SELECT statement with a an immutable target table declared inline
     SELECT * FROM zdemo_abap_carr INTO TABLE @FINAL(itab_final_inl).
 
-    output->display( `No output for this section. Check out the code, `
-      && `for example, when running the class in the debugger after setting `
-      && `a breakpoint, or the F2 information in ADT when selecting a type.` ).
+    out->write( no_output ).
 
 **********************************************************************
 
-    output->next_section( `19) Various ABAP glossary terms on data types and objects in a nutshell` ).
+    out->write( zcl_demo_abap_aux=>heading( `19) Various ABAP glossary terms on data types and objects in a nutshell` ) ).
 
     "Standalone and bound data types
     "Standalone: Data type that is defined using the statement TYPES in an ABAP program, as
@@ -1612,24 +1609,29 @@ CLASS ZCL_DEMO_ABAP_DTYPE_DOBJ IMPLEMENTATION.
     "Field symbols with generic data types can be assigned appropriate values
     ASSIGN do_e_c5 TO <fs_a>.
 
-    output->display( input = <fs_a> name = `<fs_a>` ).
+    out->write( data = <fs_a> name = `<fs_a>` ).
+    out->write( |\n| ).
 
     ASSIGN do_f_str TO <fs_a>.
 
-    output->display( input = <fs_a> name = `<fs_a>` ).
+    out->write( data = <fs_a> name = `<fs_a>` ).
+    out->write( |\n| ).
 
     "Generic type data
     ASSIGN do_e_c5 TO <fs_b>.
 
-    output->display( input = <fs_b> name = `<fs_b>` ).
+    out->write( data = <fs_b> name = `<fs_b>` ).
+    out->write( |\n| ).
 
     ASSIGN do_f_str TO <fs_b>.
 
-    output->display( input = <fs_b> name = `<fs_b>` ).
+    out->write( data = <fs_b> name = `<fs_b>` ).
+    out->write( |\n| ).
 
     ASSIGN itab_a TO <fs_b>.
 
-    output->display( input = <fs_b> name = `<fs_b>` ).
+    out->write( data = <fs_b> name = `<fs_b>` ).
+    out->write( |\n| ).
 
 **********************************************************************
 
@@ -1752,14 +1754,16 @@ CLASS ZCL_DEMO_ABAP_DTYPE_DOBJ IMPLEMENTATION.
 
     "Unnamed data objects
     "Literal that is output. It cannot be addressed via a dedicated name.
-    output->display( `I'm a literal...` ).
+    out->write( `I'm a literal...` ).
+    out->write( |\n| ).
 
     "Anonymous data object created using the NEW operator
     "Can be addressed using reference variables or field symbols.
 
     DATA(dref_c_str) = NEW string( `hi` ).
 
-    output->display( input = dref_c_str->* name = `dref_c_str->*` ).
+    out->write( data = dref_c_str->* name = `dref_c_str->*` ).
+    out->write( |\n| ).
 
     "Anonymous data object created inline using the NEW addition to the INTO
     "clause of a SELECT statement
@@ -1768,11 +1772,11 @@ CLASS ZCL_DEMO_ABAP_DTYPE_DOBJ IMPLEMENTATION.
       INTO TABLE NEW @DATA(dref_d_tab)
       UP TO 3 ROWS.
 
-    output->display( input = dref_d_tab->* name = `dref_d_tab->*` ).
+    out->write( data = dref_d_tab->* name = `dref_d_tab->*` ).
 
 **********************************************************************
 
-    output->next_section( `20) Generic ABAP types for formal parameters of methods` ).
+    out->write( zcl_demo_abap_aux=>heading( `20) Generic ABAP types for formal parameters of methods` ) ).
 
     "Generic data types have already been covered above.
     "A generic data type is an incomplete type specification that covers multiple
@@ -1808,13 +1812,13 @@ CLASS ZCL_DEMO_ABAP_DTYPE_DOBJ IMPLEMENTATION.
       ENDTRY.
     ENDLOOP.
 
-    output->display( input = tab_num name = `tab_num` ).
-
-    output->display( input = error->get_text( ) name = `error->get_text( )` ).
+    out->write( data = tab_num name = `tab_num` ).
+    out->write( |\n| ).
+    out->write( data = error->get_text( ) name = `error->get_text( )` ).
 
 **********************************************************************
 
-    output->next_section( `21) Built-in data objects` ).
+    out->write( zcl_demo_abap_aux=>heading( `21) Built-in data objects` ) ).
 
     "This example demonstrates the availability of built-in data objects in ABAP.
 
@@ -1832,7 +1836,8 @@ CLASS ZCL_DEMO_ABAP_DTYPE_DOBJ IMPLEMENTATION.
       APPEND sy-index TO syidx.
     ENDDO.
 
-    output->display( input = syidx name = `syidx` ).
+    out->write( data = syidx name = `syidx` ).
+    out->write( |\n| ).
 
     DATA str_tab TYPE TABLE OF string.
 
@@ -1842,7 +1847,8 @@ CLASS ZCL_DEMO_ABAP_DTYPE_DOBJ IMPLEMENTATION.
       APPEND |Value of processed table line: { wa_sy1 } / Table index { sy-tabix }| TO str_tab.
     ENDLOOP.
 
-    output->display( input = str_tab name = `str_tab` ).
+    out->write( data = str_tab name = `str_tab` ).
+    out->write( |\n| ).
 
     "sy-subrc contains a return code that is set by many ABAP statements.
     "In general, the value 0 means that the statement was executed without problems.
@@ -1850,10 +1856,13 @@ CLASS ZCL_DEMO_ABAP_DTYPE_DOBJ IMPLEMENTATION.
     READ TABLE syidx INDEX 6 INTO DATA(wa_sy2).
 
     IF sy-subrc = 0.
-      output->display( |Yes, the table line was found. sy-subrc value that was returned is { sy-subrc }.| ).
+      out->write( |Yes, the table line was found. sy-subrc value that was returned is { sy-subrc }.| ).
     ELSE.
-      output->display( |No, the table line was not found. sy-subrc value that was returned is { sy-subrc }.| ).
+      out->write( |No, the table line was not found. sy-subrc value that was returned is { sy-subrc }.| ).
     ENDIF.
+
+    out->write( |\n| ).
+    out->write( |\n| ).
 
     "The program-global constant space has the data type c, length 1, and contains a blank character.
     "In the following example, the table lines are concatenated into a string, separated by a blank.
@@ -1866,7 +1875,8 @@ CLASS ZCL_DEMO_ABAP_DTYPE_DOBJ IMPLEMENTATION.
 
     CONCATENATE LINES OF ctab INTO c_f SEPARATED BY space.
 
-    output->display( input = c_f name = `c_f` ).
+    out->write( data = c_f name = `c_f` ).
+    out->write( |\n| ).
 
     "Self-reference me
     "Within the implementation of each instance method, an implicitly created local
@@ -1888,12 +1898,11 @@ CLASS ZCL_DEMO_ABAP_DTYPE_DOBJ IMPLEMENTATION.
 
     DATA(res_str) = oref->adapt_text( ).
 
-    output->display( input = res_str name = `res_str` ).
-
+    out->write( data = res_str name = `res_str` ).
 
 **********************************************************************
 
-    output->next_section( `22) Declaration context` ).
+    out->write( zcl_demo_abap_aux=>heading( `22) Declaration context` ) ).
 
     "The purpose of this example is to emphasize the importance of where
     "data objects are decalred. The example deals with local declarations
@@ -1908,13 +1917,15 @@ CLASS ZCL_DEMO_ABAP_DTYPE_DOBJ IMPLEMENTATION.
       number = number + 1.
     ENDDO.
 
-    output->display( input = number name = `number` ).
+    out->write( data = number name = `number` ).
+    out->write( |\n| ).
 
     DO 10 TIMES.
       number = number + 1.
     ENDDO.
 
-    output->display( input = number name = `number` ).
+    out->write( data = number name = `number` ).
+    out->write( |\n| ).
 
     "Comparing the behavior with a data object declared inline.
     "In each loop pass, the value object is set to 10. Therefore,
@@ -1930,16 +1941,18 @@ CLASS ZCL_DEMO_ABAP_DTYPE_DOBJ IMPLEMENTATION.
       number_B = number_B + 1.
     ENDDO.
 
-    output->display( input = number_b name = `number_b` ).
+    out->write( data = number_b name = `number_b` ).
+    out->write( |\n| ).
 
     DO 10 TIMES.
       number_b = number_b + 1.
     ENDDO.
-    output->display( input = number_b name = `number_b` ).
+    out->write( data = number_b name = `number_b` ).
+    out->write( |\n| ).
 
 **********************************************************************
 
-    output->next_section( `23) Enumerated Types and Objects` ).
+    out->write( zcl_demo_abap_aux=>heading( `23) Enumerated Types and Objects` ) ).
 
     "Examples for enumerated types and objects are contained in
     "separate methods. Check the comments there.
@@ -1953,27 +1966,30 @@ CLASS ZCL_DEMO_ABAP_DTYPE_DOBJ IMPLEMENTATION.
     "enumerated values of the enumerated type can be passed to the parameter.
     DATA enum_var1 TYPE t_enum VALUE a.
     DATA(output_for_enum_var1) = enum_meth_params( enum_var1 ).
-    output->display( input = output_for_enum_var1 name = `output_for_enum_var1` ).
+    out->write( data = output_for_enum_var1 name = `output_for_enum_var1` ).
+    out->write( |\n| ).
 
     DATA enum_var2 TYPE t_enum VALUE b.
     DATA(output_for_enum_var2) = enum_meth_params( enum_var2 ).
-    output->display( input = output_for_enum_var2 name = `output_for_enum_var2` ).
+    out->write( data = output_for_enum_var2 name = `output_for_enum_var2` ).
+    out->write( |\n| ).
 
     DATA enum_var3 TYPE t_enum VALUE d.
     DATA(output_for_enum_var3) = enum_meth_params( enum_var3 ).
-    output->display( input = output_for_enum_var3 name = `output_for_enum_var3` ).
+    out->write( data = output_for_enum_var3 name = `output_for_enum_var3` ).
+    out->write( |\n| ).
 
     "The enum_processing method demonstrates various ways of processing enumerated
     "objects.
     DATA(output_for_enum_processing) = enum_processing(  ).
-    output->display( input = output_for_enum_processing name = `output_for_enum_processing` ).
+    out->write( data = output_for_enum_processing name = `output_for_enum_processing` ).
+    out->write( |\n| ).
 
     "The rtti_enum method demonstrates the RTTI class cl_abap_enumdescr.
     DATA(output_for_rtti_enum) = rtti_enum( ).
-    output->display( input = output_for_rtti_enum name = `output_for_rtti_enum` ).
+    out->write( data = output_for_rtti_enum name = `output_for_rtti_enum` ).
 
   ENDMETHOD.
-
 
   METHOD rtti_enum.
 

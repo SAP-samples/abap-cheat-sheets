@@ -72,8 +72,8 @@
 *     The calculation ID which represents the key of the instance has an
 *     initial value. Only when you save the instance to the database, the
 *     final key is set.
-*     The effect of side effects can be explored as follows: Make an entry 
-*     in an input field, click another input field (e.g. to make a new entry 
+*     The effect of side effects can be explored as follows: Make an entry
+*     in an input field, click another input field (e.g. to make a new entry
 *     there), and check how the value for the result changes.
 *
 * ----------------------------- NOTE -----------------------------------
@@ -146,12 +146,9 @@ CLASS ZCL_DEMO_ABAP_RAP_DRAFT_LN_M IMPLEMENTATION.
 
   METHOD if_oo_adt_classrun~main.
 
-    DATA(output) = NEW zcl_demo_abap_display( out ).
-
-    output->display( `ABAP Cheat Sheet Example: RAP Calculator Using Managed, ` &&
-                      `Draft-Enabled RAP BO (Late Numbering)` ).
-    output->display( `1) Creating Instances and ` &&
-                       `Saving to the database` ).
+    out->write( `ABAP Cheat Sheet Example: RAP Calculator Using Managed, ` &&
+                      |Draft-Enabled RAP BO (Late Numbering)\n\n| ).
+    out->write( |1) Creating Instances and Saving to the database\n| ).
 
     "Creating instances; draft indicator %is_draft is enabled
     MODIFY ENTITY zdemo_abap_rap_draft_m
@@ -175,26 +172,29 @@ CLASS ZCL_DEMO_ABAP_RAP_DRAFT_LN_M IMPLEMENTATION.
     "Displaying responses only if FAILED and REPORTED
     "response parameters are not initial
     IF f IS NOT INITIAL OR r IS NOT INITIAL.
-      output->display( `Responses after MODIFY operation` ).
+      out->write( `Responses after MODIFY operation` ).
+      out->write( |\n| ).
 
       IF m IS NOT INITIAL.
-        output->display( input = m name = `m` ).
+        out->write( data = m name = `m` ).
+        out->write( |\n| ).
       ENDIF.
 
       IF f IS NOT INITIAL.
-        output->display( input = f name = `f` )..
+        out->write( data = f name = `f` ).
+        out->write( |\n| ).
       ENDIF.
 
       IF r IS NOT INITIAL.
-        output->display( input = r name = `r` ).
+        out->write( data = r name = `r` ).
+        out->write( |\n| ).
       ENDIF.
-
     ENDIF.
 
     COMMIT ENTITIES.
 
     IF sy-subrc <> 0.
-      output->display( `An issue occurred in the RAP save sequence.` ).
+      out->write( `An issue occurred in the RAP save sequence.` ).
     ENDIF.
 
     "Retrieving draft table entries
@@ -229,7 +229,7 @@ CLASS ZCL_DEMO_ABAP_RAP_DRAFT_LN_M IMPLEMENTATION.
     COMMIT ENTITIES.
 
     IF sy-subrc <> 0.
-      output->display( `An issue occurred in the RAP save sequence.` ).
+      out->write( `An issue occurred in the RAP save sequence.` ).
     ENDIF.
 
     "Retrieving draft table entries
@@ -248,29 +248,28 @@ CLASS ZCL_DEMO_ABAP_RAP_DRAFT_LN_M IMPLEMENTATION.
      INTO TABLE @DATA(db_tab_root_after_act).
 
     "Displaying entries
-    output->display( `1a) Draft and database tables before ` &&
-                   `ACTIVATE action` ).
-    output->display( `Draft table before activation` ).
-    output->display( input = draft_parent_before_act name = `draft_parent_before_act` ).
+    out->write( |1a) Draft and database tables before ACTIVATE action\n| ).
+    out->write( `Draft table before activation` ).
+    out->write( |\n| ).
+    out->write( data = draft_parent_before_act name = `draft_parent_before_act` ).
+    out->write( |\n| ).
+    out->write( `Database table before activation` ).
+    out->write( |\n| ).
+    out->write( data = db_tab_root_before_act name = `db_tab_root_before_act` ).
 
-
-    output->display( `Database table before activation` ).
-    output->display( input = db_tab_root_before_act name = `db_tab_root_before_act` ).
-
-
-    output->next_section( `1b) Draft and database tables after ` &&
-                   `ACTIVATE action` ).
-    output->display( `Draft table after activation` ).
-    output->display( input = draft_parent_afer_act name = `draft_parent_afer_act` ).
-
-
-    output->display( `Database table after activation` ).
-    output->display( input = db_tab_root_after_act name = `db_tab_root_after_act` ).
-
+    out->write( zcl_demo_abap_aux=>heading( `1b) Draft and database tables after ` &&
+                   `ACTIVATE action` ) ).
+    out->write( `Draft table after activation` ).
+    out->write( |\n| ).
+    out->write( data = draft_parent_afer_act name = `draft_parent_afer_act` ).
+    out->write( |\n| ).
+    out->write( `Database table after activation` ).
+    out->write( |\n| ).
+    out->write( data = db_tab_root_after_act name = `db_tab_root_after_act` ).
 
 **********************************************************************
 
-    output->next_section( `2) Creating Invalid Instances` ).
+    out->write( zcl_demo_abap_aux=>heading( `2) Creating Invalid Instances` ) ).
 
     "Purposely creating invalid instances;
     "draft indicator %is_draft is enabled
@@ -291,18 +290,22 @@ CLASS ZCL_DEMO_ABAP_RAP_DRAFT_LN_M IMPLEMENTATION.
     "Displaying responses only if FAILED and REPORTED
     "response parameters are not initial.
     IF f IS NOT INITIAL OR r IS NOT INITIAL.
-      output->display( input = `Responses after MODIFY operation` ).
+      out->write( data = `Responses after MODIFY operation` ).
+      out->write( |\n| ).
 
       IF m IS NOT INITIAL.
-        output->display( input = m name = `m` ).
+        out->write( data = m name = `m` ).
+        out->write( |\n| ).
       ENDIF.
 
       IF f IS NOT INITIAL.
-        output->display( input = f name = `f` )..
+        out->write( data = f name = `f` ).
+        out->write( |\n| ).
       ENDIF.
 
       IF r IS NOT INITIAL.
-        output->display( input = r name = `r` ).
+        out->write( data = r name = `r` ).
+        out->write( |\n| ).
       ENDIF.
 
     ENDIF.
@@ -310,7 +313,7 @@ CLASS ZCL_DEMO_ABAP_RAP_DRAFT_LN_M IMPLEMENTATION.
     COMMIT ENTITIES.
 
     IF sy-subrc <> 0.
-      output->display( `An issue occurred in the RAP save sequence.` ).
+      out->write( `An issue occurred in the RAP save sequence.` ).
     ENDIF.
 
     "Retrieving draft table entries
@@ -327,7 +330,6 @@ CLASS ZCL_DEMO_ABAP_RAP_DRAFT_LN_M IMPLEMENTATION.
      FROM zdemo_abap_tabca
      ORDER BY id
      INTO TABLE @db_tab_root_before_act.
-
 
     "Filling the derived type for the ACTIVATE method by
     "getting %pid values; here, another table is filled for later use
@@ -350,18 +352,22 @@ CLASS ZCL_DEMO_ABAP_RAP_DRAFT_LN_M IMPLEMENTATION.
     "Displaying responses only if FAILED and REPORTED
     "response parameters are not initial.
     IF f IS NOT INITIAL OR r IS NOT INITIAL.
-      output->display( input = `Responses after MODIFY operation` ).
+      out->write( data = `Responses after MODIFY operation` ).
+      out->write( |\n| ).
 
       IF m IS NOT INITIAL.
-        output->display( input = m name = `m` ).
+        out->write( data = m name = `m` ).
+        out->write( |\n| ).
       ENDIF.
 
       IF f IS NOT INITIAL.
-        output->display( input = f name = `f` )..
+        out->write( data = f name = `f` ).
+        out->write( |\n| ).
       ENDIF.
 
       IF r IS NOT INITIAL.
-        output->display( input = r name = `r` ).
+        out->write( data = r name = `r` ).
+        out->write( |\n| ).
       ENDIF.
 
     ENDIF.
@@ -369,7 +375,7 @@ CLASS ZCL_DEMO_ABAP_RAP_DRAFT_LN_M IMPLEMENTATION.
     COMMIT ENTITIES.
 
     IF sy-subrc <> 0.
-      output->display( `An issue occurred in the RAP save sequence.` ).
+      out->write( `An issue occurred in the RAP save sequence.` ).
     ENDIF.
 
     "Retrieving draft table entries
@@ -388,29 +394,29 @@ CLASS ZCL_DEMO_ABAP_RAP_DRAFT_LN_M IMPLEMENTATION.
      INTO TABLE @db_tab_root_after_act.
 
     "Displaying entries
-    output->next_section( `2a) Draft and database tables before ` &&
-                   `ACTIVATE action` ).
-    output->display( `Draft table before activation` ).
-    output->display( input = draft_parent_before_act name = `draft_parent_before_act` ).
+    out->write( zcl_demo_abap_aux=>heading( `2a) Draft and database tables before ` &&
+                   `ACTIVATE action` ) ).
+    out->write( `Draft table before activation` ).
+    out->write( |\n| ).
+    out->write( data = draft_parent_before_act name = `draft_parent_before_act` ).
+    out->write( |\n| ).
+    out->write( `Database table before activation` ).
+    out->write( |\n| ).
+    out->write( data = db_tab_root_before_act name = `db_tab_root_before_act` ).
 
-
-    output->display( `Database table before activation` ).
-    output->display( input = db_tab_root_before_act name = `db_tab_root_before_act` ).
-
-
-    output->next_section( `2b) Draft and database tables after ` &&
-                   `ACTIVATE action` ).
-    output->display( `Draft table after activation` ).
-    output->display( input = draft_parent_afer_act name = `draft_parent_afer_act` ).
-
-
-    output->display( `Database table after activation` ).
-    output->display( input = db_tab_root_after_act name = `db_tab_root_after_act` ).
-
+    out->write( zcl_demo_abap_aux=>heading( `2b) Draft and database tables after ` &&
+                   `ACTIVATE action` ) ).
+    out->write( `Draft table after activation` ).
+    out->write( |\n| ).
+    out->write( data = draft_parent_afer_act name = `draft_parent_afer_act` ).
+    out->write( |\n| ).
+    out->write( `Database table after activation` ).
+    out->write( |\n| ).
+    out->write( data = db_tab_root_after_act name = `db_tab_root_after_act` ).
 
 **********************************************************************
 
-    output->next_section( `3) Correcting and Updating Invalid Instances` ).
+    out->write( zcl_demo_abap_aux=>heading( `3) Correcting and Updating Invalid Instances` ) ).
 
     "Preparing the derived type for the read operation to
     "retrieve the field values; the draft indicator is enabled
@@ -458,7 +464,7 @@ CLASS ZCL_DEMO_ABAP_RAP_DRAFT_LN_M IMPLEMENTATION.
     COMMIT ENTITIES.
 
     IF sy-subrc <> 0.
-      output->display( `An issue occurred in the RAP save sequence.` ).
+      out->write( `An issue occurred in the RAP save sequence.` ).
     ENDIF.
 
     MODIFY ENTITY zdemo_abap_rap_draft_m
@@ -470,7 +476,7 @@ CLASS ZCL_DEMO_ABAP_RAP_DRAFT_LN_M IMPLEMENTATION.
     COMMIT ENTITIES.
 
     IF sy-subrc <> 0.
-      output->display( `An issue occurred in the RAP save sequence.` ).
+      out->write( `An issue occurred in the RAP save sequence.` ).
     ENDIF.
 
     "Retrieving draft table entries
@@ -489,19 +495,17 @@ CLASS ZCL_DEMO_ABAP_RAP_DRAFT_LN_M IMPLEMENTATION.
      INTO TABLE @db_tab_root_after_act.
 
     "Displaying entries
-    output->display( input = `Draft and database tables after ` &&
+    out->write( data = `Draft and database tables after ` &&
                    `ACTIVATE action` ).
-
-    output->display( `Draft table after activation` ).
-    output->display( input = draft_parent_afer_act name = `draft_parent_afer_act` ).
-
-
-    output->display( `Database table after activation` ).
-    output->display( input = db_tab_root_after_act name = `db_tab_root_after_act` ).
-
-
+    out->write( |\n| ).
+    out->write( `Draft table after activation` ).
+    out->write( |\n| ).
+    out->write( data = draft_parent_afer_act name = `draft_parent_afer_act` ).
+    out->write( |\n| ).
+    out->write( `Database table after activation` ).
+    out->write( |\n| ).
+    out->write( data = db_tab_root_after_act name = `db_tab_root_after_act` ).
   ENDMETHOD.
-
 
   METHOD initialize_dbtabs.
     DELETE FROM zdemo_abap_tabca.

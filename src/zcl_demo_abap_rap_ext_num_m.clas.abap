@@ -70,12 +70,13 @@ CLASS zcl_demo_abap_rap_ext_num_m DEFINITION
     CLASS-METHODS:
       class_constructor.
 
-protected section.
+  PROTECTED SECTION.
   PRIVATE SECTION.
     CLASS-DATA:
       failed   TYPE RESPONSE FOR FAILED zdemo_abap_rap_ro_m,
       reported TYPE RESPONSE FOR REPORTED zdemo_abap_rap_ro_m,
-      mapped   TYPE RESPONSE FOR MAPPED zdemo_abap_rap_ro_m.
+      mapped   TYPE RESPONSE FOR MAPPED zdemo_abap_rap_ro_m,
+      op       TYPE string.
     CLASS-METHODS:
       initialize_dbtabs,
       "If there are entries in the response parameters following EML
@@ -88,7 +89,7 @@ ENDCLASS.
 
 
 
-CLASS ZCL_DEMO_ABAP_RAP_EXT_NUM_M IMPLEMENTATION.
+CLASS zcl_demo_abap_rap_ext_num_m IMPLEMENTATION.
 
 
   METHOD class_constructor.
@@ -100,9 +101,6 @@ CLASS ZCL_DEMO_ABAP_RAP_EXT_NUM_M IMPLEMENTATION.
     CLEAR errors.
 
     LOOP AT failed-root ASSIGNING FIELD-SYMBOL(<err>).
-
-      DATA op TYPE string.
-
       CASE if_abap_behv=>mk-on.
         WHEN <err>-%op-%create.
           op = `create operation`.
@@ -123,7 +121,6 @@ CLASS ZCL_DEMO_ABAP_RAP_EXT_NUM_M IMPLEMENTATION.
                    ELSE `key = ` && <err>-key_field ) &&
            `: Fail cause ` &&  <err>-%fail-cause && ` for ` &&  op
             && `.` TO errors.
-
     ENDLOOP.
 
     IF failed-child IS NOT INITIAL.
@@ -134,7 +131,6 @@ CLASS ZCL_DEMO_ABAP_RAP_EXT_NUM_M IMPLEMENTATION.
         && <err_ch>-%fail-cause && `.` TO errors.
       ENDLOOP.
     ENDIF.
-
   ENDMETHOD.
 
 
@@ -169,23 +165,18 @@ CLASS ZCL_DEMO_ABAP_RAP_EXT_NUM_M IMPLEMENTATION.
 
 
   METHOD fill_db_tab.
-
     MODIFY zdemo_abap_rapt1 FROM TABLE @( VALUE #(
           ( key_field = 4
              field1   = 'ggg'
              field2   = 'hhh'
              field3   = 40
              field4   = 41 ) ) ).
-
   ENDMETHOD.
 
 
   METHOD if_oo_adt_classrun~main.
 
-    DATA(output) = NEW zcl_demo_abap_display( out ).
-
-    output->display( `ABAP Cheat Sheet Example: RAP BO Operations Using a Managed ` &&
-                      `RAP BO` ).
+    out->write( |ABAP Cheat Sheet Example: RAP BO Operations Using a Managed RAP BO\n\n| ).
 
 **********************************************************************
 *
@@ -193,7 +184,7 @@ CLASS ZCL_DEMO_ABAP_RAP_EXT_NUM_M IMPLEMENTATION.
 *
 **********************************************************************
 
-    output->display( `1) Create operation` ).
+    out->write( |1) Create operation\n\n| ).
 
     "Adding an entry to the database table to provoke an error for the
     "EML create request.
@@ -247,7 +238,7 @@ CLASS ZCL_DEMO_ABAP_RAP_EXT_NUM_M IMPLEMENTATION.
     COMMIT ENTITIES.
 
     IF sy-subrc <> 0.
-      output->display( `An issue occurred in the RAP save sequence.` ).
+      out->write( `An issue occurred in the RAP save sequence.` ).
     ENDIF.
 
     "Retrieving and displaying database content
@@ -256,26 +247,30 @@ CLASS ZCL_DEMO_ABAP_RAP_EXT_NUM_M IMPLEMENTATION.
       ORDER BY key_field
       INTO TABLE @DATA(tab_root).
 
-    output->display( input = tab_root name = `tab_root` ).
+    out->write( data = tab_root name = `tab_root` ).
+    out->write( |\n| ).
 
     "Displaying response information
     IF mapped-root IS NOT INITIAL.
-      output->display( `Entries in MAPPED response parameter ` &&
+      out->write( `Entries in MAPPED response parameter ` &&
                          `(root entity)` ).
-
-      output->display( input = mapped-root name = `mapped-root` ).
+      out->write( |\n| ).
+      out->write( data = mapped-root name = `mapped-root` ).
+      out->write( |\n| ).
     ENDIF.
 
     IF failed IS NOT INITIAL.
-      output->display( `Entries in FAILED response parameter` ).
-
-      output->display( input = extract_from_failed( ) name = `extract_from_failed( )` ).
+      out->write( `Entries in FAILED response parameter` ).
+      out->write( |\n| ).
+      out->write( data = extract_from_failed( ) name = `extract_from_failed( )` ).
+      out->write( |\n| ).
     ENDIF.
 
     IF reported IS NOT INITIAL.
-      output->display( `Entries in REPORTED response parameter` ).
-
-      output->display( input = extract_from_reported( ) name = `extract_from_reported( )` ).
+      out->write( `Entries in REPORTED response parameter` ).
+      out->write( |\n| ).
+      out->write( data = extract_from_reported( ) name = `extract_from_reported( )` ).
+      out->write( |\n| ).
     ENDIF.
 
 **********************************************************************
@@ -284,7 +279,7 @@ CLASS ZCL_DEMO_ABAP_RAP_EXT_NUM_M IMPLEMENTATION.
 *
 **********************************************************************
 
-    output->next_section( `2) Update operation` ).
+    out->write( zcl_demo_abap_aux=>heading( `2) Update operation` ) ).
 
 **********************************************************************
 * Notes:
@@ -340,7 +335,7 @@ CLASS ZCL_DEMO_ABAP_RAP_EXT_NUM_M IMPLEMENTATION.
     COMMIT ENTITIES.
 
     IF sy-subrc <> 0.
-      output->display( `An issue occurred in the RAP save sequence.` ).
+      out->write( `An issue occurred in the RAP save sequence.` ).
     ENDIF.
 
     "Retrieving and displaying database content
@@ -349,26 +344,30 @@ CLASS ZCL_DEMO_ABAP_RAP_EXT_NUM_M IMPLEMENTATION.
       ORDER BY key_field
       INTO TABLE @tab_root.
 
-    output->display( input = tab_root name = `tab_root` ).
+    out->write( data = tab_root name = `tab_root` ).
+    out->write( |\n| ).
 
     "Displaying response information
     IF mapped-root IS NOT INITIAL.
-      output->display( `Entries in MAPPED response parameter ` &&
+      out->write( `Entries in MAPPED response parameter ` &&
                          `(root entity)` ).
-
-      output->display( input = mapped-root name = `mapped-root` ).
+      out->write( |\n| ).
+      out->write( data = mapped-root name = `mapped-root` ).
+      out->write( |\n| ).
     ENDIF.
 
     IF failed IS NOT INITIAL.
-      output->display( `Entries in FAILED response parameter` ).
-
-      output->display( input = extract_from_failed( ) name = `extract_from_failed( )` ).
+      out->write( `Entries in FAILED response parameter` ).
+      out->write( |\n| ).
+      out->write( data = extract_from_failed( ) name = `extract_from_failed( )` ).
+      out->write( |\n| ).
     ENDIF.
 
     IF reported IS NOT INITIAL.
-      output->display( `Entries in REPORTED response parameter` ).
-
-      output->display( input = extract_from_reported( ) name = `extract_from_reported( )` ).
+      out->write( `Entries in REPORTED response parameter` ).
+      out->write( |\n| ).
+      out->write( data = extract_from_reported( ) name = `extract_from_reported( )` ).
+      out->write( |\n| ).
     ENDIF.
 
 **********************************************************************
@@ -377,7 +376,7 @@ CLASS ZCL_DEMO_ABAP_RAP_EXT_NUM_M IMPLEMENTATION.
 *
 **********************************************************************
 
-    output->next_section( `3) Delete operation` ).
+    out->write( zcl_demo_abap_aux=>heading( `3) Delete operation` ) ).
 
 **********************************************************************
 * Notes:
@@ -413,7 +412,7 @@ CLASS ZCL_DEMO_ABAP_RAP_EXT_NUM_M IMPLEMENTATION.
     COMMIT ENTITIES.
 
     IF sy-subrc <> 0.
-      output->display( `An issue occurred in the RAP save sequence.` ).
+      out->write( `An issue occurred in the RAP save sequence.` ).
     ENDIF.
 
     "Retrieving and displaying database content
@@ -422,26 +421,30 @@ CLASS ZCL_DEMO_ABAP_RAP_EXT_NUM_M IMPLEMENTATION.
       ORDER BY key_field
       INTO TABLE @tab_root.
 
-    output->display( input = tab_root name = `tab_root` ).
+    out->write( data = tab_root name = `tab_root` ).
+    out->write( |\n| ).
 
     "Displaying response information
     IF mapped-root IS NOT INITIAL.
-      output->display( `Entries in MAPPED response parameter ` &&
+      out->write( `Entries in MAPPED response parameter ` &&
                          `(root entity)` ).
-
-      output->display( input = mapped-root name = `mapped-root` ).
+      out->write( |\n| ).
+      out->write( data = mapped-root name = `mapped-root` ).
+      out->write( |\n| ).
     ENDIF.
 
     IF failed IS NOT INITIAL.
-      output->display( `Entries in FAILED response parameter` ).
-
-      output->display( input = extract_from_failed( ) name = `extract_from_failed( )` ).
+      out->write( `Entries in FAILED response parameter` ).
+      out->write( |\n| ).
+      out->write( data = extract_from_failed( ) name = `extract_from_failed( )` ).
+      out->write( |\n| ).
     ENDIF.
 
     IF reported IS NOT INITIAL.
-      output->display( `Entries in REPORTED response parameter` ).
-
-      output->display( input = extract_from_reported( ) name = `extract_from_reported( )` ).
+      out->write( `Entries in REPORTED response parameter` ).
+      out->write( |\n| ).
+      out->write( data = extract_from_reported( ) name = `extract_from_reported( )` ).
+      out->write( |\n| ).
     ENDIF.
 
 **********************************************************************
@@ -450,7 +453,7 @@ CLASS ZCL_DEMO_ABAP_RAP_EXT_NUM_M IMPLEMENTATION.
 *
 **********************************************************************
 
-    output->next_section( `4) Action execution: mutliply_by_2` ).
+    out->write( zcl_demo_abap_aux=>heading( `4) Action execution: mutliply_by_2` ) ).
 
 **********************************************************************
 * Notes:
@@ -487,7 +490,7 @@ CLASS ZCL_DEMO_ABAP_RAP_EXT_NUM_M IMPLEMENTATION.
     COMMIT ENTITIES.
 
     IF sy-subrc <> 0.
-      output->display( `An issue occurred in the RAP save sequence.` ).
+      out->write( `An issue occurred in the RAP save sequence.` ).
     ENDIF.
 
     "Retrieving and displaying database content
@@ -496,26 +499,30 @@ CLASS ZCL_DEMO_ABAP_RAP_EXT_NUM_M IMPLEMENTATION.
       ORDER BY key_field
       INTO TABLE @tab_root.
 
-    output->display( input = tab_root name = `tab_root` ).
+    out->write( data = tab_root name = `tab_root` ).
+    out->write( |\n| ).
 
     "Displaying response information
     IF mapped-root IS NOT INITIAL.
-      output->display( `Entries in MAPPED response parameter ` &&
+      out->write( `Entries in MAPPED response parameter ` &&
                          `(root entity)` ).
-
-      output->display( input = mapped-root name = `mapped-root` ).
+      out->write( |\n| ).
+      out->write( data = mapped-root name = `mapped-root` ).
+      out->write( |\n| ).
     ENDIF.
 
     IF failed IS NOT INITIAL.
-      output->display( `Entries in FAILED response parameter` ).
-
-      output->display( input = extract_from_failed( ) name = `extract_from_failed( )` ).
+      out->write( `Entries in FAILED response parameter` ).
+      out->write( |\n| ).
+      out->write( data = extract_from_failed( ) name = `extract_from_failed( )` ).
+      out->write( |\n| ).
     ENDIF.
 
     IF reported IS NOT INITIAL.
-      output->display( `Entries in REPORTED response parameter` ).
-
-      output->display( input = extract_from_reported( ) name = `extract_from_reported( )` ).
+      out->write( `Entries in REPORTED response parameter` ).
+      out->write( |\n| ).
+      out->write( data = extract_from_reported( ) name = `extract_from_reported( )` ).
+      out->write( |\n| ).
     ENDIF.
 
 **********************************************************************
@@ -524,7 +531,7 @@ CLASS ZCL_DEMO_ABAP_RAP_EXT_NUM_M IMPLEMENTATION.
 *
 **********************************************************************
 
-    output->next_section( `5) Create-by-association operation (from parent to child)` ).
+    out->write( zcl_demo_abap_aux=>heading( `5) Create-by-association operation (from parent to child)` ) ).
 
 **********************************************************************
 * Notes:
@@ -593,7 +600,7 @@ CLASS ZCL_DEMO_ABAP_RAP_EXT_NUM_M IMPLEMENTATION.
     COMMIT ENTITIES.
 
     IF sy-subrc <> 0.
-      output->display( `An issue occurred in the RAP save sequence.` ).
+      out->write( `An issue occurred in the RAP save sequence.` ).
     ENDIF.
 
     "Retrieving and displaying database content
@@ -607,27 +614,32 @@ CLASS ZCL_DEMO_ABAP_RAP_EXT_NUM_M IMPLEMENTATION.
       ORDER BY key_field, key_ch
       INTO TABLE @DATA(tab_child).
 
-    output->display( input = tab_root name = `tab_root` ).
-    output->display( input = tab_child name = `tab_child` ).
+    out->write( data = tab_root name = `tab_root` ).
+    out->write( |\n| ).
+    out->write( data = tab_child name = `tab_child` ).
+    out->write( |\n| ).
 
     "Displaying response information
     IF mapped IS NOT INITIAL.
-      output->display( `Entries in MAPPED response parameter ` &&
+      out->write( `Entries in MAPPED response parameter ` &&
                          `(root and child entity)` ).
-
-      output->display( input = mapped name = `mapped` ).
+      out->write( |\n| ).
+      out->write( data = mapped name = `mapped` ).
+      out->write( |\n| ).
     ENDIF.
 
     IF failed IS NOT INITIAL.
-      output->display( `Entries in FAILED response parameter` ).
-
-      output->display( input = extract_from_failed( ) name = `extract_from_failed( )` ).
+      out->write( `Entries in FAILED response parameter` ).
+      out->write( |\n| ).
+      out->write( data = extract_from_failed( ) name = `extract_from_failed( )` ).
+      out->write( |\n| ).
     ENDIF.
 
     IF reported IS NOT INITIAL.
-      output->display( `Entries in REPORTED response parameter` ).
-
-      output->display( input = extract_from_reported( ) name = `extract_from_reported( )` ).
+      out->write( `Entries in REPORTED response parameter` ).
+      out->write( |\n| ).
+      out->write( data = extract_from_reported( ) name = `extract_from_reported( )` ).
+      out->write( |\n| ).
     ENDIF.
 
 **********************************************************************
@@ -636,7 +648,7 @@ CLASS ZCL_DEMO_ABAP_RAP_EXT_NUM_M IMPLEMENTATION.
 *
 **********************************************************************
 
-    output->next_section( `6) Validation val` ).
+    out->write( zcl_demo_abap_aux=>heading( `6) Validation val` ) ).
 
 **********************************************************************
 * Notes:
@@ -684,7 +696,7 @@ CLASS ZCL_DEMO_ABAP_RAP_EXT_NUM_M IMPLEMENTATION.
       REPORTED DATA(reported_late).
 
     IF sy-subrc <> 0.
-      output->display( `An issue occurred in the RAP save sequence.` ).
+      out->write( `An issue occurred in the RAP save sequence.` ).
     ENDIF.
 
     "Retrieving and displaying database content
@@ -693,26 +705,30 @@ CLASS ZCL_DEMO_ABAP_RAP_EXT_NUM_M IMPLEMENTATION.
       ORDER BY key_field
       INTO TABLE @tab_root.
 
-    output->display( input = tab_root name = `tab_root` ).
+    out->write( data = tab_root name = `tab_root` ).
+    out->write( |\n| ).
 
     "Displaying response information
     IF mapped IS NOT INITIAL.
-      output->display( `Entries in MAPPED response parameter ` &&
+      out->write( `Entries in MAPPED response parameter ` &&
                          `(root and child entity)` ).
-
-      output->display( input = mapped name = `mapped` ).
+      out->write( |\n| ).
+      out->write( data = mapped name = `mapped` ).
+      out->write( |\n| ).
     ENDIF.
 
     IF failed_late IS NOT INITIAL.
-      output->display( `Entries in FAILED LATE response parameter` ).
-
-      output->display( input = failed_late name = `failed_late` ).
+      out->write( `Entries in FAILED LATE response parameter` ).
+      out->write( |\n| ).
+      out->write( data = failed_late name = `failed_late` ).
+      out->write( |\n| ).
     ENDIF.
 
     IF reported_late IS NOT INITIAL.
-      output->display( `Entries in REPORTED LATE response parameter` ).
-
-      output->display( input = reported_late name = `reported_late` ).
+      out->write( `Entries in REPORTED LATE response parameter` ).
+      out->write( |\n| ).
+      out->write( data = reported_late name = `reported_late` ).
+      out->write( |\n| ).
     ENDIF.
 
 **********************************************************************
@@ -721,7 +737,7 @@ CLASS ZCL_DEMO_ABAP_RAP_EXT_NUM_M IMPLEMENTATION.
 *
 **********************************************************************
 
-    output->next_section( `7) Read operation (root entity)` ).
+    out->write( zcl_demo_abap_aux=>heading( `7) Read operation (root entity)` ) ).
 
 **********************************************************************
 * Notes:
@@ -747,18 +763,21 @@ CLASS ZCL_DEMO_ABAP_RAP_EXT_NUM_M IMPLEMENTATION.
         REPORTED reported.
 
     "Displaying the read result
-    output->display( input = result name = `result` ).
+    out->write( data = result name = `result` ).
+    out->write( |\n| ).
 
     "Displaying response information
     IF failed IS NOT INITIAL.
-      output->display( `Entries in FAILED response parameter` ).
-
-      output->display( input = extract_from_failed( ) name = `extract_from_failed( )` ).
+      out->write( `Entries in FAILED response parameter` ).
+      out->write( |\n| ).
+      out->write( data = extract_from_failed( ) name = `extract_from_failed( )` ).
+      out->write( |\n| ).
     ENDIF.
     IF reported IS NOT INITIAL.
-      output->display( `Entries in REPORTED response parameter` ).
-
-      output->display( input = extract_from_reported( ) name = `extract_from_reported( )` ).
+      out->write( `Entries in REPORTED response parameter` ).
+      out->write( |\n| ).
+      out->write( data = extract_from_reported( ) name = `extract_from_reported( )` ).
+      out->write( |\n| ).
     ENDIF.
 
 *********************************************************************
@@ -767,7 +786,7 @@ CLASS ZCL_DEMO_ABAP_RAP_EXT_NUM_M IMPLEMENTATION.
 *
 **********************************************************************
 
-    output->next_section( `8) Read operation (child entity)` ).
+    out->write( zcl_demo_abap_aux=>heading( `8) Read operation (child entity)` ) ).
 
 **********************************************************************
 * Notes:
@@ -790,19 +809,22 @@ CLASS ZCL_DEMO_ABAP_RAP_EXT_NUM_M IMPLEMENTATION.
           REPORTED reported.
 
     "Displaying read result
-    output->display( input = read_ch name = `read_ch` ).
+    out->write( data = read_ch name = `read_ch` ).
+    out->write( |\n| ).
 
 
     "Displaying response information
     IF failed IS NOT INITIAL.
-      output->display( `Entries in FAILED response parameter` ).
-
-      output->display( input = extract_from_failed( ) name = `extract_from_failed( )` ).
+      out->write( `Entries in FAILED response parameter` ).
+      out->write( |\n| ).
+      out->write( data = extract_from_failed( ) name = `extract_from_failed( )` ).
+      out->write( |\n| ).
     ENDIF.
     IF reported IS NOT INITIAL.
-      output->display( `Entries in REPORTED response parameter` ).
-
-      output->display( input = extract_from_reported( ) name = `extract_from_reported( )` ).
+      out->write( `Entries in REPORTED response parameter` ).
+      out->write( |\n| ).
+      out->write( data = extract_from_reported( ) name = `extract_from_reported( )` ).
+      out->write( |\n| ).
     ENDIF.
 
 **********************************************************************
@@ -811,7 +833,7 @@ CLASS ZCL_DEMO_ABAP_RAP_EXT_NUM_M IMPLEMENTATION.
 *
 **********************************************************************
 
-    output->next_section( `9) Read-by-association operation (from parent to child)` ).
+    out->write( zcl_demo_abap_aux=>heading( `9) Read-by-association operation (from parent to child)` ) ).
 
 **********************************************************************
 * Notes:
@@ -835,19 +857,23 @@ CLASS ZCL_DEMO_ABAP_RAP_EXT_NUM_M IMPLEMENTATION.
           REPORTED reported.
 
     "Displaying read result and association links
-    output->display( input = rba_result name = `rba_result` ).
-    output->display( input = association_links name = `association_links` ).
+    out->write( data = rba_result name = `rba_result` ).
+    out->write( |\n| ).
+    out->write( data = association_links name = `association_links` ).
+    out->write( |\n| ).
 
     "Displaying response information
     IF failed IS NOT INITIAL.
-      output->display( `Entries in FAILED response parameter` ).
-
-      output->display( input = extract_from_failed( ) name = `extract_from_failed( )` ).
+      out->write( `Entries in FAILED response parameter` ).
+      out->write( |\n| ).
+      out->write( data = extract_from_failed( ) name = `extract_from_failed( )` ).
+      out->write( |\n| ).
     ENDIF.
     IF reported IS NOT INITIAL.
-      output->display( `Entries in REPORTED response parameter` ).
-
-      output->display( input = extract_from_reported( ) name = `extract_from_reported( )` ).
+      out->write( `Entries in REPORTED response parameter` ).
+      out->write( |\n| ).
+      out->write( data = extract_from_reported( ) name = `extract_from_reported( )` ).
+      out->write( |\n| ).
     ENDIF.
 
 **********************************************************************
@@ -856,7 +882,7 @@ CLASS ZCL_DEMO_ABAP_RAP_EXT_NUM_M IMPLEMENTATION.
 *
 **********************************************************************
 
-    output->next_section( `10) Read-by-association operation (from child to parent)` ).
+    out->write( zcl_demo_abap_aux=>heading( `10) Read-by-association operation (from child to parent)` ) ).
 
 **********************************************************************
 * Notes:
@@ -881,19 +907,23 @@ CLASS ZCL_DEMO_ABAP_RAP_EXT_NUM_M IMPLEMENTATION.
        REPORTED reported.
 
     "Displaying read result and association links
-    output->display( input = rba_parent name = `rba_parent` ).
-    output->display( input = association_links_parent name = `association_links_parent` ).
+    out->write( data = rba_parent name = `rba_parent` ).
+    out->write( |\n| ).
+    out->write( data = association_links_parent name = `association_links_parent` ).
+    out->write( |\n| ).
 
     "Displaying response information
     IF failed IS NOT INITIAL.
-      output->display( `Entries in FAILED response parameter` ).
-
-      output->display( input = extract_from_failed( ) name = `extract_from_failed( )` ).
+      out->write( `Entries in FAILED response parameter` ).
+      out->write( |\n| ).
+      out->write( data = extract_from_failed( ) name = `extract_from_failed( )` ).
+      out->write( |\n| ).
     ENDIF.
     IF reported IS NOT INITIAL.
-      output->display( `Entries in REPORTED response parameter` ).
-
-      output->display( input = extract_from_reported( ) name = `extract_from_reported( )` ).
+      out->write( `Entries in REPORTED response parameter` ).
+      out->write( |\n| ).
+      out->write( data = extract_from_reported( ) name = `extract_from_reported( )` ).
+      out->write( |\n| ).
     ENDIF.
 
 **********************************************************************
@@ -903,8 +933,8 @@ CLASS ZCL_DEMO_ABAP_RAP_EXT_NUM_M IMPLEMENTATION.
 *
 **********************************************************************
 
-    output->next_section( `11) Excursion: Read and read-by-association ` &&
-                     `operations using dynamic EML` ).
+    out->write( zcl_demo_abap_aux=>heading( `11) Excursion: Read and read-by-association ` &&
+                     `operations using dynamic EML` ) ).
     DATA:
       op_tab          TYPE abp_behv_retrievals_tab,
       read_dyn        TYPE TABLE FOR READ IMPORT zdemo_abap_rap_ro_m,
@@ -956,15 +986,18 @@ CLASS ZCL_DEMO_ABAP_RAP_EXT_NUM_M IMPLEMENTATION.
 
     READ ENTITIES OPERATIONS op_tab.
 
-    output->display( `Read result (root)` ).
-    output->display( input = read_dyn_result name = `read_dyn_result` ).
-    output->display( `Read result (read-by-association)` ).
-    output->display( input = rba_dyn_result name = `rba_dyn_result` ).
-    output->display( `Links` ).
-    output->display( input = rba_dyn_link name = `rba_dyn_link` ).
-
+    out->write( `Read result (root)` ).
+    out->write( |\n| ).
+    out->write( data = read_dyn_result name = `read_dyn_result` ).
+    out->write( |\n| ).
+    out->write( `Read result (read-by-association)` ).
+    out->write( |\n| ).
+    out->write( data = rba_dyn_result name = `rba_dyn_result` ).
+    out->write( |\n| ).
+    out->write( `Links` ).
+    out->write( |\n| ).
+    out->write( data = rba_dyn_link name = `rba_dyn_link` ).
   ENDMETHOD.
-
 
   METHOD initialize_dbtabs.
     DELETE FROM zdemo_abap_rapt1.

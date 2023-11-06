@@ -20,22 +20,24 @@
 "! <p class="shorttext synchronized">Class supporting ABAP cheat sheet examples</p>
 "! The class supports the ABAP cheat examples by clearing and populating demo database tables that are used there.
 "! The demo database tables contain airline and flight information.
-CLASS zcl_demo_abap_flight_tables DEFINITION
+CLASS zcl_demo_abap_aux DEFINITION
   PUBLIC
   FINAL
   CREATE PUBLIC .
 
   PUBLIC SECTION.
     CLASS-METHODS: clear_dbtabs,
-                   fill_dbtabs.
+      fill_dbtabs,
+      heading IMPORTING text          TYPE string
+              RETURNING VALUE(output) TYPE string.
 
-protected section.
-private section.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
 ENDCLASS.
 
 
 
-CLASS ZCL_DEMO_ABAP_FLIGHT_TABLES IMPLEMENTATION.
+CLASS zcl_demo_abap_aux IMPLEMENTATION.
 
 
   METHOD clear_dbtabs.
@@ -708,4 +710,8 @@ CLASS ZCL_DEMO_ABAP_FLIGHT_TABLES IMPLEMENTATION.
           seatsocc_f = 20 ) ) ).
 
   ENDMETHOD.
+  METHOD heading.
+    output = |\n_________________________________________________________________________________\n\n{ text }\n\n|.
+  ENDMETHOD.
+
 ENDCLASS.
