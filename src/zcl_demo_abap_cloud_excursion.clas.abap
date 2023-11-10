@@ -160,7 +160,7 @@ CLASS zcl_demo_abap_cloud_excursion IMPLEMENTATION.
     DATA(up_to_year) = 2050.
 
     "The statement retrieves the leap years between the current year and
-    "the specfied years. A released CDS view is used as data source.
+    "the specified year. A released CDS view is used as data source.
     SELECT calendaryear
       FROM i_calendaryear
       WHERE calendaryear BETWEEN @current_year AND @up_to_year
@@ -221,7 +221,7 @@ CLASS zcl_demo_abap_cloud_excursion IMPLEMENTATION.
       AND ReleasedObjectName LIKE 'CL_ABAP_RANDOM_P%'
       INTO TABLE @DATA(rel_cl_abap_random).
 
-    out->write( |\nRead result::| ).
+    out->write( |\nRead result:| ).
     out->write( data = rel_cl_abap_random name = `rel_cl_abap_random` ).
 
     "Getting the number of all released classes in the system

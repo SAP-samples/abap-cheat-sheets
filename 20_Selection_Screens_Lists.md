@@ -139,7 +139,7 @@ PARAMETERS pd LIKE (some_dobj).
 PARAMETERS pe TYPE c LENGTH 1.
 PARAMETERS pf TYPE n LENGTH 5.
 
-"You may also see specifications in which the length is specified in parentheses.
+"Specifications in which the length is specified in parentheses.
 "For better readability, specifying LENGTH explicitly is recommended.
 PARAMETERS pg(2) TYPE c.
 "No length specified means LENGTH 1 by default
@@ -193,7 +193,7 @@ PARAMETERS ps TYPE c AS CHECKBOX. "Explicit type specification (but no explicit 
 "- Regarding the data type, the same applies as for AS CHECKBOX
 "- Only one parameter can be defined with the DEFAULT addition
 "- If DEFAULT is not specified, the first parameter of the group is set to the value X
-"- Here, a chained statements is used.
+"- Here, a chained statement is used.
 PARAMETERS: prb1 RADIOBUTTON GROUP rbgr,
             prb2 type c RADIOBUTTON GROUP rbgr,       "Explicit type specification
             prb3 RADIOBUTTON GROUP rbgr DEFAULT 'X'.  "Select this radiobutton by default
@@ -607,9 +607,9 @@ WRITE /5(30) 'this is displayed completely'.
 "Position/length only specified as numeric literals as above, then the
 "addition AT can be omitted
 WRITE AT /3(12) 'lorem ipsum'.
-"You may also see length specifications with * or **. In that case, the
-"output length depends on the data type of the data object. There are
-"special rules. See the ABAP Keyword Documentation for the details.
+"Length specifications with * or **. In that case, the output length 
+"depends on the data type of the data object. There are special rules. 
+"See the ABAP Keyword Documentation for the details.
 DATA dc34 TYPE decfloat34 VALUE '   1.2345    '.
 WRITE /(*) dc34.
 WRITE /1(**) dc34.

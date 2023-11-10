@@ -68,7 +68,7 @@ Internal Tables ...
 - There are two types of table keys: a [primary table key](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenprimary_table_key_glosry.htm) and [secondary table keys](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensecondary_table_key_glosry.htm).
 - Table keys ...
   - are intended to provide an optimized access to the content of internal tables.
-  - are either unique or non-unique, i.e. more than one line with the same key (duplicates) can exist in the internal table. Regarding the primary table key, the definition depends on the table category. For the secondary table key, the definition depends on the key type. For standard tables, the primary table key can also be defined as empty, i.e. it does not contain any key columns. Note that for standard tables, an optimized access is only possible with secondary table keys.
+  - are either unique or non-unique, i.e. more than one line with the same key (duplicates) can exist in the internal table or not. Regarding the primary table key, the definition depends on the table category. For the secondary table key, the definition depends on the key type. For standard tables, the primary table key can also be defined as empty, i.e. it does not contain any key columns. Note that for standard tables, an optimized access is only possible with secondary table keys.
  - Type of keys:  
    - Sorted keys: 
      - Are either the primary table keys of sorted tables or the secondary table keys of any table.
@@ -380,6 +380,9 @@ DATA itab_a7 LIKE TABLE OF itab_a6.
 DATA(it_inline1) = itab_a1.
 DATA(it_inline2) = it_inline1.
 
+"Using FINAL for creating immutable variables
+FINAL(it_final) = it_inline1.
+
 "Using the VALUE operator and an internal table type
 
 DATA(it_inline3) = VALUE tt_loc_str( ( ... ) ).
@@ -531,7 +534,7 @@ DATA(it_in) = VALUE it_type( ( comp1 = a comp2 = b ... )
                              ( comp1 = c comp2 = d ...  ) ).
 ```
 
-When you use the above assignments (`itab = ...`), the internal table is initialized and the existing content are deleted. To add new lines **without deleting existing content**, use the  [`BASE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenvalue_constructor_params_itab.htm) addition.
+When you use the above assignments (`itab = ...`), the internal table is initialized and the existing content is deleted. To add new lines **without deleting existing content**, use the  [`BASE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenvalue_constructor_params_itab.htm) addition.
 
 ``` abap
 itab = VALUE #( BASE itab ( comp1 = a comp2 = b ... )
@@ -540,7 +543,7 @@ itab = VALUE #( BASE itab ( comp1 = a comp2 = b ... )
 
 **Adding lines of other tables** using the `LINES OF` addition to the `VALUE` operator.
 > **💡 Note**<br>
-> Without the `BASE` addition, the existing content are deleted. It is assumed that the line type of the source table is compatible with that of the target table.
+> Without the `BASE` addition, the existing content is deleted. It is assumed that the line type of the source table is compatible with that of the target table.
 ``` abap
 itab = VALUE #( ( comp1 = a comp2 = b ...)
                 ( comp1 = a comp2 = b ...)
@@ -559,17 +562,19 @@ itab = itab2.
 
 **Copying the content of another internal table** using the
 [`CORRESPONDING`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconstructor_expr_corresponding.htm) operator. 
-- Note that the existing content are deleted.
+- Note that the existing content is deleted.
 - As an alternative to the `CORRESPONDING` operator, you can use [`MOVE-CORRESPONDING`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapmove-corresponding.htm) statements. 
 - The example assumes that the line types of the source and target table are not compatible. However, if the line types are compatible, the syntax will also work.
-
+- Several additions are possible. They can also be combined. Check the ABAP Keyword Documentation.
+  
 ``` abap
 itab = CORRESPONDING #( itab3 ).
 
 MOVE-CORRESPONDING itab3 TO itab.
 ```
 
-**Copying content and retaining existing content** using the `CORRESPONDING` operator. The `KEEPING TARGET LINES` addition of the `MOVE-CORRESPONDING` statement preserves the table content.
+**Copying content and retaining existing content** using the `CORRESPONDING` operator. 
+The `KEEPING TARGET LINES` addition of the `MOVE-CORRESPONDING` statement preserves the table content.
 
 ``` abap
 itab = CORRESPONDING #( BASE ( itab ) itab3 ).
@@ -1482,7 +1487,7 @@ and
 statements allow you to delete the entire table content.
 
 The difference between the two is in the handling of the memory space originally allocated to the table. When a table is cleared with `CLEAR`,
-the content are removed, but the memory space initially requested remains
+the content is removed, but the memory space initially requested remains
 allocated. If the table is filled again later, the memory space is still
 available, which is a performance advantage over 
 clearing an internal table with `FREE`. Such a statement also

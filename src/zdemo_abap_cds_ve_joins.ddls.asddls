@@ -3,7 +3,7 @@
 //////////////////////////------ NOTES ------//////////////////////////////////
 // - CDS view entity selects from a demo database table
 // - Demonstrates various joins
-// - As a prerequisite, run the class zcl_abap_demo_cds_ve to populate the
+// - As a prerequisite, run the class zcl_demo_abap_cds_ve to populate the
 //   database tables of the example. Otherwise, no data is displayed.
 //   It is particularly needed in this case because it contains entries to
 //   visualize the effect of outer joins.

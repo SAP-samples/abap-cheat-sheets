@@ -4,7 +4,7 @@
 // - CDS view entity that selects from a demo CDS view entity and demonstrates
 //   associations. A selection of use cases of associations is covered. For
 //   more information and examples, see the ABAP Keyword Documentation.
-// - As a prerequisite, run the class zcl_abap_demo_cds_ve to populate the
+// - As a prerequisite, run the class zcl_demo_abap_cds_ve to populate the
 //   database tables of the example. Otherwise, no data is displayed.
 // - For further notes on associations, see the commented out information further
 //   down.

@@ -8,6 +8,7 @@
     - [Field Symbols](#field-symbols)
     - [Data References](#data-references)
   - [Dynamic ABAP Statements](#dynamic-abap-statements)
+    - [CL\_ABAP\_DYN\_PRG: Validating Input for Dynamic Specifications](#cl_abap_dyn_prg-validating-input-for-dynamic-specifications)
   - [Runtime Type Services (RTTS)](#runtime-type-services-rtts)
     - [Getting Type Information at Runtime](#getting-type-information-at-runtime)
     - [Dynamically Creating Data Types at Runtime](#dynamically-creating-data-types-at-runtime)
@@ -855,20 +856,58 @@ Note that dynamically specifying syntax elements has downsides, too. Consider so
     "The addition EXCEPTION-TABLE for exceptions is not dealt with here.
     ```
 
-Excursion: Checking the validity of dynamic specifications
+### CL_ABAP_DYN_PRG: Validating Input for Dynamic Specifications
 
-The following example uses the `CL_ABAP_DYN_PRG` class, which supports dynamic programming by checking the validity of dynamic specifications.
-See the class documentation for more information. There are several methods that can be used for different use cases. In the example below, a method is used to check the database table name. To do this, the database table name is provided (`val` parameter), as well as the package in which it should be included (`packages` parameter). You can pass the `packages` formal parameter a table containing the names of packages in which the specified table should be included. Assuming you provide incorrect input for the table name, or the table is not contained in the specified packages, you can expect an exception to be raied.
+You can use the `CL_ABAP_DYN_PRG` class to validate input for dynamic specifications.
+There are several methods for different use cases. See the class documentation (click F2 on the class name in ADT) for more information.
+The following examples show some of those methods. If the validation is successful, the methods in the examples return the input value.
+Otherwise, an exception is raised.
 
 ```abap
-DATA dbtab TYPE string.
+"The following method checks database table names. The name is provided 
+"with the val parameter. The packages formal parameter expects a table 
+"containing the names of packages in which the specified table should be 
+"included. Assuming you provide incorrect input for the table name, or 
+"the table is not contained in the specified packages, you can expect an 
+"exception to be raied.
+
 TRY.
-    dbtab = cl_abap_dyn_prg=>check_table_name_tab( 
+    DATA(dbtab) = cl_abap_dyn_prg=>check_table_name_tab( 
       val      = `ZDEMO_ABAP_FLI`
-      packages = VALUE #( ( `TEST_ABAP_CHEAT_SHEETS` ) ) ).
+      packages = VALUE #( ( `TEST_ABAP_CHEAT_SHEETS` ) 
+                          ( `TEST_SOME_PACK` ) ) ).
 
     SELECT SINGLE * FROM (dbtab) INTO NEW @DATA(ref_wa).
-  CATCH cx_abap_not_a_table cx_abap_not_in_package INTO DATA(err).
+  CATCH cx_abap_not_a_table cx_abap_not_in_package.
+    ...
+ENDTRY.
+
+"In the following examples, a method is used to check whether
+"the input is allowed or not. For this, you specify an allowlist.
+"Here, the relvant parameter expects a comma-separated list of
+"allowed values.
+TRY.
+    DATA(value1) = cl_abap_dyn_prg=>check_allowlist( 
+        val           = `A`
+        allowlist_str = `A,B,C,D` ).
+    
+    ... "Here might go an ABAP SQL statement with a dynamic specification.
+  CATCH cx_abap_not_in_allowlist..
+    ...
+ENDTRY.
+
+"Another parameter of the method expects an internal table that
+"contains the allowed values.
+TRY.
+    DATA(value2) = cl_abap_dyn_prg=>check_allowlist( 
+        val            = `XYZ`
+        allowlist_htab = VALUE #( ( `A` )
+                                  ( `B` )
+                                  ( `C` )
+                                  ( `D` ) ) ).
+    
+    ... "Here might go an ABAP SQL statement with a dynamic specification.
+  CATCH cx_abap_not_in_allowlist.
     ...
 ENDTRY.
 ```
@@ -967,7 +1006,7 @@ type_descr_obj_elem = CAST #( cl_abap_typedescr=>describe_by_name( 'ELEM_TYPE' )
 "Using the older cast operator ?=
 type_descr_obj_elem ?= cl_abap_typedescr=>describe_by_name( 'ELEM_TYPE' ).
 
-"Inline declaration is handy to avoid helper variables.
+"Inline declarations are handy to avoid helper variables.
 DATA(type_descr_obj_inl_1) = CAST cl_abap_elemdescr(
   cl_abap_typedescr=>describe_by_name( 'ELEM_TYPE' ) ).
 
@@ -980,7 +1019,7 @@ DATA(type_kind) = type_descr_obj_inl_1->type_kind. "C
 DATA(output_length) = type_descr_obj_inl_1->output_length. "5
 
 "In the following example, the type properties are retrieved
-"without casting. The data object has the type ref to
+"without cast. The data object has the type ref to
 "cl_abap_typedescr. See the hierarchy tree above.
 "The reference in the type description object references an
 "object from one of the classes CL_ABAP_ELEMDESCR, CL_ABAP_ENUMDESCR,
@@ -988,7 +1027,7 @@ DATA(output_length) = type_descr_obj_inl_1->output_length. "5
 "CL_ABAP_CLASSDESCR, or CL_ABAP_INTFDESCR.
 "In the following case, it is CL_ABAP_ELEMDESCR.
 "Note that in most of the following examples, the explicit
-"casting is included when retrieving a reference to the type
+"cast is included when retrieving a reference to the type
 "description object.
 TYPES another_elem_type TYPE n LENGTH 3.
 DATA(type_descr_obj_inl_2) = cl_abap_typedescr=>describe_by_name( 'ANOTHER_ELEM_TYPE' ).
@@ -1057,22 +1096,22 @@ DATA(ref_type_type_kind) =
 "to a data object here. The relevant method is describe_by_data.
 
 "Elementary data object
-DATA dobj_elem type i.
+DATA dobj_elem TYPE i.
 DATA(ty_des_obj_el) = CAST cl_abap_elemdescr(
   cl_abap_typedescr=>describe_by_data( dobj_elem ) ).
 
 "Structure
-DATA dobj_struc type zdemo_abap_carr.
+DATA dobj_struc TYPE zdemo_abap_carr.
 DATA(ty_des_obj_struc) = CAST cl_abap_structdescr(
   cl_abap_typedescr=>describe_by_data( dobj_struc ) ).
 
 "Internal table
-DATA dobj_itab type table of zdemo_abap_carr with empty key.
+DATA dobj_itab TYPE TABLE OF zdemo_abap_carr WITH EMPTY KEY.
 DATA(ty_des_obj_itab) = CAST cl_abap_tabledescr(
   cl_abap_typedescr=>describe_by_data( dobj_itab ) ).
 
 "Reference variable
-DATA dref_var type ref to string.
+DATA dref_var TYPE REF TO string.
 DATA(ty_des_obj_dref) = CAST cl_abap_refdescr(
   cl_abap_typedescr=>describe_by_data( dref_var ) ).
 ```

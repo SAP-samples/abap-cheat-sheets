@@ -9,7 +9,7 @@
 - [Executable Example](#executable-example)
 
 
-This ABAP cheat sheet briefly touches on the terms ABAP Cloud and classic ABAP to set the context for [ABAP for Cloud Development](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_for_cloud_dev_glosry.htm). 
+This ABAP cheat sheet briefly touches on the terms ABAP Cloud and classic ABAP to get an idea about [ABAP for Cloud Development](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_for_cloud_dev_glosry.htm). 
 It provides references to more detailed information on the topic.
 
 # Terms
@@ -132,7 +132,7 @@ It provides references to more detailed information on the topic.
     
     b) Create an example class
     - Create a global class and insert the code from above. Depending on the name of the class you created, replace the class name in the snippet.
-    - If you have not imported the ABAP cheat sheet GitHub repository, remove the lines of code using artifacts from that repository, i.e. change the `SELECT` and  `READ REPORT` statemnets. You should not see any syntax errors. Activate the class.
+    - If you have not imported the ABAP cheat sheet GitHub repository, remove the lines of code using artifacts from that repository, i.e. change the `SELECT` and  `READ REPORT` statements. You should not see any syntax errors. Activate the class.
     - Run the class with *F9*. The code should have been processed up to the `BREAK-POINT` statement and the debugger should have started. You may want to check the content of the variables in the debugger. Choose *Terminate* to exit the debugger.
     - So, unlike in the case of ABAP Cloud above, the code should not cause any problems (other than the fact that it does not make a lot of sense).
     - For the example class created, check the information in the *Properties* tab. Choose *General*. The *ABAP Language Version* is maintained as *Standard ABAP*: 

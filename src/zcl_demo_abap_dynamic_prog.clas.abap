@@ -1662,16 +1662,20 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
 **********************************************************************
 
     out->write( zcl_demo_abap_aux=>heading( `37b) Excursion: Checking the validity of dynamic specifications` ) ).
-    "The following example uses the CL_ABAP_DYN_PRG class, which supports
-    "dynamic programming by checking the validity of dynamic specifications.
+    "The following examples use methods of the CL_ABAP_DYN_PRG class, which supports
+    "dynamic programming by checking the validity for dynamic specifications.
     "Check out the class documentation for more information.
-    "In the example, several table names are provided in a string table that
+
+    "In the following example, several table names are provided in a string table that
     "is looped over. Some wrong table names are intentionally included.
     "You can provide the "packages" formal parameter with a table that contains
     "the names of packages in which the tables should be included. The
     "assumption is that you imported the repository into the package
     "specified. If you imported it into a package with a different name,
     "change the value accordingly. Otherwise, none of the tables is found.
+
+    out->write( `****** Checking if the input is a database table name, inlcuded in given packages ******` ).
+    out->write( |\n| ).
 
     DATA(table_names) = VALUE string_table( ( `ZDEMO_ABAP_CARR` )
                                             ( `ZDEMO_ABAP_FLI` )
@@ -1692,15 +1696,80 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
           SELECT SINGLE * FROM (dbtab) INTO NEW @DATA(ref_wa).
 
           out->write( |Result for { wa_tab }:| ).
-          out->write( |\n| ).
-          out->write( |\n| ).
           out->write( ref_wa->* ).
           out->write( |\n| ).
         CATCH cx_abap_not_a_table cx_abap_not_in_package INTO DATA(err).
           out->write( |Result for { wa_tab }:| ).
-          out->write( |\n| ).
           out->write( err->get_text( ) ).
           out->write( |\n| ).
+      ENDTRY.
+    ENDLOOP.
+
+    "In the following example, the check_allowlist method is used to check
+    "whether the input is allowed or not. Similar to above, an internal
+    "is filled with demo input. Here, a parameter is used that expects
+    "a comma-separated list of allowed values.
+
+    out->write( `****** Checking if input is allowed or not ******` ).
+    out->write( |\n| ).
+
+    DATA(to_be_checked) = VALUE string_table( ( `A` )
+                                              ( `B` )
+                                              ( `C` )
+                                              ( `D` )
+                                              ( `HALLO` )
+                                              ( `ABAP` ) ).
+
+    LOOP AT to_be_checked INTO DATA(chk).
+      TRY.
+          DATA(value) = cl_abap_dyn_prg=>check_allowlist( val      = chk
+                                                          allowlist_str = `A,B,C,ABAP` ).
+          out->write( |{ value } is allowed.| ).
+        CATCH cx_abap_not_in_allowlist INTO err.
+          out->write( err->get_text( ) ).
+      ENDTRY.
+    ENDLOOP.
+
+    out->write( |\n| ).
+
+    "The following example is similar to the one above. However, in this case,
+    "a parameter is used that expects an internal table containing the allowed
+    "values.
+
+    LOOP AT to_be_checked INTO chk.
+      TRY.
+          value = cl_abap_dyn_prg=>check_allowlist( val      = chk
+                                                    allowlist_htab = VALUE #( ( `X` )
+                                                                              ( `B` )
+                                                                              ( `HALLO` )
+                                                                              ( `Y` )
+                                                                              ( `ABAP` ) ) ).
+          out->write( |{ value } is allowed.| ).
+        CATCH cx_abap_not_in_allowlist INTO err.
+          out->write( err->get_text( ) ).
+      ENDTRY.
+    ENDLOOP.
+
+    out->write( |\n| ).
+    out->write( `****** Checking if input can be a column name and does not contain invalid characters ******` ).
+    out->write( |\n| ).
+
+    "The following example uses a method with which the validity of column names
+    "of database tables can be checked.
+
+    to_be_checked = VALUE #( ( `CARRID` )
+                             ( `CONNID` )
+                             ( `SOME_COLUMN` )
+                             ( `??NOPE??` )
+                             ( `...!` ) ).
+
+    LOOP AT to_be_checked INTO chk.
+      TRY.
+          DATA(col_name) = cl_abap_dyn_prg=>check_column_name( val    = chk
+                                                               strict = abap_true ).
+          out->write( |{ col_name } is allowed.| ).
+        CATCH cx_abap_invalid_name INTO err.
+          out->write( err->get_text( ) ).
       ENDTRY.
     ENDLOOP.
 

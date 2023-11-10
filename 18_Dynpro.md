@@ -43,7 +43,7 @@ This cheat sheet provides a high-level overview of classic dynpro topics with a 
 > - This cheat sheet ...
 >   - is not intended to encourage you to start creating classic dynpros for programming new applications.  
 >   - does not cover all facets, techniques, and keywords in great detail. 
->   - is intended to touch on a selection of dynpro-related topics and syntax that you may encounter in older ABAP code. If you need more information, always consult the ABAP Keyword Documentation.
+>   - is intended to cover a selection of dynpro-related topics and syntax that you may encounter in older ABAP code. If you need more information, always consult the ABAP Keyword Documentation.
 > - Some of the statements described here - the ones used in the dynpro flow logic - are programmed in a special programming language. Although it looks like ABAP, it is not ABAP.
 > - Links to the ABAP Keyword Documentation in this cheat sheet refer to the documentation for [Standard ABAP](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenstandard_abap_glosry.htm) (latest version).
 
@@ -672,7 +672,7 @@ Example:
 dynnr = '9400'.
 "Assign the activetab component
 tabstr-activetab = 'SOME_TAB'.
-"Providing teh prgram name
+"Providing the prgram name
 prog = sy-repid.
 ...
 
@@ -739,7 +739,7 @@ After the import of the repository, proceed as follows:
   <summary>Expand to see explanations of the executable example</summary>
   <!-- -->
   <br>
-Th example demonstrates dynpro-related statements. In the dynpros, you can select various options for checking out the effect of the syntax. 
+The example demonstrates dynpro-related statements. In the dynpros, you can select various options for checking out the effect of the syntax. 
 It covers the following aspects:
 
 - Dynpro flow logic and related statements (`MODULE`, `FIELD`, `CHAIN`/`ENDCHAIN`, `LOOP`/`ENDLOOP`, `CALL SUBSCREEN`)
