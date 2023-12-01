@@ -441,7 +441,7 @@ SELECTION-SCREEN BEGIN OF BLOCK bl WITH FRAME.
 PARAMETERS: pa1 RADIOBUTTON GROUP gr MODIF ID mbl,
             pa2 RADIOBUTTON GROUP gr MODIF ID mbl,
             pa3 RADIOBUTTON GROUP gr,
-            pa4 RADIOBUTTON GROUP gr..
+            pa4 RADIOBUTTON GROUP gr.
 SELECTION-SCREEN END OF BLOCK bl.
 
 "Suppose you want to modify the elements before displaying, e.g. make the 

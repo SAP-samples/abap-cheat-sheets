@@ -4,6 +4,7 @@
 
 - [ABAP SQL](#abap-sql)
   - [Introduction](#introduction)
+  - [Excursion: Database Tables and Views](#excursion-database-tables-and-views)
   - [Reading Data Using SELECT](#reading-data-using-select)
     - [Basic Syntax](#basic-syntax)
     - [Using SELECT for Multiple Purposes](#using-select-for-multiple-purposes)
@@ -46,11 +47,12 @@
 - ABAP SQL statements use the ABAP SQL interface. This interface transforms all ABAP SQL statements that access the standard database of an AS ABAP to  platform-dependent SQL and forwards the results to the database system.
 - Generally bear in mind the [performance notes](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_sql_perfo.htm) when using
     ABAP SQL. The considerations there are not relevant for this cheat sheet since
-    the focus is on syntactical options.
+    the focus is on syntax options.
 
+## Excursion: Database Tables and Views
 
 <details>
-  <summary>Excursion: Database Tables and Views</summary>
+  <summary>Expand to view the details</summary>
 <br>
 
 This section provides bullet points on database tables and views which contain persisted data. Note that the code snippets in this cheat sheet focus on database tables as [data source](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendata_source_glosry.htm "Glossary Entry") for ABAP SQL statements.

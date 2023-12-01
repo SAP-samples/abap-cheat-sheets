@@ -4,12 +4,13 @@
 *
 * -------------------------- PURPOSE ----------------------------------
 * - Example that demonstrates working with XML and JSON in ABAP.
-* - The following topics are covered:
-*   - Converting string <-> xstring
+* - The following topics are covered:*
 *   - Processing XML using class libraries (iXML, sXML)
 *   - XML Transformations using XSLT and Simple Transformations
 *   - CALL TRANSFORMATION syntax
 *   - Dealing with JSON data
+*   - Excursions: Converting string <-> xstring, compressing and
+*     decompressing binary data
 *
 * ----------------------- GETTING STARTED -----------------------------
 * - Open the class with the ABAP development tools for Eclipse (ADT).
@@ -47,7 +48,10 @@ CLASS zcl_demo_abap_xml_json DEFINITION
   CREATE PUBLIC .
 
   PUBLIC SECTION.
-    INTERFACES if_oo_adt_classrun.
+    INTERFACES: if_oo_adt_classrun,
+      "This interface is implemented for serializing and
+      "deserialzing instances of classes (objects).
+      if_serializable_object.
     CLASS-METHODS class_constructor.
 
   PROTECTED SECTION.
@@ -59,6 +63,26 @@ CLASS zcl_demo_abap_xml_json DEFINITION
     TYPES c50_tab_type TYPE TABLE OF c50 WITH EMPTY KEY.
     TYPES x30 TYPE x LENGTH 30.
     TYPES x30_tab_type TYPE TABLE OF x30 WITH EMPTY KEY.
+
+    "The following instance attribues and methods are used for serializing and
+    "deserialzing instances of classes (objects)
+    DATA: attr_string_a      TYPE string,
+          attr_string_b      TYPE string,
+          attr_concat_string TYPE string,
+          attr_lowercase_str TYPE string.
+    METHODS: concatenate_string,
+      lowercase_string,
+      "The following method can only have output parameters.
+      "For each output parameter of the serialize_helper method, you must specify
+      "an identically named input parameter of the deserialize_helper method
+      "with the same type.
+      serialize_helper EXPORTING attr_string_a      TYPE string
+                                 attr_string_b      TYPE string
+                                 attr_concat_string TYPE string,
+      "This method can only have input parameters.
+      deserialize_helper IMPORTING attr_string_a      TYPE string
+                                   attr_string_b      TYPE string
+                                   attr_concat_string TYPE string.
 ENDCLASS.
 
 
@@ -67,7 +91,7 @@ CLASS zcl_demo_abap_xml_json IMPLEMENTATION.
 
   METHOD if_oo_adt_classrun~main.
 
-    out->write( |ABAP Cheat Sheet Example: XML\n\n| ).
+    out->write( |ABAP Cheat Sheet Example: Working with XML and JSON in ABAP\n\n| ).
     out->write( |1) Excursion: Converting string <-> xstring| ).
     "In the following examples, many operations are performed using binary data.
     "This excursion shows the conversion of string to xstring and the other way round
@@ -869,9 +893,7 @@ CLASS zcl_demo_abap_xml_json IMPLEMENTATION.
 
 ************************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `17) References` ) ).
-    "The example demonstrates a data reference. For (serializable) object references,
-    "check the ABAP Keyword Documentation.
+    out->write( zcl_demo_abap_aux=>heading( `17) Data References` ) ).
 
     DATA(dref_a) = NEW i( 123 ).
 
@@ -896,7 +918,75 @@ CLASS zcl_demo_abap_xml_json IMPLEMENTATION.
 
 ************************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `18) CALL TRANSFORMATION Syntax: Specifying Transformations` ) ).
+    out->write( zcl_demo_abap_aux=>heading( `18) Object References` ) ).
+    "The following example demonstrates the serialization and deserialization of
+    "instances of classes (objects). For example, to serialize instance attributes,
+    "classes must implement the if_serializable_object interface. By default, all instance
+    "attributes of an object are serialized, regardless of their visibility section.
+    "However, you can change this behavior using the serialize_helper and deserialize_helper
+    "instance methods. As a result of the transformation, you get an asXML representation of
+    "the object.
+    "The example is implemented as follows:
+    "- The class implements the if_serializable_object interface.
+    "- There are 4 instance attributes of type string.
+    "- There are two instance methods:
+    "  - One method concatenates two of the strings and assigns the resulting string to
+    "    another string.
+    "  - Another method concatenates two strings and converts the string to lowercase.
+    "    The result is assigned to another string.
+    "- Serialization preserves instance attribute values in the asXML representation of the
+    "  object.
+    "- During deserialization, the instance attribute values are transformed back and can
+    "  be accessed.
+    "- The example includes the implementation of the serialize_helper and deserialize_helper
+    "  instance methods. Without implementation, all instance attributes would be
+    "  serialized/deserialized. The sample implementation limits serialization/deserialization.
+    "  The fourth instance attribute, which is converted to a lowercase string when calling the
+    "  method, is not part of the serialization/deserialization. See the implementation of the
+    "  serialize_helper and deserialize_helper instance methods. They explicitly specify what
+    "  to serialize and deserialize.
+    "- Note: For each output parameter of the serialize_helper method, you must specify an
+    "  identically-named input parameter of the deserialize_helper method. The parameters must
+    "  have the same type.
+
+    DATA(oref_a) = NEW zcl_demo_abap_xml_json(  ).
+    oref_a->attr_string_a = `AB`.
+    oref_a->attr_string_b = `AP`.
+    oref_a->concatenate_string( ).
+    oref_a->lowercase_string( ).
+
+    out->write( `Value of instance attribute attr_lowercase_str for the created instance (before serialization/deserialization):` ).
+    out->write( oref_a->attr_lowercase_str ).
+    out->write( |\n| ).
+
+    "ABAP -> XML
+    DATA xml_oref_a TYPE xstring.
+    CALL TRANSFORMATION id SOURCE oref = oref_a
+                           RESULT XML xml_oref_a.
+
+    DATA(conv_xml_oref_a) = cl_abap_conv_codepage=>create_in( )->convert( xml_oref_a ).
+
+    out->write( `ABAP -> XML` ).
+    out->write( format( conv_xml_oref_a ) ).
+    out->write( |\n| ).
+
+    "XML -> ABAP
+    DATA oref_b LIKE oref_a.
+    CALL TRANSFORMATION id SOURCE XML xml_oref_a
+                           RESULT oref = oref_b.
+
+    out->write( `XML -> ABAP` ).
+    out->write( oref_b->attr_string_a ).
+    out->write( oref_b->attr_string_b ).
+    out->write( oref_b->attr_concat_string ).
+    out->write( |\n| ).
+    IF oref_b->attr_lowercase_str IS INITIAL.
+      out->write( `The instance attribute attr_lowercase_str is initial. The serialization/deserialization is restricted.` ).
+    ENDIF.
+
+************************************************************************
+
+    out->write( zcl_demo_abap_aux=>heading( `19) CALL TRANSFORMATION Syntax: Specifying Transformations` ) ).
     "As already covered in the examples above, transformations are specified after
     "CALL TRANSFORMATION. They are either ...
 
@@ -931,7 +1021,7 @@ CLASS zcl_demo_abap_xml_json IMPLEMENTATION.
 
 ************************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `19) CALL TRANSFORMATION Syntax: Sources of Transformations` ) ).
+    out->write( zcl_demo_abap_aux=>heading( `20) CALL TRANSFORMATION Syntax: Sources of Transformations` ) ).
     "The following examples use the predefined identity transformation ID.
     "The result is asXML data and stored in a variable of type xstring.
     "Multiple options and variants are possible. The examples cover a selection.
@@ -1060,7 +1150,7 @@ CLASS zcl_demo_abap_xml_json IMPLEMENTATION.
 
 *************************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `20) CALL TRANSFORMATION Syntax: Results of Transformations` ) ).
+    out->write( zcl_demo_abap_aux=>heading( `21) CALL TRANSFORMATION Syntax: Results of Transformations` ) ).
     "As in the examples above, the predefined identity transformation is used here.
 
     "Creating demo XML data to be used in the example as the source.
@@ -1171,7 +1261,7 @@ CLASS zcl_demo_abap_xml_json IMPLEMENTATION.
 
 ************************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `21) Dealing with JSON Data` ) ).
+    out->write( zcl_demo_abap_aux=>heading( `22) Dealing with JSON Data` ) ).
     "Note: When the identity transformation ID is used, the format is asJSON.
 
     "Elementary type
@@ -1336,6 +1426,45 @@ CLASS zcl_demo_abap_xml_json IMPLEMENTATION.
     DATA(xml2json_sxml) = cl_abap_conv_codepage=>create_in( )->convert( json_wr->get_output( ) ).
     out->write( `XML -> JSON using sXML` ).
     out->write( xml2json_sxml ).
+
+************************************************************************
+
+    out->write( zcl_demo_abap_aux=>heading( `23) Excursion: Compressing and Decompressing Binary Data` ) ).
+    "You may want to process or store binary data. The data can be very large.
+    "You can compress the data in gzip format and decompress it for further processing using
+    "the cl_abap_gzip class. Check out appropriate exceptions to be caught. The simple example
+    "just specifies cx_root. See the class documentation for more information.
+    "This example uses a data object of type xstring from a previous example.
+
+    "Compressing binary data
+    DATA xstr_comp TYPE xstring.
+    TRY.
+        cl_abap_gzip=>compress_binary( EXPORTING raw_in   = xml_oref_a
+                                       IMPORTING gzip_out = xstr_comp ).
+      CATCH cx_root INTO DATA(error_comp).
+        out->write( error_comp->get_text( ) ).
+    ENDTRY.
+
+    "Decompressing binary data
+    DATA xstr_decomp TYPE xstring.
+    TRY.
+        cl_abap_gzip=>decompress_binary( EXPORTING gzip_in = xstr_comp
+                                         IMPORTING raw_out = xstr_decomp ).
+
+      CATCH cx_root INTO DATA(error_decomp).
+        out->write( error_decomp->get_text( ) ).
+    ENDTRY.
+
+    "Checking the xstring length of the variables used and comparing result
+    DATA(strlen_original_xstring) = xstrlen( xml_oref_a ).
+    out->write( |Length of original binary data object: { strlen_original_xstring }| ).
+    DATA(strlen_comp) = xstrlen( xstr_comp ).
+    out->write( |Length of compressed binary data object: { strlen_comp }| ).
+    DATA(strlen_decomp) = xstrlen( xstr_decomp ).
+    out->write( |Length of decompressed binary data object: { strlen_decomp }| ).
+    IF xml_oref_a = xstr_decomp.
+      out->write( `The decompressed binary data object has the same value as the original binary data object.` ).
+    ENDIF.
   ENDMETHOD.
   METHOD format.
     TRY.
@@ -1357,6 +1486,26 @@ CLASS zcl_demo_abap_xml_json IMPLEMENTATION.
   METHOD class_constructor.
     "Filling demo database tables.
     zcl_demo_abap_aux=>fill_dbtabs( ).
+  ENDMETHOD.
+
+  METHOD concatenate_string.
+    attr_concat_string = attr_string_a && attr_string_b.
+  ENDMETHOD.
+
+  METHOD deserialize_helper.
+    me->attr_string_a = attr_string_a.
+    me->attr_string_b = attr_string_b.
+    me->attr_concat_string = attr_concat_string.
+  ENDMETHOD.
+
+  METHOD serialize_helper.
+    attr_string_a = me->attr_string_a.
+    attr_string_b = me->attr_string_b.
+    attr_concat_string = me->attr_concat_string.
+  ENDMETHOD.
+
+  METHOD lowercase_string.
+    attr_lowercase_str = to_lower( attr_string_a && attr_string_b ).
   ENDMETHOD.
 
 ENDCLASS.

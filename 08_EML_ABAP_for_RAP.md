@@ -538,7 +538,7 @@ by containing the keys, it also contains the component group
 [`%key`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapderived_types_key.htm)
 in the case above). The F2 information in ADT helps you find out about
 the available components in a variable. The image below shows the
-details of `%data` when clicking the `derived type`
+details of `%data` when clicking the *derived type*
 link in the first ADT F2 information screen.
 
 ![BDEF_derived_type_components](./files/bdef_derived_type_components.png)
@@ -586,7 +586,7 @@ Bullet points on selected `%` components:
         instead of `%key`. `%tky` includes
         `%key` and also the draft indicator
         `%is_draft`. When using `%tky` in non-draft
-        scenarios, you are prepared for a later, potential switch to a
+        scenarios, you are prepared for a potential, later switch to a
         draft scenario. In doing so, you can avoid lots of adaptations
         in your code by manually adding the indicator.
 -   [`%control`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapderived_types_control.htm)
@@ -1347,8 +1347,7 @@ The following restrictions apply to operations and/or statements in the individu
 |[Dynpro](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abendynpro_glosry.htm) processing (e.g.  `SET SCREEN`, `CALL SCREEN`, `LEAVE SCREEN`, `CALL DIALOG`, `SUPPRESS DIALOG`, `MESSAGE` without `INTO`, `WRITE`, `STOP`) <br><br>(unrestricted ABAP language scope)|- |- |- |Not allowed in ABAP behavior implementations. Results in a runtime error. |
 |Transaction processing (`CALL TRANSACTION`, `LEAVE TRANSACTION`) <br><br>(unrestricted ABAP language scope)| -| -| - |Not allowed to prevent (unwanted) integration of other LUWs. |
 |Raising an exception (`RAISE EXCEPTION`) |-| -| - |It is not allowed to leave a RAP transaction this way. |
-|Report processing (`SUBMIT ...`) <br><br>(unrestricted ABAP language scope)|- |- |- |Not allowed in transactional contexts. Results in a syntax or runtime error.
-`SUBMIT ... AND RETURN` does not currently return an error, but it leads to potentially unwanted screen processing, and because of the missing return channel, there is no proper error handling. |
+|Report processing (`SUBMIT ...`) <br><br>(unrestricted ABAP language scope)|- |- |- |Not allowed in transactional contexts. Results in a syntax or runtime error. <br>`SUBMIT ... AND RETURN` does not currently return an error, but it leads to potentially unwanted screen processing, and because of the missing return channel, there is no proper error handling. |
 
 
 </details>

@@ -79,14 +79,14 @@ ABAP cheat sheets[^1] ...
 |[SAP LUW](17_SAP_LUW.md)|Provides a high-level overview of the [SAP LUW](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abensap_luw_glosry.htm) concept that deals with data consistency with a focus on SAP LUW-related statements <br> 💡 Several statements covered in the cheat sheet and the executable example are only relevant to [classic ABAP](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenclassic_abap_glosry.htm).|Program `ZDEMO_ABAP_SAP_LUW`|
 |[Dynpro](18_Dynpro.md)|Provides a high-level overview of dynpro topics with a focus on dynpro-related statements <br> 💡 The content of this cheat sheet and the executable example are only relevant to [classic ABAP](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenclassic_abap_glosry.htm).|Program `ZDEMO_ABAP_DYNPRO`|
 |[Selection Screens and Classic Lists](20_Selection_Screens_Lists.md)|Provides a high-level overview of selection screens and classic lists with a focus on related statements <br> 💡 The content of this cheat sheet and the executable examples are only relevant to [classic ABAP](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenclassic_abap_glosry.htm).|Program `ZDEMO_ABAP_SELSCR_LISTS_INTRO` (the "intro" program, from which the other related example programs can be started)|
-|[Working with XML and JSON in ABAP](21_XML_JSON.md)|Covers processing XML using class libraries, XML transformations using XSLT and Simple Transformations (ST), serializations (ABAP to XML) and deserializations (XML to ABAP), `CALL TRANSFORMATION` syntax, dealing with JSON data|[zcl_demo_abap_xml_json](./src/zcl_demo_abap_xml_json.clas.abap)|
+|[Working with XML and JSON in ABAP](21_XML_JSON.md)|Covers processing XML using class libraries, XML transformations using XSLT and Simple Transformations (ST), serializations (ABAP to XML) and deserializations (XML to ABAP), dealing with JSON data|[zcl_demo_abap_xml_json](./src/zcl_demo_abap_xml_json.clas.abap)|
 
 <br>
 
 ## 🎬 Getting Started with the Examples
 
 The main focus of the ABAP Cheat Sheets is ABAP Cloud. The examples in the *main* branch of the repository are designed to be imported into the SAP BTP ABAP environment.
-For classic ABAP, you can find examples in the other branches of the repository that you can import into your SAP system. Just select the appropriate version (*v757* stands for ABAP version 7.57). Check the information in the following collapsible sections for your system environment and perform the required steps.
+For classic ABAP, you can find examples in the other branches of the repository that you can import into your sandbox SAP system. Just select the appropriate version (*v757* stands for ABAP version 7.57). Check the information in the following collapsible sections for your system environment and perform the required steps.
 
 <details>
   <summary>1) General info</summary>

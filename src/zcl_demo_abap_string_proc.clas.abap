@@ -3,7 +3,7 @@
 *              ABAP cheat sheet: String processing
 *
 * -------------------------- PURPOSE ----------------------------------
-* - Example to demonstrate various syntactical options for processing
+* - Example to demonstrate various syntax options for processing
 *   character strings.
 * - Topics covered: Creating strings and assigning values, chaining strings,
 *   string templates, concatenating/splitting/modifying strings, searching

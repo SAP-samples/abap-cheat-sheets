@@ -116,8 +116,8 @@ It provides references to more detailed information on the topic.
         ref2 = REF #( num1 ). 
 
         DATA str_itab TYPE string_table. 
-        "The following statements are invalid (the pointless WRITE statement here
-        "just represents invalid classic ABAP UI-related statements)
+        "The following statements are invalid. The pointless WRITE statement here
+        "just represents invalid classic ABAP UI-related statements.
         READ REPORT 'ZCL_DEMO_ABAP_UNIT_TEST=======CCAU' INTO str_itab.
         WRITE 'hi'.
         BREAK-POINT.
@@ -127,27 +127,27 @@ It provides references to more detailed information on the topic.
 
 2) If available to you, you have accessed an on-premise ABAP system using ADT. It is assumed that the latest ABAP release is available. 
 
-    a)  Check API Status information 
+    a)  Checking API Status information 
     - Choose `CTRL + SHIFT + A` to open the search in ADT. Search the class `CL_ABAP_RANDOM_INT`. Once you have opened the class, check the *Properties* tab and find the API status information. 
     
-    b) Create an example class
+    b) Creating an example class
     - Create a global class and insert the code from above. Depending on the name of the class you created, replace the class name in the snippet.
-    - If you have not imported the ABAP cheat sheet GitHub repository, remove the lines of code using artifacts from that repository, i.e. change the `SELECT` and  `READ REPORT` statements. You should not see any syntax errors. Activate the class.
-    - Run the class with *F9*. The code should have been processed up to the `BREAK-POINT` statement and the debugger should have started. You may want to check the content of the variables in the debugger. Choose *Terminate* to exit the debugger.
-    - So, unlike in the case of ABAP Cloud above, the code should not cause any problems (other than the fact that it does not make a lot of sense).
-    - For the example class created, check the information in the *Properties* tab. Choose *General*. The *ABAP Language Version* is maintained as *Standard ABAP*: 
+     For the example class created, check the information in the *Properties* tab. Choose *General*. The *ABAP Language Version* is maintained as *Standard ABAP*: 
      ![Standard ABAP](./files/standard.png)
+    - If you have not imported the ABAP cheat sheet GitHub repository, remove the lines of code using artifacts from that repository, i.e. remove the statements using objects starting with `Z...`. You should not see any syntax errors. Activate the class.     
+    - Run the class with *F9*. The code should have been processed up to the `BREAK-POINT` statement and the debugger should have started. You may want to check the content of the variables in the debugger. Choose *Terminate* to exit the debugger.
+    - So, unlike in the case of ABAP Cloud above, you should be able to activate and run the code (which does not represent a meaningful code example).    
      
-    c) Verify that your code in classic ABAP is cloud-ready
+    c) Verifying cloud-readiness of your code in classic ABAP
      - You have walked through b), created a class, inserted the code from above, and activated the class. The *ABAP Language Version* is maintained as *Standard ABAP* in the *Properties* tab. 
      - Verifying if your code is cloud-ready
        - You can use ATC check variant `ABAP_CLOUD_READINESS` for this purpose.
        - For example, in your class, right-click and choose *Run As* → *4 ABAP Test Cockpit With...*. Enter `ABAP_CLOUD_READINESS` in the pop-up window and choose *Ok*. The ATC check run is started. 
        - As a result of the ATC check run (note that it may take a while to complete), the *ATC Problems* tab in ADT should display results. In this case, these are the errors and warnings mentioned above, indicating that the code is not cloud-ready in various places. Double-click on the findings for more detailed information. 
 
-    d) Develop in classic ABAP in a cloud-ready manner
+    d) Cloud-ready development in classic ABAP
      - You have walked through b), created a class, inserted the code from above, and activated the class. The *ABAP Language Version* is maintained as *Standard ABAP* in the *Properties* tab under *General*. 
-     - Suppose you want to develop in a cloud-ready manner and use ABAP for Cloud Development, i.e. the restricted ABAP language version, in classic ABAP (e.g. an on-premise ABAP system that allows the unrestricted ABAP language version). 
+     - Suppose you want to do cloud-ready development and use ABAP for Cloud Development, i.e. the restricted ABAP language version, in classic ABAP (e.g. an on-premise ABAP system that allows the unrestricted ABAP language version). 
      - Open the *Properties* tab and choose *General* for this purpose. 
      - Choose the *Edit...* button to the right of the *ABAP Language Version* property.
      - Select *ABAP for Cloud Development* in the pop-up window and choose *Ok*.

@@ -3,7 +3,7 @@
 *                 ABAP cheat sheet: Internal tables
 *
 * -------------------------- PURPOSE ----------------------------------
-* - Example to demonstrate various syntactical options for working with
+* - Example to demonstrate various syntax options for working with
 *   internal tables.
 * - Topics covered: Creating, filling, reading from, sorting, modifying
 *   internal tables

@@ -1358,7 +1358,7 @@ REPLACE ALL OCCURRENCES OF `Z`
 [`replace`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenreplace_functions.htm),
 allows you to store the result of a substring replacement in a separate
 variable. 
-- What makes it particularly powerful in particular is that it
+- What makes it especially powerful is that it
 returns a value, so it can be used at almost any [read
 positions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenread_position_glosry.htm "Glossary Entry").
 - The parameters of the `replace` string functions are similar to those of the `find` function. In addition, there is the `with` parameter for the replacement. Setting `occ` to `0` means that all occurrences are respected for the replacement.

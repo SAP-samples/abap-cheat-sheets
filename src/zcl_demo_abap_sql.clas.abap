@@ -3,7 +3,7 @@
 *                   ABAP cheat sheet: ABAP SQL
 *
 * -------------------------- PURPOSE ----------------------------------
-* - Example to demonstrate various syntactical options for working with
+* - Example to demonstrate various syntax options for working with
 *   persisted data in database tables using ABAP SQL.
 * - Topics covered: reading from database tables using SELECT, changing
 *   data in database tables using INSERT, UPDATE, MODIFY and DELETE

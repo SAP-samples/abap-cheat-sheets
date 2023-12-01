@@ -3,7 +3,7 @@
 *           ABAP cheat sheet: Structures
 *
 * -------------------------- PURPOSE ----------------------------------
-* - Example to demonstrate various syntactical options for working with
+* - Example to demonstrate various syntax options for working with
 *   structures.
 * - Topics covered: creating structures and structured types, variants
 *   of structures, accessing components of structures, filling structures,

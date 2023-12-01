@@ -976,8 +976,7 @@ The type properties are represented by attributes that are accessible through th
 > - For each type category (elementary type, table, and so on), there is a type description class (e.g. `CL_ABAP_STRUCTDESCR` for structures, as shown in the hierarchy tree above) that has special attributes (i.e. the properties of the respective types). 
 > - References to type description objects can be used, for example, after the `TYPE HANDLE` addition of the `CREATE DATA` and `ASSIGN` statements.
 
-The following examples show the retrieval of type information. Instead of the
-cumbersome extra declaration of data reference variables, you can use
+The following examples show the retrieval of type information. Instead of the extra declaration of data reference variables, you can use
 [inline declarations](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abeninline_declaration_glosry.htm "Glossary Entry").
 [Method chaining](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenmethod_chaining_glosry.htm "Glossary Entry")
 comes in handy, too.

@@ -173,7 +173,7 @@ ENDIF.
   - more formats are possible (standard XML 1.0, but also XOP, binary XML, and JSON).
   - no document is created in DOM format (if you do not need to a DOM representation and DTDs, sXML is a more performant alternative to iXML).
 
-Rendering XML data using sXML:
+Creating XML data using sXML:
 
 ```abap
 "************** Token-based rendering ************** 
@@ -201,7 +201,7 @@ TRY.
     writer->open_element( name = 'carrier' ).
     writer->write_value( 'LH' ).
     writer->close_element( ).
-    writer->open_element( name = 'flightNumber' ).
+    writer->open_element( name = 'flightnumber' ).
     writer->write_value( '400' ).
     writer->close_element( ).
     writer->close_element( ).
@@ -209,7 +209,7 @@ TRY.
     writer->open_element( name = 'carrier' ).
     writer->write_value( 'DL' ).
     writer->close_element( ).
-    writer->open_element( name = 'flightNumber' ).
+    writer->open_element( name = 'flightnumber' ).
     writer->write_value( '1984' ).
     writer->close_element( ).
     writer->close_element( ).
@@ -395,7 +395,7 @@ To perform transformations in ABAP, you can use:
   - SAP-delivered and predefined XSL transformation with the name `ID`
   - Used to read and write the asXML (and also asJSON) format. 
   - When the transformation ID is called, the resulting intermediate formats (asXML, asJSON) are the direct output.
-  - When used, for example, to transform ABAP data, such as a structure, to XML, the transformation does not change the structure itself. You can, however, change the structure by implementing you own XSLT.
+  - When used, for example, to transform ABAP data, such as a structure, to XML, the transformation does not change the structure itself. You can, however, change the structure by implementing your own XSLT.
 - Simple Transformation (ST)
   - Repository objects written in an SAP-specific programming language for transformations between XML formats and ABAP data
 
@@ -424,7 +424,7 @@ Possible transformations, some of which are covered in the example:
 
 The following code snippets demonstrate a selection of possible syntax options when using [`CALL TRANSFORMATION`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapcall_transformation.htm) statements.
 
-Specifying transformations
+**Specifying transformations**
 
 ```abap
 "Specifying the name of an XSL or Simple Transformation statically
@@ -445,7 +445,8 @@ CATCH cx_invalid_transformation.
 ENDTRY.
 ```
 
-Specifying the source of the transformation
+**Specifying the source of the transformation**
+
 There are multiple options. Check the executable example to see them in action.
 
 ```abap
@@ -476,7 +477,8 @@ CALL TRANSFORMATION ... SOURCE (srctab)
                         RESULT ...
 ```
 
-Specifying the result of the transformation
+**Specifying the result of the transformation**
+
 There are multiple options. Check the executable example to see them in action.
 
 ```abap
@@ -547,7 +549,7 @@ json_wr_cast->set_option( option = if_sxml_writer=>co_opt_linebreaks ).
 json_wr_cast->set_option( option = if_sxml_writer=>co_opt_indent ).
 
 CALL TRANSFORMATION id SOURCE itab = str_table
-                        RESULT XML json_wr.
+                       RESULT XML json_wr.
 
 DATA(json_formatted) = cl_abap_conv_codepage=>create_in( )->convert( json_wr->get_output( ) ).
 
@@ -565,16 +567,16 @@ DATA(json_formatted) = cl_abap_conv_codepage=>create_in( )->convert( json_wr->ge
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## Excursion: Converting string <-> xstring
-In the code snippets above and in the exexcutable example, many operations are performed using binary data.
+In the code snippets above and in the executable example, many operations are performed using binary data.
 This excursion shows the conversion of string <-> xstring using a codepage. The examples use UTF-8.
-For example, you can use the `cl_abap_conv_codepage` class and the [XCO library](https://help.sap.com/docs/SAP_S4HANA_CLOUD/0f69f8fb28ac4bf48d2b57b9637e81fa/702b5328be1a4bc4852ce29b09506b04.html?locale=en-US).
+For example, you can use the `cl_abap_conv_codepage` class and the [XCO library](https://help.sap.com/docs/SAP_S4HANA_CLOUD/0f69f8fb28ac4bf48d2b57b9637e81fa/702b5328be1a4bc4852ce29b09506b04.html?locale=en-US). The executable example also covers an excursion regarding compressing and decompressing of binary data.
 
 ```abap
 DATA(xml_string) = `<TXT>ABAP</TXT>`.
 
 "string -> xstring
 "Note: UTF-8 is used by default. Here, it is specified explicitly.
-"Exceptions are caught with cx_sy_conversion_codepage exception.
+"Exception class that can be used: cx_sy_conversion_codepage
 TRY.
     DATA(conv_xstring) = cl_abap_conv_codepage=>create_out( codepage = `UTF-8` )->convert( xml_string ).
   CATCH cx_sy_conversion_codepage.
@@ -610,9 +612,10 @@ DATA(conv_string_xco) = xco_cp=>xstring( conv_xstring_xco
   - [ST Examples](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenst_abexas.htm)
 - [asXML](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_xslt_asxml.htm)
 - [asJSON](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_asjson.htm)
+  - [JSON Examples](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_json_abexas.htm)
 - [`CALL TRANSFORMATION`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapcall_transformation.htm)
   - [`CALL TRANSFORMATION` Examples](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencall_transformation_abexas.htm)
-- [JSON Examples](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_json_abexas.htm)
+
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
@@ -620,8 +623,16 @@ DATA(conv_string_xco) = xco_cp=>xstring( conv_xstring_xco
 [zcl_demo_abap_xml_json](./src/zcl_demo_abap_xml_json.clas.abap)
 
 > **💡 Note**<br>
-> - The steps to import and run the code are outlined [here](README.md#-getting-started-with-the-examples).
 > - The executable example ...
->   - does not cover all facets, techniques, and syntax options. 
->   - uses demo XSLT and ST programs (which are not intended to be role models for proper XSLT/ST design), apart from snippets that use the predefined identity transformation (ID). 
->   - provides a rough overview of how to work with XML and JSON in ABAP using simple contexts.
+>   - covers the following topics in simple contexts:
+>     - Creating/Parsing XML Data Using iXML
+>     - Creating/Parsing XML Data Using sXML
+>     - XML Transformations using XSLT and Simple Transformations
+>     - Creating/Parsing XML Data Using iXML
+>     - Serializations (ABAP -> XML) and Deserialization (XML -> ABAP) using the identity transformation ID (elementary types, structures, internal tables, data and object references)
+>     - `CALL TRANSFORMATION` syntax options, sources and targets of transformations
+>     - Dealing with JSON data
+>     - Excursions: Converting string <-> xstring, compressing and decompressing binary data
+>   - uses, apart from the predefined identity transformation (ID), demo XSLT and ST programs. They are not intended to be role models for proper XSLT/ST design. 
+> - The steps to import and run the code are outlined [here](README.md#🎬-getting-started-with-the-examples).
+> - [Disclaimer](README.md#⚠️-disclaimer)

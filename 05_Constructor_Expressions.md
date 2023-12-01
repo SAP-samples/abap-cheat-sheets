@@ -270,7 +270,7 @@ MODIFY zdemo_abap_carr FROM TABLE @( VALUE #(
 > **💡 Note**<br>
 > Some of the additions and concepts mentioned here are
 also valid for other constructor expressions further down but not
-necessarily mentioned explicitly. See the details on the syntactical
+necessarily mentioned explicitly. See the details on the syntax
 options of the constructor operators in the ABAP Keyword Documentation.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>

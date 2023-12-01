@@ -3,7 +3,7 @@
 *             ABAP cheat sheet: ABAP object orientation
 *
 * -------------------------- PURPOSE ----------------------------------
-* - Example to demonstrate various syntactical options and concepts related
+* - Example to demonstrate various syntax options and concepts related
 *   to ABAP object orientation.
 * - Topics covered: Working with objects and components, method redefinition
 *   in inheritance, working with interfaces, upcast and downcast, concepts
