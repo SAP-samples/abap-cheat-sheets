@@ -1113,8 +1113,7 @@ logical expression using `AND` or `OR`. To further
 detail out the desired condition, expressions within parentheses are
 possible.
 
-The clause parts that are commented out in the following code snippet
-just demonstrate how the `WHERE` clause might look like.
+For demonstration purposes, various SQL conditions mentioned above are included in a `WHERE` clause:
 
 ``` abap
 SELECT * 

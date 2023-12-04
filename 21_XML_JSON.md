@@ -228,11 +228,11 @@ DATA(xml) = CAST cl_sxml_string_writer( writer )->get_output(  ).
 "<flights>
 "  <flight>
 "    <carrier>LH</carrier>
-"    <flightNumber>400</flightNumber>
+"    <flightnumber>400</flightnumber>
 "  </flight>
 "  <flight>
 "    <carrier>DL</carrier>
-"    <flightNumber>1984</flightNumber>
+"    <flightnumber>1984</flightnumber>
 "  </flight>
 "</flights>
 
@@ -250,7 +250,7 @@ TRY.
     val->set_value( 'AZ' ).
     writer_oo->write_node( val ).
     writer_oo->write_node( writer_oo->new_close_element( ) ).
-    writer_oo->write_node( writer_oo->new_open_element( name = 'flightNumber' ) ).
+    writer_oo->write_node( writer_oo->new_open_element( name = 'flightnumber' ) ).
     val = writer_oo->new_value( ).
     val->set_value( '788' ).
     writer_oo->write_node( val ).
@@ -263,7 +263,7 @@ TRY.
     val->set_value( 'JL' ).
     writer_oo->write_node( val ).
     writer_oo->write_node( writer_oo->new_close_element( ) ).
-    writer_oo->write_node( writer_oo->new_open_element( name = 'flightNumber' ) ).
+    writer_oo->write_node( writer_oo->new_open_element( name = 'flightnumber' ) ).
     val = writer_oo->new_value( ).
     val->set_value( '407' ).
     writer_oo->write_node( val ).
@@ -281,11 +281,11 @@ DATA(xml_oo) =  CAST cl_sxml_string_writer( writer_oo )->get_output( ).
 "<flights>
 " <flight>
 "  <carrier>AZ</carrier>
-"  <flightNumber>788</flightNumber>
+"  <flightnumber>788</flightnumber>
 " </flight>
 " <flight>
 "  <carrier>JL</carrier>
-"  <flightNumber>407</flightNumber>
+"  <flightnumber>407</flightnumber>
 " </flight>
 "</flights>
 ```
@@ -504,7 +504,7 @@ CALL TRANSFORMATION ... SOURCE ...
 ```
 
 > **💡 Note**<br>
-> More additions are avaialble such as `PARAMETERS` (for parameter binding) and `OPTIONS` (for predefined transformation options). See the details in the [ABAP Keyword Documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapcall_transformation.htm).
+> More additions are available such as `PARAMETERS` (for parameter binding) and `OPTIONS` (for predefined transformation options). See the details in the [ABAP Keyword Documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapcall_transformation.htm).
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
@@ -628,11 +628,10 @@ DATA(conv_string_xco) = xco_cp=>xstring( conv_xstring_xco
 >     - Creating/Parsing XML Data Using iXML
 >     - Creating/Parsing XML Data Using sXML
 >     - XML Transformations using XSLT and Simple Transformations
->     - Creating/Parsing XML Data Using iXML
 >     - Serializations (ABAP -> XML) and Deserialization (XML -> ABAP) using the identity transformation ID (elementary types, structures, internal tables, data and object references)
 >     - `CALL TRANSFORMATION` syntax options, sources and targets of transformations
 >     - Dealing with JSON data
 >     - Excursions: Converting string <-> xstring, compressing and decompressing binary data
 >   - uses, apart from the predefined identity transformation (ID), demo XSLT and ST programs. They are not intended to be role models for proper XSLT/ST design. 
 > - The steps to import and run the code are outlined [here](README.md#🎬-getting-started-with-the-examples).
-> - [Disclaimer](README.md#⚠️-disclaimer)
+> - [Disclaimer](README.md#-disclaimer)

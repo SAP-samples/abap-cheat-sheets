@@ -15,9 +15,11 @@
 * and data exchange between a RAP BO consumer, which is a class
 * in this case, and RAP BO provider can work. Additionally, it shows
 * how the methods for non-standard RAP BO operations might be
-* self-implemented in an ABP. The example is intentionally kept
-* short and simple and focuses on specific RAP aspects. For this reason,
-* the example might not fully meet the requirements of the RAP BO contract.
+* self-implemented in an ABP. The example focuses on specific RAP aspects.
+* For this reason, the example might not fully meet the requirements of
+* the RAP BO contract. Although this unmanaged scenario attempts to
+* replicate some of the functionality of the managed example, the
+* functionality is not fully consistent with the managed scenario.
 *
 * For demonstration purposes, some of the operations are
 * impacted by feature controls and instance authorization as specified
@@ -72,19 +74,11 @@ CLASS lcl_buffer DEFINITION.
              cid_ref    TYPE string,
              cid_target TYPE string,
              changed    TYPE abap_bool,
+             deleted    TYPE abap_bool,
            END OF gty_buffer_child.
 
-    TYPES gtt_buffer TYPE TABLE OF gty_buffer
-                WITH EMPTY KEY.
-
-    TYPES gtt_buffer_child TYPE TABLE OF gty_buffer_child
-                WITH EMPTY KEY.
-
-    CLASS-DATA:
-      "Internal tables serving as transactional buffers for the root and child entities
-      root_buffer  TYPE STANDARD TABLE OF gty_buffer WITH EMPTY KEY,
-      child_buffer TYPE STANDARD TABLE OF gty_buffer_child WITH EMPTY KEY.
-
+    TYPES gtt_buffer TYPE TABLE OF gty_buffer WITH EMPTY KEY.
+    TYPES gtt_buffer_child TYPE TABLE OF gty_buffer_child WITH EMPTY KEY.
     "Structure and internal table types to include the keys for buffer preparation methods
     TYPES: BEGIN OF root_keys,
              key_field TYPE zdemo_abap_rap_ro_u-key_field,
@@ -96,6 +90,11 @@ CLASS lcl_buffer DEFINITION.
            END OF child_keys,
            tt_root_keys  TYPE TABLE OF root_keys WITH EMPTY KEY,
            tt_child_keys TYPE TABLE OF child_keys WITH EMPTY KEY.
+
+    CLASS-DATA:
+      "Internal tables serving as transactional buffers for the root and child entities
+      root_buffer  TYPE STANDARD TABLE OF gty_buffer WITH EMPTY KEY,
+      child_buffer TYPE STANDARD TABLE OF gty_buffer_child WITH EMPTY KEY.
 
     "Buffer preparation methods
     CLASS-METHODS: prep_root_buffer IMPORTING keys TYPE tt_root_keys,
@@ -282,7 +281,7 @@ ENDCLASS.
 CLASS lhc_root IMPLEMENTATION.
 
   METHOD get_global_authorizations.
-    "No implementation on purpose. No global authorization restriction.
+    "No implementation. All users are authorized.
   ENDMETHOD.
 
   METHOD create.
@@ -440,14 +439,13 @@ CLASS lhc_root IMPLEMENTATION.
         LOOP AT keys REFERENCE INTO DATA(lr_key).
           TRY.
               lo_lock->enqueue( it_parameter = VALUE #(
-                  ( name = 'KEY_FIELD' value = REF #(
-                  lr_key->key_field ) ) ) ).
+                ( name = 'KEY_FIELD' value = REF #( lr_key->key_field ) ) ) ).
             CATCH cx_abap_foreign_lock.
-              APPEND VALUE #( %key = lr_key->*
+              APPEND VALUE #( %key        = CORRESPONDING #( lr_key->* )
                               %fail-cause = if_abap_behv=>cause-locked )
               TO failed-root.
             CATCH cx_abap_lock_failure.
-              APPEND VALUE #( %key = lr_key->*
+              APPEND VALUE #( %key        = CORRESPONDING #( lr_key->* )
                               %fail-cause = if_abap_behv=>cause-unspecific )
               TO failed-root.
           ENDTRY.
@@ -461,6 +459,8 @@ CLASS lhc_root IMPLEMENTATION.
   METHOD delete.
     "Preparing the transactional buffer based on the input BDEF derived type.
     lcl_buffer=>prep_root_buffer( CORRESPONDING #( keys ) ).
+    "Preparing the child buffer to mark child instances when parent instances are marked for deletion.
+    lcl_buffer=>prep_child_buffer( VALUE #( FOR wa IN keys ( key_field = wa-key_field ) ) ).
 
     "Processing requested keys sequentially
     "Note:
@@ -477,12 +477,14 @@ CLASS lhc_root IMPLEMENTATION.
         ASSIGNING FIELD-SYMBOL(<fs_del>).
 
       IF sy-subrc = 0.
-
         <fs_del>-changed  = abap_false.
         <fs_del>-deleted  = abap_true.
 
+        "When parent instances are marked for deletion, child instances with the shared key should be marked as well.
+        LOOP AT lcl_buffer=>child_buffer ASSIGNING FIELD-SYMBOL(<del_ch>) WHERE instance-key_field = <delete>-key_field.
+          <del_ch>-deleted = abap_true.
+        ENDLOOP.
       ENDIF.
-
     ENDLOOP.
   ENDMETHOD.
 
@@ -498,7 +500,7 @@ CLASS lhc_root IMPLEMENTATION.
       "- Line with the shared key value exists in the child buffer
       "- If it is true: Sequentially processing the child buffer entries (the example is set up in a way that there can be multiple entries)
       IF line_exists( lcl_buffer=>root_buffer[ instance-key_field = <rba>-key_field deleted = abap_false ] )
-      AND line_exists( lcl_buffer=>child_buffer[ instance-key_field = <rba>-key_field ] ).
+      AND line_exists( lcl_buffer=>child_buffer[ instance-key_field = <rba>-key_field deleted = abap_false ] ).
 
         LOOP AT lcl_buffer=>child_buffer ASSIGNING FIELD-SYMBOL(<ch>) WHERE instance-key_field = <rba>-key_field.
 
@@ -510,14 +512,13 @@ CLASS lhc_root IMPLEMENTATION.
           "Filling the table for the RESULT parameter based on the FULL parameter
           "Note: If the FULL parameter is initial, only the LINK parameter should be provided
           IF result_requested = abap_true.
-            APPEND VALUE #( %tky   = CORRESPONDING #( <rba>-%tky )
-                            key_ch = COND #( WHEN <rba>-%control-key_ch NE if_abap_behv=>mk-off
-                                             THEN <ch>-instance-key_ch )
+            APPEND VALUE #( key_field   = <ch>-instance-key_field
+                            key_ch      = <ch>-instance-key_ch
                             field_ch1 = COND #( WHEN <rba>-%control-field_ch1 NE if_abap_behv=>mk-off
                                                 THEN <ch>-instance-field_ch1 )
                             field_ch2 = COND #( WHEN <rba>-%control-field_ch2 NE if_abap_behv=>mk-off
                                                 THEN <ch>-instance-field_ch2 )
-                        ) TO result.
+                          ) TO result.
           ENDIF.
         ENDLOOP.
 
@@ -837,11 +838,8 @@ CLASS lsc_zdemo_abap_rap_ro_u IMPLEMENTATION.
 
     IF line_exists( lcl_buffer=>root_buffer[ changed = abap_true ] ).
       LOOP AT lcl_buffer=>root_buffer ASSIGNING FIELD-SYMBOL(<cr>) WHERE changed = abap_true AND deleted = abap_false.
-
         APPEND CORRESPONDING #( <cr>-instance ) TO mod_tab.
-
       ENDLOOP.
-
       MODIFY zdemo_abap_rapt1 FROM TABLE @( CORRESPONDING #( mod_tab ) ).
     ENDIF.
 
@@ -850,14 +848,26 @@ CLASS lsc_zdemo_abap_rap_ro_u IMPLEMENTATION.
     DATA del_tab TYPE lcl_buffer=>tt_root_keys.
 
     IF line_exists( lcl_buffer=>root_buffer[ deleted = abap_true ] ).
-
       LOOP AT lcl_buffer=>root_buffer ASSIGNING FIELD-SYMBOL(<del>) WHERE deleted = abap_true.
-
         APPEND CORRESPONDING #( <del>-instance ) TO del_tab.
-
       ENDLOOP.
-
       DELETE zdemo_abap_rapt1 FROM TABLE @( CORRESPONDING #( del_tab ) ).
+
+      "Processing database entries of child entity: When the parent instance is deleted,
+      "the corresponding child instances are deleted.
+      SELECT key_field, key_ch
+        FROM zdemo_abap_rapt2 AS db
+        WHERE EXISTS
+        ( SELECT * FROM @del_tab AS it
+          WHERE key_field = db~key_field )
+          INTO TABLE @DATA(child_keys).
+
+      "Deleting entries from database table
+      DELETE zdemo_abap_rapt2 FROM TABLE @( CORRESPONDING #( child_keys ) ).
+      "Deleting instances from child buffer
+       "LOOP AT lcl_buffer=>child_buffer ASSIGNING FIELD-SYMBOL(<del_ch>).
+          DELETE lcl_buffer=>child_buffer WHERE instance-key_field = <del>-instance-key_field AND deleted = abap_true.
+      "ENDLOOP.
     ENDIF.
 
     "Processing the saving of create-by-association operations.
@@ -865,11 +875,8 @@ CLASS lsc_zdemo_abap_rap_ro_u IMPLEMENTATION.
 
     IF line_exists( lcl_buffer=>child_buffer[ changed = abap_true ] ).
       LOOP AT lcl_buffer=>child_buffer ASSIGNING FIELD-SYMBOL(<cba>) WHERE changed = abap_true.
-
         APPEND CORRESPONDING #( <cba>-instance ) TO cba_tab.
-
       ENDLOOP.
-
       MODIFY zdemo_abap_rapt2 FROM TABLE @( CORRESPONDING #( cba_tab ) ).
     ENDIF.
   ENDMETHOD.
@@ -927,7 +934,7 @@ CLASS lhc_child IMPLEMENTATION.
                  instance-key_ch    = <read>-key_ch
         ASSIGNING FIELD-SYMBOL(<fs_rc>).
 
-      IF sy-subrc = 0.
+      IF sy-subrc = 0 AND <fs_rc>-deleted = abap_false.
 
         APPEND VALUE #( %tky      = <read>-%tky
                         field_ch1 = COND #( WHEN <read>-%control-field_ch1 NE if_abap_behv=>mk-off
@@ -964,12 +971,12 @@ CLASS lhc_child IMPLEMENTATION.
       "- Line with the full key exists in the child buffer
       "- If it is true: Adding the instance to the RESULT parameter considering %control values
       IF line_exists( lcl_buffer=>root_buffer[ instance-key_field = <rba>-key_field deleted = abap_false ] )
-      AND line_exists( lcl_buffer=>child_buffer[ instance-key_field = <rba>-key_field instance-key_ch = <rba>-key_ch ] ).
+      AND line_exists( lcl_buffer=>child_buffer[ instance-key_field = <rba>-key_field instance-key_ch = <rba>-key_ch deleted = abap_false ] ).
 
         "Filling the LINK parameter
         INSERT VALUE #( target-%tky = CORRESPONDING #( <rba>-%tky )
                         source-%tky = VALUE #( key_field = <rba>-key_field
-                                                key_ch    = <rba>-key_ch )
+                                               key_ch    = <rba>-key_ch )
                     ) INTO TABLE association_links.
 
         IF result_requested = abap_true.
