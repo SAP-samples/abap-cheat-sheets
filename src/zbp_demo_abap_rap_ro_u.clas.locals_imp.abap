@@ -482,6 +482,7 @@ CLASS lhc_root IMPLEMENTATION.
 
         "When parent instances are marked for deletion, child instances with the shared key should be marked as well.
         LOOP AT lcl_buffer=>child_buffer ASSIGNING FIELD-SYMBOL(<del_ch>) WHERE instance-key_field = <delete>-key_field.
+          <del_ch>-changed = abap_false.
           <del_ch>-deleted = abap_true.
         ENDLOOP.
       ENDIF.
@@ -560,6 +561,9 @@ CLASS lhc_root IMPLEMENTATION.
       "- Line with the shared key value exists in the buffer for the root entity and it is not marked as deleted
       "- If it is true: Sequentially processing the instances in the %target table
       IF line_exists( lcl_buffer=>root_buffer[ instance-key_field = <cba>-key_field deleted = abap_false ] ).
+
+        "If it exists, removing instance that is marked for deletion from the child transactional buffer since it gets replaced by a new one.
+        DELETE lcl_buffer=>child_buffer WHERE instance-key_field = <cba>-key_field AND deleted = abap_true.
 
         LOOP AT <cba>-%target ASSIGNING FIELD-SYMBOL(<ch>).
 
@@ -865,16 +869,14 @@ CLASS lsc_zdemo_abap_rap_ro_u IMPLEMENTATION.
       "Deleting entries from database table
       DELETE zdemo_abap_rapt2 FROM TABLE @( CORRESPONDING #( child_keys ) ).
       "Deleting instances from child buffer
-       "LOOP AT lcl_buffer=>child_buffer ASSIGNING FIELD-SYMBOL(<del_ch>).
-          DELETE lcl_buffer=>child_buffer WHERE instance-key_field = <del>-instance-key_field AND deleted = abap_true.
-      "ENDLOOP.
+      DELETE lcl_buffer=>child_buffer WHERE instance-key_field = <del>-instance-key_field AND deleted = abap_true.
     ENDIF.
 
     "Processing the saving of create-by-association operations.
     DATA cba_tab TYPE TABLE OF zdemo_abap_rap_ch_u.
 
     IF line_exists( lcl_buffer=>child_buffer[ changed = abap_true ] ).
-      LOOP AT lcl_buffer=>child_buffer ASSIGNING FIELD-SYMBOL(<cba>) WHERE changed = abap_true.
+      LOOP AT lcl_buffer=>child_buffer ASSIGNING FIELD-SYMBOL(<cba>) WHERE changed = abap_true AND deleted = abap_false.
         APPEND CORRESPONDING #( <cba>-instance ) TO cba_tab.
       ENDLOOP.
       MODIFY zdemo_abap_rapt2 FROM TABLE @( CORRESPONDING #( cba_tab ) ).
