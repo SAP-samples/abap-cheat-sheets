@@ -892,7 +892,7 @@ TRY.
         allowlist_str = `A,B,C,D` ).
     
     ... "Here might go an ABAP SQL statement with a dynamic specification.
-  CATCH cx_abap_not_in_allowlist..
+  CATCH cx_abap_not_in_allowlist.
     ...
 ENDTRY.
 

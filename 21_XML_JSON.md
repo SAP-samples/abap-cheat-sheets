@@ -630,8 +630,8 @@ DATA(conv_string_xco) = xco_cp=>xstring( conv_xstring_xco
 >     - XML Transformations using XSLT and Simple Transformations
 >     - Serializations (ABAP -> XML) and Deserialization (XML -> ABAP) using the identity transformation ID (elementary types, structures, internal tables, data and object references)
 >     - `CALL TRANSFORMATION` syntax options, sources and targets of transformations
->     - Dealing with JSON data
+>     - Dealing with JSON data, XCO classes for JSON
 >     - Excursions: Converting string <-> xstring, compressing and decompressing binary data
 >   - uses, apart from the predefined identity transformation (ID), demo XSLT and ST programs. They are not intended to be role models for proper XSLT/ST design. 
 > - The steps to import and run the code are outlined [here](README.md#🎬-getting-started-with-the-examples).
-> - [Disclaimer](README.md#-disclaimer)
+> - [Disclaimer](README.md#⚠️-disclaimer)

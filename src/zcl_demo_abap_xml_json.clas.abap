@@ -8,7 +8,7 @@
 *   - Processing XML using class libraries (iXML, sXML)
 *   - XML Transformations using XSLT and Simple Transformations
 *   - CALL TRANSFORMATION syntax
-*   - Dealing with JSON data
+*   - Dealing with JSON data, XCO classes for JSON
 *   - Excursions: Converting string <-> xstring, compressing and
 *     decompressing binary data
 *
@@ -1429,7 +1429,84 @@ CLASS zcl_demo_abap_xml_json IMPLEMENTATION.
 
 ************************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `23) Excursion: Compressing and Decompressing Binary Data` ) ).
+    out->write( zcl_demo_abap_aux=>heading( `23) XCO Classes for JSON` ) ).
+    "Note: Unlike above, the following snippets do not work with asJSON as intermediate
+    "format.
+
+    DATA: BEGIN OF carrier_struc,
+            carrier_id    TYPE c length 3,
+            connection_id TYPE n length 4,
+            city_from TYPE c length 20,
+            city_to TYPE c length 20,
+          END OF carrier_struc.
+
+    DATA carriers_tab like TABLE OF carrier_struc WITH EMPTY KEY.
+
+    carrier_struc = VALUE #( carrier_id = 'AA' connection_id = '17' city_from = 'New York' city_to = 'San Francisco' ).
+    carriers_tab = VALUE #( ( carrier_id = 'AZ' connection_id = '788' city_from = 'Rome' city_to = 'Tokyo' )
+                            ( carrier_id = 'JL' connection_id = '408' city_from = 'Frankfurt' city_to = 'Tokyo' )
+                            ( carrier_id = 'LH' connection_id = '2402' city_from = 'Frankfurt' city_to = 'Berlin' ) ).
+
+    "ABAP (structure) -> JSON using XCO
+    DATA(struc2json_xco) = xco_cp_json=>data->from_abap( carrier_struc )->to_string( ).
+    out->write( `ABAP (structure) -> JSON using XCO` ).
+    out->write( format( input = struc2json_xco xml = abap_false ) ).
+    out->write( |\n| ).
+
+    "ABAP (internal table) -> JSON using XCO
+    DATA(itab2json_xco) = xco_cp_json=>data->from_abap( carriers_tab )->to_string( ).
+    out->write( `ABAP (internal table) -> JSON using XCO` ).
+    out->write( format( input = itab2json_xco xml = abap_false ) ).
+    out->write( |\n| ).
+
+    "JSON -> ABAP (structure) using XCO
+    DATA json2struc_xco LIKE carrier_struc.
+    xco_cp_json=>data->from_string( struc2json_xco )->write_to( REF #( json2struc_xco ) ).
+    out->write( `JSON -> ABAP (structure) using XCO` ).
+    out->write( json2struc_xco ).
+    out->write( |\n| ).
+
+    "JSON -> ABAP (internal table) using XCO
+    DATA json2itab_xco LIKE carriers_tab.
+    xco_cp_json=>data->from_string( itab2json_xco )->write_to( REF #( json2itab_xco ) ).
+    out->write( `JSON -> ABAP (internal table) using XCO` ).
+    out->write( json2itab_xco ).
+    out->write( |\n| ).
+
+    "Creating JSON using XCO
+    "Check out more methods that offer more options to build the JSON by clicking
+    "CTRL + Space after '->' in ADT.
+    DATA(json_builder_xco) = xco_cp_json=>data->builder( ).
+    json_builder_xco->begin_object(
+      )->add_member( 'CarrierId' )->add_string( 'DL'
+      )->add_member( 'ConnectionId' )->add_string( '1984'
+      )->add_member( 'CityFrom' )->add_string( 'San Francisco'
+      )->add_member( 'CityTo' )->add_string( 'New York'
+      )->end_object( ).
+
+    "Getting JSON data
+    DATA(json_created_xco) = json_builder_xco->get_data( )->to_string( ).
+
+    out->write( `Creating JSON using XCO` ).
+    out->write( format( input = json_created_xco xml = abap_false ) ).
+    out->write( |\n| ).
+
+    "Transforming the created JSON to ABAP (structure)
+    "Note: The JSON was intentionally created without the underscores in the
+    "name to demonstrate the 'apply' method. The following example demonstrates
+    "a transformation of camel case and underscore notation. As above, check out
+    "more options by clicking CTRL + Space after '...transformation->'.
+    CLEAR json2struc_xco.
+    xco_cp_json=>data->from_string( json_created_xco )->apply( VALUE #(
+      ( xco_cp_json=>transformation->pascal_case_to_underscore ) ) )->write_to( REF #( json2struc_xco ) ).
+
+    out->write( `JSON -> ABAP (structure) using XCO demonstrating the apply method` ).
+    out->write( json2struc_xco ).
+    out->write( |\n| ).
+
+************************************************************************
+
+    out->write( zcl_demo_abap_aux=>heading( `24) Excursion: Compressing and Decompressing Binary Data` ) ).
     "You may want to process or store binary data. The data can be very large.
     "You can compress the data in gzip format and decompress it for further processing using
     "the cl_abap_gzip class. Check out appropriate exceptions to be caught. The simple example
@@ -1455,7 +1532,7 @@ CLASS zcl_demo_abap_xml_json IMPLEMENTATION.
         out->write( error_decomp->get_text( ) ).
     ENDTRY.
 
-    "Checking the xstring length of the variables used and comparing result
+    "Checking the xstring length of the variables used and comparing the result
     DATA(strlen_original_xstring) = xstrlen( xml_oref_a ).
     out->write( |Length of original binary data object: { strlen_original_xstring }| ).
     DATA(strlen_comp) = xstrlen( xstr_comp ).

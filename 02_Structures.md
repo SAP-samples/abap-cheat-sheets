@@ -515,9 +515,12 @@ diff_deep_struc = CORRESPONDING #( DEEP APPENDING BASE ( diff_struc ) deep_struc
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
                                   
+
 ## Clearing Structures
+
 You can reset individual components to their initial values and clear the
 entire structure using the [`CLEAR`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapclear.htm) keyword.
+
 ``` abap
 CLEAR struc-component.
 
