@@ -1329,4 +1329,11 @@ generation or execution of programs at runtime. They are not part of this cheat 
 
 [zcl_demo_abap_dynamic_prog](./src/zcl_demo_abap_dynamic_prog.clas.abap)
 
-Note the steps outlined [here](README.md#-getting-started-with-the-examples) about how to import and run the code.
+> **💡 Note**<br>
+> - The executable example ...
+>   - covers the following topics, among others:
+>     - Field symbols and data references as supporting elements for dynamic programming
+>     - Dynamic ABAP syntax components
+>     - Runtime type services (RTTS), i. e. runtime type identification (RTTI) and runtime type creation (RTTC)
+> - The steps to import and run the code are outlined [here](README.md#-getting-started-with-the-examples).
+> - [Disclaimer](README.md#%EF%B8%8F-disclaimer)

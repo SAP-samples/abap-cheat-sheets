@@ -1513,4 +1513,7 @@ Tables](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?fil
 ## Executable Example
 [zcl_demo_abap_internal_tables](./src/zcl_demo_abap_internal_tables.clas.abap)
 
-Follow the steps outlined [here](README.md#-getting-started-with-the-examples) to import and run the code.
+> **💡 Note**<br>
+> - The executable example covers the following topics, among others: Creating, populating, reading from, sorting, modifying internal tables
+> - The steps to import and run the code are outlined [here](README.md#-getting-started-with-the-examples).
+> - [Disclaimer](README.md#%EF%B8%8F-disclaimer)

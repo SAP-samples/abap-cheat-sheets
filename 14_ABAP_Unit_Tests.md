@@ -514,6 +514,11 @@ For more information about evaluating ABAP unit test results, see [here](https:/
 
 [zcl_demo_abap_unit_test](./src/zcl_demo_abap_unit_test.clas.abap)
 
-Note ...
-- the steps outlined [here](README.md#-getting-started-with-the-examples) about how to import and run the code.
-- the comments in the executable example.
+> **💡 Note**<br>
+> - The executable example ...
+>   - covers the following topics:
+>     - Test classes and test/special methods
+>     - Implementing and injecting test doubles (constructor injection, back door injection, test seams)
+>   - contains comments in the code for more information.
+> - The steps to import and run the code are outlined [here](README.md#-getting-started-with-the-examples).
+> - [Disclaimer](README.md#%EF%B8%8F-disclaimer)

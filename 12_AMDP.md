@@ -441,4 +441,11 @@ relevant in the executable example.
 
 [zcl_demo_abap_amdp](./src/zcl_demo_abap_amdp.clas.abap)
 
-Note the steps outlined [here](README.md#-getting-started-with-the-examples) about how to import and run the code.
+> **💡 Note**<br>
+> - The executable example ...
+>   - covers the following topics:
+>     - AMDP procedures, calling AMDP procedures from SQLScript
+>     - AMDP table functions for AMDP methods
+>     - AMDP table functions for CDS table functions
+> - The steps to import and run the code are outlined [here](README.md#-getting-started-with-the-examples).
+> - [Disclaimer](README.md#%EF%B8%8F-disclaimer)

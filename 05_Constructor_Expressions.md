@@ -935,4 +935,6 @@ DATA(a) = COND #( LET b = c IN
 
 [zcl_demo_abap_constructor_expr](./src/zcl_demo_abap_constructor_expr.clas.abap)
 
-Note the steps outlined [here](README.md#-getting-started-with-the-examples) about how to import and run the code.
+> **💡 Note**<br>
+> - The steps to import and run the code are outlined [here](README.md#-getting-started-with-the-examples).
+> - [Disclaimer](README.md#%EF%B8%8F-disclaimer)

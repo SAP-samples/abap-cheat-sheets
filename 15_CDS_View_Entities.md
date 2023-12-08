@@ -24,17 +24,17 @@ Core data services (CDS) are an infrastructure for defining and consuming semant
 
 [zcl_demo_abap_cds_ve](./src/zcl_demo_abap_cds_ve.clas.abap)
 
-The example covers the following topics: 
-- Operands, expressions, built-in functions, and input parameters in CDS view entities
-  - Selecting data from CDS view entities using ABAP SQL `SELECT` statements
-- Joins  
-  - Note: A sample CDS view entity contains multiple joins. You can comment in/out code sections to see the effect. See the notes in the view. 
-  - Excursion: Joins in ABAP SQL
-- Associations
-  - Defining views with associations
-  - Exposing associations
-  - Using exposed associations in ABAP statements
-
-Note ...
-- the comments in the example CDS view entities (`zdemo_abap_cds_ve...`) and the [class](./src/zcl_demo_abap_cds_ve.clas.abap).
-- the steps outlined [here](README.md#-getting-started-with-the-examples) about how to import and run the code.
+> **💡 Note**<br>
+> - The executable example covers the following topics:
+>   - Operands, expressions, built-in functions, and input parameters in CDS view entities
+>   - Selecting data from CDS view entities using ABAP SQL `SELECT` statements
+>   - Joins  
+>     - Note: A sample CDS view entity contains multiple joins. You can comment in/out code sections to see the effect. See the notes in the view. 
+>     - Excursion: Joins in ABAP SQL
+>   - Associations
+>     - Defining views with associations
+>     - Exposing associations
+>     - Using exposed associations in ABAP statements
+> - The example CDS view entities (`zdemo_abap_cds_ve...`) and the [class](./src/zcl_demo_abap_cds_ve.clas.abap) contains comments in the code for more information.
+> - The steps to import and run the code are outlined [here](README.md#-getting-started-with-the-examples).
+> - [Disclaimer](README.md#%EF%B8%8F-disclaimer)

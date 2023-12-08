@@ -1281,8 +1281,20 @@ Find more information in the [cheat sheet about dynamic programming](06_Dynamic_
 [zcl_demo_abap_dtype_dobj](./src/zcl_demo_abap_dtype_dobj.clas.abap)
 
 > **💡 Note**<br>
-> - [Here](README.md#-getting-started-with-the-examples) are the steps to import and run the code.
-> - Compared to other ABAP cheat sheet executable examples, this one does not have as many things to be output. The focus is on syntax options and declarations. In the class, you can set breakpoints and use the debugger to check out data objects. You can also use the F2 information for the many types and data objects. Simply select a type or object in the code and press F2 in ADT to check out the information.
-> - The executable example also covers topics not covered above such as built-in data objects and formal parameters typed with generic ABAP types.
+> - The executable example ...
+>   - covers, among others, the following topics:
+>     - Declaring data types
+>     - Declaring data objects, inline declarations
+>     - Assignments
+>     - Creating anonymous data objects
+>     - Type conversions
+>     - Getting type information (Runtime Type Information/RTTI)
+>     - Constants, immutable variables
+>     - Generic types
+>     - Enumerated types and objects
+>   - does not have as many things to be output compared to other ABAP cheat sheet executable examples. The focus is on syntax options and declarations. In the class, you can set breakpoints and use the debugger to check out data objects. You can also use the F2 information for the many types and data objects. Simply select a type or object in the code and press F2 in ADT to check out the information.
+> - The steps to import and run the code are outlined [here](README.md#-getting-started-with-the-examples).
+> - [Disclaimer](README.md#%EF%B8%8F-disclaimer)
+
 
 

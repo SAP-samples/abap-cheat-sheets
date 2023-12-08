@@ -308,14 +308,19 @@ After the import of the repository, proceed as follows:
 - Run the program by choosing `F8`.
 
 > **💡 Note**<br>
-> - The steps about how to import and run the code are outlined [here](README.md#-getting-started-with-the-examples). 
-> - The SAP LUW is demonstrated using classic dynpros to provide a self-contained example (i.e., so as not to have more artifacts, service creation, etc.) that highlights the considerations regarding implicit database commits - without putting the spotlight on dynpros. Note that classic dynpros are outdated for application programs. New developments should use web-based UIs, such as SAPUI5 or Web Dynpro. 
-> - Dynpros cannot be created in ABAP Cloud. As mentioned earlier, RAP is the transactional programming model for ABAP Cloud. It comes with a well-defined transactional model and follows the rules of the SAP LUW. See the links in the *More Information* section.
->  - The example ... 
->    - does not claim to include meaningful dynpros with meaningful dynpro sequences and is not intended to be a role model for proper dynpro design.   
->    - is not intended to solve concrete programming tasks. You should always work out your own solution for each individual case.
->    - is only intended to demonstrate a selection of keywords and visualize SAP LUW-related syntax in action on a high level. 
-> - See notes on the executable example in the expandable section below. 
+> - The executable example ...
+>   - demonstrates the SAP LUW using classic dynpros to provide a self-contained and simple example that highlights the considerations regarding implicit database commits, without putting the spotlight on dynpros. Note that classic dynpros are outdated for application programs. New developments should use web-based UIs, such as SAPUI5 or Web Dynpro. 
+>   - covers the following topics in simple contexts:
+>     - Demonstrating synchronous update, asynchronous update, and local update triggered by `COMMIT WORK`, `COMMIT WORK AND WAIT`, and `SET UPDATE TASK LOCAL` using update function modules.
+>     - Demonstrating the statements `PERFORM ... ON COMMIT` and `PERFORM ... ON ROLLBACK` using subroutines.
+>   - does not claim to include meaningful dynpros with meaningful dynpro sequences and is not intended to be a role model for proper dynpro design.   
+>   - is not intended to solve concrete programming tasks. You should always work out your own solution for each individual case.
+>   - is only intended to demonstrate a selection of keywords and visualize SAP LUW-related syntax in action on a high level. 
+>   - is explained in more detail below in the expandable section below. Click to view the details.
+> - Dynpros cannot be created in ABAP Cloud. As mentioned earlier, RAP is the transactional programming model for ABAP Cloud. It comes with a well-defined transactional model and follows the rules of the SAP LUW. See the links in the [More Information](#more-information) section.
+> - The steps to import and run the code are outlined [here](README.md#-getting-started-with-the-examples).
+> - [Disclaimer](README.md#%EF%B8%8F-disclaimer)
+
 
 <br>
 <details>

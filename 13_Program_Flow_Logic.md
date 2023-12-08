@@ -658,4 +658,15 @@ ASSERT flag = abap_true.
 
 [zcl_demo_abap_prog_flow_logic](./src/zcl_demo_abap_prog_flow_logic.clas.abap)
 
-Note the steps outlined [here](README.md#-getting-started-with-the-examples) about how to import and run the code.
+> **💡 Note**<br>
+> - The executable example ...
+>   - covers the following topics, among others:
+>     - Control structures with `IF`, `CASE`, and `TRY`
+>     - Excursions: `COND` and `SWITCH` operators 
+>     - Expressions and functions for conditions
+>     - Predicate expression with `IS SUPPLIED`
+>     - Loops with `DO`, `WHILE`, and `LOOP`
+>     - Terminating loop passes
+>     - Handling exceptions
+> - The steps to import and run the code are outlined [here](README.md#-getting-started-with-the-examples).
+> - [Disclaimer](README.md#%EF%B8%8F-disclaimer)

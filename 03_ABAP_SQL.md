@@ -1508,4 +1508,11 @@ DELETE dbtab FROM TABLE @( VALUE #( ( comp1 = ... )
 ## Executable Example
 [zcl_demo_abap_sql](./src/zcl_demo_abap_sql.clas.abap)
 
-Note the steps outlined [here](README.md#-getting-started-with-the-examples) about how to import and run the code.
+> **💡 Note**<br>
+> - The executable example covers the following topics, among others:
+>     - Reading from database tables using `SELECT`
+>     - Various additions to `SELECT` statements
+>     - Changing data in database tables using `INSERT`, `UPDATE`, `MODIFY` and `DELETE`
+>     - Excursions: Operands and expressions in ABAP SQL statements
+> - The steps to import and run the code are outlined [here](README.md#-getting-started-with-the-examples).
+> - [Disclaimer](README.md#%EF%B8%8F-disclaimer)

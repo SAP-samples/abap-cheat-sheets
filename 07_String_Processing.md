@@ -1668,4 +1668,13 @@ REPLACE PCRE `(.*?)PP(.*)` IN s1 WITH `$2#$1` IGNORING CASE. "pc app#ab a
 
 [zcl_demo_abap_string_proc](./src/zcl_demo_abap_string_proc.clas.abap)
 
-Follow the steps outlined [here](README.md#-getting-started-with-the-examples) to import and run the code.
+> **💡 Note**<br>
+> - The executable example ...
+>   - covers the following topics:
+>     - Creating strings and assigning values
+>     - String templates
+>     - Operations with strings operations: chaining, concatenating, splitting, modifying 
+>     - Searching and replacing
+>     - Regular expressions 
+> - The steps to import and run the code are outlined [here](README.md#-getting-started-with-the-examples).
+> - [Disclaimer](README.md#%EF%B8%8F-disclaimer)

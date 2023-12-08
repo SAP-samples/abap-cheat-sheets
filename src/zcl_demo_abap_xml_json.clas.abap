@@ -157,13 +157,11 @@ CLASS zcl_demo_abap_xml_json IMPLEMENTATION.
     conv_string = format( conv_string ).
     conv_string_xco = format( conv_string_xco ).
     out->write( |\n| ).
-    out->write( `Result of the xstring to string conversion:`  ).
+    out->write( `Results of the xstring to string conversions:`  ).
     out->write( |\n| ).
     out->write( conv_string  ).
     out->write( |\n| ).
-    IF conv_string = conv_string_xco.
-      out->write( `The two conversions give the same result.` ).
-    ENDIF.
+    out->write( conv_string_xco  ).
 
 **********************************************************************
 
@@ -1502,7 +1500,6 @@ CLASS zcl_demo_abap_xml_json IMPLEMENTATION.
 
     out->write( `JSON -> ABAP (structure) using XCO demonstrating the apply method` ).
     out->write( json2struc_xco ).
-    out->write( |\n| ).
 
 ************************************************************************
 

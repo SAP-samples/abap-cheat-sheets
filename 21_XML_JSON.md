@@ -512,6 +512,7 @@ CALL TRANSFORMATION ... SOURCE ...
 - You can ..
   - create and read JSON data in ABAP using the readers and writers in the sXML Library. See the processing of XML data in the sXML section above. Parsing and rendering JSON data works in a similar way. However, instead of using XML readers/writers, you use JSON readers/writers.
   - transform ABAP to and from JSON data using transformations. You can directly transform ABAP <-> JSON using identity transformation (ID). In this context, note the intermediate format asJSON (see the notes on asXML above).
+  - create an handle JSON data using the [XCO library](https://help.sap.com/docs/btp/sap-business-technology-platform/xco-library?version=Cloud).
 
 The following code snippets show a selection of transformation options using the predefined identity transformation. Here, a JSON writer is specified as the target.
 
@@ -564,12 +565,84 @@ DATA(json_formatted) = cl_abap_conv_codepage=>create_in( )->convert( json_wr->ge
 *}
 ```
 
+The following snippets demonstrate creating and handling JSON data using the XCO library. Note that unlike above, the snippets do not work with asJSON as an intermediate format.
+
+```abap
+"Creating and populating a demo structure and internal table
+DATA: BEGIN OF carrier_struc,
+        carrier_id    TYPE c length 3,
+        connection_id TYPE n length 4,
+        city_from TYPE c length 20,
+        city_to TYPE c length 20,
+      END OF carrier_struc.
+
+DATA carriers_tab like TABLE OF carrier_struc WITH EMPTY KEY.
+
+carrier_struc = VALUE #( carrier_id = 'AA' connection_id = '17' city_from = 'New York' city_to = 'San Francisco' ).
+carriers_tab = VALUE #( ( carrier_id = 'AZ' connection_id = '788' city_from = 'Rome' city_to = 'Tokyo' )
+                        ( carrier_id = 'JL' connection_id = '408' city_from = 'Frankfurt' city_to = 'Tokyo' ) ).
+
+"ABAP (structure) -> JSON using XCO
+DATA(struc2json_xco) = xco_cp_json=>data->from_abap( carrier_struc )->to_string( ).
+"Result: {"CARRIER_ID":"AA","CONNECTION_ID":"0017","CITY_FROM":"New York","CITY_TO":"San Francisco"}
+
+"ABAP (internal table) -> JSON using XCO
+DATA(itab2json_xco) = xco_cp_json=>data->from_abap( carriers_tab )->to_string( ).
+"Result: [{"CARRIER_ID":"AZ","CONNECTION_ID":"0788","CITY_FROM":"Rome","CITY_TO":"Tokyo"},
+"         {"CARRIER_ID":"JL","CONNECTION_ID":"0408","CITY_FROM":"Frankfurt","CITY_TO":"Tokyo"}]
+
+"JSON -> ABAP (structure) using XCO
+DATA json2struc_xco LIKE carrier_struc.
+xco_cp_json=>data->from_string( struc2json_xco )->write_to( REF #( json2struc_xco ) ).
+"Result:
+"CARRIER_ID    CONNECTION_ID    CITY_FROM    CITY_TO
+"AA            0017             New York     San Francisco
+
+"JSON -> ABAP (internal table) using XCO
+DATA json2itab_xco LIKE carriers_tab.
+xco_cp_json=>data->from_string( itab2json_xco )->write_to( REF #( json2itab_xco ) ).
+"Result:
+"CARRIER_ID    CONNECTION_ID    CITY_FROM    CITY_TO
+"AZ            0788             Rome         Tokyo
+"JL            0408             Frankfurt    Tokyo
+
+"Creating JSON using XCO
+"You can check out more methods that offer various options to build
+"the JSON by clicking CTRL + Space after '->' in ADT.
+"In the following example, JSON data similar to above is created.
+"First, a JSON data builder is created. Then, using different methods,
+"JSON data is created.
+DATA(json_builder_xco) = xco_cp_json=>data->builder( ).
+json_builder_xco->begin_object(
+  )->add_member( 'CarrierId' )->add_string( 'DL'
+  )->add_member( 'ConnectionId' )->add_string( '1984'
+  )->add_member( 'CityFrom' )->add_string( 'San Francisco'
+  )->add_member( 'CityTo' )->add_string( 'New York'
+  )->end_object( ).
+
+"Getting JSON data
+DATA(json_created_xco) = json_builder_xco->get_data( )->to_string( ).
+"Result: {"CarrierId":"DL","ConnectionId":"1984","CityFrom":"San Francisco","CityTo":"New York"}
+
+"Transforming the created JSON to ABAP (structure)
+"Note: The JSON was intentionally created without the underscores in the
+"name to demonstrate the 'apply' method. The following example demonstrates
+"a transformation of camel case and underscore notation. As above, check out
+"more options by clicking CTRL + Space after '...transformation->'.
+CLEAR json2struc_xco.
+xco_cp_json=>data->from_string( json_created_xco )->apply( VALUE #(
+  ( xco_cp_json=>transformation->pascal_case_to_underscore ) ) )->write_to( REF #( json2struc_xco ) ).
+"Result
+"CARRIER_ID    CONNECTION_ID    CITY_FROM        CITY_TO
+"DL            1984             San Francisco    New York
+```
+
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## Excursion: Converting string <-> xstring
 In the code snippets above and in the executable example, many operations are performed using binary data.
 This excursion shows the conversion of string <-> xstring using a codepage. The examples use UTF-8.
-For example, you can use the `cl_abap_conv_codepage` class and the [XCO library](https://help.sap.com/docs/SAP_S4HANA_CLOUD/0f69f8fb28ac4bf48d2b57b9637e81fa/702b5328be1a4bc4852ce29b09506b04.html?locale=en-US). The executable example also covers an excursion regarding compressing and decompressing of binary data.
+For example, you can use the `cl_abap_conv_codepage` class and the [XCO library](https://help.sap.com/docs/btp/sap-business-technology-platform/xco-library?version=Cloud). The executable example also covers an excursion regarding compressing and decompressing of binary data.
 
 ```abap
 DATA(xml_string) = `<TXT>ABAP</TXT>`.
@@ -624,7 +697,7 @@ DATA(conv_string_xco) = xco_cp=>xstring( conv_xstring_xco
 
 > **💡 Note**<br>
 > - The executable example ...
->   - covers the following topics in simple contexts:
+>   - covers the following topics:
 >     - Creating/Parsing XML Data Using iXML
 >     - Creating/Parsing XML Data Using sXML
 >     - XML Transformations using XSLT and Simple Transformations
@@ -633,5 +706,5 @@ DATA(conv_string_xco) = xco_cp=>xstring( conv_xstring_xco
 >     - Dealing with JSON data, XCO classes for JSON
 >     - Excursions: Converting string <-> xstring, compressing and decompressing binary data
 >   - uses, apart from the predefined identity transformation (ID), demo XSLT and ST programs. They are not intended to be role models for proper XSLT/ST design. 
-> - The steps to import and run the code are outlined [here](README.md#🎬-getting-started-with-the-examples).
-> - [Disclaimer](README.md#⚠️-disclaimer)
+> - The steps to import and run the code are outlined [here](README.md#-getting-started-with-the-examples).
+> - [Disclaimer](README.md#%EF%B8%8F-disclaimer)

@@ -1229,4 +1229,13 @@ in the ABAP Keyword Documentation.
 ## Executable Example
 [zcl_demo_abap_objects](./src/zcl_demo_abap_objects.clas.abap)
 
-Note the steps outlined [here](README.md#-getting-started-with-the-examples) about how to import and run the code.<a name="top"></a>
+> **💡 Note**<br>
+> - The executable example covers the following topics, among others:
+>     - Working with objects and components
+>     - Redefining methods, inheritance
+>     - Working with interfaces
+>     - Upcast and downcast
+>     - Concepts such as factory methods, singleton and abstract classes
+>     - Events
+> - The steps to import and run the code are outlined [here](README.md#-getting-started-with-the-examples).
+> - [Disclaimer](README.md#%EF%B8%8F-disclaimer)

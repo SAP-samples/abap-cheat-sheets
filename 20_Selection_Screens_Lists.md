@@ -958,10 +958,11 @@ After the import of the repository, proceed as follows:
 - Run the program by choosing `F8`.
 
 > **💡 Note**<br>
-> - The steps about how to import and run the code are outlined [here](README.md#-getting-started-with-the-examples). 
 > - The executable examples ...
 >   - do not claim to include meaningful selection screens and lists.
 >   - are not intended to be role models for proper selection screen and list design.   
 >   - are not intended to solve concrete programming tasks. You should always work out your own solution for each individual case.
->   - are only intended to demonstrate a selection of keywords and visualize related syntax in action on a high level. 
-> - Find comments in the program code. 
+>   - are only intended to demonstrate a selection of keywords and visualize related syntax in action on a high level.
+>   - include comments in the program code. 
+> - The steps to import and run the code are outlined [here](README.md#-getting-started-with-the-examples).
+> - [Disclaimer](README.md#%EF%B8%8F-disclaimer)

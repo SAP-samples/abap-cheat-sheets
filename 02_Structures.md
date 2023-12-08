@@ -514,7 +514,6 @@ diff_deep_struc = CORRESPONDING #( DEEP APPENDING BASE ( diff_struc ) deep_struc
 ```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
-                                  
 
 ## Clearing Structures
 
@@ -710,4 +709,12 @@ TYPES END OF address_type.
 ## Executable Example
 [zcl_demo_abap_structures](./src/zcl_demo_abap_structures.clas.abap)
 
-Follow the steps outlined [here](README.md#-getting-started-with-the-examples) to import and run the code.
+> **💡 Note**<br>
+> - The executable example covers the following topics, among others:
+>     - Creating structures and structured types
+>     - Variants of structures
+>     - Accessing, populating, and clearing structures
+>     - Structures in the context of tables
+>     - Including structures
+> - The steps to import and run the code are outlined [here](README.md#-getting-started-with-the-examples).
+> - [Disclaimer](README.md#%EF%B8%8F-disclaimer)

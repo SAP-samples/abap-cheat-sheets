@@ -724,15 +724,20 @@ After the import of the repository, proceed as follows:
 - Run the program by choosing `F8`.
 
 > **💡 Note**<br>
-> - The steps about how to import and run the code are outlined [here](README.md#-getting-started-with-the-examples). 
 > - The executable example ...
+>   - covers the following topics:
+>     - Dynpro flow logic and related statements (`MODULE`, `FIELD`, `CHAIN`/`ENDCHAIN`, `LOOP`/`ENDLOOP`, `CALL SUBSCREEN`)
+>     - ABAP statements for calling and leaving dynpros (`SET SCREEN`, `CALL SCREEN`, `LEAVE SCREEN`)
+>     - Modifying static attributes (`LOOP AT SCREEN`, `MODIFY SCREEN`),
+>     - Statements related to the GUI status and title (`GET`/`SET PF-STATUS`, `SET TITLEBAR`)
+>     - Controls (table and tabstrip controls)
 >   - does not claim to include meaningful dynpros with meaningful dynpro sequences (branching to new dynpro sequences occur through using appropriate statements).
 >   - is not intended to be a role model for proper dynpro design.   
 >   - is not intended to solve concrete programming tasks. You should always work out your own solution for each individual case.
 >   - is only intended to demonstrate a selection of keywords and visualize dynpro-related syntax in action on a high level. 
-> - See notes on the executable example in the expandable section below. 
-
-
+>   - is explained in more detail below in the expandable section below. Click to view the details.
+> - The steps to import and run the code are outlined [here](README.md#-getting-started-with-the-examples).
+> - [Disclaimer](README.md#%EF%B8%8F-disclaimer)
 
 <br>
 <details>
