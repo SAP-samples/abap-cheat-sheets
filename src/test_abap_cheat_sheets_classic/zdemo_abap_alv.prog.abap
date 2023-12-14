@@ -512,7 +512,6 @@ CLASS lcl_alv_demo IMPLEMENTATION.
           "Setting the text alignment of table rows
           CAST cl_salv_column( alv->get_columns( )->get_column( 'SEATSOCC' ) )->set_alignment( if_salv_c_alignment=>left ).
           "Setting blanks instead of zeroes
-          CAST cl_salv_column( alv->get_columns( )->get_column( 'COUNT' ) )->set_zero( abap_false ).
           CAST cl_salv_column( alv->get_columns( )->get_column( 'SEATSFREE' ) )->set_zero( abap_false ).
           CAST cl_salv_column( alv->get_columns( )->get_column( 'OCCRATE' ) )->set_zero( abap_false ).
         CATCH cx_salv_not_found.
