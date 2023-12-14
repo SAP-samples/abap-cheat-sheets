@@ -249,7 +249,6 @@ CLASS lcl_events IMPLEMENTATION.
           LOOP AT itab4alv REFERENCE INTO DATA(calc).
             calc->seatsfree = calc->seatsmax - calc->seatsocc.
             TRY.
-                DATA(test) = calc->seatsocc / calc->seatsmax * 100.
                 calc->occrate = |{ CONV decfloat34( ( calc->seatsocc / calc->seatsmax ) * 100 )  DECIMALS = 2 }|.
                 IF calc->occrate >= 95.
                   calc->seatstat = icon_red_light.
