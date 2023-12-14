@@ -187,29 +187,31 @@ ENDCLASS.
 CLASS lcl_events IMPLEMENTATION.
 
   METHOD click_hotspot.
-    TRY.
-        ASSIGN itab4alv[ row ]-(column) TO FIELD-SYMBOL(<val_sc>).
-        IF <val_sc> IS ASSIGNED.
-          MESSAGE |Single click event. You clicked on row { row } in column { column }. { COND #( WHEN column = 'CONNID' THEN `Value: ` && <val_sc> ) }| TYPE 'I'.
-        ELSE.
-          MESSAGE `Single click event` TYPE 'I'.
-        ENDIF.
-      CATCH cx_root.
+    READ TABLE itab4alv INTO DATA(wa_dc) INDEX row.
+    IF sy-subrc = 0.
+      ASSIGN COMPONENT column OF STRUCTURE wa_dc TO FIELD-SYMBOL(<val_dc>).
+      IF <val_dc> IS ASSIGNED.
+        MESSAGE |Single click event. You clicked on row { row } in column { column }. Value: { <val_dc> }| TYPE 'I'.
+      ELSE.
         MESSAGE `Single click event` TYPE 'I'.
-    ENDTRY.
+      ENDIF.
+    ELSE.
+      MESSAGE `Single click event` TYPE 'I'.
+    ENDIF.
   ENDMETHOD.
 
   METHOD double_click.
-    TRY.
-        ASSIGN itab4alv[ row ]-(column) TO FIELD-SYMBOL(<val_dc>).
-        IF <val_dc> IS ASSIGNED.
-          MESSAGE |Double click event. You clicked on row { row } in column { column }. Value: { <val_dc> }| TYPE 'I'.
-        ELSE.
-          MESSAGE `Double click event` TYPE 'I'.
-        ENDIF.
-      CATCH cx_root.
+    READ TABLE itab4alv INTO DATA(wa_dc) INDEX row.
+    IF sy-subrc = 0.
+      ASSIGN COMPONENT column OF STRUCTURE wa_dc TO FIELD-SYMBOL(<val_dc>).
+      IF <val_dc> IS ASSIGNED.
+        MESSAGE |Double click event. You clicked on row { row } in column { column }. Value: { <val_dc> }| TYPE 'I'.
+      ELSE.
         MESSAGE `Double click event` TYPE 'I'.
-    ENDTRY.
+      ENDIF.
+    ELSE.
+      MESSAGE `Double click event` TYPE 'I'.
+    ENDIF.
   ENDMETHOD.
 
   METHOD func_click.
@@ -247,7 +249,6 @@ CLASS lcl_events IMPLEMENTATION.
           LOOP AT itab4alv REFERENCE INTO DATA(calc).
             calc->seatsfree = calc->seatsmax - calc->seatsocc.
             TRY.
-                DATA(test) = calc->seatsocc / calc->seatsmax * 100.
                 calc->occrate = |{ CONV decfloat34( ( calc->seatsocc / calc->seatsmax ) * 100 )  DECIMALS = 2 }|.
                 IF calc->occrate >= 95.
                   calc->seatstat = icon_red_light.
