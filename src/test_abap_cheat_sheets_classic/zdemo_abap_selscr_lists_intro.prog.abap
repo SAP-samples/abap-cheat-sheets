@@ -57,6 +57,7 @@ INITIALIZATION.
   ( number = 4 report = 'ZDEMO_ABAP_SELSCR_STMTS_VAR' )
   ( number = 5 report = 'ZDEMO_ABAP_LISTS' )
   ( number = 6 report = 'ZDEMO_ABAP_EVENT_BLOCKS' )
+  ( number = 7 report = 'ZDEMO_ABAP_ALV' )
   ).
 
 **********************************************************************
@@ -71,13 +72,14 @@ AT SELECTION-SCREEN OUTPUT.
                  ( key = 3 text = 'Selection screens: SELECTION-SCREEN (zdemo_abap_selscr_standalone)' )
                  ( key = 4 text = 'Selection screens: SELECTION-SCREEN Variants (zdemo_abap_selscr_stmts_var)' )
                  ( key = 5 text = 'Lists: Creating Lists (zdemo_abap_lists)' )
-                 ( key = 6 text = 'Event blocks (zdemo_abap_event_blocks)' ) ).
+                 ( key = 6 text = 'Event blocks (zdemo_abap_event_blocks)' )
+                 ( key = 7 text = 'SAP List Viewer (ALV) (zdemo_abap_alv)' ) ).
 
 **********************************************************************
 
 START-OF-SELECTION.
 
-  IF report BETWEEN 1 AND 6.
+  IF report BETWEEN 1 AND 7.
     "Dynamic programming check: Only submit program if its name is available
     "in the allow list
     TRY.
@@ -89,7 +91,8 @@ START-OF-SELECTION.
                                 ( `ZDEMO_ABAP_SELSCR_STANDALONE` )
                                 ( `ZDEMO_ABAP_SELSCR_STMTS_VAR` )
                                 ( `ZDEMO_ABAP_LISTS` )
-                                ( `ZDEMO_ABAP_EVENT_BLOCKS` ) ) ).
+                                ( `ZDEMO_ABAP_EVENT_BLOCKS` )
+                                ( `ZDEMO_ABAP_ALV` ) ) ).
 
         SUBMIT (rep) AND RETURN VIA SELECTION-SCREEN.
       CATCH cx_root INTO DATA(err).
