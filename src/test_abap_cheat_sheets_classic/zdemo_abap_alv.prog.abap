@@ -187,28 +187,24 @@ ENDCLASS.
 CLASS lcl_events IMPLEMENTATION.
 
   METHOD click_hotspot.
-    READ TABLE itab4alv INTO DATA(wa_dc) INDEX row.
+    READ TABLE itab4alv INDEX row REFERENCE INTO DATA(sc_ref).
     IF sy-subrc = 0.
-      ASSIGN COMPONENT column OF STRUCTURE wa_dc TO FIELD-SYMBOL(<val_dc>).
-      IF <val_dc> IS ASSIGNED.
-        MESSAGE |Single click event. You clicked on row { row } in column { column }. Value: { <val_dc> }| TYPE 'I'.
-      ELSE.
-        MESSAGE `Single click event` TYPE 'I'.
-      ENDIF.
+      ASSIGN sc_ref->(column) TO FIELD-SYMBOL(<fs_sc>).
+      MESSAGE `Single click event. ` &&
+      |Row: { row } { COND #( WHEN column IS NOT INITIAL THEN `Column: ` && column ) } | &&
+      |{ COND #( WHEN <fs_sc> IS ASSIGNED THEN `Value: ` && <fs_sc> ) }| TYPE 'I'.
     ELSE.
       MESSAGE `Single click event` TYPE 'I'.
     ENDIF.
   ENDMETHOD.
 
   METHOD double_click.
-    READ TABLE itab4alv INTO DATA(wa_dc) INDEX row.
+    READ TABLE itab4alv INDEX row REFERENCE INTO DATA(dc_ref).
     IF sy-subrc = 0.
-      ASSIGN COMPONENT column OF STRUCTURE wa_dc TO FIELD-SYMBOL(<val_dc>).
-      IF <val_dc> IS ASSIGNED.
-        MESSAGE |Double click event. You clicked on row { row } in column { column }. Value: { <val_dc> }| TYPE 'I'.
-      ELSE.
-        MESSAGE `Double click event` TYPE 'I'.
-      ENDIF.
+      ASSIGN dc_ref->(column) TO FIELD-SYMBOL(<fs_dc>).
+      MESSAGE `Double click event. ` &&
+      |Row: { row } { COND #( WHEN column IS NOT INITIAL THEN `Column: ` && column ) } | &&
+      |{ COND #( WHEN <fs_dc> IS ASSIGNED THEN `Value: ` && <fs_dc> ) }| TYPE 'I'.
     ELSE.
       MESSAGE `Double click event` TYPE 'I'.
     ENDIF.
