@@ -261,10 +261,10 @@ CLASS lhc_root DEFINITION INHERITING FROM cl_abap_behavior_handler.
 ENDCLASS.
 ```
 -   Handler method definitions include the additions `... FOR ... FOR
-    ...` followed by the kind of operations. There are various
+    ...` followed by the kinds of operations. There are various
     options depending on the RAP BO operation.
--   Depending on the definition in the BDEF, there might be more ABAP
-    words with dedicated method parameters. For example, an action might
+-   Depending on the definition in the BDEF, there might be more additions
+    with dedicated method parameters. For example, an action might
     be defined with a result parameter, hence, the method must be
     defined with the addition `RESULT` and a parameter.
 -   The `FOR MODIFY` handler method can handle multiple entities
@@ -292,7 +292,7 @@ METHODS some_action FOR MODIFY
 
 **Parameters of Handler Methods**
 
--   The handler method definition contains RAP-specific additions like
+-   The handler method definitions contain RAP-specific additions like
     `FOR MODIFY`, `FOR CREATE` or `FOR READ` as
     well as mandatory or optional additions like `RESULT` that
     are followed by parameters.
@@ -307,7 +307,7 @@ METHODS some_action FOR MODIFY
     of an instance are imported.
 -   All handler methods have changing parameters that are usually not
     explicitly specified in the definition but implicitly used. The
-    addition `CHANGING` is not needed. In most cases, these are
+    explicit specification of the `CHANGING` addition is not needed. In most cases, these are
     [RAP response
     parameters](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_response_param_glosry.htm "Glossary Entry").
     The following image shows the F2 information in ADT for the create

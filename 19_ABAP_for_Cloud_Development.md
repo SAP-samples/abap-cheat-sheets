@@ -127,7 +127,7 @@ It provides references to more detailed information on the topic.
 
 2) If available to you, you have accessed an on-premise ABAP system using ADT. It is assumed that the latest ABAP release is available. 
 
-    a)  Checking API Status information 
+    a)  Checking API status information 
     - Choose `CTRL + SHIFT + A` to open the search in ADT. Search the class `CL_ABAP_RANDOM_INT`. Once you have opened the class, check the *Properties* tab and find the API status information. 
     
     b) Creating an example class

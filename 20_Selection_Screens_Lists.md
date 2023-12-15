@@ -19,6 +19,9 @@
     - [Creating Lists](#creating-lists)
     - [Reading and Modifying in Lists](#reading-and-modifying-in-lists)
   - [Event Blocks](#event-blocks)
+  - [Excursion: SAP List Viewer (ALV)](#excursion-sap-list-viewer-alv)
+    - [Getting Started](#getting-started)
+    - [Optional Layout Settings and Functionality](#optional-layout-settings-and-functionality)
   - [More Information](#more-information)
   - [Executable Examples](#executable-examples)
 
@@ -29,7 +32,7 @@
 
 [Selection screens](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenselection_screen_glosry.htm) and [classic lists](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenclassic_list_glosry.htm) are among the classic ABAP user interfaces. They are integrated into the ABAP language itself, which means that special ABAP statements are available to create and handle them.
 
-This cheat sheet provides a high-level overview of selection screens and classic lists, focusing on a selection of related statements, supported by executable examples to explore the syntax in action.
+This cheat sheet provides a high-level overview of selection screens and classic lists, focusing on a selection of related statements, supported by executable examples to explore the syntax in action. It includes an excursion into the SAP List Viewer (ALV).
 
 For more detailed information and syntax options, see the topics [Selection Screens](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenselection_screen.htm) and [Classic Lists](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenabap_dynpro_list.htm) in the ABAP Keyword Documentation.
 
@@ -115,7 +118,7 @@ Note that various combinations of multiple additions are possible, and some are 
 PARAMETERS pa TYPE string.
 
 "Referring to an existing data object with the LIKE addition
-Data dobj type i.
+DATA dobj TYPE i.
 PARAMETERS pb LIke dobj.
 
 "Reference to a data type from the ABAP Dictionary
@@ -939,10 +942,377 @@ MODIFY CURRENT LINE FIELD FORMAT a COLOR 5 b COLOR 6 LINE FORMAT COLOR 7.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
+## Excursion: SAP List Viewer (ALV)
+
+- Provides an object-oriented API for displaying and formatting lists 
+- Allows you to specify layout settings and functionality
+- Classes such as `CL_SALV_TABLE` encapsulate the use of the ALV grid control and simplify the integration into ABAP programs. Note: The older class `CL_GUI_ALV_GRID` should no longer be used directly for new developments.
+- Other classes are available to handle hierarchical lists and tree structures. The focus of the code snippets is on simple, non-nested tables and the use of the `CL_SALV_TABLE` class.
+
+### Getting Started
+- To get started quickly, you only need to ...
+  - instantiate an ALV table object using the `factory` method.
+  - define the display type for the ALV output. By default, full-screen display is enabled. 
+  - display the ALV output using the `display` method.
+
+> **💡 Note**<br>
+> - When working with ALV, make sure that you implement appropriate error handling. 
+> - The `factory` method also has optional exporting parameters. You can use the optional `list_display` parameter to specify whether you want to display the ALV output as classic list. It is set to false by default. There are also exporting parameters to display the ALV output in containers (e.g. see the dynpro cheat sheet example). The exporting parameters are not relevant in this example. Here, the ALV output is displayed on the entire screen (however, it is also possible to display the ALV output in a dialog box).
+
+The following code snippet shows a simple example to get you started quickly with the necessary method calls. It includes a demo internal table with content.
+
+```abap
+TYPES: BEGIN OF demo_struct,
+         col1 TYPE string,
+         col2 TYPE i,
+         col3 TYPE c LENGTH 1,
+       END OF demo_struct.
+
+DATA itab TYPE TABLE OF demo_struct WITH EMPTY KEY.
+itab = VALUE #( ( col1 = `abc` col2 = 1 col3 = 'X' )
+                ( col1 = `def` col2 = 2 col3 = 'Y' )
+                ( col1 = `ghi` col2 = 3 col3 = 'Z' ) ).
+
+TRY.
+    cl_salv_table=>factory( IMPORTING r_salv_table = DATA(alv)
+                            CHANGING  t_table      = itab ).
+
+    alv->display( ).
+  CATCH cx_salv_msg INTO DATA(err).
+    MESSAGE err->get_text( ) TYPE 'I' DISPLAY LIKE 'E'.
+ENDTRY.
+```
+
+### Optional Layout Settings and Functionality
+
+- The following commented code snippet covers a selection of the many setting and functionality options.
+- For simplicity of the snippet, the code only uses the root exception class. Make sure that you implement appropriate error handling and exception classes.  
+- You can copy and paste the code into your own test program to explore the ALV output and the effect of the method calls. 
+
+> **💡 Note**<br>
+> Check the comments for the custom functions. If there are errors in your test program, replace the relevant code section and enable the generic ALV functions.
+
+```abap
+TYPES: BEGIN OF demo_struct,
+         col1 TYPE string,
+         col2 TYPE i,
+         col3 TYPE string,
+         col4 TYPE icon_d,
+         col5 TYPE string,
+       END OF demo_struct.
+DATA itab TYPE TABLE OF demo_struct WITH EMPTY KEY.
+DATA alv TYPE REF TO cl_salv_table.
+DATA cnt4evt TYPE i VALUE 6.
+
+"Local class to handle events
+CLASS lcl_events DEFINITION.
+  PUBLIC SECTION.
+    CLASS-METHODS single_click
+      FOR EVENT link_click OF cl_salv_events_table
+      IMPORTING row column.
+    CLASS-METHODS double_click
+      FOR EVENT double_click OF cl_salv_events_table
+      IMPORTING row column.
+    CLASS-METHODS func_click
+      FOR EVENT added_function OF cl_salv_events
+      IMPORTING e_salv_function.
+ENDCLASS.
+CLASS lcl_events IMPLEMENTATION.
+  METHOD single_click.
+    "Both single and double click events trigger messages.
+    "Note: To make the example work in lower ABAP releases, newer ABAP syntax is
+    "intentionally not used to dynamically access the internal table component.
+    "Refer to the internal table and dynamic programming cheat sheets.
+    READ TABLE itab INDEX row REFERENCE INTO DATA(sc_ref).
+    IF sy-subrc = 0.
+      ASSIGN sc_ref->(column) TO FIELD-SYMBOL(<fs_sc>).
+      MESSAGE `Single click event. ` &&
+      |Row: { row } { COND #( WHEN column IS NOT INITIAL THEN `Column: ` && column ) } | &&
+      |{ COND #( WHEN <fs_sc> IS ASSIGNED THEN `Value: ` && <fs_sc> ) }| TYPE 'I'.
+    ELSE.
+      MESSAGE `Single click event` TYPE 'I'.
+    ENDIF.
+  ENDMETHOD.
+  METHOD double_click.
+    READ TABLE itab INDEX row REFERENCE INTO DATA(dc_ref).
+    IF sy-subrc = 0.
+      ASSIGN dc_ref->(column) TO FIELD-SYMBOL(<fs_dc>).
+      MESSAGE `Double click event. ` &&
+      |Row: { row } { COND #( WHEN column IS NOT INITIAL THEN `Column: ` && column ) } | &&
+      |{ COND #( WHEN <fs_dc> IS ASSIGNED THEN `Value: ` && <fs_dc> ) }| TYPE 'I'.
+    ELSE.
+      MESSAGE `Double click event` TYPE 'I'.
+    ENDIF.
+  ENDMETHOD.
+  METHOD func_click.
+    "Handling custom functions
+    CASE e_salv_function.
+      WHEN 'DATA'.
+        MESSAGE `Custom function DATA. Do something ...` TYPE 'I'.
+      WHEN 'TEST'.
+        IF cnt4evt = 6.
+          MESSAGE `A table row will be added, demonstrating the 'refresh' ` &&
+          `method that rebuilds the output table.` TYPE 'I'.
+        ENDIF.
+        cnt4evt += 1.
+        itab = VALUE #( BASE itab ( col1 = `fffff` col2 = cnt4evt
+                                    col3 = `ttttt` col4 = icon_green_light ) ).
+        "Rebuilding the output table
+        alv->refresh( ).
+      WHEN 'QUIT'.
+        MESSAGE `Custom function QUIT. Do something ...` TYPE 'I'.
+      WHEN OTHERS.
+        MESSAGE `Some other function` TYPE 'I'.
+    ENDCASE.
+  ENDMETHOD.
+ENDCLASS.
+START-OF-SELECTION.
+"Populating internal table that is output
+itab = VALUE #( ( col1 = `aaaaa` col2 = 1 col3 = `zzzzz` col4 = icon_green_light )
+                ( col1 = `bbbbb` col2 = 2 col3 = 'yyyyy' col4 = icon_green_light )
+                ( col1 = `ccccc` col2 = 3 col3 = 'xxxxx' col4 = icon_green_light ) ).
+TRY.
+    "----------- Instantiating an ALV table object -----------
+    cl_salv_table=>factory( IMPORTING r_salv_table = alv
+                            CHANGING  t_table      = itab ).
+    "----------- Creating a new instance with new data -----------
+    "Notes on the set_data method:
+    "- All objects that were referred to previously are removed.
+    "- Not to be used in event handlers.
+    "In the example, new lines are added to the existing internal table.
+    itab = VALUE #( BASE itab ( col1 = `ddddd` col2 = 4
+                                col3 = `wwwww` col4 = icon_green_light )
+                              ( col1 = `ddddd` col2 = 5
+                                col3 = `vvvvv` col4 = icon_green_light )
+                              ( col1 = `eeeee` col2 = 6
+                                col3 = `uuuuu` col4 = icon_green_light ) ).
+    alv->set_data( CHANGING t_table = itab ).
+    "----------- Layout-related settings -----------
+    "Changing the list header title
+    CAST cl_salv_display_settings(
+      alv->get_display_settings( ) )->set_list_header( 'Demo Title' ).
+    "There are several methods to retrieve column-specific information.
+    "The following examples show a selection. You can check the variable
+    "content in the debugger.
+    DATA(col1obj) = alv->get_columns( )->get_column( 'COL1' ).
+    DATA(col1alignment) = col1obj->get_alignment( ).
+    DATA(col1type) = col1obj->get_ddic_inttype( ).
+    DATA(col1colname) = col1obj->get_columnname( ).
+    DATA(is_col1_visible) = col1obj->is_visible( ).
+    "Settings for the column header
+    "This example uses the get method, which returns all column objects of
+    "the output table. The table is processed in a loop.
+    "Settings covered:
+    "- Specifying the column header titles (long, medium, and short
+    "  column header)
+    "- Specifying a tooltip for the column header
+    LOOP AT alv->get_columns( )->get( ) REFERENCE INTO DATA(colref).
+      "Specifying the column header titles
+      "The example sets the texts based on the columname value.
+      "Note: The column width is optimized further down. You may want to
+      "manually adjust the width in the ALV output to see the column header
+      "name change.
+      colref->r_column->set_long_text( |{ colref->columnname }| ).
+      colref->r_column->set_medium_text( |{ colref->columnname+2(3) }| ).
+      colref->r_column->set_short_text( |{ colref->columnname+3(3) }| ).
+      "Specifying a tooltip for the column headers
+      colref->r_column->set_tooltip(
+        |Demo tooltip { colref->columnname+3(3) }| ).
+    ENDLOOP.
+    "Displaying/Hiding the column headers
+    "In the example, the value is set to abap_true. Set it to abap_false
+    "to hide the column header.
+    "Note: In this and the following examples, the settings are
+    "intentionally done using separate casts for each example. You can also
+    "create object reference variables, such as for 'col1obj' to avoid having
+    "to specify the casts explicitly each time.
+    CAST cl_salv_columns_list(
+      alv->get_columns( ) )->set_headers_visible( abap_true ).
+    "Setting key columns
+    "Note: The key columns have a default color setting. There, you can only
+    "change the color in individual cells.
+    CAST cl_salv_column_table(
+        alv->get_columns( )->get_column( 'COL1' ) )->set_key( abap_true ).
+
+    "Setting column color
+    "Note: The executable example includes examples of coloring entire rows and
+    "specific cells.
+    CAST cl_salv_column_table( alv->get_columns( )->get_column( 'COL2' )
+      )->set_color( VALUE lvc_s_colo( col = col_positive ) ).
+
+    "Hiding columns
+    CAST cl_salv_column_table( alv->get_columns( )->get_column( 'COL5' )
+      )->set_visible( abap_false ).
+
+    "Setting text alignment
+    CAST cl_salv_column_table( alv->get_columns( )->get_column( 'COL2' )
+      )->set_alignment( if_salv_c_alignment=>left ).
+
+    "Optimizing column width, i.e. automatically adjusting the column width
+    "to display values completely (can also be done for individual columns)
+    alv->get_columns( )->set_optimize( abap_true ).
+
+    "Setting output width explicitly (for an individual column)
+    "Note: Just to demonstrate the method call. This setting has no effect in
+    "the example due to the column width optimization above, and the column is
+    "hidden anyway.
+    CAST cl_salv_column_table( alv->get_columns( )->get_column( 'COL5' )
+      )->set_output_length( '100' ).
+
+    "Setting table rows to a striped pattern
+    alv->get_display_settings( )->set_striped_pattern( abap_true ).
+
+    "Displaying/hiding horizontal and vertical grid lines (here, they're hidden)
+    alv->get_display_settings( )->set_horizontal_lines( abap_false ).
+    alv->get_display_settings( )->set_vertical_lines( abap_false ).
+
+    "With the following method call, the ALV output is displayed in a dialog box.
+    "Demo coordinates are provided. You can comment it in to see the effect.
+*      alv->set_screen_popup( start_column = 10
+*                             end_column   = 100
+*                             start_line   = 4
+*                             end_line     = 15 ).
+
+    "------ Adding functionality/user interaction options to the ALV output ------
+    "Specifying the selection type
+    "The following specification allows you to select multiple rows/columns (a column
+    "is added on the left for selections). Check the other options in the
+    "if_salv_c_selection_mode interface.
+    alv->get_selections( )->set_selection_mode( if_salv_c_selection_mode=>row_column ).
+
+    "Setting the sorting
+    "In the example, a particular column is sorted in descending order.
+    alv->get_sorts( )->add_sort( 'COL1' )->set_sequence( if_salv_c_sort=>sort_down ).
+
+    "Applying a filter
+    "The example is implemented to exculed one entry from the demo table.
+    alv->get_filters( )->add_filter( 'COL2' )->add_selopt( sign   = 'E'
+                                                            option = 'EQ'
+                                                            low    = '6' ).
+
+    "Making a calculation/aggregation
+    "In this example, an aggregation is added for a specific column.
+    "In this case, the average value is calculated. It is displayed in a row added
+    "at the bottom of the table.
+    alv->get_aggregations( )->add_aggregation(
+      columnname  = 'COL2'
+      aggregation = if_salv_c_aggregation=>average ).
+
+    "Generic and custom ALV functions
+    "Note:
+    "- By default, ALV functions (such as sorting or filtering) are not available
+    "  to users. You must explicitly enable them.
+    "- Depending on whether the display is full-screen (as it is here) or in a
+    "  container, restrictions apply. In the first case, you can use your own GUI status
+    "  to integrate custom functions.
+
+    "This (self-contained, ready-to-use) code snippet is intended so that you can simply
+    "copy & paste the code into a test program. For this purpose, and to be able to
+    "demonstrate custom functions in this full-screen ALV example using a GUI status, the
+    "example uses a demo GUI status that is included in another sample program (in a
+    "subpackage of SALV). For your own GUI status, you can check the SALV_TABLE_STANDARD
+    "status contained in the SALV_METADATA_STATUS function group, which you can copy and
+    "use as a template, for example.
+    "*********************************** NOTE ***********************************
+    "- The GUI status used here is just reused to have a copyable and self-contained example.
+    "- The GUI status of the sample program (specified for the report parameter below)
+    "  contains generic and additional functions. For the additional fucntions, a simple
+    "  implementation is included in this snippet. The GUI status should include the 
+    "  functions TEST, DATA, QUIT.
+    "- The implementations in the event handler class here do not match the implementations
+    "  there, the button texts do not make sense for the implementations here, and so on.
+    "- So even though it (the button names, icons, implementations, etc.) does not make much
+    "  sense for this snippet, you should get an idea about custom functions and be able to
+    "  explore the event handling by clicking on the buttons.
+    "- The TEST function demonstrates adding new rows to the table and the 'refresh' method.
+    "- If this particular program, the GUI status and/or the custom functions are not available
+    "  in your system, or if you insert the code into your own test program, run it, and
+    "  encounter problems setting the status, remove the TRY control structure that contains
+    "  the set_screen_status method call, and comment in the code below to use the standard
+    "  ALV functions. In this case, the custom functions cannot be checked out with this
+    "  snippet.
+    "- Check out the executable example of the cheat sheet that includes a GUI status.
+    TRY.
+        alv->set_screen_status(
+          pfstatus      = 'SALV_TABLE_STANDARD'
+          report        = 'SALV_TEST_REFRESH'
+          set_functions = alv->c_functions_all ).
+
+        "In this GUI status, the custom functions TEST, DATA, and QUIT are specified. You can 
+        "check the results of the following method calls in the debugger.
+        DATA(getfunc) = alv->get_functions( ).
+        "Checking the activation status
+        DATA(is_enabled) = getfunc->is_enabled( 'TEST' ).
+        "Checking the visibility
+        DATA(is_visible) = getfunc->is_visible( 'TEST' ).
+
+        "Registering an event handler for the custom functions
+        "The added_function event is raised. In the implementation of the event handler method,
+        "you can then implement your code based on the value of the e_salv_function parameter
+        "(which contains the specified function name), for example, using a CASE statement.
+        "The implementation in this code snippet is different from the original program.
+        SET HANDLER lcl_events=>func_click FOR alv->get_event( ).
+
+      CATCH cx_salv_object_not_found.
+        MESSAGE `GUI status error. Instead, use the set_default method, for example.`
+        TYPE 'I'.
+    ENDTRY.
+
+    "If you remove the TRY control structure above, you can comment in the following
+    "code to use the generic ALV functions. Use the set_all method for all generic
+    "functions. You can also enable generic ALV functions individually. Check the
+    "set_* methods.
+    "alv->get_functions( )->set_default( abap_true ).
+
+    "Hotspot/single click functionality
+    "You can define the content of a cell as a clickable area. You can do this by
+    "specifying the cell type hotspot. When a user clicks the cell content,
+    "the link_click event is raised.
+    CAST cl_salv_column_table( alv->get_columns( )->get_column( 'COL1' )
+      )->set_cell_type( if_salv_c_cell_type=>hotspot ).
+
+    "You can set icon columns and make the icon cells clickable areas. To do this,
+    "use the set_icon method. As above, the cell type of the column is set to hotspot.
+    CAST cl_salv_column_table( alv->get_columns( )->get_column( 'COL4' )
+      )->set_icon( if_salv_c_bool_sap=>true ).
+    CAST cl_salv_column_table( alv->get_columns( )->get_column( 'COL4' )
+      )->set_cell_type( if_salv_c_cell_type=>hotspot ).
+
+    "An event handler is registered for the clickable areas (the link_click event
+    "is raised). The get_event method returns the required event object. In the
+    "example, a message is displayed.
+    SET HANDLER lcl_events=>single_click FOR alv->get_event( ).
+
+    "Double click functionality
+    "Registering an event handler for the double click event. In the example, a message
+    "is displayed. Click cells in columns for which the cell type is not set to hotspot.
+    SET HANDLER lcl_events=>double_click FOR alv->get_event( ).
+
+    "Adding tooltips to the icon column cells
+    alv->get_functional_settings( )->get_tooltips( )->add_tooltip(
+      type    = cl_salv_tooltip=>c_type_icon
+      value   = CONV lvc_value( icon_green_light )
+      tooltip = `This is a tooltip for an icon` ).
+
+    "----------- Displaying the ALV output -----------
+    alv->display( ).
+  CATCH cx_root INTO DATA(error).
+    "For simplicity, this example uses the root exception class.
+    "Always make sure that you use appropriate exception classes. Check the F2
+    "information for the methods in ADT.
+    MESSAGE error->get_text( ) TYPE 'I' DISPLAY LIKE 'E'.
+ENDTRY.
+```
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
 ## More Information
-ABAP Keyword Documentation:
-- [Selection Screens](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenselection_screen.htm) 
-- [Classic Lists](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenabap_dynpro_list.htm)
+- ABAP Keyword Documentation:
+  - [Selection Screens](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenselection_screen.htm) 
+  - [Classic Lists](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenabap_dynpro_list.htm)
+- ALV:
+  - [SAP List Viewer (ALV)](https://help.sap.com/docs/SAP_NETWEAVER_731_BW_ABAP/b1c834a22d05483b8a75710743b5ff26/4ec38f8788d22b90e10000000a42189d.html?locale=en-US) on the SAP Help Portal
+  - Find more demonstration examples in package `SALV` and its subpackages.
 
 ## Executable Examples
 
@@ -955,6 +1325,7 @@ After the import of the repository, proceed as follows:
   - `ZDEMO_ABAP_SELSCR_STMTS_VAR`: Demonstrates variants of the `SELECTION-SCREEN` statements that do not create selection screens
   - `ZDEMO_ABAP_LISTS`: Demonstrates various ABAP statements to create and handle classic lists
   - `ZDEMO_ABAP_EVENT_BLOCKS`: Demonstrates event blocks
+  - `ZDEMO_ABAP_ALV`: Demonstrates the SAP List Viewer (ALV)
 - Run the program by choosing `F8`.
 
 > **💡 Note**<br>

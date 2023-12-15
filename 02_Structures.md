@@ -664,10 +664,9 @@ MODIFY TABLE itab FROM struc.
 
 ## Excursion: Including Structures
 
-- Although their use is not recommended in the ABAP programming
-guidelines, you may come across [`INCLUDE TYPE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapinclude_type.htm)
+- [`INCLUDE TYPE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapinclude_type.htm)
 and [`INCLUDE STRUCTURE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapinclude_type.htm) statements 
-in the context of local structures. 
+are used in the context of local structures. 
 - Structured data objects and types created with `... BEGIN OF... END OF ...` can use this syntax to include components of another structure, whether it is a locally defined or global structure, without creating  substructures. 
 - `INCLUDE TYPE` can be used to include a structured type. 
 - You can use `INCLUDE STRUCTURE` to include a structure.

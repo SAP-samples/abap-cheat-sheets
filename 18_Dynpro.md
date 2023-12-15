@@ -635,7 +635,7 @@ ENDLOOP.
 
 > **💡 Note**<br>
 > - In a modern program, it is more comfortable to use an ALV Grid control.
-> - More addiitions are available for the statement.
+> - More additions are available for the statement.
 
 The ABAP statement [`REFRESH CONTROL`](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abaprefresh_control.htm) initializes the properties of a table control.
 
@@ -705,7 +705,7 @@ PROCESS AFTER INPUT.
   - Browser control (`CL_GUI_HTML_VIEWER`): A browser for HTML pages or XML documents on the dynpro. Special links in the document trigger the `SAPEVENT` event when the user clicks, which can then be evaluated in the ABAP program. 
   - Edit control (`CL_GUI_TEXTEDIT`): A simple text editor with the basic functions such as select, find, and replace on the dynpro. These functions can also be called in a program-controlled way using methods such as `FIND_AND_REPLACE`.
   - Tree control: Are available in different versions (for example, `CL_GUI_SIMPLE_TREE`). They allow hierarchical relationships to be displayed in tree structures. 
-  - ALV Grid control: Is the replacement for classic lists. It provides functions such as searching, sorting, and printing the content of the list. However, the associated class `CL_GUI_ALV_GRID` should no longer be used directly for new developments. Classes such as `CL_SALV_TABLE` encapsulate the use of the ALV Grid control and simplify the integration.
+  - ALV Grid control: Is the replacement for classic lists. It provides functions such as searching, sorting, and printing the content of the list. However, the associated class `CL_GUI_ALV_GRID` should no longer be used directly for new developments. Classes such as `CL_SALV_TABLE` encapsulate the use of the ALV Grid control and simplify the integration. 
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 

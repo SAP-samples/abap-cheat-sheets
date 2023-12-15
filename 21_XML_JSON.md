@@ -10,7 +10,9 @@
   - [XML Transformations](#xml-transformations)
   - [CALL TRANSFORMATION Syntax](#call-transformation-syntax)
   - [Dealing with JSON](#dealing-with-json)
-  - [Excursion: Converting string \<-\> xstring](#excursion-converting-string---xstring)
+  - [Excursions](#excursions)
+    - [Converting string \<-\> xstring](#converting-string---xstring)
+    - [Compressing and Decompressing Binary Data](#compressing-and-decompressing-binary-data)
   - [More Information](#more-information)
   - [Executable Example](#executable-example)
   
@@ -512,7 +514,7 @@ CALL TRANSFORMATION ... SOURCE ...
 - You can ..
   - create and read JSON data in ABAP using the readers and writers in the sXML Library. See the processing of XML data in the sXML section above. Parsing and rendering JSON data works in a similar way. However, instead of using XML readers/writers, you use JSON readers/writers.
   - transform ABAP to and from JSON data using transformations. You can directly transform ABAP <-> JSON using identity transformation (ID). In this context, note the intermediate format asJSON (see the notes on asXML above).
-  - create an handle JSON data using the [XCO library](https://help.sap.com/docs/btp/sap-business-technology-platform/xco-library?version=Cloud).
+  - create and handle JSON data using the [XCO library](https://help.sap.com/docs/btp/sap-business-technology-platform/xco-library?version=Cloud).
 
 The following code snippets show a selection of transformation options using the predefined identity transformation. Here, a JSON writer is specified as the target.
 
@@ -565,7 +567,7 @@ DATA(json_formatted) = cl_abap_conv_codepage=>create_in( )->convert( json_wr->ge
 *}
 ```
 
-The following snippets demonstrate creating and handling JSON data using the XCO library. Note that unlike above, the snippets do not work with asJSON as an intermediate format.
+The following snippets demonstrate creating and handling JSON data using the XCO library.
 
 ```abap
 "Creating and populating a demo structure and internal table
@@ -576,7 +578,7 @@ DATA: BEGIN OF carrier_struc,
         city_to TYPE c length 20,
       END OF carrier_struc.
 
-DATA carriers_tab like TABLE OF carrier_struc WITH EMPTY KEY.
+DATA carriers_tab LIKE TABLE OF carrier_struc WITH EMPTY KEY.
 
 carrier_struc = VALUE #( carrier_id = 'AA' connection_id = '17' city_from = 'New York' city_to = 'San Francisco' ).
 carriers_tab = VALUE #( ( carrier_id = 'AZ' connection_id = '788' city_from = 'Rome' city_to = 'Tokyo' )
@@ -639,10 +641,11 @@ xco_cp_json=>data->from_string( json_created_xco )->apply( VALUE #(
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-## Excursion: Converting string <-> xstring
+## Excursions 
+### Converting string <-> xstring
 In the code snippets above and in the executable example, many operations are performed using binary data.
 This excursion shows the conversion of string <-> xstring using a codepage. The examples use UTF-8.
-For example, you can use the `cl_abap_conv_codepage` class and the [XCO library](https://help.sap.com/docs/btp/sap-business-technology-platform/xco-library?version=Cloud). The executable example also covers an excursion regarding compressing and decompressing of binary data.
+For example, you can use the `cl_abap_conv_codepage` class and the [XCO library](https://help.sap.com/docs/btp/sap-business-technology-platform/xco-library?version=Cloud). 
 
 ```abap
 DATA(xml_string) = `<TXT>ABAP</TXT>`.
@@ -674,6 +677,42 @@ DATA(conv_string_xco) = xco_cp=>xstring( conv_xstring_xco
 ```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
+
+### Compressing and Decompressing Binary Data
+You may want to process or store binary data. The data may be very large. You can compress the data in gzip format and decompress it for further processing using the cl_abap_gzip class.
+
+```abap
+DATA(str) = `This is a data object of type string. It should be converted to xstring, compressed and decompressed.`.
+DATA(xstr) = cl_abap_conv_codepage=>create_out( )->convert( str ).
+DATA xstr_comp TYPE xstring.
+
+"Compressing binary data
+TRY.
+    cl_abap_gzip=>compress_binary( EXPORTING raw_in   = xstr
+                                   IMPORTING gzip_out = xstr_comp ).
+  CATCH cx_parameter_invalid_range cx_sy_buffer_overflow cx_sy_compression_error.
+ENDTRY.
+
+"Comparing the length of the data objects
+DATA(len_xstr) = xstrlen( xstr ). "101
+DATA(len_xstr_comp) = xstrlen( xstr_comp ). "81
+
+"Decompressing binary data
+DATA xstr_decomp TYPE xstring.
+TRY.
+    cl_abap_gzip=>decompress_binary( EXPORTING gzip_in = xstr_comp
+                                     IMPORTING raw_out = xstr_decomp ).
+  CATCH cx_parameter_invalid_range cx_sy_buffer_overflow cx_sy_compression_error.
+ENDTRY.
+
+DATA(len_xstr_decomp) = xstrlen( xstr_decomp ). "101
+DATA(conv_str) = cl_abap_conv_codepage=>create_in( )->convert( xstr_decomp ).
+
+DATA(is_equal) = COND #( WHEN len_xstr = len_xstr_decomp
+                         AND str = conv_str
+                         THEN 'X'
+                         ELSE '' ). "Result: X
+```
 
 ## More Information
 
