@@ -25,7 +25,7 @@
 ## RAP Terms
 
 [ABAP Entity Manipulation Language](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenaeml_glosry.htm) (or EML for short) is a subset of ABAP that allows you to access the data of [RAP](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenarap_glosry.htm) business objects in an ABAP program.
-The following points touch on RAP-related terms such as *RAP business objects* and others for setting the context:
+The following points cover RAP-related terms such as *RAP business objects* and others for setting the context:
 
 -   RAP business objects (RAP BO)
     -   A RAP BO is based on a special, tree-like hierarchical structure
@@ -162,10 +162,10 @@ The following points touch on RAP-related terms such as *RAP business objects* a
         of the behavior pool. These classes are called by the [RAP
         runtime
         engine](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_runtime_engine_glosry.htm "Glossary Entry")
-        when the RAP BO is accessed. This is touched on in more detail
+        when the RAP BO is accessed. This is covered in more detail
         further down.
     -   Usually, saver classes are not needed in managed RAP BOs (except
-        for special variants of managed RAP BOs which are not touched on
+        for special variants of managed RAP BOs which are not covered
         here). Local handler classes are, as mentioned above, usually
         needed in managed RAP BOs if implementations are required that
         go beyond standard operations.
@@ -179,6 +179,8 @@ The following points touch on RAP-related terms such as *RAP business objects* a
         pools can be assigned to a BDEF allowing applications a
         structuring into multiple units.
 
+
+Find more terms in the [RAP Glossary](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_glossary.htm) of the ABAP Keyword Documentation.
 There are more artifacts and concepts related to RAP that go way beyond
 the scope of this cheat sheet. For example, a RAP BO can be exposed as a
 [business
@@ -298,7 +300,7 @@ METHODS some_action FOR MODIFY
     are followed by parameters.
 -   Nearly all parameters are typed with [BDEF derived
     types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_derived_type_glosry.htm "Glossary Entry")
-    that have special RAP-related components as touched on further down.
+    that have special RAP-related components as covered further down.
 -   The parameters' names can be chosen freely. This is also true for
     the method names except for some predefined names.
 -   Each handler method must have at least one importing parameter. The
@@ -1359,6 +1361,7 @@ The following restrictions apply to operations and/or statements in the individu
 -   Section [ABAP for RAP Business
     Objects](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_for_rap_bos.htm)
     in the ABAP Keyword Documentation including EML
+-   [RAP Glossary](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_glossary.htm)
 -   [Development guide for the ABAP RESTful Application Programming
     Model](https://help.sap.com/docs/ABAP_PLATFORM_NEW/fc4c71aa50014fd1b43721701471913d/289477a81eec4d4e84c0302fb6835035.html)
 -   [RAP

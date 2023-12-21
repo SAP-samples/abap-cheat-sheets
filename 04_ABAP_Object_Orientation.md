@@ -214,7 +214,7 @@ kinds of components are to be distinguished when, for example, looking at declar
 -   [Instance components](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abeninstance_component_glosry.htm "Glossary Entry"):
     Components that exist separately for each instance and can only be accessed in instances of a class.
 -   [Static components](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenstatic_component_glosry.htm "Glossary Entry") (the declarations with `CLASS-`):
-    Components that exist only once per class. They do no not exist for specific instances. They can be addressed using the name of the class.
+    Components that exist only once per class. They do no not exclusively exist for specific instances. They can be addressed using the name of the class.
 
 **Attributes**
 
@@ -314,7 +314,7 @@ In the simplest form, methods can have no parameter at all. Apart from that, met
 |`IMPORTING`|Defines one or more input parameters to be imported by the method.  |
 |`EXPORTING`|Defines one or more output parameters to be exported by the method.  |
 |`CHANGING`|Defines one or more input or output parameters, i. e. that can be both imported and exported.  |
-|`RETURNING`|For [functional methods](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenfunctional_method_glosry.htm "Glossary Entry"), i. e. such methods have only one `RETURNING` parameter that can be defined. As an output parameter like the `EXPORTING` parameter, `RETURNING` parameters pass back values (note that the formal parameters of returning parameters must be passed by value as touched on below). In contrast to `EXPORTING` for which multiple parameters can be specified, only one `RETURNING` parameter can be specified in a method. If you only need one output parameter, you can benefit from using a `RETURNING` parameter by shortening the method call and enabling method chaining. Another big plus is that such functional methods can, for example, be used in expressions. In case of standalone method calls, the returned value can be accessed using the addition `RECEIVING`.  |
+|`RETURNING`|For [functional methods](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenfunctional_method_glosry.htm "Glossary Entry"), i. e. such methods have only one `RETURNING` parameter that can be defined. As an output parameter like the `EXPORTING` parameter, `RETURNING` parameters pass back values (note that the formal parameters of returning parameters must be passed by value as covered below). In contrast to `EXPORTING` for which multiple parameters can be specified, only one `RETURNING` parameter can be specified in a method. If you only need one output parameter, you can benefit from using a `RETURNING` parameter by shortening the method call and enabling method chaining. Another big plus is that such functional methods can, for example, be used in expressions. In case of standalone method calls, the returned value can be accessed using the addition `RECEIVING`.  |
 |`RAISING` | Used to declare the [class-based exceptions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenclass_based_exception_glosry.htm "Glossary Entry") that can be propagated from the method to the caller.  |
 
 
@@ -537,7 +537,7 @@ ENDDO.
 **Clearing object references**: You can use
 [`CLEAR`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapclear.htm)
 statements to explicitly clear a reference variable.
-```
+```abap
 CLEAR ref.
 ```
 
@@ -1156,7 +1156,7 @@ SET HANDLER handler3.
 
 ### Excursion: Factory Methods and Singletons as Design Patterns
 
-In object-oriented programming, there a plenty of design patterns. Touching on these ones here to get a rough idea: factory methods and singletons. Both are relevant if you want to restrict or control the instantiation of a class by external users of this class.
+In object-oriented programming, there a plenty of design patterns. Covering these ones here to get a rough idea: factory methods and singletons. Both are relevant if you want to restrict or control the instantiation of a class by external users of this class.
 
 A singleton is a design pattern in which it is only up to the class to create objects. In doing so, the class ensures that only one object exists for every internal session that is made available to consumers.
 
@@ -1222,8 +1222,10 @@ obj_factory = class=>factory_method( par = ... ).
 
 ## More Information
 You can check the subtopics of
+
 - [ABAP Objects - Overview](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_objects_oview.htm)
 - [Programming Guidlines - Object-Oriented Programming (F1 docu for standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenobj_oriented_gdl.htm)
+  
 in the ABAP Keyword Documentation.
 
 ## Executable Example

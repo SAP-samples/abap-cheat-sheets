@@ -247,7 +247,7 @@ SELECT FROM dbtab
 - If the row is found, the system field `sy-subrc` is set to `0`.
 - The loop must be closed using `ENDSELECT`.
 - To terminate the loop completely, you can use the statement [`EXIT`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapexit_loop.htm).
-- Note: As touched on further down, when using the addition `PACKAGE SIZE` and storing the result in a table, a loop is opened, too.
+- Note: As covered further down, when using the addition `PACKAGE SIZE` and storing the result in a table, a loop is opened, too.
 
 ``` abap
 SELECT FROM dbtab

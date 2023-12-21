@@ -224,7 +224,7 @@ Note:
     version](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenunrestricted_version_glosry.htm "Glossary Entry")
     scope, more syntax options are allowed for AMDP method declaration
     and implementation parts. Check the ABAP Keyword Documentation for
-    more details as touched on further down.
+    more details as covered further down.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 

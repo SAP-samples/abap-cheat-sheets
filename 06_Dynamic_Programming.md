@@ -714,10 +714,9 @@ ASSIGN COMPONENT 3 OF STRUCTURE st TO <fs>.
 
 "------- Assigning attributes of classes or interfaces dynamically ------
 "The following syntax pattern shows the possible specifications.
-"clif stands for the name of a class or interface.
-"... cref->(attr_name) ...
-"... iref->(attr_name) ...
-"... (clif_name)=>(attr_name) ...
+"... cref->(attr_name) ...  "object reference variable
+"... iref->(attr_name) ...  "interface reference variable
+"... (clif_name)=>(attr_name) ...  "class/interface name
 "... (clif_name)=>attr ...
 "... clif=>(attr_name) ...
 
@@ -743,13 +742,13 @@ ASSIGN iref->('IN_STR') TO <fs>.
 ASSIGN zcl_demo_abap_objects=>('PUBLIC_STRING') TO <fs>.
 ASSIGN zdemo_abap_objects_interface=>('CONST_INTF') TO <fs>.
 
-"Specifying a class or interface dynamically, and attributes dynamically
-ASSIGN ('zcl_demo_abap_objects')=>public_string TO <fs>.
-ASSIGN ('zdemo_abap_objects_interface')=>const_intf TO <fs>.
+"Specifying a class or interface dynamically, and attributes statically
+ASSIGN ('ZCL_DEMO_ABAP_OBJECTS')=>public_string TO <fs>.
+ASSIGN ('ZDEMO_ABAP_OBJECTS_INTERFACE')=>const_intf TO <fs>.
 
 "Specifying a class or interface as well as attributes dynamically
-ASSIGN ('zcl_demo_abap_objects')=>('PUBLIC_STRING') TO <fs>.
-ASSIGN ('zdemo_abap_objects_interface')=>('CONST_INTF') TO <fs>.
+ASSIGN ('ZCL_DEMO_ABAP_OBJECTS')=>('PUBLIC_STRING') TO <fs>.
+ASSIGN ('ZDEMO_ABAP_OBJECTS_INTERFACE')=>('CONST_INTF') TO <fs>.
 
 "Further dynamic syntax options are possible, for example,
 "specifying the memory area after ASSIGN with a writable expressions
@@ -883,8 +882,8 @@ DATA itab TYPE TABLE OF demo_struct
 TYPES itab_type LIKE itab.
 DATA itab_ref TYPE TABLE OF REF TO demo_struct WITH EMPTY KEY.
 itab_ek = VALUE #( ( col1 = 1 col2 = `aaa` col3 = `zzz` )
-                    ( col1 = 2 col2 = `bbb` col3 = `yyy` )
-                    ( col1 = 3 col2 = `ccc` col3 = `xxx` ) ).
+                   ( col1 = 2 col2 = `bbb` col3 = `yyy` )
+                   ( col1 = 3 col2 = `ccc` col3 = `xxx` ) ).
 itab = itab_ek.
 itab_ref = VALUE #( ( NEW demo_struct( col1 = 1 col2 = `aaa` col3 = `zzz` ) ) ).
 
@@ -912,7 +911,7 @@ READ TABLE itab FROM wa_read USING KEY ('SK') REFERENCE INTO DATA(read_ref).
 "The component names can also be specified dynamically (which is done in most of the
 "following examples for demonstration purposes).
 READ TABLE itab WITH TABLE KEY ('SK') COMPONENTS ('COL2') = `aaa` REFERENCE INTO read_ref.
-"Specifying the predefined name primary_key explicitly
+"Specifying the predefined name primary_key explicitly and dynamically
 READ TABLE itab WITH TABLE KEY ('PRIMARY_KEY') COMPONENTS ('COL1') = 1 REFERENCE INTO read_ref.
 "If the addition COMPONENTS is not specified, the primary table key is used by default.
 READ TABLE itab WITH TABLE KEY ('COL1') = 1 REFERENCE INTO read_ref.
@@ -958,7 +957,7 @@ DATA(wa_te2) = itab[ ('COL2') = `bbb` ('COL3') = `yyy` ].
 "In the following example, the component names are also specified dynamically.
 DATA(wa_te3) = itab[ KEY ('SK') ('COL2') = `ccc` ].
 "Specifying the COMPONENTS addition explicitly
-DATA(wa_te4) = itab[ KEY ('primary_key') COMPONENTS ('col1') = 1 ].
+DATA(wa_te4) = itab[ KEY ('PRIMARY_KEY') COMPONENTS ('col1') = 1 ].
 
 "Accessing components
 "As shown abobe, chaininings with the (object) component selector are possible.
@@ -997,7 +996,7 @@ ENDLOOP.
 "- secondary table key: order of itab entries 5 ... /4 ... /...
 "- primary table key: order of itab entries 4 ... /5 ... /...
 INSERT LINES OF VALUE itab_type( ( col1 = 4 col2 = `eee` col3 = `www` )
-                                  ( col1 = 5 col2 = `ddd` col3 = `vvv` ) )
+                                 ( col1 = 5 col2 = `ddd` col3 = `vvv` ) )
   USING KEY ('SK')
   "USING KEY ('PRIMARY_KEY')
   INTO itab INDEX 1.
@@ -1019,31 +1018,23 @@ LOOP AT itab INTO DATA(wa_pk) USING KEY ('PRIMARY_KEY').
 ENDLOOP.
 
 "------- MODIFY ------
-"specified using a table key or a table index.
-"the statement MODIFY assigns the content of
 "In the following example, a line is modified based on a work area and a table key.
 "The component col1 is left out from the work area intentionally.
 "If the primary table key was used, the value of sy-subrc would be 4, and no modification was done.
 "The optional addition transporting is specified to denote what should be modified. In this example,
 "the component is also specified dynamically.
-MODIFY TABLE itab FROM VALUE #( col2 = `bbb` col3 = `uuu` )
-  USING KEY ('SK')
-  TRANSPORTING ('COL3').
+MODIFY TABLE itab FROM VALUE #( col2 = `bbb` col3 = `uuu` ) USING KEY ('SK') TRANSPORTING ('COL3').
 
 "In the following example, a line is modified based on a work area, an index specification and a
 "table key.
 "INDEX can also be positioned after FROM.
-MODIFY itab INDEX 2 USING KEY ('SK')
-  FROM VALUE #( col3 = `ttt` )
-  TRANSPORTING ('COL3').
+MODIFY itab INDEX 2 USING KEY ('SK') FROM VALUE #( col3 = `ttt` ) TRANSPORTING ('COL3').
 
 "Dynamic WHERE clause (only to be used with the TRANSPORTING addition)
 "The USING KEY addition is also possible. Check the ABAP Keyword Documentation
 "for special rules that apply.
 DATA(cond_mod) = `COL1 < 3`.
-MODIFY itab FROM VALUE #( col3 = `sss` )
-  TRANSPORTING ('COL3')
-  WHERE (cond_mod).
+MODIFY itab FROM VALUE #( col3 = `sss` ) TRANSPORTING ('COL3') WHERE (cond_mod).
 
 "------- DELETE ------
 "A single line or multipled lines can be deleted.
@@ -1054,12 +1045,10 @@ MODIFY itab FROM VALUE #( col3 = `sss` )
 "The values can be declared either implicitly in a work area after FROM or explicitly
 "by listing the components of the table key after TABLE KEY.
 "If the USING KEY addition is not specified, the primary table key is used by default.
-DELETE TABLE itab FROM VALUE #( col2 = `eee` col3 = `www` )
-  USING KEY ('SK').
+DELETE TABLE itab FROM VALUE #( col2 = `eee` col3 = `www` ) USING KEY ('SK').
 
 "Each component of the table key must be listed.
-DELETE TABLE itab WITH TABLE KEY ('SK')
-  COMPONENTS ('COL2') = `ddd`.
+DELETE TABLE itab WITH TABLE KEY ('SK') COMPONENTS ('COL2') = `ddd`.
 
 "Deleting based on the table index
 DELETE itab INDEX 1 USING KEY ('SK').
@@ -1076,7 +1065,7 @@ DELETE itab WHERE (condition_tab).
 
 ### Dynamic ABAP SQL Statements
 
-```
+```abap
 "Dynamic SELECT list
 DATA(select_list) = `CARRID, CONNID, FLDATE`.
 DATA fli_tab TYPE TABLE OF zdemo_abap_fli WITH EMPTY KEY.
@@ -1124,8 +1113,8 @@ SELECT *
 "The example includes a WHERE clause that is created as an internal
 "table with a character-like row type.
 DATA(where_clause) = VALUE string_table( ( `CARRID = 'LH'` )
-                                          ( `OR` )
-                                          ( `CARRID = 'AA'` ) ).
+                                         ( `OR` )
+                                         ( `CARRID = 'AA'` ) ).
 
 SELECT *
   FROM zdemo_abap_fli

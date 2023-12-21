@@ -292,7 +292,7 @@ CLASS zcl_demo_abap_prog_flow_logic IMPLEMENTATION.
     "define conditions for operands. The result of such an expression is either true or false.
     "The example demonstrates a selection of possible expressions and operands of such expressions
     "using a big IF statement. It includes multiple expressions combined by AND to demonstrate
-    "different options. Here, it is just meant to touch on many syntax options in one go
+    "different options. Here, it is just meant to cover many syntax options in one go
     "for demonstration purposes.
 
     "Data declarations to be used in the IF statement below

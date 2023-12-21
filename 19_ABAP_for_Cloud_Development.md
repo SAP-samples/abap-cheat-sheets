@@ -9,7 +9,7 @@
 - [Executable Example](#executable-example)
 
 
-This ABAP cheat sheet briefly touches on the terms ABAP Cloud and classic ABAP to get an idea about [ABAP for Cloud Development](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_for_cloud_dev_glosry.htm). 
+This ABAP cheat sheet briefly outlines the terms ABAP Cloud and classic ABAP to get an idea about [ABAP for Cloud Development](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_for_cloud_dev_glosry.htm). 
 It provides references to more detailed information on the topic.
 
 # Terms
