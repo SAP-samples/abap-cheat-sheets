@@ -8,7 +8,13 @@
     - [Field Symbols](#field-symbols)
     - [Data References](#data-references)
   - [Dynamic ABAP Statements](#dynamic-abap-statements)
-    - [CL\_ABAP\_DYN\_PRG: Validating Input for Dynamic Specifications](#cl_abap_dyn_prg-validating-input-for-dynamic-specifications)
+    - [Dynamic ASSIGN Statements](#dynamic-assign-statements)
+    - [Dynamically Specifying Data Types/Creating (Data) Objects](#dynamically-specifying-data-typescreating-data-objects)
+    - [Accessing Structure Components Dynamically](#accessing-structure-components-dynamically)
+    - [Dynamic Specifications in Statements for Processing Internal Tables](#dynamic-specifications-in-statements-for-processing-internal-tables)
+    - [Dynamic ABAP SQL Statements](#dynamic-abap-sql-statements)
+    - [Dynamic Invoke](#dynamic-invoke)
+    - [Validating Input for Dynamic Specifications (CL\_ABAP\_DYN\_PRG)](#validating-input-for-dynamic-specifications-cl_abap_dyn_prg)
   - [Runtime Type Services (RTTS)](#runtime-type-services-rtts)
     - [Getting Type Information at Runtime](#getting-type-information-at-runtime)
     - [Dynamically Creating Data Types at Runtime](#dynamically-creating-data-types-at-runtime)
@@ -612,7 +618,8 @@ world. Recommended read: [Accessing Data Objects Dynamically (F1 docu for standa
 ## Dynamic ABAP Statements
 
 As already mentioned above, there are ABAP statements that support the dynamic specification of syntax elements.
-In this context, you can usually use elementary, character-like data objects - the content is usually provided in capital letters - specified within a pair of parentheses. 
+In this context, you can usually use elementary, character-like data objects specified within a pair of parentheses. 
+For example, `SORT` statements:
 ``` abap  
 "Named, character-like data object specified within parentheses
 "used by an ABAP statement
@@ -622,240 +629,600 @@ SORT itab BY (field_name).
 "Unnamed, character-like data object specified within parentheses
 SORT itab BY ('CURRCODE').
 ``` 
-      
-In the `SELECT` list of an ABAP SQL `SELECT` statement, for example, you can use a standard table with a character-like row type. The dynamically specified syntax elements can be included as operands in various ABAP statements. The following code snippets are intended to provide a rough overview. 
 
 Note that dynamically specifying syntax elements has downsides, too. Consider some erroneous character-like content of such data objects. There is no syntax warning. At runtime, it can lead to runtime errors. 
+Some of the following code snippets use artifacts from the cheat sheet repository. The code snippets demonstrate a selection.
 
-- Dynamic specifications in ...
-    - statements for processing internal tables
+### Dynamic ASSIGN Statements
 
-      ``` abap    
-      "SORT: Dynamically specifying component name to be sorted for
-      
-      "Populating an internal table
-      SELECT *
-        FROM zdemo_abap_carr
-        INTO TABLE @DATA(itab).
+``` abap    
+"Creating and populating various types/data objects to work with
+TYPES: BEGIN OF st_type,
+          col1 TYPE i,
+          col2 TYPE string,
+          col3 TYPE string,
+        END OF st_type.
+DATA st TYPE st_type.
+DATA it TYPE TABLE OF st_type WITH EMPTY KEY.
+st = VALUE #( col1 = 1 col2 = `aaa` col3 = `Z` ).
+APPEND st TO it.
+DATA(dref) = NEW st_type( col1 = 2 col2 = `b` col3 = `Y` ).
+DATA dobj TYPE string VALUE `hallo`.
+"The following examples use a field symbol with generic type
+FIELD-SYMBOLS <fs> TYPE data.
 
-      "Named data object specified within parenteses
-      DATA(field_name) = 'CARRNAME'.
-      SORT itab BY (field_name).      
+"------- Specifying the memory area dynamically ------
+"I.e. the memory area is not specified directly, but as content of a
+"character-like data object in parentheses.
+"Note:
+"- When specified as unnamed data object, the compiler treats the
+"  specifications like static assignments. Do not use named data objects
+"  for ASSIGN statements in ABAP for Cloud Development. It is recommended
+"  that existing named data objects are put in a structure. Then, the syntax
+"  for assigning components dynamically can be used so as to avoid a syntax
+"  warning.
+"- Most of the following examples use an unnamed data object.
+"- The specification of the name is not case-sensitive.
 
-      "Unnamed data object specified within parenteses
-      SORT itab BY ('CURRCODE').
+ASSIGN ('IT') TO <fs>.
+ASSIGN ('ST') TO <fs>.
 
-      "READ TABLE: Dynamically specifying keys
-      READ TABLE itab INTO DATA(wa) WITH KEY (field_name) = ...
+"Field symbol declared inline
+"Note: The typing is performed with the generic type data.
+ASSIGN ('DOBJ') TO FIELD-SYMBOL(<fs_inline>).
 
-      "MODIFY: Dynamically specifying WHERE conditions
-      DATA(condition) = `CARRID = 'LH'`.
+"The statements set the sy-subrc value. No exception occurs in
+"case of an unsuccessful assignment.
+ASSIGN ('DOESNOTEXIST') TO <fs>.
+IF sy-subrc <> 0.
+  ...
+ENDIF.
 
-      MODIFY itab FROM ... TRANSPORTING ... WHERE (condition).
+"The memory area can also be a dereferenced data reference
+ASSIGN dref->* TO <fs>.
 
-      "DELETE: Dynamically specifying WHERE conditions
-      DELETE itab USING KEY ... WHERE (condition).
+"------- Assigning components dynamically ------
+"You can chain the names with the component selector (-), or, in
+"case of reference variables, the object component selector (->).
+ASSIGN st-('COL1') TO <fs>.
+ASSIGN it[ 1 ]-('COL1') TO <fs>.
+ASSIGN dref->('COL1') TO <fs>.
+"The following example uses the dereferencing operator explicitly
+"followed by the component selector.
+ASSIGN dref->*-('COL1') TO <fs>.
 
-      "LOOP: Dynamically specifying keys
-      DATA(k) = `SOME_KEY`.
+"Using a named data object for the component specification
+DATA columnname TYPE string VALUE `COL1`.
+ASSIGN st-(columnname) TO <fs>.
 
-      LOOP AT itab INTO DATA(wa_lo) USING KEY (k).
-        ...    
-      ENDLOOP.
-      ```
+"Fully dynamic specification
+"If the compiler can fully determine the data object in ASSIGN statements
+"in ABAP for Cloud Development, a warning is not issued.
+ASSIGN ('ST-COL1') TO <fs>.
 
-    - `ASSIGN` statements
+"Numeric expressions are possible. Its value is interpreted
+"as the position of the component in the structure.
+ASSIGN st-(3) TO <fs>.
 
-      ``` abap    
-      "Dynamically assigning components of structures   
+"If the value is 0, the memory area of the entire structure is
+"assigned to the field symbol.
+ASSIGN st-(0) TO <fs>.
 
-      "Populating a structure
-      SELECT SINGLE *
-        FROM zdemo_abap_carr
-        INTO @DATA(wa).
-      
-      "Declaring a field symbol
-      FIELD-SYMBOLS <fs> type any.
+"The statements above replace the following, older statements.
+ASSIGN COMPONENT 'COL1' OF STRUCTURE st TO <fs>.
+ASSIGN COMPONENT 3 OF STRUCTURE st TO <fs>.
 
-      DATA(comp_name) = 'CARRNAME'. 
-      ASSIGN wa-(comp_name) TO <fs>. "named data object
-      ASSIGN wa-('CARRID') TO <fs>.  "unnamed data object 
-      
-      "The statements set sy-subrc value. No exception occurs in 
-      "case of an unsuccessful assignment.
-      ASSIGN wa-('XYZ') TO <fs>. 
-      IF sy-subrc <> 0.
-        ...
-      ENDIF.
+"------- Assigning attributes of classes or interfaces dynamically ------
+"The following syntax pattern shows the possible specifications.
+"clif stands for the name of a class or interface.
+"... cref->(attr_name) ...
+"... iref->(attr_name) ...
+"... (clif_name)=>(attr_name) ...
+"... (clif_name)=>attr ...
+"... clif=>(attr_name) ...
 
-      "Numeric expressions are possible. Its value is interpreted 
-      "as the position of the component in the structure.
-      ASSIGN wa-(4) TO <fs>.
+"Creating an instance of a class
+DATA(oref) = NEW zcl_demo_abap_objects( ).
 
-      "If the value is 0, the memory area of the entire structure is 
-      "assigned to the field symbol.
-      ASSIGN wa-(0) TO <fs>.
+"Assigning instance attributes using an object reference variable
+"All visible attributes of objects can be assigned.
+oref->string = `ABAP`. "Assigning a value to the attribute
+ASSIGN oref->('STRING') TO <fs>.
 
-      "The statements above replace the following, older statements. 
-      ASSIGN COMPONENT 'CARRID' OF STRUCTURE wa TO <fs>.
-      ASSIGN COMPONENT 5 OF STRUCTURE wa TO <fs>.
+"Assigning instance attributes using an interface reference variable
+DATA iref TYPE REF TO zdemo_abap_objects_interface.
+iref = oref.
+ASSIGN iref->('STRING') TO <fs>.
+iref->in_str = `hallo`.
+ASSIGN iref->('IN_STR') TO <fs>.
 
-      "Populating a structure that is referenced by a data reference 
-      "variable
-      SELECT SINGLE *
-        FROM zdemo_abap_carr
-        INTO NEW @DATA(ref_struc).
+"Assigning static attributes
+"All visible static attributes in classes and interfaces can be assigned
+"In the following example, a class and an interface is specified statically,
+"and the attributes are specified dynamically.
+ASSIGN zcl_demo_abap_objects=>('PUBLIC_STRING') TO <fs>.
+ASSIGN zdemo_abap_objects_interface=>('CONST_INTF') TO <fs>.
 
-      "Note the object component selector. The field symbol is created 
-      "inline here.
-      ASSIGN ref_struc->('CARRNAME') TO FIELD-SYMBOL(<fs_inl>). 
+"Specifying a class or interface dynamically, and attributes dynamically
+ASSIGN ('zcl_demo_abap_objects')=>public_string TO <fs>.
+ASSIGN ('zdemo_abap_objects_interface')=>const_intf TO <fs>.
 
-      *************************************************************
+"Specifying a class or interface as well as attributes dynamically
+ASSIGN ('zcl_demo_abap_objects')=>('PUBLIC_STRING') TO <fs>.
+ASSIGN ('zdemo_abap_objects_interface')=>('CONST_INTF') TO <fs>.
 
-      "Dynamically specifying attributes of classes/interfaces
-      DATA(cl_name) = 'CL_SOME_CLASS'.
-      DATA(dobj) = 'SOME_DOBJ'.
+"Further dynamic syntax options are possible, for example,
+"specifying the memory area after ASSIGN with a writable expressions
+"because the operand position after ASSIGN is a result position
+ASSIGN NEW zcl_demo_abap_objects( )->('PUBLIC_STRING') TO <fs>.
+```
 
-      ASSIGN cl_some_class=>(dobj) TO <fs>.
-      ASSIGN (cl_name)=>some_dobj TO <fs>.
-      ASSIGN (cl_name)=>(dobj) TO <fs>.
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
-      "Class reference variable pointing to an object that contains 
-      "attributes and that are specified dynamically.
-      DATA cl_ref TYPE REF TO cl_some_class.
-      cl_ref = NEW #( ).
-      ASSIGN cl_ref->('SOME_ATTRIBUTE') TO FIELD-SYMBOL(<another_fs>).
+### Dynamically Specifying Data Types/Creating (Data) Objects
 
-      "If ELSE UNASSIGN is specified, no memory area is assigned to 
-      "the field symbol. It has the state unassigned after the ASSIGN 
-      "statement.
-      ASSIGN cl_ref->('SOME_ATTRIBUTE') TO FIELD-SYMBOL(<attr>) ELSE UNASSIGN.
-      ```
+- For dynamic syntax elements in `CREATE OBJECT` statements, find more information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapcreate_object_explicit.htm) (note that parameters can be specified dynamically, too).
+- In addition to character-like data objects for the type name specified in the parentheses, you can also use [absolute type names](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabsolute_typename_glosry.htm) (see the information about RTTI below).
 
-- Dynamically specifying data types/creating (data) objects
+``` abap
+"Anonymous data objects are created using a type determined at
+"runtime. See more information below. Note that the NEW operator
+"cannot be used here.
+DATA(some_type) = 'STRING'.
+DATA dataref TYPE REF TO data.
+CREATE DATA dataref TYPE (some_type).
+CREATE DATA dataref TYPE TABLE OF (some_type).
+CREATE DATA dataref TYPE REF TO (some_type).
+"Using an absolute type name
+CREATE DATA dataref TYPE ('\TYPE=STRING').
 
-  > **💡 Note**<br>
-  > - For dynamic syntax elements in `CREATE OBJECT` statements, find more information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapcreate_object_explicit.htm) (note that parameters can be specified dynamically, too).
-  > - In addition to character-like data objects for the type name specified in the parentheses, you can also use [absolute type names](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabsolute_typename_glosry.htm) (see the information about RTTI below).
+"Assigning a data object to a field symbol casting a dynamically
+"specified type
+TYPES clen5 TYPE c LENGTH 5.
+DATA: dobj_c10    TYPE c LENGTH 10 VALUE '1234567890',
+      some_struct TYPE zdemo_abap_fli.
+FIELD-SYMBOLS <casttype> TYPE data.
 
-    ``` abap
-    "Anonymous data objects are created using a type determined at 
-    "runtime. See more information below. Note that the NEW operator 
-    "cannot be used here.
-    CREATE DATA dref TYPE (some_type).
-    CREATE DATA dref TYPE TABLE OF (some_type).
-    CREATE DATA dref TYPE REF TO (some_type).
+ASSIGN dobj_c10 TO <casttype> CASTING TYPE ('CLEN5').  "12345
+ASSIGN dobj_c10 TO <casttype> CASTING LIKE some_struct-('CARRID'). "123
 
-    "Assigning a data object to a field symbol casting a dynamically 
-    "specified type
-    ASSIGN dobj TO <fs> CASTING TYPE (some_type).
+"Dynamically creating an object as an instance of a class and
+"assigning the reference to the object to an object reference
+"variable. oref can be an object or interface reference variable.
+"The reference variable is created here with the generic 'object'.
+DATA oref_dyn TYPE REF TO object.
+CREATE OBJECT oref_dyn TYPE ('ZCL_DEMO_ABAP_OBJECTS').
+"Accessing an instance attribute
+oref_dyn->('ANOTHER_STRING') = `hi`.
 
-    "Dynamically creating an object as an instance of a class and 
-    "assigning the reference to the object to an object reference 
-    "variable. oref can be an object or interface reference variable.
-    "The reference variable is created here with the generic 'object'.
-    DATA oref TYPE REF TO object. 
-    CREATE OBJECT oref TYPE (some_class).
+"Note: As covered further down and in the executable example,
+"CREATE DATA and ASSIGN statements have the HANDLE addition
+"after which dynamically created types can be specified. A type
+"description object is expected.
 
-    "Note: As covered further down and in the executable example,
-    "CREATE DATA/OBJECT and ASSIGN statements have the HANDLE addition
-    "after which dynamically created types can be specified. A type 
-    "description object is expected.
-    CREATE DATA dref TYPE HANDLE type_descr_obj.
-    CREATE OBJECT oref TYPE HANDLE type_descr_obj.
-    ASSIGN dobj TO <fs> CASTING TYPE HANDLE type_descr_obj.
-    ```
+"Getting type description object
+DATA(tdo_elem) = cl_abap_elemdescr=>get_c( 4 ).
+CREATE DATA dataref TYPE HANDLE tdo_elem.
+dataref->* = dobj_c10. "1234
+ASSIGN dobj_c10 TO <casttype> CASTING TYPE HANDLE tdo_elem. "1234
+```
 
-- Dynamically specifying clauses in ABAP SQL statements
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
-    ``` abap
-    "This snippet demonstrates a selection of possible dynamic 
-    "specifications in ABAP SQL SELECT statements.
-    "Dynamic SELECT list
+### Accessing Structure Components Dynamically
 
-    DATA(select_list) = `CARRID, CONNID, COUNTRYFR, COUNTRYTO`.
+``` abap
+"Creating and populating various types/data objects to work with
+TYPES: BEGIN OF st_type,
+          col1 TYPE i,
+          col2 TYPE string,
+          col3 TYPE string,
+        END OF st_type.
+DATA st TYPE st_type.
+DATA it TYPE TABLE OF st_type WITH EMPTY KEY.
+st = VALUE #( col1 = 1 col2 = `aaa` col3 = `Z` ).
+APPEND st TO it.
+DATA(dref) = NEW st_type( col1 = 2 col2 = `b` col3 = `Y` ).
 
-    SELECT (select_list)
-      FROM zdemo_abap_fli
-      INTO TABLE ...
+"You can achieve the access using ASSIGN statements as shown above, or
+"by statically specifying the structure and the (object) component selector
+"followed by a character-like data object in parentheses.
+"Write position
+st-('COL1') = 123.
+it[ 1 ]-('COL1') = 456.
+dref->('COL1') = 789.
 
-    "Dynamic FROM clause
+"Read position
+"The example shows how you can retrieve the textual content of any component
+"of any structure.
+DATA(content_col2) = CONV string( st-('COL1') ).
+DATA(content_col3) = |{ st-('COL3') }|.
+DATA content_col1 LIKE st-col1.
+content_col1 = st-('COL1').
 
-    DATA(table) = `ZDEMO_ABAP_FLI`.
+DATA dref_comp TYPE REF TO data.
+CREATE DATA dref_comp LIKE st-('COL3').
+dref_comp->* = st-('COL3').
 
-    SELECT *
+"If the component is not found, a catchable exception is raised.
+TRY.
+    DATA(col_not_existent) = |{ st-('COL123') }|.
+  CATCH cx_sy_assign_illegal_component.
+    ...
+ENDTRY.
+
+"Accessing components of generic structures dynamically,
+"e.g. if you have a method parameter that is typed with the generic type
+"data.
+"The example uses a field symbol with the generic type data which is assigned
+"a structure.
+FIELD-SYMBOLS <gen> TYPE data.
+ASSIGN st TO <gen>.
+
+"As in the examples above, specifying components dynamically is possible.
+<gen>-('COL2') = `ABAP`.
+DATA(gen_comp) = CONV string( <gen>-('COL2') ).
+```
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+### Dynamic Specifications in Statements for Processing Internal Tables
+
+```abap
+"Creating and populating various types/data objects to work with
+TYPES: BEGIN OF demo_struct,
+          col1 TYPE i,
+          col2 TYPE string,
+          col3 TYPE string,
+        END OF demo_struct.
+DATA itab_ek TYPE TABLE OF demo_struct WITH EMPTY KEY.
+"Standard table and specification of primary and secondary table key
+DATA itab TYPE TABLE OF demo_struct
+  WITH NON-UNIQUE KEY col1
+  WITH UNIQUE SORTED KEY sk COMPONENTS col2.
+TYPES itab_type LIKE itab.
+DATA itab_ref TYPE TABLE OF REF TO demo_struct WITH EMPTY KEY.
+itab_ek = VALUE #( ( col1 = 1 col2 = `aaa` col3 = `zzz` )
+                    ( col1 = 2 col2 = `bbb` col3 = `yyy` )
+                    ( col1 = 3 col2 = `ccc` col3 = `xxx` ) ).
+itab = itab_ek.
+itab_ref = VALUE #( ( NEW demo_struct( col1 = 1 col2 = `aaa` col3 = `zzz` ) ) ).
+
+"Notes
+"- In statements using key specifications, secondary table key names (or alias names)
+"  are usually specified. Also the primary table key using the predefined name
+"  primary_key or its alias name can be used.
+"- Many of the following statements provide similar additions offering dynamic
+"  specifications, such as USING KEY and dynamic component name specifications.
+
+"------- SORT ------
+"Named data object specified within parenteses
+DATA(field_name) = 'COL1'.
+SORT itab_ek BY (field_name) DESCENDING.
+"Unnamed data object specified within parenteses
+SORT itab_ek BY ('COL2') ASCENDING.
+
+"------- READ TABLE ------
+"Reading by specifying keys dynamically
+"Implicitly specifying the table key values in a work area (USING KEY addition)
+DATA(wa_read) = VALUE demo_struct( col2 = `aaa` ).
+READ TABLE itab FROM wa_read USING KEY ('SK') REFERENCE INTO DATA(read_ref).
+
+"Explicitly specifying the key and key values (TABLE KEY addition)
+"The component names can also be specified dynamically (which is done in most of the
+"following examples for demonstration purposes).
+READ TABLE itab WITH TABLE KEY ('SK') COMPONENTS ('COL2') = `aaa` REFERENCE INTO read_ref.
+"Specifying the predefined name primary_key explicitly
+READ TABLE itab WITH TABLE KEY ('PRIMARY_KEY') COMPONENTS ('COL1') = 1 REFERENCE INTO read_ref.
+"If the addition COMPONENTS is not specified, the primary table key is used by default.
+READ TABLE itab WITH TABLE KEY ('COL1') = 1 REFERENCE INTO read_ref.
+
+"Reading using a free key (WITH KEY addition)
+READ TABLE itab WITH KEY ('COL3') = `yyy` REFERENCE INTO read_ref.
+"The addition can also be used by specifying a secondary table key name
+READ TABLE itab WITH KEY ('SK') COMPONENTS ('COL2') = `ccc` REFERENCE INTO read_ref.
+
+"Reading based on a table index (INDEX addition)
+"Not using the addition USING KEY means reading from the primary table index.
+READ TABLE itab INDEX 1 USING KEY ('SK') REFERENCE INTO read_ref.
+
+"More dynamic specification options when specifying the target as work area
+"(COMPARING/TRANSPORTING additions)
+"TRANSPORTING: Specifying which components shall be respected
+READ TABLE itab INDEX 1 INTO DATA(workarea) TRANSPORTING ('COL1') ('COL3').
+
+"COMPARING: If the content of the compared components is identical, sy-subrc is set
+"to 0, and otherwise to 2. The line found is assigned to the work area independently
+"of the result of the comparison.
+workarea-('COL3') = `uvw`.
+READ TABLE itab INDEX 1 INTO workarea COMPARING ('COL3') TRANSPORTING ('COL1') ('COL3').
+IF sy-subrc <> 0.
+  ...
+ENDIF.
+
+"------- Table expressions ------
+"Similar to READ TABLE statements, you can specify table lines with 3 alternatives:
+"index read, read using free key, table key
+"Also there, dynamic specification are possible regarding the key specifications.
+
+"Reading based on index with dynamic key specifications
+"Specifying the secondary table index of a sorted secondary key
+DATA(wa_te1) = itab[ KEY ('SK') INDEX 1 ].
+"Reading using a free key, the keys are specified dynamically
+DATA(wa_te2) = itab[ ('COL2') = `bbb` ('COL3') = `yyy` ].
+
+"Reading using a table key
+"Specyfing the table key explicitly
+"Note: Unlike READ TABLE statements, the name of the table key must be specified. The
+"addition COMPONENTS can be omitted.
+"In the following example, the component names are also specified dynamically.
+DATA(wa_te3) = itab[ KEY ('SK') ('COL2') = `ccc` ].
+"Specifying the COMPONENTS addition explicitly
+DATA(wa_te4) = itab[ KEY ('primary_key') COMPONENTS ('col1') = 1 ].
+
+"Accessing components
+"As shown abobe, chaininings with the (object) component selector are possible.
+"The examples use index access and write positions.
+itab[ 1 ]-('COL2') = `jkl`.
+itab_ref[ 1 ]->('COL2') = `mno`.
+
+"------- LOOP AT ------
+"USING KEY addition: Overriding the standard order determined by the table category
+LOOP AT itab REFERENCE INTO DATA(ref) USING KEY ('SK').
+  ...
+ENDLOOP.
+
+"When the primary table key is specified, the loop behaves as if it was not specified.
+"So, the following statement corresponds to the one below.
+LOOP AT itab REFERENCE INTO ref USING KEY ('PRIMARY_KEY').
+  ...
+ENDLOOP.
+
+LOOP AT itab REFERENCE INTO ref.
+  ...
+ENDLOOP.
+
+"Dynamic WHERE condition
+"You can specify a character-like data object or a standard table with character-like
+"line type.
+DATA(cond_loop) = `COL1 > 1`.
+LOOP AT itab REFERENCE INTO ref WHERE (cond_loop).
+  ...
+ENDLOOP.
+
+"------- INSERT ------
+"The USING KEY addition (which accepts a dynamic specification) affects the order in which lines are inserted.
+
+"Result of the following example when using the ...
+"- secondary table key: order of itab entries 5 ... /4 ... /...
+"- primary table key: order of itab entries 4 ... /5 ... /...
+INSERT LINES OF VALUE itab_type( ( col1 = 4 col2 = `eee` col3 = `www` )
+                                  ( col1 = 5 col2 = `ddd` col3 = `vvv` ) )
+  USING KEY ('SK')
+  "USING KEY ('PRIMARY_KEY')
+  INTO itab INDEX 1.
+
+"Excursion: Taking up the LOOP AT statements with the USING KEY addition
+"and exploring the table index
+"Declaring demo tables to hold the internal table entries
+DATA it_seckey_idx TYPE TABLE OF demo_struct WITH EMPTY KEY.
+DATA it_primekey_idx LIKE it_seckey_idx.
+
+"Visualizing the secondary table index
+LOOP AT itab INTO DATA(wa_sk) USING KEY ('SK').
+  APPEND wa_sk TO it_seckey_idx.
+ENDLOOP.
+
+"Visualizing the primary table index
+LOOP AT itab INTO DATA(wa_pk) USING KEY ('PRIMARY_KEY').
+  APPEND wa_pk TO it_primekey_idx.
+ENDLOOP.
+
+"------- MODIFY ------
+"specified using a table key or a table index.
+"the statement MODIFY assigns the content of
+"In the following example, a line is modified based on a work area and a table key.
+"The component col1 is left out from the work area intentionally.
+"If the primary table key was used, the value of sy-subrc would be 4, and no modification was done.
+"The optional addition transporting is specified to denote what should be modified. In this example,
+"the component is also specified dynamically.
+MODIFY TABLE itab FROM VALUE #( col2 = `bbb` col3 = `uuu` )
+  USING KEY ('SK')
+  TRANSPORTING ('COL3').
+
+"In the following example, a line is modified based on a work area, an index specification and a
+"table key.
+"INDEX can also be positioned after FROM.
+MODIFY itab INDEX 2 USING KEY ('SK')
+  FROM VALUE #( col3 = `ttt` )
+  TRANSPORTING ('COL3').
+
+"Dynamic WHERE clause (only to be used with the TRANSPORTING addition)
+"The USING KEY addition is also possible. Check the ABAP Keyword Documentation
+"for special rules that apply.
+DATA(cond_mod) = `COL1 < 3`.
+MODIFY itab FROM VALUE #( col3 = `sss` )
+  TRANSPORTING ('COL3')
+  WHERE (cond_mod).
+
+"------- DELETE ------
+"A single line or multipled lines can be deleted.
+"Note that DELETE ADJACENT DUPLICATES statements can also be specified using
+"dynamic parts.
+
+"Deleting based on a dynamically specified table key
+"The values can be declared either implicitly in a work area after FROM or explicitly
+"by listing the components of the table key after TABLE KEY.
+"If the USING KEY addition is not specified, the primary table key is used by default.
+DELETE TABLE itab FROM VALUE #( col2 = `eee` col3 = `www` )
+  USING KEY ('SK').
+
+"Each component of the table key must be listed.
+DELETE TABLE itab WITH TABLE KEY ('SK')
+  COMPONENTS ('COL2') = `ddd`.
+
+"Deleting based on the table index
+DELETE itab INDEX 1 USING KEY ('SK').
+
+"Deleting multiple lines and specifying the WHERE conditions dynamically
+"The USING KEY addition is also possible.
+DATA(condition_tab) = VALUE string_table( ( `COL1 < 3` )
+                                          ( `OR` )
+                                          ( `COL3 = ``www``` ) ).
+DELETE itab WHERE (condition_tab).
+```
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+### Dynamic ABAP SQL Statements
+
+```
+"Dynamic SELECT list
+DATA(select_list) = `CARRID, CONNID, FLDATE`.
+DATA fli_tab TYPE TABLE OF zdemo_abap_fli WITH EMPTY KEY.
+
+SELECT (select_list)
+  FROM zdemo_abap_fli
+  INTO CORRESPONDING FIELDS OF TABLE @fli_tab.
+
+"Dynamic FROM clause
+DATA(table) = 'ZDEMO_ABAP_FLI'.
+SELECT *
+  FROM (table)
+  INTO TABLE @fli_tab.
+
+"Excursion: Compatible target data objects
+"In the examples above, the data object/type was created statically.
+
+"Creating an anonymous data object with a CREATE DATA statement
+"and specifiying the type dynamically.
+"You can use the dereferenced object reference variable as target.
+DATA itab_dyn TYPE REF TO data.
+CREATE DATA itab_dyn TYPE TABLE OF (table).
+
+SELECT *
+  FROM (table)
+  INTO TABLE @itab_dyn->*.
+
+"In older ABAP code, you may find assignments to a field symbol
+"due to the reasons mentioned above.
+FIELD-SYMBOLS <tab> TYPE ANY TABLE.
+ASSIGN itab_dyn->* TO <tab>.
+
+SELECT *
+  FROM (table)
+  INTO TABLE @<tab>.
+
+"Similar to the NEW operator, you can use the addition NEW
+"to create an anonymous data object in place. The advantage is
+"that the data type is constructed in a suitable way.
+SELECT *
+  FROM (table)
+  INTO TABLE NEW @DATA(dref_tab).
+
+"Dynamic WHERE clause
+"The example includes a WHERE clause that is created as an internal
+"table with a character-like row type.
+DATA(where_clause) = VALUE string_table( ( `CARRID = 'LH'` )
+                                          ( `OR` )
+                                          ( `CARRID = 'AA'` ) ).
+
+SELECT *
+  FROM zdemo_abap_fli
+  WHERE (where_clause)
+  INTO TABLE NEW @DATA(tab_dyn_where).
+
+"Further dynamic specifications in other ABAP SQL statements
+"Creating a structure to be inserted into the database table
+SELECT SINGLE *
       FROM (table)
-      INTO TABLE ...
+      INTO NEW @DATA(dref_struc).
+dref_struc->('CARRID') = 'YZ'.
 
-    "Excursion: Dynamic FROM clause and compatible target data object
-    DATA(db_table) = `ZDEMO_ABAP_CARR`.
+INSERT (table) FROM @dref_struc->*.
 
-    DATA itab TYPE REF TO data.
-    CREATE DATA itab TYPE TABLE OF (db_table).
+dref_struc->('CURRENCY') = 'EUR'.
+UPDATE (table) FROM @dref_struc->*.
 
-    SELECT * 
-      FROM (db_table) 
-      INTO TABLE @itab->*.
+dref_struc->('SEATSOCC') = 10.
+MODIFY (table) FROM @dref_struc->*.
 
-    "Similar to the NEW operator, you can use the addition NEW here 
-    "to create an anonymous data object in place. The advantage is 
-    "that the data type is constructed in a suitable way.
-    SELECT *
-      FROM (db_table)
-      INTO TABLE NEW @DATA(dref_tab).
+DELETE FROM (table) WHERE (`CARRID = 'YZ'`).
+```
 
-    "Dynamic WHERE clause
-    "This is an example for using an internal table with a 
-    "character-like row type
-    DATA(where_clause) = VALUE string_table( ( `CARRID = 'LH'` )
-                                             ( `OR CARRID = 'AA'` ) ).
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
-    SELECT *
-      FROM zdemo_abap_fli
-      WHERE (where_clause)
-      INTO TABLE ...
-    ```
+### Dynamic Invoke
+The following code snippet shows dynamically specifying [procedure](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenprocedure_glosry.htm "Glossary Entry") calls.
 
-- Dynamic invoke: Dynamically specifying [procedure](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenprocedure_glosry.htm "Glossary Entry") calls
+``` abap
+"Note: Dynamic method calls require a CALL METHOD statement.
+"The following examples assume that there are no mandatory
+"parameters defined for the method.
+"Possible for methods of the same class, works like me->(meth)
+CALL METHOD (meth).
+"Class specified statically
+CALL METHOD class=>(meth).
+"Object reference variable specified statically;
+"also possible for interface reference variables
+CALL METHOD oref->(meth).
 
-    ``` abap
-    "Notes:
-    "- Dynamic method calls require a CALL METHOD statement.
-    "- The first 3 examples assume that there are no mandatory 
-    "  parameters defined for the method.
-    "- The example covers only static methods. Dynamic method calls 
-    "  for instance methods are also possible.
+"The following statements are possible for all visible static methods
+"Class dynamically specified
+CALL METHOD (class)=>meth.
+"Class and method dynamically specified
+CALL METHOD (class)=>(meth).
 
-    "Method dynamically specified
-    CALL METHOD class=>(meth).
+"Assigning actual parameters to the formal parameters statically
+CALL METHOD class=>(meth) EXPORTING  p1 = a1 p2 = a2 ...
+                          IMPORTING  p1 = a1 p2 = a2 ...
 
-    "Class dynamically specified
-    CALL METHOD (class)=>meth.
+"Assigning actual parameters to the formal parameters dynamically
+DATA ptab TYPE abap_parmbind_tab.
+ptab = ...
 
-    "Class and method dynamically specified
-    CALL METHOD (class)=>(meth).
+CALL METHOD class=>(meth) PARAMETER-TABLE ptab.
 
-    "Assigning actual parameters to the formal parameters statically
-    CALL METHOD class=>(meth) EXPORTING  p1 = a1 p2 = a2 ...
-                              IMPORTING  p1 = a1 p2 = a2 ...
+"Notes on PARAMETER-TABLE ptab
+"- The table (of type abap_parmbind_tab; line type is abap_parmbind) 
+"  must be filled and have a line for all non-optional parameters.
+"- Components: name -> formal parameter name
+"              kind -> kind of parameter, e. g. importing
+"              value -> pointer to appropriate actual parameter,
+"                       is of type REF TO data
+"The addition EXCEPTION-TABLE for exceptions is not dealt with here.
 
-    "Assigning actual parameters to the formal parameters dynamically
-    DATA ptab TYPE abap_parmbind_tab.
-    ptab = ...
+"Copyable snippet
+"Creating an instance by specifying the type statically
+"An example class of the cheat sheet repository is used.
+DATA(ob_ref) = NEW zcl_demo_abap_objects( ).
+"Calling an instance method
+"The method multiplies an integer by 3.
+"The calculation result is returned.
+DATA(result) = ob_ref->triple( i_op = 2 ). "6
 
-    CALL METHOD class=>(meth) PARAMETER-TABLE ptab.
+"Dynamic equivalent
+"Creating an instance of a class by specifying the type
+"dynamically
+DATA objref TYPE REF TO object.
+CREATE OBJECT objref TYPE ('ZCL_DEMO_ABAP_OBJECTS').
 
-    "Notes on PARAMETER-TABLE ptab
-    "- The table (of type abap_parmbind_tab; line type is abap_parmbind) 
-    "  must be filled and have a line for all non-optional parameters.
-    "- Components: name -> formal parameter name
-    "              kind -> kind of parameter, e. g. importing
-    "              value -> pointer to appropriate actual parameter,
-    "                       is of type REF TO data
-    "The addition EXCEPTION-TABLE for exceptions is not dealt with here.
-    ```
+"Creating parameter table
+DATA(ptab) = VALUE abap_parmbind_tab( ( name  = 'I_OP'
+                                        kind  = cl_abap_objectdescr=>exporting
+                                        value = NEW i( 3 ) )
+                                      ( name  = 'R_TRIPLE'
+                                        kind  = cl_abap_objectdescr=>returning
+                                        value = NEW i( ) ) ).
 
-### CL_ABAP_DYN_PRG: Validating Input for Dynamic Specifications
+"Dynamic method call and specifying a parameter table
+CALL METHOD objref->('TRIPLE') PARAMETER-TABLE ptab.
+result = ptab[ name = 'R_TRIPLE' ]-('VALUE')->*. "9
+```
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+### Validating Input for Dynamic Specifications (CL_ABAP_DYN_PRG)
 
 You can use the `CL_ABAP_DYN_PRG` class to validate input for dynamic specifications.
 There are several methods for different use cases. See the class documentation (click F2 on the class name in ADT) for more information.
