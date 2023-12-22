@@ -512,7 +512,7 @@ CALL TRANSFORMATION ... SOURCE ...
 
 ## Dealing with JSON
 - You can ..
-  - create and read JSON data in ABAP using the readers and writers in the sXML Library. See the processing of XML data in the sXML section above. Parsing and rendering JSON data works in a similar way. However, instead of using XML readers/writers, you use JSON readers/writers.
+  - create and read JSON data in ABAP using the readers and writers in the sXML ibrary. See the processing of XML data in the sXML section above. Parsing and rendering JSON data works in a similar way. However, instead of using XML readers/writers, you use JSON readers/writers.
   - transform ABAP to and from JSON data using transformations. You can directly transform ABAP <-> JSON using identity transformation (ID). In this context, note the intermediate format asJSON (see the notes on asXML above).
   - create and handle JSON data using the [XCO library](https://help.sap.com/docs/btp/sap-business-technology-platform/xco-library?version=Cloud).
 
@@ -679,7 +679,7 @@ DATA(conv_string_xco) = xco_cp=>xstring( conv_xstring_xco
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ### Compressing and Decompressing Binary Data
-You may want to process or store binary data. The data may be very large. You can compress the data in gzip format and decompress it for further processing using the cl_abap_gzip class.
+You may want to process or store binary data. The data may be very large. You can compress the data in gzip format and decompress it for further processing using the `cl_abap_gzip` class.
 
 ```abap
 DATA(str) = `This is a data object of type string. It should be converted to xstring, compressed and decompressed.`.

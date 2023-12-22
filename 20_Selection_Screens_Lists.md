@@ -1020,9 +1020,6 @@ ENDCLASS.
 CLASS lcl_events IMPLEMENTATION.
   METHOD single_click.
     "Both single and double click events trigger messages.
-    "Note: To make the example work in lower ABAP releases, newer ABAP syntax is
-    "intentionally not used to dynamically access the internal table component.
-    "Refer to the internal table and dynamic programming cheat sheets.
     READ TABLE itab INDEX row REFERENCE INTO DATA(sc_ref).
     IF sy-subrc = 0.
       ASSIGN sc_ref->(column) TO FIELD-SYMBOL(<fs_sc>).
@@ -1216,7 +1213,7 @@ TRY.
     "*********************************** NOTE ***********************************
     "- The GUI status used here is just reused to have a copyable and self-contained example.
     "- The GUI status of the sample program (specified for the report parameter below)
-    "  contains generic and additional functions. For the additional fucntions, a simple
+    "  contains generic and additional functions. For the additional functions, a simple
     "  implementation is included in this snippet. The GUI status should include the 
     "  functions TEST, DATA, QUIT.
     "- The implementations in the event handler class here do not match the implementations
@@ -1285,7 +1282,7 @@ TRY.
 
     "Double click functionality
     "Registering an event handler for the double click event. In the example, a message
-    "is displayed. Click cells in columns for which the cell type is not set to hotspot.
+    "is displayed. Double-click cells in columns for which the cell type is not set to hotspot.
     SET HANDLER lcl_events=>double_click FOR alv->get_event( ).
 
     "Adding tooltips to the icon column cells

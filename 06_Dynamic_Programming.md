@@ -118,27 +118,34 @@ Once the memory area is assigned, you can work with the content.
 
 ``` abap
 "Some data object declarations to be used
-DATA: num   TYPE i,
-      struc TYPE zdemo_abap_fli,  "Demo database table
-      tab   TYPE string_table.
+DATA: num      TYPE i,
+      struc    TYPE zdemo_abap_fli,  "Demo database table
+      itab_str TYPE string_table,
+      itab_fli TYPE TABLE OF zdemo_abap_fli WITH EMPTY KEY.
+APPEND INITIAL LINE TO itab_fli.
 
 "Declaring field symbols with complete types
 FIELD-SYMBOLS: <fs_i>     TYPE i,
-               <fs_struc> TYPE zdemo_abap_fli,
-               <fs_tab>   TYPE string_table.
+                <fs_struc> TYPE zdemo_abap_fli,
+                <fs_tab>   TYPE string_table.
 
 "Declaring field symbols with generic type
 FIELD-SYMBOLS <fs_gen> TYPE data.
 
 "Assigning data objects to field symbols
-"Note: In this case, the field symbols have an appropriate type.
+"Using field symbols with a static type
 ASSIGN num   TO <fs_i>.
 ASSIGN struc TO <fs_struc>.
-ASSIGN tab   TO <fs_tab>.
-ASSIGN num   TO <fs_gen>.   "Could be any of the data objects
+ASSIGN itab_str TO <fs_tab>.
+"Using field symbol with a generic type
+ASSIGN num   TO <fs_gen>.
+ASSIGN itab_fli TO <fs_gen>.
+ASSIGN itab_fli[ 1 ] TO <fs_gen>.
+"Assigning components
+ASSIGN struc-carrid TO <fs_gen>.
+ASSIGN itab_fli[ 1 ]-connid TO <fs_gen>.
 
-"Inline declaration is possible, too. The type
-"is automatically derived.
+"Inline declaration (the field symbol has the type data)
 ASSIGN num TO FIELD-SYMBOL(<fs_inl>).
 
 "CASTING addition for matching types of data object and field
@@ -167,6 +174,8 @@ ASSIGN chars TO <fs2> CASTING LIKE chars_l4.
 >    IF <fs> IS ASSIGNED.
 >      ...
 >    ENDIF.
+>    
+>    DATA(check) = COND #( WHEN <fs> IS ASSIGNED THEN `assigned` ELSE `not assigned` ).
 >    ```
 >- Using the statement `UNASSIGN`, you can explicitly remove the assignment of the field symbol. A `CLEAR` statement only initializes the value.
 >   ``` abap
@@ -485,6 +494,8 @@ IF ref_carr IS BOUND.
   ...
 ENDIF.
 
+DATA(ref_bound) = COND #( WHEN ref_carr IS BOUND THEN ref_carr->carrid ELSE `is not bound` ).
+
 "Explicitly removing a reference
 "However, the garbage collector takes care of removing the references
 "automatically once the data is not used any more by a reference.
@@ -500,10 +511,8 @@ ref_int->* = 123.
 
 "Generic type
 DATA ref_generic TYPE REF TO data.
-ref_generic = NEW i( ).
-
-"In older ABAP releases, CREATE DATA statements were needed.
-CREATE DATA ref_generic TYPE i.
+ref_generic = NEW i( ). "Syntax in modern ABAP
+CREATE DATA ref_generic TYPE i. "Syntax for older ABAP releases
 
 "As mentioned above, the content of anonymous data objects can only be 
 "accessed using dereferenced data variables and field symbols.
@@ -542,7 +551,7 @@ dref = NEW i( 2 ).
 ``` abap
 "This snippet shows that three data references are created
 "with the same reference variable. Storing them in an internal table
-"using the TYPE TABLE OF REF TO prevents the overwriting.
+"using the type TYPE TABLE OF REF TO prevents the overwriting.
 
 DATA: dref TYPE REF TO data,
       itab TYPE TABLE OF REF TO data,
@@ -582,6 +591,10 @@ LOOP AT fli_tab REFERENCE INTO DATA(ref).
   ref->carrid = ...
   ...
 ENDLOOP.
+
+"More statements are available that assign content to a data reference variable, 
+"for example, READ TABLE.
+READ TABLE fli_tab INDEX 1 REFERENCE INTO DATA(rt_ref).
 ```
 
 *Data reference variables as part of structures and internal tables*:
@@ -737,7 +750,7 @@ ASSIGN iref->('IN_STR') TO <fs>.
 
 "Assigning static attributes
 "All visible static attributes in classes and interfaces can be assigned
-"In the following example, a class and an interface is specified statically,
+"In the following example, a class and an interface are specified statically,
 "and the attributes are specified dynamically.
 ASSIGN zcl_demo_abap_objects=>('PUBLIC_STRING') TO <fs>.
 ASSIGN zdemo_abap_objects_interface=>('CONST_INTF') TO <fs>.
@@ -752,8 +765,21 @@ ASSIGN ('ZDEMO_ABAP_OBJECTS_INTERFACE')=>('CONST_INTF') TO <fs>.
 
 "Further dynamic syntax options are possible, for example,
 "specifying the memory area after ASSIGN with a writable expressions
-"because the operand position after ASSIGN is a result position
+"because the operand position after ASSIGN is a result position.
 ASSIGN NEW zcl_demo_abap_objects( )->('PUBLIC_STRING') TO <fs>.
+
+"ELSE UNASSIGN addition
+"If ELSE UNASSIGN is specified in the context of dynamic assignments/accesses,
+"no memory area is assigned to the field symbol. It is unassigned after
+"the ASSIGN statement.
+"Note: For the static variant of the ASSIGN statement, i.e. if the memory area
+"to be assigned following the ASSIGN keyword is statically specified, the addition
+"ELSE UNASSIGN is implicitly set and cannot be used explicitly.
+DATA(hallo) = `Hello world`.
+ASSIGN ('HALLO') TO FIELD-SYMBOL(<eu>) ELSE UNASSIGN.
+ASSERT sy-subrc = 0 AND <eu> IS ASSIGNED.
+ASSIGN ('DOES_NOT_EXIST') TO <eu> ELSE UNASSIGN.
+ASSERT sy-subrc = 4 AND <eu> IS NOT ASSIGNED.
 ```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
@@ -909,11 +935,12 @@ READ TABLE itab FROM wa_read USING KEY ('SK') REFERENCE INTO DATA(read_ref).
 
 "Explicitly specifying the key and key values (TABLE KEY addition)
 "The component names can also be specified dynamically (which is done in most of the
-"following examples for demonstration purposes).
+"following examples for demonstration purposes). Note that each component of the table
+"key must be specified.
 READ TABLE itab WITH TABLE KEY ('SK') COMPONENTS ('COL2') = `aaa` REFERENCE INTO read_ref.
 "Specifying the predefined name primary_key explicitly and dynamically
 READ TABLE itab WITH TABLE KEY ('PRIMARY_KEY') COMPONENTS ('COL1') = 1 REFERENCE INTO read_ref.
-"If the addition COMPONENTS is not specified, the primary table key is used by default.
+"If the addition COMPONENTS is not specified, the primary table key is implicitly used.
 READ TABLE itab WITH TABLE KEY ('COL1') = 1 REFERENCE INTO read_ref.
 
 "Reading using a free key (WITH KEY addition)
@@ -1181,20 +1208,20 @@ CALL METHOD class=>(meth) PARAMETER-TABLE ptab.
 "                       is of type REF TO data
 "The addition EXCEPTION-TABLE for exceptions is not dealt with here.
 
-"Copyable snippet
+"Example that uses the PARAMETER-TABLE addition
 "Creating an instance by specifying the type statically
 "An example class of the cheat sheet repository is used.
-DATA(ob_ref) = NEW zcl_demo_abap_objects( ).
+DATA(oref1) = NEW zcl_demo_abap_objects( ).
 "Calling an instance method
 "The method multiplies an integer by 3.
 "The calculation result is returned.
-DATA(result) = ob_ref->triple( i_op = 2 ). "6
+DATA(result) = oref1->triple( i_op = 2 ). "6
 
 "Dynamic equivalent
 "Creating an instance of a class by specifying the type
 "dynamically
-DATA objref TYPE REF TO object.
-CREATE OBJECT objref TYPE ('ZCL_DEMO_ABAP_OBJECTS').
+DATA oref2 TYPE REF TO object.
+CREATE OBJECT oref2 TYPE ('ZCL_DEMO_ABAP_OBJECTS').
 
 "Creating parameter table
 DATA(ptab) = VALUE abap_parmbind_tab( ( name  = 'I_OP'
@@ -1205,7 +1232,7 @@ DATA(ptab) = VALUE abap_parmbind_tab( ( name  = 'I_OP'
                                         value = NEW i( ) ) ).
 
 "Dynamic method call and specifying a parameter table
-CALL METHOD objref->('TRIPLE') PARAMETER-TABLE ptab.
+CALL METHOD oref2->('TRIPLE') PARAMETER-TABLE ptab.
 result = ptab[ name = 'R_TRIPLE' ]-('VALUE')->*. "9
 ```
 
@@ -1677,8 +1704,7 @@ CREATE DATA dref_cr TYPE HANDLE tdo_ref.
 
 ## More Information
 - It is recommended that you also consult section [Dynamic Programming Techniques (F1 docu for standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abendynamic_prog_technique_gdl.htm) in the ABAP Keyword Documentation since it provides important aspects that should be considered when dealing with dynamic programming in general (e. g. security aspects or runtime error prevention).
-- There are even further dynamic programming techniques in the unrestricted language scope such as the
-generation or execution of programs at runtime. They are not part of this cheat sheet. Find more details on the related syntax (e. g. `GENERATE SUBROUTINE POOL`, `READ REPORT` and `INSERT REPORT` in the ABAP Keyword Documentation for Standard ABAP: [Dynamic Program Development (F1 docu for standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenabap_language_dynamic.htm)
+- There are even further dynamic programming techniques in the unrestricted ABAP language scope [Standard ABAP](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenstandard_abap_glosry.htm) such as the generation or execution of programs at runtime. They are not part of this cheat sheet. Find more details on the related syntax (e. g. `GENERATE SUBROUTINE POOL`, `READ REPORT` and `INSERT REPORT` in the ABAP Keyword Documentation for Standard ABAP: [Dynamic Program Development (F1 docu for standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenabap_language_dynamic.htm)
 
 ## Executable Example
 

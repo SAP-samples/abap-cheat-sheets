@@ -108,8 +108,8 @@ For an [SAP LUW](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US
   
 Using the above bank transfer as an example: 
 - At the end of the transaction, the new totals of both accounts are updated (money is debited from account A and credited to B).
-- You cannot debit account A in one work process and then credit account B in a separate work process. When the work process changes, new totals would be available in one account, but not in the other. Consider the consequences if an error occurs and the new totals for account B cannot be updated, and so on. You would no longer be able to easily roll back the changes.
-- Consider prematurely updating the database and notifying the users or processing the data while the logical unit has not been successfully completed.
+- You cannot debit account A in one work process and then credit account B in a separate work process. When the work process changes, new totals would be available in one account, but not in the other. 
+- Consider the consequences if an error occurs and the new totals for account B cannot be updated, and so on. You would no longer be able to easily roll back the changes. Consider prematurely updating the database and notifying the users or processing the data while the logical unit has not been successfully completed.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
@@ -197,7 +197,7 @@ The following bundling techniques are available for classic ABAP. This means tha
 **Using [remote-enabled function modules](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenremote_enabled_fm_glosry.htm)**
 - Also in this case, the bundling is done through function modules. 
 - They are also specially marked as remote-enabled function modules.
-- For example, you can use register them for later asynchronous execution in the background and through the [RFC interface](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenrfc_interface_glosry.htm) ([background Remote Function Call (bgRFC)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenbg_remote_function_glosry.htm)). With this technology, you can make calls in the same or different ABAP systems. 
+- For example, you can register them for later asynchronous execution in the background and through the [RFC interface](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenrfc_interface_glosry.htm) ([background Remote Function Call (bgRFC)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenbg_remote_function_glosry.htm)). With this technology, you can make calls in the same or different ABAP systems. 
 - More information:
   - [SAP Help Portal documentation about RFC](https://help.sap.com/docs/ABAP_PLATFORM_NEW/753088fc00704d0a80e7fbd6803c8adb/4888068AD9134076E10000000A42189D)
   - [`CALL FUNCTION ... IN BACKGROUND UNIT`](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapcall_function_background_unit.htm)
@@ -316,7 +316,7 @@ After the import of the repository, proceed as follows:
 >   - does not claim to include meaningful dynpros with meaningful dynpro sequences and is not intended to be a role model for proper dynpro design.   
 >   - is not intended to solve concrete programming tasks. You should always work out your own solution for each individual case.
 >   - is only intended to demonstrate a selection of keywords and visualize SAP LUW-related syntax in action on a high level. 
->   - is explained in more detail below in the expandable section below. Click to view the details.
+>   - is explained in more detail in the expandable section below. Click to view the details.
 > - Dynpros cannot be created in ABAP Cloud. As mentioned earlier, RAP is the transactional programming model for ABAP Cloud. It comes with a well-defined transactional model and follows the rules of the SAP LUW. See the links in the [More Information](#more-information) section.
 > - The steps to import and run the code are outlined [here](README.md#-getting-started-with-the-examples).
 > - [Disclaimer](README.md#%EF%B8%8F-disclaimer)

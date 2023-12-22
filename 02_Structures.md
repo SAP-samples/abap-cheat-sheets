@@ -316,14 +316,14 @@ Nested components can be addressed using chaining:
 ```
 
 > **💡 Note**<br>
-> The [`ASSIGN`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapassign_dynamic_components.htm) statement has special variants for dynamically accessing structure components.
+> There are syntax options for dynamically accessing structure components. See the [Dynamic Porgramming](06_Dynamic_Programming.md) cheat sheet.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## Populating Structures 
 
 You can copy the content of a structure to another using the [assignment operator](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenassignment_operator_glosry.htm) `=`. 
-In the following example, it is assumed that the target and source structure are of compatible types. In general, note that special [conversion](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconversion_struc.htm) and [comparison rules](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenlogexp_rules_operands_struc.htm) apply to value assignments involving structures.
+In the following example, it is assumed that the target and source structures are of compatible types. In general, note that special [conversion](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconversion_struc.htm) and [comparison rules](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenlogexp_rules_operands_struc.htm) apply to value assignments involving structures.
 ``` abap
 some_struc = another_struc.
 
@@ -448,8 +448,8 @@ diff_struc = CORRESPONDING #( BASE ( diff_struc ) struc EXCEPT comp1 ).
 ```
 
 Value assignments in deep structures 
-- In the context of deep structures, there are additional syntax variants available for [`MOVE-CORRESPONDING`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapmove-corresponding.htm) statements and the [`CORRESPONDING`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconstructor_expr_corresponding.htm).
-- The follwing examples focus on internal tables as structure components. For the effect, see the executable example.
+- In the context of deep structures, there are additional syntax variants available for [`MOVE-CORRESPONDING`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapmove-corresponding.htm) statements and the [`CORRESPONDING`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconstructor_expr_corresponding.htm) operator.
+- The following examples focus on internal tables as structure components. Check out the syntax in action in the executable example.
 
 ``` abap
 "Nonidentical elementary component types are kept in target

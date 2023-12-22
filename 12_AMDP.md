@@ -222,7 +222,7 @@ Note:
     that the database objects that are specified after `USING` are accessible.
 -   Generally, in the [unrestricted ABAP language
     version](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenunrestricted_version_glosry.htm "Glossary Entry")
-    scope, more syntax options are allowed for AMDP method declaration
+    scope ([ABAP for Cloud Development](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenabap_for_sap_cloud_glosry.htm)), more syntax options are allowed for AMDP method declaration
     and implementation parts. Check the ABAP Keyword Documentation for
     more details as covered further down.
 
