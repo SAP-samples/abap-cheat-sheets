@@ -1368,6 +1368,7 @@ The following restrictions apply to operations and/or statements in the individu
     Contract](https://help.sap.com/docs/ABAP_PLATFORM_NEW/fc4c71aa50014fd1b43721701471913d/3a402c5cf6a74bc1a1de080b2a7c6978.html):
     Rules for the RAP BO provider and consumer implementation to ensure
     consistency and reliability
+-   Find more information about the `CL_ABAP_TX` class mentioned above in the SAP Help Portal documentation: [Controlled SAP LUW](https://help.sap.com/docs/abap-cloud/abap-concepts/controlled-sap-luw).
 
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>

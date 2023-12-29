@@ -738,7 +738,7 @@ DATA(oref) = NEW zcl_demo_abap_objects( ).
 
 "Assigning instance attributes using an object reference variable
 "All visible attributes of objects can be assigned.
-oref->string = `ABAP`. "Assigning a value to the attribute
+oref->string = `ABAP`. "Assigning a value to the attribute for demo purposes
 ASSIGN oref->('STRING') TO <fs>.
 
 "Assigning instance attributes using an interface reference variable
@@ -764,7 +764,7 @@ ASSIGN ('ZCL_DEMO_ABAP_OBJECTS')=>('PUBLIC_STRING') TO <fs>.
 ASSIGN ('ZDEMO_ABAP_OBJECTS_INTERFACE')=>('CONST_INTF') TO <fs>.
 
 "Further dynamic syntax options are possible, for example,
-"specifying the memory area after ASSIGN with a writable expressions
+"specifying the memory area after ASSIGN with a writable expression
 "because the operand position after ASSIGN is a result position.
 ASSIGN NEW zcl_demo_abap_objects( )->('PUBLIC_STRING') TO <fs>.
 
@@ -887,6 +887,35 @@ ASSIGN st TO <gen>.
 "As in the examples above, specifying components dynamically is possible.
 <gen>-('COL2') = `ABAP`.
 DATA(gen_comp) = CONV string( <gen>-('COL2') ).
+
+"Excursion
+"In the following example, a structure is assigned to a field symbol that
+"has a generic type. The components of the structure are accessed dynamically in 
+"a DO loop. The sy-index value is interpreted as the position of the component 
+"in the structure. Plus, using RTTI - as also shown further down - the component 
+"name is retrieved. Component names and the values are added to a string. As a 
+"prerequisite, all component values can be converted to type string.
+DATA struc2string TYPE string.
+FIELD-SYMBOLS <strco> TYPE data.
+ASSIGN st TO <strco>.
+IF sy-subrc = 0.
+  TRY.
+      DATA(comps) = CAST cl_abap_structdescr( cl_abap_typedescr=>describe_by_data( <strco> ) )->components.
+      DO.
+        TRY.
+            DATA(comp_name) = comps[ sy-index ]-name.
+            struc2string = struc2string &&
+                           COND #( WHEN sy-index <> 1 THEN `, ` ) &&
+                           comp_name && `: "` &&
+                           <strco>-(sy-index) && `"`.
+          CATCH cx_sy_assign_illegal_component cx_sy_itab_line_not_found.
+            EXIT.
+        ENDTRY.
+      ENDDO.
+    CATCH cx_sy_move_cast_error.
+  ENDTRY.
+ENDIF.
+"struc2string: COL1: "123", COL2: "ABAP", COL3: "Z"
 ```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
@@ -984,10 +1013,10 @@ DATA(wa_te2) = itab[ ('COL2') = `bbb` ('COL3') = `yyy` ].
 "In the following example, the component names are also specified dynamically.
 DATA(wa_te3) = itab[ KEY ('SK') ('COL2') = `ccc` ].
 "Specifying the COMPONENTS addition explicitly
-DATA(wa_te4) = itab[ KEY ('PRIMARY_KEY') COMPONENTS ('col1') = 1 ].
+DATA(wa_te4) = itab[ KEY ('PRIMARY_KEY') COMPONENTS ('COL1') = 1 ].
 
 "Accessing components
-"As shown abobe, chaininings with the (object) component selector are possible.
+"As shown above, chaininings with the (object) component selector are possible.
 "The examples use index access and write positions.
 itab[ 1 ]-('COL2') = `jkl`.
 itab_ref[ 1 ]->('COL2') = `mno`.
@@ -1028,7 +1057,7 @@ INSERT LINES OF VALUE itab_type( ( col1 = 4 col2 = `eee` col3 = `www` )
   "USING KEY ('PRIMARY_KEY')
   INTO itab INDEX 1.
 
-"Excursion: Taking up the LOOP AT statements with the USING KEY addition
+"Excursion: Using LOOP AT statements with the USING KEY addition
 "and exploring the table index
 "Declaring demo tables to hold the internal table entries
 DATA it_seckey_idx TYPE TABLE OF demo_struct WITH EMPTY KEY.
