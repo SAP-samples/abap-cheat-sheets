@@ -1239,7 +1239,7 @@ CLASS zcl_example_class IMPLEMENTATION.
     "classic ABAP, you can, for example and additionally, use cl_demo_output or
     "ALV.
     "Notes:
-    "- The following example is just ABAP code tinkering with dynamic programming
+    "- The following example is just ABAP code exploring dynamic programming
     "  aspects. Note the disclaimer in the README of the cheat sheet repository.
     "  It is an example that sets its focus on a dynamic SELECT statement and
     "  processing internal tablecontent by dynamically accessing structure
