@@ -153,18 +153,18 @@ ASSIGN num TO FIELD-SYMBOL(<fs_inl>).
 TYPES c_len_3 TYPE c LENGTH 3.
 DATA(chars) = 'abcdefg'.
 
-FIELD-SYMBOLS <fs1> TYPE c_len_3.
+FIELD-SYMBOLS <fs1> TYPE c_len_3. 
 
 "Implicit casting
-ASSIGN chars TO <fs1> CASTING.
+ASSIGN chars TO <fs1> CASTING. "abc
 
 FIELD-SYMBOLS <fs2> TYPE data.
 
 "Explicit casting
-ASSIGN chars TO <fs2> CASTING TYPE c_len_3.
+ASSIGN chars TO <fs2> CASTING TYPE c_len_3. "abc
 
 DATA chars_l4 TYPE c LENGTH 4.
-ASSIGN chars TO <fs2> CASTING LIKE chars_l4.
+ASSIGN chars TO <fs2> CASTING LIKE chars_l4. "abcd
 ```
 
 > **💡 Note**<br>
@@ -210,7 +210,8 @@ LOOP AT itab ASSIGNING <fs1>.
   ...
 ENDLOOP.
 
-"Inline declaration of a field symbol. It receives a suitable
+"Inline declaration of a field symbol. The field symbol is implcitly typed
+"with the generic type data.
 "type automatically.
 LOOP AT itab ASSIGNING FIELD-SYMBOL(<fs2>).
   <fs2>-carrid = ...
@@ -686,7 +687,7 @@ ASSIGN ('DOBJ') TO FIELD-SYMBOL(<fs_inline>).
 
 "The statements set the sy-subrc value. No exception occurs in
 "case of an unsuccessful assignment.
-ASSIGN ('DOESNOTEXIST') TO <fs>.
+ASSIGN ('DOES_NOT_EXIST') TO <fs>.
 IF sy-subrc <> 0.
   ...
 ENDIF.
@@ -893,8 +894,8 @@ DATA(gen_comp) = CONV string( <gen>-('COL2') ).
 "has a generic type. The components of the structure are accessed dynamically in 
 "a DO loop. The sy-index value is interpreted as the position of the component 
 "in the structure. Plus, using RTTI - as also shown further down - the component 
-"name is retrieved. Component names and the values are added to a string. As a 
-"prerequisite, all component values can be converted to type string.
+"names are retrieved. Component names and the values are added to a string. As a 
+"prerequisite, all component values must be convertible to type string.
 DATA struc2string TYPE string.
 FIELD-SYMBOLS <strco> TYPE data.
 ASSIGN st TO <strco>.
@@ -998,7 +999,7 @@ ENDIF.
 "------- Table expressions ------
 "Similar to READ TABLE statements, you can specify table lines with 3 alternatives:
 "index read, read using free key, table key
-"Also there, dynamic specification are possible regarding the key specifications.
+"Also there, dynamic specifications are possible regarding the key specifications.
 
 "Reading based on index with dynamic key specifications
 "Specifying the secondary table index of a sorted secondary key
@@ -1137,7 +1138,7 @@ SELECT *
   INTO TABLE @fli_tab.
 
 "Excursion: Compatible target data objects
-"In the examples above, the data object/type was created statically.
+"In the examples above, the data object/type is created statically.
 
 "Creating an anonymous data object with a CREATE DATA statement
 "and specifiying the type dynamically.
@@ -1177,6 +1178,19 @@ SELECT *
   WHERE (where_clause)
   INTO TABLE NEW @DATA(tab_dyn_where).
 
+"Dynamic ORDER BY clause
+SELECT *
+  FROM zdemo_abap_fli
+  ORDER BY (`FLDATE`)
+  INTO TABLE NEW @DATA(tab_dyn_order).
+
+"SELECT statement with miscellaneous dynamic specifications
+SELECT (`CARRID, CONNID, FLDATE`)
+  FROM (`ZDEMO_ABAP_FLI`)
+  WHERE (`CARRID <> ``AA```)
+  ORDER BY (`FLDATE`)
+  INTO TABLE NEW @DATA(tab_dyn_misc).
+
 "Further dynamic specifications in other ABAP SQL statements
 "Creating a structure to be inserted into the database table
 SELECT SINGLE *
@@ -1193,6 +1207,154 @@ dref_struc->('SEATSOCC') = 10.
 MODIFY (table) FROM @dref_struc->*.
 
 DELETE FROM (table) WHERE (`CARRID = 'YZ'`).
+```
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+**Excursion**: To take up the use case mentioned in the introduction about retrieving the content of a database table, storing it in an internal table, and
+displaying it when the database table name is specified dynamically at
+runtime, see the following code snippet. Note the comments.
+
+
+```abap
+CLASS zcl_example_class DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
+
+  PUBLIC SECTION.
+    INTERFACES if_oo_adt_classrun.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+ENDCLASS.
+CLASS zcl_example_class IMPLEMENTATION.
+  METHOD if_oo_adt_classrun~main.
+    "The example retrieves the content of a database table, storing it in an 
+    "internal table, and displaying it when the database table name is 
+    "specified dynamically at runtime.
+    "Certainly, there are quite some ways to achieve it, and that work out
+    "of the box. For example, in ABAP for Cloud Development, you can implement
+    "the classrun if_oo_adt_classrun and output content using the out->write(...)
+    "method. You can also inherit from cl_demo_classrun in your class. In
+    "classic ABAP, you can, for example and additionally, use cl_demo_output or
+    "ALV.
+    "Notes:
+    "- The following example is just ABAP code tinkering with dynamic programming
+    "  aspects. Note the disclaimer in the README of the cheat sheet repository.
+    "  It is an example that sets its focus on a dynamic SELECT statement and
+    "  processing internal tablecontent by dynamically accessing structure
+    "  components.
+    "- The ways mentioned above are way more powerful (e.g. in most cases also
+    "  nested and deep data objects can be displayed for demo purposes).
+    "- For simplicity, column contents are converted to string here if necessary,
+    "  i.e. all column contents must be convertible to string.
+    "- For display purposes, the snippet uses the classrun methods to display
+    "  results sequentially - instead of displaying the internal table
+    "  content retrieved by the SELECT statement directly.
+    "- The example uses database tables from the cheat sheet repository. To fill
+    "  them, you can use the method call zcl_demo_abap_aux=>fill_dbtabs( )..
+    zcl_demo_abap_aux=>fill_dbtabs( ).
+
+    "Data objects and types relevant for the example (length and offset for
+    "content display)
+    DATA str TYPE string.
+    TYPES: BEGIN OF comp_struc,
+             name TYPE string,
+             len  TYPE i,
+             off  TYPE i,
+           END OF comp_struc.
+    DATA it_comps TYPE TABLE OF comp_struc WITH EMPTY KEY.
+
+    "Database table of type string containing names of database tables;
+    "table is looped over to output content of all database tables
+    DATA(dbtabs) = VALUE string_table( ( `ZDEMO_ABAP_CARR` )
+                                       ( `ZDEMO_ABAP_FLI` )
+                                       ( `ZDEMO_ABAP_FLSCH` ) ).
+
+    LOOP AT dbtabs INTO DATA(dbtab).
+      "Retrieving database content of a dynamically specified database table
+      TRY.
+          SELECT *
+            FROM (dbtab)
+            INTO TABLE NEW @DATA(itab)
+            UP TO 5 ROWS.
+        CATCH cx_sy_dynamic_osql_semantics INTO DATA(sql_error).
+          CLEAR itab->*.
+          out->write( |Table { dbtab } does not exist.| ).
+      ENDTRY.
+
+      IF sql_error IS INITIAL.
+        "Getting table component names using RTTI methods
+        TRY.
+            DATA(type_descr_obj_tab) = CAST cl_abap_tabledescr(
+              cl_abap_typedescr=>describe_by_data( itab->* ) ).
+            DATA(tab_comps) = CAST cl_abap_structdescr(
+              type_descr_obj_tab->get_table_line_type( ) )->get_components( ).
+            LOOP AT tab_comps ASSIGNING FIELD-SYMBOL(<comp>).
+              APPEND VALUE #( name = <comp>-name len = strlen( <comp>-name ) ) TO it_comps.
+            ENDLOOP.
+          CATCH cx_sy_move_cast_error INTO DATA(error).
+        ENDTRY.
+
+        IF error IS INITIAL.
+          out->write( |\n| ).
+          out->write( |Retrieved content of database table { dbtab }:| ).
+          "Implementation for properly aligning the content
+          "The example is implemented to check the length of the column names as well as the
+          "length of the values in the columns. It determines the length of the longest string
+          "in each column. Depending on the length values, either the length of the column name
+          "or the length of the longest string in a column is stored in an internal table that
+          "contains information for calculating the offset.
+          LOOP AT tab_comps ASSIGNING FIELD-SYMBOL(<len>).
+            ASSIGN it_comps[ name = <len>-name ] TO FIELD-SYMBOL(<co>).
+            DATA(max_content) = REDUCE i( INIT len = <co>-len
+                                          FOR <line> IN itab->*
+                                          NEXT len = COND #( WHEN strlen( CONV string( <line>-(<co>-name) ) ) > len
+                                                             THEN strlen( CONV string( <line>-(<co>-name) ) )
+                                                             ELSE len ) ).
+            "Extend the length value to leave some more space
+            IF max_content > <co>-len.
+              <co>-len = max_content + 3.
+            ELSE.
+              <co>-len += 3.
+            ENDIF.
+          ENDLOOP.
+          "Calculating offset values
+          DATA max_str_len TYPE i.
+          LOOP AT it_comps ASSIGNING FIELD-SYMBOL(<off>).
+            DATA(tabix) = sy-tabix.
+            READ TABLE it_comps INDEX tabix - 1 ASSIGNING FIELD-SYMBOL(<prev>).
+            <off>-off = COND #( WHEN tabix = 1 THEN 0 ELSE <prev>-len + <prev>-off ).
+            max_str_len += <off>-len.
+          ENDLOOP.
+          "Providing enough space so that table row content can be inserted based on
+          "the offset specification
+          SHIFT str BY max_str_len PLACES RIGHT.
+          "Adding the column names first
+          LOOP AT it_comps ASSIGNING FIELD-SYMBOL(<header>).
+            str = insert( val = str sub = <header>-name off = <header>-off ).
+          ENDLOOP.
+          out->write( str ).
+          "Processing all lines in the internal table containing the retrieved table rows
+          LOOP AT itab->* ASSIGNING FIELD-SYMBOL(<wa>).
+            CLEAR str.
+            SHIFT str BY max_str_len PLACES RIGHT.
+            DO.
+              TRY.
+                  str = insert( val = str sub = <wa>-(sy-index) off = it_comps[ sy-index ]-off ).
+                CATCH cx_sy_assign_illegal_component cx_sy_range_out_of_bounds cx_sy_itab_line_not_found.
+                  EXIT.
+              ENDTRY.
+            ENDDO.
+            out->write( str ).
+          ENDLOOP.
+        ENDIF.
+        out->write( |\n| ).
+        CLEAR: str, it_comps.
+      ENDIF.
+    ENDLOOP.
+  ENDMETHOD.
+ENDCLASS.
 ```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
