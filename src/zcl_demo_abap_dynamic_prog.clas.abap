@@ -115,7 +115,7 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
       ...
     ENDLOOP.
 
-    out->write( `No output for this section. See the code.` ).
+    out->write( `No output for this section. You can set a break point and check the content of data objects in the debugger.` ).
 
 **********************************************************************
 
@@ -136,7 +136,7 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
                    <fs_struc_a> TYPE zdemo_abap_fli,
                    <fs_tab_a>   TYPE string_table.
 
-    "Field symbols with complete types
+    "Field symbols with generic types, see more examples bwloe
     FIELD-SYMBOLS <fs_data_a>   TYPE data.
     FIELD-SYMBOLS <fs_anytab_a> TYPE ANY TABLE.
 
@@ -149,10 +149,166 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
             tab_a   TO <fs_data_a>,
             tab_a   TO <fs_anytab_a>.
 
-    "Inline declaration is possible, too. The type is derived automatically.
+    "Inline declaration is possible, too. The field symbol is implicitly typed
+    "with the generic type data.
     ASSIGN num_a TO FIELD-SYMBOL(<fs_inl>).
 
-    out->write( `No output for this section. See the code.` ).
+    "Generic typing
+    "- Generic types are available with which formal parameters of methods or field symbols
+    "  can be specified.
+    "- At runtime, the actual data type is copied from the assigned actual parameter or
+    "  memory area, i.e. they receive the complete data type only when an actual parameter
+    "  is passed or a memory area is assigned.
+
+    FIELD-SYMBOLS:
+      "Any data type
+      <data>           TYPE data,
+      <any>            TYPE any,
+      "Any data type can be assigned. Restrictions for formal parameters and 'data': no
+      "numeric functions, no description functions, and no arithmetic expressions can be
+      "passed to these parameters. However, you can bypass the restriction by applying the
+      "CONV operator for the actual parameter.
+
+      "Character-like types
+      <c>              TYPE c,         "Text field with a generic length
+      <clike>          TYPE clike,     "Character-like (c, n, string, d, t and character-like flat structures)
+      <csequence>      TYPE csequence, "Text-like (c, string)
+      <n>              TYPE n,         "Numeric text with generic length
+      <x>              TYPE x,         "Byte field with generic length
+      <xsequence>      TYPE xsequence, "Byte-like (x, xstring)
+
+      "Numeric types
+      <decfloat>       TYPE decfloat, "decfloat16, decfloat34)
+      <numeric>        TYPE numeric,  "Numeric ((b, s), i, int8, p, decfloat16, decfloat34, f)
+      <p>              TYPE p,        "Packed number (generic length and number of decimal places)
+
+      "Internal table types
+      <any_table>      TYPE ANY TABLE,      "Internal table with any table type
+      <hashed_table>   TYPE HASHED TABLE,
+      <index_table>    TYPE INDEX TABLE,
+      <sorted_table>   TYPE SORTED TABLE,
+      <standard_table> TYPE STANDARD TABLE,
+      <table>          TYPE table,          "Standard table
+
+      "Other types
+      <simple>         TYPE simple, "Elementary data type including enumerated types and
+      "structured types with exclusively character-like flat components
+      <object>         TYPE REF TO object. "object can only be specified after REF TO; can point to any object
+
+    "Data objects to work with
+    DATA: BEGIN OF s,
+            c3        TYPE c LENGTH 3,
+            c10       TYPE c LENGTH 10,
+            n4        TYPE n LENGTH 4,
+            str       TYPE string,
+            time      TYPE t,
+            date      TYPE d,
+            dec16     TYPE decfloat16,
+            dec34     TYPE decfloat34,
+            int       TYPE i,
+            pl4d2     TYPE p LENGTH 4 DECIMALS 2,
+            tab_std   TYPE STANDARD TABLE OF string WITH EMPTY KEY,
+            tab_so    TYPE SORTED TABLE OF string WITH NON-UNIQUE KEY table_line,
+            tab_ha    TYPE HASHED TABLE OF string WITH UNIQUE KEY table_line,
+            xl1       TYPE x LENGTH 1,
+            xstr      TYPE xstring,
+            structure TYPE zdemo_abap_carr, "character-like flat structure
+            oref      TYPE REF TO object,
+          END OF s.
+
+    "The following static ASSIGN statements demonstrate various assignments
+    "Note:
+    "- The statements commented out show impossible assignments.
+    "- If a static assignment is not successful, sy-subrc is not set and no
+    "  memory area is assigned. Dynamic assignments, however, set the value.
+
+    "----- Any data type -----
+    ASSIGN s-c3 TO <data>.
+    ASSIGN s-time TO <data>.
+    ASSIGN s-tab_std TO <data>.
+    ASSIGN s-xstr TO <any>.
+    ASSIGN s-pl4d2 TO <any>.
+    ASSIGN s-date TO <any>.
+
+    "----- Character-like types -----
+    ASSIGN s-c3 TO <c>.
+    ASSIGN s-c10 TO <c>.
+    "ASSIGN s-str TO <c>.
+
+    ASSIGN s-c10 TO <clike>.
+    ASSIGN s-str TO <clike>.
+    ASSIGN s-n4 TO <clike>.
+    ASSIGN s-date TO <clike>.
+    ASSIGN s-time TO <clike>.
+    ASSIGN s-structure TO <clike>.
+
+    ASSIGN s-c10 TO <csequence>.
+    ASSIGN s-str TO <csequence>.
+    "ASSIGN s-n4 TO <csequence>.
+
+    ASSIGN s-n4 TO <n>.
+    "ASSIGN s-int TO <n>.
+    "ASSIGN s-time TO <n>.
+
+    ASSIGN s-xl1 TO <x>.
+    "ASSIGN s-xstr TO <x>.
+
+    ASSIGN s-xl1 TO <xsequence>.
+    ASSIGN s-xstr TO <xsequence>.
+
+    "----- Numeric types -----
+    ASSIGN s-dec16 TO <numeric>.
+    ASSIGN s-dec34 TO <numeric>.
+    ASSIGN s-int TO <numeric>.
+    ASSIGN s-pl4d2 TO <numeric>.
+    "ASSIGN s-n4 TO <numeric>.
+
+    ASSIGN s-dec16 TO <decfloat>.
+    ASSIGN s-dec34 TO <decfloat>.
+
+    ASSIGN s-pl4d2 TO <p>.
+    "ASSIGN s-dec34 TO <p>.
+
+    "----- Internal table types -----
+    ASSIGN s-tab_std TO <any_table>.
+    ASSIGN s-tab_so TO <any_table>.
+    ASSIGN s-tab_ha TO <any_table>.
+
+    ASSIGN s-tab_std TO <index_table>.
+    ASSIGN s-tab_so TO <index_table>.
+    "ASSIGN s-tab_ha TO <index_table>.
+
+    "ASSIGN s-tab_std TO <sorted_table>.
+    ASSIGN s-tab_so TO <sorted_table>.
+    "ASSIGN s-tab_ha TO <sorted_table>.
+
+    ASSIGN s-tab_std TO <standard_table>.
+    ASSIGN s-tab_std TO <table>.
+    "ASSIGN s-tab_so TO <standard_table>.
+    "ASSIGN s-tab_so TO <table>.
+    "ASSIGN s-tab_ha TO <standard_table>.
+    "ASSIGN s-tab_ha TO <table>.
+
+    "ASSIGN s-tab_std TO <hashed_table>.
+    "ASSIGN s-tab_so TO <hashed_table>.
+    ASSIGN s-tab_ha TO <hashed_table>.
+
+    "----- Other types -----
+    ASSIGN s-c10 TO <simple>.
+    ASSIGN s-str TO <simple>.
+    ASSIGN s-dec34 TO <simple>.
+    ASSIGN s-date TO <simple>.
+    ASSIGN s-structure TO <simple>.
+    ASSIGN s-xl1 TO <simple>.
+    "ASSIGN s-tab_ha TO <simple>.
+
+    ASSIGN s-oref TO <object>.
+    s-oref = NEW zcl_demo_abap_objects( ).
+    ASSIGN s-oref TO <object>.
+    s-oref = cl_abap_random_int=>create( ).
+    ASSIGN s-oref TO <object>.
+
+    out->write( `No output for this section. You can set a break point and check the content of data objects in the debugger.` ).
 
 **********************************************************************
 
@@ -383,9 +539,7 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
 
 **********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `7) Using Field Symbols when Processing ` &&
-   `Internal Tables` ) ).
-
+    out->write( zcl_demo_abap_aux=>heading( `7) Using Field Symbols when Processing Internal Tables` ) ).
 
     "By using field symbols in the context of loops across internal tables,
     "you can avoid an actual copying of content to a work area during
@@ -455,7 +609,7 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
 
 **********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `8) Field Symbols in the Context of Processing a Structure` ) ).
+    out->write( zcl_demo_abap_aux=>heading( `8) Structure Assigned to Field Symbol: Accessing Structure Components` ) ).
 
     "In this example, all components of a structure are processed using
     "field symbols and an ASSIGN COMPONENT ... OF STRUCTURE ... statement.
@@ -466,23 +620,23 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
     "structure. Once all components have been processed (i. e. if sy-subrc
     "does not return '0' for a sy-index value), the loop is exited. The output
     "shows all components and their values.
+    "See more examples for accessing structure components below.
 
-    FIELD-SYMBOLS: <comp> TYPE data.
+    FIELD-SYMBOLS <comp> TYPE data.
 
-    DATA: comp_tab TYPE string_table.
+    DATA comp_tab TYPE string_table.
 
     SELECT SINGLE carrid, carrname, currcode, url
       FROM zdemo_abap_carr
       WHERE carrid = 'LH'
       INTO @DATA(struct).
 
-    FIELD-SYMBOLS: <struct> TYPE data.
+    FIELD-SYMBOLS <struct> TYPE data.
 
     ASSIGN struct TO <struct>.
 
     DO.
       "sy-index represents the position of a structure component
-
       ASSIGN <struct>-(sy-index) TO <comp>.
 
       "Old syntax
@@ -501,7 +655,7 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
 
 **********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `Data references` ) ).
+    out->write( zcl_demo_abap_aux=>heading( `Data References` ) ).
     out->write( |9) Declaring Data References\n\n| ).
 
     "Like field symbols, data reference variables can be declared with both
@@ -521,7 +675,7 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
           ref_a5 TYPE ref_type,
           ref_a6 TYPE REF TO data. "Generic data type
 
-    out->write( `No output for this section. See the code.` ).
+    out->write( `No output for this section. You can set a break point and check the content of data objects in the debugger.` ).
 
 **********************************************************************
 
@@ -552,7 +706,7 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
     "You can explicitly specify the data type after REF.
     "DATA(ref_b3) = REF #( g ).
 
-    out->write( `No output for this section. See the code.` ).
+    out->write( `No output for this section. You can set a break point and check the content of data objects in the debugger.` ).
 
 **********************************************************************
 
@@ -783,6 +937,7 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
     DATA(ref_f1) = NEW string( `hello` ).
     DATA ref_f2 TYPE REF TO i.
 
+    out->write( `IF statement:` ).
     IF ref_f1 IS BOUND.
       out->write( `ref_f1 is bound.` ).
     ELSE.
@@ -790,12 +945,22 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
     ENDIF.
 
     out->write( |\n| ).
+    out->write( `COND operator:` ).
+    DATA(is_bound) = COND #( WHEN ref_f1 IS BOUND THEN `ref_f1 is bound.` ELSE `ref_f1 is not bound.` ).
+    out->write( is_bound ).
+    out->write( |\n| ).
 
+    out->write( `IF statement:` ).
     IF ref_f2 IS BOUND.
       out->write( `ref_f2 is bound.` ).
     ELSE.
       out->write( `ref_f2 is not bound.` ).
     ENDIF.
+
+    out->write( |\n| ).
+    out->write( `COND operator:` ).
+    is_bound = COND #( WHEN ref_f2 IS BOUND THEN `ref_f2 is bound.` ELSE `ref_f2 is not bound.` ).
+    out->write( is_bound ).
 
 **********************************************************************
 
@@ -962,14 +1127,250 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
 
 **********************************************************************
 
+    out->write( zcl_demo_abap_aux=>heading( `20) Excursion: Generic Data References` ) ).
+
+    "In modern ABAP, variables and field symbols of the generic types
+    "'any' and 'data' can be used directly, for example, in LOOP and READ statements.
+    DATA dref_gen TYPE REF TO data.
+    CREATE DATA dref_gen TYPE TABLE OF zdemo_abap_carr.
+    SELECT *
+      FROM zdemo_abap_carr
+      INTO TABLE @dref_gen->*.
+
+    "Note: In case of a fully generic type, an explicit or implicit index operation
+    "is not possible (indicated by the examples commented out).
+    LOOP AT dref_gen->* ASSIGNING FIELD-SYMBOL(<loop>).
+      ...
+    ENDLOOP.
+    "LOOP AT dref->* ASSIGNING FIELD-SYMBOL(<loop2>) FROM 1 TO 4.
+    "ENDLOOP.
+
+    "The following examples use a dynamic key specification.
+    "See more syntax examples below.
+    READ TABLE dref_gen->* ASSIGNING FIELD-SYMBOL(<read>) WITH KEY ('CARRID') = 'AA'.
+    "READ TABLE dref->* INDEX 1 ASSIGNING FIELD-SYMBOL(<read2>).
+    out->write( data = <read> name = `<read>` ).
+    out->write( |\n| ).
+
+    "Table expressions
+    DATA(line) = CONV zdemo_abap_carr( dref_gen->*[ ('CARRID') = 'AA' ] ).
+
+    out->write( data = line name = `line` ).
+    out->write( |\n| ).
+
+    dref_gen->*[ ('CARRID') = 'AA' ] = VALUE zdemo_abap_carr( BASE dref_gen->*[ ('CARRID') = 'AA' ] carrid = 'XY' ).
+
+    out->write( data = dref_gen->*[ ('CARRID') = 'XY' ] name = `dref_gen->*[ ('CARRID') = 'XY' ]` ).
+    out->write( |\n| ).
+
+    dref_gen->*[ ('CARRID') = 'XY' ]-('CARRID') = 'AA'.
+
+    out->write( data = dref_gen->*[ ('CARRID') = 'AA' ]-('CARRNAME') name = `dref_gen->*[ ('CARRID') = 'AA' ]-('CARRNAME')` ).
+    out->write( |\n| ).
+
+    "Table functions
+    DATA(num_tab_lines) = lines( dref_gen->* ).
+
+    out->write( data = num_tab_lines name = `num_tab_lines` ).
+    out->write( |\n| ).
+
+    DATA(idx) = line_index( dref_gen->*[ ('CARRID') = 'LH' ] ).
+
+    out->write( data = idx name = `idx` ).
+    out->write( |\n| ).
+
+**********************************************************************
+
     out->write( zcl_demo_abap_aux=>heading( `Dynamic ABAP Statements` ) ).
-    out->write( |20) Dynamic Specifications in ASSIGN Statements (1) - Attributes of Classes/Interfaces\n\n| ).
+    out->write( |21) Dynamic ASSIGN Statements (1) -  Specifying the Memory Area Dynamically\n\n| ).
+    "The memory area is not specified directly, but as content of a
+    "character-like data object in parentheses.
+    "Note:
+    "- When specified as unnamed data object, the compiler treats the
+    "  specifications like static assignments. Do not use named data objects
+    "  for ASSIGN statements in ABAP for Cloud Development. It is recommended
+    "  that existing named data objects are put in a structure. Then, the syntax
+    "  for assigning components dynamically can be used so as to avoid a syntax
+    "  warning.
+    "- Most of the following examples use an unnamed data object.
+    "- The specification of the name is not case-sensitive.
+
+    "Creating and populating various types/data objects to work with
+    TYPES: BEGIN OF st_type,
+             col1 TYPE i,
+             col2 TYPE string,
+             col3 TYPE string,
+           END OF st_type.
+    DATA structure TYPE st_type.
+    DATA it TYPE TABLE OF st_type WITH EMPTY KEY.
+    structure = VALUE #( col1 = 1 col2 = `aaa` col3 = `Z` ).
+    APPEND structure TO it.
+    DATA(struc_ref) = NEW st_type( col1 = 2 col2 = `b` col3 = `Y` ).
+    DATA dobj TYPE string VALUE `hallo`.
+    "The following examples use a field symbol with generic type
+    FIELD-SYMBOLS <fs> TYPE data.
+
+    ASSIGN ('IT') TO <fs>.
+    ASSIGN ('SRUCTURE') TO <fs>.
+
+    "Field symbol declared inline
+    "Note: The typing is performed with the generic type data.
+    ASSIGN ('DOBJ') TO FIELD-SYMBOL(<fs_inline>).
+
+    "The statements set the sy-subrc value.
+    ASSIGN ('DOES_NOT_EXIST') TO <fs>.
+    IF sy-subrc <> 0.
+      out->write( `Dynamic assignment not successful` ).
+    ENDIF.
+
+    "The memory area can also be a dereferenced data reference
+    ASSIGN struc_ref->* TO <fs>.
+
+**********************************************************************
+
+    out->write( zcl_demo_abap_aux=>heading( `22) Dynamic ASSIGN Statements (2) - Assigning Components Dynamically` ) ).
+
+    "You can chain the names with the component selector (-), or, in
+    "case of reference variables, the object component selector (->).
+    ASSIGN structure-('COL1') TO <fs>.
+    ASSIGN it[ 1 ]-('COL1') TO <fs>.
+    ASSIGN struc_ref->('COL1') TO <fs>.
+    "The following example uses the dereferencing operator explicitly
+    "followed by the component selector.
+    ASSIGN struc_ref->*-('COL1') TO <fs>.
+
+    "Using a named data object for the component specification
+    DATA columnname TYPE string VALUE `COL1`.
+    ASSIGN structure-(columnname) TO <fs>.
+
+    "Fully dynamic specification
+    "If the compiler can fully determine the data object in ASSIGN structureatements
+    "in ABAP for Cloud Development, a warning is not issued.
+    ASSIGN ('STRUCTURE-COL1') TO <fs>.
+
+    "Numeric expressions are possible. Its value is interpreted
+    "as the position of the component in the structureructure.
+    ASSIGN structure-(3) TO <fs>.
+
+    "If the value is 0, the memory area of the entire structureructure is
+    "assigned to the field symbol.
+    ASSIGN structure-(0) TO <fs>.
+
+    "The structureatements above replace the following, older structureatements.
+    ASSIGN COMPONENT 'COL1' OF STRUCTURE structure TO <fs>.
+    ASSIGN COMPONENT 3 OF STRUCTURE structure TO <fs>.
+
+    "More examples
+    SELECT SINGLE * FROM zdemo_abap_carr INTO @DATA(wa).
+    "Reading into data reference variable
+    SELECT SINGLE * FROM zdemo_abap_carr INTO NEW @DATA(ref_m).
+
+    DATA(comp_name) = lcl_det_at_runtime=>get_dyn_field( ).
+
+    ASSIGN wa-(comp_name) TO FIELD-SYMBOL(<fs_m6>).
+
+    ASSIGN wa-('CARRNAME') TO FIELD-SYMBOL(<fs_m7>).
+
+    IF sy-subrc = 0.
+      DATA(subrc1) = sy-subrc.
+    ENDIF.
+
+    "No exception occurs in case of an unsuccessful assignment.
+    ASSIGN wa-('CRRNM') TO FIELD-SYMBOL(<fs_m8>).
+
+    IF sy-subrc <> 0.
+      DATA(subrc2) = sy-subrc.
+    ENDIF.
+
+    "Numeric expressions are possible. Its value is interpreted as the position
+    "of the component in the structure.
+    ASSIGN wa-(4) TO FIELD-SYMBOL(<fs_m9>).
+
+    "If the value is 0, the memory area of the entire structure is assigned to the field symbol.
+    ASSIGN wa-(0) TO FIELD-SYMBOL(<fs_m10>).
+
+    "Old syntax
+    ASSIGN COMPONENT 'CARRID' OF STRUCTURE wa TO FIELD-SYMBOL(<fs_m11>).
+    ASSIGN COMPONENT 5 OF STRUCTURE wa TO FIELD-SYMBOL(<fs_m12>).
+
+    "Dynamically specifying components of structures that are referenced by
+    "a data reference variable
+
+    ASSIGN ref_m->('CARRNAME') TO FIELD-SYMBOL(<fs_m13>).
+
+    out->write( data = <fs_m6> name = `<fs_m6>` ).
+    out->write( |\n| ).
+    out->write( data = <fs_m7> name = `<fs_m7>` ).
+    out->write( |\n| ).
+    out->write( data = subrc1 name = `subrc1` ).
+    out->write( |\n| ).
+    out->write( data = subrc2 name = `subrc2` ).
+    out->write( |\n| ).
+    out->write( data = <fs_m9> name = `<fs_m9>` ).
+    out->write( |\n| ).
+    out->write( data = <fs_m10> name = `<fs_m10>` ).
+    out->write( |\n| ).
+    out->write( data = <fs_m11> name = `<fs_m11>` ).
+    out->write( |\n| ).
+    out->write( data = <fs_m12> name = `<fs_m12>` ).
+    out->write( |\n| ).
+    out->write( data = <fs_m13> name = `<fs_m13>` ).
+
+**********************************************************************
+
+    out->write( zcl_demo_abap_aux=>heading( `23) Dynamic ASSIGN Statements (3) - Assigning Attributes of Classes or Interfaces Dynamically (1)` ) ).
+    "The following syntax pattern shows the possible specifications.
+    "... cref->(attr_name) ...  "object reference variable
+    "... iref->(attr_name) ...  "interface reference variable
+    "... (clif_name)=>(attr_name) ...  "class/interface name
+    "... (clif_name)=>attr ...
+    "... clif=>(attr_name) ...
+
+    "Creating an instance of a class
+    DATA(objref) = NEW zcl_demo_abap_objects( ).
+
+    "Assigning instance attributes using an object reference variable
+    "All visible attributes of objects can be assigned.
+    objref->string = `ABAP`. "Assigning a value to the attribute for demo purposes
+    ASSIGN objref->('STRING') TO <fs>.
+
+    "Assigning instance attributes using an interface reference variable
+    DATA intref TYPE REF TO zdemo_abap_objects_interface.
+    intref = objref.
+    ASSIGN intref->('STRING') TO <fs>.
+    intref->in_str = `hallo`.
+    ASSIGN intref->('IN_STR') TO <fs>.
+
+    "Assigning static attributes
+    "All visible static attributes in classes and interfaces can be assigned
+    "In the following example, a class and an interface are specified statically,
+    "and the attributes are specified dynamically.
+    ASSIGN zcl_demo_abap_objects=>('PUBLIC_STRING') TO <fs>.
+    ASSIGN zdemo_abap_objects_interface=>('CONST_INTF') TO <fs>.
+
+    "Specifying a class or interface dynamically, and attributes statically
+    ASSIGN ('ZCL_DEMO_ABAP_OBJECTS')=>public_string TO <fs>.
+    ASSIGN ('ZDEMO_ABAP_OBJECTS_INTERFACE')=>const_intf TO <fs>.
+
+    "Specifying a class or interface as well as attributes dynamically
+    ASSIGN ('ZCL_DEMO_ABAP_OBJECTS')=>('PUBLIC_STRING') TO <fs>.
+    ASSIGN ('ZDEMO_ABAP_OBJECTS_INTERFACE')=>('CONST_INTF') TO <fs>.
+
+    "Further dynamic syntax options are possible, for example,
+    "specifying the memory area after ASSIGN with a writable expression
+    "because the operand position after ASSIGN is a result position.
+    ASSIGN NEW zcl_demo_abap_objects( )->('PUBLIC_STRING') TO <fs>.
+
+    out->write( `No output for this section. You can set a break point and check the content of data objects in the debugger.` ).
+
+**********************************************************************
+
+    out->write( zcl_demo_abap_aux=>heading( `24) Dynamic ASSIGN Statements (4) - Assigning Attributes of Classes or Interfaces Dynamically (2)` ) ).
 
     "The following examples demonstrate a selection of various dynamic specifications
     "that are possible with ASSIGN statements.
 
     "Dynamic specification of attributes of classes/interfaces that are assigned to a field symbol.
-
     DATA(dobj_name) = lcl_det_at_runtime=>get_dyn_dobj( ).
 
     ASSIGN lcl_det_at_runtime=>(dobj_name) TO FIELD-SYMBOL(<fs_m1>).
@@ -1008,7 +1409,7 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
 
 **********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `21) Dynamic Specifications in ASSIGN Statements (2) - Setting sy-subrc/ELSE UNASSIGN` ) ).
+    out->write( zcl_demo_abap_aux=>heading( `25) Dynamic ASSIGN Statements (5) - Setting sy-subrc/ELSE UNASSIGN Addition` ) ).
 
     "In dynamic assignments, the statement ASSIGN sets the return code sy-subrc.
     "If ELSE UNASSIGN is specified, no memory area is assigned to the field symbol. It has the state unassigned after the ASSIGN statement.
@@ -1041,69 +1442,7 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
 
 **********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `22) Dynamic Specifications in ASSIGN Statements (3) - Structure Components` ) ).
-
-    "Dynamic specification of structure components that are assigned to a field symbol.
-
-    SELECT SINGLE * FROM zdemo_abap_carr INTO @DATA(wa).
-    "Reading into data reference variable
-    SELECT SINGLE * FROM zdemo_abap_carr INTO NEW @DATA(ref_m).
-
-    DATA(comp_name) = lcl_det_at_runtime=>get_dyn_field( ).
-
-    ASSIGN wa-(comp_name) TO FIELD-SYMBOL(<fs_m6>).
-
-    ASSIGN wa-('CARRNAME') TO FIELD-SYMBOL(<fs_m7>).
-
-    IF sy-subrc = 0.
-      DATA(subrc1) = sy-subrc.
-    ENDIF.
-
-    "No exception occurs in case of an unsuccessful assignment.
-    ASSIGN wa-('CRRNM') TO FIELD-SYMBOL(<fs_m8>).
-
-    IF sy-subrc <> 0.
-      DATA(subrc2) = sy-subrc.
-    ENDIF.
-
-    "Numeric expressions are possible. Its value is interpreted as the position
-    "of the component in the structure.
-    ASSIGN wa-(4) TO FIELD-SYMBOL(<fs_m9>).
-
-    "If the value is 0, the memory area of the entire structure is assigned to the field symbol.
-    ASSIGN wa-(0) TO FIELD-SYMBOL(<fs_m10>).
-
-    "Old syntax
-    ASSIGN COMPONENT 'CARRID' OF STRUCTURE wa TO FIELD-SYMBOL(<fs_m11>).
-
-    ASSIGN COMPONENT 5 OF STRUCTURE wa TO FIELD-SYMBOL(<fs_m12>).
-
-    "Dynamically specifying components of structures that are referenced by
-    "a data reference variable
-
-    ASSIGN ref_m->('CARRNAME') TO FIELD-SYMBOL(<fs_m13>).
-
-    out->write( data = <fs_m6> name = `<fs_m6>` ).
-    out->write( |\n| ).
-    out->write( data = <fs_m7> name = `<fs_m7>` ).
-    out->write( |\n| ).
-    out->write( data = subrc1 name = `subrc1` ).
-    out->write( |\n| ).
-    out->write( data = subrc2 name = `subrc2` ).
-    out->write( |\n| ).
-    out->write( data = <fs_m9> name = `<fs_m9>` ).
-    out->write( |\n| ).
-    out->write( data = <fs_m10> name = `<fs_m10>` ).
-    out->write( |\n| ).
-    out->write( data = <fs_m11> name = `<fs_m11>` ).
-    out->write( |\n| ).
-    out->write( data = <fs_m12> name = `<fs_m12>` ).
-    out->write( |\n| ).
-    out->write( data = <fs_m13> name = `<fs_m13>` ).
-
-**********************************************************************
-
-    out->write( zcl_demo_abap_aux=>heading( `23) Dynamic Specifications in ASSIGN Statements (4) - Type Casting` ) ).
+    out->write( zcl_demo_abap_aux=>heading( `26) Dynamic ASSIGN Statements (6) - Type Casting` ) ).
 
     "As covered above, the CASTING addition of the ASSIGN statement
     "has dynamic syntax elements.
@@ -1118,8 +1457,84 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
 
 **********************************************************************
 
+    out->write( zcl_demo_abap_aux=>heading( `27) Accessing Structure Components Dynamically (1)` ) ).
+
+    "You can achieve the access using ASSIGN statements as shown above, or
+    "by statically specifying the structure and the (object) component selector
+    "followed by a character-like data object in parentheses.
+    "Write position
+    structure-('COL1') = 123.
+    it[ 1 ]-('COL1') = 456.
+    struc_ref->('COL1') = 789.
+
+    "Read position
+    "The example shows how you can retrieve the textual content of any component
+    "of any structure.
+    DATA(content_col2) = CONV string( structure-('COL1') ).
+    DATA(content_col3) = |{ structure-('COL3') }|.
+    DATA content_col1 LIKE structure-col1.
+    content_col1 = structure-('COL1').
+
+    DATA dref_comp TYPE REF TO data.
+    CREATE DATA dref_comp LIKE structure-('COL3').
+    dref_comp->* = structure-('COL3').
+
+    "If the component is not found, a catchable exception is raised.
+    TRY.
+        DATA(col_not_existent) = |{ structure-('COL123') }|.
+      CATCH cx_sy_assign_illegal_component INTO DATA(error_column).
+        out->write( error_column->get_text( ) ).
+    ENDTRY.
+
+    "Accessing components of generic structures dynamically,
+    "e.g. if you have a method parameter that is typed with the generic type
+    "data.
+    "The example uses a field symbol with the generic type data which is assigned
+    "a structure.
+    FIELD-SYMBOLS <gen> TYPE data.
+    ASSIGN structure TO <gen>.
+
+    "As in the examples above, specifying components dynamically is possible.
+    <gen>-('COL2') = `ABAP`.
+    DATA(gen_comp) = CONV string( <gen>-('COL2') ).
+
+**********************************************************************
+
+    out->write( zcl_demo_abap_aux=>heading( `28) Accessing Structure Components Dynamically (2) - Excursion` ) ).
+
+    "In the following example, a structure is assigned to a field symbol that
+    "has a generic type. The components of the structure are accessed dynamically in
+    "a DO loop. The sy-index value is interpreted as the position of the component
+    "in the structure. Plus, using RTTI - as also shown further down - the component
+    "names are retrieved. Component names and the values are added to a string. As a
+    "prerequisite, all component values must be convertible to type string.
+    DATA struc2string TYPE string.
+    FIELD-SYMBOLS <strco> TYPE data.
+    ASSIGN structure TO <strco>.
+    IF sy-subrc = 0.
+      TRY.
+          DATA(components) = CAST cl_abap_structdescr( cl_abap_typedescr=>describe_by_data( <strco> ) )->components.
+          DO.
+            TRY.
+                DATA(co) = components[ sy-index ]-name.
+                struc2string = struc2string &&
+                               COND #( WHEN sy-index <> 1 THEN `, ` ) &&
+                               co && `: "` &&
+                               <strco>-(sy-index) && `"`.
+              CATCH cx_sy_assign_illegal_component cx_sy_itab_line_not_found.
+                EXIT.
+            ENDTRY.
+          ENDDO.
+        CATCH cx_sy_move_cast_error.
+      ENDTRY.
+    ENDIF.
+
+    out->write( data = struc2string name = `struc2string` ).
+
+**********************************************************************
+
     out->write( zcl_demo_abap_aux=>heading( `Dynamically Creating Data Objects at Runtime Using Dynamic Type Definitions` ) ).
-    out->write( |24) Miscellaneous Data Objects (1)\n\n| ).
+    out->write( |29) Miscellaneous Data Objects (1)\n\n| ).
 
     "In an example above, anonymous data objects are created using static
     "type definitions. In this example, anonymous data objects are created
@@ -1211,7 +1626,7 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
 
 **********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `25) Elementary Data Object (2)` ) ).
+    out->write( zcl_demo_abap_aux=>heading( `30) Elementary Data Object (2)` ) ).
 
     "The example demonstrates the following:
     "- The method call takes care of providing the name of a built-in data type and more
@@ -1254,7 +1669,7 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
 
 **********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `26) Structure (3)` ) ).
+    out->write( zcl_demo_abap_aux=>heading( `31) Structure (3)` ) ).
 
     "The example demonstrates the following:
     "- The method call takes care of providing the name of a database table name.
@@ -1283,7 +1698,7 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
 
 **********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `27) Internal Table (4)` ) ).
+    out->write( zcl_demo_abap_aux=>heading( `32) Internal Table (4)` ) ).
 
     "The example demonstrates the following:
     "- The method call takes care of providing the name of a database table name.
@@ -1321,7 +1736,7 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
 
 **********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `28) Excursion: Absolute Type Names for Dynamically Specifying Types` ) ).
+    out->write( zcl_demo_abap_aux=>heading( `33) Absolute Type Names for Dynamically Specifying Types` ) ).
 
     "In addition to character-like data objects for the type name specified within the
     "parentheses, you can also use absolute type names for statements such as CREATE DATA.
@@ -1348,12 +1763,12 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
     "Unnamed data object
     CREATE OBJECT oref4abs TYPE ('\CLASS=ZCL_DEMO_ABAP_DYNAMIC_PROG').
 
-    out->write( `No output for this section. See the code.` ).
+    out->write( `No output for this section. You can set a break point and check the content of data objects in the debugger.` ).
 
 **********************************************************************
 
     out->write( zcl_demo_abap_aux=>heading( `Dynamically Specifying Components/Clauses in Statements for Processing Internal Tables with ...` ) ).
-    out->write( |29) SORT\n\n| ).
+    out->write( |34) SORT\n\n| ).
 
     "A field is determined at runtime on whose basis a sorting is done on an
     "internal table.
@@ -1376,7 +1791,7 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
 
 **********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `30) READ TABLE` ) ).
+    out->write( zcl_demo_abap_aux=>heading( `35) READ TABLE (1)` ) ).
 
     "Dynamic key specification in READ TABLE statements
 
@@ -1423,7 +1838,203 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
 
 **********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `31) MODIFY` ) ).
+    out->write( zcl_demo_abap_aux=>heading( `36) READ TABLE (2)` ) ).
+
+    "Data objects and types to work with
+    TYPES: BEGIN OF demo_struct,
+             col1 TYPE i,
+             col2 TYPE string,
+             col3 TYPE string,
+           END OF demo_struct.
+    "Standard table and specification of primary and secondary table key
+    DATA itab TYPE TABLE OF demo_struct
+      WITH NON-UNIQUE KEY col1
+      WITH UNIQUE SORTED KEY sk COMPONENTS col2.
+    TYPES itab_type LIKE itab.
+    DATA itab_ref TYPE TABLE OF REF TO demo_struct WITH EMPTY KEY.
+    itab = VALUE #( ( col1 = 1 col2 = `aaa` col3 = `zzz` )
+                    ( col1 = 2 col2 = `bbb` col3 = `yyy` )
+                    ( col1 = 3 col2 = `ccc` col3 = `xxx` ) ).
+    itab_ref = VALUE #( ( NEW demo_struct( col1 = 1 col2 = `aaa` col3 = `zzz` ) ) ).
+
+    "Notes
+    "- In statements using key specifications, secondary table key names (or alias names)
+    "  are usually specified. Also the primary table key using the predefined name
+    "  primary_key or its alias name can be used.
+    "- Many of the following statements provide similar additions offering dynamic
+    "  specifications, such as USING KEY and dynamic component name specifications.
+
+    "Reading by specifying keys dynamically
+    "Implicitly specifying the table key values in a work area (USING KEY addition)
+    DATA(wa_read) = VALUE demo_struct( col2 = `aaa` ).
+    READ TABLE itab FROM wa_read USING KEY ('SK') REFERENCE INTO DATA(read_ref).
+
+    "Explicitly specifying the key and key values (TABLE KEY addition)
+    "The component names can also be specified dynamically (which is done in most of the
+    "following examples for demonstration purposes). Note that each component of the table
+    "key must be specified.
+    READ TABLE itab WITH TABLE KEY ('SK') COMPONENTS ('COL2') = `aaa` REFERENCE INTO read_ref.
+    "Specifying the predefined name primary_key explicitly and dynamically
+    READ TABLE itab WITH TABLE KEY ('PRIMARY_KEY') COMPONENTS ('COL1') = 1 REFERENCE INTO read_ref.
+    "If the addition COMPONENTS is not specified, the primary table key is implicitly used.
+    READ TABLE itab WITH TABLE KEY ('COL1') = 1 REFERENCE INTO read_ref.
+
+    "Reading using a free key (WITH KEY addition)
+    READ TABLE itab WITH KEY ('COL3') = `yyy` REFERENCE INTO read_ref.
+    "The addition can also be used by specifying a secondary table key name
+    READ TABLE itab WITH KEY ('SK') COMPONENTS ('COL2') = `ccc` REFERENCE INTO read_ref.
+
+    "Reading based on a table index (INDEX addition)
+    "Not using the addition USING KEY means reading from the primary table index.
+    READ TABLE itab INDEX 1 USING KEY ('SK') REFERENCE INTO read_ref.
+
+    "More dynamic specification options when specifying the target as work area
+    "(COMPARING/TRANSPORTING additions)
+    "TRANSPORTING: Specifying which components shall be respected
+    READ TABLE itab INDEX 1 INTO DATA(workarea) TRANSPORTING ('COL1') ('COL3').
+
+    "COMPARING: If the content of the compared components is identical, sy-subrc is set
+    "to 0, and otherwise to 2. The line found is assigned to the work area independently
+    "of the result of the comparison.
+    workarea-('COL3') = `uvw`.
+    READ TABLE itab INDEX 1 INTO workarea COMPARING ('COL3') TRANSPORTING ('COL1') ('COL3').
+    IF sy-subrc <> 0.
+      ...
+    ENDIF.
+
+    out->write( `No output for this section. You can set a break point and check the content of data objects in the debugger.` ).
+
+**********************************************************************
+
+    out->write( zcl_demo_abap_aux=>heading( `37) Table Expressions` ) ).
+
+    "Similar to READ TABLE statements, you can specify table lines with 3 alternatives:
+    "index read, read using free key, table key
+    "Also there, dynamic specifications are possible regarding the key specifications.
+
+    "Reading based on index with dynamic key specifications
+    "Specifying the secondary table index of a sorted secondary key
+    DATA(wa_te1) = itab[ KEY ('SK') INDEX 1 ].
+    "Reading using a free key, the keys are specified dynamically
+    DATA(wa_te2) = itab[ ('COL2') = `bbb` ('COL3') = `yyy` ].
+
+    "Reading using a table key
+    "Specyfing the table key explicitly
+    "Note: Unlike READ TABLE statements, the name of the table key must be specified. The
+    "addition COMPONENTS can be omitted.
+    "In the following example, the component names are also specified dynamically.
+    DATA(wa_te3) = itab[ KEY ('SK') ('COL2') = `ccc` ].
+    "Specifying the COMPONENTS addition explicitly
+    DATA(wa_te4) = itab[ KEY ('PRIMARY_KEY') COMPONENTS ('COL1') = 1 ].
+
+    "Accessing components
+    "As shown above, chaininings with the (object) component selector are possible.
+    "The examples use index access and write positions.
+    itab[ 1 ]-('COL2') = `jkl`.
+    itab_ref[ 1 ]->('COL2') = `mno`.
+
+    out->write( `No output for this section. You can set a break point and check the content of data objects in the debugger.` ).
+
+**********************************************************************
+
+    out->write( zcl_demo_abap_aux=>heading( `38) LOOP (1)` ) ).
+
+    "Dynamic specification of the key in LOOP statements
+    "In the example, the loop can be executed with the entries 'SKEY' and 'PRIMARY_KEY'.
+    "This is not case sensitive. Any other entries produce a runtime error.
+
+    DATA(keys) = VALUE string_table( ( `PRIMARY_KEY` ) ( `SKEY` ) ).
+
+    DATA itab_loop TYPE TABLE OF i
+              WITH NON-UNIQUE KEY primary_key COMPONENTS table_line
+              WITH NON-UNIQUE SORTED KEY skey COMPONENTS table_line.
+
+    itab_loop = VALUE #( ( 3 ) ( 2 ) ( 1 ) ).
+
+    DATA itab_dyn_key LIKE itab_loop.
+
+    LOOP AT keys INTO DATA(k).
+
+      LOOP AT itab_loop INTO DATA(wa_lo) USING KEY (k).
+        APPEND wa_lo TO itab_dyn_key.
+      ENDLOOP.
+
+      out->write( |Loop over internal table using key "{ k }".| ).
+      out->write( |\n| ).
+      out->write( data = itab_dyn_key name = `itab_dyn_key` ).
+      out->write( |\n| ).
+      CLEAR itab_dyn_key.
+
+    ENDLOOP.
+
+**********************************************************************
+
+    out->write( zcl_demo_abap_aux=>heading( `39) LOOP (2)` ) ).
+
+    "USING KEY addition: Overriding the standard order determined by the table category
+    LOOP AT itab REFERENCE INTO DATA(ref) USING KEY ('SK').
+      ...
+    ENDLOOP.
+
+    "When the primary table key is specified, the loop behaves as if it was not specified.
+    "So, the following statement corresponds to the one below.
+    LOOP AT itab REFERENCE INTO ref USING KEY ('PRIMARY_KEY').
+      ...
+    ENDLOOP.
+
+    LOOP AT itab REFERENCE INTO ref.
+      ...
+    ENDLOOP.
+
+    "Dynamic WHERE condition
+    "You can specify a character-like data object or a standard table with character-like
+    "line type.
+    DATA(cond_loop) = `COL1 > 1`.
+    LOOP AT itab REFERENCE INTO ref WHERE (cond_loop).
+      ...
+    ENDLOOP.
+
+    out->write( `No output for this section. You can set a break point and check the content of data objects in the debugger.` ).
+
+**********************************************************************
+
+    out->write( zcl_demo_abap_aux=>heading( `40) INSERT` ) ).
+
+    "The USING KEY addition (which accepts a dynamic specification) affects the order in which lines are inserted.
+
+    "Result of the following example when using the ...
+    "- secondary table key: order of itab entries 5 ... /4 ... /...
+    "- primary table key: order of itab entries 4 ... /5 ... /...
+    INSERT LINES OF VALUE itab_type( ( col1 = 4 col2 = `eee` col3 = `www` )
+                                     ( col1 = 5 col2 = `ddd` col3 = `vvv` ) )
+      USING KEY ('SK')
+      "USING KEY ('PRIMARY_KEY')
+      INTO itab INDEX 1.
+
+    "Excursion: Using LOOP AT statements with the USING KEY addition
+    "and exploring the table index
+    "Declaring demo tables to hold the internal table entries
+    DATA it_seckey_idx TYPE TABLE OF demo_struct WITH EMPTY KEY.
+    DATA it_primekey_idx LIKE it_seckey_idx.
+
+    "Visualizing the secondary table index
+    LOOP AT itab INTO DATA(wa_sk) USING KEY ('SK').
+      APPEND wa_sk TO it_seckey_idx.
+    ENDLOOP.
+
+    out->write( data = it_seckey_idx name = `it_seckey_idx` ).
+    out->write( |\n| ).
+
+    "Visualizing the primary table index
+    LOOP AT itab INTO DATA(wa_pk) USING KEY ('PRIMARY_KEY').
+      APPEND wa_pk TO it_primekey_idx.
+    ENDLOOP.
+
+    out->write( data = it_primekey_idx name = `it_primekey_idx` ).
+
+**********************************************************************
+
+    out->write( zcl_demo_abap_aux=>heading( `41) MODIFY (1)` ) ).
 
     "Dynamic WHERE condition in MODIFY statements
     "Note:
@@ -1472,9 +2083,34 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
     out->write( |\n| ).
     out->write( data = itab_mod_tab_dyn name = `itab_mod_tab_dyn` ).
 
+
 **********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `32) DELETE` ) ).
+    out->write( zcl_demo_abap_aux=>heading( `42) MODIFY (2)` ) ).
+
+    "In the following example, a line is modified based on a work area and a table key.
+    "The component col1 is left out from the work area intentionally.
+    "If the primary table key was used, the value of sy-subrc would be 4, and no modification was done.
+    "The optional addition transporting is specified to denote what should be modified. In this example,
+    "the component is also specified dynamically.
+    MODIFY TABLE itab FROM VALUE #( col2 = `bbb` col3 = `uuu` ) USING KEY ('SK') TRANSPORTING ('COL3').
+
+    "In the following example, a line is modified based on a work area, an index specification and a
+    "table key.
+    "INDEX can also be positioned after FROM.
+    MODIFY itab INDEX 2 USING KEY ('SK') FROM VALUE #( col3 = `ttt` ) TRANSPORTING ('COL3').
+
+    "Dynamic WHERE clause (only to be used with the TRANSPORTING addition)
+    "The USING KEY addition is also possible. Check the ABAP Keyword Documentation
+    "for special rules that apply.
+    DATA(cond_mod) = `COL1 < 3`.
+    MODIFY itab FROM VALUE #( col3 = `sss` ) TRANSPORTING ('COL3') WHERE (cond_mod).
+
+    out->write( data = itab name = `itab` ).
+
+**********************************************************************
+
+    out->write( zcl_demo_abap_aux=>heading( `43) DELETE (1)` ) ).
 
     "Dynamic WHERE condition in DELETE statements
 
@@ -1521,40 +2157,37 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
 
 **********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `33) LOOP` ) ).
+    out->write( zcl_demo_abap_aux=>heading( `44) DELETE (2)` ) ).
 
-    "Dynamic specification of the key in LOOP statements
-    "In the example, the loop can be executed with the entries 'skey' and 'primary_key'.
-    "This is not case sensitive. Any other entries produce a runtime error.
+    "A single line or multipled lines can be deleted.
+    "Note that DELETE ADJACENT DUPLICATES statements can also be specified using
+    "dynamic parts.
 
-    DATA(keys) = VALUE string_table( ( `primary_key` ) ( `SKEY` ) ).
+    "Deleting based on a dynamically specified table key
+    "The values can be declared either implicitly in a work area after FROM or explicitly
+    "by listing the components of the table key after TABLE KEY.
+    "If the USING KEY addition is not specified, the primary table key is used by default.
+    DELETE TABLE itab FROM VALUE #( col2 = `eee` col3 = `www` ) USING KEY ('SK').
 
-    DATA itab_loop TYPE TABLE OF i
-              WITH NON-UNIQUE KEY primary_key COMPONENTS table_line
-              WITH NON-UNIQUE SORTED KEY skey COMPONENTS table_line.
+    "Each component of the table key must be listed.
+    DELETE TABLE itab WITH TABLE KEY ('SK') COMPONENTS ('COL2') = `ddd`.
 
-    itab_loop = VALUE #( ( 3 ) ( 2 ) ( 1 ) ).
+    "Deleting based on the table index
+    DELETE itab INDEX 1 USING KEY ('SK').
 
-    DATA itab_dyn_key LIKE itab_loop.
+    "Deleting multiple lines and specifying the WHERE conditions dynamically
+    "The USING KEY addition is also possible.
+    DATA(condition_tab) = VALUE string_table( ( `COL1 < 3` )
+                                              ( `OR` )
+                                              ( `COL3 = ``www``` ) ).
+    DELETE itab WHERE (condition_tab).
 
-    LOOP AT keys INTO DATA(k).
-
-      LOOP AT itab_loop INTO DATA(wa_lo) USING KEY (k).
-        APPEND wa_lo TO itab_dyn_key.
-      ENDLOOP.
-
-      out->write( |Loop over internal table using key "{ k }".| ).
-      out->write( |\n| ).
-      out->write( data = itab_dyn_key name = `itab_dyn_key` ).
-      out->write( |\n| ).
-      CLEAR itab_dyn_key.
-
-    ENDLOOP.
+    out->write( data = itab name = `itab` ).
 
 **********************************************************************
 
     out->write( zcl_demo_abap_aux=>heading( `Dynamically Specifying Clauses in ABAP SQL SELECT Statements` ) ).
-    out->write( |34) SELECT List\n\n| ).
+    out->write( |45) SELECT List\n\n| ).
 
     "In the example, the SELECT list that is used in a SELECT statement is
     "determined at runtime.
@@ -1578,7 +2211,7 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
 
 **********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `35) FROM Clause` ) ).
+    out->write( zcl_demo_abap_aux=>heading( `46) FROM Clause` ) ).
 
     "In the example, the FROM clause that is used in a SELECT statement is
     "determined at runtime. Here, the number of entries of a database table
@@ -1596,7 +2229,7 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
 
 **********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `36) WHERE Clause` ) ).
+    out->write( zcl_demo_abap_aux=>heading( `47) WHERE Clause` ) ).
 
     "In the example, the WHERE clause that is used in a SELECT statement is
     "determined at runtime. Here, the WHERE clause is based on a string
@@ -1620,9 +2253,26 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
 
 **********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `37a) Excursion: Multiple Dynamically Specified ` &&
-                         `Clauses in an ABAP SQL SELECT Statement` ) ).
+    out->write( zcl_demo_abap_aux=>heading( `48) ORDER BY Clause` ) ).
 
+    DATA(order_by) = 'FLTIME'.
+
+    SELECT *
+     FROM zdemo_abap_flsch
+     ORDER BY (order_by)
+     INTO TABLE @DATA(order_by_tab)
+     UP TO 5 ROWS.
+
+    out->write( |ORDER BY clause determined at runtime:| ).
+    out->write( |\n| ).
+    out->write( data = order_by name = `order_by` ).
+    out->write( |\n| ).
+    out->write( |\n| ).
+    out->write( data = order_by_tab name = `order_by_tab` ).
+
+**********************************************************************
+
+    out->write( zcl_demo_abap_aux=>heading( `49) Multiple Dynamically Specified Clauses in an ABAP SQL SELECT Statement` ) ).
 
     "In this example, multiple clauses in a SELECT statement are
     "determined at runtime to demonstrate the rich variety of possibilities.
@@ -1661,7 +2311,56 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
 
 **********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `37b) Excursion: Checking the validity of dynamic specifications` ) ).
+    out->write( zcl_demo_abap_aux=>heading( `50) Dynamic Specifications in Other ABAP SQL Statements` ) ).
+
+    "Creating a structure to be inserted into the database table
+    DATA(table) = 'ZDEMO_ABAP_CARR'.
+    Data(wherecl) = 'CARRID = ''ZZ'''.
+    SELECT SINGLE *
+          FROM (table)
+          INTO NEW @DATA(refstruc).
+    refstruc->('CARRID') = 'ZZ'.
+
+    INSERT (table) FROM @refstruc->*.
+
+    SELECT SINGLE *
+      FROM (table)
+      WHERE (wherecl)
+      INTO NEW @DATA(res1).
+    out->write( data = res1->* name = `res1->*` ).
+    out->write( |\n| ).
+
+    refstruc->('CARRNAME') = 'ZZ Airlines'.
+    UPDATE (table) FROM @refstruc->*.
+
+    SELECT SINGLE *
+      FROM (table)
+      WHERE (wherecl)
+      INTO NEW @DATA(res2).
+    out->write( data = res2->* name = `res2->*` ).
+    out->write( |\n| ).
+
+
+    refstruc->('CURRCODE') = 'GBP'.
+    MODIFY (table) FROM @refstruc->*.
+
+    SELECT SINGLE *
+      FROM (table)
+      WHERE (wherecl)
+      INTO NEW @DATA(res3).
+    out->write( data = res3->* name = `res3->*` ).
+    out->write( |\n| ).
+
+    DELETE FROM (table) WHERE (wherecl).
+
+    SELECT *
+      FROM (table)
+      INTO TABLE NEW @DATA(res4).
+    out->write( data = res4->* name = `res4->*` ).
+
+**********************************************************************
+
+    out->write( zcl_demo_abap_aux=>heading( `51) Validating Input for Dynamic Specifications` ) ).
     "The following examples use methods of the CL_ABAP_DYN_PRG class, which supports
     "dynamic programming by checking the validity for dynamic specifications.
     "Check out the class documentation for more information.
@@ -1775,7 +2474,7 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
 
 **********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `38) Dynamic Invoke` ) ).
+    out->write( zcl_demo_abap_aux=>heading( `52) Dynamic Invoke` ) ).
 
     "In the example, both class and method are determined at runtime for
     "the method call. The suitable parameter table is filled in the
@@ -1820,7 +2519,7 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
 
 **********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `39) RTTI: Getting Type Information at Runtime/Getting a Reference to a Type Description Object` ) ).
+    out->write( zcl_demo_abap_aux=>heading( `53) RTTI: Getting Type Information at Runtime/Getting a Reference to a Type Description Object` ) ).
 
     "Getting a reference to a type description object of a type.
     "i.e. getting an instance of a type description class
@@ -1986,7 +2685,7 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
 
 **********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `40) RTTI: Getting Type Information at Runtime for Miscellaneous Types` ) ).
+    out->write( zcl_demo_abap_aux=>heading( `54) RTTI: Getting Type Information at Runtime for Miscellaneous Types` ) ).
 
     "The example demonstrates RTTI as follows:
     "- The method call takes care of providing the name of a type. It is implemented
@@ -2118,7 +2817,7 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
 
 **********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `41) RTTC: Dynamically Creating Data Types at Runtime` ) ).
+    out->write( zcl_demo_abap_aux=>heading( `55) RTTC: Dynamically Creating Data Types at Runtime` ) ).
 
     "You can create data types at program runtime using methods of the type
     "description classes of RTTS. These types are only valid locally in the
@@ -2213,11 +2912,11 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
     DATA(tdo_ref_3) = cl_abap_refdescr=>get_by_name( 'T' ).
     DATA(tdo_ref_4) = cl_abap_refdescr=>get_by_name( 'ZCL_DEMO_ABAP_DYNAMIC_PROG' ).
 
-    out->write( `No output for this section. See the code.` ).
+    out->write( `No output for this section. You can set a break point and check the content of data objects in the debugger.` ).
 
 **********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `42) Dynamically Creating Data Objects at Runtime Using Type Description Objects (1) - Miscellaneous` ) ).
+    out->write( zcl_demo_abap_aux=>heading( `56) Dynamically Creating Data Objects at Runtime Using Type Description Objects (1) - Miscellaneous` ) ).
 
     "Using the TYPE HANDLE addition to CREATE DATA statements, you can
     "dynamically create data objects at runtime based on type description objects.
@@ -2258,7 +2957,7 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
 
 **********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `43) Dynamically Creating Data Objects at Runtime Using Type Description Objects (2) - Structure` ) ).
+    out->write( zcl_demo_abap_aux=>heading( `57) Dynamically Creating Data Objects at Runtime Using Type Description Objects (2) - Structure` ) ).
 
     "This example includes the dynamic definition of a structure with three components
     "using the GET method of the CL_ABAP_STRUCTDESCR class.
@@ -2314,7 +3013,7 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
 
 **********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `44) Dynamically Creating Data Objects at Runtime Using Type Description Objects (3) - Internal Table` ) ).
+    out->write( zcl_demo_abap_aux=>heading( `58) Dynamically Creating Data Objects at Runtime Using Type Description Objects (3) - Internal Table` ) ).
 
     "In the example an internal table type is created based on a DDIC type.
     "See the comments in the code.
