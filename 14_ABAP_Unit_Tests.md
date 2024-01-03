@@ -93,7 +93,7 @@ ENDCLASS.
 >   - `SHORT`: execution time of only a few seconds is expected
 >   - `MEDIUM`: execution time of about one minute is expected
 >   - `LONG`: execution time of more than one minute is expected  
-> - To create a class in ADT, type "test" in the "Test Classes" tab and choose `CTRL` and `SPACE` to display the templates suggestions. You can then choose "testClass – Test class (ABAP Unit)". The skeleton of a test class is automatically generated. 
+> - To create a class in ADT, type "test" in the "Test Classes" tab and choose `CTRL + SPACE` to display the templates suggestions. You can then choose "testClass – Test class (ABAP Unit)". The skeleton of a test class is automatically generated. 
 
 To test protected or private methods, you must declare [friendship](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenfriend_glosry.htm) with the class to be tested (class under test).
 Example:
@@ -225,7 +225,7 @@ ENDCLASS.
   - *given*: Preparing the test, e.g. creating an instance of the class under test and a local test double (to inject the test double into the class under test)
   - *when*: Calling the procedure to be tested
   - *then*: Checking and evaluating the test result using the static methods of the `CL_ABAP_UNIT_ASSERT` class
-- A selection of static methods of the class `CL_ABAP_UNIT_ASSERT` that can be used for the checks:
+- The following points cover a selection of static methods of the class `CL_ABAP_UNIT_ASSERT` that can be used for the checks:
   - `ASSERT_EQUALS`: Checks whether two data objects are the same. 
   - `ASSERT_BOUND`: Checks whether a reference variable is bound. 
   - `ASSERT_NOT_BOUND`: Negation of the one above.
@@ -336,7 +336,7 @@ CLASS ltc_test_class DEFINITION
   DURATION SHORT.                 
 
     PRIVATE SECTION.
-    DATA: ref_cut TYPE REF TO cl_class_under_test. 
+    DATA ref_cut TYPE REF TO cl_class_under_test. 
 
     METHODS: 
              "special methods

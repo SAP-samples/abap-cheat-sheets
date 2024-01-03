@@ -291,7 +291,7 @@ ENDIF.
 > - Control structures can be nested. It is recommended that you do not include more than 5 nested control structures since the code will
 >   get really hard to understand. Better go for outsourcing functionality into methods to reduce nested control control structures.
 > - Keep the number of consecutive control structures low.
-> - If you are convinced that a specified logical expression must always be true, you might include a statement like `ASSERT 1 = 0` to go
+> - If you are convinced that a specified logical expression must always be true, you might include a statement like `ASSERT 1 = 0.` to go
 >   sure - as implied in the example's `ELSE` statement above. However, an `ELSE` statement that is never executed might be a hint that
 >   logical expressions might partly be redundant.
 

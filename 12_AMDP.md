@@ -390,8 +390,8 @@ AMDP methods ...
 -   must include the addition <code>OPTIONS READ-ONLY</code> in the
     declaration part.
 -   must be implemented in SQLScript in any case.
--   cannot use the additions [`USING SCHEMA` (F1 for docu standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapmethod_by_db_proc.htm#!ABAP_ADDITION_5@5@)
-    and [`SUPPRESS SYNTAX ERRORS` (F1 docu for standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapmethod_by_db_proc.htm#!ABAP_ADDITION_3@3@)
+-   cannot use the additions [`USING SCHEMA` (F1 documentation for standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapmethod_by_db_proc.htm#!ABAP_ADDITION_5@5@)
+    and [`SUPPRESS SYNTAX ERRORS` (F1 documentation for standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapmethod_by_db_proc.htm#!ABAP_ADDITION_3@3@)
     in the method implementation part
 -   cannot use [AMDP
     macros](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenamdp_macros.htm)
@@ -399,7 +399,7 @@ AMDP methods ...
 -   can only use your own entities and entities that are released for
     the restricted language version after <code>USING</code>.
 -   cannot use
-    [`CONNECTION` (F1 docu for standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenamdp_db_connections.htm)
+    [`CONNECTION` (F1 documentation for standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenamdp_db_connections.htm)
     parameters.
 -   cannot raise the
     `CX_AMDP_CONNECTION_ERROR` exception since

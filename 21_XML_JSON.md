@@ -27,6 +27,7 @@ This cheat sheet provides a high-level overview of working with XML and JSON in 
 > **💡 Note**<br>
 > - The cheat sheet snippets and the executable example cover simple cases. Find more executable examples of the ABAP Keyword Documentation following the links in the [More Information](#more-information) section. 
 > - For more detailed information, such as documentation on ST syntax, what asXML is, etc., also see the links in the [More Information](#more-information) section.
+> - In addition to the options covered in the cheat sheet, there are other ways to work with XML/JSON (for example, the `/ui2/cl_json` class). 
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
@@ -42,7 +43,7 @@ This cheat sheet provides a high-level overview of working with XML and JSON in 
 - Advantages: Easy access to the individual parts of an XML document possible, DTDs (Document Type Definitions) are possible
 - Disadvantages: High memory consumption of the DOM (if the complete DOM is created)
 
-The following code snippets demonstrate a selection of iXML methods for handling XML data. 
+The following code snippets demonstrate a selection of iXML methods for handling XML data. Note that the snippets use classes available for [ABAP for Cloud Development](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_for_cloud_dev_glosry.htm). Find documentation on the classes for [classic ABAP](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenclassic_abap_glosry.htm) [here (F1 documentation for Standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenabap_ixml_lib.htm).
 
 Creating XML data using iXML:
 
@@ -449,7 +450,7 @@ ENDTRY.
 
 **Specifying the source of the transformation**
 
-There are multiple options. Check the executable example to see them in action.
+There are multiple options. Check the executable example to explore them.
 
 ```abap
 "**************** Transforming XML data ****************
@@ -664,7 +665,7 @@ DATA(conv_string) = cl_abap_conv_codepage=>create_in( )->convert( conv_xstring )
 "conv_string: <TXT>ABAP</TXT>
 
 "As an alternative, you can use methods of the XCO library. More methods are available
-"in this context. Check the CTRL + Space after '->'
+"in this context. Check the options when choosing CTRL + Space after '->'
 "string -> xstring
 DATA(conv_xstring_xco) = xco_cp=>string( xml_string
   )->as_xstring( xco_cp_character=>code_page->utf_8
@@ -727,7 +728,6 @@ DATA(is_equal) = COND #( WHEN len_xstr = len_xstr_decomp
   - [JSON Examples](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_json_abexas.htm)
 - [`CALL TRANSFORMATION`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapcall_transformation.htm)
   - [`CALL TRANSFORMATION` Examples](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencall_transformation_abexas.htm)
-
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 

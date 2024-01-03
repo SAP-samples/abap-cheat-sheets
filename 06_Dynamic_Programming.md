@@ -84,7 +84,7 @@ FIELD-SYMBOLS: <fs_i>        TYPE i,
                <fs_tab_type> TYPE LINE OF some_table_type,
                <fs_like>     LIKE some_data_object.
 
-"Examples for generic types
+"Examples for generic types (see more examples further down)
 FIELD-SYMBOLS <fs_c>         TYPE c.           "Text field with a generic length
 FIELD-SYMBOLS <fs_cseq>      TYPE csequence.   "Text-like (c, string)
 FIELD-SYMBOLS <fs_data>      TYPE data.        "Any data type
@@ -104,7 +104,7 @@ ENDLOOP.
 >-   There are plenty of options for generic ABAP types. A prominent one
     is `data` that stands for any data type. See more information in the
     topic [Generic ABAP
-    Types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbuilt_in_types_generic.htm).
+    Types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbuilt_in_types_generic.htm) and in a code snippet below.
 >-   Field symbols cannot be declared in the declaration part of
     [classes](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenclass_glosry.htm "Glossary Entry")
     and
@@ -126,8 +126,8 @@ APPEND INITIAL LINE TO itab_fli.
 
 "Declaring field symbols with complete types
 FIELD-SYMBOLS: <fs_i>     TYPE i,
-                <fs_struc> TYPE zdemo_abap_fli,
-                <fs_tab>   TYPE string_table.
+               <fs_struc> TYPE zdemo_abap_fli,
+               <fs_tab>   TYPE string_table.
 
 "Declaring field symbols with generic type
 FIELD-SYMBOLS <fs_gen> TYPE data.
@@ -212,12 +212,167 @@ ENDLOOP.
 
 "Inline declaration of a field symbol. The field symbol is implcitly typed
 "with the generic type data.
-"type automatically.
 LOOP AT itab ASSIGNING FIELD-SYMBOL(<fs2>).
   <fs2>-carrid = ...
   <fs2>-connid = ...
   ...
 ENDLOOP.
+
+"----------- Generic typing -----------
+"- Generic types are available with which formal parameters of methods or field symbols
+"  can be specified.
+"- At runtime, the actual data type is copied from the assigned actual parameter or
+"  memory area, i.e. they receive the complete data type only when an actual parameter
+"  is passed or a memory area is assigned.
+
+"The following code snippet demonstrates generic types with field symbols.
+FIELD-SYMBOLS:
+  "Any data type
+  <data>           TYPE data,
+  <any>            TYPE any,
+  "Any data type can be assigned. Restrictions for formal parameters and 'data': no
+  "numeric functions, no description functions, and no arithmetic expressions can be
+  "passed to these parameters. However, you can bypass the restriction by applying the
+  "CONV operator for the actual parameter.
+
+  "Character-like types
+  <c>              TYPE c,         "Text field with a generic length
+  <clike>          TYPE clike,     "Character-like (c, n, string, d, t and character-like flat structures)
+  <csequence>      TYPE csequence, "Text-like (c, string)
+  <n>              TYPE n,         "Numeric text with generic length
+  <x>              TYPE x,         "Byte field with generic length
+  <xsequence>      TYPE xsequence, "Byte-like (x, xstring)
+
+  "Numeric types
+  <decfloat>       TYPE decfloat, "decfloat16, decfloat34)
+  <numeric>        TYPE numeric,  "Numeric ((b, s), i, int8, p, decfloat16, decfloat34, f)
+  <p>              TYPE p,        "Packed number (generic length and number of decimal places)
+
+  "Internal table types
+  <any_table>      TYPE ANY TABLE,      "Internal table with any table type
+  <hashed_table>   TYPE HASHED TABLE,
+  <index_table>    TYPE INDEX TABLE,
+  <sorted_table>   TYPE SORTED TABLE,
+  <standard_table> TYPE STANDARD TABLE,
+  <table>          TYPE table,          "Standard table
+
+  "Other types
+  <simple>         TYPE simple, "Elementary data type including enumerated types and
+                                "structured types with exclusively character-like flat components
+  <object>         TYPE REF TO object. "object can only be specified after REF TO; can point to any object
+
+"Data objects to work with
+DATA: BEGIN OF s,
+        c3        TYPE c LENGTH 3,
+        c10       TYPE c LENGTH 10,
+        n4        TYPE n LENGTH 4,
+        str       TYPE string,
+        time      TYPE t,
+        date      TYPE d,
+        dec16     TYPE decfloat16,
+        dec34     TYPE decfloat34,
+        int       TYPE i,
+        pl4d2     TYPE p LENGTH 4 DECIMALS 2,
+        tab_std   TYPE STANDARD TABLE OF string WITH EMPTY KEY,
+        tab_so    TYPE SORTED TABLE OF string WITH NON-UNIQUE KEY table_line,
+        tab_ha    TYPE HASHED TABLE OF string WITH UNIQUE KEY table_line,
+        xl1       TYPE x LENGTH 1,
+        xstr      TYPE xstring,
+        structure TYPE zdemo_abap_carr, "character-like flat structure
+        oref      TYPE REF TO object,
+      END OF s.
+
+"The following static ASSIGN statements demonstrate various assignments
+"Note:
+"- The statements commented out show impossible assignments.
+"- If a static assignment is not successful, sy-subrc is not set and no
+"  memory area is assigned. Dynamic assignments, however, set the value.
+
+"----- Any data type -----
+ASSIGN s-c3 TO <data>.
+ASSIGN s-time TO <data>.
+ASSIGN s-tab_std TO <data>.
+ASSIGN s-xstr TO <any>.
+ASSIGN s-pl4d2 TO <any>.
+ASSIGN s-date TO <any>.
+
+"----- Character-like types -----
+ASSIGN s-c3 TO <c>.
+ASSIGN s-c10 TO <c>.
+"ASSIGN s-str TO <c>.
+
+ASSIGN s-c10 TO <clike>.
+ASSIGN s-str TO <clike>.
+ASSIGN s-n4 TO <clike>.
+ASSIGN s-date TO <clike>.
+ASSIGN s-time TO <clike>.
+ASSIGN s-structure TO <clike>.
+
+ASSIGN s-c10 TO <csequence>.
+ASSIGN s-str TO <csequence>.
+"ASSIGN s-n4 TO <csequence>.
+
+ASSIGN s-n4 TO <n>.
+"ASSIGN s-int TO <n>.
+"ASSIGN s-time TO <n>.
+
+ASSIGN s-xl1 TO <x>.
+"ASSIGN s-xstr TO <x>.
+
+ASSIGN s-xl1 TO <xsequence>.
+ASSIGN s-xstr TO <xsequence>.
+
+"----- Numeric types -----
+ASSIGN s-dec16 TO <numeric>.
+ASSIGN s-dec34 TO <numeric>.
+ASSIGN s-int TO <numeric>.
+ASSIGN s-pl4d2 TO <numeric>.
+"ASSIGN s-n4 TO <numeric>.
+
+ASSIGN s-dec16 TO <decfloat>.
+ASSIGN s-dec34 TO <decfloat>.
+
+ASSIGN s-pl4d2 TO <p>.
+"ASSIGN s-dec34 TO <p>.
+
+"----- Internal table types -----
+ASSIGN s-tab_std TO <any_table>.
+ASSIGN s-tab_so TO <any_table>.
+ASSIGN s-tab_ha TO <any_table>.
+
+ASSIGN s-tab_std TO <index_table>.
+ASSIGN s-tab_so TO <index_table>.
+"ASSIGN s-tab_ha TO <index_table>.
+
+"ASSIGN s-tab_std TO <sorted_table>.
+ASSIGN s-tab_so TO <sorted_table>.
+"ASSIGN s-tab_ha TO <sorted_table>.
+
+ASSIGN s-tab_std TO <standard_table>.
+ASSIGN s-tab_std TO <table>.
+"ASSIGN s-tab_so TO <standard_table>.
+"ASSIGN s-tab_so TO <table>.
+"ASSIGN s-tab_ha TO <standard_table>.
+"ASSIGN s-tab_ha TO <table>.
+
+"ASSIGN s-tab_std TO <hashed_table>.
+"ASSIGN s-tab_so TO <hashed_table>.
+ASSIGN s-tab_ha TO <hashed_table>.
+
+"----- Other types -----
+ASSIGN s-c10 TO <simple>.
+ASSIGN s-str TO <simple>.
+ASSIGN s-dec34 TO <simple>.
+ASSIGN s-date TO <simple>.
+ASSIGN s-structure TO <simple>.
+ASSIGN s-xl1 TO <simple>.
+"ASSIGN s-tab_ha TO <simple>.
+
+ASSIGN s-oref TO <object>.
+s-oref = NEW zcl_demo_abap_objects( ).
+ASSIGN s-oref TO <object>.
+s-oref = cl_abap_random_int=>create( ).
+ASSIGN s-oref TO <object>.
 ```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
@@ -503,7 +658,7 @@ DATA(ref_bound) = COND #( WHEN ref_carr IS BOUND THEN ref_carr->carrid ELSE `is 
 CLEAR ref_carr.
 
 ******************************************************
-"Excursion: Generic data references in older ABAP releases
+"Excursion: Generic data references and field symbols
 
 "Non-generic type
 DATA ref_int TYPE REF TO i.
@@ -524,14 +679,35 @@ ASSIGN ref_generic->* TO FIELD-SYMBOL(<fs_generic>).
 "An access as the following, as it is possible in modern ABAP, was not possible.
 ref_generic->* = 123.
 
-"As shown in the example below, using dereferenced generic references is possible 
-"in various places in modern ABAP.
-DATA ref_sel TYPE REF TO data.
-CREATE DATA ref_sel TYPE TABLE OF zdemo_abap_carr.
-
-SELECT * 
+"In modern ABAP, variables and field symbols of the generic types
+"'any' and 'data' can be used directly, for example, in LOOP and READ statements.
+DATA dref TYPE REF TO data.
+CREATE DATA dref TYPE TABLE OF zdemo_abap_carr.
+SELECT *
   FROM zdemo_abap_carr
-  INTO TABLE @ref_sel->*.
+  INTO TABLE @dref->*.
+
+"Note: In case of a fully generic type, an explicit or implicit index operation
+"is not possible (indicated by the examples commented out).
+LOOP AT dref->* ASSIGNING FIELD-SYMBOL(<loop>).
+  ...
+ENDLOOP.
+"LOOP AT dref->* ASSIGNING FIELD-SYMBOL(<loop2>) FROM 1 TO 4.
+"ENDLOOP.
+
+"The following examples use a dynamic key specification. 
+"See more syntax examples below.
+READ TABLE dref->* ASSIGNING FIELD-SYMBOL(<read>) WITH KEY ('CARRID') = 'AA'.
+"READ TABLE dref->* INDEX 1 ASSIGNING FIELD-SYMBOL(<read2>).
+
+"Table expressions
+DATA(line) = CONV zdemo_abap_carr( dref->*[ ('CARRID') = 'AA' ] ).
+dref->*[ ('CARRID') = 'AA' ] = VALUE zdemo_abap_carr( BASE dref->*[ ('CARRID') = 'AA' ] carrid = 'XY' ).
+dref->*[ ('CARRID') = 'XY' ]-('CARRID') = 'ZZ'.
+
+"Table functions
+DATA(num_tab_lines) = lines( dref->* ).
+DATA(idx) = line_index( dref->*[ ('CARRID') = 'LH' ] ).
 ```
 
 **Examples using data references**
@@ -685,8 +861,7 @@ ASSIGN ('ST') TO <fs>.
 "Note: The typing is performed with the generic type data.
 ASSIGN ('DOBJ') TO FIELD-SYMBOL(<fs_inline>).
 
-"The statements set the sy-subrc value. No exception occurs in
-"case of an unsuccessful assignment.
+"The statements set the sy-subrc value. 
 ASSIGN ('DOES_NOT_EXIST') TO <fs>.
 IF sy-subrc <> 0.
   ...
@@ -776,12 +951,16 @@ ASSIGN NEW zcl_demo_abap_objects( )->('PUBLIC_STRING') TO <fs>.
 "Note: For the static variant of the ASSIGN statement, i.e. if the memory area
 "to be assigned following the ASSIGN keyword is statically specified, the addition
 "ELSE UNASSIGN is implicitly set and cannot be used explicitly.
-DATA(hallo) = `Hello world`.
+DATA(hallo) = `Hallo world`.
 ASSIGN ('HALLO') TO FIELD-SYMBOL(<eu>) ELSE UNASSIGN.
 ASSERT sy-subrc = 0 AND <eu> IS ASSIGNED.
 ASSIGN ('DOES_NOT_EXIST') TO <eu> ELSE UNASSIGN.
 ASSERT sy-subrc = 4 AND <eu> IS NOT ASSIGNED.
 ```
+
+> **💡 Note**<br>
+> - The following `ASSIGN` statements set the `sy-subrc` value: dynamic assignments, dynamic component assignment, dynamic invokes, assignments of table expressions. 
+> - The return code is not set for a static assignment and an assignment of the constructor operator `CAST`.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
@@ -1242,7 +1421,7 @@ CLASS zcl_example_class IMPLEMENTATION.
     "- The following example is just ABAP code exploring dynamic programming
     "  aspects. Note the disclaimer in the README of the cheat sheet repository.
     "  It is an example that sets its focus on a dynamic SELECT statement and
-    "  processing internal tablecontent by dynamically accessing structure
+    "  processing internal table content by dynamically accessing structure
     "  components.
     "- The ways mentioned above are way more powerful (e.g. in most cases also
     "  nested and deep data objects can be displayed for demo purposes).
@@ -1294,6 +1473,7 @@ CLASS zcl_example_class IMPLEMENTATION.
               APPEND VALUE #( name = <comp>-name len = strlen( <comp>-name ) ) TO it_comps.
             ENDLOOP.
           CATCH cx_sy_move_cast_error INTO DATA(error).
+            out->write( |{ error->get_text( ) }| ).
         ENDTRY.
 
         IF error IS INITIAL.

@@ -152,7 +152,7 @@ The following points cover RAP-related terms such as *RAP business objects* and 
     -   The [global
         class](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenglobal_class_glosry.htm "Glossary Entry")
         of a behavior pool does not implement the behavior itself. It is
-        basically empty. The behavior implementation is coded in local
+        (initially) empty apart from the declaration and implementation part skeletons. The behavior implementation is coded in local
         [RAP handler
         classes](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabp_handler_class_glosry.htm "Glossary Entry")
         and a [RAP saver
@@ -211,7 +211,7 @@ the handler methods that are called are part of an ABAP behavior pool.
 
 The global class of an ABP has the addition [`FOR BEHAVIOR OF bdef`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapclass_for_behavior_of.htm)
 to the definition while `bdef` stands for the name of the BDEF.
-This class is usually empty.
+This class is (initially) empty apart from the declaration and implementation part skeleton.
 
 ```abap
 CLASS zbp_demo_abap_rap_draft_m DEFINITION PUBLIC ABSTRACT FINAL FOR BEHAVIOR OF zdemo_abap_rap_draft_m.
@@ -221,7 +221,7 @@ CLASS zbp_demo_abap_rap_draft_m IMPLEMENTATION.
 ENDCLASS.
 ```
 
-The actual implementation is done in local classes in the CCIMP include. There,
+The actual implementation is done in local classes in the CCIMP include (*Local Types* tab in ADT) of the behavior pool. There,
 two kinds of local classes are to be defined and implemented that are
 related to the RAP BO's runtime: one or more [handler
 classes](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabp_handler_class_glosry.htm "Glossary Entry")
@@ -305,8 +305,8 @@ METHODS some_action FOR MODIFY
     the method names except for some predefined names.
 -   Each handler method must have at least one importing parameter. The
     addition `IMPORTING` is optional since it is used
-    implicitly. In most cases, the whole instance or just the key values
-    of an instance are imported.
+    implicitly. In most cases, entire instances or just key values
+    of instances are imported.
 -   All handler methods have changing parameters that are usually not
     explicitly specified in the definition but implicitly used. The
     explicit specification of the `CHANGING` addition is not needed. In most cases, these are
@@ -459,50 +459,39 @@ Examples for BDEF derived types:
 "Data objects with input derived types (entity = name of a root entity)
 
 "For an EML create operation
-
 DATA create_tab TYPE TABLE FOR CREATE entity.
 
 "For an update operation
-
 DATA update_tab TYPE TABLE FOR UPDATE entity.
 
 "Type for create-by-association operations specifying the name of the entity
 "and the association
-
 DATA cba_tab TYPE TABLE FOR CREATE entity\_child.
 
 "For an action execution; the name of the action is preceded by a tilde
-
 DATA action_imp TYPE TABLE FOR ACTION IMPORT entity~action1.
 
 "Data objects with output derived types
 
 "For a read operation
-
 DATA read_tab TYPE TABLE FOR READ RESULT entity.
 
 "For an action defined with a result
-
 DATA action_res TYPE TABLE FOR ACTION RESULT entity~action2.
 
 "Examples for structures and types
-
 DATA create_wa TYPE STRUCTURE FOR CREATE entity.
 
 "For permission retrieval
-
 DATA perm_req TYPE STRUCTURE FOR PERMISSIONS REQUEST entity.
 
 "For retrieving global features
-
 DATA feat_req TYPE STRUCTURE FOR GLOBAL FEATURES RESULT entity.
 
 "Type declaration using a BDEF derived type
-
 TYPES der_typ TYPE TABLE FOR DELETE entity.
 
 "Response parameters
-
 DATA map TYPE RESPONSE FOR MAPPED entity.
 DATA fail TYPE RESPONSE FOR FAILED entity.
 DATA rep TYPE RESPONSE FOR REPORTED entity.
@@ -594,7 +583,7 @@ Bullet points on selected `%` components:
 -   [`%control`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapderived_types_control.htm)
     -   Component group that, in certain contexts and for example (it depends on the context what it contains), contains the names of all key
         and data fields of a RAP BO instance which indicate flags.
-    -   Used to get information on which fields are provided or set a
+    -   The use depends on the context. For example, it is used to get information on which fields are provided or set a
         flag for which fields are requested by RAP BO providers or RAP
         BO consumers respectively during the current EML request.
     -   For this purpose, the value of each field in the
@@ -1345,7 +1334,7 @@ The following restrictions apply to operations and/or statements in the individu
 |[bgRFC](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenbgrfc_glosry.htm) (`CALL FUNCTION ... IN BACKGROUND UNIT`) <br><br>(unrestricted ABAP language scope)| -| -| X| |  
 |[tRFC](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abentrfc_2_glosry.htm), [qRFC](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenqrfc_glosry.htm) (`CALL FUNCTION ... IN BACKGROUND TASK`) <br><br>(unrestricted ABAP language scope)| -| -| - |Obsolete technologies. |
 |`PERFORM ON COMMIT`, `PERFORM ON ROLLBACK` <br><br>(unrestricted ABAP language scope)|(X) |(X) |X |Basically possible in all phases, but should be reserved for the late save. Note: The use of these statements indicates improper integration with RAP. It is especially important to check draft scenarios when calling legacy code and using these statements. Instead, ABAP EML or procedure calls that do not include a `COMMIT WORK` should be used. |
-|Transaction control `COMMIT WORK`, `ROLLBACK WORK` |X/-| X/-| X/- |When a transactional phase has been explicitly set by methods of the `CL_ABAP_TX` class, the transaction owner is allowed to execute a commit or rollback statement. In the contexts of RAP (that is, where RAP is the transaction owner, for example, in handler and saver methods), local consumption of [RAP business events](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_entity_event_glosry.htm), [bgPF](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbgpf_glosry.htm), and [classified APIs](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenclassified_api_glosry.htm), commit or rollback statements are not allowed. |
+|Transaction control `COMMIT WORK`, `ROLLBACK WORK` |X/-| X/-| X/- |When a transactional phase has been explicitly set by methods of the `CL_ABAP_TX` class (find more information [here](https://help.sap.com/docs/abap-cloud/abap-concepts/controlled-sap-luw)), the transaction owner is allowed to execute a commit or rollback statement. In the contexts of RAP (that is, where RAP is the transaction owner, for example, in handler and saver methods), local consumption of [RAP business events](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_entity_event_glosry.htm), [bgPF](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbgpf_glosry.htm), and [classified APIs](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenclassified_api_glosry.htm), commit or rollback statements are not allowed. |
 |[Dynpro](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abendynpro_glosry.htm) processing (e.g.  `SET SCREEN`, `CALL SCREEN`, `LEAVE SCREEN`, `CALL DIALOG`, `SUPPRESS DIALOG`, `MESSAGE` without `INTO`, `WRITE`, `STOP`) <br><br>(unrestricted ABAP language scope)|- |- |- |Not allowed in ABAP behavior implementations. Results in a runtime error. |
 |Transaction processing (`CALL TRANSACTION`, `LEAVE TRANSACTION`) <br><br>(unrestricted ABAP language scope)| -| -| - |Not allowed to prevent (unwanted) integration of other LUWs. |
 |Raising an exception (`RAISE EXCEPTION`) |-| -| - |It is not allowed to leave a RAP transaction this way. |
@@ -1368,8 +1357,6 @@ The following restrictions apply to operations and/or statements in the individu
     Contract](https://help.sap.com/docs/ABAP_PLATFORM_NEW/fc4c71aa50014fd1b43721701471913d/3a402c5cf6a74bc1a1de080b2a7c6978.html):
     Rules for the RAP BO provider and consumer implementation to ensure
     consistency and reliability
--   Find more information about the `CL_ABAP_TX` class mentioned above in the SAP Help Portal documentation: [Controlled SAP LUW](https://help.sap.com/docs/abap-cloud/abap-concepts/controlled-sap-luw).
-
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
