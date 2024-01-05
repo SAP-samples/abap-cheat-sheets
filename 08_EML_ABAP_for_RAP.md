@@ -212,7 +212,7 @@ focus on).
 The following example shows a commented BDEF.
 Note that there is a wide variety of possible specifications and options. The example shows only a selection. For full details, refer to the ABAP Keyword Documentation.
 
-```abap
+```js
 //Possible implementation types: managed, unmanaged, abstract, projection, interface 
 //(with restrict/enable further specifications)
 //You can specifiy one or more implementation classes (behavior pools/ABPs -> bp...) 
