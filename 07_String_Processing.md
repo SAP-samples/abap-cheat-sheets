@@ -25,6 +25,9 @@
       - [Searching Using Regular Expressions](#searching-using-regular-expressions)
         - [Excursion: System Classes for Regular Expressions](#excursion-system-classes-for-regular-expressions)
       - [Replacing Using Regular Expressions](#replacing-using-regular-expressions)
+  - [More String Functions](#more-string-functions)
+    - [Checking the Similarity of Strings](#checking-the-similarity-of-strings)
+    - [Repeating Strings](#repeating-strings)
   - [Executable Example](#executable-example)
 
 
@@ -1664,7 +1667,6 @@ FIND FIRST OCCURRENCE OF PCRE `\bt.` IN TABLE itab
 
 ##### Excursion: System Classes for Regular Expressions
 
-
 - You can create an object-oriented representation of regular expressions using the `CL_ABAP_REGEX` system class.
 - For example, the `CREATE_PCRE` method creates instances of regular expressions with PCRE syntax.
 - The instances can be used, for example, with the `CL_ABAP_MATCHER` class, which applies the regular expressions.
@@ -1743,6 +1745,48 @@ s2 = replace( val  = s1
 
 "Changing the source field directly with a REPLACE statement; same as above
 REPLACE PCRE `(.*?)PP(.*)` IN s1 WITH `$2#$1` IGNORING CASE. "pc app#ab a
+```
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+## More String Functions
+
+### Checking the Similarity of Strings
+
+- [`distance`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendistance_functions.htm) returns the Levenshtein distance between two strings, which reflects their similarity.
+- Unlike other string functions, the return value has the type `i`.
+- Optional addition `max`: Positive integer. The calculation of the Levenshtein distance will stop if the calculated value is greater than this integer.
+
+```abap
+DATA(str_to_check) = `abap`.
+DATA(dist1) = distance( val1 = str_to_check val2 = `abap` ). "0
+DATA(dist2) = distance( val1 = str_to_check val2 = `axbap` ). "1
+DATA(dist3) = distance( val1 = str_to_check val2 = `yabyyapy` ). "4
+DATA(dist4) = distance( val1 = str_to_check val2 = `zabapzzzzzzzzzzzz` max = 5 ). "5
+
+"If the value of max is 0 or less, an exception is raised.
+TRY.
+    DATA(dist5) = distance( val1 = str_to_check val2 = `zabapzzzzzzzzzzzz` max = 0 ).
+  CATCH cx_sy_strg_par_val.
+    ...
+ENDTRY.
+```  
+
+### Repeating Strings
+- [`repeat`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrepeat_functions.htm) returns a string that contains the content of a specified string for parameter `val` as many times as specified in the parameter `occ`.
+- An empty string is returned when `occ` has the value 0 or `val` is empty.
+
+```abap
+DATA(repeat1) = repeat( val = `abap` occ = 5 ).  "abapabapabapabapabap
+DATA(repeat2) = |#{ repeat( val = ` ` occ = 10 ) }#|. "#          #
+DATA(repeat3) = COND #( WHEN repeat( val = `a` occ = 0 ) = `` THEN `Y` ELSE `Z` ). "Y (initial value returned)
+
+"If occ has a negative value, an exception is raised.
+TRY.
+    DATA(repeat4) = repeat( val = `X` occ = -3 ).
+  CATCH cx_sy_strg_par_val.
+    ...
+ENDTRY.
 ```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>

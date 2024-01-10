@@ -11,6 +11,7 @@
     - [Excursions with Internal Tables](#excursions-with-internal-tables)
   - [Reading from Internal Tables](#reading-from-internal-tables)
   - [Processing Multiple Internal Table Lines Sequentially](#processing-multiple-internal-table-lines-sequentially)
+    - [Iteration Expressions](#iteration-expressions)
   - [Sorting Internal Tables](#sorting-internal-tables)
   - [Modifying Internal Table Content](#modifying-internal-table-content)
   - [Deleting Internal Table Content](#deleting-internal-table-content)
@@ -1218,25 +1219,15 @@ LOOP AT it INTO wa FROM 6 TO 3 STEP -2.
 ENDLOOP.
 ```
 
-*Iterations with* `FOR`
+### Iteration Expressions
 
 Iteration expressions with [`FOR`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenfor.htm) as part of certain constructor expressions allow you to create content of an internal table by evaluating one or more source tables.
 
-The following examples show iterations with `FOR` within a constructor expression with `VALUE`. A new table is created and
-values for two fields are inserted into the new table, which has the internal table type of the source table. `ls` represents an iteration
-variable that holds the data as the table is looped over. The components, and thus the table line to be returned, are
-specified within the pair of parentheses before the closing parenthesis. Both examples set specific values for the components. The second example also includes a `WHERE` clause to restrict the lines to be copied.
+The expressions are covered in the cheat sheet [Constructor Expressions](05_Constructor_Expressions.md):
+- [Iteration Expressions Using FOR](05_Constructor_Expressions.md#iteration-expressions-using-for)
+- Special reduction operator `REDUCE` that is based on iteration expressions: [REDUCE](05_Constructor_Expressions.md#reduce)
 
-Unlike `LOOP` statements, this sequential processing cannot be debugged.
-``` abap
-"Internal table type
-TYPES ttype like it.
 
-DATA(tab1) = VALUE ttype( FOR ls IN it ( a = ls-a b = 9 ) ).
-
-DATA(tab2) = VALUE ttype( FOR ls IN it WHERE ( a < 7 )
-                            ( a = ls-a b = ls-b + 5  ) ).
-```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 

@@ -454,7 +454,7 @@ DATA dref4 TYPE REF TO string_table.
 dref4 = NEW #( VALUE string_table( ( `a` ) ( `b` ) ) ).
 
 "Structured type; named arguments within the parentheses
-DATA(dref5) = NEW scarr( carrid = 'AA' carrname = 'American Airlines' ).
+DATA(dref5) = NEW zdemo_abap_carr( carrid = 'AA' carrname = 'American Airlines' ).
 
 "Object references
 "Declaring object reference variables

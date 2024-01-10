@@ -95,8 +95,7 @@ The following points cover RAP-related terms such as *RAP business objects* and 
     -   This data includes [RAP BO
         instances](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_bo_instance_glosry.htm "Glossary Entry")
         (i. e. concrete data sets of an entity). This is where EML
-        enters the picture: EML is used to access this data in the
-        transactional buffer.
+        enters the picture: EML is used, among others, to access this data in the transactional buffer.
     -   Currently, there are two kinds of RAP BOs:
         [managed](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenmanaged_rap_bo_glosry.htm "Glossary Entry")
         and [unmanaged RAP
@@ -201,7 +200,7 @@ focus on).
 - As mentioned in the RAP terms and as the name implies, a RAP behavior definition describes a RAP business object (RAP BO) by defining its behavior for all of its RAP BO entities. 
 - BDL source code is used in a BDEF.
 - Once you have created ...
-  - the CDS root view entity of a RAP BO, ADT helps you create the skeleton of a BDEF (e.g., right-click on the CDS root view entity and choose *New Behavior Definition* from the pop-up). 
+  - the CDS root entity of a RAP BO, ADT helps you create the skeleton of a BDEF (e.g., right-click on the CDS root entity and choose *New Behavior Definition* from the pop-up). 
   - the BDEF, ADT helps you create the skeleton of an ABAP behavior pool, as well as RAP handler and saver method declarations and the skeleton of implementations via ADT quick fixes.
 - More information (see also the subtopics there): 
   - [Structure of a RAP behavior definition](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_bdef.htm)
@@ -211,10 +210,11 @@ focus on).
 
 The following example shows a commented BDEF.
 Note that there is a wide variety of possible specifications and options. The example shows only a selection. For full details, refer to the ABAP Keyword Documentation.
+Some of the syntax examples are commented out, just for the sake of showing more syntax options. 
 
 ```js
 //Possible implementation types: managed, unmanaged, abstract, projection, interface 
-//(with restrict/enable further specifications)
+//(which restrict/enable further specifications)
 //You can specifiy one or more implementation classes (behavior pools/ABPs -> bp...) 
 //for the RAP BO (in some contexts, specifying no ABP is possible).
 //Specifying unique is mandatory (each operation can only implemented once).
@@ -287,6 +287,8 @@ authorization master ( instance )
   //As is true for various specifications, a comma-separated list of specifications is possible.
   delete( precheck );
 
+  //Note: It is not possible to specify operations multiple times. The following specifications
+  //just demonstrate syntax options. Anyway, the compiler helps you not to specify wrong notations.
   //Applying feature control
   //delete( features: global ); 
 
@@ -374,7 +376,8 @@ authorization master ( instance )
   //Read-only during update (especially key fields created during create operations)
   field ( readonly : update ) key_field; 
 
-  //It is mandatory to specify values for the fields before persisting them to the database 
+  //The mandatory specification denotes that values must be provided for the fields before persisting 
+  //them to the database.
   //Comma-separated list possible for the field characteristics in general; 
   //mutliple characteristics can also be specified in a comma-separated list in the parentheses  
   field ( mandatory ) field2, field3; 
@@ -386,16 +389,16 @@ authorization master ( instance )
   //Checking the consitency of instances; validations are triggered based on conditions
   //Conditions (one or more are possible) can be specified for create, update, delete operations 
   //and modified fields; note: not available for unmanaged, non-draft RAP BOs.
-  validation val1 on save { create; field field1; }
+  validation val on save { create; field field1; }
   
   //Determinations
   //Modifying instances based on trigger conditions; 
   //As above, conditions (one or more are possible) can be specified for create, update, delete 
   //operations and modified fields. The triggering is possible for 'on modify' and 'on save'.
-  determination det1 on modify { update; delete; field field1, field2; }
-  determination det2 on save { create; field field3, field4; }
+  determination det1 on modify { update; delete; field field5, field6; }
+  determination det2 on save { create; field field7, field8; }
 
-  //RAP business event (derived events with the specification 'managed evt ...' is also possible)
+  //RAP business event (derived events with the specification 'managed evt ...' are also possible)
   event evt;
 
   //RAP side effects, to trigger a reload of affected properties on the UI
@@ -819,9 +822,9 @@ Bullet points on selected `%` components:
         draft scenario. In doing so, you can avoid lots of adaptations
         in your code by manually adding the indicator.
 -   [`%control`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapderived_types_control.htm)
-    -   Component group that, in certain contexts and for example (it depends on the context what it contains), contains the names of all key
+    -   Component group that contains the names of all key
         and data fields of a RAP BO instance which indicate flags.
-    -   The use depends on the context. For example, it is used to get information on which fields are provided or set a
+    -   For example, it is used to get information on which fields are provided or set a
         flag for which fields are requested by RAP BO providers or RAP
         BO consumers respectively during the current EML request.
     -   For this purpose, the value of each field in the

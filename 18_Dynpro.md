@@ -502,12 +502,13 @@ SET SCREEN 0.
 
 ## Modifying Static Attributes of Screen Elements
 
-- For each screen element, you can define various static attributes that control, for example, its appearance or status. 
+- For each screen element, you can define various static attributes that control, for example, its appearance (i.e. you can hide screen elements) or status. 
 - The static attributes of the screen elements can be overwritten from within the ABAP program during the PBO processing of the dynpro.
 - To do this, use the ABAP statements [`LOOP AT SCREEN`](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abaploop_at_screen.htm) and [`MODIFY SCREEN`](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapmodify_screen.htm). 
 - `LOOP AT SCREEN`: 
   - Defines a loop over all screen elements of the current dynpro to which a dynpro field is assigned. 
    - A work area of type `SCREEN` should be declared. 
+     - Note: Check the ABAP Keyword Documentation for the different components. You can also check the F2 information for the work area in the `LOOP` statement below.
    - After the `LOOP AT SCREEN` statement, the work area contains the properties of the corresponding screen element.
 - `MODIFY SCREEN`:   
   - Can only be used in the statement block after `LOOP AT SCREEN` and only makes sense during PBO processing.  

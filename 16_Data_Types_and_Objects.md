@@ -386,6 +386,7 @@ ASSIGN s-tab_std TO <data>.
 ASSIGN s-xstr TO <any>.
 ASSIGN s-pl4d2 TO <any>.
 ASSIGN s-date TO <any>.
+ASSIGN s TO <any>.
 
 "----- Character-like types -----
 ASSIGN s-c3 TO <c>.
@@ -461,9 +462,6 @@ ASSIGN s-xl1 TO <simple>.
 
 ASSIGN s-oref TO <object>.
 s-oref = NEW zcl_demo_abap_objects( ).
-ASSIGN s-oref TO <object>.
-s-oref = cl_abap_random_int=>create( ).
-ASSIGN s-oref TO <object>.
 ```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
