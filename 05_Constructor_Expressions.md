@@ -14,9 +14,10 @@
   - [COND](#cond)
   - [SWITCH](#switch)
   - [FILTER](#filter)
-  - [REDUCE](#reduce)
-  - [Iteration Expressions with FOR](#iteration-expressions-with-for)
   - [LET Expressions](#let-expressions)
+  - [Iteration Expressions](#iteration-expressions)
+    - [Iteration Expressions Using FOR](#iteration-expressions-using-for)
+    - [REDUCE](#reduce)
   - [Executable Example](#executable-example)
 
 ## Introduction
@@ -64,11 +65,12 @@
         go: `DATA(dec) = VALUE decfloat34( '1.23' )`.
 
 > **✔️ Hint**<br>
-> The construction of a result, i. e. a target [data
+>-  The construction of a result, i. e. a target [data
 object](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendata_object_glosry.htm "Glossary Entry"),
 implies that the data object is initialized. However, for some
 constructor operators, there is an addition with which the
 initialization can be avoided.
+>- As is true for many of the following syntax options, you can do a lot with constructor expressions, often with fewer lines (than older syntax equivalents) of code in a very elegant way. However, keep in mind the readability, maintainability, and debuggability of your code.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
@@ -701,6 +703,7 @@ DATA(b) = SWITCH #( a
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
+
 ## FILTER
 
 -   The
@@ -770,76 +773,138 @@ DATA(f11) = FILTER #( itab2 USING KEY sec_key EXCEPT IN filter_tab2 WHERE num = 
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-## REDUCE
 
--   The
-    [`REDUCE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconstructor_expression_reduce.htm)
-    operator creates a result of a specified or derived type from one or
-    more [iteration
-    expressions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abeniteration_expression_glosry.htm "Glossary Entry").
--   It basically reduces sets of data objects to a single data object.
-    For example, the numeric values of a table column are summed up. As
-    a result, the total number is constructed.
+## LET Expressions
 
-The following example calculates the total of the numbers from 1 to 10
-using the `REDUCE` operator:
-``` abap
-"sum: 55
-DATA(sum) = REDUCE i( INIT s = 0
-                      FOR  i = 1 UNTIL i > 10
-                      NEXT s += i ) ).   
+- Define one or more variables (field symbols are also possible) as local (i.e. local to the expression) helper fields and assigns values to them.
+- In the definition, the right-hand side value is declared as if an inline declaration is used. The data type is derived accordingly. 
+- Only to be used in constructor expressions (see the syntax diagrams in the ABAP Keyword Documentation where exactly [`LET`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abaplet.htm) expressions can be specified).
+
+See the following simple examples to get an idea about the use:
+
+```abap
+"Data type and object to work with in the example
+TYPES: BEGIN OF st_type,
+            comp1 TYPE c LENGTH 5,
+            comp2 TYPE i,
+            comp3 TYPE i,
+        END OF st_type.
+DATA it TYPE TABLE OF st_type WITH EMPTY KEY.
+it = VALUE #( ( comp1 = 'a' comp2 = 1 comp3 = 30 )
+              ( comp1 = 'bb' comp2 = 2 comp3 = 10 )
+              ( comp1 = 'ccc' comp2 = 3 comp3 = 20 ) ).
+
+"Constructing a data object with elementary data type using the CONV operator
+"One or more helper variables are possible specified after LET
+DATA(hi) = CONV string(
+        LET name = cl_abap_context_info=>get_user_technical_name( )
+            date = cl_abap_context_info=>get_system_date( )
+        IN |Hi { name }. Today's date is { date DATE = ISO }.| ).
+
+"Construction similar to the previous example
+"Depending on the time, a string is created. In the example, a LET expression
+"is specified for each constructor expression.
+DATA(time_of_day) = CONV string(
+        LET time = cl_abap_context_info=>get_system_time( ) IN
+        COND string( LET good = `Good` ending = `ing` IN
+                    WHEN time BETWEEN '050001' AND '120000' THEN good && ` morn` && ending  "Good morning
+                    WHEN time BETWEEN '120001' AND '180000' THEN good && ` afternoon`
+                    WHEN time BETWEEN '180001' AND '220000' THEN good && ` even` && ending
+                    ELSE `night`  ) ).
+
+
+"Getting a particular column name of an existing internal table using a RTTI
+"An internal table (it contains information on the table's structured type; the
+"component names, among others) is assigned to a data object that is declared
+"inline. This is an example of how powerful constructor expressions (and inline
+"declarations) are: You can make code more concise. Think of extra declarations
+"for the data objects, or using the older ?= operator for the casts. Many more
+"lines of code would be required.
+DATA(components) = CAST cl_abap_structdescr( CAST cl_abap_tabledescr(
+    cl_abap_typedescr=>describe_by_data( it ) )->get_table_line_type( ) )->components.
+DATA(comp2_a) = components[ 2 ]-name. "COMP2
+
+"Achieving the result from above even in one statement using LET
+DATA(comp2_b) = CONV abap_compname(
+    LET comps = CAST cl_abap_structdescr( CAST cl_abap_tabledescr(
+    cl_abap_typedescr=>describe_by_data( it ) )->get_table_line_type( ) )->components
+    IN comps[ 2 ]-name ).
+
+"Constructing a structure using local variables
+"The example uses the NEW operator to create an anonymous data object
+DATA(new_struc) = NEW st_type( LET num = 2 ch = 'AP' IN
+                                comp1 = 'AB' && ch comp2 = 2 * num comp3 = 3 * num ).
+"Structure content:
+"COMP1    COMP2    COMP3
+"ABAP     4        6
+
+"Constructing an internal table using local variables
+"The example uses the VALUE operator.
+"Note the parentheses ( ... ) representing table lines.
+DATA(itab_value) = VALUE string_table( LET line = 1 IN
+                                        ( |Line { line }| )
+                                        ( |Line { line + 1 }| )
+                                        ( |Line { line + 2 }| ) ).
+"Table line content:
+"Line 1
+"Line 2
+"Line 3
+
+"Using a local field symbol in LET expressions
+"- The right-hand side value must be the result of a writable expression, i.e.
+"  an operand that can be written to
+"- This value is then assigned to the local field symbol (as if ASSIGN is used)
+"- In the examples above, a specification such as ... LET <a> = 1 IN ... is not
+"  possible as they are not writable expressions.
+"- Writable expressions:
+"  - Constructor expressions NEW class( ... )->attr and CAST type( ... )->dobj
+"  - Table expressions itab[ ... ] and their chainings, e.g. itab[ 1 ]-comp
+"In the following example, an internal table is looped over. A string is created
+"from the table line content. In the constructor expression, a LET expression is
+"specified that uses a field symbol. It is assigned the line of the internal table.
+"The sy-index value represents the table index value.
+DATA str_tab TYPE string_table.
+DO lines( it ) TIMES.
+    DATA(concatenated_tab) = CONV string(
+        LET <li>  = it[ sy-index ]
+            comma =   `, `
+        IN  |{ <li>-comp1 }{ comma }{ <li>-comp2 }{ comma }{ <li>-comp3 }| ).
+    str_tab = VALUE #( BASE str_tab ( concatenated_tab ) ).
+ENDDO.
+"Table line content:
+"a, 1, 30
+"bb, 2, 10
+"ccc, 3, 20
 ```
-
-> **💡 Note**<br>
-> -   `INIT ...`: A temporary variable is specified that sets an
-    initial value for the result variable.
->-   `FOR ...`: Represents a loop. The loop is carried out until
-    the condition is met after `UNTIL`.
->-   `NEXT ...`: Represents the assignment to the temporary
-    variable after every iteration.
->-   Once the loop has finished, the target variable is assigned the
-    resulting value.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-## Iteration Expressions with FOR
+## Iteration Expressions
 
--   Using [iteration
-    expressions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abeniteration_expression_glosry.htm "Glossary Entry")
-    with the language element
-    [`FOR`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenfor.htm),
-    you can carry out [conditional
-    iterations](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenfor_conditional.htm)
+- Iteration expressions are expressions ...
+  - that perform an iteration and that are possible in specific constructor expressions (`NEW`, `VALUE`, `REDUCE`).
+  - that are introduced by the iteration operator `FOR`. 
+  - that can optionally be used to create lines in internal tables. 
+- `REDUCE` operator: Special reduction operator that is based on [iteration expressions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abeniteration_expression_glosry.htm "Glossary Entry"), i.e. it is mandatory to specify iteration expressions with `FOR` when using `REDUCE`.
+
+### Iteration Expressions Using FOR
+
+- Two flavors for iterations using [`FOR`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenfor.htm):
+  - [Conditional iterations](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenfor_conditional.htm)
     (including the ABAP words `UNTIL` and `WHILE` which
     have the semantics of ABAP statements
     [`DO`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapdo.htm)
     and
-    [`WHILE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapwhile.htm))
-    or [table
-    iterations](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentable_iteration_glosry.htm "Glossary Entry")
-    (having the semantics of [`LOOP AT`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abaploop_at_itab_variants.htm);
-    the expressions include the ABAP word `IN`).
--   Such expressions are possible in the following contexts:
-    -   `REDUCE`: The reduction result is created in the
-        iteration steps.
-    -   `NEW` and `VALUE`: Used in the context of
+    [`WHILE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapwhile.htm))    
+  - [Table iterations](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentable_iteration_glosry.htm "Glossary Entry"): 
+    Have the semantics of [`LOOP AT`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abaploop_at_itab_variants.htm) and 
+    include the addition `IN`.
+-   Where possible:
+    - `REDUCE`: Mandatory `FOR` specification. The reduction result is created in the
+       iteration steps. 
+    - `NEW` and `VALUE`: Optional `FOR` specification. Used in the context of
         looping across internal tables. New table lines are created in
         the iteration steps and inserted into a target table.
-
-`FOR ... WHILE`: The following example with `REDUCE`
-has the same effect as the example using `UNTIL` shown above.
-
-``` abap
-DATA(sum) = REDUCE i( INIT y = 0
-                      FOR n = 1 THEN n + 1 WHILE n < 11
-                      NEXT y += n ).
-```
-
-`FOR ... UNTIL`: See the example in the `REDUCE`
-section.
-
-`FOR ... IN`:
-
 -   The operand specified after `FOR` represents an iteration
     variable, i. e. a [work
     area](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenwork_area_glosry.htm "Glossary Entry")
@@ -856,77 +921,384 @@ section.
 -   In contrast to `LOOP` statements, the sequential processing
     cannot be debugged.
 
-Some examples for looping across tables and storing values in target
-tables:
-``` abap
-"Looping across table and storing the whole line in a new table;
-"the target table must have the same table type as the source table itab;
-"without the WHERE condition, all lines are respected
+```abap
+"Data objects and types to work with in the examples
+TYPES: BEGIN OF s,
+            col1 TYPE c LENGTH 5,
+            col2 TYPE i,
+            col3 TYPE i,
+        END OF s.
+TYPES itab_type TYPE TABLE OF s WITH EMPTY KEY.
+DATA(itab) = VALUE itab_type( ( col1 = 'a' col2 = 1 col3 = 30 )
+                                ( col1 = 'bb' col2 = 2 col3 = 10 )
+                                ( col1 = 'ccc' col2 = 3 col3 = 20 ) ).
 
-TYPES t_type LIKE itab.
+"-------------- Table iterations --------------
 
-... = VALUE t_type( FOR wa IN itab
-                    "WHERE ( comp1 > 2 )
-                    ( wa ) ).
+DATA(it1) = VALUE itab_type( FOR wa IN itab ( col1 = wa-col1 && 'z'
+                                              col2 = wa-col2 + 1 ) ).
 
-"Storing specific components having different names by specifying the assignment
-"individually; assumption: the target type is not compatible to the type of itab;
-"a field mapping is provided; pay attention to potential type conversion
+"LOOP AT equivalent
+CLEAR it1.
+LOOP AT itab REFERENCE INTO DATA(ref).
+    APPEND VALUE #( col1 = ref->col1 && 'z'
+                    col2 = ref->col2 + 1 ) TO it1.
+ENDLOOP.
 
-... = VALUE t_type( FOR wa IN itab
-                    "WHERE ( comp1 > 2 )
-                    ( compX = wa-comp1
-                      compY = wa-comp2 ) ).
+*COL1    COL2    COL3
+*az      2       0
+*bbz     3       0
+*cccz    4       0
 
-"Storing specific components having the same names;
-"assumption: Target type is not compatible to the type of itab;
-"if there are identically named components in the table types, you might
-"also use CORRESPONDING
+"The following example shows more syntax options
+"- Field symbol specifed after FOR
+"- LET expressions after FOR: Denotes that the LET
+"  expressions is evaluated for each loop pass
+"- INDEX INTO addition (the variable that follows implicitly
+"  has the type i): Storing the sy-tabix value for each
+"  loop pass
+DATA(it2) = VALUE itab_type( FOR <line> IN itab INDEX INTO idx
+                             LET idxplus1 = idx + 1 IN
+                             ( col1 = <line>-col1 col2 = idx col3 = idxplus1 ) ).
 
-... = VALUE t_type( FOR wa IN itab
-                    "WHERE ( comp1 > 2 )
-                    ( CORRESPONDING #( wa ) ) ).
+*COL1    COL2    COL3
+*a       1       2
+*bb      2       3
+*ccc     3       4
 
-"Multiple iteration expressions
+"Similar to the example above, the following example uses the INDEX INTO
+"addition, as well as a LET expression with multiple local variables
+DATA(it3) = VALUE string_table( FOR <str> IN itab INDEX INTO idx
+                                LET col1            = |COL1: "{ <str>-col1 }"|
+                                    col2            = |COL2: "{ <str>-col2 }"|
+                                    col3            = |COL3: "{ <str>-col3 }"|
+                                    str_to_be_added = |Table index { idx } -> { col1 } / { col2 } / { col3 }|
+                                IN ( str_to_be_added ) ).
 
-... = VALUE t_type( FOR wa1 IN itab1 WHERE ( comp1 = 4 )
-                    FOR wa2 IN itab2 WHERE ( comp2 > 5 )
-                    FOR wa3 IN itab3 WHERE ( comp3 < 3 )
-                    ( compX = wa1-comp1
-                      compY = wa2-comp2
-                      compZ = wa3-comp3 ) ).
+*Table index 1 -> COL1: "a" / COL2: "1" / COL3: "30"
+*Table index 2 -> COL1: "bb" / COL2: "2" / COL3: "10"
+*Table index 3 -> COL1: "ccc" / COL2: "3" / COL3: "20"
+
+"---------- Excursions ----------
+
+"FOR expression are very handy, for example, in EML and other statements.
+"The following example commented out shows an EML statement in the implementation
+"of a handler method taken from an EML cheat sheet example.
+"'result' is an input parameter/internal table containing RAP BO instance data on whose
+"basis, an EML MODIFY statement is executed. A suitable internal table is constructed
+"in place and that is used as operand of the MODIFY ... UPDATE FIELDS ... WITH ...
+"statement.
+
+"MODIFY ENTITIES OF zdemo_abap_rap_ro_u IN LOCAL MODE
+"  ENTITY root
+"  UPDATE FIELDS ( field3 field4 ) WITH VALUE #( FOR key IN result ( %tky   = key-%tky
+"                                                                    field3 = key-field3 * 2
+"                                                                    field4 = key-field4 * 2 ) ).
+
+"Merging tables
+"In the following example, the content of two existing internal tables is merged.
+"In the simple example, the index is used for the table index. You can also imagine
+"that you merge two internal tables, both having multiple columns. You could refer
+"to the specific component values, for example, using a free key in a table expression
+"such as ... VALUE #( some_itab[ comp_x = wa-comp_y ]-comp_z DEFAULT ... ) ...
+TYPES int_tab_type TYPE TABLE OF i WITH EMPTY KEY.
+DATA(inttab) = VALUE int_tab_type( ( 99 ) ( 100 ) ).
+
+DATA(it4) = VALUE itab_type( FOR wa IN itab INDEX INTO idx
+                             ( col1 = wa-col1 col2 = VALUE #( inttab[ idx ] DEFAULT 0 ) ) ).
+
+*COL1    COL2    COL3
+*a       99      0
+*bb      100     0
+*ccc     0       0
+
+"Retaining non-specified column values using the BASE addition
+"In the example, the original value of col3 is retained.
+DATA(it5) = VALUE itab_type( FOR wa IN itab ( VALUE #( BASE wa col1 = wa-col1 && 'y'
+                                                               col2 = wa-col2 + 3 ) ) ).
+
+*COL1    COL2    COL3
+*ay      4       30
+*bby     5       10
+*cccy    6       20
+
+"Using the CORRESPONDING operator to handle different types
+TYPES: BEGIN OF s2,
+          col1 TYPE c LENGTH 5,
+          col2 TYPE i,
+          str  TYPE string,
+       END OF s2.
+TYPES itab_type_2 TYPE TABLE OF s2 WITH EMPTY KEY.
+
+DATA(it6) = VALUE itab_type_2( FOR wa IN itab ( CORRESPONDING #( wa ) ) ).
+
+*COL1    COL2    STR    
+*a       1              
+*bb      2              
+*ccc     3              
+
+"Multiple FOR expressions that work like nested loops
+DATA(it7) = VALUE string_table( FOR wa1 IN itab
+                                FOR wa2 IN inttab
+                                ( |Comp. 1st itab: "{ wa1-col1 }", comp. 2nd itab: "{ wa2 }"| ) ).
+
+*Comp. 1st itab: "a", comp. 2nd itab: "99"
+*Comp. 1st itab: "a", comp. 2nd itab: "100"
+*Comp. 1st itab: "bb", comp. 2nd itab: "99"
+*Comp. 1st itab: "bb", comp. 2nd itab: "100"
+*Comp. 1st itab: "ccc", comp. 2nd itab: "99"
+*Comp. 1st itab: "ccc", comp. 2nd itab: "100"
+
+"LOOP AT equivalent
+CLEAR it7.
+LOOP AT itab INTO DATA(wa3).
+    LOOP AT inttab INTO DATA(wa4).
+        it7 = VALUE #( BASE it7 ( |Comp. 1st itab: "{ wa3-col1 }", comp. 2nd itab: "{ wa4 }"| ) ).
+    ENDLOOP.
+ENDLOOP.
+
+"More additions can be specified such as WHERE, USING KEY, FROM/TO, STEP 
+
+"WHERE condition 
+"The WHERE condition must be placed in parentheses.
+DATA(it8) = VALUE itab_type( FOR wa IN itab WHERE ( col2 < 3 ) ( col1 = wa-col1 && 'w'
+                                                                 col2 = 5
+                                                                 col3 = wa-col2 ) ).
+*COL1    COL2    COL3
+*aw      5       1
+*bbw     5       2
+
+"FROM/TO additions
+DATA(it9) = VALUE itab_type( FOR wa IN itab FROM 2 TO 3 ( col1 = wa-col1 && 'v'
+                                                          col2 = 6
+                                                          col3 = wa-col2 + 5   ) ).
+
+*COL1    COL2    COL3
+*bbv     6       7
+*cccv    6       8
+
+"STEP addition
+DATA(it10) = VALUE itab_type( FOR wa IN itab STEP -1 ( col1 = wa-col1 && 'u'
+                                                       col2 = 7
+                                                       col3 = wa-col2 + 8 ) ).
+
+*COL1    COL2    COL3
+*cccu    7       11
+*bbu     7       10
+*au      7       9
+
+"USING KEY addition
+DATA(it11) = VALUE itab_type( FOR wa IN itab USING KEY primary_key ( col1 = wa-col1 && 't'
+                                                                     col2 = 9
+                                                                     col3 = wa-col2 + 10 ) ).
+*COL1    COL2    COL3
+*at      9       11
+*bbt     9       12
+*ccct    9       13
+
+"---------- Conditional iterations ----------
+
+"FOR ... WHILE ...    
+DATA(it12) = VALUE itab_type( FOR x = 1 WHILE x < 4
+                              ( col1 = x col2 = x + 1 col3 = x + 2 ) ).
+
+*COL1    COL2    COL3
+*   1    2       3   
+*   2    3       4   
+*   3    4       5   
+
+"FOR ... UNTIL ...
+"The THEN addition is also possible for ... WHILE ...
+DATA(it13) = VALUE itab_type( FOR y = 31 THEN y - 10 UNTIL y < 10
+                              ( col1 = y col2 = y + 1 col3 = y + 2 ) ).
+
+*COL1    COL2    COL3
+*  31    32      33  
+*  21    22      23  
+*  11    12      13  
 ```
 
-<p align="right"><a href="#top">⬆️ back to top</a></p>
+### REDUCE
 
-## LET Expressions
+-   The
+    [`REDUCE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconstructor_expression_reduce.htm)
+    operator creates a result of a specified or derived type from one or
+    more [iteration expressions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abeniteration_expression_glosry.htm "Glossary Entry") with `FOR`.
+-   As covered for `FOR`, conditional iterations (reducing sets of data objects to a single data object in custom iteration steps) and table iterations (evaluation of table lines, reducing the table content to summary value) are possible. For example, the numeric values of a table column are summed up. As a result, the total number is constructed. 
+- Additions: 
+  - Optional `LET` expressions (the following additions are mandatory)
+  - `INIT ...`: A temporary variable (or field symbol) to specify an initial value for the result variable. At least, one variable/field symbol must be specified. The first specified determines the result of the expression (any others that are additionally specified can be used after `NEXT`).
+  - `FOR ...`: Iteration expression as covered above.
+  - `NEXT ...`: Represents the assignment to the temporary variable after every iteration. Once the loop has finished, the target variable is assigned the resulting value.
 
--   [`LET`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abaplet.htm)
-    expressions allow you to declare local helper fields (variables or
-    fields symbols) and assign values (the type is derived from the
-    defined value) to be used in constructor expressions, for example,
-    in iteration expressions using `FOR` or results specified in
-    the conditional expressions of `COND` and `SWITCH`.
--   Note that the helper field is only valid in the context in which the
-    `LET` expression is specified.
 
-Examples:
-``` abap
-"Creating a string table using a LET expression
+```abap
+"Data objects and types to work with in the examples
+TYPES: BEGIN OF s,
+          col1 TYPE c LENGTH 5,
+          col2 TYPE i,
+          col3 TYPE i,
+       END OF s.
+TYPES itab_type TYPE TABLE OF s WITH EMPTY KEY.
+DATA(itab) = VALUE itab_type( ( col1 = 'a' col2 = 1 col3 = 30 )
+                               ( col1 = 'bb' col2 = 2 col3 = 10 )
+                               ( col1 = 'ccc' col2 = 3 col3 = 20 ) ).
 
-DATA(str_tab) = VALUE string_table( LET it = `be` IN
-                    ( |To { it } is to do| )
-                    ( |To { it } or not to { it }| )
-                    ( |To do is to { it }| )
-                    ( |Do { it } do { it } do| ) ).
+"---------- Table iterations ----------
 
-"Conditional expressions
+"Calculating the sum of values in a table column
+"Result: 6
+DATA(sum_val) = REDUCE i( INIT len = 0
+                          FOR <line> IN itab
+                          NEXT len = len + <line>-col2 ).
 
-DATA(a) = COND #( LET b = c IN
-                  WHEN b > x THEN ...
-                  WHEN b < y THEN ...
-                  ...
-                  ELSE ... ).
+"Getting the longest string in a table column
+"Result: ccc
+DATA(long_str) = REDUCE s-col1( INIT str = VALUE #( )
+                                FOR <line> IN itab
+                                NEXT str =  COND #( WHEN strlen( <line>-col1 ) > strlen( str )
+                                                    THEN <line>-col1
+                                                    ELSE str ) ).
+
+"Getting the maximum value (other than using SORT)
+"Unlike above, a variable is used instead of a field symbol.
+"Result: 3
+DATA(max_val) = REDUCE i( INIT max = 0
+                          FOR line IN itab
+                          NEXT max =  COND #( WHEN line-col2 > max
+                                              THEN line-col2
+                                              ELSE max ) ).
+
+"Creating a new internal table using REDUCE
+"In the example, the sum of two values is calculated.
+"A VALUE expression with the BASE addition is used to
+"add a line to a table (retaining the existing lines).
+DATA(itstr) = REDUCE string_table( INIT strtab = VALUE string_table( )
+                                   FOR wa IN itab
+                                   NEXT strtab = VALUE #( BASE strtab
+                                    ( |The sum of { wa-col2 } and { wa-col3 } is { wa-col2 + wa-col3 }.| ) ) ).
+
+*The sum of 1 and 30 is 31.
+*The sum of 2 and 10 is 12.
+*The sum of 3 and 20 is 23.
+
+"More additions are possible, such as specifying a WHERE condition (which
+"must be specified in parentheses). The following example creates a new
+"internal table based on a WHERE condition.
+TYPES: BEGIN OF s3,
+          num1 TYPE i,
+          num2 TYPE i,
+          sum  TYPE i,
+       END OF s3.
+TYPES s3_tab_type TYPE TABLE OF s3 WITH EMPTY KEY.
+DATA(itred) = REDUCE s3_tab_type( INIT tab = VALUE s3_tab_type( )
+                                  FOR wa IN itab
+                                  WHERE ( col2 < 3 )
+                                  NEXT tab = VALUE #( BASE tab
+                                   ( num1 = wa-col2 num2 = wa-col3 sum = wa-col2 + wa-col3 ) ) ).
+
+*NUM1    NUM2    SUM
+*1       30      31
+*2       10      12
+
+"---------- Conditional iterations ----------
+
+"UNTIL addition
+"Iteratively calculating the sum from 1 to 10
+"Result: 55
+DATA(reduce_until) = REDUCE i( INIT sum = 0
+                               FOR  int = 1 UNTIL int > 10
+                               NEXT sum += int ).
+
+"WHILE addition
+"The example corresponds to the previous one.
+DATA(reduce_while) = REDUCE i( INIT sum = 0
+                               FOR  int = 1 WHILE int <= 10
+                               NEXT sum += int ).
+
+"THEN addition
+"The following example constructs a text string. The THEN addition is used
+"to decrement the iteration variable. Additionally, a LET expression is used
+"to specify a helper variable.
+"Result: Counting downwards starting with 10: 10 9 8 7 6 5 4 3 2 1
+DATA(count) = REDUCE string( LET start = 10 IN
+                             INIT text = |Counting downwards starting with { start }:|
+                             FOR n = start THEN n - 1 WHILE n > 0
+                             NEXT text &&= | { n }| ).
+
+"Example similar to the previous one. Using UNTIL, a text string is enlarged until
+"it has reached a specific size.
+"Result: ab abap abapap abapapap abapapapap abapapapapap abapapapapapap
+DATA(abap_str) =  REDUCE string( INIT text = ``
+                                 FOR t = `ab` THEN t && `ap` UNTIL strlen( t ) > 15
+                                 NEXT text &&= |{ t } | ).
+
+"---------- Excursion: Grouping lines in internal tables with VALUE/REDUCE ----------
+
+"The following examples show equivalents of LOOP AT GROUP ... GROUP BY ... statements.
+"Find more information and examples about grouping in the ABAP Keyword Documentation.
+
+"Internal table to work with in the examples
+DATA(itab4grp) = VALUE itab_type( ( col1 = 'a' col2 = 1 col3 = 2 )
+                                  ( col1 = 'a' col2 = 3 col3 = 4 )
+                                  ( col1 = 'a' col2 = 5 col3 = 6 )
+                                  ( col1 = 'b' col2 = 7 col3 = 8 )
+                                  ( col1 = 'b' col2 = 9 col3 = 10 )
+                                  ( col1 = 'c' col2 = 11 col3 = 12 ) ).
+
+
+"Constucting a result using VALUE
+"The following example returns the values of identified groups in an internal table
+"Table lines are evaluated by grouping all lines that meet the condition
+"specified in GROUP BY (group key binding). The group key is stored in the variable
+"after FOR GROUPS (gr). The constructed result just consists of the group keys in
+"the example. The content of the members is not relevant.
+DATA(it_val_1) = VALUE string_table( FOR GROUPS gr OF wa IN itab4grp
+                                     GROUP BY wa-col1 ASCENDING
+                                     WITHOUT MEMBERS
+                                     ( |{ gr }| ) ).
+
+*a
+*b
+*c
+
+"As above, the following example returns the values of identified groups in an internal table.
+"Additionally, a LET expression (that itself contains an iteration expression) is specified
+"to collect column values by group in an internal table. The lines of this (string) table
+"are concatenated and inserted in the target table.
+DATA(it_val_2) = VALUE string_table(
+    FOR GROUPS grp OF wa IN itab4grp
+    GROUP BY wa-col1 ASCENDING
+    LET members = VALUE string_table(
+    FOR grpd IN GROUP grp ( |{ grpd-col2 }, { grpd-col3 }| ) ) IN
+    ( |{ grp }: { concat_lines_of( table = members sep = ` / ` ) }| ) ).
+
+*a: 1, 2 / 3, 4 / 5, 6
+*b: 7, 8 / 9, 10
+*c: 11, 12
+
+"Constucting a result using REDUCE
+"The example is similar to the previous one by filling a string table.
+"The example uses a group key expression specified after GROUP BY.
+"In the group key expression, additional components of a structured
+"group key are specified which return specific information (group size,
+"group index).
+DATA(it_reduced) = REDUCE string_table(
+    INIT li = VALUE string_table( )
+    FOR GROUPS group OF grt IN itab4grp
+    GROUP BY ( grpkey = grt-col1
+                size = GROUP SIZE
+                index = GROUP INDEX ) ASCENDING
+    LET mem = VALUE string_table(
+    FOR grpr IN GROUP group ( |{ grpr-col2 }, { grpr-col3 }| ) ) IN
+    NEXT li = VALUE string_table( BASE li ( |Group key: "{ group-grpkey }" \| | &&
+                                            |group size: {  group-size  } \| | &&
+                                            |group index: { group-index } \| members: | &&
+                                            |{ concat_lines_of( table = mem sep = ` / ` ) }| ) ) ).
+
+*Group key: "a" | group size: 3 | group index: 1 | members: 1, 2 / 3, 4 / 5, 6
+*Group key: "b" | group size: 2 | group index: 2 | members: 7, 8 / 9, 10
+*Group key: "c" | group size: 1 | group index: 3 | members: 11, 12
 ```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
