@@ -545,58 +545,96 @@ two statements are  not the same:
         instance constructor. See more information:
         [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abennew_constructor_params_class.htm).
 
-Examples:
+The following examples cover: 
+- Creating anonymous data objects
+- Creating objects/instances of classes
+  
+
 ``` abap
-"Data references
+"-------------- Creating anonymous data objects -------------
+"Note that optional additions (see for VALUE expressions) when dealing 
+"with anonymous data objects (e.g. BASE). They are not covered here.
+
 "Declaring data reference variables
-DATA dref1 TYPE REF TO i.    "Complete type
+DATA dref1 TYPE REF TO i.    "Complete type
 DATA dref2 TYPE REF TO data. "Generic type
 
-"Creating anonymous data objects
-"Here, no parameters are specified within the parentheses meaning the
-"data objects retain their initial values.
+"In the following created anonymous data objects, no parameters are
+"specified in the parentheses meaning the data objects retain their
+"initial values.
 dref1 = NEW #( ).
 dref2 = NEW string( ).
 
-"Assigning single values; specified as unnamed data objects
+"Such NEW expressions replace the older syntax CREATE DATA (however, in the 
+"context of dynamic programming, using CREATE DATA is still required)
+CREATE DATA dref1.
+CREATE DATA dref2 TYPE string.
+
+"Unlike above, the following examples specify values in the parentheses,
+"this assigning single values.
 dref1 = NEW #( 123 ).
 dref2 = NEW string( `hallo` ).
 
 "Using inline declarations to omit a prior declaration of a variable
+"dref3 has the type TYPE REF TO i
 DATA(dref3) = NEW i( 456 ).
+dref2 = NEW string( `Hello world` ).
 
-DATA text TYPE string VALUE `world`.
+"Creating an anonymous structure
+"Components are assigned values.
+DATA(dref4) = NEW zdemo_abap_carr( carrid = 'AA' carrname = 'American Airlines' ).
 
-"Another constructor expression specified within the parentheses
-dref2 = NEW string( `Hello ` && text && CONV string( '!' ) ).
+"Creating an anonymous internal table
+DATA dref5 TYPE REF TO string_table.
+dref5 = NEW string_table( ( `c` ) ( `d` ) ).
+DATA(dref6) = NEW string_table( VALUE #( ( `a` ) ( `b` ) ) ).
 
-DATA dref4 TYPE REF TO string_table.
-dref4 = NEW #( VALUE string_table( ( `a` ) ( `b` ) ) ).
+"-------------- Creating objects/instances of classes -------------
 
-"Structured type; named arguments within the parentheses
-DATA(dref5) = NEW zdemo_abap_carr( carrid = 'AA' carrname = 'American Airlines' ).
-
-"Object references
-"Declaring object reference variables
-DATA oref1 TYPE REF TO cl1. "Assumption: class without constructor implementation
-DATA oref2 TYPE REF TO cl2. "Assumption: class with constructor implementation
-
-"Creating instances of classes
+"Using a cheat sheet example class (the class does not implement constructors)
+DATA oref1 TYPE REF TO zcl_demo_abap_objects.
+DATA oref2 TYPE REF TO object.  "Generic type
+"Creating an instance of a class
 oref1 = NEW #( ).
+oref2 = NEW zcl_demo_abap_objects( ).
 
-"Listing the parameter bindings for the constructor method
-"If there is only one parameter, the explicit specification of the
-"parameter name is not needed and the value can be specified directly
-oref2 = NEW #( p1 = ... p2 = ... ).
+"Such NEW expressions replace the older syntax CREATE OBJECT (however, in the 
+"context of dynamic programming, using CREATE OBJECT is still required)
+CREATE OBJECT oref1.
+CREATE OBJECT oref2 TYPE zcl_demo_abap_objects.
 
-"Using inline declaration
-DATA(oref3) = NEW cl2( p1 = ... p2 = ... ).
+"You can then, for example, use the object reference variable to access
+"components such as attributes, or you can call methods (note: instance 
+"and also static components can be addressed).
+DATA(str) = oref1->public_string. "Static attribute
+oref1->another_string = `Hello`.  "Instance attribute
+oref1->string = `Hi`.             "Static attribute
+oref1->hallo_instance_method( ).
+oref1->hallo_static_method( ).
 
-"Method chaining
-... NEW some_class( ... )->meth( ... ).
+"Using inline declarations to create an object reference variable
+"and an instance of a class
+DATA(oref3) = NEW zcl_demo_abap_objects( ).
+"Chainings are possible (the example accesses an instance attribute)
+DATA(str2) = NEW zcl_demo_abap_objects( )->another_string.
+
+"Example pattern for chainings
+"... NEW some_class( ... )->meth( ... ) ...
 
 "Chained attribute access
-... NEW some_class( ... )->attr ...
+"... NEW some_class( ... )->attr ...
+
+"Standalone NEW expression (in the case of the example method, there
+"is no parameter available)
+NEW zcl_demo_abap_objects( )->hallo_instance_method( ).
+
+"Assumption in the following examples: The classes have an instance constructor    
+"Listing the parameter assignments for the constructor method
+"If there is only one parameter, the explicit specification of the
+"parameter name is not needed and the value can be specified directly.
+DATA(oref4) = NEW cl_a( p1 = ... p2 = ... ).
+"Assumption: Only one parameter (of type i)
+DATA(oref5) = NEW cl_b( 123 ).
 ```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
