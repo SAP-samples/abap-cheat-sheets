@@ -103,131 +103,251 @@ initialization can be avoided.
         additions `BASE` and `FOR` are possible, too.
         See more information
         [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenvalue_constructor_params_itab.htm).
-
-Example: Structure
-
-``` abap
-"Creating a structured type
-TYPES: BEGIN OF struc_type,
-         a TYPE i,
-         b TYPE c LENGTH 3,
-       END OF struc_type.
-
-DATA struc TYPE struc_type. "Structured data object
-
-struc = VALUE #( a = 1 b = 'aaa' ). "Deriving the type using #
-```
-
-
-As mentioned above, the concept of [inline
-declarations](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abeninline_declarations.htm)
-enters the picture here, which simplifies ABAP programming. You can
-construct a new data object (for example, using `DATA(...)`),
-provide the desired type with the constructor expression and assign
+- As mentioned above, the concept of [inline declarations](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abeninline_declarations.htm)
+is very handy in this context. You can construct a new data object (for example, using `DATA(...)` or `FINAL(...)`), provide the desired type with the constructor expression and assign
 values in one go.
+- In case of [deep](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendeep_structure_glosry.htm "Glossary Entry")
+and [nested structures](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abennested_structure_glosry.htm "Glossary Entry")
+or [deep tables](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abendeep_table_glosry.htm "Glossary Entry"),
+the use of `VALUE` expressions is handy, too, because you can create corresponding values in place.
 
-``` abap
-"Explicit type specification needed
-DATA(structure) = VALUE struc_type( a = 2 b = 'bbb' ).
-```
+The following examples cover: 
+- Populating structures and internal tables with `VALUE`
+- Creating initial values (for all types possible)
+- Possible additions, such as `BASE` (retaining existing content) and `LINES OF` (adding all or some lines from other internal tables; more additions are available here)
+- Short form of `VALUE` constructor expressions for internal tables with structured line types
+- Excursions 
 
-Note that initial values can be created by omitting the specification of
-components or by providing no content within the parentheses.
+```abap
+"-------------- Populating structures/internal tables with VALUE --------------
 
-``` abap
-"Component b not specified, b remains initial
-struc = VALUE #( a = 2 ).
+"Declaring structured data type and structured data object
+TYPES: BEGIN OF struc_type,
+            a TYPE i,
+            b TYPE c LENGTH 3,
+        END OF struc_type.
 
-"Explicit setting of initial value for a component
-struc = VALUE #( a = 1 b = value #( ) ).
+DATA struc TYPE struc_type.
 
-"The whole structure is initial
+"Using VALUE constructor expression
+"Note: The data type can be retrieved from the context. Then, # can
+"be specified.
+struc = VALUE #( a = 1 b = 'aaa' ).
+
+"Using an inline declaration
+"In the following example, the type cannot be retrieved from the
+"context. Therefore, an explicit specification of the type is
+"required.
+DATA(struc2) = VALUE struc_type( a = 2 b = 'bbb' ).
+
+"The following syntax is also possible (explicit data type
+"specification although the type can be determined).
+struc = VALUE struc_type( a = 3 b = 'ccc' ).
+
+"Using such a VALUE constructor expression instead of, for example,
+"assigning the component values individually using the component
+"selector (-).
+struc-a = 4.
+struc-b = 'ddd'.
+
+"Internal table
+"Note the extra pair of parentheses for an individual table line.
+DATA itab TYPE TABLE OF struc_type WITH EMPTY KEY.
+
+itab = VALUE #( ( a = 5 b = 'eee' )
+                ( a = 6 b = 'fff' ) ).
+
+"Using such a VALUE constructor expression instead of, for example,
+"APPEND statements (note the BASE addition for retaining existing
+"table lines further down)
+APPEND struc TO itab.
+APPEND INITIAL LINE TO itab.
+
+"Inline declaration, explicit table type specification after VALUE
+TYPES itab_type TYPE TABLE OF struc_type WITH EMPTY KEY.
+DATA(itab2) = VALUE itab_type( ( a = 7 b = 'ggg' )
+                               ( a = 8 b = 'hhh' ) ).
+
+"Internal table with an elementary line type
+"Unstructured line types work without component names.
+DATA(itab3) = VALUE string_table( ( `Hello` )
+                                  ( `world` ) ).
+
+"-------------- Creating initial values --------------
+
+"Type-specific initial value for data objects by leaving the
+"VALUE constructor expression empty
+"Structure (the entire structure is initial)
 struc = VALUE #( ).
 
-"Creating initial values for an elementary data type
-DATA num1 TYPE i.
+"Internal table
+DATA(itab4) = VALUE itab_type( ).
+"This basically corresponds to the following data object declarations
+"DATA itab5 TYPE itab_type.
+"DATA itab6 TYPE itab_type VALUE IS INITIAL.
 
-num1 = VALUE #( ).
+"Not specifying individual components means these components
+"remain initial
+"Component b not specified, i.e. b remains initial
+struc = VALUE #( a = 2 ).
+"Explicitly setting an initial value for a component
+struc = VALUE #( a = 1 b = VALUE #( ) ).
+"All component values of the first line added are initial
+itab4 = VALUE #( ( ) ( a = 1 b = 'aaa' ) ).
 
-"Inline declaration
-DATA(num2) = VALUE i( ).
-```
+"Initial values can be created for all types, e.g. also for elementary types.
+"VALUE cannot be used to create elementary data objects and provide concrete
+"values, however, an empty VALUE expression can be used to create elementary
+"data objects with type-specific initial values.
+DATA(int) = VALUE i( ).
+DATA int2 TYPE i.
+int2 = VALUE #( ).
+DATA(xstr) = VALUE xstring( ).
 
-Regarding internal tables, the line specifications are enclosed in an
-inner pair of parentheses `( ... )`. In the following example,
-three lines are added to an internal table.
+"-------------- VALUE constructor used for nested/deep data objects  --------------
 
-``` abap
-"Creating an internal table type and an internal table
-TYPES tab_type TYPE TABLE OF struc_type WITH EMPTY KEY.
-DATA itab TYPE tab_type.
-
-"Filling the internal table using the VALUE operator with #
-itab = VALUE #( ( a = 1 b = 'aaa' )
-                ( a = 2 b = 'bbb' )
-                ( a = 3 b = 'ccc' ) ).
-
-"Internal table declared inline, explicit type specification
-DATA(itab2) = VALUE tab_type( ( a = 1 b = 'aaa' )
-                              ( a = 2 b = 'bbb' )
-                              ( a = 3 b = 'ccc' ) ).
-
-"Unstructured line types work without component names.
-"Here, the internal table type is a string table.
-DATA(itab3) = VALUE string_table( ( `abc` ) ( `def` ) ( `ghi` ) ).
-```
-
-In case of
-[deep](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendeep_structure_glosry.htm "Glossary Entry")
-and [nested
-structures](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abennested_structure_glosry.htm "Glossary Entry")
-or [deep
-tables](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abendeep_table_glosry.htm "Glossary Entry"),
-the use of `VALUE` expressions is handy. The following example
-demonstrates a nested structure.
-``` abap
 "Creating a nested structure
 DATA: BEGIN OF nested_struc,
         a TYPE i,
         BEGIN OF struct,
-          b TYPE i,
-          c TYPE c LENGTH 3,
+            b TYPE i,
+            c TYPE c LENGTH 3,
         END OF struct,
-      END OF nested_struc.
+        END OF nested_struc.
 
-"Filling the deep structure
-nested_struc = VALUE #( a = 1 struct = VALUE #( b = 2 c = 'abc' ) ).
-```
+"Populating a nested structure
+nested_struc = VALUE #( a = 1 struct = VALUE #( b = 1 c = 'aaa' ) ).
 
-`BASE` addition: A constructor expression without the
-`BASE` addition initializes the target variable. Hence, you can
-use the addition if you do not want to construct a structure or internal
-table from scratch but keep existing content.
+"Instead of, for example, using the component selector
+nested_struc-a = 2.
+nested_struc-struct-b = 3.
+nested_struc-struct-c = 'bbb'.
 
-``` abap
-"Filling structure
+"Deep table
+TYPES deep_itab_type LIKE TABLE OF nested_struc WITH EMPTY KEY.
+DATA(deep_itab) = VALUE deep_itab_type( ( nested_struc ) "Adding an existing structure
+                                        ( a = 3 struct = VALUE #( b = 3 c = 'ccc' ) )
+                                        ( a = 4 struct = VALUE #( b = 4 c = 'ddd' ) ) ).
+
+"-------------- Additions to VALUE constructor expressions --------------
+"Note: LET and FOR expressions can be added to VALUE constructor expressions.
+"Find more information further down.
+
+"-------------- BASE addition --------------
+
+"A constructor expression without the BASE addition initializes the target variable.
+"Therefore, you can use the addition if you do not want to construct a structure or
+"internal table from scratch but keep existing content.
+
+"Populating a structure
 struc = VALUE #( a = 1 b = 'aaa' ).
 
 "struc is not initialized, only component b is modified, value of a is kept
 struc = VALUE #( BASE struc b = 'bbb' ).
 
-"Filling internal table with two lines
+"Populating an internal table
 itab = VALUE #( ( a = 1 b = 'aaa' )
-                ( a = 2 b = 'bbb' ) ).
+                ( a = 2 b = 'bbb' ) ).
 
-"Two more lines are added instead of initializing the internal table
+"Two more lines are added, existing content is preserved, the internal table is not
+"initialized
 itab = VALUE #( BASE itab
-                ( a = 3 b = 'ccc' )
-                ( a = 4 b = 'ddd' ) ).
-```
+                ( a = 3 b = 'ccc' )
+                ( a = 4 b = 'ddd' ) ).
 
-`LINES OF` addition: All or some lines of another table can be included in the target internal table (provided that they have
-appropriate line types):
-``` abap
+"-------------- LINES OF addition -------------
+
+"All or some lines of another table can be included in the target internal table
+"(provided that they have appropriate line types).
+"With the LINES OF addition, more additions can be specified.
+
+DATA(itab5) = itab.
+DATA(itab6) = itab.
 itab = VALUE #( ( a = 1 b = 'aaa' )
-                ( a = 2 b = 'bbb' )
-                ( LINES OF itab2 )    "All lines of itab2
-                ( LINES OF itab3 FROM 2 TO 5 ) ).  "Specific lines of itab3
+                ( a = 2 b = 'bbb' )
+                ( LINES OF itab5 )                 "All lines of itab5
+                ( LINES OF itab6 FROM 2 TO 4 ) ).  "Specific lines of itab6
+
+itab = VALUE #( ( LINES OF itab5 STEP 2 ) "Adding every second line
+                ( LINES OF itab6 USING KEY primary_key ) ). "Specifying a table key
+
+
+"-------------- Short form for internal tables with structured line types --------------
+"- Assignments of values to individual structure components are possible outside of inner
+"  parentheses
+"- In that case, all of the following components in the inner parentheses are assigned that
+"  value.
+"- The assignment is made up to the next explicit assignment for the corresponding component.
+
+TYPES: BEGIN OF structype,
+            a TYPE i,
+            b TYPE c LENGTH 3,
+            c TYPE string,
+        END OF structype.
+TYPES tabtype TYPE TABLE OF structype WITH EMPTY KEY.
+
+DATA(itab7) = VALUE tabtype( b = 'aaa'           ( a = 1 c = `xxx` )
+                                                 ( a = 2 c = `yyy` )
+                             b = 'bbb' c = `zzz` ( a = 3 )
+                                                 ( a = 4 ) ).
+
+*A    B      C
+*1    aaa    xxx
+*2    aaa    yyy
+*3    bbb    zzz
+*4    bbb    zzz
+
+"This option can be handy in various contexts, for example, in a
+"range table.
+TYPES int_tab_type TYPE TABLE OF i WITH EMPTY KEY.
+"Populating an integer table with values from 1 to 20 (see iteration
+"expressions with FOR furhter down)
+DATA(inttab) = VALUE int_tab_type( FOR x = 1 WHILE x <= 20 ( x ) ).
+
+DATA rangetab TYPE RANGE OF i.
+
+"Populating a range table using VALUE and the short form
+rangetab = VALUE #( sign   = 'I'
+                    option = 'BT' ( low = 1  high = 3 )
+                                  ( low = 6  high = 8 )
+                                  ( low = 12 high = 15 )
+                    option = 'GE' ( low = 18 ) ).
+
+"Using a SELECT statement to retrieve internal table content
+"based on the range table specifications
+SELECT * FROM @inttab AS tab
+    WHERE table_line IN @rangetab
+    INTO TABLE @DATA(result).
+"result: 1, 2, 3, 6, 7, 8, 12, 13, 14, 15, 18, 19, 20
+
+"The following EML statement creates RAP BO instances. The BDEF derived
+"type is created inline. With the CREATE FROM addition, the %control values
+"must be specified explicitly. You can provide the corresponding values
+"for all table lines using the short form instead of individually
+"specifying the values for each instance.
+MODIFY ENTITIES OF zdemo_abap_rap_ro_m
+    ENTITY root
+    CREATE FROM VALUE #(
+        %control-key_field = if_abap_behv=>mk-on
+        %control-field1    = if_abap_behv=>mk-on
+        %control-field2    = if_abap_behv=>mk-on
+        %control-field3    = if_abap_behv=>mk-on
+        %control-field4    = if_abap_behv=>mk-off
+        ( %cid      = 'cid1'
+          key_field = 1
+          field1    = 'aaa'
+          field2    = 'bbb'
+          field3    = 10
+          field4    = 100 )
+        ( %cid      = 'cid2'
+          key_field = 2
+          field1    = 'ccc'
+          field2    = 'ddd'
+          field3    = 20
+          field4    = 200 ) )
+    MAPPED DATA(m)
+    FAILED DATA(f)
+    REPORTED DATA(r).
 ```
 
 Using the inline construction of structures and internal tables, you can
@@ -810,7 +930,7 @@ DATA(time_of_day) = CONV string(
                     WHEN time BETWEEN '050001' AND '120000' THEN good && ` morn` && ending  "Good morning
                     WHEN time BETWEEN '120001' AND '180000' THEN good && ` afternoon`
                     WHEN time BETWEEN '180001' AND '220000' THEN good && ` even` && ending
-                    ELSE `night`  ) ).
+                    ELSE good && ` night`  ) ).
 
 
 "Getting a particular column name of an existing internal table using a RTTI
@@ -827,7 +947,7 @@ DATA(comp2_a) = components[ 2 ]-name. "COMP2
 "Achieving the result from above even in one statement using LET
 DATA(comp2_b) = CONV abap_compname(
     LET comps = CAST cl_abap_structdescr( CAST cl_abap_tabledescr(
-    cl_abap_typedescr=>describe_by_data( it ) )->get_table_line_type( ) )->components
+                 cl_abap_typedescr=>describe_by_data( it ) )->get_table_line_type( ) )->components
     IN comps[ 2 ]-name ).
 
 "Constructing a structure using local variables
@@ -940,9 +1060,9 @@ DATA(it1) = VALUE itab_type( FOR wa IN itab ( col1 = wa-col1 && 'z'
 
 "LOOP AT equivalent
 CLEAR it1.
-LOOP AT itab REFERENCE INTO DATA(ref).
-    APPEND VALUE #( col1 = ref->col1 && 'z'
-                    col2 = ref->col2 + 1 ) TO it1.
+LOOP AT itab INTO DATA(wa_loop).
+    APPEND VALUE #( col1 = wa_loop-col1 && 'z'
+                    col2 = wa_loop-col2 + 1 ) TO it1.
 ENDLOOP.
 
 *COL1    COL2    COL3
@@ -985,7 +1105,7 @@ DATA(it3) = VALUE string_table( FOR <str> IN itab INDEX INTO idx
 "The following example commented out shows an EML statement in the implementation
 "of a handler method taken from an EML cheat sheet example.
 "'result' is an input parameter/internal table containing RAP BO instance data on whose
-"basis, an EML MODIFY statement is executed. A suitable internal table is constructed
+"basis an EML MODIFY statement is executed. A suitable internal table is constructed
 "in place and that is used as operand of the MODIFY ... UPDATE FIELDS ... WITH ...
 "statement.
 
@@ -1118,6 +1238,8 @@ DATA(it13) = VALUE itab_type( FOR y = 31 THEN y - 10 UNTIL y < 10
 *  11    12      13  
 ```
 
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
 ### REDUCE
 
 -   The
@@ -1160,7 +1282,7 @@ DATA(long_str) = REDUCE s-col1( INIT str = VALUE #( )
                                                     THEN <line>-col1
                                                     ELSE str ) ).
 
-"Getting the maximum value (other than using SORT)
+"Getting the maximum value (other than, for example, using a SORT statement)
 "Unlike above, a variable is used instead of a field symbol.
 "Result: 3
 DATA(max_val) = REDUCE i( INIT max = 0
@@ -1247,7 +1369,7 @@ DATA(itab4grp) = VALUE itab_type( ( col1 = 'a' col2 = 1 col3 = 2 )
                                   ( col1 = 'c' col2 = 11 col3 = 12 ) ).
 
 
-"Constucting a result using VALUE
+"Constructing a result using VALUE
 "The following example returns the values of identified groups in an internal table
 "Table lines are evaluated by grouping all lines that meet the condition
 "specified in GROUP BY (group key binding). The group key is stored in the variable
@@ -1289,8 +1411,7 @@ DATA(it_reduced) = REDUCE string_table(
     GROUP BY ( grpkey = grt-col1
                 size = GROUP SIZE
                 index = GROUP INDEX ) ASCENDING
-    LET mem = VALUE string_table(
-    FOR grpr IN GROUP group ( |{ grpr-col2 }, { grpr-col3 }| ) ) IN
+    LET mem = VALUE string_table( FOR grpr IN GROUP group ( |{ grpr-col2 }, { grpr-col3 }| ) ) IN
     NEXT li = VALUE string_table( BASE li ( |Group key: "{ group-grpkey }" \| | &&
                                             |group size: {  group-size  } \| | &&
                                             |group index: { group-index } \| members: | &&

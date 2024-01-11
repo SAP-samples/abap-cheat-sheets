@@ -1181,7 +1181,7 @@ FIND FIRST OCCURRENCE OF `Z`
 - Built-in search functions, such as `find`, are available for searching strings.
 - They return a return value of type i and contain multiple (optional) parameters.
 - `FIND` covers the same functionality and more with the many addition options.
-- Fore more information, see [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensearch_functions.htm)
+- For more information, see [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensearch_functions.htm)
 
 Parameters of the `find` function:
 - `val`: 
@@ -1766,7 +1766,7 @@ DATA(dist4) = distance( val1 = str_to_check val2 = `zabapzzzzzzzzzzzz` max = 5 )
 
 "If the value of max is 0 or less, an exception is raised.
 TRY.
-    DATA(dist5) = distance( val1 = str_to_check val2 = `zabapzzzzzzzzzzzz` max = 0 ).
+    DATA(dist5) = distance( val1 = str_to_check val2 = `#ab#ap#` max = 0 ).
   CATCH cx_sy_strg_par_val.
     ...
 ENDTRY.

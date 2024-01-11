@@ -1878,6 +1878,17 @@ DATA(a) = cl_abap_typedescr=>describe_by_data( some_struc ).
 DATA(b) = CAST cl_abap_structdescr( a ).
 DATA(c) = b->components.  
 
+"get_included_view method: Getting type information for included 
+"components, e.g. in case of deep structures
+TYPES: BEGIN OF st,
+         a TYPE i, "elementary type
+         b TYPE zdemo_abap_carr, "structure
+         c TYPE string_table, "internal table
+       END OF st.
+
+DATA(type_descr) = CAST cl_abap_structdescr(
+  cl_abap_typedescr=>describe_by_name( 'ST' ) )->get_included_view( ).
+
 "As mentioned earlier about type name specifications for statements 
 "such as CREATE DATA, in addition to character-like data objects for 
 "the type name specified in the parentheses, you can also use absolute 

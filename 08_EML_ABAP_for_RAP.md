@@ -969,7 +969,7 @@ MODIFY ENTITIES OF root_ent      "full name of root entity
     snippet is basically a shortcut for the addition
     [`FROM`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapmodify_entity_entities_fields.htm)
     that is used here. When using `FROM`, the values of the
-    `%control` structure must be specified explicitly.
+    `%control` structure must be specified explicitly. 
 >-   The BDEF derived types can also be created
     [inline](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendata_inline.htm)
     as shown in the example using a [constructor
@@ -985,6 +985,43 @@ MODIFY ENTITIES OF root_ent      "full name of root entity
     entity in one EML request). Long and short forms are also available
     for other EML statements.
 >-  The [`SET FIELDS WITH`](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapmodify_entity_entities_fields.htm#!ABAP_VARIANT_4@4@) addition is available as another field specification option. However, it has limitations that you should be aware of. It can cause syntax warnings. Check the documentation. It is recommended that you use `FIELDS ... WITH` and `FROM`.
+
+
+Excursion: Specifying `%control` component values in the short form of `VALUE` constructor expressions
+
+```abap
+"The following EML statement creates RAP BO instances. The BDEF derived
+"type is created inline. With the FROM addition, the %control values
+"must be specified explicitly. You can provide the corresponding values
+"for all table lines using the short form, i.e. outiside of the inner
+"parentheses, instead of individually specifying the values for each 
+"instance within the parentheses. In this case, the corresponding %control
+"component value is assigned for all of the following table lines.
+MODIFY ENTITIES OF zdemo_abap_rap_ro_m
+    ENTITY root
+    CREATE FROM VALUE #(
+        %control-key_field = if_abap_behv=>mk-on
+        %control-field1    = if_abap_behv=>mk-on
+        %control-field2    = if_abap_behv=>mk-on
+        %control-field3    = if_abap_behv=>mk-on
+        %control-field4    = if_abap_behv=>mk-off
+        ( %cid      = 'cid1'
+          key_field = 1
+          field1    = 'aaa'
+          field2    = 'bbb'
+          field3    = 10
+          field4    = 100 )
+        ( %cid      = 'cid2'
+          key_field = 2
+          field1    = 'ccc'
+          field2    = 'ddd'
+          field3    = 20
+          field4    = 200 ) )
+    MAPPED DATA(m)
+    FAILED DATA(f)
+    REPORTED DATA(r).
+```
+
 
 The following EML statement combines multiple operations in one EML
 request. It demonstrates the use of `%cid` and
