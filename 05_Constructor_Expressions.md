@@ -506,7 +506,7 @@ s2 = CORRESPONDING #( s1 MAPPING d = c EXCEPT b ).
 
 "Specifying an asterisk (*) after EXCEPT in combination with specifying mappings
 "means that all non-specified components after MAPPING remain initial in the target
-    s2 = CORRESPONDING #( s1 MAPPING d = c EXCEPT * ).
+s2 = CORRESPONDING #( s1 MAPPING d = c EXCEPT * ).
 
 *A    B      D
 *0           bbbbb
@@ -760,20 +760,32 @@ DATA(oref5) = NEW cl_b( 123 ).
 Examples:
 ``` abap
 "Result: 0.2
-DATA(a) = CONV decfloat34( 1 / 5 ).
+DATA(conv_res) = CONV decfloat34( 1 / 5 ).
 
-"Comparison with an expression without CONV; the result is 0, the data type is i
-DATA(b) = 1 / 5.
+"Comparison with an expression without CONV
+"The result is 0, the data type is i.
+DATA(res) = 1 / 5.
+
+"Example with internal table types
+TYPES inttab_type TYPE TABLE OF i WITH EMPTY KEY.
+DATA itab TYPE SORTED TABLE OF i WITH NON-UNIQUE DEFAULT KEY.
+FIELD-SYMBOLS <fs> TYPE inttab_type.
+
+"The following assignment is not possible due to incompatible types, 
+"although the internal table has the same line type (but there is a 
+"different table type and key).
+"ASSIGN itab TO <fs>.
+
+"Using CONV to convert the internal table to the required table type.
+DATA(conv_itab) = CONV inttab_type( itab ).
+ASSIGN conv_itab TO <fs>.
 ```
 
-Excursion: As outlined above, you can construct structures and internal
-tables using the `VALUE` operator. Using this operator for
-constructing [elementary data
-objects](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenelementary_data_object_glosry.htm "Glossary Entry")
-is not possible apart from creating a data object with an initial value,
-for example `DATA(str) = VALUE string( ).`. The `CONV`
-operator closes this gap. However, in some cases, the use of
-`CONV` is redundant.
+**Constructing data objects with the CONV operator**
+
+As outlined above, you can construct structures and internal
+tables using the `VALUE` operator. Using `VALUE` for
+constructing [elementary data objects](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenelementary_data_object_glosry.htm "Glossary Entry") and providing values is not possible. You can only use it to create a data object with an initial value, for example `DATA(str) = VALUE string( ).`. The `CONV` operator closes this gap. 
 
 ``` abap
 DATA(c) = CONV decfloat34( '0.4' ).
@@ -787,11 +799,9 @@ e = '0.4'.
 "Redundant conversion
 "Derives the string type automatically
 DATA(f) = `hallo`.
-
 "Produces a syntax warning
 "DATA(g) = CONV string( `hallo` ).
 ```
-
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
@@ -816,16 +826,35 @@ DATA(f) = `hallo`.
 
 Examples:
 ``` abap
-"Leads to a data loss when converting to a data object accepting only a single character
+"-------------- Lossless assignments -------------
+
+"Note: An assignment is made in accordance with conversion rules. Check
+"the ABAP Keyword Documentation for these rules. An assignment is only 
+"made if no values are lost. Otherwise, an error occurs. Either it is
+"detected by static code checks or at runtime raising a catchable exception.
+TYPES clen3 TYPE c LENGTH 3.
+DATA(as1) = EXACT clen3( abap_true ).
+DATA(as2) = EXACT clen3( 'XY' ).
+"DATA(as3) = EXACT clen3( 'abcd' ).
+
+"Catching exception
 TRY.
-  DATA(exact1) = EXACT abap_bool( 'XY' ).
-  CATCH CX_SY_CONVERSION_DATA_LOSS INTO DATA(error1).
+    DATA(as4) = EXACT clen3( 'abcd' ).
+    CATCH cx_sy_conversion_data_loss.
 ENDTRY.
 
-"The calculation cannot be executed exactly; a rounding is necessary
+"-------------- Lossless Calculations -------------
+
+"The first statement works, whereas the second statement raises an exception.
+"A rounding to two decimal places is required.
+TYPES packednum TYPE p LENGTH 8 DECIMALS 2.
+DATA(calc1) = EXACT packednum( 1 / 4 ).
+"DATA(calc2) = EXACT packednum( 1 / 3 ).
+
+"Catching exceptions when rounding in lossless calculations
 TRY.
-  DATA(exact2) = EXACT decfloat34( 1 / 3 ).
-  CATCH CX_SY_CONVERSION_ROUNDING INTO DATA(error2).
+    DATA(calc3) = EXACT packednum( 1 / 3 ).
+    CATCH cx_sy_conversion_rounding.
 ENDTRY.
 ```
 
@@ -860,11 +889,21 @@ DATA dref_a TYPE REF TO i.
 "Getting references
 dref_a = REF #( num ).
 
+"Inline declaration
+DATA(dref_b) = REF #( `hallo` ).
 "Inline declaration and explicit type specification
-DATA(dref_b) = REF string( `hallo` ).
+DATA(dref_c) = REF abap_bool( 'X' ).
+
+"Specifying table expressions as arguments. The example code includes
+"additions to avoid an exception if table lines are not found.
+DATA int_tab TYPE TABLE OF i WITH EMPTY KEY.
+int_tab = VALUE #( ( 1 ) ( 2 ) ( 3 ) ).
+DATA(dref_d) = REF #( int_tab[ 2 ] ).
+DATA(dref_e) = REF #( int_tab[ 6 ] OPTIONAL ). "Initial reference variable
+DATA(dref_f) = REF #( int_tab[ 7 ] DEFAULT NEW #( 123 ) ). "Providing a default value
 
 "Object references
-DATA(oref_a) = NEW some_class( ).
+DATA(oref_a) = NEW zcl_demo_abap_objects( ).
 DATA(oref_b) = REF #( oref_a ).
 ```
 
@@ -892,17 +931,70 @@ DATA(oref_b) = REF #( oref_a ).
     functional method calls are possible, too. See more information
     [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconstructor_expression_cast.htm).
 
-[Run Time Type Identification
-(RTTI)](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrun_time_type_identific_glosry.htm "Glossary Entry")
-examples:
+Examples:
 ``` abap
+"Performing casts on arguments and creating a reference variable that has the
+"static type as specified as a result.
+
+"Declaring data reference variables
+DATA ref_i TYPE REF TO i.
+DATA ref_gen TYPE REF TO data. "Generic type
+
+"Creating an anonymous data object
+ref_i = NEW #( 789 ).
+
+"Upcast
+"Static type of the target is less specific than or the same as the static
+"type of the source
+ref_gen = ref_i.
+"The CAST operator can also be specified for upcasts. In this case, it can but
+"need not be specified.
+ref_gen = CAST #( ref_i ).
+
+"Downcast
+"Static type of the target is more specific than the static type of the source
+"A check must be made at runtime before the assignment is done. If you indeed
+"want to trigger such a downcast, you must do it explicitly in your code, for
+"example, using the CAST operator (older operator: ?=).
+
+"A syntax error occurs for the first statement. An explicit casting is required.
+"ref_i = ref_gen.
+ref_i = CAST #( ref_gen ).
+
+"Like a data reference variable, the expressions can be followed by the
+"dereferencing operator
+ref_gen = NEW string( `hi` ).
+CAST string( ref_gen )->* = `abap`.
+DATA(str) = CAST string( ref_gen )->*.
+
+"In case of static structured types, you can use the object component
+"selector (->).
+ref_gen = NEW zdemo_abap_carr( ).
+CAST zdemo_abap_carr( ref_gen )->carrid = 'XY'.
+DATA(comp) = CAST zdemo_abap_carr( ref_gen )->carrid.
+"Dynamic specifications are possible.
+CAST zdemo_abap_carr( ref_gen )->('CARRID') = 'ZZ'.
+DATA(dyncomp) = |{ CAST zdemo_abap_carr( ref_gen )->('CARRID') }|.
+
+"In the context of RTTS (see the cheat sheet about dynamic programming),
+"helper variables are often required to perform a downcast of a type description
+"object to a specialized class. The following examples, show how such helper
+"variables can be reduced by using statements with CAST.
 "Getting component information
-DATA(components) = CAST cl_abap_structdescr(
-  cl_abap_typedescr=>describe_by_data( some_object ) )->components.
+DATA st TYPE zdemo_abap_carr.
+DATA(components) = CAST cl_abap_structdescr(
+    cl_abap_typedescr=>describe_by_data( st ) )->components.
+
+"A constructor expression as above instead of, for example, using helper variables
+"and the older ?= operator.
+DATA ref_struc_type TYPE REF TO cl_abap_structdescr.
+DATA comps TYPE abap_compdescr_tab.
+ref_struc_type ?= cl_abap_typedescr=>describe_by_data( st ).
+comps = ref_struc_type->components.
 
 "Getting method information
 DATA(methods) = CAST cl_abap_objectdescr(
-  cl_abap_objectdescr=>describe_by_name( 'LOCAL_CLASS' ) )->methods.
+    cl_abap_objectdescr=>describe_by_name( 'ZCL_DEMO_ABAP_OBJECTS' ) )->methods.
 ```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
@@ -928,10 +1020,51 @@ DATA(methods) = CAST cl_abap_objectdescr(
 
 Example:
 ``` abap
-DATA(b) = COND #( WHEN a BETWEEN 1 AND 3 THEN w
-                  WHEN a > 4 THEN x
-                  WHEN a IS INITIAL THEN y
-                  ELSE z ).
+DATA(day_or_night) = COND #( WHEN cl_abap_context_info=>get_system_time( ) BETWEEN '050000' AND '220000'
+                             THEN `day`
+                             ELSE `night` ).
+
+"A constructor expression as above instead of, for example, an IF statement as follows.
+IF cl_abap_context_info=>get_system_time( ) BETWEEN '050000' AND '220000'.
+    day_or_night = `day`.
+ELSE.
+    day_or_night = `night`.
+ENDIF.
+
+"Multiple logical expressions initiated by WHEN
+"Also LET expressions (see details further down) are possible.
+DATA(time_of_day) = COND #( LET time = cl_abap_context_info=>get_system_time( ) IN
+                            WHEN time BETWEEN '050001' AND '120000' THEN |Good morning, it's { time TIME = ISO }.|
+                            WHEN time BETWEEN '120001' AND '180000' THEN |Good afternoon, it's { time TIME = ISO }.|
+                            WHEN time BETWEEN '180001' AND '220000' THEN |Good evening, it's { time TIME = ISO }.|
+                            ELSE |Good night, it's { time TIME = ISO }.| ).
+
+"THROW addition to raise an exception (working like RAISE EXCEPTION TYPE statements)
+"by specifying an exception class
+"Note: It is possible to ...
+"- specify the THROW addition also after THEN.
+"- make exceptions resumable using the RESUMABLE addition.
+DATA(num1) = 0.
+DATA(num2) = 0.
+TRY.
+    "The example raises the exception because both operands have the value 0.
+    DATA(div) = COND decfloat34( WHEN num1 <> 0 AND num2 <> 0 THEN num1 / num2
+                                 WHEN num1 = 0  AND num2 <> 0 THEN num1 / num2
+                                 ELSE THROW cx_sy_zerodivide( ) ).
+    CATCH cx_sy_zerodivide.
+    DATA(two_zeros) = `Zero division`.
+ENDTRY.
+
+"Excursion: The following statement does not result in an error in ABAP (zero
+"division 'allowed' if the first operand has also the value 0).
+div = 0 / 0.
+
+"THROW SHORTDUMP addition to raise a runtime error (working like RAISE SHORTDUMP
+"TYPE statements) by specifying an exception class; a message can be also passed,
+"and input parameters can be filled
+div = COND decfloat34( WHEN num1 <> 0 AND num2 <> 0 THEN num1 / num2
+                       WHEN num1 = 0  AND num2 <> 0 THEN num1 / num2
+                       ELSE THROW SHORTDUMP cx_sy_zerodivide( ) ).
 ```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
@@ -947,11 +1080,34 @@ statements, i. e. it uses the value of only a single variable that is
 checked in the case distinction.
 
 ``` abap
-DATA(b) = SWITCH #( a
-                    WHEN 1 THEN w
-                    WHEN 2 THEN x
-                    WHEN 3 THEN y
-                    ELSE z ).
+"The following example performs a calculation (no error handling implemented)
+"if a valid operator is passed, and stores the result in a data object of
+"type string.
+"Note: Similar to the COND operator, the THROW addition is also possible
+"for the SWITCH operator.
+DATA(operator) = '*'.
+DATA(num1) = 5.
+DATA(num2) = 7.
+DATA(calc_result) = SWITCH #( operator
+                                WHEN '+' THEN |{ num1 + num2 STYLE = SIMPLE }|
+                                WHEN '-' THEN |{ num1 - num2 STYLE = SIMPLE }|
+                                WHEN '*' THEN |{ num1 * num2 STYLE = SIMPLE }|
+                                WHEN '/' THEN |{ CONV decfloat34( num1 / num2 ) STYLE = SIMPLE }|
+                                ELSE `Wrong operator.` ).
+
+"A constructor expression as above instead of, for example, a CASE statement as follows.
+CASE operator.
+    WHEN '+'.
+    calc_result = |{ num1 + num2 STYLE = SIMPLE }|.
+    WHEN '-'.
+    calc_result = |{ num1 - num2 STYLE = SIMPLE }|.
+    WHEN '*'.
+    calc_result = |{ num1 * num2 STYLE = SIMPLE }|.
+    WHEN '/'.
+    calc_result = |{ CONV decfloat34( num1 / num2 ) STYLE = SIMPLE }|.
+    WHEN OTHERS.
+    calc_result = `Wrong operator.`.
+ENDCASE.
 ```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
