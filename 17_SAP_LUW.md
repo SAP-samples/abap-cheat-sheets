@@ -275,7 +275,7 @@ The following concepts are related to the SAP LUW to ensure transactional consis
   - Note the information on the `CL_ABAP_LOCK_OBJECT_FACTORY` class that is related to this context [here](https://help.sap.com/docs/sap-btp-abap-environment/abap-environment/lock-objects). 
 
 > **💡 Note**<br>
-> RAP comes with its own implementation features to cover these concepts. See the topics [Authorization Control](https://help.sap.com/docs/SAP_S4HANA_CLOUD/e5522a8a7b174979913c99268bc03f1a/375a8124b22948688ac1c55297868d06.html) and [Concurrency Control](https://help.sap.com/docs/SAP_S4HANA_CLOUD/e5522a8a7b174979913c99268bc03f1a/d315c13677d94a6891beb3418e3e02ed.html) in the *Development guide for the ABAP RESTful Application Programming Model*.
+> For more information about related topics in RAP, see the sections [Authorization Control](https://help.sap.com/docs/SAP_S4HANA_CLOUD/e5522a8a7b174979913c99268bc03f1a/375a8124b22948688ac1c55297868d06.html) and [Concurrency Control](https://help.sap.com/docs/SAP_S4HANA_CLOUD/e5522a8a7b174979913c99268bc03f1a/d315c13677d94a6891beb3418e3e02ed.html) in the *Development guide for the ABAP RESTful Application Programming Model*.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 

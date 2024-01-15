@@ -24,6 +24,7 @@
   - [Excursions](#excursions)
     - [Enumerated Types and Objects](#enumerated-types-and-objects)
     - [Getting Type Information and Creating Types at Runtime](#getting-type-information-and-creating-types-at-runtime)
+    - [Ranges Tables](#ranges-tables)
   - [Executable Example](#executable-example)
 
 ## Introduction
@@ -1110,8 +1111,8 @@ DATA do_6_dcfl34 TYPE decfloat34 VALUE '2.78'.
 DATA(do_7_i) = CONV i( do_6_dcfl34 ).
 "Result: do_7_i: 3
 
-"A maybe surprising result of a conversion
-"from type i to string according to the rules
+"Note conversions according to the rules, e.g. from 
+"type i to string 
 DATA(i2str) = CONV string( -10 ).
 "Result: i2str: `10-`
 ```
@@ -1438,6 +1439,38 @@ Using [Runtime Type Creation (RTTC)](https://help.sap.com/doc/abapdocu_cp_index_
 
 Find more information in the [cheat sheet about dynamic programming](06_Dynamic_Programming.md#runtime-type-services-rtts). 
 
+### Ranges Tables
+
+- Internal tables that have the predefined columns `SIGN`, `OPTION`, `LOW`, and `HIGH` 
+- Declared with the `TYPE RANGE OF` addition in `DATA` and `TYPES` statements 
+- Used to store range conditions that can be evaluated in expressions using the `IN` operator (each row in the table represents a separate comparison)
+
+```abap
+"Populating an integer table with values from 1 to 20 (see iteration
+"expressions with FOR furhter down)
+TYPES int_tab_type TYPE TABLE OF i WITH EMPTY KEY.
+DATA(inttab) = VALUE int_tab_type( FOR x = 1 WHILE x <= 20 ( x ) ).
+
+"Declaring a ranges table
+DATA rangestab TYPE RANGE OF i.
+
+"Populating a ranges table using VALUE
+rangestab = VALUE #( sign   = 'I'
+                     option = 'BT' ( low = 1  high = 3 )
+                                   ( low = 6  high = 8 )
+                                   ( low = 12 high = 15 )
+                     option = 'GE' ( low = 18 ) ).
+
+"Using a SELECT statement and the IN addition to retrieve internal table
+"content based on the ranges table specifications
+SELECT * FROM @inttab AS tab
+    WHERE table_line IN @rangestab
+    INTO TABLE @DATA(result).
+"result: 1, 2, 3, 6, 7, 8, 12, 13, 14, 15, 18, 19, 20
+
+```
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## Executable Example
 

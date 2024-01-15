@@ -1504,6 +1504,7 @@ DELETE dbtab FROM TABLE @( VALUE #( ( comp1 = ... )
       INTO ...
     ```
 - [This topic](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_sql.htm) serves as the entry point for topics about ABAP SQL in the ABAP Keyword Documentation. For the full details, check the subtopics there, especially topics not covered in this cheat sheet.
+- There are [RAP](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenarap_glosry.htm)-specific variants of ABAP SQL statements that use the `MAPPING FROM ENTITY` addition. Find more information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapmapping_from_entity.htm).
 
 ## Executable Example
 [zcl_demo_abap_sql](./src/zcl_demo_abap_sql.clas.abap)

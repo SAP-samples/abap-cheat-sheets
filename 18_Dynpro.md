@@ -556,7 +556,7 @@ ENDMODULE.
     ```abap
     "Getting the GUI status
     GET PF-STATUS status.
-    st = sy-pf-key.
+    st = sy-pfkey.
 
     ****************************************
 

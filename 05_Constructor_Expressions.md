@@ -35,7 +35,7 @@
     `VALUE` operator:
 
     ``` abap
-    ... VALUE string( ... ) ...
+    ... VALUE some_type( ... ) ...
     ... VALUE #( ... ) ...
     ```
 
@@ -298,7 +298,7 @@ DATA(itab7) = VALUE tabtype( b = 'aaa'           ( a = 1 c = `xxx` )
 *4    bbb    zzz
 
 "This option can be handy in various contexts, for example, in a
-"range table.
+"ranges table.
 TYPES int_tab_type TYPE TABLE OF i WITH EMPTY KEY.
 "Populating an integer table with values from 1 to 20 (see iteration
 "expressions with FOR furhter down)
@@ -406,7 +406,7 @@ options of the constructor operators in the ABAP Keyword Documentation.
     type](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentable_type_glosry.htm "Glossary Entry")
     or [structured
     type](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenstructured_type_glosry.htm "Glossary Entry")).
--   The components or columns of the target data object are filled using
+-   The components or columns of the target data object are populated using
     assignments of the parameters specified within the parentheses.
 -   The assignments are made using identical names or based on [mapping
     relationships](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencorresponding_constr_mapping.htm)
@@ -418,51 +418,153 @@ options of the constructor operators in the ABAP Keyword Documentation.
     field is of type `string`).
 
 The following table includes a selection of various possible additions to
-this constructor operator. There are more variants available like the
-addition `EXACT`, using a lookup table, the option of discarding
-duplicates or
-[RAP](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_glosry.htm "Glossary Entry")-specific
-variants that are not part of this cheat sheet. Find the details in
-[this
-topic](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconstructor_expr_corresponding.htm).
+this operator. There are more variants available (also 
+[RAP](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_glosry.htm "Glossary Entry")-specific ones)
+that are not covered. Find more information in [this
+topic](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconstructor_expr_corresponding.htm) of the ABAP Keyword Documentation.
 
 | Addition  | Details |
 |---|---|
 | `BASE` | Keeps original values. Unlike, for example, the operator `VALUE`, a pair of parentheses must be set around `BASE`.  |
 | `MAPPING`  | Enables the mapping of component names, i. e. a component of a source structure or source table can be assigned to a differently named component of a target structure or target table (e. g. `MAPPING c1 = c2`).  |
 | `EXCEPT`  | You can specify components that should not be assigned content in the target data object. They remain initial. In doing so, you exclude identically named components in the source and target object that are not compatible or convertible from the assignment to avoid syntax errors or runtime errors.  |
+| `DISCARDING DUPLICATES`  | Relevant for tabular components. Handles duplicate lines and prevents exceptions when dealing with internal tables that have a unique primary or secondary table key. |
 | `DEEP`  | Relevant for deep tabular components. They are resolved at every hierarchy level and identically named components are assigned line by line.  |
 | `[DEEP] APPENDING`  | Relevant for (deep) tabular components. It ensures that the nested target tables are not deleted. The effect without `DEEP` is that lines of the nested source table are added using `CORRESPONDING` without addition. The effect with `DEEP` is that lines of the nested source table are added using `CORRESPONDING` with the addition `DEEP`.  |
 
-See the executable example for demonstrating the effect of the variants:
+Examples:
 ``` abap
-"Assignment of a structure/internal table to another one having a different type
-struc2 = CORRESPONDING #( struc1 ).
+"-------------- Patterns -------------
 
-tab2 = CORRESPONDING #( tab1 ).
+"The following examples demonstrate simple assignments
+"with the CORRESPONDING operator using these syntax patterns.
+"Note: 
+"- The examples show only a selection of pssible additions.
+"- There are various combinations of additions possible.
+"- The effect of the statements is shown in lines commented out.
 
-"BASE keeps original content, does not initialize the target
-struc2 = CORRESPONDING #( BASE ( struc2 ) struc1 ).
+"... CORRESPONDING #( z ) ...
+"... CORRESPONDING #( BASE ( x ) z ) ...
+"... CORRESPONDING #( z MAPPING a = b ) ...
+"... CORRESPONDING #( z EXCEPT b ) ...
+"... CORRESPONDING #( it DISCARDING DUPLICATES ) ...
 
-tab2 = CORRESPONDING #( BASE ( tab2 ) tab1 ).
+"-------------- Structures -------------
 
-"MAPPING/EXACT are used for mapping/excluding components in the assignment
-struc2 = CORRESPONDING #( struc1 MAPPING comp1 = comp2 ).
+"Data objects to work with in the examples
+"Two different structures; one component differs.
+DATA: BEGIN OF s1,
+        a TYPE i,
+        b TYPE c LENGTH 3,
+        c TYPE c LENGTH 5,
+        END OF s1.
 
-tab2 = CORRESPONDING #( tab1 EXCEPT comp1 ).
+DATA: BEGIN OF s2,
+        a TYPE i,
+        b TYPE c LENGTH 3,
+        d TYPE string,
+        END OF s2.
 
-"Complex assignments with deep components using further additions
-st_deep2 = CORRESPONDING #( DEEP st_deep1 ).
+"Populating structures
+s1 = VALUE #( a = 1 b = 'aaa' c = 'bbbbb' ).
+s2 = VALUE #( a = 2 b = 'ccc' d = `dddd` ).
 
-st_deep2 = CORRESPONDING #( DEEP BASE ( st_deep2 ) st_deep1 ).
+"Non-identical components in the target are initialized
+s2 = CORRESPONDING #( s1 ).
 
-st_deep2 = CORRESPONDING #( APPENDING ( st_deep2 ) st_deep1 ).
+*A    B      D
+*1    aaa
 
-st_deep2 = CORRESPONDING #( DEEP APPENDING ( st_deep2 ) st_deep1 ).
+"Populating structure for the BASE example
+s2 = VALUE #( a = 3 b = 'eee' d = `ffff` ).
+
+"BASE addition: Retaining original content in target, no initialization
+s2 = CORRESPONDING #( BASE ( s2 ) s1 ).
+
+*A    B      D
+*1    aaa    ffff
+
+"MAPPING addition: Mapping of component names
+"For the assignment to work, note data convertibility.
+s2 = CORRESPONDING #( s1 MAPPING d = c ).
+
+*A    B      D
+*1    aaa    bbbbb
+
+"EXCEPT addition: Excluding components
+s2 = CORRESPONDING #( s1 EXCEPT b ).
+
+*A    B      D
+*1
+
+"As noted, there are various combinations possible for the additions.
+"The following example shows MAPPING and EXCEPT.
+s2 = CORRESPONDING #( s1 MAPPING d = c EXCEPT b ).
+
+*A    B      D
+*1           bbbbb
+
+"Specifying an asterisk (*) after EXCEPT in combination with specifying mappings
+"means that all non-specified components after MAPPING remain initial in the target
+    s2 = CORRESPONDING #( s1 MAPPING d = c EXCEPT * ).
+
+*A    B      D
+*0           bbbbb
+
+"-------------- Internal tables -------------
+
+"Internal tables to work with in the examples
+DATA it1 LIKE TABLE OF s1 WITH EMPTY KEY.
+DATA it2 LIKE SORTED TABLE OF s2 WITH UNIQUE KEY a.
+DATA it3 LIKE TABLE OF s1 WITH EMPTY KEY.
+
+"Populating internal tables
+it1 = VALUE #( ( a = 1 b = 'aaa' c = 'bbbbb' )
+                ( a = 2 b = 'ccc' c = 'ddddd' ) ).
+it3 = VALUE #( ( a = 3 b = 'eee' c = 'fffff' ) ).
+it2 = VALUE #( ( a = 7 b = 'eee' d = 'fffff' ) ).
+
+it2 = CORRESPONDING #( it1 ).
+
+*A    B      D
+*1    aaa
+*2    ccc
+
+it2 = CORRESPONDING #( BASE ( it2 ) it3 ).
+
+*A    B      D
+*1    aaa
+*2    ccc
+*3    eee
+
+it2 = CORRESPONDING #( it1 MAPPING d = c ).
+
+*A    B      D
+*1    aaa    bbbbb
+*2    ccc    ddddd
+
+it2 = CORRESPONDING #( it1 EXCEPT b ).
+
+*A    B      D
+*1
+*2
+
+"DISCARDING DUPLICATES: Handling duplicate lines and preventing exceptions
+it1 = VALUE #( ( a = 4 b = 'aaa' c = 'bbbbb' )
+               ( a = 4 b = 'ccc' c = 'ddddd' )
+               ( a = 5 b = 'eee' c = 'fffff' ) ).
+
+"Without the addition, the runtime error ITAB_DUPLICATE_KEY is raised.
+it2 = CORRESPONDING #( it1 DISCARDING DUPLICATES ).
+
+*A    B      D
+*4    aaa
+*5    eee
 ```
+
 > **✔️ Hint**<br>
 > `CORRESPONDING` operator versus
-[`MOVE-CORRESPONDING`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapmove-corresponding.htm):
+[`MOVE-CORRESPONDING`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapmove-corresponding.htm) in the context of structures:
 Although the functionality is the same, note that, as the name implies,
 constructor operators construct and - without the addition
 `BASE` - target objects are initialized. Hence, the following
@@ -578,11 +680,10 @@ dref2 = NEW string( `hallo` ).
 "Using inline declarations to omit a prior declaration of a variable
 "dref3 has the type TYPE REF TO i
 DATA(dref3) = NEW i( 456 ).
-dref2 = NEW string( `Hello world` ).
 
 "Creating an anonymous structure
 "Components are assigned values.
-DATA(dref4) = NEW zdemo_abap_carr( carrid = 'AA' carrname = 'American Airlines' ).
+DATA(dref4) = NEW zdemo_abap_carr( carrid = 'XY' carrname = 'XY Airlines' ).
 
 "Creating an anonymous internal table
 DATA dref5 TYPE REF TO string_table.
@@ -624,8 +725,8 @@ DATA(str2) = NEW zcl_demo_abap_objects( )->another_string.
 "Chained attribute access
 "... NEW some_class( ... )->attr ...
 
-"Standalone NEW expression (in the case of the example method, there
-"is no parameter available)
+"Standalone method call with a NEW expression (in the case of the example 
+"method, there is no parameter available)
 NEW zcl_demo_abap_objects( )->hallo_instance_method( ).
 
 "Assumption in the following examples: The classes have an instance constructor    
@@ -741,8 +842,7 @@ ENDTRY.
     parenthesis determines the [static
     type](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenstatic_type_glosry.htm "Glossary Entry")
     of the result.
--   The operator replaces [`GET
-    REFERENCE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapget_reference.htm)
+-   The operator replaces [`GET REFERENCE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapget_reference.htm), which should not be used anymore,
     and is particularly useful for avoiding the declaration of helper
     variables that are only necessary, for example, to specify data
     reference variables as actual parameters.
@@ -752,24 +852,19 @@ Examples:
 ``` abap
 "Data references
 "Declaring data object and assign value
-
 DATA num TYPE i VALUE 5.
 
 "Declaring data reference variable
-
 DATA dref_a TYPE REF TO i.
 
 "Getting references
-
 dref_a = REF #( num ).
 
 "Inline declaration and explicit type specification
 DATA(dref_b) = REF string( `hallo` ).
 
 "Object references
-
 DATA(oref_a) = NEW some_class( ).
-
 DATA(oref_b) = REF #( oref_a ).
 ```
 
@@ -971,7 +1066,7 @@ DATA(time_of_day) = CONV string(
                     ELSE good && ` night`  ) ).
 
 
-"Getting a particular column name of an existing internal table using a RTTI
+"Getting a particular column name of an existing internal table using RTTI
 "An internal table (it contains information on the table's structured type; the
 "component names, among others) is assigned to a data object that is declared
 "inline. This is an example of how powerful constructor expressions (and inline
