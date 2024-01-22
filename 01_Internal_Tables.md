@@ -15,6 +15,9 @@
   - [Sorting Internal Tables](#sorting-internal-tables)
   - [Modifying Internal Table Content](#modifying-internal-table-content)
   - [Deleting Internal Table Content](#deleting-internal-table-content)
+  - [Excursions](#excursions)
+    - [Searching and Replacing Substrings in Internal Tables with Character-Like Data Types](#searching-and-replacing-substrings-in-internal-tables-with-character-like-data-types)
+    - [Ranges Tables](#ranges-tables)
   - [More Information](#more-information)
   - [Executable Example](#executable-example)
 
@@ -437,8 +440,13 @@ to add lines to internal tables.
         `INSERT`, `sy-tabix` is not set unlike
         `APPEND`. In case of sorted tables, the line is
         automatically inserted at the correct position.
-    -   Note: In the case of unique primary table keys in sorted
-        and hashed tables, the table cannot have entries with duplicate
+    - With `INSERT`, you can specify the position in the internal table at which lines are inserted after `INTO`. 
+        - `... INTO TABLE itab ...`: Line is inserted in ...
+          - standard tables as last line (i.e. appended) 
+          - sorted tables in the sort order in accordance with primary key values
+          - hashed table by the hash administration in accordance with primary key values
+        - `... INTO itab INDEX n`: Possible for index tables. The line is inserted before the line with the line number `n` in the primary table index.
+    -   Note: In the case of unique primary table keys, the table cannot have entries with duplicate
         keys. If a duplicate is inserted, the insertion fails and the
         system field `sy-subrc` is set to 4.
 </details>
@@ -451,7 +459,7 @@ APPEND VALUE #( comp1 = a comp2 = b ... ) TO itab.
 APPEND lv_struc TO itab.
 
 INSERT VALUE #( comp1 = a comp2 = b ... ) INTO TABLE itab.
-INSERT lv_struc INTO itab.
+INSERT lv_struc INTO TABLE itab.
 ```
 
 **Adding an initial line** to an internal table without providing any field values.
@@ -460,6 +468,17 @@ INSERT lv_struc INTO itab.
 APPEND INITIAL LINE TO itab.
 
 INSERT INITIAL LINE INTO TABLE itab.
+```
+
+**Adding a line and assignin the added line to a field symbol or data reference variable**.
+```abap
+"When inserting single lines, you can specify the optional additions 
+"ASSIGNING and REFERENCE INTO. If the insertion is successful, the 
+"line is assigned to a field symbol or a data reference variable.
+"The targets can also be created inline. 
+APPEND VALUE #( comp1 = a comp2 = b ... ) TO itab ASSIGNING FIELD-SYMBOL(<fs>).
+APPEND INITIAL LINE TO itab ASSIGNING <fs>.
+INSERT INITIAL LINE INTO TABLE itab REFERENCE INTO DATA(dref).
 ```
 
 **Adding all lines** from another internal table.
@@ -1395,13 +1414,15 @@ MODIFY it FROM line USING KEY sec_key INDEX 1 TRANSPORTING c d.
 MODIFY it FROM line TRANSPORTING b c WHERE a < 5.
 ```
 > **💡 Note**<br>
-> The system field `sy-subrc` is set to `0` if at least one line was changed. It is set to `4` if no lines were changed.
+> - The system field `sy-subrc` is set to `0` if at least one line was changed. It is set to `4` if no lines were changed.
+> - `MODIFY`, `DELETE`, and `INSERT` statements can be specified with and without the `TABLE` addition. With `TABLE` means an index access. Without `TABLE` means an access via the table key.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## Deleting Internal Table Content
 
-You can use [`DELETE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapdelete_itab.htm) statements to delete single and multiple lines in internal tables.
+You can use [`DELETE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapdelete_itab.htm) statements to delete single and multiple lines in internal tables. The following additions can be used: `USING KEY` (for specifying a table key), `FROM`/`TO` (for specifying row ranges), `STEP` (for specifying the step size), and `WHERE` (for specifying conditions).
+
 ``` abap
 "Deleting via index
 "Example: The first line in the table is deleted.
@@ -1444,6 +1465,18 @@ DELETE TABLE it_sec WITH TABLE KEY sec_key COMPONENTS ...
 "Specifying the additions USING KEY, FROM, TO is also possible.
 
 DELETE it WHERE a < 6.
+
+"Excursion: Deleting in a LIKE-like fashion you may know from
+"ABAP SQL statements.
+"The LIKE addition is not available for the WHERE clause in DELETE
+"statements for internal tables as is the case for ABAP SQL DELETE statements.
+DATA(str_table) = VALUE string_table( ( `abcZ` ) ( `Zdef` ) ( `gZhi` ) 
+                                      ( `Zjkl` ) ( `Zmno` ) ( `pqrZ` ) ).    
+
+"You can, for example, use logical operators such as CP (conforms to pattern)
+"All lines that begin with Z are to be deleted.
+DELETE str_table WHERE table_line CP `Z*`.
+"Result: abcZ / gZhi / pqrZ
 ```
 
 `DELETE ADJACENT DUPLICATES` statements allow you to delete all adjacent lines except for the first line that have the same content in certain components. You usually need to perform some appropriate sorting before using these statements.
@@ -1497,9 +1530,143 @@ it = VALUE #( ).
 ```
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
+## Excursions
+
+### Searching and Replacing Substrings in Internal Tables with Character-Like Data Types
+
+You can use [`FIND ... IN TABLE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapfind_itab.htm) statements to search for substrings in internal tables (standard tables without secondary table keys; with character-like line type) line by line. 
+
+``` abap
+DATA(str_table) = VALUE string_table( ( `aZbzZ` ) ( `cdZze` ) ( `Zzzf` ) ( `ghz` ) ).
+
+"Finding all occurrences in a table
+"Note: res_tab is of type match_result_tab 
+"You can also restrict the search range in an internal table; see an example in REPLACE ... IN TABLE
+FIND ALL OCCURRENCES OF `Z`
+  IN TABLE str_table
+  RESULTS DATA(res_tab)
+  RESPECTING CASE.
+
+"4 entries in table res_tab (tables in SUBMATCHES are initial since no regular expression is used)
+"1. line: 1, offset: 1, length: 1, submatches: (initial)
+"2. line: 1, offset: 4, length: 1, ...
+"3. line: 2, offset: 2, length: 1, ...
+"4. line: 3, offset: 0, length: 1, ...
+
+"Finding the first occurrence in a table
+"Note: res_struc, which is declared inline here, is of type match_result 
+FIND FIRST OCCURRENCE OF `Z`
+  IN TABLE str_table
+  RESULTS DATA(res_struc)
+  RESPECTING CASE.
+
+"Entries in structure res_struc 
+"line: 1, offset: 1, length: 1, submatches: (initial)
+
+"Alternative to the statement above (storing the information in individual data objects)
+FIND FIRST OCCURRENCE OF `Z`
+  IN TABLE str_table
+  MATCH LINE DATA(line)    "1
+  MATCH OFFSET DATA(off)   "1 
+  MATCH LENGTH DATA(len)   "1
+  RESPECTING CASE.
+```
+
+Replacements in internal tables with [`REPLACE ... IN TABLE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapreplace_itab.htm):
+
+``` abap
+DATA(str_table_original) = VALUE string_table( ( `aZbzZ` ) ( `cdZze` ) ( `Zzzf` ) ( `ghz` ) ).
+DATA(str_table) = str_table_original.
+
+"Replacing all occurrences in a table
+"RESULTS addition: Storing information in an internal table of type repl_result_tab
+REPLACE ALL OCCURRENCES OF `Z`
+  IN TABLE str_table
+  WITH `#`
+  RESULTS DATA(res_table)
+  RESPECTING CASE.
+
+"str_table: a#bz# / cd#ze / #zzf / ghz
+"res_table:
+"LINE  OFFSET  LENGTH
+"1     1       1
+"1     4       1
+"2     2       1
+"3     0       1
+
+str_table = str_table_original.
+
+"Replacing the first occurrence in a table
+"RESULTS addition: Storing information in a structure of type repl_result
+REPLACE FIRST OCCURRENCE OF `Z`
+  IN TABLE str_table
+  WITH `#`
+  RESULTS DATA(res_structure)
+  RESPECTING CASE.
+
+"str_table: a#bzZ / cdZze / Zzzf / ghz
+"res_structure:
+"LINE  OFFSET  LENGTH
+"1     1       1
+
+str_table = str_table_original.
+
+"Restricting the search range in an internal table
+REPLACE ALL OCCURRENCES OF `Z`
+  IN TABLE str_table
+  FROM 1 TO 2
+  WITH `#`
+  RESPECTING CASE.
+
+"str_table: a#bz# / cd#ze / Zzzf / ghz
+
+str_table = str_table_original.
+
+"Offsets can be optionally specified (also only the offset of start or end line possible)
+REPLACE ALL OCCURRENCES OF `Z`
+  IN TABLE str_table
+  FROM 1 OFFSET 3 TO 2 OFFSET 2
+  WITH `#`
+  RESPECTING CASE.
+
+"str_table: aZbz# / cdZze / Zzzf / ghz
+```
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+### Ranges Tables
+
+- Internal tables that have the predefined columns `SIGN`, `OPTION`, `LOW`, and `HIGH` 
+- Declared with the `TYPE RANGE OF` addition in `DATA` and `TYPES` statements 
+- Used to store range conditions that can be evaluated in expressions using the `IN` operator (each row in the table represents a separate comparison)
+
+```abap
+"Populating an integer table with values from 1 to 20
+TYPES int_tab_type TYPE TABLE OF i WITH EMPTY KEY.
+DATA(inttab) = VALUE int_tab_type( FOR x = 1 WHILE x <= 20 ( x ) ).
+
+"Declaring a ranges table
+DATA rangestab TYPE RANGE OF i.
+
+"Populating a ranges table using VALUE
+rangestab = VALUE #( sign   = 'I'
+                     option = 'BT' ( low = 1  high = 3 )
+                                   ( low = 6  high = 8 )
+                                   ( low = 12 high = 15 )
+                     option = 'GE' ( low = 18 ) ).
+
+"Using a SELECT statement and the IN addition to retrieve internal table
+"content based on the ranges table specifications
+SELECT * FROM @inttab AS tab
+    WHERE table_line IN @rangestab
+    INTO TABLE @DATA(result).
+"result: 1, 2, 3, 6, 7, 8, 12, 13, 14, 15, 18, 19, 20
+```
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
 ## More Information
-Topic [Internal
-Tables](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenitab.htm) in the ABAP Keyword Documentation.
+Topic [Internal Tables](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenitab.htm) in the ABAP Keyword Documentation.
 
 ## Executable Example
 [zcl_demo_abap_internal_tables](./src/zcl_demo_abap_internal_tables.clas.abap)
