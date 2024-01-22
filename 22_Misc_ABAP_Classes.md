@@ -22,6 +22,7 @@
   - [Exception Classes](#exception-classes)
   - [Parallel Processing](#parallel-processing)
   - [Application Log](#application-log)
+  - [Executing Code in Background](#executing-code-in-background)
 
 
 This ABAP cheat sheet contains a selection of available ABAP classes, serving as a quick introduction, along with code snippets to explore the functionality in action.
@@ -56,7 +57,7 @@ SELECT ReleasedObjectType, ReleasedObjectName, ReleaseState
 <td> Class </td> <td> Details/Code Snippet </td>
 </tr>
 <tr>
-<td> <code> CL_SYSTEM_UUID </code> </td>
+<td> <code>CL_SYSTEM_UUID</code> </td>
 <td>
 Creating and and converting system UUIDs with various algorithms 
 <br><br>
@@ -84,7 +85,7 @@ ENDTRY.
 <td> Class </td> <td> Details/Code Snippet </td>
 </tr>
 <tr>
-<td> <code> CL_ABAP_BEHV_AUX </code> </td>
+<td> <code>CL_ABAP_BEHV_AUX</code> </td>
 <td>
 A utility class for retrieving information about RAP handler implementations, such as the current context of RAP handler/saver methods, the handler kind, and the current <a href="https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentransactional_phase_glosry.htm">RAP transactional phase</a> (e.g., <a href="https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_int_phase_glosry.htm">RAP interaction phase</a>.
 <br><br>
@@ -113,7 +114,7 @@ FINAL(phase) = cl_abap_behv_aux=>get_current_phase( ).
 </td>
 </tr>
 <tr>
-<td> <code> CL_ABAP_BEHAVIOR_HANDLER  </code> </td>
+<td> <code>CL_ABAP_BEHAVIOR_HANDLER</code> </td>
 <td>
 Used for <a href="https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabp_handler_class_glosry.htm">RAP handler classes</a> that inherit from class <code>CL_ABAP_BEHAVIOR_HANDLER</code>. 
 <br><br>
@@ -132,7 +133,7 @@ ENDCLASS.
 </tr>
 
 <tr>
-<td> <code> CL_ABAP_BEHAVIOR_SAVER </code> </td>
+<td> <code>CL_ABAP_BEHAVIOR_SAVER</code> </td>
 <td>
 Used as base class from which a <a href="https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabp_saver_class_glosry.htm">RAP saver class</a> in an <a href="https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbehavior_pool_glosry.htm">ABAP behavior pool (ABP)</a> inherits. The RAP saver class must be defined in the <a href="https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenccimp_glosry.htm">CCIMP include</a> of an ABP. 
 <br><br>
@@ -154,7 +155,7 @@ ENDCLASS.
 </td>
 </tr>
 <tr>
-<td> <code> CL_ABAP_BEHAVIOR_SAVER_FAILED </code> </td>
+<td> <code>CL_ABAP_BEHAVIOR_SAVER_FAILED</code> </td>
 <td>
 <ul>
 <li>Same as <code>CL_ABAP_BEHAVIOR_SAVER</code>. It is used as base class from which a RAP saver class in an ABAP behavior pool (ABP) inherits. </li>
@@ -179,7 +180,7 @@ ENDCLASS.
 </td>
 </tr>
 <tr>
-<td> <code> CL_ABAP_BEHAVIOR_EVENT_HANDLER </code> </td>
+<td> <code>CL_ABAP_BEHAVIOR_EVENT_HANDLER</code> </td>
 <td>
 It is used as base class from which a RAP event handler class in its CCIMP include inherits. Its purpose is to locally consume RAP business events.
 More information: <a href="https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_events.htm">ABAP for RAP Business Events</a>.
@@ -220,7 +221,7 @@ ENDCLASS.
 <td> Class </td> <td> Details/Code Snippet </td>
 </tr>
 <tr>
-<td> <code> CL_ABAP_TX </code> </td>
+<td> <code>CL_ABAP_TX</code> </td>
 <td>
 <ul>
 <li>Explicitly setting <a href="https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentr_phase_glosry.htm">transactional phases</a> (the modify and save transactional phase) to enable transactional consistency checks with the <a href="https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencontrolled_sap_luw_glosry.htm">controlled SAP LUW</a> (which is an extension of the SAP LUW concept)</li>
@@ -274,7 +275,7 @@ MODIFY zdemo_abap_carr FROM TABLE @( VALUE #(
 <td> Class </td> <td> Details/Code Snippet </td>
 </tr>
 <tr>
-<td> <code> CL_ABAP_MATH </code> </td>
+<td> <code>CL_ABAP_MATH</code> </td>
 <td>
 For operations with (decimal) floating point numbers and for providing constants for minimum and maximum values.
 <br><br>
@@ -303,7 +304,7 @@ DATA(precision) = cl_abap_math=>get_number_of_digits( decf ). "5
 </td>
 </tr>
 <tr>
-<td> <code> CL_ABAP_DECFLOAT </code> </td>
+<td> <code>CL_ABAP_DECFLOAT</code> </td>
 <td>
 For handling decimal floating point numbers.
 <br><br>
@@ -338,7 +339,7 @@ ENDTRY.
 </td>
 </tr>
 <tr>
-<td> <code> CL_ABAP_BIGINT </code> </td>
+<td> <code>CL_ABAP_BIGINT</code> </td>
 <td>
 For calculations with integers of any size (e.g. to avoid the risk of an arithmetic overflow). Find more information in
 <a href="https://blogs.sap.com/2023/08/09/new-classes-for-arbitrary-precision-arithmetic-in-abap/">this blog</a>, and check out the different methods available.
@@ -364,7 +365,7 @@ ENDTRY.
 </td>
 </tr>
 <tr>
-<td> <code> CL_ABAP_RATIONAL </code> </td>
+<td> <code>CL_ABAP_RATIONAL</code> </td>
 <td>
 For calculations with rational numbers without precision loss and rounding errors.
 <br><br>
@@ -381,7 +382,7 @@ DATA(addition_res) = rat_num->add( cl_abap_rational=>factory_from_string(
 
 </td>
 </tr>
-<td> <code> CL_ABAP_RANDOM* </code> </td>
+<td> <code>CL_ABAP_RANDOM*</code> </td>
 <td>
 For generating arbitrary numbers for different numeric types: 
 <code>CL_ABAP_RANDOM_INT</code> (type <code>i</code>), 
@@ -428,7 +429,7 @@ DATA(random_num2) = cl_abap_random_int=>create( seed = cl_abap_random=>seed( )
 <td> Class </td> <td> Details/Code Snippet </td>
 </tr>
 <tr>
-<td> <code> CL_ABAP_GZIP* </code> </td>
+<td> <code>CL_ABAP_GZIP*</code> </td>
 <td>
 For (de)compressing character strings and byte strings using GZIP: 
 <code>CL_ABAP_GZIP</code>, 
@@ -492,7 +493,7 @@ ASSERT txt = `Hello world`.
 </td>
 </tr>
 <tr>
-<td> <code> CL_ABAP_CHAR_UTILITIES </code> </td>
+<td> <code>CL_ABAP_CHAR_UTILITIES</code> </td>
 <td> 
 Provides utilities for string processing, such as attributes that represent new lines and horizontal tabs.
 <br><br>
@@ -510,7 +511,7 @@ ASSERT cl_abap_char_utilities=>cr_lf          = |\r\n|.
 </td>
 </tr>
 <tr>
-<td> <code> CL_ABAP_STRING_UTILITIES </code> </td>
+<td> <code>CL_ABAP_STRING_UTILITIES</code> </td>
 <td> 
 For processing text strings, such as handling trailing blanks in character strings (i.e. data objects of type <code>string</code>).
 <br><br>
@@ -534,7 +535,7 @@ DATA(str_no_blanks) = CONV string( chars ).
 </td>
 </tr>
 <tr>
-<td> <code> CL_ABAP_CONV_CODEPAGE </code> </td>
+<td> <code>CL_ABAP_CONV_CODEPAGE</code> </td>
 <td> 
 For handling code pages, converting strings to the binary representation of different code pages and vice versa. 
 <br><br>
@@ -570,7 +571,7 @@ DATA(conv_string_xco) = xco_cp=>xstring( conv_xstring_xco
 </td>
 </tr>
 <tr>
-<td> <code> CL_ABAP_REGEX </code> <br> <code> CL_ABAP_MATCHER </code> </td>
+<td> <code>CL_ABAP_REGEX</code> <br> <code>CL_ABAP_MATCHER</code> </td>
 <td> 
 <ul>
 <li>For an object-oriented representation of regular expressions.</li>
@@ -615,7 +616,7 @@ DATA(res) = cl_abap_regex=>create_pcre( pattern     = `\s\w`        "Any blank f
 <td> Class </td> <td> Details/Code Snippet </td>
 </tr>
 <tr>
-<td> <code> CL_ABAP_UTCLONG </code> </td>
+<td> <code>CL_ABAP_UTCLONG</code> </td>
 <td>
 For handling time stamps in time stamp fields (data objects with type <code>utclong</code>).
 <br><br>
@@ -657,7 +658,7 @@ ENDTRY.
 </tr>
 
 <tr>
-<td> <code> CL_ABAP_TSTMP </code> </td>
+<td> <code>CL_ABAP_TSTMP</code> </td>
 <td>
 For calculating and converting time stamps in packed numbers (types <code>timestamp</code> and <code>timestampl</code>)
 <br><br>
@@ -706,7 +707,7 @@ DATA(utcl2tsl) = cl_abap_tstmp=>utclong2tstmp( ts2utcl ).
 
 
 <tr>
-<td> <code> XCO_CP_TIME </code> </td>
+<td> <code>XCO_CP_TIME</code> </td>
 <td>
 Class of the XCO time library that provides abstractions for getting and working with date and time information. Find more details <a href="https://help.sap.com/docs/btp/sap-business-technology-platform/time-library">here</a>. 
 <br><br>
@@ -797,7 +798,7 @@ DATA(m19_subtract_date) = xco_cp=>sy->date( )->subtract( iv_day = 1 iv_month = 1
 <td> Class </td> <td> Details/Code Snippet </td>
 </tr>
 <tr>
-<td> <code> CL_ABAP_TYPEDESCR </code> </td>
+<td> <code>CL_ABAP_TYPEDESCR</code> </td>
 <td>
 RTTS represent a hierarchy of type description classes containing methods for:
 <ul>
@@ -878,7 +879,7 @@ DATA(intf_attr) = tdo_iref->attributes.
 <td> Class </td> <td> Details/Code Snippet </td>
 </tr>
 <tr>
-<td> <code> CL_ABAP_CORRESPONDING </code> </td>
+<td> <code>CL_ABAP_CORRESPONDING</code> </td>
 <td>
 
 For assignments of components between structures or between internal tables with dynamically specified mapping rules. For more information, you can refer to the <a href="https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencl_abap_corresponding.htm">ABAP Keyword Documentation</a>.
@@ -951,7 +952,7 @@ cl_abap_corresponding=>create(
 <td> Class </td> <td> Details/Code Snippet </td>
 </tr>
 <tr>
-<td> <code> CL_ABAP_DYN_PRG </code> </td>
+<td> <code>CL_ABAP_DYN_PRG</code> </td>
 <td>
 For validating input for dynamic specifications. 
 <br><br>
@@ -1017,7 +1018,7 @@ ENDTRY.
 <td> Class </td> <td> Details/Code Snippet </td>
 </tr>
 <tr>
-<td> <code> CL_ABAP_CONTEXT_INFO </code> </td>
+<td> <code>CL_ABAP_CONTEXT_INFO</code> </td>
 <td>
 Provides context information relevant to the current ABAP session.
 <br><br>
@@ -1055,7 +1056,7 @@ ENDTRY.
 <td> Class </td> <td> Details </td>
 </tr>
 <tr>
-<td> <code> CL_IXML_* </code> <br> <code> CL_SXML_* </code> </td>
+<td> <code>CL_IXML_*</code> <br> <code>CL_SXML_*</code> </td>
 <td>
 <ul>
 <li>The processing of XML can be done using class libraries such as the Integrated XML Library (iXML) and the Serial XML Library (sXML).</li>
@@ -1094,7 +1095,7 @@ DATA(reader) = cl_sxml_string_reader=>create( some_xml ).
 </td>
 </tr>
 <tr>
-<td> <code> XCO_XP_JSON </code> </td>
+<td> <code>XCO_XP_JSON</code> </td>
 <td>
 Handling JSON data using the XCO library
 <br><br>
@@ -1182,7 +1183,7 @@ xco_cp_json=>data->from_string( json_created_xco )->apply( VALUE #(
 <td> Class </td> <td> Details/Code Snippet </td>
 </tr>
 <tr>
-<td> <code> XCO_CP_ABAP_REPOSITORY </code> </td>
+<td> <code>XCO_CP_ABAP_REPOSITORY</code> </td>
 <td>
 
 <ul>
@@ -1271,7 +1272,7 @@ DATA(dbtab_rel_state) = handler_tabl->get_api_state( )->get_release_state( )->va
 <td> Class </td> <td> Details/Code Snippet </td>
 </tr>
 <tr>
-<td> <code> XCO_CP </code><br><code> XCO_CP_CALL_STACK </code> </td>
+<td> <code>XCO_CP</code><br><code>XCO_CP_CALL_STACK</code> </td>
 <td>
 Getting the current ABAP call stack programmatically. See more information <a href="https://help.sap.com/docs/btp/sap-business-technology-platform/call-stack">here</a>.
 <br><br>
@@ -1319,7 +1320,7 @@ DATA(extracted_call_stack_as_text) = call_stack->from->position( 1
 <td> Class </td> <td> Details/Code Snippet </td>
 </tr>
 <tr>
-<td> <code> CL_BCS_MAIL_MESSAGE </code> </td>
+<td> <code>CL_BCS_MAIL_MESSAGE</code> </td>
 <td>
 
 <ul>
@@ -1358,7 +1359,7 @@ ENDTRY.
 <td> Class </td> <td> Details/Code Snippet </td>
 </tr>
 <tr>
-<td> <code> XCO_CP </code><br><code> XCO_CP_TENANT </code> </td>
+<td> <code>XCO_CP</code><br><code>XCO_CP_TENANT</code> </td>
 <td>
 For obtaining various information about the currently active tenant.
 <br><br>
@@ -1403,7 +1404,7 @@ DATA(uddsdld) = ten->get_subaccount_id( )->as_string( ).
 <td> Class </td> <td> Details/Code Snippet </td>
 </tr>
 <tr>
-<td> <code> CX_* </code> </td>
+<td> <code>CX_*</code> </td>
 <td>
 Exception classes are special classes, usually starting with the name <code>CX_*</code>, that serve as the basis for <a href="https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencatchable_exception_glosry.htm">catchable exceptions</a>. When an exception is raised, an object of such an exception class is created. There are several predefined exception classes. Find more information in the cheat sheet about program flow logic. 
 <br><br>
@@ -1434,7 +1435,7 @@ ENDTRY.
 <td> Class </td> <td> Details/Code Snippet </td>
 </tr>
 <tr>
-<td> <code> CL_ABAP_PARALLEL </code> </td>
+<td> <code>CL_ABAP_PARALLEL</code> </td>
 <td>
 For performing the parallel processing for instances of ABAP Objects. The following example class is intended to be a self-contained example that tries to visualize the functionality of the <code>CL_ABAP_PARALLEL</code> class. For more information, refer to the class documentation. 
 <br><br>
@@ -1583,7 +1584,7 @@ ENDCLASS.
 <td> Class </td> <td> Details/Code Snippet </td>
 </tr>
 <tr>
-<td> <code> CL_BALI_LOG </code> </td>
+<td> <code>CL_BALI_LOG</code> </td>
 <td>
 For creating and reading application logs. Refer to <a href="https://help.sap.com/docs/btp/sap-business-technology-platform/application-logs">this documentation</a> for more information and code snippets.
 <br><br>
@@ -1680,6 +1681,124 @@ TRY.
     ENDLOOP.
   CATCH cx_bali_runtime.
 ENDTRY.
+``` 
+
+</td>
+</tr>
+</table>
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+## Executing Code in Background
+
+<table>
+<tr>
+<td> Class </td> <td> Details/Code Snippet </td>
+</tr>
+<tr>
+<td> <code>CL_BGMC_PROCESS_FACTORY</code> </td>
+<td>
+<ul>
+<li>Used in the context of the Background Processing Framework (bgPF) to execute code asynchronously in the background.</li>
+<li>Different flavors are available:</li> 
+<ul>
+<li>Using bgPF without transactional control, for example, if you do not work with a RAP application or transactional control is not relevant in an ABAP program. In this case, you can implement the <code>IF_BGMC_OP_SINGLE_TX_UNCONTR</code> interface.</li> 
+<li>Using bgPF with transactional control, for example, if you work with a RAP application. In that case, you can implement the <code>IF_BGMC_OP_SINGLE</code> interface. Note: If you are in a RAP context, you do not need to implement <code>COMMIT/ROLLBACK WORK</code> because the RAP framework takes care of it.</li>
+</ul>
+<li>More information:</li> 
+<ul>
+<li><a href="https://help.sap.com/docs/abap-cloud/abap-concepts/background-processing-framework ">Background Processing Framework</a></li>
+<li>Transactional control with the <a href="https://help.sap.com/docs/abap-cloud/abap-concepts/controlled-sap-luw">controlled SAP LUW</a></li>
+</ul>
+<li>The following, self-contained, and oversimplified example is intended to give a rough idea about the functionality. It does not include transactional control, and it does the following: The example class can be run using F9 in ADT. A demo database table of the cheat sheet repository is filled synchronously and asynchronously (using bgPF) with entries, just to show an effect and get an idea. Two entries are created in the background. <code>WAIT</code> statements are included to have a self-contained example, and that all created database entries can be shown in the output. In the example, the background processing may be visualized, for example, by the <code>MODIFY</code> statement that is followed by a <code>WAIT</code> statement in the loop. The output can show that the entry for the first asynchronously created entry was added before a synchronously created entry. For more visualization options regarding the execution in the background, you can, for example, check the ABAP Cross Trace. For more information, refer to the documentation.</li>
+</ul>
+<br>
+
+``` abap
+CLASS zcl_some_class DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
+
+  PUBLIC SECTION.
+    INTERFACES if_oo_adt_classrun.
+    INTERFACES if_bgmc_op_single_tx_uncontr.
+    CLASS-METHODS get_uuid RETURNING VALUE(uuid) TYPE sysuuid_x16.
+  PRIVATE SECTION.
+    CLASS-DATA number TYPE i.
+ENDCLASS.
+
+CLASS zcl_some_class IMPLEMENTATION.
+  METHOD if_oo_adt_classrun~main.
+    "Deleting a demo database table
+    DELETE FROM zdemo_abap_tabca.
+
+    number += 1.
+    MODIFY zdemo_abap_tabca FROM @( VALUE #(
+      id = get_uuid( )
+      calc_result = |Synchronous entry creation in the MAIN method { number }|
+      crea_date_time = cl_abap_tstmp=>utclong2tstmp( utclong_current( ) ) ) ).
+
+    "Processing code in the background
+    DO 2 TIMES.
+
+      "Creating an instance of the example class (that implements the bgPF-relevant
+      "interface if_bgmc_op_single_tx_uncontr)
+      DATA(inst) = NEW zcl_some_class(  ).
+
+      TRY.
+          "Get the default factory for transactional background processes and
+          "creating a process for a single operation
+          DATA(backgr) = cl_bgmc_process_factory=>get_default( )->create( ).
+          "Setting a name of the process
+          backgr->set_name( `bgPF Test` ).
+          "Setting the transactionally uncontrolled operation of the process
+          backgr->set_operation_tx_uncontrolled( inst ).
+          "Saving the background process for the asynchronous execution
+          backgr->save_for_execution(  ).
+          "An explicit COMMIT WORK is required to start the background process.
+          "This explicit call is not needed in the context of RAP because the RAP
+          "framework will take care of the commit call.
+          COMMIT WORK.
+        CATCH cx_bgmc INTO DATA(error).
+          out->write( error->get_text( ) ).
+          ROLLBACK WORK.
+      ENDTRY.
+
+      number += 1.
+      MODIFY zdemo_abap_tabca FROM @( VALUE #(
+        id = get_uuid( )
+        calc_result = |Synchronous entry creation in the MAIN method { number }|
+        crea_date_time = cl_abap_tstmp=>utclong2tstmp( utclong_current( ) ) ) ).
+      WAIT UP TO 1 SECONDS.
+    ENDDO.
+
+    WAIT UP TO 2 SECONDS.
+
+    "Displaying the content of a demo database table that was filled
+    "in the course of the class execution
+    SELECT id, calc_result, crea_date_time
+      FROM zdemo_abap_tabca
+      ORDER BY crea_date_time
+      INTO TABLE @DATA(itab).
+
+    out->write( itab ).
+  ENDMETHOD.
+
+  METHOD if_bgmc_op_single_tx_uncontr~execute.
+    MODIFY zdemo_abap_tabca FROM @( VALUE #(
+      id = get_uuid( )
+      calc_result = `Asynchronous entry creation in background in the EXECUTE method`
+      crea_date_time = cl_abap_tstmp=>utclong2tstmp( utclong_current( ) ) ) ).
+  ENDMETHOD.
+
+  METHOD get_uuid.
+    TRY.
+        uuid = cl_system_uuid=>create_uuid_x16_static( ) .
+      CATCH cx_uuid_error.
+    ENDTRY.
+  ENDMETHOD.
+ENDCLASS.
 ``` 
 
 </td>
