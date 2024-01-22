@@ -1710,7 +1710,7 @@ ENDTRY.
 <li><a href="https://help.sap.com/docs/abap-cloud/abap-concepts/background-processing-framework ">Background Processing Framework</a></li>
 <li>Transactional control with the <a href="https://help.sap.com/docs/abap-cloud/abap-concepts/controlled-sap-luw">controlled SAP LUW</a></li>
 </ul>
-<li>The following, self-contained, and oversimplified example is intended to give a rough idea about the functionality. It does not include transactional control, and it does the following: The example class can be run using F9 in ADT. A demo database table of the cheat sheet repository is filled synchronously and asynchronously (using bgPF) with entries, just to show an effect and get an idea. Two entries are created in the background. <code>WAIT</code> statements are included to have a self-contained example, and that all created database entries can be shown in the output. In the example, the background processing may be visualized, for example, by the <code>MODIFY</code> statement that is followed by a <code>WAIT</code> statement in the loop. The output can show that the entry for the first asynchronously created entry was added before a synchronously created entry. For more visualization options regarding the execution in the background, you can, for example, check the ABAP Cross Trace. For more information, refer to the documentation.</li>
+<li>The following, self-contained, and oversimplified example is intended to give a rough idea about the functionality. It does not include transactional control. The example class can be run using F9 in ADT. It does the following: A demo database table of the cheat sheet repository is filled synchronously and asynchronously (using bgPF) with entries, just to show an effect and get an idea. Two entries are created in the background. <code>WAIT</code> statements are included to have a self-contained example, and that all created database entries can be shown in the output. In the example, the background processing may be visualized, for example, by the <code>MODIFY</code> statement that is followed by a <code>WAIT</code> statement in the loop. The output can show that the entry for the first asynchronously created entry was added before a synchronously created entry. For more visualization options regarding the execution in the background, you can, for example, check the ABAP Cross Trace. For more information, refer to the documentation.</li>
 </ul>
 <br>
 
@@ -1747,7 +1747,7 @@ CLASS zcl_some_class IMPLEMENTATION.
       DATA(inst) = NEW zcl_some_class(  ).
 
       TRY.
-          "Get the default factory for transactional background processes and
+          "Getting the default factory for transactional background processes and
           "creating a process for a single operation
           DATA(backgr) = cl_bgmc_process_factory=>get_default( )->create( ).
           "Setting a name of the process
