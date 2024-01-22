@@ -654,10 +654,11 @@ DATA(ref_bound) = COND #( WHEN ref_carr IS BOUND THEN ref_carr->carrid ELSE `is 
 "However, the garbage collector takes care of removing the references
 "automatically once the data is not used any more by a reference.
 CLEAR ref_carr.
+```
 
-******************************************************
-"Excursion: Generic data references and field symbols
+**Excursion: Generic data references and field symbols**
 
+```abap
 "Non-generic type
 DATA ref_int TYPE REF TO i.
 ref_int = NEW #( ).

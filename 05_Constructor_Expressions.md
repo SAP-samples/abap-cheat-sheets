@@ -62,7 +62,7 @@
         position](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenwrite_position_glosry.htm "Glossary Entry").
         In doing so, such a variable declared inline can be given the
         appropriate type and result of the constructor expression in one
-        go: `DATA(dec) = VALUE decfloat34( '1.23' )`.
+        go: `DATA(strtable) = VALUE string_table( ( `a` ) ( `b` ) ( `c` ) ).` or `DATA(dec) = CONV decfloat34( '1.23' ).`.
 
 > **✔️ Hint**<br>
 >-  The construction of a result, i. e. a target [data
@@ -301,7 +301,7 @@ DATA(itab7) = VALUE tabtype( b = 'aaa'           ( a = 1 c = `xxx` )
 "ranges table.
 TYPES int_tab_type TYPE TABLE OF i WITH EMPTY KEY.
 "Populating an integer table with values from 1 to 20 (see iteration
-"expressions with FOR furhter down)
+"expressions with FOR further down)
 DATA(inttab) = VALUE int_tab_type( FOR x = 1 WHILE x <= 20 ( x ) ).
 
 DATA rangetab TYPE RANGE OF i.
@@ -386,7 +386,7 @@ MODIFY zdemo_abap_carr FROM TABLE @( VALUE #(
             ( carrid = 'ZZ'
               carrname = 'ZZ Airways'
               currcode = 'EUR'
-              url =  'some_url' ) ) ).
+              url =  'another_url' ) ) ).
 ```
 
 > **💡 Note**<br>
@@ -439,7 +439,7 @@ Examples:
 "The following examples demonstrate simple assignments
 "with the CORRESPONDING operator using these syntax patterns.
 "Note: 
-"- The examples show only a selection of pssible additions.
+"- The examples show only a selection of possible additions.
 "- There are various combinations of additions possible.
 "- The effect of the statements is shown in lines commented out.
 
@@ -457,13 +457,13 @@ DATA: BEGIN OF s1,
         a TYPE i,
         b TYPE c LENGTH 3,
         c TYPE c LENGTH 5,
-        END OF s1.
+      END OF s1.
 
 DATA: BEGIN OF s2,
         a TYPE i,
         b TYPE c LENGTH 3,
         d TYPE string,
-        END OF s2.
+      END OF s2.
 
 "Populating structures
 s1 = VALUE #( a = 1 b = 'aaa' c = 'bbbbb' ).
@@ -770,10 +770,11 @@ DATA(res) = 1 / 5.
 TYPES inttab_type TYPE TABLE OF i WITH EMPTY KEY.
 DATA itab TYPE SORTED TABLE OF i WITH NON-UNIQUE DEFAULT KEY.
 FIELD-SYMBOLS <fs> TYPE inttab_type.
+itab = VALUE #( ( 1 ) ( 2 ) ( 3 ) ).
 
-"The following assignment is not possible due to incompatible types, 
-"although the internal table has the same line type (but there is a 
-"different table type and key).
+"The following assignment is not possible due to incompatible types. 
+"The internal table has the same line type, but it has a different 
+"table type and key.
 "ASSIGN itab TO <fs>.
 
 "Using CONV to convert the internal table to the required table type.
@@ -797,7 +798,8 @@ DATA e TYPE decfloat34.
 e = '0.4'.
 
 "Redundant conversion
-"Derives the string type automatically
+"The variable derives the type (string) automatically from the 
+"literal with the backquotes on the right-hand side.
 DATA(f) = `hallo`.
 "Produces a syntax warning
 "DATA(g) = CONV string( `hallo` ).
@@ -843,7 +845,7 @@ TRY.
     CATCH cx_sy_conversion_data_loss.
 ENDTRY.
 
-"-------------- Lossless Calculations -------------
+"-------------- Lossless calculations -------------
 
 "The first statement works, whereas the second statement raises an exception.
 "A rounding to two decimal places is required.
@@ -1032,7 +1034,7 @@ ELSE.
 ENDIF.
 
 "Multiple logical expressions initiated by WHEN
-"Also LET expressions (see details further down) are possible.
+"Also LET expressions are possible. See more details further down.
 DATA(time_of_day) = COND #( LET time = cl_abap_context_info=>get_system_time( ) IN
                             WHEN time BETWEEN '050001' AND '120000' THEN |Good morning, it's { time TIME = ISO }.|
                             WHEN time BETWEEN '120001' AND '180000' THEN |Good afternoon, it's { time TIME = ISO }.|
@@ -1051,12 +1053,12 @@ TRY.
     DATA(div) = COND decfloat34( WHEN num1 <> 0 AND num2 <> 0 THEN num1 / num2
                                  WHEN num1 = 0  AND num2 <> 0 THEN num1 / num2
                                  ELSE THROW cx_sy_zerodivide( ) ).
-    CATCH cx_sy_zerodivide.
+   CATCH cx_sy_zerodivide.
     DATA(two_zeros) = `Zero division`.
 ENDTRY.
 
-"Excursion: The following statement does not result in an error in ABAP (zero
-"division 'allowed' if the first operand has also the value 0).
+"Excursion for the example above: The following statement does not result in an 
+"error in ABAP (zero division 'allowed' if the first operand has also the value 0).
 div = 0 / 0.
 
 "THROW SHORTDUMP addition to raise a runtime error (working like RAISE SHORTDUMP
@@ -1089,24 +1091,24 @@ DATA(operator) = '*'.
 DATA(num1) = 5.
 DATA(num2) = 7.
 DATA(calc_result) = SWITCH #( operator
-                                WHEN '+' THEN |{ num1 + num2 STYLE = SIMPLE }|
-                                WHEN '-' THEN |{ num1 - num2 STYLE = SIMPLE }|
-                                WHEN '*' THEN |{ num1 * num2 STYLE = SIMPLE }|
-                                WHEN '/' THEN |{ CONV decfloat34( num1 / num2 ) STYLE = SIMPLE }|
-                                ELSE `Wrong operator.` ).
+                              WHEN '+' THEN |{ num1 + num2 STYLE = SIMPLE }|
+                              WHEN '-' THEN |{ num1 - num2 STYLE = SIMPLE }|
+                              WHEN '*' THEN |{ num1 * num2 STYLE = SIMPLE }|
+                              WHEN '/' THEN |{ CONV decfloat34( num1 / num2 ) STYLE = SIMPLE }|
+                              ELSE `Wrong operator.` ).
 
 "A constructor expression as above instead of, for example, a CASE statement as follows.
 CASE operator.
-    WHEN '+'.
-    calc_result = |{ num1 + num2 STYLE = SIMPLE }|.
-    WHEN '-'.
-    calc_result = |{ num1 - num2 STYLE = SIMPLE }|.
-    WHEN '*'.
-    calc_result = |{ num1 * num2 STYLE = SIMPLE }|.
-    WHEN '/'.
-    calc_result = |{ CONV decfloat34( num1 / num2 ) STYLE = SIMPLE }|.
-    WHEN OTHERS.
-    calc_result = `Wrong operator.`.
+  WHEN '+'.
+   calc_result = |{ num1 + num2 STYLE = SIMPLE }|.
+  WHEN '-'.
+   calc_result = |{ num1 - num2 STYLE = SIMPLE }|.
+  WHEN '*'.
+   calc_result = |{ num1 * num2 STYLE = SIMPLE }|.
+  WHEN '/'.
+   calc_result = |{ CONV decfloat34( num1 / num2 ) STYLE = SIMPLE }|.
+  WHEN OTHERS.
+   calc_result = `Wrong operator.`.
 ENDCASE.
 ```
 
@@ -1225,10 +1227,9 @@ DATA(time_of_day) = CONV string(
 "Getting a particular column name of an existing internal table using RTTI
 "An internal table (it contains information on the table's structured type; the
 "component names, among others) is assigned to a data object that is declared
-"inline. This is an example of how powerful constructor expressions (and inline
-"declarations) are: You can make code more concise. Think of extra declarations
-"for the data objects, or using the older ?= operator for the casts. Many more
-"lines of code would be required.
+"inline. This is an example of making code more concise with constructor expressions 
+"and inline declarations. Assume you use extra declarations for the data objects, or 
+"use the older ?= operator for the casts. Many more lines of code are required.
 DATA(components) = CAST cl_abap_structdescr( CAST cl_abap_tabledescr(
     cl_abap_typedescr=>describe_by_data( it ) )->get_table_line_type( ) )->components.
 DATA(comp2_a) = components[ 2 ]-name. "COMP2
@@ -1339,8 +1340,8 @@ TYPES: BEGIN OF s,
         END OF s.
 TYPES itab_type TYPE TABLE OF s WITH EMPTY KEY.
 DATA(itab) = VALUE itab_type( ( col1 = 'a' col2 = 1 col3 = 30 )
-                                ( col1 = 'bb' col2 = 2 col3 = 10 )
-                                ( col1 = 'ccc' col2 = 3 col3 = 20 ) ).
+                              ( col1 = 'bb' col2 = 2 col3 = 10 )
+                              ( col1 = 'ccc' col2 = 3 col3 = 20 ) ).
 
 "-------------- Table iterations --------------
 
@@ -1552,8 +1553,8 @@ TYPES: BEGIN OF s,
        END OF s.
 TYPES itab_type TYPE TABLE OF s WITH EMPTY KEY.
 DATA(itab) = VALUE itab_type( ( col1 = 'a' col2 = 1 col3 = 30 )
-                               ( col1 = 'bb' col2 = 2 col3 = 10 )
-                               ( col1 = 'ccc' col2 = 3 col3 = 20 ) ).
+                              ( col1 = 'bb' col2 = 2 col3 = 10 )
+                              ( col1 = 'ccc' col2 = 3 col3 = 20 ) ).
 
 "---------- Table iterations ----------
 

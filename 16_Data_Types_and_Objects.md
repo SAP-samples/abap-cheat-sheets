@@ -52,7 +52,7 @@ Data objects:
 
 
 > **💡 Note**<br>
-> There are several differentations that further distinguish and characterize data types and objects. See [here](#glossary-terms-in-a-nutshell).
+> There are several differentations that further distinguish and characterize data types and objects. See [here](#terms-related-to-data-types-and-objects-in-a-nutshell).
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
@@ -1446,8 +1446,7 @@ Find more information in the [cheat sheet about dynamic programming](06_Dynamic_
 - Used to store range conditions that can be evaluated in expressions using the `IN` operator (each row in the table represents a separate comparison)
 
 ```abap
-"Populating an integer table with values from 1 to 20 (see iteration
-"expressions with FOR furhter down)
+"Populating an integer table with values from 1 to 20
 TYPES int_tab_type TYPE TABLE OF i WITH EMPTY KEY.
 DATA(inttab) = VALUE int_tab_type( FOR x = 1 WHILE x <= 20 ( x ) ).
 

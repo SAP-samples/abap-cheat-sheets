@@ -9,6 +9,7 @@
   - [Accessing (Components of) Structures](#accessing-components-of-structures)
   - [Populating Structures](#populating-structures)
     - [Using the VALUE Operator](#using-the-value-operator)
+    - [Using the NEW Operator](#using-the-new-operator)
     - [Using the CORRESPONDING Operator and MOVE-CORRESPONDING Statements](#using-the-corresponding-operator-and-move-corresponding-statements)
   - [Clearing Structures](#clearing-structures)
   - [Processing Structures](#processing-structures)
@@ -364,13 +365,13 @@ address-city   = `349875 Botanica`.
 ``` abap
 "# used: type of the operand can be implicitly derived
 address = VALUE #( name   = `Mr. Duncan Pea`
-                   street = `Vegetable Lane 11`.
+                   street = `Vegetable Lane 11`
                    city   = `349875 Botanica` ).
 
 "Declaring a structure inline
 "Type used explicitly: type of the operand cannot be implicitly derived
 DATA(addr) = VALUE addr_struc( name   = `Mr. Duncan Pea`
-                               street = `Vegetable Lane 11`.
+                               street = `Vegetable Lane 11`
                                city   = `349875 Botanica` ).
 
 "Nesting value operators
@@ -402,6 +403,31 @@ DATA(str_2) = VALUE struc_nested( nested_1 = VALUE #( b = 2 c = 3 )
 DATA(str_ref) = NEW struc_nested( a        = 1 
                                   nested_1 = VALUE #( b = 2 c = 3 ) 
                                   nested_2 = VALUE #( d = 4 e = 5 ) ).
+```
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+### Using the NEW Operator
+
+Using the instance operator [`NEW`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconstructor_expression_new.htm), you can create [anonymous data objects](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenanonymous_data_object_glosry.htm "Glossary Entry"), such as anonymous structures. You can access the components or the entire data objects by [dereferencing](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendereferencing_operat_glosry.htm). For more information, refer to the  [Dynamic Programming](06_Dynamic_Programming.md) and [Constructor Expressions](05_Constructor_Expressions.md) cheat sheets.
+
+```abap
+"Creating a data reference variable 
+DATA addr_ref1 TYPE REF TO addr_struc.
+
+"Populating the anonymous structure
+addr_ref1 = NEW #( name   = `Mr. Duncan Pea`
+                   street = `Vegetable Lane 11`
+                   city   = `349875 Botanica` ).
+
+addr_ref1->name = `Mrs. Jane Doe`.     
+
+"Declaring an anonymous structure/a data reference variable inline    
+DATA(addr_ref2) = NEW addr_struc( name   = `Mr. Duncan Pea`
+                                  street = `Vegetable Lane 11`
+                                  city   = `349875 Botanica` ).
+
+addr_ref2->* = VALUE #( BASE addr_ref2->* name = `Mr. John Doe` ).
 ```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>

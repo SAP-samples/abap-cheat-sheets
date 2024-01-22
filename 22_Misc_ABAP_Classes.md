@@ -1456,21 +1456,17 @@ CLASS zcl_some_class DEFINITION
 
     "Data types and objects for the data cluster
     "that contains information to be output
-    TYPES: BEGIN OF bline,
-             id    TYPE i,
-             clstr TYPE x LENGTH 100,
-           END OF bline.
-    CLASS-DATA buffer TYPE TABLE OF bline WITH EMPTY KEY.
-    DATA itab TYPE string_table.
+    CLASS-DATA buffer TYPE xstring.
+    DATA obj TYPE string.
     DATA parallel_log TYPE string_table.
-    DATA jtab TYPE string_table.
+    DATA inst_name TYPE string.
     "Structure to hold information for the output
     DATA: BEGIN OF info,
             name   TYPE string,
             tmstmp TYPE utclong,
           END OF info.
     "Preparing the data cluster
-    METHODS handle_cluster IMPORTING name TYPE string_table.
+    METHODS handle_cluster IMPORTING name TYPE string.
 ENDCLASS.
 
 CLASS zcl_some_class IMPLEMENTATION.
@@ -1489,16 +1485,16 @@ CLASS zcl_some_class IMPLEMENTATION.
     "purposes. The handle_cluster method is used to manually
     "provide the name of the object reference variable for
     "output purposes.
-    handle_cluster( VALUE #( ( `inst1` ) ) ).
+    handle_cluster( `inst1` ).
     DATA(inst1) = NEW zcl_some_class( ).
 
-    handle_cluster( VALUE #( ( `inst2` ) ) ).
+    handle_cluster( `inst2` ).
     DATA(inst2) = NEW zcl_some_class( ).
 
-    handle_cluster( VALUE #( ( `inst3` ) ) ).
+    handle_cluster( `inst3` ).
     DATA(inst3) = NEW zcl_some_class( ).
 
-    handle_cluster( VALUE #( ( `inst4` ) ) ).
+    handle_cluster( `inst4` ).
     DATA(inst4) = NEW zcl_some_class( ).
 
     WAIT UP TO 1 SECONDS.
@@ -1548,7 +1544,7 @@ CLASS zcl_some_class IMPLEMENTATION.
     "A data cluster is used to have a self-contained example class
     "that can be run with F9.
     TRY.
-        IMPORT itab = jtab FROM INTERNAL TABLE buffer.
+        IMPORT str = inst_name FROM DATA BUFFER buffer.
       CATCH cx_sy_import_format_error INTO DATA(error).
     ENDTRY.
 
@@ -1558,7 +1554,7 @@ CLASS zcl_some_class IMPLEMENTATION.
       "expected to be the only input in the table, as well as
       "a time stamp to compare with other time stamps that are
       "output.
-      info = VALUE #( name   = VALUE #( jtab[ 1 ] OPTIONAL )
+      info = VALUE #( name   = inst_name
                       tmstmp = utclong_current( ) ).
     ENDIF.
   ENDMETHOD.
@@ -1568,8 +1564,8 @@ CLASS zcl_some_class IMPLEMENTATION.
     "pass the name of the object reference variable that
     "was added manually via the input parameter 'name'.
     CLEAR buffer.
-    itab = name.
-    EXPORT itab = itab TO INTERNAL TABLE buffer.
+    obj = name.
+    EXPORT str = obj TO DATA BUFFER buffer.
   ENDMETHOD.
 ENDCLASS.
 ``` 

@@ -174,7 +174,7 @@ ENDIF.
 - Allows you to parse and render XML data in a token-based (iterating across all nodes, i.e. tokens, in the tree structure of the XML data) and object-oriented way (wrapping methods of the token-based access; providing an object-oriented way to access XML nodes)
 - Unlike iXML, ...
   - more formats are possible (standard XML 1.0, but also XOP, binary XML, and JSON).
-  - no document is created in DOM format (if you do not need to a DOM representation and DTDs, sXML is a more performant alternative to iXML).
+  - no document is created in DOM format (if you do not need a DOM representation and DTDs, sXML is a more performant alternative to iXML).
 
 Creating XML data using sXML:
 

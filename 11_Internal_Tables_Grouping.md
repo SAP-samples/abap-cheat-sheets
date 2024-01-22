@@ -1,8 +1,8 @@
 <a name="top"></a>
 
-# ABAP SQL: Grouping Internal Tables
+# Internal Tables: Grouping
 
-- [ABAP SQL: Grouping Internal Tables](#abap-sql-grouping-internal-tables)
+- [Internal Tables: Grouping](#internal-tables-grouping)
   - [Introduction](#introduction)
   - [Grouping by One Column](#grouping-by-one-column)
   - [Grouping by More than One Column](#grouping-by-more-than-one-column)
