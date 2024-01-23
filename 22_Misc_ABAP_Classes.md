@@ -5,6 +5,7 @@
 - [Misc ABAP Classes](#misc-abap-classes)
   - [Excursion: Available Classes in ABAP Cloud](#excursion-available-classes-in-abap-cloud)
   - [Creating UUIDs](#creating-uuids)
+  - [Displaying Output in the ADT Console](#displaying-output-in-the-adt-console)
   - [RAP](#rap)
   - [Transactional Consistency](#transactional-consistency)
   - [Numbers and Calculations](#numbers-and-calculations)
@@ -12,6 +13,7 @@
   - [Time and Date](#time-and-date)
   - [Runtime Type Services (RTTS)](#runtime-type-services-rtts)
   - [Assignments](#assignments)
+  - [Information about Non-Initial Structure Components](#information-about-non-initial-structure-components)
   - [Dynamic Programming](#dynamic-programming)
   - [Context Information](#context-information)
   - [XML/JSON](#xmljson)
@@ -22,7 +24,8 @@
   - [Exception Classes](#exception-classes)
   - [Parallel Processing](#parallel-processing)
   - [Application Log](#application-log)
-  - [Executing Code in Background](#executing-code-in-background)
+  - [Running Code in the Background](#running-code-in-the-background)
+  - [Locking](#locking)
 
 
 This ABAP cheat sheet contains a selection of available ABAP classes, serving as a quick introduction, along with code snippets to explore the functionality in action.
@@ -70,6 +73,71 @@ TRY.
 ENDTRY.
 
 "e.g. B2B012691AC31EDEADA0A495A7130961
+``` 
+
+</td>
+</tr>
+</table>
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+## Displaying Output in the ADT Console
+
+<table>
+<tr>
+<td> Class </td> <td> Details/Code Snippet </td>
+</tr>
+<tr>
+<td> <code>CL_DEMO_CLASSRUN</code> </td>
+<td>
+As an alternative to using the <code>IF_OO_ADT_CLASSRUN</code> interface for displaying output in the console, you can also use the <code>CL_DEMO_CLASSRUN</code> class, which offers more methods.
+For more information, refer to <a href="https://blogs.sap.com/2023/10/24/abap-console-reloaded/">this blog</a>.
+The following example makes use of <code>CL_DEMO_CLASSRUN</code> class for output purposes. A structure and an internal table are displayed in the console. Note the automatic dereferencing of the component. Plus, the <code>write_xml</code> method is shown, which displays XML data.
+<br><br>
+
+``` abap
+CLASS zcl_some_class DEFINITION
+  INHERITING FROM cl_demo_classrun
+  PUBLIC
+  CREATE PUBLIC.
+
+  PUBLIC SECTION.
+    METHODS main REDEFINITION.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+ENDCLASS.
+
+CLASS zcl_some_class IMPLEMENTATION.
+  METHOD main.
+    TYPES: BEGIN OF s,
+             comp1 TYPE string,
+             comp2 TYPE i,
+             comp3 TYPE string_table,
+             comp4 TYPE REF TO string,
+           END OF s,
+           it_type TYPE TABLE OF s WITH EMPTY KEY.
+
+    DATA(struct) = VALUE s( comp1 = `Hello`
+                            comp2 = 1
+                            comp3 = VALUE #( ( `a` ) ( `b` ) ( `a` ) ( `p` ) )
+                            comp4 = NEW #( `world` ) ).
+
+    DATA(itab) = VALUE it_type( ( struct )
+                                ( comp1 = `Hi`
+                                  comp2 = 2
+                                  comp3 = VALUE #( ( `x` ) ( `y` ) ( `z` ) )
+                                  comp4 = NEW #( `ABAP` ) ) ).
+
+    out->write( struct ).
+    out->write( itab ).
+
+    DATA(some_xml) = cl_abap_conv_codepage=>create_out( )->convert(
+    `<hi><word1>hallo</word1><word2>how</word2><word3>are</word3><word4>you</word4></hi>` ).
+
+    out->write( some_xml ).
+    out->write_xml( some_xml ).
+  ENDMETHOD.
+ENDCLASS.
 ``` 
 
 </td>
@@ -913,7 +981,7 @@ DATA(map_obj) = cl_abap_corresponding=>create( source  = s1
                                                destination = s2
                                                mapping  = VALUE #( ) ).
 
-"Performing the assignement
+"Performing the assignment
 map_obj->execute( EXPORTING source      = s1
                   CHANGING  destination = s2 ).
 
@@ -921,7 +989,7 @@ map_obj->execute( EXPORTING source      = s1
 *A    B      D
 *1    aaa    dddd
 
-"Performing the assignement without extra variable; specifying the mapping table:
+"Performing the assignment without extra variable; specifying the mapping table:
 "level: 0 means the top level
 "kind: 1 means that components specified in this line are mapped to each other;
 "      see the specification options in cl_abap_corresponding=>mapping_...
@@ -944,6 +1012,100 @@ cl_abap_corresponding=>create(
 </table>
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
+
+
+## Information about Non-Initial Structure Components
+
+<table>
+<tr>
+<td> Class </td> <td> Details/Code Snippet </td>
+</tr>
+<tr>
+<td> <code>CL_ABAP_STRUCT_UTILITIES</code> </td>
+<td>
+Provides methods to get information about filled components in structures allowing an efficient processing of non-initial components of a structure.
+<br><br>
+
+``` abap
+CLASS zcl_some_class DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
+
+  PUBLIC SECTION.
+    INTERFACES if_oo_adt_classrun.
+  PRIVATE SECTION.
+ENDCLASS.
+
+CLASS zcl_some_class IMPLEMENTATION.
+  METHOD if_oo_adt_classrun~main.
+    out->write( `---------- filled_components method ----------` ).
+    "It returns an internal table containing the names of the non-initial
+    "components of the structure and their index.
+    DATA: BEGIN OF struct,
+            a TYPE c LENGTH 1,
+            b TYPE i,
+            c TYPE zdemo_abap_carr,
+            d TYPE REF TO string,
+          END OF struct.
+
+    struct = VALUE #( a = 'X'
+                      b = 123
+                      c = VALUE #( carrid = 'LH' )
+                      d = NEW #( `ABAP` ) ).
+
+    "Getting component information using RTTI
+    DATA(all_comps) = CAST cl_abap_structdescr(  cl_abap_typedescr=>describe_by_data( struct ) )->components.
+    out->write( all_comps ).
+
+    "Getting an internal table containing the names of non-initial components
+    "and their index
+    DATA(filled_comps) = cl_abap_struct_utilities=>filled_components( struct ).
+    out->write( filled_comps ).
+
+    "In a loop, structure components are cleared. The filled_components method
+    "is called in each loop pass, visualizing the filled components in the
+    "structure.
+    DO lines( all_comps ) TIMES.
+      CLEAR struct-(sy-index).
+      filled_comps = cl_abap_struct_utilities=>filled_components( struct ).
+      out->write( filled_comps ).
+    ENDDO.
+
+    out->write( `---------- filled_components_c method ----------` ).
+    "Same as above. All structure components must be typed with c LENGTH 1.
+    DATA: BEGIN OF struct_c1,
+            a TYPE c LENGTH 1 VALUE 'X',
+            b TYPE c LENGTH 1,
+            c TYPE c LENGTH 1 VALUE 'X',
+          END OF struct_c1.
+
+    filled_comps = cl_abap_struct_utilities=>filled_components_c( struct_c1 ).
+    out->write( filled_comps ).
+
+    out->write( `---------- filled_components_x method ----------` ).
+    "Same as above. All structure components must be typed with x LENGTH 1.
+    "It is especially useful for checking filled components of BDEF derived types,
+    "for example, %control.
+    DATA struc_der_type TYPE STRUCTURE FOR READ IMPORT zdemo_abap_rap_ro_m.
+    struc_der_type = VALUE #( %control = VALUE #( key_field = if_abap_behv=>mk-on
+                                                  field1    = if_abap_behv=>mk-on
+                                                  field2    = if_abap_behv=>mk-off
+                                                  field3    = if_abap_behv=>mk-off
+                                                  field4    = if_abap_behv=>mk-on ) ).
+
+    filled_comps = cl_abap_struct_utilities=>filled_components_x( struc_der_type-%control ).
+    out->write( filled_comps ).
+  ENDMETHOD.
+ENDCLASS.
+``` 
+
+</td>
+</tr>
+</table>
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
 
 ## Dynamic Programming
 
@@ -1095,7 +1257,7 @@ DATA(reader) = cl_sxml_string_reader=>create( some_xml ).
 </td>
 </tr>
 <tr>
-<td> <code>XCO_XP_JSON</code> </td>
+<td> <code>XCO_CP_JSON</code> </td>
 <td>
 Handling JSON data using the XCO library
 <br><br>
@@ -1382,13 +1544,13 @@ DATA(host) = ui_url->get_host( ).
 DATA(port) = ui_url->get_port( ).
 
 "Global account ID
-DATA(ui_urdld) = ten->get_global_account_id( )->as_string( ).
+DATA(global_acc_id) = ten->get_global_account_id( )->as_string( ).
 "Guid
-DATA(udld) = ten->get_guid( )->value.
+DATA(guid) = ten->get_guid( )->value.
 "Id
-DATA(uddld) = ten->get_id( ).
+DATA(id) = ten->get_id( ).
 "Subaccount ID
-DATA(uddsdld) = ten->get_subaccount_id( )->as_string( ).
+DATA(sub_acc_id) = ten->get_subaccount_id( )->as_string( ).
 ``` 
 
 </td>
@@ -1689,7 +1851,7 @@ ENDTRY.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-## Executing Code in Background
+## Running Code in the Background
 
 <table>
 <tr>
@@ -1699,7 +1861,7 @@ ENDTRY.
 <td> <code>CL_BGMC_PROCESS_FACTORY</code> </td>
 <td>
 <ul>
-<li>Used in the context of the Background Processing Framework (bgPF) to execute code asynchronously in the background.</li>
+<li>Used in the context of the Background Processing Framework (bgPF) to run code asynchronously in the background.</li>
 <li>Different flavors are available:</li> 
 <ul>
 <li>Using bgPF without transactional control, for example, if you do not work with a RAP application or transactional control is not relevant in an ABAP program. In this case, you can implement the <code>IF_BGMC_OP_SINGLE_TX_UNCONTR</code> interface.</li> 
@@ -1741,7 +1903,6 @@ CLASS zcl_some_class IMPLEMENTATION.
 
     "Processing code in the background
     DO 2 TIMES.
-
       "Creating an instance of the example class (that implements the bgPF-relevant
       "interface if_bgmc_op_single_tx_uncontr)
       DATA(inst) = NEW zcl_some_class(  ).
@@ -1799,6 +1960,50 @@ CLASS zcl_some_class IMPLEMENTATION.
     ENDTRY.
   ENDMETHOD.
 ENDCLASS.
+``` 
+
+</td>
+</tr>
+</table>
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+## Locking
+
+<table>
+<tr>
+<td> Class </td> <td> Details/Code Snippet </td>
+</tr>
+<tr>
+<td> <code>CL_ABAP_LOCK_OBJECT_FACTORY</code> </td>
+<td>
+For activating lock objects. Note that you can also use the <code>DEQUEUE_ALL</code> method to remove all locks in the current SAP LUW.
+The following example code snippet uses artifacts from the ABAP cheat sheet repository.
+<br><br>
+
+``` abap
+"Deleting demo database table
+DELETE FROM zdemo_abap_rapt1.
+"Creating a database table entry and reading it into a data reference variable
+MODIFY zdemo_abap_rapt1 FROM @( VALUE #( key_field = 1 field1 = 'aaa' field2 = 'bbb' field3 = 2 field4 = 3 ) ).
+SELECT SINGLE * FROM zdemo_abap_rapt1 WHERE key_field = 1 INTO NEW @DATA(key).
+
+TRY.
+    "Instantiating a lock object    
+    DATA(lock) = cl_abap_lock_object_factory=>get_instance( iv_name = 'EZDEMO_ABAP_LOCK' ).
+
+    "Enqueuing a lock object
+    "Note that there are various parameters. The parameter used in the example contains
+    "a list of lock fields including a reference to the parameter value.
+    lock->enqueue( it_parameter = VALUE #( ( name = 'KEY_FIELD' value = REF #( key->key_field ) ) ) ).
+  CATCH cx_abap_lock_failure cx_abap_foreign_lock INTO DATA(enq_error).
+ENDTRY.
+
+TRY.
+    "Dequeuing a lock object
+    lock->dequeue( it_parameter = VALUE #( ( name = 'KEY_FIELD' value = REF #( key->key_field ) ) ) ).
+  CATCH cx_abap_lock_failure INTO DATA(deq_error).  
+ENDTRY.
 ``` 
 
 </td>
