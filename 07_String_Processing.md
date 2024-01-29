@@ -30,6 +30,7 @@
     - [Repeating Strings](#repeating-strings)
     - [Returning the Smallest/Biggest of a Set of Character-Like Arguments](#returning-the-smallestbiggest-of-a-set-of-character-like-arguments)
     - [Escaping Special Characters](#escaping-special-characters)
+  - [Excursion: String Processing Using the XCO Library](#excursion-string-processing-using-the-xco-library)
   - [Executable Example](#executable-example)
 
 
@@ -1841,6 +1842,150 @@ TRY.
                          format = 123 ).
     CATCH cx_sy_strg_par_val.
 ENDTRY.
+```
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+## Excursion: String Processing Using the XCO Library
+The Extension Components Library (XCO) library provides [released APIs](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenreleased_api_glosry.htm) and offers various development utilities. Find more information [here](https://help.sap.com/docs/btp/sap-business-technology-platform/overview-of-xco-modules). The following code snippet demonstrates several methods of the `XCO_CP` class that deal with string processing.
+
+```abap
+"--------- Extracting a substring from a string ---------
+DATA(some_string) = `abcdefghijklmnopqrstuvwxyz`.
+
+"Creating an encapsulation of a string using XCO
+DATA(str) = xco_cp=>string( some_string ).
+
+"Using the FROM and TO methods, you can determine
+"the character position. Note that the value includes the
+"character at the position specified.
+"The character index pattern for the example string above
+"is (the string has 26 characters in total):
+"a = 1, b = 2, c = 3 ... z = 26
+"a = -26, b = -25, c = -24 ... z = -1
+"Providing a value that is out of bounds means that
+"the first (or the last) character of the string is used
+"by default.
+"Note: When combining FROM and TO, e.g. with method
+"chaining ...->from( ...)->to( ... ), note that another
+"instance is created with the first 'from', and another
+"character index pattern is created based on the new
+"and adjusted string value.
+
+"bcdefghijklmnopqrstuvwxyz
+DATA(sub1) = str->from( 2 )->value.
+
+"defghijklmnopqrstuvwxyz
+DATA(sub2) = str->from( -23 )->value.
+
+"vwxyz
+DATA(sub3) = str->from( -5 )->value.
+
+"abcde
+DATA(sub4) = str->to( 5 )->value.
+
+"ab
+DATA(sub5) = str->to( -25 )->value.
+
+"Result of 1st 'from' method call: bcdefghijklmnopqrstuvwxyz
+"Based on this result, the 'to' method call is
+"applied.
+"bcdefg
+DATA(sub6) = str->from( 2 )->to( 6 )->value.
+
+"Result of 1st 'to' method call: abcdefghijklmnopq
+"Based on this result, the 'from' method call is
+"applied.
+"defghijklmnopq
+DATA(sub7) = str->to( -10 )->from( 4 )->value.
+
+"Values that are out of bounds.
+"In the example, the first and last character of the
+"string are used.
+"abcdefghijklmnopqrstuvwxyz
+DATA(sub8) = str->from( 0 )->to( 100 )->value.
+
+"--------- Splitting and joining ---------
+
+"Splitting a string into a string table
+DATA(str_table) = xco_cp=>string( `Hello.World.ABAP` )->split( `.` )->value.
+"Hello
+"World
+"ABAP
+
+"Concatenating a string table into a string; specifying a delimiter
+str_table = VALUE #( ( `a` ) ( `b` ) ( `c` ) ).
+"a, b, c
+DATA(conc_str1) = xco_cp=>strings( str_table )->join( `, ` )->value.
+
+"Concatenating a string table into a string; specifying a delimiter and
+"reversing the table order
+"c / b / a
+DATA(conc_str2) = xco_cp=>strings( str_table )->reverse(  )->join( ` / ` )->value.
+
+"--------- Prepending and appending strings ---------
+DATA(name) = xco_cp=>string( `Max Mustermann` ).
+
+"Max Mustermann, Some Street 1, 12345 Someplace
+DATA(address) = name->append( `, Some Street 1, 12345 Someplace` )->value.
+
+"Mr. Max Mustermann
+DATA(title) = name->prepend( `Mr. ` )->value.
+
+"--------- Transforming to lowercase and uppercase ---------
+"ABAP
+DATA(to_upper) = xco_cp=>string( `abap` )->to_upper_case(  )->value.
+
+"hallo world
+DATA(to_lower) = xco_cp=>string( `HALLO WORLD` )->to_lower_case(  )->value.
+
+"--------- Checking if a string starts/ends with a specific string ---------
+DATA check TYPE string.
+DATA(str_check) = xco_cp=>string( `Max Mustermann` ).
+
+"yes
+IF str_check->ends_with( `mann` ).
+  check = `yes`.
+ELSE.
+  check = `no`.
+ENDIF.
+
+"no
+IF str_check->starts_with( `John` ).
+  check = `yes`.
+ELSE.
+  check = `no`.
+ENDIF.
+
+"--------- Converting strings to xstrings using a codepage ---------
+"536F6D6520737472696E67
+DATA(xstr) = xco_cp=>string( `Some string` )->as_xstring( xco_cp_character=>code_page->utf_8 )->value.
+
+"--------- Camel case compositions and decompositions with split and join operations ---------
+"Pascal case is also possible
+"someValue
+DATA(comp) = xco_cp=>string( `some_value` )->split( `_` )->compose( xco_cp_string=>composition->camel_case )->value.
+
+"Camel case decomposition
+"some_value
+DATA(decomp) = xco_cp=>string( `someValue` )->decompose( xco_cp_string=>decomposition->camel_case )->join( `_` )->value.
+
+"--------- Matching string against regular expression ---------
+DATA match TYPE string.
+
+"yes
+IF xco_cp=>string( ` 1` )->matches( `\s\d` ).
+  match = 'yes'.
+ELSE.
+  match = 'no'.
+ENDIF.
+
+"no
+IF xco_cp=>string( ` X` )->matches( `\s\d` ).
+  match = 'yes'.
+ELSE.
+  match = 'no'.
+ENDIF.
 ```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
