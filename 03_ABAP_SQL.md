@@ -352,7 +352,7 @@ SELECT ds~col1, ds~col2, ds~col3
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-**Reading data from a database table in another client** ([classic ABAP](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenclassic_abap_glosry.htm) only ). Note that there are several variants of the `USING ...` addition for switching the [implicit client handling (F1 docu for standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenabap_sql_client_handling.htm) from the current client to other clients. See more information [here (F1 docu for standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapselect_client.htm).
+**Reading data from a database table in another client** ([classic ABAP](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenclassic_abap_glosry.htm) only). Note that there are several variants of the `USING ...` addition for switching the [implicit client handling (F1 docu for standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenabap_sql_client_handling.htm) from the current client to other clients. See more information [here (F1 docu for standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapselect_client.htm).
 ``` abap
 "Some examples; not available in ABAP for Cloud Development
 
@@ -985,10 +985,10 @@ INTO @DATA(more_sql_expr).
 
 How [window expressions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenwindow_expression_glosry.htm "Glossary Entry") work:
 
--   Defines a subset of the result set (i. e. the
+-   Define a subset of the result set (i. e. the
     "[window](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenwindow_glosry.htm "Glossary Entry")")
     of a database query that implements ABAP SQL
--   Applies a [window
+-   Apply a [window
     function](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenwindow_function_glosry.htm "Glossary Entry") -
     which evaluates the rows of the window and which can, for example,
     be an [aggregate
@@ -1147,7 +1147,7 @@ SELECT *
         AND comp11 IS INITIAL
         
         "Combination of logical expression using AND, OR and parentheses
-        AND  ( comp12 = a AND comp13 < b ) OR ( comp14 > c AND comp15 <> d )
+        AND ( comp12 = a AND comp13 < b ) OR ( comp14 > c AND comp15 <> d )
         
   INTO TABLE @DATA(itab_where).
 ```

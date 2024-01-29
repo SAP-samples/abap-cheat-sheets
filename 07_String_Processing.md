@@ -28,6 +28,8 @@
   - [More String Functions](#more-string-functions)
     - [Checking the Similarity of Strings](#checking-the-similarity-of-strings)
     - [Repeating Strings](#repeating-strings)
+    - [Returning the Smallest/Biggest of a Set of Character-Like Arguments](#returning-the-smallestbiggest-of-a-set-of-character-like-arguments)
+    - [Escaping Special Characters](#escaping-special-characters)
   - [Executable Example](#executable-example)
 
 
@@ -364,7 +366,7 @@ s1 = |{ utc XSD = YES }|. "2024-01-01T13:51:38.57088Z
 "STYLE: Defining the style of decimal floating point numbers;
 "see the details in the ABAP Keyword Documentation.
 DATA(dcfl34) = CONV decfloat34( '-123.45600' ).
-s1 = |{ dcfl34 }|. "-123.456out->write( s1 ).
+s1 = |{ dcfl34 }|. "-123.456
 "Creates the predefined format
 s1 = |{ dcfl34 STYLE = SIMPLE }|. "-123.456
 "+/- added to the right, removes trailing zeros
@@ -1786,6 +1788,58 @@ TRY.
     DATA(repeat4) = repeat( val = `X` occ = -3 ).
   CATCH cx_sy_strg_par_val.
     ...
+ENDTRY.
+```
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+### Returning the Smallest/Biggest of a Set of Character-Like Arguments
+- [`cmin/cmax`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencmax_cmin_functions.htm) returns a string that contains the content of the smallest or biggest of a set of character-like arguments
+- 'Set' means at least two arguments and a maximum of nine argeuments are passed (`valn` operators) for comparison.
+- The comparison is made from left to right, and the first different character found determines the smaller or bigger argument.
+
+```abap
+DATA(min) =  cmin( val1 = `zzzzzzz`
+                   val2 = `zzazzzzzzzz` "smallest argument
+                   val3 = `zzzzabc` ).
+
+DATA(max) =  cmax( val1 = `abcdef`      "biggest argument
+                   val2 = `aaghij`
+                   val3 = `aaaaklmn`
+                   val4 = `aaaaaaopqrs`
+                   val5 = `aaaaaaaaaatuvwxy`
+                   val6 = `aaaaaaaaaaaaaz` ).
+```
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+### Escaping Special Characters
+- [`escape`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenescape_functions.htm) returns a string that is provided for the `val` parameter by escaping special characters according to the specification in the `format` parameter.
+- Suitable values for the `format` parameter (which expects a data object of type `i`) are available in the `CL_ABAP_FORMAT` class (the constants starting with `E_`).
+- Special rules apply to different contexts, such as URLS and JSON. Also note the prevention of Cross Site Scripting (XSS) attacks on web applications. For more information, refer to the [documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenescape_functions.htm).
+
+```abap
+"Context: URLs
+DATA(esc1) = escape( val    = '...test: 5@8...'
+                     format = cl_abap_format=>e_url_full ).
+"...test%3A%205%408...
+
+"Context: JSON
+DATA(esc2) = escape( val    = 'some "test" json \ with backslash and double quotes'
+                     format = cl_abap_format=>e_json_string ).
+"some \"test\" json \\ with backslash and double quotes
+
+
+"Context: String templates
+DATA(esc3) = escape( val    = 'Special characters in string templates: |, \, {, }'
+                     format = cl_abap_format=>e_string_tpl ).
+"Special characters in string templates: \|, \\, \{, \}
+
+"Invalid value for the format parameter
+TRY.
+    DATA(esc4) = escape( val    = 'This will raise an exception due to an invalid format value.'
+                         format = 123 ).
+    CATCH cx_sy_strg_par_val.
 ENDTRY.
 ```
 
