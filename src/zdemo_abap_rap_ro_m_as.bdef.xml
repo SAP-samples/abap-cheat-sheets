@@ -1,0 +1,39 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_BDEF" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <BDEF>
+    <NAME>ZDEMO_ABAP_RAP_RO_M_AS</NAME>
+    <TYPE>BDEF/BDO</TYPE>
+    <DESCRIPTION>BDEF: managed BO, unmanaged save, external numbering</DESCRIPTION>
+    <DESCRIPTION_TEXT_LIMIT>60</DESCRIPTION_TEXT_LIMIT>
+    <LANGUAGE>EN</LANGUAGE>
+    <LINKS>
+     <item>
+      <HREF>./zdemo_abap_rap_ro_m_as/source/main/versions</HREF>
+      <REL>http://www.sap.com/adt/relations/versions</REL>
+      <TITLE>Historic versions</TITLE>
+     </item>
+     <item>
+      <HREF>./zdemo_abap_rap_ro_m_as/source/main</HREF>
+      <REL>http://www.sap.com/adt/relations/source</REL>
+      <TYPE>text/plain</TYPE>
+      <TITLE>Source Content</TITLE>
+     </item>
+     <item>
+      <HREF>./zdemo_abap_rap_ro_m_as/source/main</HREF>
+      <REL>http://www.sap.com/adt/relations/source</REL>
+      <TYPE>text/html</TYPE>
+      <TITLE>Source Content (HTML)</TITLE>
+     </item>
+    </LINKS>
+    <MASTER_LANGUAGE>EN</MASTER_LANGUAGE>
+    <ABAP_LANGU_VERSION>5</ABAP_LANGU_VERSION>
+    <SOURCE_URI>./zdemo_abap_rap_ro_m_as/source/main</SOURCE_URI>
+    <SOURCE_TYPE>ABAP_SOURCE</SOURCE_TYPE>
+    <SOURCE_FIXED_POINT_ARITHMETIC>true</SOURCE_FIXED_POINT_ARITHMETIC>
+    <SOURCE_UNICODE_CHECKS_ACTIVE>true</SOURCE_UNICODE_CHECKS_ACTIVE>
+   </BDEF>
+  </asx:values>
+ </asx:abap>
+</abapGit>
