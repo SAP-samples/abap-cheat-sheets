@@ -15,7 +15,8 @@
     - [EML Syntax for Reading Operations](#eml-syntax-for-reading-operations)
       - [Dynamic Forms of EML Statements](#dynamic-forms-of-eml-statements)
     - [Persisting to the Database](#persisting-to-the-database)
-    - [EML Statements in ABAP Behavior Pools](#eml-statements-in-abap-behavior-pools)
+    - [Raising RAP Business Events](#raising-rap-business-events)
+    - [Additions to EML Statements in ABAP Behavior Pools](#additions-to-eml-statements-in-abap-behavior-pools)
   - [RAP Excursions](#rap-excursions)
     - [Using Keys and Identifying RAP BO Instances in a Nutshell](#using-keys-and-identifying-rap-bo-instances-in-a-nutshell)
     - [RAP Concepts](#rap-concepts)
@@ -1301,7 +1302,70 @@ ENDIF.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-### EML Statements in ABAP Behavior Pools
+### Raising RAP Business Events
+
+- [RAP business events](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_entity_event_glosry.htm) can be raised in ABAP behavior pools with [`RAISE ENTITY EVENT`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapraise_entity_event.htm) statements. 
+- Prerequisites:
+  - `event` specifications are available in the BDEF (e.g. `... event some_evt; ...`). For more details, refer to the [BDL documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbdl_event.htm)
+  - A [RAP event handler class](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_event_handler_class_glosry.htm) is available that is used to implement [RAP event handler methods](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_event_handler_meth_glosry.htm). 
+    - Note that these methods are called asynchronously.
+    - Similar to RAP handler and saver methods, RAP event handler methods are implemented in the CCIMP include of the RAP event handler class.
+    - To locally consume RAP business events, a local class that inherits from `CL_ABAP_BEHAVIOR_EVENT_HANDLER` can be implemented in the CCIMP include of a RAP event handler class.
+- More information: 
+  - [ABAP for RAP Business Events](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_events.htm) in the ABAP Keyword Documentation
+  - [Business Events](https://help.sap.com/docs/abap-cloud/abap-rap/business-events) in the SAP Help Portal
+
+```abap
+"---- Syntax for the declaration part of a global RAP event handler class ----
+CLASS cl_event_handler DEFINITION PUBLIC FOR EVENTS OF some_bdef.
+  ...
+ENDCLASS.
+
+"---- Syntax for the declaration part of a local event handler class ---- 
+"---- in the CCIMP include of a RAP event handler class ----
+CLASS lhe_event DEFINITION INHERITING FROM cl_abap_behavior_event_handler.
+  ...
+ENDCLASS.
+
+"---- RAP event handler method definition ----
+"Notes: 
+"- Must be defined as instance methods in the private visibility section. 
+"- The input parameter par is an internal table of type TYPE TABLE FOR EVENT.
+"- This type includes the keys of RAP BO instances (and %param, if the event
+"  is specified with a parameter in the BDEF)
+"- The methods do not contain RAP response parameters.
+METHODS meth FOR ENTITY EVENT par FOR some_b.def~some_evt.
+
+"---- RAISE ENTITY EVENT statement in an ABP, e.g. the save_modified method ----
+"---- in managed scenarios 'with additional save' ----
+...
+CLASS lsc IMPLEMENTATION.
+  METHOD save_modified.
+   "Assumption: An event is specified for create operations in the BDEF as follows
+   "event created;
+   IF create-some_bdef IS NOT INITIAL.    
+     RAISE ENTITY EVENT some_bdef~created 
+        FROM VALUE #( FOR <cr> IN create-root ( %key = VALUE #( some_key = <cr>-some_key ) ) ).
+   ENDIF.
+
+   "Assumption: An event is specified for delete operations in the BDEF as follows
+   "event deleted parameter some_abstract_entity;
+   "The abstract entity has two parameters, for example, with which additional
+   "information can be passed.
+   IF delete-some_bdef IS NOT INITIAL.
+     RAISE ENTITY EVENT some_bdef~deleted
+       FROM VALUE #( FOR <del> IN delete-some_bdef (
+         %key   = VALUE #( some_key = <del>-some_key )
+         %param = VALUE #( par_a = '01'
+                           par_b = 'Item deleted' ) ) ).
+   ENDIF.
+  ENDMETHOD.
+ENDCLASS.
+```
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+### Additions to EML Statements in ABAP Behavior Pools
 
 -   There are a [special additions when using EML in behavior
     pools](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abeneml_in_abp.htm).
@@ -1644,6 +1708,7 @@ This cheat sheet is supported by different executable examples demonstrating var
 - Demo RAP scenario with a managed RAP BO, external numbering: [zcl_demo_abap_rap_ext_num_m](./src/zcl_demo_abap_rap_ext_num_m.clas.abap)
 - Demo RAP scenario with an unmanaged RAP BO, external numbering: [zcl_demo_abap_rap_ext_num_u](./src/zcl_demo_abap_rap_ext_num_u.clas.abap)
 - Demo RAP scenario ("RAP calculator") with a managed, draft-enabled RAP BO, late numbering [zcl_demo_abap_rap_draft_ln_m](./src/zcl_demo_abap_rap_draft_ln_m.clas.abap)
+- Demonstrating the local consumption of [RAP business events](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_entity_event_glosry.htm) in the context of a RAP demo scenario (managed RAP BO with managed [internal numbering](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_int_numbering_glosry.htm) and [additional save](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_add_save_glosry.htm)): [zcl_demo_abap_rap_m_as](./src/zcl_demo_abap_rap_m_as.clas.abap)
 
 > **💡 Note**<br>
 > - To reduce the complexity, the executable examples only focus on the technical side. ABAP classes play the role of a RAP BO consumer here.

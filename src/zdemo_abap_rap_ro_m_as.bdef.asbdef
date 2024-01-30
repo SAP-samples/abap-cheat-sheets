@@ -1,0 +1,21 @@
+managed with additional save with full data
+implementation in class zbp_demo_abap_rap_ro_m_as unique;
+strict ( 2 );
+
+define behavior for ZDEMO_ABAP_RAP_RO_M_AS alias root
+persistent table zdemo_abap_tabca
+lock master
+authorization master ( global )
+
+{
+  create;
+  update;
+  delete;
+  internal action calc;
+  event created;
+  event updated parameter zdemo_abap_abstract_ent;
+  event deleted parameter zdemo_abap_abstract_ent;
+  field ( numbering : managed, readonly : update ) id;
+  //determination det_save on save { field calc_result; }
+  determination det_modify on modify { field num1, num2, arithm_op; }
+}
