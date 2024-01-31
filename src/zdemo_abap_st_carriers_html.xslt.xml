@@ -5,7 +5,7 @@
    <ATTRIBUTES>
     <XSLTDESC>ZDEMO_ABAP_ST_CARRIERS_HTML</XSLTDESC>
     <LANGU>E</LANGU>
-    <DESCRIPT>Simple Transformation Demo</DESCRIPT>
+    <DESCRIPT>ST Demo</DESCRIPT>
    </ATTRIBUTES>
   </asx:values>
  </asx:abap>

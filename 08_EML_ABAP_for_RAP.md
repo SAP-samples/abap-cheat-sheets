@@ -218,7 +218,7 @@ Some of the syntax examples are commented out, just for the sake of showing more
 //(which restrict/enable further specifications)
 //You can specifiy one or more implementation classes (behavior pools/ABPs -> bp...) 
 //for the RAP BO (in some contexts, specifying no ABP is possible).
-//Specifying unique is mandatory (each operation can only implemented once).
+//Specifying unique is mandatory (each operation can only be implemented once).
 managed implementation in class bp_some_demo unique;
 //For managed RAP BOs, you can enable user-defined saving options (optional additions 
 //are available).
@@ -336,7 +336,7 @@ authorization master ( instance )
   //Draft actions
   //Available for draft-enabled RAP BOs, allow data modification on the draft table; are 
   //implicitly available; it is recommended for the draft actions to be specified explicitly; 
-  //for some of the methods the 'with additional implementation' is available
+  //for some of the methods, the 'with additional implementation' addition is available
   
   //Copies active instances to the draft table
   //draft action Edit;  
@@ -1305,7 +1305,7 @@ ENDIF.
 ### Raising RAP Business Events
 
 - [RAP business events](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_entity_event_glosry.htm) can be raised in ABAP behavior pools with [`RAISE ENTITY EVENT`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapraise_entity_event.htm) statements. 
-- Prerequisites:
+- The focus of the snippets is on the local consumption of RAP business events. Prerequisites:
   - `event` specifications are available in the BDEF (e.g. `... event some_evt; ...`). For more details, refer to the [BDL documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbdl_event.htm)
   - A [RAP event handler class](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_event_handler_class_glosry.htm) is available that is used to implement [RAP event handler methods](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_event_handler_meth_glosry.htm). 
     - Note that these methods are called asynchronously.
@@ -1334,10 +1334,10 @@ ENDCLASS.
 "- This type includes the keys of RAP BO instances (and %param, if the event
 "  is specified with a parameter in the BDEF)
 "- The methods do not contain RAP response parameters.
-METHODS meth FOR ENTITY EVENT par FOR some_b.def~some_evt.
+METHODS meth FOR ENTITY EVENT par FOR some_bdef~some_evt.
 
 "---- RAISE ENTITY EVENT statement in an ABP, e.g. the save_modified method ----
-"---- in managed scenarios 'with additional save' ----
+"---- in managed scenarios with additional save ----
 ...
 CLASS lsc IMPLEMENTATION.
   METHOD save_modified.
@@ -1713,7 +1713,7 @@ This cheat sheet is supported by different executable examples demonstrating var
 > **💡 Note**<br>
 > - To reduce the complexity, the executable examples only focus on the technical side. ABAP classes play the role of a RAP BO consumer here.
 > - The examples do not represent real life scenarios and are not suitable as role models for proper RAP scenarios. They rather focus on the technical side by giving an idea how the communication and data exchange between a RAP BO consumer and RAP BO provider can work. Additionally, the examples show how the methods for non-standard RAP BO operations might be self-implemented in an ABAP behavior pool.
-> - Due to the simplification, the examples do not fully meet the requirements of the [RAP BO contract](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenrap_bo_contract_glosry.htm) in many respects.
+> - Due to the simplification, the examples do not entirely meet all requirements of the [RAP BO contract](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenrap_bo_contract_glosry.htm) and do not represent semantic or best practice examples.
 > - You can check out the "RAP calculator" example using the preview version of an SAP Fiori Elements UI. See the comments in the class for more information.
 > - The steps to import and run the code are outlined [here](README.md#-getting-started-with-the-examples).
 > - [Disclaimer](README.md#%EF%B8%8F-disclaimer)

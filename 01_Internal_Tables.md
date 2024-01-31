@@ -410,9 +410,8 @@ SELECT * FROM zdemo_abap_fli INTO TABLE @FINAL(it_inline5).
 ## Filling and Copying Internal Tables
 
 You can use the ABAP keywords
-[`APPEND`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapappend.htm)
-and
 [`INSERT`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapinsert_itab.htm)
+and [`APPEND`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapappend.htm)
 to add lines to internal tables.
 
 <details>
@@ -449,6 +448,7 @@ to add lines to internal tables.
     -   Note: In the case of unique primary table keys, the table cannot have entries with duplicate
         keys. If a duplicate is inserted, the insertion fails and the
         system field `sy-subrc` is set to 4.
+- What to use? The recommendation is the `INSERT` statement. It covers all table and key types. Consider potential issues when you change table/key types, and you use `APPEND` in your code.         
 </details>
 <br>
 
@@ -879,9 +879,9 @@ The following code snippets include [`READ TABLE`](https://help.sap.com/doc/abap
     using `REFERENCE INTO`. In this case, no copying takes place. If you want to address the line, you must first [dereference](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendereferencing_operat_glosry.htm) the data reference. You cannot use the addition `TRANSPORTING`.
 
     ``` abap
-    READ TABLE itab REFERNCE INTO dref ...
+    READ TABLE itab REFERENCE INTO dref ...
 
-    READ TABLE itab REFERNCE INTO DATA(dref_inl) ...
+    READ TABLE itab REFERENCE INTO DATA(dref_inl) ...
     ```
 
 **Which to use then?** Since all syntax options provide the same

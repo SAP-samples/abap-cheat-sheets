@@ -1921,7 +1921,7 @@ DATA(conc_str1) = xco_cp=>strings( str_table )->join( `, ` )->value.
 "Concatenating a string table into a string; specifying a delimiter and
 "reversing the table order
 "c / b / a
-DATA(conc_str2) = xco_cp=>strings( str_table )->reverse(  )->join( ` / ` )->value.
+DATA(conc_str2) = xco_cp=>strings( str_table )->reverse( )->join( ` / ` )->value.
 
 "--------- Prepending and appending strings ---------
 DATA(name) = xco_cp=>string( `Max Mustermann` ).
@@ -1934,10 +1934,10 @@ DATA(title) = name->prepend( `Mr. ` )->value.
 
 "--------- Transforming to lowercase and uppercase ---------
 "ABAP
-DATA(to_upper) = xco_cp=>string( `abap` )->to_upper_case(  )->value.
+DATA(to_upper) = xco_cp=>string( `abap` )->to_upper_case( )->value.
 
 "hallo world
-DATA(to_lower) = xco_cp=>string( `HALLO WORLD` )->to_lower_case(  )->value.
+DATA(to_lower) = xco_cp=>string( `HALLO WORLD` )->to_lower_case( )->value.
 
 "--------- Checking if a string starts/ends with a specific string ---------
 DATA check TYPE string.

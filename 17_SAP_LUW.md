@@ -8,7 +8,8 @@
     - [Bundling Techniques](#bundling-techniques)
     - [Related ABAP Statements](#related-abap-statements)
   - [Concepts Related to the SAP LUW](#concepts-related-to-the-sap-luw)
-  - [Notes on the SAP LUW in ABAP Cloud and RAP](#notes-on-the-sap-luw-in-abap-cloud-and-rap)
+  - [The SAP LUW in ABAP Cloud and RAP](#the-sap-luw-in-abap-cloud-and-rap)
+  - [Controlled SAP LUW](#controlled-sap-luw)
   - [More Information](#more-information)
   - [Executable Example](#executable-example)
 
@@ -279,7 +280,7 @@ The following concepts are related to the SAP LUW to ensure transactional consis
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-## Notes on the SAP LUW in ABAP Cloud and RAP
+## The SAP LUW in ABAP Cloud and RAP
 
 A limited set of ABAP language features is available in ABAP Cloud ([restricted ABAP language version](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenrestricted_version_glosry.htm)). 
 The limitations include the fact that the above bundling techniques are not available. Note that the local update is enabled by default in ABAP Cloud. Find more information in this [blog](https://blogs.sap.com/2022/12/05/the-sap-luw-in-abap-cloud/).
@@ -291,6 +292,73 @@ There are RAP-specific [ABAP EML](https://help.sap.com/doc/abapdocu_latest_index
 - [`COMMIT ENTITIES`](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapcommit_entities.htm) implicitly triggers `COMMIT WORK`. Furthermore, `COMMIT ENTITIES` provides RAP-specific functionality with various additions. These EML statements implicitly enforce local updates with `COMMIT WORK`, or `COMMIT WORK AND WAIT` if the local update fails. Therefore, the update is either a local update or a synchronous update, but never an asynchronous update. 
 - [`ROLLBACK ENTITIES`](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abaprollback_entities.htm): Resets all changes of the current transaction and clears the transactional buffer. The statement triggers `ROLLBACK WORK`. 
 - Find more information in the [ABAP cheat sheet about EML](08_EML_ABAP_for_RAP.md).
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+## Controlled SAP LUW
+
+- The *controlled SAP LUW* is an enhancement to the SAP LUW concept. 
+- It introduces a check mechanism to detect violations of [transactional contracts](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentransactional_contract_glosry.htm) to guarantee transactional consistency. 
+- Such contracts specify which ABAP statements and operations are allowed and which are not allowed in a [transactional phase](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentr_phase_glosry.htm). 
+- In this way, applications can be made more robust and the SAP LUW can be made more tangible.
+- Violations that are detected result in a runtime error (or are logged).
+- There are mainly two transactional phases: *modify* and *save*.
+- In RAP, these two phases are set implicitly, and they are subdivided as follows (see more information in the EML cheat sheet and the RAP guide): 
+  - *modify* 
+    - [RAP interaction phase](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_int_phase_glosry.htm)
+    - [RAP early save phase](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenearly_rap_save_phase_glosry.htm)
+  - *save*
+    - [RAP late save phase](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenlate_rap_save_phase_glosry.htm)
+- Using the static methods `modify` and `save` of the `CL_ABAP_TX` class, you can activate the transactional phases explicitly. 
+- The controlled SAP LUW is automatically and implicitly supported by newer ABAP concepts such as RAP (i.e. the transactional phases are implicitly active when RAP handler methods are called), [background Processing Framework (bgPF)](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbgpf_glosry.htm), and local consumption of [RAP business events](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_entity_event_glosry.htm).
+- Furthermore, transactional contracts define where (i. e. in which transactional phase) a [classified API](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenclassified_api_glosry.htm), such as a method of a class, can be used. The classifications start with `IF_ABAP_TX_...`, for example, `IF_ABAP_TX_SAVE`, and are, in the case of methods, typcially included as types in the local types of the class ([CCDEF include](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenccdef_glosry.htm), *Class-Relevant Local Types* tab in ADT). The classifications detail out and restrict the scope of use, so as not to use a classified API in phases where not allowed. Follow the links below for more information.
+  - Example of a classified API: Open the class `CL_BCS_MAIL_MESSAGE` (which is used for sending emails). In ADT, go to the *Class-Relevant Local Types* tab, and find classifications for methods, for example, the `send_async` method. Calling this method in the *modify* transactional phase results in a violation. You can also get information about the transactional contract using the F2 information in ADT. In the case of the method mentioned, choose F2 on `send_async` (`... cl_bcs_mail_message=>create_instance( ... )->send_async( ). ...`) to view the transactional contract information.
+- Regarding the concrete restrictions and for more information, follow the links. 
+- Examples for violations, such as database modifications. They are only allowed in the *save* transactional phase because the data being processed in the *modify* phase may be inconsistent: 
+  - Database modification (e.g. `MODIFY dbtab FROM @row.`) performed when the *modify* transactional phase is active.
+  - Database modifcation in a [RAP handler method](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabp_handler_method_glosry.htm) implementation. Here, the *modify* transactional phase is active by default.  
+  - Database modifcation in a [RAP event handler method](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_event_handler_meth_glosry.htm) implementation when the *save* transactional phase has not been activated explicitly. Note: When RAP event handler methods are called, they are started in the *modify* transactional phase. Modifying a database right away there, without the activation of the *save* phase, means a violation.
+  - Calling a classified API in a phase where not allowed, such as `... cl_bcs_mail_message=>create_instance( ... )->send_async( ). ...` (classified with `IF_ABAP_TX_SAVE`) in the *modify* transactional phase.
+- More information:
+  - [Controlled SAP LUW](https://help.sap.com/docs/abap-cloud/abap-concepts/controlled-sap-luw) in the SAP Help Portal
+  - ABAP Keyword Documentation (Standard ABAP):    
+    - [Restrictions in Transactional Phases](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapinvalid_stmts_in_tx.htm)
+    - [API Classifications](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapapi_classification.htm)
+    - [Restrictions in RAP Handler and Saver Methods](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapinvalid_stmts_in_rap_methods.htm)
+    
+  
+Example using `CL_ABAP_TX`:
+
+```abap
+...
+
+"Activating the modify transactional phase
+cl_abap_tx=>modify( ).
+
+"The following database modification statement is not allowed in the
+"modify transactional phase. In certain contexts, e.g. in ABAP Cloud,
+"the runtime error BEHAVIOR_ILLEGAL_STMT_IN_CALL occurs.
+MODIFY zdemo_abap_carr FROM TABLE @( VALUE #(
+    ( carrid = 'XY'
+      carrname = 'XY Airlines'
+      currcode = 'EUR'
+      url =  'some_url' ) ) ).
+
+...
+
+"Activating the save transactional phase
+cl_abap_tx=>save( ).
+
+"In this phase, database modifications are allowed.
+MODIFY zdemo_abap_carr FROM TABLE @( VALUE #(
+    ( carrid = 'XY'
+      carrname = 'XY Airlines'
+      currcode = 'EUR'
+      url =  'some_url' ) ) ).
+...
+``` 
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## More Information
 - [The RAP Transactional Model and the SAP LUW](https://help.sap.com/docs/SAP_S4HANA_CLOUD/e5522a8a7b174979913c99268bc03f1a/ccda1094b0f845e28b88f9f50a68dfc4.html) (Development guide for the ABAP RESTful Application Programming Model)
