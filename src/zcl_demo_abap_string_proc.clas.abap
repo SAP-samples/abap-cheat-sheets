@@ -1983,5 +1983,259 @@ CLASS zcl_demo_abap_string_proc IMPLEMENTATION.
 
     out->write( data = str_tab_reg_find name = `str_tab_reg_find` ).
 
+***********************************************************************
+
+    out->write( zcl_demo_abap_aux=>heading( `More String Functions` ) ).
+    out->write( `29) Checking the Similarity of Strings` ).
+    out->write( |\n| ).
+
+    DATA(str_to_check) = `abap`.
+    DATA(dist1) = distance( val1 = str_to_check val2 = `abap` ).
+    DATA(dist2) = distance( val1 = str_to_check val2 = `axbap` ).
+    DATA(dist3) = distance( val1 = str_to_check val2 = `yabyyapy` ).
+    DATA(dist4) = distance( val1 = str_to_check val2 = `zabapzzzzzzzzzzzz` max = 5 ).
+
+    out->write( data = dist1 name = `dist1` ).
+    out->write( |\n| ).
+    out->write( data = dist2 name = `dist2` ).
+    out->write( |\n| ).
+    out->write( data = dist3 name = `dist3` ).
+    out->write( |\n| ).
+    out->write( data = dist4 name = `dist4` ).
+    out->write( |\n| ).
+
+    "If the value of max is 0 or less, an exception is raised.
+    TRY.
+        DATA(dist5) = distance( val1 = str_to_check val2 = `#ab#ap#` max = 0 ).
+      CATCH cx_sy_strg_par_val INTO DATA(dist_err).
+        out->write( data = dist_err->get_text( ) name = `dist_err->get_text( )` ).
+    ENDTRY.
+
+***********************************************************************
+
+    out->write( zcl_demo_abap_aux=>heading( `30) Repeating Strings` ) ).
+
+    DATA(repeat1) = repeat( val = `abap` occ = 5 ).
+    DATA(repeat2) = |#{ repeat( val = ` ` occ = 10 ) }#|.
+    DATA(repeat3) = COND #( WHEN repeat( val = `a` occ = 0 ) = `` THEN `Y` ELSE `Z` ).
+
+    out->write( data = repeat1 name = `repeat1` ).
+    out->write( |\n| ).
+    out->write( data = repeat2 name = `repeat2` ).
+    out->write( |\n| ).
+    out->write( data = repeat3 name = `repeat2` ).
+    out->write( |\n| ).
+
+    "If occ has a negative value, an exception is raised.
+    TRY.
+        DATA(repeat4) = repeat( val = `X` occ = -3 ).
+      CATCH cx_sy_strg_par_val INTO DATA(rep_err).
+        out->write( data = rep_err->get_text( ) name = `rep_err->get_text( )` ).
+    ENDTRY.
+
+***********************************************************************
+
+    out->write( zcl_demo_abap_aux=>heading( `31) Returning the Smallest/Biggest of a Set of Character-Like Arguments` ) ).
+
+    DATA(min) =  cmin( val1 = `zzzzzzz`
+                   val2 = `zzazzzzzzzz`
+                   val3 = `zzzzabc` ).
+
+    DATA(max) =  cmax( val1 = `abcdef`
+                       val2 = `aaghij`
+                       val3 = `aaaaklmn`
+                       val4 = `aaaaaaopqrs`
+                       val5 = `aaaaaaaaaatuvwxy`
+                       val6 = `aaaaaaaaaaaaaz` ).
+
+    out->write( data = min name = `min` ).
+    out->write( |\n| ).
+    out->write( data = max name = `max` ).
+
+***********************************************************************
+
+    out->write( zcl_demo_abap_aux=>heading( `32) Escaping Special Characters` ) ).
+
+    "Context: URLs
+    DATA(esc1) = escape( val    = '...test: 5@8...'
+                         format = cl_abap_format=>e_url_full ).
+
+    "Context: JSON
+    DATA(esc2) = escape( val    = 'some "test" json \ with backslash and double quotes'
+                         format = cl_abap_format=>e_json_string ).
+
+    "Context: String templates
+    DATA(esc3) = escape( val    = 'Special characters in string templates: |, \, {, }'
+                         format = cl_abap_format=>e_string_tpl ).
+
+    out->write( data = esc1 name = `esc1` ).
+    out->write( |\n| ).
+    out->write( data = esc2 name = `esc2` ).
+    out->write( |\n| ).
+    out->write( data = esc3 name = `esc3` ).
+    out->write( |\n| ).
+
+    "Invalid value for the format parameter
+    TRY.
+        DATA(esc4) = escape( val    = 'This will raise an exception due to an invalid format value.'
+                             format = 123 ).
+      CATCH cx_sy_strg_par_val INTO DATA(esc_err).
+        out->write( data = esc_err->get_text( ) name = `esc_err->get_text( )` ).
+    ENDTRY.
+
+***********************************************************************
+
+    out->write( zcl_demo_abap_aux=>heading( `33) Excursion: String Processing Using the XCO Library` ) ).
+
+    "--------- Extracting a substring from a string ---------
+    DATA(abc) = `abcdefghijklmnopqrstuvwxyz`.
+
+    "Creating an encapsulation of a string using XCO
+    DATA(str) = xco_cp=>string( abc ).
+
+    "Using the FROM and TO methods, you can determine
+    "the character position. Note that the value includes the
+    "character at the position specified.
+    "The character index pattern for the example string above
+    "is (the string has 26 characters in total):
+    "a = 1, b = 2, c = 3 ... z = 26
+    "a = -26, b = -25, c = -24 ... z = -1
+    "Providing a value that is out of bounds means that
+    "the first (or the last) character of the string is used
+    "by default.
+    "Note: When combining FROM and TO, e.g. with method
+    "chaining ...->from( ...)->to( ... ), note that another
+    "instance is created with the first 'from', and another
+    "character index pattern is created based on the new
+    "and adjusted string value.
+
+    DATA(sub1) = str->from( 2 )->value.
+    DATA(sub2) = str->from( -23 )->value.
+    DATA(sub3) = str->from( -5 )->value.
+    DATA(sub4) = str->to( 5 )->value.
+    DATA(sub5) = str->to( -25 )->value.
+    DATA(sub6) = str->from( 2 )->to( 6 )->value.
+    DATA(sub7) = str->to( -10 )->from( 4 )->value.
+    "Values that are out of bounds.
+    DATA(sub8) = str->from( 0 )->to( 100 )->value.
+
+    out->write( data = sub1 name = `sub1` ).
+    out->write( |\n| ).
+    out->write( data = sub2 name = `sub2` ).
+    out->write( |\n| ).
+    out->write( data = sub3 name = `sub3` ).
+    out->write( |\n| ).
+    out->write( data = sub4 name = `sub4` ).
+    out->write( |\n| ).
+    out->write( data = sub5 name = `sub5` ).
+    out->write( |\n| ).
+    out->write( data = sub6 name = `sub6` ).
+    out->write( |\n| ).
+    out->write( data = sub7 name = `sub7` ).
+    out->write( |\n| ).
+    out->write( data = sub8 name = `sub8` ).
+    out->write( |\n| ).
+
+    "--------- Splitting and joining ---------
+
+    "Splitting a string into a string table
+    DATA(str_table) = xco_cp=>string( `Hello.World.ABAP` )->split( `.` )->value.
+
+    "Concatenating a string table into a string; specifying a delimiter
+    str_table = VALUE #( ( `a` ) ( `b` ) ( `c` ) ).
+
+    DATA(conc_str1) = xco_cp=>strings( str_table )->join( `, ` )->value.
+
+    "Concatenating a string table into a string; specifying a delimiter and
+    "reversing the table order
+    DATA(conc_str2) = xco_cp=>strings( str_table )->reverse( )->join( ` / ` )->value.
+
+    out->write( data = str_table name = `str_table` ).
+    out->write( |\n| ).
+    out->write( data = conc_str1 name = `conc_str1` ).
+    out->write( |\n| ).
+    out->write( data = conc_str2 name = `conc_str2` ).
+    out->write( |\n| ).
+
+    "--------- Prepending and appending strings ---------
+    DATA(name) = xco_cp=>string( `Max Mustermann` ).
+    DATA(address) = name->append( `, Some Street 1, 12345 Someplace` )->value.
+    DATA(title) = name->prepend( `Mr. ` )->value.
+
+    out->write( data = address name = `address` ).
+    out->write( |\n| ).
+    out->write( data = title name = `title` ).
+    out->write( |\n| ).
+
+    "--------- Transforming to lowercase and uppercase ---------
+    DATA(to_upper) = xco_cp=>string( `abap` )->to_upper_case( )->value.
+    DATA(to_lower) = xco_cp=>string( `HALLO WORLD` )->to_lower_case( )->value.
+
+    out->write( data = to_upper name = `to_upper` ).
+    out->write( |\n| ).
+    out->write( data = to_lower name = `to_lower` ).
+    out->write( |\n| ).
+
+    "--------- Checking if a string starts/ends with a specific string ---------
+    DATA check TYPE string.
+    DATA(str_check) = xco_cp=>string( `Max Mustermann` ).
+
+    "yes
+    IF str_check->ends_with( `mann` ).
+      check = `yes`.
+    ELSE.
+      check = `no`.
+    ENDIF.
+
+    out->write( data = check name = `check` ).
+    out->write( |\n| ).
+
+    "no
+    IF str_check->starts_with( `John` ).
+      check = `yes`.
+    ELSE.
+      check = `no`.
+    ENDIF.
+
+    out->write( data = check name = `check` ).
+    out->write( |\n| ).
+
+    "--------- Converting strings to xstrings using a codepage ---------
+    DATA(xstr) = xco_cp=>string( `Some string` )->as_xstring( xco_cp_character=>code_page->utf_8 )->value.
+
+    out->write( data = xstr name = `xstr` ).
+    out->write( |\n| ).
+
+    "--------- Camel case compositions and decompositions with split and join operations ---------
+    "Pascal case is also possible
+    DATA(comp) = xco_cp=>string( `some_value` )->split( `_` )->compose( xco_cp_string=>composition->camel_case )->value.
+    DATA(decomp) = xco_cp=>string( `someValue` )->decompose( xco_cp_string=>decomposition->camel_case )->join( `_` )->value.
+
+    out->write( data = comp name = `comp` ).
+    out->write( |\n| ).
+    out->write( data = decomp name = `decomp` ).
+    out->write( |\n| ).
+
+    "--------- Matching string against regular expression ---------
+    DATA match TYPE string.
+
+    "yes
+    IF xco_cp=>string( ` 1` )->matches( `\s\d` ).
+      match = 'yes'.
+    ELSE.
+      match = 'no'.
+    ENDIF.
+
+    out->write( data = match name = `match` ).
+    out->write( |\n| ).
+
+    "no
+    IF xco_cp=>string( ` X` )->matches( `\s\d` ).
+      match = 'yes'.
+    ELSE.
+      match = 'no'.
+    ENDIF.
+
+    out->write( data = match name = `match` ).
   ENDMETHOD.
 ENDCLASS.

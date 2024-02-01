@@ -1440,6 +1440,15 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
 
     ENDLOOP.
 
+    "Note: For the static variant of the ASSIGN statement, i.e. if the memory area
+    "to be assigned following the ASSIGN keyword is statically specified, the addition
+    "ELSE UNASSIGN is implicitly set and cannot be used explicitly.
+    DATA(hallo) = `Hallo world`.
+    ASSIGN ('HALLO') TO FIELD-SYMBOL(<eu>) ELSE UNASSIGN.
+    ASSERT sy-subrc = 0 AND <eu> IS ASSIGNED.
+    ASSIGN ('DOES_NOT_EXIST') TO <eu> ELSE UNASSIGN.
+    ASSERT sy-subrc = 4 AND <eu> IS NOT ASSIGNED.
+
 **********************************************************************
 
     out->write( zcl_demo_abap_aux=>heading( `26) Dynamic ASSIGN Statements (6) - Type Casting` ) ).
@@ -2315,7 +2324,7 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
 
     "Creating a structure to be inserted into the database table
     DATA(table) = 'ZDEMO_ABAP_CARR'.
-    Data(wherecl) = 'CARRID = ''ZZ'''.
+    DATA(wherecl) = 'CARRID = ''ZZ'''.
     SELECT SINGLE *
           FROM (table)
           INTO NEW @DATA(refstruc).
@@ -2474,7 +2483,7 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
 
 **********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `52) Dynamic Invoke` ) ).
+    out->write( zcl_demo_abap_aux=>heading( `52) Dynamic Invoke (1)` ) ).
 
     "In the example, both class and method are determined at runtime for
     "the method call. The suitable parameter table is filled in the
@@ -2496,6 +2505,7 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
     out->write( `Result of method call (text stored in a variable):` ).
     out->write( |\n| ).
     out->write( data = lcl_det_at_runtime=>dyn_meth_call_result name = `lcl_det_at_runtime=>dyn_meth_call_result` ).
+    out->write( |\n| ).
 
     "Further method calls
     "The class and method to be used is determined here by just providing
@@ -2516,6 +2526,44 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
     CALL METHOD (class)=>fill_string.
 
     out->write( data = lcl_det_at_runtime=>dyn_meth_call_result name = `lcl_det_at_runtime=>dyn_meth_call_result` ).
+
+
+**********************************************************************
+
+    out->write( zcl_demo_abap_aux=>heading( `52b) Dynamic Invoke (2)` ) ).
+    "Another example for dynamic invoke, using an instance method.
+
+    "Example that uses the PARAMETER-TABLE addition
+    "Creating an instance by specifying the type statically
+    "An example class of the cheat sheet repository is used.
+    DATA(oref1) = NEW zcl_demo_abap_objects( ).
+    "Calling an instance method
+    "The method multiplies an integer by 3.
+    "The calculation result is returned.
+    DATA(result) = oref1->triple( i_op = 2 ).
+
+    out->write( data = result name = `result` ).
+    out->write( |\n| ).
+
+    "Dynamic equivalent
+    "Creating an instance of a class by specifying the type
+    "dynamically
+    DATA oref2 TYPE REF TO object.
+    CREATE OBJECT oref2 TYPE ('ZCL_DEMO_ABAP_OBJECTS').
+
+    "Creating parameter table
+    DATA(ptab) = VALUE abap_parmbind_tab( ( name  = 'I_OP'
+                                            kind  = cl_abap_objectdescr=>exporting
+                                            value = NEW i( 3 ) )
+                                          ( name  = 'R_TRIPLE'
+                                            kind  = cl_abap_objectdescr=>returning
+                                            value = NEW i( ) ) ).
+
+    "Dynamic method call and specifying a parameter table
+    CALL METHOD oref2->('TRIPLE') PARAMETER-TABLE ptab.
+    result = ptab[ name = 'R_TRIPLE' ]-('VALUE')->*.
+
+    out->write( data = result name = `result` ).
 
 **********************************************************************
 

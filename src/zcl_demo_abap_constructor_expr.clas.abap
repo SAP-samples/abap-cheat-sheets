@@ -46,7 +46,7 @@ CLASS zcl_demo_abap_constructor_expr DEFINITION
   PUBLIC SECTION.
     INTERFACES: if_oo_adt_classrun.
 
-protected section.
+  PROTECTED SECTION.
   PRIVATE SECTION.
     TYPES: BEGIN OF line1,
              col1 TYPE i,
@@ -97,7 +97,7 @@ protected section.
       tab2 TYPE TABLE OF s2_type WITH EMPTY KEY,
       tab3 TYPE TABLE OF s2_type WITH EMPTY KEY,
       tab4 TYPE SORTED TABLE OF s2_type WITH NON-UNIQUE KEY comp3,
-      nl TYPE string..
+      nl   TYPE string..
 
     CLASS-METHODS:
       fill_deep_structures,
@@ -107,7 +107,7 @@ ENDCLASS.
 
 
 
-CLASS ZCL_DEMO_ABAP_CONSTRUCTOR_EXPR IMPLEMENTATION.
+CLASS zcl_demo_abap_constructor_expr IMPLEMENTATION.
 
 
   METHOD fill_deep_structures.
@@ -225,7 +225,7 @@ CLASS ZCL_DEMO_ABAP_CONSTRUCTOR_EXPR IMPLEMENTATION.
 
 **********************************************************************
 
-out->write( zcl_demo_abap_aux=>heading( `4) Internal tables: Declaration and population` ) ).
+    out->write( zcl_demo_abap_aux=>heading( `4) Internal tables: Declaration and population` ) ).
 
     "The example demonstrates the declaration of an internal table. The
     "internal table is then filled using a constructor expression with
@@ -328,12 +328,55 @@ out->write( zcl_demo_abap_aux=>heading( `4) Internal tables: Declaration and pop
 
 **********************************************************************
 
+    out->write( zcl_demo_abap_aux=>heading( `9) Short form for internal tables with structured line types` ) ).
+
+    TYPES: BEGIN OF stype,
+             a TYPE i,
+             b TYPE c LENGTH 3,
+             c TYPE string,
+           END OF stype.
+    TYPES tabtype TYPE TABLE OF stype WITH EMPTY KEY.
+
+    DATA(itable) = VALUE tabtype( b = 'aaa'           ( a = 1 c = `xxx` )
+                                                      ( a = 2 c = `yyy` )
+                                  b = 'bbb' c = `zzz` ( a = 3 )
+                                                      ( a = 4 ) ).
+
+    out->write( data = itable name = `itable` ).
+    out->write( |\n| ).
+
+    "This option can be handy in various contexts, for example, in a
+    "ranges table.
+    TYPES int_tab_type TYPE TABLE OF i WITH EMPTY KEY.
+    "Populating an integer table with values from 1 to 20 (see iteration
+    "expressions with FOR further down)
+    DATA(inttab) = VALUE int_tab_type( FOR x = 1 WHILE x <= 20 ( x ) ).
+
+    DATA rangetab TYPE RANGE OF i.
+
+    "Populating a range table using VALUE and the short form
+    rangetab = VALUE #( sign   = 'I'
+                        option = 'BT' ( low = 1  high = 3 )
+                                      ( low = 6  high = 8 )
+                                      ( low = 12 high = 15 )
+                        option = 'GE' ( low = 18 ) ).
+
+    "Using a SELECT statement to retrieve internal table content
+    "based on the range table specifications
+    SELECT * FROM @inttab AS tab
+        WHERE table_line IN @rangetab
+        INTO TABLE @DATA(result_tab).
+
+    out->write( data = result_tab name = `result_tab` ).
+
+**********************************************************************
+
     out->write( zcl_demo_abap_aux=>heading( `Excursions: VALUE operator in use with ABAP statements and ABAP SQL statements` ) ).
 
     "The following examples use ABAP and ABAP SQL statements in which table lines
     "are constructed inline using the VALUE operator.
 
-    out->write( `9) Modifying internal table from a structure created inline` && |\n\n| ).
+    out->write( `10) Modifying internal table from a structure created inline` && |\n\n| ).
 
     MODIFY TABLE itab2 FROM VALUE #( num   = 7 char1 = 'hhh' char2 = 'stu' ).
 
@@ -341,7 +384,7 @@ out->write( zcl_demo_abap_aux=>heading( `4) Internal tables: Declaration and pop
 
 **********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `10) Inserting a table line that is created inline into an internal table` ) ).
+    out->write( zcl_demo_abap_aux=>heading( `11) Inserting a table line that is created inline into an internal table` ) ).
 
     INSERT VALUE #( num = 8 char1 = 'iii'  char2 = 'vwx' ) INTO TABLE itab2.
 
@@ -349,7 +392,7 @@ out->write( zcl_demo_abap_aux=>heading( `4) Internal tables: Declaration and pop
 
 **********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `11) Deleting a table entry based on a line created inline` ) ).
+    out->write( zcl_demo_abap_aux=>heading( `12) Deleting a table entry based on a line created inline` ) ).
 
     DELETE TABLE itab2 FROM VALUE #( num = 3 ).
 
@@ -357,7 +400,7 @@ out->write( zcl_demo_abap_aux=>heading( `4) Internal tables: Declaration and pop
 
 **********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `12) Modifying a database table based on an internal table created inline` ) ).
+    out->write( zcl_demo_abap_aux=>heading( `13) Modifying a database table based on an internal table created inline` ) ).
 
     "Deleting demo database table entries for the following example
     DELETE FROM zdemo_abap_carr.
@@ -384,7 +427,7 @@ out->write( zcl_demo_abap_aux=>heading( `4) Internal tables: Declaration and pop
 **********************************************************************
 
     out->write( zcl_demo_abap_aux=>heading( `Excursion: Deep structures and tables` ) ).
-    out->write( |13) Deep structure\n| ).
+    out->write( |14) Deep structure\n| ).
 
     "The example demonstrates the use of constructor expressions with
     "VALUE in the context of a deep structure. Here, a structure is declared
@@ -408,7 +451,7 @@ out->write( zcl_demo_abap_aux=>heading( `4) Internal tables: Declaration and pop
 
 **********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `14) Deep internal table` ) ).
+    out->write( zcl_demo_abap_aux=>heading( `15) Deep internal table` ) ).
 
     "A deep internal table is created. Also here, nested VALUE
     "expressions are demonstrated.
@@ -436,7 +479,7 @@ out->write( zcl_demo_abap_aux=>heading( `4) Internal tables: Declaration and pop
     "with values to work with
     fill_struc_and_tab( ).
 
-    out->write( `15) Original structure and table content` && |\n\n| ).
+    out->write( `16) Original structure and table content` && |\n\n| ).
 
     "Displaying the original structures and tables that are filled in the
     "course of a method call. The structures and tables are filled anew
@@ -453,7 +496,7 @@ out->write( zcl_demo_abap_aux=>heading( `4) Internal tables: Declaration and pop
 
 **********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `16) CORRESPONDING without addition` ) ).
+    out->write( zcl_demo_abap_aux=>heading( `17) CORRESPONDING without addition` ) ).
 
     "The target structure and table have a different type but identically
     "named components. The identically named components are filled. Note
@@ -472,7 +515,7 @@ out->write( zcl_demo_abap_aux=>heading( `4) Internal tables: Declaration and pop
 
 **********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `17) BASE addition for keeping original content` ) ).
+    out->write( zcl_demo_abap_aux=>heading( `18) BASE addition for keeping original content` ) ).
 
     "The BASE addition keeps the original content. Structure: The non-
     "identical component name retains its value. Internal table: Existing
@@ -490,7 +533,7 @@ out->write( zcl_demo_abap_aux=>heading( `4) Internal tables: Declaration and pop
 
 **********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `18) MAPPING/EXCEPT additions` ) ).
+    out->write( zcl_demo_abap_aux=>heading( `19) MAPPING/EXCEPT additions` ) ).
 
     "The example demonstrates the additions MAPPING and EXCEPT. MAPPING:
     "One component of the target structure is assigned the value of a
@@ -512,7 +555,7 @@ out->write( zcl_demo_abap_aux=>heading( `4) Internal tables: Declaration and pop
     out->write( zcl_demo_abap_aux=>heading( `CORRESPONDING: Demonstrating various` &&
     ` additions using deep structures` ) ).
 
-    out->write( `19) Original content of deep structures` && |\n\n| ).
+    out->write( `20) Original content of deep structures` && |\n\n| ).
 
     "Displaying the original deep structures and tables that are filled in
     "the course of a method call. The deep structures and tables are filled
@@ -529,7 +572,7 @@ out->write( zcl_demo_abap_aux=>heading( `4) Internal tables: Declaration and pop
 
 **********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `20) CORRESPONDING without addition` ) ).
+    out->write( zcl_demo_abap_aux=>heading( `21) CORRESPONDING without addition` ) ).
 
     "CORRESPONDING operator without addition
     "Existing contents of identically named components are replaced.
@@ -552,7 +595,7 @@ out->write( zcl_demo_abap_aux=>heading( `4) Internal tables: Declaration and pop
 
 **********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `21) DEEP addition` ) ).
+    out->write( zcl_demo_abap_aux=>heading( `22) DEEP addition` ) ).
 
     "CORRESPONDING operator with the addition DEEP
     "Existing contents of identically named components are replaced.
@@ -575,7 +618,7 @@ out->write( zcl_demo_abap_aux=>heading( `4) Internal tables: Declaration and pop
 
 **********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `22) BASE addition` ) ).
+    out->write( zcl_demo_abap_aux=>heading( `23) BASE addition` ) ).
 
     "CORRESPONDING operator with the addition BASE
     "Existing contents of identically named components are replaced.
@@ -601,7 +644,7 @@ out->write( zcl_demo_abap_aux=>heading( `4) Internal tables: Declaration and pop
 
 **********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `23) DEEP BASE addition` ) ).
+    out->write( zcl_demo_abap_aux=>heading( `24) DEEP BASE addition` ) ).
 
     "CORRESPONDING operator with the additions DEEP BASE
     "Existing contents of identically named components are replaced.
@@ -625,7 +668,7 @@ out->write( zcl_demo_abap_aux=>heading( `4) Internal tables: Declaration and pop
 
 **********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `24) APPENDING addition` ) ).
+    out->write( zcl_demo_abap_aux=>heading( `25) APPENDING addition` ) ).
 
     "CORRESPONDING operator with the addition APPENDING
     "Existing contents of identically named components are replaced.
@@ -651,7 +694,7 @@ out->write( zcl_demo_abap_aux=>heading( `4) Internal tables: Declaration and pop
 
 **********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `25) DEEP APPENDING` ) ).
+    out->write( zcl_demo_abap_aux=>heading( `26) DEEP APPENDING` ) ).
 
     "CORRESPONDING operator with the additions DEEP APPENDING
     "Existing contents of identically named components are replaced.
@@ -677,7 +720,7 @@ out->write( zcl_demo_abap_aux=>heading( `4) Internal tables: Declaration and pop
 **********************************************************************
 
     out->write( zcl_demo_abap_aux=>heading( `NEW` ) ).
-    out->write( `26) Creating Anonymous Data Objects` && |\n\n| ).
+    out->write( `27) Creating Anonymous Data Objects` && |\n\n| ).
 
     "The examples show the creation of anonymous data objects.
     "First, data reference variables are declared using a DATA statement.
@@ -740,7 +783,7 @@ out->write( zcl_demo_abap_aux=>heading( `4) Internal tables: Declaration and pop
 
 **********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `27) Creating Instances of Classes` ) ).
+    out->write( zcl_demo_abap_aux=>heading( `28) Creating Instances of Classes` ) ).
 
     "The example demonstrates the creation of instances of classes.
     "First, an object reference variable is declared with a DATA statement.
@@ -784,7 +827,7 @@ out->write( zcl_demo_abap_aux=>heading( `4) Internal tables: Declaration and pop
 
 **********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `28) CONV` ) ).
+    out->write( zcl_demo_abap_aux=>heading( `29) CONV` ) ).
 
     "The examples show the effect of the CONV operator.
     "A variable of type i is declared and assigned a value. Then,
@@ -843,75 +886,91 @@ out->write( zcl_demo_abap_aux=>heading( `4) Internal tables: Declaration and pop
       out->write( `txt is not equal to converted str.` ).
     ENDIF.
 
-**********************************************************************
+    "Example with internal table types
+    TYPES inttab_type TYPE TABLE OF i WITH EMPTY KEY.
+    DATA int_itab TYPE SORTED TABLE OF i WITH NON-UNIQUE DEFAULT KEY.
+    FIELD-SYMBOLS <it> TYPE inttab_type.
+    int_itab = VALUE #( ( 1 ) ( 2 ) ( 3 ) ).
 
-    out->write( zcl_demo_abap_aux=>heading( `29) EXACT` ) ).
+    "The following assignment is not possible due to incompatible types.
+    "The internal table has the same line type, but it has a different
+    "table type and key.
+    "ASSIGN itab TO <fs>.
 
-    "The examples show the effect of the EXACT operator that enforces either
-    "a lossless assignment or a lossless calculation.
-    "1) Demonstrates data loss when converting to a data object that expects
-    "only a single character.
-    "2) Demonstrates an impossible lossless calculation. A rounding is
-    "necessary in this case.
-    "3) The example compares the effect of the EXACT and CONV operator.
-
-    "Example 1
-    TRY.
-        DATA(ex1) = EXACT abap_bool( 'XY' ).
-      CATCH cx_sy_conversion_data_loss INTO DATA(e1).
-        DATA(ex2) = e1->value.
-        DATA(t1) = e1->get_text( ).
-    ENDTRY.
-
-    "Example 2
-    TRY.
-        DATA(ex3) = EXACT decfloat34( 1 / 3 ).
-      CATCH cx_sy_conversion_rounding INTO DATA(e2).
-        DATA(ex4) = e2->value.
-        DATA(t2) = e2->get_text( ).
-    ENDTRY.
-
-    "Example 3
-    "Comparing the effect of CONV and EXACT
-    TYPES numtext TYPE n LENGTH 20.
-
-    TRY.
-        DATA(ex5) = EXACT numtext( '2 Apples + 5 Oranges' ).
-      CATCH cx_sy_conversion_error INTO DATA(e3).
-        DATA(t3) = e3->get_text( ).
-    ENDTRY.
-
-    DATA(conv_comp) = CONV numtext( '2 Apples + 5 Oranges' ).
-
-    IF ex1 IS INITIAL.
-      out->write( |ex2: "{ ex2 }"; t1: "{ t1 }"| ).
-    ELSE.
-      out->write( ex1 ).
-    ENDIF.
-
-    out->write( |\n| ).
-
-    IF ex3 IS INITIAL.
-      out->write( |ex4: "{ ex4 }"; t2: "{ t2 }"| ).
-    ELSE.
-      out->write( data = ex3 name = `ex3` ).
-    ENDIF.
+    "Using CONV to convert the internal table to the required table type.
+    DATA(conv_itab) = CONV inttab_type( int_itab ).
+    ASSIGN conv_itab TO <it>.
 
     out->write( |\n| ).
     out->write( |\n| ).
-
-    IF ex5 IS INITIAL.
-      out->write( data = t3 name = `t3` ).
-    ELSE.
-      out->write( data = ex5 name = `ex5` ).
-    ENDIF.
-
-    out->write( |\n| ).
-    out->write( data = conv_comp name = `conv_comp` ).
+    out->write( data = <it> name = `<it>` ).
 
 **********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `30) REF` ) ).
+    out->write( zcl_demo_abap_aux=>heading( `30) Constructing Data Objects with the CONV Operator` ) ).
+
+    DATA(decnum1) = CONV decfloat34( '0.4' ).
+
+    "Instead of
+    DATA decnum2 TYPE decfloat34 VALUE '0.4'.
+    "or
+    DATA decnum3 TYPE decfloat34.
+    decnum3 = '0.4'.
+
+    out->write( `No output for this section. See the code.` ).
+
+**********************************************************************
+
+    out->write( zcl_demo_abap_aux=>heading( `31) EXACT` ) ).
+
+    "-------------- Lossless assignments -------------
+
+    "Note: An assignment is made in accordance with conversion rules. Check
+    "the ABAP Keyword Documentation for these rules. An assignment is only
+    "made if no values are lost. Otherwise, an error occurs. Either it is
+    "detected by static code checks or at runtime raising a catchable exception.
+    TYPES clen3 TYPE c LENGTH 3.
+    DATA(as1) = EXACT clen3( abap_true ).
+    DATA(as2) = EXACT clen3( 'XY' ).
+    "DATA(as3) = EXACT clen3( 'abcd' ).
+
+    out->write( data = as1 name = `as1` ).
+    out->write( |\n| ).
+    out->write( data = as2 name = `as2` ).
+    out->write( |\n| ).
+
+
+    "Catching exception
+    TRY.
+        DATA(as4) = EXACT clen3( 'abcd' ).
+        out->write( data = as4 name = `as4` ).
+      CATCH cx_sy_conversion_data_loss INTO DATA(dl_err).
+        out->write( data = dl_err->get_text( ) name = `dl_err->get_text( )` ).
+    ENDTRY.
+    out->write( |\n| ).
+
+    "-------------- Lossless calculations -------------
+
+    "The first statement works, whereas the second statement raises an exception.
+    "A rounding to two decimal places is required.
+    TYPES packednum TYPE p LENGTH 8 DECIMALS 2.
+    DATA(calc1) = EXACT packednum( 1 / 4 ).
+    "DATA(calc2) = EXACT packednum( 1 / 3 ).
+
+    out->write( data = calc1 name = `calc1` ).
+    out->write( |\n| ).
+
+    "Catching exceptions when rounding in lossless calculations
+    TRY.
+        DATA(calc3) = EXACT packednum( 1 / 3 ).
+        out->write( data = calc3 name = `calc3` ).
+      CATCH cx_sy_conversion_rounding INTO DATA(lc_err).
+        out->write( data = lc_err->get_text( ) name = `lc_err->get_text( )` ).
+    ENDTRY.
+
+**********************************************************************
+
+    out->write( zcl_demo_abap_aux=>heading( `32) REF` ) ).
 
     "The example includes the declaration of a data object and some data
     "reference variables. One data reference variable is typed with a
@@ -956,7 +1015,7 @@ out->write( zcl_demo_abap_aux=>heading( `4) Internal tables: Declaration and pop
 
 **********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `31) CAST` ) ).
+    out->write( zcl_demo_abap_aux=>heading( `33) CAST` ) ).
 
     "The example demonstrates the CAST operator in the context of Run Time
     "Type Identification (RTTI).
@@ -1009,35 +1068,74 @@ out->write( zcl_demo_abap_aux=>heading( `4) Internal tables: Declaration and pop
 
 **********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `32) COND` ) ).
+    out->write( zcl_demo_abap_aux=>heading( `34) COND` ) ).
 
-    "The example demonstrates the use of the COND operator. The syntax
-    "includes several WHEN and THEN expressions.
-    "The example returns a string based on the current time.
+    DATA(day_or_night) = COND #( WHEN cl_abap_context_info=>get_system_time( ) BETWEEN '050000' AND '220000'
+                                 THEN `day`
+                                 ELSE `night` ).
 
-    DATA(syst_time) = cl_abap_context_info=>get_system_time( ).
+    out->write( data = day_or_night name = `day_or_night` ).
+    out->write( |\n| ).
 
-    DATA(greets) =
-      COND #( WHEN syst_time BETWEEN '050001' AND '120000'
-              THEN |It's { syst_time TIME = ISO }. | &&
-                   |Good morning, { sy-uname }.|
-              WHEN syst_time BETWEEN '120001' AND '170000'
-              THEN |It's { syst_time TIME = ISO }. | &&
-                   |Good afternoon, { sy-uname }.|
-              WHEN syst_time BETWEEN '170001' AND '210000'
-              THEN |It's { syst_time TIME = ISO }. | &&
-                   |Good evening, { sy-uname }.|
-              WHEN syst_time BETWEEN '210001' AND '050000'
-              THEN |It's { syst_time TIME = ISO }. | &&
-                   |Good night, { sy-uname }.|
-              ELSE |Hallo, { sy-uname }.|
-             ).
+    "A constructor expression as above instead of, for example, an IF statement as follows.
+    IF cl_abap_context_info=>get_system_time( ) BETWEEN '050000' AND '220000'.
+      day_or_night = `day`.
+    ELSE.
+      day_or_night = `night`.
+    ENDIF.
 
-    out->write( data = greets name = `greets` ).
+    out->write( data = day_or_night name = `day_or_night` ).
+    out->write( |\n| ).
+
+    "Multiple logical expressions initiated by WHEN
+    "Also LET expressions are possible. See more details further down.
+    DATA(time_of_day) = COND #( LET time = cl_abap_context_info=>get_system_time( ) IN
+                                WHEN time BETWEEN '050001' AND '120000' THEN |Good morning, it's { time TIME = ISO }.|
+                                WHEN time BETWEEN '120001' AND '180000' THEN |Good afternoon, it's { time TIME = ISO }.|
+                                WHEN time BETWEEN '180001' AND '220000' THEN |Good evening, it's { time TIME = ISO }.|
+                                ELSE |Good night, it's { time TIME = ISO }.| ).
+
+    out->write( data = time_of_day name = `time_of_day` ).
+    out->write( |\n| ).
+
+    "THROW addition to raise an exception (working like RAISE EXCEPTION TYPE statements)
+    "by specifying an exception class
+    "Note: It is possible to ...
+    "- specify the THROW addition also after THEN.
+    "- make exceptions resumable using the RESUMABLE addition.
+    DATA(number1) = 0.
+    DATA(number2) = 0.
+    TRY.
+        "The example raises the exception because both operands have the value 0.
+        DATA(div) = COND decfloat34( WHEN number1 <> 0 AND number2 <> 0 THEN number1 / number2
+                                     WHEN number1 = 0  AND number2 <> 0 THEN number1 / number2
+                                     ELSE THROW cx_sy_zerodivide( ) ).
+        out->write( data = div name = `div` ).
+      CATCH cx_sy_zerodivide.
+        DATA(two_zeros) = `Zero division`.
+        out->write( data = two_zeros name = `two_zeros` ).
+    ENDTRY.
+
+    out->write( |\n| ).
+
+    "Excursion for the example above: The following statement does not result in an
+    "error in ABAP (zero division 'allowed' if the first operand has also the value 0).
+    div = 0 / 0.
+
+    "THROW SHORTDUMP addition to raise a runtime error (working like RAISE SHORTDUMP
+    "TYPE statements) by specifying an exception class; a message can be also passed,
+    "and input parameters can be filled
+*    TRY.
+*        div = COND decfloat34( WHEN number1 <> 0 AND number2 <> 0 THEN number1 / number2
+*                               WHEN number1 = 0  AND number2 <> 0 THEN number1 / number2
+*                               ELSE THROW SHORTDUMP cx_sy_zerodivide( ) ).
+*        out->write( data = div name = `div` ).
+*      CATCH cx_sy_zerodivide.
+*    ENDTRY.
 
 **********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `33) SWITCH` ) ).
+    out->write( zcl_demo_abap_aux=>heading( `35) SWITCH` ) ).
 
     "The example demonstrates the use of the SWITCH operator. Here,
     "calculations are carried out. For this
@@ -1061,20 +1159,39 @@ out->write( zcl_demo_abap_aux=>heading( `4) Internal tables: Declaration and pop
       TRY.
           DATA(calc_result) =
               SWITCH string( <fs>
-                         WHEN '+' THEN CONV decfloat34( num1 + num2 )
-                         WHEN '-' THEN CONV decfloat34( num1 - num2 )
-                         WHEN '*' THEN CONV decfloat34( num1 * num2 )
-                         WHEN '/' THEN CONV decfloat34( num1 / num2 )
+                         WHEN '+' THEN |{ num1 + num2 STYLE = SIMPLE }|
+                         WHEN '-' THEN |{ num1 - num2 STYLE = SIMPLE }|
+                         WHEN '*' THEN |{ num1 * num2 STYLE = SIMPLE }|
+                         WHEN '/' THEN |{ CONV decfloat34( num1 / num2 ) STYLE = SIMPLE }|
                          ELSE `That doesn't work.` ).
           out->write( |{ num1 } { <fs> } { num2 } = { calc_result }| ).
         CATCH cx_sy_arithmetic_error INTO DATA(error).
           out->write( |Arithmetic error. { error->get_text( ) }| ).
       ENDTRY.
     ENDLOOP.
+    out->write( |\n| ).
+    out->write( |\n| ).
+
+    "A constructor expression as above instead of, for example, a CASE statement as follows.
+    DATA(operator) = '+'.
+    CASE operator.
+      WHEN '+'.
+        calc_result = |{ num1 + num2 STYLE = SIMPLE }|.
+      WHEN '-'.
+        calc_result = |{ num1 - num2 STYLE = SIMPLE }|.
+      WHEN '*'.
+        calc_result = |{ num1 * num2 STYLE = SIMPLE }|.
+      WHEN '/'.
+        calc_result = |{ CONV decfloat34( num1 / num2 ) STYLE = SIMPLE }|.
+      WHEN OTHERS.
+        calc_result = `Wrong operator.`.
+    ENDCASE.
+
+    out->write( data = calc_result name = `calc_result` ).
 
 **********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `34) FILTER` ) ).
+    out->write( zcl_demo_abap_aux=>heading( `36) FILTER` ) ).
 
     "This section covers multiple examples demonstrating the syntactical variety
     "of the FILTER operator.
@@ -1186,14 +1303,182 @@ out->write( zcl_demo_abap_aux=>heading( `4) Internal tables: Declaration and pop
 
 **********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `Iteration Expressions with FOR` ) ).
+    out->write( zcl_demo_abap_aux=>heading(  `37) Iteration Expressions with FOR` ) ).
+
+    "Data objects and types to work with in the examples
+    TYPES: BEGIN OF s,
+             col1 TYPE c LENGTH 5,
+             col2 TYPE i,
+             col3 TYPE i,
+           END OF s.
+    TYPES it_type TYPE TABLE OF s WITH EMPTY KEY.
+    DATA(itab4for) = VALUE it_type( ( col1 = 'a' col2 = 1 col3 = 30 )
+                                    ( col1 = 'bb' col2 = 2 col3 = 10 )
+                                    ( col1 = 'ccc' col2 = 3 col3 = 20 ) ).
+
+    "-------------- Table iterations --------------
+
+    DATA(it1) = VALUE it_type( FOR wa IN itab4for ( col1 = wa-col1 && 'z'
+                                                  col2 = wa-col2 + 1 ) ).
+
+    out->write( data = it1 name = `it1` ).
+    out->write( |\n| ).
+
+    "LOOP AT equivalent
+    CLEAR it1.
+    LOOP AT itab4for INTO DATA(wa_loop).
+      APPEND VALUE #( col1 = wa_loop-col1 && 'z'
+                      col2 = wa_loop-col2 + 1 ) TO it1.
+    ENDLOOP.
+
+    out->write( data = it1 name = `it1` ).
+    out->write( |\n| ).
+
+    "The following example shows more syntax options
+    "- Field symbol specifed after FOR
+    "- LET expressions after FOR: Denotes that the LET
+    "  expressions is evaluated for each loop pass
+    "- INDEX INTO addition (the variable that follows implicitly
+    "  has the type i): Storing the sy-tabix value for each
+    "  loop pass
+    DATA(it2) = VALUE it_type( FOR <line> IN itab4for INDEX INTO idx
+                                 LET idxplus1 = idx + 1 IN
+                                 ( col1 = <line>-col1 col2 = idx col3 = idxplus1 ) ).
+
+    out->write( data = it2 name = `it2` ).
+    out->write( |\n| ).
+
+    "Similar to the example above, the following example uses the INDEX INTO
+    "addition, as well as a LET expression with multiple local variables
+    DATA(it3) = VALUE string_table( FOR <str> IN itab4for INDEX INTO idx
+                                    LET col1            = |COL1: "{ <str>-col1 }"|
+                                        col2            = |COL2: "{ <str>-col2 }"|
+                                        col3            = |COL3: "{ <str>-col3 }"|
+                                        str_to_be_added = |Table index { idx } -> { col1 } / { col2 } / { col3 }|
+                                    IN ( str_to_be_added ) ).
+
+    out->write( data = it3 name = `it3` ).
+    out->write( |\n| ).
+
+    "---------- Excursions ----------
+
+    "Merging tables
+    "In the following example, the content of two existing internal tables is merged.
+    "In the simple example, the index is used for the table index. You can also imagine
+    "that you merge two internal tables, both having multiple columns. You could refer
+    "to the specific component values, for example, using a free key in a table expression
+    "such as ... VALUE #( some_itab[ comp_x = wa-comp_y ]-comp_z DEFAULT ... ) ...
+    TYPES inttabtype TYPE TABLE OF i WITH EMPTY KEY.
+    DATA(integertable) = VALUE inttabtype( ( 99 ) ( 100 ) ).
+
+    DATA(it4) = VALUE it_type( FOR wa IN itab4for INDEX INTO idx
+                                 ( col1 = wa-col1 col2 = VALUE #( integertable[ idx ] DEFAULT 0 ) ) ).
+
+    out->write( data = it4 name = `it4` ).
+    out->write( |\n| ).
+
+    "Retaining non-specified column values using the BASE addition
+    "In the example, the original value of col3 is retained.
+    DATA(it5) = VALUE it_type( FOR wa IN itab4for ( VALUE #( BASE wa col1 = wa-col1 && 'y'
+                                                                   col2 = wa-col2 + 3 ) ) ).
+
+    out->write( data = it5 name = `it5` ).
+    out->write( |\n| ).
+
+    "Using the CORRESPONDING operator to handle different types
+    TYPES: BEGIN OF s2,
+             col1 TYPE c LENGTH 5,
+             col2 TYPE i,
+             str  TYPE string,
+           END OF s2.
+    TYPES itab_type_2 TYPE TABLE OF s2 WITH EMPTY KEY.
+
+    DATA(it6) = VALUE itab_type_2( FOR wa IN itab4for ( CORRESPONDING #( wa ) ) ).
+
+    out->write( data = it6 name = `it6` ).
+    out->write( |\n| ).
+
+    "Multiple FOR expressions that work like nested loops
+    DATA(it7) = VALUE string_table( FOR wa1 IN itab4for
+                                    FOR wa2 IN integertable
+                                    ( |Comp. 1st itab: "{ wa1-col1 }", comp. 2nd itab: "{ wa2 }"| ) ).
+
+    out->write( data = it7 name = `it7` ).
+    out->write( |\n| ).
+
+    "LOOP AT equivalent
+    CLEAR it7.
+    LOOP AT itab4for INTO DATA(wa3).
+      LOOP AT integertable INTO DATA(wa4).
+        it7 = VALUE #( BASE it7 ( |Comp. 1st itab: "{ wa3-col1 }", comp. 2nd itab: "{ wa4 }"| ) ).
+      ENDLOOP.
+    ENDLOOP.
+
+    out->write( data = it7 name = `it7` ).
+    out->write( |\n| ).
+
+    "More additions can be specified such as WHERE, USING KEY, FROM/TO, STEP
+
+    "WHERE condition
+    "The WHERE condition must be placed in parentheses.
+    DATA(it8) = VALUE it_type( FOR wa IN itab4for WHERE ( col2 < 3 ) ( col1 = wa-col1 && 'w'
+                                                                     col2 = 5
+                                                                     col3 = wa-col2 ) ).
+
+    out->write( data = it8 name = `it8` ).
+    out->write( |\n| ).
+
+    "FROM/TO additions
+    DATA(it9) = VALUE it_type( FOR wa IN itab4for FROM 2 TO 3 ( col1 = wa-col1 && 'v'
+                                                              col2 = 6
+                                                              col3 = wa-col2 + 5   ) ).
+
+    out->write( data = it9 name = `it9` ).
+    out->write( |\n| ).
+
+    "STEP addition
+    DATA(it10) = VALUE it_type( FOR wa IN itab4for STEP -1 ( col1 = wa-col1 && 'u'
+                                                           col2 = 7
+                                                           col3 = wa-col2 + 8 ) ).
+
+    out->write( data = it10 name = `it10` ).
+    out->write( |\n| ).
+
+    "USING KEY addition
+    DATA(it11) = VALUE it_type( FOR wa IN itab4for USING KEY primary_key ( col1 = wa-col1 && 't'
+                                                                         col2 = 9
+                                                                         col3 = wa-col2 + 10 ) ).
+
+    out->write( data = it11 name = `it11` ).
+    out->write( |\n| ).
+
+    "---------- Conditional iterations ----------
+
+    "FOR ... WHILE ...
+    DATA(it12) = VALUE it_type( FOR x = 1 WHILE x < 4
+                                  ( col1 = x col2 = x + 1 col3 = x + 2 ) ).
+
+    out->write( data = it12 name = `it12` ).
+    out->write( |\n| ).
+
+    "FOR ... UNTIL ...
+    "The THEN addition is also possible for ... WHILE ...
+    DATA(it13) = VALUE it_type( FOR y = 31 THEN y - 10 UNTIL y < 10
+                                  ( col1 = y col2 = y + 1 col3 = y + 2 ) ).
+
+    out->write( data = it13 name = `it13` ).
+    out->write( |\n| ).
+
+**********************************************************************
+
+    out->write( zcl_demo_abap_aux=>heading( `38) More Examples with Iteration Expressions with FOR` ) ).
 
     "The examples demonstrate iteration expressions with FOR. The examples
     "are based on demo internal tables that are filled using a method. The
     "tables are displayed to show the original content of the internal
     "tables that are to be processed.
 
-    out->write( |35) Original table content\n\n| ).
+    out->write( |Original table content\n\n| ).
 
     "Method to fill demo internal tables with values to work with.
     "Tables are displayed showing the values.
@@ -1205,9 +1490,9 @@ out->write( zcl_demo_abap_aux=>heading( `4) Internal tables: Declaration and pop
     out->write( |\n| ).
     out->write( data = tab3 name = `tab3` ).
 
-**********************************************************************
-
-    out->write( zcl_demo_abap_aux=>heading( `36) FOR ... IN ... (LOOP Semantics)` ) ).
+    out->write( |\n| ).
+    out->write( `************ FOR ... IN ... (LOOP Semantics) ************` ).
+    out->write( |\n| ).
 
     "Examples demonstrating FOR ... IN ... that has the semantics of LOOP.
     "1) An internal table is looped across. The whole line is stored in a
@@ -1231,7 +1516,7 @@ out->write( zcl_demo_abap_aux=>heading( `4) Internal tables: Declaration and pop
 
     TYPES t_type1 LIKE tab3.
 
-    DATA(for1) = VALUE t_type1( FOR wa IN tab3 ( wa ) ).
+    DATA(for1) = VALUE t_type1( FOR w IN tab3 ( w ) ).
 
     "2) Storing specific components having the same names.
     "The target type is not compatible to the type of the source table.
@@ -1239,17 +1524,17 @@ out->write( zcl_demo_abap_aux=>heading( `4) Internal tables: Declaration and pop
 
     TYPES t_type2 LIKE tab1.
 
-    DATA(for2) = VALUE t_type2( FOR wa IN tab3
+    DATA(for2) = VALUE t_type2( FOR w IN tab3
                                 WHERE ( comp4 > 7 )
-                                ( CORRESPONDING #( wa ) ) ).
+                                ( CORRESPONDING #( w ) ) ).
 
     "3) Specify components individually and providing a mapping
 
-    DATA(for3) = VALUE t_type2( FOR wa IN tab3
+    DATA(for3) = VALUE t_type2( FOR w IN tab3
                                 WHERE ( comp4 > 7 )
-                                ( comp1 = wa-comp1
+                                ( comp1 = w-comp1
                                   comp2 = `hallo`
-                                  comp3 = wa-comp4 ) ).
+                                  comp3 = w-comp4 ) ).
 
     out->write( data = for1 name = `for1` ).
     out->write( |\n| ).
@@ -1275,19 +1560,18 @@ out->write( zcl_demo_abap_aux=>heading( `4) Internal tables: Declaration and pop
 
     "Nested iteration expressions with FOR
     DATA(for4) = VALUE t_type3(
-      FOR wa1 IN tab1 WHERE ( comp1 = 'A' )
-      FOR wa2 IN tab2 WHERE ( comp4 > 6 )
-      FOR wa3 IN tab3 WHERE ( comp3 < 4 )
-      ( compX = wa1-comp1
-        compY = wa2-comp1
-        compZ = wa3-comp3 ) ).
+      FOR w1 IN tab1 WHERE ( comp1 = 'A' )
+      FOR w2 IN tab2 WHERE ( comp4 > 6 )
+      FOR w3 IN tab3 WHERE ( comp3 < 4 )
+      ( compX = w1-comp1
+        compY = w2-comp1
+        compZ = w3-comp3 ) ).
 
     out->write( data = for4 name = `for4` ).
 
-**********************************************************************
-
-    out->write( zcl_demo_abap_aux=>heading( `37) FOR ... WHILE/UNTIL ... ` &&
-    `(DO/WHILE Semantics)` ) ).
+    out->write( |\n| ).
+    out->write( `************ FOR ... WHILE/UNTIL ... (DO/WHILE Semantics) ************` ).
+    out->write( |\n| ).
 
     "Examples demonstrating FOR ... WHILE/UNTIL ... that has the semantics
     "of DO/WHILE.
@@ -1322,115 +1606,294 @@ out->write( zcl_demo_abap_aux=>heading( `4) Internal tables: Declaration and pop
 
 **********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `38) REDUCE (1)` ) ).
+    out->write( zcl_demo_abap_aux=>heading( `39) REDUCE` ) ).
 
-    "The examples demonstrate the REDUCE operator using values contained in
-    "an internal table column. Here, the table is of type string.
-    "1) The values of the columns are sequentially concatenated into a
-    "string.
-    "INIT ...: A temporary variable is specified that sets an initial
-    "value for the result variable
-    "FOR ...: Represents a loop, the loop is carried out for all table
-    "entries.
-    "NEXT ...: Represents the assignment to the temporary variable after
-    "every iteration.
-    "Once the loop has finished, the target variable is assigned the
-    "resulting value.
-    "2) Also here, the table rows are reduced to a text string using a
-    "chaining after NEXT. The auxiliary variable sep declared after
-    "INIT is initial for the first read row and is filled with a blank here
-    "for the evaluation of further rows.
+    "Data objects and types to work with in the examples
+    TYPES: BEGIN OF st,
+             col1 TYPE c LENGTH 5,
+             col2 TYPE i,
+             col3 TYPE i,
+           END OF st.
+    TYPES tab_type TYPE TABLE OF st WITH EMPTY KEY.
+    DATA(itab4reduce) = VALUE tab_type( ( col1 = 'a' col2 = 1 col3 = 30 )
+                                  ( col1 = 'bb' col2 = 2 col3 = 10 )
+                                  ( col1 = 'ccc' col2 = 3 col3 = 20 ) ).
 
-    "Creating and filling a string table
-    DATA tab TYPE STANDARD TABLE OF string WITH EMPTY KEY.
+    "---------- Table iterations ----------
 
-    tab = VALUE #( ( `h` ) ( `a` ) ( `l` ) ( `l` ) ( `o` ) ).
+    "Calculating the sum of values in a table column
+    DATA(sum_val) = REDUCE i( INIT len = 0
+                              FOR <l> IN itab4reduce
+                              NEXT len = len + <l>-col2 ).
 
-    "Example 1
-    DATA(a_word) =
-          REDUCE string( INIT text = ``
-            FOR word IN tab
-            NEXT text = |{ text }{ word }| ).
-
-    "Example 2
-    tab = VALUE #( ( `Some` ) ( `cool` ) ( `stuff` )
-                   ( `using` ) ( `REDUCE` ) ).
-
-    DATA(sentence) =
-          REDUCE string( INIT text = `` sep = ``
-            FOR word IN tab
-            NEXT text = |{ text }{ sep }{ word }| sep = ` ` ) && '.'.
-
-    out->write( data = a_word name = `a_word` ).
+    out->write( data = sum_val name = `sum_val` ).
     out->write( |\n| ).
-    out->write( data = sentence name = `sentence` ).
 
-**********************************************************************
+    "Getting the longest string in a table column
+    DATA(long_str) = REDUCE st-col1( INIT string = VALUE #( )
+                                    FOR <l> IN itab4reduce
+                                    NEXT string =  COND #( WHEN strlen( <l>-col1 ) > strlen( string )
+                                                        THEN <l>-col1
+                                                        ELSE string ) ).
 
-    out->write( zcl_demo_abap_aux=>heading( `39) REDUCE (2)` ) ).
-
-    "The examples demonstrate summations using the REDUCE operator.
-    "1) Example using FOR ... UNTIL .... It calculates the total of the
-    "numbers from 1 to 10. The resulting number is stored in a variable that
-    "is declared inline.
-    "2) The example has the same output as the first example. Here, a table
-    "column is reduced. The table that is of type i is filled with numbers
-    "from 1 to 10 (using a constructor expression with FOR ... WHILE ...).
-    "The reduction is then carried out based on the numbers contained in
-    "this table.
-
-    "Example 1
-    DATA(sum1) = REDUCE i( INIT b = 0
-                            FOR n = 1 UNTIL n > 10
-                            NEXT b += n ).
-
-    "Example 2
-    DATA itab_i TYPE STANDARD TABLE OF i WITH EMPTY KEY.
-
-    itab_i = VALUE #( FOR j = 1 WHILE j <= 10 ( j ) ).
-
-    DATA(sum2) = REDUCE i( INIT x = 0
-                           FOR z IN itab_i
-                           NEXT x = x + z ).
-
-    out->write( data = sum1 name = `sum1` ).
+    out->write( data = long_str name = `long_str` ).
     out->write( |\n| ).
-    out->write( data = sum2 name = `sum2` ).
 
-**********************************************************************
+    "Getting the maximum value (other than, for example, using a SORT statement)
+    "Unlike above, a variable is used instead of a field symbol.
+    DATA(max_val) = REDUCE i( INIT max = 0
+                              FOR line IN itab4reduce
+                              NEXT max =  COND #( WHEN line-col2 > max
+                                                  THEN line-col2
+                                                  ELSE max ) ).
 
-    out->write( zcl_demo_abap_aux=>heading( `40) REDUCE (3)` ) ).
+    out->write( data = max_val name = `max_val` ).
+    out->write( |\n| ).
 
-    "The examples demonstrate the concatenation of strings
-    "1) without the addition THEN
-    "2) with the addition THEN
-    "3) in the context of a non-arithmetic expression.
+    "Creating a new internal table using REDUCE
+    "In the example, the sum of two values is calculated.
+    "A VALUE expression with the BASE addition is used to
+    "add a line to a table (retaining the existing lines).
+    DATA(itstr) = REDUCE string_table( INIT strtab = VALUE string_table( )
+                                       FOR workarea IN itab4reduce
+                                       NEXT strtab = VALUE #( BASE strtab
+                                        ( |The sum of { workarea-col2 } and { workarea-col3 } is { workarea-col2 + workarea-col3 }.| ) ) ).
 
-    "1) Concatenation without THEN
-    DATA(conc1) = REDUCE string( INIT text = `Count up:`
-                                 FOR n = 1 UNTIL n > 10
+    out->write( data = itstr name = `itstr` ).
+    out->write( |\n| ).
+
+    "More additions are possible, such as specifying a WHERE condition (which
+    "must be specified in parentheses). The following example creates a new
+    "internal table based on a WHERE condition.
+    TYPES: BEGIN OF s3,
+             num1 TYPE i,
+             num2 TYPE i,
+             sum  TYPE i,
+           END OF s3.
+    TYPES s3_tab_type TYPE TABLE OF s3 WITH EMPTY KEY.
+    DATA(itred) = REDUCE s3_tab_type( INIT tab = VALUE s3_tab_type( )
+                                      FOR workarea IN itab4reduce
+                                      WHERE ( col2 < 3 )
+                                      NEXT tab = VALUE #( BASE tab
+                                       ( num1 = workarea-col2 num2 = workarea-col3 sum = workarea-col2 + workarea-col3 ) ) ).
+
+    out->write( data = itred name = `itred` ).
+    out->write( |\n| ).
+
+    "---------- Conditional iterations ----------
+
+    "UNTIL addition
+    "Iteratively calculating the sum from 1 to 10
+    DATA(reduce_until) = REDUCE i( INIT sum = 0
+                                   FOR  int = 1 UNTIL int > 10
+                                   NEXT sum += int ).
+
+    out->write( data = reduce_until name = `reduce_until` ).
+    out->write( |\n| ).
+
+    "WHILE addition
+    "The example corresponds to the previous one.
+    DATA(reduce_while) = REDUCE i( INIT sum = 0
+                                   FOR  int = 1 WHILE int <= 10
+                                   NEXT sum += int ).
+
+    out->write( data = reduce_while name = `reduce_while` ).
+    out->write( |\n| ).
+
+    "THEN addition
+    "The following example constructs a text string. The THEN addition is used
+    "to decrement the iteration variable. Additionally, a LET expression is used
+    "to specify a helper variable.
+    "Result: Counting downwards starting with 10: 10 9 8 7 6 5 4 3 2 1
+    DATA(count) = REDUCE string( LET start = 10 IN
+                                 INIT text = |Counting downwards starting with { start }:|
+                                 FOR n = start THEN n - 1 WHILE n > 0
                                  NEXT text &&= | { n }| ).
 
-    "2) Concatenation with THEN
-    DATA(conc2) = REDUCE string( INIT text = `Count down:`
-                                 FOR n = 10 THEN n - 1 WHILE n > 0
-                                 NEXT text &&= | { n }| ).
-
-    "3) Non-arithmetic expression
-    DATA(conc3) = REDUCE string( INIT text = ``
-                                 FOR t = `x` THEN t && `y`
-                                             UNTIL strlen( t ) > 10
-                                 NEXT text &&= |{ t } | ).
-
-    out->write( data = conc1 name = `conc1` ).
+    out->write( data = count name = `count` ).
     out->write( |\n| ).
-    out->write( data = conc2 name = `conc2` ).
+
+    "Example similar to the previous one. Using UNTIL, a text string is enlarged until
+    "it has reached a specific size.
+    "Result: ab abap abapap abapapap abapapapap abapapapapap abapapapapapap
+    DATA(abap_str) =  REDUCE string( INIT text = ``
+                                     FOR t = `ab` THEN t && `ap` UNTIL strlen( t ) > 15
+                                     NEXT text &&= |{ t } | ).
+
+    out->write( data = abap_str name = `abap_str` ).
     out->write( |\n| ).
-    out->write( data = conc3 name = `conc3` ).
+
+    "---------- Excursion: Grouping lines in internal tables with VALUE/REDUCE ----------
+
+    "The following examples show equivalents of LOOP AT GROUP ... GROUP BY ... statements.
+    "Find more information and examples about grouping in the ABAP Keyword Documentation.
+
+    "Internal table to work with in the examples
+    DATA(itab4grp) = VALUE tab_type( ( col1 = 'a' col2 = 1 col3 = 2 )
+                                      ( col1 = 'a' col2 = 3 col3 = 4 )
+                                      ( col1 = 'a' col2 = 5 col3 = 6 )
+                                      ( col1 = 'b' col2 = 7 col3 = 8 )
+                                      ( col1 = 'b' col2 = 9 col3 = 10 )
+                                      ( col1 = 'c' col2 = 11 col3 = 12 ) ).
+
+
+    "Constructing a result using VALUE
+    "The following example returns the values of identified groups in an internal table
+    "Table lines are evaluated by grouping all lines that meet the condition
+    "specified in GROUP BY (group key binding). The group key is stored in the variable
+    "after FOR GROUPS (gr). The constructed result just consists of the group keys in
+    "the example. The content of the members is not relevant.
+    DATA(it_val_1) = VALUE string_table( FOR GROUPS gr OF wr IN itab4grp
+                                         GROUP BY wr-col1 ASCENDING
+                                         WITHOUT MEMBERS
+                                         ( |{ gr }| ) ).
+
+    out->write( data = it_val_1 name = `it_val_1` ).
+    out->write( |\n| ).
+
+
+    "As above, the following example returns the values of identified groups in an internal table.
+    "Additionally, a LET expression (that itself contains an iteration expression) is specified
+    "to collect column values by group in an internal table. The lines of this (string) table
+    "are concatenated and inserted in the target table.
+    DATA(it_val_2) = VALUE string_table(
+        FOR GROUPS grp OF wr IN itab4grp
+        GROUP BY wr-col1 ASCENDING
+        LET members = VALUE string_table(
+        FOR grpd IN GROUP grp ( |{ grpd-col2 }, { grpd-col3 }| ) ) IN
+        ( |{ grp }: { concat_lines_of( table = members sep = ` / ` ) }| ) ).
+
+    out->write( data = it_val_2 name = `it_val_2` ).
+    out->write( |\n| ).
+
+    "Constructing a result using REDUCE
+    "The example is similar to the previous one by filling a string table.
+    "The example uses a group key expression specified after GROUP BY.
+    "In the group key expression, additional components of a structured
+    "group key are specified which return specific information (group size,
+    "group index).
+    DATA(it_reduced) = REDUCE string_table(
+        INIT li = VALUE string_table( )
+        FOR GROUPS group OF grt IN itab4grp
+        GROUP BY ( grpkey = grt-col1
+                    size = GROUP SIZE
+                    index = GROUP INDEX ) ASCENDING
+        LET mem = VALUE string_table( FOR grpr IN GROUP group ( |{ grpr-col2 }, { grpr-col3 }| ) ) IN
+        NEXT li = VALUE string_table( BASE li ( |Group key: "{ group-grpkey }" \| | &&
+                                                |group size: {  group-size  } \| | &&
+                                                |group index: { group-index } \| members: | &&
+                                                |{ concat_lines_of( table = mem sep = ` / ` ) }| ) ) ).
+
+    out->write( data = it_reduced name = `it_reduced` ).
+    out->write( |\n| ).
 
 **********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `41) LET Expressions (1)` ) ).
+    out->write( zcl_demo_abap_aux=>heading( `40) LET Expressions` ) ).
+
+    "Data type and object to work with in the example
+    TYPES: BEGIN OF st_type,
+             comp1 TYPE c LENGTH 5,
+             comp2 TYPE i,
+             comp3 TYPE i,
+           END OF st_type.
+    DATA it TYPE TABLE OF st_type WITH EMPTY KEY.
+    it = VALUE #( ( comp1 = 'a' comp2 = 1 comp3 = 30 )
+                  ( comp1 = 'bb' comp2 = 2 comp3 = 10 )
+                  ( comp1 = 'ccc' comp2 = 3 comp3 = 20 ) ).
+
+    "Constructing a data object with elementary data type using the CONV operator
+    "One or more helper variables are possible specified after LET
+    DATA(hi) = CONV string(
+            LET name = cl_abap_context_info=>get_user_technical_name( )
+                date = cl_abap_context_info=>get_system_date( )
+            IN |Hi { name }. Today's date is { date DATE = ISO }.| ).
+
+    out->write( data = hi name = `hi` ).
+    out->write( |\n| ).
+
+    "Construction similar to the previous example
+    "Depending on the time, a string is created. In the example, a LET expression
+    "is specified for each constructor expression.
+    DATA(timeofday) = CONV string(
+            LET time = cl_abap_context_info=>get_system_time( ) IN
+            COND string( LET good = `Good` ending = `ing` IN
+                        WHEN time BETWEEN '050001' AND '120000' THEN good && ` morn` && ending  "Good morning
+                        WHEN time BETWEEN '120001' AND '180000' THEN good && ` afternoon`
+                        WHEN time BETWEEN '180001' AND '220000' THEN good && ` even` && ending
+                        ELSE good && ` night`  ) ).
+
+    out->write( data = timeofday name = `timeofday` ).
+    out->write( |\n| ).
+
+    "Getting a particular column name of an existing internal table using RTTI
+    "An internal table (it contains information on the table's structured type; the
+    "component names, among others) is assigned to a data object that is declared
+    "inline. This is an example of making code more concise with constructor expressions
+    "and inline declarations. Assume you use extra declarations for the data objects, or
+    "use the older ?= operator for the casts. Many more lines of code are required.
+    DATA(components) = CAST cl_abap_structdescr( CAST cl_abap_tabledescr(
+        cl_abap_typedescr=>describe_by_data( it ) )->get_table_line_type( ) )->components.
+    DATA(comp2_a) = components[ 2 ]-name.
+
+    out->write( data = comp2_a name = `comp2_a` ).
+    out->write( |\n| ).
+
+    "Achieving the result from above even in one statement using LET
+    DATA(comp2_b) = CONV abap_compname(
+        LET comps = CAST cl_abap_structdescr( CAST cl_abap_tabledescr(
+                     cl_abap_typedescr=>describe_by_data( it ) )->get_table_line_type( ) )->components
+        IN comps[ 2 ]-name ).
+
+    out->write( data = comp2_b name = `comp2_b` ).
+    out->write( |\n| ).
+
+    "Constructing a structure using local variables
+    "The example uses the NEW operator to create an anonymous data object
+    DATA(new_struc) = NEW st_type( LET n = 2 ch = 'AP' IN
+                                    comp1 = 'AB' && ch comp2 = 2 * n comp3 = 3 * n ).
+
+    out->write( data = new_struc->* name = `new_struc->*` ).
+    out->write( |\n| ).
+
+    "Constructing an internal table using local variables
+    "The example uses the VALUE operator.
+    "Note the parentheses ( ... ) representing table lines.
+    DATA(itab_value) = VALUE string_table( LET lin = 1 IN
+                                            ( |Line { lin }| )
+                                            ( |Line { lin + 1 }| )
+                                            ( |Line { lin + 2 }| ) ).
+
+    out->write( data = itab_value name = `itab_value` ).
+    out->write( |\n| ).
+
+    "Using a local field symbol in LET expressions
+    "- The right-hand side value must be the result of a writable expression, i.e.
+    "  an operand that can be written to
+    "- This value is then assigned to the local field symbol (as if ASSIGN is used)
+    "- In the examples above, a specification such as ... LET <a> = 1 IN ... is not
+    "  possible as they are not writable expressions.
+    "- Writable expressions:
+    "  - Constructor expressions NEW class( ... )->attr and CAST type( ... )->dobj
+    "  - Table expressions itab[ ... ] and their chainings, e.g. itab[ 1 ]-comp
+    "In the following example, an internal table is looped over. A string is created
+    "from the table line content. In the constructor expression, a LET expression is
+    "specified that uses a field symbol. It is assigned the line of the internal table.
+    "The sy-index value represents the table index value.
+    DATA str_tab TYPE string_table.
+    DO lines( it ) TIMES.
+      DATA(concatenated_tab) = CONV string(
+          LET <li>  = it[ sy-index ]
+              comma =   `, `
+          IN  |{ <li>-comp1 }{ comma }{ <li>-comp2 }{ comma }{ <li>-comp3 }| ).
+      str_tab = VALUE #( BASE str_tab ( concatenated_tab ) ).
+    ENDDO.
+
+    out->write( data = str_tab name = `str_tab` ).
+
+**********************************************************************
+
+    out->write( zcl_demo_abap_aux=>heading( `41) More LET Examples` ) ).
 
     "The examples demonstrate LET expressions in different contexts.
 
@@ -1439,17 +1902,14 @@ out->write( zcl_demo_abap_aux=>heading( `4) Internal tables: Declaration and pop
     "resulting table (a table of type string) receive the content of this
     "variable in the specified position.
 
-    DATA(str_tab) = VALUE string_table( LET it = `be` IN
-                      ( |To { it } is to do| )
-                      ( |To { it } or not to { it }| )
-                      ( |To do is to { it }| )
-                      ( |Do { it } do { it } do| ) ).
+    DATA(stringtable) = VALUE string_table( LET be = `be` IN
+                      ( |To { be } is to do| )
+                      ( |To { be } or not to { be }| )
+                      ( |To do is to { be }| )
+                      ( |Do { be } do { be } do| ) ).
 
-    out->write( data = str_tab name = `str_tab` ).
-
-**********************************************************************
-
-    out->write( zcl_demo_abap_aux=>heading( `42) LET Expressions (2)` ) ).
+    out->write( data = stringtable name = `stringtable` ).
+    out->write( |\n| ).
 
     "2) LET within a constructor expression with COND: 12 o'clock is
     "specified as value for the LET expression. Based on this value, checks
@@ -1457,7 +1917,7 @@ out->write( zcl_demo_abap_aux=>heading( `4) Internal tables: Declaration and pop
 
     DATA(system_time) = cl_abap_context_info=>get_system_time( ).
 
-    DATA(time) =
+    DATA(systime) =
       COND #( LET tm = '120000' IN
               WHEN system_time < tm THEN
                 |{ system_time TIME = ISO } AM|
@@ -1466,11 +1926,8 @@ out->write( zcl_demo_abap_aux=>heading( `4) Internal tables: Declaration and pop
               WHEN system_time = tm THEN |High Noon|
               ELSE |?| ).
 
-    out->write( data = time name = `time` ).
-
-**********************************************************************
-
-    out->write( zcl_demo_abap_aux=>heading( `43) LET Expressions (3)` ) ).
+    out->write( data = systime name = `systime` ).
+    out->write( |\n| ).
 
     "3) An internal table that includes three components is created and
     "filled. A loop across this table is carried out. The purpose of the
@@ -1508,6 +1965,5 @@ out->write( zcl_demo_abap_aux=>heading( `4) Internal tables: Declaration and pop
     ENDDO.
 
     out->write( data = stringtab name = `stringtab` ).
-
   ENDMETHOD.
 ENDCLASS.
