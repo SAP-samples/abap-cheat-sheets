@@ -1736,137 +1736,208 @@ The following examples show the retrieval of type information. Instead of the ex
 comes in handy, too.
 
 ```abap
-"Getting a reference to a type description object of a type.
-"i.e. getting an instance of a type description class.
-"To do so, the static methods of the class CL_ABAP_TYPEDESCR can be used.
-"As shown below, the type decription object can be used to create data
-"objects dynamically. Note that instances of classes are not covered.
+"------------------------------------------------------------------------
+"---------------- Getting general type information ----------------------
+"------------------------------------------------------------------------
 
-"Type for which information should be retrieved
-TYPES elem_type TYPE c LENGTH 5.
+"Getting references to type description objects of a type ...
+
+"... using the cl_abap_typedescr=>describe_by_name method.
+"In this case, the name of the types are used.
+"The following examples cover elementary, structured and
+"internal table types.
+TYPES elemtype TYPE n LENGTH 3.
+TYPES structype TYPE zdemo_abap_carr.
+TYPES strtabtype TYPE string_table.
+
+"The reference in the type description object references an
+"object from one of the classes CL_ABAP_ELEMDESCR, CL_ABAP_ENUMDESCR,
+"CL_ABAP_REFDESCR, CL_ABAP_STRUCTDESCR, CL_ABAP_TABLEDESCR,
+"CL_ABAP_CLASSDESCR, or CL_ABAP_INTFDESCR. You may want to check the
+"content of the type description objects in the debugger.
+DATA(tdo_by_name_elem) = cl_abap_typedescr=>describe_by_name( 'ELEMTYPE' ).
+DATA(tdo_by_name_struc) = cl_abap_typedescr=>describe_by_name( 'STRUCTYPE' ).
+DATA(tdo_by_name_itab) = cl_abap_typedescr=>describe_by_name( 'STRTABTYPE' ).
+
+"Inline declarations are handy to avoid helper variables such as
+"in the following example.
+DATA tdo_by_name_elem_helper TYPE REF TO cl_abap_typedescr.
+tdo_by_name_elem_helper = cl_abap_typedescr=>describe_by_name( 'ELEMTYPE' ).
+
+"... using the cl_abap_typedescr=>describe_by_data method.
+"In this case, the data objects are provided.
+"The examples cover an elementary data object, a structure and and
+"internal table.
+DATA elemdobj TYPE elemtype.
+DATA strucdobj TYPE structype.
+DATA tabledobj TYPE strtabtype.
+
+DATA(tdo_by_data_elem) = cl_abap_typedescr=>describe_by_data( 'ELEMTYPE' ).
+DATA(tdo_by_data_struc) = cl_abap_typedescr=>describe_by_data( 'STRUCTYPE' ).
+DATA(tdo_by_data_itab) = cl_abap_typedescr=>describe_by_data( 'STRTABTYPE' ).
+
+"... using the cl_abap_typedescr=>describe_by_data_ref method
+"In this case, a data reference variable is used.
+"Note: As a result, the method returns a reference that points to
+"an object in one of the classes CL_ABAP_ELEMDESCR, CL_ABAP_ENUMDESCR,
+"CL_ABAP_REFDESCR, CL_ABAP_STRUCTDESCR, or CL_ABAP_TABLEDSECR.
+
+DATA dref1 TYPE REF TO i.
+dref1 = NEW #( ).
+"Data reference pointing to CL_ABAP_ELEMDESCR
+DATA(tdo_by_dref1) = cl_abap_typedescr=>describe_by_data_ref( dref1 ).
+"Data reference pointing to CL_ABAP_TABLEDSECR
+DATA(dref2) = NEW string_table( ).
+DATA(tdo_by_dref2) = cl_abap_typedescr=>describe_by_data_ref( dref2 ).
+
+"... using the cl_abap_typedescr=>describe_by_data_ref method
+"In this case, an object reference variable is used.
+DATA oref TYPE REF TO zcl_demo_abap_objects.
+oref = NEW #( ).
+DATA(tdo_by_oref) = cl_abap_typedescr=>describe_by_object_ref( oref ).
+
+"------------------------------------------------------------------------
+"--- Getting more detailed information by programmatically accessing ----
+"--- the attributes -----------------------------------------------------
+"------------------------------------------------------------------------
+
+"------------------------------------------------------------------------
+"--- Examples using a type description object for an elementary type ----
+"------------------------------------------------------------------------
+DATA(elem_kind) = tdo_by_name_elem->kind.  "E (elementary)
+DATA(elem_absolute_name) = tdo_by_name_elem->absolute_name.  "Check in the debugger for such a local type
+DATA(elem_relative_name) = tdo_by_name_elem->get_relative_name( ).  "ELEMTYPE
+DATA(elem_is_ddic_type) = tdo_by_name_elem->is_ddic_type( ). "has the value abap_false
+
+"Getting more information using type-specific type description classes (e.g. cl_abap_elemdescr for elementary
+"types, as shown in the hierarchy tree above)
+"Using casts, you can access special attributes (i.e. the properties of the respective types).
 
 "Creating a data reference variable to hold the reference to
 "the type description object
-DATA type_descr_obj_elem TYPE REF TO cl_abap_elemdescr.
+DATA ref_elemdescr TYPE REF TO cl_abap_elemdescr.
+ref_elemdescr = CAST #( tdo_by_name_elem ).
+"Using the older cast operator ?= (which is not used in the examples)
+ref_elemdescr ?= tdo_by_name_elem.
 
-"Retrieving type information by creating an instance of a type description
-"class. As the name implies, the describe_by_name method expects the name
-"of the type. In the following example, the reference to the type object is
-"assigned using a downcast to the reference variable of type CL_ABAP_ELEMDESCR
-"created above.
-type_descr_obj_elem = CAST #( cl_abap_typedescr=>describe_by_name( 'ELEM_TYPE' ) ).
+"Alternatives using inline declaration
+DATA(ref_elemdescr2) = CAST cl_abap_elemdescr( tdo_by_name_elem ).
+"Using method chaining, you can omit extra declarations
+DATA(ref_elemdescr3) = CAST cl_abap_elemdescr( cl_abap_typedescr=>describe_by_name( 'ELEMTYPE' ) ).
+DATA(elem_abs_name) = CAST cl_abap_elemdescr( cl_abap_typedescr=>describe_by_name( 'ELEMTYPE' ) )->absolute_name.
+"Implementing a check before the cast to the type-specific type description class
+IF tdo_by_name_elem IS INSTANCE OF cl_abap_elemdescr.
+  DATA(ref_elemdescr4) = CAST cl_abap_elemdescr( tdo_by_name_elem ).
+ENDIF.
 
-"Using the older cast operator ?=
-type_descr_obj_elem ?= cl_abap_typedescr=>describe_by_name( 'ELEM_TYPE' ).
+"Some examples for more detailed information that is accessible after
+"the cast. Check the options after the object component selector ->.
+DATA(elem_output_length) = ref_elemdescr->output_length. "3
+"The following method checks compatibility of a specified data object
+DATA(elem_applies1) = ref_elemdescr->applies_to_data( elemdobj ). "has the value abap_true
+DATA test_dobj TYPE c LENGTH 3.
+DATA(elem_applies2) = ref_elemdescr->applies_to_data( test_dobj ). "has the value abap_false
 
-"Inline declarations are handy to avoid helper variables.
-DATA(type_descr_obj_inl_1) = CAST cl_abap_elemdescr(
-  cl_abap_typedescr=>describe_by_name( 'ELEM_TYPE' ) ).
+"-----------------------------------------------------------------
+"--- Examples using a type description object for a structure ----
+"-----------------------------------------------------------------
+DATA ref_structdescr1 TYPE REF TO cl_abap_structdescr.
+ref_structdescr1 = CAST #( tdo_by_name_struc ).
 
-"You may want to check the type description object in the debugger.
-"Various methods/attributes provide you with detailed information.
-"The following examples show a selection:
-"Kind/Type kind/Output length
-DATA(kind) = type_descr_obj_inl_1->kind. "E (elementary)
-DATA(type_kind) = type_descr_obj_inl_1->type_kind. "C
-DATA(output_length) = type_descr_obj_inl_1->output_length. "5
+"Check examples before making the cast
+"The examples also use inline declaration.
+CASE TYPE OF tdo_by_name_struc.
+  WHEN TYPE cl_abap_structdescr.
+    DATA(ref_structdescr2) = CAST cl_abap_structdescr( tdo_by_name_struc ).
+  WHEN OTHERS.
+    ...
+ENDCASE.
 
-"In the following example, the type properties are retrieved
-"without cast. The data object has the type ref to
-"cl_abap_typedescr. See the hierarchy tree above.
-"The reference in the type description object references an
-"object from one of the classes CL_ABAP_ELEMDESCR, CL_ABAP_ENUMDESCR,
-"CL_ABAP_REFDESCR, CL_ABAP_STRUCTDESCR, CL_ABAP_TABLEDSECR,
-"CL_ABAP_CLASSDESCR, or CL_ABAP_INTFDESCR.
-"In the following case, it is CL_ABAP_ELEMDESCR.
-"Note that in most of the following examples, the explicit
-"cast is included when retrieving a reference to the type
-"description object.
-TYPES another_elem_type TYPE n LENGTH 3.
-DATA(type_descr_obj_inl_2) = cl_abap_typedescr=>describe_by_name( 'ANOTHER_ELEM_TYPE' ).
+DATA(ref_structdescr3) = COND #( WHEN tdo_by_name_struc IS INSTANCE OF cl_abap_structdescr
+                                  THEN CAST cl_abap_structdescr( tdo_by_name_struc ) ).
 
-"More types
-"Structured data type (here, using the name of a database table)
-DATA(type_descr_obj_struc) = CAST cl_abap_structdescr(
-  cl_abap_typedescr=>describe_by_name( 'ZDEMO_ABAP_CARR' ) ).
+"More details accessible after the cast
+DATA(struc_kind) = ref_structdescr1->struct_kind. "F (flat)
+"The following attribute returns a table with component information, such as
+"the component names and type kinds.
+DATA(struc_components) = ref_structdescr1->components.
+"The following method also returns a table with component information. In this case,
+"more information is returned such as type description objects of each component and more.
+DATA(struc_components_tab) = ref_structdescr1->get_components( ).
 
-"Various attributes/methods available for detailed information
-"Kind
-DATA(struc_kind) = type_descr_obj_struc->kind. "S
+"-----------------------------------------------------------------------
+"--- Examples using a type description object for an internal table ----
+"-----------------------------------------------------------------------
+DATA ref_tabledescr1 TYPE REF TO cl_abap_tabledescr.
+ref_tabledescr1 = CAST #( tdo_by_name_itab ).
+"Cast with inline declaration (for a change)
+DATA(ref_tabledescr2) = CAST cl_abap_tabledescr( tdo_by_name_itab ).
 
-"Getting components of the structure (e.g. the component names
-"and type description objects for the individual components)
-DATA(comps_struc) = type_descr_obj_struc->get_components( ).
+"Another internal table as an example
+DATA itab TYPE SORTED TABLE OF zdemo_abap_carr WITH UNIQUE KEY carrid.
+DATA(ref_tabledescr3) = CAST cl_abap_tabledescr( cl_abap_typedescr=>describe_by_data( itab ) ).
 
-"The follwing attribute also lists the component names and types
-"(but not the type desription objects as is the case above)
-DATA(comps_struc2) = type_descr_obj_struc->components.
+DATA(itab_table_kind) = ref_tabledescr3->table_kind. "O (sorted table)
+DATA(itab_has_unique_key) = ref_tabledescr3->has_unique_key. "has the value abap_true
+"Returns a table with the names internal table keys
+DATA(itab_table_key) = ref_tabledescr3->key. "carrid
+"Returns a table with a description of all table keys, e.g.
+"all components of a key, key kind (U, unique, in the example case),
+"information whether the key is the primary key etc.
+DATA(itab_keys) = ref_tabledescr3->get_keys( ).
+"If you want to get information about the line type, e.g. finding out about
+"the component names, another cast is required.
+"First, getting a reference to the type description object for the structured type.
+DATA(itab_comp_ref) = ref_tabledescr3->get_table_line_type( ).
+"Then, performing a cast to access the component information as shown above.
+DATA(itab_line_info) = CAST cl_abap_structdescr( itab_comp_ref ).
+DATA(itab_comps1) = itab_line_info->components.
+DATA(itab_comps2) = itab_line_info->get_components( ).
 
-"Kind of structure
-DATA(struct_kind) = type_descr_obj_struc->struct_kind. "F (flat)
+"----------------------------------------------------------------------
+"--- Examples using a type description object for a data reference ----
+"----------------------------------------------------------------------
+DATA ref_refdescr1 TYPE REF TO cl_abap_refdescr.
+TYPES type_ref_i TYPE REF TO i.
+DATA(tdo_ref) = cl_abap_typedescr=>describe_by_name( 'TYPE_REF_I' ).
+ref_refdescr1 = CAST #( tdo_ref ).
+DATA(ref_refdescr2) = CAST cl_abap_refdescr( tdo_ref ).
 
-"Internal table type
-TYPES tab_type TYPE SORTED TABLE OF zdemo_abap_carr
-  WITH UNIQUE KEY carrid.
+"Getting a reference to the type description object of a type used to
+"type the reference
+DATA(ref_type) = ref_refdescr1->get_referenced_type( ).
+DATA(ref_abs_name) = ref_refdescr1->get_referenced_type( )->absolute_name. "\TYPE=I
 
-DATA(type_descr_obj_tab) = CAST cl_abap_tabledescr(
-  cl_abap_typedescr=>describe_by_name( 'TAB_TYPE' ) ).
+"-------------------------------------------------------------------------
+"--- Examples using a type description object for an object reference ----
+"-------------------------------------------------------------------------
+DATA ref_oref1 TYPE REF TO cl_abap_objectdescr.
+ref_oref1 = CAST #( tdo_by_oref ).
+"See the hierarchy of type description classes. You may also use
+"cl_abap_classdescr.
+DATA(ref_oref2) = CAST cl_abap_classdescr( tdo_by_oref ).
 
-"Kind
-DATA(tab_kind) = type_descr_obj_tab->kind. "T
+"Returns a table with information about the class attributes
+DATA(class_attributes) = ref_oref1->attributes.
 
-"The following method returns more information than the attribute
-"below (e.g. key kind, i.e. if it is a unique key, etc.)
-DATA(tab_keys) = type_descr_obj_tab->get_keys( ).
-DATA(tab_keys2) = type_descr_obj_tab->key.
+"Returns a table with information about the methods such as
+"parameters, visibility and more
+DATA(class_methods) = ref_oref1->methods.
 
-"Getting internal table components
-"The method get_table_line_type returns a variable of type ref to
-"cl_abap_datadescr. This way you can retrieve the table components.
-"Method chaining is useful here.
-DATA(tab_comps) = CAST cl_abap_structdescr(
-  type_descr_obj_tab->get_table_line_type( ) )->get_components( ).
+"Returns a table with information about the interfaces implemented
+DATA(class_intf) = ref_oref1->interfaces.
 
-"Reference type
-TYPES ref_str TYPE REF TO string.
-DATA(type_descr_obj_ref) = CAST cl_abap_refdescr(
-  cl_abap_typedescr=>describe_by_name( 'REF_STR' ) ).
+"Can class be instantiated
+DATA(class_is_inst) = ref_oref1->is_instantiatable( ). "has the value abap_true
 
-"Returns the type description object of the referenced type
-DATA(ref_type) = type_descr_obj_ref->get_referenced_type( ).
+"Using an interface
+DATA(tdo_intf) = cl_abap_typedescr=>describe_by_name( 'ZDEMO_ABAP_OBJECTS_INTERFACE' ).
+DATA ref_iref TYPE REF TO cl_abap_intfdescr.
+ref_iref = CAST #( tdo_intf ). "cl_abap_objectdescr is also possible
 
-"Getting the absolute type name
-DATA(ref_type_abs_name) =
-  type_descr_obj_ref->get_referenced_type( )->absolute_name. "\TYPE=STRING
-
-"Kind/Type kind
-DATA(ref_kind) = type_descr_obj_ref->kind. "R
-DATA(ref_type_type_kind) =
-  type_descr_obj_ref->get_referenced_type( )->type_kind. "g (string)
-
-"Getting a reference to a type description object of an existing
-"data object. Instead of referring to the name of a type, referring
-"to a data object here. The relevant method is describe_by_data.
-
-"Elementary data object
-DATA dobj_elem TYPE i.
-DATA(ty_des_obj_el) = CAST cl_abap_elemdescr(
-  cl_abap_typedescr=>describe_by_data( dobj_elem ) ).
-
-"Structure
-DATA dobj_struc TYPE zdemo_abap_carr.
-DATA(ty_des_obj_struc) = CAST cl_abap_structdescr(
-  cl_abap_typedescr=>describe_by_data( dobj_struc ) ).
-
-"Internal table
-DATA dobj_itab TYPE TABLE OF zdemo_abap_carr WITH EMPTY KEY.
-DATA(ty_des_obj_itab) = CAST cl_abap_tabledescr(
-  cl_abap_typedescr=>describe_by_data( dobj_itab ) ).
-
-"Reference variable
-DATA dref_var TYPE REF TO string.
-DATA(ty_des_obj_dref) = CAST cl_abap_refdescr(
-  cl_abap_typedescr=>describe_by_data( dref_var ) ).
+DATA(ref_intf_attr) = ref_iref->attributes.
+DATA(ref_intf_meth) = ref_iref->methods.
+DATA(ref_intf_attr_objdescr) = CAST cl_abap_objectdescr( tdo_intf )->attributes.
 ```
 
 Excursions: 
@@ -1935,37 +2006,40 @@ DATA(type_descr_obj) = CAST cl_abap_structdescr(
   cl_abap_typedescr=>describe_by_name( 'SOME_STRUC_TYPE' ) ).
 ```
 
-The focus here is on using RTTC methods such as `get...`.
+The focus here is on using RTTC methods such as `get...`. It is recommended that you use the `get` method instead of the `create` method. 
 
 ```abap
-"Creating type description objects using ...
-"... elementary data types
-"Conceptually, all elementary, built-in ABAP types already 
+"----------------------------------------------------------------------
+"--- Creating type description objects using elementary data types ----
+"----------------------------------------------------------------------
+"Conceptually, all elementary, built-in ABAP types already
 "exist and can be accessed by the corresponding get_* methods.
-"In ADT, click CTRL + space after cl_abap_elemdescr=>... 
-"to check out the options. The following examples show a 
+"In ADT, click CTRL + space after cl_abap_elemdescr=>...
+"to check out the options. The following examples show a
 "selection.
 
 DATA(tdo_elem_i) = cl_abap_elemdescr=>get_i( ).
 DATA(tdo_elem_string) = cl_abap_elemdescr=>get_string( ).
 
-"For the length specification of type c and others, there is 
+"For the length specification of type c and others, there is
 "an importing parameter available.
 DATA(tdo_elem_c_l20) = cl_abap_elemdescr=>get_c( 10 ).
 
 "Type p with two parameters to be specified.
-DATA(tdo_elem_p) = cl_abap_elemdescr=>get_p( p_length   = 3 
+DATA(tdo_elem_p) = cl_abap_elemdescr=>get_p( p_length   = 3
                                              p_decimals = 2 ).
 
-"Note: Instead of calling get_i() and others having no importing 
-"parameters, you could also call the describe_by_name( ) method 
+"Note: Instead of calling get_i() and others having no importing
+"parameters, you could also call the describe_by_name( ) method
 "and pass the type names (I‚ STRING etc.) as arguments.
 "DATA(tdo_elem_i_2) = CAST cl_abap_elemdescr(
 "  cl_abap_typedescr=>describe_by_name( 'I' ) ).
 "DATA(tdo_elem_string_2) = CAST cl_abap_elemdescr(
 "  cl_abap_typedescr=>describe_by_name( 'STRING' ) ).
 
-"... structured data types
+"----------------------------------------------------------------------
+"--- Creating type description objects using structured data types ----
+"----------------------------------------------------------------------
 "They are created based on a component description table.
 
 "A structured type such as the following shall be created dynamically
@@ -1979,24 +2053,25 @@ TYPES: BEGIN OF struc_type,
 
 "Creating a type description object using RTTC method
 "Using the get method, you can create the type description object
-"dynamically based on a component table. The component table is 
-"of type abap_component_tab. In this example, the component table 
+"dynamically based on a component table. The component table is
+"of type abap_component_tab. In this example, the component table
 "is created inline.
 DATA(tdo_struc) = cl_abap_structdescr=>get(
     VALUE #(
       ( name = 'A' type = cl_abap_elemdescr=>get_string( ) )
       ( name = 'B' type = cl_abap_elemdescr=>get_i( ) )
       ( name = 'C' type = cl_abap_elemdescr=>get_c( 5 ) )
-      ( name = 'D' type = cl_abap_elemdescr=>get_p( p_length   = 4 
+      ( name = 'D' type = cl_abap_elemdescr=>get_p( p_length   = 4
                                                     p_decimals = 3 ) ) ) ).
 
-"... internal table types
+"---------------------------------------------------------------------
+"--- Creating type description objects using internal table types ----
+"---------------------------------------------------------------------
 "Note: Specifying the line type is mandatory, the rest is optional.
 
 "An internal table type such as the following shall be created dynamically
 "using a type description object.
-TYPES std_tab_type_std_key TYPE STANDARD TABLE OF string 
-  WITH DEFAULT KEY.
+TYPES std_tab_type_std_key TYPE STANDARD TABLE OF string WITH DEFAULT KEY.
 
 "Creating a type description object using RTTC method
 "Not specifying the other optional parameters means that the
@@ -2005,24 +2080,23 @@ TYPES std_tab_type_std_key TYPE STANDARD TABLE OF string
 DATA(tdo_tab_1) = cl_abap_tabledescr=>get(
         p_line_type  = cl_abap_elemdescr=>get_string( ) ).
 
-"Another internal table type for which more parameter specifications 
-"are needed. The following internal table type shall be created using 
+"Another internal table type for which more parameter specifications
+"are needed. The following internal table type shall be created using
 "a type description object.
-TYPES so_table_type TYPE SORTED TABLE OF zdemo_abap_flsch 
-  WITH UNIQUE KEY carrid connid.
+TYPES so_table_type TYPE SORTED TABLE OF zdemo_abap_flsch WITH UNIQUE KEY carrid connid.
 
 "Creating a type description object using RTTC method
 "The following example also demonstrates how comfortably constructor
 "operators can be used at these positions.
 DATA(tdo_tab_2) = cl_abap_tabledescr=>get(
-        p_line_type  = CAST cl_abap_structdescr( 
+        p_line_type  = CAST cl_abap_structdescr(
                          cl_abap_tabledescr=>describe_by_name( 'ZDEMO_ABAP_FLSCH' ) )
         p_table_kind = cl_abap_tabledescr=>tablekind_sorted
         p_key        = VALUE #( ( name = 'CARRID' ) ( name = 'CONNID' ) )
         p_unique     = cl_abap_typedescr=>true ).
 
 " ... reference types
-"Reference types such as the following shall be created using a 
+"Reference types such as the following shall be created using a
 "type description object.
 TYPES some_ref_type2t TYPE REF TO t.
 TYPES some_ref_type2cl TYPE REF TO zcl_demo_abap_dynamic_prog.
@@ -2031,7 +2105,7 @@ TYPES some_ref_type2cl TYPE REF TO zcl_demo_abap_dynamic_prog.
 "You can create a reference type from a base type. This base type
 "may be a class, interface or data type.
 DATA(tdo_ref_1) = cl_abap_refdescr=>get( cl_abap_elemdescr=>get_t( ) ).
-DATA(tdo_ref_2) = cl_abap_refdescr=>get( 
+DATA(tdo_ref_2) = cl_abap_refdescr=>get(
                     cl_abap_typedescr=>describe_by_name( 'ZCL_DEMO_ABAP_DYNAMIC_PROG' ) ).
 "Alternative: get_by_name method
 DATA(tdo_ref_3) = cl_abap_refdescr=>get_by_name( 'T' ).
