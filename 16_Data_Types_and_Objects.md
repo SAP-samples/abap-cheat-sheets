@@ -336,7 +336,7 @@ FIELD-SYMBOLS:
   <xsequence>      TYPE xsequence, "Byte-like (x, xstring)
 
   "Numeric types
-  <decfloat>       TYPE decfloat, "decfloat16, decfloat34)
+  <decfloat>       TYPE decfloat, "decfloat16, decfloat34
   <numeric>        TYPE numeric,  "Numeric ((b, s), i, int8, p, decfloat16, decfloat34, f)
   <p>              TYPE p,        "Packed number (generic length and number of decimal places)
 
@@ -461,8 +461,11 @@ ASSIGN s-structure TO <simple>.
 ASSIGN s-xl1 TO <simple>.
 "ASSIGN s-tab_ha TO <simple>.
 
-ASSIGN s-oref TO <object>.
 s-oref = NEW zcl_demo_abap_objects( ).
+ASSIGN s-oref TO <object>.
+"Accessing class attributes using casting
+DATA(publ_str) = CAST zcl_demo_abap_objects( <object> )->public_string.
+CAST zcl_demo_abap_objects( <object> )->another_string = `ABAP`.
 ```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>

@@ -746,7 +746,7 @@ DATA rep TYPE RESPONSE FOR REPORTED entity.
 ### Components of BDEF Derived Types
 
 Many of the BDEF derived types contain components of CDS entities like
-key and data fields that retain their original line type, for example, a
+key and data fields that retain their original data type, for example, a
 messenger table typed with `TYPE TABLE FOR CREATE`. Certainly,
 if an instance is to be created, key and field values of a RAP BO
 instance are of relevance.

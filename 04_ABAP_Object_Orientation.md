@@ -14,13 +14,20 @@
       - [Creating the Visibility Sections](#creating-the-visibility-sections)
     - [Defining Components](#defining-components)
   - [Working with Objects and Components](#working-with-objects-and-components)
+    - [Declaring Reference Variables](#declaring-reference-variables)
+    - [Creating Objects](#creating-objects)
+    - [Assigning Reference Variables](#assigning-reference-variables)
+    - [Accessing Attributes](#accessing-attributes)
+    - [Calling Methods](#calling-methods)
+    - [Method Chaining](#method-chaining)
+    - [Self-Reference me](#self-reference-me)
   - [Notes on Inheritance](#notes-on-inheritance)
   - [Notes on Polymorphism and Casting](#notes-on-polymorphism-and-casting)
   - [Notes on Interfaces](#notes-on-interfaces)
-  - [Additional Notes](#additional-notes)
+  - [Excursions](#excursions)
     - [Friendship](#friendship)
     - [Events](#events)
-    - [Excursion: Factory Methods and Singletons as Design Patterns](#excursion-factory-methods-and-singletons-as-design-patterns)
+    - [Factory Methods and Singletons as Design Patterns](#factory-methods-and-singletons-as-design-patterns)
   - [More Information](#more-information)
   - [Executable Example](#executable-example)
 
@@ -293,7 +300,7 @@ ENDCLASS.
     (also known as
     [signature](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensignature_glosry.htm "Glossary Entry"))
     with which methods can get values to work with when being called and pass values
-    back to the caller.
+    back to the caller (see the notes on formal and actual parameters below).
 -   [Static
     methods](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenstatic_method_glosry.htm "Glossary Entry")
     can only access static attributes of a class and trigger static
@@ -329,7 +336,10 @@ In the simplest form, methods can have no parameter at all. Apart from that, met
     [generic](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abengeneric_data_type_glosry.htm "Glossary Entry")
     or
     [complete](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencomplete_data_type_glosry.htm "Glossary Entry")
-    type.
+    type. Examples:
+>      - `fp` is the formal parameter that has a complete type: `... meth IMPORTING fp TYPE string ...`
+>      - `gen` is the formal parameter that has a generic type: `... meth IMPORTING gen TYPE any ...`
+>      - Find more information about generic types also in the [Data Types and Data Objects](16_Data_Types_and_Objects.md#generic-types) cheat sheet.
 >   - This formal parameter includes the specification of how the
     value passing should happen. Parameters can be [passed by
     reference](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenpass_by_reference_glosry.htm "Glossary Entry")
@@ -420,11 +430,18 @@ CLASS local_class DEFINITION.
                      stat_meth3 IMPORTING VALUE(m) TYPE i,       "pass by value
                      stat_meth4 IMPORTING REFERENCE(n) TYPE i,   "pass by reference
                      stat_meth5 IMPORTING o TYPE i,              "same as n; the specification of REFERENCE(...) is optional
-                     stat_meth6 RETURNING VALUE(p) TYPE,         "pass by value once more (note: it's the only option for returning parameters)
+                     stat_meth6 RETURNING VALUE(p) TYPE i,       "pass by value once more (note: it's the only option for returning parameters)
 
                      "OPTIONAL/DEFAULT additions
                      stat_meth7 IMPORTING q TYPE i DEFAULT 123
-                                          r TYPE i OPTIONAL.
+                                          r TYPE i OPTIONAL,
+
+                     "The examples above use a complete type for 
+                     "the parameter specification. Generic types
+                     "are possible.
+                     stat_meth8 IMPORTING s TYPE any           "Any data type
+                                          t TYPE any table     "Any internal table type                 
+                                          u TYPE clike.        "Character-like types (c, n, string, d, t and character-like flat structures)
 
 ENDCLASS.
 
@@ -441,7 +458,7 @@ ENDCLASS.
 
 ## Working with Objects and Components
 
-**Declaring reference variables**:
+### Declaring Reference Variables
 - To create an object, a [reference variable](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenreference_variable_glosry.htm "Glossary Entry")
 must be declared.
 - Such an [object reference
@@ -455,7 +472,9 @@ DATA: ref1 TYPE REF TO local_class,
       ref3 LIKE ref1.
 ```
 
-**Creating objects**:
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+### Creating Objects
 
 -   Using the instance operator
     [`NEW`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconstructor_expression_new.htm),
@@ -494,7 +513,10 @@ DATA(ref2) = NEW some_class( ).      "Reference variable declared inline, explic
 "CREATE OBJECT ref4 TYPE some_class.  "Corresponds to the result of the expression above
 ```
 
-**Assigning reference variables**: To assign or copy
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+### Assigning Reference Variables
+To assign or copy
 reference variables, use the [assignment
 operator](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenassignment_operator_glosry.htm "Glossary Entry")
 `=`. In the example below, both object reference variables have the same
@@ -509,6 +531,8 @@ ref1 = NEW #( ).
 "Assigning existing reference
 ref2 = ref1.
 ```
+
+More examples for dealing with object reference variables:
 
 **Overwriting reference variables**: An [object
 reference](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenobject_reference_glosry.htm "Glossary Entry")
@@ -545,7 +569,9 @@ CLEAR ref.
 > Objects use up space in the memory and should therefore be
 cleared if they are no longer needed. However, the [garbage collector](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abengarbage_collector_glosry.htm "Glossary Entry") is called periodically and automatically by the [ABAP runtime framework](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_runtime_frmwk_glosry.htm "Glossary Entry") and clears all objects without any reference.
 
-**Accessing attributes**:
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+### Accessing Attributes
 - Instance attributes: Accessed using
 the [object component selector](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenobject_component_select_glosry.htm "Glossary Entry")
 `->` via a reference variable.
@@ -572,7 +598,9 @@ DATA dobj1      TYPE some_class=>some_type.
 DATA dobj2      LIKE some_class=>some_static_attribute.
 ```
 
-**Calling methods**:
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+### Calling Methods
 - Similar to accessing attributes, instance
 methods are called using `->` via a reference variable.
 - Static
@@ -580,11 +608,8 @@ methods are called using `=>` via the class name. When used
 within the class in which it is declared, the static method can also be
 called without `class_name=>...`.
 - When methods are called, the (non-optional) parameters must be specified within parentheses.
-- You might also stumble on method
-calls with [`CALL METHOD`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapcall_method_static.htm)
-statements in older programs. It should no longer be used, however, `CALL METHOD` statements are the
-only option in the context of dynamic programming.
-
+- You might also stumble on method calls with [`CALL METHOD`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapcall_method_static.htm)
+statements. These statements should no longer be used. Note that `CALL METHOD` statements are the only option in the context of [dynamic programming](06_Dynamic_Programming.md). Therefore, `CALL METHOD` statements should be reserved for dynamic method calls.
 
 
 Examples for instance method calls and static method calls:
@@ -642,13 +667,13 @@ class_name=>meth( CHANGING g = h ).
 
 "Calling (static) methods having a returning parameter.
 "Basically, they do the same as methods with exporting parameters
-"but they are way more versatile and you save lines of code.
+"but they are way more versatile, and you can save lines of code.
 
 "They do not need temporary variables.
 "In the example, the return value is stored in a variable declared inline.
 
 "i and k are importing parameters
-DATA(result) = class_name=>meth( i = j k = l )
+DATA(result) = class_name=>meth( i = j k = l ).
 
 "They can be used with other statements, e. g. logical expressions.
 "In the example below, the assumption is that the returning parameter is of type i.
@@ -659,17 +684,78 @@ ENDIF.
 "They enable method chaining.
 "The example shows a method to create random integer values.
 "The methods have a returning parameter.
-
 DATA(random_no) = cl_abap_random_int=>create( )->get_next( ).
 
-"Receiving parameter: Available in methods defined with a returning parameter;
+"RECEIVING parameter: Available in methods defined with a returning parameter;
 "used in standalone method calls only.
 "In the snippet, m is the returning parameter; n stores the result.
-
 class_name=>meth( EXPORTING i = j k = l RECEIVING m = DATA(n) ).
 ```
 
-**Self-Reference me**
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+### Method Chaining
+
+As shown in the previous example, method chaining is possible for functional method calls (i.e. methods that have exactly one return value declared with `RETURNING`) at appropriate read positions. In this case, the method's return value is used as an ABAP operand.
+A chained method call can consist of multipled functional methods that are linked using component selectors `->`. The return values of each method are references to the next method.
+
+```abap
+"The following example demonstrates method chaining
+"The following class creates random integers. Find more information in the
+"class documentation.
+"Both methods have returning parameters specified.
+DATA(some_int1) = cl_abap_random_int=>create( seed = cl_abap_random=>seed( )
+                                              min  = 1
+                                              max  = 10 )->get_next( ).
+
+"Getting to the result as above - not using method chaining and inline declarations.
+DATA some_int2 TYPE i.
+DATA dref TYPE REF TO cl_abap_random_int.
+
+dref = cl_abap_random_int=>create( seed = cl_abap_random=>seed( )
+                                   min  = 1
+                                   max  = 10 ).
+
+some_int2 = dref->get_next( ).
+
+"Using the RECEIVING parameter in a standalone method call
+DATA some_int3 TYPE i.
+dref->get_next( RECEIVING value = some_int3 ).
+
+"IF statement that uses the return value in a read position
+IF cl_abap_random_int=>create( seed = cl_abap_random=>seed( )
+                               min  = 1
+                               max  = 10 )->get_next( ) < 5.
+  ... "The random number is lower than 5.
+ELSE.
+  ... "The random number is greater than 5.
+ENDIF.
+
+"Examples using classes of the XCO library (see more information in the
+"ABAP for Cloud Development and Misc ABAP Classes cheat sheets), in which
+"multiple chained method calls can be specified. Each of the methods
+"has a returning parameter specified.
+
+"In the following example, 1 hour is added to the current time.
+DATA(add1hour) = xco_cp=>sy->time( xco_cp_time=>time_zone->user )->add( iv_hour = 1 )->as( xco_cp_time=>format->iso_8601_extended )->value.
+
+"In the following example, a string is converted to xstring using a codepage
+DATA(xstr) = xco_cp=>string( `Some string` )->as_xstring( xco_cp_character=>code_page->utf_8 )->value.
+
+"In the following example, JSON data is created. First, a JSON data builder
+"is created. Then, using different methods, JSON data is added. Finally,
+"the JSON data is turned to a string.
+DATA(json) = xco_cp_json=>data->builder( )->begin_object(
+  )->add_member( 'CarrierId' )->add_string( 'DL'
+  )->add_member( 'ConnectionId' )->add_string( '1984'
+  )->add_member( 'CityFrom' )->add_string( 'San Francisco'
+  )->add_member( 'CityTo' )->add_string( 'New York'
+  )->end_object( )->get_data( )->to_string( ).
+```
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+### Self-Reference me
 
 When implementing instance methods, you can optionally make use of the implicitly available object reference variable [`me`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenme.htm) which is always available at runtime and points to the respective object itself. You can use it to refer to components of the instance of a particular class:
 ``` abap
@@ -1066,7 +1152,7 @@ i_ref = NEW class( ).
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-## Additional Notes
+## Excursions
 
 ### Friendship
 
@@ -1154,7 +1240,7 @@ SET HANDLER handler3.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-### Excursion: Factory Methods and Singletons as Design Patterns
+### Factory Methods and Singletons as Design Patterns
 
 In object-oriented programming, there a plenty of design patterns. Covering these ones here to get a rough idea: factory methods and singletons. Both are relevant if you want to restrict or control the instantiation of a class by external users of this class.
 

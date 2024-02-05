@@ -93,7 +93,7 @@ ENDTRY.
 <td>
 As an alternative to using the <code>IF_OO_ADT_CLASSRUN</code> interface for displaying output in the console, you can also use the <code>CL_DEMO_CLASSRUN</code> class, which offers more methods.
 For more information, refer to <a href="https://blogs.sap.com/2023/10/24/abap-console-reloaded/">this blog</a>.
-The following example makes use of <code>CL_DEMO_CLASSRUN</code> class for output purposes. A structure and an internal table are displayed in the console. Note the automatic dereferencing of the component. Plus, the <code>write_xml</code> method is shown, which displays XML data.
+The following example makes use of the <code>CL_DEMO_CLASSRUN</code>. A structure and an internal table are displayed in the console. A structure component is a reference variable, which is automatically dereferenced. Plus, the <code>write_xml</code> method is shown, which displays XML data.
 <br><br>
 
 ``` abap
@@ -604,7 +604,7 @@ DATA(str_no_blanks) = CONV string( chars ).
 </td>
 </tr>
 <tr>
-<td> <code>CL_ABAP_CONV_CODEPAGE</code><br><code>XCO_CP</code> </td>
+<td> <code>CL_ABAP_CONV_CODEPAGE</code> </td>
 <td> 
 For handling code pages, converting strings to the binary representation of different code pages and vice versa. 
 <br><br>
@@ -2181,7 +2181,7 @@ It only explores method calls and is intended to give a rough idea of the functi
 <li>Third, a public API provided by GitHub is used to render markdown text to HTML. This is done by creating another client object. HTTP POST requests are sent, and the responses are retrieved. The responses should contain the code snippets converted to HTML in a string. The code snippets are added to HTML expandable sections.</li>
 <li>Finally, the expandable sections containing the code snippets per cheat sheet are added to a simple HTML page. The code of the assembled HTML page is displayed in the ADT console.</li>
 <li>For example and for demonstration purposes, if the HTML code is displayed in the ADT console, you can create a file named <em>ABAP_cheat_sheet_code.html</em> on your local machine. Open the file in an editor, copy and paste the entire ADT console content (it is recommended that you clear the ADT console before running the class to avoid copying and pasting unwanted output), and save the local file. Open the saved file in a web browser. You will now have several code snippets from the cheat sheets available offline. 
-In fact, the output (plain html with a lot of code) of this example is not a meaningful reference artifact and may not be of much use. 
+In fact, the output (plain html with a lot of code) of this example may not be a meaningful reference artifact. 
 Nevertheless, the example may give you an idea of how to use the ABAP classes, GET and POST requests, and so on (and you may also be interested in the various options for string processing as used in the example and described in the respective cheat sheet). Follow the links for more information. </li>
 <li>Before using the GitHub APIs, make sure that you have consulted the following documentation: <a href="https://docs.github.com/en">GitHub Docs</a>, <a href="https://docs.github.com/en/enterprise-cloud@latest/rest/markdown/markdown?apiVersion=2022-11-28#render-a-markdown-document">Render a Markdown document</a>, <a href="https://docs.github.com/en/rest/using-the-rest-api/rate-limits-for-the-rest-api?apiVersion=2022-11-28">Rate limits for the REST API</a> </li>
 </ul>
@@ -2245,7 +2245,7 @@ CLASS zcl_some_class IMPLEMENTATION.
 
       "In the following loop, the raw markdown content is retrieved using an HTTP GET request, also
       "by creating a client object and using a destination (another plain URL). The URL is constructed
-      "using the constant value plus the markdown file that was retreived before.
+      "using the constant value plus the markdown file that was retrieved before.
       LOOP AT tab REFERENCE INTO DATA(cs).
         url = url_gh && cs->file_name.
         TRY.
@@ -2259,7 +2259,7 @@ CLASS zcl_some_class IMPLEMENTATION.
             "snippet (indicated by the triple ```) is deleted.
             "The replacements with dummy content in the loop are only done so that
             "the POST request further down can work with the provided content
-            "(i.e. avoiding issues characters such as "; they are inserted later again).
+            "(i.e. avoiding issues with characters such as "; they are inserted later again).
             LOOP AT snippets REFERENCE INTO DATA(line).
               DATA(tabix) = sy-tabix.
               FIND PCRE '^\s*```' IN line->*.

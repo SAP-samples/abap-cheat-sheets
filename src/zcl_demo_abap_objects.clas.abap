@@ -12,7 +12,7 @@
 *   classes to support the example.
 * - Artifacts related to this example:
 *   - zdemo_abap_objects_interface: Separate global interface to demonstrate
-*     working with
+*     working with interfaces
 *   - zcl_demo_abap_objects_friend: Another global class used to demonstrate
 *     the concept of friendship
 *

@@ -470,7 +470,7 @@ APPEND INITIAL LINE TO itab.
 INSERT INITIAL LINE INTO TABLE itab.
 ```
 
-**Adding a line and assignin the added line to a field symbol or data reference variable**.
+**Adding a line and assigning the added line to a field symbol or data reference variable**.
 ```abap
 "When inserting single lines, you can specify the optional additions 
 "ASSIGNING and REFERENCE INTO. If the insertion is successful, the 

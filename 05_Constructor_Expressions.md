@@ -1507,25 +1507,68 @@ DATA(it11) = VALUE itab_type( FOR wa IN itab USING KEY primary_key ( col1 = wa-c
 *ccct    9       13
 
 "---------- Conditional iterations ----------
+"Notes:
+"- When used with VALUE/NEW for internal tables: New table lines are created in
+"  iteration steps and added to result
+"- When used with REDUCE (as shown below): Reduction result is created in iteration steps
+"- Regarding the THEN addition:
+"  - Must be specified if the iteration variable specified after FOR is not a numeric data
+"    type and not of type d/t
+"  - If the iteration variable is a numeric type/type d or t, THEN is optional. If THEN
+"    is not specified, the iteration variable is implicitly incremented by 1.
 
-"FOR ... WHILE ...    
+"FOR ... WHILE ...
+"Implicit incrementing of the iteration variable
 DATA(it12) = VALUE itab_type( FOR x = 1 WHILE x < 4
                               ( col1 = x col2 = x + 1 col3 = x + 2 ) ).
 
 *COL1    COL2    COL3
-*   1    2       3   
-*   2    3       4   
-*   3    4       5   
+*   1    2       3
+*   2    3       4
+*   3    4       5
+
+"The following example corresponds to the previous one. Here, THEN
+"is explicitly specified.
+DATA(it13) = VALUE itab_type( FOR x = 1 THEN x + 1 WHILE x < 4
+                              ( col1 = x col2 = x + 1 col3 = x + 2 ) ).
+
+"THEN explicitly specified
+DATA(it14) = VALUE itab_type( FOR x = 1 THEN x + 2 WHILE x < 8
+                              ( col1 = x col2 = x + 1 col3 = x + 2 ) ).
+
+*COL1    COL2    COL3
+*   1    2       3
+*   3    4       5
+*   5    6       7
+*   7    8       9
+
+"THEN addition is required for non-numeric data types of the iteration
+"variable
+DATA(it15) = VALUE itab_type( FOR str = `x` THEN str && str WHILE strlen( str ) < 5
+                              ( col1 = str col2 = strlen( str ) + 1 col3 = strlen( str ) + 2 ) ).
+
+*COL1    COL2    COL3
+*x       2       3
+*xx      3       4
+*xxxx    5       6
 
 "FOR ... UNTIL ...
-"The THEN addition is also possible for ... WHILE ...
-DATA(it13) = VALUE itab_type( FOR y = 31 THEN y - 10 UNTIL y < 10
+DATA(it16) = VALUE itab_type( FOR y = 10 UNTIL y > 12
                               ( col1 = y col2 = y + 1 col3 = y + 2 ) ).
 
 *COL1    COL2    COL3
-*  31    32      33  
-*  21    22      23  
-*  11    12      13  
+*  10    11      12
+*  11    12      13
+*  12    13      14
+
+"THEN explicitly specified
+DATA(it17) = VALUE itab_type( FOR y = 31 THEN y - 10 UNTIL y < 10
+                              ( col1 = y col2 = y + 1 col3 = y + 2 ) ).
+
+*COL1    COL2    COL3
+*  31    32      33
+*  21    22      23
+*  11    12      13
 ```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
@@ -1689,7 +1732,7 @@ DATA(it_val_2) = VALUE string_table(
 *b: 7, 8 / 9, 10
 *c: 11, 12
 
-"Constucting a result using REDUCE
+"Constructing a result using REDUCE
 "The example is similar to the previous one by filling a string table.
 "The example uses a group key expression specified after GROUP BY.
 "In the group key expression, additional components of a structured
