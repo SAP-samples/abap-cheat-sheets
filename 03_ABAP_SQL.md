@@ -1105,7 +1105,8 @@ topic.
 | `... [NOT] LIKE ...`         |      The content of an operand matches (does not match) a specified pattern. The pattern can be specified by using wildcard characters. `%` stands for any character string, including an empty string. `_` stands for any character.|
 | `... IS [NOT] INITIAL ...`   |      The value of an operand is (not) the initial value of its built-in dictionary type.|
 | `... EXISTS ...`           |              Checks the result set of a [subquery](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensubquery_glosry.htm "Glossary Entry"). The expression is true if the result set contains at least one row. See more information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenwhere_logexp_subquery.htm).|
-| `... [NOT] IN ( ... )`      |       Checks whether the operands on the left side match a value from a set of values specified in parentheses. On the left side, a single operand or an operand list are possible. On the right side, a comma-separated lists or subqueries can be specified.|
+| `... [NOT] IN ...`      |       Checks whether the operands on the left side match a value from a set of values specified in parentheses. On the left side, a single operand or an operand list are possible. On the right side, a comma-separated lists or subqueries can be specified. It is also possible to specify a [ranges table](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenranges_table_glosry.htm) to evaluate [ranges conditions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenranges_condition_glosry.htm).|
+| `... [NOT] NULL ...`      |   Checks whether the value of an operand is (not) the [null value](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abennull_value_glosry.htm). Find more information in the code snippet and in the [ABAP Keyword Documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenwhere_logexp_null.htm).   |
 
 > **💡 Note**<br>
 >You can combine multiple logical expressions into one
@@ -1113,43 +1114,243 @@ logical expression using `AND` or `OR`. To further
 detail out the desired condition, expressions within parentheses are
 possible.
 
-For demonstration purposes, various SQL conditions mentioned above are included in a `WHERE` clause:
+Examples:
 
 ``` abap
-SELECT * 
-  FROM dbtab
-  WHERE comp1 = 'abc' "Equals some value
-        
-        "More example WHERE conditions:
-        AND comp2 > 100 "Greater than some value; alternatively GT is possible
-        
-        "Not equals plus an additional condition that must be respected
-        AND comp3 <> 100 AND comp4 = 'xyz'
-        
-        "(Not) between a value range
-        AND comp5 BETWEEN 1 AND 10
-        AND comp6 NOT BETWEEN 1 AND 10
-        
-        "A character literal has a certain pattern, preceded and
-        "followed by any string.
-        AND comp7 LIKE '%XYZ%'
-        
-        "The second character is not Y. _ stands for any character.
-        AND comp8 NOT LIKE '_Y%'
-        
-        "Contains one of the values specified in the parentheses
-        AND comp9 IN ( 'ABC', 'DEF', 'GHI' )
-                        
-        "Does not contain one of the values specified in the parentheses
-        AND comp10 NOT IN ( 'JKL', 'MNO' )
-        
-        "Checking if an operand has an initial value
-        AND comp11 IS INITIAL
-        
-        "Combination of logical expression using AND, OR and parentheses
-        AND ( comp12 = a AND comp13 < b ) OR ( comp14 > c AND comp15 <> d )
-        
-  INTO TABLE @DATA(itab_where).
+"---- SQL conditions demonstrated with the WHERE clause ----
+"Note:
+"- For most of the self-contained examples, an internal table is used as the
+"  data source of SELECT statements to work with simple data.
+"- For some examples that are covered, such as subqueries, demo database tables
+"  from the cheat sheet repository are used in addition.
+"- Dynamic specifications are also possible. They are not covered here. See
+"  the Dynamic Programming cheat sheet.
+
+"---- Types and internal table to work with in the examples ----
+"Note: You cannot use type string columns in WHERE conditions.
+TYPES: BEGIN OF demo_struc,
+          id   TYPE i,
+          name TYPE c LENGTH 15,
+          "name TYPE string,
+        END OF demo_struc.
+DATA itab TYPE SORTED TABLE OF demo_struc WITH UNIQUE KEY id.
+"Populating internal table with data to work with in the examples
+itab = VALUE #( ( id = 1 name = 'bear' )
+                ( id = 2 name = 'camel' )
+                ( id = 3 name = 'rabbit' )
+                ( id = 4 name = 'zebra' )
+                ( id = 5 name = 'dog' )
+                ( id = 6 name = 'deer' )
+                ( id = 7 name = 'squirrel' )
+                ( id = 8 name = 'cheetah' )
+                ( id = 9 name = 'elephant' )
+                ( id = 10 name = 'donkey' )
+                ( id = 11 name = 'fish' )
+                ( id = 12 name = 'sheep' ) ).
+
+"---- =, <>, >, >= (as a selection of possible comparison operators) ----
+SELECT id FROM @itab AS tab WHERE name = 'bear' INTO TABLE @DATA(it). "1
+SELECT id FROM @itab AS tab WHERE name <> 'bear' INTO TABLE @it. "2-12
+SELECT id FROM @itab AS tab WHERE id > 10 INTO TABLE @it. "11,12
+SELECT id FROM @itab AS tab WHERE id >= 10 INTO TABLE @it. "10,11,12
+
+"---- Combining logical expressions using AND, OR and parentheses  ----
+SELECT id FROM @itab AS tab WHERE id = 1 AND name = 'bear' INTO TABLE @it. "1
+SELECT id FROM @itab AS tab WHERE name = 'bear' OR name = 'sheep' INTO TABLE @it. "1,12
+
+"In the following example, the resulting table is initial. One of the expressions
+"in parentheses is false (AND is used between the expressions in parentheses).
+"In contrast, the example below returns an entry because of using OR.
+SELECT id FROM @itab AS tab
+  WHERE ( id = 1 AND name = 'bear' )
+  AND ( id = 20 AND name = 'camel' )
+  INTO TABLE @it.
+
+SELECT id FROM @itab AS tab
+  WHERE ( id = 1 AND name = 'bear' )
+  OR ( id = 20 AND name = 'camel' )
+  INTO TABLE @it. "1
+
+"------------------------ [NOT] BETWEEN ------------------------
+SELECT id FROM @itab AS tab WHERE id BETWEEN 1 AND 4 INTO TABLE @it. "1,2,3,4
+"The condition with BETWEEN above corresponds to the following condition.
+"The example makes use of a condition specified in parentheses to combine multiple
+"expressions.
+SELECT id FROM @itab AS tab WHERE ( id >= 1 AND id <= 4 ) INTO TABLE @it. "1,2,3,4
+"Negation with NOT
+SELECT id FROM @itab AS tab WHERE id NOT BETWEEN 1 AND 4 INTO TABLE @it. "5-12
+
+"------------------------ IS [NOT] INITIAL ------------------------
+SELECT id FROM @itab AS tab WHERE id IS NOT INITIAL INTO TABLE @it. "1-12
+
+"------------------------ [NOT] LIKE ------------------------
+"For (not) matching a specified pattern
+"Note: % (any character string), _ (any character).
+SELECT name FROM @itab AS tab
+  WHERE name LIKE '%ee%'
+  OR name LIKE '_o%'
+  INTO TABLE @DATA(names). "dog,deer,cheetah,donkey,sheep
+
+"ESCAPE addition for defining a single-character escape character
+"In the following example, this character is #. It is placed before
+"the % character in the specification after LIKE. In this case, %
+"is escaped and does then not stand for any character string in the
+"evaluation.
+"Adding a table entry for this syntax example.
+itab = VALUE #( BASE itab ( id = 13 name = '100%' ) ).
+"Any character sequence followed by the % character
+SELECT name FROM @itab AS tab
+  WHERE name LIKE '%#%' ESCAPE '#'
+  INTO TABLE @names. "100%
+
+"Deleting the entry because it is not relevant for the further examples.
+DELETE itab INDEX 13.
+
+"------------------------ [NOT] IN (using a value set) ------------------------
+"For (not) matching a value in a set of values specified in parentheses.
+
+"Single operands on the left side of IN
+SELECT id FROM @itab AS tab
+  WHERE name IN ( 'camel', 'rabbit', 'dog', 'snake' )
+  INTO TABLE @it. "2,3,5
+
+"Negation NOT IN; note to use host variables/expressions for local/global data objects
+DATA(animal) = 'sheep'.
+SELECT id FROM @itab AS tab
+  WHERE name NOT IN ( 'fish', @animal )
+  INTO TABLE @it. "1-10
+
+"Operand list (a parenthesized comma-separated list) on the left side of IN
+"For (not) matching value tuples from a set of value tuples specified in parentheses on the right side.
+"In the following example, two values are specified in the operand list on the left. Consequently,
+"two values with appropriate types must be specified in parentheses on the right.
+SELECT id FROM @itab AS tab
+  WHERE ( id, name ) IN ( ( 1, 'bear' ), ( 3, 'rabbit' ), ( 8, 'zebra' ), ( 20, 'dog' ) )
+  INTO TABLE @it. "1,3
+
+
+"------------------------ [NOT] IN (using a subquery) ------------------------
+"[NOT] IN for matching a value contained in the result set of a subquery
+
+"In the following example, the subquery reads data from a demo database table.
+"For a representative result, the table is cleared, and then filled with 'suitable'
+"data sets.
+DELETE FROM zdemo_abap_tab1.
+MODIFY zdemo_abap_tab1 FROM TABLE @( VALUE #( ( key_field = 11 num1 = 11 )
+                                              ( key_field = 12 num1 = 12 )
+                                              ( key_field = 13 num1 = 13 )
+                                              ( key_field = 14 num1 = 14 ) ) ).
+
+SELECT id FROM @itab AS tab
+  WHERE id IN ( SELECT key_field FROM zdemo_abap_tab1 ) INTO TABLE @it. "11,12
+
+"------------------------ [NOT] IN (using a ranges table) ------------------------
+"[NOT] IN for checking whether the operands on the left side match a ranges condition in a ranges table
+
+"Declaring a ranges table
+DATA rangestab TYPE RANGE OF i.
+"Populating a ranges table using the VALUE operator
+rangestab = VALUE #( ( sign   = 'I' option = 'BT' low = 1 high = 3 )
+                      ( sign   = 'I' option = 'GE' low = 10  ) ).
+
+SELECT id FROM @itab AS tab WHERE id IN @rangestab INTO TABLE @it. "1,2,3,10,11,12
+
+
+"You cannot use logical operators such as CP (conforms to pattern) in the WHERE clause.
+"In a ranges table, they are possible.
+"Note:
+"- Regarding CP: * (any character sequence), + (any character), # (escape character)
+"- An equivalent example above uses the LIKE addition.
+DATA rt TYPE RANGE OF demo_struc-name.
+rt = VALUE #( ( sign   = 'I' option = 'CP' low = '*ee*' ) "ee in a string
+              ( sign   = 'I' option = 'CP' low = '+o*' ) ). "o in second position
+SELECT name FROM @itab AS tab
+  WHERE name IN @rt
+  INTO TABLE @names. "dog,deer,cheetah,donkey,sheep
+
+"------------------------ EXISTS ------------------------
+"For checking the result set of a subquery.
+"The following example reads all entries from the internal table if entries having
+"the same key also exist in the database table.
+"Note: The SELECT list in the subquery only contains a literal to determine that
+"the entry exists. Specifying explicit column names is not relevant.
+SELECT id FROM @itab AS tab WHERE
+  EXISTS ( SELECT @abap_true FROM zdemo_abap_tab1 WHERE key_field = tab~id )
+  INTO TABLE @it. "11,12
+
+"------------------------ [NOT] NULL ------------------------
+"The null value is a special value that is returned by a database. It indicates an
+"undefined value or result. Note that, in ABAP, there are no special null values. Do
+"not confuse the null value with a type-dependent initial value. When using SELECT
+"statements to read data, null values can be produced by, for example, outer joins.
+"When the null values are passed to a data object, they are transformed to the
+"type-dependent initial values. For more information, refer to the ABAP Keyword Documentation.
+"The following example uses a left outer join to intentionally create null values. For
+"this purpose, two demo database tables of the cheat sheet repository are cleared and
+"populated with specific values to visulaize null values.
+DELETE FROM zdemo_abap_tab1.
+DELETE FROM zdemo_abap_tab2.
+MODIFY zdemo_abap_tab1 FROM TABLE @( VALUE #( ( key_field = 1 char1 = 'a' char2 = 'y' )
+                                              ( key_field = 2 char1 = 'b' char2 = 'z' ) ) ).
+MODIFY zdemo_abap_tab2 FROM TABLE @( VALUE #( ( key_field = 1 char1 = 'a' )
+                                              ( key_field = 2 char1 = 'a' )
+                                              ( key_field = 3 char1 = 'b' )
+                                              ( key_field = 4 ) ) ).
+"Note that for the entry 'key_field = 4' no char1 value was passed.
+"char1 is a shared column of the two database tables, and which is used in
+"the ON condition of the join. Since there is no entry in char1 for 'key_field = 4',
+"the joined values are null in that case. The WHERE clause uses the addition IS NULL.
+"Therefore, the result only contains this entry. char2 is assigned the type-initial
+"value in the result.
+SELECT tab2~key_field, tab1~char2
+    FROM zdemo_abap_tab2 AS tab2
+    LEFT OUTER JOIN zdemo_abap_tab1 AS tab1 ON tab1~char1 = tab2~char1
+    WHERE tab1~char1 IS NULL
+    INTO TABLE @DATA(joined_tab).
+*KEY_FIELD    CHAR2
+*4
+
+"The following example visualizes the null values. The INDICATORS addition of the
+"INTO clause is used to specify indicators such as the null indicator. In the
+"example, an appropriate target table is defined to also store information about
+"which columns of the result set contain the null value and which do not.
+"For more information on the syntax, refer to the ABAP Keyword Documentation.
+TYPES BEGIN OF st4null.
+TYPES: BEGIN OF s2,
+          key_field TYPE zdemo_abap_tab2-key_field,
+          char2     TYPE zdemo_abap_tab1-char2,
+        END OF s2.
+TYPES: BEGIN OF nulls,
+          key_field TYPE c LENGTH 1,
+          char2     TYPE c LENGTH 1,
+        END OF nulls,
+        END OF st4null.
+DATA joined_tab_w_null_ind TYPE TABLE OF st4null WITH EMPTY KEY.
+
+SELECT tab2~key_field, tab1~char2
+  FROM zdemo_abap_tab2 AS tab2
+  LEFT OUTER JOIN zdemo_abap_tab1 AS tab1 ON tab1~char1 = tab2~char1
+  INTO TABLE @joined_tab_w_null_ind INDICATORS NULL STRUCTURE nulls.
+*S2                      NULLS
+*KEY_FIELD    CHAR2      KEY_FIELD    CHAR2
+*1            y
+*KEY_FIELD    CHAR2      KEY_FIELD    CHAR2
+*2            y
+*KEY_FIELD    CHAR2      KEY_FIELD    CHAR2
+*3            z
+*KEY_FIELD    CHAR2      KEY_FIELD    CHAR2
+*4                                    X
+
+"Negation IS NOT NULL
+SELECT tab2~key_field, tab1~char2
+  FROM zdemo_abap_tab2 AS tab2
+  LEFT OUTER JOIN zdemo_abap_tab1 AS tab1 ON tab1~char1 = tab2~char1
+  WHERE tab1~char1 IS NOT NULL
+  INTO TABLE @joined_tab.
+*KEY_FIELD    CHAR2
+*1            y
+*2            y
+*3            z
 ```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
