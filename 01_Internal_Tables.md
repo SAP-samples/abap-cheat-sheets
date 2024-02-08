@@ -16,6 +16,7 @@
   - [Modifying Internal Table Content](#modifying-internal-table-content)
   - [Deleting Internal Table Content](#deleting-internal-table-content)
   - [Excursions](#excursions)
+    - [Improving Read Performance with Secondary Table Keys](#improving-read-performance-with-secondary-table-keys)
     - [Searching and Replacing Substrings in Internal Tables with Character-Like Data Types](#searching-and-replacing-substrings-in-internal-tables-with-character-like-data-types)
     - [Ranges Tables](#ranges-tables)
   - [More Information](#more-information)
@@ -154,7 +155,8 @@ Internal Tables ...
     Key (F1 docu for standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abensecondary_key_guidl.htm "Guideline").
 
 > **💡 Note**<br>
-> See examples of internal table declarations using the table keys mentioned above in the following section.
+> - See examples of internal table declarations using the table keys mentioned above in the following section.
+> - See an example that uses secondary table keys [below](#improving-read-performance-with-secondary-table-keys).
  
 </details>
 
@@ -191,24 +193,19 @@ In the examples, the internal tables are created using the structured type of a 
 "is not explicitly specified.
 "Implicitly, the standard key is used; all non-numeric table fields
 "make up the primary table key.
-
 DATA it1 TYPE TABLE OF zdemo_abap_fli.
 
 "Explicitly specifying STANDARD for a standard table.
 "Explicitly specifying the standard table key. It is the same as it1.
-
 DATA it2 TYPE STANDARD TABLE OF zdemo_abap_fli WITH DEFAULT KEY.
 
 "Hashed table with unique standard table key
-
 DATA it3 TYPE HASHED TABLE OF zdemo_abap_fli WITH UNIQUE DEFAULT KEY.
 
 "Sorted table with non-unique standard table key
-
 DATA it4 TYPE SORTED TABLE OF zdemo_abap_fli WITH NON-UNIQUE DEFAULT KEY.
 
 "Elementary line type; the whole table line is the standard table key
-
 DATA it5 TYPE TABLE OF i.
 
 "------------------ Primary table key ------------------
@@ -216,40 +213,32 @@ DATA it5 TYPE TABLE OF i.
 "Specifying the primary table key
 "Standard tables: only a non-unique key possible
 "The following two examples are the same. NON-UNIQUE can be ommitted but is implicitly added.
-
 DATA it6 TYPE TABLE OF zdemo_abap_fli WITH NON-UNIQUE KEY carrid.
 DATA it7 TYPE TABLE OF zdemo_abap_fli WITH KEY carrid.
 
 "Sorted tables: both UNIQUE and NON-UNIQUE possible
-
 DATA it8 TYPE SORTED TABLE OF zdemo_abap_fli WITH UNIQUE KEY carrid connid.
-
 DATA it9 TYPE SORTED TABLE OF zdemo_abap_fli WITH NON-UNIQUE KEY carrid connid cityfrom.
 
 "Hashed tables: UNIQUE KEY must be specified
-
 DATA it10 TYPE HASHED TABLE OF zdemo_abap_fli WITH UNIQUE KEY carrid.
 
 "Explicitly specifying the predefined name primary_key and listing the components.
 "The example is the same as it6 and it7.
-
 DATA it11 TYPE TABLE OF zdemo_abap_fli WITH KEY primary_key COMPONENTS carrid.
 
 "The following example is the same as it9.
-
 DATA it12 TYPE SORTED TABLE OF zdemo_abap_fli 
   WITH NON-UNIQUE KEY primary_key COMPONENTS carrid connid cityfrom.
 
 "Specifying an alias name for a primary table key.
 "Only possible for sorted/hashed tables.
-
 DATA it13 TYPE SORTED TABLE OF zdemo_abap_fli
   WITH NON-UNIQUE KEY primary_key
   ALIAS p1 COMPONENTS carrid connid cityfrom.
 
 "Specifying a key that is composed of the entire line using the predefined table_line.
 "In the example, an alias name is defined for a primary table key. 
-
 DATA it14 TYPE HASHED TABLE OF zdemo_abap_fli
   WITH UNIQUE KEY primary_key
   ALIAS p2 COMPONENTS table_line.
@@ -257,17 +246,14 @@ DATA it14 TYPE HASHED TABLE OF zdemo_abap_fli
 "------------------ Empty key ------------------
 
 "Empty keys only possible for standard tables
-
 DATA it15 TYPE TABLE OF zdemo_abap_fli WITH EMPTY KEY.
 
 "Excursion: The inline declaration in a SELECT statement produces a standard table with empty key.
-
 SELECT * FROM zdemo_abap_fli INTO TABLE @DATA(it16).
 
 "------------------ Secondary table key ------------------
 
 "The following examples demonstrate secondary table keys that are possible for all table categories.
-
 DATA it17 TYPE TABLE OF zdemo_abap_fli                      "standard table
   WITH NON-UNIQUE KEY carrid connid                         "primary table key
   WITH UNIQUE SORTED KEY cities COMPONENTS cityfrom cityto. "secondary table key
@@ -281,14 +267,12 @@ DATA it19 TYPE SORTED TABLE OF zdemo_abap_fli              "sorted table
   WITH UNIQUE HASHED KEY countries COMPONENTS countryfr countryto.
 
 "Multiple secondary keys are possible 
-
 DATA it20 TYPE TABLE OF zdemo_abap_fli
   WITH NON-UNIQUE KEY primary_key COMPONENTS carrid connid
   WITH NON-UNIQUE SORTED KEY cities COMPONENTS cityfrom cityto
   WITH UNIQUE HASHED KEY airports COMPONENTS airpfrom airpto.
 
 "Alias names for secondary table keys (and also for the primary table key in the example)
-
 DATA it21 TYPE SORTED TABLE OF zdemo_abap_fli
   WITH NON-UNIQUE KEY primary_key ALIAS k1 COMPONENTS carrid connid city
   WITH NON-UNIQUE SORTED KEY cities ALIAS s1 COMPONENTS cityfrom cityto
@@ -300,7 +284,6 @@ DATA it21 TYPE SORTED TABLE OF zdemo_abap_fli
 "used in the example), the primary table key is respected by default.
 "Further ABAP statements, such as READ or MODIFY, are available in which the key can be 
 "explicitly specified to process internal tables.
-
 LOOP AT it21 INTO DATA(wa) USING KEY primary_key.
 "LOOP AT it21 INTO DATA(wa) USING KEY k1.
 "LOOP AT it21 INTO DATA(wa) USING KEY cities.
@@ -358,7 +341,6 @@ TYPES:
 
 "3. Creating internal tables ...
 "... from locally defined table types
-
 DATA: itab_a1 TYPE tt_loc_str,
       itab_a2 TYPE tt_gl_str,
       itab_a3 TYPE tt_gl_tab,
@@ -368,7 +350,6 @@ DATA: itab_a1 TYPE tt_loc_str,
 DATA itab_a5 TYPE string_table.
 
 "Combining data object and table type definition 
-
 DATA itab_a6 TYPE TABLE OF ls_loc WITH NON-UNIQUE KEY key_field.
 
 "Internal table based on an already existing internal table using LIKE.
@@ -380,7 +361,6 @@ DATA itab_a7 LIKE TABLE OF itab_a6.
 "The examples show the copying of a table including the content on the fly
 "and creating the table in one step. The data type of the
 "declared variable is determined by the right side.
-
 DATA(it_inline1) = itab_a1.
 DATA(it_inline2) = it_inline1.
 
@@ -388,17 +368,14 @@ DATA(it_inline2) = it_inline1.
 FINAL(it_final) = it_inline1.
 
 "Using the VALUE operator and an internal table type
-
 DATA(it_inline3) = VALUE tt_loc_str( ( ... ) ).
 
 "Table declared inline in the context of a SELECT statement;
 "a prior extra declaration of an internal table is not needed.
-
 SELECT * FROM zdemo_abap_fli INTO TABLE @DATA(it_inline4).
 
 "Instead of
 DATA it_sel TYPE TABLE OF zdemo_abap_fli WITH EMPTY KEY.
-
 SELECT * FROM zdemo_abap_fli INTO TABLE @it_sel.
 
 "Using FINAL
@@ -549,7 +526,6 @@ TYPES it_type LIKE itab.
 "Inline declaration
 "The # character would not be possible here since the line type
 "cannot be derived from the context.
-
 DATA(it_in) = VALUE it_type( ( comp1 = a comp2 = b ... )
                              ( comp1 = c comp2 = d ...  ) ).
 ```
@@ -954,7 +930,7 @@ DATA(line2) = VALUE #( itab[ 7 ] DEFAULT itab[ 8 ]  ).
 
 Lines can be read by explicitly specifying the table keys or the alias names, if any.
 ```abap
-"Example internal table with primary and secondary key and alias names
+"Example internal table with primary and secondary table key and alias names
 "Assumption: All components are of type i
 
 DATA it TYPE SORTED TABLE OF struc
@@ -963,36 +939,36 @@ DATA it TYPE SORTED TABLE OF struc
 
 "Table expressions
 
-"key must be fully specified
+"Key must be fully specified
 line = it[ KEY primary_key COMPONENTS a = 1 b = 2 ].
 
-"addition COMPONENTS is optional; same as above
+"The addition COMPONENTS is optional; same as above
 line = it[ KEY primary_key a = 1 b = 2 ].
 
-"primary key alias
+"Primary key alias
 line = it[ KEY pk a = 1 b = 2 ].
 
-"secondary key
+"Secondary table key
 line = it[ KEY sec_key c = 3 d = 4 ].
 
-"secondary key alias
+"Secondary table key alias
 line = it[ KEY sk c = 3 d = 4 ].
 
 "READ TABLE statements
-"primary key
+"Primary table key
 READ TABLE it INTO wa WITH TABLE KEY primary_key COMPONENTS a = 1 b = 2.
 
-"alias
+"Alias
 READ TABLE it INTO wa WITH TABLE KEY pk COMPONENTS a = 1 b = 2.
 
-"secondary key
+"Secondary table key
 READ TABLE it INTO wa WITH TABLE KEY sec_key COMPONENTS c = 3 d = 4.
 
-"alias
+"Alias
 READ TABLE it INTO wa WITH TABLE KEY sk COMPONENTS c = 3 d = 4.
 
 "Reading a line based on keys specified in a work area
-"Work area containing primary and secondary key values; the line type
+"Work area containing primary and secondary table key values; the line type
 "must be compatible to the internal table
 DATA(pr_keys) = VALUE struc( a = 1 b = 2 ).
 
@@ -1006,7 +982,7 @@ READ TABLE it FROM pr_keys USING KEY primary_key INTO wa.
 
 READ TABLE it FROM sec_keys USING KEY sec_key INTO wa.
 
-"alias
+"Alias
 READ TABLE it FROM sec_keys USING KEY sk INTO wa.
 ```
 
@@ -1062,37 +1038,35 @@ This function expects a [table
 expression](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentable_expression_glosry.htm "Glossary Entry") as an argument.
 See below for more on table expressions. Note that table expressions do not set system fields.
 ``` abap
-"via key
-
+"Read using the key
 READ TABLE it WITH KEY b = 2 TRANSPORTING NO FIELDS.
 
 IF sy-subrc = 0.
   ...
 ENDIF.
 
-"via index
-
+"Read using the index
 READ TABLE it INDEX 1 TRANSPORTING NO FIELDS.
 
 IF sy-subrc = 0.
   ...
 ENDIF.
 
-"via key
-
+"Read using the key
 IF line_exists( it[ b = 2 ] ).
   ...
 ENDIF.
 
-"via index
-
+"Read using the index
 IF line_exists( it[ 1 ] ).
   ...
 ENDIF.
 ```
+
 If you want to find out about the index of a line in an internal table, you can also make use of the `READ TABLE` statement above. If
 the line is found, the system field `sy-tabix` is set to the number of the index. Otherwise, the built-in function
 [`line_index( )`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenline_index_function.htm) can be used. It returns the index of the found line or 0 if the line does not exist.
+
 ``` abap
 DATA(idx) = line_index( it[ b = 2 ] ).
 ```
@@ -1193,7 +1167,7 @@ LOOP AT it INTO wa WHERE a > 1 AND b < 4.
   ...
 ENDLOOP.
 
-"No interest in table content; only relevant system fields are filled
+"No interest in the table content; only relevant system fields are filled
 
 "Mandatory WHERE clause
 LOOP AT it TRANSPORTING NO FIELDS WHERE a < 5.
@@ -1246,8 +1220,6 @@ The expressions are covered in the cheat sheet [Constructor Expressions](05_Cons
 - [Iteration Expressions Using FOR](05_Constructor_Expressions.md#iteration-expressions-using-for)
 - Special reduction operator `REDUCE` that is based on iteration expressions: [REDUCE](05_Constructor_Expressions.md#reduce)
 
-
-
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## Sorting Internal Tables
@@ -1264,15 +1236,13 @@ The expressions are covered in the cheat sheet [Constructor Expressions](05_Cons
     easier to understand and can prevent unwanted sorting results,
     especially with tables with standard key.
 
-*Sorting by primary key*
+*Sorting by primary table key*
 ``` abap
-"Implicit sorting by primary key and in ascending order by default
-
+"Implicit sorting by primary table key and in ascending order by default
 SORT itab.
 
 "Optional additions to determine the sort order
-"Explicit specification of ascending sort order
-
+"As mentioned above, ASCENDING is used implicitly. Here, specifying it explicitly.
 SORT itab ASCENDING.
 SORT itab DESCENDING.
 ```
@@ -1284,7 +1254,7 @@ DATA it1 TYPE TABLE OF zdemo_abap_fli.
 
 DATA it2 TYPE STANDARD TABLE OF zdemo_abap_fli WITH DEFAULT KEY.
 
-"Respect the standard key when sorting.
+"Respecting the standard key when sorting
 SORT it1.
 ```
 Plus: Suppose there are only elementary numeric components in an internal table with a structured line type. In this case, sorting has no effect because the primary table key is considered empty. This is certainly also true for tables declared with `EMPTY KEY`.
@@ -1297,21 +1267,18 @@ You can sort by any component of the internal table. It is also possible to spec
 ``` abap
 DATA it3 TYPE TABLE OF struc WITH NON-UNIQUE KEY a.
 
-"Sorts by primary table key a
+"Sorting by primary table key a
 SORT itab.
 
 "Specifying the component to sort for; here, it is the same as the key;
 "this way, the sorting is easier to understand
-
 SORT itab BY a.
 
 "Syntax showing multiple component sorting with component-wise sort order
-
 SORT itab BY a b ASCENDING c DESCENDING.
 
 "Sorting respecting the entire line (e. g. in the context of tables with
 "empty or standard keys)
-
 SORT itab BY table_line.
 ```
 
@@ -1371,46 +1338,38 @@ without first reading the lines into a target area.
 "Addition FROM ...; specified key values determine the line to be modified
 
 "line: existing line including key values
-
 MODIFY TABLE it FROM line.
 
 "line constructed inline
-
 MODIFY TABLE it FROM VALUE #( a = 1 b = 2 ... ).
 
 "Respecting only specified fields with the addition TRANSPORTING
 "In case of sorted/hashed tables, key values cannot be specified.
-
 MODIFY TABLE it FROM line TRANSPORTING b c.
 
 "Modification via index
 "Note that it is only MODIFY, not MODIFY TABLE.
 "Example: It modifies the line with number 1 in the primary table index.
-
 MODIFY it FROM line INDEX 1.
 
 "Without the addition TRANSPORTING, the entire line is changed.
 "Example: It modifies specific values.
-
 MODIFY it FROM line INDEX 1 TRANSPORTING b c.
 
 "USING KEY addition
 "If the addition is not specified, the primary table key is used;
 "otherwise, it is the explicitly specified table key that is used.
 "Example: It is the same as MODIFY it FROM line INDEX 1.
-
 MODIFY it FROM line USING KEY primary_key INDEX 1.
 
 "The statement below uses a secondary key and an index specification
 "for the secondary table index. Only specific fields are modified.
-
 MODIFY it FROM line USING KEY sec_key INDEX 1 TRANSPORTING c d.
 
 "Modifying multiple lines in internal tables
 "All lines matching the logical expression in the WHERE clause are modified
 "as specified in line.
 "The additions TRANSPORTING and WHERE are both mandatory; USING KEY is optional.
-
 MODIFY it FROM line TRANSPORTING b c WHERE a < 5.
 ```
 > **💡 Note**<br>
@@ -1426,18 +1385,15 @@ You can use [`DELETE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-U
 ``` abap
 "Deleting via index
 "Example: The first line in the table is deleted.
-
 DELETE it INDEX 1.
 
 "If USING KEY is not used, INDEX can only be used with index tables.
 "If doing so, it determines the line from the primary table index.
 "If a secondary key is specified, the secondary table index is respected
 "Example: same as above
-
 DELETE it INDEX 1 USING KEY primary_key.
 
 "Deleting an index range; FROM or TO alone can also be specified
-
 DELETE it FROM 2 TO 5.
 
 "Deleting via keys
@@ -1445,25 +1401,21 @@ DELETE it FROM 2 TO 5.
 "include key values. The first found line with the corresponding keys
 "is deleted.
 "If the key is empty, no line is deleted.
-
 DELETE TABLE it FROM line.
 
 "Instead of specifying the keys using a data object ("line" above),
 "the keys can be specified separately. All key values must be specified.
 "Example: Respects keys from primary table index.
-
 DELETE TABLE it WITH TABLE KEY a = 1.
 
 "You can also specify secondary keys.
 "Example: Same as above
-
 DELETE TABLE it WITH TABLE KEY primary_key COMPONENTS a = 1.
 
 DELETE TABLE it_sec WITH TABLE KEY sec_key COMPONENTS ...
 
 "Deleting multiple lines based on a WHERE condition
 "Specifying the additions USING KEY, FROM, TO is also possible.
-
 DELETE it WHERE a < 6.
 
 "Excursion: Deleting in a LIKE-like fashion you may know from
@@ -1481,20 +1433,16 @@ DELETE str_table WHERE table_line CP `Z*`.
 
 `DELETE ADJACENT DUPLICATES` statements allow you to delete all adjacent lines except for the first line that have the same content in certain components. You usually need to perform some appropriate sorting before using these statements.
 ``` abap
-"Implicitly uses the primary table key
-
+"Implicitly using the primary table key
 DELETE ADJACENT DUPLICATES FROM it.
 
 "Deletion respecting the values of the entire line
-
 DELETE ADJACENT DUPLICATES FROM it COMPARING ALL FIELDS.
 
 "Only lines are deleted with matching content in specific fields
-
 DELETE ADJACENT DUPLICATES FROM it COMPARING a c.
 
 "Deletion respecting a specified table key
-
 "Same as first example above
 DELETE ADJACENT DUPLICATES FROM it USING KEY primary_key.
 
@@ -1531,6 +1479,75 @@ it = VALUE #( ).
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## Excursions
+
+### Improving Read Performance with Secondary Table Keys
+
+The following example creates two demo internal tables. One without a secondary
+table key and the other with a secondary table key. Consider a scenario where you
+have an internal table without a secondary table key, and you want to add a secondary table key later to improve read performance. The tables are populated with a lot of data. Then, in a DO loop, many reads are performed on the internal tables. One example uses a free key for the read, the other uses a secondary table key. Before and after the reads, the current timestamp is stored in variables, from which the elapsed time is calculated. There should be a significant delta of the elapsed time.
+
+```abap
+CLASS zcl_some_class DEFINITION PUBLIC FINAL CREATE PUBLIC.
+  PUBLIC SECTION.
+    INTERFACES if_oo_adt_classrun.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+ENDCLASS.
+CLASS zcl_some_class IMPLEMENTATION.
+  METHOD if_oo_adt_classrun~main.
+    TYPES: BEGIN OF demo_struc,
+             idx TYPE i,
+             str TYPE string,
+             num TYPE i,
+           END OF demo_struc.
+
+    DATA itab TYPE HASHED TABLE OF demo_struc WITH UNIQUE KEY idx.
+    DATA itab_sec TYPE HASHED TABLE OF demo_struc
+                  WITH UNIQUE KEY idx
+                  WITH NON-UNIQUE SORTED KEY sk
+                       COMPONENTS str num.
+
+    DO 500 TIMES.
+      INSERT VALUE #( idx = sy-index
+                      str = |INDEX{ sy-index }|
+                      num = sy-index ) INTO TABLE itab.
+    ENDDO.
+    itab_sec = itab.
+
+    DATA(ts1) = utclong_current( ).
+    DO 500 TIMES.
+      "Reading into a data reference variable using using a free key.
+      "This key corresponds to the secondary table key specified for
+      "the table in the second example.
+      DATA(dref) = REF #( itab[ str = `INDEX250` num = 250 ] ).
+    ENDDO.
+    DATA(ts2) = utclong_current( ).
+
+    cl_abap_utclong=>diff( EXPORTING high     = ts2
+                                     low      = ts1
+                            IMPORTING seconds = DATA(seconds) ).
+
+    out->write( `Elapsed time for the reads using a free key:` ).
+    out->write( seconds ).
+    out->write( `----------------------------------------------------------` ).
+
+    ts1 = utclong_current( ).
+    DO 500 TIMES.
+      "Reading from an internal table using the secondary table key
+      dref = REF #( itab_sec[ KEY sk str = `INDEX250` num = 250 ] ).
+    ENDDO.
+    ts2 = utclong_current( ).
+
+    cl_abap_utclong=>diff( EXPORTING high     = ts2
+                                     low      = ts1
+                           IMPORTING seconds = seconds ).
+    out->write( `Elapsed time for the reads using a secondary table key:` ).
+    out->write( seconds ).
+  ENDMETHOD.
+ENDCLASS.
+```
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ### Searching and Replacing Substrings in Internal Tables with Character-Like Data Types
 

@@ -1870,7 +1870,7 @@ DATA(struc_components_tab) = ref_structdescr1->get_components( ).
 "-----------------------------------------------------------------------
 DATA ref_tabledescr1 TYPE REF TO cl_abap_tabledescr.
 ref_tabledescr1 = CAST #( tdo_by_name_itab ).
-"Cast with inline declaration (for a change)
+"Cast with inline declaration
 DATA(ref_tabledescr2) = CAST cl_abap_tabledescr( tdo_by_name_itab ).
 
 "Another internal table as an example
@@ -1879,7 +1879,7 @@ DATA(ref_tabledescr3) = CAST cl_abap_tabledescr( cl_abap_typedescr=>describe_by_
 
 DATA(itab_table_kind) = ref_tabledescr3->table_kind. "O (sorted table)
 DATA(itab_has_unique_key) = ref_tabledescr3->has_unique_key. "has the value abap_true
-"Returns a table with the names internal table keys
+"Returns a table with the names of internal table keys
 DATA(itab_table_key) = ref_tabledescr3->key. "carrid
 "Returns a table with a description of all table keys, e.g.
 "all components of a key, key kind (U, unique, in the example case),
@@ -1888,9 +1888,9 @@ DATA(itab_keys) = ref_tabledescr3->get_keys( ).
 "If you want to get information about the line type, e.g. finding out about
 "the component names, another cast is required.
 "First, getting a reference to the type description object for the structured type.
-DATA(itab_comp_ref) = ref_tabledescr3->get_table_line_type( ).
+DATA(itab_line_type) = ref_tabledescr3->get_table_line_type( ).
 "Then, performing a cast to access the component information as shown above.
-DATA(itab_line_info) = CAST cl_abap_structdescr( itab_comp_ref ).
+DATA(itab_line_info) = CAST cl_abap_structdescr( itab_line_type ).
 DATA(itab_comps1) = itab_line_info->components.
 DATA(itab_comps2) = itab_line_info->get_components( ).
 
@@ -2023,7 +2023,7 @@ DATA(tdo_elem_string) = cl_abap_elemdescr=>get_string( ).
 
 "For the length specification of type c and others, there is
 "an importing parameter available.
-DATA(tdo_elem_c_l20) = cl_abap_elemdescr=>get_c( 10 ).
+DATA(tdo_elem_c_l20) = cl_abap_elemdescr=>get_c( 20 ).
 
 "Type p with two parameters to be specified.
 DATA(tdo_elem_p) = cl_abap_elemdescr=>get_p( p_length   = 3
@@ -2128,7 +2128,7 @@ DATA dref_cr TYPE REF TO data.
 
 "Elementary data object
 "Type description object for an elementary type
-DATA(tdo_elem_c_l20) = cl_abap_elemdescr=>get_c( 10 ).
+DATA(tdo_elem_c_l20) = cl_abap_elemdescr=>get_c( 20 ).
 "Creating an elementary data object based on a type description object
 CREATE DATA dref_cr TYPE HANDLE tdo_elem_c_l20.
 

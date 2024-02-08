@@ -1366,7 +1366,7 @@ The declaration context of data types (and objects) determines the validity and 
 - Program-local data types with `TYPES` statements
   - Local declarations in procedures
     - For example, methods. The local data and types can only be addressed within the method itself.
-  - Classe and interface attributes
+  - Class and interface attributes
     - Data types and objects can be declared in the declaration part of classes and interfaces. In classes, the visibility sections, as the name implies, determine how the attributes are visible. For example, attributes declared in the `PUBLIC SECTION` are visible globally. 
     - Note the difference between [static](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenstatic_attribute_glosry.htm) and [instance attributes](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abeninstance_attribute_glosry.htm). Instance attributes of classes are bound to the lifetime of objects. They are created when an object is instantiated.
 - Program-independent data types 

@@ -1106,7 +1106,7 @@ topic.
 | `... IS [NOT] INITIAL ...`   |      The value of an operand is (not) the initial value of its built-in dictionary type.|
 | `... EXISTS ...`           |              Checks the result set of a [subquery](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensubquery_glosry.htm "Glossary Entry"). The expression is true if the result set contains at least one row. See more information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenwhere_logexp_subquery.htm).|
 | `... [NOT] IN ...`      |       Checks whether the operands on the left side match a value from a set of values specified in parentheses. On the left side, a single operand or an operand list are possible. On the right side, a comma-separated lists or subqueries can be specified. It is also possible to specify a [ranges table](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenranges_table_glosry.htm) to evaluate [ranges conditions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenranges_condition_glosry.htm).|
-| `... [NOT] NULL ...`      |   Checks whether the value of an operand is (not) the [null value](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abennull_value_glosry.htm). Find more information in the code snippet and in the [ABAP Keyword Documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenwhere_logexp_null.htm).   |
+| `... IS [NOT] NULL ...`      |   Checks whether the value of an operand is (not) the [null value](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abennull_value_glosry.htm). Find more information in the code snippet and in the [ABAP Keyword Documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenwhere_logexp_null.htm).   |
 
 > **💡 Note**<br>
 >You can combine multiple logical expressions into one
@@ -1278,7 +1278,7 @@ SELECT id FROM @itab AS tab WHERE
   EXISTS ( SELECT @abap_true FROM zdemo_abap_tab1 WHERE key_field = tab~id )
   INTO TABLE @it. "11,12
 
-"------------------------ [NOT] NULL ------------------------
+"------------------------ IS [NOT] NULL ------------------------
 "The null value is a special value that is returned by a database. It indicates an
 "undefined value or result. Note that, in ABAP, there are no special null values. Do
 "not confuse the null value with a type-dependent initial value. When using SELECT
@@ -1315,15 +1315,15 @@ SELECT tab2~key_field, tab1~char2
 "example, an appropriate target table is defined to also store information about
 "which columns of the result set contain the null value and which do not.
 "For more information on the syntax, refer to the ABAP Keyword Documentation.
-TYPES BEGIN OF st4null.
-TYPES: BEGIN OF s2,
-          key_field TYPE zdemo_abap_tab2-key_field,
-          char2     TYPE zdemo_abap_tab1-char2,
-        END OF s2.
-TYPES: BEGIN OF nulls,
-          key_field TYPE c LENGTH 1,
-          char2     TYPE c LENGTH 1,
-        END OF nulls,
+TYPES: BEGIN OF st4null,
+          BEGIN OF s2,
+            key_field TYPE zdemo_abap_tab2-key_field,
+            char2     TYPE zdemo_abap_tab1-char2,
+          END OF s2,
+          BEGIN OF nulls,
+            key_field TYPE c LENGTH 1,
+            char2     TYPE c LENGTH 1,
+          END OF nulls,
         END OF st4null.
 DATA joined_tab_w_null_ind TYPE TABLE OF st4null WITH EMPTY KEY.
 
