@@ -1,0 +1,20 @@
+<xsl:transform xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:sap="http://www.sap.com/sapxsl" version="1.0">
+  <xsl:strip-space elements="*"/>
+  <xsl:template match="node()|@*">
+    <xsl:copy>
+      <xsl:apply-templates select="node()|@*"/>
+    </xsl:copy>
+  </xsl:template>
+  <xsl:template match="*[MAXSEATS and OCCSEATS]">
+    <xsl:copy>
+      <xsl:apply-templates select="node()|@*"/>
+      <FREESEATS>
+        <xsl:value-of select="MAXSEATS - OCCSEATS"/>
+      </FREESEATS>
+      <OCCUPANCYRATE>
+        <xsl:value-of select="format-number(OCCSEATS div MAXSEATS * 100, '##.##')"/>
+      </OCCUPANCYRATE>
+    </xsl:copy>
+  </xsl:template>
+</xsl:transform>
+

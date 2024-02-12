@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_XSLT" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <ATTRIBUTES>
+    <XSLTDESC>ZDEMO_ABAP_ST_CARRHTML</XSLTDESC>
+    <LANGU>E</LANGU>
+    <DESCRIPT>ST Demo</DESCRIPT>
+   </ATTRIBUTES>
+  </asx:values>
+ </asx:abap>
+</abapGit>

@@ -1,0 +1,20 @@
+<?sap.transform simple?>
+<tt:transform xmlns:tt="http://www.sap.com/transformation-templates">
+  <tt:root name="STRING_TABLE"/>
+  <tt:template>
+    <html>
+      <body>
+        <h2>String Table Content</h2>
+        <table border="1">
+          <tt:loop ref=".STRING_TABLE">
+            <tr>
+              <td>
+                <tt:value ref="$ref"/>
+              </td>
+            </tr>
+          </tt:loop>
+        </table>
+      </body>
+    </html>
+  </tt:template>
+</tt:transform>
