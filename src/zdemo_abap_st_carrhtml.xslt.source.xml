@@ -1,0 +1,48 @@
+<?sap.transform simple?>
+<tt:transform xmlns:tt="http://www.sap.com/transformation-templates">
+  <tt:root name="CARRIER_INFO"/>
+
+  <tt:template>
+    <html>
+      <body>
+        <h2>Carrier Information</h2>
+        <table border="1">
+          <tr>
+            <td>
+              <b>ID</b>
+            </td>
+            <td>
+              <b>Name</b>
+            </td>
+            <td>
+              <b>Currency</b>
+            </td>
+            <td>
+              <b>Website</b>
+            </td>
+          </tr>
+          <tt:loop ref=".CARRIER_INFO">
+            <tr>
+              <td>
+                <tt:value ref="$ref.carrid"/>
+              </td>
+              <td>
+                <tt:value ref="$ref.carrname"/>
+              </td>
+              <td>
+                <tt:value ref="$ref.currcode"/>
+              </td>
+              <td>
+                <a>
+                  <tt:attribute name="href" value-ref="$ref.url"/>
+                  <tt:value ref="$ref.url"/>
+                </a>
+              </td>
+            </tr>
+          </tt:loop>
+        </table>
+      </body>
+    </html>
+  </tt:template>
+
+</tt:transform>

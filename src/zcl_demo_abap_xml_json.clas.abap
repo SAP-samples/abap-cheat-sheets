@@ -702,7 +702,7 @@ CLASS zcl_demo_abap_xml_json IMPLEMENTATION.
 
     DATA xml_a TYPE xstring.
 
-    CALL TRANSFORMATION zdemo_abap_xslt_flights
+    CALL TRANSFORMATION zdemo_abap_xslt_fl
                         SOURCE XML xml_flights
                         RESULT XML xml_a.
 
@@ -728,7 +728,7 @@ CLASS zcl_demo_abap_xml_json IMPLEMENTATION.
 
     DATA xml_b TYPE xstring.
 
-    CALL TRANSFORMATION zdemo_abap_xslt_flights
+    CALL TRANSFORMATION zdemo_abap_xslt_fl
                         SOURCE flights = fli_itab
                         RESULT XML xml_b.
 
@@ -747,7 +747,7 @@ CLASS zcl_demo_abap_xml_json IMPLEMENTATION.
     DATA xml_c TYPE xstring.
 
     "ABAP -> XML
-    CALL TRANSFORMATION zdemo_abap_st_strtab_html
+    CALL TRANSFORMATION zdemo_abap_st_strhtml
                         SOURCE string_table = string_table_a
                         RESULT XML xml_c.
 
@@ -758,7 +758,7 @@ CLASS zcl_demo_abap_xml_json IMPLEMENTATION.
 
     "XML -> ABAP
     DATA string_table_b TYPE string_table.
-    CALL TRANSFORMATION zdemo_abap_st_strtab_html
+    CALL TRANSFORMATION zdemo_abap_st_strhtml
                               SOURCE XML xml_c
                               RESULT string_table = string_table_b.
 
@@ -783,7 +783,7 @@ CLASS zcl_demo_abap_xml_json IMPLEMENTATION.
     "addition. In this example, the XML header should not be added.
     "So, you can take the resulting html and test it in an HTML viewer.
 
-    CALL TRANSFORMATION zdemo_abap_st_carriers_html
+    CALL TRANSFORMATION zdemo_abap_st_carrhtml
                         SOURCE carrier_info = carr_tab_a
                         RESULT XML str_a
                         OPTIONS xml_header = 'NO'.
@@ -795,7 +795,7 @@ CLASS zcl_demo_abap_xml_json IMPLEMENTATION.
     "XML -> ABAP
     DATA carr_tab_b LIKE carr_tab_a.
 
-    CALL TRANSFORMATION zdemo_abap_st_carriers_html
+    CALL TRANSFORMATION zdemo_abap_st_carrhtml
                         SOURCE XML str_a
                         RESULT carrier_info = carr_tab_b.
 
@@ -989,7 +989,7 @@ CLASS zcl_demo_abap_xml_json IMPLEMENTATION.
     "CALL TRANSFORMATION. They are either ...
 
     "... XSLT programs
-    CALL TRANSFORMATION zdemo_abap_st_carriers_html SOURCE carrier_info = carr_tab_a
+    CALL TRANSFORMATION zdemo_abap_st_carrhtml SOURCE carrier_info = carr_tab_a
                                                     RESULT XML str_a.
 
     "... predefined identity transformations
@@ -1014,7 +1014,7 @@ CLASS zcl_demo_abap_xml_json IMPLEMENTATION.
     ENDTRY.
 
     "... Simple Transformation
-    CALL TRANSFORMATION zdemo_abap_st_carriers_html SOURCE XML str_a
+    CALL TRANSFORMATION zdemo_abap_st_carrhtml SOURCE XML str_a
                                                     RESULT carrier_info = carr_tab_b.
 
 ************************************************************************

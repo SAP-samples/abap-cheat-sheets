@@ -1790,7 +1790,7 @@ DATA(tdo_by_dref1) = cl_abap_typedescr=>describe_by_data_ref( dref1 ).
 DATA(dref2) = NEW string_table( ).
 DATA(tdo_by_dref2) = cl_abap_typedescr=>describe_by_data_ref( dref2 ).
 
-"... using the cl_abap_typedescr=>describe_by_data_ref method
+"... using the cl_abap_typedescr=>describe_by_object_ref method
 "In this case, an object reference variable is used.
 DATA oref TYPE REF TO zcl_demo_abap_objects.
 oref = NEW #( ).
@@ -2168,8 +2168,7 @@ CREATE DATA dref_cr TYPE HANDLE tdo_ref.
 [zcl_demo_abap_dynamic_prog](./src/zcl_demo_abap_dynamic_prog.clas.abap)
 
 > **💡 Note**<br>
-> - The executable example ...
->   - covers the following topics, among others:
+> - The executable example covers the following topics, among others:
 >     - Field symbols and data references as supporting elements for dynamic programming
 >     - Dynamic ABAP syntax components
 >     - Runtime type services (RTTS), i. e. runtime type identification (RTTI) and runtime type creation (RTTC)
