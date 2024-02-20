@@ -64,7 +64,7 @@ It provides references to more detailed information on the topic.
     >   - Examples for deprecated and invalid syntax in ABAP for Cloud Development are included. Among them, the invalid statement `MOVE ... TO` and others which are just included for demonstration purposes. To set breakpoints in ADT, double-click the area to the left of the code line number.
 
     ```abap
-    CLASS zcl_demo_abap_temp DEFINITION
+    CLASS zcl_some_class DEFINITION
       PUBLIC
       FINAL
       CREATE PUBLIC .
@@ -73,7 +73,7 @@ It provides references to more detailed information on the topic.
         INTERFACES if_oo_adt_classrun.
     ENDCLASS.
 
-    CLASS zcl_demo_abap_temp IMPLEMENTATION.
+    CLASS zcl_some_class IMPLEMENTATION.
       METHOD if_oo_adt_classrun~main.
         "ABAP SQL statements using database tables as data sources
         "Data source that cannot be accessed in ABAP Cloud
@@ -183,5 +183,3 @@ It provides references to more detailed information on the topic.
 >   - covers an arbitrary selection for you to explore. For more detailed information and code snippets, see the SAP Help Portal documentation [here](https://help.sap.com/docs/btp/sap-business-technology-platform/sap-business-technology-platform?version=Cloud) and [here about XCO](https://help.sap.com/docs/btp/sap-business-technology-platform/xco-library?version=Cloud). In most cases, the example covers a selection of classes and methods for retrieving information about repository objects. It is more of a "playground" for exploring the APIs with a few snippets of code, and should be seen as an invitation to more in-depth exploration.  
 > - The steps to import and run the code are outlined [here](README.md#-getting-started-with-the-examples).
 > - [Disclaimer](README.md#%EF%B8%8F-disclaimer)
-
-

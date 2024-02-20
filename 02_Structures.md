@@ -65,7 +65,6 @@ TYPES BEGIN OF struc_type.
 TYPES END OF struc_type.
 ```
 
-
 - The simplest structures and structured types have [elementary](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenelementary_data_type_glosry.htm "Glossary Entry")
 components.
 - As mentioned above, the components can be of any type, i.e. they can be of structured types themselves, internal table types, or [reference types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenreference_type_glosry.htm). 
@@ -345,9 +344,7 @@ TYPES: BEGIN OF addr_struc,
 DATA address TYPE addr_struc.
 
 address-name   = `Mr. Duncan Pea`.
-
 address-street = `Vegetable Lane 11`.
-
 address-city   = `349875 Botanica`.
 ```
 
@@ -450,26 +447,21 @@ The focus is on flat structures only.
 ``` abap
 "Moves identically named components; content in other components
 "of the targets structure are kept.
-
 MOVE-CORRESPONDING struc TO diff_struc.
 
 "Initializes target structure; moves identically named components
-
 diff_struc = CORRESPONDING #( struc ).
 
 "Same effect as the first MOVE-CORRESPONDING statement;
 "addition BASE keeps existing content
-
 diff_struc = CORRESPONDING #( BASE ( diff_struc ) struc ).
 
 "MAPPING addition: Specifying components of a source structure that are
 "assigned to the components of a target structure in mapping
 "relationships.
-
 diff_struc = CORRESPONDING #( BASE ( diff_struc ) struc MAPPING comp1 = compa ).
 
 "EXCEPT addition: Excluding components from the assignment.
-
 diff_struc = CORRESPONDING #( BASE ( diff_struc ) struc EXCEPT comp1 ).
 ```
 
@@ -482,60 +474,50 @@ Value assignments in deep structures
 "structure which is true for the below MOVE-CORRESPONDING statements;
 "existing internal table content is replaced by content of
 "the source table irrespective of identically named components
-
 MOVE-CORRESPONDING deep_struc TO diff_deep_struc.
 
 "Existing internal table content is replaced but the value
 "assignment happens for identically named components only.
-
 MOVE-CORRESPONDING deep_struc TO diff_deep_struc EXPANDING NESTED TABLES.
 
 "Existing internal table content is kept; table content of the source
 "structure are added but the value assignment happens like the first
 "MOVE-CORRESPONDING statement without further syntax additions.
-
 MOVE-CORRESPONDING deep_struc TO diff_deep_struc KEEPING TARGET LINES.
 
 "Existing internal table content is kept; table content of the source
 "structure are added; the value assignment happens like the statement
 "MOVE-CORRESPONDING ... EXPANDING NESTED TABLES.
-
 MOVE-CORRESPONDING deep_struc TO diff_deep_struc EXPANDING NESTED TABLES KEEPING TARGET LINES.
 
 "Target structure is initialized; the value assignment for an internal
 "table happens irrespective of identically named components.
-
 diff_deep_struc = CORRESPONDING #( deep_struc ).
 
 "Target structure is initialized; the value assignment for an internal
 "table happens for identically named components only.
-
 diff_deep_struc = CORRESPONDING #( DEEP deep_struc ).
 
 "Nonidentical elementary component types are kept in target structure;
 "internal table content is replaced; there, the value assignment
 "happens like using the CORRESPONDING operator without addition.
-
 diff_deep_struc = CORRESPONDING #( BASE ( diff_struc ) deep_struc ).
 
 "Nonidentical elementary component types are kept in target structure;
 "internal table content is replaced; there, the value assignment
 "happens like using the CORRESPONDING operator with the addition DEEP.
-
 diff_deep_struc = CORRESPONDING #( DEEP BASE ( diff_struc ) deep_struc ).
 
 "Nonidentical elementary component types are kept in target structure;
 "internal table content is kept, too, and table content of the
 "source structure are added; there, the value assignment
 "happens like using the CORRESPONDING operator without addition.
-
 diff_deep_struc = CORRESPONDING #( APPENDING BASE ( diff_struc ) deep_struc ).
 
 "Nonidentical elementary component types are kept in target structure;
 "internal table content is kept, too, and table content of the
 "source structure are added; there, the value assignment
 "happens like using the CORRESPONDING operator with the addition DEEP.
-
 diff_deep_struc = CORRESPONDING #( DEEP APPENDING BASE ( diff_struc ) deep_struc ).
 ```
 

@@ -119,7 +119,7 @@ DATA(parser_pa) = ixml_pa->create_parser(
 DATA(parsing_check) = parser_pa->parse( ).
 IF parsing_check = 0. "Parsing was successful
 
-  "************* Directly reading nodes *************
+  "--------------------- Directly reading nodes ----------------------  
 
   "Accessing the root element of the DOM. It can be used as the initial node
   "for accessing subnodes.
@@ -135,7 +135,8 @@ IF parsing_check = 0. "Parsing was successful
   "Result: First element searched for
   DATA(element_by_name) = document_pa->find_from_name( name = `word3` )->get_value( ). "are
   
-  "************* Reading using iterators *************
+  "--------------------- Reading using iterators ----------------------  
+
   "i.e. going over the XML nodes one after another
 
   "Creating an iterator
@@ -179,7 +180,7 @@ ENDIF.
 Creating XML data using sXML:
 
 ```abap
-"************** Token-based rendering ************** 
+"--------------------- Token-based rendering ----------------------
 
 "For sXML, there are specialized writer classes, such as CL_SXML_STRING_WRITE.
 "Writers created with this class render XML data to a byte string.
@@ -239,7 +240,7 @@ DATA(xml) = CAST cl_sxml_string_writer( writer )->get_output(  ).
 "  </flight>
 "</flights>
 
-"************** Object-oriented rendering ************** 
+"--------------------- Object-oriented rendering ----------------------
 
 DATA(writer_oo) = CAST if_sxml_writer( cl_sxml_string_writer=>create( type     = if_sxml=>co_xt_xml10
                                                                       encoding = 'UTF-8' ) ).
@@ -296,7 +297,7 @@ DATA(xml_oo) =  CAST cl_sxml_string_writer( writer_oo )->get_output( ).
 Parsing XML data using sXML:
 
 ```abap
-"************** Token-based parsing ************** 
+"--------------------- Token-based parsing ----------------------
 
 "Creating reader
 "Note: See the comments for the writer above. It is similar here. For readers,
@@ -333,7 +334,7 @@ TRY.
     ...
 ENDTRY.
 
-"************** Object-oriented parsing ************** 
+"--------------------- Object-oriented parsing ----------------------
 
 "Creating demo XML data to be used in the example.
 DATA(xml_oo_read) = cl_abap_conv_codepage=>create_out( )->convert(
@@ -453,7 +454,7 @@ ENDTRY.
 There are multiple options. Check the executable example to explore them.
 
 ```abap
-"**************** Transforming XML data ****************
+"--------------------- Transforming XML data ----------------------
 "Options for src: 
 "- Data object of type string or xstring containing XML data in XML 1.0 format
 "- Standard table with flat character-like or byte-like line type
@@ -462,7 +463,7 @@ There are multiple options. Check the executable example to explore them.
 CALL TRANSFORMATION ... SOURCE XML src
                         RESULT ...
 
-"**************** Transforming ABAP data ****************
+"--------------------- Transforming ABAP data ----------------------
 "No XML specified after SOURCE
 "Options for src: 
 "- One or multiple ABAP data objects (abap1 in the snippet) can be specified as 
@@ -485,7 +486,7 @@ CALL TRANSFORMATION ... SOURCE (srctab)
 There are multiple options. Check the executable example to see them in action.
 
 ```abap
-"**************** Transforming to XML data ****************
+"--------------------- Transforming to XML data ----------------------
 "Options for res: 
 "- Data object of type string or xstring
 "- Data object declared inline (e.g. DATA(a) or FINAL(b)), which has then the type xstring
@@ -494,7 +495,7 @@ There are multiple options. Check the executable example to see them in action.
 CALL TRANSFORMATION ... SOURCE ...
                         RESULT XML res.
 
-"**************** Transforming to ABAP data ****************
+"--------------------- Transforming to ABAP data ----------------------
 "No XML specified after RESULT
 "Similar to above, multiple ABAP data objects can be specified as a static parameter list.
 CALL TRANSFORMATION ... SOURCE ...

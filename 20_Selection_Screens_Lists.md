@@ -111,7 +111,8 @@ The following code snippets provide a commented selection of available syntax op
 Note that various combinations of multiple additions are possible, and some are not. See the ABAP Keyword Documentation for details.
 
 ```abap
-****************************** Type options ******************************
+"-------------------------- Type options --------------------------
+
 "Referring to a built-in type with TYPE 
 "In this case, a variable length character string can be inserted in the 
 "generated input field. Note the LOWER CASE addition further down.
@@ -153,7 +154,7 @@ PARAMETERS pj length 40.
 "No explicit type and length specification means TYPE c LENGTH 1 by default
 PARAMETERS pk.
 
-****************************** Value options ******************************
+"-------------------------- Value options --------------------------
 
 "DEFAULT: Defining a start value (can also be a data object instead of a literal)
 PARAMETERS pl TYPE i DEFAULT 12345.
@@ -167,7 +168,7 @@ PARAMETERS pn TYPE string DEFAULT `Hello World` LOWER CASE.
 "or checking against fixed values defined in the domain of the data type, and so on.
 "You can also perform your custom input checks. See the event block section below.
 
-****************************** Screen options ******************************
+"-------------------------- Screen options --------------------------
 
 "OBLIGATORY: Declaring the input field as a required field
 "If there is no entry, the program cannot proceed when choosing Execute.
@@ -207,7 +208,7 @@ PARAMETERS: prb1 RADIOBUTTON GROUP rbgr,
 "See the executable example.
 PARAMETERS pt TYPE i AS LISTBOX VISIBLE LENGTH 10.
 
-*********************** Assigning function codes ***********************
+"-------------------------- Assigning function codes --------------------------
 
 "The AS CHECKBOX, RADIOBUTTON GROUP, AS LISTBOX additions can be combined
 "with the addition USER-COMMAND. That means, on selection, the event
@@ -304,7 +305,7 @@ SELECT-OPTIONS f FOR some_dobj DEFAULT 4 TO 8 OPTION NB SIGN I.
 - Selection screens can be created as regular dynpros or as subscreen dynpros.
 
 ```abap
-******************************** Pattern ***********************************
+"-------------------------- Pattern --------------------------
 
 SELECTION-SCREEN BEGIN OF SCREEN ...
 
@@ -315,7 +316,7 @@ SELECTION-SCREEN BEGIN OF SCREEN ...
 SELECTION-SCREEN END OF SCREEN ...
 
 
-****************************** Regular dynpros ******************************
+"-------------------------- Regular dynpros --------------------------
 
 "Creating a selection screen as regular dynpro
 "Note that the dynpro number must be unique in the program. Do not use 1000.
@@ -334,7 +335,7 @@ SELECTION-SCREEN BEGIN OF SCREEN 9002 AS WINDOW.
   ...
 SELECTION-SCREEN END OF SCREEN 9002.
 
-****************************** Subscreen dynpros ******************************
+"-------------------------- Subscreen dynpros --------------------------
 
 "Can be included in other dynpros or selection screens, or in subscreen areas 
 "or tab pages. But they cannot be called explicitly.
@@ -599,7 +600,7 @@ WRITE some_text && sy-uname.
 "/: Writes to a new line
 WRITE / 'new line'.
 
-*********** Positioning output ***********
+"-------------------------- Positioning output --------------------------
 "Specifying the output position (and output in new line)
 WRITE /5 'positioned'.
 "Specifying the length, no position specified means the output is
@@ -617,7 +618,8 @@ DATA dc34 TYPE decfloat34 VALUE '   1.2345    '.
 WRITE /(*) dc34.
 WRITE /1(**) dc34.
 
-*********** Further specification options ***********
+"--------------------- Further specification options ----------------------
+
 "Various examples for further specification options, among them function
 "calls, string expressions, method calls
 DATA txt TYPE string VALUE `abap`.
@@ -657,7 +659,8 @@ WRITE: (*) sy-uname QUICKINFO 'User name',
        '/',
        (*) sy-uzeit QUICKINFO 'Current time'.
 
-*********** Special list elements ***********
+"--------------------- Special list elements ----------------------
+
 "INPUT: Enabling fields for input
 "You can overwrite the output and further evaluate the overwritten
 "content in a list event. 

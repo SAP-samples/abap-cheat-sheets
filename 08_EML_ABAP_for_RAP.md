@@ -13,7 +13,7 @@
   - [EML Syntax](#eml-syntax)
     - [EML Syntax for Modifying Operations](#eml-syntax-for-modifying-operations)
     - [EML Syntax for Reading Operations](#eml-syntax-for-reading-operations)
-      - [Dynamic Forms of EML Statements](#dynamic-forms-of-eml-statements)
+    - [Dynamic Forms of EML Statements](#dynamic-forms-of-eml-statements)
     - [Persisting to the Database](#persisting-to-the-database)
     - [Raising RAP Business Events](#raising-rap-business-events)
     - [Additions to EML Statements in ABAP Behavior Pools](#additions-to-eml-statements-in-abap-behavior-pools)
@@ -1159,7 +1159,7 @@ READ ENTITIES OF root_ent
 ```
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-#### Dynamic Forms of EML Statements
+### Dynamic Forms of EML Statements
 
 In addition to the short and long forms described above, various ABAP EML statements also have dynamic forms. 
 Taking EML read operations as an example, the following code snippet shows a dynamic EML [`READ ENTITIES`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapread_entities_operations.htm) statement. The relevant syntax element is the `OPERATIONS` addition.

@@ -697,7 +697,7 @@ class_name=>meth( EXPORTING i = j k = l RECEIVING m = DATA(n) ).
 ### Method Chaining
 
 As shown in the previous example, method chaining is possible for functional method calls (i.e. methods that have exactly one return value declared with `RETURNING`) at appropriate read positions. In this case, the method's return value is used as an ABAP operand.
-A chained method call can consist of multipled functional methods that are linked using component selectors `->`. The return values of each method are references to the next method.
+A chained method call can consist of multiple functional methods that are linked using component selectors `->`. The return values of each method are references to the next method.
 
 ```abap
 "The following example demonstrates method chaining

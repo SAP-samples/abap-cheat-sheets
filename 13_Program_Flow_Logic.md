@@ -16,6 +16,7 @@
       - [`WHILE`: Conditional Loops](#while-conditional-loops)
       - [Loops Across Tables](#loops-across-tables)
   - [Calling Procedures](#calling-procedures)
+    - [Excursion: RETURN](#excursion-return)
   - [Handling Exceptions](#handling-exceptions)
       - [Notes on Exception Classes](#notes-on-exception-classes)
     - [Raising Exceptions](#raising-exceptions)
@@ -439,6 +440,58 @@ However, ...
 2. methods are described in the context of the ABAP cheat sheet on ABAP object orientation. Hence, see more details there.
 
 Regarding the exiting of procedures, note the hint mentioned above. The use of `RETURN` is recommended.
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+### Excursion: RETURN
+
+As mentioned, `RETURN` terminates the current processing block. Usually, the statement is intended for leaving processing blocks early. 
+In case of functional method, i.e. methods that have one returning parameter, the `RETURN` statement can also be specified with an expression. In doing so, the 
+following statement
+```abap
+res = some_expr.
+RETURN.
+```
+can also be specified as follows: 
+```abap
+RETURN some_expr.
+```
+Here, the expression result is passed to the returning parameter without naming it explicitly. As an expression, you can specify a constructor expression (and using type inference with `#` means using the type of the returning parameter).
+
+Example:
+```abap
+CLASS zcl_some_class DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC.
+  PUBLIC SECTION.
+    INTERFACES: if_oo_adt_classrun.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+    CLASS-METHODS multiply
+      IMPORTING num1          TYPE i
+                num2          TYPE i
+      RETURNING VALUE(result) TYPE i.
+ENDCLASS.
+CLASS zcl_some_class IMPLEMENTATION.
+  METHOD if_oo_adt_classrun~main.
+    DATA(res1) = multiply( num1 = 2 num2 = 3 ).
+    DATA(res2) = multiply( num1 = 10 num2 = 10 ).
+    DATA(res3) = multiply( num1 = 99999999 num2 = 99999999 ).
+    out->write( res1 ). "6
+    out->write( res2 ). "100
+    out->write( res3 ). "0
+  ENDMETHOD.
+  METHOD multiply.
+    TRY.        
+        "result = num1 * num2.
+        RETURN num1 * num2.
+      CATCH cx_sy_arithmetic_error.
+        RETURN VALUE #( ).
+    ENDTRY.
+  ENDMETHOD.
+ENDCLASS.
+```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 

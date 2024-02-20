@@ -141,8 +141,7 @@ The following bundling techniques are available for classic ABAP. This means tha
 
 
     ```abap
-    "Synchronous update
-
+    "--------------------- Synchronous update ---------------------
     DATA(st_a) = VALUE some_type( ... ).
 
     ... 
@@ -156,9 +155,7 @@ The following bundling techniques are available for classic ABAP. This means tha
     "Triggering the synchronous update
     COMMIT WORK AND WAIT.                              
 
-    ***********************************************************************
-    "Asynchronous update
-
+    "--------------------- Asynchronous update ---------------------
     DATA(st_b) = VALUE some_type( ... ).
 
     ... 
@@ -171,9 +168,8 @@ The following bundling techniques are available for classic ABAP. This means tha
     "Triggering the asynchronous update
     COMMIT WORK.
 
-    ***********************************************************************
-    "Local update
-
+    "--------------------- Local update ---------------------
+    
     "Before update function modules are registered.
     SET UPDATE TASK LOCAL.
 
@@ -332,7 +328,7 @@ Example using `CL_ABAP_TX`:
 ```abap
 ...
 
-"Activating the modify transactional phase
+"------------- Activating the modify transactional phase -------------
 cl_abap_tx=>modify( ).
 
 "The following database modification statement is not allowed in the
@@ -346,7 +342,7 @@ MODIFY zdemo_abap_carr FROM TABLE @( VALUE #(
 
 ...
 
-"Activating the save transactional phase
+"------------- Activating the save transactional phase -------------
 cl_abap_tx=>save( ).
 
 "In this phase, database modifications are allowed.
@@ -447,11 +443,3 @@ The log shows the value 1 for the transaction state after the update task is exe
   - The work process information may change due to the fact that database commits are triggered when completing a dialog step. So you might expect different numbers there, but not necessarily. The new free work process can also be the same as the one before it was freed. However, there will be no different work process information for the update. The numbers will be the same because the update is performed in a single work process.
   - Before calling the program that displays database entries and the log, the SAP LUW key is the same throughout the transaction. It does not change until a new SAP LUW is opened. See and compare the last entry for the SAP LUW key in the log that is retrieved for the program submitted.
 </details>
-
-
-
-
-
-
-
-

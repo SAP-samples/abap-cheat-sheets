@@ -152,7 +152,7 @@ PROCESS AFTER INPUT.
   MODULE pai_9000.
 ```
 
-Implementation of the dialog modules in the ABAP program
+Implementation of the dialog modules in the ABAP program:
 
 ```abap
 MODULE pbo_9000 OUTPUT.
@@ -432,7 +432,7 @@ PROCESS AFTER INPUT.
 
 SET SCREEN 9200.
 
-***************************
+**********************************************
 
 "The current dynpro sequence is terminated.
 SET SCREEN 0.
@@ -478,24 +478,26 @@ SET SCREEN 0.
   "Dynpro 9100 is called.
   LEAVE SCREEN.
 
-  ****************************************
+  **************************************************************************
 
   "The following statement ends the processing of the current dynpro. 
   "The statically defined dynpro 9100 is overwritten. Dynpro 9200 is called.
   SET SCREEN 9200.
   LEAVE SCREEN.
 
-  ****************************************
+  **************************************************************************
 
   "The following statement is a shorter form of the one above.
   "It has the same effect.
   LEAVE TO SCREEN 9200.
 
-  ****************************************
+  **************************************************************************
 
   "Ending the dynpro sequence
   SET SCREEN 0.
   LEAVE SCREEN.
+  "Alternative
+  LEAVE TO SCREEN 0.
   ```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
@@ -543,7 +545,7 @@ ENDMODULE.
     "Setting the GUI status (in PBO)
     SET PF-STATUS status.
 
-    ****************************************
+    ****************************************************************************
 
     "Setting the GUI status and excluding function codes, i.e. the 
     "specified function codes are deactivated. fcode expects either 
@@ -558,7 +560,7 @@ ENDMODULE.
     GET PF-STATUS status.
     st = sy-pfkey.
 
-    ****************************************
+    ****************************************************************************
 
     "The following statement inserts the function codes which are 
     "inactive in the current GUI status line by line into the 
@@ -579,7 +581,7 @@ ENDMODULE.
     "The name of the current GUI title is displayed in the system field sy-title.
     gui_title = sy-title.
 
-    ****************************************
+    ****************************************************************************
 
     "WITH addition
     "The placeholders of a GUI title can be replaced by the formatted 
@@ -677,7 +679,7 @@ tabstr-activetab = 'SOME_TAB'.
 prog = sy-repid.
 ...
 
-******************************************************
+****************************************************************************
 
 "Code in the flow logic
 

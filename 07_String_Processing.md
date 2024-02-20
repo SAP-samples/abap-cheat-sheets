@@ -12,25 +12,37 @@
   - [Concatenating Strings](#concatenating-strings)
   - [Splitting Strings](#splitting-strings)
   - [Modifying Strings](#modifying-strings)
+    - [Transforming to Lowercase and Uppercase](#transforming-to-lowercase-and-uppercase)
+    - [Shifting Content](#shifting-content)
+    - [Condensing Strings](#condensing-strings)
+    - [Reversing Strings](#reversing-strings)
+    - [Inserting Substrings into Strings](#inserting-substrings-into-strings)
+    - [Overlaying Content](#overlaying-content)
   - [Processing Substrings](#processing-substrings)
   - [Searching and Replacing](#searching-and-replacing)
     - [Searching for Specific Characters](#searching-for-specific-characters)
     - [Replacing Specific Characters in Strings](#replacing-specific-characters-in-strings)
-    - [Searching for Substrings in Strings (and Tables)](#searching-for-substrings-in-strings-and-tables)
-    - [Replacing Substrings in Strings (and Tables)](#replacing-substrings-in-strings-and-tables)
+    - [Searching for Substrings in Strings](#searching-for-substrings-in-strings)
+    - [Searching for Substrings in Tables](#searching-for-substrings-in-tables)
+    - [String Function find](#string-function-find)
+    - [Replacing Substrings in Strings](#replacing-substrings-in-strings)
+    - [Replacing Substrings in Tables](#replacing-substrings-in-tables)
+    - [String Function replace](#string-function-replace)
   - [Pattern-Based Searching and Replacing in Strings](#pattern-based-searching-and-replacing-in-strings)
     - [Simple Pattern-Based Searching Using Comparison Operators](#simple-pattern-based-searching-using-comparison-operators)
     - [Complex Searching and Replacing Using Regular Expressions](#complex-searching-and-replacing-using-regular-expressions)
       - [Excursion: Common Regular Expressions](#excursion-common-regular-expressions)
       - [Searching Using Regular Expressions](#searching-using-regular-expressions)
-        - [Excursion: System Classes for Regular Expressions](#excursion-system-classes-for-regular-expressions)
+      - [System Classes for Regular Expressions](#system-classes-for-regular-expressions)
       - [Replacing Using Regular Expressions](#replacing-using-regular-expressions)
   - [More String Functions](#more-string-functions)
     - [Checking the Similarity of Strings](#checking-the-similarity-of-strings)
     - [Repeating Strings](#repeating-strings)
     - [Returning the Smallest/Biggest of a Set of Character-Like Arguments](#returning-the-smallestbiggest-of-a-set-of-character-like-arguments)
     - [Escaping Special Characters](#escaping-special-characters)
-  - [Excursion: String Processing Using the XCO Library](#excursion-string-processing-using-the-xco-library)
+  - [Excursions](#excursions)
+    - [Comparison Operators for Character-Like Data Types in a Nutshell](#comparison-operators-for-character-like-data-types-in-a-nutshell)
+    - [String Processing Using the XCO Library](#string-processing-using-the-xco-library)
   - [Executable Example](#executable-example)
 
 
@@ -514,7 +526,7 @@ s2 = segment( val = s1 index = 2 sep = `,` ). "world
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## Modifying Strings
-**Transforming to Lowercase and Uppercase**
+### Transforming to Lowercase and Uppercase
 
 - The string functions
 [`to_lower`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencase_functions.htm)
@@ -538,7 +550,9 @@ TRANSLATE s1 TO UPPER CASE. "HALLO
 TRANSLATE s1 TO LOWER CASE. "hallo
 ```
 
-**Shifting Content**
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+### Shifting Content
 
 - You can shift content within a string to a specific position on the left
 or right of a string.
@@ -599,7 +613,9 @@ s2 = shift_right( val = `abc   ` sub = ` ` ). "'abc'
 s2 = shift_right( val = `abc   ` ). "'abc' (same result as above)
 ```
 
-**Condensing Strings**
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+### Condensing Strings
 
 - You can use
 [`CONDENSE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapcondense.htm)
@@ -649,7 +665,9 @@ s2 = condense( val  = `  Rock'xxx'Roller`
                to   = `n` ). "Rock'n'Roll
 ```
 
-**Reversing Strings**
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+### Reversing Strings
 
 The string function
 [`reverse`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenreverse_functions.htm)
@@ -659,7 +677,9 @@ reverses a string:
 DATA(s1) = reverse( `paba` ).
 ```
 
-**Inserting Substrings into Strings**
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+### Inserting Substrings into Strings
 
 - The string function
 [`insert`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abeninsert_functions.htm)
@@ -678,7 +698,9 @@ DATA(s1) = insert( val = `abcghi` sub = `def` off = 3 ).
 s1 = insert( val = `abcghi` sub = `def` ).
 ```
 
-**Overlaying Content**
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+### Overlaying Content
 
 You can use [`OVERLAY`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapoverlay.htm) statements to replace characters in one variable with characters in another variable that are in the same place there.
 
@@ -712,7 +734,7 @@ string (`val`).
 or `len` must be specified. The default value of `off`
 is 0, i.e. when using the default value, the substring is extracted
 from the beginning of the string. 
-  - If `len` is not specified, the rest of the remaining characters are respected. If the offset
+  - If `len` is not specified, the rest of the remaining characters is respected. If the offset
 and length are greater than the actual length of the string, the
 exception `CX_SY_RANGE_OUT_OF_BOUNDS` is raised.
 - You may also encounter the syntax for accessing substrings by specifying the offset
@@ -739,7 +761,7 @@ Syntax examples:
 DATA(s1) = `Lorem ipsum dolor sit amet`. "Type string
 
 "Extracting substring starting at a specific position
-"'len' not specified means the rest of the remaining characters are
+"'len' not specified means the rest of the remaining characters is
 "respected
 DATA(s2) = substring( val = s1 off = 6 ). "ipsum dolor sit amet
 
@@ -934,7 +956,7 @@ TRANSLATE s1 USING `_.a#g+`. "...#bc.def.....+hi.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-### Searching for Substrings in Strings (and Tables)
+### Searching for Substrings in Strings
 
 -   For simple substring searches, you can use the [comparison
     operators](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencomp_operator_glosry.htm "Glossary Entry")
@@ -1142,6 +1164,7 @@ FIND FIRST OCCURRENCE OF `ab` IN str_abap
 "res10: line: 0, offset: 0, length: 2, submatches: (initial)
 ```
 
+### Searching for Substrings in Tables
 You can use [`FIND ... IN TABLE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapfind_itab.htm) statements to search for substrings in internal tables (standard tables without secondary table keys; with character-like line type) line by line. 
 
 ``` abap
@@ -1180,7 +1203,7 @@ FIND FIRST OCCURRENCE OF `Z`
   RESPECTING CASE.
 ```
 
-**Built-in search functions**
+### String Function find
 - Built-in search functions, such as `find`, are available for searching strings.
 - They return a return value of type i and contain multiple (optional) parameters.
 - `FIND` covers the same functionality and more with the many addition options.
@@ -1261,7 +1284,7 @@ ENDTRY.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-### Replacing Substrings in Strings (and Tables)
+### Replacing Substrings in Strings
 
 - [`REPLACE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapreplace.htm) and [`REPLACE ... IN TABLE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapreplace_itab.htm) statements have a similar syntax as `FIND` and `FIND ... IN TABLE` statements. Refer to the ABAP Keyword Documentation for all possible additions. The following code snippets cover a selection.
 - `sy-subrc` is set: 0 (search pattern or section was replaced by the specified content, result was not truncated on the right), 2 (search pattern or section was replaced, result was truncated on the right), 4	(search pattern was not found).
@@ -1384,7 +1407,9 @@ str = str_original.
 REPLACE SECTION LENGTH 6 OF str WITH `#`. "#BAP abap
 ```
 
-Replacements in internal tables with `REPLACE ... IN TABLE`:
+### Replacing Substrings in Tables
+
+Replacements in internal tables with `REPLACE ... IN TABLE` (see the notes above for searching in internal tables):
 ``` abap
 DATA(str_table_original) = VALUE string_table( ( `aZbzZ` ) ( `cdZze` ) ( `Zzzf` ) ( `ghz` ) ).
 DATA(str_table) = str_table_original.
@@ -1443,6 +1468,7 @@ REPLACE ALL OCCURRENCES OF `Z`
 "str_table: aZbz# / cdZze / Zzzf / ghz
 ```
 
+### String Function replace
 - The string function
 [`replace`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenreplace_functions.htm),
 allows you to store the result of a substring replacement in a separate
@@ -1668,7 +1694,7 @@ FIND FIRST OCCURRENCE OF PCRE `\bt.` IN TABLE itab
 ```
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-##### Excursion: System Classes for Regular Expressions
+#### System Classes for Regular Expressions
 
 - You can create an object-oriented representation of regular expressions using the `CL_ABAP_REGEX` system class.
 - For example, the `CREATE_PCRE` method creates instances of regular expressions with PCRE syntax.
@@ -1846,7 +1872,143 @@ ENDTRY.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-## Excursion: String Processing Using the XCO Library
+## Excursions 
+
+### Comparison Operators for Character-Like Data Types in a Nutshell 
+
+The comparison operators have already been covered in different sections above. This is a summary of the operators.
+
+<table>
+<tr>
+<th>Comparison Operator</th>
+<th>Details</th>
+<th>Example</th>
+</tr>
+<tr>
+    <td><code>CA</code></td>
+<td><i>Contains any</i><br>To determine whether any character of a given character set is contained
+in a string. <br>Note: The search is case-sensitive. <code>sy-fdpos</code> contains the offset of the first character found, while 0 stands for the very first position. If nothing is found, <code>sy-fdpos</code> contains the length of the string.</td>
+<td>
+
+```abap
+DATA(s1) = `cheers`.
+IF s1 CA `aeiou`. ... "true; sy-fdpos: 2
+IF s1 CA `xy`. ...    "false; sy-fdpos: 6
+```    
+
+</td>
+</tr>
+<tr>
+<td><code>NA</code></td>
+<td><i>Contains not any</i><br>To determine whether any character of a given character set is not contained
+in a string. See the note above. </td>
+<td>
+
+```abap
+DATA(s2) = `Hallo`.
+IF s2 NA `bcdeh`. ... "true; sy-fdpos: 5
+IF s2 NA `bcdeH`. ... "false; sy-fdpos: 0
+```   
+
+</td>
+</tr>
+<tr>
+<td><code>CO</code></td>  
+<td><i>Contains only</i><br>To determine whether a string contains only a certain set of characters. See the note above.</td>
+<td>
+
+```abap
+DATA(s3) = `abcd`.
+IF s3 CO `abcd`. ... "true; sy-fdpos: 4
+IF s3 CO `abCd`. ... "false; sy-fdpos: 2
+```   
+
+</td>
+</tr>
+<tr>
+<td><code>CN</code></td>
+<td><i>Contains not only</i><br>To determine whether a string does not only contain a certain set of characters, i.e. whether a string contains characters other than those in the character set. See the note above.</td>
+<td>
+
+```abap
+DATA(s4) = `abap`.
+IF s4 CN `ab`. ...  "true; sy-fdpos: 3
+IF s4 CN `abp`. ... "false; sy-fdpos: 4
+```   
+
+</td>
+</tr>
+<tr>
+<td><code>CS</code></td>
+<td><i>Contains string</i><br>For simple substring searches and determining whether a string contains a substring. <br>Note: The search is not case-sensitive. <code>sy-fdpos</code> contains the offset of the first substring found. If it is not found, <code>sy-fdpos</code> contains the length of the string searched.</td>
+<td>
+
+```abap
+DATA(s5) = `Lorem ipsum dolor sit amet.`.
+IF s5 CS `or`. ... "true; sy-fdpos: 1
+IF s5 CS `zz`. ... "false; sy-fdpos: 27
+```   
+
+</td>
+</tr>
+<tr>
+<td><code>NS</code></td>
+<td><i>Contains no string</i><br>To determine whether a substring is not contained in a string. See the note for <code>CS</code>.</td>
+<td>
+
+```abap
+DATA(s6) = `some test string`.
+IF s6 NS `tests`. ... "true; sy-fdpos: 16
+IF s6 NS `TEST`. ...  "false; sy-fdpos: 5
+```   
+
+</td>
+</tr>
+<tr>
+<td><code>CP</code></td>
+<td><i>Conforms to pattern</i><br>For simple pattern searches and determining whether a set of characters is contained in a string that matches a particular pattern. You can use the following special characters as patterns: <ul><li><code>*</code>: Any character sequence (including blanks)</li><li><code>+</code>: Any character (only one character, including blanks)</li><li><code>#</code>: Escape character. The following character is marked for an exact comparison.</li></ul>Patterns are not case-sensitive except for characters marked with
+<code>#</code>. If a pattern is found, <code>sy-fdpos</code> returns the offset of the first occurrence. Otherwise, it contains the length of the string searched.
+</td>
+<td>
+
+```abap
+DATA(s7) = `abc_def_ghi`.
+
+"Pattern: f is preceded by any character sequence, must be followed
+"by '_' and then followed by any character sequence
+IF s7 CP `*f#_*`. ... "true; sy-fdpos: 6
+
+"Pattern: i is preceded by any character sequence, must be followed
+"by any character or a blank
+IF s7 CP `*i+`. ... "false; sy-fdpos: 11    
+```   
+
+</td>
+</tr>
+    <tr>
+<td><code>NP</code></td>
+<td><i>Does not conform to pattern</i><br>Negation of <code>CP</code>. See the previous notes.</td>
+<td>
+
+```abap
+DATA(s8) = `abcDEFghi`.
+
+"Pattern: c is preceded by any character sequence, must be followed
+"by a small letter d, and then followed by any character sequence
+IF s8 NP `*c#d*`. ... "true; sy-fdpos: 9   
+
+"Pattern: c is preceded by any character sequence, must be followed
+"by a capital letter D, and then followed by any character sequence
+IF s8 NP `*c#D*`. ... "false; sy-fdpos: 2    
+```   
+
+</td>
+</tr>
+</table>
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+### String Processing Using the XCO Library
 The Extension Components Library (XCO) library provides [released APIs](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenreleased_api_glosry.htm) and offers various development utilities. Find more information [here](https://help.sap.com/docs/btp/sap-business-technology-platform/overview-of-xco-modules). The following code snippet demonstrates several methods of the `XCO_CP` class that deal with string processing.
 
 ```abap

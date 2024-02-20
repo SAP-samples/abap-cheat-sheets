@@ -895,7 +895,8 @@ DATA(dref_6_i) = REF #( do_number ).
 "The concepts of upcast and downcast enter the picture here.
 "Two different assignment operators are used, as well as the casting operator CAST.
 
-"Upcast is possible for elementary data types
+"--------------------- Upcasts --------------------
+"Upcasts are possible for elementary data types
 "- The static type of the target variable is more general or identical to the static type of the source variable.
 "- Assignment operator used: =
 "- Note that the operators for downcasts can also be used explicitly here, but it is usually not needed.
@@ -909,7 +910,7 @@ dref_1_i = dref_6_i.
 "the target on the left side is a generic type (type data).
 dref_3_data = dref_1_i.
 
-"Downcasts
+"--------------------- Downcasts --------------------
 "- The static type of the target variable is more specific than the static type of the source variable.
 "- The assignability is not checked until runtime.
 "- Must always be performed explicitly using the casting operator ?= or the more modern casting operator CAST.
@@ -958,7 +959,7 @@ There are several ways to create anonymous data objects:
 - Addition `NEW` of the [`INTO`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapselect_into_target.htm) clause in ABAP SQL `SELECT` statements
 
 ```abap
-"CREATE DATA statements
+"--------------------- CREATE DATA statements --------------------
 "Note that there are many additions available. The examples show a selection.
 
 "Creating an anonymous data object with an implicit type.
@@ -1004,7 +1005,7 @@ SELECT SINGLE *
     FROM zdemo_abap_fli
     INTO @dref_8_data->*.
 
-"NEW operator
+"--------------------- NEW operator --------------------
 "- Works like CREATE DATA dref TYPE type statements and can be used in general expression positions.
 "- Allows to assign values to the new anonymous data objects in parentheses
 
@@ -1047,6 +1048,7 @@ SELECT *
  [`FINAL`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenfinal_inline.htm).
 
 ```abap
+"--------------------- Constants --------------------
 "As mentioned above, constants cannot be changed at runtime.
 CONSTANTS con_str TYPE string VALUE `hallo`.
 
@@ -1054,7 +1056,7 @@ CONSTANTS con_str TYPE string VALUE `hallo`.
 CONSTANTS con_underscores TYPE string VALUE `__________`.
 DATA str_w_con_as_start_value TYPE string VALUE con_underscores.
 
-"Immutable variables
+"--------------------- Immutable variables --------------------
 FINAL(do_final_inl) = 1.
 DATA(do_data_inl) = 1 + do_final_inl.
 "not possible
@@ -1125,7 +1127,7 @@ DATA(i2str) = CONV string( -10 ).
 ## Terms Related to Data Types and Objects in a Nutshell
 
 ```abap
-"Standalone and bound data types
+"----------------- Standalone and bound data types ----------------- 
 "Standalone: Data type that is defined using the statement TYPES in an 
 "            ABAP program, as a data type of the ABAP Dictionary or as 
 "            an CDS entity.
@@ -1139,9 +1141,7 @@ DATA do_a_c20 TYPE c LENGTH 20.
 DATA do_b_like LIKE do_a_c20.
 TYPES te_b_like LIKE do_a_c20.
 
-**********************************************************************
-
-"Complex and elementary data type/object
+"-------------- Complex and elementary data type/object --------------
 "Elementary: Data type of fixed or variable length that is neither 
 "            structured, nor a table type or a reference type.
 "Complex: Made up of other data types, for example structured data 
@@ -1159,9 +1159,7 @@ DATA: BEGIN OF struc_a,
         comp5 TYPE REF TO i, "reference type
       END OF struc_a.
 
-**********************************************************************
-
-"Complete and generic data types
+"------------------ Complete and generic data types ------------------
 "Complete: Non-generic data type
 "Generic:
 "- Data type that does not set all properties of a data object.
@@ -1191,9 +1189,7 @@ ASSIGN do_e_c5 TO <fs_b>.
 ASSIGN do_f_str TO <fs_b>.
 ASSIGN itab_a TO <fs_b>.
 
-**********************************************************************
-
-"Variable and constant data objects
+"------------------ Variable and constant data objects ------------------
 "Variable: Named data object whose value can be changed during the runtime 
 "          of an ABAP program.
 "Constant: Named data object whose value cannot be changed at runtime.
@@ -1206,9 +1202,7 @@ CONSTANTS con_a_i TYPE i VALUE 789.
 "Not changeable
 "con_a_i = 321.
 
-**********************************************************************
-
-"Static and dynamic data objects
+"--------------------- Static and dynamic data objects --------------------
 "Static:
 "- Data object for which all attributes, including memory use, are specified 
 "  statically by the data type.
@@ -1234,9 +1228,7 @@ do_i_str = `abc`.
 do_i_str = `d`.
 do_i_str = `efghijklmnopqrstuvwxyz`.
 
-**********************************************************************
-
-"Static type and dynamic type
+"------------------------ Static type and dynamic type -----------------------
 "Both are data types of a reference variable (reference type) that determine 
 "the objects a reference variable can point to.
 "Static type: For data reference variables, the static type is a data type 
@@ -1261,9 +1253,7 @@ dref_b_data  = REF #( do_j_i ).
 dref_b_data  = REF #( do_k_str ).
 dref_b_data  = REF #( dref_a_i ).
 
-**********************************************************************
-
-"Flat and deep data objects
+"------------------------ Flat and deep data objects -----------------------
 "Flat:
 "- Property of a data type, where the content of its data objects represents 
 "  the actual work data.
@@ -1296,9 +1286,7 @@ DATA: BEGIN OF struc_c_deep,
         comp4 TYPE string_table, "internal table as deep data object
       END OF struc_c_deep.
 
-**********************************************************************
-
-"Named and unnamed data object
+"---------------------- Named and unnamed data object ---------------------
 "Named: Data object that can be identified via a name.
 "Unnamed: Data object that cannot be addressed by a name. Unnamed data 
 "         objects are literals and anonymous data objects.
@@ -1323,10 +1311,8 @@ SELECT *
   INTO TABLE NEW @DATA(dref_d_tab)
   UP TO 3 ROWS.
 
-**********************************************************************
-
-"Compatibility, convertibility and conversion regarding source and 
-"target data objects
+"--- Compatibility, convertibility and conversion regarding source and ---
+"--- target data objects -------------------------------------------------
 "1. Source and target are compatible, all technical type properties 
 "   match
 DATA some_dobj TYPE c LENGTH 1 VALUE 'A'.

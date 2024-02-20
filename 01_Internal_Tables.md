@@ -353,6 +353,8 @@ DATA itab_a5 TYPE string_table.
 DATA itab_a6 TYPE TABLE OF ls_loc WITH NON-UNIQUE KEY key_field.
 
 "Internal table based on an already existing internal table using LIKE.
+"Here, an internal table is created containing internal tables of the 
+"type of itab_a6.
 DATA itab_a7 LIKE TABLE OF itab_a6.
 
 "Creating internal tables by inline declarations

@@ -190,14 +190,12 @@ SELECT FROM source   "What database table or view to read from
 "Note that if the selection covers more than one row, e. g. in case
 "of a non-unique WHERE clause, one of these rows is included in
 "the result.
-
 SELECT SINGLE FROM dbtab
   FIELDS *
   WHERE ...
   INTO @struc.        "Existing structure of dbtab's row type
 
 "Reading a selected set of fields of a single row
-
 SELECT SINGLE FROM dbtab
   FIELDS comp1, comp2, comp3
   WHERE ...
@@ -207,7 +205,6 @@ SELECT SINGLE FROM dbtab
 "Here, the CORRESPONDING FIELDS OF addition is used. Only the content of
 "columns that have identically named components in the target data object
 "is assigned.
-
 SELECT SINGLE comp1, comp2, comp3       "Selected set of fields
   FROM dbtab
   WHERE ...
@@ -227,7 +224,6 @@ SELECT FROM dbtab
   INTO TABLE @itab.     "itab has an appropriate row type
 
 "Alternative syntax without the FIELDS addition
-
 SELECT comp1, comp2, comp3          "Selected set of fields
   FROM dbtab
   WHERE ...
@@ -235,7 +231,6 @@ SELECT comp1, comp2, comp3          "Selected set of fields
 
 "Selected set of fields, existing variable
 "See the note on CORRESPONDING FIELDS OF above
-
 SELECT FROM dbtab
   FIELDS comp1, comp2, comp3                "Selected set of fields
   WHERE ...
@@ -271,7 +266,6 @@ ENDSELECT.
 **Checking the existence of a row in a database table**
 ``` abap
 "Instead of @abap_true, you could also use 'X'.
-
 SELECT SINGLE @abap_true
   FROM dbtab
   WHERE ...
@@ -337,7 +331,6 @@ SELECT dbtab~*
 "object but, for example, a name in the target is different. Provided that there will
 "not be an issue regarding the type (conversion) when the values are assigned, you might
 "specify an alias name for the database column to match a component's name in the target data object.
-
 SELECT FROM dbtab
   FIELDS comp1 AS comp_a, comp2 AS comp_b, comp3 AS comp_c
   WHERE ...
@@ -383,8 +376,7 @@ SELECT *
 
 `INTO` **clause**:
 
-**Limiting the number of returned table rows** using the optional addition [`UP TO n
-ROWS`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapselect_up_to_offset.htm).
+**Limiting the number of returned table rows** using the optional addition [`UP TO n ROWS`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapselect_up_to_offset.htm).
 
 ``` abap
 "A maximum of five rows are to be returned
@@ -1542,37 +1534,31 @@ expressions (with `@( ... )`).
 
 ``` abap
 "Inserting a single row into a database table
-
 INSERT dbtab FROM @row.
 
 "Alternative syntax, same effect
 INSERT INTO dbtab VALUES @row.
 
 "Line is created inline using the VALUE operator as part of a host expression
-
 INSERT dbtab FROM @( VALUE #( comp1 = ... comp2 = ... ) ).
 
 "Inserting multiple lines from an internal table into a database table.
 "Make sure that the internal table does not contain a line having the same key
 "as an existing row in the database table. Otherwise, a runtime error occurs.
-
 INSERT dbtab FROM TABLE @itab.
 
 "Inserting lines from a table declared inline using the VALUE operator
 "as part of a host expression
-
 INSERT dbtab FROM TABLE @( VALUE #( ( comp1 = ... comp2 = ... )
                                     ( comp1 = ... comp2 = ... ) ) ).
 
 "ACCEPTING DUPLICATE KEYS addition: To avoid the runtime error mentioned above,
 "all lines that would produce duplicate entries in the database table
 "regarding the keys are discarded and sy-subrc is set to 4.
-
 INSERT dbtab FROM TABLE @itab ACCEPTING DUPLICATE KEYS.
 
 "Inserting the result set of an embedded subquery
 "Here, multiple result sets can be joined, e. g. using UNION.
-
 INSERT dbtab FROM ( SELECT ... ).
 ```
 
@@ -1584,16 +1570,13 @@ INSERT dbtab FROM ( SELECT ... ).
 
 ``` abap
 "Changing content by overwriting entire rows based on a structure
-
 UPDATE dbtab FROM @row.
 UPDATE dbtab FROM @( VALUE #( comp1 = ... comp2 = ... ) ). "Using a host expression
 
 "Changing content by overwriting entire rows based on rows in an internal table
-
 UPDATE dbtab FROM TABLE @itab.
 
 "Using a host expression
-
 UPDATE dbtab FROM TABLE @( VALUE #( ( comp1 = ... comp2 = ... )
                                     ( comp1 = ... comp2 = ... ) ) ).
 
@@ -1606,7 +1589,6 @@ UPDATE dbtab FROM TABLE @( VALUE #( ( comp1 = ... comp2 = ... )
 "- Internal table is filled; only one component is flagged as to be updated
 "- Other fields remain unchanged; note that key fields must be included
 "  in ind_tab (indicator setting for key fields has no effect)
-
 TYPES ind_wa TYPE dbtab WITH INDICATORS comp_ind TYPE abap_bool.
 
 DATA ind_tab TYPE TABLE OF ind_wa.
@@ -1617,14 +1599,12 @@ ind_tab = VALUE #(
 
 UPDATE dbtab FROM TABLE @ind_tab INDICATORS SET STRUCTURE comp_ind.
 
-"Reverses the logic
-
+"In the following example, the logic is reversed using NOT.
 UPDATE dbtab FROM TABLE @ind_tab INDICATORS NOT SET STRUCTURE comp_ind.
 
 "SET addition: Changing values of specific fields in all table rows
-"There are mutliple options for the value assignment. E. g. you can use
+"There are mutliple options for the value assignment. E.g. you can use
 "a literal, host variable/expression, SQL function, and so on.
-
 UPDATE dbtab SET comp2 = ... .
 ```
 
@@ -1636,24 +1616,19 @@ UPDATE dbtab SET comp2 = ... .
 
 ``` abap
 "Inserting a single row into a database table or changing an existing row
-
 MODIFY dbtab FROM @row.
 
 "Using a host expression
-
 MODIFY dbtab FROM @( VALUE #( comp1 = ... comp2 = ... ) ).
 
 "Inserting/Changing multiple rows
-
 MODIFY dbtab FROM TABLE @itab.
 
 "Using a host expression
-
 MODIFY dbtab FROM TABLE @( VALUE #( ( comp1 = ... comp2 = ... )
                                     ( comp1 = ... comp2 = ... ) ) ).
 
 "Inserting/Changing multiple rows based on a result set of an embedded subquery
-
 MODIFY dbtab FROM ( SELECT ... ).
 ```
 
@@ -1667,26 +1642,20 @@ MODIFY dbtab FROM ( SELECT ... ).
 "Variant DELETE FROM ...: Either all rows are deleted or restricted
 
 "All rows are deleted
-
 DELETE FROM dbtab.
 
 "Rows are deleted based on a condition
-
 DELETE FROM dbtab WHERE ....
 
 "Note that there are further options available, e. g. ORDER BY, UP TO
 "Variant DELETE ... FROM ...: Deleting a single row or multiple row
-
 DELETE dbtab FROM @row.
 
 "Using a host expression
-
 DELETE dbtab FROM @( VALUE #( comp1 = ... ) ).
-
 DELETE dbtab FROM TABLE @itab.
 
 "Using a host expression
-
 DELETE dbtab FROM TABLE @( VALUE #( ( comp1 = ... )
                                     ( comp1 = ... ) ) ).
 ```
