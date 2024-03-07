@@ -823,8 +823,8 @@ Bullet points on selected `%` components:
         draft scenario. In doing so, you can avoid lots of adaptations
         in your code by manually adding the indicator.
 -   [`%control`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapderived_types_control.htm)
-    -   Component group that contains the names of all key
-        and data fields of a RAP BO instance which indicate flags.
+    -   Structured component that is a component of many BDEF derived types. It contains the names of all key
+        and data fields of a RAP BO instance, which indicate flags.
     -   For example, it is used to get information on which fields are provided or set a
         flag for which fields are requested by RAP BO providers or RAP
         BO consumers respectively during the current EML request.
@@ -1072,10 +1072,7 @@ created for the root entity. Then, in the same request, instances are
 created for the child entity based on the root instance. In the example
 below, the assumption is that a composition is specified in the root
 view entity like `composition [1..*] of root_ent as _child` and `key_field` and
-`key_field_child` are the keys of the child view entity. The
-[`%target`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapderived_types_target.htm)
-component group enters the picture here which contains the target's
-primary key and data fields.
+`key_field_child` are the keys of the child view entity. The structured component [`%target`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapderived_types_target.htm) enters the picture here which contains the target's primary key and data fields.
 ``` abap
 MODIFY ENTITIES OF root_ent
   ENTITY root_ent
@@ -1291,7 +1288,10 @@ MODIFY ENTITIES OF root_ent
   ENTITY root_ent
   CREATE FIELDS ( key_field field1 field2 ) WITH
   VALUE #( ( %cid = 'cid' key_field = 7
-             field1 = 'K' field2 = 'L' ) ).
+             field1 = 'K' field2 = 'L' ) )
+  MAPPED DATA(mapped)
+  FAILED DATA(failed)
+  REPORTED DATA(resp).
 
 COMMIT ENTITIES.
 
@@ -1578,10 +1578,10 @@ contains all relevant components for the chosen scenario.
 >    in which the final key values are assigned; the preliminary keys can
 >    be included in `%key` or `%pid` or both of them.
 >-   `%pid` and the preliminary key values in `%key` are
->    automatically assigned to the following component groups when
+>    automatically assigned to the following components when
 >    reaching the `adjust_numbers` method:
 >    -   [`%tmp`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapderived_types_tmp.htm):
->        A component group that is assigned the preliminary key values
+>        A component that is assigned the preliminary key values
 >        contained in `%key`. In doing so, `%tmp` takes
 >        over the role that `%key` has had in the RAP interaction
 >        phase to hold the preliminary key values.

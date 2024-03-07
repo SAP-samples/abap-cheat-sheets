@@ -136,7 +136,7 @@ Views](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm
 
 You use ABAP SQL `SELECT` statements to read data from one or more database tables (or views). This can be done to create a multirow or single row result set by assigning the result set to a suitable data object, i. e. you can store the multirow read result in an internal table or the single row result in a structure.
 The `SELECT` statement includes several clauses that serve
-different purposes. The following code snippet shows the basic syntax:
+different purposes. The following code snippet shows the basic syntax (see the note below for a different but interchangeable syntax):
 ``` abap
 SELECT FROM source   "What database table or view to read from
   FIELDS field_list  "What columns should be read
@@ -155,8 +155,7 @@ SELECT FROM source   "What database table or view to read from
 >     - specified in an [operand position](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenoperand_position_glosry.htm) of an ABAP SQL statement.
 > See more information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenhost_variable_glosry.htm).
 >-  The `SELECT` list, i. e. the fields that are specified, can also be specified following the `SELECT`
-    keyword before the `FROM` clause - without `FIELDS`. The
-    following two `SELECT` statements are basically the same but differently arranged:
+    keyword before the `FROM` clause - without `FIELDS`. The following two `SELECT` statements are basically the same but differently arranged. The code snippets in the cheat sheet randomly use one syntax or the other. 
 >      ``` abap
 >      SELECT FROM dbtab
 >        FIELDS comp1, comp2, comp3

@@ -42,7 +42,7 @@
     - [Escaping Special Characters](#escaping-special-characters)
   - [Excursions](#excursions)
     - [Comparison Operators for Character-Like Data Types in a Nutshell](#comparison-operators-for-character-like-data-types-in-a-nutshell)
-    - [String Processing Using the XCO Library](#string-processing-using-the-xco-library)
+    - [Miscellaneous Classes for String Processing](#miscellaneous-classes-for-string-processing)
   - [Executable Example](#executable-example)
 
 
@@ -2008,147 +2008,179 @@ IF s8 NP `*c#D*`. ... "false; sy-fdpos: 2
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-### String Processing Using the XCO Library
-The Extension Components Library (XCO) library provides [released APIs](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenreleased_api_glosry.htm) and offers various development utilities. Find more information [here](https://help.sap.com/docs/btp/sap-business-technology-platform/overview-of-xco-modules). The following code snippet demonstrates several methods of the `XCO_CP` class that deal with string processing.
+### Miscellaneous Classes for String Processing 
+The following list shows a selected set of classes that support string processing.
 
-```abap
-"--------- Extracting a substring from a string ---------
-DATA(some_string) = `abcdefghijklmnopqrstuvwxyz`.
+- `CL_ABAP_CHAR_UTILITIES`: As previously mentioned, this class provides utilities for string processing, such as attributes that represent new lines and horizontal tabs.
 
-"Creating an encapsulation of a string using XCO
-DATA(str) = xco_cp=>string( some_string ).
+    ``` abap
+    DATA(tabbed) = `#` && cl_abap_char_utilities=>horizontal_tab && `#`.
 
-"Using the FROM and TO methods, you can determine
-"the character position. Note that the value includes the
-"character at the position specified.
-"The character index pattern for the example string above
-"is (the string has 26 characters in total):
-"a = 1, b = 2, c = 3 ... z = 26
-"a = -26, b = -25, c = -24 ... z = -1
-"Providing a value that is out of bounds means that
-"the first (or the last) character of the string is used
-"by default.
-"Note: When combining FROM and TO, e.g. with method
-"chaining ...->from( ...)->to( ... ), note that another
-"instance is created with the first 'from', and another
-"character index pattern is created based on the new
-"and adjusted string value.
+    "The following attributes can be replaced by a representation of
+    "the control characters in a string template.
+    ASSERT cl_abap_char_utilities=>newline        = |\n|.
+    ASSERT cl_abap_char_utilities=>horizontal_tab = |\t|.
+    ASSERT cl_abap_char_utilities=>cr_lf          = |\r\n|.
+    ``` 
 
-"bcdefghijklmnopqrstuvwxyz
-DATA(sub1) = str->from( 2 )->value.
+- `CL_ABAP_STRING_UTILITIES`: For processing text strings, such as handling trailing blanks in character strings (i.e. data objects of type <code>string</code>).
 
-"defghijklmnopqrstuvwxyz
-DATA(sub2) = str->from( -23 )->value.
+    ``` abap
+    DATA(string) = `ABAP   `.
+    "Removing trailing blanks
+    cl_abap_string_utilities=>del_trailing_blanks( CHANGING str = string ).
+    "`ABAP`
 
-"vwxyz
-DATA(sub3) = str->from( -5 )->value.
+    "Preserving trailing blanks when assigning text fields to data objects of
+    "type string
+    DATA(chars) = 'ABAP   '.
+    cl_abap_string_utilities=>c2str_preserving_blanks( EXPORTING source = chars 
+                                                      IMPORTING dest   = DATA(str_w_blanks) ).
+    "`ABAP   `
+    DATA(str_no_blanks) = CONV string( chars ).
+    "`ABAP`
+    ``` 
 
-"abcde
-DATA(sub4) = str->to( 5 )->value.
+- `XCO_CP`: The Extension Components Library (XCO) library provides [released APIs](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenreleased_api_glosry.htm) and offers various development utilities. Find more information [here](https://help.sap.com/docs/btp/sap-business-technology-platform/overview-of-xco-modules). The following code snippet demonstrates several methods of the class that deal with string processing.
 
-"ab
-DATA(sub5) = str->to( -25 )->value.
+    ```abap
+    "--------- Extracting a substring from a string ---------
+    DATA(some_string) = `abcdefghijklmnopqrstuvwxyz`.
 
-"Result of 1st 'from' method call: bcdefghijklmnopqrstuvwxyz
-"Based on this result, the 'to' method call is
-"applied.
-"bcdefg
-DATA(sub6) = str->from( 2 )->to( 6 )->value.
+    "Creating an encapsulation of a string using XCO
+    DATA(str) = xco_cp=>string( some_string ).
 
-"Result of 1st 'to' method call: abcdefghijklmnopq
-"Based on this result, the 'from' method call is
-"applied.
-"defghijklmnopq
-DATA(sub7) = str->to( -10 )->from( 4 )->value.
+    "Using the FROM and TO methods, you can determine
+    "the character position. Note that the value includes the
+    "character at the position specified.
+    "The character index pattern for the example string above
+    "is (the string has 26 characters in total):
+    "a = 1, b = 2, c = 3 ... z = 26
+    "a = -26, b = -25, c = -24 ... z = -1
+    "Providing a value that is out of bounds means that
+    "the first (or the last) character of the string is used
+    "by default.
+    "Note: When combining FROM and TO, e.g. with method
+    "chaining ...->from( ...)->to( ... ), note that another
+    "instance is created with the first 'from', and another
+    "character index pattern is created based on the new
+    "and adjusted string value.
 
-"Values that are out of bounds.
-"In the example, the first and last character of the
-"string are used.
-"abcdefghijklmnopqrstuvwxyz
-DATA(sub8) = str->from( 0 )->to( 100 )->value.
+    "bcdefghijklmnopqrstuvwxyz
+    DATA(sub1) = str->from( 2 )->value.
 
-"--------- Splitting and joining ---------
+    "defghijklmnopqrstuvwxyz
+    DATA(sub2) = str->from( -23 )->value.
 
-"Splitting a string into a string table
-DATA(str_table) = xco_cp=>string( `Hello.World.ABAP` )->split( `.` )->value.
-"Hello
-"World
-"ABAP
+    "vwxyz
+    DATA(sub3) = str->from( -5 )->value.
 
-"Concatenating a string table into a string; specifying a delimiter
-str_table = VALUE #( ( `a` ) ( `b` ) ( `c` ) ).
-"a, b, c
-DATA(conc_str1) = xco_cp=>strings( str_table )->join( `, ` )->value.
+    "abcde
+    DATA(sub4) = str->to( 5 )->value.
 
-"Concatenating a string table into a string; specifying a delimiter and
-"reversing the table order
-"c / b / a
-DATA(conc_str2) = xco_cp=>strings( str_table )->reverse( )->join( ` / ` )->value.
+    "ab
+    DATA(sub5) = str->to( -25 )->value.
 
-"--------- Prepending and appending strings ---------
-DATA(name) = xco_cp=>string( `Max Mustermann` ).
+    "Result of 1st 'from' method call: bcdefghijklmnopqrstuvwxyz
+    "Based on this result, the 'to' method call is
+    "applied.
+    "bcdefg
+    DATA(sub6) = str->from( 2 )->to( 6 )->value.
 
-"Max Mustermann, Some Street 1, 12345 Someplace
-DATA(address) = name->append( `, Some Street 1, 12345 Someplace` )->value.
+    "Result of 1st 'to' method call: abcdefghijklmnopq
+    "Based on this result, the 'from' method call is
+    "applied.
+    "defghijklmnopq
+    DATA(sub7) = str->to( -10 )->from( 4 )->value.
 
-"Mr. Max Mustermann
-DATA(title) = name->prepend( `Mr. ` )->value.
+    "Values that are out of bounds.
+    "In the example, the first and last character of the
+    "string are used.
+    "abcdefghijklmnopqrstuvwxyz
+    DATA(sub8) = str->from( 0 )->to( 100 )->value.
 
-"--------- Transforming to lowercase and uppercase ---------
-"ABAP
-DATA(to_upper) = xco_cp=>string( `abap` )->to_upper_case( )->value.
+    "--------- Splitting and joining ---------
 
-"hallo world
-DATA(to_lower) = xco_cp=>string( `HALLO WORLD` )->to_lower_case( )->value.
+    "Splitting a string into a string table
+    DATA(str_table) = xco_cp=>string( `Hello.World.ABAP` )->split( `.` )->value.
+    "Hello
+    "World
+    "ABAP
 
-"--------- Checking if a string starts/ends with a specific string ---------
-DATA check TYPE string.
-DATA(str_check) = xco_cp=>string( `Max Mustermann` ).
+    "Concatenating a string table into a string; specifying a delimiter
+    str_table = VALUE #( ( `a` ) ( `b` ) ( `c` ) ).
+    "a, b, c
+    DATA(conc_str1) = xco_cp=>strings( str_table )->join( `, ` )->value.
 
-"yes
-IF str_check->ends_with( `mann` ).
-  check = `yes`.
-ELSE.
-  check = `no`.
-ENDIF.
+    "Concatenating a string table into a string; specifying a delimiter and
+    "reversing the table order
+    "c / b / a
+    DATA(conc_str2) = xco_cp=>strings( str_table )->reverse( )->join( ` / ` )->value.
 
-"no
-IF str_check->starts_with( `John` ).
-  check = `yes`.
-ELSE.
-  check = `no`.
-ENDIF.
+    "--------- Prepending and appending strings ---------
+    DATA(name) = xco_cp=>string( `Max Mustermann` ).
 
-"--------- Converting strings to xstrings using a codepage ---------
-"536F6D6520737472696E67
-DATA(xstr) = xco_cp=>string( `Some string` )->as_xstring( xco_cp_character=>code_page->utf_8 )->value.
+    "Max Mustermann, Some Street 1, 12345 Someplace
+    DATA(address) = name->append( `, Some Street 1, 12345 Someplace` )->value.
 
-"--------- Camel case compositions and decompositions with split and join operations ---------
-"Pascal case is also possible
-"someValue
-DATA(comp) = xco_cp=>string( `some_value` )->split( `_` )->compose( xco_cp_string=>composition->camel_case )->value.
+    "Mr. Max Mustermann
+    DATA(title) = name->prepend( `Mr. ` )->value.
 
-"Camel case decomposition
-"some_value
-DATA(decomp) = xco_cp=>string( `someValue` )->decompose( xco_cp_string=>decomposition->camel_case )->join( `_` )->value.
+    "--------- Transforming to lowercase and uppercase ---------
+    "ABAP
+    DATA(to_upper) = xco_cp=>string( `abap` )->to_upper_case( )->value.
 
-"--------- Matching string against regular expression ---------
-DATA match TYPE string.
+    "hallo world
+    DATA(to_lower) = xco_cp=>string( `HALLO WORLD` )->to_lower_case( )->value.
 
-"yes
-IF xco_cp=>string( ` 1` )->matches( `\s\d` ).
-  match = 'yes'.
-ELSE.
-  match = 'no'.
-ENDIF.
+    "--------- Checking if a string starts/ends with a specific string ---------
+    DATA check TYPE string.
+    DATA(str_check) = xco_cp=>string( `Max Mustermann` ).
 
-"no
-IF xco_cp=>string( ` X` )->matches( `\s\d` ).
-  match = 'yes'.
-ELSE.
-  match = 'no'.
-ENDIF.
-```
+    "yes
+    IF str_check->ends_with( `mann` ).
+      check = `yes`.
+    ELSE.
+      check = `no`.
+    ENDIF.
+
+    "no
+    IF str_check->starts_with( `John` ).
+      check = `yes`.
+    ELSE.
+      check = `no`.
+    ENDIF.
+
+    "--------- Converting strings to xstrings using a codepage ---------
+    "536F6D6520737472696E67
+    DATA(xstr) = xco_cp=>string( `Some string` )->as_xstring( xco_cp_character=>code_page->utf_8 )->value.
+
+    "--------- Camel case compositions and decompositions with split and join operations ---------
+    "Pascal case is also possible
+    "someValue
+    DATA(comp) = xco_cp=>string( `some_value` )->split( `_` )->compose( xco_cp_string=>composition->camel_case )->value.
+
+    "Camel case decomposition
+    "some_value
+    DATA(decomp) = xco_cp=>string( `someValue` )->decompose( xco_cp_string=>decomposition->camel_case )->join( `_` )->value.
+
+    "--------- Matching string against regular expression ---------
+    DATA match TYPE string.
+
+    "yes
+    IF xco_cp=>string( ` 1` )->matches( `\s\d` ).
+      match = 'yes'.
+    ELSE.
+      match = 'no'.
+    ENDIF.
+
+    "no
+    IF xco_cp=>string( ` X` )->matches( `\s\d` ).
+      match = 'yes'.
+    ELSE.
+      match = 'no'.
+    ENDIF.
+    ```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 

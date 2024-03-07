@@ -370,7 +370,6 @@ ASSIGN s-xl1 TO <simple>.
 "ASSIGN s-tab_ha TO <simple>.
 
 ASSIGN s-oref TO <object>.
-s-oref = NEW zcl_demo_abap_objects( ).
 ```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
@@ -1028,9 +1027,12 @@ st = VALUE #( col1 = 1 col2 = `aaa` col3 = `Z` ).
 APPEND st TO it.
 DATA(dref) = NEW st_type( col1 = 2 col2 = `b` col3 = `Y` ).
 
-"You can achieve the access using ASSIGN statements as shown above, or
-"by statically specifying the structure and the (object) component selector
-"followed by a character-like data object in parentheses.
+"You can achieve the access using ASSIGN statements as shown above
+"(using field symbols), ...
+ASSIGN st-('COL1') TO FIELD-SYMBOL(<col1>).
+
+"... or by statically specifying the structure and the (object) component
+"selector followed by a character-like data object in parentheses.
 "Write position
 st-('COL1') = 123.
 it[ 1 ]-('COL1') = 456.
@@ -1038,15 +1040,24 @@ dref->('COL1') = 789.
 
 "Read position
 "The example shows how you can retrieve the textual content of any component
-"of any structure.
-DATA(content_col2) = CONV string( st-('COL1') ).
-DATA(content_col3) = |{ st-('COL3') }|.
-DATA content_col1 LIKE st-col1.
+"of any structure. As a prerequisite, the components must be convertible
+"to type string in the example.
+DATA content_col1 TYPE string.
 content_col1 = st-('COL1').
+DATA(content_col2) = CONV string( st-('COL2') ).
+DATA(content_col3) = |{ st-('COL3') }|.
 
+"The following example creates an anonymous data object. The dereferenced
+"data reference variable is assigned the component value. Using the LIKE
+"addition, the appropriate type is specified (and not the string type as 
+"above for the structure component col1 that is of type i).
 DATA dref_comp TYPE REF TO data.
-CREATE DATA dref_comp LIKE st-('COL3').
-dref_comp->* = st-('COL3').
+CREATE DATA dref_comp LIKE st-('COL1').
+dref_comp->* = st-('COL1').
+"As shown further down, using RTTI to get the absolute type name of the 
+"dereferenced data reference variable. 
+DATA(type_used) = cl_abap_typedescr=>describe_by_data(
+   dref_comp->* )->absolute_name. "\TYPE=I
 
 "If the component is not found, a catchable exception is raised.
 TRY.
@@ -1766,7 +1777,7 @@ tdo_by_name_elem_helper = cl_abap_typedescr=>describe_by_name( 'ELEMTYPE' ).
 
 "... using the cl_abap_typedescr=>describe_by_data method.
 "In this case, the data objects are provided.
-"The examples cover an elementary data object, a structure and and
+"The examples cover an elementary data object, a structure and an
 "internal table.
 DATA elemdobj TYPE elemtype.
 DATA strucdobj TYPE structype.

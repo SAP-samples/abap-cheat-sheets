@@ -521,8 +521,8 @@ DATA it3 LIKE TABLE OF s1 WITH EMPTY KEY.
 "Populating internal tables
 it1 = VALUE #( ( a = 1 b = 'aaa' c = 'bbbbb' )
                 ( a = 2 b = 'ccc' c = 'ddddd' ) ).
-it3 = VALUE #( ( a = 3 b = 'eee' c = 'fffff' ) ).
 it2 = VALUE #( ( a = 7 b = 'eee' d = 'fffff' ) ).
+it3 = VALUE #( ( a = 3 b = 'eee' c = 'fffff' ) ).
 
 it2 = CORRESPONDING #( it1 ).
 
@@ -789,13 +789,22 @@ tables using the `VALUE` operator. Using `VALUE` for
 constructing [elementary data objects](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenelementary_data_object_glosry.htm "Glossary Entry") and providing values is not possible. You can only use it to create a data object with an initial value, for example `DATA(str) = VALUE string( ).`. The `CONV` operator closes this gap. 
 
 ``` abap
-DATA(c) = CONV decfloat34( '0.4' ).
+DATA(a) = CONV decfloat34( '0.4' ).
 
 "Instead of
-DATA d TYPE decfloat34 VALUE '0.4'.
+DATA b TYPE decfloat34 VALUE '0.4'.
 "or
-DATA e TYPE decfloat34.
-e = '0.4'.
+DATA c TYPE decfloat34.
+c = '0.4'.
+
+"Using the VALUE operator to construct elementary data objects 
+"and provide values is not possible. 
+"It is only possible to create an elementary data object with 
+"an initial value. 
+DATA(d) = VALUE string( ).
+"This way it basically corresponds to a declaration as follows,
+"which does not specify a start value with the addition VALUE.
+DATA e TYPE string.
 
 "Redundant conversion
 "The variable derives the type (string) automatically from the 

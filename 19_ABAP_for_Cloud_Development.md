@@ -3,16 +3,16 @@
 # ABAP for Cloud Development
 
 - [ABAP for Cloud Development](#abap-for-cloud-development)
-- [Terms](#terms)
-- [Excursions](#excursions)
-- [More Information](#more-information)
-- [Executable Example](#executable-example)
+  - [Terms](#terms)
+  - [Excursions](#excursions)
+  - [More Information](#more-information)
+  - [Executable Example](#executable-example)
 
 
 This ABAP cheat sheet briefly outlines the terms ABAP Cloud and classic ABAP to get an idea about [ABAP for Cloud Development](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_for_cloud_dev_glosry.htm). 
 It provides references to more detailed information on the topic.
 
-# Terms
+## Terms
 
 - ABAP Cloud 
   - Progamming paradigm for state-of-the-art, cloud-ready and upgrade-stable solutions 
@@ -41,7 +41,7 @@ It provides references to more detailed information on the topic.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
   
-# Excursions
+## Excursions
 
 1) If available to you, you have accessed an SAP BTP ABAP environment using ADT.
 
@@ -155,7 +155,7 @@ It provides references to more detailed information on the topic.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-# More Information
+## More Information
 
 - Devtoberfest sessions
   - [Overview of ABAP Cloud](https://www.youtube.com/watch?v=ApZSn_t_WSo)
@@ -174,7 +174,7 @@ It provides references to more detailed information on the topic.
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
 
-# Executable Example
+## Executable Example
 [zcl_demo_abap_cloud_excursion](./src/zcl_demo_abap_cloud_excursion.clas.abap)
 
 > **💡 Note**<br>
