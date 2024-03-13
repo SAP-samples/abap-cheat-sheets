@@ -1322,7 +1322,7 @@ Provides context information relevant to the current ABAP session.
 <br><br>
 
 ``` abap
-"Getting UTC date, e.g. 20240101
+"Getting current date in UTC, e.g. 20240101
 DATA(sys_date) = cl_abap_context_info=>get_system_date( ).
 
 "Getting current time in UTC, e.g. 152450

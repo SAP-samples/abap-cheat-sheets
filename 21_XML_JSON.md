@@ -439,7 +439,7 @@ CALL TRANSFORMATION zsome_transformation SOURCE ...
 CALL TRANSFORMATION id SOURCE ...
                        RESULT ...
 
-"Dynamic specifiation of the transformation
+"Dynamic specification of the transformation
 "If the transformation does not exist, an exception is raised.
 TRY.
   CALL TRANSFORMATION ('ID') SOURCE ...
@@ -465,7 +465,7 @@ CALL TRANSFORMATION ... SOURCE XML src
 
 "--------------------- Transforming ABAP data ----------------------
 "No XML specified after SOURCE
-"Options for src: 
+"Options after SOURCE: 
 "- One or multiple ABAP data objects (abap1 in the snippet) can be specified as 
 "  static parameter list, e.g. z1 = abap1 z2 = abap2 ...
 "- When XSLT is used (such as ID), the data is serialized to asXML depending on 

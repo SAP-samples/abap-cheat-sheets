@@ -1,31 +1,32 @@
 <a name="top"></a>
 
-# Date, Time, and Time Stamps
+# Date, Time, and Time Stamp
 
-- [Date, Time, and Time Stamps](#date-time-and-time-stamps)
-  - [Data Types for Date, Time and Time Stamps](#data-types-for-date-time-and-time-stamps)
+- [Date, Time, and Time Stamp](#date-time-and-time-stamp)
+  - [Data Types for Date, Time and Time Stamp](#data-types-for-date-time-and-time-stamp)
   - [Retrieving the Time Zone](#retrieving-the-time-zone)
   - [Date](#date)
     - [Retrieving and Creating Dates](#retrieving-and-creating-dates)
     - [Validity of Date Fields](#validity-of-date-fields)
     - [Character-Like Access to Date Fields](#character-like-access-to-date-fields)
     - [Numeric Access/Calculations](#numeric-accesscalculations)
+    - [`CL_ABAP_DATFM`: Date Conversions](#cl_abap_datfm-date-conversions)
   - [Time](#time)
   - [Time Stamps](#time-stamps)
-    - [Time stamps of type utclong](#time-stamps-of-type-utclong)
+    - [Time Stamps of Type `utclong`](#time-stamps-of-type-utclong)
       - [Retrieving the Current Time Stamp](#retrieving-the-current-time-stamp)
       - [Creating/Modifying a Time Stamp](#creatingmodifying-a-time-stamp)
-      - [Time Stamp Calculations with the Built-In Function utclong\_add](#time-stamp-calculations-with-the-built-in-function-utclong_add)
+      - [Time Stamp Calculations with the Built-In Function `utclong_add`](#time-stamp-calculations-with-the-built-in-function-utclong_add)
       - [Time Stamp Calculations with XCO](#time-stamp-calculations-with-xco)
-      - [Calculating Time Stamp Differences Using the Built-In Function utclong\_diff](#calculating-time-stamp-differences-using-the-built-in-function-utclong_diff)
-      - [CONVERT UTCLONG: Time Stamp (utclong) -\> Local Date/Time](#convert-utclong-time-stamp-utclong---local-datetime)
-      - [CONVERT INTO UTCLONG: Local Date/Time -\> Time Stamp (utclong)](#convert-into-utclong-local-datetime---time-stamp-utclong)
-      - [CL\_ABAP\_UTCLONG: Utilities for Time Stamps (utclong)](#cl_abap_utclong-utilities-for-time-stamps-utclong)
-    - [Time Stamps in Packed Numbers (types timestamp, timestampl)](#time-stamps-in-packed-numbers-types-timestamp-timestampl)
-      - [Retrieving the Current Time Stamp](#retrieving-the-current-time-stamp-1)
-      - [CONVERT TIME STAMP: Time Stamp (timestamp, timestampl)-\> Local Date/Time](#convert-time-stamp-time-stamp-timestamp-timestampl--local-datetime)
-      - [CONVERT INTO TIME STAMP: Local Date/Time -\> Time Stamp (timestamp, timestampl)](#convert-into-time-stamp-local-datetime---time-stamp-timestamp-timestampl)
-      - [CL\_ABAP\_TSTMP: Calculating and Converting Time Stamps in Packed Numbers](#cl_abap_tstmp-calculating-and-converting-time-stamps-in-packed-numbers)
+      - [Calculating Time Stamp Differences Using the Built-In Function `utclong_diff`](#calculating-time-stamp-differences-using-the-built-in-function-utclong_diff)
+      - [`CONVERT UTCLONG`: Time Stamp (`utclong`) -\> Local Date/Time](#convert-utclong-time-stamp-utclong---local-datetime)
+      - [`CONVERT INTO UTCLONG`: Local Date/Time -\> Time Stamp (`utclong`)](#convert-into-utclong-local-datetime---time-stamp-utclong)
+      - [`CL_ABAP_UTCLONG`: Utilities for Time Stamps (`utclong`)](#cl_abap_utclong-utilities-for-time-stamps-utclong)
+    - [Time Stamps in Packed Numbers (types `timestamp`, `timestampl`)](#time-stamps-in-packed-numbers-types-timestamp-timestampl)
+      - [`GET TIME STAMP`: Retrieving the Current Time Stamp](#get-time-stamp-retrieving-the-current-time-stamp)
+      - [`CONVERT TIME STAMP`: Time Stamp in Packed Numbers -\> Local Date/Time](#convert-time-stamp-time-stamp-in-packed-numbers---local-datetime)
+      - [`CONVERT INTO TIME STAMP`: Local Date/Time -\> Time Stamp in Packed Numbers](#convert-into-time-stamp-local-datetime---time-stamp-in-packed-numbers)
+      - [`CL_ABAP_TSTMP`: Calculating and Converting Time Stamps in Packed Numbers](#cl_abap_tstmp-calculating-and-converting-time-stamps-in-packed-numbers)
     - [Excursion: Unix Time Stamps](#excursion-unix-time-stamps)
   - [Date, Time, and Time Stamps in String Templates](#date-time-and-time-stamps-in-string-templates)
   - [Excursions](#excursions)
@@ -35,9 +36,9 @@
   - [More Information](#more-information)
 
 
-This ABAP cheat sheet covers how to handle and process dates, times, and time stamps in ABAP. Note the different types when working with them in ABAP, such as for calculations, evaluations, or displaying on a user interface.
+This ABAP cheat sheet covers options of how to handle and process dates, times, and time stamps in ABAP. Note the different types when working with them in ABAP, such as for calculations, evaluations, or displaying on a user interface.
 
-## Data Types for Date, Time and Time Stamps
+## Data Types for Date, Time and Time Stamp
 
 The main data types for date, time, and time stamps in ABAP are as follows::
 - [Built-in ABAP types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbuiltin_abap_type_glosry.htm): `d`, `t`, `utclong`
@@ -217,7 +218,7 @@ More information on string processing: [String processing cheat sheet](07_String
 
 ```abap
 "Since the content is character-like, you can use string processing functionalities
-"to access date values. This is also applies to time fields of type t.
+"to access date values. This also applies to time fields of type t.
 "Some examples:
 "Extracting date values using the string function substring.
 DATA some_date TYPE d VALUE '20240102'.
@@ -252,7 +253,6 @@ DATA(days_since_01_01_0001) = CONV i( date_calc_1 ). "738887
 "Getting the weekday (1 = Monday, 2 = Tuesday, ...)
 DATA(weekday1) = ( 5 + date_calc_1  MOD 7 ) MOD 7 + 1. "1 (Monday)
 DATA(weekday2) = ( 5 + date_calc_3  MOD 7 ) MOD 7 + 1. "6 (Saturday)
-"Getting the last day of the previous month
 DATA(date_w_first_day_of_month) =  CONV d( replace( val = `202403020` off = 6 len = 2 with = `01` ) ). "20240301
 DATA(date_w_last_day_of_prev_month) = CONV d( date_w_first_day_of_month - 1 ). "20240229
 
@@ -315,6 +315,95 @@ TRY.
                                         )->value.
   CATCH cx_root.
 ENDTRY.
+```
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+### `CL_ABAP_DATFM`: Date Conversions
+
+```abap
+"Using the CL_ABAP_DATFM class, you can perform conversions with external
+"and internal representations of a time according to the date format, e.g.
+"the conversion of a date in a data object of type string to type d and vice
+"versa using a specific date format. Multiple methods are available, of which
+"two are covered in the example. For more information, refer to the class
+"documentation.
+"Values of the date format for the conversion
+"'1'  DD.MM.YYYY (Gregorian Date)
+"'2'  MM/DD/YYYY (Gregorian Date)
+"'3'  MM-DD-YYYY (Gregorian Date)
+"'4'  YYYY.MM.DD (Gregorian Date)
+"'5'  YYYY/MM/DD (Gregorian Date)
+"'6'  YYYY-MM-DD (Gregorian Date, ISO 8601)
+"'7'  GYY.MM.DD (Japanese Date)
+"'8'  GYY/MM/DD (Japanese Date)
+"'9'  GYY-MM-DD (Japanese Date)
+"'A'  YYYY/MM/DD (Islamic Date 1)
+"'B'  YYYY/MM/DD (Islamic Date 2)
+"'C'  YYYY/MM/DD (Iranian Date)
+
+"Data type and obect declarations for the example. The example, explores
+"multiple date formats. For this purpose, each loop pass in a DO loop
+"uses a different date format. First, the internal time format is converted
+"to external time formats. In another loop, the conversions are performed
+"the other way round. The results are stored in an internal table.
+DATA(date4conversion) = CONV d( '20240202' ).
+DATA conv_date_str TYPE string.
+DATA conv_date_d TYPE d.
+DATA date_format TYPE cl_abap_datfm=>ty_datfm.
+TYPES: BEGIN OF date_ty_s,
+          ext_date TYPE string,
+          format   TYPE c LENGTH 1,
+          int_date TYPE d,
+        END OF date_ty_s.
+DATA date_tab TYPE TABLE OF date_ty_s WITH EMPTY KEY.
+
+"Conversion of d (internal) to string (external time format)
+DO 7 TIMES.
+  TRY.
+      cl_abap_datfm=>conv_date_int_to_ext(
+        EXPORTING im_datint    = date4conversion
+                  im_datfmdes  = SWITCH #( sy-index
+                                            WHEN 1 THEN cl_abap_datfm=>get_datfm( )
+                                            WHEN 2 THEN '1'
+                                            WHEN 3 THEN '2'
+                                            WHEN 4 THEN '3'
+                                            WHEN 5 THEN '6'
+                                            WHEN 6 THEN 'A'
+                                            WHEN 7 THEN 'C' )
+        IMPORTING ex_datext    = conv_date_str
+                  ex_datfmused = date_format  ).
+      date_tab = VALUE #( BASE date_tab ( ext_date = conv_date_str format = date_format ) ).
+    CATCH cx_abap_datfm_format_unknown.
+  ENDTRY.
+ENDDO.
+
+"Conversion of string (external) to d (internal time format)
+LOOP AT date_tab REFERENCE INTO DATA(ref_date).
+  TRY.
+      cl_abap_datfm=>conv_date_ext_to_int(
+        EXPORTING im_datext    = ref_date->ext_date
+                  im_datfmdes  = ref_date->format
+        IMPORTING ex_datint    = conv_date_d
+                  ex_datfmused = date_format ).
+      ref_date->int_date = conv_date_d.
+    CATCH cx_abap_datfm_no_date cx_abap_datfm_invalid_date 
+          cx_abap_datfm_format_unknown cx_abap_datfm_ambiguous.
+  ENDTRY.
+ENDLOOP.
+
+"Content of date_tab:
+"EXT_DATE      FORMAT    INT_DATE
+"02/02/2024    2         20240202
+"02.02.2024    1         20240202
+"02/02/2024    2         20240202
+"02-02-2024    3         20240202
+"2024-02-02    6         20240202
+"1445/07/22    A         20240202
+"1402/11/13    C         20240202
+"Note: When outputting the data object with the classrun,
+"20240202, which is of type d, is displayed as 2014-02-02 in 
+"the console for better readability.
 ```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
@@ -400,6 +489,35 @@ DATA(time_xco_subtr) = xco_cp=>sy->time( xco_cp_time=>time_zone->user
                                        )->subtract( iv_hour = 1 iv_minute = 1 iv_second = 1
                                        )->as( xco_cp_time=>format->iso_8601_extended
                                        )->value.
+
+"------------ Conversions with the CL_ABAP_TIMEFM class ------------
+
+"Using the CL_ABAP_TIMEFM class, you can perform conversions with external
+"and internal representations of a time, e.g. conversion of a time in a data
+"object of type string to type t and vice versa. Multiple methods are available,
+"of which two are covered in the example. For more information, refer to the 
+"class documentation.
+DATA(time4conversion) = CONV t( '123456' ).
+DATA conv_time_str TYPE string.
+DATA conv_time_t TYPE t.
+
+"Conversion of t (internal) to string (external time format)
+TRY.
+    cl_abap_timefm=>conv_time_int_to_ext(
+      EXPORTING time_int            = time4conversion
+                without_seconds     = abap_false
+                format_according_to = cl_abap_timefm=>iso "hh:mm:ss
+      IMPORTING time_ext            = conv_time_str ). "12:34:56
+  CATCH cx_parameter_invalid_range.
+ENDTRY.
+
+"Conversion of string (external) to t (internal time format)
+TRY.
+    cl_abap_timefm=>conv_time_ext_to_int(
+      EXPORTING time_ext            = conv_time_str
+      IMPORTING time_int            = conv_time_t ).    "123456
+  CATCH cx_abap_timefm_invalid.
+ENDTRY.                                       
 ```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
@@ -416,7 +534,7 @@ DATA(time_xco_subtr) = xco_cp=>sy->time( xco_cp_time=>time_zone->user
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-### Time stamps of type utclong
+### Time Stamps of Type `utclong`
 #### Retrieving the Current Time Stamp
 
 More information: [`utclong_current`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenutclong_current.htm)
@@ -496,7 +614,7 @@ DATA(ts12) = ts11->overwrite( iv_year = '2025'
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-#### Time Stamp Calculations with the Built-In Function utclong_add
+#### Time Stamp Calculations with the Built-In Function `utclong_add`
 
 More information: [`utclong_add`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenutclong_add.htm)
 
@@ -546,7 +664,7 @@ DATA(ts_ref2) =  xco_cp_time=>moment( iv_year   = '2024'
                                       iv_minute = '28'
                                       iv_second = '59' ).
 
-"Additions; various optional parameters available
+"Additions; various optional parameters are available
 "2027-03-02T11:37:54
 DATA(ts18) = ts_ref1->add( iv_day = 1 iv_month = 2 iv_year = 3
                           )->as( xco_cp_time=>format->iso_8601_extended
@@ -610,7 +728,7 @@ DATA(ts_interval_high) = ts_interval->upper_bound->as( xco_cp_time=>format->iso_
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-#### Calculating Time Stamp Differences Using the Built-In Function utclong_diff
+#### Calculating Time Stamp Differences Using the Built-In Function `utclong_diff`
 
 More information: [`utclong_diff`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenutclong_diff.htm)
 
@@ -628,7 +746,7 @@ DATA(ts_diff2) = utclong_diff( high = ts16
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-#### CONVERT UTCLONG: Time Stamp (utclong) -> Local Date/Time
+#### `CONVERT UTCLONG`: Time Stamp (`utclong`) -> Local Date/Time
 
 More information: [`CONVERT UTCLONG`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapconvert_utclong.htm)
 
@@ -670,7 +788,7 @@ ENDTRY.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-#### CONVERT INTO UTCLONG: Local Date/Time -> Time Stamp (utclong)
+#### `CONVERT INTO UTCLONG`: Local Date/Time -> Time Stamp (`utclong`)
 
 More information: [`CONVERT INTO UTCLONG`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapconvert_utclong.htm)
 
@@ -709,15 +827,16 @@ CONVERT DATE date2utcl
 "the valid time stamp, the exceptions raised and the error messages 
 "are added to an internal table.
 DATA error_checks TYPE string_table.
+DATA date_test TYPE d.
+DATA time_test TYPE t.
+DATA frac_sec_test TYPE decfloat34.
+DATA dls_test TYPE abap_bool.
+DATA tz_test TYPE string.
 DO 6 TIMES.
-  DATA date_test TYPE d.
   date_test = '20240101'.
-  DATA time_test TYPE t.
   time_test = '112458'.
-  DATA frac_sec_test TYPE decfloat34.
   frac_sec_test = '0.768127'.
-  DATA dls_test TYPE abap_bool.
-  DATA tz_test TYPE string.
+  dls_test = abap_false.
   tz_test = `EST`.
 
   CASE sy-index.
@@ -747,29 +866,30 @@ DO 6 TIMES.
               DAYLIGHT SAVING TIME dls_test
               TIME ZONE tz_test
               INTO UTCLONG DATA(utcl_inl3).
-      error_checks = VALUE #( BASE error_checks ( |Valid time stamp: { utcl_inl3 }| ) ).
+      error_checks = VALUE #( BASE error_checks ( |({ sy-index }) Valid time stamp: { utcl_inl3 }| ) ).
     CATCH cx_root INTO DATA(err).
       error_checks = VALUE #( BASE error_checks
-        ( |{ replace( val = cl_abap_typedescr=>describe_by_object_ref( err )->absolute_name
+        ( |({ sy-index }) Exception | &&
+          |{ replace( val = cl_abap_typedescr=>describe_by_object_ref( err )->absolute_name
                       sub = `\CLASS=`
-                      with = `` ) } | &&
+                      with = `` ) } was raised: | &&
           |{ err->get_text( ) }| ) ).
   ENDTRY.
 ENDDO.
 
-*Content of error_checks:
-*Valid time stamp: 2024-01-01 16:24:58.7681270
-*CX_SY_CONVERSION_NO_DATE The '20249999 argument cannot be interpreted as a date
-*CX_SY_CONVERSION_NO_TIME The '992458' argument cannot be interpreted as a time
-*CX_SY_CONVERSION_NO_DATE_TIME The seconds fractions '1' must be in the range 0.0000000 to 0.9999999 (a maximum of seven decimal places).
-*CX_SY_CONVERSION_NO_DATE_TIME A combination of date '20240101', time '112458', time zone 'EST', and daylight savings time = 'X' is not a valid time.
-*CX_PARAMETER_INVALID_RANGE Parameter has invalid value: Parameter DAYLIGHT SAVING TIME has invalid value N.
+*Content of error_checks:                                                                                                                                                              
+*(1) Valid time stamp: 2024-01-01 16:24:58.7681270                                                                                                                             
+*(2) Exception CX_SY_CONVERSION_NO_DATE was raised: The '20249999 argument cannot be interpreted as a date                                                                     
+*(3) Exception CX_SY_CONVERSION_NO_TIME was raised: The '992458' argument cannot be interpreted as a time                                                                      
+*(4) Exception CX_SY_CONVERSION_NO_DATE_TIME was raised: The seconds fractions '1' must be in the range 0.0000000 to 0.9999999 (a maximum of seven decimal places).            
+*(5) Exception CX_SY_CONVERSION_NO_DATE_TIME was raised: A combination of date '20240101', time '112458', time zone 'EST', and daylight savings time = 'X' is not a valid time.
+*(6) Exception CX_PARAMETER_INVALID_RANGE was raised: Parameter has invalid value: Parameter DAYLIGHT SAVING TIME has invalid value N.            
 ```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
 
-#### CL_ABAP_UTCLONG: Utilities for Time Stamps (utclong)
+#### `CL_ABAP_UTCLONG`: Utilities for Time Stamps (`utclong`)
 
 ```abap
 "Check the class documentation. More methods are available.
@@ -798,11 +918,11 @@ ENDTRY.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-### Time Stamps in Packed Numbers (types timestamp, timestampl)
+### Time Stamps in Packed Numbers (types `timestamp`, `timestampl`)
 
-This section deals with time stamps in packag numbers (types `timestamp`, `timestampl`). Note that only a few ABAP statements can deal with these types. Most other statements just interpret the types as numbers. 
+This section deals with time stamps in packed numbers (types `timestamp`, `timestampl`). Note that only a few ABAP statements can deal with these types. Most other statements just interpret the types as numbers. 
 
-#### Retrieving the Current Time Stamp
+#### `GET TIME STAMP`: Retrieving the Current Time Stamp
 
 More information: [`GET TIME STAMP`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapget_time-stamp.htm)
 
@@ -825,7 +945,7 @@ GET TIME STAMP FIELD DATA(ts_inl).
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-#### CONVERT TIME STAMP: Time Stamp (timestamp, timestampl)-> Local Date/Time
+#### `CONVERT TIME STAMP`: Time Stamp in Packed Numbers -> Local Date/Time
 
 More information: [`CONVERT TIME STAMP`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapconvert_time-stamp.htm)
 
@@ -884,7 +1004,7 @@ ASSERT sy-subrc = 12.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-#### CONVERT INTO TIME STAMP: Local Date/Time -> Time Stamp (timestamp, timestampl)
+#### `CONVERT INTO TIME STAMP`: Local Date/Time -> Time Stamp in Packed Numbers
 
 More information: [`CONVERT INTO TIME STAMP`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapconvert_date_time-stamp.htm)
 
@@ -915,7 +1035,7 @@ CONVERT DATE CONV d( '20240101' )
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
 
-#### CL_ABAP_TSTMP: Calculating and Converting Time Stamps in Packed Numbers
+#### `CL_ABAP_TSTMP`: Calculating and Converting Time Stamps in Packed Numbers
 
 More information: Class documentation and [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencl_abap_tstmp.htm)
 
@@ -1047,8 +1167,9 @@ SELECT SINGLE
   WHERE TimeZoneID = char`EST`
   INTO @DATA(wa_typed_literal).
 
-"Cast with a typed literal to be more exact. In the case of
-"the example, the data type char(6) is expected.
+"Cast with a typed literal to cover a specification true to the
+"actually expected type. In the case of the example, the data type 
+"char(6) is expected.
 SELECT SINGLE
   FROM i_timezone
   FIELDS *
@@ -1074,7 +1195,7 @@ SELECT SINGLE
     utclong`2024-01-01T10:01:02,2` AS utc,
     tims`101507` AS tims,
     curr`173.95` AS curr,
-    "Multiple cast expressions split a time stamp into date and time parts
+    "Multiple cast expressions splitting a time stamp into date and time parts
     CAST( CAST( div( @tmstamp, 1000000 ) AS CHAR ) AS DATS ) AS date,
     CAST( substring( CAST( @tmstamp AS CHAR ), 9, 6 ) AS TIMS ) AS time,
     'ABAP' AS txt "Untyped literal
@@ -1086,7 +1207,7 @@ SELECT SINGLE
 
 ### Date and Time Functions in ABAP SQL
 
-More information: [Date Functions and Time Functions]([07_String_Processing.md#string-templates](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_sql_date_time_functions.htm))
+More information: [Date Functions and Time Functions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_sql_date_time_functions.htm)
 
 ```abap
 "The following demo ABAP SQL SELECT statement selects from a
@@ -1174,7 +1295,7 @@ FIELDS
   tims_to_timn( tims = tims`231256` ) AS tims_to_timn, "231256
   tims_from_timn( timn = timn`155432` ) AS tims_from_timn "155432
 
-WHERE TimeZoneID = 'EST'
+WHERE TimeZoneID = char`EST`
 INTO @DATA(wa).
 ```
 

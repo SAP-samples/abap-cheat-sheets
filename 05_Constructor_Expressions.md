@@ -62,7 +62,7 @@
         position](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenwrite_position_glosry.htm "Glossary Entry").
         In doing so, such a variable declared inline can be given the
         appropriate type and result of the constructor expression in one
-        go: `DATA(strtable) = VALUE string_table( ( `a` ) ( `b` ) ( `c` ) ).` or `DATA(dec) = CONV decfloat34( '1.23' ).`.
+        go: ```DATA(strtable) = VALUE string_table( ( `a` ) ( `b` ) ( `c` ) ).``` or ```DATA(dec) = CONV decfloat34( '1.23' ).```.
 
 > **✔️ Hint**<br>
 >-  The construction of a result, i. e. a target [data
@@ -79,10 +79,9 @@ initialization can be avoided.
 -   Expressions with the
     [`VALUE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconstructor_expression_value.htm)
     operator construct a result in place based on a data type.
--   This result can be initial values for any non-generic data types,
-    structures or internal tables.
-> **💡 Note**<br>
-> Elementary data types and reference types cannot be
+-   This result can be structures or internal tables. It can also be initial values for any non-generic data types.   
+    > **💡 Note**<br>
+    > Elementary data types and reference types cannot be
     explicitly specified for the construction of values here.
 -   Regarding the type specifications before and parameters within the
     parentheses:

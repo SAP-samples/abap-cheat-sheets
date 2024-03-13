@@ -25,6 +25,7 @@
     - [Enumerated Types and Objects](#enumerated-types-and-objects)
     - [Getting Type Information and Creating Types at Runtime](#getting-type-information-and-creating-types-at-runtime)
     - [Ranges Tables](#ranges-tables)
+    - [Typed Literals in ABAP SQL](#typed-literals-in-abap-sql)
   - [Executable Example](#executable-example)
 
 ## Introduction
@@ -1460,6 +1461,59 @@ SELECT * FROM @inttab AS tab
     INTO TABLE @DATA(result).
 "result: 1, 2, 3, 6, 7, 8, 12, 13, 14, 15, 18, 19, 20
 
+```
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+### Typed Literals in ABAP SQL
+
+Typed literal:
+- Literal whose data types is defined by specifying a [built-in dictionary type](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenddic_builtin_types.htm) explicitly. 
+- Available for most but not all ABAP Dictionary data types.
+- Can be used in ABAP SQL and in ABAP CDS. 
+- More information: Typed literals in [ABAP SQL](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_sql_typed_literals.htm) ([cast expressions in ABAP SQL](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensql_cast.htm)) and [ABAP CDS](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_typed_literal_v2.htm)
+
+```abap
+SELECT SINGLE
+  FROM i_timezone
+  FIELDS *
+  WHERE TimeZoneID = char`EST`
+  INTO @DATA(wa_typed_literal).
+
+"Cast with a typed literal to cover a specification true to the
+"actually expected type. In the case of the example, the data type 
+"char(6) is expected.
+SELECT SINGLE
+  FROM i_timezone
+  FIELDS *
+  WHERE TimeZoneID = CAST( char`EST` AS CHAR( 6 ) )
+  INTO @DATA(wa_typed_literal_cast).
+
+"Untyped literal
+SELECT SINGLE
+  FROM i_timezone
+  FIELDS *
+  WHERE TimeZoneID = 'EST'
+  INTO @DATA(wa_untyped_literal).
+
+"Various typed literals
+DATA(tmstamp) = CONV timestamp( '20240808112517' ).
+SELECT SINGLE
+  FROM i_timezone
+  FIELDS
+    char`X` AS flag,
+    int8`32984723948723` AS int8,
+    raw`11` AS raw,
+    numc`1234` AS numc,
+    utclong`2024-01-01T10:01:02,2` AS utc,
+    tims`101507` AS tims,
+    curr`173.95` AS curr,
+    "Multiple cast expressions splitting a time stamp into date and time parts
+    CAST( CAST( div( @tmstamp, 1000000 ) AS CHAR ) AS DATS ) AS date,
+    CAST( substring( CAST( @tmstamp AS CHAR ), 9, 6 ) AS TIMS ) AS time,
+    'ABAP' AS txt "Untyped literal
+  WHERE TimeZoneID = CAST( char`EST` AS CHAR( 6 ) )
+  INTO @DATA(wa_some_typed_literal).
 ```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>

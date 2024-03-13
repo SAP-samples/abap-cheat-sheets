@@ -1,6 +1,7 @@
 # CDS View Entities
 
 - [CDS View Entities](#cds-view-entities)
+  - [A Glimpse on the CDS Syntax](#a-glimpse-on-the-cds-syntax)
   - [More Information](#more-information)
   - [Executable Example](#executable-example)
 
@@ -10,6 +11,35 @@ Core data services (CDS) are an infrastructure for defining and consuming semant
 > - For cheat sheet content on CDS views, check out [this blog](https://blogs.sap.com/2022/10/24/feature-matrix-data-modeling-with-abap-core-data-services/).
 > - The executable example focuses on CDS view entities and covers a selection of features.
 > - The sample CDS view entities are designed to demonstrate a selection of features with a limited number of artifacts. They are not intended to be role models for proper CDS view design. They focus on syntax options only. They are not intended to solve concrete programming tasks. You should always work out your own solution for each individual case.
+
+## A Glimpse on the CDS Syntax
+The following links take you to the source code of the cheat sheet artifacts to get a glimpse on the syntax used. To explore the syntax in action, import the ABAP cheat sheet repository into your system. 
+
+- [zdemo_abap_cds_ve_sel](src/zdemo_abap_cds_ve_sel.ddls.asddls)
+  - Input parameters
+  - Specifying fields of the data source
+  - Typed and untyped literals
+  - Session variables
+  - Multiple expressions: 
+    - Cast expressions 
+    - Reuse expressions
+    - Arithmetic expressions
+    - Case expressions
+    - Logical expressions
+  - Built-in functions
+    - Numeric functions
+    - String functions
+    - Coalesce function
+    - Date and time functions
+- [zdemo_abap_cds_ve_agg_exp](zdemo_abap_cds_ve_agg_exp.ddls.asddls)
+  - Aggregate expressions
+- [zdemo_abap_cds_ve_joins](src/zdemo_abap_cds_ve_joins.ddls.asddls)
+  - Inner joins
+  - Left outer joins
+  - Right outer joins
+  - Cross joins
+- [zdemo_abap_cds_ve_assoc](src/zdemo_abap_cds_ve_assoc.ddls.asddls)
+  - Associations
 
 ## More Information
 
