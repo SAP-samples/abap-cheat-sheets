@@ -715,3 +715,4 @@ CLASS zcl_demo_abap_aux IMPLEMENTATION.
   ENDMETHOD.
 
 ENDCLASS.
+
