@@ -34,13 +34,14 @@
     - [Date and Time Functions in ABAP SQL](#date-and-time-functions-in-abap-sql)
     - [Date and Time Functions in ABAP CDS](#date-and-time-functions-in-abap-cds)
   - [More Information](#more-information)
+  - [Executable Example](#executable-example)
 
 
 This ABAP cheat sheet covers options of how to handle and process dates, times, and time stamps in ABAP. Note the different types when working with them in ABAP, such as for calculations, evaluations, or displaying on a user interface.
 
 ## Data Types for Date, Time and Time Stamp
 
-The main data types for date, time, and time stamps in ABAP are as follows::
+The main data types for date, time, and time stamps in ABAP are as follows:
 - [Built-in ABAP types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbuiltin_abap_type_glosry.htm): `d`, `t`, `utclong`
 - [Built-in DDIC types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbuiltin_ddic_type_glosry.htm) such as `dats`, `tims`, `utclong` and more. These types are mapped to ABAP types (e.g. `dats` is mapped to `d`, `utclong` is mapped to the identically named ABAP type `utclong`). Find more information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenddic_builtin_types.htm#@@ITOC@@ABENDDIC_BUILTIN_TYPES_6).
   - Note that the built-in DDIC types are used in artifacts such as [DDIC database tables](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenddic_db_table_glosry.htm) and [CDS entities](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_entity_glosry.htm), but not in ABAP programs (except for [typed literals](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentyped_literal_glosry.htm)).
@@ -117,7 +118,7 @@ DATA(tz_w_xco_utc) = xco_cp_time=>time_zone->utc->value.
 ## Date
 
 > **💡 Note**<br>
-> - AS ABAP always implicitly references the Gregorian calendar. For output purposes, dates can be converted to country-specific calendars. 
+> - [AS ABAP](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenas_abap_glosry.htm) always implicitly references the Gregorian calendar. For output purposes, dates can be converted to country-specific calendars. 
 > - Regarding assignments of data objects with numeric data types and calculations: Valid values are converted to the number of days since 01.01.0001.  
 
 
@@ -392,7 +393,9 @@ LOOP AT date_tab REFERENCE INTO DATA(ref_date).
   ENDTRY.
 ENDLOOP.
 
-"Content of date_tab:
+"Content of date_tab
+"Note: The first entry in the table in your system may be different. The currently 
+"active date format is retrieved.
 "EXT_DATE      FORMAT    INT_DATE
 "02/02/2024    2         20240202
 "02.02.2024    1         20240202
@@ -823,9 +826,9 @@ CONVERT DATE date2utcl
         INTO UTCLONG DATA(utcl_inl2).
 
 "Ensure that valid values are passed
-"The following example explores invalid values that are passed.
-"the valid time stamp, the exceptions raised and the error messages 
-"are added to an internal table.
+"The following example explores ABAP statements with invalid values 
+"that are passed. The valid time stamp, the exceptions raised and 
+"the error messages are added to an internal table.
 DATA error_checks TYPE string_table.
 DATA date_test TYPE d.
 DATA time_test TYPE t.
@@ -1019,17 +1022,15 @@ CONVERT DATE date4conv
         INTO TIME STAMP ts_conv
         TIME ZONE 'EST'.
 
-"Using the long form with type timestampl as target type and
-"setting the daylight saving time explicitly using the
-"optional addition DAYLIGHT SAVING TIME. Find more 
-"details in the ABAP Keyword Documentation.
+"Using the long form with type timestampl as target type.
 "20240808152458.0
 DATA tsl_conv TYPE timestampl.
 CONVERT DATE CONV d( '20240101' )
-        TIME CONV t( '112458' )
-        DAYLIGHT SAVING TIME 'X'
+        TIME CONV t( '112458' )        
         INTO TIME STAMP tsl_conv
         TIME ZONE 'EST'.
+
+"Note that you can optionally specify the DAYLIGHT SAVING TIME addition.         
 ```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
@@ -1200,7 +1201,7 @@ SELECT SINGLE
     CAST( substring( CAST( @tmstamp AS CHAR ), 9, 6 ) AS TIMS ) AS time,
     'ABAP' AS txt "Untyped literal
   WHERE TimeZoneID = CAST( char`EST` AS CHAR( 6 ) )
-  INTO @DATA(wa_some_typed_literal).
+  INTO @DATA(wa_some_typed_literals).
 ```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
@@ -1318,3 +1319,11 @@ Find examples in the ABAP Keyword Documentation and a small selection of functio
 - In [ABAP for Cloud Development](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_for_cloud_dev_glosry.htm), do not use the date and time-related system fields such as `sy-datum`, `sy-uzeit`, `sy-timlo`, and `sy-datlo`.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
+
+## Executable Example
+[zcl_demo_abap_date_time](./src/zcl_demo_abap_date_time.clas.abap)
+
+> **💡 Note**<br>
+> - The executable example covers the handling and processing of date, time, and time stamps. The snippets of this cheat sheets are included, as well as an excursion (*ABAP stopwatch*). 
+> - The steps to import and run the code are outlined [here](README.md#-getting-started-with-the-examples).
+> - [Disclaimer](README.md#%EF%B8%8F-disclaimer)

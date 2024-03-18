@@ -21,7 +21,7 @@ It provides references to more detailed information on the topic.
       - The available ABAP language version is [ABAP for Cloud Development](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_for_cloud_dev_glosry.htm) that presents a [restricted ABAP language version](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrestricted_version_glosry.htm).
     - [Released APIs](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenreleased_api_glosry.htm):
       - Access to SAP-delivered repository objects is restricted to objects released for ABAP for Cloud Development
-      - For example, most of the database tables provided by SAP cannot be read directly (although there are abstractions/CDS view entities for many that can be accessed).
+      - For example, most of the database tables provided by SAP cannot be read directly (although there are abstractions/[CDS entities](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_entity_glosry.htm) for many that can be accessed).
       - Libraries are available with predefined functionality.
       - Note that repository objects can be classified by a [release contract](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrelease_contract_glosry.htm) (e.g. C0, C1 etc.). 
     - Tools:

@@ -82,7 +82,7 @@ ABAP cheat sheets[^1] ...
 |[Selection Screens and Classic Lists](20_Selection_Screens_Lists.md)|Provides a high-level overview of selection screens and classic lists with a focus on related statements. It includes an excursion into the SAP List Viewer (ALV). <br> 💡 The content of this cheat sheet and the executable examples are only relevant to [classic ABAP](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenclassic_abap_glosry.htm).|Program `ZDEMO_ABAP_SELSCR_LISTS_INTRO` (the "intro" program, from which the other related example programs can be started)|
 |[Working with XML and JSON in ABAP](21_XML_JSON.md)|Covers processing XML using class libraries, XML transformations using XSLT and Simple Transformations (ST), serializations (ABAP to XML) and deserializations (XML to ABAP), dealing with JSON data|[zcl_demo_abap_xml_json](./src/zcl_demo_abap_xml_json.clas.abap)|
 |[Misc ABAP Classes](22_Misc_ABAP_Classes.md)|Contains a selection of ABAP classes, serving as a quick introduction, along with code snippets to explore the functionality in action|-|
-|[Date, Time, and Time Stamp](23_Date_and_Time.md)|Covers how to handle and process dates, times, and time stamps in ABAP|-|
+|[Date, Time, and Time Stamp](23_Date_and_Time.md)|Covers how to handle and process dates, times, and time stamps in ABAP|[zcl_demo_abap_date_time](./src/zcl_demo_abap_date_time.clas.abap)|
 
 <br>
 

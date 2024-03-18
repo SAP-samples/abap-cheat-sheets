@@ -8,7 +8,7 @@
 Core data services (CDS) are an infrastructure for defining and consuming semantically rich data models on the [standard database](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenstandard_db_glosry.htm) of an [AS ABAP](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenas_abap_glosry.htm).
 
 > **💡 Note**<br>
-> - For cheat sheet content on CDS views, check out [this blog](https://blogs.sap.com/2022/10/24/feature-matrix-data-modeling-with-abap-core-data-services/).
+> - For cheat sheet content on [CDS entities](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abencds_entity_glosry.htm), refer to [this blog](https://blogs.sap.com/2022/10/24/feature-matrix-data-modeling-with-abap-core-data-services/).
 > - The executable example focuses on CDS view entities and covers a selection of features.
 > - The sample CDS view entities are designed to demonstrate a selection of features with a limited number of artifacts. They are not intended to be role models for proper CDS view design. They focus on syntax options only. They are not intended to solve concrete programming tasks. You should always work out your own solution for each individual case.
 
@@ -31,7 +31,7 @@ The following links take you to the source code of the cheat sheet artifacts to 
     - String functions
     - Coalesce function
     - Date and time functions
-- [zdemo_abap_cds_ve_agg_exp](zdemo_abap_cds_ve_agg_exp.ddls.asddls)
+- [zdemo_abap_cds_ve_agg_exp](src/zdemo_abap_cds_ve_agg_exp.ddls.asddls)
   - Aggregate expressions
 - [zdemo_abap_cds_ve_joins](src/zdemo_abap_cds_ve_joins.ddls.asddls)
   - Inner joins
