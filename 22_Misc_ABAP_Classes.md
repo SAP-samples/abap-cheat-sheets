@@ -788,6 +788,29 @@ DATA(comp) = xco_cp=>string( `some_value` )->split( `_` )->compose( xco_cp_strin
 "some_value
 DATA(decomp) = xco_cp=>string( `someValue` )->decompose( xco_cp_string=>decomposition->camel_case )->join( `_` )->value.
 
+"------ Processing Base64 Representations of Raw Binary Data ------
+DATA(a_string) = `Hello world`.
+"string -> xstring
+"Result: 48656C6C6F20776F726C64
+DATA(conv_xstring) = xco_cp=>string( a_string
+  )->as_xstring( xco_cp_character=>code_page->utf_8
+  )->value.
+"Encoding of raw binary data into its Base64 representation
+"Result: SGVsbG8gd29ybGQ=
+DATA(raw2base64) = xco_cp=>xstring( conv_xstring
+  )->as_string( xco_cp_binary=>text_encoding->base64
+  )->value.
+"Decoding of a Base64 representation into raw binary data
+"Result: 48656C6C6F20776F726C64
+DATA(base642raw) = xco_cp=>string( raw2base64
+  )->as_xstring( xco_cp_binary=>text_encoding->base64
+  )->value.
+"xstring -> string
+"Result: Hello world
+DATA(conv_string_xco) = xco_cp=>xstring( base642raw
+  )->as_string( xco_cp_character=>code_page->utf_8
+  )->value.
+
 "--------- Matching string against regular expression ---------
 DATA match TYPE string.
 

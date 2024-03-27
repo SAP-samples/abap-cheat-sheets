@@ -13,7 +13,7 @@
     - [Functions for Numeric Values](#functions-for-numeric-values)
     - [Functions for Strings](#functions-for-strings)
     - [Functions for Date, Time, and Time Stamps](#functions-for-date-time-and-time-stamps)
-    - [More Functions](#more-functions)
+    - [More (Special) Functions](#more-special-functions)
     - [coalesce Function](#coalesce-function)
   - [More Information](#more-information)
 
@@ -170,7 +170,7 @@ DATA(cont5) = xsdbool( contains( val = `123` start = `2` ) ).
 
 "off/len can also be specified individually
 "Not specifying off means 0 by default
- "abap_false
+"abap_false
 DATA(cont6) = xsdbool( contains( val = `##ab## ##cd##` sub = `cd` len = 5 ) ).
 
 "abap_true
@@ -189,7 +189,7 @@ ENDDO.
 DATA(cont9) = xsdbool( contains( val = `Hallo world` pcre = `\s` ) ). 
 
 "-------------------- contains_any_of --------------------
- "abap_true
+"abap_true
 DATA(cont10) = xsdbool( contains_any_of( val = `abcdefg` sub = `xyza` ) ).
 
 "abap_false
@@ -207,7 +207,7 @@ DATA(cont13) = xsdbool( contains_any_of( val = hi end = abc ) ).
 "abap_true
 DATA(cont14) = xsdbool( contains_any_not_of( val = hi start = abc ) ).
 
- "abap_false
+"abap_false
 DATA(cont15) = xsdbool( contains_any_not_of( val = hi end = abc ) ).
 ``` 
 
@@ -256,7 +256,7 @@ DATA(line_exists3) = xsdbool( line_exists( itab[ comp1 = 2 ] ) ).
 "abap_true
 DATA(line_exists4) = xsdbool( line_exists( str_tab[ 2 ] ) ). 
 
- "abap_false
+"abap_false
 DATA(line_exists5) = xsdbool( line_exists( str_tab[ table_line = `xxx` ] ) ).
 ```
 
@@ -314,7 +314,7 @@ DATA(ceil4) = ceil( CONV decfloat34( '-4.001' ) ).
 "4
 DATA(floor1) = floor( CONV decfloat34( '4.999' ) ). 
 
- "4
+"4
 DATA(floor2) = floor( CONV decfloat34( '4.001' ) ).
 
 "-5
@@ -376,13 +376,13 @@ Numeric extremum functions that return the value of the largest or smallest of t
 "A minimum of two, and a maximum of 9 arguments can be specified.
 "Numeric data objects and numeric expressions are possible
 "0.999
-DATA(nmin1) =  nmin( val1 = CONV decfloat34( '1.34' )
+DATA(nmin) =  nmin( val1 = CONV decfloat34( '1.34' )
                      val2 = CONV decfloat34( '56.7' )
                      val3 = CONV decfloat34( '890.123' )
                      val4 = CONV decfloat34( '0.999' ) ). 
 
 "890.123
-DATA(nmax2) =  nmax( val1 = CONV decfloat34( '1.34' )
+DATA(nmax) =  nmax( val1 = CONV decfloat34( '1.34' )
                      val2 = CONV decfloat34( '56.7' )
                      val3 = CONV decfloat34( '890.123' )
                      val4 = CONV decfloat34( '0.999' ) ). 
@@ -394,7 +394,7 @@ DATA(nmax2) =  nmax( val1 = CONV decfloat34( '1.34' )
 <tr>
 <td> <code>acos</code><br><code>asin</code><br><code>atan</code><br><code>cos</code><br><code>sin</code><br><code>tan</code><br><code>cosh</code><br><code>sinh</code><br><code>tanh</code><br><code>exp</code><br><code>log</code><br><code>log10</code><br><code>sqrt</code> </td>
 <td>
-Regarding the details of result and type conversion of floating point functions, refer to the ABAP Keyword Documentation. The following snippet shows a small selection.
+Regarding the details of the result and type conversion of floating point functions, refer to the ABAP Keyword Documentation. The following snippet shows a small selection.
 <br><br>
 
 ``` abap
@@ -508,7 +508,7 @@ DATA(conv_str) = cl_abap_conv_codepage=>create_in( )->convert( xstr ).
 </tr>
 
 <tr>
-<td> <code>nmax</code><br><code>nmin</code> </td>
+<td> <code>cmin</code><br><code>cmax</code> </td>
 <td>
 Character-like extremum value functions return a string that contains the content of the smallest or biggest of a set of character-like arguments.
 <br><br>
@@ -924,13 +924,11 @@ DO.
 ENDDO.
 
 *Content of segment_tab
-*Row  TABLE_LINE
-*===============
-*1    a
-*2    b
-*3    c
-*4    d
-*5    e
+*a           
+*b           
+*c           
+*d           
+*e       
 ```
 
 </td>
@@ -1080,7 +1078,7 @@ DATA(from_mixed2) = from_mixed( val = `AbaP` sep = `#` ).
 "ABA_P
 DATA(from_mixed3) = from_mixed( val = `AbaP` ). 
 
-  "ABA#P (same as previous example)
+"ABA#P (same as previous example)
 DATA(from_mixed4) = from_mixed( val = `AbaP` sep = `#` case = 'X' ).
 
 "aba#p
@@ -1238,7 +1236,7 @@ DATA(ts_diff2) = utclong_diff( high = ts5
 ## Table Functions 
 
 > **💡 Note**<br>
-> See the `line_exists` functions in the [Logical Functions](#logical-functions) section.
+> See the `line_exists` function in the [Logical Functions](#logical-functions) section.
 
 <table>
 <tr>
@@ -1377,6 +1375,8 @@ SELECT SINGLE
   INTO @DATA(numeric_functions).
 ```
 
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
 ### Functions for Strings
 
 ```abap
@@ -1434,7 +1434,7 @@ SELECT SINGLE
 
   "Searches a PCRE pattern, returns offset of match + 1;
   "many optional parameters: occurrence, case_sensitive, start, group
-    "2
+  "2
   locate_regexpr_after( pcre = '.',  "Any character
                         value = url,
                         occurrence = 1 ) AS locate_regexpr_after,
@@ -1455,7 +1455,7 @@ SELECT SINGLE
 
   "Replaces a found PCRE expression;
   "more parameters possible: occurrence, case_sensitive, start
-    "http://www#ufthansa#om
+  "http://www#ufthansa#om
   replace_regexpr( pcre = '\..', "Period that is followed by any character
                     value = url,
                     with = '#' ) AS replace_regex,
@@ -1496,6 +1496,7 @@ SELECT SINGLE
   INTO @DATA(string_functions).
 ```
 
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ### Functions for Date, Time, and Time Stamps
 
@@ -1652,7 +1653,9 @@ WHERE TimeZoneID = char`EST`
 INTO @DATA(time_and_date_functions).
 ```
 
-### More Functions
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+### More (Special) Functions
 
 ```abap
 SELECT SINGLE
@@ -1662,7 +1665,7 @@ SELECT SINGLE
   "length string of type string
   to_clob( carrid ) AS clob,
 
-    "Byte string -> character string
+  "Byte string -> character string
   bintohex( raw`1234` ) AS bintohex,
 
   "Character string -> byte string
@@ -1693,6 +1696,8 @@ SELECT SINGLE
   WHERE carrid = 'LH'
   INTO @DATA(special_functions).
 ```
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ### coalesce Function
 
@@ -1735,6 +1740,8 @@ SELECT tab2~key_field,
 *3            b             z         
 *4            -             #       
 ```
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## More Information
 

@@ -1155,56 +1155,7 @@ tz_str = |{ utclong_current( ) TIMEZONE = 'EST' COUNTRY = 'US ' }|. "12/30/2024 
 ## Excursions 
 ### Typed Literals in ABAP SQL
 
-Typed literal:
-- Literal whose data types is defined by specifying a [built-in dictionary type](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenddic_builtin_types.htm) explicitly. 
-- Available for most but not all ABAP Dictionary data types.
-- Can be used in ABAP SQL and in ABAP CDS. 
-- More information: Typed literals in [ABAP SQL](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_sql_typed_literals.htm) ([cast expressions in ABAP SQL](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensql_cast.htm)) and [ABAP CDS](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_typed_literal_v2.htm)
-
-```abap
-SELECT SINGLE
-  FROM i_timezone
-  FIELDS *
-  WHERE TimeZoneID = char`EST`
-  INTO @DATA(wa_typed_literal).
-
-"Cast with a typed literal to cover a specification true to the
-"actually expected type. In the case of the example, the data type 
-"char(6) is expected.
-SELECT SINGLE
-  FROM i_timezone
-  FIELDS *
-  WHERE TimeZoneID = CAST( char`EST` AS CHAR( 6 ) )
-  INTO @DATA(wa_typed_literal_cast).
-
-"Untyped literal
-SELECT SINGLE
-  FROM i_timezone
-  FIELDS *
-  WHERE TimeZoneID = 'EST'
-  INTO @DATA(wa_untyped_literal).
-
-"Various typed literals
-DATA(tmstamp) = CONV timestamp( '20240808112517' ).
-SELECT SINGLE
-  FROM i_timezone
-  FIELDS
-    char`X` AS flag,
-    int8`32984723948723` AS int8,
-    raw`11` AS raw,
-    numc`1234` AS numc,
-    utclong`2024-01-01T10:01:02,2` AS utc,
-    tims`101507` AS tims,
-    curr`173.95` AS curr,
-    "Multiple cast expressions splitting a time stamp into date and time parts
-    CAST( CAST( div( @tmstamp, 1000000 ) AS CHAR ) AS DATS ) AS date,
-    CAST( substring( CAST( @tmstamp AS CHAR ), 9, 6 ) AS TIMS ) AS time,
-    'ABAP' AS txt "Untyped literal
-  WHERE TimeZoneID = CAST( char`EST` AS CHAR( 6 ) )
-  INTO @DATA(wa_some_typed_literals).
-```
-
-<p align="right"><a href="#top">⬆️ back to top</a></p>
+The following code snippets use [typed literals](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentyped_literal_glosry.htm). For more information, refer to the [ABAP Keyword Documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_sql_typed_literals.htm) and the [Typed Literals in ABAP SQL](/16_Data_Types_and_Objects.md#typed-literals-in-abap-sql) section of the *Data Types and Data Objects* cheat sheet.
 
 ### Date and Time Functions in ABAP SQL
 
@@ -1324,6 +1275,6 @@ Find examples in the ABAP Keyword Documentation and a small selection of functio
 [zcl_demo_abap_date_time](./src/zcl_demo_abap_date_time.clas.abap)
 
 > **💡 Note**<br>
-> - The executable example covers the handling and processing of date, time, and time stamps. The snippets of this cheat sheets are included, as well as an excursion (*ABAP stopwatch*). 
+> - The executable example covers the handling and processing of date, time, and time stamps. The snippets of this cheat sheets and more are included. 
 > - The steps to import and run the code are outlined [here](README.md#-getting-started-with-the-examples).
 > - [Disclaimer](README.md#%EF%B8%8F-disclaimer)

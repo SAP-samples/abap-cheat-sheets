@@ -260,10 +260,11 @@ within a pair of delimiters (`|...|`) if these expressions can be converted to `
 - To embed expressions, you enclose them in curly brackets: `{ ... }`.
 
 > **💡 Note**<br>
-> String templates form a [string
+> - String templates form a [string
 expression](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenstring_expression_glosry.htm "Glossary Entry")
 that is compiled at runtime. Therefore, a string template that contains only
 literal text is treated as an expression, which has a performance impact. In such a case, it is preferable to use a text string literal with backquotes.
+> - It is possible to dynamically specify formatting options. For more information, refer to the [Dynamic Formatting Option Specifications in String Templates](/06_Dynamic_Programming.md#dynamic-formatting-option-specifications-in-string-templates) section of the *Dynamic Programming* cheat sheet.
 
 Syntax examples:
 ``` abap
@@ -893,7 +894,7 @@ Built-in functions:
 DATA(str) = `Pieces of cakes.`.
 DATA res TYPE i.
 
-"find_end returns the sum of the offset of the occurrence
+"find_end returns the sum of the offset of the occurrence plus the length of the match
 res = find_end( val = str sub = `of` ). "9
 
 "find_any_of returns the offset of the occurrence of any character contained in substring

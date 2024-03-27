@@ -566,7 +566,7 @@ Due to the rich variety of options, the cheat sheet covers a selection.
         reasons: Using untyped literals means extra cost in terms of
         performance since they must be converted by the compiler. Plus,
         their use can result in errors at runtime whereas typed literals
-        guarantee type compatibility at once.
+        guarantee type compatibility at once. For more information on [typed literals](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentyped_literal_glosry.htm), refer to the [ABAP Keyword Documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_sql_typed_literals.htm) and the [Typed Literals in ABAP SQL](/16_Data_Types_and_Objects.md#typed-literals-in-abap-sql) section of the *Data Types and Data Objects* cheat sheet.
     -   Regarding host expressions: Structures and internal tables are
         possible as host expressions for statements modifying the
         content of database tables as shown further down.
@@ -1278,7 +1278,7 @@ SELECT id FROM @itab AS tab WHERE
 "type-dependent initial values. For more information, refer to the ABAP Keyword Documentation.
 "The following example uses a left outer join to intentionally create null values. For
 "this purpose, two demo database tables of the cheat sheet repository are cleared and
-"populated with specific values to visulaize null values.
+"populated with specific values to visualize null values.
 DELETE FROM zdemo_abap_tab1.
 DELETE FROM zdemo_abap_tab2.
 MODIFY zdemo_abap_tab1 FROM TABLE @( VALUE #( ( key_field = 1 char1 = 'a' char2 = 'y' )

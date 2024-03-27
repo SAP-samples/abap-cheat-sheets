@@ -14,6 +14,7 @@
     - [Dynamic Specifications in Statements for Processing Internal Tables](#dynamic-specifications-in-statements-for-processing-internal-tables)
     - [Dynamic ABAP SQL Statements](#dynamic-abap-sql-statements)
     - [Dynamic Invoke](#dynamic-invoke)
+    - [Dynamic Formatting Option Specifications in String Templates](#dynamic-formatting-option-specifications-in-string-templates)
     - [Validating Input for Dynamic Specifications (CL\_ABAP\_DYN\_PRG)](#validating-input-for-dynamic-specifications-cl_abap_dyn_prg)
   - [Runtime Type Services (RTTS)](#runtime-type-services-rtts)
     - [Getting Type Information at Runtime](#getting-type-information-at-runtime)
@@ -1618,6 +1619,43 @@ DATA(ptab) = VALUE abap_parmbind_tab( ( name  = 'I_OP'
 CALL METHOD oref2->('TRIPLE') PARAMETER-TABLE ptab.
 result = ptab[ name = 'R_TRIPLE' ]-('VALUE')->*. "9
 ```
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+### Dynamic Formatting Option Specifications in String Templates
+
+The following code snippet demonstrates a small selection of dynamic formatting option specifications in string templates.
+For more details and a complete list of options, refer to the [ABAP Keyword Documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/abapcompute_string_format_options.htm), especially regarding the expected and supported input (attributes of the `CL_ABAP_FORMAT` class). General information on string templates can also be found there and in the [String Processing](/07_String_Processing.md#string-templates) cheat sheet. 
+
+```abap
+"ALIGN
+"Only to be used with WIDTH; only the associated values of the following attributes of the
+"class CL_ABAP_FORMAT can be used (they are of type i): A_LEFT (1), A_RIGHT (2), A_CENTER (3)
+DATA(some_string) = `##`.
+DATA(s1) = |{ some_string WIDTH = 10 ALIGN = (1) }<---|.   "'##        <---'
+DATA(right) = 2.
+DATA(s2) = |{ some_string WIDTH = 10 ALIGN = (right) }<---|. "'        ##<---'
+
+
+"The following example uses method chaining with methods of the class
+"cl_abap_random_int to get a random integer value (in the range of 1 - 3).
+"The get_next method has a returning parameter, and returns and integer value.
+DO 5 TIMES.
+  DATA(s3) = |{ some_string WIDTH = 10 ALIGN = cl_abap_random_int=>create( seed = cl_abap_random=>seed( )
+                                                  min  = 1 max = 3 )->get_next( ) }<---|.
+ENDDO.
+
+"CASE
+"Values to be used: CL_ABAP_FORMAT=>C_RAW (for not changing the case; 0),
+"CL_ABAP_FORMAT=>C_UPPER (1), CL_ABAP_FORMAT=>C_LOWER (2)
+some_string = `AbAp`.
+DATA(s4) = |{ some_string CASE = (1) }|. "ABAP
+DATA(s5) = |{ some_string CASE = CONV i( '2' ) }|. "abap
+DATA int_tab TYPE TABLE OF i WITH EMPTY KEY.
+int_tab = VALUE #( ( 0 ) ( 1 ) ( 2 ) ).
+DATA(s6) = |{ some_string CASE = int_tab[ 1 ] }|. "AbAp
+```
+
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 

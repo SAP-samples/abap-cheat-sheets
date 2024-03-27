@@ -82,7 +82,7 @@ ENDIF.
 - The components of such relational expressions can be [comparisons](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencomparison_glosry.htm) or [predicates](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenpredicate_glosry.htm). Note that for [comparison expressions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencomparison_expression_glosry.htm),
 the comparisons are carried out according to [comparison rules](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenlogexp_rules.htm).
 
-The following code snippet shows a selection of possible expressions and operands of such expressions using a big `IF` statement. Certainly, such a huge statement is far from ideal. Here, the intention is to just cover many syntax options in one go for demonstration purposes.
+The following code snippet shows a selection of possible expressions and operands of such expressions using a big `IF` statement. Certainly, such a huge statement is far from ideal. Here, the intention is to just cover many syntax options in one go for demonstration purposes. For more information on built-in functions, you can refer to the [Misc Built-In Functions](/24_Misc_Builtin_Functions.md) cheat sheet.
 
 ```abap
 "Some declarations to be used in the IF statement below
@@ -180,7 +180,7 @@ AND check_is_supplied( ) IS NOT INITIAL
 "expression is false, the result of boolc does not meet the condition IS INITIAL since
 "a blank and no empty string is returned. If this is desired, the function xsdbool
 "can be used instead of boolc.
-AND boolc( check_is_supplied( ) ) = abap_true
+AND boolc( check_is_supplied( ) ) = `X`
 
 "Result has the same ABAP type as abap_bool.
 AND xsdbool( check_is_supplied( ) ) = abap_true

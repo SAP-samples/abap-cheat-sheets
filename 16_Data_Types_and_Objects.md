@@ -1474,33 +1474,31 @@ Typed literal:
 - More information: Typed literals in [ABAP SQL](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_sql_typed_literals.htm) ([cast expressions in ABAP SQL](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensql_cast.htm)) and [ABAP CDS](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_typed_literal_v2.htm)
 
 ```abap
+"Specifying a built-in ABAP Dictionary type instead of an
+"untyped literal as in the example below to foster readibility.
 SELECT SINGLE
-  FROM i_timezone
+  FROM zdemo_abap_fli
   FIELDS *
-  WHERE TimeZoneID = char`EST`
-  INTO @DATA(wa_typed_literal).
+  WHERE fldate = dats`20240102`
+  INTO @DATA(wa_typed_literals).
 
-"Cast with a typed literal to cover a specification true to the
-"actually expected type. In the case of the example, the data type 
-"char(6) is expected.
+"Specifying an untyped literal
 SELECT SINGLE
-  FROM i_timezone
+  FROM zdemo_abap_fli
   FIELDS *
-  WHERE TimeZoneID = CAST( char`EST` AS CHAR( 6 ) )
-  INTO @DATA(wa_typed_literal_cast).
+  WHERE fldate = '20240102'
+  INTO @DATA(wa_untyped_literals).
 
-"Untyped literal
-SELECT SINGLE
-  FROM i_timezone
-  FIELDS *
-  WHERE TimeZoneID = 'EST'
-  INTO @DATA(wa_untyped_literal).
-
-"Various typed literals
+"Miscellaneous typed literals in an ABAP SQL statement
+"Note that typed literals can be specified in in read
+"positions where host variables are possible.
 DATA(tmstamp) = CONV timestamp( '20240808112517' ).
+DATA(some_string) = `Some string`.
 SELECT SINGLE
-  FROM i_timezone
+  FROM zdemo_abap_fli
   FIELDS
+    carrid,
+    @some_string AS host_var,
     char`X` AS flag,
     int8`32984723948723` AS int8,
     raw`11` AS raw,
@@ -1511,9 +1509,10 @@ SELECT SINGLE
     "Multiple cast expressions splitting a time stamp into date and time parts
     CAST( CAST( div( @tmstamp, 1000000 ) AS CHAR ) AS DATS ) AS date,
     CAST( substring( CAST( @tmstamp AS CHAR ), 9, 6 ) AS TIMS ) AS time,
-    'ABAP' AS txt "Untyped literal
-  WHERE TimeZoneID = CAST( char`EST` AS CHAR( 6 ) )
-  INTO @DATA(wa_some_typed_literal).
+    "Untyped literal
+    'ABAP' AS txt
+  WHERE fldate = dats`20240102`
+  INTO @DATA(wa_misc_typed_literal).
 ```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
