@@ -1308,7 +1308,7 @@ DATA(line_index2) = line_index( itab_em[ comp2 = 'd' ] ).
 "Note: A hashed table does not have a primary table index. The result is -1.
 DATA(line_index3) = line_index( itab_sec[ KEY primary_key comp1 = 1 ] ). 
 
-"Hashed tables can be assigned a secondary table index using a seoncary 
+"Hashed tables can be assigned a secondary table index using a secondary 
 "table key.
 "4
 DATA(line_index4) = line_index( itab_sec[ KEY sk comp2 = 'd' ] ). 
@@ -1415,7 +1415,7 @@ SELECT SINGLE
   "case-sensitive by default (case_sensitive parameter can be specified)
   "Notes on the 1 = found, 0 = not found
   "1
-  like_regexpr( pcre  = '\..',  "Period that is followed by any character
+  like_regexpr( pcre  = '\..',         "Period that is followed by any character
                 value = url ) AS like_regex,
 
   "Returns position of a substring in an expression,
@@ -1427,15 +1427,15 @@ SELECT SINGLE
   "Searches a PCRE pattern, returns offset of match;
   "many optional parameters: occurrence, case_sensitive, start, group
   "21
-  locate_regexpr( pcre = '\..', "Period followed by any character
+  locate_regexpr( pcre = '\..',        "Period followed by any character
                   value = url,
-                  occurrence = 2 ) "2nd occurrence in the string
+                  occurrence = 2 )     "2nd occurrence in the string
                   AS locate_regexpr,
 
   "Searches a PCRE pattern, returns offset of match + 1;
   "many optional parameters: occurrence, case_sensitive, start, group
   "2
-  locate_regexpr_after( pcre = '.',  "Any character
+  locate_regexpr_after( pcre = '.',     "Any character
                         value = url,
                         occurrence = 1 ) AS locate_regexpr_after,
 
@@ -1446,7 +1446,7 @@ SELECT SINGLE
 
   "Counts all occurrences of found PCRE patterns
   "2
-  occurrences_regexpr( pcre = '\..', "Period that is followed by any character
+  occurrences_regexpr( pcre = '\..',    "Period that is followed by any character
                         value = url ) AS occ_regex,
 
   "Replaces the 2nd argument with the 3rd in an expression
@@ -1456,7 +1456,7 @@ SELECT SINGLE
   "Replaces a found PCRE expression;
   "more parameters possible: occurrence, case_sensitive, start
   "http://www#ufthansa#om
-  replace_regexpr( pcre = '\..', "Period that is followed by any character
+  replace_regexpr( pcre = '\..',        "Period that is followed by any character
                     value = url,
                     with = '#' ) AS replace_regex,
 

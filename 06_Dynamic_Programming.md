@@ -1639,7 +1639,7 @@ DATA(s2) = |{ some_string WIDTH = 10 ALIGN = (right) }<---|. "'        ##<---'
 
 "The following example uses method chaining with methods of the class
 "cl_abap_random_int to get a random integer value (in the range of 1 - 3).
-"The get_next method has a returning parameter, and returns and integer value.
+"The get_next method has a returning parameter, and returns an integer value.
 DO 5 TIMES.
   DATA(s3) = |{ some_string WIDTH = 10 ALIGN = cl_abap_random_int=>create( seed = cl_abap_random=>seed( )
                                                   min  = 1 max = 3 )->get_next( ) }<---|.
@@ -1821,9 +1821,9 @@ DATA elemdobj TYPE elemtype.
 DATA strucdobj TYPE structype.
 DATA tabledobj TYPE strtabtype.
 
-DATA(tdo_by_data_elem) = cl_abap_typedescr=>describe_by_data( 'ELEMTYPE' ).
-DATA(tdo_by_data_struc) = cl_abap_typedescr=>describe_by_data( 'STRUCTYPE' ).
-DATA(tdo_by_data_itab) = cl_abap_typedescr=>describe_by_data( 'STRTABTYPE' ).
+DATA(tdo_by_data_elem) = cl_abap_typedescr=>describe_by_data( elemdobj ).
+DATA(tdo_by_data_struc) = cl_abap_typedescr=>describe_by_data( strucdobj ).
+DATA(tdo_by_data_itab) = cl_abap_typedescr=>describe_by_data( tabledobj ).
 
 "... using the cl_abap_typedescr=>describe_by_data_ref method
 "In this case, a data reference variable is used.

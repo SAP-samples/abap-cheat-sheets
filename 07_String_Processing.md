@@ -258,6 +258,7 @@ embedded ABAP
 [expressions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenexpression_glosry.htm "Glossary Entry")
 within a pair of delimiters (`|...|`) if these expressions can be converted to `string`. 
 - To embed expressions, you enclose them in curly brackets: `{ ... }`.
+- Among the expressions that can be specified in the curly brackets are data objects and [functional method calls](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenfunctional_method_call_glosry.htm) that have a [return value](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenreturn_value_glosry.htm). The expression result must be convertible to type `string`.
 
 > **💡 Note**<br>
 > - String templates form a [string
@@ -278,6 +279,33 @@ DATA(s3) = |{ s1 } { s2 }|. "Hallo NAME! How are you?
 
 "Chaining of string templates using &&
 DATA(s4) = |{ s1 }| && ` ` && |{ s2 }|. "Hallo NAME! How are you?
+
+"Selection of possible expressions:
+"Data objects, as in the examples above
+DATA(dobj1) = `Hallo`.
+DATA(dobj2) = '!'.
+
+"Hallo!
+DATA(s5) = |{ dobj1 }{ dobj2 }|. 
+
+"NOT INITIAL
+DATA(s6) = |{ COND #( WHEN s5 IS INITIAL THEN `INITIAL` ELSE `NOT INITIAL` ) }|. 
+
+"Functional method calls, built-in functions
+"Your user alias: XXXX...
+DATA(s7) = |Your user alias: { cl_abap_context_info=>get_user_alias( ) }|. 
+
+"Some random number: 39 (example)
+DATA(s8) = |Some random number: { cl_abap_random_int=>create( seed = cl_abap_random=>seed( ) min = 1 max = 100 )->get_next( ) }|. 
+
+"Length of string s5: 6
+DATA(s9) = |Length of string s5: { strlen( s5 ) }|.
+
+"Current UTC time stamp: 2024-01-11 14:27:54.1514090 (example)
+DATA(s10) = |Current UTC time stamp: { utclong_current( ) }|.
+
+"HALLO!
+DATA(s11) = |{ to_upper( s5 ) }|.
 ```
 
 - String templates interpret certain character combinations as [control

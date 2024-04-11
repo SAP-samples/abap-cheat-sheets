@@ -29,10 +29,7 @@
       - [`CL_ABAP_TSTMP`: Calculating and Converting Time Stamps in Packed Numbers](#cl_abap_tstmp-calculating-and-converting-time-stamps-in-packed-numbers)
     - [Excursion: Unix Time Stamps](#excursion-unix-time-stamps)
   - [Date, Time, and Time Stamps in String Templates](#date-time-and-time-stamps-in-string-templates)
-  - [Excursions](#excursions)
-    - [Typed Literals in ABAP SQL](#typed-literals-in-abap-sql)
-    - [Date and Time Functions in ABAP SQL](#date-and-time-functions-in-abap-sql)
-    - [Date and Time Functions in ABAP CDS](#date-and-time-functions-in-abap-cds)
+  - [Excursion: Date and Time Functions in ABAP SQL and ABAP CDS](#excursion-date-and-time-functions-in-abap-sql-and-abap-cds)
   - [More Information](#more-information)
   - [Executable Example](#executable-example)
 
@@ -1152,14 +1149,11 @@ tz_str = |{ utclong_current( ) TIMEZONE = 'EST' COUNTRY = 'US ' }|. "12/30/2024 
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-## Excursions 
-### Typed Literals in ABAP SQL
+## Excursion: Date and Time Functions in ABAP SQL and ABAP CDS
 
-The following code snippets use [typed literals](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentyped_literal_glosry.htm). For more information, refer to the [ABAP Keyword Documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_sql_typed_literals.htm) and the [Typed Literals in ABAP SQL](/16_Data_Types_and_Objects.md#typed-literals-in-abap-sql) section of the *Data Types and Data Objects* cheat sheet.
-
-### Date and Time Functions in ABAP SQL
-
-More information: [Date Functions and Time Functions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_sql_date_time_functions.htm)
+> **💡 Note**<br>
+> - Date and time functions are available for both [ABAP SQL](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_sql_date_time_functions.htm) and [ABAP CDS](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_date_time_functions_v2.htm). They have the same names. See the [overview](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenddic_date_time_functions.htm) to find out which functions are available. The followig code snippet uses ABAP SQL.
+> - The following code snippets use [typed literals](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentyped_literal_glosry.htm) to have self-contained examples. For more information, refer to the [ABAP Keyword Documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_sql_typed_literals.htm) and the [Typed Literals in ABAP SQL](/16_Data_Types_and_Objects.md#typed-literals-in-abap-sql) section of the *Data Types and Data Objects* cheat sheet.
 
 ```abap
 "The following demo ABAP SQL SELECT statement selects from a
@@ -1250,17 +1244,6 @@ FIELDS
 WHERE TimeZoneID = char`EST`
 INTO @DATA(wa).
 ```
-
-<p align="right"><a href="#top">⬆️ back to top</a></p>
-
-### Date and Time Functions in ABAP CDS
-Date and time functions are available for [ABAP CDS](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_cds_glosry.htm). They have the same names as the functions in ABAP SQL. See the [overview](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenddic_date_time_functions.htm) to find out which functions are available.
-
-More information: 
-- [Date and time functions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_date_time_functions_v2.htm)
-- [Overview of date and time functions for ABAP SQL and ABAP CDS](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenddic_date_time_functions.htm)
-
-Find examples in the ABAP Keyword Documentation and a small selection of functions in the examples of the CDS view entities cheat sheet in [this example artifact](src/zdemo_abap_cds_ve_sel.ddls.asddls).
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 

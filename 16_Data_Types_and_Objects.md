@@ -1471,6 +1471,10 @@ Typed literal:
 - Literal whose data types is defined by specifying a [built-in dictionary type](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenddic_builtin_types.htm) explicitly. 
 - Available for most but not all ABAP Dictionary data types.
 - Can be used in ABAP SQL and in ABAP CDS. 
+- Advantages of typed literals over untyped literals
+  - Allow type-safe use of literals
+  - Eliminate the need for (implicit type) conversions and casts, which can lead to surprising or erroneous results; also consider the conversion costs in terms of performance (typed literals are passed to the database and evaluated there without ABAP-specific type conversions). 
+  - For better readability (you can immediately see what type is being used)
 - More information: Typed literals in [ABAP SQL](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_sql_typed_literals.htm) ([cast expressions in ABAP SQL](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensql_cast.htm)) and [ABAP CDS](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_typed_literal_v2.htm)
 
 ```abap
@@ -1512,7 +1516,7 @@ SELECT SINGLE
     "Untyped literal
     'ABAP' AS txt
   WHERE fldate = dats`20240102`
-  INTO @DATA(wa_misc_typed_literal).
+  INTO @DATA(wa_misc_typed_literals).
 ```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>

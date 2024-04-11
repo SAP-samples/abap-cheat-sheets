@@ -476,7 +476,7 @@ DATA(random_num1) = cl_abap_random_int=>create( seed = cl_abap_random=>seed( )
                                                 min  = 1
                                                 max  = 100 ).
 DO 3 TIMES.
-    APPEND random_num1->get_next( ) TO int_tab.
+  APPEND random_num1->get_next( ) TO int_tab.
 ENDDO.
 
 "Getting a random integer in one go using method chaining
@@ -788,7 +788,7 @@ DATA(comp) = xco_cp=>string( `some_value` )->split( `_` )->compose( xco_cp_strin
 "some_value
 DATA(decomp) = xco_cp=>string( `someValue` )->decompose( xco_cp_string=>decomposition->camel_case )->join( `_` )->value.
 
-"------ Processing Base64 Representations of Raw Binary Data ------
+"------ Processing Base64 representations of raw binary data ------
 DATA(a_string) = `Hello world`.
 "string -> xstring
 "Result: 48656C6C6F20776F726C64
