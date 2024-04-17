@@ -8,13 +8,23 @@
   - [Table Keys in Internal Tables (Primary, Secondary, Standard, Empty)](#table-keys-in-internal-tables-primary-secondary-standard-empty)
   - [Creating Internal Tables and Types](#creating-internal-tables-and-types)
   - [Filling and Copying Internal Tables](#filling-and-copying-internal-tables)
-    - [Excursions with Internal Tables](#excursions-with-internal-tables)
-  - [Reading from Internal Tables](#reading-from-internal-tables)
+    - [Using INSERT and APPEND Statements](#using-insert-and-append-statements)
+    - [Creating and Filling Internal Tables Using Constructor Expressions](#creating-and-filling-internal-tables-using-constructor-expressions)
+    - [Excursion: Using Internal Tables in ABAP SQL Statements](#excursion-using-internal-tables-in-abap-sql-statements)
+  - [Reading Single Lines from Internal Tables](#reading-single-lines-from-internal-tables)
+    - [Determining the Target Area when Reading Single Lines](#determining-the-target-area-when-reading-single-lines)
+    - [Reading a Single Line by Index](#reading-a-single-line-by-index)
+    - [Reading a Single Line Using Table Keys](#reading-a-single-line-using-table-keys)
+    - [Reading a Single Line Using a Free Key](#reading-a-single-line-using-a-free-key)
+    - [Addressing Individual Components of Read Lines](#addressing-individual-components-of-read-lines)
+    - [Checking the Existence and the Index of a Line in an Internal Table](#checking-the-existence-and-the-index-of-a-line-in-an-internal-table)
   - [Processing Multiple Internal Table Lines Sequentially](#processing-multiple-internal-table-lines-sequentially)
     - [Iteration Expressions](#iteration-expressions)
   - [Sorting Internal Tables](#sorting-internal-tables)
   - [Modifying Internal Table Content](#modifying-internal-table-content)
   - [Deleting Internal Table Content](#deleting-internal-table-content)
+    - [Deleting Adjacent Duplicate Lines](#deleting-adjacent-duplicate-lines)
+    - [Deleting the Entire Internal Table Content](#deleting-the-entire-internal-table-content)
   - [Excursions](#excursions)
     - [Improving Read Performance with Secondary Table Keys](#improving-read-performance-with-secondary-table-keys)
     - [Searching and Replacing Substrings in Internal Tables with Character-Like Data Types](#searching-and-replacing-substrings-in-internal-tables-with-character-like-data-types)
@@ -372,21 +382,31 @@ FINAL(it_final) = it_inline1.
 "Using the VALUE operator and an internal table type
 DATA(it_inline3) = VALUE tt_loc_str( ( ... ) ).
 
+"Not providing any table lines means the table is initial 
+"and has the same effect as the declaration of
+"itab_a1 above.
+DATA(it_inline4) = VALUE tt_loc_str( ).
+
 "Table declared inline in the context of a SELECT statement;
 "a prior extra declaration of an internal table is not needed.
-SELECT * FROM zdemo_abap_fli INTO TABLE @DATA(it_inline4).
+SELECT * FROM zdemo_abap_fli INTO TABLE @DATA(it_inline5).
 
 "Instead of
 DATA it_sel TYPE TABLE OF zdemo_abap_fli WITH EMPTY KEY.
 SELECT * FROM zdemo_abap_fli INTO TABLE @it_sel.
 
 "Using FINAL
-SELECT * FROM zdemo_abap_fli INTO TABLE @FINAL(it_inline5).
+SELECT * FROM zdemo_abap_fli INTO TABLE @FINAL(it_inline6).
 ```
+
+> **💡 Note**<br>
+> Internal tables can also be created dynamically. Find more information in the [Dynamic Programming cheat sheet](06_Dynamic_Programming.md).
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## Filling and Copying Internal Tables
+
+### Using INSERT and APPEND Statements
 
 You can use the ABAP keywords
 [`INSERT`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapinsert_itab.htm)
@@ -497,7 +517,7 @@ INSERT LINES OF itab2 INTO itab INDEX i.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-**Adding lines using constructor expressions**
+### Creating and Filling Internal Tables Using Constructor Expressions
 
 As mentioned above, table lines that are constructed inline as
 arguments to the `VALUE` operator, for example, can be added to
@@ -530,6 +550,16 @@ TYPES it_type LIKE itab.
 "cannot be derived from the context.
 DATA(it_in) = VALUE it_type( ( comp1 = a comp2 = b ... )
                              ( comp1 = c comp2 = d ...  ) ).
+
+"Creating string tables
+DATA(str_tab_a) = VALUE string_table( ( `Hallo` ) ( `World` ) ).                            
+DATA(str_tab_b) = VALUE string_table( ).                            
+"In the previous statement, the internal table is declared
+"inline, however, no content, no table lines are provided. 
+"This means that an initial string table was created. This 
+"way, the statement has the same effect as the following 
+"statement.
+DATA str_tab_c TYPE string_table.
 ```
 
 When you use the above assignments (`itab = ...`), the internal table is initialized and the existing content is deleted. To add new lines **without deleting existing content**, use the  [`BASE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenvalue_constructor_params_itab.htm) addition.
@@ -618,9 +648,83 @@ MOVE-CORRESPONDING itab_nested1 TO itab_nested2 EXPANDING NESTED TABLES.
 MOVE-CORRESPONDING itab_nested1 TO itab_nested2 EXPANDING NESTED TABLES KEEPING TARGET LINES.
 ```
 
+**Using the `FILTER` operator**
+
+To create an internal table by copying data from another internal table and 
+filtering out lines that do not meet the `WHERE` condition, you can use the [`FILTER`
+operator](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconstructor_expression_filter.htm).
+
+-   The
+    `FILTER` operator constructs an internal table according to a specified type (which can be an explicitly specified, non-generic table type or the `#` character as a symbol for the [operand type](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenoperand_type_glosry.htm) before the first parenthesis).
+- The lines for the new internal table are taken from an
+    existing internal table based on conditions specified in a `WHERE` clause. Note that the table type of the existing internal table must be convertible into the specified target type.
+-   The conditions can be based on either single values or a [filter
+    table](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconstructor_expr_filter_table.htm).
+- Additions:
+
+|Addition |Details |
+|---|---|
+|`USING KEY`  | Specifies the [table key](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentable_key_glosry.htm "Glossary Entry") used to evaluate the `WHERE` condition: either a [sorted key](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensorted_key_glosry.htm "Glossary Entry") or a [hash key](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenhash_key_glosry.htm "Glossary Entry"). If the internal table does not have either of these, it must have a [secondary table key](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensecondary_table_key_glosry.htm "Glossary Entry"), which must be specified after `USING KEY`.  |
+| `EXCEPT`   | Specifying `EXCEPT` means that those lines of the existing table are used that do not meet the condition specified in the `WHERE` clause. If `EXCEPT` is not specified, those lines of the existing table that meet the condition are used.  |
+
+Examples:
+```abap
+"FILTER on conditions based on single values
+"Assumption: The component num is of type i.
+DATA itab1 TYPE SORTED TABLE OF struc WITH NON-UNIQUE KEY num.
+DATA itab2 TYPE STANDARD TABLE OF struc WITH NON-UNIQUE SORTED KEY sec_key COMPONENTS num.
+DATA itab3 TYPE HASHED TABLE OF struc WITH UNIQUE KEY num.
+
+"The lines meeting the condition are respected.
+"Note: The source table must have at least one sorted or hashed key.
+"Here, the primary key is used
+DATA(f1) = FILTER #( itab1 WHERE num >= 3 ).
+
+"USING KEY primary_key explicitly specified; same as above
+DATA(f2) = FILTER #( itab1 USING KEY primary_key WHERE num >= 3 ).
+
+"EXCEPT addition
+DATA(f3) = FILTER #( itab1 EXCEPT WHERE num >= 3 ).
+DATA(f4) = FILTER #( itab1 EXCEPT USING KEY primary_key WHERE num >= 3 ).
+
+"Secondary table key specified after USING KEY
+DATA(f5) = FILTER #( itab2 USING KEY sec_key WHERE num >= 4 ).
+DATA(f6) = FILTER #( itab2 EXCEPT USING KEY sec_key WHERE num >= 3 ).
+
+"Note: In case of a hash key, exactly one comparison expression for each key component is allowed;
+"only = as comparison operator possible.
+DATA(f7) = FILTER #( itab3 WHERE num = 3 ).
+
+"Using a filter table
+"In the WHERE condition, the columns of source and filter table are compared. 
+"Those lines in the source table are used for which at least one line in the filter 
+"table meets the condition. EXCEPT and USING KEY are also possible.
+
+DATA filter_tab1 TYPE SORTED TABLE OF i
+  WITH NON-UNIQUE KEY table_line.
+
+DATA filter_tab2 TYPE STANDARD TABLE OF i
+  WITH EMPTY KEY
+  WITH UNIQUE SORTED KEY line COMPONENTS table_line.
+
+DATA(f8) = FILTER #( itab1 IN filter_tab1 WHERE num = table_line ).
+
+"EXCEPT addition
+DATA(f9) = FILTER #( itab1 EXCEPT IN filter_tab1 WHERE num = table_line ).
+
+"USING KEY is specified for the filter table
+DATA(f10) = FILTER #( itab2 IN filter_tab2 USING KEY line WHERE num = table_line ).
+
+"USING KEY is specified for the source table, including EXCEPT
+DATA(f11) = FILTER #( itab2 USING KEY sec_key EXCEPT IN filter_tab2 WHERE num = table_line ).
+```
+
+> **💡 Note**<br>
+> More constructor expressions are available to deal with internal tables. Find more information and examples in the [Constructor Expression cheat sheet](05_Constructor_Expressions.md).
+
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-### Excursions with Internal Tables
+### Excursion: Using Internal Tables in ABAP SQL Statements
 For more details on ABAP SQL, see the cheat sheet on [ABAP SQL](03_ABAP_SQL.md).
 
 **Adding multiple lines from a database table to an internal table** using
@@ -723,91 +827,9 @@ IF itab IS NOT INITIAL.
 ENDIF.
 ```
 
-**Using the `FILTER` operator**
-
-To create an internal table by copying data from another internal table and 
-filtering out lines that do not meet the `WHERE` condition, you can use the [`FILTER`
-operator](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconstructor_expression_filter.htm).
-
--   The
-    `FILTER` operator constructs an internal table according to a specified type (which can be an explicitly specified, non-generic table type or the `#` character as a symbol for the [operand type](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenoperand_type_glosry.htm) before the first parenthesis).
-- The lines for the new internal table are taken from an
-    existing internal table based on conditions specified in a `WHERE` clause. Note that the table type of the existing internal table must be convertible into the specified target type.
--   The conditions can be based on either single values or a [filter
-    table](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconstructor_expr_filter_table.htm).
-- Additions:
-
-|Addition |Details |
-|---|---|
-|`USING KEY`  | Specifies the [table key](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentable_key_glosry.htm "Glossary Entry") used to evaluate the `WHERE` condition: either a [sorted key](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensorted_key_glosry.htm "Glossary Entry") or a [hash key](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenhash_key_glosry.htm "Glossary Entry"). If the internal table does not have either of these, it must have a [secondary table key](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensecondary_table_key_glosry.htm "Glossary Entry"), which must be specified after `USING KEY`.  |
-| `EXCEPT`   | Specifying `EXCEPT` means that those lines of the existing table are used that do not meet the condition specified in the `WHERE` clause. If `EXCEPT` is not specified, those lines of the existing table that meet the condition are used.  |
-
-Examples:
-```abap
-"FILTER on conditions based on single values
-"Assumption: The component num is of type i.
-DATA itab1 TYPE SORTED TABLE OF struc WITH NON-UNIQUE KEY num.
-DATA itab2 TYPE STANDARD TABLE OF struc WITH NON-UNIQUE SORTED KEY sec_key COMPONENTS num.
-DATA itab3 TYPE HASHED TABLE OF struc WITH UNIQUE KEY num.
-
-"The lines meeting the condition are respected.
-"Note: The source table must have at least one sorted or hashed key.
-"Here, the primary key is used
-DATA(f1) = FILTER #( itab1 WHERE num >= 3 ).
-
-"USING KEY primary_key explicitly specified; same as above
-DATA(f2) = FILTER #( itab1 USING KEY primary_key WHERE num >= 3 ).
-
-"EXCEPT addition
-DATA(f3) = FILTER #( itab1 EXCEPT WHERE num >= 3 ).
-DATA(f4) = FILTER #( itab1 EXCEPT USING KEY primary_key WHERE num >= 3 ).
-
-"Secondary table key specified after USING KEY
-DATA(f5) = FILTER #( itab2 USING KEY sec_key WHERE num >= 4 ).
-DATA(f6) = FILTER #( itab2 EXCEPT USING KEY sec_key WHERE num >= 3 ).
-
-"Note: In case of a hash key, exactly one comparison expression for each key component is allowed;
-"only = as comparison operator possible.
-DATA(f7) = FILTER #( itab3 WHERE num = 3 ).
-
-"Using a filter table
-"In the WHERE condition, the columns of source and filter table are compared. 
-"Those lines in the source table are used for which at least one line in the filter 
-"table meets the condition. EXCEPT and USING KEY are also possible.
-
-DATA filter_tab1 TYPE SORTED TABLE OF i
-  WITH NON-UNIQUE KEY table_line.
-
-DATA filter_tab2 TYPE STANDARD TABLE OF i
-  WITH EMPTY KEY
-  WITH UNIQUE SORTED KEY line COMPONENTS table_line.
-
-DATA(f8) = FILTER #( itab1 IN filter_tab1 WHERE num = table_line ).
-
-"EXCEPT addition
-DATA(f9) = FILTER #( itab1 EXCEPT IN filter_tab1 WHERE num = table_line ).
-
-"USING KEY is specified for the filter table
-DATA(f10) = FILTER #( itab2 IN filter_tab2 USING KEY line WHERE num = table_line ).
-
-"USING KEY is specified for the source table, including EXCEPT
-DATA(f11) = FILTER #( itab2 USING KEY sec_key EXCEPT IN filter_tab2 WHERE num = table_line ).
-```
-
-**Collecting values**
-
-Use the
-[`COLLECT`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapcollect.htm)
-keyword, for example, to add the values of numeric components to the
-corresponding values in an internal table. Use it mainly for internal
-tables with a unique primary key, especially hashed tables.
-``` abap
-COLLECT VALUE dtype( comp1 = a comp2 = b ... ) INTO itab.
-```
-
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-## Reading from Internal Tables
+## Reading Single Lines from Internal Tables
 
 There are three different ways to specify the line to read:
 
@@ -817,9 +839,7 @@ There are three different ways to specify the line to read:
 
 The following code snippets include [`READ TABLE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapread_table.htm) statements and [table expressions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentable_expressions.htm) to read from internal tables.
 
-**Reading single lines**
-
-*Determining the target area*
+### Determining the Target Area when Reading Single Lines
 
 -   Copying a line to a data object using the addition `INTO`.
     After the copying, the line found exists separately in the internal table and
@@ -875,7 +895,7 @@ the `TRANSPORTING` addition to restrict the fields to be copied).
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-*Reading a single line by index*
+### Reading a Single Line by Index
 
 The following example shows `READ TABLE` statements to read a single line from an internal table by specifying the index. You can use the addition `USING KEY` to specify a table key and thus explicitly determine the table index to use. If the table has a sorted secondary
 key, the addition can be specified and the line to be read is then determined from its secondary table index. If the primary table key is
@@ -928,7 +948,7 @@ DATA(line2) = VALUE #( itab[ 7 ] DEFAULT itab[ 8 ]  ).
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-*Reading single lines using table keys*
+### Reading a Single Line Using Table Keys
 
 Lines can be read by explicitly specifying the table keys or the alias names, if any.
 ```abap
@@ -990,7 +1010,7 @@ READ TABLE it FROM sec_keys USING KEY sk INTO wa.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-**Reading a single line using a free key**
+### Reading a Single Line Using a Free Key
 
 The specified components used as keys need not be part of a table key.
 ``` abap
@@ -999,7 +1019,7 @@ line = it[ b = 2 ].
 READ TABLE it INTO wa WITH KEY b = 2.
 ```
 
-*Addressing individual components*
+### Addressing Individual Components of Read Lines
 
 When reading single lines in general, you can also address individual
 components of the line using the [component
@@ -1023,7 +1043,7 @@ DATA(comp4) = dref->c.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-**Checking the existence and the index of a line in an internal table**
+### Checking the Existence and the Index of a Line in an Internal Table
 
 This is relevant if you are not interested in the content of a table
 line, but only want to find out whether a line exists that matches to the
@@ -1433,6 +1453,8 @@ DELETE str_table WHERE table_line CP `Z*`.
 "Result: abcZ / gZhi / pqrZ
 ```
 
+### Deleting Adjacent Duplicate Lines
+
 `DELETE ADJACENT DUPLICATES` statements allow you to delete all adjacent lines except for the first line that have the same content in certain components. You usually need to perform some appropriate sorting before using these statements.
 ``` abap
 "Implicitly using the primary table key
@@ -1453,6 +1475,8 @@ DELETE ADJACENT DUPLICATES FROM it USING KEY sec_key.
 
 > **💡 Note**<br>
 > The system field `sy-subrc` is set to `0` if at least one line has been deleted. It is set to `4` if no lines were deleted.
+
+### Deleting the Entire Internal Table Content
 
 The 
 [`CLEAR`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapclear.htm)

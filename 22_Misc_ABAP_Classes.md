@@ -1504,7 +1504,7 @@ xco_cp_json=>data->from_string( json_created_xco )->apply( VALUE #(
 <td> Class </td> <td> Details/Code Snippet </td>
 </tr>
 <tr>
-<td> <code>XCO_CP_ABAP_REPOSITORY</code> </td>
+<td> <code>XCO_CP_ABAP</code><br><code>XCO_CP_ABAP_REPOSITORY</code> </td>
 <td>
 
 <ul>
@@ -1568,6 +1568,9 @@ DATA(handler_cl) = xco_cp_abap=>class( 'ZCL_DEMO_ABAP_UNIT_TEST' ).
 DATA(subcl) = xco_cp_abap=>class( 'CL_ABAP_TYPEDESCR' )->subclasses->all->get( ).
 "Getting the names of the subclasses
 DATA(subcl_names) = xco_cp_abap=>class( 'CL_ABAP_TYPEDESCR' )->subclasses->all->get_names( ).
+"Getting the direct superclass
+DATA(direct_super_class) = xco_cp_abap=>class( 'CL_ABAP_DATADESCR' )->definition->content( 
+  )->get_superclass( )->name.
 
 "Taking an XCO handler for a database table as an example, see some of the
 "details you can retrieve. The method names should be self-explanatory.
@@ -1945,6 +1948,10 @@ TRY.
       cl_bali_log_db=>get_instance( )->delete_log( log = log_del ).
     ENDLOOP.
 
+  CATCH cx_bali_runtime.
+ENDTRY.
+
+TRY.
     "Creating new application log entries
     "Creating a free text and adding it to the application log
     DATA(free_txt) = cl_bali_free_text_setter=>create( severity = if_bali_constants=>c_category_free_text

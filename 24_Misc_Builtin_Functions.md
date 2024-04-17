@@ -536,6 +536,7 @@ Search functions
 <br><br>
 
 ``` abap
+"---------------- find ----------------
 "The find function searches for the substring specified and returns the offset
 "7
 DATA(find1) = find( val = str sub = `of` ). 
@@ -567,6 +568,7 @@ DATA(find8) = find( val = str sub = `es` occ = 3 ).
 "15
 DATA(find9) = find( val = str pcre = `\.` ). 
 
+"---------------- find_end ----------------
 "find_end returns the sum of the offset of the occurrence plus the length of the match
 "9 (7 + 2)
 DATA(find_end1) = find_end( val = str sub = `of` ). 
@@ -574,6 +576,7 @@ DATA(find_end1) = find_end( val = str sub = `of` ).
 "7 (6 + 1)
 DATA(find_end2) = find_end( val = str pcre = `\s` ). 
 
+"---------------- find_any_of ----------------
 "find_any_of returns the offset of the occurrence of any character contained 
 "in a substring. The search is always case-sensitive.
 "2 (character e is found)
@@ -582,6 +585,7 @@ DATA(find_any_of1) = find_any_of( val = str sub = `x523z4e` ).
 "-1 
 DATA(find_any_of2) = find_any_of( val = str sub = `zwq85t` ). 
 
+"---------------- find_any_not_of ----------------
 "find_any_not_of is the negation of find_any_of
 "0 (very first character in the searched string)
 DATA(find_any_not_of1) = find_any_not_of( val = str sub = `ieces` ). 
@@ -1319,6 +1323,7 @@ DATA(line_index5) = line_index( itab_sec[ KEY sk comp2 = 'a' ] ).
 "Specifying the pseudo component table_line
 "1
 DATA(line_index6) = line_index( itab_str[ table_line = `aaa` ] ). 
+
 "0
 DATA(line_index7) = line_index( itab_str[ table_line = `zzz` ] ). 
 ```
@@ -1693,7 +1698,7 @@ SELECT SINGLE
   uuid( ) AS uuid
 
   FROM zdemo_abap_carr
-  WHERE carrid = 'LH'
+  WHERE carrid = char`LH`
   INTO @DATA(special_functions).
 ```
 

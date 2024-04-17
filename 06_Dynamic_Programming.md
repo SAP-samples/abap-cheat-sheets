@@ -1999,7 +1999,7 @@ DATA(a) = cl_abap_typedescr=>describe_by_data( some_struc ).
 DATA(b) = CAST cl_abap_structdescr( a ).
 DATA(c) = b->components.  
 
-"get_included_view method: Getting type information for included 
+"get_included_view method: Getting type information of included 
 "components, e.g. in case of deep structures
 TYPES: BEGIN OF st,
          a TYPE i, "elementary type
@@ -2048,14 +2048,14 @@ CREATE OBJECT oref4abs TYPE ('\CLASS=ZCL_DEMO_ABAP_DYNAMIC_PROG').
 ### Dynamically Creating Data Types at Runtime
 You can create data types at program runtime using methods of the type description classes of RTTS.
 These types are only valid locally in the program. They are also anonymous, i.e. they are only accessible through type description objects.
-As shown above, you can get a reference to a type description object of a type using the static methods of the class `CL_ABAP_TYPEDESCR`.
+As shown above, you can get a reference to a type description object of a type using the static methods of the class `CL_ABAP_TYPEDESCR`. You can use type description objects such as `type_descr_obj` of the example to create data objects dynamically with `CREATE DATA` statements and the `TYPE HANDLE` addition as shown further down.
 ```abap
 "For example, a structured type
 DATA(type_descr_obj) = CAST cl_abap_structdescr(
   cl_abap_typedescr=>describe_by_name( 'SOME_STRUC_TYPE' ) ).
 ```
 
-The focus here is on using RTTC methods such as `get...`. It is recommended that you use the `get` method instead of the `create` method. 
+The focus of the following snippets is on using RTTC methods such as `get` to create type description objects. For more information, check the class documentation. It is recommended that you use the `get` method instead of the `create` method. 
 
 ```abap
 "----------------------------------------------------------------------
@@ -2144,7 +2144,9 @@ DATA(tdo_tab_2) = cl_abap_tabledescr=>get(
         p_key        = VALUE #( ( name = 'CARRID' ) ( name = 'CONNID' ) )
         p_unique     = cl_abap_typedescr=>true ).
 
-" ... reference types
+"----------------------------------------------------------------------
+"--- Creating type description objects using reference types ----
+"----------------------------------------------------------------------
 "Reference types such as the following shall be created using a
 "type description object.
 TYPES some_ref_type2t TYPE REF TO t.

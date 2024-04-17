@@ -10,6 +10,7 @@
     - [RAP Saver Class and Saver Methods](#rap-saver-class-and-saver-methods)
   - [BDEF Derived Types](#bdef-derived-types)
     - [Components of BDEF Derived Types](#components-of-bdef-derived-types)
+    - [Secondary Table Keys of BDEF Derived Types](#secondary-table-keys-of-bdef-derived-types)
   - [EML Syntax](#eml-syntax)
     - [EML Syntax for Modifying Operations](#eml-syntax-for-modifying-operations)
     - [EML Syntax for Reading Operations](#eml-syntax-for-reading-operations)
@@ -298,7 +299,7 @@ authorization master ( instance )
 
   //Operations for associations (many specification options are possible)
   //The following example means enabling create-by-association operations for associations
-  //Assumption: _child is specified in the the underlying CDS data model.
+  //Assumption: _child is specified in the underlying CDS data model.
   association _child { create; } 
 
   //Non-standard operations (check the specification options in the documentation, e.g. feature 
@@ -838,6 +839,48 @@ Bullet points on selected `%` components:
         particular non-key fields in `%control` are set to
         `if_abap_behv=>mk-off`, the values of these fields
         are not returned in the result.
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+### Secondary Table Keys of BDEF Derived Types
+- Internal tables typed with BDEF derived types (`TYPE TABLE FOR ...`) are standard tables with an empty [primary table key](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenprimary_table_key_glosry.htm) (`primary_key`). 
+- Predefined [secondary table key](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensecondary_table_key_glosry.htm) are available for many types. 
+- These secondary table keys are always [sorted keys](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensorted_key_glosry.htm). 
+- Currently available secondary table keys (as also visibile in one of the images above when using the F2 help in ADT):
+  - `entity`: Includes `%key`
+  - `cid`: Includes `%cid` or `%cid_ref`, and can - depending on the type - also include `%key` and `%pid`
+  - `draft`: Available in draft scenarios; includes `%is_draft`; can also include `%key` and `%pid`
+  - `pid` (alias name `id`): Available in late numbering scenarios; includes `%pid`; can also include `%tmp` and `%key`
+
+```abap
+DATA itab_cr TYPE TABLE FOR CREATE zdemo_abap_rap_ro_m.
+
+itab_cr = VALUE #( %control-key_field = if_abap_behv=>mk-on
+                    %control-field1 = if_abap_behv=>mk-on
+                    %control-field2 = if_abap_behv=>mk-on
+                    %control-field3 = if_abap_behv=>mk-on
+                    %control-field4 = if_abap_behv=>mk-on
+                    ( %cid           = `cid1`
+                        %key-key_field = 1
+                        field1         = 'aaa'
+                        field2         = 'bbb'
+                        field3         = 11
+                        field4         = 111 ) ).
+
+"Secondary table keys available in the example table: cid, entity
+
+"The statements demonstrate the secondary table keys using table expressions.
+"The statements commented out raise a syntax warning. The secondary table key 
+"should be specified explicitly.
+"DATA(line_a) = itab_cr[ %cid = `cid1` ].
+"DATA(line_b) = itab_cr[ %cid = `cid1` %key = VALUE #( key_field = 1 ) ].
+DATA(line_c) = itab_cr[ KEY cid COMPONENTS %cid = `cid1`
+                                           %key = VALUE #( key_field = 1 ) ].
+
+"DATA(line_d) = itab_cr[ %key = VALUE #( key_field = 1 ) ].
+"The COMPONENTS addition is optional.
+DATA(line_e) = itab_cr[ KEY entity %key = VALUE #( key_field = 1 ) ].
+``` 
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 

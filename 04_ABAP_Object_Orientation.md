@@ -2,9 +2,6 @@
 
 # ABAP Object Orientation
 
-> **💡 Note**<br>
-> This ABAP cheat sheet provides an overview on selected syntax options and concepts related to ABAP object orientation. It is supported by code snippets and an executable example. They are **not** suitable as role models for object-oriented design. Their primary focus is on the syntax and functionality. For more details, refer to the respective topics in the ABAP Keyword Documentation. Find an overview in the topic [ABAP Objects - Overview](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_objects_oview.htm).
-
 - [ABAP Object Orientation](#abap-object-orientation)
   - [Classes and Objects](#classes-and-objects)
     - [Creating Classes](#creating-classes)
@@ -30,6 +27,10 @@
     - [Factory Methods and Singletons as Design Patterns](#factory-methods-and-singletons-as-design-patterns)
   - [More Information](#more-information)
   - [Executable Example](#executable-example)
+
+> **💡 Note**<br>
+> This ABAP cheat sheet provides an overview on selected syntax options and concepts related to ABAP object orientation. It is supported by code snippets and an executable example. They are **not** suitable as role models for object-oriented design. Their primary focus is on the syntax and functionality. For more details, refer to the respective topics in the ABAP Keyword Documentation. Find an overview in the topic [ABAP Objects - Overview](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_objects_oview.htm).
+
 
 ## Classes and Objects
 
@@ -71,8 +72,8 @@ Classes ...
         that determine the behavior of an object
     -   [Events](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenevent_glosry.htm "Glossary Entry") to trigger the processing of ABAP code
 
-<p align="right"><a href="#top">⬆️ back to top</a></p>
 
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ### Creating Classes
 

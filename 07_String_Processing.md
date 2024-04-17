@@ -292,8 +292,8 @@ DATA(s5) = |{ dobj1 }{ dobj2 }|.
 DATA(s6) = |{ COND #( WHEN s5 IS INITIAL THEN `INITIAL` ELSE `NOT INITIAL` ) }|. 
 
 "Functional method calls, built-in functions
-"Your user alias: XXXX...
-DATA(s7) = |Your user alias: { cl_abap_context_info=>get_user_alias( ) }|. 
+"User alias: XXXX...
+DATA(s7) = |User alias: { cl_abap_context_info=>get_user_alias( ) }|. 
 
 "Some random number: 39 (example)
 DATA(s8) = |Some random number: { cl_abap_random_int=>create( seed = cl_abap_random=>seed( ) min = 1 max = 100 )->get_next( ) }|. 
@@ -565,7 +565,7 @@ transform characters of a string to either lowercase or uppercase and
 store the result in a target variable. 
 - If you want to apply the transformation to the source directly, you can use
 [`TRANSLATE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abaptranslate.htm)
-statements.
+statements. 
 
 Syntax examples:
 ``` abap
@@ -577,6 +577,11 @@ s1 = to_lower( `SOME_FILE.Txt` ). "some_file.txt
 s1 = `Hallo`.
 TRANSLATE s1 TO UPPER CASE. "HALLO
 TRANSLATE s1 TO LOWER CASE. "hallo
+
+"For the transformation of the source directly, you can 
+"also specify an existing, changeable data object as 
+"the source in a simple assignment as follows.
+s1 = to_upper( s1 ).
 ```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
@@ -1808,6 +1813,7 @@ REPLACE PCRE `(.*?)PP(.*)` IN s1 WITH `$2#$1` IGNORING CASE. "pc app#ab a
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## More String Functions
+As also covered in the [Misc Built-in Functions cheat sheet](24_Misc_Builtin_Functions.md), the following sections show more string functions available.
 
 ### Checking the Similarity of Strings
 
@@ -2038,7 +2044,7 @@ IF s8 NP `*c#D*`. ... "false; sy-fdpos: 2
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ### Miscellaneous Classes for String Processing 
-The following list shows a selected set of classes that support string processing.
+The following list (as also covered in the [Misc ABAP Classes cheat sheet](22_Misc_ABAP_Classes.md)) shows a selected set of classes that support string processing.
 
 - `CL_ABAP_CHAR_UTILITIES`: As previously mentioned, this class provides utilities for string processing, such as attributes that represent new lines and horizontal tabs.
 
