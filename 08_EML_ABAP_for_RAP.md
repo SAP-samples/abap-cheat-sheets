@@ -844,7 +844,7 @@ Bullet points on selected `%` components:
 
 ### Secondary Table Keys of BDEF Derived Types
 - Internal tables typed with BDEF derived types (`TYPE TABLE FOR ...`) are standard tables with an empty [primary table key](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenprimary_table_key_glosry.htm) (`primary_key`). 
-- Predefined [secondary table key](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensecondary_table_key_glosry.htm) are available for many types. 
+- Predefined [secondary table keys](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensecondary_table_key_glosry.htm) are available for many types. 
 - These secondary table keys are always [sorted keys](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensorted_key_glosry.htm). 
 - Currently available secondary table keys (as also visibile in one of the images above when using the F2 help in ADT):
   - `entity`: Includes `%key`

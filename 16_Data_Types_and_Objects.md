@@ -1418,9 +1418,11 @@ Enumerated variables can be declared by referring to the enumerated type.
 They can only be assigned the enumerated values defined there that exist as the content of enumerated constants or components of an enumerated structure.
 
 ```abap
-DATA dobj_enum TYPE enum_type.
+DATA dobj_enum_a TYPE t_enum.
 
-dobj_enum = a.
+dobj_enum_a = a.
+
+DATA(dobj_enum_b) = b.   
 ```
 
 Find more information on enumerated types in the (commented code of the) cheat sheet example and [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenenumerated_types_usage.htm). 
@@ -1494,7 +1496,7 @@ SELECT SINGLE
   INTO @DATA(wa_untyped_literals).
 
 "Miscellaneous typed literals in an ABAP SQL statement
-"Note that typed literals can be specified in in read
+"Note that typed literals can be specified in read
 "positions where host variables are possible.
 DATA(tmstamp) = CONV timestamp( '20240808112517' ).
 DATA(some_string) = `Some string`.
