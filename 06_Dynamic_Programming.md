@@ -18,6 +18,8 @@
     - [Validating Input for Dynamic Specifications (CL\_ABAP\_DYN\_PRG)](#validating-input-for-dynamic-specifications-cl_abap_dyn_prg)
   - [Runtime Type Services (RTTS)](#runtime-type-services-rtts)
     - [Getting Type Information at Runtime](#getting-type-information-at-runtime)
+      - [Excursion: Inline Declaration, CAST Operator, Method Chaining](#excursion-inline-declaration-cast-operator-method-chaining)
+      - [Absolute Names](#absolute-names)
     - [Dynamically Creating Data Types at Runtime](#dynamically-creating-data-types-at-runtime)
     - [Dynamically Creating Data Objects at Runtime](#dynamically-creating-data-objects-at-runtime)
   - [More Information](#more-information)
@@ -1784,263 +1786,838 @@ The following examples show the retrieval of type information. Instead of the ex
 [Method chaining](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenmethod_chaining_glosry.htm "Glossary Entry")
 comes in handy, too.
 
+
+The following example explores the RTTI type hierarchy and demonstrates how to retrieve various pieces of type information using RTTI attributes and methods. You can create a demo class (adapt the class name if needed), copy and paste the code, run the class with F9 in ADT, and check the output in the console.
+
+The example includes demo objects that are added to an internal table. This table is then looped over to retrieve type information for all objects. To retrieve a type description object, you have multiple options. One option is to use the static methods of the `cl_abap_typedescr` class, which is the root class of the RTTI hierarchy. These methods include: 
+- `describe_by_data`: Returns an object reference in one of the classes `cl_abap_elemdescr`, `cl_abap_enumdescr`, `cl_abap_refdescr`, `cl_abap_structdescr`, or `cl_abap_tabledsecr`. 
+- `describe_by_object_ref`: Returns the type that an object reference variable points to. 
+- `describe_by_data_ref`: Returns the type that a data reference variable points to. 
+- `describe_by_name`: Returns a type description object when providing the relative or absolute name of a type. 
+Notes: 
+- The `*_ref` methods return objects of the dynamic type. 
+- In the bigger example of the demo class, we do not use type names, but rather objects (`describe_by_name` is used in the smaller example in the demo class). Therefore, we first try to get a type description object using the `describe_by_object_ref` method to obtain an instance of `cl_abap_objectdescr`. If this fails, it means we have an instance of `cl_abap_datadescr`, which is the next subclass in the hierarchy. We can retrieve this using the `describe_by_data` method. 
+- The `describe_by_data` method also works for references, including object/interface reference variables. In these cases, the returned object points to `cl_abap_refdescr`. We can then use the `get_referenced_type` method to obtain more details about the actual reference. 
+- The example also demonstrates the dynamic creation of data objects using the retrieved type description objects and the `HANDLE` addition to the `CREATE DATA` statement. It also shows dynamic creations using the dynamic specification of the type and the absolute name. The latter is also possible with the `CREATE OBJECT` statement to create objects dynamically. In ABAP for Cloud Development, absolute names having the pattern `\TYPE=%_...` (an internal technical name that is available for [bound data types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbound_data_type_glosry.htm)) cannot be used for the dynamic creation. 
+- To visualize the retrieved information, many values are added to a string table. Note that this example is tailored to cover all subclasses of the RTTI hierarchy, but it does not explore all available options for information retrieval. 
+- The example uses artifacts from the ABAP cheat sheet repository.
+
+
 ```abap
-"------------------------------------------------------------------------
-"---------------- Getting general type information ----------------------
-"------------------------------------------------------------------------
+CLASS zcl_some_class DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
 
-"Getting references to type description objects of a type ...
+  PUBLIC SECTION.
+    INTERFACES if_oo_adt_classrun.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
 
-"... using the cl_abap_typedescr=>describe_by_name method.
-"In this case, the name of the types are used.
-"The following examples cover elementary, structured and
-"internal table types.
-TYPES elemtype TYPE n LENGTH 3.
-TYPES structype TYPE zdemo_abap_carr.
-TYPES strtabtype TYPE string_table.
+ENDCLASS.
 
-"The reference in the type description object references an
-"object from one of the classes CL_ABAP_ELEMDESCR, CL_ABAP_ENUMDESCR,
-"CL_ABAP_REFDESCR, CL_ABAP_STRUCTDESCR, CL_ABAP_TABLEDESCR,
-"CL_ABAP_CLASSDESCR, or CL_ABAP_INTFDESCR. You may want to check the
-"content of the type description objects in the debugger.
-DATA(tdo_by_name_elem) = cl_abap_typedescr=>describe_by_name( 'ELEMTYPE' ).
-DATA(tdo_by_name_struc) = cl_abap_typedescr=>describe_by_name( 'STRUCTYPE' ).
-DATA(tdo_by_name_itab) = cl_abap_typedescr=>describe_by_name( 'STRTABTYPE' ).
+CLASS zcl_some_class IMPLEMENTATION.
+  METHOD if_oo_adt_classrun~main.
 
-"Inline declarations are handy to avoid helper variables such as
-"in the following example.
-DATA tdo_by_name_elem_helper TYPE REF TO cl_abap_typedescr.
-tdo_by_name_elem_helper = cl_abap_typedescr=>describe_by_name( 'ELEMTYPE' ).
+    "Data objects to work with in the example
+    DATA itab_refs TYPE TABLE OF REF TO data.
+    DATA str_tab TYPE string_table.
+    DATA dyn_dobj TYPE REF TO data.
+    DATA dyn_obj TYPE REF TO object.
+    DATA tdo TYPE REF TO cl_abap_typedescr.
 
-"... using the cl_abap_typedescr=>describe_by_data method.
-"In this case, the data objects are provided.
-"The examples cover an elementary data object, a structure and an
-"internal table.
-DATA elemdobj TYPE elemtype.
-DATA strucdobj TYPE structype.
-DATA tabledobj TYPE strtabtype.
+    "Data objects of different kinds based on which type information shall be retrieved
+    "Elementary type
+    DATA elem_dobj TYPE c LENGTH 4 VALUE 'ABAP'.
 
-DATA(tdo_by_data_elem) = cl_abap_typedescr=>describe_by_data( elemdobj ).
-DATA(tdo_by_data_struc) = cl_abap_typedescr=>describe_by_data( strucdobj ).
-DATA(tdo_by_data_itab) = cl_abap_typedescr=>describe_by_data( tabledobj ).
+    "Enumeration type
+    TYPES: BEGIN OF ENUM enum_t,
+             enum1,
+             enum2,
+             enum3,
+           END OF ENUM enum_t.
+    DATA(dobj_enum) = enum2.
 
-"... using the cl_abap_typedescr=>describe_by_data_ref method
-"In this case, a data reference variable is used.
-"Note: As a result, the method returns a reference that points to
-"an object in one of the classes CL_ABAP_ELEMDESCR, CL_ABAP_ENUMDESCR,
-"CL_ABAP_REFDESCR, CL_ABAP_STRUCTDESCR, or CL_ABAP_TABLEDSECR.
+    "Structured types
+    DATA(struct) = VALUE zdemo_abap_carr( carrid = 'XY' carrname = 'XY Airlines' ).
+    "BDEF derived type (structure)
+    DATA struct_rap TYPE STRUCTURE FOR CREATE zdemo_abap_rap_ro_m.
 
-DATA dref1 TYPE REF TO i.
-dref1 = NEW #( ).
-"Data reference pointing to CL_ABAP_ELEMDESCR
-DATA(tdo_by_dref1) = cl_abap_typedescr=>describe_by_data_ref( dref1 ).
-"Data reference pointing to CL_ABAP_TABLEDSECR
-DATA(dref2) = NEW string_table( ).
-DATA(tdo_by_dref2) = cl_abap_typedescr=>describe_by_data_ref( dref2 ).
+    "Internal table types
+    "Standard table with standard table key
+    DATA(string_table) = VALUE string_table( ( `AB` ) ( `AP` ) ).
+    "Local structured type as basis for a sorted internal table that
+    "includes primary and secondary table key specifiactions (including
+    "an alias name)
+    TYPES: BEGIN OF struc_type,
+             a TYPE c LENGTH 3,
+             b TYPE i,
+             c TYPE decfloat34,
+           END OF struc_type.
+    TYPES tab_type TYPE SORTED TABLE OF struc_type
+      WITH UNIQUE KEY a
+      WITH NON-UNIQUE SORTED KEY sec_key ALIAS sk COMPONENTS b c .
+    DATA(sorted_tab) = VALUE tab_type( ( a = 'aaa' ) ).
 
-"... using the cl_abap_typedescr=>describe_by_object_ref method
-"In this case, an object reference variable is used.
-DATA oref TYPE REF TO zcl_demo_abap_objects.
-oref = NEW #( ).
-DATA(tdo_by_oref) = cl_abap_typedescr=>describe_by_object_ref( oref ).
+    "Reference variables
+    "Data reference variable
+    DATA(dref) = NEW i( 123 ).
+    "Object reference variable
+    DATA(oref) = NEW zcl_demo_abap_objects( ).
+    "Interface reference variable
+    DATA iref TYPE REF TO zdemo_abap_objects_interface.
+    iref = CAST #( oref ).
 
-"------------------------------------------------------------------------
-"--- Getting more detailed information by programmatically accessing ----
-"--- the attributes -----------------------------------------------------
-"------------------------------------------------------------------------
+    "Adding the previous (data) objects to an internal table which is
+    "looped over to retrieve type information for all
+    itab_refs = VALUE #( ( REF #( elem_dobj ) ) "elementary type (1)
+                         ( REF #( dobj_enum ) ) "enumerated type (2)
+                         ( REF #( struct ) ) "flat structure (3)
+                         ( REF #( struct_rap ) ) "structure typed with BDEF derived type (4)
+                         ( REF #( string_table ) ) "internal table, elementary line type (5)
+                         ( REF #( sorted_tab ) ) "internal table, local line type (6)
+                         ( REF #( dref ) ) "data reference variable (7)
+                         ( REF #( oref ) ) "object reference variable (8)
+                         ( REF #( iref ) ) "interface reference variable (9)
+                      ).
 
-"------------------------------------------------------------------------
-"--- Examples using a type description object for an elementary type ----
-"------------------------------------------------------------------------
-DATA(elem_kind) = tdo_by_name_elem->kind.  "E (elementary)
-DATA(elem_absolute_name) = tdo_by_name_elem->absolute_name.  "Check in the debugger for such a local type
-DATA(elem_relative_name) = tdo_by_name_elem->get_relative_name( ).  "ELEMTYPE
-DATA(elem_is_ddic_type) = tdo_by_name_elem->is_ddic_type( ). "has the value abap_false
 
-"Getting more information using type-specific type description classes (e.g. cl_abap_elemdescr for elementary
-"types, as shown in the hierarchy tree above)
-"Using casts, you can access special attributes (i.e. the properties of the respective types).
+    LOOP AT itab_refs INTO DATA(type).
+      DATA(tabix) = sy-tabix.
+      TRY.
+          "The reference returned points to an object from the class CL_ABAP_CLASSDESCR
+          tdo = cl_abap_typedescr=>describe_by_object_ref( type->* ).
+        CATCH cx_sy_dyn_call_illegal_type.
+          "The reference returned points to an object from the class CL_ABAP_DATADESCR
+          tdo = cl_abap_typedescr=>describe_by_data( type->* ).
+      ENDTRY.
 
-"Creating a data reference variable to hold the reference to
-"the type description object
-DATA ref_elemdescr TYPE REF TO cl_abap_elemdescr.
-ref_elemdescr = CAST #( tdo_by_name_elem ).
-"Using the older cast operator ?= (which is not used in the examples)
-ref_elemdescr ?= tdo_by_name_elem.
+      "----------------- Exploring general type information -----------------
+      "At this stage, with using the static methods above, you already get general type
+      "information such as the type kind or the abosulte name. Check the type description
+      "object in the debugger for more attributes.
+      "When performing a down cast to more specific classes, you can access special
+      "methods of the type object and get more detailed information.
 
-"Alternatives using inline declaration
-DATA(ref_elemdescr2) = CAST cl_abap_elemdescr( tdo_by_name_elem ).
-"Using method chaining, you can omit extra declarations
-DATA(ref_elemdescr3) = CAST cl_abap_elemdescr( cl_abap_typedescr=>describe_by_name( 'ELEMTYPE' ) ).
-DATA(elem_abs_name) = CAST cl_abap_elemdescr( cl_abap_typedescr=>describe_by_name( 'ELEMTYPE' ) )->absolute_name.
-"Implementing a check before the cast to the type-specific type description class
-IF tdo_by_name_elem IS INSTANCE OF cl_abap_elemdescr.
-  DATA(ref_elemdescr4) = CAST cl_abap_elemdescr( tdo_by_name_elem ).
-ENDIF.
+      "Getting the type kind
+      "For the constant values of type abap_typekind, see cl_abap_typedescr. For example, 'h'
+      "stands for internal table.
+      DATA(type_kind) = tdo->type_kind.
+      INSERT |{ tabix } Type kind: { type_kind }| INTO TABLE str_tab.
 
-"Some examples for more detailed information that is accessible after
-"the cast. Check the options after the object component selector ->.
-DATA(elem_output_length) = ref_elemdescr->output_length. "3
-"The following method checks compatibility of a specified data object
-DATA(elem_applies1) = ref_elemdescr->applies_to_data( elemdobj ). "has the value abap_true
-DATA test_dobj TYPE c LENGTH 3.
-DATA(elem_applies2) = ref_elemdescr->applies_to_data( test_dobj ). "has the value abap_false
+      "Type category
+      "For the constant values of type abap_typecategory, see cl_abap_typedescr.
+      "C (class), E (elementary), I (interface), R (Reference), S (structure), T (table)
+      DATA(type_category) = tdo->kind.
+      INSERT |{ tabix } Type category: { type_category }| INTO TABLE str_tab.
 
-"-----------------------------------------------------------------
-"--- Examples using a type description object for a structure ----
-"-----------------------------------------------------------------
-DATA ref_structdescr1 TYPE REF TO cl_abap_structdescr.
-ref_structdescr1 = CAST #( tdo_by_name_struc ).
+      "Absolute name (used later for dynamic (data) object creation)
+      "Note: In ABAP for Cloud Development, absolute names having the pattern \TYPE=%_...
+      "cannot be used to create (data) objects dynamically.
+      DATA(absolute_name) = tdo->absolute_name.
+      INSERT |{ tabix } Absolute name: { absolute_name }| INTO TABLE str_tab.
 
-"Check examples before making the cast
-"The examples also use inline declaration.
-CASE TYPE OF tdo_by_name_struc.
-  WHEN TYPE cl_abap_structdescr.
-    DATA(ref_structdescr2) = CAST cl_abap_structdescr( tdo_by_name_struc ).
-  WHEN OTHERS.
-    ...
-ENDCASE.
+      "Relative name
+      "Types that are implicitly defined (e.g. created using DATA) do not have a relative
+      "type name. Explicitly defined types are, for example, standard ABAP types, Dictionary
+      "types, classes and interfaces.
+      DATA(relative_name) = tdo->get_relative_name( ).
+      IF relative_name IS NOT INITIAL.
+        INSERT |{ tabix } Relative name: { relative_name }| INTO TABLE str_tab.
+      ENDIF.
 
-DATA(ref_structdescr3) = COND #( WHEN tdo_by_name_struc IS INSTANCE OF cl_abap_structdescr
-                                  THEN CAST cl_abap_structdescr( tdo_by_name_struc ) ).
+      "Checking if it is a DDIC type
+      DATA(is_ddic_type) = tdo->is_ddic_type( ).
+      IF is_ddic_type IS NOT INITIAL.
+        INSERT |{ tabix } Is DDIC type: "{ is_ddic_type }"| INTO TABLE str_tab.
+      ENDIF.
 
-"More details accessible after the cast
-DATA(struc_kind) = ref_structdescr1->struct_kind. "F (flat)
-"The following attribute returns a table with component information, such as
-"the component names and type kinds.
-DATA(struc_components) = ref_structdescr1->components.
-"The following method also returns a table with component information. In this case,
-"more information is returned such as type description objects of each component and more.
-DATA(struc_components_tab) = ref_structdescr1->get_components( ).
+      "----------------- Exploring more specific information by casting -----------------
+      "For checking the type before performing the cast, you can use statements with
+      "CASE TYPE OF and IS INSTANCE. The example demonstrates both options.
 
-"-----------------------------------------------------------------------
-"--- Examples using a type description object for an internal table ----
-"-----------------------------------------------------------------------
-DATA ref_tabledescr1 TYPE REF TO cl_abap_tabledescr.
-ref_tabledescr1 = CAST #( tdo_by_name_itab ).
-"Cast with inline declaration
-DATA(ref_tabledescr2) = CAST cl_abap_tabledescr( tdo_by_name_itab ).
+      CASE TYPE OF tdo.
 
-"Another internal table as an example
-DATA itab TYPE SORTED TABLE OF zdemo_abap_carr WITH UNIQUE KEY carrid.
-DATA(ref_tabledescr3) = CAST cl_abap_tabledescr( cl_abap_typedescr=>describe_by_data( itab ) ).
+        WHEN TYPE cl_abap_datadescr.
+          INSERT |{ tabix } Is instance of cl_abap_datadescr| INTO TABLE str_tab.
 
-DATA(itab_table_kind) = ref_tabledescr3->table_kind. "O (sorted table)
-DATA(itab_has_unique_key) = ref_tabledescr3->has_unique_key. "has the value abap_true
-"Returns a table with the names of internal table keys
-DATA(itab_table_key) = ref_tabledescr3->key. "carrid
-"Returns a table with a description of all table keys, e.g.
-"all components of a key, key kind (U, unique, in the example case),
-"information whether the key is the primary key etc.
-DATA(itab_keys) = ref_tabledescr3->get_keys( ).
-"If you want to get information about the line type, e.g. finding out about
-"the component names, another cast is required.
-"First, getting a reference to the type description object for the structured type.
-DATA(itab_line_type) = ref_tabledescr3->get_table_line_type( ).
-"Then, performing a cast to access the component information as shown above.
-DATA(itab_line_info) = CAST cl_abap_structdescr( itab_line_type ).
-DATA(itab_comps1) = itab_line_info->components.
-DATA(itab_comps2) = itab_line_info->get_components( ).
+          "-----------------------------------------------------------------------
+          "----------------------- Elementary types ------------------------------
+          "-----------------------------------------------------------------------
+          IF tdo IS INSTANCE OF cl_abap_elemdescr.
+            INSERT |{ tabix } Is instance of cl_abap_elemdescr| INTO TABLE str_tab.
 
-"----------------------------------------------------------------------
-"--- Examples using a type description object for a data reference ----
-"----------------------------------------------------------------------
-DATA ref_refdescr1 TYPE REF TO cl_abap_refdescr.
-TYPES type_ref_i TYPE REF TO i.
-DATA(tdo_ref) = cl_abap_typedescr=>describe_by_name( 'TYPE_REF_I' ).
-ref_refdescr1 = CAST #( tdo_ref ).
-DATA(ref_refdescr2) = CAST cl_abap_refdescr( tdo_ref ).
+            "Enumeration types
+            IF tdo IS INSTANCE OF cl_abap_enumdescr.
+              INSERT |{ tabix } Is instance of cl_abap_enumdescr| INTO TABLE str_tab.
 
-"Getting a reference to the type description object of a type used to
-"type the reference
-DATA(ref_type) = ref_refdescr1->get_referenced_type( ).
-DATA(ref_abs_name) = ref_refdescr1->get_referenced_type( )->absolute_name. "\TYPE=I
+              DATA(enum) = CAST cl_abap_enumdescr( tdo ).
 
-"-------------------------------------------------------------------------
-"--- Examples using a type description object for an object reference ----
-"-------------------------------------------------------------------------
-DATA ref_oref1 TYPE REF TO cl_abap_objectdescr.
-ref_oref1 = CAST #( tdo_by_oref ).
-"See the hierarchy of type description classes. You may also use
-"cl_abap_classdescr.
-DATA(ref_oref2) = CAST cl_abap_classdescr( tdo_by_oref ).
+              "Various type-specific information retrieval
+              "Base type of enumeration type
+              DATA(enum_base_type_kind) = enum->base_type_kind.
+              INSERT |{ tabix } Base type: { enum_base_type_kind }| INTO TABLE str_tab.
 
-"Returns a table with information about the class attributes
-DATA(class_attributes) = ref_oref1->attributes.
+              "Elements of the enumeration type
+              DATA(enum_elements) = enum->members.
+              INSERT |{ tabix } Elements:| &&
+              | { REDUCE string( INIT str = `` FOR <l> IN enum_elements NEXT str = |{ str }{ COND #( WHEN str IS NOT INITIAL THEN ` / ` ) }| &&
+              |{ <l>-name } ({ CONV i( <l>-value ) })| ) }| INTO TABLE str_tab.
 
-"Returns a table with information about the methods such as
-"parameters, visibility and more
-DATA(class_methods) = ref_oref1->methods.
+              "Checking the type compatibility of the data object
+              DATA(applies_enum1) = enum->applies_to_data( enum2 ).
+              DATA(applies_enum2) = enum->applies_to_data( `nope` ).
+              DATA(applies_enum3) = enum->applies_to_data_ref( REF #( enum3 ) ).
+              DATA(applies_enum4) = enum->applies_to_data_ref( REF #( `nope` ) ).
 
-"Returns a table with information about the interfaces implemented
-DATA(class_intf) = ref_oref1->interfaces.
+              INSERT |{ tabix } Applies: 1) "{ applies_enum1 }" 2) "{ applies_enum2 }"| &&
+              | 3) "{ applies_enum3 }" 4) "{ applies_enum4 }"| INTO TABLE str_tab.
 
-"Can class be instantiated
-DATA(class_is_inst) = ref_oref1->is_instantiatable( ). "has the value abap_true
+              "Dynamically creating data objects based on the ...
+              TRY.
+                  "... absolute name
+                  CREATE DATA dyn_dobj TYPE (absolute_name).
+                  "Assigning the value to the dynamically created data object
+                  dyn_dobj->* = type->*.
 
-"Using an interface
-DATA(tdo_intf) = cl_abap_typedescr=>describe_by_name( 'ZDEMO_ABAP_OBJECTS_INTERFACE' ).
-DATA ref_iref TYPE REF TO cl_abap_intfdescr.
-ref_iref = CAST #( tdo_intf ). "cl_abap_objectdescr is also possible
+                  "... type description object
+                  CREATE DATA dyn_dobj TYPE HANDLE enum.
+                  dyn_dobj->* = type->*.
+                  INSERT |{ tabix } Dynamic data objects created, assignments done| INTO TABLE str_tab.
+                CATCH cx_root INTO DATA(err_enum).
+                  INSERT |{ tabix } Dynamic data object creation error: { err_enum->get_text( ) }| INTO TABLE str_tab.
+              ENDTRY.
 
-DATA(ref_intf_attr) = ref_iref->attributes.
-DATA(ref_intf_meth) = ref_iref->methods.
-DATA(ref_intf_attr_objdescr) = CAST cl_abap_objectdescr( tdo_intf )->attributes.
+              "Elementary types other than enumeration types
+            ELSE.
+              DATA(elem) = CAST cl_abap_elemdescr( tdo ).
+
+              "Note: General information such as (output) length, decimals etc. especially
+              "for elementary types is already available without the cast.
+
+              "Internal length
+              DATA(elem_internal_length) = elem->length.
+              "Output length
+              DATA(elem_output_length) = elem->output_length.
+              INSERT |{ tabix } Internal length: "{ elem_internal_length }", | &&
+              |output length: "{ elem_output_length }"| INTO TABLE str_tab.
+
+              "Checking the type compatibility of the data object
+              DATA(applies_elem1) = elem->applies_to_data( 'ciao' ).
+              DATA(applies_elem2) = elem->applies_to_data( abap_true ).
+              DATA(applies_elem3) = elem->applies_to_data_ref( REF #( 'abap' ) ).
+              DATA(applies_elem4) = elem->applies_to_data_ref( REF #( `nope` ) ).
+
+              INSERT |{ tabix } Applies: 1) "{ applies_elem1 }" 2) "{ applies_elem2 }"| &&
+              | 3) "{ applies_elem3 }" 4) "{ applies_elem4 }"| INTO TABLE str_tab.
+
+              "Dynamically creating data objects based on the ...
+              TRY.
+                  "... absolute name
+                  CREATE DATA dyn_dobj TYPE (absolute_name).
+                  "Assigning the value to the dynamically created data object
+                  dyn_dobj->* = type->*.
+
+                  "... type description object
+                  CREATE DATA dyn_dobj TYPE HANDLE elem.
+                  dyn_dobj->* = type->*.
+                  INSERT |{ tabix } Dynamic data objects created, assignments done| INTO TABLE str_tab.
+                CATCH cx_root INTO DATA(err_elem).
+                  INSERT |{ tabix } Dynamic data object creation error: { err_elem->get_text( ) }| INTO TABLE str_tab.
+              ENDTRY.
+            ENDIF.
+
+            "-----------------------------------------------------------------------
+            "----------------------- Reference types ------------------------------
+            "-----------------------------------------------------------------------
+          ELSEIF tdo IS INSTANCE OF cl_abap_refdescr.
+            INSERT |{ tabix } Is instance of cl_abap_refdescr| INTO TABLE str_tab.
+
+            "Gettting a reference to the type's type description object using the
+            "describe_by_data_ref, which can be used for data reference variables.
+            "Note that the dynamic type is evaluated.
+
+            "The following statement retrieves a type description object using the describe_by_data_ref
+            "method, which can be used for data reference variables. An object is returned that points
+            "to an object in one of these classes: cl_abap_elemdescr, cl_abap_enumdescr, cl_abap_refdescr,
+            "cl_abap_structdescr, cl_abap_tabledsecr.
+            "The method call is for demonstration purposes. With the returned object, the information
+            "retrieval can also be performed as above.
+            DATA(tdo_dref) = cl_abap_typedescr=>describe_by_data_ref( type->* ).
+
+            "Using the type description object retrieved above (describe_by_data) and casting
+            DATA(data_ref) = CAST cl_abap_refdescr( tdo ).
+
+            "Getting a reference to the type's type description object that is used to
+            "type the reference.
+            DATA(dref_referenced_type) = data_ref->get_referenced_type( ).
+
+            "Based on this, you can get further information of the dynamic type just like in the
+            "other examples for the referenced type. Here, skipping further type evaluation.
+            IF dref_referenced_type IS INSTANCE OF cl_abap_elemdescr.
+              INSERT |{ tabix } The referenced type is an elementary type.| INTO TABLE str_tab.
+            ELSE.
+              INSERT |{ tabix } The referenced type is a type other than elementary.| INTO TABLE str_tab.
+            ENDIF.
+
+            "Checking the type compatibility
+            DATA(applies_dref1) = data_ref->applies_to_data( REF #( 456 ) ).
+            DATA(applies_dref2) = data_ref->applies_to_data( REF #( `hello` ) ).
+            TYPES ref_int TYPE REF TO i.
+            TYPES ref_str TYPE REF TO string.
+            DATA(applies_dref3) = data_ref->applies_to_data_ref( NEW ref_int( ) ).
+            DATA(applies_dref4) = data_ref->applies_to_data_ref( NEW ref_str( ) ).
+
+            INSERT |{ tabix } Applies: 1) "{ applies_dref1 }" 2) "{ applies_dref2 }"| &&
+            | / 3) "{ applies_dref3 }" 4) "{ applies_dref4 }"| INTO TABLE str_tab.
+
+            "Dynamically creating data objects based on the ...
+            TRY.
+                "... absolute name
+                CREATE DATA dyn_dobj TYPE (absolute_name).
+                "Assigning the value to the dynamically created data object
+                dyn_dobj->* = type->*.
+
+                "... type description object
+                CREATE DATA dyn_dobj TYPE HANDLE data_ref.
+                dyn_dobj->* = type->*.
+                INSERT |{ tabix } Dynamic data objects created, assignments done| INTO TABLE str_tab.
+              CATCH cx_root INTO DATA(err_ref).
+                INSERT |{ tabix } Dynamic data object creation error: { err_ref->get_text( ) }| INTO TABLE str_tab.
+            ENDTRY.
+
+            "Complex types
+          ELSEIF tdo IS INSTANCE OF cl_abap_complexdescr.
+            INSERT |{ tabix } Is instance of cl_abap_complexdescr| INTO TABLE str_tab.
+
+            "-----------------------------------------------------------------------
+            "----------------------- Structured types ------------------------------
+            "-----------------------------------------------------------------------
+            IF tdo IS INSTANCE OF cl_abap_structdescr.
+              INSERT |{ tabix } Is instance of cl_abap_structdescr| INTO TABLE str_tab.
+
+              DATA(struc) = CAST cl_abap_structdescr( tdo ).
+
+              "Structure kind
+              "For the constant values, see abap_structkind cl_abap_structdescr
+              "For the constant values of type abap_structkind, see cl_abap_structdescr. For example, 'F'
+              "stands for a flat structure.
+              DATA(struc_kind) = struc->struct_kind.
+              INSERT |{ tabix } Structure kind: { struc_kind }| INTO TABLE str_tab.
+
+              "Structure components
+              "The following attribute returns a table with component information, such as
+              "the component names and type kinds.
+              DATA(struc_components) = struc->components.
+              INSERT |{ tabix } Components 1: | &&
+              |{ REDUCE string( INIT str = `` FOR <comp1> IN struc_components NEXT str = |{ str }| &&
+              |{ COND #( WHEN str IS NOT INITIAL THEN ` / ` ) }{ <comp1>-name } ({ <comp1>-type_kind })| ) }|
+              INTO TABLE str_tab.
+
+              "Structure components (more details)
+              "The following method also returns a table with component information. In this case,
+              "type description objects of each component and the component names are returned, which can
+              "be further evaluated.
+              DATA(struc_components_tab) = struc->get_components( ).
+              INSERT |{ tabix } Components 2: | &&
+              |{ REDUCE string( INIT str = `` FOR <comp2> IN struc_components_tab NEXT str = |{ str }| &&
+              |{ COND #( WHEN str IS NOT INITIAL THEN ` / ` ) }{ <comp2>-name } ({ <comp2>-type->type_kind })| ) }|
+              INTO TABLE str_tab.
+
+              "Checking if the structure has includes
+              DATA(struc_has_include) = struc->has_include.
+              INSERT |{ tabix } Has include: "{ struc_has_include }"| INTO TABLE str_tab.
+              IF struc_has_include = abap_true.
+                "Returning the included view
+                "Check the class documentation for more information
+                DATA(struc_incl_view) = struc->get_included_view( ).
+                INSERT |{ tabix } Included view: | &&
+                |{ REDUCE string( INIT str = `` FOR <comp3> IN struc_incl_view NEXT str = |{ str }| &&
+                |{ COND #( WHEN str IS NOT INITIAL THEN `, ` ) }{ <comp3>-name }| ) }|
+                INTO TABLE str_tab.
+
+                "Returning component names of all components and substructures in included
+                "structures that contain included structures
+                DATA(struc_all_incl) = struc->get_symbols( ).
+                INSERT |{ tabix } Included view: | &&
+                |{ REDUCE string( INIT str = `` FOR <comp4> IN struc_all_incl NEXT str = |{ str }| &&
+                |{ COND #( WHEN str IS NOT INITIAL THEN `, ` ) }{ <comp4>-name }| ) }|
+                INTO TABLE str_tab.
+              ENDIF.
+
+              "Checking the type compatibility of the data object
+              DATA struct_test TYPE zdemo_abap_carr.
+              DATA struct_rap_test TYPE STRUCTURE FOR CREATE zdemo_abap_rap_ro_m.
+              DATA(applies_struc1) = struc->applies_to_data( struct_test ).
+              DATA(applies_struc2) = struc->applies_to_data( struct_rap_test ).
+              DATA(applies_struc3) = struc->applies_to_data_ref( REF #( struct_test ) ).
+              DATA(applies_struc4) = struc->applies_to_data_ref( REF #( struct_rap_test ) ).
+
+              INSERT |{ tabix } Applies: 1) "{ applies_struc1 }" 2) "{ applies_struc2 }" | &&
+              |3) "{ applies_struc3 }" 4) "{ applies_struc4 }"| INTO TABLE str_tab.
+
+              "Dynamically creating data objects based on the ...
+              TRY.
+                  "... absolute name
+                  CREATE DATA dyn_dobj TYPE (absolute_name).
+                  "Assigning the value to the dynamically created data object
+                  dyn_dobj->* = type->*.
+
+                  "... type description object
+                  CREATE DATA dyn_dobj TYPE HANDLE struc.
+                  dyn_dobj->* = type->*.
+                  INSERT |{ tabix } Dynamic data objects created, assignments done| INTO TABLE str_tab.
+                CATCH cx_root INTO DATA(err_struc).
+                  INSERT |{ tabix } Dynamic data object creation error: { err_struc->get_text( ) }| INTO TABLE str_tab.
+              ENDTRY.
+
+              "-----------------------------------------------------------------------
+              "----------------------- Table types ------------------------------
+              "-----------------------------------------------------------------------
+            ELSEIF tdo IS INSTANCE OF cl_abap_tabledescr.
+              INSERT |{ tabix } Is instance of cl_abap_tabledescr| INTO TABLE str_tab.
+
+              DATA(tab) = CAST cl_abap_tabledescr( tdo ).
+
+              "Getting the table kind
+              "For the constant values of type abap_tablekind, see cl_abap_tabledescr. For example, 'S'
+              "stands for a standard table.
+              DATA(tab_table_kind) = tab->table_kind.
+              INSERT |{ tabix } Table kind: { tab_table_kind }| INTO TABLE str_tab.
+
+              "Checking if the table has a unique key
+              DATA(tab_has_unique_key) = tab->has_unique_key.
+              INSERT |{ tabix } Has a unique key: "{ tab_has_unique_key }" | &&
+              |{ COND #( WHEN tab_has_unique_key IS INITIAL THEN `(no unique key)` ) }| INTO TABLE str_tab.
+
+              "Returning a table with the names of internal table keys
+              DATA(tab_table_key) = tab->key.
+              INSERT |{ tabix } Table keys: { REDUCE string( INIT str = `` FOR <key1> IN tab_table_key NEXT str = |{ str }| &&
+              |{ COND #( WHEN str IS NOT INITIAL THEN `, ` ) }{ <key1>-name }| ) }| INTO TABLE str_tab.
+
+              "Returning a table with a description of all table keys, e.g. all components of a key,
+              "key kind (U, unique, in the example case), information whether the key is the primary
+              "key etc. For the constant values, see the cl_abap_tabledescr class.
+              DATA(tab_keys) = tab->get_keys( ).
+
+              INSERT |{ tabix } Table keys: { REDUCE string( INIT str = `` FOR <key2> IN tab_keys NEXT str = |{ str }| &&
+              |{ COND #( WHEN str IS NOT INITIAL THEN `, ` ) }{ REDUCE string( INIT str2 = `` FOR <key3> IN <key2>-components NEXT str2 = |{ str2 }| &&
+              |{ COND #( WHEN str2 IS NOT INITIAL THEN `/` ) }{ <key3>-name }| ) } (is primary: "{ <key2>-is_primary }", |  &&
+              |is unique: "{ <key2>-is_unique }", key kind: "{ <key2>-key_kind }", access kind: "{ <key2>-access_kind }")| ) }|
+              INTO TABLE str_tab.
+
+              DATA(tab_keys_aliases) = tab->get_key_aliases( ).
+              IF tab_keys_aliases IS NOT INITIAL.
+                INSERT |{ tabix } Table key aliases: { REDUCE string( INIT str = `` FOR <key4> IN tab_keys_aliases NEXT str = |{ str }| &&
+                |{ COND #( WHEN str IS NOT INITIAL THEN `, ` ) }{ <key4>-name } (table key) -> { <key4>-alias } (alias)| ) }|  INTO TABLE str_tab.
+              ENDIF.
+
+              "If you want to get information about the line type, e.g. finding out about the component
+              "names, another cast is required. First, getting a reference to the type description object
+              "for the structured type.
+              DATA(tab_line_type) = tab->get_table_line_type( ).
+
+              "Then, performing a cast to access the component information as shown above.
+              "Note that the line type can also be of types other than structured line types.
+              IF tab_line_type IS INSTANCE OF cl_abap_structdescr.
+                DATA(tab_line_info) = CAST cl_abap_structdescr( tab_line_type ).
+                "See more options for structures above.
+                DATA(tab_comps) = tab_line_info->components.
+                INSERT |{ tabix } Table components: { REDUCE string( INIT str = `` FOR <comp> IN tab_comps NEXT str = |{ str }| &&
+                |{ COND #( WHEN str IS NOT INITIAL THEN ` / ` ) }{ <comp>-name } ({ <comp>-type_kind })| ) }| INTO TABLE str_tab.
+
+              ELSEIF tab_line_type IS INSTANCE OF cl_abap_elemdescr.
+                DATA(tab_elem_line_type) = CAST cl_abap_elemdescr( tab_line_type ).
+                DATA(tab_elem_line_type_kind) = tab_elem_line_type->type_kind.
+                INSERT |{ tabix } Elementary line type, type kind: { tab_elem_line_type_kind }| INTO TABLE str_tab.
+              ENDIF.
+
+              "Checking the type compatibility of the data object
+              DATA tab_test1 TYPE string_table.
+              DATA tab_test2 TYPE tab_type.
+
+              DATA(applies_tab1) = tab->applies_to_data( tab_test1 ).
+              DATA(applies_tab2) = tab->applies_to_data( tab_test2 ).
+              DATA(applies_tab3) = tab->applies_to_data_ref( REF #( tab_test1 ) ).
+              DATA(applies_tab4) = tab->applies_to_data_ref( REF #( tab_test2 ) ).
+
+              INSERT |{ tabix } Applies: 1) "{ applies_tab1 }" 2) "{ applies_tab2 }" | &&
+              |3) "{ applies_tab3 }" 4) "{ applies_tab4 }"| INTO TABLE str_tab.
+
+              "Dynamically creating data objects based on the ...
+              TRY.
+                  "... absolute name
+                  CREATE DATA dyn_dobj TYPE (absolute_name).
+                  dyn_dobj->* = type->*.
+                  "... type description object
+
+                  CREATE DATA dyn_dobj TYPE HANDLE tab.
+                  dyn_dobj->* = type->*.
+                  INSERT |{ tabix } Dynamic data objects created, assignments done| INTO TABLE str_tab.
+                CATCH cx_root INTO DATA(err_tab).
+                  INSERT |{ tabix } Dynamic data object creation error: { err_tab->get_text( ) }| INTO TABLE str_tab.
+              ENDTRY.
+            ENDIF.
+          ENDIF.
+
+          "Object types
+        WHEN TYPE cl_abap_objectdescr.
+          INSERT |{ tabix } Is instance of cl_abap_objectdescr| INTO TABLE str_tab.
+
+          "In this example, reference variables are used to retrieve type information of their dynamic type.
+          "Here, and to find out about the dynamic type the reference refers to (i.e. class or interface), a cast
+          "with cl_abap_refdescr and calling the get_referenced_type method is used to also find out about the
+          "instance of cl_abap_intfdescr. In this example, the dynamic type in 'type->*' is evaluated, which is
+          "cl_abap_classdescr for both because the interface reference variable was assigned accordingly above.
+          DATA(referenced_type) = CAST cl_abap_refdescr( cl_abap_typedescr=>describe_by_data( type->* ) )->get_referenced_type( ).
+
+          "-----------------------------------------------------------------------
+          "----------------------- Class descriptions ------------------------------
+          "-----------------------------------------------------------------------
+          IF referenced_type IS INSTANCE OF cl_abap_classdescr.
+            INSERT |{ tabix } Is instance of cl_abap_classdescr| INTO TABLE str_tab.
+
+            DATA(obj_ref) = CAST cl_abap_classdescr( tdo ).
+
+            "Getting the class kind
+            "For the constant values of type abap_classkind, see cl_abap_classdescr.
+            "Common, simple class (C), abstract class (A), final class (F)
+            DATA(obj_ref_class_kind) = obj_ref->class_kind.
+
+            "Getting class attributes
+            "You can check the following table in the debugger. There is plenty of information available
+            "such as type kind, constant, read only etc.
+            "The example writes the names, the visibility and static or instance attribute (is_class = abap_true
+            "means it is a static attribute) to the string table.
+            DATA(obj_ref_attributes) = obj_ref->attributes.
+
+            INSERT |{ tabix } Attributes: { REDUCE string( INIT str = `` FOR <attr> IN obj_ref_attributes NEXT str = |{ str }| &&
+            |{ COND #( WHEN str IS NOT INITIAL THEN `, ` ) }{ <attr>-name } (vis: "{ <attr>-visibility }", static: "{ <attr>-is_class }")| ) }|
+            INTO TABLE str_tab.
+
+            "Getting the interfaces implemented
+            DATA(obj_ref_interfaces) = obj_ref->interfaces.
+            INSERT |{ tabix } Interfaces: { REDUCE string( INIT str = `` FOR <intf> IN obj_ref_interfaces NEXT str = |{ str }| &&
+            |{ COND #( WHEN str IS NOT INITIAL THEN `, ` ) }{ <intf>-name }| ) }| INTO TABLE str_tab.
+
+            "Getting information about the methods
+            "You can check the following table in the debugger. There is plenty of information available
+            "such as parameters, visibility, abstract/final, static/instance and more.
+            "The example only writes the method names to the string table.
+            DATA(obj_ref_methods) = obj_ref->methods.
+            INSERT |{ tabix } Methods: { REDUCE string( INIT str = `` FOR <meth> IN obj_ref_methods NEXT str = |{ str }| &&
+            |{ COND #( WHEN str IS NOT INITIAL THEN `, ` ) }{ <meth>-name }| ) }| INTO TABLE str_tab.
+
+            "Getting a reference to the type description object and the absolute name
+            "of the superclass
+            "In this example, it is the root class object OBJECT.
+            DATA(obj_ref_super_class) = obj_ref->get_super_class_type( ).
+            DATA(obj_ref_super_class_name) = obj_ref_super_class->absolute_name.
+            INSERT |{ tabix } Super class: { obj_ref_super_class_name }| INTO TABLE str_tab.
+
+            "Checking the type compatibility of the object
+            DATA(oref_test1) = NEW zcl_demo_abap_objects( ).
+            DATA(oref_test2) = NEW cl_system_uuid( ).
+
+            DATA(applies_obj1) = obj_ref->applies_to( oref_test1 ).
+            DATA(applies_obj2) = obj_ref->applies_to( oref_test2 ).
+            DATA(applies_obj3) = obj_ref->applies_to_class( 'ZCL_DEMO_ABAP_OBJECTS' ).
+            DATA(applies_obj4) = obj_ref->applies_to_class( 'CL_SYSTEM_UUID' ).
+
+            INSERT |{ tabix } Applies: 1) "{ applies_obj1 }" 2) "{ applies_obj2 }" | &&
+            |3) "{ applies_obj3 }" 4) "{ applies_obj4 }"| INTO TABLE str_tab.
+
+            "Dynamically creating objects based on the absolute name
+            TRY.
+                CREATE OBJECT dyn_obj TYPE (absolute_name).
+                INSERT |{ tabix } Dynamic object created| INTO TABLE str_tab.
+              CATCH cx_sy_create_object_error INTO DATA(err_obj).
+                INSERT |{ tabix } Dynamic object creation error: { err_obj->get_text( ) }| INTO TABLE str_tab.
+            ENDTRY.
+
+            "The following example shows dynamically accessing public class attributes using the
+            "dynamically created object. The names and the attribute content are added to the string table.
+            "In this example (using an ABAP cheat sheet class), all attributes are convertible to string.
+            IF  absolute_name CS '\CLASS=ZCL_DEMO_ABAP_OBJECTS' AND err_obj IS INITIAL.
+              INSERT |{ tabix } Dynamic attribute access: { REDUCE string( INIT str = `` FOR <m> IN obj_ref_attributes NEXT str = |{ str }| &&
+              |{ COND #( WHEN str IS NOT INITIAL AND <m>-visibility = 'U' THEN ` / ` ) }| &&
+              |{ COND #( WHEN <m>-visibility = 'U' THEN <m>-name && ` ("` && CONV string( dyn_obj->(<m>-name) ) && `")` ) }| ) }|
+              INTO TABLE str_tab.
+            ENDIF.
+
+            "-----------------------------------------------------------------------
+            "----------------------- Interface descriptions ------------------------------
+            "-----------------------------------------------------------------------
+          ELSEIF referenced_type IS INSTANCE OF cl_abap_intfdescr.
+            INSERT |{ tabix } Is instance of cl_abap_intfdescr| INTO TABLE str_tab.
+
+            "In the example, the checked reference variable points to the class
+            "as the interface reference variable was assigned an instance of a class.
+            "Therefore, the example here does not work with 'tdo' but with the type
+            "description object 'referenced_type'. With 'referenced_type', the
+            "interface-specific information can be accessed using a cast.
+            DATA(intf) = CAST cl_abap_intfdescr( referenced_type ).
+
+            "Getting the absolute name
+            DATA(intf_abs_name) = intf->absolute_name.
+            INSERT |{ tabix } Absolute name (via cl_abap_intfdescr): { intf_abs_name }| INTO TABLE str_tab.
+
+            "Relative name
+            DATA(intf_rel_name) = intf->get_relative_name( ).
+            INSERT |{ tabix } Relative name (via cl_abap_intfdescr): { intf_rel_name }| INTO TABLE str_tab.
+
+            "Type kind
+            "For the constant values of type abap_typekind, see cl_abap_typedescr.
+            "+ stands for the internal type interface.
+            DATA(intf_type_kind) = intf->type_kind.
+            INSERT |{ tabix } Type kind (via cl_abap_intfdescr): { intf_type_kind }| INTO TABLE str_tab.
+
+            "Type category
+            "For the constant values of type abap_typecategory, see cl_abap_typedescr.
+            "I stands for interface.
+            DATA(intf_type_category) = intf->kind.
+            INSERT |{ tabix } Type category (via cl_abap_intfdescr): { intf_type_category }| INTO TABLE str_tab.
+
+            "Interface type
+            "For the constant values of type abap_intfkind, see cl_abap_intfdescr.
+            "F stands for flat interface
+            DATA(intf_type) = intf->intf_kind.
+            INSERT |{ tabix } Interface type: { intf_type }| INTO TABLE str_tab.
+
+            "Interface attributes
+            DATA(intf_attributes) = intf->attributes.
+            INSERT |{ tabix } Attributes: { REDUCE string( INIT str = `` FOR <attrintf> IN intf_attributes NEXT str = |{ str }| &&
+            |{ COND #( WHEN str IS NOT INITIAL THEN `, ` ) }{ <attrintf>-name } (vis: "{ <attrintf>-visibility }", | &&
+            |static: "{ <attrintf>-is_class }")| ) }| INTO TABLE str_tab.
+
+            "Interface methods
+            "You can check the following table in the debugger. There is plenty of information available
+            "such as parameters, visibility , abstract/final, static/instance, and more.
+            "The example only writes the methods names to the string table.
+            DATA(intf_methods) = intf->methods.
+            INSERT |{ tabix } Methods: { REDUCE string( INIT str = `` FOR <methintf> IN intf_methods NEXT str = |{ str }| &&
+            |{ COND #( WHEN str IS NOT INITIAL THEN `, ` ) }{ <methintf>-name }| ) }| INTO TABLE str_tab.
+
+            "Checking the type compatibility
+            DATA(intf_test1) = NEW zcl_demo_abap_objects( ).
+            DATA(intf_test2) = NEW cl_system_uuid( ).
+
+            DATA(applies_intf1) = intf->applies_to( intf_test1 ).
+            DATA(applies_intf2) = intf->applies_to( intf_test2 ).
+            DATA(applies_intf3) = intf->applies_to_class( 'ZCL_DEMO_ABAP_OBJECTS' ).
+            DATA(applies_intf4) = intf->applies_to_class( 'CL_SYSTEM_UUID' ).
+
+            INSERT |{ tabix } Applies: 1) "{ applies_intf1 }" 2) "{ applies_intf2 }"| &&
+            | 3) "{ applies_intf3 }" 4) "{ applies_intf4 }"| INTO TABLE str_tab.
+
+            "Creating an interface reference variable dynamically
+            TRY.
+                CREATE DATA dyn_dobj TYPE REF TO (intf_abs_name).
+                INSERT |{ tabix } Dynamic data object created| INTO TABLE str_tab.
+              CATCH cx_sy_create_data_error INTO DATA(err_intf).
+                INSERT |{ tabix } Dynamic data object creation error: { err_intf->get_text( ) }| INTO TABLE str_tab.
+            ENDTRY.
+
+            "The following example shows dynamically creating an object which is assigned to the
+            "previously created interface reference variable. Artifacts of the ABAP cheat sheet repository
+            "are used.
+            IF intf_abs_name CS '\INTERFACE=ZDEMO_ABAP_OBJECTS_INTERFACE'
+            AND absolute_name CS '\CLASS=ZCL_DEMO_ABAP_OBJECTS'
+            AND err_intf IS INITIAL.
+              TRY.
+                  CREATE OBJECT dyn_dobj->* TYPE (absolute_name).
+                  INSERT |{ tabix } Dynamic object created| INTO TABLE str_tab.
+                CATCH cx_sy_create_object_error INTO err_obj.
+                  INSERT |{ tabix } Dynamic object creation error: { err_obj->get_text( ) }| INTO TABLE str_tab.
+              ENDTRY.
+            ENDIF.
+          ENDIF.
+      ENDCASE.
+      INSERT `-----------------------------------` INTO TABLE str_tab.
+    ENDLOOP.
+    out->write( str_tab ).
+
+**********************************************************************
+
+    "----------- Exploring the describe_by_name method -----------
+    "The method returns a type description object when providing the relative or
+    "absolute name of a type.
+    "The following example explores the RTTI type hierarchy based on relative names
+    "and using the describe_by_name method. Similar to the example above, an internal
+    "table that is filled with local and global type names instead of data objects is
+    "looped over. The information retrieval can be performed via the type description
+    "object as above, but it is not implemented here.
+
+    CLEAR str_tab.
+    DATA tdo_from_type_name TYPE REF TO cl_abap_typedescr.
+
+    "Data types of different kinds based on which type
+    "information shall be retrieved
+    "Elementary type
+    TYPES packed TYPE p LENGTH 8 DECIMALS 2.
+
+    "Enumeration type
+    TYPES: BEGIN OF ENUM enum_type,
+             enum_a,
+             enum_b,
+             enum_c,
+           END OF ENUM enum_type.
+
+    "Structured types
+    TYPES: BEGIN OF flat_struc_type,
+             a TYPE c LENGTH 3,
+             b TYPE i,
+             c TYPE decfloat34,
+           END OF flat_struc_type.
+
+    TYPES str_der_type TYPE STRUCTURE FOR CREATE zdemo_abap_rap_ro_m.
+
+    "Internal table types
+    TYPES int_tab_type TYPE TABLE OF i WITH EMPTY KEY.
+    TYPES sorted_tab_type TYPE SORTED TABLE OF flat_struc_type WITH UNIQUE KEY a WITH NON-UNIQUE SORTED KEY sec_key ALIAS sk COMPONENTS b c.
+    TYPES itab_der_type TYPE TABLE FOR UPDATE zdemo_abap_rap_ro_m.
+
+    "Reference types
+    TYPES int_dref_type TYPE REF TO i.
+    TYPES gen_dref_type TYPE REF TO data.
+    "Class and interface names are specified directly
+
+    DATA(type_names) = VALUE string_table( ( `PACKED` ) "Elementary type (1)
+                                           ( `TIMESTAMPL` ) "Elementary type, global DDIC type/data element (2)
+                                           ( `ENUM_TYPE` ) "Enumeration type (3)
+                                           ( `FLAT_STRUC_TYPE` ) "Structured type, flat structure (4)
+                                           ( `STR_DER_TYPE` )  "Structured type, BDEF derived type (5)
+                                           ( `INT_TAB_TYPE` ) "Table type, elementary line type (6)
+                                           ( `SORTED_TAB_TYPE` )  "Table type, structured line type (7)
+                                           ( `ITAB_DER_TYPE` )  "Table type, BDEF derived type (8)
+                                           ( `INT_DREF_TYPE` )  "Reference type (9)
+                                           ( `GEN_DREF_TYPE` )  "Reference type, generic type (10)
+                                           ( `CL_ABAP_TYPEDESCR` )  "Class name (11)
+                                           ( `CL_ABAP_CORRESPONDING` )  "Class name (12)
+                                           ( `IF_OO_ADT_CLASSRUN` )  "Interface name (13)
+                                           ( `ZDEMO_ABAP_OBJECTS_INTERFACE` )  "Interface name (14)
+                                         ).
+
+    LOOP AT type_names INTO DATA(type_name).
+      DATA(tabix_type_names) = sy-tabix.
+      tdo_from_type_name = cl_abap_typedescr=>describe_by_name( type_name ).
+      CASE TYPE OF tdo_from_type_name.
+        WHEN TYPE cl_abap_datadescr.
+          INSERT |{ tabix_type_names } Is instance of cl_abap_datadescr| INTO TABLE str_tab.
+          CASE TYPE OF tdo_from_type_name.
+            WHEN TYPE cl_abap_elemdescr.
+              INSERT |{ tabix_type_names } Is instance of cl_abap_elemdescr| INTO TABLE str_tab.
+              IF tdo_from_type_name IS INSTANCE OF cl_abap_enumdescr.
+                INSERT |{ tabix_type_names } Is instance of cl_abap_enumdescr| INTO TABLE str_tab.
+              ENDIF.
+            WHEN TYPE cl_abap_complexdescr.
+              INSERT |{ tabix_type_names } Is instance of cl_abap_complexdescr| INTO TABLE str_tab.
+              CASE TYPE OF tdo_from_type_name.
+                WHEN TYPE cl_abap_structdescr.
+                  INSERT |{ tabix_type_names } Is instance of cl_abap_structdescr| INTO TABLE str_tab.
+                WHEN TYPE cl_abap_tabledescr.
+                  INSERT |{ tabix_type_names } Is instance of cl_abap_tabledescr| INTO TABLE str_tab.
+              ENDCASE.
+            WHEN TYPE cl_abap_refdescr.
+              INSERT |{ tabix_type_names } Is instance of cl_abap_refdescr| INTO TABLE str_tab.
+          ENDCASE.
+        WHEN TYPE cl_abap_objectdescr.
+          INSERT |{ tabix_type_names } Is instance of cl_abap_objectdescr| INTO TABLE str_tab.
+          CASE TYPE OF tdo_from_type_name.
+            WHEN TYPE cl_abap_classdescr.
+              INSERT |{ tabix_type_names } Is instance of cl_abap_classdescr| INTO TABLE str_tab.
+            WHEN TYPE cl_abap_intfdescr.
+              INSERT |{ tabix_type_names } Is instance of cl_abap_intfdescr| INTO TABLE str_tab.
+          ENDCASE.
+      ENDCASE.
+      INSERT `-----------------------------------` INTO TABLE str_tab.
+    ENDLOOP.
+    out->write( |\n*************************************************************\n\n| ).
+    out->write( str_tab ).
+  ENDMETHOD.
+ENDCLASS.
 ```
 
-Excursions: 
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+#### Excursion: Inline Declaration, CAST Operator, Method Chaining
+
+As shown in the example above, you can use inline declaration, the `CAST` operator for casting, and method chaining to write more concise code and avoid declaring helper variables. However, also consider the code's debuggability, maintainability, and readability.
 
 ```abap
-"Casting and method chaining as above in contrast to the following 
-"extra declarations. If the variables were not declared inline as 
-"in the example, there would be even more lines of code.
+DATA some_struc TYPE zdemo_abap_carr.
+
+"An example as follows ...
 DATA(a) = cl_abap_typedescr=>describe_by_data( some_struc ).
 DATA(b) = CAST cl_abap_structdescr( a ).
-DATA(c) = b->components.  
+DATA(c) = b->components.
 
-"get_included_view method: Getting type information of included 
-"components, e.g. in case of deep structures
-TYPES: BEGIN OF st,
-         a TYPE i, "elementary type
-         b TYPE zdemo_abap_carr, "structure
-         c TYPE string_table, "internal table
-       END OF st.
+"... instead of:
+DATA d TYPE REF TO cl_abap_typedescr.
+DATA e TYPE REF TO cl_abap_structdescr.
+DATA f TYPE abap_compdescr_tab.
+d = cl_abap_typedescr=>describe_by_data( some_struc ).
+e = CAST cl_abap_structdescr( d ).
+f = e->components.
 
-DATA(type_descr) = CAST cl_abap_structdescr(
-  cl_abap_typedescr=>describe_by_name( 'ST' ) )->get_included_view( ).
+"The same in one statement
+DATA(g) = CAST cl_abap_structdescr( cl_abap_typedescr=>describe_by_data( some_struc ) )->components.
 
-"As mentioned earlier about type name specifications for statements 
-"such as CREATE DATA, in addition to character-like data objects for 
-"the type name specified in the parentheses, you can also use absolute 
-"type names.
+ASSERT c = f.
+ASSERT c = g.
+ASSERT f = g.
+```
 
-"Type to refer to 
-TYPES type4abs TYPE p LENGTH 4 DECIMALS 3.
+#### Absolute Names
 
+As mentioned earlier about type name specifications for statements such as `CREATE DATA` and `CREATE OBJECT`, and as shown in the previous example, in addition to character-like data objects for the type name (the [relative type name](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrelative_type_name_glosry.htm)) specified in the parentheses, you can also use [absolute type names](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabsolute_typename_glosry.htm).
+
+
+> **💡 Note**<br>
+> In [ABAP for Cloud Development](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_for_cloud_dev_glosry.htm), absolute names having the pattern `\TYPE=%_...` (an internal technical name that is available for [bound data types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbound_data_type_glosry.htm); bound data types do not have a relative name) cannot be used for the dynamic creation. 
+
+
+```abap
+"Local type to refer to
+TYPES type4abs TYPE p LENGTH 8 DECIMALS 2.
 "Data and object reference variables with generic types
 DATA dref4abs TYPE REF TO data.
 DATA oref4abs TYPE REF TO object.
 
-"Getting absolute names
-DATA(abs_name_type) = cl_abap_typedescr=>describe_by_name( 
-   'TYPE4ABS' )->absolute_name.
+"----------- Getting absolute names -----------
+DATA(abs_name_type) = cl_abap_typedescr=>describe_by_name(
+    'TYPE4ABS' )->absolute_name.
 DATA(abs_name_cl) = cl_abap_typedescr=>describe_by_name(
-   'ZCL_DEMO_ABAP_DYNAMIC_PROG' )->absolute_name.
+    'ZCL_DEMO_ABAP_DYNAMIC_PROG' )->absolute_name.
 
-"Data references
+"----------- Data references -----------
 "Named data object holding the absolute name
 CREATE DATA dref4abs TYPE (abs_name_type).
 
 "Unnamed data object
 CREATE DATA dref4abs TYPE ('\TYPE=STRING').
 
-"Object references
+"----------- Object references -----------
 "Named data object
 CREATE OBJECT oref4abs TYPE (abs_name_cl).
 
 "Unnamed data object
 CREATE OBJECT oref4abs TYPE ('\CLASS=ZCL_DEMO_ABAP_DYNAMIC_PROG').
+
+"----------- Using relative names -----------
+CREATE DATA dref4abs TYPE ('TYPE4ABS').
+CREATE OBJECT oref4abs TYPE ('ZCL_DEMO_ABAP_DYNAMIC_PROG').
+
+"----------- Using bound data types -----------
+DATA packed_dobj TYPE p LENGTH 8 DECIMALS 2.
+abs_name_type = cl_abap_typedescr=>describe_by_data( 
+  packed_dobj )->absolute_name.
+
+"In ABAP for Cloud Development, an exception is raised.
+TRY.
+    CREATE DATA dref4abs TYPE (abs_name_type).
+  CATCH cx_sy_create_data_error.
+ENDTRY.
 ```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>

@@ -16,7 +16,7 @@ It provides references to more detailed information on the topic.
 
 - ABAP Cloud 
   - Progamming paradigm for state-of-the-art, cloud-ready and upgrade-stable solutions 
-  - Based on a usage type of the [ABAP Platform](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_platform_glosry.htm), where the following restrictions apply:
+  - ABAP technology (the entire technology provided for and by an ABAP system for developing and executing ABAP-based applications) is used with the following restrictions:
     - [ABAP language version](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_version_glosry.htm): 
       - The available ABAP language version is [ABAP for Cloud Development](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_for_cloud_dev_glosry.htm) that presents a [restricted ABAP language version](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrestricted_version_glosry.htm).
     - [Released APIs](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenreleased_api_glosry.htm):
@@ -28,10 +28,10 @@ It provides references to more detailed information on the topic.
       - [ABAP development tools for Eclipse (ADT)](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenadt_glosry.htm) are the only supported tools 
       - There is no access to SAP GUI (transactions `SE80`, `SE24` etc. you may know from classic ABAP)
   - The [ABAP RESTful Application Programming Model (RAP)](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenarap_glosry.htm) is the transactional programming model for ABAP Cloud.
-  - Supported in both [SAP BTP ABAP Environment](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensap_btp_abap_env_glosry.htm) and [ABAP Platform Cloud](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_platform_cloud_glosry.htm).
+  - Supported in all SAP products that are based on ABAP technology (in the products it can be fully or partly mandatory).
 - Classic ABAP
   - Progamming paradigm for legacy solutions
-  - Based on an ABAP Platform without restrictions regarding ABAP language versions (i.e. you can use [Standard ABAP](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenstandard_abap_glosry.htm) - the unrestricted ABAP language version - and also ABAP for Cloud Development there), usage of tools (ADT and/or SAP GUI) or access to repository objects (also objects provided by SAP). 
+  - Based on the ABAP technology without restrictions regarding ABAP language versions (i.e. you can use [Standard ABAP](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenstandard_abap_glosry.htm) - the unrestricted ABAP language version - and also ABAP for Cloud Development there), usage of tools (ADT and/or SAP GUI) or access to repository objects (also objects provided by SAP). 
   - Supported in [SAP S/4HANA](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensap_s4hana_glosry.htm)
 
 
@@ -53,21 +53,22 @@ It provides references to more detailed information on the topic.
    
     ![Release contract](./files/release_contract.png)
 
-    For deprecated and invalid syntax in ABAP for Cloud Development, see the following code.
-    For example, create a demo class and insert the code contained in the implementation into the `if_oo_adt_classrun~main` method. You will see several syntax errors.
 
-    > **💡 Note**<br>
-    > - The `IF_OO_ADT_CLASSRUN` interface is a released API. As the name implies, you can implement this interface to run an ABAP class. In ADT you can do this with *F9*. Of course, the example below will not run. The class cannot be activated because of the syntax errors. Note: To output the content of data objects, you can use `out->write( ... ).` in the `main` method.
-    > - About the errros/warnings:
-    >   - The first two ABAP SQL statements select from demo database tables. The first is a demo table provided by SAP. This table is not directly accessible in ABAP Cloud (unlike in classic ABAP) and therefore cannot be used as a data source to select from. The second one is a database table from the ABAP cheat sheet GitHub repository. If you have imported the repository into the system, you can use it as a data source.
-    >   - The next set of ABAP SQL statements are dynamic statements. This is just to emphasize that you should be careful with dynamic statements. You will not get a syntax error at compile time. You can try out the following: Comment out all code except the lines with the dynamic statements, activate the code and run the class with `F9`. The result is a [runtime error](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenruntime_error_glosry.htm) because you cannot select from the data source.
-    >   - Examples for deprecated and invalid syntax in ABAP for Cloud Development are included. Among them, the invalid statement `MOVE ... TO` and others which are just included for demonstration purposes. To set breakpoints in ADT, double-click the area to the left of the code line number.
+    For deprecated and invalid syntax in ABAP for Cloud Development, refer to the following example code. You can create a demo class and insert the code below (adjust the class name if necessary). Several syntax errors and warnings will be displayed: 
+    - ABAP SQL statements 
+      - The first two ABAP SQL statements select from demo database tables. The first one is a demo table provided by SAP, but it cannot be accessed directly in ABAP Cloud like in classic ABAP. Therefore, it cannot be used as a data source for selection. 
+      - The second one is a database table from the ABAP cheat sheet GitHub repository. If you have imported the repository into the system, you can use it as a data source. 
+      - The CDS view is released and can be accessed in the restricted ABAP language scope. 
+      - Although the source code provides an invalid data source, the dynamic ABAP SQL statement does not produce a syntax error during compilation. However, it would result in a runtime error because you cannot select from that data source. You can check the validity of dynamic specifications using the `cl_abap_dyn_prg` class, which supports dynamic programming. 
+      - The addition `USING CLIENT` for client handling is not allowed in the restricted ABAP language scope. 
+    - When using APIs and types like `string_table`, ensure that they are released. The `IF_OO_ADT_CLASSRUN` interface is released, and you can implement it to run an ABAP class. In ADT, you can do this by choosing *F9*. However, the example class will not run because the class cannot be activated due to the syntax errors. To output the content of data objects, you can use `out->write( ... )` in the `main` method. 
+    - The example includes a selection of deprecated and invalid syntax in ABAP for Cloud Development. It includes the invalid statement `MOVE ... TO` and others that are included for demonstration purposes (some alternatives are provided). Certain system fields should not be accessed. The pointless `WRITE` statement within the method implementation represents invalid classic ABAP UI-related statements. Executable programs (*reports*) are not allowed in the restricted ABAP language scope. To set breakpoints in ADT, double-click the area to the left of the code line number.
 
     ```abap
     CLASS zcl_some_class DEFINITION
-      PUBLIC
-      FINAL
-      CREATE PUBLIC .
+          PUBLIC
+          FINAL
+          CREATE PUBLIC .
 
       PUBLIC SECTION.
         INTERFACES if_oo_adt_classrun.
@@ -75,49 +76,53 @@ It provides references to more detailed information on the topic.
 
     CLASS zcl_some_class IMPLEMENTATION.
       METHOD if_oo_adt_classrun~main.
-        "ABAP SQL statements using database tables as data sources
-        "Data source that cannot be accessed in ABAP Cloud
+        "ABAP SQL statements
+        "Using database tables and CDS views as data sources
         SELECT carrid, connid FROM spfli WHERE carrid = 'LH' INTO TABLE @DATA(it1).
-        
-        "Data source that can be accessed in ABAP Cloud if you have imported 
-        "the ABAP cheat sheet repository objects
         SELECT carrid, connid FROM zdemo_abap_fli WHERE carrid = 'LH' INTO TABLE @DATA(it2).
-        
+        SELECT SINGLE * FROM i_timezone WHERE TimeZoneID = 'EST' INTO @DATA(tz_info).
         "Dynamic ABAP SQL statements
-        "No syntax error will be displayed for the dynamic statements. 
-        "However, a runtime error will occur when running the class (in ABAP Cloud). 
-        "Note: Check out the CL_ABAP_DYN_PRG class, which supports dynamic programming 
-        "by checking the validity of dynamic specifications.
         SELECT SINGLE carrid, connid FROM ('SPFLI') WHERE carrid = 'LH' INTO NEW @DATA(ref_a).
-        "No runtime error if you have imported the ABAP cheat sheet repository objects.
         SELECT SINGLE carrid, connid FROM ('ZDEMO_ABAP_FLI') WHERE carrid = 'LH' INTO NEW @DATA(ref_b).
+        "ABAP SQL Statement involving client handling
+        DATA(clnt) = sy-mandt.
+        SELECT carrid, connid FROM zdemo_abap_fli USING CLIENT @clnt WHERE carrid = 'LH' INTO TABLE @DATA(it3).
 
-        "Examples for deprecated and invalid syntax in ABAP for Cloud Development  
+        "(Not) released APIs
+        "Getting a random integer
+        DATA(random_num) = cl_abap_random_int=>create( seed = cl_abap_random=>seed( )
+                                                      min  = 1
+                                                      max  = 100 )->get_next( ).
+
+        "Possible alternatives to the system fields used below
+        DATA(sys_date) = cl_abap_context_info=>get_system_date( ).
+        DATA(sys_time) = cl_abap_context_info=>get_system_time( ).
+
+        "Querying whether the current database supports AMDP methods
+        DATA(amdp_allowed) = xsdbool( cl_abap_dbfeatures=>use_features(
+          EXPORTING requested_features = VALUE #( ( cl_abap_dbfeatures=>call_amdp_method ) ) ) ).
+
+        "Examples for deprecated and invalid syntax in ABAP for Cloud Development
         DATA(num1) = 1.
         DATA(num2) = 1.
         DATA(num3) = 2.
-        "Invalid statement
         MOVE num3 TO num1.
-        "Alternative that can be used
-        num2 = num3. 
+        num2 = num3.
 
-        "Note: This table type is released.
-        DATA(it3) = VALUE string_table( ( `a` ) ( `b` ) ( `c` ) ).
-        "Invalid statement
-        DESCRIBE TABLE it3 LINES DATA(num_lines1).
-        "Alternative that can be used
-        DATA(num_lines2) = lines( it3 ).
+        DATA(it4) = VALUE string_table( ( `a` ) ( `b` ) ( `c` ) ).
+        DESCRIBE TABLE it4 LINES DATA(num_lines1).
+        DATA(num_lines2) = lines( it4 ).
 
         DATA: ref1 TYPE REF TO i,
-              ref2 TYPE REF TO i.    
-        "Deprecated statement
-        GET REFERENCE OF num1 INTO ref1.
-        "Alternative that can be used
-        ref2 = REF #( num1 ). 
+              ref2 TYPE REF TO i.
 
-        DATA str_itab TYPE string_table. 
-        "The following statements are invalid. The pointless WRITE statement here
-        "just represents invalid classic ABAP UI-related statements.
+        GET REFERENCE OF num1 INTO ref1.
+        ref2 = REF #( num1 ).
+
+        DATA(current_time) = sy-uzeit.
+        DATA(current_date) = sy-datum.        
+
+        DATA str_itab TYPE string_table.
         READ REPORT 'ZCL_DEMO_ABAP_UNIT_TEST=======CCAU' INTO str_itab.
         WRITE 'hi'.
         BREAK-POINT.
@@ -164,6 +169,7 @@ It provides references to more detailed information on the topic.
   - [Steampunk is going all-in](https://blogs.sap.com/2021/09/30/steampunk-is-going-all-in/)
   - [Embedded Steampunk – Some more details for ABAP developers](https://blogs.sap.com/2022/09/05/embedded-steampunk-some-more-details-for-abap-developers/)
 - Documentation
+  - [ABAP Cloud: Background Concepts and Overview](https://help.sap.com/docs/abap-cloud/abap-cloud/why-abap-cloud)
   - [ABAP Cloud - Technical Use Cases and Recommended Technologies](https://www.sap.com/documents/2023/05/74fc05e6-747e-0010-bca6-c68f7e60039b.html)
   - [SAP Business Technology Platform](https://help.sap.com/docs/btp/sap-business-technology-platform/sap-business-technology-platform?version=Cloud) on the SAP Help Portal
     - Section [Released Components and Objects](https://help.sap.com/docs/btp/sap-business-technology-platform/released-components-and-objects?version=Cloud) including the topic [XCO Library](https://help.sap.com/docs/btp/sap-business-technology-platform/xco-library?version=Cloud)

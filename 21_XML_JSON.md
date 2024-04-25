@@ -514,7 +514,7 @@ CALL TRANSFORMATION ... SOURCE ...
 
 ## Dealing with JSON
 - You can ..
-  - create and read JSON data in ABAP using the readers and writers in the sXML ibrary. See the processing of XML data in the sXML section above. Parsing and rendering JSON data works in a similar way. However, instead of using XML readers/writers, you use JSON readers/writers.
+  - create and read JSON data in ABAP using the readers and writers in the sXML library. See the processing of XML data in the sXML section above. Parsing and rendering JSON data works in a similar way. However, instead of using XML readers/writers, you use JSON readers/writers.
   - transform ABAP to and from JSON data using transformations. You can directly transform ABAP <-> JSON using identity transformation (ID). In this context, note the intermediate format asJSON (see the notes on asXML above).
   - create and handle JSON data using the [XCO library](https://help.sap.com/docs/btp/sap-business-technology-platform/xco-library?version=Cloud).
 

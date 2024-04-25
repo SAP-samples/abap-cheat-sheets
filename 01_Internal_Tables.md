@@ -1542,7 +1542,7 @@ CLASS zcl_some_class IMPLEMENTATION.
 
     DATA(ts1) = utclong_current( ).
     DO 500 TIMES.
-      "Reading into a data reference variable using using a free key.
+      "Reading into a data reference variable using a free key.
       "This key corresponds to the secondary table key specified for
       "the table in the second example.
       DATA(dref) = REF #( itab[ str = `INDEX250` num = 250 ] ).
