@@ -1,4 +1,6 @@
 @AccessControl.authorizationCheck: #NOT_REQUIRED
+@ClientHandling.type: #CLIENT_DEPENDENT
+@ClientHandling.algorithm: #SESSION_VARIABLE 
 define table function ZDEMO_ABAP_TABLE_FUNCTION
   returns
   {

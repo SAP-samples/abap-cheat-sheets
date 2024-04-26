@@ -380,60 +380,31 @@ You can then use the CDS table function as source for a
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-## More Information
+## More Information 
 
-Notes on using AMDP in environments with restricted language version (in
-contrast unrestricted language version):
+**... on AMDP in ABAP for Cloud Development**
 
-AMDP methods ...
+Find more information in the subtopics of the [ABAP Keyword Documentation (ABAP for Cloud Development)](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenamdp.htm).
 
--   must include the addition <code>OPTIONS READ-ONLY</code> in the
-    declaration part.
--   must be implemented in SQLScript in any case.
--   cannot use the additions [`USING SCHEMA` (F1 documentation for standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapmethod_by_db_proc.htm#!ABAP_ADDITION_5@5@)
-    and [`SUPPRESS SYNTAX ERRORS` (F1 documentation for standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapmethod_by_db_proc.htm#!ABAP_ADDITION_3@3@)
-    in the method implementation part
--   cannot use [AMDP
-    macros](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenamdp_macros.htm)
-    and call hints.
--   can only use your own entities and entities that are released for
-    the restricted language version after <code>USING</code>.
--   cannot use
-    [`CONNECTION` (F1 documentation for standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenamdp_db_connections.htm)
-    parameters.
--   cannot raise the
-    `CX_AMDP_CONNECTION_ERROR` exception since
-    the `CONNECTION` parameter is not allowed.
+> **💡 Note**<br>
+> - In ABAP for Cloud Development, AMDP methods must be client-safe. This means that the SQLScript code should only access artifacts that restrict access to a single client, such as CDS view entities, or are client-independent. Therefore, all objects used in the `USING` list must be client-safe. This also applies to CDS table functions implemented as AMDP methods. Accessing client-dependent data using methods like Native SQL is not supported in ABAP for Cloud Development. 
+> - The AMDP example for ABAP for Cloud Development is designed differently compared to the AMDP example for Standard ABAP. Instead of using demo database tables, CDS view entities are used in the `USING` list. Additionally, the client handling is adjusted for the AMDP methods by including appropriate additions in the AMDP method declaration part.
 
-As mentioned above and hinted in the bullet points above, AMDP has more
-options regarding the unrestricted language version. Check the subtopics
-[here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenamdp.htm).
-A fundamental question in [classic ABAP](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenclassic_abap_glosry.htm) with an unrestricted
-language scope can be whether AMDP is supported at all. The constant
-`CALL_AMDP_METHOD` of the class
-`CL_ABAP_DBFEATURES` can be used to query
-whether the current database supports AMDP methods. See the following
-snippet:
+**... on AMDP in Standard ABAP**
 
-```abap
-IF NOT cl_abap_dbfeatures=>use_features(
-    EXPORTING requested_features =
-      VALUE #( ( cl_abap_dbfeatures=>call_amdp_method ) ) ).
+Find more information in the subtopics of the [ABAP Keyword Documentation (Standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenamdp.htm).
 
-  "Result: Current database system does not support AMDP procedures
-  RETURN.
-ENDIF.
-```
-
-This check is not required (and possible) for [ABAP Cloud](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_cloud_glosry.htm) since it is SAP HANA-only anyway and database connections are not
-possible. Furthermore, another topic that should be noted is that AMDP
-does not support [implicit client
-handling](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_sql_client_handling.htm).
-Therefore, the parameter interface of AMDP methods usually contains an
-input parameter for the client ID. See more information
-[here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenamdp_client_handling.htm) (or [here for the F1 docu for standard ABAP](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenamdp_client_handling.htm)).
-The client handling is not dealt with in this cheat sheet and not
-relevant in the executable example.
+> **✔️ Hint**<br>
+> Checking if AMDP is supported on the system: 
+>    ```abap
+>    IF NOT cl_abap_dbfeatures=>use_features(
+>        EXPORTING requested_features =
+>        VALUE #( ( cl_abap_dbfeatures=>call_amdp_method ) ) ).
+>
+>      "Result: Current database system does not support AMDP procedures
+>    RETURN.
+>    ENDIF.
+>    ```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
@@ -442,10 +413,9 @@ relevant in the executable example.
 [zcl_demo_abap_amdp](./src/zcl_demo_abap_amdp.clas.abap)
 
 > **💡 Note**<br>
-> - The executable example ...
->   - covers the following topics:
->     - AMDP procedures, calling AMDP procedures from SQLScript
->     - AMDP table functions for AMDP methods
->     - AMDP table functions for CDS table functions
+> - The executable example covers the following topics:
+>   - AMDP procedures, calling AMDP procedures from SQLScript
+>   - AMDP table functions for AMDP methods
+>   - AMDP table functions for CDS table functions
 > - The steps to import and run the code are outlined [here](README.md#-getting-started-with-the-examples).
 > - [Disclaimer](README.md#%EF%B8%8F-disclaimer)

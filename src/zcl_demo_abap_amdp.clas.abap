@@ -59,17 +59,17 @@ CLASS zcl_demo_abap_amdp DEFINITION
 
     "Various internal table type specifications for the parameters of AMDP methods
     "Note: Only table and elementary data types are possible for the parameters.
-    TYPES carr_tab TYPE STANDARD TABLE OF zdemo_abap_carr WITH EMPTY KEY.
+    TYPES carr_tab TYPE STANDARD TABLE OF zdemo_abap_carr_ve WITH EMPTY KEY.
 
-    TYPES fli_tab TYPE STANDARD TABLE OF zdemo_abap_fli WITH EMPTY KEY.
+    TYPES fli_tab TYPE STANDARD TABLE OF zdemo_abap_fli_ve WITH EMPTY KEY.
 
     TYPES:
       "Structured data type as basis for the table type below
       BEGIN OF carr_fli_struc,
-        carrname TYPE zdemo_abap_carr-carrname,
-        connid   TYPE zdemo_abap_flsch-connid,
-        cityfrom TYPE zdemo_abap_flsch-cityfrom,
-        cityto   TYPE zdemo_abap_flsch-cityto,
+        carrname TYPE zdemo_abap_carr_ve-carrname,
+        connid   TYPE zdemo_abap_flsch_ve-connid,
+        cityfrom TYPE zdemo_abap_flsch_ve-cityfrom,
+        cityto   TYPE zdemo_abap_flsch_ve-cityto,
       END OF carr_fli_struc,
 
       "Internal table type
@@ -77,15 +77,15 @@ CLASS zcl_demo_abap_amdp DEFINITION
 
       "Structured data type as basis for the table type below
       BEGIN OF fli_struc,
-        carrid   TYPE zdemo_abap_flsch-carrid,
-        connid   TYPE zdemo_abap_flsch-connid,
-        cityfrom TYPE zdemo_abap_flsch-cityfrom,
-        cityto   TYPE zdemo_abap_flsch-cityto,
-        fltime   TYPE zdemo_abap_flsch-fltime,
+        carrid   TYPE zdemo_abap_flsch_ve-carrid,
+        connid   TYPE zdemo_abap_flsch_ve-connid,
+        cityfrom TYPE zdemo_abap_flsch_ve-cityfrom,
+        cityto   TYPE zdemo_abap_flsch_ve-cityto,
+        fltime   TYPE zdemo_abap_flsch_ve-fltime,
       END OF fli_struc,
 
       "Internal table type
-      flsch_tab TYPE STANDARD TABLE OF zdemo_abap_flsch WITH EMPTY KEY.
+      flsch_tab TYPE STANDARD TABLE OF zdemo_abap_flsch_ve WITH EMPTY KEY.
 
     "Various instance method declarations
     "The selection for instance and static methods is irrelevant for the example.
@@ -96,6 +96,7 @@ CLASS zcl_demo_abap_amdp DEFINITION
     "Note the parameter declaration that includes the mandatory passing by value.
     "This is true for all of the AMDP method declarations.
     METHODS select_carriers
+      AMDP OPTIONS READ-ONLY CDS SESSION CLIENT dependent
       EXPORTING VALUE(carr_tab) TYPE carr_tab.
 
     "AMDP procedure to call an AMDP table function
@@ -103,7 +104,8 @@ CLASS zcl_demo_abap_amdp DEFINITION
     "AMDP table function get_carr_fli. AMDP table functions can only be called
     "by other AMDP methods.
     METHODS select_get_carr_fli
-      IMPORTING VALUE(carrid)       TYPE zdemo_abap_fli-carrid
+      AMDP OPTIONS READ-ONLY CDS SESSION CLIENT dependent
+      IMPORTING VALUE(carrid)       TYPE zdemo_abap_fli_ve-carrid
       EXPORTING VALUE(carr_fli_tab) TYPE carr_fli_tab.
 
     "Various static method declarations
@@ -118,7 +120,8 @@ CLASS zcl_demo_abap_amdp DEFINITION
     "in the same AMDP class. The method declaration includes the addition RAISING with an
     "exception class for AMDP-specific exceptions.
     CLASS-METHODS  get_flights
-      IMPORTING VALUE(carrid)  TYPE zdemo_abap_fli-carrid
+      AMDP OPTIONS READ-ONLY CDS SESSION CLIENT dependent
+      IMPORTING VALUE(carrid)  TYPE zdemo_abap_fli_ve-carrid
       EXPORTING VALUE(fli_tab) TYPE fli_tab
       RAISING   cx_amdp_execution_error.
 
@@ -134,7 +137,8 @@ CLASS zcl_demo_abap_amdp DEFINITION
     "AMDP procedure
     "This method demonstrates the calling of an AMDP procedure from SQLScript as mentioned above.
     CLASS-METHODS get_flights_amdp
-      IMPORTING VALUE(carrid)  TYPE zdemo_abap_fli-carrid
+      AMDP OPTIONS READ-ONLY CDS SESSION CLIENT dependent
+      IMPORTING VALUE(carrid)  TYPE zdemo_abap_fli_ve-carrid
       EXPORTING VALUE(fli_tab) TYPE fli_tab
       RAISING   cx_amdp_execution_error.
 
@@ -142,15 +146,16 @@ CLASS zcl_demo_abap_amdp DEFINITION
     "AMDP table functions can only be called by other AMDP methods. In this example,
     "the AMDP procedure select_get_carr_fli calls this AMDP table function.
     METHODS get_carr_fli
-      IMPORTING VALUE(carrid)       TYPE zdemo_abap_flsch-carrid
+      AMDP OPTIONS READ-ONLY CDS SESSION CLIENT dependent
+      IMPORTING VALUE(carrid)       TYPE zdemo_abap_flsch_ve-carrid
       RETURNING VALUE(carr_fli_tab) TYPE carr_fli_tab.
 
-    CONSTANTS nl TYPE string value cl_abap_char_utilities=>newline.
+    CONSTANTS nl TYPE string VALUE cl_abap_char_utilities=>newline.
 ENDCLASS.
 
 
 
-CLASS ZCL_DEMO_ABAP_AMDP IMPLEMENTATION.
+CLASS zcl_demo_abap_amdp IMPLEMENTATION.
 
 
   METHOD class_constructor.
@@ -164,26 +169,26 @@ CLASS ZCL_DEMO_ABAP_AMDP IMPLEMENTATION.
          FOR HDB
          LANGUAGE SQLSCRIPT
          OPTIONS READ-ONLY
-         USING zdemo_abap_flsch "Two database tables are used and must both be specified here.
-               zdemo_abap_carr.
-* Reading data from two database tables
+         USING zdemo_abap_flsch_ve
+               zdemo_abap_carr_ve.
+* Reading data from two CDS view entities
     itab_cities =
      select DISTINCT
-            zdemo_abap_flsch.mandt    as client,
-            zdemo_abap_flsch.carrid   as carrier_id,
-            zdemo_abap_flsch.airpfrom as airport_from,
-            zdemo_abap_flsch.airpto   as airport_to,
-            zdemo_abap_flsch.fltime   as flight_time,
-            zdemo_abap_flsch.distance as flight_distance,
-            zdemo_abap_flsch.distid   as unit
-       from zdemo_abap_flsch;
+            zdemo_abap_flsch_ve.mandt    as client,
+            zdemo_abap_flsch_ve.carrid   as carrier_id,
+            zdemo_abap_flsch_ve.airpfrom as airport_from,
+            zdemo_abap_flsch_ve.airpto   as airport_to,
+            zdemo_abap_flsch_ve.fltime   as flight_time,
+            zdemo_abap_flsch_ve.distance as flight_distance,
+            zdemo_abap_flsch_ve.distid   as unit
+       from zdemo_abap_flsch_ve;
 
     itab_carrier_names =
      select distinct
-            zdemo_abap_carr.mandt    as client,
-            zdemo_abap_carr.carrid   as carrier_id,
-            zdemo_abap_carr.carrname as carrier_name
-       from zdemo_abap_carr;
+            zdemo_abap_carr_ve.mandt    as client,
+            zdemo_abap_carr_ve.carrid   as carrier_id,
+            zdemo_abap_carr_ve.carrname as carrier_name
+       from zdemo_abap_carr_ve;
 
 * Returning joined data using an inner join
    return
@@ -211,13 +216,13 @@ CLASS ZCL_DEMO_ABAP_AMDP IMPLEMENTATION.
          FOR HDB
          LANGUAGE SQLSCRIPT
          OPTIONS READ-ONLY
-         USING zdemo_abap_carr zdemo_abap_flsch.
+         USING zdemo_abap_carr_ve zdemo_abap_flsch_ve.
 * AMDP table function to be called by other AMDP methods only.
-* In the example, joined data from two database table are returned.
+* In the example, joined data from two CDS view entities are returned.
     RETURN
       SELECT ca.carrname, fl.connid, fl.cityfrom, fl.cityto
-        FROM zdemo_abap_carr as ca
-        INNER JOIN zdemo_abap_flsch as fl
+        FROM zdemo_abap_carr_ve as ca
+        INNER JOIN zdemo_abap_flsch_ve as fl
         ON ca.carrid = fl.carrid
         WHERE fl.carrid = :carrid
         ORDER BY ca.mandt, ca.carrname, fl.connid;
@@ -242,10 +247,12 @@ CLASS ZCL_DEMO_ABAP_AMDP IMPLEMENTATION.
          FOR HDB
          LANGUAGE SQLSCRIPT
          OPTIONS READ-ONLY
-         USING zdemo_abap_fli.
+         USING zdemo_abap_fli_ve.
 * Simple data selection
-    fli_tab = SELECT *
-                FROM "ZDEMO_ABAP_FLI"
+    fli_tab = SELECT carrid, connid, fldate, price, currency, planetype,
+                     seatsmax, seatsocc, paymentsum, seatsmax_b, seatsocc_b,
+                     seatsmax_f, seatsocc_f
+                FROM "ZDEMO_ABAP_FLI_VE"
                 WHERE carrid = :carrid
                 ORDER BY carrid;
   ENDMETHOD.
@@ -253,7 +260,7 @@ CLASS ZCL_DEMO_ABAP_AMDP IMPLEMENTATION.
 
   METHOD if_oo_adt_classrun~main.
 
-    out->write( `ABAP Cheat Sheet Example: ABAP AMDP` ).
+    out->write( `ABAP Cheat Sheet Example: AMDP` ).
 
     out->write( |\n1) AMDP Procedure\n\n| ).
 
@@ -279,17 +286,13 @@ CLASS ZCL_DEMO_ABAP_AMDP IMPLEMENTATION.
     "As can be seen in the method implementation part, this AMDP procedure
     "includes an AMDP procedure call from SQLScript.
     "In this example, the AMDP procedure get_flights_amdp is called by
-    "get_flights which is meant to select data from a database table.
+    "get_flights which is meant to select data from a CDS view entity.
     "The returned result is displayed.
     TRY.
-
         zcl_demo_abap_amdp=>get_flights( EXPORTING carrid = 'LH'
                                          IMPORTING fli_tab = DATA(call_amdp_res) ).
-
       CATCH cx_amdp_execution_error INTO DATA(error1).
-
         out->write( error1->get_text( ) ).
-
     ENDTRY.
 
     out->write( data = call_amdp_res name = `call_amdp_res` ).
@@ -303,15 +306,11 @@ CLASS ZCL_DEMO_ABAP_AMDP IMPLEMENTATION.
     "get_carr_fli in the implementation part. AMDP table functions can
     "only be called by other AMDP methods.
     TRY.
-
         NEW zcl_demo_abap_amdp( )->select_get_carr_fli(
           EXPORTING carrid = 'LH'
           IMPORTING carr_fli_tab = DATA(amdp_tab_func) ).
-
       CATCH cx_amdp_execution_error INTO DATA(error2).
-
         out->write( error2->get_text( ) ).
-
     ENDTRY.
 
     out->write( data = amdp_tab_func name = `amdp_tab_func` ).
@@ -333,7 +332,7 @@ CLASS ZCL_DEMO_ABAP_AMDP IMPLEMENTATION.
     "In this example, the CDS table function is implemented in a way to
     "return accumulated data.
     "In the method implementation for flight_analysis, first two kinds of
-    "data sets from two database tables are gathered. These data sets are
+    "data sets from two CDS view entities are gathered. These data sets are
     "joined using an inner join. There, some expressions are included
     "(strings are aggregated, average values are determined).
 
@@ -350,10 +349,10 @@ CLASS ZCL_DEMO_ABAP_AMDP IMPLEMENTATION.
          FOR HDB
          LANGUAGE SQLSCRIPT
          OPTIONS READ-ONLY
-         USING zdemo_abap_carr.
+         USING zdemo_abap_carr_ve.
 * Simple data selection
-    carr_tab = SELECT *
-                FROM "ZDEMO_ABAP_CARR"
+    carr_tab = SELECT carrid, carrname, currcode, url
+                FROM "ZDEMO_ABAP_CARR_VE"
                 ORDER BY carrid;
   ENDMETHOD.
 

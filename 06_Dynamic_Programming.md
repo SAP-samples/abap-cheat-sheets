@@ -1781,23 +1781,18 @@ The type properties are represented by attributes that are accessible through th
 > - For each type category (elementary type, table, and so on), there is a type description class (e.g. `CL_ABAP_STRUCTDESCR` for structures, as shown in the hierarchy tree above) that has special attributes (i.e. the properties of the respective types). 
 > - References to type description objects can be used, for example, after the `TYPE HANDLE` addition of the `CREATE DATA` and `ASSIGN` statements.
 
-The following examples show the retrieval of type information. Instead of the extra declaration of data reference variables, you can use
-[inline declarations](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abeninline_declaration_glosry.htm "Glossary Entry").
-[Method chaining](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenmethod_chaining_glosry.htm "Glossary Entry")
-comes in handy, too.
-
-
 The following example explores the RTTI type hierarchy and demonstrates how to retrieve various pieces of type information using RTTI attributes and methods. You can create a demo class (adapt the class name if needed), copy and paste the code, run the class with F9 in ADT, and check the output in the console.
 
-The example includes demo objects that are added to an internal table. This table is then looped over to retrieve type information for all objects. To retrieve a type description object, you have multiple options. One option is to use the static methods of the `cl_abap_typedescr` class, which is the root class of the RTTI hierarchy. These methods include: 
+The example includes demo objects that are added to an internal table. This table is then looped over to retrieve type information for all objects. To retrieve a type description object, you have multiple options. You can use the static methods of the `cl_abap_typedescr` class, which is the root class of the RTTI hierarchy. These methods include: 
 - `describe_by_data`: Returns an object reference in one of the classes `cl_abap_elemdescr`, `cl_abap_enumdescr`, `cl_abap_refdescr`, `cl_abap_structdescr`, or `cl_abap_tabledsecr`. 
 - `describe_by_object_ref`: Returns the type that an object reference variable points to. 
 - `describe_by_data_ref`: Returns the type that a data reference variable points to. 
 - `describe_by_name`: Returns a type description object when providing the relative or absolute name of a type. 
+
 Notes: 
 - The `*_ref` methods return objects of the dynamic type. 
-- In the bigger example of the demo class, we do not use type names, but rather objects (`describe_by_name` is used in the smaller example in the demo class). Therefore, we first try to get a type description object using the `describe_by_object_ref` method to obtain an instance of `cl_abap_objectdescr`. If this fails, it means we have an instance of `cl_abap_datadescr`, which is the next subclass in the hierarchy. We can retrieve this using the `describe_by_data` method. 
-- The `describe_by_data` method also works for references, including object/interface reference variables. In these cases, the returned object points to `cl_abap_refdescr`. We can then use the `get_referenced_type` method to obtain more details about the actual reference. 
+- In the bigger example of the demo class (the first `LOOP` statement), type names are not used, but rather objects. First, an attempt is made to get a type description object using the `describe_by_object_ref` method to obtain an instance of `cl_abap_objectdescr`. If this fails, it means it is an instance of `cl_abap_datadescr`, which is the next subclass in the hierarchy. It can be retrieved using the `describe_by_data` method. `describe_by_name` is used in the smaller example in the demo class (the second `LOOP` statement). 
+- The `describe_by_data` method also works for references, including object/interface reference variables. In these cases, the returned object points to `cl_abap_refdescr`. The `get_referenced_type` method can then be used to obtain more details about the actual reference. 
 - The example also demonstrates the dynamic creation of data objects using the retrieved type description objects and the `HANDLE` addition to the `CREATE DATA` statement. It also shows dynamic creations using the dynamic specification of the type and the absolute name. The latter is also possible with the `CREATE OBJECT` statement to create objects dynamically. In ABAP for Cloud Development, absolute names having the pattern `\TYPE=%_...` (an internal technical name that is available for [bound data types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbound_data_type_glosry.htm)) cannot be used for the dynamic creation. 
 - To visualize the retrieved information, many values are added to a string table. Note that this example is tailored to cover all subclasses of the RTTI hierarchy, but it does not explore all available options for information retrieval. 
 - The example uses artifacts from the ABAP cheat sheet repository.
@@ -1830,7 +1825,7 @@ CLASS zcl_some_class IMPLEMENTATION.
     "Elementary type
     DATA elem_dobj TYPE c LENGTH 4 VALUE 'ABAP'.
 
-    "Enumeration type
+    "Enumerated type
     TYPES: BEGIN OF ENUM enum_t,
              enum1,
              enum2,
@@ -1947,18 +1942,18 @@ CLASS zcl_some_class IMPLEMENTATION.
           IF tdo IS INSTANCE OF cl_abap_elemdescr.
             INSERT |{ tabix } Is instance of cl_abap_elemdescr| INTO TABLE str_tab.
 
-            "Enumeration types
+            "Enumerated types
             IF tdo IS INSTANCE OF cl_abap_enumdescr.
               INSERT |{ tabix } Is instance of cl_abap_enumdescr| INTO TABLE str_tab.
 
               DATA(enum) = CAST cl_abap_enumdescr( tdo ).
 
               "Various type-specific information retrieval
-              "Base type of enumeration type
+              "Base type of enumerated type
               DATA(enum_base_type_kind) = enum->base_type_kind.
               INSERT |{ tabix } Base type: { enum_base_type_kind }| INTO TABLE str_tab.
 
-              "Elements of the enumeration type
+              "Elements of the enumerated type
               DATA(enum_elements) = enum->members.
               INSERT |{ tabix } Elements:| &&
               | { REDUCE string( INIT str = `` FOR <l> IN enum_elements NEXT str = |{ str }{ COND #( WHEN str IS NOT INITIAL THEN ` / ` ) }| &&
@@ -1988,7 +1983,7 @@ CLASS zcl_some_class IMPLEMENTATION.
                   INSERT |{ tabix } Dynamic data object creation error: { err_enum->get_text( ) }| INTO TABLE str_tab.
               ENDTRY.
 
-              "Elementary types other than enumeration types
+              "Elementary types other than enumerated types
             ELSE.
               DATA(elem) = CAST cl_abap_elemdescr( tdo ).
 
@@ -2111,8 +2106,7 @@ CLASS zcl_some_class IMPLEMENTATION.
               DATA(struc_components) = struc->components.
               INSERT |{ tabix } Components 1: | &&
               |{ REDUCE string( INIT str = `` FOR <comp1> IN struc_components NEXT str = |{ str }| &&
-              |{ COND #( WHEN str IS NOT INITIAL THEN ` / ` ) }{ <comp1>-name } ({ <comp1>-type_kind })| ) }|
-              INTO TABLE str_tab.
+              |{ COND #( WHEN str IS NOT INITIAL THEN ` / ` ) }{ <comp1>-name } ({ <comp1>-type_kind })| ) }| INTO TABLE str_tab.
 
               "Structure components (more details)
               "The following method also returns a table with component information. In this case,
@@ -2121,8 +2115,7 @@ CLASS zcl_some_class IMPLEMENTATION.
               DATA(struc_components_tab) = struc->get_components( ).
               INSERT |{ tabix } Components 2: | &&
               |{ REDUCE string( INIT str = `` FOR <comp2> IN struc_components_tab NEXT str = |{ str }| &&
-              |{ COND #( WHEN str IS NOT INITIAL THEN ` / ` ) }{ <comp2>-name } ({ <comp2>-type->type_kind })| ) }|
-              INTO TABLE str_tab.
+              |{ COND #( WHEN str IS NOT INITIAL THEN ` / ` ) }{ <comp2>-name } ({ <comp2>-type->type_kind })| ) }| INTO TABLE str_tab.
 
               "Checking if the structure has includes
               DATA(struc_has_include) = struc->has_include.
@@ -2133,16 +2126,14 @@ CLASS zcl_some_class IMPLEMENTATION.
                 DATA(struc_incl_view) = struc->get_included_view( ).
                 INSERT |{ tabix } Included view: | &&
                 |{ REDUCE string( INIT str = `` FOR <comp3> IN struc_incl_view NEXT str = |{ str }| &&
-                |{ COND #( WHEN str IS NOT INITIAL THEN `, ` ) }{ <comp3>-name }| ) }|
-                INTO TABLE str_tab.
+                |{ COND #( WHEN str IS NOT INITIAL THEN `, ` ) }{ <comp3>-name }| ) }| INTO TABLE str_tab.
 
                 "Returning component names of all components and substructures in included
                 "structures that contain included structures
                 DATA(struc_all_incl) = struc->get_symbols( ).
                 INSERT |{ tabix } Included view: | &&
                 |{ REDUCE string( INIT str = `` FOR <comp4> IN struc_all_incl NEXT str = |{ str }| &&
-                |{ COND #( WHEN str IS NOT INITIAL THEN `, ` ) }{ <comp4>-name }| ) }|
-                INTO TABLE str_tab.
+                |{ COND #( WHEN str IS NOT INITIAL THEN `, ` ) }{ <comp4>-name }| ) }| INTO TABLE str_tab.
               ENDIF.
 
               "Checking the type compatibility of the data object
@@ -2203,8 +2194,7 @@ CLASS zcl_some_class IMPLEMENTATION.
               INSERT |{ tabix } Table keys: { REDUCE string( INIT str = `` FOR <key2> IN tab_keys NEXT str = |{ str }| &&
               |{ COND #( WHEN str IS NOT INITIAL THEN `, ` ) }{ REDUCE string( INIT str2 = `` FOR <key3> IN <key2>-components NEXT str2 = |{ str2 }| &&
               |{ COND #( WHEN str2 IS NOT INITIAL THEN `/` ) }{ <key3>-name }| ) } (is primary: "{ <key2>-is_primary }", |  &&
-              |is unique: "{ <key2>-is_unique }", key kind: "{ <key2>-key_kind }", access kind: "{ <key2>-access_kind }")| ) }|
-              INTO TABLE str_tab.
+              |is unique: "{ <key2>-is_unique }", key kind: "{ <key2>-key_kind }", access kind: "{ <key2>-access_kind }")| ) }| INTO TABLE str_tab.
 
               DATA(tab_keys_aliases) = tab->get_key_aliases( ).
               IF tab_keys_aliases IS NOT INITIAL.
@@ -2292,8 +2282,7 @@ CLASS zcl_some_class IMPLEMENTATION.
             DATA(obj_ref_attributes) = obj_ref->attributes.
 
             INSERT |{ tabix } Attributes: { REDUCE string( INIT str = `` FOR <attr> IN obj_ref_attributes NEXT str = |{ str }| &&
-            |{ COND #( WHEN str IS NOT INITIAL THEN `, ` ) }{ <attr>-name } (vis: "{ <attr>-visibility }", static: "{ <attr>-is_class }")| ) }|
-            INTO TABLE str_tab.
+            |{ COND #( WHEN str IS NOT INITIAL THEN `, ` ) }{ <attr>-name } (vis: "{ <attr>-visibility }", static: "{ <attr>-is_class }")| ) }| INTO TABLE str_tab.
 
             "Getting the interfaces implemented
             DATA(obj_ref_interfaces) = obj_ref->interfaces.
@@ -2341,8 +2330,7 @@ CLASS zcl_some_class IMPLEMENTATION.
             IF  absolute_name CS '\CLASS=ZCL_DEMO_ABAP_OBJECTS' AND err_obj IS INITIAL.
               INSERT |{ tabix } Dynamic attribute access: { REDUCE string( INIT str = `` FOR <m> IN obj_ref_attributes NEXT str = |{ str }| &&
               |{ COND #( WHEN str IS NOT INITIAL AND <m>-visibility = 'U' THEN ` / ` ) }| &&
-              |{ COND #( WHEN <m>-visibility = 'U' THEN <m>-name && ` ("` && CONV string( dyn_obj->(<m>-name) ) && `")` ) }| ) }|
-              INTO TABLE str_tab.
+              |{ COND #( WHEN <m>-visibility = 'U' THEN <m>-name && ` ("` && CONV string( dyn_obj->(<m>-name) ) && `")` ) }| ) }| INTO TABLE str_tab.
             ENDIF.
 
             "-----------------------------------------------------------------------
@@ -2456,7 +2444,7 @@ CLASS zcl_some_class IMPLEMENTATION.
     "Elementary type
     TYPES packed TYPE p LENGTH 8 DECIMALS 2.
 
-    "Enumeration type
+    "Enumerated type
     TYPES: BEGIN OF ENUM enum_type,
              enum_a,
              enum_b,
@@ -2474,7 +2462,9 @@ CLASS zcl_some_class IMPLEMENTATION.
 
     "Internal table types
     TYPES int_tab_type TYPE TABLE OF i WITH EMPTY KEY.
-    TYPES sorted_tab_type TYPE SORTED TABLE OF flat_struc_type WITH UNIQUE KEY a WITH NON-UNIQUE SORTED KEY sec_key ALIAS sk COMPONENTS b c.
+    TYPES sorted_tab_type TYPE SORTED TABLE OF flat_struc_type 
+      WITH UNIQUE KEY a 
+      WITH NON-UNIQUE SORTED KEY sec_key ALIAS sk COMPONENTS b c.
     TYPES itab_der_type TYPE TABLE FOR UPDATE zdemo_abap_rap_ro_m.
 
     "Reference types
@@ -2482,20 +2472,20 @@ CLASS zcl_some_class IMPLEMENTATION.
     TYPES gen_dref_type TYPE REF TO data.
     "Class and interface names are specified directly
 
-    DATA(type_names) = VALUE string_table( ( `PACKED` ) "Elementary type (1)
-                                           ( `TIMESTAMPL` ) "Elementary type, global DDIC type/data element (2)
-                                           ( `ENUM_TYPE` ) "Enumeration type (3)
-                                           ( `FLAT_STRUC_TYPE` ) "Structured type, flat structure (4)
-                                           ( `STR_DER_TYPE` )  "Structured type, BDEF derived type (5)
-                                           ( `INT_TAB_TYPE` ) "Table type, elementary line type (6)
-                                           ( `SORTED_TAB_TYPE` )  "Table type, structured line type (7)
-                                           ( `ITAB_DER_TYPE` )  "Table type, BDEF derived type (8)
-                                           ( `INT_DREF_TYPE` )  "Reference type (9)
-                                           ( `GEN_DREF_TYPE` )  "Reference type, generic type (10)
-                                           ( `CL_ABAP_TYPEDESCR` )  "Class name (11)
-                                           ( `CL_ABAP_CORRESPONDING` )  "Class name (12)
-                                           ( `IF_OO_ADT_CLASSRUN` )  "Interface name (13)
-                                           ( `ZDEMO_ABAP_OBJECTS_INTERFACE` )  "Interface name (14)
+    DATA(type_names) = VALUE string_table( ( `PACKED` )                       "Elementary type (1)
+                                           ( `TIMESTAMPL` )                   "Elementary type, global DDIC type/data element (2)
+                                           ( `ENUM_TYPE` )                    "Enumerated type (3)
+                                           ( `FLAT_STRUC_TYPE` )              "Structured type, flat structure (4)
+                                           ( `STR_DER_TYPE` )                 "Structured type, BDEF derived type (5)
+                                           ( `INT_TAB_TYPE` )                 "Table type, elementary line type (6)
+                                           ( `SORTED_TAB_TYPE` )              "Table type, structured line type (7)
+                                           ( `ITAB_DER_TYPE` )                "Table type, BDEF derived type (8)
+                                           ( `INT_DREF_TYPE` )                "Reference type (9)
+                                           ( `GEN_DREF_TYPE` )                "Reference type, generic type (10)
+                                           ( `CL_ABAP_TYPEDESCR` )            "Class name (11)
+                                           ( `CL_ABAP_CORRESPONDING` )        "Class name (12)
+                                           ( `IF_OO_ADT_CLASSRUN` )           "Interface name (13)
+                                           ( `ZDEMO_ABAP_OBJECTS_INTERFACE` ) "Interface name (14)
                                          ).
 
     LOOP AT type_names INTO DATA(type_name).
@@ -2542,7 +2532,8 @@ ENDCLASS.
 
 #### Excursion: Inline Declaration, CAST Operator, Method Chaining
 
-As shown in the example above, you can use inline declaration, the `CAST` operator for casting, and method chaining to write more concise code and avoid declaring helper variables. However, also consider the code's debuggability, maintainability, and readability.
+As shown in the example above, you can use [inline declarations](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abeninline_declaration_glosry.htm "Glossary Entry"), the [`CAST`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconstructor_expression_cast.htm) operator for casting, and [method chaining](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenmethod_chaining_glosry.htm "Glossary Entry") to write more concise code and avoid declaring helper variables. However, also consider the code's debuggability, maintainability, and readability.
+
 
 ```abap
 DATA some_struc TYPE zdemo_abap_carr.
