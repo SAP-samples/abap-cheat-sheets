@@ -387,7 +387,7 @@ You can then use the CDS table function as source for a
 Find more information in the subtopics of the [ABAP Keyword Documentation (ABAP for Cloud Development)](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenamdp.htm).
 
 > **💡 Note**<br>
-> - In ABAP for Cloud Development, AMDP methods must be client-safe. This means that the SQLScript code should only access artifacts that restrict access to a single client, such as CDS view entities, or are client-independent. Therefore, all objects used in the `USING` list must be client-safe. This also applies to CDS table functions implemented as AMDP methods. Accessing client-dependent data using methods like Native SQL is not supported in ABAP for Cloud Development. 
+> - In ABAP for Cloud Development, AMDP methods must be client-safe. This means that the SQLScript code should only access artifacts that restrict access to a single client, such as CDS view entities, or are client-independent. Therefore, all objects used in the `USING` list must be client-safe. This also applies to CDS table functions implemented as AMDP methods. Accessing client-dependent data using Native SQL is not supported in ABAP for Cloud Development. 
 > - The AMDP example for ABAP for Cloud Development is designed differently compared to the AMDP example for Standard ABAP. Instead of using demo database tables, CDS view entities are used in the `USING` list. Additionally, the client handling is adjusted for the AMDP methods by including appropriate additions in the AMDP method declaration part.
 
 **... on AMDP in Standard ABAP**
