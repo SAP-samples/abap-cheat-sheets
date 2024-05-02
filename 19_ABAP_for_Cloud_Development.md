@@ -176,6 +176,7 @@ It provides references to more detailed information on the topic.
   - ABAP Keyword Documentation 
     - [Rules for ABAP Cloud](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_strict_rules.htm)
     - [Language Elements in ABAP Versions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrestricted_abap_elements.htm): A table showing which ABAP language elements are allowed in which ABAP language version 
+    - [Contract Rules for ABAP Released APIs](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrestricted_apis.htm)
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 

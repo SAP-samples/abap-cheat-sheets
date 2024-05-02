@@ -243,26 +243,30 @@ ENDIF.
 
 
 ```abap
-"IF statement with multiple included ELSEIF statements
-IF log_exp1.
-
-  ... "statement_block1
-
-ELSEIF log_exp2.
-
-  ... "statement_block2
-
-ELSEIF log_exp3.
-
-  ... "statement_block3
-
-... "further ELSEIF statements
-
+DATA(abap) = `ABAP`.
+FIND `AB` IN abap.
+IF sy-subrc = 0.
+  "found
+  ...
 ELSE.
-
-  ... "statement_blockn
-
+  "not found
+  ...
 ENDIF.
+
+"IF statement with multiple included ELSEIF statements
+DATA(current_utc_time) = cl_abap_context_info=>get_system_time( ).
+DATA greetings TYPE string.
+
+IF current_utc_time BETWEEN '050000' AND '115959'.
+  greetings = |Good morning, it's { current_utc_time TIME = ISO }.|.
+ELSEIF current_utc_time BETWEEN '120000' AND '175959'.
+  greetings = |Good afternoon, it's { current_utc_time TIME = ISO }.|.
+ELSEIF current_utc_time BETWEEN '180000' AND '215959'.
+  greetings =  |Good evening, it's { current_utc_time TIME = ISO }.|.
+ELSE.
+  greetings = |Good night, it's { current_utc_time TIME = ISO }.|.
+ENDIF.
+
 ```
 
 
@@ -304,12 +308,16 @@ ENDIF.
 - Such conditional expressions have a result that is dependent on the logical expressions.
 - The result's data type is specified after `COND` right before the first parenthesis. It can also be the `#` character as a symbol for the operand type if the type can be derived from the context. See the ABAP Keyword Documentation and the cheat sheet on constructor expressions for more information.
 - All operands specified after `THEN` must be convertible to the result's data type.
+- See also the [Constructor Expressions](05_Constructor_Expressions.md) cheat sheet for more information and examples.
 
-```abap
-... COND type( WHEN log_exp1 THEN result1
-               WHEN log_exp2 THEN result2
-               ...
-               ELSE resultn ) ...
+```abap 
+DATA greetings_cond TYPE string.
+DATA(current_utc_time_cond) = cl_abap_context_info=>get_system_time( ).
+greetings_cond = COND #( WHEN current_utc_time_cond BETWEEN '050000' AND '115959' THEN |Good morning, it's { current_utc_time_cond TIME = ISO }.|
+                         WHEN current_utc_time_cond BETWEEN '120000' AND '175959' THEN |Good afternoon, it's { current_utc_time_cond TIME = ISO }.|
+                         WHEN current_utc_time_cond BETWEEN '180000' AND '215959' THEN |Good evening, it's { current_utc_time_cond TIME = ISO }.|
+                         ELSE |Good night, it's { current_utc_time_cond TIME = ISO }.| ).
+
 ```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
@@ -325,29 +333,49 @@ ENDIF.
 
 
 ```abap
-CASE operand.
-  WHEN op1.
-    ... "statement_block
-  WHEN op2.
-    ... "statement_block
-  WHEN op3 OR op4.
-    ... "statement_block
+"Getting a random number
+DATA(random_num) = cl_abap_random_int=>create( seed = cl_abap_random=>seed( )
+                                               min  = 1
+                                               max  = 5 )->get_next( ).
+DATA num TYPE string.
+
+CASE random_num.
+  WHEN 1.
+    num = `The number is 1.`.
+  WHEN 2.
+    num = `The number is 2.`.
+  WHEN 3 OR 4.
+    num = `The number is either 3 or 4.`.
   WHEN OTHERS.
-    ... "statement_block
+    num = `The number is not between 1 and 4.`.
 ENDCASE.
 ```
 
-Special control structure introduced by [`CASE TYPE OF`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapcase_type.htm): Checks the type of object reference variables.
+Special control structure introduced by [`CASE TYPE OF`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapcase_type.htm): Checks the type of object reference variables. An object reference variable with the static type of a class or an interface must be specified after `CASE TYPE OF`.
 
 ```abap
-"oref must be an object reference variable with the static type of a class or an interface.
-CASE TYPE OF oref.
-  WHEN TYPE some_class.
-    ... "statement_block
-  WHEN TYPE some_intf.
-    ... "statement_block
+"The example shows the retrieval of type information at runtime (RTTI).
+"For more information on RTTI, refer to the Dynamic Programming cheat
+"sheet. The result of the method call is a type description object
+"that points to one of the classes specified.
+DATA stringtab TYPE TABLE OF string WITH EMPTY KEY.
+DATA(type_description) = cl_abap_typedescr=>describe_by_data( stringtab ).
+
+CASE TYPE OF type_description.
+  WHEN TYPE cl_abap_elemdescr.
+    ...
+  WHEN TYPE cl_abap_enumdescr.
+    ...
+  WHEN TYPE cl_abap_refdescr.
+    ...
+  WHEN TYPE cl_abap_structdescr.
+    ...
+  WHEN TYPE cl_abap_tabledescr.
+    "This is the class the type description object points to for 
+    "the example data object.
+    ...
   WHEN OTHERS.
-    ... "statement_block
+    ...
 ENDCASE.
 ```
 
@@ -355,15 +383,19 @@ ENDCASE.
 
 #### Excursion: `SWITCH` Operator
 
-The conditional operator [`SWITCH`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconditional_expression_switch.htm) can also be used to make case distinctions in operand positions. As mentioned above for `COND`, a result is constructed. The same criteria apply for `SWITCH` as for `COND` regarding the type. See the ABAP Keyword Documentation and the cheat sheet on constructor expressions for more information.
+The conditional operator [`SWITCH`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconditional_expression_switch.htm) can also be used to make case distinctions in operand positions. As mentioned above for `COND`, a result is constructed. The same criteria apply for `SWITCH` as for `COND` regarding the type. See the ABAP Keyword Documentation and the cheat sheet on constructor expressions for more information. See also the [Constructor Expressions](05_Constructor_Expressions.md) cheat sheet for more information and examples.
 
 
 ```abap
-... SWITCH type( operand
-                 WHEN const1 THEN result1
-                 WHEN const2 THEN result2
-                 ...
-                 ELSE resultn ) ...
+DATA(random_num_switch) = cl_abap_random_int=>create( seed = cl_abap_random=>seed( )
+                                                      min  = 1
+                                                      max  = 5 )->get_next( ).
+
+DATA(num_switch) = SWITCH #( random_num_switch
+                             WHEN 1 THEN `The number is 1.`
+                             WHEN 2 THEN `The number is 2.`
+                             WHEN 3 OR 4 THEN `The number is either 3 or 4.`
+                             ELSE `The number is not between 1 and 4.` ).
 ```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
@@ -376,17 +408,23 @@ The conditional operator [`SWITCH`](https://help.sap.com/doc/abapdocu_cp_index_h
 - The loop is exited when a statement to terminate the loop is reached (`EXIT`, see further down). Otherwise, it is executed endlessly.
 
   ```abap
+  DATA str_a TYPE string.
   DO.
-    ... "statement_block
-        "To be terminated with an EXIT statement.
+    str_a &&= sy-index.
+    IF sy-index = 5.
+      EXIT.
+    ENDIF.
   ENDDO.
+  "str_a: 12345
   ```
 - To restrict the loop passes, you can use the `TIMES` addition and specify the maximum number of loop passes.
 
   ```abap
-  DO 5 TIMES.
-    ... "statement_block
+  DATA str_b TYPE string.
+  DO 9 TIMES.
+    str_b &&= sy-index.
   ENDDO.
+  "str_b: 123456789
   ```
 - The value of the system field `sy-index` within the statement block contains the number of previous loop passes including the current pass.
 
@@ -402,6 +440,54 @@ The following ABAP keywords are available for interrupting and exiting loops:
 | [`CHECK`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapcheck_loop.htm)  | `CHECK log_exp.`  | Conditional termination. If the logical expression `log_exp` is false, the current loop pass is terminated immediately and the program flow is continued with the next loop pass. |
 | [`EXIT`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapexit_loop.htm)  | `EXIT.`  | The loop is terminated completely. The program flow resumes after the closing statement of the loop.  |
 
+```abap
+"------------ CONTINUE ------------
+DATA str_c TYPE string.
+DO 15 TIMES.
+  "Continue with the next loop pass if the number is even
+  "Terminating the loop pass and continuing with the next loop pass if the condition specified
+  "with the IF statement is true (if the number is even)
+  IF sy-index MOD 2 = 0.
+    CONTINUE.
+  ELSE.
+    str_c = |{ str_c }{ COND #( WHEN str_c IS NOT INITIAL THEN `, ` ) }{ sy-index }|.
+  ENDIF.
+ENDDO.
+"str_c: 1, 3, 5, 7, 9, 11, 13, 15
+
+"------------ CHECK ------------
+DATA str_d TYPE string.
+DO 15 TIMES.
+  "Terminating the loop pass and continuing with the next loop pass if the condition is
+  "true (if the number is odd)
+  CHECK sy-index MOD 2 = 0.
+  str_d = |{ str_d }{ COND #( WHEN str_d IS NOT INITIAL THEN `, ` ) }{ sy-index }|.
+ENDDO.
+"str_d: 2, 4, 6, 8, 10, 12, 14
+
+"CHECK NOT
+DATA str_e TYPE string.
+DO 15 TIMES.
+  "Here, it is checked whether the sy-index value is not an even number
+  CHECK NOT sy-index MOD 2 = 0.
+  str_e = |{ str_e }{ COND #( WHEN str_e IS NOT INITIAL THEN `, ` ) }{ sy-index }|.
+ENDDO.
+"str_e: 1, 3, 5, 7, 9, 11, 13, 15
+
+"------------ EXIT ------------
+DATA str_f TYPE string.
+DO 15 TIMES.
+  "Terminating the entire loop
+  IF sy-index = 7.
+    EXIT.
+  ELSE.
+    str_f = |{ str_f }{ COND #( WHEN str_f IS NOT INITIAL THEN `, ` ) }{ sy-index }|.
+  ENDIF.
+ENDDO.
+"str_f: 1, 2, 3, 4, 5, 6
+```
+
+
 > **💡 Note**<br>
 > - [`RETURN`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapreturn.htm) statements immediately terminate the current processing block. However, according to the [guidelines (F1 docu for standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenexit_procedure_guidl.htm), `RETURN` should only be used to exit procedures like methods.
 > - `EXIT` and `CHECK` might also be used for exiting procedures. However, their use inside loops is recommended.
@@ -413,11 +499,43 @@ The following ABAP keywords are available for interrupting and exiting loops:
 - Conditional loops introduced by `WHILE` and ended by `ENDWHILE` are repeated as long as a logical expression is true.
 - These loops can also be exited using the statements mentioned above.
 - Like in `DO` loops, the system field `sy-index` contains the number of previous loop passes including the current pass.
+- Also check the conditional loops options using `FOR ... WHILE` with a constructor expression in the [Constructor Expressions](05_Constructor_Expressions.md) cheat sheet.
 
 ```abap
-WHILE log_exp.
-  ... "statement_block
+DATA int_itab TYPE TABLE OF i WITH EMPTY KEY.
+
+WHILE lines( int_itab ) = 5.
+  int_itab = VALUE #( BASE int_itab ( sy-index ) ).
 ENDWHILE.
+
+"Content of int_itab:
+"1
+"2
+"3
+"4
+"5
+
+"The following string replacement example uses a WHILE
+"statement for demo purposes - instead of using a REPLACE ALL 
+"OCCURRENCES statement or the replace function to replace all 
+"occurrences. The WHILE loop exits when there are no more '#' 
+"characters to be replaced in the string. The value of the data 
+"object, which is checked in the logical expression, is then set 
+"to make the logical expression false.
+DATA(str_to_replace) = `Lorem#ipsum#dolor#sit#amet`.
+DATA(subrc) = 0.
+DATA(counter) = 0.
+WHILE subrc = 0.
+  REPLACE `#` IN str_to_replace WITH ` `.
+  IF sy-subrc <> 0.
+    subrc = 1.
+  ELSE.
+    counter += 1.
+  ENDIF.
+ENDWHILE.
+
+"str_to_replace: Lorem ipsum dolor sit amet
+"counter: 4
 ```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
