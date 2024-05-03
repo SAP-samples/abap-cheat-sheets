@@ -1091,23 +1091,22 @@ DATA(gen_comp) = CONV string( <gen>-('COL2') ).
 DATA struc2string TYPE string.
 FIELD-SYMBOLS <strco> TYPE data.
 ASSIGN st TO <strco>.
-IF sy-subrc = 0.
-  TRY.
-      DATA(comps) = CAST cl_abap_structdescr( cl_abap_typedescr=>describe_by_data( <strco> ) )->components.
-      DO.
-        TRY.
-            DATA(comp_name) = comps[ sy-index ]-name.
-            struc2string = struc2string &&
-                           COND #( WHEN sy-index <> 1 THEN `, ` ) &&
-                           comp_name && `: "` &&
-                           <strco>-(sy-index) && `"`.
-          CATCH cx_sy_assign_illegal_component cx_sy_itab_line_not_found.
-            EXIT.
-        ENDTRY.
-      ENDDO.
-    CATCH cx_sy_move_cast_error.
-  ENDTRY.
-ENDIF.
+
+TRY.
+    DATA(comps) = CAST cl_abap_structdescr( cl_abap_typedescr=>describe_by_data( <strco> ) )->components.
+    DO.
+      TRY.
+          DATA(comp_name) = comps[ sy-index ]-name.
+          struc2string = struc2string &&
+                          COND #( WHEN sy-index <> 1 THEN `, ` ) &&
+                          comp_name && `: "` &&
+                          <strco>-(sy-index) && `"`.
+        CATCH cx_sy_assign_illegal_component cx_sy_itab_line_not_found.
+          EXIT.
+      ENDTRY.
+    ENDDO.
+  CATCH cx_sy_move_cast_error.
+ENDTRY.
 "struc2string: COL1: "123", COL2: "ABAP", COL3: "Z"
 ```
 
@@ -1627,7 +1626,7 @@ result = ptab[ name = 'R_TRIPLE' ]-('VALUE')->*. "9
 ### Dynamic Formatting Option Specifications in String Templates
 
 The following code snippet demonstrates a small selection of dynamic formatting option specifications in string templates.
-For more details and a complete list of options, refer to the [ABAP Keyword Documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/abapcompute_string_format_options.htm), especially regarding the expected and supported input (attributes of the `CL_ABAP_FORMAT` class). General information on string templates can also be found there and in the [String Processing](/07_String_Processing.md#string-templates) cheat sheet. 
+For more details and a complete list of options, refer to the [ABAP Keyword Documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/abapcompute_string_format_options.htm), especially regarding the expected and supported input (attributes of the `CL_ABAP_FORMAT` class). General information on string templates can also be found there and in the [String Processing](07_String_Processing.md#string-templates) cheat sheet. 
 
 ```abap
 "ALIGN

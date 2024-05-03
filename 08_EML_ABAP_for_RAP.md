@@ -11,6 +11,7 @@
   - [BDEF Derived Types](#bdef-derived-types)
     - [Components of BDEF Derived Types](#components-of-bdef-derived-types)
     - [Secondary Table Keys of BDEF Derived Types](#secondary-table-keys-of-bdef-derived-types)
+    - [Type Mapping for RAP](#type-mapping-for-rap)
   - [EML Syntax](#eml-syntax)
     - [EML Syntax for Modifying Operations](#eml-syntax-for-modifying-operations)
     - [EML Syntax for Reading Operations](#eml-syntax-for-reading-operations)
@@ -884,6 +885,142 @@ DATA(line_e) = itab_cr[ KEY entity %key = VALUE #( key_field = 1 ) ].
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
+### Type Mapping for RAP
+
+**RAP-Specific Additions to the CORRESPONDING Operator**
+
+The [`CORRESPONDING`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconstructor_expr_corresponding.htm) operator offers RAP-specific additions for handling type mappings related to BDEF derived types and other types. For more information, see the [ABAP Keyword Documentation topic](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapeml_type_mapping.htm).
+
+The following additions are available:
+```abap
+... CORRESPONDING ...( ... MAPPING FROM ENTITY ) ...
+... CORRESPONDING ...( ... MAPPING TO ENTITY ) ...
+... CORRESPONDING ...( ... USING CONTROL ) ...
+... CORRESPONDING ...( ... MAPPING FROM ENTITY USING CONTROL ) ...
+... CORRESPONDING ...( ... CHANGING CONTROL ) ...
+```
+
+For some additions, a mapping needs to be specified in the BDEF. For more information, see the  
+[ABAP Keyword Documentation topic](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbdl_type_mapping.htm).
+
+The following example uses a BDEF derived type from the ABAP cheat sheets. It shows additions that do not require a type mapping to be specified.  
+
+```abap
+"BDEF derived type 
+DATA derived_type TYPE STRUCTURE FOR UPDATE zdemo_abap_rap_ro_m.
+
+"Other type
+"For simplicity, the structure has the same component names
+"and types to avoid further additions in the statement.
+DATA: BEGIN OF some_other_type,
+		key_field TYPE i,
+		field1    TYPE c LENGTH 10,
+		field2    TYPE c LENGTH 10,
+		field3    TYPE i,
+		field4    TYPE i,
+		END OF some_other_type.
+
+derived_type = VALUE #( key_field = 1
+						field1 = 'aaa'
+						field2 = 'bbb'
+						field3 = 2
+						field4 = 3
+						%control = VALUE #( key_field = if_abap_behv=>mk-on
+											field1    = if_abap_behv=>mk-off
+											field2    = if_abap_behv=>mk-on
+											field3    = if_abap_behv=>mk-on
+											field4    = if_abap_behv=>mk-off ) ).
+
+"-------------------- USING CONTROL addition --------------------
+"This addition respects the %control component of BDEF derived types, i.e.
+"only those fields for which the %control field has been marked as enabled
+"are respected by the mapping. A disabled %control field means that the
+"mapping is not applied.
+
+"In the example, components are marked as disabled in %control.
+"Consequently, the field values are not assigned, and the type-specific
+"initial values are used.
+some_other_type = CORRESPONDING #( derived_type USING CONTROL ).
+
+*KEY_FIELD    FIELD1     FIELD2    FIELD3    FIELD4
+*1                       bbb       2         0
+
+"-------------------- CHANGING CONTROL addition --------------------
+"This variant fills the %control structure of a BDEF-derived type based on
+"a non-BDEF-derived type that does not include control information.
+"In the example, two components are not assigned (i.e. they remain initial).
+"Consequently, when using the CORRESPONDING operator with CHANGING CONTROL,
+"the %control values are marked as disabled, the others as enabled.
+
+some_other_type = VALUE #( key_field = 4 field1 = 'ccc' field4 = 5 ).
+
+derived_type = CORRESPONDING #( some_other_type CHANGING CONTROL ).
+
+*%CID_REF    KEY_FIELD    FIELD1    FIELD2     FIELD3    FIELD4    %CONTROL
+*            4            ccc                  0         5         KEY_FIELD    FIELD1    FIELD2    FIELD3    FIELD4
+*                                                                  01           01        00        00        01
+```
+
+**ABAP SQL Statements with BDEF Derived Types**
+
+The ABAP SQL statements `INSERT`, `UPDATE`, `MODIFY`, and `DELETE` offer the [`MAPPING FROM ENTITY`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapmapping_from_entity.htmaddition) addition to handle BDEF derived types.
+
+```abap
+"--------------- INSERT ---------------
+"Populating a BDEF derived type
+DATA cr_der_type TYPE STRUCTURE FOR CREATE zdemo_abap_rap_ro_m.
+"%control is not relevant in this example
+cr_der_type = VALUE #( key_field = 1
+					   field1 = 'aaa'
+					   field2 = 'bbb'
+					   field3 = 2
+					   field4 = 3 ).
+
+INSERT zdemo_abap_rapt1 FROM @cr_der_type MAPPING FROM ENTITY.
+
+*KEY_FIELD    FIELD1    FIELD2    FIELD3    FIELD4
+*1            aaa       bbb       2         3
+
+"--------------- MODIFY ---------------
+cr_der_type = VALUE #( BASE cr_der_type
+          			   field1 = 'YYY'
+					   field2 = 'ZZZ' ).
+
+MODIFY zdemo_abap_rapt1 FROM @cr_der_type MAPPING FROM ENTITY.
+
+*KEY_FIELD    FIELD1    FIELD2    FIELD3    FIELD4
+*1            YYY       ZZZ       2         3
+
+"--- UPDATE with the INDICATORS SET STRUCTURE %control addition ---
+"Populating a BDEF derived type
+"%control is relevant in this example. Some %control values are enabled,
+"some are not.
+cr_der_type = VALUE #( key_field = 1
+					   field1 = '###'
+					   field2 = '...'
+					   field3 = 100
+					   field4 = 200
+					   %control = VALUE #( key_field = if_abap_behv=>mk-on
+				     					   field1    = if_abap_behv=>mk-on
+										   field2    = if_abap_behv=>mk-off
+										   field3    = if_abap_behv=>mk-off
+										   field4    = if_abap_behv=>mk-on ) ).
+
+UPDATE zdemo_abap_rapt1 FROM @cr_der_type
+	INDICATORS SET STRUCTURE %control MAPPING FROM ENTITY.
+
+"--------------- DELETE ---------------
+*KEY_FIELD    FIELD1    FIELD2    FIELD3    FIELD4
+*1            ###       ZZZ       2         200
+
+DELETE zdemo_abap_rapt1 FROM @cr_der_type MAPPING FROM ENTITY.
+```
+
+> **💡 Note**<br>
+> More information and ABAP statements: [Type Mapping for RAP](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapeml_type_mapping.htm)
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
 ## EML Syntax
 
 The focus is here on selected EML statements. These statements can be
@@ -1003,6 +1140,22 @@ MODIFY ENTITIES OF root_ent      "full name of root entity
   MAPPED DATA(m)       "Target variables declared inline
   FAILED DATA(f)
   REPORTED DATA(r).
+
+"Note: You can use the AUTO FILL CID addition to fill %cid automatically. It is 
+"also possible in the short form. 
+MODIFY ENTITIES OF root_ent      
+  ENTITY root                    
+  CREATE AUTO FILL CID WITH 
+  VALUE #( ( key_field = 3
+             field1    = 'E'
+             field2    = 'F'
+             %control = VALUE #(                
+               key_field = if_abap_behv=>mk-on
+               field1    = if_abap_behv=>mk-on
+               field2    = if_abap_behv=>mk-on ) ) )
+  MAPPED DATA(m2)       
+  FAILED DATA(f2)
+  REPORTED DATA(r2).
 ```
 
 > **💡 Note**<br>

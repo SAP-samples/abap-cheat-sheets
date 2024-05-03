@@ -150,7 +150,7 @@ DATA: flag  TYPE c LENGTH 1,   "Built-in type
       char1 TYPE c_type,       "Local type
       str2  LIKE str1,         "Deriving type from a local data object
       str3  TYPE str_type,     "Local type
-      char2 TYPE s_toairp,     "DDIC type (used e. g. for a field in a demo table)
+      tstmp TYPE timestampl,   "DDIC type 
       char3 TYPE zdemo_abap_flsch-carrid. "Using the type of a DDIC table component
 
 "You may also encounter declarations with type c and the length
@@ -1651,13 +1651,25 @@ Character Sets, Ranges, Subgroups and Lookarounds
 | `(?!...)` | Negative lookahead, returns characters that are not followed by a specified pattern without including this pattern | `a(?!b)` | abc ade | abc <ins>**a**</ins>de | <ins>**a**</ins>bc ade |
 | `(?<=...)` | Positive lookbehind, returns characters that are preceded by a specified pattern without including this pattern | `(?<=\s)c` | ab c abcd | ab <ins>**c**</ins> abcd (it is preceded by a blank) | ab c ab<ins>**c**</ins>d |
 | `(?<!...)` | Negative lookbehind, returns characters that are not preceded by a specified pattern without including this pattern | `(?<!\s)c` | ab c abcd | ab c ab<ins>**c**</ins>d (it is not preceded by a blank) | ab <ins>**c**</ins> abcd |
-| `\n` | Backreference, refers to a previous capturing group; n represents the number of the group index that starts with 1 | `(a.)(\w*)\1` | abcdefabghij | <ins>**abcdefab**</ins>ghij <br>Note: Capturing group 1 holds `ab` in the example. The second capturing group captures all word characters until `ab` is found. | <ins>**ab**</ins>cdefabghij |
+| `\1` | Backreference, refers to a previous capturing group; 1 represents the number of the group index (the group index starts with 1) | `(a.)(\w*)\1` | abcdefabghij | <ins>**abcdefab**</ins>ghij <br>Note: Capturing group 1 holds `ab` in the example. The second capturing group captures all word characters until `ab` is found. | <ins>**ab**</ins>cdefabghij |
 | `\K` | Resets the starting point of a match, i.e. findings are excluded from the final match | `a.\Kc` | abcd | ab<ins>**c**</ins>d | <ins>**abc**</ins>d |
 
 > **💡 Note**<br>
 > - Subgroups are useful in replacements. By using an expression with `$` and a number, such as `$1`, you can refer to a specific group. For example, you have a string `abcde`. A PCRE expression might be
 `(ab|xy)c(d.)`, where two subgroups are specified within two pairs of parentheses. In a replacement pattern, you can refer to the first group with `$1` and the second group with `$2`. Thus, the replacement pattern `$2Z$1` results in `deZab`.
 > - `(?:x)` creates a group but it is not captured. Example regular expression: `(?:ab)(ap)`. Example string: 'abap'. It matches 'abap', but `$1` will only contain 'ap'. 
+> - Note that `.` does not include new line feeds among others. If you want to capture a new line, you can use `\n` as regular expression. The following example string includes a new line. All content between the HTML p tags should be replaced. You could use a regular expression to capture any character or new line as follows:
+>   ```abap 
+>   DATA(str_a) = |<p>Hallo\n</p><p>Ciao!</p><p>Salut.</p>|.
+>   DATA(str_b) = str_a.
+>
+>   REPLACE ALL OCCURRENCES OF PCRE `(<p>)(.*?)(<\/p>)` IN str_a WITH `$1Hi$3`.
+>   "<p>Hallo
+>   "</p><p>Hi</p><p>Hi</p>
+>
+>   "Regular expression: any character or a new line with zero or more repretitions
+>   REPLACE ALL OCCURRENCES OF PCRE `(<p>)(.|\n)*?(<\/p>)` IN str_b WITH `$1Hi$3`.
+>   "<p>Hi</p><p>Hi</p><p>Hi</p>
 
 Anchors and Positions
 

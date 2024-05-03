@@ -339,15 +339,15 @@ ENDTRY.
 "Creating demo XML data to be used in the example.
 DATA(xml_oo_read) = cl_abap_conv_codepage=>create_out( )->convert(
       `<?xml version="1.0"?>` &&
-      `<node atta="123">` &&
+      `<node attr_a="123">` &&
       ` <subnode1>` &&
       ` <status>A</status>` &&
       ` <date format="mm-dd-yyyy">01-01-2024</date>` &&
       ` </subnode1>` &&
       ` <subnode2>`  &&
-      ` <text attb="1" attc="a">abc</text>` &&
-      ` <text attb="2" attc="b">def</text>` &&
-      ` <text attb="3" attc="c">ghi</text>` &&
+      ` <text attr_b="1" attr_c="a">abc</text>` &&
+      ` <text attr_b="2" attr_c="b">def</text>` &&
+      ` <text attr_b="3" attr_c="c">ghi</text>` &&
       ` </subnode2>` &&
       `</node>` ).
 

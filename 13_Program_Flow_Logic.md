@@ -814,8 +814,12 @@ RAISE EXCEPTION TYPE cx_sy_zerodivide.
 "If the expression is false, the program is terminated and an uncatchable exception is raised
 "resulting in the runtime error ASSERTION_FAILED.
 
-DATA(flag) = abap_false.
+DATA(number) = 0.
+ASSERT number IS INITIAL.
+ASSERT number > -1.
+ASSERT 1 = 1.
 
+DATA(flag) = abap_false.
 ASSERT flag = abap_true.
 ```
 

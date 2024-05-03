@@ -29,6 +29,7 @@
     - [Improving Read Performance with Secondary Table Keys](#improving-read-performance-with-secondary-table-keys)
     - [Searching and Replacing Substrings in Internal Tables with Character-Like Data Types](#searching-and-replacing-substrings-in-internal-tables-with-character-like-data-types)
     - [Ranges Tables](#ranges-tables)
+    - [Getting Table Type Information and Creating Internal Tables at Runtime](#getting-table-type-information-and-creating-internal-tables-at-runtime)
   - [More Information](#more-information)
   - [Executable Example](#executable-example)
 
@@ -1705,6 +1706,17 @@ SELECT * FROM @inttab AS tab
     INTO TABLE @DATA(result).
 "result: 1, 2, 3, 6, 7, 8, 12, 13, 14, 15, 18, 19, 20
 ```
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+### Getting Table Type Information and Creating Internal Tables at Runtime
+
+Using [Runtime Type Services (RTTS)](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrun_time_type_services_glosry.htm "Glossary Entry")
+you can ...
+- get type information on data objects, data types or [instances](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abeninstance_glosry.htm "Glossary Entry") at runtime ([Runtime Type Identification (RTTI)](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrun_time_type_identific_glosry.htm "Glossary Entry")).
+- define and create new data types as [type description objects](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentype_object_glosry.htm) at runtime ([Runtime Type Creation (RTTC)](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrun_time_type_creation_glosry.htm "Glossary Entry")).
+
+For more information, see the [Dynamic Programming](06_Dynamic_Programming.md) cheat sheet.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 

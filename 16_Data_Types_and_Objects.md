@@ -23,7 +23,7 @@
   - [Notes on the Declaration Context](#notes-on-the-declaration-context)
   - [Excursions](#excursions)
     - [Enumerated Types and Objects](#enumerated-types-and-objects)
-    - [Getting Type Information and Creating Types at Runtime](#getting-type-information-and-creating-types-at-runtime)
+    - [Getting Type Information and Creating Types/Data Objects at Runtime](#getting-type-information-and-creating-typesdata-objects-at-runtime)
     - [Ranges Tables](#ranges-tables)
     - [Typed Literals in ABAP SQL](#typed-literals-in-abap-sql)
   - [Executable Example](#executable-example)
@@ -1418,10 +1418,12 @@ Enumerated variables can be declared by referring to the enumerated type.
 They can only be assigned the enumerated values defined there that exist as the content of enumerated constants or components of an enumerated structure.
 
 ```abap
+"Using the enumerated type from above
 DATA dobj_enum_a TYPE t_enum.
 
 dobj_enum_a = a.
 
+"Data object declared inline, the typed derived is t_enum
 DATA(dobj_enum_b) = b.   
 ```
 
@@ -1429,11 +1431,16 @@ Find more information on enumerated types in the (commented code of the) cheat s
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-### Getting Type Information and Creating Types at Runtime
-Using [Runtime Type Identification (RTTI)](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrun_time_type_identific_glosry.htm "Glossary Entry"), you can get type information on data objects, data types or [instances](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abeninstance_glosry.htm "Glossary Entry") at runtime ([Runtime Type Identification (RTTI)](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrun_time_type_identific_glosry.htm "Glossary Entry")).
-Using [Runtime Type Creation (RTTC)](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrun_time_type_creation_glosry.htm "Glossary Entry"), you can define and create new data types as [type description objects](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentype_object_glosry.htm) at runtime.
+### Getting Type Information and Creating Types/Data Objects at Runtime
 
-Find more information in the [cheat sheet about dynamic programming](06_Dynamic_Programming.md#runtime-type-services-rtts). 
+Using [Runtime Type Services (RTTS)](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrun_time_type_services_glosry.htm "Glossary Entry")
+you can ...
+- get type information on data objects, data types or [instances](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abeninstance_glosry.htm "Glossary Entry") at runtime ([Runtime Type Identification (RTTI)](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrun_time_type_identific_glosry.htm "Glossary Entry")).
+- define and create new data types as [type description objects](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentype_object_glosry.htm) at runtime ([Runtime Type Creation (RTTC)](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrun_time_type_creation_glosry.htm "Glossary Entry")).
+
+For more information, see the [Dynamic Programming](06_Dynamic_Programming.md) cheat sheet.
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ### Ranges Tables
 

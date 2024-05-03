@@ -13,7 +13,9 @@
     - [Using the CORRESPONDING Operator and MOVE-CORRESPONDING Statements](#using-the-corresponding-operator-and-move-corresponding-statements)
   - [Clearing Structures](#clearing-structures)
   - [Processing Structures](#processing-structures)
-  - [Excursion: Including Structures](#excursion-including-structures)
+  - [Excursions](#excursions)
+    - [Including Structures](#including-structures)
+    - [Getting Structured Type Information and Creating Structures at Runtime](#getting-structured-type-information-and-creating-structures-at-runtime)
   - [Executable Example](#executable-example)
 
 ## Introduction
@@ -670,7 +672,9 @@ MODIFY TABLE itab FROM struc.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-## Excursion: Including Structures
+## Excursions 
+
+### Including Structures
 
 - [`INCLUDE TYPE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapinclude_type.htm)
 and [`INCLUDE STRUCTURE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapinclude_type.htm) statements 
@@ -710,8 +714,19 @@ TYPES BEGIN OF address_type.
 TYPES END OF address_type.
 ```
 
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+### Getting Structured Type Information and Creating Structures at Runtime
+
+Using [Runtime Type Services (RTTS)](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrun_time_type_services_glosry.htm "Glossary Entry")
+you can ...
+- get type information on data objects, data types or [instances](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abeninstance_glosry.htm "Glossary Entry") at runtime ([Runtime Type Identification (RTTI)](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrun_time_type_identific_glosry.htm "Glossary Entry")).
+- define and create new data types as [type description objects](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentype_object_glosry.htm) at runtime ([Runtime Type Creation (RTTC)](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrun_time_type_creation_glosry.htm "Glossary Entry")).
+
+For more information, see the [Dynamic Programming](06_Dynamic_Programming.md) cheat sheet.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
+
 
 ## Executable Example
 [zcl_demo_abap_structures](./src/zcl_demo_abap_structures.clas.abap)
