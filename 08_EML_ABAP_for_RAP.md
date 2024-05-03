@@ -921,15 +921,15 @@ DATA: BEGIN OF some_other_type,
 		END OF some_other_type.
 
 derived_type = VALUE #( key_field = 1
-						field1 = 'aaa'
-						field2 = 'bbb'
-						field3 = 2
-						field4 = 3
-						%control = VALUE #( key_field = if_abap_behv=>mk-on
-											field1    = if_abap_behv=>mk-off
-											field2    = if_abap_behv=>mk-on
-											field3    = if_abap_behv=>mk-on
-											field4    = if_abap_behv=>mk-off ) ).
+                        field1 = 'aaa'
+                        field2 = 'bbb'
+                        field3 = 2
+                        field4 = 3
+                        %control = VALUE #( key_field = if_abap_behv=>mk-on
+                                            field1    = if_abap_behv=>mk-off
+                                            field2    = if_abap_behv=>mk-on
+                                            field3    = if_abap_behv=>mk-on
+                                            field4    = if_abap_behv=>mk-off ) ).
 
 "-------------------- USING CONTROL addition --------------------
 "This addition respects the %control component of BDEF derived types, i.e.
@@ -971,10 +971,10 @@ The ABAP SQL statements `INSERT`, `UPDATE`, `MODIFY`, and `DELETE` offer the [`M
 DATA cr_der_type TYPE STRUCTURE FOR CREATE zdemo_abap_rap_ro_m.
 "%control is not relevant in this example
 cr_der_type = VALUE #( key_field = 1
-					   field1 = 'aaa'
-					   field2 = 'bbb'
-					   field3 = 2
-					   field4 = 3 ).
+                       field1 = 'aaa'
+                       field2 = 'bbb'
+                       field3 = 2
+                       field4 = 3 ).
 
 INSERT zdemo_abap_rapt1 FROM @cr_der_type MAPPING FROM ENTITY.
 
@@ -983,8 +983,8 @@ INSERT zdemo_abap_rapt1 FROM @cr_der_type MAPPING FROM ENTITY.
 
 "--------------- MODIFY ---------------
 cr_der_type = VALUE #( BASE cr_der_type
-          			   field1 = 'YYY'
-					   field2 = 'ZZZ' ).
+                       field1 = 'YYY'
+                       field2 = 'ZZZ' ).
 
 MODIFY zdemo_abap_rapt1 FROM @cr_der_type MAPPING FROM ENTITY.
 
@@ -996,15 +996,15 @@ MODIFY zdemo_abap_rapt1 FROM @cr_der_type MAPPING FROM ENTITY.
 "%control is relevant in this example. Some %control values are enabled,
 "some are not.
 cr_der_type = VALUE #( key_field = 1
-					   field1 = '###'
-					   field2 = '...'
-					   field3 = 100
-					   field4 = 200
-					   %control = VALUE #( key_field = if_abap_behv=>mk-on
-				     					   field1    = if_abap_behv=>mk-on
-										   field2    = if_abap_behv=>mk-off
-										   field3    = if_abap_behv=>mk-off
-										   field4    = if_abap_behv=>mk-on ) ).
+                       field1 = '###'
+                       field2 = '...'
+                       field3 = 100
+                       field4 = 200
+                       %control = VALUE #( key_field = if_abap_behv=>mk-on
+                                           field1    = if_abap_behv=>mk-on
+                                           field2    = if_abap_behv=>mk-off
+                                           field3    = if_abap_behv=>mk-off
+                                           field4    = if_abap_behv=>mk-on ) ).
 
 UPDATE zdemo_abap_rapt1 FROM @cr_der_type
 	INDICATORS SET STRUCTURE %control MAPPING FROM ENTITY.
