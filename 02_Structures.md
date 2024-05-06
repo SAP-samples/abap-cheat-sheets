@@ -127,7 +127,7 @@ DATA END OF struc.
 >-  The keywords [`CLASS-DATA`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapclass-data.htm) and [`CONSTANTS`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapconstants.htm) can also be used to create structures. In principle, they represent special cases of the general statement shown above. See the ABAP Keyword Documentation for more information. 
 >- Structures can also be created [inline](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abeninline_declaration_glosry.htm) using [`DATA(...)`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendata_inline.htm) or [`FINAL(...)`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenfinal_inline.htm), as shown below.
 
-Creating structures using existing structured types:
+**Creating structures using existing structured types**
 
 ``` abap
 "Local structured type 
@@ -156,10 +156,12 @@ DATA: struc_6 LIKE struc_1,
 ```
 
 
-Creating structures by inline declaration using `DATA(...)` 
+**Creating structures by inline declaration** 
+
 - This is particularly useful for declaring data objects at the [operand positions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenoperand_position_glosry.htm) where you actually need them. 
 - In this way, you can avoid an extra declaration of the structure in different contexts.
-- You can also use the [`FINAL`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenfinal_inline.htm) declaration operator to create [immutable variables](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenimmutable_variable_glosry.htm).
+- You can use the declaration operator using `DATA(...)`. The [`FINAL`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenfinal_inline.htm) declaration operator is used to create [immutable variables](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenimmutable_variable_glosry.htm).
+- You can also create structures using the `VALUE` operator (and also fill them as shown below). Without specifying component values in the parentheses, you create an initial structure. 
 
 ``` abap
 "Structures created inline instead of an extra declared variable
@@ -169,6 +171,14 @@ struc_9 = struc_1
 "Type is derived from the right-hand structure; the content of struc is assigned, too.
 DATA(struc_10) = struc_1.
 FINAL(struc_11) = struc_9.
+
+"Using the VALUE operator
+"A structure declaration as follows (without providing component 
+"value assignments) ...
+DATA(struc_a) = VALUE struc_type( ).
+
+"... yields the same result as the following declaration.
+DATA struc_b TYPE struc_type.
 
 "Structures declared inline instead of an extra declared variable
 
@@ -202,6 +212,36 @@ ENDLOOP.
 LOOP AT itab INTO DATA(wa_2).
   ...
 ENDLOOP.
+```
+
+**Anonymous Structures**
+
+Using the instance operator [`NEW`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconstructor_expression_new.htm) and [`CREATE DATA`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapcreate_data.htm) statements, you can create [anonymous data objects](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenanonymous_data_object_glosry.htm "Glossary Entry"), such as anonymous structures. 
+The `NEW` addition of the `INTO` clause of an ABAP SQL `SELECT` statement also creates an anonymous data object. 
+As outlined below, you can access the components or the entire data objects by [dereferencing](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendereferencing_operat_glosry.htm). 
+For more information, refer to the [Dynamic Programming](06_Dynamic_Programming.md) and [Constructor Expressions](05_Constructor_Expressions.md) cheat sheets.
+
+```abap
+"Without assigning component values in the parentheses, the anonymous
+"structure is initial.
+DATA(struc_ref_a) = NEW struc_type( ).
+
+DATA struc_ref_b TYPE REF TO DATA.
+struc_ref_b = NEW struc_type( ).
+
+"Multiple syntax options are available for CREATE DATA
+"statements. See the cheat sheets mentioned.
+CREATE DATA struc_ref_b TYPE struc_type.
+
+DATA struc_ref_c TYPE REF TO struc_type.
+"Implicit data type definition
+CREATE DATA struc_ref_c.
+
+"NEW addition of the INTO clause of an ABAP SQL SELECT statement
+SELECT SINGLE carrid, carrname
+ FROM zdemo_abap_carr
+ WHERE carrid = char`LH`
+ INTO NEW @DATA(struc_ref_d).
 ```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
@@ -373,6 +413,17 @@ DATA(addr) = VALUE addr_struc( name   = `Mr. Duncan Pea`
                                street = `Vegetable Lane 11`
                                city   = `349875 Botanica` ).
 
+
+"Using the BASE addition to retain existing component values
+addr = VALUE #( BASE addr street = `Some Street 1` ).
+*NAME              STREET           CITY           
+*Mr. Duncan Pea    Some Street 1    349875 Botanica
+
+"Without the BASE addition, the components are initialized
+addr = VALUE #( street = `Another Street 2` ).
+*NAME       STREET              CITY   
+*           Another Street 2           
+
 "Nesting value operators
 TYPES: BEGIN OF struc_nested,
         a TYPE i,
@@ -537,6 +588,9 @@ CLEAR struc.
 
 "Note: An assignment using the VALUE operator without entries in the parentheses clears the structure. 
 struc = VALUE #( ). 
+
+"The same applies to data reference variables pointing to structures.
+struc_ref = NEW #( ).
 ```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>

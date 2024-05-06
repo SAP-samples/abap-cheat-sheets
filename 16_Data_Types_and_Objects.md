@@ -854,6 +854,26 @@ SELECT * FROM zdemo_abap_carr INTO TABLE @DATA(itab_b3).
 SELECT * FROM zdemo_abap_carr INTO TABLE NEW @DATA(itab_ref).
 ```
 
+Inline declaration is useful for specifying data objects as actual parameters in method calls. It automatically determines the appropriate type, eliminating the need for additional variable declarations. However, it is important to note that inline declarations cannot be used when a method call is included in an expression. For example, if a method has both returning and exporting parameters, and you want to make a method call and assignement as shown in the example commented out, while also using inline declarations for the exporting parameters, this is not possible. This is because the assignment involves a method call expression on the right-hand side.
+
+```abap
+"The following method calculates the difference in days, hours, minutes,
+"and seconds of two time stamps.
+"Check the F2 information of the 'diff' method. It has 4 exporting parameters.
+"3 different types are involved. Using the inline declarations, the data
+"objects receive the suitable types automatically. Extra variable declarations
+"with suitable types can be avoided.
+cl_abap_utclong=>diff( EXPORTING high     = CONV utclong( '2024-01-01 15:30:00' )
+                                 low      = CONV utclong( '2023-12-24 14:20:40' )
+                       IMPORTING days    = DATA(days)
+                                 hours   = DATA(hours)
+                                 minutes = DATA(minutes)
+                                 seconds = DATA(seconds) ).
+
+"Not possible
+"DATA(result) = some_cl=>some_meth( IMPORTING some_param = DATA(act_param) ).                                  
+```
+
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ### Assigning References to Data Reference Variables

@@ -7,8 +7,9 @@
   - [Basic Properties of Internal Tables](#basic-properties-of-internal-tables)
   - [Table Keys in Internal Tables (Primary, Secondary, Standard, Empty)](#table-keys-in-internal-tables-primary-secondary-standard-empty)
   - [Creating Internal Tables and Types](#creating-internal-tables-and-types)
-  - [Filling and Copying Internal Tables](#filling-and-copying-internal-tables)
-    - [Using INSERT and APPEND Statements](#using-insert-and-append-statements)
+  - [Populating Internal Tables](#populating-internal-tables)
+    - [Copying Internal Tables](#copying-internal-tables)
+    - [Using INSERT and APPEND Statements to Populate Internal Tables](#using-insert-and-append-statements-to-populate-internal-tables)
     - [Creating and Filling Internal Tables Using Constructor Expressions](#creating-and-filling-internal-tables-using-constructor-expressions)
     - [Excursion: Using Internal Tables in ABAP SQL Statements](#excursion-using-internal-tables-in-abap-sql-statements)
   - [Reading Single Lines from Internal Tables](#reading-single-lines-from-internal-tables)
@@ -405,9 +406,26 @@ SELECT * FROM zdemo_abap_fli INTO TABLE @FINAL(it_inline6).
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-## Filling and Copying Internal Tables
+## Populating Internal Tables
 
-### Using INSERT and APPEND Statements
+### Copying Internal Tables
+
+A simple assignment without a constructor expression that **copies the content of another internal table** (note that the existing content in `itab` are deleted). The example below assumes that the source and target table have compatible line types. Using inline declaration is helpful to avoid an additional internal table declaration with an appropriate type.
+
+``` abap
+itab = itab2.
+
+DATA(itab3) = itab.
+FINAL(itab4) = itab.
+```
+
+> **💡 Note**<br>
+> - Internal tables can only be assigned to internal tables. 
+> - Internal tables can be assigned to each other if their line types are [compatible](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencompatible_glosry.htm) or [convertible](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconvertible_glosry.htm).
+> - An assignment can trigger an uncatchable exception if, for example, the target table is assigned a duplicate of a unique primary table key or secondary table.
+> - More information: [Conversion Rules for Internal Tables](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconversion_itab.htm)
+
+### Using INSERT and APPEND Statements to Populate Internal Tables
 
 You can use the ABAP keywords
 [`INSERT`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapinsert_itab.htm)
@@ -579,15 +597,7 @@ itab = VALUE #( ( comp1 = a comp2 = b ...)
                 ( LINES OF itab2 )
                 ... ).
 ```
-A simple assignment without a constructor expression that **copies the content of another internal table** (note that the existing content in `itab` are deleted). The example below assumes that the source and target table have compatible line types. 
-``` abap
-itab = itab2.
-```
-> **💡 Note**<br>
-> - Internal tables can only be assigned to internal tables. 
-> - Internal tables can be assigned to each other if their line types are [compatible](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencompatible_glosry.htm) or [convertible](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconvertible_glosry.htm).
-> - An assignment can trigger an uncatchable exception if, for example, the target table is assigned a duplicate of a unique primary table key or secondary table.
-> More information: [Conversion Rules for Internal Tables](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconversion_itab.htm)
+
 
 **Copying the content of another internal table** using the
 [`CORRESPONDING`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconstructor_expr_corresponding.htm) operator. 
@@ -721,12 +731,12 @@ DATA(f11) = FILTER #( itab2 USING KEY sec_key EXCEPT IN filter_tab2 WHERE num = 
 ```
 
 > **💡 Note**<br>
-> More constructor expressions are available to deal with internal tables. Find more information and examples in the [Constructor Expression cheat sheet](05_Constructor_Expressions.md).
+> More constructor expressions are available to deal with internal tables, for example the `REDUCE` operator. Find more information and examples in the [Constructor Expression cheat sheet](05_Constructor_Expressions.md).
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ### Excursion: Using Internal Tables in ABAP SQL Statements
-For more details on ABAP SQL, see the cheat sheet on [ABAP SQL](03_ABAP_SQL.md).
+For more details on ABAP SQL, see the [ABAP SQL](03_ABAP_SQL.md) cheat sheet.
 
 **Adding multiple lines from a database table to an internal table** using
 [`SELECT`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapselect.htm),
@@ -814,7 +824,7 @@ Filling internal table from a table based on the existence of data in
 another table using the [`FOR ALL ENTRIES`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenwhere_all_entries.htm) addition.
 
 > **💡 Note**<br>
-> Make sure that the internal table you are reading from is not initial. Therefore, it is recommended that you use a subquery as shown above: `... ( SELECT ... FROM @itab AS itab_alias WHERE ...`).
+> Make sure that the internal table you are reading from is not initial. Therefore, it is recommended that you use a subquery as shown above: `... ( SELECT ... FROM @itab AS itab_alias WHERE ... ) ...`.
 
 ``` abap
 IF itab IS NOT INITIAL.
@@ -1502,6 +1512,9 @@ FREE it.
 
 "Assignment using the VALUE operator without entries in the parentheses
 it = VALUE #( ). 
+
+"The same applies to data reference variables pointing to internal tables.
+it_ref = NEW #( ).
 ```
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 

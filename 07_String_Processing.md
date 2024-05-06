@@ -1820,6 +1820,17 @@ s2 = replace( val  = s1
 
 "Changing the source field directly with a REPLACE statement; same as above
 REPLACE PCRE `(.*?)PP(.*)` IN s1 WITH `$2#$1` IGNORING CASE. "pc app#ab a
+
+"ALL OCCURRENCES addition
+REPLACE ALL OCCURRENCES OF PCRE `\s` IN s1 WITH `?`. "pc?app#ab?a
+
+REPLACE ALL OCCURRENCES OF PCRE `p.` IN s1 WITH `XY` "XY?aXY#ab?a
+    REPLACEMENT COUNT DATA(repl_cnt) "2
+    RESULTS DATA(repl_res).
+    "repl_res:
+    "LINE    OFFSET    LENGTH
+    "0       0         2
+    "0       4         2
 ```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
