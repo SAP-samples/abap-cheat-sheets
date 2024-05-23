@@ -1827,6 +1827,82 @@ CALL METHOD oref2->('TRIPLE') PARAMETER-TABLE ptab.
 result = ptab[ name = 'R_TRIPLE' ]-('VALUE')->*. "9
 ```
 
+**Excursion** 
+
+The following simplified example highlights several things in the context of a dynamic invoke example: 
+- Dynamic invoke and assigning actual parameters to formal parameters statically
+- Creating instances of classes dynamically, using generic types
+- The concepts of static vs. dynamic type, upcast vs. downcast
+- Dynamic ABAP does the same as static ABAP, but with dynamic ABAP, errors may not be discovered until runtime.
+- Type compliance (see the [General Rules for Typing](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentyping_check_general.htm))
+
+```abap
+CLASS zcl_demo_test DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
+
+  PUBLIC SECTION.
+    INTERFACES if_oo_adt_classrun.
+    METHODS some_method IMPORTING obj TYPE REF TO zcl_demo_abap_objects.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+ENDCLASS.
+
+CLASS zcl_demo_test IMPLEMENTATION.
+  METHOD if_oo_adt_classrun~main.
+
+    "Creating an instance of a class dynamically
+    "Here, an object reference variable of the generic type 'object'
+    "is used. This generic type is the static type.
+    "After the CREATE OBJECT statement in the example, the dynamic type 
+    "is 'ref to zcl_demo_abap_objects'. It is the type which the variable 
+    "points to at runtime.
+    DATA oref TYPE REF TO object.
+    CREATE OBJECT oref TYPE ('ZCL_DEMO_ABAP_OBJECTS').
+
+    "In the example, the some_method method expects an object reference
+    "variable with type 'ref to zcl_demo_abap_objects'.
+    "A static method call such as the following is not possible. The compiler will
+    "raise an error since there is no type compliance. This is because the
+    "static type of the formal parameter is not compliant with the static
+    "type of oref - even if the dynamic type to which the variable points
+    "to at runtime is suitable.
+    "some_method( oref ).
+
+    "As a rule, static ABAP does the same as dynamic ABAP. So, the following
+    "dynamic statement raises an error at runtime. There is no compiler
+    "error shown at compile time.
+    TRY.
+        CALL METHOD ('SOME_METHOD') EXPORTING obj = oref.
+      CATCH cx_sy_dyn_call_illegal_type.
+    ENDTRY.
+
+    "See also the following statement. No error at compile time
+    "with the nonsense formal parameter.
+    "It is checked at runtime and will consequently raise an issue.
+    TRY.
+        CALL METHOD ('SOME_METHOD') EXPORTING abcdef = oref.
+      CATCH cx_sy_dyn_call_param_missing.
+    ENDTRY.
+
+    "If you have such a use case, and deal with generic/dynamic types, note
+    "the general rules for typing in the ABAP Keyword Documentation.
+    "A prior downcast (i.e. from the more generic type 'object' to the less
+    "specific type zcl_demo_abap_objects) can be done. In this context, note
+    "that upcasts are possible (and implicitly done) when assigning the parameters, 
+    "but downcasts must always be done explicitly, for example, using the CAST 
+    "operator as follows (if you know the type to cast to).
+    CALL METHOD ('SOME_METHOD') EXPORTING obj = CAST zcl_demo_abap_objects( oref ).
+  ENDMETHOD.
+
+  METHOD some_method.
+    ...
+  ENDMETHOD.
+
+ENDCLASS.
+```
+
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ### Dynamic Formatting Option Specifications in String Templates

@@ -6,7 +6,6 @@
   - [Introduction](#introduction)
   - [VALUE](#value)
   - [CORRESPONDING](#corresponding)
-  - [NEW](#new)
   - [CONV](#conv)
   - [EXACT](#exact)
   - [REF](#ref)
@@ -425,7 +424,7 @@ topic](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file
 | Addition  | Details |
 |---|---|
 | `BASE` | Keeps original values. Unlike, for example, the operator `VALUE`, a pair of parentheses must be set around `BASE`.  |
-| `MAPPING`  | Enables the mapping of component names, i. e. a component of a source structure or source table can be assigned to a differently named component of a target structure or target table (e. g. `MAPPING c1 = c2`).  |
+| `MAPPING`  | Enables the mapping of component names, i. e. a component of a source structure or source table can be assigned to a differently named component of a target structure or target table (e. g. `MAPPING c1 = c2`). The `DEFAULT` addition is possible when using the `MAPPING` addition. It allows the assignment of values for a target component based on an expression. |
 | `EXCEPT`  | You can specify components that should not be assigned content in the target data object. They remain initial. In doing so, you exclude identically named components in the source and target object that are not compatible or convertible from the assignment to avoid syntax errors or runtime errors.  |
 | `DISCARDING DUPLICATES`  | Relevant for tabular components. Handles duplicate lines and prevents exceptions when dealing with internal tables that have a unique primary or secondary table key. |
 | `DEEP`  | Relevant for deep tabular components. They are resolved at every hierarchy level and identically named components are assigned line by line.  |
@@ -574,6 +573,89 @@ two statements are  not the same:
 >"Not matching components are not initialized
 >MOVE-CORRESPONDING struc1 TO struc2.
 >```
+
+`DEFAULT` addition when using `MAPPING`: 
+- This addition allows the assignment of values for a target component based on an expression (which is evaluated before the `CORRESPONDING` expression). 
+- `DEFAULT` can be preceded by the source component. In this case, the source component's value is assigned to the left-hand side only if the source component is not initial. If it is initial, the value of the expression following the `DEFAULT` addition is assigned.
+
+´´´abap
+"Creating and populating data objects to work with
+DATA: BEGIN OF struc1,
+        id1 TYPE i,
+        a   TYPE string,
+        b   TYPE string,
+        c   TYPE i,
+        d   TYPE string,
+        e   TYPE i,
+        END OF struc1.
+
+DATA: BEGIN OF struc2,
+        id2 TYPE i,
+        a   TYPE string,
+        b   TYPE string,
+        c   TYPE i,
+        d   TYPE string,
+        z   TYPE i,
+        END OF struc2.
+
+DATA itab1 LIKE TABLE OF struc1 WITH EMPTY KEY.
+
+"Populating structure
+struc1 = VALUE #( id1 = 1 a = `a` b = `b` c = 2 d = `d` e = 3 ).
+
+"--------- Assignment using CORRESPONDING (DEFAULT only) ---------
+"- Component a: It is not specified but it is mapped anyway
+"     due to the identical name and not being explicitly specified
+"  for mapping
+"- The other components demonstrate various expressions
+"  in combination with the DEFAULT addition.
+"- Component d: The internal table is initial in the example. The
+"     DEFAULT addition to the VALUE operator avoids a runtime error
+"     and specifies a default value in case of a non-existent table
+"     line.
+struc2 = CORRESPONDING #(
+    struc1 MAPPING id2 = id1
+                    b = DEFAULT `ha` && `llo`
+                    c = DEFAULT 1 + 5
+                    d = DEFAULT VALUE #( itab1[ 1 ]-d DEFAULT `hi` )
+                    z = DEFAULT cl_abap_random_int=>create(
+                                    seed = cl_abap_random=>seed( )
+                                    min  = 1
+                                    max = 100 )->get_next( ) ).
+
+*struc2 (the value of z may vary because a random integer is created):
+*ID2    A    B        C    D     Z 
+*1      a    hallo    6    hi    28
+
+"--- Assignment using CORRESPONDING (DEFAULT preceded by the source ---
+"--- component on the right-hand side) --------------------------------
+"- The example is similar to above. Various expressions are included
+"    in combination with the DEFAULT addition
+"- Component a: It is not specified; see above.
+"- Components b/e: The values of the components b and e in the source
+"    are initial. Therefore, the result of the expression is assigned.
+"- Components c/d: The values of the components c and d in the source
+"    are not initial. Therefore, the values of c and d are assigned.
+
+"Populating structure
+struc1 = VALUE #( id1 = 1 a = `a` b = `` c = 2 d = `d` e = 0 ).
+
+struc2 = CORRESPONDING #(
+    struc1 MAPPING id2 = id1
+                    b = b DEFAULT `ha` && `llo`
+                    c = c DEFAULT 1 + 5
+                    d = d DEFAULT VALUE #( itab1[ 1 ]-d DEFAULT `hi` )
+                    z = e DEFAULT cl_abap_random_int=>create(
+                                    seed = cl_abap_random=>seed( )
+                                    min  = 1
+                                    max = 100 )->get_next( ) ).
+
+*struc2 (the value of z may vary because a random integer is created):
+*ID2    A    B        C    D    Z 
+*1      a    hallo    2    d    30
+```
+
+
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 

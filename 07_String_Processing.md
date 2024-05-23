@@ -1670,6 +1670,13 @@ Character Sets, Ranges, Subgroups and Lookarounds
 >   "Regular expression: any character or a new line with zero or more repretitions
 >   REPLACE ALL OCCURRENCES OF PCRE `(<p>)(.|\n)*?(<\/p>)` IN str_b WITH `$1Hi$3`.
 >   "<p>Hi</p><p>Hi</p><p>Hi</p>
+>   ```
+> - Regarding special characters, check the [Special Characters](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenregex_pcre_syntax_specials.htm) topic in the ABAP Keyword Documentation. For example, a non-breaking space whose hex code is *U+00A0*. You can replace all of the non-breaking space occurrences in a string as follows:
+>   ```abap 
+>   REPLACE ALL OCCURRENCES OF PCRE `\x{00A0}` IN some_string WITH ``.
+>   "Alternative
+>   REPLACE ALL OCCURRENCES OF PCRE `(*UTF)\N{U+00A0}` IN some_string WITH ``.
+>   ```
 
 Anchors and Positions
 

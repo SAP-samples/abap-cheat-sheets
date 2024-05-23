@@ -81,7 +81,7 @@ Boolean function that returns a truth value. Similar to <code>boolc</code>, it r
 <br><br>
 
 ``` abap
-"X
+"abap_true
 DATA(xsdb1) = xsdbool( 3 > 1 ). 
 
 "#X#
@@ -216,7 +216,7 @@ DATA(cont15) = xsdbool( contains_any_not_of( val = hi end = abc ) ).
 <tr>
 <td> <code>matches</code> </td>
 <td>
-Comparing a search range. More optional parameters are available.
+Comparing a search range of a value with a regular expression. More optional parameters are available (e.g. <code>case</code>, <code>off</code>, <code>len</code>).
 <br><br>
 
 ``` abap

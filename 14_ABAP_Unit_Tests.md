@@ -93,7 +93,7 @@ ENDCLASS.
 >   - `SHORT`: execution time of only a few seconds is expected
 >   - `MEDIUM`: execution time of about one minute is expected
 >   - `LONG`: execution time of more than one minute is expected  
-> - To create a class in ADT, type "test" in the "Test Classes" tab and choose `CTRL + SPACE` to display the templates suggestions. You can then choose "testClass – Test class (ABAP Unit)". The skeleton of a test class is automatically generated. 
+> - To create a class in ADT, type "test" in the "Test Classes" tab and choose `CTRL + SPACE` to display the template suggestions. You can then choose "testClass – Test class (ABAP Unit)". The skeleton of a test class is automatically generated. 
 
 To test protected or private methods, you must declare [friendship](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenfriend_glosry.htm) with the class to be tested (class under test).
 Example:

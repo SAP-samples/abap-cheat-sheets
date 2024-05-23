@@ -20,12 +20,12 @@
       - [Time Stamp Calculations with XCO](#time-stamp-calculations-with-xco)
       - [Calculating Time Stamp Differences Using the Built-In Function `utclong_diff`](#calculating-time-stamp-differences-using-the-built-in-function-utclong_diff)
       - [`CONVERT UTCLONG`: Time Stamp (`utclong`) -\> Local Date/Time](#convert-utclong-time-stamp-utclong---local-datetime)
-      - [`CONVERT INTO UTCLONG`: Local Date/Time -\> Time Stamp (`utclong`)](#convert-into-utclong-local-datetime---time-stamp-utclong)
+      - [`CONVERT ... INTO UTCLONG`: Local Date/Time -\> Time Stamp (`utclong`)](#convert--into-utclong-local-datetime---time-stamp-utclong)
       - [`CL_ABAP_UTCLONG`: Utilities for Time Stamps (`utclong`)](#cl_abap_utclong-utilities-for-time-stamps-utclong)
     - [Time Stamps in Packed Numbers (types `timestamp`, `timestampl`)](#time-stamps-in-packed-numbers-types-timestamp-timestampl)
       - [`GET TIME STAMP`: Retrieving the Current Time Stamp](#get-time-stamp-retrieving-the-current-time-stamp)
       - [`CONVERT TIME STAMP`: Time Stamp in Packed Numbers -\> Local Date/Time](#convert-time-stamp-time-stamp-in-packed-numbers---local-datetime)
-      - [`CONVERT INTO TIME STAMP`: Local Date/Time -\> Time Stamp in Packed Numbers](#convert-into-time-stamp-local-datetime---time-stamp-in-packed-numbers)
+      - [`CONVERT ... INTO TIME STAMP`: Local Date/Time -\> Time Stamp in Packed Numbers](#convert--into-time-stamp-local-datetime---time-stamp-in-packed-numbers)
       - [`CL_ABAP_TSTMP`: Calculating and Converting Time Stamps in Packed Numbers](#cl_abap_tstmp-calculating-and-converting-time-stamps-in-packed-numbers)
     - [Excursion: Unix Time Stamps](#excursion-unix-time-stamps)
   - [Date, Time, and Time Stamps in String Templates](#date-time-and-time-stamps-in-string-templates)
@@ -788,9 +788,9 @@ ENDTRY.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-#### `CONVERT INTO UTCLONG`: Local Date/Time -> Time Stamp (`utclong`)
+#### `CONVERT ... INTO UTCLONG`: Local Date/Time -> Time Stamp (`utclong`)
 
-More information: [`CONVERT INTO UTCLONG`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapconvert_utclong.htm)
+More information: [`CONVERT ... INTO UTCLONG`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapconvert_utclong.htm)
 
 ```abap
 DATA date2utcl TYPE d VALUE '20240101'.
@@ -1004,9 +1004,9 @@ ASSERT sy-subrc = 12.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-#### `CONVERT INTO TIME STAMP`: Local Date/Time -> Time Stamp in Packed Numbers
+#### `CONVERT ... INTO TIME STAMP`: Local Date/Time -> Time Stamp in Packed Numbers
 
-More information: [`CONVERT INTO TIME STAMP`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapconvert_date_time-stamp.htm)
+More information: [`CONVERT ... INTO TIME STAMP`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapconvert_date_time-stamp.htm)
 
 ```abap
 DATA date4conv TYPE d VALUE '20240101'.

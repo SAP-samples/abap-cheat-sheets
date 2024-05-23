@@ -57,7 +57,7 @@ TYPES: BEGIN OF struc_type,
        END OF struc_type.
 ```
 
-Alternatively, you can also use the following syntax. However, a chained statement provides better readability.
+Alternatively, you can also use the following syntax. However, a chained statement may provide better readability.
 ``` abap
 TYPES BEGIN OF struc_type.
   TYPES comp1 TYPE ... .
@@ -98,7 +98,8 @@ TYPES: BEGIN OF struc_type,
 
 **Creating structures**
 
-- To create a structure in an ABAP program, you can use the `DATA` keyword. - It works in the same way as the `TYPES` statement above. 
+- To create a structure in an ABAP program, you can use the `DATA` keyword. 
+- It works in the same way as the `TYPES` statement above. 
 - Unlike the `TYPES` statement, you can use the [`VALUE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapdata_options.htm) addition to set default values.  
 
 ``` abap
@@ -113,7 +114,7 @@ DATA: BEGIN OF struc,
       END OF struc.
 ```
 
-Alternatively, you can use the following syntax. Similar to above, a chained statement provides better readability.
+Alternatively, you can use the following syntax. Similar to above, a chained statement may provide better readability.
 
 ``` abap
 DATA BEGIN OF struc.
@@ -177,7 +178,7 @@ FINAL(struc_11) = struc_9.
 "value assignments) ...
 DATA(struc_a) = VALUE struc_type( ).
 
-"... yields the same result as the following declaration.
+"... is similar to the following declaration.
 DATA struc_b TYPE struc_type.
 
 "Structures declared inline instead of an extra declared variable
@@ -678,7 +679,7 @@ ENDLOOP.
 
 **Inserting a single row into a database table from a structure** using  ABAP SQL statements with
 [`INSERT`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapinsert_dbtab.htm). The following statements can be considered as alternatives. The third statement shows that instead of inserting a row from an existing structure, you can create and fill a structure directly.
-Note that you should avoid inserting a row with a particular key into the database table if a row with the same key already exists.
+Note that you should avoid inserting a row with a particular key into the database table if a row with the same key already exists. Note that with this and the followig syntax, various options/expressions are possible.
 ``` abap
 INSERT INTO dbtab VALUES @struc.
 

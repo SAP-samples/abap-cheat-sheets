@@ -18,7 +18,7 @@
     - [Assigning References to Data Reference Variables](#assigning-references-to-data-reference-variables)
     - [Creating Anonymous Data Objects](#creating-anonymous-data-objects)
     - [Constants and Immutable Variables](#constants-and-immutable-variables)
-  - [Type Conversion](#type-conversion)
+  - [Type Conversions and Assignments](#type-conversions-and-assignments)
   - [Terms Related to Data Types and Objects in a Nutshell](#terms-related-to-data-types-and-objects-in-a-nutshell)
   - [Notes on the Declaration Context](#notes-on-the-declaration-context)
   - [Excursions](#excursions)
@@ -1106,7 +1106,7 @@ SELECT * FROM zdemo_abap_carr INTO TABLE @FINAL(itab_final_inl).
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-## Type Conversion
+## Type Conversions and Assignments
 A value assignment means that the value of a data object is transferred to a target data object. If the data types of the source and target are compatible, the content is copied unchanged. If they are incompatible and a suitable [conversion rule](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconversion_rule_glosry.htm) exists, the content is converted.
 The following cases must be distinguished with regard to the data type: 
 - The source and target data types are compatible, i.e. all technical type properties match. The content is transferred from the source to the target without being converted. 
@@ -1120,7 +1120,7 @@ See the conversion rules for the different data types here: [Assignment and Conv
 > - Typically, assignements are made using the assignment operator `=`. If necessary and applicable, the type is converted implicitly. However, you can also use the conversion operator [`CONV`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconstructor_expression_conv.htm) to convert types explicitly.
 > - For [lossless assignments](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenlossless_assignment_glosry.htm), the lossless operator [`EXACT`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconstructor_expression_exact.htm) can be used to perform checks before the conversion is performed to ensure that only valid values are assigned and that no values are lost in assignments.
 > - In general, no checks are performed on assignments between compatible data objects. If a data object already contains an invalid value, for example, an invalid date or time in a date or time field, it is passed a valid value when the assignment is made to a compatible data object.
-> - The `applies_to_data` method of the [RTTI](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrun_time_type_identific_glosry.htm) class `cl_abap_datadescr` can be used to check type compatibility. See the executable example.
+> - The `applies_to_data` method of the [RTTI](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrun_time_type_identific_glosry.htm) class `cl_abap_datadescr` can be used to check type compatibility. See the executable example and the [Dynamic Programming cheat sheet](06_Dynamic_Programming.md).
     
 
 ```abap

@@ -27,6 +27,7 @@
   - [Running Code in the Background](#running-code-in-the-background)
   - [Locking](#locking)
   - [Calling Services](#calling-services)
+  - [Generating ABAP Repository Objects](#generating-abap-repository-objects)
 
 
 This ABAP cheat sheet contains a selection of available ABAP classes, serving as a quick introduction, along with code snippets to explore the functionality in action.
@@ -2421,6 +2422,50 @@ CLASS zcl_some_class IMPLEMENTATION.
     ENDIF.
   ENDMETHOD.
 ENDCLASS.
+``` 
+
+</td>
+</tr>
+</table>
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+## Generating ABAP Repository Objects
+
+<table>
+<tr>
+<td> Class </td> <td> Details/Code Snippet </td>
+</tr>
+<tr>
+<td> <code>XCO_CP_GENERATION</code> </td>
+<td>
+For creating, updating and deleting ABAP repository objects. More information: [Generation APIs](https://help.sap.com/docs/btp/sap-business-technology-platform/generation-apis)<br>The rudimentary snippet is taken from the executable example of the ABAP for Cloud Development cheat sheet.
+
+<br><br>
+
+``` abap
+...
+DATA(n10_handler) = xco_cp_generation=>environment->dev_system( ... ).
+DATA(n11_put) = n10_handler->create_put_operation( ).
+
+"Creating a domain
+DATA(n12_doma_spec) = n11_put->for-doma->add_object( ... "e.g. 'ZDEMO_ABAP_STATUS'
+  )->set_package( ...
+  )->create_form_specification( ).
+n12_doma_spec->set_short_description( 'Demo domain' ).
+n12_doma_spec->set_format( xco_cp_abap_dictionary=>built_in_type->char( 10 ) ).
+n12_doma_spec->fixed_values->add_fixed_value( 'BOOKED'
+  )->set_description( 'Booked' ).
+n12_doma_spec->fixed_values->add_fixed_value( 'CANCELED'
+  )->set_description( 'Canceled' ).
+
+...
+
+"Executing the generation
+TRY.
+    n11_put->execute( ).      
+  CATCH cx_xco_gen_put_exception.
+ENDTRY.
 ``` 
 
 </td>

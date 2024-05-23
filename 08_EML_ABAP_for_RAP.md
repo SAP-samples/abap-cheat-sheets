@@ -167,7 +167,7 @@ The following points cover RAP-related terms such as *RAP business objects* and 
         further down.
     -   Usually, saver classes are not needed in managed RAP BOs (except
         for special variants of managed RAP BOs which are not covered
-        here). Local handler classes are, as mentioned above, usually
+        here). Local handler classes are usually
         needed in managed RAP BOs if implementations are required that
         go beyond standard operations.
     -   Note: In more complex scenarios, with RAP BOs that
@@ -200,7 +200,7 @@ focus on).
 
 ## Excursion: RAP Behavior Definition (BDEF)
 
-- As mentioned in the RAP terms and as the name implies, a RAP behavior definition describes a RAP business object (RAP BO) by defining its behavior for all of its RAP BO entities. 
+- As the name implies, a RAP behavior definition describes a RAP business object (RAP BO) by defining its behavior for all of its RAP BO entities. 
 - BDL source code is used in a BDEF.
 - Once you have created ...
   - the CDS root entity of a RAP BO, ADT helps you create the skeleton of a BDEF (e.g., right-click on the CDS root entity and choose *New Behavior Definition* from the pop-up). 
@@ -443,7 +443,7 @@ authorization dependent by _parent
 
 ## ABAP Behavior Pools (ABP)
 
-As mentioned above, you can access RAP BO data from inside AS ABAP using
+You can access RAP BO data from inside AS ABAP using
 EML. Among other things, EML allows you to read or modify RAP BOs by
 accessing the RAP BO data (the RAP BO instances) in the transactional
 buffer and trigger the persistent storage or reset changes. More
@@ -738,7 +738,7 @@ TYPES der_typ TYPE TABLE FOR DELETE entity.
 "Response parameters
 DATA map TYPE RESPONSE FOR MAPPED entity.
 DATA fail TYPE RESPONSE FOR FAILED entity.
-DATA rep TYPE RESPONSE FOR REPORTED entity.
+DATA resp TYPE RESPONSE FOR REPORTED entity.
 ```
 > **💡 Note**<br>
 > Some of the derived types can only be created and accessed in implementation classes.
@@ -857,16 +857,16 @@ Bullet points on selected `%` components:
 DATA itab_cr TYPE TABLE FOR CREATE zdemo_abap_rap_ro_m.
 
 itab_cr = VALUE #( %control-key_field = if_abap_behv=>mk-on
-                    %control-field1 = if_abap_behv=>mk-on
-                    %control-field2 = if_abap_behv=>mk-on
-                    %control-field3 = if_abap_behv=>mk-on
-                    %control-field4 = if_abap_behv=>mk-on
-                    ( %cid           = `cid1`
-                        %key-key_field = 1
-                        field1         = 'aaa'
-                        field2         = 'bbb'
-                        field3         = 11
-                        field4         = 111 ) ).
+                   %control-field1 = if_abap_behv=>mk-on
+                   %control-field2 = if_abap_behv=>mk-on
+                   %control-field3 = if_abap_behv=>mk-on
+                   %control-field4 = if_abap_behv=>mk-on
+                   ( %cid           = `cid1`
+                     %key-key_field = 1
+                     field1         = 'aaa'
+                     field2         = 'bbb'
+                     field3         = 11
+                     field4         = 111 ) ).
 
 "Secondary table keys available in the example table: cid, entity
 
@@ -1009,10 +1009,10 @@ cr_der_type = VALUE #( key_field = 1
 UPDATE zdemo_abap_rapt1 FROM @cr_der_type
 	INDICATORS SET STRUCTURE %control MAPPING FROM ENTITY.
 
-"--------------- DELETE ---------------
 *KEY_FIELD    FIELD1    FIELD2    FIELD3    FIELD4
 *1            ###       ZZZ       2         200
 
+"--------------- DELETE ---------------
 DELETE zdemo_abap_rapt1 FROM @cr_der_type MAPPING FROM ENTITY.
 ```
 
@@ -1190,7 +1190,7 @@ Excursion: Specifying `%control` component values in the short form of `VALUE` c
 "The following EML statement creates RAP BO instances. The BDEF derived
 "type is created inline. With the FROM addition, the %control values
 "must be specified explicitly. You can provide the corresponding values
-"for all table lines using the short form, i.e. outiside of the inner
+"for all table lines using the short form, i.e. outside of the inner
 "parentheses, instead of individually specifying the values for each 
 "instance within the parentheses. In this case, the corresponding %control
 "component value is assigned for all of the following table lines.
@@ -1455,7 +1455,7 @@ READ ENTITIES OPERATIONS op_tab.
     ENTITIES`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapcommit_entities.htm)
     statement triggers the RAP save sequence. Without such a statement,
     the modified RAP BO instances that are available in the
-    transactional buffer are not persisted to the database. As mentioned above, in case of a natively supported RAP
+    transactional buffer are not persisted to the database. In case of a natively supported RAP
     scenario (for example, when using OData), the `COMMIT
     ENTITIES` request is executed automatically.
 -   `COMMIT ENTITIES` implicitly includes [`COMMIT
@@ -1670,7 +1670,7 @@ instances](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?
         for the current ABAP EML request within the [RAP interaction phase](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_int_phase_glosry.htm "Glossary Entry") in one RAP transaction.
     -   **Note:**  Specify `%cid` even if there are no further operations referring to it.
 -   Special case: Late numbering
-    -   As mentioned above, in late numbering scenarios newly created
+    -   In late numbering scenarios newly created
         entity instances are given their final key only shortly before
         saving in the database, i. e. you deal with preliminary keys in
         the RAP interaction phase and the early phase of the [RAP save sequence](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_save_seq_glosry.htm "Glossary Entry").
@@ -1839,7 +1839,7 @@ Saver methods called in the RAP late save phase:
 [`cleanup`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensaver_method_cleanup.htm) method: After a successful save, the [`cleanup`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensaver_method_cleanup.htm) method clears the transactional buffer. It completes the save sequence. 
 
 **Commit and Rollback in a RAP Transaction**  
-The default ABAP statements for RAP are `COMMIT ENTITIES` (triggers the RAP save sequence and the final database commit; as mentioned above, in natively supported RAP scenarios, the commit is performed implicitly and automatically by the RAP runtime engine) and `ROLLBACK ENTITIES` (rolls back all changes of the current RAP transaction, i.e. the transactional buffer is cleared by calling the `cleanup` method). Both are RAP-specific and end the RAP transaction. 
+The default ABAP statements for RAP are `COMMIT ENTITIES` (triggers the RAP save sequence and the final database commit; in natively supported RAP scenarios, the commit is performed implicitly and automatically by the RAP runtime engine) and `ROLLBACK ENTITIES` (rolls back all changes of the current RAP transaction, i.e. the transactional buffer is cleared by calling the `cleanup` method). Both are RAP-specific and end the RAP transaction. 
 
 *Notes on `COMMIT ...` and `ROLLBACK ...` statements due to the integration of RAP transactions into the SAP LUW:* 
 

@@ -11,7 +11,10 @@
     - [Copying Internal Tables](#copying-internal-tables)
     - [Using INSERT and APPEND Statements to Populate Internal Tables](#using-insert-and-append-statements-to-populate-internal-tables)
     - [Creating and Filling Internal Tables Using Constructor Expressions](#creating-and-filling-internal-tables-using-constructor-expressions)
-    - [Excursion: Using Internal Tables in ABAP SQL Statements](#excursion-using-internal-tables-in-abap-sql-statements)
+      - [VALUE operator](#value-operator)
+      - [CORRESPONDING operator](#corresponding-operator)
+      - [FILTER Operator\*\*](#filter-operator)
+      - [NEW Operator](#new-operator)
   - [Reading Single Lines from Internal Tables](#reading-single-lines-from-internal-tables)
     - [Determining the Target Area when Reading Single Lines](#determining-the-target-area-when-reading-single-lines)
     - [Reading a Single Line by Index](#reading-a-single-line-by-index)
@@ -21,6 +24,9 @@
     - [Checking the Existence and the Index of a Line in an Internal Table](#checking-the-existence-and-the-index-of-a-line-in-an-internal-table)
   - [Processing Multiple Internal Table Lines Sequentially](#processing-multiple-internal-table-lines-sequentially)
     - [Iteration Expressions](#iteration-expressions)
+  - [Operations with Internal Tables Using ABAP SQL SELECT Statements](#operations-with-internal-tables-using-abap-sql-select-statements)
+    - [Internal Tables as Target Data Objects](#internal-tables-as-target-data-objects)
+    - [Querying from Internal Tables](#querying-from-internal-tables)
   - [Sorting Internal Tables](#sorting-internal-tables)
   - [Modifying Internal Table Content](#modifying-internal-table-content)
   - [Deleting Internal Table Content](#deleting-internal-table-content)
@@ -537,7 +543,9 @@ INSERT LINES OF itab2 INTO itab INDEX i.
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ### Creating and Filling Internal Tables Using Constructor Expressions
+The constructor expressions can be specified in/with various positions/statements in ABAP. In most of the following snippets, simple assignments are demonstrated.
 
+#### VALUE operator
 As mentioned above, table lines that are constructed inline as
 arguments to the `VALUE` operator, for example, can be added to
 internal tables. In the following cases, internal tables are populated
@@ -598,6 +606,7 @@ itab = VALUE #( ( comp1 = a comp2 = b ...)
                 ... ).
 ```
 
+#### CORRESPONDING operator
 
 **Copying the content of another internal table** using the
 [`CORRESPONDING`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconstructor_expr_corresponding.htm) operator. 
@@ -652,14 +661,14 @@ itab = CORRESPONDING #( itab2 DISCARDING DUPLICATES ).
 ``` abap
 itab_nested2 = CORRESPONDING #( DEEP itab_nested1 ).
 
-itab_nested2 = CORRESPONDING #( DEEP BASE ( itab_nested2 ) itab_nested1 )
+itab_nested2 = CORRESPONDING #( DEEP BASE ( itab_nested2 ) itab_nested1 ).
 
 MOVE-CORRESPONDING itab_nested1 TO itab_nested2 EXPANDING NESTED TABLES.
 
 MOVE-CORRESPONDING itab_nested1 TO itab_nested2 EXPANDING NESTED TABLES KEEPING TARGET LINES.
 ```
 
-**Using the `FILTER` operator**
+#### FILTER Operator**
 
 To create an internal table by copying data from another internal table and 
 filtering out lines that do not meet the `WHERE` condition, you can use the [`FILTER`
@@ -735,107 +744,28 @@ DATA(f11) = FILTER #( itab2 USING KEY sec_key EXCEPT IN filter_tab2 WHERE num = 
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-### Excursion: Using Internal Tables in ABAP SQL Statements
-For more details on ABAP SQL, see the [ABAP SQL](03_ABAP_SQL.md) cheat sheet.
+#### NEW Operator
 
-**Adding multiple lines from a database table to an internal table** using
-[`SELECT`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapselect.htm),
-for example, based on a condition. In the case below, the internal table
-is created inline. 
-``` abap
-SELECT FROM dbtab
-  FIELDS comp1, comp2 ...
-  WHERE ...
-  INTO TABLE @DATA(itab_sel).
-```
+Using the instance operator [`NEW`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconstructor_expression_new.htm), you can create [anonymous data objects](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenanonymous_data_object_glosry.htm "Glossary Entry"), such as anonymous internal tables. You can access the lines, components or the entire data objects by [dereferencing](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendereferencing_operat_glosry.htm). For more information, refer to the  [Dynamic Programming](06_Dynamic_Programming.md) and [Constructor Expressions](05_Constructor_Expressions.md) cheat sheets.
 
-**Sequentially adding multiple rows** from a database table to an internal table using `SELECT ... ENDSELECT.`, for example, based on a condition. In this case, the selected data is first stored in a structure that can be further processed and added to an internal table.
+```abap
+TYPES: BEGIN OF s,
+          a TYPE c LENGTH 3,
+          b TYPE i,
+        END OF s,
+        tab_type TYPE TABLE OF s WITH EMPTY KEY.
 
-``` abap
-SELECT FROM dbtab 
-  FIELDS comp1, comp2 ...
-  WHERE ...
-  INTO @DATA(struc_sel).
+"Creating and populating an anonymous data object
+DATA(dref_tab) = NEW tab_type( ( a = 'aaa' b = 1 )
+                               ( a = 'bbb' b = 2 ) ).
 
-  IF sy-subrc = 0.
-    APPEND struc_sel TO itab.
-  ...
-  ENDIF.
-ENDSELECT.
-```
-
-Adding multiple lines from a database table using `SELECT`, for example, based on a condition when the database table has a line type that is incompatible with the internal table. The `*` character means that all fields are selected. The other examples define specific fields.
-The `APPENDING CORRESPONDING FIELDS INTO TABLE` addition appends the selected data to the end of the table without deleting existing
-table entries. The `INTO CORRESPONDING FIELDS OF TABLE` addition adds lines and deletes existing table entries.
-``` abap
-SELECT FROM dbtab2
-  FIELDS *
-  WHERE ...
-  APPENDING CORRESPONDING FIELDS OF TABLE @itab.
-
-SELECT FROM dbtab2
-  FIELDS *
-  WHERE ...
-  INTO CORRESPONDING FIELDS OF TABLE @itab.
-```
-Adding multiple lines from an internal table to another internal table using `SELECT`. Note the alias name that must be defined for the
-internal table.
-``` abap
-SELECT comp1, comp2, ...
-  FROM @itab2 AS it_alias
-  INTO TABLE @DATA(itab_sel).
-```
-
-**Combining data from multiple tables into one internal table** using an [inner
-join](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abeninner_join_glosry.htm "Glossary Entry").
-The following example joins data of an internal and a database table 
-using a `SELECT` statement and the [`INNER JOIN`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapselect_join.htm) addition. Note that the field list includes fields from both tables. The fields are referred to using `~`.
-``` abap
-SELECT it_alias~comp1, it_alias~comp2, dbtab~comp3 ...
-  FROM @itab AS it_alias
-  INNER JOIN dbtab ON it_alias~comp1 = dbtab~comp1
-  INTO TABLE @DATA(it_join_result).
-```
-
-Filling an internal table from a database table using
-[subqueries](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensubquery_glosry.htm "Glossary Entry").
-The following two examples fill an internal table from a database table. In the first example, a subquery is specified in the
-`WHERE` clause with the `NOT IN` addition. It checks whether a value matches a value in a set of values
-specified in parentheses. The second example fills an internal table depending on data in another table. A subquery with the `EXISTS` addition is specified in
-the `WHERE` clause. In this
-case, the result of the subquery, which is another
-`SELECT` statement, is checked to see if an entry exists in
-a table based on the specified conditions.
-
-``` abap
-SELECT comp1, comp2, ...
-  FROM dbtab
-  WHERE comp1 NOT IN ( a, b, c ... )
-  INTO TABLE @DATA(it_subquery_result1).
-
-SELECT comp1, comp2, ...
-  FROM dbtab
-  WHERE EXISTS ( SELECT 'X' FROM @itab AS itab_alias
-                 WHERE comp1 = dbtab~comp1 )
-  INTO TABLE @DATA(it_subquery_result2).
-```
-
-Filling internal table from a table based on the existence of data in
-another table using the [`FOR ALL ENTRIES`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenwhere_all_entries.htm) addition.
-
-> **💡 Note**<br>
-> Make sure that the internal table you are reading from is not initial. Therefore, it is recommended that you use a subquery as shown above: `... ( SELECT ... FROM @itab AS itab_alias WHERE ... ) ...`.
-
-``` abap
-IF itab IS NOT INITIAL.
-
-  SELECT dbtab~comp1, dbtab~comp2, ...
-    FROM dbtab
-    FOR ALL ENTRIES IN @itab
-    WHERE comp1 = @itab-comp1
-    INTO TABLE @DATA(it_select_result).
-
-ENDIF.
+"Access by derefencing
+DATA(copy_deref_itab) = dref_tab->*.
+DATA(read_line) = dref_tab->*[ 2 ].
+DATA(read_comp) = dref_tab->*[ 1 ]-a.
+dref_tab->*[ 1 ]-a = 'zzz'.
+ASSERT dref_tab->*[ 1 ]-a = 'zzz'.
+INSERT VALUE s( a = 'yyy' b = 3 ) INTO TABLE dref_tab->*.
 ```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
@@ -871,7 +801,7 @@ The following code snippets include [`READ TABLE`](https://help.sap.com/doc/abap
 
 -   Assigning a line to a [field
     symbol](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenfield_symbol_glosry.htm "Glossary Entry"),
-    for example, using an inline declaration (`ASSIGNING <fs>`). When you then access the field symbol, it means that you access the found table line. There is no actual copying of
+    for example, using an inline declaration (`... ASSIGNING FIELD-SYMBOL(<fs>) ...`). When you then access the field symbol, it means that you access the found table line. There is no actual copying of
     content. Therefore, modifying the field symbol means
     modifying the table line directly. Note that you cannot use the 
     `TRANSPORTING` addition since the entire table is
@@ -1035,7 +965,7 @@ READ TABLE it INTO wa WITH KEY b = 2.
 When reading single lines in general, you can also address individual
 components of the line using the [component
 selector](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencomponent_selector_glosry.htm "Glossary Entry")
-`-` (or the [dereferencing
+`-` (or the [object component selector](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenobject_component_select_glosry.htm) `->` or the [dereferencing
 operator](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendereferencing_operat_glosry.htm "Glossary Entry")
 `->*` in the case of data reference variables).
 ``` abap
@@ -1252,6 +1182,178 @@ Iteration expressions with [`FOR`](https://help.sap.com/doc/abapdocu_cp_index_ht
 The expressions are covered in the cheat sheet [Constructor Expressions](05_Constructor_Expressions.md):
 - [Iteration Expressions Using FOR](05_Constructor_Expressions.md#iteration-expressions-using-for)
 - Special reduction operator `REDUCE` that is based on iteration expressions: [REDUCE](05_Constructor_Expressions.md#reduce)
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+## Operations with Internal Tables Using ABAP SQL SELECT Statements
+
+- In ABAP, database data is buffered in a [table buffer](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentable_buffer_glosry.htm) (internally, this happens in internal tables in the [shared memory](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenshared_memory_glosry.htm) of the ABAP server). 
+- During read access, it is checked if the data is in the buffer, and if so, a read happens directly from there. If not, the data is first loaded into the buffer. 
+- The [ABAP SQL engine](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_sql_engine_glosry.htm) is involved in the read process. It processes reads and is used when tabular data is read (with a `SELECT` statement). This includes both buffered data from database tables in the table buffer and also internal tables of the current internal session. 
+- Which means ABAP SQL is executed in this buffer on the ABAP server, not directly on the database.
+
+So, ABAP SQL `SELECT` statements can be used for multiple purposes also on internal tables. The following snippets cover a selection. Find more details in the ABAP Keyword Documentation and in the [ABAP SQL cheat sheet](03_ABAP_SQL.md).
+
+> **💡 Note**<br>
+> - No deep components (nested tables, strings) are allowed. 
+> - Trailing blanks of short text fields are truncated. 
+> - When joining multiple internal tables, it must be ensured that the ABAP SQL engine can handle it, which means only internal tables are used (no buffered database tables), no special features like hierarchies, aggregates, subselects, etc. are used.
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+### Internal Tables as Target Data Objects
+
+Adding multiple lines from a database table to an internal table using
+[`SELECT`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapselect.htm),
+for example, based on a condition. In the case below, the internal table
+is created inline. 
+``` abap
+SELECT FROM dbtab
+  FIELDS comp1, comp2 ...
+  WHERE ...
+  INTO TABLE @DATA(itab_sel).
+```
+
+Adding multiple lines from a database table using `SELECT`, for example, based on a condition when the database table has a line type that is incompatible with the internal table. The `*` character means that all fields are selected. The other examples define specific fields.
+The `APPENDING CORRESPONDING FIELDS INTO TABLE` addition appends the selected data to the end of the table without deleting existing
+table entries. The `INTO CORRESPONDING FIELDS OF TABLE` addition adds lines and deletes existing table entries.
+``` abap
+SELECT FROM dbtab2
+  FIELDS *
+  WHERE ...
+  APPENDING CORRESPONDING FIELDS OF TABLE @itab.
+
+SELECT FROM dbtab2
+  FIELDS *
+  WHERE ...
+  INTO CORRESPONDING FIELDS OF TABLE @itab.
+```
+
+Combining data from multiple database tables into one internal table using an [inner
+join](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abeninner_join_glosry.htm "Glossary Entry").
+The following example uses the [`INNER JOIN`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapselect_join.htm) addition. Note that the field list includes fields from both tables. The fields are referred to using `~`.
+``` abap
+SELECT db1~comp1, db1~comp2, db2~comp_abc, db2~comp_xyz ...
+  FROM db1
+  INNER JOIN db2 ON db1~comp1 = db2~comp1
+  INTO TABLE @DATA(it_join_result).
+```
+
+Filling an internal table from a database table using
+[subqueries](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensubquery_glosry.htm "Glossary Entry").
+The following two examples fill an internal table from a database table. In the first example, a subquery is specified in the
+`WHERE` clause with the `NOT IN` addition. It checks whether a value matches a value in a set of values
+specified in parentheses. The second example fills an internal table depending on data in another table. A subquery with the `EXISTS` addition is specified in
+the `WHERE` clause. In this
+case, the result of the subquery, which is another
+`SELECT` statement, is checked to see if an entry exists in
+a table based on the specified conditions.
+
+``` abap
+SELECT comp1, comp2, ...
+  FROM dbtab
+  WHERE comp1 NOT IN ( a, b, c ... )
+  INTO TABLE @DATA(it_subquery_result1).
+
+SELECT comp1, comp2, ...
+  FROM db1
+  WHERE EXISTS ( SELECT 'X' FROM db2
+                 WHERE comp1 = db1~comp1 )
+  INTO TABLE @DATA(it_subquery_result2).
+```
+
+Populating an internal table from a table based on the existence of data in
+another table using the [`FOR ALL ENTRIES`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenwhere_all_entries.htm) addition.
+
+> **💡 Note**<br>
+> Make sure that the internal table you are reading from is not initial. Therefore, it is recommended that you use a subquery as shown above: `... ( SELECT ... FROM ... WHERE ... ) ...`.
+
+``` abap
+IF itab IS NOT INITIAL.
+
+  SELECT dbtab~comp1, dbtab~comp2, ...
+    FROM dbtab
+    FOR ALL ENTRIES IN @itab
+    WHERE comp1 = @itab-comp1
+    INTO TABLE @DATA(it_select_result).
+
+ENDIF.
+```
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+### Querying from Internal Tables
+In `SELECT` statements, internal tables can also be used as data sources. 
+The snippet shows adding multiple lines from an internal table to another internal table using `SELECT`. Note the alias name that must be defined for the internal table.
+
+``` abap
+SELECT comp1, comp2, ...
+  FROM @itab AS it_alias
+  INTO TABLE @DATA(itab_sel).
+```
+
+Using the `LIKE` addition in the `WHERE` clause to extract internal table entries matching a specific pattern.
+```abap
+TYPES: BEGIN OF s,
+          a TYPE c LENGTH 3,
+          b TYPE i,
+        END OF s,
+        tab_type TYPE TABLE OF s WITH EMPTY KEY.
+DATA(itab) = VALUE tab_type( ( a = 'abc' b = 1 ) ( a = 'zbc' b = 2 )
+                              ( a = 'bde' b = 3 ) ( a = 'yde' b = 4 ) ).
+
+SELECT a, b
+  FROM @itab AS it_alias
+  WHERE a LIKE '%bc'
+  INTO TABLE @DATA(itab_sel_like).
+
+*A      B     
+*abc    1     
+*zbc    2 
+```
+
+Using the `IN` addition in the `WHERE` clause to extract internal table entries based on values specified in an operand list.
+```abap
+SELECT a, b
+  FROM @itab AS it_alias
+  WHERE a IN ('bde', 'yde', 'zde')
+  INTO TABLE @DATA(itab_in).
+
+*A      B     
+*bde    3     
+*yde    4 
+```
+
+Combining data from multiple internal tables into one internal table using an [inner
+join](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abeninner_join_glosry.htm "Glossary Entry"). See above.
+
+```abap
+TYPES: BEGIN OF s,
+          a TYPE c LENGTH 3,
+          b TYPE c LENGTH 3,
+          c TYPE i,
+        END OF s,
+        tab_type TYPE TABLE OF s WITH EMPTY KEY.
+        
+DATA(it1) = VALUE tab_type( ( a = 'aaa' b = 'bbb' c = 1 )
+                            ( a = 'ccc' b = 'ddd' c = 1 )
+                            ( a = 'eee' b = 'fff' c = 2 ) ).
+
+DATA(it2) = VALUE tab_type( ( a = 'ggg' b = 'hhh' c = 1 )
+                            ( a = 'iii' b = 'jjj' c = 1 )
+                            ( a = 'kkk' b = 'lll' c = 3 ) ).
+
+SELECT it_alias1~a, it_alias2~b
+  FROM @it1 AS it_alias1
+  INNER JOIN @it2 AS it_alias2 ON it_alias1~c = it_alias2~c
+  INTO TABLE @DATA(it_join_result).
+      
+*A      B     
+*aaa    hhh   
+*aaa    jjj   
+*ccc    hhh   
+*ccc    jjj  
+```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
