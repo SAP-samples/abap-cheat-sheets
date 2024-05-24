@@ -7,6 +7,7 @@
     - [Creating Classes](#creating-classes)
       - [Creating a Local Class](#creating-a-local-class)
       - [Creating a Global Class](#creating-a-global-class)
+      - [Excursion: Class Pool and Include Programs](#excursion-class-pool-and-include-programs)
     - [Visibility of Components](#visibility-of-components)
       - [Creating the Visibility Sections](#creating-the-visibility-sections)
     - [Defining Components](#defining-components)
@@ -153,6 +154,178 @@ of the class itself, and of its
 > - Addition `... CREATE PRIVATE`: The class can only
 be instantiated in methods of the class itself or of its friends. Hence,
 it cannot be instantiated as an inherited component of subclasses.
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+#### Excursion: Class Pool and Include Programs
+
+- A class pool is an ABAP program containing the definition of one global class (*Global Class* tab in ADT)
+- Global classes are marked as such with the `PUBLIC` addition to the `CLASS` statement: `CLASS zcl_demo_test DEFINITION PUBLIC ...` 
+- Additionally, a class pool can also contain local classes that are defined in dedicated include programs (CCDEF and the other include names are internal names the include programs end with):
+  - CCDEF include (*Class-relevant Local Types* tab in ADT): Is included in front of the declaration part of the global class
+  - CCIMP include (*Local Types* tab in ADT): Is included behind the declaration part and in front of the implementation part of the global class
+  - CCAU include (*Test classes* tab in ADT): Test include; contains ABAP Unit test classes 
+
+The following simplified example demonstrates include programs.
+
+<details>
+  <summary>Expand to view the details</summary>
+  <!-- -->
+
+  Global class:
+- Create a new global class (the example uses the name `zcl_demo_test`) and copy and paste the following code in the *Global Class* tab in ADT.
+- The method in the private section makes use of local types that are defined in the CCDEF include. In the example the method is deliberately included in the private visibility section. Having it like this in the public section is not possible due to the use of local types.
+- The `if_oo_adt_classrun~main` implementation contains method calls to this method. It also contains method calls to a method implemented in a local class in the CCIMP include.
+- As a prerequisite to activate the class, you also need to copy and paste the code snippets further down for the CCDEF and CCIMP include. Once you have pasted the code, the syntax errors in the global class will disappear.
+- You can run the class using F9. Some output is displayed.
+- When you have copied and pasted the CCAU code snippet for the simple ABAP Unit test, and activated the class, you can choose *CTRL+Shift+F10* in ADT to run the ABAP Unit test. Alternatively, you can make a right click in the class code, choose *Run As* and *4 ABAP Unit Test*.
+
+```abap
+CLASS zcl_demo_test DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
+
+  PUBLIC SECTION.
+    INTERFACES if_oo_adt_classrun.
+
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+    "This methods uses types (data type c1 and the local exception class)
+    "defined in the CCDEF include
+    METHODS calculate IMPORTING num1          TYPE i
+                                operator      TYPE c1
+                                num2          TYPE i
+                      RETURNING VALUE(result) TYPE i
+                      RAISING   lcx_wrong_operator.
+ENDCLASS.
+
+CLASS zcl_demo_test IMPLEMENTATION.
+
+  METHOD if_oo_adt_classrun~main.
+
+    "---- The method called uses type declarations in the CCDEF include ----
+    TRY.
+        DATA(result1) = calculate( num1 = 10 operator = '+' num2 = 4 ).
+        out->write( data = result1 name = `result1` ).
+      CATCH lcx_wrong_operator.
+        out->write( `Operator not allowed` ).
+    ENDTRY.
+
+    TRY.
+        DATA(result2) = calculate( num1 = 10 operator = '-' num2 = 4 ).
+        out->write( data = result2 name = `result2` ).
+      CATCH lcx_wrong_operator.
+        out->write( `Operator not allowed` ).
+    ENDTRY.
+
+    TRY.
+        DATA(result3) = calculate( num1 = 10 operator = '*' num2 = 4 ).
+        out->write( data = result3 name = `result3` ).
+      CATCH lcx_wrong_operator.
+        out->write( `Operator not allowed` ).
+    ENDTRY.
+
+    "---- Using local class implemented in the CCIMP include ----
+    DATA(hi1) = lcl_demo=>say_hello( ).
+    out->write( data = hi1 name = `hi1` ).
+    DATA(hi2) = lcl_demo=>say_hello( xco_cp=>sy->user( )->name ).
+    out->write( data = hi2 name = `hi2` ).
+
+    "--------------- Test include (CCAU) ---------------
+    "For running the ABAP Unit test, choose CTRL+Shift+F10 in ADT.
+    "Or you can make a right click in the class code, choose
+    "'Run As' and '4 ABAP Unit Test'.
+  ENDMETHOD.
+
+  METHOD calculate.
+    result = SWITCH #( operator
+                       WHEN '+' THEN num1 + num2
+                       WHEN '-' THEN num1 - num2
+                       ELSE THROW lcx_wrong_operator( ) ).
+  ENDMETHOD.
+
+ENDCLASS.
+```
+Code snippet for the CCDEF include:
+```abap
+CLASS lcx_wrong_operator DEFINITION INHERITING FROM cx_static_check.
+ENDCLASS.
+
+TYPES c1 type c length 1.
+```
+
+Code snippet for the CCIMP include:
+```abap
+CLASS lcl_demo DEFINITION.
+  PUBLIC SECTION.
+    CLASS-METHODS: say_hello IMPORTING name TYPE string optional
+                             RETURNING VALUE(hi) type string.
+
+ENDCLASS.
+
+CLASS lcl_demo IMPLEMENTATION.
+
+  METHOD say_hello.
+    hi = |Hallo{ COND #( when name is supplied then ` ` && name ) }!|.
+  ENDMETHOD.
+
+ENDCLASS.
+```
+
+Code snippet for the test include (CCAU):
+```abap
+CLASS ltc_test DEFINITION DEFERRED.
+CLASS zcl_demo_test DEFINITION LOCAL FRIENDS ltc_test.
+
+CLASS ltc_test DEFINITION FOR TESTING
+RISK LEVEL HARMLESS
+DURATION SHORT.
+
+  PRIVATE SECTION.
+    METHODS test_calculate FOR TESTING.
+
+ENDCLASS.
+
+CLASS ltc_test IMPLEMENTATION.
+
+  METHOD test_calculate.
+    "Creating an object of class under test
+    DATA(ref_cut) = NEW zcl_demo_test( ).
+
+    "Calling method that is to be tested
+    TRY.
+        DATA(result1) = ref_cut->calculate( num1 = 10 operator = '+' num2 = 4 ).
+      CATCH lcx_wrong_operator.
+    ENDTRY.
+
+    TRY.
+        DATA(result2) = ref_cut->calculate( num1 = 10 operator = '-' num2 = 4 ).
+      CATCH lcx_wrong_operator.
+    ENDTRY.
+
+    "Assertions
+    cl_abap_unit_assert=>assert_equals(
+          act = result1
+          exp = 14
+          quit = if_abap_unit_constant=>quit-no ).
+
+    cl_abap_unit_assert=>assert_equals(
+          act = result2
+          exp = 6
+          quit = if_abap_unit_constant=>quit-no ).
+  ENDMETHOD.
+
+ENDCLASS.
+```
+</details>
+
+
+
+
+
+
+
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 

@@ -10,10 +10,10 @@
   - [Populating Internal Tables](#populating-internal-tables)
     - [Copying Internal Tables](#copying-internal-tables)
     - [Using INSERT and APPEND Statements to Populate Internal Tables](#using-insert-and-append-statements-to-populate-internal-tables)
-    - [Creating and Filling Internal Tables Using Constructor Expressions](#creating-and-filling-internal-tables-using-constructor-expressions)
+    - [Creating and Populating Internal Tables Using Constructor Expressions](#creating-and-populating-internal-tables-using-constructor-expressions)
       - [VALUE operator](#value-operator)
       - [CORRESPONDING operator](#corresponding-operator)
-      - [FILTER Operator\*\*](#filter-operator)
+      - [FILTER Operator](#filter-operator)
       - [NEW Operator](#new-operator)
   - [Reading Single Lines from Internal Tables](#reading-single-lines-from-internal-tables)
     - [Determining the Target Area when Reading Single Lines](#determining-the-target-area-when-reading-single-lines)
@@ -80,7 +80,7 @@ Internal Tables ...
 
 | Category | Internally managed by | Access | Primary table key | When to use | Hints |
 |---|---|---|---|---|---|
-|`STANDARD`|Primary table index (that's why these tables are called [index tables](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenindex_table_glosry.htm))|<ul><li>Table index</li><li>Table key</li></ul>|<ul><li>Always non-unique, i.e. duplicate entries are always allowed</li><li>Definition of an empty key is possible if the key is not relevant(`WITH EMPTY KEY`)</li></ul>|<ul><li>If you primarily access the table content for sequential processing or via the table index.</li><li>Response time for accessing the table using the primary key: This kind of table access is optimized only for sorted and hashed tables. For standard tables, primary key access uses a linear search across all lines. That means that large standard tables (more than 100 lines) are not ideal if the you primarily access the table using the table key.</></ul>|<ul><li>There is no particular sort order, but the tables can be sorted using `SORT`.</li><li>Filling this kind of table: Lines are either appended at the end of the table or inserted at a specific position.</li><li>[Secondary table keys](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensecondary_table_key_glosry.htm) can be defined to make key access to standard tables more efficient.</li><li>Standard and sorted tables have the least [administration costs (F1 docu for standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenadmin_costs_dyn_mem_obj_guidl.htm).</li></ul>|
+|`STANDARD`|Primary table index (that's why these tables are called [index tables](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenindex_table_glosry.htm))|<ul><li>Table index</li><li>Table key</li></ul>|<ul><li>Always non-unique, i.e. duplicate entries are always allowed</li><li>Definition of an empty key is possible if the key is not relevant(`WITH EMPTY KEY`)</li></ul>|<ul><li>If you primarily access the table content for sequential processing or via the table index.</li><li>Response time for accessing the table using the primary key: This kind of table access is optimized only for sorted and hashed tables. For standard tables, primary key access uses a linear search across all lines. That means that large standard tables (more than 100 lines) are not ideal if the you primarily access the table using the table key.</></ul>|<ul><li>There is no particular sort order, but the tables can be sorted using `SORT`.</li><li>Populating this kind of table: Lines are either appended at the end of the table or inserted at a specific position.</li><li>[Secondary table keys](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensecondary_table_key_glosry.htm) can be defined to make key access to standard tables more efficient.</li><li>Standard and sorted tables have the least [administration costs (F1 docu for standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenadmin_costs_dyn_mem_obj_guidl.htm).</li></ul>|
 |`SORTED`|Primary table index (that's why these tables are called [index tables](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenindex_table_glosry.htm))|<ul><li>Table index</li><li>Table key</li></ul>|<ul><li>Non-unique</li><li>Unique</li><br>... used to sort the table in ascending order.</ul>|<ul><li>Enables an optimized access to table content using table key and index.</li><li>If access via table key is the main access method, but no unique key can be defined.</li></ul>|<ul><li>Sorting is done automatically when lines are inserted or deleted. As a consequence, the table index must usually be reorganized. </li><li>The response time for accessing the table using the primary key depends logarithmically on the number of table entries, since a binary search is used.</li><li>Standard and sorted tables have the least administration costs.</li></ul>|
 |`HASHED`|Hash algorithm |<ul><li>Table key</li><li>[Secondary table index](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensecondary_table_index_glosry.htm)</li></ul>|Always unique|<ul><li>For large internal tables.</li><li>Optimized for key access. Access to table content via table key is the main access method and a unique key can be defined.</li></ul>|<ul><li>The response time for primary key access is constant and independent of the number of entries in the table.</li><li>Hashed tables have the highest administration costs.</li></ul>|
 
@@ -166,7 +166,7 @@ Internal Tables ...
 - When accessing internal tables using the secondary table key, the key name (or the alias if specified) must be specified. They are not selected automatically. If no secondary key is specified in a processing statement, the primary key or primary table index is always used. If you want to make use of this key in ABAP statements, for example, `READ`, `LOOP AT` or `MODIFY` statements, you must specify the key explicitly using the appropriate additions, for example, `WITH ... KEY ... COMPONENTS` or `USING KEY`.
 - Use cases:
   - To improve read performance.
-  - For very large internal tables (that are filled once and changed very often) 
+  - For very large internal tables (that are populated once and changed very often) 
   - Standard tables, whose primary table keys cannot be unique, can be provided with a means of ensuring that unique table entries are read. 
  - Note that defining secondary table keys involves additional administration costs (additional memory consumption). Therefore, the use of secondary table keys should be reserved for cases where the benefits outweigh the extra costs. 
 - For more details, see the programming guidelines for secondary keys: [Secondary
@@ -542,7 +542,7 @@ INSERT LINES OF itab2 INTO itab INDEX i.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-### Creating and Filling Internal Tables Using Constructor Expressions
+### Creating and Populating Internal Tables Using Constructor Expressions
 The constructor expressions can be specified in/with various positions/statements in ABAP. In most of the following snippets, simple assignments are demonstrated.
 
 #### VALUE operator
@@ -668,7 +668,7 @@ MOVE-CORRESPONDING itab_nested1 TO itab_nested2 EXPANDING NESTED TABLES.
 MOVE-CORRESPONDING itab_nested1 TO itab_nested2 EXPANDING NESTED TABLES KEEPING TARGET LINES.
 ```
 
-#### FILTER Operator**
+#### FILTER Operator
 
 To create an internal table by copying data from another internal table and 
 filtering out lines that do not meet the `WHERE` condition, you can use the [`FILTER`
@@ -1130,7 +1130,7 @@ LOOP AT it INTO wa WHERE a > 1 AND b < 4.
   ...
 ENDLOOP.
 
-"No interest in the table content; only relevant system fields are filled
+"No interest in the table content; only relevant system fields are populated
 
 "Mandatory WHERE clause
 LOOP AT it TRANSPORTING NO FIELDS WHERE a < 5.
@@ -1239,11 +1239,11 @@ SELECT db1~comp1, db1~comp2, db2~comp_abc, db2~comp_xyz ...
   INTO TABLE @DATA(it_join_result).
 ```
 
-Filling an internal table from a database table using
+Populating an internal table from a database table using
 [subqueries](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensubquery_glosry.htm "Glossary Entry").
-The following two examples fill an internal table from a database table. In the first example, a subquery is specified in the
+The following two examples populate an internal table from a database table. In the first example, a subquery is specified in the
 `WHERE` clause with the `NOT IN` addition. It checks whether a value matches a value in a set of values
-specified in parentheses. The second example fills an internal table depending on data in another table. A subquery with the `EXISTS` addition is specified in
+specified in parentheses. The second example populates an internal table depending on data in another table. A subquery with the `EXISTS` addition is specified in
 the `WHERE` clause. In this
 case, the result of the subquery, which is another
 `SELECT` statement, is checked to see if an entry exists in
@@ -1599,7 +1599,7 @@ statements allow you to delete the entire table content.
 
 The difference between the two is in the handling of the memory space originally allocated to the table. When a table is cleared with `CLEAR`,
 the content is removed, but the memory space initially requested remains
-allocated. If the table is filled again later, the memory space is still
+allocated. If the table is populated again later, the memory space is still
 available, which is a performance advantage over 
 clearing an internal table with `FREE`. Such a statement also
 deletes the table content, but it also releases the memory

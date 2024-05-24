@@ -2439,7 +2439,7 @@ ENDCLASS.
 <tr>
 <td> <code>XCO_CP_GENERATION</code> </td>
 <td>
-For creating, updating and deleting ABAP repository objects. More information: [Generation APIs](https://help.sap.com/docs/btp/sap-business-technology-platform/generation-apis)<br>The rudimentary snippet is taken from the executable example of the ABAP for Cloud Development cheat sheet.
+For creating, updating and deleting ABAP repository objects. More information: <a href="https://help.sap.com/docs/btp/sap-business-technology-platform/generation-apis">Generation APIs</a><br>The rudimentary snippet is taken from the executable example of the ABAP for Cloud Development cheat sheet.
 
 <br><br>
 
