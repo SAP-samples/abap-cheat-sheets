@@ -17,6 +17,7 @@
       - [Loops Across Tables](#loops-across-tables)
   - [Calling Procedures](#calling-procedures)
     - [Excursion: RETURN](#excursion-return)
+  - [Interrupting the Program Execution](#interrupting-the-program-execution)
   - [Handling Exceptions](#handling-exceptions)
       - [Notes on Exception Classes](#notes-on-exception-classes)
     - [Raising Exceptions](#raising-exceptions)
@@ -609,6 +610,32 @@ CLASS zcl_some_class IMPLEMENTATION.
     ENDTRY.
   ENDMETHOD.
 ENDCLASS.
+```
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+## Interrupting the Program Execution
+
+Using [`WAIT UP TO`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapwait_up_to.htm) statements, you can interrupt the program execution by a specified number of seconds.
+
+```abap
+"First retrieval of the current time stamp
+DATA(ts1) = utclong_current( ).
+...
+WAIT UP TO 1 SECONDS.
+...
+WAIT UP TO 3 SECONDS.
+...
+"Second retrieval of the current time stamp after the WAIT statements
+DATA(ts2) = utclong_current( ).
+"Calcularing the difference of the two time stamps
+cl_abap_utclong=>diff( EXPORTING high     = ts2
+                                 low      = ts1
+                        IMPORTING seconds = DATA(seconds) ).
+
+"The 'seconds' data object holding the delta of the time stamps 
+"should be greater than 4.
+ASSERT seconds > 4.
 ```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>

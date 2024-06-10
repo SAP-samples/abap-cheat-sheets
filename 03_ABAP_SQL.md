@@ -174,7 +174,8 @@ SELECT FROM source   "What database table or view to read from
     internal tables as targets, the resulting table is a standard table
     and has an empty key which might have an impact when further
     processing the internal table entries. Find more information in the
-    ABAP cheat sheet [Internal Tables](01_Internal_Tables.md). In newer ABAP releases, the declaration operator [`FINAL`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenfinal_inline.htm) can be used to declare immutable variables.
+    ABAP cheat sheet [Internal Tables](01_Internal_Tables.md). The declaration operator [`FINAL`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenfinal_inline.htm) can be used to declare immutable variables.
+>- Many syntax examples in this cheat sheet show a selection from `dbtab` denoting a database table as a source. However, other data sources can also be specified.    
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 

@@ -11,21 +11,31 @@
     - [Visibility of Components](#visibility-of-components)
       - [Creating the Visibility Sections](#creating-the-visibility-sections)
     - [Defining Components](#defining-components)
+      - [Class Attributes](#class-attributes)
+      - [Methods](#methods)
+      - [Method Parameter Interface](#method-parameter-interface)
+      - [Constructors](#constructors)
   - [Working with Objects and Components](#working-with-objects-and-components)
     - [Declaring Reference Variables](#declaring-reference-variables)
     - [Creating Objects](#creating-objects)
-    - [Assigning Reference Variables](#assigning-reference-variables)
+    - [Working with Reference Variables](#working-with-reference-variables)
     - [Accessing Attributes](#accessing-attributes)
     - [Calling Methods](#calling-methods)
     - [Method Chaining](#method-chaining)
     - [Self-Reference me](#self-reference-me)
-  - [Notes on Inheritance](#notes-on-inheritance)
-  - [Notes on Polymorphism and Casting](#notes-on-polymorphism-and-casting)
-  - [Notes on Interfaces](#notes-on-interfaces)
+  - [Inheritance](#inheritance)
+    - [Additions: ABSTRACT and FINAL](#additions-abstract-and-final)
+    - [Redefining Methods](#redefining-methods)
+  - [Polymorphism and Casting (Upcast/Downcast)](#polymorphism-and-casting-upcastdowncast)
+    - [Demonstrating Upcasts and Downcasts Using the RTTS Inheritance Tree](#demonstrating-upcasts-and-downcasts-using-the-rtts-inheritance-tree)
+  - [Interfaces](#interfaces)
+    - [Defining Interfaces](#defining-interfaces)
+    - [Implementing Interfaces](#implementing-interfaces)
+    - [Interface Reference Variables and Accessing Objects](#interface-reference-variables-and-accessing-objects)
   - [Excursions](#excursions)
     - [Friendship](#friendship)
     - [Events](#events)
-    - [Factory Methods and Singletons as Design Patterns](#factory-methods-and-singletons-as-design-patterns)
+    - [Examples for Design Patterns: Factory Methods and Singletons](#examples-for-design-patterns-factory-methods-and-singletons)
   - [More Information](#more-information)
   - [Executable Example](#executable-example)
 
@@ -191,7 +201,7 @@ CLASS zcl_demo_test DEFINITION
 
   PROTECTED SECTION.
   PRIVATE SECTION.
-    "This methods uses types (data type c1 and the local exception class)
+    "This method uses types (data type c1 and the local exception class)
     "defined in the CCDEF include
     METHODS calculate IMPORTING num1          TYPE i
                                 operator      TYPE c1
@@ -252,7 +262,7 @@ Code snippet for the CCDEF include:
 CLASS lcx_wrong_operator DEFINITION INHERITING FROM cx_static_check.
 ENDCLASS.
 
-TYPES c1 type c length 1.
+TYPES c1 TYPE c LENGTH 1.
 ```
 
 Code snippet for the CCIMP include:
@@ -267,7 +277,7 @@ ENDCLASS.
 CLASS lcl_demo IMPLEMENTATION.
 
   METHOD say_hello.
-    hi = |Hallo{ COND #( when name is supplied then ` ` && name ) }!|.
+    hi = |Hallo{ COND #( WHEN name IS SUPPLIED THEN ` ` && name ) }!|.
   ENDMETHOD.
 
 ENDCLASS.
@@ -319,11 +329,6 @@ CLASS ltc_test IMPLEMENTATION.
 ENDCLASS.
 ```
 </details>
-
-
-
-
-
 
 
 
@@ -397,7 +402,7 @@ kinds of components are to be distinguished when, for example, looking at declar
 -   [Static components](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenstatic_component_glosry.htm "Glossary Entry") (the declarations with `CLASS-`):
     Components that exist only once per class. They do no not exclusively exist for specific instances. They can be addressed using the name of the class.
 
-**Attributes**
+#### Class Attributes
 
 -   The attributes of a class (or interface) mean the data objects declared within a
     class (or interface).
@@ -428,6 +433,7 @@ can be used in the public visibility section. Effect:
 >   - Can be read from outside of the class
 >   - Cannot be changed from outside
 >   - Can only be changed using methods of the class or its subclasses
+> - Note that when creating attributes in the public visibility section, they are globally visible and can therefore be globally used. Note the consequences on the users when changing attributes in the public visibility section (e.g. making an attribute read-only at a later point in time when, for example, other classes use the attribute).
 
 Declaring attributes in visibility sections. In the code snippet below, all attributes are declared in the public section of a local class.
 ``` abap
@@ -462,7 +468,7 @@ ENDCLASS.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-**Methods**
+#### Methods
 
 -   Are internal
     [procedures](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenprocedure_glosry.htm "Glossary Entry")
@@ -486,7 +492,7 @@ ENDCLASS.
     You declare them using `METHODS` statements in a visibility
     section. Note that you must create an instance of a class first before using instance methods.
 
-**Parameter Interface**
+#### Method Parameter Interface
 
 In the simplest form, methods can have no parameter at all. Apart from that, methods can be defined with the following parameters:
 
@@ -544,7 +550,7 @@ In the simplest form, methods can have no parameter at all. Apart from that, met
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-**Constructors**
+#### Constructors
 
 -   [Constructors](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconstructor_glosry.htm "Glossary Entry")
     are special methods that are usually used for setting a defined
@@ -670,7 +676,7 @@ for example, using `DATA`. In this case, the name of the class must be placed af
         instance constructor. See more information:
         [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abennew_constructor_params_class.htm).
 - The operator
-    basically replaces the syntax [`CREATE OBJECT`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapcreate_object.htm) you might stumble on.
+    basically replaces the syntax [`CREATE OBJECT`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapcreate_object.htm) you might stumble on. However, `CREATE OBJECT` statements are still required (i.e. they are the only option, `NEW` is not possible for them) for creating objects dynamically. For more information, see the [Dynamic Programming](06_Dynamic_Programming.md) cheat sheet.
 
 ``` abap
 "Declaring object reference variable
@@ -689,7 +695,11 @@ DATA(ref2) = NEW some_class( ).      "Reference variable declared inline, explic
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-### Assigning Reference Variables
+### Working with Reference Variables
+Some examples for working with reference variables: 
+
+**Assigning Reference Variables**
+
 To assign or copy
 reference variables, use the [assignment
 operator](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenassignment_operator_glosry.htm "Glossary Entry")
@@ -705,8 +715,6 @@ ref1 = NEW #( ).
 "Assigning existing reference
 ref2 = ref1.
 ```
-
-More examples for dealing with object reference variables:
 
 **Overwriting reference variables**: An [object
 reference](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenobject_reference_glosry.htm "Glossary Entry")
@@ -955,7 +963,7 @@ ENDMETHOD.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-## Notes on Inheritance
+## Inheritance
 
 -   Concept: Deriving a new class (i. e.
     [subclass](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensubclass_glosry.htm "Glossary Entry"))
@@ -977,7 +985,8 @@ ENDMETHOD.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-**Excursion: Additions `ABSTRACT` and `FINAL`**
+### Additions: ABSTRACT and FINAL
+
 -  Both classes and methods can be defined with the additions `ABSTRACT` and `FINAL`.
 - `FINAL` with ...:
     - Classes: These classes cannot be inherited. All methods are automatically and implicitly `FINAL`. In this case, the addition `FINAL` cannot be used for methods.
@@ -1009,7 +1018,7 @@ ENDCLASS.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-**Redefining Methods**
+### Redefining Methods
 
 - Redefining methods is possible for the public and protected instance (not the static) methods of all preceding superclasses in a subclass (but only if the methods are not specified with `FINAL`).
 -  In the declaration part of the subclass, you must specify the method as follows (and using the same method name):
@@ -1032,7 +1041,7 @@ ENDCLASS.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-## Notes on Polymorphism and Casting
+## Polymorphism and Casting (Upcast/Downcast)
 
 The object orientation concept
 [polymorphism](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenpolymorphism_glosry.htm "Glossary Entry")
@@ -1146,9 +1155,243 @@ DATA(rtti_d) = CAST cl_abap_structdescr(
       )->components.
 ```
 
+### Demonstrating Upcasts and Downcasts Using the RTTS Inheritance Tree
+
+The examples in the following code snippet use object reference variables to illustrate the class hierarchy of the [Runtime Type Services (RTTS)](#runtime-type-services-rtts), which is covered in more detail in the [Dynamic Programming](06_Dynamic_Programming.md) cheat sheet. 
+
+Hierarchy tree of the classes:
+```abap
+CL_ABAP_TYPEDESCR
+  |
+  |--CL_ABAP_DATADESCR
+  |   |
+  |   |--CL_ABAP_ELEMDESCR
+  |   |   |
+  |   |   |--CL_ABAP_ENUMDESCR
+  |   |
+  |   |--CL_ABAP_REFDESCR
+  |   |--CL_ABAP_COMPLEXDESCR
+  |       |
+  |       |--CL_ABAP_STRUCTDESCR
+  |       |--CL_ABAP_TABLEDESCR
+  |
+  |--CL_ABAP_OBJECTDESCR
+     |
+     |--CL_ABAP_CLASSDESCR
+     |--CL_ABAP_INTFDESCR
+``` 
+
+Examples:
+
+```abap
+"------------ Object reference variables ------------
+
+"Static and dynamic types
+"Defining an object reference variable with a static type
+DATA tdo TYPE REF TO cl_abap_typedescr.
+
+"Retrieving type information
+"The reference the reference variable points to is either cl_abap_elemdescr,
+"cl_abap_enumdescr, cl_abap_refdescr, cl_abap_structdescr, or cl_abap_tabledescr.
+"So, it points to one of the subclasses. The static type of tdo refers to
+"cl_abap_typedescr, however, the dynamic type is one of the subclasses mentioned.
+"in the case of the example, it is cl_abap_elemdescr. Check in the debugger.
+DATA some_string TYPE string.
+tdo = cl_abap_typedescr=>describe_by_data( some_string ).
+
+"Some more object reference variables
+DATA tdo_super TYPE REF TO cl_abap_typedescr.
+DATA tdo_elem TYPE REF TO cl_abap_elemdescr.
+DATA tdo_data TYPE REF TO cl_abap_datadescr.
+DATA tdo_gen_obj TYPE REF TO object.
+
+"------------ Upcasts ------------
+
+"Moving up the inheritance tree
+"Assignments:
+"- If the static type of target variable is less specific or the same, an assignment works.
+"- The target variable inherits the dynamic type of the source variable.
+
+"Static type of target variable is the same
+tdo_super = tdo.
+
+"Examples for static types of target variables that are less specific
+"Target variable has the generic type object
+tdo_gen_obj = tdo.
+
+"Target variable is less specific because the direct superclass of cl_abap_elemdescr
+"is cl_abap_datadescr
+"Note: In the following three assignments, the target variable remains initial 
+"since the source variables do not (yet) point to any object.
+tdo_data = tdo_elem.
+
+"Target variable is less specific because the direct superclass of cl_abap_datadescr
+"is cl_abap_typedescr
+tdo_super = tdo_data.
+
+"Target variable is less specific because the class cl_abap_typedescr is higher up in
+"the inheritance tree than cl_abap_elemdescr
+tdo_super = tdo_elem.
+
+"The casting happens implicitly. You can also excplicitly cast and use
+"casting operators, but it is usually not required.
+tdo_super = CAST #( tdo ).
+tdo_super ?= tdo.
+
+"In combination with inline declarations, the CAST operator can be used to provide a
+"reference variable with a more general type.
+DATA(tdo_inl_cast) = CAST cl_abap_typedescr( tdo_elem ).
+
+CLEAR: tdo_super, tdo_elem, tdo_data, tdo_gen_obj.
+
+"------------ Downcasts ------------
+
+"Moving down the inheritance tree
+"Assignments:
+"- If the static type of the target variable is more specific than the static type
+"  of the source variable, performing a check whether it is less specific or the same
+"  as the dynamic type of the source variable is required at runtime before the assignment
+"- The target variable inherits the dynamic type of the source variable, however, the target
+"  variable can accept fewer dynamic types than the source variable
+"- Downcasts are always performed explicitly using casting operators
+
+"Static type of the target is more specific
+"object -> cl_abap_typedescr
+tdo_super = CAST #( tdo_gen_obj ).
+"cl_abap_typedescr -> cl_abap_datadescr
+"Note: Here, the dynamic type of the source variable is cl_abap_elemdescr.
+tdo_data = CAST #( tdo ).
+"cl_abap_datadescr -> cl_abap_elemdescr
+tdo_elem = CAST #( tdo_data ).
+"cl_abap_typedescr -> cl_abap_elemdescr
+tdo_elem = CAST #( tdo_super ).
+
+"------------ Error prevention in downcasts ------------
+
+"In the examples above, the assignments work. The following code snippets
+"deal with examples in which a downcast is not possible. An exception is
+"raised.
+DATA str_table TYPE string_table.
+DATA tdo_table TYPE REF TO cl_abap_tabledescr.
+
+"With the following method call, tdo points to an object with
+"reference to cl_abap_tabledescr.
+tdo = cl_abap_typedescr=>describe_by_data( str_table ).
+
+"Therefore, the following downcast works.
+tdo_table = CAST #( tdo ).
+
+"You could also achieve the same in one statement and with inline
+"declaration.
+DATA(tdo_table_2) = CAST cl_abap_tabledescr( cl_abap_typedescr=>describe_by_data( str_table ) ).
+
+"Example for an impossible downcast
+"The generic object reference variable points to cl_abap_elemdescr after the following
+"assignment.
+tdo_gen_obj = cl_abap_typedescr=>describe_by_data( some_string ).
+
+"Without catching the exception, the runtime error MOVE_CAST_ERROR
+"occurs. There is no syntax error at compile time. The static type of
+"tdo_gen_obj is more generic than the static type of the target variable.
+"The error occurs when trying to downcast, and the dynamic type is used.
+TRY.
+    tdo_table = CAST #( tdo_gen_obj ).
+  CATCH cx_sy_move_cast_error.
+ENDTRY.
+"Note: tdo_table sill points to the reference as assigned above after trying
+"to downcast in the TRY control structure.
+
+"Using CASE TYPE OF and IS INSTANCE OF statements, you can check if downcasts
+"are possible.
+"Note: In case of ...
+"- non-initial object reference variables, the dynamic type is checked.
+"- initial object reference variables, the static type is checked.
+
+"------------ IS INSTANCE OF ------------
+DATA some_tdo TYPE REF TO cl_abap_typedescr.
+some_tdo = cl_abap_typedescr=>describe_by_data( str_table ).
+
+IF some_tdo IS INSTANCE OF cl_abap_elemdescr.
+  DATA(tdo_a) = CAST cl_abap_elemdescr( some_tdo ).
+ELSE.
+  "This branch is executed. The downcast is not possible.
+  ...
+ENDIF.
+
+IF some_tdo IS INSTANCE OF cl_abap_elemdescr.
+  DATA(tdo_b) = CAST cl_abap_elemdescr( some_tdo ).
+ELSEIF some_tdo IS INSTANCE OF cl_abap_refdescr.
+  DATA(tdo_c) = CAST cl_abap_refdescr( some_tdo ).
+ELSEIF some_tdo IS INSTANCE OF cl_abap_structdescr.
+  DATA(tdo_d) = CAST cl_abap_structdescr( some_tdo ).
+ELSEIF some_tdo IS INSTANCE OF cl_abap_tabledescr.
+  "In this example, this branch is executed. With the check,
+  "you can make sure that the downcast is indeed possible.
+  DATA(tdo_e) = CAST cl_abap_tabledescr( some_tdo ).
+ELSE.
+  ...
+ENDIF.
+
+DATA initial_tdo TYPE REF TO cl_abap_typedescr.
+
+IF initial_tdo IS INSTANCE OF cl_abap_elemdescr.
+  DATA(tdo_f) = CAST cl_abap_elemdescr( some_tdo ).
+ELSEIF initial_tdo IS INSTANCE OF cl_abap_refdescr.
+  DATA(tdo_g) = CAST cl_abap_refdescr( some_tdo ).
+ELSEIF initial_tdo IS INSTANCE OF cl_abap_structdescr.
+  DATA(tdo_h) = CAST cl_abap_structdescr( some_tdo ).
+ELSEIF initial_tdo IS INSTANCE OF cl_abap_tabledescr.
+  DATA(tdo_i) = CAST cl_abap_tabledescr( some_tdo ).
+ELSE.
+  "In this example, this branch is executed. The static
+  "type of the initial object reference variable is used,
+  "which is cl_abap_typedescr here.
+  ...
+ENDIF.
+
+"------------ CASE TYPE OF ------------
+"The examples are desinged similarly to the IS INSTANCE OF examples.
+
+DATA(dref) = REF #( str_table ).
+some_tdo = cl_abap_typedescr=>describe_by_data( dref ).
+
+CASE TYPE OF some_tdo.
+  WHEN TYPE cl_abap_elemdescr.
+    DATA(tdo_j) = CAST cl_abap_elemdescr( some_tdo ).
+  WHEN TYPE cl_abap_refdescr.
+    "In this example, this branch is executed. With the check,
+    "you can make sure that the downcast is indeed possible.
+    DATA(tdo_k) = CAST cl_abap_refdescr( some_tdo ).
+  WHEN TYPE cl_abap_structdescr.
+    DATA(tdo_l) = CAST cl_abap_structdescr( some_tdo ).
+  WHEN TYPE cl_abap_tabledescr.
+    DATA(tdo_m) = CAST cl_abap_tabledescr( some_tdo ).
+  WHEN OTHERS.
+    ...
+ENDCASE.
+
+"Example with initial object reference variable
+CASE TYPE OF initial_tdo.
+  WHEN TYPE cl_abap_elemdescr.
+    DATA(tdo_n) = CAST cl_abap_elemdescr( some_tdo ).
+  WHEN TYPE cl_abap_refdescr.
+    DATA(tdo_o) = CAST cl_abap_refdescr( some_tdo ).
+  WHEN TYPE cl_abap_structdescr.
+    DATA(tdo_p) = CAST cl_abap_structdescr( some_tdo ).
+  WHEN TYPE cl_abap_tabledescr.
+    DATA(tdo_q) = CAST cl_abap_tabledescr( some_tdo ).
+  WHEN OTHERS.
+    "In this example, this branch is executed. The static
+    "type of the initial object reference variable is used,
+    "which is cl_abap_typedescr here.
+    ...
+ENDCASE.
+```
+
+
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-## Notes on Interfaces
+## Interfaces
 
 Interfaces ...
 
@@ -1174,7 +1417,7 @@ Interfaces ...
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-Defining interfaces:
+### Defining Interfaces
 - Can be done either globally in the repository or locally in an ABAP program.
 
 ``` abap
@@ -1190,7 +1433,9 @@ INTERFACE intf.
 ENDINTERFACE.
 ```
 
-Implementing interfaces:
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+### Implementing Interfaces
 -   A class can implement multiple interfaces.
 -   Interfaces must be specified in the
     declaration part of a class using the statement
@@ -1260,8 +1505,11 @@ CLASS cl_sub IMPLEMENTATION.
 ENDCLASS.
 ```
 
-Interface reference variables and accessing objects:
-- As mentioned above, addressing an object happens via an object reference variable with reference to a class.
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+### Interface Reference Variables and Accessing Objects
+
+- Addressing an object happens via an object reference variable with reference to a class.
 - An interface variable can contain references to objects of classes that implement the corresponding interface.
 - You create an interface reference variable like this: `DATA i_ref TYPE REF TO intf.`
 
@@ -1414,7 +1662,7 @@ SET HANDLER handler3.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-### Factory Methods and Singletons as Design Patterns
+### Examples for Design Patterns: Factory Methods and Singletons
 
 In object-oriented programming, there a plenty of design patterns. Covering these ones here to get a rough idea: factory methods and singletons. Both are relevant if you want to restrict or control the instantiation of a class by external users of this class.
 

@@ -37,6 +37,7 @@
     - [Searching and Replacing Substrings in Internal Tables with Character-Like Data Types](#searching-and-replacing-substrings-in-internal-tables-with-character-like-data-types)
     - [Ranges Tables](#ranges-tables)
     - [Getting Table Type Information and Creating Internal Tables at Runtime](#getting-table-type-information-and-creating-internal-tables-at-runtime)
+    - [Comparing Content of Compatible Internal Tables](#comparing-content-of-compatible-internal-tables)
   - [More Information](#more-information)
   - [Executable Example](#executable-example)
 
@@ -960,6 +961,123 @@ line = it[ b = 2 ].
 READ TABLE it INTO wa WITH KEY b = 2.
 ```
 
+Optimized read access using the `BINARY SEARCH` addition to the `READ TABLE` statement (find more details in the expandable section below):
+```abap
+READ TABLE itab WITH KEY ... BINARY SEARCH ...
+```
+
+<details>
+  <summary>Expand to view more information and a code snippet</summary>
+  <!-- -->
+
+- `READ TABLE` without `BINARY SEARCH`: Table is accessed linearly
+- `READ TABLE` with `BINARY SEARCH`: Table is accessed using a binary search 
+  - Using the `BINARY SEARCH` addition is particularly more efficient for larger tables when accessing data often. 
+  - The table must be sorted in ascending order based on the keys being searched. 
+  - `BINARY SEARCH` is suitable for standard tables that do not have a secondary key defined and when you need to make multiple read accesses to the table (however, note the costs of a previous sorting)  
+  - `BINARY SEARCH` can only be used with index tables and not with hashed tables. If the table is sorted and the read access uses a free key, the addition can only be applied when the initial part of the table key is specified. I.e. if key components are `a`, `b`, and `c`, the addition can be used by specifying `a` alone, `a` and `b`, or `a`, `b`, and `c`. Not working (for example): `b` and `c` without `a`, or any other non-key component (because it cannot be sorted according to the non-key component).  
+- Depending on the number of times you need to access the internal table, it is recommended to work with sorted tables or tables with secondary keys. If you only need to read one or a few data sets, consider the administrative costs of setting up the index.
+- Note: The `BINARY SEARCH` addition is not available for table expressions. If `KEY ...` is specified, an optimized search is performed by default. There are no performance differences between using the `READ TABLE` statement and table expressions.
+
+The output of the following example, which includes multiple reads on standard internal tables using `READ TABLE` statements without `BINARY SEARCH` and with `BINARY SEARCH` demonstrates the performance gain. An excursion is included that shows read accesses in an internal table with a secondary table key.
+
+```abap
+CLASS zcl_demo_test DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
+
+  PUBLIC SECTION.
+    INTERFACES if_oo_adt_classrun.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+ENDCLASS.
+
+
+
+CLASS zcl_demo_test IMPLEMENTATION.
+  METHOD if_oo_adt_classrun~main.
+    "Line type and internal table declarations
+    TYPES: BEGIN OF demo_struc,
+             idx TYPE i,
+             str TYPE string,
+             num TYPE i,
+           END OF demo_struc.
+
+    DATA: "Tables with empty primary table key
+      itab_std1 TYPE STANDARD TABLE OF demo_struc WITH EMPTY KEY,
+      itab_std2 LIKE itab_std1,
+      "Table with empty primary table key, secondary table key specified
+      itab_sec  TYPE STANDARD TABLE OF demo_struc
+                   WITH EMPTY KEY
+                   WITH NON-UNIQUE SORTED KEY sk COMPONENTS str num.
+
+    "Populating internal tables
+    DO 1000 TIMES.
+      INSERT VALUE #( idx = sy-index
+                      str = |INDEX{ sy-index }|
+                      num = sy-index ) INTO TABLE itab_std1.
+    ENDDO.
+    itab_std2 = itab_std1.
+    itab_sec = itab_std1.
+
+    "---- Reading without the BINARY SEARCH addition ----
+    DATA(ts1) = utclong_current( ).
+    DO 1000 TIMES.
+      READ TABLE itab_std1
+        WITH KEY str = `INDEX500` num = 500
+        REFERENCE INTO DATA(dref1).
+    ENDDO.
+    DATA(ts2) = utclong_current( ).
+    cl_abap_utclong=>diff( EXPORTING high     = ts2
+                                     low      = ts1
+                            IMPORTING seconds = DATA(seconds) ).
+
+    out->write( `Elapsed time for the reads using READ TABLE without the BINARY SEARCH addition:` ).
+    out->write( seconds ).
+    out->write( repeat( val = `-` occ = 70  ) ).
+
+    "---- Reading with the BINARY SEARCH addition ----
+    ts1 = utclong_current( ).
+    "Sorting the internal table when using BINARY SEARCH
+    "In this simple example, the internal table is populated by having the free key components
+    "to be searched in ascending order anyway. This is to emphasize the requirement to
+    "sort the (standard) internal table when using BINARY SEARCH.
+    SORT itab_std2 BY str num.
+
+    DO 1000 TIMES.
+      READ TABLE itab_std2
+       WITH KEY str = `INDEX500` num = 500
+       BINARY SEARCH
+       REFERENCE INTO DATA(dref2).
+    ENDDO.
+    ts2 = utclong_current( ).
+    cl_abap_utclong=>diff( EXPORTING high     = ts2
+                                     low      = ts1
+                           IMPORTING seconds = seconds ).
+    out->write( `Elapsed time for the reads using READ TABLE ... BINARY SEARCH ...:` ).
+    out->write( seconds ).
+    out->write( repeat( val = `-` occ = 70  ) ).
+
+    "---- Excursion: Reading with READ TABLE using a secondary table key ----
+    ts1 = utclong_current( ).
+    DO 1000 TIMES.
+      READ TABLE itab_sec
+        WITH TABLE KEY sk COMPONENTS str = `INDEX500` num = 500
+        INTO DATA(dref3).
+    ENDDO.
+    ts2 = utclong_current( ).
+    cl_abap_utclong=>diff( EXPORTING high     = ts2
+                                     low      = ts1
+                           IMPORTING seconds = seconds ).
+    out->write( `Elapsed time for the reads using READ TABLE and a secondary table key:` ).
+    out->write( seconds ).
+  ENDMETHOD.
+ENDCLASS.
+```
+
+</details>
+
 ### Addressing Individual Components of Read Lines
 
 When reading single lines in general, you can also address individual
@@ -1518,7 +1636,8 @@ MODIFY it FROM line TRANSPORTING b c WHERE a < 5.
 You can use [`DELETE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapdelete_itab.htm) statements to delete single and multiple lines in internal tables. The following additions can be used: `USING KEY` (for specifying a table key), `FROM`/`TO` (for specifying row ranges), `STEP` (for specifying the step size), and `WHERE` (for specifying conditions).
 
 ``` abap
-"Deleting via index
+"-------------- Deleting via index --------------
+
 "Example: The first line in the table is deleted.
 DELETE it INDEX 1.
 
@@ -1531,7 +1650,8 @@ DELETE it INDEX 1 USING KEY primary_key.
 "Deleting an index range; FROM or TO alone can also be specified
 DELETE it FROM 2 TO 5.
 
-"Deleting via keys
+"-------------- Deleting via keys --------------
+
 "The line must have a compatible type to the tables line type and
 "include key values. The first found line with the corresponding keys
 "is deleted.
@@ -1549,7 +1669,8 @@ DELETE TABLE it WITH TABLE KEY primary_key COMPONENTS a = 1.
 
 DELETE TABLE it_sec WITH TABLE KEY sec_key COMPONENTS ...
 
-"Deleting multiple lines based on a WHERE condition
+"---------- Deleting multiple lines based on a WHERE condition ----------
+
 "Specifying the additions USING KEY, FROM, TO is also possible.
 DELETE it WHERE a < 6.
 
@@ -1564,6 +1685,58 @@ DATA(str_table) = VALUE string_table( ( `abcZ` ) ( `Zdef` ) ( `gZhi` )
 "All lines that begin with Z are to be deleted.
 DELETE str_table WHERE table_line CP `Z*`.
 "Result: abcZ / gZhi / pqrZ
+
+"---------- Deleting the current line inside a LOOP statement ----------
+
+"The following example illustrates deleting the current table line
+"using a DELETE statement within a LOOP statement. Lines with even
+"numbers are deleted.
+"Note:
+"- The short form of the DELETE statement always deletes the
+"  current first line implicitly. It is only possible within a LOOP
+"  statement and the delete operation is performed on the same internal
+"  table.
+"- The field symbol (or reference variable) should not be used after
+"  the DELETE statement any more.
+DATA itab1 TYPE TABLE OF i WITH EMPTY KEY.
+itab1 = VALUE #( ( 1 ) ( 2 ) ( 3 ) ( 4 ) ( 5 ) ( 6 ) ( 7 ) ( 8 ) ( 9 ) ( 10 ) ).
+
+LOOP AT itab1 ASSIGNING FIELD-SYMBOL(<fs>).
+  IF <fs> MOD 2 = 0.
+    DELETE itab1.
+  ENDIF.
+ENDLOOP.
+
+*Table content:
+*1
+*3
+*5
+*7
+*9
+
+"The following, similar example (uneven numbers are deleted) uses a
+"table which is looped over by specifying the addition USING KEY.
+"In this case (using LOOP ... USING KEY ...), the short form of the
+"DELETE statement cannot be use. Use the DELETE statement with the
+"addition USING KEY loop_key to delete the current first line.
+"loop_key is a predefined name to be used with DELETE and within
+"loops that specify LOOP ... USING KEY .... No other key name is
+"possible here.
+DATA itab2 TYPE TABLE OF i WITH NON-UNIQUE KEY table_line.
+itab2 = VALUE #( ( 1 ) ( 2 ) ( 3 ) ( 4 ) ( 5 ) ( 6 ) ( 7 ) ( 8 ) ( 9 ) ( 10 ) ).
+
+LOOP AT itab2 USING KEY primary_key REFERENCE INTO DATA(dref2).
+  IF dref2->* MOD 2 <> 0.
+    DELETE itab2 USING KEY loop_key.
+  ENDIF.
+ENDLOOP.
+
+*Table content:
+*2
+*4
+*6
+*8
+*10
 ```
 
 ### Deleting Adjacent Duplicate Lines
@@ -1832,6 +2005,16 @@ you can ...
 - define and create new data types as [type description objects](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentype_object_glosry.htm) at runtime ([Runtime Type Creation (RTTC)](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrun_time_type_creation_glosry.htm "Glossary Entry")).
 
 For more information, see the [Dynamic Programming](06_Dynamic_Programming.md) cheat sheet.
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+### Comparing Content of Compatible Internal Tables 
+
+Using the methods of the `CL_ABAP_DIFF` class, you can compare the content of two compatible index tables. 
+
+Find ...
+- more information in the class documentation and in the [ABAP Keyword Documentation]([06_Dynamic_Programming.md](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencl_abap_diff.htm)). 
+- a code snippet in the [Misc ABAP Classes](22_Misc_ABAP_Classes.md) cheat sheet.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 

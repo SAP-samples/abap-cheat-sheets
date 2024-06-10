@@ -6,7 +6,18 @@
   - [Introduction](#introduction)
   - [Excursion: Field Symbols and Data References](#excursion-field-symbols-and-data-references)
     - [Field Symbols](#field-symbols)
+      - [Declaring Field Symbols](#declaring-field-symbols)
+      - [Assigning Data Objects](#assigning-data-objects)
+      - [Examples Using Field Symbols](#examples-using-field-symbols)
+      - [Generic Typing](#generic-typing)
     - [Data References](#data-references)
+      - [Declaring Data Reference Variables](#declaring-data-reference-variables)
+      - [Assigning References to Existing Data Objects](#assigning-references-to-existing-data-objects)
+      - [Creating New Data Objects at Runtime (Anonymous Data Objects)](#creating-new-data-objects-at-runtime-anonymous-data-objects)
+      - [Assignments Between Two Reference Variables (Static and Dynamic Type, Upcast and Downcast)](#assignments-between-two-reference-variables-static-and-dynamic-type-upcast-and-downcast)
+      - [Addressing Data References](#addressing-data-references)
+      - [Excursion: Generic Data References and Field Symbols](#excursion-generic-data-references-and-field-symbols)
+      - [Examples Using Data References](#examples-using-data-references)
   - [Dynamic ABAP Statements](#dynamic-abap-statements)
     - [Dynamic ASSIGN Statements](#dynamic-assign-statements)
     - [Dynamically Specifying Data Types/Creating (Data) Objects](#dynamically-specifying-data-typescreating-data-objects)
@@ -74,7 +85,9 @@ Field symbols ...
 - can be typed either with [generic data types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abengeneric_data_type_glosry.htm "Glossary Entry") or [complete data types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencomplete_data_type_glosry.htm "Glossary Entry"). 
 - are declared using the statement [`FIELD-SYMBOLS`](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapfield-symbols.htm) or the [declaration operator](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendeclaration_operator_glosry.htm) [`FIELD-SYMBOL`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenfield-symbol_inline.htm). Their names must be included between angle brackets.
 
-**Declaring field symbols**
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+#### Declaring Field Symbols
 
 Syntax:
 ``` abap
@@ -113,7 +126,9 @@ ENDLOOP.
     and
     [interfaces](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenoo_intf_glosry.htm "Glossary Entry").
 
-**Assigning data objects**
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+#### Assigning Data Objects
 
 [`ASSIGN`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapassign.htm)
 statements assign the memory area of a data object to a field symbol.
@@ -186,7 +201,9 @@ ASSIGN chars TO <fs2> CASTING LIKE chars_l4. "abcd
 >   ```
 >- See more information on the addition `CASTING` [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapassign_casting.htm).
 
-**Examples using field symbols**
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+#### Examples Using Field Symbols
 
 ``` abap
 "Assignments
@@ -220,7 +237,13 @@ LOOP AT itab ASSIGNING FIELD-SYMBOL(<fs2>).
   <fs2>-connid = ...
   ...
 ENDLOOP.
+```
 
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+#### Generic Typing
+
+``` abap
 "----------- Generic typing -----------
 "- Generic types are available with which formal parameters of methods or field symbols
 "  can be specified.
@@ -399,7 +422,9 @@ ASSIGN s-oref TO <object>.
 > [Object references](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenobject_reference_glosry.htm "Glossary Entry")
 and [object reference variables](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenobject_refer_variable_glosry.htm "Glossary Entry") are not part of this cheat sheet. To get more details, refer to the [ABAP Keyword Documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenobject_reference_type.htm) or the cheat sheet [ABAP Object Orientation](04_ABAP_Object_Orientation.md).
 
-**Declaring data reference variables**
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+#### Declaring Data Reference Variables
 
 ``` abap
 "Example declarations of data reference variables with static types.
@@ -416,8 +441,11 @@ DATA: ref_a TYPE REF TO i,                 "Complete data type
 As shown below, instead of the explicit declaration, inline declarations are also possible. 
 See also the cheat sheet [Data Types and Data Objects](16_Data_Types_and_Objects.md).
 
-**Assigning references to existing data objects** using the
-[reference operator](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenreference_operator_glosry.htm "Glossary Entry")
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+#### Assigning References to Existing Data Objects
+
+Assigning references to existing data objects [reference operator](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenreference_operator_glosry.htm "Glossary Entry")
 `REF`.
 ``` abap
 "Declaring a data object
@@ -458,7 +486,9 @@ DATA(ref3) = REF some_type( ... ).
 "GET REFERENCE OF num INTO DATA(ref5).
 ```
 
-**Creating new data objects at runtime**: 
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+#### Creating New Data Objects at Runtime (Anonymous Data Objects) 
 [Anonymous data objects](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenanonymous_data_object_glosry.htm "Glossary Entry") ...
 - are dynamically created at runtime. 
 - are relevant if the data type is only known when the program is executed.
@@ -543,7 +573,11 @@ SELECT SINGLE *
   INTO NEW @DATA(dref_8). "structure
 ```  
 
-**Assignments between two reference variables**. As mentioned above regarding the assignment, note that static types of both data
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+#### Assignments Between Two Reference Variables (Static and Dynamic Type, Upcast and Downcast)
+
+As mentioned above regarding the assignment, note that static types of both data
 reference variables must be compatible. As a result of an assignment, both the target reference variable and the source reference variable point to the same (data) object.
 
 Excursion: Static vs. dynamic type, upcasts and downcasts
@@ -806,7 +840,9 @@ ref5 ?= ref6.
 ref4 = CAST #( ref3 ).
 ```
 
-**Addressing data references**
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+#### Addressing Data References
 
 Before addressing the content of data objects a data reference points to, you must dereference data reference variables. Use the
 [dereferencing operator](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendereferencing_operat_glosry.htm "Glossary Entry")
@@ -864,7 +900,9 @@ DATA(ref_bound) = COND #( WHEN ref_carr IS BOUND THEN ref_carr->carrid ELSE `is 
 CLEAR ref_carr.
 ```
 
-**Excursion: Generic data references and field symbols**
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+#### Excursion: Generic Data References and Field Symbols
 
 ```abap
 "Non-generic type
@@ -917,7 +955,9 @@ DATA(num_tab_lines) = lines( dref->* ).
 DATA(idx) = line_index( dref->*[ ('CARRID') = 'LH' ] ).
 ```
 
-**Examples using data references**
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+#### Examples Using Data References
 
 Some example contexts of using data references are as follows:
 

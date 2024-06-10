@@ -14,6 +14,7 @@
   - [Runtime Type Services (RTTS)](#runtime-type-services-rtts)
   - [Assignments](#assignments)
   - [Information about Non-Initial Structure Components](#information-about-non-initial-structure-components)
+  - [Comparing Content of Compatible Internal Tables](#comparing-content-of-compatible-internal-tables)
   - [Dynamic Programming](#dynamic-programming)
   - [Context Information](#context-information)
   - [XML/JSON](#xmljson)
@@ -1259,6 +1260,114 @@ CLASS zcl_some_class IMPLEMENTATION.
   ENDMETHOD.
 ENDCLASS.
 ``` 
+
+</td>
+</tr>
+</table>
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+## Comparing Content of Compatible Internal Tables
+
+<table>
+<tr>
+<td> Class </td> <td> Details/Code Snippet </td>
+</tr>
+<tr>
+<td> <code>CL_ABAP_DIFF</code> </td>
+<td>
+Using the methods <code>diff</code> and <code>diff_with_line_ref</code> of the <code>CL_ABAP_DIFF</code> class, you can compare the content of two compatible index tables. The returning parameter is an internal table showing how the content of one internal table can be modified to match another one. <code>diff_with_line_ref</code> also returns a reference to the original table lines. Various importing parameters are available to adjust the comparison. Find more information in the class documentation and in the <a href="https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencl_abap_diff.htm">ABAP Keyword Documentation</a>.
+
+<br>
+
+```abap
+CLASS zcl_demo_test DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
+
+  PUBLIC SECTION.
+    INTERFACES if_oo_adt_classrun.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+ENDCLASS.
+
+
+
+CLASS zcl_demo_test IMPLEMENTATION.
+  METHOD if_oo_adt_classrun~main.
+    TYPES: BEGIN OF s,
+             a TYPE i,
+             b TYPE string,
+             c TYPE c LENGTH 3,
+           END OF s.
+
+    DATA it1 TYPE TABLE OF s WITH EMPTY KEY.
+    DATA it2 TYPE TABLE OF s WITH EMPTY KEY.
+
+    it1 = VALUE #(
+    ( a = 1 b = `aaa` c = 'zzz' )
+    ( a = 2 b = `bbb` c = 'yyy' )
+    ( a = 3 b = `ccc` c = 'xxx' )
+    ( a = 4 b = `ddd` c = 'www' )
+    ).
+
+    it2 = VALUE #(
+    ( a = 1 b = `aaa` c = 'zzz' )
+    ( a = 2 b = `#bb` c = 'yy#' )
+    ( a = 3 b = `cc` c = 'x' )
+    ( a = 4 b = `ddd` c = 'www' )
+    ( a = 5 b = `eee` c = 'vvv' )
+    ).
+
+    DATA(it3) = it1.
+    DATA is_identical TYPE abap_bool.
+
+    DATA(comparison) = cl_abap_diff=>create(  ).
+    TRY.
+        DATA(comp_res1) = comparison->diff( EXPORTING target = it2
+                                                      source = it1
+                                            IMPORTING flag_identical = is_identical ).
+        IF is_identical = abap_true.
+          out->write( `The two internal tables have identical content.` ).
+          CLEAR is_identical.
+        ELSE.
+          out->write( comp_res1 ).
+        ENDIF.
+      CATCH cx_abap_diff INTO DATA(error1).
+        out->write( error1->get_text( ) ).
+    ENDTRY.
+
+    TRY.
+        DATA(comp_res2) = comparison->diff_with_line_ref( EXPORTING target = it2
+                                                                    source = it1
+                                                          IMPORTING flag_identical = is_identical ).
+        IF is_identical = abap_true.
+          out->write( `The two internal tables have identical content.` ).
+          CLEAR is_identical.
+        ELSE.
+          out->write( comp_res2 ).
+        ENDIF.
+      CATCH cx_abap_diff INTO DATA(error2).
+        out->write( error2->get_text( ) ).
+    ENDTRY.
+
+    TRY.
+        DATA(comp_res3) = comparison->diff_with_line_ref( EXPORTING target = it3
+                                                                    source = it1
+                                                          IMPORTING flag_identical = is_identical ).
+        IF is_identical = abap_true.
+          out->write( `The two internal tables have identical content.` ).
+          CLEAR is_identical.
+        ELSE.
+          out->write( comp_res3 ).
+        ENDIF.
+      CATCH cx_abap_diff INTO DATA(error3).
+        out->write( error2->get_text( ) ).
+    ENDTRY.
+  ENDMETHOD.
+ENDCLASS.
+```
 
 </td>
 </tr>

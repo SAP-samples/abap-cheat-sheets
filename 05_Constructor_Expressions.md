@@ -1231,100 +1231,100 @@ ENDCASE.
 
 Examples:
 ```abap
- "Internal tables to work with in the example
-    TYPES: BEGIN OF fi_str,
-             a TYPE i,
-             b TYPE c LENGTH 3,
-             c TYPE c LENGTH 3,
-           END OF fi_str.
+"Internal tables to work with in the example
+TYPES: BEGIN OF fi_str,
+            a TYPE i,
+            b TYPE c LENGTH 3,
+            c TYPE c LENGTH 3,
+        END OF fi_str.
 
-    DATA fi_tab1 TYPE SORTED TABLE OF fi_str WITH NON-UNIQUE KEY a.
-    DATA fi_tab2 TYPE STANDARD TABLE OF fi_str WITH NON-UNIQUE SORTED KEY sec_key COMPONENTS a.
-    DATA fi_tab3 TYPE HASHED TABLE OF fi_str WITH UNIQUE KEY a.
-    DATA fi_tab4 TYPE STANDARD TABLE OF fi_str WITH UNIQUE HASHED KEY sec_hash_key COMPONENTS a b.
+DATA fi_tab1 TYPE SORTED TABLE OF fi_str WITH NON-UNIQUE KEY a.
+DATA fi_tab2 TYPE STANDARD TABLE OF fi_str WITH NON-UNIQUE SORTED KEY sec_key COMPONENTS a.
+DATA fi_tab3 TYPE HASHED TABLE OF fi_str WITH UNIQUE KEY a.
+DATA fi_tab4 TYPE STANDARD TABLE OF fi_str WITH UNIQUE HASHED KEY sec_hash_key COMPONENTS a b.
 
-    "Populating internal tables with demo data
-    fi_tab1 = VALUE #( ( a = 1  b = 'aaa' c = 'abc' )
-                       ( a = 2  b = 'bbb' c = 'def' )
-                       ( a = 3  b = 'ccc' c = 'hij' )
-                       ( a = 4  b = 'ddd' c = 'klm' )
-                       ( a = 5  b = 'eee' c = 'nop' ) ).
+"Populating internal tables with demo data
+fi_tab1 = VALUE #( ( a = 1  b = 'aaa' c = 'abc' )
+                    ( a = 2  b = 'bbb' c = 'def' )
+                    ( a = 3  b = 'ccc' c = 'hij' )
+                    ( a = 4  b = 'ddd' c = 'klm' )
+                    ( a = 5  b = 'eee' c = 'nop' ) ).
 
-    fi_tab2 = fi_tab1.
-    fi_tab3 = fi_tab1.
-    fi_tab4 = fi_tab1.
+fi_tab2 = fi_tab1.
+fi_tab3 = fi_tab1.
+fi_tab4 = fi_tab1.
 
-    "---------------- Basic form: Filtering using single values ----------------
-    "Syntax options for using a WHERE condition and the table key
+"---------------- Basic form: Filtering using single values ----------------
+"Syntax options for using a WHERE condition and the table key
 
-    "Using the primary table key without specifying USING KEY
-    DATA(f1) = FILTER #( fi_tab1 WHERE a >= 4 ).
-
-*A    B      C
-*4    ddd    klm
-*5    eee    nop
-
-    "Using the primary table key by specifying the default name primary_key
-    "and specifying USING KEY; the result in the example is the same as above
-    DATA(f2) = FILTER #( fi_tab1 USING KEY primary_key WHERE a >= 4 ).
+"Using the primary table key without specifying USING KEY
+DATA(f1) = FILTER #( fi_tab1 WHERE a >= 4 ).
 
 *A    B      C
 *4    ddd    klm
 *5    eee    nop
 
-    "Using the secondary table key by specifying its name and USING KEY
-    DATA(f3) = FILTER #( fi_tab2 USING KEY sec_key WHERE a < 3 ).
+"Using the primary table key by specifying the default name primary_key
+"and specifying USING KEY; the result in the example is the same as above
+DATA(f2) = FILTER #( fi_tab1 USING KEY primary_key WHERE a >= 4 ).
+
+*A    B      C
+*4    ddd    klm
+*5    eee    nop
+
+"Using the secondary table key by specifying its name and USING KEY
+DATA(f3) = FILTER #( fi_tab2 USING KEY sec_key WHERE a < 3 ).
 
 *A    B      C
 *1    aaa    abc
 *2    bbb    def
 
-    "Note: When using a table with hash key, only the comparison operator =
-    "can be used in the WHERE clause
-    "The example uses the primary table key, which is a hash key.
-    DATA(f4) = FILTER #( fi_tab3 WHERE a = 3 ).
+"Note: When using a table with hash key, only the comparison operator =
+"can be used in the WHERE clause
+"The example uses the primary table key, which is a hash key.
+DATA(f4) = FILTER #( fi_tab3 WHERE a = 3 ).
 
 *A    B      C
 *3    ccc    hij
 
-    "The example table used in the following example has two components specified
-    "for the table key. The key must be specified in full listing all components
-    "and using AND.
-    DATA(f5) = FILTER #( fi_tab4 USING KEY sec_hash_key WHERE a = 3 AND b = 'ccc' ).
+"The example table used in the following example has two components specified
+"for the table key. The key must be specified in full listing all components
+"and using AND.
+DATA(f5) = FILTER #( fi_tab4 USING KEY sec_hash_key WHERE a = 3 AND b = 'ccc' ).
 
 *A    B      C
 *3    ccc    hij
 
-    "Examples with the EXCEPT addition
-    DATA(f6) = FILTER #( fi_tab1 EXCEPT WHERE a >= 4 ).
-
-*A    B      C
-*1    aaa    abc
-*2    bbb    def
-*3    ccc    hij
-
-    DATA(f7) = FILTER #( fi_tab1 EXCEPT USING KEY primary_key WHERE a >= 4 ).
-
-*A    B      C
-*1    aaa    abc
-*2    bbb    def
-*3    ccc    hij
-
-    "Secondary table key specified after USING KEY
-    DATA(f8) = FILTER #( fi_tab2 USING KEY sec_key WHERE a <= 2 ).
-
-*A    B      C
-*1    aaa    abc
-*2    bbb    def
-
-    DATA(f9) = FILTER #( fi_tab2 EXCEPT USING KEY sec_key WHERE a >= 4 ).
+"Examples with the EXCEPT addition
+DATA(f6) = FILTER #( fi_tab1 EXCEPT WHERE a >= 4 ).
 
 *A    B      C
 *1    aaa    abc
 *2    bbb    def
 *3    ccc    hij
 
-    DATA(f10) = FILTER #( fi_tab4 EXCEPT USING KEY sec_hash_key WHERE a = 3 AND b = 'ccc' ).
+DATA(f7) = FILTER #( fi_tab1 EXCEPT USING KEY primary_key WHERE a >= 4 ).
+
+*A    B      C
+*1    aaa    abc
+*2    bbb    def
+*3    ccc    hij
+
+"Secondary table key specified after USING KEY
+DATA(f8) = FILTER #( fi_tab2 USING KEY sec_key WHERE a <= 2 ).
+
+*A    B      C
+*1    aaa    abc
+*2    bbb    def
+
+DATA(f9) = FILTER #( fi_tab2 EXCEPT USING KEY sec_key WHERE a >= 4 ).
+
+*A    B      C
+*1    aaa    abc
+*2    bbb    def
+*3    ccc    hij
+
+DATA(f10) = FILTER #( fi_tab4 EXCEPT USING KEY sec_hash_key WHERE a = 3 AND b = 'ccc' ).
 
 *A    B      C
 *1    aaa    abc
@@ -1332,47 +1332,47 @@ Examples:
 *4    ddd    klm
 *5    eee    nop
 
-    "---------------- Basic form: Filtering using a filter table ----------------
+"---------------- Basic form: Filtering using a filter table ----------------
 
-    "In the WHERE condition, the columns of source and filter table are compared.
-    "Those lines in the source table are used for which at least one line in the
-    "filter table meets the condition. EXCEPT and USING KEY are also possible.
-    "The following examples use simple tables with elementary line types. Note
-    "that the line types of the tables in a FILTER epxression need not be identical.
-    "Declaring and filling filter tables
-    DATA filter_tab1 TYPE SORTED TABLE OF i WITH NON-UNIQUE KEY table_line.
+"In the WHERE condition, the columns of source and filter table are compared.
+"Those lines in the source table are used for which at least one line in the
+"filter table meets the condition. EXCEPT and USING KEY are also possible.
+"The following examples use simple tables with elementary line types. Note
+"that the line types of the tables in a FILTER epxression need not be identical.
+"Declaring and filling filter tables
+DATA filter_tab1 TYPE SORTED TABLE OF i WITH NON-UNIQUE KEY table_line.
 
-    DATA filter_tab2 TYPE STANDARD TABLE OF i
-        WITH EMPTY KEY
-        WITH UNIQUE SORTED KEY line COMPONENTS table_line.
+DATA filter_tab2 TYPE STANDARD TABLE OF i
+    WITH EMPTY KEY
+    WITH UNIQUE SORTED KEY line COMPONENTS table_line.
 
-    filter_tab1 = VALUE #( ( 3 ) ( 5 ) ).
-    filter_tab2 = filter_tab1.
+filter_tab1 = VALUE #( ( 3 ) ( 5 ) ).
+filter_tab2 = filter_tab1.
 
-    "No further additions specified
-    DATA(f11) = FILTER #( fi_tab1 IN filter_tab1 WHERE a = table_line ).
+"No further additions specified
+DATA(f11) = FILTER #( fi_tab1 IN filter_tab1 WHERE a = table_line ).
 
 *A    B      C
 *3    ccc    hij
 *5    eee    nop
 
-    "Specifying EXCEPT addition
-    DATA(f12) = FILTER #( fi_tab1 EXCEPT IN filter_tab1 WHERE a = table_line ).
+"Specifying EXCEPT addition
+DATA(f12) = FILTER #( fi_tab1 EXCEPT IN filter_tab1 WHERE a = table_line ).
 
 *A    B      C
 *1    aaa    abc
 *2    bbb    def
 *4    ddd    klm
 
-    "Specifying USING KEY for the filter table
-    DATA(f13) = FILTER #( fi_tab2 IN filter_tab2 USING KEY line WHERE a = table_line ).
+"Specifying USING KEY for the filter table
+DATA(f13) = FILTER #( fi_tab2 IN filter_tab2 USING KEY line WHERE a = table_line ).
 
 *A    B      C
 *3    ccc    hij
 *5    eee    nop
 
-    "Specifying USING KEY for the source table, including EXCEPT
-    DATA(f14) = FILTER #( fi_tab2 USING KEY sec_key EXCEPT IN filter_tab2 WHERE a = table_line ).
+"Specifying USING KEY for the source table, including EXCEPT
+DATA(f14) = FILTER #( fi_tab2 USING KEY sec_key EXCEPT IN filter_tab2 WHERE a = table_line ).
 
 *A    B      C
 *1    aaa    abc

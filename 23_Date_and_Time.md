@@ -1258,6 +1258,6 @@ INTO @DATA(wa).
 [zcl_demo_abap_date_time](./src/zcl_demo_abap_date_time.clas.abap)
 
 > **💡 Note**<br>
-> - The executable example covers the handling and processing of date, time, and time stamps. The snippets of this cheat sheets and more are included. 
+> - The executable example covers the handling and processing of date, time, and time stamps. The snippets of this cheat sheet and more are included. 
 > - The steps to import and run the code are outlined [here](README.md#-getting-started-with-the-examples).
 > - [Disclaimer](README.md#%EF%B8%8F-disclaimer)
