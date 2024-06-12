@@ -21,8 +21,13 @@
     - [Reading a Single Line Using Table Keys](#reading-a-single-line-using-table-keys)
     - [Reading a Single Line Using a Free Key](#reading-a-single-line-using-a-free-key)
     - [Addressing Individual Components of Read Lines](#addressing-individual-components-of-read-lines)
-    - [Checking the Existence and the Index of a Line in an Internal Table](#checking-the-existence-and-the-index-of-a-line-in-an-internal-table)
+  - [Obtaining Information about Internal Tables, Table Lines, Table Types](#obtaining-information-about-internal-tables-table-lines-table-types)
+    - [Checking the Existence of a Line in an Internal Table](#checking-the-existence-of-a-line-in-an-internal-table)
+    - [Checking the Index of a Line in an Internal Table](#checking-the-index-of-a-line-in-an-internal-table)
+    - [Checking How Many Lines Exist in an Internal Table](#checking-how-many-lines-exist-in-an-internal-table)
+    - [Getting Table (Type) Information and Creating Internal Tables and Types at Runtime](#getting-table-type-information-and-creating-internal-tables-and-types-at-runtime)
   - [Processing Multiple Internal Table Lines Sequentially](#processing-multiple-internal-table-lines-sequentially)
+    - [Restricting the Area of a Table to Be Looped Over](#restricting-the-area-of-a-table-to-be-looped-over)
     - [Iteration Expressions](#iteration-expressions)
   - [Operations with Internal Tables Using ABAP SQL SELECT Statements](#operations-with-internal-tables-using-abap-sql-select-statements)
     - [Internal Tables as Target Data Objects](#internal-tables-as-target-data-objects)
@@ -32,11 +37,11 @@
   - [Deleting Internal Table Content](#deleting-internal-table-content)
     - [Deleting Adjacent Duplicate Lines](#deleting-adjacent-duplicate-lines)
     - [Deleting the Entire Internal Table Content](#deleting-the-entire-internal-table-content)
+  - [Grouping Internal Tables](#grouping-internal-tables)
   - [Excursions](#excursions)
     - [Improving Read Performance with Secondary Table Keys](#improving-read-performance-with-secondary-table-keys)
     - [Searching and Replacing Substrings in Internal Tables with Character-Like Data Types](#searching-and-replacing-substrings-in-internal-tables-with-character-like-data-types)
     - [Ranges Tables](#ranges-tables)
-    - [Getting Table Type Information and Creating Internal Tables at Runtime](#getting-table-type-information-and-creating-internal-tables-at-runtime)
     - [Comparing Content of Compatible Internal Tables](#comparing-content-of-compatible-internal-tables)
   - [More Information](#more-information)
   - [Executable Example](#executable-example)
@@ -885,7 +890,7 @@ default line in case of an unsuccessful read operation, which can also be anothe
 ``` abap
 DATA(line1) = VALUE #( itab[ 6 ] OPTIONAL ).
 
-DATA(line2) = VALUE #( itab[ 7 ] DEFAULT itab[ 8 ]  ).
+DATA(line2) = VALUE #( itab[ 7 ] DEFAULT itab[ 1 ]  ).
 ```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
@@ -975,7 +980,7 @@ READ TABLE itab WITH KEY ... BINARY SEARCH ...
   - Using the `BINARY SEARCH` addition is particularly more efficient for larger tables when accessing data often. 
   - The table must be sorted in ascending order based on the keys being searched. 
   - `BINARY SEARCH` is suitable for standard tables that do not have a secondary key defined and when you need to make multiple read accesses to the table (however, note the costs of a previous sorting)  
-  - `BINARY SEARCH` can only be used with index tables and not with hashed tables. If the table is sorted and the read access uses a free key, the addition can only be applied when the initial part of the table key is specified. I.e. if key components are `a`, `b`, and `c`, the addition can be used by specifying `a` alone, `a` and `b`, or `a`, `b`, and `c`. Not working (for example): `b` and `c` without `a`, or any other non-key component (because it cannot be sorted according to the non-key component).  
+  - `BINARY SEARCH` can only be used with index tables and not with hashed tables. If the table is sorted and the read access uses a free key, the addition can only be applied when the initial part of the table key is specified. I.e. if key components are `a`, `b`, and `c`, the addition can be used by specifying `a` alone, `a` and `b`, or `a`, `b`, and `c`. However, it is just that the syntax "works", the `BINARY SEARCH` specifiation has no effect and is redundant. Syntactically not possible with `BINARY SEARCH` (for example): `b` and `c` without `a`, or any other non-key component (because it cannot be sorted according to the non-key component). 
 - Depending on the number of times you need to access the internal table, it is recommended to work with sorted tables or tables with secondary keys. If you only need to read one or a few data sets, consider the administrative costs of setting up the index.
 - Note: The `BINARY SEARCH` addition is not available for table expressions. If `KEY ...` is specified, an optimized search is performed by default. There are no performance differences between using the `READ TABLE` statement and table expressions.
 
@@ -1097,12 +1102,17 @@ DATA(comp3) = <fs>-c.
 
 READ TABLE it REFERENCE INTO DATA(dref) WITH KEY b = 2.
 DATA(comp4) = dref->c.
-"Note: The syntax dref->*-c is also possible.
+
+"It is also possible to specify the dereferencing operator
+"with the component selector.
+DATA(comp5) = dref->*-c.
 ```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-### Checking the Existence and the Index of a Line in an Internal Table
+## Obtaining Information about Internal Tables, Table Lines, Table Types
+
+### Checking the Existence of a Line in an Internal Table
 
 This is relevant if you are not interested in the content of a table
 line, but only want to find out whether a line exists that matches to the
@@ -1144,21 +1154,50 @@ IF line_exists( it[ 1 ] ).
 ENDIF.
 ```
 
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+### Checking the Index of a Line in an Internal Table
+
 If you want to find out about the index of a line in an internal table, you can also make use of the `READ TABLE` statement above. If
 the line is found, the system field `sy-tabix` is set to the number of the index. Otherwise, the built-in function
 [`line_index( )`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenline_index_function.htm) can be used. It returns the index of the found line or 0 if the line does not exist.
 
 ``` abap
-DATA(idx) = line_index( it[ b = 2 ] ).
+DATA(itab) = VALUE string_table( ( `aaa` ) ( `bbb` ) ).
+READ TABLE itab WITH KEY table_line = `bbb` TRANSPORTING NO FIELDS.
+"2
+DATA(tabix) = sy-tabix.
+
+"1
+DATA(idx) = line_index( itab[ table_line = `aaa` ] ).
 ```
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+### Checking How Many Lines Exist in an Internal Table
 
 `lines( )` is another built-in function that you can use to check how many lines exist in an internal table. It returns an integer value.
 
 ``` abap
-DATA(number_of_lines) = lines( it ).
+DATA(itab) = VALUE string_table( ( `a` ) ( `b` ) ( `c` ) ( `d` ) ( `e` ) ).
+
+"5
+DATA(number_of_lines) = lines( itab ).
 ```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
+
+### Getting Table (Type) Information and Creating Internal Tables and Types at Runtime
+
+Using [Runtime Type Services (RTTS)](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrun_time_type_services_glosry.htm "Glossary Entry")
+you can ...
+- get type information on internal tables and table types at runtime ([Runtime Type Identification (RTTI)](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrun_time_type_identific_glosry.htm "Glossary Entry")).
+- define and create new internal tables and table types as [type description objects](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentype_object_glosry.htm) at runtime ([Runtime Type Creation (RTTC)](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrun_time_type_creation_glosry.htm "Glossary Entry")).
+
+For more information, see the [Dynamic Programming](06_Dynamic_Programming.md) cheat sheet.
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
 
 ## Processing Multiple Internal Table Lines Sequentially
 
@@ -1218,7 +1257,7 @@ line. This is not true for hashed tables. There, `sy-tabix` is `0`.
 - Note that if you want to work with the value of `sy-tabix`, you
 should do so immediately after the `LOOP` statement to avoid possible overwriting in statements contained in the loop block.
 
-*Restricting the area of the table to be looped over*
+### Restricting the Area of a Table to Be Looped Over
 
 The additions of `LOOP` statements come into play when you want to restrict the table content to be respected by the loop because
 you do not want to loop over the entire table. Note that the examples only show work areas as target objects to hold the table line read. 
@@ -1489,6 +1528,7 @@ SELECT it_alias1~a, it_alias2~b
     easier to understand and can prevent unwanted sorting results,
     especially with tables with standard key.
 
+
 *Sorting by primary table key*
 ``` abap
 "Implicit sorting by primary table key and in ascending order by default
@@ -1717,7 +1757,7 @@ ENDLOOP.
 "The following, similar example (uneven numbers are deleted) uses a
 "table which is looped over by specifying the addition USING KEY.
 "In this case (using LOOP ... USING KEY ...), the short form of the
-"DELETE statement cannot be use. Use the DELETE statement with the
+"DELETE statement cannot be used. Use the DELETE statement with the
 "addition USING KEY loop_key to delete the current first line.
 "loop_key is a predefined name to be used with DELETE and within
 "loops that specify LOOP ... USING KEY .... No other key name is
@@ -1791,6 +1831,12 @@ it = VALUE #( ).
 "The same applies to data reference variables pointing to internal tables.
 it_ref = NEW #( ).
 ```
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+## Grouping Internal Tables
+
+Find more information in the [Internal Tables: Grouping](11_Internal_Tables_Grouping.md) cheat sheet and a code snippet in the [Constructor Expressions](05_Constructor_Expressions.md#grouping-lines-in-internal-tables-with-valuereduce) cheat sheet.
+
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## Excursions
@@ -1994,17 +2040,6 @@ SELECT * FROM @inttab AS tab
     INTO TABLE @DATA(result).
 "result: 1, 2, 3, 6, 7, 8, 12, 13, 14, 15, 18, 19, 20
 ```
-
-<p align="right"><a href="#top">⬆️ back to top</a></p>
-
-### Getting Table Type Information and Creating Internal Tables at Runtime
-
-Using [Runtime Type Services (RTTS)](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrun_time_type_services_glosry.htm "Glossary Entry")
-you can ...
-- get type information on data objects, data types or [instances](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abeninstance_glosry.htm "Glossary Entry") at runtime ([Runtime Type Identification (RTTI)](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrun_time_type_identific_glosry.htm "Glossary Entry")).
-- define and create new data types as [type description objects](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentype_object_glosry.htm) at runtime ([Runtime Type Creation (RTTC)](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrun_time_type_creation_glosry.htm "Glossary Entry")).
-
-For more information, see the [Dynamic Programming](06_Dynamic_Programming.md) cheat sheet.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 

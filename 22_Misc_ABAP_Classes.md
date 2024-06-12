@@ -1329,8 +1329,7 @@ CLASS zcl_demo_test IMPLEMENTATION.
                                                       source = it1
                                             IMPORTING flag_identical = is_identical ).
         IF is_identical = abap_true.
-          out->write( `The two internal tables have identical content.` ).
-          CLEAR is_identical.
+          out->write( `The two internal tables have identical content.` ).          
         ELSE.
           out->write( comp_res1 ).
         ENDIF.
@@ -1343,8 +1342,7 @@ CLASS zcl_demo_test IMPLEMENTATION.
                                                                     source = it1
                                                           IMPORTING flag_identical = is_identical ).
         IF is_identical = abap_true.
-          out->write( `The two internal tables have identical content.` ).
-          CLEAR is_identical.
+          out->write( `The two internal tables have identical content.` ).          
         ELSE.
           out->write( comp_res2 ).
         ENDIF.
@@ -1357,8 +1355,7 @@ CLASS zcl_demo_test IMPLEMENTATION.
                                                                     source = it1
                                                           IMPORTING flag_identical = is_identical ).
         IF is_identical = abap_true.
-          out->write( `The two internal tables have identical content.` ).
-          CLEAR is_identical.
+          out->write( `The two internal tables have identical content.` ).          
         ELSE.
           out->write( comp_res3 ).
         ENDIF.

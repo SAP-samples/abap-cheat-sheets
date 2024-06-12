@@ -633,7 +633,7 @@ cl_abap_utclong=>diff( EXPORTING high     = ts2
                                  low      = ts1
                         IMPORTING seconds = DATA(seconds) ).
 
-"The 'seconds' data object holding the delta of the time stamps 
+"The value of the 'seconds' data object holding the delta of the time stamps 
 "should be greater than 4.
 ASSERT seconds > 4.
 ```

@@ -17,6 +17,7 @@
   - [Iteration Expressions](#iteration-expressions)
     - [Iteration Expressions Using FOR](#iteration-expressions-using-for)
     - [REDUCE](#reduce)
+    - [Grouping Lines in Internal Tables with VALUE/REDUCE](#grouping-lines-in-internal-tables-with-valuereduce)
   - [Executable Example](#executable-example)
 
 ## Introduction
@@ -424,7 +425,7 @@ topic](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file
 | Addition  | Details |
 |---|---|
 | `BASE` | Keeps original values. Unlike, for example, the operator `VALUE`, a pair of parentheses must be set around `BASE`.  |
-| `MAPPING`  | Enables the mapping of component names, i. e. a component of a source structure or source table can be assigned to a differently named component of a target structure or target table (e. g. `MAPPING c1 = c2`). The `DEFAULT` addition is possible when using the `MAPPING` addition. It allows the assignment of values for a target component based on an expression. |
+| `MAPPING`  | Enables the mapping of component names, i. e. a component of a source structure or source table can be assigned to a differently named component of a target structure or target table (e. g. `MAPPING c1 = c2`). The `DEFAULT` addition is possible when using the `MAPPING` addition. It allows the assignment of values for a target component based on an expression. Do not use the component selector `-` to refer to data objects in nested components in the mappings. |
 | `EXCEPT`  | You can specify components that should not be assigned content in the target data object. They remain initial. In doing so, you exclude identically named components in the source and target object that are not compatible or convertible from the assignment to avoid syntax errors or runtime errors.  |
 | `DISCARDING DUPLICATES`  | Relevant for tabular components. Handles duplicate lines and prevents exceptions when dealing with internal tables that have a unique primary or secondary table key. |
 | `DEEP`  | Relevant for deep tabular components. They are resolved at every hierarchy level and identically named components are assigned line by line.  |
@@ -1885,8 +1886,25 @@ DATA(count) = REDUCE string( LET start = 10 IN
 DATA(abap_str) =  REDUCE string( INIT text = ``
                                  FOR t = `ab` THEN t && `ap` UNTIL strlen( t ) > 15
                                  NEXT text &&= |{ t } | ).
+```
 
-"---------- Excursion: Grouping lines in internal tables with VALUE/REDUCE ----------
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+### Grouping Lines in Internal Tables with VALUE/REDUCE
+
+Find more information in the [Internal Tables: Grouping](11_Internal_Tables_Grouping.md) cheat sheet.
+
+```abap
+"Data objects and types to work with in the examples
+TYPES: BEGIN OF s,
+          col1 TYPE c LENGTH 5,
+          col2 TYPE i,
+          col3 TYPE i,
+       END OF s.
+TYPES itab_type TYPE TABLE OF s WITH EMPTY KEY.
+DATA(itab) = VALUE itab_type( ( col1 = 'a' col2 = 1 col3 = 30 )
+                              ( col1 = 'bb' col2 = 2 col3 = 10 )
+                              ( col1 = 'ccc' col2 = 3 col3 = 20 ) ).
 
 "The following examples show equivalents of LOOP AT GROUP ... GROUP BY ... statements.
 "Find more information and examples about grouping in the ABAP Keyword Documentation.

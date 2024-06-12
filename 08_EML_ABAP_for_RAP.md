@@ -12,6 +12,8 @@
     - [Components of BDEF Derived Types](#components-of-bdef-derived-types)
     - [Secondary Table Keys of BDEF Derived Types](#secondary-table-keys-of-bdef-derived-types)
     - [Type Mapping for RAP](#type-mapping-for-rap)
+      - [RAP-Specific Additions to the CORRESPONDING Operator](#rap-specific-additions-to-the-corresponding-operator)
+      - [ABAP SQL Statements with BDEF Derived Types](#abap-sql-statements-with-bdef-derived-types)
   - [EML Syntax](#eml-syntax)
     - [EML Syntax for Modifying Operations](#eml-syntax-for-modifying-operations)
     - [EML Syntax for Reading Operations](#eml-syntax-for-reading-operations)
@@ -887,7 +889,7 @@ DATA(line_e) = itab_cr[ KEY entity %key = VALUE #( key_field = 1 ) ].
 
 ### Type Mapping for RAP
 
-**RAP-Specific Additions to the CORRESPONDING Operator**
+#### RAP-Specific Additions to the CORRESPONDING Operator
 
 The [`CORRESPONDING`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconstructor_expr_corresponding.htm) operator offers RAP-specific additions for handling type mappings related to BDEF derived types and other types. For more information, see the [ABAP Keyword Documentation topic](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapeml_type_mapping.htm).
 
@@ -961,7 +963,7 @@ derived_type = CORRESPONDING #( some_other_type CHANGING CONTROL ).
 *                                                                  01           01        00        00        01
 ```
 
-**ABAP SQL Statements with BDEF Derived Types**
+#### ABAP SQL Statements with BDEF Derived Types
 
 The ABAP SQL statements `INSERT`, `UPDATE`, `MODIFY`, and `DELETE` offer the [`MAPPING FROM ENTITY`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapmapping_from_entity.htmaddition) addition to handle BDEF derived types.
 
@@ -1487,7 +1489,7 @@ MODIFY ENTITIES OF root_ent
              field1 = 'K' field2 = 'L' ) )
   MAPPED DATA(mapped)
   FAILED DATA(failed)
-  REPORTED DATA(resp).
+  REPORTED DATA(rep).
 
 COMMIT ENTITIES.
 

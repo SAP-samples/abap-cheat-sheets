@@ -22,10 +22,11 @@
     - [Combining Data of Multiple Database Tables](#combining-data-of-multiple-database-tables)
       - [Common Table Expressions (CTE)](#common-table-expressions-cte)
   - [Changing Data in Database Tables](#changing-data-in-database-tables)
-    - [Using `INSERT`](#using-insert)
-    - [Using `UPDATE`](#using-update)
-    - [Using `MODIFY`](#using-modify)
-    - [Using `DELETE`](#using-delete)
+    - [Using INSERT](#using-insert)
+    - [Using UPDATE](#using-update)
+    - [Using MODIFY](#using-modify)
+    - [Using DELETE](#using-delete)
+    - [RAP-Specific ABAP SQL Variants](#rap-specific-abap-sql-variants)
   - [More Information](#more-information)
   - [Executable Example](#executable-example)
 
@@ -1524,13 +1525,14 @@ SELECT *
 
 ## Changing Data in Database Tables
 
-### Using [`INSERT`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapinsert_dbtab.htm)
+### Using INSERT
 
 - Inserts one or more rows into a database table specified.
 - The rows to be inserted are taken from a structure, an internal table, or the result set of an embedded subquery.
 - As mentioned above, structures and internal tables from which to insert content should be specified as host variables (with `@`) or host
 expressions (with `@( ... )`).
 - The system fields `sy-subrc` (0 = single row or all rows inserted successfully, 4 = row not or not all rows inserted) and `sy-dbcnt` (number of rows that are inserted) are set.
+- More information: [`INSERT`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapinsert_dbtab.htm)
 
 ``` abap
 "Inserting a single row into a database table
@@ -1564,9 +1566,11 @@ INSERT dbtab FROM ( SELECT ... ).
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-### Using [`UPDATE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapupdate.htm)
+### Using UPDATE
+
 - Changes the content of one or more rows of a database table specified.
 - Similar to `INSERT`, `sy-subrc` and `sy-dbcnt` are set.
+- More information: [`UPDATE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapupdate.htm)
 
 ``` abap
 "Changing content by overwriting entire rows based on a structure
@@ -1610,9 +1614,11 @@ UPDATE dbtab SET comp2 = ... .
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-### Using [`MODIFY`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapmodify_dbtab.htm)
+### Using MODIFY
+
 - Inserts one or more rows into a database table specified or overwrites existing ones.
 - As above, `sy-subrc` and `sy-dbcnt` are set.
+- More information: [`MODIFY`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapmodify_dbtab.htm)
 
 ``` abap
 "Inserting a single row into a database table or changing an existing row
@@ -1634,9 +1640,11 @@ MODIFY dbtab FROM ( SELECT ... ).
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-### Using [`DELETE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapdelete_dbtab.htm)
+### Using DELETE
+
 - Deletes one or more rows from a database table specified.
 - As above, `sy-subrc` and `sy-dbcnt` are set.
+- More information: [`DELETE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapdelete_dbtab.htm)
 
 ``` abap
 "Variant DELETE FROM ...: Either all rows are deleted or restricted
@@ -1659,6 +1667,12 @@ DELETE dbtab FROM TABLE @itab.
 DELETE dbtab FROM TABLE @( VALUE #( ( comp1 = ... )
                                     ( comp1 = ... ) ) ).
 ```
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+### RAP-Specific ABAP SQL Variants
+
+Find more information in the [ABAP for RAP: Entity Manipulation Language (ABAP EML)](08_EML_ABAP_for_RAP.md#abap-sql-statements-with-bdef-derived-types) cheat sheet. 
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
