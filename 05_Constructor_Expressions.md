@@ -6,6 +6,7 @@
   - [Introduction](#introduction)
   - [VALUE](#value)
   - [CORRESPONDING](#corresponding)
+  - [NEW](#new)
   - [CONV](#conv)
   - [EXACT](#exact)
   - [REF](#ref)
@@ -579,7 +580,9 @@ two statements are  not the same:
 - This addition allows the assignment of values for a target component based on an expression (which is evaluated before the `CORRESPONDING` expression). 
 - `DEFAULT` can be preceded by the source component. In this case, the source component's value is assigned to the left-hand side only if the source component is not initial. If it is initial, the value of the expression following the `DEFAULT` addition is assigned.
 
-´´´abap
+Examples:
+
+```abap
 "Creating and populating data objects to work with
 DATA: BEGIN OF struc1,
         id1 TYPE i,
@@ -655,8 +658,6 @@ struc2 = CORRESPONDING #(
 *ID2    A    B        C    D    Z 
 *1      a    hallo    2    d    30
 ```
-
-
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
@@ -1172,6 +1173,8 @@ the style of
 statements, i. e. it uses the value of only a single variable that is
 checked in the case distinction.
 
+Examples:
+
 ``` abap
 "The following example performs a calculation (no error handling implemented)
 "if a valid operator is passed, and stores the result in a data object of
@@ -1390,7 +1393,7 @@ DATA(f14) = FILTER #( fi_tab2 USING KEY sec_key EXCEPT IN filter_tab2 WHERE a = 
 - In the definition, the right-hand side value is declared as if an inline declaration is used. The data type is derived accordingly. 
 - Only to be used in constructor expressions (see the syntax diagrams in the ABAP Keyword Documentation where exactly [`LET`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abaplet.htm) expressions can be specified).
 
-See the following simple examples to get an idea about the use:
+See the following examples to get an idea about the use:
 
 ```abap
 "Data type and object to work with in the example
@@ -1529,6 +1532,8 @@ ENDDO.
     parenthesis.
 -   In contrast to `LOOP` statements, the sequential processing
     cannot be debugged.
+
+Examples:
 
 ```abap
 "Data objects and types to work with in the examples
@@ -1893,6 +1898,8 @@ DATA(abap_str) =  REDUCE string( INIT text = ``
 ### Grouping Lines in Internal Tables with VALUE/REDUCE
 
 Find more information in the [Internal Tables: Grouping](11_Internal_Tables_Grouping.md) cheat sheet.
+
+Examples: 
 
 ```abap
 "Data objects and types to work with in the examples

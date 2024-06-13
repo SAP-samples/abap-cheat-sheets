@@ -29,6 +29,7 @@
     - [Validating Input for Dynamic Specifications (CL\_ABAP\_DYN\_PRG)](#validating-input-for-dynamic-specifications-cl_abap_dyn_prg)
   - [Runtime Type Services (RTTS)](#runtime-type-services-rtts)
     - [Getting Type Information at Runtime](#getting-type-information-at-runtime)
+      - [Example: Exploring the RTTI Type Hierarchy](#example-exploring-the-rtti-type-hierarchy)
       - [Excursion: Inline Declaration, CAST Operator, Method Chaining](#excursion-inline-declaration-cast-operator-method-chaining)
       - [Absolute Names](#absolute-names)
     - [Dynamically Creating Data Types at Runtime](#dynamically-creating-data-types-at-runtime)
@@ -1867,6 +1868,152 @@ CALL METHOD oref2->('TRIPLE') PARAMETER-TABLE ptab.
 result = ptab[ name = 'R_TRIPLE' ]-('VALUE')->*. "9
 ```
 
+**Example Class** 
+
+The commented example class below explores dynamic method calls with a simple method. You can create a demo class called `zcl_some_class` and copy and paste the following code. Once activated, you can choose *F9* in ADT to run the class. The example is designed to display output in the console that shows the result of calling different methods.
+
+```abap
+CLASS zcl_some_class DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
+
+  PUBLIC SECTION.
+    INTERFACES if_oo_adt_classrun.
+    METHODS meth IMPORTING num1       TYPE i
+                           num2       TYPE i
+                 EXPORTING add        TYPE i
+                           subtr      TYPE i
+                 CHANGING  abs_val    TYPE i
+                 RETURNING VALUE(ret) TYPE string.
+
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+
+ENDCLASS.
+
+CLASS zcl_some_class IMPLEMENTATION.
+  METHOD if_oo_adt_classrun~main.
+
+    "-------------------- Static method call --------------------
+
+    "Creating object reference
+    DATA(oref_stat) = NEW zcl_some_class( ).
+    DATA: calc_result_addition    TYPE i,
+          calc_result_subtraction TYPE i,
+          some_number             TYPE i VALUE -123.
+
+    DATA(result_stat) = oref_stat->meth( EXPORTING num1 = 7
+                                                   num2 = 3
+                                         IMPORTING add = calc_result_addition
+                                                   subtr = calc_result_subtraction
+                                         CHANGING abs_val = some_number ).
+
+    out->write( data = calc_result_addition name = `calc_result_addition` ).
+    out->write( data = calc_result_subtraction name = `calc_result_subtraction` ).
+    out->write( data = some_number name = `some_number` ).
+    out->write( data = result_stat name = `result_stat` ).
+    out->write( repeat( val = `*` occ = 80 ) ).
+
+    "-------------------- Dynamic method calls --------------------
+    "The following method calls explore possible dynamic equivalents
+    "of the previous static method call.
+
+    "Creating an instance of a class by specifying the type dynamically
+    DATA oref TYPE REF TO object.
+    CREATE OBJECT oref TYPE ('ZCL_SOME_CLASS').
+    some_number = -99.
+
+    "Specifying parameters statically
+    DATA result_dyn TYPE string.
+    CALL METHOD oref->('METH')
+      EXPORTING
+        num1    = 10
+        num2    = 4
+      IMPORTING
+        add     = calc_result_addition
+        subtr   = calc_result_subtraction
+      CHANGING
+        abs_val = some_number
+      RECEIVING
+        ret     = result_dyn.
+
+    out->write( data = calc_result_addition name = `calc_result_addition` ).
+    out->write( data = calc_result_subtraction name = `calc_result_subtraction` ).
+    out->write( data = some_number name = `some_number` ).
+    out->write( data = result_dyn name = `result_dyn` ).
+    out->write( repeat( val = `*` occ = 80 ) ).
+
+    "The following examples show erroneous dynamic method calls
+    "Missing parameters
+    TRY.
+        CALL METHOD oref->('METH').
+      CATCH cx_root INTO DATA(error).
+        DATA(cx_class) = cl_abap_typedescr=>describe_by_object_ref( error )->get_relative_name( ).
+        out->write( |{ cx_class } raised: { error->get_text( ) }| ).
+        out->write( repeat( val = `*` occ = 80 ) ).
+    ENDTRY.
+
+    "Illegal type of an actual parameter
+    TRY.
+        CALL METHOD oref->('METH')
+          EXPORTING
+            num1    = 'nope'
+            num2    = 1
+          IMPORTING
+            add     = calc_result_addition
+            subtr   = calc_result_subtraction
+          CHANGING
+            abs_val = some_number
+          RECEIVING
+            ret     = result_dyn.
+      CATCH cx_root INTO error.
+        cx_class = cl_abap_typedescr=>describe_by_object_ref( error )->get_relative_name( ).
+        out->write( |{ cx_class } raised: { error->get_text( ) }| ).
+        out->write( repeat( val = `*` occ = 80 ) ).
+    ENDTRY.
+
+    "Dynamic method call using a parameter table
+    DATA(ptab) = VALUE abap_parmbind_tab( ( name  = 'NUM1'
+                                            kind  = cl_abap_objectdescr=>exporting
+                                            value = NEW i( 2 ) )
+                                          ( name  = 'NUM2'
+                                            kind  = cl_abap_objectdescr=>exporting
+                                            value = NEW i( 10 ) )
+                                          ( name  = 'ADD'
+                                            kind  = cl_abap_objectdescr=>importing
+                                            value = NEW i( ) )
+                                          ( name  = 'SUBTR'
+                                            kind  = cl_abap_objectdescr=>importing
+                                            value = NEW i( ) )
+                                          ( name  = 'ABS_VAL'
+                                            kind  = cl_abap_objectdescr=>changing
+                                            value = NEW i( -987 ) )
+                                          ( name  = 'RET'
+                                            kind  = cl_abap_objectdescr=>returning
+                                            value = NEW string( ) ) ).
+
+    CALL METHOD oref->('METH') PARAMETER-TABLE ptab.
+
+    out->write( ptab ).
+  ENDMETHOD.
+  METHOD meth.
+    add = num1 + num2.
+    subtr = num1 - num2.
+    DATA(abs_val_copy) = abs_val.
+    "Getting the absolute value
+    abs_val = abs( abs_val ).
+    ret = |Values of importing parameters: num1 = { num1 STYLE = SIMPLE }| &&
+          |, num2 = { num2 STYLE = SIMPLE }\nValues of exporting parameters: | &&
+          |add = { add STYLE = SIMPLE }, subtr = { subtr STYLE = SIMPLE }| &&
+          |\nChanging parameter: abs_val (original) = { abs_val_copy STYLE = SIMPLE }, | &&
+          |abs_val (modified) = { abs_val STYLE = SIMPLE }|.
+  ENDMETHOD.
+
+ENDCLASS.
+```
+
+
 **Excursion** 
 
 The following simplified example highlights several things in the context of a dynamic invoke example: 
@@ -2101,6 +2248,8 @@ The type properties are represented by attributes that are accessible through th
 > - For each type, there is exactly one type description object. 
 > - For each type category (elementary type, table, and so on), there is a type description class (e.g. `CL_ABAP_STRUCTDESCR` for structures, as shown in the hierarchy tree above) that has special attributes (i.e. the properties of the respective types). 
 > - References to type description objects can be used, for example, after the `TYPE HANDLE` addition of the `CREATE DATA` and `ASSIGN` statements.
+
+#### Example: Exploring the RTTI Type Hierarchy
 
 The following example explores the RTTI type hierarchy and demonstrates how to retrieve various pieces of type information using RTTI attributes and methods. You can create a demo class (adapt the class name if needed), copy and paste the code, run the class with F9 in ADT, and check the output in the console.
 
@@ -2385,12 +2534,13 @@ CLASS zcl_some_class IMPLEMENTATION.
             DATA(applies_dref4) = data_ref->applies_to_data_ref( NEW ref_str( ) ).
 
             INSERT |{ tabix } Applies: 1) "{ applies_dref1 }" 2) "{ applies_dref2 }"| &&
-            | / 3) "{ applies_dref3 }" 4) "{ applies_dref4 }"| INTO TABLE str_tab.
+            | 3) "{ applies_dref3 }" 4) "{ applies_dref4 }"| INTO TABLE str_tab.
 
             "Dynamically creating data objects based on the ...
             TRY.
-                "... absolute name
-                CREATE DATA dyn_dobj TYPE (absolute_name).
+                "... absolute name of the referenced data object
+                DATA(absolute_name_ref) = dref_referenced_type->absolute_name.
+                CREATE DATA dyn_dobj TYPE REF TO (absolute_name_ref).
                 "Assigning the value to the dynamically created data object
                 dyn_dobj->* = type->*.
 

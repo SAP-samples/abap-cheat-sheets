@@ -158,13 +158,18 @@ CLASS global_class IMPLEMENTATION.
 ENDCLASS.
 ```
 > **💡 Note**<br>
-> - Addition `... CREATE PROTECTED.`: The class can only be instantiated in methods of its
-[subclasses](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensubclass_glosry.htm "Glossary Entry"),
-of the class itself, and of its
-[friends](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenfriend_glosry.htm "Glossary Entry").
-> - Addition `... CREATE PRIVATE`: The class can only
-be instantiated in methods of the class itself or of its friends. Hence,
-it cannot be instantiated as an inherited component of subclasses.
+> - The code snippet above shows the syntax to create a global class (indicated by `PUBLIC`), that is instantiable everywhere (indicated by `CREATE PUBLIC`) but that does not allow inheritance (indicated by `FINAL`, and which is covered further down).
+> - There are more additions that can be specified. Find more information on the additions [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapclass_options.htm).
+> - Examples: 
+>   - `... CREATE PROTECTED.`: The class can only be instantiated in methods of its [subclasses](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensubclass_glosry.htm "Glossary Entry"), of the class itself, and of its [friends](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenfriend_glosry.htm "Glossary Entry").
+>   - `... CREATE PRIVATE.`: The class can only be instantiated in methods of the class itself or of its friends. Hence, it cannot be instantiated as an inherited component of subclasses.
+>   - `... INHERITING FROM superclass ...`: As the name implies, it is used to inherit from a visible [superclass](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensuperclass_glosry.htm). If the addition is not specified, the created class implicitly inherits from the predefined empty, abstract class `object` (the root object).
+>   - `... ABSTRACT ...`: To define [abstract](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabstract_glosry.htm) classes. These classes cannot be instantiated. Abstract methods can only be implemented in [subclasses](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensubclass_glosry.htm).
+>   - `... [GLOBAL] FRIENDS class ...`: Used to define [friendships](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenfriend_glosry.htm) (also possible for interfaces). Friends of a class have unrestricted access to all components of that class. The `GLOBAL` addition can be used together with the `PUBLIC` addition and be specified with other global classes/interfaces following `GLOBAL FIRENDS`. Note: For local classes/interfaces, the addition [`LOCAL FRIENDS`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapclass_local_friends.htm) is available.
+>   - `... FOR TESTING ...`: For [ABAP Unit](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_unit_glosry.htm) tests. Find more information in the [ABAP Unit Tests](14_ABAP_Unit_Tests.md) cheat sheet.
+>   - `... FOR BEHAVIOR OF ...`: To define [ABAP behavior pools](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbehavior_pool_glosry.htm). Find more information in the [ABAP for RAP: Entity Manipulation Language (ABAP EML)](08_EML_ABAP_for_RAP.md) cheat sheet.
+>   - `... DEFINITION DEFERRED.`: Making a local class known in a program before the actual class definition. It is typically used in test classes of ABAP Unit. Find more information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapclass_deferred.htm).
+
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
@@ -301,7 +306,7 @@ ENDCLASS.
 CLASS ltc_test IMPLEMENTATION.
 
   METHOD test_calculate.
-    "Creating an object of class under test
+    "Creating an object of the class under test
     DATA(ref_cut) = NEW zcl_demo_test( ).
 
     "Calling method that is to be tested
@@ -371,7 +376,11 @@ Summary:
 #### Creating the Visibility Sections
 At least one section must be specified.
 ``` abap
-CLASS local_class DEFINITION.
+CLASS zcl_some_class DEFINITION
+  PUBLIC                       
+  FINAL                        
+  CREATE PUBLIC.  
+
     PUBLIC SECTION.
       "Here go the components.
     PROTECTED SECTION.
@@ -379,6 +388,8 @@ CLASS local_class DEFINITION.
     PRIVATE SECTION.
       "Here go the components.
 ENDCLASS.
+
+...
 ```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
@@ -436,12 +447,15 @@ can be used in the public visibility section. Effect:
 >   - Can only be changed using methods of the class or its subclasses
 > - Note that when creating attributes in the public visibility section, they are globally visible and can therefore be globally used. Note the consequences on the users when changing attributes in the public visibility section (e.g. making an attribute read-only at a later point in time when, for example, other classes use the attribute).
 
-Declaring attributes in visibility sections. In the code snippet below, all attributes are declared in the public section of a local class.
+Declaring attributes in visibility sections. In the code snippet below, all attributes are declared in the public section.
 ``` abap
-CLASS local_class DEFINITION.
+CLASS zcl_some_class DEFINITION
+  PUBLIC                       
+  FINAL                        
+  CREATE PUBLIC.  
 
     PUBLIC SECTION.
-      TYPES some_type TYPE c LENGTH 3.              "Type declaration
+      TYPES some_type TYPE c LENGTH 3.               "Type declaration
 
       DATA: inst_number TYPE i,                      "Instance attributes
             inst_string TYPE string,
@@ -450,7 +464,7 @@ CLASS local_class DEFINITION.
       CLASS-DATA: stat_number TYPE i,                "Static attributes
                   stat_char   TYPE c LENGTH 3.
 
-      CONSTANTS const_num TYPE i VALUE 123.         "Non-changeable constant
+      CONSTANTS const_num TYPE i VALUE 123.          "Non-changeable constant
 
     PROTECTED SECTION.
       "Here go more attributes if needed.
@@ -460,7 +474,7 @@ CLASS local_class DEFINITION.
 
 ENDCLASS.
 
-CLASS local_class IMPLEMENTATION.
+CLASS zcl_some_class IMPLEMENTATION.
 
       ... "Here go all method implementations.
 
@@ -507,6 +521,7 @@ In the simplest form, methods can have no parameter at all. Apart from that, met
 
 
 > **💡 Note**<br>
+> - Find more information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapmethods_general.htm).
 > - You may find the addition `EXCEPTIONS` especially in definitions of older classes. They are for non-class-based exceptions. This addition should not be used in ABAP for Cloud Development.
 > - Notes on [formal
     parameter](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenformal_parameter_glosry.htm "Glossary Entry")
@@ -577,12 +592,16 @@ In the simplest form, methods can have no parameter at all. Apart from that, met
 **Example for method definitions** 
 
 The following snippet shows
-multiple method definitions in the public section of a local class. Most of the formal
+multiple method definitions in the public section of a global class. Most of the formal
 parameters of the demo methods below are defined by just using the
 parameter name. This means passing by reference (returning parameters
 require to be passed by value).
 ``` abap
-CLASS local_class DEFINITION.
+CLASS zcl_some_class DEFINITION
+  PUBLIC                       
+  FINAL                        
+  CREATE PUBLIC. 
+
     PUBLIC SECTION.
       METHODS: inst_meth1,                                      "instance methods
 
@@ -628,7 +647,7 @@ CLASS local_class DEFINITION.
 
 ENDCLASS.
 
-CLASS local_class IMPLEMENTATION.
+CLASS zcl_some_class IMPLEMENTATION.
    METHOD inst_meth1.
       ...
    ENDMETHOD.
@@ -980,7 +999,7 @@ CLASS zcl_demo_test DEFINITION
     INTERFACES if_oo_adt_classrun.
 
     "------------------------ Attributes ------------------------
-    "Instance attribute
+    "Instance attributes
     DATA: inst_attr   TYPE utclong,
           inst_string TYPE string.
 
@@ -1169,7 +1188,7 @@ CLASS zcl_demo_test IMPLEMENTATION.
     "- See the method implementation of inst_meth1. It shows that
     "  instance methods can access both static and instance attributes.
     "- As mentioned above regarding the attributes, in the same class and
-    "  in this example, you can call the methods directly (without via
+    "  in this example, you can call the methods directly (without using
     "  a reference variable).
     inst_meth1( ).
 
@@ -1308,7 +1327,7 @@ CLASS zcl_demo_test IMPLEMENTATION.
     "The ipow function is included in the method implementation. The
     "second example raises the exception.
 
-    "No TRY control structure, no syntax warning at compile. However,
+    "No TRY control structure, no syntax warning at compile time. However,
     "the calculation works.
     DATA(power_res1) = oref->inst_meth7( ip1 = 5 ip2 = 2 ).
     out->write( data = power_res1 name = `power_res1` ).
