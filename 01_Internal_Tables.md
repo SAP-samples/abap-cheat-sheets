@@ -1835,7 +1835,47 @@ it_ref = NEW #( ).
 
 ## Grouping Internal Tables
 
-Find more information in the [Internal Tables: Grouping](11_Internal_Tables_Grouping.md) cheat sheet and a code snippet in the [Constructor Expressions](05_Constructor_Expressions.md#grouping-lines-in-internal-tables-with-valuereduce) cheat sheet.
+To group internal tables, there are additions for both `LOOP AT` statements and constructor expressions. Find more information in the [Internal Tables: Grouping](11_Internal_Tables_Grouping.md) cheat sheet and a code snippet in the [Constructor Expressions](05_Constructor_Expressions.md#grouping-lines-in-internal-tables-with-valuereduce) cheat sheet.
+
+In the following example, an internal table is sorted and looped over using groups. The goal is to transfer a line from the original table to another table of the same type. This line has the highest value in component `b` among all lines that are grouped by component `a`.
+
+```abap
+TYPES: BEGIN OF demo_struct,
+          a TYPE c LENGTH 1,
+          b TYPE i,
+        END OF demo_struct,
+        tab_type TYPE TABLE OF demo_struct WITH EMPTY KEY.
+DATA(it1) = VALUE tab_type( ( a = 'a' b = 1 )
+                            ( a = 'b' b = 5 )
+                            ( a = 'a' b = 3 )
+                            ( a = 'b' b = 4 )
+                            ( a = 'a' b = 2 )
+                            ( a = 'b' b = 6 )
+                            ( a = 'c' b = 10 )
+                            ( a = 'd' b = 0 )
+                            ( a = 'd' b = 7 )
+                            ( a = 'a' b = 4 )
+                            ( a = 'e' b = 11 )
+                            ( a = 'e' b = 111 ) ).
+
+
+DATA it2 LIKE it1.
+SORT it1 BY a ASCENDING b DESCENDING.
+LOOP AT it1 INTO DATA(wa) GROUP BY wa-a.
+  LOOP AT GROUP wa INTO DATA(member).
+    APPEND member TO it2.
+    EXIT.
+  ENDLOOP.
+ENDLOOP.
+
+"Content of it2:
+*A    B       
+*a    4       
+*b    6       
+*c    10      
+*d    7       
+*e    111
+```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 

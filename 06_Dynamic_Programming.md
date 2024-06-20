@@ -1118,6 +1118,21 @@ ENDIF.
 "The memory area can also be a dereferenced data reference
 ASSIGN dref->* TO <fs>.
 
+"Do not use named data objects in ABAP for Cloud Development because
+"you cannot know what data object you get (e.g. a class attribute or a 
+"local variable). If you want to assign a data object from your local 
+"scope, it is recommended that you specify the data objects to 
+"be assigned as components of a structure. Then you can ensure that
+"you assign the correct data object dynamically, using the dynamic
+"component assignments as shown below.
+
+DATA some_string TYPE string VALUE `hi`.
+DATA(some_named_dobj) = 'SOME_STRING'.
+
+"A warning is displayed for the following statement in ABAP for Cloud
+"Development.
+"ASSIGN (some_named_dobj) TO FIELD-SYMBOL(<fs>).
+
 "------- Assigning components dynamically ------
 "You can chain the names with the component selector (-), or, in
 "case of reference variables, the object component selector (->).
@@ -1133,8 +1148,8 @@ DATA columnname TYPE string VALUE `COL1`.
 ASSIGN st-(columnname) TO <fs>.
 
 "Fully dynamic specification
-"If the compiler can fully determine the data object in ASSIGN statements
-"in ABAP for Cloud Development, a warning is not issued.
+"If the compiler can fully determine the data object in ASSIGN 
+"statements in ABAP for Cloud Development, a warning is not issued.
 ASSIGN ('ST-COL1') TO <fs>.
 
 "Numeric expressions are possible. Its value is interpreted
@@ -1204,6 +1219,39 @@ ASSIGN ('HALLO') TO FIELD-SYMBOL(<eu>) ELSE UNASSIGN.
 ASSERT sy-subrc = 0 AND <eu> IS ASSIGNED.
 ASSIGN ('DOES_NOT_EXIST') TO <eu> ELSE UNASSIGN.
 ASSERT sy-subrc = 4 AND <eu> IS NOT ASSIGNED.
+
+"------- Assigments and casting a dynamically specified type ------
+"Pattern: ASSIGN ... TO <fs> CASTING TYPE (type_name).
+
+TYPES: c1  TYPE c LENGTH 1,
+       c3  TYPE c LENGTH 3,
+       c10 TYPE c LENGTH 10,
+       c20 TYPE c LENGTH 20,
+       str TYPE string.
+DATA abc TYPE c LENGTH 26 VALUE 'abcdefghijklmnopqrstuvwxyz'.
+DATA(type_names) = VALUE string_table( ( `C1` ) ( `C3` ) ( `C10` ) ( `C20` ) ( `NOPE` ) ( `STR` ) ).
+DATA assignment_results TYPE string_table.
+FIELD-SYMBOLS <fs> TYPE clike.
+
+LOOP AT type_names INTO DATA(type_name).
+  TRY.
+      ASSIGN abc TO <fs> CASTING TYPE (type_name).
+      assignment_results = VALUE #( BASE assignment_results ( |Type: '{ type_name }'; Assignment result: '{ <fs> }'| ) ).
+    CATCH cx_root INTO DATA(error).
+      assignment_results = VALUE #( BASE assignment_results
+      ( |Error! Exception raised: { cl_abap_typedescr=>describe_by_object_ref( error )->get_relative_name( ) }; | &&
+        |'{ error->get_text( ) }'| ) ).
+  ENDTRY.
+ENDLOOP.
+
+*Content of the assignment_results table: 
+*Type: 'C1'; Assignment result: 'a'                                                                           
+*Type: 'C3'; Assignment result: 'abc'                                                                         
+*Type: 'C10'; Assignment result: 'abcdefghij'                                                                 
+*Type: 'C20'; Assignment result: 'abcdefghijklmnopqrst'                                                       
+*Error! Exception raised: CX_SY_ASSIGN_CAST_UNKNOWN_TYPE; 'ASSIGN ... CASTING failed; NOPE is an unknown type'
+*Error! Exception raised: CX_SY_ASSIGN_CAST_ILLEGAL_CAST; 'ASSIGN ... CASTING failed: Incompatible type'   
+
 ```
 
 > **💡 Note**<br>
@@ -1230,7 +1278,7 @@ CREATE DATA dataref TYPE REF TO (some_type).
 CREATE DATA dataref TYPE ('\TYPE=STRING').
 
 "Assigning a data object to a field symbol casting a dynamically
-"specified type
+"specified type as also shown in the example above
 TYPES clen5 TYPE c LENGTH 5.
 DATA: dobj_c10    TYPE c LENGTH 10 VALUE '1234567890',
       some_struct TYPE zdemo_abap_fli.
@@ -2498,7 +2546,7 @@ CLASS zcl_some_class IMPLEMENTATION.
           ELSEIF tdo IS INSTANCE OF cl_abap_refdescr.
             INSERT |{ tabix } Is instance of cl_abap_refdescr| INTO TABLE str_tab.
 
-            "Gettting a reference to the type's type description object using the
+            "Getting a reference to the type's type description object using the
             "describe_by_data_ref, which can be used for data reference variables.
             "Note that the dynamic type is evaluated.
 

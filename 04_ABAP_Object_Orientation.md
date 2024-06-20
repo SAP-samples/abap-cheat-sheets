@@ -1345,7 +1345,7 @@ CLASS zcl_demo_test IMPLEMENTATION.
     "CX_STATIC_CHECK. That is, it is statically checked. Without the
     "TRY control structure and catching the exception, a syntax warning
     "is displayed. And in the case of the example implementation,
-    "the exception is indeed raised. Not cathcing the exception results
+    "the exception is indeed raised. Not catching the exception results
     "in a runtime error.
     TRY.
         DATA(test) = oref->inst_meth8( ip1 = 1 ).

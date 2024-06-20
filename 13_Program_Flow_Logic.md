@@ -16,6 +16,12 @@
       - [`WHILE`: Conditional Loops](#while-conditional-loops)
       - [Loops Across Tables](#loops-across-tables)
   - [Calling Procedures](#calling-procedures)
+    - [Methods of Classes](#methods-of-classes)
+    - [Function Modules](#function-modules)
+      - [Calling Function Modules](#calling-function-modules)
+      - [Function Module Example](#function-module-example)
+      - [Special Function Modules in Standard ABAP](#special-function-modules-in-standard-abap)
+    - [Subroutines](#subroutines)
     - [Excursion: RETURN](#excursion-return)
   - [Interrupting the Program Execution](#interrupting-the-program-execution)
   - [Handling Exceptions](#handling-exceptions)
@@ -553,18 +559,303 @@ Further keywords for defining loops are as follows. They are not dealt with here
 
 ## Calling Procedures
 
-Calling [procedures](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenprocedure_glosry.htm) would actually fit here in the context of dealing with program flow logic since they can be called explicitly in an [ABAP program](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_program_glosry.htm).
-However, ...
-1. in modern ABAP programs, only methods should be implemented (instead of [function modules](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenfunction_module_glosry.htm) and [subroutines](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensubroutine_glosry.htm) in most cases) and
-2. methods are described in the context of the ABAP cheat sheet on ABAP object orientation. Hence, see more details there.
+Calling [procedures](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenprocedure_glosry.htm) fits in the context of dealing with program flow logic since they can be called explicitly in an [ABAP program](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_program_glosry.htm).
 
-Regarding the exiting of procedures, note the hint mentioned above. The use of `RETURN` is recommended.
+### Methods of Classes
+
+In modern ABAP programs, only methods should be implemented (instead of [function modules](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenfunction_module_glosry.htm) and [subroutines](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensubroutine_glosry.htm) in most cases).
+Note that methods and calling methods are described in the context of the [ABAP Object Orientation cheat sheet](04_ABAP_Object_Orientation.md). Find more information and examples there.
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+
+### Function Modules
+
+> **💡 Note**<br>
+> In [ABAP for Cloud Development](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_for_cloud_dev_glosry.htm), function modules can technically be used, but they are not recommended for new implementations. Many features available in standard ABAP, such as various includes, are not compatible with ABAP for Cloud Development (for example, [dynpro](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abendynpro_glosry.htm)-related functionality).
+
+Function modules ... 
+- are reusable cross-program procedures (i.e. processing blocks callable via an ABAP statement).
+- are organized and implemented within function pools.
+- are the precursor technology of public methods in global classes.
+- are implemented (i.e. their functionality is implemented) between the following statements:
+  ```abap
+  FUNCTION ... .
+    ...
+  ENDFUNCTION.
+  ```
+- have a parameter interface that's similar to ABAP classes. Note: In ADT, the parameter interface of a function module is defined in ABAP pseudo syntax. These statements are not compiled like genuine ABAP statements and are not subject to the regular ABAP syntax checks. Find more information on the parameter inteface in the [ABAP Keyword Documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenfunction.htm). 
+- are called using `CALL FUNCTION` statements.
+
+Function pools ...
+- serve as a framework for function modules and are organized in include programs. 
+  - The main program is implicitly created, while subordinate include programs are automatically generated, each with specific prefixes and suffixes.
+- can contain multiple function modules. They can hold up to 99 function modules.
+- are loaded when one of its function modules is called.
+- are introduced by the `FUNCTION-POOL` statement. 
+    
+#### Calling Function Modules
+
+Syntax to call function modules:
+```abap
+CALL FUNCTION func params.
+```
+
+- `func`: Character-like data object (for example, a literal) that contains the name of a function module in uppercase letters
+    - Since all function modules have unique names, there is no need to specify the function pool.
+- `params`: Parameter list or table 
+- Incorrectly provided function module names or parameters are not checked until runtime
+- Unlike method calls, you cannot specify inline declarations as actual parameters.
+- Regarding dynamic function module calls: Static and dynamic function module calls are syntactically identical. In a static call, the function module is specified as a character literal or a constant, with parameters passed statically. Conversely, in a dynamic call, the function module's name is specified in a variable, with parameters passed dynamically. For dynamic calls, you can utilize the `CL_ABAP_DYN_PRG` as shown in the [Misc ABAP Classes cheat sheet](22_Misc_ABAP_Classes.md). 
+- When a function module call is made, the system field `sy-subrc` is set to 0. If a non-class-based exception is raised and a value is assigned to handle it, this value updates `sy-subrc`.
+
+Example function module calls with parameter passing and exception handling: 
+```abap
+"Handling non-class-based exception
+DATA it TYPE some_table_type.
+CALL FUNCTION 'SOME_FUNCTION_MODULE_A'
+  EXPORTING
+    param_a = 'somevalue'
+  IMPORTING
+    param_b = it
+  EXCEPTIONS
+    not_found = 4.
+
+IF sy-subrc <> 0.
+   ...
+ENDIF.
+
+"Handling class-based exception
+TRY.
+    CALL FUNCTION 'SOME_FUNCTION_MODULE_B'
+      EXPORTING
+          param_c = 'somevalue'
+      IMPORTING
+          param_d = it.
+  CATCH cx_some_exception INTO DATA(exc).
+    ...
+ENDTRY.
+
+"---------- Dynamic function method calls ----------
+
+"Function module name contained in a variable
+DATA(func_name) = 'SOME_FUNCTION_MODULE_C'.
+
+CALL FUNCTION func_name ...
+
+"For parmeters in a parameter table ,use the addition ... PARAMETER-TABLE ptab ...
+"ptab: Sorted table of type abap_func_parmbind_tab (line type abap_func_parmbind)
+"For exceptions, use the addition ... EXCEPTION-TABLE ...
+DATA(ptab) = VALUE abap_func_parmbind_tab( ... ).
+
+CALL FUNCTION func_name PARAMETER-TABLE ptab.
+```
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+#### Function Module Example
+Expand the following section to get a simple executable example:
+
+<details>
+  <summary>Expand to view the details</summary>
+  <!-- -->
+
+The following example demonstrates a simple function module: 
+- The implementation in the function module represents a calculator. In the function module call, you specify two numbers and an operator. 
+- The example includes static function module calls, and a dynamic function module call using the `PARAMETER-TABLE` addition.
+
+To get started quickly with copiable code snippets, you can proceed as follows.
+1. Create a function pool. 
+   - In ADT, you can, for example, right-click the package in which you want to create the function pool and module.
+   - Choose *New -> Other ABAP Repository Object*.
+   - In the input field, enter *function*, select *ABAP Function Group* (which is the function pool), and choose *Next*.
+   - Make entries in the *Name* (e.g. `Z_DEMO_ABAP_TEST_FUNC_P`) and *Description Field* (e.g. *Demo function group*) fields, and choose *Next*.
+   - If prompted, select a transport request and choose *Finish*.
+2. Create a function module.
+   - In ADT, you can, for example, right-click the package in which you have created function pool.
+   - Choose *New -> Other ABAP Repository Object*.
+   - In the input field, enter *function*, select *ABAP Function Module*, and choose *Next*.
+   - Make entries in the *Name* (e.g. `Z_DEMO_ABAP_TEST_FUNC_M`), *Description Field* (e.g. *Demo function module*), and *Function Group* (e.g. the previously created `Z_DEMO_ABAP_TEST_FUNC_P`) fields and choose *Next*.
+   - If prompted, select a transport request and choose *Finish*.
+   - The function module is created and can be filled with an implementation.
+   - You can copy and paste the code below to have a sample implementation.
+3. To test the function module, you can create a class, for example, with the name `ZCL_DEMO_ABAP_FUNC_TEST`, and copy and paste the code below. 
+   - In ADT, you can run the class by choosing *F9*. Some output is displayed in the ADT console, demonstrating the result of the function module calls.
+
+
+Code for the function module `Z_DEMO_ABAP_TEST_FUNC_M`:
+
+```abap
+FUNCTION z_demo_abap_test_func_m
+  IMPORTING
+    num1 TYPE i
+    operator TYPE string
+    num2 TYPE i
+  EXPORTING
+    result TYPE string
+  RAISING
+    cx_sy_arithmetic_error.
+
+
+
+
+
+  "ABAP 'allows' zero division if the both operands are 0.
+  IF num1 = 0 AND num2 = 0.
+    RAISE EXCEPTION TYPE cx_sy_zerodivide.
+  ENDIF.
+
+  DATA op TYPE c LENGTH 1.
+  op = condense( val = operator to = `` ).
+
+  result = SWITCH #( op
+                     WHEN '+' THEN |{ num1 } + { num2 } = { num1 + num2 STYLE = SIMPLE }|
+                     WHEN '-' THEN |{ num1 } - { num2 } = { num1 - num2 STYLE = SIMPLE }|
+                     WHEN '*' THEN |{ num1 } * { num2 } = { num1 * num2 STYLE = SIMPLE }|
+                     WHEN '/' THEN |{ num1 } / { num2 } = { CONV decfloat34( num1 / num2 ) STYLE = SIMPLE }|
+                     ELSE `Use one of the operators + - * /` ).
+
+ENDFUNCTION.
+```
+
+Code for the class `ZCL_DEMO_ABAP_FUNC_TEST` that can be run in ADT choosing *F9*:
+
+```abap
+CLASS zcl_demo_abap_func_test DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
+
+  PUBLIC SECTION.
+    INTERFACES if_oo_adt_classrun.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+ENDCLASS.
+
+
+
+CLASS zcl_demo_abap_func_test IMPLEMENTATION.
+  METHOD if_oo_adt_classrun~main.
+
+    "Handling class-based exception
+    "For handling a possible wrong operator, you may want to implement
+    "a separate exception. The simple example just catches calculation errors
+    "and uses a data object of type string for storing the calculation result.
+    DATA calculation_result TYPE string.
+
+    TRY.
+        CALL FUNCTION 'Z_DEMO_ABAP_TEST_FUNC_M'
+          EXPORTING
+            num1     = 1
+            operator = `+`
+            num2     = 2
+          IMPORTING
+            result   = calculation_result.
+      CATCH cx_sy_arithmetic_error INTO DATA(exc).
+        calculation_result = exc->get_text( ).
+    ENDTRY.
+
+    out->write( calculation_result && |\n\n| ).
+
+    "More calculation examples; calculations are stored in a table
+    DATA calculation_result_table TYPE string_table.
+
+    TYPES: BEGIN OF s,
+             num1     TYPE i,
+             operator TYPE string,
+             num2     TYPE i,
+           END OF s,
+           it_type TYPE TABLE OF s WITH EMPTY KEY.
+    DATA(itab) = VALUE it_type( ( num1 = 10 operator = `-` num2 = 12 )
+                                ( num1 = 15 operator = `*` num2 = 4 )
+                                ( num1 = 7 operator = `/` num2 = 2 )
+                                ( num1 = 1 operator = `/` num2 = 0 )
+                                ( num1 = 0 operator = `/` num2 = 0 )
+                                ( num1 = 9999999 operator = `*` num2 = 9999999 ) ).
+
+    LOOP AT itab INTO DATA(wa).
+      TRY.
+          CALL FUNCTION 'Z_DEMO_ABAP_TEST_FUNC_M'
+            EXPORTING
+              num1     = wa-num1
+              operator = wa-operator
+              num2     = wa-num2
+            IMPORTING
+              result   = calculation_result.
+        CATCH cx_sy_arithmetic_error INTO exc.
+          calculation_result = |{ wa-num1 } { wa-operator } { wa-num2 } -> Error: { exc->get_text( ) }|.
+      ENDTRY.
+      APPEND calculation_result TO calculation_result_table.
+    ENDLOOP.
+
+    out->write( calculation_result_table ).
+    out->write( |\n\n\n| ).
+
+    "----- Dynamic function module call ----
+
+    DATA(func_name) = 'Z_DEMO_ABAP_TEST_FUNC_M'.
+    DATA(ptab) = VALUE abap_func_parmbind_tab( ( name  = 'NUM1'
+                                                 kind  = abap_func_exporting
+                                                 value = NEW i( 3 ) )
+                                               ( name  = 'OPERATOR'
+                                                 kind  = abap_func_exporting
+                                                 value = NEW string( `+` ) )
+                                               ( name  = 'NUM2'
+                                                 kind  = abap_func_exporting
+                                                 value = NEW i( 5 ) )
+                                               ( name  = 'RESULT'
+                                                 kind  = abap_func_importing
+                                                 value = NEW string( ) ) ).
+
+    CALL FUNCTION func_name PARAMETER-TABLE ptab.
+
+    out->write( data = ptab name = `ptab` ).
+  ENDMETHOD.
+
+ENDCLASS.
+```
+
+</details>
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+#### Special Function Modules in Standard ABAP
+Special function modules exist in [Standard ABAP](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenstandard_abap_glosry.htm) (and not in ABAP for Cloud Development), and for which special properties are specified in the [Function Builder](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenfunction_builder_glosry.htm):
+
+- Update function modules: 
+  - Typically contain modifying database accesses and can be used to register for later execution
+  - Are called with `CALL FUNCTION ... IN UPDATE TASK`
+  - Find more information [here](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapcall_function_update.htm) (note that the links in this section refer to the ABAP Keyword Documentation for Standard ABAP) and in the SAP LUW cheat sheet
+- Remote function calls (RFC):
+  - Remote-enabled function modules are called using the [RFC interface](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenrfc_interface_glosry.htm)
+  - You can make these calls within the same system or a different one, determined by an [RFC destination](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenrfc_dest_glosry.htm). Find more information [here](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenrfc.htm)
+  - The calls can be ...
+    - synchronous ([sRFC](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abensrfc_glosry.htm)): The calling program waits for the remote function to finish processing; called using `CALL FUNCTION ... DESTINATION` 
+    - asynchronous ([aRFC](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenarfc_glosry.htm)): A remote function call that proceeds without waiting for the remotely called function to finish processing; called using `CALL FUNCTION ... STARTING NEW TASK`      
+    - transactional 
+      - transactional calls ([tRFC](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abentrfc_2_glosry.htm)) related to the concept of the SAP LUW
+      - tRFC is considered obsolete
+      - Successor technology: Background RFC ([bgRFC](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenbgrfc_glosry.htm)), executed with the statement `CALL FUNCTION ... IN BACKGROUND UNIT`. Find more information [here](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapcall_function_background_unit.htm).
+      - The newer background Processing Framework ([bgPF](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenbgpf_glosry.htm)) encapsulates bgRFC to execute time-consuming methods asynchronously. Find more information [here](https://help.sap.com/docs/abap-cloud/abap-concepts/background-processing-framework).
+ 
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+### Subroutines
+
+- Obsolete procedures you may find in older ABAP programs. Before ABAP Objects was introduced, subroutines were mainly used for local modularization.
+- They are implemented between the statements `FORM` and `ENDFORM`.
+- Called using `PERFORM` statements
+- Find more information [here](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenabap_subroutines.htm). The [SAP LUW cheat sheet example](17_SAP_LUW.md) also uses subroutines in the context of an SAP LUW (these subroutines are called using `PERFORM ... ON COMMIT` and `... ROLLBACK`).
+
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ### Excursion: RETURN
 
-As mentioned, `RETURN` terminates the current processing block. Usually, the statement is intended for leaving processing blocks early. 
+Regarding the exiting of procedures, note the hint mentioned above. The use of `RETURN` is recommended.
+
+`RETURN` terminates the current processing block. Usually, the statement is intended for leaving processing blocks early. 
 In case of functional method, i.e. methods that have one returning parameter, the `RETURN` statement can also be specified with an expression. In doing so, the 
 following statement
 ```abap
