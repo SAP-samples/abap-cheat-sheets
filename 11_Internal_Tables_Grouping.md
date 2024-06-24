@@ -150,8 +150,7 @@ Here, `key` is a structure with the components `key1`
 and `key2`. A member loop can be inserted in exactly the same
 way as when grouping by one column.
 
-If the group members are not relevant, the addition [`NO
-MEMBERS`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abaploop_at_itab_group_by.htm)
+If the group members are not relevant, the addition [`WITHOUT MEMBERS`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abaploop_at_itab_group_by.htm)
 can be used to save time and memory.
 
 ``` abap

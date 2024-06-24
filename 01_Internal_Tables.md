@@ -1835,46 +1835,195 @@ it_ref = NEW #( ).
 
 ## Grouping Internal Tables
 
-To group internal tables, there are additions for both `LOOP AT` statements and constructor expressions. Find more information in the [Internal Tables: Grouping](11_Internal_Tables_Grouping.md) cheat sheet and a code snippet in the [Constructor Expressions](05_Constructor_Expressions.md#grouping-lines-in-internal-tables-with-valuereduce) cheat sheet.
+To group internal tables, there are additions for `LOOP AT` statements.
 
-In the following example, an internal table is sorted and looped over using groups. The goal is to transfer a line from the original table to another table of the same type. This line has the highest value in component `b` among all lines that are grouped by component `a`.
+`LOOP AT ... GROUP BY` 
+- Groups the lines of internal tables based on a group key. Each group key represents a group, and the lines read are members of that group. 
+- Performs a loop across these groups. 
+- You can execute a nested loop across the members of each group using `LOOP AT GROUP` statements.
+- The statements offer a variety of syntax options, such as the following. For more information, refer to the ABAP Keyword Documentation:
+
+  - `ASCENDING`/`DESCENDING` additions to specify the sort order in the group loop. You can also sort beforehand with `SORT` statements. 
+  - `WITHOUT MEMBERS`: This creates groups (requiring group key binding) without assigning actual component values. Access to group lines is not possible. Use this when access is not necessary and you want to enhance read performance. 
+  - Specifying the group key after `GROUP BY` 
+    - This can be a single data object or multiple keys within parentheses, which define a structure with specific components. 
+    - In simple cases, component values of the table line can be assigned to the group key or the components of the group key. However, expressions are also possible on the right side of the group key assignments. 
+    - Storing group-specific information in structured group keys.     
+      - `GROUP SIZE` to count group members, e.g., `gs = GROUP SIZE`. 
+      - `GROUP INDEX` to index group members, e.g., `gi = GROUP INDEX`. 
+      - You can choose component names (such as `gs` and `gi` in the previous example) freely. 
+      - To use these components, you need a group key binding. 
+  - Group key binding 
+    - Can be specified at the end of the statement using `INTO` and a data object. You can also use data references (`REFERENCE INTO`) or field symbols (`ASSIGNING ...`). 
+    - If specified, the current key's group key is assigned to the specified data object (data reference, or field symbol). You can then address the group in nested loops with `LOOP AT GROUP`. 
+    - Note: You can access the read result (e.g., `dobj` in `LOOP AT itab INTO dobj`), but the component values are initial when the group key binding is specified. You can address the group and its component values in nested loops with `LOOP AT GROUP`. 
+    - If you do not specify the group key binding, it defaults to a representative binding. In each loop pass, the first line of the current group is assigned to the target area. You can process this *representative* further in nested loops with `LOOP AT GROUP`. With representative binding, the `sy-tabix` value is set as if the loop was specified without grouping.
+
+`LOOP AT GROUP`: 
+- Allows for a nested loop across group members. 
+- Only applicable with `LOOP ... GROUP BY` statements (provided `WITHOUT MEMBERS` isn't specified) 
+- After using `LOOP AT GROUP`, you can specify ... 
+  - the read result that serves as a representative in representative binding: `LOOP AT it INTO DATA(wa) GROUP BY ... LOOP AT GROUP wa ...`. 
+  - the group key binding: `LOOP AT it INTO DATA(wa) GROUP BY ... INTO gkb. ... LOOP AT GROUP gkb ...`. 
+- Additional syntax options like a `WHERE` condition and further grouping are also available.
+
+More information:
+- [Here (and the subtopics there)](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abaploop_at_itab_group_by.htm) in the ABAP Keyword Documentation 
+- Iteration expressions can also handle table grouping (`FOR ... IN GROUP`). For example, see the [Constructor Expressions](05_Constructor_Expressions.md) cheat sheet.
+- [Internal Tables: Grouping](11_Internal_Tables_Grouping.md) cheat sheet 
+
+The example class below demonstrates internal table grouping options. To try it out, create a demo class named `zcl_some_class` and paste the following code into it. After activation, choose *F9* in ADT to execute the class. The example is designed to display results in the console.
 
 ```abap
-TYPES: BEGIN OF demo_struct,
-          a TYPE c LENGTH 1,
-          b TYPE i,
-        END OF demo_struct,
-        tab_type TYPE TABLE OF demo_struct WITH EMPTY KEY.
-DATA(it1) = VALUE tab_type( ( a = 'a' b = 1 )
-                            ( a = 'b' b = 5 )
-                            ( a = 'a' b = 3 )
-                            ( a = 'b' b = 4 )
-                            ( a = 'a' b = 2 )
-                            ( a = 'b' b = 6 )
-                            ( a = 'c' b = 10 )
-                            ( a = 'd' b = 0 )
-                            ( a = 'd' b = 7 )
-                            ( a = 'a' b = 4 )
-                            ( a = 'e' b = 11 )
-                            ( a = 'e' b = 111 ) ).
+CLASS zcl_some_class DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
 
+  PUBLIC SECTION.
+    INTERFACES if_oo_adt_classrun.
 
-DATA it2 LIKE it1.
-SORT it1 BY a ASCENDING b DESCENDING.
-LOOP AT it1 INTO DATA(wa) GROUP BY wa-a.
-  LOOP AT GROUP wa INTO DATA(member).
-    APPEND member TO it2.
-    EXIT.
-  ENDLOOP.
-ENDLOOP.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+ENDCLASS.
 
-"Content of it2:
-*A    B       
-*a    4       
-*b    6       
-*c    10      
-*d    7       
-*e    111
+CLASS zcl_some_class IMPLEMENTATION.
+  METHOD if_oo_adt_classrun~main.
+    TYPES: BEGIN OF demo_struct,
+             comp1 TYPE c LENGTH 1,
+             comp2 TYPE i,
+             comp3 TYPE abap_boolean,
+             comp4 TYPE string,
+           END OF demo_struct,
+           tab_type TYPE TABLE OF demo_struct WITH EMPTY KEY.
+    DATA str_table TYPE string_table.
+
+    "Populating a demo internal table as the basis of the syntax example
+    "Note: The example loops only use data objects as targets, not data references
+    "or field symbols.
+    DATA(it) = VALUE tab_type( ( comp1 = 'd' comp2 = 0 comp3 = abap_false )
+                               ( comp1 = 'a' comp2 = 1 comp3 = abap_true )
+                               ( comp1 = 'a' comp2 = 2 comp3 = abap_false )
+                               ( comp1 = 'e' comp2 = 11 comp3 = abap_true )
+                               ( comp1 = 'e' comp2 = 11 comp3 = abap_true )
+                               ( comp1 = 'b' comp2 = 5 comp3 = abap_true )
+                               ( comp1 = 'b' comp2 = 6 comp3 = abap_false )
+                               ( comp1 = 'a' comp2 = 3 comp3 = abap_false )
+                               ( comp1 = 'b' comp2 = 4 comp3 = abap_true )
+                               ( comp1 = 'c' comp2 = 10 comp3 = abap_true )
+                               ( comp1 = 'e' comp2 = 1 comp3 = abap_false )
+                               ( comp1 = 'd' comp2 = 7 comp3 = abap_true )
+                               ( comp1 = 'a' comp2 = 4 comp3 = abap_true )
+                               ( comp1 = 'e' comp2 = 111 comp3 = abap_true ) ).
+
+    "The following example (and several others below) does not specify a nested loop.
+    "It does not specify a group key binding either. This means that the work area
+    "contains the first line of each group, representing the group in the loop
+    "(representative binding). The comp4 component is assigned the sy-tabix value,
+    "which is the number of the line in the table without the grouping.
+    DATA ita LIKE it.
+    LOOP AT it INTO DATA(waa) GROUP BY waa-comp1.
+      waa-comp4 = sy-tabix.
+      APPEND waa TO ita.
+    ENDLOOP.
+    out->write( data = ita name = `ita` ).
+
+    "Specifying sort order
+    DATA itb LIKE it.
+    LOOP AT it INTO DATA(wab) GROUP BY wab-comp1 ASCENDING.
+      wab-comp4 = sy-tabix.
+      APPEND wab TO itb.
+    ENDLOOP.
+    out->write( data = itb name = `itb` ).
+
+    "WITHOUT MEMBERS addition; a group key binding is required
+    "after WITHOUT MEMBERS
+    "The group key binding is added to a string table for visualizing its
+    "content.
+    "Note: The component values are initial when the group key binding is
+    "specified.
+    LOOP AT it INTO DATA(wac) GROUP BY wac-comp1 WITHOUT MEMBERS INTO DATA(keyc).
+      ASSERT wac IS INITIAL.
+      APPEND keyc TO str_table.
+    ENDLOOP.
+    out->write( data = str_table name = `str_table` ).
+
+    "Using a structured group key
+    "The following example just assigns component values to the group key. In this case,
+    "the grouping is performed with more than just one criterion as in the previous examples.
+    "As a result, table lines are added to the other table in descending order based on the
+    "two component values.
+    DATA itd LIKE it.
+    LOOP AT it INTO DATA(wad) GROUP BY ( key1 = wad-comp1 key2 = wad-comp2 ) DESCENDING.
+      APPEND wad TO itd.
+    ENDLOOP.
+    out->write( data = itd name = `itd` ).
+
+    "In the following example, the group is sorted in ascending order. Note that the
+    "group index value uses the original position in the group index. The group key
+    "binding information is added to a string table for visualizing its content.
+    CLEAR str_table.
+    LOOP AT it INTO DATA(wae) GROUP BY ( key = wae-comp1 gi = GROUP INDEX gs = GROUP SIZE ) ASCENDING INTO DATA(keye).
+      ASSERT wae IS INITIAL.
+      APPEND |Key component: '{ keye-key }', group index: '{ keye-gi }', group size: '{ keye-gs }'| TO str_table.
+    ENDLOOP.
+    out->write( data = str_table name = `str_table` ).
+
+    "LOOP AT GROUP: Nested loop across group members
+    "Unlike the previous example, the example uses a nested loop across the groups (the group key binding is
+    "specified after LOOP AT GROUP). There, the component values of the members can be accessed.
+    DATA itf LIKE it.
+    LOOP AT it INTO DATA(waf) GROUP BY ( key = waf-comp1 gi = GROUP INDEX gs = GROUP SIZE ) ASCENDING INTO DATA(keyf).
+      ASSERT waf IS INITIAL.
+      LOOP AT GROUP keyf INTO DATA(memberf).
+        APPEND VALUE #( comp1 = memberf-comp1 comp2 = memberf-comp2 comp3 = memberf-comp3
+        comp4 = |Key component: '{ keyf-key }', group index: '{ keyf-gi }', group size: '{ keyf-gs }'|
+        ) TO itf.
+      ENDLOOP.
+    ENDLOOP.
+    out->write( data = itf name = `itf` ).
+
+    "The objective of this example is to extract the line with the highest value in a particular
+    "column within a group (following the sorting) from the original table to another.
+    "The example uses representative binding, i.e. the representative of the group is specified
+    "in the work area, not in a group key binding.
+    DATA itg LIKE it.
+    LOOP AT it INTO DATA(wag) GROUP BY wag-comp1 ASCENDING.
+      LOOP AT GROUP wag INTO DATA(memberg) GROUP BY memberg-comp2 DESCENDING.
+        APPEND memberg TO itg.
+        EXIT.
+      ENDLOOP.
+    ENDLOOP.
+    out->write( data = itg name = `itg` ).
+
+    "The following example is similar to the previous example, and yields the same result.
+    "Here, the group key binding is specified after LOOP AT GROUP.
+    DATA ith LIKE it.
+    LOOP AT it INTO DATA(wah) GROUP BY wah-comp1 ASCENDING.
+      LOOP AT GROUP wah INTO DATA(memberh) GROUP BY memberh-comp2 DESCENDING.
+        APPEND memberh TO ith.
+        EXIT.
+      ENDLOOP.
+    ENDLOOP.
+    ASSERT itg = ith.
+    out->write( data = ith name = `ith` ).
+
+    "Additional syntax options, like specifying a WHERE condition in both nested and outer
+    "loops, are possible. The example below shows that the LOOP AT GROUP statement assigns
+    "the value of sy-tabix to the value that would be set for the current line in the LOOP
+    "without grouping.
+    DATA iti LIKE it.
+    LOOP AT it INTO DATA(wai) GROUP BY wai-comp1 ASCENDING.
+      LOOP AT GROUP wai INTO DATA(memberi) WHERE comp3 = abap_true.
+        APPEND VALUE #( comp1 = memberi-comp1 comp2 = memberi-comp2 comp3 = memberi-comp3
+        comp4 = |sy-tabix: '{ sy-tabix }'|
+        ) TO iti.
+      ENDLOOP.
+    ENDLOOP.
+    out->write( data = iti name = `iti` ).
+  ENDMETHOD.
+
+ENDCLASS.
 ```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
