@@ -2034,7 +2034,7 @@ ENDCLASS.
 
 The following example creates two demo internal tables. One without a secondary
 table key and the other with a secondary table key. Consider a scenario where you
-have an internal table without a secondary table key, and you want to add a secondary table key later to improve read performance. The tables are populated with a lot of data. Then, in a DO loop, many reads are performed on the internal tables. One example uses a free key for the read, the other uses a secondary table key. Before and after the reads, the current timestamp is stored in variables, from which the elapsed time is calculated. There should be a significant delta of the elapsed time.
+have an internal table without a secondary table key, and you want to add a secondary table key later to improve read performance. The tables are populated with a lot of data. Then, in a `DO` loop, many reads are performed on the internal tables. One example uses a free key for the read, the other uses a secondary table key that includes the components used for the free key search. Before and after the reads, the current timestamp is stored in variables, from which the elapsed time is calculated. There should be a significant delta of the elapsed time.
 
 ```abap
 CLASS zcl_some_class DEFINITION PUBLIC FINAL CREATE PUBLIC.
@@ -2051,48 +2051,77 @@ CLASS zcl_some_class IMPLEMENTATION.
              num TYPE i,
            END OF demo_struc.
 
-    DATA itab TYPE HASHED TABLE OF demo_struc WITH UNIQUE KEY idx.
-    DATA itab_sec TYPE HASHED TABLE OF demo_struc
-                  WITH UNIQUE KEY idx
+    DATA itab TYPE TABLE OF demo_struc WITH NON-UNIQUE KEY idx.
+    DATA itab_sec TYPE TABLE OF demo_struc
+                  WITH NON-UNIQUE KEY idx
                   WITH NON-UNIQUE SORTED KEY sk
                        COMPONENTS str num.
+    DATA runtime_tab TYPE TABLE OF decfloat34 WITH EMPTY KEY.
+    "Constant values on the basis of which the test runs are performed
+    CONSTANTS: num_of_table_lines TYPE i VALUE 5000,
+               num_of_repetitions TYPE i VALUE 10,
+               num_of_reads       TYPE i VALUE 1000.
 
-    DO 500 TIMES.
+    "Popluating demo tables
+    DO num_of_table_lines TIMES.
       INSERT VALUE #( idx = sy-index
                       str = |INDEX{ sy-index }|
                       num = sy-index ) INTO TABLE itab.
     ENDDO.
     itab_sec = itab.
 
-    DATA(ts1) = utclong_current( ).
-    DO 500 TIMES.
-      "Reading into a data reference variable using a free key.
-      "This key corresponds to the secondary table key specified for
-      "the table in the second example.
-      DATA(dref) = REF #( itab[ str = `INDEX250` num = 250 ] ).
+    "To get a meaningful result, many read iterations are performed (as defined
+    "by 'num_of_reads'). These iterations are performed multiple times as indicated
+    "by 'num_of_repetitions'. The current timestamp is stored before and after the
+    "read iterations. The difference between these two timestamps provides the
+    "duration, in seconds, of how long the reads took. This value is stored in
+    "an internal table. The fastest value is taken as reference value for the
+    "comparison with the value from the second internal table below.
+
+    "Reading from an internal table using a free key
+    DO num_of_repetitions TIMES.
+      DATA(ts1) = utclong_current( ).
+      DO num_of_reads TIMES.
+        "The free key corresponds to the secondary table key specified for the
+        "table in the second example.
+        READ TABLE itab WITH KEY str = `INDEX` && sy-index num = sy-index TRANSPORTING NO FIELDS.
+      ENDDO.
+      DATA(ts2) = utclong_current( ).
+      cl_abap_utclong=>diff( EXPORTING high    = ts2
+                                       low     = ts1
+                             IMPORTING seconds = DATA(seconds) ).
+      APPEND seconds TO runtime_tab.
     ENDDO.
-    DATA(ts2) = utclong_current( ).
 
-    cl_abap_utclong=>diff( EXPORTING high     = ts2
-                                     low      = ts1
-                            IMPORTING seconds = DATA(seconds) ).
-
+    SORT runtime_tab BY table_line ASCENDING.
     out->write( `Elapsed time for the reads using a free key:` ).
-    out->write( seconds ).
-    out->write( `----------------------------------------------------------` ).
+    DATA(fastest_free_key) = runtime_tab[ 1 ].
+    out->write( fastest_free_key ).
+    out->write( repeat( val = `-` occ = 70 ) ).
 
-    ts1 = utclong_current( ).
-    DO 500 TIMES.
-      "Reading from an internal table using the secondary table key
-      dref = REF #( itab_sec[ KEY sk str = `INDEX250` num = 250 ] ).
+    CLEAR runtime_tab.
+
+    "Reading from an internal table using the secondary table key
+    DO num_of_repetitions TIMES.
+      ts1 = utclong_current( ).
+      DO num_of_reads TIMES.
+        READ TABLE itab_sec WITH TABLE KEY sk COMPONENTS str = `INDEX` && sy-index num = sy-index TRANSPORTING NO FIELDS.
+      ENDDO.
+      ts2 = utclong_current( ).
+      cl_abap_utclong=>diff( EXPORTING high    = ts2
+                                       low     = ts1
+                             IMPORTING seconds = seconds ).
+      APPEND seconds TO runtime_tab.
     ENDDO.
-    ts2 = utclong_current( ).
 
-    cl_abap_utclong=>diff( EXPORTING high     = ts2
-                                     low      = ts1
-                           IMPORTING seconds = seconds ).
+    SORT runtime_tab BY table_line ASCENDING.
     out->write( `Elapsed time for the reads using a secondary table key:` ).
-    out->write( seconds ).
+    DATA(fastest_sec_key) = runtime_tab[ 1 ].
+    out->write( fastest_sec_key ).
+    out->write( |\n\n| ).
+    DATA(percentage) = fastest_sec_key / fastest_free_key * 100.
+    out->write( |In the test runs of this example, the fastest read access with the secondary table key takes approximately | &&
+    |{ percentage DECIMALS = 2 }% of the time it takes for the fastest read using a free key.| ).
   ENDMETHOD.
 ENDCLASS.
 ```
