@@ -1715,7 +1715,7 @@ DATA(call_stack) = xco_cp=>current->call_stack->full( ).
 
 "Creating a format for the call stack
 "In the example, an ADT debugger-like style is used
-Data(format) = xco_cp_call_stack=>format->adt(
+DATA(format) = xco_cp_call_stack=>format->adt(
   )->with_line_number_flavor( xco_cp_call_stack=>line_number_flavor->source ).
 
 "Retrieving the full call stack as text, e.g. so that it can be output

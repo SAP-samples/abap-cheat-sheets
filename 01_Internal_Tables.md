@@ -21,7 +21,7 @@
     - [Reading a Single Line Using Table Keys](#reading-a-single-line-using-table-keys)
     - [Reading a Single Line Using a Free Key](#reading-a-single-line-using-a-free-key)
     - [Addressing Individual Components of Read Lines](#addressing-individual-components-of-read-lines)
-  - [Obtaining Information about Internal Tables, Table Lines, Table Types](#obtaining-information-about-internal-tables-table-lines-table-types)
+  - [Getting Information about Internal Tables, Table Lines, Table Types](#getting-information-about-internal-tables-table-lines-table-types)
     - [Checking the Existence of a Line in an Internal Table](#checking-the-existence-of-a-line-in-an-internal-table)
     - [Checking the Index of a Line in an Internal Table](#checking-the-index-of-a-line-in-an-internal-table)
     - [Checking How Many Lines Exist in an Internal Table](#checking-how-many-lines-exist-in-an-internal-table)
@@ -29,6 +29,7 @@
   - [Processing Multiple Internal Table Lines Sequentially](#processing-multiple-internal-table-lines-sequentially)
     - [Restricting the Area of a Table to Be Looped Over](#restricting-the-area-of-a-table-to-be-looped-over)
     - [Iteration Expressions](#iteration-expressions)
+    - [Interrupting and Exiting Loops](#interrupting-and-exiting-loops)
   - [Operations with Internal Tables Using ABAP SQL SELECT Statements](#operations-with-internal-tables-using-abap-sql-select-statements)
     - [Internal Tables as Target Data Objects](#internal-tables-as-target-data-objects)
     - [Querying from Internal Tables](#querying-from-internal-tables)
@@ -40,6 +41,7 @@
   - [Grouping Internal Tables](#grouping-internal-tables)
   - [Excursions](#excursions)
     - [Improving Read Performance with Secondary Table Keys](#improving-read-performance-with-secondary-table-keys)
+    - [Example: Exploring Read Access Performance with Internal Tables](#example-exploring-read-access-performance-with-internal-tables)
     - [Searching and Replacing Substrings in Internal Tables with Character-Like Data Types](#searching-and-replacing-substrings-in-internal-tables-with-character-like-data-types)
     - [Ranges Tables](#ranges-tables)
     - [Comparing Content of Compatible Internal Tables](#comparing-content-of-compatible-internal-tables)
@@ -1110,7 +1112,7 @@ DATA(comp5) = dref->*-c.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-## Obtaining Information about Internal Tables, Table Lines, Table Types
+## Getting Information about Internal Tables, Table Lines, Table Types
 
 ### Checking the Existence of a Line in an Internal Table
 
@@ -1339,6 +1341,24 @@ Iteration expressions with [`FOR`](https://help.sap.com/doc/abapdocu_cp_index_ht
 The expressions are covered in the cheat sheet [Constructor Expressions](05_Constructor_Expressions.md):
 - [Iteration Expressions Using FOR](05_Constructor_Expressions.md#iteration-expressions-using-for)
 - Special reduction operator `REDUCE` that is based on iteration expressions: [REDUCE](05_Constructor_Expressions.md#reduce)
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+### Interrupting and Exiting Loops
+
+ABAP keywords such as `CONTINUE`, `CHECK`, and `EXIT`, are available to exit loops. Find more information in the [Program Flow Logic](13_Program_Flow_Logic.md#interrupting-and-exiting-loops) cheat sheet.
+
+In the following example, the loop is exited using the `EXIT` statement when a certain condition is met.
+```abap
+DATA(str_table) = VALUE string_table( ( `a` ) ( `b` ) ( `c` ) ( `d` ) ( `e` ) ( `f` ) ).
+LOOP AT str_table INTO DATA(wa).
+  DATA(tabix) = sy-tabix.
+  IF wa = `e`.
+    EXIT.
+  ENDIF.
+ENDLOOP.
+ASSERT tabix = 5.
+```    
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
@@ -1861,14 +1881,14 @@ To group internal tables, there are additions for `LOOP AT` statements.
 
 `LOOP AT GROUP`: 
 - Allows for a nested loop across group members. 
-- Only applicable with `LOOP ... GROUP BY` statements (provided `WITHOUT MEMBERS` isn't specified) 
+- Only applicable with `LOOP ... GROUP BY` statements (provided `WITHOUT MEMBERS` is not specified) 
 - After using `LOOP AT GROUP`, you can specify ... 
   - the read result that serves as a representative in representative binding: `LOOP AT it INTO DATA(wa) GROUP BY ... LOOP AT GROUP wa ...`. 
-  - the group key binding: `LOOP AT it INTO DATA(wa) GROUP BY ... INTO gkb. ... LOOP AT GROUP gkb ...`. 
+  - the group key binding: `LOOP AT it INTO DATA(wa) GROUP BY ... INTO DATA(gkb). ... LOOP AT GROUP gkb ...`. 
 - Additional syntax options like a `WHERE` condition and further grouping are also available.
 
 More information:
-- [Here (and the subtopics there)](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abaploop_at_itab_group_by.htm) in the ABAP Keyword Documentation 
+- [ABAP Keyword Documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abaploop_at_itab_group_by.htm)   
 - Iteration expressions can also handle table grouping (`FOR ... IN GROUP`). For example, see the [Constructor Expressions](05_Constructor_Expressions.md) cheat sheet.
 - [Internal Tables: Grouping](11_Internal_Tables_Grouping.md) cheat sheet 
 
@@ -1904,7 +1924,6 @@ CLASS zcl_some_class IMPLEMENTATION.
     DATA(it) = VALUE tab_type( ( comp1 = 'd' comp2 = 0 comp3 = abap_false )
                                ( comp1 = 'a' comp2 = 1 comp3 = abap_true )
                                ( comp1 = 'a' comp2 = 2 comp3 = abap_false )
-                               ( comp1 = 'e' comp2 = 11 comp3 = abap_true )
                                ( comp1 = 'e' comp2 = 11 comp3 = abap_true )
                                ( comp1 = 'b' comp2 = 5 comp3 = abap_true )
                                ( comp1 = 'b' comp2 = 6 comp3 = abap_false )
@@ -2062,7 +2081,7 @@ CLASS zcl_some_class IMPLEMENTATION.
                num_of_repetitions TYPE i VALUE 10,
                num_of_reads       TYPE i VALUE 1000.
 
-    "Popluating demo tables
+    "Populating demo tables
     DO num_of_table_lines TIMES.
       INSERT VALUE #( idx = sy-index
                       str = |INDEX{ sy-index }|
@@ -2127,6 +2146,482 @@ ENDCLASS.
 ```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
+
+### Example: Exploring Read Access Performance with Internal Tables
+
+- The following example explores the performance of read accesses to internal tables of various kinds in a simplified and self-contained manner. 
+- It primarily addresses the scenario of large internal tables that are accessed frequently. 
+- Read accesses are executed using `READ TABLE` statements, which access the tables by: 
+  - Index (both primary and secondary table index) 
+  - Key (primary table key, secondary table key, free key)
+- To try this, create a demo class named `zcl_some_class` and insert the provided code. After activation, select *F9* in ADT to execute the class. It may take some time to finish and display the output. The example is set up to display the results of the read performance test in the console.
+
+> **💡 Note**<br>
+> - This example is used for [exploration and experimentation ⚠️](README.md#%EF%B8%8F-disclaimer). It is solely for demonstration purposes, and it is **not** a *tool* for proper and accurate runtime and performance testing. Due to its simplified nature, the results may not be entirely accurate. However, multiple test runs should reflect the notes below (and above). 
+> - The example concentrates on a few demo internal tables, constructed using various declaration options. 
+> - The purpose of this example is to underscore the significance of choosing the right table categories for your internal tables, tailored to your specific use case and the frequency of table access.
+
+Notes on ...
+
+... primary table key and primary table index: 
+- Each internal table has a primary key, which can be custom-defined or use the standard key. In standard tables, it is also possible to use an empty key. 
+  - Be aware of the implications of specifying the standard key, either intentionally or unintentionally. The standard key combines all character-like components, such as `txt` in the example below, while the remaining components are of type `i`.
+  - The primary key of a table is ... 
+    - a hash key in hashed tables, 
+    - a sorted key in sorted tables, 
+    - always non-unique in standard tables. 
+- Key access is optimized for hashed and sorted tables, but not for standard tables. 
+  - You cannot modify key fields in hashed and sorted tables. 
+  - In standard tables, key access is relatively slow because the search is linear. 
+- Generally, the larger the table, the slower the key access. Hashed tables excel here, providing constant access time even for very large tables. 
+- Sorted and standard tables have a primary table index, hence their designation as index tables. 
+- The primary table index assigns a unique line number to each table line. 
+  - The index updates whenever a line is added or removed. 
+  - Unlike key access, access time via the index does not increase linearly with table size.
+
+... secondary table key and secondary table index:
+- Secondary table keys, which can be sorted or hashed, are available for all table categories. 
+- They enhance table access efficiency and performance. 
+- Declaring a secondary table key generates a corresponding secondary table index. However, the index for a non-unique key does not update immediately upon adding or deleting a line. The update happens when the internal table is accessed using the secondary table key. 
+- In ABAP statements, you must specify the secondary table key explicitly. Otherwise, the system implicitly uses the primary table key. 
+- Data access using the secondary table key is always optimized, even for standard tables. Thus, even older standard tables can gain from optimized access by adding secondary table keys later, without impacting existing table-related statements. 
+- However, weigh the administrative costs of secondary table keys. Use them only in scenarios where they offer substantial benefits, like large internal tables that are filled once and rarely altered. Frequent modifications can lead to regular index updates, potentially causing performance issues.
+
+... the use of table categories:
+- Standard tables: 
+  - Suitable for ... 
+    - small, sequentially accessed tables that are often accessed by index 
+    - tables where key sorting is not critical, though you can sort using `SORT` statements, especially after table population
+    - tables that are populated frequently, as there is no need to check for unique entries regarding the primary table key. 
+  - Access speed: 
+    - Fast: By index, optimized key access with secondary table keys, and free keys using `READ TABLE ... BINARY SEARCH` statements 
+    - Slow: Primary table and free key
+
+- Sorted tables: 
+  - Suitable for ...
+    - large tables requiring consistent sorted content 
+    - tables frequently accessed both by index and in sequence 
+  - Access is fast by index, primary table key (always optimized), secondary table key (also optimized)
+
+- Hashed tables: 
+  - Suitable for ...
+    - very large tables that are filled once and rarely altered 
+    - tables where key-based access is the primary method 
+    - tables that do not require index access on the primary table index 
+  - Access is ... 
+    - fast and optimized for both primary and secondary table keys 
+    - consistent for large internal tables due to a special hash algorithm
+
+Expand the following collapsible section to view the code of the example that you can copy & paste into a demo class and run choosing *F9* in ADT. Note that, when running the class, it may take a while to complete and display output in the console.
+
+<details>
+  <summary>Expand to view the code</summary>
+  <!-- -->
+
+```abap
+CLASS zcl_some_class DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
+
+  PUBLIC SECTION.
+    INTERFACES if_oo_adt_classrun.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+    "Internal table to process demo tables and storing information
+    TYPES: BEGIN OF info_struc,
+             id         TYPE i,
+             dobj_name  TYPE string,
+             runtime    TYPE decfloat34,
+             operation  TYPE string,
+             comment    TYPE string,
+             lines      TYPE i,
+             accesses   TYPE i,
+             table_kind TYPE abap_tablekind,
+             keys       TYPE abap_table_keydescr_tab,
+             itab_ref   TYPE REF TO data,
+           END OF info_struc,
+           info_tab_type TYPE TABLE OF info_struc WITH EMPTY KEY.
+    DATA info_tab TYPE TABLE OF info_struc WITH EMPTY KEY.
+
+    "Object reference variable to retrieve type information
+    "at runtime (RTTI)
+    DATA tdo TYPE REF TO cl_abap_tabledescr.
+
+    "Demo internal tables
+    "The line type is used for all demo tables.
+    TYPES: BEGIN OF s,
+             idx TYPE i,
+             txt TYPE c LENGTH 20,
+             num TYPE i,
+           END OF s.
+
+    "------------------ Standard tables ------------------
+    "Empty primary table key
+    DATA it_std_empty_key TYPE TABLE OF s WITH EMPTY KEY.
+
+    "Primary table key explicitly specified (only non-unique in case of standard tables)
+    DATA it_std_w_nu_pr_key TYPE TABLE OF s WITH NON-UNIQUE KEY idx.
+
+    "Secondary table key specified, primary key not specified explicitly
+    "Therefore, the standard primary table key is used. It consists of all
+    "character-like components (which is the 'txt' component only in this case).
+    DATA it_std_w_std_pr_key_w_sec_key TYPE TABLE OF s WITH NON-UNIQUE SORTED KEY sec_key COMPONENTS num.
+    "Note: The following declaration corresponds to the previous one. Here, the standard key
+    "is specified explicitly.
+    "DATA it_std_w_std_pr_key_w_sec_key TYPE TABLE OF s WITH DEFAULT KEY WITH NON-UNIQUE SORTED KEY sec_key COMPONENTS num.
+
+    "Empty primary table key, secondary table key specified
+    DATA it_std_w_emp_pr_key_w_sec_key TYPE TABLE OF s WITH EMPTY KEY WITH NON-UNIQUE SORTED KEY sec_key COMPONENTS num.
+
+    "------------------ Sorted tables ------------------
+    DATA it_sorted TYPE SORTED TABLE OF s WITH UNIQUE KEY idx.
+
+    "Secondary table key specified
+    DATA it_sorted_w_sec_key TYPE SORTED TABLE OF s WITH UNIQUE KEY idx WITH NON-UNIQUE SORTED KEY sec_key COMPONENTS num.
+
+    "------------------ Hashed tables ------------------
+    DATA it_hashed TYPE HASHED TABLE OF s WITH UNIQUE KEY idx.
+
+    "Secondary table key specified
+    DATA it_hashed_w_sec_key TYPE HASHED TABLE OF s WITH UNIQUE KEY idx WITH NON-UNIQUE SORTED KEY sec_key COMPONENTS num.
+
+    "------------------ Method declarations ------------------
+    "Populating the internal tables with demo data
+    "The method is supplied with the number of lines that should be added to the demo tables. Ideally, and to
+    "demonstrate a meaningful result, it is a high integer value. Furthermore, the information table is
+    "prepared for output purposes. It also contains a reference to the internal table content that is processed.
+    METHODS prepare_itabs IMPORTING number_of_lines TYPE i.
+
+    "For performing the read accesses
+    "The method is supplied with integer values.
+    "- Number of read accesses: Ideally, and to demonstrate a meaningful result, it is a high integer value (but not
+    "  higher than the number of internal table lines in the example).
+    "- Number of repetitions: The higher the number of repetitions (i.e. how often the read access is performed n times),
+    "  the more accurate the performance check can be. In the result, the fastest read access time is stored in the
+    "  information table, which is returned.
+    METHODS read_itabs IMPORTING number_of_reads       TYPE i
+                                 number_of_repetitions TYPE i
+                       RETURNING VALUE(read_results)   TYPE info_tab_type.
+
+    "Helper method to check that specific components are included in the internal
+    "tables since READ statements are performed using these components.
+    METHODS check_example_components RETURNING VALUE(are_included) TYPE abap_boolean.
+ENDCLASS.
+
+CLASS zcl_some_class IMPLEMENTATION.
+  METHOD if_oo_adt_classrun~main.
+
+    prepare_itabs( number_of_lines = 5000 ).
+
+    "Specifying a fairly high number of read accesses to the internal tables,
+    "and not just one or two repetitions of the runtime checks so as to get
+    "a more precise result (the fastest access is returned and displayed in the
+    "output table). The higher the numbers provided, the longer the example
+    "runs.
+    DATA(read_result) = read_itabs( number_of_reads = 1000
+                                    number_of_repetitions = 20 ).
+
+    out->write( read_result ).
+
+  ENDMETHOD.
+
+  METHOD prepare_itabs.
+
+    "Populating internal tables with demo data
+    DO number_of_lines TIMES.
+      INSERT VALUE #( idx = sy-index txt = |INDEX{ sy-index }| num = |{ sy-index }| ) INTO TABLE it_std_empty_key.
+    ENDDO.
+
+    "Copying the content to the other internal tables having the same line type
+    "to have the same data basis for the runtime checks
+    it_std_w_nu_pr_key = it_std_empty_key.
+    it_std_w_std_pr_key_w_sec_key  = it_std_empty_key.
+    it_std_w_emp_pr_key_w_sec_key = it_std_empty_key.
+    it_sorted = it_std_empty_key.
+    it_sorted_w_sec_key = it_std_empty_key.
+    it_hashed = it_std_empty_key.
+    it_hashed_w_sec_key = it_std_empty_key.
+
+    "Populating the information table (including references to the tables)
+    info_tab = VALUE #(
+    ( dobj_name = `it_std_empty_key` itab_ref = REF #( it_std_empty_key ) lines = lines( it_std_empty_key ) comment = `Standard, empty primary t.key` )
+    ( dobj_name = `it_std_w_nu_pr_key` itab_ref = REF #( it_std_w_nu_pr_key ) lines = lines( it_std_w_nu_pr_key ) comment = `Standard, expl. primary t.key` )
+    ( dobj_name = `it_std_w_std_pr_key_w_sec_key` itab_ref = REF #( it_std_w_std_pr_key_w_sec_key ) lines = lines( it_std_w_std_pr_key_w_sec_key ) comment = `Standard, standard primary, w. secondary t.key` )
+    ( dobj_name = `it_std_w_emp_pr_key_w_sec_key` itab_ref = REF #( it_std_w_emp_pr_key_w_sec_key ) lines = lines( it_std_w_emp_pr_key_w_sec_key ) comment = `Standard, empty primary, w. secondary t.key` )
+    ( dobj_name = `it_sorted` itab_ref = REF #( it_sorted ) lines = lines( it_sorted ) comment = `Sorted, primary t.key only` )
+    ( dobj_name = `it_sorted_w_sec_key` itab_ref = REF #( it_sorted_w_sec_key ) lines = lines( it_sorted_w_sec_key ) comment = `Sorted, w. secondary t.key` )
+    ( dobj_name = `it_hashed` itab_ref = REF #( it_hashed ) lines = lines( it_hashed ) comment = `Hashed,  primary t.key only` )
+    ( dobj_name = `it_hashed_w_sec_key` itab_ref = REF #( it_hashed_w_sec_key ) lines = lines( it_hashed_w_sec_key ) comment = `Hashed, w. secondary t.key` )
+    ).
+
+  ENDMETHOD.
+
+  METHOD read_itabs.
+    FIELD-SYMBOLS <itab_idx> TYPE INDEX TABLE.
+    FIELD-SYMBOLS <itab_ha> TYPE HASHED TABLE.
+    FIELD-SYMBOLS <any_tab> TYPE ANY TABLE.
+    DATA ts1 TYPE utclong.
+    DATA ts2 TYPE utclong.
+    DATA seconds TYPE decfloat34.
+    DATA result TYPE info_tab_type.
+
+    IF info_tab IS INITIAL.
+      RETURN.
+    ELSE.
+      ASSIGN info_tab[ 1 ]-itab_ref->* TO FIELD-SYMBOL(<tab>).
+      "The number of read lines should not exceed the number of read accesses.
+      IF number_of_reads > lines( <tab> ).
+        RETURN.
+      ENDIF.
+    ENDIF.
+
+    "Repeated runtime check for a more meaningful result
+    DO number_of_repetitions TIMES.
+      LOOP AT info_tab REFERENCE INTO DATA(dref).
+        dref->id = sy-tabix.
+
+        "Assigning number of read accesses
+        dref->accesses = number_of_reads.
+
+        "Getting type information (RTTI)
+        tdo = CAST cl_abap_tabledescr( cl_abap_typedescr=>describe_by_data( dref->itab_ref->* ) ).
+
+        "Adding table kind information
+        "S: standard
+        "H: hashed
+        "O: sorted
+        dref->table_kind = tdo->table_kind.
+
+        "Adding table key information
+        dref->keys = tdo->get_keys( ).
+
+        "Assigning referenced internal tables to field symbols to work
+        "with all kinds of tables in the read accesses
+        IF dref->table_kind = 'H'.
+          ASSIGN dref->itab_ref->* TO <itab_ha>.
+        ELSE.
+          ASSIGN dref->itab_ref->* TO <itab_idx>.
+        ENDIF.
+
+        "-------------------- Read access by primary table index --------------------
+
+        "Only index tables have a primary table index
+        IF <itab_idx> IS ASSIGNED.
+          dref->operation = |Read access by primary table index|.
+
+          ts1 = utclong_current( ).
+          DO number_of_reads TIMES.
+            "Note: The READ TABLE statements in the statements use the
+            "TRANSPORTING NO FIELDS addition to only focus on the read
+            "access, not storing the content.
+            READ TABLE <itab_idx> INDEX sy-index TRANSPORTING NO FIELDS.
+          ENDDO.
+          ts2 = utclong_current( ).
+          cl_abap_utclong=>diff( EXPORTING high    = ts2
+                                           low     = ts1
+                                 IMPORTING seconds = seconds ).
+          dref->runtime = seconds.
+          APPEND dref->* TO result.
+        ENDIF.
+
+        "-------------------- Read access by secondary table index --------------------
+
+        "Checking whether there is a secondary table key, which is indicated by an initial
+        "value of the 'is_primary' field.
+        DATA(has_sec_table_index) = xsdbool( line_exists( dref->keys[ is_primary = '' ] ) ).
+
+        IF has_sec_table_index = abap_true.
+          dref->operation = |Read access by secondary table index|.
+
+          "Getting a secondary key name for the dynamic READ TABLE
+          "statement below
+          DATA(sec_key_name) = dref->keys[ is_primary = '' ]-name.
+
+          "Assigning index or hashed table to a field symbol
+          IF <itab_idx> IS ASSIGNED.
+            ASSIGN <itab_idx> TO <any_tab>.
+          ELSEIF <itab_ha> IS ASSIGNED.
+            ASSIGN <itab_ha> TO <any_tab>.
+          ENDIF.
+
+          IF <any_tab> IS ASSIGNED.
+            ts1 = utclong_current( ).
+            DO number_of_reads TIMES.
+              READ TABLE <any_tab> INDEX sy-index USING KEY (sec_key_name) TRANSPORTING NO FIELDS.
+            ENDDO.
+            ts2 = utclong_current( ).
+            cl_abap_utclong=>diff( EXPORTING high    = ts2
+                                             low     = ts1
+                                   IMPORTING seconds = seconds ).
+            dref->runtime = seconds.
+            APPEND dref->* TO result.
+          ENDIF.
+        ENDIF.
+
+        "-------------------- Read access by primary table key --------------------
+
+        "Checking whether the internal table has a primary table key
+        READ TABLE dref->keys WITH KEY is_primary = 'X' REFERENCE INTO DATA(line_ref).
+        IF sy-subrc = 0.
+          "The example is designed for this example's demo internal tables. These
+          "tables all have a specific line type. In this case, the primary table
+          "key should only consist of one component and have the name 'IDX'.
+          DATA(key_check_lines) = xsdbool( lines( line_ref->components ) = 1 ).
+          IF key_check_lines = abap_true.
+            DATA(key_check_idx) = xsdbool( line_ref->components[ 1 ]-name = 'IDX' ).
+          ENDIF.
+          DATA(is_pr_key_only_idx) = xsdbool( key_check_lines = abap_true AND key_check_idx = abap_true ).
+        ELSE.
+          is_pr_key_only_idx = abap_false.
+        ENDIF.
+
+        IF is_pr_key_only_idx = abap_true.
+          IF <itab_idx> IS ASSIGNED.
+            ASSIGN <itab_idx> TO <any_tab>.
+          ELSEIF <itab_ha> IS ASSIGNED.
+            ASSIGN <itab_ha> TO <any_tab>.
+          ENDIF.
+
+          dref->operation = |Read access by primary table key|.
+          ts1 = utclong_current( ).
+          DO number_of_reads TIMES.
+            "Note: The primary table key is always accessible by the default name 'primary_key'.
+            READ TABLE <any_tab> WITH TABLE KEY primary_key COMPONENTS ('IDX') = sy-index TRANSPORTING NO FIELDS.
+          ENDDO.
+          ts2 = utclong_current( ).
+          cl_abap_utclong=>diff( EXPORTING high    = ts2
+                                           low      = ts1
+                                 IMPORTING seconds = seconds ).
+          dref->runtime = seconds.
+          APPEND dref->* TO result.
+        ENDIF.
+
+        "-------------------- Read access by secondary table key --------------------
+
+        "Checking whether the internal table has a secondary table key
+        READ TABLE dref->keys WITH KEY is_primary = '' REFERENCE INTO DATA(line_ref_sec).
+        IF sy-subrc = 0.
+          "The example is designed for this example's demo internal tables. These
+          "tables all have a specific line type. All tables with a secondary
+          "table key have one component with the name 'NUM'.
+          DATA(name_sec_key) = line_ref_sec->name.
+          DATA(sec_key_check_lines) = xsdbool( lines( line_ref_sec->components ) = 1 ).
+          IF sec_key_check_lines = abap_true.
+            DATA(sec_key_check_num) = xsdbool( line_ref_sec->components[ 1 ]-name = 'NUM' ).
+          ENDIF.
+          DATA(is_sec_key_only_num) = xsdbool( sec_key_check_lines = abap_true AND sec_key_check_num = abap_true ).
+        ELSE.
+          is_sec_key_only_num = abap_false.
+        ENDIF.
+
+        IF is_sec_key_only_num = abap_true.
+          IF <itab_idx> IS ASSIGNED.
+            ASSIGN <itab_idx> TO <any_tab>.
+          ELSEIF <itab_ha> IS ASSIGNED.
+            ASSIGN <itab_ha> TO <any_tab>.
+          ENDIF.
+
+          dref->operation = |Read access by secondary table key|.
+          ts1 = utclong_current( ).
+          DO number_of_reads TIMES.
+            READ TABLE <any_tab> WITH TABLE KEY (name_sec_key) COMPONENTS ('NUM') = sy-index TRANSPORTING NO FIELDS.
+          ENDDO.
+          ts2 = utclong_current( ).
+          cl_abap_utclong=>diff( EXPORTING high    = ts2
+                                           low     = ts1
+                                 IMPORTING seconds = seconds ).
+          dref->runtime = seconds.
+          APPEND dref->* TO result.
+        ENDIF.
+
+        "-------------------- Read access by free key --------------------
+
+        "The free key can contain components other than the key components.
+        "In this example, the line type of the internal tables consists of three
+        "components. One of the components constitutes the primary table key.
+        "The free key used here consists of the other two components.
+
+        "Checking whether the internal table includes the two components
+        "that constitute the free key.
+        IF check_example_components( ).
+          IF <itab_idx> IS ASSIGNED.
+            ASSIGN <itab_idx> TO <any_tab>.
+          ELSEIF <itab_ha> IS ASSIGNED.
+            ASSIGN <itab_ha> TO <any_tab>.
+          ENDIF.
+
+          dref->operation = |Read access by free key|.
+          ts1 = utclong_current( ).
+          DO number_of_reads TIMES.
+            READ TABLE <any_tab> WITH KEY ('TXT') = `INDEX` &&  sy-index ('NUM') = sy-index TRANSPORTING NO FIELDS.
+          ENDDO.
+          ts2 = utclong_current( ).
+          cl_abap_utclong=>diff( EXPORTING high    = ts2
+                                           low     = ts1
+                                 IMPORTING seconds = seconds ).
+          dref->runtime = seconds.
+          APPEND dref->* TO result.
+        ENDIF.
+
+        "---------- Read access to standard tables by free key, using BINARY SEARCH ----------
+
+        "The example is intended to compare the runtime results of standard tables
+        "declared with secondary table keys vs the access using BINARY SEARCH that
+        "enables optimized access. Note that it is recommended to use secondary table
+        "keys for an optimized access.
+
+        IF dref->table_kind = 'S' AND <itab_idx> IS ASSIGNED.
+          IF check_example_components( ).
+            dref->operation = |Read access by free key and BINARY SEARCH|.
+            ts1 = utclong_current( ).
+            "A prior sorting is required (which is actually not needed in this example because
+            "the internal tables are populated in a sorted order).
+            SORT <itab_idx> BY ('TXT') ('NUM') ASCENDING.
+            DO number_of_reads TIMES.
+              READ TABLE <itab_idx> WITH KEY ('TXT') = `INDEX` && sy-index ('NUM') = sy-index BINARY SEARCH TRANSPORTING NO FIELDS.
+            ENDDO.
+            cl_abap_utclong=>diff( EXPORTING high    = utclong_current( )
+                                             low      = ts1
+                                   IMPORTING seconds = seconds ).
+            dref->runtime = seconds.
+            APPEND dref->* TO result.
+          ENDIF.
+        ENDIF.
+
+        UNASSIGN: <itab_idx>, <itab_ha>, <any_tab>.
+      ENDLOOP.
+    ENDDO.
+
+    "Retrieving the fastest run from the result table and adding this run to
+    "the internal table that is returned
+    SORT result BY id operation runtime dobj_name ASCENDING.
+    LOOP AT result INTO DATA(wa) GROUP BY ( key1 = wa-id key2 = wa-operation ).
+      LOOP AT GROUP wa INTO DATA(member).
+        "Clearing internal table content for output purposes
+        CLEAR member-itab_ref.
+        APPEND member TO read_results.
+        EXIT.
+      ENDLOOP.
+    ENDLOOP.
+    SORT read_results BY runtime ASCENDING.
+  ENDMETHOD.
+
+  METHOD check_example_components.
+    "Checking whether tables contain the components 'TXT' and 'NUM'
+    DATA(tab_line_type) = tdo->get_table_line_type( ).
+    DATA(struc_comps) = CAST cl_abap_structdescr( tab_line_type )->components.
+    are_included = xsdbool( line_exists( struc_comps[ name = 'TXT' ] ) AND line_exists( struc_comps[ name = 'NUM' ] ) ).
+  ENDMETHOD.
+
+ENDCLASS.
+```
+
+</details>  
+
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
 
 ### Searching and Replacing Substrings in Internal Tables with Character-Like Data Types
 

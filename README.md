@@ -44,7 +44,7 @@ ABAP cheat sheets[^1] ...
 - Check the [Known Issues](#-known-issues) and [Disclaimer](#%EF%B8%8F-disclaimer).
 - The cheat sheets provide links to glossary entries and topics in the ABAP Keyword Documentation. Note that unlike the classic ABAP-only cheat sheets, in most cases these links refer to ABAP for Cloud Development.
 - [Here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrestricted_abap_elements.htm) is an overview of the different ABAP language elements in the different ABAP versions, i.e. what is allowed in ABAP Cloud and what is not. See also the released APIs [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenreleased_apis.htm).
-- In order to have all ABAP cheat sheet documents in one place, the *main* branch (for ABAP Cloud examples) also contains the ABAP cheat sheet documents that are only relevant for classic ABAP. 
+- In order to have all ABAP cheat sheet documents in one place, the *main* branch (for examples to be imported into the SAP BTP ABAP environment) also contains the ABAP cheat sheet documents that are only relevant for classic ABAP. 
 - The example classes contained in the branches for classic ABAP mostly use syntax that is also available in ABAP for Cloud Development. Only the  `TEST_ABAP_CHEAT_SHEETS_CLASSIC` subpackage contains syntax relevant to Standard ABAP and that is not available in ABAP for Cloud Development, such as dynpro-related ABAP keywords.
 </details>
 
@@ -53,7 +53,7 @@ ABAP cheat sheets[^1] ...
 ## 🏗️ How to Use
 
 1. **ABAP syntax info**: Get info in a nutshell on ABAP syntax and concepts related to various ABAP topics in the [ABAP cheat sheets](#-abap-cheat-sheets-overview).
-2. **Demo examples**: Import the ABAP development objects of this repository (Note: *main* branch for ABAP Cloud only) into your system using [abapGit](https://abapgit.org/) as described [here](#-getting-started-with-the-examples) and run the demo classes by choosing *F9* in the [ABAP development tools for Eclipse (ADT)](https://tools.eu1.hana.ondemand.com/) for checking out the ABAP syntax in action.
+2. **Demo examples**: Import the ABAP development objects of this repository (Note: *main* branch for the SAP BTP ABAP environment only) into your system using [abapGit](https://abapgit.org/) as described [here](#-getting-started-with-the-examples) and run the demo classes by choosing *F9* in the [ABAP development tools for Eclipse (ADT)](https://tools.eu1.hana.ondemand.com/) for checking out the ABAP syntax in action.
 
 <br>
 
@@ -90,8 +90,8 @@ ABAP cheat sheets[^1] ...
 
 ## 🎬 Getting Started with the Examples
 
-The main focus of the ABAP Cheat Sheets is ABAP Cloud. The examples in the *main* branch of the repository are designed to be imported into the SAP BTP ABAP environment.
-For classic ABAP, you can find examples in the other branches of the repository that you can import into your sandbox SAP system. Just select the appropriate version (*v757* stands for ABAP version 7.57). Check the information in the following collapsible sections for your system environment and perform the required steps.
+The main focus of the ABAP Cheat Sheets is ABAP for Cloud Development. The examples in the *main* branch of the repository are designed to be imported into the SAP BTP ABAP environment.
+For Standard ABAP, you can find examples in the other branches of the repository that you can import into your sandbox SAP system. Just select the appropriate version (*v757* stands for ABAP version 7.57). Check the information in the following collapsible sections for your system environment and perform the required steps.
 
 <details>
   <summary>1) General info</summary>
@@ -176,7 +176,7 @@ Use the standalone version of the abapGit report to import the demo examples of 
       ```
 
    - ***Package***: Your demo package, for example, *TEST_ABAP_CHEAT_SHEETS*
-   - ***Branch***: Choose the button with the 3 dots to the right of the input field. In the pop-up window, select the appropriate branch, e.g. *v757* if your ABAP release is 7.57, and choose the *Continue* (✔️) button. **Note**: The examples in the *main* branch are for ABAP Cloud only. 
+   - ***Branch***: Choose the button with the 3 dots to the right of the input field. In the pop-up window, select the appropriate branch, e.g. *v757* if your ABAP release is 7.57, and choose the *Continue* (✔️) button. **Note**: The examples in the *main* branch are designed to be imported into the SAP BTP ABAP environment only. 
    - ***Folder Logic***: *Full*
 6. Choose *Create Online Repo*.
 7. The *Repository* screen displays the available ABAP artifacts to be imported into your ABAP system.
@@ -211,7 +211,7 @@ Use the standalone version of the abapGit report to import the demo examples of 
 ## ⚡ Known Issues
 - Only one user on the system can import this repository because all object names must be globally unique. 
 - Regarding possible code check warnings, e.g. for the many strings in the code, not using an `ORDER BY` clause, or messages regarding using `SELECT *`, the code deliberately avoids [pragmas](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenpragma_glosry.htm) and [pseudo comments](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenpseudo_comment_glosry.htm) in order to focus on the available ABAP syntax. See also the [Disclaimer](#%EF%B8%8F-disclaimer).
-- Regarding the examples to be imported into on-premise ABAP systems, note the following: In most cases, the cheat sheet documents and examples focus on ABAP for Cloud Development. Therefore, the lower the [ABAP release](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_release_glosry.htm) in your system, the fewer syntax options and examples are available. For example, the RAP examples in particular require at least ABAP version 7.56. The code examples in the classic ABAP branches do not necessarily reflect all (described) syntax variations and options that are available in classic ABAP and in the particular ABAP release. For more information, see the [ABAP Release News (Standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abennews.htm).
+- Regarding the examples to be imported into on-premise ABAP systems, note the following: In most cases, the cheat sheet documents and examples focus on ABAP for Cloud Development. Therefore, the lower the [ABAP release](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_release_glosry.htm) in your system, the fewer syntax options and examples are available. For example, the RAP examples in particular require at least ABAP version 7.56. The code examples in the classic ABAP branches do not necessarily reflect all (described) syntax variations and options that are available in classic ABAP and in the particular ABAP release. For more information about the availability of syntax, see the [ABAP Release News (Standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abennews.htm).
 - If you encounter import problems with the XSLT/ST objects, try to manually paste the code from the 3 `...source.xml` files ([zdemo_abap_st_carrhtml](./src/zdemo_abap_st_carrhtml.xslt.source.xml), [zdemo_abap_st_strhtml](./src/zdemo_abap_st_strhtml.xslt.source.xml), [zdemo_abap_xslt_fl](./src/zdemo_abap_xslt_fl.xslt.source.xml)) into the improperly imported objects and activate all non-active objects.
 
 <br>

@@ -21,7 +21,7 @@
       - [Calling Function Modules](#calling-function-modules)
       - [Function Module Example](#function-module-example)
       - [Special Function Modules in Standard ABAP](#special-function-modules-in-standard-abap)
-    - [Subroutines](#subroutines)
+    - [Subroutines in Standard ABAP](#subroutines-in-standard-abap)
     - [Excursion: RETURN](#excursion-return)
   - [Interrupting the Program Execution](#interrupting-the-program-execution)
   - [Handling Exceptions](#handling-exceptions)
@@ -371,8 +371,6 @@ DATA(type_description) = cl_abap_typedescr=>describe_by_data( stringtab ).
 CASE TYPE OF type_description.
   WHEN TYPE cl_abap_elemdescr.
     ...
-  WHEN TYPE cl_abap_enumdescr.
-    ...
   WHEN TYPE cl_abap_refdescr.
     ...
   WHEN TYPE cl_abap_structdescr.
@@ -700,7 +698,7 @@ FUNCTION z_demo_abap_test_func_m
 
 
 
-  "ABAP 'allows' zero division if the both operands are 0.
+  "ABAP 'allows' zero division if both operands are 0.
   IF num1 = 0 AND num2 = 0.
     RAISE EXCEPTION TYPE cx_sy_zerodivide.
   ENDIF.
@@ -833,15 +831,14 @@ Special function modules exist in [Standard ABAP](https://help.sap.com/doc/abapd
     - synchronous ([sRFC](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abensrfc_glosry.htm)): The calling program waits for the remote function to finish processing; called using `CALL FUNCTION ... DESTINATION` 
     - asynchronous ([aRFC](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenarfc_glosry.htm)): A remote function call that proceeds without waiting for the remotely called function to finish processing; called using `CALL FUNCTION ... STARTING NEW TASK`      
     - transactional 
-      - transactional calls ([tRFC](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abentrfc_2_glosry.htm)) related to the concept of the SAP LUW
-      - tRFC is considered obsolete
+      - transactional calls ([tRFC](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abentrfc_2_glosry.htm)) are related to the concept of the SAP LUW. tRFC is considered obsolete.
       - Successor technology: Background RFC ([bgRFC](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenbgrfc_glosry.htm)), executed with the statement `CALL FUNCTION ... IN BACKGROUND UNIT`. Find more information [here](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapcall_function_background_unit.htm).
       - The newer background Processing Framework ([bgPF](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenbgpf_glosry.htm)) encapsulates bgRFC to execute time-consuming methods asynchronously. Find more information [here](https://help.sap.com/docs/abap-cloud/abap-concepts/background-processing-framework).
  
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-### Subroutines
+### Subroutines in Standard ABAP
 
 - Obsolete procedures you may find in older ABAP programs. Before ABAP Objects was introduced, subroutines were mainly used for local modularization.
 - They are implemented between the statements `FORM` and `ENDFORM`.
