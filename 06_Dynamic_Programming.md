@@ -20,7 +20,8 @@
       - [Examples Using Data References](#examples-using-data-references)
   - [Dynamic ABAP Statements](#dynamic-abap-statements)
     - [Dynamic ASSIGN Statements](#dynamic-assign-statements)
-    - [Dynamically Specifying Data Types/Creating (Data) Objects](#dynamically-specifying-data-typescreating-data-objects)
+    - [Creating Anonymous Data Objects by Specifying the Type Dynamically](#creating-anonymous-data-objects-by-specifying-the-type-dynamically)
+    - [Creating Instances of Classes by Specifying the Type Dynamically](#creating-instances-of-classes-by-specifying-the-type-dynamically)
     - [Accessing Structure Components Dynamically](#accessing-structure-components-dynamically)
     - [Dynamic Specifications in Statements for Processing Internal Tables](#dynamic-specifications-in-statements-for-processing-internal-tables)
     - [Dynamic ABAP SQL Statements](#dynamic-abap-sql-statements)
@@ -1109,7 +1110,7 @@ ASSIGN ('ST') TO <fs>.
 "Note: The typing is performed with the generic type data.
 ASSIGN ('DOBJ') TO FIELD-SYMBOL(<fs_inline>).
 
-"The statements set the sy-subrc value. 
+"The statements set the sy-subrc value.
 ASSIGN ('DOES_NOT_EXIST') TO <fs>.
 IF sy-subrc <> 0.
   ...
@@ -1119,9 +1120,9 @@ ENDIF.
 ASSIGN dref->* TO <fs>.
 
 "Do not use named data objects in ABAP for Cloud Development because
-"you cannot know what data object you get (e.g. a class attribute or a 
-"local variable). If you want to assign a data object from your local 
-"scope, it is recommended that you specify the data objects to 
+"you cannot know what data object you get (e.g. a class attribute or a
+"local variable). If you want to assign a data object from your local
+"scope, it is recommended that you specify the data objects to
 "be assigned as components of a structure. Then you can ensure that
 "you assign the correct data object dynamically, using the dynamic
 "component assignments as shown below.
@@ -1148,7 +1149,7 @@ DATA columnname TYPE string VALUE `COL1`.
 ASSIGN st-(columnname) TO <fs>.
 
 "Fully dynamic specification
-"If the compiler can fully determine the data object in ASSIGN 
+"If the compiler can fully determine the data object in ASSIGN
 "statements in ABAP for Cloud Development, a warning is not issued.
 ASSIGN ('ST-COL1') TO <fs>.
 
@@ -1223,60 +1224,6 @@ ASSERT sy-subrc = 4 AND <eu> IS NOT ASSIGNED.
 "------- Assigments and casting a dynamically specified type ------
 "Pattern: ASSIGN ... TO <fs> CASTING TYPE (type_name).
 
-TYPES: c1  TYPE c LENGTH 1,
-       c3  TYPE c LENGTH 3,
-       c10 TYPE c LENGTH 10,
-       c20 TYPE c LENGTH 20,
-       str TYPE string.
-DATA abc TYPE c LENGTH 26 VALUE 'abcdefghijklmnopqrstuvwxyz'.
-DATA(type_names) = VALUE string_table( ( `C1` ) ( `C3` ) ( `C10` ) ( `C20` ) ( `NOPE` ) ( `STR` ) ).
-DATA assignment_results TYPE string_table.
-FIELD-SYMBOLS <fs> TYPE clike.
-
-LOOP AT type_names INTO DATA(type_name).
-  TRY.
-      ASSIGN abc TO <fs> CASTING TYPE (type_name).
-      assignment_results = VALUE #( BASE assignment_results ( |Type: '{ type_name }'; Assignment result: '{ <fs> }'| ) ).
-    CATCH cx_root INTO DATA(error).
-      assignment_results = VALUE #( BASE assignment_results
-      ( |Error! Exception raised: { cl_abap_typedescr=>describe_by_object_ref( error )->get_relative_name( ) }; | &&
-        |'{ error->get_text( ) }'| ) ).
-  ENDTRY.
-ENDLOOP.
-
-*Content of the assignment_results table: 
-*Type: 'C1'; Assignment result: 'a'                                                                           
-*Type: 'C3'; Assignment result: 'abc'                                                                         
-*Type: 'C10'; Assignment result: 'abcdefghij'                                                                 
-*Type: 'C20'; Assignment result: 'abcdefghijklmnopqrst'                                                       
-*Error! Exception raised: CX_SY_ASSIGN_CAST_UNKNOWN_TYPE; 'ASSIGN ... CASTING failed; NOPE is an unknown type'
-*Error! Exception raised: CX_SY_ASSIGN_CAST_ILLEGAL_CAST; 'ASSIGN ... CASTING failed: Incompatible type'   
-
-```
-
-> **💡 Note**<br>
-> - The following `ASSIGN` statements set the `sy-subrc` value: dynamic assignments, dynamic component assignment, dynamic invokes, assignments of table expressions. 
-> - The return code is not set for a static assignment and an assignment of the constructor operator `CAST`.
-
-<p align="right"><a href="#top">⬆️ back to top</a></p>
-
-### Dynamically Specifying Data Types/Creating (Data) Objects
-
-- For dynamic syntax elements in `CREATE OBJECT` statements, find more information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapcreate_object_explicit.htm) (note that parameters can be specified dynamically, too).
-- In addition to character-like data objects for the type name specified in the parentheses, you can also use [absolute type names](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabsolute_typename_glosry.htm) (see the information about RTTI below).
-
-``` abap
-"Anonymous data objects are created using a type determined at
-"runtime. See more information below. Note that the NEW operator
-"cannot be used here.
-DATA(some_type) = 'STRING'.
-DATA dataref TYPE REF TO data.
-CREATE DATA dataref TYPE (some_type).
-CREATE DATA dataref TYPE TABLE OF (some_type).
-CREATE DATA dataref TYPE REF TO (some_type).
-"Using an absolute type name
-CREATE DATA dataref TYPE ('\TYPE=STRING').
-
 "Assigning a data object to a field symbol casting a dynamically
 "specified type as also shown in the example above
 TYPES clen5 TYPE c LENGTH 5.
@@ -1287,14 +1234,36 @@ FIELD-SYMBOLS <casttype> TYPE data.
 ASSIGN dobj_c10 TO <casttype> CASTING TYPE ('CLEN5').  "12345
 ASSIGN dobj_c10 TO <casttype> CASTING LIKE some_struct-('CARRID'). "123
 
-"Dynamically creating an object as an instance of a class and
-"assigning the reference to the object to an object reference
-"variable. oref can be an object or interface reference variable.
-"The reference variable is created here with the generic 'object'.
-DATA oref_dyn TYPE REF TO object.
-CREATE OBJECT oref_dyn TYPE ('ZCL_DEMO_ABAP_OBJECTS').
-"Accessing an instance attribute
-oref_dyn->('ANOTHER_STRING') = `hi`.
+TYPES: c1  TYPE c LENGTH 1,
+        c3  TYPE c LENGTH 3,
+        c10 TYPE c LENGTH 10,
+        c20 TYPE c LENGTH 20,
+        str TYPE string.
+DATA abc TYPE c LENGTH 26 VALUE 'abcdefghijklmnopqrstuvwxyz'.
+DATA(type_names) = VALUE string_table( ( `C1` ) ( `C3` ) ( `C10` ) ( `C20` ) ( `NOPE` ) ( `STR` ) ).
+DATA assignment_results TYPE string_table.
+FIELD-SYMBOLS <clike> TYPE clike.
+
+LOOP AT type_names INTO DATA(type_name).
+  TRY.
+      ASSIGN abc TO <clike> CASTING TYPE (type_name).
+      assignment_results = VALUE #( BASE assignment_results ( |Type: '{ type_name }'; Assignment result: '{ <clike> }'| ) ).
+    CATCH cx_root INTO DATA(error).
+      assignment_results = VALUE #( BASE assignment_results
+      ( |Error! Exception raised: { cl_abap_typedescr=>describe_by_object_ref( error )->get_relative_name( ) }; | &&
+        |'{ error->get_text( ) }'| ) ).
+  ENDTRY.
+ENDLOOP.
+
+*Content of the assignment_results table:
+*Type: 'C1'; Assignment result: 'a'
+*Type: 'C3'; Assignment result: 'abc'
+*Type: 'C10'; Assignment result: 'abcdefghij'
+*Type: 'C20'; Assignment result: 'abcdefghijklmnopqrst'
+*Error! Exception raised: CX_SY_ASSIGN_CAST_UNKNOWN_TYPE; 'ASSIGN ... CASTING failed; NOPE is an unknown type'
+*Error! Exception raised: CX_SY_ASSIGN_CAST_ILLEGAL_CAST; 'ASSIGN ... CASTING failed: Incompatible type'
+
+"------- Assigments and dynamic casting using a type description object ------
 
 "Note: As covered further down and in the executable example,
 "CREATE DATA and ASSIGN statements have the HANDLE addition
@@ -1303,9 +1272,103 @@ oref_dyn->('ANOTHER_STRING') = `hi`.
 
 "Getting type description object
 DATA(tdo_elem) = cl_abap_elemdescr=>get_c( 4 ).
-CREATE DATA dataref TYPE HANDLE tdo_elem.
-dataref->* = dobj_c10. "1234
 ASSIGN dobj_c10 TO <casttype> CASTING TYPE HANDLE tdo_elem. "1234
+```
+
+> **💡 Note**<br>
+> - The following `ASSIGN` statements set the `sy-subrc` value: dynamic assignments, dynamic component assignment, dynamic invokes, assignments of table expressions. 
+> - The return code is not set for a static assignment and an assignment of the constructor operator `CAST`.
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+### Creating Anonymous Data Objects by Specifying the Type Dynamically
+
+- As shown above, you create anonymous data objects using `CREATE DATA` statements and assign the reference to the data object to a reference variable. 
+- You can dynamically specify the type name in parentheses. 
+- In addition to character-like data objects (such as literals and variables) for the type name specified in the parentheses, you can also use [absolute type names](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabsolute_typename_glosry.htm). 
+- You can also use type description objects and the [`TYPE HANDLE` addition](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapcreate_data_handle.htm) to create anonymous data objects dynamically. For this and the absolute names, find more information below in the section about RTTS.
+
+``` abap
+"------------ Specifying a type name dynamically ------------
+
+"Anonymous data objects are created using a type determined at
+"runtime. In this case, the name of the data type is specified dynamically.
+"Note that the NEW operator cannot be used here.
+DATA(some_type) = 'STRING'.
+DATA dataref TYPE REF TO data.
+"Elementary data object
+CREATE DATA dataref TYPE (some_type).
+"Internal tables
+"Standard table with elementary line type and standard key
+CREATE DATA dataref TYPE TABLE OF (some_type).
+
+TYPES: BEGIN OF demo_struc,
+          comp1 TYPE c LENGTH 10,
+          comp2 TYPE i,
+          comp3 TYPE i,
+        END OF demo_struc.
+
+"Structured line type, empty key specified
+CREATE DATA dataref TYPE TABLE OF ('DEMO_STRUC') WITH EMPTY KEY.
+
+"An internal table such as the following should be created by dynamically
+"specifying the type and keys dynamically. The keys are specified in lines
+"of an internal table with character-like line type.
+DATA itab TYPE SORTED TABLE OF demo_struc WITH UNIQUE KEY comp1 comp2.
+
+DATA(key_table) = VALUE string_table( ( `COMP1` ) ( `COMP2` ) ).
+CREATE DATA dataref TYPE SORTED TABLE OF ('DEMO_STRUC') WITH UNIQUE KEY (key_table).
+
+"Structures
+CREATE DATA dataref TYPE ('DEMO_STRUC').
+TYPES itab_type TYPE SORTED TABLE OF demo_struc WITH UNIQUE KEY comp1 comp2.
+CREATE DATA dataref TYPE LINE OF ('ITAB_TYPE').
+
+"Specifying data reference variables are also possible
+CREATE DATA dataref TYPE REF TO (some_type).
+CREATE DATA dataref TYPE REF TO ('DEMO_STRUC').
+
+
+"------------ Specifying an absolute type name ------------
+
+CREATE DATA dataref TYPE ('\TYPE=STRING').
+"Getting an absolute type name; see more information further down
+DATA(absolute_name) = cl_abap_typedescr=>describe_by_name( 'DEMO_STRUC' )->absolute_name.
+CREATE DATA dataref TYPE (absolute_name).
+
+"------------ HANDLE addition: Specifying a type description object ------------
+
+"Getting a type description object. Find more information about RTTI below.
+DATA(tdo_elem) = cl_abap_elemdescr=>get_c( 4 ). "type c length 4
+CREATE DATA dataref TYPE HANDLE tdo_elem.
+```
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+### Creating Instances of Classes by Specifying the Type Dynamically
+
+- [`CREATE OBJECT`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapcreate_object_explicit.htm) statements can be used to create instances of classes by specifying the type dynamically.
+- It assigns the reference to the object to an object reference variable.
+
+
+```abap
+DATA oref_dyn TYPE REF TO object.
+CREATE OBJECT oref_dyn TYPE ('ZCL_DEMO_ABAP_OBJECTS').
+
+DATA cl TYPE string VALUE `ZCL_DEMO_ABAP_OBJECTS`.
+CREATE OBJECT oref_dyn TYPE (cl).
+
+"Note: If the class has an instance constructor specified with importing
+"parameters, you can (or must in the case of non-optional parameters) pass
+"actual parameters.
+"This can be done either statically using the addition EXPORTING, and
+"specifying the parameters statically, or by dynamically specifying the
+"parameters in a parameter table. See the dynamic invoke section for
+"examples on the parameter table and the static parameter passing.
+"The addition EXCEPTIONS and an exception table are also available
+"to handle non-class-based exceptions.
+"CREATE OBJECT oref_dyn TYPE (...) EXPORTING p1 = a1 ...
+"CREATE OBJECT oref_dyn TYPE (...) PARAMETER-TABLE ...
 ```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>

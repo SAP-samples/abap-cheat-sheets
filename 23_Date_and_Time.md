@@ -40,9 +40,9 @@ This ABAP cheat sheet covers options of how to handle and process dates, times, 
 
 The main data types for date, time, and time stamps in ABAP are as follows:
 - [Built-in ABAP types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbuiltin_abap_type_glosry.htm): `d`, `t`, `utclong`
-- [Built-in DDIC types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbuiltin_ddic_type_glosry.htm) such as `dats`, `tims`, `utclong` and more. These types are mapped to ABAP types (e.g. `dats` is mapped to `d`, `utclong` is mapped to the identically named ABAP type `utclong`). Find more information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenddic_builtin_types.htm#@@ITOC@@ABENDDIC_BUILTIN_TYPES_6).
+- [Built-in DDIC types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbuiltin_ddic_type_glosry.htm) such as `datn`, `timn`, `utclong` and more. These types are mapped to ABAP types (e.g. `datn` is mapped to `d`, `utclong` is mapped to the identically named ABAP type `utclong`). Find more information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenddic_builtin_types.htm#@@ITOC@@ABENDDIC_BUILTIN_TYPES_6).
   - Note that the built-in DDIC types are used in artifacts such as [DDIC database tables](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenddic_db_table_glosry.htm) and [CDS entities](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_entity_glosry.htm), but not in ABAP programs (except for [typed literals](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentyped_literal_glosry.htm)).
-  - When it comes to time stamps, there are additional ([released](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenreleased_api_glosry.htm)) DDIC types available that are related to time stamps. These types can be used in ABAP programs, unlike the built-in DDIC types. The [DDIC data elements](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendata_element_glosry.htm) `timestamp` and `timestampl` represent time stamps in [packed numbers](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenpacked_number_glosry.htm).
+   
     
 
 **Built-in ABAP types**
@@ -54,18 +54,16 @@ The main data types for date, time, and time stamps in ABAP are as follows:
 
 
 > **💡 Note**<br>
-> Time stamps in packed numbers:
-> - `timestamp`
->   -  Short form; the time stamp is represented precisely to the second with no decimal places
->   -  Format: `yyyymmddhhmmss`
-> - `timestampl`
->   -  Long form; the time stamp is represented precisely to 100 ns with seven decimal places
->   -  Format: `yyyymmddhhmmss.sssssss` (in addition to the short form, the seven decimal places are fractions of a second)
->
-> Many code snippets in the cheat sheet include examples that utilize the [XCO library](https://help.sap.com/docs/btp/sap-business-technology-platform/xco-library?version=Cloud), which offers various options for handling dates, times, and time stamps. The cheat sheet includes a selection. Note that, in most cases, the return value of the XCO calls in the snippets is of type `string`. For more detailed information, refer to the class documentation and the [SAP Help Portal](https://help.sap.com/docs/btp/sap-business-technology-platform/xco-library?version=Cloud).
-> 
-> In [ABAP for Cloud Development](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_for_cloud_dev_glosry.htm), do not use the date and time-related system fields such as `sy-datum` and `sy-uzeit`, and others. User-related time and date values (such as `sy-timlo` and `sy-datlo`) can be retrieved using the XCO library as shown below.
-
+> - Regarding DDIC types: When saving dates and times in a database, it is recommended that you use the `datn` and `timn` types in your implementations. These types are optimized for their corresponding functions and expressions, offering an advantage over the older `dats` and `tims` types, which require conversion to actual date and time types. If you need UTC time stamps to be stored in the database, the `utclong` DDIC type is recommended.
+> - The [DDIC data elements](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendata_element_glosry.htm) `timestamp` and `timestampl` represent time stamps in [packed numbers](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenpacked_number_glosry.htm). They are [released](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenreleased_api_glosry.htm), and they are used in several ABAP statements and classes covered in the cheat sheet.
+>   - `timestamp`
+>     -  Short form; the time stamp is represented precisely to the second with no decimal places
+>     -  Format: `yyyymmddhhmmss`
+>   - `timestampl`
+>     -  Long form; the time stamp is represented precisely to 100 ns with seven decimal places
+>     -  Format: `yyyymmddhhmmss.sssssss` (in addition to the short form, the seven decimal places are fractions of a second)
+> -  Many code snippets in the cheat sheet include examples that utilize the [XCO library](https://help.sap.com/docs/btp/sap-business-technology-platform/xco-library?version=Cloud), which offers various options for handling dates, times, and time stamps. The cheat sheet includes a selection. Note that, in most cases, the return value of the XCO calls in the snippets is of type `string`. For more detailed information, refer to the class documentation and the [SAP Help Portal](https://help.sap.com/docs/btp/sap-business-technology-platform/xco-library?version=Cloud).
+> - In [ABAP for Cloud Development](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_for_cloud_dev_glosry.htm), do not use the date and time-related system fields such as `sy-datum`, `sy-uzeit`, `sy-timlo`, `sy-datlo`, and others. User-related time and date values can be retrieved using the XCO library as shown below.
 
 Example: 
 
