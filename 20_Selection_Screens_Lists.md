@@ -236,7 +236,7 @@ PARAMETERS: pv RADIOBUTTON GROUP grp USER-COMMAND rbcm,
 - Declares selection criteria for a data object
 - Unlike the `PARAMETERS` statement, which specifies a single value for a variable, the `SELECT-OPTIONS` statement allows you to specify complex criteria, such as an value range or a list of single values, to include or exclude values, that can be evaluated.
 - The selection criteria are assigned to a selection table (see [ranges table](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenranges_table_glosry.htm) and the type `TYPE RANGE OF`).
-  - Such a table type contains four columns - low, high, option, sign - for determining range conditions. Each line of such a table represents a condition. 
+  - Such a table type contains four columns - `LOW`, `HIGH`, `OPTION`, `SIGN` - for determining range conditions. Each line of such a table represents a condition. 
   - Typically, the content of the selection table can be evaluated in `SELECT` statements using the `IN` operator in the `WHERE` clause.
   - If the selection table is empty, all lines are respected.
 
@@ -1336,4 +1336,4 @@ After the import of the repository, proceed as follows:
 >   - are only intended to demonstrate a selection of keywords and visualize related syntax in action on a high level.
 >   - include comments in the program code. 
 > - The steps to import and run the code are outlined [here](README.md#-getting-started-with-the-examples).
-> - [Disclaimer](README.md#%EF%B8%8F-disclaimer)
+> - [Disclaimer](./README.md#%EF%B8%8F-disclaimer)

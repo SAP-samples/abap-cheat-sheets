@@ -521,4 +521,4 @@ For more information about evaluating ABAP unit test results, see [here](https:/
 >     - Implementing and injecting test doubles (constructor injection, back door injection, test seams)
 >   - contains comments in the code for more information.
 > - The steps to import and run the code are outlined [here](README.md#-getting-started-with-the-examples).
-> - [Disclaimer](README.md#%EF%B8%8F-disclaimer)
+> - [Disclaimer](./README.md#%EF%B8%8F-disclaimer)

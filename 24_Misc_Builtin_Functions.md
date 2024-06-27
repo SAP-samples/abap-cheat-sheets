@@ -31,6 +31,7 @@ Built-in functions are also available in ABAP SQL and ABAP CDS.
 > - For more detailed information, refer to the topics linked in the [More Information](#more-information) section.
 > - Avoid naming your methods the same as built-in functions within classes. Otherwise, the methods will "[hide](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbuilt_in_functions_hiding.htm)" the built-in functions.
 > - The examples in the ABAP cheat sheet are not comprehensive in terms of functions covered, syntax options and parameters used. Always refer to the ABAP Keyword Documentation for more details.
+> - [Disclaimer](./README.md#%EF%B8%8F-disclaimer)
 
 ## Logical Functions 
 

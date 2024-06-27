@@ -557,7 +557,7 @@ Further keywords for defining loops are as follows. They are not dealt with here
 
 ## Calling Procedures
 
-Calling [procedures](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenprocedure_glosry.htm) fits in the context of dealing with program flow logic since they can be called explicitly in an [ABAP program](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_program_glosry.htm).
+[Procedures](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenprocedure_glosry.htm) can be explicitly called within an [ABAP program](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_program_glosry.htm), thereby influencing the program flow logic.
 
 ### Methods of Classes
 
@@ -1159,4 +1159,4 @@ ASSERT flag = abap_true.
 >     - Terminating loop passes
 >     - Handling exceptions
 > - The steps to import and run the code are outlined [here](README.md#-getting-started-with-the-examples).
-> - [Disclaimer](README.md#%EF%B8%8F-disclaimer)
+> - [Disclaimer](./README.md#%EF%B8%8F-disclaimer)

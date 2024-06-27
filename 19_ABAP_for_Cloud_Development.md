@@ -31,7 +31,10 @@ It provides references to more detailed information on the topic.
   - Supported in all SAP products that are based on ABAP technology (in the products it can be fully or partly mandatory).
 - Classic ABAP
   - Progamming paradigm for legacy solutions
-  - Based on the ABAP technology without restrictions regarding ABAP language versions (i.e. you can use [Standard ABAP](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenstandard_abap_glosry.htm) - the unrestricted ABAP language version - and also ABAP for Cloud Development there), usage of tools (ADT and/or SAP GUI) or access to repository objects (also objects provided by SAP). 
+  - Based on the ABAP technology without restrictions regarding the ...
+    - ABAP language versions, i.e. you can use both [Standard ABAP](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenstandard_abap_glosry.htm) (the unrestricted ABAP language version) and ABAP for Cloud Development  
+    - usage of tools (ADT and/or SAP GUI) 
+    - access to repository objects (i.e. also objects provided by SAP can be accessed). 
   - Supported in [SAP S/4HANA](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensap_s4hana_glosry.htm)
 
 
@@ -56,7 +59,7 @@ It provides references to more detailed information on the topic.
 
     For deprecated and invalid syntax in ABAP for Cloud Development, refer to the following example code. You can create a demo class and insert the code below (adjust the class name if necessary). Several syntax errors and warnings will be displayed: 
     - ABAP SQL statements 
-      - The first two ABAP SQL statements select from demo database tables. The first one is a demo table provided by SAP, but it cannot be accessed directly in ABAP Cloud like in classic ABAP. Therefore, it cannot be used as a data source for selection. 
+      - The first two ABAP SQL statements select from demo database tables. The first one is a demo table provided by SAP, but it cannot be accessed directly in the case of ABAP for Cloud Development like in the case of Standard ABAP. Therefore, it cannot be used as a data source for selection. 
       - The second one is a database table from the ABAP cheat sheet GitHub repository. If you have imported the repository into the system, you can use it as a data source. 
       - The CDS view is released and can be accessed in the restricted ABAP language scope. 
       - Although the source code provides an invalid data source, the dynamic ABAP SQL statement does not produce a syntax error during compilation. However, it would result in a runtime error because you cannot select from that data source. You can check the validity of dynamic specifications using the `cl_abap_dyn_prg` class, which supports dynamic programming. 
@@ -130,7 +133,7 @@ It provides references to more detailed information on the topic.
     ENDCLASS.
     ```   
 
-2) If available to you, you have accessed an on-premise ABAP system using ADT. It is assumed that the latest ABAP release is available. 
+2) If available to you, you have accessed a system supporting classic ABAP using ADT. It is assumed that the latest ABAP release is available. 
 
     a)  Checking API status information 
     - Choose `CTRL + SHIFT + A` to open the search in ADT. Search the class `CL_ABAP_RANDOM_INT`. Once you have opened the class, check the *Properties* tab and find the API status information. 
@@ -141,7 +144,7 @@ It provides references to more detailed information on the topic.
      ![Standard ABAP](./files/standard.png)
     - If you have not imported the ABAP cheat sheet GitHub repository, remove the lines of code using artifacts from that repository, i.e. remove the statements using objects starting with `Z...`. You should not see any syntax errors. Activate the class.     
     - Run the class with *F9*. The code should have been processed up to the `BREAK-POINT` statement and the debugger should have started. You may want to check the content of the variables in the debugger. Choose *Terminate* to exit the debugger.
-    - So, unlike in the case of ABAP Cloud above, you should be able to activate and run the code (which does not represent a meaningful code example).    
+    - So, unlike in the case of ABAP for Cloud Development above, you should be able to activate and run the code (which does not represent a meaningful code example).    
      
     c) Verifying cloud-readiness of your code in classic ABAP
      - You have walked through b), created a class, inserted the code from above, and activated the class. The *ABAP Language Version* is maintained as *Standard ABAP* in the *Properties* tab. 
@@ -152,7 +155,7 @@ It provides references to more detailed information on the topic.
 
     d) Cloud-ready development in classic ABAP
      - You have walked through b), created a class, inserted the code from above, and activated the class. The *ABAP Language Version* is maintained as *Standard ABAP* in the *Properties* tab under *General*. 
-     - Suppose you want to do cloud-ready development and use ABAP for Cloud Development, i.e. the restricted ABAP language version, in classic ABAP (e.g. an on-premise ABAP system that allows the unrestricted ABAP language version). 
+     - Imagine you are aiming for cloud-ready development and want to utilize ABAP for Cloud Development, the restricted version of the ABAP language, within a system that supports classic ABAP. 
      - Open the *Properties* tab and choose *General* for this purpose. 
      - Choose the *Edit...* button to the right of the *ABAP Language Version* property.
      - Select *ABAP for Cloud Development* in the pop-up window and choose *Ok*.
@@ -189,4 +192,4 @@ It provides references to more detailed information on the topic.
 >   - does not focus - unlike other ABAP cheat sheet examples - on ABAP syntax as such (the other non-Standard-ABAP cheat sheet examples focus on ABAP syntax available in ABAP for Cloud Development), but rather emphasizes released APIs and libraries that provide predefined functionality and can be used in ABAP for Cloud Development. In particular, the Extension Components Library (XCO) is used.
 >   - covers an arbitrary selection for you to explore. For more detailed information and code snippets, see the SAP Help Portal documentation [here](https://help.sap.com/docs/btp/sap-business-technology-platform/sap-business-technology-platform?version=Cloud) and [here about XCO](https://help.sap.com/docs/btp/sap-business-technology-platform/xco-library?version=Cloud). In most cases, the example covers a selection of classes and methods for retrieving information about repository objects. It is more of a "playground" for exploring the APIs with a few snippets of code, and should be seen as an invitation to more in-depth exploration.  
 > - The steps to import and run the code are outlined [here](README.md#-getting-started-with-the-examples).
-> - [Disclaimer](README.md#%EF%B8%8F-disclaimer)
+> - [Disclaimer](./README.md#%EF%B8%8F-disclaimer)

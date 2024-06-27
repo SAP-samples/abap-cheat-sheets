@@ -1467,30 +1467,7 @@ For more information, see the [Dynamic Programming](06_Dynamic_Programming.md) c
 - Internal tables that have the predefined columns `SIGN`, `OPTION`, `LOW`, and `HIGH` 
 - Declared with the `TYPE RANGE OF` addition in `DATA` and `TYPES` statements 
 - Used to store range conditions that can be evaluated in expressions using the `IN` operator (each row in the table represents a separate comparison)
-
-```abap
-"Populating an integer table with values from 1 to 20
-TYPES int_tab_type TYPE TABLE OF i WITH EMPTY KEY.
-DATA(inttab) = VALUE int_tab_type( FOR x = 1 WHILE x <= 20 ( x ) ).
-
-"Declaring a ranges table
-DATA rangestab TYPE RANGE OF i.
-
-"Populating a ranges table using VALUE
-rangestab = VALUE #( sign   = 'I'
-                     option = 'BT' ( low = 1  high = 3 )
-                                   ( low = 6  high = 8 )
-                                   ( low = 12 high = 15 )
-                     option = 'GE' ( low = 18 ) ).
-
-"Using a SELECT statement and the IN addition to retrieve internal table
-"content based on the ranges table specifications
-SELECT * FROM @inttab AS tab
-    WHERE table_line IN @rangestab
-    INTO TABLE @DATA(result).
-"result: 1, 2, 3, 6, 7, 8, 12, 13, 14, 15, 18, 19, 20
-
-```
+- Find more information and a code snippet in the [Internal Table](./01_Internal_Tables.md#ranges-tables) cheat sheet.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
@@ -1568,7 +1545,7 @@ SELECT SINGLE
 >     - Enumerated types and objects
 >   - does not have as many things to be output compared to other ABAP cheat sheet executable examples. The focus is on syntax options and declarations. In the class, you can set breakpoints and use the debugger to check out data objects. You can also use the F2 information for the many types and data objects. Simply select a type or object in the code and press F2 in ADT to check out the information.
 > - The steps to import and run the code are outlined [here](README.md#-getting-started-with-the-examples).
-> - [Disclaimer](README.md#%EF%B8%8F-disclaimer)
+> - [Disclaimer](./README.md#%EF%B8%8F-disclaimer)
 
 
 

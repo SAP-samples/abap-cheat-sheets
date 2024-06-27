@@ -2314,4 +2314,4 @@ in the ABAP Keyword Documentation.
 >     - Concepts such as factory methods, singleton and abstract classes
 >     - Events
 > - The steps to import and run the code are outlined [here](README.md#-getting-started-with-the-examples).
-> - [Disclaimer](README.md#%EF%B8%8F-disclaimer)
+> - [Disclaimer](./README.md#%EF%B8%8F-disclaimer)

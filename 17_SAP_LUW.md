@@ -30,7 +30,7 @@ Consider the following example of transactional consistency:
 
 > **💡 Note**<br>
 > - This cheat sheet focuses on [classic ABAP](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenclassic_abap_glosry.htm). Hence, the links in this cheat sheet open topics in the ABAP Keyword Documentation for [Standard ABAP](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenstandard_abap_glosry.htm).
-> - The SAP LUW concept is certainly relevant to ABAP Cloud, too. The [ABAP RESTful Application Programming Model (RAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenarap_glosry.htm) is the transactional programming model for [ABAP Cloud](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_cloud_glosry.htm). It comes with a well-defined transactional model and follows the rules of the SAP LUW. Find out more in this [blog](https://blogs.sap.com/2022/12/05/the-sap-luw-in-abap-cloud/).
+> - The SAP LUW concept is also relevant to ABAP Cloud. The [ABAP RESTful Application Programming Model (RAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenarap_glosry.htm) is the transactional programming model for [ABAP Cloud](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_cloud_glosry.htm). It comes with a well-defined transactional model and follows the rules of the SAP LUW. Find out more in this [blog](https://blogs.sap.com/2022/12/05/the-sap-luw-in-abap-cloud/).
 
 ## Terms
 
@@ -293,7 +293,7 @@ There are RAP-specific [ABAP EML](https://help.sap.com/doc/abapdocu_latest_index
 
 ## Controlled SAP LUW
 
-- The *controlled SAP LUW* is an enhancement to the SAP LUW concept. 
+- The *controlled SAP LUW* is an enhancement to the SAP LUW concept, available in both [ABAP Cloud](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_cloud_glosry.htm) and [classic ABAP](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenclassic_abap_glosry.htm). 
 - It introduces a check mechanism to detect violations of [transactional contracts](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentransactional_contract_glosry.htm) to guarantee transactional consistency. 
 - Such contracts specify which ABAP statements and operations are allowed and which are not allowed in a [transactional phase](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentr_phase_glosry.htm). 
 - In this way, applications can be made more robust and the SAP LUW can be made more tangible.
@@ -383,7 +383,7 @@ After the import of the repository, proceed as follows:
 >   - is explained in more detail in the expandable section below. Click to view the details.
 > - Dynpros cannot be created in ABAP Cloud. As mentioned earlier, RAP is the transactional programming model for ABAP Cloud. It comes with a well-defined transactional model and follows the rules of the SAP LUW. See the links in the [More Information](#more-information) section.
 > - The steps to import and run the code are outlined [here](README.md#-getting-started-with-the-examples).
-> - [Disclaimer](README.md#%EF%B8%8F-disclaimer)
+> - [Disclaimer](./README.md#%EF%B8%8F-disclaimer)
 
 
 <br>

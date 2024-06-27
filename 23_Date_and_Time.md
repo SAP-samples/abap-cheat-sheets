@@ -10,23 +10,23 @@
     - [Validity of Date Fields](#validity-of-date-fields)
     - [Character-Like Access to Date Fields](#character-like-access-to-date-fields)
     - [Numeric Access/Calculations](#numeric-accesscalculations)
-    - [`CL_ABAP_DATFM`: Date Conversions](#cl_abap_datfm-date-conversions)
+    - [CL\_ABAP\_DATFM: Date Conversions](#cl_abap_datfm-date-conversions)
   - [Time](#time)
   - [Time Stamps](#time-stamps)
-    - [Time Stamps of Type `utclong`](#time-stamps-of-type-utclong)
+    - [Time Stamps of Type utclong](#time-stamps-of-type-utclong)
       - [Retrieving the Current Time Stamp](#retrieving-the-current-time-stamp)
       - [Creating/Modifying a Time Stamp](#creatingmodifying-a-time-stamp)
-      - [Time Stamp Calculations with the Built-In Function `utclong_add`](#time-stamp-calculations-with-the-built-in-function-utclong_add)
+      - [Time Stamp Calculations with the Built-In Function utclong\_add](#time-stamp-calculations-with-the-built-in-function-utclong_add)
       - [Time Stamp Calculations with XCO](#time-stamp-calculations-with-xco)
-      - [Calculating Time Stamp Differences Using the Built-In Function `utclong_diff`](#calculating-time-stamp-differences-using-the-built-in-function-utclong_diff)
-      - [`CONVERT UTCLONG`: Time Stamp (`utclong`) -\> Local Date/Time](#convert-utclong-time-stamp-utclong---local-datetime)
-      - [`CONVERT ... INTO UTCLONG`: Local Date/Time -\> Time Stamp (`utclong`)](#convert--into-utclong-local-datetime---time-stamp-utclong)
-      - [`CL_ABAP_UTCLONG`: Utilities for Time Stamps (`utclong`)](#cl_abap_utclong-utilities-for-time-stamps-utclong)
-    - [Time Stamps in Packed Numbers (types `timestamp`, `timestampl`)](#time-stamps-in-packed-numbers-types-timestamp-timestampl)
-      - [`GET TIME STAMP`: Retrieving the Current Time Stamp](#get-time-stamp-retrieving-the-current-time-stamp)
-      - [`CONVERT TIME STAMP`: Time Stamp in Packed Numbers -\> Local Date/Time](#convert-time-stamp-time-stamp-in-packed-numbers---local-datetime)
-      - [`CONVERT ... INTO TIME STAMP`: Local Date/Time -\> Time Stamp in Packed Numbers](#convert--into-time-stamp-local-datetime---time-stamp-in-packed-numbers)
-      - [`CL_ABAP_TSTMP`: Calculating and Converting Time Stamps in Packed Numbers](#cl_abap_tstmp-calculating-and-converting-time-stamps-in-packed-numbers)
+      - [Calculating Time Stamp Differences Using the Built-In Function utclong\_diff](#calculating-time-stamp-differences-using-the-built-in-function-utclong_diff)
+      - [CONVERT UTCLONG: Time Stamp (utclong) -\> Local Date/Time](#convert-utclong-time-stamp-utclong---local-datetime)
+      - [CONVERT ... INTO UTCLONG: Local Date/Time -\> Time Stamp (utclong)](#convert--into-utclong-local-datetime---time-stamp-utclong)
+      - [CL\_ABAP\_UTCLONG: Utilities for Time Stamps (utclong)](#cl_abap_utclong-utilities-for-time-stamps-utclong)
+    - [Time Stamps in Packed Numbers (Types timestamp and timestampl)](#time-stamps-in-packed-numbers-types-timestamp-and-timestampl)
+      - [GET TIME STAMP: Retrieving the Current Time Stamp](#get-time-stamp-retrieving-the-current-time-stamp)
+      - [CONVERT TIME STAMP: Time Stamp in Packed Numbers -\> Local Date/Time](#convert-time-stamp-time-stamp-in-packed-numbers---local-datetime)
+      - [CONVERT ... INTO TIME STAMP: Local Date/Time -\> Time Stamp in Packed Numbers](#convert--into-time-stamp-local-datetime---time-stamp-in-packed-numbers)
+      - [CL\_ABAP\_TSTMP: Calculating and Converting Time Stamps in Packed Numbers](#cl_abap_tstmp-calculating-and-converting-time-stamps-in-packed-numbers)
     - [Excursion: Unix Time Stamps](#excursion-unix-time-stamps)
   - [Date, Time, and Time Stamps in String Templates](#date-time-and-time-stamps-in-string-templates)
   - [Excursion: Date and Time Functions in ABAP SQL and ABAP CDS](#excursion-date-and-time-functions-in-abap-sql-and-abap-cds)
@@ -63,6 +63,8 @@ The main data types for date, time, and time stamps in ABAP are as follows:
 >   -  Format: `yyyymmddhhmmss.sssssss` (in addition to the short form, the seven decimal places are fractions of a second)
 >
 > Many code snippets in the cheat sheet include examples that utilize the [XCO library](https://help.sap.com/docs/btp/sap-business-technology-platform/xco-library?version=Cloud), which offers various options for handling dates, times, and time stamps. The cheat sheet includes a selection. Note that, in most cases, the return value of the XCO calls in the snippets is of type `string`. For more detailed information, refer to the class documentation and the [SAP Help Portal](https://help.sap.com/docs/btp/sap-business-technology-platform/xco-library?version=Cloud).
+> 
+> In [ABAP for Cloud Development](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_for_cloud_dev_glosry.htm), do not use the date and time-related system fields such as `sy-datum` and `sy-uzeit`, and others. User-related time and date values (such as `sy-timlo` and `sy-datlo`) can be retrieved using the XCO library as shown below.
 
 
 Example: 
@@ -143,6 +145,7 @@ DATA(date_1) = xco_cp=>sy->date( )->as( xco_cp_time=>format->iso_8601_basic )->v
 "e.g. 2024-01-01
 DATA(date_2) = xco_cp=>sy->date( )->as( xco_cp_time=>format->iso_8601_extended )->value.
 "Specifying the default time zone explicitly
+"The following method call retrieves the current user date.
 DATA(date_3) = xco_cp=>sy->date( xco_cp_time=>time_zone->user 
                                )->as( xco_cp_time=>format->iso_8601_extended 
                                )->value.
@@ -317,7 +320,7 @@ ENDTRY.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-### `CL_ABAP_DATFM`: Date Conversions
+### CL_ABAP_DATFM: Date Conversions
 
 ```abap
 "Using the CL_ABAP_DATFM class, you can perform conversions with external
@@ -420,6 +423,7 @@ DATA(utc_time) = cl_abap_context_info=>get_system_time( ).
 
 "Using XCO
 "Note the optional time zone specification.
+"The following method call retrieves the current user time.
 "Result: e.g. 14:39:10
 DATA(time_w_xco) = xco_cp=>sy->time( xco_cp_time=>time_zone->user
                                     )->as( xco_cp_time=>format->iso_8601_extended
@@ -534,7 +538,7 @@ ENDTRY.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-### Time Stamps of Type `utclong`
+### Time Stamps of Type utclong
 #### Retrieving the Current Time Stamp
 
 More information: [`utclong_current`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenutclong_current.htm)
@@ -614,7 +618,7 @@ DATA(ts12) = ts11->overwrite( iv_year = '2025'
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-#### Time Stamp Calculations with the Built-In Function `utclong_add`
+#### Time Stamp Calculations with the Built-In Function utclong_add
 
 More information: [`utclong_add`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenutclong_add.htm)
 
@@ -728,7 +732,7 @@ DATA(ts_interval_high) = ts_interval->upper_bound->as( xco_cp_time=>format->iso_
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-#### Calculating Time Stamp Differences Using the Built-In Function `utclong_diff`
+#### Calculating Time Stamp Differences Using the Built-In Function utclong_diff
 
 More information: [`utclong_diff`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenutclong_diff.htm)
 
@@ -746,7 +750,7 @@ DATA(ts_diff2) = utclong_diff( high = ts16
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-#### `CONVERT UTCLONG`: Time Stamp (`utclong`) -> Local Date/Time
+#### CONVERT UTCLONG: Time Stamp (utclong) -> Local Date/Time
 
 More information: [`CONVERT UTCLONG`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapconvert_utclong.htm)
 
@@ -788,7 +792,7 @@ ENDTRY.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-#### `CONVERT ... INTO UTCLONG`: Local Date/Time -> Time Stamp (`utclong`)
+#### CONVERT ... INTO UTCLONG: Local Date/Time -> Time Stamp (utclong)
 
 More information: [`CONVERT ... INTO UTCLONG`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapconvert_utclong.htm)
 
@@ -889,7 +893,7 @@ ENDDO.
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
 
-#### `CL_ABAP_UTCLONG`: Utilities for Time Stamps (`utclong`)
+#### CL_ABAP_UTCLONG: Utilities for Time Stamps (utclong)
 
 ```abap
 "Check the class documentation. More methods are available.
@@ -918,11 +922,11 @@ ENDTRY.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-### Time Stamps in Packed Numbers (types `timestamp`, `timestampl`)
+### Time Stamps in Packed Numbers (Types timestamp and timestampl)
 
-This section deals with time stamps in packed numbers (types `timestamp`, `timestampl`). Note that only a few ABAP statements can deal with these types. Most other statements just interpret the types as numbers. 
+This section deals with time stamps in packed numbers (types `timestamp` and `timestampl`). Note that only a few ABAP statements can deal with these types. Most other statements just interpret the types as numbers. 
 
-#### `GET TIME STAMP`: Retrieving the Current Time Stamp
+#### GET TIME STAMP: Retrieving the Current Time Stamp
 
 More information: [`GET TIME STAMP`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapget_time-stamp.htm)
 
@@ -945,7 +949,7 @@ GET TIME STAMP FIELD DATA(ts_inl).
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-#### `CONVERT TIME STAMP`: Time Stamp in Packed Numbers -> Local Date/Time
+#### CONVERT TIME STAMP: Time Stamp in Packed Numbers -> Local Date/Time
 
 More information: [`CONVERT TIME STAMP`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapconvert_time-stamp.htm)
 
@@ -1004,7 +1008,7 @@ ASSERT sy-subrc = 12.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-#### `CONVERT ... INTO TIME STAMP`: Local Date/Time -> Time Stamp in Packed Numbers
+#### CONVERT ... INTO TIME STAMP: Local Date/Time -> Time Stamp in Packed Numbers
 
 More information: [`CONVERT ... INTO TIME STAMP`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapconvert_date_time-stamp.htm)
 
@@ -1033,7 +1037,7 @@ CONVERT DATE CONV d( '20240101' )
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
 
-#### `CL_ABAP_TSTMP`: Calculating and Converting Time Stamps in Packed Numbers
+#### CL_ABAP_TSTMP: Calculating and Converting Time Stamps in Packed Numbers
 
 More information: Class documentation and [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencl_abap_tstmp.htm)
 
@@ -1260,4 +1264,4 @@ INTO @DATA(wa).
 > **💡 Note**<br>
 > - The executable example covers the handling and processing of date, time, and time stamps. The snippets of this cheat sheet and more are included. 
 > - The steps to import and run the code are outlined [here](README.md#-getting-started-with-the-examples).
-> - [Disclaimer](README.md#%EF%B8%8F-disclaimer)
+> - [Disclaimer](./README.md#%EF%B8%8F-disclaimer)

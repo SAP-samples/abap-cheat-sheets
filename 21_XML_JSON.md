@@ -747,4 +747,4 @@ DATA(is_equal) = COND #( WHEN len_xstr = len_xstr_decomp
 >     - Excursions: Converting string <-> xstring, compressing and decompressing binary data
 >   - uses, apart from the predefined identity transformation (ID), demo XSLT and ST programs. They are not intended to be role models for proper XSLT/ST design. 
 > - The steps to import and run the code are outlined [here](README.md#-getting-started-with-the-examples).
-> - [Disclaimer](README.md#%EF%B8%8F-disclaimer)
+> - [Disclaimer](./README.md#%EF%B8%8F-disclaimer)

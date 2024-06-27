@@ -740,7 +740,7 @@ After the import of the repository, proceed as follows:
 >   - is only intended to demonstrate a selection of keywords and visualize dynpro-related syntax in action on a high level. 
 >   - is explained in more detail below in the expandable section below. Click to view the details.
 > - The steps to import and run the code are outlined [here](README.md#-getting-started-with-the-examples).
-> - [Disclaimer](README.md#%EF%B8%8F-disclaimer)
+> - [Disclaimer](./README.md#%EF%B8%8F-disclaimer)
 
 <br>
 <details>

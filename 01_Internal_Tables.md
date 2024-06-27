@@ -1346,7 +1346,7 @@ The expressions are covered in the cheat sheet [Constructor Expressions](05_Cons
 
 ### Interrupting and Exiting Loops
 
-ABAP keywords such as `CONTINUE`, `CHECK`, and `EXIT`, are available to exit loops. Find more information in the [Program Flow Logic](13_Program_Flow_Logic.md#interrupting-and-exiting-loops) cheat sheet.
+ABAP keywords such as `CONTINUE`, `CHECK`, and `EXIT`, are available to exit and interrupt loops. Find more information in the [Program Flow Logic](13_Program_Flow_Logic.md#interrupting-and-exiting-loops) cheat sheet.
 
 In the following example, the loop is exited using the `EXIT` statement when a certain condition is met.
 ```abap
@@ -1982,8 +1982,7 @@ CLASS zcl_some_class IMPLEMENTATION.
     "group index value uses the original position in the group index. The group key
     "binding information is added to a string table for visualizing its content.
     CLEAR str_table.
-    LOOP AT it INTO DATA(wae) GROUP BY ( key = wae-comp1 gi = GROUP INDEX gs = GROUP SIZE ) ASCENDING INTO DATA(keye).
-      ASSERT wae IS INITIAL.
+    LOOP AT it INTO DATA(wae) GROUP BY ( key = wae-comp1 gi = GROUP INDEX gs = GROUP SIZE ) ASCENDING INTO DATA(keye).      
       APPEND |Key component: '{ keye-key }', group index: '{ keye-gi }', group size: '{ keye-gs }'| TO str_table.
     ENDLOOP.
     out->write( data = str_table name = `str_table` ).
@@ -1992,8 +1991,7 @@ CLASS zcl_some_class IMPLEMENTATION.
     "Unlike the previous example, the example uses a nested loop across the groups (the group key binding is
     "specified after LOOP AT GROUP). There, the component values of the members can be accessed.
     DATA itf LIKE it.
-    LOOP AT it INTO DATA(waf) GROUP BY ( key = waf-comp1 gi = GROUP INDEX gs = GROUP SIZE ) ASCENDING INTO DATA(keyf).
-      ASSERT waf IS INITIAL.
+    LOOP AT it INTO DATA(waf) GROUP BY ( key = waf-comp1 gi = GROUP INDEX gs = GROUP SIZE ) ASCENDING INTO DATA(keyf).      
       LOOP AT GROUP keyf INTO DATA(memberf).
         APPEND VALUE #( comp1 = memberf-comp1 comp2 = memberf-comp2 comp3 = memberf-comp3
         comp4 = |Key component: '{ keyf-key }', group index: '{ keyf-gi }', group size: '{ keyf-gs }'|
@@ -2003,7 +2001,7 @@ CLASS zcl_some_class IMPLEMENTATION.
     out->write( data = itf name = `itf` ).
 
     "The objective of this example is to extract the line with the highest value in a particular
-    "column within a group (following the sorting) from the original table to another.
+    "column within a group from the original table to another.
     "The example uses representative binding, i.e. the representative of the group is specified
     "in the work area, not in a group key binding.
     DATA itg LIKE it.
@@ -2154,10 +2152,10 @@ ENDCLASS.
 - Read accesses are executed using `READ TABLE` statements, which access the tables by: 
   - Index (both primary and secondary table index) 
   - Key (primary table key, secondary table key, free key)
-- To try this, create a demo class named `zcl_some_class` and insert the provided code. After activation, select *F9* in ADT to execute the class. It may take some time to finish and display the output. The example is set up to display the results of the read performance test in the console.
+- To try this, create a demo class named `zcl_some_class` and insert the provided code. After activation, choose *F9* in ADT to execute the class. It may take some time to finish and display the output. The example is set up to display the results of the read performance test in the console.
 
 > **💡 Note**<br>
-> - This example is used for [exploration and experimentation ⚠️](README.md#%EF%B8%8F-disclaimer). It is solely for demonstration purposes, and it is **not** a *tool* for proper and accurate runtime and performance testing. Due to its simplified nature, the results may not be entirely accurate. However, multiple test runs should reflect the notes below (and above). 
+> - This example is used for [exploration and experimentation ⚠️](./README.md#%EF%B8%8F-disclaimer). It is solely for demonstration purposes, and it is **not** a *tool* for proper and accurate runtime and performance testing. Due to its simplified nature, the results may not be entirely accurate. However, multiple test runs should reflect the notes below. 
 > - The example concentrates on a few demo internal tables, constructed using various declaration options. 
 > - The purpose of this example is to underscore the significance of choosing the right table categories for your internal tables, tailored to your specific use case and the frequency of table access.
 
@@ -2172,8 +2170,8 @@ Notes on ...
     - always non-unique in standard tables. 
 - Key access is optimized for hashed and sorted tables, but not for standard tables. 
   - You cannot modify key fields in hashed and sorted tables. 
-  - In standard tables, key access is relatively slow because the search is linear. 
-- Generally, the larger the table, the slower the key access. Hashed tables excel here, providing constant access time even for very large tables. 
+  - In standard tables, key access is not optimized regarding the primary table index (for the secondary table index, it is optimized) because the search is linear. 
+- Generally, the larger the table, the slower the key access. The benefit of hash tables is that they offer constant access time, even for very large tables.
 - Sorted and standard tables have a primary table index, hence their designation as index tables. 
 - The primary table index assigns a unique line number to each table line. 
   - The index updates whenever a line is added or removed. 
@@ -2183,18 +2181,18 @@ Notes on ...
 - Secondary table keys, which can be sorted or hashed, are available for all table categories. 
 - They enhance table access efficiency and performance. 
 - Declaring a secondary table key generates a corresponding secondary table index. However, the index for a non-unique key does not update immediately upon adding or deleting a line. The update happens when the internal table is accessed using the secondary table key. 
-- In ABAP statements, you must specify the secondary table key explicitly. Otherwise, the system implicitly uses the primary table key. 
+- In ABAP statements, you must specify the secondary table key explicitly. Otherwise, the primary table key is used implicitly. 
 - Data access using the secondary table key is always optimized, even for standard tables. Thus, even older standard tables can gain from optimized access by adding secondary table keys later, without impacting existing table-related statements. 
-- However, weigh the administrative costs of secondary table keys. Use them only in scenarios where they offer substantial benefits, like large internal tables that are filled once and rarely altered. Frequent modifications can lead to regular index updates, potentially causing performance issues.
+- However, weigh the administrative costs of secondary table keys. Use them only in scenarios where they offer substantial benefits, like large internal tables that are filled once and rarely altered. Frequent modifications can lead to regular index updates, potentially impacting performance.
 
 ... the use of table categories:
 - Standard tables: 
   - Suitable for ... 
     - small, sequentially accessed tables that are often accessed by index 
-    - tables where key sorting is not critical, though you can sort using `SORT` statements, especially after table population
+    - tables where sorting is not critical. However, you can explicitly sort using `SORT` statements, especially after table population.
     - tables that are populated frequently, as there is no need to check for unique entries regarding the primary table key. 
   - Access speed: 
-    - Fast: By index, optimized key access with secondary table keys, and free keys using `READ TABLE ... BINARY SEARCH` statements 
+    - Fast: By index, optimized key access with secondary table keys, and free keys using `READ TABLE ... BINARY SEARCH` statements (Note: It is recommended to use secondary table keys for an optimized access.)
     - Slow: Primary table and free key
 
 - Sorted tables: 
@@ -2212,7 +2210,7 @@ Notes on ...
     - fast and optimized for both primary and secondary table keys 
     - consistent for large internal tables due to a special hash algorithm
 
-Expand the following collapsible section to view the code of the example that you can copy & paste into a demo class and run choosing *F9* in ADT. Note that, when running the class, it may take a while to complete and display output in the console.
+Expand the following collapsible section to view the code of the example that you can copy and paste into a demo class and run choosing *F9* in ADT. Note that, when running the class, it may take a while to complete and display output in the console.
 
 <details>
   <summary>Expand to view the code</summary>
@@ -2231,7 +2229,7 @@ CLASS zcl_some_class DEFINITION
     "Internal table to process demo tables and storing information
     TYPES: BEGIN OF info_struc,
              id         TYPE i,
-             dobj_name  TYPE string,
+             name       TYPE string,
              runtime    TYPE decfloat34,
              operation  TYPE string,
              comment    TYPE string,
@@ -2345,14 +2343,14 @@ CLASS zcl_some_class IMPLEMENTATION.
 
     "Populating the information table (including references to the tables)
     info_tab = VALUE #(
-    ( dobj_name = `it_std_empty_key` itab_ref = REF #( it_std_empty_key ) lines = lines( it_std_empty_key ) comment = `Standard, empty primary t.key` )
-    ( dobj_name = `it_std_w_nu_pr_key` itab_ref = REF #( it_std_w_nu_pr_key ) lines = lines( it_std_w_nu_pr_key ) comment = `Standard, expl. primary t.key` )
-    ( dobj_name = `it_std_w_std_pr_key_w_sec_key` itab_ref = REF #( it_std_w_std_pr_key_w_sec_key ) lines = lines( it_std_w_std_pr_key_w_sec_key ) comment = `Standard, standard primary, w. secondary t.key` )
-    ( dobj_name = `it_std_w_emp_pr_key_w_sec_key` itab_ref = REF #( it_std_w_emp_pr_key_w_sec_key ) lines = lines( it_std_w_emp_pr_key_w_sec_key ) comment = `Standard, empty primary, w. secondary t.key` )
-    ( dobj_name = `it_sorted` itab_ref = REF #( it_sorted ) lines = lines( it_sorted ) comment = `Sorted, primary t.key only` )
-    ( dobj_name = `it_sorted_w_sec_key` itab_ref = REF #( it_sorted_w_sec_key ) lines = lines( it_sorted_w_sec_key ) comment = `Sorted, w. secondary t.key` )
-    ( dobj_name = `it_hashed` itab_ref = REF #( it_hashed ) lines = lines( it_hashed ) comment = `Hashed,  primary t.key only` )
-    ( dobj_name = `it_hashed_w_sec_key` itab_ref = REF #( it_hashed_w_sec_key ) lines = lines( it_hashed_w_sec_key ) comment = `Hashed, w. secondary t.key` )
+    ( name = `it_std_empty_key` itab_ref = REF #( it_std_empty_key ) lines = lines( it_std_empty_key ) comment = `Standard, empty primary t.key` )
+    ( name = `it_std_w_nu_pr_key` itab_ref = REF #( it_std_w_nu_pr_key ) lines = lines( it_std_w_nu_pr_key ) comment = `Standard, expl. primary t.key` )
+    ( name = `it_std_w_std_pr_key_w_sec_key` itab_ref = REF #( it_std_w_std_pr_key_w_sec_key ) lines = lines( it_std_w_std_pr_key_w_sec_key ) comment = `Standard, standard primary, w. secondary t.key` )
+    ( name = `it_std_w_emp_pr_key_w_sec_key` itab_ref = REF #( it_std_w_emp_pr_key_w_sec_key ) lines = lines( it_std_w_emp_pr_key_w_sec_key ) comment = `Standard, empty primary, w. secondary t.key` )
+    ( name = `it_sorted` itab_ref = REF #( it_sorted ) lines = lines( it_sorted ) comment = `Sorted, primary t.key only` )
+    ( name = `it_sorted_w_sec_key` itab_ref = REF #( it_sorted_w_sec_key ) lines = lines( it_sorted_w_sec_key ) comment = `Sorted, w. secondary t.key` )
+    ( name = `it_hashed` itab_ref = REF #( it_hashed ) lines = lines( it_hashed ) comment = `Hashed,  primary t.key only` )
+    ( name = `it_hashed_w_sec_key` itab_ref = REF #( it_hashed_w_sec_key ) lines = lines( it_hashed_w_sec_key ) comment = `Hashed, w. secondary t.key` )
     ).
 
   ENDMETHOD.
@@ -2445,18 +2443,16 @@ CLASS zcl_some_class IMPLEMENTATION.
             ASSIGN <itab_ha> TO <any_tab>.
           ENDIF.
 
-          IF <any_tab> IS ASSIGNED.
-            ts1 = utclong_current( ).
-            DO number_of_reads TIMES.
-              READ TABLE <any_tab> INDEX sy-index USING KEY (sec_key_name) TRANSPORTING NO FIELDS.
-            ENDDO.
-            ts2 = utclong_current( ).
-            cl_abap_utclong=>diff( EXPORTING high    = ts2
-                                             low     = ts1
-                                   IMPORTING seconds = seconds ).
-            dref->runtime = seconds.
-            APPEND dref->* TO result.
-          ENDIF.
+          ts1 = utclong_current( ).
+          DO number_of_reads TIMES.
+            READ TABLE <any_tab> INDEX sy-index USING KEY (sec_key_name) TRANSPORTING NO FIELDS.
+          ENDDO.
+          ts2 = utclong_current( ).
+          cl_abap_utclong=>diff( EXPORTING high    = ts2
+                                           low     = ts1
+                                 IMPORTING seconds = seconds ).
+          dref->runtime = seconds.
+          APPEND dref->* TO result.
         ENDIF.
 
         "-------------------- Read access by primary table key --------------------
@@ -2595,9 +2591,8 @@ CLASS zcl_some_class IMPLEMENTATION.
 
     "Retrieving the fastest run from the result table and adding this run to
     "the internal table that is returned
-    SORT result BY id operation runtime dobj_name ASCENDING.
-    LOOP AT result INTO DATA(wa) GROUP BY ( key1 = wa-id key2 = wa-operation ).
-      LOOP AT GROUP wa INTO DATA(member).
+    LOOP AT result INTO DATA(wa) GROUP BY ( key1 = wa-id key2 = wa-operation ) ASCENDING.
+      LOOP AT GROUP wa INTO DATA(member) GROUP BY member-runtime ASCENDING.
         "Clearing internal table content for output purposes
         CLEAR member-itab_ref.
         APPEND member TO read_results.
@@ -2728,6 +2723,10 @@ REPLACE ALL OCCURRENCES OF `Z`
 ### Ranges Tables
 
 - Internal tables that have the predefined columns `SIGN`, `OPTION`, `LOW`, and `HIGH` 
+  - `SIGN`: type c with length 1; indicates whether each line is included ('I') or excluded ('E') from the result set.
+  - `OPTION`: type c with length 2; specifies the selection option for the condition. It uses comparison operators such as `EQ`, `NE`, `GE`, `GT`, `LE`, `LT`, `CP`, `NP`, `BT`, `NB`. Special rules apply for certain operators such as when using `CP` or `NP`, the `LOW` and `HIGH` columns must be character values.
+  - `LOW`: The lower comparison value.
+  - `HIGH`: The higher comparison value.
 - Declared with the `TYPE RANGE OF` addition in `DATA` and `TYPES` statements 
 - Used to store range conditions that can be evaluated in expressions using the `IN` operator (each row in the table represents a separate comparison)
 
@@ -2762,7 +2761,7 @@ Using the methods of the `CL_ABAP_DIFF` class, you can compare the content of tw
 
 Find ...
 - more information in the class documentation and in the [ABAP Keyword Documentation]([06_Dynamic_Programming.md](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencl_abap_diff.htm)). 
-- a code snippet in the [Misc ABAP Classes](22_Misc_ABAP_Classes.md) cheat sheet.
+- a code snippet in the [Misc ABAP Classes](./22_Misc_ABAP_Classes.md#comparing-content-of-compatible-internal-tables) cheat sheet.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
@@ -2775,4 +2774,4 @@ Topic [Internal Tables](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-
 > **💡 Note**<br>
 > - The executable example covers the following topics, among others: Creating, populating, reading from, sorting, modifying internal tables
 > - The steps to import and run the code are outlined [here](README.md#-getting-started-with-the-examples).
-> - [Disclaimer](README.md#%EF%B8%8F-disclaimer)
+> - [Disclaimer](./README.md#%EF%B8%8F-disclaimer)

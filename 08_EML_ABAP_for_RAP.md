@@ -1914,4 +1914,4 @@ This cheat sheet is supported by different executable examples demonstrating var
 > - Due to the simplification, the examples do not entirely meet all requirements of the [RAP BO contract](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenrap_bo_contract_glosry.htm) and do not represent semantic or best practice examples.
 > - You can check out the "RAP calculator" example using the preview version of an SAP Fiori Elements UI. See the comments in the class for more information.
 > - The steps to import and run the code are outlined [here](README.md#-getting-started-with-the-examples).
-> - [Disclaimer](README.md#%EF%B8%8F-disclaimer)
+> - [Disclaimer](./README.md#%EF%B8%8F-disclaimer)

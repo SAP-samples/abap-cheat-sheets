@@ -1847,7 +1847,7 @@ ENDCLASS.
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ### Dynamic Invoke
-The following code snippet shows dynamically specifying [procedure](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenprocedure_glosry.htm "Glossary Entry") calls.
+The following code snippet shows dynamically specifying [procedures](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenprocedure_glosry.htm "Glossary Entry") calls. The snippet covers methods. Find an example of a dynamic function module call in the [Program Flow Logic](./13_Program_Flow_Logic.md#function-module-example) cheat sheet.
 
 ``` abap
 "Note: Dynamic method calls require a CALL METHOD statement.
@@ -3311,4 +3311,4 @@ CREATE DATA dref_cr TYPE HANDLE tdo_ref.
 >     - Dynamic ABAP syntax components
 >     - Runtime type services (RTTS), i. e. runtime type identification (RTTI) and runtime type creation (RTTC)
 > - The steps to import and run the code are outlined [here](README.md#-getting-started-with-the-examples).
-> - [Disclaimer](README.md#%EF%B8%8F-disclaimer)
+> - [Disclaimer](./README.md#%EF%B8%8F-disclaimer)

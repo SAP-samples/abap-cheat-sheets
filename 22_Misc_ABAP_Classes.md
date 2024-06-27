@@ -36,7 +36,8 @@ This ABAP cheat sheet contains a selection of available ABAP classes, serving as
 > **💡 Note**<br>
 > - The cheat sheet is not a comprehensive overview, and the code snippets do not claim to be comprehensive as far as options, methods, or parameters are concerned. It is intended to give you a rough overview, for you to get an idea. It is an invitation to a more in-depth exploration.
 > - For more information and where available, refer to the class documentation (for example, choose F2 when the cursor is on the class name in ADT), the ABAP Keyword Documentation, and the SAP Help Portal documentation.
-> - In the cheat sheet, the focus is on a selected set of classes that are available in [ABAP Cloud](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_cloud_glosry.htm).
+> - In the cheat sheet, the focus is on a selected set of classes that are available in [ABAP for Cloud Development](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_for_cloud_dev_glosry.htm).
+> - [Disclaimer](./README.md#%EF%B8%8F-disclaimer)
 
 ## Excursion: Available Classes in ABAP Cloud
 
@@ -837,8 +838,10 @@ ENDIF.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-
 ## Time and Date
+
+> **💡 Note**<br>
+> In [ABAP for Cloud Development](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_for_cloud_dev_glosry.htm), do not use the date and time-related system fields such as `sy-datum` and `sy-uzeit`, and others. User-related time and date values (such as `sy-timlo` and `sy-datlo`) can be retrieved using the XCO library. For code snippets, see the [Date, Time, and Time Stamp](23_Date_and_Time.md) cheat sheet.
 
 <table>
 <tr>
@@ -1452,7 +1455,7 @@ Provides context information relevant to the current ABAP session.
 <br><br>
 
 ``` abap
-"Getting current date in UTC, e.g. 20240101
+"Getting current date in UTC (not the system or user time), e.g. 20240101
 DATA(sys_date) = cl_abap_context_info=>get_system_date( ).
 
 "Getting current time in UTC, e.g. 152450

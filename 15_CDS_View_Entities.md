@@ -67,4 +67,4 @@ The following links take you to the source code of the cheat sheet artifacts to 
 >     - Using exposed associations in ABAP statements
 > - The example CDS view entities (`zdemo_abap_cds_ve...`) and the [class](./src/zcl_demo_abap_cds_ve.clas.abap) contains comments in the code for more information.
 > - The steps to import and run the code are outlined [here](README.md#-getting-started-with-the-examples).
-> - [Disclaimer](README.md#%EF%B8%8F-disclaimer)
+> - [Disclaimer](./README.md#%EF%B8%8F-disclaimer)

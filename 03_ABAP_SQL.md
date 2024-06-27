@@ -1244,7 +1244,7 @@ SELECT id FROM @itab AS tab
 DATA rangestab TYPE RANGE OF i.
 "Populating a ranges table using the VALUE operator
 rangestab = VALUE #( ( sign   = 'I' option = 'BT' low = 1 high = 3 )
-                      ( sign   = 'I' option = 'GE' low = 10  ) ).
+                     ( sign   = 'I' option = 'GE' low = 10  ) ).
 
 SELECT id FROM @itab AS tab WHERE id IN @rangestab INTO TABLE @it. "1,2,3,10,11,12
 
@@ -1700,4 +1700,4 @@ Find more information in the [ABAP for RAP: Entity Manipulation Language (ABAP E
 >     - Changing data in database tables using `INSERT`, `UPDATE`, `MODIFY` and `DELETE`
 >     - Excursions: Operands and expressions in ABAP SQL statements
 > - The steps to import and run the code are outlined [here](README.md#-getting-started-with-the-examples).
-> - [Disclaimer](README.md#%EF%B8%8F-disclaimer)
+> - [Disclaimer](./README.md#%EF%B8%8F-disclaimer)

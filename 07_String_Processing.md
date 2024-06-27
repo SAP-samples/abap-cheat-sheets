@@ -2262,4 +2262,4 @@ The following list (as also covered in the [Misc ABAP Classes cheat sheet](22_Mi
 >     - Searching and replacing
 >     - Regular expressions 
 > - The steps to import and run the code are outlined [here](README.md#-getting-started-with-the-examples).
-> - [Disclaimer](README.md#%EF%B8%8F-disclaimer)
+> - [Disclaimer](./README.md#%EF%B8%8F-disclaimer)
