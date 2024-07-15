@@ -3,7 +3,7 @@
 # Misc ABAP Classes
 
 - [Misc ABAP Classes](#misc-abap-classes)
-  - [Excursion: Available Classes in ABAP Cloud](#excursion-available-classes-in-abap-cloud)
+  - [Excursion: Available Classes in ABAP for Cloud Development](#excursion-available-classes-in-abap-for-cloud-development)
   - [Creating UUIDs](#creating-uuids)
   - [Displaying Output in the ADT Console](#displaying-output-in-the-adt-console)
   - [RAP](#rap)
@@ -39,7 +39,7 @@ This ABAP cheat sheet contains a selection of available ABAP classes, serving as
 > - In the cheat sheet, the focus is on a selected set of classes that are available in [ABAP for Cloud Development](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_for_cloud_dev_glosry.htm).
 > - [Disclaimer](./README.md#%EF%B8%8F-disclaimer)
 
-## Excursion: Available Classes in ABAP Cloud
+## Excursion: Available Classes in ABAP for Cloud Development
 
 If available to you, you have accessed an [SAP BTP ABAP Environment](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensap_btp_abap_env_glosry.htm) using the [ABAP development tools for Eclipse (ADT)](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenadt_glosry.htm).
 Access to SAP-provided repository objects is restricted to objects that have been released for [ABAP for Cloud Development](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_for_cloud_dev_glosry.htm) ([released APIs](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenreleased_api_glosry.htm)). You can find the released repository objects in the *Project Explorer* view in ADT under *Released Objects*. The classes are located in the *Source Code Library* folder:

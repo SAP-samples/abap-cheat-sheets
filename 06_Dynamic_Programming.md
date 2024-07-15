@@ -707,13 +707,13 @@ tdo_gen_obj = cl_abap_typedescr=>describe_by_data( some_string ).
 
 "Without catching the exception, the runtime error MOVE_CAST_ERROR
 "occurs. There is no syntax error at compile time. The static type of
-"tdo_gen_obj is more generic than the static type of the target variable.
+"tdo_gen_obj is more general than the static type of the target variable.
 "The error occurs when trying to downcast, and the dynamic type is used.
 TRY.
     tdo_table = CAST #( tdo_gen_obj ).
   CATCH cx_sy_move_cast_error.
 ENDTRY.
-"Note: tdo_table sill points to the reference as assigned above after trying
+"Note: tdo_table still points to the reference as assigned above after trying
 "to downcast in the TRY control structure.
 
 "Using CASE TYPE OF and IS INSTANCE OF statements, you can check if downcasts
@@ -2186,7 +2186,7 @@ CLASS zcl_demo_test IMPLEMENTATION.
 
     "If you have such a use case, and deal with generic/dynamic types, note
     "the general rules for typing in the ABAP Keyword Documentation.
-    "A prior downcast (i.e. from the more generic type 'object' to the less
+    "A prior downcast (i.e. from the more general type 'object' to the less
     "specific type zcl_demo_abap_objects) can be done. In this context, note
     "that upcasts are possible (and implicitly done) when assigning the parameters, 
     "but downcasts must always be done explicitly, for example, using the CAST 
@@ -2821,8 +2821,8 @@ CLASS zcl_some_class IMPLEMENTATION.
                   "... absolute name
                   CREATE DATA dyn_dobj TYPE (absolute_name).
                   dyn_dobj->* = type->*.
-                  "... type description object
 
+                  "... type description object
                   CREATE DATA dyn_dobj TYPE HANDLE tab.
                   dyn_dobj->* = type->*.
                   INSERT |{ tabix } Dynamic data objects created, assignments done| INTO TABLE str_tab.

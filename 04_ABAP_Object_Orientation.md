@@ -1165,7 +1165,7 @@ CLASS zcl_demo_test IMPLEMENTATION.
     DATA(a) = inst_attr.
     DATA(b) = stat_attr.
 
-    "The following is also possible inside the class (it the only option outside of
+    "The following is also possible inside the class (it is the only option outside of
     "this class):
     DATA(c) = oref->inst_attr.
     DATA(d) = zcl_demo_test=>stat_attr.
@@ -1686,7 +1686,7 @@ DATA(oref_sub2) = NEW lcl_sub2( ).
 
 TRY.
   oref_sub = CAST #( oref_super ).
-  CATCH CX_SY_MOVE_CAST_ERROR INTO DATA(e).
+  CATCH cx_sy_move_cast_error INTO DATA(e).
     ...
 ENDTRY.
 

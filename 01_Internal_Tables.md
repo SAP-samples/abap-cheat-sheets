@@ -25,7 +25,7 @@
     - [Checking the Existence of a Line in an Internal Table](#checking-the-existence-of-a-line-in-an-internal-table)
     - [Checking the Index of a Line in an Internal Table](#checking-the-index-of-a-line-in-an-internal-table)
     - [Checking How Many Lines Exist in an Internal Table](#checking-how-many-lines-exist-in-an-internal-table)
-    - [Getting Table (Type) Information and Creating Internal Tables and Types at Runtime](#getting-table-type-information-and-creating-internal-tables-and-types-at-runtime)
+    - [Getting Table (Type) Information at Runtime](#getting-table-type-information-at-runtime)
   - [Processing Multiple Internal Table Lines Sequentially](#processing-multiple-internal-table-lines-sequentially)
     - [Restricting the Area of a Table to Be Looped Over](#restricting-the-area-of-a-table-to-be-looped-over)
     - [Iteration Expressions](#iteration-expressions)
@@ -45,6 +45,7 @@
     - [Searching and Replacing Substrings in Internal Tables with Character-Like Data Types](#searching-and-replacing-substrings-in-internal-tables-with-character-like-data-types)
     - [Ranges Tables](#ranges-tables)
     - [Comparing Content of Compatible Internal Tables](#comparing-content-of-compatible-internal-tables)
+    - [BDEF Derived Types (ABAP EML)](#bdef-derived-types-abap-eml)
   - [More Information](#more-information)
   - [Executable Example](#executable-example)
 
@@ -53,13 +54,14 @@
 
 Internal Tables ...
 
+- are tables that temporarily store variable data (i.e. any number of table lines of a fixed structure) in the working memory in ABAP.
 - are [dynamic data objects](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendynamic_data_object_glosry.htm), i.e. all properties apart from the memory consumption are determined statically by the [data type](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendata_type_glosry.htm).
 - consist of a variable sequence of lines of the same data type. 
 - have a [table type](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentable_type_glosry.htm) as its data type (it is a [complex data type](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencomplex_data_type_glosry.htm)), which defines the following properties: 
   - [line type](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrow_type_glosry.htm)
   - [table category](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentable_category_glosry.htm)
   - [table key](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentable_key_glosry.htm)
-- are used when a variable data set of a random data type needs to be processed in a structured way.
+- are used when a variable data set of a random data type needs to be processed in a structured way, for example, storing and processing [database table](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendatabase_table_glosry.htm) content within an [ABAP program](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_program_glosry.htm).
 - allow access to individual table lines via a [table index](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentable_index_glosry.htm) or a [table key](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentable_key_glosry.htm).
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
@@ -88,7 +90,7 @@ Internal Tables ...
 
 | Category | Internally managed by | Access | Primary table key | When to use | Hints |
 |---|---|---|---|---|---|
-|`STANDARD`|Primary table index (that's why these tables are called [index tables](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenindex_table_glosry.htm))|<ul><li>Table index</li><li>Table key</li></ul>|<ul><li>Always non-unique, i.e. duplicate entries are always allowed</li><li>Definition of an empty key is possible if the key is not relevant(`WITH EMPTY KEY`)</li></ul>|<ul><li>If you primarily access the table content for sequential processing or via the table index.</li><li>Response time for accessing the table using the primary key: This kind of table access is optimized only for sorted and hashed tables. For standard tables, primary key access uses a linear search across all lines. That means that large standard tables (more than 100 lines) are not ideal if the you primarily access the table using the table key.</></ul>|<ul><li>There is no particular sort order, but the tables can be sorted using `SORT`.</li><li>Populating this kind of table: Lines are either appended at the end of the table or inserted at a specific position.</li><li>[Secondary table keys](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensecondary_table_key_glosry.htm) can be defined to make key access to standard tables more efficient.</li><li>Standard and sorted tables have the least [administration costs (F1 docu for standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenadmin_costs_dyn_mem_obj_guidl.htm).</li></ul>|
+|`STANDARD`|Primary table index (that's why these tables are called [index tables](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenindex_table_glosry.htm))|<ul><li>Table index</li><li>Table key</li></ul>|<ul><li>Always non-unique, i.e. duplicate entries are always allowed</li><li>Definition of an empty key is possible if the key is not relevant(`WITH EMPTY KEY`)</li></ul>|<ul><li>If you primarily access the table content for sequential processing or via the table index.</li><li>Response time for accessing the table using the primary key: This kind of table access is optimized only for sorted and hashed tables. For standard tables, primary key access uses a linear search across all lines. That means that large standard tables (more than 100 lines) are not ideal if the you primarily access the table using the table key.</li></ul>|<ul><li>There is no particular sort order, but the tables can be sorted using `SORT`.</li><li>Populating this kind of table: Lines are either appended at the end of the table or inserted at a specific position.</li><li>[Secondary table keys](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensecondary_table_key_glosry.htm) can be defined to make key access to standard tables more efficient.</li><li>Standard and sorted tables have the least [administration costs (F1 docu for standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenadmin_costs_dyn_mem_obj_guidl.htm).</li></ul>|
 |`SORTED`|Primary table index (that's why these tables are called [index tables](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenindex_table_glosry.htm))|<ul><li>Table index</li><li>Table key</li></ul>|<ul><li>Non-unique</li><li>Unique</li><br>... used to sort the table in ascending order.</ul>|<ul><li>Enables an optimized access to table content using table key and index.</li><li>If access via table key is the main access method, but no unique key can be defined.</li></ul>|<ul><li>Sorting is done automatically when lines are inserted or deleted. As a consequence, the table index must usually be reorganized. </li><li>The response time for accessing the table using the primary key depends logarithmically on the number of table entries, since a binary search is used.</li><li>Standard and sorted tables have the least administration costs.</li></ul>|
 |`HASHED`|Hash algorithm |<ul><li>Table key</li><li>[Secondary table index](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensecondary_table_index_glosry.htm)</li></ul>|Always unique|<ul><li>For large internal tables.</li><li>Optimized for key access. Access to table content via table key is the main access method and a unique key can be defined.</li></ul>|<ul><li>The response time for primary key access is constant and independent of the number of entries in the table.</li><li>Hashed tables have the highest administration costs.</li></ul>|
 
@@ -206,7 +208,8 @@ DATA  itab4      LIKE                   itab1 ...       "Based on an existing in
 ```
 
 > **💡 Note**<br>
-> If the table category is not specified (`... TYPE TABLE OF ...`), it is automatically `... TYPE STANDARD TABLE OF ...`.
+> - If the table category is not specified (`... TYPE TABLE OF ...`), it is automatically `... TYPE STANDARD TABLE OF ...`.
+> - Using [Runtime Type Creation (RTTC)](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrun_time_type_creation_glosry.htm "Glossary Entry"), you can define and  create new internal tables and table types as [type description objects](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentype_object_glosry.htm) at runtime. For more information, see the [Dynamic Programming](06_Dynamic_Programming.md) ABAP cheat sheet.
 
 The following code snippet contains various internal table declarations. It is intended to demonstrate a selection of the rich variety of possible internal tables mentioned in the previous sections, e.g. in *Table Keys in Internal Tables*.
 In the examples, the internal tables are created using the structured type of a demo database table in the DDIC. The line type of the database table is automatically used when defining an internal table.
@@ -424,7 +427,7 @@ SELECT * FROM zdemo_abap_fli INTO TABLE @FINAL(it_inline6).
 
 ### Copying Internal Tables
 
-A simple assignment without a constructor expression that **copies the content of another internal table** (note that the existing content in `itab` are deleted). The example below assumes that the source and target table have compatible line types. Using inline declaration is helpful to avoid an additional internal table declaration with an appropriate type.
+To copy internal table content from one table to another, you can use the assignment operator. Such an assignment (without a constructor expression) deletes the existing content in the target internal table. The example below assumes that the source and target table have compatible line types. Using inline declaration is helpful to avoid an additional internal table declaration with an appropriate type.
 
 ``` abap
 itab = itab2.
@@ -552,6 +555,9 @@ INSERT LINES OF itab2 INTO itab INDEX i.
 
 ### Creating and Populating Internal Tables Using Constructor Expressions
 The constructor expressions can be specified in/with various positions/statements in ABAP. In most of the following snippets, simple assignments are demonstrated.
+
+> **💡 Note**<br>
+> The following sections cover a selection. There are more constructor expressions used in the context of internal tables (e.g. for creating internal tables). Find more details in the [Constructor Expressions](05_Constructor_Expressions.md) ABAP cheat sheet.
 
 #### VALUE operator
 As mentioned above, table lines that are constructed inline as
@@ -1189,17 +1195,14 @@ DATA(number_of_lines) = lines( itab ).
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-### Getting Table (Type) Information and Creating Internal Tables and Types at Runtime
+### Getting Table (Type) Information at Runtime
 
-Using [Runtime Type Services (RTTS)](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrun_time_type_services_glosry.htm "Glossary Entry")
-you can ...
-- get type information on internal tables and table types at runtime ([Runtime Type Identification (RTTI)](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrun_time_type_identific_glosry.htm "Glossary Entry")).
-- define and create new internal tables and table types as [type description objects](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentype_object_glosry.htm) at runtime ([Runtime Type Creation (RTTC)](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrun_time_type_creation_glosry.htm "Glossary Entry")).
+Using [Runtime Type Identification (RTTI)](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrun_time_type_identific_glosry.htm "Glossary Entry"),
+you can get type information on internal tables and table types at runtime 
 
-For more information, see the [Dynamic Programming](06_Dynamic_Programming.md) cheat sheet.
+For more information, see the [Dynamic Programming](06_Dynamic_Programming.md) ABAP cheat sheet.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
-
 
 ## Processing Multiple Internal Table Lines Sequentially
 
@@ -2762,6 +2765,26 @@ Using the methods of the `CL_ABAP_DIFF` class, you can compare the content of tw
 Find ...
 - more information in the class documentation and in the [ABAP Keyword Documentation]([06_Dynamic_Programming.md](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencl_abap_diff.htm)). 
 - a code snippet in the [Misc ABAP Classes](./22_Misc_ABAP_Classes.md#comparing-content-of-compatible-internal-tables) cheat sheet.
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+### BDEF Derived Types (ABAP EML)
+
+In the context of [ABAP RAP](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenarap_glosry.htm), the operands of [ABAP EML](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_eml_glosry.htm) statements and parameters of [RAP handler methods](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabp_handler_method_glosry.htm) and [RAP saver methods](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabp_saver_method_glosry.htm) are mainly special messenger tables for passing data and receiving results or messages: [BDEF derived types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_derived_type_glosry.htm) - special ABAP types (internal tables and structures) that are tailor-made for RAP purposes.
+
+```abap
+"Example declarations
+"For an EML create operation
+DATA create_tab TYPE TABLE FOR CREATE entity.
+
+"For an update operation
+DATA update_tab TYPE TABLE FOR UPDATE entity.
+
+"Type declaration using a BDEF derived type
+TYPES der_typ TYPE TABLE FOR DELETE entity.
+```
+
+Find more information in the [ABAP for RAP: Entity Manipulation Language (ABAP EML)](08_EML_ABAP_for_RAP.md) ABAP cheat sheet.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 

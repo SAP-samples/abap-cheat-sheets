@@ -414,13 +414,14 @@ Possible transformations, some of which are covered in the example:
 | ABAP <-> ABAP | X  | - |
 
 > **💡 Note**<br>
-> asXML:
-> - *ABAP Serialization XML*
-> - Describes a format of XML data created when serializing ABAP data (ABAP -> XML) with the identity transformation 
-> - This format is a prerequisite for deserializations (XML -> ABAP) using identity transformations.
-> - Used as an intermediate format that defines a mapping between ABAP data and XML
-> - Therefore, if you want to deserialize XML data in ABAP, you must first transform it to the asXML format.
-> Make sure that you use appropriate exception classes for potential errors in transformations. See the section [Catchable Exceptions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapcall_transformation.htm) in the `CALL TRANSFORMATION` topic.
+> - asXML:
+>   - *ABAP Serialization XML*
+>   - Describes a format of XML data created when serializing ABAP data (ABAP -> XML) with the identity transformation 
+>   - This format is a prerequisite for deserializations (XML -> ABAP) using identity transformations.
+>   - Used as an intermediate format that defines a mapping between ABAP data and XML
+>   - Therefore, if you want to deserialize XML data in ABAP, you must first transform it to the asXML format.
+> - Make sure that you use appropriate exception classes for potential errors in transformations. See the section [Catchable Exceptions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapcall_transformation.htm) in the `CALL TRANSFORMATION` topic.
+> - For serializing instances of classes, find more information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenasxml_class_instances.htm) in the ABAP Keyword Documentation. The classes must implement the `IF_SERIALIZABLE_OBJECT` interface (find a demo in the executable example). 
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 

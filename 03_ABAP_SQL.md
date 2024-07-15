@@ -11,7 +11,7 @@
     - [Clause Variations and Additions in SELECT Statements](#clause-variations-and-additions-in-select-statements)
     - [More Clauses](#more-clauses)
     - [Operands and Expressions in ABAP SQL Statements](#operands-and-expressions-in-abap-sql-statements)
-      - [SQL operands](#sql-operands)
+      - [SQL Operands](#sql-operands)
       - [SQL Expressions](#sql-expressions)
         - [Elementary Expressions](#elementary-expressions)
         - [SQL Functions](#sql-functions)
@@ -547,7 +547,7 @@ overview of important operand positions in ABAP SQL
 [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensql_operand_positions_oview.htm).
 Due to the rich variety of options, the cheat sheet covers a selection.
 
-#### SQL operands
+#### SQL Operands
 
 -   Are elementary operands in an ABAP SQL statement
 -   Can be database table or view columns, a

@@ -313,7 +313,7 @@ ENDIF.
 
 - The conditional operator [`COND`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconditional_expression_cond.htm) can also be used to implement branches in operand positions that are based on logical expressions.
 - Such conditional expressions have a result that is dependent on the logical expressions.
-- The result's data type is specified after `COND` right before the first parenthesis. It can also be the `#` character as a symbol for the operand type if the type can be derived from the context. See the ABAP Keyword Documentation and the cheat sheet on constructor expressions for more information.
+- The result's data type is specified after `COND` right before the first parenthesis. It can also be the `#` character as a symbol for the operand type if the type can be derived from the context. 
 - All operands specified after `THEN` must be convertible to the result's data type.
 - See also the [Constructor Expressions](05_Constructor_Expressions.md) cheat sheet for more information and examples.
 
@@ -641,7 +641,7 @@ DATA(func_name) = 'SOME_FUNCTION_MODULE_C'.
 
 CALL FUNCTION func_name ...
 
-"For parmeters in a parameter table ,use the addition ... PARAMETER-TABLE ptab ...
+"For parameters in a parameter table, use the addition ... PARAMETER-TABLE ptab ...
 "ptab: Sorted table of type abap_func_parmbind_tab (line type abap_func_parmbind)
 "For exceptions, use the addition ... EXCEPTION-TABLE ...
 DATA(ptab) = VALUE abap_func_parmbind_tab( ... ).
@@ -670,15 +670,15 @@ To get started quickly with copiable code snippets, you can proceed as follows.
    - Make entries in the *Name* (e.g. `Z_DEMO_ABAP_TEST_FUNC_P`) and *Description Field* (e.g. *Demo function group*) fields, and choose *Next*.
    - If prompted, select a transport request and choose *Finish*.
 2. Create a function module.
-   - In ADT, you can, for example, right-click the package in which you have created function pool.
+   - In ADT, you can, for example, right-click the package in which you have created the function pool.
    - Choose *New -> Other ABAP Repository Object*.
    - In the input field, enter *function*, select *ABAP Function Module*, and choose *Next*.
    - Make entries in the *Name* (e.g. `Z_DEMO_ABAP_TEST_FUNC_M`), *Description Field* (e.g. *Demo function module*), and *Function Group* (e.g. the previously created `Z_DEMO_ABAP_TEST_FUNC_P`) fields and choose *Next*.
    - If prompted, select a transport request and choose *Finish*.
    - The function module is created and can be filled with an implementation.
    - You can copy and paste the code below to have a sample implementation.
-3. To test the function module, you can create a class, for example, with the name `ZCL_DEMO_ABAP_FUNC_TEST`, and copy and paste the code below. 
-   - In ADT, you can run the class by choosing *F9*. Some output is displayed in the ADT console, demonstrating the result of the function module calls.
+3. To demonstrate the function module, you can create a class, for example, with the name `ZCL_DEMO_ABAP_FUNC_TEST`, and copy and paste the code below. 
+   - In ADT, you can run the class by choosing *F9*. Some output is displayed in the ADT console, demonstrating the result of function module calls.
 
 
 Code for the function module `Z_DEMO_ABAP_TEST_FUNC_M`:
@@ -735,8 +735,8 @@ ENDCLASS.
 CLASS zcl_demo_abap_func_test IMPLEMENTATION.
   METHOD if_oo_adt_classrun~main.
 
-    "Handling class-based exception
-    "For handling a possible wrong operator, you may want to implement
+    "Calling a function module
+    "For handling a possible wrong operator in the example, you may want to implement
     "a separate exception. The simple example just catches calculation errors
     "and uses a data object of type string for storing the calculation result.
     DATA calculation_result TYPE string.
@@ -835,6 +835,359 @@ Special function modules exist in [Standard ABAP](https://help.sap.com/doc/abapd
       - Successor technology: Background RFC ([bgRFC](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenbgrfc_glosry.htm)), executed with the statement `CALL FUNCTION ... IN BACKGROUND UNIT`. Find more information [here](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapcall_function_background_unit.htm).
       - The newer background Processing Framework ([bgPF](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenbgpf_glosry.htm)) encapsulates bgRFC to execute time-consuming methods asynchronously. Find more information [here](https://help.sap.com/docs/abap-cloud/abap-concepts/background-processing-framework).
  
+
+**sRFC Example**
+
+Expand the collapsible section below to view descriptions and the code examples. The example includes two repository objects: a remote-enabled function module and a class. You can copy and paste the code examples into a demo class and demo function module in your system supporting classic ABAP. Run the class by choosing F9 in ADT. 
+Note that it is a [nonsensical](./README.md#%EF%B8%8F-disclaimer) example designed for experimentation and exploration of syntax ⚠️.
+
+<details>
+  <summary>Expand to view the details</summary>
+  <!-- -->
+
+"Purpose":
+- Making synchronous RFC calls to an RFC-enabled function module and demonstrate the `CALL FUNCTION` syntax with the `DESTINATION` addition.
+- Checking if two random data objects can be assigned. The focus is on exploring various conversion rules when assigning values from a source data object to a target data object. If there is no conversion rule, meaning the two data objects are neither compatible nor convertible, an assignment cannot be performed. In many cases, an uncatchable exception is raised during the assignment, which is performed when executing the function module implementation.
+- The calling program is not terminated due to the "delegated check" to an RFC-enabled function module (however, a system message is displayed in ADT informing about the exception).
+- As a result of a method call (which includes a call to the RFC-enabled function module), it is determined whether ... 
+  - the assignment of the source to the target object is possible at all, and if so, perform the assignment.
+  - the two data objects are type compliant (all the technical properties of the data objects' types are identical).  
+  - a [lossless assignment](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenlossless_assignment_glosry.htm) is possible when assigning the source to the target data object.
+  
+The example implementation is as follows:
+- A class contains declarations of several demo data objects. These data objects include elementary types such as `c`, `string`, `d`, `t`, `i`, as well as a structure and an internal table. They are assigned demo values, which are then used for further demo assignments.
+- When the class is run, an instance of the class is created initially.
+- All demo data objects are then assigned to each other, with the assignment being *delegated* to the remote-enabled function module. Note that many of these assignments are nonsensical, as the focus is on the function module call and exploring conversion rules.
+- The assignment check is performed as follows:
+  - The method responsible for the assignment check retrieves type information using RTTI. As a first step, it checks the type compatibility of the data objects, i.e. if they have identical technical properties.
+  - The actual assignment of the two data objects occurs in the remote-enabled function module: 
+    - To enable this in the example implementation, the class has the interface `if_serializable_object` defined, which allows instances of the class to be serialized. 
+    - The content of the two data objects is assigned to public instance attributes of the class.
+    - Then, the instance of the class is serialized using a `CALL TRANSFORMATION` statement. 
+    - The remote-enabled function module is called using a `CALL FUNCTION ... DESTINATION 'NONE'` statement, with the instance of the class passed as a parameter. `'NONE'` is a predefined destination that indicates the remote function will run in the same system as the calling class.
+    - In the function module implementation, the instance of the class is deserialized, and the two data objects are assigned to each other. If the assignment is successful, the value `abap_true` is set for the `is_assignable` exporting parameter. If the assignment fails, an exception is raised, resulting in `is_assignable` remaining `abap_false`. Note that for certain assignments, exceptions cannot be caught. However, since the class calls the remote-enabled function module, the execution of the class is not terminated. Therefore, in cases where data objects are not assignable, you will receive notifications about runtime errors. If a runtime error occurs, the exception message is also returned and added to a structure containing information.
+- The structure returned by the check method in the class includes various pieces of information, such as whether the two data objects are are assignable at all, whether they are type compliant, or whether a lossless assignment is possible. When the two data objects are indeed assignable (based on the `is_assignable` flag returned by the function call), the two data objects are assigned once again in the method to add the assignment result to the information structure that is returned. The lossless assignment is also performed at this stage.
+
+Notes: 
+- Running the example class will take some time to complete and display output in the console.
+- The feed reader in your ADT will display numerous error messages related to runtime errors triggered by invalid data object assignments when the example class is run.
+- For more information on the assignment results and conversion rules, see the topic [Assignment and Conversion Rules](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenconversion_rules.htm) in the ABAP Keyword Documentation.
+- Information about RFC in the [SAP Help Portal](https://help.sap.com/docs/ABAP_PLATFORM_NEW/753088fc00704d0a80e7fbd6803c8adb/4888068ad9134076e10000000a42189d.html?locale=en-US).
+- Examples of calling the example class (externally and separately): 
+  ```abap
+  DATA a TYPE abap_boolean VALUE abap_true.
+  DATA b TYPE c LENGTH 1 VALUE 'Z'.
+  DATA(assignm_check1) = zcl_demo_abap_check_assignment=>get_instance( )->check_assignment(
+    source = b target = a comment = `c length 1 -> abap_boolean` ).
+
+  *ASSIGNM_CHECK1:
+  *IS_TYPE_COMPLIANT    IS_EXACT_MOVE_POSSIBLE    IS_ASSIGNABLE    ASSIGNMENT_RESULT->*    COMMENT
+  *X                    X                         X                Z                       c length 1 -> abap_boolean
+
+  DATA c TYPE string VALUE `hallo`.
+  DATA(d) = VALUE string_table( ( `X` ) ).
+  "An exception is raised in the function module for the nonsensical assignment.
+  DATA(assignm_check2) = zcl_demo_abap_check_assignment=>get_instance( )->check_assignment(
+    source = c target = d comment = `string -> internal table` ).
+
+  *ASSIGNM_CHECK2:
+  *IS_TYPE_COMPLIANT    IS_EXACT_MOVE_POSSIBLE    IS_ASSIGNABLE    ASSIGNMENT_RESULT->*    COMMENT
+  *                                                                initial reference       string -> internal table (Error: Conversion of type STRING to type STRING_TABLE not supported.)
+  ```
+
+To check the example, follow these steps in your system that supports classic ABAP:
+
+- Create a demo class named `ZCL_DEMO_ABAP_CHECK_ASSIGNMENT` and insert the provided example code.
+- Create a function module named `Z_DEMO_ABAP_ASSIGNM_CHECK_FM` (for example, as part of function pool `Z_DEMO_ABAP_TEST_FUNC_P` - *ABAP Function Group* in ADT; refer to the function module example for details).
+  - In ADT, right-click within the code and select *Open With -> SAP GUI* to open the Function Builder in SAP GUI.
+  - In the Function Builder, select *Display <-> Change* (CTRL + F1) to enable modification.
+  - Go to the *Attributes* tab and check the *Remote-Enabled Module* checkbox.
+  - Select *Activate* (CTRL + F3). Take note of the security aspects related to remote-enabled function modules that can be called from outside SAP systems. Also, refer to the disclaimer in the repository's *README*. The example is only meant to illustrate the syntax functionality.
+  - Close the tab.
+  - Insert the provided example code into the function module.
+- After activation, press *F9* in ADT to execute the class. The example is designed to display output in the console.
+- Running the example class may take some time to complete and display the content. You will see multiple runtime error notifications in ADT (also check the Feed Reader tab in ADT) due to impossible assignments.
+
+
+Example code of the class:
+```abap
+CLASS zcl_demo_abap_check_assignment DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
+
+  PUBLIC SECTION.
+    INTERFACES: if_oo_adt_classrun,
+                if_serializable_object.
+    DATA target TYPE REF TO data.
+    DATA source TYPE REF TO data.
+
+    TYPES: BEGIN OF type_check_str,
+             is_type_compliant      TYPE abap_boolean,
+             is_exact_move_possible TYPE abap_boolean,
+             is_assignable          TYPE abap_boolean,
+             assignment_result      TYPE REF TO data,
+             comment                TYPE string,
+           END OF type_check_str.
+
+    CLASS-METHODS: get_instance RETURNING VALUE(ref) TYPE REF TO zcl_demo_abap_check_assignment.
+    METHODS: check_assignment IMPORTING target              TYPE any
+                                        source              TYPE any
+                                        comment             TYPE string OPTIONAL
+                              RETURNING VALUE(check_result) TYPE type_check_str.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+
+    METHODS:
+      "The following method can only have output parameters.
+      "For each output parameter of the serialize_helper method, you must specify
+      "an identically named input parameter of the deserialize_helper method
+      "with the same type.
+      serialize_helper EXPORTING target TYPE REF TO data
+                                 source TYPE REF TO data,
+      "This method can only have input parameters.
+      deserialize_helper IMPORTING target TYPE REF TO data
+                                   source TYPE REF TO data.
+
+ENDCLASS.
+
+
+
+CLASS zcl_demo_abap_check_assignment IMPLEMENTATION.
+  METHOD if_oo_adt_classrun~main.
+
+    DATA(oref) = zcl_demo_abap_check_assignment=>get_instance( ).
+
+    "Example data objects
+    "--- Elementary types ---
+    DATA a TYPE abap_boolean VALUE 'X'.
+    DATA b TYPE c LENGTH 1 VALUE 'Y'.
+    DATA c TYPE c LENGTH 3 VALUE '123'.
+    DATA d TYPE c LENGTH 5 VALUE 'vwxy1'.
+    DATA e TYPE n LENGTH 4 VALUE '9876'.
+    DATA f TYPE string VALUE `hallo`.
+    DATA g TYPE d VALUE '20240101'.
+    DATA h TYPE t VALUE '123456'.
+    DATA i TYPE i VALUE 99.
+    DATA j TYPE p LENGTH 8 DECIMALS 2 VALUE '8.91'.
+
+    "--- Structure ---
+    TYPES: BEGIN OF s,
+             a TYPE c LENGTH 3,
+             b TYPE c LENGTH 3,
+           END OF s.
+    DATA k TYPE s.
+    k = VALUE #( a = 'abc' b = 'def' ).
+
+    "--- Internal table ---
+    DATA l TYPE string_table.
+    l = VALUE #( ( `abc` ) ).
+
+    TYPES: BEGIN OF st,
+             ref     TYPE REF TO data,
+             comment TYPE string,
+           END OF st.
+
+    DATA itab TYPE TABLE OF st WITH EMPTY KEY.
+    itab = VALUE #( ( ref = REF #( a ) comment = `abap_boolean` )
+                    ( ref = REF #( b ) comment = `c LENGTH 1` )
+                    ( ref = REF #( c ) comment = `c LENGTH 3` )
+                    ( ref = REF #( d ) comment = `c LENGTH 5` )
+                    ( ref = REF #( e ) comment = `n LENGTH 4` )
+                    ( ref = REF #( f ) comment = `string` )
+                    ( ref = REF #( g ) comment = `d` )
+                    ( ref = REF #( h ) comment = `t` )
+                    ( ref = REF #( i ) comment = `i` )
+                    ( ref = REF #( j ) comment = `p LENGTH 8 DECIMALS 2` )
+                    ( ref = REF #( k ) comment = `structure (2 components of type c)` )
+                    ( ref = REF #( l ) comment = `string table` )
+    ).
+
+    DATA itab2 LIKE itab.
+    itab2 = itab.
+
+    DATA itab_res TYPE TABLE OF zcl_demo_abap_check_assignment=>type_check_str.
+    LOOP AT itab INTO DATA(wa_1).
+      DATA(tabix1) = sy-tabix.
+      LOOP AT itab2 INTO DATA(wa_2).
+        DATA(tabix2) = sy-tabix.
+        IF tabix1 <> tabix2.
+          "Method call for the actual assignment check
+          "Note: 'target' means the value on the left-hand side of an assignment, 'source' is the
+          "data object specified on the right-hand side (target = source.).
+          DATA(res) = oref->check_assignment( target = wa_1-ref->* source = wa_2-ref->* comment = |{ tabix1 }: { wa_2-comment } -> { wa_1-comment }| ).
+          APPEND res TO itab_res.
+        ENDIF.
+      ENDLOOP.
+    ENDLOOP.
+    out->write( itab_res ).
+  ENDMETHOD.
+
+  METHOD deserialize_helper.
+    me->target = target.
+    me->source = source.
+  ENDMETHOD.
+
+  METHOD serialize_helper.
+    target = me->target.
+    source = me->source.
+  ENDMETHOD.
+
+  METHOD get_instance.
+    ref = NEW #( ).
+  ENDMETHOD.
+
+  METHOD check_assignment.
+    "The returning parameter of this method is a structure that
+    "contains information about the assignment. Throughout the
+    "method implementation, the structure's components are populated
+    "with various pieces of information.
+    check_result-comment = comment.
+
+    "Getting type description objects for checking type compliance (i.e.
+    "whether the type properties are identical)
+    "The example is designed to work only with elementary, structured and
+    "table types.
+    DATA(tdo1) = cl_abap_typedescr=>describe_by_data( target ).
+    DATA(tdo2) = cl_abap_typedescr=>describe_by_data( source ).
+
+    IF tdo1 IS INSTANCE OF cl_abap_refdescr
+    OR tdo2 IS INSTANCE OF cl_abap_refdescr
+    OR tdo1 IS INSTANCE OF cl_abap_enumdescr
+    OR tdo2 IS INSTANCE OF cl_abap_enumdescr.
+      check_result-comment = `The example implementation is designed to only work with elementary, structured and table types.`.
+      RETURN.
+    ENDIF.
+
+    "Checking type compliance
+    CASE TYPE OF tdo1.
+      WHEN TYPE cl_abap_elemdescr.
+        DATA(applies_to) = CAST cl_abap_elemdescr( tdo1 )->applies_to_data( source ).
+      WHEN TYPE cl_abap_structdescr.
+        applies_to = CAST cl_abap_structdescr( tdo1 )->applies_to_data( source ).
+      WHEN TYPE cl_abap_tabledescr.
+        applies_to = CAST cl_abap_tabledescr( tdo1 )->applies_to_data( source ).
+      WHEN OTHERS.
+        check_result-comment = `The example implementation is designed to only work with elementary, structured and table types.`.
+        RETURN.
+    ENDCASE.
+
+    check_result-is_type_compliant = applies_to.
+
+    "Assigning the passed values to the public instance attributes
+    CREATE DATA me->target LIKE target.
+    CREATE DATA me->source LIKE source.
+    me->target->* = target.
+    me->source->* = source.
+
+    "Serializing the instance
+    DATA xml TYPE xstring.
+    TRY.
+        CALL TRANSFORMATION id SOURCE oref = me
+                               RESULT XML xml.
+      CATCH cx_xslt_serialization_error INTO DATA(tr_err).
+        check_result-comment = |Transformation error: { tr_err->get_text( ) }|.
+        RETURN.
+    ENDTRY.
+
+    "Calling RFC-enabled function module
+    "In the function module, the instance is deserialized, and one
+    "public instance attribute is assigned to the other. If the
+    "assignment is successful, the value of 'is_assignable' is 'X'
+    "because the assignment to the parameter happens after the
+    "actual assignment. If the assignment does not work, and an
+    "exception is raised, the 'is_assignable' value assignment
+    "is not reached in the function module implementation, and
+    "remains initial. Note that not all exceptions that are
+    "raised by assignments are catchable - which is the purpose
+    "of this example: Avoiding a termination of the executed class.
+    "In case of an assignment error, the 'msg' variable is populated
+    "with an error message. This message is added to the structure
+    "containing information about the assignment.
+    DATA msg TYPE c LENGTH 255.
+    DATA is_assignable TYPE abap_boolean.
+    CALL FUNCTION 'Z_DEMO_ABAP_ASSIGNM_CHECK_FM'
+      DESTINATION 'NONE'
+      EXPORTING
+        serialized_obj        = xml
+      IMPORTING
+        is_assignable         = is_assignable
+      EXCEPTIONS
+        system_failure        = 1 MESSAGE msg
+        communication_failure = 2 MESSAGE msg
+        OTHERS                = 3.
+
+    IF sy-subrc <> 0.
+      check_result-comment = check_result-comment && ` (Error: ` && msg && `)`.
+    ENDIF.
+
+    "Performing further assignments if there is no runtime error
+    "in the function module
+    IF is_assignable = abap_true.
+      check_result-is_assignable = abap_true.
+
+      "Since the assignment indeed works (as checked in the function
+      "module), performing the assignment. The result of the
+      "assignment is added to the information structure.
+      me->target->* = me->source->*.
+
+      check_result-assignment_result = me->target.
+
+      "Checking whether a lossless assignment is possible
+      "In this case, an assignment is only made if no values are lost.
+      "Otherwise, an error occurs.
+      "Example:
+      "- There are two data objects: A is of type c length 1, B having type c 3
+      "- An exact move of A to B is possible as no values are lost.
+      "  However, an exact move of B to A is not possible. There are
+      "  more characters. A 'regular' assignment (e.g. just A = B) would
+      "  work even though. The overlapping characters are truncated in this case.
+      TRY.
+          me->target->* = EXACT #( me->source->* ).
+          check_result-is_exact_move_possible = abap_true.
+        CATCH cx_root.
+          check_result-is_exact_move_possible = abap_false.
+      ENDTRY.
+    ENDIF.
+  ENDMETHOD.
+ENDCLASS.
+```
+
+Example code for the function module:
+```abap
+FUNCTION z_demo_abap_assignm_check_fm
+  IMPORTING
+    VALUE(serialized_obj) TYPE xstring
+  EXPORTING
+    VALUE(is_assignable) TYPE abap_boolean.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  DATA deserialized_oref TYPE REF TO zcl_demo_abap_check_assignment.
+  CALL TRANSFORMATION id SOURCE XML serialized_obj
+                         RESULT oref = deserialized_oref.
+
+  deserialized_oref->target->* = deserialized_oref->source->*.
+
+  "If the prvious assignment does not work, the exeuction is terminated, and the
+  "following assignment is not done, i.e. is_assignable remains abap_false.
+  is_assignable = abap_true.
+
+ENDFUNCTION.
+```
+
+</details>
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 

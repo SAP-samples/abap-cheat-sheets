@@ -1251,8 +1251,8 @@ INTO @DATA(wa).
 
 ## More Information
 
-- [Date and Time Processing](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendate_time_processing.htm)
-- In [ABAP for Cloud Development](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_for_cloud_dev_glosry.htm), do not use the date and time-related system fields such as `sy-datum`, `sy-uzeit`, `sy-timlo`, and `sy-datlo`.
+[Date and Time Processing](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendate_time_processing.htm) in the ABAP Keyword Documentation.
+
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
