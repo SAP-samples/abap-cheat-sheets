@@ -5,9 +5,12 @@
 - [String Processing](#string-processing)
   - [Introduction](#introduction)
   - [Data Types for Character Strings](#data-types-for-character-strings)
+    - [Differences Between Text Strings (Variable Length) and Text Fields (Fixed Length)](#differences-between-text-strings-variable-length-and-text-fields-fixed-length)
   - [Declaring Character-Like Data Objects](#declaring-character-like-data-objects)
   - [Assigning Values](#assigning-values)
   - [String Templates](#string-templates)
+    - [Control Characters in String Templates](#control-characters-in-string-templates)
+    - [Formatting Options in String Templates](#formatting-options-in-string-templates)
   - [Determining the Length of Strings](#determining-the-length-of-strings)
   - [Concatenating Strings](#concatenating-strings)
   - [Splitting Strings](#splitting-strings)
@@ -86,16 +89,16 @@ In addition to these main data types for character strings, there are several ot
 
 These data types are not covered further in this cheat sheet. The same is true for the [byte-like data types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbyte_like_data_typ_glosry.htm "Glossary Entry") `x` and `xstring` that are closely related to `c` and `string` but contain raw [byte strings](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbyte_string_glosry.htm).
 
-> **⚡ Differences between text strings (variable length) and text fields (fixed length)**<br>
->-   **Initial value**: The initial value of a text string is an
+### Differences Between Text Strings (Variable Length) and Text Fields (Fixed Length)
+- **Initial value**: The initial value of a text string is an
     empty string of length 0. The initial value of text field is represented by blanks at each position.
->-   **Internal representation**: Data objects of type `c` and `string` are both [elementary data objects](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenelementary_data_object_glosry.htm "Glossary Entry").
+-   **Internal representation**: Data objects of type `c` and `string` are both [elementary data objects](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenelementary_data_object_glosry.htm "Glossary Entry").
     However, while text fields occupy a block of memory according to their length, text strings are so-called [deep](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendeep_glosry.htm "Glossary Entry") data objects. Internally, they are managed by a [reference](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenreference_glosry.htm "Glossary Entry") that points to the actual character. This fact has restrictive consequences for the use of strings as components of structures, but can also improve the performance of assignments due to the concept of [sharing](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensharing_glosry.htm "Glossary Entry") of deep data objects.
->-   **Length**: Theoretically, a text string can use up to 2 GB (one character occupies 2 bytes).
+- **Length**: Theoretically, a text string can use up to 2 GB (one character occupies 2 bytes).
     The maximum length of a text field is 262143 characters.
->-   **Trailing blanks**: For text strings, trailing blanks are preserved in all operations. For text fields, it depends on the [operand
+- **Trailing blanks**: For text strings, trailing blanks are preserved in all operations. For text fields, it depends on the [operand
     position](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenoperand_position_glosry.htm "Glossary Entry") whether trailing blanks are respected or not. In most operand positions, trailing blanks are truncated when working with text fields, even when using [text field literals](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abentext_field_literal_glosry.htm). For example, if a text field is assigned to a text string, the resulting target string will never contain trailing blanks. See the *Condensing Strings* section in this context.
->-   **Flexibility**: Text strings are more flexible than text fields
+- **Flexibility**: Text strings are more flexible than text fields
     because you can easily shorten or lengthen them without
     worrying that, for example, parts of the character string will be
     truncated during processing. On the other hand, when accessing substrings of a string, you have to make sure that the string is long enough, whereas with text fields you always know their length.
@@ -266,6 +269,7 @@ expression](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm
 that is compiled at runtime. Therefore, a string template that contains only
 literal text is treated as an expression, which has a performance impact. In such a case, it is preferable to use a text string literal with backquotes.
 > - It is possible to dynamically specify formatting options. For more information, refer to the [Dynamic Formatting Option Specifications in String Templates](/06_Dynamic_Programming.md#dynamic-formatting-option-specifications-in-string-templates) section of the *Dynamic Programming* cheat sheet.
+> - Escape `\|{}` in string templates using `\`, i. e. `\\` means `\`.
 
 Syntax examples:
 ``` abap
@@ -306,45 +310,62 @@ DATA(s10) = |Current UTC time stamp: { utclong_current( ) }|.
 
 "HALLO!
 DATA(s11) = |{ to_upper( s5 ) }|.
+
+"\ | { }
+DATA(s12) = |\\ \| \{ \}|.
 ```
 
+### Control Characters in String Templates
 - String templates interpret certain character combinations as [control
 characters](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenstring_templates_separators.htm).
 - For example, `\n` is interpreted as a newline. A new line is
 started. 
-- String templates also support various [formatting
-options](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapcompute_string_format_options.htm).
-- Refer to the ABAP Keyword Documentation for all options.
 
 The following syntax examples demonstrate a selection:
 ```abap
-"Control characters
-s4 = |{ s1 }\n{ s2 }\nSee you.|. "\n is interpreted as a line feed
+"\n is interpreted as a line feed
+DATA(s1) = `Hello`.
+DATA(s2) = `World`.
+DATA(s3) = |{ s1 }\n{ s2 }\nHow are you\n?|.
 
-"Excursion: Class CL_ABAP_CHAR_UTILITIES provides attributes and methods as utilities for string processing.
-"See the class documentation
+*Hello
+*World
+*How are you
+*?
+
+"Excursion: The CL_ABAP_CHAR_UTILITIES class provides attributes and methods as utilities for string processing.
 "The following examples demonstrate that attributes that contain control characters can be replaced by
 "a representation of control characters in a string template.
 ASSERT cl_abap_char_utilities=>newline        = |\n|.
 ASSERT cl_abap_char_utilities=>horizontal_tab = |\t|.
 ASSERT cl_abap_char_utilities=>cr_lf          = |\r\n|.
+```
 
-"Various formatting options
-"DATE: Defining the format of a date
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+### Formatting Options in String Templates
+- String templates support various formatting options.
+- The following syntax examples demonstrate a selection. For information about all options, refer to [this topic](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapcompute_string_format_options.htm) in the ABAP Keyword Documentation.
+
+```abap
+"---------------------- DATE ----------------------
+"Defining the format of a date
 "The output is just an example and depends on your settings.
 DATA(d) = |The date is { cl_abap_context_info=>get_system_date( ) DATE = USER }.|. "The date is 01/01/2024.
 d = |{ cl_abap_context_info=>get_system_date( ) DATE = RAW }|. "20240101
 d = |{ cl_abap_context_info=>get_system_date( ) DATE = ISO }|. "2024-01-01
 d = |{ cl_abap_context_info=>get_system_date( ) DATE = ENVIRONMENT }|. "01/01/2024
 
-"TIME: Defining the format of a time 
+"---------------------- TIME ----------------------
+"Defining the format of a time 
 "The output is just an example and depends on your settings.
 DATA(tm) = |The time is { cl_abap_context_info=>get_system_time( ) TIME = ISO }.|. "The time is 14:37:24.
 tm = |{ cl_abap_context_info=>get_system_time( ) TIME = RAW }|. "143724
 tm = |{ cl_abap_context_info=>get_system_time( ) TIME = USER }|. "14:37:24
 tm = |{ cl_abap_context_info=>get_system_time( ) TIME = ENVIRONMENT }|. "14:37:24
 
-"TIMESTAMP: Defining the format of a time stamp
+"---------------------- TIMESTAMP ----------------------
+"Defining the format of a time stamp
 "The output is just an example and depends on your settings.
 DATA(ts) = |{ utclong_current( ) TIMESTAMP = SPACE }|. "2024-01-01 14:39:50.4069170
 ts = |{ utclong_current( ) TIMESTAMP = ISO }|. "2024-01-01T14:39:50,4071110
@@ -352,28 +373,32 @@ ts = |{ utclong_current( ) TIMESTAMP = USER }|. "01/01/2024 14:39:50.4072010
 ts = |{ utclong_current( ) TIMESTAMP = ENVIRONMENT }|. "01/01/2024 14:39:50.4073230
 ts = |{ utclong_current( ) }|. "2024-01-01 14:39:50.4074060 
 
-"TIMEZONE: Defining the format of a time stamp using the rules for time zones
+"---------------------- TIMEZONE ----------------------
+"Defining the format of a time stamp using the rules for time zones
 DATA(tz) = |{ utclong_current( ) TIMEZONE = 'UTC' }|. "2024-12-30 14:43:20.6534640
 tz = |{ utclong_current( ) TIMEZONE = 'CET' COUNTRY = 'DE ' }|. "30.12.2024 15:43:20,6536320
 tz = |{ utclong_current( ) TIMEZONE = 'EST' COUNTRY = 'US ' }|. "12/30/2024 09:43:20.6889180 AM
 
-"CASE: Lowercase and uppercase
+"---------------------- CASE ----------------------
+"Lowercase and uppercase
 s1 = |AbCdEfG|.
 s2 = |{ s1 CASE = LOWER }|. "abcdefg
 s2 = |{ s1 CASE = UPPER }|. "ABCDEFG
 
-"WIDTH/ALIGN
+"---------------------- WIDTH/ALIGN ----------------------
 s1 = `##`.
 s2 = |{ s1 WIDTH = 10 ALIGN = LEFT }<---|.   "'##        <---'
 s2 = |{ s1 WIDTH = 10 ALIGN = CENTER }<---|. "'    ##    <---'
 
-"PAD: Used to pad any surplus places in the result with the specified character.
+"---------------------- PAD ----------------------
+"Used to pad any surplus places in the result with the specified character.
 s2 = |{ s1 WIDTH = 10 ALIGN = RIGHT PAD = `.` }<---|. "'........##<---'
 
-"DECIMALS
+"---------------------- DECIMALS ----------------------
 s1 = |{ CONV decfloat34( - 1 / 3 ) DECIMALS = 3 }|. "'-0.333'
 
-"SIGN: Defining the format of the +/- sign when the string represented
+"---------------------- SIGN ----------------------
+"Defining the format of the +/- sign when the string represented
 "by the embedded expression represents a numeric value
 "- left without space, no +
 s1 =  |{ +1 SIGN = LEFT }|. "1
@@ -388,11 +413,13 @@ s1 =  |{ 1 SIGN = RIGHTPLUS }|. "1+
 "- left without space, blank right for +
 s1 =  |{ +1 SIGN = RIGHTSPACE }|. "1
 
-"ZERO: Defining the format of the numeric value zero.
+"---------------------- ZERO ----------------------
+"Defining the format of the numeric value zero.
 "Only to be specified if the embedded expression has a numeric data type.
 s1 = |'{ 0 ZERO = NO }' and '{ 0 ZERO = YES }'|. "'' and '0'
 
-"XSD: Formatting is applied to an embedded expression (elementary data types) in asXML format that is
+"---------------------- XSD ----------------------
+"Formatting is applied to an embedded expression (elementary data types) in asXML format that is
 "assigned to its data type. Check the information in the ABAP Keyword Documentation about the asXML
 "mapping of elementary ABAP types.
 DATA xstr TYPE xstring  VALUE `41424150`.
@@ -405,7 +432,8 @@ s1 = |{ dat XSD = YES }|. "2024-01-01
 s1 = |{ tim XSD = YES }|. "12:34:56
 s1 = |{ utc XSD = YES }|. "2024-01-01T13:51:38.57088Z
 
-"STYLE: Defining the style of decimal floating point numbers;
+"---------------------- STYLE ----------------------
+"Defining the style of decimal floating point numbers;
 "see the details in the ABAP Keyword Documentation.
 DATA(dcfl34) = CONV decfloat34( '-123.45600' ).
 s1 = |{ dcfl34 }|. "-123.456
@@ -424,7 +452,8 @@ s1 = |{ dcfl34 STYLE = SCALE_PRESERVING_SCIENTIFIC }|. "-1.2345600E+0002
 "Technical format
 s1 = |{ dcfl34 STYLE = ENGINEERING }|. "-123.456E+00
 
-"ALPHA: Adds or removes leading zeros from strings of digits; the data type
+"---------------------- ALPHA ----------------------
+"Adds or removes leading zeros from strings of digits; the data type
 "must be string, c, or n
 "Adding leading zeros
 "Additionally specifying WIDTH
@@ -439,9 +468,6 @@ s1 = |{ '00001234' ALPHA = OUT }|. "1234
 "Do not apply formatting
 s1 = |{ '00001234' ALPHA = RAW }|. "00001234
 ```
-
-> **💡 Note**<br>
-> Escape `\|{}` in string templates using `\`, i. e. `\\` means `\`.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
@@ -1240,7 +1266,7 @@ FIND FIRST OCCURRENCE OF `Z`
 ### String Function find
 - Built-in search functions, such as `find`, are available for searching strings.
 - They return a return value of type i and contain multiple (optional) parameters.
-- `FIND` covers the same functionality and more with the many addition options.
+- `FIND` covers the same functionality and more with the many addition options (e.g. searching in tables).
 - For more information, see [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensearch_functions.htm)
 
 Parameters of the `find` function:
@@ -1322,7 +1348,7 @@ ENDTRY.
 
 - [`REPLACE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapreplace.htm) and [`REPLACE ... IN TABLE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapreplace_itab.htm) statements have a similar syntax as `FIND` and `FIND ... IN TABLE` statements. Refer to the ABAP Keyword Documentation for all possible additions. The following code snippets cover a selection.
 - `sy-subrc` is set: 0 (search pattern or section was replaced by the specified content, result was not truncated on the right), 2 (search pattern or section was replaced, result was truncated on the right), 4	(search pattern was not found).
--  `REPLACE` statements can be used to directly replace strings (including substrings, which is not possible with the string function).   
+-  `REPLACE` statements can be used to directly replace strings (including substrings, which is not possible with the string function `replace` covered below).   
 
 ``` abap
 "Examples for pattern-based replacements in which data objects are searched for character strings 
@@ -1564,7 +1590,7 @@ help you process strings effectively.
 > Do not use [POSIX
 regular
 expressions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenposix_regex_glosry.htm "Glossary Entry")
-anymore, they are obsolete.
+anymore. They are obsolete.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
@@ -2074,7 +2100,7 @@ IF s8 NP `*c#D*`. ... "false; sy-fdpos: 2
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ### Miscellaneous Classes for String Processing 
-The following list (as also covered in the [Misc ABAP Classes cheat sheet](22_Misc_ABAP_Classes.md)) shows a selected set of classes that support string processing.
+As also covered in the [Misc ABAP Classes](22_Misc_ABAP_Classes.md) cheat sheet, the following list shows a selected set of classes that support string processing.
 
 - `CL_ABAP_CHAR_UTILITIES`: As previously mentioned, this class provides utilities for string processing, such as attributes that represent new lines and horizontal tabs.
 

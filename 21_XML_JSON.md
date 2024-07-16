@@ -9,7 +9,7 @@
     - [sXML](#sxml)
   - [XML Transformations](#xml-transformations)
   - [CALL TRANSFORMATION Syntax](#call-transformation-syntax)
-  - [Dealing with JSON](#dealing-with-json)
+  - [Working with JSON](#working-with-json)
   - [Excursions](#excursions)
     - [Converting string \<-\> xstring](#converting-string---xstring)
     - [Compressing and Decompressing Binary Data](#compressing-and-decompressing-binary-data)
@@ -513,7 +513,7 @@ CALL TRANSFORMATION ... SOURCE ...
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-## Dealing with JSON
+## Working with JSON
 - You can ..
   - create and read JSON data in ABAP using the readers and writers in the sXML library. See the processing of XML data in the sXML section above. Parsing and rendering JSON data works in a similar way. However, instead of using XML readers/writers, you use JSON readers/writers.
   - transform ABAP to and from JSON data using transformations. You can directly transform ABAP <-> JSON using identity transformation (ID). In this context, note the intermediate format asJSON (see the notes on asXML above).
@@ -542,30 +542,59 @@ CALL TRANSFORMATION id SOURCE XML json
                        RESULT hi = str_b.
 "str_b: Hello
 
-"ABAP -> formatted JSON
-"In this example, an internal table is transformed to JSON. 
-"A cast is included for the writer (if_sxml_writer) to access special methods. 
-"See comments in the sXML section.
-DATA(str_table) = value string_table( ( `abc` ) ( `def` ) ( `ghi` ) ).
+"ABAP -> (un)formatted JSON
+"In this example, an internal table is transformed to JSON.
+TYPES: BEGIN OF demo_struc,
+          comp1 TYPE i,
+          comp2 TYPE string,
+          comp3 TYPE abap_boolean,
+        END OF demo_struc,
+        tab_type TYPE TABLE OF demo_struc WITH EMPTY KEY.
+DATA(it) = VALUE tab_type( ( comp1 = 1 comp2 = `abc` comp3 = abap_true )
+                            ( comp1 = 2 comp2 = `def` comp3 = abap_false )
+                            ( comp1 = 3 comp2 = `ghi` comp3 = abap_true ) ).
+
 DATA(json_wr) = cl_sxml_string_writer=>create( type = if_sxml=>co_xt_json ).
-DATA(json_wr_cast) = CAST if_sxml_writer( json_wr ).
 
-"With the following method calls, the result is formatted.
-json_wr_cast->set_option( option = if_sxml_writer=>co_opt_linebreaks ).
-json_wr_cast->set_option( option = if_sxml_writer=>co_opt_indent ).
-
-CALL TRANSFORMATION id SOURCE itab = str_table
+CALL TRANSFORMATION id SOURCE itab = it
                        RESULT XML json_wr.
 
-DATA(json_formatted) = cl_abap_conv_codepage=>create_in( )->convert( json_wr->get_output( ) ).
+DATA(json_output_xstr) = json_wr->get_output( ).
+DATA(json_unformatted) = cl_abap_conv_codepage=>create_in( )->convert( json_output_xstr ).
 
-*json_formatted:
+*{"ITAB":[{"COMP1":1,"COMP2":"abc","COMP3":"X"},{"COMP1":2,"COMP2":"def","COMP3":""},{"COMP1":3,"COMP2":"ghi","COMP3":"X"}]}
+
+"A cast is included for the writer (if_sxml_writer) to access special methods.
+"See comments in the sXML section.
+DATA(json_wr_formatting) = CAST if_sxml_writer( cl_sxml_string_writer=>create( type = if_sxml=>co_xt_json ) ).
+
+"With the following method calls, the result is formatted.
+json_wr_formatting->set_option( option = if_sxml_writer=>co_opt_linebreaks ).
+json_wr_formatting->set_option( option = if_sxml_writer=>co_opt_indent ).
+
+CALL TRANSFORMATION id SOURCE itab = it
+                       RESULT XML json_wr_formatting.
+
+DATA(json_formatted) = cl_abap_conv_codepage=>create_in( )->convert( CAST cl_sxml_string_writer( json_wr_formatting )->get_output( ) ).
+
 *{
 * "ITAB":
 * [
-*  "abc",
-*  "def",
-*  "ghi"
+*  {
+*   "COMP1":1,
+*   "COMP2":"abc",
+*   "COMP3":"X"
+*  },
+*  {
+*   "COMP1":2,
+*   "COMP2":"def",
+*   "COMP3":""
+*  },
+*  {
+*   "COMP1":3,
+*   "COMP2":"ghi",
+*   "COMP3":"X"
+*  }
 * ]
 *}
 ```

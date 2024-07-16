@@ -33,8 +33,8 @@
       - [Example: Exploring the RTTI Type Hierarchy](#example-exploring-the-rtti-type-hierarchy)
       - [Excursion: Inline Declaration, CAST Operator, Method Chaining](#excursion-inline-declaration-cast-operator-method-chaining)
       - [Absolute Names](#absolute-names)
-    - [Dynamically Creating Data Types at Runtime](#dynamically-creating-data-types-at-runtime)
-    - [Dynamically Creating Data Objects at Runtime](#dynamically-creating-data-objects-at-runtime)
+    - [Dynamically Creating Data Types at Runtime (Type Description Objects)](#dynamically-creating-data-types-at-runtime-type-description-objects)
+    - [Dynamically Creating Data Objects at Runtime Using Type Description Objects](#dynamically-creating-data-objects-at-runtime-using-type-description-objects)
   - [More Information](#more-information)
   - [Executable Example](#executable-example)
 
@@ -3195,9 +3195,9 @@ ENDTRY.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-### Dynamically Creating Data Types at Runtime
+### Dynamically Creating Data Types at Runtime (Type Description Objects)
 You can create data types at program runtime using methods of the type description classes of RTTS.
-These types are only valid locally in the program. They are also anonymous, i.e. they are only accessible through type description objects.
+These types are only valid locally in the program. They are also anonymous, i.e. they are only accessible through [type description objects](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentype_object_glosry.htm).
 As shown above, you can get a reference to a type description object of a type using the static methods of the class `CL_ABAP_TYPEDESCR`. You can use type description objects such as `type_descr_obj` of the example to create data objects dynamically with `CREATE DATA` statements and the `TYPE HANDLE` addition as shown further down.
 ```abap
 "For example, a structured type
@@ -3315,7 +3315,7 @@ DATA(tdo_ref_4) = cl_abap_refdescr=>get_by_name( 'ZCL_DEMO_ABAP_DYNAMIC_PROG' ).
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-### Dynamically Creating Data Objects at Runtime
+### Dynamically Creating Data Objects at Runtime Using Type Description Objects
 
 As shown above, anonymous data objects can be dynamically created using `CREATE DATA` statements in many ways by specifying the type ...
 - statically: `CREATE DATA dref TYPE string.`

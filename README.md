@@ -152,7 +152,7 @@ https://github.com/SAP-samples/abap-cheat-sheets.git
 </details>
 
 <details>
-  <summary>2b) System supportig classic ABAP</summary>
+  <summary>2b) System supporting classic ABAP</summary>
 <br>
 
 **Prerequisites**

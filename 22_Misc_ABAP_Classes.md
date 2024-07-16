@@ -2301,6 +2301,14 @@ ENDTRY.
 <li>For creating a client object using an HTTP destination. The HTTP destination is provided based on an HTTP destination object.
 The latter can be created, among others, based on a communication arrangement or a plain URL. </li>
 <li>For more information, refer to the class documentation and the topic <a href="https://help.sap.com/docs/btp/sap-business-technology-platform/integration-and-connectivity">Integration and Connectivity</a>.</li>
+<li>To check out the classes in an example, expand the collapsible section below.</li>
+</ul>
+
+<details>
+  <summary>Expand to view an example</summary>
+  <!-- -->
+
+<ul>
 <li>⚠️ Notes on the example</li>
 <ul>
 <li>The following self-contained and oversimplified example is not a representative best practice example, nor does it cover a meaningful use case. 
@@ -2532,6 +2540,9 @@ CLASS zcl_some_class IMPLEMENTATION.
   ENDMETHOD.
 ENDCLASS.
 ``` 
+</details>  
+
+
 
 </td>
 </tr>

@@ -65,7 +65,7 @@ It provides references to more detailed information on the topic.
       - Although the source code provides an invalid data source, the dynamic ABAP SQL statement does not produce a syntax error during compilation. However, it would result in a runtime error because you cannot select from that data source. You can check the validity of dynamic specifications using the `cl_abap_dyn_prg` class, which supports dynamic programming. 
       - The addition `USING CLIENT` for client handling is not allowed in the restricted ABAP language scope. 
     - When using APIs and types like `string_table`, ensure that they are released. The `IF_OO_ADT_CLASSRUN` interface is released, and you can implement it to run an ABAP class. In ADT, you can do this by choosing *F9*. However, the example class will not run because the class cannot be activated due to the syntax errors. To output the content of data objects, you can use `out->write( ... )` in the `main` method. 
-    - The example includes a selection of deprecated and invalid syntax in ABAP for Cloud Development. It includes the invalid statement `MOVE ... TO` and others that are included for demonstration purposes (some alternatives are provided). Certain system fields should not be accessed. The pointless `WRITE` statement within the method implementation represents invalid classic ABAP UI-related statements. Executable programs (*reports*) are not allowed in the restricted ABAP language scope. To set breakpoints in ADT, double-click the area to the left of the code line number.
+    - The example includes a selection of deprecated and invalid syntax in ABAP for Cloud Development. It includes the invalid statement `MOVE ... TO` and others that are added for demonstration purposes (some alternatives are provided). Certain system fields should not be accessed. The pointless `WRITE` statement within the method implementation represents invalid classic ABAP UI-related statements. Executable programs (*reports*) are not allowed in the restricted ABAP language scope. To set breakpoints in ADT, double-click the area to the left of the code line number.
 
     ```abap
     CLASS zcl_some_class DEFINITION
@@ -92,16 +92,22 @@ It provides references to more detailed information on the topic.
         SELECT carrid, connid FROM zdemo_abap_fli USING CLIENT @clnt WHERE carrid = 'LH' INTO TABLE @DATA(it3).
 
         "(Not) released APIs
-        "Getting a random integer
+        "Released API: Getting a random integer
         DATA(random_num) = cl_abap_random_int=>create( seed = cl_abap_random=>seed( )
-                                                      min  = 1
-                                                      max  = 100 )->get_next( ).
+                                                       min  = 1
+                                                       max  = 100 )->get_next( ).
 
-        "Possible alternatives to the system fields used below
-        DATA(sys_date) = cl_abap_context_info=>get_system_date( ).
-        DATA(sys_time) = cl_abap_context_info=>get_system_time( ).
+        "Released APIs from the XCO library
+        "Retrieving the current user date
+        DATA(user_date) = xco_cp=>sy->date( xco_cp_time=>time_zone->user 
+                               )->as( xco_cp_time=>format->iso_8601_extended 
+                               )->value.
+        "Retrieving the current user time
+        DATA(user_time) = xco_cp=>sy->time( xco_cp_time=>time_zone->user
+                               )->as( xco_cp_time=>format->iso_8601_extended
+                               )->value.
 
-        "Querying whether the current database supports AMDP methods
+        "Not released API: Querying whether the current database supports AMDP methods
         DATA(amdp_allowed) = xsdbool( cl_abap_dbfeatures=>use_features(
           EXPORTING requested_features = VALUE #( ( cl_abap_dbfeatures=>call_amdp_method ) ) ) ).
 
@@ -109,23 +115,30 @@ It provides references to more detailed information on the topic.
         DATA(num1) = 1.
         DATA(num2) = 1.
         DATA(num3) = 2.
+        "Invalid statement for an assignment
         MOVE num3 TO num1.
+        "Using the assignment operator
         num2 = num3.
 
         DATA(it4) = VALUE string_table( ( `a` ) ( `b` ) ( `c` ) ).
+        "Invalid statement for determining the number of lines in an internal table
         DESCRIBE TABLE it4 LINES DATA(num_lines1).
         DATA(num_lines2) = lines( it4 ).
 
         DATA: ref1 TYPE REF TO i,
               ref2 TYPE REF TO i.
 
+        "Deprecated statement for references
         GET REFERENCE OF num1 INTO ref1.
+        "Using the REF operator instead
         ref2 = REF #( num1 ).
 
+        "Various sy components should not be used in ABAP for Cloud Development
         DATA(current_time) = sy-uzeit.
         DATA(current_date) = sy-datum.        
 
         DATA str_itab TYPE string_table.
+        "Various invalid statements 
         READ REPORT 'ZCL_DEMO_ABAP_UNIT_TEST=======CCAU' INTO str_itab.
         WRITE 'hi'.
         BREAK-POINT.

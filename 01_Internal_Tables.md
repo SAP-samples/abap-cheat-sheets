@@ -1630,7 +1630,7 @@ READ TABLE it_so REFERENCE INTO DATA(dref) INDEX 2.
 
 "Modification via dereferencing
 
-ref->b = 4.
+dref->b = 4.
 
 "Table expressions
 
