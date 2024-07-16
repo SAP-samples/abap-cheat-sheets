@@ -1240,13 +1240,13 @@ CONSTANTS con_a_i TYPE i VALUE 789.
 "  dynamic data objects.
 
 "Static data object
-DATA do_h_c5 TYPE c LENGTH 3.
+DATA do_h_c3 TYPE c LENGTH 3.
 "Dynamic data object
 DATA do_i_str TYPE string.
 
 "Assignments
-do_h_c5 = 'abc'.
-do_h_c5 = 'defghi'. "only 'def' assigned -> length and memory use do not change
+do_h_c3 = 'abc'.
+do_h_c3 = 'defghi'. "only 'def' assigned -> length and memory use do not change
 
 "Memory consumption changes for dynamic data objects
 do_i_str = `abc`.
