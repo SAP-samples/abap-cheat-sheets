@@ -34,7 +34,7 @@
   - [Executable Example](#executable-example)
 
 
-This ABAP cheat sheet covers options of how to handle and process dates, times, and time stamps in ABAP. Note the different types when working with them in ABAP, such as for calculations, evaluations, or displaying on a user interface.
+This ABAP cheat sheet covers options of how to handle and process dates, times, and time stamps in ABAP. Note the different types when working with them in ABAP, such as for calculations, evaluations, or displaying on a user interface. As with most of the ABAP cheat sheets, the focus here is on [ABAP for Cloud Development](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_for_cloud_dev_glosry.htm).
 
 ## Data Types for Date, Time and Time Stamp
 

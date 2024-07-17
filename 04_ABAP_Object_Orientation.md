@@ -710,7 +710,7 @@ ref1 = NEW #( ).                     "Type derived from already declared ref1
 DATA(ref2) = NEW some_class( ).      "Reference variable declared inline, explicit type
                                      "(class) specification
 
-"Old syntax. Do not use.
+"Older syntax
 "CREATE OBJECT ref3.                  "Type derived from already declared ref3
 "CREATE OBJECT ref4 TYPE some_class.  "Corresponds to the result of the expression above
 ```

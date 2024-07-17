@@ -11,6 +11,7 @@
   - [CALL TRANSFORMATION Syntax](#call-transformation-syntax)
   - [Working with JSON](#working-with-json)
   - [Excursions](#excursions)
+    - [Serializing and Deserializing Instances of Classes](#serializing-and-deserializing-instances-of-classes)
     - [Converting string \<-\> xstring](#converting-string---xstring)
     - [Compressing and Decompressing Binary Data](#compressing-and-decompressing-binary-data)
   - [More Information](#more-information)
@@ -421,7 +422,7 @@ Possible transformations, some of which are covered in the example:
 >   - Used as an intermediate format that defines a mapping between ABAP data and XML
 >   - Therefore, if you want to deserialize XML data in ABAP, you must first transform it to the asXML format.
 > - Make sure that you use appropriate exception classes for potential errors in transformations. See the section [Catchable Exceptions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapcall_transformation.htm) in the `CALL TRANSFORMATION` topic.
-> - For serializing instances of classes, find more information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenasxml_class_instances.htm) in the ABAP Keyword Documentation. The classes must implement the `IF_SERIALIZABLE_OBJECT` interface (find a demo in the executable example). 
+> - For serializing instances of classes, find more information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenasxml_class_instances.htm) in the ABAP Keyword Documentation. The classes must implement the `IF_SERIALIZABLE_OBJECT` interface (find a demo in the executable example and further down). 
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
@@ -674,6 +675,121 @@ xco_cp_json=>data->from_string( json_created_xco )->apply( VALUE #(
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## Excursions 
+
+### Serializing and Deserializing Instances of Classes
+
+For serializing instances of classes, find more information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenasxml_class_instances.htm) in the ABAP Keyword Documentation. The classes must implement the `IF_SERIALIZABLE_OBJECT` interface. 
+
+Expand the following collapsible section to view the code of an example. To try it out, create a demo class named `zcl_some_class` and paste the code into it. After activation, choose *F9* in ADT to execute the class. This example is set up to display the results in the console.
+
+<details>
+  <summary>Expand to view the details</summary>
+  <!-- -->
+
+When running the class, three instances of this class are created, and two instance attributes are assigned values for output purposes. The current UTC timestamp
+and a random number are retrieved and assigned. Then, the instances are serialized.
+The instances are deserialized again, and the instance attributes are accessed. Their values are stored in an internal table, which is then displayed. 
+
+
+```abap
+CLASS zcl_some_class DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
+
+  PUBLIC SECTION.
+    INTERFACES: if_oo_adt_classrun,
+                if_serializable_object.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+
+    DATA timestamp TYPE utclong.
+    DATA random_number TYPE i.
+    DATA serialized_obj_tab TYPE TABLE OF xstring WITH EMPTY KEY.
+
+    TYPES: BEGIN OF deserialized_obj_struc,
+             timestamp     TYPE utclong,
+             random_number TYPE i,
+           END OF deserialized_obj_struc.
+    DATA deserialized_obj_tab TYPE TABLE OF deserialized_obj_struc WITH EMPTY KEY.
+
+    METHODS:
+      "The following method can only have output parameters.
+      "For each output parameter of the serialize_helper method, you must specify
+      "an identically named input parameter of the deserialize_helper method
+      "with the same type.
+      "The example uses two instance attributes that are specified in the private
+      "visibility section.
+      serialize_helper EXPORTING timestamp     TYPE utclong
+                                 random_number TYPE i,
+      "This method can only have input parameters.
+      deserialize_helper IMPORTING timestamp     TYPE utclong
+                                   random_number TYPE i.
+ENDCLASS.
+
+
+
+CLASS zcl_some_class IMPLEMENTATION.
+
+  METHOD if_oo_adt_classrun~main.
+
+    "For demonstration purposes, 3 instances of the class are created and serialized.
+    "Two instance attributes are assigned values for output purposes (the current UTC timestamp
+    "and a random number are retrieved and assigned). The assigned values are also serialized and
+    "can be addressed after deserialization. The serialized instances of the class are added to an
+    "internal table which is processed below.
+    DO 3 TIMES.
+      DATA(oref) = NEW zcl_some_class( ).
+      oref->timestamp = utclong_current( ).
+      oref->random_number = cl_abap_random_int=>create( seed = cl_abap_random=>seed( )
+                                                        min  = 1
+                                                        max  = 100 )->get_next( ).
+
+      DATA serialized_obj TYPE xstring.
+      CALL TRANSFORMATION id SOURCE obj = oref
+                             RESULT XML serialized_obj.
+
+      APPEND serialized_obj TO serialized_obj_tab.
+    ENDDO.
+
+    "Deserializing instances of classes from above
+    "For output purposes, the values of the instance attributes are added to an
+    "internal table.
+    LOOP AT serialized_obj_tab INTO DATA(wa).
+      DATA deserialized_oref TYPE REF TO zcl_some_class.
+      CALL TRANSFORMATION id SOURCE XML wa
+                             RESULT obj = deserialized_oref.
+
+      "Addressing instance attributes after deserialization
+      DATA(deserialized_timestamp) = deserialized_oref->timestamp.
+      DATA(deserialized_random_number) = deserialized_oref->random_number.
+
+      APPEND VALUE #( timestamp = deserialized_timestamp
+                      random_number = deserialized_random_number
+                    ) TO deserialized_obj_tab.
+    ENDLOOP.
+
+    "The output is intended to visualize the deserialized instance of a class
+    "and the values of its instance attributes that should differ from line to
+    "line.
+    out->write( deserialized_obj_tab ).
+  ENDMETHOD.
+
+  METHOD deserialize_helper.
+    me->timestamp = timestamp.
+    me->random_number = random_number.
+  ENDMETHOD.
+
+  METHOD serialize_helper.
+    timestamp = me->timestamp.
+    random_number = me->random_number.
+  ENDMETHOD.
+ENDCLASS.
+```
+
+</details>  
+
+
 ### Converting string <-> xstring
 In the code snippets above and in the executable example, many operations are performed using binary data.
 This excursion shows the conversion of string <-> xstring using a codepage. The examples use UTF-8.

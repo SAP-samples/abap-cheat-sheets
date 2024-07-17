@@ -14,6 +14,7 @@
       - [Declaring Data Reference Variables](#declaring-data-reference-variables)
       - [Assigning References to Existing Data Objects](#assigning-references-to-existing-data-objects)
       - [Creating New Data Objects at Runtime (Anonymous Data Objects)](#creating-new-data-objects-at-runtime-anonymous-data-objects)
+      - [Excursion: Creating Objects as Instances of Classes and CREATE OBJECT Statements](#excursion-creating-objects-as-instances-of-classes-and-create-object-statements)
       - [Assignments Between Two Reference Variables (Static and Dynamic Type, Upcast and Downcast)](#assignments-between-two-reference-variables-static-and-dynamic-type-upcast-and-downcast)
       - [Addressing Data References](#addressing-data-references)
       - [Excursion: Generic Data References and Field Symbols](#excursion-generic-data-references-and-field-symbols)
@@ -420,10 +421,6 @@ ASSIGN s-oref TO <object>.
 - are typed with the addition [`REF TO`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abaptypes_references.htm) followed by a [static type](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenstatic_type_glosry.htm). Note the [dynamic type](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendynamic_type_glosry.htm) in this context: The dynamic type of such a variable is the data type to which it actually points. This concept is particularly relevant in the context of assignments (see the assignment rules [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconversion_references.htm)).
 - can be typed with a complete or generic type. However, only `data` can be used as generic type.
 
-> **💡 Note**<br>
-> [Object references](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenobject_reference_glosry.htm "Glossary Entry")
-and [object reference variables](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenobject_refer_variable_glosry.htm "Glossary Entry") are not part of this cheat sheet. To get more details, refer to the [ABAP Keyword Documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenobject_reference_type.htm) or the cheat sheet [ABAP Object Orientation](04_ABAP_Object_Orientation.md).
-
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
 #### Declaring Data Reference Variables
@@ -500,7 +497,6 @@ DATA(ref3) = REF some_type( ... ).
 
 > **💡 Note**<br>
 > The following snippet covers statically defined types. Data objects can also be created with `CREATE DATA` dynamically using dynamic type definitions (the type name is specified within a pair of parentheses) and type description objects ([`TYPE HANDLE` addition](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapcreate_data_handle.htm)) as shown further down. 
-> Using [`CREATE OBJECT`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapcreate_object.htm) statements, you can create an object as an instance of a class and assign the reference to the object to an [object reference variable](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenobject_refer_variable_glosry.htm). Find more information in the [ABAP Keyword Documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapcreate_object.htm).
 
 ```abap
 "CREATE DATA statements
@@ -574,6 +570,39 @@ SELECT SINGLE *
   FROM zdemo_abap_carr
   INTO NEW @DATA(dref_8). "structure
 ```  
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+#### Excursion: Creating Objects as Instances of Classes and CREATE OBJECT Statements
+
+- To create an object, a [reference variable](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenreference_variable_glosry.htm "Glossary Entry")
+must be declared.
+- Such an [object reference variable](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenobject_refer_variable_glosry.htm "Glossary Entry")
+is required to access objects and their components. That means objects are not directly accessed but only via references that point to those objects. This object reference variable contains the reference to the object - after assigning the reference to the object.
+- Using [`CREATE OBJECT`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapcreate_object.htm) statements, you can create an object as an instance of a class and assign the reference to the object to an [object reference variable](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenobject_refer_variable_glosry.htm). 
+- The instance operator [`NEW`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconstructor_expression_new.htm) basically replaces `CREATE OBJECT` statements. 
+- However, `CREATE OBJECT` statements are still required and they are the only option for creating objects dynamically (`NEW` is not possible in that context) as shown further down.
+- Note the use of the built-in generic ABAP type `object` (`TYPE REF TO object`) that is used for the generic typing of object references. It is for any object type. `object` stands for the root class of the inheritance hierarchy. More information: [Generic ABAP Types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbuilt_in_types_generic.htm)
+- Find more information in the [ABAP Keyword Documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapcreate_object.htm) and the [ABAP Object Orientation](04_ABAP_Object_Orientation.md) cheat sheet
+
+```abap
+DATA oref_a TYPE REF TO zcl_some_class.
+oref_a = NEW #( ).
+"Using Inline declaration
+DATA(oref_b) = NEW zcl_some_class( ).
+"Generic type
+DATA oref_c TYPE REF TO object.
+oref_c = NEW zcl_some_class( ).
+
+"This object creation with the NEW operator corresponds to the older 
+"syntax using CREATE OBJECT, and replaces it. See more examples in the 
+"context of dynamic object creation that require the CREATE OBJECT 
+"syntax further down.
+DATA oref_d TYPE REF TO zcl_some_class.
+CREATE OBJECT oref_d.
+DATA oref_e TYPE REF TO object.
+CREATE OBJECT oref_e TYPE zcl_some_class.
+```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
