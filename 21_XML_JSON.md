@@ -11,7 +11,7 @@
   - [CALL TRANSFORMATION Syntax](#call-transformation-syntax)
   - [Working with JSON](#working-with-json)
   - [Excursions](#excursions)
-    - [Serializing and Deserializing Instances of Classes](#serializing-and-deserializing-instances-of-classes)
+    - [Serializing and Deserializing Objects](#serializing-and-deserializing-objects)
     - [Converting string \<-\> xstring](#converting-string---xstring)
     - [Compressing and Decompressing Binary Data](#compressing-and-decompressing-binary-data)
   - [More Information](#more-information)
@@ -676,19 +676,110 @@ xco_cp_json=>data->from_string( json_created_xco )->apply( VALUE #(
 
 ## Excursions 
 
-### Serializing and Deserializing Instances of Classes
+### Serializing and Deserializing Objects
 
-For serializing instances of classes, find more information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenasxml_class_instances.htm) in the ABAP Keyword Documentation. The classes must implement the `IF_SERIALIZABLE_OBJECT` interface. 
+- To serialize and deserialize objects (i.e. instances of classes), you can use `CALL TRANSFORMATION` statements. As a prerequisite, the classes must implement the `IF_SERIALIZABLE_OBJECT` interface.
+- Find more information and examples [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenasxml_class_instances.htm) in the ABAP Keyword Documentation. 
 
-Expand the following collapsible section to view the code of an example. To try it out, create a demo class named `zcl_some_class` and paste the code into it. After activation, choose *F9* in ADT to execute the class. This example is set up to display the results in the console.
+
+Expand the following collapsible section to view the code of two simplified examples. To try them out, create a demo class named `zcl_some_class` and paste the code into it. After activation, choose *F9* in ADT to execute the class. The examples are set up to display output in the console.
 
 <details>
   <summary>Expand to view the details</summary>
   <!-- -->
 
-When running the class, three instances of this class are created, and two instance attributes are assigned values for output purposes. The current UTC timestamp
-and a random number are retrieved and assigned. Then, the instances are serialized.
-The instances are deserialized again, and the instance attributes are accessed. Their values are stored in an internal table, which is then displayed. 
+- When the class runs, it creates three instances, and three instance attributes are assigned values for each instance: the current UTC timestamp, a random number, and a UUID. 
+- These instances are then serialized and subsequently deserialized.
+- The instance attributes are accessed, and their values are stored in an internal table and displayed.
+
+
+**Example 1:** 
+
+- The example class implements the `IF_SERIALIZABLE_OBJECT` interface, using the standard behavior to serialize and deserialize all instance attributes (i.e. the helper methods mentioned below are not implemented). 
+- The values of of all deserialized instance attributes are displayed.
+
+```abap
+CLASS zcl_some_class DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
+
+  PUBLIC SECTION.
+    INTERFACES: if_oo_adt_classrun,
+      if_serializable_object.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+    DATA timestamp TYPE utclong.
+    DATA random_number TYPE i.
+    DATA uuid TYPE sysuuid_x16.
+
+ENDCLASS.
+
+
+
+CLASS zcl_some_class IMPLEMENTATION.
+
+  METHOD if_oo_adt_classrun~main.
+
+    DATA serialized_obj_tab TYPE string_table.
+    TYPES: BEGIN OF deserialized_obj_struc,
+             timestamp     TYPE utclong,
+             random_number TYPE i,
+             uuid          TYPE sysuuid_x16,
+           END OF deserialized_obj_struc.
+    DATA deserialized_obj_tab TYPE TABLE OF deserialized_obj_struc WITH EMPTY KEY.
+
+    "Creating objects, assigning values to instance attributes, and serializing objects
+    DO 3 TIMES.
+      DATA(oref) = NEW zcl_some_class( ).
+      oref->timestamp = utclong_current( ).
+      oref->random_number = cl_abap_random_int=>create( seed = cl_abap_random=>seed( )
+                                                        min  = 1
+                                                        max  = 100 )->get_next( ).
+
+      TRY.
+          oref->uuid = cl_system_uuid=>create_uuid_x16_static( ) .
+        CATCH cx_uuid_error.
+      ENDTRY.
+
+      DATA serialized_obj TYPE string.
+      CALL TRANSFORMATION id SOURCE obj = oref
+                             RESULT XML serialized_obj.
+
+      APPEND serialized_obj TO serialized_obj_tab.
+    ENDDO.
+
+    "Deserializing objects
+    LOOP AT serialized_obj_tab INTO DATA(wa).
+      DATA deserialized_obj TYPE REF TO zcl_some_class.
+      CALL TRANSFORMATION id SOURCE XML wa
+                             RESULT obj = deserialized_obj.
+
+      "Addressing instance attributes after deserialization
+      DATA(deserialized_timestamp) = deserialized_obj->timestamp.
+      DATA(deserialized_random_number) = deserialized_obj->random_number.
+      DATA(deserialized_uuid) = deserialized_obj->uuid.
+
+      "Adding deserialized instance attribute values to an internal table
+      APPEND VALUE #( timestamp = deserialized_timestamp
+                      random_number = deserialized_random_number
+                      uuid = deserialized_uuid
+                    ) TO deserialized_obj_tab.
+    ENDLOOP.
+
+    out->write( deserialized_obj_tab ).
+  ENDMETHOD.
+
+ENDCLASS.
+```
+
+**Example 2:** 
+
+- The example class implements the `IF_SERIALIZABLE_OBJECT` interface, along with the `SERIALIZE_HELPER` and `DESERIALIZE_HELPER` methods. 
+- These methods allow you to modify the standard behavior. Both methods must be implemented together, or not at all. If neither is implemented, the standard behavior applies. 
+- The methods must be declared as private instance methods. The `SERIALIZE_HELPER` method only has output parameters, while `DESERIALIZE_HELPER` only has input parameters. Any parameter specified for the `SERIALIZE_HELPER` method must have an identically named and typed parameter in the `DESERIALIZE_HELPER` method.
+- For example, you can implement these methods if you want to exclude certain attributes from (de)serialization. 
+- In the given example, one of the instance attributes is excluded from (de)serialization. As a result, the output only includes initial values for one of the attributes.
 
 
 ```abap
@@ -699,32 +790,19 @@ CLASS zcl_some_class DEFINITION
 
   PUBLIC SECTION.
     INTERFACES: if_oo_adt_classrun,
-                if_serializable_object.
+      if_serializable_object.
   PROTECTED SECTION.
   PRIVATE SECTION.
-
     DATA timestamp TYPE utclong.
     DATA random_number TYPE i.
-    DATA serialized_obj_tab TYPE TABLE OF xstring WITH EMPTY KEY.
-
-    TYPES: BEGIN OF deserialized_obj_struc,
-             timestamp     TYPE utclong,
-             random_number TYPE i,
-           END OF deserialized_obj_struc.
-    DATA deserialized_obj_tab TYPE TABLE OF deserialized_obj_struc WITH EMPTY KEY.
+    DATA uuid TYPE sysuuid_x16.
 
     METHODS:
-      "The following method can only have output parameters.
-      "For each output parameter of the serialize_helper method, you must specify
-      "an identically named input parameter of the deserialize_helper method
-      "with the same type.
-      "The example uses two instance attributes that are specified in the private
-      "visibility section.
       serialize_helper EXPORTING timestamp     TYPE utclong
                                  random_number TYPE i,
-      "This method can only have input parameters.
       deserialize_helper IMPORTING timestamp     TYPE utclong
                                    random_number TYPE i.
+
 ENDCLASS.
 
 
@@ -733,11 +811,15 @@ CLASS zcl_some_class IMPLEMENTATION.
 
   METHOD if_oo_adt_classrun~main.
 
-    "For demonstration purposes, 3 instances of the class are created and serialized.
-    "Two instance attributes are assigned values for output purposes (the current UTC timestamp
-    "and a random number are retrieved and assigned). The assigned values are also serialized and
-    "can be addressed after deserialization. The serialized instances of the class are added to an
-    "internal table which is processed below.
+    DATA serialized_obj_tab TYPE string_table.
+    TYPES: BEGIN OF deserialized_obj_struc,
+             timestamp     TYPE utclong,
+             random_number TYPE i,
+             uuid          TYPE sysuuid_x16,
+           END OF deserialized_obj_struc.
+    DATA deserialized_obj_tab TYPE TABLE OF deserialized_obj_struc WITH EMPTY KEY.
+
+    "Creating objects, assigning values to instance attributes, and serializing objects
     DO 3 TIMES.
       DATA(oref) = NEW zcl_some_class( ).
       oref->timestamp = utclong_current( ).
@@ -745,34 +827,42 @@ CLASS zcl_some_class IMPLEMENTATION.
                                                         min  = 1
                                                         max  = 100 )->get_next( ).
 
-      DATA serialized_obj TYPE xstring.
+      TRY.
+          oref->uuid = cl_system_uuid=>create_uuid_x16_static( ) .
+        CATCH cx_uuid_error.
+      ENDTRY.
+
+      DATA serialized_obj TYPE string.
       CALL TRANSFORMATION id SOURCE obj = oref
                              RESULT XML serialized_obj.
 
       APPEND serialized_obj TO serialized_obj_tab.
     ENDDO.
 
-    "Deserializing instances of classes from above
-    "For output purposes, the values of the instance attributes are added to an
-    "internal table.
+    "Deserializing objects
     LOOP AT serialized_obj_tab INTO DATA(wa).
-      DATA deserialized_oref TYPE REF TO zcl_some_class.
+      DATA deserialized_obj TYPE REF TO zcl_some_class.
       CALL TRANSFORMATION id SOURCE XML wa
-                             RESULT obj = deserialized_oref.
+                             RESULT obj = deserialized_obj.
 
       "Addressing instance attributes after deserialization
-      DATA(deserialized_timestamp) = deserialized_oref->timestamp.
-      DATA(deserialized_random_number) = deserialized_oref->random_number.
+      DATA(deserialized_timestamp) = deserialized_obj->timestamp.
+      DATA(deserialized_random_number) = deserialized_obj->random_number.
+      DATA(deserialized_uuid) = deserialized_obj->uuid.
 
+      "Adding deserialized instance attribute values to an internal table
       APPEND VALUE #( timestamp = deserialized_timestamp
                       random_number = deserialized_random_number
+                      uuid = deserialized_uuid
                     ) TO deserialized_obj_tab.
     ENDLOOP.
 
-    "The output is intended to visualize the deserialized instance of a class
-    "and the values of its instance attributes that should differ from line to
-    "line.
     out->write( deserialized_obj_tab ).
+  ENDMETHOD.
+
+  METHOD serialize_helper.
+    timestamp = me->timestamp.
+    random_number = me->random_number.
   ENDMETHOD.
 
   METHOD deserialize_helper.
@@ -780,12 +870,8 @@ CLASS zcl_some_class IMPLEMENTATION.
     me->random_number = random_number.
   ENDMETHOD.
 
-  METHOD serialize_helper.
-    timestamp = me->timestamp.
-    random_number = me->random_number.
-  ENDMETHOD.
 ENDCLASS.
-```
+``` 
 
 </details>  
 

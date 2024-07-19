@@ -14,8 +14,11 @@
       - [SQL Operands](#sql-operands)
       - [SQL Expressions](#sql-expressions)
         - [Elementary Expressions](#elementary-expressions)
-        - [SQL Functions](#sql-functions)
-        - [More SQL Expressions](#more-sql-expressions)
+        - [Numeric Functions](#numeric-functions)
+        - [String Functions](#string-functions)
+        - [Special Functions](#special-functions)
+        - [Aggregate Expressions](#aggregate-expressions)
+        - [Arithmetic, Cast, String Expressions, and Case Distinctions](#arithmetic-cast-string-expressions-and-case-distinctions)
         - [Window Expressions](#window-expressions)
     - [SQL Conditions](#sql-conditions)
     - [Selecting Data by Evaluating the Content of Other Tables](#selecting-data-by-evaluating-the-content-of-other-tables)
@@ -623,6 +626,7 @@ SELECT FROM zdemo_abap_flsch
     on SQL expressions
     [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapsql_expr.htm)
     and the subtopics there.
+- Built-in functions are available in ABAP SQL. The result is a value with the associated dictionary type. The arguments of the functions can cover one or more SQL expressions. Find more information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_sql_builtin_functions.htm).
 
 ##### Elementary Expressions
 
@@ -634,15 +638,10 @@ SELECT FROM zdemo_abap_flsch
 -   See more information
     [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensql_elem.htm).
 
-##### SQL Functions
+##### Numeric Functions
 
--   You can use built-in functions in ABAP SQL.
--   Result: Value with the associated dictionary type.
--   Arguments of the functions: Cover one or more SQL expressions.
--   See more information
-    [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_sql_builtin_functions.htm).
+[Numeric functions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensql_arith_func.htm)
 
-Example: [Numeric functions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensql_arith_func.htm)
 ``` abap
 SELECT SINGLE
   carrname,
@@ -683,7 +682,9 @@ SELECT SINGLE
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-Example: [String functions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensql_string_func.htm)
+##### String Functions
+
+[String functions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensql_string_func.htm)
 
 ``` abap
 SELECT SINGLE
@@ -804,7 +805,9 @@ SELECT SINGLE
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-Example: [Special functions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_sql_special_functions.htm)
+##### Special Functions
+
+[Special functions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_sql_special_functions.htm)
 
 ``` abap
 SELECT SINGLE
@@ -855,6 +858,8 @@ INTO @DATA(special_functions).
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
+##### Aggregate Expressions
+
 [Aggregate expressions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapselect_aggregate.htm)
 
 -   Consist of [aggregate
@@ -903,7 +908,7 @@ SELECT
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-##### More SQL Expressions
+##### Arithmetic, Cast, String Expressions, and Case Distinctions
 
 -   [Arithmetic
     expressions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensql_arith.htm)

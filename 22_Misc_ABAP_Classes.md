@@ -841,7 +841,7 @@ ENDIF.
 ## Time and Date
 
 > **💡 Note**<br>
-> In [ABAP for Cloud Development](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_for_cloud_dev_glosry.htm), do not use the date and time-related system fields such as `sy-datum` and `sy-uzeit`, and others. User-related time and date values (such as `sy-timlo` and `sy-datlo`) can be retrieved using the XCO library. For code snippets, see the [Date, Time, and Time Stamp](23_Date_and_Time.md) cheat sheet.
+> In [ABAP for Cloud Development](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_for_cloud_dev_glosry.htm), do not use the date and time-related system fields such as `sy-datum` and `sy-uzeit`, and others. User-related time and date values can be retrieved using the XCO library. For code snippets, see the [Date, Time, and Time Stamp](23_Date_and_Time.md) cheat sheet.
 
 <table>
 <tr>
@@ -1363,7 +1363,7 @@ CLASS zcl_demo_test IMPLEMENTATION.
           out->write( comp_res3 ).
         ENDIF.
       CATCH cx_abap_diff INTO DATA(error3).
-        out->write( error2->get_text( ) ).
+        out->write( error3->get_text( ) ).
     ENDTRY.
   ENDMETHOD.
 ENDCLASS.

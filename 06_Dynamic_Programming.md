@@ -582,13 +582,13 @@ is required to access objects and their components. That means objects are not d
 - Using [`CREATE OBJECT`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapcreate_object.htm) statements, you can create an object as an instance of a class and assign the reference to the object to an [object reference variable](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenobject_refer_variable_glosry.htm). 
 - The instance operator [`NEW`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconstructor_expression_new.htm) basically replaces `CREATE OBJECT` statements. 
 - However, `CREATE OBJECT` statements are still required and they are the only option for creating objects dynamically (`NEW` is not possible in that context) as shown further down.
-- Note the use of the built-in generic ABAP type `object` (`TYPE REF TO object`) that is used for the generic typing of object references. It is for any object type. `object` stands for the root class of the inheritance hierarchy. More information: [Generic ABAP Types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbuilt_in_types_generic.htm)
+- In the example, note the the built-in generic ABAP type `object` (`TYPE REF TO object`) that is used for the generic typing of object references. It is for any object type. `object` stands for the root class of the inheritance hierarchy. More information: [Generic ABAP Types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbuilt_in_types_generic.htm)
 - Find more information in the [ABAP Keyword Documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapcreate_object.htm) and the [ABAP Object Orientation](04_ABAP_Object_Orientation.md) cheat sheet
 
 ```abap
 DATA oref_a TYPE REF TO zcl_some_class.
 oref_a = NEW #( ).
-"Using Inline declaration
+"Using inline declaration
 DATA(oref_b) = NEW zcl_some_class( ).
 "Generic type
 DATA oref_c TYPE REF TO object.
