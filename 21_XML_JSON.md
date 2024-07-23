@@ -696,7 +696,7 @@ Expand the following collapsible section to view the code of two simplified exam
 **Example 1:** 
 
 - The example class implements the `IF_SERIALIZABLE_OBJECT` interface, using the standard behavior to serialize and deserialize all instance attributes (i.e. the helper methods mentioned below are not implemented). 
-- The values of of all deserialized instance attributes are displayed.
+- The values of all deserialized instance attributes are displayed.
 
 ```abap
 CLASS zcl_some_class DEFINITION

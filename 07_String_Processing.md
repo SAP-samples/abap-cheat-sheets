@@ -1770,6 +1770,45 @@ DATA(itab) = value string_table( ( `Cathy's black cat on the mat played with the
 "Pattern: 't' at the beginning of a word followed by another character
 FIND FIRST OCCURRENCE OF PCRE `\bt.` IN TABLE itab
   IGNORING CASE MATCH LINE DATA(d) MATCH OFFSET DATA(e) MATCH LENGTH DATA(f). "d: 1, e: 21, f: 2
+
+"The objective of the following example is to extract the content of the segments that
+"are positioned within /.../ in a URL. The segments are stored in an internal table.
+DATA(url) = `https://help.sap.com/docs/abap-cloud/abap-concepts/controlled-sap-luw/`.
+DATA url_parts TYPE string_table.
+
+FIND ALL OCCURRENCES OF PCRE `(?<=/)([^/]+)(?=/)` IN url RESULTS DATA(res).
+
+"Details on the regular expression:
+"- Positive lookbehind (?<=/) that determines that the content is preceded by `/`
+"- Positive lookahead (?=/) that determines that the content is followed by `/
+"- ([^/]+) in between determines that any sequence of characters that are not `/` are matched
+"- The match is put in parentheses to store the submatch
+
+"The RESULTS addition stores findings in an internal table of type match_result_tab.
+"Submatches (i.e. length and offset values of the submatches) are stored in internal
+"tables themselves. Therefore, the example uses nested loops and the substring function
+"to retrieve the strings.
+
+LOOP AT res INTO DATA(finding).
+  LOOP AT finding-submatches INTO DATA(sub).
+    DATA(url_part) = substring( val = url off = sub-offset len = sub-length ).
+    APPEND url_part TO url_parts.
+  ENDLOOP.
+ENDLOOP.
+
+"The following statement uses nested iteration expressions with FOR instead of nested 
+"LOOP statements.
+DATA(url_parts_for_loop) = VALUE string_table( FOR wa1 IN res
+                                               FOR wa2 IN wa1-submatches
+                                                ( substring( val = url off = wa2-offset len = wa2-length ) ) ).
+
+ASSERT url_parts = url_parts_for_loop.
+*Content:
+*help.sap.com
+*docs
+*abap-cloud
+*abap-concepts
+*controlled-sap-luw
 ```
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 

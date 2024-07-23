@@ -12,15 +12,22 @@
     - [Using INSERT and APPEND Statements to Populate Internal Tables](#using-insert-and-append-statements-to-populate-internal-tables)
     - [Creating and Populating Internal Tables Using Constructor Expressions](#creating-and-populating-internal-tables-using-constructor-expressions)
       - [VALUE operator](#value-operator)
-      - [CORRESPONDING operator](#corresponding-operator)
+      - [CORRESPONDING Operator](#corresponding-operator)
       - [FILTER Operator](#filter-operator)
       - [NEW Operator](#new-operator)
+    - [Example: Exploring Populating Internal Tables](#example-exploring-populating-internal-tables)
   - [Reading Single Lines from Internal Tables](#reading-single-lines-from-internal-tables)
     - [Determining the Target Area when Reading Single Lines](#determining-the-target-area-when-reading-single-lines)
     - [Reading a Single Line by Index](#reading-a-single-line-by-index)
     - [Reading a Single Line Using Table Keys](#reading-a-single-line-using-table-keys)
     - [Reading a Single Line Using a Free Key](#reading-a-single-line-using-a-free-key)
-    - [Addressing Individual Components of Read Lines](#addressing-individual-components-of-read-lines)
+    - [Examples of Addressing Individual Components of Read Lines](#examples-of-addressing-individual-components-of-read-lines)
+    - [Excursions with READ TABLE Statements](#excursions-with-read-table-statements)
+      - [System Field Setting in READ TABLE Statements](#system-field-setting-in-read-table-statements)
+      - [COMPARING and TRANSPORTING Additions: Comparing Fields and Specifying Fields for Transport](#comparing-and-transporting-additions-comparing-fields-and-specifying-fields-for-transport)
+      - [CASTING and ELSE UNASSIGN Additions when Specifying Field Symbols as Target Areas](#casting-and-else-unassign-additions-when-specifying-field-symbols-as-target-areas)
+      - [BINARY SEARCH Addition: Optimized Read Access When Specifying Free Keys](#binary-search-addition-optimized-read-access-when-specifying-free-keys)
+    - [Example: Exploring READ TABLE Statements and Table Expressions](#example-exploring-read-table-statements-and-table-expressions)
   - [Getting Information about Internal Tables, Table Lines, Table Types](#getting-information-about-internal-tables-table-lines-table-types)
     - [Checking the Existence of a Line in an Internal Table](#checking-the-existence-of-a-line-in-an-internal-table)
     - [Checking the Index of a Line in an Internal Table](#checking-the-index-of-a-line-in-an-internal-table)
@@ -514,6 +521,9 @@ INSERT INITIAL LINE INTO TABLE itab.
 APPEND VALUE #( comp1 = a comp2 = b ... ) TO itab ASSIGNING FIELD-SYMBOL(<fs>).
 APPEND INITIAL LINE TO itab ASSIGNING <fs>.
 INSERT INITIAL LINE INTO TABLE itab REFERENCE INTO DATA(dref).
+
+"Note: Once assigned, you can then, for example, address individual components
+"of the (initial) line and assign values, e.g. <fs>-comp = ... or dref->comp = ....
 ```
 
 **Adding all lines** from another internal table.
@@ -539,7 +549,7 @@ APPEND LINES OF itab2 FROM i1 TO itab.
 
 APPEND LINES OF itab2 TO i2 TO itab.
 
-INSERT LINES OF itab2 FROM i1 TO i2 INTO itab.
+INSERT LINES OF itab2 FROM i1 TO i2 INTO TABLE itab.
 ```
 
 **Inserting one line or multiple lines from another internal table at a specific position**. 
@@ -620,7 +630,7 @@ itab = VALUE #( ( comp1 = a comp2 = b ...)
                 ... ).
 ```
 
-#### CORRESPONDING operator
+#### CORRESPONDING Operator
 
 **Copying the content of another internal table** using the
 [`CORRESPONDING`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconstructor_expr_corresponding.htm) operator. 
@@ -784,6 +794,303 @@ INSERT VALUE s( a = 'yyy' b = 3 ) INTO TABLE dref_tab->*.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
+### Example: Exploring Populating Internal Tables
+
+Expand the following collapsible section to view the code of an example. To try it out, create a demo class named `zcl_some_class` and paste the code into it. After activation, choose *F9* in ADT to execute the class. 
+The example is set up to display output in the console, but only for few data objects. You may want to set a break point at the first position possible and walk through the example in the debugger. You may want to set a breakpoint at the earliest possible position and walk through the example in the debugger. This will allow you to double-click on data objects and observe how the different statements affect their contents.
+
+<details>
+  <summary>Expand to view the code</summary>
+  <!-- -->
+
+```abap
+CLASS zcl_some_class DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
+
+  PUBLIC SECTION.
+    INTERFACES if_oo_adt_classrun.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+
+ENDCLASS.
+
+
+
+CLASS zcl_some_class IMPLEMENTATION.
+
+  METHOD if_oo_adt_classrun~main.
+
+    "Populating internal tables by adding a line (structure) using
+    "APPEND ... TO/INSERT ... INTO
+
+    TYPES: BEGIN OF st_a,
+             num  TYPE i,
+             str  TYPE string,
+             char TYPE c LENGTH 2,
+           END OF st_a,
+           ty_tab_a TYPE TABLE OF st_a WITH EMPTY KEY.
+    DATA it_a TYPE ty_tab_a.
+
+    "Adding a line created inline
+    APPEND VALUE #( num = 1 str = `A` char = 'bb' ) TO it_a.
+    INSERT VALUE #( num = 2 str = `C` char = 'dd' ) INTO TABLE it_a.
+
+    "Adding an existing line
+    DATA(struc_a) = VALUE st_a( num = 3 str =  `E` char = 'ff' ).
+    "Structure whose components are assigned individually using the
+    "structure component selector
+    DATA struc_b TYPE st_a.
+    struc_b-num = 4.
+    struc_b-str =  `G`.
+    struc_b-char = 'hh'.
+
+    APPEND struc_a TO it_a.
+    INSERT struc_b INTO TABLE it_a.
+
+**********************************************************************
+    "INITIAL LINE addition
+    "Adding an initial line
+
+    APPEND INITIAL LINE TO it_a.
+    INSERT INITIAL LINE INTO TABLE it_a.
+
+**********************************************************************
+    "ASSIGNING/REFERENCE INTO additions
+
+    "Adding a line and assigning the added line to a field symbol or
+    "data reference variable
+
+    "Creating field symbol inline
+    APPEND VALUE st_a( num = 5 str =  `I` char = 'jj' ) TO it_a ASSIGNING FIELD-SYMBOL(<fs_a>).
+    "Addressing individual components
+    ASSERT <fs_a>-num = 5.
+    <fs_a>-num = 123.
+
+    FIELD-SYMBOLS <fs_b> TYPE st_a.
+    DATA(struc_c) = VALUE st_a( num = 6 ).
+    INSERT struc_c INTO TABLE it_a ASSIGNING <fs_b>.
+    <fs_b>-str =  `K`.
+
+    "Adding an initial line
+    "The examples use data reference variables.
+    "Using inline declaration
+    APPEND INITIAL LINE TO it_a REFERENCE INTO DATA(dref_a).
+    dref_a->num = 7.
+    DATA dref_b TYPE REF TO st_a.
+    INSERT INITIAL LINE INTO TABLE it_a REFERENCE INTO dref_b.
+    dref_b->num = 8.
+
+    DO 3 TIMES.
+      APPEND INITIAL LINE TO it_a REFERENCE INTO dref_b.
+      dref_b->* = VALUE #( num = sy-index str = sy-index char = sy-index ).
+    ENDDO.
+
+**********************************************************************
+    "LINES OF addition
+    "Adding all lines from another internal table
+
+    "Adding lines to one internal table that are all added to
+    "another one
+    DATA it_b TYPE ty_tab_a.
+    INSERT VALUE #( num = 99 str =  `L` char = 'mm' ) INTO TABLE it_b.
+    INSERT VALUE #( num = 100 str =  `N` char = 'oo' ) INTO TABLE it_b.
+
+    APPEND LINES OF it_b TO it_a.
+    INSERT LINES OF it_b INTO TABLE it_a.
+
+**********************************************************************
+    "Adding multiple lines from another internal table with
+    "a specified index range
+
+    APPEND LINES OF it_a FROM 5 TO 7 TO it_b.
+    APPEND LINES OF it_a FROM 12 TO it_b. "further lines up to the last line
+    APPEND LINES OF it_a TO 3 TO it_b.  "all lines from the start up to the specified index
+    INSERT LINES OF it_a FROM 8 TO 10 INTO TABLE it_b.
+
+**********************************************************************
+    "INDEX addition
+    "Inserting one line or multiple lines from another internal table at
+    "a specific position. To be used for index tables.
+
+    INSERT VALUE #( num = 9 str =  `P` char = 'qq' ) INTO it_b INDEX 2.
+    INSERT LINES OF VALUE ty_tab_a( ( num = 10 str =  `R` ) ( num = 11 str =  `S` ) ) INTO it_b INDEX 5.
+    "FROM and TO can also be used
+    INSERT LINES OF it_a FROM 1 TO 3 INTO it_b INDEX 1.
+
+**********************************************************************
+    "Using the VALUE operator
+
+    DATA(struc_d) = VALUE st_a( num = 11 str =  `T` char = 'uu' ).
+    DATA it_c TYPE ty_tab_a.
+
+    "Adding an existing line and a line created inline
+    it_c = VALUE #( ( struc_d )
+                    ( num = 11 str =  `V` char = 'ww' ) ).
+
+    "Creating an internal table by inline declaration and adding lines with VALUE
+    DATA(it_d) = VALUE ty_tab_a( ( num = 12 str =  `X` char = 'yy' )
+                                 ( num = 13 str =  `Z` char = 'aa' )
+                                 ( struc_d ) ).
+
+    "******* BASE addition *******
+    "Adding new lines without deleting existing content
+    it_d =  VALUE #( BASE it_d ( num = 14 str =  `B` char = 'cc' )
+                               ( num = 15 str =  `D` char = 'ee' ) ).
+
+    "******* LINES OF addition *******
+    "Adding lines of other tables
+    it_d = VALUE #( ( LINES OF it_c ) ). "No BASE addition, existing content is deleted
+
+    it_c = VALUE #( BASE it_c ( num = 16 str =  `F` char = 'gg' )
+                              ( LINES OF it_d ) ).
+
+**********************************************************************
+    "CORRESPONDING operator / MOVE-CORRESPONDING statements
+
+    "Creating and populating demo internal tables
+    TYPES: BEGIN OF st_b,
+             num    TYPE i,
+             char   TYPE c LENGTH 2,
+             comp_a TYPE string,
+           END OF st_b,
+           ty_tab_b TYPE TABLE OF st_b WITH EMPTY KEY,
+           BEGIN OF st_c,
+             num    TYPE i,
+             char   TYPE c LENGTH 2,
+             comp_b TYPE string,
+           END OF st_c,
+           ty_tab_c TYPE TABLE OF st_c WITH EMPTY KEY.
+
+    DATA(it_e_original) = VALUE ty_tab_b( ( num = 1 char = 'aa' comp_a = `B` )
+                                          ( num = 2 char = 'cc' comp_a = `D` ) ).
+    DATA(it_f_original) = VALUE ty_tab_c( ( num = 3 char = 'ee' comp_b = `F` )
+                                          ( num = 4 char = 'gg' comp_b = `H` ) ).
+
+    DATA(it_e) = it_e_original.
+    DATA(it_f) = it_f_original.
+
+    "Copying the content of another internal table respecting identically
+    "named components
+    "it_f -> it_e
+    it_e = CORRESPONDING #( it_f ).
+
+    "it_e -> it_f
+    it_e = it_e_original.
+    MOVE-CORRESPONDING it_e TO it_f.
+
+    "******* BASE addition / /KEEPING TARGET LINES addition *******
+    "Copying content and retaining existing content
+    it_e = it_e_original.
+    it_f = it_f_original.
+
+    it_e = CORRESPONDING #( BASE ( it_e ) it_f ).
+
+    it_e = it_e_original.
+    it_f = it_f_original.
+    MOVE-CORRESPONDING it_e TO it_f KEEPING TARGET LINES.
+
+    "******* MAPPING addition *******
+    "Assigning components using mapping relationships
+    it_e = it_e_original.
+    it_f = it_f_original.
+
+    it_e = CORRESPONDING #( it_f MAPPING comp_a = comp_b ).
+    it_e = it_e_original.
+    it_f = CORRESPONDING #( BASE ( it_f ) it_e MAPPING comp_b = comp_a ). "Retaining content with BASE
+
+    "******* EXCEPT addition *******
+    "Excluding components from the assignment
+    it_e = it_e_original.
+    it_f = it_f_original.
+
+    it_e = CORRESPONDING #( it_f EXCEPT char ).
+
+    it_e = it_e_original.
+    it_f = CORRESPONDING #( it_e MAPPING comp_b = comp_a EXCEPT * ). "Mapping components
+
+    "******* DISCARDING DUPLICATES addition *******
+    "Preventing runtime errors when duplicate lines are assigned
+    it_e = VALUE #( ( num = 1 char = 'aa' comp_a = `B` )
+                    ( num = 1 char = 'cc' comp_a = `D` ) ).
+
+    DATA it_g TYPE SORTED TABLE OF st_b WITH UNIQUE KEY num.
+
+    "The statement commented out raises the runtime error ITAB_DUPLICATE_KEY.
+    "it_g = CORRESPONDING #( it_e ).
+    it_g = CORRESPONDING #( it_e DISCARDING DUPLICATES ).
+
+    "******* DEEP addition / EXPANDING NESTED TABLES addition *******
+    "Handling deep components such as nested internal tables
+
+    "Creating an populating demo internal tables
+    TYPES: BEGIN OF st_d,
+             char_a TYPE c LENGTH 2,
+             char_b TYPE c LENGTH 2,
+           END OF st_d,
+           BEGIN OF st_e,
+             char_b TYPE c LENGTH 2,
+             char_c TYPE c LENGTH 2,
+           END OF st_e,
+           BEGIN OF st_f,
+             comp1 TYPE c LENGTH 2,
+             comp2 TYPE c LENGTH 2,
+             comp3 TYPE TABLE OF st_d WITH EMPTY KEY,
+           END OF st_f,
+           BEGIN OF st_g,
+             comp2 TYPE c LENGTH 2,
+             comp3 TYPE TABLE OF st_e WITH EMPTY KEY,
+             comp4 TYPE c LENGTH 2,
+           END OF st_g,
+           ty_tab_d TYPE TABLE OF st_f WITH EMPTY KEY,
+           ty_tab_e TYPE TABLE OF st_g WITH EMPTY KEY.
+
+    DATA(it_h_original) = VALUE ty_tab_d(
+      ( comp1 = 'a1' comp2 = 'a2' comp3 = VALUE #( ( char_a = 'a3' char_b = 'a4' ) ( char_a = 'a5' char_b = 'a6' ) ) )
+      ( comp1 = 'b1' comp2 = 'b2' comp3 = VALUE #( ( char_a = 'b3' char_b = 'b4' ) ( char_a = 'b5' char_b = 'b6' ) ) ) ).
+
+    DATA(it_i_original) = VALUE ty_tab_e(
+      ( comp2 = 'c1' comp3 = VALUE #( ( char_b = 'c2' char_c = 'c3' ) ( char_b = 'c4' char_c = 'c5' ) ) comp4 = 'c6' )
+      ( comp2 = 'd1' comp3 = VALUE #( ( char_b = 'd2' char_c = 'd3' ) ( char_b = 'd4' char_c = 'd5' ) ) comp4 = 'd6' ) ).
+
+    DATA(it_h) = it_h_original.
+    DATA(it_i) = it_i_original.
+
+    "Compare the output of the examples
+    out->write( `******* CORRESPONDING *******` ).
+    "Note: The following example uses just CORRESPONDING. The outcome of the assignment
+    "is a different one compared to using DEEP. Refer to the ABAP Keyword Documentation
+    "for more details.
+    it_h = CORRESPONDING #( it_i ).
+    out->write( it_h ).
+
+    out->write( `******* CORRESPONDING ... DEEP *******` ).
+    it_h = CORRESPONDING #( DEEP it_i ).
+    out->write( it_h ).
+
+    out->write( `******* CORRESPONDING ... DEEP BASE *******` ).
+    it_h = it_h_original.
+    it_h = CORRESPONDING #( DEEP BASE ( it_h ) it_i ).
+    out->write( it_h ).
+
+    out->write( `******* MOVE-CORRESPONDING ... EXPANDING NESTED TABLES *******` ).
+    it_h = it_h_original.
+    MOVE-CORRESPONDING it_i TO it_h EXPANDING NESTED TABLES.
+    out->write( it_h ).
+
+    out->write( `******* MOVE-CORRESPONDING ... EXPANDING NESTED TABLES KEEPING TARGET LINES *******` ).
+    it_h = it_h_original.
+    MOVE-CORRESPONDING it_i TO it_h EXPANDING NESTED TABLES KEEPING TARGET LINES.
+    out->write( it_h ).
+  ENDMETHOD.
+ENDCLASS.
+```
+</details>  
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+
 ## Reading Single Lines from Internal Tables
 
 There are three different ways to specify the line to read:
@@ -858,9 +1165,16 @@ specified by its name `primary_key`, the table must be an index table, and the b
 not specified.
 Note that the examples only show reading into a work area. Other targets are possible as shown above. 
 ``` abap
+"Primary table index is used by default
 READ TABLE itab INTO wa INDEX i.
 
+"Primary table index is used, primary key's default name specified explicitly 
 READ TABLE itab INTO wa INDEX i USING KEY primary_key.
+
+"Secondary table index is used (assuming a secondary table key sec_key exists) 
+READ TABLE itab INTO wa INDEX i USING KEY sec_key.
+
+"Note: You can also use alias names for the keys if specified.
 ```
 
 Using a [table
@@ -971,10 +1285,221 @@ The specified components used as keys need not be part of a table key.
 ``` abap
 line = it[ b = 2 ].
 
+"Note: Table keys are specified with the ... WITH TABLE KEY ... addition, 
+"free keys with ... WITH KEY ....
 READ TABLE it INTO wa WITH KEY b = 2.
 ```
 
-Optimized read access using the `BINARY SEARCH` addition to the `READ TABLE` statement (find more details in the expandable section below):
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+### Examples of Addressing Individual Components of Read Lines
+
+When reading single lines in general, you can also address individual
+components of the line using the [component
+selector](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencomponent_selector_glosry.htm "Glossary Entry")
+`-` (or the [object component selector](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenobject_component_select_glosry.htm) `->` or the [dereferencing
+operator](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendereferencing_operat_glosry.htm "Glossary Entry")
+`->*` in the case of data reference variables).
+
+You can also use [`ASSIGN`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapassign.htm) statements to assign components (and more) to [field symbols](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenfield_symbol_glosry.htm). See the [Example: Exploring READ TABLE Statements and Table Expressions](#example-exploring-read-table-statements-and-table-expressions) below.
+
+``` abap
+DATA(comp1) = it[ b = 2 ]-c.
+
+READ TABLE it INTO DATA(wa) WITH KEY b = 2.
+DATA(comp2) = wa-c.
+
+READ TABLE it ASSIGNING FIELD-SYMBOL(<fs>) WITH KEY b = 2.
+DATA(comp3) = <fs>-c.
+
+READ TABLE it REFERENCE INTO DATA(dref) WITH KEY b = 2.
+DATA(comp4) = dref->c.
+
+"It is also possible to specify the dereferencing operator
+"with the component selector.
+DATA(comp5) = dref->*-c.
+
+"Note: When using field symbols and data reference variables as target areas, 
+"and you modify their content (the examples above only show reads), you can directly 
+"edit the line in the internal table (because the field symbols/data reference 
+"variable points to the line). This does not apply to work areas that creates 
+"local copies. However, you can modify the content of the work area and then, 
+"for example, use a MODIFY statement to edit the line in the internal table as 
+"shown further down. 
+```
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+### Excursions with READ TABLE Statements
+
+#### System Field Setting in READ TABLE Statements
+- For example, for checking if a line is found (`sy-subrc`) and stored in the target area, and what the index of the line is (`sy-tabix`). 
+- Find more information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapread_table.htm)
+
+```abap
+TYPES: BEGIN OF demo_struc,
+          comp1 TYPE i,
+          comp2 TYPE c LENGTH 3,
+        END OF demo_struc,
+        ty_tab_demo TYPE TABLE OF demo_struc WITH EMPTY KEY.
+
+DATA(it) = VALUE ty_tab_demo( ( comp1 = 1 comp2 = `abc` )
+                              ( comp1 = 2 comp2 = `def` )
+                              ( comp1 = 1 comp2 = `ghi` ) ).
+
+READ TABLE it INTO DATA(wa) WITH KEY comp2 = `def`.
+
+IF sy-subrc = 0.
+  ... "line found (which is the case in the example)
+ELSE.
+  ... "line not found
+ENDIF.
+
+ASSERT sy-tabix = 2.
+
+READ TABLE it INTO wa WITH KEY comp2 = `xyz`.
+ASSERT sy-subrc = 4.
+ASSERT sy-tabix = 0.
+```
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+#### COMPARING and TRANSPORTING Additions: Comparing Fields and Specifying Fields for Transport
+
+`... TRANSPORTING NO FIELDS`: It is only checked whether the line exists. No target area is specified. As mentioned above, the system fields are filled. 
+
+```abap
+DATA(stringtab) = VALUE string_table( ( `abc` ) ( `def` ) ( `ghi` ) ).
+
+READ TABLE stringtab WITH KEY table_line = `def` TRANSPORTING NO FIELDS.
+ASSERT sy-subrc = 0.
+ASSERT sy-tabix = 2.
+
+READ TABLE stringtab WITH KEY table_line = `xyz` TRANSPORTING NO FIELDS.
+ASSERT sy-subrc = 4.
+ASSERT sy-tabix = 0.
+```
+
+`... TRANSPORTING ...`: Specifying fields to be transported. The addition cannot be used with the `ASSIGNING`
+and `REFERENCE` additions.
+
+```abap
+TYPES: BEGIN OF demo_struc_tr,
+          comp1 TYPE i,
+          comp2 TYPE c LENGTH 3,
+        END OF demo_struc_tr,
+        ty_tab_demo_tr TYPE TABLE OF demo_struc_tr WITH EMPTY KEY.
+
+DATA(it_tr) = VALUE ty_tab_demo_tr( ( comp1 = 1 comp2 = `abc` )
+                                    ( comp1 = 2 comp2 = `def` ) ).
+
+READ TABLE it_tr INTO DATA(line_tr) INDEX 1 TRANSPORTING comp2.
+ASSERT line_tr-comp1 IS INITIAL.
+
+"ALL FIELDS addition is available, explicitly stating that all fields
+"should be transported.
+READ TABLE it_tr INTO line_tr INDEX 1 TRANSPORTING ALL FIELDS.
+```
+
+`... COMPARING ...`:
+- Can be used together with and in front of `TRANSPORTING ...`
+- Compares specified components
+- The `COMPARING ALL FIELDS` compares all components, `COMPARING NO FIELDS` compares no components
+- Setting of `sy-subrc`: 0 is set if the content of compared components is identical,
+  otherwise it is 2. Found lines are nevertheless assigned independently of the comparison.
+
+```abap
+TYPES: BEGIN OF demo_struc_compare,
+          comp1 TYPE i,
+          comp2 TYPE c LENGTH 3,
+          comp3 TYPE string,
+        END OF demo_struc_compare,
+        ty_tab_demo_compare TYPE TABLE OF demo_struc_compare WITH EMPTY KEY.
+
+DATA(it_compare) = VALUE ty_tab_demo_compare( ( comp1 = 1 comp2 = 'abc' comp3 = `zzz` )
+                                              ( comp1 = 2 comp2 = 'def' comp3 = `yyy` )
+                                              ( comp1 = 2 comp2 = 'ghi' comp3 = `yyy` ) ).
+
+DO 3 TIMES.
+  DATA(line_compare) = VALUE demo_struc_compare( comp1 = 1 ).
+  READ TABLE it_compare INTO line_compare INDEX sy-index COMPARING comp1.
+  CASE sy-index.
+    WHEN 1.
+      ASSERT sy-subrc = 0.
+    WHEN 2.
+      ASSERT sy-subrc = 2.
+    WHEN 3.
+      ASSERT sy-subrc = 2.
+  ENDCASE.
+
+  line_compare = VALUE demo_struc_compare( comp3 = `yyy` ).
+  READ TABLE it_compare INTO line_compare INDEX sy-index COMPARING comp3 TRANSPORTING comp2 comp3.
+
+  CASE sy-index.
+    WHEN 1.
+      ASSERT sy-subrc = 2.
+      ASSERT line_compare-comp1 IS INITIAL.
+    WHEN 2.
+      ASSERT sy-subrc = 0.
+      ASSERT line_compare-comp1 IS INITIAL.
+    WHEN 3.
+      ASSERT sy-subrc = 0.
+      ASSERT line_compare-comp1 IS INITIAL.
+  ENDCASE.
+ENDDO.
+```
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+#### CASTING and ELSE UNASSIGN Additions when Specifying Field Symbols as Target Areas
+
+```abap
+TYPES c3 TYPE c LENGTH 3.
+TYPES ty_tab_casting TYPE TABLE OF c3 WITH EMPTY KEY.
+DATA(it_casting) = VALUE ty_tab_casting( ( 'abc' ) ( 'def' ) ).
+
+"Field symbol created inline (i.e. with the generic type 'data' implicitly)
+"In this case, the CASTING and ELSE UNASSIGN additions are not available.
+READ TABLE it_casting ASSIGNING FIELD-SYMBOL(<a>) INDEX 1.
+
+"******* CASTING addition *******
+"To use the addition, the field symbol must be either completely typed, or
+"typed with one of the generic built-in ABAP types c, n, p, or x.
+TYPES c2 TYPE c LENGTH 2.
+FIELD-SYMBOLS <b> TYPE c2.
+
+READ TABLE it_casting ASSIGNING <b> CASTING INDEX 2.
+ASSERT <b> = 'de'.
+
+"******* ELSE UNASSIGN addition *******
+"The field symbol is unassigned if no table line is found. The addition
+"can be used together with the CASTING addition.
+"The following example loops 3 times across an internal table that has
+"two lines. The sy-index value is used as the index value of the READ TABLE
+"statement. The example demonstrates that when a line is not found, the field
+"symbol is unassigned. In case of the first READ TABLE statement that does not
+"specify ELSE UNASSIGN, the field symbol remains assigned.
+
+DATA string_a TYPE string.
+FIELD-SYMBOLS <c> TYPE c2.
+DO 3 TIMES.
+  READ TABLE it_casting ASSIGNING FIELD-SYMBOL(<d>) INDEX sy-index.
+  READ TABLE it_casting ASSIGNING FIELD-SYMBOL(<e>) ELSE UNASSIGN INDEX sy-index.
+  READ TABLE it_casting ASSIGNING <c> CASTING ELSE UNASSIGN INDEX sy-index.
+  IF sy-index = 3.
+    ASSERT <d> = `def`.
+    ASSERT <e> IS NOT ASSIGNED.
+    ASSERT <c> IS NOT ASSIGNED.
+  ENDIF.
+ENDDO.
+```
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+#### BINARY SEARCH Addition: Optimized Read Access When Specifying Free Keys
+
+Find information and an example in the expandable section below
+
 ```abap
 READ TABLE itab WITH KEY ... BINARY SEARCH ...
 ```
@@ -1091,30 +1616,496 @@ ENDCLASS.
 
 </details>
 
-### Addressing Individual Components of Read Lines
 
-When reading single lines in general, you can also address individual
-components of the line using the [component
-selector](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencomponent_selector_glosry.htm "Glossary Entry")
-`-` (or the [object component selector](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenobject_component_select_glosry.htm) `->` or the [dereferencing
-operator](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendereferencing_operat_glosry.htm "Glossary Entry")
-`->*` in the case of data reference variables).
-``` abap
-DATA(comp1) = it[ b = 2 ]-c.
+### Example: Exploring READ TABLE Statements and Table Expressions
 
-READ TABLE it INTO DATA(wa) WITH KEY b = 2.
-DATA(comp2) = wa-c.
+Expand the following collapsible section to view the code of an example. To try it out, create a demo class named `zcl_some_class` and paste the code into it. After activation, choose *F9* in ADT to execute the class. 
+The example is not set up to display output in the console. You may want to set a break point at the first position possible and walk through the example in the debugger. You may want to set a breakpoint at the earliest possible position and walk through the example in the debugger. This will allow you to double-click on data objects and observe how the different statements affect their contents.
 
-READ TABLE it ASSIGNING FIELD-SYMBOL(<fs>) WITH KEY b = 2.
-DATA(comp3) = <fs>-c.
+<details>
+  <summary>Expand to view the code</summary>
+  <!-- -->
 
-READ TABLE it REFERENCE INTO DATA(dref) WITH KEY b = 2.
-DATA(comp4) = dref->c.
+```abap
+CLASS zcl_some_class DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
 
-"It is also possible to specify the dereferencing operator
-"with the component selector.
-DATA(comp5) = dref->*-c.
+  PUBLIC SECTION.
+    INTERFACES if_oo_adt_classrun.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+
+ENDCLASS.
+
+
+
+CLASS zcl_some_class IMPLEMENTATION.
+
+  METHOD if_oo_adt_classrun~main.
+
+    "Creating and populating an internal table
+    TYPES: BEGIN OF st_h,
+             a TYPE i,
+             b TYPE c LENGTH 2,
+             c TYPE string,
+           END OF st_h,
+           ty_tab_f TYPE SORTED TABLE OF st_h WITH UNIQUE KEY a WITH NON-UNIQUE SORTED KEY sk COMPONENTS b.
+
+    DATA(it_j) = VALUE ty_tab_f( ( a = 1 b = 'zz' c = `B` )
+                                 ( a = 2 b = 'xx' c = `D` )
+                                 ( a = 3 b = 'yy' c = `F` ) ).
+
+    "******* 1) Reading a single line by index: READ TABLE statements  *******
+
+    DATA struc_e TYPE st_h.
+    "In the following example ...
+    "- a work area is specified as target area.
+    "- USING KEY is not specified, i.e. the primary table index is used by default.
+    READ TABLE it_j INTO struc_e INDEX 2.
+
+    "Reading into a work area that is created inline
+    READ TABLE it_j INTO DATA(struc_f) INDEX 3.
+
+    "Specifying other target areas: Field symbols and data reference variables
+    "Here, the target areas are created inline
+    READ TABLE it_j ASSIGNING FIELD-SYMBOL(<fs_c>) INDEX 1.
+    READ TABLE it_j REFERENCE INTO DATA(dref_c) INDEX 1.
+
+    "******* USING KEY addition *******
+    "Reading by index and specifying which table index to use
+
+    "In the following example, the primary key is specified explicitly and
+    "addressed using the default name primary_key. It has the same effect
+    "as the statement below because the primary table index is used by
+    "default.
+    READ TABLE it_j INTO struc_e INDEX 1 USING KEY primary_key.
+    READ TABLE it_j INTO struc_e INDEX 1.
+
+    "Specifying the secondary key to use the secondary table index
+    READ TABLE it_j INTO struc_e INDEX 1 USING KEY sk.
+
+    "Using alias names
+    DATA it_j_alias TYPE SORTED TABLE OF st_h
+     WITH UNIQUE KEY primary_key ALIAS pk COMPONENTS a
+     WITH NON-UNIQUE SORTED KEY sk ALIAS sk_alias COMPONENTS b.
+
+    it_j_alias = it_j.
+    READ TABLE it_j_alias INTO struc_e INDEX 1 USING KEY pk.
+    READ TABLE it_j_alias INTO struc_e INDEX 1 USING KEY sk_alias.
+    "The following examples use the other key names
+    READ TABLE it_j_alias INTO struc_e INDEX 1 USING KEY primary_key.
+    READ TABLE it_j_alias INTO struc_e INDEX 1 USING KEY sk.
+
+    "******* Excursion: System field setting with READ TABLE statements *******
+    "Checking if a line is found and stored in the target area
+
+    READ TABLE it_j INTO struc_e INDEX 999.
+    IF sy-subrc = 0.
+      ...
+    ELSE.
+      ... "This branch is executed in the example since the line is not found.
+      ASSERT sy-tabix = 0.
+    ENDIF.
+
+    READ TABLE it_j INTO struc_e INDEX 1.
+    ASSERT sy-subrc = 0.
+    ASSERT sy-tabix = 1.
+
+    "******* 2) Reading a single line by index: Table expressions *******
+
+    "Many of the following examples show the assignment of a line
+    "using a table expression that is specified on the right side
+    "of an assignment.
+    "The target area is declared inline on the left side of an assignment.
+    DATA(struc_g) = it_j[ 1 ].
+
+    "If a table line is not found, a catchable exception is raised. It can
+    "be caught in a TRY control structure.
+    TRY.
+        struc_g = it_j[ 999 ].
+      CATCH cx_sy_itab_line_not_found.
+    ENDTRY.
+
+    "Table expression on the left side of an assignment
+    "The following example does not work since the example is a key table.
+    "it_j[ 1 ] = VALUE #( ).
+
+    "Creating and populating a table without a key
+    DATA it_j_no_key TYPE TABLE OF st_h WITH EMPTY KEY.
+    it_j_no_key = VALUE #( ( a = 1 b = 'a' c = `b` )
+                           ( a = 2 b = 'c' c = `d` )
+                           ( a = 3 b = 'e' c = `f` ) ).
+
+    it_j_no_key[ 1 ] = VALUE #( b = 'z' ).
+    ASSERT it_j_no_key[ 1 ]-a IS INITIAL.
+    ASSERT it_j_no_key[ 1 ]-b = 'z'.
+    ASSERT it_j_no_key[ 1 ]-c IS INITIAL.
+
+    it_j_no_key[ 2 ]-b = 'x'.
+    it_j_no_key[ 3 ] = VALUE #( ).
+    ASSERT it_j_no_key[ 3 ] IS INITIAL.
+
+    "******* KEY addition *******
+    "Reading by index and specifying which table index to use
+
+    "Primary key's default name
+    struc_g = it_j_alias[ KEY primary_key INDEX 1 ].
+    "Primary key alias
+    struc_g = it_j_alias[ KEY pk INDEX 1 ].
+    "Secondary key
+    struc_g = it_j_alias[ KEY sk INDEX 1 ].
+    "Secondary key alias
+    struc_g = it_j_alias[ KEY sk_alias INDEX 1 ].
+
+    "******* Excursion: Other ways of assignments with table expressions *******
+    "The examples only read by index. Reading by keys is also possible.
+
+    "Assigning a line read by index to a field symbol
+    FIELD-SYMBOLS <fs_d> TYPE st_h.
+    ASSIGN it_j[ 1 ] TO <fs_d>.
+    "The field symbol created inline has a generic type
+    ASSIGN it_j[ 1 ] TO FIELD-SYMBOL(<fs_d_inl>).
+
+    "Copying a table line via a table expression and embedding it in a
+    "constructor expression
+    struc_g = VALUE #( it_j[ 3 ] ).
+
+    "Reading into data reference variable using the REF operator
+    DATA(dref_d) = REF #( it_j[ 2 ] ).
+
+    "******* OPTIONAL/DEFAULT additions *******
+    "OPTIONAL: The default value is an initial data object with the data type
+    DATA(struc_h) = VALUE #( it_j[ 999 ] OPTIONAL ).
+    ASSERT struc_h = VALUE st_h( ).
+
+    "DEFAULT: Specifying a default value for table lines not found
+    "This value must be convertible to the type of the table expression.
+    "It can also be a table expression.
+    struc_h = VALUE #( it_j[ 999 ] DEFAULT it_j[ 1 ] ).
+    struc_h = VALUE #( it_j[ 999 ] DEFAULT VALUE st_h( c = `null` ) ).
+
+**********************************************************************
+
+    "******* 1) Reading a single line using table keys: READ TABLE statements  *******
+
+    "Creating and populating a demo internal table
+    TYPES: BEGIN OF st_i,
+             num  TYPE i,
+             str  TYPE string,
+             char TYPE c LENGTH 2,
+           END OF st_i.
+
+    DATA it_k TYPE SORTED TABLE OF st_i
+      WITH NON-UNIQUE KEY primary_key ALIAS pk COMPONENTS num
+      WITH NON-UNIQUE SORTED KEY sec_key ALIAS sk COMPONENTS char.
+
+    it_k = VALUE #( ( num = 1 str = `A` char = 'zz' )
+                    ( num = 2 str = `C` char = 'yy' )
+                    ( num = 3 str = `E` char = 'xx' ) ).
+
+    "The following examples use a work area as target. Other target areas are
+    "possible.
+
+    "Primary table key
+    READ TABLE it_k INTO DATA(struc_i) WITH TABLE KEY primary_key COMPONENTS num = 3.
+    "Primary table key alias
+    READ TABLE it_k INTO struc_i WITH TABLE KEY pk COMPONENTS num = 2.
+    "Secondary table key
+    READ TABLE it_k INTO struc_i WITH TABLE KEY sec_key COMPONENTS char = 'xx'.
+    "Secondary table key alias
+    READ TABLE it_k INTO struc_i WITH TABLE KEY sk COMPONENTS char = 'yy'.
+
+    "Reading a line based on keys specified in a work area
+    "It is a work area containing primary and secondary table key values.
+    "the line type must be compatible to the internal table.
+    TYPES st_j LIKE LINE OF it_k.
+    DATA(pr_key) = VALUE st_j( num = 1 ).
+    DATA(sec_key) = VALUE st_j( char = 'yy' ).
+
+    READ TABLE it_k FROM pr_key INTO struc_i.
+
+    "If USING KEY is not specified, the primary table key is used by default.
+    "Explicitly specifying the primary table key
+    READ TABLE it_k FROM pr_key USING KEY primary_key INTO struc_i.
+    "Primary table key alias
+    READ TABLE it_k FROM pr_key USING KEY pk INTO struc_i.
+    "Secondary table key
+    READ TABLE it_k FROM sec_key USING KEY sec_key INTO struc_i.
+    "Secondary table key alias
+    READ TABLE it_k FROM sec_key USING KEY sk INTO struc_i.
+
+    "******* 2) Reading a single line using table keys: Table expressions *******
+
+    "The addition COMPONENTS is optional. Therefore, the statement below
+    "has the same effect.
+    "Explicitly specifying the primary table key
+    struc_i = it_k[ KEY primary_key COMPONENTS num = 1 ].
+    struc_i = it_k[ KEY primary_key num = 1 ].
+
+    "Primary table key alias
+    struc_i = it_k[ KEY pk num = 2 ].
+    "Secondary table key
+    struc_i = it_k[ KEY sec_key char = 'xx' ].
+    "Secondary table key alias
+    struc_i = it_k[ KEY sk char = 'zz' ].
+
+**********************************************************************
+
+    "Reading a single line using a free key
+    "Note: Instead if READ TABLE ... WITH TABLE KEY ..., it is ... WITH KEY.
+
+    READ TABLE it_k INTO DATA(struc_j) WITH KEY str = `A`.
+    struc_j = it_k[ str = `C` ].
+
+**********************************************************************
+
+    "Examples for addressing individual components of read lines
+    "The assertions emphasize the difference of work areas and field
+    "symbols/data reference variables as target areas. Modifying the
+    "contents of the field symbols/data reference variables means
+    "modifying the internal table content.
+
+    DATA(comp_a) = it_k[ str = `C` ]-num.
+
+    READ TABLE it_k INTO DATA(struc_k) WITH KEY str = `A`.
+    struc_k-num = 123.
+    ASSERT NOT it_k[ str = `C` ]-num = 123.
+    DATA(comp_b) = struc_k-num.
+
+    READ TABLE it_k ASSIGNING FIELD-SYMBOL(<fs_e>) WITH KEY str = `C`.
+    "Note: The example table is a sorted table with 'num' as part of
+    "a unique key. The field value cannot be modified.
+    "<fs_e>-num = 123.
+    <fs_e>-char = 'hi'.
+    ASSERT it_k[ str = `C` ]-char = 'hi'.
+    DATA(comp_c) = <fs_e>-char.
+
+    READ TABLE it_k REFERENCE INTO DATA(dref_e) WITH KEY str = `E`.
+    dref_e->char = '##'.
+    ASSERT it_k[ str = `E` ]-char = '##'.
+    DATA(comp_d) = dref_e->num.
+
+    "It is also possible to specify the dereferencing operator together
+    "with the component selector.
+    DATA(comp_e) = dref_e->*-char.
+
+**********************************************************************
+
+    "Excursion: Using ASSIGN statements to assign to field symbols
+
+    TYPES ty_tab_h TYPE TABLE OF st_i WITH EMPTY KEY.
+    DATA(it_l) = VALUE ty_tab_h( ( num = 1 str = `A` char = 'zz' )
+                                 ( num = 2 str = `C` char = 'yy' )
+                                 ( num = 3 str = `E` char = 'xx' ) ).
+
+    FIELD-SYMBOLS <fs_f> TYPE st_i-num.
+    ASSIGN it_l[ str = `C` ]-num TO <fs_f>.
+    <fs_f> = 99.
+    ASSERT it_l[ str = `C` ]-num = 99.
+
+    FIELD-SYMBOLS <fs_g> TYPE st_i-char.
+    ASSIGN it_l[ str = `C` ]-char TO <fs_g>.
+    <fs_g> = 'aa'.
+
+    "Field symbol created inline
+    ASSIGN <fs_g> TO FIELD-SYMBOL(<fs_h>).
+    <fs_h> = 'bb'.
+
+    READ TABLE it_l REFERENCE INTO DATA(dref_f) WITH KEY str = `E`.
+    ASSIGN dref_f->char TO FIELD-SYMBOL(<fs_i>).
+    <fs_i> = 'cc'.
+
+    "The following example use the generic type any so that anything
+    "can be assigned.
+    FIELD-SYMBOLS <fs_j> TYPE any.
+
+    "Assigning component
+    ASSIGN it_l[ str = `C` ]-num TO <fs_j>.
+    <fs_j> = 123.
+
+    "Assigning line
+    ASSIGN it_l[ str = `C` ] TO <fs_j>.
+    <fs_j> = VALUE st_i( num = 789 str = `U` char = 'vv' ).
+
+    "Assigning the entire table
+    ASSIGN it_l TO <fs_j>.
+    <fs_j> = VALUE ty_tab_h( ( num = 1 str = `AB` char = 'ap' ) ).
+
+**********************************************************************
+
+    "COMPARING / TRANSPORTING additions to READ TABLE statements
+    "Comparing fields and specifying fields to be transported
+
+    DATA(it_m) = VALUE ty_tab_h( ( num = 1 str = `Z` char = '##' )
+                                 ( num = 2 str = `Y` char = 'yy' )
+                                 ( num = 3 str = `X` char = '##' )
+                                 ( num = 4 str = `W` char = 'ww' )
+                                 ( num = 5 str = `W` char = '##' )
+                                 ( num = 6 str = `V` char = '##' )
+                                 ( num = 7 str = `V` char = '##' )
+                                 ( num = 7 str = `V` char = '##' )
+                                 ( num = 8 str = `V` char = 'vv' ) ).
+
+    "******* TRANSPORTING NO FIELDS addition *******
+    "It is only checked whether the line exists. No target area is specified.
+    "The system fields sy-subrc and sy-tabix are filled. Check also the
+    "line_exists and line_index functions.
+
+    READ TABLE it_m WITH KEY str = `X` TRANSPORTING NO FIELDS.
+    ASSERT sy-subrc = 0.
+    DATA(sysubrc) = sy-subrc.
+    ASSERT sy-tabix = 3.
+    DATA(sytabix) = sy-tabix.
+
+    READ TABLE it_m WITH KEY str = `nope` TRANSPORTING NO FIELDS.
+    ASSERT sy-subrc = 4.
+    ASSERT sy-tabix = 0.
+
+    "******* TRANSPORTING ... addition *******
+    "Specifying fields to be transported; cannot be used with the ASSIGNING
+    "and REFERENCE additions
+
+    READ TABLE it_m INTO DATA(struc_l) INDEX 1 TRANSPORTING num char.
+    ASSERT struc_l-str IS INITIAL.
+
+    "If ALL FIELDS is specified, all fields are assigned, which corresponds to the
+    "example below.
+    READ TABLE it_m INTO struc_l INDEX 1 TRANSPORTING ALL FIELDS.
+    READ TABLE it_m INTO struc_l INDEX 1.
+
+    "******* COMPARING addition *******
+    "- Can be used together with and in front of TRANSPORTING ...
+    "- Compares the specified components
+    "- ALL FIELDS compares all components, NO FIELDS compares no components
+    "- Setting of sy-subrc: 0 is set if the content of compared components is identical,
+    "  otherwise it is 2. Found lines are nevertheless assigned independently of the comparison.
+
+    "The following examples use a WHILE loop to read all table lines (sy-index represents the
+    "index value of the primary table index) into a work area.
+    "The work area is filled before the read for the comparison. Depending on the comparison
+    "result (by checking the sy-subrc value), the lines are added to different internal tables
+    "for demonstration purposes. In addition, the 'num' component value is added to a string.
+    "The examples explore several syntax options.
+
+    DATA struc_m LIKE LINE OF it_m.
+    DATA it_n LIKE it_m.
+    DATA it_o LIKE it_m.
+    DATA nums_subrc_0 TYPE string.
+    DATA nums_subrc_2 TYPE string.
+    DATA(subrc) = 0.
+
+    "Specifying ALL FIELDS
+    WHILE subrc = 0.
+      DATA(idx) = sy-index.
+      struc_m = VALUE #( num = 7 str = `V` char = '##' ).
+      READ TABLE it_m INTO struc_m INDEX idx COMPARING ALL FIELDS TRANSPORTING ALL FIELDS.
+      subrc = COND #( WHEN sy-subrc = 0 THEN 0 ELSE sy-subrc ).
+      IF subrc = 0.
+        APPEND struc_m TO it_n.
+        nums_subrc_0 &&= struc_m-num.
+      ELSEIF subrc = 2.
+        APPEND struc_m TO it_o.
+        nums_subrc_2 &&= struc_m-num.
+        subrc = 0.
+      ELSE.
+        EXIT.
+      ENDIF.
+    ENDWHILE.
+
+    ASSERT nums_subrc_0 = `77`.
+    ASSERT nums_subrc_2 = `1234568`.
+    CLEAR: subrc, struc_m, it_n, it_o, nums_subrc_0, nums_subrc_2.
+
+    "Specifying specific fields for the comparison and transport
+    WHILE subrc = 0.
+      idx = sy-index.
+      struc_m = VALUE #( num = 1234 str = `NOPE` char = '##' ).
+      READ TABLE it_m INTO struc_m INDEX idx COMPARING char TRANSPORTING num.
+      subrc = COND #( WHEN sy-subrc = 0 THEN 0 ELSE sy-subrc ).
+      IF subrc = 0.
+        APPEND struc_m TO it_n.
+        nums_subrc_0 &&= struc_m-num.
+      ELSEIF subrc = 2.
+        APPEND struc_m TO it_o.
+        nums_subrc_2 &&= struc_m-num.
+        subrc = 0.
+      ELSE.
+        EXIT.
+      ENDIF.
+    ENDWHILE.
+
+    ASSERT nums_subrc_0 = `135677`.
+    ASSERT nums_subrc_2 = `248`.
+    CLEAR: subrc, struc_m, it_n, it_o, nums_subrc_0, nums_subrc_2.
+
+    WHILE subrc = 0.
+      idx = sy-index.
+      struc_m = VALUE #( num = 9999 char = '##' str = `V` ).
+      READ TABLE it_m INTO struc_m INDEX idx COMPARING char str TRANSPORTING num.
+      subrc = COND #( WHEN sy-subrc = 0 THEN 0 ELSE sy-subrc ).
+      IF subrc = 0.
+        APPEND struc_m TO it_n.
+        nums_subrc_0 &&= struc_m-num.
+      ELSEIF subrc = 2.
+        APPEND struc_m TO it_o.
+        nums_subrc_2 &&= struc_m-num.
+        subrc = 0.
+      ELSE.
+        EXIT.
+      ENDIF.
+    ENDWHILE.
+
+    ASSERT nums_subrc_0 = `677`.
+    ASSERT nums_subrc_2 = `123458`.
+
+**********************************************************************
+    "CASTING / ELSE UNASSIGN additions to READ TABLE statements
+    "Additions when assigning the read result to a field symbol
+
+    TYPES c3 TYPE c LENGTH 3.
+    TYPES ty_tab_g TYPE TABLE OF c3 WITH EMPTY KEY.
+    DATA(itq) = VALUE ty_tab_g( ( 'abc' ) ( 'def' ) ).
+
+    "Field symbol created inline (i.e. with the generic type 'data' implicitly)
+    "In this case, the CASTING and ELSE UNASSIGN additions are not available.
+    READ TABLE itq ASSIGNING FIELD-SYMBOL(<fs_k>) INDEX 1.
+
+    "******* CASTING addition *******
+    "To use the addition, the field symbol must be either completely typed, or
+    "typed with one of the generic built-in ABAP types c, n, p, or x.
+    TYPES c2 TYPE c LENGTH 2.
+    FIELD-SYMBOLS <fs_l> TYPE c2.
+
+    READ TABLE itq ASSIGNING <fs_l> CASTING INDEX 2.
+    ASSERT <fs_l> = 'de'.
+
+    "******* ELSE UNASSIGN addition *******
+    "The field symbol is unassigned if no table line is found. The addition
+    "can be used together with the CASTING addition.
+    "The following example loops 3 times across an internal table that has
+    "two lines. The sy-index value is used as the index value of the READ TABLE
+    "statement. The example demonstrates that when a line is not found, the field
+    "symbol is unassigned. In case of the first READ TABLE statement that does not
+    "specify ELSE UNASSIGN, the field symbol remains assigned.
+
+    DATA string_a TYPE string.
+    FIELD-SYMBOLS <fs_o> TYPE c2.
+    DO 3 TIMES.
+      READ TABLE itq ASSIGNING FIELD-SYMBOL(<fs_m>) INDEX sy-index.
+      READ TABLE itq ASSIGNING FIELD-SYMBOL(<fs_n>) ELSE UNASSIGN INDEX sy-index.
+      READ TABLE itq ASSIGNING <fs_o> CASTING ELSE UNASSIGN INDEX sy-index.
+      IF sy-index = 3.
+        ASSERT <fs_m> = `def`.
+        ASSERT <fs_n> IS NOT ASSIGNED.
+        ASSERT <fs_o> IS NOT ASSIGNED.
+      ENDIF.
+    ENDDO.
+  ENDMETHOD.
+ENDCLASS.
 ```
+</details>    
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 

@@ -1671,6 +1671,36 @@ LOOP AT itab INTO DATA(wa3).
     ENDLOOP.
 ENDLOOP.
 
+"The objective of the following example is to extract the content of the segments that
+"are positioned within /.../ in a URL. The segments are stored in an internal table.
+DATA(url) = `https://help.sap.com/docs/abap-cloud/abap-concepts/controlled-sap-luw/`.
+FIND ALL OCCURRENCES OF PCRE `(?<=/)([^/]+)(?=/)` IN url RESULTS DATA(res).
+
+"Details on the regular expression:
+"- Positive lookbehind (?<=/) that determines that the content is preceded by `/`
+"- Positive lookahead (?=/) that determines that the content is followed by `/
+"- ([^/]+) in between determines that any sequence of characters that are not `/` are matched
+"- The match is put in parentheses to store the submatch
+
+"The RESULTS addition stores findings in an internal table of type match_result_tab.
+"Submatches (i.e. length and offset values of the submatches) are stored in internal
+"tables themselves. Therefore, the example uses nested loops and the substring function
+"to retrieve the strings.
+
+DATA(url_parts_for_loop) = VALUE string_table( FOR wa1 IN res
+                                               FOR wa2 IN wa1-submatches
+                                                ( substring( val = url off = wa2-offset len = wa2-length ) ) ).
+
+*Content:
+*help.sap.com
+*docs
+*abap-cloud
+*abap-concepts
+*controlled-sap-luw
+
+
+
+
 "More additions can be specified such as WHERE, USING KEY, FROM/TO, STEP 
 
 "WHERE condition 
