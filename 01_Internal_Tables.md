@@ -35,6 +35,7 @@
     - [Getting Table (Type) Information at Runtime](#getting-table-type-information-at-runtime)
   - [Processing Multiple Internal Table Lines Sequentially](#processing-multiple-internal-table-lines-sequentially)
     - [Restricting the Area of a Table to Be Looped Over](#restricting-the-area-of-a-table-to-be-looped-over)
+    - [Defining the Step Size and the Direction of Loop Passes](#defining-the-step-size-and-the-direction-of-loop-passes)
     - [Iteration Expressions](#iteration-expressions)
     - [Interrupting and Exiting Loops](#interrupting-and-exiting-loops)
   - [Operations with Internal Tables Using ABAP SQL SELECT Statements](#operations-with-internal-tables-using-abap-sql-select-statements)
@@ -797,7 +798,7 @@ INSERT VALUE s( a = 'yyy' b = 3 ) INTO TABLE dref_tab->*.
 ### Example: Exploring Populating Internal Tables
 
 Expand the following collapsible section to view the code of an example. To try it out, create a demo class named `zcl_some_class` and paste the code into it. After activation, choose *F9* in ADT to execute the class. 
-The example is set up to display output in the console, but only for few data objects. You may want to set a break point at the first position possible and walk through the example in the debugger. You may want to set a breakpoint at the earliest possible position and walk through the example in the debugger. This will allow you to double-click on data objects and observe how the different statements affect their contents.
+The example is set up to display output in the console, but only for few data objects. You may want to set a break point at the earliest possible position and walk through the example in the debugger. This will allow you to double-click on data objects and observe how the different statements affect their contents.
 
 <details>
   <summary>Expand to view the code</summary>
@@ -1517,10 +1518,17 @@ READ TABLE itab WITH KEY ... BINARY SEARCH ...
 - Depending on the number of times you need to access the internal table, it is recommended to work with sorted tables or tables with secondary keys. If you only need to read one or a few data sets, consider the administrative costs of setting up the index.
 - Note: The `BINARY SEARCH` addition is not available for table expressions. If `KEY ...` is specified, an optimized search is performed by default. There are no performance differences between using the `READ TABLE` statement and table expressions.
 
-The output of the following example, which includes multiple reads on standard internal tables using `READ TABLE` statements without `BINARY SEARCH` and with `BINARY SEARCH` demonstrates the performance gain. An excursion is included that shows read accesses in an internal table with a secondary table key.
+To try it out the following example, create a demo class named `zcl_some_class` and paste the code into it. After activation, choose *F9* in ADT to execute the class. The example is set up to display output in the console.
+
+The example includes multiple reads on standard internal tables using a `READ TABLE` statement ...
+- without `BINARY SEARCH`. 
+- with `BINARY SEARCH` and a previous `SORT` statement.
+- with a secondary table key whose components correspond to free key used in the previous statements.
+The runtime of the reads is determined and stored in internal tables. The read operations are repeated several times to have a more accurate runtime evaluation. The fastest time is output. 
+The example is intended to demonstrate the performance gain using the `BINARY SEARCH` addition (and also using a secondary table key).
 
 ```abap
-CLASS zcl_demo_test DEFINITION
+CLASS zcl_some_class DEFINITION
   PUBLIC
   FINAL
   CREATE PUBLIC .
@@ -1533,7 +1541,7 @@ ENDCLASS.
 
 
 
-CLASS zcl_demo_test IMPLEMENTATION.
+CLASS zcl_some_class IMPLEMENTATION.
   METHOD if_oo_adt_classrun~main.
     "Line type and internal table declarations
     TYPES: BEGIN OF demo_struc,
@@ -1542,16 +1550,19 @@ CLASS zcl_demo_test IMPLEMENTATION.
              num TYPE i,
            END OF demo_struc.
 
-    DATA: "Tables with empty primary table key
-      itab_std1 TYPE STANDARD TABLE OF demo_struc WITH EMPTY KEY,
-      itab_std2 LIKE itab_std1,
-      "Table with empty primary table key, secondary table key specified
-      itab_sec  TYPE STANDARD TABLE OF demo_struc
-                   WITH EMPTY KEY
-                   WITH NON-UNIQUE SORTED KEY sk COMPONENTS str num.
+    "Tables with empty primary table key
+    DATA itab_std1 TYPE STANDARD TABLE OF demo_struc WITH EMPTY KEY.
+    DATA itab_std2 LIKE itab_std1.
+    "Table with empty primary table key, secondary table key specified
+    DATA itab_sec TYPE STANDARD TABLE OF demo_struc
+                 WITH EMPTY KEY
+                 WITH NON-UNIQUE SORTED KEY sk COMPONENTS str num.
+    DATA num_of_table_lines TYPE i VALUE 5000.
+    DATA num_of_repetitions TYPE i VALUE 10.
+    DATA num_of_reads TYPE i VALUE 3000.
 
     "Populating internal tables
-    DO 1000 TIMES.
+    DO num_of_table_lines TIMES.
       INSERT VALUE #( idx = sy-index
                       str = |INDEX{ sy-index }|
                       num = sy-index ) INTO TABLE itab_std1.
@@ -1559,57 +1570,68 @@ CLASS zcl_demo_test IMPLEMENTATION.
     itab_std2 = itab_std1.
     itab_sec = itab_std1.
 
-    "---- Reading without the BINARY SEARCH addition ----
-    DATA(ts1) = utclong_current( ).
-    DO 1000 TIMES.
-      READ TABLE itab_std1
-        WITH KEY str = `INDEX500` num = 500
-        REFERENCE INTO DATA(dref1).
+    DATA no_binary_search TYPE TABLE OF decfloat34 WITH EMPTY KEY.
+    DATA with_sort_and_binary_search TYPE TABLE OF decfloat34 WITH EMPTY KEY.
+    DATA with_secondary_key TYPE TABLE OF decfloat34 WITH EMPTY KEY.
+
+    "Repeating the reads several times for a more accurate result
+
+    DO num_of_repetitions TIMES.
+      "---- Reading without the BINARY SEARCH addition ----
+      DATA(ts1) = utclong_current( ).
+      DO num_of_reads TIMES.
+        READ TABLE itab_std1 WITH KEY str = `INDEX` && sy-index num = sy-index TRANSPORTING NO FIELDS.
+      ENDDO.
+      DATA(ts2) = utclong_current( ).
+      cl_abap_utclong=>diff( EXPORTING high     = ts2
+                                       low      = ts1
+                              IMPORTING seconds = DATA(seconds) ).
+      APPEND seconds TO no_binary_search.
+
+      "---- Reading with the BINARY SEARCH addition ----
+      ts1 = utclong_current( ).
+      "Sorting the internal table when using BINARY SEARCH
+      "In this simple example, the internal table is populated by having the free key components
+      "to be searched in ascending order anyway. This is to emphasize the requirement to
+      "sort the (standard) internal table when using BINARY SEARCH. Here, the SORT statement
+      "is counted to the runtime.
+      SORT itab_std2 BY str num.
+
+      DO num_of_reads TIMES.
+        READ TABLE itab_std2 WITH KEY str = `INDEX` && sy-index num = sy-index BINARY SEARCH TRANSPORTING NO FIELDS.
+      ENDDO.
+      ts2 = utclong_current( ).
+      cl_abap_utclong=>diff( EXPORTING high     = ts2
+                                       low      = ts1
+                             IMPORTING seconds = seconds ).
+      APPEND seconds TO with_sort_and_binary_search.
+
+      "---- Excursion: Reading with READ TABLE using a secondary table key ----
+      ts1 = utclong_current( ).
+      DO num_of_reads TIMES.
+        READ TABLE itab_sec WITH TABLE KEY sk COMPONENTS str = `INDEX` && sy-index num = sy-index TRANSPORTING NO FIELDS.
+      ENDDO.
+      ts2 = utclong_current( ).
+      cl_abap_utclong=>diff( EXPORTING high     = ts2
+                                       low      = ts1
+                             IMPORTING seconds = seconds ).
+      APPEND seconds TO with_secondary_key.
     ENDDO.
-    DATA(ts2) = utclong_current( ).
-    cl_abap_utclong=>diff( EXPORTING high     = ts2
-                                     low      = ts1
-                            IMPORTING seconds = DATA(seconds) ).
 
-    out->write( `Elapsed time for the reads using READ TABLE without the BINARY SEARCH addition:` ).
-    out->write( seconds ).
-    out->write( repeat( val = `-` occ = 70  ) ).
+    SORT no_binary_search ASCENDING BY table_line.
+    SORT with_sort_and_binary_search ASCENDING BY table_line.
+    SORT with_secondary_key ASCENDING BY table_line.
 
-    "---- Reading with the BINARY SEARCH addition ----
-    ts1 = utclong_current( ).
-    "Sorting the internal table when using BINARY SEARCH
-    "In this simple example, the internal table is populated by having the free key components
-    "to be searched in ascending order anyway. This is to emphasize the requirement to
-    "sort the (standard) internal table when using BINARY SEARCH.
-    SORT itab_std2 BY str num.
-
-    DO 1000 TIMES.
-      READ TABLE itab_std2
-       WITH KEY str = `INDEX500` num = 500
-       BINARY SEARCH
-       REFERENCE INTO DATA(dref2).
-    ENDDO.
-    ts2 = utclong_current( ).
-    cl_abap_utclong=>diff( EXPORTING high     = ts2
-                                     low      = ts1
-                           IMPORTING seconds = seconds ).
-    out->write( `Elapsed time for the reads using READ TABLE ... BINARY SEARCH ...:` ).
-    out->write( seconds ).
-    out->write( repeat( val = `-` occ = 70  ) ).
-
-    "---- Excursion: Reading with READ TABLE using a secondary table key ----
-    ts1 = utclong_current( ).
-    DO 1000 TIMES.
-      READ TABLE itab_sec
-        WITH TABLE KEY sk COMPONENTS str = `INDEX500` num = 500
-        INTO DATA(dref3).
-    ENDDO.
-    ts2 = utclong_current( ).
-    cl_abap_utclong=>diff( EXPORTING high     = ts2
-                                     low      = ts1
-                           IMPORTING seconds = seconds ).
-    out->write( `Elapsed time for the reads using READ TABLE and a secondary table key:` ).
-    out->write( seconds ).
+    out->write( |Number of read repetitions: { num_of_repetitions }| ).
+    out->write( |Number of reads per table: { num_of_reads }\n| ).
+    out->write( `Fastest run of reads using READ TABLE with a free key, without the BINARY SEARCH addition:` ).
+    out->write( no_binary_search[ 1 ] ).
+    out->write( repeat( val = `-` occ = 70 ) ).
+    out->write( `Fastest run of reads using SORT, and READ TABLE with a free key, and the BINARY SEARCH addition:` ).
+    out->write( with_sort_and_binary_search[ 1 ] ).
+    out->write( repeat( val = `-` occ = 70 ) ).
+    out->write( `Fastest run of reads using READ TABLE and a secondary table key:` ).
+    out->write( with_secondary_key[ 1 ] ).
   ENDMETHOD.
 ENDCLASS.
 ```
@@ -2253,6 +2275,8 @@ line. This is not true for hashed tables. There, `sy-tabix` is `0`.
 - Note that if you want to work with the value of `sy-tabix`, you
 should do so immediately after the `LOOP` statement to avoid possible overwriting in statements contained in the loop block.
 
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
 ### Restricting the Area of a Table to Be Looped Over
 
 The additions of `LOOP` statements come into play when you want to restrict the table content to be respected by the loop because
@@ -2300,7 +2324,15 @@ LOOP AT it INTO wa USING KEY primary_key.
 "LOOP AT it INTO wa USING KEY sk.            "secondary key alias
   ...
 ENDLOOP.
+```
 
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+### Defining the Step Size and the Direction of Loop Passes
+
+Find more information in the [`STEP`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abaploop_at_itab_cond.htm#!ABAP_ADDITION_3@3@) topic. The addition is also available for other ABAP statements.  
+
+``` abap
 "STEP addition for defining the step size and the direction of the loop
 "- Step size: Specified by the absolute value of an integer
 "- Direction: Specified by a positive (forward loop) or negative 
@@ -2328,9 +2360,26 @@ LOOP AT it INTO wa FROM 6 TO 3 STEP -2.
 ENDLOOP.
 ```
 
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
 ### Iteration Expressions
 
 Iteration expressions with [`FOR`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenfor.htm) as part of certain constructor expressions allow you to create content of an internal table by evaluating one or more source tables.
+
+```abap
+TYPES ty_int_tab TYPE TABLE OF i WITH EMPTY KEY.
+DATA(int_table_a) = VALUE ty_int_tab( ( 1 ) ( 2 ) ( 3 ) ( 4 ) ( 5 ) ).
+DATA int_table_b TYPE ty_int_tab.
+int_table_b = VALUE #( FOR wa_b IN int_table_a ( wa_b * 2 ) ).
+"Table Content: 2 / 4 / 6 / 8 / 10
+
+"Instead of, for example, a LOOP statement as follows:
+DATA int_table_c TYPE ty_int_tab.
+LOOP AT int_table_a INTO DATA(wa_c).
+  INSERT wa_c * 3 INTO TABLE int_table_c.
+ENDLOOP.
+"Table content: 3 / 6 / 9 / 12 / 15
+```
 
 The expressions are covered in the cheat sheet [Constructor Expressions](05_Constructor_Expressions.md):
 - [Iteration Expressions Using FOR](05_Constructor_Expressions.md#iteration-expressions-using-for)
@@ -3322,7 +3371,7 @@ CLASS zcl_some_class IMPLEMENTATION.
 
     "Populating internal tables with demo data
     DO number_of_lines TIMES.
-      INSERT VALUE #( idx = sy-index txt = |INDEX{ sy-index }| num = |{ sy-index }| ) INTO TABLE it_std_empty_key.
+      INSERT VALUE #( idx = sy-index txt = |INDEX{ sy-index }| num = sy-index ) INTO TABLE it_std_empty_key.
     ENDDO.
 
     "Copying the content to the other internal tables having the same line type
@@ -3392,8 +3441,10 @@ CLASS zcl_some_class IMPLEMENTATION.
         "with all kinds of tables in the read accesses
         IF dref->table_kind = 'H'.
           ASSIGN dref->itab_ref->* TO <itab_ha>.
+          ASSIGN dref->itab_ref->* TO <any_tab>.
         ELSE.
           ASSIGN dref->itab_ref->* TO <itab_idx>.
+          ASSIGN dref->itab_ref->* TO <any_tab>.
         ENDIF.
 
         "-------------------- Read access by primary table index --------------------
@@ -3430,13 +3481,6 @@ CLASS zcl_some_class IMPLEMENTATION.
           "statement below
           DATA(sec_key_name) = dref->keys[ is_primary = '' ]-name.
 
-          "Assigning index or hashed table to a field symbol
-          IF <itab_idx> IS ASSIGNED.
-            ASSIGN <itab_idx> TO <any_tab>.
-          ELSEIF <itab_ha> IS ASSIGNED.
-            ASSIGN <itab_ha> TO <any_tab>.
-          ENDIF.
-
           ts1 = utclong_current( ).
           DO number_of_reads TIMES.
             READ TABLE <any_tab> INDEX sy-index USING KEY (sec_key_name) TRANSPORTING NO FIELDS.
@@ -3467,11 +3511,6 @@ CLASS zcl_some_class IMPLEMENTATION.
         ENDIF.
 
         IF is_pr_key_only_idx = abap_true.
-          IF <itab_idx> IS ASSIGNED.
-            ASSIGN <itab_idx> TO <any_tab>.
-          ELSEIF <itab_ha> IS ASSIGNED.
-            ASSIGN <itab_ha> TO <any_tab>.
-          ENDIF.
 
           dref->operation = |Read access by primary table key|.
           ts1 = utclong_current( ).
@@ -3506,11 +3545,6 @@ CLASS zcl_some_class IMPLEMENTATION.
         ENDIF.
 
         IF is_sec_key_only_num = abap_true.
-          IF <itab_idx> IS ASSIGNED.
-            ASSIGN <itab_idx> TO <any_tab>.
-          ELSEIF <itab_ha> IS ASSIGNED.
-            ASSIGN <itab_ha> TO <any_tab>.
-          ENDIF.
 
           dref->operation = |Read access by secondary table key|.
           ts1 = utclong_current( ).
@@ -3535,11 +3569,6 @@ CLASS zcl_some_class IMPLEMENTATION.
         "Checking whether the internal table includes the two components
         "that constitute the free key.
         IF check_example_components( ).
-          IF <itab_idx> IS ASSIGNED.
-            ASSIGN <itab_idx> TO <any_tab>.
-          ELSEIF <itab_ha> IS ASSIGNED.
-            ASSIGN <itab_ha> TO <any_tab>.
-          ENDIF.
 
           dref->operation = |Read access by free key|.
           ts1 = utclong_current( ).

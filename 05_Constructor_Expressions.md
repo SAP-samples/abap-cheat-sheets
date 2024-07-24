@@ -1698,9 +1698,6 @@ DATA(url_parts_for_loop) = VALUE string_table( FOR wa1 IN res
 *abap-concepts
 *controlled-sap-luw
 
-
-
-
 "More additions can be specified such as WHERE, USING KEY, FROM/TO, STEP 
 
 "WHERE condition 
