@@ -1603,6 +1603,30 @@ xco_cp_json=>data->from_string( json_created_xco )->apply( VALUE #(
 
 </td>
 </tr>
+<tr>
+<td> <code>/UI2/CL_JSON</code> </td>
+<td>
+
+- Handling JSON data using the <code>/UI2/CL_JSON</code> class
+- Note that there are many additional and optional parameters available, some of which are explored in examples in the [Working with XML and JSON in ABAP](21_XML_JSON.md) cheat sheet.
+
+
+<br>
+
+```abap
+DATA(some_table) = VALUE string_table( ( `aaa` ) ( `bbb` ) ( `ddd` ) ).
+
+"--------- ABAP -> Json ---------
+DATA(abap_to_json) = /ui2/cl_json=>serialize( data = some_table ).
+
+"--------- Json -> ABAP ---------
+DATA table_json_to_abap TYPE string_table.
+/ui2/cl_json=>deserialize( EXPORTING json = abap_to_json
+                           CHANGING data  = table_json_to_abap ).
+```
+
+</td>
+</tr>
 </table>
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
