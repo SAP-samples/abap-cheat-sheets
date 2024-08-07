@@ -38,6 +38,7 @@
       - [Searching Using Regular Expressions](#searching-using-regular-expressions)
       - [System Classes for Regular Expressions](#system-classes-for-regular-expressions)
       - [Replacing Using Regular Expressions](#replacing-using-regular-expressions)
+      - [Misc Examples Using Regular Expressions](#misc-examples-using-regular-expressions)
   - [More String Functions](#more-string-functions)
     - [Checking the Similarity of Strings](#checking-the-similarity-of-strings)
     - [Repeating Strings](#repeating-strings)
@@ -1634,8 +1635,7 @@ IF s1 NP `i+`. ... "true; sy-fdpos = 11 (length of searched string)
 
 #### Excursion: Common Regular Expressions
 
-There are several ways to perform complex searches in strings using PCRE expressions. They can be quite complex. The following overview shows common PCRE expressions with simple examples.
-For more information, see [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenregex_pcre_syntax_specials.htm).
+There are several ways to perform complex searches in strings using PCRE expressions. They can be quite complex. The following overview shows common PCRE expressions with simple examples. It is not comprehensive. For more details, see [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenregex_pcre_syntax_specials.htm).
 
 Characters and character types
 
@@ -1684,19 +1684,6 @@ Character Sets, Ranges, Subgroups and Lookarounds
 > - Subgroups are useful in replacements. By using an expression with `$` and a number, such as `$1`, you can refer to a specific group. For example, you have a string `abcde`. A PCRE expression might be
 `(ab|xy)c(d.)`, where two subgroups are specified within two pairs of parentheses. In a replacement pattern, you can refer to the first group with `$1` and the second group with `$2`. Thus, the replacement pattern `$2Z$1` results in `deZab`.
 > - `(?:x)` creates a group but it is not captured. Example regular expression: `(?:ab)(ap)`. Example string: 'abap'. It matches 'abap', but `$1` will only contain 'ap'. 
-> - Note that `.` does not include new line feeds among others. If you want to capture a new line, you can use `\n` as regular expression. The following example string includes a new line. All content between the HTML p tags should be replaced. You could use a regular expression to capture any character or new line as follows:
->   ```abap 
->   DATA(str_a) = |<p>Hallo\n</p><p>Ciao!</p><p>Salut.</p>|.
->   DATA(str_b) = str_a.
->
->   REPLACE ALL OCCURRENCES OF PCRE `(<p>)(.*?)(<\/p>)` IN str_a WITH `$1Hi$3`.
->   "<p>Hallo
->   "</p><p>Hi</p><p>Hi</p>
->
->   "Regular expression: any character or a new line with zero or more repretitions
->   REPLACE ALL OCCURRENCES OF PCRE `(<p>)(.|\n)*?(<\/p>)` IN str_b WITH `$1Hi$3`.
->   "<p>Hi</p><p>Hi</p><p>Hi</p>
->   ```
 > - Regarding special characters, check the [Special Characters](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenregex_pcre_syntax_specials.htm) topic in the ABAP Keyword Documentation. For example, a non-breaking space whose hex code is *U+00A0*. You can replace all of the non-breaking space occurrences in a string as follows:
 >   ```abap 
 >   REPLACE ALL OCCURRENCES OF PCRE `\x{00A0}` IN some_string WITH ``.
@@ -1708,8 +1695,8 @@ Anchors and Positions
 
 | Expression | Represents | Example Regex | Example String | Matches | Does not Match |
 |---|---|---|---|---|---|
-| `^` | Start of line, alternative: `\A` | `^.` or `\A.` | abc def | <ins>**a**</ins>bc def | abc <ins>**d**</ins>ef  |
-| `$` | End of line, alternative: `\Z` | `.$` or `.\Z` | abc def | abc de<ins>**f**</ins> | <ins>**a**</ins>bc def |
+| `^` | Start of line | `^.` | abc def | <ins>**a**</ins>bc def | abc <ins>**d**</ins>ef  |
+| `$` | End of line | `.$`  | abc def | abc de<ins>**f**</ins> | <ins>**a**</ins>bc def |
 | `\b` | Start or end of word | 1. `\ba.` <br>2. `\Dd\b` <br>3. `\b.d\b` | abcd a12d ed | 1. <ins>**ab**</ins>cd <ins>**a1**</ins>2d ed <br>2. ab<ins>**cd**</ins> a12d <ins>**ed**</ins> <br> 3. abcd a12d <ins>**ed**</ins> | 1. ab<ins>**cd**</ins> a1<ins>**2d**</ins> ed <br> 2. abcd a1<ins>**2d**</ins> ed <br> 3. <ins>**abcd**</ins> <ins>**a12d**</ins> ed |
 | `\B` | Negation of `\b`, not at the start or end of words | `\Be\B` | see an elefant | s<ins>**e**</ins>e an el<ins>**e**</ins>fant  | s<ins>**ee**</ins> an <ins>**e**</ins>lefant |
 
@@ -1903,6 +1890,152 @@ REPLACE ALL OCCURRENCES OF PCRE `p.` IN s1 WITH `XY` "XY?aXY#ab?a
     "LINE    OFFSET    LENGTH
     "0       0         2
     "0       4         2
+```
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+#### Misc Examples Using Regular Expressions
+
+This section demonstrates various examples using regular expressions. For example, it includes the handling of special characters.
+Regarding special characters, check the [Special Characters](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenregex_pcre_syntax_specials.htm) topic in the ABAP Keyword Documentation.
+
+```abap
+"String created with string template and control characters for
+"new line, tab, and return
+DATA(a) = |A B\nC\tD\rE|.
+"Copies for more examples
+DATA(b) = a.
+DATA(c) = a.
+
+"Replacing any whitespace character
+REPLACE ALL OCCURRENCES OF PCRE `\s` IN a WITH `#`.
+*A#B#C#D#E
+
+"Replacing any character that is not a whitespace character
+REPLACE ALL OCCURRENCES OF PCRE `\S` IN b WITH `#`.
+
+*# #
+*#      #
+*#
+
+"Note that '.' representing any character includes spaces
+"but not new lines, for example
+REPLACE ALL OCCURRENCES OF PCRE `.` IN c WITH `#`.
+
+*###
+*###
+*#
+
+FIND PCRE `\n` IN c.
+ASSERT sy-subrc = 0.
+FIND PCRE `\r` IN c.
+ASSERT sy-subrc = 0.
+
+FIND PCRE `\t` IN c.
+ASSERT sy-subrc = 4.
+FIND ` ` IN c.
+ASSERT sy-subrc = 4.
+
+"In the followig string (that includes HTML tags), the content within
+"the p tags shall be replaced. A new line is inlcuded.
+"The first example just uses a non-greedy search with '.'.
+"The example also demonstrates the replacement with groups. The regular
+"expression contains three groups, and two of them shall be included in
+"the repalcement.
+DATA(html_a) = |<p>Hallo\n</p><p>Ciao!</p><p>Salut.</p>|.
+DATA(html_b) = html_a.
+
+  REPLACE ALL OCCURRENCES OF PCRE `(<p>)(.*?)(<\/p>)` IN html_a WITH `$1Hi$3`.
+*<p>Hallo
+*</p><p>Hi</p><p>Hi</p>
+
+"Regular expression: any character or a new line with zero or more repretitions
+REPLACE ALL OCCURRENCES OF PCRE `(<p>)(.|\n)*?(<\/p>)` IN html_b WITH `$1Hi$3`.
+*<p>Hi</p><p>Hi</p><p>Hi</p>
+
+"The following strangely formatted demo HTML code is to be processed. It
+"intentionally and randomly includes new lines and returns. Some HTML tags
+"have attributes. Suppose you want to proceed with the following tasks:
+"- Getting the content between the table tags
+"- Putting the content in one line by removing all new lines and returns
+"- Removing all attributes so that only the tags are available
+
+DATA(nl) = |\n|.
+DATA(rt) = |\r|.
+DATA(html) =
+`<html lang="EN">` && nl &&
+`<body>` && nl &&
+`  <table border="1" summary="data display"   ` && rt &&
+`title="ABAP ` && nl &&
+`Data">` &&
+`    <tr class="header">` && rt &&
+`      <th>CARRID` && nl &&
+`</th>` && nl &&
+`            <th>CARRNAME</th>` &&
+`    </tr>` && nl &&
+`    <tr class="body">` && nl &&
+`      <td>` &&
+`        <span ` && nl &&
+`class="nprpnwrp">XY</span>` &&
+`      </td>` && rt &&
+`      <td>` &&
+`        <span class="nprpnwrp"` && rt &&
+`>XY Airlines</span>` && nl &&
+`      </td>` && nl &&
+`    </tr>` && nl &&
+`    <tr class="body">` && nl &&
+`      <td>` && rt &&
+`        <span class="nprpnwrp">YZ</span>` && rt &&
+`      </td>` && nl &&
+`      <td>` && nl &&
+`        <span class=` && rt &&
+`"nprpnwrp">YZ Airways</span>` && nl &&
+`      </td>` && nl &&
+`    </tr>` && nl &&
+`  </table>` && rt &&
+`</body>` && nl &&
+`</html>`.
+
+"See the following examples of how to proceed. Other regular expressions may be chosen, too.
+
+"Getting the content/all tags between the table tags
+"The regular expression considers the attributes of the table tag that could be anything.
+"A non-greedy search up to the next '>' would not work with just '.' in this case because
+"of the new lines and returns. So, a regular expression to retrieve the content might be
+"as follows:
+"[\s|\S]*?
+"- Matches a single character specified within [...]
+"- In this case it is either \s or \S (i.e. any whitespace or non-whitespace character
+"- 'or' is represented by '|'
+"- '*?' represents non-greedy search (zero or multiple occurrences) up to the next '>' in
+"  the example
+"- The same regular expression is used between the <table ...> ... </table> tags to capture
+"  anyting.
+"- It is put within a pair of parentheses to capture a group. This group (i.e. the offset
+"  and length values for the finding) is available in the data object following RESULTS
+"  in the FIND statement. As only one group is available in the regular expression,
+"  the 'submatches" table contains one line.
+"- Note the escaping of '/' for '/' in </table>
+"- The examples use FIND/REPLACE statements. You can also use string functions.
+FIND PCRE `<table[\s|\S]*?>([\s|\S]*?)<\/table>` IN html RESULTS DATA(res).
+DATA(content_bw_table_tag) = substring( val = html off = res-submatches[ 1 ]-offset len = res-submatches[ 1 ]-length ).
+"Removing all new lines and returns
+REPLACE ALL OCCURRENCES OF PCRE `\n|\r` IN content_bw_table_tag WITH ``.
+"Removing all whitespace characters between start and end HTML tags
+REPLACE ALL OCCURRENCES OF PCRE `>(\s*?)<` IN content_bw_table_tag WITH `><`.
+"Removing all whitespace characters in front of the first HTML tag, and behind
+"the last tag
+REPLACE PCRE `^\s*?<` IN content_bw_table_tag WITH `<`.
+REPLACE PCRE `>\s*$` IN content_bw_table_tag WITH `>`.
+"Removing all attributes within tags
+"Regex: Non-greedy searches up to the next whitespace character, and from that
+"whitespace character up to the next '>'. Using $n, you refer to the capturing
+"group. In this case, the first capturing group enclosed by '<...>' shall be
+"inserted.
+REPLACE ALL OCCURRENCES OF PCRE `<(.*?)\s(.*?)>` IN content_bw_table_tag WITH `<$1>`.
+"span tags are not needed in the example any more as the attributes are removed
+REPLACE ALL OCCURRENCES OF `<span>` IN content_bw_table_tag WITH ``.
+REPLACE ALL OCCURRENCES OF `</span>` IN content_bw_table_tag WITH ``.
 ```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>

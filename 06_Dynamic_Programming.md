@@ -14,7 +14,7 @@
       - [Declaring Data Reference Variables](#declaring-data-reference-variables)
       - [Assigning References to Existing Data Objects](#assigning-references-to-existing-data-objects)
       - [Creating New Data Objects at Runtime (Anonymous Data Objects)](#creating-new-data-objects-at-runtime-anonymous-data-objects)
-      - [Excursion: Creating Objects as Instances of Classes and CREATE OBJECT Statements](#excursion-creating-objects-as-instances-of-classes-and-create-object-statements)
+      - [Excursion with Object Reference Variables: Creating Objects as Instances of Classes and CREATE OBJECT Statements](#excursion-with-object-reference-variables-creating-objects-as-instances-of-classes-and-create-object-statements)
       - [Assignments Between Two Reference Variables (Static and Dynamic Type, Upcast and Downcast)](#assignments-between-two-reference-variables-static-and-dynamic-type-upcast-and-downcast)
       - [Addressing Data References](#addressing-data-references)
       - [Excursion: Generic Data References and Field Symbols](#excursion-generic-data-references-and-field-symbols)
@@ -31,6 +31,7 @@
     - [Validating Input for Dynamic Specifications (CL\_ABAP\_DYN\_PRG)](#validating-input-for-dynamic-specifications-cl_abap_dyn_prg)
   - [Runtime Type Services (RTTS)](#runtime-type-services-rtts)
     - [Getting Type Information at Runtime](#getting-type-information-at-runtime)
+      - [RTTI Method Calls](#rtti-method-calls)
       - [Example: Exploring the RTTI Type Hierarchy](#example-exploring-the-rtti-type-hierarchy)
       - [Excursion: Inline Declaration, CAST Operator, Method Chaining](#excursion-inline-declaration-cast-operator-method-chaining)
       - [Absolute Names](#absolute-names)
@@ -573,7 +574,7 @@ SELECT SINGLE *
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-#### Excursion: Creating Objects as Instances of Classes and CREATE OBJECT Statements
+#### Excursion with Object Reference Variables: Creating Objects as Instances of Classes and CREATE OBJECT Statements
 
 - To create an object, a [reference variable](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenreference_variable_glosry.htm "Glossary Entry")
 must be declared.
@@ -2389,6 +2390,184 @@ The type properties are represented by attributes that are accessible through th
 > - For each type category (elementary type, table, and so on), there is a type description class (e.g. `CL_ABAP_STRUCTDESCR` for structures, as shown in the hierarchy tree above) that has special attributes (i.e. the properties of the respective types). 
 > - References to type description objects can be used, for example, after the `TYPE HANDLE` addition of the `CREATE DATA` and `ASSIGN` statements.
 
+
+#### RTTI Method Calls
+
+The following code example demonstrates a range of RTTI method calls. It includes retrieving type information at runtime for elementary and enumerated types, structures, internal tables, data references, classes, and interfaces. Find more information in the section below. 
+
+To try the example out, create a demo class named `zcl_some_class` and paste the code into it. 
+The example is not set up to display output in the console. So, after activation, you may want to set a break point at the first position possible and choose *F9* in ADT to execute the class.  You can then walk through the example in the debugger. This will allow you to double-click on the variables and check out the contents. The example is similar to the one below, however, this only focuses on the method calls without output preparation among others.
+
+```abap
+CLASS zcl_some_class DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
+
+  PUBLIC SECTION.
+    INTERFACES if_oo_adt_classrun.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+
+ENDCLASS.
+
+
+
+CLASS zcl_some_class IMPLEMENTATION.
+  METHOD if_oo_adt_classrun~main.
+
+    "------------------------------------- Elementary types/data objects -------------------------------------
+
+    TYPES elem_type_ts TYPE timestampl.
+    DATA ts TYPE elem_type_ts VALUE '20240101081317.81011'.
+
+    DATA(tdo_a) = cl_abap_typedescr=>describe_by_data( ts ).
+    "DATA(tdo_a) = cl_abap_typedescr=>describe_by_name( 'ELEM_TYPE_TS' ).
+
+    "Cast to get more specific information
+    DATA(tdo_elem) = CAST cl_abap_elemdescr( cl_abap_typedescr=>describe_by_data( ts ) ).
+    "DATA(tdo_elem) = CAST cl_abap_elemdescr( tdo_a ).
+
+    DATA(type_category_elem) = tdo_elem->kind.
+    DATA(type_kind_elem) = tdo_elem->type_kind.
+    DATA(decimals_elem) = tdo_elem->decimals.
+    DATA(output_length_elem) = tdo_elem->output_length.
+    DATA(absolute_name_elem) = tdo_elem->absolute_name.
+    DATA(relative_name_elem) = tdo_elem->get_relative_name( ).
+    DATA(is_ddic_type_elem) = tdo_elem->is_ddic_type( ).
+    DATA(applies_to_data_elem) = tdo_elem->applies_to_data( CONV timestamp( '20240808112458' ) ).
+    DATA(applies_to_dataref_elem) = tdo_elem->applies_to_data_ref( REF #( '20240808112458' ) ).
+
+    "Enumerated type
+    TYPES: BEGIN OF ENUM enum_t,
+             enum1,
+             enum2,
+           END OF ENUM enum_t.
+    DATA(dobj_enum) = enum2.
+    DATA(other_enum) = enum1.
+
+    DATA(tdo_enum) = CAST cl_abap_enumdescr( cl_abap_typedescr=>describe_by_data( enum2 ) ).
+    "DATA(tdo_enum) = CAST cl_abap_enumdescr( cl_abap_typedescr=>describe_by_name( 'ENUM_T' ) ).
+
+    DATA(type_category_enum) = tdo_enum->kind.
+    DATA(relative_name_enum) = tdo_enum->get_relative_name( ).
+    ... "Explore more options by positioning the cursor behind -> and choosing CTRL + Space
+    DATA(base_kind_enum) = tdo_enum->base_type_kind.
+    DATA(members_enum) = tdo_enum->members.
+    DATA(applies_to_data_enum) = tdo_enum->applies_to_data( other_enum ).
+
+    "------------------------------------- Structure -------------------------------------
+
+    TYPES: BEGIN OF demo_struc_type,
+             comp1 TYPE c LENGTH 3,
+             comp2 TYPE i,
+             comp3 TYPE string,
+           END OF demo_struc_type.
+    DATA demo_struc TYPE demo_struc_type.
+
+    DATA(tdo_c) = cl_abap_typedescr=>describe_by_data( demo_struc ).
+    "DATA(tdo_c) = cl_abap_typedescr=>describe_by_name( 'DEMO_STRUC_TYPE' ).
+
+    "Cast to get more specific information
+    DATA(tdo_struc) = CAST cl_abap_structdescr( cl_abap_typedescr=>describe_by_data( demo_struc ) ).
+    "DATA(tdo_struc) = CAST cl_abap_structdescr( tdo_c ).
+
+    DATA(type_category_struc) = tdo_struc->kind.
+    DATA(relative_name_struc) = tdo_struc->get_relative_name( ).
+    ... "Explore more options by positioning the cursor behind -> and choosing CTRL + Space
+    DATA(type_of_struc) = tdo_struc->struct_kind.
+    DATA(struc_comps) = tdo_struc->components.
+    DATA(struc_comps_more_details) = tdo_struc->get_components( ).
+    DATA(struc_has_include) = tdo_struc->has_include.
+    DATA(struc_incl_view) = tdo_struc->get_included_view( ).
+    DATA(applies_to_data_struc) = tdo_enum->applies_to_data( `some string` ).
+
+    "------------------------------------- Internal table -------------------------------------
+
+    TYPES tab_type TYPE SORTED TABLE OF demo_struc_type
+       WITH UNIQUE KEY comp1
+       WITH NON-UNIQUE SORTED KEY sec_key ALIAS sk COMPONENTS comp2 comp3.
+    DATA itab TYPE tab_type.
+
+    DATA(tdo_d) = cl_abap_typedescr=>describe_by_data( itab ).
+    "DATA(tdo_d) = cl_abap_typedescr=>describe_by_name( 'TAB_TYPE' ).
+
+    "Cast to get more specific information
+    DATA(tdo_itab) = CAST cl_abap_tabledescr( cl_abap_typedescr=>describe_by_data( itab ) ).
+    "DATA(tdo_itab) = CAST cl_abap_tabledescr( tdo_d ).
+
+    DATA(type_category_itab) = tdo_itab->kind.
+    DATA(relative_name_itab) = tdo_itab->get_relative_name( ).
+    ... "Explore more options by positioning the cursor behind -> and choosing CTRL + Space
+    DATA(table_kind_itab) = tdo_itab->table_kind.
+    DATA(table_keys_itab) = tdo_itab->key.
+    DATA(table_keys_more_details_itab) = tdo_itab->get_keys( ).
+    DATA(table_has_unique_key_itab) = tdo_itab->has_unique_key.
+    DATA(table_key_alias_itab) = tdo_itab->get_key_aliases( ).
+    DATA(line_type_itab) = tdo_itab->get_table_line_type( ).
+    DATA(table_component_info_itab) = CAST cl_abap_structdescr( tdo_itab->get_table_line_type( ) ).
+    DATA(table_components_itab) = CAST cl_abap_structdescr( tdo_itab->get_table_line_type( ) )->components.
+    DATA(table_comps_more_info_itab) = CAST cl_abap_structdescr( tdo_itab->get_table_line_type( ) )->get_components( ).
+    DATA(applies_to_data_itab) = tdo_itab->applies_to_data( VALUE tab_type( ) ).
+
+    "------------------------------------- Data reference -------------------------------------
+
+    TYPES dref_type TYPE REF TO i.
+    DATA dref TYPE dref_type.
+    dref = NEW #( 1 ).
+    DATA(dref_b) = REF #( 2 ).
+
+    DATA(tdo_e) = cl_abap_typedescr=>describe_by_data( dref ).
+    "DATA(tdo_e) = cl_abap_typedescr=>describe_by_name( 'DREF_TYPE' ).
+
+    DATA(tdo_dref) = CAST cl_abap_refdescr( cl_abap_typedescr=>describe_by_data( dref ) ).
+    DATA(referenced_type_dref) = tdo_dref->get_referenced_type( ).
+    ... "Explore more options by positioning the cursor behind -> and choosing CTRL + Space
+
+    "Using the describe_by_data_ref method
+    DATA(tdo_dref_b) = cl_abap_typedescr=>describe_by_data_ref( dref ).
+
+    "------------------------------------- Class -------------------------------------
+
+    "Creating an object reference variable
+    DATA(oref) = NEW cl_abap_dyn_prg( ).
+
+    "Using the describe_by_object_ref method
+    DATA(tdo_f) = cl_abap_typedescr=>describe_by_object_ref( oref ).
+    "DATA(tdo_f) = cl_abap_typedescr=>describe_by_name( 'CL_ABAP_DYN_PRG' ).
+
+    "Cast using cl_abap_classdescr to get class descriptions
+    DATA(tdo_cl) = CAST cl_abap_classdescr( cl_abap_typedescr=>describe_by_object_ref( oref ) ).
+    "DATA(tdo_cl) = CAST cl_abap_classdescr( tdo_f ).
+
+    DATA(class_kind_cl) = tdo_cl->class_kind.
+    DATA(attributes_cl) = tdo_cl->attributes.
+    DATA(interfaces_cl) = tdo_cl->interfaces.
+    DATA(events_cl) = tdo_cl->events.
+    DATA(methods_cl) = tdo_cl->methods.
+    DATA(super_class_cl) = tdo_cl->get_super_class_type( ).
+    DATA(super_class_name_cl) = super_class_cl->absolute_name.
+    DATA(is_instantiable_cl) = tdo_cl->is_instantiatable( ).
+    ... "Explore more options by positioning the cursor behind -> and choosing CTRL + Space
+
+    "------------------------------------- Interface -------------------------------------
+
+    "This example only uses the describe_by_name method
+    DATA(tdo_g) = cl_abap_typedescr=>describe_by_name( 'IF_OO_ADT_CLASSRUN' ).
+
+    DATA(tdo_intf) = CAST cl_abap_intfdescr( cl_abap_typedescr=>describe_by_name( 'IF_OO_ADT_CLASSRUN' ) ).
+    "DATA(tdo_intf) = CAST cl_abap_classdescr( tdo_g ).
+
+    DATA(attributes_intf) = tdo_intf->attributes.
+    DATA(methods_intf) = tdo_intf->methods.
+    ... "Explore more options by positioning the cursor behind -> and choosing CTRL + Space
+
+  ENDMETHOD.
+ENDCLASS.
+```
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
 #### Example: Exploring the RTTI Type Hierarchy
 
 The following example explores the RTTI type hierarchy and demonstrates how to retrieve various pieces of type information using RTTI attributes and methods. You can create a demo class (adapt the class name if needed), copy and paste the code, run the class with F9 in ADT, and check the output in the console.
@@ -2991,7 +3170,7 @@ CLASS zcl_some_class IMPLEMENTATION.
 
             "Interface methods
             "You can check the following table in the debugger. There is plenty of information available
-            "such as parameters, visibility , abstract/final, static/instance, and more.
+            "such as parameters, visibility, abstract/final, static/instance, and more.
             "The example only writes the methods names to the string table.
             DATA(intf_methods) = intf->methods.
             INSERT |{ tabix } Methods: { REDUCE string( INIT str = `` FOR <methintf> IN intf_methods NEXT str = |{ str }| &&

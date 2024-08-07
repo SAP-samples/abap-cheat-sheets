@@ -23,7 +23,7 @@ It provides references to more detailed information on the topic.
       - Access to SAP-delivered repository objects is restricted to objects released for ABAP for Cloud Development
       - For example, most of the database tables provided by SAP cannot be read directly (although there are abstractions/[CDS entities](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_entity_glosry.htm) for many that can be accessed).
       - Libraries are available with predefined functionality.
-      - Note that repository objects can be classified by a [release contract](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrelease_contract_glosry.htm) (e.g. C0, C1 etc.). 
+      - Note that repository objects can be classified by a [release contract](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrelease_contract_glosry.htm) (e.g. C0, C1 etc.). Find more information [here](https://help.sap.com/docs/ABAP_PLATFORM_NEW/c238d694b825421f940829321ffa326a/c479660d07374c15a1a5fe83fdbb1337.html?locale=en-US).
     - Tools:
       - [ABAP development tools for Eclipse (ADT)](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenadt_glosry.htm) are the only supported tools 
       - There is no access to SAP GUI (transactions `SE80`, `SE24` etc. you may know from classic ABAP)

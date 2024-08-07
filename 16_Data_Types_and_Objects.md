@@ -18,7 +18,7 @@
     - [Assigning References to Data Reference Variables](#assigning-references-to-data-reference-variables)
     - [Creating Anonymous Data Objects](#creating-anonymous-data-objects)
     - [Constants and Immutable Variables](#constants-and-immutable-variables)
-  - [Type Conversions and Assignments](#type-conversions-and-assignments)
+  - [Type Conversions, Compatibility and Assignments](#type-conversions-compatibility-and-assignments)
   - [Terms Related to Data Types and Objects in a Nutshell](#terms-related-to-data-types-and-objects-in-a-nutshell)
   - [Notes on the Declaration Context](#notes-on-the-declaration-context)
   - [Excursions](#excursions)
@@ -1106,7 +1106,7 @@ SELECT * FROM zdemo_abap_carr INTO TABLE @FINAL(itab_final_inl).
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-## Type Conversions and Assignments
+## Type Conversions, Compatibility and Assignments
 A value assignment means that the value of a data object is transferred to a target data object. If the data types of the source and target are compatible, the content is copied unchanged. If they are incompatible and a suitable [conversion rule](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconversion_rule_glosry.htm) exists, the content is converted.
 The following cases must be distinguished with regard to the data type: 
 - The source and target data types are compatible, i.e. all technical type properties match. The content is transferred from the source to the target without being converted. 
@@ -1124,27 +1124,61 @@ See the conversion rules for the different data types here: [Assignment and Conv
     
 
 ```abap
+"-------------------- Conversions --------------------
+
 "Implicit conversions of the types c and string
-DATA do_1_str TYPE string VALUE `abcedf`.
+DATA do_1_str TYPE string VALUE `abcdef`.
 DATA do_2_c3 TYPE c LENGTH 3.
+"'abc'
 do_2_c3 = do_1_str.
-"Result: do_2_c3: 'abc'
+
 
 "Implicit conversions of the types i and decfloat34
 DATA do_4_i TYPE i.
 DATA do_5_dcfl34 TYPE decfloat34 VALUE '4.56'.
+"5
 do_4_i = do_5_dcfl34.
-"Result: do_4_i: 5
 
 "Explicitly converting decfloat34 to i
 DATA do_6_dcfl34 TYPE decfloat34 VALUE '2.78'.
+"3
 DATA(do_7_i) = CONV i( do_6_dcfl34 ).
-"Result: do_7_i: 3
 
-"Note conversions according to the rules, e.g. from 
+"Note the conversion rules in the ABAP Keyword Documentation, e.g. from 
 "type i to string 
+"`10-`
 DATA(i2str) = CONV string( -10 ).
-"Result: i2str: `10-`
+
+"-------------------- Compatibility --------------------
+
+"1. Source and target are compatible, all technical type properties 
+"   match
+DATA some_dobj TYPE c LENGTH 1 VALUE 'A'.
+DATA flag TYPE abap_bool VALUE 'X'.
+
+"Assignment of compatible types; content transferred without 
+"conversion
+some_dobj = flag.
+
+"2. Source and target are not compatible but can be converted.
+"   Content of source is converted according to conversion rules
+"   and then transferred to the target. Two data types are
+"   convertible if a conversion rule exists for them.
+DATA another_char TYPE c LENGTH 3 VALUE 'abc'.
+DATA some_str     TYPE string VALUE `defghij`.
+
+another_char = some_str.
+
+"3. Data objects are neither compatible nor convertible. No
+"   assignment possible. If recognized by the syntax check, a
+"   syntax error is raised, otherwise an uncatchable exception
+"   is raised when the program is executed.
+DATA some_number TYPE i VALUE 123.
+DATA itab_str    TYPE string_table.
+
+"Type conversion not possible
+"itab_str = some_number.
+"some_number = itab_str.
 ```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>

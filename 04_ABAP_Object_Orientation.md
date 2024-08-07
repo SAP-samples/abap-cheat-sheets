@@ -16,7 +16,7 @@
       - [Parameter Interface](#parameter-interface)
       - [Constructors](#constructors)
   - [Working with Objects and Components](#working-with-objects-and-components)
-    - [Declaring Reference Variables](#declaring-reference-variables)
+    - [Declaring Object Reference Variables](#declaring-object-reference-variables)
     - [Creating Objects](#creating-objects)
     - [Working with Reference Variables](#working-with-reference-variables)
     - [Accessing Attributes](#accessing-attributes)
@@ -35,6 +35,7 @@
     - [Interface Reference Variables and Accessing Objects](#interface-reference-variables-and-accessing-objects)
   - [Excursions](#excursions)
     - [Friendship](#friendship)
+      - [Friendship between Global and Local Classes](#friendship-between-global-and-local-classes)
     - [Events](#events)
     - [Examples for Design Patterns: Factory Methods and Singletons](#examples-for-design-patterns-factory-methods-and-singletons)
   - [More Information](#more-information)
@@ -660,13 +661,12 @@ ENDCLASS.
 
 ## Working with Objects and Components
 
-### Declaring Reference Variables
-- To create an object, a [reference variable](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenreference_variable_glosry.htm "Glossary Entry")
-must be declared.
-- Such an [object reference
-variable](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenobject_refer_variable_glosry.htm "Glossary Entry")
-is also necessary for accessing objects and their components. That means objects are not directly accessed but only via references that point to
-those objects. This object reference variable contains the reference to the object - after assigning the reference to the object (see further down).
+### Declaring Object Reference Variables
+- To create an object, an [object reference variable](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenobject_refer_variable_glosry.htm "Glossary Entry") must be declared. 
+- It is also necessary for accessing objects and their components. That means objects are not directly accessed but only via references that point to
+those objects. 
+- This object reference variable contains the reference to the object - after assigning the reference to the object (see further down).
+
 ``` abap
 "Declaring object reference variables
 DATA: ref1 TYPE REF TO local_class,
@@ -2168,6 +2168,82 @@ CLASS lo_class DEFINITION CREATE PRIVATE FRIENDS other_class ... .
 "Addition GLOBAL only allowed for global classes, i. e. if the addition PUBLIC is also used
 "Other global classes and interfaces from the class library can be specified after GLOBAL FRIENDS.
 CLASS global_class DEFINITION CREATE PUBLIC FRIENDS other_global_class ... .
+```
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+#### Friendship between Global and Local Classes
+
+The following example demonstrates granting friendship between a global class and a local class (in the CCIMP include, *Local Types* tab in ADT). In the example, friendship is granted in both ways so that the global class can access private components of the local class, and the local class can access private components of the global class.
+For more information, see the following topics: 
+- [`LOCAL FRIENDS`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapclass_local_friends.htm), 
+- [`DEFERRED`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapclass_deferred.htm)
+
+**Global class**
+- Create a new global class (the example uses the name `zcl_some_class`) and copy and paste the following code in the *Global Class* tab in ADT.
+- The class has a type and method declaration in the private section. They are used in the local class.
+- Once activated (and the code of the other includes has been inserted), you can choose *F9* in ADT to run the class.
+- When running the class, a method of the local class that is declared in the private section there is called. As a result of this method call, a string is assigned to an attribute that is also declared in the private section of the local class. This attribute is accessed by the global class, and finally displayed in the ADT console.
+
+```abap
+CLASS zcl_some_class DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
+
+  PUBLIC SECTION.
+    INTERFACES if_oo_adt_classrun.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+    TYPES str TYPE string.
+    CLASS-METHODS get_hello RETURNING VALUE(hello) TYPE string.
+ENDCLASS.
+
+
+
+CLASS zcl_some_class IMPLEMENTATION.
+  METHOD if_oo_adt_classrun~main.
+    local_class=>say_hello( ).
+    DATA(hello) = local_class=>hello.
+    out->write( hello ).
+  ENDMETHOD.
+  METHOD get_hello.
+    hello = `Hello`.
+  ENDMETHOD.
+ENDCLASS.
+```
+
+**CCDEF include (*Class-relevant Local Types* tab in ADT)**
+- Regarding the includes, see the information in section [Excursion: Class Pool and Include Programs](#excursion-class-pool-and-include-programs)
+- The LOCAL FRIENDS addition makes the local class a friend of the global class. The private components of the global class can then be accessed by the local class.
+
+```abap
+CLASS local_class DEFINITION DEFERRED.
+CLASS zcl_some_class DEFINITION LOCAL FRIENDS local_class.
+```
+
+**CCIMP include (*Local Types* tab in ADT)**
+- The FRIENDS addition makes the global class a friend of the local class. The private components of the local class can then be accessed by the global class.
+- A type declared in the private section of the global class is used to type an attribute.
+- The method, which is also declared in the private section, includes a method call in the implementation. It is a method delcared in the private section of the global class.
+
+
+```abap
+CLASS local_class DEFINITION FRIENDS zcl_some_class.
+
+  PUBLIC SECTION.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+    CLASS-DATA hello TYPE zcl_some_class=>str.
+    CLASS-METHODS say_hello.
+    
+ENDCLASS.
+
+CLASS local_class IMPLEMENTATION.
+  METHOD say_hello.
+    hello = |{ zcl_some_class=>get_hello( ) } { sy-uname }.|.
+  ENDMETHOD.
+ENDCLASS.
 ```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>

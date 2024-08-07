@@ -392,7 +392,7 @@ ENDIF.
 <td>
 
 - Cannot be used with the addition `SINGLE`.
-- See more information here [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapselect_clause.htm).
+- See more information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapselect_clause.htm).
 
 <br>
 

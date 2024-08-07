@@ -1025,7 +1025,7 @@ CLASS zcl_some_class IMPLEMENTATION.
     "******* DEEP addition / EXPANDING NESTED TABLES addition *******
     "Handling deep components such as nested internal tables
 
-    "Creating an populating demo internal tables
+    "Creating and populating demo internal tables
     TYPES: BEGIN OF st_d,
              char_a TYPE c LENGTH 2,
              char_b TYPE c LENGTH 2,
@@ -1642,7 +1642,7 @@ ENDCLASS.
 ### Example: Exploring READ TABLE Statements and Table Expressions
 
 Expand the following collapsible section to view the code of an example. To try it out, create a demo class named `zcl_some_class` and paste the code into it. After activation, choose *F9* in ADT to execute the class. 
-The example is not set up to display output in the console. You may want to set a break point at the first position possible and walk through the example in the debugger. You may want to set a breakpoint at the earliest possible position and walk through the example in the debugger. This will allow you to double-click on data objects and observe how the different statements affect their contents.
+The example is not set up to display output in the console. You may want to set a break point at the first position possible and walk through the example in the debugger. This will allow you to double-click on data objects and observe how the different statements affect their contents.
 
 <details>
   <summary>Expand to view the code</summary>

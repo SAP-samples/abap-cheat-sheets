@@ -34,7 +34,7 @@ This cheat sheet contains basic information about [unit testing](https://help.sa
 
 ## High-Level Steps for ABAP Unit Tests
 
-- Identify dependend-on components (DOC) in your production code (i.e. your class/method) that need to be tested, and prepare the code for testing.
+- Identify dependent-on components (DOC) in your production code (i.e. your class/method) that need to be tested, and prepare the code for testing.
   - Examples of DOCs: In your production code, a method is called that is outside of your code. Or, for example, whenever there is an interaction with the database. 
   - This means that there are dependencies that need to be taken into account for a unit test. These dependencies should be isolated and replaced by a test double.
 - Create/Implement test doubles
@@ -45,7 +45,7 @@ This cheat sheet contains basic information about [unit testing](https://help.sa
 - Run unit tests
 
 > **💡 Note**<br>
-> Of course, if there are no dependend-on components in your production code, you can skip the considerations of dependency isolation, test doubles and their injection into the production code.
+> In some examples, the code does not have any dependent-on components. Therefore, the considerations about dependency isolation, test doubles, and their injection into the code are skipped.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
@@ -270,7 +270,7 @@ ENDMETHOD.
 
 Example: Test method for the example method *multiply_by_two* in the production code
 
-As mentioned above, in simple cases, there may not be any dependend-on component in (a method of) the production code. Therefore, the functionality of the method in the production code is tested by simply comparing the value of the actual value (the value that is returned by the method, for example) and the expected value.
+As mentioned above, in simple cases, there may not be any dependent-on component in (a method of) the production code. Therefore, the functionality of the method in the production code is tested by simply comparing the value of the actual value (the value that is returned by the method, for example) and the expected value.
 
 ``` abap
 "The code in this snippet refers to the test class in the test include.
@@ -399,9 +399,9 @@ ENDCLASS.
 
 ## Handling Dependencies 
 
-The code snippets above covered test classes and methods in simple contexts without dependend-on components (DOC) in the production code. In more complex cases with dependencies in the production code, there are ways to deal with them. You can create test doubles and inject them into the production code during the test run. 
+The code snippets above covered test classes and methods in simple contexts without dependent-on components (DOC) in the production code. In more complex cases with dependencies in the production code, there are ways to deal with them. You can create test doubles and inject them into the production code during the test run. 
 
-It is assumed that you have identified the dependend-on components (DOC) in a method in your production code. They were isolated (which may have involved some major rebuilding if the code is not created from scratch and the requirements for unit testing were taken into account, e.g. by creating an interface), and you want to replace them with a test double (by injection) so that your code can be  properly tested without dependencies.
+It is assumed that you have identified the dependent-on components (DOC) in a method in your production code. They were isolated (which may have involved some major rebuilding if the code is not created from scratch and the requirements for unit testing were taken into account, e.g. by creating an interface), and you want to replace them with a test double (by injection) so that your code can be  properly tested without dependencies.
 
 
 **Creating/Implementing test doubles**
