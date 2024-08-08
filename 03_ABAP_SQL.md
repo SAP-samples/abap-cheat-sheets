@@ -8,6 +8,7 @@
   - [Retrieving Data Using SELECT](#retrieving-data-using-select)
     - [Basic Syntax](#basic-syntax)
     - [SELECT List Variants](#select-list-variants)
+    - [Data Sources of SELECT Queries](#data-sources-of-select-queries)
     - [Retrieving Single and Multiple Rows](#retrieving-single-and-multiple-rows)
     - [Miscellaneous Options Regarding the Result](#miscellaneous-options-regarding-the-result)
     - [Additional Clauses](#additional-clauses)
@@ -35,6 +36,7 @@
     - [Using UPDATE](#using-update)
     - [Using MODIFY](#using-modify)
     - [Using DELETE](#using-delete)
+    - [Example: Exploring ABAP SQL Statements Changing Data in Database Tables](#example-exploring-abap-sql-statements-changing-data-in-database-tables)
     - [RAP-Specific ABAP SQL Variants](#rap-specific-abap-sql-variants)
   - [More Information](#more-information)
   - [Executable Example](#executable-example)
@@ -247,10 +249,16 @@ SELECT ds~col1, ds~col2, ds~col3
   INTO ...
 ```
 
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
-Most of the code snippets in this cheat sheet use database tables as the source in `SELECT` statements. Among others, you can also use internal tables or CDS view entities as data source
-Note that an alias name must be specified for the internal table used as data source. Find more information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapselect_itab.htm).
+### Data Sources of SELECT Queries
 
+- Most of the code snippets in this cheat sheet use database tables as the source in `SELECT` statements. 
+- Among others, you can also use internal tables or CDS view entities as data source.
+- Note that the internal table must be specified as host variable prefixed by `@`, and an alias name must be specified. 
+- More information and code snippets: 
+  - Section [SELECT Queries with Internal Tables as Data Sources](01_Internal_Tables.md#select-queries-with-internal-tables-as-data-sources) in the *Internal Tables* cheat sheet and in the [ABAP Keyword Documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapselect_itab.htm)
+  - The executable example of the [CDS View Entities](15_CDS_View_Entities.md) cheat sheet covers `SELECT` statements with CDS view entities as data sources. 
 
 ``` abap
 SELECT *
@@ -265,6 +273,7 @@ SELECT *
 ```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
+
 
 ### Retrieving Single and Multiple Rows
 
@@ -1923,13 +1932,10 @@ INTO @DATA(special_functions).
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-
-
-
-
-
-
 ## Changing Data in Database Tables
+
+> **💡 Note**<br>
+> The following sections include code patterns. To explore various syntax options with an executable example, see section [Example: Exploring ABAP SQL Statements Changing Data in Database Tables](#example-exploring-abap-sql-statements-changing-data-in-database-tables) below.
 
 ### Using INSERT
 
@@ -2076,6 +2082,303 @@ DELETE dbtab FROM TABLE @( VALUE #( ( comp1 = ... )
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
+### Example: Exploring ABAP SQL Statements Changing Data in Database Tables
+
+To try the following example out, create a demo class named `zcl_some_class` and paste the code into it. After activation, choose *F9* in ADT to execute the class. The example uses a database table of the ABAP cheat sheets repository and is set up to display output in the console.
+
+
+```abap
+CLASS zcl_some_class DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
+
+  PUBLIC SECTION.
+    INTERFACES if_oo_adt_classrun.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+
+ENDCLASS.
+
+
+
+CLASS zcl_some_class IMPLEMENTATION.
+
+  METHOD if_oo_adt_classrun~main.
+
+    "--------------------------- INSERT ---------------------------
+
+    "Deleting the contents of a demo database table to start with an empty database table
+    DELETE FROM zdemo_abap_tab1.
+
+    "Inserting a single row into a database table
+    DATA(row_a) = VALUE zdemo_abap_tab1( key_field = 1 char1 = 'aaa' char2 = 'bbb' num1 = 10 num2 = 100 ).
+    INSERT zdemo_abap_tab1 FROM @row_a.
+
+    "Alternative syntax, same effect
+    DATA(row_b) = VALUE zdemo_abap_tab1( key_field = 2 char1 = 'ccc' char2 = 'ddd' num1 = 20 num2 = 200 ).
+    INSERT INTO zdemo_abap_tab1 VALUES @row_b.
+
+    "Line is created inline using the VALUE operator as part of a host expression
+    INSERT zdemo_abap_tab1 FROM @( VALUE #( key_field = 3 char1 = 'eee' char2 = 'fff' num1 = 30 num2 = 300 ) ).
+
+    "Inserting multiple lines from an internal table into a database table.
+    "Make sure that the internal table does not contain a line having the same key
+    "as an existing row in the database table. Otherwise, a runtime error occurs.
+    TYPES it_type TYPE TABLE OF zdemo_abap_tab1 WITH EMPTY KEY.
+    DATA(it_a) = VALUE it_type( ( key_field = 4 char1 = 'ggg' char2 = 'hhh' num1 = 40 num2 = 400 )
+                                ( key_field = 5 char1 = 'iii' char2 = 'jjj' num1 = 50 num2 = 500 ) ).
+    INSERT zdemo_abap_tab1 FROM TABLE @it_a.
+
+    "Inserting lines from a table declared inline using the VALUE operator
+    "as part of a host expression
+    INSERT zdemo_abap_tab1 FROM TABLE @( VALUE #( ( key_field = 6 char1 = 'kkk' char2 = 'lll' num1 = 60 num2 = 600 )
+                                                  ( key_field = 7 char1 = 'mmm' char2 = 'nnn' num1 = 70 num2 = 700 ) ) ).
+
+    "ACCEPTING DUPLICATE KEYS addition: To avoid the runtime error mentioned above,
+    "all lines that would produce duplicate entries in the database table
+    "regarding the keys are discarded and sy-subrc is set to 4.
+    DATA(it_b) = VALUE it_type( ( key_field = 1 char1 = '###' char2 = '###' num1 = 0 num2 = 0 )
+                                ( key_field = 8 char1 = 'ooo' char2 = 'ppp' num1 = 80 num2 = 800 ) ).
+    INSERT zdemo_abap_tab1 FROM TABLE @it_b ACCEPTING DUPLICATE KEYS.
+    ASSERT sy-subrc = 4.
+
+    "Inserting the result set of an embedded subquery
+    "Various options are available. The examples show a selection.
+    "The subqueries use an internal table.
+
+    "No restriction specified, all entries are inserted
+    DATA(it_c) = VALUE it_type( ( key_field = 9 char1 = 'qqq' char2 = 'rrr' num1 = 90 num2 = 900 )
+                                ( key_field = 10 char1 = 'sss' char2 = 'ttt' num1 = 100 num2 = 1000 )
+                                ( key_field = 11 char1 = 'uuu' char2 = 'vvv' num1 = 110 num2 = 1100 ) ).
+
+    INSERT zdemo_abap_tab1 FROM ( SELECT key_field, char1, char2, num1, num2 FROM @it_c AS itc ).
+
+    "WHERE condition specified
+    DATA(it_d) = VALUE it_type( ( key_field = 12 char1 = 'www' char2 = 'xxx' num1 = 120 num2 = 1200 )
+                                ( key_field = 13 char1 = 'yyy' char2 = 'zzz' num1 = 130 num2 = 1300 )
+                                ( key_field = 14 char1 = 'AAA' char2 = 'BBB' num1 = 140 num2 = 1400 ) ).
+
+    INSERT zdemo_abap_tab1 FROM ( SELECT key_field, char1, char2, num1, num2 FROM @it_d AS itd WHERE key_field <= 13 ).
+
+    "Using a subquery and replacing existing values in a CASE expression
+    DATA(it_e) = VALUE it_type( ( key_field = 15 char1 = 'X' char2 = 'DDD' num1 = 150 num2 = 1500 )
+                                ( key_field = 16 char1 = 'Y' char2 = 'FFF' num1 = 160 num2 = 1600 )
+                                ( key_field = 17 char1 = 'Z' char2 = 'HHH' num1 = 170 num2 = 1700 ) ).
+
+    INSERT zdemo_abap_tab1 FROM (
+      SELECT key_field,
+             CASE WHEN char1 = 'X' THEN 'CCC'
+                  WHEN char1 = 'Y' THEN 'EEE'
+                  ELSE 'GGG'
+             END AS char1,
+             char2, num1, num2
+        FROM @it_e AS ite ).
+
+    "Retrieving all database entries for display purposes
+    SELECT * FROM zdemo_abap_tab1 INTO TABLE @DATA(itab_insert).
+    out->write( data = itab_insert name = `itab_insert` ).
+
+**********************************************************************
+
+    "-------- Exploring constructor expressions for internal tables created in place --------
+    "The examples explore constructor expressions that construct internal tables in place and that can be
+    "specified after the TABLE addition (as a host expressions), apart from an existing data object.
+    "For more information about constructor expressions, see the ABAP Keyword Documentation and the
+    "Constructor Expressions cheat sheet.
+    DELETE FROM zdemo_abap_tab1.
+
+    "VALUE operator as shown above, creating an internal table in place
+    INSERT zdemo_abap_tab1 FROM TABLE @( VALUE #( ( key_field = 1 char1 = 'aaa' char2 = 'bbb' num1 = 10 num2 = 100 )
+                                                  ( key_field = 2 char1 = 'ccc' char2 = 'ddd' num1 = 20 num2 = 200 ) ) ).
+
+    "FOR LOOP with VALUE
+    DATA(it_f) = VALUE it_type( ( key_field = 3 char1 = 'ee' char2 = 'ff' num1 = 30 num2 = 300 )
+                                ( key_field = 4 char1 = 'gg' char2 = 'hh' num1 = 40 num2 = 400 )
+                                ( key_field = 5 char1 = 'ii' char2 = 'jj' num1 = 50 num2 = 500 ) ).
+
+    "In the example, the internal table from above is looped across. The index value is
+    "stored and used to modify field values of the internal table. In doing so, the modified
+    "internal table values are inserted into the database table.
+    INSERT zdemo_abap_tab1 FROM TABLE @( VALUE #( FOR wa IN it_f INDEX INTO idx ( key_field = wa-key_field
+                                                                                  char1 = wa-char1 && idx
+                                                                                  char2 = wa-char2 && idx
+                                                                                  num1 = wa-num1 + idx
+                                                                                  num2 = wa-num2 + idx ) ) ).
+
+    "CORRESPONDING
+    TYPES: BEGIN OF s1,
+             key_field TYPE i,
+             char1     TYPE c LENGTH 5,
+             num1      TYPE i,
+           END OF s1,
+           it_type_s1 TYPE TABLE OF s1 WITH EMPTY KEY,
+           BEGIN OF s2,
+             key     TYPE i,
+             char    TYPE c LENGTH 5,
+             number1 TYPE i,
+             num2    TYPE p LENGTH 8 DECIMALS 2,
+           END OF s2,
+           it_type_s2 TYPE TABLE OF s2 WITH EMPTY KEY.
+
+    "Identical component names in the internal table
+    "The example includes compatible and convertible types.
+    DATA(it_g) = VALUE it_type_s1( ( key_field = 6 char1 = 'kkk' num1 = 60 )
+                                   ( key_field = 7 char1 = 'lll' num1 = 70 ) ).
+
+    INSERT zdemo_abap_tab1 FROM TABLE @( CORRESPONDING #( it_g ) ).
+
+    "Non-identical component names in the internal table; using the MAPPING/EXCEPT additions
+    "The example includes compatible and convertible types.
+    DATA(it_h) = VALUE it_type_s2( ( key = 8 char = 'mmm' number1 = 80 num2 = '1.23' )
+                                   ( key = 9 char = 'nnn' number1 = 90 num2 = '4.56' ) ).
+
+    INSERT zdemo_abap_tab1 FROM TABLE @( CORRESPONDING #( it_h MAPPING key_field = key char2 = char num1 = number1 EXCEPT num2 ) ).
+
+    SELECT * FROM zdemo_abap_tab1 INTO TABLE @DATA(itab_constr).
+    out->write( data = itab_constr name = `itab_constr` ).
+
+**********************************************************************
+
+    "--------------------------- UPDATE ---------------------------
+
+    "Preparing a demo database table
+    DELETE FROM zdemo_abap_tab1.
+    INSERT zdemo_abap_tab1 FROM TABLE @( VALUE #( ( key_field = 1 char1 = 'aaa' char2 = 'bbb' num1 = 10 num2 = 100 )
+                                                  ( key_field = 2 char1 = 'ccc' char2 = 'ddd' num1 = 20 num2 = 200 )
+                                                  ( key_field = 3 char1 = 'eee' char2 = 'fff' num1 = 30 num2 = 300 ) ) ).
+
+    "Changing content by overwriting entire rows based on a structure
+    DATA(row_c) = VALUE zdemo_abap_tab1( key_field = 1 char1 = 'ggg' char2 = 'hhh' num1 = 12 num2 = 123 ).
+    UPDATE zdemo_abap_tab1 FROM @row_c.
+
+    "The following example specifies a value for the key field that does not
+    "exist in the database table. Consequently, no update takes place, the sy-subrc
+    "value is set to 4.
+    UPDATE zdemo_abap_tab1 FROM @( VALUE #( key_field = 4 char1 = 'iii' char2 = 'jjj' num1 = 44 num2 = 456 ) ).
+    ASSERT sy-subrc = 4.
+
+    "Changing content by overwriting entire rows based on rows in an internal table
+    DATA(it_j) = VALUE it_type( ( key_field = 2 char1 = 'kkk' char2 = 'lll' num1 = 23 num2 = 234 )
+                                ( key_field = 3 char1 = 'mmm' char2 = 'nnn' num1 = 34 num2 = 345 ) ).
+
+    UPDATE zdemo_abap_tab1 FROM TABLE @it_j.
+
+    "Using a host expression, internal table created in place
+    INSERT zdemo_abap_tab1 FROM @( VALUE #( key_field = 4 char1 = 'ooo' char2 = 'ppp' num1 = 40 num2 = 400 ) ).
+    "The following example does not specify two components. Initial values are used.
+    UPDATE zdemo_abap_tab1 FROM TABLE @( VALUE #( ( key_field = 4 char2 = 'qqq' num1 = 44 ) ) ).
+
+    "INDICATORS addition: Changing content of specific fields without overwriting
+    "existing values of other fields
+    TYPES ind_wa TYPE zdemo_abap_tab1 WITH INDICATORS comp_ind TYPE abap_boolean.
+    TYPES ind_tab TYPE TABLE OF ind_wa WITH EMPTY KEY.
+
+    INSERT zdemo_abap_tab1 FROM TABLE @( VALUE #( ( key_field = 5 char1 = 'rrr' char2 = 'sss' num1 = 50 num2 = 500 )
+                                                  ( key_field = 6 char1 = 'ttt' char2 = 'uuu' num1 = 60 num2 = 600 ) ) ).
+
+    UPDATE zdemo_abap_tab1 FROM TABLE @( VALUE ind_tab( ( key_field = 5 char1 = 'vvv' char2 = 'www' num1 = 56 num2 = 567
+                                                          comp_ind-char1 = abap_true comp_ind-char2 = abap_false
+                                                          comp_ind-num1 = abap_true comp_ind-num2 = abap_false )
+                                                        ( key_field = 6 char1 = 'xxx' char2 = 'yyy' num1 = 67 num2 = 678
+                                                          comp_ind-char1 = abap_false comp_ind-char2 = abap_true
+                                                          comp_ind-num1 = abap_false comp_ind-num2 = abap_true ) ) )
+      INDICATORS SET STRUCTURE comp_ind.
+
+    SELECT * FROM zdemo_abap_tab1 INTO TABLE @DATA(itab_update).
+    out->write( data = itab_update name = `itab_update` ).
+
+    "SET addition: Changing values of specific fields in all table rows
+    "Preparing a demo database table
+    DELETE FROM zdemo_abap_tab1.
+    INSERT zdemo_abap_tab1 FROM TABLE @( VALUE #( ( key_field = 1 char1 = 'aaa' char2 = 'bbb' num1 = 10 num2 = 100 )
+                                                  ( key_field = 2 char1 = 'ccc' char2 = 'ddd' num1 = 20 num2 = 200 )
+                                                  ( key_field = 3 char1 = 'eee' char2 = 'fff' num1 = 30 num2 = 300 ) ) ).
+
+    "The following example transforms the character string of a
+    "component to upper case.
+    UPDATE zdemo_abap_tab1 SET char1 = upper( char1 ).
+
+    "Setting a WHERE condition
+    UPDATE zdemo_abap_tab1 SET char2 = concat( char2, '#' ), num1 = num1 + 1, num2 = num2 + 2 WHERE num1 > 15.
+
+    SELECT * FROM zdemo_abap_tab1 INTO TABLE @DATA(itab_update_set).
+    out->write( data = itab_update_set name = `itab_update_set` ).
+
+**********************************************************************
+
+    "--------------------------- MODIFY ---------------------------
+    "The examples include INSERT statements to prepare the database table.
+
+    "Deleting the contents of a demo database table to start with an empty database table
+    DELETE FROM zdemo_abap_tab1.
+
+    "Inserting a single row into a database table
+    DATA(row_d) = VALUE zdemo_abap_tab1( key_field = 1 char1 = 'aaa' char2 = 'bbb' num1 = 10 num2 = 100 ).
+    MODIFY zdemo_abap_tab1 FROM @row_d.
+
+    "Inserting a table row using a host expression and a row created in place
+    MODIFY zdemo_abap_tab1 FROM @( VALUE #( key_field = 2 char1 = 'ccc' char2 = 'ddd' num1 = 20 num2 = 200 ) ).
+
+    "Inserting a table row ...
+    MODIFY zdemo_abap_tab1 FROM @( VALUE #( key_field = 3 char1 = 'eee' char2 = 'fff' num1 = 30 num2 = 300 ) ).
+    "... and modifying it. No new row is inserted, the existing one is modified as the key already exists.
+    MODIFY zdemo_abap_tab1 FROM @( VALUE #( key_field = 3 char1 = 'ggg' char2 = 'hhh' num1 = 34 num2 = 345 ) ).
+
+    "Inserting table rows from an internal table
+    MODIFY zdemo_abap_tab1 FROM TABLE @( VALUE #( ( key_field = 4 char1 = 'iii' char2 = 'jjj' num1 = 40 num2 = 400 )
+                                                  ( key_field = 5 char1 = 'kkk' char2 = 'lll' num1 = 50 num2 = 500 ) ) ).
+    "Modifying/inserting from an internal table
+    MODIFY zdemo_abap_tab1 FROM TABLE @( VALUE #( ( key_field = 4 char1 = 'mmm' char2 = 'nnn' num1 = 45 num2 = 456 )
+                                                  ( key_field = 5 char1 = 'ooo' char2 = 'ppp' num1 = 56 num2 = 567 )
+                                                  ( key_field = 6 char1 = 'qqq' char2 = 'rrr' num1 = 60 num2 = 600 )
+                                                  ( key_field = 7 char1 = 'sss' char2 = 'ttt' num1 = 70 num2 = 700 ) ) ).
+
+    SELECT * FROM zdemo_abap_tab1 INTO TABLE @DATA(itab_modify).
+    out->write( data = itab_modify name = `itab_modify` ).
+
+**********************************************************************
+
+    "--------------------------- DELETE ---------------------------
+
+    "Deleting the contents of a demo database table to start with an empty database table
+    DELETE FROM zdemo_abap_tab1.
+    SELECT * FROM zdemo_abap_tab1 INTO TABLE @DATA(itab_delete).
+    ASSERT itab_delete IS INITIAL.
+
+    "Inserting demo data into the database table
+    INSERT zdemo_abap_tab1 FROM TABLE @( VALUE #( ( key_field = 1 num1 = 10 )
+                                                  ( key_field = 2 num1 = 20 )
+                                                  ( key_field = 3 num1 = 30 )
+                                                  ( key_field = 4 num1 = 40 )
+                                                  ( key_field = 5 num1 = 50 )
+                                                  ( key_field = 6 num1 = 60 )
+                                                  ( key_field = 7 num1 = 70 )
+                                                  ( key_field = 8 num1 = 80 ) ) ).
+
+    "Rows are deleted based on a condition
+    DELETE FROM zdemo_abap_tab1 WHERE key_field >= 7.
+
+    "Deleting a single row based on entries in a structure
+    "Keys are specified
+    DELETE zdemo_abap_tab1 FROM @( VALUE #( key_field = 1 ) ).
+
+    "There is no entry with key_field = 0.
+    DELETE zdemo_abap_tab1 FROM @( VALUE zdemo_abap_tab1( num1 = 20 ) ).
+    ASSERT sy-subrc = 4.
+
+    "Deleting multiple rows based on entries in an internal table
+    DELETE zdemo_abap_tab1 FROM TABLE @( VALUE #( ( key_field = 2 )
+                                                  ( key_field = 3 ) ) ).
+
+    SELECT * FROM zdemo_abap_tab1 INTO TABLE @itab_delete.
+    out->write( data = itab_delete name = `itab_delete` ).
+  ENDMETHOD.
+ENDCLASS.
+```
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
 ### RAP-Specific ABAP SQL Variants
 
 There are [RAP](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenarap_glosry.htm)-specific variants of ABAP SQL statements that use the `MAPPING FROM ENTITY` addition. Find more information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapmapping_from_entity.htm) and in the [ABAP for RAP: Entity Manipulation Language (ABAP EML)](08_EML_ABAP_for_RAP.md#abap-sql-statements-with-bdef-derived-types) cheat sheet. 
@@ -2098,7 +2401,7 @@ There are [RAP](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index
   - ABAP SQL statements can contain [SQL path expressions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensql_path_expression_glosry.htm). For more information, see [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_sql_path.htm). The executable example of the CDS view entities cheat sheet includes demo SQL statements.
   - Find [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_sql_exceptions.htm) and overview on exceptions that can occur in the context of ABAP SQL statements.
   - As a rule, bear in mind performance aspects when using ABAP SQL statements. Find more information in the [Performance Notes](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_sql_perfo.htm). The code snippets here only focus on syntax options.
-  - You can specify hierarchy data as a data source in ABAP SQL `SELECT` statements. Find more information and examples in the [ABAP Keyword Documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenselect_hierarchy_data.htm).
+  - You can specify hierarchy data as a data source in ABAP SQL `SELECT` statements. Find more information and examples in the [ABAP Keyword Documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenselect_hierarchy_data.htm). For working with hierarchies, see the [ABAP SQL: Working with Hierarchies cheat sheet](10_ABAP_SQL_Hierarchies.md).
 
 ## Executable Example
 [zcl_demo_abap_sql](./src/zcl_demo_abap_sql.clas.abap)

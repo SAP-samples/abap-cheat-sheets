@@ -27,11 +27,12 @@
     - [Dynamic Specifications in Statements for Processing Internal Tables](#dynamic-specifications-in-statements-for-processing-internal-tables)
     - [Dynamic ABAP SQL Statements](#dynamic-abap-sql-statements)
     - [Dynamic Invoke](#dynamic-invoke)
+    - [Dynamic ABAP EML Statements](#dynamic-abap-eml-statements)
     - [Dynamic Formatting Option Specifications in String Templates](#dynamic-formatting-option-specifications-in-string-templates)
     - [Validating Input for Dynamic Specifications (CL\_ABAP\_DYN\_PRG)](#validating-input-for-dynamic-specifications-cl_abap_dyn_prg)
   - [Runtime Type Services (RTTS)](#runtime-type-services-rtts)
     - [Getting Type Information at Runtime](#getting-type-information-at-runtime)
-      - [RTTI Method Calls](#rtti-method-calls)
+      - [RTTI: Attribute Access and Method Calls](#rtti-attribute-access-and-method-calls)
       - [Example: Exploring the RTTI Type Hierarchy](#example-exploring-the-rtti-type-hierarchy)
       - [Excursion: Inline Declaration, CAST Operator, Method Chaining](#excursion-inline-declaration-cast-operator-method-chaining)
       - [Absolute Names](#absolute-names)
@@ -241,6 +242,9 @@ LOOP AT itab ASSIGNING FIELD-SYMBOL(<fs2>).
   <fs2>-connid = ...
   ...
 ENDLOOP.
+
+"READ TABLE statements
+READ TABLE itab INDEX 1 ASSIGNING FIELD-SYMBOL(<rt>).  
 ```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
@@ -995,6 +999,7 @@ Some example contexts of using data references are as follows:
 
 *Overwriting data reference variables*:
 ``` abap
+DATA dref TYPE REF TO data.
 dref = NEW i( 1 ).
 
 "ref is overwritten here because a new object is created
@@ -2233,6 +2238,14 @@ ENDCLASS.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
+### Dynamic ABAP EML Statements
+
+In the context of [RAP](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_rap_glosry.htm), [ABAP EML](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_eml_glosry.htm) statements are available with dynamic forms. 
+Find an example in the [ABAP EML cheat sheet](08_EML_ABAP_for_RAP.md#dynamic-forms-of-eml-statements) and in the [ABAP Keyword Documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abeneml.htm).
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+
 ### Dynamic Formatting Option Specifications in String Templates
 
 The following code snippet demonstrates a small selection of dynamic formatting option specifications in string templates.
@@ -2391,9 +2404,9 @@ The type properties are represented by attributes that are accessible through th
 > - References to type description objects can be used, for example, after the `TYPE HANDLE` addition of the `CREATE DATA` and `ASSIGN` statements.
 
 
-#### RTTI Method Calls
+#### RTTI: Attribute Access and Method Calls
 
-The following code example demonstrates a range of RTTI method calls. It includes retrieving type information at runtime for elementary and enumerated types, structures, internal tables, data references, classes, and interfaces. Find more information in the section below. 
+The following code example demonstrates a range of RTTI attribute accesses and method calls. It includes retrieving type information at runtime for elementary and enumerated types, structures, internal tables, data references, classes, and interfaces. Find more information in the section below. 
 
 To try the example out, create a demo class named `zcl_some_class` and paste the code into it. 
 The example is not set up to display output in the console. So, after activation, you may want to set a break point at the first position possible and choose *F9* in ADT to execute the class.  You can then walk through the example in the debugger. This will allow you to double-click on the variables and check out the contents. The example is similar to the one below, however, this only focuses on the method calls without output preparation among others.
@@ -2480,7 +2493,7 @@ CLASS zcl_some_class IMPLEMENTATION.
     DATA(struc_comps_more_details) = tdo_struc->get_components( ).
     DATA(struc_has_include) = tdo_struc->has_include.
     DATA(struc_incl_view) = tdo_struc->get_included_view( ).
-    DATA(applies_to_data_struc) = tdo_enum->applies_to_data( `some string` ).
+    DATA(applies_to_data_struc) = tdo_struc->applies_to_data( `some string` ).
 
     "------------------------------------- Internal table -------------------------------------
 
@@ -2556,7 +2569,7 @@ CLASS zcl_some_class IMPLEMENTATION.
     DATA(tdo_g) = cl_abap_typedescr=>describe_by_name( 'IF_OO_ADT_CLASSRUN' ).
 
     DATA(tdo_intf) = CAST cl_abap_intfdescr( cl_abap_typedescr=>describe_by_name( 'IF_OO_ADT_CLASSRUN' ) ).
-    "DATA(tdo_intf) = CAST cl_abap_classdescr( tdo_g ).
+    "DATA(tdo_intf) = CAST cl_abap_intfdescr( tdo_g ).
 
     DATA(attributes_intf) = tdo_intf->attributes.
     DATA(methods_intf) = tdo_intf->methods.
@@ -3570,7 +3583,7 @@ CREATE DATA dref_cr TYPE HANDLE tdo_ref.
 
 ## More Information
 - It is recommended that you also consult section [Dynamic Programming Techniques (F1 docu for standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abendynamic_prog_technique_gdl.htm) in the ABAP Keyword Documentation since it provides important aspects that should be considered when dealing with dynamic programming in general (e. g. security aspects or runtime error prevention).
-- There are even further dynamic programming techniques in the unrestricted ABAP language scope [Standard ABAP](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenstandard_abap_glosry.htm) such as the generation or execution of programs at runtime. They are not part of this cheat sheet. Find more details on the related syntax (e. g. `GENERATE SUBROUTINE POOL`, `READ REPORT` and `INSERT REPORT` in the ABAP Keyword Documentation for Standard ABAP: [Dynamic Program Development (F1 docu for standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenabap_language_dynamic.htm)
+- There are even further dynamic programming techniques in the unrestricted ABAP language scope [Standard ABAP](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenstandard_abap_glosry.htm) such as the generation or execution of programs at runtime. They are not part of this cheat sheet. Find more details on the related syntax (e. g. `GENERATE SUBROUTINE POOL`, `READ REPORT` and `INSERT REPORT` in the ABAP Keyword Documentation for Standard ABAP: [Dynamic Program Development (F1 docu for Standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenabap_language_dynamic.htm)
 
 ## Executable Example
 

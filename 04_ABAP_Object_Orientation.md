@@ -2176,7 +2176,7 @@ CLASS global_class DEFINITION CREATE PUBLIC FRIENDS other_global_class ... .
 
 The following example demonstrates granting friendship between a global class and a local class (in the CCIMP include, *Local Types* tab in ADT). In the example, friendship is granted in both ways so that the global class can access private components of the local class, and the local class can access private components of the global class.
 For more information, see the following topics: 
-- [`LOCAL FRIENDS`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapclass_local_friends.htm), 
+- [`LOCAL FRIENDS`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapclass_local_friends.htm) 
 - [`DEFERRED`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapclass_deferred.htm)
 
 **Global class**
@@ -2196,7 +2196,7 @@ CLASS zcl_some_class DEFINITION
   PROTECTED SECTION.
   PRIVATE SECTION.
     TYPES str TYPE string.
-    CLASS-METHODS get_hello RETURNING VALUE(hello) TYPE string.
+    CLASS-METHODS get_hello RETURNING VALUE(hello) TYPE str.
 ENDCLASS.
 
 
@@ -2215,7 +2215,7 @@ ENDCLASS.
 
 **CCDEF include (*Class-relevant Local Types* tab in ADT)**
 - Regarding the includes, see the information in section [Excursion: Class Pool and Include Programs](#excursion-class-pool-and-include-programs)
-- The LOCAL FRIENDS addition makes the local class a friend of the global class. The private components of the global class can then be accessed by the local class.
+- The `LOCAL FRIENDS` addition makes the local class a friend of the global class. The private components of the global class can then be accessed by the local class.
 
 ```abap
 CLASS local_class DEFINITION DEFERRED.
@@ -2223,9 +2223,9 @@ CLASS zcl_some_class DEFINITION LOCAL FRIENDS local_class.
 ```
 
 **CCIMP include (*Local Types* tab in ADT)**
-- The FRIENDS addition makes the global class a friend of the local class. The private components of the local class can then be accessed by the global class.
+- The `FRIENDS` addition makes the global class a friend of the local class. The private components of the local class can then be accessed by the global class.
 - A type declared in the private section of the global class is used to type an attribute.
-- The method, which is also declared in the private section, includes a method call in the implementation. It is a method delcared in the private section of the global class.
+- The method, which is also declared in the private section, includes a method call in the implementation. It is a method declared in the private section of the global class.
 
 
 ```abap

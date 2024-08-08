@@ -699,7 +699,7 @@ They are deep structures containing the information for the individual
 entities of the RAP BO. The components of these structures are internal
 tables of appropriate types with `TYPE TABLE FOR`.
 
-Examples for BDEF derived types:
+Examples of BDEF derived types:
 
 ``` abap
 "Data objects with input derived types (entity = name of a root entity)
@@ -741,9 +741,27 @@ TYPES der_typ TYPE TABLE FOR DELETE entity.
 DATA map TYPE RESPONSE FOR MAPPED entity.
 DATA fail TYPE RESPONSE FOR FAILED entity.
 DATA resp TYPE RESPONSE FOR REPORTED entity.
+
+
+
+"Typing method parameters with BDEF derived types by referencing an existing type
+CLASS zcl_some_class DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
+
+  PUBLIC SECTION.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+    TYPES derived_type TYPE TABLE FOR CREATE zdemo_abap_rap_ro_m.
+    METHODS some_meth IMPORTING itab TYPE derived_type.
+ENDCLASS.
+...
+
 ```
 > **💡 Note**<br>
-> Some of the derived types can only be created and accessed in implementation classes.
+> Certain types derived from BDEF can only be specified and used within implementation classes, not beyond. These types include the following: `FOR CHANGE`, `FOR DETERMINATION`, `FOR VALIDATION`, `FOR ... FEATURES`, `FOR ... AUTHORIZATION`.
+
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 

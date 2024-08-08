@@ -931,15 +931,15 @@ For more information, see the class documentation. Note that there are many addi
 
 
 ```abap
-DATA(some_table) = VALUE string_table( ( `aaa` ) ( `bbb` ) ( `ddd` ) ).
+DATA(some_table) = VALUE string_table( ( `aaa` ) ( `bbb` ) ( `ccc` ) ).
 
-"--------- ABAP -> Json ---------
+"--------- ABAP -> JSON ---------
 DATA(abap_to_json) = /ui2/cl_json=>serialize( data = some_table ).
 
-"--------- Json -> ABAP ---------
-DATA table_json_to_abap TYPE string_table.
+"--------- JSON -> ABAP ---------
+DATA json_to_abap_table TYPE string_table.
 /ui2/cl_json=>deserialize( EXPORTING json = abap_to_json
-                           CHANGING data  = table_json_to_abap ).
+                           CHANGING data  = json_to_abap_table ).
 ```
 
 Expand the following collapsible section to view the code of an example. To try it out, create a demo class named `zcl_some_class` and paste the code into it. After activation, choose *F9* in ADT to execute the class. This example is set up to display output in the console.

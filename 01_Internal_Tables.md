@@ -39,8 +39,8 @@
     - [Iteration Expressions](#iteration-expressions)
     - [Interrupting and Exiting Loops](#interrupting-and-exiting-loops)
   - [Operations with Internal Tables Using ABAP SQL SELECT Statements](#operations-with-internal-tables-using-abap-sql-select-statements)
-    - [Internal Tables as Target Data Objects](#internal-tables-as-target-data-objects)
-    - [Querying from Internal Tables](#querying-from-internal-tables)
+    - [Internal Tables as Target Data Objects in SELECT Queries](#internal-tables-as-target-data-objects-in-select-queries)
+    - [SELECT Queries with Internal Tables as Data Sources](#select-queries-with-internal-tables-as-data-sources)
   - [Sorting Internal Tables](#sorting-internal-tables)
   - [Modifying Internal Table Content](#modifying-internal-table-content)
   - [Deleting Internal Table Content](#deleting-internal-table-content)
@@ -2264,6 +2264,17 @@ ENDLOOP.
 LOOP AT it REFERENCE INTO DATA(dref_inl).
   ...
 ENDLOOP.
+
+"Table key specification (snippet uses example table from above)
+"The specified table key affects the order in which the table lines
+"are accessed and the evaluation of the other conditions.
+
+LOOP AT it INTO wa USING KEY primary_key.
+"LOOP AT it INTO wa USING KEY pk.            "primary key alias
+"LOOP AT it INTO wa USING KEY sec_key.       "secondary key
+"LOOP AT it INTO wa USING KEY sk.            "secondary key alias
+  ...
+ENDLOOP.
 ```
 
 - The order in which tables are iterated depends on the table category. 
@@ -2311,17 +2322,6 @@ ENDLOOP.
 
 "Mandatory WHERE clause
 LOOP AT it TRANSPORTING NO FIELDS WHERE a < 5.
-  ...
-ENDLOOP.
-
-"Table key specification (snippet uses example table from above)
-"The specified table key affects the order in which the table lines
-"are accessed and the evaluation of the other conditions.
-
-LOOP AT it INTO wa USING KEY primary_key.
-"LOOP AT it INTO wa USING KEY pk.            "primary key alias
-"LOOP AT it INTO wa USING KEY sec_key.       "secondary key
-"LOOP AT it INTO wa USING KEY sk.            "secondary key alias
   ...
 ENDLOOP.
 ```
@@ -2407,21 +2407,7 @@ ASSERT tabix = 5.
 
 ## Operations with Internal Tables Using ABAP SQL SELECT Statements
 
-- In ABAP, database data is buffered in a [table buffer](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentable_buffer_glosry.htm) (internally, this happens in internal tables in the [shared memory](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenshared_memory_glosry.htm) of the ABAP server). 
-- During read access, it is checked if the data is in the buffer, and if so, a read happens directly from there. If not, the data is first loaded into the buffer. 
-- The [ABAP SQL engine](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_sql_engine_glosry.htm) is involved in the read process. It processes reads and is used when tabular data is read (with a `SELECT` statement). This includes both buffered data from database tables in the table buffer and also internal tables of the current internal session. 
-- Which means ABAP SQL is executed in this buffer on the ABAP server, not directly on the database.
-
-So, ABAP SQL `SELECT` statements can be used for multiple purposes also on internal tables. The following snippets cover a selection. Find more details in the ABAP Keyword Documentation and in the [ABAP SQL cheat sheet](03_ABAP_SQL.md).
-
-> **💡 Note**<br>
-> - No deep components (nested tables, strings) are allowed. 
-> - Trailing blanks of short text fields are truncated. 
-> - When joining multiple internal tables, it must be ensured that the ABAP SQL engine can handle it, which means only internal tables are used (no buffered database tables), no special features like hierarchies, aggregates, subselects, etc. are used.
-
-<p align="right"><a href="#top">⬆️ back to top</a></p>
-
-### Internal Tables as Target Data Objects
+### Internal Tables as Target Data Objects in SELECT Queries
 
 Adding multiple lines from a database table to an internal table using
 [`SELECT`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapselect.htm),
@@ -2502,77 +2488,198 @@ ENDIF.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-### Querying from Internal Tables
-In `SELECT` statements, internal tables can also be used as data sources. 
-The snippet shows adding multiple lines from an internal table to another internal table using `SELECT`. Note the alias name that must be defined for the internal table.
+### SELECT Queries with Internal Tables as Data Sources
 
-``` abap
-SELECT comp1, comp2, ...
-  FROM @itab AS it_alias
-  INTO TABLE @DATA(itab_sel).
-```
+- You can use internal tables as data sources in `SELECT` statements.
 
-Using the `LIKE` addition in the `WHERE` clause to extract internal table entries matching a specific pattern.
-```abap
-TYPES: BEGIN OF s,
-          a TYPE c LENGTH 3,
-          b TYPE i,
-        END OF s,
-        tab_type TYPE TABLE OF s WITH EMPTY KEY.
-DATA(itab) = VALUE tab_type( ( a = 'abc' b = 1 ) ( a = 'zbc' b = 2 )
-                              ( a = 'bde' b = 3 ) ( a = 'yde' b = 4 ) ).
+   ``` abap
+   SELECT comp1, comp2, ...
+      FROM @itab AS it_alias
+      WHERE ...
+      INTO TABLE @DATA(itab_sel).
+   ```
+- Internal tables are specified as [host variables](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenhost_variable_glosry.htm) prefixed by `@` and provided with an alias name.
+- Deep and nested structured types are not allowed. Structured types cannot include strings, reference types, or internal tables. Exception: The type `string` is allowed if it is declared using a reference to the built-in dictionary type `sstring`.
+- When used as data sources in `SELECT` statements, internal tables are treated like DDIC database tables.
+  - This is the case even if they are not passed to the database.
+  - They are considered as client-independent tables, and the first column is not considered as a client column. 
+  - The ABAP types of the columns are mapped to appropriate DDIC built-in types.
+- Using `SELECT` statements with internal tables has significant advantages:
+  - You can leverage the extensive functionalities that ABAP SQL provides with `SELECT` statements, such as aggregate expressions.
+  - They can serve as alternatives to `READ TABLE` or `LOOP AT` statements, provided the data can be processed on the AS ABAP by the ABAP SQL engine and the SQL functionality surpasses the standard functionality of these ABAP statements.
 
-SELECT a, b
-  FROM @itab AS it_alias
-  WHERE a LIKE '%bc'
-  INTO TABLE @DATA(itab_sel_like).
+Notes and restrictions: 
 
-*A      B     
-*abc    1     
-*zbc    2 
-```
+- In ABAP, database data is buffered in a [table buffer](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentable_buffer_glosry.htm) (internally, this happens in internal tables in the [shared memory](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenshared_memory_glosry.htm) of the ABAP server). 
+- During read access, it is checked if the data is in the buffer, and if so, a read happens directly from there. If not, the data is first loaded into the buffer. 
+- The [ABAP SQL engine](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_sql_engine_glosry.htm) is involved in the read process. It processes reads and is used when tabular data is read (with a `SELECT` statement). This includes both buffered data from database tables in the table buffer and also internal tables of the current internal session. 
+- Which means the ABAP SQL engine processes queries located on the AS ABAP, ABAP SQL is executed in the said buffer on the AS ABAP, not directly on the database.
+- However, if a `SELECT` statement includes elements the ABAP SQL engine cannot handle in case of internal tables, the internal table data transfers to a temporary database table for query execution. 
+- Yet, only the data of one internal table can be transferred to the database. Thus, if a query involves multiple internal tables, it can only be executed if the ABAP SQL engine can manage it. This means that if data from more than one internal table must be transferred to the database, the query will not function. Similarly, joins of database tables and internal tables can only specify one internal table whose data can be passed to the database.
+- If the compiler detects a statement the ABAP SQL engine cannot process, a syntax warning appears. To suppress this warning, use the pragma `##itab_db_select`.
+- Find more information on ... 
+  - the restrictions [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensql_engine_restr.htm).
+  - the various ABAP SQL functionalities in the ABAP Keyword Documentation and in the [ABAP SQL cheat sheet](03_ABAP_SQL.md). The following code snippets cover a selection.
 
-Using the `IN` addition in the `WHERE` clause to extract internal table entries based on values specified in an operand list.
-```abap
-SELECT a, b
-  FROM @itab AS it_alias
-  WHERE a IN ('bde', 'yde', 'zde')
-  INTO TABLE @DATA(itab_in).
+The following example explores various `SELECT` queries with internal tables as data sources. To try it out, create a demo class named `zcl_some_class` and paste the code into it. After activation, choose *F9* in ADT to execute the class. The example uses objects of the ABAP cheat sheets repository and is set up to display output in the console.
 
-*A      B     
-*bde    3     
-*yde    4 
-```
-
-Combining data from multiple internal tables into one internal table using an [inner
-join](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abeninner_join_glosry.htm "Glossary Entry"). See above.
+Example: 
 
 ```abap
-TYPES: BEGIN OF s,
-          a TYPE c LENGTH 3,
-          b TYPE c LENGTH 3,
-          c TYPE i,
-        END OF s,
-        tab_type TYPE TABLE OF s WITH EMPTY KEY.
-        
-DATA(it1) = VALUE tab_type( ( a = 'aaa' b = 'bbb' c = 1 )
-                            ( a = 'ccc' b = 'ddd' c = 1 )
-                            ( a = 'eee' b = 'fff' c = 2 ) ).
+CLASS zcl_some_class DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
 
-DATA(it2) = VALUE tab_type( ( a = 'ggg' b = 'hhh' c = 1 )
-                            ( a = 'iii' b = 'jjj' c = 1 )
-                            ( a = 'kkk' b = 'lll' c = 3 ) ).
+  PUBLIC SECTION.
+    INTERFACES if_oo_adt_classrun.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
 
-SELECT it_alias1~a, it_alias2~b
-  FROM @it1 AS it_alias1
-  INNER JOIN @it2 AS it_alias2 ON it_alias1~c = it_alias2~c
-  INTO TABLE @DATA(it_join_result).
-      
-*A      B     
-*aaa    hhh   
-*aaa    jjj   
-*ccc    hhh   
-*ccc    jjj  
+ENDCLASS.
+
+
+
+CLASS zcl_some_class IMPLEMENTATION.
+  METHOD if_oo_adt_classrun~main.
+
+    "----------- Exploiting ABAP SQL functionality with internal tables -----------
+
+    TYPES int_tab_type TYPE TABLE OF i WITH EMPTY KEY.
+    DATA(itab_a) = VALUE int_tab_type( ( 1 ) ( 32 ) ( 100 ) ( -24 ) ( 17 ) ( 99 ) ).
+
+    "SELECT query with an internal table as data source
+    "The example uses an aggregate expression. It is statically
+    "detected that the query cannot be processed by the ABAP SQL
+    "enginge. The data must be passed to the database. Consequently,
+    "a syntax warning is displayed. It can be suppressed by a pragma.
+    SELECT MAX( table_line ) AS max_val
+      FROM @itab_a AS it
+      INTO @DATA(max_a).
+
+    "100
+    SELECT MAX( table_line ) AS max_val ##itab_db_select
+     FROM @itab_a AS it
+     INTO @DATA(max_b).
+
+    out->write( max_a ).
+    out->write( max_b ).
+
+    "Using the LIKE addition in the WHERE clause to extract internal table
+    "entries matching a specific pattern.
+    TYPES: BEGIN OF s1,
+             a TYPE c LENGTH 3,
+             b TYPE i,
+           END OF s1,
+           it_type_1 TYPE TABLE OF s1 WITH EMPTY KEY.
+    DATA(itab_b) = VALUE it_type_1( ( a = 'abc' b = 1 )
+                                    ( a = 'zbc' b = 2 )
+                                    ( a = 'bde' b = 3 )
+                                    ( a = 'yde' b = 4 ) ).
+
+    SELECT a, b
+      FROM @itab_b AS it_alias
+      WHERE a LIKE '%bc'
+      INTO TABLE @DATA(select_like_result).
+
+*A      B
+*abc    1
+*zbc    2
+
+    out->write( select_like_result ).
+
+    "----------- Using a SELECT loop with an internal table as data source -----------
+
+    TYPES: BEGIN OF s2,
+             comp1 TYPE c LENGTH 2,
+             comp2 TYPE i,
+           END OF s2,
+           it_type_2 TYPE TABLE OF s2 WITH EMPTY KEY.
+
+    DATA(itab_c) = VALUE it_type_2( ( comp1 = 'aa' comp2 = 2 )
+                                    ( comp1 = 'zz' comp2 = 9 )
+                                    ( comp1 = 'dd' comp2 = 1 )
+                                    ( comp1 = 'rr' comp2 = 7 )
+                                    ( comp1 = 'tt' comp2 = 5 )
+                                    ( comp1 = 'bb' comp2 = 6 ) ).
+
+    DATA itab_d TYPE int_tab_type.
+
+    "The following SELECT loop specifies an internal table as data source.
+    "The loop sequence is defined by a sort order. Such a functionality is
+    "not available with LOOP AT.
+    SELECT comp2
+           FROM @itab_c AS it
+           ORDER BY comp2 DESCENDING
+           INTO @DATA(wa).
+      INSERT wa INTO TABLE itab_d.
+    ENDSELECT.
+
+*9
+*7
+*6
+*5
+*2
+*1
+
+    out->write( itab_d ).
+
+    "------------------- Joins with internal tables -------------------
+
+    TYPES: BEGIN OF s3,
+             a TYPE c LENGTH 3,
+             b TYPE c LENGTH 3,
+             c TYPE i,
+           END OF s3,
+           it_type_3 TYPE TABLE OF s3 WITH EMPTY KEY.
+
+    DATA(itab_e) = VALUE it_type_3( ( a = 'aaa' b = 'bbb' c = 1 )
+                                    ( a = 'ccc' b = 'ddd' c = 1 )
+                                    ( a = 'eee' b = 'fff' c = 2 ) ).
+
+    DATA(itab_f) = VALUE it_type_3( ( a = 'ggg' b = 'hhh' c = 1 )
+                                    ( a = 'iii' b = 'jjj' c = 1 )
+                                    ( a = 'kkk' b = 'lll' c = 3 ) ).
+
+    "No syntax warning. The internal tables can be processed by the
+    "ABAP SQL engine.
+    SELECT it_alias1~a, it_alias2~b
+      FROM @itab_e AS it_alias1
+      INNER JOIN @itab_f AS it_alias2 ON it_alias1~c = it_alias2~c
+      INTO TABLE @DATA(itab_g).
+
+*A      B
+*aaa    hhh
+*aaa    jjj
+*ccc    hhh
+*ccc    jjj
+
+    out->write( itab_g ).
+
+    "Join with a database table and an internal table
+
+    "Preparing a demo database table and an internal table
+    DELETE FROM zdemo_abap_tab1.
+    INSERT zdemo_abap_tab1 FROM TABLE @( VALUE #( ( key_field = 1 char1 = 'aaa' )
+                                                  ( key_field = 2 char1 = 'bbb' )
+                                                  ( key_field = 3 char1 = 'ccc' ) ) ).
+
+    TYPES it_type_4 TYPE TABLE OF zdemo_abap_tab1 WITH EMPTY KEY.
+    DATA(itab_h) = VALUE it_type_4( ( key_field = 1 char2 = 'zzz' )
+                                    ( key_field = 2 char2 = 'yyy' ) ).
+
+    SELECT db~key_field, db~char1, it~char2
+      FROM zdemo_abap_tab1 AS db
+      INNER JOIN @itab_h AS it ON it~key_field = db~key_field
+      INTO TABLE @DATA(itab_i).
+
+*KEY_FIELD    CHAR1    CHAR2
+*1            aaa      zzz
+*2            bbb      yyy
+
+    out->write( itab_i ).
+  ENDMETHOD.
+ENDCLASS.
 ```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
@@ -3094,7 +3201,7 @@ ENDCLASS.
 
 The following example creates two demo internal tables. One without a secondary
 table key and the other with a secondary table key. Consider a scenario where you
-have an internal table without a secondary table key, and you want to add a secondary table key later to improve read performance. The tables are populated with a lot of data. Then, in a `DO` loop, many reads are performed on the internal tables. One example uses a free key for the read, the other uses a secondary table key that includes the components used for the free key search. Before and after the reads, the current timestamp is stored in variables, from which the elapsed time is calculated. There should be a significant delta of the elapsed time.
+have a standard internal table without a secondary table key, and you want to add a secondary table key later to improve read performance. The tables are populated with a lot of data. Then, in a `DO` loop, many reads are performed on the internal tables. One example uses a free key for the read, the other uses a secondary table key that includes the components used for the free key search. Before and after the reads, the current timestamp is stored in variables, from which the elapsed time is calculated. There should be a significant delta of the elapsed time.
 
 ```abap
 CLASS zcl_some_class DEFINITION PUBLIC FINAL CREATE PUBLIC.
