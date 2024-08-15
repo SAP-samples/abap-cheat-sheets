@@ -18,7 +18,7 @@
   - [Dynamic Programming](#dynamic-programming)
   - [Context Information](#context-information)
   - [XML/JSON](#xmljson)
-  - [ABAP Repository Information](#abap-repository-information)
+  - [ABAP Repository Object Information](#abap-repository-object-information)
   - [Call Stack](#call-stack)
   - [Sending Emails](#sending-emails)
   - [Tenant Information](#tenant-information)
@@ -1616,10 +1616,10 @@ xco_cp_json=>data->from_string( json_created_xco )->apply( VALUE #(
 ```abap
 DATA(some_table) = VALUE string_table( ( `aaa` ) ( `bbb` ) ( `ddd` ) ).
 
-"--------- ABAP -> Json ---------
+"--------- ABAP -> JSON ---------
 DATA(abap_to_json) = /ui2/cl_json=>serialize( data = some_table ).
 
-"--------- Json -> ABAP ---------
+"--------- JSON -> ABAP ---------
 DATA table_json_to_abap TYPE string_table.
 /ui2/cl_json=>deserialize( EXPORTING json = abap_to_json
                            CHANGING data  = table_json_to_abap ).
@@ -1631,7 +1631,7 @@ DATA table_json_to_abap TYPE string_table.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-## ABAP Repository Information 
+## ABAP Repository Object Information 
 
 <table>
 <tr>
@@ -2375,7 +2375,7 @@ CLASS zcl_some_class DEFINITION PUBLIC FINAL CREATE PUBLIC.
              file_name     TYPE string,
              title         TYPE string,
              code_snippets TYPE string_table,
-             error         TYPE abap_bool,
+             error         TYPE abap_boolean,
            END OF s.
     DATA tab TYPE TABLE OF s WITH EMPTY KEY.
     DATA snippets TYPE string_table.

@@ -278,8 +278,8 @@ The following concepts are related to the SAP LUW to ensure transactional consis
 
 ## The SAP LUW in ABAP Cloud and RAP
 
-A limited set of ABAP language features is available in ABAP Cloud ([restricted ABAP language version](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenrestricted_version_glosry.htm)). 
-The limitations include the fact that the above bundling techniques are not available. Note that the local update is enabled by default in ABAP Cloud. Find more information in this [blog](https://blogs.sap.com/2022/12/05/the-sap-luw-in-abap-cloud/).
+A limited set of ABAP language features is available in ABAP for Cloud Development ([restricted ABAP language version](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenrestricted_version_glosry.htm)). 
+The limitations include the fact that the above bundling techniques are not available. Note that the local update is enabled by default in ABAP Cloud. 
 
 In fact, RAP is the transactional programming model for ABAP Cloud.
 And RAP comes with a well-defined transactional model and follows the rules of the SAP LUW. At the end of an SAP LUW in RAP, database modification operations should be performed in a final step in the [RAP late save phase](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenlate_rap_save_phase_glosry.htm) by persisting the consistent data in the [RAP transactional buffer](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abentransactional_buffer_glosry.htm) to the database.
@@ -358,7 +358,6 @@ MODIFY zdemo_abap_carr FROM TABLE @( VALUE #(
 
 ## More Information
 - [The RAP Transactional Model and the SAP LUW](https://help.sap.com/docs/SAP_S4HANA_CLOUD/e5522a8a7b174979913c99268bc03f1a/ccda1094b0f845e28b88f9f50a68dfc4.html) (Development guide for the ABAP RESTful Application Programming Model)
-- [The SAP LUW in ABAP Cloud](https://blogs.sap.com/2022/12/05/the-sap-luw-in-abap-cloud/) (blog)
 - [SAP LUW in the ABAP Keyword Documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensap_luw.htm)
 - [Controlled SAP LUW](https://help.sap.com/docs/abap-cloud/abap-concepts/controlled-sap-luw) as an enhancement of the SAP LUW concept
 

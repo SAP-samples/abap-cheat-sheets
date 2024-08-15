@@ -1059,7 +1059,7 @@ CLASS zcl_some_class IMPLEMENTATION.
     "---------------- Deserializing: No equivalent ABAP type available ----------------
 
     "The example assumes that there is no equivalent ABAP type available for JSON data
-    "that is to be deserialized. You can use of the 'generate' method that has a
+    "that is to be deserialized. You can use the 'generate' method that has a
     "returning parameter of the generic type 'ref to data'.
     DATA(json) = `[{"CARRIER_ID":"AA","CONNECTION_ID":17,"CITY_FROM":"New York","CITY_TO":"San Francisco"},` &&
                  `{"CARRIER_ID":"AZ","CONNECTION_ID":789,"CITY_FROM":"Tokyo","CITY_TO":"Rome"}]`.

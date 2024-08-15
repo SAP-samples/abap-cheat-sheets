@@ -734,7 +734,7 @@ After the import of the repository, proceed as follows:
 >     - Modifying static attributes (`LOOP AT SCREEN`, `MODIFY SCREEN`),
 >     - Statements related to the GUI status and title (`GET`/`SET PF-STATUS`, `SET TITLEBAR`)
 >     - Controls (table and tabstrip controls)
->   - does not claim to include meaningful dynpros with meaningful dynpro sequences (branching to new dynpro sequences occur through using appropriate statements).
+>   - does not claim to include meaningful dynpros with meaningful dynpro sequences (the branching to new dynpro sequences occurs through using appropriate statements).
 >   - is not intended to be a role model for proper dynpro design.   
 >   - is not intended to solve concrete programming tasks. You should always work out your own solution for each individual case.
 >   - is only intended to demonstrate a selection of keywords and visualize dynpro-related syntax in action on a high level. 

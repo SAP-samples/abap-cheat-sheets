@@ -41,6 +41,7 @@
   - [Operations with Internal Tables Using ABAP SQL SELECT Statements](#operations-with-internal-tables-using-abap-sql-select-statements)
     - [Internal Tables as Target Data Objects in SELECT Queries](#internal-tables-as-target-data-objects-in-select-queries)
     - [SELECT Queries with Internal Tables as Data Sources](#select-queries-with-internal-tables-as-data-sources)
+      - [Excursion: Restrictions Regarding Selecting from Internal Tables](#excursion-restrictions-regarding-selecting-from-internal-tables)
   - [Sorting Internal Tables](#sorting-internal-tables)
   - [Modifying Internal Table Content](#modifying-internal-table-content)
   - [Deleting Internal Table Content](#deleting-internal-table-content)
@@ -1499,11 +1500,12 @@ ENDDO.
 
 #### BINARY SEARCH Addition: Optimized Read Access When Specifying Free Keys
 
-Find information and an example in the expandable section below
+You may stumble on the `BINARY SEARCH` addition to `READ TABLE` statements for an optimized access. However, it is recommended to use sorted tables or secondary table keys for an optimized access. Find information and an example in the expandable section below.
 
 ```abap
 READ TABLE itab WITH KEY ... BINARY SEARCH ...
 ```
+
 
 <details>
   <summary>Expand to view more information and a code snippet</summary>
@@ -2551,7 +2553,7 @@ CLASS zcl_some_class IMPLEMENTATION.
     "SELECT query with an internal table as data source
     "The example uses an aggregate expression. It is statically
     "detected that the query cannot be processed by the ABAP SQL
-    "enginge. The data must be passed to the database. Consequently,
+    "engine. The data must be passed to the database. Consequently,
     "a syntax warning is displayed. It can be suppressed by a pragma.
     SELECT MAX( table_line ) AS max_val
       FROM @itab_a AS it
@@ -2680,6 +2682,78 @@ CLASS zcl_some_class IMPLEMENTATION.
     out->write( itab_i ).
   ENDMETHOD.
 ENDCLASS.
+```
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+
+#### Excursion: Restrictions Regarding Selecting from Internal Tables 
+
+- This excursion is intended to underscore the restricitions mentioned above and in the [documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensql_engine_restr.htm) in more detail when selecting from internal tables. 
+- Components having deep types, such as strings, cannot be included, for example, in the `SELECT` list or `WHERE` clause. 
+- Note that only those fields are checked (and sent to the database) that are actually used (as shown in the example below). 
+- However, the type string is allowed if it is declared using the built-in dictionary type `sstring` (for example, a component typed with a [data element](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendata_element_glosry.htm) or a [CDS simple type](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_simple_type_glosry.htm) that uses `sstring`).
+
+The following example demonstrates various `SELECT` statements. A demo internal table has a component that is typed with a CDS simple type, which can be created as follows:
+- In ADT, right-click your pacakage, and choose *New -> Other Repository Object* 
+- Insert *type* and select *Type* under *Core Data Services*.
+- Choose *Next* and provide a name (e.g. `zdemo_abap_string`) and a description.
+- Choose *Finish*.
+- Find more information on CDS simple types [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_simple_types.htm).
+
+The code of the CDS simple type may look as follows: 
+
+```abap
+@EndUserText.label: 'String type'
+define type zdemo_abap_string: abap.sstring( 1333 );
+```
+
+Commented code example:
+
+```abap
+"------ Internal table having a component of type string ------
+"Creating and populating an internal table that includes a component that is
+"typed with type string
+TYPES: BEGIN OF s1,
+         comp1 TYPE i,
+         comp2 TYPE c LENGTH 3,
+         comp3 TYPE string,
+       END OF s1,
+       tab_type_1 TYPE TABLE OF s1 WITH EMPTY KEY.
+DATA(itab1) = VALUE tab_type_1( ( comp1 = 1 comp2 = 'aaa' comp3 = `ABAP` ) ).
+
+"Columns of type string cannot be used in SELECT statements that
+"select from internal tables (* selects all fields). Therefore, the
+"following statements are commented out.
+
+"SELECT SINGLE * FROM @itab1 AS it WHERE comp1 = 1 INTO @DATA(res1).
+"SELECT SINGLE comp1 FROM @itab1 AS it where comp3 = `ABAP` INTO @DATA(res2).
+"SELECT SINGLE comp3 FROM @itab1 AS it where comp1 = 1 INTO @DATA(res3).
+
+"However, the following statements work. No component of type string is involved.
+SELECT SINGLE comp1 FROM @itab1 AS it WHERE comp2 = 'aaa' INTO @DATA(res4).
+SELECT SINGLE comp1, comp2 FROM @itab1 AS it INTO @DATA(res5).
+
+"--- Internal table having a component typed with a CDS simple type (sstring) ---
+"Creating and populating an internal table that includes a component that is typed
+"with a CDS simple type (sstring). Note: Built-in DDIC types such as sstring cannot
+"directly be used in ABAP statements, except for typed literals.
+TYPES: BEGIN OF s2,
+         comp1 TYPE i,
+         comp2 TYPE c LENGTH 3,
+         comp3 TYPE zdemo_abap_string,
+       END OF s2,
+       tab_type_2 TYPE TABLE OF s2 WITH EMPTY KEY.
+DATA(itab2) = VALUE tab_type_2( ( comp1 = 1 comp2 = 'aaa' comp3 = `ABAP` ) ).
+
+"Unlike above, the following SELECT statements are possible
+SELECT SINGLE * FROM @itab2 AS it WHERE comp1 = 1 INTO @DATA(res6).
+SELECT SINGLE comp1 FROM @itab2 AS it WHERE comp3 = `ABAP` INTO @DATA(res7).
+SELECT SINGLE comp1, comp3 FROM @itab2 AS it WHERE comp2 = 'aaa' AND comp3 = `ABAP` INTO @DATA(res8).
+"Note: `ABAP` represents a literal of type string. When specifying it here
+"like it is specified above, there is an implicit conversion. The following
+"example uses a typed literal.
+SELECT SINGLE comp1, comp2, comp3 FROM @itab2 AS it WHERE comp3 = sstring`ABAP` INTO @DATA(res9).
 ```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>

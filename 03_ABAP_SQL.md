@@ -1996,8 +1996,30 @@ UPDATE dbtab FROM TABLE @itab.
 UPDATE dbtab FROM TABLE @( VALUE #( ( comp1 = ... comp2 = ... )
                                     ( comp1 = ... comp2 = ... ) ) ).
 
-"INDICATORS addition: Changing content of specific fields without overwriting
-"existing values of other fields
+"-------------------------- SET addition --------------------------
+"Changing values of specific fields without overwriting other, non-specified 
+"fields
+"Changing values of specific fields in all table rows
+"There are mutliple options for the value assignment. E.g. you can use
+"a literal, host variable/expression, SQL function, and so on.
+"The following statement does not use a WHERE clause. Therefore, 
+"the comp2 values of all database table entries are changed.
+UPDATE dbtab SET comp2 = 'X'.
+
+"Changing values of specific fields in all found entries by restricting 
+"the data sets to be changed using a WHERE clause
+"Use a comma-separated list for the components after SET
+UPDATE dbtab SET comp2 = 'X', comp3 = 'Y' WHERE comp4 > 100.
+
+"Changing values of specific fields in a single database table entry 
+"Assume the entry can be uniquely identified by specifying key values
+"in the WHERE clause
+UPDATE dbtab SET comp2 = 'X' WHERE key1 = 'Y'.
+
+"--------------- INDICATORS ... SET STRUCTURE addition ---------------
+"Similar to SET, using the INDICATORS ... addition, you  can change content 
+"of specific fields without overwriting existing values of other fields by 
+"specifying set indicators.
 "Example:
 "- Structured type is created with WITH INDICATORS addition
 "- Internal table from which to update dbtab is created;
@@ -2017,11 +2039,6 @@ UPDATE dbtab FROM TABLE @ind_tab INDICATORS SET STRUCTURE comp_ind.
 
 "In the following example, the logic is reversed using NOT.
 UPDATE dbtab FROM TABLE @ind_tab INDICATORS NOT SET STRUCTURE comp_ind.
-
-"SET addition: Changing values of specific fields in all table rows
-"There are mutliple options for the value assignment. E.g. you can use
-"a literal, host variable/expression, SQL function, and so on.
-UPDATE dbtab SET comp2 = ... .
 ```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
