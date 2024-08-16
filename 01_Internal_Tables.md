@@ -500,10 +500,10 @@ to add lines to internal tables.
 
 ``` abap
 APPEND VALUE #( comp1 = a comp2 = b ... ) TO itab.
-APPEND lv_struc TO itab.
+APPEND struc TO itab.
 
 INSERT VALUE #( comp1 = a comp2 = b ... ) INTO TABLE itab.
-INSERT lv_struc INTO TABLE itab.
+INSERT struc INTO TABLE itab.
 ```
 
 **Adding an initial line** to an internal table without providing any field values.
@@ -558,7 +558,7 @@ INSERT LINES OF itab2 FROM i1 TO i2 INTO TABLE itab.
 `FROM` and `TO` can be used here, too.
 
 ``` abap
-INSERT lv_struc INTO itab2 INDEX i.
+INSERT struc INTO itab2 INDEX i.
 
 INSERT LINES OF itab2 INTO itab INDEX i.
 ```

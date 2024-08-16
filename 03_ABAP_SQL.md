@@ -36,6 +36,7 @@
     - [Using UPDATE](#using-update)
     - [Using MODIFY](#using-modify)
     - [Using DELETE](#using-delete)
+    - [Using of Constructor Expressions in ABAP SQL Statements](#using-of-constructor-expressions-in-abap-sql-statements)
     - [Example: Exploring ABAP SQL Statements Changing Data in Database Tables](#example-exploring-abap-sql-statements-changing-data-in-database-tables)
     - [RAP-Specific ABAP SQL Variants](#rap-specific-abap-sql-variants)
   - [More Information](#more-information)
@@ -1996,6 +1997,12 @@ UPDATE dbtab FROM TABLE @itab.
 UPDATE dbtab FROM TABLE @( VALUE #( ( comp1 = ... comp2 = ... )
                                     ( comp1 = ... comp2 = ... ) ) ).
 
+"Excursion: Constructor expression with VALUE and BASE
+"The example assumes selecting an entry from a database, modifying it, and 
+"updating it again, but the non-modified entries shall remain unchanged.
+SELECT SINGLE * FROM dbtab WHERE key = ... INTO @DATA(read_line).
+UPDATE dbtab FROM @( VALUE #( BASE read_line comp2 = ... comp4 = ... ) ).
+
 "-------------------------- SET addition --------------------------
 "Changing values of specific fields without overwriting other, non-specified 
 "fields
@@ -2099,6 +2106,59 @@ DELETE dbtab FROM TABLE @( VALUE #( ( comp1 = ... )
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
+### Using of Constructor Expressions in ABAP SQL Statements
+
+[Constructor expressions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconstructor_expression_glosry.htm) can be very handy in ABAP SQL statements. 
+For more information about constructor expressions, see the ABAP Keyword Documentation and the [Constructor Expressions cheat sheet](05_Constructor_Expressions.md). Many additions are available. 
+The following examples show a selection. The previous code snippets already include the use of the `VALUE` operator with which structures and internal tables can be created in place.
+
+```abap
+"--- VALUE ---
+"VALUE operator as shown above, creating an internal table in place
+INSERT dbtab FROM TABLE @( VALUE #( ( key_field = 1 comp1 = ... )
+                                    ( key_field = 2 comp1 = ... )
+                                    ( key_field = 3 comp1 = ... ) ) ).
+
+"Inserting a table row from a row created in place
+"INSERT dbtab FROM @( VALUE #( key_field = 4 comp1 = ... ) ).
+
+
+"FOR LOOP with VALUE
+DATA(it) = VALUE some_it_type( ( key_field = 5 comp1 = ... )
+                                ( key_field = 6 comp1 = ... )
+                                ( key_field = 7 comp1 = ... ) ).
+
+"In the following example, the internal table from above is looped across. You
+"can imagine modifying the components when mapping the fields (as inidicated by the
+"concatentation in the example). In doing so, the internal table values are modified
+"(or not) and inserted into the database table.
+INSERT dbtab FROM TABLE @( VALUE #( FOR wa IN it ( key_field = wa-key_field
+                                                    comp1 = wa-comp1 && 'XYZ'
+                                                    ... ) ) ).
+
+"Using a constructor expression with VALUE and BASE in an UPDATE statement
+"The example assumes selecting an entry from a database, modifying it, and updating it again,
+"but the non-modified entries shall remain unchanged.
+
+SELECT SINGLE * FROM dbtab WHERE key_field = ... INTO @DATA(read_line).
+"Assumed comp1 or comp3 components are not specified, but they retain their
+"original content and are not initialized when writing to the database table.
+UPDATE dbtab FROM @( VALUE #( BASE read_line comp2 = ... comp4 = ... ) ).
+
+"The following example assumes that some_itab has a different line type than dbtab.
+"I.e. some_itab may have more components that are not available in dbtab. The
+"corresponding fields with identical names are used. It is assumed that the components'
+"types are compatible and/or convertible.
+INSERT dbtab FROM TABLE @( CORRESPONDING #( some_itab ) ).
+
+"This example assumes that field names are not identical. Using the CORRESPONDING operator
+"and its additions, you can carry out a mapping and, for example, exclude components. It is 
+"assumed that the components' types are compatible and/or convertible.
+INSERT dbtab FROM TABLE @( CORRESPONDING #( another_itab MAPPING key_field = key comp1 = compZ EXCEPT comp2 ) ).
+```
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
 ### Example: Exploring ABAP SQL Statements Changing Data in Database Tables
 
 To try the following example out, create a demo class named `zcl_some_class` and paste the code into it. After activation, choose *F9* in ADT to execute the class. The example uses a database table of the ABAP cheat sheets repository and is set up to display output in the console.
@@ -2198,65 +2258,6 @@ CLASS zcl_some_class IMPLEMENTATION.
 
 **********************************************************************
 
-    "-------- Exploring constructor expressions for internal tables created in place --------
-    "The examples explore constructor expressions that construct internal tables in place and that can be
-    "specified after the TABLE addition (as a host expressions), apart from an existing data object.
-    "For more information about constructor expressions, see the ABAP Keyword Documentation and the
-    "Constructor Expressions cheat sheet.
-    DELETE FROM zdemo_abap_tab1.
-
-    "VALUE operator as shown above, creating an internal table in place
-    INSERT zdemo_abap_tab1 FROM TABLE @( VALUE #( ( key_field = 1 char1 = 'aaa' char2 = 'bbb' num1 = 10 num2 = 100 )
-                                                  ( key_field = 2 char1 = 'ccc' char2 = 'ddd' num1 = 20 num2 = 200 ) ) ).
-
-    "FOR LOOP with VALUE
-    DATA(it_f) = VALUE it_type( ( key_field = 3 char1 = 'ee' char2 = 'ff' num1 = 30 num2 = 300 )
-                                ( key_field = 4 char1 = 'gg' char2 = 'hh' num1 = 40 num2 = 400 )
-                                ( key_field = 5 char1 = 'ii' char2 = 'jj' num1 = 50 num2 = 500 ) ).
-
-    "In the example, the internal table from above is looped across. The index value is
-    "stored and used to modify field values of the internal table. In doing so, the modified
-    "internal table values are inserted into the database table.
-    INSERT zdemo_abap_tab1 FROM TABLE @( VALUE #( FOR wa IN it_f INDEX INTO idx ( key_field = wa-key_field
-                                                                                  char1 = wa-char1 && idx
-                                                                                  char2 = wa-char2 && idx
-                                                                                  num1 = wa-num1 + idx
-                                                                                  num2 = wa-num2 + idx ) ) ).
-
-    "CORRESPONDING
-    TYPES: BEGIN OF s1,
-             key_field TYPE i,
-             char1     TYPE c LENGTH 5,
-             num1      TYPE i,
-           END OF s1,
-           it_type_s1 TYPE TABLE OF s1 WITH EMPTY KEY,
-           BEGIN OF s2,
-             key     TYPE i,
-             char    TYPE c LENGTH 5,
-             number1 TYPE i,
-             num2    TYPE p LENGTH 8 DECIMALS 2,
-           END OF s2,
-           it_type_s2 TYPE TABLE OF s2 WITH EMPTY KEY.
-
-    "Identical component names in the internal table
-    "The example includes compatible and convertible types.
-    DATA(it_g) = VALUE it_type_s1( ( key_field = 6 char1 = 'kkk' num1 = 60 )
-                                   ( key_field = 7 char1 = 'lll' num1 = 70 ) ).
-
-    INSERT zdemo_abap_tab1 FROM TABLE @( CORRESPONDING #( it_g ) ).
-
-    "Non-identical component names in the internal table; using the MAPPING/EXCEPT additions
-    "The example includes compatible and convertible types.
-    DATA(it_h) = VALUE it_type_s2( ( key = 8 char = 'mmm' number1 = 80 num2 = '1.23' )
-                                   ( key = 9 char = 'nnn' number1 = 90 num2 = '4.56' ) ).
-
-    INSERT zdemo_abap_tab1 FROM TABLE @( CORRESPONDING #( it_h MAPPING key_field = key char2 = char num1 = number1 EXCEPT num2 ) ).
-
-    SELECT * FROM zdemo_abap_tab1 INTO TABLE @DATA(itab_constr).
-    out->write( data = itab_constr name = `itab_constr` ).
-
-**********************************************************************
-
     "--------------------------- UPDATE ---------------------------
 
     "Preparing a demo database table
@@ -2313,11 +2314,20 @@ CLASS zcl_some_class IMPLEMENTATION.
                                                   ( key_field = 3 char1 = 'eee' char2 = 'fff' num1 = 30 num2 = 300 ) ) ).
 
     "The following example transforms the character string of a
-    "component to upper case.
+    "component to upper case. Since no WHERE clause is specified,
+    "the char1 components of all database table entries are affected
     UPDATE zdemo_abap_tab1 SET char1 = upper( char1 ).
 
-    "Setting a WHERE condition
+    "Changing values of specific fields in all found entries by restricting
+    "the data sets to be changed using a WHERE clause
     UPDATE zdemo_abap_tab1 SET char2 = concat( char2, '#' ), num1 = num1 + 1, num2 = num2 + 2 WHERE num1 > 15.
+
+    "Changing values of specific fields in a single database table entry
+    "assuming the entry can be uniquely identified by specifying key values
+    "in the WHERE clause
+    "Use a comma-separated list after SET to specify multiple components
+    INSERT zdemo_abap_tab1 FROM @( VALUE #( key_field = 99 char1 = 'A' char2 = 'B' num1 = 99 num2 = 100 ) ).
+    UPDATE zdemo_abap_tab1 SET char2 = 'X', num1 = 1, num2 = 2  WHERE key_field = 99.
 
     SELECT * FROM zdemo_abap_tab1 INTO TABLE @DATA(itab_update_set).
     out->write( data = itab_update_set name = `itab_update_set` ).
@@ -2390,6 +2400,73 @@ CLASS zcl_some_class IMPLEMENTATION.
 
     SELECT * FROM zdemo_abap_tab1 INTO TABLE @itab_delete.
     out->write( data = itab_delete name = `itab_delete` ).
+
+**********************************************************************
+
+    "-------- Exploring constructor expressions for internal tables created in place --------
+    "For more information about constructor expressions, see the ABAP Keyword Documentation and the
+    "Constructor Expressions cheat sheet. Many additions are available. The examples show a
+    "selection.
+    DELETE FROM zdemo_abap_tab1.
+
+    "--- VALUE ---
+    "VALUE operator as shown above, creating an internal table in place
+    INSERT zdemo_abap_tab1 FROM TABLE @( VALUE #( ( key_field = 1 char1 = 'aaa' char2 = 'bbb' num1 = 10 num2 = 100 )
+                                                  ( key_field = 2 char1 = 'ccc' char2 = 'ddd' num1 = 20 num2 = 200 ) ) ).
+
+    "FOR LOOP with VALUE
+    DATA(it_f) = VALUE it_type( ( key_field = 3 char1 = 'ee' char2 = 'ff' num1 = 30 num2 = 300 )
+                                ( key_field = 4 char1 = 'gg' char2 = 'hh' num1 = 40 num2 = 400 )
+                                ( key_field = 5 char1 = 'ii' char2 = 'jj' num1 = 50 num2 = 500 ) ).
+
+    "In the example, the internal table from above is looped across. The index value is
+    "stored and used to modify field values of the internal table. In doing so, the modified
+    "internal table values are inserted into the database table.
+    INSERT zdemo_abap_tab1 FROM TABLE @( VALUE #( FOR wa IN it_f INDEX INTO idx ( key_field = wa-key_field
+                                                                                  char1 = wa-char1 && idx
+                                                                                  char2 = wa-char2 && idx
+                                                                                  num1 = wa-num1 + idx
+                                                                                  num2 = wa-num2 + idx ) ) ).
+
+    "Using a constructor expression with VALUE and BASE in an UPDATE statement
+    "The example assumes selecting an entry from a database, modifying it, and updating it again,
+    "but the non-modified entries shall remain unchanged.
+    INSERT zdemo_abap_tab1 FROM @( VALUE #( key_field = 100 char1 = 'xxx' char2 = 'yyy' num1 = 100 num2 = 101 ) ).
+
+    SELECT SINGLE * FROM zdemo_abap_tab1 WHERE key_field = 100 INTO @DATA(read_line).
+    UPDATE zdemo_abap_tab1 FROM @( VALUE #( BASE read_line char2 = '#' num1 = 1 ) ).
+
+    "--- CORRESPONDING ---
+    TYPES: BEGIN OF s1,
+             key_field TYPE i,
+             char1     TYPE c LENGTH 5,
+             num1      TYPE i,
+           END OF s1,
+           it_type_s1 TYPE TABLE OF s1 WITH EMPTY KEY,
+           BEGIN OF s2,
+             key     TYPE i,
+             char    TYPE c LENGTH 5,
+             number1 TYPE i,
+             num2    TYPE p LENGTH 8 DECIMALS 2,
+           END OF s2,
+           it_type_s2 TYPE TABLE OF s2 WITH EMPTY KEY.
+
+    "Identical component names in the internal table
+    "The example includes compatible and convertible types.
+    DATA(it_g) = VALUE it_type_s1( ( key_field = 6 char1 = 'kkk' num1 = 60 )
+                                   ( key_field = 7 char1 = 'lll' num1 = 70 ) ).
+
+    INSERT zdemo_abap_tab1 FROM TABLE @( CORRESPONDING #( it_g ) ).
+    
+    "Non-identical component names in the internal table; using the MAPPING/EXCEPT additions
+    "The example includes compatible and convertible types.
+    DATA(it_h) = VALUE it_type_s2( ( key = 8 char = 'mmm' number1 = 80 num2 = '1.23' )
+                                   ( key = 9 char = 'nnn' number1 = 90 num2 = '4.56' ) ).
+
+    INSERT zdemo_abap_tab1 FROM TABLE @( CORRESPONDING #( it_h MAPPING key_field = key char2 = char num1 = number1 EXCEPT num2 ) ).
+
+    SELECT * FROM zdemo_abap_tab1 INTO TABLE @DATA(itab_constr).
+    out->write( data = itab_constr name = `itab_constr` ).
   ENDMETHOD.
 ENDCLASS.
 ```

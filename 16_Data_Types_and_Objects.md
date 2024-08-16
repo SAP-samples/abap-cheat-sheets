@@ -1081,6 +1081,12 @@ CONSTANTS con_str TYPE string VALUE `hallo`.
 CONSTANTS con_underscores TYPE string VALUE `__________`.
 DATA str_w_con_as_start_value TYPE string VALUE con_underscores.
 
+"Constant structure
+CONSTANTS: BEGIN OF const_struct,
+              int  TYPE i VALUE 1,
+              char TYPE c LENGTH 4 VALUE 'ABAP',
+           END OF const_struct.
+
 "--------------------- Immutable variables --------------------
 FINAL(do_final_inl) = 1.
 DATA(do_data_inl) = 1 + do_final_inl.
