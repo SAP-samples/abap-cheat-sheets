@@ -29,7 +29,7 @@
     - [Dynamic Invoke](#dynamic-invoke)
     - [Dynamic ABAP EML Statements](#dynamic-abap-eml-statements)
     - [Dynamic Formatting Option Specifications in String Templates](#dynamic-formatting-option-specifications-in-string-templates)
-    - [Validating Input for Dynamic Specifications (CL\_ABAP\_DYN\_PRG)](#validating-input-for-dynamic-specifications-cl_abap_dyn_prg)
+  - [Security Considerations in Dynamic Programming Using External Input](#security-considerations-in-dynamic-programming-using-external-input)
   - [Runtime Type Services (RTTS)](#runtime-type-services-rtts)
     - [Getting Type Information at Runtime](#getting-type-information-at-runtime)
       - [RTTI: Attribute Access and Method Calls](#rtti-attribute-access-and-method-calls)
@@ -67,8 +67,11 @@
 
 - Further aspects for dynamic programming in ABAP enter the picture if you want to determine information about data types and data objects at runtime ([RTTI](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrun_time_type_identific_glosry.htm)) or even create them ([RTTC](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrun_time_type_creation_glosry.htm)).
 
-- In general, dynamic programming also comes with some downsides. For example, the ABAP compiler cannot check the dynamic programming feature like the `SELECT` statement mentioned above. There is no syntax warning or suchlike (note the `CL_ABAP_DYN_PRG` class that supports dynamic programming). The checks are performed only at runtime, which has an impact on the performance. Plus, the  testing of [procedures](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenprocedure_glosry.htm "Glossary Entry")
-that include dynamic programming features may be difficult.
+- In general, dynamic programming also comes with some downsides. For example:
+  - The ABAP compiler cannot check the dynamic programming feature like the `SELECT` statement mentioned above. There is no syntax warning or suchlike. 
+  - The checks are performed only at runtime, which has an impact on the performance. 
+  - The testing of [procedures](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenprocedure_glosry.htm "Glossary Entry") that include dynamic programming features may be difficult.
+  - Including external input in dynamic ABAP SQL statements without an appropriate handling, there can be potential security risks. You can, for example, use the `CL_ABAP_DYN_PRG` class to manage security risks.
 
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
@@ -882,7 +885,8 @@ ref4 = CAST #( ref3 ).
 
 Before addressing the content of data objects a data reference points to, you must dereference data reference variables. Use the
 [dereferencing operator](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendereferencing_operat_glosry.htm "Glossary Entry")
-`->*`. To check if dereferencing works, you can use a logical expression with [`IS BOUND`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenlogexp_bound.htm).
+`->*`. To check if dereferencing works, you can use a logical expression with [`IS BOUND`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenlogexp_bound.htm). When dereferencing a data reference variable that has a structured data type, you can use the component selector `->` to address individual components.
+
 
 ``` abap
 "Creating data reference variables and assign values
@@ -1384,6 +1388,7 @@ CREATE DATA dataref TYPE HANDLE tdo_elem.
 
 - [`CREATE OBJECT`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapcreate_object_explicit.htm) statements can be used to create instances of classes by specifying the type dynamically.
 - It assigns the reference to the object to an object reference variable.
+- The `NEW` operator cannot be used to create instances of classes by specifying the type dynamically..
 
 
 ```abap
@@ -2283,60 +2288,412 @@ DATA(s6) = |{ some_string CASE = int_tab[ 1 ] }|. "AbAp
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-### Validating Input for Dynamic Specifications (CL_ABAP_DYN_PRG)
+## Security Considerations in Dynamic Programming Using External Input
 
-You can use the `CL_ABAP_DYN_PRG` class to validate input for dynamic specifications.
-There are several methods for different use cases. See the class documentation (click F2 on the class name in ADT) for more information.
-The following examples show some of those methods. If the validation is successful, the methods in the examples return the input value.
-Otherwise, an exception is raised.
+Dynamic programming techniques can present a security risk, particularly when they incorporate external input. Consider a scenario where a user interface allows users to input values. Dynamic ABAP statements that use this input, such as in ABAP SQL statement clauses, can be vulnerable to SQL injections if the input is not properly checked for malicious content.
+
+It is crucial to perform checks and handle dynamic programming techniques cautiously when including external content. You can use the `CL_ABAP_DYN_PRG` class. If escaping is necessary, you can also and additionally use the built-in function `escape` (which is recommended). The following example illustrates a selection and highlights various aspects. 
+
+For more details, refer to the ABAP Keyword Documentation [here (Standard ABAP documentation)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abendynamic_programming_scrty.htm).
+
+To try the example out, create a demo class named `zcl_some_class` and paste the code into it. After activation, choose *F9* in ADT to execute the class. The example uses  objects of the ABAP cheat sheets repository and is set up to display output in the console.
+It covers the following aspects: 
+- Dynamic `WHERE` clause and specifying the data object holding external input as operand and literal
+- Verifying input for not allowed database table access
+- Verifying input against a given allowlist
+- Potential manipulation of ABAP SQL clauses
+- Escaping
+  
 
 ```abap
-"The following method checks database table names. The name is provided 
-"with the val parameter. The packages formal parameter expects a table 
-"containing the names of packages in which the specified table should be 
-"included. Assuming you provide incorrect input for the table name, or 
-"the table is not contained in the specified packages, you can expect an 
-"exception to be raied.
+CLASS zcl_some_class DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
 
-TRY.
-    DATA(dbtab) = cl_abap_dyn_prg=>check_table_name_tab( 
-      val      = `ZDEMO_ABAP_FLI`
-      packages = VALUE #( ( `TEST_ABAP_CHEAT_SHEETS` ) 
-                          ( `TEST_SOME_PACK` ) ) ).
+  PUBLIC SECTION.
+    INTERFACES if_oo_adt_classrun.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+ENDCLASS.
 
-    SELECT SINGLE * FROM (dbtab) INTO NEW @DATA(ref_wa).
-  CATCH cx_abap_not_a_table cx_abap_not_in_package.
-    ...
-ENDTRY.
 
-"In the following examples, a method is used to check whether
-"the input is allowed or not. For this, you specify an allowlist.
-"Here, the relvant parameter expects a comma-separated list of
-"allowed values.
-TRY.
-    DATA(value1) = cl_abap_dyn_prg=>check_allowlist( 
-        val           = `A`
-        allowlist_str = `A,B,C,D` ).
-    
-    ... "Here might go an ABAP SQL statement with a dynamic specification.
-  CATCH cx_abap_not_in_allowlist.
-    ...
-ENDTRY.
 
-"Another parameter of the method expects an internal table that
-"contains the allowed values.
-TRY.
-    DATA(value2) = cl_abap_dyn_prg=>check_allowlist( 
-        val            = `XYZ`
-        allowlist_htab = VALUE #( ( `A` )
-                                  ( `B` )
-                                  ( `C` )
-                                  ( `D` ) ) ).
-    
-    ... "Here might go an ABAP SQL statement with a dynamic specification.
-  CATCH cx_abap_not_in_allowlist.
-    ...
-ENDTRY.
+CLASS zcl_some_class IMPLEMENTATION.
+
+  METHOD if_oo_adt_classrun~main.
+
+    "Filling demo database tables of the ABAP cheat sheet repository
+    zcl_demo_abap_aux=>fill_dbtabs( ).
+
+    "--------------------------------------------------------------------
+    "--- Specifying the data object holding external input as operand ---
+    "--- and literal ----------------------------------------------------
+    "--------------------------------------------------------------------
+
+    "The example explores a dynamic WHERE clause. External content is used
+    "in the WHERE clause, unchecked.
+
+    "Assuming the data object 'input' holds external input inserted on a UI.
+    DATA(input) = 'LH'.
+
+    "Inserting the input value into a dynamic WHERE clause as literal
+    DATA(cond1) = `CARRID = '` && input && `'`.
+    SELECT SINGLE * FROM zdemo_abap_fli WHERE (cond1) INTO @DATA(db_entry).
+
+    out->write( data = db_entry name = `db_entry` ).
+    out->write( |\n\n| ).
+
+    "Inserting the input value into a dynamic WHERE clause using the data
+    "object name
+    DATA(cond2) = `CARRID = @input`.
+    SELECT SINGLE * FROM zdemo_abap_fli WHERE (cond2) INTO @db_entry.
+
+    out->write( data =  db_entry name = `db_entry` ).
+    out->write( |\n\n| ).
+
+    "Assuming bad input is provided that is unchecked
+    DATA(bad_input) = |LH' AND CONNID = '401|.
+
+    "Inserting the input value as literal
+    "Because of using the value as literal, the WHERE clause
+    "can be manipulated, yielding a potentially different
+    "result, thus posing a security risk.
+    DATA(cond3) = `CARRID = '` && bad_input && `'`.
+    SELECT SINGLE * FROM zdemo_abap_fli WHERE (cond3) INTO @db_entry.
+
+    out->write( data =  db_entry name = `db_entry` ).
+    out->write( |\n\n| ).
+
+    "Inserting the input value using the data object name
+    "In doing so, the WHERE clause becomes erroneous, the ABAP
+    "SQL statement cannot be executed.
+    DATA(cond4) = `CARRID = @bad_input`.
+    TRY.
+        SELECT SINGLE * FROM zdemo_abap_fli WHERE (cond4) INTO @db_entry.
+        out->write( data =  db_entry name = `db_entry` ).
+      CATCH cx_sy_dynamic_osql_error cx_sy_open_sql_data_error INTO DATA(select_error).
+        out->write( select_error->get_text( ) ).
+    ENDTRY.
+    out->write( |\n\n| ).
+    out->write( |{ repeat( val = `*` occ = 70 ) }| ).
+
+    "--------------------------------------------------------------------
+    "------------ Accessing not allowed database tables -----------------
+    "--------------------------------------------------------------------
+    "Assume the name of a database table is specified externally, and a
+    "dynamic ABAP SQL statement uses this name. Potentially, users that
+    "are actually not allowed to access the database table may get access.
+    "The example uses the CL_ABAP_DYN_PRG class that checks a list of
+    "allowed database tables.
+
+    "The following methods check ...
+    "- Database table names
+    "- Whether the database table is contained in a/certain package/s
+    "Assuming you provide incorrect input for the table name, or
+    "the table is not contained in the specified packages, you should
+    "expect an exception to be raied.
+
+    "Assuming the following data object contains external input
+    DATA(input_dbtab_name) = `zdemo_abap_fli`.
+
+    "check_table_name_str method: Specifying a single package
+    TRY.
+        DATA(dbtab) = cl_abap_dyn_prg=>check_table_name_str(
+          val      = to_upper( input_dbtab_name )
+          packages = `ZABAP_CHEAT_SHEETS` ).
+
+        SELECT SINGLE * FROM (dbtab) INTO NEW @DATA(ref_db_entry).
+        out->write( data =  ref_db_entry name = `ref_db_entry` ).
+      CATCH cx_abap_not_a_table cx_abap_not_in_package INTO DATA(error_input_dbtab1).
+        out->write( error_input_dbtab1->get_text( ) ).
+    ENDTRY.
+    out->write( |\n\n| ).
+
+    "check_table_name_tab method: Specifying multiple packages in an internal
+    "table
+    TRY.
+        dbtab = cl_abap_dyn_prg=>check_table_name_tab(
+          val      = to_upper( input_dbtab_name )
+          packages = VALUE #( ( `ZABAP_CHEAT_SHEETS` )
+                              ( `ZSOME_PACKAGE` ) ) ).
+
+        SELECT SINGLE * FROM (dbtab) INTO NEW @ref_db_entry.
+        out->write( data =  ref_db_entry name = `ref_db_entry` ).
+      CATCH cx_abap_not_a_table cx_abap_not_in_package INTO DATA(error_input_dbtab2).
+        out->write( error_input_dbtab2->get_text( ) ).
+    ENDTRY.
+    out->write( |\n\n| ).
+
+    "Not existant database table/invalid name
+    input_dbtab_name = `not_a_dbtab!!`.
+    TRY.
+        dbtab = cl_abap_dyn_prg=>check_table_name_tab(
+          val      = to_upper( input_dbtab_name )
+          packages = VALUE #( ( `ZABAP_CHEAT_SHEETS` )
+                              ( `ZSOME_PACKAGE` ) ) ).
+
+        SELECT SINGLE * FROM (dbtab) INTO NEW @ref_db_entry.
+        out->write( data =  ref_db_entry name = `ref_db_entry` ).
+      CATCH cx_abap_not_a_table cx_abap_not_in_package INTO DATA(error_input_dbtab3).
+        out->write( error_input_dbtab3->get_text( ) ).
+    ENDTRY.
+    out->write( |\n\n| ).
+
+    "Database table not existant in packages specified (assuming you have imported
+    "the ABAP cheat sheet repository, and the database table is available)
+    input_dbtab_name = `zdemo_abap_fli`.
+    TRY.
+        dbtab = cl_abap_dyn_prg=>check_table_name_tab(
+          val      = to_upper( input_dbtab_name )
+          packages = VALUE #( ( `SAP_BASIS` ) ) ).
+
+        SELECT SINGLE * FROM (dbtab) INTO NEW @ref_db_entry.
+        out->write( data =  ref_db_entry name = `ref_db_entry` ).
+      CATCH cx_abap_not_a_table cx_abap_not_in_package INTO DATA(error_input_dbtab4).
+        out->write( error_input_dbtab4->get_text( ) ).
+    ENDTRY.
+    out->write( |\n\n| ).
+    out->write( |{ repeat( val = `*` occ = 70 ) }| ).
+
+    "--------------------------------------------------------------------
+    "------------ Verifying input against a given allowlist  ------------
+    "--------------------------------------------------------------------
+
+    "Assume a SELECT statement dynamically specifies the column names
+    "in the SELECT list. Table columns might be accessed although
+    "they should not be.
+    "You may check against an allowlist.
+
+    "check_allowlist method
+    "In the following examples, a method is used to check whether
+    "the input is allowed or not. For this, you specify an allowlist.
+    "Here, the relevant parameter expects a comma-separated list of
+    "allowed values.
+
+    "Assuming the following data object contains external input
+    DATA(input_col_name) = `carrid`.
+
+    TRY.
+        DATA(value1) = cl_abap_dyn_prg=>check_allowlist(
+            val           = to_upper( input_col_name )
+            allowlist_str = `CARRID,CONNID,FLDATE` ).
+
+        SELECT SINGLE (input_col_name) FROM zdemo_abap_fli INTO NEW @ref_db_entry.
+        out->write( data =  ref_db_entry name = `ref_db_entry` ).
+      CATCH cx_abap_not_in_allowlist INTO DATA(error_allowed1).
+        out->write( error_allowed1->get_text( ) ).
+    ENDTRY.
+    out->write( |\n\n| ).
+
+    "The allowlist_htab formal parameter expects an internal table.
+    input_col_name = `price`.
+    TRY.
+        DATA(value2) = cl_abap_dyn_prg=>check_allowlist(
+            val           = to_upper( input_col_name )
+            allowlist_htab = VALUE #( ( `CARRID` )
+                                      ( `CONNID` )
+                                      ( `FLDATE` ) ) ).
+
+        SELECT SINGLE (input_col_name) FROM zdemo_abap_fli INTO NEW @ref_db_entry.
+        out->write( data =  ref_db_entry name = `ref_db_entry` ).
+      CATCH cx_abap_not_in_allowlist INTO DATA(error_allowed2).
+        out->write( error_allowed2->get_text( ) ).
+    ENDTRY.
+    out->write( |\n\n| ).
+    out->write( |{ repeat( val = `*` occ = 70 ) }| ).
+
+    "--------------------------------------------------------------------
+    "------------ Potential manipulation of ABAP SQL clauses ------------
+    "--------------------------------------------------------------------
+
+    "In the following example, a dynamic WHERE clause is set up. For this,
+    "it is assumed that the WHERE clause uses external input via input fields.
+    "This is represented by the column and value data objects. It is assumed
+    "that column holds the name of the table column, value a dedicated value in
+    "the specified table column.
+    "The cl_abap_dyn_prg class is used to check content in two ways:
+    "- Checking if the provided column name is valid using the check_column_name
+    "  method.
+    "- Using the quote method for putting single quotes around the value and escaping
+    "  single quotes.
+    "In a DO loop, various example inputs are explored. The fourth loop pass includes
+    "bad input without using the quote method. This way, an SQL injection takes
+    "place, yielding a different result. In this case, all database table entries
+    "are retrieved because the WHERE clause is as follows:
+    "CARRID = 'LH' OR CARRID <> 'LH'.
+    "This is prevented using the quote method, resulting in a non-functional SELECT
+    "statement.
+
+    DATA: column TYPE c LENGTH 30,
+          value  TYPE c LENGTH 30.
+
+    DO 4 TIMES.
+      CASE sy-index.
+        WHEN 1.
+          "Working example
+          column = 'carrid'.
+          value = 'lh'.
+        WHEN 2.
+          "Invalid column name
+          column = '?=('.
+          value = 'lh'.
+        WHEN 3.
+          "Bad input, using cl_abap_dyn_prg
+          column = 'carrid'.
+          value = |'LH' OR CARRID <> 'LH'|.
+
+        WHEN 4.
+          "Bad input, not using cl_abap_dyn_prg
+          column = 'carrid'.
+          value = |'LH' OR CARRID <> 'LH'|.
+
+      ENDCASE.
+
+      out->write( |---------- Run { sy-index } ----------| ).
+
+      TRY.
+          cl_abap_dyn_prg=>check_column_name( column ).
+        CATCH cx_abap_invalid_name INTO DATA(error_col_name).
+          out->write( error_col_name->get_text( ) ).
+      ENDTRY.
+
+      DATA(cond_syntax) = to_upper( column ) && ` = ` &&
+      COND #( WHEN sy-index <> 4 THEN cl_abap_dyn_prg=>quote( to_upper( value ) ) ELSE to_upper( value ) ).
+
+      TRY.
+          SELECT *
+                 FROM zdemo_abap_flsch
+                 WHERE (cond_syntax)
+                 INTO TABLE @DATA(itab_flsch).
+
+          out->write( itab_flsch ).
+        CATCH cx_sy_dynamic_osql_error cx_sy_open_sql_data_error INTO DATA(error_select).
+          out->write( error_select->get_text( ) ).
+      ENDTRY.
+
+      out->write( |\n\n| ).
+    ENDDO.
+
+    "Example manipulating the SET clause in an UPDATE statement
+    "Inserting a database table entry to work with in the example
+    INSERT zdemo_abap_carr FROM @( VALUE #( carrid = 'XY' carrname = 'XY Airways' currcode = 'EUR' url = 'some_url'  ) ).
+    SELECT SINGLE * FROM zdemo_abap_carr WHERE carrid = 'XY' INTO @DATA(row4update).
+
+    out->write( data =  row4update name = `row4update` ).
+    out->write( |\n\n| ).
+
+    "Assuming the carrier name is to be changed (that was previously created and retrieved
+    "for demo purposes). The carrier name is provided via external input, represented by
+    "the following data object assignment.
+    DATA(input_carrname) = 'Air XY'.
+
+    "Specifying a potentially dangerous dynamic SET clause by directly using external
+    "input in the clause
+    DATA(dyn_set_clause) = `CARRNAME = '` && input_carrname && `'`.
+
+    UPDATE zdemo_abap_carr
+      SET (dyn_set_clause)
+      WHERE carrid = @row4update-carrid.
+
+    SELECT SINGLE * FROM zdemo_abap_carr WHERE carrid = 'XY' INTO @row4update.
+    out->write( data =  row4update name = `row4update` ).
+    out->write( |\n\n| ).
+
+    "Bad input, not using cl_abap_dyn_prg
+    "In the example, the input is manipulated in a way that also changes
+    "another field value.
+    DATA(bad_input_carrname) = |XY Airways', URL = '#########|.
+    dyn_set_clause = `CARRNAME = '` && bad_input_carrname && `'`.
+
+    UPDATE zdemo_abap_carr
+      SET (dyn_set_clause)
+      WHERE carrid = @row4update-carrid.
+
+    SELECT SINGLE * FROM zdemo_abap_carr WHERE carrid = 'XY' INTO @row4update.
+    out->write( data =  row4update name = `row4update` ).
+    out->write( |\n\n| ).
+
+    "Bad input, using cl_abap_dyn_prg
+    "Undoing the changes for the demo database table row
+    MODIFY zdemo_abap_carr FROM @( VALUE #( carrid = 'XY' carrname = 'XY Airways' currcode = 'EUR' url = 'some_url' ) ).
+    SELECT SINGLE * FROM zdemo_abap_carr WHERE carrid = 'XY' INTO @row4update.
+
+    bad_input_carrname = |XY Airways', URL = '#########|.
+    dyn_set_clause = `CARRNAME = ` && cl_abap_dyn_prg=>quote( bad_input_carrname ).
+
+    TRY.
+        UPDATE zdemo_abap_carr
+          SET (dyn_set_clause)
+          WHERE carrid = @row4update-carrid.
+      CATCH cx_sy_open_sql_data_error INTO DATA(error_set).
+        out->write( error_set->get_text( ) ).
+    ENDTRY.
+
+    out->write( |{ repeat( val = `*` occ = 70 ) }| ).
+
+    "--------------------------------------------------------------------
+    "---------------------------- Escaping ------------------------------
+    "--------------------------------------------------------------------
+
+    "In various contexts, a replacement of special characters may be important.
+    "Such an escaping is applied on characters contained in a string according
+    "to a set of rules.
+
+    "The following example deals with Cross Site Scripting, e.g. manipulating
+    "HTML pages and embedding scripts displayed in a browser. In ABAP, this
+    "enters the picture, for example, when directly dealing with the Internet
+    "Communication Framework.
+    "The built-in function escape can be used to escape content in various contexts.
+    "The cl_abap_dyn_prg class also offers methods to escape. However, the function
+    "is recommended due to performance reasons.
+
+    "Assuming building HTML code by using external input
+    DATA your_name TYPE string.
+    your_name = sy-uname.
+    DATA(html) = `<p>Hello ` && your_name && `!</p>`.
+
+    out->write( data =  html name = `html` ).
+    out->write( |\n\n| ).
+
+    "Embedding potentially malicious scripts into the code
+    your_name = `<script>alert("Hmmm... potentially malicious code!");</script>`.
+    html = `<p>Hello ` && your_name && `!</p>`.
+
+    "Inserted this in an HTML and run in a browser, an alert will be displayed.
+    out->write( data =  html name = `html` ).
+    out->write( |\n\n| ).
+
+    "Escaping may be done as follows
+    "Check the various methods available for escaping with cl_abap_dyn_prg, as well as
+    "the formats in the context of the escape function
+    DATA(esc_js_cl) = `<p>Hello ` && cl_abap_dyn_prg=>escape_xss_javascript( html ) && `!</p>`.
+
+    "Using the built-in function escape
+    DATA(esc_js_fu) = `<p>Hello ` && escape( val = html format = cl_abap_format=>e_xss_js ) && `!</p>`.
+
+    "Further character handling and escaping examples using the cl_abap_dyn_prg class
+    Data(quote) = |10 o'clock|.
+    DATA(handle_quotes) = cl_abap_dyn_prg=>quote( quote ).
+    Data(backtick) = |The character ` is a backtick|.
+    DATA(handle_backtick) = cl_abap_dyn_prg=>quote_str( backtick ).
+    DATA(esc_quotes) = cl_abap_dyn_prg=>escape_quotes( quote ).
+    DATA(esc_backticks) = cl_abap_dyn_prg=>escape_quotes_str( backtick ).
+    "You may also do the escaping using string processing techniques, e.g.
+    "using the replace function.
+    DATA(esc_quotes_replace) = replace( val = quote sub = |'| with = |''| occ = 0 ).
+    DATA(esc_backticks_replace) = replace( val = backtick sub = |`| with = |``| occ = 0 ).
+
+    out->write( data =  esc_js_cl name = `esc_js_cl` ).
+    out->write( data =  esc_js_fu name = `esc_js_fu` ).
+    out->write( data =  handle_quotes name = `handle_quotes` ).
+    out->write( data =  handle_backtick name = `handle_backtick` ).
+    out->write( data =  esc_quotes name = `esc_quotes` ).
+    out->write( data =  esc_backticks name = `esc_backticks` ).
+    out->write( data =  esc_quotes_replace name = `esc_quotes_replace` ).
+    out->write( data =  esc_backticks_replace name = `esc_backticks` ).
+  ENDMETHOD.
+ENDCLASS.
 ```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>

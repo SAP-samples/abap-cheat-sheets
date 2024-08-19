@@ -36,7 +36,7 @@
     - [Using UPDATE](#using-update)
     - [Using MODIFY](#using-modify)
     - [Using DELETE](#using-delete)
-    - [Using of Constructor Expressions in ABAP SQL Statements](#using-of-constructor-expressions-in-abap-sql-statements)
+    - [Using Constructor Expressions in ABAP SQL Statements](#using-constructor-expressions-in-abap-sql-statements)
     - [Example: Exploring ABAP SQL Statements Changing Data in Database Tables](#example-exploring-abap-sql-statements-changing-data-in-database-tables)
     - [RAP-Specific ABAP SQL Variants](#rap-specific-abap-sql-variants)
   - [More Information](#more-information)
@@ -1997,12 +1997,6 @@ UPDATE dbtab FROM TABLE @itab.
 UPDATE dbtab FROM TABLE @( VALUE #( ( comp1 = ... comp2 = ... )
                                     ( comp1 = ... comp2 = ... ) ) ).
 
-"Excursion: Constructor expression with VALUE and BASE
-"The example assumes selecting an entry from a database, modifying it, and 
-"updating it again, but the non-modified entries shall remain unchanged.
-SELECT SINGLE * FROM dbtab WHERE key = ... INTO @DATA(read_line).
-UPDATE dbtab FROM @( VALUE #( BASE read_line comp2 = ... comp4 = ... ) ).
-
 "-------------------------- SET addition --------------------------
 "Changing values of specific fields without overwriting other, non-specified 
 "fields
@@ -2021,7 +2015,7 @@ UPDATE dbtab SET comp2 = 'X', comp3 = 'Y' WHERE comp4 > 100.
 "Changing values of specific fields in a single database table entry 
 "Assume the entry can be uniquely identified by specifying key values
 "in the WHERE clause
-UPDATE dbtab SET comp2 = 'X' WHERE key1 = 'Y'.
+UPDATE dbtab SET comp2 = 'X' WHERE key_field = 'Y'.
 
 "--------------- INDICATORS ... SET STRUCTURE addition ---------------
 "Similar to SET, using the INDICATORS ... addition, you  can change content 
@@ -2106,7 +2100,7 @@ DELETE dbtab FROM TABLE @( VALUE #( ( comp1 = ... )
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-### Using of Constructor Expressions in ABAP SQL Statements
+### Using Constructor Expressions in ABAP SQL Statements
 
 [Constructor expressions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconstructor_expression_glosry.htm) can be very handy in ABAP SQL statements. 
 For more information about constructor expressions, see the ABAP Keyword Documentation and the [Constructor Expressions cheat sheet](05_Constructor_Expressions.md). Many additions are available. 
@@ -2120,7 +2114,7 @@ INSERT dbtab FROM TABLE @( VALUE #( ( key_field = 1 comp1 = ... )
                                     ( key_field = 3 comp1 = ... ) ) ).
 
 "Inserting a table row from a row created in place
-"INSERT dbtab FROM @( VALUE #( key_field = 4 comp1 = ... ) ).
+INSERT dbtab FROM @( VALUE #( key_field = 4 comp1 = ... ) ).
 
 
 "FOR LOOP with VALUE
@@ -2129,12 +2123,12 @@ DATA(it) = VALUE some_it_type( ( key_field = 5 comp1 = ... )
                                 ( key_field = 7 comp1 = ... ) ).
 
 "In the following example, the internal table from above is looped across. You
-"can imagine modifying the components when mapping the fields (as inidicated by the
-"concatentation in the example). In doing so, the internal table values are modified
-"(or not) and inserted into the database table.
+"can imagine modifying the components (or not) when mapping the fields (as indicated 
+"by the concatentation in the example). In doing so, the internal table values may or 
+"may be not modified and inserted into the database table.
 INSERT dbtab FROM TABLE @( VALUE #( FOR wa IN it ( key_field = wa-key_field
-                                                    comp1 = wa-comp1 && 'XYZ'
-                                                    ... ) ) ).
+                                                   comp1 = wa-comp1 && 'XYZ'
+                                                   ... ) ) ).
 
 "Using a constructor expression with VALUE and BASE in an UPDATE statement
 "The example assumes selecting an entry from a database, modifying it, and updating it again,

@@ -2689,7 +2689,7 @@ ENDCLASS.
 
 #### Excursion: Restrictions Regarding Selecting from Internal Tables 
 
-- This excursion is intended to underscore the restricitions mentioned above and in the [documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensql_engine_restr.htm) in more detail when selecting from internal tables. 
+- This excursion is intended to underscore the restrictions mentioned above and in the [documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensql_engine_restr.htm) in more detail when selecting from internal tables. 
 - Components having deep types, such as strings, cannot be included, for example, in the `SELECT` list or `WHERE` clause. 
 - Note that only those fields are checked (and sent to the database) that are actually used (as shown in the example below). 
 - However, the type string is allowed if it is declared using the built-in dictionary type `sstring` (for example, a component typed with a [data element](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendata_element_glosry.htm) or a [CDS simple type](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_simple_type_glosry.htm) that uses `sstring`).

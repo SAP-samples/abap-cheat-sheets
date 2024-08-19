@@ -4,7 +4,7 @@
 
 - [Misc ABAP Classes](#misc-abap-classes)
   - [Excursion: Available Classes in ABAP for Cloud Development](#excursion-available-classes-in-abap-for-cloud-development)
-  - [Creating UUIDs](#creating-uuids)
+  - [Creating and Transforming UUIDs](#creating-and-transforming-uuids)
   - [Displaying Output in the ADT Console](#displaying-output-in-the-adt-console)
   - [RAP](#rap)
   - [Transactional Consistency](#transactional-consistency)
@@ -58,7 +58,7 @@ SELECT ReleasedObjectType, ReleasedObjectName, ReleaseState
   INTO TABLE @DATA(released_classes).
 ```
 
-## Creating UUIDs
+## Creating and Transforming UUIDs
 
 <table>
 <tr>
@@ -71,13 +71,31 @@ Creating and and converting system UUIDs with various algorithms
 <br><br>
 
 ``` abap
-"Generating UUIDs in binary format (16 bytes)
+"Creating UUIDs in binary format (16 bytes)
 TRY.
     DATA(uuid) = cl_system_uuid=>create_uuid_x16_static( ) .
   CATCH cx_uuid_error.
 ENDTRY.
 
 "e.g. B2B012691AC31EDEADA0A495A7130961
+``` 
+
+</td>
+</tr>
+<tr>
+<td> <code>XCO_CP_UUID</code> </td>
+<td>
+Transforming between different UUID formats
+<br><br>
+
+``` abap
+DATA(uuid_c36) = xco_cp_uuid=>format->c36->to_uuid( '7cd44fff-036a-4155-b0d2-f5a4dfbcee92' ).
+
+"7CD44FFF036A4155B0D2F5A4DFBCEE92
+DATA(uuid_c36_to_c32) =  CONV sysuuid_c32( xco_cp_uuid=>format->c32->from_uuid( uuid_c36 ) ).
+
+"7cd44fff-036a-4155-b0d2-f5a4dfbcee92
+DATA(uuid_c32_to_c36) = to_lower( CONV sysuuid_c36( xco_cp_uuid=>format->c36->from_uuid( uuid_c36 ) ) ).
 ``` 
 
 </td>
@@ -601,6 +619,7 @@ DATA(chars) = 'ABAP   '.
 cl_abap_string_utilities=>c2str_preserving_blanks( EXPORTING source = chars 
                                                    IMPORTING dest   = DATA(str_w_blanks) ).
 "`ABAP   `
+
 DATA(str_no_blanks) = CONV string( chars ).
 "`ABAP`
 ``` 
@@ -2089,7 +2108,7 @@ ENDCLASS.
 <tr>
 <td> <code>CL_BALI_LOG</code> </td>
 <td>
-For creating and reading application logs. Refer to <a href="https://help.sap.com/docs/btp/sap-business-technology-platform/application-logs">this documentation</a> for more information and code snippets.
+For creating and reading application logs. Refer to <a href="https://help.sap.com/docs/btp/sap-business-technology-platform/application-logs">this documentation</a> for more information and code snippets. Note that there is also an XCO module available dealing with business application log (<code>XCO_CP_BAL</code>; see <a href="https://help.sap.com/docs/btp/sap-business-technology-platform/business-application-log">this documentation</a>).
 <br><br>
 
 ``` abap
@@ -2631,7 +2650,7 @@ ENDCLASS.
 
 The XCO library offers classes (`XCO_CP_XLSX` and others) and methods for reading and writing XLSX content. You can find more information [here](https://help.sap.com/docs/btp/sap-business-technology-platform/xlsx). The following example demonstrates a selection of  methods and includes the following steps:
 
-- Importing an existing XLSX content into your SAP BTP ABAP Environment system (not related to the XCO library; just to have content to work with in the self-contained example below)
+- Importing existing XLSX content into your SAP BTP ABAP Environment system (not related to the XCO library; just to have content to work with in the self-contained example below)
   - This is a simplified, nonsemantic, and explorative RAP example (not delving into RAP as such; just using various ABAP repository objects related to RAP) solely for importing XLSX content to work with in the example. 
   - ⚠️ Note the repository's readme file for disclaimer and the [documentation](https://help.sap.com/docs/btp/sap-business-technology-platform/xlsx-read-access) for security considerations when importing and processing external content.
   - The import is done using an automatically created SAP Fiori Elements app preview, which provides a simple UI for uploading local XLSX content.
@@ -3103,7 +3122,7 @@ CLASS zcl_some_class IMPLEMENTATION.
     "---- explore the new XLSX content (without considering RAP-related    ----
     "---  things and other database table fields such as the time stamps). ----
 
-    out->write( `-------------------- Read Write to XLSX content --------------------` ).
+    out->write( `-------------------- Write XLSX content --------------------` ).
     out->write( |\n\n| ).
 
     "Creating a new XLSX document
@@ -3186,7 +3205,7 @@ CLASS zcl_some_class IMPLEMENTATION.
     DATA(file_content) = write_xlsx->get_file_content( ).
 
     "In this example, the uploaded XLSX content is replaced by the newly created
-    "XLSX content by just updating the file content field. It is just for demonstration
+    "XLSX content by just updating the file_content field. It is just for demonstration
     "purposes as commented above. 
     "If you have created the SAP Fiori Elements preview app, you can download the XLSX file.
     "To do so, access the app via the service binding as described. Find the entry with the

@@ -51,7 +51,7 @@ ABAP cheat sheets[^1] ...
 - [Here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrestricted_abap_elements.htm) is an overview of the different ABAP language elements in the different ABAP versions, i.e. what is allowed in ABAP Cloud and what is not. See also the released APIs [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenreleased_apis.htm).
 - In order to have all ABAP cheat sheet documents in one place, the *main* branch (for examples to be imported into the SAP BTP ABAP environment) also contains the ABAP cheat sheet documents that are only relevant for classic ABAP. 
 - The example classes contained in the branches for classic ABAP mostly use syntax that is also available in ABAP for Cloud Development. Only the  `TEST_ABAP_CHEAT_SHEETS_CLASSIC` subpackage contains syntax relevant to Standard ABAP and that is not available in ABAP for Cloud Development, such as dynpro-related ABAP keywords.
-- The code snippets in the ABAP cheat sheet documents and the executable examples include many comments. While it is generally not recommended to overuse comments in your code, they are used here to educate, explain, and provide context directly where it is needed. In some cases, they illustrate the results of ABAP statements.
+- The code snippets in the ABAP cheat sheet documents and the executable examples include many comments. While it is generally not recommended to overuse comments in your code, they are used here to explain and provide context directly where it is needed. In many cases, they illustrate the results of ABAP statements.
 </details>
 
 <br>
@@ -96,8 +96,8 @@ ABAP cheat sheets[^1] ...
 
 ## 🎬 Getting Started with the Examples
 
-The main focus of the ABAP Cheat Sheets is ABAP for Cloud Development. The examples in the *main* branch of the repository are designed to be imported into the SAP BTP ABAP environment.
-For Standard ABAP, you can find examples in the other branches of the repository that you can import into your sandbox SAP system. Just select the appropriate version (*v757* stands for ABAP version 7.57). Check the information in the following collapsible sections for your system environment and perform the required steps.
+The main focus of the ABAP cheat sheets is ABAP for Cloud Development. The examples in the *main* branch of the repository are designed to be imported into the SAP BTP ABAP environment.
+For Standard ABAP, you can find examples in the other branches of the repository (note that except for specific examples, the example code there uses syntax that is also availabe in ABAP for Cloud Development) that you can import into your sandbox SAP system. Just select the appropriate version (*v757* stands for ABAP version 7.57). Check the information in the following collapsible sections for your system environment and perform the required steps.
 
 <details>
   <summary>1) General info</summary>
@@ -122,7 +122,7 @@ For Standard ABAP, you can find examples in the other branches of the repository
 
 **Import Code**
 
-Use the abapGit plug-in to install the <em>ABAP Cheat Sheets</em> by carrying out the following steps:
+Use the abapGit plug-in to install the <em>ABAP cheat sheets</em> by carrying out the following steps:
 
 1. In your ABAP cloud project, create a package, for example, *ZABAP_CHEAT_SHEETS* as the target package. It is recommended that you assign the package to a transport request that is suitable for demo content.
 2. Add the package to the *Favorite Packages* in the *Project Explorer* view in ADT.

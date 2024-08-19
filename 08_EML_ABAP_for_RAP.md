@@ -1715,7 +1715,8 @@ contains all relevant components for the chosen scenario.
 > **💡 Note**<br>
 > Assignment of Key Component Groups
 > 
-> As a general best practice, you should use a RAP BO instance key component group when referring to the entire key, rather than listing the individual key fields. It is  recommended that you use `%tky` whenever possible. 
+> As a general best practice, you should use a RAP BO instance key component group when referring to the entire key, rather than listing the individual key fields. It is recommended that you use `%tky` whenever possible. 
+> - Avoid specifying multiple keys. For example, check the F2 information to understand what is included in the component groups to avoid redundancy. You should avoid specifying a component group and a key separately if the group already includes that key.
 > In the following cases, type compatibility cannot be guaranteed in component group assignments:
 > - Mixing key component groups when they refer to the same RAP BO entity, e.g. `wa-%tky = wa-%key`. Such an assignment should also be avoided when both component groups have an identical scope in terms of components (e.g. `%tky` and `%key` in non-late-numbering and non-draft scenarios).
 > - Mixing the same key component groups when referring to two different RAP BO entities, for example, `wa_root-%tky = wa_child-%tky`. In this case, adding more components later may cause syntax errors for an assignment that worked previously.
