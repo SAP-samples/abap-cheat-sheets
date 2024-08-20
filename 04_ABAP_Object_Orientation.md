@@ -15,15 +15,17 @@
       - [Methods](#methods)
       - [Parameter Interface](#parameter-interface)
       - [Constructors](#constructors)
+      - [Example for Method Definitions](#example-for-method-definitions)
   - [Working with Objects and Components](#working-with-objects-and-components)
     - [Declaring Object Reference Variables](#declaring-object-reference-variables)
     - [Creating Objects](#creating-objects)
     - [Working with Reference Variables](#working-with-reference-variables)
     - [Accessing Attributes](#accessing-attributes)
     - [Calling Methods](#calling-methods)
+      - [Excursion: Inline Declarations, Returning Parameters](#excursion-inline-declarations-returning-parameters)
     - [Method Chaining](#method-chaining)
     - [Self-Reference me](#self-reference-me)
-    - [Example Class](#example-class)
+    - [Excursion: Example Class](#excursion-example-class)
   - [Inheritance](#inheritance)
     - [Additions: ABSTRACT and FINAL](#additions-abstract-and-final)
     - [Redefining Methods](#redefining-methods)
@@ -33,6 +35,7 @@
     - [Defining Interfaces](#defining-interfaces)
     - [Implementing Interfaces](#implementing-interfaces)
     - [Interface Reference Variables and Accessing Objects](#interface-reference-variables-and-accessing-objects)
+    - [Excursion: Example Interface](#excursion-example-interface)
   - [Excursions](#excursions)
     - [Friendship](#friendship)
       - [Friendship between Global and Local Classes](#friendship-between-global-and-local-classes)
@@ -343,10 +346,7 @@ ENDCLASS.
 
 ### Visibility of Components
 
-In the class declaration part, you must specify (at least one of the) three
-[visibility
-sections](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenvisibility_section_glosry.htm "Glossary Entry")
-and include class components to define their visibility. These visibility sections serve the purpose of encapsulation in ABAP Objects. For example, you do not want to make certain components publicly available for all users. The visibility sections are as follows:
+In the class declaration part, you specify three [visibility sections](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenvisibility_section_glosry.htm "Glossary Entry") and include class components to define their visibility. These visibility sections serve the purpose of encapsulation in ABAP Objects. For example, you do not want to make certain components publicly available for all users. The visibility sections are as follows:
 
 <table>
 <tr>
@@ -590,7 +590,9 @@ In the simplest form, methods can have no parameter at all. Apart from that, met
     instantiated and an instance is created.
     - Can have `IMPORTING` parameters and raise exceptions.
 
-**Example for method definitions** 
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+#### Example for Method Definitions 
 
 The following snippet shows
 multiple method definitions in the public section of a global class. Most of the formal
@@ -898,6 +900,125 @@ class_name=>meth( EXPORTING i = j k = l RECEIVING m = DATA(n) ).
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
+#### Excursion: Inline Declarations, Returning Parameters
+
+- The example code below highlights the convenience of inline declarations when defining target data objects for output parameters. 
+- This approach allows you to create data objects on the spot, eliminating the need for additional helper variables. 
+- It also mitigates the risk of type mismatches. 
+- However, when declaring a method with both exporting and returning parameters, it is not possible to specify target data objects for both inline at the same time in case of functional method calls. 
+- Additional code snippets illustrate various ways to use methods declared with returning parameters in expression positions.
+
+```abap
+CLASS zcl_some_class DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
+
+  PUBLIC SECTION.
+    INTERFACES if_oo_adt_classrun.
+    CLASS-METHODS meth1 IMPORTING i_str        TYPE string
+                                  i_tab        TYPE string_table OPTIONAL
+                        EXPORTING e_dec        TYPE decfloat34
+                                  e_tab        TYPE string_table
+                        RETURNING VALUE(r_int) TYPE i.
+    CLASS-METHODS meth2 RETURNING VALUE(r_tab) TYPE string_table.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+
+ENDCLASS.
+
+
+CLASS zcl_some_class IMPLEMENTATION.
+
+  METHOD if_oo_adt_classrun~main.    
+    "Note: Calling the method in the same class means specifying 'zcl_some_class=>' is optional here.
+
+    "Standalone method call
+    "Specifying target data objects for all output parameters
+    "Inline declarations are handy because you can create an
+    "appropriately typed data object in place. No need to
+    "create an extra variable, check on the type etc.
+    zcl_some_class=>meth1(
+      EXPORTING
+        i_str = `ABAP`
+      IMPORTING
+        e_dec = DATA(a)
+        e_tab = DATA(b)
+      RECEIVING
+        r_int = DATA(c)
+    ).
+
+    "Functional method call
+    "The target data object of the returning parameter is specified on the left side of an assignment.
+    "Note: In this case, you cannot specify inline declarations for the exporting parameters.
+    DATA e TYPE decfloat34.
+    DATA f TYPE string_table.
+    DATA(g) = zcl_some_class=>meth1(
+      EXPORTING
+        i_str = `ABAP`
+      IMPORTING
+        "e_dec = DATA(h)
+        "e_tab = DATA(i)
+        e_dec = e
+        e_tab = f
+    ).
+
+    "Benefits of returning parameters: They can, for example, be used in expressions
+    "The following snippets show a selection (and ignore the available exporting
+    "parameters).
+
+    CASE zcl_some_class=>meth1( i_str = `ABAP` ).
+      WHEN 0. ...
+      WHEN 1. ...
+      WHEN OTHERS. ...
+    ENDCASE.
+
+    IF zcl_some_class=>meth1( i_str = `ABAP` ) > 5.
+      ...
+    ELSE.
+      ...
+    ENDIF.
+
+    "IF used with a predicative method call
+    "The result of the relational expression is true if the result of the functional
+    "method call is not initial and false if it is initial. The data type of the result
+    "of the functional meth1od call, i. e. the return value of the called function method,
+    "is arbitrary. A check is made for the type-dependent initial value.
+    IF zcl_some_class=>meth1( i_str = `ABAP` ).
+      ...
+    ELSE.
+      ...
+    ENDIF.
+
+    DO zcl_some_class=>meth1( i_str = `ABAP` ) TIMES.
+      ...
+    ENDDO.
+
+    "Method call result as actual parameter
+    DATA(j) = zcl_some_class=>meth1( i_str = `ABAP` i_tab = zcl_some_class=>meth2( ) ).
+
+    "Examples of returning parameters typed with a table type
+    LOOP AT zcl_some_class=>meth2( ) INTO DATA(wa1).
+      ...
+    ENDLOOP.
+
+    READ TABLE zcl_some_class=>meth2( ) INTO DATA(wa2) INDEX 1.
+
+  ENDMETHOD.
+  
+  METHOD meth1.
+    ... "Method implementation
+  ENDMETHOD.
+
+  METHOD meth2.
+    ... "Method implementation
+  ENDMETHOD.
+
+ENDCLASS.
+```
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
 ### Method Chaining
 
 As shown in the previous example, method chaining is possible for functional method calls (i.e. methods that have exactly one return value declared with `RETURNING`) at appropriate read positions. In this case, the method's return value is used as an ABAP operand.
@@ -985,7 +1106,7 @@ ENDMETHOD.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-### Example Class
+### Excursion: Example Class
 
 The commented example class below explores various aspects covered in the previous sections. You can create a demo class called `zcl_demo_test` and copy and paste the following code. Once activated, you can choose *F9* in ADT to run the class. The example is designed to display output in the console that shows the result of calling different methods.
 
@@ -2017,9 +2138,9 @@ ENDINTERFACE.
     implement the methods of the interface. The implementation is then relevant for a subclass inheriting from a superclass that includes
     such an interface declaration. Note that the whole class must be abstract.
     - The additions [`FINAL METHODS`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapinterfaces_class.htm) followed by method names or [`ALL METHODS FINAL`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapinterfaces_class.htm) for the `INTERFACES` statement in the declaration part of classes flag the method(s) as final.
-- In the interface, methods can mark their implementation as optional using the additions [`DEFAULT
-    IGNORE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapmethods_default.htm)
-    or [`DEFAULT FAIL`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapmethods_default.htm).
+- In the interface, methods can mark their implementation as optional using the additions [`DEFAULT IGNORE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapmethods_default.htm) or [`DEFAULT FAIL`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapmethods_default.htm).
+  - `DEFAULT IGNORE`: When a method with such a declaration is called without an implementation, it behaves as though no implementation exists.
+  - `DEFAULT FAIL`: If an unimplemented method is called, it triggers the `CX_SY_DYN_CALL_ILLEGAL_METHOD` exception.
 
 
 Syntax for using interfaces in classes:
@@ -2044,7 +2165,7 @@ CLASS class IMPLEMENTATION.
   ...
 ENDCLASS.
 
-"Abstract class
+"----------------------- Abstract class -----------------------
 CLASS cl_super DEFINITION ABSTRACT.
   PUBLIC SECTION.
     INTERFACES intf ALL METHODS ABSTRACT.
@@ -2137,6 +2258,206 @@ i_ref = NEW class( ).
 "Plus, it can be addressed using the following pattern
 ... intf=>const ...
 ```
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+### Excursion: Example Interface
+
+Expand the following collapsible section to view the code of an example. To try it out, create a demo interface named `zif_some_interface`, a class named `zcl_some_class`, and paste the code into the artifacts. After activation, choose *F9* in ADT to execute the class. The example is set up to display output in the console.
+
+<details>
+  <summary>Expand to view the details</summary>
+  <!-- -->
+<br>
+
+Example interface:
+```abap
+INTERFACE zif_some_interface
+  PUBLIC .
+
+  TYPES c3 type c length 3.
+  DATA add_result TYPE i.
+  CLASS-DATA: subtr_result TYPE i.
+  METHODS addition IMPORTING num1          TYPE i
+                             num2          TYPE i.
+  CLASS-METHODS subtraction IMPORTING num1          TYPE i
+                                      num2          TYPE i.
+
+  METHODS meth_ignore DEFAULT IGNORE returning value(int) type i.
+  METHODS meth_fail DEFAULT FAIL returning value(int) type i.
+
+ENDINTERFACE.
+```
+
+When you have activated the interface, create the class. The following steps comment on various things.
+
+Example class implementations:
+
+1) 
+- When you create the class, you can add `INTERFACES zif_some_interface.` to the public visibility section.
+- Using the quick fix in ADT, you can automatically add the method implementation skeletons of the interface methods.
+- Note that the interface methods declared with `DEFAULT IGNORE` and `DEFAULT FAIL` are not automatically added. If implementations are desired, you can manually add the implementations for these methods. See the following step.
+- The example class also implements the interface `if_oo_adt_classrun`.
+
+```abap
+CLASS zcl_some_class DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
+
+  PUBLIC SECTION.
+    INTERFACES if_oo_adt_classrun.
+    INTERFACES zif_some_interface.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+
+ENDCLASS.
+
+
+CLASS zcl_some_class IMPLEMENTATION.
+
+  METHOD if_oo_adt_classrun~main.
+  ENDMETHOD.
+
+  METHOD zif_some_interface~addition.
+  ENDMETHOD.
+
+  METHOD zif_some_interface~subtraction.
+  ENDMETHOD.
+
+ENDCLASS.
+```
+
+2) 
+- Adding the implementations for the interface methods declared with `DEFAULT IGNORE` and `DEFAULT FAIL`.
+
+```abap
+CLASS zcl_some_class DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
+
+  PUBLIC SECTION.
+    INTERFACES if_oo_adt_classrun.
+    INTERFACES zif_some_interface.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+
+ENDCLASS.
+
+
+CLASS zcl_some_class IMPLEMENTATION.
+
+  METHOD if_oo_adt_classrun~main.
+  ENDMETHOD.
+
+  METHOD zif_some_interface~addition.
+  ENDMETHOD.
+
+  METHOD zif_some_interface~subtraction.
+  ENDMETHOD.
+
+  METHOD zif_some_interface~meth_fail.
+  ENDMETHOD.
+
+  METHOD zif_some_interface~meth_ignore.
+  ENDMETHOD.
+
+ENDCLASS.
+``` 
+
+3) 
+- The following example class represents an exectuable example that displays output in the ADT console. 
+- Apart from simple demo implementations, it includes alias names specified for interface components.
+- The interface methods declared with `DEFAULT IGNORE` and `DEFAULT FAIL` are intentionally not implemented, but the methods are nevertheless called. 
+   - Interface method declared with `DEFAULT IGNORE`: No implementation available, and no value is assigned for the returning parameter. Therefore, the value is initial. 
+   - Interface method declared with `DEFAULT FAIL`: If the exception is not caught, a runtime error occurs.
+- The example demonstrates method calls using object and interface reference variables.
+
+```abap
+CLASS zcl_some_class DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
+
+  PUBLIC SECTION.
+    INTERFACES if_oo_adt_classrun.
+    INTERFACES zif_some_interface.
+    ALIASES res FOR zif_some_interface~add_result.
+    ALIASES add FOR zif_some_interface~addition.
+    ALIASES subtr FOR zif_some_interface~subtraction.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+ENDCLASS.
+
+
+CLASS zcl_some_class IMPLEMENTATION.
+
+  METHOD if_oo_adt_classrun~main.
+
+    "Examples using an object reference variable
+    DATA(oref) = NEW zcl_some_class( ).
+
+    oref->add( num1 = 1 num2 = 2 ).
+    DATA(res1) = oref->res.
+    out->write( res1 ).
+
+    oref->subtr( num1 = 1 num2 = 2 ).
+    DATA(res2) = oref->zif_some_interface~subtr_result.
+    out->write( res2 ).
+
+    "Referring to a type declared in the interface
+    DATA char_a TYPE zif_some_interface~c3.
+    DATA char_b TYPE zif_some_interface=>c3.
+
+    "Calling non-implemented methods
+    DATA(int_ig_a) = oref->zif_some_interface~meth_ignore( ).
+    ASSERT int_ig_a = 0.
+
+    TRY.
+        DATA(int_fl_a) = oref->zif_some_interface~meth_fail( ).
+      CATCH cx_sy_dyn_call_illegal_method INTO DATA(error).
+        out->write( error->get_text( ) ).
+    ENDTRY.
+
+    "Similar examples using an interface reference variable
+    DATA iref TYPE REF TO zif_some_interface.
+    iref = NEW zcl_some_class( ).
+
+    iref->addition( num1 = 3 num2 = 5 ).
+    DATA(res3) = iref->add_result.
+    out->write( res3 ).
+
+    iref->subtraction( num1 = 3 num2 = 5 ).
+    DATA(res4) = iref->subtr_result.
+    out->write( res4 ).
+
+    "Referring to a type declared in the interface
+    DATA char_c TYPE iref->c3.
+
+    "Calling non-implemented methods
+    DATA(int_ig_b) = iref->meth_ignore( ).
+    ASSERT int_ig_b = 0.
+
+    TRY.
+        DATA(int_fl_b) = iref->meth_fail( ).
+      CATCH cx_sy_dyn_call_illegal_method INTO error.
+        out->write( error->get_text( ) ).
+    ENDTRY.
+  ENDMETHOD.
+
+  METHOD add.
+    res = num1 + num2.
+  ENDMETHOD.
+
+  METHOD subtr.
+    zif_some_interface~subtr_result = num1 - num2.
+  ENDMETHOD.
+ENDCLASS.
+```
+
+
+</details>  
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 

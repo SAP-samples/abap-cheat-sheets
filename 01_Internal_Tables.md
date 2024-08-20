@@ -5,7 +5,7 @@
 - [Internal Tables](#internal-tables)
   - [Introduction](#introduction)
   - [Basic Properties of Internal Tables](#basic-properties-of-internal-tables)
-  - [Table Keys in Internal Tables (Primary, Secondary, Standard, Empty)](#table-keys-in-internal-tables-primary-secondary-standard-empty)
+  - [Table Keys (Primary, Secondary, Standard, Empty) and Table Indexes](#table-keys-primary-secondary-standard-empty-and-table-indexes)
   - [Creating Internal Tables and Types](#creating-internal-tables-and-types)
   - [Populating Internal Tables](#populating-internal-tables)
     - [Copying Internal Tables](#copying-internal-tables)
@@ -128,7 +128,7 @@ Internal Tables ...
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-## Table Keys in Internal Tables (Primary, Secondary, Standard, Empty)
+## Table Keys (Primary, Secondary, Standard, Empty) and Table Indexes
 
 <details>
   <summary>Expand to view the details</summary>
@@ -144,7 +144,7 @@ Internal Tables ...
 - Note that the key fields in sorted and hashed tables are read-only. This is not valid for standard tables.
 - The specification of the primary key can be omitted only for standard tables. The primary table key is then automatically defined as a non-unique standard key.
 - The primary table key has the predefined name `primary_key`, by which it can also be addressed explicitly. However, its use is optional, and it is usually not necessary to specify it explicitly. You can also specify an alias name for the primary key. 
-- When accessing internal tables using the table key, the primary key is always used implicitly in processing statements if no secondary key is specified. Note that the primary table key must be specified  in table expressions if the primary key is to be used explicitly.
+- When accessing internal tables using the table key, the primary key is always used implicitly in processing statements if no secondary key is specified. Note that the primary table key must be specified in table expressions if the primary key is to be used explicitly.
 
 > **💡 Note**<br>
 > The key can consist of individual key fields or the entire line of the internal table. In this case, the pseudo component `table_line` can be used to denote the primary table key. For non-structured line types, this is the only way to define the key.
@@ -175,13 +175,18 @@ Internal Tables ...
         if an unstructured line type is tabular.
     - Note: When using an [inline declaration](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abeninline_declaration_glosry.htm "Glossary Entry") such as `... INTO TABLE @DATA(itab) ...` in `SELECT` statements, the resulting table is a standard table and has an empty key.
 
+> **💡 Primary table index**<br>
+> - Index tables, such as sorted and standard tables, have a primary table index. 
+> - Each table line receives a unique line number from the primary table index. 
+> - The index updates each time a line is added or removed. 
+
 **Secondary table keys**
 
 - Secondary table keys ...
   - are optional for all table categories.
   - can be unique/non-unique sorted keys or unique hash keys.
   - have a self-defined name. An alias name can also be specified.
-- A secondary table index is created internally for each sorted secondary key. This allows index access to hashed tables via the secondary table key. In this case, `sy-tabix` is set.
+- A [secondary table index](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensecondary_table_index_glosry.htm) is created internally for each sorted secondary key. This allows index access to hashed tables via the secondary table key. In this case, `sy-tabix` is set.
 - When accessing internal tables using the secondary table key, the key name (or the alias if specified) must be specified. They are not selected automatically. If no secondary key is specified in a processing statement, the primary key or primary table index is always used. If you want to make use of this key in ABAP statements, for example, `READ`, `LOOP AT` or `MODIFY` statements, you must specify the key explicitly using the appropriate additions, for example, `WITH ... KEY ... COMPONENTS` or `USING KEY`.
 - Use cases:
   - To improve read performance.
@@ -193,7 +198,7 @@ Internal Tables ...
 
 > **💡 Note**<br>
 > - See examples of internal table declarations using the table keys mentioned above in the following section.
-> - See an example that uses secondary table keys [below](#improving-read-performance-with-secondary-table-keys).
+> - See more information and examples that focus on table access using keys and index below.
  
 </details>
 
@@ -3927,7 +3932,7 @@ REPLACE ALL OCCURRENCES OF `Z`
 ### Ranges Tables
 
 - Internal tables that have the predefined columns `SIGN`, `OPTION`, `LOW`, and `HIGH` 
-  - `SIGN`: type c with length 1; indicates whether each line is included ('I') or excluded ('E') from the result set.
+  - `SIGN`: type c with length 1; indicates whether each line is included (`I`) or excluded (`E`) from the result set.
   - `OPTION`: type c with length 2; specifies the selection option for the condition. It uses comparison operators such as `EQ`, `NE`, `GE`, `GT`, `LE`, `LT`, `CP`, `NP`, `BT`, `NB`. Special rules apply for certain operators such as when using `CP` or `NP`, the `LOW` and `HIGH` columns must be character values.
   - `LOW`: The lower comparison value.
   - `HIGH`: The higher comparison value.

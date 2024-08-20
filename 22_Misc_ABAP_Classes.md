@@ -558,10 +558,8 @@ ENDTRY.
 DATA(len_xstr_decomp) = xstrlen( xstr_decomp ). "101
 DATA(conv_str) = cl_abap_conv_codepage=>create_in( )->convert( xstr_decomp ).
 
-DATA(is_equal) = COND #( WHEN len_xstr = len_xstr_decomp
-                         AND str = conv_str
-                         THEN 'X'
-                         ELSE '' ). "Result: X
+"abap_true
+DATA(is_equal) = xsdbool( len_xstr = len_xstr_decomp AND str = conv_str ). 
 
 "------- (De)compressing character strings -------
 DATA zipped TYPE xstring.

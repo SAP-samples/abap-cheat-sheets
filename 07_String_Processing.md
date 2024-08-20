@@ -21,7 +21,7 @@
     - [Reversing Strings](#reversing-strings)
     - [Inserting Substrings into Strings](#inserting-substrings-into-strings)
     - [Overlaying Content](#overlaying-content)
-  - [Processing Substrings](#processing-substrings)
+  - [Accessing and Processing Substrings](#accessing-and-processing-substrings)
   - [Searching and Replacing](#searching-and-replacing)
     - [Searching for Specific Characters](#searching-for-specific-characters)
     - [Replacing Specific Characters in Strings](#replacing-specific-characters-in-strings)
@@ -480,6 +480,7 @@ s1 = |{ '00001234' ALPHA = RAW }|. "00001234
 fixed-length string does not include them. 
 - To exclude trailing blanks in all cases, regardless of the data type, you can use the built-in
 [`numofchar`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenlength_functions.htm) function.
+- [`xstrlen`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendescriptive_functions_binary.htm) returns the number of bytes of a byte-like argument.
 
 Syntax examples:
 ``` abap
@@ -490,6 +491,9 @@ DATA(len_str) = strlen( `abc   ` ). "6
 "numofchar
 len_c   = numofchar( 'abc   ' ). "3
 len_str = numofchar( `abc   ` ). "3
+
+DATA(xstr) = CONV xstring( `480065006C006C006F00200077006F0072006C0064002100` ).
+DATA(len_xstr) = xstrlen( xstr ). "24
 ```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
@@ -549,7 +553,7 @@ statements to split strings in multiple segments.
 split can be stored in separate data objects or internal tables that
 have a character-like line type. 
 - Note that if the number of specified targets is
-less than the number of segments returned by the split, the last target receives the remaining unsplit segements. If more targets are specified, the targets that do not receive a segment are
+less than the number of segments returned by the split, the last target receives the remaining unsplit segments. If more targets are specified, the targets that do not receive a segment are
 initialized. 
 - Therefore, specifying individual targets with `SPLIT`
 statements is useful if the number of expected segments is known.
@@ -659,8 +663,16 @@ SHIFT s3 RIGHT DELETING TRAILING ` `. "'      hallo' (length is kept)
 "Removing trailing blanks in strings without leading blanks;
 "you can use the following sequence of statements
 DATA(s4) = `hallo   `.
+DATA(s5) = s4.
 SHIFT s4 RIGHT DELETING TRAILING ` `. "'   hallo'
 SHIFT s4 LEFT DELETING LEADING ` `. "'hallo'
+
+"To remove trailing blanks, you can also use the following method of the
+"cl_abap_string_utilities class.
+cl_abap_string_utilities=>del_trailing_blanks( CHANGING str = s5 ).
+ASSERT s4 = s5.
+"Note the c2str_preserving_blanks method for preserving trailing blanks 
+"when assigning text fields to data objects of type string.
 
 "String functions with parameters
 s1 = `hallo`.
@@ -785,7 +797,7 @@ OVERLAY txt1 WITH txt2 ONLY 'ab'.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-## Processing Substrings
+## Accessing and Processing Substrings
 
 - The string function
 [`substring`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensubstring_functions.htm) allows you to specify the position (parameter `off`) and the length
@@ -798,15 +810,11 @@ from the beginning of the string.
   - If `len` is not specified, the rest of the remaining characters is respected. If the offset
 and length are greater than the actual length of the string, the
 exception `CX_SY_RANGE_OUT_OF_BOUNDS` is raised.
-- You may also encounter the syntax for accessing substrings by specifying the offset
-and length using the `+` character after a variable. 
-  - The length is specified in parentheses. Specifying an asterisk (`*`) means
-that the rest of the remaining string is respected. 
-  - This syntax option
-even allows write access to substrings for fixed-length strings. Read
-access is possible for both fixed-length and variable-length strings.
-  - However, this syntax can be confused with the use of tokens in the
-context of  dynamic programming.
+- You can also access substrings by specifying certain data objects in certain positions using the data object name (field symbols and dereferenced data reference variables are also possible) and the length in parentheses. 
+  - Additionally, you can specify the offset using the `+` character after a variable. 
+  - Specifying the length with an asterisk (`*`) means that the rest of the remaining string is respected. 
+  - This syntax option even allows write access to substrings for fixed-length strings. Read access is possible for both fixed-length and variable-length strings.
+  - However, this syntax can be confused with the use of tokens in the context of  dynamic programming.
 - There are other string functions available for dealing with substrings, such as 
 [`substring_after`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensubstring_functions.htm),
 [`substring_before`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensubstring_functions.htm),
@@ -835,15 +843,42 @@ s2 = substring( val = s1 off = 6 len = 5 ). "ipsum
 
 DATA(txt) = 'Lorem ipsum dolor sit amet'. "Type c
 
-"Offset and length specification using the + sign after a variable
-DATA(ch6) = txt+0(5). "Lorem
+"Offset and length specification for substring access
+"Length specification only in parentheses, no offset
+"specification means starting from 0
+DATA(ch6) = txt(5). "Lorem
+
+"Offset specification using the + sign after a variable
+"The following example corresponds to the previous one
+"(offset 0 explicitly specified)
+DATA(ch7) = txt+0(5). "Lorem
+
+DATA(ch8) = txt+6(5). "ipsum
 
 "* means respecting the rest of the remaining string
-DATA(ch7) = txt+12(*). "dolor sit amet
+DATA(ch9) = txt+12(*). "dolor sit amet
 
+"Using the syntax in various contexts, e.g. modifying the
+"text field
 CLEAR txt+11(*). "Lorem ipsum
 
-txt+0(5) = 'Hallo'. "Hallo ipsum dolor sit amet
+txt = 'Lorem ipsum dolor sit amet'.
+txt(5) = 'Hallo'. "Hallo ipsum dolor sit amet
+txt+7(3) = '###'. "Hallo i###m dolor sit amet
+
+"Field symbol
+TYPES abc TYPE c LENGTH 26.
+FIELD-SYMBOLS <fs> TYPE abc.
+DATA(alphabet) = 'abcdefghijklmnopqrstuvwxyz'.
+ASSIGN alphabet TO <fs>.
+DATA(part_of_abc_1) = <fs>(3). "abc
+<fs>+12(*) = '###'. "abcdefghijkl###
+
+"Data reference variable
+alphabet = 'abcdefghijklmnopqrstuvwxyz'.
+DATA(dref_str) = NEW abc( alphabet ).
+DATA(part_of_abc_2) = dref_str->*+20(*). "uvwxyz
+dref_str->*+25(1) = '#'. "abcdefghijklmnopqrstuvwxy#
 
 "Further string functions
 s1 = `aa1bb2aa3bb4`.
@@ -1005,8 +1040,13 @@ statements to perform replacements directly on the source field.
 Syntax examples:
 ``` abap
 DATA(s1) = `___abc_def_____ghi_`.
-DATA(s2) = translate( val = s1 from = `hi_` to = `##` ). "abcdefg##
-s2 = translate( val = s1 from = `_`  to = `##` ).  "###abc#def#####ghi#
+DATA(s2) = translate( val = s1 from = `hi_` to = `?!+` ). "+++abc+def+++++g?!+
+
+"'from' specifies three characters, while 'to' only specifies two
+s2 = translate( val = s1 from = `hi_` to = `?!` ). "abcdefg?!
+
+"'to' specifies more characters than 'from'
+s2 = translate( val = s1 from = `_`  to = `#?!` ). "###abc#def#####ghi#
 
 "TRANSLATE statement. The value after USING is interpreted as a string composed of character pairs.
 "Starting with the first pair, a search is performed in text for the

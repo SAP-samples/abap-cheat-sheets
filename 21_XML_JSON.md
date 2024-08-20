@@ -10,6 +10,7 @@
       - [sXML](#sxml)
     - [XML Transformations](#xml-transformations)
     - [CALL TRANSFORMATION Syntax](#call-transformation-syntax)
+      - [Exploring CALL TRANSFORMATION Syntax Using the Predefined Identity Transformation ID](#exploring-call-transformation-syntax-using-the-predefined-identity-transformation-id)
   - [Working with JSON](#working-with-json)
     - [Creating and Reading JSON Data Using sXML](#creating-and-reading-json-data-using-sxml)
     - [Transforming JSON Data Using Transformations](#transforming-json-data-using-transformations)
@@ -402,7 +403,7 @@ To perform transformations in ABAP, you can use:
   - Repository objects written in XSLT
   - XSLT can process ABAP data because ABAP data is first implicitly transformed into the asXML format. The result of this implicit transformation (the asXML format) is then used as the actual source for the XSL transformation.
 - Identity transformations
-  - SAP-delivered and predefined XSL transformation with the name `ID`
+  - Predefined XSL transformation with the name `ID`
   - Used to read and write the asXML (and also asJSON) format. 
   - When the transformation ID is called, the resulting intermediate formats (asXML, asJSON) are the direct output.
   - When used, for example, to transform ABAP data, such as a structure, to XML, the transformation does not change the structure itself. You can, however, change the structure by implementing your own XSLT.
@@ -495,7 +496,7 @@ CALL TRANSFORMATION ... SOURCE (srctab)
 
 **Specifying the result of the transformation**
 
-There are multiple options. Check the executable example to see them in action.
+There are multiple options. Check the executable example to explore them in action.
 
 ```abap
 "--------------------- Transforming to XML data ----------------------
@@ -521,6 +522,192 @@ CALL TRANSFORMATION ... SOURCE ...
 
 > **💡 Note**<br>
 > More additions are available such as `PARAMETERS` (for parameter binding) and `OPTIONS` (for predefined transformation options). See the details in the [ABAP Keyword Documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapcall_transformation.htm).
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+#### Exploring CALL TRANSFORMATION Syntax Using the Predefined Identity Transformation ID
+
+The following example explores various syntax options for `CALL TRANSFORMATION` statements, using the predefined identity transformation `ID`.
+
+To try the example out, create a demo class named `zcl_some_class` and paste the code into it. After activation, choose *F9* in ADT to execute the class. The example is set up to display output in the console.
+
+```abap
+CLASS zcl_some_class DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
+
+  PUBLIC SECTION.
+    INTERFACES if_oo_adt_classrun.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+
+ENDCLASS.
+
+
+CLASS zcl_some_class IMPLEMENTATION.
+
+  METHOD if_oo_adt_classrun~main.
+
+    TYPES: BEGIN OF line,
+             char TYPE c LENGTH 3,
+             int  TYPE i,
+           END OF line,
+           t_type TYPE TABLE OF line WITH EMPTY KEY.
+    DATA(tab) = VALUE t_type( ( char = 'aaa' int = 1 )
+                              ( char = 'bbb' int = 2 )
+                              ( char = 'ccc' int = 3 ) ).
+
+    out->write( `ABAP <-> XML using XSLT (Using the Predefined Identity Transformation ID)` ).
+
+**********************************************************************
+
+    out->write( `-------- Transforming ABAP data: ... SOURCE ... --------` ).
+    "This section covers syntax options after SOURCE without XML.
+
+    "ABAP (specifying ABAP data object) -> asXML/xstring
+    "itab stands for the name of the XML element (check ... <ITAB> ... in the output)
+    CALL TRANSFORMATION id SOURCE itab = tab
+                           RESULT XML DATA(xml_tab_a).
+
+    DATA(xml_a) = cl_abap_conv_codepage=>create_in( )->convert( xml_tab_a ).
+    out->write( data = xml_a name = `xml_a` ).
+
+    "ABAP (specifying ABAP data objects dynamically using an internal table
+    "of type abap_trans_srcbind_tab) -> asXML/xstring
+
+    DATA(srctab) = VALUE abap_trans_srcbind_tab( ( name = 'ITAB' value = REF #( tab ) ) ).
+    CALL TRANSFORMATION id SOURCE (srctab)
+                           RESULT XML DATA(xml_tab_b).
+
+    DATA(xml_b) = cl_abap_conv_codepage=>create_in( )->convert( xml_tab_b ).
+    out->write( data = xml_b name = `xml_b` ).
+
+**********************************************************************
+
+    out->write( `-------- Transforming XML data: ... SOURCE XML ... --------` ).
+    "This section covers syntax options after SOURCE XML.
+    "Apart from data objects of type string or xstring containing XML data
+    "in XML 1.0 format, standard tables with flat character-like or byte-like
+    "line type, you can also specify certain references to iXML and sXML libraries
+
+    "sxml/ixml references as source
+    "The examples use XML data from above
+    DATA(sxml_reader) = cl_sxml_string_reader=>create( xml_tab_a ).
+
+    CALL TRANSFORMATION id SOURCE XML sxml_reader
+                           RESULT XML DATA(xml_tab_c).
+
+    DATA(xml_c) = cl_abap_conv_codepage=>create_in( )->convert( xml_tab_c ).
+    out->write( data = xml_c name = `xml_c` ).
+
+    DATA(ixmlr) = cl_ixml_core=>create( ).
+    DATA(ixml_doc1) = ixmlr->create_document( ).
+    DATA(ixml_cr_streamr) = ixmlr->create_stream_factory( ).
+    DATA(ixml_i_stream) = ixml_cr_streamr->create_istream_xstring( xml_tab_a ).
+
+    CALL TRANSFORMATION id SOURCE XML ixml_i_stream
+                           RESULT XML DATA(xml_tab_d).
+
+    DATA(xml_d) = cl_abap_conv_codepage=>create_in( )->convert( xml_tab_d ).
+    out->write( data = xml_d name = `xml_d` ).
+
+**********************************************************************
+
+    out->write( `-------- Transforming to XML data: ... RESULT XML ... --------` ).
+    "This section covers syntax options after RESULT XML.
+    "Note: The following examples always use ABAP data objects as source
+    "(... SOURCE ...).
+
+    "ABAP -> asXML/xstring
+    "This syntax option has already been used above.
+    "When declared inline, the target data object has the type xstring.
+    CALL TRANSFORMATION id SOURCE itab = tab
+                           RESULT XML DATA(xml_tab_e).
+
+    "Specifying a data object of type xstring
+    DATA xml_tab_f TYPE xstring.
+    CALL TRANSFORMATION id SOURCE itab = tab
+                           RESULT XML xml_tab_f.
+
+    "ABAP -> asXML/string
+    DATA str TYPE string.
+    CALL TRANSFORMATION id SOURCE itab = tab
+                           RESULT XML str.
+
+    "ABAP -> asXML/table with a flat character-like line type
+    TYPES c50 TYPE c LENGTH 50.
+    TYPES c50_tab_type TYPE TABLE OF c50 WITH EMPTY KEY.
+    DATA chartab TYPE c50_tab_type.
+
+    "The following statement inlcudes the OPTIONS addition.
+    CALL TRANSFORMATION id SOURCE itab = tab
+                           RESULT XML chartab
+                           OPTIONS xml_header = 'NO'.
+
+    out->write( data = chartab name = `chartab` ).
+
+    "ABAP -> asXML/table with a flat byte-like line type
+    TYPES x50 TYPE x LENGTH 50.
+    TYPES x50_tab_type TYPE TABLE OF x50 WITH EMPTY KEY.
+    DATA xtab TYPE x50_tab_type.
+    "The following statement inlcudes the OPTIONS addition
+    CALL TRANSFORMATION id SOURCE itab = tab
+                           RESULT XML xtab
+                           OPTIONS xml_header = 'NO'.
+
+    out->write( data = xtab name = `xtab` ).
+
+    "iXML/sXML references
+    "Using an iXML output stream
+    DATA xstrg TYPE xstring.
+    DATA(ixml) = cl_ixml_core=>create( ).
+    DATA(ixml_doc) = ixml->create_document( ).
+    DATA(ixml_cr_stream) = ixml->create_stream_factory( ).
+    DATA(ixml_o_stream) = ixml_cr_stream->create_ostream_xstring( string =  xstrg ).
+
+    CALL TRANSFORMATION id SOURCE itab = tab
+                           RESULT XML ixml_o_stream.
+
+    ixml->create_renderer( document = ixml_doc
+                           ostream  = ixml_o_stream )->render( ).
+
+    DATA(xml_from_ixml) = cl_abap_conv_codepage=>create_in( )->convert( xstrg ).
+    out->write( data = xml_from_ixml name = `xml_from_ixml` ).
+
+    "Using an sXML writer
+    DATA(sxml) = CAST if_sxml_writer( cl_sxml_string_writer=>create( type     = if_sxml=>co_xt_xml10
+                                                                     encoding = 'UTF-8' ) ).
+    CALL TRANSFORMATION id SOURCE itab = tab
+                           RESULT XML sxml.
+
+    DATA(xml_from_sxml) = CAST cl_sxml_string_writer( sxml )->get_output( ).
+    DATA(conv_xml_from_sxml) = cl_abap_conv_codepage=>create_in( )->convert( xml_from_sxml ).
+    out->write( data = conv_xml_from_sxml name = `conv_xml_from_sxml` ).
+
+**********************************************************************
+
+    out->write( `-------- Transforming to ABAP data: ... RESULT ... --------` ).
+
+    "This section covers syntax options after RESULT without XML.
+    "XML from above is used as source.
+    DATA tab_b LIKE tab.
+    CALL TRANSFORMATION id SOURCE XML xml_tab_a
+                           RESULT itab = tab_b.
+    out->write( data = tab_b name = `tab_b` ).
+
+    "An internal table of type abap_trans_resbind_tab can be specified.
+    DATA tab_c LIKE tab.
+    DATA(restab) = VALUE abap_trans_resbind_tab( ( name = 'ITAB' value = REF #( tab_c ) ) ).
+
+    CALL TRANSFORMATION id SOURCE XML xml_tab_a
+                           RESULT (restab).
+
+    out->write( data = tab_c name = `tab_c` ).
+  ENDMETHOD.
+
+ENDCLASS.
+```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
@@ -1090,7 +1277,7 @@ ENDCLASS.
 
 ### Serializing and Deserializing Objects
 
-- To serialize and deserialize objects (i.e. instances of classes), you can use `CALL TRANSFORMATION` statements. As a prerequisite, the classes must implement the `IF_SERIALIZABLE_OBJECT` interface.
+- To serialize and deserialize objects (i.e. instances of classes), you can use `CALL TRANSFORMATION` statements. As a prerequisite, the classes must implement the `IF_SERIALIZABLE_OBJECT` interface. The example uses the predefined identity transformation `ID`.
 - Find more information and examples [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenasxml_class_instances.htm) in the ABAP Keyword Documentation. 
 
 
@@ -1354,10 +1541,8 @@ ENDTRY.
 DATA(len_xstr_decomp) = xstrlen( xstr_decomp ). "101
 DATA(conv_str) = cl_abap_conv_codepage=>create_in( )->convert( xstr_decomp ).
 
-DATA(is_equal) = COND #( WHEN len_xstr = len_xstr_decomp
-                         AND str = conv_str
-                         THEN 'X'
-                         ELSE '' ). "Result: X
+"abap_true
+DATA(is_equal) = xsdbool( len_xstr = len_xstr_decomp AND str = conv_str ). 
 ```
 
 ## More Information

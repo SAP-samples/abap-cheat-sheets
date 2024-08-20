@@ -187,7 +187,7 @@ AND check_is_supplied( ) IS NOT INITIAL
 "expression is false, the result of boolc does not meet the condition IS INITIAL since
 "a blank and no empty string is returned. If this is desired, the function xsdbool
 "can be used instead of boolc.
-AND boolc( check_is_supplied( ) ) = `X`
+AND boolc( check_is_supplied( ) ) = 'X'
 
 "Result has the same ABAP type as abap_bool.
 AND xsdbool( check_is_supplied( ) ) = abap_true
@@ -206,7 +206,7 @@ AND NOT to_lower( flag ) = 'X'
 AND ipow( base = num exp = 2 ) = 4
 
 "Functional methods
-"Method with exactly one return value
+"Assume such a method exists having one return value
 AND addition( num1 = 1 num2 = 1 ) = 2
 
 "Calculation expressions
@@ -222,11 +222,11 @@ AND VALUE string_table( ( `a` ) ( `b` ) ( `c` ) ) = str_table
 "Table expression
 AND str_table[ 2 ] = `b`.
 
-  "All of the logical expressions are true.
+  ... "All of the logical expressions are true.
 
 ELSE.
 
-  "At least one of the logical expressions is false.
+  ... "At least one of the logical expressions is false.
 
 ENDIF.
 ```
@@ -388,7 +388,7 @@ ENDCASE.
 
 #### Excursion: `SWITCH` Operator
 
-The conditional operator [`SWITCH`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconditional_expression_switch.htm) can also be used to make case distinctions in operand positions. As mentioned above for `COND`, a result is constructed. The same criteria apply for `SWITCH` as for `COND` regarding the type. See the ABAP Keyword Documentation and the cheat sheet on constructor expressions for more information. See also the [Constructor Expressions](05_Constructor_Expressions.md) cheat sheet for more information and examples.
+The conditional operator [`SWITCH`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconditional_expression_switch.htm) can also be used to make case distinctions in operand positions. As mentioned above for `COND`, a result is constructed. The same criteria apply for `SWITCH` as for `COND` regarding the type. See also the ABAP Keyword Documentation and the [Constructor Expressions](05_Constructor_Expressions.md) cheat sheet for more information and examples.
 
 
 ```abap
@@ -915,7 +915,7 @@ WAIT UP TO 3 SECONDS.
 ...
 "Second retrieval of the current time stamp after the WAIT statements
 DATA(ts2) = utclong_current( ).
-"Calcularing the difference of the two time stamps
+"Calculating the difference of the two time stamps
 cl_abap_utclong=>diff( EXPORTING high     = ts2
                                  low      = ts1
                         IMPORTING seconds = DATA(seconds) ).
@@ -1134,6 +1134,7 @@ ASSERT number > -1.
 ASSERT 1 = 1.
 
 DATA(flag) = abap_false.
+"Raises a runtime error
 ASSERT flag = abap_true.
 ```
 

@@ -28,7 +28,8 @@
  
 ## Introduction
 
-⚠️ The content of this cheat sheet and the executable example are only relevant to [classic ABAP](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenclassic_abap_glosry.htm).
+> **💡 Note**<br>
+> The content of this cheat sheet and the executable example are only relevant to [classic ABAP](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenclassic_abap_glosry.htm).
 
 [User interfaces (UI)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenuser_interface_glosry.htm) are not limited to displaying some information, they must also allow the user to interact with the program. 
 In modern UI technologies, this can be achieved through [events](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenevent_glosry.htm), i.e. [user actions](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenuser_action_glosry.htm) on a UI trigger events, and UI methods register these events and react accordingly. In this way, users control the program flow through their actions.
@@ -38,13 +39,13 @@ This is where [dynpros](https://help.sap.com/doc/abapdocu_latest_index_htm/lates
 This cheat sheet provides a high-level overview of classic dynpro topics with a focus on dynpro-related statements, supported by an executable example to check the syntax in action.
 
 > **💡 Note**<br>
-> - Classic dynpros are outdated for application programs. New developments should use web-based UIs, such as SAPUI5 or Web Dynpro. 
+> - Classic dynpros are outdated for application programs. New developments should use web-based UIs, such as SAPUI5. 
 > - Dynpros cannot be created in ABAP Cloud.
 > - This cheat sheet ...
 >   - is not intended to encourage you to start creating classic dynpros for programming new applications.  
 >   - does not cover all facets, techniques, and keywords in great detail. 
 >   - is intended to cover a selection of dynpro-related topics and syntax that you may encounter in older ABAP code. If you need more information, always consult the ABAP Keyword Documentation.
-> - Some of the statements described here - the ones used in the dynpro flow logic - are programmed in a special programming language. 
+> - The statements covered in the dynpro flow logic are specific to dynpros. 
 > - Links to the ABAP Keyword Documentation in this cheat sheet refer to the documentation for [Standard ABAP](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenstandard_abap_glosry.htm) (latest version).
 
 ## About Dynpros
@@ -52,8 +53,8 @@ This cheat sheet provides a high-level overview of classic dynpro topics with a 
   - Stands for dynamic program, i.e. the program execution is dynmically controlled by user interactions
   - Can only be defined in [function groups](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenfunction_group_glosry.htm), [module pools](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenmodul_pool_glosry.htm) (not [class pools](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenclass_pool_glosry.htm)) and [executable program](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenexecutable_program_glosry.htm) (*reports*; the focus in the cheat sheet is on the latter)
   - Can be identified by a unique, four-digit [dynpro number](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abendynpro_number_glosry.htm) in an [ABAP program](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenabap_program_glosry.htm). Note that leading zeros need not be specified when calling the dynpro. Number 1000 is reserved, as are other dynpro number ranges (e.g. used by SAP). The current dynpro can be retrieved using `sy-dynnr`.
-  - Is displayed in a window of [SAP GUI](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abensap_gui_glosry.htm)  
-  - Consists of the following main aspects: 
+  - Are displayed in a window of [SAP GUI](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abensap_gui_glosry.htm)  
+  - Consist of the following main aspects: 
     - Specific characteristics when creating the dynpro. To name a few: 
       - Dynpro type: Defines whether the dynpro is displayed in the full GUI window (if *Normal* is selected), in a pop-up window (*Modal Dialog Box*), or as a subscreen in a specific area within another dynpro in the same ABAP program.
       - [Next dynpro](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abennext_dynpro_glosry.htm): Statically specifies the next dynpro to be displayed in a [dynpro sequence](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abendynpro_sequence_glosry.htm). Setting the next dynpro to 0 or leaving the attribute blank will make the current dynpro the last dynpro in the sequence. If the next dynpro number is the same as the current dynpro, the dynpro continues to be called. The static next dynpro can be overwritten temporarily and dynamically in the ABAP program.
@@ -63,11 +64,11 @@ This cheat sheet provides a high-level overview of classic dynpro topics with a 
       - To add screen elements, use the [layout editor](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenlayout_editor_glosry.htm) of the [screen painter](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenscreen_painter_glosry.htm) tool. It is available only in the [ABAP Workbench](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenabap_workbench_glosry.htm).
       - For each screen element, you can define various static properties (attributes) that control its appearance. Double-clicking a screen element in the layout editor opens the attribute maintenance dialog box.
       - Various static attributes of the screen elements can be overwritten dynamically from within the ABAP program using special statements.
-  - Has its own data objects, called [dynpro fields](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abendynpro_field_glosry.htm) (see more below)
-  - Is called either by another dynpro (as the next dynpro), by a [transaction code](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abentransaction_code_glosry.htm) ([dialog transaction](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abendialog_transaction_glosry.htm)), or by ABAP statements (e.g. `CALL SCREEN`). Several dynpros in a single ABAP program can be called in sequence to form a dynpro sequence.
+  - Have their own data objects, called [dynpro fields](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abendynpro_field_glosry.htm) (see more below)
+  - Are called either by another dynpro (as the next dynpro), by a [transaction code](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abentransaction_code_glosry.htm) ([dialog transaction](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abendialog_transaction_glosry.htm)), or by ABAP statements (e.g. `CALL SCREEN`). Several dynpros in a single ABAP program can be called in sequence to form a dynpro sequence.
 
 > **💡 Note**<br>
-> There are special dynpros ([selection screens](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenselection_screen_glosry.htm), [classic lists](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenclassic_list_glosry.htm)). They are created implicitly.
+> There are special dynpros ([selection screens](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenselection_screen_glosry.htm), [classic lists](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenclassic_list_glosry.htm)). They are created implicitly. See the [Selection Screens and Classic Lists](20_Selection_Screens_Lists.md) cheat sheet.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
@@ -76,7 +77,7 @@ This cheat sheet provides a high-level overview of classic dynpro topics with a 
 - Represents the procedural part of a dynpro
 - Controls the dynpro processing, fills and processes the dynpro fields
 - Is defined in the *Flow Logic* tab in the screen painter
-- Has its own programming language, similar to ABAP, but runs in AS ABAP
+- The statements in the dynpro flow logic are specific to dynpro. Nevertheless, they run in AS ABAP.
 - Contains [processing blocks](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenprocessing_block_glosry.htm) introduced by special keywords
 - The processing blocks are executed in response to the [PAI](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenpai_glosry.htm), [PBO](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenpbo_glosry.htm), [POH](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenpoh_glosry.htm), and [POV](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenpov_glosry.htm) events of the corresponding ABAP program, and call [dialog modules](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abendialog_module_glosry.htm):
 
