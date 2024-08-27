@@ -99,7 +99,17 @@ CLASS zcl_demo_abap_string_proc IMPLEMENTATION.
     DATA(str_a6) = `efgh`. "Type string
 
     "Note: Variable is of type c length 4. Characters are truncated.
-    char_a2 = 'ijklmnopq'.
+    "In newer ABAP releases, the following statement shows a syntax 
+    "warning that the value of the literal (intentionally specified 
+    "here like this) is not an admissable value for the target type. 
+    "Therefore, the example is provided differently to circumvent the 
+    "syntax warning.
+
+    "char_a2 = 'ijklmnopq'.
+    
+    TYPES c_l9 TYPE c LENGTH 9.
+    DATA some_char TYPE c_l9 VALUE 'ijklmnopq'.
+    char_a2 = some_char.
 
     "Treating trailing blanks
     DATA(char_a3) = 'ab   '.

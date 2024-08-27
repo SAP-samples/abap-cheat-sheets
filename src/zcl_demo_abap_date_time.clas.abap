@@ -187,7 +187,18 @@ CLASS zcl_demo_abap_date_time IMPLEMENTATION.
 
     "Assignment of an invalid date of type d to type i; the initial value
     "is produced
-    DATA(inv_date3) = CONV i( CONV d( '20240231' ) ).
+    "In newer ABAP releases, the following statement shows a  
+    "syntax warning that the date (intentionally specified as 
+    "invalid date here) does not match the type. Therefore, 
+    "the example is provided differently to circumvent the
+    "syntax warning.
+    
+    "DATA(inv_date3) = CONV i( CONV d( '20240231' ) ).
+    
+    TYPES c8 TYPE c LENGTH 8.
+    DATA false_date TYPE c8 VALUE '20240231'.
+    DATA(inv_date3) = CONV i( CONV d( false_date ) ).
+    
     IF inv_date3 = 0.
       out->write( `inv_date3 = 0` ).
     ENDIF.
@@ -913,10 +924,27 @@ CLASS zcl_demo_abap_date_time IMPLEMENTATION.
           "No data object change. The statement below should return a valid time stamp.
         WHEN 2.
           "Invalid date
-          date_test = '20249999'.
+          "In newer ABAP releases, the following statement shows a 
+          "syntax warning that the date (intentionally specified as 
+          "invalid date here) does not match the type. Therefore, 
+          "the example is provided differently to circumvent the 
+          "syntax warning.
+
+          "date_test = '20249999'.
+
+          TYPES c_l8 TYPE c LENGTH 8.
+          DATA falsedate TYPE c_l8 VALUE '20240231'.
+          date_test = falsedate.
         WHEN 3.
           "Invalid time
-          time_test = '992458'.
+          "The following statement is commented out for the reasons
+          "mentioned above.
+
+          "time_test = '992458'.
+
+          TYPES c_l6 TYPE c LENGTH 6.
+          DATA falsetime TYPE c_l6 VALUE '992458'.
+          time_test = falsetime.
         WHEN 4.
           "Invalid fractions of seconds
           frac_sec_test = '1'.
@@ -925,7 +953,14 @@ CLASS zcl_demo_abap_date_time IMPLEMENTATION.
           dls_test = 'X'.
         WHEN 6.
           "Invalid time zone
-          dls_test = `NOPE`.
+          "The following statement is commented out for the reasons
+          "mentioned above.
+
+          "dls_test = `NOPE`.
+
+          TYPES c_l4 TYPE c LENGTH 4.
+          DATA falsetimezone TYPE c_l4 VALUE 'NOPE'.
+          dls_test = falsetimezone.
       ENDCASE.
 
       TRY.

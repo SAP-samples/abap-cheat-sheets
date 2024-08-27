@@ -1273,7 +1273,15 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
     out->write( data = date name = `date` ).
     out->write( |\n| ).
 
-    date = 20240101.
+    "In newer ABAP releases, the following statement shows a syntax 
+    "warning that the value of the the data object (intentionally 
+    "specified here like this) is not an admissable value for the 
+    "target type. Therefore, the example is provided differently to 
+    "circumvent the syntax warning.
+    
+    "date = 20240101.
+    DATA falsedate TYPE i VALUE 20240101.
+    date = falsedate.
     out->write( data = date name = `date` ).
 
 **********************************************************************
@@ -1670,7 +1678,21 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
 
     "Assignments
     do_h_c5 = 'abc'.
-    do_h_c5 = 'defghi'. "only 'def' assigned -> length and memory use do not change
+    
+    "In newer ABAP releases, the following statement shows a syntax 
+    "warning that the value of the literal (intentionally specified 
+    "here like this) is not an admissable value for the target type. 
+    "Therefore, the example is provided differently to circumvent the 
+    "syntax warning.
+
+    "do_h_c5 = 'defghi'.
+
+    TYPES c_l6 TYPE c LENGTH 6.
+    DATA some_char TYPE c_l6 VALUE 'defghi'.
+    "only 'def' assigned -> length and memory use do not change
+    do_h_c5 = some_char.
+
+
 
     "Memory consumption changes for dynamic data objects
     do_i_str = `abc`.

@@ -1286,7 +1286,12 @@ DATA do_i_str TYPE string.
 
 "Assignments
 do_h_c3 = 'abc'.
-do_h_c3 = 'defghi'. "only 'def' assigned -> length and memory use do not change
+
+"only 'def' assigned -> length and memory use do not change
+"Note: In newer ABAP releases, the following statement shows a syntax 
+"warning that the value of the literal (intentionally specified 
+"here like this) is not an admissable value for the target type. 
+do_h_c3 = 'defghi'. 
 
 "Memory consumption changes for dynamic data objects
 do_i_str = `abc`.

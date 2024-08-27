@@ -205,6 +205,9 @@ TRY.
 ENDTRY.
 
 "Assignment of an invalid date of type d to type i; the initial value is produced
+"Note: In newer ABAP releases, the following statement shows a syntax 
+"warning that the value of the literal (intentionally specified 
+"here like this) does not match type d. 
 DATA(inv_date3) = CONV i( CONV d( '20240231' ) ).
 ASSERT inv_date3 = 0.
 ```
@@ -841,6 +844,10 @@ DO 6 TIMES.
   dls_test = abap_false.
   tz_test = `EST`.
 
+  "Note: In newer ABAP releases, some of the following statements 
+  "show a syntax warning. The values of some literals (intentionally 
+  "specified here like this) are not admissable values for the target
+  "types. 
   CASE sy-index.
     WHEN 1.
       "No data object change. The statement below should return a valid time stamp.

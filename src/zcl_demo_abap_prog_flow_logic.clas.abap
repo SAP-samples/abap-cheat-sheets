@@ -415,7 +415,7 @@ CLASS zcl_demo_abap_prog_flow_logic IMPLEMENTATION.
     AND `ha` && `llo` = <fs>
 
     "Constructor expression
-    AND CONV i( '2.03' ) = num
+    AND VALUE i( ) = 0
     AND VALUE string_table( ( `a` ) ( `b` ) ( `c` ) ) = str_table
 
     "Table expression

@@ -223,6 +223,9 @@ FINAL(final_string)  = `zyx`.
 
 "Since char2 is of type c length 4 (the length is also derived),
 "characters are truncated in the following example assignment
+"Note: In newer ABAP releases, the following statement shows a syntax 
+"warning that the value of the literal (intentionally specified 
+"here like this) is not an admissable value for the target type. 
 char2 = 'ijklmnopq'. "ijkl
 
 "Trailing blanks after assigning fixed length to variable length string

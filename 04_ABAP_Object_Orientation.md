@@ -2367,7 +2367,7 @@ ENDCLASS.
 ``` 
 
 3) 
-- The following example class represents an exectuable example that displays output in the ADT console. 
+- The following example class represents an executable example that displays output in the ADT console. 
 - Apart from simple demo implementations, it includes alias names specified for interface components.
 - The interface methods declared with `DEFAULT IGNORE` and `DEFAULT FAIL` are intentionally not implemented, but the methods are nevertheless called. 
    - Interface method declared with `DEFAULT IGNORE`: No implementation available, and no value is assigned for the returning parameter. Therefore, the value is initial. 
