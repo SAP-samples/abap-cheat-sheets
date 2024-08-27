@@ -15,7 +15,8 @@
 
 ## Introduction
 
-⚠️ The concept is relevant to both ABAP Cloud and classic ABAP, but some of the statements covered in the cheat sheet and the executable example are only relevant to [classic ABAP](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenclassic_abap_glosry.htm).
+> **💡 Note**<br>
+>  The concept is relevant to both ABAP Cloud and classic ABAP, but some of the statements covered in the cheat sheet and the executable example are only relevant to [classic ABAP](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenclassic_abap_glosry.htm).
 
 This cheat sheet provides a high-level overview of the [SAP LUW](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abensap_luw_glosry.htm) concept that deals with data consistency with a focus on SAP LUW-related statements, supported by an executable example to check the syntax in action.
 

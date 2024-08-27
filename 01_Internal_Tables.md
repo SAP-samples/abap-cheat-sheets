@@ -17,7 +17,7 @@
       - [NEW Operator](#new-operator)
     - [Example: Exploring Populating Internal Tables](#example-exploring-populating-internal-tables)
   - [Reading Single Lines from Internal Tables](#reading-single-lines-from-internal-tables)
-    - [Determining the Target Area when Reading Single Lines](#determining-the-target-area-when-reading-single-lines)
+    - [Determining the Target Area when Reading Single Lines in READ TABLE Statements](#determining-the-target-area-when-reading-single-lines-in-read-table-statements)
     - [Reading a Single Line by Index](#reading-a-single-line-by-index)
     - [Reading a Single Line Using Table Keys](#reading-a-single-line-using-table-keys)
     - [Reading a Single Line Using a Free Key](#reading-a-single-line-using-a-free-key)
@@ -1108,7 +1108,7 @@ There are three different ways to specify the line to read:
 
 The following code snippets include [`READ TABLE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapread_table.htm) statements and [table expressions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentable_expressions.htm) to read from internal tables.
 
-### Determining the Target Area when Reading Single Lines
+### Determining the Target Area when Reading Single Lines in READ TABLE Statements
 
 -   Copying a line to a data object using the addition `INTO`.
     After the copying, the line found exists separately in the internal table and
@@ -1151,7 +1151,7 @@ The following code snippets include [`READ TABLE`](https://help.sap.com/doc/abap
     READ TABLE itab REFERENCE INTO DATA(dref_inl) ...
     ```
 
-**Which to use then?** Since all syntax options provide the same
+**Which to use then?** Since all syntax options basically provide similar
 functionality, your use case, the
 performance or readability of the code may play a role. For more information, see 
 the programming guidelines for the [target
@@ -3278,9 +3278,8 @@ ENDCLASS.
 
 ### Improving Read Performance with Secondary Table Keys
 
-The following example creates two demo internal tables. One without a secondary
-table key and the other with a secondary table key. Consider a scenario where you
-have a standard internal table without a secondary table key, and you want to add a secondary table key later to improve read performance. The tables are populated with a lot of data. Then, in a `DO` loop, many reads are performed on the internal tables. One example uses a free key for the read, the other uses a secondary table key that includes the components used for the free key search. Before and after the reads, the current timestamp is stored in variables, from which the elapsed time is calculated. There should be a significant delta of the elapsed time.
+Consider a scenario where you have a standard internal table, and you frequently access its content using a free key. The table is declared without a secondary table key. You can add a secondary table key to improve read performance.
+The following example creates two demo internal tables. One without a secondary table key and the other with a secondary table key. The tables are populated with a lot of data. Then, in a `DO` loop, many reads are performed on the internal tables. One example uses a free key for the read, the other uses a secondary table key that includes the components used for the free key search. Before and after the reads, the current timestamp is stored in variables, from which the elapsed time is calculated. There should be a significant delta of the elapsed time.
 
 ```abap
 CLASS zcl_some_class DEFINITION PUBLIC FINAL CREATE PUBLIC.

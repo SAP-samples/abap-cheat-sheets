@@ -13,9 +13,8 @@
     - [Using the CORRESPONDING Operator and MOVE-CORRESPONDING Statements](#using-the-corresponding-operator-and-move-corresponding-statements)
   - [Clearing Structures](#clearing-structures)
   - [Processing Structures](#processing-structures)
-  - [Excursions](#excursions)
-    - [Including Structures](#including-structures)
-    - [Getting Structured Type Information and Creating Structures at Runtime](#getting-structured-type-information-and-creating-structures-at-runtime)
+  - [Including Structures](#including-structures)
+  - [Getting Structured Type Information and Creating Structures at Runtime](#getting-structured-type-information-and-creating-structures-at-runtime)
   - [Executable Example](#executable-example)
 
 ## Introduction
@@ -727,9 +726,7 @@ MODIFY TABLE itab FROM struc.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-## Excursions 
-
-### Including Structures
+## Including Structures
 
 - [`INCLUDE TYPE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapinclude_type.htm)
 and [`INCLUDE STRUCTURE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapinclude_type.htm) statements 
@@ -771,7 +768,7 @@ TYPES END OF address_type.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-### Getting Structured Type Information and Creating Structures at Runtime
+## Getting Structured Type Information and Creating Structures at Runtime
 
 Using [Runtime Type Services (RTTS)](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrun_time_type_services_glosry.htm "Glossary Entry")
 you can ...
