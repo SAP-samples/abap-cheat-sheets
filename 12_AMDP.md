@@ -9,6 +9,7 @@
   - [AMDP Procedures](#amdp-procedures)
   - [AMDP Functions](#amdp-functions)
     - [CDS Table Functions](#cds-table-functions)
+  - [Notes on Client Handling and Client Safety](#notes-on-client-handling-and-client-safety)
   - [More Information](#more-information)
   - [Executable Example](#executable-example)
 
@@ -380,31 +381,48 @@ You can then use the CDS table function as source for a
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
+## Notes on Client Handling and Client Safety
+
+> **🌰 In brief**<br>
+> - ABAP SQL features implicit [client handling](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenclient_handling_glosry.htm). 
+> - While you can disable this in classic ABAP, it is not an option in ABAP Cloud, where you are limited to accessing your own client. 
+> - Unlike ABAP SQL, there is no implicit client handling in Native SQL. AMDP, which uses Native SQL, is usable in ABAP Cloud, but it is crucial to ensure that AMDP only accesses client-safe repository objects, meaning it only accesses data from your own client. For this purpose, dedicated additions are provided.
+  
+**ABAP SQL:**
+- An SAP system can have multiple clients, each distinguished by a unique [client ID](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenclient_identifier_glosry.htm). 
+- Each client can contain unique data. For instance, when you log into the system, you select a client and can only access the data within that specific client. If you log into client 000, for example, your access is restricted to the data of client 000, not any other clients.
+  - Client-dependent data is managed through a client column. So, if a database table has a client column, it contains client-dependent data. However, there are also client-independent data sources, which contain data not specific to any client. These are typically accessed by [system programs](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensystem_program_glosry.htm).
+- ABAP SQL features implicit client handling, i.e. it automatically handles client selection. When you execute an ABAP SQL statement in a client, the system automatically uses the current client. There is no need to specify the client separately, as the compiler automatically manages client handling. Exception: The [`USING CLIENT` (F1 docu for Standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapselect_client.htm) addition modifies this default behavior. It disables implicit client handling.
+- Find more information on client handling [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_sql_client_handling.htm).
+
+**Native SQL/AMDP**
+- Unlike ABAP SQL, Native SQL does not have implicit handling, so you must explicitly pass the client. 
+- Native SQL is passed directly to the database.
+- AMDP, which uses Native SQL, also does not support implicit client handling.
+- While AMDP is permitted in ABAP Cloud, accessing client-dependent data via Native SQL is not supported.
+- When using AMDP in ABAP Cloud, it is crucial to access only the current client. Client-safety must be ensured..
+- AMDP methods in ABAP Cloud must be client-safe, meaning the SQLScript code should access data only in your client. Use only artifacts that limit access to a single client or those that are client-independent.
+- Consequently, all objects in the `USING` list must be client-safe, including CDS table functions implemented as AMDP methods.
+- There are additions to cover client-safe aspects, ensuring access only to your client data.
+- Find more information about client safety in AMDP [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenamdp_client_safety.htm).
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
 ## More Information 
 
-**... on AMDP in ABAP for Cloud Development**
-
-Find more information in the subtopics of the [ABAP Keyword Documentation (ABAP for Cloud Development)](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenamdp.htm).
-
-> **💡 Note**<br>
-> - In ABAP for Cloud Development, AMDP methods must be client-safe. This means that the SQLScript code should only access artifacts that restrict access to a single client, such as CDS view entities, or are client-independent. Therefore, all objects used in the `USING` list must be client-safe. This also applies to CDS table functions implemented as AMDP methods. Accessing client-dependent data using Native SQL is not supported in ABAP for Cloud Development. 
-> - The AMDP example for ABAP for Cloud Development is designed differently compared to the AMDP example for Standard ABAP. Instead of using demo database tables, CDS view entities are used in the `USING` list. Additionally, the client handling is adjusted for the AMDP methods by including appropriate additions in the AMDP method declaration part.
-
-**... on AMDP in Standard ABAP**
-
-Find more information in the subtopics of the [ABAP Keyword Documentation (Standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenamdp.htm).
-
-> **✔️ Hint**<br>
-> Checking if AMDP is supported on the system: 
->    ```abap
->    IF NOT cl_abap_dbfeatures=>use_features(
->        EXPORTING requested_features =
->        VALUE #( ( cl_abap_dbfeatures=>call_amdp_method ) ) ).
->
->      "Result: Current database system does not support AMDP procedures
->    RETURN.
->    ENDIF.
->    ```
+- AMDP in ABAP for Cloud Development: [ABAP Keyword Documentation (ABAP for Cloud Development)](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenamdp.htm)
+- AMDP in Standard ABAP: [ABAP Keyword Documentation (Standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenamdp.htm)
+    > **✔️ Hint**<br>
+    > Checking if AMDP is supported in classic ABAP: 
+    >    ```abap
+    >    IF NOT cl_abap_dbfeatures=>use_features(
+    >        EXPORTING requested_features =
+    >        VALUE #( ( cl_abap_dbfeatures=>call_amdp_method ) ) ).
+    >
+    >      "Result: Current database system does not support AMDP procedures
+    >    RETURN.
+    >    ENDIF.
+    >    ```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
@@ -417,5 +435,6 @@ Find more information in the subtopics of the [ABAP Keyword Documentation (Stand
 >   - AMDP procedures, calling AMDP procedures from SQLScript
 >   - AMDP table functions for AMDP methods
 >   - AMDP table functions for CDS table functions
+> - The AMDP example for ABAP for Cloud Development is designed differently compared to the AMDP example for Standard ABAP. Instead of using demo database tables, CDS view entities are used in the `USING` list. Additionally, the client handling is adjusted for the AMDP methods by including appropriate additions in the AMDP method declaration part.
 > - The steps to import and run the code are outlined [here](README.md#-getting-started-with-the-examples).
 > - [Disclaimer](./README.md#%EF%B8%8F-disclaimer)

@@ -777,6 +777,53 @@ you can ...
 
 For more information, see the [Dynamic Programming](06_Dynamic_Programming.md) cheat sheet.
 
+RTTI example: 
+```abap
+TYPES: BEGIN OF demo_struc_type,
+             comp1 TYPE c LENGTH 3,
+             comp2 TYPE i,
+             comp3 TYPE string,
+       END OF demo_struc_type.
+DATA demo_struc TYPE demo_struc_type.
+
+DATA(tdo_c) = cl_abap_typedescr=>describe_by_data( demo_struc ).
+"DATA(tdo_c) = cl_abap_typedescr=>describe_by_name( 'DEMO_STRUC_TYPE' ).
+
+"Cast to get more specific information
+DATA(tdo_struc) = CAST cl_abap_structdescr( cl_abap_typedescr=>describe_by_data( demo_struc ) ).
+"DATA(tdo_struc) = CAST cl_abap_structdescr( tdo_c ).
+
+DATA(type_category_struc) = tdo_struc->kind.
+DATA(relative_name_struc) = tdo_struc->get_relative_name( ).
+... "Explore more options by positioning the cursor behind -> and choosing CTRL + Space
+DATA(type_of_struc) = tdo_struc->struct_kind.
+DATA(struc_comps) = tdo_struc->components.
+DATA(struc_comps_more_details) = tdo_struc->get_components( ).
+DATA(struc_has_include) = tdo_struc->has_include.
+DATA(struc_incl_view) = tdo_struc->get_included_view( ).
+DATA(applies_to_data_struc) = tdo_struc->applies_to_data( `some string` ).
+
+"Example: "Looping" across a structure
+"Demo structure, all components are convertible to type string
+TYPES: BEGIN OF ty_struc,
+         comp1 TYPE c LENGTH 3,
+         comp2 TYPE string,
+         comp3 TYPE i,
+         comp4 TYPE n LENGTH 4,
+       END OF ty_struc.
+DATA(struct) = VALUE ty_struc( comp1 = 'abc' comp2 = `ABAP` comp3 = 123 comp4 = '9876' ).
+DATA looped_struc TYPE string.
+
+"In the loop, a string is populated, component by component.
+LOOP AT CAST cl_abap_structdescr( cl_abap_typedescr=>describe_by_data( struct ) )->components INTO DATA(comp).
+  looped_struc = |{ looped_struc }{ COND #( WHEN sy-tabix <> 1 THEN ` / ` ) }Name: "{ CONV string( comp-name ) }", Value: "{ struct-(comp-name) }"|.
+ENDLOOP.
+
+"Result:
+"Name: "COMP1", Value: "abc" / Name: "COMP2", Value: "ABAP" / Name: "COMP3", Value: "123" / Name: "COMP4", Value: "9876"
+```
+
+
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
 

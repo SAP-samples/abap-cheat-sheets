@@ -1762,6 +1762,9 @@ DATA(where_clause) = VALUE string_table( ( `CARRID = 'LH'` )
                                          ( `OR` )
                                          ( `CARRID = 'AA'` ) ).
 
+"A string as an alternative
+"DATA(where_clause) = `CARRID = 'LH' OR CARRID = 'AA'`.
+
 SELECT *
   FROM zdemo_abap_fli
   WHERE (where_clause)

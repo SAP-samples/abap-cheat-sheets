@@ -5,7 +5,7 @@
 - [ABAP SQL](#abap-sql)
   - [Introduction](#introduction)
   - [Excursion: Database Tables and Views](#excursion-database-tables-and-views)
-  - [Retrieving Data Using SELECT](#retrieving-data-using-select)
+  - [Read Operations Using SELECT](#read-operations-using-select)
     - [Basic Syntax](#basic-syntax)
     - [SELECT List Variants](#select-list-variants)
     - [Data Sources of SELECT Queries](#data-sources-of-select-queries)
@@ -13,7 +13,7 @@
     - [Miscellaneous Options Regarding the Result](#miscellaneous-options-regarding-the-result)
     - [Additional Clauses](#additional-clauses)
     - [Selecting Data by Evaluating the Content of Other Tables](#selecting-data-by-evaluating-the-content-of-other-tables)
-    - [Combining Data of Multiple Tables](#combining-data-of-multiple-tables)
+    - [Combining Data of Multiple Data Sources](#combining-data-of-multiple-data-sources)
     - [Common Table Expressions (CTE)](#common-table-expressions-cte)
   - [SQL Conditions](#sql-conditions)
   - [SQL Operands](#sql-operands)
@@ -31,13 +31,15 @@
     - [String Functions](#string-functions)
     - [coalesce Function](#coalesce-function)
     - [More Functions](#more-functions)
-  - [Changing Data in Database Tables](#changing-data-in-database-tables)
+  - [Create, Update, and Delete Operations](#create-update-and-delete-operations)
     - [Using INSERT](#using-insert)
     - [Using UPDATE](#using-update)
     - [Using MODIFY](#using-modify)
     - [Using DELETE](#using-delete)
     - [Using Constructor Expressions in ABAP SQL Statements](#using-constructor-expressions-in-abap-sql-statements)
-    - [Example: Exploring ABAP SQL Statements Changing Data in Database Tables](#example-exploring-abap-sql-statements-changing-data-in-database-tables)
+    - [Example: Exploring Create, Update, and Delete Operations with ABAP SQL Statements](#example-exploring-create-update-and-delete-operations-with-abap-sql-statements)
+  - [Excursions](#excursions)
+    - [ABAP SQL and Client Handling](#abap-sql-and-client-handling)
     - [RAP-Specific ABAP SQL Variants](#rap-specific-abap-sql-variants)
   - [More Information](#more-information)
   - [Executable Example](#executable-example)
@@ -143,7 +145,7 @@ Views](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-## Retrieving Data Using SELECT
+## Read Operations Using SELECT
 
 ### Basic Syntax
 
@@ -786,9 +788,17 @@ SELECT comp1, comp2, comp3
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-### Combining Data of Multiple Tables
+### Combining Data of Multiple Data Sources
 
-**Using an [inner join](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abeninner_join_glosry.htm)**:
+<table>
+<tr>
+<td> Subject </td> <td> Details/Code Snippet </td>
+</tr>
+<tr>
+<td> Using an inner join </td>
+<td>
+
+[Inner join](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abeninner_join_glosry.htm):
 - Columns of two or more data sources in a result set can be joined.
 - Result set:
   - Columns of the rows in the result set of the left side with the columns of the rows in the result set of the right side are joined into a single result set.
@@ -796,6 +806,9 @@ SELECT comp1, comp2, comp3
 - If there are identical column names in multiple data sources, use the [column
 selector](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentable_comp_selector_glosry.htm "Glossary Entry")
 `~`.
+
+<br>
+
 ``` abap
 SELECT a~comp1, a~comp2, b~comp3, c~comp4
   FROM dbtab1 AS a
@@ -805,12 +818,21 @@ SELECT a~comp1, a~comp2, b~comp3, c~comp4
   INTO ...
 ```
 
-**Using an [outer join](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenouter_join_glosry.htm)**:
+</td>
+</tr>
+
+<tr>
+<td> Using an outer join </td>
+<td>
+
+[Outer join](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenouter_join_glosry.htm):
 - Realized by either a [left outer join](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenleft_outer_join_glosry.htm) or
 a [right outer join](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenright_outer_join_glosry.htm).
 - Result set:
   - Same result set as the inner join.
   - Difference: For each selected row on the left side as `LEFT OUTER JOIN` or on the right side as `RIGHT OUTER JOIN`, at least one row is created in the result set even if no rows on the other side meet the condition. The columns on the other side that do not meet the condition are filled with [null values](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abennull_value_glosry.htm).
+
+<br>
 
 ``` abap
 "Example for a left outer join
@@ -820,11 +842,17 @@ SELECT a~comp1, a~comp2, b~comp3,
   WHERE ...
   INTO ...
 ```
-> **💡 Note**<br>
-> There are more join variants and syntax options available. See the ABAP Keyword Documentation on [joins](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapselect_join.htm)
-for more information.
 
-**Merging the result sets of multiple queries into a single result set** using the [set operator](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_set_operators_glosry.htm) [`UNION`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapunion.htm#!ABAP_VARIANT_1@1@). In this case, the rows of the result set of the query after `UNION` are inserted into the result set of the query in front of `UNION`.
+</td>
+</tr>
+
+<tr>
+<td> Merging the result sets of multiple queries into a single result set </td>
+<td>
+
+... using the [set operator](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_set_operators_glosry.htm) [`UNION`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapunion.htm#!ABAP_VARIANT_1@1@). In this case, the rows of the result set of the query after `UNION` are inserted into the result set of the query in front of `UNION`.
+
+<br>
 
 ``` abap
 SELECT FROM dbtab1
@@ -837,8 +865,16 @@ SELECT FROM dbtab2
   INTO ...
 ```
 
-**Returning distinct rows of a result set (1)** of a query specified before the `INTERSECT` addition that are also available in the result set of the query after the `INTERSECT` addition.
+</td>
+</tr>
 
+<tr>
+<td> Returning distinct rows of a result set (1) </td>
+<td>
+
+... of a query specified before the `INTERSECT` addition that are also available in the result set of the query after the `INTERSECT` addition.
+
+<br>
 
 ``` abap
 "If you have imported the cheat sheet repository and already run an example class to fill
@@ -860,7 +896,16 @@ SELECT carrid, carrname
     INTO TABLE @DATA(itab_w_intersect).
 ```
 
-**Returning distinct rows of a result set (2)** of a query specified before the `EXCEPT` addition that are not available in the result set of the query after the `EXCEPT` addition.
+</td>
+</tr>
+
+<tr>
+<td> Returning distinct rows of a result set (2) </td>
+<td>
+
+... of a query specified before the `EXCEPT` addition that are not available in the result set of the query after the `EXCEPT` addition.
+
+<br>
 
 ```abap
 "If you have imported the cheat sheet repository and already run an example class to fill
@@ -890,8 +935,16 @@ SELECT carrid
     INTO TABLE @DATA(itab_w_except).
 ```
 
+</td>
+</tr>
+
+</table>
+
 > **💡 Note**<br>
-> There a more syntax options and contexts for `UNION`, `INTERSECT`, and `EXCEPT`. Find more information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapunion.htm).
+> - There are more join variants and syntax options available. See the ABAP Keyword Documentation on [joins](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapselect_join.htm)
+for more information.
+> - There a more syntax options and contexts for `UNION`, `INTERSECT`, and `EXCEPT`. Find more information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapunion.htm).
+
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
@@ -1933,7 +1986,7 @@ INTO @DATA(special_functions).
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-## Changing Data in Database Tables
+## Create, Update, and Delete Operations 
 
 > **💡 Note**<br>
 > The following sections include code patterns. To explore various syntax options with an executable example, see section [Example: Exploring ABAP SQL Statements Changing Data in Database Tables](#example-exploring-abap-sql-statements-changing-data-in-database-tables) below.
@@ -2091,6 +2144,8 @@ DELETE dbtab FROM @row.
 
 "Using a host expression
 DELETE dbtab FROM @( VALUE #( comp1 = ... ) ).
+
+"Rows are deleted based on data in an internal table
 DELETE dbtab FROM TABLE @itab.
 
 "Using a host expression
@@ -2142,18 +2197,18 @@ UPDATE dbtab FROM @( VALUE #( BASE read_line comp2 = ... comp4 = ... ) ).
 "The following example assumes that some_itab has a different line type than dbtab.
 "I.e. some_itab may have more components that are not available in dbtab. The
 "corresponding fields with identical names are used. It is assumed that the components'
-"types are compatible and/or convertible.
+"types are compatible or convertible.
 INSERT dbtab FROM TABLE @( CORRESPONDING #( some_itab ) ).
 
 "This example assumes that field names are not identical. Using the CORRESPONDING operator
 "and its additions, you can carry out a mapping and, for example, exclude components. It is 
-"assumed that the components' types are compatible and/or convertible.
+"assumed that the components' types are compatible or convertible.
 INSERT dbtab FROM TABLE @( CORRESPONDING #( another_itab MAPPING key_field = key comp1 = compZ EXCEPT comp2 ) ).
 ```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-### Example: Exploring ABAP SQL Statements Changing Data in Database Tables
+### Example: Exploring Create, Update, and Delete Operations with ABAP SQL Statements
 
 To try the following example out, create a demo class named `zcl_some_class` and paste the code into it. After activation, choose *F9* in ADT to execute the class. The example uses a database table of the ABAP cheat sheets repository and is set up to display output in the console.
 
@@ -2464,6 +2519,87 @@ CLASS zcl_some_class IMPLEMENTATION.
   ENDMETHOD.
 ENDCLASS.
 ```
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+## Excursions
+
+### ABAP SQL and Client Handling
+
+> **🌰 In brief**<br>
+> - ABAP SQL features implicit [client handling](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenclient_handling_glosry.htm). 
+> - While you can disable this in classic ABAP, it is not an option in ABAP Cloud, where you are limited to accessing your own client. 
+> - Unlike ABAP SQL, there is no implicit client handling in Native SQL. AMDP, which uses Native SQL, is usable in ABAP Cloud, but it is crucial to ensure that AMDP only accesses client-safe repository objects, meaning it only accesses data from your own client. For this purpose, dedicated additions are provided.
+  
+**Notes on ABAP SQL:**
+- An SAP system can have multiple clients, each distinguished by a unique [client ID](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenclient_identifier_glosry.htm). 
+- Each client can contain unique data. For instance, when you log into the system, you select a client and can only access the data within that specific client. If you log into client 000, for example, your access is restricted to the data of client 000, not any other clients.
+  - Client-dependent data is managed through a client column. So, if a database table has a client column, it contains client-dependent data. However, there are also client-independent data sources, which contain data not specific to any client. These are typically accessed by [system programs](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensystem_program_glosry.htm).
+- ABAP SQL features implicit client handling, i.e. it automatically handles client selection. When you execute an ABAP SQL statement in a client, the system automatically uses the current client. There is no need to specify the client separately, as the compiler automatically manages client handling.
+- See the following example using a SELECT statement selecting from a database table.
+    ```abap
+    "Using the current client implicitly
+    SELECT * FROM zdemo_abap_carr INTO TABLE @DATA(itab1).
+
+    "For example, it is not possible to specify the client explicitly in a WHERE clause.
+    "The following statement shows a syntax error.
+    "SELECT * FROM zdemo_abap_carr WHERE mandt = '123' INTO TABLE @DATA(itab2).
+    ```  
+
+- However, in classic ABAP, not in ABAP Cloud, you can use the [`USING CLIENT` (F1 docu for Standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapselect_client.htm) addition modifies this default behavior. It disables implicit client handling.
+  - With the addition, you can specify other clients from which to retrieve data. Find more information in the ABAP Keyword Documentation.
+  - You may also stumble on the `CLIENT SPECIFIED` addition. It is obsolete, only `USING CLIENT` should be used.  
+  - The following (classic ABAP only) code shows a variety of syntax options. Note that it uses a data source of the cheat sheet repository. For exploration, you may want to use another data source. You may also want to check the commands that are passed by the [ABAP SQL Interface](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_sql_interface_glosry.htm) when activating the SQL trace (transaction ST05) to the explore the use of another client ID and more. 
+
+    ```abap
+    "---- The following code is for classic ABAP only. ----
+
+    "SQL SELECT statements turning off the implicit client handling, and
+    "specifying different clients to retrieve data from
+
+    "Literal containing a client ID
+    SELECT * FROM zdemo_abap_carr USING CLIENT '000' INTO TABLE @DATA(itab3).
+
+    "Data object containing a client ID (must be of type c length 3)
+    "Note: If the client does not exist, the result set is empty.
+    TYPES c3 LENGTH 3.
+    DATA client_id TYPE c3 VALUE '000'.
+    SELECT * FROM zdemo_abap_carr USING CLIENT @client_id INTO TABLE @DATA(itab4).
+
+    "Selecting from multiple clients
+    "Using a ranges table
+    DATA client_range TYPE RANGE OF c3.
+    client_range = VALUE #( ( sign = 'I' option = 'EQ' low = '000' )
+                            ( sign = 'I' option = 'BT' low = '100' high = '200' ) ).
+
+    SELECT * FROM zdemo_abap_carr USING CLIENTS IN @client_range INTO TABLE @DATA(itab5).
+    "Selecting data of all clients whose client IDs are in the column MANDT of the
+    "system table T000
+    SELECT * FROM zdemo_abap_carr USING CLIENTS IN t000 INTO TABLE @DATA(itab6).
+    "Selecting data of all clients regardless of the content of the client column
+    SELECT * FROM zdemo_abap_carr USING ALL CLIENTS INTO TABLE @DATA(itab7).
+    ``` 
+
+- Find more information on client handling [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_sql_client_handling.htm).
+
+**Notes on Native SQL/AMDP**
+- Unlike ABAP SQL, Native SQL does not have implicit handling, so you must explicitly pass the client. 
+- Native SQL is passed directly to the database.
+- AMDP, which uses Native SQL, also does not support implicit client handling.
+- While AMDP is permitted in ABAP Cloud, accessing client-dependent data via Native SQL is not supported.
+- When using AMDP in ABAP Cloud, it is crucial to access only the current client. Client-safety must be ensured..
+- AMDP methods in ABAP Cloud must be client-safe, meaning the SQLScript code should access data only in your client. Use only artifacts that limit access to a single client or those that are client-independent.
+- Consequently, all objects in the `USING` list must be client-safe, including CDS table functions implemented as AMDP methods.
+- There are additions to cover client-safe aspects, ensuring access only to your client data.
+- Find more information about client safety in AMDP [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenamdp_client_safety.htm).
+
+**Notes on CDS view entities**
+- In CDS view entities, client handling is done implicitly and automatically.
+- The client dependency is determined by the data sources used. If at least one source is client-dependent, then the entire entity is client-dependent.
+- More information: 
+  - [Client Handling in CDS View Entities](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_v2_view_client_handling.htm)
+  - [Client Safety of CDS View Entities](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_v2_view_client_safety.htm)
+  - [Client Handling in CDS Table Functions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_func_client_handling.htm)
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 

@@ -11,16 +11,16 @@
     - [Copying Internal Tables](#copying-internal-tables)
     - [Using INSERT and APPEND Statements to Populate Internal Tables](#using-insert-and-append-statements-to-populate-internal-tables)
     - [Creating and Populating Internal Tables Using Constructor Expressions](#creating-and-populating-internal-tables-using-constructor-expressions)
-      - [VALUE operator](#value-operator)
-      - [CORRESPONDING Operator](#corresponding-operator)
+      - [VALUE Operator](#value-operator)
+      - [CORRESPONDING Operator and MOVE-CORRESPONDING Statements](#corresponding-operator-and-move-corresponding-statements)
       - [FILTER Operator](#filter-operator)
       - [NEW Operator](#new-operator)
     - [Example: Exploring Populating Internal Tables](#example-exploring-populating-internal-tables)
   - [Reading Single Lines from Internal Tables](#reading-single-lines-from-internal-tables)
     - [Determining the Target Area when Reading Single Lines in READ TABLE Statements](#determining-the-target-area-when-reading-single-lines-in-read-table-statements)
-    - [Reading a Single Line by Index](#reading-a-single-line-by-index)
-    - [Reading a Single Line Using Table Keys](#reading-a-single-line-using-table-keys)
-    - [Reading a Single Line Using a Free Key](#reading-a-single-line-using-a-free-key)
+    - [Reading Single Lines by Index](#reading-single-lines-by-index)
+    - [Reading Single Lines Using Table Keys](#reading-single-lines-using-table-keys)
+    - [Reading Single Lines Using a Free Key](#reading-single-lines-using-a-free-key)
     - [Examples of Addressing Individual Components of Read Lines](#examples-of-addressing-individual-components-of-read-lines)
     - [Excursions with READ TABLE Statements](#excursions-with-read-table-statements)
       - [System Field Setting in READ TABLE Statements](#system-field-setting-in-read-table-statements)
@@ -456,6 +456,8 @@ FINAL(itab4) = itab.
 > - An assignment can trigger an uncatchable exception if, for example, the target table is assigned a duplicate of a unique primary table key or secondary table.
 > - More information: [Conversion Rules for Internal Tables](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconversion_itab.htm)
 
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
 ### Using INSERT and APPEND Statements to Populate Internal Tables
 
 You can use the ABAP keywords
@@ -501,7 +503,17 @@ to add lines to internal tables.
 </details>
 <br>
 
-**Adding a line to an internal table**. The example shows both a structure that is created using the `VALUE` operator as well as an existing structure that is added.
+<table>
+<tr>
+<td> Subject </td> <td> Details/Code Snippet </td>
+</tr>
+<tr>
+<td> Adding a line to an internal table </td>
+<td>
+
+The example shows both a structure that is created using the `VALUE` operator as well as an existing structure that is added.
+
+<br>
 
 ``` abap
 APPEND VALUE #( comp1 = a comp2 = b ... ) TO itab.
@@ -511,7 +523,15 @@ INSERT VALUE #( comp1 = a comp2 = b ... ) INTO TABLE itab.
 INSERT struc INTO TABLE itab.
 ```
 
-**Adding an initial line** to an internal table without providing any field values.
+</td>
+</tr>
+
+<tr>
+<td> Adding an initial line </td>
+<td>
+
+... to an internal table without providing any field values.
+<br>
 
 ``` abap
 APPEND INITIAL LINE TO itab.
@@ -519,7 +539,12 @@ APPEND INITIAL LINE TO itab.
 INSERT INITIAL LINE INTO TABLE itab.
 ```
 
-**Adding a line and assigning the added line to a field symbol or data reference variable**.
+</td>
+</tr>
+<tr>
+<td> Adding a line and assigning the added line to a field symbol or data reference variable </td>
+<td>
+
 ```abap
 "When inserting single lines, you can specify the optional additions 
 "ASSIGNING and REFERENCE INTO. If the insertion is successful, the 
@@ -533,7 +558,11 @@ INSERT INITIAL LINE INTO TABLE itab REFERENCE INTO DATA(dref).
 "of the (initial) line and assign values, e.g. <fs>-comp = ... or dref->comp = ....
 ```
 
-**Adding all lines** from another internal table.
+</td>
+</tr>
+<tr>
+<td> Adding all lines from another internal table </td>
+<td>
 
 ``` abap
 APPEND LINES OF itab2 TO itab.
@@ -541,32 +570,52 @@ APPEND LINES OF itab2 TO itab.
 INSERT LINES OF itab2 INTO TABLE itab.
 ```
 
-**Adding multiple lines from another internal table with a specified index range**.
+</td>
+</tr>
+<tr>
+<td> Adding multiple lines from another internal table with a specified index range </td>
+<td>
+
 - Both `FROM` and `TO` are not mandatory in one statement. it is possible to use only one of them. 
 - If you use only ...
   - `FROM`, all lines up to the last table entry are respected.
   - `TO`, all lines starting with the first table entry are respected. 
 
+<br>
+
 ``` abap
-"i1/i2 represent integer values
+APPEND LINES OF itab2 FROM 3 TO 5 TO itab.
 
-APPEND LINES OF itab2 FROM i1 TO i2 TO itab.
+APPEND LINES OF itab2 FROM 3 TO itab.
 
-APPEND LINES OF itab2 FROM i1 TO itab.
+APPEND LINES OF itab2 TO 7 TO itab.
 
-APPEND LINES OF itab2 TO i2 TO itab.
-
-INSERT LINES OF itab2 FROM i1 TO i2 INTO TABLE itab.
+INSERT LINES OF itab2 FROM 5 TO 9 INTO TABLE itab.
 ```
 
-**Inserting one line or multiple lines from another internal table at a specific position**. 
+
+</td>
+</tr>
+
+<tr>
+<td> Inserting one line or multiple lines from another internal table at a specific position </td>
+<td>
+
 `FROM` and `TO` can be used here, too.
+
+<br>
 
 ``` abap
 INSERT struc INTO itab2 INDEX i.
 
 INSERT LINES OF itab2 INTO itab INDEX i.
 ```
+
+</td>
+</tr>
+
+</table>
+
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
@@ -576,12 +625,21 @@ The constructor expressions can be specified in/with various positions/statement
 > **💡 Note**<br>
 > The following sections cover a selection. There are more constructor expressions used in the context of internal tables (e.g. for creating internal tables). Find more details in the [Constructor Expressions](05_Constructor_Expressions.md) ABAP cheat sheet.
 
-#### VALUE operator
+#### VALUE Operator
 As mentioned above, table lines that are constructed inline as
 arguments to the `VALUE` operator, for example, can be added to
 internal tables. In the following cases, internal tables are populated
 using constructor expressions in the context of
 [assignments](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenassignment_glosry.htm "Glossary Entry").
+
+<table>
+<tr>
+<td> Subject </td> <td> Details/Code Snippet </td>
+</tr>
+<tr>
+<td> Populating an existing internal table by assigning an
+internal table that is constructed inline </td>
+<td>
 
 In the example below, the internal table is populated by assigning an
 internal table that is constructed inline with the `VALUE`
@@ -589,16 +647,24 @@ operator. The inline constructed table has two lines. `line`
 represents an existing structure with a compatible line type. The
 other line is constructed inline.
 
-
 > **💡 Note**<br>
-> The extra pair of parentheses represents a table line. The `#` character indicates that the line type can be derived from the context. The assignment deletes the existing content of the internal table on the left side.
+> - The extra pair of parentheses represents a table line. The `#` character indicates that the line type can be derived from the context. The assignment deletes the existing content of the internal table on the left side.
+> - The existing content of the internal table is deleted, and the new content, which is created in place, is added.
+
+<br>
 
 ``` abap
 itab = VALUE #( ( line )
                 ( comp1 = a comp2 = b ...  ) ).
 ```
 
-**Creating an internal table by inline declaration** and adding lines with a constructor expression.
+</td>
+</tr>
+
+<tr>
+<td> Creating an internal table by inline declaration and adding lines with a constructor expression </td>
+<td>
+
 ``` abap
 "Internal table type
 TYPES it_type LIKE itab.
@@ -620,75 +686,156 @@ DATA(str_tab_b) = VALUE string_table( ).
 DATA str_tab_c TYPE string_table.
 ```
 
-When you use the above assignments (`itab = ...`), the internal table is initialized and the existing content is deleted. To add new lines **without deleting existing content**, use the  [`BASE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenvalue_constructor_params_itab.htm) addition.
+</td>
+</tr>
+<tr>
+<td> Adding new lines without deleting existing content </td>
+<td>
+
+When you use the above assignments to an existing internal table (`itab = ...`), the internal table is initialized and the existing content is deleted. To add new lines without deleting existing content, use the  [`BASE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenvalue_constructor_params_itab.htm) addition.
+
+<br>
 
 ``` abap
 itab = VALUE #( BASE itab ( comp1 = a comp2 = b ... )
                           ( comp1 = c comp2 = d ... ) ).
 ```
 
-**Adding lines of other tables** using the `LINES OF` addition to the `VALUE` operator.
-> **💡 Note**<br>
-> Without the `BASE` addition, the existing content is deleted. It is assumed that the line type of the source table is compatible with that of the target table.
+</td>
+</tr>
+<tr>
+<td> Adding lines of other tables </td>
+<td>
+
+... using the `LINES OF` addition to the `VALUE` operator.
+Without the `BASE` addition, the existing content is deleted. It is assumed that the line type of the source table is compatible with that of the target table. You have multiple syntax options following the `LINES OF` addition, e.g. you can further determine and restrict the lines to be added using `FROM` and `TO`.
+<br>
+
 ``` abap
 itab = VALUE #( ( comp1 = a comp2 = b ...)
                 ( comp1 = a comp2 = b ...)
+                "All lines
                 ( LINES OF itab2 )
+                "More syntax options
+                ( LINES OF itab3 FROM 2 TO 5 )
+                ( LINES OF itab4 FROM 3 )
+                ( LINES OF itab5 TO 7 )
+                ( LINES OF itab6 STEP 2 )
+                ( LINES OF itab7 USING KEY primary_key FROM 3 TO 6 )
                 ... ).
 ```
 
-#### CORRESPONDING Operator
+</td>
+</tr>
 
-**Copying the content of another internal table** using the
+</table>
+
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+#### CORRESPONDING Operator and MOVE-CORRESPONDING Statements
+
+<table>
+<tr>
+<td> Subject </td> <td> Details/Code Snippet </td>
+</tr>
+<tr>
+<td> Copying the content of another internal table </td>
+<td>
+
+... using the
 [`CORRESPONDING`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconstructor_expr_corresponding.htm) operator. 
 - Note that the existing content is deleted.
 - As an alternative to the `CORRESPONDING` operator, you can use [`MOVE-CORRESPONDING`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapmove-corresponding.htm) statements. 
 - The example assumes that the line types of the source and target table are not compatible. However, if the line types are compatible, the syntax will also work.
 - Several additions are possible. They can also be combined. Check the ABAP Keyword Documentation.
-  
+
+<br>
+
 ``` abap
 itab = CORRESPONDING #( itab3 ).
 
 MOVE-CORRESPONDING itab3 TO itab.
 ```
 
-**Copying content and retaining existing content** using the `CORRESPONDING` operator. 
+</td>
+</tr>
+
+<tr>
+<td> Copying content and retaining existing content </td>
+<td>
+
+... using the `CORRESPONDING` operator. 
 The `KEEPING TARGET LINES` addition of the `MOVE-CORRESPONDING` statement preserves the table content.
+<br>
 
 ``` abap
 itab = CORRESPONDING #( BASE ( itab ) itab3 ).
 
 MOVE-CORRESPONDING itab3 TO itab KEEPING TARGET LINES.
 ```
-**Assigning components using mapping relationships**
+
+</td>
+</tr>
+<tr>
+<td> Assigning components using mapping relationships </td>
+<td>
+
 - You can use the `MAPPING` addition of the `CORRESPONDING` operator to specify components of a source table that are assigned to the components of a target table in mapping relationships. 
 - For elementary components, the assignment is made according to the associated assignment rules.
+
+<br>
 
 ``` abap
 itab = CORRESPONDING #( itab3 MAPPING a = c b = d ).
 ```
 
-**Excluding components from the assignment** using the `EXCEPT` addition to the `CORRESPONDING` operator.
+</td>
+</tr>
+<tr>
+<td> Excluding components from the assignment </td>
+<td>
+
+... using the `EXCEPT` addition to the `CORRESPONDING` operator.
 - This is particularly useful if there are identically named components in the source and target tables that are not compatible or convertible. You can avoid syntax errors or runtime errors. 
 - Instead of a component list, `EXCEPT` can also be followed by `*` to exclude all components that are not mentioned in a previous mapping of components. 
 - If `EXCEPT *` is used without the `MAPPING` addition, all components remain initial.
+<br>
+
 ``` abap
 itab = CORRESPONDING #( itab3 EXCEPT e ).
 
 itab = CORRESPONDING #( itab3 EXCEPT * ).
 ```
 
-**Preventing runtime errors when duplicate lines are assigned** to the target table that is defined to accept only unique keys using the `DISCARDING DUPLICATES` addition of the `CORRESPONDING` operator. 
+</td>
+</tr>
+
+<tr>
+<td> Preventing runtime errors when duplicate lines are assigned </td>
+<td>
+
+... to the target table that is defined to accept only unique keys using the `DISCARDING DUPLICATES` addition of the `CORRESPONDING` operator. 
 - In this case, the duplicate line is ignored in the source table. 
 - The addition can also be specified with `MAPPING ...`.
+<br>
 
 ``` abap
 itab = CORRESPONDING #( itab2 DISCARDING DUPLICATES ).
 ```
 
-**Copying data from deep internal tables**. 
+</td>
+</tr>
+
+<tr>
+<td> Copying data from deep internal tables </td>
+<td>
+
 - The `BASE` addition does not delete the existing content. 
 - See also the alternative `MOVE-CORRESPONDING` statements.
+
+<br>
+
 ``` abap
 itab_nested2 = CORRESPONDING #( DEEP itab_nested1 ).
 
@@ -698,6 +845,16 @@ MOVE-CORRESPONDING itab_nested1 TO itab_nested2 EXPANDING NESTED TABLES.
 
 MOVE-CORRESPONDING itab_nested1 TO itab_nested2 EXPANDING NESTED TABLES KEEPING TARGET LINES.
 ```
+
+</td>
+</tr>
+
+</table>
+
+> **💡 Note**<br>
+> The `CL_ABAP_CORRESPONDING` class can be used for assignments. Find an example in the [Misc ABAP Classes](22_Misc_ABAP_Classes.md) cheat sheet.
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 #### FILTER Operator
 
@@ -1151,7 +1308,8 @@ The following code snippets include [`READ TABLE`](https://help.sap.com/doc/abap
     READ TABLE itab REFERENCE INTO DATA(dref_inl) ...
     ```
 
-**Which to use then?** Since all syntax options basically provide similar
+> **✔️ Hint**<br>
+> Which to use then? Since all syntax options basically provide similar
 functionality, your use case, the
 performance or readability of the code may play a role. For more information, see 
 the programming guidelines for the [target
@@ -1164,13 +1322,24 @@ the `TRANSPORTING` addition to restrict the fields to be copied).
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-### Reading a Single Line by Index
+### Reading Single Lines by Index
+
+<table>
+<tr>
+<td> Subject </td> <td> Details/Code Snippet </td>
+</tr>
+<tr>
+<td> Using <code>READ TABLE</code> statements </td>
+<td>
 
 The following example shows `READ TABLE` statements to read a single line from an internal table by specifying the index. You can use the addition `USING KEY` to specify a table key and thus explicitly determine the table index to use. If the table has a sorted secondary
 key, the addition can be specified and the line to be read is then determined from its secondary table index. If the primary table key is
 specified by its name `primary_key`, the table must be an index table, and the behavior is the same as if `USING KEY` was
 not specified.
 Note that the examples only show reading into a work area. Other targets are possible as shown above. 
+
+<br>
+
 ``` abap
 "Primary table index is used by default
 READ TABLE itab INTO wa INDEX i.
@@ -1184,12 +1353,20 @@ READ TABLE itab INTO wa INDEX i USING KEY sec_key.
 "Note: You can also use alias names for the keys if specified.
 ```
 
-Using a [table
-expression](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentable_expressions.htm),
+</td>
+</tr>
+
+<tr>
+<td> Using table expressions </td>
+<td>
+
+Using [table
+expressions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentable_expressions.htm),
 the read result is stored in a variable that can be declared inline.
 The number in the square brackets represents the index. A line that is
 not found results in an runtime error. To avoid an error, you can
 use a [`TRY ... CATCH ... ENDTRY.`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abaptry.htm) block.
+<br>
 
 ``` abap
 "In the examples, integer values are specified for the index.
@@ -1210,11 +1387,19 @@ DATA(lv4) = VALUE #( itab[ 4 ] ).
 DATA(lv5_ref) = REF #( itab[ 5 ] ).
 ```
 
+</td>
+</tr>
+<tr>
+<td> Avoiding an exception when using table expressions </td>
+<td>
+
 When you read a non-existent line using a table expression, you may not want to throw an exception. You can also embed the table expression
 in a constructor expression using the `OPTIONAL` addition. This way, an unsuccessful read will not trigger the 
 exception. The result returned is a line with initial values.
 Alternatively, you can use the `DEFAULT` addition to return a
 default line in case of an unsuccessful read operation, which can also be another table expression or constructor expression.
+
+<br>
 
 ``` abap
 DATA(line1) = VALUE #( itab[ 6 ] OPTIONAL ).
@@ -1222,9 +1407,17 @@ DATA(line1) = VALUE #( itab[ 6 ] OPTIONAL ).
 DATA(line2) = VALUE #( itab[ 7 ] DEFAULT itab[ 1 ]  ).
 ```
 
+
+</td>
+</tr>
+
+
+</table>
+
+
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-### Reading a Single Line Using Table Keys
+### Reading Single Lines Using Table Keys
 
 Lines can be read by explicitly specifying the table keys or the alias names, if any.
 ```abap
@@ -1286,7 +1479,7 @@ READ TABLE it FROM sec_keys USING KEY sk INTO wa.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-### Reading a Single Line Using a Free Key
+### Reading Single Lines Using a Free Key
 
 The specified components used as keys need not be part of a table key.
 ``` abap
@@ -2222,6 +2415,35 @@ you can get type information on internal tables and table types at runtime
 
 For more information, see the [Dynamic Programming](06_Dynamic_Programming.md) ABAP cheat sheet.
 
+RTTI example: 
+```abap
+TYPES tab_type TYPE SORTED TABLE OF demo_struc_type
+       WITH UNIQUE KEY comp1
+       WITH NON-UNIQUE SORTED KEY sec_key ALIAS sk COMPONENTS comp2 comp3.
+DATA itab TYPE tab_type.
+
+DATA(tdo_d) = cl_abap_typedescr=>describe_by_data( itab ).
+"DATA(tdo_d) = cl_abap_typedescr=>describe_by_name( 'TAB_TYPE' ).
+
+"Cast to get more specific information
+DATA(tdo_itab) = CAST cl_abap_tabledescr( cl_abap_typedescr=>describe_by_data( itab ) ).
+"DATA(tdo_itab) = CAST cl_abap_tabledescr( tdo_d ).
+
+DATA(type_category_itab) = tdo_itab->kind.
+DATA(relative_name_itab) = tdo_itab->get_relative_name( ).
+... "Explore more options by positioning the cursor behind -> and choosing CTRL + Space
+DATA(table_kind_itab) = tdo_itab->table_kind.
+DATA(table_keys_itab) = tdo_itab->key.
+DATA(table_keys_more_details_itab) = tdo_itab->get_keys( ).
+DATA(table_has_unique_key_itab) = tdo_itab->has_unique_key.
+DATA(table_key_alias_itab) = tdo_itab->get_key_aliases( ).
+DATA(line_type_itab) = tdo_itab->get_table_line_type( ).
+DATA(table_component_info_itab) = CAST cl_abap_structdescr( tdo_itab->get_table_line_type( ) ).
+DATA(table_components_itab) = CAST cl_abap_structdescr( tdo_itab->get_table_line_type( ) )->components.
+DATA(table_comps_more_info_itab) = CAST cl_abap_structdescr( tdo_itab->get_table_line_type( ) )->get_components( ).
+DATA(applies_to_data_itab) = tdo_itab->applies_to_data( VALUE tab_type( ) ).
+```
+
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## Processing Multiple Internal Table Lines Sequentially
@@ -2778,7 +3000,14 @@ SELECT SINGLE comp1, comp2, comp3 FROM @itab2 AS it WHERE comp3 = sstring`ABAP` 
     especially with tables with standard key.
 
 
-*Sorting by primary table key*
+<table>
+<tr>
+<td> Subject </td> <td> Details/Code Snippet </td>
+</tr>
+<tr>
+<td> Sorting by primary table key </td>
+<td>
+
 ``` abap
 "Implicit sorting by primary table key and in ascending order by default
 SORT itab.
@@ -2801,10 +3030,17 @@ SORT it1.
 ```
 Plus: Suppose there are only elementary numeric components in an internal table with a structured line type. In this case, sorting has no effect because the primary table key is considered empty. This is certainly also true for tables declared with `EMPTY KEY`.
 
-*Sorting by explicitly specifying components*
+</td>
+</tr>
+
+<tr>
+<td> Sorting by explicitly specifying components </td>
+<td>
 
 You can sort by any component of the internal table. It is also possible to specify the sort order 
 (even component-wise). Explicitly specifying the components has the advantage that your code is easier to understand and you can avoid unexpected results if you accidentally use `SORT` without the `BY` addition on empty and standard table keys.
+
+<br>
 
 ``` abap
 DATA it3 TYPE TABLE OF struc WITH NON-UNIQUE KEY a.
@@ -2823,6 +3059,10 @@ SORT itab BY a b ASCENDING c DESCENDING.
 "empty or standard keys)
 SORT itab BY table_line.
 ```
+
+</td>
+</tr>
+</table>
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
