@@ -831,6 +831,7 @@ itab = CORRESPONDING #( itab2 DISCARDING DUPLICATES ).
 <td> Copying data from deep internal tables </td>
 <td>
 
+- A deep internal table is table with [deep](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendeep_glosry.htm) line type, which means the table can itself contain internal tables as components, among others.
 - The `BASE` addition does not delete the existing content. 
 - See also the alternative `MOVE-CORRESPONDING` statements.
 
@@ -1405,6 +1406,7 @@ default line in case of an unsuccessful read operation, which can also be anothe
 DATA(line1) = VALUE #( itab[ 6 ] OPTIONAL ).
 
 DATA(line2) = VALUE #( itab[ 7 ] DEFAULT itab[ 1 ]  ).
+DATA(line3) = VALUE #( itab[ 8 ] DEFAULT VALUE #( ) ).
 ```
 
 

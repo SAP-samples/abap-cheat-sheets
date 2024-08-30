@@ -804,6 +804,7 @@ DATA(struc_incl_view) = tdo_struc->get_included_view( ).
 DATA(applies_to_data_struc) = tdo_struc->applies_to_data( `some string` ).
 
 "Example: "Looping" across a structure
+"For example, this may also be done using a DO loop and dynamic assignments.
 "Demo structure, all components are convertible to type string
 TYPES: BEGIN OF ty_struc,
          comp1 TYPE c LENGTH 3,

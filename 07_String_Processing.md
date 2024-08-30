@@ -38,7 +38,7 @@
       - [Searching Using Regular Expressions](#searching-using-regular-expressions)
       - [System Classes for Regular Expressions](#system-classes-for-regular-expressions)
       - [Replacing Using Regular Expressions](#replacing-using-regular-expressions)
-      - [Misc Examples Using Regular Expressions](#misc-examples-using-regular-expressions)
+      - [Overview/Examples: Using PCRE Regular Expressions in Various Contexts](#overviewexamples-using-pcre-regular-expressions-in-various-contexts)
   - [More String Functions](#more-string-functions)
     - [Checking the Similarity of Strings](#checking-the-similarity-of-strings)
     - [Repeating Strings](#repeating-strings)
@@ -1743,6 +1743,9 @@ Anchors and Positions
 | `\b` | Start or end of word | 1. `\ba.` <br>2. `\Dd\b` <br>3. `\b.d\b` | abcd a12d ed | 1. <ins>**ab**</ins>cd <ins>**a1**</ins>2d ed <br>2. ab<ins>**cd**</ins> a12d <ins>**ed**</ins> <br> 3. abcd a12d <ins>**ed**</ins> | 1. ab<ins>**cd**</ins> a1<ins>**2d**</ins> ed <br> 2. abcd a1<ins>**2d**</ins> ed <br> 3. <ins>**abcd**</ins> <ins>**a12d**</ins> ed |
 | `\B` | Negation of `\b`, not at the start or end of words | `\Be\B` | see an elefant | s<ins>**e**</ins>e an el<ins>**e**</ins>fant  | s<ins>**ee**</ins> an <ins>**e**</ins>lefant |
 
+> **💡 Note**<br>
+> Find more information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenregex_pcre_syntax_specials.htm). Note that there are further anchors available such as `\A` and `\Z` for the start and end of strings.
+
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
 #### Searching Using Regular Expressions
@@ -1937,12 +1940,83 @@ REPLACE ALL OCCURRENCES OF PCRE `p.` IN s1 WITH `XY` "XY?aXY#ab?a
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-#### Misc Examples Using Regular Expressions
+#### Overview/Examples: Using PCRE Regular Expressions in Various Contexts
 
-This section demonstrates various examples using regular expressions. For example, it includes the handling of special characters.
-Regarding special characters, check the [Special Characters](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenregex_pcre_syntax_specials.htm) topic in the ABAP Keyword Documentation.
+- As also covered in other sections, there are multiple contexts where regular expressions (PCRE) are possible, among them:
+  - Statements (`PCRE` addition): `FIND`, `REPLACE` 
+  - Classes: `CL_ABAP_REGEX`, `CL_ABAP_MATCHER`
+  - Built-in functions having the `pcre` parameter: `find`, `find_end`, `count`, `match`, `replace`, `substring_from`, `substring_after`, `substring_before`, `substring_to`
+    - Note: Built-in string functions dealing with regular expressions are also available for ABAP SQL and CDS. See the [Misc Built-In Functions](24_Misc_Builtin_Functions.md) cheat sheet.
 
+Examples:
 ```abap
+DATA(some_string) = `aa bb cc dd ee`.
+DATA(original_string) = some_string.
+
+"---------------- Statements ----------------
+FIND ALL OCCURRENCES OF PCRE `\s` IN some_string RESULTS DATA(findings).
+*LINE    OFFSET    LENGTH    SUBMATCHES
+*0       2         1         OFFSET     LENGTH
+*
+*0       5         1         OFFSET     LENGTH
+*
+*0       8         1         OFFSET     LENGTH
+*
+*0       11        1         OFFSET     LENGTH
+*
+
+"aa#bb#cc#dd#ee
+REPLACE ALL OCCURRENCES OF PCRE `\s` IN some_string WITH `#`.
+
+some_string = original_string.
+
+"---------------- Classes ----------------
+"The result is the same as 'findings'
+DATA(regex_cl1) = cl_abap_regex=>create_pcre( pattern = `\s` )->create_matcher( text = some_string )->find_all( ).
+
+
+"---------------- Built-in Functions ----------------
+"2
+DATA(find_first_occ) = find( val = some_string pcre = `\s` ).
+
+"8
+DATA(find_third_occ) = find( val = some_string pcre = `\s` occ = 3 ).
+
+"3
+DATA(find_end_first_occ) = find_end( val = some_string pcre = `\s` ).
+
+"4
+DATA(count)  = count( val = some_string pcre = `\s` ).
+
+"aa b
+DATA(match) = match( val = some_string
+                      pcre = `a.\s.` ).
+
+"aa#bb cc dd ee
+DATA(replace_first_occ) = replace( val = some_string pcre = `\s` with = `#` ).
+
+some_string = original_string.
+
+"aa#bb#cc#dd#ee
+DATA(replace_all_occ) = replace( val = some_string pcre = `\s` with = `#` occ = 0 ).
+
+"The following examples always use the first occurrence
+"' bb cc dd ee'
+DATA(substr_from) = substring_from( val = some_string pcre = `\s` ).
+    
+"'aa '
+DATA(substr_to) = substring_to( val = some_string pcre = `\s` ).
+    
+"'aa'
+DATA(substr_before) = substring_before( val = some_string pcre = `\s` ).
+    
+"bb cc dd ee
+DATA(substr_after) = substring_after( val = some_string pcre = `\s` ).
+
+******************************************************************************
+
+"The following snippets demonstrates more examples using regular expressions
+
 "String created with string template and control characters for
 "new line, tab, and return
 DATA(a) = |A B\nC\tD\rE|.
@@ -1988,7 +2062,7 @@ ASSERT sy-subrc = 4.
 DATA(html_a) = |<p>Hallo\n</p><p>Ciao!</p><p>Salut.</p>|.
 DATA(html_b) = html_a.
 
-  REPLACE ALL OCCURRENCES OF PCRE `(<p>)(.*?)(<\/p>)` IN html_a WITH `$1Hi$3`.
+REPLACE ALL OCCURRENCES OF PCRE `(<p>)(.*?)(<\/p>)` IN html_a WITH `$1Hi$3`.
 *<p>Hallo
 *</p><p>Hi</p><p>Hi</p>
 
