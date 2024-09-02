@@ -756,6 +756,7 @@ An [inline declaration](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-
 > - For more information about the possible declaration positions, see [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendeclaration_positions.htm).    
 > - You can use the [`FINAL`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenfinal_inline.htm) declaration operator to create [immutable variables](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenimmutable_variable_glosry.htm), as shown below.
 > - [Programming guidelines for inline declarations (F1 documentation for Standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abendeclaration_inline_guidl.htm)
+> - Inline declarations are particularly useful in combination with constructor expressions, such as `VALUE`. Find more information and examples in other cheat sheets, for example, [Constructor Expressions](05_Constructor_Expressions.md).
 
  
 ```abap
@@ -842,6 +843,16 @@ ENDLOOP.
 READ TABLE itab_b2 INTO DATA(wa_b2) INDEX 2.
 "Data reference variable
 READ TABLE itab_b2 REFERENCE INTO DATA(wa_ref_b2) INDEX 2.
+
+
+DATA(strtab) = VALUE string_table( ( `aaa` ) ( `bbb` ) ( `ccc` ) ).
+
+LOOP AT strtab ASSIGNING FIELD-SYMBOL(<fs>).
+  <fs> = to_upper( <fs> ).
+ENDLOOP.
+
+READ TABLE strtab REFERENCE INTO DATA(dref) INDEX 1.
+ASSERT dref->* = `AAA`.
 
 "ABAP SQL statements
 "A structure as target data object is created inline.
@@ -1534,7 +1545,7 @@ Typed literal:
 SELECT SINGLE
   FROM zdemo_abap_fli
   FIELDS *
-  WHERE fldate = dats`20240102`
+  WHERE fldate = datn`20240102`
   INTO @DATA(wa_typed_literals).
 
 "Specifying an untyped literal
@@ -1566,7 +1577,7 @@ SELECT SINGLE
     CAST( substring( CAST( @tmstamp AS CHAR ), 9, 6 ) AS TIMS ) AS time,
     "Untyped literal
     'ABAP' AS txt
-  WHERE fldate = dats`20240102`
+  WHERE fldate = datn`20240102`
   INTO @DATA(wa_misc_typed_literals).
 ```
 

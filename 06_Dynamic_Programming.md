@@ -1479,7 +1479,38 @@ ASSIGN st TO <gen>.
 <gen>-('COL2') = `ABAP`.
 DATA(gen_comp) = CONV string( <gen>-('COL2') ).
 
-"Excursion
+"------------ Excursions ------------
+"The following example "loops" across a structure
+"Demo structure, all components are convertible to type string
+TYPES: BEGIN OF ty_struc,
+         comp1 TYPE c LENGTH 3,
+         comp2 TYPE string,
+         comp3 TYPE i,
+         comp4 TYPE n LENGTH 4,
+       END OF ty_struc.
+DATA(struct) = VALUE ty_struc( comp1 = 'abc' comp2 = `ABAP` comp3 = 123 comp4 = '9876' ).
+DATA looped_struc1 TYPE string.
+DATA looped_struc2 TYPE string.
+
+"In the loop, a string is populated, component by component.
+"Two alternatives are demonstrated. The newer syntax with the component selector and dynamically
+"specifying the position (which is represented by the sy-index value), and an ASSIGN COMPONENT
+"statement.
+DO.
+  TRY.
+      looped_struc1 = |{ looped_struc1 }{ COND #( WHEN sy-index <> 1 THEN `, ` ) }"{ struct-(sy-index) }"|.
+
+      ASSIGN COMPONENT sy-index OF STRUCTURE struct TO FIELD-SYMBOL(<fs>).
+      looped_struc2 = |{ looped_struc2 }{ COND #( WHEN sy-index <> 1 THEN ` / ` ) }"{ <fs> }"|.
+    CATCH cx_sy_assign_illegal_component.
+      EXIT.
+  ENDTRY.
+ENDDO.
+
+*Result:
+*"abc", "ABAP", "123", "9876"
+*"abc" / "ABAP" / "123" / "9876"
+
 "In the following example, a structure is assigned to a field symbol that
 "has a generic type. The components of the structure are accessed dynamically in 
 "a DO loop. The sy-index value is interpreted as the position of the component 

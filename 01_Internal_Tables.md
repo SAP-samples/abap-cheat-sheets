@@ -7,6 +7,11 @@
   - [Basic Properties of Internal Tables](#basic-properties-of-internal-tables)
   - [Table Keys (Primary, Secondary, Standard, Empty) and Table Indexes](#table-keys-primary-secondary-standard-empty-and-table-indexes)
   - [Creating Internal Tables and Types](#creating-internal-tables-and-types)
+    - [Specifying Keys in Internal Table Declarations](#specifying-keys-in-internal-table-declarations)
+    - [Internal Tables Based on Locally Created Line/Table Types](#internal-tables-based-on-locally-created-linetable-types)
+    - [Line Type Options of Internal Tables](#line-type-options-of-internal-tables)
+    - [Creating Internal Tables By Inline Declaration](#creating-internal-tables-by-inline-declaration)
+    - [Creating Internal Tables Dynamically](#creating-internal-tables-dynamically)
   - [Populating Internal Tables](#populating-internal-tables)
     - [Copying Internal Tables](#copying-internal-tables)
     - [Using INSERT and APPEND Statements to Populate Internal Tables](#using-insert-and-append-statements-to-populate-internal-tables)
@@ -225,119 +230,165 @@ DATA  itab4      LIKE                   itab1 ...       "Based on an existing in
 > - If the table category is not specified (`... TYPE TABLE OF ...`), it is automatically `... TYPE STANDARD TABLE OF ...`.
 > - Using [Runtime Type Creation (RTTC)](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrun_time_type_creation_glosry.htm "Glossary Entry"), you can define and  create new internal tables and table types as [type description objects](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentype_object_glosry.htm) at runtime. For more information, see the [Dynamic Programming](06_Dynamic_Programming.md) ABAP cheat sheet.
 
-The following code snippet contains various internal table declarations. It is intended to demonstrate a selection of the rich variety of possible internal tables mentioned in the previous sections, e.g. in *Table Keys in Internal Tables*.
-In the examples, the internal tables are created using the structured type of a demo database table in the DDIC. The line type of the database table is automatically used when defining an internal table.
+The following code snippets contain various internal table declarations. It is intended to demonstrate a selection of the rich variety of possible internal tables mentioned in the previous sections, e.g. in *Table Keys in Internal Tables*.
+In the examples, many of the internal tables are created using the structured type of a demo database table in the DDIC. The line type of the database table is automatically used when defining an internal table.
+
+### Specifying Keys in Internal Table Declarations
+
+<table>
+<tr>
+<td> Creating internal tables with ... </td> <td> Details/Code Snippet </td>
+</tr>
+<tr>
+<td> Standard table keys </td>
+<td>
+
+``` abap
+"Standard table without explicit primary table key specification.
+"Note that STANDARD is not explicitly specified.
+"Implicitly, the standard key is used; all non-numeric table fields
+"make up the primary table key.
+DATA it1 TYPE TABLE OF zdemo_abap_flsch.
+
+"Explicitly specifying STANDARD for a standard table.
+"Explicitly specifying the standard table key. The declaration
+"corresponds to it1.
+DATA it2 TYPE STANDARD TABLE OF zdemo_abap_flsch WITH DEFAULT KEY.
+
+"Hashed table with unique standard table key
+DATA it3 TYPE HASHED TABLE OF zdemo_abap_flsch WITH UNIQUE DEFAULT KEY.
+
+"Sorted table with non-unique standard table key
+DATA it4 TYPE SORTED TABLE OF zdemo_abap_flsch WITH NON-UNIQUE DEFAULT KEY.
+``` 
+
+</td>
+</tr>
+<tr>
+<td> Primary table keys </td>
+<td>
 
 
 ``` abap
-"------------------ Standard table key ------------------
-
-"Standard table without explicit primary table key specification. Note that STANDARD 
-"is not explicitly specified.
-"Implicitly, the standard key is used; all non-numeric table fields
-"make up the primary table key.
-DATA it1 TYPE TABLE OF zdemo_abap_fli.
-
-"Explicitly specifying STANDARD for a standard table.
-"Explicitly specifying the standard table key. It is the same as it1.
-DATA it2 TYPE STANDARD TABLE OF zdemo_abap_fli WITH DEFAULT KEY.
-
-"Hashed table with unique standard table key
-DATA it3 TYPE HASHED TABLE OF zdemo_abap_fli WITH UNIQUE DEFAULT KEY.
-
-"Sorted table with non-unique standard table key
-DATA it4 TYPE SORTED TABLE OF zdemo_abap_fli WITH NON-UNIQUE DEFAULT KEY.
-
-"Elementary line type; the whole table line is the standard table key
-DATA it5 TYPE TABLE OF i.
-
-"------------------ Primary table key ------------------
-
 "Specifying the primary table key
-"Standard tables: only a non-unique key possible
-"The following two examples are the same. NON-UNIQUE can be ommitted but is implicitly added.
-DATA it6 TYPE TABLE OF zdemo_abap_fli WITH NON-UNIQUE KEY carrid.
-DATA it7 TYPE TABLE OF zdemo_abap_fli WITH KEY carrid.
+"In standard tables, only a non-unique key is possible.
+"The following two examples are the same. NON-UNIQUE can be ommitted but
+"is implicitly added.
+DATA it5 TYPE TABLE OF zdemo_abap_flsch WITH NON-UNIQUE KEY carrid.
+DATA it6 TYPE TABLE OF zdemo_abap_flsch WITH KEY carrid.
 
 "Sorted tables: both UNIQUE and NON-UNIQUE possible
-DATA it8 TYPE SORTED TABLE OF zdemo_abap_fli WITH UNIQUE KEY carrid connid.
-DATA it9 TYPE SORTED TABLE OF zdemo_abap_fli WITH NON-UNIQUE KEY carrid connid cityfrom.
+DATA it7 TYPE SORTED TABLE OF zdemo_abap_flsch WITH UNIQUE KEY carrid connid.
+DATA it8 TYPE SORTED TABLE OF zdemo_abap_flsch WITH NON-UNIQUE KEY carrid connid cityfrom.
 
 "Hashed tables: UNIQUE KEY must be specified
-DATA it10 TYPE HASHED TABLE OF zdemo_abap_fli WITH UNIQUE KEY carrid.
+DATA it9 TYPE HASHED TABLE OF zdemo_abap_flsch WITH UNIQUE KEY carrid.
 
 "Explicitly specifying the predefined name primary_key and listing the components.
-"The example is the same as it6 and it7.
-DATA it11 TYPE TABLE OF zdemo_abap_fli WITH KEY primary_key COMPONENTS carrid.
+"The example is the same as it5 and it6.
+DATA it10 TYPE TABLE OF zdemo_abap_flsch WITH KEY primary_key COMPONENTS carrid.
 
-"The following example is the same as it9.
-DATA it12 TYPE SORTED TABLE OF zdemo_abap_fli 
+"The following example is the same as it8.
+DATA it11 TYPE SORTED TABLE OF zdemo_abap_flsch
   WITH NON-UNIQUE KEY primary_key COMPONENTS carrid connid cityfrom.
 
 "Specifying an alias name for a primary table key.
 "Only possible for sorted/hashed tables.
-DATA it13 TYPE SORTED TABLE OF zdemo_abap_fli
+DATA it12 TYPE SORTED TABLE OF zdemo_abap_flsch
   WITH NON-UNIQUE KEY primary_key
   ALIAS p1 COMPONENTS carrid connid cityfrom.
 
-"Specifying a key that is composed of the entire line using the predefined table_line.
-"In the example, an alias name is defined for a primary table key. 
-DATA it14 TYPE HASHED TABLE OF zdemo_abap_fli
+"Specifying a key that is composed of the entire line using the
+"predefined table_line.
+"In the example, an alias name is defined for a primary table key.
+DATA it13 TYPE HASHED TABLE OF zdemo_abap_flsch
   WITH UNIQUE KEY primary_key
   ALIAS p2 COMPONENTS table_line.
+``` 
 
-"------------------ Empty key ------------------
+</td>
+</tr>
 
-"Empty keys only possible for standard tables
-DATA it15 TYPE TABLE OF zdemo_abap_fli WITH EMPTY KEY.
+<tr>
+<td> Empty keys </td>
+<td>
 
-"Excursion: The inline declaration in a SELECT statement produces a standard table with empty key.
-SELECT * FROM zdemo_abap_fli INTO TABLE @DATA(it16).
 
-"------------------ Secondary table key ------------------
+``` abap
+"Empty keys are only possible for standard tables
+DATA it14 TYPE TABLE OF zdemo_abap_flsch WITH EMPTY KEY.
 
-"The following examples demonstrate secondary table keys that are possible for all table categories.
-DATA it17 TYPE TABLE OF zdemo_abap_fli                      "standard table
+"Empty primary table key, secondary table key specified
+DATA it15 TYPE TABLE OF zdemo_abap_flsch WITH EMPTY KEY
+  WITH UNIQUE SORTED KEY cities COMPONENTS cityfrom cityto.
+
+"Excursion: The inline declaration in a SELECT statement
+"produces a standard table with empty key.
+SELECT * FROM zdemo_abap_flsch INTO TABLE @DATA(it16).
+``` 
+
+</td>
+</tr>
+<tr>
+<td> Secondary table keys </td>
+<td>
+
+
+``` abap
+"The following examples demonstrate secondary table keys that are
+"possible for all table categories.
+DATA it17 TYPE TABLE OF zdemo_abap_flsch                    "standard table
   WITH NON-UNIQUE KEY carrid connid                         "primary table key
   WITH UNIQUE SORTED KEY cities COMPONENTS cityfrom cityto. "secondary table key
 
-DATA it18 TYPE HASHED TABLE OF zdemo_abap_fli               "hashed table
+DATA it18 TYPE HASHED TABLE OF zdemo_abap_flsch               "hashed table
   WITH UNIQUE KEY carrid connid
   WITH NON-UNIQUE SORTED KEY airports COMPONENTS airpfrom airpto.
 
-DATA it19 TYPE SORTED TABLE OF zdemo_abap_fli              "sorted table
+DATA it19 TYPE SORTED TABLE OF zdemo_abap_flsch              "sorted table
   WITH UNIQUE KEY carrid connid
   WITH UNIQUE HASHED KEY countries COMPONENTS countryfr countryto.
 
-"Multiple secondary keys are possible 
-DATA it20 TYPE TABLE OF zdemo_abap_fli
+"Multiple secondary keys are possible
+DATA it20 TYPE TABLE OF zdemo_abap_flsch
   WITH NON-UNIQUE KEY primary_key COMPONENTS carrid connid
   WITH NON-UNIQUE SORTED KEY cities COMPONENTS cityfrom cityto
   WITH UNIQUE HASHED KEY airports COMPONENTS airpfrom airpto.
 
-"Alias names for secondary table keys (and also for the primary table key in the example)
-DATA it21 TYPE SORTED TABLE OF zdemo_abap_fli
-  WITH NON-UNIQUE KEY primary_key ALIAS k1 COMPONENTS carrid connid city
+"Alias names for secondary table keys (and also for the primary
+"table key in the example)
+DATA it21 TYPE SORTED TABLE OF zdemo_abap_flsch
+  WITH NON-UNIQUE KEY primary_key ALIAS k1 COMPONENTS carrid connid
   WITH NON-UNIQUE SORTED KEY cities ALIAS s1 COMPONENTS cityfrom cityto
   WITH UNIQUE HASHED KEY airports ALIAS s2 COMPONENTS airpfrom airpto.
 
-"Example for using table keys and alias names using a LOOP AT statement. 
+"Excursion: Example of using table keys and alias names using a LOOP AT statement.
 "All of the statements below are possible.
-"Note that if the secondary table key is not specified (and if the USING KEY addition is not 
+"Note that if the secondary table key is not specified (and if the USING KEY addition is not
 "used in the example), the primary table key is respected by default.
-"Further ABAP statements, such as READ or MODIFY, are available in which the key can be 
+"Further ABAP statements, such as READ or MODIFY, are available in which the key can be
 "explicitly specified to process internal tables.
 LOOP AT it21 INTO DATA(wa) USING KEY primary_key.
-"LOOP AT it21 INTO DATA(wa) USING KEY k1.
-"LOOP AT it21 INTO DATA(wa) USING KEY cities.
-"LOOP AT it21 INTO DATA(wa) USING KEY s1.
-"LOOP AT it21 INTO DATA(wa) USING KEY airports.
-"LOOP AT it21 INTO DATA(wa) USING KEY s2.
+  "LOOP AT it21 INTO DATA(wa) USING KEY k1.
+  "LOOP AT it21 INTO DATA(wa) USING KEY cities.
+  "LOOP AT it21 INTO DATA(wa) USING KEY s1.
+  "LOOP AT it21 INTO DATA(wa) USING KEY airports.
+  "LOOP AT it21 INTO DATA(wa) USING KEY s2.
   ...
 ENDLOOP.
-```
+``` 
 
-As mentioned, the examples above demonstrate internal tables that are created using the structured type of a database table in the DDIC. 
+</td>
+</tr>
+
+</table>
+
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+### Internal Tables Based on Locally Created Line/Table Types
+
+The examples above demonstrate internal tables that are created using the structured type of a database table in the DDIC. 
 The following example shows the pattern and various examples of declaring internal tables and types by including the local definition of structured data and internal table types for demonstration purposes.
 
 Steps: 
@@ -355,85 +406,224 @@ if the operand type can be fully determined, for example, using a
 
 
 ``` abap
+"Internal table creation steps based on a locally declared structure
 "1. Defining line type locally
-
 TYPES: BEGIN OF ls_loc,
-        key_field TYPE i,
-        char1     TYPE c LENGTH 10,
-        char2     TYPE c LENGTH 10,
-        num1      TYPE i,
-        num2      TYPE i,
-      END OF ls_loc.
+          key_field TYPE i,
+          char1     TYPE c LENGTH 10,
+          char2     TYPE c LENGTH 10,
+          num1      TYPE i,
+          num2      TYPE i,
+        END OF ls_loc.
 
 "2. Defining internal table types
-"All of the examples use the short form:
+TYPES: tt_std    TYPE TABLE OF ls_loc WITH EMPTY KEY,
+        tt_sorted TYPE SORTED TABLE OF ls_loc WITH NON-UNIQUE KEY key_field,
+        tt_hashed TYPE HASHED TABLE OF ls_loc WITH UNIQUE KEY key_field.
 
-TYPES:
-  "Standard table type based on locally defined structure type.
-  tt_loc_str TYPE TABLE OF ls_loc WITH NON-UNIQUE KEY key_field,
+"3. Creating internal tables from locally defined table types
+DATA: it22 TYPE tt_std,
+      it23 TYPE tt_sorted,
+      it24 TYPE tt_hashed.
 
-  "Based on global structure type
-  tt_gl_str TYPE TABLE OF zsome_global_struc_type WITH NON-UNIQUE KEY key_field,
+"Combining data object and table type definition
+DATA it25 TYPE TABLE OF ls_loc WITH NON-UNIQUE KEY key_field.
 
-  "Based on database table (could also be, e. g. a CDS view)
-  "In this case, the line type of the table is automatically used.
-  tt_gl_tab TYPE TABLE OF zdemo_abap_fli WITH NON-UNIQUE KEY carrid,
-
-  "Based on an elementary type
-  tt_el_type TYPE TABLE OF i.
-
-"3. Creating internal tables ...
-"... from locally defined table types
-DATA: itab_a1 TYPE tt_loc_str,
-      itab_a2 TYPE tt_gl_str,
-      itab_a3 TYPE tt_gl_tab,
-      itab_a4 TYPE tt_el_type.
-
-"... from global internal table types
-DATA itab_a5 TYPE string_table.
-
-"Combining data object and table type definition 
-DATA itab_a6 TYPE TABLE OF ls_loc WITH NON-UNIQUE KEY key_field.
-
+"LIKE addition
 "Internal table based on an already existing internal table using LIKE.
-"Here, an internal table is created containing internal tables of the 
-"type of itab_a6.
-DATA itab_a7 LIKE TABLE OF itab_a6.
-
-"Creating internal tables by inline declarations
-
-"Table declared inline in the context of an assignment
-"The examples show the copying of a table including the content on the fly
-"and creating the table in one step. The data type of the
-"declared variable is determined by the right side.
-DATA(it_inline1) = itab_a1.
-DATA(it_inline2) = it_inline1.
-
-"Using FINAL for creating immutable variables
-FINAL(it_final) = it_inline1.
-
-"Using the VALUE operator and an internal table type
-DATA(it_inline3) = VALUE tt_loc_str( ( ... ) ).
-
-"Not providing any table lines means the table is initial 
-"and has the same effect as the declaration of
-"itab_a1 above.
-DATA(it_inline4) = VALUE tt_loc_str( ).
-
-"Table declared inline in the context of a SELECT statement;
-"a prior extra declaration of an internal table is not needed.
-SELECT * FROM zdemo_abap_fli INTO TABLE @DATA(it_inline5).
-
-"Instead of
-DATA it_sel TYPE TABLE OF zdemo_abap_fli WITH EMPTY KEY.
-SELECT * FROM zdemo_abap_fli INTO TABLE @it_sel.
-
-"Using FINAL
-SELECT * FROM zdemo_abap_fli INTO TABLE @FINAL(it_inline6).
+DATA it26 LIKE it25.
+"In the following example, an internal table is created containing internal tables
+"of the type of itab_a6.
+DATA it27 LIKE TABLE OF it25.
 ```
 
-> **💡 Note**<br>
-> Internal tables can also be created dynamically. Find more information in the [Dynamic Programming cheat sheet](06_Dynamic_Programming.md).
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+### Line Type Options of Internal Tables
+
+This section explores various line type options when declaring internal tables.Apart from the (globally available) line types of database tables, you can also use other line/table types. Among them, for example: 
+- globally available line type of DDIC structures and CDS entities
+- globally available table types declared in the DDIC
+- locally declared line and table types (as shown above)
+- line and table types declared in the public visibility section of classes/interfaces that are gloablly visibile
+
+<table>
+<tr>
+<td> Subject </td> <td> Details/Code Snippet </td>
+</tr>
+
+<tr>
+<td> Elementary line types </td>
+<td>
+
+
+``` abap
+"The whole table line is the standard table key.
+"The following examples use built-in ABAP types. Besides these types,
+"you can also use locally declared elementary types, globally declared
+"elementary types such as DDIC data elements, CDS simple types, types
+"that are declared in the public visibility section of classes/interfaces,
+"etc.. As shown further down, there are released table types with elementary
+"line types. 
+DATA it28 TYPE TABLE OF i.
+DATA it29 TYPE TABLE OF string WITH EMPTY KEY.
+DATA it30 TYPE TABLE OF xstring WITH EMPTY KEY.
+DATA it31 TYPE TABLE OF utclong WITH EMPTY KEY.
+"Elementary type declared in an interface
+DATA it32 TYPE TABLE OF zdemo_abap_get_data_itf=>occ_rate WITH EMPTY KEY.
+"Using a DDIC data element
+DATA it_dtel TYPE TABLE OF timestamp WITH EMPTY KEY.
+``` 
+
+</td>
+</tr>
+
+<tr>
+<td> Structured types </td>
+<td>
+
+
+``` abap
+"Apart from the line type of a database table, these types can also
+"be local structured types (as shown below), local structured types declared
+"in the public visibility section of classes/interfaces, DDIC structures, CDS
+"entities, etc.
+
+"CDS view entity
+DATA it33 TYPE TABLE OF zdemo_abap_carr_ve WITH EMPTY KEY.
+"CDS abstract entity
+DATA it34 TYPE TABLE OF zdemo_abap_abstract_ent WITH EMPTY KEY.
+
+``` 
+
+</td>
+</tr>
+<tr>
+<td> Table types </td>
+<td>
+
+
+``` abap
+"As shown above, the table types can be locally declared.
+DATA it35 TYPE TABLE OF zdemo_abap_get_data_itf=>carr_tab.
+"Global table type declared in an interface
+DATA it36 TYPE zdemo_abap_get_data_itf=>carr_tab.
+
+"The following examples use globally available and released table 
+"types with elementary lines types.
+DATA it37 TYPE string_table.
+DATA it38 TYPE string_hashed_table.
+DATA it39 TYPE xstring_table.
+``` 
+
+</td>
+</tr>
+<tr>
+<td> Deep internal tables </td>
+<td>
+
+
+``` abap
+"The previous examples mostly demonstrate flat line types.
+"Deep line types are also possible, that is, the line type
+"can include components such as strings, references, structures,
+"and internal tables.
+TYPES: BEGIN OF ls_deep,
+         key_field TYPE i,
+         char      TYPE c LENGTH 10,
+         str       TYPE string,
+         dref      TYPE REF TO i,
+         struct    TYPE zdemo_abap_flsch,
+         str_tab   TYPE string_table,
+         tab       TYPE TABLE OF zdemo_abap_flsch WITH EMPTY KEY,
+       END OF ls_deep.
+
+DATA it40 TYPE TABLE OF ls_deep WITH EMPTY KEY.
+``` 
+
+</td>
+</tr>
+<tr>
+<td> References as line types </td>
+<td>
+
+
+``` abap
+DATA it_ref TYPE TABLE OF REF TO i.
+``` 
+
+</td>
+</tr>
+
+
+</table>
+
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+### Creating Internal Tables By Inline Declaration 
+
+```abap
+"Table declared inline in the context of an assignment
+"The examples show the copying of a table including the content
+"on the fly and creating the table in one step. The data type of the
+"declared variable is determined by the right side.
+DATA(it41) = it40.
+DATA(it42) = it41.
+
+"Using FINAL for creating immutable variables
+FINAL(it43) = it40.
+
+"As shown below and in other cheat sheets, constructor operators
+"are handy when creating internal tables in place. The following
+"examples uses the VALUE operator and an internal table type.
+DATA(it44) = VALUE tt_std( ( key_field = 1 char1 = 'aaa' )
+                           ( key_field = 2 char1 = 'bbb' ) ).
+
+"Not providing any table lines means the table is initial
+"and has the same effect as the declaration of it46.
+DATA(it45) = VALUE tt_std( ).
+DATA it46 TYPE tt_std.
+
+"Excursion
+"Table declared inline in the context of a SELECT statement;
+"a prior extra declaration of an internal table is not needed.
+SELECT * FROM zdemo_abap_fli INTO TABLE @DATA(it47).
+
+"Instead of
+DATA it48 TYPE TABLE OF zdemo_abap_fli WITH EMPTY KEY.
+SELECT * FROM zdemo_abap_fli INTO TABLE @it48.
+
+"Using FINAL
+SELECT * FROM zdemo_abap_fli INTO TABLE @FINAL(it49).
+```
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+
+### Creating Internal Tables Dynamically
+
+Find more information in the [Dynamic Programming cheat sheet](06_Dynamic_Programming.md).
+
+```abap
+DATA(some_type) = 'STRING'.
+DATA dataref TYPE REF TO data.
+
+"Creating an internal table using a CREATE DATA statement
+"by specifying the type name dynamically.
+"In the example, a standard table with elementary line type
+"and standard key is created.
+CREATE DATA dataref TYPE TABLE OF (some_type).
+
+TYPES: BEGIN OF demo_struc,
+          comp1 TYPE c LENGTH 10,
+          comp2 TYPE i,
+          comp3 TYPE i,
+        END OF demo_struc.
+
+"Internal table with structured line type and empty key.
+CREATE DATA dataref TYPE TABLE OF ('DEMO_STRUC') WITH EMPTY KEY.
+```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
