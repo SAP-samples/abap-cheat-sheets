@@ -1501,6 +1501,18 @@ dobj_enum_a = a.
 
 "Data object declared inline, the typed derived is t_enum
 DATA(dobj_enum_b) = b.   
+
+"Note: The technical data type of an enumerated value is the base type 
+"of the enumerated type. You can use the base type of an enumerated type 
+"in special conversions using CONV. A base type is flat, elementary, and 
+"has a maximum length of 16 bytes.
+DATA some_dobj TYPE c LENGTH 2 VALUE 'ap'.
+DATA(dobj_enum_c) = CONV t_enum_struc( some_dobj ).
+ASSERT dobj_enum_c = en_struc-m.
+
+"Conversion not possible
+DATA some_string TYPE string VALUE 'ap'.
+"DATA(dobj_enum_d) = CONV t_enum_struc( some_string ).
 ```
 
 Find more information on enumerated types in the (commented code of the) cheat sheet example and [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenenumerated_types_usage.htm). 

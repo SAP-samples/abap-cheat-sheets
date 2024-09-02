@@ -985,7 +985,7 @@ DATA(shift_right4) = shift_right( val = to_be_shifted ).
 </tr>
 
 <tr>
-<td> <code>substring</code><br><code>substring_after</code><br><code>substring_before</code><br><code>substring_to</code> </td>
+<td> <code>substring</code><br><code>substring_after</code><br><code>substring_before</code><br><code>substring_to</code><br><code>substring_from</code> </td>
 <td>
 Processing substrings
 <br><br>

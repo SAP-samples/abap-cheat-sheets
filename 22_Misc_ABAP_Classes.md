@@ -30,6 +30,7 @@
   - [Locking](#locking)
   - [Calling Services](#calling-services)
   - [Reading and Writing XLSX Content](#reading-and-writing-xlsx-content)
+  - [Zip Files](#zip-files)
 
 
 This ABAP cheat sheet contains a selection of available ABAP classes, serving as a quick introduction, along with code snippets to explore the functionality in action.
@@ -2389,6 +2390,299 @@ The latter can be created, among others, based on a communication arrangement or
 <li>For more information, refer to the class documentation and the topic <a href="https://help.sap.com/docs/btp/sap-business-technology-platform/integration-and-connectivity">Integration and Connectivity</a>.</li>
 </ul>
 
+To check out examples in demo classes, expand the collapsible sections below.
+
+
+<details>
+  <summary>1. Read example: Getting Markdown content and sending ZIP file via email</summary>
+  <!-- -->
+
+> **⚠️ Note/Disclaimer**<br>
+> - The following self-contained and oversimplified example is not a representative best practice example, nor does it cover a meaningful use case. It only explores method calls and is intended to give a rough idea of the functionality.</li>
+> - The example uses the <code>create_by_url</code> method, which is only suitable for public services or testing purposes. No authentication is required for the APIs used.
+> - Note the <a href="README.md#%EF%B8%8F-disclaimer">Disclaimer</a>.</li>
+> - For more information, more meaningful examples, and tutorials that deal with the classes and methods, see the following links:
+>   - <a href="https://developers.sap.com/tutorials/abap-environment-external-api.html">Call an External API and Parse the Response in SAP BTP ABAP Environment</a>
+>   - <a href="https://community.sap.com/t5/technology-blogs-by-sap/how-to-call-a-remote-odata-service-from-the-trial-version-of-sap-cloud/ba-p/13411535">How to call a remote OData service from the trial version of SAP Cloud Platform ABAP environment</a>
+> - The example is generally about calling external APIs and parsing the HTTP responses. It retrieves the Markdown files of the ABAP cheat sheet documents Markdown contained in the ABAP cheat sheet GitHub repository.  
+> - Before using the GitHub APIs, make sure that you have consulted the following documentation: <a href="https://docs.github.com/en">GitHub Docs</a>, <a href="https://docs.github.com/en/enterprise-cloud@latest/rest/markdown/markdown?apiVersion=2022-11-28#render-a-markdown-document">Render a Markdown document</a>, <a href="https://docs.github.com/en/rest/using-the-rest-api/rate-limits-for-the-rest-api?apiVersion=2022-11-28">Rate limits for the REST API</a>
+> - For the example to work and send emails, make sure that the configurations from [here](https://help.sap.com/docs/btp/sap-business-technology-platform/emailing) have been performed.
+> - To run the example class, copy and paste the code into a class named `zcl_some_class`. Run the class using F9. The email sending status will be displayed, and you can expect an email to be sent.   
+
+
+<br>
+
+``` abap
+CLASS zcl_some_class DEFINITION PUBLIC FINAL CREATE PUBLIC.
+  PUBLIC SECTION.
+    INTERFACES if_oo_adt_classrun.
+  PRIVATE SECTION.
+    CONSTANTS url_cs TYPE string VALUE `https://api.github.com/repos/SAP-samples/abap-cheat-sheets/git/trees/main`.
+    CONSTANTS url_gh TYPE string VALUE `https://raw.githubusercontent.com/SAP-samples/abap-cheat-sheets/main/`.
+    CONSTANTS url_api TYPE string VALUE `https://api.github.com/markdown`.
+    DATA url TYPE string.
+    TYPES: BEGIN OF s,
+             file_name     TYPE string,
+             title         TYPE string,
+             code_snippets TYPE string_table,
+             error         TYPE abap_boolean,
+           END OF s.
+    DATA tab TYPE TABLE OF s WITH EMPTY KEY.
+    DATA snippets TYPE string_table.
+    DATA html TYPE string.
+ENDCLASS.
+CLASS zcl_some_class IMPLEMENTATION.
+  METHOD if_oo_adt_classrun~main.
+    TRY.
+        "Creating a client object using a destination
+        "In the example, the HTTP destination is created using a plain URL.
+        "Here, a GitHub API is used to retrieve file names of the ABAP cheat sheet repository.
+        DATA(http_client) = cl_web_http_client_manager=>create_by_http_destination( i_destination = cl_http_destination_provider=>create_by_url( i_url = url_cs ) ).
+        "Sending an HTTP GET request and returning the response
+        "In the example, the HTTP body is retrieved as string data.
+        DATA(response) = http_client->execute( if_web_http_client=>get )->get_text(  ).
+      CATCH cx_root INTO DATA(err).
+        out->write( err->get_text( ) ).
+    ENDTRY.
+    IF err IS INITIAL.
+      "Markdown file names are contained in the returned string in a specific
+      "pattern. In the following code, the markdown file names are extracted
+      "using a regular expression (pattern: "path":"04_ABAP_Object_Orientation.md")
+      "After '"path":"' (not including this part, indivated by \K), two
+      "digits must follow. Then, the further file name is captured with a
+      "non-greedy capturing up to '.md'.
+      FIND ALL OCCURRENCES OF PCRE `("path":")\K\d\d.*?\.md` IN response
+        RESULTS DATA(results)
+        IGNORING CASE.
+
+      "The 'results' internal table contains all findings and includes their
+      "offset and length information.
+      "Using a loop, the actual file names are extracted from the 'response'
+      "string and added to an internal table that is to receive more information
+      "in the code below.
+      LOOP AT results REFERENCE INTO DATA(md).
+        tab = VALUE #( BASE tab ( file_name = substring( val = response off = md->offset len = md->length ) ) ).
+      ENDLOOP.
+      SORT tab BY file_name ASCENDING.
+
+      "In the following loop, the raw markdown content is retrieved using an HTTP GET request, also
+      "by creating a client object and using a destination (another plain URL). The URL is constructed
+      "using the constant value plus the markdown file that was retrieved before.
+      LOOP AT tab REFERENCE INTO DATA(cs).
+        url = url_gh && cs->file_name.
+        TRY.
+            http_client = cl_web_http_client_manager=>create_by_http_destination( i_destination = cl_http_destination_provider=>create_by_url( i_url = url ) ).
+            DATA(raw_md) = http_client->execute( if_web_http_client=>get )->get_text(  ).
+            "Putting the long string that was retrieved in an internal table of type string
+            "for further processing (extracting the code snippets).
+            SPLIT raw_md AT |\n| INTO TABLE snippets.
+            DATA(flag) = ''.
+            "In the loop, all content from the markdown that is not part of a code
+            "snippet (indicated by the triple ```) is deleted.
+            "The replacements with dummy content in the loop are only done so that
+            "the POST request further down can work with the provided content
+            "(i.e. avoiding issues with characters such as "; they are inserted later again).
+            LOOP AT snippets REFERENCE INTO DATA(line).
+              DATA(tabix) = sy-tabix.
+              FIND PCRE '^\s*```' IN line->*.
+              IF sy-subrc = 0 AND flag = ''.
+                line->* = `%%%--START--%%%%`.
+                flag = 'X'.
+              ELSEIF sy-subrc = 0 AND flag = 'X'.
+                line->* = `%%%--END--%%%%`.
+                flag = ''.
+              ELSEIF flag <> 'X'.
+                DELETE snippets INDEX tabix.
+              ELSE.
+                FIND PCRE `^\s*"` IN line->*.
+                IF sy-subrc = 0.
+                  DATA(comment1) = 'X'.
+                ENDIF.
+                FIND PCRE `^\*` IN line->*.
+                IF sy-subrc = 0.
+                  DATA(comment2) = 'X'.
+                ENDIF.
+                FIND `***********************************************************************`
+                IN line->*.
+                IF sy-subrc = 0.
+                  DATA(divider) = 'X'.
+                ENDIF.
+                IF comment1 = 'X' OR comment2 = 'X' OR divider = 'X'.
+                  DELETE snippets INDEX tabix.
+                  CLEAR: comment1, comment2, divider.
+                ELSE.
+                  REPLACE ALL OCCURRENCES OF `"` IN line->* WITH `§§§§§`.
+                  REPLACE ALL OCCURRENCES OF `\` IN line->* WITH `%%%%%`.
+                ENDIF.
+              ENDIF.
+            ENDLOOP.
+            "Adding the code snippets to the information table
+            cs->code_snippets = snippets.
+            CLEAR snippets.
+          CATCH cx_root INTO err.
+            cs->error = abap_true.
+        ENDTRY.
+        DELETE ADJACENT DUPLICATES FROM cs->code_snippets COMPARING table_line.
+      ENDLOOP.
+      "Creating the final html to be displayed
+      LOOP AT tab REFERENCE INTO cs WHERE code_snippets IS NOT INITIAL AND error = abap_false.
+        LOOP AT cs->code_snippets REFERENCE INTO DATA(code).
+          tabix = sy-tabix.
+          IF code->* = `%%%--START--%%%%`.
+            code->* = |```|.
+          ENDIF.
+          IF code->* = `%%%--END--%%%%`.
+            code->* = |```|.
+            INSERT `*****************` && |\\n|
+            INTO cs->code_snippets INDEX tabix + 1.
+          ENDIF.
+          code->* = code->* && |\\n|.
+        ENDLOOP.
+        "For the POST request, concatenating the string table to a single string.
+        DATA(code_string) = concat_lines_of( table = cs->code_snippets ).
+        TRY.
+            "Another creation of a client object using a destination
+            "This example deals with a POST request.
+            http_client = cl_web_http_client_manager=>create_by_http_destination( i_destination =  cl_http_destination_provider=>create_by_url( i_url = url_api ) ).
+            DATA(request) = http_client->get_http_request( ).
+            request->set_text( `{"text":"` && code_string && `"}` ).
+            request->set_header_fields( VALUE #( ( name = 'Accept' value = 'application/vnd.github+json' ) ) ).
+            DATA(post) = http_client->execute( if_web_http_client=>post ).
+            DATA(status) = post->get_status( ).
+            IF status-code <> 200.
+              cs->error = abap_true.
+              DATA(status_error) = |Post request error: { status-code } / { status-reason }|.
+            ELSE.
+              "Retrieving the created html code
+              DATA(html_code) = post->get_text( ).
+              REPLACE ALL OCCURRENCES OF `§§§§§` IN html_code WITH `"`.
+              REPLACE ALL OCCURRENCES OF `%%%%%` IN html_code WITH `\`.
+              REPLACE ALL OCCURRENCES OF PCRE `(<code>)(\w.*)` IN html_code WITH `$1  $2`.
+            ENDIF.
+          CATCH cx_root INTO DATA(error).
+            cs->error = abap_true.
+        ENDTRY.
+        "Preparing the title for expandable sections
+        DATA(title) = cs->file_name.
+        REPLACE ALL OCCURRENCES OF `_` IN title WITH ` `.
+        REPLACE PCRE `^..` IN title WITH ``.
+        REPLACE `.md` IN title WITH ``.
+        "Assembling expandable sections
+        html = html &&
+          `<br><details>` &&
+          ` <summary>` && title && `</summary>` &&
+          COND #( WHEN cs->error = abap_false THEN html_code ELSE COND #( WHEN error IS INITIAL THEN status_error ELSE error->get_text( ) ) ) &&
+          `</details>`.
+      ENDLOOP.
+      "Providing the html skeleton and inserting the assembled expandable sections from above
+      DATA(final_html) =
+      `<!DOCTYPE html>` &&
+      `<html>` &&
+      `<head>` &&
+      `<title>ABAP Cheat Sheet Code Snippets</title>` &&
+      `<style>` &&
+      `  body {background-color: #F8F8F8;}` &&
+      `  h1 {color: blue; font-family: verdana;}` &&
+      `  pre {background: #f4f4f4;border: 1px solid #ddd;border-left: 3px solid #0070f2;color: #36454F;` &&
+      `       page-break-inside: avoid;font-size: 14px;line-height: 1.3;max-width: 100%;overflow: auto;padding: 1em 1.5em;` &&
+      `       display: block;word-wrap: break-word;} ` &&
+      `</style>` &&
+      `</head>` &&
+      `<body>` &&
+      `<h1>ABAP Cheat Sheet Code Snippets</h1>` &&
+      `<a href="https://github.com/SAP-samples/abap-cheat-sheets">https://github.com/SAP-samples/abap-cheat-sheets</a><br><br>` &&
+      html &&
+      `<script>` &&
+      `  const snippets = document.querySelectorAll("code");` &&
+      `  snippets.forEach(elem => {` &&
+      `    var abap = elem.innerHTML;` &&
+      `    abap = abap.replace(/(\b[A-Z]{2,}\b)/g, "<strong>$1</strong>");` &&
+      `    elem.innerHTML = abap;` &&
+      `  });` &&
+      `</script>` &&
+      `</body>` &&
+      `</html>`.
+      "Displaying the html result in the ADT console
+      "Note: Before running the class, clear the ADT console.
+      "When the html code is displayed in the ADT console, you can, for example,
+      "create a file named ABAP_cheat_sheet_code.html on your local machine.
+      "Open the file in an editor, copy & paste the entire ADT console content and
+      "save the local file. In doing so, you have various code snippets at your
+      "disposal offline.
+      out->write( final_html ).
+    ENDIF.
+  ENDMETHOD.
+ENDCLASS.
+``` 
+</details>  
+
+<br>
+
+<details>
+  <summary>2. Post example: Demonstrating a post request by converting Markdown to HTML using the GitHub API</summary>
+  <!-- -->
+
+> **⚠️ Note/Disclaimer**<br>
+> - As stated for the previous example, also note for this example: Before using the GitHub APIs, make sure that you have consulted the following documentation: <a href="https://docs.github.com/en">GitHub Docs</a>, <a href="https://docs.github.com/en/enterprise-cloud@latest/rest/markdown/markdown?apiVersion=2022-11-28#render-a-markdown-document">Render a Markdown document</a>, <a href="https://docs.github.com/en/rest/using-the-rest-api/rate-limits-for-the-rest-api?apiVersion=2022-11-28">Rate limits for the REST API</a>
+> - To run the example class, copy and paste the code into a class named `zcl_some_class`. Run the class using F9. It is set up to display HTML content in the console. Using the GitHub API, sample Markdown content is sent and converted to HTML.
+
+<br>
+
+``` abap
+CLASS zcl_some_class DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
+
+  PUBLIC SECTION.
+    INTERFACES if_oo_adt_classrun.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+    CONSTANTS url_api TYPE string VALUE `https://api.github.com/markdown`.
+ENDCLASS.
+
+
+
+CLASS zcl_some_class IMPLEMENTATION.
+
+
+  METHOD if_oo_adt_classrun~main.
+
+    DATA(nl) = |\n|.
+    DATA(markdown_content) =
+    `# Lorem ipsum dolor sit amet \n`    &&
+    `Consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. \n` &&
+    `Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. \n` &&
+    `- Duis aute irure \n` &&
+    `- Dolor in reprehenderit in voluptate \n` &&
+    `1. Velit esse cillum dolore eu fugiat nulla pariatur \n` &&
+    `2. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. \n` &&
+    `3. [ABAP cheat sheets](https://github.com/SAP-samples/abap-cheat-sheets)`.
+
+    TRY.
+        "Creation of a client object using a destination
+        "This example deals with a POST request.
+        DATA(http_client) = cl_web_http_client_manager=>create_by_http_destination( i_destination = cl_http_destination_provider=>create_by_url( i_url = url_api ) ).
+        DATA(request) = http_client->get_http_request( ).
+        request->set_text( `{"text":"` && markdown_content && `"}` ).
+        request->set_header_fields( VALUE #( ( name = 'Accept' value = 'application/vnd.github+json' ) ) ).
+        DATA(post) = http_client->execute( if_web_http_client=>post ).
+        DATA(status) = post->get_status( ).
+        IF status-code <> 200.
+          out->write( |Post request error: { status-code } / { status-reason }| ).
+        ELSE.
+          DATA(html) = post->get_text( ).
+          out->write( html ).
+        ENDIF.
+      CATCH cx_root INTO DATA(error).
+        out->write( error->get_text( ) ).
+    ENDTRY.
+  ENDMETHOD.
+ENDCLASS.
+``` 
+</details>  
+
+
 
 </td>
 </tr>
@@ -2982,6 +3276,46 @@ ENDCLASS.
 ```
 
 </details>  
+
+</td>
+</tr>
+</table>
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+## Zip Files
+
+<table>
+<tr>
+<td> Class </td> <td> Details/Code Snippet </td>
+</tr>
+<tr>
+<td> <code>CL_ABAP_ZIP</code> </td>
+<td>
+
+The following example creates a zip file and adds three txt files with sample content.
+
+```abap
+"Create zip file
+DATA(zip) = NEW cl_abap_zip( ).
+
+"Adding 3 files to a zip file
+DO 3 TIMES.
+  DATA(some_content) = |{ sy-index }. Some text content|.
+
+  TRY.
+      DATA(conv_xstring) = cl_abap_conv_codepage=>create_out( codepage = `UTF-8` )->convert( some_content ).
+    CATCH cx_sy_conversion_codepage.
+  ENDTRY.
+
+  "Add xstring as file content to zip
+  zip->add( EXPORTING name = |file{ sy-index }.txt|
+                      content = conv_xstring ).
+
+ENDDO.
+
+DATA(zipped_file) = zip->save( ).
+```
 
 </td>
 </tr>

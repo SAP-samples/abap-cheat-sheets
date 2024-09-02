@@ -852,7 +852,7 @@ Special function modules exist in [Standard ABAP](https://help.sap.com/doc/abapd
 Regarding the exiting of procedures, note the hint mentioned above. The use of `RETURN` is recommended.
 
 `RETURN` terminates the current processing block. Usually, the statement is intended for leaving processing blocks early. 
-In case of functional method, i.e. methods that have one returning parameter, the `RETURN` statement can also be specified with an expression. In doing so, the 
+In case of functional methods, i.e. methods that have one returning parameter, the `RETURN` statement can also be specified with an expression. In doing so, the 
 following statement
 ```abap
 res = some_expr.

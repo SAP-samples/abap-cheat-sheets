@@ -507,7 +507,7 @@ DATA(len_xstr) = xstrlen( xstr ). "24
 `&&` and string templates. Alternatively, you can use
 [`CONCATENATE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapconcatenate.htm)
 statements. 
-- It is also possible to concatenate lines from internal tables
+- It is also possible to concatenate lines from internal tables with character-like line type
 into a string to avoid a loop. 
 - A more modern way is to use
 the string function
@@ -827,6 +827,7 @@ and
   - These functions offer more options in terms of parameters, such as the use of [PCRE regular
 expressions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenpcre_regex_glosry.htm "Glossary Entry"),
 which are covered below.
+- As also shown further down, using the built-in function `match`, you can extract substrings matching a given pattern.
 
 Syntax examples:
 ``` abap
@@ -904,6 +905,12 @@ s2 = substring_from( val = s1 sub = `a3` ). "a3bb4
 "... up to a specified substring. It includes the substring specified
 "in sub. len/off and other parameters are possible.
 s2 = substring_to( val = s1 sub = `3b` ). "aa1bb2aa3b
+
+"Extracting a substring matching a given pattern
+"AB
+s2 = match( val = `ABAP`
+            pcre = `.b`         "Any character followed by b/B
+            case = abap_false ).
 ```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
@@ -1942,7 +1949,7 @@ REPLACE ALL OCCURRENCES OF PCRE `p.` IN s1 WITH `XY` "XY?aXY#ab?a
 
 #### Overview/Examples: Using PCRE Regular Expressions in Various Contexts
 
-- As also covered in other sections, there are multiple contexts where regular expressions (PCRE) are possible, among them:
+- As also covered in other sections, there are multiple contexts where regular expressions are possible, for example, PCRE regular expressions. Among them are:
   - Statements (`PCRE` addition): `FIND`, `REPLACE` 
   - Classes: `CL_ABAP_REGEX`, `CL_ABAP_MATCHER`
   - Built-in functions having the `pcre` parameter: `find`, `find_end`, `count`, `match`, `replace`, `substring_from`, `substring_after`, `substring_before`, `substring_to`
@@ -2001,13 +2008,13 @@ some_string = original_string.
 DATA(replace_all_occ) = replace( val = some_string pcre = `\s` with = `#` occ = 0 ).
 
 "The following examples always use the first occurrence
-"' bb cc dd ee'
+"` bb cc dd ee`
 DATA(substr_from) = substring_from( val = some_string pcre = `\s` ).
     
-"'aa '
+"`aa `
 DATA(substr_to) = substring_to( val = some_string pcre = `\s` ).
     
-"'aa'
+"`aa`
 DATA(substr_before) = substring_before( val = some_string pcre = `\s` ).
     
 "bb cc dd ee

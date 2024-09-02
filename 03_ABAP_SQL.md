@@ -10,7 +10,7 @@
     - [SELECT List Variants](#select-list-variants)
     - [Data Sources of SELECT Queries](#data-sources-of-select-queries)
     - [Retrieving Single and Multiple Rows](#retrieving-single-and-multiple-rows)
-    - [Miscellaneous Options Regarding the Result](#miscellaneous-options-regarding-the-result)
+    - [Miscellaneous Options for the Selection Result](#miscellaneous-options-for-the-selection-result)
     - [Additional Clauses](#additional-clauses)
     - [Selecting Data by Evaluating the Content of Other Tables](#selecting-data-by-evaluating-the-content-of-other-tables)
     - [Combining Data of Multiple Data Sources](#combining-data-of-multiple-data-sources)
@@ -422,7 +422,7 @@ SELECT DISTINCT comp1
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-### Miscellaneous Options Regarding the Result
+### Miscellaneous Options for the Selection Result
 
 This section demonstrates different patterns of the ABAP SQL `SELECT` statement for handling query results. There is a wide range of options available, some of which have already been covered above. This section covers a selection of additions and syntax options. For complete details and syntax options, you can refer to the ABAP Keyword Documentation.
 
@@ -2194,6 +2194,7 @@ SELECT SINGLE * FROM dbtab WHERE key_field = ... INTO @DATA(read_line).
 "original content and are not initialized when writing to the database table.
 UPDATE dbtab FROM @( VALUE #( BASE read_line comp2 = ... comp4 = ... ) ).
 
+"--- CORRESPONDING ---
 "The following example assumes that some_itab has a different line type than dbtab.
 "I.e. some_itab may have more components that are not available in dbtab. The
 "corresponding fields with identical names are used. It is assumed that the components'
@@ -2546,10 +2547,10 @@ ENDCLASS.
     "SELECT * FROM zdemo_abap_carr WHERE mandt = '123' INTO TABLE @DATA(itab2).
     ```  
 
-- However, in classic ABAP, not in ABAP Cloud, you can use the [`USING CLIENT` (F1 docu for Standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapselect_client.htm) addition modifies this default behavior. It disables implicit client handling.
+- However, in classic ABAP, not in ABAP Cloud, you can use the [`USING CLIENT` (F1 docu for Standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapselect_client.htm) addition that modifies this default behavior. It disables implicit client handling.
   - With the addition, you can specify other clients from which to retrieve data. Find more information in the ABAP Keyword Documentation.
   - You may also stumble on the `CLIENT SPECIFIED` addition. It is obsolete, only `USING CLIENT` should be used.  
-  - The following (classic ABAP only) code shows a variety of syntax options. Note that it uses a data source of the cheat sheet repository. For exploration, you may want to use another data source. You may also want to check the commands that are passed by the [ABAP SQL Interface](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_sql_interface_glosry.htm) when activating the SQL trace (transaction ST05) to the explore the use of another client ID and more. 
+  - The following (classic ABAP only) code shows a variety of syntax options. Note that it uses a data source of the cheat sheet repository. For exploration, you may want to use another data source. You may also want to check the commands that are passed by the [ABAP SQL Interface](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_sql_interface_glosry.htm) when activating the SQL trace (transaction ST05) to explore the use of another client ID and more. 
 
     ```abap
     "---- The following code is for classic ABAP only. ----

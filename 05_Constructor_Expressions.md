@@ -1024,6 +1024,7 @@ DATA(oref_b) = REF #( oref_a ).
     )->meth( ... )`). Method chaining, standalone and
     functional method calls are possible, too. See more information
     [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconstructor_expression_cast.htm).
+- Find more examples on using the `CAST` operator, up- and downcasts in the [ABAP Object Orientation](04_ABAP_Object_Orientation.md#demonstrating-upcasts-and-downcasts-using-the-rtts-inheritance-tree) cheat sheet.
 
 Examples:
 ``` abap
@@ -1636,7 +1637,7 @@ DATA(it5) = VALUE itab_type( FOR wa IN itab ( VALUE #( BASE wa col1 = wa-col1 &&
 *bby     5       10
 *cccy    6       20
 
-"Using the CORRESPONDING operator to handle different types
+"Using the CORRESPONDING operator to handle types whose components have non-identical names
 TYPES: BEGIN OF s2,
           col1 TYPE c LENGTH 5,
           col2 TYPE i,

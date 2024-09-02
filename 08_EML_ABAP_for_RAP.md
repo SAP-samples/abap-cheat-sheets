@@ -14,10 +14,10 @@
     - [Type Mapping for RAP](#type-mapping-for-rap)
       - [RAP-Specific Additions to the CORRESPONDING Operator](#rap-specific-additions-to-the-corresponding-operator)
       - [ABAP SQL Statements with BDEF Derived Types](#abap-sql-statements-with-bdef-derived-types)
-  - [EML Syntax](#eml-syntax)
-    - [EML Syntax for Modifying Operations](#eml-syntax-for-modifying-operations)
-    - [EML Syntax for Reading Operations](#eml-syntax-for-reading-operations)
-    - [Dynamic Forms of EML Statements](#dynamic-forms-of-eml-statements)
+  - [ABAP EML Syntax](#abap-eml-syntax)
+    - [ABAP EML Syntax for Modifying Operations](#abap-eml-syntax-for-modifying-operations)
+    - [ABAP EML Syntax for Reading Operations](#abap-eml-syntax-for-reading-operations)
+    - [Dynamic Forms of ABAP EML Statements](#dynamic-forms-of-abap-eml-statements)
     - [Persisting to the Database](#persisting-to-the-database)
     - [Raising RAP Business Events](#raising-rap-business-events)
     - [Additions to EML Statements in ABAP Behavior Pools](#additions-to-eml-statements-in-abap-behavior-pools)
@@ -481,6 +481,9 @@ sequence](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?f
 (in [saver
 methods](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabp_saver_method_glosry.htm "Glossary Entry")
 to save data from the transactional buffer to the database).
+
+> **💡 Note**<br>
+> You can optionally define auxiliary classes for ABPs using the syntax `... FOR BEHAVIOR OF bdef_name ...`. These classes reference a RAP business object and have enhanced access rights to it. Their main function is to support implementation in an ABAP behavior pool. They achieve this by offering reusable methods and enabling developers to implement RAP behavior simultaneously.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
@@ -1041,14 +1044,14 @@ DELETE zdemo_abap_rapt1 FROM @cr_der_type MAPPING FROM ENTITY.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-## EML Syntax
+## ABAP EML Syntax
 
 The focus is here on selected EML statements. These statements can be
 fairly long and various additions are possible. Find more information on
 the EML statements
 [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abeneml.htm).
 
-### EML Syntax for Modifying Operations
+### ABAP EML Syntax for Modifying Operations
 
 The modifying operations covered include the standard operations (using
 the additions
@@ -1311,7 +1314,7 @@ MODIFY ENTITIES OF root_ent
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-### EML Syntax for Reading Operations
+### ABAP EML Syntax for Reading Operations
 
 -   Read-only operations always return a result, i.e. the syntax of the
     EML statement requires the addition `RESULT` and an operand.
@@ -1372,7 +1375,7 @@ READ ENTITIES OF root_ent
 ```
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-### Dynamic Forms of EML Statements
+### Dynamic Forms of ABAP EML Statements
 
 In addition to the short and long forms described above, various ABAP EML statements also have dynamic forms. 
 Taking EML read operations as an example, the following code snippet shows a dynamic EML [`READ ENTITIES`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapread_entities_operations.htm) statement. The relevant syntax element is the `OPERATIONS` addition.

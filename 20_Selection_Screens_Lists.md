@@ -5,7 +5,7 @@
 - [Selection Screens and Classic Lists](#selection-screens-and-classic-lists)
   - [Introduction](#introduction)
   - [Terms](#terms)
-    - [Selection screens](#selection-screens)
+    - [Selection Screens](#selection-screens)
     - [Classic Lists](#classic-lists)
   - [ABAP Statements for Selection Screens](#abap-statements-for-selection-screens)
     - [Creating Selection Screens](#creating-selection-screens)
@@ -50,7 +50,7 @@ For more detailed information and syntax options, see the topics [Selection Scre
 
 ## Terms
 
-### Selection screens
+### Selection Screens
 - Are special [dynpros](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abendynpro_glosry.htm) in [executable programs](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenexecutable_program_glosry.htm) (*"reports"*; they're also possible in [function groups](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenfunction_group_glosry.htm) and [module pools](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenmodul_pool_glosry.htm), but the focus here is on executable programs).
 - Used for data entry in an executable program, i.e. they allow users to ...
   - enter parameters (for entering single values).
