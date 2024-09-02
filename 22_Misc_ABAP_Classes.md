@@ -2413,26 +2413,40 @@ To check out examples in demo classes, expand the collapsible sections below.
 <br>
 
 ``` abap
-CLASS zcl_some_class DEFINITION PUBLIC FINAL CREATE PUBLIC.
+CLASS zcl_some_class DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
+
   PUBLIC SECTION.
     INTERFACES if_oo_adt_classrun.
+  PROTECTED SECTION.
   PRIVATE SECTION.
+    "Markdown URLs
     CONSTANTS url_cs TYPE string VALUE `https://api.github.com/repos/SAP-samples/abap-cheat-sheets/git/trees/main`.
     CONSTANTS url_gh TYPE string VALUE `https://raw.githubusercontent.com/SAP-samples/abap-cheat-sheets/main/`.
-    CONSTANTS url_api TYPE string VALUE `https://api.github.com/markdown`.
-    DATA url TYPE string.
+    "Here go email addresses
+    CONSTANTS sender_addr TYPE cl_bcs_mail_message=>ty_address VALUE '...@...'.
+    CONSTANTS recipient_addr TYPE cl_bcs_mail_message=>ty_address VALUE '...@...'.
+
     TYPES: BEGIN OF s,
-             file_name     TYPE string,
-             title         TYPE string,
-             code_snippets TYPE string_table,
-             error         TYPE abap_boolean,
+             file_name TYPE string,
+             markdown  TYPE string,
+             error     TYPE abap_boolean,
            END OF s.
     DATA tab TYPE TABLE OF s WITH EMPTY KEY.
-    DATA snippets TYPE string_table.
-    DATA html TYPE string.
+    DATA url TYPE string.
 ENDCLASS.
+
+
+
 CLASS zcl_some_class IMPLEMENTATION.
+
+
   METHOD if_oo_adt_classrun~main.
+
+    "----------- Retrieving all Markdown file names in the ABAP cheat sheet GitHub repository -----------
+
     TRY.
         "Creating a client object using a destination
         "In the example, the HTTP destination is created using a plain URL.
@@ -2441,9 +2455,19 @@ CLASS zcl_some_class IMPLEMENTATION.
         "Sending an HTTP GET request and returning the response
         "In the example, the HTTP body is retrieved as string data.
         DATA(response) = http_client->execute( if_web_http_client=>get )->get_text(  ).
+        IF response CS `API rate limit exceeded`.
+          out->write( `API rate limit exceeded` ).
+          RETURN.
+        ENDIF.
+
       CATCH cx_root INTO DATA(err).
         out->write( err->get_text( ) ).
+        RETURN.
     ENDTRY.
+
+
+    "----------- Retrieving Markdown content from ABAP cheat sheet GitHub repository -----------
+
     IF err IS INITIAL.
       "Markdown file names are contained in the returned string in a specific
       "pattern. In the following code, the markdown file names are extracted
@@ -2465,7 +2489,7 @@ CLASS zcl_some_class IMPLEMENTATION.
       ENDLOOP.
       SORT tab BY file_name ASCENDING.
 
-      "In the following loop, the raw markdown content is retrieved using an HTTP GET request, also
+      "In the following loop, the Markdown content is retrieved using an HTTP GET request, also
       "by creating a client object and using a destination (another plain URL). The URL is constructed
       "using the constant value plus the markdown file that was retrieved before.
       LOOP AT tab REFERENCE INTO DATA(cs).
@@ -2473,143 +2497,59 @@ CLASS zcl_some_class IMPLEMENTATION.
         TRY.
             http_client = cl_web_http_client_manager=>create_by_http_destination( i_destination = cl_http_destination_provider=>create_by_url( i_url = url ) ).
             DATA(raw_md) = http_client->execute( if_web_http_client=>get )->get_text(  ).
-            "Putting the long string that was retrieved in an internal table of type string
-            "for further processing (extracting the code snippets).
-            SPLIT raw_md AT |\n| INTO TABLE snippets.
-            DATA(flag) = ''.
-            "In the loop, all content from the markdown that is not part of a code
-            "snippet (indicated by the triple ```) is deleted.
-            "The replacements with dummy content in the loop are only done so that
-            "the POST request further down can work with the provided content
-            "(i.e. avoiding issues with characters such as "; they are inserted later again).
-            LOOP AT snippets REFERENCE INTO DATA(line).
-              DATA(tabix) = sy-tabix.
-              FIND PCRE '^\s*```' IN line->*.
-              IF sy-subrc = 0 AND flag = ''.
-                line->* = `%%%--START--%%%%`.
-                flag = 'X'.
-              ELSEIF sy-subrc = 0 AND flag = 'X'.
-                line->* = `%%%--END--%%%%`.
-                flag = ''.
-              ELSEIF flag <> 'X'.
-                DELETE snippets INDEX tabix.
-              ELSE.
-                FIND PCRE `^\s*"` IN line->*.
-                IF sy-subrc = 0.
-                  DATA(comment1) = 'X'.
-                ENDIF.
-                FIND PCRE `^\*` IN line->*.
-                IF sy-subrc = 0.
-                  DATA(comment2) = 'X'.
-                ENDIF.
-                FIND `***********************************************************************`
-                IN line->*.
-                IF sy-subrc = 0.
-                  DATA(divider) = 'X'.
-                ENDIF.
-                IF comment1 = 'X' OR comment2 = 'X' OR divider = 'X'.
-                  DELETE snippets INDEX tabix.
-                  CLEAR: comment1, comment2, divider.
-                ELSE.
-                  REPLACE ALL OCCURRENCES OF `"` IN line->* WITH `§§§§§`.
-                  REPLACE ALL OCCURRENCES OF `\` IN line->* WITH `%%%%%`.
-                ENDIF.
-              ENDIF.
-            ENDLOOP.
-            "Adding the code snippets to the information table
-            cs->code_snippets = snippets.
-            CLEAR snippets.
-          CATCH cx_root INTO err.
+            cs->markdown = raw_md.
+          CATCH cx_root.
             cs->error = abap_true.
         ENDTRY.
-        DELETE ADJACENT DUPLICATES FROM cs->code_snippets COMPARING table_line.
       ENDLOOP.
-      "Creating the final html to be displayed
-      LOOP AT tab REFERENCE INTO cs WHERE code_snippets IS NOT INITIAL AND error = abap_false.
-        LOOP AT cs->code_snippets REFERENCE INTO DATA(code).
-          tabix = sy-tabix.
-          IF code->* = `%%%--START--%%%%`.
-            code->* = |```|.
-          ENDIF.
-          IF code->* = `%%%--END--%%%%`.
-            code->* = |```|.
-            INSERT `*****************` && |\\n|
-            INTO cs->code_snippets INDEX tabix + 1.
-          ENDIF.
-          code->* = code->* && |\\n|.
-        ENDLOOP.
-        "For the POST request, concatenating the string table to a single string.
-        DATA(code_string) = concat_lines_of( table = cs->code_snippets ).
+
+      "----------- Creating a zip file containing all ABAP cheat sheet Markdown documents -----------
+
+      DATA(zip) = NEW cl_abap_zip( ).
+
+      "Iteratively adding the ABAP cheat sheet Markdown documents to the zip file
+      LOOP AT tab REFERENCE INTO cs WHERE error = abap_false.
+        cs->file_name = cs->file_name.
         TRY.
-            "Another creation of a client object using a destination
-            "This example deals with a POST request.
-            http_client = cl_web_http_client_manager=>create_by_http_destination( i_destination =  cl_http_destination_provider=>create_by_url( i_url = url_api ) ).
-            DATA(request) = http_client->get_http_request( ).
-            request->set_text( `{"text":"` && code_string && `"}` ).
-            request->set_header_fields( VALUE #( ( name = 'Accept' value = 'application/vnd.github+json' ) ) ).
-            DATA(post) = http_client->execute( if_web_http_client=>post ).
-            DATA(status) = post->get_status( ).
-            IF status-code <> 200.
-              cs->error = abap_true.
-              DATA(status_error) = |Post request error: { status-code } / { status-reason }|.
-            ELSE.
-              "Retrieving the created html code
-              DATA(html_code) = post->get_text( ).
-              REPLACE ALL OCCURRENCES OF `§§§§§` IN html_code WITH `"`.
-              REPLACE ALL OCCURRENCES OF `%%%%%` IN html_code WITH `\`.
-              REPLACE ALL OCCURRENCES OF PCRE `(<code>)(\w.*)` IN html_code WITH `$1  $2`.
-            ENDIF.
-          CATCH cx_root INTO DATA(error).
-            cs->error = abap_true.
+            DATA(conv_xstring) = cl_abap_conv_codepage=>create_out( codepage = `UTF-8` )->convert( cs->markdown ).
+          CATCH cx_sy_conversion_codepage.
         ENDTRY.
-        "Preparing the title for expandable sections
-        DATA(title) = cs->file_name.
-        REPLACE ALL OCCURRENCES OF `_` IN title WITH ` `.
-        REPLACE PCRE `^..` IN title WITH ``.
-        REPLACE `.md` IN title WITH ``.
-        "Assembling expandable sections
-        html = html &&
-          `<br><details>` &&
-          ` <summary>` && title && `</summary>` &&
-          COND #( WHEN cs->error = abap_false THEN html_code ELSE COND #( WHEN error IS INITIAL THEN status_error ELSE error->get_text( ) ) ) &&
-          `</details>`.
+
+        "Adding the xstring content as file content to zip
+        zip->add( name = cs->file_name
+                  content = conv_xstring ).
+
       ENDLOOP.
-      "Providing the html skeleton and inserting the assembled expandable sections from above
-      DATA(final_html) =
-      `<!DOCTYPE html>` &&
-      `<html>` &&
-      `<head>` &&
-      `<title>ABAP Cheat Sheet Code Snippets</title>` &&
-      `<style>` &&
-      `  body {background-color: #F8F8F8;}` &&
-      `  h1 {color: blue; font-family: verdana;}` &&
-      `  pre {background: #f4f4f4;border: 1px solid #ddd;border-left: 3px solid #0070f2;color: #36454F;` &&
-      `       page-break-inside: avoid;font-size: 14px;line-height: 1.3;max-width: 100%;overflow: auto;padding: 1em 1.5em;` &&
-      `       display: block;word-wrap: break-word;} ` &&
-      `</style>` &&
-      `</head>` &&
-      `<body>` &&
-      `<h1>ABAP Cheat Sheet Code Snippets</h1>` &&
-      `<a href="https://github.com/SAP-samples/abap-cheat-sheets">https://github.com/SAP-samples/abap-cheat-sheets</a><br><br>` &&
-      html &&
-      `<script>` &&
-      `  const snippets = document.querySelectorAll("code");` &&
-      `  snippets.forEach(elem => {` &&
-      `    var abap = elem.innerHTML;` &&
-      `    abap = abap.replace(/(\b[A-Z]{2,}\b)/g, "<strong>$1</strong>");` &&
-      `    elem.innerHTML = abap;` &&
-      `  });` &&
-      `</script>` &&
-      `</body>` &&
-      `</html>`.
-      "Displaying the html result in the ADT console
-      "Note: Before running the class, clear the ADT console.
-      "When the html code is displayed in the ADT console, you can, for example,
-      "create a file named ABAP_cheat_sheet_code.html on your local machine.
-      "Open the file in an editor, copy & paste the entire ADT console content and
-      "save the local file. In doing so, you have various code snippets at your
-      "disposal offline.
-      out->write( final_html ).
+
+      "Saving the zip file
+      DATA(zipped_file) = zip->save( ).
+
+      "----------- Creating a ZIP file containing all ABAP cheat sheet Markdown documents -----------
+
+      "Sending email
+      TRY.
+          "Creating a new mail instance
+          DATA(mail) = cl_bcs_mail_message=>create_instance( ).
+          "Settings
+          mail->set_sender( sender_addr ).
+          mail->add_recipient( recipient_addr ).
+          mail->set_subject( 'Test Mail' ).
+          "Main document
+          mail->set_main( cl_bcs_mail_textpart=>create_instance(
+            iv_content      = '<h3>Test Mail</h3><p>Please find ABAP cheat sheet markdown files attached.<br>Cheers</p>'
+            iv_content_type = 'text/html' ) ).
+          "Adding an attachment
+          mail->add_attachment( cl_bcs_mail_binarypart=>create_instance(
+                iv_content      =  zipped_file
+                iv_content_type = 'application/x-zip-compressed'
+                iv_filename     = 'abap_cheat_sheets.zip' ) ).
+
+          "Sending mail synchronously, displaying the status for each recipient
+          mail->send( IMPORTING et_status = DATA(status_table) ).
+          out->write( status_table ).
+        CATCH cx_bcs_mail INTO DATA(error_mail).
+          out->write( |Mail sending error: { error_mail->get_text( ) }| ).
+      ENDTRY.
     ENDIF.
   ENDMETHOD.
 ENDCLASS.
@@ -3293,7 +3233,7 @@ ENDCLASS.
 <td> <code>CL_ABAP_ZIP</code> </td>
 <td>
 
-The following example creates a zip file and adds three txt files with sample content.
+The following example creates a zip file and adds three txt files with sample content. 
 
 ```abap
 "Create zip file
