@@ -31,14 +31,14 @@
   - [Calling Services](#calling-services)
   - [Reading and Writing XLSX Content](#reading-and-writing-xlsx-content)
   - [Zip Files](#zip-files)
+  - [ABAP Unit](#abap-unit)
 
 
-This ABAP cheat sheet contains a selection of available ABAP classes, serving as a quick introduction, along with code snippets to explore the functionality in action.
+This ABAP cheat sheet contains a selection of [released](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenreleased_api_glosry.htm) ABAP classes that are available in [ABAP for Cloud Development](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_for_cloud_dev_glosry.htm). It serves as a quick introduction, along with code snippets to explore the functionality in action.
 
 > **💡 Note**<br>
 > - The cheat sheet is not a comprehensive overview, and the code snippets do not claim to be comprehensive as far as options, methods, or parameters are concerned. It is intended to give you a rough overview, for you to get an idea. It is an invitation to a more in-depth exploration.
 > - For more information and where available, refer to the class documentation (for example, choose F2 when the cursor is on the class name in ADT), the ABAP Keyword Documentation, and the SAP Help Portal documentation.
-> - In the cheat sheet, the focus is on a selected set of classes that are available in [ABAP for Cloud Development](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_for_cloud_dev_glosry.htm).
 > - [Disclaimer](./README.md#%EF%B8%8F-disclaimer)
 
 ## Excursion: Available Classes in ABAP for Cloud Development
@@ -3233,7 +3233,7 @@ ENDCLASS.
 <td> <code>CL_ABAP_ZIP</code> </td>
 <td>
 
-The following example creates a zip file and adds three txt files with sample content. 
+The following example creates a zip file and adds three txt files with sample content. Note that the example snippet for `CL_WEB_HTTP_CLIENT_MANAGER` and `CL_HTTP_DESTINATION_PROVIDER` (calling services) also includes the use of `CL_ABAP_ZIP`.
 
 ```abap
 "Create zip file
@@ -3256,6 +3256,67 @@ ENDDO.
 
 DATA(zipped_file) = zip->save( ).
 ```
+
+</td>
+</tr>
+</table>
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+## ABAP Unit
+
+<table>
+<tr>
+<td> Class </td> <td> Details/Code Snippet </td>
+</tr>
+<tr>
+<td> <code>CL_ABAP_UNIT_ASSERT</code> </td>
+<td>
+
+Provides methods to verify test expectations in ABAP Unit tests. For more information, see the [ABAP Unit Tests](14_ABAP_Unit_Tests.md) cheat sheet.
+
+
+```abap
+"Code in a test class
+
+...
+
+DATA(result) = 100.
+
+...
+
+cl_abap_unit_assert=>assert_equals(
+  act = result
+  exp = 100
+  msg = `The value does not match the expected result`
+  quit = if_abap_unit_constant=>quit-no ).
+
+ENDDO.
+
+DATA(zipped_file) = zip->save( ).
+```
+
+</td>
+</tr>
+<tr>
+<td> <code>CL_ABAP_TESTDOUBLE</code><br><code>CL_OSQL_TEST_ENVIRONMENT</code><br><code>CL_CDS_TEST_ENVIRONMENT</code><br><code>CL_BOTD_TXBUFDBL_BO_TEST_ENV</code><br><code>CL_BOTD_MOCKEMLAPI_BO_TEST_ENV</code> </td>
+<td>
+
+
+- The classes can be used in the context of ABAP Unit to create test doubles in a standardized way. 
+- The test doubles replace dependent-on components (DOC) during unit tests.
+- DOCs:
+  - Classes and interfaces: 
+    - `CL_ABAP_TESTDOUBLE`: ABAP OO Test Double Framework
+  - Database (e.g. database tables or CDS view entities) 
+    - `CL_OSQL_TEST_ENVIRONMENT`: ABAP SQL Test Double Framework; to test ABAP SQL statements that depend on data sources such as database tables or CDS view entities
+    - `CL_CDS_TEST_ENVIRONMENT`: ABAP CDS Test Double Framework; to test logic implemented in CDS entities
+  - RAP business objects
+    - `CL_BOTD_TXBUFDBL_BO_TEST_ENV`: Creating transactional buffer test doubles
+    - `CL_BOTD_MOCKEMLAPI_BO_TEST_ENV`: Mocking ABAP EML APIs
+
+- Note that more classes are available for other use cases. 
+- For more information, see the [ABAP Unit Tests](14_ABAP_Unit_Tests.md) cheat sheet and the [documentation](https://help.sap.com/docs/abap-cloud/abap-development-tools-user-guide/managing-dependencies-with-abap-unit).
 
 </td>
 </tr>
