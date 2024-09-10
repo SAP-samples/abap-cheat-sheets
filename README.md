@@ -92,6 +92,7 @@ ABAP cheat sheets[^1] ...
 |[Misc ABAP Classes](22_Misc_ABAP_Classes.md)|Contains a selection of ABAP classes, serving as a quick introduction, along with code snippets to explore the functionality in action|-|
 |[Date, Time, and Time Stamp](23_Date_and_Time.md)|Covers how to handle and process dates, times, and time stamps in ABAP|[zcl_demo_abap_date_time](./src/zcl_demo_abap_date_time.clas.abap)|
 |[Misc Built-In Functions](24_Misc_Builtin_Functions.md)|Covers a variety of built-in functions in ABAP|-|
+|[Authorization Checks](25_Authorization_Checks.md)|Provides a high-level overview of explicit and implicit authorization checks in ABAP|-|
 
 <br>
 
