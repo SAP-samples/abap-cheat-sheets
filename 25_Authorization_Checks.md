@@ -1,8 +1,8 @@
 <a name="top"></a>
 
-# Misc Built-In Functions
+# Authorization Checks
 
-- [Misc Built-In Functions](#misc-built-in-functions)
+- [Authorization Checks](#authorization-checks)
   - [Introduction](#introduction)
   - [Terms](#terms)
   - [Explicit Authorization Checks Using AUTHORITY-CHECK Statements](#explicit-authorization-checks-using-authority-check-statements)
