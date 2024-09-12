@@ -1919,6 +1919,7 @@ The following restrictions apply to operations and/or statements in the individu
     Contract](https://help.sap.com/docs/ABAP_PLATFORM_NEW/fc4c71aa50014fd1b43721701471913d/3a402c5cf6a74bc1a1de080b2a7c6978.html):
     Rules for the RAP BO provider and consumer implementation to ensure
     consistency and reliability
+-   The [Authorization Checks](25_Authorization_Checks.md) cheat sheet includes high-level information and provides links on authorization control in RAP.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 

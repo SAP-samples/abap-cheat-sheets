@@ -116,7 +116,7 @@ DATA(uuid_c32_to_c36) = to_lower( CONV sysuuid_c36( xco_cp_uuid=>format->c36->fr
 <td>
 As an alternative to using the <code>IF_OO_ADT_CLASSRUN</code> interface for displaying output in the console, you can also use the <code>CL_DEMO_CLASSRUN</code> class, which offers more methods.
 For more information, refer to <a href="https://blogs.sap.com/2023/10/24/abap-console-reloaded/">this blog</a>.
-The following example makes use of the <code>CL_DEMO_CLASSRUN</code>. A structure and an internal table are displayed in the console. A structure component is a reference variable, which is automatically dereferenced. Plus, the <code>write_xml</code> method is shown, which displays XML data.
+The following example makes use of the <code>CL_DEMO_CLASSRUN</code> class. A structure and an internal table are displayed in the console. A structure component is a reference variable, which is automatically dereferenced. Plus, the <code>write_xml</code> method is shown, which displays XML data.
 <br><br>
 
 ``` abap
@@ -2508,8 +2508,7 @@ CLASS zcl_some_class IMPLEMENTATION.
       DATA(zip) = NEW cl_abap_zip( ).
 
       "Iteratively adding the ABAP cheat sheet Markdown documents to the zip file
-      LOOP AT tab REFERENCE INTO cs WHERE error = abap_false.
-        cs->file_name = cs->file_name.
+      LOOP AT tab REFERENCE INTO cs WHERE error = abap_false.        
         TRY.
             DATA(conv_xstring) = cl_abap_conv_codepage=>create_out( codepage = `UTF-8` )->convert( cs->markdown ).
           CATCH cx_sy_conversion_codepage.
@@ -2588,7 +2587,6 @@ CLASS zcl_some_class IMPLEMENTATION.
 
   METHOD if_oo_adt_classrun~main.
 
-    DATA(nl) = |\n|.
     DATA(markdown_content) =
     `# Lorem ipsum dolor sit amet \n`    &&
     `Consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. \n` &&
@@ -2640,7 +2638,7 @@ ENDCLASS.
 <td> <code>XCO_CP_XLSX</code> </td>
 <td>
 
-The XCO library offers classes (`XCO_CP_XLSX` and others) and methods for reading and writing XLSX content. You can find more information [here](https://help.sap.com/docs/btp/sap-business-technology-platform/xlsx). The following example demonstrates a selection of  methods and includes the following steps:
+The XCO library offers classes such as `XCO_CP_XLSX` and methods for reading and writing XLSX content. You can find more information [here](https://help.sap.com/docs/btp/sap-business-technology-platform/xlsx). The following example demonstrates a selection of  methods and includes the following steps:
 
 - Importing existing XLSX content into your SAP BTP ABAP Environment system (not related to the XCO library; just to have content to work with in the self-contained example below)
   - This is a simplified, nonsemantic, and explorative RAP example (not delving into RAP as such; just using various ABAP repository objects related to RAP) solely for importing XLSX content to work with in the example. 
@@ -3292,8 +3290,6 @@ cl_abap_unit_assert=>assert_equals(
   quit = if_abap_unit_constant=>quit-no ).
 
 ENDDO.
-
-DATA(zipped_file) = zip->save( ).
 ```
 
 </td>

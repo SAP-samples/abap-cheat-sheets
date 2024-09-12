@@ -7,7 +7,7 @@
   - [Terms](#terms)
   - [Explicit Authorization Checks Using AUTHORITY-CHECK Statements](#explicit-authorization-checks-using-authority-check-statements)
   - [Implicit Authorization Checks Using CDS Access Control for Read Accesses](#implicit-authorization-checks-using-cds-access-control-for-read-accesses)
-  - [Executable Example](#executable-example)
+  - [Executable Example (SAP BTP ABAP Environment)](#executable-example-sap-btp-abap-environment)
     - [Implementation Steps](#implementation-steps)
     - [Example Class](#example-class)
   - [Excursion: Authorization Control in RAP](#excursion-authorization-control-in-rap)
@@ -76,7 +76,7 @@ The following topic covers authorization-related terms and provides you with the
   - `#CHECK`: A warning is issued if no access control object is present.
   - `#MANDATORY`: An access control object must be present.
   - `#NOT_ALLOWED`: An access control object must not be present. If one exists, it is disregarded. 
-- The authorization are based on authorization objects.
+- The authorizations are based on authorization objects.
 - Example CDS view entity with the `@AccessControl.authorizationCheck: #CHECK` annotation
 
   ```abap
@@ -114,7 +114,7 @@ The following topic covers authorization-related terms and provides you with the
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-## Executable Example
+## Executable Example (SAP BTP ABAP Environment)
 
 > **💡 Note**<br>
 > - The example is intentionally simplified and nonsemantic, designed to explore basic authorization checks.
@@ -137,16 +137,16 @@ Expand the following collapsible section to view the implementation steps requir
 
 <br>
 
-- You have accessed you SAP BTP ABAP Environment in ADT.
+- You have accessed your SAP BTP ABAP Environment in ADT.
 - Create an authorization field
   - In your target package, choose *New -> Other ABAP Repository Object*.
-  - Filter for *Authorization Object* and choose *Next* and walk through the wizard. 
+  - Filter for *Authorization Field* and choose *Next* and walk through the wizard. 
   - As the name, use *ZAUTH_CTRY*.  
   - Specify the data element `LAND1`.
   - Save and activate.
 - Create an authorization object
   - In your target package, choose *New -> Other ABAP Repository Object*.
-  - Filter for *Authorization Field* and choose *Next* and walk through the wizard. 
+  - Filter for *Authorization Object* and choose *Next* and walk through the wizard. 
   - As the name, use *ZAUTH_OBJ*.
   - In the *Authorizaton Fields* section, add the *ZAUTH_CTRY* field created above.
   - Select the *Activity Field* checkbox for the *ACTVT* field.
@@ -221,7 +221,7 @@ For creating a CDS access control, proceed as follows:
   - Filter for *Data definition* and choose *Next*. 
   - As the name, use *ZCDS_ACC_CTRL*. 
   - In a step in the wizard, select *Define Role with PFCG Aspect*. 
-  - As entitiy, use *ZDEMO_ABAP_FLSCH_VE_AUTH*.
+  - As entity, use *ZDEMO_ABAP_FLSCH_VE_AUTH*.
   - Adapt the code according to the code below. The authorization object and fields from above are used. The specifications including *ACTVT = '03'* mean that entries can be read (displayed) if the *countryfr* is *US*.
 
     ```abap
@@ -467,10 +467,10 @@ ENDCLASS.
 
 ## Excursion: Authorization Control in RAP
 
-- This section focuses on authorization control in the ABAP RESTful Application Programming Model (RAP). 
+- This section focuses on [authorization control](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_auth_control_glosry.htm) in the ABAP RESTful Application Programming Model (RAP). 
 - The authorization control features safeguard your RAP business objects from unauthorized data access. 
-- You can define authorization control in the BDEF for each entity, which then needs to be implemented in the RAP handler methods of the ABAP behavior pool. 
-- In the BDEF, you can set authorization control for all RAP BO operations of a specific entity or for particular RAP BO operations.
+- You can define authorization control in the [RAP behavior definition (BDEF)](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_behavior_definition_glosry.htm) for each entity, which then needs to be implemented in the [RAP handler methods](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabp_handler_method_glosry.htm) of the [ABAP behavior pool (ABP)](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbehavior_pool_glosry.htm). 
+- In the BDEF, you can set authorization control for all [RAP BO operations](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_bo_operation_glosry.htm) of a specific entity or for particular RAP BO operations.
 - For read operations on RAP business objects, you can utilize the CDS access control, which is automatically applied in managed scenarios. 
 - For modify operations, dedicated authorization implementation options are available, such as the following: 
   - Global authorization restricts data access or the ability to perform certain operations for an entire RAP BO, regardless of individual instances. This can depend on user roles. For example, if a user is not allowed to delete following the authorization check, the method handling the delete operation in the ABAP behavior pool is not invoked. In doing so, it allows you to reject a request before it reaches any other method of the behavior handler classes.
@@ -544,7 +544,7 @@ METHOD get_global_authorizations.
     ENDIF.
 
     "Authorization check for delete operations
-    IF requested_authorizations-%delete =  if_abap_behv=>mk-on.
+    IF requested_authorizations-%delete = if_abap_behv=>mk-on.
 
       AUTHORITY-CHECK OBJECT 'ZAUTH_OBJ'
               ID 'ZAUTH_FIELD' DUMMY

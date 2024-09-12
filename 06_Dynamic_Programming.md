@@ -31,13 +31,17 @@
     - [Dynamic Formatting Option Specifications in String Templates](#dynamic-formatting-option-specifications-in-string-templates)
   - [Security Considerations in Dynamic Programming Using External Input](#security-considerations-in-dynamic-programming-using-external-input)
   - [Runtime Type Services (RTTS)](#runtime-type-services-rtts)
-    - [Getting Type Information at Runtime](#getting-type-information-at-runtime)
+    - [Getting Type Information at Runtime (RTTI)](#getting-type-information-at-runtime-rtti)
       - [RTTI: Attribute Access and Method Calls](#rtti-attribute-access-and-method-calls)
       - [Example: Exploring the RTTI Type Hierarchy](#example-exploring-the-rtti-type-hierarchy)
       - [Excursion: Inline Declaration, CAST Operator, Method Chaining](#excursion-inline-declaration-cast-operator-method-chaining)
       - [Absolute Names](#absolute-names)
-    - [Dynamically Creating Data Types at Runtime (Type Description Objects)](#dynamically-creating-data-types-at-runtime-type-description-objects)
-    - [Dynamically Creating Data Objects at Runtime Using Type Description Objects](#dynamically-creating-data-objects-at-runtime-using-type-description-objects)
+    - [Dynamically Creating Data Types (RTTC) and Data Objects at Runtime Using Type Description Objects](#dynamically-creating-data-types-rttc-and-data-objects-at-runtime-using-type-description-objects)
+      - [Getting Type Description Objects](#getting-type-description-objects)
+      - [Creating Elementary Types and Data Objects Dynamically](#creating-elementary-types-and-data-objects-dynamically)
+      - [Creating Structured Types and Data Objects Dynamically](#creating-structured-types-and-data-objects-dynamically)
+      - [Creating Table Types and Internal Tables Dynamically](#creating-table-types-and-internal-tables-dynamically)
+      - [Creating Reference Types and Data Reference Variables Dynamically](#creating-reference-types-and-data-reference-variables-dynamically)
   - [More Information](#more-information)
   - [Executable Example](#executable-example)
 
@@ -1328,6 +1332,12 @@ ASSIGN dobj_c10 TO <casttype> CASTING TYPE HANDLE tdo_elem. "1234
 - You can also use type description objects and the [`TYPE HANDLE` addition](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapcreate_data_handle.htm) to create anonymous data objects dynamically. For this and the absolute names, find more information below in the section about RTTS.
 
 ``` abap
+"------------ CREATE DATA statement patterns ----------------
+"CREATE DATA dref TYPE (typename).
+"CREATE DATA dref TYPE TABLE OF (typename).
+"CREATE DATA dref TYPE REF TO (typename).
+"CREATE DATA dref TYPE HANDLE type_description_object.
+
 "------------ Specifying a type name dynamically ------------
 
 "Anonymous data objects are created using a type determined at
@@ -2782,7 +2792,7 @@ for more details.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-### Getting Type Information at Runtime
+### Getting Type Information at Runtime (RTTI)
 
 With RTTI, you can determine data types at runtime using description methods in type description classes.
 To get the type information, you can get a reference to a type description object of a type, that is, an instance of a type description class.
@@ -2800,7 +2810,7 @@ The type properties are represented by attributes that are accessible through th
 The following code example demonstrates a range of RTTI attribute accesses and method calls. It includes retrieving type information at runtime for elementary and enumerated types, structures, internal tables, data references, classes, and interfaces. Find more information in the section below. 
 
 To try the example out, create a demo class named `zcl_some_class` and paste the code into it. 
-The example is not set up to display output in the console. So, after activation, you may want to set a break point at the first position possible and choose *F9* in ADT to execute the class.  You can then walk through the example in the debugger. This will allow you to double-click on the variables and check out the contents. The example is similar to the one below, however, this only focuses on the method calls without output preparation among others.
+The example is not set up to display output in the console. So, after activation, you may want to set a break point at the first position possible and choose *F9* in ADT to execute the class.  You can then walk through the example in the debugger. This will allow you to double-click on the variables and check out the contents. The example is similar to the one below, however, this only focuses on the method calls and attribute accesses without output preparation among others.
 
 ```abap
 CLASS zcl_some_class DEFINITION
@@ -3807,167 +3817,312 @@ ENDTRY.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-### Dynamically Creating Data Types at Runtime (Type Description Objects)
-You can create data types at program runtime using methods of the type description classes of RTTS.
-These types are only valid locally in the program. They are also anonymous, i.e. they are only accessible through [type description objects](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentype_object_glosry.htm).
-As shown above, you can get a reference to a type description object of a type using the static methods of the class `CL_ABAP_TYPEDESCR`. You can use type description objects such as `type_descr_obj` of the example to create data objects dynamically with `CREATE DATA` statements and the `TYPE HANDLE` addition as shown further down.
-```abap
-"For example, a structured type
-DATA(type_descr_obj) = CAST cl_abap_structdescr(
-  cl_abap_typedescr=>describe_by_name( 'SOME_STRUC_TYPE' ) ).
-```
+### Dynamically Creating Data Types (RTTC) and Data Objects at Runtime Using Type Description Objects
 
-The focus of the following snippets is on using RTTC methods such as `get` to create type description objects. For more information, check the class documentation. It is recommended that you use the `get` method instead of the `create` method. 
+#### Getting Type Description Objects
+
+[Type description objects](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentype_object_glosry.htm):
+
+- They are instances of type description classes. See the hierarchy of type description classes above. 
+- As already shown in several code snippets above, you can use the static methods of these type description classes to create type description objects. 
+- You can create them from existing types or create new types. 
+- Attributes of type description objects determine the technical properties of the type. 
+- Type description objects are basically available for all types.
+- `CREATE DATA` and `ASSIGN` statements include the `HANDLE` addition after which you can specify references to type description objects so as to create or assign data objects dynamically.
+  - The focus here is on creating anonymous data objects dynamically using `CREATE DATA` statements. Apart from using type description objects and the `HANDLE` addition, you can - as shown above - perform a dynamic creation of data objects using a type name specified dynamically (`CREATE DATA dref TYPE (some_type).`).
+  - After the [`HANDLE`](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapcreate_data_handle.htm) addition, a reference variable of the static type of class `CL_ABAP_DATADESCR` or its subclasses that points to a type description object are expected.
+
+The following examples show snippets that have already been covered in several sections above. 
+The use the following methods to get type description objects: 
+- `cl_abap_typedescr=>describe_by_name` (based on an existing type name)
+- `cl_abap_typedescr=>describe_by_data` (based on an existing data object)
+- `...=>get*` (getting type description objects for elementary and other types) 
 
 ```abap
-"----------------------------------------------------------------------
-"--- Creating type description objects using elementary data types ----
-"----------------------------------------------------------------------
+"------------------------------------------------------------------
+"--- Getting a type description object from an existing data ------
+"--- type name ----------------------------------------------------
+"--- describe_by_name method --------------------------------------
+"------------------------------------------------------------------
+
+"Elementary and structured data object, internal table
+TYPES ty_elem TYPE c LENGTH 5.
+TYPES ty_struct TYPE zdemo_abap_fli.
+TYPES ty_tab TYPE TABLE OF zdemo_abap_fli WITH EMPTY KEY.
+
+DATA(tdo_from_name1) = cl_abap_typedescr=>describe_by_name( 'TY_ELEM' ).
+DATA(type_name) = `TY_STRUCT`.
+DATA(tdo_from_name2) = cl_abap_typedescr=>describe_by_name( type_name ).
+"As shown above, using a cast to get more details.
+DATA(tdo_from_name3) = CAST cl_abap_tabledescr( cl_abap_typedescr=>describe_by_name( 'TY_TAB' ) ).
+
+"------------------------------------------------------------------
+"--- Getting a type description object from an existing data ------
+"--- object name --------------------------------------------------
+"--- describe_by_data method --------------------------------------
+"------------------------------------------------------------------
+
+"Elementary and structured data object, internal table
+DATA elem_dobj TYPE c LENGTH 5.
+DATA struct_dobj TYPE zdemo_abap_fli.
+DATA tab_dobj TYPE TABLE OF zdemo_abap_fli WITH EMPTY KEY.
+
+DATA(tdo_from_dobj1) = cl_abap_typedescr=>describe_by_data( elem_dobj ).
+DATA(dobj_name) = `STRUCT_DOBJ`.
+DATA(tdo_from_dobj2) = cl_abap_typedescr=>describe_by_data( dobj_name ).
+"As shown above, using a cast to get more details.
+DATA(tdo_from_dobj3) = CAST cl_abap_tabledescr( cl_abap_typedescr=>describe_by_data( tab_dobj ) ).
+
+"----------------------------------------------------------------
+"--- Getting a type description object for built-in elementary -- 
+"--- types ------------------------------------------------------
+"--- cl_abap_elemdescr=>get* methods ----------------------------
+"----------------------------------------------------------------
+
 "Conceptually, all elementary, built-in ABAP types already
 "exist and can be accessed by the corresponding get_* methods.
 "In ADT, click CTRL + space after cl_abap_elemdescr=>...
-"to check out the options. The following examples show a
-"selection.
-
-DATA(tdo_elem_i) = cl_abap_elemdescr=>get_i( ).
+"to check out the options.
 DATA(tdo_elem_string) = cl_abap_elemdescr=>get_string( ).
+DATA(tdo_elem_d) = cl_abap_elemdescr=>get_d( ).
+DATA(tdo_elem_t) = cl_abap_elemdescr=>get_t( ).
+DATA(tdo_elem_utcl) = cl_abap_elemdescr=>get_utclong( ).
+DATA(tdo_elem_dec16) = cl_abap_elemdescr=>get_decfloat16( ).
+DATA(tdo_elem_dec34) = cl_abap_elemdescr=>get_decfloat34( ).
+DATA(tdo_elem_f) = cl_abap_elemdescr=>get_f( ).
+DATA(tdo_elem_xstr) = cl_abap_elemdescr=>get_xstring( ).
+DATA(tdo_elem_i) = cl_abap_elemdescr=>get_i( ).
+DATA(tdo_elemd_int1) = cl_abap_elemdescr=>get_int1( ).
+DATA(tdo_elemd_int2) = cl_abap_elemdescr=>get_int2( ).
+DATA(tdo_elemd_int8) = cl_abap_elemdescr=>get_int8( ).
 
 "For the length specification of type c and others, there is
 "an importing parameter available.
-DATA(tdo_elem_c_l20) = cl_abap_elemdescr=>get_c( 20 ).
+DATA(tdo_elem_c_l5) = cl_abap_elemdescr=>get_c( 5 ).
+DATA(tdo_elem_n_l4) = cl_abap_elemdescr=>get_n( 4 ).
+DATA(tdo_elem_x_l10) = cl_abap_elemdescr=>get_x( 10 ).
 
 "Type p with two parameters to be specified.
 DATA(tdo_elem_p) = cl_abap_elemdescr=>get_p( p_length   = 3
                                              p_decimals = 2 ).
 
-"Note: Instead of calling get_i() and others having no importing
-"parameters, you could also call the describe_by_name( ) method
+"Instead of calling get_i() and others having no importing
+"parameters, you can also call the describe_by_name( ) method
 "and pass the type names (I‚ STRING etc.) as arguments.
-"DATA(tdo_elem_i_2) = CAST cl_abap_elemdescr(
-"  cl_abap_typedescr=>describe_by_name( 'I' ) ).
-"DATA(tdo_elem_string_2) = CAST cl_abap_elemdescr(
-"  cl_abap_typedescr=>describe_by_name( 'STRING' ) ).
+DATA(tdo_elem_i2) = CAST cl_abap_elemdescr( cl_abap_typedescr=>describe_by_name( 'I' ) ).
+DATA(tdo_elem_string2) = CAST cl_abap_elemdescr( cl_abap_typedescr=>describe_by_name( 'STRING' ) ).
+```
 
-"----------------------------------------------------------------------
-"--- Creating type description objects using structured data types ----
-"----------------------------------------------------------------------
-"They are created based on a component description table.
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
-"A structured type such as the following shall be created dynamically
-"using a type description object.
+#### Creating Elementary Types and Data Objects Dynamically
+
+```abap
+"An elementary type and data object such as the following shall be 
+"created dynamically using a type description object.
+TYPES ty_c3 TYPE c LENGTH 3.
+DATA elemdobj TYPE ty_c3.
+
+"Creating the type dynamically (creating a type description object)
+DATA(tdo_elem_1) = cl_abap_elemdescr=>get_c( 3 ).
+
+"Creating an elementary data object dynamically using a type description object
+DATA dref_elem TYPE REF TO data.
+CREATE DATA dref_elem TYPE HANDLE tdo_elem_1.
+
+ASSERT elemdobj = dref_elem->*.
+
+"Excursions
+"As shown above, the type description object can be retrieved using
+"other methods.
+DATA(tdo_elem_2) = CAST cl_abap_elemdescr( cl_abap_typedescr=>describe_by_name( 'TY_C3' ) ).
+CREATE DATA dref_elem TYPE HANDLE tdo_elem_2.
+    
+DATA(tdo_elem_3) = CAST cl_abap_elemdescr( cl_abap_typedescr=>describe_by_data( elemdobj ) ).
+CREATE DATA dref_elem TYPE HANDLE tdo_elem_2.
+
+"After HANDLE, a reference variable of the static type of class CL_ABAP_DATADESCR
+"or its subclasses is expected. So, the following CREATE DATA statement does not work. 
+"A cast is required.
+DATA(tdo_elem_4) = cl_abap_typedescr=>describe_by_data( elemdobj ).
+"CREATE DATA dref_elem TYPE HANDLE tdo_elem_4.
+DATA(tdo_elem_5) = CAST cl_abap_datadescr( cl_abap_typedescr=>describe_by_data( elemdobj ) ).
+CREATE DATA dref_elem TYPE HANDLE tdo_elem_5.
+```
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+#### Creating Structured Types and Data Objects Dynamically
+
+```abap
+"A structured type and data object such as the following shall be created
+"dynamically using a type description object.
 TYPES: BEGIN OF struc_type,
-        a TYPE string,
-        b TYPE i,
-        c TYPE c LENGTH 5,
-        d TYPE p LENGTH 4 DECIMALS 3,
-      END OF struc_type.
+         a TYPE string,   "Built-in ABAP types
+         b TYPE i,
+         c TYPE c LENGTH 5,
+         d TYPE p LENGTH 4 DECIMALS 3,
+         e TYPE land1,          "DDIC data element
+         f TYPE zdemo_abap_fli, "Structure based on the line type of a database table
+         g TYPE string_table,   "Table type
+       END OF struc_type.
+DATA demo_struc_1 TYPE struc_type.
 
 "Creating a type description object using RTTC method
 "Using the get method, you can create the type description object
 "dynamically based on a component table. The component table is
 "of type abap_component_tab. In this example, the component table
 "is created inline.
-DATA(tdo_struc) = cl_abap_structdescr=>get(
+DATA(tdo_struc_1) = cl_abap_structdescr=>get(
     VALUE #(
       ( name = 'A' type = cl_abap_elemdescr=>get_string( ) )
       ( name = 'B' type = cl_abap_elemdescr=>get_i( ) )
       ( name = 'C' type = cl_abap_elemdescr=>get_c( 5 ) )
-      ( name = 'D' type = cl_abap_elemdescr=>get_p( p_length   = 4
-                                                    p_decimals = 3 ) ) ) ).
+      ( name = 'D' type = cl_abap_elemdescr=>get_p( p_length = 4 p_decimals = 3 ) )
+      ( name = 'E' type = CAST cl_abap_datadescr( cl_abap_typedescr=>describe_by_name( 'LAND1' ) ) )
+      ( name = 'F' type = CAST cl_abap_datadescr( cl_abap_typedescr=>describe_by_name( 'ZDEMO_ABAP_FLI' ) ) )
+      ( name = 'G' type = CAST cl_abap_datadescr( cl_abap_typedescr=>describe_by_name( 'STRING_TABLE' ) ) ) ) ).
 
-"---------------------------------------------------------------------
-"--- Creating type description objects using internal table types ----
-"---------------------------------------------------------------------
-"Note: Specifying the line type is mandatory, the rest is optional.
+"Creating a structured data object dynamically using a type description object
+DATA dref_struc TYPE REF TO data.
+CREATE DATA dref_struc TYPE HANDLE tdo_struc_1.
+
+ASSERT demo_struc_1 = dref_struc->*.
+
+"Excursion
+"The previous example shows the use of cl_abap_structdescr=>get to create a
+"type description object. The following examples show the creation based on
+"other methods/different casts getting type description objects.
+TYPES ty_struc TYPE zdemo_abap_carr.
+DATA demo_struc_2 TYPE zdemo_abap_carr.
+DATA(tdo_struc_2) = CAST cl_abap_datadescr( cl_abap_typedescr=>describe_by_data( demo_struc_2 ) ).
+CREATE DATA dref_struc TYPE HANDLE tdo_struc_2.
+ASSERT demo_struc_2 = dref_struc->*.
+DATA(tdo_struc_3) = CAST cl_abap_structdescr( cl_abap_typedescr=>describe_by_name( 'TY_STRUC' ) ).
+CREATE DATA dref_struc TYPE HANDLE tdo_struc_3.
+```
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+#### Creating Table Types and Internal Tables Dynamically 
+
+```abap
+"Note regarding cl_abap_tabledescr=>get( ... ): Specifying the line type is mandatory, 
+"the rest is optional.
 
 "An internal table type such as the following shall be created dynamically
 "using a type description object.
 TYPES std_tab_type_std_key TYPE STANDARD TABLE OF string WITH DEFAULT KEY.
+DATA itab_1 TYPE std_tab_type_std_key.
 
-"Creating a type description object using RTTC method
+"Creating the type dynamically (creating a type description object)
 "Not specifying the other optional parameters means that the
 "default values are used, for example, standard table is the
 "default value for p_table_kind.
 DATA(tdo_tab_1) = cl_abap_tabledescr=>get(
         p_line_type  = cl_abap_elemdescr=>get_string( ) ).
 
+"Creating an internal table dynamically using a type description object
+DATA dref_itab TYPE REF TO data.
+CREATE DATA dref_itab TYPE HANDLE tdo_tab_1.
+
+ASSERT itab_1 = dref_itab->*.
+
 "Another internal table type for which more parameter specifications
 "are needed. The following internal table type shall be created using
 "a type description object.
 TYPES so_table_type TYPE SORTED TABLE OF zdemo_abap_flsch WITH UNIQUE KEY carrid connid.
+DATA itab_2 TYPE so_table_type.
 
-"Creating a type description object using RTTC method
+"Creating the type dynamically (creating a type description object)
 "The following example also demonstrates how comfortably constructor
 "operators can be used at these positions.
 DATA(tdo_tab_2) = cl_abap_tabledescr=>get(
-        p_line_type  = CAST cl_abap_structdescr(
-                         cl_abap_tabledescr=>describe_by_name( 'ZDEMO_ABAP_FLSCH' ) )
+        p_line_type  = CAST cl_abap_structdescr( cl_abap_tabledescr=>describe_by_name( 'ZDEMO_ABAP_FLSCH' ) )
         p_table_kind = cl_abap_tabledescr=>tablekind_sorted
         p_key        = VALUE #( ( name = 'CARRID' ) ( name = 'CONNID' ) )
         p_unique     = cl_abap_typedescr=>true ).
 
-"----------------------------------------------------------------------
-"--- Creating type description objects using reference types ----
-"----------------------------------------------------------------------
-"Reference types such as the following shall be created using a
-"type description object.
-TYPES some_ref_type2t TYPE REF TO t.
-TYPES some_ref_type2cl TYPE REF TO zcl_demo_abap_dynamic_prog.
+"Creating an internal table dynamically using a type description object
+CREATE DATA dref_itab TYPE HANDLE tdo_tab_2.
 
-"Using RTTC methods
-"You can create a reference type from a base type. This base type
-"may be a class, interface or data type.
-DATA(tdo_ref_1) = cl_abap_refdescr=>get( cl_abap_elemdescr=>get_t( ) ).
-DATA(tdo_ref_2) = cl_abap_refdescr=>get(
-                    cl_abap_typedescr=>describe_by_name( 'ZCL_DEMO_ABAP_DYNAMIC_PROG' ) ).
-"Alternative: get_by_name method
-DATA(tdo_ref_3) = cl_abap_refdescr=>get_by_name( 'T' ).
-DATA(tdo_ref_4) = cl_abap_refdescr=>get_by_name( 'ZCL_DEMO_ABAP_DYNAMIC_PROG' ).
+ASSERT itab_2 = dref_itab->*.
+
+"A table type and data object such as the following shall be created
+"dynamically using a type description object.
+TYPES: BEGIN OF struc_type_2,
+          a TYPE string,   "Built-in ABAP types
+          b TYPE i,
+          c TYPE c LENGTH 5,
+          d TYPE land1,    "DDIC data element
+        END OF struc_type_2.
+DATA itab_3 TYPE HASHED TABLE OF struc_type_2 WITH UNIQUE KEY a.
+
+"Creating the type dynamically (creating a type description object)
+DATA(tdo_tab_3) = cl_abap_tabledescr=>get(
+        p_line_type  = cl_abap_structdescr=>get( VALUE #(
+          ( name = 'A' type = cl_abap_elemdescr=>get_string( ) )
+          ( name = 'B' type = cl_abap_elemdescr=>get_i( ) )
+          ( name = 'C' type = cl_abap_elemdescr=>get_c( 5 ) )
+          ( name = 'D' type = CAST cl_abap_datadescr( cl_abap_typedescr=>describe_by_name( 'LAND1' ) ) ) ) )
+        p_table_kind = cl_abap_tabledescr=>tablekind_hashed
+        p_key        = VALUE #( ( name = 'A' )  )
+        p_unique     = cl_abap_typedescr=>true ).
+
+"Creating an internal table dynamically using a type description object
+CREATE DATA dref_itab TYPE HANDLE tdo_tab_3.
+
+ASSERT itab_3 = dref_itab->*.
+
+"Excursion
+"The previous examples show the use of cl_abap_tabledescr=>get to create
+"type description objects. These examples show the creation based on
+"other methods/different casts getting type description objects.
+TYPES ty_str_tab TYPE TABLE OF string WITH EMPTY KEY.
+DATA itab_4 TYPE string_table.
+
+DATA(tdo_tab_4) = CAST cl_abap_datadescr( cl_abap_typedescr=>describe_by_name( 'TY_STR_TAB' ) ).
+CREATE DATA dref_itab TYPE HANDLE tdo_tab_4.
+DATA(tdo_tab_5) = CAST cl_abap_tabledescr( cl_abap_typedescr=>describe_by_data( itab_4 ) ).
+CREATE DATA dref_itab TYPE HANDLE tdo_tab_5.
 ```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-### Dynamically Creating Data Objects at Runtime Using Type Description Objects
+#### Creating Reference Types and Data Reference Variables Dynamically 
 
-As shown above, anonymous data objects can be dynamically created using `CREATE DATA` statements in many ways by specifying the type ...
-- statically: `CREATE DATA dref TYPE string.`
-- dynamically: `CREATE DATA dref TYPE (some_type).`
+```abap
+"A reference type and variable such as the following shall be created 
+"using type description objects.
+TYPES ty_ref2string TYPE REF TO string.
+DATA dref_string TYPE REF TO string.
 
-Another way to dynamically create data objects with dynamic type specification is to use types created at runtime with RTTC methods.
-The `CREATE DATA` statement provides the [`TYPE HANDLE`](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapcreate_data_handle.htm) addition after which you can specify type description objects. A reference variable of the static type of class `CL_ABAP_DATADESCR` or its subclasses that points to a type description object can be specified after `TYPE HANDLE`.
+DATA dref_ref TYPE REF TO data.
 
-``` abap
-DATA dref_cr TYPE REF TO data.
+"Creating the type dynamically (creating a type description object)
+DATA(tdo_ref_1) = cl_abap_refdescr=>get( cl_abap_elemdescr=>get_string( ) ).
 
-"Elementary data object
-"Type description object for an elementary type
-DATA(tdo_elem_c_l20) = cl_abap_elemdescr=>get_c( 20 ).
-"Creating an elementary data object based on a type description object
-CREATE DATA dref_cr TYPE HANDLE tdo_elem_c_l20.
+"Creating a data reference variable dynamically using a type description object
+CREATE DATA dref_ref TYPE HANDLE tdo_ref_1.
 
-"Structure
-DATA(tdo_struc) = cl_abap_structdescr=>get(
-        VALUE #(
-          ( name = 'COMP1' type = cl_abap_elemdescr=>get_string( ) )
-          ( name = 'COMP2' type = cl_abap_elemdescr=>get_i( ) )
-          ( name = 'COMP3' type = cl_abap_elemdescr=>get_c( 3 ) ) ) ).
+dref_ref = REF string( `hi` ).
+dref_string = REF string( `hi` ).
+ASSERT dref_string = dref_ref.
+ASSERT dref_string->* = dref_ref->*.
 
-"Creating a structure based on a type description object
-CREATE DATA dref_cr TYPE HANDLE tdo_struc.
+"Excursion
+"The previous examples show the use of cl_abap_refdescr=>get to create
+"a type description object. The following examples show the creation based
+"on other methods/different casts getting type description objects.
+DATA(tdo_ref_2) = CAST cl_abap_datadescr( cl_abap_typedescr=>describe_by_name( 'TY_REF2STRING' ) ).
+CREATE DATA dref_ref TYPE HANDLE tdo_ref_2.
 
-"Internal table
-"In the case below, it is a standard table with standard key by 
-"default because the other parameters are not specified.
-DATA(tdo_tab) = cl_abap_tabledescr=>get(
-  p_line_type  = CAST cl_abap_structdescr( 
-                       cl_abap_tabledescr=>describe_by_name( 'ZDEMO_ABAP_CARR' ) ) ).
+DATA(tdo_ref_3) = CAST cl_abap_refdescr( cl_abap_typedescr=>describe_by_data( dref_string ) ).
+CREATE DATA dref_ref TYPE HANDLE tdo_ref_3.
 
-"Creating an internal table based on a type description object
-CREATE DATA dref_cr TYPE HANDLE tdo_tab.
-
-"Data reference
-DATA(tdo_ref) = cl_abap_refdescr=>get( cl_abap_elemdescr=>get_t( ) ). 
-CREATE DATA dref_cr TYPE HANDLE tdo_ref.
+"get_by_name method
+DATA(tdo_ref_4) = cl_abap_refdescr=>get_by_name( 'STRING' ).
+CREATE DATA dref_ref TYPE HANDLE tdo_ref_4.
 ```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
@@ -3975,6 +4130,8 @@ CREATE DATA dref_cr TYPE HANDLE tdo_ref.
 ## More Information
 - It is recommended that you also consult section [Dynamic Programming Techniques (F1 docu for standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abendynamic_prog_technique_gdl.htm) in the ABAP Keyword Documentation since it provides important aspects that should be considered when dealing with dynamic programming in general (e. g. security aspects or runtime error prevention).
 - There are even further dynamic programming techniques in the unrestricted ABAP language scope [Standard ABAP](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenstandard_abap_glosry.htm) such as the generation or execution of programs at runtime. They are not part of this cheat sheet. Find more details on the related syntax (e. g. `GENERATE SUBROUTINE POOL`, `READ REPORT` and `INSERT REPORT` in the ABAP Keyword Documentation for Standard ABAP: [Dynamic Program Development (F1 docu for Standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenabap_language_dynamic.htm)
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## Executable Example
 

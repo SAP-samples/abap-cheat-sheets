@@ -144,7 +144,7 @@ CLASS lcl_demo IMPLEMENTATION.
     "ENDIF.
 
     "Night: 9 pm to 4 am.
-    IF time BETWEEN '210001' AND '050000'.
+    IF time BETWEEN '210001' AND '235959' OR time BETWEEN '000000' AND '050000'.
       subrc = 33.
     ENDIF.
 

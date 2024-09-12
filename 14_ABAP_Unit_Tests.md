@@ -448,7 +448,7 @@ There are multiple ways to implement test doubles manually:
 - If the DOC is a method in a class that allows inheritance (i.e. it is not defined as `FINAL`), you can inherit from the class and redefine methods for which you need a test double. 
 
 > **💡 Note**<br>
-> Instead of manually creating test doubles, the [ABAP OO Test Double Framework](https://help.sap.com/docs/ABAP_PLATFORM_NEW/c238d694b825421f940829321ffa326a/804c251e9c19426cadd1395978d3f17b.html?locale=en-US) helps you create test doubles automatically.
+> See information and an example about frameworks such as the [ABAP OO Test Double Framework](https://help.sap.com/docs/ABAP_PLATFORM_NEW/c238d694b825421f940829321ffa326a/804c251e9c19426cadd1395978d3f17b.html?locale=en-US) below that support you with creating the test doubles.
 
 ### Injecting Test Doubles
 

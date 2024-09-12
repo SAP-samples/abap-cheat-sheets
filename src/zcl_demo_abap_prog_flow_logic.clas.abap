@@ -276,11 +276,11 @@ CLASS zcl_demo_abap_prog_flow_logic IMPLEMENTATION.
 
     DATA(greetings) = COND #( WHEN syst_time BETWEEN '050001' AND '120000'
                               THEN |It's { syst_time TIME = ISO }. Good morning, { sy-uname }.|
-                              WHEN syst_time BETWEEN '170001' AND '210000'
+                              WHEN syst_time BETWEEN '120001' AND '180000'
+                              THEN |It's { syst_time TIME = ISO }. Good afternoon, { sy-uname }.|
+                              WHEN syst_time BETWEEN '180001' AND '220000'
                               THEN |It's { syst_time TIME = ISO }. Good evening, { sy-uname }.|
-                              WHEN syst_time BETWEEN '210001' AND '050000'
-                              THEN |It's { syst_time TIME = ISO }. Good night, { sy-uname }.|
-                              ELSE |It's { syst_time TIME = ISO }. Hallo, { sy-uname }.| ).
+                              ELSE |It's { syst_time TIME = ISO }. Good night, { sy-uname }.| ).
 
     out->write( data = greetings name = `greetings` ).
 
