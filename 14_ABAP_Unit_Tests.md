@@ -1673,7 +1673,7 @@ For more information about evaluating ABAP unit test results, see [here](https:/
 
 ## More Information
 
-- openSAP course: [Writing Testable Code for ABAP](https://open.sap.com/courses/wtc1.OpenSAP+WTC1_W1U5+Writing+Testable+Code+for+ABAPComent)
+- [Writing Testable Code for ABAP](https://learning.sap.com/courses/writing-testable-code-for-abap) course
 - ABAP Keyword Documentation
   - [ABAP Unit](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_unit.htm)
   - [Testing repository objects](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentest_relations.htm)

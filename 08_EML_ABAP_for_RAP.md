@@ -25,6 +25,8 @@
     - [Using Keys and Identifying RAP BO Instances in a Nutshell](#using-keys-and-identifying-rap-bo-instances-in-a-nutshell)
     - [RAP Concepts](#rap-concepts)
     - [Ensuring Data Consistency in a RAP Transaction](#ensuring-data-consistency-in-a-rap-transaction)
+    - [RAP Additional and Unmanaged Save](#rap-additional-and-unmanaged-save)
+    - [Handling Dependencies on RAP Business Objects in ABAP Unit](#handling-dependencies-on-rap-business-objects-in-abap-unit)
   - [More Information](#more-information)
   - [Executable Examples](#executable-examples)
 
@@ -168,8 +170,7 @@ The following points cover RAP-related terms such as *RAP business objects* and 
         when the RAP BO is accessed. This is covered in more detail
         further down.
     -   Usually, saver classes are not needed in managed RAP BOs (except
-        for special variants of managed RAP BOs which are not covered
-        here). Local handler classes are usually
+        for special variants of managed RAP BOs such as [RAP additional save](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_add_save_glosry.htm) and [RAP unmanaged save](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_unman_save_glosry.htm)). Local handler classes are usually
         needed in managed RAP BOs if implementations are required that
         go beyond standard operations.
     -   Note: In more complex scenarios, with RAP BOs that
@@ -1617,11 +1618,6 @@ MODIFY ENTITIES OF root_ent IN LOCAL MODE
 
 ### Using Keys and Identifying RAP BO Instances in a Nutshell
 
-<details>
-  <summary>Expand to view the details</summary>
-
-<br>
-
 The following bullet points outline important aspects regarding
  keys and identifying [RAP BO
 instances](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_bo_instance_glosry.htm "Glossary Entry") in ABAP EML statements.
@@ -1732,14 +1728,7 @@ contains all relevant components for the chosen scenario.
 >```
 > In cases where different data objects of key component groups of a BDEF derived type are to be assigned to the same key component group of the same entity, a direct assignment works without a syntax warning because the content is identical. A direct assignment is recommended (`...wa1_root-%tky = wa2_root-%tky ...`). The use of the `CORRESPONDING` operator is unnecessary and less performant. This is true, for example, for key component group assignments in the context of RAP response parameters failed and reported.
 
-</details>
-
 ### RAP Concepts
-
-<details>
-  <summary>Expand to view the details</summary>
-
-<br>
 
 **RAP numbering**
 
@@ -1820,14 +1809,8 @@ contains all relevant components for the chosen scenario.
 >    `%pid` and `%tmp`) is unique and mapped to the final
 >    keys that are to be contained in `%key`.
 
-</details>
 
 ### Ensuring Data Consistency in a RAP Transaction
-
-<details>
-  <summary>Expand to view the details</summary>
-
-<br>
 
 The [LUW](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenluw_glosry.htm) concept, which deals with the transfer of data from one consistent state to another, applies to applications using RAP. RAP transactions are integrated with the [SAP LUW](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensap_luw_glosry.htm), which is a prerequisite for transactional consistency. RAP provides a standardized approach and rules ([RAP BO contract](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_bo_contract_glosry.htm)) for the [RAP business object (BO)](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_bo_glosry.htm) runtime to ensure that the RAP transaction is correctly implemented, data inconsistencies are avoided, and the SAP LUW is successfully completed.  
 
@@ -1903,7 +1886,60 @@ The following restrictions apply to operations and/or statements in the individu
 |Report processing (`SUBMIT ...`) <br><br>(unrestricted ABAP language scope)|- |- |- |Not allowed in transactional contexts. Results in a syntax or runtime error. <br>`SUBMIT ... AND RETURN` does not currently return an error, but it leads to potentially unwanted screen processing, and because of the missing return channel, there is no proper error handling. |
 
 
-</details>
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+
+### RAP Additional and Unmanaged Save
+
+- As covered in the RAP terms section, *managed* is an implementation type that is specified in the BDEF, and which determines the [RAP BO provider](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_bo_provider_glosry.htm "Glossary Entry"), and thus,  how the transactional buffer is provided and how the behavior of a RAP BO is implemented.
+- In a managed RAP BO, the RAP framework automatically executes the save, eliminating the need for any additional logic. However, you can modify this behavior by adding or replacing the default save logic. This is not applicable to unmanaged BOs, where the save is user-defined.
+- RAP additional save 
+  - This feature enhances the default save sequence by incorporating additional save logic.
+  - You can apply this additional save logic to the entire BO or a specific entity.
+  - For example, you can add functionality to be executed during the save, such as change documents or writing to an application log.
+  - The relevant BDEF syntax is `with additional save` 
+      ```abap
+      managed with additional save implementation in class bp_some_abp unique;
+      strict(2);
+      ...
+      ```
+  - The additional save logic is implemented in the `save_modified` RAP saver method.
+  - `save_modified` has three importing parameters with specific BDEF derived types: 
+    - `create` of type `REQUEST FOR CHANGE ...`
+    - `update` of type `REQUEST FOR CHANGE ...`
+    - `delete` of type `REQUEST FOR DELETE ...`
+    - These BDEF derived types are deep structures containing internal tables with RAP BO instance keys and/or data, i.e. they contain those instances that are to be created, updated or deleted.    
+  - Optional additions are available in the BDEF. With the specification in the code snippet above, by default, only the values of the key fields and changed fields are passed to the `save_modified` method. Using the addition `with full data`, you can, as the name implies, pass all instance data: `managed with additional save with full data implementation in class ...`.
+
+- RAP unmanaged save
+  - This feature replaces the default managed save logic with a custom save logic.
+  - BDEF syntax:
+    ```abap
+    managed with unmanaged save implementation in class bp_some_abp unique;
+    strict(2);
+    ...
+    ```
+  - Also in this case, ...
+    - you can apply the save logic to the entire BO or an individual entity.
+    - the implementation is done in the `save_modified` RAP saver method.
+
+- More information: 
+  - [ABAP Keyword Documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbdl_saving.htm)
+  - Development guide for the ABAP RESTful Application Programming Model:
+    - [Additional Save](https://help.sap.com/docs/abap-cloud/abap-rap/additional-save)
+    - [Unmanaged Save](https://help.sap.com/docs/abap-cloud/abap-rap/unmanaged-save)
+
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+### Handling Dependencies on RAP Business Objects in ABAP Unit
+
+The [ABAP Unit Tests](14_ABAP_Unit_Tests.md) cheat sheet includes an example demonstrating the handling of dependencies on RAP business objects: 
+- Creating transactional buffer test doubles using the `CL_BOTD_TXBUFDBL_BO_TEST_ENV` class
+- Mocking ABAP EML APIs using the `CL_BOTD_MOCKEMLAPI_BO_TEST_ENV` class
+
+Note that there is a RAP-specific variant of the `CREATE OBJECT` statement available. [`CREATE OBJECT ... FOR TESTING.`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapcreate_object_for_testing.htm) enables the instantiation of RAP handler classes. Find more information in the [Development guide for the ABAP RESTful Application Programming Model](https://help.sap.com/docs/abap-cloud/abap-rap/test).
+
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 

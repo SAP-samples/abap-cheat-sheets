@@ -74,7 +74,7 @@
 - In general, dynamic programming also comes with some downsides. For example:
   - The ABAP compiler cannot check the dynamic programming feature like the `SELECT` statement mentioned above. There is no syntax warning or suchlike. 
   - The checks are performed only at runtime, which has an impact on the performance. 
-  - The testing of [procedures](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenprocedure_glosry.htm "Glossary Entry") that include dynamic programming features may be difficult.
+  - The testing of [procedure](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenprocedure_glosry.htm "Glossary Entry") that include dynamic programming features may be difficult.
   - Including external input in dynamic ABAP SQL statements without an appropriate handling, there can be potential security risks. You can, for example, use the `CL_ABAP_DYN_PRG` class to manage security risks.
 
 
@@ -3833,10 +3833,10 @@ ENDTRY.
   - After the [`HANDLE`](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapcreate_data_handle.htm) addition, a reference variable of the static type of class `CL_ABAP_DATADESCR` or its subclasses that points to a type description object are expected.
 
 The following examples show snippets that have already been covered in several sections above. 
-The use the following methods to get type description objects: 
+They use the following methods to get type description objects: 
 - `cl_abap_typedescr=>describe_by_name` (based on an existing type name)
 - `cl_abap_typedescr=>describe_by_data` (based on an existing data object)
-- `...=>get*` (getting type description objects for elementary and other types) 
+- `...=>get*` (getting type description objects for elementary and other types; other get* methods are shown further down) 
 
 ```abap
 "------------------------------------------------------------------
@@ -3858,7 +3858,7 @@ DATA(tdo_from_name3) = CAST cl_abap_tabledescr( cl_abap_typedescr=>describe_by_n
 
 "------------------------------------------------------------------
 "--- Getting a type description object from an existing data ------
-"--- object name --------------------------------------------------
+"--- object -------------------------------------------------------
 "--- describe_by_data method --------------------------------------
 "------------------------------------------------------------------
 
@@ -3868,8 +3868,7 @@ DATA struct_dobj TYPE zdemo_abap_fli.
 DATA tab_dobj TYPE TABLE OF zdemo_abap_fli WITH EMPTY KEY.
 
 DATA(tdo_from_dobj1) = cl_abap_typedescr=>describe_by_data( elem_dobj ).
-DATA(dobj_name) = `STRUCT_DOBJ`.
-DATA(tdo_from_dobj2) = cl_abap_typedescr=>describe_by_data( dobj_name ).
+DATA(tdo_from_dobj2) = cl_abap_typedescr=>describe_by_data( struct_dobj ).
 "As shown above, using a cast to get more details.
 DATA(tdo_from_dobj3) = CAST cl_abap_tabledescr( cl_abap_typedescr=>describe_by_data( tab_dobj ) ).
 
@@ -3892,9 +3891,9 @@ DATA(tdo_elem_dec34) = cl_abap_elemdescr=>get_decfloat34( ).
 DATA(tdo_elem_f) = cl_abap_elemdescr=>get_f( ).
 DATA(tdo_elem_xstr) = cl_abap_elemdescr=>get_xstring( ).
 DATA(tdo_elem_i) = cl_abap_elemdescr=>get_i( ).
-DATA(tdo_elemd_int1) = cl_abap_elemdescr=>get_int1( ).
-DATA(tdo_elemd_int2) = cl_abap_elemdescr=>get_int2( ).
-DATA(tdo_elemd_int8) = cl_abap_elemdescr=>get_int8( ).
+DATA(tdo_elem_int1) = cl_abap_elemdescr=>get_int1( ).
+DATA(tdo_elem_int2) = cl_abap_elemdescr=>get_int2( ).
+DATA(tdo_elem_int8) = cl_abap_elemdescr=>get_int8( ).
 
 "For the length specification of type c and others, there is
 "an importing parameter available.

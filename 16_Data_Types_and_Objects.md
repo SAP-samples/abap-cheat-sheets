@@ -18,6 +18,7 @@
     - [Assigning References to Data Reference Variables](#assigning-references-to-data-reference-variables)
     - [Creating Anonymous Data Objects](#creating-anonymous-data-objects)
     - [Constants and Immutable Variables](#constants-and-immutable-variables)
+    - [Built-In Data Objects](#built-in-data-objects)
   - [Type Conversions, Compatibility and Assignments](#type-conversions-compatibility-and-assignments)
   - [Terms Related to Data Types and Objects in a Nutshell](#terms-related-to-data-types-and-objects-in-a-nutshell)
   - [Notes on the Declaration Context](#notes-on-the-declaration-context)
@@ -1120,6 +1121,332 @@ ENDLOOP.
 "SELECT statement with a an immutable target table declared inline
 SELECT * FROM zdemo_abap_carr INTO TABLE @FINAL(itab_final_inl).
 ```
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+### Built-In Data Objects
+
+In [ABAP programs](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_program_glosry.htm), you can use built-in data objects, including:
+
+| Built-in data object | Details |
+| -------- | ------- |
+| ABAP system fields | These fields, filled by the [ABAP runtime framework](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_runtime_frmwk_glosry.htm), can be used to query system information and more. Typically, they should only be read, and not overwritten. The fields are components of the built-in structure `sy` (or `syst`). Prominent ones are `sy-subrc` (return code of many ABAP statements; typically, the value 0 indicates success), `sy-tabix` (row index of internal tables), and `sy-index` (loop pass index), which can be used in [ABAP for Cloud Development](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_for_cloud_dev_glosry.htm). However, most of these fields should not be used in ABAP for Cloud Development (indicated by a syntax warning) because they refer to [Standard ABAP](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenstandard_abap_glosry.htm) contexts (e.g. classic dynpros and lists), or their values are not relevant in a cloud context. More information about the purpose of the individual components is available at [ABAP System Fields (F1 documentation for Standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abensystem_fields.htm).|
+| `space` constant | It is of type type `c`, length 1, and contains a blank character. |
+| `me` self-reference  | Used in ABAP Objects, it's a local reference variable for instance method implementations. At runtime, it points to the instance executing the method. It is primarily used to be explicit about, for exmaple, using instance attributes of the class, especially if there is a local data object with the same name.|
+
+Expand the following collapsible section to view the code of an example. To try it out, create a demo class named `zcl_some_class` and paste the code into it. After activation, choose *F9* in ADT to execute the class. The example is set up to display output in the console.
+
+
+<details>
+  <summary>Expand to view the code</summary>
+  <!-- -->
+
+```abap
+CLASS zcl_some_class DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
+
+  PUBLIC SECTION.
+    INTERFACES if_oo_adt_classrun.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+    DATA str TYPE string VALUE `Data object 'str' declared in the private visibility section`.
+ENDCLASS.
+
+
+
+CLASS zcl_some_class IMPLEMENTATION.
+  METHOD if_oo_adt_classrun~main.
+
+    "In ABAP for Cloud Development, the following statement will show a syntax warning saying that
+    "sy should not be used. Here, it is used for demonstration purposes.
+    "In the example, RTTI is used to get all component names of the built-in data object sy. In the loop,
+    "ABAP statements are created (they represent simple assignments using the various sy components) and
+    "output to the console. You can insert all the output DATA(...) = ... statements in the demo class's
+    "main method implementation. The purpose is to demonstrate that most of the sy components should not be
+    "used in ABAP for Cloud Development. Most of the statements will show a syntax warning in ABAP for Cloud
+    "Development. Check the ABAP Keyword Documentation (for Standard ABAP) and the F2 information for the
+    "purpose of the individual sy components.
+    LOOP AT CAST cl_abap_structdescr( cl_abap_typedescr=>describe_by_data( sy ) )->components INTO DATA(co).
+      DATA(sycomp) = to_lower( co-name ).
+      DATA(code) = |DATA(sy{ sycomp }) = sy-{ sycomp }.|.
+      out->write( code ).
+    ENDLOOP.
+    out->write( |\n| ).
+    out->write( |\n| ).
+
+    "Demonstrating prominent sy components that can be used in ABAP for Cloud Development
+
+    "------------------------------------------------------------------------------
+    "------------------ sy-subrc: Return code of ABAP statements ------------------
+    "------------------------------------------------------------------------------
+
+    "Many ABAP statements set a sy-subrc value. Check the ABAP Keyword Documentation
+    "for individual statements. Usually, the value 0 indicates a successful execution.
+
+    DATA(some_string) = `ABAP`.
+
+    "FIND statements
+    "Found
+    FIND `P` IN some_string.
+    ASSERT sy-subrc = 0.
+
+    "Not found
+    FIND `p` IN some_string RESPECTING CASE.
+    ASSERT sy-subrc = 4.
+
+    DATA(some_itab) = VALUE string_table( ( `a` ) ( `b` ) ( `c` ) ( `d` ) ).
+
+    "READ TABLE statements
+    "Entry available
+    READ TABLE some_itab INTO DATA(wa1) INDEX 3.
+    ASSERT sy-subrc = 0.
+
+    "Entry not available
+    READ TABLE some_itab INTO DATA(wa2) INDEX 7.
+    ASSERT sy-subrc = 4.
+
+    "ABAP SQL statements
+    DELETE FROM zdemo_abap_tab1.
+    IF sy-subrc = 0.
+      out->write( `DELETE: All rows were deleted.` ).
+    ELSE.
+      out->write( `DELETE: No row was deleted because it was already empty.` ).
+    ENDIF.
+
+    INSERT zdemo_abap_tab1 FROM TABLE @( VALUE #( ( key_field = 1 ) ( key_field = 2 ) ) ).
+    IF sy-subrc = 0.
+      out->write( `INSERT: All rows of the internal table were inserted.` ).
+    ENDIF.
+
+    INSERT zdemo_abap_tab1 FROM TABLE @( VALUE #( ( key_field = 3 ) ( key_field = 3 ) ) ) ACCEPTING DUPLICATE KEYS.
+    IF sy-subrc = 4.
+      out->write( `INSERT ... ACCEPTING DUPLICATE KEYS: sy-subrc has the value 4 in this case. Not all rows of the ` &&
+                  `internal table were inserted because a row with the key already exists.` ).
+    ENDIF.
+
+    DELETE FROM zdemo_abap_tab1 WHERE key_field = 3.
+    IF sy-subrc = 0.
+      out->write( `DELETE: The row matching the WHERE condition was deleted.` ).
+    ELSE.
+      out->write( `DELETE: No match according to the WHERE condition.` ).
+    ENDIF.
+
+    DELETE FROM zdemo_abap_tab1 WHERE key_field = 3.
+    IF sy-subrc = 0.
+      out->write( `DELETE: The row matching the WHERE condition was deleted.` ).
+    ELSE.
+      out->write( `DELETE: No match according to the WHERE condition.` ).
+    ENDIF.
+
+    "------------------------------------------------------------------------------
+    "--------------------------- sy-index: Loop indexes ---------------------------
+    "------------------------------------------------------------------------------
+
+    CLEAR some_string.
+
+    "DO loops
+    DO 5 TIMES.
+      some_string = some_string && sy-index.
+    ENDDO.
+
+    ASSERT some_string = `12345`.
+
+    CLEAR some_string.
+
+    DO 10 TIMES.
+      some_string = some_string && sy-index.
+      IF sy-index = 7.
+        EXIT.
+      ENDIF.
+    ENDDO.
+
+    ASSERT some_string = `1234567`.
+
+    CLEAR some_string.
+
+    DATA number TYPE i.
+
+    "WHILE loop
+    WHILE number < 9.
+      number = sy-index.
+      some_string = some_string && number.
+    ENDWHILE.
+
+    ASSERT some_string = `123456789`.
+
+    "------------------------------------------------------------------------------
+    "------------------- sy-tabix: Row index of internal tables -------------------
+    "------------------------------------------------------------------------------
+
+    "Demo standard internal table with 5 entries
+    DATA(std_itab) = VALUE string_table( ( `a` ) ( `b` ) ( `c` ) ( `d` ) ( `e` ) ).
+
+    "READ TABLE statement using a free key
+    READ TABLE std_itab INTO DATA(wa3) WITH KEY table_line = `b`.
+    ASSERT sy-tabix = 2.
+
+    "Demo hashed internal table with 5 entries
+    DATA(hashed_itab) = VALUE string_hashed_table( ( `a` ) ( `b` ) ( `c` ) ( `d` ) ( `e` ) ).
+
+    "READ TABLE statement using a free key
+    READ TABLE hashed_itab INTO DATA(wa4) WITH KEY table_line = `b`.
+    "Hashed tables do not have a primary table index.
+    ASSERT sy-tabix = 0.
+
+    CLEAR some_string.
+
+    "LOOP statements
+    LOOP AT std_itab INTO DATA(wa5).
+      some_string = some_string && sy-tabix.
+    ENDLOOP.
+    ASSERT some_string = `12345`.
+
+    CLEAR some_string.
+    "Step addition
+    "In the example, the table is looped across backwards
+    "indicated by the negative value. The step size 1 indicates
+    "that each line is respected.
+    LOOP AT std_itab INTO DATA(wa6) STEP -1.
+      some_string = some_string && sy-tabix.
+    ENDLOOP.
+    ASSERT some_string = `54321`.
+
+    CLEAR some_string.
+    "Forward loop, step size = 2
+    LOOP AT std_itab INTO DATA(wa7) STEP 2.
+      some_string = some_string && sy-tabix.
+    ENDLOOP.
+    ASSERT some_string = `135`.
+
+    CLEAR some_string.
+    "FROM/TO additions
+    LOOP AT std_itab INTO DATA(wa8) FROM 2 TO 4.
+      some_string = some_string && sy-tabix.
+    ENDLOOP.
+    ASSERT some_string = `234`.
+
+    CLEAR some_string.
+    "STEP/FROM additions
+    LOOP AT std_itab INTO DATA(wa9) STEP 2 FROM 2.
+      some_string = some_string && sy-tabix.
+    ENDLOOP.
+    ASSERT some_string = `24`.
+
+    CLEAR some_string.
+    "Hashed table
+    LOOP AT hashed_itab INTO DATA(wa10).
+      some_string = some_string && sy-tabix.
+    ENDLOOP.
+    ASSERT some_string = `00000`.
+
+    "------------------------------------------------------------------------------
+    "------------------------ sy-dbcnt: Edited table rows -------------------------
+    "------------------------------------------------------------------------------
+
+    DELETE FROM zdemo_abap_tab1.
+    DATA(dbcnt) = sy-dbcnt.
+
+    out->write( |Dbtab rows deleted: { dbcnt }| ).
+
+    INSERT zdemo_abap_tab1 FROM TABLE @( VALUE #( ( key_field = 1 ) ( key_field = 2 ) ) ).
+    ASSERT sy-dbcnt = 2.
+
+    INSERT zdemo_abap_tab1 FROM TABLE @( VALUE #( ( key_field = 3 ) ( key_field = 3 ) ) ) ACCEPTING DUPLICATE KEYS.
+    ASSERT sy-dbcnt = 1.
+
+    MODIFY zdemo_abap_tab1 FROM @( VALUE #( key_field = 1 char1 = 'aaa' ) ).
+    ASSERT sy-dbcnt = 1.
+
+    UPDATE zdemo_abap_tab1 SET char2 = 'bbb'.
+    ASSERT sy-dbcnt = 3.
+
+    DELETE FROM zdemo_abap_tab1 WHERE num1 IS INITIAL.
+    ASSERT sy-dbcnt = 3.
+
+    "------------------------------------------------------------------------------
+    "------------- sy-fdpos: Occurrence in byte or character strings --------------
+    "------------------------------------------------------------------------------
+    "For example, relevant in comparison expressions such as CS (constains string).
+    "If the comparison is true, sy-fdpos contains the offset of the found value. If it
+    "is false, sy-fdpos contains the length of the searched string.
+
+    some_string = `###abap###`.
+
+    IF some_string CS `p`.
+      out->write( |The substring is found. Offset of first finding: { sy-fdpos }| ).
+    ELSE.
+      out->write( |The substring is not found. Length of searched string: { sy-fdpos }| ).
+      ASSERT sy-fdpos = strlen( some_string ).
+    ENDIF.
+
+    IF some_string CS `#`.
+      out->write( |The substring is found. Offset of first finding: { sy-fdpos }| ).
+    ELSE.
+      out->write( |The substring is not found. Length of searched string: { sy-fdpos }| ).
+      ASSERT sy-fdpos = strlen( some_string ).
+    ENDIF.
+
+    IF some_string CS `Y`.
+      out->write( |The substring is found. Offset of first finding: { sy-fdpos }| ).
+    ELSE.
+      out->write( |The substring is not found. Length of searched string: { sy-fdpos }| ).
+      ASSERT sy-fdpos = strlen( some_string ).
+    ENDIF.
+
+    "------------------------------------------------------------------------------
+    "----------------------------- Constant space ---------------------------------
+    "------------------------------------------------------------------------------
+    "Has the data type c, length 1, and contains a blank character.
+
+    "Note: Trailing blanks are ignored in most operand positions. Therfore, the constant
+    "space should not be used in such positions.
+
+    some_string = |{ space }{ space }|.
+    ASSERT some_string = ``.
+
+    some_string = `#` && space && space && space && space && space && `#`.
+    ASSERT some_string = `##`.
+
+    "Using a CONCATENATE statement, blanks are respected after the SEPARATED BY
+    "addition only
+    CONCATENATE space space INTO some_string SEPARATED BY space.
+    ASSERT some_string = ` `.
+
+    "Text field literal, concatentation without SEPARATED BY space
+    DATA some_char TYPE c LENGTH 5.
+    CONCATENATE '#' space space '#' INTO some_char.
+    ASSERT some_char = '##'.
+
+    CONCATENATE space space '#' space '#' INTO some_char.
+    ASSERT some_char = '##'.
+
+    "------------------------------------------------------------------------------
+    "----------------------------- Self-reference me ------------------------------
+    "------------------------------------------------------------------------------
+    "When implementing instance methods, you can optionally make use of the implicitly available
+    "object reference variable me which is always available at runtime and points to the respective
+    "object itself. You can use it to refer to components of the instance of a particular class.
+
+    "Intentionally creating a data object that has the same name as a data object
+    "created in the private visibility section of the demo class.
+    DATA str TYPE string VALUE `Local data object 'str'`.
+
+    "Demo assignments
+    "dobj1 contains the value of the locally declared data object
+    DATA(dobj1) = str.
+    "dobj2 contains the value of the class attribute
+    DATA(dobj2) = me->str.
+
+    out->write( data = dobj1 name = `dobj1` ).
+    out->write( data = dobj2 name = `dobj2` ).
+
+  ENDMETHOD.
+ENDCLASS.
+```
+
+</details>  
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
