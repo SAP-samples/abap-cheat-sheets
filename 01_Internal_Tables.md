@@ -53,7 +53,7 @@
     - [Deleting Adjacent Duplicate Lines](#deleting-adjacent-duplicate-lines)
     - [Deleting the Entire Internal Table Content](#deleting-the-entire-internal-table-content)
   - [Grouping Internal Tables](#grouping-internal-tables)
-  - [Collecting Calues](#collecting-calues)
+  - [Collecting Values](#collecting-values)
   - [Excursions](#excursions)
     - [Improving Read Performance with Secondary Table Keys](#improving-read-performance-with-secondary-table-keys)
     - [Example: Exploring Read Access Performance with Internal Tables](#example-exploring-read-access-performance-with-internal-tables)
@@ -3901,7 +3901,7 @@ ENDCLASS.
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
 
-## Collecting Calues
+## Collecting Values
 
 - You can use `COLLECT` statements, for example, to add the values of numeric components to the corresponding values in an internal table. 
 - It is recommended that you use it mainly for internal tables with a unique primary key, especially hashed tables.
