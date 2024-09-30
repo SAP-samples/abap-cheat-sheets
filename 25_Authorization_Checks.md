@@ -441,7 +441,7 @@ CLASS zcl_demo_abap_auth IMPLEMENTATION.
     IF flag = abap_true.
       out->write( `Something went wrong with the example procedure. There should only be entries with the condition countryfr = 'US'.` ).
     ELSE.
-      out->write( `Excepted result. There are only entries with the condition countryfr = 'US' in the internal table.` ).
+      out->write( `Expected result. There are only entries with the condition countryfr = 'US' in the internal table.` ).
     ENDIF.
     out->write( |\n| ).
 
@@ -451,7 +451,7 @@ CLASS zcl_demo_abap_auth IMPLEMENTATION.
 
     out->write( `SELECT statements that specify WHERE clauses:` ).
     IF itab3 IS NOT INITIAL AND itab4 IS INITIAL.
-      out->write( `Excepted result. Only entries with the condition countryfr = 'US' should be accessible.` ).
+      out->write( `Expected result. Only entries with the condition countryfr = 'US' should be accessible.` ).
     ELSE.
       out->write( `Something went wrong with the example procedure. There should only be entries with the condition countryfr = 'US'.` ).
     ENDIF.

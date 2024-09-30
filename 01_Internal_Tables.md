@@ -9,7 +9,7 @@
   - [Creating Internal Tables and Types](#creating-internal-tables-and-types)
     - [Specifying Keys in Internal Table Declarations](#specifying-keys-in-internal-table-declarations)
     - [Internal Tables Based on Locally Created Line/Table Types](#internal-tables-based-on-locally-created-linetable-types)
-    - [Line Type Options of Internal Tables](#line-type-options-of-internal-tables)
+    - [Line/Table Type Options of Internal Tables](#linetable-type-options-of-internal-tables)
     - [Creating Internal Tables By Inline Declaration](#creating-internal-tables-by-inline-declaration)
     - [Creating Internal Tables Dynamically](#creating-internal-tables-dynamically)
   - [Populating Internal Tables](#populating-internal-tables)
@@ -53,6 +53,7 @@
     - [Deleting Adjacent Duplicate Lines](#deleting-adjacent-duplicate-lines)
     - [Deleting the Entire Internal Table Content](#deleting-the-entire-internal-table-content)
   - [Grouping Internal Tables](#grouping-internal-tables)
+  - [Collecting Calues](#collecting-calues)
   - [Excursions](#excursions)
     - [Improving Read Performance with Secondary Table Keys](#improving-read-performance-with-secondary-table-keys)
     - [Example: Exploring Read Access Performance with Internal Tables](#example-exploring-read-access-performance-with-internal-tables)
@@ -439,13 +440,18 @@ DATA it27 LIKE TABLE OF it25.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-### Line Type Options of Internal Tables
+### Line/Table Type Options of Internal Tables
 
-This section explores various line type options when declaring internal tables.Apart from the (globally available) line types of database tables, you can also use other line/table types. Among them, for example: 
-- globally available line type of DDIC structures and CDS entities
-- globally available table types declared in the DDIC
-- locally declared line and table types (as shown above)
-- line and table types declared in the public visibility section of classes/interfaces that are gloablly visibile
+This section explores various line (i.e. structured) and table type options when declaring internal tables. Various examples have already been covered in the previous sections. Among the options are, for example: 
+- Elementary line types based on elementary built-in ABAP types, locally declared elementary types, globally available elementary types such as DDIC data elements
+- Line types based on both locally declared and globally available structured types
+  - Among the globally available line types are, for example, DDIC structures, database tables and CDS objects such as CDS view entities
+  - Note that internal tables can be created as [deep tables](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendeep_table_glosry.htm). That is, internal tables can contain [deep](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendeep_glosry.htm) components (references, internal tables or strings). Structures can also be components of internal tables. For more information, see the [Variants of Structures](02_Structures.md#variants-of-structures) in the *Structures* cheat sheet.
+- Table types based on both locally declared and globally available table types
+- References
+
+> **💡 Note**<br>
+> Types declared in the public visibility section of classes/interfaces are also globally visible and can be used for the creation.
 
 <table>
 <tr>
@@ -458,21 +464,43 @@ This section explores various line type options when declaring internal tables.A
 
 
 ``` abap
-"The whole table line is the standard table key.
-"The following examples use built-in ABAP types. Besides these types,
-"you can also use locally declared elementary types, globally declared
-"elementary types such as DDIC data elements, CDS simple types, types
-"that are declared in the public visibility section of classes/interfaces,
-"etc.. As shown further down, there are released table types with elementary
-"line types. 
-DATA it28 TYPE TABLE OF i.
-DATA it29 TYPE TABLE OF string WITH EMPTY KEY.
-DATA it30 TYPE TABLE OF xstring WITH EMPTY KEY.
-DATA it31 TYPE TABLE OF utclong WITH EMPTY KEY.
+"------ Internal tables declared using elementary line types ------
+"Note: In this case, the whole table line is the standard table key.
+
+"Elementary built-in ABAP types
+DATA it_elem_1 TYPE TABLE OF i.
+DATA it_elem_2 TYPE TABLE OF string WITH EMPTY KEY.
+DATA it_elem_3 TYPE TABLE OF xstring WITH EMPTY KEY.
+DATA it_elem_4 TYPE TABLE OF utclong WITH EMPTY KEY.
+
+"Note: As described above, the table key can consist of components of the
+"line type or of the entire line using the pseudo component table_line. In
+"case of elementary line types, table_line is the only option to refer to the
+"component/entire line.
+DATA it_elem_5 TYPE SORTED TABLE OF string WITH NON-UNIQUE KEY table_line.
+
+"Locally declared elementary types
+TYPES ty_c3 TYPE c LENGTH 3.
+DATA it_elem_6 TYPE TABLE OF ty_c3 WITH EMPTY KEY.
+
+"Apart from the globally available elementary built-in ABAP types, you can
+"also use elementary types from the DDIC such as data elements that are
+"visible anywhere. You can also refer to CDS simple types that
+"constitute elemenary data types.
+DATA it_elem_7 TYPE TABLE OF timestamp WITH EMPTY KEY.
+DATA it_elem_8 TYPE TABLE OF timestampl WITH EMPTY KEY.
+
+"Globally available elementary types in the public visibility section of
+"classes/interfaces
 "Elementary type declared in an interface
-DATA it32 TYPE TABLE OF zdemo_abap_get_data_itf=>occ_rate WITH EMPTY KEY.
-"Using a DDIC data element
-DATA it_dtel TYPE TABLE OF timestamp WITH EMPTY KEY.
+DATA it_elem_9 TYPE TABLE OF zdemo_abap_get_data_itf=>occ_rate WITH EMPTY KEY.
+
+"Note the syntax options when referring to components. In the following
+"example, a database table field is referred to using the database table name,
+"the component selector and the name of a field having an elementary data type.
+DATA it_elem_10 TYPE TABLE OF zdemo_abap_fli-carrid WITH EMPTY KEY.
+"CDS view entity component
+DATA it_elem_11 TYPE TABLE OF zdemo_abap_carr_ve-url WITH EMPTY KEY.
 ``` 
 
 </td>
@@ -484,16 +512,32 @@ DATA it_dtel TYPE TABLE OF timestamp WITH EMPTY KEY.
 
 
 ``` abap
-"Apart from the line type of a database table, these types can also
-"be local structured types (as shown below), local structured types declared
-"in the public visibility section of classes/interfaces, DDIC structures, CDS
-"entities, etc.
+"------ Internal tables declared using structured types ------
 
-"CDS view entity
-DATA it33 TYPE TABLE OF zdemo_abap_carr_ve WITH EMPTY KEY.
+"Locally declared structured type
+TYPES: BEGIN OF local_struct,
+          comp1 TYPE i,
+          comp2 TYPE string,
+          comp3 TYPE c LENGTH 3,
+        END OF local_struct.
+
+DATA it_struc_1 TYPE SORTED TABLE OF local_struct WITH UNIQUE KEY comp1.
+
+"Globally available structured types
+"E.g. DDIC database tables
+DATA it_struc_2 TYPE TABLE OF zdemo_abap_fli WITH EMPTY KEY.
+
+"CDS objects such as ...
+"CDS view entity component
+DATA it_struc_3 TYPE TABLE OF zdemo_abap_carr_ve WITH EMPTY KEY.
 "CDS abstract entity
-DATA it34 TYPE TABLE OF zdemo_abap_abstract_ent WITH EMPTY KEY.
+DATA it_struc_4 TYPE TABLE OF zdemo_abap_abstract_ent WITH EMPTY KEY.
+"CDS table function
+DATA it_struc_5 TYPE TABLE OF zdemo_abap_table_function WITH EMPTY KEY.
 
+"Globally available structured types in the public visibility section of
+"classes/interfaces
+DATA it_struc_6 TYPE TABLE OF zcl_demo_abap_amdp=>fli_struc WITH EMPTY KEY.
 ``` 
 
 </td>
@@ -504,41 +548,54 @@ DATA it34 TYPE TABLE OF zdemo_abap_abstract_ent WITH EMPTY KEY.
 
 
 ``` abap
-"As shown above, the table types can be locally declared.
-DATA it35 TYPE TABLE OF zdemo_abap_get_data_itf=>carr_tab.
-"Global table type declared in an interface
-DATA it36 TYPE zdemo_abap_get_data_itf=>carr_tab.
+"------ Internal tables declared using table types ------
 
-"The following examples use globally available and released table 
-"types with elementary lines types.
-DATA it37 TYPE string_table.
-DATA it38 TYPE string_hashed_table.
-DATA it39 TYPE xstring_table.
-``` 
+"Locally declared table type (based on a locally declared structured type)
+TYPES: BEGIN OF loc_struct,
+          comp1 TYPE i,
+          comp2 TYPE string,
+          comp3 TYPE c LENGTH 3,
+        END OF loc_struct,
+        ty_tab_1 TYPE TABLE OF loc_struct WITH EMPTY KEY.
 
-</td>
-</tr>
-<tr>
-<td> Deep internal tables </td>
-<td>
+DATA it_tab_1 TYPE ty_tab_1.
 
+"Locally declared table type (based on a globally available structured type)
+TYPES ty_tab_2 TYPE TABLE OF zdemo_abap_fli WITH EMPTY KEY.
+DATA it_tab_2 TYPE ty_tab_2.
 
-``` abap
-"The previous examples mostly demonstrate flat line types.
+"Globally available table types
+"The following examples show released table types. They have an
+"elementary line type.
+DATA it_tab_3 TYPE string_table.
+DATA it_tab_4 TYPE string_hashed_table.
+DATA it_tab_5 TYPE xstring_table.
+
+"Globally available table types in the public visibility section of
+"classes/interfaces
+DATA it_tab_6 TYPE zdemo_abap_get_data_itf=>carr_tab.
+DATA it_tab_7 TYPE zcl_demo_abap_amdp=>flsch_tab.
+
+"Excursion
+"Creating an internal table based on the table type of an existing
+"internal table
+DATA it_tab_8 LIKE it_tab_7.
+
+"Many of the previous examples demonstrate flat line types.
 "Deep line types are also possible, that is, the line type
-"can include components such as strings, references, structures,
-"and internal tables.
-TYPES: BEGIN OF ls_deep,
-         key_field TYPE i,
-         char      TYPE c LENGTH 10,
-         str       TYPE string,
-         dref      TYPE REF TO i,
-         struct    TYPE zdemo_abap_flsch,
-         str_tab   TYPE string_table,
-         tab       TYPE TABLE OF zdemo_abap_flsch WITH EMPTY KEY,
-       END OF ls_deep.
+"can include components such as strings, references, and internal
+"tables.
+TYPES: BEGIN OF loc_deep_struct,
+          key_field TYPE i,
+          char      TYPE c LENGTH 10,
+          str       TYPE string,
+          dref      TYPE REF TO i,
+          struct    TYPE zdemo_abap_flsch,
+          str_tab   TYPE string_table,
+          tab       TYPE TABLE OF zdemo_abap_flsch WITH EMPTY KEY,
+        END OF loc_deep_struct.
 
-DATA it40 TYPE TABLE OF ls_deep WITH EMPTY KEY.
+DATA it_tab_9 TYPE TABLE OF loc_deep_struct WITH EMPTY KEY.
 ``` 
 
 </td>
@@ -549,7 +606,20 @@ DATA it40 TYPE TABLE OF ls_deep WITH EMPTY KEY.
 
 
 ``` abap
-DATA it_ref TYPE TABLE OF REF TO i.
+DATA it_ref_1 TYPE TABLE OF REF TO i.
+DATA it_ref_2 TYPE TABLE OF REF TO string.
+
+"Generic type data
+DATA it_ref_3 TYPE TABLE OF REF TO data.
+
+"Such a table can hold any data type
+"For more details on generic types, see the Data Types and Data Objects
+"and Dynamic Programming cheat sheets.
+it_ref_3 = VALUE #( ( NEW i( 3 ) ) "Elementary type
+                    ( NEW string( `hello` ) ) "Elementary type
+                    ( NEW zdemo_abap_flsch( carrid = 'XY' connid = '1234' ) ) "Structured type
+                    ( NEW string_table( ( `a` ) ( `b` ) ( `c` ) ) ) "Table type
+                  ).
 ``` 
 
 </td>
@@ -623,6 +693,9 @@ TYPES: BEGIN OF demo_struc,
 
 "Internal table with structured line type and empty key.
 CREATE DATA dataref TYPE TABLE OF ('DEMO_STRUC') WITH EMPTY KEY.
+
+"Using a globally available table type
+CREATE DATA dataref TYPE ('STRING_TABLE').
 ```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
@@ -1517,10 +1590,10 @@ the `TRANSPORTING` addition to restrict the fields to be copied).
 
 <table>
 <tr>
-<td> Subject </td> <td> Details/Code Snippet </td>
+<td> Statement </td> <td> Details/Code Snippet </td>
 </tr>
 <tr>
-<td> Using <code>READ TABLE</code> statements </td>
+<td> <code>READ TABLE</code> </td>
 <td>
 
 The following example shows `READ TABLE` statements to read a single line from an internal table by specifying the index. You can use the addition `USING KEY` to specify a table key and thus explicitly determine the table index to use. If the table has a sorted secondary
@@ -1548,7 +1621,7 @@ READ TABLE itab INTO wa INDEX i USING KEY sec_key.
 </tr>
 
 <tr>
-<td> Using table expressions </td>
+<td> Table expressions </td>
 <td>
 
 Using [table
@@ -1612,7 +1685,17 @@ DATA(line3) = VALUE #( itab[ 8 ] DEFAULT VALUE #( ) ).
 ### Reading Single Lines Using Table Keys
 
 Lines can be read by explicitly specifying the table keys or the alias names, if any.
-```abap
+
+
+<table>
+<tr>
+<td> Statement </td> <td> Details/Code Snippet </td>
+</tr>
+<tr>
+<td> <code>READ TABLE</code> </td>
+<td>
+
+``` abap
 "Example internal table with primary and secondary table key and alias names
 "Assumption: All components are of type i
 
@@ -1620,24 +1703,6 @@ DATA it TYPE SORTED TABLE OF struc
   WITH NON-UNIQUE KEY primary_key ALIAS pk COMPONENTS a b
   WITH NON-UNIQUE SORTED KEY sec_key ALIAS sk COMPONENTS c d.
 
-"Table expressions
-
-"Key must be fully specified
-line = it[ KEY primary_key COMPONENTS a = 1 b = 2 ].
-
-"The addition COMPONENTS is optional; same as above
-line = it[ KEY primary_key a = 1 b = 2 ].
-
-"Primary key alias
-line = it[ KEY pk a = 1 b = 2 ].
-
-"Secondary table key
-line = it[ KEY sec_key c = 3 d = 4 ].
-
-"Secondary table key alias
-line = it[ KEY sk c = 3 d = 4 ].
-
-"READ TABLE statements
 "Primary table key
 READ TABLE it INTO wa WITH TABLE KEY primary_key COMPONENTS a = 1 b = 2.
 
@@ -1669,18 +1734,76 @@ READ TABLE it FROM sec_keys USING KEY sec_key INTO wa.
 READ TABLE it FROM sec_keys USING KEY sk INTO wa.
 ```
 
+</td>
+</tr>
+
+<tr>
+<td> Table expressions </td>
+<td>
+
+
+``` abap
+"Key must be fully specified
+line = it[ KEY primary_key COMPONENTS a = 1 b = 2 ].
+
+"The addition COMPONENTS is optional; same as above
+line = it[ KEY primary_key a = 1 b = 2 ].
+
+"Primary key alias
+line = it[ KEY pk a = 1 b = 2 ].
+
+"Secondary table key
+line = it[ KEY sec_key c = 3 d = 4 ].
+
+"Secondary table key alias
+line = it[ KEY sk c = 3 d = 4 ].
+```
+
+</td>
+</tr>
+
+</table>
+
+
+
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ### Reading Single Lines Using a Free Key
 
 The specified components used as keys need not be part of a table key.
-``` abap
-line = it[ b = 2 ].
 
+<table>
+<tr>
+<td> Statement </td> <td> Details/Code Snippet </td>
+</tr>
+<tr>
+<td> <code>READ TABLE</code> </td>
+<td>
+
+``` abap
 "Note: Table keys are specified with the ... WITH TABLE KEY ... addition, 
 "free keys with ... WITH KEY ....
 READ TABLE it INTO wa WITH KEY b = 2.
 ```
+
+</td>
+</tr>
+
+<tr>
+<td> Table expressions </td>
+<td>
+
+
+``` abap
+line = it[ b = 2 ].
+```
+
+</td>
+</tr>
+
+</table>
+
+
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
@@ -3264,45 +3387,116 @@ As mentioned above, you can modify the content of internal table lines directly 
 
 The following examples demonstrate direct modification of recently read table lines:
 ``` abap
-"Table declarations
+"Declaring and populating demo internal tables
+TYPES: BEGIN OF ty_struc,
+          comp1 TYPE i,
+          comp2 TYPE string,
+          comp3 TYPE c LENGTH 3,
+       END OF ty_struc.
 
-DATA it_st TYPE TABLE OF struc WITH NON-UNIQUE KEY a.
+DATA it_st TYPE TABLE OF ty_struc WITH NON-UNIQUE KEY comp1.
+DATA it_so TYPE SORTED TABLE OF ty_struc WITH UNIQUE KEY comp1.
+DATA it_ha TYPE HASHED TABLE OF ty_struc WITH UNIQUE KEY comp1.
 
-DATA it_so TYPE SORTED TABLE OF struc WITH UNIQUE KEY a.
+it_st = VALUE #( ( comp1 = 1 comp2 = `AAAAAA` comp3 = 'bbb' )
+                 ( comp1 = 2 comp2 = `CCCCCC` comp3 = 'ddd' )
+                 ( comp1 = 3 comp2 = `EEEEEE` comp3 = 'fff' )
+                 ( comp1 = 4 comp2 = `GGGGGG` comp3 = 'hhh' )
+               ).
 
-"Reading table line into target area
+it_so = it_st.
+it_ha = it_st.
 
-READ TABLE it_st ASSIGNING FIELD-SYMBOL(<fs>) INDEX 1.
+"---- Modifying internal table content by changing the ----
+"---- content of READ TABLE statement target areas --------
+"Reading table line into a target area
+READ TABLE it_st INTO DATA(wa) INDEX 1.
+READ TABLE it_so ASSIGNING FIELD-SYMBOL(<fs>) INDEX 2.
+READ TABLE it_ha REFERENCE INTO DATA(dref) WITH TABLE KEY comp1 = 3. "No reading by index in case of hashed tables
 
-READ TABLE it_so REFERENCE INTO DATA(dref) INDEX 2.
+"------ Modification examples -------
+"Modifying all non-key components using the VALUE operator and
+"the BASE addition
+<fs> = VALUE #( BASE <fs> comp2 = `IIIIII` comp3 = 'jjj' ).
 
-"Modification examples
-"Modifying the entire table line while keeping the values of other components;
-"this way is not possible for it_so because of key value change.
+"In the following example, the key value is assigned a new
+"value. Key values are protected against change in case of key tables.
+"A runtime error occurs.
+"<fs> = VALUE #( comp1 = 5 comp2 = `IIIIII` comp3 = 'jjj' ).
 
-<fs> = VALUE #( BASE <fs> a = 1 b = 2 ).
+dref->* = VALUE #( BASE dref->* comp2 = `KKKKKK` comp3 = 'lll' ).
 
-"Modifying a single component via field symbol
+"Same as above. Key values cannot be changed in this case.
+"dref->* = VALUE #( comp1 = 5 comp2 = `MMMMMM` comp3 = 'nnn' ).
 
-<fs>-c = 3.
+"Using a MODIFY statement outlined below for changing internal
+"table content based on a read line in a work area
+MODIFY TABLE it_st FROM VALUE #( BASE wa comp2 = `OOOOOO` comp3 = 'ppp' ).
 
-"Modification via dereferencing
+"Modifying individual components
+READ TABLE it_st INTO wa INDEX 2.
+READ TABLE it_so ASSIGNING <fs> INDEX 3.
+READ TABLE it_ha REFERENCE INTO dref WITH TABLE KEY comp1 = 4.
 
-dref->b = 4.
+"Using VALUE/BASE
+<fs> = VALUE #( BASE <fs> comp2 = `QQQQQQ` ).
+dref->* = VALUE #( BASE dref->* comp2 = `RRRRRR` ).
+MODIFY TABLE it_st FROM VALUE #( BASE wa comp2 = `SSSSSS` ).
 
-"Table expressions
+"Using the component selector
+<fs>-comp3 = 'ttt'.
 
-it_st[ 1 ] = VALUE #( a = 1 b = 2 ).
+READ TABLE it_st INTO wa INDEX 3.
+wa-comp3 = 'uuu'.
+MODIFY TABLE it_st FROM wa.
 
-it_st[ 2 ]-c = 3.
+"Object component selector in case of dereferencing ...
+dref->comp2 = `VVVVVV`.
+"... which is a more comfortable option compared to using the
+"dereferencing and component selector operators in the following way.
+dref->*-comp3 = 'www'.
 
-"Sorted table: no key field change
+"---- Modifying internal table content using table expressions -----
 
-it_so[ 2 ]-d = 4.
+"Changing the entire table line of a standard table
+"In standard tables, the key value change is allowed.
+it_st[ 3 ] = VALUE #( comp1 = 9 comp2 = `XXXXXX` comp3 = 'yyy' ).
+"As above, the sorted table is a key table having a unique key,
+"therefore a write cannot be performed on the entire entry. Runtime
+"errors can occur.
+"it_so[ 3 ] = VALUE #( comp2 = `XXXXXX` comp3 = 'yyy' ).
+"The same applies to hashed tables.
+"it_ha[ comp2 = `OOOOOO` ] = VALUE #( comp2 = `XXXXXX` comp3 = 'yyy' ).
+
+"Changing individual components
+it_st[ 3 ]-comp2 = `ZZZZZZ`.
+it_so[ 3 ]-comp3 = 'A1'.
+it_ha[ comp2 = `CCCCCC` ]-comp2 = `B2`.
+"As above, no key field change in key tables. Allowed in standard
+"tables.
+"it_so[ 3 ]-comp1 = 10.
+"it_ha[ comp2 = `AAAAAA` ]-comp1 = `C3`.
+it_st[ 1 ]-comp1 = 99.
+
+"---- Modifying table content in all table rows in a loop ----
+"For more syntax options regarding loops, check the section above.
+"Target area: field symbol
+LOOP AT it_st ASSIGNING FIELD-SYMBOL(<lo>).
+  <lo>-comp2 = sy-tabix.
+ENDLOOP.
+
+"---- Modifying table content restricting the rows that are looped across ----
+"Target area: data reference variable
+LOOP AT it_st reference into data(lo) FROM 2 TO 3.
+  lo->comp3 = sy-tabix.
+ENDLOOP.
+
+"Target area: work area
+LOOP AT it_so into data(wa_lo) where comp1 < 4.
+  wa_lo-comp2 = sy-tabix.
+  MODIFY TABLE it_so FROM wa_lo.
+ENDLOOP.
 ```
-
-> **💡 Note**<br>
-> If you want to modify recently read lines in a work area, for example, within a loop (`LOOP AT INTO dobj`), you can modify the line and then use a `MODIFY` statement to modify the internal table based on this line.
 
 [`MODIFY`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapmodify_itab.htm)
 statements provide multiple ways of changing the content of single and multiple table lines by specifying the table key or a table index,
@@ -3702,6 +3896,51 @@ CLASS zcl_some_class IMPLEMENTATION.
   ENDMETHOD.
 
 ENDCLASS.
+```
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+
+## Collecting Calues
+
+- You can use `COLLECT` statements, for example, to add the values of numeric components to the corresponding values in an internal table. 
+- It is recommended that you use it mainly for internal tables with a unique primary key, especially hashed tables.
+- Find more information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapcollect.htm)
+
+``` abap
+"This example demonstrates how to insert data from a database table
+"into an internal table in a compressed way. Within a SELECT loop,
+"a COLLECT statement is used to consolidate lines with identical
+"primary key components (carrid and connid) by summing the number
+"of occupied seats in the numeric component (seatsocc).
+"Additionally, an internal table is filled by adding all read lines.
+"This table is looped across to simulate the effect of the COLLECT
+"statement.
+
+DATA: BEGIN OF seats,
+        carrid   TYPE zdemo_abap_fli-carrid,
+        connid   TYPE zdemo_abap_fli-connid,
+        seatsocc TYPE zdemo_abap_fli-seatsocc,
+        END OF seats,
+        seats_tab_col LIKE HASHED TABLE OF seats WITH UNIQUE KEY carrid connid,
+        seats_tab_all LIKE TABLE OF seats WITH EMPTY KEY,
+        seats_tab_loop_grp LIKE seats_tab_col.
+
+SELECT carrid, connid, seatsocc
+        FROM zdemo_abap_fli
+        INTO @seats.
+    COLLECT seats INTO seats_tab_col.
+    APPEND seats TO seats_tab_all.
+ENDSELECT.
+
+LOOP AT seats_tab_all INTO DATA(wa) GROUP BY ( key1 = wa-carrid key2 = wa-connid ).
+    INSERT VALUE #( carrid = wa-carrid connid = wa-connid ) INTO TABLE seats_tab_loop_grp ASSIGNING FIELD-SYMBOL(<fs>).
+    LOOP AT GROUP wa INTO DATA(member).
+    <fs>-seatsocc = <fs>-seatsocc + member-seatsocc.
+    ENDLOOP.
+ENDLOOP.
+
+ASSERT seats_tab_loop_grp = seats_tab_col.
 ```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>

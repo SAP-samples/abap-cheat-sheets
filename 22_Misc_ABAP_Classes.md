@@ -3288,8 +3288,6 @@ cl_abap_unit_assert=>assert_equals(
   exp = 100
   msg = `The value does not match the expected result`
   quit = if_abap_unit_constant=>quit-no ).
-
-ENDDO.
 ```
 
 </td>

@@ -4,7 +4,13 @@
 
 - [Structures](#structures)
   - [Introduction](#introduction)
+  - [Globally Available Structures and Structured Types](#globally-available-structures-and-structured-types)
   - [Creating Structures and Structured Types](#creating-structures-and-structured-types)
+    - [Creating Structured Types](#creating-structured-types)
+    - [Creating Structures](#creating-structures)
+    - [Creating Structures Using Existing Structured Types](#creating-structures-using-existing-structured-types)
+    - [Creating Structures by Inline Declaration](#creating-structures-by-inline-declaration)
+    - [Creating Anonymous Structures](#creating-anonymous-structures)
   - [Variants of Structures](#variants-of-structures)
   - [Accessing (Components of) Structures](#accessing-components-of-structures)
   - [Populating Structures](#populating-structures)
@@ -25,22 +31,48 @@ Structures ...
 -   consist of a sequence of [components](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencomponent_glosry.htm "Glossary Entry") of any data type, that is, the components of a structure can be, for example, [elementary data objects](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenelementary_data_object_glosry.htm), structures themselves, [internal tables](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abeninternal_table_glosry.htm "Glossary Entry") or [references](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenreference_glosry.htm).
 - are used to combine different data objects that belong together. A typical example is an address. It has several components, such as name, street, city, and so on, that belong together.
 - play an important role in the context of internal tables and [database tables](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendatabase_table_glosry.htm "Glossary Entry"). Structured types serve as [line types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrow_type_glosry.htm) for these tables. Most internal tables across [ABAP programs](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_program_glosry.htm) may have structured line types. For database tables, there is no alternative to structured line types.
-- can be created locally in an ABAP program. You can also create them as global [DDIC structures](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenddic_structure_glosry.htm) in the [ABAP Dictionary](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_dictionary_glosry.htm). Such a DDIC structure defines a globally available structured type ([DDIC type](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenddic_type_glosry.htm)).
-  - Note: There are other structured types available globally, which may be the structured types most commonly used in ABAP programs:
-    - [Database tables](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenddic_db_table_glosry.htm) defined in the ABAP Dictionary can be used as data types just like DDIC structures in an ABAP program. This means that when you create a structure in your ABAP program, for example, you can simply use the name of a database table to address the line type of the table. The structure you created will then have the same structured type as the database table. Typically, you use the database tables to create structures of such a type, or internal tables of such a structured line type, to process data read from the database table in structures or internal tables.     
-    -  A [CDS entity](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_entity_glosry.htm) such as a [CDS view](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_view_glosry.htm) also represents a structured data type and can be used as such in ABAP programs (but not in the ABAP Dictionary). The same applies to [DDIC views](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenddic_view_glosry.htm) that are only available in [Standard ABAP](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenstandard_abap_glosry.htm).
-    - Structures and structured data types can also be defined in the public [visibility section](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenvisibility_section_glosry.htm) of [global classes](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenglobal_class_glosry.htm) or in [global interfaces](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenglobal_interface_glosry.htm) and then used globally.
+- can be created locally in an ABAP program and globally. This cheat sheet focuses on locally defined structures and structured types.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
+
+## Globally Available Structures and Structured Types
+
+- Apart from the local declaration of a structured type, you can create such a type, for example, as global [DDIC structure](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenddic_structure_glosry.htm) in the [ABAP Dictionary](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_dictionary_glosry.htm). Such a DDIC structure defines a globally available structured type ([DDIC type](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenddic_type_glosry.htm)).
+- There are other structured types available globally, which may be the structured types most commonly used in ABAP programs:
+    - [Database tables](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenddic_db_table_glosry.htm) defined in the ABAP Dictionary can be used as data types just like DDIC structures in an ABAP program. This means that when you create a structure in your ABAP program, for example, you can simply use the name of a database table to address the line type of the table. The structure you created will then have the same structured type as the database table. Typically, you use the database tables to create structures of such a type, or internal tables of such a structured line type, to process data read from the database table in structures or internal tables.     
+    - Various [CDS entities](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_entity_glosry.htm) are globally available structured types. For example, a [CDS view entity](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_v2_view_glosry.htm) represents a structured data type and can be used as such in ABAP programs (but not in the ABAP Dictionary). 
+    - Structures and structured data types can be defined in the public [visibility section](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenvisibility_section_glosry.htm) of [global classes](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenglobal_class_glosry.htm) or in [global interfaces](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenglobal_interface_glosry.htm) and then used globally.
+
+```abap
+"Creating structures based on globally available structured types
+"Database table
+DATA struc_from_dbtab TYPE zdemo_abap_fli.
+"CDS view entity
+DATA struc_from_cds_ve TYPE zdemo_abap_fli.
+"CDS abstract entity
+DATA struc_from_cds_abs TYPE zdemo_abap_abstract_ent.
+"CDS table function
+DATA struc_from_cds_tab_func TYPE zdemo_abap_table_function.
+
+"Globally available structured type in the public visibility section of
+"classes/interfaces
+DATA struc_from_struc_type_in_cl TYPE zcl_demo_abap_amdp=>fli_struc.
+
+"Creating structured types based on globally available structured types
+TYPES ty_struc_from_dbtab TYPE zdemo_abap_fli.
+TYPES ty_struc_from_cds_ve TYPE zdemo_abap_fli.
+```
+
+> **💡 Note**<br>
+> - This cheat sheet focuses on locally defined structures and structured types.
+> - Classic [DDIC views](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenddic_view_glosry.htm) are not available in [ABAP Cloud](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_cloud_glosry.htm). They can only be used as structured types in [classic ABAP](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenclassic_abap_glosry.htm).
 
 ## Creating Structures and Structured Types
 
 The typical language elements for creating structures and structured types locally in an ABAP program are [`BEGIN OF ... END OF ...`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abaptypes_struc.htm). They are used in combination with the [`TYPES`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abaptypes.htm) keyword to create a structured type and the [`DATA`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapdata.htm) keyword to create a structure.
 
-> **💡 Note**<br>
-> This cheat sheet focuses on locally defined structures and structured types.
 
-**Creating structured types**
+### Creating Structured Types
 
 - The following statement defines a structured type introduced by `TYPES`. The type name is preceded by `BEGIN OF` (which marks the beginning of the structured type definition) and `END OF` (the end of the definition). 
 - The components - at least one must be defined - are listed in between.
@@ -95,9 +127,9 @@ TYPES: BEGIN OF struc_type,
 > Outside of classes, you can also refer to DDIC types using `LIKE` (`... comp11 LIKE ddic_type, ...`). If you actually want to refer to an existing data object, but due to typing errors you inadvertently specify a name that exists as DDIC type, errors may be unavoidable.
 
 
-**Creating structures**
+### Creating Structures
 
-- To create a structure in an ABAP program, you can use the `DATA` keyword. 
+- To create a structure (i.e. a structured data object) in an ABAP program, you can use the `DATA` keyword. 
 - It works in the same way as the `TYPES` statement above. 
 - Unlike the `TYPES` statement, you can use the [`VALUE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapdata_options.htm) addition to set default values.  
 
@@ -127,7 +159,7 @@ DATA END OF struc.
 >-  The keywords [`CLASS-DATA`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapclass-data.htm) and [`CONSTANTS`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapconstants.htm) can also be used to create structures. In principle, they represent special cases of the general statement shown above. See the ABAP Keyword Documentation for more information. 
 >- Structures can also be created [inline](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abeninline_declaration_glosry.htm) using [`DATA(...)`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendata_inline.htm) or [`FINAL(...)`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenfinal_inline.htm), as shown below.
 
-**Creating structures using existing structured types**
+### Creating Structures Using Existing Structured Types
 
 ``` abap
 "Local structured type 
@@ -156,7 +188,7 @@ DATA: struc_6 LIKE struc_1,
 ```
 
 
-**Creating structures by inline declaration** 
+### Creating Structures by Inline Declaration 
 
 - This is particularly useful for declaring data objects at the [operand positions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenoperand_position_glosry.htm) where you actually need them. 
 - In this way, you can avoid an extra declaration of the structure in different contexts.
@@ -214,7 +246,7 @@ LOOP AT itab INTO DATA(wa_2).
 ENDLOOP.
 ```
 
-**Anonymous Structures**
+### Creating Anonymous Structures
 
 Using the instance operator [`NEW`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconstructor_expression_new.htm) and [`CREATE DATA`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapcreate_data.htm) statements, you can create [anonymous data objects](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenanonymous_data_object_glosry.htm "Glossary Entry"), such as anonymous structures. 
 The `NEW` addition of the `INTO` clause of an ABAP SQL `SELECT` statement also creates an anonymous data object. 

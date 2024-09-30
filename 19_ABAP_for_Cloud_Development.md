@@ -57,15 +57,7 @@ It provides references to more detailed information on the topic.
     ![Release contract](./files/release_contract.png)
 
 
-    For deprecated and invalid syntax in ABAP for Cloud Development, refer to the following example code. You can create a demo class and insert the code below (adjust the class name if necessary). Several syntax errors and warnings will be displayed: 
-    - ABAP SQL statements 
-      - The first two ABAP SQL statements select from demo database tables. The first one is a demo table provided by SAP, but it cannot be accessed directly in the case of ABAP for Cloud Development like in the case of Standard ABAP. Therefore, it cannot be used as a data source for selection. 
-      - The second one is a database table from the ABAP cheat sheet GitHub repository. If you have imported the repository into the system, you can use it as a data source. 
-      - The CDS view is released and can be accessed in the restricted ABAP language scope. 
-      - Although the source code provides an invalid data source, the dynamic ABAP SQL statement does not produce a syntax error during compilation. However, it would result in a runtime error because you cannot select from that data source. You can check the validity of dynamic specifications using the `cl_abap_dyn_prg` class, which supports dynamic programming. 
-      - The addition `USING CLIENT` for client handling is not allowed in the restricted ABAP language scope. 
-    - When using APIs and types like `string_table`, ensure that they are released. The `IF_OO_ADT_CLASSRUN` interface is released, and you can implement it to run an ABAP class. In ADT, you can do this by choosing *F9*. However, the example class will not run because the class cannot be activated due to the syntax errors. To output the content of data objects, you can use `out->write( ... )` in the `main` method. 
-    - The example includes a selection of deprecated and invalid syntax in ABAP for Cloud Development. It includes the invalid statement `MOVE ... TO` and others that are added for demonstration purposes (some alternatives are provided). Certain system fields should not be accessed. The pointless `WRITE` statement within the method implementation represents invalid classic ABAP UI-related statements. Executable programs (*reports*) are not allowed in the restricted ABAP language scope. To set breakpoints in ADT, double-click the area to the left of the code line number.
+    For deprecated and invalid syntax in ABAP for Cloud Development, refer to the following (nonsensical) example code. You can create a demo class and insert the code below (adjust the class name if necessary). Several syntax errors and warnings will be displayed: 
 
     ```abap
     CLASS zcl_some_class DEFINITION
@@ -79,39 +71,87 @@ It provides references to more detailed information on the topic.
 
     CLASS zcl_some_class IMPLEMENTATION.
       METHOD if_oo_adt_classrun~main.
-        "ABAP SQL statements
-        "Using database tables and CDS views as data sources
-        SELECT carrid, connid FROM spfli WHERE carrid = 'LH' INTO TABLE @DATA(it1).
-        SELECT carrid, connid FROM zdemo_abap_fli WHERE carrid = 'LH' INTO TABLE @DATA(it2).
-        SELECT SINGLE * FROM i_timezone WHERE TimeZoneID = 'EST' INTO @DATA(tz_info).
-        "Dynamic ABAP SQL statements
-        SELECT SINGLE carrid, connid FROM ('SPFLI') WHERE carrid = 'LH' INTO NEW @DATA(ref_a).
-        SELECT SINGLE carrid, connid FROM ('ZDEMO_ABAP_FLI') WHERE carrid = 'LH' INTO NEW @DATA(ref_b).
-        "ABAP SQL Statement involving client handling
-        DATA(clnt) = sy-mandt.
-        SELECT carrid, connid FROM zdemo_abap_fli USING CLIENT @clnt WHERE carrid = 'LH' INTO TABLE @DATA(it3).
+        "Example that demonstrates (not) released APIs, deprecated and
+        "invalid syntax in ABAP for Cloud Development
 
-        "(Not) released APIs
-        "Released API: Getting a random integer
+        "Released DDIC data elements
+        DATA dobj1 TYPE timestampl.
+        DATA dobj2 TYPE land1.
+
+        "Attributes of the accessible type pool ABAP
+        DATA flag TYPE abap_boolean.
+        flag = abap_true.
+
+        "Released table types
+        DATA it1 TYPE string_table.
+        DATA it2 TYPE string_hashed_table.
+        DATA it3 TYPE xstring_table.
+
+        "Released CDS object
+        DATA s1 TYPE i_timezone.
+
+        "Released interface
+        "The if_oo_adt_classrun interface is released, and you can implement it to run an ABAP class. 
+        "In ADT, you can do this by choosing F9. To output the content of data objects, you can use 
+        "out->write( ... ). in the main method. 
+        DATA ref_classrun TYPE REF TO if_oo_adt_classrun.
+
+        "Not released DDIC database table
+        DATA s2 TYPE scarr.
+
+        "Classes
+        "(Not) Released classes
+        DATA(ixml1) = cl_ixml_core=>create( ).
+        "Not released (API for classic ABAP)
+        DATA(ixml2) = cl_ixml=>create( ).
+
+        "Getting a random integer
         DATA(random_num) = cl_abap_random_int=>create( seed = cl_abap_random=>seed( )
-                                                       min  = 1
-                                                       max  = 100 )->get_next( ).
+                                                      min  = 1
+                                                      max  = 100 )->get_next( ).
 
         "Released APIs from the XCO library
         "Retrieving the current user date
-        DATA(user_date) = xco_cp=>sy->date( xco_cp_time=>time_zone->user 
-                               )->as( xco_cp_time=>format->iso_8601_extended 
-                               )->value.
+        DATA(user_date) = xco_cp=>sy->date( xco_cp_time=>time_zone->user
+                              )->as( xco_cp_time=>format->iso_8601_extended
+                              )->value.
+
         "Retrieving the current user time
         DATA(user_time) = xco_cp=>sy->time( xco_cp_time=>time_zone->user
-                               )->as( xco_cp_time=>format->iso_8601_extended
-                               )->value.
+                              )->as( xco_cp_time=>format->iso_8601_extended
+                              )->value.
 
         "Not released API: Querying whether the current database supports AMDP methods
         DATA(amdp_allowed) = xsdbool( cl_abap_dbfeatures=>use_features(
           EXPORTING requested_features = VALUE #( ( cl_abap_dbfeatures=>call_amdp_method ) ) ) ).
 
-        "Examples for deprecated and invalid syntax in ABAP for Cloud Development
+        "ABAP SQL statements
+        "Selecting from a
+        "... not released database table
+        SELECT carrid, connid FROM spfli WHERE carrid = 'LH' INTO TABLE @DATA(spfli_tab).
+
+        "... released CDS view
+        SELECT SINGLE * FROM i_timezone WHERE TimeZoneID = 'EST' INTO @DATA(tz_info).
+
+        "... not released database table using a dynamic ABAP SQL statement
+        "Although the source code provides an invalid data source, the dynamic ABAP SQL statement 
+        "does not produce a syntax error during compilation. However, it would result in a runtime 
+        "error because you cannot select from that data source. You can check the validity of dynamic 
+        "specifications using the `cl_abap_dyn_prg` class, which supports dynamic programming. 
+        SELECT SINGLE carrid, connid FROM ('SPFLI') WHERE carrid = 'LH' INTO NEW @DATA(ref_spfli_tab).
+
+        "ABAP SQL Statement involving client handling; using a cheat sheet database table
+        "The addition `USING CLIENT` for client handling is not allowed in the restricted ABAP language scope. 
+        DATA(clnt) = sy-mandt.
+        SELECT carrid, connid FROM ('ZDEMO_ABAP_FLI') USING CLIENT @clnt WHERE carrid = 'LH' INTO TABLE NEW @DATA(ref_demo_tab).
+
+        "The example includes a selection of deprecated and invalid syntax in ABAP for Cloud Development. They are added 
+        "for demonstration purposes. For example, classic UI technology-related (such as dynpro) syntax is not allowed.  
+        "The pointless WRITE statement within the method implementation represents invalid classic list-related statements. 
+        "Executable programs (reports) are not allowed in the restricted ABAP language scope. To set breakpoints in ADT, 
+        "double-click the area to the left of the code line number.
+
+        "Assignments
         DATA(num1) = 1.
         DATA(num2) = 1.
         DATA(num3) = 2.
@@ -120,26 +160,37 @@ It provides references to more detailed information on the topic.
         "Using the assignment operator
         num2 = num3.
 
-        DATA(it4) = VALUE string_table( ( `a` ) ( `b` ) ( `c` ) ).
-        "Invalid statement for determining the number of lines in an internal table
-        DESCRIBE TABLE it4 LINES DATA(num_lines1).
-        DATA(num_lines2) = lines( it4 ).
+        "Determining the number of lines in an internal table
+        DATA(str_table) = VALUE string_table( ( `a` ) ( `b` ) ( `c` ) ).
+        DATA(num_lines1) = lines( str_table ).
+        "Invalid statement
+        DESCRIBE TABLE str_table LINES DATA(num_lines2).
 
+        "Getting references
         DATA: ref1 TYPE REF TO i,
               ref2 TYPE REF TO i.
 
-        "Deprecated statement for references
-        GET REFERENCE OF num1 INTO ref1.
-        "Using the REF operator instead
-        ref2 = REF #( num1 ).
+        ref1 = REF #( num1 ).
+        "Deprecated statement
+        GET REFERENCE OF num1 INTO ref2.
 
+        "Classic ABAP-related statements and syntax
         "Various sy components should not be used in ABAP for Cloud Development
-        DATA(current_time) = sy-uzeit.
-        DATA(current_date) = sy-datum.        
+        DATA(current_as_abap_time) = sy-uzeit.
+        DATA(current_as_abap_date) = sy-datum.
+        DATA(current_local_time) = sy-timlo.
 
-        DATA str_itab TYPE string_table.
-        "Various invalid statements 
-        READ REPORT 'ZCL_DEMO_ABAP_UNIT_TEST=======CCAU' INTO str_itab.
+        "Various invalid statements
+        DATA scarr_tab TYPE TABLE OF scarr WITH EMPTY KEY.
+        TRY.
+            cl_salv_table=>factory( IMPORTING r_salv_table = DATA(alv)
+                                    CHANGING  t_table      = scarr_tab ).
+            "The exception class is not released, too.
+          CATCH cx_salv_msg.
+        ENDTRY.
+
+        DATA code TYPE string_table.
+        READ REPORT 'ZCL_DEMO_ABAP_UNIT_TEST=======CCAU' INTO code.
         WRITE 'hi'.
         BREAK-POINT.
       ENDMETHOD.
@@ -156,7 +207,7 @@ It provides references to more detailed information on the topic.
      For the example class created, check the information in the *Properties* tab. Choose *General*. The *ABAP Language Version* is maintained as *Standard ABAP*: 
      ![Standard ABAP](./files/standard.png)
     - If you have not imported the ABAP cheat sheet GitHub repository, remove the lines of code using artifacts from that repository, i.e. remove the statements using objects starting with `Z...`. You should not see any syntax errors. Activate the class.     
-    - Run the class with *F9*. The code should have been processed up to the `BREAK-POINT` statement and the debugger should have started. You may want to check the content of the variables in the debugger. Choose *Terminate* to exit the debugger.
+    - Run the class with *F9*. The code should have been processed up to the `BREAK-POINT` statement and the debugger should have started. Choose *Terminate* to exit the debugger.
     - So, unlike in the case of ABAP for Cloud Development above, you should be able to activate and run the code (which does not represent a meaningful code example).    
      
     c) Verifying cloud-readiness of your code in classic ABAP

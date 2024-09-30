@@ -10,6 +10,7 @@
     - [RAP Saver Class and Saver Methods](#rap-saver-class-and-saver-methods)
   - [BDEF Derived Types](#bdef-derived-types)
     - [Components of BDEF Derived Types](#components-of-bdef-derived-types)
+    - [Constants for BDEF Derived Type Components](#constants-for-bdef-derived-type-components)
     - [Secondary Table Keys of BDEF Derived Types](#secondary-table-keys-of-bdef-derived-types)
     - [Type Mapping for RAP](#type-mapping-for-rap)
       - [RAP-Specific Additions to the CORRESPONDING Operator](#rap-specific-additions-to-the-corresponding-operator)
@@ -867,6 +868,22 @@ Bullet points on selected `%` components:
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
+### Constants for BDEF Derived Type Components
+
+Several BDEF derived types contain `%` components, which have a specific type and represent flags. The mentioned `%control` structure of type `ABP_BEHV_FLAG` is such a component. When assigning values to these components, ensure you use appropriate values. The `IF_ABAP_BEHV` interface provides a range of structured constants for this purpose. Although these constants are technically identical, it is recommended that you use them in the right context.
+
+| Type    | Structured Constant | Details |
+| -------- | ------- | ------- |
+| ABP_BEHV_FLAG  |  IF_ABAP_BEHV=>MK   | Marks and unmarks fields in ABAP EML modify and read operations, such as in %control and %element. |
+| ABP_BEHV_FIELD_PERM  | IF_ABAP_BEHV=>PERM-F   |  Used in the context of field permission results, such as a field marked as mandatory or read-only.   |
+| ABP_BEHV_OP_PERM  |  IF_ABAP_BEHV=>PERM-O   |  For operation permission results, such as a delete operation that is marked as enabled.   |
+| ABP_BEHV_FIELD_CTRL  |  IF_ABAP_BEHV=>FC-F   |  For field feature control results, such as a field marked with no restrictions.   |
+| ABP_BEHV_OP_CTRL |  IF_ABAP_BEHV=>FC-O   |  For operation feature control results, such as a disabled update operation.   |
+| ABP_BEHV_AUTH |  IF_ABAP_BEHV=>AUTH   |  For authorization results, such as an unauthorized operation.   |
+
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
 ### Secondary Table Keys of BDEF Derived Types
 - Internal tables typed with BDEF derived types (`TYPE TABLE FOR ...`) are standard tables with an empty [primary table key](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenprimary_table_key_glosry.htm) (`primary_key`). 
 - Predefined [secondary table keys](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensecondary_table_key_glosry.htm) are available for many types. 
@@ -875,7 +892,8 @@ Bullet points on selected `%` components:
   - `entity`: Includes `%key`
   - `cid`: Includes `%cid` or `%cid_ref`, and can - depending on the type - also include `%key` and `%pid`
   - `draft`: Available in draft scenarios; includes `%is_draft`; can also include `%key` and `%pid`
-  - `pid` (alias name `id`): Available in late numbering scenarios; includes `%pid`; can also include `%tmp` and `%key`
+  - `pid`: Available in late numbering scenarios; includes `%pid`; can also include `%tmp` and `%key`
+  - The [alias name](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenalias_glosry.htm) `id` is available for either `entity`, `draft`, or `pid` depending on the context. Check the F2 information in ADT for the respective types.
 
 ```abap
 DATA itab_cr TYPE TABLE FOR CREATE zdemo_abap_rap_ro_m.

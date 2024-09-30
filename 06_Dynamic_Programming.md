@@ -74,7 +74,7 @@
 - In general, dynamic programming also comes with some downsides. For example:
   - The ABAP compiler cannot check the dynamic programming feature like the `SELECT` statement mentioned above. There is no syntax warning or suchlike. 
   - The checks are performed only at runtime, which has an impact on the performance. 
-  - The testing of [procedure](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenprocedure_glosry.htm "Glossary Entry") that include dynamic programming features may be difficult.
+  - The testing of [procedures](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenprocedure_glosry.htm "Glossary Entry") that include dynamic programming features may be difficult.
   - Including external input in dynamic ABAP SQL statements without an appropriate handling, there can be potential security risks. You can, for example, use the `CL_ABAP_DYN_PRG` class to manage security risks.
 
 
@@ -182,7 +182,7 @@ ASSIGN num TO FIELD-SYMBOL(<fs_inl>).
 "symbol when assigning memory areas
 TYPES c_len_3 TYPE c LENGTH 3.
 DATA(chars) = 'abcdefg'.
-
+table_linebetween
 FIELD-SYMBOLS <fs1> TYPE c_len_3. 
 
 "Implicit casting
