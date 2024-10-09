@@ -24,7 +24,7 @@
   - [Terms Related to Data Types and Objects in a Nutshell](#terms-related-to-data-types-and-objects-in-a-nutshell)
   - [Notes on the Declaration Context](#notes-on-the-declaration-context)
   - [Excursions](#excursions)
-    - [Enumerated Types and Objects](#enumerated-types-and-objects)
+    - [ABAP Enumerated Types and Objects](#abap-enumerated-types-and-objects)
     - [Getting Type Information and Creating Types/Data Objects at Runtime](#getting-type-information-and-creating-typesdata-objects-at-runtime)
     - [Ranges Tables](#ranges-tables)
     - [Typed Literals in ABAP SQL](#typed-literals-in-abap-sql)
@@ -481,7 +481,9 @@ CAST zcl_demo_abap_objects( <object> )->another_string = `ABAP`.
 
 - The ABAP Dictionary (DDIC) serves as a persistent repository for type definitions represented by dictionary objects. 
 - These objects constitute global data types that are accessible by other repository objects.
+- For many of the classic DDIC objects, which are still supported in [ABAP Cloud](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_cloud_glosry.htm), CDS-based successor objects are available.
 - Find a high-level overview in the [ABAP Dictionary](26_ABAP_Dictionary.md) cheat sheet.
+- Note that there are predefined global types available. However, in ABAP Cloud, only [released APIs](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenreleased_api_glosry.htm) can be used there.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
@@ -1143,11 +1145,11 @@ In [ABAP programs](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/in
 | `space` constant | It is of type type `c`, length 1, and contains a blank character. |
 | `me` self-reference  | Used in ABAP Objects, it's a local reference variable for instance method implementations. At runtime, it points to the instance executing the method. It is primarily used to be explicit about, for exmaple, using instance attributes of the class, especially if there is a local data object with the same name.|
 
-Expand the following collapsible section to view the code of an example. To try it out, create a demo class named `zcl_some_class` and paste the code into it. After activation, choose *F9* in ADT to execute the class. The example is set up to display output in the console.
+Expand the following collapsible section for example code. To try it out, create a demo class named `zcl_some_class` and paste the code into it. After activation, choose *F9* in ADT to execute the class. The example is set up to display output in the console.
 
 
 <details>
-  <summary>Expand to view the code</summary>
+  <summary>🟢 Click to expand for example code</summary>
   <!-- -->
 
 ```abap
@@ -1782,11 +1784,12 @@ The declaration context of data types (and objects) determines the validity and 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## Excursions
-### Enumerated Types and Objects
+### ABAP Enumerated Types and Objects
 - ABAP supports the concept of enumerations. 
 - Enumerations are a mixture of types and constants.
 - An [enumerated type](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenenum_type_glosry.htm) specifies a value set in addition to the actual type properties. 
 - [Enumerated objects](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenenumerated_object_glosry.htm) - data objects with an enumerated type - are mainly used to check allowed values. This usually restricts the actual parameters passed to methods to the enumerated values defined in the class. [Enumerated variables](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenenumerated_variable_glosry.htm) are variable enumerated objects. They can only contain the associated enumerated values. 
+- [CDS enumerated types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_enum_type_glosry.htm) are also available. Find more information in the [ABAP Dictionary (DDIC)](26_ABAP_Dictionary.md) cheat sheet.
 
 Syntax:
 

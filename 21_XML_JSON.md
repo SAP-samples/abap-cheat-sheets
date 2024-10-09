@@ -728,12 +728,12 @@ ENDCLASS.
 > - For additional information and examples, see the [ABAP and JSON](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_json.htm) section of the ABAP Keyword Documentation.
 
 
-Expand the following collapsible sections to view the code of examples. To try them out, create a demo class named `zcl_some_class` and paste the code into it. After activation, choose *F9* in ADT to execute the class. This example is set up to display output in the console.
+Expand the following collapsible section for example classes. To try them out, create a demo class named `zcl_some_class` and paste the code into it. After activation, choose *F9* in ADT to execute the class. This example is set up to display output in the console.
 
 **Creating JSON Data using the sXML library**
 
 <details>
-  <summary>Expand to view the code</summary>
+  <summary>🟢 Click to expand for example code</summary>
   <!-- -->
 
 - The `create` method from the `cl_sxml_string_writer` class is used to create a JSON writer by setting the type to `if_sxml=>co_xt_json`. 
@@ -833,7 +833,7 @@ ENDCLASS.
 **Reading JSON Data using the sXML library**
 
 <details>
-  <summary>Expand to view the code</summary>
+  <summary>🟢 Click to expand for example code</summary>
   <!-- -->
 
 - An internal table is created for display purposes. This table is populated when iterating over all nodes. It includes information such as the node's value. 
@@ -1129,10 +1129,10 @@ DATA json_to_abap_table TYPE string_table.
                            CHANGING data  = json_to_abap_table ).
 ```
 
-Expand the following collapsible section to view the code of an example. To try it out, create a demo class named `zcl_some_class` and paste the code into it. After activation, choose *F9* in ADT to execute the class. This example is set up to display output in the console.
+Expand the following collapsible section for example code. To try it out, create a demo class named `zcl_some_class` and paste the code into it. After activation, choose *F9* in ADT to execute the class. This example is set up to display output in the console.
 
 <details>
-  <summary>Expand to view the code</summary>
+  <summary>🟢 Click to expand for example code</summary>
   <!-- -->
 
 ```abap
@@ -1281,10 +1281,10 @@ ENDCLASS.
 - Find more information and examples [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenasxml_class_instances.htm) in the ABAP Keyword Documentation. 
 
 
-Expand the following collapsible section to view the code of two simplified examples. To try them out, create a demo class named `zcl_some_class` and paste the code into it. After activation, choose *F9* in ADT to execute the class. The examples are set up to display output in the console.
+Expand the following collapsible section for example classes. To try them out, create a demo class named `zcl_some_class` and paste the code into it. After activation, choose *F9* in ADT to execute the class. The examples are set up to display output in the console.
 
 <details>
-  <summary>Expand to view the details</summary>
+  <summary>🟢 Click to expand for example code</summary>
   <!-- -->
 
 - When the class runs, it creates three instances, and three instance attributes are assigned values for each instance: the current UTC timestamp, a random number, and a UUID. 

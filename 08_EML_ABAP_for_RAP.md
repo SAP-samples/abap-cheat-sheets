@@ -874,12 +874,12 @@ Several BDEF derived types contain `%` components, which have a specific type an
 
 | Type    | Structured Constant | Details |
 | -------- | ------- | ------- |
-| ABP_BEHV_FLAG  |  IF_ABAP_BEHV=>MK   | Marks and unmarks fields in ABAP EML modify and read operations, such as in %control and %element. |
-| ABP_BEHV_FIELD_PERM  | IF_ABAP_BEHV=>PERM-F   |  Used in the context of field permission results, such as a field marked as mandatory or read-only.   |
-| ABP_BEHV_OP_PERM  |  IF_ABAP_BEHV=>PERM-O   |  For operation permission results, such as a delete operation that is marked as enabled.   |
-| ABP_BEHV_FIELD_CTRL  |  IF_ABAP_BEHV=>FC-F   |  For field feature control results, such as a field marked with no restrictions.   |
-| ABP_BEHV_OP_CTRL |  IF_ABAP_BEHV=>FC-O   |  For operation feature control results, such as a disabled update operation.   |
-| ABP_BEHV_AUTH |  IF_ABAP_BEHV=>AUTH   |  For authorization results, such as an unauthorized operation.   |
+| `ABP_BEHV_FLAG`  |  `IF_ABAP_BEHV=>MK`   | Marks and unmarks fields in ABAP EML modify and read operations, such as in `%control` and `%element`. |
+| `ABP_BEHV_FIELD_PERM`  | `IF_ABAP_BEHV=>PERM-F`   |  Used in the context of field permission results, such as a field marked as mandatory or read-only.   |
+| `ABP_BEHV_OP_PERM`  |  `IF_ABAP_BEHV=>PERM-O`   |  For operation permission results, such as a delete operation that is marked as enabled.   |
+| `ABP_BEHV_FIELD_CTRL`  |  `IF_ABAP_BEHV=>FC-F`   |  For field feature control results, such as a field marked with no restrictions.   |
+| `ABP_BEHV_OP_CTRL` |  `IF_ABAP_BEHV=>FC-O`   |  For operation feature control results, such as a disabled update operation.   |
+| `ABP_BEHV_AUTH` |  `IF_ABAP_BEHV=>AUTH`   |  For authorization results, such as an unauthorized operation.   |
 
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
@@ -1746,6 +1746,8 @@ contains all relevant components for the chosen scenario.
 >```
 > In cases where different data objects of key component groups of a BDEF derived type are to be assigned to the same key component group of the same entity, a direct assignment works without a syntax warning because the content is identical. A direct assignment is recommended (`...wa1_root-%tky = wa2_root-%tky ...`). The use of the `CORRESPONDING` operator is unnecessary and less performant. This is true, for example, for key component group assignments in the context of RAP response parameters failed and reported.
 
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
 ### RAP Concepts
 
 **RAP numbering**
@@ -1827,6 +1829,8 @@ contains all relevant components for the chosen scenario.
 >    `%pid` and `%tmp`) is unique and mapped to the final
 >    keys that are to be contained in `%key`.
 
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ### Ensuring Data Consistency in a RAP Transaction
 
@@ -1957,7 +1961,6 @@ The [ABAP Unit Tests](14_ABAP_Unit_Tests.md) cheat sheet includes an example dem
 - Mocking ABAP EML APIs using the `CL_BOTD_MOCKEMLAPI_BO_TEST_ENV` class
 
 Note that there is a RAP-specific variant of the `CREATE OBJECT` statement available. [`CREATE OBJECT ... FOR TESTING.`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapcreate_object_for_testing.htm) enables the instantiation of RAP handler classes. Find more information in the [Development guide for the ABAP RESTful Application Programming Model](https://help.sap.com/docs/abap-cloud/abap-rap/test).
-
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 

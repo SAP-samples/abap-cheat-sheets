@@ -2394,7 +2394,7 @@ To check out examples in demo classes, expand the collapsible sections below.
 
 
 <details>
-  <summary>1. Read example: Getting Markdown content and sending ZIP file via email</summary>
+  <summary>🟢 1. Read example: Getting Markdown content and sending ZIP file via email</summary>
   <!-- -->
 
 > **⚠️ Note/Disclaimer**<br>
@@ -2558,7 +2558,7 @@ ENDCLASS.
 <br>
 
 <details>
-  <summary>2. Post example: Demonstrating a post request by converting Markdown to HTML using the GitHub API</summary>
+  <summary>🟢 2. Post example: Demonstrating a post request by converting Markdown to HTML using the GitHub API</summary>
   <!-- -->
 
 > **⚠️ Note/Disclaimer**<br>
@@ -2650,10 +2650,10 @@ The XCO library offers classes such as `XCO_CP_XLSX` and methods for reading and
   - A demo class explores a selection of XCO classes and methods. You can find the code in the expandable section.
 - Exporting the adapted XLSX content (not related to the XCO library; just to visualize newly created XLSX content using XCO)
 
-Expand the following collapsible section to view the steps and code of the example. 
+Expand the following collapsible section for example code.
 
 <details>
-  <summary>Expand to view the details</summary>
+  <summary>🟢 Click to expand for example code</summary>
   <!-- -->
 <br>
 

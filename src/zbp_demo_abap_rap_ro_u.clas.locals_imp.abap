@@ -446,12 +446,12 @@ CLASS lhc_root IMPLEMENTATION.
               TO failed-root.
             CATCH cx_abap_lock_failure.
               APPEND VALUE #( %key        = CORRESPONDING #( lr_key->* )
-                              %fail-cause = if_abap_behv=>cause-unspecific )
+                              %fail-cause = if_abap_behv=>cause-locked )
               TO failed-root.
           ENDTRY.
         ENDLOOP.
       CATCH cx_abap_lock_failure.
-        APPEND VALUE #( %fail-cause = if_abap_behv=>cause-unspecific )
+        APPEND VALUE #( %fail-cause = if_abap_behv=>cause-locked )
         TO failed-root.
     ENDTRY.
   ENDMETHOD.

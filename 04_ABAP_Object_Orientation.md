@@ -189,7 +189,7 @@ ENDCLASS.
 The following simplified example demonstrates include programs.
 
 <details>
-  <summary>Expand to view the details</summary>
+   <summary>🟢 Click to expand for more details</summary>
   <!-- -->
 
   Global class:
@@ -2263,10 +2263,10 @@ i_ref = NEW class( ).
 
 ### Excursion: Example Interface
 
-Expand the following collapsible section to view the code of an example. To try it out, create a demo interface named `zif_some_interface`, a class named `zcl_some_class`, and paste the code into the artifacts. After activation, choose *F9* in ADT to execute the class. The example is set up to display output in the console.
+Expand the following collapsible section for example code. To try it out, create a demo interface named `zif_some_interface`, a class named `zcl_some_class`, and paste the code into the artifacts. After activation, choose *F9* in ADT to execute the class. The example is set up to display output in the console.
 
 <details>
-  <summary>Expand to view the details</summary>
+   <summary>🟢 Click to expand for more information and example code</summary>
   <!-- -->
 <br>
 

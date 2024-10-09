@@ -129,10 +129,10 @@ The following topic covers authorization-related terms and provides you with the
 > - The purpose of the example is that activities are only allowed when the *countryfr* value is *US*. This is checked by the authorization check examples in the class further down.
 
 
-Expand the following collapsible section to view the implementation steps required for the executable example.
+Expand the following collapsible section for the implementation steps required for the executable example.
 
 <details>
-  <summary>Expand to view the implementation steps</summary>
+  <summary>🟢 Click to expand for the implementation steps</summary>
   <!-- -->
 
 <br>
@@ -251,10 +251,10 @@ For creating a CDS access control, proceed as follows:
 
 ### Example Class
 
-Expand the following collapsible section to view the code of an example class. Provided that the implementation steps have been walked through, the example explores explicit and implicit authorization checks. To try it out, create a demo class named `zcl_demo_abap_auth` and paste the code into it. After activation, choose *F9* in ADT to execute the class. The example is set up to display output in the console.
+Expand the following collapsible section for example code. Provided that the implementation steps have been walked through, the example explores explicit and implicit authorization checks. To try it out, create a demo class named `zcl_demo_abap_auth` and paste the code into it. After activation, choose *F9* in ADT to execute the class. The example is set up to display output in the console.
 
 <details>
-  <summary>Expand to view the class code</summary>
+  <summary>🟢 Click to expand for example code</summary>
   <!-- -->
 
 <br>

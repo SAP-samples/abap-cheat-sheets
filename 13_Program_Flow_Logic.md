@@ -655,7 +655,7 @@ CALL FUNCTION func_name PARAMETER-TABLE ptab.
 Expand the following section to get a simple executable example:
 
 <details>
-  <summary>Expand to view the details</summary>
+  <summary>🟢 Click to expand for more information and example code</summary>
   <!-- -->
 
 The following example demonstrates a simple function module: 

@@ -84,7 +84,7 @@ Internal Tables ...
 ## Basic Properties of Internal Tables
 
 <details>
-  <summary>Expand to view the details</summary>
+  <summary>🟢 Click to expand for more details</summary>
   <!-- -->
 
 **Line Type**
@@ -137,7 +137,7 @@ Internal Tables ...
 ## Table Keys (Primary, Secondary, Standard, Empty) and Table Indexes
 
 <details>
-  <summary>Expand to view the details</summary>
+  <summary>🟢 Click to expand for more details</summary>
   <!-- -->
 
 **Primary table key**
@@ -442,7 +442,7 @@ DATA it27 LIKE TABLE OF it25.
 
 ### Line/Table Type Options of Internal Tables
 
-This section explores various line (i.e. structured) and table type options when declaring internal tables. Various examples have already been covered in the previous sections. Among the options are, for example: 
+This section explores various line and table type options when declaring internal tables. Examples have already been covered in the previous sections. Among the options are, for example: 
 - Elementary line types based on elementary built-in ABAP types, locally declared elementary types, globally available elementary types such as DDIC data elements
 - Line types based on both locally declared and globally available structured types
   - Among the globally available line types are, for example, DDIC structures, database tables and CDS objects such as CDS view entities
@@ -538,6 +538,22 @@ DATA it_struc_5 TYPE TABLE OF zdemo_abap_table_function WITH EMPTY KEY.
 "Globally available structured types in the public visibility section of
 "classes/interfaces
 DATA it_struc_6 TYPE TABLE OF zcl_demo_abap_amdp=>fli_struc WITH EMPTY KEY.
+
+"Many of the previous examples demonstrate flat line types.
+"Deep line types are also possible, that is, the line type
+"can include components such as strings, references, and internal
+"tables.
+TYPES: BEGIN OF loc_deep_struct,
+          key_field TYPE i,
+          char      TYPE c LENGTH 10,
+          str       TYPE string,
+          dref      TYPE REF TO i,
+          struct    TYPE zdemo_abap_flsch,
+          str_tab   TYPE string_table,
+          tab       TYPE TABLE OF zdemo_abap_flsch WITH EMPTY KEY,
+        END OF loc_deep_struct.
+
+DATA it_struc_7 TYPE TABLE OF loc_deep_struct WITH EMPTY KEY.
 ``` 
 
 </td>
@@ -576,26 +592,9 @@ DATA it_tab_5 TYPE xstring_table.
 DATA it_tab_6 TYPE zdemo_abap_get_data_itf=>carr_tab.
 DATA it_tab_7 TYPE zcl_demo_abap_amdp=>flsch_tab.
 
-"Excursion
 "Creating an internal table based on the table type of an existing
 "internal table
 DATA it_tab_8 LIKE it_tab_7.
-
-"Many of the previous examples demonstrate flat line types.
-"Deep line types are also possible, that is, the line type
-"can include components such as strings, references, and internal
-"tables.
-TYPES: BEGIN OF loc_deep_struct,
-          key_field TYPE i,
-          char      TYPE c LENGTH 10,
-          str       TYPE string,
-          dref      TYPE REF TO i,
-          struct    TYPE zdemo_abap_flsch,
-          str_tab   TYPE string_table,
-          tab       TYPE TABLE OF zdemo_abap_flsch WITH EMPTY KEY,
-        END OF loc_deep_struct.
-
-DATA it_tab_9 TYPE TABLE OF loc_deep_struct WITH EMPTY KEY.
 ``` 
 
 </td>
@@ -638,34 +637,39 @@ it_ref_3 = VALUE #( ( NEW i( 3 ) ) "Elementary type
 "The examples show the copying of a table including the content
 "on the fly and creating the table in one step. The data type of the
 "declared variable is determined by the right side.
-DATA(it41) = it40.
-DATA(it42) = it41.
+DATA string_tab TYPE string_table.
+
+DATA(it_a) = string_tab.
+DATA(it_b) = it_a.
 
 "Using FINAL for creating immutable variables
-FINAL(it43) = it40.
+FINAL(it_c) = it_a.
+"For example, it is not possible to modify such a table in the following position.
+"Find more information in the Data Types and Data Objects cheat sheet.
+"APPEND INITIAL LINE TO it_c.
 
 "As shown below and in other cheat sheets, constructor operators
 "are handy when creating internal tables in place. The following
 "examples uses the VALUE operator and an internal table type.
-DATA(it44) = VALUE tt_std( ( key_field = 1 char1 = 'aaa' )
-                           ( key_field = 2 char1 = 'bbb' ) ).
+DATA(it_d) = VALUE string_table( ( `aaa` )
+                                 ( `bbb` ) ).
 
 "Not providing any table lines means the table is initial
 "and has the same effect as the declaration of it46.
-DATA(it45) = VALUE tt_std( ).
-DATA it46 TYPE tt_std.
+DATA(it_e) = VALUE string_table( ).
+DATA it_f TYPE string_table.
 
 "Excursion
 "Table declared inline in the context of a SELECT statement;
 "a prior extra declaration of an internal table is not needed.
-SELECT * FROM zdemo_abap_fli INTO TABLE @DATA(it47).
+SELECT * FROM zdemo_abap_fli INTO TABLE @DATA(it_g).
 
 "Instead of
-DATA it48 TYPE TABLE OF zdemo_abap_fli WITH EMPTY KEY.
-SELECT * FROM zdemo_abap_fli INTO TABLE @it48.
+DATA it_h TYPE TABLE OF zdemo_abap_fli WITH EMPTY KEY.
+SELECT * FROM zdemo_abap_fli INTO TABLE @it_h.
 
 "Using FINAL
-SELECT * FROM zdemo_abap_fli INTO TABLE @FINAL(it49).
+SELECT * FROM zdemo_abap_fli INTO TABLE @FINAL(it_i).
 ```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
@@ -729,7 +733,7 @@ and [`APPEND`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.
 to add lines to internal tables.
 
 <details>
-  <summary>Notes on using <code>APPEND</code> and <code>INSERT</code></summary>
+  <summary>🟢 Click to expand for notes on using <code>APPEND</code> and <code>INSERT</code></summary>
   <!-- -->
 
 -   `APPEND` ...
@@ -1224,11 +1228,11 @@ INSERT VALUE s( a = 'yyy' b = 3 ) INTO TABLE dref_tab->*.
 
 ### Example: Exploring Populating Internal Tables
 
-Expand the following collapsible section to view the code of an example. To try it out, create a demo class named `zcl_some_class` and paste the code into it. After activation, choose *F9* in ADT to execute the class. 
+Expand the following collapsible section for example code. To try it out, create a demo class named `zcl_some_class` and paste the code into it. After activation, choose *F9* in ADT to execute the class. 
 The example is set up to display output in the console, but only for few data objects. You may want to set a break point at the earliest possible position and walk through the example in the debugger. This will allow you to double-click on data objects and observe how the different statements affect their contents.
 
 <details>
-  <summary>Expand to view the code</summary>
+  <summary>🟢 Click to expand for a code example</summary>
   <!-- -->
 
 ```abap
@@ -2021,7 +2025,7 @@ READ TABLE itab WITH KEY ... BINARY SEARCH ...
 
 
 <details>
-  <summary>Expand to view more information and a code snippet</summary>
+  <summary>🟢 Click to expand for more information and a code example</summary>
   <!-- -->
 
 - `READ TABLE` without `BINARY SEARCH`: Table is accessed linearly
@@ -2156,11 +2160,11 @@ ENDCLASS.
 
 ### Example: Exploring READ TABLE Statements and Table Expressions
 
-Expand the following collapsible section to view the code of an example. To try it out, create a demo class named `zcl_some_class` and paste the code into it. After activation, choose *F9* in ADT to execute the class. 
+Expand the following collapsible section for example code. To try it out, create a demo class named `zcl_some_class` and paste the code into it. After activation, choose *F9* in ADT to execute the class. 
 The example is not set up to display output in the console. You may want to set a break point at the first position possible and walk through the example in the debugger. This will allow you to double-click on data objects and observe how the different statements affect their contents.
 
 <details>
-  <summary>Expand to view the code</summary>
+  <summary>🟢 Click to expand for example code</summary>
   <!-- -->
 
 ```abap
@@ -4109,10 +4113,10 @@ Notes on ...
     - fast and optimized for both primary and secondary table keys 
     - consistent for large internal tables due to a special hash algorithm
 
-Expand the following collapsible section to view the code of the example that you can copy and paste into a demo class and run choosing *F9* in ADT. Note that, when running the class, it may take a while to complete and display output in the console.
+Expand the following collapsible section for example code. To try it out, create a demo class named `zcl_some_class` and paste the code into it. After activation, choose *F9* in ADT to execute the class. Note that, when running the class, it may take a while to complete and display output in the console.
 
 <details>
-  <summary>Expand to view the code</summary>
+  <summary>🟢 Click to expand for example code</summary>
   <!-- -->
 
 ```abap

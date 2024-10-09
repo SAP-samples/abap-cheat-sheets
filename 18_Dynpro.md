@@ -745,7 +745,7 @@ After the import of the repository, proceed as follows:
 
 <br>
 <details>
-  <summary>Expand to see explanations of the executable example</summary>
+  <summary>🟢 Click to expand for more information</summary>
   <!-- -->
   <br>
 The example demonstrates dynpro-related statements. In the dynpros, you can select various options for checking out the effect of the syntax. 

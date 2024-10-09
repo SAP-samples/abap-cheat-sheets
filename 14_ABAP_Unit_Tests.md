@@ -577,10 +577,10 @@ To run the example, follow these steps:
 > - Refer to the code comments, SAP Help Portal and class documentation for additional information.
 
 
-Expand the following collapsible section to view the code of an example.
+Expand the following collapsible section for example code.
 
 <details>
-  <summary>Expand to view the example code</summary>
+  <summary>🟢 Click to expand for example code</summary>
   <!-- -->
 <br>
 

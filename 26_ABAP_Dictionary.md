@@ -41,14 +41,14 @@ This cheat sheet ...
 - These objects constitute global data types that are accessible by other repository objects.
 - Many of these objects can also be accessed in CDS objects and ABAP itself.
 - DDIC provides built-in and predefined data types, but also allows for the creation of custom data types.
-- The data types that can be defined in the DDIC, similar to the ABAP language. The types include the following: 
+- The data types that can be defined in the DDIC, similar to the ABAP language, include the following: 
   - Elementary types
   - Structured types
   - Table types
   - Reference types 
 - They provide the same functionality as the local types that can be defined in ABAP programs with `TYPES` statements.  
 - DDIC also enables the creation of additional objects, such as database tables, which are then created in the underlying database.
-- Furthermore, the DDIC includes objects that support development in various contexts, such as lock objects related to the [SAP LUW concept](17_SAP_LUW.md).
+- Furthermore, the DDIC includes objects that support development in various contexts, such as lock objects related to the [SAP LUW concept](17_SAP_LUW.md) and more. They are not outlined here.
 - DDIC offers many objects and functionalities particularly suited for classic ABAP technologies and user interfaces, such as dynpros. However, these are not relevant in ABAP Cloud and are not covered in this cheat sheet. For example, DDIC search helps (that are used to created value lists for input fields on dynpros) can be replaced by CDS-based search helps.
 - The more modern concept, ABAP CDS, is integrated into the DDIC, allowing for the creation of dedicated CDS objects that can replace DDIC objects to be used in newer concepts like RAP.
 - DDIC objects are transportable.
@@ -80,14 +80,14 @@ DDIC supports the following data types:
   - In ABAP programs, the built-in dictionary types are mapped to corresponding ABAP data types.
 - For all available types and more details, refer to the [ABAP Keyword Documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenddic_builtin_types.htm). The following list shows a selection of available built-in dicitionary types: 
 
-  | Built-in DDIC Type  |  Details |
+  | Built-in Dictionary Type  |  Details |
   |---|---|
   |  `int4`  | Represents 4-byte integers <br>Mapped to the ABAP type `i`  |
-  | `char`   | Represents strings of fixed length <br>Mapped to the ABAP type `c` with a dedicated length <br>For example, in database tables and fields of CDS entities, the maximum length is 1333 characters.  |
+  | `char`   | Represents strings of fixed length <br>Mapped to the ABAP type `c` with a dedicated length <br>For example, in database tables and fields of CDS entities, the maximum length is 1333 characters. <br><br>The built-in dictionary type `clnt` is a special character-like type and has special semantics. It denotes the [client column](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenclient_column_glosry.htm) in [client-dependent](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenclient_dependent_glosry.htm) DDIC database tables. The type is mapped to the ABAP type `c`, length 3.   |
   | `string`  | Represents strings of variable length<br>In DDIC, it is handled like a character large object/CLOB. <br>A maximum length can be specified, but there is no upper limit. The type cannot be used to specify key fields in database tables. In the tables, a maximum length of at least 256 can be specfied to restrict the length of database table fields. <br>Mapped to the identically named ABAP type `string` <br><br>Another built-in dicitionary type mapped to the ABAP type `string` is `sstring`, which represents shorter text strings having a maximum length of 1333. It is handled like `char` and can be used as type for a database table key field (unlike `string`; note that trailing blanks are removed).   |
   |  `datn`/`timn` | Represent date and time formats <br>Mapped to `d`/`t` <br><br>`dats`/`tims` are older types. `datn`/`timn` are preferred because `dats`/`tims` require conversion to actual date and time types.   |
-  |  `utclong` | Represents numeric text <br>Mapped to `n`  |
-  |  `numc` | Represents time stamps <br>Mapped to the identically named ABAP data type `utclong`  |
+  |  `utclong` | Represents time stamps <br>Mapped to the identically named ABAP data type `utclong`   |
+  |  `numc` | Represents numeric text <br>Mapped to `n` |
   |  `raw` | Represents byte strings <br>Mapped to `x`  |
 
 
@@ -138,7 +138,7 @@ SELECT SINGLE
 ### DDIC Data Types
 
 They can be ... 
-- defined in the DDIC are global data types.
+- defined in the DDIC and represent [global types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenglobal_type_glosry.htm).
 - accessed by all repository objects (as long as the package concept allows it).
 - referenced in ABAP programs, for example, using `TYPES` and `DATA` statements.
 - used to type components in other repository objects.
@@ -325,10 +325,10 @@ The following example creates two DDIC structures exploring several options:
 
 - DDIC table types ...
   - are complex types that describe internal tables in ABAP.
-  - are defined by the following properties. For additional details, refer to the Internal Tables cheat sheet.
+  - are defined by the following properties. For additional details, refer to the [Internal Tables](01_Internal_Tables.md) cheat sheet.
     - Line type (can be elementary, reference, or structured types; the latter may use DDIC database tables; note: CDS entities are not allowed)
     - Table category (options include standard, sorted, hashed, or generic category index for standard and sorted)
-    - Table key (the primary table key can be empty, standard, or consist of specific components; secondary table keys and alias names for the keys can be specified)
+    - Table key (the primary table key can be empty, standard, or consist of specific components; secondary table keys and an alias name an be specified)
   - are not to be confused with DDIC database tables, which represent tables on the database.
 
 **Example: DDIC Table Type**
@@ -549,7 +549,7 @@ The following example creates two DDIC database tables exploring several options
 - While ABAP Cloud still supports several DDIC objects, some have ABAP CDS-based successors. These successors offer advanced functionalities and support modern concepts such as ABAP RAP, which relies on data models defined in ABAP CDS and RAP behavior definitions that determine the model behavior.
 
 > **💡 Note**<br>
-> - This cheat sheet only emphasizes ABAP CDS objects as global types to be used in ABAP. It does not cover use cases, data modeling aspects, annotations, syntax, and more. Refer to the [documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds.htm) for the complete picture. The executable example of the CDS View Entities cheat sheet provides a demonstration of a selection of CDS-related syntax.
+> - This cheat sheet only emphasizes ABAP CDS objects as global types to be used in ABAP. It does not cover use cases, data modeling aspects, annotations, syntax, and more. Refer to the [documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds.htm) for the complete picture. The executable example of the [CDS View Entities](15_CDS_View_Entities.md) cheat sheet provides a demonstration of a selection of CDS-related syntax.
 > - ABAP CDS objects are created in ADT from source code.
 
 ### CDS Types Usable as Elementary Types
@@ -757,7 +757,7 @@ SELECT * FROM zdemo_abap_table_function INTO TABLE @itab_cds_tabfunc.
 
 ### Finding Released Repository Objects in the System
 
-In an SAP BTP ABAP environment and using ADT, you can find released repository objects in the *Project Explorer* view under *Released Objects*
+In an SAP BTP ABAP environment and using ADT, you can find released repository objects in the *Project Explorer* view under *Released Objects*:
 
 ![Released APIs](./files/released_APIs.png)
 
@@ -775,7 +775,7 @@ SELECT ReleasedObjectType, ReleasedObjectName, ReleaseState
 
 ### Creating Repository Objects Programmatically with XCO
 
-Using the [XCO library](https://help.sap.com/docs/btp/sap-business-technology-platform/generation-apis), you can create ABAP repository objects programmatically. The executable example of the [ABAP for Cloud Development](22_Misc_ABAP_Classes.md#generating-abap-repository-objects) cheat sheet includes demo code snippets. For more information, refer to the [documentation](https://help.sap.com/docs/btp/sap-business-technology-platform/generation-apis).
+Using the [XCO library](https://help.sap.com/docs/btp/sap-business-technology-platform/generation-apis), you can create ABAP repository objects programmatically. The executable example ([zcl_demo_abap_cloud_excursion](src/zcl_demo_abap_cloud_excursion.clas.abap)) of the [ABAP for Cloud Development](19_ABAP_for_Cloud_Development.md) cheat sheet includes demo code snippets. For more information, refer to the [documentation](https://help.sap.com/docs/btp/sap-business-technology-platform/generation-apis).
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
@@ -793,13 +793,13 @@ Using the [XCO library](https://help.sap.com/docs/btp/sap-business-technology-pl
 ## Executable Example
 
 > **💡 Note**<br>
-> - The executable example uses both the created repository objects as described in this cheat sheet and some repository objects of the ABAP cheat sheet repository. The example explores and uses code snippets of this cheat sheets, emphasizing the use of global types in ABAP programs.
+> - The executable example uses both the created repository objects as described in this cheat sheet and some repository objects of the ABAP cheat sheet repository. The example explores and uses code snippets of this cheat sheet, emphasizing the use of global types in ABAP programs.
 > - [Disclaimer](./README.md#%EF%B8%8F-disclaimer)
 
-Expand the following collapsible section to view the code of an example. To try it out, create a demo class named `zcl_some_class` and paste the code into it. After activation, choose *F9* in ADT to execute the class. The example is set up to display output in the console.
+Expand the following collapsible section for example code. To try it out, create a demo class named `zcl_some_class` and paste the code into it. After activation, choose *F9* in ADT to execute the class. The example is set up to display output in the console.
 
 <details>
-  <summary>Expand to view the code</summary>
+  <summary>🟢 Click to expand for example code</summary>
   <!-- -->
 
 

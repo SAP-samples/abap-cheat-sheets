@@ -388,7 +388,7 @@ After the import of the repository, proceed as follows:
 
 <br>
 <details>
-  <summary>Expand to see explanations of the executable example</summary>
+  <summary>🟢 Click to expand for more information</summary>
   <!-- -->
   <br>
 The example demonstrates the SAP LUW using dynpros and bundling techniques with update function modules and subroutines. In the dynpros, you can select various options that determine how the program runs. It covers the following aspects:
