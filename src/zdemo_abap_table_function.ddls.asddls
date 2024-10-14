@@ -8,8 +8,8 @@ define table function ZDEMO_ABAP_TABLE_FUNCTION
     carrier_id      : abap.char(3);
     carrier_name    : abap.char(20);
     connections     : abap.string;
-    avg_flight_time : abap.dec( 10, 2 );
-    avg_distance    : abap.dec( 10, 2 );
+    avg_flight_time : abap.decfloat34;
+    avg_distance    : abap.decfloat34;
   }
   implemented by method
     zcl_demo_abap_amdp=>flight_analysis;
