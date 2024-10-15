@@ -57,6 +57,7 @@
   - [Excursions](#excursions)
     - [Improving Read Performance with Secondary Table Keys](#improving-read-performance-with-secondary-table-keys)
     - [Example: Exploring Read Access Performance with Internal Tables](#example-exploring-read-access-performance-with-internal-tables)
+    - [Generic Table Types with Formal Parameters of Methods and Field Symbols](#generic-table-types-with-formal-parameters-of-methods-and-field-symbols)
     - [Searching and Replacing Substrings in Internal Tables with Character-Like Data Types](#searching-and-replacing-substrings-in-internal-tables-with-character-like-data-types)
     - [Ranges Tables](#ranges-tables)
     - [Comparing Content of Compatible Internal Tables](#comparing-content-of-compatible-internal-tables)
@@ -2723,6 +2724,58 @@ DATA(itab) = VALUE string_table( ( `a` ) ( `b` ) ( `c` ) ( `d` ) ( `e` ) ).
 
 "5
 DATA(number_of_lines) = lines( itab ).
+
+"Excursion: Finding out the number of lines in a table by specifying concrete
+"component values, e.g. you want to find out how many lines exist in the table 
+"that have the value 1 for comp2
+TYPES: BEGIN OF struct,
+          comp1 TYPE c LENGTH 3,
+          comp2 TYPE i,
+        END OF struct,
+        tab_type TYPE TABLE OF struct WITH EMPTY KEY.
+
+DATA(it) = VALUE tab_type( ( comp1 = 'a' comp2 = 1  )
+                           ( comp1 = 'b' comp2 = 1  )
+                           ( comp1 = 'c' comp2 = 1  )
+                           ( comp1 = 'd' comp2 = 2  )
+                           ( comp1 = 'e' comp2 = 3  )
+                           ( comp1 = 'f' comp2 = 4  )
+                           ( comp1 = 'g' comp2 = 5  ) ).
+
+"7
+DATA(line_num) = lines( it ).
+
+"Finding out the number of lines in a table by component value, e.g.
+"using constructor expressions and specifying a WHERE clause.
+"The example creates an new internal table inline using VALUE and a FOR loop,
+"specified with a WHERE clause. The lines function is applied to the
+"table created inline.
+"3
+DATA(line_num_filtered1) = lines( VALUE tab_type( FOR wa IN it WHERE ( comp2 = 1 ) ( wa ) ) ).
+
+"Using the REDUCE operator
+"The example adds 1 to the resulting integer if the comp2 value of the iterated line is greater than 1.
+"The lines function is not relevant in the example.
+"4
+DATA(line_num_filtered2) = REDUCE i( INIT var = 0
+                                     FOR <line> IN it
+                                     WHERE ( comp2 > 1 )
+                                     NEXT var += 1 ).
+
+"Using the FILTER operator
+"Note: The source table must have at least one sorted key or a hash key for accessing.
+"If the table does not have such a primary table key, a secondary table key must be available.
+TYPES: tab_type_sorted TYPE TABLE OF struct with NON-UNIQUE SORTED KEY sec_key COMPONENTS comp2.
+DATA it_sorted type tab_type_sorted.
+it_sorted = it.
+
+"The example creates an new internal table inline using FILTER,
+"specified with a WHERE clause. The lines function is applied to the
+"table created inline.
+"3
+DATA(line_num_filtered3) = lines( FILTER #( it_sorted USING KEY sec_key WHERE comp2 = 1 ) ).
+"4
+DATA(line_num_filtered4) = lines( FILTER #( it_sorted USING KEY sec_key WHERE comp2 > 1 ) ).
 ```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
@@ -3317,6 +3370,7 @@ SELECT SINGLE comp1, comp2, comp3 FROM @itab2 AS it WHERE comp3 = sstring`ABAP` 
 -   Explicit specification is the recommended way because it is
     easier to understand and can prevent unwanted sorting results,
     especially with tables with standard key.
+-   You can also sort dynamically. For more information, refer to the [Dynamic Programming](06_Dynamic_Programming.md) cheat sheet.
 
 
 <table>
@@ -4500,6 +4554,101 @@ ENDCLASS.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
+### Generic Table Types with Formal Parameters of Methods and Field Symbols
+
+
+- [Formal parameters](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenformal_parameter_glosry.htm) of methods or [field symbols](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenfield_symbol_glosry.htm) can be specified with generic types.
+- At runtime, the actual data type is copied from the assigned [actual parameter](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenactual_parameter_glosry.htm) or memory area, i.e. they receive the complete data type only when an actual parameter is passed or a memory area is assigned.
+- Among them, there are generic table types. For more information, refer to the [Data Types and Objects](16_Data_Types_and_Objects.md) cheat sheet and the [documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbuilt_in_types_generic.htm).
+- The following example mainly demonstrates formal parameters of methods that are typed with generic table types. The method calls and the tables passed are only possible if the generic types fits. For example, you cannot pass a hashed table to a method whose importing parameter is typed with the generic type `INDEX TABLE`. Invalid method calls and table passing are commented out.
+
+```abap
+CLASS zcl_some_class DEFINITION
+      PUBLIC
+      FINAL
+      CREATE PUBLIC .
+
+  PUBLIC SECTION.
+    INTERFACES if_oo_adt_classrun.
+    CLASS-METHODS process_any_table IMPORTING itab TYPE ANY TABLE.
+    CLASS-METHODS process_standard_tables1 IMPORTING itab TYPE STANDARD TABLE.
+    CLASS-METHODS process_standard_tables2 IMPORTING itab TYPE TABLE.
+    CLASS-METHODS process_sorted_tables IMPORTING itab TYPE SORTED TABLE.
+    CLASS-METHODS process_hashed_tables IMPORTING itab TYPE HASHED TABLE.
+    CLASS-METHODS process_index_tables IMPORTING itab TYPE INDEX TABLE.
+
+ENDCLASS.
+
+CLASS zcl_some_class IMPLEMENTATION.
+  METHOD if_oo_adt_classrun~main.
+
+    DATA standard_tab TYPE TABLE OF string WITH EMPTY KEY.
+    DATA sorted_tab TYPE SORTED TABLE OF string WITH NON-UNIQUE KEY table_line.
+    DATA hashed_tab TYPE HASHED TABLE OF string WITH UNIQUE KEY table_line.
+
+    "ANY TABLE
+    process_any_table( standard_tab ).
+    process_any_table( sorted_tab ).
+    process_any_table( hashed_tab ).
+
+    "(STANDARD) TABLE
+    process_standard_tables1( standard_tab ).
+    "process_standard_tables1( sorted_tab ).
+    "process_standard_tables1( hashed_tab ).
+    process_standard_tables2( standard_tab ).
+    "process_standard_tables2( sorted_tab ).
+    "process_standard_tables2( hashed_tab ).
+
+    "SORTED TABLE
+    "process_sorted_tables( standard_tab ).
+    process_sorted_tables( sorted_tab ).
+    "process_sorted_tables( hashed_tab ).
+
+    "HASHED TABLE
+    "process_hashed_tables( standard_tab ).
+    "process_hashed_tables( sorted_tab ).
+    process_hashed_tables( hashed_tab ).
+
+    "INDEX TABLE
+    process_index_tables( standard_tab ).
+    process_index_tables( sorted_tab ).
+    "process_index_tables( hashed_tab ).
+
+
+    "Note: Field symbols can also be typed with generic types.
+    FIELD-SYMBOLS <fs_std_table> TYPE table.
+    ASSIGN standard_tab TO <fs_std_table>.
+    "ASSIGN sorted_tab TO <fs_std_table>.
+    "ASSIGN hashed_tab TO <fs_std_table>.
+
+    FIELD-SYMBOLS <fs_index_table> TYPE INDEX TABLE.
+    ASSIGN standard_tab TO <fs_index_table>.
+    ASSIGN sorted_tab TO <fs_index_table>.
+    "ASSIGN hashed_tab TO <fs_index_table>.
+
+  ENDMETHOD.
+  METHOD process_any_table.
+  ENDMETHOD.
+
+  METHOD process_hashed_tables.
+  ENDMETHOD.
+
+  METHOD process_index_tables.
+  ENDMETHOD.
+
+  METHOD process_sorted_tables.
+  ENDMETHOD.
+
+  METHOD process_standard_tables1.
+  ENDMETHOD.
+
+  METHOD process_standard_tables2.
+  ENDMETHOD.
+
+ENDCLASS.
+```
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ### Searching and Replacing Substrings in Internal Tables with Character-Like Data Types
 

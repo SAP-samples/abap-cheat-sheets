@@ -488,12 +488,16 @@ fixed-length string does not include them.
 Syntax examples:
 ``` abap
 "strlen
-DATA(len_c)   = strlen( 'abc   ' ). "3
-DATA(len_str) = strlen( `abc   ` ). "6
+DATA(len_c_a)   = strlen( 'abc   ' ).    "3
+DATA(len_c_b)   = strlen( '   abc   ' ). "6
+DATA(len_str_a) = strlen( `abc   ` ).    "6
+DATA(len_str_b) = strlen( `   abc   ` ). "9
 
 "numofchar
-len_c   = numofchar( 'abc   ' ). "3
-len_str = numofchar( `abc   ` ). "3
+len_c_a   = numofchar( 'abc   ' ).    "3
+len_c_b   = numofchar( '   abc   ' ). "6
+len_str_a = numofchar( `abc   ` ).    "3
+len_str_a = numofchar( `   abc   ` ). "6
 
 DATA(xstr) = CONV xstring( `480065006C006C006F00200077006F0072006C0064002100` ).
 DATA(len_xstr) = xstrlen( xstr ). "24

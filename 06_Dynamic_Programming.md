@@ -1580,14 +1580,23 @@ itab_ref = VALUE #( ( NEW demo_struct( col1 = 1 col2 = `aaa` col3 = `zzz` ) ) ).
 "- Many of the following statements provide similar additions offering dynamic
 "  specifications, such as USING KEY and dynamic component name specifications.
 
-"------- SORT ------
+"----------------------------------------------------------
+"------------------------ SORT (1) ------------------------
+"----------------------------------------------------------
+
+"Note: See more dynamic specifications with SORT statements
+"further down.
+
 "Named data object specified within parenteses
 DATA(field_name) = 'COL1'.
 SORT itab_ek BY (field_name) DESCENDING.
 "Unnamed data object specified within parenteses
 SORT itab_ek BY ('COL2') ASCENDING.
 
-"------- READ TABLE ------
+"-------------------------------------------------------------
+"------------------------ READ TABLE  ------------------------
+"-------------------------------------------------------------
+
 "Reading by specifying keys dynamically
 "Implicitly specifying the table key values in a work area (USING KEY addition)
 DATA(wa_read) = VALUE demo_struct( col2 = `aaa` ).
@@ -1626,7 +1635,10 @@ IF sy-subrc <> 0.
   ...
 ENDIF.
 
-"------- Table expressions ------
+"-------------------------------------------------------------
+"------------------------ Table expressions ------------------
+"-------------------------------------------------------------
+
 "Similar to READ TABLE statements, you can specify table lines with 3 alternatives:
 "index read, read using free key, table key
 "Also there, dynamic specifications are possible regarding the key specifications.
@@ -1652,7 +1664,10 @@ DATA(wa_te4) = itab[ KEY ('PRIMARY_KEY') COMPONENTS ('COL1') = 1 ].
 itab[ 1 ]-('COL2') = `jkl`.
 itab_ref[ 1 ]->('COL2') = `mno`.
 
-"------- LOOP AT ------
+"--------------------------------------------------------
+"------------------------ LOOP AT -----------------------
+"--------------------------------------------------------
+
 "USING KEY addition: Overriding the standard order determined by the table category
 LOOP AT itab REFERENCE INTO DATA(ref) USING KEY ('SK').
   ...
@@ -1676,7 +1691,10 @@ LOOP AT itab REFERENCE INTO ref WHERE (cond_loop).
   ...
 ENDLOOP.
 
-"------- INSERT ------
+"--------------------------------------------------------
+"------------------------ INSERT ------------------------
+"--------------------------------------------------------
+
 "The USING KEY addition (which accepts a dynamic specification) affects the order in which lines are inserted.
 
 "Result of the following example when using the ...
@@ -1704,7 +1722,10 @@ LOOP AT itab INTO DATA(wa_pk) USING KEY ('PRIMARY_KEY').
   APPEND wa_pk TO it_primekey_idx.
 ENDLOOP.
 
-"------- MODIFY ------
+"--------------------------------------------------------
+"------------------------ MODIFY ------------------------
+"--------------------------------------------------------
+
 "In the following example, a line is modified based on a work area and a table key.
 "The component col1 is left out from the work area intentionally.
 "If the primary table key was used, the value of sy-subrc would be 4, and no modification was done.
@@ -1723,7 +1744,10 @@ MODIFY itab INDEX 2 USING KEY ('SK') FROM VALUE #( col3 = `ttt` ) TRANSPORTING (
 DATA(cond_mod) = `COL1 < 3`.
 MODIFY itab FROM VALUE #( col3 = `sss` ) TRANSPORTING ('COL3') WHERE (cond_mod).
 
-"------- DELETE ------
+"--------------------------------------------------------
+"------------------------ DELETE ------------------------
+"--------------------------------------------------------
+
 "A single line or multipled lines can be deleted.
 "Note that DELETE ADJACENT DUPLICATES statements can also be specified using
 "dynamic parts.
@@ -1746,6 +1770,87 @@ DATA(condition_tab) = VALUE string_table( ( `COL1 < 3` )
                                           ( `OR` )
                                           ( `COL3 = ``www``` ) ).
 DELETE itab WHERE (condition_tab).
+
+"--------------------------------------------------------
+"------------------------ SORT (2) ------------------------
+"--------------------------------------------------------
+
+"Sorting by dynamically specified components in a sort table, i. e.an
+"internal table of type abap_sortorder_tab.
+"Notes:
+"- Each line of this sort table specifies a component of the sort key.
+"- If this table is initial, there is no sorting.
+"- The sort priority is based on the order of the lines in the sort table.
+
+TYPES: BEGIN OF struct,
+          comp1 TYPE i,
+          comp2 TYPE string,
+          comp3 TYPE c LENGTH 3,
+        END OF struct.
+
+DATA it TYPE TABLE OF struct WITH EMPTY KEY.
+
+it = VALUE #( ( comp1 = 1 comp2 = `B` comp3 = 'a' )
+              ( comp1 = 1 comp2 = `A` comp3 = 'b' )
+              ( comp1 = 2 comp2 = `D` comp3 = 'c' )
+              ( comp1 = 2 comp2 = `C` comp3 = 'd' )
+              ( comp1 = 3 comp2 = `F` comp3 = 'e' )
+              ( comp1 = 3 comp2 = `E` comp3 = 'f' ) ).
+
+DATA(it_original) = it.
+
+"Note: The line type is abap_sortorder.
+DATA(sort) = VALUE abap_sortorder_tab( ).
+
+"No sorting because the sort table is initial.
+SORT it BY (sort).
+
+it = it_original.
+"Note: Ascending is the default sort order. The following example flags
+"the descending sort order explicitly.
+sort = VALUE abap_sortorder_tab( ( name = `COMP1` descending = 'X' ) ).
+SORT it BY (sort).
+
+it = it_original.
+
+sort = VALUE abap_sortorder_tab( ( name = `COMP1` descending = '' )
+                                  ( name = `COMP2` descending = 'X' ) ).
+SORT it BY (sort).
+
+it = it_original.
+
+"Sort priority based on the order of lines in the sort table
+"In this example, the values of comp3 are set up so that a clear
+"sort order is determined. Since the component is specified first in the
+"sort table, this sorting has priority. Note the values of comp2 in the
+"result table.
+sort = VALUE abap_sortorder_tab( ( name = `COMP3` descending = 'X' )
+                                  ( name = `COMP2` descending = 'X' ) ).
+SORT it BY (sort).
+
+"Specifying an invalid component name raises an exception
+sort = VALUE abap_sortorder_tab( ( name = `XYZ` descending = 'X' ) ).
+
+TRY.
+    SORT it BY (sort).
+  CATCH cx_sy_dyn_table_ill_comp_val INTO DATA(error).
+ENDTRY.
+ASSERT error IS NOT INITIAL.
+
+it = it_original.
+"Specifying an expression/functional method call whose result is a sort
+"table of type abap_sortorder_tab
+"In this case, BY is followed by the expression/functional method call,
+"not enclosed in parentheses.
+
+"The example shows expressions with sort tables created inline
+SORT it BY VALUE abap_sortorder_tab( ( name = `COMP1` descending = 'X' ) ).
+
+it = it_original.
+
+DATA(comp_names) = VALUE string_table( ( `comp1` ) ( `comp2` ) ).
+
+SORT it BY VALUE abap_sortorder_tab( FOR wa IN comp_names ( name = condense( to_upper( wa ) ) ) ).
 ```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
