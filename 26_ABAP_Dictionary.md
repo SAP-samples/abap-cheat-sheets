@@ -6,6 +6,7 @@
   - [Introduction](#introduction)
   - [Data Types in DDIC](#data-types-in-ddic)
     - [Built-in ABAP Dictionary Types](#built-in-abap-dictionary-types)
+      - [Typed Literals](#typed-literals)
     - [DDIC Data Types](#ddic-data-types)
       - [DDIC Data Elements](#ddic-data-elements)
       - [DDIC Domains](#ddic-domains)
@@ -94,7 +95,9 @@ DDIC supports the following data types:
 > **💡 Note**<br>
 > There are restrictions when using strings in ABAP CDS and ABAP SQL. For more information, see [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenddic_character_byte_types.htm).
 
-Typed literals:
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+#### Typed Literals
 - Built-in dictionary types cannot be used directly in ABAP, e.g. for typing local data objects. 
 - However, the types can be used in ABAP SQL, and also ABAP CDS, in the context of [typed literals](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentyped_literal_glosry.htm). Note that some special types cannot be used in this context.
 - Advantages of typed literals over untyped literals:
@@ -310,7 +313,7 @@ The following example creates two DDIC structures exploring several options:
       - `bt_elem5` represents a type that requires additional specifications. The type alone is not possible since it is a currency field that must relate to a currency code field. The annotation can be added using an ADT quick fix.
       - `dtel_elem*` represents components with elementary types using data elements. The data elements used are all released for ABAP for Cloud Development.
       - `dref*` represents components with data references. The example covers references to built-in types, data elements and the generic type data. 
-      - `oref*`/`iref` represents components with object/interface references. Random released classes/interfaces are used.
+      - `oref*`/`iref` represents components with object/interface references. Random released classes/interfaces and the generic type `object` are used.
       - `struc*` represent components with structured types. The example does not cover DDIC structures, but DDIC database tables. Tables from the ABAP cheat sheet repository are used. Two structures represent include structures. One of them is specified with suffix. The following would not be possible in the example case since both tables contain some identically named components that would prevent an activation:
         ```abap
         struc2: include zdemo_abap_carr;
@@ -479,7 +482,7 @@ The following example creates three DDIC table types exploring several options:
   - Some field types, such as `curr` (currency) or `quan` (quantity), require specific specifications and must have reference tables specified.
   - For table field typing, you can use built-in types and data elements.
   - You can specify non-nested structures to be included in tables to avoid redundant structure definitions.
-- Specific technical and semantic properties for DDIC database tables can or must be specified. More information is available [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenddic_database_tables_techspec.htm). Among the specifications are the following. They are added by default when creating a new DDIC database table.Certain specifications are added by default when creating a new DDIC database table. 
+- Specific technical and semantic properties for DDIC database tables can or must be specified. More information is available [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenddic_database_tables_techspec.htm). Among the specifications are the following. They are added by default when creating a new DDIC database table. Certain specifications are added by default when creating a new DDIC database table. 
 
   | Specification  | Purpose  |
   |---|---|

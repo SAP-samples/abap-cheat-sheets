@@ -2000,7 +2000,6 @@ ASSERT <b> = 'de'.
 "symbol is unassigned. In case of the first READ TABLE statement that does not
 "specify ELSE UNASSIGN, the field symbol remains assigned.
 
-DATA string_a TYPE string.
 FIELD-SYMBOLS <c> TYPE c2.
 DO 3 TIMES.
   READ TABLE it_casting ASSIGNING FIELD-SYMBOL(<d>) INDEX sy-index.
@@ -4560,7 +4559,7 @@ ENDCLASS.
 - [Formal parameters](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenformal_parameter_glosry.htm) of methods or [field symbols](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenfield_symbol_glosry.htm) can be specified with generic types.
 - At runtime, the actual data type is copied from the assigned [actual parameter](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenactual_parameter_glosry.htm) or memory area, i.e. they receive the complete data type only when an actual parameter is passed or a memory area is assigned.
 - Among them, there are generic table types. For more information, refer to the [Data Types and Objects](16_Data_Types_and_Objects.md) cheat sheet and the [documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbuilt_in_types_generic.htm).
-- The following example mainly demonstrates formal parameters of methods that are typed with generic table types. The method calls and the tables passed are only possible if the generic types fits. For example, you cannot pass a hashed table to a method whose importing parameter is typed with the generic type `INDEX TABLE`. Invalid method calls and table passing are commented out.
+- The following example mainly demonstrates formal parameters of methods that are typed with generic table types. The method calls and the tables passed are only possible if the generic types fit. For example, you cannot pass a hashed table to a method whose importing parameter is typed with the generic type `INDEX TABLE`. Invalid method calls and table passing are commented out.
 
 ```abap
 CLASS zcl_some_class DEFINITION

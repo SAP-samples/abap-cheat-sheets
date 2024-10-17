@@ -27,8 +27,8 @@
     - [Self-Reference me](#self-reference-me)
     - [Excursion: Example Class](#excursion-example-class)
   - [Inheritance](#inheritance)
-    - [Additions: ABSTRACT and FINAL](#additions-abstract-and-final)
-    - [Redefining Methods](#redefining-methods)
+    - [Inheritance-Related Syntax](#inheritance-related-syntax)
+    - [Excursion: Inheritance Example](#excursion-inheritance-example)
   - [Polymorphism and Casting (Upcast/Downcast)](#polymorphism-and-casting-upcastdowncast)
     - [Demonstrating Upcasts and Downcasts Using the RTTS Inheritance Tree](#demonstrating-upcasts-and-downcasts-using-the-rtts-inheritance-tree)
   - [Interfaces](#interfaces)
@@ -1672,59 +1672,921 @@ ENDCLASS.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-### Additions: ABSTRACT and FINAL
+### Inheritance-Related Syntax
 
--  Both classes and methods can be defined with the additions `ABSTRACT` and `FINAL`.
-- `FINAL` with ...:
-    - Classes: These classes cannot be inherited. All methods are automatically and implicitly `FINAL`. In this case, the addition `FINAL` cannot be used for methods.
-    - Methods: These methods cannot be redefined in subclasses.
-- `ABSTRACT` with ...:
-    - Classes: Defines abstract classes. You cannot create an instance of an abstract class. To use instance components of an abstract class, you must create an instance of a subclass of such classes.
-    - Methods: Defines abstract methods. The addition is only allowed in abstract classes (and not for private methods). These methods cannot be implemented in the implementation part of the class where they are declared. They must be redefined in subclasses. Note that you can also have non-abstract methods in abstract classes.
-- See [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapclass_options.htm) more information on class options.
+The table below includes selected syntax related to inheritance in class and method declarations.  
+
+> **💡 Note**<br>
+> - Some of the syntax options have already been mentioned previously.
+> - Here, the emphasis is on global classes.
+> - The snippets provided do not represent all possible syntax combinations. For the complete picture, refer to the ABAP Keyword Documentation. Additional syntax options are available in the context of friendship (`GLOBAL FRIENDS/FRIENDS`), testing (`FOR TESTING`), [RAP](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenarap_glosry.htm) (`FOR BEHAVIOR OF`; to declare [ABAP behavior pools](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbehavior_pool_glosry.htm)), and more.
+> - The order of the additions can vary.
+
+
+**Declarations in Classes**
+
+<table>
+
+<tr>
+<td> Syntax Example </td> <td> Details </td>
+</tr>
+
+<tr>
+<td> 
 
 ``` abap
-"Declaration of an abstract method of an abstract superclass
-"and its implementation in a concrete subclass.
-CLASS cls1 DEFINITION ABSTRACT.
+CLASS zcl_demo DEFINITION     
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
+``` 
+
+ </td>
+<td>
+
+<br>
+
+- `... PUBLIC ...`: Specifies that the class is a global class, available globally within the class library. Most of the subsequent snippets use the `PUBLIC` addition as the focus is on global classes.
+- `... FINAL ...`: Specifies that the class cannot have any subclasses, effectively prohibiting inheritance. This addition seals off a branch of the inheritance tree. In final classes, all methods are automatically final.
+- `... CREATE PUBLIC ...`: Specifies that the class can be instantiated wherever it is visible.
+
+</td>
+</tr>
+
+<tr>
+<td> 
+
+``` abap
+CLASS zcl_demo DEFINITION   
+  PUBLIC
+  CREATE PUBLIC .
+``` 
+
+ </td>
+<td>
+
+<br>
+
+This class permits inheritance because it does not include the `FINAL` addition. Subclasses can be derived from this superclass.
+
+</td>
+</tr>
+
+<tr>
+<td> 
+
+``` abap
+CLASS zcl_demo DEFINITION    
+  PUBLIC
+  CREATE PROTECTED .
+``` 
+
+ </td>
+<td>
+
+<br>
+
+- This class permits inheritance because it does not include the `FINAL` addition. 
+- `... CREATE PROTECTED ...`: Specifies that the class can only be instantiated within its own methods, its subclasses' methods, or those of its friends.
+
+</td>
+</tr>
+
+<tr>
+<td> 
+
+``` abap
+CLASS zcl_demo DEFINITION    
+  FINAL
+  CREATE PRIVATE .
+``` 
+
+ </td>
+<td>
+
+<br>
+
+- This class does not permit inheritance because it includes the `FINAL` addition.
+- `... CREATE PRIVATE ...`: Specifies that the class can only be instantiated within its own methods or those of its friends. It cannot be instantiated as a component of (not befriended) subclasses.
+- Consider the implications of defining a superclass in this manner:
+  - External users cannot instantiate a subclass.
+  - If inheritance is allowed, subclasses cannot instantiate themselves though. This is because they cannot access the superclass's instance constructor, preventing the creation of subclass instances. However, this can be altered if the subclass is a friend of the superclass.
+  - Similarly, subclass objects cannot be created within their superclass if declared using `CREATE PROTECTED` or `CREATE PRIVATE`. This is only possible if the superclasses are friends with their subclasses.
+- The `FINAL` addition can be beneficial with `CREATE PRIVATE` to prevent the derivation of subclasses.
+- Note: In each class, the `CREATE PUBLIC`, `CREATE PROTECTED`, and `CREATE PRIVATE` additions of the `CLASS` statement control who can create an instance of the class and who can call its instance constructor.
+
+
+</td>
+</tr>
+
+<tr>
+<td> 
+
+``` abap
+CLASS zcl_demo DEFINITION     
+  PUBLIC
+  ABSTRACT
+  CREATE ...
+``` 
+
+ </td>
+<td>
+
+<br>
+
+- `... ABSTRACT ...`:
+  - Defines abstract classes
+  - Abstract classes cannot be instantiated.
+  - To use the instance components of an abstract class, you can instantiate a subclass of that class.
+  - Abstract classes may contain both abstract and concrete instance methods. However, abstract methods are not implemented within abstract classes.
+  - By adding the `FINAL` addition, abstract classes can be made final. In these cases, only static components are usable. While instance components may be declared, they are not usable.
+
+</td>
+</tr>
+
+<tr>
+<td> 
+
+``` abap
+CLASS zcl_sub DEFINITION       
+  INHERITING FROM zcl_demo       
+  ...
+``` 
+
+ </td>
+<td>
+
+<br>
+
+- `... INHERITING FROM ...`: 
+  - Can be specified in subclasses inheriting from visible superclasses  
+  - If not specified, the class implicitly inherits from the predefined, empty, abstract class `OBJECT` (the root object).
+  - A subclass inherits all components of the superclasses. 
+    - For example, if an internal table `itab` is declared as a static component in superclass `zcl_super`, subclasses can refer to `itab` directly, not necessarily by specifying the class name as with `zcl_super=>itab` (which is also possible). 
+    - If the superclass defines a type, subclasses cannot define a type with the same name.
+  - The visibility of the components remains unchanged. 
+  - Only the public and protected components of the superclass are visible in the subclass.
+  - Private components of superclasses are inaccessible in subclasses.
+  - The properties of inherited components are immutable. However, subclasses can declare additional components (with unique names) and redefine inherited methods without altering the interface.
+  - Upon instantiation of a subclass, all superclasses are also instantiated, ensuring the initialization of superclass attributes through calling superclass constructors.
+
+</td>
+</tr>
+
+
+</table>
+
+
+**Declarations in Instance Methods**
+
+<table>
+
+<tr>
+<td> Syntax Example </td> <td> Details </td>
+</tr>
+
+<tr>
+<td> 
+
+``` abap
+METHODS some_meth FINAL ...    
+``` 
+
+ </td>
+<td>
+
+<br>
+
+- Declares final methods
+- These methods cannot be overridden in subclasses.
+- Note: In final classes, all methods are inherently final. Therefore, the `FINAL` addition cannot be specified. Instance constructors are always final, but the use of the `FINAL` addition is optional.
+
+</td>
+</tr>
+
+<tr>
+<td> 
+
+``` abap
+METHODS some_meth ABSTRACT ...    
+``` 
+
+ </td>
+<td>
+
+<br>
+
+- Declares abstract methods
+- Can only be used in abstract classes
+- You can implement these methods in a subclass (by redefining using the `REDEFINITION`addition), not in the abstract class itself. When declared, there is no implementation part in the abstract class.  
+- All instance methods can be declared as abstract, except for instance constructors.
+- Private methods cannot be redefined and can therefore not be declared as abstract.
+- If abstract methods are declared in classes that are both abstract and final, they cannot be implemented. Therefore, the methods are not usable.
+- In interfaces, methods are implicitly abstract as interfaces do not contain method implementations.
+
+</td>
+</tr>
+
+
+<tr>
+<td> 
+
+``` abap
+"Instance constructor
+METHODS constructor. 
+"Static constructor
+CLASS-METHODS class_constructor.
+``` 
+
+ </td>
+<td>
+
+<br>
+
+- Instance constructors (`constructor`):
+  - Subclasses cannot redefine the instance constructors of superclasses.
+  - These constructors are automatically invoked when creating an object, not explicitly called.
+  - In inheritance, a subclass's instance constructor must call the instance constructors of all its superclasses. This requires calling `super->constructor( ).` to call the instance constructor of the direct superclass, even if the superclass does not explicitly declare the instance constructor. Note that any non-optional importing parameters must be filled.
+- Static constructors (`class_constructor`):
+  - These constructors are implicitly available in all classes, whether declared or not.
+  - They are called when creating a class instance for the first time in an ABAP program or when addressing a static component, excluding types and constants.
+  - In inheritance, the static constructors of all classes up the inheritance tree are called first.
+  - A static constructor can only be called once during program runtime.
+
+
+</td>
+</tr>
+
+
+<tr>
+<td> 
+
+``` abap
+METHODS some_meth REDEFINITION.           
+METHODS another_meth FINAL REDEFINITION.      
+``` 
+
+ </td>
+<td>
+
+<br>
+
+- Specified in subclasses to redefine inherited methods from superclasses.
+- The method's implementation is expected to reimplement the inherited method. However, the subclass's new implementation conceals the superclass's implementation.
+- The redefined method accesses the private components of its class, not any similarly named private components in the superclass.
+- The superclass's implementation can be called in the redefined method using the [pseudo reference](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenpseudo_reference_glosry.htm "Glossary Entry") `super->meth( ).`. Note that non-optional importing parameters must be filled.
+- The redefinition is valid for subclasses until the method is redefined again.
+- The `FINAL` addition can be specified, preventing further redefinition of the method in other subclasses.
+
+</td>
+</tr>
+
+</table>
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+
+### Excursion: Inheritance Example
+
+The following example explores inheritance and demonstrates a selection of the inheritance related-syntax described above. The inheritance tree consists of four example classes. The base class includes the implementation of the classrun interface. The example is designed to output information to the console. So, you can execute this class using F9 in ADT.
+The purpose of the example and information output is to visualize and explore concepts and syntax related to inheritance, checking out when and how methods are called, redefining methods, abstract and final classes and methods.
+
+The inheritance tree of the example classes is as follows: 
+
+```
+ZCL_DEMO_ABAP_OO_INHERITANCE_1
+  |
+  |--ZCL_DEMO_ABAP_OO_INHERITANCE_2
+  |   |
+  |   |--ZCL_DEMO_ABAP_OO_INHERITANCE_3
+  |   |   |
+  |   |   |--ZCL_DEMO_ABAP_OO_INHERITANCE_4
+```
+
+Notes on the example: 
+- All classes include instance and static constructor declarations.
+- Many instance methods are declared in all classes to demonstrate inheritance. However, there is no meaningful implementation in these methods in all classes. All instance methods include the same code. 
+  - The purpose of the code in the method implementations is to add a line to a log table (which is output to the console) with various pieces of information: 
+      - Name of the method that is called 
+      - In which class the method is implemented when it is called
+      - From which class the method is called
+      - Whether the method is inherited, redefined, final, or a static method
+      - Visibility of the method
+      - Time stamp of when the method is called 
+  - The information retrieval is implemented in a static method in the `ZCL_DEMO_ABAP_OO_INHERITANCE_1` class by getting callstack information to determine which method in which class was called by whom. Based on the retrieved class and method names, RTTI is used to get detailed information about the methods.
+- `ZCL_DEMO_ABAP_OO_INHERITANCE_1`
+  - Allows inheritance and represents the root class of the inheritance hierarchy
+  - Declares several instance methods in each visibility section
+    - One of them is declared with `FINAL`, so no redefinition is possible in subclasses.
+  - Includes the implementation of the classrun interface meaning this class is executable using F9 in ADT.
+    - The class includes an internal table that represents a log table and that is output to the console as described above.    
+- `ZCL_DEMO_ABAP_OO_INHERITANCE_2`
+  - Inherits from `ZCL_DEMO_ABAP_OO_INHERITANCE_1` and allows inheritance itself 
+  - Specifies `CREATE PROTECTED`, so the class can only be instantiated in methods of its subclasses, of the class itself, and of its friends   
+    - You may want to try to create an instance of the class in `ZCL_DEMO_ABAP_OO_INHERITANCE_1` like this `DATA(oref) = NEW zcl_demo_abap_oo_inheritance_1( ).` It is not possible. For example, in `ZCL_DEMO_ABAP_OO_INHERITANCE_3` and `ZCL_DEMO_ABAP_OO_INHERITANCE_4`, it is possible.
+  - Declares several instance methods
+    - One of them is declared with `FINAL`, so no redefinition is possible in subclasses
+    - Instance methods of the direct superclass are redefined
+      - Note: Private methods of superclasses cannot be redefined. You cannot specify abstract methods, which is only possible in abstract classes. Abstract methods are generally not possible in the private visibility section since they cannot be redefined.
+   - Declares a static method to delegate method calls of this class
+     - The implementation includes the creation of an instance of the class and instance method calls (including redefined methods).
+     - It is called in the classrun implementation in `ZCL_DEMO_ABAP_OO_INHERITANCE_1`.
+- `ZCL_DEMO_ABAP_OO_INHERITANCE_3`
+  - Inherits from `ZCL_DEMO_ABAP_OO_INHERITANCE_2` and thus from `ZCL_DEMO_ABAP_OO_INHERITANCE_1`     
+  - Declared as abstract class using the `ABSTRACT` addition, so no instances can be created from the class
+  - Declares several instance methods
+    - Two abstract methods are included using the `ABSTRACT` addition, so they can only be implemented in subclasses (there is no implementation of these methods in the class) 
+    - Instance methods of the direct superclass are redefined as well as methods from two levels up the inheritance hierarchy
+    - One redefined method specifies `FINAL REDEFINITION`, so a further redefinition in subclasses is not possible.
+- `ZCL_DEMO_ABAP_OO_INHERITANCE_4`
+  - Inherits from `ZCL_DEMO_ABAP_OO_INHERITANCE_3` and thus from `ZCL_DEMO_ABAP_OO_INHERITANCE_2` and `ZCL_DEMO_ABAP_OO_INHERITANCE_1`
+  - Specifies `FINAL` and so does not allow inheritance     
+  - Declares several instance methods
+    - Instance methods of the direct superclass, which is an abstract class, are redefined. It is mandatory to redefine the abstract methods. 
+    - Other instance methods from further levels up the inheritance hierarchy are redefined (except one method that is declared with `FINAL REDEFINITION` in `ZCL_DEMO_ABAP_OO_INHERITANCE_3`)
+    - For demonstration purposes, instance methods implemented in the abstract direct superclass (instances of abstract classes cannot be created) are called in the respective redefined methods by refering to the direct superclass using the syntax `super->...`.
+  - Declares a static method to delegate method calls of this class
+
+
+Expand the following collapsible section for example classes. To try them out, create four demo classes named 
+
+- `ZCL_DEMO_ABAP_OO_INHERITANCE_1` 
+- `ZCL_DEMO_ABAP_OO_INHERITANCE_2`
+- `ZCL_DEMO_ABAP_OO_INHERITANCE_3`
+- `ZCL_DEMO_ABAP_OO_INHERITANCE_4`
+
+and paste the code into it. After activation, choose *F9* in ADT to execute the class `ZCL_DEMO_ABAP_OO_INHERITANCE_1`. The example is set up to display output in the console.
+
+<details>
+  <summary>🟢 Click to expand for example code</summary>
+  <!-- -->
+
+<br>
+
+Class `ZCL_DEMO_ABAP_OO_INHERITANCE_1` 
+
+```abap
+CLASS zcl_demo_abap_oo_inheritance_1 DEFINITION
+  PUBLIC
+  CREATE PUBLIC .
+
+  PUBLIC SECTION.
+    "Classrun interface
+    INTERFACES if_oo_adt_classrun.
+
+    "Instance/static constructor declarations
+    METHODS constructor.
+    CLASS-METHODS class_constructor.
+
+    "Instance method declarations
+    METHODS meth_public_1.
+    "Final method
+    METHODS meth_public_1_final FINAL.
+
+    "Components used for logging information about method calls
+    TYPES: BEGIN OF s_log,
+             method            TYPE string,
+             implemented_where TYPE string,
+             called_from       TYPE syrepid,
+             is_inherited      TYPE abap_boolean,
+             is_redefined      TYPE abap_boolean,
+             is_final          TYPE abap_boolean,
+             visibility        TYPE abap_visibility,
+             is_static_method  TYPE abap_boolean,
+             called_at         TYPE utclong,
+           END OF s_log,
+           t_log TYPE TABLE OF s_log WITH EMPTY KEY.
+
+    CLASS-DATA log_tab TYPE t_log.
+    CLASS-METHODS get_method_info RETURNING VALUE(info) TYPE s_log.
+
   PROTECTED SECTION.
-    METHODS meth ABSTRACT.
+    METHODS meth_protected_1.
+
+  PRIVATE SECTION.
+    METHODS meth_private_1.
 ENDCLASS.
 
-CLASS cls2 DEFINITION INHERITING FROM cls1.
+
+
+CLASS zcl_demo_abap_oo_inheritance_1 IMPLEMENTATION.
+  METHOD if_oo_adt_classrun~main.
+
+    "----- First level in the inheritance hierarchy ----
+    "Creating an instance of the class
+    DATA(oref_super) = NEW zcl_demo_abap_oo_inheritance_1( ).
+
+    "Calling methods of the class
+    oref_super->meth_public_1( ).
+    oref_super->meth_public_1_final( ).
+    oref_super->meth_protected_1( ).
+    oref_super->meth_private_1( ).
+
+    "----- Second level in the inheritance hierarchy ----
+    "The instance creation and method calling is delegated to
+    "a static method in the class
+    zcl_demo_abap_oo_inheritance_2=>perform_meth_calls_2( ).
+
+    "----- Third level in the inheritance hierarchy ----
+    "Note: The class zcl_demo_abap_oo_inheritance_3 is abstract and contains
+    "both non-abstract and abstract instance methods. Instances of abstract
+    "classes cannot be created. So, the following statement is not possible.
+    "DATA(oref_3) = NEW zcl_demo_abap_oo_inheritance_3( ).
+
+    "Instance components of an abstract class can be accessed via its subclasses.
+    "zcl_demo_abap_oo_inheritance_4 inherits from zcl_demo_abap_oo_inheritance_3 and
+    "redefines methods of zcl_demo_abap_oo_inheritance_3. Both abstract methods (which
+    "are mandatory to implement) and non-abstract methods are redefined. To also access
+    "the method implementations of the non-abstract instance methods of
+    "zcl_demo_abap_oo_inheritance_3, the respective implementations of the redefined
+    "methods in zcl_demo_abap_oo_inheritance_4 include method calls to the direct
+    "superclass using the syntax super->meth( ).. The instance methods of
+    "zcl_demo_abap_oo_inheritance_3 are called in the context of the static method call
+    "via zcl_demo_abap_oo_inheritance_4 below.
+
+    "----- Fourth level in the inheritance hierarchy ----
+    "As above, the instance creation and method calling is delegated to
+    "a static method in the class. This method call includes method calls to
+    "non-abstract instance methods implemented in zcl_demo_abap_oo_inheritance_3.
+    zcl_demo_abap_oo_inheritance_4=>perform_meth_calls_4( ).
+
+    "Writing the log table to the console
+    out->write( data = log_tab name = `log_tab` ).
+
+    "Excursion: Using RTTI to retrieve the name of the superclass
+    "As this class starts an inheritance hierarchy, the superclass of this class
+    "is the root class OBJECT.
+    DATA(tdo_cl) = CAST cl_abap_classdescr( cl_abap_typedescr=>describe_by_name( 'ZCL_DEMO_ABAP_OO_INHERITANCE_1' ) ).
+    DATA(superclass) = tdo_cl->get_super_class_type( )->get_relative_name( ).
+    out->write( |\n\n| ).
+    out->write( data = superclass name = `superclass` ).
+
+  ENDMETHOD.
+
+  METHOD class_constructor.
+    INSERT VALUE #( called_at = utclong_current( ) ) INTO TABLE log_tab ASSIGNING FIELD-SYMBOL(<fs>).
+    <fs> = CORRESPONDING #( BASE ( <fs> ) get_method_info( ) EXCEPT called_at ).
+  ENDMETHOD.
+
+  METHOD constructor.
+    INSERT VALUE #( called_at = utclong_current( ) ) INTO TABLE log_tab ASSIGNING FIELD-SYMBOL(<fs>).
+    <fs> = CORRESPONDING #( BASE ( <fs> ) get_method_info( ) EXCEPT called_at ).
+  ENDMETHOD.
+
+  METHOD meth_private_1.
+    INSERT VALUE #( called_at = utclong_current( ) ) INTO TABLE log_tab ASSIGNING FIELD-SYMBOL(<fs>).
+    <fs> = CORRESPONDING #( BASE ( <fs> ) get_method_info( ) EXCEPT called_at ).
+  ENDMETHOD.
+
+  METHOD meth_protected_1.
+    INSERT VALUE #( called_at = utclong_current( ) ) INTO TABLE log_tab ASSIGNING FIELD-SYMBOL(<fs>).
+    <fs> = CORRESPONDING #( BASE ( <fs> ) get_method_info( ) EXCEPT called_at ).
+  ENDMETHOD.
+
+  METHOD meth_public_1.
+    INSERT VALUE #( called_at = utclong_current( ) ) INTO TABLE log_tab ASSIGNING FIELD-SYMBOL(<fs>).
+    <fs> = CORRESPONDING #( BASE ( <fs> ) get_method_info( ) EXCEPT called_at ).
+  ENDMETHOD.
+
+  METHOD meth_public_1_final.
+    INSERT VALUE #( called_at = utclong_current( ) ) INTO TABLE log_tab ASSIGNING FIELD-SYMBOL(<fs>).
+    <fs> = CORRESPONDING #( BASE ( <fs> ) get_method_info( ) EXCEPT called_at ).
+  ENDMETHOD.
+
+  METHOD get_method_info.
+    "This method retrieves callstack information to determine which method in which
+    "class was called by whom.
+    "Based on the retrieved class and method names, RTTI is used to get detailed
+    "information about methods (such as the visibility or whether the method is
+    "inherited, redefined, final, and a static method).
+
+    "Getting callstack information
+    DATA(call_stack_tab) = xco_cp=>current->call_stack->full( )->from->position( 2
+                            )->to->position( 2 )->as_text( xco_cp_call_stack=>format->adt( )
+                            )->get_lines( )->value.
+
+    IF lines( call_stack_tab ) < 2.
+      RETURN.
+    ENDIF.
+
+    LOOP AT call_stack_tab INTO DATA(wa) TO 2.
+      DATA(tabix) = sy-tabix.
+      SPLIT wa AT ` ` INTO TABLE DATA(entry).
+      DELETE entry WHERE table_line IS INITIAL.
+
+      DATA(class_name) = condense( val = entry[ 1 ] to = `` ).
+
+      IF tabix = 1.
+        info-implemented_where = class_name.
+
+        DATA(meth_name) = condense( val = to_upper( entry[ 2 ] ) to = `` ).
+        info-method = meth_name.
+
+        IF class_name IS NOT INITIAL AND meth_name IS NOT INITIAL.
+          DATA(tdo_cl) = CAST cl_abap_classdescr( cl_abap_typedescr=>describe_by_name( class_name ) ).
+          DATA(methods_cl) = tdo_cl->methods.
+          DATA(meth_info) = VALUE #( methods_cl[ name = meth_name ] OPTIONAL ).
+          IF meth_info IS NOT INITIAL.
+            info-is_inherited = meth_info-is_inherited.
+            info-is_redefined = meth_info-is_redefined.
+            info-is_final = meth_info-is_final.
+            info-visibility = meth_info-visibility.
+            info-is_static_method = meth_info-is_class.
+          ENDIF.
+        ENDIF.
+
+      ELSE.
+        info-called_from = class_name.
+      ENDIF.
+    ENDLOOP.
+
+  ENDMETHOD.
+
+ENDCLASS.
+```
+
+Class `ZCL_DEMO_ABAP_OO_INHERITANCE_2` 
+
+```abap
+CLASS zcl_demo_abap_oo_inheritance_2 DEFINITION
+  INHERITING FROM zcl_demo_abap_oo_inheritance_1
+  PUBLIC
+  CREATE PROTECTED .
+
+  PUBLIC SECTION.
+    "Instance/static constructor declarations
+    METHODS constructor.
+    CLASS-METHODS class_constructor.
+
+    "Instance method declarations
+    METHODS meth_public_2.
+    METHODS meth_public_2_final FINAL.
+
+    "Static method declaration for display purposes
+    CLASS-METHODS perform_meth_calls_2.
+
+    "Redefining method from the class one level up in the inheritance hierarchy
+    "(i.e. the direct superclass)
+    METHODS meth_public_1 REDEFINITION.
+
+    "Excursions:
+    "- Redefining the final public method of the superclass is not possible.
+    "- The same applies to constructors.
+    "- The following type has the same name as a type in the superclass. Since components
+    "  are inherited, the following declaration is not possible.
+    "TYPES t_log TYPE string_table.
+    "- Similary, the log table, which is a static component in the superclass, can be
+    "  referenced in the method implementations using 'log_table'. Using the class name
+    "  and => is also possible, but not required.
+    "INSERT VALUE #( ) INTO TABLE zcl_demo_abap_oo_inheritance_1=>log_tab.
+
   PROTECTED SECTION.
-    METHODS meth REDEFINITION.
+    "Instance method declaration
+    METHODS meth_protected_2.
+
+    "Redefining method from the class one level up in the inheritance hierarchy
+    "(i.e. the direct superclass)
+    METHODS meth_protected_1 REDEFINITION.
+
+  PRIVATE SECTION.
+    "Ecursion:
+    "- The following declarations are not possible.
+    "- Private methods cannot be redefined.
+    "METHODS meth_private_1 REDEFINITION.
+    "- Abstract methods can only be declared in abstract classes. And, since
+    "  private methods cannot be redefined, abstract private methods are not
+    "  possible.
+    "METHODS meth_private_2_abstract ABSTRACT.
 ENDCLASS.
 
-CLASS cls2 IMPLEMENTATION.
-  METHOD meth.
-    ...
+
+
+CLASS zcl_demo_abap_oo_inheritance_2 IMPLEMENTATION.
+  METHOD class_constructor.
+    INSERT VALUE #( called_at = utclong_current( ) ) INTO TABLE log_tab ASSIGNING FIELD-SYMBOL(<fs>).
+    <fs> = CORRESPONDING #( BASE ( <fs> ) get_method_info( ) EXCEPT called_at ).
+  ENDMETHOD.
+
+  METHOD constructor.
+    super->constructor( ).
+    INSERT VALUE #( called_at = utclong_current( ) ) INTO TABLE log_tab ASSIGNING FIELD-SYMBOL(<fs>).
+    <fs> = CORRESPONDING #( BASE ( <fs> ) get_method_info( ) EXCEPT called_at ).
+  ENDMETHOD.
+
+  METHOD meth_public_2.
+    "Method of this class
+    INSERT VALUE #( called_at = utclong_current( ) ) INTO TABLE log_tab ASSIGNING FIELD-SYMBOL(<fs>).
+    <fs> = CORRESPONDING #( BASE ( <fs> ) get_method_info( ) EXCEPT called_at ).
+  ENDMETHOD.
+
+  METHOD meth_public_2_final.
+    "Method of this class
+    INSERT VALUE #( called_at = utclong_current( ) ) INTO TABLE log_tab ASSIGNING FIELD-SYMBOL(<fs>).
+    <fs> = CORRESPONDING #( BASE ( <fs> ) get_method_info( ) EXCEPT called_at ).
+  ENDMETHOD.
+
+  METHOD meth_protected_2.
+    "Method of this class
+    INSERT VALUE #( called_at = utclong_current( ) ) INTO TABLE log_tab ASSIGNING FIELD-SYMBOL(<fs>).
+    <fs> = CORRESPONDING #( BASE ( <fs> ) get_method_info( ) EXCEPT called_at ).
+  ENDMETHOD.
+
+  METHOD meth_public_1.
+    "Reimplementing a method from the class one level up in the inheritance hierarchy (direct superclass)
+    INSERT VALUE #( called_at = utclong_current( ) ) INTO TABLE log_tab ASSIGNING FIELD-SYMBOL(<fs>).
+    <fs> = CORRESPONDING #( BASE ( <fs> ) get_method_info( ) EXCEPT called_at ).
+  ENDMETHOD.
+
+  METHOD meth_protected_1.
+    "Reimplementing a method from the class one level up in the inheritance hierarchy (direct superclass)
+    INSERT VALUE #( called_at = utclong_current( ) ) INTO TABLE log_tab ASSIGNING FIELD-SYMBOL(<fs>).
+    <fs> = CORRESPONDING #( BASE ( <fs> ) get_method_info( ) EXCEPT called_at ).
+  ENDMETHOD.
+
+  METHOD perform_meth_calls_2.
+    "Method of this class
+    "Creating an instance of the class
+    DATA(oref_2) = NEW zcl_demo_abap_oo_inheritance_2( ).
+
+    "Calling methods of this class
+    oref_2->meth_public_2( ).
+    oref_2->meth_public_2_final( ).
+    oref_2->meth_protected_2( ).
+    "Calling redefined methods from the class one level up in the inheritance hierarchy (direct superclass)
+    oref_2->meth_protected_1( ).
+    oref_2->meth_public_1( ).
+
+  ENDMETHOD.
+
+ENDCLASS.
+```
+
+Class `ZCL_DEMO_ABAP_OO_INHERITANCE_3` 
+
+```abap
+CLASS zcl_demo_abap_oo_inheritance_3 DEFINITION
+  INHERITING FROM zcl_demo_abap_oo_inheritance_2
+  PUBLIC
+  ABSTRACT
+  CREATE PUBLIC .
+
+  PUBLIC SECTION.
+    "Instance/static constructor declarations
+    METHODS constructor.
+    CLASS-METHODS class_constructor.
+
+    "Instance method declarations
+    METHODS meth_public_3.
+    "Abstract method
+    METHODS meth_public_3_abstract ABSTRACT.
+
+    "Redefining methods from the class ...
+    "... one level up in the inheritance hierarchy (i.e. the direct superclass)
+    METHODS meth_public_2  REDEFINITION.
+    "... two levels up in the inheritance hierarchy
+    METHODS meth_public_1 REDEFINITION.
+
+  PROTECTED SECTION.
+    "Instance method declarations
+    METHODS meth_protected_3.
+    "Abstract method
+    METHODS meth_protected_3_abstract ABSTRACT.
+
+    "Redefining methods from the class ...
+    "... one level up in the inheritance hierarchy (i.e. the direct superclass)
+    METHODS meth_protected_2 REDEFINITION.
+    "... two levels up in the inheritance hierarchy
+    "Specifying the FINAL addition
+    METHODS meth_protected_1 FINAL REDEFINITION.
+
+  PRIVATE SECTION.
+ENDCLASS.
+
+
+
+CLASS zcl_demo_abap_oo_inheritance_3 IMPLEMENTATION.
+
+  METHOD class_constructor.
+     INSERT VALUE #( called_at = utclong_current( ) ) INTO TABLE log_tab ASSIGNING FIELD-SYMBOL(<fs>).
+    <fs> = CORRESPONDING #( BASE ( <fs> ) get_method_info( ) EXCEPT called_at ).
+  ENDMETHOD.
+
+  METHOD constructor.
+    super->constructor( ).
+    INSERT VALUE #( called_at = utclong_current( ) ) INTO TABLE log_tab ASSIGNING FIELD-SYMBOL(<fs>).
+    <fs> = CORRESPONDING #( BASE ( <fs> ) get_method_info( ) EXCEPT called_at ).
+  ENDMETHOD.
+
+  METHOD meth_public_3.
+    "Method of this class
+    INSERT VALUE #( called_at = utclong_current( ) ) INTO TABLE log_tab ASSIGNING FIELD-SYMBOL(<fs>).
+    <fs> = CORRESPONDING #( BASE ( <fs> ) get_method_info( ) EXCEPT called_at ).
+  ENDMETHOD.
+
+  METHOD meth_protected_3.
+    "Method of this class
+    INSERT VALUE #( called_at = utclong_current( ) ) INTO TABLE log_tab ASSIGNING FIELD-SYMBOL(<fs>).
+    <fs> = CORRESPONDING #( BASE ( <fs> ) get_method_info( ) EXCEPT called_at ).
+  ENDMETHOD.
+
+  METHOD meth_public_2.
+    "Reimplementing a method from the class one level up in the inheritance hierarchy (direct superclass)
+    INSERT VALUE #( called_at = utclong_current( ) ) INTO TABLE log_tab ASSIGNING FIELD-SYMBOL(<fs>).
+    <fs> = CORRESPONDING #( BASE ( <fs> ) get_method_info( ) EXCEPT called_at ).
+  ENDMETHOD.
+
+  METHOD meth_protected_2.
+    "Reimplementing a method from the class one level up in the inheritance hierarchy (direct superclass)
+    INSERT VALUE #( called_at = utclong_current( ) ) INTO TABLE log_tab ASSIGNING FIELD-SYMBOL(<fs>).
+    <fs> = CORRESPONDING #( BASE ( <fs> ) get_method_info( ) EXCEPT called_at ).
+  ENDMETHOD.
+
+  METHOD meth_protected_1.
+    "Reimplementing a method from the class two levels up in the inheritance hierarchy
+    "Note that the method is specified with FINAL REDEFINITION. So, a further redefinition in subclasses is not possible.
+    INSERT VALUE #( called_at = utclong_current( ) ) INTO TABLE log_tab ASSIGNING FIELD-SYMBOL(<fs>).
+    <fs> = CORRESPONDING #( BASE ( <fs> ) get_method_info( ) EXCEPT called_at ).
+  ENDMETHOD.
+
+  METHOD meth_public_1.
+    "Reimplementing a method from the class two levels up in the inheritance hierarchy
+    INSERT VALUE #( called_at = utclong_current( ) ) INTO TABLE log_tab ASSIGNING FIELD-SYMBOL(<fs>).
+    <fs> = CORRESPONDING #( BASE ( <fs> ) get_method_info( ) EXCEPT called_at ).
   ENDMETHOD.
 ENDCLASS.
 ```
 
-<p align="right"><a href="#top">⬆️ back to top</a></p>
+Class `ZCL_DEMO_ABAP_OO_INHERITANCE_4` 
 
-### Redefining Methods
+```abap
+CLASS zcl_demo_abap_oo_inheritance_4 DEFINITION
+  INHERITING FROM zcl_demo_abap_oo_inheritance_3
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
 
-- Redefining methods is possible for the public and protected instance (not the static) methods of all preceding superclasses in a subclass (but only if the methods are not specified with `FINAL`).
--  In the declaration part of the subclass, you must specify the method as follows (and using the same method name):
-    `METHODS meth REDEFINITION.`
-- This must be done in the same
-    visibility section of the subclass as in the superclass.
-- You cannot change the parameters of the method.
-- Redefined methods work with private attributes of the subclass and cannot access private attributes of the superclass with the same name.
--   If you want to access the identically named method implementation in a superclass from within
-    the method implementation of the subclass, use the [pseudo
-    reference](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenpseudo_reference_glosry.htm "Glossary Entry")
-     [`super->meth`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapcall_method_meth_super.htm).
+  PUBLIC SECTION.
+    "Instance/static constructor declarations
+    METHODS constructor.
+    CLASS-METHODS class_constructor.
 
-> **💡 Note**<br>
-> Inheritance and constructors:
-> - Constructors cannot be redefined.
-> - If the instance constructor is implemented in a subclass, the instance constructor of the superclass must be called explicitly using `super->constructor`, even if the latter is not explicitly declared. An exception to this: Direct subclasses of the root node `OBJECT`.
-> - Regarding the static constructor: When calling a subclass for the first time, the preceding static constructors of all of the entire inheritance tree must have been called first.
-> - More information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abeninheritance_constructors.htm).
+    "Instance method declaration
+    METHODS meth_public_4.
+    "Static method declaration for display purposes
+    CLASS-METHODS perform_meth_calls_4.
+
+    "Redefining methods from the class ...
+    "... one level up in the inheritance hierarchy (i.e. the direct superclass)
+    METHODS meth_public_3 REDEFINITION.
+    "Note: Redefining the abstract method here is mandatory.
+    METHODS meth_public_3_abstract REDEFINITION.
+    "... two levels up in the inheritance hierarchy
+    METHODS meth_public_2 REDEFINITION.
+    "... three levels up in the inheritance hierarchy
+    METHODS meth_public_1 REDEFINITION.
+
+  PROTECTED SECTION.
+
+    "Instance method declaration
+    METHODS meth_protected_4.
+
+    "Redefining methods from the class ...
+    "... one level up in the inheritance hierarchy (i.e. the direct superclass)
+    METHODS meth_protected_3 REDEFINITION.
+    "Note: Redefining the abstract method here is mandatory.
+    METHODS meth_protected_3_abstract REDEFINITION.
+    "... two levels up in the inheritance hierarchy
+    METHODS meth_protected_2 REDEFINITION.
+    "... three levels up in the inheritance hierarchy
+    "The meth_protected_1 method is specified with FINAL REDEFINITION in the
+    "direct superclass. Therefore, a further redefinition is not possible.
+    "The following statement is not possible.
+    "METHODS meth_protected_1 REDEFINITION.
+
+  PRIVATE SECTION.
+ENDCLASS.
+
+
+
+CLASS zcl_demo_abap_oo_inheritance_4 IMPLEMENTATION.
+
+  METHOD class_constructor.
+    INSERT VALUE #( called_at = utclong_current( ) ) INTO TABLE log_tab ASSIGNING FIELD-SYMBOL(<fs>).
+    <fs> = CORRESPONDING #( BASE ( <fs> ) get_method_info( ) EXCEPT called_at ).
+  ENDMETHOD.
+
+  METHOD constructor.
+    super->constructor( ).
+    INSERT VALUE #( called_at = utclong_current( ) ) INTO TABLE log_tab ASSIGNING FIELD-SYMBOL(<fs>).
+    <fs> = CORRESPONDING #( BASE ( <fs> ) get_method_info( ) EXCEPT called_at ).
+  ENDMETHOD.
+
+  METHOD meth_public_4.
+    "Method of this class
+    INSERT VALUE #( called_at = utclong_current( ) ) INTO TABLE log_tab ASSIGNING FIELD-SYMBOL(<fs>).
+    <fs> = CORRESPONDING #( BASE ( <fs> ) get_method_info( ) EXCEPT called_at ).
+  ENDMETHOD.
+
+  METHOD meth_protected_4.
+    "Method of this class
+    INSERT VALUE #( called_at = utclong_current( ) ) INTO TABLE log_tab ASSIGNING FIELD-SYMBOL(<fs>).
+    <fs> = CORRESPONDING #( BASE ( <fs> ) get_method_info( ) EXCEPT called_at ).
+  ENDMETHOD.
+
+  METHOD meth_public_3.
+    "Reimplementing a method from the class one level up in the inheritance hierarchy (direct superclass)
+    "Calling this instance method that is redefined in the abstract direct superclass (instances of abstract classes cannot be created)
+    "by refering to the direct superclass using the syntax super->...
+    super->meth_public_3( ).
+    INSERT VALUE #( called_at = utclong_current( ) ) INTO TABLE log_tab ASSIGNING FIELD-SYMBOL(<fs>).
+    <fs> = CORRESPONDING #( BASE ( <fs> ) get_method_info( ) EXCEPT called_at ).
+  ENDMETHOD.
+
+  METHOD meth_protected_3.
+    "Reimplementing a method from the class one level up in the inheritance hierarchy (direct superclass)
+    "This method is a non-abstract instance method of the abstract direct superclass. Instances of abstract classes
+    "cannot be created. The syntax super->meth is used to also call instance methods of the abstract direct superclass
+    "for output purposes.
+    super->meth_protected_3( ).
+    INSERT VALUE #( called_at = utclong_current( ) ) INTO TABLE log_tab ASSIGNING FIELD-SYMBOL(<fs>).
+    <fs> = CORRESPONDING #( BASE ( <fs> ) get_method_info( ) EXCEPT called_at ).
+  ENDMETHOD.
+
+  METHOD meth_public_3_abstract.
+    "Implementating abstract methods are only possible in subclasses of abstract classes
+    "Reimplementing a method from the class one level up in the inheritance hierarchy (direct superclass)
+    INSERT VALUE #( called_at = utclong_current( ) ) INTO TABLE log_tab ASSIGNING FIELD-SYMBOL(<fs>).
+    <fs> = CORRESPONDING #( BASE ( <fs> ) get_method_info( ) EXCEPT called_at ).
+  ENDMETHOD.
+
+  METHOD meth_protected_3_abstract.
+    "Implementating abstract methods are only possible in subclasses of abstract classes
+    "Reimplementing a method from the class one level up in the inheritance hierarchy (direct superclass)
+    INSERT VALUE #( called_at = utclong_current( ) ) INTO TABLE log_tab ASSIGNING FIELD-SYMBOL(<fs>).
+    <fs> = CORRESPONDING #( BASE ( <fs> ) get_method_info( ) EXCEPT called_at ).
+  ENDMETHOD.
+
+  METHOD meth_public_2.
+    "Reimplementing a method from the class two levels up in the inheritance hierarchy
+    "Calling this instance method that is redefined in the abstract direct superclass (instances of abstract
+    "classes cannot be created) by refering to the direct superclass using the syntax super->....
+    super->meth_public_2( ).
+    INSERT VALUE #( called_at = utclong_current( ) ) INTO TABLE log_tab ASSIGNING FIELD-SYMBOL(<fs>).
+    <fs> = CORRESPONDING #( BASE ( <fs> ) get_method_info( ) EXCEPT called_at ).
+  ENDMETHOD.
+
+  METHOD meth_protected_2.
+    "Reimplementing a method from the class two levels up in the inheritance hierarchy
+    "Calling this instance method that is redefined in the abstract direct superclass (instances of abstract
+    "classes cannot be created) by refering to the direct superclass using the syntax super->....
+    super->meth_protected_2( ).
+    INSERT VALUE #( called_at = utclong_current( ) ) INTO TABLE log_tab ASSIGNING FIELD-SYMBOL(<fs>).
+    <fs> = CORRESPONDING #( BASE ( <fs> ) get_method_info( ) EXCEPT called_at ).
+  ENDMETHOD.
+
+  METHOD meth_public_1.
+    "Reimplementing a method from the class three levels up in the inheritance hierarchy
+    "Calling this instance method that is redefined in the abstract direct superclass (instances of abstract
+    "classes cannot be created) by refering to the direct superclass using the syntax super->....
+    super->meth_public_1( ).
+    INSERT VALUE #( called_at = utclong_current( ) ) INTO TABLE log_tab ASSIGNING FIELD-SYMBOL(<fs>).
+    <fs> = CORRESPONDING #( BASE ( <fs> ) get_method_info( ) EXCEPT called_at ).
+  ENDMETHOD.
+
+  METHOD perform_meth_calls_4.
+    "Method of this class
+    "Creating an instance of the class
+    DATA(oref_4) = NEW zcl_demo_abap_oo_inheritance_4( ).
+
+    "Calling methods of this class
+    oref_4->meth_public_4( ).
+    oref_4->meth_protected_4( ).
+    "Calling redefined methods from the class ...
+    "... one level up in the inheritance hierarchy (direct superclass)
+    "Among them are abstract methods that can only be implemented in subclasses.
+    "Note that the implementations of the non-abstract, redefined methods in this
+    "class includes method calls of the abstract direct superclass so that
+    "also these implementations are called for output purposes.
+    oref_4->meth_public_3( ).
+    oref_4->meth_public_3_abstract( ).
+    oref_4->meth_protected_3( ).
+    oref_4->meth_protected_3_abstract( ).
+    "... two levels up in the inheritance hierarchy
+    oref_4->meth_public_2( ).
+    oref_4->meth_protected_2( ).
+    "... three levels up in the inheritance hierarchy
+    oref_4->meth_public_1( ).
+    "Note: The following method call calls the method implementation in
+    "class zcl_demo_abap_oo_inheritance_3. The method is specified with FINAL
+    "REDEFINITION. So, it cannot be redefined in this class inheriting from
+    "zcl_demo_abap_oo_inheritance_3.
+    oref_4->meth_protected_1( ).
+  ENDMETHOD.
+
+ENDCLASS.
+```
+
+</details>  
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
