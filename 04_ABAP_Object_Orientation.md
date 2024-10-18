@@ -1948,7 +1948,7 @@ METHODS another_meth FINAL REDEFINITION.
 
 ### Excursion: Inheritance Example
 
-The following example explores inheritance and demonstrates a selection of the inheritance related-syntax described above. The inheritance tree consists of four example classes. The base class includes the implementation of the classrun interface. The example is designed to output information to the console. So, you can execute this class using F9 in ADT.
+The following example explores inheritance and demonstrates a selection of the inheritance-related syntax described above. The inheritance tree consists of four example classes. The base class includes the implementation of the classrun interface. The example is designed to output information to the console. So, you can execute this class using F9 in ADT.
 The purpose of the example and information output is to visualize and explore concepts and syntax related to inheritance, checking out when and how methods are called, redefining methods, abstract and final classes and methods.
 
 The inheritance tree of the example classes is as follows: 
@@ -1983,7 +1983,7 @@ Notes on the example:
 - `ZCL_DEMO_ABAP_OO_INHERITANCE_2`
   - Inherits from `ZCL_DEMO_ABAP_OO_INHERITANCE_1` and allows inheritance itself 
   - Specifies `CREATE PROTECTED`, so the class can only be instantiated in methods of its subclasses, of the class itself, and of its friends   
-    - You may want to try to create an instance of the class in `ZCL_DEMO_ABAP_OO_INHERITANCE_1` like this `DATA(oref) = NEW zcl_demo_abap_oo_inheritance_1( ).` It is not possible. For example, in `ZCL_DEMO_ABAP_OO_INHERITANCE_3` and `ZCL_DEMO_ABAP_OO_INHERITANCE_4`, it is possible.
+    - You may want to try to create an instance of the class in `ZCL_DEMO_ABAP_OO_INHERITANCE_1` like this `DATA(oref) = NEW zcl_demo_abap_oo_inheritance_2( ).` It is not possible. In `ZCL_DEMO_ABAP_OO_INHERITANCE_3` and `ZCL_DEMO_ABAP_OO_INHERITANCE_4`, for example, it is possible.
   - Declares several instance methods
     - One of them is declared with `FINAL`, so no redefinition is possible in subclasses
     - Instance methods of the direct superclass are redefined
@@ -2004,7 +2004,7 @@ Notes on the example:
   - Declares several instance methods
     - Instance methods of the direct superclass, which is an abstract class, are redefined. It is mandatory to redefine the abstract methods. 
     - Other instance methods from further levels up the inheritance hierarchy are redefined (except one method that is declared with `FINAL REDEFINITION` in `ZCL_DEMO_ABAP_OO_INHERITANCE_3`)
-    - For demonstration purposes, instance methods implemented in the abstract direct superclass (instances of abstract classes cannot be created) are called in the respective redefined methods by refering to the direct superclass using the syntax `super->...`.
+    - For demonstration purposes, instance methods implemented in the abstract direct superclass (instances of abstract classes cannot be created) are called in the respective redefined methods by referring to the direct superclass using the syntax `super->...`.
   - Declares a static method to delegate method calls of this class
 
 
@@ -2496,7 +2496,7 @@ CLASS zcl_demo_abap_oo_inheritance_4 IMPLEMENTATION.
   METHOD meth_public_3.
     "Reimplementing a method from the class one level up in the inheritance hierarchy (direct superclass)
     "Calling this instance method that is redefined in the abstract direct superclass (instances of abstract classes cannot be created)
-    "by refering to the direct superclass using the syntax super->...
+    "by referring to the direct superclass using the syntax super->...
     super->meth_public_3( ).
     INSERT VALUE #( called_at = utclong_current( ) ) INTO TABLE log_tab ASSIGNING FIELD-SYMBOL(<fs>).
     <fs> = CORRESPONDING #( BASE ( <fs> ) get_method_info( ) EXCEPT called_at ).
@@ -2529,7 +2529,7 @@ CLASS zcl_demo_abap_oo_inheritance_4 IMPLEMENTATION.
   METHOD meth_public_2.
     "Reimplementing a method from the class two levels up in the inheritance hierarchy
     "Calling this instance method that is redefined in the abstract direct superclass (instances of abstract
-    "classes cannot be created) by refering to the direct superclass using the syntax super->....
+    "classes cannot be created) by referring to the direct superclass using the syntax super->....
     super->meth_public_2( ).
     INSERT VALUE #( called_at = utclong_current( ) ) INTO TABLE log_tab ASSIGNING FIELD-SYMBOL(<fs>).
     <fs> = CORRESPONDING #( BASE ( <fs> ) get_method_info( ) EXCEPT called_at ).
@@ -2538,7 +2538,7 @@ CLASS zcl_demo_abap_oo_inheritance_4 IMPLEMENTATION.
   METHOD meth_protected_2.
     "Reimplementing a method from the class two levels up in the inheritance hierarchy
     "Calling this instance method that is redefined in the abstract direct superclass (instances of abstract
-    "classes cannot be created) by refering to the direct superclass using the syntax super->....
+    "classes cannot be created) by referring to the direct superclass using the syntax super->....
     super->meth_protected_2( ).
     INSERT VALUE #( called_at = utclong_current( ) ) INTO TABLE log_tab ASSIGNING FIELD-SYMBOL(<fs>).
     <fs> = CORRESPONDING #( BASE ( <fs> ) get_method_info( ) EXCEPT called_at ).
@@ -2547,7 +2547,7 @@ CLASS zcl_demo_abap_oo_inheritance_4 IMPLEMENTATION.
   METHOD meth_public_1.
     "Reimplementing a method from the class three levels up in the inheritance hierarchy
     "Calling this instance method that is redefined in the abstract direct superclass (instances of abstract
-    "classes cannot be created) by refering to the direct superclass using the syntax super->....
+    "classes cannot be created) by referring to the direct superclass using the syntax super->....
     super->meth_public_1( ).
     INSERT VALUE #( called_at = utclong_current( ) ) INTO TABLE log_tab ASSIGNING FIELD-SYMBOL(<fs>).
     <fs> = CORRESPONDING #( BASE ( <fs> ) get_method_info( ) EXCEPT called_at ).
