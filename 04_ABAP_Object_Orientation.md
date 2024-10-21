@@ -14,6 +14,8 @@
       - [Class Attributes](#class-attributes)
       - [Methods](#methods)
       - [Parameter Interface](#parameter-interface)
+      - [Formal and Actual Parameters](#formal-and-actual-parameters)
+      - [Defingin Parameters as Optional](#defingin-parameters-as-optional)
       - [Constructors](#constructors)
       - [Example for Method Definitions](#example-for-method-definitions)
   - [Working with Objects and Components](#working-with-objects-and-components)
@@ -508,6 +510,8 @@ ENDCLASS.
     You declare them using `METHODS` statements in a visibility
     section. Note that you must create an instance of a class first before using instance methods.
 
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
 #### Parameter Interface
 
 In the simplest form, methods can have no parameter at all. Apart from that, methods can be defined with the following parameters:
@@ -524,46 +528,35 @@ In the simplest form, methods can have no parameter at all. Apart from that, met
 > **💡 Note**<br>
 > - Find more information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapmethods_general.htm).
 > - You may find the addition `EXCEPTIONS` especially in definitions of older classes. They are for non-class-based exceptions. This addition should not be used in ABAP for Cloud Development.
-> - Notes on [formal
-    parameter](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenformal_parameter_glosry.htm "Glossary Entry")
-    versus [actual
-    parameters](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenactual_parameter_glosry.htm "Glossary Entry"):
->   - You define method parameters by specifying a name with a type which
-    can be a
-    [generic](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abengeneric_data_type_glosry.htm "Glossary Entry")
-    or
-    [complete](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencomplete_data_type_glosry.htm "Glossary Entry")
-    type. Examples:
->      - `fp` is the formal parameter that has a complete type: `... meth IMPORTING fp TYPE string ...`
->      - `gen` is the formal parameter that has a generic type: `... meth IMPORTING gen TYPE any ...`
->      - Find more information about generic types also in the [Data Types and Data Objects](16_Data_Types_and_Objects.md#generic-types) cheat sheet.
->   - This formal parameter includes the specification of how the
-    value passing should happen. Parameters can be [passed by
-    reference](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenpass_by_reference_glosry.htm "Glossary Entry")
-    (`... REFERENCE(param) ...`; note that just specifying the
-    parameter name `... param ...` - as a shorter syntax -
-    means passing by reference by default) or [by
-    value](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenpass_by_value_glosry.htm "Glossary Entry")
-    (`... VALUE(param) ...`).
->   - The actual parameter represents
-    the data object whose content is passed to or copied from a formal
-    parameter as an argument when a procedure is called. If
-    passing by reference is used, a local data object is not created for
-    the actual parameter. Instead, the procedure is given a
-    [reference](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenreference_glosry.htm "Glossary Entry")
-    to the actual parameter during the call and works with the actual
-    parameter itself. Note that parameters that are input and passed by
-    reference cannot be modified in the procedure. However, the use of a
-    reference is beneficial regarding the performance compared to
-    creating a local data object.
->-   Parameters can be defined as optional using the
-    [`OPTIONAL`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapmethods_parameters.htm#!ABAP_ONE_ADD@1@)
-    addition. In doing so, it is not mandatory to pass an actual
-    parameter. The
-    [`DEFAULT`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapmethods_parameters.htm#!ABAP_ONE_ADD@1@)
-    addition also makes the passing of an actual parameter optional.
-    However, when using this addition, as the name implies, a default
-    value is set.
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+#### Formal and Actual Parameters
+- [Formal parameter](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenformal_parameter_glosry.htm "Glossary Entry")
+    versus [actual parameters](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenactual_parameter_glosry.htm "Glossary Entry"):
+
+- [Formal parameters](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenformal_parameter_glosry.htm "Glossary Entry"): You define method parameters by specifying a name with a type which can be a [generic](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abengeneric_data_type_glosry.htm "Glossary Entry") or  [complete](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencomplete_data_type_glosry.htm "Glossary Entry")
+    type. 
+- Examples:
+  - `fp` is the formal parameter that has a complete type: `... meth IMPORTING fp TYPE string ...`
+  - `gen` is the formal parameter that has a generic type: `... meth IMPORTING gen TYPE any ...`
+  - Find more information about generic types also in the [Data Types and Data Objects](16_Data_Types_and_Objects.md#generic-types) cheat sheet.
+- This formal parameter includes the specification of how the value passing should happen. Parameters can be passed by ...
+  - [reference](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenpass_by_reference_glosry.htm "Glossary Entry"): `... REFERENCE(param) ...`; note that just specifying the parameter name `... param ...` - as a shorter syntax - means passing by reference by default) 
+  - [value](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenpass_by_value_glosry.htm "Glossary Entry"): `... VALUE(param) ...`
+- The [actual parameters](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenactual_parameter_glosry.htm "Glossary Entry") represents the data object whose content is passed to or copied from a formal parameter as an argument when a procedure is called. 
+- If passing by reference is used, a local data object is not created for the actual parameter. Instead, the procedure is given a [reference](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenreference_glosry.htm "Glossary Entry") to the actual parameter during the call and works with the actual parameter itself. 
+- Note that parameters that are input and passed by reference cannot be modified in the procedure. However, the use of a reference is beneficial regarding the performance compared to creating a local data object.
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+#### Defingin Parameters as Optional
+
+- Parameters can be defined as optional using the `OPTIONAL` and `DEFAULT` additions: 
+  - [`OPTIONAL`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapmethods_parameters.htm#!ABAP_ONE_ADD@1@): It is then not mandatory to pass an actual
+    parameter. 
+  - [`DEFAULT`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapmethods_parameters.htm#!ABAP_ONE_ADD@1@): Also makes the passing of an actual parameter optional. However, when using this addition, as the name implies, a default value is set.
+  - In the method implementations you may want to check whether an actual parameter was passed. You can use predicate expressions using `IS SUPPLIED`. See the example further down.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
@@ -711,6 +704,9 @@ ref1 = NEW #( ).                     "Type derived from already declared ref1
 
 DATA(ref2) = NEW some_class( ).      "Reference variable declared inline, explicit type
                                      "(class) specification
+"The assumption is that this class has no mandatory importing parameters for the 
+"instance constructor. If a class has, actual parameters must be provided.                                      
+DATA(ref_mand_param) = NEW another_class( ip1 = ... ip2 = ... ).
 
 "Older syntax
 "CREATE OBJECT ref3.                  "Type derived from already declared ref3
@@ -724,11 +720,9 @@ Some examples for working with reference variables:
 
 **Assigning Reference Variables**
 
-To assign or copy
-reference variables, use the [assignment
+To assign or copy reference variables, use the [assignment
 operator](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenassignment_operator_glosry.htm "Glossary Entry")
-`=`. In the example below, both object reference variables have the same
-type.
+`=`. In the example below, both object reference variables have the same type. Note the concepts of polymorphism, upcasts and downcasts when assigning reference variables covered further down.
 
 ``` abap
 DATA: ref1 TYPE REF TO some_class,
@@ -1677,7 +1671,7 @@ ENDCLASS.
 The table below includes selected syntax related to inheritance in class and method declarations.  
 
 > **💡 Note**<br>
-> - Some of the syntax options have already been mentioned previously.
+> - Some of the syntax options have already been mentioned previously. This is to summarize. 
 > - Here, the emphasis is on global classes.
 > - The snippets provided do not represent all possible syntax combinations. For the complete picture, refer to the ABAP Keyword Documentation. Additional syntax options are available in the context of friendship (`GLOBAL FRIENDS/FRIENDS`), testing (`FOR TESTING`), [RAP](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenarap_glosry.htm) (`FOR BEHAVIOR OF`; to declare [ABAP behavior pools](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbehavior_pool_glosry.htm)), and more.
 > - The order of the additions can vary.

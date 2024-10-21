@@ -9,6 +9,7 @@
     - [RAP Handler Classes and Methods](#rap-handler-classes-and-methods)
     - [RAP Saver Class and Saver Methods](#rap-saver-class-and-saver-methods)
   - [BDEF Derived Types](#bdef-derived-types)
+    - [BDEF Derived Type Syntax and Declaring Data Types and Data Objects](#bdef-derived-type-syntax-and-declaring-data-types-and-data-objects)
     - [Components of BDEF Derived Types](#components-of-bdef-derived-types)
     - [Constants for BDEF Derived Type Components](#constants-for-bdef-derived-type-components)
     - [Secondary Table Keys of BDEF Derived Types](#secondary-table-keys-of-bdef-derived-types)
@@ -674,98 +675,191 @@ framework](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?
 from CDS entities and their behavior definition in the BDEF. With these
 special types, a type-safe access to RAP BOs is guaranteed.
 
-You can create internal tables (using [`TYPE TABLE
-FOR`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abaptype_table_for.htm)),
-structures (using [`TYPE STRUCTURE
-FOR`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abaptype_structure_for.htm))
-and data types with BDEF derived types. For all operations and behavior
-characteristics defined in the BDEF, types can be derived.
-
-The syntax uses - similar to the method definitions mentioned before -
-the addition `FOR` followed by the operation and the name of an
-entity (and, if need be, the concrete name, e. g. in case of an action
-defined in the BDEF).
-
-Each BDEF derived type can be categorized as
-[input](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_input_der_type_glosry.htm "Glossary Entry")
-or [output derived
-type](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_output_der_type_glosry.htm "Glossary Entry")
-according to its use as importing or exporting parameters in methods of
-RAP BO providers. In most cases, structures of type `TYPE STRUCTURE
-FOR` can be considered as serving as [work
-area](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenwork_area_glosry.htm "Glossary Entry")
-and line type of the internal tables. However, there are also structured
-derived types that do serve as types for handler method parameters.
-
-The response parameters `mapped`, `failed` and
-`reported` have dedicated derived types: [`TYPE RESPONSE
-FOR`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abaptype_response_for.htm).
-They are deep structures containing the information for the individual
-entities of the RAP BO. The components of these structures are internal
-tables of appropriate types with `TYPE TABLE FOR`.
-
-Examples of BDEF derived types:
-
-``` abap
-"Data objects with input derived types (entity = name of a root entity)
-
-"For an EML create operation
-DATA create_tab TYPE TABLE FOR CREATE entity.
-
-"For an update operation
-DATA update_tab TYPE TABLE FOR UPDATE entity.
-
-"Type for create-by-association operations specifying the name of the entity
-"and the association
-DATA cba_tab TYPE TABLE FOR CREATE entity\_child.
-
-"For an action execution; the name of the action is preceded by a tilde
-DATA action_imp TYPE TABLE FOR ACTION IMPORT entity~action1.
-
-"Data objects with output derived types
-
-"For a read operation
-DATA read_tab TYPE TABLE FOR READ RESULT entity.
-
-"For an action defined with a result
-DATA action_res TYPE TABLE FOR ACTION RESULT entity~action2.
-
-"Examples for structures and types
-DATA create_wa TYPE STRUCTURE FOR CREATE entity.
-
-"For permission retrieval
-DATA perm_req TYPE STRUCTURE FOR PERMISSIONS REQUEST entity.
-
-"For retrieving global features
-DATA feat_req TYPE STRUCTURE FOR GLOBAL FEATURES RESULT entity.
-
-"Type declaration using a BDEF derived type
-TYPES der_typ TYPE TABLE FOR DELETE entity.
-
-"Response parameters
-DATA map TYPE RESPONSE FOR MAPPED entity.
-DATA fail TYPE RESPONSE FOR FAILED entity.
-DATA resp TYPE RESPONSE FOR REPORTED entity.
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 
+### BDEF Derived Type Syntax and Declaring Data Types and Data Objects
 
-"Typing method parameters with BDEF derived types by referencing an existing type
-CLASS zcl_some_class DEFINITION
-  PUBLIC
-  FINAL
-  CREATE PUBLIC .
+- For all operations and behavior characteristics defined in the BDEF, you can derive types. For example, if you enable create operations (using the `create` specification in the BDEF), you can create respective BDEF derived types. If you do not enable delete operations, you cannot create respective types.
+- The syntax, similar to method definitions mentioned earlier, uses the addition `FOR` followed by further RAP-related additions (such as `CREATE` for create operations).
+- These additions include the name of an entity and, if necessary, a specific name (e.g., the action name for a BDEF derived type related to an action).
+- The following syntax options are available in the context of BDEF derived types:
 
-  PUBLIC SECTION.
-  PROTECTED SECTION.
-  PRIVATE SECTION.
-    TYPES derived_type TYPE TABLE FOR CREATE zdemo_abap_rap_ro_m.
-    METHODS some_meth IMPORTING itab TYPE derived_type.
-ENDCLASS.
-...
+    | Syntax  | Notes |
+    |---|---|
+    | [`TYPE TABLE FOR`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abaptype_table_for.htm)  |  For creating internal tables with BDEF derived types. Most RAP handler method parameters use tabular BDEF derived types.  |
+    | [`TYPE STRUCTURE FOR`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abaptype_structure_for.htm)  | In many cases, structures of type `TYPE STRUCTURE FOR` serve as both the [work area](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenwork_area_glosry.htm "Glossary Entry") and the line type of the internal tables. There are also structured BDEF derived types that function as types for RAP handler method parameters. |
+    | [`TYPE RESPONSE FOR`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abaptype_response_for.htm)  | These types refer to the RAP response parameters `mapped`, `failed`, and `reported`. They are deep structures containing information for individual RAP BO entities. The components of these structures are internal tables of appropriate types with `TYPE TABLE FOR`.  |
+    | [`TYPE REQUEST FOR`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abaptype_request_for.htm)  | The types `TYPE REQUEST FOR CHANGE` and `TYPE REQUEST FOR DELETE` are relevant for importing parameters of the save_modified RAP saver method in the context of RAP additional and unmanaged save. These BDEF derived types are deep structures containing internal tables with RAP BO instance keys and/or data for create, update, or delete operations.  |
 
-```
+
+- Find an overview of available BDEF derived types [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrpm_derived_types.htm).
+- You can use `TYPES` and `DATA` statements to declare data types and objects with BDEF derived types.
+- Both long and short forms are available to declare data types and objects. Example:
+  - Create an internal table typed with a BDEF derived type for create operations in ADT: `DATA d1 TYPE TABLE FOR CREATE zdemo_abap_rap_ro_m.`
+  - Position the cursor on `d1` and press F2 to get type information. The long form shows the root entity plus the concrete entity (which is the root entity itself, an alias name is specified for the root entity in the example): `d1 type table for create zdemo_abap_rap_ro_m\\root.`
+- The following specification options are available:
+  - Long form: Specifying the name of the RAP BO root entity followed by `\\` and an entity of the composition tree.
+    - If an alias is defined for the entity, you must specify it; otherwise, you can specify the entity name.
+    - If no alias name was specified for the example entity, the long form would be: `DATA d2 TYPE TABLE FOR CREATE zdemo_abap_rap_ro_m\\zdemo_abap_rap_ro_m.`
+  - Short form: For convenience, you can specify RAP BO entities such as the RAP BO root entity or other CDS entities of a CDS composition tree. Examples: `DATA d1 TYPE TABLE FOR CREATE zdemo_abap_rap_ro_m.` (root entity), `DATA d3 TYPE TABLE FOR UPDATE zdemo_abap_rap_ch_m.` (child entity). Note that most example codes in the cheat sheet and in the executable example use the short form.
+  - Specifying associations defined in a BDEF preceded by `\`: For example, `DATA d4 TYPE TABLE FOR CREATE zdemo_abap_rap_ro_m\_child.`. The long form with `\\` followed by an entity name, `\`, and an association is also possible.
+
 > **💡 Note**<br>
 > Certain types derived from BDEF can only be specified and used within implementation classes, not beyond. These types include the following: `FOR CHANGE`, `FOR DETERMINATION`, `FOR VALIDATION`, `FOR ... FEATURES`, `FOR ... AUTHORIZATION`.
+
+
+BDEF derived type examples:
+
+> **💡 Note**<br>
+> The demo BDEF `zdemo_abap_rap_ro_m` ...
+> - specifies the alias name `root` for the RAP BO root entity `zdemo_abap_rap_ro_m`.
+> - specifies the association `_child`.
+> - includes the child entity `zdemo_abap_rap_ch_m`, for which an alias name `child` is specified and which specifies the association `_parent`.
+
+
+```abap
+"---------------------------------------------------------------------
+"------- BDEF derived types demonstrating long and short forms -------
+"---------------------------------------------------------------------
+
+"Short forms
+"Specifying the RAP BO root entity
+TYPES t1 TYPE TABLE FOR CREATE zdemo_abap_rap_ro_m.
+DATA d1 TYPE TABLE FOR CREATE zdemo_abap_rap_ro_m.
+"Specifying child entity
+TYPES t2 TYPE TABLE FOR UPDATE zdemo_abap_rap_ch_m.
+DATA d2 TYPE TABLE FOR UPDATE zdemo_abap_rap_ch_m.
+
+"Long form: Specifying the name of the RAP BO root entity, followed
+"by \\ and an entity of the composition tree
+"Since an alias name is specified for the example entities,it must
+"be specified after \\. Otherwise, the entity name can be specified.
+"t3/d3 are the same as t1/d1.
+TYPES t3 TYPE TABLE FOR CREATE zdemo_abap_rap_ro_m\\root.
+DATA d3 TYPE TABLE FOR CREATE zdemo_abap_rap_ro_m\\root.
+"In this example, t4/d4 are the same as t2/d2.
+TYPES t4 TYPE TABLE FOR UPDATE zdemo_abap_rap_ro_m\\child.
+DATA d4 TYPE TABLE FOR UPDATE zdemo_abap_rap_ro_m\\child.
+
+"Specifying associations that are declared in the BDEF preceded by \
+"with both short and long forms
+"In this example, t5/d5 are the same as t6/d6.
+TYPES t5 TYPE TABLE FOR CREATE zdemo_abap_rap_ro_m\_child.
+DATA d5 TYPE TABLE FOR CREATE zdemo_abap_rap_ro_m\_child.
+TYPES t6 TYPE TABLE FOR CREATE zdemo_abap_rap_ro_m\\root\_child.
+DATA d6 TYPE TABLE FOR CREATE zdemo_abap_rap_ro_m\\root\_child.
+"In this example, t7/d7 are the same as t8/d8.
+TYPES t7 TYPE TABLE FOR READ IMPORT zdemo_abap_rap_ro_m\\child\_parent.
+DATA d7 TYPE TABLE FOR READ IMPORT zdemo_abap_rap_ro_m\\child\_parent.
+TYPES t8 TYPE TABLE FOR READ IMPORT zdemo_abap_rap_ch_m\_parent.
+DATA d8 TYPE TABLE FOR READ IMPORT zdemo_abap_rap_ch_m\_parent.
+
+"---------------------------------------------------------------------
+"---------------- Miscellaneous BDEF derived types -------------------
+"---------------------------------------------------------------------
+
+"The examples show a selection of possible types. The types mostly use
+"the short form.
+
+"-------------------------- Table types ------------------------------
+"Create
+DATA create_tab TYPE TABLE FOR CREATE zdemo_abap_rap_ro_m.
+
+"Update
+DATA update_tab TYPE TABLE FOR UPDATE zdemo_abap_rap_ro_m.
+
+"Create-by-association operation specifying the name of the entity
+"and the association
+DATA cba_tab TYPE TABLE FOR CREATE zdemo_abap_rap_ro_m\_child.
+
+"Action; the name of the action is preceded by a tilde
+DATA action_import TYPE TABLE FOR ACTION IMPORT zdemo_abap_rap_ro_m~multiply_by_2.
+"The example action does not specify a result parameter, therefore the following
+"type is not available.
+"DATA action_result TYPE TABLE FOR ACTION RESULT zdemo_abap_rap_ro_m~multiply_by_2.
+
+"Read
+DATA read_import TYPE TABLE FOR READ IMPORT zdemo_abap_rap_ro_m.
+DATA read_result TYPE TABLE FOR READ RESULT zdemo_abap_rap_ro_m.
+
+"The previous examples use the RAP BO root entity. The following ones
+"use a child entity specified in the example BDEF.
+"Update
+DATA update_tab_ch TYPE TABLE FOR UPDATE zdemo_abap_rap_ch_m.
+"Which corresponds to the long form sepcifying the RAP BO root entity
+"name and the (alias) name of the child entity followed by \\
+DATA update_tab_ch_2 TYPE TABLE FOR UPDATE zdemo_abap_rap_ro_m\\child.
+DATA delete_tab_ch TYPE TABLE FOR DELETE zdemo_abap_rap_ch_m.
+"Read-by-association
+DATA rba_import_child_to_parent TYPE TABLE FOR READ IMPORT zdemo_abap_rap_ch_m\_parent.
+DATA rba_import_child_to_parent_2 TYPE TABLE FOR READ IMPORT zdemo_abap_rap_ro_m\\child\_parent.
+DATA rba_result_child_to_parent TYPE TABLE FOR READ RESULT zdemo_abap_rap_ch_m\_parent.
+DATA rba_result_child_to_parent_2 TYPE TABLE FOR READ IMPORT zdemo_abap_rap_ro_m\\child\_parent.
+
+"-------------------------- Structured types ------------------------------
+
+DATA create_wa TYPE STRUCTURE FOR CREATE zdemo_abap_rap_ro_m.
+DATA update_wa TYPE STRUCTURE FOR UPDATE zdemo_abap_rap_ro_m.
+TYPES delete_wa TYPE STRUCTURE FOR DELETE zdemo_abap_rap_ro_m.
+DATA update_child_wa TYPE STRUCTURE FOR UPDATE zdemo_abap_rap_ch_m.
+TYPES delete_child_wa TYPE STRUCTURE FOR DELETE zdemo_abap_rap_ch_m.
+
+"Retrieving permissions
+DATA perm_req TYPE STRUCTURE FOR PERMISSIONS REQUEST zdemo_abap_rap_ro_m.
+
+"Retrieving global features
+"... FOR ... FEATURES ... can only be used within implementation classes
+"DATA feat_req TYPE STRUCTURE FOR GLOBAL FEATURES RESULT zdemo_abap_rap_ro_m.
+
+"The same applies to validations and determinations
+"DATA validate TYPE TABLE FOR VALIDATION zdemo_abap_rap_ro_m~val.
+"DATA determine TYPE TABLE FOR DETERMINATION zdemo_abap_rap_ro_m~det_add_text.
+
+"---------------------------------------------------------------------
+"---- BDEF derived types relating to RAP response parameters ---------
+"---------------------------------------------------------------------
+
+"Response parameters
+"Note: The addition EARLY or no addition is relevant in the context of the
+"RAP interaction phase. The addition LATE is relevant in the context of the
+"save phase.
+DATA map TYPE RESPONSE FOR MAPPED zdemo_abap_rap_ro_m.
+DATA fail TYPE RESPONSE FOR FAILED zdemo_abap_rap_ro_m.
+DATA resp TYPE RESPONSE FOR REPORTED zdemo_abap_rap_ro_m.
+"Same as resp
+DATA resp_2 TYPE RESPONSE FOR REPORTED EARLY zdemo_abap_rap_ro_m.
+"Relevant for the late RAP save phase
+DATA map_late TYPE RESPONSE FOR MAPPED LATE zdemo_abap_rap_ro_m.
+DATA fail_late TYPE RESPONSE FOR FAILED LATE zdemo_abap_rap_ro_m.
+DATA resp_late TYPE RESPONSE FOR REPORTED LATE zdemo_abap_rap_ro_m.
+
+"You can check the F2 information in ADT for the types. The types above
+"are deep structures, containing tables typed with TYPE TABLE FOR MAPPED
+"and so on.
+DATA map_tab_early_1 TYPE TABLE FOR MAPPED zdemo_abap_rap_ro_m.
+DATA map_tab_early_2 TYPE TABLE FOR MAPPED EARLY zdemo_abap_rap_ro_m.
+DATA map_tab_late TYPE TABLE FOR MAPPED LATE zdemo_abap_rap_ro_m.
+
+"---------------------------------------------------------------------
+"---- BDEF derived types relating to the save phase in RAP -----------
+"---- additional and unmanaged save scenarios ------------------------
+"---------------------------------------------------------------------
+
+"REQUEST FOR ... can only be used within implementation classes
+"For create and update operations
+"DATA req_change TYPE REQUEST FOR CHANGE zdemo_abap_rap_ro_m_as.
+"For delete operations
+"DATA req_delete TYPE REQUEST FOR DELETE zdemo_abap_rap_ro_m_as.
+
+"---------------------------------------------------------------------
+"---- Excursion: Typing method parameters with BDEF derived types ----
+"---------------------------------------------------------------------
+...
+"TYPES tab_type TYPE TABLE FOR CREATE zdemo_abap_rap_ro_m.
+"METHODS some_meth IMPORTING itab TYPE tab_type.
+...
+``` 
 
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>

@@ -6,7 +6,6 @@
   - [Introduction](#introduction)
   - [Data Types in DDIC](#data-types-in-ddic)
     - [Built-in ABAP Dictionary Types](#built-in-abap-dictionary-types)
-      - [Typed Literals](#typed-literals)
     - [DDIC Data Types](#ddic-data-types)
       - [DDIC Data Elements](#ddic-data-elements)
       - [DDIC Domains](#ddic-domains)
@@ -93,48 +92,8 @@ DDIC supports the following data types:
 
 
 > **💡 Note**<br>
-> There are restrictions when using strings in ABAP CDS and ABAP SQL. For more information, see [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenddic_character_byte_types.htm).
-
-<p align="right"><a href="#top">⬆️ back to top</a></p>
-
-#### Typed Literals
-- Built-in dictionary types cannot be used directly in ABAP, e.g. for typing local data objects. 
-- However, the types can be used in ABAP SQL, and also ABAP CDS, in the context of [typed literals](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentyped_literal_glosry.htm). Note that some special types cannot be used in this context.
-- Advantages of typed literals over untyped literals:
-  - Allow type-safe use of literals
-  - Eliminate the need for (implicit type) conversions and casts, which can lead to surprising or erroneous results. Also consider the conversion costs in terms of performance (typed literals are passed to the database and evaluated there without ABAP-specific type conversions).
-  - For better readability (you can immediately see what type is being used)
-- More information:
-  - [Typed literals in ABAP SQL](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_sql_typed_literals.htm)
-  - [Typed literals in ABAP CDS](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_typed_literal_v2.htm)
-  - They can also be used in casts in ABAP [SQL](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensql_cast.htm) and [CDS](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_cast_expression_v2.htm).
-  
-```abap
-"Miscellaneous typed literals in an ABAP SQL statement
-"Note that typed literals can be specified in read
-"positions where host variables are possible.
-DATA(tmstamp) = CONV timestamp( '20240808112517' ).
-DATA(some_string) = `Some string`.
-SELECT SINGLE
-  FROM zdemo_abap_fli
-  FIELDS
-    carrid,
-    @some_string AS host_var,
-    char`X` AS flag,
-    int8`32984723948723` AS int8,
-    raw`11` AS raw,
-    numc`1234` AS numc,
-    utclong`2024-01-01T10:01:02,2` AS utc,
-    tims`101507` AS tims,
-    curr`173.95` AS curr,
-    "Multiple cast expressions splitting a time stamp into date and time parts
-    CAST( CAST( div( @tmstamp, 1000000 ) AS CHAR ) AS DATS ) AS date,
-    CAST( substring( CAST( @tmstamp AS CHAR ), 9, 6 ) AS TIMS ) AS time,
-    "Untyped literal
-    'ABAP' AS txt
-  WHERE fldate = datn`20240102`
-  INTO @DATA(misc_typed_literals).
-```
+> - There are restrictions when using strings in ABAP CDS and ABAP SQL. For more information, see [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenddic_character_byte_types.htm).
+> - Built-in dictionary types cannot be used directly in ABAP, e.g. for typing local data objects. However, the types can be used in ABAP SQL, and also ABAP CDS, in the context of [typed literals](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentyped_literal_glosry.htm). Find more information in the [ABAP SQL](03_ABAP_SQL.md#typed-literals) cheat sheet.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
