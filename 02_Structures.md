@@ -19,6 +19,8 @@
     - [Using the CORRESPONDING Operator and MOVE-CORRESPONDING Statements](#using-the-corresponding-operator-and-move-corresponding-statements)
   - [Clearing Structures](#clearing-structures)
   - [Processing Structures](#processing-structures)
+    - [Structures in ABAP SQL Statements](#structures-in-abap-sql-statements)
+    - [Structures in Statements for Processing Internal Tables](#structures-in-statements-for-processing-internal-tables)
   - [Including Structures](#including-structures)
   - [Getting Structured Type Information and Creating Structures at Runtime](#getting-structured-type-information-and-creating-structures-at-runtime)
   - [Executable Example](#executable-example)
@@ -631,7 +633,23 @@ struc_ref = NEW #( ).
 Structures are primarily used to process data from tables. In this context, structures often take on the role of a [work area](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenwork_area_glosry.htm "Glossary Entry"). 
 The following code snippets cover only a selection. For more examples, see the cheat sheets about internal tables and ABAP SQL. 
 
-**Reading a row from a database table into a structure that has a compatible type**. Note that, since database tables are flat, the
+### Structures in ABAP SQL Statements
+
+The following code snippets cover a selection. Find more information and code snippets in the [ABAP SQL](03_ABAP_SQL.md) cheat sheet.
+
+
+<table>
+<tr>
+<td> Subject </td> <td> Notes </td>
+</tr>
+
+<tr>
+<td> 
+Reading a row from a database table into a structure that has a compatible type
+</td>
+<td>
+
+Note that, since database tables are flat, the
 target structure must also be flat. In the example below, the [`SINGLE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapselect_single.htm)
 addition reads only a single row into the structure. It returns the first entry that matches the `WHERE` condition.
 
@@ -650,7 +668,15 @@ SELECT SINGLE FROM zdemo_abap_fli
   WHERE carrid = 'LH'
   INTO @DATA(ls_fli2).
 ```
-**Reading a row from a database table into a structure that has an incompatible type**. 
+</td>
+</tr>
+
+<tr>
+<td> 
+Reading a row from a database table into a structure that has an incompatible type
+</td>
+<td>
+
 Components in the structure with identical names are filled.
 
 ``` abap
@@ -658,10 +684,18 @@ SELECT SINGLE FROM zdemo_abap_fli
   FIELDS *
   WHERE carrid = 'AA'
   INTO CORRESPONDING FIELDS OF @ls_fli_diff.
-```
-**Reading a line from an internal table into a structure** ...
+```  
+</td>
+</tr>
 
-... using a `SELECT` statement. Note the specified alias name and that ABAP variables like internal tables must be escaped with `@`. The addition `INTO CORRESPONDING FIELDS OF` also applies here.
+<tr>
+<td> 
+
+Reading a line from an internal table into a structure using an ABAP SQL `SELECT` statement
+</td>
+<td>
+
+Note the specified alias name and that ABAP variables like internal tables must be escaped with `@`. The addition `INTO CORRESPONDING FIELDS OF` also applies here.
 ``` abap
 SELECT SINGLE FROM @itab AS itab_alias
   FIELDS *
@@ -669,25 +703,17 @@ SELECT SINGLE FROM @itab AS itab_alias
   INTO @DATA(ls_struc).
   "INTO CORRESPONDING FIELDS OF @some_existing_struc.
 ```
-... using a `READ TABLE` statement. The code snippet below shows the reading of a line into a [work area](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenwork_area_glosry.htm "Glossary Entry"), a [field symbol](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenfield_symbol_glosry.htm "Glossary Entry"), and a [data reference variable](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendata_reference_variable_glosry.htm "Glossary Entry"), all of which 
-represent structured data objects that are declared inline. In the following example, a line is read based on the line number by
-specifying `INDEX`. For more details, see the section *Determining the target area* in the cheat sheet [Internal Tables](01_Internal_Tables.md#).
-``` abap
-READ TABLE itab INTO DATA(wa) INDEX 1.
+</td>
+</tr>
 
-READ TABLE itab ASSIGNING FIELD-SYMBOL(<fs>) INDEX 2.
 
-READ TABLE itab REFERENCE INTO DATA(dref) INDEX 3.
-```
-... using a [table expression](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentable_expression_glosry.htm "Glossary Entry").
-The code snippet shows how to read a line into a structure declared inline. The index is given in square brackets.
-``` abap
-DATA(ls_table_exp) = itab[ 3 ].
-```
+<tr>
+<td> 
+Sequentially reading a row from a database table into a structure
+</td>
+<td>
 
-**Sequentially reading** ...
-
-... a row from a database table into a structure. A `SELECT` loop can be specified with the syntax `SELECT ... ENDSELECT.`.
+A `SELECT` loop can be specified with the syntax `SELECT ... ENDSELECT.`.
 In the following example, the row found and returned in a structure declared inline can be processed further.
 ``` abap
 SELECT FROM zdemo_abap_fli
@@ -700,16 +726,18 @@ SELECT FROM zdemo_abap_fli
   ENDIF.
 ENDSELECT.
 ```
-... a line from an internal table into a structure using a [`LOOP AT`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abaploop_at_itab_variants.htm) statement. There are many ways to specify the condition on which the loop is based. The following example covers the option of reading all lines sequentially into a field symbol  declared inline. When using a field symbol, you can, for example, directly modify components.
-``` abap
-LOOP AT itab ASSIGNING FIELD-SYMBOL(<fs>).
-  <fs>-comp1 = ...
-  ...
-ENDLOOP.
-```
+</td>
+</tr>
 
-**Inserting a single row into a database table from a structure** using  ABAP SQL statements with
-[`INSERT`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapinsert_dbtab.htm). The following statements can be considered as alternatives. The third statement shows that instead of inserting a row from an existing structure, you can create and fill a structure directly.
+<tr>
+<td> 
+
+Inserting a single row into a database table from a structure using  ABAP SQL statements with
+[`INSERT`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapinsert_dbtab.htm)
+</td>
+<td>
+
+The following statements can be considered as alternatives. The third statement shows that instead of inserting a row from an existing structure, you can create and fill a structure directly.
 Note that you should avoid inserting a row with a particular key into the database table if a row with the same key already exists. Note that with this and the followig syntax, various options/expressions are possible.
 ``` abap
 INSERT INTO dbtab VALUES @struc.
@@ -718,7 +746,17 @@ INSERT dbtab FROM @struc.
 
 INSERT dbtab FROM @( VALUE #( comp1 = ... comp2 = ... ) ).
 ```
-**Updating a single row in a database table from a structure** using ABAP SQL statements with [`UPDATE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapupdate.htm). Note that this syntax changes the entire row and all of its components.
+</td>
+</tr>
+
+<tr>
+<td> 
+
+Updating a single row in a database table from a structure using ABAP SQL statements with [`UPDATE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapupdate.htm)
+</td>
+<td>
+
+Note that this syntax changes the entire row and all of its components.
 ``` abap
 UPDATE dbtab FROM @struc.
 
@@ -733,15 +771,117 @@ SELECT SINGLE *
 
 UPDATE dbtab FROM @( VALUE #( BASE wa comp2 = ... comp4 = ... ) ).
 ```
-**Updating or creating a single row in a database table from a structure** using ABAP SQL statements with
-[`MODIFY`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapmodify_dbtab.htm). If a row with the same key as specified in the structure already exists in the database table, the row is updated. If no row with the keys specified in the structure exists, a new row is created in the database table.
+</td>
+</tr>
+
+<tr>
+<td> 
+
+Updating or creating a single row in a database table from a structure using ABAP SQL statements with
+[`MODIFY`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapmodify_dbtab.htm) 
+</td>
+<td>
+
+If a row with the same key as specified in the structure already exists in the database table, the row is updated. If no row with the keys specified in the structure exists, a new row is created in the database table.
 ``` abap
 MODIFY dbtab FROM @struc.
 
 MODIFY dbtab FROM @( VALUE #( comp1 = ... comp2 = ... ) ).
 ```
-**Adding lines to and updating single lines in an internal table from a structure** using `INSERT`,
-`APPEND`, and `MODIFY` statements. 
+</td>
+</tr>
+
+<tr>
+<td> 
+
+Deleting a single row in a database table from a structure using ABAP SQL statements with
+[`DELETE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapdelete_dbtab.htm) 
+</td>
+<td>
+
+If a row with the same key as specified in the structure already exists in the database table, the row is updated. If no row with the keys specified in the structure exists, a new row is created in the database table.
+``` abap
+DELETE dbtab FROM @struc.
+
+DELETE dbtab FROM @( VALUE #( comp1 = ... ) ).
+```
+</td>
+</tr>
+
+</table>
+
+### Structures in Statements for Processing Internal Tables
+
+The following code snippets cover a selection. Find more information and code snippets in the [Internal Tables](01_Internal_Tables.md) cheat sheet.
+
+
+<table>
+<tr>
+<td> Subject </td> <td> Notes </td>
+</tr>
+
+
+
+<tr>
+<td>
+
+Reading a line from an internal table into a structure using a `READ TABLE` statement
+</td>
+<td>
+
+The code snippet below shows the reading of a line into a [work area](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenwork_area_glosry.htm "Glossary Entry"), a [field symbol](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenfield_symbol_glosry.htm "Glossary Entry"), and a [data reference variable](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendata_reference_variable_glosry.htm "Glossary Entry"), all of which 
+represent structured data objects that are declared inline. In the following example, a line is read based on the line number by
+specifying `INDEX`. For more details, see the section *Determining the target area* in the cheat sheet [Internal Tables](01_Internal_Tables.md#).
+``` abap
+READ TABLE itab INTO DATA(wa) INDEX 1.
+
+READ TABLE itab ASSIGNING FIELD-SYMBOL(<fs>) INDEX 2.
+
+READ TABLE itab REFERENCE INTO DATA(dref) INDEX 3.
+``` 
+</td>
+</tr>
+
+
+<tr>
+<td>
+
+Reading a line from an internal table into a structure using a [table expression](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentable_expression_glosry.htm "Glossary Entry")
+</td>
+<td>
+
+The code snippet shows how to read a line into a structure declared inline. The index is given in square brackets. You can also specify table keys and free keys.
+``` abap
+DATA(ls_table_exp) = itab[ 3 ].
+```
+</td>
+</tr>
+
+<tr>
+<td> 
+
+Sequentially reading a line from an internal table into a structure using a [`LOOP AT`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abaploop_at_itab_variants.htm) statement
+</td>
+<td>
+
+There are many ways to specify the condition on which the loop is based. The following example covers the option of reading all lines sequentially into a field symbol  declared inline. When using a field symbol, you can, for example, directly modify components.
+``` abap
+LOOP AT itab ASSIGNING FIELD-SYMBOL(<fs>).
+  <fs>-comp1 = ...
+  ...
+ENDLOOP.
+```
+</td>
+</tr>
+
+<tr>
+<td> 
+
+Adding lines to and updating single lines in an internal table from a structure using `INSERT`,
+`APPEND`, and `MODIFY` statements
+</td>
+<td>
+
 - Note that all statements, including `INSERT` and `MODIFY`, are ABAP statements in this context, not ABAP SQL statements.
 - Both `INSERT` and `APPEND` add one or more lines to an internal table. While `APPEND` adds at the bottom of the
 internal table, `INSERT` can be used to add lines at a specific position in the table. If you do not specify the position, the lines are also added at the bottom of the table. However, unlike `APPEND`, `INSERT` does not set `sy-tabix`. 
@@ -755,6 +895,11 @@ APPEND struc TO itab.
 
 MODIFY TABLE itab FROM struc.
 ```
+</td>
+</tr>
+
+</table>
+
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 

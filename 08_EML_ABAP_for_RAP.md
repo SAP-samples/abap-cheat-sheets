@@ -661,19 +661,15 @@ ENDCLASS.
 
 ## BDEF Derived Types
 
-The operands of EML statements and parameters of handler and saver
-methods are mainly special messenger tables for passing data and
-receiving results or messages, i. e. the communication between a RAP BO
-consumer and the RAP BO provider using EML consists (in most cases) of
-exchanging data stored in internal tables that have special ABAP types -
-[BDEF derived
-types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_derived_type_glosry.htm "Glossary Entry").
+The operands of EML statements and parameters of handler and saver methods are mainly special messenger tables for passing data and receiving results or messages, i. e. the communication between a [RAP BO consumer](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_bo_consumer_glosry.htm) and the [RAP BO provider](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_bo_provider_glosry.htm) using EML consists (in most cases) of exchanging data stored in internal tables that have special ABAP types - [BDEF derived types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_derived_type_glosry.htm "Glossary Entry").
 These types are tailor-made for RAP purposes.
 
-As the name implies, the types are derived by the [ABAP runtime
-framework](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_runtime_frmwk_glosry.htm "Glossary Entry")
-from CDS entities and their behavior definition in the BDEF. With these
-special types, a type-safe access to RAP BOs is guaranteed.
+As the name implies, the types are derived by the [ABAP runtime framework](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_runtime_frmwk_glosry.htm "Glossary Entry")
+from CDS entities and their behavior definition in the BDEF. With these special types, a type-safe access to RAP BOs is guaranteed.
+
+> **💡 Note**<br>
+> - To explore BDEF derived types in your RAP BO, you can access the CCIMP include (*Local Types* tab in ADT) of your ABAP behavior pool, position the cursor on the methods, choose F2 and check the parameters typed with BDEF derived types. 
+> - As mentioned, CRUD operations are implicitly supported in managed scenarios (when specified in the BDEF). So, there will not be method declarations and implementations for CRUD operation methods. 
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
@@ -690,7 +686,7 @@ special types, a type-safe access to RAP BOs is guaranteed.
     | [`TYPE TABLE FOR`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abaptype_table_for.htm)  |  For creating internal tables with BDEF derived types. Most RAP handler method parameters use tabular BDEF derived types.  |
     | [`TYPE STRUCTURE FOR`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abaptype_structure_for.htm)  | In many cases, structures of type `TYPE STRUCTURE FOR` serve as both the [work area](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenwork_area_glosry.htm "Glossary Entry") and the line type of the internal tables. There are also structured BDEF derived types that function as types for RAP handler method parameters. |
     | [`TYPE RESPONSE FOR`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abaptype_response_for.htm)  | These types refer to the RAP response parameters `mapped`, `failed`, and `reported`. They are deep structures containing information for individual RAP BO entities. The components of these structures are internal tables of appropriate types with `TYPE TABLE FOR`.  |
-    | [`TYPE REQUEST FOR`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abaptype_request_for.htm)  | The types `TYPE REQUEST FOR CHANGE` and `TYPE REQUEST FOR DELETE` are relevant for importing parameters of the save_modified RAP saver method in the context of RAP additional and unmanaged save. These BDEF derived types are deep structures containing internal tables with RAP BO instance keys and/or data for create, update, or delete operations.  |
+    | [`TYPE REQUEST FOR`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abaptype_request_for.htm)  | The types `TYPE REQUEST FOR CHANGE` and `TYPE REQUEST FOR DELETE` are relevant for importing parameters of the `save_modified` RAP saver method in the context of RAP additional and unmanaged save. These BDEF derived types are deep structures containing internal tables with RAP BO instance keys and/or data for create, update, or delete operations.  |
 
 
 - Find an overview of available BDEF derived types [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrpm_derived_types.htm).
@@ -706,7 +702,7 @@ special types, a type-safe access to RAP BOs is guaranteed.
   - Specifying associations defined in a BDEF preceded by `\`: For example, `DATA d4 TYPE TABLE FOR CREATE zdemo_abap_rap_ro_m\_child.`. The long form with `\\` followed by an entity name, `\`, and an association is also possible.
 
 > **💡 Note**<br>
-> Certain types derived from BDEF can only be specified and used within implementation classes, not beyond. These types include the following: `FOR CHANGE`, `FOR DETERMINATION`, `FOR VALIDATION`, `FOR ... FEATURES`, `FOR ... AUTHORIZATION`.
+> Certain types derived from the BDEF can only be specified and used within implementation classes, not beyond. These types include the following: `FOR CHANGE`, `FOR DETERMINATION`, `FOR VALIDATION`, `FOR ... FEATURES`, `FOR ... AUTHORIZATION`.
 
 
 BDEF derived type examples:
@@ -855,10 +851,9 @@ DATA map_tab_late TYPE TABLE FOR MAPPED LATE zdemo_abap_rap_ro_m.
 "---------------------------------------------------------------------
 "---- Excursion: Typing method parameters with BDEF derived types ----
 "---------------------------------------------------------------------
-...
+
 "TYPES tab_type TYPE TABLE FOR CREATE zdemo_abap_rap_ro_m.
 "METHODS some_meth IMPORTING itab TYPE tab_type.
-...
 ``` 
 
 

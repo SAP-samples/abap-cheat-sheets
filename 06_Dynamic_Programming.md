@@ -69,7 +69,7 @@
           INTO TABLE @DATA(some_itab).
         ```
 
-- Further aspects for dynamic programming in ABAP enter the picture if you want to determine information about data types and data objects at runtime ([RTTI](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrun_time_type_identific_glosry.htm)) or even create them ([RTTC](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrun_time_type_creation_glosry.htm)).
+- Further aspects of dynamic programming in ABAP enter the picture if you want to determine information about data types and data objects at runtime ([RTTI](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrun_time_type_identific_glosry.htm)) or even create them ([RTTC](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrun_time_type_creation_glosry.htm)).
 
 - In general, dynamic programming also comes with some downsides. For example:
   - The ABAP compiler cannot check the dynamic programming feature like the `SELECT` statement mentioned above. There is no syntax warning or suchlike. 
@@ -182,7 +182,6 @@ ASSIGN num TO FIELD-SYMBOL(<fs_inl>).
 "symbol when assigning memory areas
 TYPES c_len_3 TYPE c LENGTH 3.
 DATA(chars) = 'abcdefg'.
-table_linebetween
 FIELD-SYMBOLS <fs1> TYPE c_len_3. 
 
 "Implicit casting

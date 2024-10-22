@@ -8,7 +8,7 @@
   - [Read Operations Using SELECT](#read-operations-using-select)
     - [Basic Syntax](#basic-syntax)
       - [Notes on Modern SELECT Statements](#notes-on-modern-select-statements)
-    - [Specifying the SELECT List and FIELDS Clause](#specifying-the-select-list-and-fields-clause)
+    - [Specifying the SELECT List or FIELDS Clause](#specifying-the-select-list-or-fields-clause)
     - [Specifying the FROM Clause](#specifying-the-from-clause)
     - [Specifying the Target and Related Additions](#specifying-the-target-and-related-additions)
     - [Specifying Clauses to Order, Group and Set Conditions for the Result Set](#specifying-clauses-to-order-group-and-set-conditions-for-the-result-set)
@@ -194,9 +194,9 @@ SELECT FROM source   "What data source read from
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-### Specifying the SELECT List and FIELDS Clause  
+### Specifying the SELECT List or FIELDS Clause  
 
-- Using the `SELECT` list/`FIELDS` clause, you define the structure of the result set.
+- Using the `SELECT` list or `FIELDS` clause, you define the structure of the result set.
 - You can do this by specifying the columns to be read from the data source individually, or by specifying `*` to read all columns.
 - Syntax variants are possible.
 - Note that you can specify the addition `SINGLE` after `SELECT`. With `SINGLE`, it means the result set is a single row result set. Otherwise, it is a multirow result set. An appropriate data object must be specified in the `INTO` clause.
@@ -321,7 +321,7 @@ SELECT *
   INTO ....
 ```
 
-Example using cheat sheet repository objects and demo internal table:
+Example using cheat sheet repository objects, a demo internal table, and the `FIELDS` addition:
 
 ``` abap
 "Database table
@@ -384,6 +384,11 @@ SELECT FROM dbtab
   FIELDS *
   WHERE ...
   INTO TABLE @itab.
+
+SELECT FROM dbtab
+  FIELDS *
+  WHERE ...
+  INTO TABLE @DATA(itab_inl).
 ```
 
 </td>
@@ -403,6 +408,11 @@ SELECT SINGLE comp1, comp2, comp3
   FROM dbtab
   WHERE ...
   INTO @struc.  
+
+SELECT SINGLE comp1, comp2, comp3       
+  FROM dbtab
+  WHERE ...
+  INTO @DATA(struc_inl).    
 ```
 
 </td>
@@ -2724,15 +2734,15 @@ ENDCLASS.
 
 ### Evaluating ABAP System Fields after ABAP SQL Statements
 
-As mentioned in several sections above, ABAP system fields such as `sy-subrc` and `sy-dbcnt` are set in the context of ABAP SQL statements, which can be evaluated. 
+As mentioned in several sections above, ABAP system fields such as `sy-subrc` and `sy-dbcnt` are set in the context of ABAP SQL statements, which can be evaluated, e.g. using a subsequent statement `IF sy-subrc = ...`. The following table shows a selection of values.
 
 | Statement  | sy-subrc  | sy-dbcnt  |
 |---|---|---|
-| `SELECT`  | 0 = Values were passed successfully to a target data object <br> 4 = Result set is empty. Typically, this means that there are no entries found (matching conditions specified).  | The number of rows that were passed. |
-| `INSERT`  | 0 = Single row (work area specified) or all rows (internal table specified) inserted <br> 4 = Row not or not all rows inserted (in case of multiple rows to be inserted, `ACCEPTING DUPLICATE KEYS` was specified) | The number of rows that were inserted.  |
-| `MODIFY`  | 0 = Single row (work area specified) or all rows (internal table specified) inserted or modified <br> 4 = Row not or not all rows inserted or modified  | The number of rows that were processed.  |
-| `UPDATE`  | 0 = Single row (work area specified) or all rows updated <br> 4 = Row not or not all rows updated | The number of rows that were updated.  |
-| `DELETE`  | `DELETE FROM target` variant: <br> 0 = At least one row deleted (with `WHERE` clause specified), all or n rows deleted (without `WHERE` clause specified) <br> 4 = No row deleted <br><br>`DELETE target FROM` variant: <br> 0 = Row deleted (work area specified), all rows deleted (internal table specified) <br> 4 = Row not deleted (work area specified), not all specified rows deleted (internal table specified) | The number of rows that were deleted. |
+| `SELECT`  | *0*: Values were passed successfully to a target data object <br><br> *4*: Result set is empty. Typically, this means that there are no entries found (matching conditions specified).  | The number of rows that were passed. |
+| `INSERT`  | *0*: Single row (work area specified) or all rows (internal table specified) inserted <br><br> *4*: Row not or not all rows inserted (in case of multiple rows to be inserted, `ACCEPTING DUPLICATE KEYS` was specified) | The number of rows that were inserted.  |
+| `MODIFY`  | *0*: Single row (work area specified) or all rows (internal table specified) inserted or modified <br><br> *4*: Row not or not all rows inserted or modified  | The number of rows that were processed.  |
+| `UPDATE`  | *0*: Single row (work area specified) or all rows updated <br><br> *4*: Row not or not all rows updated | The number of rows that were updated.  |
+| `DELETE`  | `DELETE FROM target` variant: <br> *0*: At least one row deleted (with `WHERE` clause specified), all or n rows deleted (without `WHERE` clause specified) <br><br> *4*: No row deleted <br><br>`DELETE target FROM` variant: <br> *0*: Row deleted (work area specified), all rows deleted (internal table specified) <br><br> *4*: Row not deleted (work area specified), not all specified rows deleted (internal table specified) | The number of rows that were deleted. |
 
 The following example explores the setting of `sy-subrc` and `sy-dbcnt` by ABAP SQL statements using a demo database table from the cheat sheet repository.
 
