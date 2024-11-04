@@ -94,6 +94,8 @@ ABAP cheat sheets[^1] ...
 |[Misc Built-In Functions](24_Misc_Builtin_Functions.md)|Covers a variety of built-in functions in ABAP|- (The cheat sheet includes copy and paste code snippets)|
 |[Authorization Checks](25_Authorization_Checks.md)|Provides a high-level overview of explicit and implicit authorization checks in ABAP|- (The cheat sheet includes a copy and paste example class)|
 |[ABAP Dictionary](26_ABAP_Dictionary.md)|Covers a selection of repository objects in the ABAP Dictionary (DDIC) that represent global types|- (The cheat sheet includes a copy and paste example class)|
+|[Exceptions and Runtime Errors](27_Exceptions.md)|Provides an overview on exceptions and runtime errors|- (The cheat sheet includes a copy and paste example class)|
+
 
 <br>
 
