@@ -22,6 +22,7 @@
   - [Excursions](#excursions)
     - [Local Exception Classes](#local-exception-classes)
     - [Messages in RAP](#messages-in-rap)
+    - [Violations of ABAP Contract Checks Causing Runtime Errors](#violations-of-abap-contract-checks-causing-runtime-errors)
     - [Classic Exceptions](#classic-exceptions)
   - [More Information](#more-information)
   - [Executable Example](#executable-example)
@@ -55,7 +56,7 @@ This cheat sheet includes an overview about syntax in the context of exceptions 
 Exception classes ...
 - are special classes that form the basis of catchable exceptions. 
   - When an exception is raised, an object of an exception class is created, making exceptions instances of these classes.
-  - Using attributes of raised exception classes, you can retrieve and evaluate information on the exception.
+  - Using components of raised exception classes, you can retrieve and evaluate information on the exception.
 - are available as predefined and globally available exception classes for exceptions of the ABAP runtime framework, typically following the the naming convention `CX_...` instead of `CL_...` to distinguish them from *regular* classes (e.g. `CX_SY_ZERODIVIDE` for zero division). 
 - can be self-defined as global or local exception classes (typically following the naming conventions `ZCX_...`/`YCX_...` or `LCX_...` ) to react on issues that are specific to your ABAP program.
 - are direct or indirect subclasses of the [abstract](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabstract_glosry.htm) [superclasses](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensuperclass_glosry.htm):
@@ -237,7 +238,7 @@ Example:
 
 ### Components of Exception Classes
 
-- The following list covers a selection of exception class attributes relevant, for example, to evaluate exceptions raised using exception objects.
+- The following list covers a selection of exception class components relevant, for example, to evaluate exceptions raised using exception objects.
 - Exception classes include instance methods because of inheriting from the root class `CX_ROOT`:
   - `get_text`: Returns the exception text 
   - `get_source_position`: Returns the program name, the name of a possible [include program](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abeninclude_program_glosry.htm), and the line number of the statement that raised the exception.
@@ -247,7 +248,7 @@ Example:
   - `is_resumable`: Flag for [resumable exceptions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenresumable_exception_glosry.htm); indicates whether the exception can be resumed and leave a `CATCH BEFORE UNWIND` block
   
 > **💡 Note**<br>
-> - Usually, instances of exception classes are created when exceptions are raised. However, instances can also be created programmatically, e.g., with the `NEW` operator.
+> - Usually, instances of exception classes are created when exceptions are raised. However, instances can also be created programmatically, e.g., with the `NEW` operator (if the classes are not abstract).
 > - It is possible to define additional methods and attributes in exception classes, for example, for passing more information about error situations to handlers. Custom attributes should be defined as `READ-ONLY`.
 > - Find examples in the section below, covering `CATCH ... INTO ...`.
 
@@ -280,7 +281,7 @@ Syntax examples for raising exceptions programmatically:
 "the name of a visible exception class; an exception
 "object is created (if necessary, see the ABAP Keyword Documentation
 "for more details)
-RAISE EXCEPTION Type cx_sy_zerodivide.
+RAISE EXCEPTION TYPE cx_sy_zerodivide.
 
 "RAISE EXCEPTION statement specifying an exception object (an object
 "reference variable pointing to an exception class)
@@ -336,7 +337,7 @@ ENDDO.
 ### Handling Exceptions Using TRY Control Structures 
 
 - Exceptions can be handled locally using [`TRY`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abaptry.htm) control structures
-- To be prepared for potential exceptions that are raised when executing statements, statements can be included and executed within such a `TRY` control structure representing a *protected area*
+- To be prepared for potential exceptions that are raised when executing statements, statements can be included and executed within such a `TRY` control structure representing a *protected area*.
 - In doing so, it is possible for the ABAP runtime framework to catch exceptions, and you can react on error situations.
 - A `TRY` control structure is initiated with `TRY` and ended with `ENDTRY`. The statements expect a [`CATCH`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapcatch_try.htm) block, otherwise a syntax warning occurs.
   ```abap
@@ -349,7 +350,7 @@ ENDDO.
   ```
 
 - One or more class-based exceptions can be handled in one or more subsequent `CATCH` blocks. 
-- The `CATCH` statement must include a class-based exception suitable for the error handling. 
+- The `CATCH` statement should include a class-based exception suitable for the error handling. 
 
   ```abap
   TRY.    
@@ -428,10 +429,10 @@ ENDDO.
 - Regarding the program flow:
   - The statement block following `TRY` is always executed. If an exception is raised within this `TRY` block, the system searches for a `CATCH` block that can handle the exception.
   - If there is no `CATCH` block that can handle the exception, or if the code is not within a `TRY` structure, the exception is propagated to the caller.
-    - Exceptions can be handled locally using a `TRY` structure or be propagated to the caller, making the caller responsible for handling the error. This approach allows for better code structure by managing errors centrally rather than checking each procedure call individually.  - 
+    - Exceptions can be handled locally using a `TRY` structure or be propagated to the caller, making the caller responsible for handling the error. This approach allows for better code structure by managing errors centrally rather than checking each procedure call individually.   
   - If the exception cannot be caught and handled, the program terminates with a runtime error.
   - If the exception is handled or no exception is raised, processing continues after `ENDTRY`.
-  - Strategies after an exception is raised and caught include ignoring the error, correcting and retrying, evaluating the error situation (see notes on the `INTO` addition to the `CATCH` statement), showing an error message to the user, logging the error, etc.
+  - Strategies about how to continue after an exception is raised and caught include ignoring the error, correcting and retrying, evaluating the error situation (see notes on the `INTO` addition to the `CATCH` statement), showing an error message to the user, logging the error, etc.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
@@ -447,11 +448,12 @@ ENDDO.
 Example:
 - In the code snippet above, the exception class `CX_SY_ZERODIVIDE` is used. Consider a calculator. It should not only handle errors like zero division, but also arithmetic overflows. The predefined exception class `CX_SY_ARITHMETIC_OVERFLOW` is available. It is derived from `CX_SY_ARITHMETIC_ERROR`. If you specify the exception class `CX_SY_ARITHMETIC_ERROR`, which is higher in the inheritance hierarchy and can handle both error situations (`CX_SY_ARITHMETIC_OVERFLOW` and `CX_SY_ZERODIVIDE`), the specific exception raised becomes unclear.
 - Using the `INTO` clause and the stored exception object, you can perform tasks like retrieving and displaying the exception text.
-- Find more information on [Runtime Type Identification (RTTI)](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrun_time_type_identific_glosry.htm) in the Dynamic Programming cheat sheet.
+- Many code snippets in the cheat sheet use [Runtime Type Identification (RTTI)](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrun_time_type_identific_glosry.htm). Find more information in the [Dynamic Programming cheat sheet](06_Dynamic_Programming.md).
 
 
 ```abap
-DATA: exception TYPE REF TO cx_root. "Note the root class
+"Note the specification of the root class cx_root
+DATA exception TYPE REF TO cx_root. 
 
 TRY.
     ... "TRY block
@@ -892,6 +894,11 @@ Example:
 "the content of msg shows the specified example text, and includes
 "the specified parameters.
 
+"After MESSAGE, a message type is specified (which is not of relevance in ABAP for Cloud
+"Development). These types can be the following: A, E, I, S, W, or X. See the ABAP Keyword
+"Documentation for information. For example, E representing an error message.
+"The character is followed by the message number. The message class name is directly
+"specified within a pair of parentheses.
 MESSAGE e001(zdemo_abap_messages) INTO DATA(msg).
 "msg: An error occured (Nr. 001)
 
@@ -950,7 +957,7 @@ msgv4 = sy-msgv4. "H
 > **💡 Note**<br>
 > - The code snippets below use exception classes, a message class and messages from the executable demo example.
 > - The snippets include additions that are only available when exception classes implement the `IF_T100_DYN_MSG` interface. 
-> - In the executable example, `zcx_demo_abap_error_a` implements `IF_T100_MESSAGE` and - `zcx_demo_abap_error_b` implements `IF_T100_DYN_MSG`.
+> - In the executable example, `zcx_demo_abap_error_a` implements the `IF_T100_MESSAGE` interface and  `zcx_demo_abap_error_b` implements `IF_T100_DYN_MSG`.
 
 ```abap
 "----------------------------------------------------------------------------
@@ -998,7 +1005,7 @@ RAISE EXCEPTION NEW zcx_demo_abap_error_a( textid  = zcx_demo_abap_error_a=>erro
 "Note that EXPORTING can also be specified
 "After MESSAGE, a message type is specified (which is not of relevance in ABAP for Cloud
 "Development). These types can be the following: A, E, I, S, W, or X. See the ABAP Keyword
-"Documentation for information.For example, E representing an error message.
+"Documentation for information. For example, E representing an error message.
 "The character is followed by the message number. The message class name is directly
 "specified within a pair of parentheses.
 RAISE EXCEPTION TYPE zcx_demo_abap_error_a MESSAGE e002(zdemo_abap_messages).
@@ -1313,6 +1320,96 @@ APPEND VALUE #( %tky = <fs_res>-%tky
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
+### Violations of ABAP Contract Checks Causing Runtime Errors
+
+ABAP contract checks include ...
+
+- RAP BO contract checks 
+  - They define rules for the [RAP BO provider](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_bo_provider_glosry.htm) and [RAP BO consumer](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_bo_consumer_glosry.htm) implementation to ensure consistency and reliability.
+  - They include transactional contract checks, too.
+  - More information:     
+    - [Development guide for the ABAP RESTful Application Programming Model, section RAP Business Object Contract (SAP Help Portal)](https://help.sap.com/docs/ABAP_Cloud/f055b8bf582d4f34b91da667bc1fcce6/3a402c5cf6a74bc1a1de080b2a7c6978.html)
+    - [RAP Implementation Rules (ABAP Keyword Documentation)](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abaprap_impl_rules.htm)
+    - [Restrictions in RAP Handler and Saver Methods (ABAP Keyword Documentation)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapinvalid_stmts_in_rap_methods.htm)
+
+    Example: 
+    - Violation: Missing `%cid`
+    - `%cid` should always be filled in RAP creation requests
+    - You can try out the following:
+      - You are in your SAP BTP ABAP environment.
+      - Provided that you have imported the ABAP cheat sheet repository, you can add the following ABAP EML create request in a class that implements the classrun (`if_oo_adt_classrun`).
+      - The `%cid` specification in the code snippet is intentionally commented out, so `%cid` is not specified.
+      - Run the class. 
+      - The `BEHAVIOR_CONTRACT_VIOLATION` runtime error will be raised.
+      - To avoid the runtime error, specify `%cid` explicitly or use the [`AUTO FILL CID`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapmodify_entity_entities_fields.htm) addition to create `%cid` automatically.
+
+    ```abap
+    DELETE from zdemo_abap_rapt1.
+
+    MODIFY ENTITIES OF zdemo_abap_rap_ro_m
+        ENTITY root
+        CREATE FIELDS ( key_field field1 field2 field3 field4 )
+        WITH VALUE #( ( "%cid = 'cid1'
+                        key_field = 1
+                        field1    = 'aaa'
+                        field2    = 'bbb'
+                        field3    = 10
+                        field4    = 11 ) )
+        MAPPED FINAL(mapped)
+        FAILED FINAL(failed)
+        REPORTED FINAL(reported).
+
+    COMMIT ENTITIES.
+
+    SELECT SINGLE * from zdemo_abap_rapt1 where key_field = 1 into @FINAL(entry).
+    ```
+
+
+- Transactional contract checks 
+  - Implemented in the [controlled SAP LUW](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencontrolled_sap_luw_glosry.htm) concept. 
+  - Check for transactional consistency violations in a transactional phase.
+  - Transactional contracts specify which ABAP statements and operations are allowed and which are not allowed in a transactional phase.
+  - Such a transactional phase is either the *modify* or the *save* transactional phase.
+  - The phases are set either implicitly (e.g. in RAP handler and saver methods), or explicitly using the static methods of the `CL_ABAP_TX` class.
+  - In RAP, the *modify* transactional phase includes the [RAP interaction phase](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_int_phase_glosry.htm) and the [RAP early save phase](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenearly_rap_save_phase_glosry.htm) of the [RAP save sequence](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_save_seq_glosry.htm). The *save* transactional phase includes the [RAP late save phase](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenlate_rap_save_phase_glosry.htm).
+  - Transactional contracts can be set explicitly by API classifications (starting with `IF_ABAP_TX...`, for example, `IF_ABAP_TX_SAVE`). 
+  - More information: 
+    - [Controlled SAP LUW (SAP LUW cheat sheet)](17_SAP_LUW.md#controlled-sap-luw)
+    - [Ensuring Data Consistency in a RAP Transaction (ABAP EML cheat sheet)](08_EML_ABAP_for_RAP.md#ensuring-data-consistency-in-a-rap-transaction)
+    - [Controlled SAP LUW (SAP Help Portal)](https://help.sap.com/docs/ABAP_Cloud/f2961be2bd3d403585563277e65d108f/80fe04141e30456c80cc90c5cc838e94.html)
+    - [API Classifications (ABAP Keyword Documentation)](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapapi_classification.htm)
+   
+
+    Example: 
+    ```abap
+    "Activating the modify transactional phase
+    cl_abap_tx=>modify( ).
+
+    "The following database modification statement is not allowed in the
+    "modify transactional phase. In certain contexts, e.g. in ABAP Cloud,
+    "the runtime error BEHAVIOR_ILLEGAL_STMT_IN_CALL occurs.
+    MODIFY zdemo_abap_carr FROM TABLE @( VALUE #(
+        ( carrid = 'XY'
+          carrname = 'XY Airlines'
+          currcode = 'EUR'
+          url =  'some_url' ) ) ).
+
+    ...
+
+    "Activating the save transactional phase
+    cl_abap_tx=>save( ).
+
+    "In this phase, database modifications are allowed.
+    MODIFY zdemo_abap_carr FROM TABLE @( VALUE #(
+        ( carrid = 'XY'
+          carrname = 'XY Airlines'
+          currcode = 'EUR'
+          url =  'some_url' ) ) ).
+    ...
+    ```  
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
 ### Classic Exceptions
 
 - In older ABAP code, you may encounter non-class-based exceptions, the predecessors of class-based exceptions.
@@ -1321,7 +1418,7 @@ APPEND VALUE #( %tky = <fs_res>-%tky
 - Find more details in the [ABAP Keyword Documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenexceptions_non_class.htm).
 
 Example: 
-- The following example shows the older `describe_by_name` available in the [Runtime Type Identification (RTTI)](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrun_time_type_identific_glosry.htm) class `cl_abap_typedescr` (find more information in the Dynamic Programming cheat sheet).
+- The following example shows the longer available `describe_by_name` method available in the [Runtime Type Identification (RTTI)](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrun_time_type_identific_glosry.htm) class `cl_abap_typedescr` (find more information in the Dynamic Programming cheat sheet).
 - This method specifies `EXCEPTIONS` in the method signature.
 - The example intentionally uses a class name that is (most probably) not available in the system.
 - The exception is raised, and the `sy-subrc` value is evaluated. 
@@ -1359,7 +1456,7 @@ ENDTRY.
 >     - one executable class 
 >     - two self-defined example exception classes (one implements the `IF_T100_DYN_MSG`, the other implements `IF_T100_MESSAGE`)
 >     - one message class with 5 message texts that are used as exception texts
->   - explores and uses code snippets of this cheat sheet.
+>   - explores syntax described and uses code snippets in the cheat sheet.
 >   - does not represent best practice implementations. It only focuses on demonstrating ABAP syntax. 
 > - [Disclaimer](./README.md#%EF%B8%8F-disclaimer)
 
@@ -1851,7 +1948,7 @@ CLASS zcl_some_class IMPLEMENTATION.
 
             CLEANUP INTO cleanup_b.
               APPEND `#### Executing CLEANUP block ####` TO info_tab_b.
-              "USing RTTI to find out the absolute name of the class of the raised execption
+              "Using RTTI to find out the absolute name of the class of the raised execption
               DATA(class_name) = cl_abap_classdescr=>get_class_name( p_object = cleanup_b ).
               APPEND class_name TO info_tab_b.
               APPEND `d` TO strtab_b.
