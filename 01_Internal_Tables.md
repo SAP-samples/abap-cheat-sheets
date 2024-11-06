@@ -656,7 +656,7 @@ DATA(it_d) = VALUE string_table( ( `aaa` )
                                  ( `bbb` ) ).
 
 "Not providing any table lines means the table is initial
-"and has the same effect as the declaration of it46.
+"and has the same effect as the declaration of it_f.
 DATA(it_e) = VALUE string_table( ).
 DATA it_f TYPE string_table.
 

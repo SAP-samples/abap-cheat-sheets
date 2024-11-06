@@ -939,17 +939,19 @@ msgv4 = sy-msgv4. "H
 
 - This section provides examples of `RAISE EXCEPTION` statements and the `THROW` addition to the `COND` and `SWITCH` operators.
 - Note that the `RESUMABLE` addition is not covered. See more details above. 
-- The variants of statements covered in the example include the use of these additions:
+- The variants of statements covered in the example include the use of these additions. Check the ABAP Keyword Documentation for details and all possible syntax options.
   - `RAISE EXCEPTION TYPE ...`
   - `RAISE EXCEPTION TYPE ... EXPORTING ...`
   - `RAISE EXCEPTION object_reference_variable.`
   - `RAISE EXCEPTION TYPE ... MESSAGE ...`
+  - `RAISE EXCEPTION TYPE ... MESSAGE ... WITH ...`
   - `RAISE EXCEPTION TYPE ... MESSAGE ID ... TYPE ... NUMBER ...`
   - `RAISE EXCEPTION TYPE ... MESSAGE ID ... TYPE ... NUMBER ... WITH ...`
   - `RAISE EXCEPTION TYPE ... USING MESSAGE.`
   - `... THROW exc( ) ...`
   - `... THROW exc( ... ) ...`
   - `... THROW exc( MESSAGE ... ) ...`
+  - `... THROW exc( MESSAGE ... WITH ... ) ...`
   - `... THROW exc( MESSAGE ID ... TYPE ... NUMBER ... ) ...`
   - `... THROW exc( MESSAGE ID ... TYPE ... NUMBER ... WITH ... ) ...`
   - `... THROW exc( USING MESSAGE ) ...`
@@ -1029,6 +1031,8 @@ RAISE EXCEPTION TYPE zcx_demo_abap_error_a MESSAGE ID msgid TYPE msgtype NUMBER 
 "Note that the positions of the operands determine which placeholders are replaced.
 "The first specified operand replaces &1 and so on.
 
+RAISE EXCEPTION TYPE zcx_demo_abap_error_b MESSAGE e005(zdemo_abap_messages) WITH 'Hello' 'world'.
+
 RAISE EXCEPTION TYPE zcx_demo_abap_error_b MESSAGE ID 'ZDEMO_ABAP_MESSAGES'
                                                    TYPE 'E'
                                                    NUMBER '004'
@@ -1097,20 +1101,24 @@ DATA(cond_w_throw_3) = COND #( WHEN flag IS INITIAL THEN `works`
                                ELSE THROW zcx_demo_abap_error_a( MESSAGE e005(zdemo_abap_messages)
                                                                  p_005_a = `An exception raised with COND` )  ).
 
-"MESSAGE addition including ID, TYPE, NUMBER
 DATA(cond_w_throw_4) = COND #( WHEN flag IS INITIAL THEN `works`
+                               ELSE THROW zcx_demo_abap_error_b( MESSAGE e005(zdemo_abap_messages)
+                                                                 WITH 'Lorem' 'ipsum' )  ).
+
+"MESSAGE addition including ID, TYPE, NUMBER
+DATA(cond_w_throw_5) = COND #( WHEN flag IS INITIAL THEN `works`
                                ELSE THROW zcx_demo_abap_error_a( MESSAGE ID 'ZDEMO_ABAP_MESSAGES'
                                                                  TYPE 'E'
                                                                  NUMBER '002' ) ).
 
-DATA(cond_w_throw_5) =  COND #( WHEN flag IS INITIAL THEN `works`
+DATA(cond_w_throw_6) =  COND #( WHEN flag IS INITIAL THEN `works`
                                 ELSE THROW zcx_demo_abap_error_a( MESSAGE ID 'ZDEMO_ABAP_MESSAGES'
                                                                           TYPE 'E'
                                                                           NUMBER '005'
                                                                           p_005_a = `blabla` ) ).
 
 "MESSAGE addition including ID, TYPE, NUMBER, WITH
-DATA(cond_w_throw_6) = COND #( WHEN flag IS INITIAL THEN `works`
+DATA(cond_w_throw_7) = COND #( WHEN flag IS INITIAL THEN `works`
                                ELSE THROW zcx_demo_abap_error_b( MESSAGE ID 'ZDEMO_ABAP_MESSAGES'
                                                                          TYPE 'E'
                                                                          NUMBER '005'
@@ -1119,7 +1127,7 @@ DATA(cond_w_throw_6) = COND #( WHEN flag IS INITIAL THEN `works`
 "USING MESSAGE addition
 MESSAGE e005(zdemo_abap_messages) WITH 'Some message' INTO DATA(msg6).
 
-DATA(cond_w_throw_7) = COND #( WHEN flag IS INITIAL THEN `works`
+DATA(cond_w_throw_8) = COND #( WHEN flag IS INITIAL THEN `works`
                                ELSE THROW zcx_demo_abap_error_b( USING MESSAGE ) ).
 
 "----------------------------------------------------------------------------
@@ -1138,12 +1146,16 @@ DATA(switch_w_throw_3) = SWITCH #( flag WHEN '' THEN `works`
                                                                      p_005_a = `An exception raised with SWITCH` ) ).
 
 DATA(switch_w_throw_4) = SWITCH #( flag WHEN '' THEN `works`
+                                   ELSE THROW zcx_demo_abap_error_b( MESSAGE e005(zdemo_abap_messages)
+                                                                     WITH 'Test' 'message' ) ).
+
+DATA(switch_w_throw_5) = SWITCH #( flag WHEN '' THEN `works`
                                    ELSE THROW zcx_demo_abap_error_a( MESSAGE ID 'ZDEMO_ABAP_MESSAGES'
                                                                              TYPE 'E'
                                                                              NUMBER '005'
                                                                              p_005_a = `lorem ipsum` ) ).
 
-DATA(switch_w_throw_5) = SWITCH #( flag WHEN '' THEN `works`
+DATA(switch_w_throw_6) = SWITCH #( flag WHEN '' THEN `works`
                                    ELSE THROW zcx_demo_abap_error_b( MESSAGE ID 'ZDEMO_ABAP_MESSAGES'
                                                                                  TYPE 'E'
                                                                                  NUMBER '005'
@@ -1151,7 +1163,7 @@ DATA(switch_w_throw_5) = SWITCH #( flag WHEN '' THEN `works`
 
 MESSAGE e005(zdemo_abap_messages) WITH 'Some message' INTO DATA(msg7).
 
-DATA(switch_w_throw_6) = SWITCH #( flag WHEN '' THEN `works`
+DATA(switch_w_throw_7) = SWITCH #( flag WHEN '' THEN `works`
                                    ELSE THROW zcx_demo_abap_error_b( USING MESSAGE ) ).
 ```
 
@@ -2175,7 +2187,7 @@ CLASS zcl_some_class IMPLEMENTATION.
               include_name = line->source_position-incl
               source_line  = line->source_position-source_line ).
       ENDTRY.
-      IF sy-index = 14.
+      IF sy-index = 15.
         EXIT.
       ENDIF.
     ENDDO.
@@ -2501,11 +2513,13 @@ CLASS zcl_some_class IMPLEMENTATION.
           TYPE 'E'
           NUMBER '002'.
       WHEN 4.
+        RAISE EXCEPTION TYPE zcx_demo_abap_error_b MESSAGE e005(zdemo_abap_messages) WITH 'Hello' 'world'.
+      WHEN 5.
         RAISE EXCEPTION TYPE zcx_demo_abap_error_b MESSAGE ID 'ZDEMO_ABAP_MESSAGES'
                                                    TYPE 'E'
                                                    NUMBER '004'
                                                    WITH 'abc' 'def' 'ghi' 'jkl'.
-      WHEN 5.
+      WHEN 6.
         RAISE EXCEPTION TYPE zcx_demo_abap_error_b MESSAGE ID 'ZDEMO_ABAP_MESSAGES'
                                                    TYPE 'E'
                                                    NUMBER '005'
@@ -2514,22 +2528,22 @@ CLASS zcl_some_class IMPLEMENTATION.
                                                         cl_abap_context_info=>get_system_time( )
                                                         cl_abap_context_info=>get_user_alias( ).
 
-      WHEN 6.
+      WHEN 7.
         RAISE EXCEPTION TYPE zcx_demo_abap_error_b MESSAGE ID 'ZDEMO_ABAP_MESSAGES'
                                                    TYPE 'E'
                                                    NUMBER '005'
                                                    WITH 'only two out of four' 'parameters specified'.
-      WHEN 7.
+      WHEN 8.
 
         MESSAGE e002(zdemo_abap_messages) INTO DATA(msg).
         RAISE EXCEPTION TYPE zcx_demo_abap_error_b USING MESSAGE.
 
-      WHEN 8.
+      WHEN 9.
 
         MESSAGE e005(zdemo_abap_messages) WITH 'a' 'b' 'c' 'd' INTO msg.
         RAISE EXCEPTION TYPE zcx_demo_abap_error_b USING MESSAGE.
 
-      WHEN 9.
+      WHEN 10.
 
         DATA: mid     TYPE sy-msgid VALUE 'ZDEMO_ABAP_MESSAGES',
               mtype   TYPE sy-msgty VALUE 'E',
@@ -2538,7 +2552,7 @@ CLASS zcl_some_class IMPLEMENTATION.
         MESSAGE ID mid TYPE mtype NUMBER msg_num INTO msg.
         RAISE EXCEPTION TYPE zcx_demo_abap_error_b USING MESSAGE.
 
-      WHEN 10.
+      WHEN 11.
         "The following statements have the same effect as USING MESSAGE.
         MESSAGE ID 'ZDEMO_ABAP_MESSAGES'
             TYPE 'E'
@@ -2552,23 +2566,23 @@ CLASS zcl_some_class IMPLEMENTATION.
                                                    NUMBER sy-msgno
                                                    WITH   sy-msgv1 sy-msgv2 sy-msgv3 sy-msgv4.
 
-      WHEN 11.
+      WHEN 12.
         DATA(cond_w_throw_1) = COND #( WHEN flag IS INITIAL THEN `works`
                                        ELSE THROW zcx_demo_abap_error_b( MESSAGE e005(zdemo_abap_messages)
                                                                          WITH `An exception raised with COND,` `MESSAGE/WITH additions` ) ).
 
-      WHEN 12.
+      WHEN 13.
         MESSAGE e005(zdemo_abap_messages) WITH 'Exception raised with COND,' 'USING MESSAGE addition' INTO msg.
 
         DATA(cond_w_throw_2) = COND #( WHEN flag IS INITIAL THEN `works`
                                        ELSE THROW zcx_demo_abap_error_b( USING MESSAGE ) ).
 
-      WHEN 13.
+      WHEN 14.
         DATA(switch_w_throw_1) = SWITCH #( flag WHEN '' THEN `works`
                                            ELSE THROW zcx_demo_abap_error_b( MESSAGE e005(zdemo_abap_messages)
                                                                              WITH `An exception raised with SWITCH,` `MESSAGE/WITH additions` )  ).
 
-      WHEN 14.
+      WHEN 15.
         MESSAGE e005(zdemo_abap_messages) WITH 'Exception raised with SWITCH,' 'USING MESSAGE addition' INTO msg.
 
         DATA(switch_w_throw_2) = SWITCH #( flag WHEN '' THEN `works`

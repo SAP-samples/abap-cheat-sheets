@@ -1096,22 +1096,12 @@ DATA(methods) = CAST cl_abap_objectdescr(
 
 ## COND
 
--   The
-    [`COND`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconditional_expression_cond.htm)
-    operator is used for either creating a result depending on [logical
-    expressions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenlogical_expression_glosry.htm "Glossary Entry")
-    or raising a [class-based
-    exception](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenclass_based_exception_glosry.htm "Glossary Entry")
-    (which is specified within the parentheses after the addition
-    [`THROW`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconditional_expression_result.htm)).
--   There can be multiple logical expressions initiated by
-    `WHEN` followed by the result specified after
-    `THEN`. If none of the logical expressions are true, you can
-    specify an `ELSE` clause at the end. If this clause is not
-    specified, the result is the initial value of the specified or
-    derived data type.
--   Note that all operands specified after `THEN` must be
-    convertible to the specified or derived data type.
+- The [`COND`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconditional_expression_cond.htm) operator is used for creating a result depending on [logical expressions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenlogical_expression_glosry.htm "Glossary Entry") 
+- It can also be used to raise [class-based exceptions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenclass_based_exception_glosry.htm "Glossary Entry") or [runtime errors](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenruntime_error_glosry.htm) with the [`THROW`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconditional_expression_result.htm) addition.
+  - Find examples on the `THROW` addition in the [Exceptions and Runtime Errors](27_Exceptions.md) cheat sheet.
+- There can be multiple logical expressions initiated by `WHEN` followed by the result specified after `THEN`. If none of the logical expressions are true, you can
+    specify an `ELSE` clause at the end. If this clause is not specified, the result is the initial value of the specified or derived data type.
+- Note that all operands specified after `THEN` must be convertible to the specified or derived data type.
 
 Example:
 ``` abap
@@ -1166,13 +1156,8 @@ div = COND decfloat34( WHEN num1 <> 0 AND num2 <> 0 THEN num1 / num2
 
 ## SWITCH
 
-The
-[`SWITCH`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconditional_expression_switch.htm)
-operator is fairly similar to the `COND` operator and works in
-the style of
-[`CASE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapcase.htm)
-statements, i. e. it uses the value of only a single variable that is
-checked in the case distinction.
+- The [`SWITCH`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconditional_expression_switch.htm) operator is fairly similar to the `COND` operator and works in the style of [`CASE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapcase.htm) statements, i. e. it uses the value of only a single variable that is checked in the case distinction.
+- Also here, `SWITCH` can be used to raise [class-based exceptions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenclass_based_exception_glosry.htm "Glossary Entry") or [runtime errors](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenruntime_error_glosry.htm) with the [`THROW`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconditional_expression_result.htm) addition. Find examples on the `THROW` addition in the [Exceptions and Runtime Errors](27_Exceptions.md) cheat sheet.
 
 Examples:
 

@@ -28,8 +28,9 @@
       - [CONVERT ... INTO TIME STAMP: Local Date/Time -\> Time Stamp in Packed Numbers](#convert--into-time-stamp-local-datetime---time-stamp-in-packed-numbers)
       - [CL\_ABAP\_TSTMP: Calculating and Converting Time Stamps in Packed Numbers](#cl_abap_tstmp-calculating-and-converting-time-stamps-in-packed-numbers)
     - [Excursion: Unix Time Stamps](#excursion-unix-time-stamps)
-  - [Date, Time, and Time Stamps in String Templates](#date-time-and-time-stamps-in-string-templates)
-  - [Excursion: Date and Time Functions in ABAP SQL and ABAP CDS](#excursion-date-and-time-functions-in-abap-sql-and-abap-cds)
+  - [Excursions](#excursions)
+    - [Date, Time, and Time Stamps in String Templates](#date-time-and-time-stamps-in-string-templates)
+    - [Date and Time Functions in ABAP SQL and ABAP CDS](#date-and-time-functions-in-abap-sql-and-abap-cds)
   - [More Information](#more-information)
   - [Executable Example](#executable-example)
 
@@ -1121,7 +1122,9 @@ DATA(ts_from_unix2) = utclong_add( val = CONV utclong( '1970-01-01 00:00:00' )
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-## Date, Time, and Time Stamps in String Templates
+## Excursions
+
+### Date, Time, and Time Stamps in String Templates
 
 More information: [String Processing cheat sheet](07_String_Processing.md#string-templates) and the [ABAP Keyword Documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenstring_templates.htm)
 
@@ -1158,7 +1161,8 @@ tz_str = |{ utclong_current( ) TIMEZONE = 'EST' COUNTRY = 'US ' }|. "12/30/2024 
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-## Excursion: Date and Time Functions in ABAP SQL and ABAP CDS
+
+### Date and Time Functions in ABAP SQL and ABAP CDS
 
 > **💡 Note**<br>
 > - Date and time functions are available for both [ABAP SQL](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_sql_date_time_functions.htm) and [ABAP CDS](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_date_time_functions_v2.htm). They have the same names. See the [overview](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenddic_date_time_functions.htm) to find out which functions are available. The followig code snippet uses ABAP SQL.

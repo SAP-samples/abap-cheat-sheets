@@ -49,7 +49,7 @@ This cheat sheet ...
 - They provide the same functionality as the local types that can be defined in ABAP programs with `TYPES` statements.  
 - DDIC also enables the creation of additional objects, such as database tables, which are then created in the underlying database.
 - Furthermore, the DDIC includes objects that support development in various contexts, such as lock objects related to the [SAP LUW concept](17_SAP_LUW.md) and more. They are not outlined here.
-- DDIC offers many objects and functionalities particularly suited for classic ABAP technologies and user interfaces, such as dynpros. However, these are not relevant in ABAP Cloud and are not covered in this cheat sheet. For example, DDIC search helps (that are used to created value lists for input fields on dynpros) can be replaced by CDS-based search helps.
+- DDIC offers many objects and functionalities particularly suited for classic ABAP technologies and user interfaces, such as dynpros. However, these are not relevant in ABAP Cloud and are not covered in this cheat sheet. For example, DDIC search helps (that are used to create value lists for input fields on dynpros) can be replaced by CDS-based search helps.
 - The more modern concept, ABAP CDS, is integrated into the DDIC, allowing for the creation of dedicated CDS objects that can replace DDIC objects to be used in newer concepts like RAP.
 - DDIC objects are transportable.
 - In terms of repository objects in ABAP Cloud, you can use only those SAP-delivered repository objects that are released as APIs for the ABAP language version ABAP for Cloud Development, in addition to your custom repository objects. See a list of released APIs [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenreleased_apis.htm). Also, ABAP development tools for Eclipse (ADT) are the only supported tools for creating repository objects.
@@ -183,7 +183,7 @@ DATA char1_dtel TYPE zdemo_abap_dtel_do.
 
 "Data element based on a reference type
 TYPES ty_dtel3 TYPE zdemo_abap_dtel_ref.
-DATA char10_dtel_ref TYPE zdemo_abap_dtel_do.
+DATA char10_dtel_ref TYPE zdemo_abap_dtel_ref.
 ```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>

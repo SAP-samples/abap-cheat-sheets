@@ -5,8 +5,8 @@
 - [ABAP Object Orientation](#abap-object-orientation)
   - [Classes and Objects](#classes-and-objects)
     - [Creating Classes](#creating-classes)
-      - [Creating a Local Class](#creating-a-local-class)
       - [Creating a Global Class](#creating-a-global-class)
+      - [Creating a Local Class](#creating-a-local-class)
       - [Excursion: Class Pool and Include Programs](#excursion-class-pool-and-include-programs)
     - [Visibility of Components](#visibility-of-components)
       - [Creating the Visibility Sections](#creating-the-visibility-sections)
@@ -15,7 +15,8 @@
       - [Methods](#methods)
       - [Parameter Interface](#parameter-interface)
       - [Formal and Actual Parameters](#formal-and-actual-parameters)
-      - [Defingin Parameters as Optional](#defingin-parameters-as-optional)
+      - [Defining Parameters as Optional](#defining-parameters-as-optional)
+      - [Defining Input Parameters as Preferred](#defining-input-parameters-as-preferred)
       - [Constructors](#constructors)
       - [Example for Method Definitions](#example-for-method-definitions)
   - [Working with Objects and Components](#working-with-objects-and-components)
@@ -43,6 +44,7 @@
       - [Friendship between Global and Local Classes](#friendship-between-global-and-local-classes)
     - [Events](#events)
     - [Examples for Design Patterns: Factory Methods and Singletons](#examples-for-design-patterns-factory-methods-and-singletons)
+    - [Class-Based Exceptions](#class-based-exceptions)
   - [More Information](#more-information)
   - [Executable Example](#executable-example)
 
@@ -119,26 +121,6 @@ Basic structure of classes:
 - [Implementation part](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenimplementation_part_glosry.htm "Glossary Entry") that includes method implementations.
 - Both are introduced by `CLASS` and ended by `ENDCLASS`.
 
-#### Creating a Local Class
-
-``` abap
-"Declaration part
-CLASS local_class DEFINITION.
-
-    ... "Here go the declarations for all components and visibility sections.
-        "You should place the declarations at the beginning of the program.
-
-ENDCLASS.
-
-"Implementation part
-CLASS local_class IMPLEMENTATION.
-
-    ...  "Here go the method implementations.
-         "Only required if you declare methods in the declaration part.
-
-ENDCLASS.
-```
-
 #### Creating a Global Class
 The code snippet shows a basic skeleton of a global class. There are [further
 additions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapclass_options.htm)
@@ -176,6 +158,37 @@ ENDCLASS.
 >   - `... FOR BEHAVIOR OF ...`: To define [ABAP behavior pools](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbehavior_pool_glosry.htm). Find more information in the [ABAP for RAP: Entity Manipulation Language (ABAP EML)](08_EML_ABAP_for_RAP.md) cheat sheet.
 >   - `... DEFINITION DEFERRED.`: Making a local class known in a program before the actual class definition. It is typically used in test classes of ABAP Unit. Find more information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapclass_deferred.htm).
 
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+#### Creating a Local Class
+
+- You can create local classes, for example, in the [CCIMP include](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenccimp_glosry.htm) (*Local Types* tab in ADT) of a [class pool](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenclass_pool_glosry.htm). 
+- Local classes are used in their own ABAP program. While dynamic access beyond program boundaries is possible, it is not recommended.
+- The cheat sheet's focus is on global classes. Local classes are also mentioned in the [friendship](#friendship) section.
+
+The following snippet shows the skeleton of local class declaration. 
+- It does not specify any class options after `DEFINITION`. 
+- The `PUBLIC` addition makes a class a global class in the class library. Not possible in the context of local classes.
+- It does not specify `CREATE ...`. Note that `CREATE PUBLIC` is the default, which means that not specifying any `CREATE ...` addition makes the class implicitly specified with `CREATE PUBLIC`.
+
+``` abap
+"Declaration part
+CLASS local_class DEFINITION.
+
+    ... "Here go the declarations for all components and visibility sections.
+        "You should place the declarations at the beginning of the program.
+
+ENDCLASS.
+
+"Implementation part
+CLASS local_class IMPLEMENTATION.
+
+    ...  "Here go the method implementations.
+         "Only required if you declare methods in the declaration part.
+
+ENDCLASS.
+```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
@@ -522,7 +535,7 @@ In the simplest form, methods can have no parameter at all. Apart from that, met
 |`EXPORTING`|Defines one or more output parameters to be exported by the method.  |
 |`CHANGING`|Defines one or more input or output parameters, i. e. that can be both imported and exported.  |
 |`RETURNING`|For [functional methods](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenfunctional_method_glosry.htm "Glossary Entry"), i. e. such methods have only one `RETURNING` parameter that can be defined. As an output parameter like the `EXPORTING` parameter, `RETURNING` parameters pass back values (note that the formal parameters of returning parameters must be passed by value as covered below; the parameter must be [completely typed](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencomplete_typing_glosry.htm)). In contrast to `EXPORTING` for which multiple parameters can be specified, only one `RETURNING` parameter can be specified in a method. If you only need one output parameter, you can benefit from using a `RETURNING` parameter by shortening the method call and enabling method chaining. Another big plus is that such functional methods can, for example, be used in expressions. In case of standalone method calls, the returned value can be accessed using the addition `RECEIVING`.  |
-|`RAISING` | Used to declare the [class-based exceptions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenclass_based_exception_glosry.htm "Glossary Entry") that can be propagated from the method to the caller.  |
+|`RAISING` | Used to declare the [class-based exceptions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenclass_based_exception_glosry.htm "Glossary Entry") that can be propagated from the method to the caller. It can also be specified with the addition `RESUMABLE` for [resumable exceptions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenresumable_exception_glosry.htm). Find more information in the [Exceptions and Runtime Errors](27_Exceptions.md) cheat sheet. |
 
 
 > **💡 Note**<br>
@@ -532,8 +545,6 @@ In the simplest form, methods can have no parameter at all. Apart from that, met
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
 #### Formal and Actual Parameters
-- [Formal parameter](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenformal_parameter_glosry.htm "Glossary Entry")
-    versus [actual parameters](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenactual_parameter_glosry.htm "Glossary Entry"):
 
 - [Formal parameters](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenformal_parameter_glosry.htm "Glossary Entry"): You define method parameters by specifying a name with a type which can be a [generic](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abengeneric_data_type_glosry.htm "Glossary Entry") or  [complete](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencomplete_data_type_glosry.htm "Glossary Entry")
     type. 
@@ -544,19 +555,105 @@ In the simplest form, methods can have no parameter at all. Apart from that, met
 - This formal parameter includes the specification of how the value passing should happen. Parameters can be passed by ...
   - [reference](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenpass_by_reference_glosry.htm "Glossary Entry"): `... REFERENCE(param) ...`; note that just specifying the parameter name `... param ...` - as a shorter syntax - means passing by reference by default) 
   - [value](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenpass_by_value_glosry.htm "Glossary Entry"): `... VALUE(param) ...`
-- The [actual parameters](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenactual_parameter_glosry.htm "Glossary Entry") represents the data object whose content is passed to or copied from a formal parameter as an argument when a procedure is called. 
+- An [Actual parameter](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenactual_parameter_glosry.htm "Glossary Entry") represents the data object whose content is passed to or copied from a formal parameter as an argument when a procedure is called. 
 - If passing by reference is used, a local data object is not created for the actual parameter. Instead, the procedure is given a [reference](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenreference_glosry.htm "Glossary Entry") to the actual parameter during the call and works with the actual parameter itself. 
 - Note that parameters that are input and passed by reference cannot be modified in the procedure. However, the use of a reference is beneficial regarding the performance compared to creating a local data object.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-#### Defingin Parameters as Optional
+#### Defining Parameters as Optional
 
-- Parameters can be defined as optional using the `OPTIONAL` and `DEFAULT` additions: 
+- Parameters specified after `IMPORTING` and `CHANGING` can be defined as optional using the `OPTIONAL` and `DEFAULT` additions: 
   - [`OPTIONAL`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapmethods_parameters.htm#!ABAP_ONE_ADD@1@): It is then not mandatory to pass an actual
     parameter. 
   - [`DEFAULT`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapmethods_parameters.htm#!ABAP_ONE_ADD@1@): Also makes the passing of an actual parameter optional. However, when using this addition, as the name implies, a default value is set.
   - In the method implementations you may want to check whether an actual parameter was passed. You can use predicate expressions using `IS SUPPLIED`. See the example further down.
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+#### Defining Input Parameters as Preferred
+
+- Using the `PREFERRED PARAMETER` addition, you can flag an input parameter from the list as preferred.
+- All parameters must be optional (i.e. specified with `OPTIONAL` or `DEFAULT`).
+- The preferred parameter is implicitly optional, but you should explicitly specify it as `OPTIONAL` or `DEFAULT`, or a warning will be displayed.
+- When you call a method and specify a single actual parameter without specifying the name of the formal parameter in an assignment, the actual parameter is automatically assigned to the preferred parameter.
+
+The following example shows a simple method with input parameters of type `i` (an addition is performed using the actual parameter values), where one parameter is preferred. The `IS SUPPLIED` addition in `COND` statements checks whether parameters are supplied. The final output shows the preferred parameter assigned automatically when the formal parameter is not specified explicitly.
+To try the example out, create a demo class named `zcl_some_class` and paste the code into it. After activation, choose *F9* in ADT to execute the class. The example is set up to display output in the console. The example should display the following:
+
+```
+IS SUPPLIED: num1 "X", num2 "X", num3 "X" / Addition result "9"
+IS SUPPLIED: num1 "X", num2 "X", num3 "" / Addition result "7"
+IS SUPPLIED: num1 "", num2 "X", num3 "X" / Addition result "6"
+IS SUPPLIED: num1 "X", num2 "", num3 "X" / Addition result "6"
+IS SUPPLIED: num1 "", num2 "X", num3 "" / Addition result "4"
+IS SUPPLIED: num1 "", num2 "", num3 "X" / Addition result "3"
+IS SUPPLIED: num1 "", num2 "", num3 "" / Addition result "1"
+IS SUPPLIED: num1 "X", num2 "", num3 "" / Addition result "4"
+```
+
+Example code:
+
+```abap
+CLASS zcl_some_class DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
+
+  PUBLIC SECTION.
+    INTERFACES if_oo_adt_classrun.
+
+    CLASS-METHODS meth
+      IMPORTING num1        TYPE i OPTIONAL
+                num2        TYPE i OPTIONAL
+                num3        TYPE i DEFAULT 1
+                PREFERRED PARAMETER num1
+      RETURNING VALUE(text) TYPE string.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+ENDCLASS.
+
+CLASS zcl_some_class IMPLEMENTATION.
+  METHOD if_oo_adt_classrun~main.
+
+    DATA(text1) = meth( num1 = 3 num2 = 3 num3 = 3 ).
+    out->write( text1 ).
+
+    DATA(text2) = meth( num1 = 3 num2 = 3 ).
+    out->write( text2 ).
+
+    DATA(text3) = meth( num2 = 3 num3 = 3 ).
+    out->write( text3 ).
+
+    DATA(text4) = meth( num1 = 3 num3 = 3 ).
+    out->write( text4 ).
+
+    DATA(text5) = meth( num2 = 3 ).
+    out->write( text5 ).
+
+    DATA(text6) = meth( num3 = 3 ).
+    out->write( text6 ).
+
+    DATA(text7) = meth( ).
+    out->write( text7 ).
+
+    "Not specifying the name of the formal parameter. The
+    "actual parameter is assigned to the preferred input
+    "parameter.
+    DATA(text8) = meth( 3 ).
+    out->write( text8 ).
+  ENDMETHOD.
+
+  METHOD meth.
+    DATA(addition) = num1 + num2 + num3.
+    text = |IS SUPPLIED: num1 "{ COND #( WHEN num1 IS SUPPLIED THEN 'X' ELSE '' ) }", | &&
+           |num2 "{ COND #( WHEN num2 IS SUPPLIED THEN 'X' ELSE '' ) }", | &&
+           |num3 "{ COND #( WHEN num3 IS SUPPLIED THEN 'X' ELSE '' ) }" / | &&
+           |Addition result "{ addition }"|.
+  ENDMETHOD.
+
+ENDCLASS.
+```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
@@ -3544,6 +3641,13 @@ DATA obj_factory TYPE REF TO class.
 
 obj_factory = class=>factory_method( par = ... ).
 ```
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+### Class-Based Exceptions
+
+- [Catchable exceptions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencatchable_exception_glosry.htm) are represented by exception objects of exception classes.
+- Find an overview in the [Exceptions and Runtime Errors](27_Exceptions.md) cheat sheet.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
