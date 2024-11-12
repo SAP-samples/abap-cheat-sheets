@@ -46,7 +46,8 @@
   - [Operations with Internal Tables Using ABAP SQL SELECT Statements](#operations-with-internal-tables-using-abap-sql-select-statements)
     - [Internal Tables as Target Data Objects in SELECT Queries](#internal-tables-as-target-data-objects-in-select-queries)
     - [SELECT Queries with Internal Tables as Data Sources](#select-queries-with-internal-tables-as-data-sources)
-      - [Excursion: Restrictions Regarding Selecting from Internal Tables](#excursion-restrictions-regarding-selecting-from-internal-tables)
+    - [Restrictions Regarding Selecting from Internal Tables](#restrictions-regarding-selecting-from-internal-tables)
+    - [Excursion: Joining/Merging Internal Tables into Internal Tables](#excursion-joiningmerging-internal-tables-into-internal-tables)
   - [Sorting Internal Tables](#sorting-internal-tables)
   - [Modifying Internal Table Content](#modifying-internal-table-content)
   - [Deleting Internal Table Content](#deleting-internal-table-content)
@@ -3285,7 +3286,7 @@ ENDCLASS.
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
 
-#### Excursion: Restrictions Regarding Selecting from Internal Tables 
+### Restrictions Regarding Selecting from Internal Tables 
 
 - This excursion is intended to underscore the restrictions mentioned above and in the [documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensql_engine_restr.htm) in more detail when selecting from internal tables. 
 - Components having deep types, such as strings, cannot be included, for example, in the `SELECT` list or `WHERE` clause. 
@@ -3353,6 +3354,146 @@ SELECT SINGLE comp1, comp3 FROM @itab2 AS it WHERE comp2 = 'aaa' AND comp3 = `AB
 "example uses a typed literal.
 SELECT SINGLE comp1, comp2, comp3 FROM @itab2 AS it WHERE comp3 = sstring`ABAP` INTO @DATA(res9).
 ```
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+### Excursion: Joining/Merging Internal Tables into Internal Tables
+
+The following code snippets demonstrate joining/merging the content of two simple internal tables into another table. There are various ways to achieve this. Here, the intention is to give an idea and, in particular, to emphasize SQL functionalities also available for internal tables (note the restrictions mentioned above and in the documentation).
+
+Assumptions:
+- The target table is either created inline or exists and includes components from the source tables or components that can be mapped.
+- One or more components are common between the source tables to perform a join or merge the table content.
+
+The code snippet shows a selection of syntax options and includes the following statements:
+- Joins with `SELECT` (`INNER JOIN`, `LEFT OUTER JOIN`, CTE)
+- Loops with `LOOP AT` statements, `FOR` loops using the `VALUE` and `REDUCE` operators
+
+```abap
+"Creating two internal tables whose content will be joined. The shared
+"value is represented by the key1 and key2 components.
+"Sorted tables are used in the example (having key1/key2 as unique keys)
+"to have unique values to perform joins.
+TYPES: BEGIN OF s1,
+            key1 TYPE i,
+            a    TYPE c LENGTH 1,
+            b    TYPE c LENGTH 1,
+            c    TYPE c LENGTH 1,
+        END OF s1,
+        tab_type1 TYPE SORTED TABLE OF s1 WITH UNIQUE KEY key1,
+        BEGIN OF s2,
+            key2 TYPE i,
+            d    TYPE c LENGTH 1,
+            e    TYPE c LENGTH 1,
+        END OF s2,
+        tab_type2 TYPE SORTED TABLE OF s2 WITH UNIQUE KEY key2.
+
+"Populating demo internal tables
+DATA(itab1) = VALUE tab_type1( ( key1 = 1 a = 'a' b = 'b'  c = 'c' )
+                               ( key1 = 2 a = 'd' b = 'e'  c = 'f' )
+                               ( key1 = 3 a = 'g' b = 'h'  c = 'i' ) ).
+
+DATA(itab2) = VALUE tab_type2( ( key2 = 1 d = `j` e = `k` )
+                               ( key2 = 2 d = `l` e = `m` ) ).
+
+"SELECT statement, inner join
+"Note: With the inner join, the target table contains all
+"combinations of rows for whose columns the join condition
+"is true.
+SELECT a~key1, a~a, a~b, b~d, b~e
+    FROM @itab1 AS a
+    INNER JOIN @itab2 AS b ON a~key1 = b~key2
+    INTO TABLE @DATA(itab3).
+
+*Result
+*KEY1    A    B    D    E
+*1       a    b    j    k
+*2       d    e    l    m
+
+"SELECT statement, left outer join
+"In contrast to the inner join above, the target table here
+"also contains the table row of the first table for which
+"no equivalent row exists in the second table.
+SELECT a~key1, a~a, a~b, b~d, b~e
+    FROM @itab1 AS a
+    LEFT OUTER JOIN @itab2 AS b ON a~key1 = b~key2
+    INTO TABLE @DATA(itab4).
+
+*Result
+*KEY1    A    B    D    E
+*1       a    b    j    k
+*2       d    e    l    m
+*3       g    h
+
+"------------------------ NOTE -----------------------------------
+"--- The following statements produce the same result as the -----
+"--- previous example (itab4). -----------------------------------
+"-----------------------------------------------------------------
+
+"Common table expression
+"The following example procudes the same result as the previous one.
+WITH +it1 AS ( SELECT a~key1, a~a, a~b FROM @itab1 AS a ),
+        +it2 AS ( SELECT b~key2, b~d, b~e FROM @itab2 AS b )
+SELECT +it1~key1, +it1~a, +it1~b, +it2~d, +it2~e FROM +it1 LEFT JOIN +it2 ON +it1~key1 = +it2~key2
+INTO TABLE @DATA(itab5).
+
+"LOOP statements
+"Using the CORRESPONDING operator, BASE retains existing content
+"The assignment with CORRESPONDING ... BASE ... includes a table expression
+"in which table lines are read and inserted based on the key mapping. With the
+"OPTIONAL addition, errors can be avoided if a line does not exist.
+DATA itab6 LIKE itab4.
+LOOP AT itab1 INTO DATA(wa1).
+    INSERT CORRESPONDING #( wa1 ) INTO TABLE itab6 REFERENCE INTO DATA(ref).
+    ref->* = CORRESPONDING #( BASE ( ref->* ) VALUE #( itab2[ key2 = ref->key1 ] OPTIONAL ) ).
+ENDLOOP.
+
+"Example similar to the previous one
+"Also here, a table expression is used to read a line from
+"the second internal table. The INSERT statement (without
+"CORRESPONDING) includes the concrete value assignments
+"with the VALUE operator.
+DATA itab7 LIKE itab4.
+LOOP AT itab1 INTO DATA(wa2).
+    DATA(line) = VALUE #( itab2[ key2 = wa2-key1 ] OPTIONAL ).
+
+    INSERT VALUE #( key1 = wa2-key1
+                    a = wa2-a
+                    b = wa2-b
+                    d = line-d
+                    e = line-e ) INTO TABLE itab7.
+ENDLOOP.
+
+"Example using a FOR loop with the VALUE operator
+TYPES tt_type3 LIKE itab4.
+DATA(itab8) = VALUE tt_type3( FOR wa3 IN itab1
+                              ( key1 = wa3-key1
+                                a = wa3-a
+                                b = wa3-b
+                                d = VALUE #( itab2[ key2 = wa3-key1 ]-d OPTIONAL )
+                                e = VALUE #( itab2[ key2 = wa3-key1 ]-e OPTIONAL ) ) ).
+
+"Similar example that includes a LET expression
+DATA(itab9) = VALUE tt_type3( FOR wa4 IN itab1
+                              LET tab_line = VALUE #( itab2[ key2 = wa4-key1 ] OPTIONAL ) IN
+                              ( key1 = wa4-key1
+                                a = wa4-a
+                                b = wa4-b
+                                d = tab_line-d
+                                e = tab_line-e ) ).
+
+"Example using a FOR loop with the REDUCE operator and LET
+DATA(itab10) = REDUCE tt_type3( INIT tab = VALUE #( )
+                                FOR wa5 IN itab1
+                                LET tableline = VALUE #( itab2[ key2 = wa5-key1 ] OPTIONAL ) IN
+                                NEXT tab = VALUE #( BASE tab
+                                ( key1 = wa5-key1
+                                  a = wa5-a
+                                  b = wa5-b
+                                  d = tableline-d
+                                  e = tableline-e ) ) ).
+```
+
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
