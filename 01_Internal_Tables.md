@@ -2865,9 +2865,6 @@ ref->* = itab[ 1 ].
 <td> Specifying table expressions as operands in constructor expressions with <code>VALUE</code> and <code>REF</code> </td>
 <td>
 
-test
-
-<br>
 
 ``` abap
 line = VALUE #( itab[ 2 ] ).
@@ -3038,9 +3035,6 @@ ASSERT num2 = num1.
 <td> Table expression result having a reference type enabling chainings with the object component selector </td>
 <td>
 
-test
-
-<br>
 
 ``` abap
 DATA itab_ref TYPE TABLE OF REF TO s_demo WITH EMPTY KEY.
