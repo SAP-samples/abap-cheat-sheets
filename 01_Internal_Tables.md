@@ -33,6 +33,7 @@
       - [CASTING and ELSE UNASSIGN Additions when Specifying Field Symbols as Target Areas](#casting-and-else-unassign-additions-when-specifying-field-symbols-as-target-areas)
       - [BINARY SEARCH Addition: Optimized Read Access When Specifying Free Keys](#binary-search-addition-optimized-read-access-when-specifying-free-keys)
     - [Example: Exploring READ TABLE Statements and Table Expressions](#example-exploring-read-table-statements-and-table-expressions)
+  - [Table Expressions](#table-expressions)
   - [Getting Information about Internal Tables, Table Lines, Table Types](#getting-information-about-internal-tables-table-lines-table-types)
     - [Checking the Existence of a Line in an Internal Table](#checking-the-existence-of-a-line-in-an-internal-table)
     - [Checking the Index of a Line in an Internal Table](#checking-the-index-of-a-line-in-an-internal-table)
@@ -1636,6 +1637,8 @@ the read result is stored in a variable that can be declared inline.
 The number in the square brackets represents the index. A line that is
 not found results in an runtime error. To avoid an error, you can
 use a [`TRY ... CATCH ... ENDTRY.`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abaptry.htm) block.
+
+Find more information about syntax related to table expressions [further down](#table-expressions).
 <br>
 
 ``` abap
@@ -1747,22 +1750,25 @@ READ TABLE it FROM sec_keys USING KEY sk INTO wa.
 <td> Table expressions </td>
 <td>
 
+Find more information about syntax related to table expressions [further down](#table-expressions).
+
 
 ``` abap
-"Key must be fully specified
-line = it[ KEY primary_key COMPONENTS a = 1 b = 2 ].
+line = it[ TABLE KEY primary_key COMPONENTS a = 1 b = 2 ].
 
 "The addition COMPONENTS is optional; same as above
-line = it[ KEY primary_key a = 1 b = 2 ].
+line = it[ TABLE KEY primary_key a = 1 b = 2 ].
 
 "Primary key alias
-line = it[ KEY pk a = 1 b = 2 ].
+line = it[ TABLE KEY pk a = 1 b = 2 ].
 
 "Secondary table key
-line = it[ KEY sec_key c = 3 d = 4 ].
+line = it[ TABLE KEY sec_key c = 3 d = 4 ].
 
 "Secondary table key alias
-line = it[ KEY sk c = 3 d = 4 ].
+line = it[ TABLE KEY sk c = 3 d = 4 ].
+
+"Note the section further down about just using KEY (instead of TABLE KEY).
 ```
 
 </td>
@@ -2650,6 +2656,628 @@ ENDCLASS.
 </details>    
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
+
+
+## Table Expressions
+
+Table expressions have been mentioned in sections above. This is to summarize.
+
+- Table expressions typically use the name of an internal table followed by square brackets with content `[ ... ]`, specifying a table line.
+- They allow read and write access to internal tables at various positions.
+- These expressions are a concise form of `READ TABLE` statements, enabling read and write operations in operand positions.
+  - Unlike `READ TABLE`, table expressions do not change the `sy-tabix` system field (except with `ASSIGN`).
+- After the brackets, you can specify chaining (component selectors or additional square brackets). Without chaining, the entire line is respected.
+
+The following table demonstrates a selection of subjects where table expressions are applicable.
+
+
+<table>
+<tr>
+<td> Subject </td> <td> Details/Code Snippet </td>
+</tr>
+
+<tr>
+<td> Reading table lines by index </td>
+<td>
+
+- When only specifying the index number in the square brackets, it means referring to the primary table index.
+- In this case, the internal table must be an index table.
+- Using the `KEY ... INDEX ...` addition, you can specify the table index explicitly. Either use the predefined name `primary_key` for the primary key explicitly (or an alias name, if specified), or the secondary key name (or an alias name, if specified).
+- Note that the demo internal tables in the snippet are used in the following examples of the section. 
+
+<br>
+
+``` abap
+"Creating and populating demo internal tables
+"Note: These demo tables are relevant for most of the code snippets
+"in this section.
+TYPES: BEGIN OF s_demo,
+            comp1 TYPE i,
+            comp2 TYPE i,
+            comp3 TYPE i,
+            comp4 TYPE c LENGTH 3,
+        END OF s_demo,
+        ttyp        TYPE SORTED TABLE OF s_demo WITH UNIQUE KEY comp1 WITH NON-UNIQUE SORTED KEY sk COMPONENTS comp2 comp3,
+        ttyp_hashed TYPE HASHED TABLE OF s_demo WITH UNIQUE KEY comp1 WITH NON-UNIQUE SORTED KEY sk COMPONENTS comp2 comp3.
+
+DATA(itab) = VALUE ttyp( ( comp1 = 1 comp2 = 30 comp3 = 31 comp4 = 'aaa' )
+                            ( comp1 = 2 comp2 = 20 comp3 = 21 comp4 = 'bbb' )
+                            ( comp1 = 3 comp2 = 10 comp3 = 11 comp4 = 'ccc' ) ).
+DATA itab_hashed TYPE ttyp_hashed.
+itab_hashed = itab.
+
+
+"------ Reading table line by index------
+"Just specifying the index number means referring to the primary table index.
+"In this case, the internal table must be an index table.
+
+"In the example, the entire table line is assigned to a variable
+DATA(line) = itab[ 2 ].
+
+"KEY ... INDEX ... additions
+"For reading a line according to a table index.
+"The following example has the same effect as above. Here, the default
+"name of the primary key is specified explicitly.
+line = itab[ KEY primary_key INDEX 2 ].
+
+"This syntax is not possible for hashed tables.
+"DATA(line_hashed_tab1) = itab_hashed[ 2 ].
+"DATA(line_hashed_tab2) = itab_hashed[ KEY primary_key INDEX 2 ].
+"Secondary table index access is possible for hashed tables
+DATA(line_hashed_tab3) = itab_hashed[ KEY sk INDEX 2 ].
+``` 
+
+</td>
+</tr>
+<tr>
+
+<tr>
+<td> Reading table lines by table key </td>
+<td>
+
+- Using the `TABLE KEY` addition, the table key must be fully specified, i.e. all components of the key must be respected, no other components are possible.
+- In case of the primary table key and when using it explicitly, the key must be specified using the predefined name or an alias, if available.
+- The `COMPONENTS` addition is optional.
+- Note the comments in the snippet about just using the `KEY` addition instead of `TABLE KEY`, and others. 
+
+<br>
+
+``` abap
+
+line = itab[ TABLE KEY primary_key COMPONENTS comp1 = 1 ].
+"The following statement is not possible as no other components can be specified.
+"line = itab[ TABLE KEY primary_key COMPONENTS comp1 = 1 comp2 = 30 ].
+
+"The addition COMPONENTS is optional; the following example is the same as above
+line = itab[ TABLE KEY primary_key comp1 = 1 ].
+
+"Secondary table key
+line = itab[ TABLE KEY sk comp2 = 20 comp3 = 21 ].
+"Fully specifying the table key components is required with TABLE KEY.
+"line = itab[ TABLE KEY sk comp2 = 20 ].
+
+"The following syntax only uses the KEY addition, without TABLE. This
+"syntax option reads a line in accordance with a specified free key.
+"However, if a table key is specified with KEY, an optimized search is performed.
+line = itab[ KEY primary_key comp1 = 1 ].
+
+"Note: Sorted table keys need not be covered completely.
+"Example purposes of such a specification: Determining the existence of a line,
+"or determining a line number for the starting point for a loop starting at
+"that position.
+line = itab[ KEY sk comp2 = 20 ].
+
+"For sorted and secondary keys, additional components can be specified
+"that are not part of the table key.
+line = itab[ KEY sk comp2 = 20 comp4 = 'bbb' ].
+
+"Note: The primary table key does not need to be specified explicitly.
+"You can also just use the syntax variant for reading by free key (no TABLE KEY/KEY
+"additions) and benefit from optimized search when the key components are specified,
+"for example as follows:
+line = itab[ comp1 = 1 ].
+``` 
+
+</td>
+</tr>
+<tr>
+
+<tr>
+<td> Reading table lines by using free keys </td>
+<td>
+
+
+``` abap
+line = itab[ comp3 = 31 ].
+line = itab[ comp4 = 'ccc' ].
+``` 
+
+</td>
+</tr>
+<tr>
+
+<tr>
+<td> Using the read result in various positions </td>
+<td>
+
+This is to emphasize that table expression can be used in various read positions. The snippet shows a few examples. Check the notes in the ABAP Keyword Documentation topics about the use. 
+
+<br>
+
+``` abap
+IF itab[ 1 ] IS INITIAL.
+    ...
+ELSE.
+    ...
+ENDIF.
+
+"Using table expressions as arguments of built-in functions
+IF line_exists( itab[ 1 ] ).
+    ...
+ELSE.
+    ...
+ENDIF.
+
+ASSERT line_index( itab[ comp4 = 'ccc' ] ) = 3.
+``` 
+
+</td>
+</tr>
+<tr>
+
+<tr>
+<td> Assigning table lines to a field symbol </td>
+<td>
+
+``` abap
+"Works like READ TABLE ... ASSIGNING ...
+ASSIGN itab[ 2 ] TO FIELD-SYMBOL(<line>).
+"Note: Table expressions do not set the sy-tabix
+"value, except when used with ASSIGN.
+ASSERT sy-tabix = 2.
+
+"Note: Assigning a non-existent line results in sy-subrc = 4
+"An exception is not raised.
+ASSIGN itab[ 99 ] TO <line>.
+ASSERT sy-subrc = 4.
+``` 
+
+</td>
+</tr>
+<tr>
+
+<tr>
+<td> Data reference variables pointing to a table line </td>
+<td>
+
+
+``` abap
+DATA ref TYPE REF TO data.
+ref = NEW s_demo(  ).
+ref->* = itab[ 1 ].
+``` 
+
+</td>
+</tr>
+<tr>
+
+<tr>
+<td> Specifying table expressions as operands in constructor expressions with <code>VALUE</code> and <code>REF</code> </td>
+<td>
+
+test
+
+<br>
+
+``` abap
+line = VALUE #( itab[ 2 ] ).
+"Works like READ TABLE ... REFERENCE INTO ...
+DATA(line_ref) = REF #( itab[ 3 ] ).
+``` 
+
+</td>
+</tr>
+<tr>
+
+<tr>
+<td> Specifying a default values for lines that are not found to avoid an exception </td>
+<td>
+
+- You can specify default values for lines that are not found to avoid an exception.
+- The first example shows catching the execption with a `TRY` control structure.
+- The `OPTIONAL` and `DEFAULT` additions can be used in the context of statements using table expressions and constructor expressions (`VALUE` and `REF` are possible).
+
+
+<br>
+
+``` abap
+"Accessing a non-existent table line raises a catchable exception
+TRY.
+    DATA(line2) = itab[ 4 ].
+    CATCH cx_sy_itab_line_not_found.
+ENDTRY.
+
+DATA(line3) = VALUE #( itab[ 4 ] OPTIONAL ).
+
+DATA(line4) = VALUE #( itab[ 5 ] DEFAULT itab[ 1 ]  ).
+DATA(line5) = VALUE #( itab[ 6 ] DEFAULT VALUE #( ) ).
+``` 
+
+</td>
+</tr>
+<tr>
+
+<tr>
+<td> Field symbols and dereferenced data references specified before the square brackets </td>
+<td>
+
+The previous examples use concrete internal table names specified before the square brackets. Field symbols and dereferenced data references are also possible.
+
+
+<br>
+
+``` abap
+ASSIGN itab TO FIELD-SYMBOL(<tab>).
+DATA(line11) = <tab>[ 1 ].
+
+DATA dref TYPE REF TO ttyp.
+dref = NEW #(  ).
+
+dref->* = itab.
+line = dref->*[ 2 ].
+``` 
+
+</td>
+</tr>
+<tr>
+
+<tr>
+<td> Reading multiple lines </td>
+<td>
+
+Using table expressions, you can read entire lines individually. This is just to emphasize that when reading multiple lines sequentially, `LOOP` statements and `FOR` loops are recommended.
+
+<br>
+
+``` abap
+"Instead of something like this ...
+DO.
+    ASSIGN itab[ sy-index ] TO FIELD-SYMBOL(<fs>).
+    IF sy-subrc = 0.
+     ...
+     "<fs>-comp1 = ...
+    ELSE.
+     EXIT.
+    ENDIF.
+ENDDO.
+
+"... a LOOP statement, for example.
+LOOP AT itab ASSIGNING <fs>.
+    ...
+    "<fs>-comp1 = ...
+ENDLOOP.
+``` 
+
+</td>
+</tr>
+<tr>
+
+<tr>
+<td> Reading individual components of table lines </td>
+<td>
+
+
+``` abap
+"Reading individual components of table lines using chainings after the
+"closing square bracket
+
+"Read component via line read using ...
+"... index
+DATA(compa) = itab[ 1 ]-comp1.
+"... table key
+DATA(compb) = itab[ TABLE KEY primary_key comp1 = 1 ]-comp1.
+DATA(compc) = itab[ TABLE KEY sk comp2 = 30 comp3 = 31 ]-comp1.
+"... free key
+DATA(compd) = itab[ comp4 = 'ccc' ]-comp1.
+``` 
+
+</td>
+</tr>
+<tr>
+
+<tr>
+<td> Chaining table expressions in the context of nested internal tables </td>
+<td>
+
+- Table expressions can be chained if the table expression result is a table itself.
+- Note the pitfall remarks further down.
+
+<br>
+
+``` abap
+"Creating deep internal table
+TYPES: BEGIN OF s_sub,
+            comp1 TYPE i,
+            comp2 TYPE i,
+        END OF s_sub,
+        tab_type_sub TYPE TABLE OF s_sub WITH EMPTY KEY,
+        BEGIN OF s,
+            compa TYPE i,
+            compb TYPE TABLE OF tab_type_sub WITH EMPTY KEY,
+        END OF s,
+        tab_type TYPE TABLE OF s WITH EMPTY KEY.
+
+"Expressions helpful when populating
+DATA(deep_tab) = VALUE tab_type( ( compa = 1
+                                   compb = VALUE #( ( VALUE #( ( comp1 = 3 comp2 = 4 ) ( comp1 = 5 comp2 = 6 ) ) )
+                                                    ( VALUE #( ( comp1 = 7 comp2 = 8 ) ( comp1 = 9 comp2 = 10 ) ) ) ) )
+                                    ( compa = 2
+                                      compb = VALUE #( ( VALUE #( ( comp1 = 11 comp2 = 12 ) ( comp1 = 13 comp2 = 14 ) ) )
+                                                       ( VALUE #( ( comp1 = 15 comp2 = 16 ) ( comp1 = 17 comp2 = 18 ) ) ) ) ) ).
+
+
+
+DATA(num1) = deep_tab[ 2 ]-compb[ 1 ][ 2 ]-comp2.
+ASSERT num1 = 14.
+
+"Such a statement instead of, for example, a statement as follows.
+READ TABLE deep_tab INDEX 2 INTO DATA(wa1).
+READ TABLE wa1-compb INDEX 1 INTO DATA(wa2).
+READ TABLE wa2 INTO DATA(wa3) INDEX 2.
+
+DATA(num2) = wa3-comp2.
+
+ASSERT num2 = num1.
+``` 
+
+</td>
+</tr>
+<tr>
+
+<tr>
+<td> Table expression result having a reference type enabling chainings with the object component selector </td>
+<td>
+
+test
+
+<br>
+
+``` abap
+DATA itab_ref TYPE TABLE OF REF TO s_demo WITH EMPTY KEY.
+itab_ref = VALUE #( ( NEW s_demo( comp1 = 1 comp2 = 30 comp3 = 31 comp4 = 'aaa' ) ) ).
+
+"Reading entire line by dereferencing
+DATA(deref_line) = itab_ref[ 1 ]->*.
+"Reading component by dereferencing
+DATA(dref_compa) = itab_ref[ 1 ]->comp3.
+"The following syntax is also possible (dereferencing operator followed
+"by the component selector).
+DATA(dref_compb) = itab_ref[ 1 ]->*-comp4.
+``` 
+
+</td>
+</tr>
+<tr>
+
+<tr>
+<td> Table expressions in write positions: Writes on the entire line </td>
+<td>
+
+Note that you cannot perform writes on entire lines in the context of key tables as key values cannot be changed.
+
+<br>
+
+``` abap
+"The demo table is key table. Therefore, writes on entire lines produce runtime errors.
+"itab[ 3 ] = VALUE #( ).
+
+"Creating a standard table
+DATA itab_std TYPE TABLE OF s_demo WITH NON-UNIQUE KEY comp1 WITH NON-UNIQUE SORTED KEY sk COMPONENTS comp2 comp3.
+itab_std = itab.
+
+"Here, writes on entire lines are allowed.
+itab_std[ 3 ] = VALUE #( comp1 = 123 comp4 = 'zzz' ).
+CLEAR itab_std[ 3 ].
+``` 
+
+</td>
+</tr>
+<tr>
+
+<tr>
+<td> Table expressions in write positions: Writes on individual components </td>
+<td>
+
+
+``` abap
+itab[ 3 ]-comp4 = 'yyy'.
+itab_ref[ 1 ]->comp3 = 123.
+"No key value change allowed in key tables
+"The following statement causes a runtime error.
+"itab[ 1 ]-comp1 = 987.
+
+"Key value change allowed for standard tables.
+itab_std[ 3 ]-comp1 = 456.
+``` 
+
+</td>
+</tr>
+<tr>
+
+<tr>
+<td> Pitfalls about table expressions </td>
+<td>
+
+- The following example emphasizes that table expressions - expression enabling in modern ABAP as such - comes in very handy. 
+- However, also take the maintainability, debuggability and readbility of your code into consideration. 
+- The example includes the table expression chaining example from above (that may be fairly hard to understand) and a nonsensical, bad example overusing table expressions (affecting performance).
+- Expand the following collapsible section for example code. To try it out, create a demo class named `zcl_some_class` and paste the code into it. After activation, choose *F9* in ADT to execute the class. The example is set up to display output in the console.
+
+<details>
+  <summary>🟢 Click to expand for example code</summary>
+  <!-- -->
+
+``` abap
+CLASS zcl_some_class DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
+
+  PUBLIC SECTION.
+    INTERFACES if_oo_adt_classrun.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+ENDCLASS.
+
+
+
+CLASS zcl_some_class IMPLEMENTATION.
+  METHOD if_oo_adt_classrun~main.
+
+    "-------------- Chaining table expressions -------------
+
+    "Creating a deep internal table
+    TYPES: BEGIN OF s_sub,
+             comp1 TYPE i,
+             comp2 TYPE i,
+           END OF s_sub,
+           tab_type_sub TYPE TABLE OF s_sub WITH EMPTY KEY,
+           BEGIN OF s,
+             compa TYPE i,
+             compb TYPE TABLE OF tab_type_sub WITH EMPTY KEY,
+           END OF s,
+           tab_type TYPE TABLE OF s WITH EMPTY KEY.
+
+    "Expressions helpful when populating
+    DATA(deep_tab) = VALUE tab_type( ( compa = 1
+                                       compb = VALUE #( ( VALUE #( ( comp1 = 3 comp2 = 4 ) ( comp1 = 5 comp2 = 6 ) ) )
+                                                        ( VALUE #( ( comp1 = 7 comp2 = 8 ) ( comp1 = 9 comp2 = 10 ) ) ) ) )
+                                     ( compa = 2
+                                       compb = VALUE #( ( VALUE #( ( comp1 = 11 comp2 = 12 ) ( comp1 = 13 comp2 = 14 ) ) )
+                                                        ( VALUE #( ( comp1 = 15 comp2 = 16 ) ( comp1 = 17 comp2 = 18 ) ) ) ) ) ).
+
+    "Chained table expressions in the context of reading a value from a
+    "nested internal table
+    "Such a chaining works if the table expression result is a table itself.
+    "Such statements are fairly short, achieving things with few lines of code, however,
+    "they may be hard to understand and debug.
+    DATA(num1) = deep_tab[ 2 ]-compb[ 1 ][ 2 ]-comp2.
+
+    out->write( num1 ).
+
+    "A statement as above instead of multiple statements, for example, as follows.
+    READ TABLE deep_tab INDEX 2 INTO DATA(wa1).
+    READ TABLE wa1-compb INDEX 1 INTO DATA(wa2).
+    READ TABLE wa2 INTO DATA(wa3) INDEX 2.
+
+    DATA(num2) = wa3-comp2.
+
+    out->write( num2 ).
+
+    "-------------- Overusing table expression -------------
+    "The following examples performes many reads and writes
+    "using table expressions. The first example includes multiple
+    "table expressions, while the second one is differently designed,
+    "without many table expressions. The runtimes of the loops are
+    "stored, demonstrating that the second example has a significantly
+    "reduced runtime compared to the first example.
+
+    CONSTANTS: num_of_repetitions     TYPE i VALUE 10,
+               num_of_assignment_runs TYPE i VALUE 1000.
+
+    TYPES: BEGIN OF struct,
+             a TYPE i,
+             b TYPE i,
+             c TYPE i,
+             d TYPE i,
+             e TYPE i,
+             f TYPE i,
+           END OF struct.
+
+    DATA it TYPE TABLE OF struct WITH EMPTY KEY.
+
+    it = VALUE #( ( a = 0 b = 0 c = 0 d = 0 e = 0 f = 0 )
+                  ( a = 1 b = 1 c = 1 d = 1 e = 1 f = 1 ) ).
+    DATA(it_original) = it.
+
+    DATA runtime_tab TYPE TABLE OF decfloat34 WITH EMPTY KEY.
+
+    DO num_of_repetitions TIMES.
+      DATA(ts1) = utclong_current( ).
+      DO num_of_assignment_runs TIMES.
+        it[ 1 ]-a = sy-index.
+        it[ 1 ]-b = sy-index.
+        it[ 1 ]-c = sy-index.
+        it[ 2 ]-d = sy-index.
+        it[ 2 ]-e = sy-index.
+        it[ 2 ]-f = sy-index.
+        it[ 1 ]-d = it[ 2 ]-d.
+        it[ 1 ]-e = it[ 2 ]-e.
+        it[ 1 ]-f = it[ 2 ]-f.
+        INSERT it[ 1 ] INTO TABLE it.
+        INSERT it[ 2 ] INTO TABLE it.
+      ENDDO.
+      DATA(ts2) = utclong_current( ).
+      cl_abap_utclong=>diff( EXPORTING high    = ts2
+                                       low     = ts1
+                             IMPORTING seconds = DATA(seconds) ).
+
+      APPEND seconds TO runtime_tab.
+    ENDDO.
+
+    SORT runtime_tab BY table_line ASCENDING.
+
+    out->write( `Multiple table expressions, fastest run:` ).
+    out->write( runtime_tab[ 1 ] ).
+
+    CLEAR runtime_tab.
+    it = it_original.
+
+    DO num_of_repetitions TIMES.
+      ts1 = utclong_current( ).
+      DO num_of_assignment_runs TIMES.
+        ASSIGN it[ 1 ] TO FIELD-SYMBOL(<fs1>).
+        ASSIGN it[ 2 ] TO FIELD-SYMBOL(<fs2>).
+        <fs1>-a = sy-index.
+        <fs1>-b = sy-index.
+        <fs1>-c = sy-index.
+        <fs2>-d = sy-index.
+        <fs2>-e = sy-index.
+        <fs2>-f = sy-index.
+        <fs1>-d = <fs2>-d.
+        <fs1>-e = <fs2>-e.
+        <fs1>-f = <fs2>-f.
+        INSERT <fs1> INTO TABLE it.
+        INSERT <fs2> INTO TABLE it.
+      ENDDO.
+      ts2 = utclong_current( ).
+      cl_abap_utclong=>diff( EXPORTING high    = ts2
+                                       low     = ts1
+                             IMPORTING seconds = seconds ).
+
+      APPEND seconds TO runtime_tab.
+    ENDDO.
+
+    SORT runtime_tab BY table_line ASCENDING.
+
+    out->write( `Avoiding overusing table expressions, fastest run:` ).
+    out->write( runtime_tab[ 1 ] ).
+  ENDMETHOD.
+ENDCLASS.
+``` 
+
+
+</details>  
+
+</td>
+</tr>
+<tr>
+
+
+</table>
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
 
 ## Getting Information about Internal Tables, Table Lines, Table Types
 
@@ -3581,7 +4209,7 @@ SORT itab BY table_line.
 
 ## Modifying Internal Table Content
 
-As mentioned above, you can modify the content of internal table lines directly in the context of `READ TABLE` and `LOOP AT` statements using field symbols and data reference variables. You can also use table expressions for direct modification. Note that the key fields of the primary table key of sorted and hashed tables are always read-only. If you try to modify a key field, a runtime error occurs. However, this is not checked until runtime.
+As mentioned above, you can modify the content of internal table lines directly in the context of `READ TABLE` and `LOOP AT` statements using field symbols and data reference variables. You can also use table expressions for direct modification (as also covered in section [Table Expressions](#table-expressions)). Note that the key fields of the primary table key of sorted and hashed tables are always read-only. If you try to modify a key field, a runtime error occurs. However, this is not checked until runtime.
 
 The following examples demonstrate direct modification of recently read table lines:
 ``` abap
