@@ -531,7 +531,7 @@ DATA it_struc_1 TYPE SORTED TABLE OF local_struct WITH UNIQUE KEY comp1.
 DATA it_struc_2 TYPE TABLE OF zdemo_abap_fli WITH EMPTY KEY.
 
 "CDS objects such as ...
-"CDS view entity component
+"CDS view entity
 DATA it_struc_3 TYPE TABLE OF zdemo_abap_carr_ve WITH EMPTY KEY.
 "CDS abstract entity
 DATA it_struc_4 TYPE TABLE OF zdemo_abap_abstract_ent WITH EMPTY KEY.
@@ -2040,7 +2040,7 @@ READ TABLE itab WITH KEY ... BINARY SEARCH ...
   - Using the `BINARY SEARCH` addition is particularly more efficient for larger tables when accessing data often. 
   - The table must be sorted in ascending order based on the keys being searched. 
   - `BINARY SEARCH` is suitable for standard tables that do not have a secondary key defined and when you need to make multiple read accesses to the table (however, note the costs of a previous sorting)  
-  - `BINARY SEARCH` can only be used with index tables and not with hashed tables. If the table is sorted and the read access uses a free key, the addition can only be applied when the initial part of the table key is specified. I.e. if key components are `a`, `b`, and `c`, the addition can be used by specifying `a` alone, `a` and `b`, or `a`, `b`, and `c`. However, it is just that the syntax "works", the `BINARY SEARCH` specifiation has no effect and is redundant. Syntactically not possible with `BINARY SEARCH` (for example): `b` and `c` without `a`, or any other non-key component (because it cannot be sorted according to the non-key component). 
+  - `BINARY SEARCH` can only be used with index tables and not with hashed tables. If the table is a sorted table and the read access uses a free key, the addition can only be applied when the initial part of the table key is specified. I.e. if key components are `a`, `b`, and `c`, the addition can be used by specifying `a` alone, `a` and `b`, or `a`, `b`, and `c`. However, it means that the syntax can be specified without errors. The `BINARY SEARCH` specifiation has no effect and is redundant. Syntactically not possible with `BINARY SEARCH` (for example): `b` and `c` without `a`, or any other non-key component (because it cannot be sorted according to the non-key component). 
 - Depending on the number of times you need to access the internal table, it is recommended to work with sorted tables or tables with secondary keys. If you only need to read one or a few data sets, consider the administrative costs of setting up the index.
 - Note: The `BINARY SEARCH` addition is not available for table expressions. If `KEY ...` is specified, an optimized search is performed by default. There are no performance differences between using the `READ TABLE` statement and table expressions.
 
@@ -2666,7 +2666,8 @@ Table expressions have been mentioned in sections above. This is to summarize.
 - They allow read and write access to internal tables at various positions.
 - These expressions are a concise form of `READ TABLE` statements, enabling read and write operations in operand positions.
   - Unlike `READ TABLE`, table expressions do not change the `sy-tabix` system field (except with `ASSIGN`).
-- After the brackets, you can specify chaining (component selectors or additional square brackets). Without chaining, the entire line is respected.
+- After the brackets, you can specify chaining (component and object component selectors or additional square brackets). Without chaining, the entire line is respected.
+- Note that not found lines raise the catchable exception `CX_SY_ITAB_LINE_NOT_FOUND`.
 
 The following table demonstrates a selection of subjects where table expressions are applicable.
 
@@ -2683,6 +2684,7 @@ The following table demonstrates a selection of subjects where table expressions
 - When only specifying the index number in the square brackets, it means referring to the primary table index.
 - In this case, the internal table must be an index table.
 - Using the `KEY ... INDEX ...` addition, you can specify the table index explicitly. Either use the predefined name `primary_key` for the primary key explicitly (or an alias name, if specified), or the secondary key name (or an alias name, if specified).
+- The `KEY` addition here works like `USING KEY` in `READ TABLE` statements.
 - Note that the demo internal tables in the snippet are used in the following examples of the section. 
 
 <br>
@@ -2692,33 +2694,41 @@ The following table demonstrates a selection of subjects where table expressions
 "Note: These demo tables are relevant for most of the code snippets
 "in this section.
 TYPES: BEGIN OF s_demo,
-            comp1 TYPE i,
-            comp2 TYPE i,
-            comp3 TYPE i,
-            comp4 TYPE c LENGTH 3,
+          comp1 TYPE i,
+          comp2 TYPE i,
+          comp3 TYPE i,
+          comp4 TYPE c LENGTH 3,
         END OF s_demo,
         ttyp        TYPE SORTED TABLE OF s_demo WITH UNIQUE KEY comp1 WITH NON-UNIQUE SORTED KEY sk COMPONENTS comp2 comp3,
-        ttyp_hashed TYPE HASHED TABLE OF s_demo WITH UNIQUE KEY comp1 WITH NON-UNIQUE SORTED KEY sk COMPONENTS comp2 comp3.
+        ttyp_hashed TYPE HASHED TABLE OF s_demo WITH UNIQUE KEY comp1 WITH NON-UNIQUE SORTED KEY sk COMPONENTS comp2 comp3,
+        ttyp2       TYPE SORTED TABLE OF s_demo WITH UNIQUE KEY comp1 comp2 WITH NON-UNIQUE SORTED KEY sk COMPONENTS comp3.
 
 DATA(itab) = VALUE ttyp( ( comp1 = 1 comp2 = 30 comp3 = 31 comp4 = 'aaa' )
-                            ( comp1 = 2 comp2 = 20 comp3 = 21 comp4 = 'bbb' )
-                            ( comp1 = 3 comp2 = 10 comp3 = 11 comp4 = 'ccc' ) ).
+                         ( comp1 = 2 comp2 = 20 comp3 = 21 comp4 = 'bbb' )
+                         ( comp1 = 3 comp2 = 10 comp3 = 11 comp4 = 'ccc' ) ).
+
 DATA itab_hashed TYPE ttyp_hashed.
 itab_hashed = itab.
+DATA itab_so TYPE ttyp2.
+itab_so = itab.
 
+DATA line TYPE s_demo.
 
 "------ Reading table line by index------
 "Just specifying the index number means referring to the primary table index.
 "In this case, the internal table must be an index table.
 
 "In the example, the entire table line is assigned to a variable
-DATA(line) = itab[ 2 ].
+line = itab[ 2 ].
 
 "KEY ... INDEX ... additions
 "For reading a line according to a table index.
 "The following example has the same effect as above. Here, the default
 "name of the primary key is specified explicitly.
 line = itab[ KEY primary_key INDEX 2 ].
+
+"Secondary table key specified, using secondary table index
+line = itab[ KEY sk INDEX 1 ].
 
 "This syntax is not possible for hashed tables.
 "DATA(line_hashed_tab1) = itab_hashed[ 2 ].
@@ -2729,78 +2739,134 @@ DATA(line_hashed_tab3) = itab_hashed[ KEY sk INDEX 2 ].
 
 </td>
 </tr>
-<tr>
+
 
 <tr>
 <td> Reading table lines by table key </td>
 <td>
 
-- Using the `TABLE KEY` addition, the table key must be fully specified, i.e. all components of the key must be respected, no other components are possible.
-- In case of the primary table key and when using it explicitly, the key must be specified using the predefined name or an alias, if available.
-- The `COMPONENTS` addition is optional.
-- Note the comments in the snippet about just using the `KEY` addition instead of `TABLE KEY`, and others. 
+- `TABLE KEY` addition
+  - Requires the table key to be fully specified, i.e. all components of the key (primary table key or secondary table key) must be specified, and no other components can be specified.
+  - Works like the `WITH TABLE KEY` addition in `READ TABLE` statements. However, in table expressions, the `COMPONENTS` addition is optional and the key name must be specified.
+  - Usually, specifying the primary table key explicitly (using predefined name `primary_key` or an alias, if available) is not required. You can instead also just specify a free key search (i.e. not using any `TABLE KEY`/`KEY` addition) and specify all primary table key components. Then, an optimized search is also performed for sorted and hashed tables. 
+- `KEY` addition without `TABLE`:
+  - This syntax option reads a line in accordance with a specified free key. 
+  - It is not mandatory to specify all components of a sorted table key (the initial left part at least is required). The search is then partly optimized (unlike fully optimized when all key components are specified).
+  - Example purposes of such a specification: Determining the existence of a line, or determining a line number for the starting point for a loop starting at that position.
+  - Additionally, in case of sorted and secondary table keys, other components not being part of the key can be specified.
+  - Same as above, specifying the addition `COMPONENTS` is optional.
+  - Just using `KEY` and specifying all key components following the key name works like specifying `TABLE KEY`. The `TABLE KEY` addition just ensures that indeed all key components are specified. 
+- Not using any `TABLE KEY`/`KEY` additions:
+  - In case of sorted and hashed tables and without using any `TABLE KEY`/`KEY` additions, an optimized search is performed when some or all components of the primary table key are specified as free keys.
+- Notes:
+  - Binary searches cannot be enforced with table expressions (unlike `READ TABLE` statements).
+  - Key names can also be specified dynamically using parentheses `(...)`.
 
 <br>
 
 ``` abap
+"------------------ TABLE KEY addition ------------------
 
+"Explicitly specifying the primary table key
 line = itab[ TABLE KEY primary_key COMPONENTS comp1 = 1 ].
+
 "The following statement is not possible as no other components can be specified.
+
 "line = itab[ TABLE KEY primary_key COMPONENTS comp1 = 1 comp2 = 30 ].
 
 "The addition COMPONENTS is optional; the following example is the same as above
 line = itab[ TABLE KEY primary_key comp1 = 1 ].
 
-"Secondary table key
+"Specifying a secondary table key
+line = itab[ TABLE KEY sk COMPONENTS comp2 = 20 comp3 = 21 ].
+
+"Optional COMPONENTS addition
 line = itab[ TABLE KEY sk comp2 = 20 comp3 = 21 ].
-"Fully specifying the table key components is required with TABLE KEY.
+
+"Fully specifying the table key components is required with TABLE KEY. So, the
+"following statement is not possible.
+
 "line = itab[ TABLE KEY sk comp2 = 20 ].
 
-"The following syntax only uses the KEY addition, without TABLE. This
-"syntax option reads a line in accordance with a specified free key.
-"However, if a table key is specified with KEY, an optimized search is performed.
-line = itab[ KEY primary_key comp1 = 1 ].
+"------------------ KEY addition ------------------
 
-"Note: Sorted table keys need not be covered completely.
-"Example purposes of such a specification: Determining the existence of a line,
-"or determining a line number for the starting point for a loop starting at
-"that position.
+"Using KEY and specifying all key components work like specifying TABLE KEY
+line = itab[ KEY primary_key COMPONENTS comp1 = 1 ].
+line = itab[ KEY primary_key comp1 = 1 ].
+line = itab[ KEY sk COMPONENTS comp2 = 20 comp3 = 21 ].
+line = itab[ KEY sk comp2 = 20 comp3 = 21 ].
+
+"Unlike TABLE KEY, KEY does not enforce all key components to be specified
 line = itab[ KEY sk comp2 = 20 ].
 
-"For sorted and secondary keys, additional components can be specified
-"that are not part of the table key.
+"In case of sorted and secondary table keys, other components not being part
+"of the key can be specified
+line = itab[ KEY primary_key comp1 = 1 comp4 = 'aaa' ].
 line = itab[ KEY sk comp2 = 20 comp4 = 'bbb' ].
 
-"Note: The primary table key does not need to be specified explicitly.
-"You can also just use the syntax variant for reading by free key (no TABLE KEY/KEY
-"additions) and benefit from optimized search when the key components are specified,
-"for example as follows:
+"The following statements are not possible. The initial, left part of
+"the key must be specified. In the example case, it is comp2.
+
+"line = itab[ KEY sk comp3 = 21 comp4 = 'bbb' ].
+"line = itab[ KEY sk comp4 = 'bbb' ].
+
+"The following statement triggers a syntax warning because the initial
+"part of a table key is specified, but the key name is not specified.
+"In this case, the search is not optimized as the component is not
+"part of the primary table key of the sorted table. You may optimize
+"it by specifying the key.
+
+"line = itab[ comp2 = 10 ].
+
+"The syntax warning can be suppressed by a pragma.
+line = itab[ comp2 = 10 ] ##primkey[sk].
+
+"Specifying the key name
+line = itab[ KEY sk comp2 = 10 ].
+
+
+"------------------ No TABLE KEY/KEY additions ------------------
+
+"Specifying a free key search, but including all components of the primary
+"table key
+"For a sorted table as in the example, the search is fully optimized.
 line = itab[ comp1 = 1 ].
+
+"Partly optimized (only a part of the primary table key of the sorted
+"example table is specified)
+line = itab_so[ comp1 = 1 ].
 ``` 
 
 </td>
 </tr>
-<tr>
+
 
 <tr>
-<td> Reading table lines by using free keys </td>
+<td> Reading table lines using free keys </td>
 <td>
 
+- Free keys are specified without any `... KEY ...` addition. This corresponds to `WITH KEY` specifications in `READ TABLE` statements.
+- However, in case of sorted and hashed tables, an optimized search is performed when some or all of the key components are specified as free keys (without any `... KEY ...` addition).
+- Note that binary searches cannot be enforced with table expressions (unlike `READ TABLE` statements).
+
+<br>
 
 ``` abap
-line = itab[ comp3 = 31 ].
+"The search is and cannot be optimized as the component is not part of 
+"the primary table key of the sorted table. Plus, no appropriate 
+"secondary table key can be applied.
 line = itab[ comp4 = 'ccc' ].
 ``` 
 
 </td>
 </tr>
-<tr>
+
 
 <tr>
 <td> Using the read result in various positions </td>
 <td>
 
-This is to emphasize that table expression can be used in various read positions. The snippet shows a few examples. Check the notes in the ABAP Keyword Documentation topics about the use. 
+This is to emphasize that table expressions can be used in various read positions. The snippet shows a few examples. Check the notes in the ABAP Keyword Documentation topics about the use. 
 
 <br>
 
@@ -2823,7 +2889,7 @@ ASSERT line_index( itab[ comp4 = 'ccc' ] ) = 3.
 
 </td>
 </tr>
-<tr>
+
 
 <tr>
 <td> Assigning table lines to a field symbol </td>
@@ -2844,7 +2910,6 @@ ASSERT sy-subrc = 4.
 
 </td>
 </tr>
-<tr>
 
 <tr>
 <td> Data reference variables pointing to a table line </td>
@@ -2859,7 +2924,6 @@ ref->* = itab[ 1 ].
 
 </td>
 </tr>
-<tr>
 
 <tr>
 <td> Specifying table expressions as operands in constructor expressions with <code>VALUE</code> and <code>REF</code> </td>
@@ -2874,10 +2938,9 @@ DATA(line_ref) = REF #( itab[ 3 ] ).
 
 </td>
 </tr>
-<tr>
 
 <tr>
-<td> Specifying a default values for lines that are not found to avoid an exception </td>
+<td> Specifying a default value for lines that are not found to avoid an exception </td>
 <td>
 
 - You can specify default values for lines that are not found to avoid an exception.
@@ -2890,19 +2953,18 @@ DATA(line_ref) = REF #( itab[ 3 ] ).
 ``` abap
 "Accessing a non-existent table line raises a catchable exception
 TRY.
-    DATA(line2) = itab[ 4 ].
+    line = itab[ 4 ].
     CATCH cx_sy_itab_line_not_found.
 ENDTRY.
 
-DATA(line3) = VALUE #( itab[ 4 ] OPTIONAL ).
+line = VALUE #( itab[ 4 ] OPTIONAL ).
 
-DATA(line4) = VALUE #( itab[ 5 ] DEFAULT itab[ 1 ]  ).
-DATA(line5) = VALUE #( itab[ 6 ] DEFAULT VALUE #( ) ).
+line = VALUE #( itab[ 5 ] DEFAULT itab[ 1 ]  ).
+line = VALUE #( itab[ 6 ] DEFAULT VALUE #( ) ).
 ``` 
 
 </td>
 </tr>
-<tr>
 
 <tr>
 <td> Field symbols and dereferenced data references specified before the square brackets </td>
@@ -2915,7 +2977,7 @@ The previous examples use concrete internal table names specified before the squ
 
 ``` abap
 ASSIGN itab TO FIELD-SYMBOL(<tab>).
-DATA(line11) = <tab>[ 1 ].
+line = <tab>[ 1 ].
 
 DATA dref TYPE REF TO ttyp.
 dref = NEW #(  ).
@@ -2926,7 +2988,6 @@ line = dref->*[ 2 ].
 
 </td>
 </tr>
-<tr>
 
 <tr>
 <td> Reading multiple lines </td>
@@ -2957,7 +3018,6 @@ ENDLOOP.
 
 </td>
 </tr>
-<tr>
 
 <tr>
 <td> Reading individual components of table lines </td>
@@ -2972,7 +3032,7 @@ ENDLOOP.
 "... index
 DATA(compa) = itab[ 1 ]-comp1.
 "... table key
-DATA(compb) = itab[ TABLE KEY primary_key comp1 = 1 ]-comp1.
+DATA(compb) = itab[ TABLE KEY primary_key comp1 = 1 ]-comp2.
 DATA(compc) = itab[ TABLE KEY sk comp2 = 30 comp3 = 31 ]-comp1.
 "... free key
 DATA(compd) = itab[ comp4 = 'ccc' ]-comp1.
@@ -2980,7 +3040,6 @@ DATA(compd) = itab[ comp4 = 'ccc' ]-comp1.
 
 </td>
 </tr>
-<tr>
 
 <tr>
 <td> Chaining table expressions in the context of nested internal tables </td>
@@ -3017,7 +3076,7 @@ DATA(deep_tab) = VALUE tab_type( ( compa = 1
 DATA(num1) = deep_tab[ 2 ]-compb[ 1 ][ 2 ]-comp2.
 ASSERT num1 = 14.
 
-"Such a statement instead of, for example, a statement as follows.
+"Such a statement instead of, for example, multiple statements as follows.
 READ TABLE deep_tab INDEX 2 INTO DATA(wa1).
 READ TABLE wa1-compb INDEX 1 INTO DATA(wa2).
 READ TABLE wa2 INTO DATA(wa3) INDEX 2.
@@ -3029,7 +3088,6 @@ ASSERT num2 = num1.
 
 </td>
 </tr>
-<tr>
 
 <tr>
 <td> Table expression result having a reference type enabling chainings with the object component selector </td>
@@ -3051,7 +3109,6 @@ DATA(dref_compb) = itab_ref[ 1 ]->*-comp4.
 
 </td>
 </tr>
-<tr>
 
 <tr>
 <td> Table expressions in write positions: Writes on the entire line </td>
@@ -3062,7 +3119,7 @@ Note that you cannot perform writes on entire lines in the context of key tables
 <br>
 
 ``` abap
-"The demo table is key table. Therefore, writes on entire lines produce runtime errors.
+"The demo table is a key table. Therefore, writes on entire lines produce runtime errors.
 "itab[ 3 ] = VALUE #( ).
 
 "Creating a standard table
@@ -3076,7 +3133,6 @@ CLEAR itab_std[ 3 ].
 
 </td>
 </tr>
-<tr>
 
 <tr>
 <td> Table expressions in write positions: Writes on individual components </td>
@@ -3096,10 +3152,37 @@ itab_std[ 3 ]-comp1 = 456.
 
 </td>
 </tr>
-<tr>
 
 <tr>
-<td> Pitfalls about table expressions </td>
+<td> Dynamic key and component name specifications </td>
+<td>
+
+For more information about dynamic programming, refer to the [Dynamic Programming](06_Dynamic_Programming.md) cheat sheet.
+
+<br>
+
+``` abap
+"Dynamic key and component specifications
+line = itab[ KEY ('PRIMARY_KEY') COMPONENTS comp1 = 1 ].
+line = itab[ KEY ('PRIMARY_KEY') comp1 = 1 ].
+line = itab[ KEY ('SK') COMPONENTS comp2 = 20 comp3 = 21 ].
+line = itab[ KEY ('SK') comp2 = 20 comp3 = 21 ].
+
+line = itab[ KEY ('PRIMARY_KEY') ('COMP1') = 1 ].
+line = itab[ KEY ('SK') ('COMP2') = 20 ('COMP3') = 21 ].
+
+DATA(key_name) = 'PRIMARY_KEY'.
+DATA(comp_name) = 'COMP1'.
+line = itab[ KEY (key_name) (comp_name) = 1 ].
+line = itab[ KEY primary_key (comp_name) = 1 ].
+``` 
+
+</td>
+</tr>
+
+
+<tr>
+<td> Pitfalls regarding table expressions </td>
 <td>
 
 - The following example emphasizes that table expressions - expression enabling in modern ABAP as such - comes in very handy. 
@@ -3153,7 +3236,7 @@ CLASS zcl_some_class IMPLEMENTATION.
     "Chained table expressions in the context of reading a value from a
     "nested internal table
     "Such a chaining works if the table expression result is a table itself.
-    "Such statements are fairly short, achieving things with few lines of code, however,
+    "Such statements are fairly short, using few lines of code, however,
     "they may be hard to understand and debug.
     DATA(num1) = deep_tab[ 2 ]-compb[ 1 ][ 2 ]-comp2.
 
@@ -3163,7 +3246,6 @@ CLASS zcl_some_class IMPLEMENTATION.
     READ TABLE deep_tab INDEX 2 INTO DATA(wa1).
     READ TABLE wa1-compb INDEX 1 INTO DATA(wa2).
     READ TABLE wa2 INTO DATA(wa3) INDEX 2.
-
     DATA(num2) = wa3-comp2.
 
     out->write( num2 ).
@@ -3292,7 +3374,7 @@ This function expects a [table
 expression](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentable_expression_glosry.htm "Glossary Entry") as an argument.
 See below for more on table expressions. Note that table expressions do not set system fields.
 ``` abap
-"Read using the key
+"Read using a key
 READ TABLE it WITH KEY b = 2 TRANSPORTING NO FIELDS.
 
 IF sy-subrc = 0.
@@ -3333,6 +3415,17 @@ DATA(tabix) = sy-tabix.
 
 "1
 DATA(idx) = line_index( itab[ table_line = `aaa` ] ).
+
+"Note: No primary table index with hashed tables
+DATA(hashed_tab) = VALUE string_hashed_table( ( `a` ) ( `b` ) ( `c` ) ).
+"-1
+DATA(hashed_primary_idx) = line_index( hashed_tab[ table_line = `c` ] ).
+
+"Index access in hashed tables only using a secondary table index
+DATA hashed_tab2 TYPE TABLE OF string WITH EMPTY KEY WITH NON-UNIQUE SORTED KEY sk COMPONENTS table_line.
+hashed_tab2 = hashed_tab.
+"3
+DATA(hashed_secondary_idx) = line_index( hashed_tab2[ KEY sk table_line = `c` ] ).
 ```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
@@ -3981,7 +4074,7 @@ SELECT SINGLE comp1, comp2, comp3 FROM @itab2 AS it WHERE comp3 = sstring`ABAP` 
 
 ### Excursion: Joining/Merging Internal Tables into Internal Tables
 
-The following code snippets demonstrate joining/merging the content of two simple internal tables into another table. There are various ways to achieve this. Here, the intention is to give an idea and, in particular, to emphasize SQL functionalities also available for internal tables (note the restrictions mentioned above and in the documentation).
+The following code snippets demonstrate joining/merging the content of two simple internal tables into another table. There may be several ways to achieve this. Here, the intention is to give an idea and, in particular, to emphasize SQL functionalities also available for internal tables (note the restrictions mentioned above and in the documentation).
 
 Assumptions:
 - The target table is either created inline or exists and includes components from the source tables or components that can be mapped.
@@ -4053,14 +4146,14 @@ SELECT a~key1, a~a, a~b, b~d, b~e
 "-----------------------------------------------------------------
 
 "Common table expression
-"The following example procudes the same result as the previous one.
 WITH +it1 AS ( SELECT a~key1, a~a, a~b FROM @itab1 AS a ),
-        +it2 AS ( SELECT b~key2, b~d, b~e FROM @itab2 AS b )
+     +it2 AS ( SELECT b~key2, b~d, b~e FROM @itab2 AS b )
 SELECT +it1~key1, +it1~a, +it1~b, +it2~d, +it2~e FROM +it1 LEFT JOIN +it2 ON +it1~key1 = +it2~key2
 INTO TABLE @DATA(itab5).
 
 "LOOP statements
-"Using the CORRESPONDING operator, BASE retains existing content
+"Using the CORRESPONDING operator to assign identically named components, 
+"BASE retains existing content
 "The assignment with CORRESPONDING ... BASE ... includes a table expression
 "in which table lines are read and inserted based on the key mapping. With the
 "OPTIONAL addition, errors can be avoided if a line does not exist.
@@ -4069,6 +4162,9 @@ LOOP AT itab1 INTO DATA(wa1).
     INSERT CORRESPONDING #( wa1 ) INTO TABLE itab6 REFERENCE INTO DATA(ref).
     ref->* = CORRESPONDING #( BASE ( ref->* ) VALUE #( itab2[ key2 = ref->key1 ] OPTIONAL ) ).
 ENDLOOP.
+"Assume the second table's shared component was also key1. In the second CORRESPONDING
+"you could then work with the EXCEPT addition to not overwrite the identicall named
+"component.
 
 "Example similar to the previous one
 "Also here, a table expression is used to read a line from

@@ -216,9 +216,7 @@ focus on).
   - [Infos about behavior definitions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbdl.htm)
  
 
-The following example shows a commented BDEF.
-Note that there is a wide variety of possible specifications and options. The example shows only a selection. For full details, refer to the ABAP Keyword Documentation.
-Some of the syntax examples are commented out, just for the sake of showing more syntax options. 
+The following example shows a commented BDEF. Note that there is a wide variety of possible specifications and options. The example shows only a selection. The example shows multiple specifications with comments and also syntax hidden with comments, just for the sake of showing more syntax options. For full details, correct specification and combination options, refer to the ABAP Keyword Documentation. For example, it is not possible to specify operations multiple times and more.
 
 ```js
 //Possible implementation types: managed, unmanaged, abstract, projection, interface 
@@ -227,12 +225,16 @@ Some of the syntax examples are commented out, just for the sake of showing more
 //for the RAP BO (in some contexts, specifying no ABP is possible).
 //Specifying unique is mandatory (each operation can only be implemented once).
 managed implementation in class bp_some_demo unique;
+
 //For managed RAP BOs, you can enable user-defined saving options (optional additions 
 //are available).
 //Purpose: Enhancing or replacing the default save sequence (Note: Only in this case, 
 //the ABP has a local saver class/save_modified saver method)
+
 //managed with additional save with full data implementation in class bp_some_demo unique; 
+
 //full data: Full instance data is passed for saving
+
 //managed with unmanaged save implementation in class bp_some_demo unique;
 
 //Enabling the strict mode (and version) to apply additional syntax checks; handled by 
@@ -240,6 +242,7 @@ managed implementation in class bp_some_demo unique;
 strict ( 2 );
 
 //Enabling RAP draft handling
+
 //with draft;
 
 //It is mandatory to specify an entity behavior definition for the RAP BO root entity.
@@ -248,6 +251,7 @@ define behavior for some_demo
 //Specifying an alias name (e.g. to have a more telling name than the technical name of 
 //the entity). When specifying an alias name, you should address the entity with the alias 
 //name instead of the full name (e.g. in the signature of handler methods).
+
 //define behavior for some_demo alias root
 
 //Specifying the database table a RAP BO is based on (only available/mandatory in managed 
@@ -255,6 +259,7 @@ define behavior for some_demo
 persistent table some_dbtab
 
 //Mandatory specification of a draft table when a RAP BO is draft-enabled
+
 //draft table drafttab
 
 //Specifying the locking mechanism for entities, e.g. to prevent a simultaneous 
@@ -269,12 +274,14 @@ lock master
 //More variants are available that can be specified in the { ... } block below for 
 //excluding and delegating authorization checks (e.g. authorization:update)
 authorization master ( instance )
+
 //authorization master ( global )
 //authorization master ( instance, global )
 
 //Defining late numbering for primary key fields (see the adjust_numbers handler method)
 //More numbering options are available such as early numbering, or, in the { ... } block below, 
 //the 'numbering : managed' specification for particular fields.
+
 //late numbering
 
 //Defining a field as entity tag (ETag) field for optimistic concurrency control (i.e. 

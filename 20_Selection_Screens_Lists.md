@@ -1186,7 +1186,7 @@ TRY.
     alv->get_sorts( )->add_sort( 'COL1' )->set_sequence( if_salv_c_sort=>sort_down ).
 
     "Applying a filter
-    "The example is implemented to exculed one entry from the demo table.
+    "The example is implemented to exclude one entry from the demo table.
     alv->get_filters( )->add_filter( 'COL2' )->add_selopt( sign   = 'E'
                                                             option = 'EQ'
                                                             low    = '6' ).

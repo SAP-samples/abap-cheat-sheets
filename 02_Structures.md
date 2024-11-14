@@ -1043,11 +1043,11 @@ CLASS zcl_some_class IMPLEMENTATION.
     "sy should not be used. Here, it is used for demonstration purposes.
     "In the example, RTTI is used to get all component names of the built-in data object sy. In the loop,
     "ABAP statements are created (they represent simple assignments using the various sy components) and
-    "output to the console. You can insert all the output DATA(...) = ... statements in the demo class's
-    "main method implementation. The purpose is to demonstrate that most of the sy components should not be
-    "used in ABAP for Cloud Development. Most of the statements will show a syntax warning in ABAP for Cloud
-    "Development. Check the ABAP Keyword Documentation (for Standard ABAP) and the F2 information for the
-    "purpose of the individual sy components.
+    "output to the console. You can copy all the output DATA(...) = ... statements from the console and 
+    "paste them in the demo class's main method implementation. The purpose is to demonstrate that most of 
+    "the sy components should not be used in ABAP for Cloud Development. Most of the statements will show 
+    "a syntax warning in ABAP for Cloud Development. Check the ABAP Keyword Documentation (for Standard ABAP) 
+    "and the F2 information for the purpose of the individual sy components.
     LOOP AT CAST cl_abap_structdescr( cl_abap_typedescr=>describe_by_data( sy ) )->components INTO DATA(co).
       DATA(sycomp) = to_lower( co-name ).
       DATA(code) = |DATA(sy{ sycomp }) = sy-{ sycomp }.|.

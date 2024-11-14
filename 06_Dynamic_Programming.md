@@ -1397,7 +1397,7 @@ CREATE DATA dataref TYPE HANDLE tdo_elem.
 
 - [`CREATE OBJECT`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapcreate_object_explicit.htm) statements can be used to create instances of classes by specifying the type dynamically.
 - It assigns the reference to the object to an object reference variable.
-- The `NEW` operator cannot be used to create instances of classes by specifying the type dynamically..
+- The `NEW` operator cannot be used to create instances of classes by specifying the type dynamically.
 
 
 ```abap
