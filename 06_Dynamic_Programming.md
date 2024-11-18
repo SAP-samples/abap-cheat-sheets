@@ -1634,6 +1634,17 @@ IF sy-subrc <> 0.
   ...
 ENDIF.
 
+"Specifying the WHERE condition dynamically
+DATA(dyn_where_cond_str) = `col3 CS 'y'`.
+
+READ TABLE itab INTO DATA(dyn_res) WHERE (dyn_where_cond_str).
+ASSERT sy-tabix = 2.
+
+DATA(dyn_where_cond_tab) = VALUE string_table( ( `col3` ) ( `CS` ) ( `'x'` ) ).
+
+READ TABLE itab INTO dyn_res WHERE (dyn_where_cond_tab).
+ASSERT sy-tabix = 3.
+
 "-------------------------------------------------------------
 "------------------------ Table expressions ------------------
 "-------------------------------------------------------------

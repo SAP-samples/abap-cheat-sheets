@@ -29,6 +29,7 @@
     - [Examples of Addressing Individual Components of Read Lines](#examples-of-addressing-individual-components-of-read-lines)
     - [Excursions with READ TABLE Statements](#excursions-with-read-table-statements)
       - [System Field Setting in READ TABLE Statements](#system-field-setting-in-read-table-statements)
+      - [Specifying a WHERE Condition in READ TABLE Statements](#specifying-a-where-condition-in-read-table-statements)
       - [COMPARING and TRANSPORTING Additions: Comparing Fields and Specifying Fields for Transport](#comparing-and-transporting-additions-comparing-fields-and-specifying-fields-for-transport)
       - [CASTING and ELSE UNASSIGN Additions when Specifying Field Symbols as Target Areas](#casting-and-else-unassign-additions-when-specifying-field-symbols-as-target-areas)
       - [BINARY SEARCH Addition: Optimized Read Access When Specifying Free Keys](#binary-search-addition-optimized-read-access-when-specifying-free-keys)
@@ -44,6 +45,7 @@
     - [Defining the Step Size and the Direction of Loop Passes](#defining-the-step-size-and-the-direction-of-loop-passes)
     - [Iteration Expressions](#iteration-expressions)
     - [Interrupting and Exiting Loops](#interrupting-and-exiting-loops)
+    - [Inserting and Deleting Lines in Internal Tables in Loops](#inserting-and-deleting-lines-in-internal-tables-in-loops)
   - [Operations with Internal Tables Using ABAP SQL SELECT Statements](#operations-with-internal-tables-using-abap-sql-select-statements)
     - [Internal Tables as Target Data Objects in SELECT Queries](#internal-tables-as-target-data-objects-in-select-queries)
     - [SELECT Queries with Internal Tables as Data Sources](#select-queries-with-internal-tables-as-data-sources)
@@ -1891,6 +1893,148 @@ ASSERT sy-tabix = 0.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
+#### Specifying a WHERE Condition in READ TABLE Statements
+
+- The syntax `READ TABLE ... WHERE ...` searches for the first line that matches a `WHERE` condition.
+- The value of `sy-tabix` is set when a line is found, while `sy-subrc` are set to either 0 or 4.
+- The `WHERE` condition can use comparison and predicate expressions (see the code snippet comments below for examples).
+- Syntax options: 
+  - The read result must be specified before the `WHERE` condition.
+  - The `TRANSPORTING NO FIELDS` and `USING KEY` additions are possible.
+  - Dynamic `WHERE` conditions are possible.
+- If a `READ TABLE` statement can be expressed using `WITH KEY`, this approach - instead of using a `WHERE` condition - is recommended as it is more performant. A syntax warning occurs but can be suppressed with the pragma `##read_where_ok`.
+- For optimized searches with a `WHERE` condition:
+  - No optimized search in standard tables without a secondary table key.
+  - For sorted and hashed keys (sorted/hashed tables, secondary table keys), the search is optimized as described [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenitab_where_optimization.htm), if specifications are transferable to a key access.
+
+```abap
+"Creating and populating demo internal tables
+TYPES: BEGIN OF s_demo,
+            comp1 TYPE i,
+            comp2 TYPE c LENGTH 5,
+            comp3 TYPE i,
+            comp4 TYPE c LENGTH 5,
+        END OF s_demo,
+        t_type_so TYPE SORTED TABLE OF s_demo WITH UNIQUE KEY comp1 WITH NON-UNIQUE SORTED KEY sk COMPONENTS comp3.
+
+DATA(itab) = VALUE t_type_so( ( comp1 = 1 comp2 = 'lorem' comp3 = 30 comp4 = 'ipsum' )
+                              ( comp1 = 2 comp2 = 'dolor' comp3 = 20 comp4 = 'sit' )
+                              ( comp1 = 3 comp2 = 'amet' comp3 = 40 comp4 = 'hello' )
+                              ( comp1 = 4 comp2 = 'world' comp3 = 50 comp4 = 'ABAP' )
+                              ( comp1 = 5 comp2 = 'test' comp3 = 10 comp4 = '' ) ).
+
+DATA wa TYPE s_demo.
+
+"--------- WHERE condition with comparison expressions ---------
+
+"Examples: =/EQ, <>/NE, >/GT, </LT, >=,GE, <=/LE,
+"          CO, CN, CA, NA, CS, NS, CP, NP,
+"          [NOT] BETWEEN ... AND
+"          [NOT] IN ranges_tables
+
+READ TABLE itab INTO wa WHERE comp1 > 3.
+ASSERT sy-tabix = 4.
+
+"'or' also available in other lines in this component, but the first found line
+"is returned (lines 1, 2, 4)
+READ TABLE itab INTO wa WHERE comp2 CS 'or'.
+ASSERT sy-tabix = 1.
+
+"'d' occurs in lines 2, 4
+READ TABLE itab INTO wa WHERE comp2 CS 'd'.
+ASSERT sy-tabix = 2.
+
+READ TABLE itab INTO wa WHERE comp2 CS 'd'.
+ASSERT sy-tabix = 2.
+
+"--------- WHERE condition with predicate expressions ---------
+
+"Examples: IS [NOT] INITIAL
+"          IS [NOT] BOUND
+"          IS [NOT] INSTANCE OF
+
+READ TABLE itab INTO wa WHERE comp1 > 4 AND comp4 IS INITIAL.
+ASSERT sy-tabix = 5.
+
+"--------- WITH KEY instead of WHERE condition ---------
+
+"Syntax warning in READ TABLE ... WHERE ... statements
+READ TABLE itab INTO wa WHERE comp4 IS INITIAL.
+ASSERT sy-tabix = 5.
+
+"For a better performance, the previous statement should be
+"replaced by a READ TABLE ... WITH KEY ... statement.
+READ TABLE itab INTO wa WITH KEY comp4 = ''.
+ASSERT sy-tabix = 5.
+
+"You can also suppress the syntax warning by a pragma.
+READ TABLE itab INTO wa WHERE comp4 IS INITIAL ##read_where_ok.
+ASSERT sy-tabix = 5.
+
+"------------------- Further additions -------------------
+
+"TRANSPORTING NO FIELDS addition is possible
+READ TABLE itab TRANSPORTING NO FIELDS WHERE comp2 CS 'd'.
+ASSERT sy-tabix = 2.
+
+"USING KEY addition
+READ TABLE itab USING KEY primary_key INTO wa WHERE comp2 CS 't'.
+ASSERT sy-tabix = 3.
+
+READ TABLE itab USING KEY sk INTO wa WHERE comp3 > 40.
+ASSERT sy-tabix = 5.
+
+"------------------- Excursions -------------------
+
+"Note the comparison rules for character-like data types
+READ TABLE itab INTO wa WHERE comp2 = 'lorem' ##read_where_ok.
+ASSERT sy-tabix = 1.
+
+"In the following case, the length of the comp2 value increased to match the
+"length of the specified text field, i.e. the surplus characters from the right
+"side text field are not truncated. As a consequence, the line is not found.
+
+DATA(some_text) = 'loremXYZ'.
+
+READ TABLE itab INTO wa WHERE comp2 = some_text ##read_where_ok.
+ASSERT sy-tabix = 0 AND sy-subrc <> 0.
+
+"When using READ TABLE ... WITH KEY ... the behavior is different. In that
+"case, the surplus characters are truncated because of a conversion. Therefore,
+"the following statement finds a line.
+READ TABLE itab INTO wa WITH KEY comp2 = some_text.
+ASSERT sy-tabix = 1 AND sy-subrc = 0.
+
+"Note: The read target can only be placed before WHERE conditions.
+"The following statements are not possible.
+"READ TABLE itab WHERE comp2 CS 'd' INTO wa.
+"READ TABLE itab WHERE comp2 CS 'd' TRANSPORTING NO FIELDS.
+
+"READ TABLE ... WHERE ... statements can replace LOOP AT ... WHERE ...
+"statements including EXIT.
+LOOP AT itab INTO wa WHERE comp2 CS 'd'.
+    ASSERT sy-tabix = 2.
+    EXIT.
+ENDLOOP.
+
+"------------------- Dynamic WHERE condition -------------------
+
+"Character-like data objects or standard tables with character-like line type
+"can be specified
+
+DATA(dyn_where_cond_str) = `comp2 CS 'd'`.
+
+READ TABLE itab INTO wa WHERE (dyn_where_cond_str).
+ASSERT sy-tabix = 2.
+
+DATA(dyn_where_cond_tab) = VALUE string_table( ( `comp2` ) ( `CS` ) ( `'d'` ) ).
+READ TABLE itab INTO wa WHERE (dyn_where_cond_tab).
+ASSERT sy-tabix = 2.
+```
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+
 #### COMPARING and TRANSPORTING Additions: Comparing Fields and Specifying Fields for Transport
 
 `... TRANSPORTING NO FIELDS`: It is only checked whether the line exists. No target area is specified. As mentioned above, the system fields are filled. 
@@ -3720,6 +3864,256 @@ ASSERT tabix = 5.
 ```    
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
+
+### Inserting and Deleting Lines in Internal Tables in Loops
+
+- In a loop, you can change the values of the current table line's components. You can also delete or insert entire lines.
+- The position of these new or deleted lines is determined by the table index or a sorted key. For hashed tables or hash keys, the position is determined by the insertion order (though this can be changed with the `SORT` statement).
+- After the currently processed table line, ...
+  - inserting a line: The new line is processed in the next loop pass (watch out for a non-terminating loop).
+  - deleting a line: The deleted line is not processed in the next loop pass.
+- Before the currently processed table line, ...
+  - inserting a line: The internal loop counter (`sy-tabix`) increases accordingly (in the case of index tables, sorted keys).
+  - deleting a line: The internal loop counter (`sy-tabix`) decreases accordingly.
+- You cannot replace or clear the entire table body in a loop. If detected statically, a syntax error is displayed.
+
+The following examples explore the insertion and deletion of lines when looping across internal tables: 
+
+```abap
+"Creating and populating a demo standard internal table to
+"work with in the example loops
+TYPES: BEGIN OF s_loop_mod,
+            text TYPE string,
+            num  TYPE i,
+        END OF s_loop_mod,
+        t_loop_mod TYPE TABLE OF s_loop_mod WITH EMPTY KEY.
+
+"Inserting 10 entries into the demo table
+DATA(itab_original) = VALUE t_loop_mod( FOR x = 1 WHILE x <= 10 ( text = x ) ).
+DATA(itab) = itab_original.
+
+"---------- Inserting a line after the current line ----------
+
+"The example inserts a line after the currently processed line
+"using an INSERT statement and specifying the index value
+"(sy-tabix value + 1). The 'num' component is assigned the
+"current sy-tabix value.
+"Note: In all statements, the sy-tabix value is stored in a
+"variable right after the LOOP statement. Assume that multiple
+"statements are included before the statement that actually uses
+"the current sy-tabix value. Other statements that potentially
+"change the sy-tabix value might interfere.
+"An EXIT statement takes care of exiting the loop. In the example,
+"all values of the 'num' component in the original table lines
+"(except the first line) are initial as the loop is exited.
+LOOP AT itab ASSIGNING FIELD-SYMBOL(<fs>).
+    DATA(tabix) = sy-tabix.
+    <fs>-num = tabix.
+    INSERT VALUE #( text = tabix ) INTO itab INDEX tabix + 1.
+    IF tabix = 50.
+    EXIT.
+    ENDIF.
+ENDLOOP.
+
+*Internal table content (parts of it):
+*TEXT    NUM
+*1       1
+*1       2
+*2       3
+*3       4
+*4       5
+*...
+*48      49
+*49      50
+*50      0
+*2       0
+*3       0
+*4       0
+*...
+
+"---------- Deleting a line after the current line ----------
+
+"The example deletes a line after the current line using a
+"DELETE statement and the INDEX addition. The index value
+"is specified using the current sy-tabix value + 1.
+"The 'num' value in the resulting internal table includes
+"the sy-tabix value.
+
+itab = itab_original.
+LOOP AT itab ASSIGNING <fs>.
+    tabix = sy-tabix.
+    <fs>-num = tabix.
+    DELETE itab INDEX tabix + 1.
+ENDLOOP.
+
+*Internal table content:
+*TEXT    NUM
+*1       1
+*3       2
+*5       3
+*7       4
+*9       5
+
+"---------- Inserting a line before the current line ----------
+
+"The example insert a line before the currently processed line using
+"an INSERT statement. The current sy-tabix value is used as INDEX value,
+"moving down the currently processed table line one position.
+"In that case, the sy-tabix value increases accordingly.
+"Logic:
+"- For example, the first line is processed, sy-tabix has the value 1.
+"- A line is inserted at this position, moving down the currently processed line
+"  one position. The moved line is then in the second position (as a new line exists
+"  in the first position).
+"- In the next loop pass, the loop is continued with the third line, i.e.
+"  sy-tabix has the value 3 in the second loop pass.
+"The example includes modifications of the table components. The 'num' value
+"is assigned the table index value after inserting the new line. The
+"'num' value of existing table lines includes the value of the index before
+"inserting the new line + 1.
+
+itab = itab_original.
+FIELD-SYMBOLS <line> TYPE s_loop_mod.
+DATA new_line_counter TYPE i.
+DATA tabix_copy TYPE i.
+
+LOOP AT itab ASSIGNING <fs>.
+    tabix = sy-tabix.
+    new_line_counter += 1.
+
+    "Asserting that sy-tabix value has changed accordingly.
+    IF tabix <> 1.
+    ASSERT tabix = tabix_copy + 2.
+    ENDIF.
+
+    DATA(new_line_text) = |---- New line { new_line_counter } ----|.
+    INSERT VALUE #( text = new_line_text ) INTO itab INDEX tabix ASSIGNING <line>.
+
+    DATA(idx_new) = line_index( itab[ text = new_line_text num = 0 ] ).
+    <line>-num = idx_new.
+
+    DATA(idx_existing) = line_index( itab[ text = <fs>-text num = 0 ] ).
+    DATA(new_text) = |{ <fs>-text }(existing line, index before insertion: { tabix })|.
+    <fs>-text = new_text.
+    <fs>-num = idx_existing.
+
+    tabix_copy = tabix.
+ENDLOOP.
+
+*Internal table content:
+*TEXT                                              NUM
+*---- New line 1 ----                              1
+*1 (existing line, index before insertion: 1)      2
+*---- New line 2 ----                              3
+*2 (existing line, index before insertion: 3)      4
+*---- New line 3 ----                              5
+*3 (existing line, index before insertion: 5)      6
+*---- New line 4 ----                              7
+*4 (existing line, index before insertion: 7)      8
+*---- New line 5 ----                              9
+*5 (existing line, index before insertion: 9)      10
+*---- New line 6 ----                              11
+*6 (existing line, index before insertion: 11)     12
+*---- New line 7 ----                              13
+*7 (existing line, index before insertion: 13)     14
+*---- New line 8 ----                              15
+*8 (existing line, index before insertion: 15)     16
+*---- New line 9 ----                              17
+*9 (existing line, index before insertion: 17)     18
+*---- New line 10 ----                             19
+*10 (existing line, index before insertion: 19)    20
+
+
+"---------- Deleting a line before the current line ----------
+
+"The example explores the deletion of a line before the currently
+"processed line. The previous line in the table is deleted if
+"the value of 'text' (an integer was inserted) is an even number.
+"The DELETE statement specifies the index with the current sy-tabix
+"value - 1. On deletion, the sy-tabix value is decreased accordingly.
+"Before a potential deletion, the currently processed table line is
+"copied to another table to visualize the current sy-tabix value in
+"the 'num' component.
+
+itab = itab_original.
+DATA itab_copy LIKE itab.
+
+LOOP AT itab ASSIGNING <fs>.
+    tabix = sy-tabix.
+
+    <fs>-num = tabix.
+    INSERT <fs> INTO TABLE itab_copy.
+
+    TRY.
+        IF CONV i( <fs>-text ) MOD 2 = 0.
+        DELETE itab INDEX tabix - 1.
+        ENDIF.
+    CATCH cx_sy_conversion_no_number .
+    ENDTRY.
+
+ENDLOOP.
+
+*Internal table content (itab):
+*TEXT    NUM
+*2       2
+*4       3
+*6       4
+*8       5
+*10      6
+
+*Internal table content (itab_copy):
+*TEXT    NUM
+*1       1
+*2       2
+*3       2
+*4       3
+*5       3
+*6       4
+*7       4
+*8       5
+*9       5
+*10      6
+
+"---------- Deleting the currently processed table line ----------
+
+"The example explores deleting the currently processed table line using
+"a string table. So, the DELETE statement specifies the current sy-tabix
+"value for INDEX. In that case, the next line moves up one position, and
+"the sy-tabix value remains the same, i.e. when sy-tabix is 2, and the
+"line is deleted, the value remains 2 and processes the line moved up.
+
+"Creating and populating a demo internal table
+DATA(str_tab) = VALUE string_table( ( `a` ) ( `#` ) ( `c` ) ( `#` ) ( `e` )
+                                    ( `f` ) ( `g` ) ( `#` ) ( `i` ) ( `j` ) ).
+
+LOOP AT str_tab REFERENCE INTO DATA(dref).
+    tabix = sy-tabix.
+    IF dref->* CS `#`.
+    DELETE str_tab INDEX tabix.
+    ENDIF.
+ENDLOOP.
+
+*Internal table content:
+*a
+*c
+*e
+*f
+*g
+*i
+*j
+
+"---------- Statements clearing the entire internal table are not allowed in loops ----------
+
+"The entire internal table cannot be deleted within loops.
+"The following statements commented out are not possible.
+LOOP AT str_tab REFERENCE INTO dref.
+    "CLEAR str_tab.
+    "str_tab = VALUE #( ).
+ENDLOOP.
+```
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
 
 ## Operations with Internal Tables Using ABAP SQL SELECT Statements
 
