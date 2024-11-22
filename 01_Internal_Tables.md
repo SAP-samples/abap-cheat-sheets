@@ -1896,7 +1896,7 @@ ASSERT sy-tabix = 0.
 #### Specifying a WHERE Condition in READ TABLE Statements
 
 - The syntax `READ TABLE ... WHERE ...` searches for the first line that matches a `WHERE` condition.
-- The value of `sy-tabix` is set when a line is found, while `sy-subrc` are set to either 0 or 4.
+- The value of `sy-tabix` is set when a line is found, while `sy-subrc` is set to either 0 or 4.
 - The `WHERE` condition can use comparison and predicate expressions (see the code snippet comments below for examples).
 - Syntax options: 
   - The read result must be specified before the `WHERE` condition.
@@ -3015,11 +3015,7 @@ This is to emphasize that table expressions can be used in various read position
 <br>
 
 ``` abap
-IF itab[ 1 ] IS INITIAL.
-    ...
-ELSE.
-    ...
-ENDIF.
+DATA(first_line) = itab[ 1 ].
 
 "Using table expressions as arguments of built-in functions
 IF line_exists( itab[ 1 ] ).
@@ -3566,10 +3562,20 @@ DATA(hashed_tab) = VALUE string_hashed_table( ( `a` ) ( `b` ) ( `c` ) ).
 DATA(hashed_primary_idx) = line_index( hashed_tab[ table_line = `c` ] ).
 
 "Index access in hashed tables only using a secondary table index
-DATA hashed_tab2 TYPE TABLE OF string WITH EMPTY KEY WITH NON-UNIQUE SORTED KEY sk COMPONENTS table_line.
-hashed_tab2 = hashed_tab.
+TYPES: BEGIN OF s,
+          comp1 TYPE i,
+          comp2 TYPE i,
+        END OF s,
+        ttype TYPE HASHED TABLE OF s WITH UNIQUE KEY comp1 WITH NON-UNIQUE SORTED KEY sk COMPONENTS comp2.
+
+DATA(hashed_tab2) = VALUE ttype( ( comp1 = 1 comp2 = 10 )
+                                 ( comp1 = 2 comp2 = 8 )
+                                 ( comp1 = 3 comp2 = 9 ) ).
+
 "3
-DATA(hashed_secondary_idx) = line_index( hashed_tab2[ KEY sk table_line = `c` ] ).
+DATA(hashed_secondary_idx) = line_index( hashed_tab2[ KEY sk comp2 = 10 ] ).
+"1
+hashed_secondary_idx = line_index( hashed_tab2[ KEY sk comp2 = 8 ] ).
 ```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
@@ -3648,9 +3654,9 @@ For more information, see the [Dynamic Programming](06_Dynamic_Programming.md) A
 
 RTTI example: 
 ```abap
-TYPES tab_type TYPE SORTED TABLE OF demo_struc_type
-       WITH UNIQUE KEY comp1
-       WITH NON-UNIQUE SORTED KEY sec_key ALIAS sk COMPONENTS comp2 comp3.
+TYPES tab_type TYPE SORTED TABLE OF zdemo_abap_flsch
+       WITH UNIQUE KEY carrid connid
+       WITH NON-UNIQUE SORTED KEY sec_key ALIAS sk COMPONENTS countryfr cityto.
 DATA itab TYPE tab_type.
 
 DATA(tdo_d) = cl_abap_typedescr=>describe_by_data( itab ).
@@ -4048,7 +4054,7 @@ LOOP AT itab ASSIGNING <fs>.
         IF CONV i( <fs>-text ) MOD 2 = 0.
         DELETE itab INDEX tabix - 1.
         ENDIF.
-    CATCH cx_sy_conversion_no_number .
+    CATCH cx_sy_conversion_no_number.
     ENDTRY.
 
 ENDLOOP.
