@@ -159,7 +159,7 @@ The following points cover RAP-related terms such as *RAP business objects* and 
     -   The [global
         class](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenglobal_class_glosry.htm "Glossary Entry")
         of a behavior pool does not implement the behavior itself. It is
-        (initially) empty apart from the declaration and implementation part skeletons. The behavior implementation is coded in local
+        empty on creation apart from the declaration and implementation part skeletons. The behavior implementation is coded in local
         [RAP handler
         classes](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabp_handler_class_glosry.htm "Glossary Entry")
         and a [RAP saver
@@ -1101,7 +1101,7 @@ derived_type = CORRESPONDING #( some_other_type CHANGING CONTROL ).
 
 #### ABAP SQL Statements with BDEF Derived Types
 
-The ABAP SQL statements `INSERT`, `UPDATE`, `MODIFY`, and `DELETE` offer the [`MAPPING FROM ENTITY`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapmapping_from_entity.htmaddition) addition to handle BDEF derived types.
+The ABAP SQL statements `INSERT`, `UPDATE`, `MODIFY`, and `DELETE` offer the [`MAPPING FROM ENTITY`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapmapping_from_entity.htm) addition to handle BDEF derived types.
 
 ```abap
 "--------------- INSERT ---------------

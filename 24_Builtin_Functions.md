@@ -1,8 +1,8 @@
 <a name="top"></a>
 
-# Misc Built-In Functions
+# Built-In Functions
 
-- [Misc Built-In Functions](#misc-built-in-functions)
+- [Built-In Functions](#built-in-functions)
   - [About Built-In Functions](#about-built-in-functions)
   - [Logical Functions](#logical-functions)
   - [Numeric Functions](#numeric-functions)
@@ -537,6 +537,8 @@ Search functions
 <br><br>
 
 ``` abap
+DATA(str) =`Pieces of cakes.`.
+
 "---------------- find ----------------
 "The find function searches for the substring specified and returns the offset
 "7
@@ -599,7 +601,7 @@ DATA(find_any_not_of2) = find_any_not_of( val = str sub = `P` ).
 </tr>
 
 <tr>
-<td> <code>count</code> </td>
+<td> <code>count</code><br><code>count_any_of</code><br><code>count_any_not_of</code> </td>
 <td>
 Returning the number of all occurrences in a string
 <br><br>

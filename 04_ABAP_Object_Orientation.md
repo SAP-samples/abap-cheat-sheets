@@ -1148,7 +1148,7 @@ ELSE.
 ENDIF.
 
 "Examples using classes of the XCO library (see more information in the
-"ABAP for Cloud Development and Misc ABAP Classes cheat sheets), in which
+"ABAP for Cloud Development and Released ABAP Classes cheat sheets), in which
 "multiple chained method calls can be specified. Each of the methods
 "has a returning parameter specified.
 

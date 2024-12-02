@@ -13,7 +13,7 @@
     - [Capturing Groups, Replacements and Backreferences](#capturing-groups-replacements-and-backreferences)
     - [Lookarounds](#lookarounds)
     - [Case Conversions in Replacement Patterns](#case-conversions-in-replacement-patterns)
-    - [Option Settings and Control Verbs](#option-settings-and-control-verbs)
+    - [Setting Options and Control Verbs](#setting-options-and-control-verbs)
     - [Callouts](#callouts)
     - [Coniditional Patterns](#coniditional-patterns)
   - [ABAP Statements Using Regular Expressions](#abap-statements-using-regular-expressions)
@@ -30,7 +30,7 @@ Regular expressions
 - Offer a powerful way to perform complex searching, replacing, and matching
 - Can be used in ABAP in the following contexts (with a focus on PCRE):
   - `FIND` and `REPLACE` statements (with the `PCRE` addition) 
-  - Built-in functions in ABAP with the `pcre` parameter, such as `find`, `find_end`, `count`, `match`, `replace`, `substring_from`, `substring_after`, `substring_before`, `substring_to`  
+  - Built-in functions in ABAP with the `pcre` parameter, such as `find`, `find_end`, `count`, `match`, `matches`, `replace`, `contains`, `substring_from`, `substring_after`, `substring_before`, `substring_to` 
   - Built-in functions in ABAP SQL and CDS (e.g. `like_regexpr`, `locate_regexpr`, `locate_regexpr_after`, `occurrences_regexpr`, `replace_regexpr`, `substring_regexpr` in ABAP SQL)
   - `CL_ABAP_REGEX` and `CL_ABAP_MATCHER` classes (note that you can also use objects of `CL_ABAP_REGEX` in `FIND` and `REPLACE` statements)
 - Are supported in ABAP with the following syntaxes:
@@ -48,17 +48,17 @@ Regular expressions
 > **💡 Note**<br>
 > - You can perform complex searches using regular expressions. For simple pattern-based searches, refer to comparison operators (`CP`, `NP`) in the [String Processing](07_String_Processing.md) cheat sheets.
 > - The cheat sheet and examples focus on PCRE regular expressions. For other syntax types, find more information and links in the [ABAP Keyword Documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABENREGEX_SYNTAX.html). 
-> - If you have access to a system supporting [classic ABAP](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenclassic_abap_glosry.htm), you can check out the `demo_regex_toy` program for experimenting with regular expressions in ABAP.
+> - In a system supporting [classic ABAP](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenclassic_abap_glosry.htm), you can check out the `demo_regex_toy` program for experimenting with regular expressions in ABAP.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## Excursion: Common Regular Expressions
 
 > **💡 Note**<br>  
-> - The sections below provide an overview of common PCRE expressions with examples. This is not a comprehensive overview; only selected expressions are included.
+> - The sections below provide an overview of common PCRE expressions with examples. This is not a comprehensive overview; only selected regular expressions are included.
 > - For a complete guide to PCRE syntax, refer to the [official documentation](https://perldoc.perl.org/perlre). Note that ABAP-specific restrictions or modifications may apply to the standard syntax.
-> - The code snippets use `replace` functions to show the effects of PCRE regular expressions. Many examples use the `occ = 0` parameter to replace all occurrences.
-> - When using regular expressions, note that exceptions such as of type `cx_sy_invalid_regex` (invalid regex) or `cx_sy_regex_too_complex` (too complex regex) can occur.
+> - The code snippets use `replace` functions to show the effects of PCRE regular expressions. Many examples use the `occ` parameter with the assignment `occ = 0` to replace all occurrences.
+> - When using regular expressions, note that exceptions such as of type `cx_sy_invalid_regex` or `cx_sy_regex_too_complex` can occur.
 
 ### Characters and Character Types
 
@@ -138,28 +138,28 @@ DATA string_esc_chars TYPE string.
 
 "Special characters
 "a#b#c#d#e#f#g
-string_chars_types = replace( val = `a[b]c\d/e^f.g` pcre = `\[|\]|\\|\/|\^|\.` with = `#` occ = 0 ).
+string_esc_chars = replace( val = `a[b]c\d/e^f.g` pcre = `\[|\]|\\|\/|\^|\.` with = `#` occ = 0 ).
 
 "Line feeds
 "a#b#c
-string_chars_types = replace( val = |a\nb\nc| pcre = `\n` with = `#` occ = 0 ).
+string_esc_chars = replace( val = |a\nb\nc| pcre = `\n` with = `#` occ = 0 ).
 
 "Line feed negation
 "String template representation of the result: |#\n#\n#|
-string_chars_types = replace( val = |a\nb\nc| pcre = `\N` with = `#` occ = 0 ).
+string_esc_chars = replace( val = |a\nb\nc| pcre = `\N` with = `#` occ = 0 ).
 
 "Tabs
 "a#b#c
-string_chars_types = replace( val = |a\tb\tc| pcre = `\t` with = `#` occ = 0 ).
+string_esc_chars = replace( val = |a\tb\tc| pcre = `\t` with = `#` occ = 0 ).
 
 "Carriage return
 "d#e#f
-string_chars_types = replace( val = |d\re\rf| pcre = `\r` with = `#` occ = 0 ).
+string_esc_chars = replace( val = |d\re\rf| pcre = `\r` with = `#` occ = 0 ).
 
 "Characters with hex code
 "The example string includes a non-breaking space.
 "#x#
-string_chars_types = replace( 
+string_esc_chars = replace( 
   val = |#{ cl_abap_conv_codepage=>create_in( codepage = `UTF-16BE` )->convert( source = CONV xstring( `00A0` ) ) }#|
   pcre = `\x{00A0}` with = `x` occ = 0 ).
 
@@ -167,22 +167,22 @@ string_chars_types = replace(
 "As above, the example string includes a non-breaking space.
 "The PCRE syntax uses the control verb (*UTF) to enable UTF mode.
 "#y#
-string_chars_types = replace( 
+string_esc_chars = replace( 
   val = |#{ cl_abap_conv_codepage=>create_in( codepage = `UTF-16BE` )->convert( source = CONV xstring( `00A0` ) ) }#|
   pcre = `(*UTF)\N{U+00A0}` with = `y` occ = 0 ).
 
 "Characters with a specified Unicode character property
 "H# ABAP
-string_chars_types = replace( val = `Hello ABAP` pcre = `\p{Ll}+` with = `#` occ = 0 ).
+string_esc_chars = replace( val = `Hello ABAP` pcre = `\p{Ll}+` with = `#` occ = 0 ).
 
 "#ello #
-string_chars_types = replace( val = `Hello ABAP` pcre = `\p{Lu}+` with = `#` occ = 0 ).
+string_esc_chars = replace( val = `Hello ABAP` pcre = `\p{Lu}+` with = `#` occ = 0 ).
 
 "#ello#
-string_chars_types = replace( val = `Hello ABAP` pcre = `\P{Ll}+` with = `#` occ = 0 ).
+string_esc_chars = replace( val = `Hello ABAP` pcre = `\P{Ll}+` with = `#` occ = 0 ).
 
 "H#ABAP
-string_chars_types = replace( val = `Hello ABAP` pcre = `\P{Lu}+` with = `#` occ = 0 ).
+string_esc_chars = replace( val = `Hello ABAP` pcre = `\P{Lu}+` with = `#` occ = 0 ).
 ```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
@@ -300,9 +300,9 @@ string_char_sets_ranges = replace( val = `ABCDabcd123456` pcre = `[^A-Ca-c1-4]` 
 | Expression | Represents | Example Regex | Example String | Matches | Does not Match |
 |---|---|---|---|---|---|
 | `\A` | Start of a subject | `\A.` | abc def | <ins>**a**</ins>bc def | abc <ins>**d**</ins>ef  |
-| `^` | Start of a subject (particularly relevant in multi line mode) | `^.` | See above and more details in the option settion section |  |   |
+| `^` | Start of a subject (particularly relevant in multi-line mode) | `^.` | See above and more details in the option setting section |  |   |
 | `\Z` | End of a subject | `.\Z`  | abc def | abc de<ins>**f**</ins> | <ins>**a**</ins>bc def |
-| `$` | End of a subject (particularly relevant in multi line mode) | `.$`  | See above and more details in the option settion section |  |   |
+| `$` | End of a subject (particularly relevant in multi-line mode) | `.$`  | See above and more details in the option setting section |  |   |
 | `\b` | Start or end of word | 1. `\ba.` <br>2. `\Dd\b` <br>3. `\b.d\b` | abcd a12d ed | 1. <ins>**ab**</ins>cd <ins>**a1**</ins>2d ed <br>2. ab<ins>**cd**</ins> a12d <ins>**ed**</ins> <br> 3. abcd a12d <ins>**ed**</ins> | 1. ab<ins>**cd**</ins> a1<ins>**2d**</ins> ed <br> 2. abcd a1<ins>**2d**</ins> ed <br> 3. <ins>**abcd**</ins> <ins>**a12d**</ins> ed |
 | `\B` | Negation of `\b`, not at the start or end of words | `\Be\B` | see an elefant | s<ins>**e**</ins>e an el<ins>**e**</ins>fant  | s<ins>**ee**</ins> an <ins>**e**</ins>lefant |
 | `\K` | Resets the starting point of a match, i.e. findings are excluded from the final match | `a.\Kc` | abcd | ab<ins>**c**</ins>d | <ins>**abc**</ins>d |
@@ -318,13 +318,13 @@ DATA string_anchors_pos TYPE string.
 "#abc def
 string_anchors_pos = replace( val = `abc def` pcre = `\A` with = `#` occ = 0 ).
 
-"Start of subject, syntax ^; find more information below regarding multi line mode
+"Start of subject, syntax ^; find more information below regarding multi-line mode
 "#abc
 "#def
 "#ghi
 string_anchors_pos = replace( val = |abc\ndef\nghi| pcre = `(?m)^` with = `#` occ = 0 ).
 
-"The following examples uses ^ without enabling the multi line mode
+"The following examples uses ^ without enabling the multi-line mode
 "#abc
 "def
 "ghi
@@ -335,7 +335,7 @@ string_anchors_pos = replace( val = |abc\ndef\nghi| pcre = `^` with = `#` occ = 
 string_anchors_pos = replace( val = `abc def` pcre = `\Z` with = `#` occ = 0 ).
 
 "End of subject, syntax $
-"The example uses multi line mode
+"The example uses multi-line mode
 "abc#
 "def#
 "ghi#
@@ -369,7 +369,7 @@ string_anchors_pos = replace( val = `abcd` pcre = `a.\Kc` with = `#` occ = 0 ).
 | `(...)` | Capturing group to group parts of patterns together | `b(a\|u)t` | bit bat but bet | bat, but | bit, bet |
 | `(?<name>...)`, `(?'name'...)` | Named capturing group | `(?<x>..)(?'y'..)` | abcd | `$x` refers to *ab*, `$y` to *cd* <br> The reference can also be made using curly brackets: `${x}`, `${y}` | `$x` refers to *cd*, `$y` to *ab* |
 | `$id`, `${id}`  | Represents the substitute for a capturing group, `id` stands for a number or name of a capturing group | `(..)(..)` | abcd | `$1` refers to *ab*, `$2` to *cd* <br> `$0` refers to the content of the whole match <br> As above, the reference can also be made using curly brackets: `${0}`, `${1}`, `${2}`  | `$1` refers to *cd*, `$2` to *ab* |
-| `(?:...)` | Creates a group but it is not captured | `(?:ab)(ap)` | abap | It matches *abap*, but in a replacements and when referring to the subgroup `$1`, it refers to *ap*. |  ab |
+| `(?:...)` | Creates a group but it is not captured | `(?:ab)(ap)` | abap | It matches *abap*, but in a replacement and when referring to the subgroup `$1`, it refers to *ap*. |  ab |
 | `\1` | Backreference, refers to a previous capturing group; 1 represents the number of the group index (the group index starts with 1); more back reference syntax options are possible such as the specification of named groups | `(a.)(\w*)\1` | abcdefabghij | <ins>**abcdefab**</ins>ghij <br>Note: Capturing group 1 holds `ab` in the example. The second capturing group captures all word characters until `ab` is found. | <ins>**ab**</ins>cdefabghij |
 
 Examples:
@@ -501,7 +501,6 @@ string_case_conv = replace( val = `HIJKLMNO` pcre = `K(.*)` with = `K\l$1` ).
 string_case_conv = replace( val = `HIJKLMNO` pcre = `K(.*)` with = `K\L$1` ).
 
 "\E syntax
-
 "abcDEfg
 string_case_conv = replace( val = `abcdefg` pcre = `c(..)(..)` with = `c\U$1\E$2` ).
 
@@ -512,7 +511,7 @@ string_case_conv = replace( val = `abcdefg` pcre = `c(..)(..)` with = `c\U$1$2` 
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-### Option Settings and Control Verbs
+### Setting Options and Control Verbs
 
 There are various [setting options](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/abenregex_pcre_syntax_specials.html) for specifying PCRE syntax. The following examples demonstrate a selection:
 
@@ -549,14 +548,14 @@ string_opt_set = replace( val = |\n\n| pcre = `(?s).` with = `#` occ = 0 ).
 
 "----------- Examples for the start of subjects -----------
 
-"Multi line mode not enabled
+"Multi-line mode not enabled
 "Result:
 "#bc
 "def
 "ghi
 string_opt_set = replace( val = |abc\ndef\nghi| pcre = `^.` with = `#` occ = 0 ).
 
-"Multi line mode enabled
+"Multi-line mode enabled
 "Result:
 "#bc
 "#ef
@@ -595,7 +594,7 @@ string_opt_set = replace( val = |abc\ndef\nghi| pcre = `(?m).\Z` with = `#` occ 
 - The extended mode is the default for ABAP statements and built-in functions, but you can disable it in the regex pattern with `(?-x)`. The `create_pcre` method of the `CL_ABAP_REGEX` class includes an `extended` parameter for this purpose.
 - To handle whitespaces in regular expressions, escape it with `\ `, match it using `\s`, or enable extended mode with `(?-x)`.
 
-The following code snippet shows extended mode enabled by default and then explicitly disabled in a PCRE regular expression.
+The following code snippet shows the extended mode enabled by default and then explicitly disabled in a PCRE regular expression.
 
 
 ```abap
@@ -622,7 +621,7 @@ some_string = replace( val = `abc def` pcre = `abc\ def` with = `#` ).
 "are ignored.
 some_string = replace( val = `abc def` pcre = `abc\         def` with = `#` ).
 
-"Disabling the extended mode, so whitespaces are not ignored
+"Disabling the extended mode so that whitespaces are not ignored
 "Result: #
 some_string = replace( val = `abc def` pcre = `(?-x)abc def` with = `#` ).
 ```
@@ -650,7 +649,7 @@ ctrl_verb_string = replace(
 
 "Line breaks
 "The results are demonstrated using string templates.
-"In the examples, the multi line mode is enabled in addition.
+"In the examples, the multi-line mode is enabled in addition.
 
 "|_abc\ndef\r_ghi\r_\njkl|
 ctrl_verb_string = replace( val = |abc\ndef\rghi\r\njkl|
@@ -741,7 +740,7 @@ CLASS zcl_some_class IMPLEMENTATION.
       APPEND |start_match_off: { start_match_off }| TO callout_tab.
 
       TRY.
-          APPEND |Content of match: { subject+capture_last_off(capture_last_len) }| TO callout_tab.
+          APPEND |Content of submatch: { subject+capture_last_off(capture_last_len) }| TO callout_tab.
         CATCH cx_sy_range_out_of_bounds.
       ENDTRY.
       APPEND |This callout was called at { ts }| TO callout_tab.
@@ -869,7 +868,7 @@ FIND PCRE `(.*)\son\s(.*)` IN str IGNORING CASE RESULTS DATA(e).
 *                            21        25
 
 "----- MATCH OFFSET/LENGTH additions -----
-"The following examples find the last occurence of a comma and the following content.
+"The following examples find the last occurrence of a comma and the following content.
 "\K denotes that the comma is excluded from the result. Using the offset and length
 "values, the part of the string is extracted. The examples underscore that you can
 "achieve the same thing differently with different PCRE syntax patterns (which also
@@ -914,12 +913,12 @@ FIND FIRST OCCURRENCE OF PCRE `\bt.` IN TABLE itab
 DATA(url) = `https://help.sap.com/docs/abap-cloud/abap-concepts/controlled-sap-luw/`.
 DATA url_parts TYPE string_table.
 
-FIND ALL OCCURRENCES OF PCRE `(?<=/)([^/]+)(?=/)` IN url RESULTS DATA(res).
+FIND ALL OCCURRENCES OF PCRE `(?<=\/)([^\/]+)(?=\/)` IN url RESULTS DATA(res).
 
 "Details on the regular expression:
-"- Positive lookbehind (?<=/) that determines that the content is preceded by `/`
-"- Positive lookahead (?=/) that determines that the content is followed by `/
-"- ([^/]+) in between determines that any sequence of characters that are not `/` are matched
+"- Positive lookbehind (?<=\/) that determines that the content is preceded by `/`
+"- Positive lookahead (?=\/) that determines that the content is followed by `/
+"- ([^\/]+) in between determines that any sequence of characters that are not `/` are matched
 "- The match is put in parentheses to store the submatch
 
 LOOP AT res INTO DATA(finding).
@@ -1098,6 +1097,20 @@ DATA(substring_from) = substring_from( val = text pcre = `\s` occ = 2  ).
 "... up to a matching regular expression including the match
 "'Lorem ipsum '
 DATA(substring_to) = substring_to( val = text pcre = `\s` occ = 2 ).
+
+"---------------- Predicate functions: contains, matches ----------------
+"The built-in functions 'contains' returns a truth value. In the following
+"examples, the truth value is demonstrated using the xsdbool function.
+
+"X
+DATA(contains) = xsdbool( contains( val = `abc def` pcre = `\s`  ) ).
+
+"The built-in functions 'matches' compares a search range of the textual argument
+"with a regular expression.
+
+"X
+DATA(matches) = xsdbool( matches( val  = `jon.doe@email.com`
+                                  pcre = `\w+(\.\w+)*@(\w+\.)+(\w{2,4})` ) ).
 ```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
@@ -1200,8 +1213,8 @@ DATA(str) = `a1 # B2 ? cd . E3`.
 "using cl_abap_regex
 
 "Example pattern: Any-non digit followed by a digit
-DATA(regex_1) = cl_abap_regex=>create_pcre( pattern = `\D\d`
-                                            ignore_case = abap_true ).
+DATA(regex) = cl_abap_regex=>create_pcre( pattern = `\D\d`
+                                          ignore_case = abap_true ).
 
 "----------- Creating matchers -----------
 
@@ -1216,7 +1229,7 @@ DATA(regex_1) = cl_abap_regex=>create_pcre( pattern = `\D\d`
 "with the 'table' parameter and more.
 
 "Creating a matcher using the create_matcher method of the cl_abap_regex class
-DATA(matcher_1) = regex_1->create_matcher( text = str ).
+DATA(matcher_1) = regex->create_matcher( text = str ).
 "Creating a matcher in one go using method chaining
 DATA(matcher_2) = cl_abap_regex=>create_pcre( pattern = `\D\d`
                                               ignore_case = abap_true
@@ -1231,7 +1244,7 @@ DATA(matcher_3) = cl_abap_matcher=>create_pcre( pattern = `\D\d`
 
 "--- Finding all occurrences using the find_all method ---
 "In the example, result has the type match_result_tab containing the findings.
-DATA(result_1) = matcher_1->find_all( ).
+DATA(result_fa1) = matcher_1->find_all( ).
 
 *LINE    OFFSET    LENGTH    SUBMATCHES
 *0       0         2         OFFSET     LENGTH
@@ -1240,24 +1253,24 @@ DATA(result_1) = matcher_1->find_all( ).
 *
 *0       15        2         OFFSET     LENGTH
 
-DATA(result_2) = matcher_2->find_all( ).
-ASSERT result_2 = result_1.
+DATA(result_fa2) = matcher_2->find_all( ).
+ASSERT result_fa2 = result_fa1.
 
 "Getting the result in one go using method chaining with cl_abap_matcher
-DATA(result_3) = cl_abap_matcher=>create_pcre( pattern = `\D\d`
+DATA(result_fa3) = cl_abap_matcher=>create_pcre( pattern = `\D\d`
                                                 text    = str
                                                 ignore_case = abap_true
                                               )->find_all( ).
-ASSERT result_3 = result_1.
+ASSERT result_fa3 = result_fa1.
 
-"--- Example with subgroups ---
+"--- Example with submatches ---
 
 str = `XabcdXXefgXXhXXijklmnXX`.
 
-DATA(result_4) = cl_abap_matcher=>create_pcre( pattern = `X(.*?)X`
-                                               text    = str
-                                               ignore_case = abap_true
-                                             )->find_all( ).
+DATA(result_fa4) = cl_abap_matcher=>create_pcre( pattern = `X(.*?)X`
+                                                 text    = str
+                                                 ignore_case = abap_true
+                                               )->find_all( ).
 
 *LINE    OFFSET    LENGTH    SUBMATCHES
 *0       0         6         OFFSET    LENGTH
@@ -1271,20 +1284,20 @@ DATA(result_4) = cl_abap_matcher=>create_pcre( pattern = `X(.*?)X`
 
 "--- Replacing all occurrences using the 'replace_all' method ---
 
-DATA(matcher_4) = cl_abap_regex=>create_pcre( pattern = `X(.*?)X`
-                                            )->create_matcher( text = str ).
+DATA(matcher_repl_1) = cl_abap_regex=>create_pcre( pattern = `X(.*?)X`
+                                                 )->create_matcher( text = str ).
 
 "4
-DATA(repl_count_1) = matcher_4->replace_all( newtext = `#` ).
+DATA(repl_count_1) = matcher_repl_1->replace_all( newtext = `#$1#` ).
 
-"####X
-DATA(repl_result_1) = matcher_4->text.
+"#abcd##efg##h##ijklmn#X
+DATA(repl_result_1) = matcher_repl_1->text.
 
 "Using cl_abap_matcher
-DATA(matcher_5) = cl_abap_matcher=>create_pcre( pattern = `X(.*?)X`
-                                                text    = str ).
-DATA(repl_count_2) = matcher_5->replace_all( newtext = `#` ).
-DATA(repl_result_3) = matcher_5->text.
+DATA(matcher_repl_2) = cl_abap_matcher=>create_pcre( pattern = `X(.*?)X`
+                                                     text    = str ).
+DATA(repl_count_2) = matcher_repl_2->replace_all( newtext = `#$1#` ).
+DATA(repl_result_2) = matcher_repl_2->text.
 
 "---- Sequential processing of the regular expression ---
 "---- using the find_next method ------------------------
@@ -1293,18 +1306,18 @@ DATA(repl_result_3) = matcher_5->text.
 
 str = `a1bc2def3ghij45klm67opqr8stuvwx90yz`.
 
-DATA(matcher_6) = cl_abap_matcher=>create_pcre( pattern = `\d(\D.)`
-                                                text    = str ).
+DATA(matcher_fn) = cl_abap_matcher=>create_pcre( pattern = `\d(\D.)`
+                                                 text    = str ).
 
 DATA strtab TYPE string_table.
-WHILE matcher_6->find_next( ) = abap_true.
+WHILE matcher_fn->find_next( ) = abap_true.
   APPEND |---- Finding { sy-index } -----| TO strtab.
 
   "Type match_result
-  DATA(match_result) = matcher_6->get_match( ).
+  DATA(match_result) = matcher_fn->get_match( ).
 
-  DATA(offset) = matcher_6->get_offset( ).
-  DATA(length) = matcher_6->get_length( ).
+  DATA(offset) = matcher_fn->get_offset( ).
+  DATA(length) = matcher_fn->get_length( ).
   DATA(matched_content) = str+offset(length).
 
   APPEND |Match offset: { offset }| TO strtab.
@@ -1312,14 +1325,14 @@ WHILE matcher_6->find_next( ) = abap_true.
   APPEND |Match content: { matched_content }| TO strtab.
 
   "Type match_result
-  DATA(subgroup) = matcher_6->get_match( )-submatches.
+  DATA(subgroup) = matcher_fn->get_match( )-submatches.
 
   LOOP AT subgroup INTO DATA(wa).
     DATA(sub_tabix) = sy-tabix.
     DATA(submatch_line) = wa.
     DATA(submatch_offset) = wa-offset.
     DATA(submatch_length) = wa-length.
-    DATA(submatch) = matcher_6->get_submatch( sub_tabix ).
+    DATA(submatch) = matcher_fn->get_submatch( sub_tabix ).
     APPEND |Submatch { sub_tabix } offset: { submatch_offset }| TO strtab.
     APPEND |Submatch { sub_tabix } length: { submatch_length }| TO strtab.
     APPEND |Submatch { sub_tabix } content: { submatch }| TO strtab.
@@ -1330,16 +1343,16 @@ ENDWHILE.
 "---- Using an object of type cl_abap_regex in ABAP ---
 "---- statements with the REGEX addition --------------
 
-DATA(result_5) = cl_abap_matcher=>create_pcre( pattern = `\d(\D.)`
-                                                text = str
-                                             )->find_all( ).
-DATA(result_6) = cl_abap_regex=>create_pcre( pattern = `\d(\D.)`
+DATA(result_find_all_1) = cl_abap_matcher=>create_pcre( pattern = `\d(\D.)`
+                                                        text = str
+                                                      )->find_all( ).
+DATA(result_find_all_2) = cl_abap_regex=>create_pcre( pattern = `\d(\D.)`
                                            )->create_matcher( text = str
                                            )->find_all( ).
 
-DATA(regex_2) = cl_abap_regex=>create_pcre( pattern = `\d(\D.)` ).
+DATA(reg_expr) = cl_abap_regex=>create_pcre( pattern = `\d(\D.)` ).
 
-FIND ALL OCCURRENCES OF REGEX regex_2 IN str RESULTS DATA(result_7).
+FIND ALL OCCURRENCES OF REGEX reg_expr IN str RESULTS DATA(result_find_all_3).
 
 *LINE    OFFSET    LENGTH    SUBMATCHES
 *0       1         3         OFFSET    LENGTH
@@ -1357,19 +1370,77 @@ FIND ALL OCCURRENCES OF REGEX regex_2 IN str RESULTS DATA(result_7).
 *0       32        3         OFFSET    LENGTH
 *                            33        2
 
-ASSERT result_7 = result_5.
-ASSERT result_7 = result_6.
+ASSERT result_find_all_3 = result_find_all_1.
+ASSERT result_find_all_3 = result_find_all_2.
 
 "Note that the REGEX addition is obsolete when using (POSIX) syntax patterns
 "A syntax warning is displayed for the following example.
 "FIND ALL OCCURRENCES OF REGEX `\d(\D.)` IN str RESULTS DATA(result_8).
 
 "The syntax warning can be suppressed using a pragma
-FIND ALL OCCURRENCES OF REGEX `\d(\D.)` IN str RESULTS DATA(result_9) ##REGEX_POSIX.
+FIND ALL OCCURRENCES OF REGEX `\d(\D.)` IN str RESULTS DATA(result_find_all_4) ##REGEX_POSIX.
 
 "Using PCRE instead
-FIND ALL OCCURRENCES OF PCRE `\d(\D.)` IN str RESULTS DATA(result_10).
-ASSERT result_10 = result_7.
+FIND ALL OCCURRENCES OF PCRE `\d(\D.)` IN str RESULTS DATA(result_find_all_5).
+ASSERT result_find_all_5 = result_find_all_3.
+
+"---------------- Exploring more parameters of the create_pcre method ----------------
+"See the class documentation for more parameters and information.
+
+"--- enable_multiline parameter ---
+
+str = |abc\ndef\nghi\njkl|.
+
+DATA(matcher_no_ml) = cl_abap_matcher=>create_pcre( pattern = `^`
+                                                    text    = str ).
+"1
+DATA(repl_count_no_ml) = matcher_no_ml->replace_all( newtext = `#` ).
+"|#abc\ndef\nghi\njkl|
+DATA(repl_result_no_ml) = matcher_no_ml->text.
+
+DATA(matcher_w_ml) = cl_abap_matcher=>create_pcre( pattern = `^`
+                                                   text    = str
+                                                   enable_multiline = abap_true ).
+"4
+DATA(repl_count_w_ml) = matcher_w_ml->replace_all( newtext = `#` ).
+"|#abc\n#def\n#ghi\n#jkl|
+DATA(repl_result_w_ml) = matcher_w_ml->text.
+
+"--- table/ignore_case parameters ---
+
+data(str_table) = VALUE string_table( ( `abZdez` ) ( `zZfghZ` ) ( `ijkZZz` ) ( `zzzzZ` ) ).
+
+DATA(matcher_tab) = cl_abap_matcher=>create_pcre( pattern = `z+`
+                                                  table   = str_table
+                                                  ignore_case = abap_true ).
+"6
+DATA(repl_count_tab) = matcher_tab->replace_all( newtext = `#` ).
+"ab#de# / #fgh# / ijk# / #
+DATA(repl_result_tab) = matcher_tab->table.
+
+"--- extended parameter ---
+
+str = `abc def`.
+
+DATA(matcher_w_extended) = cl_abap_matcher=>create_pcre( pattern = `abc def`
+                                                         text    = str ).
+
+"No replacement in the following example as the extended mode is
+"enabled by default.
+"0
+DATA(repl_count_w_extended) = matcher_w_extended->replace_all( newtext = `#` ).
+"abc def
+DATA(repl_result_w_extended) = matcher_w_extended->text.
+
+"Disabling the extended mode so that whitespaces are not ignored
+DATA(matcher_not_extended) = cl_abap_matcher=>create_pcre( pattern = `abc def`
+                                                           text    = str
+                                                           extended = abap_false ).
+
+"1
+DATA(repl_count_not_extended) = matcher_not_extended->replace_all( newtext = `#` ).
+"#
+DATA(repl_result_not_extended) = matcher_not_extended->text.
 ```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>

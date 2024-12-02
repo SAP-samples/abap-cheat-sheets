@@ -53,6 +53,7 @@ ABAP cheat sheets[^1] ...
 - The example classes contained in the branches for classic ABAP mostly use syntax that is also available in ABAP for Cloud Development. Only the  `TEST_ABAP_CHEAT_SHEETS_CLASSIC` subpackage contains syntax relevant to Standard ABAP and that is not available in ABAP for Cloud Development, such as dynpro-related ABAP keywords.
 - The code snippets in the ABAP cheat sheet documents and the executable examples include many comments. While it is generally not recommended to overuse comments in your code, they are used here to explain and provide context directly where it is needed. In many cases, they illustrate the results of ABAP statements.
 - As previously mentioned, the cheat sheet documents and examples primarily focus on syntax options. The usage and names of data objects, classes, methods etc. are nonsemantic.
+- Many ABAP statements allow additions in various orders, and these orders are not always fixed.
 </details>
 
 <br>
@@ -89,9 +90,9 @@ ABAP cheat sheets[^1] ...
 |[Dynpro](18_Dynpro.md)|Provides a high-level overview of dynpro topics with a focus on dynpro-related statements <br> 💡 The content of this cheat sheet and the executable example are only relevant to [classic ABAP](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenclassic_abap_glosry.htm).|Program `ZDEMO_ABAP_DYNPRO`|
 |[Selection Screens and Classic Lists](20_Selection_Screens_Lists.md)|Provides a high-level overview of selection screens and classic lists with a focus on related statements. It includes an excursion into the SAP List Viewer (ALV). <br> 💡 The content of this cheat sheet and the executable examples are only relevant to [classic ABAP](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenclassic_abap_glosry.htm).|Program `ZDEMO_ABAP_SELSCR_LISTS_INTRO` (the "intro" program, from which the other related example programs can be started)|
 |[Working with XML and JSON in ABAP](21_XML_JSON.md)|Covers processing XML using class libraries, XML transformations using XSLT and Simple Transformations (ST), serializations (ABAP to XML) and deserializations (XML to ABAP), dealing with JSON data|[zcl_demo_abap_xml_json](./src/zcl_demo_abap_xml_json.clas.abap)|
-|[Misc ABAP Classes](22_Misc_ABAP_Classes.md)|Contains a selection of ABAP classes, serving as a quick introduction, along with code snippets to explore the functionality in action|- (The cheat sheet includes copy and paste code snippets and example classes)|
+|[Released ABAP Classes](22_Released_ABAP_Classes.md)|Contains a selection of ABAP classes, serving as a quick introduction, along with code snippets to explore the functionality in action|- (The cheat sheet includes copy and paste code snippets and example classes)|
 |[Date, Time, and Time Stamp](23_Date_and_Time.md)|Covers how to handle and process dates, times, and time stamps in ABAP|[zcl_demo_abap_date_time](./src/zcl_demo_abap_date_time.clas.abap)|
-|[Misc Built-In Functions](24_Misc_Builtin_Functions.md)|Covers a variety of built-in functions in ABAP|- (The cheat sheet includes copy and paste code snippets)|
+|[Built-In Functions](24_Builtin_Functions.md)|Covers a variety of built-in functions in ABAP|- (The cheat sheet includes copy and paste code snippets)|
 |[Authorization Checks](25_Authorization_Checks.md)|Provides a high-level overview of explicit and implicit authorization checks in ABAP|- (The cheat sheet includes a copy and paste example class)|
 |[ABAP Dictionary](26_ABAP_Dictionary.md)|Covers a selection of repository objects in the ABAP Dictionary (DDIC) that represent global types|- (The cheat sheet includes a copy and paste example class)|
 |[Exceptions and Runtime Errors](27_Exceptions.md)|Provides an overview on exceptions and runtime errors|- (The cheat sheet includes a copy and paste example class)|

@@ -637,20 +637,14 @@ DO 2 TIMES.
     CATCH cx_sy_itab_line_not_found INTO cleanup.
       APPEND `---- Catching cx_sy_itab_line_not_found ----` TO info_tab.
       APPEND cleanup->get_text( ) TO info_tab.
+      TRY.
+          line_4 = strtab[ 4 ].
+          APPEND `Since the row was added in the CLEANUP block, it is now in the table.` TO info_tab.
+        CATCH cx_sy_itab_line_not_found INTO DATA(line_not_found).
+          APPEND `The row is not in the table.` TO info_tab.
+      ENDTRY.
   ENDTRY.
 ENDDO.
-TRY.
-    line_4 = strtab[ 4 ].
-  CATCH cx_sy_itab_line_not_found INTO DATA(line_not_found).
-ENDTRY.
-
-IF line_not_found IS INITIAL.
-  ...
-  "Line 4 exists and was assigned to the data object.
-ELSE.
-  ...
-  "Line 4 does not exist.
-ENDIF.
 
 "----------------------------------------------------------------------------
 "----------------------- INTO addition --------------------------------------

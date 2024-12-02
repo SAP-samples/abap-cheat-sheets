@@ -491,7 +491,7 @@ DATA it_elem_6 TYPE TABLE OF ty_c3 WITH EMPTY KEY.
 "Apart from the globally available elementary built-in ABAP types, you can
 "also use elementary types from the DDIC such as data elements that are
 "visible anywhere. You can also refer to CDS simple types that
-"constitute elemenary data types.
+"constitute elementary data types.
 DATA it_elem_7 TYPE TABLE OF timestamp WITH EMPTY KEY.
 DATA it_elem_8 TYPE TABLE OF timestampl WITH EMPTY KEY.
 
@@ -1125,7 +1125,7 @@ MOVE-CORRESPONDING itab_nested1 TO itab_nested2 EXPANDING NESTED TABLES KEEPING 
 </table>
 
 > **💡 Note**<br>
-> The `CL_ABAP_CORRESPONDING` class can be used for assignments. Find an example in the [Misc ABAP Classes](22_Misc_ABAP_Classes.md) cheat sheet.
+> The `CL_ABAP_CORRESPONDING` class can be used for assignments. Find an example in the [Released ABAP Classes](22_Released_ABAP_Classes.md) cheat sheet.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
@@ -6051,7 +6051,7 @@ Using the methods of the `CL_ABAP_DIFF` class, you can compare the content of tw
 
 Find ...
 - more information in the class documentation and in the [ABAP Keyword Documentation]([06_Dynamic_Programming.md](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencl_abap_diff.htm)). 
-- a code snippet in the [Misc ABAP Classes](./22_Misc_ABAP_Classes.md#comparing-content-of-compatible-internal-tables) cheat sheet.
+- a code snippet in the [Released ABAP Classes](22_Released_ABAP_Classes.md) cheat sheet.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 

@@ -713,7 +713,7 @@ SELECT * FROM zdemo_abap_table_function INTO TABLE @itab_cds_tabfunc.
 
 - DDIC offers a variety of predefined functions for use in ABAP CDS and ABAP SQL. 
 - These functions include numeric functions for computations, string functions for string manipulation, and table functions for handling internal tables, among others. 
-- For additional information and code examples, refer to the [Misc Built-In Functions](24_Misc_Builtin_Functions.md) cheat sheet.
+- For additional information and code examples, refer to the [Built-In Functions](24_Builtin_Functions.md) cheat sheet.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 

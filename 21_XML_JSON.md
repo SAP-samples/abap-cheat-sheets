@@ -1478,7 +1478,7 @@ ENDCLASS.
 ### Converting string <-> xstring
 In the code snippets above and in the executable example, many operations are performed using binary data.
 This excursion shows the conversion of string <-> xstring using a codepage. The examples use UTF-8.
-For example, you can use the `cl_abap_conv_codepage` class and the [XCO library](https://help.sap.com/docs/btp/sap-business-technology-platform/xco-library?version=Cloud). Using the `xco_cp` class of the XCO library, you can also process Base64 representations of raw binary data (see the snippet for `xco_cp` in the [String Processing](/22_Misc_ABAP_Classes.md#string-processing) section of the Misc ABAP Classes cheat sheet). 
+For example, you can use the `cl_abap_conv_codepage` class and the [XCO library](https://help.sap.com/docs/btp/sap-business-technology-platform/xco-library?version=Cloud). Using the `xco_cp` class of the XCO library, you can also process Base64 representations of raw binary data (see the snippet for `xco_cp` in the [String Processing](/22_Released_ABAP_Classes.md#string-processing) section of the *Regular ABAP Classes* cheat sheet). 
 
 ```abap
 DATA(xml_string) = `<TXT>ABAP</TXT>`.

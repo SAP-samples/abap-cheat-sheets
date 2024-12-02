@@ -1908,7 +1908,7 @@ INTO TABLE @DATA(null_expr).
 - The result is a value with the associated dictionary type. 
 - The arguments of the functions can cover one or more SQL expressions. 
 - For all available functions and for more information, refer to [this topic](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_sql_builtin_functions.htm) in the ABAP Keyword Documentation and the subtopics.
-- The functions are also covered in other cheat sheets such as the *Misc Built-In Functions* cheat sheet.
+- The functions are also covered in other cheat sheets such as the [Built-In Functions](24_Builtin_Functions.md) cheat sheet.
 
 ### Numeric Functions
 
@@ -2139,7 +2139,7 @@ More information:
 - [Date and time functions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensql_uuid.htm)
 - It is also possible to call [SQL-based scalar functions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_sql_scalar_glosry.htm). Find more information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensql_cds_scalar_func.htm).
 
-The following example shows a selection. Other cheat sheets such as *Misc Built-In Functions* show more snippets about date and time functions.
+The following example shows a selection. Other cheat sheets such as [Built-In Functions](24_Builtin_Functions.md) show more snippets about date and time functions.
   
 ``` abap
 SELECT SINGLE

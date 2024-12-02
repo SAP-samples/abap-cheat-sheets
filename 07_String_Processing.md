@@ -29,6 +29,7 @@
     - [Searching for Substrings in Tables](#searching-for-substrings-in-tables)
     - [String Function find](#string-function-find)
     - [Replacing Substrings in Strings](#replacing-substrings-in-strings)
+      - [Position-Based Replacements](#position-based-replacements)
     - [Replacing Substrings in Tables](#replacing-substrings-in-tables)
     - [String Function replace](#string-function-replace)
   - [Pattern-Based Searching and Replacing in Strings](#pattern-based-searching-and-replacing-in-strings)
@@ -380,7 +381,7 @@ tz = |{ utclong_current( ) TIMEZONE = 'EST' COUNTRY = 'US ' }|. "12/30/2024 09:4
 
 "---------------------- CASE ----------------------
 "Lowercase and uppercase
-s1 = |AbCdEfG|.
+s1 = `AbCdEfG`.
 s2 = |{ s1 CASE = LOWER }|. "abcdefg
 s2 = |{ s1 CASE = UPPER }|. "ABCDEFG
 
@@ -890,7 +891,7 @@ s1 = `aa1bb2aa3bb4`.
 "... after a specified substring
 s2 = substring_after( val = s1 sub = `aa` ). "1bb2aa3bb4 (only the first occurrence is respected)
 
-"... after a specified substring specifying the occurence in a string
+"... after a specified substring specifying the occurrence in a string
 "and restricting the length
 s2 = substring_after( val = s1 sub = `aA` occ = 2 len = 4 case = abap_false ). "3bb4
 
@@ -1497,6 +1498,10 @@ REPLACE FIRST OCCURRENCE OF `ap`
 "0     2       2
 ```
 
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+#### Position-Based Replacements
+
 You can use [`REPLACE SECTION ... OF`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapfind_section_of.htm) statements for position-based replacements, that is, to replace a section in a string starting at a specified offset for a specified length.
 
 ``` abap
@@ -1516,6 +1521,8 @@ str = str_original.
 "Only LENGTH (OFFSET: starting from the leftmost position)
 REPLACE SECTION LENGTH 6 OF str WITH `#`. "#BAP abap
 ```
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ### Replacing Substrings in Tables
 
@@ -1578,6 +1585,8 @@ REPLACE ALL OCCURRENCES OF `Z`
 "str_table: aZbz# / cdZze / Zzzf / ghz
 ```
 
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
 ### String Function replace
 - The string function
 [`replace`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenreplace_functions.htm),
@@ -1629,6 +1638,8 @@ res = replace( val = str  with = `#` len = 3 ). "#p ABAP abap
 "- Result: Value specified for 'with' is appended to the end of the string
 res = replace( val = str  with = `#` off = strlen( str ) ). "abap ABAP abap#
 ```
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## Pattern-Based Searching and Replacing in Strings
 
@@ -1818,7 +1829,7 @@ REPLACE ALL OCCURRENCES OF PCRE `(<p>)(.|\n)*?(<\/p>)` IN html_b WITH `$1Hi$3`.
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## More String Functions
-As also covered in the [Misc Built-in Functions cheat sheet](24_Misc_Builtin_Functions.md), the following sections show more string functions available.
+As also covered in the [Built-In Functions](24_Builtin_Functions.md), the following sections show more string functions available.
 
 ### Checking the Similarity of Strings
 
@@ -2049,7 +2060,7 @@ IF s8 NP `*c#D*`. ... "false; sy-fdpos: 2
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ### Miscellaneous Classes for String Processing 
-As also covered in the [Misc ABAP Classes](22_Misc_ABAP_Classes.md) cheat sheet, the following list shows a selected set of classes that support string processing.
+As also covered in the [Released ABAP Classes](22_Released_ABAP_Classes.md) cheat sheet, the following list shows a selected set of classes that support string processing.
 
 - `CL_ABAP_CHAR_UTILITIES`: As previously mentioned, this class provides utilities for string processing, such as attributes that represent new lines and horizontal tabs.
 
