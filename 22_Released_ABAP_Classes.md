@@ -1371,16 +1371,21 @@ SELECT PublicHolidayCalendarID
   ORDER BY PublicHolidayCalendarID
   INTO TABLE @DATA(public_holiday_cal_ids).
 
-DATA(example_cal_ids) = VALUE string_table( ( `SAP_US` ) ( `SAP_IN` ) ( `SAP_QA` ) ( `SAP_SA` ) ( `SAP_DE_BW` ) ).
+DATA(example_cal_ids) = VALUE string_table( ( `SAP_US` ) ( `SAP_IN` ) ( `SAP_QA` )
+                                            ( `SAP_SA` ) ( `SAP_DE_BW` ) ).
 
 LOOP AT example_cal_ids INTO DATA(example_cal_id).
 
   IF line_exists( factory_cal_ids[ table_line = example_cal_id ] ).
     DATA(factory_calendar_id) = CONV cl_fhc_calendar_runtime=>ty_fcal_id( example_cal_id ).
+  ELSE.
+    CLEAR factory_calendar_id.
   ENDIF.
 
   IF line_exists( public_holiday_cal_ids[ table_line = example_cal_id ] ).
     DATA(holiday_calendar_id) = CONV cl_fhc_calendar_runtime=>ty_hcal_id( example_cal_id ).
+  ELSE.
+    CLEAR holiday_calendar_id.
   ENDIF.
 
   "---------------------- Factory calendar-related information ----------------------
@@ -1389,9 +1394,12 @@ LOOP AT example_cal_ids INTO DATA(example_cal_id).
       DATA(fc_date_conv) = factory_cal->convert_date_to_factorydate( CONV d( '20241115' ) ).
       DATA(fc_factory_date_conv) = factory_cal->convert_factorydate_to_date( 7219 ).
       DATA(fc_last_factory_date) = factory_cal->get_last_factorydate( ).
-      DATA(fc_days_between) = factory_cal->calc_workingdays_between_dates( iv_start = '20241201' iv_end = '20250101'  ).
-      DATA(fc_days_add) = factory_cal->add_workingdays_to_date( iv_start = '20241220' iv_number_of_workingdays  = 5  ).
-      DATA(fc_days_subtract) = factory_cal->subtract_workingdays_from_date( iv_start = '20250101' iv_number_of_workingdays  = 5  ).
+      DATA(fc_days_between) = factory_cal->calc_workingdays_between_dates( iv_start = '20241201'
+                                                                            iv_end = '20250101'  ).
+      DATA(fc_days_add) = factory_cal->add_workingdays_to_date( iv_start = '20241220'
+                                                                iv_number_of_workingdays  = 5  ).
+      DATA(fc_days_subtract) = factory_cal->subtract_workingdays_from_date( iv_start = '20250101'
+                                                                            iv_number_of_workingdays  = 5  ).
       DATA(fc_is_working_date_1) = factory_cal->is_date_workingday( '20250101' ).
       DATA(fc_is_working_date_2) = factory_cal->is_date_workingday( '20241231' ).
       DATA(fc_description) = factory_cal->get_description( ).
