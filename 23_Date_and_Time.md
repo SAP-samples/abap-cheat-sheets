@@ -31,6 +31,7 @@
   - [Excursions](#excursions)
     - [Date, Time, and Time Stamps in String Templates](#date-time-and-time-stamps-in-string-templates)
     - [Date and Time Functions in ABAP SQL and ABAP CDS](#date-and-time-functions-in-abap-sql-and-abap-cds)
+    - [Calendar-Related Information](#calendar-related-information)
   - [More Information](#more-information)
   - [Executable Example](#executable-example)
 
@@ -1257,6 +1258,12 @@ FIELDS
 WHERE TimeZoneID = char`EST`
 INTO @DATA(wa).
 ```
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+### Calendar-Related Information
+
+Find examples with classes for accessing calendar-related information in [this section](22_Released_ABAP_Classes.md#calendar-related-information) of the *Released ABAP Classes* cheat sheet.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 

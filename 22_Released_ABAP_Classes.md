@@ -12,6 +12,7 @@
   - [String Processing](#string-processing)
   - [Regular Expressions](#regular-expressions)
   - [Time and Date](#time-and-date)
+  - [Calendar-Related Information](#calendar-related-information)
   - [Runtime Type Services (RTTS)](#runtime-type-services-rtts)
   - [Assignments](#assignments)
   - [Information about Non-Initial Structure Components](#information-about-non-initial-structure-components)
@@ -1097,6 +1098,80 @@ DATA(repl_result_not_extended) = matcher_not_extended->text.
 <tr>
 <td> Class </td> <td> Details/Code Snippet </td>
 </tr>
+
+<tr>
+<td> <code>CL_ABAP_DATFM</code> </td>
+<td>
+For conversions between the external and the internal representation of a date specification
+
+<br><br>
+
+``` abap
+DATA(date4conversion) = CONV d( '20240202' ).
+DATA conv_date_str TYPE string.
+DATA conv_date_d TYPE d.
+DATA date_format TYPE cl_abap_datfm=>ty_datfm.
+
+"Conversion of d (internal) to string (external time format)
+TRY.
+    cl_abap_datfm=>conv_date_int_to_ext(
+      EXPORTING im_datint    = date4conversion
+                im_datfmdes  = cl_abap_datfm=>get_datfm( )
+      IMPORTING ex_datext    = conv_date_str
+                ex_datfmused = date_format ).
+  CATCH cx_abap_datfm_format_unknown.
+ENDTRY.
+
+"Conversion of string (external) to d (internal time format)
+TRY.
+    cl_abap_datfm=>conv_date_ext_to_int(
+      EXPORTING im_datext    = conv_date_str
+                im_datfmdes  = date_format
+      IMPORTING ex_datint    = conv_date_d
+                ex_datfmused = date_format ).
+  CATCH cx_abap_datfm_no_date cx_abap_datfm_invalid_date
+        cx_abap_datfm_format_unknown cx_abap_datfm_ambiguous.
+ENDTRY.
+``` 
+
+</td>
+</tr>
+
+<tr>
+<td> <code>CL_ABAP_TIMEFM</code> </td>
+<td>
+For conversions between the external and the internal representation of a time specification
+
+<br><br>
+
+``` abap
+DATA(time4conversion) = CONV t( '123456' ).
+DATA conv_time_str TYPE string.
+DATA conv_time_t TYPE t.
+
+"Conversion of t (internal) to string (external time format)
+TRY.
+    cl_abap_timefm=>conv_time_int_to_ext(
+      EXPORTING time_int            = time4conversion
+                without_seconds     = abap_false
+                format_according_to = cl_abap_timefm=>iso
+      IMPORTING time_ext            = conv_time_str ).
+  CATCH cx_parameter_invalid_range.
+ENDTRY.
+
+"Conversion of string (external) to t (internal time format)
+TRY.
+    cl_abap_timefm=>conv_time_ext_to_int(
+      EXPORTING time_ext            = conv_time_str
+      IMPORTING time_int            = conv_time_t ).
+  CATCH cx_abap_timefm_invalid.
+ENDTRY.
+``` 
+
+</td>
+</tr>
+
+
 <tr>
 <td> <code>CL_ABAP_UTCLONG</code> </td>
 <td>
@@ -1272,6 +1347,158 @@ DATA(m19_subtract_date) = xco_cp=>sy->date( )->subtract( iv_day = 1 iv_month = 1
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
+## Calendar-Related Information
+
+<table>
+<tr>
+<td> Class </td> <td> Details/Code Snippet </td>
+</tr>
+<tr>
+<td> <code>CL_FHC_CALENDAR_RUNTIME</code> </td>
+<td>
+
+The following example explores accessing calendar-related information (factory and holiday calendars). Find more information in the [SAP Help Portal documentation](https://help.sap.com/docs/BTP/65de2977205c403bbc107264b8eccf4b/f7cbd3c336f84dc09c85639c55b4309f.html?version=Cloud). Note the [released CDS views](https://help.sap.com/docs/BTP/65de2977205c403bbc107264b8eccf4b/cc36b142349f40c499155b65e812c3ac.html?version=Cloud) in that context.
+
+
+``` abap
+SELECT FactoryCalendarID
+  FROM I_FactoryCalendarBasic
+  ORDER BY FactoryCalendarID
+  INTO TABLE @DATA(factory_cal_ids).
+
+SELECT PublicHolidayCalendarID
+  FROM I_PublicHolidayCalendarBasic
+  ORDER BY PublicHolidayCalendarID
+  INTO TABLE @DATA(public_holiday_cal_ids).
+
+DATA(example_cal_ids) = VALUE string_table( ( `SAP_US` ) ( `SAP_IN` ) ( `SAP_QA` ) ( `SAP_SA` ) ( `SAP_DE_BW` ) ).
+
+LOOP AT example_cal_ids INTO DATA(example_cal_id).
+
+  IF line_exists( factory_cal_ids[ table_line = example_cal_id ] ).
+    DATA(factory_calendar_id) = CONV cl_fhc_calendar_runtime=>ty_fcal_id( example_cal_id ).
+  ENDIF.
+
+  IF line_exists( public_holiday_cal_ids[ table_line = example_cal_id ] ).
+    DATA(holiday_calendar_id) = CONV cl_fhc_calendar_runtime=>ty_hcal_id( example_cal_id ).
+  ENDIF.
+
+  "---------------------- Factory calendar-related information ----------------------
+  TRY.
+      DATA(factory_cal) = cl_fhc_calendar_runtime=>create_factorycalendar_runtime( iv_factorycalendar_id = factory_calendar_id ).
+      DATA(fc_date_conv) = factory_cal->convert_date_to_factorydate( CONV d( '20241115' ) ).
+      DATA(fc_factory_date_conv) = factory_cal->convert_factorydate_to_date( 7219 ).
+      DATA(fc_last_factory_date) = factory_cal->get_last_factorydate( ).
+      DATA(fc_days_between) = factory_cal->calc_workingdays_between_dates( iv_start = '20241201' iv_end = '20250101'  ).
+      DATA(fc_days_add) = factory_cal->add_workingdays_to_date( iv_start = '20241220' iv_number_of_workingdays  = 5  ).
+      DATA(fc_days_subtract) = factory_cal->subtract_workingdays_from_date( iv_start = '20250101' iv_number_of_workingdays  = 5  ).
+      DATA(fc_is_working_date_1) = factory_cal->is_date_workingday( '20250101' ).
+      DATA(fc_is_working_date_2) = factory_cal->is_date_workingday( '20241231' ).
+      DATA(fc_description) = factory_cal->get_description( ).
+      DATA(fc_id) = factory_cal->get_id( ).
+    CATCH cx_fhc_runtime INTO DATA(error_factory_cal).
+      DATA(error_msg_factory_cal) = error_factory_cal->get_text( ).
+  ENDTRY.
+
+  "---------------------- Holiday calendar-related information ----------------------
+  TRY.
+      DATA(holiday_cal) = cl_fhc_calendar_runtime=>create_holidaycalendar_runtime( iv_holidaycalendar_id = holiday_calendar_id ).
+      DATA(hc_is_holiday) = holiday_cal->is_holiday( CONV d( '20250101' ) ).
+      holiday_cal->calc_holidays_between_dates(
+        EXPORTING
+          iv_start = '20240101'
+          iv_end = '20250101'
+        IMPORTING
+          et_holidays = DATA(hc_holidays_between)
+      ).
+      DATA(hc_val_start) = holiday_cal->get_validity_start( ).
+      DATA(hc_val_end) = holiday_cal->get_validity_end( ).
+      DATA(hc_description) = holiday_cal->get_description( ).
+      DATA(hc_id) = holiday_cal->get_id( ).
+      DATA(hc_holiday_assignm) = holiday_cal->get_holiday_assignments( ).
+
+      DATA holidays TYPE string_table.
+      LOOP AT hc_holiday_assignm INTO DATA(holiday_wa).
+        APPEND |Holiday ID: "{ holiday_wa->get_holiday_id( ) }", "{ holiday_wa->get_text( )-description }"| TO holidays.
+      ENDLOOP.
+
+      DATA holidays_in_time_frame TYPE string_table.
+      LOOP AT hc_holidays_between INTO DATA(holiday_info_wa).
+        DATA(hc_get_holiday) = holiday_cal->get_holiday( holiday_info_wa-date ).
+        DATA(hc_holiday_text) = hc_get_holiday->get_text( ).
+        DATA(hc_holiday_class) = hc_get_holiday->get_class( ).
+        DATA(hc_holiday_conf) = hc_get_holiday->get_confession( ).
+        DATA(hc_holiday_type) = hc_get_holiday->get_type( ).
+        DATA(hc_holiday_id) = hc_get_holiday->get_holiday_id( ).
+        APPEND |Date "{ holiday_info_wa-date }", Title "{ hc_holiday_text-description }"| TO holidays_in_time_frame.
+      ENDLOOP.
+    CATCH cx_fhc_runtime INTO DATA(error_holiday_cal).
+      DATA(error_msg_holidays_cal) = error_holiday_cal->get_text( ).
+  ENDTRY.
+  CLEAR: holidays, holidays_in_time_frame.
+ENDLOOP.
+``` 
+
+</td>
+</tr>
+<tr>
+<td> <code>CL_SCAL_UTILS</code> </td>
+<td>
+Calendar utilities for getting month names, year and week of a date, first day of a week, name and number of the weekday for a specified date
+
+
+``` abap
+TRY.
+  "Getting month names
+  cl_scal_utils=>month_names_get(
+    EXPORTING
+      iv_language    = sy-langu
+    IMPORTING
+      et_month_names = DATA(months)
+      ev_returncode  = DATA(return_code)
+  ).
+
+  DATA(month_names) = VALUE string_table( FOR wa IN months ( CONV string( wa-ltx ) ) ).
+
+  "Getting year and week of a date
+  cl_scal_utils=>date_get_week(
+    EXPORTING
+      iv_date = '20251201'
+    IMPORTING
+      ev_year = DATA(year)
+      ev_week = DATA(week) ).
+
+  "Getting the first day of a week
+  "Note the class documentation
+  cl_scal_utils=>week_get_first_day(
+    EXPORTING
+      iv_year_week = 0
+      iv_year      = 2025
+      iv_week      = 48
+    IMPORTING
+      ev_date      = DATA(date)
+  ).
+
+  "Getting the name and number of the weekday for a specified date
+  cl_scal_utils=>date_compute_day(
+    EXPORTING
+      iv_date           = '20251201'
+    IMPORTING
+      ev_weekday_number = DATA(day_number)
+      ev_weekday_name   = DATA(day_name)
+  ).
+
+CATCH cx_scal INTO DATA(error_scal).
+  DATA(error_msg_scal) = error_scal->get_text( ).
+ENDTRY.
+``` 
+
+</td>
+</tr>
+</table>
+
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## Runtime Type Services (RTTS)
 
