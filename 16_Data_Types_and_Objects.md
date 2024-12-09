@@ -28,6 +28,7 @@
     - [Getting Type Information and Creating Types/Data Objects at Runtime](#getting-type-information-and-creating-typesdata-objects-at-runtime)
     - [Ranges Tables](#ranges-tables)
     - [Typed Literals in ABAP SQL](#typed-literals-in-abap-sql)
+    - [Non-Admissible Values of Literals](#non-admissible-values-of-literals)
   - [Executable Example](#executable-example)
 
 ## Introduction
@@ -47,7 +48,7 @@ Data types
 > - DDIC types such as [DDIC data elements](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendata_element_glosry.htm) (elementary data types or reference types), [DDIC structures](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenddic_structure_glosry.htm), [DDIC table types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenddic_table_type_glosry.htm). Find more information in the [ABAP Dictionary](26_ABAP_Dictionary.md) cheat sheet.
 > - Furthermore, [database tables](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendatabase_table_glosry.htm) and [CDS entities](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_entity_glosry.htm) and their components can also be used as data types in ABAP programs.
 >
-> Data types declared in interfaces and in the public visibility section of global classes are also globally visibile. Global classes and interfaces as such are global types to refer to. In [classic ABAP](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenclassic_abap_glosry.htm), global data types can also be created in [type pools](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentype_pool_glosry.htm). Find more information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenddic_data_types.htm).
+> Data types declared in interfaces and in the public visibility section of global classes are also globally visibile. Global classes and interfaces as such are global types to refer to. In [classic ABAP](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenclassic_abap_glosry.htm), you may stumble on the option to create global data types in [type pools](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentype_pool_glosry.htm), which is not possible in ABAP for Cloud Development. However, the predefined type pool `abap` can be used in ABAP for Cloud Development. Find more information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenddic_data_types.htm).
 
 
 Data objects: 
@@ -103,7 +104,7 @@ For an overview, see the [ABAP Type Hierarchy](https://help.sap.com/doc/abapdocu
 
 - Are composed of other types. 
 - The following complex data types are available: 
-   - [Structured types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenstructured_type_glosry.htm): Represent a sequence of arbitrary data type (i.e., they can be elementary, reference, or complex data types). The typical syntax element for the local definition of a structure is `... BEGIN OF ... END OF ...`.
+   - [Structured types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenstructured_type_glosry.htm): Represent a sequence of arbitrary data types (i.e., they can be elementary, reference, or complex data types). The typical syntax element for the local definition of a structure is `... BEGIN OF ... END OF ...`.
    - [Table types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentable_type_glosry.htm): Consist of a sequence of any number of lines of the same data type. It can be any elementary type, reference type, or complex data type. The type definition includes other properties such as the [table category](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentable_category_glosry.htm) (defines how tables can be accessed) and [table key](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentable_key_glosry.htm) (to identify the table lines). The typical syntax element is `... TABLE OF ...`.
    - [Enumerated types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenenum_type_glosry.htm): Specify a set of values in addition to the actual type properties. The typical syntax element is `... BEGIN OF ENUM ... END OF ENUM ...`. See more information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenenumerated_types_usage.htm) and further down.  
    - [Mesh types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenmesh_type_glosry.htm): Special structured type that contains only table types with structured line types as components that can be linked using mesh associations. The typical syntax element is `... BEGIN OF MESH ... END OF MESH ...`. See more information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abaptypes_mesh.htm).  
@@ -322,7 +323,11 @@ TYPES tr_like_table_ref LIKE TABLE OF REF TO itab_str.
   - [Generic ABAP Types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbuilt_in_types_generic.htm)
   - [ABAP cheat sheet about dynamic programming](06_Dynamic_Programming.md) regarding field symbols and `ASSIGN` statements
 
-The following code snippet demonstrates generic types with field symbols.
+> **💡 Note**<br>
+> The `TYPE REF TO` addition types as a reference variable. A generic type cannot be specified after `REF TO`. A typing with `TYPE REF TO data` and `TYPE REF TO object` is considered as completely typing.
+
+
+The following code snippet demonstrates generic types with field symbols. For complete and generic typing of formal parameters, refer to the [ABAP Object Orientation](04_ABAP_Object_Orientation.md#complete-typing-of-formal-parameters) cheat sheet.
 
 ```abap
 FIELD-SYMBOLS:
@@ -356,9 +361,8 @@ FIELD-SYMBOLS:
   <table>          TYPE table,          "Standard table
 
   "Other types
-  <simple>         TYPE simple, "Elementary data type including enumerated types and
-                                "structured types with exclusively character-like flat components
-  <object>         TYPE REF TO object. "object can only be specified after REF TO; can point to any object
+  <simple>         TYPE simple. "Elementary data type including enumerated types and
+                                "structured types with exclusively character-like flat components  
 
 "Data objects to work with
 DATA: BEGIN OF s,
@@ -378,7 +382,6 @@ DATA: BEGIN OF s,
         xl1       TYPE x LENGTH 1,
         xstr      TYPE xstring,
         structure TYPE zdemo_abap_carr, "character-like flat structure
-        oref      TYPE REF TO object,
       END OF s.
 
 "The following static ASSIGN statements demonstrate various assignments
@@ -467,12 +470,6 @@ ASSIGN s-date TO <simple>.
 ASSIGN s-structure TO <simple>.
 ASSIGN s-xl1 TO <simple>.
 "ASSIGN s-tab_ha TO <simple>.
-
-s-oref = NEW zcl_demo_abap_objects( ).
-ASSIGN s-oref TO <object>.
-"Accessing class attributes using casting
-DATA(publ_str) = CAST zcl_demo_abap_objects( <object> )->public_string.
-CAST zcl_demo_abap_objects( <object> )->another_string = `ABAP`.
 ```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
@@ -661,7 +658,7 @@ An assignment passes the contents of a source to a target data object.
 
 > **💡 Note**<br>
 > - There are conversion rules when assigning a source to a target data object that have different types. For more information, see the topic [Assignment and Conversion Rules](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconversion_rules.htm) in the ABAP Keyword Documentation, especially for complex types, since elementary types are usually demonstrated in the cheat sheet.
-> - There are many ways to assigning values to data objects in ABAP. Assignments with the assignment operator `=` are mostly used here.
+> - There are many ways to assigning values to data objects in ABAP. They occur in the context of various ABAP statements. Here, assignments with the assignment operator `=` are mostly used.
 > - In older ABAP code, you may see `MOVE ... TO ...` statements for value assignments. These statements are obsolete. They are not to be confused with `MOVE-CORRESPONDING` statements for complex types. These are not obsolete.
 
 The following code snippet shows several ways to assign values to data objects. 
@@ -1931,6 +1928,36 @@ SELECT SINGLE
   WHERE fldate = datn`20240102`
   INTO @DATA(wa_misc_typed_literals).
 ```
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+### Non-Admissible Values of Literals
+
+Note recent syntax warnings when using literals that represent invalid values for target types. The following example demonstrates the assignement of literals using admissible and non-admissible values. You can copy and paste the code into a demo class in your SAP BTP ABAP Environment to explore the syntax warnings.
+
+
+```abap
+DATA char3 TYPE c LENGTH 3.
+
+"Value is admissable and convertible
+char3 = 'abc'.
+
+"Non-admissable value assigned to the target (type c length 6)
+char3 = 'defghi'.
+
+DATA date TYPE d.
+
+"Value is admissable and convertible
+date = '20250101'.
+
+"Non-admissable value assigned to the target
+"Type i
+date = 20250101.
+"More characters than type d
+date = '20250101234'.
+"Fewer characters than type d
+date = '202511'.
+```    
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 

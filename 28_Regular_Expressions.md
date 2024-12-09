@@ -15,7 +15,7 @@
     - [Case Conversions in Replacement Patterns](#case-conversions-in-replacement-patterns)
     - [Setting Options and Control Verbs](#setting-options-and-control-verbs)
     - [Callouts](#callouts)
-    - [Coniditional Patterns](#coniditional-patterns)
+    - [Conditional Patterns](#conditional-patterns)
   - [ABAP Statements Using Regular Expressions](#abap-statements-using-regular-expressions)
   - [Built-In Functions in ABAP Using Regular Expressions](#built-in-functions-in-abap-using-regular-expressions)
   - [Built-In Functions in ABAP SQL and CDS Using Regular Expressions](#built-in-functions-in-abap-sql-and-cds-using-regular-expressions)
@@ -128,7 +128,7 @@ Note that some of the example strings are represented by string templates.
 | `\R` | Line feed sequence, ensuring that regular expression matches all kinds of newlines, such as `\n`, `\r`, or `\r\n` (carriage return followed by line feed)  | `\R.` | <code>\|abc\rdef\nghi\r\njkl mno\|</code> | <code>\|\rd\|</code>, <code>\|\ng\|</code>, <code>\|\r\nj\|</code> | <code>\| m\|</code> |
 | `\x{...}` | Character with hex code | `\x{00A0}#` (non-breaking space and #) | <code>\|#{ cl_abap_conv_codepage=>create_in( codepage = \`UTF-16BE\` )->convert( source = CONV xstring( \`00A0\` ) ) }#\|</code> | The non-breaking space plus the second # character | The first # character |
 | `\N{U+...}` | Character with Unicode code point | `\N{U+00A0}#` (non-breaking space and # as above) | See the example below | See the example below | |
-| `\p{..}` | Character with a specified Unicode character property; see the [documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/abenregex_pcre_syntax_specials.html) for options; among them, there are, for example, properties for lower (`Ll`) and uppercase (`Lu`) letters; negation: `\P{..}` | 1. `\p{Ll}+` <br> 2. `\p{Lu}+` <br> 3. `\P{Lu}+`  | Hello ABAP | 1. H<ins>**ello**</ins> ABAP <br> 2. <ins>**H**</ins>ello <ins>**ABAP**</ins> <br> 3. H<ins>**ello&nbsp;**</u></ins>ABAP (the space is also matched) | 1. Upper case letter sequences <br> 2. Lower case letter sequences <br> 3. Upper case letter sequences |
+| `\p{..}` | Character with a specified Unicode character property; see the [documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/abenregex_pcre_syntax_specials.html) for options; among them, there are, for example, properties for lowercase (`Ll`) and uppercase (`Lu`) letters; negation: `\P{..}` | 1. `\p{Ll}+` <br> 2. `\p{Lu}+` <br> 3. `\P{Lu}+`  | Hello ABAP | 1. H<ins>**ello**</ins> ABAP <br> 2. <ins>**H**</ins>ello <ins>**ABAP**</ins> <br> 3. H<ins>**ello&nbsp;**</u></ins>ABAP (the space is also matched) | 1. Upper case letter sequences <br> 2. Lower case letter sequences <br> 3. Upper case letter sequences |
 
 Examples:
 
@@ -391,7 +391,7 @@ string_capt_group = replace( val = `APAB` pcre = `(..)(..)` with = `$2$1` ).
 string_capt_group = replace( val = `abcd` pcre = `(..)(..)` with = `#$0#` ).
 
 "Alternative replacement syntax with the curly brackets
-"cdab
+"ABAP
 string_capt_group = replace( val = `APAB` pcre = `(..)(..)` with = `${2}${1}` ).
 
 "------- Named capturing groups -------
@@ -753,7 +753,7 @@ ENDCLASS.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-### Coniditional Patterns
+### Conditional Patterns
 
 - Used to check whether certain capture groups are matched
 - When matched or not matched, you can specify replacement patterns; you can also specify replacement patterns with conditions
@@ -1224,7 +1224,7 @@ DATA(regex) = cl_abap_regex=>create_pcre( pattern = `\D\d`
 "- create_pcre method of the cl_abap_matcher class
 "Note that several importing parameters are available to enable
 "further settings of the regular expression, e.g. ignoring the
-"case, using the extended mode, etc. The example pass a string
+"case, using the extended mode, etc. The examples pass a string
 "to the 'text' parameter. You can also specify internal tables
 "with the 'table' parameter and more.
 

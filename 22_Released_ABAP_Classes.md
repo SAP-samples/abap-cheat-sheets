@@ -18,7 +18,7 @@
   - [Information about Non-Initial Structure Components](#information-about-non-initial-structure-components)
   - [Comparing Content of Compatible Internal Tables](#comparing-content-of-compatible-internal-tables)
   - [Dynamic Programming](#dynamic-programming)
-  - [Context Information](#context-information)
+  - [Getting the User Name](#getting-the-user-name)
   - [XML/JSON](#xmljson)
   - [ABAP Repository Object Information](#abap-repository-object-information)
   - [Generating ABAP Repository Objects](#generating-abap-repository-objects)
@@ -41,6 +41,7 @@ This ABAP cheat sheet contains a selection of [released](https://help.sap.com/do
 > **💡 Note**<br>
 > - The cheat sheet is not a comprehensive overview, and the code snippets do not claim to be comprehensive as far as options, methods, or parameters are concerned. It is intended to give you a rough overview, for you to get an idea. It is an invitation to a more in-depth exploration.
 > - For more information and where available, refer to the class documentation (for example, choose F2 when the cursor is on the class name in ADT), the ABAP Keyword Documentation, and the SAP Help Portal documentation.
+> - You might find that different classes can achieve similar or the same results, especially with the Extension Components Library (XCO), a general-purpose development library designed specifically for ABAP for Cloud Development. Choose the classes that best meet your needs.
 > - [Disclaimer](./README.md#%EF%B8%8F-disclaimer)
 
 ## Excursion: Available Classes in ABAP for Cloud Development
@@ -1100,6 +1101,22 @@ DATA(repl_result_not_extended) = matcher_not_extended->text.
 </tr>
 
 <tr>
+<td> <code>CL_ABAP_CONTEXT_INFO</code> </td>
+<td>
+Provides context information relevant to the current ABAP session.
+<br><br>
+
+``` abap
+"Getting current date in UTC (not the system or user time), e.g. 20240101
+DATA(sys_date) = cl_abap_context_info=>get_system_date( ).
+
+"Getting current time in UTC, e.g. 152450
+DATA(sys_time) = cl_abap_context_info=>get_system_time( ).
+``` 
+
+</td>
+</tr>
+<tr>
 <td> <code>CL_ABAP_DATFM</code> </td>
 <td>
 For conversions between the external and the internal representation of a date specification
@@ -1927,7 +1944,7 @@ ENDTRY.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-## Context Information
+## Getting the User Name
 
 <table>
 <tr>
@@ -1940,12 +1957,6 @@ Provides context information relevant to the current ABAP session.
 <br><br>
 
 ``` abap
-"Getting current date in UTC (not the system or user time), e.g. 20240101
-DATA(sys_date) = cl_abap_context_info=>get_system_date( ).
-
-"Getting current time in UTC, e.g. 152450
-DATA(sys_time) = cl_abap_context_info=>get_system_time( ).
-
 "User alias, e.g. XY0000001234
 DATA(alias) = cl_abap_context_info=>get_user_alias( ).
 "You can also get user information using XCO classes
@@ -1956,6 +1967,14 @@ TRY.
     DATA(formatted_name) = cl_abap_context_info=>get_user_formatted_name( ).
   CATCH cx_abap_context_info_error.
 ENDTRY.
+
+"The class also provides the option to retrieve the current date and time 
+"in UTC.
+"Getting current date in UTC (not the system or user time), e.g. 20240101
+DATA(sys_date) = cl_abap_context_info=>get_system_date( ).
+
+"Getting current time in UTC, e.g. 152450
+DATA(sys_time) = cl_abap_context_info=>get_system_time( ).
 ``` 
 
 </td>

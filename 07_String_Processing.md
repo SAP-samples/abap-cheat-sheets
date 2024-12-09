@@ -825,8 +825,7 @@ exception `CX_SY_RANGE_OUT_OF_BOUNDS` is raised.
 and
 [`substring_to`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensubstring_functions.htm).
   - These functions offer more options in terms of parameters, such as the use of [PCRE regular
-expressions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenpcre_regex_glosry.htm "Glossary Entry"),
-which are covered below.
+expressions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenpcre_regex_glosry.htm "Glossary Entry").
 - As also shown further down, using the built-in function `match`, you can extract substrings matching a given pattern.
 
 Syntax examples:

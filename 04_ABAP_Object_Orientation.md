@@ -15,6 +15,8 @@
       - [Methods](#methods)
       - [Parameter Interface](#parameter-interface)
       - [Formal and Actual Parameters](#formal-and-actual-parameters)
+      - [Complete Typing of Formal Parameters](#complete-typing-of-formal-parameters)
+      - [Generic Typing of Formal Parameters](#generic-typing-of-formal-parameters)
       - [Defining Parameters as Optional](#defining-parameters-as-optional)
       - [Defining Input Parameters as Preferred](#defining-input-parameters-as-preferred)
       - [Constructors](#constructors)
@@ -558,6 +560,386 @@ In the simplest form, methods can have no parameter at all. Apart from that, met
 - An [Actual parameter](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenactual_parameter_glosry.htm "Glossary Entry") represents the data object whose content is passed to or copied from a formal parameter as an argument when a procedure is called. 
 - If passing by reference is used, a local data object is not created for the actual parameter. Instead, the procedure is given a [reference](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenreference_glosry.htm "Glossary Entry") to the actual parameter during the call and works with the actual parameter itself. 
 - Note that parameters that are input and passed by reference cannot be modified in the procedure. However, the use of a reference is beneficial regarding the performance compared to creating a local data object.
+
+The following example shows a class with a simple method demonstrating the syntax for formal paremeter specifications. Complete types are used. 
+
+```abap
+CLASS zcl_some_class DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
+
+  PUBLIC SECTION.
+    INTERFACES if_oo_adt_classrun.
+
+    "Passing by reference and value
+    METHODS: meth IMPORTING i_a            TYPE i
+                            REFERENCE(i_b) TYPE string
+                            VALUE(i_c)     TYPE i
+                  RETURNING VALUE(r_a)     TYPE string.
+
+
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+ENDCLASS.
+
+
+
+CLASS zcl_some_class IMPLEMENTATION.
+
+  METHOD if_oo_adt_classrun~main.
+
+    DATA(result) = meth( i_a = 1
+                         i_b = `hello`
+                         i_c = 2 ).
+
+  ENDMETHOD.
+
+  METHOD meth.
+    ... "Method implementation
+
+    "No change for input parameters passed by reference
+    "i_a += 1.
+    "i_b &&= ` world`.
+
+    "Input parameters passed by reference can be changed in the method.
+    i_c += 1.
+
+  ENDMETHOD.
+
+ENDCLASS.
+```
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+#### Complete Typing of Formal Parameters
+
+Syntax for [completely](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencomplete_data_type_glosry.htm "Glossary Entry") typing a formal parameter: 
+- `TYPE complete_type`
+- `TYPE LINE OF complete_type`
+- `TYPE REF TO type`
+- `LIKE dobj`
+- `LIKE LINE OF dobj`
+- `LIKE REF TO dobj`
+
+> **💡 Note**<br>
+> - `complete_type`: Stands for a non-generic built-in ABAP, ABAP DDIC, ABAP CDS, a public data type from a global class or interface, or a local type declared with `TYPES`
+> - `REF TO` types as a reference variable. A generic type cannot be specified after `REF TO`. A typing with `TYPE REF TO data` and `TYPE REF TO object` is considered as completely typing a formal parameter.
+> - Enumerated types can also be used to type the formal parameter.
+> - The considerations also apply to the typing of field symbols.
+
+```abap
+CLASS zcl_some_class DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
+
+  PUBLIC SECTION.
+    INTERFACES if_oo_adt_classrun.
+
+    "Local types and data objects used in the example
+    TYPES c3 TYPE c LENGTH 3.
+    TYPES der_type TYPE TABLE FOR CREATE zdemo_abap_rap_ro_m.
+    DATA int TYPE i.
+    DATA itab TYPE TABLE OF zdemo_abap_fli_ve WITH EMPTY KEY.
+
+    "Various syntax options for completely typing formal parameters
+    "Note: The example parameters are all specified for passing
+    "actual parameters by reference.
+    METHODS: meth IMPORTING
+                    "---- Non-generic built-in ABAP types ----
+                    i_a TYPE i
+                    i_b TYPE string
+                    "---- ABAP DDIC types ----
+                    i_c TYPE land1           "elementary type
+                    i_d TYPE timestampl      "elementary type
+                    i_e TYPE zdemo_abap_fli "structured type based on DDIC database table
+                    i_f TYPE string_hashed_table "table type
+                    "---- ABAP CDS types (all of the examples are structured types) ----
+                    i_g TYPE zdemo_abap_fli_ve "CDS view entity
+                    i_h TYPE zdemo_abap_abstract_ent "CDS abstract entity
+                    i_i TYPE zdemo_abap_table_function "CDS table function
+                    "---- Data types declared in public section of a class ----
+                    i_j TYPE zcl_demo_abap_dtype_dobj=>t_pub_text_c30 "elementary type
+                    i_k TYPE zcl_demo_abap_amdp=>carr_fli_struc "structured type
+                    i_l TYPE zcl_demo_abap_amdp=>carr_fli_tab "table type
+                    "---- Data types declared in an interface ----
+                    i_m TYPE zdemo_abap_get_data_itf=>occ_rate "elementary type
+                    i_n TYPE zdemo_abap_get_data_itf=>carr_tab "table type
+                    "---- Local types ----
+                    i_o TYPE c3 "elementary type
+                    i_p TYPE der_type "table type (BDEF derived type)
+                    "---- Note: Examaples for not allowed types of formal parameters ----
+                    "i_no1 TYPE c LENGTH 3
+                    "i_no2 TYPE TABLE OF zdemo_abap_fli WITH EMPTY KEY
+                    "---- Reference types ----
+                    i_q TYPE REF TO i "Data reference
+                    i_r TYPE REF TO zdemo_abap_carr "Data reference
+                    i_s TYPE REF TO zcl_demo_abap_unit_test "Object reference
+                    i_t TYPE REF TO data "Data reference (considered as complete typing, too)
+                    i_u TYPE REF TO object "Object reference (considered as complete typing, too)
+                    "---- TYPE LINE OF addition (structured type based on a table type) ----
+                    i_v TYPE LINE OF zcl_demo_abap_amdp=>carr_fli_tab
+                    i_w TYPE LINE OF der_type
+                    "---- LIKE addition (types based on existing data objects) ----
+                    i_x LIKE int "Local type
+                    i_y LIKE zcl_demo_abap_dtype_dobj=>comma "Constant specified in a class
+                    i_z LIKE zdemo_abap_objects_interface=>stat_str "Data object specified in an interface
+                    "---- LIKE LINE OF addition (types based on existing internal tables) ----
+                    i_1 LIKE LINE OF itab "Local type
+                    "---- LIKE REF TO addition (reference types based on existing data object) ----
+                    i_2 LIKE REF TO int "Local type (elementary)
+                    i_3 LIKE REF TO itab "Local type (table)
+                  .
+
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+ENDCLASS.
+
+
+
+CLASS zcl_some_class IMPLEMENTATION.
+
+  METHOD if_oo_adt_classrun~main.
+
+    "Calling methods and providing actual parameters
+*    meth(
+*      i_a = 1
+*      i_b = `hello`
+*      ... ).
+
+  ENDMETHOD.
+
+  METHOD meth.
+    ... "Method implementation
+  ENDMETHOD.
+
+ENDCLASS.
+```
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+#### Generic Typing of Formal Parameters
+
+Find more information on generic types in the [Data Types and Data Objects](16_Data_Types_and_Objects.md#generic-types) cheat sheet.
+
+```abap
+CLASS zcl_some_class DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
+
+  PUBLIC SECTION.
+    INTERFACES if_oo_adt_classrun.
+
+    "Example method demonstrating the generic typing of formal parameters
+    METHODS: meth IMPORTING
+                    "---- Any data type ----
+                    i_data           TYPE data
+                    i_any            TYPE any
+
+                    "---- Character-like types ----
+                    i_c              TYPE c         "Text field with a generic length
+                    i_clike          TYPE clike     "Character-like (c n string d t and character-like flat structures)
+                    i_csequence      TYPE csequence "Text-like (c string)
+                    i_n              TYPE n         "Numeric text with generic length
+                    i_x              TYPE x         "Byte field with generic length
+                    i_xsequence      TYPE xsequence "Byte-like (x xstring)
+
+                    "---- Numeric types ----
+                    i_decfloat       TYPE decfloat "decfloat16 decfloat34
+                    i_numeric        TYPE numeric  "Numeric ((b s) i int8 p decfloat16 decfloat34 f)
+                    i_p              TYPE p        "Packed number (generic length and number of decimal places)
+
+                    "---- Internal table types ----
+                    i_any_table      TYPE ANY TABLE      "Internal table with any table type
+                    i_hashed_table   TYPE HASHED TABLE
+                    i_index_table    TYPE INDEX TABLE
+                    i_sorted_table   TYPE SORTED TABLE
+                    i_standard_table TYPE STANDARD TABLE
+                    i_table          TYPE table          "Standard table
+
+                    "---- Other types ----
+                    i_simple         TYPE simple "Elementary data type including enumerated types and
+                    "structured types with exclusively character-like flat components
+                  .
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+ENDCLASS.
+
+
+
+CLASS zcl_some_class IMPLEMENTATION.
+
+  METHOD if_oo_adt_classrun~main.
+
+    "Structure including various components of specific types
+    "They represent actual parameters in the method call below
+    DATA: BEGIN OF s,
+            c3        TYPE c LENGTH 3,
+            c10       TYPE c LENGTH 10,
+            n4        TYPE n LENGTH 4,
+            str       TYPE string,
+            time      TYPE t,
+            date      TYPE d,
+            dec16     TYPE decfloat16,
+            dec34     TYPE decfloat34,
+            int       TYPE i,
+            pl4d2     TYPE p LENGTH 4 DECIMALS 2,
+            tab_std   TYPE STANDARD TABLE OF string WITH EMPTY KEY,
+            tab_so    TYPE SORTED TABLE OF string WITH NON-UNIQUE KEY table_line,
+            tab_ha    TYPE HASHED TABLE OF string WITH UNIQUE KEY table_line,
+            xl1       TYPE x LENGTH 1,
+            xstr      TYPE xstring,
+            structure TYPE zdemo_abap_carr, "character-like flat structure
+          END OF s.
+
+    "The following method call specifies various actual parameters for the
+    "generic formal parameters.
+    "Note the comments for allowed and not allowed example assignments of
+    "actual parameters.
+    meth(
+      "------------- Any data type -------------
+      "--- data/any: Allowed (examples) ---
+      i_data = s-c3
+      "i_data = s-time
+      "i_data = s-tab_std
+      "i_data = s-xstr
+
+      i_any = s-c3
+      "i_any = s-time
+      "i_any = s-tab_std
+      "i_any = s-xstr
+
+      "------------- Character-like types -------------
+      "--- c: Allowed (examples) ---
+      i_c = s-c3
+      "i_c = s-c10
+      "--- c: Not allowed (examples) ---
+      "i_c = s-str
+      "i_c = s-n4
+
+      "--- clike: Allowed (examples) ---
+      i_clike = s-c3
+      "i_clike = s-c10
+      "i_clike = s-str
+      "i_clike = s-structure
+      "i_clike = s-time
+      "i_clike = s-date
+      "i_clike = s-n4
+      "--- clike: Not allowed (examples) ---
+      "i_clike = s-xstr
+      "i_clike = s-xl1
+      "i_clike = s-pl4d2
+
+      "--- csequence: Allowed (examples) ---
+      i_csequence  = s-c3
+      "i_csequence  = s-c10
+      "i_csequence  = s-str
+      "--- csequence: Not allowed (examples) ---
+      "i_csequence  = s-time
+      "i_csequence  = s-date
+      "i_csequence  = s-structure
+
+      "--- n: Allowed ---
+      i_n = s-n4
+      "--- n: Not allowed (examples) ---
+      "i_n = s-c3
+      "i_n = s-int
+
+      "--- x: Allowed ---
+      i_x = s-xl1
+      "--- x: Not allowed (examples) ---
+      "i_x = s-xstr
+      "i_x = s-c3
+
+      "--- xsequence: Allowed ---
+      i_xsequence = s-xstr
+      "i_xsequence = s-xl1
+      "--- xsequence: Not allowed (examples) ---
+      "i_xsequence = s-c3
+      "i_xsequence = s-str
+
+      "--- decfloat: Allowed ---
+      i_decfloat = s-dec16
+      "i_decfloat = s-dec34
+      "--- decfloat: Not allowed (examples) ---
+      "i_decfloat = s-int
+      "i_decfloat = s-pl4d2
+
+      "--- numeric: Allowed (examples) ---
+      i_numeric  = s-int
+      "i_numeric = s-dec16
+      "i_numeric = s-dec34
+      "i_numeric = s-pl4d2
+      "--- numeric: Not allowed (examples) ---
+      "i_numeric = s-n4
+      "i_numeric = s-date
+
+      "--- p: Allowed ---
+      i_p = s-pl4d2
+      "--- p: Not allowed (examples) ---
+      "i_p = s-dec16
+      "i_p = s-dec34
+
+      "--- any table: Allowed ---
+      i_any_table = s-tab_std
+      "i_any_table = s-tab_ha
+      "i_any_table = s-tab_so
+      "--- any table: Not allowed (examples) ---
+      "i_any_table = s-structure
+      "i_any_table = s-c3
+
+      "--- hashed table: Allowed ---
+      i_hashed_table = s-tab_ha
+      "--- hashed table: Not allowed ---
+      "i_hashed_table = s-tab_std
+      "i_hashed_table = s-tab_so
+
+      "--- index table: Allowed ---
+      i_index_table = s-tab_std
+      "i_index_table = s-tab_so
+      "--- index table: Not allowed ---
+      "i_index_table = s-tab_ha
+
+      "--- sorted table: Allowed ---
+      i_sorted_table = s-tab_so
+      "--- index table: Not allowed ---
+      "i_sorted_table = s-tab_std
+      "i_sorted_table = s-tab_ha
+
+      "--- standard table/table: Allowed ---
+      i_standard_table = s-tab_std
+      i_table = s-tab_std
+      "--- standard table/table: Not allowed ---
+      "i_standard_table = s-tab_so
+      "i_standard_table = s-tab_ha
+      "i_table = s-tab_so
+      "i_table = s-tab_ha
+
+     "--- simple: Allowed (examples) ---
+      i_simple = s-structure
+      "i_simple = s-c3
+      "i_simple = s-n4
+      "i_simple = s-int
+      "i_simple = s-pl4d2
+      "i_simple = s-xstr
+      "i_simple = s-str
+      "--- simple: Not allowed (examples) ---
+      "i_simple = s-tab_ha
+      "i_simple = s-tab_so
+
+       ).
+
+  ENDMETHOD.
+
+  METHOD meth.
+    ... "Method implementation
+  ENDMETHOD.
+
+ENDCLASS.
+```
+
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 

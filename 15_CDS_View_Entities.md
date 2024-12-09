@@ -11,6 +11,7 @@ Core data services (CDS) are an infrastructure for defining and consuming semant
 > - For cheat sheet content on [CDS entities](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abencds_entity_glosry.htm), refer to [this blog](https://blogs.sap.com/2022/10/24/feature-matrix-data-modeling-with-abap-core-data-services/).
 > - The executable example focuses on CDS view entities and covers a selection of features.
 > - The sample CDS view entities are designed to demonstrate a selection of features with a limited number of artifacts. They are not intended to be role models for proper CDS view design. They focus on syntax options only. They are not intended to solve concrete programming tasks. You should always work out your own solution for each individual case.
+> - The [ABAP Dictionary](26_ABAP_Dictionary.md) cheat sheet highlights that several [CDS entities](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_entity_glosry.htm) - apart from CDS view entities - represent structured types that are usable in ABAP.
 
 ## A Glimpse on the CDS Syntax
 The following links take you to the source code of the cheat sheet artifacts to get a glimpse on the syntax used. To explore the syntax in action, import the ABAP cheat sheet repository into your system. 
@@ -48,6 +49,7 @@ The following links take you to the source code of the cheat sheet artifacts to 
 - [ABAP CDS Development Tools: User Guide](https://help.sap.com/docs/abap-cloud/abap-cds-tools-user-guide/about-abap-cds-development-tools-user-guide?version=sap_btp)
 - [ABAP CDS Feature Tables](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_language_elements.htm)
 - [ABAP CDS Glossary](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_glossary.htm)
+- [ABAP CDS - SAP Annotation Documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_annotations_ktd_docu.htm)
 - Blogs:
   - [Feature Matrix: Data Modeling with ABAP Core Data Services](https://blogs.sap.com/2022/10/24/feature-matrix-data-modeling-with-abap-core-data-services/)
   - [ABAP CDS Cheat Sheet: Amounts and Quantities in ABAP CDS](https://blogs.sap.com/2022/07/07/abap-cds-cheat-sheet-amounts-and-quantities-in-abap-cds/)
