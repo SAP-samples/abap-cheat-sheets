@@ -1122,6 +1122,23 @@ MOVE-CORRESPONDING itab_nested1 TO itab_nested2 EXPANDING NESTED TABLES KEEPING 
 </td>
 </tr>
 
+<tr>
+<td> <code>CORRESPONDING</code> with lookup table </td>
+<td>
+
+- You can constructs an internal table by joining an internal table and a lookup table and comparing their components.
+- Syntax pattern of the variant:  
+    ```abap
+    ... CORRESPONDING type|#( itab FROM lookup_tab 
+                              USING [KEY key_name] a1 = b1 a2 = b2 ... 
+                              [MAPPING ...] ) ...
+    ```
+- Find more information and code snippets in the [Constructor Expressions](05_Constructor_Expressions.md#corresponding-with-lookup-table) cheat sheet.
+
+</td>
+</tr>
+
+
 </table>
 
 > **💡 Note**<br>

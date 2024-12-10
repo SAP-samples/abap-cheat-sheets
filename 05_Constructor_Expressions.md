@@ -6,6 +6,8 @@
   - [Introduction](#introduction)
   - [VALUE](#value)
   - [CORRESPONDING](#corresponding)
+    - [DEFAULT Addition When Using MAPPING](#default-addition-when-using-mapping)
+    - [CORRESPONDING with Lookup Table](#corresponding-with-lookup-table)
   - [NEW](#new)
   - [CONV](#conv)
   - [EXACT](#exact)
@@ -576,7 +578,10 @@ two statements are  not the same:
 >MOVE-CORRESPONDING struc1 TO struc2.
 >```
 
-`DEFAULT` addition when using `MAPPING`: 
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+### DEFAULT Addition When Using MAPPING
+
 - This addition allows the assignment of values for a target component based on an expression (which is evaluated before the `CORRESPONDING` expression). 
 - `DEFAULT` can be preceded by the source component. In this case, the source component's value is assigned to the left-hand side only if the source component is not initial. If it is initial, the value of the expression following the `DEFAULT` addition is assigned.
 
@@ -658,6 +663,190 @@ struc2 = CORRESPONDING #(
 *ID2    A    B        C    D    Z 
 *1      a    hallo    2    d    30
 ```
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+### CORRESPONDING with Lookup Table
+
+- Constructs an internal table by joining an internal table and a lookup table and comparing their components
+- Syntax pattern of the variant:  
+    ```abap
+    ... CORRESPONDING type|#( itab FROM lookup_tab 
+                              USING [KEY key_name] a1 = b1 a2 = b2 ... 
+                              [MAPPING ...] ) ...
+    ```
+- The resulting table is created as follows:
+  - A search is performed on all lines in the internal table `itab`. They are matched to lines in the lookup table `lookup_tab` based on specifications after `USING`.
+  - The search uses a sorted table key or hash key. If the key is not unique, the first matching line is used for the result.
+  - If no match is found in the lookup table `lookup_tab`, the original line from the internal table `itab` is used for the result.
+  - If a match is found, a `MOVE-CORRESPONDING` operation is implicitly performed and the line is assigned. However, the components that are used for the search are not assigned (to the identically named components) by default (see the [documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/abencorresponding_constr_using.html)).
+  - Mapping rules specified after the optional `MAPPING` addition can modify the default assignments of identically named components.
+
+- Usage hints:
+  - To be used only with internal tables.
+  - The target type must be a table type.
+  - Tables in the `CORRESPONDING` expression must have structured line types.
+  - The target internal table should match the type of `itab`.
+  - The search must use a sorted table key or a hash key:
+    - Omit the `KEY` addition only if the lookup table `lookup_tab` is sorted or hashed.
+    - When using KEY, specify either:
+      - A secondary key.
+      - The primary key's default name `primary_key` or an alias, but only for sorted or hashed lookup tables.
+  - When used:
+    - Typically used for enriching the content of `itab` with content from `lookup_tab`, making `itab` the target table.
+    - If `itab` is not used as the target or it is not statically known, a syntax check appears, which can be hidden with a pragma. In such an operation, a temporary copy of the values of the used internal table is created implicitly.
+
+```abap
+"The following examples construct an internal tables by joining an internal table 
+"and a lookup table and comparing their components.
+TYPES:
+    BEGIN OF s1,
+      character TYPE c LENGTH 1,
+      text   TYPE string,
+    END OF s1,
+    it_type         TYPE STANDARD TABLE OF s1 WITH EMPTY KEY,
+    lookup_tab_type TYPE HASHED TABLE OF s1 WITH UNIQUE KEY character.
+
+DATA(it1) = VALUE it_type( ( character = 'a' ) ( character = 'b' ) ( character = 'c' ) ( character = 'd' )
+                           ( character = 'e' ) ( character = 'f' ) ).
+DATA(it1_copy) = it1.
+
+DATA(lookup_tab) = VALUE lookup_tab_type( ( character = 'a' text = `lorem` )
+                                           ( character = 'c' text = `ipsum` )
+                                           ( character = 'e' text = `dolor` )
+                                           ( character = 'f' text = `sit` ) ).
+
+"In the following example assignment, the internal table used for the comparison 
+"is also the target table.
+it1 = CORRESPONDING #( it1 FROM lookup_tab USING character = character ).
+
+*character    TEXT
+*a         lorem
+*b
+*c         ipsum
+*d
+*e         dolor
+*f         sit
+
+"In the following example, the internal table used for the comparison
+"is not the target table. Instead, a new table is created inline.
+"The pragma suppresses a syntax warning.
+
+DATA(it2) = CORRESPONDING it_type( it1_copy FROM lookup_tab USING character = character ) ##operator.
+
+ASSERT it2 = it1.
+
+"Examples assignments to demonstrate the KEY and MAPPING additions
+TYPES:
+    BEGIN OF s2,
+      a TYPE string,
+      b TYPE string,
+      c TYPE string,
+      d TYPE string,
+      e TYPE string,
+      f TYPE string,
+    END OF s2,
+    BEGIN OF s3,
+      a TYPE string,
+      b TYPE string,
+      c TYPE string,
+      d TYPE string,
+      e TYPE string,
+      g TYPE string,
+    END OF s3,
+    BEGIN OF s4,
+      h TYPE string,
+      i TYPE string,
+      j TYPE string,
+      k TYPE string,
+      l TYPE string,
+      m TYPE string,
+    END OF s4.
+DATA:
+    it3          TYPE STANDARD TABLE OF s2,
+    it4          TYPE STANDARD TABLE OF s2,
+    it5          TYPE STANDARD TABLE OF s2,
+    lookup_table TYPE STANDARD TABLE OF s3 WITH NON-UNIQUE SORTED KEY sk COMPONENTS c d,
+    it6          TYPE STANDARD TABLE OF s4.
+
+it3 = VALUE #( ( a = `1a`  b = `1b`
+                 c = `---` d = `---`
+                 e = `---` f = `---` )
+               ( a = `2a`  b = `2b`
+                 c = `---` d = `---`
+                 e = `---` f = `---` )
+               ( a = `3a`  b = `3b`
+                 c = `---` d = `---`
+                 e = `---` f = `---` ) ).
+
+it4 = it3.
+it5 = it3.
+
+lookup_table = VALUE #( ( a = `4a` b = `4b`
+                          c = `1a` d = `1b`
+                          e = `5a` g = `5b` )
+                        ( a = `6a` b = `6b`
+                          c = `3a` d = `3b`
+                          e = `7a` g = `7b` ) ).
+
+"Notes on the example assignment:
+"- Internal table used for the comparison is also the target table
+"- The lookup table specifies a sorted secondary table key.
+"- The key is used after the USING KEY addition.
+"- All key components must be specified.
+"- Regarding the result:
+"  - Only the first and third lines are found in the lookup table.
+"  - Therefore, the values of the identically named components in it3
+"    are assigned (which is only one component in the example).
+"  - The assignment excludes the components c and d of the lookup table,
+"    although there are identically named components in it3. The components
+"    used in the condition specification are ignored. The other components
+"    retain their original values.
+"  - In the lookup table, no line is available with the values a = `2a` b = `2b`.
+"    Therefore, the result does not include values from the lookup table. The
+"    original component values of the line in it3 are used for the result.
+
+it3 = CORRESPONDING #( it3 FROM lookup_table USING KEY sk c = a d = b ).
+
+*A     B     C      D      E      F
+*1a    1b    ---    ---    5a     ---
+*2a    2b    ---    ---    ---    ---
+*3a    3b    ---    ---    7a     ---
+
+
+"Notes on the example assignment:
+"- See above. Here, the MAPPING addition is included. It is used to specify
+"  mapping relationships for the assignments. The example specifies a mapping
+"  relationship for all available components in the demo tables. In doing so,
+"  the default mapping is overridden, and, all previously ignored components
+"  are not ignored anymore.
+"- As a consequence, all component values in the first and third lines are
+"  are affected and assigned values.
+"- As above, the second line retains the original values of it4 as there is
+"  no line found in the lookup table.
+
+it4 = CORRESPONDING #( it4 FROM lookup_table USING KEY sk c = a d = b MAPPING a = a b = b c = c d = d f = g ).
+
+*A     B     C      D      E      F
+*4a    4b    1a     1b     5a     5b
+*2a    2b    ---    ---    ---    ---
+*6a    6b    3a     3b     7a     7b
+
+"Notes on the example assignment:
+"- The target table does not have the same type as it5. But, despite having differently
+"  named components, the types are compatible, and an assignment can be performed.
+"- As not the same internal table is used for the search in the CORRESPONDING expression and
+"  the target, a syntax warning would occur (a temporary copy of it5 must be created) if not
+"  hidden by the pragma.
+
+it6 = CORRESPONDING #( it5 FROM lookup_table USING KEY sk c = a d = b ) ##operator.
+
+*H     I     J      K      L      M
+*1a    1b    ---    ---    5a     ---
+*2a    2b    ---    ---    ---    ---
+*3a    3b    ---    ---    7a     ---
+```
+
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
