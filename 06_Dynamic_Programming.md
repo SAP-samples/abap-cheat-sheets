@@ -2013,14 +2013,14 @@ CLASS zcl_example_class IMPLEMENTATION.
            END OF comp_struc.
     DATA it_comps TYPE TABLE OF comp_struc WITH EMPTY KEY.
 
-    "Database table of type string containing names of database tables;
+    "Internal table of type string containing names of database tables;
     "table is looped over to output content of all database tables
     DATA(dbtabs) = VALUE string_table( ( `ZDEMO_ABAP_CARR` )
                                        ( `ZDEMO_ABAP_FLI` )
                                        ( `ZDEMO_ABAP_FLSCH` ) ).
 
     LOOP AT dbtabs INTO DATA(dbtab).
-      "Retrieving database content of a dynamically specified database table
+      "Retrieving database content of a dynamically specified database table (up to 5 rows)
       TRY.
           SELECT *
             FROM (dbtab)

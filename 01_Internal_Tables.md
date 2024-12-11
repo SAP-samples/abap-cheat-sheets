@@ -199,11 +199,20 @@ Internal Tables ...
   - have a self-defined name. An alias name can also be specified.
 - A [secondary table index](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensecondary_table_index_glosry.htm) is created internally for each sorted secondary key. This allows index access to hashed tables via the secondary table key. In this case, `sy-tabix` is set.
 - When accessing internal tables using the secondary table key, the key name (or the alias if specified) must be specified. They are not selected automatically. If no secondary key is specified in a processing statement, the primary key or primary table index is always used. If you want to make use of this key in ABAP statements, for example, `READ`, `LOOP AT` or `MODIFY` statements, you must specify the key explicitly using the appropriate additions, for example, `WITH ... KEY ... COMPONENTS` or `USING KEY`.
+- The table access using secondary table keys is always optimized.
 - Use cases:
-  - To improve read performance.
-  - For very large internal tables (that are populated once and changed very often) 
+  - To enable different key accesses for an internal table
+  - To enable an optimized key access to internal tables (i.e. to improve read performance), even for standard tables
+  - To enable index access for hashed tables
   - Standard tables, whose primary table keys cannot be unique, can be provided with a means of ensuring that unique table entries are read. 
- - Note that defining secondary table keys involves additional administration costs (additional memory consumption). Therefore, the use of secondary table keys should be reserved for cases where the benefits outweigh the extra costs. 
+  - Typically used ... 
+    - for large internal tables (that are populated once and infrequently changed) 
+    - for smaller tables, especially standard tables, for ensuring uniqueness of entries (in standard tables, the primary key cannot be unique) 
+    - if predominantly fast read accesses are required. Then non-unique sorted secondary table keys can be used, especially for existing internal tables because a later change of the table declaration does not affect exsisting statements.
+    - if predominantly uniqueness is required. Then unique hash secondary table keys can be used. This is also true for smaller internal tables.
+ - Note that defining secondary table keys involves additional administration costs such as additional memory consumption and regarding the key update
+   - Unique secondary table keys are immediately updated, whereas non-unique secondary table keys are not (only when the table is accessed using the key).
+   - The use of secondary table keys should be reserved for cases where the benefits outweigh the extra costs. So, it may not be advisable to use secondary table keys for very small tables or if you very often change the content of the table.
 - For more details, see the programming guidelines for secondary keys: [Secondary
     Key (F1 docu for standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abensecondary_key_guidl.htm "Guideline").
 
@@ -371,10 +380,11 @@ DATA it21 TYPE SORTED TABLE OF zdemo_abap_flsch
 "Excursion: Example of using table keys and alias names using a LOOP AT statement.
 "All of the statements below are possible.
 "Note that if the secondary table key is not specified (and if the USING KEY addition is not
-"used in the example), the primary table key is respected by default.
+"used in the example), the primary table key is respected by default. So, the first statement
+"specifying the primary table key explicitly is the same as not specifying it.
 "Further ABAP statements, such as READ or MODIFY, are available in which the key can be
 "explicitly specified to process internal tables.
-LOOP AT it21 INTO DATA(wa) USING KEY primary_key.
+LOOP AT it21 INTO DATA(wa) USING KEY primary_key. 
   "LOOP AT it21 INTO DATA(wa) USING KEY k1.
   "LOOP AT it21 INTO DATA(wa) USING KEY cities.
   "LOOP AT it21 INTO DATA(wa) USING KEY s1.
@@ -1126,7 +1136,7 @@ MOVE-CORRESPONDING itab_nested1 TO itab_nested2 EXPANDING NESTED TABLES KEEPING 
 <td> <code>CORRESPONDING</code> with lookup table </td>
 <td>
 
-- You can constructs an internal table by joining an internal table and a lookup table and comparing their components.
+- You can construct an internal table by joining an internal table and a lookup table and comparing their components.
 - Syntax pattern of the variant:  
     ```abap
     ... CORRESPONDING type|#( itab FROM lookup_tab 
@@ -3930,12 +3940,12 @@ DATA(itab) = itab_original.
 "all values of the 'num' component in the original table lines
 "(except the first line) are initial as the loop is exited.
 LOOP AT itab ASSIGNING FIELD-SYMBOL(<fs>).
-    DATA(tabix) = sy-tabix.
-    <fs>-num = tabix.
-    INSERT VALUE #( text = tabix ) INTO itab INDEX tabix + 1.
-    IF tabix = 50.
-    EXIT.
-    ENDIF.
+  DATA(tabix) = sy-tabix.
+  <fs>-num = tabix.
+  INSERT VALUE #( text = tabix ) INTO itab INDEX tabix + 1.
+  IF tabix = 50.
+   EXIT.
+  ENDIF.
 ENDLOOP.
 
 *Internal table content (parts of it):
@@ -3964,9 +3974,9 @@ ENDLOOP.
 
 itab = itab_original.
 LOOP AT itab ASSIGNING <fs>.
-    tabix = sy-tabix.
-    <fs>-num = tabix.
-    DELETE itab INDEX tabix + 1.
+  tabix = sy-tabix.
+  <fs>-num = tabix.
+  DELETE itab INDEX tabix + 1.
 ENDLOOP.
 
 *Internal table content:
@@ -4001,26 +4011,26 @@ DATA new_line_counter TYPE i.
 DATA tabix_copy TYPE i.
 
 LOOP AT itab ASSIGNING <fs>.
-    tabix = sy-tabix.
-    new_line_counter += 1.
+  tabix = sy-tabix.
+  new_line_counter += 1.
 
-    "Asserting that sy-tabix value has changed accordingly.
-    IF tabix <> 1.
+  "Asserting that sy-tabix value has changed accordingly.
+  IF tabix <> 1.
     ASSERT tabix = tabix_copy + 2.
-    ENDIF.
+  ENDIF.
 
-    DATA(new_line_text) = |---- New line { new_line_counter } ----|.
-    INSERT VALUE #( text = new_line_text ) INTO itab INDEX tabix ASSIGNING <line>.
+  DATA(new_line_text) = |---- New line { new_line_counter } ----|.
+  INSERT VALUE #( text = new_line_text ) INTO itab INDEX tabix ASSIGNING <line>.
 
-    DATA(idx_new) = line_index( itab[ text = new_line_text num = 0 ] ).
-    <line>-num = idx_new.
+  DATA(idx_new) = line_index( itab[ text = new_line_text num = 0 ] ).
+  <line>-num = idx_new.
 
-    DATA(idx_existing) = line_index( itab[ text = <fs>-text num = 0 ] ).
-    DATA(new_text) = |{ <fs>-text }(existing line, index before insertion: { tabix })|.
-    <fs>-text = new_text.
-    <fs>-num = idx_existing.
+  DATA(idx_existing) = line_index( itab[ text = <fs>-text num = 0 ] ).
+  DATA(new_text) = |{ <fs>-text }(existing line, index before insertion: { tabix })|.
+  <fs>-text = new_text.
+  <fs>-num = idx_existing.
 
-    tabix_copy = tabix.
+  tabix_copy = tabix.
 ENDLOOP.
 
 *Internal table content:
@@ -4068,10 +4078,10 @@ LOOP AT itab ASSIGNING <fs>.
     INSERT <fs> INTO TABLE itab_copy.
 
     TRY.
-        IF CONV i( <fs>-text ) MOD 2 = 0.
+      IF CONV i( <fs>-text ) MOD 2 = 0.
         DELETE itab INDEX tabix - 1.
-        ENDIF.
-    CATCH cx_sy_conversion_no_number.
+      ENDIF.
+     CATCH cx_sy_conversion_no_number.
     ENDTRY.
 
 ENDLOOP.
@@ -4110,10 +4120,10 @@ DATA(str_tab) = VALUE string_table( ( `a` ) ( `#` ) ( `c` ) ( `#` ) ( `e` )
                                     ( `f` ) ( `g` ) ( `#` ) ( `i` ) ( `j` ) ).
 
 LOOP AT str_tab REFERENCE INTO DATA(dref).
-    tabix = sy-tabix.
-    IF dref->* CS `#`.
+  tabix = sy-tabix.
+  IF dref->* CS `#`.
     DELETE str_tab INDEX tabix.
-    ENDIF.
+  ENDIF.
 ENDLOOP.
 
 *Internal table content:
@@ -4130,8 +4140,8 @@ ENDLOOP.
 "The entire internal table cannot be deleted within loops.
 "The following statements commented out are not possible.
 LOOP AT str_tab REFERENCE INTO dref.
-    "CLEAR str_tab.
-    "str_tab = VALUE #( ).
+  "CLEAR str_tab.
+  "str_tab = VALUE #( ).
 ENDLOOP.
 ```
 
@@ -5412,7 +5422,7 @@ Notes on ...
 ... secondary table key and secondary table index:
 - Secondary table keys, which can be sorted or hashed, are available for all table categories. 
 - They enhance table access efficiency and performance. 
-- Declaring a secondary table key generates a corresponding secondary table index. However, the index for a non-unique key does not update immediately upon adding or deleting a line. The update happens when the internal table is accessed using the secondary table key. 
+- Declaring a secondary table key generates a corresponding secondary table index. However, the index for a non-unique key does not update immediately upon adding or deleting a line (for unique keys, it does). The update happens when the internal table is accessed using the secondary table key. 
 - In ABAP statements, you must specify the secondary table key explicitly. Otherwise, the primary table key is used implicitly. 
 - Data access using the secondary table key is always optimized, even for standard tables. Thus, even older standard tables can gain from optimized access by adding secondary table keys later, without impacting existing table-related statements. 
 - However, weigh the administrative costs of secondary table keys. Use them only in scenarios where they offer substantial benefits, like large internal tables that are filled once and rarely altered. Frequent modifications can lead to regular index updates, potentially impacting performance.

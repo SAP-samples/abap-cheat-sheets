@@ -65,7 +65,7 @@ The main data types for date, time, and time stamps in ABAP are as follows:
 >     -  Long form; the time stamp is represented precisely to 100 ns with seven decimal places
 >     -  Format: `yyyymmddhhmmss.sssssss` (in addition to the short form, the seven decimal places are fractions of a second)
 > -  Many code snippets in the cheat sheet include examples that utilize the [XCO library](https://help.sap.com/docs/btp/sap-business-technology-platform/xco-library?version=Cloud), which offers various options for handling dates, times, and time stamps. The cheat sheet includes a selection. Note that, in most cases, the return value of the XCO calls in the snippets is of type `string`. For more detailed information, refer to the class documentation and the [SAP Help Portal](https://help.sap.com/docs/btp/sap-business-technology-platform/xco-library?version=Cloud).
-> - In [ABAP for Cloud Development](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_for_cloud_dev_glosry.htm), do not use the date and time-related system fields such as `sy-datum`, `sy-uzeit`, `sy-timlo`, `sy-datlo`, and others. User-related time and date values can be retrieved using the XCO library as shown below.
+> - In [ABAP for Cloud Development](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_for_cloud_dev_glosry.htm), do not use the date and time-related system fields such as `sy-datum`, `sy-uzeit`, `sy-timlo`, `sy-datlo`, and others, as they relate to system-specific values that are not relevant in the cloud context, in cloud systems. User-related time and date values can be retrieved using the XCO library as shown below.
 
 Example: 
 

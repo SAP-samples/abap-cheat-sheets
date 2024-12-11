@@ -1933,7 +1933,7 @@ SELECT SINGLE
 
 ### Non-Admissible Values of Literals
 
-Note recent syntax warnings when using literals that represent invalid values for target types. The following example demonstrates the assignement of literals using admissible and non-admissible values. You can copy and paste the code into a demo class in your SAP BTP ABAP Environment to explore the syntax warnings.
+Note recent syntax warnings when using literals that represent invalid values for target types. The following example demonstrates the assignment of literals using admissible and non-admissible values. You can copy and paste the code into a demo class in your SAP BTP ABAP Environment to explore the syntax warnings.
 
 
 ```abap

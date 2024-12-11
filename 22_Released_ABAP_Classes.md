@@ -18,7 +18,7 @@
   - [Information about Non-Initial Structure Components](#information-about-non-initial-structure-components)
   - [Comparing Content of Compatible Internal Tables](#comparing-content-of-compatible-internal-tables)
   - [Dynamic Programming](#dynamic-programming)
-  - [Getting the User Name](#getting-the-user-name)
+  - [Getting the Current User Name](#getting-the-current-user-name)
   - [XML/JSON](#xmljson)
   - [ABAP Repository Object Information](#abap-repository-object-information)
   - [Generating ABAP Repository Objects](#generating-abap-repository-objects)
@@ -1944,7 +1944,7 @@ ENDTRY.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-## Getting the User Name
+## Getting the Current User Name
 
 <table>
 <tr>
@@ -2351,6 +2351,65 @@ TRY.
     ...
 ENDTRY.
 ``` 
+
+The following snippet includes some file attachments:
+
+```abap
+TRY.
+    "Creating a new mail instance
+    DATA(mail) = cl_bcs_mail_message=>create_instance( ).
+    "Settings
+    mail->set_sender( '...@...' ).
+    mail->add_recipient( '...@...' ).
+    mail->set_subject( 'Test Mail' ).    
+    mail->set_main( cl_bcs_mail_textpart=>create_instance(
+      iv_content      = `<h3>Test Mail</h3><p>Please find some files attached.<br>Cheers</p>`
+      iv_content_type = `text/html` ) ).
+
+    "Adding attachments
+    "Adding a text file
+    mail->add_attachment( cl_bcs_mail_textpart=>create_text_plain(
+                            iv_content  = `This is some sample text.`
+                            iv_filename = `txt_file.txt` ) ).
+
+    "Adding an XML file
+    mail->add_attachment( cl_bcs_mail_textpart=>create_instance(
+                            iv_content = `<?xml version="1.0"?>` &&
+                                         `<node attr_a="123">` &&
+                                         ` <subnode1>` &&
+                                         ` <status>A</status>` &&
+                                         ` <date format="mm-dd-yyyy">01-01-2024</date>` &&
+                                         ` </subnode1>` &&
+                                         ` <subnode2>`  &&
+                                         ` <text attr_b="1" attr_c="a">abc</text>` &&
+                                         ` <text attr_b="2" attr_c="b">def</text>` &&
+                                         ` <text attr_b="3" attr_c="c">ghi</text>` &&
+                                         ` </subnode2>` &&
+                                         `</node>`
+                            iv_content_type = `text/xml`
+                            iv_filename     = `xml_file.xml` ) ).
+
+    "Adding a zip file
+    DATA(zip) = NEW cl_abap_zip( ).
+    DATA(txt_content) = `This is some sample text for a file that is zipped.`.
+    TRY.
+        DATA(conv_xstring) = cl_abap_conv_codepage=>create_out( codepage = `UTF-8` )->convert( txt_content ).
+      CATCH cx_sy_conversion_codepage.
+    ENDTRY.
+    zip->add( EXPORTING name = |test_txt_file.txt|
+                        content = conv_xstring ).
+    DATA(zipped_file) = zip->save( ).
+
+    mail->add_attachment( cl_bcs_mail_binarypart=>create_instance(
+          iv_content      =  zipped_file
+          iv_content_type = 'application/x-zip-compressed'
+          iv_filename     = 'zip_file.zip' ) ).
+
+    mail->send( ).
+  CATCH cx_bcs_mail INTO DATA(error_mail).
+    DATA(error_mail_msg) = error_mail->get_text( ).
+ENDTRY.
+```
 
 </td>
 </tr>
@@ -3719,25 +3778,49 @@ ENDCLASS.
 The following example creates a zip file and adds three txt files with sample content. Note that the example snippet for `CL_WEB_HTTP_CLIENT_MANAGER` and `CL_HTTP_DESTINATION_PROVIDER` (calling services) also includes the use of `CL_ABAP_ZIP`.
 
 ```abap
-"Create zip file
+"Creating a zip file
 DATA(zip) = NEW cl_abap_zip( ).
 
-"Adding 3 files to a zip file
+"Adding 3 files to the zip file
 DO 3 TIMES.
-  DATA(some_content) = |{ sy-index }. Some text content|.
+  DATA(some_content) = |Some text content for file number { sy-index }.|.
 
   TRY.
       DATA(conv_xstring) = cl_abap_conv_codepage=>create_out( codepage = `UTF-8` )->convert( some_content ).
     CATCH cx_sy_conversion_codepage.
   ENDTRY.
 
-  "Add xstring as file content to zip
+  "Adding xstring as file content to zip
   zip->add( EXPORTING name = |file{ sy-index }.txt|
                       content = conv_xstring ).
 
 ENDDO.
 
+"Saving the zip file
 DATA(zipped_file) = zip->save( ).
+
+"Unzipping a zip file
+DATA unzipped_content_tab TYPE string_table.
+
+DATA(unzip) = NEW cl_abap_zip( ).
+unzip->load( zipped_file ).
+
+LOOP AT unzip->files INTO DATA(file).
+  unzip->get( EXPORTING name    = file-name
+              IMPORTING content = DATA(unzipped_content)
+  ).
+  "Converting xstring to string
+  TRY.
+     DATA(conv_string) = cl_abap_conv_codepage=>create_in( )->convert( unzipped_content ).
+    CATCH cx_sy_conversion_codepage.
+  ENDTRY.
+  APPEND conv_string TO unzipped_content_tab.
+ENDLOOP.
+
+*Content of unzipped_content_tab:
+*Some text content for file number 1.
+*Some text content for file number 2.
+*Some text content for file number 3.
 ```
 
 </td>

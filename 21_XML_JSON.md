@@ -1103,7 +1103,7 @@ DATA(json_created_xco) = json_builder_xco->get_data( )->to_string( ).
 "Note: The JSON was intentionally created without the underscores in the
 "name to demonstrate the 'apply' method. The following example demonstrates
 "a transformation of camel case and underscore notation. As above, check out
-"more options by clicking CTRL + Space after '...transformation->'.
+"more options by using CTRL + Space after '...transformation->'.
 CLEAR json2struc_xco.
 xco_cp_json=>data->from_string( json_created_xco )->apply( VALUE #(
   ( xco_cp_json=>transformation->pascal_case_to_underscore ) ) )->write_to( REF #( json2struc_xco ) ).

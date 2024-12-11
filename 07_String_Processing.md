@@ -42,7 +42,8 @@
     - [Escaping Special Characters](#escaping-special-characters)
   - [Excursions](#excursions)
     - [Comparison Operators for Character-Like Data Types in a Nutshell](#comparison-operators-for-character-like-data-types-in-a-nutshell)
-    - [Miscellaneous Classes for String Processing](#miscellaneous-classes-for-string-processing)
+    - [Classes for String Processing](#classes-for-string-processing)
+    - [Character String and Byte String Processing with ABAP Statements](#character-string-and-byte-string-processing-with-abap-statements)
   - [Executable Example](#executable-example)
 
 
@@ -537,8 +538,17 @@ CONCATENATE s1 s2 INTO s3 SEPARATED BY `#`. "ABAP#abap ABAP
 "strings. The ones of variable length strings are respected by default.
 CONCATENATE 'a  ' 'b  ' 'c  ' INTO DATA(ch) RESPECTING BLANKS. "'a  b  c  '
 
-"Concatenating lines of internal tables into a string
-CONCATENATE LINES OF itab INTO t SEPARATED BY ` `.
+"Concatenating lines of internal tables with character-like line type into a string
+DATA(itab) = VALUE string_table( ( `abc` ) ( `def` ) ( `ghi` ) ).
+
+"abcdefghi
+CONCATENATE LINES OF itab INTO DATA(conc_tab1).
+
+"abc def ghi
+CONCATENATE LINES OF itab INTO DATA(conc_tab2) SEPARATED BY ` `.
+
+"abc,def,ghi
+CONCATENATE LINES OF itab INTO DATA(conc_tab3) SEPARATED BY `,`.
 
 "Using concat_lines_of
 s1 = concat_lines_of( table = itab ). "Without separator
@@ -2058,7 +2068,7 @@ IF s8 NP `*c#D*`. ... "false; sy-fdpos: 2
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-### Miscellaneous Classes for String Processing 
+### Classes for String Processing 
 As also covered in the [Released ABAP Classes](22_Released_ABAP_Classes.md) cheat sheet, the following list shows a selected set of classes that support string processing.
 
 - `CL_ABAP_CHAR_UTILITIES`: As previously mentioned, this class provides utilities for string processing, such as attributes that represent new lines and horizontal tabs.
@@ -2231,6 +2241,171 @@ As also covered in the [Released ABAP Classes](22_Released_ABAP_Classes.md) chea
       match = 'no'.
     ENDIF.
     ```
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+### Character String and Byte String Processing with ABAP Statements 
+
+- Several ABAP statements include the `IN CHARACTER MODE` and `IN BYTE MODE` additions.
+- These additions determine whether operations process character strings or byte strings.
+- If neither option is specified, the default is character string processing (i.e. `IN CHARACTER MODE`).
+- Byte string processing with the `IN BYTE MODE` addition is supported by the following ABAP statements: `CONCATENATE`, `FIND`, `REPLACE`, `SHIFT`, `SPLIT`.
+- In byte string processing, the data objects used must be byte-like. For character string processing, only character-like data objects are allowed.
+
+
+The following code snippet explores various statements with the `IN CHARACTER MODE` and `IN BYTE MODE` additions.
+
+```abap
+DATA off TYPE i.
+DATA(abc_str) = `abc def ghi jkl mno pqr stu vwx yz`.
+DATA(copy_str) = abc_str.
+
+"-----------------------------------------------------------------------------
+"------------------------ FIND and REPLACE statements ------------------------
+"-----------------------------------------------------------------------------
+
+"------------------------ IN CHARACTER MODE addition ------------------------
+
+"Searching for the first blank in the string
+"3
+FIND ` ` IN abc_str IN CHARACTER MODE MATCH OFFSET off.
+
+"The following example is the same as the previous as the IN CHARACTER MODE
+"addition is optional. The FIRST OCCURRENCE OF addition is also optional.
+"Just using FIND without FIRST OCCURRENCE OF means searching for the first
+"occurrence by default.
+"3
+FIND FIRST OCCURRENCE OF ` ` IN abc_str MATCH OFFSET off.
+
+"Searching for all blanks in the string
+FIND ALL OCCURRENCES OF ` ` IN abc_str IN CHARACTER MODE RESULTS DATA(res).
+DATA(offsets_of_findings) = concat_lines_of( 
+  table = VALUE string_table( FOR wa IN res ( condense( val = CONV string( wa-offset ) to = `` ) ) )  sep = `, ` ).
+"3, 7, 11, 15, 19, 23, 27, 31
+
+"Replacing the first blank in the string
+"abc#def ghi jkl mno pqr stu vwx yz
+REPLACE ` ` IN abc_str WITH `#` IN CHARACTER MODE.
+
+abc_str = copy_str.
+
+"Replacing all blanks in the string
+"abc#def#ghi#jkl#mno#pqr#stu#vwx#yz
+REPLACE ALL OCCURRENCES OF ` ` IN abc_str WITH `#` IN CHARACTER MODE.
+
+abc_str = copy_str.
+
+"------------------------ IN BYTE MODE addition ------------------------
+
+"Converting to xstring
+"6162632064656620676869206A6B6C206D6E6F20707172207374752076777820797A
+DATA(abc_xstr) = cl_abap_conv_codepage=>create_out( )->convert( abc_str ).
+"20
+DATA(blank_xstr) = cl_abap_conv_codepage=>create_out( )->convert( ` ` ).
+"23
+DATA(repl_xstr) = cl_abap_conv_codepage=>create_out( )->convert( `#` ).
+DATA(copy_xstr) = abc_xstr.
+
+"Searching for the first byte that represents a blank in the UTF-8 code page
+"3
+FIND blank_xstr IN abc_xstr IN BYTE MODE MATCH OFFSET off.
+
+FIND ALL OCCURRENCES OF blank_xstr IN abc_xstr IN BYTE MODE RESULTS res.
+"3, 7, 11, 15, 19, 23, 27, 31
+DATA(offsets_of_findings_xstr) = concat_lines_of( 
+  table = VALUE string_table( FOR wa IN res ( condense( val = CONV string( wa-offset ) to = `` ) ) )  sep = `, ` ).
+
+"Replacing the first byte that represents a blank in the UTF-8 code page
+"6162632364656620676869206A6B6C206D6E6F20707172207374752076777820797A
+REPLACE blank_xstr IN abc_xstr WITH repl_xstr IN BYTE MODE.
+
+abc_xstr = copy_xstr.
+
+"Replacing all bytes that represent a blank in the UTF-8 code page
+"6162632364656623676869236A6B6C236D6E6F23707172237374752376777823797A
+REPLACE ALL OCCURRENCES OF blank_xstr IN abc_xstr WITH repl_xstr IN BYTE MODE.
+
+"-----------------------------------------------------------------------------
+"--------------------------- CONCATENATE statements --------------------------
+"-----------------------------------------------------------------------------
+
+DATA(part_str1) = `abc`.
+DATA(part_str2) = `def`.
+
+"abcdef
+CONCATENATE part_str1 part_str2 INTO DATA(concat_str) IN CHARACTER MODE.
+"abc/def
+CONCATENATE part_str1 part_str2 INTO concat_str SEPARATED BY `/` IN CHARACTER MODE.
+
+"Same as above
+CONCATENATE part_str1 part_str2 INTO concat_str.
+CONCATENATE part_str1 part_str2 INTO concat_str SEPARATED BY `/`.
+
+DATA(part_xstr1) = cl_abap_conv_codepage=>create_out( )->convert( part_str1 ).
+DATA(part_xstr2) = cl_abap_conv_codepage=>create_out( )->convert( part_str2 ).
+DATA(sep_xstr) = cl_abap_conv_codepage=>create_out( )->convert( `/` ).
+
+"616263646566
+CONCATENATE part_xstr1 part_xstr2 INTO DATA(concat_xstr) IN BYTE MODE.
+"abcdef
+DATA(concat_xstr_converted) = cl_abap_conv_codepage=>create_in( )->convert( concat_xstr ).
+"6162632F646566
+CONCATENATE part_xstr1 part_xstr2 INTO concat_xstr SEPARATED BY sep_xstr IN BYTE MODE.
+"abc/def
+concat_xstr_converted = cl_abap_conv_codepage=>create_in( )->convert( concat_xstr ).
+
+"Creating a table of type xstring
+DATA(xstr_table) = VALUE xstring_table( ( part_xstr1 ) ( part_xstr2 ) ).
+"616263646566
+CONCATENATE LINES OF xstr_table INTO DATA(concat_xstr_tab) IN BYTE MODE.
+"abcdef
+DATA(concat_xstr_tab_converted) = cl_abap_conv_codepage=>create_in( )->convert( concat_xstr_tab ).
+
+"-----------------------------------------------------------------------------
+"------------------------------- SHIFT statements ----------------------------
+"-----------------------------------------------------------------------------
+
+DATA(str) = `abcdef`.
+DATA(copy) = str.
+
+"bcdef
+SHIFT str IN CHARACTER MODE.
+
+str = copy.
+
+"Same as
+SHIFT str.
+
+str = copy.
+"616263646566
+DATA(xstr) = cl_abap_conv_codepage=>create_out( )->convert( str ).
+
+"6263646566
+SHIFT xstr IN BYTE MODE.
+
+"-----------------------------------------------------------------------------
+"------------------------------- SPLIT statements ----------------------------
+"-----------------------------------------------------------------------------
+
+str = `abc def`.
+
+"`abc` / `def`
+SPLIT str AT space INTO DATA(str1) DATA(str2) IN CHARACTER MODE.
+SPLIT str AT space INTO TABLE DATA(tab_str) IN CHARACTER MODE.
+
+"Same as above
+SPLIT str AT space INTO str1 str2.
+SPLIT str AT space INTO TABLE tab_str.
+
+"61626320646566
+xstr = cl_abap_conv_codepage=>create_out( )->convert( str ).
+"20
+blank_xstr = cl_abap_conv_codepage=>create_out( )->convert( ` ` ).
+
+"`616263` / `646566`
+SPLIT xstr AT blank_xstr INTO DATA(xstr1) DATA(xstr2) IN BYTE MODE.
+SPLIT xstr AT blank_xstr INTO TABLE DATA(xstr_tab) IN BYTE MODE.
+```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 

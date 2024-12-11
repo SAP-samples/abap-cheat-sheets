@@ -561,7 +561,7 @@ In the simplest form, methods can have no parameter at all. Apart from that, met
 - If passing by reference is used, a local data object is not created for the actual parameter. Instead, the procedure is given a [reference](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenreference_glosry.htm "Glossary Entry") to the actual parameter during the call and works with the actual parameter itself. 
 - Note that parameters that are input and passed by reference cannot be modified in the procedure. However, the use of a reference is beneficial regarding the performance compared to creating a local data object.
 
-The following example shows a class with a simple method demonstrating the syntax for formal paremeter specifications. Complete types are used. 
+The following example shows a class with a simple method demonstrating the syntax for formal parameter specifications. Complete types are used. 
 
 ```abap
 CLASS zcl_some_class DEFINITION
@@ -589,6 +589,8 @@ CLASS zcl_some_class IMPLEMENTATION.
 
   METHOD if_oo_adt_classrun~main.
 
+    "The values 1, hello, and 2 are actual parameters supplied when 
+    "the method is called.
     DATA(result) = meth( i_a = 1
                          i_b = `hello`
                          i_c = 2 ).
@@ -598,11 +600,11 @@ CLASS zcl_some_class IMPLEMENTATION.
   METHOD meth.
     ... "Method implementation
 
-    "No change for input parameters passed by reference
+    "Input parameters passed by reference cannot be changed in the method implementation.
     "i_a += 1.
     "i_b &&= ` world`.
 
-    "Input parameters passed by reference can be changed in the method.
+    "Input parameters passed by value can be changed in the method implementation.
     i_c += 1.
 
   ENDMETHOD.
@@ -669,7 +671,9 @@ CLASS zcl_some_class DEFINITION
                     "---- Local types ----
                     i_o TYPE c3 "elementary type
                     i_p TYPE der_type "table type (BDEF derived type)
-                    "---- Note: Examaples for not allowed types of formal parameters ----
+                    "---- Note: Examples such as the following are not allowed type specifications of formal parameters. ----
+                    "---- In the following cases, extra (local) type declarations with TYPES are required before the --------
+                    "---- method declaration to type the formal parameters. -------------------------------------------------
                     "i_no1 TYPE c LENGTH 3
                     "i_no2 TYPE TABLE OF zdemo_abap_fli WITH EMPTY KEY
                     "---- Reference types ----
@@ -682,14 +686,14 @@ CLASS zcl_some_class DEFINITION
                     i_v TYPE LINE OF zcl_demo_abap_amdp=>carr_fli_tab
                     i_w TYPE LINE OF der_type
                     "---- LIKE addition (types based on existing data objects) ----
-                    i_x LIKE int "Local type
+                    i_x LIKE int "Local data object
                     i_y LIKE zcl_demo_abap_dtype_dobj=>comma "Constant specified in a class
                     i_z LIKE zdemo_abap_objects_interface=>stat_str "Data object specified in an interface
                     "---- LIKE LINE OF addition (types based on existing internal tables) ----
-                    i_1 LIKE LINE OF itab "Local type
+                    i_1 LIKE LINE OF itab "Local internal table
                     "---- LIKE REF TO addition (reference types based on existing data object) ----
-                    i_2 LIKE REF TO int "Local type (elementary)
-                    i_3 LIKE REF TO itab "Local type (table)
+                    i_2 LIKE REF TO int "Local elementary data object
+                    i_3 LIKE REF TO itab "Local internal table
                   .
 
   PROTECTED SECTION.
@@ -740,15 +744,15 @@ CLASS zcl_some_class DEFINITION
 
                     "---- Character-like types ----
                     i_c              TYPE c         "Text field with a generic length
-                    i_clike          TYPE clike     "Character-like (c n string d t and character-like flat structures)
-                    i_csequence      TYPE csequence "Text-like (c string)
+                    i_clike          TYPE clike     "Character-like (c, n, string, d, t, and character-like flat structures)
+                    i_csequence      TYPE csequence "Text-like (c, string)
                     i_n              TYPE n         "Numeric text with generic length
                     i_x              TYPE x         "Byte field with generic length
-                    i_xsequence      TYPE xsequence "Byte-like (x xstring)
+                    i_xsequence      TYPE xsequence "Byte-like (x, xstring)
 
                     "---- Numeric types ----
                     i_decfloat       TYPE decfloat "decfloat16 decfloat34
-                    i_numeric        TYPE numeric  "Numeric ((b s) i int8 p decfloat16 decfloat34 f)
+                    i_numeric        TYPE numeric  "Numeric (i, int8, p, decfloat16, decfloat34, f, (b, s))
                     i_p              TYPE p        "Packed number (generic length and number of decimal places)
 
                     "---- Internal table types ----
@@ -904,7 +908,7 @@ CLASS zcl_some_class IMPLEMENTATION.
 
       "--- sorted table: Allowed ---
       i_sorted_table = s-tab_so
-      "--- index table: Not allowed ---
+      "--- sorted table: Not allowed ---
       "i_sorted_table = s-tab_std
       "i_sorted_table = s-tab_ha
 

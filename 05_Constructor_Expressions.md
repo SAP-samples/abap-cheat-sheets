@@ -6,8 +6,6 @@
   - [Introduction](#introduction)
   - [VALUE](#value)
   - [CORRESPONDING](#corresponding)
-    - [DEFAULT Addition When Using MAPPING](#default-addition-when-using-mapping)
-    - [CORRESPONDING with Lookup Table](#corresponding-with-lookup-table)
   - [NEW](#new)
   - [CONV](#conv)
   - [EXACT](#exact)
@@ -578,9 +576,8 @@ two statements are  not the same:
 >MOVE-CORRESPONDING struc1 TO struc2.
 >```
 
-<p align="right"><a href="#top">⬆️ back to top</a></p>
 
-### DEFAULT Addition When Using MAPPING
+**`DEFAULT` addition when using `MAPPING`**
 
 - This addition allows the assignment of values for a target component based on an expression (which is evaluated before the `CORRESPONDING` expression). 
 - `DEFAULT` can be preceded by the source component. In this case, the source component's value is assigned to the left-hand side only if the source component is not initial. If it is initial, the value of the expression following the `DEFAULT` addition is assigned.
@@ -664,9 +661,8 @@ struc2 = CORRESPONDING #(
 *1      a    hallo    2    d    30
 ```
 
-<p align="right"><a href="#top">⬆️ back to top</a></p>
 
-### CORRESPONDING with Lookup Table
+**`CORRESPONDING` with lookup table**
 
 - Constructs an internal table by joining an internal table and a lookup table and comparing their components
 - Syntax pattern of the variant:  
@@ -689,7 +685,7 @@ struc2 = CORRESPONDING #(
   - The target internal table should match the type of `itab`.
   - The search must use a sorted table key or a hash key:
     - Omit the `KEY` addition only if the lookup table `lookup_tab` is sorted or hashed.
-    - When using KEY, specify either:
+    - When using `KEY`, specify either:
       - A secondary key.
       - The primary key's default name `primary_key` or an alias, but only for sorted or hashed lookup tables.
   - When used:
@@ -736,7 +732,7 @@ DATA(it2) = CORRESPONDING it_type( it1_copy FROM lookup_tab USING character = ch
 
 ASSERT it2 = it1.
 
-"Examples assignments to demonstrate the KEY and MAPPING additions
+"Example assignments to demonstrate the KEY and MAPPING additions
 TYPES:
     BEGIN OF s2,
       a TYPE string,
@@ -812,7 +808,6 @@ it3 = CORRESPONDING #( it3 FROM lookup_table USING KEY sk c = a d = b ).
 *1a    1b    ---    ---    5a     ---
 *2a    2b    ---    ---    ---    ---
 *3a    3b    ---    ---    7a     ---
-
 
 "Notes on the example assignment:
 "- See above. Here, the MAPPING addition is included. It is used to specify
