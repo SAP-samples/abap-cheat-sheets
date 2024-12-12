@@ -23,7 +23,9 @@
     - [Structures in Statements for Processing Internal Tables](#structures-in-statements-for-processing-internal-tables)
   - [Including Structures](#including-structures)
   - [Getting Structured Type Information and Creating Structures at Runtime](#getting-structured-type-information-and-creating-structures-at-runtime)
-  - [sy Structure](#sy-structure)
+  - [Excursions](#excursions)
+    - [sy Structure](#sy-structure)
+    - [Boxed Components](#boxed-components)
   - [Executable Example](#executable-example)
 
 ## Introduction
@@ -1005,8 +1007,9 @@ ENDLOOP.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
+## Excursions
 
-## sy Structure
+### sy Structure
 
 - The `sy` (or `syst`) structure is a built-in data object. 
 - The components of the structure represent ABAP system fields. 
@@ -1278,6 +1281,207 @@ CLASS zcl_some_class IMPLEMENTATION.
   ENDMETHOD.
 ENDCLASS.
 ```
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+
+### Boxed Components
+
+
+- In structures, boxed components represent nested structures managed by an internal reference.  
+- Currently, static boxes are supported as boxed components, enabling [initial value sharing](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABENINITIAL_VALUE_SHARING_GLOSRY.html). Find more information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABENSTATIC_BOXES.html).
+- The relevant addition in a structured type declaration is `BOXED`. Syntax example: 
+  ```abap
+  TYPES: BEGIN OF struct, 
+          text          TYPE c LENGTH 20, 
+          nested_struct TYPE zdemo_abap_carr BOXED, 
+         END OF struct.
+  ```
+- When used: 
+  - Optimize memory consumption for structures used repeatedly, such as in internal tables with nested structures. Without boxed components, memory increases line by line, even if the nested structure is initial. With boxed components, memory does not increase when nested structures are initial, and only reads are performed.
+  - Enhance runtime performance since assignments for components with active initial value sharing require only the internal reference, not additional data to be copied.
+- Boxed components allocate memory when there is write access to at least one component or when a field symbol is assigned or data reference points to at least one component.
+
+Expand the following collapsible section for more information and example code. 
+
+<details>
+  <summary>🟢 Click to expand for more information and example code</summary>
+  <!-- -->
+
+The following example illustrates boxed components: 
+- Two internal tables are created. One includes a nested structure as a boxed component, and the other includes a nested structure that is not a boxed component.
+- The tables are populated in a loop under various conditions.
+- The example demonstrates the impact of boxed components on memory usage.
+- To try it out, proceed as follows:  
+  - Create a demo class named `zcl_some_class`, paste the code into it, and activate it.
+  - The example does not display output in the console.
+  - It includes sections you can comment in and out. See notes in the examples.
+  - The code sections compare the memory usage of boxed and non-boxed components:
+    - *Comparison 1*: Empty nested boxed vs. empty nested non-boxed components
+    - *Comparison 2*: All nested boxed vs. all nested non-boxed components populated
+    - *Comparison 3*: Few nested boxed vs. few nested non-boxed components populated
+  - For the comparison:
+    - In ADT, add the *ABAP Memory (Debugger)* view. If not yet available, choose *Window* from the menu -> *Show View* -> *Other ...* -> filter for "memory" and add *ABAP Memory (Debugger)*.
+    - Set a break-point at the `ASSERT` statement.
+    - For *Comparison 1*, the first section is commented in. Run the class with *F9* in ADT. The first section deals with an internal table containing boxed components, where all are empty.
+    - The debugger stops at the break-point. Open the *ABAP Memory (Debugger)* view.
+    - Press *Refresh* in the view's top right corner. Check the *ABAP Application* values for used and allocated memory.
+    - You may want to take a screenshot for comparison.
+    - Stop debugging.
+    - Comment out the first section and comment in the next one. Ensure no other sections within the loop are commented in. This section handles an internal table with nested, non-boxed components.
+    - Repeat the process by setting the break-point and refreshing the view to compare memory values in the *ABAP Memory (Debugger)* view.
+    - Compare the resulting values of the memory consumption. 
+    - Repeat the steps for *Comparison 2* and *Comparison 3*.
+- The following observations should be made regarding the memory consumption values, reflecting the impact of boxed components:
+  - *Comparison 1*: Empty nested boxed vs. empty nested non-boxed components
+    - The table with boxed components allocates significantly less memory than the one without. Non-boxed components have full memory allocation despite having no entries.
+  - *Comparison 2*: All nested boxed vs. all nested non-boxed components populated
+    - Memory for the table with boxed components is slightly higher due to extra administrative costs.
+  - *Comparison 3*: Few nested boxed vs. few nested non-boxed components populated
+    - Large tables with boxed components show considerably less memory usage when only a few components are populated compared to tables without boxed components.
+
+<br>
+
+```abap
+CLASS zcl_some_class DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
+
+  PUBLIC SECTION.
+    INTERFACES if_oo_adt_classrun.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+ENDCLASS.
+
+
+
+CLASS zcl_some_class IMPLEMENTATION.
+
+  METHOD if_oo_adt_classrun~main.
+
+    "Creating two demo internal tables
+    "One with boxed components, the other with a nested, non-boxed components
+    TYPES:
+      BEGIN OF struc,
+        comp1 TYPE c LENGTH 1024,
+        comp2 TYPE c LENGTH 1024,
+      END OF struc,
+
+      BEGIN OF struc_w_boxed,
+        id         TYPE i,
+        boxed_comp TYPE struc BOXED,
+      END OF struc_w_boxed,
+
+      BEGIN OF struc_no_boxed,
+        id    TYPE i,
+        struc TYPE struc,
+      END OF struc_no_boxed,
+
+      tab_w_boxed  TYPE TABLE OF struc_w_boxed WITH EMPTY KEY,
+      tab_no_boxed TYPE TABLE OF struc_no_boxed WITH EMPTY KEY.
+
+    DATA: itab_w_boxed  TYPE tab_w_boxed,
+          itab_no_boxed TYPE tab_no_boxed.
+
+    "Populating internal tables
+    "When running the example, only have one code snippet commented in, i.e.
+    "the snippets between the sections
+    "---- Comment in/out START ----
+    "...
+     "---- Comment in/out END ----
+    DO 100000 TIMES.
+
+      "------------------------------------------------------------------------
+      "----------------------------- Comparison 1 -----------------------------
+      "------------------------------------------------------------------------
+
+      "1) Internal table with boxed components: All boxed components empty
+
+      "---- Comment in/out START ----
+      INSERT INITIAL LINE INTO TABLE itab_w_boxed REFERENCE INTO DATA(wa1).
+      wa1->id = sy-index.
+      "---- Comment in/out END ----
+
+**************************************************************************************************
+
+      "2) Internal table with non-boxed components: All nested, non-boxed components empty
+
+      "---- Comment in/out START ----
+*      INSERT INITIAL LINE INTO TABLE itab_no_boxed REFERENCE INTO DATA(wa2).
+*      wa2->id = sy-index.
+      "---- Comment in/out END ----
+
+**************************************************************************************************
+
+      "------------------------------------------------------------------------
+      "----------------------------- Comparison 2 -----------------------------
+      "------------------------------------------------------------------------
+
+      "3) Internal table with boxed components: All boxed components filled
+
+      "---- Comment in/out START ----
+*      INSERT INITIAL LINE INTO TABLE itab_w_boxed REFERENCE INTO DATA(wa3).
+*      wa3->id = sy-index.
+*      wa3->boxed_comp-comp1 = sy-index.
+*      wa3->boxed_comp-comp2 = sy-index.
+      "---- Comment in/out END ----
+
+**************************************************************************************************
+
+      "4) Internal table with non-boxed components: All nested, non-boxed components filled
+
+      "---- Comment in/out START ----
+*      INSERT INITIAL LINE INTO TABLE itab_no_boxed REFERENCE INTO DATA(wa4).
+*      wa4->id = sy-index.
+*      wa4->struc-comp1 = sy-index.
+*      wa4->struc-comp2 = sy-index.
+      "---- Comment in/out END ----
+
+**************************************************************************************************
+
+      "------------------------------------------------------------------------
+      "----------------------------- Comparison 3 -----------------------------
+      "------------------------------------------------------------------------
+
+      "5) Internal table with boxed components: Only few boxed components filled
+
+      "---- Comment in/out START ----
+*      INSERT INITIAL LINE INTO TABLE itab_w_boxed REFERENCE INTO DATA(wa5).
+*      wa5->id = sy-index.
+*      IF sy-index <= 50.
+*        wa5->boxed_comp-comp1 = sy-index.
+*        wa5->boxed_comp-comp2 = sy-index.
+*      ENDIF.
+      "---- Comment in/out END ----
+
+**************************************************************************************************
+
+      "6) Internal table with non-boxed components: Only few nested, non-boxed components filled
+
+      "---- Comment in/out START ----
+*      INSERT INITIAL LINE INTO TABLE itab_no_boxed REFERENCE INTO DATA(wa6).
+*      wa6->id = sy-index.
+*      IF sy-index <= 50.
+*        wa6->struc-comp1 = sy-index.
+*        wa6->struc-comp2 = sy-index.
+*      ENDIF.
+      "---- Comment in/out END ----
+    ENDDO.
+
+    ASSERT 1 = 1.
+
+  ENDMETHOD.
+
+ENDCLASS.
+```
+
+
+</details>  
+
+
+
+
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 

@@ -43,7 +43,9 @@
   - [Excursions](#excursions)
     - [Comparison Operators for Character-Like Data Types in a Nutshell](#comparison-operators-for-character-like-data-types-in-a-nutshell)
     - [Classes for String Processing](#classes-for-string-processing)
-    - [Character String and Byte String Processing with ABAP Statements](#character-string-and-byte-string-processing-with-abap-statements)
+    - [Byte String Processing](#byte-string-processing)
+      - [Character String and Byte String Processing with ABAP Statements](#character-string-and-byte-string-processing-with-abap-statements)
+      - [SET BIT and GET BIT Statements](#set-bit-and-get-bit-statements)
   - [Executable Example](#executable-example)
 
 
@@ -2244,14 +2246,15 @@ As also covered in the [Released ABAP Classes](22_Released_ABAP_Classes.md) chea
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-### Character String and Byte String Processing with ABAP Statements 
+### Byte String Processing
+
+#### Character String and Byte String Processing with ABAP Statements
 
 - Several ABAP statements include the `IN CHARACTER MODE` and `IN BYTE MODE` additions.
 - These additions determine whether operations process character strings or byte strings.
 - If neither option is specified, the default is character string processing (i.e. `IN CHARACTER MODE`).
 - Byte string processing with the `IN BYTE MODE` addition is supported by the following ABAP statements: `CONCATENATE`, `FIND`, `REPLACE`, `SHIFT`, `SPLIT`.
 - In byte string processing, the data objects used must be byte-like. For character string processing, only character-like data objects are allowed.
-
 
 The following code snippet explores various statements with the `IN CHARACTER MODE` and `IN BYTE MODE` additions.
 
@@ -2406,6 +2409,145 @@ blank_xstr = cl_abap_conv_codepage=>create_out( )->convert( ` ` ).
 SPLIT xstr AT blank_xstr INTO DATA(xstr1) DATA(xstr2) IN BYTE MODE.
 SPLIT xstr AT blank_xstr INTO TABLE DATA(xstr_tab) IN BYTE MODE.
 ```
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+#### SET BIT and GET BIT Statements
+
+- Unlike the ABAP statements in the previous section, the following statements are are only for byte string processing:
+  - [`SET BIT`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABAPSET_BIT.html) and  .
+    - Syntax pattern: `SET BIT pos OF byte_string [TO value].`
+    - In a byte-like data object, the bit is set to 1 by default at a specified position, or to 0 or 1 as specified after `TO`.
+    - Alternatively, you can use the built-in function [`bit-set`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABENBIT_FUNCTIONS.html).
+  - [`GET BIT`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABAPGET_BIT.html) 
+    - Syntax pattern: `GET BIT pos OF byte_string INTO value.`
+    - Reads a bit at a specified position in a byte string into a target data object.
+
+
+Expand the following collapsible section for example code, which experiments with byte string processing (converting a hexadecimal value to the character-like representation of the binary values by reading bits, getting hexadecimal values from from the character-like representation of the binary values, setting bits). To try it out, create a demo class named `zcl_some_class` and paste the code into it. After activation, choose *F9* in ADT to execute the class. The example is set up to display output in the console.
+
+<details>
+  <summary>🟢 Click to expand for example code</summary>
+  <!-- -->
+
+```abap
+CLASS zcl_some_class DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
+
+  PUBLIC SECTION.
+    INTERFACES if_oo_adt_classrun.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+ENDCLASS.
+
+
+
+CLASS zcl_some_class IMPLEMENTATION.
+
+  METHOD if_oo_adt_classrun~main.
+
+    "Converting an example text string to xstring
+    "The conversion is performed using the default code page UTF-8.
+    "48656C6C6F2041424150
+    DATA(demo_string) = `Hello ABAP`.
+    DATA(xstr) = cl_abap_conv_codepage=>create_out( )->convert( demo_string ).
+
+    TYPES: BEGIN OF struc,
+             bin       TYPE string,
+             hex_value TYPE xstring,
+           END OF struc.
+    DATA tab TYPE TABLE OF struc WITH EMPTY KEY.
+
+    "Determining the length of the hexadecimal value 48656C6C6F2041424150
+    "and multiplying by 8 for reading the bits
+    DATA(length_xstr) = xstrlen( xstr ) * 8.
+
+    "Data object to store the binary representation of hexadecimal values
+    DATA binary_rep TYPE string.
+
+    "Reading the bits from front to back
+    "The example is implemented in a way to perform a byte-wise storing
+    "of the binary representations of hexadecimal values in an internal table
+    "to visualize individual bytes. After 8 bits, the next byte is processed.
+    WHILE sy-index <= length_xstr.
+      GET BIT sy-index OF xstr INTO DATA(bit).
+      binary_rep &&= |{ bit }|.
+      IF sy-index MOD 8 = 0.
+        APPEND VALUE #( bin = binary_rep ) TO tab.
+        CLEAR binary_rep.
+      ENDIF.
+    ENDWHILE.
+
+    "Getting hexadecimal values from the character-like representation of
+    "the binary values
+    LOOP AT tab REFERENCE INTO DATA(line).
+      DATA(num) = 0.
+      DO strlen( line->bin ) TIMES.
+        DATA(pos) = strlen( line->bin ) - sy-index.
+        num += COND i( WHEN line->bin+pos(1) = '1' THEN 2 ** ( sy-index - 1 ) ).
+      ENDDO.
+
+      line->hex_value = CONV xstring( num ).
+    ENDLOOP.
+
+    "Table reduction: Concatenating the individual hexadecimal values
+    DATA(hex_value) = REDUCE xstring( INIT xs = ``
+                                      FOR <li> IN tab
+                                      NEXT xs &&= <li>-hex_value ).
+
+    out->write( data = tab name = `tab` ).
+    out->write( |\n| ).
+    ASSERT hex_value = xstr.
+    out->write( data = hex_value name = `hex_value` ).
+    out->write( |\n| ).
+
+    "Converting xstring to string
+    DATA(conv_string) = cl_abap_conv_codepage=>create_in( )->convert( hex_value ).
+    ASSERT conv_string = demo_string.
+    out->write( data = conv_string name = `conv_string` ).
+    out->write( |\n| ).
+
+    "SET BIT
+    "Adding `!` to the demo string
+    "The binary representation of `!` corresponds to 00100001.
+    "The hex_val data object has eight bits. In a loop, the
+    "binary representation is looped across. Depending on the
+    "value 0 or 1, SET BIT statements set values accordingly.
+    "Finally, the resulting data object is assigned to the demo
+    "xstring, and converted to string.
+
+    DATA hex_val    TYPE x LENGTH 1.
+    DATA(excl_mark) = `00100001`.
+
+    DATA(length_str) = strlen( excl_mark ).
+
+    DO 8 TIMES.
+      DATA(idx_for_position) = sy-index - 1.
+      DATA(value_at_position) = SWITCH #( sy-index WHEN 1 THEN excl_mark+0(1) ELSE excl_mark+idx_for_position(1) ).
+
+      CASE value_at_position.
+        WHEN `0`.
+          SET BIT sy-index OF hex_val TO 0.
+        WHEN `1`.
+          SET BIT sy-index OF hex_val.
+      ENDCASE.
+    ENDDO.
+
+    xstr = xstr && hex_val.
+    conv_string = cl_abap_conv_codepage=>create_in( )->convert( xstr ).
+    ASSERT conv_string = |{ demo_string }!|.
+    out->write( data = conv_string name = `conv_string` ).
+
+  ENDMETHOD.
+
+ENDCLASS.
+```
+
+
+</details>  
+
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
