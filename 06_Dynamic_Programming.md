@@ -8,6 +8,7 @@
     - [Field Symbols](#field-symbols)
       - [Declaring Field Symbols](#declaring-field-symbols)
       - [Assigning Data Objects](#assigning-data-objects)
+      - [Checking Field Symbol Assignment and Unassigning Field Symbols](#checking-field-symbol-assignment-and-unassigning-field-symbols)
       - [Examples Using Field Symbols](#examples-using-field-symbols)
       - [Generic Typing](#generic-typing)
     - [Data References](#data-references)
@@ -17,6 +18,7 @@
       - [Excursion with Object Reference Variables: Creating Objects as Instances of Classes and CREATE OBJECT Statements](#excursion-with-object-reference-variables-creating-objects-as-instances-of-classes-and-create-object-statements)
       - [Assignments Between Two Reference Variables (Static and Dynamic Type, Upcast and Downcast)](#assignments-between-two-reference-variables-static-and-dynamic-type-upcast-and-downcast)
       - [Addressing Data References](#addressing-data-references)
+      - [Checking if Data Reference Variables Can Be Dereferenced](#checking-if-data-reference-variables-can-be-dereferenced)
       - [Excursion: Generic Data References and Field Symbols](#excursion-generic-data-references-and-field-symbols)
       - [Examples Using Data References](#examples-using-data-references)
   - [Dynamic ABAP Statements](#dynamic-abap-statements)
@@ -197,20 +199,34 @@ ASSIGN chars TO <fs2> CASTING LIKE chars_l4. "abcd
 ```
 
 > **💡 Note**<br>
-> - If you use an unassigned field symbol, an exception is raised. Before using it, you can check the
-    assignment with the following logical expression. The statement is true if the field symbol is assigned.
->    ``` abap
->    IF <fs> IS ASSIGNED.
->      ...
->    ENDIF.
->    
->    DATA(check) = COND #( WHEN <fs> IS ASSIGNED THEN `assigned` ELSE `not assigned` ).
->    ```
->- Using the statement `UNASSIGN`, you can explicitly remove the assignment of the field symbol. A `CLEAR` statement only initializes the value.
->   ``` abap
->   UNASSIGN <fs>.
->   ```
->- See more information on the addition `CASTING` [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapassign_casting.htm).
+> See more information on the addition `CASTING` [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapassign_casting.htm).
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+#### Checking Field Symbol Assignment and Unassigning Field Symbols
+
+- If you use an unassigned field symbol, an exception is raised. Before using it, you can check the assignment with the following logical expression. The statement is true if the field symbol is assigned.  
+- Using the statement `UNASSIGN`, you can explicitly remove the assignment of the field symbol. A `CLEAR` statement only initializes the value.
+
+```abap
+FIELD-SYMBOLS <fs> TYPE string.
+DATA(some_string) = `hello`.
+ASSIGN some_string TO <fs>.
+
+IF <fs> IS ASSIGNED.
+  DATA(fs_assigned) = `is assigned`.
+ELSE.
+  ref_bound = `is not assigned`.
+ENDIF.
+
+DATA(fs_assigned_w_cond) = COND #( WHEN <fs> IS ASSIGNED THEN `is assigned` ELSE `is not assigned` ).
+
+UNASSIGN <fs>.
+FIELD-SYMBOLS <another_fs> TYPE i.
+
+ASSERT <fs> IS NOT ASSIGNED.
+ASSERT <another_fs> IS NOT ASSIGNED.
+```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
@@ -888,7 +904,7 @@ ref4 = CAST #( ref3 ).
 
 Before addressing the content of data objects a data reference points to, you must dereference data reference variables. Use the
 [dereferencing operator](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendereferencing_operat_glosry.htm "Glossary Entry")
-`->*`. To check if dereferencing works, you can use a logical expression with [`IS BOUND`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenlogexp_bound.htm). When dereferencing a data reference variable that has a structured data type, you can use the component selector `->` to address individual components.
+`->*`. When dereferencing a data reference variable that has a structured data type, you can use the component selector `->` to address individual components.
 
 
 ``` abap
@@ -930,13 +946,6 @@ ref_carr->carrid = 'UA'.
 "This longer syntax with the dereferencing operator also works.
 ref_carr->*-carrname = 'United Airlines'.
 
-"Checking if a data reference variable can be dereferenced.
-IF ref_carr IS BOUND.
-  ...
-ENDIF.
-
-DATA(ref_bound) = COND #( WHEN ref_carr IS BOUND THEN ref_carr->carrid ELSE `is not bound` ).
-
 "Explicitly removing a reference
 "However, the garbage collector takes care of removing the references
 "automatically once the data is not used any more by a reference.
@@ -944,6 +953,30 @@ CLEAR ref_carr.
 ```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
+
+#### Checking if Data Reference Variables Can Be Dereferenced
+
+To check if dereferencing works, you can use a logical expression with [`IS [NOT] BOUND`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenlogexp_bound.htm).
+
+```abap
+DATA(ref_carr) = NEW zdemo_abap_carr( carrid = 'LH' carrname = 'Lufthansa' ).
+
+"Checking if a data reference variable can be dereferenced.
+IF ref_carr IS BOUND.
+  DATA(ref_bound) = `is bound`.
+ELSE.
+  ref_bound = `is not bound`.
+ENDIF.
+
+DATA(ref_bound_w_cond) = COND #( WHEN ref_carr IS BOUND THEN `is bound` ELSE `is not bound` ).
+
+DATA some_ref TYPE REF TO string.
+
+ASSERT some_ref IS NOT BOUND.
+```
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
 
 #### Excursion: Generic Data References and Field Symbols
 
@@ -1332,63 +1365,112 @@ ASSIGN dobj_c10 TO <casttype> CASTING TYPE HANDLE tdo_elem. "1234
 
 ``` abap
 "------------ CREATE DATA statement patterns ----------------
-"CREATE DATA dref TYPE (typename).
-"CREATE DATA dref TYPE TABLE OF (typename).
+"CREATE DATA dref TYPE (typename) ...
+"CREATE DATA dref TYPE ... TABLE OF (typename) ...
 "CREATE DATA dref TYPE REF TO (typename).
+"CREATE DATA dref TYPE LINE OF (typename).
+"CREATE DATA dref LIKE struc-(dobjname).
+"CREATE DATA dref TYPE (absolute_name).
 "CREATE DATA dref TYPE HANDLE type_description_object.
 
 "------------ Specifying a type name dynamically ------------
 
 "Anonymous data objects are created using a type determined at
-"runtime. In this case, the name of the data type is specified dynamically.
+"runtime. In this case, the name of the data type is specified
+"dynamically.
 "Note that the NEW operator cannot be used here.
-DATA(some_type) = 'STRING'.
-DATA dataref TYPE REF TO data.
-"Elementary data object
-CREATE DATA dataref TYPE (some_type).
-"Internal tables
-"Standard table with elementary line type and standard key
-CREATE DATA dataref TYPE TABLE OF (some_type).
 
-TYPES: BEGIN OF demo_struc,
-          comp1 TYPE c LENGTH 10,
-          comp2 TYPE i,
-          comp3 TYPE i,
-        END OF demo_struc.
+"Data reference variable used for the examples
+DATA dref TYPE REF TO data.
 
-"Structured line type, empty key specified
-CREATE DATA dataref TYPE TABLE OF ('DEMO_STRUC') WITH EMPTY KEY.
+"Example types and data objects
 
+"Elementary type and data object
+TYPES t_c3 TYPE c LENGTH 3.
+DATA c3 TYPE c LENGTH 3.
+
+"Structured type and data object
+TYPES t_fli_struc TYPE zdemo_abap_fli.
+DATA  fli_struc TYPE zdemo_abap_fli.
+
+"Table type and internal table
+TYPES t_carr_tab TYPE SORTED TABLE OF zdemo_abap_carr WITH UNIQUE KEY carrid.
+DATA carr_tab TYPE TABLE OF zdemo_abap_carr WITH EMPTY KEY.
+
+"Reference type and data reference variable
+TYPES t_str_ref TYPE REF TO string.
+DATA str_ref TYPE REF TO string.
+
+
+"----- Pattern: TYPE (typename) ... -----
+
+"Creating an elementary data object
+"Specifying a literal for the dynamic type name (used in most of the
+"following examples)
+CREATE DATA dref TYPE ('T_C3').
+
+"Specifying a named data object
+DATA(some_type) = 'T_C3'.
+CREATE DATA dref TYPE (some_type).
+
+"Structured data object
+CREATE DATA dref TYPE ('T_FLI_STRUC').
+
+"Internal table
+CREATE DATA dref TYPE ('T_CARR_TAB').
+
+"Data reference
+CREATE DATA dref TYPE ('T_STR_REF').
+
+"----- Pattern: TYPE ... TABLE OF (typename) ... -----
+
+"Creating internal tables
+
+CREATE DATA dref TYPE TABLE OF ('STRING').
+CREATE DATA dref TYPE TABLE OF ('T_FLI_STRUC') WITH EMPTY KEY.
+
+"Specifying the structured type dynamically, but the key values statically
+CREATE DATA dref TYPE SORTED TABLE OF ('ZDEMO_ABAP_CARR') WITH UNIQUE KEY carrid.
+
+"Specifying the structured type and the key values dynamically
 "An internal table such as the following should be created by dynamically
 "specifying the type and keys dynamically. The keys are specified in lines
 "of an internal table with character-like line type.
-DATA itab TYPE SORTED TABLE OF demo_struc WITH UNIQUE KEY comp1 comp2.
+DATA itab TYPE SORTED TABLE OF zdemo_abap_fli WITH UNIQUE KEY carrid connid fldate.
 
-DATA(key_table) = VALUE string_table( ( `COMP1` ) ( `COMP2` ) ).
-CREATE DATA dataref TYPE SORTED TABLE OF ('DEMO_STRUC') WITH UNIQUE KEY (key_table).
+DATA(key_table) = VALUE string_table( ( `CARRID` ) ( `CONNID` ) ( `FLDATE` ) ).
+CREATE DATA dref TYPE SORTED TABLE OF ('ZDEMO_ABAP_FLI') WITH UNIQUE KEY (key_table).
 
-"Structures
-CREATE DATA dataref TYPE ('DEMO_STRUC').
-TYPES itab_type TYPE SORTED TABLE OF demo_struc WITH UNIQUE KEY comp1 comp2.
-CREATE DATA dataref TYPE LINE OF ('ITAB_TYPE').
+"----- Pattern: TYPE REF TO (typename) -----
 
-"Specifying data reference variables are also possible
-CREATE DATA dataref TYPE REF TO (some_type).
-CREATE DATA dataref TYPE REF TO ('DEMO_STRUC').
+"Creating data reference variables
 
+CREATE DATA dref TYPE REF TO ('STRING').
+CREATE DATA dref TYPE REF TO ('T_C3').
+CREATE DATA dref TYPE REF TO ('T_FLI_STRUC').
+CREATE DATA dref TYPE REF TO ('T_CARR_TAB').
 
-"------------ Specifying an absolute type name ------------
+"----- Pattern: TYPE LINE OF (typename) -----
 
-CREATE DATA dataref TYPE ('\TYPE=STRING').
+"Creating structures based on table types
+CREATE DATA dref TYPE LINE OF ('T_CARR_TAB').
+
+"----- Pattern: LIKE struc-(dobjname) -----
+
+CREATE DATA dref LIKE fli_struc-('CARRID').
+
+"----- Pattern: TYPE (absolute_name) -----
+
+CREATE DATA dref TYPE ('\TYPE=STRING').
 "Getting an absolute type name; see more information further down
-DATA(absolute_name) = cl_abap_typedescr=>describe_by_name( 'DEMO_STRUC' )->absolute_name.
-CREATE DATA dataref TYPE (absolute_name).
+DATA(absolute_name) = cl_abap_typedescr=>describe_by_name( 'ZDEMO_ABAP_CARR' )->absolute_name.
+CREATE DATA dref TYPE (absolute_name).
 
-"------------ HANDLE addition: Specifying a type description object ------------
+"----- Pattern: TYPE HANDLE type_description_object -----
 
 "Getting a type description object. Find more information about RTTI below.
 DATA(tdo_elem) = cl_abap_elemdescr=>get_c( 4 ). "type c length 4
-CREATE DATA dataref TYPE HANDLE tdo_elem.
+CREATE DATA dref TYPE HANDLE tdo_elem.
 ```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
