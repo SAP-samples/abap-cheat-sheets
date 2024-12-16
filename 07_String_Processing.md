@@ -2415,7 +2415,7 @@ SPLIT xstr AT blank_xstr INTO TABLE DATA(xstr_tab) IN BYTE MODE.
 #### SET BIT and GET BIT Statements
 
 - Unlike the ABAP statements in the previous section, the following statements are are only for byte string processing:
-  - [`SET BIT`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABAPSET_BIT.html) and  .
+  - [`SET BIT`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABAPSET_BIT.html)
     - Syntax pattern: `SET BIT pos OF byte_string [TO value].`
     - In a byte-like data object, the bit is set to 1 by default at a specified position, or to 0 or 1 as specified after `TO`.
     - Alternatively, you can use the built-in function [`bit-set`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABENBIT_FUNCTIONS.html).
@@ -2424,7 +2424,7 @@ SPLIT xstr AT blank_xstr INTO TABLE DATA(xstr_tab) IN BYTE MODE.
     - Reads a bit at a specified position in a byte string into a target data object.
 
 
-Expand the following collapsible section for example code, which experiments with byte string processing (converting a hexadecimal value to the character-like representation of the binary values by reading bits, getting hexadecimal values from from the character-like representation of the binary values, setting bits). To try it out, create a demo class named `zcl_some_class` and paste the code into it. After activation, choose *F9* in ADT to execute the class. The example is set up to display output in the console.
+Expand the following collapsible section for example code, which experiments with byte string processing (converting a hexadecimal value to the character-like representation of the binary values by reading bits, getting hexadecimal values from the character-like representation of the binary values, setting bits). To try it out, create a demo class named `zcl_some_class` and paste the code into it. After activation, choose *F9* in ADT to execute the class. The example is set up to display output in the console.
 
 <details>
   <summary>🟢 Click to expand for example code</summary>

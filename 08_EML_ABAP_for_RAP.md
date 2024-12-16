@@ -42,7 +42,7 @@ The following points cover RAP-related terms such as *RAP business objects* and 
         of [CDS
         entities](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_entity_glosry.htm "Glossary Entry")
         of a data model
-    -   Such a structure of entities consists of [parent
+    -   Such a structure of entities can consist of [parent
         entities](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenparent_entity_glosry.htm "Glossary Entry")
         and [child
         entities](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenchild_entity_glosry.htm "Glossary Entry")
@@ -614,7 +614,7 @@ METHODS some_action FOR MODIFY
 -   The saver class is implicitly `ABSTRACT` and `FINAL`
     since the instantiating and calling only happens through the RAP
     runtime engine.
--   A saver class can be defined in the CCIMP include of an ABAP
+-   A saver class can be defined in the CCIMP include (*Local Types* tab in ADT) of an ABAP
     behavior pool. It includes the definitions and implementations of
     RAP saver methods.
 -   The saver methods consist of a set of predefined methods having
@@ -736,7 +736,7 @@ DATA d2 TYPE TABLE FOR UPDATE zdemo_abap_rap_ch_m.
 
 "Long form: Specifying the name of the RAP BO root entity, followed
 "by \\ and an entity of the composition tree
-"Since an alias name is specified for the example entities,it must
+"Since an alias name is specified for the example entities, it must
 "be specified after \\. Otherwise, the entity name can be specified.
 "t3/d3 are the same as t1/d1.
 TYPES t3 TYPE TABLE FOR CREATE zdemo_abap_rap_ro_m\\root.
@@ -1602,7 +1602,7 @@ READ ENTITIES OPERATIONS op_tab.
     in behavior implementations. 
 -   There are multiple variants available for the statement as described
     in the ABAP Keyword Documentation
-    [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapcommit_entities.htm). For example, RAP responses can be retrieved, key conversion in late numbering scenarios, checking a RAP transaction in a simulation mode. 
+    [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapcommit_entities.htm). They deal with different variants of how to handle RAP responses, among others. 
 -   `COMMIT ENTITIES` statements set the system field
     `sy-subrc`. When using `COMMIT ENTITIES`, it is not
     guaranteed that `COMMIT WORK` is carried out successfully.
@@ -1610,14 +1610,33 @@ READ ENTITIES OPERATIONS op_tab.
     `COMMIT ENTITIES` so that you can react to failures
     accordingly.
 
+
+
+<table>
+
+<tr>
+<td> Variant/Addition </td> <td> Notes </td>
+</tr>
+
+<tr>
+<td> 
+
+Short form of `COMMIT ENTITIES` 
+
+</td>
+<td> 
+
 The following snippet shows a create operation. This operation has only
 an impact on the database with the `COMMIT ENTITIES` statement.
 Triggering the save sequence means that the execution of the statement
 triggers the calling of the saver methods available in the saver class
 of a behavior implementation. In managed scenarios (except for some
 special variants), the saving is done automatically without implementing
-a dedicated saver method.
-``` abap
+a dedicated saver method. Optionally, you can specify the `RESPONSES` addition followed by a data object of type `ABP_BEHV_RESPONSE_TAB` to retrieve information returned by the response parameters of RAP saver methods.
+
+<br>
+
+```abap
 MODIFY ENTITIES OF root_ent
   ENTITY root_ent
   CREATE FIELDS ( key_field field1 field2 ) WITH
@@ -1632,7 +1651,181 @@ COMMIT ENTITIES.
 IF sy-subrc <> 0.
   ...
 ENDIF.
+
+... "Some modifications
+
+DATA f_resp TYPE abp_behv_response_tab.
+DATA r_resp TYPE abp_behv_response_tab.
+"Note: Inline declarations for the data objects are also possible.
+COMMIT ENTITIES RESPONSES FAILED f_resp REPORTED r_resp.
+
+IF sy-subrc <> 0.
+  ...
+ENDIF.
 ```
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+Long form of `COMMIT ENTITIES` 
+
+ </td>
+
+ <td> 
+
+The long syntax form includes the retrieval of information for one or more RAP BO entities. Root entities must be specified.
+
+<br>
+
+``` abap
+COMMIT ENTITIES
+ RESPONSE OF zdemo_abap_rap_ro_m
+   FAILED   DATA(f1)
+   REPORTED DATA(r1)
+ RESPONSE OF zdemo_abap_rap_draft_m
+   FAILED   DATA(f2)
+   REPORTED DATA(r2).
+
+IF sy-subrc <> 0.
+    ...
+ENDIF.
+``` 
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+Dynamic form of `COMMIT ENTITIES` 
+
+ </td>
+
+ <td> 
+
+The dynamic syntax form allows you to retrieve RAP responses from RAP saver methods by dynamically specifying one or more RAP BO root entities.
+
+
+<br>
+
+``` abap
+DATA: root_name1  TYPE abp_root_entity_name VALUE 'ZDEMO_ABAP_RAP_RO_M',
+      root_name2  TYPE abp_root_entity_name VALUE 'ZDEMO_ABAP_RAP_DRAFT_M',
+      failed_resp TYPE abp_behv_response_tab.
+
+DATA(dyn_tab) = VALUE abp_entity_name_tab( ( root_name1 )
+                                           ( root_name2 ) ).
+
+COMMIT ENTITIES  RESPONSES OF dyn_tab
+    FAILED   failed_resp
+    REPORTED DATA(reported_resp).
+
+IF sy-subrc <> 0.
+    ...
+ENDIF.
+``` 
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+Specifying a commit scope
+
+ </td>
+
+ <td> 
+
+- Especially used in late numbering scenarios to get the final keys from the preliminary keys (using the [`CONVERT KEY`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapconvert_key.htm) addition)
+- The commit scope is opened by `COMMIT ENTITIES BEGIN ...` (`...` stands for further syntax options such as the specification of `RESPONSES ...` or `RESPONSE OF ...` ), and closed by `COMMIT ENTITIES END.`.
+
+
+<br>
+
+``` abap
+COMMIT ENTITIES BEGIN. 
+ 
+... 
+
+"CONVERT KEY OF some_bo FROM ...-%pid TO DATA(some_key).
+
+"For example, converting the preliminary keys (e.g. %pid components) 
+"based on entries in the MAPPED table of a RAP BO entity. 
+"Using a CONVERT KEY statement, you can retrieve the final keys of
+"individual instances, and store them in a local variable. 
+ 
+COMMIT ENTITIES END.
+``` 
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+Simulating a commit
+
+ </td>
+
+ <td> 
+
+- The optional `IN SIMULATION MODE` addition can be specified with `COMMIT ENTITIES` statements allowing a RAP transaction to be checked.
+- With this addition, only the RAP early save phase is processed without saving data, i.e. a final `COMMIT WORK` is not performed. 
+- The addition can be used to check the consistency of the transaction by evaluating, for example, the `sy-subrc` value as a result of executing the commit in simulation mode.
+
+
+<br>
+
+``` abap
+DELETE FROM zdemo_abap_rapt1.
+
+DO 2 TIMES.
+ MODIFY ENTITIES OF zdemo_abap_rap_ro_m
+  ENTITY root
+  CREATE FIELDS ( key_field )
+  AUTO FILL CID WITH VALUE #( ( key_field = 100 ) )
+  MAPPED DATA(m1)
+  FAILED DATA(f1)
+  REPORTED DATA(r1).
+
+ IF sy-index = 1.
+   COMMIT ENTITIES IN SIMULATION MODE.
+ ELSE.
+   COMMIT ENTITIES.
+ ENDIF.
+
+ IF sy-subrc <> 0.
+  ...
+ ENDIF.
+
+"Data is not saved
+ SELECT FROM zdemo_abap_rapt1
+  FIELDS key_field
+  ORDER BY key_field
+  INTO TABLE @DATA(tab).
+
+ IF sy-index = 1.
+  ASSERT tab IS INITIAL.
+  "Clearing the transactional buffer
+  ROLLBACK ENTITIES.
+ ELSE.
+  ASSERT lines( tab ) = 1.
+  ASSERT tab[ 1 ]-key_field = 100.
+ ENDIF.
+ENDDO.
+``` 
+
+ </td>
+</tr>
+
+</table>
+
+
+
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
@@ -1643,7 +1836,7 @@ ENDIF.
   - `event` specifications are available in the BDEF (e.g. `... event some_evt; ...`). For more details, refer to the [BDL documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbdl_event.htm)
   - A [RAP event handler class](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_event_handler_class_glosry.htm) is available that is used to implement [RAP event handler methods](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_event_handler_meth_glosry.htm). 
     - Note that these methods are called asynchronously.
-    - Similar to RAP handler and saver methods, RAP event handler methods are implemented in the CCIMP include of the RAP event handler class.
+    - Similar to RAP handler and saver methods, RAP event handler methods are implemented in the CCIMP include (*Local Types* tab in ADT) of the RAP event handler class.
     - To locally consume RAP business events, a local class that inherits from `CL_ABAP_BEHAVIOR_EVENT_HANDLER` can be implemented in the CCIMP include of a RAP event handler class.
 - More information: 
   - [ABAP for RAP Business Events](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_events.htm) in the ABAP Keyword Documentation

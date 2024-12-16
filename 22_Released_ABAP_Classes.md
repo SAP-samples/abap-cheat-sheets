@@ -2502,10 +2502,33 @@ ENDTRY.
 <tr>
 <td> <code>CL_ABAP_PARALLEL</code> </td>
 <td>
-For performing the parallel processing for instances of ABAP Objects. The following example class is intended to be a self-contained example that tries to visualize the functionality of the <code>CL_ABAP_PARALLEL</code> class. For more information, refer to the class documentation. 
+For performing the parallel processing for instances of ABAP Objects. For more information, refer to the class documentation. 
 <br><br>
 
-``` abap
+The following example class demonstrates parallel processing using the `CL_ABAP_PARALLEL` class.
+
+<details>
+  <summary>🟢 Click to expand for more information and example code</summary>
+  <!-- -->
+
+Notes on the example: 
+- As a prerequisite, ensure you have a class implementing the `IF_ABAP_PARALLEL` interface. In this self-contained example, the executable class itself implements it. 
+- Before running the class with F9 in ADT, set a breakpoint for the `ASSERT` statement in the implementation of the `if_oo_adt_classrun~main` method. 
+- The example visualizes parallel processing by adding timestamps to an internal table. When program execution stops, you can check the table contents.
+- First, instances of the example class are created for the parallel processing of instances.
+- Next, an instance of the `CL_ABAP_PARALLEL` class is created. The example omits optional parameters; refer to the class documentation for details.
+- Parallel processing begins with the `run_inst` method, adding the instances to the input parameter.
+- A table of result information for tasks is returned and stored in a data object.
+- After starting the parallel processing, the `if_abap_parallel~do` method is called for each instance. This method includes a `DO` loop that populates the `info` table with timestamps.
+- The example includes a `WAIT` statement to pause program execution to ensure that all the parallel processing runs have completed.
+- The result information table is then looped over, and details are accessed by casting to the respective class (in this case, the example class).
+- The `info` table is sorted by timestamps. In the debugger, you can explore the functionality of the parallel processing in the following ways:
+  - The `instance` component may show a random instance, like `inst3`, processed first.
+  - Due to many loop passes, other instances might start in parallel before the current instance finishes. The `instance` component might show, for example, that `inst3` was processed first while `inst1` began. Some `time_stamp` values may even show identical values.
+
+<br>
+
+```abap
 CLASS zcl_some_class DEFINITION
   PUBLIC
   FINAL
@@ -2514,127 +2537,77 @@ CLASS zcl_some_class DEFINITION
   PUBLIC SECTION.
     INTERFACES if_oo_adt_classrun.
     INTERFACES if_abap_parallel.
-    METHODS: constructor.
+    METHODS constructor IMPORTING text TYPE string OPTIONAL.
+  PROTECTED SECTION.
   PRIVATE SECTION.
-    "This table holds entries that are added when
-    "calling the 'do' method.
-    DATA info_parallel_proc TYPE string_table.
+    DATA instance_name TYPE string.
+    DATA time_stamp TYPE utclong.
 
-    "Data types and objects for the data cluster
-    "that contains information to be output
-    CLASS-DATA buffer TYPE xstring.
-    DATA obj TYPE string.
-    DATA parallel_log TYPE string_table.
-    DATA inst_name TYPE string.
-    "Structure to hold information for the output
-    DATA: BEGIN OF info,
-            name   TYPE string,
-            tmstmp TYPE utclong,
-          END OF info.
-    "Preparing the data cluster
-    METHODS handle_cluster IMPORTING name TYPE string.
+    TYPES: BEGIN OF struct,
+             time_stamp   TYPE utclong,
+             instance TYPE string,
+             comment  TYPE string,
+           END OF struct.
+    DATA info TYPE TABLE OF struct WITH EMPTY KEY.
+    DATA parallel_proc LIKE info.
+
 ENDCLASS.
 
 CLASS zcl_some_class IMPLEMENTATION.
   METHOD if_oo_adt_classrun~main.
-    "This is a self-contained example class trying to visualize the
-    "functionality of the cl_abap_parallel class.
-    "As a prerequisite, you have a class that implements the interface
-    "IF_ABAP_PARALLEL. In the self-contained example, it is this class
-    "itself that implements it.
-    "When running the class with F9, the following code is executed.
+    APPEND VALUE #( time_stamp = time_stamp instance = `----` comment = `Time stamp stored when first running/calling the class` ) TO info.
 
-    "Creating an instance of class cl_abap_parallel
+    DATA(inst1) = NEW zcl_some_class( `inst1` ).
+    DATA(inst2) = NEW zcl_some_class( `inst2` ).
+    DATA(inst3) = NEW zcl_some_class( `inst3` ).
+    DATA(inst4) = NEW zcl_some_class( `inst4` ).
+    DATA(inst5) = NEW zcl_some_class( `inst5` ).
+
+    APPEND VALUE #( time_stamp = utclong_current( ) instance = `----` comment = `Time stamp stored before starting parallel processing` ) TO info.
+
     DATA(parallel) = NEW cl_abap_parallel( ).
 
-    "Creating instances of this example class for demonstration
-    "purposes. The handle_cluster method is used to manually
-    "provide the name of the object reference variable for
-    "output purposes.
-    handle_cluster( `inst1` ).
-    DATA(inst1) = NEW zcl_some_class( ).
-
-    handle_cluster( `inst2` ).
-    DATA(inst2) = NEW zcl_some_class( ).
-
-    handle_cluster( `inst3` ).
-    DATA(inst3) = NEW zcl_some_class( ).
-
-    handle_cluster( `inst4` ).
-    DATA(inst4) = NEW zcl_some_class( ).
-
-    WAIT UP TO 1 SECONDS.
-
-    "Starting the parallel processing for objects with the 'run_inst' method.
-    "As input parameters, instances of the classes to be processed are expected.
-    "The importing parameter is an internal table. It contains result information
-    "for the tasks that were processed in parallel.
     parallel->run_inst( EXPORTING p_in_tab  = VALUE #( ( inst1 )
                                                        ( inst2 )
                                                        ( inst3 )
-                                                       ( inst4 ) )
+                                                       ( inst4 )
+                                                       ( inst5 ) )
                         IMPORTING p_out_tab = DATA(result_info) ).
+
+    APPEND VALUE #( time_stamp = utclong_current( ) instance = `----` comment = `Time stamp stored after starting parallel processing` ) TO info.
 
     WAIT UP TO 1 SECONDS.
 
-    LOOP AT result_info INTO DATA(wa).
-      "For accessing the details, a cast to the respective class is required (in this
-      "case, it is this very class).
-      DATA(res) = CAST zcl_some_class( wa-inst ).
+    APPEND VALUE #( time_stamp = utclong_current( ) instance = `----` comment = `Time stamp stored after the WAIT statement` ) TO info.
 
-      "Adding information to a string table that is output
-      APPEND |**** Instance "{ res->info-name }" created at { res->info-tmstmp } ****| TO parallel_log.
-      LOOP AT res->info_parallel_proc INTO DATA(wap).
-        APPEND |{ wap }| TO parallel_log.
-      ENDLOOP.
-      APPEND `-----------------------------------------------------------------` TO parallel_log.
+    LOOP AT result_info INTO DATA(wa).
+      DATA(res) = CAST zcl_some_class( wa-inst ).
+      APPEND LINES OF res->parallel_proc TO info.
+      APPEND VALUE #( time_stamp = res->time_stamp instance = res->instance_name comment = `Time stamp stored in constructor implementation when instantiating class` ) TO info.
     ENDLOOP.
 
-    out->write( parallel_log ).
+    SORT info BY time_stamp ASCENDING.
+
+    ASSERT 1 = 1.
   ENDMETHOD.
 
   METHOD if_abap_parallel~do.
-    "The following code is executed in parallel.
-    "In the simplified example, some text is added to a string table that
-    "is output later on. It includes a time stamp to compare the different
-    "outputs.
-    DO 3 TIMES.
-      APPEND |This text was added at { utclong_current( ) }| TO info_parallel_proc.
+    DO 1000 TIMES.
+      APPEND VALUE #( time_stamp = utclong_current( ) instance = instance_name comment = |Entry { sy-index } added within "do" method| ) TO parallel_proc.
     ENDDO.
   ENDMETHOD.
 
   METHOD constructor.
-    "The purpose of the implementation in the instance constructor
-    "is to pass the manually added name of the object reference
-    "variable for output purposes.
-    "A data cluster is used to have a self-contained example class
-    "that can be run with F9.
-    TRY.
-        IMPORT str = inst_name FROM DATA BUFFER buffer.
-      CATCH cx_sy_import_format_error INTO DATA(error).
-    ENDTRY.
-
-    IF error IS INITIAL.
-      "The information provided here is used for output purposes.
-      "The name of the object reference variable is
-      "expected to be the only input in the table, as well as
-      "a time stamp to compare with other time stamps that are
-      "output.
-      info = VALUE #( name   = inst_name
-                      tmstmp = utclong_current( ) ).
+    IF text IS SUPPLIED AND text IS NOT INITIAL.
+      instance_name =  text.
     ENDIF.
+    time_stamp = utclong_current( ).
   ENDMETHOD.
 
-  METHOD handle_cluster.
-    "This method is used to prepare the data cluster and
-    "pass the name of the object reference variable that
-    "was added manually via the input parameter 'name'.
-    CLEAR buffer.
-    obj = name.
-    EXPORT str = obj TO DATA BUFFER buffer.
-  ENDMETHOD.
 ENDCLASS.
-``` 
+```
+
+</details> 
 
 </td>
 </tr>

@@ -561,7 +561,7 @@ In the simplest form, methods can have no parameter at all. Apart from that, met
 - If passing by reference is used, a local data object is not created for the actual parameter. Instead, the procedure is given a [reference](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenreference_glosry.htm "Glossary Entry") to the actual parameter during the call and works with the actual parameter itself. 
 - Note that parameters that are input and passed by reference cannot be modified in the procedure. However, the use of a reference is beneficial regarding the performance compared to creating a local data object.
 
-The following example shows a class with a simple method demonstrating the syntax for formal parameter specifications. Complete types are used. 
+The following example (which anticipates aspects described in the following sections, such as calling methods) shows a class with a simple method demonstrating the syntax for formal parameter specifications. Complete types are used. 
 
 ```abap
 CLASS zcl_some_class DEFINITION
@@ -725,7 +725,7 @@ ENDCLASS.
 
 #### Generic Typing of Formal Parameters
 
-Find more information on generic types in the [Data Types and Data Objects](16_Data_Types_and_Objects.md#generic-types) cheat sheet.
+Find more information on generic types in the [Data Types and Data Objects](16_Data_Types_and_Objects.md#generic-types) cheat sheet. The following code snippet anticipates aspects described in the following sections, such as calling methods.
 
 ```abap
 CLASS zcl_some_class DEFINITION
@@ -964,7 +964,7 @@ ENDCLASS.
 - The preferred parameter is implicitly optional, but you should explicitly specify it as `OPTIONAL` or `DEFAULT`, or a warning will be displayed.
 - When you call a method and specify a single actual parameter without specifying the name of the formal parameter in an assignment, the actual parameter is automatically assigned to the preferred parameter.
 
-The following example shows a simple method with input parameters of type `i` (an addition is performed using the actual parameter values), where one parameter is preferred. The `IS SUPPLIED` addition in `COND` statements checks whether parameters are supplied. The final output shows the preferred parameter assigned automatically when the formal parameter is not specified explicitly.
+The following example (which anticipates aspects described in the following sections, such as calling methods) shows a simple method with input parameters of type `i` (an addition is performed using the actual parameter values), where one parameter is preferred. The `IS SUPPLIED` addition in `COND` statements checks whether parameters are supplied. The final output shows the preferred parameter assigned automatically when the formal parameter is not specified explicitly.
 To try the example out, create a demo class named `zcl_some_class` and paste the code into it. After activation, choose *F9* in ADT to execute the class. The example is set up to display output in the console. The example should display the following:
 
 ```
@@ -1065,6 +1065,82 @@ ENDCLASS.
     - Automatically called when a class is
     instantiated and an instance is created.
     - Can have `IMPORTING` parameters and raise exceptions.
+
+The following example (which anticipates aspects described in the following sections, such as creating instances of classes) demonstrates static and instance constructors. To try the example out, create a demo class named `zcl_some_class` and paste the code into it. After activation, choose *F9* in ADT to execute the class. The example is set up to display output in the console.
+
+Notes:  
+- The example class defines the instance and static constructors.  
+- The instance constructor includes an optional importing parameter, which static constructors do not allow. If the parameter were not optional, the class would not run with F9, as it could not pass an actual parameter. In the example, the actual parameter indicates the name of the instance created for output purposes.
+- The example class creates multiple instances.
+- Both instance and static attributes of each instance are accessed and added to an internal table, which is then output.
+- The constructor implementations include:  
+  - Instance constructor:  
+    - Stores the current timestamp in an instance attribute.  
+    - Maintains a call counter for the number of times the instance constructor is called, stored in a static attribute to reflect the count per internal session.  
+    - Stores the manually provided instance name in an instance attribute.  
+  - Static constructor:  
+    - Stores the current timestamp in a static attribute.  
+    - Maintains a call counter for static constructor calls, stored in a static attribute.  
+- The constructors demonstrate:  
+  - The static constructor is called only once, even when multiple class instances are created, leading to a constant `static_timestamp` value and `stat_constr_call_count` value, which remains 1.  
+  - The `instance_timestamp` attribute shows different timestamps for each created instance.  
+  - The static attribute `instance_constr_call_count` increases with each instance. Note that running the class with F9 in ADT also calls the instance and static constructors. Thus, the final `instance_constr_call_count` totals the number of `DO` loop passes plus 1, starting with 2 for `inst1` instead of 1.
+
+
+```abap
+CLASS zcl_some_class DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
+
+  PUBLIC SECTION.
+    INTERFACES if_oo_adt_classrun.
+    METHODS constructor IMPORTING text TYPE string OPTIONAL.
+    CLASS-METHODS class_constructor.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+    DATA instance_timestamp TYPE utclong.
+    CLASS-DATA static_timestamp TYPE utclong.
+    DATA instance_name TYPE string.
+    CLASS-DATA stat_constr_call_count TYPE i.
+    CLASS-DATA instance_constr_call_count TYPE i.
+ENDCLASS.
+
+CLASS zcl_some_class IMPLEMENTATION.
+  METHOD if_oo_adt_classrun~main.
+
+    DATA itab TYPE string_table.
+
+    DO 5 TIMES.
+      DATA(inst) = NEW zcl_some_class( |inst{ sy-index }| ).
+      APPEND |-------------- Instance "{ inst->instance_name }" --------------| TO itab.
+      APPEND |instance_timestamp: { inst->instance_timestamp }| TO itab.
+      APPEND |static_timestamp: { inst->static_timestamp }| TO itab.
+      APPEND |instance_constr_call_count: { inst->instance_constr_call_count }| TO itab.
+      APPEND |stat_constr_call_count: { inst->stat_constr_call_count }| TO itab.
+      APPEND INITIAL LINE TO itab.
+    ENDDO.
+
+    out->write( itab ).
+  ENDMETHOD.
+
+  METHOD class_constructor.
+    static_timestamp = utclong_current( ).
+    stat_constr_call_count += 1.
+  ENDMETHOD.
+
+  METHOD constructor.
+    instance_timestamp = utclong_current( ).
+    instance_constr_call_count += 1.
+
+    IF text IS SUPPLIED AND text IS NOT INITIAL.
+      instance_name = text.
+    ENDIF.
+  ENDMETHOD.
+
+ENDCLASS.
+```
+
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
