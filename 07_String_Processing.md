@@ -45,7 +45,7 @@
     - [Comparison Operators for Character-Like Data Types in a Nutshell](#comparison-operators-for-character-like-data-types-in-a-nutshell)
     - [Classes for String Processing](#classes-for-string-processing)
     - [Byte String Processing](#byte-string-processing)
-  - [Determining the Length of Xstrings](#determining-the-length-of-xstrings)
+      - [Determining the Length of xstrings](#determining-the-length-of-xstrings)
       - [Character String and Byte String Processing with ABAP Statements](#character-string-and-byte-string-processing-with-abap-statements)
       - [SET BIT and GET BIT Statements](#set-bit-and-get-bit-statements)
   - [Executable Example](#executable-example)
@@ -2315,7 +2315,7 @@ As also covered in the [Released ABAP Classes](22_Released_ABAP_Classes.md) chea
 
 ### Byte String Processing
 
-## Determining the Length of Xstrings
+#### Determining the Length of xstrings
 
 The built-in function [`xstrlen`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendescriptive_functions_binary.htm) returns the number of bytes of a byte-like argument.
 
@@ -2330,6 +2330,8 @@ DATA(len_str) = strlen( CONV string( conv_xstring ) ).
 "11
 DATA(len_xstr) = xstrlen( conv_xstring ).
 ```
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 #### Character String and Byte String Processing with ABAP Statements
 

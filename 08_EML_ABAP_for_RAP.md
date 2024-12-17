@@ -29,7 +29,7 @@
       - [ABAP EML READ Statement](#abap-eml-read-statement)
       - [Read-by-Association Operation](#read-by-association-operation)
       - [Dynamic ABAP EML READ Statements](#dynamic-abap-eml-read-statements)
-    - [COMMIT ENTITIES Statements: Persisting to the Database](#commit-entities-statements-persisting-to-the-database)
+    - [COMMIT ENTITIES: Persisting to the Database](#commit-entities-persisting-to-the-database)
     - [GET PERMISSIONS: Retrieving Information about RAP BO Permissions](#get-permissions-retrieving-information-about-rap-bo-permissions)
     - [Raising RAP Business Events](#raising-rap-business-events)
     - [Additions to ABAP EML Statements in ABAP Behavior Pools](#additions-to-abap-eml-statements-in-abap-behavior-pools)
@@ -1764,7 +1764,7 @@ READ ENTITIES OPERATIONS op_tab.
 ```
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-### COMMIT ENTITIES Statements: Persisting to the Database
+### COMMIT ENTITIES: Persisting to the Database
 
 -   A [`COMMIT
     ENTITIES`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapcommit_entities.htm)
@@ -2005,18 +2005,11 @@ ENDDO.
 
 ### GET PERMISSIONS: Retrieving Information about RAP BO Permissions
 
-- Permissions of RAP BOs cover multiple aspects such as global and instance authorization, or global, instance and static feature control
-- You can retrieve information about the permissions using ABAP EML `GET PERMISSIONS` statements.
-- Find more information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABAPGET_PERMISSIONS.html) and in the subtopics.
-- As is the case with other ABAP EML statements, multiple (optional) additions and syntax variants are available for `GET PERMISSIONS`. 
-- The example code snippet uses the short form of `GET PERMISSIONS`. It specifies an [only clause](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABAPGET_PERMISSIONS_ONLY_CLAUSE.html). The `ONLY GLOBAL` addition means that the result of the information retrieval includes only the global authorization, global and static feature control. 
-
 - RAP BO permissions cover aspects such as global and instance authorization, or global, instance, and static feature control.
-- Use ABAP EML `GET PERMISSIONS` statements to retrieve information about these permissions.
-- Find more information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABAPGET_PERMISSIONS.html) and in the related subtopics.
-- Like other ABAP EML statements, `GET PERMISSIONS` offers multiple (optional) additions and syntax variants.
+- Using ABAP EML `GET PERMISSIONS` statements, you can retrieve information about these permissions.
+- Like other ABAP EML statements, `GET PERMISSIONS` offers multiple (optional) additions and syntax variants. - Find more information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABAPGET_PERMISSIONS.html) and in the subtopics.
 - The example code snippet uses the short form of `GET PERMISSIONS`, specifying an [only clause](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABAPGET_PERMISSIONS_ONLY_CLAUSE.html). The `ONLY GLOBAL` addition ensures the result includes only global authorization, global and static feature control.
-
+- Unlike many other ABAP EML statements, the `GET PERMISSIONS` example statement works with a data object having a structured BDEF derived type (after `REQUEST`), not a tabular BDEF derived type.
 
 ```abap
 DATA request TYPE STRUCTURE FOR PERMISSIONS REQUEST zdemo_abap_rap_ro_m.
