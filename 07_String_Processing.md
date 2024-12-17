@@ -13,6 +13,7 @@
     - [Formatting Options in String Templates](#formatting-options-in-string-templates)
   - [Determining the Length of Strings](#determining-the-length-of-strings)
   - [Concatenating Strings](#concatenating-strings)
+    - [Literal Operator](#literal-operator)
   - [Splitting Strings](#splitting-strings)
   - [Modifying Strings](#modifying-strings)
     - [Transforming to Lowercase and Uppercase](#transforming-to-lowercase-and-uppercase)
@@ -44,6 +45,7 @@
     - [Comparison Operators for Character-Like Data Types in a Nutshell](#comparison-operators-for-character-like-data-types-in-a-nutshell)
     - [Classes for String Processing](#classes-for-string-processing)
     - [Byte String Processing](#byte-string-processing)
+  - [Determining the Length of Xstrings](#determining-the-length-of-xstrings)
       - [Character String and Byte String Processing with ABAP Statements](#character-string-and-byte-string-processing-with-abap-statements)
       - [SET BIT and GET BIT Statements](#set-bit-and-get-bit-statements)
   - [Executable Example](#executable-example)
@@ -173,7 +175,7 @@ DATA char_no_type_len.
 ## Assigning Values
 
 - When you declare character-like data objects, you can specify start values directly with the `VALUE` addition, e.g. `DATA chars TYPE c LENGTH 3 VALUE 'abc'.`. 
-- You can do value assignments to data objects using the the [assignment operator](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenassignment_operator_glosry.htm "Glossary Entry") `=`.
+- Various ABAP statements assign values. You can do value assignments to data objects using the [assignment operator](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenassignment_operator_glosry.htm "Glossary Entry") `=`.
 - As mentioned above, you can declare character-like data objects inline using the operators `DATA` or `FINAL`. 
 - You can use the operators at many [write positions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenwrite_position_glosry.htm "Glossary Entry"). 
 - Unlike the `VALUE` addition of the declaration statements, inline declarations allow you to declare variables for the results of expressions or at other positions where character strings are returned.
@@ -247,13 +249,6 @@ str5 = str3 && ` ` && str4 && `!`. "X 1-!
 "of an integer value for str4 that is of type string.
 ```
 
-Note that there is also the [literal
-operator](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenliteral_operator_glosry.htm "Glossary Entry")
-`&` that joins [text string
-literals](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentext_string_literal_glosry.htm "Glossary Entry"),
-however, with [significant
-differences](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenliteral_operator.htm)
-to `&&`.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
@@ -559,6 +554,57 @@ s1 = concat_lines_of( table = itab sep = ` ` ). "With separator
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
+### Literal Operator 
+
+The [literal operator](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenliteral_operator_glosry.htm "Glossary Entry") `&` combines [text string literals](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentext_string_literal_glosry.htm "Glossary Entry"), however, with [significant differences](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenliteral_operator.htm) to `&&`, which the code snippet demonstrates.
+
+
+```abap
+"Literal operator
+"Used to combine character literals of the same type into a single character literal
+DATA(abap) = 'AB' & 'AP'.
+
+"Note an upper limit of 255 characters
+"If you remove the comment, which results in a combined character literal
+"of 256 characters, a syntax error is displayed.
+DATA(c_limit_255) =
+'##################################################' & "50 x #
+'##################################################' &
+'##################################################' &
+'##################################################' &
+'##################################################' &
+'#####'
+"& '#'
+.
+
+"Trailing blanks are respected
+DATA(char_with_blanks) = 'AB' & 'AP' & '           '.
+
+"Using RTTI to get type information, retrieving the output length of the combined literal
+"15
+DATA(output_length) = CAST cl_abap_elemdescr( cl_abap_typedescr=>describe_by_data( char_with_blanks ) )->output_length.
+
+DATA(ch1) = 'AB'.
+DATA(ch2) = 'AP'.
+"Not possible as the operands are not character literals but data objects
+"DATA(combined_ch) = ch1 & ch2.
+
+"Not to be confused with the concatenation operator && to concatenate
+"character-like operands; at runtime, any number of character-like operands
+"are possible
+"The result in the example is of type string.
+DATA(combined_ch_with_conc_op) = ch1 && ch2.
+
+"Concatenation similar to the example above
+"As the result is of type string using the concatenation operator, the
+"trailing blanks are not respected.
+DATA(char_with_blanks_conc_op) = 'AB' && 'AP' && '           '.
+"4
+DATA(len1) = strlen( char_with_blanks_conc_op ).
+"4
+DATA(len2) = numofchar( char_with_blanks_conc_op ).
+``` 
+
 ## Splitting Strings
 
 - You can use
@@ -596,6 +642,27 @@ SPLIT s1 AT ',' INTO TABLE itab. "Strings are added to itab in individual lines 
 "String function segment returning the occurrence of a segment
 "index parameter: number of segment
 s2 = segment( val = s1 index = 2 sep = `,` ). "world
+
+"SPLIT statement specifying a colon after INTO
+DATA(some_text) = `Lorem ipsum dolor sit amet, consectetur adipiscing elit`.
+
+SPLIT some_text AT ` ` INTO: DATA(str1) DATA(str2) DATA(str3) DATA(str4), TABLE DATA(tab).
+
+"Result
+"str1: Lorem
+"str2: ipsum
+"str3: dolor
+"str4: sit amet, consectetur adipiscing elit
+
+"tab:
+*Lorem        
+*ipsum        
+*dolor        
+*sit          
+*amet,        
+*consectetur  
+*adipiscing   
+*elit
 ```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
@@ -1840,7 +1907,7 @@ REPLACE ALL OCCURRENCES OF PCRE `(<p>)(.|\n)*?(<\/p>)` IN html_b WITH `$1Hi$3`.
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## More String Functions
-As also covered in the [Built-In Functions](24_Builtin_Functions.md), the following sections show more string functions available.
+As also covered in the [Built-In Functions](24_Builtin_Functions.md) cheat sheet, the following sections show more string functions available.
 
 ### Checking the Similarity of Strings
 
@@ -2247,6 +2314,22 @@ As also covered in the [Released ABAP Classes](22_Released_ABAP_Classes.md) chea
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ### Byte String Processing
+
+## Determining the Length of Xstrings
+
+The built-in function [`xstrlen`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendescriptive_functions_binary.htm) returns the number of bytes of a byte-like argument.
+
+``` abap
+DATA(hi) = `Hello world`.
+
+"48656C6C6F20776F726C64
+DATA(conv_xstring) = cl_abap_conv_codepage=>create_out( codepage = `UTF-8` )->convert( hi ).
+"22
+DATA(len_str) = strlen( CONV string( conv_xstring ) ).
+
+"11
+DATA(len_xstr) = xstrlen( conv_xstring ).
+```
 
 #### Character String and Byte String Processing with ABAP Statements
 

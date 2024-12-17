@@ -18,11 +18,21 @@
       - [ABAP SQL Statements with BDEF Derived Types](#abap-sql-statements-with-bdef-derived-types)
   - [ABAP EML Syntax](#abap-eml-syntax)
     - [ABAP EML Syntax for Modifying Operations](#abap-eml-syntax-for-modifying-operations)
+      - [Create Operation Using the Short Form of ABAP EML MODIFY Statements](#create-operation-using-the-short-form-of-abap-eml-modify-statements)
+      - [Create Operation Using the Long Form of ABAP EML MODIFY Statements](#create-operation-using-the-long-form-of-abap-eml-modify-statements)
+      - [Excursion: Specifying %control Component Values in the Short Form of VALUE Constructor Expressions](#excursion-specifying-control-component-values-in-the-short-form-of-value-constructor-expressions)
+      - [Combining Multiple Operations in One ABAP EML Request](#combining-multiple-operations-in-one-abap-eml-request)
+      - [Dynamic Form of ABAP EML MODIFY Statements](#dynamic-form-of-abap-eml-modify-statements)
+      - [Executing Actions](#executing-actions)
+      - [Creating Instances for the Root and Child Entity (Deep Create)](#creating-instances-for-the-root-and-child-entity-deep-create)
     - [ABAP EML Syntax for Reading Operations](#abap-eml-syntax-for-reading-operations)
-    - [Dynamic Forms of ABAP EML Statements](#dynamic-forms-of-abap-eml-statements)
-    - [Persisting to the Database](#persisting-to-the-database)
+      - [ABAP EML READ Statement](#abap-eml-read-statement)
+      - [Read-by-Association Operation](#read-by-association-operation)
+      - [Dynamic ABAP EML READ Statements](#dynamic-abap-eml-read-statements)
+    - [COMMIT ENTITIES Statements: Persisting to the Database](#commit-entities-statements-persisting-to-the-database)
+    - [GET PERMISSIONS: Retrieving Information about RAP BO Permissions](#get-permissions-retrieving-information-about-rap-bo-permissions)
     - [Raising RAP Business Events](#raising-rap-business-events)
-    - [Additions to EML Statements in ABAP Behavior Pools](#additions-to-eml-statements-in-abap-behavior-pools)
+    - [Additions to ABAP EML Statements in ABAP Behavior Pools](#additions-to-abap-eml-statements-in-abap-behavior-pools)
   - [RAP Excursions](#rap-excursions)
     - [Using Keys and Identifying RAP BO Instances in a Nutshell](#using-keys-and-identifying-rap-bo-instances-in-a-nutshell)
     - [RAP Concepts](#rap-concepts)
@@ -1197,7 +1207,16 @@ of EML `MODIFY` statements.
 > ...
 > ```
 
-Create operation for creating new instances of a RAP BO entity:
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+#### Create Operation Using the Short Form of ABAP EML MODIFY Statements
+
+- The following code snippet demonstrates the creation of new instances of a RAP BO entity.
+- The [short form](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABAPMODIFY_ENTITY_SHORT.html) of the `MODIFY` statement is used.
+- Note that the statement has multiple (optional) additions.
+- The statement uses the [`FIELDS ( ... ) WITH`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapmodify_entity_entities_fields.htm) addition. See more details in the documentation and below.
+- The statements, as is also valid for the following sections, can also use data objects declared and created inline.
+
 
 ``` abap
 "Declaration of data objects using BDEF derived types
@@ -1235,6 +1254,8 @@ MODIFY ENTITY root_ent
   REPORTED reported_resp.     "messages
 ```
 
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
 > **💡 Note**<br>
 > -   Addition [`FIELDS ( ... ) WITH`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapmodify_entity_entities_fields.htm):
     This field selection option specifies which fields are to be
@@ -1262,7 +1283,14 @@ MODIFY ENTITY root_ent
 >-   `%cid` should be provided even if you are not interested in
     it and subsequent operations do not require the reference.
 
-Long form of an EML `MODIFY` statement:
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+#### Create Operation Using the Long Form of ABAP EML MODIFY Statements
+
+- The example demonstrates the long form of an ABAP EML `MODIFY` statement.
+- The example statement uses the [`FROM`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapmodify_entity_entities_fields.htm) addition instead of `FIELDS ( ... ) WITH`. See more details in the documentation and below.
+- 
+
 ``` abap
 MODIFY ENTITIES OF root_ent      "full name of root entity
   ENTITY root                    "root or child entity (alias name if available)
@@ -1321,17 +1349,16 @@ MODIFY ENTITIES OF root_ent
     for other EML statements.
 >-  The [`SET FIELDS WITH`](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapmodify_entity_entities_fields.htm#!ABAP_VARIANT_4@4@) addition is available as another field specification option. However, it has limitations that you should be aware of. It can cause syntax warnings. Check the documentation. It is recommended that you use `FIELDS ... WITH` and `FROM`.
 
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
-Excursion: Specifying `%control` component values in the short form of `VALUE` constructor expressions
+#### Excursion: Specifying %control Component Values in the Short Form of VALUE Constructor Expressions
+
+- The following EML statement creates RAP BO instances. The BDEF derived type is created inline. 
+- With the `FROM` addition, the `%control` values must be specified explicitly. 
+- There is also a short form of `VALUE` constructor expressions. In this case, you can provide the corresponding values for all table lines  outside of the inner parentheses, instead of individually specifying the values for each instance within the parentheses. 
+- The corresponding `%control` component value is then assigned for all of the following table lines.
 
 ```abap
-"The following EML statement creates RAP BO instances. The BDEF derived
-"type is created inline. With the FROM addition, the %control values
-"must be specified explicitly. You can provide the corresponding values
-"for all table lines using the short form, i.e. outside of the inner
-"parentheses, instead of individually specifying the values for each 
-"instance within the parentheses. In this case, the corresponding %control
-"component value is assigned for all of the following table lines.
 MODIFY ENTITIES OF zdemo_abap_rap_ro_m
     ENTITY root
     CREATE FROM VALUE #(
@@ -1357,22 +1384,21 @@ MODIFY ENTITIES OF zdemo_abap_rap_ro_m
     REPORTED DATA(r).
 ```
 
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
-The following EML statement combines multiple operations in one EML
-request. It demonstrates the use of `%cid` and
-`%cid_ref`. First, two instances are created by specifying
-`%cid`. An update operation in the same request only specifies a
-certain field within the parentheses of the `FIELDS ( ... )
-WITH` addition which denotes that only this particular field
-should be updated. The other field values remain unchanged. The
-reference to the instance is made via `%cid_ref`. Consider an
-EML request in which no instance to refer to using `%cid_ref`
-exists, e. g. for an update operation. You can also make the reference
-using the unique key. A delete operation is available in the same
-request, too. `DELETE` can only be followed by the addition
-`FROM`. In contrast to other derived types, the derived type
-that is expected here (`TYPE TABLE FOR DELETE`) only has
-`%cid_ref` and the key as components.
+#### Combining Multiple Operations in One ABAP EML Request
+
+The following EML statement combines multiple operations in one EML request. It demonstrates the use of the BDEF derived type components `%cid` and `%cid_ref`. 
+
+- First, two instances are created by specifying `%cid`. 
+- An update operation in the same request only specifies a certain field within the parentheses of the `FIELDS ( ... ) WITH` addition which denotes that only this particular field should be updated. 
+- The other field values remain unchanged. 
+- The reference to the instance is made via `%cid_ref`. 
+- Consider an EML request in which no instance to refer to using `%cid_ref` exists, e. g. for an update operation. You can also make the reference using the unique key. 
+- A delete operation is available in the same request, too. 
+- `DELETE` can only be followed by the addition `FROM`. 
+- In contrast to other derived types, the derived type that is expected here (`TYPE TABLE FOR DELETE`) only has `%cid_ref` and the key as components.
+
 ``` abap
 MODIFY ENTITIES OF root_ent
   ENTITY root
@@ -1391,22 +1417,168 @@ MODIFY ENTITIES OF root_ent
 ...
 ```
 
-EML statement including the execution of an action:
-``` abap
-MODIFY ENTITIES OF root_ent
-  ENTITY root
-  EXECUTE some_action
-  FROM action_tab
-  RESULT DATA(action_result) "Assumption: The action is defined with a result parameter.
-    ...
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+#### Dynamic Form of ABAP EML MODIFY Statements
+
+- The code snippet demonstrate the dynamic form `MODIFY ENTITIES OPERATIONS ...`.
+- Using the statement, you can execute multiple modify operations for multiple RAP BOs in a single statement.
+- Find more information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABAPMODIFY_ENTITIES_OPERATIONS_DYN.html).
+
+```abap
+DATA: op_tab           TYPE abp_behv_changes_tab,
+        create_root_tab  TYPE TABLE FOR CREATE zdemo_abap_rap_ro_m,
+        update_root_tab  TYPE TABLE FOR UPDATE zdemo_abap_rap_ro_m,
+        delete_root_tab  TYPE TABLE FOR UPDATE zdemo_abap_rap_ro_m,
+        cba              TYPE TABLE FOR CREATE zdemo_abap_rap_ro_m\_child,
+        update_child_tab TYPE TABLE FOR UPDATE zdemo_abap_rap_ch_m,
+        delete_child_tab TYPE TABLE FOR DELETE zdemo_abap_rap_ch_m.
+
+create_root_tab = VALUE #(
+            ( %cid = 'cid1'
+                key_field = 5
+                %control-key_field = if_abap_behv=>mk-on
+                field1 = 'a'
+                %control-field1 = if_abap_behv=>mk-on
+                field2 = 'b'
+                %control-field2 = if_abap_behv=>mk-on )
+            ( %cid = 'cid2'
+                key_field = 6
+                %control-key_field = if_abap_behv=>mk-on
+                field1 = 'd'
+                %control-field1 = if_abap_behv=>mk-on
+                field2 = 'd'
+                %control-field2 = if_abap_behv=>mk-on )
+            ( %cid = 'cid3'
+                key_field = 7
+                %control-key_field = if_abap_behv=>mk-on
+                field1 = 'e'
+                %control-field1 = if_abap_behv=>mk-on
+                field2 = 'f'
+                %control-field2 = if_abap_behv=>mk-on ) ).
+
+update_root_tab = VALUE #(
+            ( %cid_ref = 'cid2'
+            field1 = 'g'
+            %control-field1 = if_abap_behv=>mk-on
+            field2 = 'h'
+            %control-field2 = if_abap_behv=>mk-on ) ).
+
+cba = VALUE #(
+            ( %cid_ref = 'cid1'
+                %target = VALUE #( (
+                %cid = 'cid_cba1'
+                key_ch = 10
+                %control-key_ch = if_abap_behv=>mk-on
+                field_ch1 = 'i'
+                %control-field_ch1 = if_abap_behv=>mk-on
+                field_ch2 = 1
+                %control-field_ch2 = if_abap_behv=>mk-on
+            ) ) )
+            ( %cid_ref = 'cid2'
+                %target = VALUE #( (
+                %cid = 'cid_cba2'
+                key_ch = 20
+                %control-key_ch = if_abap_behv=>mk-on
+                field_ch1 = 'j'
+                %control-field_ch1 = if_abap_behv=>mk-on
+                field_ch2 = 2
+                %control-field_ch2 = if_abap_behv=>mk-on
+            ) ) )
+            ( %cid_ref = 'cid3'
+                %target = VALUE #( (
+                %cid = 'cid_cba3'
+                key_ch = 30
+                %control-key_ch = if_abap_behv=>mk-on
+                field_ch1 = 'k'
+                %control-field_ch1 = if_abap_behv=>mk-on
+                field_ch2 = 3
+                %control-field_ch2 = if_abap_behv=>mk-on
+            ) ) ) ).
+
+update_child_tab = VALUE #(
+            ( key_field = 6
+                field_ch1 = 'l'
+                %control-field_ch1 = if_abap_behv=>mk-on
+                field_ch2 = 4
+                %control-field_ch2 = if_abap_behv=>mk-on ) ).
+
+delete_root_tab = VALUE #( ( key_field = 7 ) ).
+
+delete_child_tab = VALUE #( ( key_field = 7 ) ).
+
+op_tab = VALUE #(
+        ( op = if_abap_behv=>op-m-create
+            entity_name = 'ZDEMO_ABAP_RAP_RO_M'
+            instances   = REF #( create_root_tab ) )
+        ( op = if_abap_behv=>op-m-update
+            entity_name = 'ZDEMO_ABAP_RAP_RO_M'
+            instances   = REF #( update_root_tab ) )
+        ( op = if_abap_behv=>op-m-delete
+            entity_name = 'ZDEMO_ABAP_RAP_RO_M'
+            instances   = REF #( delete_root_tab ) )
+        ( op = if_abap_behv=>op-m-create_ba
+            entity_name = 'ZDEMO_ABAP_RAP_RO_M'
+            sub_name    = '_CHILD'
+            instances   = REF #( cba ) )
+        ( op = if_abap_behv=>op-m-update
+            entity_name = 'ZDEMO_ABAP_RAP_CH_M'
+            instances   = REF #( update_child_tab ) )
+        ( op = if_abap_behv=>op-m-delete
+            entity_name = 'ZDEMO_ABAP_RAP_CH_M'
+            instances   = REF #( delete_child_tab ) )
+        ).
+
+MODIFY ENTITIES OPERATIONS op_tab
+    MAPPED   DATA(m)
+    FAILED   DATA(f)
+    REPORTED DATA(r).
 ```
 
-The following code snippet shows a deep create. First, an instance is
-created for the root entity. Then, in the same request, instances are
-created for the child entity based on the root instance. In the example
-below, the assumption is that a composition is specified in the root
-view entity like `composition [1..*] of root_ent as _child` and `key_field` and
-`key_field_child` are the keys of the child view entity. The structured component [`%target`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapderived_types_target.htm) enters the picture here which contains the target's primary key and data fields.
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+#### Executing Actions
+
+- A RAP action is a [non-standard operation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABENRAP_NSTANDARD_OPERATION_GLOSRY.html) that modifies the state of a RAP BO entity instance.
+- Various flavors of actions are available. Find more information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABENBDL_ACTION.html).
+- To execute actions, use the syntax `MODIFY ... EXECUTE ...`.
+
+``` abap
+"Example snippet taken from the executable example
+"The long form of the MODIFY statement is used. It includes
+"a create operation and executes an action 
+MODIFY ENTITIES OF zdemo_abap_rap_ro_m
+    ENTITY root
+    CREATE FIELDS ( key_field field1 field2 field3 field4 )
+        WITH VALUE #(
+        ( %cid = 'cid_x2'
+          key_field = 7
+          field1    = 'ooo'
+          field2    = 'ppp'
+          field3    = 70
+          field4    = 71 ) )
+    EXECUTE multiply_by_2 FROM VALUE #(
+        "Executing action via %cid_ref
+        ( %cid_ref = 'cid_x2' )
+        "Executing action via key
+        ( key_field  =  1  )
+        ( key_field  =  2  ) ) 
+    MAPPED DATA(mapped)
+    FAILED DATA(failed)
+    REPORTED DATA(reported).
+```
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+#### Creating Instances for the Root and Child Entity (Deep Create)
+
+The following code snippet shows a deep create. 
+
+- First, an instance is created for the root entity. 
+- Then, in the same request, instances are created for the child entity based on the root instance. 
+- In the example below, the assumption is that a composition is specified in the root view entity like `composition [1..*] of root_ent as _child` and `key_field` and `key_field_child` are the keys of the child view entity. 
+- The structured component [`%target`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapderived_types_target.htm) enters the picture here which contains the target's primary key and data fields.
+
 ``` abap
 MODIFY ENTITIES OF root_ent
   ENTITY root_ent
@@ -1442,14 +1614,16 @@ MODIFY ENTITIES OF root_ent
     entity listed in a BDEF, i. e. there is no extra definition in the
     BDEF in contrast to, for example, create or update.
 
-The following code snippet shows the long form of the EML
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+#### ABAP EML READ Statement
+
+- The following code snippet shows the long form of the EML
 [`READ`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapread_entity_entities_op.htm)
-statement for reading instances from the root entity. In `READ`
-statements, the additions `FIELDS ( ... ) WITH` and
-`FROM` can also be used to specify the fields that you intend to
-read. Here, the addition [`ALL FIELDS
-WITH`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapread_entity_entities_fields.htm)
-is available for reading all field values.
+statement for reading instances from the root entity. 
+- In `READ` statements, the additions `FIELDS ( ... ) WITH` and `FROM` can also be used to specify the fields that you intend to
+read. Here, the addition [`ALL FIELDS WITH`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapread_entity_entities_fields.htm) is available for reading all field values.
+- There are also short and dynamic forms of the statement.
 
 ``` abap
 READ ENTITIES OF root_ent
@@ -1462,11 +1636,14 @@ READ ENTITIES OF root_ent
   REPORTED DATA(r).
 ```
 
-Read-by-association operations include the optional addition
-[`LINK`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapread_entity_entities_op&sap-language=EN&sap-client=000&version=X&anchor=!ABAP_ONE_ADD@1@&tree=X)
-with which you can retrieve the keys of the source and target (i. e. the
-associated entity). The by-association operations work reciprocally, i.
-e. you can, for example, read a child instance via the parent and a
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+#### Read-by-Association Operation
+
+- Read-by-association operations include the optional addition
+[`LINK`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapread_entity_entities_op&sap-language=EN&sap-client=000&version=X&anchor=!ABAP_ONE_ADD@1@&tree=X) with which you can retrieve the keys of the source and target (i. e. the
+associated entity). 
+- The by-association operations work reciprocally, i. e. you can, for example, read a child instance via the parent and a
 parent instance via the child, too.
 
 ``` abap
@@ -1490,7 +1667,7 @@ READ ENTITIES OF root_ent
 ```
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-### Dynamic Forms of ABAP EML Statements
+#### Dynamic ABAP EML READ Statements
 
 In addition to the short and long forms described above, various ABAP EML statements also have dynamic forms. 
 Taking EML read operations as an example, the following code snippet shows a dynamic EML [`READ ENTITIES`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapread_entities_operations.htm) statement. The relevant syntax element is the `OPERATIONS` addition.
@@ -1587,7 +1764,7 @@ READ ENTITIES OPERATIONS op_tab.
 ```
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-### Persisting to the Database
+### COMMIT ENTITIES Statements: Persisting to the Database
 
 -   A [`COMMIT
     ENTITIES`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapcommit_entities.htm)
@@ -1824,8 +2001,42 @@ ENDDO.
 
 </table>
 
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+### GET PERMISSIONS: Retrieving Information about RAP BO Permissions
+
+- Permissions of RAP BOs cover multiple aspects such as global and instance authorization, or global, instance and static feature control
+- You can retrieve information about the permissions using ABAP EML `GET PERMISSIONS` statements.
+- Find more information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABAPGET_PERMISSIONS.html) and in the subtopics.
+- As is the case with other ABAP EML statements, multiple (optional) additions and syntax variants are available for `GET PERMISSIONS`. 
+- The example code snippet uses the short form of `GET PERMISSIONS`. It specifies an [only clause](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABAPGET_PERMISSIONS_ONLY_CLAUSE.html). The `ONLY GLOBAL` addition means that the result of the information retrieval includes only the global authorization, global and static feature control. 
+
+- RAP BO permissions cover aspects such as global and instance authorization, or global, instance, and static feature control.
+- Use ABAP EML `GET PERMISSIONS` statements to retrieve information about these permissions.
+- Find more information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABAPGET_PERMISSIONS.html) and in the related subtopics.
+- Like other ABAP EML statements, `GET PERMISSIONS` offers multiple (optional) additions and syntax variants.
+- The example code snippet uses the short form of `GET PERMISSIONS`, specifying an [only clause](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABAPGET_PERMISSIONS_ONLY_CLAUSE.html). The `ONLY GLOBAL` addition ensures the result includes only global authorization, global and static feature control.
 
 
+```abap
+DATA request TYPE STRUCTURE FOR PERMISSIONS REQUEST zdemo_abap_rap_ro_m.
+
+request = VALUE #(
+    %create          = if_abap_behv=>mk-on
+    %update          = if_abap_behv=>mk-on
+    %delete          = if_abap_behv=>mk-on
+    %field-key_field = if_abap_behv=>mk-on
+    %field-field1    = if_abap_behv=>mk-on
+    %field-field2    = if_abap_behv=>mk-on
+    %field-field3    = if_abap_behv=>mk-on
+    %field-field4    = if_abap_behv=>mk-on ).
+
+GET PERMISSIONS ONLY GLOBAL ENTITY zdemo_abap_rap_ro_m
+    REQUEST request
+    RESULT DATA(result)
+    FAILED DATA(failed)
+    REPORTED DATA(reported).
+```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
@@ -1892,7 +2103,7 @@ ENDCLASS.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-### Additions to EML Statements in ABAP Behavior Pools
+### Additions to ABAP EML Statements in ABAP Behavior Pools
 
 -   There are a [special additions when using EML in behavior
     pools](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abeneml_in_abp.htm).

@@ -36,6 +36,8 @@
   - [Zip Files](#zip-files)
   - [ABAP Unit](#abap-unit)
   - [Units of Measurement](#units-of-measurement)
+  - [Programmatic ABAP Test Cockpit (ATC) Check](#programmatic-abap-test-cockpit-atc-check)
+  - [Handling Number Ranges](#handling-number-ranges)
 
 
 This ABAP cheat sheet contains a selection of [released](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenreleased_api_glosry.htm) ABAP classes that are available in [ABAP for Cloud Development](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_for_cloud_dev_glosry.htm). It serves as a quick introduction, along with code snippets to explore the functionality in action.
@@ -823,7 +825,7 @@ DATA(str) = xco_cp=>xstring( xstr )->as_string( xco_cp_character=>code_page->utf
 <tr>
 <td> <code>XCO_CP</code> </td>
 <td> 
-Processing Base64 representations of raw binary data
+Base64 decoding/encoding using XCO
 <br><br>
 
 ``` abap
@@ -852,6 +854,49 @@ DATA(conv_string_xco) = xco_cp=>xstring( base642raw
 
 </td>
 </tr>
+
+<tr>
+<td> <code>CL_WEB_HTTP_UTILITY</code> </td>
+<td> 
+Endcoding strings/xstrings in Base64 and decoding Base64-encoded strings/xstrings
+<br><br>
+
+``` abap
+DATA(hi) = `Hello world`.
+
+"Encoding a string in BASE64
+"Result is of type string
+"SGVsbG8gd29ybGQ=
+DATA(encode_base64_str) = cl_web_http_utility=>encode_base64( unencoded = hi ).
+
+"Decoding a base64-encoded String
+"Result is of type string
+"Hello world
+DATA(decode_base64_str) = cl_web_http_utility=>decode_base64( encoded = encode_base64_str ).
+
+**********************************************************************
+
+"string -> xstring
+"48656C6C6F20776F726C64
+DATA(conv_xstring) = cl_abap_conv_codepage=>create_out( codepage = `UTF-8` )->convert( hi ).
+
+"Encoding an xstring in BASE64
+"Result is of type string
+"SGVsbG8gd29ybGQ=
+DATA(encode_base64_xstr) = cl_web_http_utility=>encode_x_base64( unencoded = conv_xstring ).
+
+"Decoding a base64-encoded xstring
+"48656C6C6F20776F726C64
+DATA(decode_base64_xstr) = cl_web_http_utility=>decode_x_base64( encoded = encode_base64_xstr ).
+
+"xstring -> string
+"Hello world
+DATA(conv_string) = cl_abap_conv_codepage=>create_in( )->convert( decode_base64_xstr ).
+``` 
+
+</td>
+</tr>
+
 </table>
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
@@ -4131,3 +4176,153 @@ SELECT *
 </table>
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
+
+## Programmatic ABAP Test Cockpit (ATC) Check
+
+<table>
+<tr>
+<td> Class </td> <td> Details/Code Snippet </td>
+</tr>
+<tr>
+<td> <code>CL_SATC_API</code> </td>
+<td>
+
+- The class provides access to the ABAP Test Cockpit (ATC) API.
+- Find more information about checking the quality of ABAP Code with ATC [here](https://help.sap.com/docs/ABAP_Cloud/bbcee501b99848bdadecd4e290db3ae4/4ec5711c6e391014adc9fffe4e204223.html?locale=en-US).
+- The example code snippet ...
+  - explores the API by creating a factory object, creating and starting an ATC run, and checking the information returned. 
+  - includes some statements that are found by ATC runs such as a deprecated statement, and a literal in the code. 
+  - includes check variants. You may want to comment out the one, and comment in the other. For example, find check variants as follows: Right-click in the code -> Run as -> 3 ABAP Text Cockpit With... -> Choose Browse in the pop-up -> Insert `*` for *Select your check variant* and find available check variants in the system. You can also create your own ATC check variant, for example, by right-clicking your package -> New -> Other ABAP Repository Object -> Filter for *ATC Check Variant*, select it and proceed with the wizard. 
+ 
+<br>
+
+```abap
+CLASS zcl_some_class DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
+
+  PUBLIC SECTION.
+    INTERFACES if_oo_adt_classrun.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+ENDCLASS.
+
+CLASS zcl_some_class IMPLEMENTATION.
+  METHOD if_oo_adt_classrun~main.
+
+    DATA num TYPE i VALUE 1.
+    GET REFERENCE OF num INTO DATA(ref).
+
+    out->write( `Some text` ).
+
+**********************************************************************
+
+    TRY.
+        "Creating a factory object
+        DATA(atc) = cl_satc_api=>create_api_factory( ).
+        "Creating an ATC run and starting it
+        "The ATC run result is stored in a variable.
+        DATA(atc_result) = atc->create_run(
+        atc->create_run_configuration( atc->create_object_set_for_list( VALUE #( ( obj_type = 'CLAS' obj_name = 'ZCL_SOME_CLASS' ) ) )
+        )->set_check_variant( atc->get_check_variant_by_name(
+        'ABAP_CLOUD_READINESS'
+        "'ABAP_CLOUD_DEVELOPMENT_DEFAULT'
+        ) )
+        )->run( ).
+      CATCH cx_satc_api INTO DATA(exc).
+        out->write( |Error: { exc->get_text( ) }| ).
+        RETURN.
+    ENDTRY.
+    "Returning the result ID
+    DATA(result_id) = atc_result->get_result_id( ).
+    out->write( |Result ID: { result_id }| ).
+
+    "Returning all information of the findings reported during the run
+    DATA(findings) = atc_result->get_findings_with_text( ).
+    IF findings IS INITIAL.
+      out->write( `No findings` ).
+    ELSE.
+      out->write( findings ).
+    ENDIF.
+
+  ENDMETHOD.
+
+ENDCLASS.
+``` 
+
+</td>
+</tr>
+
+
+</table>
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+
+## Handling Number Ranges
+
+<table>
+<tr>
+<td> Class </td> <td> Details/Code Snippet </td>
+</tr>
+<tr>
+<td> <code>CL_NUMBERRANGE_OBJECTS</code><br><code>CL_NUMBERRANGE_INTERVALS</code><br><code>CL_NUMBERRANGE_RUNTIME</code> </td>
+<td>
+
+- Find more information in the SAP Help Portal, section [Number Range Solution](https://help.sap.com/docs/BTP/65de2977205c403bbc107264b8eccf4b/0335201e35bb433eab298bf8f389ea11.html), and in the class documentation.
+- The code snippets rudimentarily show methods of the classes to retrieve information. You can find more snippets in the documentation linked above and check the various parameters.
+ 
+<br>
+
+```abap
+"Use a valid number range object
+DATA(numberrange_object) = 'Z.........'.
+
+"Retrieving attributes of number range objects
+TRY.
+    cl_numberrange_objects=>read(
+      EXPORTING
+        object          = numberrange_object
+      IMPORTING
+        attributes      = DATA(attr)
+        interval_exists = DATA(intv_exists)
+        obj_text        = DATA(obj_text)
+    ).
+  CATCH cx_nr_object_not_found cx_number_ranges.
+ENDTRY.
+
+"Retrieving intervals of number range objects
+TRY.
+    cl_numberrange_intervals=>read(
+      EXPORTING
+        object       = numberrange_object
+      IMPORTING
+        interval     = DATA(intv)
+    ).
+  CATCH cx_nr_object_not_found cx_nr_subobject cx_number_ranges.
+ENDTRY.
+
+"Retrieving numbers from number range object intervals
+TRY.
+    cl_numberrange_runtime=>number_get(
+      EXPORTING
+        nr_range_nr       = '01'
+        object            = numberrange_object
+      IMPORTING
+        number            = DATA(number)
+        returncode        = DATA(rc)
+        returned_quantity = DATA(quan)
+    ).
+  CATCH cx_nr_object_not_found cx_number_ranges.
+ENDTRY.
+``` 
+
+</td>
+</tr>
+
+
+</table>
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
