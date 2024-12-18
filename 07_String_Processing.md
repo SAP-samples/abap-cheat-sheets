@@ -556,7 +556,7 @@ s1 = concat_lines_of( table = itab sep = ` ` ). "With separator
 
 ### Literal Operator 
 
-The [literal operator](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenliteral_operator_glosry.htm "Glossary Entry") `&` combines [text string literals](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentext_string_literal_glosry.htm "Glossary Entry"), however, with [significant differences](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenliteral_operator.htm) to `&&`, which the code snippet demonstrates.
+The [literal operator](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenliteral_operator_glosry.htm "Glossary Entry") `&` combines [text string literals](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentext_string_literal_glosry.htm "Glossary Entry"), however, with [significant differences](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenliteral_operator.htm) to `&&`, which the code snippet addresses.
 
 
 ```abap

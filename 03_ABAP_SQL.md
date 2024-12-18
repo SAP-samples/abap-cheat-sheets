@@ -38,6 +38,7 @@
     - [Using DELETE](#using-delete)
     - [Using Constructor Expressions in ABAP SQL Statements](#using-constructor-expressions-in-abap-sql-statements)
     - [Example: Exploring Create, Update, and Delete Operations with ABAP SQL Statements](#example-exploring-create-update-and-delete-operations-with-abap-sql-statements)
+  - [Dynamic ABAP SQL Statements](#dynamic-abap-sql-statements)
   - [Excursions](#excursions)
     - [Evaluating ABAP System Fields after ABAP SQL Statements](#evaluating-abap-system-fields-after-abap-sql-statements)
     - [Typed Literals](#typed-literals)
@@ -199,7 +200,7 @@ SELECT FROM source   "What data source read from
 - Using the `SELECT` list or `FIELDS` clause, you define the structure of the result set.
 - You can do this by specifying the columns to be read from the data source individually, or by specifying `*` to read all columns.
 - Syntax variants are possible.
-- Note that you can specify the addition `SINGLE` after `SELECT`. With `SINGLE`, it means the result set is a single row result set. Otherwise, it is a multirow result set. An appropriate data object must be specified in the `INTO` clause.
+- Note that you can specify the addition `SINGLE` after `SELECT`. With `SINGLE`, it means the result set is a single row result set. Otherwise, it is a multirow result set, or a `SELECT` loop is opened. An appropriate data object must be specified in the `INTO` clause.
 
 | Syntax   |      Notes      |
 |----------|-------------|
@@ -2730,6 +2731,24 @@ ENDCLASS.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
+## Dynamic ABAP SQL Statements
+
+- ABAP SQL statements offer syntax options for dynamic programming. 
+- For example, you can specify the data source to read from dynamically. 
+- Find more information and code snippets in the ABAP Keyword Documentation or the [ABAP cheat sheet on dynamic programming](06_Dynamic_Programming.md).
+
+```abap
+DATA(dbtab) = 'ZDEMO_ABAP_FLSCH'.
+
+"Selecting from a dynamically specified database table.
+SELECT *
+  FROM (dbtab)
+  WHERE ...
+  INTO ...
+```
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
 ## Excursions
 
 ### Evaluating ABAP System Fields after ABAP SQL Statements
@@ -2970,7 +2989,7 @@ SELECT SINGLE
 - Native SQL is passed directly to the database.
 - AMDP, which uses Native SQL, also does not support implicit client handling.
 - While AMDP is permitted in ABAP Cloud, accessing client-dependent data via Native SQL is not supported.
-- When using AMDP in ABAP Cloud, it is crucial to access only the current client. Client-safety must be ensured..
+- When using AMDP in ABAP Cloud, it is crucial to access only the current client. Client-safety must be ensured.
 - AMDP methods in ABAP Cloud must be client-safe, meaning the SQLScript code should access data only in your client. Use only artifacts that limit access to a single client or those that are client-independent.
 - Consequently, all objects in the `USING` list must be client-safe, including CDS table functions implemented as AMDP methods.
 - There are additions to cover client-safe aspects, ensuring access only to your client data.
@@ -2993,16 +3012,6 @@ There are [RAP](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## More Information
-- Note that ABAP SQL statements offer syntax options for dynamic programming. For example, you can specify the data source to read from dynamically. See more information in the ABAP Keyword Documentation or the [ABAP cheat sheet on dynamic programming](06_Dynamic_Programming.md).
-    ```abap
-    DATA(dbtab) = 'ZDEMO_ABAP_FLSCH'.
-
-    "Selecting from a dynamically specified database table.
-    SELECT *
-      FROM (dbtab)
-      WHERE ...
-      INTO ...
-    ```
 - [This topic](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_sql.htm) serves as the entry point for topics about ABAP SQL in the ABAP Keyword Documentation. For the full details, check the subtopics there, especially topics not covered in this cheat sheet.
 - Find more topics in the ABAP Keyword Documentation such as the following: 
   - ABAP SQL statements can contain [SQL path expressions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensql_path_expression_glosry.htm). For more information, see [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_sql_path.htm). The executable example of the CDS view entities cheat sheet includes demo SQL statements.

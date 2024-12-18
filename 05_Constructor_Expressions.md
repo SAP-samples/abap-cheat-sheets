@@ -111,17 +111,28 @@ and [nested structures](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-
 or [deep tables](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abendeep_table_glosry.htm "Glossary Entry"),
 the use of `VALUE` expressions is handy, too, because you can create corresponding values in place.
 
-The following examples cover: 
-- Populating structures and internal tables with `VALUE`
-- Creating initial values (for all types possible)
-- Possible additions, such as `BASE` (retaining existing content) and `LINES OF` (adding all or some lines from other internal tables; more additions are available here)
-- Short form of `VALUE` constructor expressions for internal tables with structured line types
-- Excursions 
+The following table illustrates a variety of syntax options and aspects regarding the `VALUE` operator. 
 
-```abap
-"-------------- Populating structures/internal tables with VALUE --------------
+> **💡 Note**<br>
+> - The examples represent a selection. Check the documentation for all options. 
+> - Some of the additions and concepts mentioned here are also valid for other constructor expressions further down but not necessarily mentioned explicitly. See the details on the syntax
+options of the constructor operators in the ABAP Keyword Documentation.
 
-"Declaring structured data type and structured data object
+
+<table>
+
+<tr>
+<td> Subject </td> <td> Notes/Code Snippet </td>
+</tr>
+
+<tr>
+<td> Populating an existing structure or a structure created inline </td>
+
+<td> 
+
+``` abap
+"Declaring structured data type and structured data object 
+"(also used in the following snippets)
 TYPES: BEGIN OF struc_type,
             a TYPE i,
             b TYPE c LENGTH 3,
@@ -129,28 +140,41 @@ TYPES: BEGIN OF struc_type,
 
 DATA struc TYPE struc_type.
 
-"Using VALUE constructor expression
 "Note: The data type can be retrieved from the context. Then, # can
 "be specified.
 struc = VALUE #( a = 1 b = 'aaa' ).
+
+"The following syntax is also possible (explicit data type
+"specification although the type can be determined).
+struc = VALUE struc_type( a = 2 b = 'bbb' ).
+
+"Using such a VALUE constructor expression instead of, for example,
+"assigning the component values individually using the component
+"selector (-).
+struc-a = 3.
+struc-b = 'ccc'.
 
 "Using an inline declaration
 "In the following example, the type cannot be retrieved from the
 "context. Therefore, an explicit specification of the type is
 "required.
-DATA(struc2) = VALUE struc_type( a = 2 b = 'bbb' ).
+DATA(struc2) = VALUE struc_type( a = 4 b = 'ddd' ).
+``` 
 
-"The following syntax is also possible (explicit data type
-"specification although the type can be determined).
-struc = VALUE struc_type( a = 3 b = 'ccc' ).
+ </td>
+</tr>
 
-"Using such a VALUE constructor expression instead of, for example,
-"assigning the component values individually using the component
-"selector (-).
-struc-a = 4.
-struc-b = 'ddd'.
+<tr>
+<td> 
 
-"Internal table
+Populating an existing internal table or an internal table created inline
+
+ </td>
+
+ <td> 
+
+
+``` abap
 "Note the extra pair of parentheses for an individual table line.
 DATA itab TYPE TABLE OF struc_type WITH EMPTY KEY.
 
@@ -172,9 +196,21 @@ DATA(itab2) = VALUE itab_type( ( a = 7 b = 'ggg' )
 "Unstructured line types work without component names.
 DATA(itab3) = VALUE string_table( ( `Hello` )
                                   ( `world` ) ).
+``` 
 
-"-------------- Creating initial values --------------
+ </td>
+</tr>
 
+<tr>
+<td> 
+
+Creating initial values for all types
+
+ </td>
+
+ <td> 
+
+``` abap
 "Type-specific initial value for data objects by leaving the
 "VALUE constructor expression empty
 "Structure (the entire structure is initial)
@@ -203,9 +239,21 @@ DATA(int) = VALUE i( ).
 DATA int2 TYPE i.
 int2 = VALUE #( ).
 DATA(xstr) = VALUE xstring( ).
+``` 
 
-"-------------- VALUE constructor used for nested/deep data objects  --------------
+ </td>
+</tr>
 
+<tr>
+<td> 
+
+`VALUE` constructor used for nested/deep data objects
+
+ </td>
+
+ <td> 
+
+``` abap
 "Creating a nested structure
 DATA: BEGIN OF nested_struc,
         a TYPE i,
@@ -228,13 +276,21 @@ TYPES deep_itab_type LIKE TABLE OF nested_struc WITH EMPTY KEY.
 DATA(deep_itab) = VALUE deep_itab_type( ( nested_struc ) "Adding an existing structure
                                         ( a = 3 struct = VALUE #( b = 3 c = 'ccc' ) )
                                         ( a = 4 struct = VALUE #( b = 4 c = 'ddd' ) ) ).
+``` 
 
-"-------------- Additions to VALUE constructor expressions --------------
-"Note: LET and FOR expressions can be added to VALUE constructor expressions.
-"Find more information further down.
+ </td>
+</tr>
 
-"-------------- BASE addition --------------
+<tr>
+<td> 
 
+`BASE` addition
+
+ </td>
+
+ <td> 
+
+``` abap
 "A constructor expression without the BASE addition initializes the target variable.
 "Therefore, you can use the addition if you do not want to construct a structure or
 "internal table from scratch but keep existing content.
@@ -254,9 +310,21 @@ itab = VALUE #( ( a = 1 b = 'aaa' )
 itab = VALUE #( BASE itab
                 ( a = 3 b = 'ccc' )
                 ( a = 4 b = 'ddd' ) ).
+``` 
 
-"-------------- LINES OF addition -------------
+ </td>
+</tr>
 
+<tr>
+<td> 
+
+`LINES OF` addition
+
+ </td>
+
+ <td> 
+
+``` abap
 "All or some lines of another table can be included in the target internal table
 "(provided that they have appropriate line types).
 "With the LINES OF addition, more additions can be specified.
@@ -270,9 +338,22 @@ itab = VALUE #( ( a = 1 b = 'aaa' )
 
 itab = VALUE #( ( LINES OF itab5 STEP 2 ) "Adding every second line
                 ( LINES OF itab6 USING KEY primary_key ) ). "Specifying a table key
+``` 
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+Short form for internal tables with structured line types
+
+ </td>
+
+ <td> 
 
 
-"-------------- Short form for internal tables with structured line types --------------
+``` abap
 "- Assignments of values to individual structure components are possible outside of inner
 "  parentheses
 "- In that case, all of the following components in the inner parentheses are assigned that
@@ -348,7 +429,110 @@ MODIFY ENTITIES OF zdemo_abap_rap_ro_m
     MAPPED DATA(m)
     FAILED DATA(f)
     REPORTED DATA(r).
-```
+``` 
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+Assigning incompatible structures
+
+ </td>
+
+ <td> 
+
+- The example makes use of the `BASE` addition, and includes a `CORRESPONDING` expression.
+- The `s1` structure is assigned the identically named components of the `s2` structure. 
+- Other components are assigned by explicitly specifying them.
+
+<br>
+
+``` abap
+DATA:
+  BEGIN OF s1,
+    comp1 TYPE i,
+    comp2 TYPE i,
+    comp3 TYPE i,
+    comp4 TYPE i,
+    comp5 TYPE i,
+  END OF s1,
+  BEGIN OF s2,
+    comp1 TYPE i VALUE 1,
+    comp2 TYPE i VALUE 2,
+    comp3 TYPE i VALUE 3,
+  END OF s2.
+
+s1 = VALUE #( BASE CORRESPONDING #( s2 ) comp4 = 4 comp5 = 5 ).
+``` 
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+Table iterations with `FOR`
+
+ </td>
+
+ <td> 
+
+- Have the semantics of `LOOP AT` statements
+- Find more examples [below](#iteration-expressions-using-for)
+
+<br>
+
+``` abap
+TYPES: BEGIN OF s,
+            col1 TYPE c LENGTH 5,
+            col2 TYPE i,
+            col3 TYPE i,
+        END OF s.
+TYPES itab_type TYPE TABLE OF s WITH EMPTY KEY.
+DATA(itab) = VALUE itab_type( ( col1 = 'a' col2 = 1 col3 = 30 )
+                              ( col1 = 'bb' col2 = 2 col3 = 10 )
+                              ( col1 = 'ccc' col2 = 3 col3 = 20 ) ).
+
+DATA(it1) = VALUE itab_type( FOR wa IN itab ( col1 = wa-col1 && 'z'
+                                              col2 = wa-col2 + 1 ) ).
+``` 
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+`LET` expressions
+
+ </td>
+
+ <td> 
+
+- They define one or more variables (field symbols are also possible) as local (i.e. local to the expression) helper fields and assigns values to them.
+- Find more examples [below](#let-expressions)
+
+<br>
+
+``` abap
+DATA(strtab) = VALUE string_table( LET mark = '!' IN
+                                    ( |abc{ mark }| )
+                                    ( |def{ mark }| )
+                                    ( |ghi{ mark }| ) ).
+``` 
+
+ </td>
+</tr>
+<tr>
+<td> 
+
+Using data objects declared inline in various ABAP statements
+
+ </td>
+
+ <td> 
 
 Using the inline construction of structures and internal tables, you can
 avoid the declaration of extra variables in many contexts, for example,
@@ -361,7 +545,8 @@ statements like
 (which is not to be confused with the ABAP statement having the same
 name) for modifying database tables.
 
-Examples:
+<br>
+
 ``` abap
 "ABAP statements
 "Modifiying individual internal table entries based on a structure created inline
@@ -389,11 +574,36 @@ MODIFY zdemo_abap_carr FROM TABLE @( VALUE #(
               url =  'another_url' ) ) ).
 ```
 
-> **💡 Note**<br>
-> Some of the additions and concepts mentioned here are
-also valid for other constructor expressions further down but not
-necessarily mentioned explicitly. See the details on the syntax
-options of the constructor operators in the ABAP Keyword Documentation.
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+Grouping lines in internal tables
+
+ </td>
+
+ <td> 
+
+- Regarding grouping lines in internal tables, find more information in the [Internal Tables: Grouping](11_Internal_Tables_Grouping.md) cheat sheet.
+- More code snippets on grouping lines, covering syntax such as `FOR GROUPS` with the `VALUE` and `REDUCE` operators, are available [below](#grouping-lines-in-internal-tables-with-valuereduce).
+
+<br>
+
+``` abap
+...
+DATA(it_val_1) = VALUE string_table( FOR GROUPS gr OF wa IN itab4grp
+                                     GROUP BY wa-col1 ASCENDING
+                                     WITHOUT MEMBERS
+                                     ( |{ gr }| ) ).
+``` 
+
+ </td>
+</tr>
+
+</table>
+
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
@@ -423,6 +633,7 @@ this operator. There are more variants available (also
 that are not covered. Find more information in [this
 topic](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconstructor_expr_corresponding.htm) of the ABAP Keyword Documentation.
 
+
 | Addition  | Details |
 |---|---|
 | `BASE` | Keeps original values. Unlike, for example, the operator `VALUE`, a pair of parentheses must be set around `BASE`.  |
@@ -431,6 +642,9 @@ topic](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file
 | `DISCARDING DUPLICATES`  | Relevant for tabular components. Handles duplicate lines and prevents exceptions when dealing with internal tables that have a unique primary or secondary table key. |
 | `DEEP`  | Relevant for deep tabular components. They are resolved at every hierarchy level and identically named components are assigned line by line.  |
 | `[DEEP] APPENDING`  | Relevant for (deep) tabular components. It ensures that the nested target tables are not deleted. The effect without `DEEP` is that lines of the nested source table are added using `CORRESPONDING` without addition. The effect with `DEEP` is that lines of the nested source table are added using `CORRESPONDING` with the addition `DEEP`.  |
+| `DEEP`  | Relevant for deep tabular components. They are resolved at every hierarchy level and identically named components are assigned line by line.  |
+| `FROM tab USING`  | Relevant for constructing an internal table by joining an internal table and a lookup table and comparing their components. |
+
 
 Examples:
 ``` abap
@@ -560,31 +774,15 @@ it2 = CORRESPONDING #( it1 DISCARDING DUPLICATES ).
 *A    B      D
 *4    aaa
 *5    eee
-```
 
-> **✔️ Hint**<br>
-> `CORRESPONDING` operator versus
-[`MOVE-CORRESPONDING`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapmove-corresponding.htm) in the context of structures:
-Although the functionality is the same, note that, as the name implies,
-constructor operators construct and - without the addition
-`BASE` - target objects are initialized. Hence, the following
-two statements are  not the same:
->``` abap
->struc2 = CORRESPONDING #( struc1 ).
->
->"Not matching components are not initialized
->MOVE-CORRESPONDING struc1 TO struc2.
->```
+"-------------- DEFAULT addition when using MAPPING -------------
+"- This addition allows the assignment of values for a target component based 
+"  on an expression (which is evaluated before the CORRESPONDING expression). 
+"- DEFAULT can be preceded by the source component. In this case, the source 
+"  component's value is assigned to the left-hand side only if the source 
+"  component is not initial. If it is initial, the value of the expression 
+"  following the DEFAULT addition is assigned.
 
-
-**`DEFAULT` addition when using `MAPPING`**
-
-- This addition allows the assignment of values for a target component based on an expression (which is evaluated before the `CORRESPONDING` expression). 
-- `DEFAULT` can be preceded by the source component. In this case, the source component's value is assigned to the left-hand side only if the source component is not initial. If it is initial, the value of the expression following the `DEFAULT` addition is assigned.
-
-Examples:
-
-```abap
 "Creating and populating data objects to work with
 DATA: BEGIN OF struc1,
         id1 TYPE i,
@@ -661,6 +859,19 @@ struc2 = CORRESPONDING #(
 *1      a    hallo    2    d    30
 ```
 
+> **✔️ Hint**<br>
+> `CORRESPONDING` operator versus
+[`MOVE-CORRESPONDING`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapmove-corresponding.htm) in the context of structures:
+Although the functionality is the same, note that, as the name implies,
+constructor operators construct and - without the addition
+`BASE` - target objects are initialized. Hence, the following
+two statements are  not the same:
+>``` abap
+>struc2 = CORRESPONDING #( struc1 ).
+>
+>"Not matching components are not initialized
+>MOVE-CORRESPONDING struc1 TO struc2.
+>```
 
 **`CORRESPONDING` with lookup table**
 
@@ -1024,7 +1235,22 @@ DATA(oref5) = NEW cl_b( 123 ).
 -   The operator is particularly suitable for avoiding the declaration
     of helper variables.
 
-Examples:
+
+<table>
+
+<tr>
+<td> Subject </td> <td> Notes/Code Snippet </td>
+</tr>
+
+<tr>
+<td> 
+
+Explicit conversion
+
+ </td>
+
+ <td> 
+
 ``` abap
 "Result: 0.2
 DATA(conv_res) = CONV decfloat34( 1 / 5 ).
@@ -1047,13 +1273,25 @@ itab = VALUE #( ( 1 ) ( 2 ) ( 3 ) ).
 "Using CONV to convert the internal table to the required table type.
 DATA(conv_itab) = CONV inttab_type( itab ).
 ASSIGN conv_itab TO <fs>.
-```
+``` 
 
-**Constructing data objects with the CONV operator**
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+Constructing data objects
+
+ </td>
+
+ <td> 
 
 As outlined above, you can construct structures and internal
 tables using the `VALUE` operator. Using `VALUE` for
 constructing [elementary data objects](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenelementary_data_object_glosry.htm "Glossary Entry") and providing values is not possible. You can only use it to create a data object with an initial value, for example `DATA(str) = VALUE string( ).`. The `CONV` operator closes this gap. 
+
+<br>
 
 ``` abap
 DATA(a) = CONV decfloat34( '0.4' ).
@@ -1079,7 +1317,13 @@ DATA e TYPE string.
 DATA(f) = `hallo`.
 "Produces a syntax warning
 "DATA(g) = CONV string( `hallo` ).
-```
+``` 
+
+ </td>
+</tr>
+
+</table>
+
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
@@ -1102,10 +1346,23 @@ DATA(f) = `hallo`.
     with the [rules of lossless
     assignments](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapmove_exact.htm).
 
-Examples:
-``` abap
-"-------------- Lossless assignments -------------
 
+<table>
+
+<tr>
+<td> Subject </td> <td> Notes/Code Snippet </td>
+</tr>
+
+<tr>
+<td> 
+
+Lossless assignments
+
+ </td>
+
+ <td> 
+
+``` abap
 "Note: An assignment is made in accordance with conversion rules. Check
 "the ABAP Keyword Documentation for these rules. An assignment is only 
 "made if no values are lost. Otherwise, an error occurs. Either it is
@@ -1120,9 +1377,22 @@ TRY.
     DATA(as4) = EXACT clen3( 'abcd' ).
     CATCH cx_sy_conversion_data_loss.
 ENDTRY.
+``` 
 
-"-------------- Lossless calculations -------------
+ </td>
+</tr>
 
+<tr>
+<td> 
+
+Lossless calculations
+
+ </td>
+
+ <td> 
+
+
+``` abap
 "The first statement works, whereas the second statement raises an exception.
 "A rounding to two decimal places is required.
 TYPES packednum TYPE p LENGTH 8 DECIMALS 2.
@@ -1134,7 +1404,12 @@ TRY.
     DATA(calc3) = EXACT packednum( 1 / 3 ).
     CATCH cx_sy_conversion_rounding.
 ENDTRY.
-```
+``` 
+
+ </td>
+</tr>
+
+</table>
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
@@ -1287,7 +1562,23 @@ DATA(methods) = CAST cl_abap_objectdescr(
     specify an `ELSE` clause at the end. If this clause is not specified, the result is the initial value of the specified or derived data type.
 - Note that all operands specified after `THEN` must be convertible to the specified or derived data type.
 
-Example:
+
+
+<table>
+
+<tr>
+<td> Subject </td> <td> Notes/Code Snippet </td>
+</tr>
+
+<tr>
+<td> 
+
+Creating a result depending on logical expressions
+
+ </td>
+
+ <td> 
+
 ``` abap
 DATA(day_or_night) = COND #( WHEN cl_abap_context_info=>get_system_time( ) BETWEEN '050000' AND '220000'
                              THEN `day`
@@ -1299,15 +1590,41 @@ IF cl_abap_context_info=>get_system_time( ) BETWEEN '050000' AND '220000'.
 ELSE.
     day_or_night = `night`.
 ENDIF.
+``` 
 
-"Multiple logical expressions initiated by WHEN
-"Also LET expressions are possible. See more details further down.
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+Multiple logical expressions initiated by `WHEN`, using `LET`
+
+ </td>
+
+ <td> 
+
+``` abap
 DATA(time_of_day) = COND #( LET time = cl_abap_context_info=>get_system_time( ) IN
                             WHEN time BETWEEN '050001' AND '120000' THEN |Good morning, it's { time TIME = ISO }.|
                             WHEN time BETWEEN '120001' AND '180000' THEN |Good afternoon, it's { time TIME = ISO }.|
                             WHEN time BETWEEN '180001' AND '220000' THEN |Good evening, it's { time TIME = ISO }.|
                             ELSE |Good night, it's { time TIME = ISO }.| ).
+``` 
 
+ </td>
+</tr>
+<tr>
+<td> 
+
+`THROW` addition to raise an exception
+
+ </td>
+
+ <td> 
+
+
+``` abap
 "THROW addition to raise an exception (working like RAISE EXCEPTION TYPE statements)
 "by specifying an exception class
 "Note: It is possible to ...
@@ -1327,14 +1644,35 @@ ENDTRY.
 "Excursion for the example above: The following statement does not result in an 
 "error in ABAP (zero division 'allowed' if the first operand has also the value 0).
 div = 0 / 0.
+``` 
 
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+`THROW SHORTDUMP` addition to raise a runtime error
+
+ </td>
+
+ <td> 
+
+``` abap
 "THROW SHORTDUMP addition to raise a runtime error (working like RAISE SHORTDUMP
 "TYPE statements) by specifying an exception class; a message can be also passed,
 "and input parameters can be filled
-div = COND decfloat34( WHEN num1 <> 0 AND num2 <> 0 THEN num1 / num2
-                       WHEN num1 = 0  AND num2 <> 0 THEN num1 / num2
-                       ELSE THROW SHORTDUMP cx_sy_zerodivide( ) ).
-```
+DATA(int1) = 0.
+DATA(int2) = 0.
+
+DATA(division) = COND decfloat34( WHEN int1 <> 0 AND int2 <> 0 THEN int1 / int2
+                                  WHEN int1 = 0  AND int2 <> 0 THEN int1 / int2
+                                  ELSE THROW SHORTDUMP cx_sy_zerodivide( ) ).
+``` 
+
+ </td>
+</tr>
+</table>
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 

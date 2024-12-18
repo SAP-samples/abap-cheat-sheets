@@ -32,7 +32,7 @@
     - [COMMIT ENTITIES: Persisting to the Database](#commit-entities-persisting-to-the-database)
     - [GET PERMISSIONS: Retrieving Information about RAP BO Permissions](#get-permissions-retrieving-information-about-rap-bo-permissions)
     - [Raising RAP Business Events](#raising-rap-business-events)
-    - [Additions to ABAP EML Statements in ABAP Behavior Pools](#additions-to-abap-eml-statements-in-abap-behavior-pools)
+    - [IN LOCAL MODE Addition to ABAP EML Statements in ABAP Behavior Pools](#in-local-mode-addition-to-abap-eml-statements-in-abap-behavior-pools)
   - [RAP Excursions](#rap-excursions)
     - [Using Keys and Identifying RAP BO Instances in a Nutshell](#using-keys-and-identifying-rap-bo-instances-in-a-nutshell)
     - [RAP Concepts](#rap-concepts)
@@ -572,8 +572,8 @@ METHODS some_action FOR MODIFY
     that have special RAP-related components as covered further down.
 -   The parameters' names can be chosen freely. This is also true for
     the method names except for some predefined names.
--   Each handler method must have at least one importing parameter. The
-    addition `IMPORTING` is optional since it is used
+-   Each handler method must have at least one importing parameter. 
+    Specifying the addition `IMPORTING` explicitly is optional since it is used
     implicitly. In most cases, entire instances or just key values
     of instances are imported.
 -   All handler methods have changing parameters that are usually not
@@ -972,6 +972,24 @@ Bullet points on selected `%` components:
         `if_abap_behv=>mk-off`, the values of these fields
         are not returned in the result.
 
+
+The following code snippet illustrates the importance of careful component access and value assignment with component groups in BDEF derived types:
+- It uses the key component of a demo RAP BO and an internal table of type `FOR CREATE` as an example.
+- The type includes the component groups `%data` and `%key`.
+- `%data` contains `%key` as a component.
+- Component access may be done in various ways.
+- Especially in value assignments, make sure that there is only one assignment per component.
+
+```abap
+DATA itab TYPE TABLE FOR CREATE zdemo_abap_rap_ro_m.
+APPEND INITIAL LINE TO itab.
+
+DATA(a) = itab[ 1 ]-key_field.
+DATA(b) = itab[ 1 ]-%key-key_field.
+DATA(c) = itab[ 1 ]-%data-key_field.
+DATA(d) = itab[ 1 ]-%data-%key-key_field.
+```
+
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ### Constants for BDEF Derived Type Components
@@ -986,6 +1004,7 @@ Several BDEF derived types contain `%` components, which have a specific type an
 | `ABP_BEHV_FIELD_CTRL`  |  `IF_ABAP_BEHV=>FC-F`   |  For field feature control results, such as a field marked with no restrictions.   |
 | `ABP_BEHV_OP_CTRL` |  `IF_ABAP_BEHV=>FC-O`   |  For operation feature control results, such as a disabled update operation.   |
 | `ABP_BEHV_AUTH` |  `IF_ABAP_BEHV=>AUTH`   |  For authorization results, such as an unauthorized operation.   |
+| `IF_ABAP_BEHV=>T_CHAR01` |  `IF_ABAP_BEHV=>MK`   |  For dynamic ABAP EML statements; e.g. `if_abap_behv=>op-m-create` for create and `if_abap_behv=>op-r-read` for read operations. |
 
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
@@ -1421,7 +1440,7 @@ MODIFY ENTITIES OF root_ent
 
 #### Dynamic Form of ABAP EML MODIFY Statements
 
-- The code snippet demonstrate the dynamic form `MODIFY ENTITIES OPERATIONS ...`.
+- The code snippet demonstrates the dynamic form `MODIFY ENTITIES OPERATIONS ...`.
 - Using the statement, you can execute multiple modify operations for multiple RAP BOs in a single statement.
 - Find more information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABAPMODIFY_ENTITIES_OPERATIONS_DYN.html).
 
@@ -1979,7 +1998,6 @@ DO 2 TIMES.
   ...
  ENDIF.
 
-"Data is not saved
  SELECT FROM zdemo_abap_rapt1
   FIELDS key_field
   ORDER BY key_field
@@ -2096,7 +2114,7 @@ ENDCLASS.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-### Additions to ABAP EML Statements in ABAP Behavior Pools
+### IN LOCAL MODE Addition to ABAP EML Statements in ABAP Behavior Pools
 
 -   There are a [special additions when using EML in behavior
     pools](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abeneml_in_abp.htm).

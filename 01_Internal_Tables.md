@@ -9,9 +9,8 @@
   - [Creating Internal Tables and Types](#creating-internal-tables-and-types)
     - [Specifying Keys in Internal Table Declarations](#specifying-keys-in-internal-table-declarations)
     - [Internal Tables Based on Locally Created Line/Table Types](#internal-tables-based-on-locally-created-linetable-types)
-    - [Line/Table Type Options of Internal Tables](#linetable-type-options-of-internal-tables)
+    - [Overview of Line and Table Type Options with Internal Tables](#overview-of-line-and-table-type-options-with-internal-tables)
     - [Creating Internal Tables By Inline Declaration](#creating-internal-tables-by-inline-declaration)
-    - [Creating Internal Tables Dynamically](#creating-internal-tables-dynamically)
   - [Populating Internal Tables](#populating-internal-tables)
     - [Copying Internal Tables](#copying-internal-tables)
     - [Using INSERT and APPEND Statements to Populate Internal Tables](#using-insert-and-append-statements-to-populate-internal-tables)
@@ -53,6 +52,8 @@
     - [Excursion: Joining/Merging Internal Tables into Internal Tables](#excursion-joiningmerging-internal-tables-into-internal-tables)
   - [Sorting Internal Tables](#sorting-internal-tables)
   - [Modifying Internal Table Content](#modifying-internal-table-content)
+    - [Modifying Read Table Lines](#modifying-read-table-lines)
+    - [Modifying Table Lines Using ABAP MODIFY Statements](#modifying-table-lines-using-abap-modify-statements)
   - [Deleting Internal Table Content](#deleting-internal-table-content)
     - [Deleting Adjacent Duplicate Lines](#deleting-adjacent-duplicate-lines)
     - [Deleting the Entire Internal Table Content](#deleting-the-entire-internal-table-content)
@@ -66,6 +67,7 @@
     - [Ranges Tables](#ranges-tables)
     - [Comparing Content of Compatible Internal Tables](#comparing-content-of-compatible-internal-tables)
     - [BDEF Derived Types (ABAP EML)](#bdef-derived-types-abap-eml)
+    - [Creating Internal Tables Dynamically](#creating-internal-tables-dynamically)
   - [More Information](#more-information)
   - [Executable Example](#executable-example)
 
@@ -243,7 +245,7 @@ DATA  itab4      LIKE                   itab1 ...       "Based on an existing in
 
 > **💡 Note**<br>
 > - If the table category is not specified (`... TYPE TABLE OF ...`), it is automatically `... TYPE STANDARD TABLE OF ...`.
-> - Using [Runtime Type Creation (RTTC)](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrun_time_type_creation_glosry.htm "Glossary Entry"), you can define and  create new internal tables and table types as [type description objects](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentype_object_glosry.htm) at runtime. For more information, see the [Dynamic Programming](06_Dynamic_Programming.md) ABAP cheat sheet.
+> - Using [Runtime Type Creation (RTTC)](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrun_time_type_creation_glosry.htm "Glossary Entry"), you can define and  create new internal tables and table types as [type description objects](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentype_object_glosry.htm) at runtime. For more information, see the [Dynamic Programming](06_Dynamic_Programming.md) ABAP cheat sheet. Also find a snippet on creating internal tables dynamically by specifying the type dynamically [below](#creating-internal-tables-dynamically).
 
 The following code snippets contain various internal table declarations. It is intended to demonstrate a selection of the rich variety of possible internal tables mentioned in the previous sections, e.g. in *Table Keys in Internal Tables*.
 In the examples, many of the internal tables are created using the structured type of a demo database table in the DDIC. The line type of the database table is automatically used when defining an internal table.
@@ -455,7 +457,7 @@ DATA it27 LIKE TABLE OF it25.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-### Line/Table Type Options of Internal Tables
+### Overview of Line and Table Type Options with Internal Tables
 
 This section explores various line and table type options when declaring internal tables. Examples have already been covered in the previous sections. Among the options are, for example: 
 - Elementary line types based on elementary built-in ABAP types, locally declared elementary types, globally available elementary types such as DDIC data elements
@@ -622,14 +624,12 @@ DATA it_tab_8 LIKE it_tab_7.
 ``` abap
 DATA it_ref_1 TYPE TABLE OF REF TO i.
 DATA it_ref_2 TYPE TABLE OF REF TO string.
+DATA it_ref_3 TYPE TABLE OF REF TO zdemo_abap_carr.
 
-"Generic type data
-DATA it_ref_3 TYPE TABLE OF REF TO data.
+DATA it_ref_4 TYPE TABLE OF REF TO data.
 
 "Such a table can hold any data type
-"For more details on generic types, see the Data Types and Data Objects
-"and Dynamic Programming cheat sheets.
-it_ref_3 = VALUE #( ( NEW i( 3 ) ) "Elementary type
+it_ref_4 = VALUE #( ( NEW i( 3 ) ) "Elementary type
                     ( NEW string( `hello` ) ) "Elementary type
                     ( NEW zdemo_abap_flsch( carrid = 'XY' connid = '1234' ) ) "Structured type
                     ( NEW string_table( ( `a` ) ( `b` ) ( `c` ) ) ) "Table type
@@ -690,34 +690,7 @@ SELECT * FROM zdemo_abap_fli INTO TABLE @FINAL(it_i).
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
 
-### Creating Internal Tables Dynamically
 
-Find more information in the [Dynamic Programming cheat sheet](06_Dynamic_Programming.md).
-
-```abap
-DATA(some_type) = 'STRING'.
-DATA dataref TYPE REF TO data.
-
-"Creating an internal table using a CREATE DATA statement
-"by specifying the type name dynamically.
-"In the example, a standard table with elementary line type
-"and standard key is created.
-CREATE DATA dataref TYPE TABLE OF (some_type).
-
-TYPES: BEGIN OF demo_struc,
-          comp1 TYPE c LENGTH 10,
-          comp2 TYPE i,
-          comp3 TYPE i,
-        END OF demo_struc.
-
-"Internal table with structured line type and empty key.
-CREATE DATA dataref TYPE TABLE OF ('DEMO_STRUC') WITH EMPTY KEY.
-
-"Using a globally available table type
-CREATE DATA dataref TYPE ('STRING_TABLE').
-```
-
-<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## Populating Internal Tables
 
@@ -905,7 +878,7 @@ INSERT LINES OF itab2 INTO itab INDEX i.
 The constructor expressions can be specified in/with various positions/statements in ABAP. In most of the following snippets, simple assignments are demonstrated.
 
 > **💡 Note**<br>
-> The following sections cover a selection. There are more constructor expressions used in the context of internal tables (e.g. for creating internal tables). Find more details in the [Constructor Expressions](05_Constructor_Expressions.md) ABAP cheat sheet.
+> The following sections cover a selection. There are more constructor expressions used in the context of internal tables (e.g. for creating internal tables). Find more details in the [Constructor Expressions](05_Constructor_Expressions.md) cheat sheet.
 
 #### VALUE Operator
 As mentioned above, table lines that are constructed inline as
@@ -4728,6 +4701,8 @@ SORT itab BY table_line.
 
 As mentioned above, you can modify the content of internal table lines directly in the context of `READ TABLE` and `LOOP AT` statements using field symbols and data reference variables. You can also use table expressions for direct modification (as also covered in section [Table Expressions](#table-expressions)). Note that the key fields of the primary table key of sorted and hashed tables are always read-only. If you try to modify a key field, a runtime error occurs. However, this is not checked until runtime.
 
+### Modifying Read Table Lines
+
 The following examples demonstrate direct modification of recently read table lines:
 ``` abap
 "Declaring and populating demo internal tables
@@ -4841,9 +4816,11 @@ LOOP AT it_so into data(wa_lo) where comp1 < 4.
 ENDLOOP.
 ```
 
+### Modifying Table Lines Using ABAP MODIFY Statements
+
 [`MODIFY`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapmodify_itab.htm)
 statements provide multiple ways of changing the content of single and multiple table lines by specifying the table key or a table index,
-without first reading the lines into a target area.
+without first reading the lines into a target area. Do not confuse the ABAP statement `MODIFY` with the ABAP SQL statement [`MODIFY`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABAPMODIFY_DBTAB.html).
 
 ``` abap
 "Addition FROM ...; specified key values determine the line to be modified
@@ -4883,6 +4860,7 @@ MODIFY it FROM line USING KEY sec_key INDEX 1 TRANSPORTING c d.
 "The additions TRANSPORTING and WHERE are both mandatory; USING KEY is optional.
 MODIFY it FROM line TRANSPORTING b c WHERE a < 5.
 ```
+
 > **💡 Note**<br>
 > - The system field `sy-subrc` is set to `0` if at least one line was changed. It is set to `4` if no lines were changed.
 > - `MODIFY`, `DELETE`, and `INSERT` statements can be specified with and without the `TABLE` addition. With `TABLE` means an index access. Without `TABLE` means an access via the table key.
@@ -5000,6 +4978,7 @@ ENDLOOP.
 ### Deleting Adjacent Duplicate Lines
 
 `DELETE ADJACENT DUPLICATES` statements allow you to delete all adjacent lines except for the first line that have the same content in certain components. You usually need to perform some appropriate sorting before using these statements.
+
 ``` abap
 "Implicitly using the primary table key
 DELETE ADJACENT DUPLICATES FROM it.
@@ -6101,6 +6080,36 @@ TYPES der_typ TYPE TABLE FOR DELETE entity.
 Find more information in the [ABAP for RAP: Entity Manipulation Language (ABAP EML)](08_EML_ABAP_for_RAP.md) ABAP cheat sheet.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
+
+### Creating Internal Tables Dynamically
+
+Find more information in the [Dynamic Programming cheat sheet](06_Dynamic_Programming.md).
+
+```abap
+DATA(some_type) = 'STRING'.
+DATA dataref TYPE REF TO data.
+
+"Creating an internal table using a CREATE DATA statement
+"by specifying the type name dynamically.
+"In the example, a standard table with elementary line type
+"and standard key is created.
+CREATE DATA dataref TYPE TABLE OF (some_type).
+
+TYPES: BEGIN OF demo_struc,
+          comp1 TYPE c LENGTH 10,
+          comp2 TYPE i,
+          comp3 TYPE i,
+        END OF demo_struc.
+
+"Internal table with structured line type and empty key.
+CREATE DATA dataref TYPE TABLE OF ('DEMO_STRUC') WITH EMPTY KEY.
+
+"Using a globally available table type
+CREATE DATA dataref TYPE ('STRING_TABLE').
+```
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
 
 ## More Information
 Topic [Internal Tables](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenitab.htm) in the ABAP Keyword Documentation.

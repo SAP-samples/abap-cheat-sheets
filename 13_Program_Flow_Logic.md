@@ -601,7 +601,7 @@ CALL FUNCTION func params.
 - `params`: Parameter list or table 
 - Incorrectly provided function module names or parameters are not checked until runtime
 - Unlike method calls, you cannot specify inline declarations as actual parameters.
-- Regarding dynamic function module calls: Static and dynamic function module calls are syntactically identical. In a static call, the function module is specified as a character literal or a constant, with parameters passed statically. Conversely, in a dynamic call, the function module's name is specified in a variable, with parameters passed dynamically. For dynamic calls, you can utilize the `CL_ABAP_DYN_PRG` as shown in the [Released ABAP Classes](22_Released_ABAP_Classes.md). 
+- Regarding dynamic function module calls: Static and dynamic function module calls are syntactically identical. In a static call, the function module is specified as a character literal or a constant, with parameters passed statically. Conversely, in a dynamic call, the function module's name is specified in a variable, with parameters passed dynamically. For dynamic calls, you can utilize the `CL_ABAP_DYN_PRG` as shown in the [Released ABAP Classes](22_Released_ABAP_Classes.md) cheat sheet. 
 - When a function module call is made, the system field `sy-subrc` is set to 0. If a non-class-based exception is raised and a value is assigned to handle it, this value updates `sy-subrc`.
 
 Example function module calls with parameter passing and exception handling: 

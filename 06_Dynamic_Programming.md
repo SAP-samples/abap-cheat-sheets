@@ -31,6 +31,7 @@
     - [Dynamic Invoke](#dynamic-invoke)
     - [Dynamic ABAP EML Statements](#dynamic-abap-eml-statements)
     - [Dynamic Formatting Option Specifications in String Templates](#dynamic-formatting-option-specifications-in-string-templates)
+    - [Dynamic Parameter List in EXPORT and IMPORT Statements](#dynamic-parameter-list-in-export-and-import-statements)
   - [Security Considerations in Dynamic Programming Using External Input](#security-considerations-in-dynamic-programming-using-external-input)
   - [Runtime Type Services (RTTS)](#runtime-type-services-rtts)
     - [Getting Type Information at Runtime (RTTI)](#getting-type-information-at-runtime-rtti)
@@ -2526,6 +2527,56 @@ int_tab = VALUE #( ( 0 ) ( 1 ) ( 2 ) ).
 DATA(s6) = |{ some_string CASE = int_tab[ 1 ] }|. "AbAp
 ```
 
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+### Dynamic Parameter List in EXPORT and IMPORT Statements
+
+- Used in the context of exporting and importing data clusters
+- Find more information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABENDATA_CLUSTER.html) and an executable example, including the code snippet below, in the [Working with XML and JSON in ABAP](21_XML_JSON.md) cheat sheet.
+
+```abap
+DATA buffer TYPE xstring.
+
+"--------- Dynamic specification of the parameter list ---------
+"Note:
+"- The parameter list is specified in an index table with two columns.
+"- The column names can have random names, but the type must be character-like.
+"- The first column represents the parameter name, the second column represents
+"  the name of the data object.
+"- Note that special behavior applies. See the documentation.
+
+TYPES: BEGIN OF param,
+          name TYPE string,
+          dobj TYPE string,
+        END OF param,
+        param_tab_type TYPE TABLE OF param WITH EMPTY KEY.
+
+DATA: txt1 TYPE string VALUE `hello`,
+      txt2 TYPE string VALUE `world`,
+      txt3 TYPE string VALUE `ABAP`.
+
+DATA(param_table) = VALUE param_tab_type(
+  ( name = `txt1` dobj = `txt1` )
+  ( name = `txt2` dobj = `txt2` )
+  ( name = `txt3` dobj = `txt3` ) ).
+
+EXPORT (param_table) TO DATA BUFFER buffer.
+
+"The example reads the content into structure components.
+DATA: BEGIN OF values,
+        txt1 TYPE string,
+        txt2 TYPE string,
+        txt3 TYPE string,
+      END OF values.
+
+param_table = VALUE param_tab_type(
+  ( name = `txt1` dobj = `values-txt1` )
+  ( name = `txt2` dobj = `values-txt2` )
+  ( name = `txt3` dobj = `values-txt3` ) ).
+
+IMPORT (param_table) FROM DATA BUFFER buffer.
+```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 

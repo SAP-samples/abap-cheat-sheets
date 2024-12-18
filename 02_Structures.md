@@ -616,12 +616,16 @@ diff_deep_struc = CORRESPONDING #( DEEP APPENDING BASE ( diff_struc ) deep_struc
 ## Clearing Structures
 
 You can reset individual components to their initial values and clear the
-entire structure using the [`CLEAR`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapclear.htm) keyword.
+entire structure using the [`CLEAR`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapclear.htm) keyword. Note that [`FREE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapfree_dataobject.htm) statements also deletes the content, but they also release the initially allocated memory.
+space. 
 
 ``` abap
 CLEAR struc-component.
 
 CLEAR struc.
+
+"This statement additionally releases memory space.
+FREE struc.
 
 "Note: An assignment using the VALUE operator without entries in the parentheses clears the structure. 
 struc = VALUE #( ). 
@@ -1389,7 +1393,7 @@ CLASS zcl_some_class IMPLEMENTATION.
     "the snippets between the sections
     "---- Comment in/out START ----
     "...
-     "---- Comment in/out END ----
+    "---- Comment in/out END ----
     DO 100000 TIMES.
 
       "------------------------------------------------------------------------

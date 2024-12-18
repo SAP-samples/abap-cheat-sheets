@@ -447,8 +447,7 @@ kinds of components are to be distinguished when, for example, looking at declar
     (`CLASS-DATA`): Their content is independent of instances of
     a class and, thus, valid for all instances.  That means that if you change such a static
     attribute, the change is visible in all instances. As shown further down,
-    static attributes can be accessed by using the class name without a
-    prior creation of an instance.
+    static attributes can be accessed by both using an object reference variable and using the class name without a prior creation of an instance.
 
 
 > **💡 Note**<br>
@@ -524,6 +523,7 @@ ENDCLASS.
     can access all of the attributes of a class and trigger all events.
     You declare them using `METHODS` statements in a visibility
     section. Note that you must create an instance of a class first before using instance methods.
+- `CLASS-METHODS` and `METHODS` can be followed by a colon to list one or more methods, separated by commas, or without a colon to declare a single method.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
@@ -1455,6 +1455,13 @@ class_name=>meth( EXPORTING i = j k = l RECEIVING m = DATA(n) ).
 
 #### Excursion: Inline Declarations, Returning Parameters
 
+<details>
+  <summary>🟢 Click to expand for more information and example code</summary>
+  <!-- -->
+
+<br>
+
+
 - The example code below highlights the convenience of inline declarations when defining target data objects for output parameters. 
 - This approach allows you to create data objects on the spot, eliminating the need for additional helper variables. 
 - It also mitigates the risk of type mismatches. 
@@ -1535,7 +1542,7 @@ CLASS zcl_some_class IMPLEMENTATION.
     "IF used with a predicative method call
     "The result of the relational expression is true if the result of the functional
     "method call is not initial and false if it is initial. The data type of the result
-    "of the functional meth1od call, i. e. the return value of the called function method,
+    "of the functional meth1od call, i. e. the return value of the called functional method,
     "is arbitrary. A check is made for the type-dependent initial value.
     IF zcl_some_class=>meth1( i_str = `ABAP` ).
       ...
@@ -1570,30 +1577,63 @@ CLASS zcl_some_class IMPLEMENTATION.
 ENDCLASS.
 ```
 
+</details>  
+
+
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ### Self-Reference me
 
-When implementing instance methods, you can optionally make use of the implicitly available object reference variable [`me`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenme.htm) which is always available at runtime and points to the respective object itself. You can use it to refer to components of the instance of a particular class:
+When implementing instance methods, you can optionally make use of the implicitly available object reference variable [`me`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenme.htm) which is always available at runtime and points to the respective object itself. You can use it, for example, to refer to components of the instance of a particular class:
 ``` abap
 ... some_method( ... ) ...
 
 ... me->some_method( ... ) ...
 ```
 
-The following code snippet shows a method implementation. In this case, a local data object from within the method and an instance attribute that is declared in the declaration part of the class in which this method is implemented have identical names. `me` is used to access the non-local data object.
+You can also address the entire object, which is illustrated in the example of section [Method Chaining and Chained Attribute Access](#method-chaining-and-chained-attribute-access).
+The following code snippet declares a local data object in a method. It has the same name as a data object declared in the private visibility section. shows a method implementation. `me` is used to access the non-local data object.
 
 ``` abap
-METHOD me_ref.
+CLASS zcl_some_class DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
 
-  DATA str TYPE string VALUE `Local string`.
+  PUBLIC SECTION.
+    INTERFACES if_oo_adt_classrun.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+    DATA str TYPE string.
+    METHODS meth RETURNING VALUE(text) TYPE string.
+ENDCLASS.
 
-  DATA(local_string) = str.
+CLASS zcl_some_class IMPLEMENTATION.
+  METHOD if_oo_adt_classrun~main.
 
-  "Assuming there is a variable str declared in the class declaration part.
-  DATA(other_string) = me->str.
+    str = `AP`.
+    DATA(text) = meth( ).
+    ASSERT text = `ABAP`.
 
-ENDMETHOD.
+  ENDMETHOD.
+
+  METHOD meth.
+
+    "Declaring a local data object having the same
+    "name as a data object declared in a visibility section
+    DATA str TYPE string VALUE `AB`.
+
+    "Addressing locally declared data object
+    DATA(local_string) = str.
+
+    "Addressing data object declared in private visibility section
+    DATA(other_string) = me->str.
+
+    text = local_string && other_string.
+
+  ENDMETHOD.
+
+ENDCLASS.
 ```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
@@ -1662,7 +1702,7 @@ DATA(json) = xco_cp_json=>data->builder( )->begin_object(
   )->end_object( )->get_data( )->to_string( ).
 ```
 
-Self-contained example class demonstrating chained method calls with a function method call and a standalone statement:
+Self-contained example class demonstrating chained method calls with a functional method call and a standalone statement:
 
 ```abap
 CLASS zcl_some_class DEFINITION
@@ -1686,7 +1726,7 @@ CLASS zcl_some_class IMPLEMENTATION.
   METHOD if_oo_adt_classrun~main.
 
     "----------------------------------------------------------------
-    "-------- Method chaining with a function method call -----------
+    "-------- Method chaining with a functional method call ---------
     "---------------------------------------------------------------- 
     "This example chained method call includes a chained attribute access
     "at the end so that the target variable contains the content of the
@@ -1765,7 +1805,13 @@ ENDCLASS.
 
 ### Excursion: Example Class
 
-The commented example class below explores various aspects covered in the previous sections. You can create a demo class called `zcl_demo_test` and copy and paste the following code. Once activated, you can choose *F9* in ADT to run the class. The example is designed to display output in the console that shows the result of calling different methods.
+Expand the following collapsible section for an example class. The commented example class explores various aspects covered in the previous sections. You can create a demo class called `zcl_demo_test` and copy and paste the following code. Once activated, you can choose *F9* in ADT to run the class. The example is designed to display output in the console that shows the result of calling different methods.
+
+<details>
+  <summary>🟢 Click to expand for example code</summary>
+  <!-- -->
+
+<br>
 
 ```abap
 CLASS zcl_demo_test DEFINITION
@@ -2304,6 +2350,11 @@ CLASS zcl_demo_test IMPLEMENTATION.
 ENDCLASS.
 ```
 
+</details> 
+
+
+
+
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
 
@@ -2605,8 +2656,15 @@ METHODS another_meth FINAL REDEFINITION.
 
 ### Excursion: Inheritance Example
 
-The following example explores inheritance and demonstrates a selection of the inheritance-related syntax described above. The inheritance tree consists of four example classes. The base class includes the implementation of the classrun interface. The example is designed to output information to the console. So, you can execute this class using F9 in ADT.
+Expand the following collapsible section for example classes. The example classes explore inheritance and demonstrate a selection of the inheritance-related syntax described above. The inheritance tree consists of four example classes. The base class includes the implementation of the classrun interface. The example is designed to output information to the console. So, you can execute this class using F9 in ADT.
 The purpose of the example and information output is to visualize and explore concepts and syntax related to inheritance, checking out when and how methods are called, redefining methods, abstract and final classes and methods.
+
+
+<details>
+  <summary>🟢 Click to expand for more information and example code</summary>
+  <!-- -->
+
+<br>
 
 The inheritance tree of the example classes is as follows: 
 
@@ -2665,7 +2723,7 @@ Notes on the example:
   - Declares a static method to delegate method calls of this class
 
 
-Expand the following collapsible section for example classes. To try them out, create four demo classes named 
+To try the example classes out, create four demo classes named 
 
 - `ZCL_DEMO_ABAP_OO_INHERITANCE_1` 
 - `ZCL_DEMO_ABAP_OO_INHERITANCE_2`
@@ -2674,9 +2732,6 @@ Expand the following collapsible section for example classes. To try them out, c
 
 and paste the code into it. After activation, choose *F9* in ADT to execute the class `ZCL_DEMO_ABAP_OO_INHERITANCE_1`. The example is set up to display output in the console.
 
-<details>
-  <summary>🟢 Click to expand for example code</summary>
-  <!-- -->
 
 <br>
 
@@ -4014,10 +4069,17 @@ CLASS global_class DEFINITION CREATE PUBLIC FRIENDS other_global_class ... .
 
 #### Friendship between Global and Local Classes
 
-The following example demonstrates granting friendship between a global class and a local class (in the CCIMP include, *Local Types* tab in ADT). In the example, friendship is granted in both ways so that the global class can access private components of the local class, and the local class can access private components of the global class.
+Expand the following collapsible section for an example class. It demonstrates granting friendship between a global class and a local class (in the CCIMP include, *Local Types* tab in ADT). In the example, friendship is granted in both ways so that the global class can access private components of the local class, and the local class can access private components of the global class.
 For more information, see the following topics: 
 - [`LOCAL FRIENDS`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapclass_local_friends.htm) 
 - [`DEFERRED`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapclass_deferred.htm)
+
+<details>
+  <summary>🟢 Click to expand for more information and example code</summary>
+  <!-- -->
+
+<br>
+
 
 **Global class**
 - Create a new global class (the example uses the name `zcl_some_class`) and copy and paste the following code in the *Global Class* tab in ADT.
@@ -4085,6 +4147,11 @@ CLASS local_class IMPLEMENTATION.
   ENDMETHOD.
 ENDCLASS.
 ```
+
+</details>  
+
+
+
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 

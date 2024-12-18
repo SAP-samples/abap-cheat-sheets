@@ -432,7 +432,7 @@ ENDDO.
     - Exceptions can be handled locally using a `TRY` structure or be propagated to the caller, making the caller responsible for handling the error. This approach allows for better code structure by managing errors centrally rather than checking each procedure call individually.   
   - If the exception cannot be caught and handled, the program terminates with a runtime error.
   - If the exception is handled or no exception is raised, processing continues after `ENDTRY`.
-  - Strategies about how to continue after an exception is raised and caught include ignoring the error, correcting and retrying, evaluating the error situation (see notes on the `INTO` addition to the `CATCH` statement), showing an error message to the user, logging the error, etc.
+  - Options for how to continue after an exception is raised and caught may include ignoring the error, correcting and retrying, evaluating the error situation (see notes on the `INTO` addition to the `CATCH` statement), showing an error message to the user, logging the error, etc.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 

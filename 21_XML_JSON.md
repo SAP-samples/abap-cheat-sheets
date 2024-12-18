@@ -19,6 +19,7 @@
     - [Serializing and Deserializing Objects](#serializing-and-deserializing-objects)
     - [Converting string \<-\> xstring](#converting-string---xstring)
     - [Compressing and Decompressing Binary Data](#compressing-and-decompressing-binary-data)
+    - [Exporting and Importing Data Clusters](#exporting-and-importing-data-clusters)
   - [More Information](#more-information)
   - [Executable Example](#executable-example)
   
@@ -1544,6 +1545,235 @@ DATA(conv_str) = cl_abap_conv_codepage=>create_in( )->convert( xstr_decomp ).
 "abap_true
 DATA(is_equal) = xsdbool( len_xstr = len_xstr_decomp AND str = conv_str ). 
 ```
+
+### Exporting and Importing Data Clusters
+
+- A data cluster groups data objects for temporary and persistent storage in a medium, such as an elementary data object of type `xstring`, or an internal table with a specific table type.
+- Potential uses include:
+  - Fast serialization and deserialization of data to and from `xstring` 
+  - Storing the data cluster (in a compressed form) in a DDIC database table field
+  - Passing data clusters through parameters in procedures for further evaluation, especially with large, complex data
+- Related ABAP statements:
+  - `EXPORT` to write data objects to the memory medium
+  - `IMPORT` to read from the memory medium and extract the data objects
+
+> **💡 Note**<br>
+> - The use cases of data clusters go beyond the actual subject of this cheat sheet. Here, the emphasis is on the fast serialization and deserialization of data to and from `xstring`.
+> - Find more information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABENDATA_CLUSTER.html).
+> - More syntax options are available in [Standard ABAP](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenstandard_abap_glosry.htm).
+> - Various exceptions can be raised when using these statements; see the related subtopics in the [documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABENDATA_CLUSTER.html).
+> - Additions to `IMPORT` statements offer [conversion options](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABAPIMPORT_CONVERSION.html).
+
+The following example covers:
+- Exporting a data cluster, storing it in a byte string, and importing it back to a data object
+- Activating compression using the `COMPRESSION ON` addition
+- Specifying multiple data objects in the parameter list
+- Alternative syntax for specifying parameters
+- Dynamic specification of the parameter list
+- Exporting and importing class objects
+
+```abap
+CLASS zcl_some_class DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
+
+  PUBLIC SECTION.
+    INTERFACES if_oo_adt_classrun.
+    INTERFACES if_serializable_object.
+    METHODS constructor IMPORTING text TYPE string OPTIONAL.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+    DATA timestamp TYPE utclong.
+    DATA text TYPE string.
+ENDCLASS.
+
+CLASS zcl_some_class IMPLEMENTATION.
+  METHOD if_oo_adt_classrun~main.
+
+    DATA buffer TYPE xstring.
+
+
+    "---- Exporting data cluster, storing it in byte string, -------
+    "---- and importing it to a data object again ------------------
+
+    "The following example exports an internal table to a byte string buffer, and
+    "imports the content to another internal table.
+    "The parameter list includes one data object. Compression is deactivated
+    "by default.
+
+    SELECT *
+     FROM zdemo_abap_fli
+     INTO TABLE @DATA(itab1).
+
+    EXPORT flights = itab1 TO DATA BUFFER buffer.
+
+    "Determining the length of the xstring (to compare it with the
+    "same example that activates compression).
+    DATA(strlen_export) = xstrlen( buffer ).
+
+    out->write( data = strlen_export name = `strlen_export` ).
+    out->write( |\n| ).
+
+    DATA itab2 LIKE itab1.
+    IMPORT flights = itab2 FROM DATA BUFFER buffer.
+
+    ASSERT itab2 = itab1.
+
+    out->write( data = itab2 name = `itab2` ).
+    out->write( |\n| ).
+
+    "---------------- Activating compression ----------------
+    EXPORT flights = itab1 TO DATA BUFFER buffer COMPRESSION ON.
+
+    DATA(strlen_export_compr) = xstrlen( buffer ).
+
+    ASSERT strlen_export_compr < strlen_export.
+    out->write( data = strlen_export_compr name = `strlen_export_compr` ).
+    out->write( |\n| ).
+
+    "------ Multiple data objects specified in the parameter list -----
+    "The following example writes and reads a byte string of two numbers.
+
+    DATA num1 TYPE i.
+    DATA num2 TYPE i.
+    EXPORT int1 = 100 int2 = 200 TO DATA BUFFER buffer.
+    IMPORT int1 = num1 int2 = num2 FROM DATA BUFFER buffer.
+
+    "----------------- Exceptions -----------------
+    "The following example includes a non-compatible data object to read
+    "to. The example emphasizes that various exceptions can be
+    "raised when using the statements. Find more details in the ABAP
+    "Keyword Documentation.
+    DATA str_table TYPE string_table.
+    TRY.
+        IMPORT int1 = num1 int2 = str_table FROM DATA BUFFER buffer.
+      CATCH cx_sy_import_mismatch_error.
+    ENDTRY.
+
+    "--------- Alternative syntax for specifying the parameters ---------
+    "EXPORT: Using ... FROM ... instead of ... = ...
+    "IMPORT: Using ... TO ... instead of ... = ...
+    EXPORT flights FROM itab1 TO DATA BUFFER buffer.
+    IMPORT flights TO itab2 FROM DATA BUFFER buffer.
+    EXPORT int1 = 100 int2 = 200 TO DATA BUFFER buffer.
+    IMPORT int1 TO num1 int2 TO num2 FROM DATA BUFFER buffer.
+
+    "--------- Dynamic specification of the parameter list ---------
+    "Note:
+    "- The parameter list is specified in an index table with two columns.
+    "- The column names can have random names, but the type must be character-like.
+    "- The first column represents the parameter name, the second column represents
+    "  the name of the data object.
+    "- Note that special behavior applies. See the documentation.
+
+    TYPES: BEGIN OF param,
+             name TYPE string,
+             dobj TYPE string,
+           END OF param,
+           param_tab_type TYPE TABLE OF param WITH EMPTY KEY.
+
+    DATA: txt1 TYPE string VALUE `hello`,
+          txt2 TYPE string VALUE `world`,
+          txt3 TYPE string VALUE `ABAP`.
+
+    DATA(param_table) = VALUE param_tab_type(
+      ( name = `txt1` dobj = `txt1` )
+      ( name = `txt2` dobj = `txt2` )
+      ( name = `txt3` dobj = `txt3` ) ).
+
+    EXPORT (param_table) TO DATA BUFFER buffer.
+
+    "The example reads the content into structure components.
+    DATA: BEGIN OF values,
+            txt1 TYPE string,
+            txt2 TYPE string,
+            txt3 TYPE string,
+          END OF values.
+
+    param_table = VALUE param_tab_type(
+      ( name = `txt1` dobj = `values-txt1` )
+      ( name = `txt2` dobj = `values-txt2` )
+      ( name = `txt3` dobj = `values-txt3` ) ).
+
+    IMPORT (param_table) FROM DATA BUFFER buffer.
+
+    out->write( data = values name = `values` ).
+    out->write( |\n| ).
+
+    "--------- Exporting and importing objects of classes ----------
+    "The following example explores:
+    "- Objects of the example class are created
+    "- The objects are serialized using a CALL TRANSFORMATION statement
+    "- As a prerequisite, the class includes the IF_SERIALIZABLE_OBJECT interface
+    "- In a DO loop, 3 objects of the class are created.
+    "- After serializing the objects, the data is exported with compression activated.
+    "- Then, the data is read and deserialized again.
+    "- Instance attributes are accessed and added to an internal table for output
+    "  purposes. The class is setup that instance attributes receive different values,
+    "  for example, the current UTC timestamp is set.
+
+    TYPES: BEGIN OF info,
+             text      TYPE string,
+             timestamp TYPE utclong,
+           END OF info.
+
+    DATA info_tab TYPE TABLE OF info WITH EMPTY KEY.
+
+    DO 3 TIMES.
+      DATA(obj_ref) = NEW zcl_some_class( |Instance { sy-index }| ).
+      CALL TRANSFORMATION id SOURCE oref = obj_ref RESULT XML DATA(xml).
+
+      EXPORT xml_data = xml TO DATA BUFFER buffer COMPRESSION ON.
+
+      CLEAR obj_ref.
+
+      IMPORT xml_data = xml FROM DATA BUFFER buffer.
+
+      CALL TRANSFORMATION id SOURCE XML xml RESULT oref = obj_ref.
+      DATA(text_deserialized) = obj_ref->text.
+      DATA(timestamp_deserialized) = obj_ref->timestamp.
+      APPEND VALUE #( text = text_deserialized timestamp = timestamp_deserialized ) TO info_tab.
+    ENDDO.
+
+    out->write( info_tab ).
+    out->write( |\n| ).
+
+    "--------- Exporting and importing data objects to an internal table as storage medium ----------
+    "The following example exports an internal table to a data cluster in an internal table,
+    "and imports it into another internal table.
+    "Note that there are prerequisites for the internal table as storage medium. See the documentation.
+    "As the width of the second column is restricted, the data is stored across multiple table lines.
+
+    TYPES: BEGIN OF buffer_line,
+             id    TYPE i,
+             clstr TYPE x LENGTH 100,
+           END OF  buffer_line.
+
+    DATA tab_buffer TYPE TABLE OF buffer_line WITH EMPTY KEY.
+    EXPORT itab = itab1 TO INTERNAL TABLE tab_buffer.
+
+    out->write( |Lines in buffer table: { lines( tab_buffer ) }| ).
+    out->write( |\n| ).
+
+    IMPORT itab = itab2 FROM INTERNAL TABLE tab_buffer.
+
+    ASSERT itab2 = itab1.
+
+  ENDMETHOD.
+
+  METHOD constructor.
+    me->timestamp = utclong_current( ).
+
+    IF text IS SUPPLIED AND text IS NOT INITIAL.
+      me->text = text.
+    ENDIF.
+  ENDMETHOD.
+
+ENDCLASS.
+```
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## More Information
 
