@@ -28,8 +28,8 @@
     - [Accessing Attributes](#accessing-attributes)
     - [Calling Methods](#calling-methods)
       - [Excursion: Inline Declarations, Returning Parameters](#excursion-inline-declarations-returning-parameters)
-    - [Method Chaining](#method-chaining)
     - [Self-Reference me](#self-reference-me)
+    - [Method Chaining and Chained Attribute Access](#method-chaining-and-chained-attribute-access)
     - [Excursion: Example Class](#excursion-example-class)
   - [Inheritance](#inheritance)
     - [Inheritance-Related Syntax](#inheritance-related-syntax)
@@ -1572,13 +1572,44 @@ ENDCLASS.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-### Method Chaining
+### Self-Reference me
 
-As shown in the previous example, method chaining is possible for functional method calls (i.e. methods that have exactly one return value declared with `RETURNING`) at appropriate read positions. In this case, the method's return value is used as an ABAP operand.
-A chained method call can consist of multiple functional methods that are linked using component selectors `->`. The return values of each method are references to the next method.
+When implementing instance methods, you can optionally make use of the implicitly available object reference variable [`me`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenme.htm) which is always available at runtime and points to the respective object itself. You can use it to refer to components of the instance of a particular class:
+``` abap
+... some_method( ... ) ...
+
+... me->some_method( ... ) ...
+```
+
+The following code snippet shows a method implementation. In this case, a local data object from within the method and an instance attribute that is declared in the declaration part of the class in which this method is implemented have identical names. `me` is used to access the non-local data object.
+
+``` abap
+METHOD me_ref.
+
+  DATA str TYPE string VALUE `Local string`.
+
+  DATA(local_string) = str.
+
+  "Assuming there is a variable str declared in the class declaration part.
+  DATA(other_string) = me->str.
+
+ENDMETHOD.
+```
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+### Method Chaining and Chained Attribute Access
+
+- As shown in a previous example, method chaining is possible for functional method calls (i.e. methods that have exactly one return value declared with `RETURNING`) at appropriate read positions. 
+- In this method design, the return values are reference variables that point to objects with the next method in question. The methods in the example class below assign the objects to the returning parameter using the self-reference `me`. 
+- The method's return value is then used as an ABAP operand.
+- A chained method call can consist of multiple functional methods that are linked using component selectors `->`. 
+- Class attributes can also be added to the chain.
+- In the context of method chaining, constructor expressions (e.g. with `NEW`) come in handy. The example class below shows a functional method call (i.e. the return value of the method is used as an ABAP operand), and a standalone statement.
+
+The following example illustrates method chaining. Find a self-contained example class further down.
 
 ```abap
-"The following example demonstrates method chaining
 "The following class creates random integers. Find more information in the
 "class documentation.
 "Both methods have returning parameters specified.
@@ -1631,33 +1662,106 @@ DATA(json) = xco_cp_json=>data->builder( )->begin_object(
   )->end_object( )->get_data( )->to_string( ).
 ```
 
-<p align="right"><a href="#top">⬆️ back to top</a></p>
+Self-contained example class demonstrating chained method calls with a function method call and a standalone statement:
 
-### Self-Reference me
+```abap
+CLASS zcl_some_class DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
 
-When implementing instance methods, you can optionally make use of the implicitly available object reference variable [`me`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenme.htm) which is always available at runtime and points to the respective object itself. You can use it to refer to components of the instance of a particular class:
-``` abap
-... some_method( ... ) ...
+  PUBLIC SECTION.
+    INTERFACES if_oo_adt_classrun.
+    METHODS add_text IMPORTING str        TYPE string
+                     RETURNING VALUE(ref) TYPE REF TO zcl_some_class.
+    METHODS add_space RETURNING VALUE(ref) TYPE REF TO zcl_some_class.
+    METHODS add_period RETURNING VALUE(ref) TYPE REF TO zcl_some_class.
+    METHODS display_text IMPORTING cl_run_ref TYPE REF TO if_oo_adt_classrun_out.
+    DATA text TYPE string.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+ENDCLASS.
 
-... me->some_method( ... ) ...
+CLASS zcl_some_class IMPLEMENTATION.
+  METHOD if_oo_adt_classrun~main.
+
+    "----------------------------------------------------------------
+    "-------- Method chaining with a function method call -----------
+    "---------------------------------------------------------------- 
+    "This example chained method call includes a chained attribute access
+    "at the end so that the target variable contains the content of the
+    "attribute.
+    
+    "Hallo NAME. This is an example of method chaining.
+    DATA(some_text) = NEW zcl_some_class(
+                      )->add_text( `Hallo`
+                      )->add_space(
+                      )->add_text( xco_cp=>sy->user( )->name
+                      )->add_period(
+                      )->add_space(
+                      )->add_text( `This`
+                      )->add_space(
+                      )->add_text( `is`
+                      )->add_space(
+                      )->add_text( `an`
+                      )->add_space(
+                      )->add_text( `example`
+                      )->add_space(
+                      )->add_text( `of`
+                      )->add_space(
+                      )->add_text( `method`
+                      )->add_space(
+                      )->add_text( `chaining`
+                      )->add_period(
+                      )->text.
+
+    out->write( some_text ).
+
+    "----------------------------------------------------------------
+    "-------- Method chaining with a standalone statement -----------
+    "----------------------------------------------------------------
+    "In the example, the final method call in the chain receives the
+    "classrun instance available in the implementation of the 
+    "if_oo_adt_classrun~main method.
+
+    "Console output: Lorem ipsum dolor sit amet
+    NEW zcl_some_class( )->add_text( `Lorem`
+                        )->add_space(
+                        )->add_text( `ipsum`
+                        )->add_space(
+                        )->add_text( `dolor`
+                        )->add_space(
+                        )->add_text( `sit`
+                        )->add_space(
+                        )->add_text( `amet`
+                        )->display_text( out ).
+
+  ENDMETHOD.
+
+  METHOD add_text.
+    text &&= str.
+    ref = me.
+  ENDMETHOD.
+
+  METHOD add_space.
+    text &&= ` `.
+    ref = me.
+  ENDMETHOD.
+
+  METHOD display_text.
+    cl_run_ref->write( text ).
+  ENDMETHOD.
+
+  METHOD add_period.
+    text &&= `.`.
+    ref = me.
+  ENDMETHOD.
+
+ENDCLASS.
 ```
 
-The following code snippet shows a method implementation. In this case, a local data object from within the method and an instance attribute that is declared in the declaration part of the class in which this method is implemented have identical names. `me` is used to access the non-local data object.
-
-``` abap
-METHOD me_ref.
-
-  DATA str TYPE string VALUE `Local string`.
-
-  DATA(local_string) = str.
-
-  "Assuming there is a variable str declared in the class declaration part.
-  DATA(other_string) = me->str.
-
-ENDMETHOD.
-```
-
 <p align="right"><a href="#top">⬆️ back to top</a></p>
+
 
 ### Excursion: Example Class
 
