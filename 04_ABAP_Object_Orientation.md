@@ -20,7 +20,6 @@
       - [Defining Parameters as Optional](#defining-parameters-as-optional)
       - [Defining Input Parameters as Preferred](#defining-input-parameters-as-preferred)
       - [Constructors](#constructors)
-      - [Example for Method Definitions](#example-for-method-definitions)
   - [Working with Objects and Components](#working-with-objects-and-components)
     - [Declaring Object Reference Variables](#declaring-object-reference-variables)
     - [Creating Objects](#creating-objects)
@@ -47,6 +46,7 @@
     - [Events](#events)
     - [Examples for Design Patterns: Factory Methods and Singletons](#examples-for-design-patterns-factory-methods-and-singletons)
     - [Class-Based Exceptions](#class-based-exceptions)
+    - [ABAP Doc Comments](#abap-doc-comments)
   - [More Information](#more-information)
   - [Executable Example](#executable-example)
 
@@ -525,6 +525,78 @@ ENDCLASS.
     section. Note that you must create an instance of a class first before using instance methods.
 - `CLASS-METHODS` and `METHODS` can be followed by a colon to list one or more methods, separated by commas, or without a colon to declare a single method.
 
+
+The following code snippet shows (which anticipates aspects described in the following sections, such as specifying the method signature, constructors etc.) multiple method definitions in the public section of a global class. Most of the formal
+parameters of the demo methods below are defined by just using the
+parameter name. This means passing by reference (returning parameters
+require to be passed by value).
+``` abap
+CLASS zcl_some_class DEFINITION
+  PUBLIC                       
+  FINAL                        
+  CREATE PUBLIC. 
+
+    PUBLIC SECTION.
+      METHODS: inst_meth1,                                      "instance methods
+
+               inst_meth2 IMPORTING a TYPE string,
+
+               inst_meth3 IMPORTING b TYPE i
+                          EXPORTING c TYPE i,
+
+               inst_meth4 IMPORTING d TYPE string
+                          RETURNING VALUE(e) TYPE string,
+
+               "Note that method declarations should be done with care. An example
+               "as follows may not be advisable, e.g. specifying multiple output
+               "parameters (both exporting and returning parameters for a method).
+               "As is valid for all examples in the cheat sheet, the focus is on
+               "syntax options.
+               inst_meth5 IMPORTING f TYPE i
+                          EXPORTING g TYPE i
+                          CHANGING  h TYPE string
+                          RETURNING VALUE(i) TYPE i
+                          RAISING   cx_sy_zerodivide,
+
+              constructor IMPORTING j TYPE i.                   "instance constructor with importing parameter
+
+      CLASS-METHODS: stat_meth1,                                "static methods  
+
+                     stat_meth2 IMPORTING k TYPE i              
+                                EXPORTING l TYPE i,
+
+                     class_constructor,                         "static constructor
+
+                     "Options of formal parameter definitions
+                     stat_meth3 IMPORTING VALUE(m) TYPE i,       "pass by value
+                     stat_meth4 IMPORTING REFERENCE(n) TYPE i,   "pass by reference
+                     stat_meth5 IMPORTING o TYPE i,              "same as n; the specification of REFERENCE(...) is optional
+                     stat_meth6 RETURNING VALUE(p) TYPE i,       "pass by value once more (note: it's the only option for returning parameters)
+
+                     "OPTIONAL/DEFAULT additions
+                     stat_meth7 IMPORTING q TYPE i DEFAULT 123
+                                          r TYPE i OPTIONAL,
+
+                     "The examples above use a complete type for 
+                     "the parameter specification. Generic types
+                     "are possible.
+                     stat_meth8 IMPORTING s TYPE any           "Any data type
+                                          t TYPE any table     "Any internal table type                 
+                                          u TYPE clike.        "Character-like types (c, n, string, d, t and character-like flat structures)
+
+ENDCLASS.
+
+CLASS zcl_some_class IMPLEMENTATION.
+   METHOD inst_meth1.
+      ...
+   ENDMETHOD.
+
+  ... "Further method implementations. Note that all declared methods must go here.
+ENDCLASS.
+```
+
+
+
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
 #### Parameter Interface
@@ -955,6 +1027,100 @@ ENDCLASS.
   - [`DEFAULT`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapmethods_parameters.htm#!ABAP_ONE_ADD@1@): Also makes the passing of an actual parameter optional. However, when using this addition, as the name implies, a default value is set.
   - In the method implementations you may want to check whether an actual parameter was passed. You can use predicate expressions using `IS SUPPLIED`. See the example further down.
 
+
+The following example (which anticipates aspects described in the following sections, such as calling methods) includes three methods that specify optional parameters. The methods are called with and without providing actual parameters. The method implementations include the use of the predicate expression `IS SUPPLIED` with `IF` statements and the `COND` operator. The console output of the example, run with F9, is as follows:
+
+```
+meth1_result_a                                    
+The parameter is not supplied. Initial value: "0".
+meth1_result_b                        
+The parameter is supplied. Value: "2".
+meth2_result_a                                    
+The parameter is not supplied. Default value: "1".
+meth2_result_b                        
+The parameter is supplied. Value: "3".
+meth3_result_b                                                                                      
+num1: "4" / num2 (is not supplied; initial value): "0" / num3 (is not supplied; default value): "1" 
+meth3_result_c                                                                   
+num1: "5" / num2 (is supplied): "6" / num3 (is not supplied; default value): "1" 
+meth3_result_d                                                                   
+num1: "7" / num2 (is not supplied; initial value): "0" / num3 (is supplied): "8" 
+```
+
+```abap
+CLASS zcl_some_class DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
+
+  PUBLIC SECTION.
+    INTERFACES if_oo_adt_classrun.
+    METHODS meth1 IMPORTING num        TYPE i OPTIONAL
+                  RETURNING VALUE(str) TYPE string.
+    METHODS meth2 IMPORTING num        TYPE i DEFAULT 1
+                  RETURNING VALUE(str) TYPE string.
+    METHODS meth3 IMPORTING num1       TYPE i
+                            num2       TYPE i OPTIONAL
+                            num3       TYPE i DEFAULT 1
+                  RETURNING VALUE(str) TYPE string.
+
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+ENDCLASS.
+
+CLASS zcl_some_class IMPLEMENTATION.
+  METHOD if_oo_adt_classrun~main.
+
+    DATA(meth1_result_a) = meth1( ).
+    DATA(meth1_result_b) = meth1( 2 ).
+
+    DATA(meth2_result_a) = meth2( ).
+    DATA(meth2_result_b) = meth2( 3 ).
+
+    "The commented out statement is not possible as there is one
+    "non-optional parameter.
+    "DATA(meth3_result_a) = meth3( ).
+    DATA(meth3_result_b) = meth3( 4 ).
+    DATA(meth3_result_c) = meth3( num1 = 5 num2 = 6 ).
+    DATA(meth3_result_d) = meth3( num1 = 7 num3 = 8 ).
+
+    out->write( data = meth1_result_a name = `meth1_result_a` ).
+    out->write( data = meth1_result_b name = `meth1_result_b` ).
+    out->write( data = meth2_result_a name = `meth2_result_a` ).
+    out->write( data = meth2_result_b name = `meth2_result_b` ).
+    out->write( data = meth3_result_b name = `meth3_result_b` ).
+    out->write( data = meth3_result_c name = `meth3_result_c` ).
+    out->write( data = meth3_result_d name = `meth3_result_d` ).
+
+  ENDMETHOD.
+
+  METHOD meth1.
+    IF num IS SUPPLIED.
+      str = |The parameter is supplied. Value: "{ num }".|.
+    ELSE.
+      str = |The parameter is not supplied. Initial value: "{ num }".|.
+    ENDIF.
+  ENDMETHOD.
+
+  METHOD meth2.
+    str = COND #( WHEN num IS SUPPLIED THEN |The parameter is supplied. Value: "{ num }".|
+                  ELSE |The parameter is not supplied. Default value: "{ num }".|  ).
+  ENDMETHOD.
+
+  METHOD meth3.
+    str = |num1: "{ num1 }" / |.
+
+    str &&= |{ COND #( WHEN num2 IS SUPPLIED THEN |num2 (is supplied): "{ num2 }"|
+                       ELSE |num2 (is not supplied; initial value): "{ num2 }"| ) } / |.
+
+    str &&= |{ COND #( WHEN num3 IS SUPPLIED THEN |num3 (is supplied): "{ num3 }"|
+                       ELSE |num3 (is not supplied; default value): "{ num3 }"| ) } |.
+  ENDMETHOD.
+
+ENDCLASS.
+```
+
+
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
 #### Defining Input Parameters as Preferred
@@ -1144,75 +1310,6 @@ ENDCLASS.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-#### Example for Method Definitions 
-
-The following snippet shows
-multiple method definitions in the public section of a global class. Most of the formal
-parameters of the demo methods below are defined by just using the
-parameter name. This means passing by reference (returning parameters
-require to be passed by value).
-``` abap
-CLASS zcl_some_class DEFINITION
-  PUBLIC                       
-  FINAL                        
-  CREATE PUBLIC. 
-
-    PUBLIC SECTION.
-      METHODS: inst_meth1,                                      "instance methods
-
-               inst_meth2 IMPORTING a TYPE string,
-
-               inst_meth3 IMPORTING b TYPE i
-                          EXPORTING c TYPE i,
-
-               inst_meth4 IMPORTING d TYPE string
-                          RETURNING VALUE(e) TYPE string,
-
-               inst_meth5 IMPORTING f TYPE i
-                          EXPORTING g TYPE i
-                          CHANGING  h TYPE string
-                          RETURNING VALUE(i) TYPE i
-                          RAISING   cx_sy_zerodivide,
-
-              constructor IMPORTING j TYPE i.                   "instance constructor with importing parameter
-
-      CLASS-METHODS: stat_meth1,                                "static methods  
-
-                     stat_meth2 IMPORTING k TYPE i              
-                                EXPORTING l TYPE i,
-
-                     class_constructor,                         "static constructor
-
-                     "Options of formal parameter definitions
-                     stat_meth3 IMPORTING VALUE(m) TYPE i,       "pass by value
-                     stat_meth4 IMPORTING REFERENCE(n) TYPE i,   "pass by reference
-                     stat_meth5 IMPORTING o TYPE i,              "same as n; the specification of REFERENCE(...) is optional
-                     stat_meth6 RETURNING VALUE(p) TYPE i,       "pass by value once more (note: it's the only option for returning parameters)
-
-                     "OPTIONAL/DEFAULT additions
-                     stat_meth7 IMPORTING q TYPE i DEFAULT 123
-                                          r TYPE i OPTIONAL,
-
-                     "The examples above use a complete type for 
-                     "the parameter specification. Generic types
-                     "are possible.
-                     stat_meth8 IMPORTING s TYPE any           "Any data type
-                                          t TYPE any table     "Any internal table type                 
-                                          u TYPE clike.        "Character-like types (c, n, string, d, t and character-like flat structures)
-
-ENDCLASS.
-
-CLASS zcl_some_class IMPLEMENTATION.
-   METHOD inst_meth1.
-      ...
-   ENDMETHOD.
-
-  ... "Further method implementations. Note that all declared methods must go here.
-ENDCLASS.
-```
-
-<p align="right"><a href="#top">⬆️ back to top</a></p>
-
 ## Working with Objects and Components
 
 ### Declaring Object Reference Variables
@@ -1267,15 +1364,17 @@ DATA(ref2) = NEW some_class( ).      "Reference variable declared inline, explic
 "instance constructor. If a class has, actual parameters must be provided.                                      
 DATA(ref_mand_param) = NEW another_class( ip1 = ... ip2 = ... ).
 
-"Older syntax
-"CREATE OBJECT ref3.                  "Type derived from already declared ref3
-"CREATE OBJECT ref4 TYPE some_class.  "Corresponds to the result of the expression above
+"Older syntax, replaced by NEW operator 
+"However, the CREATE OBJECT is required in dynamic object creation.
+CREATE OBJECT ref3.                  "Type derived from already declared ref3
+CREATE OBJECT ref4 TYPE some_class.  "Corresponds to the result of the expression above
 ```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ### Working with Reference Variables
-Some examples for working with reference variables: 
+
+This section covers some aspects of working with reference variables.
 
 **Assigning Reference Variables**
 
@@ -1716,6 +1815,7 @@ CLASS zcl_some_class DEFINITION
                      RETURNING VALUE(ref) TYPE REF TO zcl_some_class.
     METHODS add_space RETURNING VALUE(ref) TYPE REF TO zcl_some_class.
     METHODS add_period RETURNING VALUE(ref) TYPE REF TO zcl_some_class.
+    METHODS return_text RETURNING VALUE(str) TYPE string.
     METHODS display_text IMPORTING cl_run_ref TYPE REF TO if_oo_adt_classrun_out.
     DATA text TYPE string.
   PROTECTED SECTION.
@@ -1727,13 +1827,10 @@ CLASS zcl_some_class IMPLEMENTATION.
 
     "----------------------------------------------------------------
     "-------- Method chaining with a functional method call ---------
-    "---------------------------------------------------------------- 
-    "This example chained method call includes a chained attribute access
-    "at the end so that the target variable contains the content of the
-    "attribute.
-    
+    "----------------------------------------------------------------
+
     "Hallo NAME. This is an example of method chaining.
-    DATA(some_text) = NEW zcl_some_class(
+    DATA(text1) = NEW zcl_some_class(
                       )->add_text( `Hallo`
                       )->add_space(
                       )->add_text( xco_cp=>sy->user( )->name
@@ -1753,16 +1850,50 @@ CLASS zcl_some_class IMPLEMENTATION.
                       )->add_space(
                       )->add_text( `chaining`
                       )->add_period(
+                      )->return_text( ).
+
+    out->write( text1 ).
+
+    "The following example chained method call includes a chained attribute
+    "access at the end so that the target variable contains the content of
+    "the attribute.
+
+    "Example result: Today is 2025-03-05. It's 14:30:38. Have a nice day.
+    DATA(text2) = NEW zcl_some_class(
+                      )->add_text( `Today`
+                      )->add_space(
+                      )->add_text( `is`
+                      )->add_space(
+                      )->add_text( xco_cp=>sy->date( )->as( xco_cp_time=>format->iso_8601_extended )->value
+                      )->add_period(
+                      )->add_space(
+                      )->add_text( `It's`
+                      )->add_space(
+                      )->add_text( xco_cp=>sy->time( xco_cp_time=>time_zone->user
+                                    )->as( xco_cp_time=>format->iso_8601_extended
+                                    )->value
+                      )->add_period(
+                      )->add_space(
+                      )->add_text( `Have`
+                      )->add_space(
+                      )->add_text( `a`
+                      )->add_space(
+                      )->add_text( `nice`
+                      )->add_space(
+                      )->add_text( `day`
+                      )->add_period(
                       )->text.
 
-    out->write( some_text ).
+    out->write( text2 ).
 
     "----------------------------------------------------------------
     "-------- Method chaining with a standalone statement -----------
     "----------------------------------------------------------------
-    "In the example, the final method call in the chain receives the
-    "classrun instance available in the implementation of the 
-    "if_oo_adt_classrun~main method.
+
+    "In the example, the final method call in the chain receives
+    "the classrun instance available in the implementation of the
+    "if_oo_adt_classrun~main method. The method implementation
+    "includes the writing to the console.
 
     "Console output: Lorem ipsum dolor sit amet
     NEW zcl_some_class( )->add_text( `Lorem`
@@ -1795,6 +1926,10 @@ CLASS zcl_some_class IMPLEMENTATION.
   METHOD add_period.
     text &&= `.`.
     ref = me.
+  ENDMETHOD.
+
+  METHOD return_text.
+    str = me->text.
   ENDMETHOD.
 
 ENDCLASS.
@@ -4281,6 +4416,130 @@ obj_factory = class=>factory_method( par = ... ).
 
 - [Catchable exceptions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencatchable_exception_glosry.htm) are represented by exception objects of exception classes.
 - Find an overview in the [Exceptions and Runtime Errors](27_Exceptions.md) cheat sheet.
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+### ABAP Doc Comments
+
+- The ABAP Doc documentation tool allows you to add special ABAP Doc comments to ABAP source code for documentation.  
+- ABAP Doc comments consist of one or more lines starting with `"!`.  
+- You can place these comments before declarations (e.g., in classes and methods) to document functionality, add notes, and so on.  
+- In ADT, click, for example, on class names or methods to display ABAP Doc comments (if available) in the *ABAP Element Info*, or choose F2 to display the information.
+- Find more information on ABAP Doc [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABENDOCCOMMENT.html).
+- The following example demonstrates ABAP Doc comments, showing various commenting options, including:  
+  - Using HTML tags for formatting. Only a selected set of HTML tags is supported. You can choose *CTRL + Space* in the ABAP Doc comment for input help.
+  - Special tagging and linking options. Refer to the [documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABENDOCCOMMENT.html) for more details.
+  - Special method signature specifications like `@parameter | ...` for parameters and `@raising | ...` for declared exceptions.
+
+
+```abap
+"! <p class="shorttext">Demo ABAP Doc comments</p>
+"!
+"! <p>This class serves as an example to illustrate comments for ABAP Doc.
+"! The comments begin with the string <strong>"!</strong>, a special form of regular comments introduced by <strong>"</strong>. <br/><br/>
+"! The {@link zcl_some_class.METH:calculate} method of the example class performs a calculation. </p>
+"! <h2>Notes</h2>
+"! <ul>
+"! <li>ABAP Doc documents declarations in ABAP programs.</li>
+"! <li>The ABAP development tools for Eclipse (ADT) support ABAP Doc.</li>
+"! <li>The content of ABAP Doc comments is converted to HTML and displayed appropriately.</li>
+"! <li>Check out the supported HTML tags by choosing <em>CTRL + Space</em> after <em>"!</em>. h1 - h3 tags can also be used.</li>
+"! <li>Escaping special characters:  <strong>&quot;, &apos;, &lt;, &gt;, &#64;, &#123;, &#124;, and &#125;</strong></li>
+"! </ul>
+"! <h2>Steps</h2>
+"! <ol>
+"! <li>Create a demo class named <em>zcl_some_class</em></li>
+"! <li>Copy and paste the code of this example and activate.</li>
+"! <li>Click the class name to display the comments in the <em>ABAP Element Info</em> ADT tab.</li>
+"! <li>You can also choose F2 for the class name to display the information.</li>
+"! </ol>
+"! <h3>More examples</h3>
+"! Find more code examples in ABAP cheat sheet demo classes, such as {@link zcl_demo_abap_objects} and others. <br/>
+"! <h3>Link examples</h3>
+"! <ul>
+"! <li>Repository objects such as the following, and more:
+"! <ul><li>Classes, e.g. {@link zcl_some_class}</li>
+"! <li>Interfaces, e.g. {@link if_oo_adt_classrun}</li>
+"! <li>CDS artifacts, e.g. {@link i_apisforclouddevelopment}</li>
+"! <li>DDIC database tables, e.g. {@link zdemo_abap_carr}</li>
+"! <li>DDIC data elements, e.g. {@link land1}</li></ul>
+"! <li>Method: {@link zcl_some_class.METH:calculate}</li>
+"! <li>Constant: {@link zcl_some_class.DATA:const}</li>
+"! <li>Data object: {@link zcl_some_class.DATA:dobj}</li>
+"! <li>Method parameter: {@link zcl_some_class.METH:calculate.DATA:operator}</li>
+"! <li>Interface implemented in a class: {@link zcl_some_class.INTF:if_oo_adt_classrun}</li>
+"! <li>Interface method implemented in a class: {@link zcl_some_class.INTF:if_oo_adt_classrun.METH:main}</li>
+"! <li>DDIC domain: {@link DOMA:land1}</li>
+"! <li>XSLT: {@link XSLT:id}</li>
+"! </ul>
+CLASS zcl_some_class DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
+
+  PUBLIC SECTION.
+    INTERFACES if_oo_adt_classrun.
+
+    TYPES: basetype TYPE c LENGTH 1,
+           BEGIN OF ENUM t_enum_calc STRUCTURE en_calc BASE TYPE basetype,
+             init     VALUE IS INITIAL,
+             plus     VALUE '+',
+             minus    VALUE '-',
+             multiply VALUE '*',
+             divide   VALUE '/',
+           END OF ENUM t_enum_calc STRUCTURE en_calc.
+
+    "! <p>This method performs a calculation.</p>
+    "! @parameter num1 | First number for the calcation
+    "! @parameter num2 | Second number for the calcation
+    "! @parameter operator | Operator. Only one of the four operators +, -, *, / is allowed.
+    "! The value is represented by an enumerated type. Note that there is no handling if
+    "! the assigned value is initial.
+    "! @parameter result | Result of the calculation
+    "! @raising cx_sy_zerodivide | Zero division
+    "! @raising cx_sy_arithmetic_overflow | Arithmetic overflow
+    CLASS-METHODS calculate IMPORTING num1          TYPE i
+                                      num2          TYPE i
+                                      operator      TYPE t_enum_calc
+                            RETURNING VALUE(result) TYPE decfloat34
+                            RAISING   cx_sy_zerodivide cx_sy_arithmetic_overflow.
+
+    "! This is an ABAP Doc comment for a constant
+    CONSTANTS const TYPE i VALUE 123.
+
+    "! This is an ABAP Doc comment for a static attribute of a class
+    CLASS-DATA dobj TYPE i.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+ENDCLASS.
+
+CLASS zcl_some_class IMPLEMENTATION.
+  METHOD if_oo_adt_classrun~main.
+
+    DATA(result_plus) = calculate( num1 = 1 num2 = 10 operator = en_calc-plus ).
+    DATA(result_minus) = calculate( num1 = 1 num2 = 10 operator = en_calc-minus ).
+    DATA(result_multiply) = calculate( num1 = 2 num2 = 5 operator = en_calc-multiply ).
+    DATA(result_divide) = calculate( num1 = 10 num2 = 5 operator = en_calc-divide ).
+
+    out->write( data = result_plus name = `result_plus` ).
+    out->write( data = result_minus name = `result_minus` ).
+    out->write( data = result_multiply name = `result_multiply` ).
+    out->write( data = result_divide name = `result_divide` ).
+
+  ENDMETHOD.
+
+  METHOD calculate.
+
+    result = SWITCH #( operator
+                       WHEN en_calc-plus THEN num1 + num2
+                       WHEN en_calc-minus THEN num1 - num2
+                       WHEN en_calc-multiply THEN num1 * num2
+                       WHEN en_calc-divide THEN num1 / num2
+                       ELSE '0' ).
+
+  ENDMETHOD.
+ENDCLASS.
+```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 

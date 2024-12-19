@@ -1026,6 +1026,9 @@ READ TABLE dref->* ASSIGNING FIELD-SYMBOL(<read>) WITH KEY ('CARRID') = 'AA'.
 DATA(line) = CONV zdemo_abap_carr( dref->*[ ('CARRID') = 'AA' ] ).
 dref->*[ ('CARRID') = 'AA' ] = VALUE zdemo_abap_carr( BASE dref->*[ ('CARRID') = 'AA' ] carrid = 'XY' ).
 dref->*[ ('CARRID') = 'XY' ]-('CARRID') = 'ZZ'.
+"Note: As the example uses a fully generic type, explicit or implicit index 
+"operations are not allowed.
+"dref->*[ 1 ]-('CARRID') = 'ZZ'.
 
 "Table functions
 DATA(num_tab_lines) = lines( dref->* ).
@@ -1285,9 +1288,9 @@ ASSIGN ('ZDEMO_ABAP_OBJECTS_INTERFACE')=>('CONST_INTF') TO <fs>.
 ASSIGN NEW zcl_demo_abap_objects( )->('PUBLIC_STRING') TO <fs>.
 
 "ELSE UNASSIGN addition
-"If ELSE UNASSIGN is specified in the context of dynamic assignments/accesses,
-"no memory area is assigned to the field symbol. It is unassigned after
-"the ASSIGN statement.
+"If ELSE UNASSIGN is specified and assignment does not work in the context 
+"of dynamic assignments/accesses, no memory area is assigned to the field 
+"symbol. It is unassigned after the ASSIGN statement.
 "Note: For the static variant of the ASSIGN statement, i.e. if the memory area
 "to be assigned following the ASSIGN keyword is statically specified, the addition
 "ELSE UNASSIGN is implicitly set and cannot be used explicitly.
@@ -1370,7 +1373,7 @@ ASSIGN dobj_c10 TO <casttype> CASTING TYPE HANDLE tdo_elem. "1234
 "CREATE DATA dref TYPE ... TABLE OF (typename) ...
 "CREATE DATA dref TYPE REF TO (typename).
 "CREATE DATA dref TYPE LINE OF (typename).
-"CREATE DATA dref LIKE struc-(dobjname).
+"CREATE DATA dref LIKE struc-(compname).
 "CREATE DATA dref TYPE (absolute_name).
 "CREATE DATA dref TYPE HANDLE type_description_object.
 
@@ -1489,6 +1492,18 @@ CREATE OBJECT oref_dyn TYPE ('ZCL_DEMO_ABAP_OBJECTS').
 
 DATA cl TYPE string VALUE `ZCL_DEMO_ABAP_OBJECTS`.
 CREATE OBJECT oref_dyn TYPE (cl).
+
+"Specifying a wrong/non-existent type name
+TRY.
+    CREATE OBJECT oref_dyn TYPE ('THIS_CLASS_DOES_NOT_EXIST').
+  CATCH cx_sy_create_object_error.
+ENDTRY.
+
+"Using an absolute name for the dynamic type specification
+"Getting the absolute name using RTTI
+DATA(abs_name_cl) = cl_abap_typedescr=>describe_by_name( 'ZCL_DEMO_ABAP_OBJECTS' )->absolute_name.
+CREATE OBJECT oref_dyn TYPE (abs_name_cl).
+CREATE OBJECT oref_dyn TYPE ('\CLASS=ZCL_DEMO_ABAP_OBJECTS').
 
 "Note: If the class has an instance constructor specified with importing
 "parameters, you can (or must in the case of non-optional parameters) pass
@@ -2288,16 +2303,24 @@ ENDCLASS.
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ### Dynamic Invoke
-The following code snippet shows dynamically specifying [procedures](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenprocedure_glosry.htm "Glossary Entry") calls. The snippet covers methods. Find an example of a dynamic function module call in the [Program Flow Logic](./13_Program_Flow_Logic.md#function-module-example) cheat sheet.
+
+
+- The following code snippet shows dynamically specifying [procedures](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenprocedure_glosry.htm "Glossary Entry") calls.
+- The snippet covers methods. Dynamic method calls require `CALL METHOD` statements. 
+- Find an example of a dynamic function module call in the [Program Flow Logic](./13_Program_Flow_Logic.md#function-module-example) cheat sheet.
+
+
+Syntax patterns: 
 
 ``` abap
-"Note: Dynamic method calls require a CALL METHOD statement.
 "The following examples assume that there are no mandatory
 "parameters defined for the method.
 "Possible for methods of the same class, works like me->(meth)
 CALL METHOD (meth).
+
 "Class specified statically
 CALL METHOD class=>(meth).
+
 "Object reference variable specified statically;
 "also possible for interface reference variables
 CALL METHOD oref->(meth).
@@ -2305,6 +2328,7 @@ CALL METHOD oref->(meth).
 "The following statements are possible for all visible static methods
 "Class dynamically specified
 CALL METHOD (class)=>meth.
+
 "Class and method dynamically specified
 CALL METHOD (class)=>(meth).
 
@@ -2328,38 +2352,10 @@ CALL METHOD class=>(meth) PARAMETER-TABLE ptab.
 "              value -> pointer to appropriate actual parameter,
 "                       is of type REF TO data
 "The addition EXCEPTION-TABLE for exceptions is not dealt with here.
-
-"Example that uses the PARAMETER-TABLE addition
-"Creating an instance by specifying the type statically
-"An example class of the cheat sheet repository is used.
-DATA(oref1) = NEW zcl_demo_abap_objects( ).
-"Calling an instance method
-"The method multiplies an integer by 3.
-"The calculation result is returned.
-DATA(result) = oref1->triple( i_op = 2 ). "6
-
-"Dynamic equivalent
-"Creating an instance of a class by specifying the type
-"dynamically
-DATA oref2 TYPE REF TO object.
-CREATE OBJECT oref2 TYPE ('ZCL_DEMO_ABAP_OBJECTS').
-
-"Creating parameter table
-DATA(ptab) = VALUE abap_parmbind_tab( ( name  = 'I_OP'
-                                        kind  = cl_abap_objectdescr=>exporting
-                                        value = NEW i( 3 ) )
-                                      ( name  = 'R_TRIPLE'
-                                        kind  = cl_abap_objectdescr=>returning
-                                        value = NEW i( ) ) ).
-
-"Dynamic method call and specifying a parameter table
-CALL METHOD oref2->('TRIPLE') PARAMETER-TABLE ptab.
-result = ptab[ name = 'R_TRIPLE' ]-('VALUE')->*. "9
 ```
 
-**Example Class** 
-
-The commented example class below explores dynamic method calls with a simple method. You can create a demo class called `zcl_some_class` and copy and paste the following code. Once activated, you can choose *F9* in ADT to run the class. The example is designed to display output in the console that shows the result of calling different methods.
+**Example class 1** 
+The following example class explores dynamic method calls with simple methods. You can create a demo class called `zcl_some_class` and copy and paste the following code. Once activated, you can choose *F9* in ADT to run the class. The example is not designed to display output in the console.
 
 ```abap
 CLASS zcl_some_class DEFINITION
@@ -2369,141 +2365,185 @@ CLASS zcl_some_class DEFINITION
 
   PUBLIC SECTION.
     INTERFACES if_oo_adt_classrun.
-    METHODS meth IMPORTING num1       TYPE i
-                           num2       TYPE i
-                 EXPORTING add        TYPE i
-                           subtr      TYPE i
-                 CHANGING  abs_val    TYPE i
-                 RETURNING VALUE(ret) TYPE string.
-
+    METHODS inst_meth1.
+    METHODS inst_meth2 IMPORTING text          TYPE string
+                       RETURNING VALUE(result) TYPE string.
+    CLASS-METHODS stat_meth1.
+    CLASS-METHODS stat_meth2 IMPORTING text   TYPE string
+                             EXPORTING result TYPE string.
   PROTECTED SECTION.
   PRIVATE SECTION.
-
 ENDCLASS.
 
 CLASS zcl_some_class IMPLEMENTATION.
   METHOD if_oo_adt_classrun~main.
 
-    "-------------------- Static method call --------------------
+    "The following examples use both named and unnamed data objects randomly,
+    "i.e. ...=>(meth_name) or ...=>(`SOME_METH`), for example.
+    DATA(cl_name) = `ZCL_SOME_CLASS`.
+    DATA(meth_name1) = `STAT_METH1`.
 
-    "Creating object reference
-    DATA(oref_stat) = NEW zcl_some_class( ).
-    DATA: calc_result_addition    TYPE i,
-          calc_result_subtraction TYPE i,
-          some_number             TYPE i VALUE -123.
+    "------------------------------------------------------------------------
+    "---------------- Calling static methods dynamically --------------------
+    "------------------------------------------------------------------------
 
-    DATA(result_stat) = oref_stat->meth( EXPORTING num1 = 7
-                                                   num2 = 3
-                                         IMPORTING add = calc_result_addition
-                                                   subtr = calc_result_subtraction
-                                         CHANGING abs_val = some_number ).
+    "-------- Method without mandatory parameters defined --------
+    "The syntax is possible for methods of the same class.
+    CALL METHOD (meth_name1).
 
-    out->write( data = calc_result_addition name = `calc_result_addition` ).
-    out->write( data = calc_result_subtraction name = `calc_result_subtraction` ).
-    out->write( data = some_number name = `some_number` ).
-    out->write( data = result_stat name = `result_stat` ).
-    out->write( repeat( val = `*` occ = 80 ) ).
+    "The previous example method call works like me->(meth).
+    CALL METHOD me->(meth_name1).
 
-    "-------------------- Dynamic method calls --------------------
-    "The following method calls explore possible dynamic equivalents
-    "of the previous static method call.
+    "-------- Class specified statically, method specified dynamically --------
+    CALL METHOD zcl_some_class=>(meth_name1).
+
+    "-------- Class specified dynamically, method specified statically --------
+    CALL METHOD (`ZCL_SOME_CLASS`)=>stat_meth1.
+
+    "-------- Class and method specified dynamically --------
+    CALL METHOD (`ZCL_SOME_CLASS`)=>(`STAT_METH1`).
+
+    "-------- Specifying non-optional parameters --------
+    CALL METHOD (`ZCL_SOME_CLASS`)=>stat_meth2 EXPORTING text = `hallo`.
+
+    "Specifying the output parameter is optional
+    DATA res TYPE string.
+    CALL METHOD (`ZCL_SOME_CLASS`)=>stat_meth2 EXPORTING text = `hallo` IMPORTING result = res.
+    ASSERT res = `HALLO`.
+
+    "-------- Some examples for handling errors when calling methods wrongly --------
+
+    "Instance method called using =>
+    TRY.
+        CALL METHOD zcl_some_class=>(`INST_METH1`).
+      CATCH cx_sy_dyn_call_illegal_method.
+    ENDTRY.
+
+    "The example method does not specify non-optional parameters.
+    TRY.
+        CALL METHOD (`ZCL_SOME_CLASS`)=>stat_meth2.
+      CATCH cx_sy_dyn_call_param_missing.
+    ENDTRY.
+
+    "Specifying a wrong parameter name
+    TRY.
+        CALL METHOD (`ZCL_SOME_CLASS`)=>stat_meth2 EXPORTING hallo = `hallo`.
+      CATCH cx_sy_dyn_call_param_missing.
+    ENDTRY.
+
+    "Assigning wrong, non-compatible type
+    TRY.
+        CALL METHOD (`ZCL_SOME_CLASS`)=>stat_meth2 EXPORTING text = VALUE string_table( ( `hi` ) ).
+      CATCH cx_sy_dyn_call_illegal_type.
+    ENDTRY.
+
+    "Specifying wrong parameter kinds (the example method specifies importing
+    "and exporting parameters, and not a returning parameter)
+    TRY.
+        CALL METHOD (`ZCL_SOME_CLASS`)=>stat_meth2 EXPORTING text = `hallo` RECEIVING result = res.
+      CATCH cx_sy_dyn_call_illegal_type.
+    ENDTRY.
+
+    "------------------------------------------------------------------------
+    "---------------- Calling instance methods dynamically ------------------
+    "------------------------------------------------------------------------
 
     "Creating an instance of a class by specifying the type dynamically
     DATA oref TYPE REF TO object.
     CREATE OBJECT oref TYPE ('ZCL_SOME_CLASS').
-    some_number = -99.
 
-    "Specifying parameters statically
-    DATA result_dyn TYPE string.
-    CALL METHOD oref->('METH')
-      EXPORTING
-        num1    = 10
-        num2    = 4
-      IMPORTING
-        add     = calc_result_addition
-        subtr   = calc_result_subtraction
-      CHANGING
-        abs_val = some_number
-      RECEIVING
-        ret     = result_dyn.
+    "--- Object reference variable specified statically, method specified dynamically ---
+    "Note: This is a also possible for interface reference variables.
+    CALL METHOD oref->(`INST_METH1`).
 
-    out->write( data = calc_result_addition name = `calc_result_addition` ).
-    out->write( data = calc_result_subtraction name = `calc_result_subtraction` ).
-    out->write( data = some_number name = `some_number` ).
-    out->write( data = result_dyn name = `result_dyn` ).
-    out->write( repeat( val = `*` occ = 80 ) ).
+    "-------- Specifying non-optional parameters --------
+    CALL METHOD oref->(`INST_METH2`) EXPORTING text = `abap`.
 
-    "The following examples show erroneous dynamic method calls
-    "Missing parameters
-    TRY.
-        CALL METHOD oref->('METH').
-      CATCH cx_root INTO DATA(error).
-        DATA(cx_class) = cl_abap_typedescr=>describe_by_object_ref( error )->get_relative_name( ).
-        out->write( |{ cx_class } raised: { error->get_text( ) }| ).
-        out->write( repeat( val = `*` occ = 80 ) ).
-    ENDTRY.
+    CALL METHOD oref->(`INST_METH2`) EXPORTING text = `abap` RECEIVING result = res.
+    ASSERT res = `ABAP`.
 
-    "Illegal type of an actual parameter
-    TRY.
-        CALL METHOD oref->('METH')
-          EXPORTING
-            num1    = 'nope'
-            num2    = 1
-          IMPORTING
-            add     = calc_result_addition
-            subtr   = calc_result_subtraction
-          CHANGING
-            abs_val = some_number
-          RECEIVING
-            ret     = result_dyn.
-      CATCH cx_root INTO error.
-        cx_class = cl_abap_typedescr=>describe_by_object_ref( error )->get_relative_name( ).
-        out->write( |{ cx_class } raised: { error->get_text( ) }| ).
-        out->write( repeat( val = `*` occ = 80 ) ).
-    ENDTRY.
+    "Note that calling static methods using object reference variables is also possible.
+    CALL METHOD oref->(`STAT_METH1`).
 
-    "Dynamic method call using a parameter table
-    DATA(ptab) = VALUE abap_parmbind_tab( ( name  = 'NUM1'
+    CALL METHOD oref->(`STAT_METH2`) EXPORTING text = `test` IMPORTING result = res.
+    ASSERT res = `TEST`.
+
+    "------------------------------------------------------------------------
+    "------------------- PARAMETER-TABLE addition ---------------------------
+    "------------------------------------------------------------------------
+
+    "------- Static equivalents to the dynamic statement below -------
+    DATA(oref_stat) = NEW zcl_some_class( ).
+    res = oref_stat->inst_meth2( `abc` ).
+    ASSERT res = `ABC`.
+    "For demo purposes, including chained method call options:
+    "Functional method call
+    res = NEW zcl_some_class( )->inst_meth2( `def` ).
+    ASSERT res = `DEF`.
+    "Standalone statement)
+    NEW zcl_some_class( )->inst_meth2( EXPORTING text = `ghi` RECEIVING result = res ).
+    ASSERT res = `GHI`.
+
+    "------- Dynamic CALL METHOD statements using the PARAMETER-TABLE addition -------
+
+    "Creating parameter table for an instance example method
+    DATA(ptab) = VALUE abap_parmbind_tab( ( name  = 'TEXT'
                                             kind  = cl_abap_objectdescr=>exporting
-                                            value = NEW i( 2 ) )
-                                          ( name  = 'NUM2'
-                                            kind  = cl_abap_objectdescr=>exporting
-                                            value = NEW i( 10 ) )
-                                          ( name  = 'ADD'
-                                            kind  = cl_abap_objectdescr=>importing
-                                            value = NEW i( ) )
-                                          ( name  = 'SUBTR'
-                                            kind  = cl_abap_objectdescr=>importing
-                                            value = NEW i( ) )
-                                          ( name  = 'ABS_VAL'
-                                            kind  = cl_abap_objectdescr=>changing
-                                            value = NEW i( -987 ) )
-                                          ( name  = 'RET'
+                                            value = NEW string( `jkl` ) )
+                                          ( name  = 'RESULT'
                                             kind  = cl_abap_objectdescr=>returning
-                                            value = NEW string( ) ) ).
+                                            value = NEW string( ) )
+                                             ).
 
-    CALL METHOD oref->('METH') PARAMETER-TABLE ptab.
+    CALL METHOD oref->(`INST_METH2`) PARAMETER-TABLE ptab.
+    "Excursion: Accessing structure components dynamically
+    res = ptab[ name = 'RESULT' ]-('VALUE')->*.
+    ASSERT res = `JKL`.
 
-    out->write( ptab ).
+    "Creating parameter table for a static example method
+    ptab = VALUE abap_parmbind_tab( ( name  = 'TEXT'
+                                      kind  = cl_abap_objectdescr=>exporting
+                                      value = NEW string( `mno` ) )
+                                    ( name  = 'RESULT'
+                                      kind  = cl_abap_objectdescr=>importing
+                                      value = NEW string( ) ) ).
+
+    "Demonstrating static/dynamic specification variants
+    CALL METHOD (`ZCL_SOME_CLASS`)=>(`STAT_METH2`) PARAMETER-TABLE ptab.
+    res = ptab[ name = 'RESULT' ]-('VALUE')->*.
+    ASSERT res = `MNO`.
+
+    CALL METHOD zcl_some_class=>(`STAT_METH2`) PARAMETER-TABLE ptab.
+    res = ptab[ name = 'RESULT' ]-('VALUE')->*.
+    ASSERT res = `MNO`.
+
+    CALL METHOD (`ZCL_SOME_CLASS`)=>stat_meth2 PARAMETER-TABLE ptab.
+    res = ptab[ name = 'RESULT' ]-('VALUE')->*.
+    ASSERT res = `MNO`.
+
   ENDMETHOD.
-  METHOD meth.
-    add = num1 + num2.
-    subtr = num1 - num2.
-    DATA(abs_val_copy) = abs_val.
-    "Getting the absolute value
-    abs_val = abs( abs_val ).
-    ret = |Values of importing parameters: num1 = { num1 STYLE = SIMPLE }| &&
-          |, num2 = { num2 STYLE = SIMPLE }\nValues of exporting parameters: | &&
-          |add = { add STYLE = SIMPLE }, subtr = { subtr STYLE = SIMPLE }| &&
-          |\nChanging parameter: abs_val (original) = { abs_val_copy STYLE = SIMPLE }, | &&
-          |abs_val (modified) = { abs_val STYLE = SIMPLE }|.
+
+  METHOD inst_meth1.
+    ...
+  ENDMETHOD.
+
+  METHOD inst_meth2.
+    result = to_upper( text ).
+  ENDMETHOD.
+
+  METHOD stat_meth1.
+    ...
+  ENDMETHOD.
+
+  METHOD stat_meth2.
+    result = to_upper( text ).
   ENDMETHOD.
 
 ENDCLASS.
 ```
 
 
-**Excursion** 
+**Example class 2** 
 
 The following simplified example highlights several things in the context of a dynamic invoke example: 
 - Dynamic invoke and assigning actual parameters to formal parameters statically
