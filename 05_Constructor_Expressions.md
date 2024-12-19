@@ -437,15 +437,16 @@ MODIFY ENTITIES OF zdemo_abap_rap_ro_m
 <tr>
 <td> 
 
-Assigning incompatible structures
+Assigning incompatible structures and internal tables
 
  </td>
 
  <td> 
 
 - The example makes use of the `BASE` addition, and includes a `CORRESPONDING` expression.
-- The `s1` structure is assigned the identically named components of the `s2` structure. 
-- Other components are assigned by explicitly specifying them.
+- The `s1` structure is assigned the identically named components of the `s2` structure. Other components are assigned by explicitly specifying them.
+- Another example performs an assignment with internal tables, using a table iteration with a `FOR` loop.
+- 
 
 <br>
 
@@ -465,6 +466,37 @@ DATA:
   END OF s2.
 
 s1 = VALUE #( BASE CORRESPONDING #( s2 ) comp4 = 4 comp5 = 5 ).
+
+DATA itab1 LIKE TABLE OF s1 WITH EMPTY KEY.
+DATA itab2 LIKE TABLE OF s2 WITH EMPTY KEY.
+
+itab1 = VALUE #( ( comp1 = 1 comp2 = 2 comp3 = 3 comp4 = 4 comp5 = 5 )
+                 ( comp1 = 10 comp2 = 20 comp3 = 30 comp4 = 40 comp5 = 50 )
+                 ( comp1 = 100 comp2 = 200 comp3 = 300 comp4 = 400 comp5 = 500 ) ).
+
+itab2 = VALUE #( ( comp1 = 7 comp2 = 8 comp3 = 9  )
+                 ( comp1 = 70 comp2 = 80 comp3 = 90  )
+                 ( comp1 = 700 comp2 = 800 comp3 = 900  ) ).
+
+itab1 = VALUE #( BASE itab1 FOR wa IN itab2 ( CORRESPONDING #( wa ) ) ).
+
+*Result:
+*COMP1    COMP2    COMP3    COMP4    COMP5
+*1        2        3        4        5
+*10       20       30       40       50
+*100      200      300      400      500
+*7        8        9        0        0
+*70       80       90       0        0
+*700      800      900      0        0
+
+"Note: If BASE is not specified, the target table is initialized first.
+"itab1 = VALUE #( FOR wa IN itab2 ( CORRESPONDING #( wa ) ) ).
+
+*Result:
+*COMP1    COMP2    COMP3    COMP4    COMP5
+*7        8        9        0        0
+*70       80       90       0        0
+*700      800      900      0        0
 ``` 
 
  </td>
@@ -497,6 +529,12 @@ DATA(itab) = VALUE itab_type( ( col1 = 'a' col2 = 1 col3 = 30 )
 
 DATA(it1) = VALUE itab_type( FOR wa IN itab ( col1 = wa-col1 && 'z'
                                               col2 = wa-col2 + 1 ) ).
+
+*Result:  
+*COL1    COL2    COL3
+*az      2       0   
+*bbz     3       0   
+*cccz    4       0  
 ``` 
 
  </td>
@@ -521,6 +559,11 @@ DATA(strtab) = VALUE string_table( LET mark = '!' IN
                                     ( |abc{ mark }| )
                                     ( |def{ mark }| )
                                     ( |ghi{ mark }| ) ).
+
+*Result:
+*abc!         
+*def!         
+*ghi!     
 ``` 
 
  </td>
@@ -1734,6 +1777,7 @@ ENDCASE.
   - The conditions for the table key components can be specified as follows: 
     - Hash keys: Only the comparison operator `=` is allowed
     - Sorted key: `=`/`EQ`, `<>`/`NE`, `<`/`LT`, `>`/`GT`, `<=`/`LE`, `>=`/`GE`
+    - When filtering using single values, you can also use `IS [NOT] INITIAL`.
   - Multiple comparisons can be combined using `AND`; boolean operators such as `NOT` or `OR` cannot be specified.
 - Notes on the filter table: 
   - The line types of the source and filter table need not be identical.

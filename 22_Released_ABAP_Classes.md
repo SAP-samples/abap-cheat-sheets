@@ -38,6 +38,7 @@
   - [Units of Measurement](#units-of-measurement)
   - [Programmatic ABAP Test Cockpit (ATC) Check](#programmatic-abap-test-cockpit-atc-check)
   - [Handling Number Ranges](#handling-number-ranges)
+  - [Programmatically Releasing APIs](#programmatically-releasing-apis)
 
 
 This ABAP cheat sheet contains a selection of [released](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenreleased_api_glosry.htm) ABAP classes that are available in [ABAP for Cloud Development](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_for_cloud_dev_glosry.htm). It serves as a quick introduction, along with code snippets to explore the functionality in action.
@@ -514,6 +515,115 @@ DATA(random_num2) = cl_abap_random_int=>create( seed = cl_abap_random=>seed( )
                                                 min  = 100
                                                 max  = 1000 )->get_next( ).
 ``` 
+
+<br>
+
+The following example explores the generation of arbitraty numeric values. 
+- It uses dynamic programming techniques. Find more information in the [Dynamic Programming](06_Dynamic_Programming.md) cheat sheet.
+- The class names are constructed dynamically. They all begin with `CL_ABAP_RANDOM_`.
+- An object is created dynamically based on the constructed class name.
+- This object is assigned the result of a dynamic method call. The error handling is included as the `min` and `max` parameters are not available for all methods.
+- The `get_next` method returns an appropriately typed data object, e.g. in case of `CL_ABAP_RANDOM_DECFLOAT34`, a data object of type `decfloat34` is returned. As a generic returning parameter is not possible, the example uses a data object of type `string`. So, the value returned is converted to type `string`. Note that are special conversion rules (e.g. the minus character for negative values are added at the end by default).
+- The resulting string values are added to an internal table for display purposes.
+- The example also includes static method calls.
+
+
+```abap
+CLASS zcl_some_class DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
+
+  PUBLIC SECTION.
+    INTERFACES if_oo_adt_classrun.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+ENDCLASS.
+
+CLASS zcl_some_class IMPLEMENTATION.
+  METHOD if_oo_adt_classrun~main.
+
+    TYPES: BEGIN OF random_values,
+             class        TYPE string,
+             random_value TYPE string,
+           END OF random_values.
+    DATA random_value_table TYPE TABLE OF random_values WITH EMPTY KEY.
+
+    DATA(cl_name_parts) = VALUE string_table( ( `DECFLOAT16` )
+                                              ( `DECFLOAT34` )
+                                              ( `FLOAT` )
+                                              ( `INT` )
+                                              ( `INT8` )
+                                              ( `PACKED` )
+                                              ( `PACKED_DEC` ) ).
+
+    LOOP AT cl_name_parts INTO DATA(wa).
+
+      IF wa CS `PACKED_DEC`.
+        FIND PCRE `\d` IN wa.
+        IF sy-subrc <> 0.
+          DELETE cl_name_parts INDEX sy-tabix.
+          DO 14 TIMES.
+            APPEND wa && sy-index TO cl_name_parts.
+          ENDDO.
+          CONTINUE.
+        ENDIF.
+      ENDIF.
+
+      DATA(cl_name) = `CL_ABAP_RANDOM_` && wa.
+      DATA oref TYPE REF TO object.
+
+      TRY.
+          CALL METHOD (cl_name)=>create
+            EXPORTING
+              seed = cl_abap_random=>seed( )
+              min  = 1
+              max  = 1000
+            RECEIVING
+              prng = oref.
+        CATCH cx_sy_dyn_call_param_not_found.
+          CALL METHOD (cl_name)=>create
+            EXPORTING
+              seed = cl_abap_random=>seed( )
+            RECEIVING
+              prng = oref.
+      ENDTRY.
+
+      DATA value_conv2string TYPE string.
+
+      CALL METHOD oref->('GET_NEXT') RECEIVING value = value_conv2string.
+
+      APPEND VALUE #( class = cl_name random_value = value_conv2string ) TO random_value_table.
+    ENDLOOP.
+
+    out->write( random_value_table ).
+
+    DATA(a) = cl_abap_random_decfloat16=>create( seed = cl_abap_random=>seed( ) )->get_next( ).
+    DATA(b) = cl_abap_random_decfloat34=>create( seed = cl_abap_random=>seed( ) )->get_next( ).
+    DATA(c) = cl_abap_random_float=>create( seed = cl_abap_random=>seed( ) )->get_next( ).
+    DATA(d) = cl_abap_random_int=>create( seed = cl_abap_random=>seed( ) )->get_next( ).
+    DATA(e) = cl_abap_random_int8=>create( seed = cl_abap_random=>seed( ) )->get_next( ).
+    DATA(f) = cl_abap_random_packed=>create( seed = cl_abap_random=>seed( ) )->get_next( ).
+    DATA(g) = cl_abap_random_packed=>create( seed = cl_abap_random=>seed( ) )->get_next( ).
+    DATA(h) = cl_abap_random_packed_dec1=>create( seed = cl_abap_random=>seed( ) )->get_next( ).
+    DATA(i) = cl_abap_random_packed_dec2=>create( seed = cl_abap_random=>seed( ) )->get_next( ).
+    DATA(j) = cl_abap_random_packed_dec3=>create( seed = cl_abap_random=>seed( ) )->get_next( ).
+    DATA(k) = cl_abap_random_packed_dec4=>create( seed = cl_abap_random=>seed( ) )->get_next( ).
+    DATA(l) = cl_abap_random_packed_dec5=>create( seed = cl_abap_random=>seed( ) )->get_next( ).
+    DATA(m) = cl_abap_random_packed_dec6=>create( seed = cl_abap_random=>seed( ) )->get_next( ).
+    DATA(n) = cl_abap_random_packed_dec7=>create( seed = cl_abap_random=>seed( ) )->get_next( ).
+    DATA(o) = cl_abap_random_packed_dec8=>create( seed = cl_abap_random=>seed( ) )->get_next( ).
+    DATA(p) = cl_abap_random_packed_dec9=>create( seed = cl_abap_random=>seed( ) )->get_next( ).
+    DATA(q) = cl_abap_random_packed_dec10=>create( seed = cl_abap_random=>seed( ) )->get_next( ).
+    DATA(r) = cl_abap_random_packed_dec11=>create( seed = cl_abap_random=>seed( ) )->get_next( ).
+    DATA(s) = cl_abap_random_packed_dec12=>create( seed = cl_abap_random=>seed( ) )->get_next( ).
+    DATA(t) = cl_abap_random_packed_dec13=>create( seed = cl_abap_random=>seed( ) )->get_next( ).
+    DATA(u) = cl_abap_random_packed_dec14=>create( seed = cl_abap_random=>seed( ) )->get_next( ).
+
+  ENDMETHOD.
+
+ENDCLASS.
+```
 
 </td>
 </tr>
@@ -4326,3 +4436,54 @@ ENDTRY.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
+## Programmatically Releasing APIs
+
+<table>
+<tr>
+<td> Class </td> <td> Details/Code Snippet </td>
+</tr>
+<tr>
+<td> <code>CL_ABAP_API_STATE</code> </td>
+<td>
+
+- You can use the class to release APIs programmatically. Note that you can also achieve this using ADT tools. 
+- Find more information in the class documentation.
+- The code snippets uses various methods offered by the class and illustrates the following aspects: creating an instance of the API state handler for a specified API (a demo class is inserted), releasing the API for ABAP for Cloud Development (by also specifying a transport request), retrieving release information, and deleting the release state for the specified API again. 
+ 
+<br>
+
+```abap
+TRY.
+    DATA(api_state) = cl_abap_api_state=>create_instance( api_key = VALUE #( object_type = 'CLAS' object_name = 'ZCL_DEMO_TEST' ) ).
+
+    api_state->release( use_in_cloud_development = abap_true
+                        use_in_key_user_apps     = abap_false
+                        request                  = 'SOME_TR_REQ' ).
+
+    DATA(rel_info) = api_state->get_release_info( ).
+
+    DATA(is_released) = api_state->is_released( use_in_cloud_development = abap_true
+                                                use_in_key_user_apps     = abap_false ).
+
+    IF is_released = abap_true.
+      api_state->delete_release_state( request = 'SOME_TR_REQ' ).
+
+      rel_info = api_state->get_release_info( ).
+
+      is_released = api_state->is_released( use_in_cloud_development = abap_true
+                                            use_in_key_user_apps     = abap_false ).
+
+    ENDIF.
+
+  CATCH cx_abap_api_state INTO DATA(error).
+    DATA(error_text) = error->get_text( ).
+ENDTRY.
+``` 
+
+</td>
+</tr>
+
+
+</table>
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>

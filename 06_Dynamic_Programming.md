@@ -1951,7 +1951,8 @@ SORT it BY VALUE abap_sortorder_tab( FOR wa IN comp_names ( name = condense( to_
 ### Dynamic ABAP SQL Statements
 
 ```abap
-"Dynamic SELECT list
+"--------------------- Dynamic SELECT list ---------------------
+
 DATA(select_list) = `CARRID, CONNID, FLDATE`.
 DATA fli_tab TYPE TABLE OF zdemo_abap_fli WITH EMPTY KEY.
 
@@ -1959,13 +1960,15 @@ SELECT (select_list)
   FROM zdemo_abap_fli
   INTO CORRESPONDING FIELDS OF TABLE @fli_tab.
 
-"Dynamic FROM clause
+"--------------------- Dynamic FROM clause ---------------------
+
 DATA(table) = 'ZDEMO_ABAP_FLI'.
 SELECT *
   FROM (table)
   INTO TABLE @fli_tab.
 
-"Excursion: Compatible target data objects
+"--------------------- Excursion: Compatible target data objects ---------------------
+
 "In the examples above, the data object/type is created statically.
 
 "Creating an anonymous data object with a CREATE DATA statement
@@ -1994,35 +1997,44 @@ SELECT *
   FROM (table)
   INTO TABLE NEW @DATA(dref_tab).
 
-"Dynamic WHERE clause
+"--------------------- Dynamic WHERE clause ---------------------
+
 "The example includes a WHERE clause that is created as an internal
 "table with a character-like row type.
 DATA(where_clause) = VALUE string_table( ( `CARRID = 'LH'` )
                                          ( `OR` )
                                          ( `CARRID = 'AA'` ) ).
 
-"A string as an alternative
-"DATA(where_clause) = `CARRID = 'LH' OR CARRID = 'AA'`.
-
 SELECT *
   FROM zdemo_abap_fli
   WHERE (where_clause)
   INTO TABLE NEW @DATA(tab_dyn_where).
 
-"Dynamic ORDER BY clause
+"A string as an alternative
+DATA(where_clause_string) = `CARRID = 'LH' OR CARRID = 'AA'`.
+
+SELECT *
+  FROM zdemo_abap_fli
+  WHERE (where_clause_string)
+  INTO TABLE NEW @DATA(tab_dyn_where_str).
+
+"--------------------- Dynamic ORDER BY clause ---------------------
+
 SELECT *
   FROM zdemo_abap_fli
   ORDER BY (`FLDATE`)
   INTO TABLE NEW @DATA(tab_dyn_order).
 
-"SELECT statement with miscellaneous dynamic specifications
+"----- SELECT statement with miscellaneous dynamic specifications -----
+
 SELECT (`CARRID, CONNID, FLDATE`)
   FROM (`ZDEMO_ABAP_FLI`)
   WHERE (`CARRID <> ``AA```)
   ORDER BY (`FLDATE`)
   INTO TABLE NEW @DATA(tab_dyn_misc).
 
-"Further dynamic specifications in other ABAP SQL statements
+"--------------------- Dynamic INSERT statement ---------------------
+
 "Creating a structure to be inserted into the database table
 SELECT SINGLE *
       FROM (table)
@@ -2031,13 +2043,97 @@ dref_struc->('CARRID') = 'YZ'.
 
 INSERT (table) FROM @dref_struc->*.
 
+"--------------------- Dynamic UPDATE statement ---------------------
+
 dref_struc->('CURRENCY') = 'EUR'.
 UPDATE (table) FROM @dref_struc->*.
+
+"--------------------- Dynamic MODIFY statement ---------------------
 
 dref_struc->('SEATSOCC') = 10.
 MODIFY (table) FROM @dref_struc->*.
 
+"--------------------- Dynamic DELETE statement ---------------------
+
 DELETE FROM (table) WHERE (`CARRID = 'YZ'`).
+
+"--------------------- Dynamic UPDATE ... SET ... statement ---------------------
+
+"Inserting demo data into the database table to work with
+TYPES carr_tab TYPE TABLE OF zdemo_abap_carr WITH EMPTY KEY.
+INSERT ('ZDEMO_ABAP_CARR') FROM TABLE @( VALUE carr_tab( ( carrid = 'WX' carrname = 'WX Airways' )
+                                                         ( carrid = 'XY' carrname = 'Air XY' )
+                                                         ( carrid = 'YZ' carrname = 'YZ Airlines' ) ) ).
+
+"Note that erroneous dynamic specifications can lead to runtime errors
+"In the following example, the final inverted comma is missing in the dynamic
+"set clause.
+DATA(set_clause) = `CURRCODE = 'EUR`.
+DATA(where_cl) = `CARRID = 'WX' OR CARRID = 'XY' OR CARRID = 'YZ'`.
+
+TRY.
+    UPDATE ('ZDEMO_ABAP_CARR') SET (set_clause) WHERE (where_cl).
+  CATCH cx_sy_dynamic_osql_syntax INTO DATA(error).
+    DATA(error_text) = error->get_text( ).
+ENDTRY.
+
+"Correcting the dynamic specification
+"The example sets the value for a component for all entries.
+"The example additionally specifies a (dynamic) WHERE clause
+"to restrict the range of entries where the update is performed.
+"The database table is also specified dynamically.
+set_clause = `CURRCODE = 'EUR'`.
+
+UPDATE ('ZDEMO_ABAP_CARR') SET (set_clause) WHERE (where_cl).
+
+"--------------------- Dynamic UPDATE ... INDICATORS ... statement ---------------------
+
+"The statement changes values of specific fields without overwriting existing values of 
+"other fields.
+
+"Notes on the example:
+"- A structured type is created with the WITH INDICATORS addition.
+"- An internal table from which to update a database table is created.
+"- The table includes the indicator structure comp_ind.
+"- The table is populated, and two components are flagged as
+"  to be updated.
+"- Other fields remain unchanged. Note that key fields must be
+"  included in ind_tab (indicator setting for key fields has
+"  no effect).
+"- The UPDATE statement includes dynamically specified
+"  indicator syntax. Additionally, the database table is specified
+"  dynamically.
+
+"Structured type with WITH INDICATORS addition
+TYPES ind_wa TYPE zdemo_abap_carr WITH INDICATORS comp_ind TYPE abap_bool.
+
+DATA ind_tab TYPE TABLE OF ind_wa.
+
+"Filling internal table; only CURRCODE and URL should be updated
+ind_tab = VALUE #( ( carrid = 'WX'
+                      carrname = 'WX Airways'
+                      currcode = 'USD'
+                      url = 'some_url_wx'
+                      comp_ind-currcode = abap_true
+                      comp_ind-url = abap_true )
+                    ( carrid = 'XY'
+                      carrname = 'Air XY'
+                      currcode = 'USD'
+                      url = 'some_url_xy'
+                      comp_ind-currcode = abap_true
+                      comp_ind-url = abap_true )
+                    ( carrid = 'YZ'
+                      carrname = 'YZ Airlines'
+                      currcode = 'USD'
+                      url = 'some_url_yz'
+                      comp_ind-currcode = abap_true
+                      comp_ind-url = abap_true ) ).
+
+DATA(dyn_ind) = `SET STRUCTURE comp_ind`.
+
+UPDATE ('ZDEMO_ABAP_CARR') FROM TABLE @ind_tab INDICATORS (dyn_ind).
+
+DELETE FROM ('ZDEMO_ABAP_CARR') WHERE (where_cl).
 ```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
