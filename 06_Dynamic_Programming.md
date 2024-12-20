@@ -28,7 +28,7 @@
     - [Accessing Structure Components Dynamically](#accessing-structure-components-dynamically)
     - [Dynamic Specifications in Statements for Processing Internal Tables](#dynamic-specifications-in-statements-for-processing-internal-tables)
     - [Dynamic ABAP SQL Statements](#dynamic-abap-sql-statements)
-    - [Dynamic Invoke](#dynamic-invoke)
+    - [Dynamic Method Calls](#dynamic-method-calls)
     - [Dynamic ABAP EML Statements](#dynamic-abap-eml-statements)
     - [Dynamic Formatting Option Specifications in String Templates](#dynamic-formatting-option-specifications-in-string-templates)
     - [Dynamic Parameter List in EXPORT and IMPORT Statements](#dynamic-parameter-list-in-export-and-import-statements)
@@ -1355,7 +1355,7 @@ ASSIGN dobj_c10 TO <casttype> CASTING TYPE HANDLE tdo_elem. "1234
 ```
 
 > **💡 Note**<br>
-> - The following `ASSIGN` statements set the `sy-subrc` value: dynamic assignments, dynamic component assignment, dynamic invokes, assignments of table expressions. 
+> - The following `ASSIGN` statements set the `sy-subrc` value: dynamic assignments, dynamic component assignment, dynamic method calls, assignments of table expressions. 
 > - The return code is not set for a static assignment and an assignment of the constructor operator `CAST`.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
@@ -1510,7 +1510,7 @@ CREATE OBJECT oref_dyn TYPE ('\CLASS=ZCL_DEMO_ABAP_OBJECTS').
 "actual parameters.
 "This can be done either statically using the addition EXPORTING, and
 "specifying the parameters statically, or by dynamically specifying the
-"parameters in a parameter table. See the dynamic invoke section for
+"parameters in a parameter table. See the dynamic method calls section for
 "examples on the parameter table and the static parameter passing.
 "The addition EXCEPTIONS and an exception table are also available
 "to handle non-class-based exceptions.
@@ -2302,12 +2302,12 @@ ENDCLASS.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-### Dynamic Invoke
+### Dynamic Method Calls
 
 
-- The following code snippet shows dynamically specifying [procedures](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenprocedure_glosry.htm "Glossary Entry") calls.
+- The following code snippet shows dynamically specifying method calls.
 - The snippet covers methods. Dynamic method calls require `CALL METHOD` statements. 
-- Find an example of a dynamic function module call in the [Program Flow Logic](./13_Program_Flow_Logic.md#function-module-example) cheat sheet.
+- Find an example of a dynamic function module call - as another example of [procedure](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenprocedure_glosry.htm "Glossary Entry") calls - in the [Program Flow Logic](./13_Program_Flow_Logic.md#function-module-example) cheat sheet.
 
 
 Syntax patterns: 
@@ -2355,6 +2355,7 @@ CALL METHOD class=>(meth) PARAMETER-TABLE ptab.
 ```
 
 **Example class 1** 
+
 The following example class explores dynamic method calls with simple methods. You can create a demo class called `zcl_some_class` and copy and paste the following code. Once activated, you can choose *F9* in ADT to run the class. The example is not designed to display output in the console.
 
 ```abap
@@ -2419,7 +2420,7 @@ CLASS zcl_some_class IMPLEMENTATION.
       CATCH cx_sy_dyn_call_illegal_method.
     ENDTRY.
 
-    "The example method does not specify non-optional parameters.
+    "The example method declares a non-optional parameter.
     TRY.
         CALL METHOD (`ZCL_SOME_CLASS`)=>stat_meth2.
       CATCH cx_sy_dyn_call_param_missing.
@@ -2431,7 +2432,7 @@ CLASS zcl_some_class IMPLEMENTATION.
       CATCH cx_sy_dyn_call_param_missing.
     ENDTRY.
 
-    "Assigning wrong, non-compatible type
+    "Assigning wrong, incompatible type
     TRY.
         CALL METHOD (`ZCL_SOME_CLASS`)=>stat_meth2 EXPORTING text = VALUE string_table( ( `hi` ) ).
       CATCH cx_sy_dyn_call_illegal_type.
@@ -2480,7 +2481,7 @@ CLASS zcl_some_class IMPLEMENTATION.
     "Functional method call
     res = NEW zcl_some_class( )->inst_meth2( `def` ).
     ASSERT res = `DEF`.
-    "Standalone statement)
+    "Standalone statement
     NEW zcl_some_class( )->inst_meth2( EXPORTING text = `ghi` RECEIVING result = res ).
     ASSERT res = `GHI`.
 
@@ -2492,8 +2493,7 @@ CLASS zcl_some_class IMPLEMENTATION.
                                             value = NEW string( `jkl` ) )
                                           ( name  = 'RESULT'
                                             kind  = cl_abap_objectdescr=>returning
-                                            value = NEW string( ) )
-                                             ).
+                                            value = NEW string( ) ) ).
 
     CALL METHOD oref->(`INST_METH2`) PARAMETER-TABLE ptab.
     "Excursion: Accessing structure components dynamically
@@ -2508,7 +2508,7 @@ CLASS zcl_some_class IMPLEMENTATION.
                                       kind  = cl_abap_objectdescr=>importing
                                       value = NEW string( ) ) ).
 
-    "Demonstrating static/dynamic specification variants
+    "Static/dynamic specification variants
     CALL METHOD (`ZCL_SOME_CLASS`)=>(`STAT_METH2`) PARAMETER-TABLE ptab.
     res = ptab[ name = 'RESULT' ]-('VALUE')->*.
     ASSERT res = `MNO`.
@@ -2545,8 +2545,8 @@ ENDCLASS.
 
 **Example class 2** 
 
-The following simplified example highlights several things in the context of a dynamic invoke example: 
-- Dynamic invoke and assigning actual parameters to formal parameters statically
+The following simplified example highlights several things in the context of a dynamic method call example: 
+- Dynamic method call and assigning actual parameters to formal parameters statically
 - Creating instances of classes dynamically, using generic types
 - The concepts of static vs. dynamic type, upcast vs. downcast
 - Dynamic ABAP does the same as static ABAP, but with dynamic ABAP, errors may not be discovered until runtime.

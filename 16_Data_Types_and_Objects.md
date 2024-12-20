@@ -11,7 +11,7 @@
     - [Reference Types](#reference-types)
     - [Declaring Data Types](#declaring-data-types)
     - [Generic Types](#generic-types)
-    - [Global Types in the ABAP Dictionary (DDIC)](#global-types-in-the-abap-dictionary-ddic)
+    - [Global Data Types](#global-data-types)
   - [Data Objects](#data-objects)
     - [Declaring Data Objects](#declaring-data-objects)
     - [Assigning Values to Data Objects](#assigning-values-to-data-objects)
@@ -43,13 +43,6 @@ Data types
 - Are descriptions only, with no data memory attached except for administrative information. 
 - Can occur in [ABAP programs](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_program_glosry.htm) as [bound data types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbound_data_type_glosry.htm), that is, the type is a property of a data object, or as a [standalone data type](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenstand-alone_data_type_glosry.htm), that is, the data type is defined independently. 
 - Can be defined locally in an ABAP program or globally in classes, interfaces and in the [ABAP Dictionary (DDIC)](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_dictionary_glosry.htm). 
-> **💡 Note**<br>
-> Global data types are created as [repository objects](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrepository_object_glosry.htm) in the ABAP Dictionary: 
-> - DDIC types such as [DDIC data elements](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendata_element_glosry.htm) (elementary data types or reference types), [DDIC structures](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenddic_structure_glosry.htm), [DDIC table types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenddic_table_type_glosry.htm). Find more information in the [ABAP Dictionary](26_ABAP_Dictionary.md) cheat sheet.
-> - Furthermore, [database tables](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendatabase_table_glosry.htm) and [CDS entities](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_entity_glosry.htm) and their components can also be used as data types in ABAP programs.
->
-> Data types declared in interfaces and in the public visibility section of global classes are also globally visibile. Global classes and interfaces as such are global types to refer to. In [classic ABAP](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenclassic_abap_glosry.htm), you may stumble on the option to create global data types in [type pools](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentype_pool_glosry.htm), which is not possible in ABAP for Cloud Development. However, the predefined type pool `abap` can be used in ABAP for Cloud Development. Find more information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenddic_data_types.htm).
-
 
 Data objects: 
 - Are objects (or [instances](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abeninstance_glosry.htm)) of a data type (similar to objects/instances of classes in [ABAP Objects](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_objects_glosry.htm)).
@@ -474,13 +467,19 @@ ASSIGN s-xl1 TO <simple>.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-### Global Types in the ABAP Dictionary (DDIC)
+### Global Data Types
 
-- The ABAP Dictionary (DDIC) serves as a persistent repository for type definitions represented by dictionary objects. 
-- These objects constitute global data types that are accessible by other repository objects.
-- For many of the classic DDIC objects, which are still supported in [ABAP Cloud](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_cloud_glosry.htm), CDS-based successor objects are available.
-- Find a high-level overview in the [ABAP Dictionary](26_ABAP_Dictionary.md) cheat sheet.
-- Note that there are predefined global types available. However, in ABAP Cloud, only [released APIs](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenreleased_api_glosry.htm) can be used there.
+- Global data types are created as [repository objects](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrepository_object_glosry.htm) in the ABAP Dictionary: 
+  - The ABAP Dictionary (DDIC) serves as a persistent repository for type definitions represented by dictionary objects. 
+  - These objects constitute global data types that are accessible by other repository objects.
+  - DDIC types such as [DDIC data elements](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendata_element_glosry.htm) (elementary data types or reference types), [DDIC structures](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenddic_structure_glosry.htm), [DDIC table types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenddic_table_type_glosry.htm). Find more information in the [ABAP Dictionary](26_ABAP_Dictionary.md) cheat sheet.
+  - Furthermore, [database tables](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendatabase_table_glosry.htm) and [CDS entities](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_entity_glosry.htm) and their components can also be used as data types in ABAP programs. 
+  - For many of the classic DDIC objects, which are still supported in [ABAP Cloud](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_cloud_glosry.htm), CDS-based successor objects are available.
+  - Find a high-level overview in the [ABAP Dictionary](26_ABAP_Dictionary.md) cheat sheet.
+  - Note that there are predefined global types available. However, in ABAP Cloud, only [released APIs](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenreleased_api_glosry.htm) can be used there.  
+  - In [classic ABAP](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenclassic_abap_glosry.htm), you may stumble on the option to create global data types in [type pools](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentype_pool_glosry.htm), which is not possible in ABAP for Cloud Development. However, the predefined type pool `abap` can be used in ABAP for Cloud Development.
+- Data types declared in interfaces and in the public visibility section of global classes are also globally visibile. Global classes and interfaces as such are global types to refer to. 
+- Find more information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenddic_data_types.htm).
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 

@@ -1730,7 +1730,7 @@ SELECT SINGLE
 
 FROM zdemo_abap_carr
 WHERE carrid = 'AA'
-INTO @DATA(cast_expr).
+INTO @DATA(case_expr).
 ```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>

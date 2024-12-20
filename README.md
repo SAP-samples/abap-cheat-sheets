@@ -27,7 +27,7 @@
 
 ABAP cheat sheets[^1] ...
 - provide a **collection of information on selected ABAP topics** in a nutshell for your reference.
-- focus on **ABAP syntax**.
+- focus on **ABAP syntax** in the restricted ABAP language version [ABAP for Cloud Development](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_for_cloud_dev_glosry.htm).
 - include **code snippets**.
 - are supported by easy-to-consume **demonstration examples** that you can import into your system using [abapGit](https://abapgit.org/) to run and check out ABAP syntax in action in simple contexts:
   | Environment    | Branch | ABAP language version |
@@ -74,7 +74,7 @@ ABAP cheat sheets[^1] ...
 |[Internal Tables](01_Internal_Tables.md)| Creating, filling, reading from, sorting, modifying internal tables  | [zcl_demo_abap_internal_tables](./src/zcl_demo_abap_internal_tables.clas.abap)   |
 |[Structures](02_Structures.md)| Some basics when working with structures  |  [zcl_demo_abap_structures](./src/zcl_demo_abap_structures.clas.abap)  |
 |[ABAP SQL](03_ABAP_SQL.md)| Reading from database tables using `SELECT`, changing data in database tables using `INSERT`, `UPDATE`, `MODIFY` and `DELETE`    | [zcl_demo_abap_sql](./src/zcl_demo_abap_sql.clas.abap)   |
-|[ABAP Object Orientation](04_ABAP_Object_Orientation.md)| Working with objects and components, concepts such as inheritance, interfaces, and more | [zcl_demo_abap_objects](./src/zcl_demo_abap_objects.clas.abap) |
+|[ABAP Object Orientation](04_ABAP_Object_Orientation.md)| Working with objects and components, concepts such as inheritance, interfaces, and more |<ul><li>[zcl_demo_abap_objects](./src/zcl_demo_abap_objects.clas.abap)</li><li>[zcl_demo_abap_objects_misc](./src/zcl_demo_abap_objects_misc.clas.abap)</li><li>[zcl_demo_abap_oo_inheritance_1](./src/zcl_demo_abap_oo_inheritance_1.clas.abap)</li></ul> |
 |[Constructor Expressions](05_Constructor_Expressions.md)| Covers constructor expressions with operators such as `VALUE`, `CORRESPONDING`, `NEW`, `CONV`, `EXACT`, `REF`, `CAST`, `COND`, `SWITCH`, `FILTER`, `REDUCE`, iteration expressions with `FOR`, `LET` expressions  | [zcl_demo_abap_constructor_expr](./src/zcl_demo_abap_constructor_expr.clas.abap) |
 |[Dynamic Programming](06_Dynamic_Programming.md)| Covers field symbols and data references as supporting elements for dynamic programming, dynamic ABAP syntax components, runtime type services (RTTS), i. e. runtime type identification (RTTI) and runtime type creation (RTTC) |  [zcl_demo_abap_dynamic_prog](./src/zcl_demo_abap_dynamic_prog.clas.abap)  |
 |[String Processing](07_String_Processing.md)| Creating strings and assigning values, chaining strings, string templates, concatenating, splitting, modifying strings, searching and replacing |  [zcl_demo_abap_string_proc](./src/zcl_demo_abap_string_proc.clas.abap)  |
@@ -95,8 +95,8 @@ ABAP cheat sheets[^1] ...
 |[Built-In Functions](24_Builtin_Functions.md)|Covers a variety of built-in functions in ABAP|- (The cheat sheet includes copy and paste code snippets)|
 |[Authorization Checks](25_Authorization_Checks.md)|Provides a high-level overview of explicit and implicit authorization checks in ABAP|- (The cheat sheet includes a copy and paste example class)|
 |[ABAP Dictionary](26_ABAP_Dictionary.md)|Covers a selection of repository objects in the ABAP Dictionary (DDIC) that represent global types|- (The cheat sheet includes a copy and paste example class)|
-|[Exceptions and Runtime Errors](27_Exceptions.md)|Provides an overview on exceptions and runtime errors|- (The cheat sheet includes a copy and paste example class)|
-|[Regular Expressions in ABAP](28_Regular_Expressions.md)|Includes an overview of common regular expressions and their use in ABAP through statements, built-in functions, and system classes|- (The cheat sheet includes copy and paste sample code snippets)|
+|[Exceptions and Runtime Errors](27_Exceptions.md)|Provides an overview on exceptions and runtime errors|[zcl_demo_abap_error_handling](./src/zcl_demo_abap_error_handling.clas.abap)|
+|[Regular Expressions in ABAP](28_Regular_Expressions.md)|Includes an overview of common regular expressions and their use in ABAP through statements, built-in functions, and system classes|[zcl_demo_abap_regex](./src/zcl_demo_abap_regex.clas.abap)|
 
 
 <br>

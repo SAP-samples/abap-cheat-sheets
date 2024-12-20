@@ -48,10 +48,11 @@
     - [Class-Based Exceptions](#class-based-exceptions)
     - [ABAP Doc Comments](#abap-doc-comments)
   - [More Information](#more-information)
-  - [Executable Example](#executable-example)
+  - [Executable Examples](#executable-examples)
 
 > **💡 Note**<br>
-> This ABAP cheat sheet provides an overview on selected syntax options and concepts related to ABAP object orientation. It is supported by code snippets and an executable example. They are **not** suitable as role models for object-oriented design. Their primary focus is on the syntax and functionality. For more details, refer to the respective topics in the ABAP Keyword Documentation. Find an overview in the topic [ABAP Objects - Overview](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_objects_oview.htm).
+> - This ABAP cheat sheet provides an overview on selected syntax options and concepts related to ABAP object orientation. It is supported by code snippets and an executable example. They are **not** suitable as role models for object-oriented design. Their primary focus is on the syntax and functionality. For more details, refer to the respective topics in the ABAP Keyword Documentation. Find an overview in the topic [ABAP Objects - Overview](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_objects_oview.htm).
+> - The [executable examples](#executable-examples) reflect several points and code snippets covered in the cheat sheet.
 
 
 ## Classes and Objects
@@ -1744,7 +1745,7 @@ ENDCLASS.
 - The method's return value is then used as an ABAP operand.
 - A chained method call can consist of multiple functional methods that are linked using component selectors `->`. 
 - Class attributes can also be added to the chain.
-- In the context of method chaining, constructor expressions (e.g. with `NEW`) come in handy. The example class below shows a functional method call (i.e. the return value of the method is used as an ABAP operand), and a standalone statement.
+- In the context of method chaining, constructor expressions (e.g. with `NEW`) come in handy. The example class below shows functional method calls (i.e. the return value of the method is used as an ABAP operand), and a standalone statement.
 
 The following example illustrates method chaining. Find a self-contained example class further down.
 
@@ -2790,6 +2791,9 @@ METHODS another_meth FINAL REDEFINITION.
 
 
 ### Excursion: Inheritance Example
+
+> **💡 Note**<br>
+> This example is also included in the ABAP cheat sheet repository: [zcl_demo_abap_oo_inheritance_1](./src/zcl_demo_abap_oo_inheritance_1.clas.abap)
 
 Expand the following collapsible section for example classes. The example classes explore inheritance and demonstrate a selection of the inheritance-related syntax described above. The inheritance tree consists of four example classes. The base class includes the implementation of the classrun interface. The example is designed to output information to the console. So, you can execute this class using F9 in ADT.
 The purpose of the example and information output is to visualize and explore concepts and syntax related to inheritance, checking out when and how methods are called, redefining methods, abstract and final classes and methods.
@@ -4424,7 +4428,7 @@ obj_factory = class=>factory_method( par = ... ).
 - The ABAP Doc documentation tool allows you to add special ABAP Doc comments to ABAP source code for documentation.  
 - ABAP Doc comments consist of one or more lines starting with `"!`.  
 - You can place these comments before declarations (e.g., in classes and methods) to document functionality, add notes, and so on.  
-- In ADT, click, for example, on class names or methods to display ABAP Doc comments (if available) in the *ABAP Element Info*, or choose F2 to display the information.
+- In ADT, click, for example, on class names or methods to display ABAP Doc comments (if available) in the *ABAP Element Info* tab, or choose F2 to display the information.
 - Find more information on ABAP Doc [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABENDOCCOMMENT.html).
 - The following example demonstrates ABAP Doc comments, showing various commenting options, including:  
   - Using HTML tags for formatting. Only a selected set of HTML tags is supported. You can choose *CTRL + Space* in the ABAP Doc comment for input help.
@@ -4551,16 +4555,12 @@ You can check the subtopics of
   
 in the ABAP Keyword Documentation.
 
-## Executable Example
-[zcl_demo_abap_objects](./src/zcl_demo_abap_objects.clas.abap)
+## Executable Examples
+
+- [zcl_demo_abap_objects](./src/zcl_demo_abap_objects.clas.abap) 
+- [zcl_demo_abap_objects_misc](./src/zcl_demo_abap_objects_misc.clas.abap): Additional syntax examples  
+- [zcl_demo_abap_oo_inheritance_1](./src/zcl_demo_abap_oo_inheritance_1.clas.abap): Focuses on inheritance; the inheritance tree consists of 4 example classes 
 
 > **💡 Note**<br>
-> - The executable example covers the following topics, among others:
->     - Working with objects and components
->     - Redefining methods, inheritance
->     - Working with interfaces
->     - Upcast and downcast
->     - Concepts such as factory methods, singleton and abstract classes
->     - Events
 > - The steps to import and run the code are outlined [here](README.md#-getting-started-with-the-examples).
 > - [Disclaimer](./README.md#%EF%B8%8F-disclaimer)

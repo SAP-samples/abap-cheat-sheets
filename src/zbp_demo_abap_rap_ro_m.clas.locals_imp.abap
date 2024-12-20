@@ -107,7 +107,7 @@ CLASS lhc_root IMPLEMENTATION.
     LOOP AT lt_res ASSIGNING FIELD-SYMBOL(<fs_res>).
       IF <fs_res>-field3 > 1000.
         APPEND VALUE #( %tky = <fs_res>-%tky
-                        %fail-cause = if_abap_behv=>cause-disabled
+                        %fail-cause = if_abap_behv=>cause-unspecific
                      )
                      TO failed-root.
 

@@ -1558,7 +1558,7 @@ DATA(is_equal) = xsdbool( len_xstr = len_xstr_decomp AND str = conv_str ).
   - `IMPORT` to read from the memory medium and extract the data objects
 
 > **💡 Note**<br>
-> - The use cases of data clusters go beyond the actual subject of this cheat sheet. Here, the emphasis is on the fast serialization and deserialization of data to and from `xstring`.
+> - Regarding data clusters, the focus in this section is on the fast serialization and deserialization of data to and from `xstring`.
 > - Find more information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABENDATA_CLUSTER.html).
 > - More syntax options are available in [Standard ABAP](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenstandard_abap_glosry.htm).
 > - Various exceptions can be raised when using these statements; see the related subtopics in the [documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABENDATA_CLUSTER.html).
