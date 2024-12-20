@@ -20,6 +20,7 @@
   - [Built-In Functions in ABAP Using Regular Expressions](#built-in-functions-in-abap-using-regular-expressions)
   - [Built-In Functions in ABAP SQL and CDS Using Regular Expressions](#built-in-functions-in-abap-sql-and-cds-using-regular-expressions)
   - [System Classes for Regular Expressions: CL\_ABAP\_REGEX and CL\_ABAP\_MATCHER](#system-classes-for-regular-expressions-cl_abap_regex-and-cl_abap_matcher)
+  - [Executable Example](#executable-example)
 
 ## Introduction
 
@@ -1444,3 +1445,12 @@ DATA(repl_result_not_extended) = matcher_not_extended->text.
 ```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
+
+## Executable Example
+
+[zcl_demo_abap_regex](./src/zcl_demo_abap_regex.clas.abap)
+
+> **💡 Note**<br>
+> - The [executable example](./src/zcl_demo_abap_string_proc.clas.abap) of the [String Processing](07_String_Processing.md) cheat sheet also includes examples with regular expressions.
+> - The steps to import and run the code are outlined [here](README.md#-getting-started-with-the-examples).
+> - [Disclaimer](./README.md#%EF%B8%8F-disclaimer)
