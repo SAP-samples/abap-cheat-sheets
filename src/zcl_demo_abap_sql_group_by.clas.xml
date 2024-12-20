@@ -5,7 +5,7 @@
    <VSEOCLASS>
     <CLSNAME>ZCL_DEMO_ABAP_SQL_GROUP_BY</CLSNAME>
     <LANGU>E</LANGU>
-    <DESCRIPT>ABAP cheat sheet: ABAP SQL - Grouping Internal Tables</DESCRIPT>
+    <DESCRIPT>ABAP cheat sheet: ABAP SQL - Grouping internal tables</DESCRIPT>
     <STATE>1</STATE>
     <CLSCCINCL>X</CLSCCINCL>
     <FIXPT>X</FIXPT>

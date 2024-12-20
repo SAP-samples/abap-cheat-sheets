@@ -1,89 +1,60 @@
-***********************************************************************
-*
-*             RAP BO consumer for a RAP demo scenario:
-* Managed RAP BO with managed internal numbering and additional save
-* demonstrating the local consumption of RAP business events
-*
-* -------------------------- PURPOSE ----------------------------------
-* - Primarily, the example demonstrates the local consumption of RAP
-*   business events.
-* - For that purpose, the BDEF defines three events. Two of them are
-*   specified with a parameter. The events are raised for create, update
-*   and delete operations.
-* - The example implementation in this class (the RAP BO consumer)
-*   contains three ABAP EML modify requests: a RAP create, update and
-*   delete operation. For each of the operations, an event is raised
-*   using a RAISE ENTITY EVENT statement. The events are raised in the
-*   save_modified RAP saver method in the CCIMP include of the behavior
-*   pool.
-* - When the events are raised, the RAP event handler methods are called
-*   asynchronously. To demonstrate the effect of the events, a database
-*   table representing a log table is populated.
-* - In the output of the example, the content of internal tables is
-*   displayed to demonstrate the effect of the RAP operations by
-*   selecting from the database table where the RAP BO instances are
-*   persisted to after each RAP operation. Additionally, the content
-*   of an internal table is displayed including the entries that have been
-*   inserted into the log database table by the event handler methods.
-*   In this self-contained example, this 'log database table' is just a
-*   database table that is used to store some entries triggered by the RAP
-*   events for visualization purposes. You can imagine that, for example,
-*   the sending of an email is triggered there, or the application log is
-*   filled, and so on. The log table is used in another RAP example as
-*   draft table. The draft concept is not relevant for this simplified
-*   example here.
-* - Note the comments in the example code. You can check out the
-*   asynchronity by commenting out the WAIT statement further down.
-*
-* ----------------- RELATED ARTIFACTS OF THE EXAMPLE ------------------*
-* - RAP BO consumer: zcl_demo_abap_rap_m_as (this class here)
-* - RAP BO provider (ABAP behavior pool): zbp_demo_abap_rap_ro_m_as
-* - RAP event handler: zcl_demo_abap_rap_evt_handler
-* - BDEF: zdemo_abap_rap_ro_m_as
-* - More artifacts are related such as database tables, CDS views, and
-*   an abstract entity (zdemo_abap_abstract_ent; used for the parameter
-*   specifications for the events in the BDEF)
-*
-* ----------------------- GETTING STARTED -----------------------------
-* - Open the class with the ABAP development tools for Eclipse (ADT).
-* - Choose F9 to run the class.
-* - Check the console output.
-* - To understand the context and the ABAP syntax used, check the notes
-*   included in the class as comments or refer to the respective topic
-*   in the ABAP Keyword Documentation.
-* - Due to the amount of output in the console, the examples include
-*   numbers (e. g. 1) ..., 2) ..., 3) ...) for the individual example
-*   sections. Plus, the variable name is displayed in most cases. Hence,
-*   to easier and faster find the relevant output in the console, just
-*   search in the console for the number/variable name (CTRL+F in the
-*   console) or use the debugger.
-*
-* ----------------------------- NOTE -----------------------------------
-* This simplified example is not a real life scenario and rather
-* focuses on the technical side by giving an idea how the communication
-* and data exchange between a RAP BO consumer, which is a class
-* in this case, and RAP BO provider can work. Additionally, it shows
-* how the methods for non-standard RAP BO operations might be
-* self-implemented in an ABP. The example is intentionally kept
-* short and simple and focuses on specific RAP aspects. For this reason,
-* the example might not fully meet the requirements of the RAP BO contract.
-*
-* The code presented in this class is intended only to support the ABAP
-* cheat sheets. It is not intended for direct use in a production system
-* environment. The code examples in the ABAP cheat sheets are primarily
-* intended to provide a better explanation and visualization of the
-* syntax and semantics of ABAP statements, not to solve concrete
-* programming tasks. For production application programs, you should
-* always work out your own solution for each individual case. There is
-* no guarantee for the correctness or completeness of the code.
-* Furthermore, there is no legal responsibility or liability for any
-* errors or their consequences that may occur when using the the example
-* code.
-*
-***********************************************************************
-"! <p class="shorttext synchronized">ABAP cheat sheet: Local consumption of RAP Business Events</p>
-"! Example to demonstrate local consumption of RAP business events in the context of a RAP demo scenario (managed RAP BO with managed internal numbering and additional save).
-"! The class represents a RAP BO consumer.<br>Choose F9 in ADT to run the class.
+"! <p class="shorttext"><strong>Local consumption of RAP Business Events</strong><br/>ABAP cheat sheet example class</p>
+"!
+"! <p>The example class demonstrates local consumption of RAP business events in the context of a RAP demo
+"! scenario (managed RAP BO with managed internal numbering and additional save).
+"! The class represents a RAP BO consumer.<br/> Choose F9 in ADT to run the class.</p>
+"!
+"! <h2>Note</h2>
+"! <ul><li>Primarily, the example demonstrates the local consumption of RAP
+"! business events.</li>
+"! <li>For that purpose, the BDEF defines three events. Two of them are
+"! specified with a parameter. The events are raised for create, update
+"! and delete operations.</li>
+"! <li>The example implementation in this class (the RAP BO consumer)
+"! contains three ABAP EML modify requests: a RAP create, update and
+"! delete operation. For each of the operations, an event is raised
+"! using a RAISE ENTITY EVENT statement. The events are raised in the
+"! save_modified RAP saver method in the CCIMP include of the behavior
+"! pool.</li>
+"! <li>When the events are raised, the RAP event handler methods are called
+"! asynchronously. To demonstrate the effect of the events, a database
+"! table representing a log table is populated.</li>
+"! <li>In the output of the example, the content of internal tables is
+"! displayed to demonstrate the effect of the RAP operations by
+"! selecting from the database table where the RAP BO instances are
+"! persisted to after each RAP operation. Additionally, the content
+"! of an internal table is displayed including the entries that have been
+"! inserted into the log database table by the event handler methods.
+"! In this self-contained example, this 'log database table' is just a
+"! database table that is used to store some entries triggered by the RAP
+"! events for visualization purposes. You can imagine that, for example,
+"! the sending of an email is triggered there, or the application log is
+"! filled, and so on. The log table is used in another RAP example as
+"! draft table. The draft concept is not relevant for this simplified
+"! example here.</li>
+"! <li>Note the comments in the example code. You can check out the
+"! asynchronity by commenting out the WAIT statement further down.</li>
+"! <li> This simplified example is not a real life scenario and rather
+"! focuses on the technical side by giving an idea how the communication
+"! and data exchange between a RAP BO consumer, which is a class
+"! in this case, and RAP BO provider can work. Additionally, it shows
+"! how the methods for non-standard RAP BO operations might be
+"! self-implemented in an ABP. The example is intentionally kept
+"! short and simple and focuses on specific RAP aspects. For this reason,
+"! the example might not fully meet the requirements of the RAP BO contract.</li>
+"! <li>Find information on <strong>getting started with the example class</strong> and the
+"! <strong>disclaimer</strong> in the ABAP Doc comment of class {@link zcl_demo_abap_aux}.</li>
+"! </ul>
+"!
+"! <h2>Related artifacts</h2>
+"! <ul><li>RAP BO consumer: {@link zcl_demo_abap_rap_m_as} (this class here)</li>
+"! <li>RAP BO provider (ABAP behavior pool): {@link zbp_demo_abap_rap_ro_m_as}</li>
+"! <li>RAP event handler: {@link zcl_demo_abap_rap_evt_handler}</li>
+"! <li>BDEF: {@link zdemo_abap_rap_ro_m_as}</li>
+"! <li>More artifacts are related such as database tables, CDS views, and
+"! an abstract entity ({@link zdemo_abap_abstract_ent}; used for the parameter
+"! specifications for the events in the BDEF)</li>
+"! </ul>
 CLASS zcl_demo_abap_rap_m_as DEFINITION
   PUBLIC
   FINAL

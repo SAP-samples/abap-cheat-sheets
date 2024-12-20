@@ -1,44 +1,11 @@
-***********************************************************************
-*
-*           ABAP cheat sheet: Structures
-*
-* -------------------------- PURPOSE ----------------------------------
-* - Example to demonstrate various syntax options for working with
-*   structures.
-* - Topics covered: creating structures and structured types, variants
-*   of structures, accessing components of structures, filling structures,
-*   clearing structures, structures in use in the context of tables
-*
-* ----------------------- GETTING STARTED -----------------------------
-* - Open the class with the ABAP development tools for Eclipse (ADT).
-* - Choose F9 to run the class.
-* - Check the console output.
-* - To understand the context and the ABAP syntax used, refer to the
-*   notes included in the class as comments or refer to the respective
-*   topic in the ABAP Keyword Documentation.
-* - Due to the amount of console output, the examples contain numbers
-*   (e.g. 1) ..., 2) ..., 3) ...) for the individual example sections.
-*   Also, the variable name is displayed in most cases. So to find
-*   the relevant output in the console easier and faster, just search
-*   for the number/variable name in the console (CTRL+F in the console)
-*   or use the debugger.
-*
-* ----------------------------- NOTE -----------------------------------
-* The code presented in this class is intended only to support the ABAP
-* cheat sheets. It is not intended for direct use in a production system
-* environment. The code examples in the ABAP cheat sheets are primarily
-* intended to provide a better explanation and visualization of the
-* syntax and semantics of ABAP statements, not to solve concrete
-* programming tasks. For production application programs, you should
-* always work out your own solution for each individual case. There is
-* no guarantee for the correctness or completeness of the code.
-* Furthermore, there is no legal responsibility or liability for any
-* errors or their consequences that may occur when using the the example
-* code.
-*
-***********************************************************************
-"! <p class="shorttext synchronized">ABAP cheat sheet: Structures</p>
-"! Example to demonstrate working with structures.<br>Choose F9 in ADT to run the class.
+"! <p class="shorttext"><strong>Structures</strong><br/>ABAP cheat sheet example class</p>
+"!
+"! <p>The example class demonstrates various syntax options for working with structures.<br/>
+"! Choose F9 in ADT to run the class.</p>
+"!
+"! <h2>Note</h2>
+"! <p>Find information on <strong>getting started with the example class</strong> and the
+"! <strong>disclaimer</strong> in the ABAP Doc comment of class {@link zcl_demo_abap_aux}.</p>
 CLASS zcl_demo_abap_structures DEFINITION
   PUBLIC
   FINAL
@@ -146,11 +113,35 @@ CLASS zcl_demo_abap_structures IMPLEMENTATION.
 
   METHOD if_oo_adt_classrun~main.
 
-    out->write( |ABAP Cheat Sheet Example: Structures\n\n| ).
+    out->write( |ABAP cheat sheet example: Structures\n\n| ).
 
 **********************************************************************
 
-    out->write( |1) Creating structures and structured types\n| ).
+    out->write( |1) Globally available structures and structured types\n| ).
+
+    "Creating structures based on globally available structured types
+    "Database table
+    DATA struc_from_dbtab TYPE zdemo_abap_fli.
+    "CDS view entity
+    DATA struc_from_cds_ve TYPE zdemo_abap_fli.
+    "CDS abstract entity
+    DATA struc_from_cds_abs TYPE zdemo_abap_abstract_ent.
+    "CDS table function
+    DATA struc_from_cds_tab_func TYPE zdemo_abap_table_function.
+
+    "Globally available structured type in the public visibility section of
+    "classes/interfaces
+    DATA struc_from_struc_type_in_cl TYPE zcl_demo_abap_amdp=>fli_struc.
+
+    "Creating structured types based on globally available structured types
+    TYPES ty_struc_from_dbtab TYPE zdemo_abap_fli.
+    TYPES ty_struc_from_cds_ve TYPE zdemo_abap_fli.
+
+    out->write( zcl_demo_abap_aux=>no_output ).
+
+**********************************************************************
+
+    out->write( zcl_demo_abap_aux=>heading( `2) Nested structure` ) ).
 
     "The following declarations are just included for demonstration purposes
     "to show how declarations of local structures and structured
@@ -213,12 +204,12 @@ CLASS zcl_demo_abap_structures IMPLEMENTATION.
     "Declaring structure inline and populating it using the VALUE operator
     DATA(struc_inl2) = VALUE lty_struc( num1 = 1 num2 = 2 ).
 
-    out->write( `No output for this section. See the code.` ).
+    out->write( zcl_demo_abap_aux=>no_output ).
 
 **********************************************************************
 
     out->write( zcl_demo_abap_aux=>heading( `Variants of structures` ) ).
-    out->write( |2) Flat structure with default values\n\n| ).
+    out->write( |3) Flat structure with default values\n\n| ).
 
     "Flat structures only contain elementary data types
 
@@ -235,7 +226,7 @@ CLASS zcl_demo_abap_structures IMPLEMENTATION.
 
 **********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `3) Nested structure` ) ).
+    out->write( zcl_demo_abap_aux=>heading( `4) Nested structure` ) ).
 
     "Nested structures contain at least one structure as component
 
@@ -260,7 +251,7 @@ CLASS zcl_demo_abap_structures IMPLEMENTATION.
 
 **********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `4) Deep structure with strings` ) ).
+    out->write( zcl_demo_abap_aux=>heading( `5) Deep structure with strings` ) ).
 
     "Deep structures contain at least one deep component, for
     "example, internal tables, strings.
@@ -276,7 +267,7 @@ CLASS zcl_demo_abap_structures IMPLEMENTATION.
 
 **********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `5) Deep structure with internal table as component` ) ).
+    out->write( zcl_demo_abap_aux=>heading( `6) Deep structure with internal table as component` ) ).
 
     "Structured type for nested internal table
     TYPES: BEGIN OF lty_flights,
@@ -308,7 +299,7 @@ CLASS zcl_demo_abap_structures IMPLEMENTATION.
 **********************************************************************
 
     out->write( zcl_demo_abap_aux=>heading( `Accessing and populating structures` ) ).
-    out->write( |6) Populating structure components using the component selector\n\n| ).
+    out->write( |7) Populating structure components using the component selector\n\n| ).
 
     gs_struc-num1  = 1.
     gs_struc-num2  = 2.
@@ -320,7 +311,7 @@ CLASS zcl_demo_abap_structures IMPLEMENTATION.
 
 **********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `7) Populating structure components ` &&
+    out->write( zcl_demo_abap_aux=>heading( `8) Populating structure components ` &&
     `using the VALUE operator` ) ).
 
     "Value assignments by addressing the structure components individually
@@ -373,7 +364,7 @@ CLASS zcl_demo_abap_structures IMPLEMENTATION.
 
 **********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `8) Creating and populating a new structure ` &&
+    out->write( zcl_demo_abap_aux=>heading( `9) Creating and populating a new structure ` &&
     `using the VALUE operator` ) ).
 
     "In the example below in which a new structure is created by declaring
@@ -391,7 +382,7 @@ CLASS zcl_demo_abap_structures IMPLEMENTATION.
 
 **********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `9) Accessing individual components using the ` &&
+    out->write( zcl_demo_abap_aux=>heading( `10) Accessing individual components using the ` &&
     `component selector` ) ).
 
     "Assigning value of individual component to a variable
@@ -412,7 +403,7 @@ CLASS zcl_demo_abap_structures IMPLEMENTATION.
 
 **********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `10) Excursion: Addressing components of a variable` &&
+    out->write( zcl_demo_abap_aux=>heading( `11) Excursion: Addressing components of a variable` &&
     ` referring to a structure ` ) ).
 
     "Creating a data reference variable.
@@ -433,7 +424,7 @@ CLASS zcl_demo_abap_structures IMPLEMENTATION.
 
 **********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `11) Using structure components for ` &&
+    out->write( zcl_demo_abap_aux=>heading( `12) Using structure components for ` &&
     `data type and data object declarations` ) ).
 
     TYPES: lty_1 TYPE gty_struc-num1,
@@ -448,7 +439,39 @@ CLASS zcl_demo_abap_structures IMPLEMENTATION.
 
 **********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `12) Copying content of a structure to another ` &&
+    out->write( zcl_demo_abap_aux=>heading( `13) Creating and populating an anonymous structure ` &&
+    `using the NEW operator` ) ).
+
+    "In the example below in which a new structure is created by declaring
+    "a variable inline the '#' sign cannot be used before the parentheses
+    "because a type cannot be derived. Instead, the type must be
+    "specified before the parentheses explicitly.
+
+    "Creating a data reference variable
+    TYPES struc_type LIKE ls_flat_address.
+    DATA addr_ref1 TYPE REF TO struc_type.
+
+    "Populating the anonymous structure
+    addr_ref1 = NEW #( name   = `Mr. Duncan Pea`
+                       street = `Vegetable Lane 11`
+                       city   = `349875 Botanica` ).
+
+    addr_ref1->name = `Mrs. Jane Doe`.
+
+    "Declaring an anonymous structure/a data reference variable inline
+    DATA(addr_ref2) = NEW struc_type( name   = `Mr. Duncan Pea`
+                                      street = `Vegetable Lane 11`
+                                      city   = `349875 Botanica` ).
+
+    out->write( data = addr_ref2->* name = `addr_ref2->*` ).
+
+    addr_ref2->* = VALUE #( BASE addr_ref2->* name = `Mr. John Doe` ).
+
+    out->write( data = addr_ref2->* name = `addr_ref2->*` ).
+
+**********************************************************************
+
+    out->write( zcl_demo_abap_aux=>heading( `14) Copying content of a structure to another ` &&
     ` that has the same type using the assignment operator` ) ).
 
     "Note: In the case below, a MOVE-CORRESPONDING statement as shown
@@ -463,7 +486,7 @@ CLASS zcl_demo_abap_structures IMPLEMENTATION.
 
 **********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `13) Copying content of a structure to another` &&
+    out->write( zcl_demo_abap_aux=>heading( `15) Copying content of a structure to another` &&
     ` that has an incompatible type using` &&
     ` MOVE-CORRESPONDING statemtns and the CORRESPONDING operator` ) ).
 
@@ -532,7 +555,7 @@ CLASS zcl_demo_abap_structures IMPLEMENTATION.
 
 **********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `14) Copying content of a deep ` &&
+    out->write( zcl_demo_abap_aux=>heading( `16) Copying content of a deep ` &&
     `structure to another` ) ).
     out->write( |Original content of deep structures:\n\n| ).
 
@@ -545,7 +568,7 @@ CLASS zcl_demo_abap_structures IMPLEMENTATION.
 
 **********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `15) MOVE-CORRESPONDING without additions` ) ).
+    out->write( zcl_demo_abap_aux=>heading( `17) MOVE-CORRESPONDING without additions` ) ).
 
     "Notes on the result:
     "- Existing content of identically named components is replaced.
@@ -569,7 +592,7 @@ CLASS zcl_demo_abap_structures IMPLEMENTATION.
 
 **********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `16) MOVE-CORRESPONDING with the ` &&
+    out->write( zcl_demo_abap_aux=>heading( `18) MOVE-CORRESPONDING with the ` &&
     `EXPANDING NESTED TABLES addition` ) ).
 
     "Notes on the result:
@@ -591,7 +614,7 @@ CLASS zcl_demo_abap_structures IMPLEMENTATION.
 
 **********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `17) MOVE-CORRESPONDING with the` &&
+    out->write( zcl_demo_abap_aux=>heading( `19) MOVE-CORRESPONDING with the` &&
     ` KEEPING TARGET LINES addition` ) ).
 
     "Notes on the result:
@@ -615,7 +638,7 @@ CLASS zcl_demo_abap_structures IMPLEMENTATION.
 
 **********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `18) MOVE-CORRESPONDING with the ` &&
+    out->write( zcl_demo_abap_aux=>heading( `20) MOVE-CORRESPONDING with the ` &&
     `EXPANDING NESTED TABLES KEEPING TARGET LINES addition` ) ).
 
     "Notes on the result:
@@ -640,7 +663,7 @@ CLASS zcl_demo_abap_structures IMPLEMENTATION.
 
 **********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `19) CORRESPONDING operator without additions` ) ).
+    out->write( zcl_demo_abap_aux=>heading( `21) CORRESPONDING operator without additions` ) ).
 
     "Notes on the result:
     "- Existing content of identically named components is replaced.
@@ -661,7 +684,7 @@ CLASS zcl_demo_abap_structures IMPLEMENTATION.
 
 **********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `20) CORRESPONDING operator with the` &&
+    out->write( zcl_demo_abap_aux=>heading( `22) CORRESPONDING operator with the` &&
     ` DEEP addition` ) ).
 
     "Notes on the result:
@@ -683,7 +706,7 @@ CLASS zcl_demo_abap_structures IMPLEMENTATION.
 
 **********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `21) CORRESPONDING operator with the` &&
+    out->write( zcl_demo_abap_aux=>heading( `23) CORRESPONDING operator with the` &&
     ` BASE addition` ) ).
 
     "Notes on the result:
@@ -707,7 +730,7 @@ CLASS zcl_demo_abap_structures IMPLEMENTATION.
 
 **********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `22) CORRESPONDING operator with the ` &&
+    out->write( zcl_demo_abap_aux=>heading( `24) CORRESPONDING operator with the ` &&
     `DEEP BASE addition` ) ).
 
     "Notes on the result:
@@ -730,7 +753,7 @@ CLASS zcl_demo_abap_structures IMPLEMENTATION.
 
 **********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `23) CORRESPONDING operator with the ` &&
+    out->write( zcl_demo_abap_aux=>heading( `25) CORRESPONDING operator with the ` &&
     `APPENDING addition` ) ).
 
     "Notes on the result:
@@ -754,7 +777,7 @@ CLASS zcl_demo_abap_structures IMPLEMENTATION.
 
 **********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `24) CORRESPONDING operator with the ` &&
+    out->write( zcl_demo_abap_aux=>heading( `26) CORRESPONDING operator with the ` &&
     `DEEP APPENDING addition` ) ).
 
     "Notes on the result:
@@ -777,7 +800,7 @@ CLASS zcl_demo_abap_structures IMPLEMENTATION.
 
 **********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `25) Clearing individual components of a ` &&
+    out->write( zcl_demo_abap_aux=>heading( `27) Clearing individual components of a ` &&
     `structure and the complete structure` ) ).
 
     "Clearing individual component
@@ -791,11 +814,23 @@ CLASS zcl_demo_abap_structures IMPLEMENTATION.
 
     out->write( data = gs_struc name = `gs_struc` ).
 
+    "Note: An assignment using the VALUE operator without entries in the parentheses clears the structure.
+    ls_flat_address = VALUE #( name = `Mr. Duncan Pea` ).
+    ls_flat_address = VALUE #( ).
+
+    ASSERT ls_flat_address IS INITIAL.
+
+    "The same applies to data reference variables pointing to structures.
+    addr_ref2 = NEW struc_type( name = `Mr. Duncan Pea` ).
+    addr_ref2 = NEW #( ).
+
+    ASSERT addr_ref2->* IS INITIAL.
+
 **********************************************************************
 
     out->write( zcl_demo_abap_aux=>heading( `Processing structures` ) ).
     out->write( |Reading a row from a database table into a structure ...\n\n| ).
-    out->write( |26) ... that has a compatible type\n\n| ).
+    out->write( |28) ... that has a compatible type\n\n| ).
 
     "The first entry that is found according to the WHERE condition is
     "returned. Instead of creating a structure having a compatible type,
@@ -819,7 +854,7 @@ CLASS zcl_demo_abap_structures IMPLEMENTATION.
 
 **********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `27) ... that has a different type` ) ).
+    out->write( zcl_demo_abap_aux=>heading( `29) ... that has a different type` ) ).
 
     "Creating structure having a different type.
     DATA: BEGIN OF ls_fli_diff,
@@ -842,7 +877,7 @@ CLASS zcl_demo_abap_structures IMPLEMENTATION.
 **********************************************************************
 
     out->write( zcl_demo_abap_aux=>heading( `Reading a line from an internal table into a structure ...` ) ).
-    out->write( |28) ... using a SELECT statement\n\n| ).
+    out->write( |30) ... using a SELECT statement\n\n| ).
 
     "Creating and filling an internal table to be read from
     DATA itab TYPE TABLE OF zdemo_abap_flsch WITH EMPTY KEY.
@@ -862,7 +897,7 @@ CLASS zcl_demo_abap_structures IMPLEMENTATION.
 
 **********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `29) ... using a READ TABLE statement` ) ).
+    out->write( zcl_demo_abap_aux=>heading( `31) ... using a READ TABLE statement` ) ).
 
     "The example shows the reading of one line into a work area, field
     "symbol and a data reference variable, all representing structured
@@ -886,7 +921,7 @@ CLASS zcl_demo_abap_structures IMPLEMENTATION.
 
 **********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `30) ... using a table expression` ) ).
+    out->write( zcl_demo_abap_aux=>heading( `32) ... using a table expression` ) ).
     "The line number, that is, the index, is specified in square
     "brackets.
 
@@ -897,7 +932,7 @@ CLASS zcl_demo_abap_structures IMPLEMENTATION.
 **********************************************************************
 
     out->write( zcl_demo_abap_aux=>heading( `Sequentially reading ...` ) ).
-    out->write( |31) ... a row from a database table into a structure\n\n| ).
+    out->write( |33) ... a row from a database table into a structure\n\n| ).
 
     "In the given simple example, the line that is found and returned
     "in a structure, that is declared inline, is simply added to an
@@ -916,7 +951,7 @@ CLASS zcl_demo_abap_structures IMPLEMENTATION.
 
 **********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `32) ... a line from an internal table into a structure` ) ).
+    out->write( zcl_demo_abap_aux=>heading( `34) ... a line from an internal table into a structure` ) ).
 
     "The given example covers the reading of a line into a field symbol.
     "Within the loop, a modification is carried out on a component
@@ -930,7 +965,7 @@ CLASS zcl_demo_abap_structures IMPLEMENTATION.
 
 **********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `33) Inserting a single row ` &&
+    out->write( zcl_demo_abap_aux=>heading( `35) Inserting a single row ` &&
     `into a database table from a structure` ) ).
 
     "The statements in the given example can be considered as
@@ -969,7 +1004,7 @@ CLASS zcl_demo_abap_structures IMPLEMENTATION.
 
 **********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `34) Updating a single row ` &&
+    out->write( zcl_demo_abap_aux=>heading( `36) Updating a single row ` &&
     `in a database table from a structure` ) ).
 
     ls_struc_db = VALUE #( key_field = 2
@@ -991,7 +1026,7 @@ CLASS zcl_demo_abap_structures IMPLEMENTATION.
 
 **********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `35) Updating a single row ` &&
+    out->write( zcl_demo_abap_aux=>heading( `37) Updating a single row ` &&
     `in a database table from a structure without overwriting specific ` &&
     `components` ) ).
 
@@ -1014,7 +1049,7 @@ CLASS zcl_demo_abap_structures IMPLEMENTATION.
 
 **********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `36) Updating or creating a single` &&
+    out->write( zcl_demo_abap_aux=>heading( `38) Updating or creating a single` &&
     ` row in a database table from a structure using MODIFY` ) ).
 
     "You can update or create an individual row in a database table
@@ -1056,7 +1091,7 @@ CLASS zcl_demo_abap_structures IMPLEMENTATION.
 
 **********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `36) Adding rows to and updating single rows` &&
+    out->write( zcl_demo_abap_aux=>heading( `39) Adding rows to and updating single rows` &&
     ` in an internal table from a structure` ) ).
 
     "INSERT and MODIFY are ABAP statements in this context, not ABAP SQL
@@ -1111,7 +1146,7 @@ CLASS zcl_demo_abap_structures IMPLEMENTATION.
 
 **********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `37) Including structures` ) ).
+    out->write( zcl_demo_abap_aux=>heading( `40) Including structures` ) ).
 
     "The example shows the inclusion of structured types and data
     "objects in another structure. First, three structured types as
@@ -1160,6 +1195,277 @@ CLASS zcl_demo_abap_structures IMPLEMENTATION.
     address-name_city = `Botanica`.
 
     out->write( data = address name = `address` ).
+
+**********************************************************************
+
+    out->write( zcl_demo_abap_aux=>heading( `41) Getting Structured Type Information and Creating Structures at Runtime` ) ).
+
+    TYPES: BEGIN OF demo_struc_type,
+             comp1 TYPE c LENGTH 3,
+             comp2 TYPE i,
+             comp3 TYPE string,
+           END OF demo_struc_type.
+    DATA demo_struc TYPE demo_struc_type.
+
+    DATA(tdo_c) = cl_abap_typedescr=>describe_by_data( demo_struc ).
+    "DATA(tdo_c) = cl_abap_typedescr=>describe_by_name( 'DEMO_STRUC_TYPE' ).
+
+    "Cast to get more specific information
+    DATA(tdo_struc) = CAST cl_abap_structdescr( cl_abap_typedescr=>describe_by_data( demo_struc ) ).
+    "DATA(tdo_struc) = CAST cl_abap_structdescr( tdo_c ).
+
+    DATA(type_category_struc) = tdo_struc->kind.
+    DATA(relative_name_struc) = tdo_struc->get_relative_name( ).
+    ... "Explore more options by positioning the cursor behind -> and choosing CTRL + Space
+    DATA(type_of_struc) = tdo_struc->struct_kind.
+    DATA(struc_comps) = tdo_struc->components.
+    DATA(struc_comps_more_details) = tdo_struc->get_components( ).
+    DATA(struc_has_include) = tdo_struc->has_include.
+    DATA(struc_incl_view) = tdo_struc->get_included_view( ).
+    DATA(applies_to_data_struc) = tdo_struc->applies_to_data( `some string` ).
+
+    "Example: "Looping" across a structure
+    "For example, this may also be done using a DO loop and dynamic assignments.
+    "Demo structure, all components are convertible to type string
+    TYPES: BEGIN OF ty_struc,
+             comp1 TYPE c LENGTH 3,
+             comp2 TYPE string,
+             comp3 TYPE i,
+             comp4 TYPE n LENGTH 4,
+           END OF ty_struc.
+    DATA(struct) = VALUE ty_struc( comp1 = 'abc' comp2 = `ABAP` comp3 = 123 comp4 = '9876' ).
+    DATA looped_struc TYPE string.
+
+    "In the loop, a string is populated, component by component.
+    LOOP AT CAST cl_abap_structdescr( cl_abap_typedescr=>describe_by_data( struct ) )->components INTO DATA(comp).
+      looped_struc = |{ looped_struc }{ COND #( WHEN sy-tabix <> 1 THEN ` / ` ) }Name: "{ CONV string( comp-name ) }", Value: "{ struct-(comp-name) }"|.
+    ENDLOOP.
+
+    out->write( data = looped_struc name = `looped_struc` ).
+
+**********************************************************************
+
+    out->write( zcl_demo_abap_aux=>heading( `42) sy Structure` ) ).
+
+    "Demonstrating prominent sy components that can be used in ABAP for Cloud Development
+
+    "------------------------------------------------------------------------------
+    "------------------ sy-subrc: Return code of ABAP statements ------------------
+    "------------------------------------------------------------------------------
+
+    "Many ABAP statements set a sy-subrc value. Check the ABAP Keyword Documentation
+    "for individual statements. Usually, the value 0 indicates a successful execution.
+
+    DATA(some_string) = `ABAP`.
+
+    "FIND statements
+    "Found
+    FIND `P` IN some_string.
+    ASSERT sy-subrc = 0.
+
+    "Not found
+    FIND `p` IN some_string RESPECTING CASE.
+    ASSERT sy-subrc = 4.
+
+    DATA(some_itab) = VALUE string_table( ( `a` ) ( `b` ) ( `c` ) ( `d` ) ).
+
+    "READ TABLE statements
+    "Entry available
+    READ TABLE some_itab INTO DATA(wa1) INDEX 3.
+    ASSERT sy-subrc = 0.
+
+    "Entry not available
+    READ TABLE some_itab INTO DATA(wa2) INDEX 7.
+    ASSERT sy-subrc = 4.
+
+    "ABAP SQL statements
+    DELETE FROM zdemo_abap_tab1.
+    IF sy-subrc = 0.
+      out->write( `DELETE: All rows were deleted.` ).
+    ELSE.
+      out->write( `DELETE: No row was deleted because it was already empty.` ).
+    ENDIF.
+
+    INSERT zdemo_abap_tab1 FROM TABLE @( VALUE #( ( key_field = 1 ) ( key_field = 2 ) ) ).
+    IF sy-subrc = 0.
+      out->write( `INSERT: All rows of the internal table were inserted.` ).
+    ENDIF.
+
+    INSERT zdemo_abap_tab1 FROM TABLE @( VALUE #( ( key_field = 3 ) ( key_field = 3 ) ) ) ACCEPTING DUPLICATE KEYS.
+    IF sy-subrc = 4.
+      out->write( `INSERT ... ACCEPTING DUPLICATE KEYS: sy-subrc has the value 4 in this case. Not all rows of the ` &&
+                  `internal table were inserted because a row with the key already exists.` ).
+    ENDIF.
+
+    DELETE FROM zdemo_abap_tab1 WHERE key_field = 3.
+    IF sy-subrc = 0.
+      out->write( `DELETE: The row matching the WHERE condition was deleted.` ).
+    ELSE.
+      out->write( `DELETE: No match according to the WHERE condition.` ).
+    ENDIF.
+
+    DELETE FROM zdemo_abap_tab1 WHERE key_field = 3.
+    IF sy-subrc = 0.
+      out->write( `DELETE: The row matching the WHERE condition was deleted.` ).
+    ELSE.
+      out->write( `DELETE: No match according to the WHERE condition.` ).
+    ENDIF.
+
+    "------------------------------------------------------------------------------
+    "--------------------------- sy-index: Loop indexes ---------------------------
+    "------------------------------------------------------------------------------
+
+    CLEAR some_string.
+
+    "DO loops
+    DO 5 TIMES.
+      some_string = some_string && sy-index.
+    ENDDO.
+
+    ASSERT some_string = `12345`.
+
+    CLEAR some_string.
+
+    DO 10 TIMES.
+      some_string = some_string && sy-index.
+      IF sy-index = 7.
+        EXIT.
+      ENDIF.
+    ENDDO.
+
+    ASSERT some_string = `1234567`.
+
+    CLEAR some_string.
+
+    DATA number TYPE i.
+
+    "WHILE loop
+    WHILE number < 9.
+      number = sy-index.
+      some_string = some_string && number.
+    ENDWHILE.
+
+    ASSERT some_string = `123456789`.
+
+    "------------------------------------------------------------------------------
+    "------------------- sy-tabix: Row index of internal tables -------------------
+    "------------------------------------------------------------------------------
+
+    "Demo standard internal table with 5 entries
+    DATA(std_itab) = VALUE string_table( ( `a` ) ( `b` ) ( `c` ) ( `d` ) ( `e` ) ).
+
+    "READ TABLE statement using a free key
+    READ TABLE std_itab INTO DATA(wa3) WITH KEY table_line = `b`.
+    ASSERT sy-tabix = 2.
+
+    "Demo hashed internal table with 5 entries
+    DATA(hashed_itab) = VALUE string_hashed_table( ( `a` ) ( `b` ) ( `c` ) ( `d` ) ( `e` ) ).
+
+    "READ TABLE statement using a free key
+    READ TABLE hashed_itab INTO DATA(wa4) WITH KEY table_line = `b`.
+    "Hashed tables do not have a primary table index.
+    ASSERT sy-tabix = 0.
+
+    CLEAR some_string.
+
+    "LOOP statements
+    LOOP AT std_itab INTO DATA(wa5).
+      some_string = some_string && sy-tabix.
+    ENDLOOP.
+    ASSERT some_string = `12345`.
+
+    CLEAR some_string.
+    "Step addition
+    "In the example, the table is looped across backwards
+    "indicated by the negative value. The step size 1 indicates
+    "that each line is respected.
+    LOOP AT std_itab INTO DATA(wa6) STEP -1.
+      some_string = some_string && sy-tabix.
+    ENDLOOP.
+    ASSERT some_string = `54321`.
+
+    CLEAR some_string.
+    "Forward loop, step size = 2
+    LOOP AT std_itab INTO DATA(wa7) STEP 2.
+      some_string = some_string && sy-tabix.
+    ENDLOOP.
+    ASSERT some_string = `135`.
+
+    CLEAR some_string.
+    "FROM/TO additions
+    LOOP AT std_itab INTO DATA(wa8) FROM 2 TO 4.
+      some_string = some_string && sy-tabix.
+    ENDLOOP.
+    ASSERT some_string = `234`.
+
+    CLEAR some_string.
+    "STEP/FROM additions
+    LOOP AT std_itab INTO DATA(wa9) STEP 2 FROM 2.
+      some_string = some_string && sy-tabix.
+    ENDLOOP.
+    ASSERT some_string = `24`.
+
+    CLEAR some_string.
+    "Hashed table
+    LOOP AT hashed_itab INTO DATA(wa10).
+      some_string = some_string && sy-tabix.
+    ENDLOOP.
+    ASSERT some_string = `00000`.
+
+    "------------------------------------------------------------------------------
+    "------------------------ sy-dbcnt: Edited table rows -------------------------
+    "------------------------------------------------------------------------------
+
+    DELETE FROM zdemo_abap_tab1.
+    DATA(dbcnt) = sy-dbcnt.
+
+    out->write( |Dbtab rows deleted: { dbcnt }| ).
+
+    INSERT zdemo_abap_tab1 FROM TABLE @( VALUE #( ( key_field = 1 ) ( key_field = 2 ) ) ).
+    ASSERT sy-dbcnt = 2.
+
+    INSERT zdemo_abap_tab1 FROM TABLE @( VALUE #( ( key_field = 3 ) ( key_field = 3 ) ) ) ACCEPTING DUPLICATE KEYS.
+    ASSERT sy-dbcnt = 1.
+
+    MODIFY zdemo_abap_tab1 FROM @( VALUE #( key_field = 1 char1 = 'aaa' ) ).
+    ASSERT sy-dbcnt = 1.
+
+    UPDATE zdemo_abap_tab1 SET char2 = 'bbb'.
+    ASSERT sy-dbcnt = 3.
+
+    DELETE FROM zdemo_abap_tab1 WHERE num1 IS INITIAL.
+    ASSERT sy-dbcnt = 3.
+
+    "------------------------------------------------------------------------------
+    "------------- sy-fdpos: Occurrence in byte or character strings --------------
+    "------------------------------------------------------------------------------
+    "For example, relevant in comparison expressions such as CS (constains string).
+    "If the comparison is true, sy-fdpos contains the offset of the found value. If it
+    "is false, sy-fdpos contains the length of the searched string.
+
+    some_string = `###abap###`.
+
+    IF some_string CS `p`.
+      out->write( |The substring is found. Offset of first finding: { sy-fdpos }| ).
+    ELSE.
+      out->write( |The substring is not found. Length of searched string: { sy-fdpos }| ).
+      ASSERT sy-fdpos = strlen( some_string ).
+    ENDIF.
+
+    IF some_string CS `#`.
+      out->write( |The substring is found. Offset of first finding: { sy-fdpos }| ).
+    ELSE.
+      out->write( |The substring is not found. Length of searched string: { sy-fdpos }| ).
+      ASSERT sy-fdpos = strlen( some_string ).
+    ENDIF.
+
+    IF some_string CS `Y`.
+      out->write( |The substring is found. Offset of first finding: { sy-fdpos }| ).
+    ELSE.
+      out->write( |The substring is not found. Length of searched string: { sy-fdpos }| ).
+      ASSERT sy-fdpos = strlen( some_string ).
+    ENDIF.
+
   ENDMETHOD.
 
 

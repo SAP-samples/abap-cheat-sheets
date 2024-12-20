@@ -1,58 +1,24 @@
-***********************************************************************
-*
-*       ABAP Cheat Sheet: ABAP Unit Tests
-*
-* -------------------------- PURPOSE ----------------------------------
-* - Example to demonstrate ABAP unit tests.
-* - Topics covered: Test classes and test methods, special methods,
-*   implementing and injecting test doubles (constructor injection,
-*   back door injection, test seams)
-*
-* ----------------------- RUN ABAP UNIT TEST---------------------------
-* - Open the class with the ABAP development tools for Eclipse (ADT).
-* - Choose Ctrl/Cmd + Shift + F10 to launch all tests in the class.
-*   You can also right-click somewhere in the class and choose
-*   Run as -> ABAP Unit Test.
-* - The results of a test run are displayed in the ABAP Unit tab in ADT
-*   and can be evaluated. The Failure Trace section provides information
-*   on errors found.
-* - If you are interested in test coverage, you can choose
-*   Ctrl/Cmd + Shift + F11, or make a right-click, choose Run as ->
-*   ABAP Unit Test With..., select the Coverage checkbox and choose
-*   Execute. You can then check the results in the ABAP Coverage tab,
-*   what code is tested and what not.
-*
-* ----------------------- RUN CLASS -----------------------------
-* - Open the class with the ABAP development tools for Eclipse (ADT).
-* - Choose F9 to run the class.
-* - Check the console output.
-* - To understand the context and the ABAP syntax used, check the notes
-*   included in the class as comments or refer to the respective topic
-*   in the ABAP Keyword Documentation.
-* - Due to the amount of output in the console, the examples include
-*   numbers (e. g. 1) ..., 2) ..., 3) ...) for the individual example
-*   sections. Plus, the variable name is displayed in most cases. Hence,
-*   to easier and faster find the relevant output in the console, just
-*   search in the console for the number/variable name (CTRL + F in the
-*   console) or use the debugger.
-*
-* ----------------------------- NOTE -----------------------------------
-* The code presented in this class is intended only to support the ABAP
-* cheat sheets. It is not intended for direct use in a production system
-* environment. The code examples in the ABAP cheat sheets are primarily
-* intended to provide a better explanation and visualization of the
-* syntax and semantics of ABAP statements, not to solve concrete
-* programming tasks. For production application programs, you should
-* always work out your own solution for each individual case. There is
-* no guarantee for the correctness or completeness of the code.
-* Furthermore, there is no legal responsibility or liability for any
-* errors or their consequences that may occur when using the the example
-* code.
-*
-***********************************************************************
-"! <p class="shorttext synchronized">ABAP cheat sheet: Unit tests</p>
-"! Example to demonstrate ABAP unit tests.<br>Choose F9 in ADT to run the class.
-"! To run all unit tests of the class, choose Ctrl/Cmd + Shift + F10.
+"! <p class="shorttext"><strong>ABAP Unit tests</strong><br/>ABAP cheat sheet example class</p>
+"!
+"! <p>The example class demonstrates ABAP unit tests.<br/>
+"! Choose F9 in ADT to run the class. To run all unit tests of the class, choose Ctrl/Cmd + Shift + F10.</p>
+"!
+"! <h2>Running ABAP Unit tests</h2>
+"! <ol><li>Open the class with the ABAP development tools for Eclipse (ADT).</li>
+"! <li>Choose Ctrl/Cmd + Shift + F10 to launch all tests in the class.
+"! You can also right-click somewhere in the class and choose Run as -> ABAP Unit Test.
+"! <li>The results of a test run are displayed in the ABAP Unit tab in ADT
+"! and can be evaluated. The Failure Trace section provides information
+"! on errors found.</li>
+"! <li>If you are interested in test coverage, you can choose Ctrl/Cmd + Shift + F11,
+"! or make a right-click, choose Run as -> ABAP Unit Test With..., select the Coverage
+"! checkbox and choose Execute. You can then check the results in the ABAP Coverage tab,
+"! what code is tested and what not.</li>
+"! </ol>
+"!
+"! <h2>Note</h2>
+"! <p>Find information on <strong>getting started with the example class</strong> and the
+"! <strong>disclaimer</strong> in the ABAP Doc comment of class {@link zcl_demo_abap_aux}.</p>
 CLASS zcl_demo_abap_unit_test DEFINITION
 PUBLIC
 CREATE PUBLIC.

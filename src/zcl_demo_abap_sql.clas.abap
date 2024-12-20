@@ -1,43 +1,11 @@
-***********************************************************************
-*
-*                   ABAP cheat sheet: ABAP SQL
-*
-* -------------------------- PURPOSE ----------------------------------
-* - Example to demonstrate various syntax options for working with
-*   persisted data in database tables using ABAP SQL.
-* - Topics covered: reading from database tables using SELECT, changing
-*   data in database tables using INSERT, UPDATE, MODIFY and DELETE
-*
-* ----------------------- GETTING STARTED -----------------------------
-* - Open the class with the ABAP development tools for Eclipse (ADT).
-* - Choose F9 to run the class.
-* - Check the console output.
-* - To understand the context and the ABAP syntax used, refer to the
-*   notes included in the class as comments or refer to the respective
-*   topic in the ABAP Keyword Documentation.
-* - Due to the amount of console output, the examples contain numbers
-*   (e.g. 1) ..., 2) ..., 3) ...) for the individual example sections.
-*   Also, the variable name is displayed in most cases. So to find
-*   the relevant output in the console easier and faster, just search
-*   for the number/variable name in the console (CTRL+F in the console)
-*   or use the debugger.
-*
-* ----------------------------- NOTE -----------------------------------
-* The code presented in this class is intended only to support the ABAP
-* cheat sheets. It is not intended for direct use in a production system
-* environment. The code examples in the ABAP cheat sheets are primarily
-* intended to provide a better explanation and visualization of the
-* syntax and semantics of ABAP statements, not to solve concrete
-* programming tasks. For production application programs, you should
-* always work out your own solution for each individual case. There is
-* no guarantee for the correctness or completeness of the code.
-* Furthermore, there is no legal responsibility or liability for any
-* errors or their consequences that may occur when using the the example
-* code.
-*
-***********************************************************************
-"! <p class="shorttext synchronized">ABAP cheat sheet: ABAP SQL</p>
-"! Example to demonstrate ABAP SQL.<br>Choose F9 in ADT to run the class.
+"! <p class="shorttext"><strong>ABAP SQL</strong><br/>ABAP cheat sheet example class</p>
+"!
+"! <p>The example class demonstrates syntax and concepts related to ABAP SQL.<br/>
+"! Choose F9 in ADT to run the class.</p>
+"!
+"! <h2>Note</h2>
+"! <p>Find information on <strong>getting started with the example class</strong> and the
+"! <strong>disclaimer</strong> in the ABAP Doc comment of class {@link zcl_demo_abap_aux}.</p>
 CLASS zcl_demo_abap_sql DEFINITION
   PUBLIC
   FINAL
@@ -72,7 +40,7 @@ CLASS zcl_demo_abap_sql IMPLEMENTATION.
 
   METHOD if_oo_adt_classrun~main.
 
-    out->write( |ABAP Cheat Sheet Example: ABAP SQL\n\n| ).
+    out->write( |ABAP cheat sheet example: ABAP SQL\n\n| ).
     out->write( |Using SELECT for multiple purposes\n| ).
     out->write( |1) Reading a single row from database table into a structure\n\n| ).
 
@@ -763,7 +731,7 @@ CLASS zcl_demo_abap_sql IMPLEMENTATION.
 
 **********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `18) Special functions` ) ).
+    out->write( zcl_demo_abap_aux=>heading( `18a) Special functions` ) ).
 
     SELECT SINGLE
       carrid,
@@ -822,6 +790,49 @@ CLASS zcl_demo_abap_sql IMPLEMENTATION.
 
 **********************************************************************
 
+    out->write( zcl_demo_abap_aux=>heading( `18b) coalesce Function` ) ).
+
+    "The null value is a special value that is returned by a database. It indicates an
+    "undefined value or result. Note that, in ABAP, there are no special null values. Do
+    "not confuse the null value with a type-dependent initial value. When using SELECT
+    "statements to read data, null values can be produced by, for example, outer joins.
+    "When the null values are passed to a data object, they are transformed to the
+    "type-dependent initial values. For more information, refer to the ABAP Keyword Documentation.
+    "The following example uses a left outer join to intentionally create null values. For
+    "this purpose, two demo database tables of the ABAP cheat sheet repository are cleared and
+    "populated with specific values to visualize null values.
+    DELETE FROM zdemo_abap_tab1.
+    DELETE FROM zdemo_abap_tab2.
+    MODIFY zdemo_abap_tab1 FROM TABLE @( VALUE #( ( key_field = 1 char1 = 'a' char2 = 'y' )
+                                                  ( key_field = 2 char1 = 'b' char2 = 'z' ) ) ).
+    MODIFY zdemo_abap_tab2 FROM TABLE @( VALUE #( ( key_field = 1 char1 = 'a' )
+                                                  ( key_field = 2 char1 = 'a' )
+                                                  ( key_field = 3 char1 = 'b' )
+                                                  ( key_field = 4 ) ) ).
+
+    "Note that for the entry 'key_field = 4' no char1 value was passed.
+    "char1 is a shared column of the two database tables, and which is used in
+    "the ON condition of the join. Since there is no entry in char1 for 'key_field = 4',
+    "the joined values are null in that case.
+    "The coalesce function is used to replace null values produced by an outer join with
+    "a different value.
+    SELECT tab2~key_field,
+           coalesce( tab1~char1, '-' ) AS coalesced1,
+           coalesce( tab1~char2, '#' ) AS coalesced2,
+           "A coalesce function is a short form of a complex
+           "case distinction such as the following:
+           CASE WHEN tab1~char1 IS NOT NULL THEN tab1~char1
+            ELSE '?'
+           END AS coalesced3
+
+        FROM zdemo_abap_tab2 AS tab2
+        LEFT OUTER JOIN zdemo_abap_tab1 AS tab1 ON tab1~char1 = tab2~char1
+        INTO TABLE @DATA(join_w_null).
+
+    out->write( data = join_w_null name = `join_w_null` ).
+
+**********************************************************************
+
     out->write( zcl_demo_abap_aux=>heading( `19) Aggregate Expressions` ) ).
 
     "Consist of aggregate functions and aggregate the values of
@@ -864,64 +875,121 @@ CLASS zcl_demo_abap_sql IMPLEMENTATION.
 
 **********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `20) More SQL Expressions` ) ).
+    out->write( zcl_demo_abap_aux=>heading( `20a) Arithmetic Expressions` ) ).
 
-    "Arithmetic expressions to perform arithmetic calculations
-    "Cast expressions to convert the value of operands to a dedicated
-    " dictionary type. Note that there are special conversion rules.
-    "String expressions using the operator && to concatenate character
-    " strings.
-    "Case distinctions to carry out either a simple (comparison of the
-    " values of a dedicated operand) or complex (searched case;
-    " evaluation of multiple logical expressions) case distinction.
+    SELECT SINGLE
+    carrid,
+
+    "Arithmethic expressions
+    "operators + - *
+    "Note that / is not allowed in integer expressions as the one below
+    ( 1 + 2 ) * 3 AS calc,
+
+    "/ used in an expression using type adjustment in ABAP SQL.
+    "A cast expression converts the value of the operands to the
+    "specified dictionary type. The result is a representation of the
+    "source value in the specified type.
+    CAST( 1 AS D34N ) / CAST( 2 AS D34N ) AS ratio
+
+  FROM zdemo_abap_carr
+  WHERE carrid = 'AA'
+  INTO @DATA(arithmetic_sql_expr).
+
+    out->write( data = arithmetic_sql_expr name = `arithmetic_sql_expr` ).
+
+**********************************************************************
+
+    out->write( zcl_demo_abap_aux=>heading( `20b) Cast Expressions` ) ).
+
+    SELECT SINGLE
+        carrid,
+
+        "A cast expression converts the value of the operands to the
+        "specified dictionary type. The result is a representation of the
+        "source value in the specified type.
+        CAST( 1 AS D34N ) / CAST( 2 AS D34N ) AS ratio,
+        CAST( connid AS INT4 ) AS connidnum,
+        CAST( @( cl_abap_context_info=>get_system_date( ) ) AS CHAR ) AS dat
+
+    FROM zdemo_abap_fli
+    WHERE carrid = 'AA'
+    INTO @DATA(cast_expr).
+
+    out->write( data = cast_expr name = `cast_expr` ).
+
+**********************************************************************
+
+    out->write( zcl_demo_abap_aux=>heading( `20c) String Expressions` ) ).
+
+    SELECT SINGLE
+        carrid,
+
+        "String expression using && to concatenate two character strings;
+        "the result of the concatenation must not be longer than
+        "255 characters.
+        carrid && char`_` && carrname AS concat
+
+    FROM zdemo_abap_carr
+    WHERE carrid = 'AA'
+    INTO @DATA(string_expr).
+
+    out->write( data = string_expr name = `string_expr` ).
+
+**********************************************************************
+
+    out->write( zcl_demo_abap_aux=>heading( `20d) Case Expressions` ) ).
 
     SELECT SINGLE
       carrid,
 
-      "Arithmethic expressions
-      "operators + - *
-      "Note that / is not allowed in integer expressions as the
-      "one below.
-      ( 1 + 2 ) * 3 AS calc,
-
-      "/ used in an expression using type adjustment in ABAP SQL.
-      "A cast expression converts the value of the operands to the
-      "specified dictionary type. The result is a representation of
-      "the source value in the specified type.
-      CAST( 1 AS D34N ) / CAST( 2 AS D34N ) AS ratio,
-
-      "String expression using && to concatenate two character strings;
-      "the result of the concatenation must not be longer than
-      "255 characters.
-      carrid && carrname AS concat,
-
-      "Case distinction
       "Simple case distinction
       "The expression compares the values of an operand with other
       "operands. Result: The first operand after THEN for which the
-      "comparison is true. If no matches are found, the result
-      "specified after ELSE is selected.
+      "comparison is true. If no matches are found, the result specified
+      "after ELSE is selected.
       CASE currcode
-           WHEN 'EUR' THEN 'A'
-           WHEN 'USD' THEN 'B'
-           ELSE 'C'
+        WHEN 'EUR' THEN 'A'
+        WHEN 'USD' THEN 'B'
+        ELSE 'C'
       END AS case_simple,
 
       "Complex case distinction
       "The expression evaluates logical expressions. Result: The first
-      "operand after THEN for which the logical expression is true. If
-      "no logical expressions are true, the result specified after ELSE
-      "is selected.
+      "operand after THEN for which the logical expression is true. If no
+      "logical expressions are true, the result specified after ELSE is
+      "selected.
       CASE WHEN length( carrname ) <= 5 THEN 'small'
            WHEN length( carrname ) BETWEEN 6 AND 10 THEN 'mid'
            WHEN length( carrname ) BETWEEN 11 AND 15 THEN 'large'
            ELSE 'huge'
       END AS case_complex
-     FROM zdemo_abap_carr
-     WHERE carrid = 'AA'
-     INTO @DATA(more_sql_expr).
 
-    out->write( data = more_sql_expr name = `more_sql_expr` ).
+    FROM zdemo_abap_carr
+    WHERE carrid = 'AA'
+    INTO @DATA(case_expr).
+
+    out->write( data = case_expr name = `case_expr` ).
+
+**********************************************************************
+
+    out->write( zcl_demo_abap_aux=>heading( `20e) Null Expressions` ) ).
+
+    SELECT
+    carrid,
+    carrname,
+    "The type of the null value is determined by the context.
+    "When the null value is passed to the internal table,
+    "it is converted to the initial value. In the first case,
+    "it is ' '. In the second case, it is 0..
+    CASE WHEN length( carrname ) > 12 THEN char`X`
+      ELSE NULL
+    END AS long_name,
+    CAST( NULL AS INT1 ) AS null_val
+
+FROM zdemo_abap_carr
+INTO TABLE @DATA(null_expr).
+
+    out->write( data = null_expr name = `null_expr` ).
 
 **********************************************************************
 
@@ -1048,6 +1116,239 @@ CLASS zcl_demo_abap_sql IMPLEMENTATION.
 
 
     out->write( data = itab_like_in name = `itab_like_in` ).
+
+**********************************************************************
+
+    out->write( zcl_demo_abap_aux=>heading( `25b) SQL conditions (4)` ) ).
+
+    "---- SQL conditions demonstrated with the WHERE clause ----
+    "Note:
+    "- For most of the self-contained examples, an internal table is used as the
+    "  data source of SELECT statements to work with simple data.
+    "- For some examples that are covered, such as subqueries, demo database tables
+    "  from the cheat sheet repository are used in addition.
+    "- Dynamic specifications are also possible. They are not covered here. See
+    "  the Dynamic Programming cheat sheet.
+
+    "---- Types and internal table to work with in the examples ----
+    "Note: You cannot use type string columns in WHERE conditions.
+    TYPES: BEGIN OF demo_struc,
+             id   TYPE i,
+             name TYPE c LENGTH 15,
+             "name TYPE string,
+           END OF demo_struc.
+    DATA itab_sql_cond TYPE SORTED TABLE OF demo_struc WITH UNIQUE KEY id.
+    "Populating internal table with data to work with in the examples
+    itab_sql_cond = VALUE #( ( id = 1 name = 'bear' )
+                    ( id = 2 name = 'camel' )
+                    ( id = 3 name = 'rabbit' )
+                    ( id = 4 name = 'zebra' )
+                    ( id = 5 name = 'dog' )
+                    ( id = 6 name = 'deer' )
+                    ( id = 7 name = 'squirrel' )
+                    ( id = 8 name = 'cheetah' )
+                    ( id = 9 name = 'elephant' )
+                    ( id = 10 name = 'donkey' )
+                    ( id = 11 name = 'fish' )
+                    ( id = 12 name = 'sheep' ) ).
+
+    "---- =, <>, >, >= (as a selection of possible comparison operators) ----
+    SELECT id FROM @itab_sql_cond AS tab WHERE name = 'bear' INTO TABLE @DATA(it).
+    SELECT id FROM @itab_sql_cond AS tab WHERE name <> 'bear' INTO TABLE @it.
+    SELECT id FROM @itab_sql_cond AS tab WHERE id > 10 INTO TABLE @it.
+    SELECT id FROM @itab_sql_cond AS tab WHERE id >= 10 INTO TABLE @it.
+
+    "---- Combining logical expressions using AND, OR and parentheses  ----
+    SELECT id FROM @itab_sql_cond AS tab WHERE id = 1 AND name = 'bear' INTO TABLE @it.
+    SELECT id FROM @itab_sql_cond AS tab WHERE name = 'bear' OR name = 'sheep' INTO TABLE @it.
+
+    "In the following example, the resulting table is initial. One of the expressions
+    "in parentheses is false (AND is used between the expressions in parentheses).
+    "In contrast, the example below returns an entry because of using OR.
+    SELECT id FROM @itab_sql_cond AS tab
+      WHERE ( id = 1 AND name = 'bear' )
+      AND ( id = 20 AND name = 'camel' )
+      INTO TABLE @it.
+
+    SELECT id FROM @itab_sql_cond AS tab
+      WHERE ( id = 1 AND name = 'bear' )
+      OR ( id = 20 AND name = 'camel' )
+      INTO TABLE @it.
+
+    "------------------------ [NOT] BETWEEN ------------------------
+    SELECT id FROM @itab_sql_cond AS tab WHERE id BETWEEN 1 AND 4 INTO TABLE @it.
+    "The condition with BETWEEN above corresponds to the following condition.
+    "The example makes use of a condition specified in parentheses to combine multiple
+    "expressions.
+    SELECT id FROM @itab_sql_cond AS tab WHERE ( id >= 1 AND id <= 4 ) INTO TABLE @it.
+    "Negation with NOT
+    SELECT id FROM @itab_sql_cond AS tab WHERE id NOT BETWEEN 1 AND 4 INTO TABLE @it.
+
+    "------------------------ IS [NOT] INITIAL ------------------------
+    SELECT id FROM @itab_sql_cond AS tab WHERE id IS NOT INITIAL INTO TABLE @it.
+
+    SELECT id FROM @itab_sql_cond AS tab WHERE id IS INITIAL INTO TABLE @it.
+
+    "------------------------ [NOT] LIKE ------------------------
+    "For (not) matching a specified pattern
+    "Note: % (any character string), _ (any character).
+    SELECT name FROM @itab_sql_cond AS tab
+      WHERE name LIKE '%ee%'
+      OR name LIKE '_o%'
+      INTO TABLE @DATA(names). "dog,deer,cheetah,donkey,sheep
+
+    SELECT name FROM @itab_sql_cond AS tab
+      WHERE name NOT LIKE '%ee%'
+      INTO TABLE @names.
+
+    "ESCAPE addition for defining a single-character escape character
+    "In the following example, this character is #. It is placed before
+    "the % character in the specification after LIKE. In this case, %
+    "is escaped and does then not stand for any character string in the
+    "evaluation.
+    "Adding a table entry for this syntax example.
+    itab_sql_cond = VALUE #( BASE itab_sql_cond ( id = 13 name = '100%' ) ).
+    "Any character sequence followed by the % character
+    SELECT name FROM @itab_sql_cond AS tab
+      WHERE name LIKE '%#%' ESCAPE '#'
+      INTO TABLE @names.
+
+    "Deleting the entry because it is not relevant for the further examples.
+    DELETE itab_sql_cond INDEX 13.
+
+    "------------------------ [NOT] IN (using a value set) ------------------------
+    "For (not) matching a value in a set of values specified in parentheses.
+
+    "Single operands on the left side of IN
+    SELECT id FROM @itab_sql_cond AS tab
+      WHERE name IN ( 'camel', 'rabbit', 'dog', 'snake' )
+      INTO TABLE @it.
+
+    "Negation NOT IN; note to use host variables/expressions for local/global data objects
+    DATA(animal) = 'sheep'.
+    SELECT id FROM @itab_sql_cond AS tab
+      WHERE name NOT IN ( 'fish', @animal )
+      INTO TABLE @it.
+
+    "Operand list (a parenthesized comma-separated list) on the left side of IN
+    "For (not) matching value tuples from a set of value tuples specified in parentheses on the right side.
+    "In the following example, two values are specified in the operand list on the left. Consequently,
+    "two values with appropriate types must be specified in parentheses on the right.
+    SELECT id FROM @itab_sql_cond AS tab
+      WHERE ( id, name ) IN ( ( 1, 'bear' ), ( 3, 'rabbit' ), ( 8, 'zebra' ), ( 20, 'dog' ) )
+      INTO TABLE @it.
+
+
+    "------------------------ [NOT] IN (using a subquery) ------------------------
+    "[NOT] IN for matching a value contained in the result set of a subquery
+
+    "In the following example, the subquery reads data from a demo database table.
+    "For a representative result, the table is cleared, and then filled with 'suitable'
+    "data sets.
+    DELETE FROM zdemo_abap_tab1.
+    MODIFY zdemo_abap_tab1 FROM TABLE @( VALUE #( ( key_field = 11 num1 = 11 )
+                                                  ( key_field = 12 num1 = 12 )
+                                                  ( key_field = 13 num1 = 13 )
+                                                  ( key_field = 14 num1 = 14 ) ) ).
+
+    SELECT id FROM @itab_sql_cond AS tab
+      WHERE id IN ( SELECT key_field FROM zdemo_abap_tab1 ) INTO TABLE @it.
+
+    "------------------------ [NOT] IN (using a ranges table) ------------------------
+    "[NOT] IN for checking whether the operands on the left side match a ranges condition in a ranges table
+
+    "Declaring a ranges table
+    DATA rangestab TYPE RANGE OF i.
+    "Populating a ranges table using the VALUE operator
+    rangestab = VALUE #( ( sign   = 'I' option = 'BT' low = 1 high = 3 )
+                         ( sign   = 'I' option = 'GE' low = 10  ) ).
+
+    SELECT id FROM @itab_sql_cond AS tab WHERE id IN @rangestab INTO TABLE @it.
+
+
+    "You cannot use logical operators such as CP (conforms to pattern) in the WHERE clause.
+    "In a ranges table, they are possible.
+    "Note:
+    "- Regarding CP: * (any character sequence), + (any character), # (escape character)
+    "- An equivalent example above uses the LIKE addition.
+    DATA rt TYPE RANGE OF demo_struc-name.
+    rt = VALUE #( ( sign   = 'I' option = 'CP' low = '*ee*' ) "ee in a string
+                  ( sign   = 'I' option = 'CP' low = '+o*' ) ). "o in second position
+    SELECT name FROM @itab_sql_cond AS tab
+      WHERE name IN @rt
+      INTO TABLE @names.
+
+    "------------------------ EXISTS ------------------------
+    "For checking the result set of a subquery.
+    "The following example reads all entries from the internal table if entries having
+    "the same key also exist in the database table.
+    "Note: The SELECT list in the subquery only contains a literal to determine that
+    "the entry exists. Specifying explicit column names is not relevant.
+    SELECT id FROM @itab_sql_cond AS tab WHERE
+      EXISTS ( SELECT @abap_true FROM zdemo_abap_tab1 WHERE key_field = tab~id )
+      INTO TABLE @it.
+
+    "------------------------ IS [NOT] NULL ------------------------
+    "The null value is a special value that is returned by a database. It indicates an
+    "undefined value or result. Note that, in ABAP, there are no special null values. Do
+    "not confuse the null value with a type-dependent initial value. When using SELECT
+    "statements to read data, null values can be produced by, for example, outer joins.
+    "When the null values are passed to a data object, they are transformed to the
+    "type-dependent initial values. For more information, refer to the ABAP Keyword Documentation.
+    "The following example uses a left outer join to intentionally create null values. For
+    "this purpose, two demo database tables of the cheat sheet repository are cleared and
+    "populated with specific values to visualize null values.
+    DELETE FROM zdemo_abap_tab1.
+    DELETE FROM zdemo_abap_tab2.
+    MODIFY zdemo_abap_tab1 FROM TABLE @( VALUE #( ( key_field = 1 char1 = 'a' char2 = 'y' )
+                                                  ( key_field = 2 char1 = 'b' char2 = 'z' ) ) ).
+    MODIFY zdemo_abap_tab2 FROM TABLE @( VALUE #( ( key_field = 1 char1 = 'a' )
+                                                  ( key_field = 2 char1 = 'a' )
+                                                  ( key_field = 3 char1 = 'b' )
+                                                  ( key_field = 4 ) ) ).
+
+    "Note that for the entry 'key_field = 4' no char1 value was passed.
+    "char1 is a shared column of the two database tables, and which is used in
+    "the ON condition of the join. Since there is no entry in char1 for 'key_field = 4',
+    "the joined values are null in that case. The WHERE clause uses the addition IS NULL.
+    "Therefore, the result only contains this entry. char2 is assigned the type-initial
+    "value in the result.
+    SELECT tab2~key_field, tab1~char2
+        FROM zdemo_abap_tab2 AS tab2
+        LEFT OUTER JOIN zdemo_abap_tab1 AS tab1 ON tab1~char1 = tab2~char1
+        WHERE tab1~char1 IS NULL
+        INTO TABLE @DATA(joined_tab).
+
+    "The following example visualizes the null values. The INDICATORS addition of the
+    "INTO clause is used to specify indicators such as the null indicator. In the
+    "example, an appropriate target table is defined to also store information about
+    "which columns of the result set contain the null value and which do not.
+    "For more information on the syntax, refer to the ABAP Keyword Documentation.
+    TYPES: BEGIN OF st4null,
+             BEGIN OF s2,
+               key_field TYPE zdemo_abap_tab2-key_field,
+               char2     TYPE zdemo_abap_tab1-char2,
+             END OF s2,
+             BEGIN OF nulls,
+               key_field TYPE c LENGTH 1,
+               char2     TYPE c LENGTH 1,
+             END OF nulls,
+           END OF st4null.
+    DATA joined_tab_w_null_ind TYPE TABLE OF st4null WITH EMPTY KEY.
+
+    SELECT tab2~key_field, tab1~char2
+      FROM zdemo_abap_tab2 AS tab2
+      LEFT OUTER JOIN zdemo_abap_tab1 AS tab1 ON tab1~char1 = tab2~char1
+      INTO TABLE @joined_tab_w_null_ind INDICATORS NULL STRUCTURE nulls.
+
+    "Negation IS NOT NULL
+    SELECT tab2~key_field, tab1~char2
+      FROM zdemo_abap_tab2 AS tab2
+      LEFT OUTER JOIN zdemo_abap_tab1 AS tab1 ON tab1~char1 = tab2~char1
+      WHERE tab1~char1 IS NOT NULL
+      INTO TABLE @joined_tab.
+
+    out->write( zcl_demo_abap_aux=>no_output ).
 
 **********************************************************************
 
@@ -1260,6 +1561,60 @@ CLASS zcl_demo_abap_sql IMPLEMENTATION.
        INTO TABLE @DATA(itab_union).
 
     out->write( data = itab_union name = `itab_union` ).
+
+**********************************************************************
+
+    out->write( zcl_demo_abap_aux=>heading( `33b) Returning distinct rows of a result set using INTERSECT` ) ).
+
+    SELECT zdemo_abap_flsch~carrid, zdemo_abap_carr~carrname
+        FROM zdemo_abap_flsch
+        INNER JOIN zdemo_abap_carr ON zdemo_abap_carr~carrid = zdemo_abap_flsch~carrid
+        ORDER BY zdemo_abap_flsch~carrid
+        INTO TABLE @DATA(itab_no_intersect).
+
+    out->write( data = itab_no_intersect name = `itab_no_intersect` ).
+    out->write( |\n| ).
+
+    "Using INTERSECT; the result set contains distinct rows
+    SELECT zdemo_abap_flsch~carrid, zdemo_abap_carr~carrname
+        FROM zdemo_abap_flsch
+        INNER JOIN zdemo_abap_carr ON zdemo_abap_carr~carrid = zdemo_abap_flsch~carrid
+    INTERSECT
+    SELECT carrid, carrname
+        FROM zdemo_abap_carr
+        ORDER BY carrid
+        INTO TABLE @DATA(itab_w_intersect).
+
+    out->write( data = itab_no_intersect name = `itab_w_intersect` ).
+
+**********************************************************************
+
+    out->write( zcl_demo_abap_aux=>heading( `33c) Returning distinct rows of a result set using EXCEPT` ) ).
+
+    "Selecting all carrier IDs from a database table that do not exist in an
+    "internal table
+    TYPES: ty_demo_tab TYPE TABLE OF zdemo_abap_flsch WITH EMPTY KEY.
+    DATA(itab_except) = VALUE ty_demo_tab( ( carrid = 'LH' ) ( carrid = 'LH' ) ( carrid = 'LH' )
+                                           ( carrid = 'AA' ) ( carrid = 'AA' ) ).
+
+
+    "Selecting all carrier IDs for comparison
+    SELECT carrid
+        FROM zdemo_abap_carr
+        INTO TABLE @DATA(all_carrids).
+
+    "Using EXCEPT; the result set excludes those carrier IDs present in the
+    "internal table
+    SELECT carrid
+        FROM zdemo_abap_carr
+        EXCEPT
+            SELECT it~carrid
+            FROM @itab_except AS it
+                INNER JOIN zdemo_abap_carr ON zdemo_abap_carr~carrid = it~carrid
+        ORDER BY carrid ASCENDING
+        INTO TABLE @DATA(itab_w_except).
+
+    out->write( data = itab_w_except name = `itab_w_except` ).
 
 **********************************************************************
 
@@ -1605,6 +1960,226 @@ CLASS zcl_demo_abap_sql IMPLEMENTATION.
 
     select_from_dbtab( ).
     out->write( data = itab_res name = `itab_res` ).
+
+**********************************************************************
+
+    out->write( zcl_demo_abap_aux=>heading( `47) Exploring ABAP SQL statements using constructor expressions created in place` ) ).
+
+    TYPES it_type TYPE TABLE OF zdemo_abap_tab1 WITH EMPTY KEY.
+    DELETE FROM zdemo_abap_tab1.
+
+    "--- VALUE ---
+    "VALUE operator as shown above, creating an internal table in place
+    INSERT zdemo_abap_tab1 FROM TABLE @( VALUE #( ( key_field = 1 char1 = 'aaa' char2 = 'bbb' num1 = 10 num2 = 100 )
+                                                  ( key_field = 2 char1 = 'ccc' char2 = 'ddd' num1 = 20 num2 = 200 ) ) ).
+
+    "FOR LOOP with VALUE
+    DATA(it_f) = VALUE it_type( ( key_field = 3 char1 = 'ee' char2 = 'ff' num1 = 30 num2 = 300 )
+                                ( key_field = 4 char1 = 'gg' char2 = 'hh' num1 = 40 num2 = 400 )
+                                ( key_field = 5 char1 = 'ii' char2 = 'jj' num1 = 50 num2 = 500 ) ).
+
+    "In the example, the internal table from above is looped across. The index value is
+    "stored and used to modify field values of the internal table. In doing so, the modified
+    "internal table values are inserted into the database table.
+    INSERT zdemo_abap_tab1 FROM TABLE @( VALUE #( FOR wa IN it_f INDEX INTO idx ( key_field = wa-key_field
+                                                                                  char1 = wa-char1 && idx
+                                                                                  char2 = wa-char2 && idx
+                                                                                  num1 = wa-num1 + idx
+                                                                                  num2 = wa-num2 + idx ) ) ).
+
+    "Using a constructor expression with VALUE and BASE in an UPDATE statement
+    "The example assumes selecting an entry from a database, modifying it, and updating it again,
+    "but the non-modified entries shall remain unchanged.
+    INSERT zdemo_abap_tab1 FROM @( VALUE #( key_field = 100 char1 = 'xxx' char2 = 'yyy' num1 = 100 num2 = 101 ) ).
+
+    SELECT SINGLE * FROM zdemo_abap_tab1 WHERE key_field = 100 INTO @DATA(read_line).
+    UPDATE zdemo_abap_tab1 FROM @( VALUE #( BASE read_line char2 = '#' num1 = 1 ) ).
+
+    "--- CORRESPONDING ---
+    TYPES: BEGIN OF s1,
+             key_field TYPE i,
+             char1     TYPE c LENGTH 5,
+             num1      TYPE i,
+           END OF s1,
+           it_type_s1 TYPE TABLE OF s1 WITH EMPTY KEY,
+           BEGIN OF s2,
+             key     TYPE i,
+             char    TYPE c LENGTH 5,
+             number1 TYPE i,
+             num2    TYPE p LENGTH 8 DECIMALS 2,
+           END OF s2,
+           it_type_s2 TYPE TABLE OF s2 WITH EMPTY KEY.
+
+    "Identical component names in the internal table
+    "The example includes compatible and convertible types.
+    DATA(it_g) = VALUE it_type_s1( ( key_field = 6 char1 = 'kkk' num1 = 60 )
+                                   ( key_field = 7 char1 = 'lll' num1 = 70 ) ).
+
+    INSERT zdemo_abap_tab1 FROM TABLE @( CORRESPONDING #( it_g ) ).
+
+    "Non-identical component names in the internal table; using the MAPPING/EXCEPT additions
+    "The example includes compatible and convertible types.
+    DATA(it_h) = VALUE it_type_s2( ( key = 8 char = 'mmm' number1 = 80 num2 = '1.23' )
+                                   ( key = 9 char = 'nnn' number1 = 90 num2 = '4.56' ) ).
+
+    INSERT zdemo_abap_tab1 FROM TABLE @( CORRESPONDING #( it_h MAPPING key_field = key char2 = char num1 = number1 EXCEPT num2 ) ).
+
+    SELECT * FROM zdemo_abap_tab1 INTO TABLE @DATA(itab_constr).
+
+    out->write( zcl_demo_abap_aux=>no_output ).
+
+**********************************************************************
+
+    out->write( zcl_demo_abap_aux=>heading( `48) Evaluating ABAP System Fields after ABAP SQL Statements` ) ).
+
+    "Clearing a demo database table
+    DELETE FROM zdemo_abap_tab1.
+
+    "--------------------- INSERT ---------------------
+    INSERT zdemo_abap_tab1 FROM @( VALUE #( key_field = 1 ) ).
+
+    ASSERT sy-subrc = 0.
+    ASSERT sy-dbcnt = 1.
+
+    INSERT zdemo_abap_tab1 FROM TABLE @( VALUE #( ( key_field = 2 )
+                                                  ( key_field = 3 ) ) ).
+
+    ASSERT sy-subrc = 0.
+    ASSERT sy-dbcnt = 2.
+
+    INSERT zdemo_abap_tab1 FROM TABLE @( VALUE #( ( key_field = 2 )
+                                                  ( key_field = 3 ) ) ) ACCEPTING DUPLICATE KEYS.
+
+    ASSERT sy-subrc = 4.
+    ASSERT sy-dbcnt = 0.
+
+    INSERT zdemo_abap_tab1 FROM TABLE @( VALUE #( ( key_field = 3 )
+                                                  ( key_field = 4 ) ) ) ACCEPTING DUPLICATE KEYS.
+
+    ASSERT sy-subrc = 4.
+    ASSERT sy-dbcnt = 1.
+
+    "--------------------- UPDATE ---------------------
+    UPDATE zdemo_abap_tab1 FROM @( VALUE #( key_field = 1 num1 = 1 ) ).
+
+    ASSERT sy-subrc = 0.
+    ASSERT sy-dbcnt = 1.
+
+    UPDATE zdemo_abap_tab1 FROM @( VALUE #( key_field = 9999 num1 = 9999 ) ).
+
+    ASSERT sy-subrc = 4.
+    ASSERT sy-dbcnt = 0.
+
+    UPDATE zdemo_abap_tab1 FROM TABLE @( VALUE #( ( key_field = 2 num1 = 2 )
+                                                  ( key_field = 3 num1 = 3 ) ) ).
+
+    ASSERT sy-subrc = 0.
+    ASSERT sy-dbcnt = 2.
+
+    UPDATE zdemo_abap_tab1 FROM TABLE @( VALUE #( ( key_field = 4 num1 = 4 )
+                                                  ( key_field = 1111 num1 = 1111 ) ) ).
+
+    ASSERT sy-subrc = 4.
+    ASSERT sy-dbcnt = 1.
+
+    "--------------------- MODIFY ---------------------
+    MODIFY zdemo_abap_tab1 FROM @( VALUE #( key_field = 1 num1 = 11 ) ).
+
+    ASSERT sy-subrc = 0.
+    ASSERT sy-dbcnt = 1.
+
+    MODIFY zdemo_abap_tab1 FROM TABLE @( VALUE #( ( key_field = 2 num1 = 22 )     "Entry modified
+                                                  ( key_field = 5 num1 = 5 ) ) ). "Entry inserted
+
+    ASSERT sy-subrc = 0.
+    ASSERT sy-dbcnt = 2.
+
+    "--------------------- SELECT ---------------------
+
+    SELECT *
+      FROM zdemo_abap_tab1
+      INTO TABLE @DATA(tab).
+
+    ASSERT sy-subrc = 0.
+    ASSERT sy-dbcnt = 5.
+    ASSERT sy-dbcnt = lines( tab ).
+
+    SELECT *
+          FROM zdemo_abap_tab1
+          WHERE key_field <= 3
+          INTO TABLE @DATA(tab2).
+
+    ASSERT sy-subrc = 0.
+    ASSERT sy-dbcnt = 3.
+
+    SELECT *
+      FROM zdemo_abap_tab1
+      WHERE key_field > 10
+      INTO TABLE @DATA(tab3).
+
+    ASSERT sy-subrc = 4.
+    ASSERT sy-dbcnt = 0.
+
+    "--------------------- DELETE ---------------------
+    DELETE zdemo_abap_tab1 FROM @( VALUE #( key_field = 1 ) ).
+    ASSERT sy-subrc = 0.
+    ASSERT sy-dbcnt = 1.
+
+    DELETE zdemo_abap_tab1 FROM TABLE @( VALUE #( ( key_field = 1 ) "Entry not existent
+                                                  ( key_field = 2 )
+                                                  ( key_field = 3 ) ) ).
+
+    ASSERT sy-subrc = 4.
+    ASSERT sy-dbcnt = 2.
+
+    DELETE FROM zdemo_abap_tab1 WHERE key_field >= 5.
+    ASSERT sy-subrc = 0.
+    ASSERT sy-dbcnt = 1.
+
+    "Only one entry left in the database table
+    DELETE FROM zdemo_abap_tab1.
+    ASSERT sy-subrc = 0.
+    ASSERT sy-dbcnt = 1.
+
+    SELECT *
+      FROM zdemo_abap_tab1
+      INTO TABLE @DATA(tab4).
+
+    ASSERT sy-subrc = 4.
+    ASSERT sy-dbcnt = 0.
+
+    out->write( zcl_demo_abap_aux=>no_output ).
+
+**********************************************************************
+
+    out->write( zcl_demo_abap_aux=>heading( `49) Typed literals` ) ).
+
+    "Miscellaneous typed literals in an ABAP SQL statement
+    "Note that typed literals can be specified in read
+    "positions where host variables are possible.
+    DATA(tmstamp) = CONV timestamp( '20240808112517' ).
+    DATA(some_string) = `Some string`.
+    SELECT SINGLE
+      FROM zdemo_abap_fli
+      FIELDS
+        carrid,
+        @some_string AS host_var,
+        char`X` AS flag,
+        int8`32984723948723` AS int8,
+        raw`11` AS raw,
+        numc`1234` AS numc,
+        utclong`2024-01-01T10:01:02,2` AS utc,
+        tims`101507` AS tims,
+        curr`173.95` AS curr,
+        "Multiple cast expressions splitting a time stamp into date and time parts
+        CAST( CAST( div( @tmstamp, 1000000 ) AS CHAR ) AS DATS ) AS date,
+        CAST( substring( CAST( @tmstamp AS CHAR ), 9, 6 ) AS TIMS ) AS time,
+        "Untyped literal
+        'ABAP' AS txt
+      WHERE fldate = datn`20240102`
+      INTO @DATA(misc_typed_literals).
+
+    out->write( data = misc_typed_literals name = `misc_typed_literals` ).
 
   ENDMETHOD.
 

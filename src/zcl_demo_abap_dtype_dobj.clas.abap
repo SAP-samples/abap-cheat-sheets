@@ -1,46 +1,19 @@
-***********************************************************************
-*
-*           ABAP cheat sheet: Data Types and Data Objects
-*
-* -------------------------- PURPOSE ----------------------------------
-* - Example to demonstrate data types and data objects.
-* - Note that in many cases there is no output displayed because the
-*   focus is on syntax options and declarations. In the class, you can
-*   set breakpoints and use the debugger to check out data objects.
-*   You can also use the F2 information for the many types and data
-*   objects. Simply select a type or object in the code and press F2
-*   in ADT to check out the information.
-*
-* ----------------------- GETTING STARTED -----------------------------
-* - Open the class with the ABAP development tools for Eclipse (ADT).
-* - Choose F9 to run the class.
-* - Check the console output.
-* - To understand the context and the ABAP syntax used, refer to the
-*   notes included in the class as comments or refer to the respective
-*   topic in the ABAP Keyword Documentation.
-* - Due to the amount of console output, the examples contain numbers
-*   (e.g. 1) ..., 2) ..., 3) ...) for the individual example sections.
-*   Also, the variable name is displayed in most cases. So to find
-*   the relevant output in the console easier and faster, just search
-*   for the number/variable name in the console (CTRL+F in the console)
-*   or use the debugger.
-*
-* ----------------------------- NOTE -----------------------------------
-* The code presented in this class is intended only to support the ABAP
-* cheat sheets. It is not intended for direct use in a production system
-* environment. The code examples in the ABAP cheat sheets are primarily
-* intended to provide a better explanation and visualization of the
-* syntax and semantics of ABAP statements, not to solve concrete
-* programming tasks. For production application programs, you should
-* always work out your own solution for each individual case. There is
-* no guarantee for the correctness or completeness of the code.
-* Furthermore, there is no legal responsibility or liability for any
-* errors or their consequences that may occur when using the the example
-* code.
-*
-***********************************************************************
-"! <p class="shorttext synchronized">ABAP cheat sheet: Data Types and Data Objects</p>
-"! Example to demonstrate data types and data objects in ABAP.<br>Choose F9 in ADT to run the class.
+"! <p class="shorttext"><strong>Data Types and Data Objects</strong><br/>ABAP cheat sheet example class</p>
+"!
+"! <p>The example class demonstrates data types and data objects in ABAP.<br/>
+"! Choose F9 in ADT to run the class.</p>
+"!
+"! <h2>Note</h2>
+"! <ul>
+"! <li>In many cases, there is no output displayed because the
+"! focus is on syntax options and declarations.</li>
+"! <li>In the class, you can set breakpoints and use the debugger to
+"! check out data objects.</li>
+"! <li>You can also use the F2 information for the many types and data
+"! objects. Simply select a type or object in the code and choose F2
+"! in ADT to check out the information.</li>
+"! <li>Find information on <strong>getting started with the example class</strong> and the
+"! <strong>disclaimer</strong> in the ABAP Doc comment of class {@link zcl_demo_abap_aux}.</li></ul>
 CLASS zcl_demo_abap_dtype_dobj DEFINITION
   PUBLIC
   FINAL
@@ -67,8 +40,6 @@ CLASS zcl_demo_abap_dtype_dobj DEFINITION
     METHODS addition_with_generic_num IMPORTING num1          TYPE numeric
                                                 num2          TYPE numeric
                                       RETURNING VALUE(result) TYPE decfloat34.
-
-    constants no_output type string value `No output for this section. Check out the types in the code e.g. using the F2 information.`.
 
 **********************************************************************
 
@@ -366,7 +337,7 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
     TYPES te_tp TYPE abap_bool.
     TYPES te_const_in_tp LIKE abap_true.
 
-    out->write( no_output ).
+    out->write( zcl_demo_abap_aux=>no_output ).
 
 **********************************************************************
 
@@ -434,7 +405,7 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
     "Elementary line type; the type is available in a global interface
     TYPES tt_elem_type_from_itf TYPE TABLE OF zdemo_abap_get_data_itf=>occ_rate.
 
-    out->write( no_output ).
+    out->write( zcl_demo_abap_aux=>no_output ).
 
 **********************************************************************
 
@@ -467,9 +438,9 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
     "Reference table types
     TYPES tr_tab_ref_i TYPE TABLE OF REF TO i.
     DATA itab_str TYPE TABLE OF string.
-    TYPES tr_like_table_ref LIKE TABLE OF ref TO itab_str.
+    TYPES tr_like_table_ref LIKE TABLE OF REF TO itab_str.
 
-    out->write( no_output ).
+    out->write( zcl_demo_abap_aux=>no_output ).
 
 **********************************************************************
 
@@ -565,7 +536,7 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
       ...
     ENDIF.
 
-    out->write( no_output ).
+    out->write( zcl_demo_abap_aux=>no_output ).
 
 **********************************************************************
 
@@ -624,7 +595,7 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
     DATA struc_from_itab_type TYPE LINE OF tt_ddic_tab.
     DATA struc_like_line LIKE LINE OF itab_ddic_tab.
 
-    out->write( no_output ).
+    out->write( zcl_demo_abap_aux=>no_output ).
 
 **********************************************************************
 
@@ -655,7 +626,7 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
     DATA dref_tab_i TYPE TABLE OF REF TO i.
     DATA dref_tab_str LIKE TABLE OF REF TO do_some_string.
 
-    out->write( no_output ).
+    out->write( zcl_demo_abap_aux=>no_output ).
 
 **********************************************************************
 
@@ -757,7 +728,7 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
     "with the conversion rules.
     str_a2 = some_itab[ 2 ]-carrname.
 
-    out->write( no_output ).
+    out->write( zcl_demo_abap_aux=>no_output ).
 
 **********************************************************************
 
@@ -869,7 +840,22 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
     "NEW addition
     SELECT * FROM zdemo_abap_carr INTO TABLE NEW @DATA(itab_ref).
 
-    out->write( no_output ).
+    "Inline declaration is useful for specifying data objects as actual
+    "parameters in method calls
+    "The following method calculates the difference in days, hours, minutes,
+    "and seconds of two time stamps.
+    "Check the F2 information of the 'diff' method. It has 4 exporting parameters.
+    "3 different types are involved. Using the inline declarations, the data
+    "objects receive the suitable types automatically. Extra variable declarations
+    "with suitable types can be avoided.
+    cl_abap_utclong=>diff( EXPORTING high     = CONV utclong( '2024-01-01 15:30:00' )
+                                     low      = CONV utclong( '2023-12-24 14:20:40' )
+                           IMPORTING days    = DATA(days)
+                                     hours   = DATA(hours)
+                                     minutes = DATA(minutes)
+                                     seconds = DATA(seconds) ).
+
+    out->write( zcl_demo_abap_aux=>no_output ).
 
 **********************************************************************
 
@@ -1074,7 +1060,7 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
       FROM zdemo_abap_carr
       INTO TABLE NEW @DATA(dref_14_inline).
 
-    out->write( no_output ).
+    out->write( zcl_demo_abap_aux=>no_output ).
 
 **********************************************************************
 
@@ -1273,12 +1259,12 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
     out->write( data = date name = `date` ).
     out->write( |\n| ).
 
-    "In newer ABAP releases, the following statement shows a syntax 
-    "warning that the value of the the data object (intentionally 
-    "specified here like this) is not an admissable value for the 
-    "target type. Therefore, the example is provided differently to 
+    "In newer ABAP releases, the following statement shows a syntax
+    "warning that the value of the the data object (intentionally
+    "specified here like this) is not an admissable value for the
+    "target type. Therefore, the example is provided differently to
     "circumvent the syntax warning.
-    
+
     "date = 20240101.
     DATA falsedate TYPE i VALUE 20240101.
     date = falsedate.
@@ -1545,7 +1531,7 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
     "SELECT statement with a an immutable target table declared inline
     SELECT * FROM zdemo_abap_carr INTO TABLE @FINAL(itab_final_inl).
 
-    out->write( no_output ).
+    out->write( zcl_demo_abap_aux=>no_output ).
 
 **********************************************************************
 
@@ -1678,11 +1664,11 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
 
     "Assignments
     do_h_c5 = 'abc'.
-    
-    "In newer ABAP releases, the following statement shows a syntax 
-    "warning that the value of the literal (intentionally specified 
-    "here like this) is not an admissable value for the target type. 
-    "Therefore, the example is provided differently to circumvent the 
+
+    "In newer ABAP releases, the following statement shows a syntax
+    "warning that the value of the literal (intentionally specified
+    "here like this) is not an admissable value for the target type.
+    "Therefore, the example is provided differently to circumvent the
     "syntax warning.
 
     "do_h_c5 = 'defghi'.
@@ -1798,7 +1784,7 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
 
 **********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `20) Generic ABAP types for formal parameters of methods` ) ).
+    out->write( zcl_demo_abap_aux=>heading( `20a) Generic ABAP types for formal parameters of methods` ) ).
 
     "Generic data types have already been covered above.
     "A generic data type is an incomplete type specification that covers multiple
@@ -1840,7 +1826,154 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
 
 **********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `21) Built-in data objects` ) ).
+    out->write( zcl_demo_abap_aux=>heading( `20b) Overview of generic ABAP types using field symbols` ) ).
+
+    FIELD-SYMBOLS:
+      "Any data type
+      <data>           TYPE data,
+      <any>            TYPE any,
+      "Any data type can be assigned. Restrictions for formal parameters and 'data': no
+      "numeric functions, no description functions, and no arithmetic expressions can be
+      "passed to these parameters. However, you can bypass the restriction by applying the
+      "CONV operator for the actual parameter.
+
+      "Character-like types
+      <c>              TYPE c,         "Text field with a generic length
+      <clike>          TYPE clike,     "Character-like (c, n, string, d, t and character-like flat structures)
+      <csequence>      TYPE csequence, "Text-like (c, string)
+      <n>              TYPE n,         "Numeric text with generic length
+      <x>              TYPE x,         "Byte field with generic length
+      <xsequence>      TYPE xsequence, "Byte-like (x, xstring)
+
+      "Numeric types
+      <decfloat>       TYPE decfloat, "decfloat16, decfloat34
+      <numeric>        TYPE numeric,  "Numeric ((b, s), i, int8, p, decfloat16, decfloat34, f)
+      <p>              TYPE p,        "Packed number (generic length and number of decimal places)
+
+      "Internal table types
+      <any_table>      TYPE ANY TABLE,      "Internal table with any table type
+      <hashed_table>   TYPE HASHED TABLE,
+      <index_table>    TYPE INDEX TABLE,
+      <sorted_table>   TYPE SORTED TABLE,
+      <standard_table> TYPE STANDARD TABLE,
+      <table>          TYPE table,          "Standard table
+
+      "Other types
+      <simple>         TYPE simple. "Elementary data type including enumerated types and
+    "structured types with exclusively character-like flat components
+
+    "Data objects to work with
+    DATA: BEGIN OF s,
+            c3        TYPE c LENGTH 3,
+            c10       TYPE c LENGTH 10,
+            n4        TYPE n LENGTH 4,
+            str       TYPE string,
+            time      TYPE t,
+            date      TYPE d,
+            dec16     TYPE decfloat16,
+            dec34     TYPE decfloat34,
+            int       TYPE i,
+            pl4d2     TYPE p LENGTH 4 DECIMALS 2,
+            tab_std   TYPE STANDARD TABLE OF string WITH EMPTY KEY,
+            tab_so    TYPE SORTED TABLE OF string WITH NON-UNIQUE KEY table_line,
+            tab_ha    TYPE HASHED TABLE OF string WITH UNIQUE KEY table_line,
+            xl1       TYPE x LENGTH 1,
+            xstr      TYPE xstring,
+            structure TYPE zdemo_abap_carr, "character-like flat structure
+          END OF s.
+
+    "The following static ASSIGN statements demonstrate various assignments
+    "Note:
+    "- The statements commented out show impossible assignments.
+    "- If a static assignment is not successful, sy-subrc is not set and no
+    "  memory area is assigned. Dynamic assignments, however, set the value.
+
+    "----- Any data type -----
+    ASSIGN s-c3 TO <data>.
+    ASSIGN s-time TO <data>.
+    ASSIGN s-tab_std TO <data>.
+    ASSIGN s-xstr TO <any>.
+    ASSIGN s-pl4d2 TO <any>.
+    ASSIGN s-date TO <any>.
+    ASSIGN s TO <any>.
+
+    "----- Character-like types -----
+    ASSIGN s-c3 TO <c>.
+    ASSIGN s-c10 TO <c>.
+    "ASSIGN s-str TO <c>.
+
+    ASSIGN s-c10 TO <clike>.
+    ASSIGN s-str TO <clike>.
+    ASSIGN s-n4 TO <clike>.
+    ASSIGN s-date TO <clike>.
+    ASSIGN s-time TO <clike>.
+    ASSIGN s-structure TO <clike>.
+
+    ASSIGN s-c10 TO <csequence>.
+    ASSIGN s-str TO <csequence>.
+    "ASSIGN s-n4 TO <csequence>.
+
+    ASSIGN s-n4 TO <n>.
+    "ASSIGN s-int TO <n>.
+    "ASSIGN s-time TO <n>.
+
+    ASSIGN s-xl1 TO <x>.
+    "ASSIGN s-xstr TO <x>.
+
+    ASSIGN s-xl1 TO <xsequence>.
+    ASSIGN s-xstr TO <xsequence>.
+
+    "----- Numeric types -----
+    ASSIGN s-dec16 TO <numeric>.
+    ASSIGN s-dec34 TO <numeric>.
+    ASSIGN s-int TO <numeric>.
+    ASSIGN s-pl4d2 TO <numeric>.
+    "ASSIGN s-n4 TO <numeric>.
+
+    ASSIGN s-dec16 TO <decfloat>.
+    ASSIGN s-dec34 TO <decfloat>.
+
+    ASSIGN s-pl4d2 TO <p>.
+    "ASSIGN s-dec34 TO <p>.
+
+    "----- Internal table types -----
+    ASSIGN s-tab_std TO <any_table>.
+    ASSIGN s-tab_so TO <any_table>.
+    ASSIGN s-tab_ha TO <any_table>.
+
+    ASSIGN s-tab_std TO <index_table>.
+    ASSIGN s-tab_so TO <index_table>.
+    "ASSIGN s-tab_ha TO <index_table>.
+
+    "ASSIGN s-tab_std TO <sorted_table>.
+    ASSIGN s-tab_so TO <sorted_table>.
+    "ASSIGN s-tab_ha TO <sorted_table>.
+
+    ASSIGN s-tab_std TO <standard_table>.
+    ASSIGN s-tab_std TO <table>.
+    "ASSIGN s-tab_so TO <standard_table>.
+    "ASSIGN s-tab_so TO <table>.
+    "ASSIGN s-tab_ha TO <standard_table>.
+    "ASSIGN s-tab_ha TO <table>.
+
+    "ASSIGN s-tab_std TO <hashed_table>.
+    "ASSIGN s-tab_so TO <hashed_table>.
+    ASSIGN s-tab_ha TO <hashed_table>.
+
+    "----- Other types -----
+    ASSIGN s-c10 TO <simple>.
+    ASSIGN s-str TO <simple>.
+    ASSIGN s-dec34 TO <simple>.
+    ASSIGN s-date TO <simple>.
+    ASSIGN s-structure TO <simple>.
+    ASSIGN s-xl1 TO <simple>.
+    "ASSIGN s-tab_ha TO <simple>.
+
+    out->write( zcl_demo_abap_aux=>no_output ).
+
+**********************************************************************
+
+    out->write( zcl_demo_abap_aux=>heading( `21a) Built-in data objects (1)` ) ).
 
     "This example demonstrates the availability of built-in data objects in ABAP.
 
@@ -1921,6 +2054,271 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
     DATA(res_str) = oref->adapt_text( ).
 
     out->write( data = res_str name = `res_str` ).
+
+**********************************************************************
+
+    out->write( zcl_demo_abap_aux=>heading( `21b) Built-in data objects (2)` ) ).
+
+    "This sections is an addition to the previous one.
+
+    "------------------------------------------------------------------------------
+    "------------------ sy-subrc: Return code of ABAP statements ------------------
+    "------------------------------------------------------------------------------
+
+    "Many ABAP statements set a sy-subrc value. Check the ABAP Keyword Documentation
+    "for individual statements. Usually, the value 0 indicates a successful execution.
+
+    DATA(test_string) = `ABAP`.
+
+    "FIND statements
+    "Found
+    FIND `P` IN test_string.
+    ASSERT sy-subrc = 0.
+
+    "Not found
+    FIND `p` IN test_string RESPECTING CASE.
+    ASSERT sy-subrc = 4.
+
+    DATA(test_tab) = VALUE string_table( ( `a` ) ( `b` ) ( `c` ) ( `d` ) ).
+
+    "READ TABLE statements
+    "Entry available
+    READ TABLE test_tab INTO DATA(wa1) INDEX 3.
+    ASSERT sy-subrc = 0.
+
+    "Entry not available
+    READ TABLE test_tab INTO DATA(wa2) INDEX 7.
+    ASSERT sy-subrc = 4.
+
+    "ABAP SQL statements
+    DELETE FROM zdemo_abap_tab1.
+    IF sy-subrc = 0.
+      out->write( `DELETE: All rows were deleted.` ).
+    ELSE.
+      out->write( `DELETE: No row was deleted because it was already empty.` ).
+    ENDIF.
+
+    INSERT zdemo_abap_tab1 FROM TABLE @( VALUE #( ( key_field = 1 ) ( key_field = 2 ) ) ).
+    IF sy-subrc = 0.
+      out->write( `INSERT: All rows of the internal table were inserted.` ).
+    ENDIF.
+
+    INSERT zdemo_abap_tab1 FROM TABLE @( VALUE #( ( key_field = 3 ) ( key_field = 3 ) ) ) ACCEPTING DUPLICATE KEYS.
+    IF sy-subrc = 4.
+      out->write( `INSERT ... ACCEPTING DUPLICATE KEYS: sy-subrc has the value 4 in this case. Not all rows of the ` &&
+                  `internal table were inserted because a row with the key already exists.` ).
+    ENDIF.
+
+    DELETE FROM zdemo_abap_tab1 WHERE key_field = 3.
+    IF sy-subrc = 0.
+      out->write( `DELETE: The row matching the WHERE condition was deleted.` ).
+    ELSE.
+      out->write( `DELETE: No match according to the WHERE condition.` ).
+    ENDIF.
+
+    DELETE FROM zdemo_abap_tab1 WHERE key_field = 3.
+    IF sy-subrc = 0.
+      out->write( `DELETE: The row matching the WHERE condition was deleted.` ).
+    ELSE.
+      out->write( `DELETE: No match according to the WHERE condition.` ).
+    ENDIF.
+
+    "------------------------------------------------------------------------------
+    "--------------------------- sy-index: Loop indexes ---------------------------
+    "------------------------------------------------------------------------------
+
+    CLEAR test_string.
+
+    "DO loops
+    DO 5 TIMES.
+      test_string = test_string && sy-index.
+    ENDDO.
+
+    ASSERT test_string = `12345`.
+
+    CLEAR test_string.
+
+    DO 10 TIMES.
+      test_string = test_string && sy-index.
+      IF sy-index = 7.
+        EXIT.
+      ENDIF.
+    ENDDO.
+
+    ASSERT test_string = `1234567`.
+
+    CLEAR test_string.
+
+    DATA test_number TYPE i.
+
+    "WHILE loop
+    WHILE test_number < 9.
+      test_number = sy-index.
+      test_string = test_string && test_number.
+    ENDWHILE.
+
+    ASSERT test_string = `123456789`.
+
+    "------------------------------------------------------------------------------
+    "------------------- sy-tabix: Row index of internal tables -------------------
+    "------------------------------------------------------------------------------
+
+    "Demo standard internal table with 5 entries
+    DATA(std_itab) = VALUE string_table( ( `a` ) ( `b` ) ( `c` ) ( `d` ) ( `e` ) ).
+
+    "READ TABLE statement using a free key
+    READ TABLE std_itab INTO DATA(wa3) WITH KEY table_line = `b`.
+    ASSERT sy-tabix = 2.
+
+    "Demo hashed internal table with 5 entries
+    DATA(hashed_itab) = VALUE string_hashed_table( ( `a` ) ( `b` ) ( `c` ) ( `d` ) ( `e` ) ).
+
+    "READ TABLE statement using a free key
+    READ TABLE hashed_itab INTO DATA(wa4) WITH KEY table_line = `b`.
+    "Hashed tables do not have a primary table index.
+    ASSERT sy-tabix = 0.
+
+    CLEAR test_string.
+
+    "LOOP statements
+    LOOP AT std_itab INTO DATA(wa5).
+      test_string = test_string && sy-tabix.
+    ENDLOOP.
+    ASSERT test_string = `12345`.
+
+    CLEAR test_string.
+    "Step addition
+    "In the example, the table is looped across backwards
+    "indicated by the negative value. The step size 1 indicates
+    "that each line is respected.
+    LOOP AT std_itab INTO DATA(wa6) STEP -1.
+      test_string = test_string && sy-tabix.
+    ENDLOOP.
+    ASSERT test_string = `54321`.
+
+    CLEAR test_string.
+    "Forward loop, step size = 2
+    LOOP AT std_itab INTO DATA(wa7) STEP 2.
+      test_string = test_string && sy-tabix.
+    ENDLOOP.
+    ASSERT test_string = `135`.
+
+    CLEAR test_string.
+    "FROM/TO additions
+    LOOP AT std_itab INTO DATA(wa8) FROM 2 TO 4.
+      test_string = test_string && sy-tabix.
+    ENDLOOP.
+    ASSERT test_string = `234`.
+
+    CLEAR test_string.
+    "STEP/FROM additions
+    LOOP AT std_itab INTO DATA(wa9) STEP 2 FROM 2.
+      test_string = test_string && sy-tabix.
+    ENDLOOP.
+    ASSERT test_string = `24`.
+
+    CLEAR test_string.
+    "Hashed table
+    LOOP AT hashed_itab INTO DATA(wa10).
+      test_string = test_string && sy-tabix.
+    ENDLOOP.
+    ASSERT test_string = `00000`.
+
+    "------------------------------------------------------------------------------
+    "------------------------ sy-dbcnt: Edited table rows -------------------------
+    "------------------------------------------------------------------------------
+
+    DELETE FROM zdemo_abap_tab1.
+    DATA(dbcnt) = sy-dbcnt.
+
+    out->write( |Dbtab rows deleted: { dbcnt }| ).
+
+    INSERT zdemo_abap_tab1 FROM TABLE @( VALUE #( ( key_field = 1 ) ( key_field = 2 ) ) ).
+    ASSERT sy-dbcnt = 2.
+
+    INSERT zdemo_abap_tab1 FROM TABLE @( VALUE #( ( key_field = 3 ) ( key_field = 3 ) ) ) ACCEPTING DUPLICATE KEYS.
+    ASSERT sy-dbcnt = 1.
+
+    MODIFY zdemo_abap_tab1 FROM @( VALUE #( key_field = 1 char1 = 'aaa' ) ).
+    ASSERT sy-dbcnt = 1.
+
+    UPDATE zdemo_abap_tab1 SET char2 = 'bbb'.
+    ASSERT sy-dbcnt = 3.
+
+    DELETE FROM zdemo_abap_tab1 WHERE num1 IS INITIAL.
+    ASSERT sy-dbcnt = 3.
+
+    "------------------------------------------------------------------------------
+    "------------- sy-fdpos: Occurrence in byte or character strings --------------
+    "------------------------------------------------------------------------------
+    "For example, relevant in comparison expressions such as CS (constains string).
+    "If the comparison is true, sy-fdpos contains the offset of the found value. If it
+    "is false, sy-fdpos contains the length of the searched string.
+
+    test_string = `###abap###`.
+
+    IF test_string CS `p`.
+      out->write( |The substring is found. Offset of first finding: { sy-fdpos }| ).
+    ELSE.
+      out->write( |The substring is not found. Length of searched string: { sy-fdpos }| ).
+      ASSERT sy-fdpos = strlen( test_string ).
+    ENDIF.
+
+    IF test_string CS `#`.
+      out->write( |The substring is found. Offset of first finding: { sy-fdpos }| ).
+    ELSE.
+      out->write( |The substring is not found. Length of searched string: { sy-fdpos }| ).
+      ASSERT sy-fdpos = strlen( test_string ).
+    ENDIF.
+
+    IF test_string CS `Y`.
+      out->write( |The substring is found. Offset of first finding: { sy-fdpos }| ).
+    ELSE.
+      out->write( |The substring is not found. Length of searched string: { sy-fdpos }| ).
+      ASSERT sy-fdpos = strlen( test_string ).
+    ENDIF.
+
+    "------------------------------------------------------------------------------
+    "----------------------------- Constant space ---------------------------------
+    "------------------------------------------------------------------------------
+    "Has the data type c, length 1, and contains a blank character.
+
+    "Note: Trailing blanks are ignored in most operand positions. Therfore, the constant
+    "space should not be used in such positions.
+
+    test_string = |{ space }{ space }|.
+    ASSERT test_string = ``.
+
+    test_string = `#` && space && space && space && space && space && `#`.
+    ASSERT test_string = `##`.
+
+    "Using a CONCATENATE statement, blanks are respected after the SEPARATED BY
+    "addition only
+    CONCATENATE space space INTO test_string SEPARATED BY space.
+    ASSERT test_string = ` `.
+
+    "Text field literal, concatentation without SEPARATED BY space
+    DATA test_char TYPE c LENGTH 5.
+    CONCATENATE '#' space space '#' INTO test_char.
+    ASSERT test_char = '##'.
+
+    CONCATENATE space space '#' space '#' INTO test_char.
+    ASSERT test_char = '##'.
+
+    "------------------------------------------------------------------------------
+    "----------------------------- Self-reference me ------------------------------
+    "------------------------------------------------------------------------------
+
+    DATA text TYPE string VALUE `Local data object 'text'`.
+
+    "Demo assignments
+    "dobj1 contains the value of the locally declared data object
+    DATA(dobj1) = text.
+    "dobj2 contains the value of the class attribute
+    DATA(dobj2) = me->text.
+
+    out->write( data = dobj1 name = `dobj1` ).
+    out->write( data = dobj2 name = `dobj2` ).
 
 **********************************************************************
 
@@ -2010,6 +2408,37 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
     "The rtti_enum method demonstrates the RTTI class cl_abap_enumdescr.
     DATA(output_for_rtti_enum) = rtti_enum( ).
     out->write( data = output_for_rtti_enum name = `output_for_rtti_enum` ).
+
+**********************************************************************
+
+    out->write( zcl_demo_abap_aux=>heading( `24) Typed literals` ) ).
+
+    "Miscellaneous typed literals in an ABAP SQL statement
+    "Note that typed literals can be specified in read
+    "positions where host variables are possible.
+    DATA(tmstamp) = CONV timestamp( '20240808112517' ).
+    some_string = `Some string`.
+    SELECT SINGLE
+      FROM zdemo_abap_fli
+      FIELDS
+        carrid,
+        @some_string AS host_var,
+        char`X` AS flag,
+        int8`32984723948723` AS int8,
+        raw`11` AS raw,
+        numc`1234` AS numc,
+        utclong`2024-01-01T10:01:02,2` AS utc,
+        tims`101507` AS tims,
+        curr`173.95` AS curr,
+        "Multiple cast expressions splitting a time stamp into date and time parts
+        CAST( CAST( div( @tmstamp, 1000000 ) AS CHAR ) AS DATS ) AS date,
+        CAST( substring( CAST( @tmstamp AS CHAR ), 9, 6 ) AS TIMS ) AS time,
+        "Untyped literal
+        'ABAP' AS txt
+      WHERE fldate = datn`20240102`
+      INTO @DATA(wa_misc_typed_literals).
+
+    out->write( data = wa_misc_typed_literals name = `wa_misc_typed_literals` ).
 
   ENDMETHOD.
 

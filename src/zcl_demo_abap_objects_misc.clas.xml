@@ -3,7 +3,7 @@
  <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
   <asx:values>
    <VSEOCLASS>
-    <CLSNAME>ZCL_DEMO_ABAP_OBJECTS</CLSNAME>
+    <CLSNAME>ZCL_DEMO_ABAP_OBJECTS_MISC</CLSNAME>
     <LANGU>E</LANGU>
     <DESCRIPT>ABAP cheat sheet: ABAP object orientation</DESCRIPT>
     <STATE>1</STATE>

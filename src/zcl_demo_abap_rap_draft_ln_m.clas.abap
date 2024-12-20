@@ -1,107 +1,79 @@
-***********************************************************************
-*
-*           RAP BO consumer for a RAP demo scenario
-* ABAP EML in use: RAP calculator (managed, draft-enabled RAP BO with
-* late numbering
-*
-* -------------------------- PURPOSE ----------------------------------
-* - This class is the RAP BO consumer for a RAP demo scenario that
-*   represents a calculator using RAP concepts, i. e. using ABAP EML in
-*   the context of a managed and draft-enabled RAP business object with
-*   RAP late numbering to carry out simple calculations. Here, a RAP BO
-*   instance consists of a calculation ID (which is the key that is finally
-*   set not until the RAP save sequence), two operands (having integer
-*   values), the arithmetic operator and the result plus other
-*   draft-related fields.
-* - Underlying data model: Consists of a root entity alone.
-*   The BDEF defines the behavior for this entity. The definitions in the
-*   BDEF determine which methods must be implemented in the ABAP behavior
-*   pool (ABP). Note that the view contains many annotations for the SAP
-*   Fiori UI.
-* - ABP for this scenario: zbp_demo_abap_rap_draft_m
-*
-* ----------------------- GETTING STARTED (1) -------------------------
-* ----------------- Using this class as RAP BO consumer ---------------
-*
-* - Open the class with the ABAP development tools for Eclipse (ADT).
-* - Choose F9 to run the class.
-* - Check the console output.
-* - To understand the context and the ABAP syntax used, check the notes
-*   included in the class as comments or refer to the respective topic
-*   in the ABAP Keyword Documentation.
-* - Due to the amount of output in the console, the examples include
-*   numbers (e. g. 1) ..., 2) ..., 3) ...) for the individual example
-*   sections. Plus, the variable name is displayed in most cases. Hence,
-*   to easier and faster find the relevant output in the console, just
-*   search in the console for the number/variable name (CTRL+F in the
-*   console) or use the debugger.
-*
-* ----------------------- GETTING STARTED (2) -------------------------
-* Using the preview version of an SAP Fiori Elements UI as RAP BO consumer
-*
-* Create a service binding:
-* 1. Find the service definition ZDEMO_ABAP_RAP_CALC_SD in the imported
-*    package in Business Services -> Service Definitions.
-* 2. Right-click the service definition and choose New Service Binding.
-* 3. In the New Service Binding pop-up, make the following entries:
-*   - Name: ZDEMO_ABAP_RAP_CALC_SB
-*   - Description: Service binding for demo
-*   - Binding type: OData V4 - UI
-*   - Service Definition: ZDEMO_ABAP_RAP_CALC_SD (should be already filled)
-* 4. Choose Next.
-* 5. Assign a transport request and choose Finish.
-* 6. The service binding ZDEMO_ABAP_RAP_CALC_SB is opened. Activate the
-*    service binding.
-* 7. In the Service Version Details section, choose the Publish button
-*    for the Local Service Endpoint. Once the service has been published,
-*    you should see ZDEMO_ABAP_RAP_DRAFT_M in the Entity Set and Association
-*    section.
-* 8. Activate the service binding once the service has been published.
-* 9. Select ZDEMO_ABAP_RAP_DRAFT_M and choose the Preview button.
-* 10. The preview version of an SAP Fiori Elements app is displayed. If
-*     prompted, provide your credentials.
-* 11. The app and the managed, draft-enabled RAP BO can be explored. If no
-*     columns are displayed, choose the 'Settings' button and select the
-*     desired columns.
-*     Choosing the 'Go' button refreshes the list. At first use, there
-*     might not be any entry. You can create an entry choosing the 'Create'
-*     button.
-*     The late numbering aspects enter the picture when you, for
-*     example, create a new instance, i. e. create a new calculation, and
-*     you keep a draft version of it instead of saving it to the database.
-*     The calculation ID which represents the key of the instance has an
-*     initial value. Only when you save the instance to the database, the
-*     final key is set.
-*     The effect of side effects can be explored as follows: Make an entry
-*     in an input field, click another input field (e.g. to make a new entry
-*     there), and check how the value for the result changes.
-*
-* ----------------------------- NOTE -----------------------------------
-* This simplified example is not a real life scenario and rather
-* focuses on the technical side by giving an idea how the communication
-* and data exchange between a RAP BO consumer, which is a class
-* in this case, and RAP BO provider can work. Additionally, it shows
-* how the methods for non-standard RAP BO operations might be
-* self-implemented in an ABP. The example is intentionally kept
-* short and simple and focuses on specific RAP aspects. For this reason,
-* the example might not fully meet the requirements of the RAP BO contract.
-*
-* The code presented in this class is intended only to support the ABAP
-* cheat sheets. It is not intended for direct use in a production system
-* environment. The code examples in the ABAP cheat sheets are primarily
-* intended to provide a better explanation and visualization of the
-* syntax and semantics of ABAP statements, not to solve concrete
-* programming tasks. For production application programs, you should
-* always work out your own solution for each individual case. There is
-* no guarantee for the correctness or completeness of the code.
-* Furthermore, there is no legal responsibility or liability for any
-* errors or their consequences that may occur when using the the example
-* code.
-*
-***********************************************************************
-"! <p class="shorttext synchronized">ABAP cheat sheet: ABAP EML in a RAP scenario (draft BO)</p>
-"! Example to demonstrate ABAP EML in the context of a RAP demo scenario (managed and draft-enabled RAP business object with RAP late numbering).
-"! The class represents a RAP BO consumer.<br>Choose F9 in ADT to run the class.
+"! <p class="shorttext"><strong>ABAP EML in a RAP scenario (draft BO)</strong><br/>ABAP cheat sheet example class</p>
+"!
+"! <p>The example class demonstrates ABAP EML in the context of a RAP demo scenario (managed and draft-enabled
+"! RAP business object with RAP late numbering). The class represents a RAP BO consumer.<br/>
+"! Choose F9 in ADT to run the class.</p>
+"!
+"! <h2>Purpose</h2>
+"! <ul><li>This class is the RAP BO consumer for a RAP demo scenario that
+"! represents a calculator using RAP concepts, i. e. using ABAP EML in
+"! the context of a managed and draft-enabled RAP business object with
+"! RAP late numbering to carry out simple calculations. Here, a RAP BO
+"! instance consists of a calculation ID (which is the key that is finally
+"! set not until the RAP save sequence), two operands (having integer
+"! values), the arithmetic operator and the result plus other
+"! draft-related fields.</li>
+"! <li>Underlying data model: Consists of a root entity alone.
+"! The BDEF defines the behavior for this entity. The definitions in the
+"! BDEF determine which methods must be implemented in the ABAP behavior
+"! pool (ABP). Note that the view contains many annotations for the SAP
+"! Fiori UI.</li>
+"! <li>ABP for this scenario: {@link zbp_demo_abap_rap_draft_m}</li></ul>
+"!
+"! <h2>Getting started (1)</h2>
+"! <p>To <strong>use this class as RAP BO consumer</strong>, see the ABAP Doc comment about
+"! <strong>getting started with the example class</strong> of class {@link zcl_demo_abap_aux}.
+"!
+"! <h2>Getting started (2)</h2>
+"! <strong>Using the preview version of an SAP Fiori Elements UI as RAP BO consumer</strong>
+"! <br/>
+"! Create a service binding:
+"! <ol><li>Find the service definition ZDEMO_ABAP_RAP_CALC_SD in the imported
+"!    package in Business Services -> Service Definitions.</li>
+"! <li>Right-click the service definition and choose New Service Binding.</li>
+"! <li>In the New Service Binding pop-up, make the following entries:
+"! Name: ZDEMO_ABAP_RAP_CALC_SB; Description: Service binding for demo,
+"! Binding type: OData V4 - UI, Service Definition: ZDEMO_ABAP_RAP_CALC_SD
+"! (should be already filled)</li>
+"! <li>Choose Next.</li>
+"! <li>Assign a transport request and choose Finish.</li>
+"! <li>The service binding ZDEMO_ABAP_RAP_CALC_SB is opened. Activate the
+"! service binding.</li>
+"! <li>In the Service Version Details section, choose the Publish button
+"! for the Local Service Endpoint. Once the service has been published,
+"! you should see ZDEMO_ABAP_RAP_DRAFT_M in the Entity Set and Association
+"! section.</li>
+"! <li>Activate the service binding once the service has been published.</li>
+"! <li>Select ZDEMO_ABAP_RAP_DRAFT_M and choose the Preview button.</li>
+"! <li>The preview version of an SAP Fiori Elements app is displayed. If
+"! prompted, provide your credentials.</li>
+"! <li>The app and the managed, draft-enabled RAP BO can be explored. If no
+"! columns are displayed, choose the 'Settings' button and select the
+"! desired columns.
+"! Choosing the 'Go' button refreshes the list. At first use, there
+"! might not be any entry. You can create an entry choosing the 'Create'
+"! button.
+"! The late numbering aspects enter the picture when you, for
+"! example, create a new instance, i. e. create a new calculation, and
+"! you keep a draft version of it instead of saving it to the database.
+"! The calculation ID which represents the key of the instance has an
+"! initial value. Only when you save the instance to the database, the
+"! final key is set.
+"! The effect of side effects can be explored as follows: Make an entry
+"! in an input field, click another input field (e.g. to make a new entry
+"! there), and check how the value for the result changes.</li></ol>
+"!
+"! <h2>Note</h2>
+"! <p>This simplified example is not a real life scenario and rather
+"! focuses on the technical side by giving an idea how the communication
+"! and data exchange between a RAP BO consumer, which is a class
+"! in this case, and RAP BO provider can work. Additionally, it shows
+"! how the methods for non-standard RAP BO operations might be
+"! self-implemented in an ABP. The example is intentionally kept
+"! short and simple and focuses on specific RAP aspects. For this reason,
+"! the example might not fully meet the requirements of the RAP BO contract.</p>
+"! <p>Find the <strong>disclaimer</strong> in the ABAP Doc comment of
+"! class {@link zcl_demo_abap_aux}.</p>
 CLASS zcl_demo_abap_rap_draft_ln_m DEFINITION
   PUBLIC
   FINAL
@@ -113,7 +85,7 @@ CLASS zcl_demo_abap_rap_draft_ln_m DEFINITION
     CLASS-METHODS:
       class_constructor.
 
-protected section.
+  PROTECTED SECTION.
   PRIVATE SECTION.
     CLASS-DATA:
       activate_tab  TYPE TABLE FOR ACTION IMPORT
@@ -136,7 +108,7 @@ ENDCLASS.
 
 
 
-CLASS ZCL_DEMO_ABAP_RAP_DRAFT_LN_M IMPLEMENTATION.
+CLASS zcl_demo_abap_rap_draft_ln_m IMPLEMENTATION.
 
 
   METHOD class_constructor.

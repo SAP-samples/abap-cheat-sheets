@@ -1,0 +1,44 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_MSAG" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <T100A>
+    <ARBGB>ZDEMO_ABAP_MESSAGES</ARBGB>
+    <MASTERLANG>E</MASTERLANG>
+    <STEXT>ABAP cheat sheet message class</STEXT>
+   </T100A>
+   <T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZDEMO_ABAP_MESSAGES</ARBGB>
+     <MSGNR>001</MSGNR>
+     <TEXT>An error occured (Nr. 001)</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZDEMO_ABAP_MESSAGES</ARBGB>
+     <MSGNR>002</MSGNR>
+     <TEXT>Exception raised (Nr. 002)</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZDEMO_ABAP_MESSAGES</ARBGB>
+     <MSGNR>003</MSGNR>
+     <TEXT>Test message (Nr. 003) &amp;1 &amp;2</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZDEMO_ABAP_MESSAGES</ARBGB>
+     <MSGNR>004</MSGNR>
+     <TEXT>Message (Nr. 004) p1: &quot;&amp;1&quot; p2: &quot;&amp;2&quot; p3: &quot;&amp;3&quot; p4: &quot;&amp;4&quot;</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZDEMO_ABAP_MESSAGES</ARBGB>
+     <MSGNR>005</MSGNR>
+     <TEXT>&amp;1 &amp;2 &amp;3 &amp;4</TEXT>
+    </T100>
+   </T100>
+  </asx:values>
+ </asx:abap>
+</abapGit>

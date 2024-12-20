@@ -1,25 +1,32 @@
-***********************************************************************
-*
-*   Class for ABAP cheat sheet examples designed to clear and populate
-*   demo database tables
-*
-* -------------------------- NOTE -------------------------------------
-* The code presented in this class is only meant for supporting the ABAP
-* cheat sheets. It is not intended for direct use in a
-* production system environment. The code examples in the ABAP cheat
-* sheets are primarily intended to provide a better explanation and
-* visualization of the syntax and semantics of ABAP statements and not to
-* solve concrete programming tasks. For production application programs,
-* a dedicated solution should therefore always be worked out for each
-* individual case. There is no guarantee for either the correctness or
-* the completeness of the code. In addition, there is no legal
-* responsibility or liability for possible errors or their consequences
-* which occur through the use of the example code.
-*
-***********************************************************************
-"! <p class="shorttext synchronized">Class supporting ABAP cheat sheet examples</p>
-"! The class supports the ABAP cheat examples by clearing and populating demo database tables that are used there.
-"! The demo database tables contain airline and flight information.
+"! <p class="shorttext">ABAP cheat sheet example class: ABAP cheat sheet auxiliary class</p>
+"!
+"! <p>The class supports the ABAP cheat examples by clearing and populating demo database tables that are used there.
+"! The demo database tables contain airline and flight information.</p>
+"!
+"! <h2>Getting started with ABAP cheat sheet example classes</h2>
+"! <ol><li>Open the class using ABAP development tools for Eclipse (ADT).</li>
+"! <li>Choose F9 to run the class.</li>
+"! <li>Check the console output.</li>
+"! <li>To understand the context and ABAP syntax used, refer to the notes in the
+"! class comments or the relevant topic in the ABAP Keyword Documentation.</li>
+"! <li>The console output contains numbered sections (e.g., 1) ... , 2) ..., 3) ...)
+"! for each example. Most of the time, the variable name is diplayed. To quickly find
+"! the output, use CTRL+F to search for the specific number or variable name in the
+"! console. Alternatively, debug the class using the debugger to check the data
+"! objects' content and values.</li></ol>
+"!
+"! <h2>Disclaimer</h2>
+"! <p>The code presented in this class is only meant for supporting the ABAP
+"! cheat sheets. It is not intended for direct use in a
+"! production system environment. The code examples in the ABAP cheat
+"! sheets are primarily intended to provide a better explanation and
+"! visualization of the syntax and semantics of ABAP statements and not to
+"! solve concrete programming tasks. For production application programs,
+"! a dedicated solution should therefore always be worked out for each
+"! individual case. There is no guarantee for either the correctness or
+"! the completeness of the code. In addition, there is no legal
+"! responsibility or liability for possible errors or their consequences
+"! which occur through the use of the example code.</p>
 CLASS zcl_demo_abap_aux DEFINITION
   PUBLIC
   FINAL
@@ -30,6 +37,7 @@ CLASS zcl_demo_abap_aux DEFINITION
       fill_dbtabs,
       heading IMPORTING text          TYPE string
               RETURNING VALUE(output) TYPE string.
+    CONSTANTS no_output TYPE string VALUE `No output for this section. You can set breakpoints and check the content of data objects (if available) in the debugger.`.
 
   PROTECTED SECTION.
   PRIVATE SECTION.
@@ -38,7 +46,6 @@ ENDCLASS.
 
 
 CLASS zcl_demo_abap_aux IMPLEMENTATION.
-
 
   METHOD clear_dbtabs.
     DELETE FROM zdemo_abap_flsch.

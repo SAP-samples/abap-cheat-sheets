@@ -1,23 +1,11 @@
-***********************************************************************
-*
-*               Class supporting an ABAP cheat sheet example
-*
-* ----------------------------- NOTE -----------------------------------
-* The code presented in this class is intended only to support the ABAP
-* cheat sheets. It is not intended for direct use in a production system
-* environment. The code examples in the ABAP cheat sheets are primarily
-* intended to provide a better explanation and visualization of the
-* syntax and semantics of ABAP statements, not to solve concrete
-* programming tasks. For production application programs, you should
-* always work out your own solution for each individual case. There is
-* no guarantee for the correctness or completeness of the code.
-* Furthermore, there is no legal responsibility or liability for any
-* errors or their consequences that may occur when using the the example
-* code.
-*
-***********************************************************************
- "! <p class="shorttext synchronized">Class supporting ABAP cheat sheet example</p>
- "! The class supports the ABAP cheat sheet example about object orientation.
+"! <p class="shorttext"><strong>Class supporting the ABAP object orientation example</strong><br/>ABAP cheat sheet example class</p>
+"!
+"! <p>The example class supports the ABAP object orientation example.<br/>
+"! Choose F9 in ADT to run the class.</p>
+"!
+"! <h2>Note</h2>
+"! <p>Find the <strong>disclaimer</strong> in the ABAP Doc comment of class
+"! {@link zcl_demo_abap_aux}.</p>
  CLASS zcl_demo_abap_objects_friend DEFINITION PUBLIC FINAL CREATE PUBLIC.
 
    PUBLIC SECTION.

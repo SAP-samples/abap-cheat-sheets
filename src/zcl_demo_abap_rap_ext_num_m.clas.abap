@@ -1,64 +1,35 @@
-***********************************************************************
-*
-*          RAP BO consumer for a RAP demo scenario:
-*      ABAP EML in use: Managed RAP BO with external numbering
-*
-* -------------------------- PURPOSE ----------------------------------
-* - This class is the RAP BO consumer for a RAP demo scenario that
-*   demonstrates various RAP BO standard operations and non-standard
-*   operations using ABAP EML in the context of a managed RAP business
-*   object with RAP external numbering.
-* - Topics covered: RAP BO operations like create (including a
-*   determination on save), update, delete, executing an action, validation,
-*   create-by-association (parent to child), read (root entity),
-*   read-by-association (parent to child), read (child entity),
-*   read-by-association (child to parent)
-* - Underlying data model: Consists of a root entity and one child entity.
-*   The  BDEF defines the behavior for these two entities which are connected
-*   via a CDS composition relation. The definitions in the BDEF determine
-*   which methods must be implemented in the ABAP behavior pool (ABP).
-* - ABP for this scenario: zbp_demo_abap_rap_ro_m
-*
-* ----------------------- GETTING STARTED -----------------------------
-* - Open the class with the ABAP development tools for Eclipse (ADT).
-* - Choose F9 to run the class.
-* - Check the console output.
-* - To understand the context and the ABAP syntax used, check the notes
-*   included in the class as comments or refer to the respective topic
-*   in the ABAP Keyword Documentation.
-* - Due to the amount of output in the console, the examples include
-*   numbers (e. g. 1) ..., 2) ..., 3) ...) for the individual example
-*   sections. Plus, the variable name is displayed in most cases. Hence,
-*   to easier and faster find the relevant output in the console, just
-*   search in the console for the number/variable name (CTRL+F in the
-*   console) or use the debugger.
-*
-* ----------------------------- NOTE -----------------------------------
-* This simplified example is not a real life scenario and rather
-* focuses on the technical side by giving an idea how the communication
-* and data exchange between a RAP BO consumer, which is a class
-* in this case, and RAP BO provider can work. Additionally, it shows
-* how the methods for non-standard RAP BO operations might be
-* self-implemented in an ABP. The example is intentionally kept
-* short and simple and focuses on specific RAP aspects. For this reason,
-* the example might not fully meet the requirements of the RAP BO contract.
-*
-* The code presented in this class is intended only to support the ABAP
-* cheat sheets. It is not intended for direct use in a production system
-* environment. The code examples in the ABAP cheat sheets are primarily
-* intended to provide a better explanation and visualization of the
-* syntax and semantics of ABAP statements, not to solve concrete
-* programming tasks. For production application programs, you should
-* always work out your own solution for each individual case. There is
-* no guarantee for the correctness or completeness of the code.
-* Furthermore, there is no legal responsibility or liability for any
-* errors or their consequences that may occur when using the the example
-* code.
-*
-***********************************************************************
-"! <p class="shorttext synchronized">ABAP cheat sheet: ABAP EML in a RAP scenario (managed BO)</p>
-"! Example to demonstrate ABAP EML in the context of a RAP demo scenario (managed RAP BO with external numbering).
-"! The class represents a RAP BO consumer.<br>Choose F9 in ADT to run the class.
+"! <p class="shorttext"><strong>ABAP EML in a RAP scenario (managed BO)</strong><br/>ABAP cheat sheet example class</p>
+"!
+"! <p>The example class demonstrates ABAP EML in the context of a RAP demo scenario
+"! (managed RAP BO with external numbering). The class represents a RAP BO consumer.<br/>
+"! Choose F9 in ADT to run the class.</p>
+"!
+"! <h2>Note</h2>
+"! <ul><li>This class is the RAP BO consumer for a RAP demo scenario that
+"! demonstrates various RAP BO standard operations and non-standard
+"! operations using ABAP EML in the context of a managed RAP business
+"! object with RAP external numbering.</li>
+"! <li>Topics covered: RAP BO operations like create (including a
+"! determination on save), update, delete, executing an action, validation,
+"! create-by-association (parent to child), read (root entity),
+"! read-by-association (parent to child), read (child entity),
+"! read-by-association (child to parent)</li>
+"! <li>Underlying data model: Consists of a root entity and one child entity.
+"! The BDEF defines the behavior for these two entities which are connected
+"! via a CDS composition relation. The definitions in the BDEF determine
+"! which methods must be implemented in the ABAP behavior pool (ABP).</li>
+"! <li>ABP for this scenario: {@link zbp_demo_abap_rap_ro_m}.</li>
+"! <li> This simplified example is not a real life scenario and rather
+"! focuses on the technical side by giving an idea how the communication
+"! and data exchange between a RAP BO consumer, which is a class
+"! in this case, and RAP BO provider can work. Additionally, it shows
+"! how the methods for non-standard RAP BO operations might be
+"! self-implemented in an ABP. The example is intentionally kept
+"! short and simple and focuses on specific RAP aspects. For this reason,
+"! the example might not fully meet the requirements of the RAP BO contract.</li>
+"! <li>Find information on <strong>getting started with the example class</strong> and the
+"! <strong>disclaimer</strong> in the ABAP Doc comment of class {@link zcl_demo_abap_aux}.</li>
+"! </ul>
 CLASS zcl_demo_abap_rap_ext_num_m DEFINITION
   PUBLIC
   FINAL

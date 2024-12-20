@@ -1,41 +1,11 @@
-***********************************************************************
-*
-*           ABAP cheat sheet: Date, Time, and Time Stamp
-*
-* -------------------------- PURPOSE ----------------------------------
-* - Example to demonstrate various syntax options for working with
-*   date, time, and time stamp.
-*
-* ----------------------- GETTING STARTED -----------------------------
-* - Open the class with the ABAP development tools for Eclipse (ADT).
-* - Choose F9 to run the class.
-* - Check the console output.
-* - To understand the context and the ABAP syntax used, refer to the
-*   notes included in the class as comments or refer to the respective
-*   topic in the ABAP Keyword Documentation.
-* - Due to the amount of console output, the examples contain numbers
-*   (e.g. 1) ..., 2) ..., 3) ...) for the individual example sections.
-*   Also, the variable name is displayed in most cases. So to find
-*   the relevant output in the console easier and faster, just search
-*   for the number/variable name in the console (CTRL+F in the console)
-*   or use the debugger.
-*
-* ----------------------------- NOTE -----------------------------------
-* The code presented in this class is intended only to support the ABAP
-* cheat sheets. It is not intended for direct use in a production system
-* environment. The code examples in the ABAP cheat sheets are primarily
-* intended to provide a better explanation and visualization of the
-* syntax and semantics of ABAP statements, not to solve concrete
-* programming tasks. For production application programs, you should
-* always work out your own solution for each individual case. There is
-* no guarantee for the correctness or completeness of the code.
-* Furthermore, there is no legal responsibility or liability for any
-* errors or their consequences that may occur when using the the example
-* code.
-*
-***********************************************************************
-"! <p class="shorttext synchronized">ABAP cheat sheet: Date, Time, and Time Stamp</p>
-"! Example to demonstrate handling and procesing dates, times, and time stamps in ABAP.<br>Choose F9 in ADT to run the class.
+"! <p class="shorttext"><strong>Date, Time, and Time Stamp</strong><br/>ABAP cheat sheet example class</p>
+"!
+"! <p>The example class demonstrates the handling and procesing dates, times, and time stamps in ABAP.<br/>
+"! Choose F9 in ADT to run the class.</p>
+"!
+"! <h2>Note</h2>
+"! <p>Find information on <strong>getting started with the example class</strong> and the
+"! <strong>disclaimer</strong> in the ABAP Doc comment of class {@link zcl_demo_abap_aux}.</p>
 CLASS zcl_demo_abap_date_time DEFINITION
   PUBLIC
   FINAL
@@ -187,18 +157,18 @@ CLASS zcl_demo_abap_date_time IMPLEMENTATION.
 
     "Assignment of an invalid date of type d to type i; the initial value
     "is produced
-    "In newer ABAP releases, the following statement shows a  
-    "syntax warning that the date (intentionally specified as 
-    "invalid date here) does not match the type. Therefore, 
+    "In newer ABAP releases, the following statement shows a
+    "syntax warning that the date (intentionally specified as
+    "invalid date here) does not match the type. Therefore,
     "the example is provided differently to circumvent the
     "syntax warning.
-    
+
     "DATA(inv_date3) = CONV i( CONV d( '20240231' ) ).
-    
+
     TYPES c8 TYPE c LENGTH 8.
     DATA false_date TYPE c8 VALUE '20240231'.
     DATA(inv_date3) = CONV i( CONV d( false_date ) ).
-    
+
     IF inv_date3 = 0.
       out->write( `inv_date3 = 0` ).
     ENDIF.
@@ -924,10 +894,10 @@ CLASS zcl_demo_abap_date_time IMPLEMENTATION.
           "No data object change. The statement below should return a valid time stamp.
         WHEN 2.
           "Invalid date
-          "In newer ABAP releases, the following statement shows a 
-          "syntax warning that the date (intentionally specified as 
-          "invalid date here) does not match the type. Therefore, 
-          "the example is provided differently to circumvent the 
+          "In newer ABAP releases, the following statement shows a
+          "syntax warning that the date (intentionally specified as
+          "invalid date here) does not match the type. Therefore,
+          "the example is provided differently to circumvent the
           "syntax warning.
 
           "date_test = '20249999'.

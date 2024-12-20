@@ -1,42 +1,17 @@
-***********************************************************************
-*
-*    ABAP cheat sheet: Excursions into ABAP for Cloud Development
-*
-* -------------------------- PURPOSE ----------------------------------
-* - Example to demonstrate a selected set of released APIs and libraries
-*   with the restricted ABAP language version
-* - NOTE: The example class includes constants in the private visbility
-*         section. The names specified there are used by code snippets.
-*         Make sure that you insert suitable values before running the
-*         example class.
-*
-* ----------------------- GETTING STARTED -----------------------------
-* - Open the class with the ABAP development tools for Eclipse (ADT).
-* - Choose F9 to run the class.
-* - Check the console output.
-* - Due to the amount of output in the console, the examples include
-*   numbers (e. g. 1) ..., 2) ..., 3) ...) for the individual example
-*   sections. Plus, the variable name is displayed in several cases.
-*   Hence, to easier and faster find the relevant output in the console,
-*   just search in the console for the number/variable name (CTRL+F in
-*   the console) or use the debugger.
-*
-* ----------------------------- NOTE -----------------------------------
-* The code presented in this class is intended only to support the ABAP
-* cheat sheets. It is not intended for direct use in a production system
-* environment. The code examples in the ABAP cheat sheets are primarily
-* intended to provide a better explanation and visualization of the
-* syntax and semantics of ABAP statements, not to solve concrete
-* programming tasks. For production application programs, you should
-* always work out your own solution for each individual case. There is
-* no guarantee for the correctness or completeness of the code.
-* Furthermore, there is no legal responsibility or liability for any
-* errors or their consequences that may occur when using the the example
-* code.
-*
-***********************************************************************
-"! <p class="shorttext synchronized">ABAP cheat sheet: Excursions into ABAP for Cloud Development</p>
-"! Example to demonstrate released APIs and libraries with the restricted ABAP language version.<br>Choose F9 in ADT to run the class.
+"! <p class="shorttext"><strong>AMDP</strong><br/>Excursions into ABAP for Cloud Development</p>
+"!
+"! <p>The example class demonstrates released APIs and libraries with the restricted
+"! ABAP language version.<br/>
+"! Choose F9 in ADT to run the class.</p>
+"!
+"! <h2>Note</h2>
+"! <ul>
+"! <li>The example class includes constants in the private visbility
+"! section. The names specified there are used by code snippets.
+"! Make sure that you insert suitable values before running the
+"! example class if you want to explore all syntax examples.</li>
+"! <li>Find information on <strong>getting started with the example class</strong> and the
+"! <strong>disclaimer</strong> in the ABAP Doc comment of class {@link zcl_demo_abap_aux}.</li></ul>
 CLASS zcl_demo_abap_cloud_excursion DEFINITION
   PUBLIC
   FINAL
@@ -98,49 +73,122 @@ CLASS zcl_demo_abap_cloud_excursion IMPLEMENTATION.
     out->write( `1) Restrictions in ABAP for Cloud Development` ).
     out->write( |\nYou can check the code of this section by commenting it in and out. Note the comments in the code.| ).
     "The following statements demonstrate a selection of restrictions in ABAP for Cloud Development.
+    "It includes (not) released APIs, deprecated and invalid syntax in ABAP for Cloud Development.
     "Comment in the code lines (CTRL + 7) up to BREAK-POINT and check the syntax errors/warnings
     "displayed.
-    "Notes about the errors/warnings:
-    "- Using ABAP SQL statements, data is retrieved from database tables. The first table
-    "  is a demo table provided by SAP. This table cannot be accessed directly (unlike in classic
-    "  ABAP) and therefore cannot be used as a data source from which to select. The second
-    "  is a database table from the ABAP Cheat Sheet GitHub repository. If you have imported
-    "  the repository into the system, you can use it as a data source.
-    "- The example includes dynamic ABAP SQL statements. This is just to emphasize that such
-    "  statements can lead to unwanted results, since in this case you cannot select from the
-    "  first database table whose name is specified dynamically. Therefore, there is no syntax
-    "  error or warning at compile time, but an error at runtime. You can try the following:
-    "  Comment out all code except the lines with the dynamic statements, activate the code
-    "  and execute the class with F9. Note: Check out the CL_ABAP_DYN_PRG class, which supports
-    "  dynamic programming by checking the validity of dynamic specifications.
-    "- Further examples of obsolete and invalid syntax in ABAP for Cloud Development include
-    "  the invalid MOVE ... TO ... statement and others. To set breakpoints in ADT, double-click
-    "  the area to the left of the code line number.
 
-
-*    SELECT carrid, connid FROM spfli WHERE carrid = 'LH' INTO TABLE @DATA(it1).
-*    SELECT carrid, connid FROM zdemo_abap_fli WHERE carrid = 'LH' INTO TABLE @DATA(it2).
-*    SELECT SINGLE carrid, connid FROM ('SPFLI') WHERE carrid = 'LH' INTO NEW @DATA(wa1).
-*    SELECT SINGLE carrid, connid FROM ('ZDEMO_ABAP_FLI') WHERE carrid = 'LH' INTO NEW @DATA(wa2).
+*    "Released DDIC data elements
+*    DATA dobj1 TYPE timestampl.
+*    DATA dobj2 TYPE land1.
 *
+*    "Attributes of the accessible type pool ABAP
+*    DATA flag TYPE abap_boolean.
+*    flag = abap_true.
+*
+*    "Released table types
+*    DATA it1 TYPE string_table.
+*    DATA it2 TYPE string_hashed_table.
+*    DATA it3 TYPE xstring_table.
+*
+*    "Released CDS object
+*    DATA s1 TYPE i_timezone.
+*
+*    "Released interface
+*    "The if_oo_adt_classrun interface is released, and you can implement it to run an ABAP class.
+*    "In ADT, you can do this by choosing F9. To output the content of data objects, you can use
+*    "out->write( ... ). in the main method.
+*    DATA ref_classrun TYPE REF TO if_oo_adt_classrun.
+*
+*    "Not released DDIC database table
+*    DATA s2 TYPE scarr.
+*
+*    "Classes
+*    "Released class
+*    DATA(ixml1) = cl_ixml_core=>create( ).
+*    "Not released (API for classic ABAP)
+*    DATA(ixml2) = cl_ixml=>create( ).
+*
+*    "Released APIs from the XCO library
+*    "Retrieving the current user date
+*    DATA(user_date) = xco_cp=>sy->date( xco_cp_time=>time_zone->user
+*                          )->as( xco_cp_time=>format->iso_8601_extended
+*                          )->value.
+*
+*    "Retrieving the current user time
+*    DATA(user_time) = xco_cp=>sy->time( xco_cp_time=>time_zone->user
+*                          )->as( xco_cp_time=>format->iso_8601_extended
+*                          )->value.
+*
+*    "Not released API: Querying whether the current database supports AMDP methods
+*    DATA(amdp_allowed) = xsdbool( cl_abap_dbfeatures=>use_features(
+*      EXPORTING requested_features = VALUE #( ( cl_abap_dbfeatures=>call_amdp_method ) ) ) ).
+*
+*    "ABAP SQL statements
+*    "Selecting from a
+*    "... not released database table
+*    SELECT carrid, connid FROM spfli WHERE carrid = 'LH' INTO TABLE @DATA(spfli_tab).
+*
+*    "... released CDS view
+*    SELECT SINGLE * FROM i_timezone WHERE TimeZoneID = 'EST' INTO @DATA(tz_info).
+*
+*    "... not released database table using a dynamic ABAP SQL statement
+*    "Although the source code provides an invalid data source, the dynamic ABAP SQL statement
+*    "does not produce a syntax error during compilation. However, it would result in a runtime
+*    "error because you cannot select from that data source. You can check the validity of dynamic
+*    "specifications using the `cl_abap_dyn_prg` class, which supports dynamic programming.
+*    SELECT SINGLE carrid, connid FROM ('SPFLI') WHERE carrid = 'LH' INTO NEW @DATA(ref_spfli_tab).
+*
+*    "ABAP SQL Statement involving client handling; using a cheat sheet database table
+*    "The addition `USING CLIENT` for client handling is not allowed in the restricted ABAP language scope.
+*    DATA(clnt) = sy-mandt.
+*    SELECT carrid, connid FROM ('ZDEMO_ABAP_FLI') USING CLIENT @clnt WHERE carrid = 'LH' INTO TABLE NEW @DATA(ref_demo_tab).
+*
+*    "The example includes a selection of deprecated and invalid syntax in ABAP for Cloud Development. They are added
+*    "for demonstration purposes. For example, classic UI technology-related (such as dynpro) syntax is not allowed.
+*    "The pointless WRITE statement within the method implementation represents invalid classic list-related statements.
+*    "Executable programs (reports) are not allowed in the restricted ABAP language scope. To set breakpoints in ADT,
+*    "double-click the area to the left of the code line number.
+*
+*    "Assignments
 *    DATA(num1) = 1.
 *    DATA(num2) = 1.
 *    DATA(num3) = 2.
-*
+*    "Invalid statement for an assignment
 *    MOVE num3 TO num1.
+*    "Using the assignment operator
 *    num2 = num3.
 *
-*    DATA(it3) = VALUE string_table( ( `a` ) ( `b` ) ( `c` ) ).
-*    DESCRIBE TABLE it3 LINES DATA(num_lines1).
-*    DATA(num_lines2) = lines( it3 ).
+*    "Determining the number of lines in an internal table
+*    DATA(str_table) = VALUE string_table( ( `a` ) ( `b` ) ( `c` ) ).
+*    DATA(num_lines1) = lines( str_table ).
+*    "Invalid statement
+*    DESCRIBE TABLE str_table LINES DATA(num_lines2).
 *
+*    "Getting references
 *    DATA: ref1 TYPE REF TO i,
 *          ref2 TYPE REF TO i.
+*
 *    ref1 = REF #( num1 ).
+*    "Deprecated statement
 *    GET REFERENCE OF num1 INTO ref2.
 *
-*    DATA str_itab TYPE string_table.
-*    READ REPORT 'ZCL_DEMO_ABAP_UNIT_TEST=======CCAU' INTO str_itab.
+*    "Classic ABAP-related statements and syntax
+*    "Various sy components should not be used in ABAP for Cloud Development
+*    DATA(current_as_abap_time) = sy-uzeit.
+*    DATA(current_as_abap_date) = sy-datum.
+*    DATA(current_local_time) = sy-timlo.
+*
+*    "Various invalid statements
+*    DATA scarr_tab TYPE TABLE OF scarr WITH EMPTY KEY.
+*    TRY.
+*        cl_salv_table=>factory( IMPORTING r_salv_table = DATA(alv)
+*                                CHANGING  t_table      = scarr_tab ).
+*        "The exception class is not released, too.
+*      CATCH cx_salv_msg.
+*    ENDTRY.
+*
+*    DATA code TYPE string_table.
+*    READ REPORT 'ZCL_DEMO_ABAP_UNIT_TEST=======CCAU' INTO code.
 *    WRITE 'hi'.
 *    BREAK-POINT.
 

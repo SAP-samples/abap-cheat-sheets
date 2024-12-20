@@ -1,51 +1,18 @@
-***********************************************************************
-*
-*               ABAP cheat sheet: Dynamic programming
-*
-* -------------------------- PURPOSE ----------------------------------
-* - Example to demonstrate various syntax options and concepts related
-*   to dynamic programming.
-* - Topics covered: Field symbols and data references (both as supporting
-*   elements for dynamic programming), dynamic ABAP syntax components,
-*   runtime type services (RTTS), i. e. runtime type identification (RTTI)
-*   and runtime type creation (RTTC)
-* - To provide a "real" dynamic determination at runtime for several code
-*   examples in this class, the example class includes local classes
-*   in the CCIMP include (local types tab in ADT) whose methods return
-*   character-like content to be used in the ABAP statements. The content
-*   is predefined in these classes but the content that is actually used
-*   in the end is random.
-*
-* ----------------------- GETTING STARTED -----------------------------
-* - Open the class with the ABAP development tools for Eclipse (ADT).
-* - Choose F9 to run the class.
-* - Check the console output.
-* - To understand the context and the ABAP syntax used, refer to the
-*   notes included in the class as comments or refer to the respective
-*   topic in the ABAP Keyword Documentation.
-* - Due to the amount of console output, the examples contain numbers
-*   (e.g. 1) ..., 2) ..., 3) ...) for the individual example sections.
-*   Also, the variable name is displayed in most cases. So to find
-*   the relevant output in the console easier and faster, just search
-*   for the number/variable name in the console (CTRL+F in the console)
-*   or use the debugger.
-*
-* ----------------------------- NOTE -----------------------------------
-* The code presented in this class is intended only to support the ABAP
-* cheat sheets. It is not intended for direct use in a production system
-* environment. The code examples in the ABAP cheat sheets are primarily
-* intended to provide a better explanation and visualization of the
-* syntax and semantics of ABAP statements, not to solve concrete
-* programming tasks. For production application programs, you should
-* always work out your own solution for each individual case. There is
-* no guarantee for the correctness or completeness of the code.
-* Furthermore, there is no legal responsibility or liability for any
-* errors or their consequences that may occur when using the the example
-* code.
-*
-***********************************************************************
-"! <p class="shorttext synchronized">ABAP cheat sheet: Dynamic programming</p>
-"! Example to demonstrate syntax related to dynamic programming.<br>Choose F9 in ADT to run the class.
+"! <p class="shorttext"><strong>Dynamic programming</strong><br/>ABAP cheat sheet example class</p>
+"!
+"! <p>The example class demonstrates syntax and concepts related to dynamic programming.<br/>
+"! Choose F9 in ADT to run the class.</p>
+"!
+"! <h2>Note</h2>
+"! <ul><li>Topics covered: Field symbols and data references (both as supporting elements for dynamic
+"! programming), dynamic ABAP syntax components, runtime type services (RTTS), i.e., runtime type
+"! identification (RTTI) and runtime type creation (RTTC).</li>
+"! <li>To provide true dynamic determination at runtime for several code examples in this class,
+"! the example class includes local classes in the CCIMP include (local types tab in ADT) whose
+"! methods return character-like content for use in ABAP statements. The content is predefined
+"! in these classes, but the actual content used is random.</li>
+"! <li>Find information on <strong>getting started with the example class</strong> and the
+"! <strong>disclaimer</strong> in the ABAP Doc comment of class {@link zcl_demo_abap_aux}.</li></ul>
 CLASS zcl_demo_abap_dynamic_prog DEFINITION
   PUBLIC
   FINAL
@@ -56,6 +23,14 @@ CLASS zcl_demo_abap_dynamic_prog DEFINITION
 
     CLASS-METHODS:
       class_constructor.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+    METHODS inst_meth1.
+    METHODS inst_meth2 IMPORTING text          TYPE string
+                       RETURNING VALUE(result) TYPE string.
+    CLASS-METHODS stat_meth1.
+    CLASS-METHODS stat_meth2 IMPORTING text   TYPE string
+                             EXPORTING result TYPE string.
 ENDCLASS.
 
 
@@ -115,7 +90,7 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
       ...
     ENDLOOP.
 
-    out->write( `No output for this section. You can set a break point and check the content of data objects in the debugger.` ).
+    out->write( zcl_demo_abap_aux=>no_output ).
 
 **********************************************************************
 
@@ -308,7 +283,7 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
     s-oref = cl_abap_random_int=>create( ).
     ASSIGN s-oref TO <object>.
 
-    out->write( `No output for this section. You can set a break point and check the content of data objects in the debugger.` ).
+    out->write( zcl_demo_abap_aux=>no_output ).
 
 **********************************************************************
 
@@ -675,7 +650,7 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
           ref_a5 TYPE ref_type,
           ref_a6 TYPE REF TO data. "Generic data type
 
-    out->write( `No output for this section. You can set a break point and check the content of data objects in the debugger.` ).
+    out->write( zcl_demo_abap_aux=>no_output ).
 
 **********************************************************************
 
@@ -706,7 +681,7 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
     "You can explicitly specify the data type after REF.
     "DATA(ref_b3) = REF #( g ).
 
-    out->write( `No output for this section. You can set a break point and check the content of data objects in the debugger.` ).
+    out->write( zcl_demo_abap_aux=>no_output ).
 
 **********************************************************************
 
@@ -1182,7 +1157,7 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
 **********************************************************************
 
     out->write( zcl_demo_abap_aux=>heading( `Dynamic ABAP Statements` ) ).
-    out->write( |21) Dynamic ASSIGN Statements (1) -  Specifying the Memory Area Dynamically\n\n| ).
+    out->write( |21) Dynamic ASSIGN Statements (1) - Specifying the Memory Area Dynamically\n\n| ).
     "The memory area is not specified directly, but as content of a
     "character-like data object in parentheses.
     "Note:
@@ -1361,7 +1336,7 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
     "because the operand position after ASSIGN is a result position.
     ASSIGN NEW zcl_demo_abap_objects( )->('PUBLIC_STRING') TO <fs>.
 
-    out->write( `No output for this section. You can set a break point and check the content of data objects in the debugger.` ).
+    out->write( zcl_demo_abap_aux=>no_output ).
 
 **********************************************************************
 
@@ -1451,7 +1426,7 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
 
 **********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `26) Dynamic ASSIGN Statements (6) - Type Casting` ) ).
+    out->write( zcl_demo_abap_aux=>heading( `26a) Dynamic ASSIGN Statements (6) - Type Casting` ) ).
 
     "As covered above, the CASTING addition of the ASSIGN statement
     "has dynamic syntax elements.
@@ -1463,6 +1438,56 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
     ASSIGN dobj_c_l5 TO <fs_dyn_as> CASTING TYPE ('DTYPE_C_L2').
 
     out->write( data = <fs_dyn_as> name = `<fs_dyn_as1>` ).
+
+**********************************************************************
+
+    out->write( zcl_demo_abap_aux=>heading( `26b) Dynamic ASSIGN Statements (7) - Type Casting` ) ).
+
+    "Assigning a data object to a field symbol casting a dynamically
+    "specified type as also shown in the example above
+    TYPES clen5 TYPE c LENGTH 5.
+    DATA: dobj_c10    TYPE c LENGTH 10 VALUE '1234567890',
+          some_struct TYPE zdemo_abap_fli.
+    FIELD-SYMBOLS <casttype> TYPE data.
+
+    ASSIGN dobj_c10 TO <casttype> CASTING TYPE ('CLEN5').  "12345
+    ASSIGN dobj_c10 TO <casttype> CASTING LIKE some_struct-('CARRID'). "123
+
+    TYPES: c1  TYPE c LENGTH 1,
+           c3  TYPE c LENGTH 3,
+           c10 TYPE c LENGTH 10,
+           c20 TYPE c LENGTH 20,
+           str TYPE string.
+    DATA abc TYPE c LENGTH 26 VALUE 'abcdefghijklmnopqrstuvwxyz'.
+    DATA(typenames) = VALUE string_table( ( `C1` ) ( `C3` ) ( `C10` ) ( `C20` ) ( `NOPE` ) ( `STR` ) ).
+    DATA assignment_results TYPE string_table.
+    FIELD-SYMBOLS <c_like> TYPE clike.
+
+    LOOP AT typenames INTO DATA(typename).
+      TRY.
+          ASSIGN abc TO <c_like> CASTING TYPE (typename).
+          assignment_results = VALUE #( BASE assignment_results ( |Type: '{ typename }'; Assignment result: '{ <c_like> }'| ) ).
+        CATCH cx_root INTO DATA(error).
+          assignment_results = VALUE #( BASE assignment_results
+          ( |Error! Exception raised: { cl_abap_typedescr=>describe_by_object_ref( error )->get_relative_name( ) }; | &&
+            |'{ error->get_text( ) }'| ) ).
+      ENDTRY.
+    ENDLOOP.
+
+    out->write( data = assignment_results name = `assignment_results` ).
+
+**********************************************************************
+
+    out->write( zcl_demo_abap_aux=>heading( `26c) Dynamic ASSIGN Statements (8) - Type Casting` ) ).
+
+    "Note: As covered further down CREATE DATA and ASSIGN statements have the HANDLE addition
+    "after which dynamically created types can be specified. A type description object is expected.
+
+    "Getting type description object
+    DATA(tdo_elem) = cl_abap_elemdescr=>get_c( 4 ).
+    ASSIGN dobj_c10 TO <casttype> CASTING TYPE HANDLE tdo_elem.
+
+    out->write( data = <casttype> name = `<casttype>` ).
 
 **********************************************************************
 
@@ -1707,7 +1732,7 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
 
 **********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `32) Internal Table (4)` ) ).
+    out->write( zcl_demo_abap_aux=>heading( `32a) Internal Table (4)` ) ).
 
     "The example demonstrates the following:
     "- The method call takes care of providing the name of a database table name.
@@ -1745,7 +1770,129 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
 
 **********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `33) Absolute Type Names for Dynamically Specifying Types` ) ).
+    out->write( zcl_demo_abap_aux=>heading( `32b) Creating Anonymous Data Objects by Specifying the Type Dynamically (Summarizing Syntax Patterns)` ) ).
+
+    "------------ Specifying a type name dynamically ------------
+
+    "Anonymous data objects are created using a type determined at
+    "runtime. In this case, the name of the data type is specified
+    "dynamically.
+    "Note that the NEW operator cannot be used here.
+
+    "Data reference variable used for the examples
+    DATA data_ref TYPE REF TO data.
+
+    "Example types and data objects
+
+    "Elementary type and data object
+    TYPES t_c3 TYPE c LENGTH 3.
+    DATA c3 TYPE c LENGTH 3.
+
+    "Structured type and data object
+    TYPES t_fli_struc TYPE zdemo_abap_fli.
+    DATA  fli_struc TYPE zdemo_abap_fli.
+
+    "Table type and internal table
+    TYPES t_carr_tab TYPE SORTED TABLE OF zdemo_abap_carr WITH UNIQUE KEY carrid.
+    DATA carr_tab TYPE TABLE OF zdemo_abap_carr WITH EMPTY KEY.
+
+    "Reference type and data reference variable
+    TYPES t_str_ref TYPE REF TO string.
+    DATA str_ref TYPE REF TO string.
+
+    "----- Pattern: TYPE (typename) ... -----
+
+    "Creating an elementary data object
+    "Specifying a literal for the dynamic type name (used in most of the
+    "following examples)
+    CREATE DATA data_ref TYPE ('T_C3').
+
+    "Specifying a named data object
+    DATA(c3_type) = 'T_C3'.
+    CREATE DATA data_ref TYPE (c3_type).
+
+    "Structured data object
+    CREATE DATA data_ref TYPE ('T_FLI_STRUC').
+
+    "Internal table
+    CREATE DATA data_ref TYPE ('T_CARR_TAB').
+
+    "Data reference
+    CREATE DATA data_ref TYPE ('T_STR_REF').
+
+    "----- Pattern: TYPE ... TABLE OF (typename) ... -----
+
+    "Creating internal tables
+
+    CREATE DATA data_ref TYPE TABLE OF ('STRING').
+    CREATE DATA data_ref TYPE TABLE OF ('T_FLI_STRUC') WITH EMPTY KEY.
+
+    "Specifying the structured type dynamically, but the key values statically
+    CREATE DATA data_ref TYPE SORTED TABLE OF ('ZDEMO_ABAP_CARR') WITH UNIQUE KEY carrid.
+
+    "Specifying the structured type and the key values dynamically
+    "An internal table such as the following should be created by dynamically
+    "specifying the type and keys dynamically. The keys are specified in lines
+    "of an internal table with character-like line type.
+    DATA itab_compare TYPE SORTED TABLE OF zdemo_abap_fli WITH UNIQUE KEY carrid connid fldate.
+
+    DATA(key_table) = VALUE string_table( ( `CARRID` ) ( `CONNID` ) ( `FLDATE` ) ).
+    CREATE DATA data_ref TYPE SORTED TABLE OF ('ZDEMO_ABAP_FLI') WITH UNIQUE KEY (key_table).
+
+    "----- Pattern: TYPE REF TO (typename) -----
+
+    "Creating data reference variables
+
+    CREATE DATA data_ref TYPE REF TO ('STRING').
+    CREATE DATA data_ref TYPE REF TO ('T_C3').
+    CREATE DATA data_ref TYPE REF TO ('T_FLI_STRUC').
+    CREATE DATA data_ref TYPE REF TO ('T_CARR_TAB').
+
+    "----- Pattern: TYPE LINE OF (typename) -----
+
+    "Creating structures based on table types
+    CREATE DATA data_ref TYPE LINE OF ('T_CARR_TAB').
+
+    "----- Pattern: LIKE struc-(dobjname) -----
+
+    CREATE DATA data_ref LIKE fli_struc-('CARRID').
+
+    "----- Pattern: TYPE (absolute_name) -----
+
+    CREATE DATA data_ref TYPE ('\TYPE=STRING').
+    "Getting an absolute type name; see more information further down
+    DATA(absolute_name) = cl_abap_typedescr=>describe_by_name( 'ZDEMO_ABAP_CARR' )->absolute_name.
+    CREATE DATA data_ref TYPE (absolute_name).
+
+    "----- Pattern: TYPE HANDLE type_description_object -----
+
+    "Getting a type description object. Find more information about RTTI below.
+    DATA(typedescrobj) = cl_abap_elemdescr=>get_c( 4 ). "type c length 4
+    CREATE DATA data_ref TYPE HANDLE typedescrobj.
+
+    out->write( zcl_demo_abap_aux=>no_output ).
+
+**********************************************************************
+
+    out->write( zcl_demo_abap_aux=>heading( `33a) Creating Instances of Classes by Specifying the Type Dynamically` ) ).
+
+    DATA oref_dyn TYPE REF TO object.
+    CREATE OBJECT oref_dyn TYPE ('ZCL_DEMO_ABAP_OBJECTS').
+
+    DATA cl TYPE string VALUE `ZCL_DEMO_ABAP_OBJECTS`.
+    CREATE OBJECT oref_dyn TYPE (cl).
+
+    "Specifying a wrong/non-existent type name
+    TRY.
+        CREATE OBJECT oref_dyn TYPE ('THIS_CLASS_DOES_NOT_EXIST').
+      CATCH cx_sy_create_object_error.
+    ENDTRY.
+
+    out->write( zcl_demo_abap_aux=>no_output ).
+
+**********************************************************************
+
+    out->write( zcl_demo_abap_aux=>heading( `33b) Absolute Type Names for Dynamically Specifying Types` ) ).
 
     "In addition to character-like data objects for the type name specified within the
     "parentheses, you can also use absolute type names for statements such as CREATE DATA.
@@ -1772,12 +1919,12 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
     "Unnamed data object
     CREATE OBJECT oref4abs TYPE ('\CLASS=ZCL_DEMO_ABAP_DYNAMIC_PROG').
 
-    out->write( `No output for this section. You can set a break point and check the content of data objects in the debugger.` ).
+    out->write( zcl_demo_abap_aux=>no_output ).
 
 **********************************************************************
 
     out->write( zcl_demo_abap_aux=>heading( `Dynamically Specifying Components/Clauses in Statements for Processing Internal Tables with ...` ) ).
-    out->write( |34) SORT\n\n| ).
+    out->write( |34a) SORT (1)\n\n| ).
 
     "A field is determined at runtime on whose basis a sorting is done on an
     "internal table.
@@ -1797,6 +1944,106 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
     out->write( |\n| ).
     out->write( |\n| ).
     out->write( data = carr_itab name = `carr_itab` ).
+
+**********************************************************************
+
+    out->write( zcl_demo_abap_aux=>heading( `34b) SORT (2)` ) ).
+
+
+    "Sorting by dynamically specified components in a sort table, i. e.an
+    "internal table of type abap_sortorder_tab.
+    "Notes:
+    "- Each line of this sort table specifies a component of the sort key.
+    "- If this table is init_sortial, there is no sorting.
+    "- The sort priorit_sorty is based on the order of the lines in the sort table.
+
+    TYPES: BEGIN OF struct,
+             comp1 TYPE i,
+             comp2 TYPE string,
+             comp3 TYPE c LENGTH 3,
+           END OF struct.
+
+    DATA it_sort TYPE TABLE OF struct WITH EMPTY KEY.
+
+    it_sort = VALUE #( ( comp1 = 1 comp2 = `B` comp3 = 'a' )
+                  ( comp1 = 1 comp2 = `A` comp3 = 'b' )
+                  ( comp1 = 2 comp2 = `D` comp3 = 'c' )
+                  ( comp1 = 2 comp2 = `C` comp3 = 'd' )
+                  ( comp1 = 3 comp2 = `F` comp3 = 'e' )
+                  ( comp1 = 3 comp2 = `E` comp3 = 'f' ) ).
+
+    DATA(it_sort_original) = it_sort.
+
+    "Note: The line type is abap_sortorder.
+    DATA(sort) = VALUE abap_sortorder_tab( ).
+
+    "No sorting because the sort table is init_sortial.
+    SORT it_sort BY (sort).
+
+    out->write( data = it_sort name = `it_sort` ).
+    out->write( |\n| ).
+
+    it_sort = it_sort_original.
+    "Note: Ascending is the default sort order. The following example flags
+    "the descending sort order explicit_sortly.
+    sort = VALUE abap_sortorder_tab( ( name = `COMP1` descending = 'X' ) ).
+    SORT it_sort BY (sort).
+
+    out->write( data = it_sort name = `it_sort` ).
+    out->write( |\n| ).
+
+    it_sort = it_sort_original.
+
+    sort = VALUE abap_sortorder_tab( ( name = `COMP1` descending = '' )
+                                      ( name = `COMP2` descending = 'X' ) ).
+    SORT it_sort BY (sort).
+
+    out->write( data = it_sort name = `it_sort` ).
+    out->write( |\n| ).
+
+    it_sort = it_sort_original.
+
+    "Sort priorit_sorty based on the order of lines in the sort table
+    "In this example, the values of comp3 are set up so that a clear
+    "sort order is determined. Since the component is specified first in the
+    "sort table, this sorting has priorit_sorty. Note the values of comp2 in the
+    "result table.
+    sort = VALUE abap_sortorder_tab( ( name = `COMP3` descending = 'X' )
+                                      ( name = `COMP2` descending = 'X' ) ).
+    SORT it_sort BY (sort).
+
+    out->write( data = it_sort name = `it_sort` ).
+    out->write( |\n| ).
+
+    "Specifying an invalid component name raises an exception
+    sort = VALUE abap_sortorder_tab( ( name = `XYZ` descending = 'X' ) ).
+
+    TRY.
+        SORT it_sort BY (sort).
+      CATCH cx_sy_dyn_table_ill_comp_val INTO DATA(err).
+    ENDTRY.
+    ASSERT err IS NOT INITIAL.
+
+    it_sort = it_sort_original.
+    "Specifying an expression/functional method call whose result is a sort
+    "table of type abap_sortorder_tab
+    "In this case, BY is followed by the expression/functional method call,
+    "not enclosed in parentheses.
+
+    "The example shows expressions wit_sorth sort tables created inline
+    SORT it_sort BY VALUE abap_sortorder_tab( ( name = `COMP1` descending = 'X' ) ).
+
+    out->write( data = it_sort name = `it_sort` ).
+    out->write( |\n| ).
+
+    it_sort = it_sort_original.
+
+    DATA(compnames) = VALUE string_table( ( `comp1` ) ( `comp2` ) ).
+
+    SORT it_sort BY VALUE abap_sortorder_tab( FOR sortwa IN compnames ( name = condense( to_upper( sortwa ) ) ) ).
+
+    out->write( data = it_sort name = `it_sort` ).
+    out->write( |\n| ).
 
 **********************************************************************
 
@@ -1911,7 +2158,7 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
       ...
     ENDIF.
 
-    out->write( `No output for this section. You can set a break point and check the content of data objects in the debugger.` ).
+    out->write( zcl_demo_abap_aux=>no_output ).
 
 **********************************************************************
 
@@ -1942,7 +2189,7 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
     itab[ 1 ]-('COL2') = `jkl`.
     itab_ref[ 1 ]->('COL2') = `mno`.
 
-    out->write( `No output for this section. You can set a break point and check the content of data objects in the debugger.` ).
+    out->write( zcl_demo_abap_aux=>no_output ).
 
 **********************************************************************
 
@@ -2003,7 +2250,7 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
       ...
     ENDLOOP.
 
-    out->write( `No output for this section. You can set a break point and check the content of data objects in the debugger.` ).
+    out->write( zcl_demo_abap_aux=>no_output ).
 
 **********************************************************************
 
@@ -2366,6 +2613,96 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
       FROM (table)
       INTO TABLE NEW @DATA(res4).
     out->write( data = res4->* name = `res4->*` ).
+    out->write( |\n| ).
+
+    "--------------------- Dynamic UPDATE ... SET ... statement ---------------------
+
+    "Inserting demo data into the database table to work with
+    TYPES carr_tab TYPE TABLE OF zdemo_abap_carr WITH EMPTY KEY.
+    INSERT ('ZDEMO_ABAP_CARR') FROM TABLE @( VALUE carr_tab( ( carrid = 'WX' carrname = 'WX Airways' )
+                                                             ( carrid = 'XY' carrname = 'Air XY' )
+                                                             ( carrid = 'YZ' carrname = 'YZ Airlines' ) ) ).
+
+    "Note that erroneous dynamic specifications can lead to runtime errors
+    "In the following example, the final inverted comma is missing in the dynamic
+    "set clause.
+    DATA(set_clause) = `CURRCODE = 'EUR`.
+    DATA(where_cl) = `CARRID = 'WX' OR CARRID = 'XY' OR CARRID = 'YZ'`.
+
+    TRY.
+        UPDATE ('ZDEMO_ABAP_CARR') SET (set_clause) WHERE (where_cl).
+      CATCH cx_sy_dynamic_osql_syntax INTO DATA(err_sql).
+        DATA(error_text) = err_sql->get_text( ).
+    ENDTRY.
+
+    "Correcting the dynamic specification
+    "The example sets the value for a component for all entries.
+    "The example additionally specifies a (dynamic) WHERE clause
+    "to restrict the range of entries where the update is performed.
+    "The database table is also specified dynamically.
+    set_clause = `CURRCODE = 'EUR'`.
+
+    UPDATE ('ZDEMO_ABAP_CARR') SET (set_clause) WHERE (where_cl).
+
+    SELECT *
+      FROM ('ZDEMO_ABAP_CARR')
+      INTO TABLE NEW @DATA(res5).
+    out->write( data = res5->* name = `res5->*` ).
+    out->write( |\n| ).
+
+    "--------------------- Dynamic UPDATE ... INDICATORS ... statement ---------------------
+
+    "The statement changes values of specific fields without overwriting existing values of
+    "other fields.
+
+    "Notes on the example:
+    "- A structured type is created with the WITH INDICATORS addition.
+    "- An internal table from which to update a database table is created.
+    "- The table includes the indicator structure comp_ind.
+    "- The table is populated, and two components are flagged as
+    "  to be updated.
+    "- Other fields remain unchanged. Note that key fields must be
+    "  included in ind_tab (indicator setting for key fields has
+    "  no effect).
+    "- The UPDATE statement includes dynamically specified
+    "  indicator syntax. Additionally, the database table is specified
+    "  dynamically.
+
+    "Structured type with WITH INDICATORS addition
+    TYPES ind_wa TYPE zdemo_abap_carr WITH INDICATORS comp_ind TYPE abap_bool.
+
+    DATA ind_tab TYPE TABLE OF ind_wa.
+
+    "Filling internal table; only CURRCODE and URL should be updated
+    ind_tab = VALUE #( ( carrid = 'WX'
+                          carrname = 'WX Airways'
+                          currcode = 'USD'
+                          url = 'some_url_wx'
+                          comp_ind-currcode = abap_true
+                          comp_ind-url = abap_true )
+                        ( carrid = 'XY'
+                          carrname = 'Air XY'
+                          currcode = 'USD'
+                          url = 'some_url_xy'
+                          comp_ind-currcode = abap_true
+                          comp_ind-url = abap_true )
+                        ( carrid = 'YZ'
+                          carrname = 'YZ Airlines'
+                          currcode = 'USD'
+                          url = 'some_url_yz'
+                          comp_ind-currcode = abap_true
+                          comp_ind-url = abap_true ) ).
+
+    DATA(dyn_ind) = `SET STRUCTURE comp_ind`.
+
+    UPDATE ('ZDEMO_ABAP_CARR') FROM TABLE @ind_tab INDICATORS (dyn_ind).
+
+    SELECT *
+      FROM ('ZDEMO_ABAP_CARR')
+      INTO TABLE NEW @DATA(res6).
+    out->write( data = res6->* name = `res6->*` ).
+
+    DELETE FROM ('ZDEMO_ABAP_CARR') WHERE (where_cl).
 
 **********************************************************************
 
@@ -2406,9 +2743,9 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
           out->write( |Result for { wa_tab }:| ).
           out->write( ref_wa->* ).
           out->write( |\n| ).
-        CATCH cx_abap_not_a_table cx_abap_not_in_package INTO DATA(err).
+        CATCH cx_abap_not_a_table cx_abap_not_in_package INTO DATA(e).
           out->write( |Result for { wa_tab }:| ).
-          out->write( err->get_text( ) ).
+          out->write( e->get_text( ) ).
           out->write( |\n| ).
       ENDTRY.
     ENDLOOP.
@@ -2433,8 +2770,8 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
           DATA(value) = cl_abap_dyn_prg=>check_allowlist( val      = chk
                                                           allowlist_str = `A,B,C,ABAP` ).
           out->write( |{ value } is allowed.| ).
-        CATCH cx_abap_not_in_allowlist INTO err.
-          out->write( err->get_text( ) ).
+        CATCH cx_abap_not_in_allowlist INTO e.
+          out->write( e->get_text( ) ).
       ENDTRY.
     ENDLOOP.
 
@@ -2453,8 +2790,8 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
                                                                               ( `Y` )
                                                                               ( `ABAP` ) ) ).
           out->write( |{ value } is allowed.| ).
-        CATCH cx_abap_not_in_allowlist INTO err.
-          out->write( err->get_text( ) ).
+        CATCH cx_abap_not_in_allowlist INTO e.
+          out->write( e->get_text( ) ).
       ENDTRY.
     ENDLOOP.
 
@@ -2476,14 +2813,14 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
           DATA(col_name) = cl_abap_dyn_prg=>check_column_name( val    = chk
                                                                strict = abap_true ).
           out->write( |{ col_name } is allowed.| ).
-        CATCH cx_abap_invalid_name INTO err.
-          out->write( err->get_text( ) ).
+        CATCH cx_abap_invalid_name INTO e.
+          out->write( e->get_text( ) ).
       ENDTRY.
     ENDLOOP.
 
 **********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `52) Dynamic Invoke (1)` ) ).
+    out->write( zcl_demo_abap_aux=>heading( `52) Dynamic Method Calls (1)` ) ).
 
     "In the example, both class and method are determined at runtime for
     "the method call. The suitable parameter table is filled in the
@@ -2530,7 +2867,7 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
 
 **********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `52b) Dynamic Invoke (2)` ) ).
+    out->write( zcl_demo_abap_aux=>heading( `52b) Dynamic Method Calls (2)` ) ).
     "Another example for dynamic invoke, using an instance method.
 
     "Example that uses the PARAMETER-TABLE addition
@@ -2564,6 +2901,628 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
     result = ptab[ name = 'R_TRIPLE' ]-('VALUE')->*.
 
     out->write( data = result name = `result` ).
+
+**********************************************************************
+
+    out->write( zcl_demo_abap_aux=>heading( `52c) Dynamic Method Calls (Syntax Pattern Overview) (3)` ) ).
+
+    "The following examples use both named and unnamed data objects randomly,
+    "i.e. ...=>(meth_name) or ...=>(`SOME_METH`), for example.
+    DATA(classname) = `ZCL_DEMO_ABAP_DYNAMIC_PROG`.
+    DATA(meth_name1) = `STAT_METH1`.
+
+    "------------------------------------------------------------------------
+    "---------------- Calling static methods dynamically --------------------
+    "------------------------------------------------------------------------
+
+    "-------- Method without mandatory parameters defined --------
+    "The syntax is possible for methods of the same class.
+    CALL METHOD (meth_name1).
+
+    "The previous example method call works like me->(meth).
+    CALL METHOD me->(meth_name1).
+
+    "-------- Class specified statically, method specified dynamically --------
+    CALL METHOD zcl_demo_abap_dynamic_prog=>(meth_name1).
+
+    "-------- Class specified dynamically, method specified statically --------
+    CALL METHOD (`ZCL_DEMO_ABAP_DYNAMIC_PROG`)=>stat_meth1.
+
+    "-------- Class and method specified dynamically --------
+    CALL METHOD (`ZCL_DEMO_ABAP_DYNAMIC_PROG`)=>(`STAT_METH1`).
+
+    "-------- Specifying non-optional parameters --------
+    CALL METHOD (`ZCL_DEMO_ABAP_DYNAMIC_PROG`)=>stat_meth2 EXPORTING text = `hallo`.
+
+    "Specifying the output parameter is optional
+    DATA res TYPE string.
+    CALL METHOD (`ZCL_DEMO_ABAP_DYNAMIC_PROG`)=>stat_meth2 EXPORTING text = `hallo` IMPORTING result = res.
+    ASSERT res = `HALLO`.
+
+    "-------- Some examples for handling errors when calling methods wrongly --------
+
+    "Instance method called using =>
+    TRY.
+        CALL METHOD zcl_demo_abap_dynamic_prog=>(`INST_METH1`).
+      CATCH cx_sy_dyn_call_illegal_method.
+    ENDTRY.
+
+    "The example method does not specify non-optional parameters.
+    TRY.
+        CALL METHOD (`ZCL_DEMO_ABAP_DYNAMIC_PROG`)=>stat_meth2.
+      CATCH cx_sy_dyn_call_param_missing.
+    ENDTRY.
+
+    "Specifying a wrong parameter name
+    TRY.
+        CALL METHOD (`ZCL_DEMO_ABAP_DYNAMIC_PROG`)=>stat_meth2 EXPORTING hallo = `hallo`.
+      CATCH cx_sy_dyn_call_param_missing.
+    ENDTRY.
+
+    "Assigning wrong, non-compatible type
+    TRY.
+        CALL METHOD (`ZCL_DEMO_ABAP_DYNAMIC_PROG`)=>stat_meth2 EXPORTING text = VALUE string_table( ( `hi` ) ).
+      CATCH cx_sy_dyn_call_illegal_type.
+    ENDTRY.
+
+    "Specifying wrong parameter kinds (the example method specifies importing
+    "and exporting parameters, and not a returning parameter)
+    TRY.
+        CALL METHOD (`ZCL_DEMO_ABAP_DYNAMIC_PROG`)=>stat_meth2 EXPORTING text = `hallo` RECEIVING result = res.
+      CATCH cx_sy_dyn_call_illegal_type.
+    ENDTRY.
+
+    "------------------------------------------------------------------------
+    "---------------- Calling instance methods dynamically ------------------
+    "------------------------------------------------------------------------
+
+    "Creating an instance of a class by specifying the type dynamically
+    DATA object_ref TYPE REF TO object.
+    CREATE OBJECT object_ref TYPE ('ZCL_DEMO_ABAP_DYNAMIC_PROG').
+
+    "--- Object reference variable specified statically, method specified dynamically ---
+    "Note: This is a also possible for interface reference variables.
+    CALL METHOD object_ref->(`INST_METH1`).
+
+    "-------- Specifying non-optional parameters --------
+    CALL METHOD object_ref->(`INST_METH2`) EXPORTING text = `abap`.
+
+    CALL METHOD object_ref->(`INST_METH2`) EXPORTING text = `abap` RECEIVING result = res.
+    ASSERT res = `ABAP`.
+
+    "Note that calling static methods using object reference variables is also possible.
+    CALL METHOD object_ref->(`STAT_METH1`).
+
+    CALL METHOD object_ref->(`STAT_METH2`) EXPORTING text = `test` IMPORTING result = res.
+    ASSERT res = `TEST`.
+
+    "------------------------------------------------------------------------
+    "------------------- PARAMETER-TABLE addition ---------------------------
+    "------------------------------------------------------------------------
+
+    "------- Static equivalents to the dynamic statement below -------
+    DATA(object_ref_stat) = NEW zcl_demo_abap_dynamic_prog( ).
+    res = object_ref_stat->inst_meth2( `abc` ).
+    ASSERT res = `ABC`.
+    "For demo purposes, including chained method call options:
+    "Functional method call
+    res = NEW zcl_demo_abap_dynamic_prog( )->inst_meth2( `def` ).
+    ASSERT res = `DEF`.
+    "Standalone statement)
+    NEW zcl_demo_abap_dynamic_prog( )->inst_meth2( EXPORTING text = `ghi` RECEIVING result = res ).
+    ASSERT res = `GHI`.
+
+    "------- Dynamic CALL METHOD statements using the PARAMETER-TABLE addition -------
+
+    "Creating parameter table for an instance example method
+    DATA(paramtab) = VALUE abap_parmbind_tab( ( name  = 'TEXT'
+                                            kind  = cl_abap_objectdescr=>exporting
+                                            value = NEW string( `jkl` ) )
+                                          ( name  = 'RESULT'
+                                            kind  = cl_abap_objectdescr=>returning
+                                            value = NEW string( ) )
+                                             ).
+
+    CALL METHOD object_ref->(`INST_METH2`) PARAMETER-TABLE paramtab.
+    "Excursion: Accessing structure components dynamically
+    res = paramtab[ name = 'RESULT' ]-('VALUE')->*.
+    ASSERT res = `JKL`.
+
+    "Creating parameter table for a static example method
+    paramtab = VALUE abap_parmbind_tab( ( name  = 'TEXT'
+                                      kind  = cl_abap_objectdescr=>exporting
+                                      value = NEW string( `mno` ) )
+                                    ( name  = 'RESULT'
+                                      kind  = cl_abap_objectdescr=>importing
+                                      value = NEW string( ) ) ).
+
+    "Demonstrating static/dynamic specification variants
+    CALL METHOD (`ZCL_DEMO_ABAP_DYNAMIC_PROG`)=>(`STAT_METH2`) PARAMETER-TABLE paramtab.
+    res = paramtab[ name = 'RESULT' ]-('VALUE')->*.
+    ASSERT res = `MNO`.
+
+    CALL METHOD zcl_demo_abap_dynamic_prog=>(`STAT_METH2`) PARAMETER-TABLE paramtab.
+    res = paramtab[ name = 'RESULT' ]-('VALUE')->*.
+    ASSERT res = `MNO`.
+
+    CALL METHOD (`ZCL_DEMO_ABAP_DYNAMIC_PROG`)=>stat_meth2 PARAMETER-TABLE paramtab.
+    res = paramtab[ name = 'RESULT' ]-('VALUE')->*.
+    ASSERT res = `MNO`.
+
+    out->write( zcl_demo_abap_aux=>no_output ).
+
+**********************************************************************
+
+    out->write( zcl_demo_abap_aux=>heading( `52d) Dynamic Formatting Option Specifications in String Templates` ) ).
+
+    "ALIGN
+    "Only to be used with WIDTH; only the associated values of the following attributes of the
+    "class CL_ABAP_FORMAT can be used (they are of type i): A_LEFT (1), A_RIGHT (2), A_CENTER (3)
+    DATA(demo_string) = `##`.
+    DATA(s1) = |{ demo_string WIDTH = 10 ALIGN = (1) }<---|.
+
+    out->write( data = s1 name = `s1` ).
+    out->write( |\n| ).
+
+    DATA(right) = 2.
+    DATA(s2) = |{ demo_string WIDTH = 10 ALIGN = (right) }<---|.
+
+    out->write( data = s2 name = `s2` ).
+    out->write( |\n| ).
+
+    "The following example uses method chaining with methods of the class
+    "cl_abap_random_int to get a random integer value (in the range of 1 - 3).
+    "The get_next method has a returning parameter, and returns an integer value.
+    DO 5 TIMES.
+      DATA(s3) = |{ demo_string WIDTH = 10 ALIGN = cl_abap_random_int=>create( seed = cl_abap_random=>seed( )
+                                                      min  = 1 max = 3 )->get_next( ) }<---|.
+    ENDDO.
+
+    out->write( data = s3 name = `s3` ).
+    out->write( |\n| ).
+
+    "CASE
+    "Values to be used: CL_ABAP_FORMAT=>C_RAW (for not changing the case; 0),
+    "CL_ABAP_FORMAT=>C_UPPER (1), CL_ABAP_FORMAT=>C_LOWER (2)
+    demo_string = `AbAp`.
+    DATA(s4) = |{ demo_string CASE = (1) }|.
+
+    out->write( data = s4 name = `s4` ).
+    out->write( |\n| ).
+
+    DATA(s5) = |{ demo_string CASE = CONV i( '2' ) }|.
+
+    out->write( data = s5 name = `s5` ).
+    out->write( |\n| ).
+
+    DATA int_tab TYPE TABLE OF i WITH EMPTY KEY.
+    int_tab = VALUE #( ( 0 ) ( 1 ) ( 2 ) ).
+    DATA(s6) = |{ demo_string CASE = int_tab[ 1 ] }|.
+
+    out->write( data = s2 name = `s2` ).
+    out->write( |\n| ).
+
+**********************************************************************
+
+    out->write( zcl_demo_abap_aux=>heading( `52e) Dynamic Parameter List in EXPORT and IMPORT Statements` ) ).
+
+    DATA buffer TYPE xstring.
+
+    "--------- Dynamic specification of the parameter list ---------
+    "Note:
+    "- The parameter list is specified in an index table with two columns.
+    "- The column names can have random names, but the type must be character-like.
+    "- The first column represents the parameter name, the second column represents
+    "  the name of the data object.
+    "- Note that special behavior applies. See the documentation.
+
+    TYPES: BEGIN OF param,
+             name TYPE string,
+             dobj TYPE string,
+           END OF param,
+           param_tab_type TYPE TABLE OF param WITH EMPTY KEY.
+
+    DATA: txt1 TYPE string VALUE `hello`,
+          txt2 TYPE string VALUE `world`,
+          txt3 TYPE string VALUE `ABAP`.
+
+    DATA(param_table) = VALUE param_tab_type(
+      ( name = `txt1` dobj = `txt1` )
+      ( name = `txt2` dobj = `txt2` )
+      ( name = `txt3` dobj = `txt3` ) ).
+
+    EXPORT (param_table) TO DATA BUFFER buffer.
+
+    "The example reads the content into structure components.
+    DATA: BEGIN OF values,
+            txt1 TYPE string,
+            txt2 TYPE string,
+            txt3 TYPE string,
+          END OF values.
+
+    param_table = VALUE param_tab_type(
+      ( name = `txt1` dobj = `values-txt1` )
+      ( name = `txt2` dobj = `values-txt2` )
+      ( name = `txt3` dobj = `values-txt3` ) ).
+
+    IMPORT (param_table) FROM DATA BUFFER buffer.
+
+    out->write( data = values name = `values` ).
+    out->write( |\n| ).
+
+**********************************************************************
+
+    out->write( zcl_demo_abap_aux=>heading( `52f) Security Considerations in Dynamic Programming Using External Input` ) ).
+
+    "Filling demo database tables of the ABAP cheat sheet repository
+    zcl_demo_abap_aux=>fill_dbtabs( ).
+
+    "--------------------------------------------------------------------
+    "--- Specifying the data object holding external input as operand ---
+    "--- and literal ----------------------------------------------------
+    "--------------------------------------------------------------------
+
+    "The example explores a dynamic WHERE clause. External content is used
+    "in the WHERE clause, unchecked.
+
+    "Assuming the data object 'input' holds external input inserted on a UI.
+    DATA(input) = 'LH'.
+
+    "Inserting the input value into a dynamic WHERE clause as literal
+    DATA(cond1) = `CARRID = '` && input && `'`.
+    SELECT SINGLE * FROM zdemo_abap_fli WHERE (cond1) INTO @DATA(db_entry).
+
+    out->write( data = db_entry name = `db_entry` ).
+    out->write( |\n\n| ).
+
+    "Inserting the input value into a dynamic WHERE clause using the data
+    "object name
+    DATA(cond2) = `CARRID = @input`.
+    SELECT SINGLE * FROM zdemo_abap_fli WHERE (cond2) INTO @db_entry.
+
+    out->write( data =  db_entry name = `db_entry` ).
+    out->write( |\n\n| ).
+
+    "Assuming bad input is provided that is unchecked
+    DATA(bad_input) = |LH' AND CONNID = '401|.
+
+    "Inserting the input value as literal
+    "Because of using the value as literal, the WHERE clause
+    "can be manipulated, yielding a potentially different
+    "result, thus posing a security risk.
+    DATA(cond3) = `CARRID = '` && bad_input && `'`.
+    SELECT SINGLE * FROM zdemo_abap_fli WHERE (cond3) INTO @db_entry.
+
+    out->write( data =  db_entry name = `db_entry` ).
+    out->write( |\n\n| ).
+
+    "Inserting the input value using the data object name
+    "In doing so, the WHERE clause becomes erroneous, the ABAP
+    "SQL statement cannot be executed.
+    DATA(cond4) = `CARRID = @bad_input`.
+    TRY.
+        SELECT SINGLE * FROM zdemo_abap_fli WHERE (cond4) INTO @db_entry.
+        out->write( data =  db_entry name = `db_entry` ).
+      CATCH cx_sy_dynamic_osql_error cx_sy_open_sql_data_error INTO DATA(select_error).
+        out->write( select_error->get_text( ) ).
+    ENDTRY.
+    out->write( |\n\n| ).
+    out->write( |{ repeat( val = `*` occ = 70 ) }| ).
+
+    "--------------------------------------------------------------------
+    "------------ Accessing not allowed database tables -----------------
+    "--------------------------------------------------------------------
+    "Assume the name of a database table is specified externally, and a
+    "dynamic ABAP SQL statement uses this name. Potentially, users that
+    "are actually not allowed to access the database table may get access.
+    "The example uses the CL_ABAP_DYN_PRG class that checks a list of
+    "allowed database tables.
+
+    "The following methods check ...
+    "- Database table names
+    "- Whether the database table is contained in a/certain package/s
+    "Assuming you provide incorrect input for the table name, or
+    "the table is not contained in the specified packages, you should
+    "expect an exception to be raied.
+
+    "Assuming the following data object contains external input
+    DATA(input_dbtab_name) = `zdemo_abap_fli`.
+
+    "check_table_name_str method: Specifying a single package
+    TRY.
+        DATA(databasetable) = cl_abap_dyn_prg=>check_table_name_str(
+          val      = to_upper( input_dbtab_name )
+          packages = `ZABAP_CHEAT_SHEETS` ).
+
+        SELECT SINGLE * FROM (databasetable) INTO NEW @DATA(ref_db_entry).
+        out->write( data =  ref_db_entry name = `ref_db_entry` ).
+      CATCH cx_abap_not_a_table cx_abap_not_in_package INTO DATA(error_input_dbtab1).
+        out->write( error_input_dbtab1->get_text( ) ).
+    ENDTRY.
+    out->write( |\n\n| ).
+
+    "check_table_name_tab method: Specifying multiple packages in an internal
+    "table
+    TRY.
+        dbtab = cl_abap_dyn_prg=>check_table_name_tab(
+          val      = to_upper( input_dbtab_name )
+          packages = VALUE #( ( `ZABAP_CHEAT_SHEETS` )
+                              ( `ZSOME_PACKAGE` ) ) ).
+
+        SELECT SINGLE * FROM (dbtab) INTO NEW @ref_db_entry.
+        out->write( data =  ref_db_entry name = `ref_db_entry` ).
+      CATCH cx_abap_not_a_table cx_abap_not_in_package INTO DATA(error_input_dbtab2).
+        out->write( error_input_dbtab2->get_text( ) ).
+    ENDTRY.
+    out->write( |\n\n| ).
+
+    "Not existant database table/invalid name
+    input_dbtab_name = `not_a_dbtab!!`.
+    TRY.
+        dbtab = cl_abap_dyn_prg=>check_table_name_tab(
+          val      = to_upper( input_dbtab_name )
+          packages = VALUE #( ( `ZABAP_CHEAT_SHEETS` )
+                              ( `ZSOME_PACKAGE` ) ) ).
+
+        SELECT SINGLE * FROM (dbtab) INTO NEW @ref_db_entry.
+        out->write( data =  ref_db_entry name = `ref_db_entry` ).
+      CATCH cx_abap_not_a_table cx_abap_not_in_package INTO DATA(error_input_dbtab3).
+        out->write( error_input_dbtab3->get_text( ) ).
+    ENDTRY.
+    out->write( |\n\n| ).
+
+    "Database table not existant in packages specified (assuming you have imported
+    "the ABAP cheat sheet repository, and the database table is available)
+    input_dbtab_name = `zdemo_abap_fli`.
+    TRY.
+        dbtab = cl_abap_dyn_prg=>check_table_name_tab(
+          val      = to_upper( input_dbtab_name )
+          packages = VALUE #( ( `SAP_BASIS` ) ) ).
+
+        SELECT SINGLE * FROM (dbtab) INTO NEW @ref_db_entry.
+        out->write( data =  ref_db_entry name = `ref_db_entry` ).
+      CATCH cx_abap_not_a_table cx_abap_not_in_package INTO DATA(error_input_dbtab4).
+        out->write( error_input_dbtab4->get_text( ) ).
+    ENDTRY.
+    out->write( |\n\n| ).
+    out->write( |{ repeat( val = `*` occ = 70 ) }| ).
+
+    "--------------------------------------------------------------------
+    "------------ Verifying input against a given allowlist  ------------
+    "--------------------------------------------------------------------
+
+    "Assume a SELECT statement dynamically specifies the column names
+    "in the SELECT list. Table columns might be accessed although
+    "they should not be.
+    "You may check against an allowlist.
+
+    "check_allowlist method
+    "In the following examples, a method is used to check whether
+    "the input is allowed or not. For this, you specify an allowlist.
+    "Here, the relevant parameter expects a comma-separated list of
+    "allowed values.
+
+    "Assuming the following data object contains external input
+    DATA(input_col_name) = `carrid`.
+
+    TRY.
+        DATA(value1) = cl_abap_dyn_prg=>check_allowlist(
+            val           = to_upper( input_col_name )
+            allowlist_str = `CARRID,CONNID,FLDATE` ).
+
+        SELECT SINGLE (input_col_name) FROM zdemo_abap_fli INTO NEW @ref_db_entry.
+        out->write( data =  ref_db_entry name = `ref_db_entry` ).
+      CATCH cx_abap_not_in_allowlist INTO DATA(error_allowed1).
+        out->write( error_allowed1->get_text( ) ).
+    ENDTRY.
+    out->write( |\n\n| ).
+
+    "The allowlist_htab formal parameter expects an internal table.
+    input_col_name = `price`.
+    TRY.
+        DATA(value2) = cl_abap_dyn_prg=>check_allowlist(
+            val           = to_upper( input_col_name )
+            allowlist_htab = VALUE #( ( `CARRID` )
+                                      ( `CONNID` )
+                                      ( `FLDATE` ) ) ).
+
+        SELECT SINGLE (input_col_name) FROM zdemo_abap_fli INTO NEW @ref_db_entry.
+        out->write( data =  ref_db_entry name = `ref_db_entry` ).
+      CATCH cx_abap_not_in_allowlist INTO DATA(error_allowed2).
+        out->write( error_allowed2->get_text( ) ).
+    ENDTRY.
+    out->write( |\n\n| ).
+    out->write( |{ repeat( val = `*` occ = 70 ) }| ).
+
+    "--------------------------------------------------------------------
+    "------------ Potential manipulation of ABAP SQL clauses ------------
+    "--------------------------------------------------------------------
+
+    "In the following example, a dynamic WHERE clause is set up. For this,
+    "it is assumed that the WHERE clause uses external input via input fields.
+    "This is represented by the column and value data objects. It is assumed
+    "that column holds the name of the table column, value a dedicated value in
+    "the specified table column.
+    "The cl_abap_dyn_prg class is used to check content in two ways:
+    "- Checking if the provided column name is valid using the check_column_name
+    "  method.
+    "- Using the quote method for putting single quotes around the value and escaping
+    "  single quotes.
+    "In a DO loop, various example inputs are explored. The fourth loop pass includes
+    "bad input without using the quote method. This way, an SQL injection takes
+    "place, yielding a different result. In this case, all database table entries
+    "are retrieved because the WHERE clause is as follows:
+    "CARRID = 'LH' OR CARRID <> 'LH'.
+    "This is prevented using the quote method, resulting in a non-functional SELECT
+    "statement.
+
+    DATA: column TYPE c LENGTH 30,
+          val    TYPE c LENGTH 30.
+
+    DO 4 TIMES.
+      CASE sy-index.
+        WHEN 1.
+          "Working example
+          column = 'carrid'.
+          val = 'lh'.
+        WHEN 2.
+          "Invalid column name
+          column = '?=('.
+          val = 'lh'.
+        WHEN 3.
+          "Bad input, using cl_abap_dyn_prg
+          column = 'carrid'.
+          val = |'LH' OR CARRID <> 'LH'|.
+
+        WHEN 4.
+          "Bad input, not using cl_abap_dyn_prg
+          column = 'carrid'.
+          val = |'LH' OR CARRID <> 'LH'|.
+
+      ENDCASE.
+
+      out->write( |---------- Run { sy-index } ----------| ).
+
+      TRY.
+          cl_abap_dyn_prg=>check_column_name( column ).
+        CATCH cx_abap_invalid_name INTO DATA(error_col_name).
+          out->write( error_col_name->get_text( ) ).
+      ENDTRY.
+
+      DATA(cond_syntax) = to_upper( column ) && ` = ` &&
+      COND #( WHEN sy-index <> 4 THEN cl_abap_dyn_prg=>quote( to_upper( value ) ) ELSE to_upper( value ) ).
+
+      TRY.
+          SELECT *
+                 FROM zdemo_abap_flsch
+                 WHERE (cond_syntax)
+                 INTO TABLE @DATA(itab_flsch).
+
+          out->write( itab_flsch ).
+        CATCH cx_sy_dynamic_osql_error cx_sy_open_sql_data_error INTO DATA(error_select).
+          out->write( error_select->get_text( ) ).
+      ENDTRY.
+
+      out->write( |\n\n| ).
+    ENDDO.
+
+    "Example manipulating the SET clause in an UPDATE statement
+    "Inserting a database table entry to work with in the example
+    INSERT zdemo_abap_carr FROM @( VALUE #( carrid = 'XY' carrname = 'XY Airways' currcode = 'EUR' url = 'some_url'  ) ).
+    SELECT SINGLE * FROM zdemo_abap_carr WHERE carrid = 'XY' INTO @DATA(row4update).
+
+    out->write( data =  row4update name = `row4update` ).
+    out->write( |\n\n| ).
+
+    "Assuming the carrier name is to be changed (that was previously created and retrieved
+    "for demo purposes). The carrier name is provided via external input, represented by
+    "the following data object assignment.
+    DATA(input_carrname) = 'Air XY'.
+
+    "Specifying a potentially dangerous dynamic SET clause by directly using external
+    "input in the clause
+    DATA(dyn_set_clause) = `CARRNAME = '` && input_carrname && `'`.
+
+    UPDATE zdemo_abap_carr
+      SET (dyn_set_clause)
+      WHERE carrid = @row4update-carrid.
+
+    SELECT SINGLE * FROM zdemo_abap_carr WHERE carrid = 'XY' INTO @row4update.
+    out->write( data =  row4update name = `row4update` ).
+    out->write( |\n\n| ).
+
+    "Bad input, not using cl_abap_dyn_prg
+    "In the example, the input is manipulated in a way that also changes
+    "another field value.
+    DATA(bad_input_carrname) = |XY Airways', URL = '#########|.
+    dyn_set_clause = `CARRNAME = '` && bad_input_carrname && `'`.
+
+    UPDATE zdemo_abap_carr
+      SET (dyn_set_clause)
+      WHERE carrid = @row4update-carrid.
+
+    SELECT SINGLE * FROM zdemo_abap_carr WHERE carrid = 'XY' INTO @row4update.
+    out->write( data =  row4update name = `row4update` ).
+    out->write( |\n\n| ).
+
+    "Bad input, using cl_abap_dyn_prg
+    "Undoing the changes for the demo database table row
+    MODIFY zdemo_abap_carr FROM @( VALUE #( carrid = 'XY' carrname = 'XY Airways' currcode = 'EUR' url = 'some_url' ) ).
+    SELECT SINGLE * FROM zdemo_abap_carr WHERE carrid = 'XY' INTO @row4update.
+
+    bad_input_carrname = |XY Airways', URL = '#########|.
+    dyn_set_clause = `CARRNAME = ` && cl_abap_dyn_prg=>quote( bad_input_carrname ).
+
+    TRY.
+        UPDATE zdemo_abap_carr
+          SET (dyn_set_clause)
+          WHERE carrid = @row4update-carrid.
+      CATCH cx_sy_open_sql_data_error INTO DATA(error_set).
+        out->write( error_set->get_text( ) ).
+    ENDTRY.
+
+    out->write( |{ repeat( val = `*` occ = 70 ) }| ).
+
+    "--------------------------------------------------------------------
+    "---------------------------- Escaping ------------------------------
+    "--------------------------------------------------------------------
+
+    "In various contexts, a replacement of special characters may be important.
+    "Such an escaping is applied on characters contained in a string according
+    "to a set of rules.
+
+    "The following example deals with Cross Site Scripting, e.g. manipulating
+    "HTML pages and embedding scripts displayed in a browser. In ABAP, this
+    "enters the picture, for example, when directly dealing with the Internet
+    "Communication Framework.
+    "The built-in function escape can be used to escape content in various contexts.
+    "The cl_abap_dyn_prg class also offers methods to escape. However, the function
+    "is recommended due to performance reasons.
+
+    "Assuming building HTML code by using external input
+    DATA your_name TYPE string.
+    your_name = sy-uname.
+    DATA(html) = `<p>Hello ` && your_name && `!</p>`.
+
+    out->write( data =  html name = `html` ).
+    out->write( |\n\n| ).
+
+    "Embedding potentially malicious scripts into the code
+    your_name = `<script>alert("Hmmm... potentially malicious code!");</script>`.
+    html = `<p>Hello ` && your_name && `!</p>`.
+
+    "Inserted this in an HTML and run in a browser, an alert will be displayed.
+    out->write( data =  html name = `html` ).
+    out->write( |\n\n| ).
+
+    "Escaping may be done as follows
+    "Check the various methods available for escaping with cl_abap_dyn_prg, as well as
+    "the formats in the context of the escape function
+    DATA(esc_js_cl) = `<p>Hello ` && cl_abap_dyn_prg=>escape_xss_javascript( html ) && `!</p>`.
+
+    "Using the built-in function escape
+    DATA(esc_js_fu) = `<p>Hello ` && escape( val = html format = cl_abap_format=>e_xss_js ) && `!</p>`.
+
+    "Further character handling and escaping examples using the cl_abap_dyn_prg class
+    DATA(quote) = |10 o'clock|.
+    DATA(handle_quotes) = cl_abap_dyn_prg=>quote( quote ).
+    DATA(backtick) = |The character ` is a backtick|.
+    DATA(handle_backtick) = cl_abap_dyn_prg=>quote_str( backtick ).
+    DATA(esc_quotes) = cl_abap_dyn_prg=>escape_quotes( quote ).
+    DATA(esc_backticks) = cl_abap_dyn_prg=>escape_quotes_str( backtick ).
+    "You may also do the escaping using string processing techniques, e.g.
+    "using the replace function.
+    DATA(esc_quotes_replace) = replace( val = quote sub = |'| with = |''| occ = 0 ).
+    DATA(esc_backticks_replace) = replace( val = backtick sub = |`| with = |``| occ = 0 ).
+
+    out->write( data =  esc_js_cl name = `esc_js_cl` ).
+    out->write( data =  esc_js_fu name = `esc_js_fu` ).
+    out->write( data =  handle_quotes name = `handle_quotes` ).
+    out->write( data =  handle_backtick name = `handle_backtick` ).
+    out->write( data =  esc_quotes name = `esc_quotes` ).
+    out->write( data =  esc_backticks name = `esc_backticks` ).
+    out->write( data =  esc_quotes_replace name = `esc_quotes_replace` ).
+    out->write( data =  esc_backticks_replace name = `esc_backticks` ).
 
 **********************************************************************
 
@@ -2733,7 +3692,7 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
 
 **********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `54) RTTI: Getting Type Information at Runtime for Miscellaneous Types` ) ).
+    out->write( zcl_demo_abap_aux=>heading( `54a) RTTI: Getting Type Information at Runtime for Miscellaneous Types` ) ).
 
     "The example demonstrates RTTI as follows:
     "- The method call takes care of providing the name of a type. It is implemented
@@ -2865,6 +3824,722 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
 
 **********************************************************************
 
+    out->write( zcl_demo_abap_aux=>heading( `54b) RTTI: Getting Type Information at Runtime for Miscellaneous Types` ) ).
+
+    "Data objects to work with in the example
+    DATA itab_refs TYPE TABLE OF REF TO data.
+    DATA str_tab TYPE string_table.
+    DATA dyn_dobj TYPE REF TO data.
+    DATA dyn_obj TYPE REF TO object.
+    DATA typdeobj TYPE REF TO cl_abap_typedescr.
+
+    "Data objects of different kinds based on which type information shall be retrieved
+    "Elementary type
+    DATA elem_dobj TYPE c LENGTH 4 VALUE 'ABAP'.
+
+    "Enumerated type
+    TYPES: BEGIN OF ENUM enum_t,
+             enum1,
+             enum2,
+             enum3,
+           END OF ENUM enum_t.
+    DATA(dobj_enum) = enum2.
+
+    "demo_structured types
+    DATA(demo_struct) = VALUE zdemo_abap_carr( carrid = 'XY' carrname = 'XY Airlines' ).
+    "BDEF derived type (demo_structure)
+    DATA demo_struct_rap TYPE STRUCTURE FOR CREATE zdemo_abap_rap_ro_m.
+
+    "Internal table types
+    "Standard table with standard table key
+    DATA(string_table) = VALUE string_table( ( `AB` ) ( `AP` ) ).
+    "Local demo_structured type as basis for a sorted internal table that
+    "includes primary and secondary table key specifiactions (including
+    "an alias name)
+    TYPES: BEGIN OF struc_type,
+             a TYPE c LENGTH 3,
+             b TYPE i,
+             c TYPE decfloat34,
+           END OF struc_type.
+    TYPES demo_tab_type TYPE SORTED TABLE OF struc_type
+      WITH UNIQUE KEY a
+      WITH NON-UNIQUE SORTED KEY sec_key ALIAS sk COMPONENTS b c .
+    DATA(demo_sorted_tab) = VALUE demo_tab_type( ( a = 'aaa' ) ).
+
+    "Reference variables
+    "Data reference variable
+    DATA(demo_dref) = NEW i( 123 ).
+    "Object reference variable
+    DATA(demo_oref) = NEW zcl_demo_abap_objects( ).
+    "Interface reference variable
+    DATA demo_iref TYPE REF TO zdemo_abap_objects_interface.
+    demo_iref = CAST #( demo_oref ).
+
+    "Adding the previous (data) objects to an internal table which is
+    "looped over to retrieve type information for all
+    itab_refs = VALUE #( ( REF #( elem_dobj ) ) "elementary type (1)
+                         ( REF #( dobj_enum ) ) "enumerated type (2)
+                         ( REF #( demo_struct ) ) "flat demo_structure (3)
+                         ( REF #( demo_struct_rap ) ) "demo_structure typed with BDEF derived type (4)
+                         ( REF #( string_table ) ) "internal table, elementary line type (5)
+                         ( REF #( demo_sorted_tab ) ) "internal table, local line type (6)
+                         ( REF #( demo_dref ) ) "data reference variable (7)
+                         ( REF #( demo_oref ) ) "object reference variable (8)
+                         ( REF #( demo_iref ) ) "interface reference variable (9)
+                      ).
+
+
+    LOOP AT itab_refs INTO DATA(type).
+      DATA(tabix) = sy-tabix.
+      TRY.
+          "The reference returned points to an object from the class CL_ABAP_CLASSDESCR
+          typdeobj = cl_abap_typedescr=>describe_by_object_ref( type->* ).
+        CATCH cx_sy_dyn_call_illegal_type.
+          "The reference returned points to an object from the class CL_ABAP_DATADESCR
+          typdeobj = cl_abap_typedescr=>describe_by_data( type->* ).
+      ENDTRY.
+
+      "----------------- Exploring general type information -----------------
+      "At this stage, with using the static methods above, you already get general type
+      "information such as the type kind or the abosulte name. Check the type description
+      "object in the debugger for more attributes.
+      "When performing a down cast to more specific classes, you can access special
+      "methods of the type object and get more detailed information.
+
+      "Getting the type kind
+      "For the constant values of type abap_typekind, see cl_abap_typedescr. For example, 'h'
+      "stands for internal table.
+      DATA(type_kind) = typdeobj->type_kind.
+      INSERT |{ tabix } Type kind: { type_kind }| INTO TABLE str_tab.
+
+      "Type category
+      "For the constant values of type abap_typecategory, see cl_abap_typedescr.
+      "C (class), E (elementary), I (interface), R (Reference), S (demo_structure), T (table)
+      DATA(type_category) = typdeobj->kind.
+      INSERT |{ tabix } Type category: { type_category }| INTO TABLE str_tab.
+
+      "Absolute name (used later for dynamic (data) object creation)
+      "Note: In ABAP for Cloud Development, absolute names having the pattern \TYPE=%_...
+      "cannot be used to create (data) objects dynamically.
+      DATA(absolutename) = typdeobj->absolute_name.
+      INSERT |{ tabix } Absolute name: { absolutename }| INTO TABLE str_tab.
+
+      "Relative name
+      "Types that are implicitly defined (e.g. created using DATA) do not have a relative
+      "type name. Explicitly defined types are, for example, standard ABAP types, Dictionary
+      "types, classes and interfaces.
+      DATA(relative_name) = typdeobj->get_relative_name( ).
+      IF relative_name IS NOT INITIAL.
+        INSERT |{ tabix } Relative name: { relative_name }| INTO TABLE str_tab.
+      ENDIF.
+
+      "Checking if it is a DDIC type
+      DATA(is_ddic_type) = typdeobj->is_ddic_type( ).
+      IF is_ddic_type IS NOT INITIAL.
+        INSERT |{ tabix } Is DDIC type: "{ is_ddic_type }"| INTO TABLE str_tab.
+      ENDIF.
+
+      "----------------- Exploring more specific information by casting -----------------
+      "For checking the type before performing the cast, you can use statements with
+      "CASE TYPE OF and IS INSTANCE. The example demonstrates both options.
+
+      CASE TYPE OF typdeobj.
+
+        WHEN TYPE cl_abap_datadescr.
+          INSERT |{ tabix } Is instance of cl_abap_datadescr| INTO TABLE str_tab.
+
+          "-----------------------------------------------------------------------
+          "----------------------- Elementary types ------------------------------
+          "-----------------------------------------------------------------------
+          IF typdeobj IS INSTANCE OF cl_abap_elemdescr.
+            INSERT |{ tabix } Is instance of cl_abap_elemdescr| INTO TABLE str_tab.
+
+            "Enumerated types
+            IF typdeobj IS INSTANCE OF cl_abap_enumdescr.
+              INSERT |{ tabix } Is instance of cl_abap_enumdescr| INTO TABLE str_tab.
+
+              DATA(enum) = CAST cl_abap_enumdescr( typdeobj ).
+
+              "Various type-specific information retrieval
+              "Base type of enumerated type
+              DATA(enum_base_type_kind) = enum->base_type_kind.
+              INSERT |{ tabix } Base type: { enum_base_type_kind }| INTO TABLE str_tab.
+
+              "Elements of the enumerated type
+              DATA(enum_elements) = enum->members.
+              INSERT |{ tabix } Elements:| &&
+              | { REDUCE string( INIT rstr = `` FOR <l> IN enum_elements NEXT rstr = |{ rstr }{ COND #( WHEN rstr IS NOT INITIAL THEN ` / ` ) }| &&
+              |{ <l>-name } ({ CONV i( <l>-value ) })| ) }| INTO TABLE str_tab.
+
+              "Checking the type compatibility of the data object
+              DATA(applies_enum1) = enum->applies_to_data( enum2 ).
+              DATA(applies_enum2) = enum->applies_to_data( `nope` ).
+              DATA(applies_enum3) = enum->applies_to_data_ref( REF #( enum3 ) ).
+              DATA(applies_enum4) = enum->applies_to_data_ref( REF #( `nope` ) ).
+
+              INSERT |{ tabix } Applies: 1) "{ applies_enum1 }" 2) "{ applies_enum2 }"| &&
+              | 3) "{ applies_enum3 }" 4) "{ applies_enum4 }"| INTO TABLE str_tab.
+
+              "Dynamically creating data objects based on the ...
+              TRY.
+                  "... absolute name
+                  CREATE DATA dyn_dobj TYPE (absolutename).
+                  "Assigning the value to the dynamically created data object
+                  dyn_dobj->* = type->*.
+
+                  "... type description object
+                  CREATE DATA dyn_dobj TYPE HANDLE enum.
+                  dyn_dobj->* = type->*.
+                  INSERT |{ tabix } Dynamic data objects created, assignments done| INTO TABLE str_tab.
+                CATCH cx_root INTO DATA(err_enum).
+                  INSERT |{ tabix } Dynamic data object creation error: { err_enum->get_text( ) }| INTO TABLE str_tab.
+              ENDTRY.
+
+              "Elementary types other than enumerated types
+            ELSE.
+              DATA(elem) = CAST cl_abap_elemdescr( typdeobj ).
+
+              "Note: General information such as (output) length, decimals etc. especially
+              "for elementary types is already available without the cast.
+
+              "Internal length
+              DATA(elem_internal_length) = elem->length.
+              "Output length
+              DATA(elem_output_length) = elem->output_length.
+              INSERT |{ tabix } Internal length: "{ elem_internal_length }", | &&
+              |output length: "{ elem_output_length }"| INTO TABLE str_tab.
+
+              "Checking the type compatibility of the data object
+              DATA(applies_elem1) = elem->applies_to_data( 'ciao' ).
+              DATA(applies_elem2) = elem->applies_to_data( abap_true ).
+              DATA(applies_elem3) = elem->applies_to_data_ref( REF #( 'abap' ) ).
+              DATA(applies_elem4) = elem->applies_to_data_ref( REF #( `nope` ) ).
+
+              INSERT |{ tabix } Applies: 1) "{ applies_elem1 }" 2) "{ applies_elem2 }"| &&
+              | 3) "{ applies_elem3 }" 4) "{ applies_elem4 }"| INTO TABLE str_tab.
+
+              "Dynamically creating data objects based on the ...
+              TRY.
+                  "... absolute name
+                  CREATE DATA dyn_dobj TYPE (absolutename).
+                  "Assigning the value to the dynamically created data object
+                  dyn_dobj->* = type->*.
+
+                  "... type description object
+                  CREATE DATA dyn_dobj TYPE HANDLE elem.
+                  dyn_dobj->* = type->*.
+                  INSERT |{ tabix } Dynamic data objects created, assignments done| INTO TABLE str_tab.
+                CATCH cx_root INTO DATA(err_elem).
+                  INSERT |{ tabix } Dynamic data object creation error: { err_elem->get_text( ) }| INTO TABLE str_tab.
+              ENDTRY.
+            ENDIF.
+
+            "-----------------------------------------------------------------------
+            "----------------------- Reference types ------------------------------
+            "-----------------------------------------------------------------------
+          ELSEIF typdeobj IS INSTANCE OF cl_abap_refdescr.
+            INSERT |{ tabix } Is instance of cl_abap_refdescr| INTO TABLE str_tab.
+
+            "Getting a reference to the type's type description object using the
+            "describe_by_data_ref, which can be used for data reference variables.
+            "Note that the dynamic type is evaluated.
+
+            "The following statement retrieves a type description object using the describe_by_data_ref
+            "method, which can be used for data reference variables. An object is returned that points
+            "to an object in one of these classes: cl_abap_elemdescr, cl_abap_enumdescr, cl_abap_refdescr,
+            "cl_abap_demo_structdescr, cl_abap_tabledsecr.
+            "The method call is for demonstration purposes. With the returned object, the information
+            "retrieval can also be performed as above.
+            DATA(typdeobj_demo_dref) = cl_abap_typedescr=>describe_by_data_ref( type->* ).
+
+            "Using the type description object retrieved above (describe_by_data) and casting
+            DATA(data_reference) = CAST cl_abap_refdescr( typdeobj ).
+
+            "Getting a reference to the type's type description object that is used to
+            "type the reference.
+            DATA(demo_dref_referenced_type) = data_reference->get_referenced_type( ).
+
+            "Based on this, you can get further information of the dynamic type just like in the
+            "other examples for the referenced type. Here, skipping further type evaluation.
+            IF demo_dref_referenced_type IS INSTANCE OF cl_abap_elemdescr.
+              INSERT |{ tabix } The referenced type is an elementary type.| INTO TABLE str_tab.
+            ELSE.
+              INSERT |{ tabix } The referenced type is a type other than elementary.| INTO TABLE str_tab.
+            ENDIF.
+
+            "Checking the type compatibility
+            DATA(applies_demo_dref1) = data_reference->applies_to_data( REF #( 456 ) ).
+            DATA(applies_demo_dref2) = data_reference->applies_to_data( REF #( `hello` ) ).
+            TYPES ref_int TYPE REF TO i.
+            TYPES ref_dstr TYPE REF TO string.
+            DATA(applies_demo_dref3) = data_reference->applies_to_data_ref( NEW ref_int( ) ).
+            DATA(applies_demo_dref4) = data_reference->applies_to_data_ref( NEW ref_dstr( ) ).
+
+            INSERT |{ tabix } Applies: 1) "{ applies_demo_dref1 }" 2) "{ applies_demo_dref2 }"| &&
+            | 3) "{ applies_demo_dref3 }" 4) "{ applies_demo_dref4 }"| INTO TABLE str_tab.
+
+            "Dynamically creating data objects based on the ...
+            TRY.
+                "... absolute name of the referenced data object
+                DATA(absolutename_ref) = demo_dref_referenced_type->absolute_name.
+                CREATE DATA dyn_dobj TYPE REF TO (absolutename_ref).
+                "Assigning the value to the dynamically created data object
+                dyn_dobj->* = type->*.
+
+                "... type description object
+                CREATE DATA dyn_dobj TYPE HANDLE data_reference.
+                dyn_dobj->* = type->*.
+                INSERT |{ tabix } Dynamic data objects created, assignments done| INTO TABLE str_tab.
+              CATCH cx_root INTO DATA(err_ref).
+                INSERT |{ tabix } Dynamic data object creation error: { err_ref->get_text( ) }| INTO TABLE str_tab.
+            ENDTRY.
+
+            "Complex types
+          ELSEIF typdeobj IS INSTANCE OF cl_abap_complexdescr.
+            INSERT |{ tabix } Is instance of cl_abap_complexdescr| INTO TABLE str_tab.
+
+            "-----------------------------------------------------------------------
+            "----------------------- demo_structured types ------------------------------
+            "-----------------------------------------------------------------------
+            IF typdeobj IS INSTANCE OF cl_abap_structdescr.
+              INSERT |{ tabix } Is instance of cl_abap_demo_structdescr| INTO TABLE str_tab.
+
+              DATA(cast_struc) = CAST cl_abap_structdescr( typdeobj ).
+
+              "demo_structure kind
+              "For the constant values, see abap_demo_structkind cl_abap_demo_structdescr
+              "For the constant values of type abap_demo_structkind, see cl_abap_demo_structdescr. For example, 'F'
+              "stands for a flat demo_structure.
+              DATA(struckind) = cast_struc->struct_kind.
+              INSERT |{ tabix } demo_structure kind: { struckind }| INTO TABLE str_tab.
+
+              "demo_structure components
+              "The following attribute returns a table with component information, such as
+              "the component names and type kinds.
+              DATA(struc_components) = cast_struc->components.
+              INSERT |{ tabix } Components 1: | &&
+              |{ REDUCE string( INIT dstr = `` FOR <comp1> IN struc_components NEXT dstr = |{ dstr }| &&
+              |{ COND #( WHEN dstr IS NOT INITIAL THEN ` / ` ) }{ <comp1>-name } ({ <comp1>-type_kind })| ) }| INTO TABLE str_tab.
+
+              "demo_structure components (more details)
+              "The following method also returns a table with component information. In this case,
+              "type description objects of each component and the component names are returned, which can
+              "be further evaluated.
+              DATA(struc_components_tab) = cast_struc->get_components( ).
+              INSERT |{ tabix } Components 2: | &&
+              |{ REDUCE string( INIT dstr = `` FOR <comp2> IN struc_components_tab NEXT dstr = |{ dstr }| &&
+              |{ COND #( WHEN dstr IS NOT INITIAL THEN ` / ` ) }{ <comp2>-name } ({ <comp2>-type->type_kind })| ) }| INTO TABLE str_tab.
+
+              "Checking if the demo_structure has includes
+              DATA(struc_has_include) = cast_struc->has_include.
+              INSERT |{ tabix } Has include: "{ struc_has_include }"| INTO TABLE str_tab.
+              IF struc_has_include = abap_true.
+                "Returning the included view
+                "Check the class documentation for more information
+                DATA(struc_incl_view) = cast_struc->get_included_view( ).
+                INSERT |{ tabix } Included view: | &&
+                |{ REDUCE string( INIT dstr = `` FOR <comp3> IN struc_incl_view NEXT dstr = |{ dstr }| &&
+                |{ COND #( WHEN dstr IS NOT INITIAL THEN `, ` ) }{ <comp3>-name }| ) }| INTO TABLE str_tab.
+
+                "Returning component names of all components and subdemo_structures in included
+                "demo_structures that contain included demo_structures
+                DATA(struc_all_incl) = cast_struc->get_symbols( ).
+                INSERT |{ tabix } Included view: | &&
+                |{ REDUCE string( INIT dstr = `` FOR <comp4> IN struc_all_incl NEXT dstr = |{ dstr }| &&
+                |{ COND #( WHEN dstr IS NOT INITIAL THEN `, ` ) }{ <comp4>-name }| ) }| INTO TABLE str_tab.
+              ENDIF.
+
+              "Checking the type compatibility of the data object
+              DATA demo_struct_test TYPE zdemo_abap_carr.
+              DATA demo_struct_rap_test TYPE STRUCTURE FOR CREATE zdemo_abap_rap_ro_m.
+              DATA(applies_struc1) = cast_struc->applies_to_data( demo_struct_test ).
+              DATA(applies_struc2) = cast_struc->applies_to_data( demo_struct_rap_test ).
+              DATA(applies_struc3) = cast_struc->applies_to_data_ref( REF #( demo_struct_test ) ).
+              DATA(applies_struc4) = cast_struc->applies_to_data_ref( REF #( demo_struct_rap_test ) ).
+
+              INSERT |{ tabix } Applies: 1) "{ applies_struc1 }" 2) "{ applies_struc2 }" | &&
+              |3) "{ applies_struc3 }" 4) "{ applies_struc4 }"| INTO TABLE str_tab.
+
+              "Dynamically creating data objects based on the ...
+              TRY.
+                  "... absolute name
+                  CREATE DATA dyn_dobj TYPE (absolutename).
+                  "Assigning the value to the dynamically created data object
+                  dyn_dobj->* = type->*.
+
+                  "... type description object
+                  CREATE DATA dyn_dobj TYPE HANDLE cast_struc.
+                  dyn_dobj->* = type->*.
+                  INSERT |{ tabix } Dynamic data objects created, assignments done| INTO TABLE str_tab.
+                CATCH cx_root INTO DATA(err_struc).
+                  INSERT |{ tabix } Dynamic data object creation error: { err_struc->get_text( ) }| INTO TABLE str_tab.
+              ENDTRY.
+
+              "-----------------------------------------------------------------------
+              "----------------------- Table types ------------------------------
+              "-----------------------------------------------------------------------
+            ELSEIF typdeobj IS INSTANCE OF cl_abap_tabledescr.
+              INSERT |{ tabix } Is instance of cl_abap_tabledescr| INTO TABLE str_tab.
+
+              DATA(cast_tab) = CAST cl_abap_tabledescr( typdeobj ).
+
+              "Getting the table kind
+              "For the constant values of type abap_tablekind, see cl_abap_tabledescr. For example, 'S'
+              "stands for a standard table.
+              DATA(tab_table_kind) = cast_tab->table_kind.
+              INSERT |{ tabix } Table kind: { tab_table_kind }| INTO TABLE str_tab.
+
+              "Checking if the table has a unique key
+              DATA(tab_has_unique_key) = cast_tab->has_unique_key.
+              INSERT |{ tabix } Has a unique key: "{ tab_has_unique_key }" | &&
+              |{ COND #( WHEN tab_has_unique_key IS INITIAL THEN `(no unique key)` ) }| INTO TABLE str_tab.
+
+              "Returning a table with the names of internal table keys
+              DATA(tab_table_key) = cast_tab->key.
+              INSERT |{ tabix } Table keys: { REDUCE string( INIT dstr = `` FOR <key1> IN tab_table_key NEXT dstr = |{ dstr }| &&
+              |{ COND #( WHEN dstr IS NOT INITIAL THEN `, ` ) }{ <key1>-name }| ) }| INTO TABLE str_tab.
+
+              "Returning a table with a description of all table keys, e.g. all components of a key,
+              "key kind (U, unique, in the example case), information whether the key is the primary
+              "key etc. For the constant values, see the cl_abap_tabledescr class.
+              DATA(tabkeys) = cast_tab->get_keys( ).
+
+              INSERT |{ tabix } Table keys: { REDUCE string( INIT dstr = `` FOR <key2> IN tabkeys NEXT dstr = |{ dstr }| &&
+              |{ COND #( WHEN dstr IS NOT INITIAL THEN `, ` ) }{ REDUCE string( INIT str2 = `` FOR <key3> IN <key2>-components NEXT str2 = |{ str2 }| &&
+              |{ COND #( WHEN str2 IS NOT INITIAL THEN `/` ) }{ <key3>-name }| ) } (is primary: "{ <key2>-is_primary }", |  &&
+              |is unique: "{ <key2>-is_unique }", key kind: "{ <key2>-key_kind }", access kind: "{ <key2>-access_kind }")| ) }| INTO TABLE str_tab.
+
+              DATA(tab_keys_aliases) = cast_tab->get_key_aliases( ).
+              IF tab_keys_aliases IS NOT INITIAL.
+                INSERT |{ tabix } Table key aliases: { REDUCE string( INIT dstr = `` FOR <key4> IN tab_keys_aliases NEXT dstr = |{ dstr }| &&
+                |{ COND #( WHEN dstr IS NOT INITIAL THEN `, ` ) }{ <key4>-name } (table key) -> { <key4>-alias } (alias)| ) }|  INTO TABLE str_tab.
+              ENDIF.
+
+              "If you want to get information about the line type, e.g. finding out about the component
+              "names, another cast is required. First, getting a reference to the type description object
+              "for the demo_structured type.
+              DATA(tab_line_type) = cast_tab->get_table_line_type( ).
+
+              "Then, performing a cast to access the component information as shown above.
+              "Note that the line type can also be of types other than demo_structured line types.
+              IF tab_line_type IS INSTANCE OF cl_abap_structdescr.
+                DATA(tab_line_info) = CAST cl_abap_structdescr( tab_line_type ).
+                "See more options for demo_structures above.
+                DATA(tabcomps) = tab_line_info->components.
+                INSERT |{ tabix } Table components: { REDUCE string( INIT dstr = `` FOR <com> IN tabcomps NEXT dstr = |{ dstr }| &&
+                |{ COND #( WHEN dstr IS NOT INITIAL THEN ` / ` ) }{ <com>-name } ({ <com>-type_kind })| ) }| INTO TABLE str_tab.
+
+              ELSEIF tab_line_type IS INSTANCE OF cl_abap_elemdescr.
+                DATA(tab_elem_line_type) = CAST cl_abap_elemdescr( tab_line_type ).
+                DATA(tab_elem_line_type_kind) = tab_elem_line_type->type_kind.
+                INSERT |{ tabix } Elementary line type, type kind: { tab_elem_line_type_kind }| INTO TABLE str_tab.
+              ENDIF.
+
+              "Checking the type compatibility of the data object
+              DATA tab_test1 TYPE string_table.
+              DATA tab_test2 TYPE demo_tab_type.
+
+              DATA(applies_tab1) = cast_tab->applies_to_data( tab_test1 ).
+              DATA(applies_tab2) = cast_tab->applies_to_data( tab_test2 ).
+              DATA(applies_tab3) = cast_tab->applies_to_data_ref( REF #( tab_test1 ) ).
+              DATA(applies_tab4) = cast_tab->applies_to_data_ref( REF #( tab_test2 ) ).
+
+              INSERT |{ tabix } Applies: 1) "{ applies_tab1 }" 2) "{ applies_tab2 }" | &&
+              |3) "{ applies_tab3 }" 4) "{ applies_tab4 }"| INTO TABLE str_tab.
+
+              "Dynamically creating data objects based on the ...
+              TRY.
+                  "... absolute name
+                  CREATE DATA dyn_dobj TYPE (absolutename).
+                  dyn_dobj->* = type->*.
+
+                  "... type description object
+                  CREATE DATA dyn_dobj TYPE HANDLE cast_tab.
+                  dyn_dobj->* = type->*.
+                  INSERT |{ tabix } Dynamic data objects created, assignments done| INTO TABLE str_tab.
+                CATCH cx_root INTO DATA(err_tab).
+                  INSERT |{ tabix } Dynamic data object creation error: { err_tab->get_text( ) }| INTO TABLE str_tab.
+              ENDTRY.
+            ENDIF.
+          ENDIF.
+
+          "Object types
+        WHEN TYPE cl_abap_objectdescr.
+          INSERT |{ tabix } Is instance of cl_abap_objectdescr| INTO TABLE str_tab.
+
+          "In this example, reference variables are used to retrieve type information of their dynamic type.
+          "Here, and to find out about the dynamic type the reference refers to (i.e. class or interface), a cast
+          "with cl_abap_refdescr and calling the get_referenced_type method is used to also find out about the
+          "instance of cl_abap_intfdescr. In this example, the dynamic type in 'type->*' is evaluated, which is
+          "cl_abap_classdescr for both because the interface reference variable was assigned accordingly above.
+          DATA(referenced_type) = CAST cl_abap_refdescr( cl_abap_typedescr=>describe_by_data( type->* ) )->get_referenced_type( ).
+
+          "-----------------------------------------------------------------------
+          "----------------------- Class descriptions ------------------------------
+          "-----------------------------------------------------------------------
+          IF referenced_type IS INSTANCE OF cl_abap_classdescr.
+            INSERT |{ tabix } Is instance of cl_abap_classdescr| INTO TABLE str_tab.
+
+            DATA(obj_ref) = CAST cl_abap_classdescr( typdeobj ).
+
+            "Getting the class kind
+            "For the constant values of type abap_classkind, see cl_abap_classdescr.
+            "Common, simple class (C), abstract class (A), final class (F)
+            DATA(obj_ref_class_kind) = obj_ref->class_kind.
+
+            "Getting class attributes
+            "You can check the following table in the debugger. There is plenty of information available
+            "such as type kind, constant, read only etc.
+            "The example writes the names, the visibility and static or instance attribute (is_class = abap_true
+            "means it is a static attribute) to the string table.
+            DATA(obj_ref_attributes) = obj_ref->attributes.
+
+            INSERT |{ tabix } Attributes: { REDUCE string( INIT dstr = `` FOR <at> IN obj_ref_attributes NEXT dstr = |{ dstr }| &&
+            |{ COND #( WHEN dstr IS NOT INITIAL THEN `, ` ) }{ <at>-name } (vis: "{ <at>-visibility }", static: "{ <at>-is_class }")| ) }| INTO TABLE str_tab.
+
+            "Getting the interfaces implemented
+            DATA(obj_ref_interfaces) = obj_ref->interfaces.
+            INSERT |{ tabix } Interfaces: { REDUCE string( INIT dstr = `` FOR <intf> IN obj_ref_interfaces NEXT dstr = |{ dstr }| &&
+            |{ COND #( WHEN dstr IS NOT INITIAL THEN `, ` ) }{ <intf>-name }| ) }| INTO TABLE str_tab.
+
+            "Getting information about the methods
+            "You can check the following table in the debugger. There is plenty of information available
+            "such as parameters, visibility, abstract/final, static/instance and more.
+            "The example only writes the method names to the string table.
+            DATA(obj_ref_methods) = obj_ref->methods.
+            INSERT |{ tabix } Methods: { REDUCE string( INIT dstr = `` FOR <meth> IN obj_ref_methods NEXT dstr = |{ dstr }| &&
+            |{ COND #( WHEN dstr IS NOT INITIAL THEN `, ` ) }{ <meth>-name }| ) }| INTO TABLE str_tab.
+
+            "Getting a reference to the type description object and the absolute name
+            "of the superclass
+            "In this example, it is the root class object OBJECT.
+            DATA(obj_ref_super_class) = obj_ref->get_super_class_type( ).
+            DATA(obj_ref_super_class_name) = obj_ref_super_class->absolute_name.
+            INSERT |{ tabix } Super class: { obj_ref_super_class_name }| INTO TABLE str_tab.
+
+            "Checking the type compatibility of the object
+            DATA(demo_oref_test1) = NEW zcl_demo_abap_objects( ).
+            DATA(demo_oref_test2) = NEW cl_system_uuid( ).
+
+            DATA(applies_obj1) = obj_ref->applies_to( demo_oref_test1 ).
+            DATA(applies_obj2) = obj_ref->applies_to( demo_oref_test2 ).
+            DATA(applies_obj3) = obj_ref->applies_to_class( 'ZCL_DEMO_ABAP_OBJECTS' ).
+            DATA(applies_obj4) = obj_ref->applies_to_class( 'CL_SYSTEM_UUID' ).
+
+            INSERT |{ tabix } Applies: 1) "{ applies_obj1 }" 2) "{ applies_obj2 }" | &&
+            |3) "{ applies_obj3 }" 4) "{ applies_obj4 }"| INTO TABLE str_tab.
+
+            "Dynamically creating objects based on the absolute name
+            TRY.
+                CREATE OBJECT dyn_obj TYPE (absolutename).
+                INSERT |{ tabix } Dynamic object created| INTO TABLE str_tab.
+              CATCH cx_sy_create_object_error INTO DATA(err_obj).
+                INSERT |{ tabix } Dynamic object creation error: { err_obj->get_text( ) }| INTO TABLE str_tab.
+            ENDTRY.
+
+            "The following example shows dynamically accessing public class attributes using the
+            "dynamically created object. The names and the attribute content are added to the string table.
+            "In this example (using an ABAP cheat sheet class), all attributes are convertible to string.
+            IF  absolutename CS '\CLASS=ZCL_DEMO_ABAP_OBJECTS' AND err_obj IS INITIAL.
+              INSERT |{ tabix } Dynamic attribute access: { REDUCE string( INIT dstr = `` FOR <m> IN obj_ref_attributes NEXT dstr = |{ dstr }| &&
+              |{ COND #( WHEN dstr IS NOT INITIAL AND <m>-visibility = 'U' THEN ` / ` ) }| &&
+              |{ COND #( WHEN <m>-visibility = 'U' THEN <m>-name && ` ("` && CONV string( dyn_obj->(<m>-name) ) && `")` ) }| ) }| INTO TABLE str_tab.
+            ENDIF.
+
+            "-----------------------------------------------------------------------
+            "----------------------- Interface descriptions ------------------------------
+            "-----------------------------------------------------------------------
+          ELSEIF referenced_type IS INSTANCE OF cl_abap_intfdescr.
+            INSERT |{ tabix } Is instance of cl_abap_intfdescr| INTO TABLE str_tab.
+
+            "In the example, the checked reference variable points to the class
+            "as the interface reference variable was assigned an instance of a class.
+            "Therefore, the example here does not work with 'typdeobj' but with the type
+            "description object 'referenced_type'. With 'referenced_type', the
+            "interface-specific information can be accessed using a cast.
+            DATA(intf) = CAST cl_abap_intfdescr( referenced_type ).
+
+            "Getting the absolute name
+            DATA(intf_abs_name) = intf->absolute_name.
+            INSERT |{ tabix } Absolute name (via cl_abap_intfdescr): { intf_abs_name }| INTO TABLE str_tab.
+
+            "Relative name
+            DATA(intf_rel_name) = intf->get_relative_name( ).
+            INSERT |{ tabix } Relative name (via cl_abap_intfdescr): { intf_rel_name }| INTO TABLE str_tab.
+
+            "Type kind
+            "For the constant values of type abap_typekind, see cl_abap_typedescr.
+            "+ stands for the internal type interface.
+            DATA(intf_type_kind) = intf->type_kind.
+            INSERT |{ tabix } Type kind (via cl_abap_intfdescr): { intf_type_kind }| INTO TABLE str_tab.
+
+            "Type category
+            "For the constant values of type abap_typecategory, see cl_abap_typedescr.
+            "I stands for interface.
+            DATA(intf_type_category) = intf->kind.
+            INSERT |{ tabix } Type category (via cl_abap_intfdescr): { intf_type_category }| INTO TABLE str_tab.
+
+            "Interface type
+            "For the constant values of type abap_intfkind, see cl_abap_intfdescr.
+            "F stands for flat interface
+            DATA(intf_type) = intf->intf_kind.
+            INSERT |{ tabix } Interface type: { intf_type }| INTO TABLE str_tab.
+
+            "Interface attributes
+            DATA(intf_attributes) = intf->attributes.
+            INSERT |{ tabix } Attributes: { REDUCE string( INIT dstr = `` FOR <attrintf> IN intf_attributes NEXT dstr = |{ dstr }| &&
+            |{ COND #( WHEN dstr IS NOT INITIAL THEN `, ` ) }{ <attrintf>-name } (vis: "{ <attrintf>-visibility }", | &&
+            |static: "{ <attrintf>-is_class }")| ) }| INTO TABLE str_tab.
+
+            "Interface methods
+            "You can check the following table in the debugger. There is plenty of information available
+            "such as parameters, visibility, abstract/final, static/instance, and more.
+            "The example only writes the methods names to the string table.
+            DATA(intf_methods) = intf->methods.
+            INSERT |{ tabix } Methods: { REDUCE string( INIT dstr = `` FOR <methintf> IN intf_methods NEXT dstr = |{ dstr }| &&
+            |{ COND #( WHEN dstr IS NOT INITIAL THEN `, ` ) }{ <methintf>-name }| ) }| INTO TABLE str_tab.
+
+            "Checking the type compatibility
+            DATA(intf_test1) = NEW zcl_demo_abap_objects( ).
+            DATA(intf_test2) = NEW cl_system_uuid( ).
+
+            DATA(applies_intf1) = intf->applies_to( intf_test1 ).
+            DATA(applies_intf2) = intf->applies_to( intf_test2 ).
+            DATA(applies_intf3) = intf->applies_to_class( 'ZCL_DEMO_ABAP_OBJECTS' ).
+            DATA(applies_intf4) = intf->applies_to_class( 'CL_SYSTEM_UUID' ).
+
+            INSERT |{ tabix } Applies: 1) "{ applies_intf1 }" 2) "{ applies_intf2 }"| &&
+            | 3) "{ applies_intf3 }" 4) "{ applies_intf4 }"| INTO TABLE str_tab.
+
+            "Creating an interface reference variable dynamically
+            TRY.
+                CREATE DATA dyn_dobj TYPE REF TO (intf_abs_name).
+                INSERT |{ tabix } Dynamic data object created| INTO TABLE str_tab.
+              CATCH cx_sy_create_data_error INTO DATA(err_intf).
+                INSERT |{ tabix } Dynamic data object creation error: { err_intf->get_text( ) }| INTO TABLE str_tab.
+            ENDTRY.
+
+            "The following example shows dynamically creating an object which is assigned to the
+            "previously created interface reference variable. Artifacts of the ABAP cheat sheet repository
+            "are used.
+            IF intf_abs_name CS '\INTERFACE=ZDEMO_ABAP_OBJECTS_INTERFACE'
+            AND absolutename CS '\CLASS=ZCL_DEMO_ABAP_OBJECTS'
+            AND err_intf IS INITIAL.
+              TRY.
+                  CREATE OBJECT dyn_dobj->* TYPE (absolutename).
+                  INSERT |{ tabix } Dynamic object created| INTO TABLE str_tab.
+                CATCH cx_sy_create_object_error INTO err_obj.
+                  INSERT |{ tabix } Dynamic object creation error: { err_obj->get_text( ) }| INTO TABLE str_tab.
+              ENDTRY.
+            ENDIF.
+          ENDIF.
+      ENDCASE.
+      INSERT `-----------------------------------` INTO TABLE str_tab.
+    ENDLOOP.
+    out->write( str_tab ).
+
+**********************************************************************
+
+    "----------- Exploring the describe_by_name method -----------
+    "The method returns a type description object when providing the relative or
+    "absolute name of a type.
+    "The following example explores the RTTI type hierarchy based on relative names
+    "and using the describe_by_name method. Similar to the example above, an internal
+    "table that is filled with local and global type names instead of data objects is
+    "looped over. The information retrieval can be performed via the type description
+    "object as above, but it is not implemented here.
+
+    CLEAR str_tab.
+    DATA typdeobj_from_type_name TYPE REF TO cl_abap_typedescr.
+
+    "Data types of different kinds based on which type
+    "information shall be retrieved
+    "Elementary type
+    TYPES packed TYPE p LENGTH 8 DECIMALS 2.
+
+    "Enumerated type
+    TYPES: BEGIN OF ENUM enum_type,
+             enum_a,
+             enum_b,
+             enum_c,
+           END OF ENUM enum_type.
+
+    "demo_structured types
+    TYPES: BEGIN OF flat_struc_type,
+             a TYPE c LENGTH 3,
+             b TYPE i,
+             c TYPE decfloat34,
+           END OF flat_struc_type.
+
+    TYPES str_der_type TYPE STRUCTURE FOR CREATE zdemo_abap_rap_ro_m.
+
+    "Internal table types
+    TYPES int_demo_tab_type TYPE TABLE OF i WITH EMPTY KEY.
+    TYPES demo_sorted_demo_tab_type TYPE SORTED TABLE OF flat_struc_type
+      WITH UNIQUE KEY a
+      WITH NON-UNIQUE SORTED KEY sec_key ALIAS sk COMPONENTS b c.
+    TYPES itab_der_type TYPE TABLE FOR UPDATE zdemo_abap_rap_ro_m.
+
+    "Reference types
+    TYPES int_demo_dref_type TYPE REF TO i.
+    TYPES gen_demo_dref_type TYPE REF TO data.
+    "Class and interface names are specified directly
+
+    DATA(type_name_tab) = VALUE string_table( ( `PACKED` )                       "Elementary type (1)
+                                           ( `TIMESTAMPL` )                   "Elementary type, global DDIC type/data element (2)
+                                           ( `ENUM_TYPE` )                    "Enumerated type (3)
+                                           ( `FLAT_STRUC_TYPE` )              "demo_structured type, flat demo_structure (4)
+                                           ( `STR_DER_TYPE` )                 "demo_structured type, BDEF derived type (5)
+                                           ( `INT_demo_tab_type` )                 "Table type, elementary line type (6)
+                                           ( `demo_sorted_demo_tab_type` )              "Table type, demo_structured line type (7)
+                                           ( `ITAB_DER_TYPE` )                "Table type, BDEF derived type (8)
+                                           ( `INT_demo_dref_TYPE` )                "Reference type (9)
+                                           ( `GEN_demo_dref_TYPE` )                "Reference type, generic type (10)
+                                           ( `CL_ABAP_TYPEDESCR` )            "Class name (11)
+                                           ( `CL_ABAP_CORRESPONDING` )        "Class name (12)
+                                           ( `IF_OO_ADT_CLASSRUN` )           "Interface name (13)
+                                           ( `ZDEMO_ABAP_OBJECTS_INTERFACE` ) "Interface name (14)
+                                         ).
+
+    LOOP AT type_name_tab INTO DATA(ty_name).
+      DATA(tabix_type_names) = sy-tabix.
+      typdeobj_from_type_name = cl_abap_typedescr=>describe_by_name( ty_name ).
+      CASE TYPE OF typdeobj_from_type_name.
+        WHEN TYPE cl_abap_datadescr.
+          INSERT |{ tabix_type_names } Is instance of cl_abap_datadescr| INTO TABLE str_tab.
+          CASE TYPE OF typdeobj_from_type_name.
+            WHEN TYPE cl_abap_elemdescr.
+              INSERT |{ tabix_type_names } Is instance of cl_abap_elemdescr| INTO TABLE str_tab.
+              IF typdeobj_from_type_name IS INSTANCE OF cl_abap_enumdescr.
+                INSERT |{ tabix_type_names } Is instance of cl_abap_enumdescr| INTO TABLE str_tab.
+              ENDIF.
+            WHEN TYPE cl_abap_complexdescr.
+              INSERT |{ tabix_type_names } Is instance of cl_abap_complexdescr| INTO TABLE str_tab.
+              CASE TYPE OF typdeobj_from_type_name.
+                WHEN TYPE cl_abap_structdescr.
+                  INSERT |{ tabix_type_names } Is instance of cl_abap_demo_structdescr| INTO TABLE str_tab.
+                WHEN TYPE cl_abap_tabledescr.
+                  INSERT |{ tabix_type_names } Is instance of cl_abap_tabledescr| INTO TABLE str_tab.
+              ENDCASE.
+            WHEN TYPE cl_abap_refdescr.
+              INSERT |{ tabix_type_names } Is instance of cl_abap_refdescr| INTO TABLE str_tab.
+          ENDCASE.
+        WHEN TYPE cl_abap_objectdescr.
+          INSERT |{ tabix_type_names } Is instance of cl_abap_objectdescr| INTO TABLE str_tab.
+          CASE TYPE OF typdeobj_from_type_name.
+            WHEN TYPE cl_abap_classdescr.
+              INSERT |{ tabix_type_names } Is instance of cl_abap_classdescr| INTO TABLE str_tab.
+            WHEN TYPE cl_abap_intfdescr.
+              INSERT |{ tabix_type_names } Is instance of cl_abap_intfdescr| INTO TABLE str_tab.
+          ENDCASE.
+      ENDCASE.
+      INSERT `-----------------------------------` INTO TABLE str_tab.
+    ENDLOOP.
+    out->write( |\n*************************************************************\n\n| ).
+    out->write( str_tab ).
+
+**********************************************************************
+
     out->write( zcl_demo_abap_aux=>heading( `55) RTTC: Dynamically Creating Data Types at Runtime` ) ).
 
     "You can create data types at program runtime using methods of the type
@@ -2900,12 +4575,12 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
     "A structured type such as the following shall be created using a
     "type description object.
     TYPES:
-      BEGIN OF struc_type,
+      BEGIN OF demo_struc_type,
         a TYPE string,
         b TYPE i,
         c TYPE c LENGTH 5,
         d TYPE p LENGTH 4 DECIMALS 3,
-      END OF struc_type.
+      END OF demo_struc_type.
 
     "Creating a type description object using RTTC method
     "Using the get method, you can create the type description object
@@ -2960,7 +4635,7 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
     DATA(tdo_ref_3) = cl_abap_refdescr=>get_by_name( 'T' ).
     DATA(tdo_ref_4) = cl_abap_refdescr=>get_by_name( 'ZCL_DEMO_ABAP_DYNAMIC_PROG' ).
 
-    out->write( `No output for this section. You can set a break point and check the content of data objects in the debugger.` ).
+    out->write( zcl_demo_abap_aux=>no_output ).
 
 **********************************************************************
 
@@ -3121,4 +4796,21 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
     out->write( data = ref_tab->* name = `ref_tab->*` ).
 
   ENDMETHOD.
+
+  METHOD inst_meth1.
+    ... "No implementation added
+  ENDMETHOD.
+
+  METHOD inst_meth2.
+    result = to_upper( text ).
+  ENDMETHOD.
+
+  METHOD stat_meth1.
+    ... "No implementation added
+  ENDMETHOD.
+
+  METHOD stat_meth2.
+    result = to_upper( text ).
+  ENDMETHOD.
+
 ENDCLASS.

@@ -1,44 +1,11 @@
-***********************************************************************
-*
-*              ABAP cheat sheet: String processing
-*
-* -------------------------- PURPOSE ----------------------------------
-* - Example to demonstrate various syntax options for processing
-*   character strings.
-* - Topics covered: Creating strings and assigning values, chaining strings,
-*   string templates, concatenating/splitting/modifying strings, searching
-*   and replacing, regular expressions
-*
-* ----------------------- GETTING STARTED -----------------------------
-* - Open the class with the ABAP development tools for Eclipse (ADT).
-* - Choose F9 to run the class.
-* - Check the console output.
-* - To understand the context and the ABAP syntax used, refer to the
-*   notes included in the class as comments or refer to the respective
-*   topic in the ABAP Keyword Documentation.
-* - Due to the amount of console output, the examples contain numbers
-*   (e.g. 1) ..., 2) ..., 3) ...) for the individual example sections.
-*   Also, the variable name is displayed in most cases. So to find
-*   the relevant output in the console easier and faster, just search
-*   for the number/variable name in the console (CTRL+F in the console)
-*   or use the debugger.
-*
-* ----------------------------- NOTE -----------------------------------
-* The code presented in this class is intended only to support the ABAP
-* cheat sheets. It is not intended for direct use in a production system
-* environment. The code examples in the ABAP cheat sheets are primarily
-* intended to provide a better explanation and visualization of the
-* syntax and semantics of ABAP statements, not to solve concrete
-* programming tasks. For production application programs, you should
-* always work out your own solution for each individual case. There is
-* no guarantee for the correctness or completeness of the code.
-* Furthermore, there is no legal responsibility or liability for any
-* errors or their consequences that may occur when using the the example
-* code.
-*
-***********************************************************************
-"! <p class="shorttext synchronized">ABAP cheat sheet: String processing</p>
-"! Example to demonstrate string processing.<br>Choose F9 in ADT to run the class.
+"! <p class="shorttext"><strong>String processing</strong><br/>ABAP cheat sheet example class</p>
+"!
+"! <p>The example class demonstrates various syntax options for processing character strings.<br/>
+"! Choose F9 in ADT to run the class.</p>
+"!
+"! <h2>Note</h2>
+"! <p>Find information on <strong>getting started with the example class</strong> and the
+"! <strong>disclaimer</strong> in the ABAP Doc comment of class {@link zcl_demo_abap_aux}.</p>
 CLASS zcl_demo_abap_string_proc DEFINITION
   PUBLIC
   FINAL
@@ -99,14 +66,14 @@ CLASS zcl_demo_abap_string_proc IMPLEMENTATION.
     DATA(str_a6) = `efgh`. "Type string
 
     "Note: Variable is of type c length 4. Characters are truncated.
-    "In newer ABAP releases, the following statement shows a syntax 
-    "warning that the value of the literal (intentionally specified 
-    "here like this) is not an admissable value for the target type. 
-    "Therefore, the example is provided differently to circumvent the 
+    "In newer ABAP releases, the following statement shows a syntax
+    "warning that the value of the literal (intentionally specified
+    "here like this) is not an admissable value for the target type.
+    "Therefore, the example is provided differently to circumvent the
     "syntax warning.
 
     "char_a2 = 'ijklmnopq'.
-    
+
     TYPES c_l9 TYPE c LENGTH 9.
     DATA some_char TYPE c_l9 VALUE 'ijklmnopq'.
     char_a2 = some_char.
@@ -302,7 +269,7 @@ CLASS zcl_demo_abap_string_proc IMPLEMENTATION.
 
 **********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `6) Concatenating Strings` ) ).
+    out->write( zcl_demo_abap_aux=>heading( `6a) Concatenating Strings` ) ).
 
     DATA(str_f1) = `Hallo`.
     DATA(str_f2) = `world`.
@@ -383,6 +350,58 @@ CLASS zcl_demo_abap_string_proc IMPLEMENTATION.
 
 **********************************************************************
 
+    out->write( zcl_demo_abap_aux=>heading( `6b) Literal Operator` ) ).
+
+    "Literal operator
+    "Used to combine character literals of the same type into a single character literal
+    DATA(abap) = 'AB' & 'AP'.
+
+    "Note an upper limit of 255 characters
+    "If you remove the comment, which results in a combined character literal
+    "of 256 characters, a syntax error is displayed.
+    DATA(c_limit_255) =
+    '##################################################' & "50 x #
+    '##################################################' &
+    '##################################################' &
+    '##################################################' &
+    '##################################################' &
+    '#####'
+    "& '#'
+    .
+
+    "Trailing blanks are respected
+    DATA(char_with_blanks) = 'AB' & 'AP' & '           '.
+
+    "Using RTTI to get type information, retrieving the output length of the combined literal
+    DATA(output_length) = CAST cl_abap_elemdescr( cl_abap_typedescr=>describe_by_data( char_with_blanks ) )->output_length.
+    out->write( data = output_length name = `output_length` ).
+    out->write( |\n| ).
+
+    DATA(ch1) = 'AB'.
+    DATA(ch2) = 'AP'.
+    "Not possible as the operands are not character literals but data objects
+    "DATA(combined_ch) = ch1 & ch2.
+
+    "Not to be confused with the concatenation operator && to concatenate
+    "character-like operands; at runtime, any number of character-like operands
+    "are possible
+    "The result in the example is of type string.
+    DATA(combined_ch_with_conc_op) = ch1 && ch2.
+
+    "Concatenation similar to the example above
+    "As the result is of type string using the concatenation operator, the
+    "trailing blanks are not respected.
+    DATA(char_with_blanks_conc_op) = 'AB' && 'AP' && '           '.
+
+    DATA(len1) = strlen( char_with_blanks_conc_op ).
+    DATA(len2) = numofchar( char_with_blanks_conc_op ).
+
+    out->write( data = len1 name = `len1` ).
+    out->write( |\n| ).
+    out->write( data = len2 name = `len2` ).
+
+**********************************************************************
+
     out->write( zcl_demo_abap_aux=>heading( `7) Splitting Strings` ) ).
 
     DATA(str_g1) = `Hallo,world,12345`.
@@ -427,6 +446,11 @@ CLASS zcl_demo_abap_string_proc IMPLEMENTATION.
       ENDTRY.
     ENDDO.
 
+    "SPLIT statement specifying a colon after INTO
+    DATA(some_text) = `Lorem ipsum dolor sit amet, consectetur adipiscing elit`.
+
+    SPLIT some_text AT ` ` INTO: DATA(str1) DATA(str2) DATA(str3) DATA(str4), TABLE DATA(tab).
+
     out->write( data = str_g2 name = `str_g2` ).
     out->write( |\n| ).
     out->write( data = str_g3 name = `str_g3` ).
@@ -446,6 +470,16 @@ CLASS zcl_demo_abap_string_proc IMPLEMENTATION.
     out->write( data = itab_g2 name = `itab_g2` ).
     out->write( |\n| ).
     out->write( data = seg_nom name = `seg_nom` ).
+    out->write( |\n| ).
+    out->write( data = str1 name = `str1` ).
+    out->write( |\n| ).
+    out->write( data = str2 name = `str2` ).
+    out->write( |\n| ).
+    out->write( data = str3 name = `str3` ).
+    out->write( |\n| ).
+    out->write( data = str4 name = `str4` ).
+    out->write( |\n| ).
+    out->write( data = tab name = `tab` ).
 
 **********************************************************************
 
@@ -1558,6 +1592,7 @@ CLASS zcl_demo_abap_string_proc IMPLEMENTATION.
 
     out->write( zcl_demo_abap_aux=>heading( `25) Complex Searching Using ` &&
     `Regular Expressions` ) ).
+    "Also note the cheat sheet example on regular expressions in ABAP.
 
     DATA(str_y) = `Cathy's black cat was fast asleep on the mat. ` &&
                   `Later that day, the cat played with Matt.`.
@@ -2247,5 +2282,159 @@ CLASS zcl_demo_abap_string_proc IMPLEMENTATION.
     ENDIF.
 
     out->write( data = match name = `match` ).
+
+***********************************************************************
+
+    "------------------------ Byte String Processing ------------------------
+
+    out->write( zcl_demo_abap_aux=>heading( `34) Determining the Length of xstrings` ) ).
+
+    DATA(hi) = `Hello world`.
+
+    DATA(conv_xstring) = cl_abap_conv_codepage=>create_out( codepage = `UTF-8` )->convert( hi ).
+
+    DATA(len_str) = strlen( CONV string( conv_xstring ) ).
+    out->write( data = len_str name = `len_str` ).
+
+    DATA(len_xstr) = xstrlen( conv_xstring ).
+    out->write( data = len_xstr name = `len_xstr` ).
+
+***********************************************************************
+
+    out->write( zcl_demo_abap_aux=>heading( `35) Character String and Byte String Processing with ABAP Statements` ) ).
+
+    DATA off TYPE i.
+    DATA(abc_str) = `abc def ghi jkl mno pqr stu vwx yz`.
+    DATA(copy_str) = abc_str.
+
+    "-----------------------------------------------------------------------------
+    "------------------------ FIND and REPLACE statements ------------------------
+    "-----------------------------------------------------------------------------
+
+    "------------------------ IN CHARACTER MODE addition ------------------------
+
+    "Searching for the first blank in the string
+    FIND ` ` IN abc_str IN CHARACTER MODE MATCH OFFSET off.
+
+    "The following example is the same as the previous as the IN CHARACTER MODE
+    "addition is optional. The FIRST OCCURRENCE OF addition is also optional.
+    "Just using FIND without FIRST OCCURRENCE OF means searching for the first
+    "occurrence by default.
+    FIND FIRST OCCURRENCE OF ` ` IN abc_str MATCH OFFSET off.
+
+    "Searching for all blanks in the string
+    FIND ALL OCCURRENCES OF ` ` IN abc_str IN CHARACTER MODE RESULTS DATA(res).
+    DATA(offsets_of_findings) = concat_lines_of(
+      table = VALUE string_table( FOR wa IN res ( condense( val = CONV string( wa-offset ) to = `` ) ) )  sep = `, ` ).
+
+    "Replacing the first blank in the string
+    REPLACE ` ` IN abc_str WITH `#` IN CHARACTER MODE.
+
+    abc_str = copy_str.
+
+    "Replacing all blanks in the string
+    REPLACE ALL OCCURRENCES OF ` ` IN abc_str WITH `#` IN CHARACTER MODE.
+
+    abc_str = copy_str.
+
+    "------------------------ IN BYTE MODE addition ------------------------
+
+    "Converting to xstring
+    DATA(abc_xstr) = cl_abap_conv_codepage=>create_out( )->convert( abc_str ).
+    DATA(blank_xstr) = cl_abap_conv_codepage=>create_out( )->convert( ` ` ).
+    DATA(repl_xstr) = cl_abap_conv_codepage=>create_out( )->convert( `#` ).
+    DATA(copy_xstr) = abc_xstr.
+
+    "Searching for the first byte that represents a blank in the UTF-8 code page
+    FIND blank_xstr IN abc_xstr IN BYTE MODE MATCH OFFSET off.
+
+    FIND ALL OCCURRENCES OF blank_xstr IN abc_xstr IN BYTE MODE RESULTS res.
+    DATA(offsets_of_findings_xstr) = concat_lines_of(
+      table = VALUE string_table( FOR wa IN res ( condense( val = CONV string( wa-offset ) to = `` ) ) )  sep = `, ` ).
+
+    "Replacing the first byte that represents a blank in the UTF-8 code page
+    REPLACE blank_xstr IN abc_xstr WITH repl_xstr IN BYTE MODE.
+
+    abc_xstr = copy_xstr.
+
+    "Replacing all bytes that represent a blank in the UTF-8 code page
+    REPLACE ALL OCCURRENCES OF blank_xstr IN abc_xstr WITH repl_xstr IN BYTE MODE.
+
+    "-----------------------------------------------------------------------------
+    "--------------------------- CONCATENATE statements --------------------------
+    "-----------------------------------------------------------------------------
+
+    DATA(part_str1) = `abc`.
+    DATA(part_str2) = `def`.
+
+    CONCATENATE part_str1 part_str2 INTO DATA(concat_str) IN CHARACTER MODE.
+
+    CONCATENATE part_str1 part_str2 INTO concat_str SEPARATED BY `/` IN CHARACTER MODE.
+
+    "Same as above
+    CONCATENATE part_str1 part_str2 INTO concat_str.
+    CONCATENATE part_str1 part_str2 INTO concat_str SEPARATED BY `/`.
+
+    DATA(part_xstr1) = cl_abap_conv_codepage=>create_out( )->convert( part_str1 ).
+    DATA(part_xstr2) = cl_abap_conv_codepage=>create_out( )->convert( part_str2 ).
+    DATA(sep_xstr) = cl_abap_conv_codepage=>create_out( )->convert( `/` ).
+
+    CONCATENATE part_xstr1 part_xstr2 INTO DATA(concat_xstr) IN BYTE MODE.
+
+    DATA(concat_xstr_converted) = cl_abap_conv_codepage=>create_in( )->convert( concat_xstr ).
+
+    CONCATENATE part_xstr1 part_xstr2 INTO concat_xstr SEPARATED BY sep_xstr IN BYTE MODE.
+
+    concat_xstr_converted = cl_abap_conv_codepage=>create_in( )->convert( concat_xstr ).
+
+    "Creating a table of type xstring
+    DATA(xstr_table) = VALUE xstring_table( ( part_xstr1 ) ( part_xstr2 ) ).
+
+    CONCATENATE LINES OF xstr_table INTO DATA(concat_xstr_tab) IN BYTE MODE.
+
+    DATA(concat_xstr_tab_converted) = cl_abap_conv_codepage=>create_in( )->convert( concat_xstr_tab ).
+
+    "-----------------------------------------------------------------------------
+    "------------------------------- SHIFT statements ----------------------------
+    "-----------------------------------------------------------------------------
+
+    DATA(test_string) = `abcdef`.
+    DATA(copy) = test_string.
+
+    SHIFT test_string IN CHARACTER MODE.
+
+    test_string = copy.
+
+    "Same as
+    SHIFT test_string.
+
+    test_string = copy.
+
+    DATA(test_xstr) = cl_abap_conv_codepage=>create_out( )->convert( test_string ).
+
+    SHIFT test_xstr IN BYTE MODE.
+
+    "-----------------------------------------------------------------------------
+    "------------------------------- SPLIT statements ----------------------------
+    "-----------------------------------------------------------------------------
+
+    test_string = `abc def`.
+
+    SPLIT test_string AT space INTO DATA(test_str1) DATA(test_str2) IN CHARACTER MODE.
+    SPLIT test_string AT space INTO TABLE DATA(tab_str) IN CHARACTER MODE.
+
+    "Same as above
+    SPLIT test_string AT space INTO test_str1 test_str2.
+    SPLIT test_string AT space INTO TABLE tab_str.
+
+    test_xstr = cl_abap_conv_codepage=>create_out( )->convert( test_string ).
+
+    blank_xstr = cl_abap_conv_codepage=>create_out( )->convert( ` ` ).
+
+    SPLIT test_xstr AT blank_xstr INTO DATA(xstr1) DATA(xstr2) IN BYTE MODE.
+    SPLIT test_xstr AT blank_xstr INTO TABLE DATA(xstr_tab) IN BYTE MODE.
+
+    out->write( zcl_demo_abap_aux=>no_output ).
+
   ENDMETHOD.
 ENDCLASS.

@@ -5,7 +5,7 @@
    <VSEOCLASS>
     <CLSNAME>ZCL_DEMO_ABAP_AUX</CLSNAME>
     <LANGU>E</LANGU>
-    <DESCRIPT>Class supporting ABAP cheat sheet examples</DESCRIPT>
+    <DESCRIPT>ABAP cheat sheet example class: ABAP cheat sheet auxiliary c</DESCRIPT>
     <STATE>1</STATE>
     <CLSCCINCL>X</CLSCCINCL>
     <FIXPT>X</FIXPT>

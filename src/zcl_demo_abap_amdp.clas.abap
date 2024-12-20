@@ -1,52 +1,19 @@
-***********************************************************************
-*
-*                     ABAP cheat sheet: AMDP
-*
-* -------------------------- PURPOSE ----------------------------------
-* - Example to demonstrate AMDP procedures and functions. It includes
-*   a CDS table function.
-* - NOTE:
-*    - The example covers basics regarding AMDP method declarations
-*      and implementations.
-*    - The purpose is to give you a rough idea about AMDP. Therefore,
-*      the SQLScript code used in the method implementations is
-*      fairly simple. AMDP is not needed in simple cases like these.
-*    - The example is primarily intended for ABAP Cloud.
-*      For example, in ABAP Cloud only read-only operations are possible.
-*      In general, there are more syntax options available in classic
-*      ABAP. Check the ABAP Keyword Documentation for more details and
-*      examples.
-*
-* ----------------------- GETTING STARTED -----------------------------
-* - Open the class with the ABAP development tools for Eclipse (ADT).
-* - Choose F9 to run the class.
-* - Check the console output.
-* - To understand the context and the ABAP syntax used, check the notes
-*   included in the class as comments or refer to the respective topic
-*   in the ABAP Keyword Documentation.
-* - Due to the amount of output in the console, the examples include
-*   numbers (e. g. 1) ..., 2) ..., 3) ...) for the individual example
-*   sections. Plus, the variable name is displayed in most cases. Hence,
-*   to easier and faster find the relevant output in the console, just
-*   search in the console for the number/variable name (CTRL+F in the
-*   console) or use the debugger.
-*
-* ----------------------------- NOTE -----------------------------------
-* The code presented in this class is intended only to support the ABAP
-* cheat sheets. It is not intended for direct use in a production system
-* environment. The code examples in the ABAP cheat sheets are primarily
-* intended to provide a better explanation and visualization of the
-* syntax and semantics of ABAP statements, not to solve concrete
-* programming tasks. For production application programs, you should
-* always work out your own solution for each individual case. There is
-* no guarantee for the correctness or completeness of the code.
-* Furthermore, there is no legal responsibility or liability for any
-* errors or their consequences that may occur when using the the example
-* code.
-*
-***********************************************************************
-"! <p class="shorttext synchronized">ABAP cheat sheet: AMDP</p>
-"! Example to demonstrate AMDP procedures and functions.<br>Choose F9 in ADT to run the class.
+"! <p class="shorttext"><strong>AMDP</strong><br/>ABAP cheat sheet example class</p>
+"!
+"! <p>The example class demonstrates AMDP procedures and functions.<br/>
+"! Choose F9 in ADT to run the class.</p>
+"!
+"! <h2>Note</h2>
+"! <ul>
+"! <li>The example covers the basics of AMDP method declarations and implementations.</li>
+"! <li>The goal is to provide a general overview of AMDP, so the SQLScript code used in these
+"! methods is quite simple. AMDP is usually not necessary for such simple cases.</li>
+"! <li>This example is mainly intended for ABAP Cloud, where only read-only operations are
+"! possible. In classic ABAP, there are more syntax options available. Refer to the ABAP
+"! Keyword Documentation for more details and examples.</li>
+"! <li>The example includes a CDS table function.</li>
+"! <li>Find information on <strong>getting started with the example class</strong> and the
+"! <strong>disclaimer</strong> in the ABAP Doc comment of class {@link zcl_demo_abap_aux}.</li></ul>
 CLASS zcl_demo_abap_amdp DEFINITION
   PUBLIC
   FINAL

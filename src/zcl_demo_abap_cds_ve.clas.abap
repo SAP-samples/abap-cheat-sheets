@@ -1,48 +1,18 @@
-***********************************************************************
-*
-*                     ABAP cheat sheet: CDS View Entities
-*
-* -------------------------- PURPOSE ----------------------------------
-* - Example to demonstrate CDS view entities. See the CDS view entities
-*   that are used in the example for more details.
-* - Topics covered: Operands, expressions, and built-in functions in the
-*   element list of CDS view entities, input parameters, joins,
-*   associations
-* - Note: In ADT, check out the CDS view entities used in this example
-*   by holding down CTRL and clicking on the CDS view entity. This will
-*   take you to the artifact. There you can choose F8 to open the data
-*   preview.
-
-* ----------------------- GETTING STARTED -----------------------------
-* - Open the class with the ABAP development tools for Eclipse (ADT).
-* - Choose F9 to run the class.
-* - Check the console output.
-* - To understand the context and the ABAP syntax used, refer to the
-*   notes included in the class as comments or refer to the respective
-*   topic in the ABAP Keyword Documentation.
-* - Due to the amount of console output, the examples contain numbers
-*   (e.g. 1) ..., 2) ..., 3) ...) for the individual example sections.
-*   Also, the variable name is displayed in most cases. So to find
-*   the relevant output in the console easier and faster, just search
-*   for the number/variable name in the console (CTRL+F in the console)
-*   or use the debugger.
-*
-* ----------------------------- NOTE -----------------------------------
-* The code presented in this class is intended only to support the ABAP
-* cheat sheets. It is not intended for direct use in a production system
-* environment. The code examples in the ABAP cheat sheets are primarily
-* intended to provide a better explanation and visualization of the
-* syntax and semantics of ABAP statements, not to solve concrete
-* programming tasks. For production application programs, you should
-* always work out your own solution for each individual case. There is
-* no guarantee for the correctness or completeness of the code.
-* Furthermore, there is no legal responsibility or liability for any
-* errors or their consequences that may occur when using the the example
-* code.
-*
-***********************************************************************
-"! <p class="shorttext synchronized">ABAP cheat sheet: CDS view entities</p>
-"! Example to demonstrate CDS view entities.<br>Choose F9 in ADT to run the class.
+"! <p class="shorttext"><strong>CDS view entities</strong><br/>ABAP cheat sheet example class</p>
+"!
+"! <p>The example class demonstrates CDS view entities.<br/>
+"! Choose F9 in ADT to run the class.</p>
+"!
+"! <h2>Note</h2>
+"! <ul>
+"! <li>Example demonstrating CDS view entities. Refer to the CDS view entities used
+"! here for more details.</li>
+"! <li>Topics covered: Operands, expressions, built-in functions in the element list
+"! of CDS view entities, input parameters, joins, associations.</li>
+"! <li>Note: In ADT, hold CTRL and click on the CDS view entity in this example to
+"! access the artifact. You can choose F8 there to open the data preview.</li>
+"! <li>Find information on <strong>getting started with the example class</strong> and the
+"! <strong>disclaimer</strong> in the ABAP Doc comment of class {@link zcl_demo_abap_aux}.</li></ul>
 CLASS zcl_demo_abap_cds_ve DEFINITION
   PUBLIC
   FINAL
@@ -53,18 +23,18 @@ CLASS zcl_demo_abap_cds_ve DEFINITION
       if_oo_adt_classrun.
 
     CLASS-METHODS class_constructor.
-protected section.
-private section.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
 ENDCLASS.
 
 
 
-CLASS ZCL_DEMO_ABAP_CDS_VE IMPLEMENTATION.
+CLASS zcl_demo_abap_cds_ve IMPLEMENTATION.
 
 
   METHOD class_constructor.
     "Filling demo database tables.
-     zcl_demo_abap_aux=>fill_dbtabs( ).
+    zcl_demo_abap_aux=>fill_dbtabs( ).
 
     "Some more database table insertions for this particular example
     MODIFY zdemo_abap_carr FROM TABLE @( VALUE #(

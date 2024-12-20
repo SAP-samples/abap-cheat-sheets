@@ -5,7 +5,7 @@
    <VSEOCLASS>
     <CLSNAME>ZCL_DEMO_ABAP_OBJECTS_FRIEND</CLSNAME>
     <LANGU>E</LANGU>
-    <DESCRIPT>Class for ABAP cheat sheet example</DESCRIPT>
+    <DESCRIPT>Class supporting ABAP cheat sheet example</DESCRIPT>
     <STATE>1</STATE>
     <CLSCCINCL>X</CLSCCINCL>
     <FIXPT>X</FIXPT>

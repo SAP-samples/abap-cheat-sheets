@@ -1,51 +1,18 @@
-***********************************************************************
-*
-*             ABAP cheat sheet: ABAP object orientation
-*
-* -------------------------- PURPOSE ----------------------------------
-* - Example to demonstrate various syntax options and concepts related
-*   to ABAP object orientation.
-* - Topics covered: Working with objects and components, method redefinition
-*   in inheritance, working with interfaces, upcast and downcast, concepts
-*   like factory methods, singleton and abstract classes, using events.
-* - The CCIMP include (local types tab in ADT) includes multiple local
-*   classes to support the example.
-* - Artifacts related to this example:
-*   - zdemo_abap_objects_interface: Separate global interface to demonstrate
-*     working with interfaces
-*   - zcl_demo_abap_objects_friend: Another global class used to demonstrate
-*     the concept of friendship
-*
-* ----------------------- GETTING STARTED -----------------------------
-* - Open the class with the ABAP development tools for Eclipse (ADT).
-* - Choose F9 to run the class.
-* - Check the console output.
-* - To understand the context and the ABAP syntax used, refer to the
-*   notes included in the class as comments or refer to the respective
-*   topic in the ABAP Keyword Documentation.
-* - Due to the amount of console output, the examples contain numbers
-*   (e.g. 1) ..., 2) ..., 3) ...) for the individual example sections.
-*   Also, the variable name is displayed in most cases. So to find
-*   the relevant output in the console easier and faster, just search
-*   for the number/variable name in the console (CTRL+F in the console)
-*   or use the debugger.
-*
-* ----------------------------- NOTE -----------------------------------
-* The code presented in this class is intended only to support the ABAP
-* cheat sheets. It is not intended for direct use in a production system
-* environment. The code examples in the ABAP cheat sheets are primarily
-* intended to provide a better explanation and visualization of the
-* syntax and semantics of ABAP statements, not to solve concrete
-* programming tasks. For production application programs, you should
-* always work out your own solution for each individual case. There is
-* no guarantee for the correctness or completeness of the code.
-* Furthermore, there is no legal responsibility or liability for any
-* errors or their consequences that may occur when using the the example
-* code.
-*
-***********************************************************************
-"! <p class="shorttext synchronized">ABAP cheat sheet: ABAP object orientation</p>
-"! Example to demonstrate concepts related to ABAP object orientation.<br>Choose F9 in ADT to run the class.
+"! <p class="shorttext"><strong>ABAP object orientation</strong><br/>ABAP cheat sheet example class</p>
+"!
+"! <p>The example class demonstrates syntax and concepts related to ABAP object orientation.<br/>
+"! Choose F9 in ADT to run the class.</p>
+"!
+"! <h2>Note</h2>
+"! <ul><li>Topics covered include working with objects and components, method redefinition in inheritance,
+"! using interfaces, upcasting and downcasting, and concepts like factory methods, singletons, abstract
+"! classes, and events.</li>
+"! <li>The CCIMP include (local types tab in ADT) contains multiple local classes to support the example.</li>
+"! <li>Artifacts related to this example: {@link zdemo_abap_objects_interface} (a separate global interface to
+"! demonstrate interface usage) and {@link zcl_demo_abap_objects_friend} (another global class used to
+"! demonstrate the concept of friendship</li>
+"! <li>Find information on <strong>getting started with the example class</strong> and the
+"! <strong>disclaimer</strong> in the ABAP Doc comment of class {@link zcl_demo_abap_aux}.</li></ul>
 CLASS zcl_demo_abap_objects DEFINITION
   PUBLIC
   FINAL
@@ -98,7 +65,7 @@ CLASS zcl_demo_abap_objects IMPLEMENTATION.
 
   METHOD if_oo_adt_classrun~main.
 
-    out->write( |ABAP Cheat Sheet Example: ABAP Object Orientation\n\n| ).
+    out->write( |ABAP cheat sheet example: ABAP Object Orientation (1)\n\n| ).
     out->write( |Working with objects and components\n\n| ).
     out->write( |1) Declaring reference variables\n\n| ).
 
@@ -1108,4 +1075,33 @@ CLASS zcl_demo_abap_objects IMPLEMENTATION.
     zdemo_abap_objects_interface~stat_str = `The result of calling zdemo_abap_objects_interface~halve is: `.
     r_halve = i_op / 2.
   ENDMETHOD.
+
+  METHOD zdemo_abap_objects_interface~addition.
+    ... "No implementation included since the method is not used in this example class.
+  ENDMETHOD.
+
+  METHOD zdemo_abap_objects_interface~subtraction.
+    ... "No implementation included since the method is not used in this example class.
+  ENDMETHOD.
+
+  METHOD zdemo_abap_objects_interface~meth_fail.
+    ...
+    "No implementation included since the method is not used in this example class.
+    "Interface methods declared with DEFAULT IGNORE and DEFAULT FAIL are not required
+    "to be implemented, i.e. specifying
+    "METHOD zdemo_abap_objects_interface~meth_fail.
+    " ...
+    "ENDMETHOD.
+    "is not required. Ususally, all interface methods must be implemented.
+    "See the example class zcl_demo_abap_objects_misc that also implements the
+    "interface, but does not include the method implementations.
+    "If implementations are desired, you can manually add the implementations (if
+    "not automatically added using the ADT quickfix when adding the interface) for
+    "these methods.
+  ENDMETHOD.
+
+  METHOD zdemo_abap_objects_interface~meth_ignore.
+    ... "See the comment in the method implementation of zdemo_abap_objects_interface~meth_fail.
+  ENDMETHOD.
+
 ENDCLASS.
