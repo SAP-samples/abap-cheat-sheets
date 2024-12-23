@@ -47,6 +47,7 @@ CLASS zcl_demo_abap_xml_json DEFINITION
       deserialize_helper IMPORTING attr_string_a      TYPE string
                                    attr_string_b      TYPE string
                                    attr_concat_string TYPE string.
+
 ENDCLASS.
 
 
@@ -144,7 +145,7 @@ CLASS zcl_demo_abap_xml_json IMPLEMENTATION.
       ( ReleasedObjectName LIKE '%IXML%' OR ReleasedObjectName LIKE '%SXML%' )
       INTO TABLE @DATA(released_xml_libs).
 
-    out->write( `No output. You can check the internal table content in the debugger to view the usable artifacts.` ).
+    out->write( zcl_demo_abap_aux=>no_output ).
 
 ***********************************************************************
 
@@ -196,29 +197,27 @@ CLASS zcl_demo_abap_xml_json IMPLEMENTATION.
 ***********************************************************************
 
     out->write( zcl_demo_abap_aux=>heading( `4) Parsing XML Data Using iXML` ) ).
-    "The example covers the following aspects:
-    "- Parsing XML data to a DOM object in one go
-    "- Directly reading nodes using various iXML methods
-    "- Directly reading nodes using element names
-    "- Reading using iterators, i.e. going over the XML nodes one after another
-    "- During the iteration, ...
-    "  ... node properties are extracted using various iXML methods
-    "      (and stored in an internal table for display purposes).
-    "  ... the XML data is modified.
-    "  ... a new element is created.
-    "- Rendering XML data
+    "Notes on the example:
+    "- XML data is transformed to an input steam object and imported to a DOM object in one go using a parser object
+    "- If the XML is successfully parsed, DOM object nodes are iterated and accessed
+    "- Elements of the XML data and their attributes are processed, read and output
+    "- The create_renderer method is used to render XML data into an output stream
 
-    "Internal table to store node properties for display purposes
-    DATA properties TYPE string_table.
-
-    "Creating simple demo XML data to be used in the example
     TRY.
         DATA(some_xml) = cl_abap_conv_codepage=>create_out( )->convert(
-            `<hi>` &&
-            `  <word1>hallo</word1>` &&
-            `  <word2>how</word2>` &&
-            `  <word3>are</word3>` &&
-            `</hi>` ).
+             `<?xml version="1.0"?>` &&
+             `<node attr_a="123">` &&
+             ` <subnode1>` &&
+             ` <letter>A</letter>` &&
+             ` <date format="mm-dd-yyyy">01-01-2024</date>` &&
+             ` </subnode1>` &&
+             ` <subnode2>`  &&
+             ` <text attr_b="1" attr_c="a">abc</text>` &&
+             ` <text attr_b="2" attr_c="b">def</text>` &&
+             ` <text attr_b="3" attr_c="c">ghi</text>` &&
+             ` <text attr_b="4" attr_c="d">jkl</text>` &&
+             ` </subnode2>` &&
+             `</node>` ).
       CATCH cx_sy_conversion_codepage.
     ENDTRY.
 
@@ -237,76 +236,58 @@ CLASS zcl_demo_abap_xml_json IMPLEMENTATION.
                        document = document_pa
                        stream_factory = stream_factory_pa ).
 
-    "Parsing XML data to a DOM representation in one go. It is put in the memory.
-    "Note: You can also parse sequentially, and not in one go.
-    DATA(parsing_check) = parser_pa->parse( ).
-    IF parsing_check = 0. "Parsing was successful
+    IF parser_pa->parse( ) <> 0.
+      "Processing errors
+      DATA(error_pa_num) = parser_pa->num_errors( ).
 
-      "Directly reading nodes using various iXML methods
-
-      "Accessing the root element of the DOM. It can be used as the initial node
-      "for accessing subnodes.
-      "You can check the content of the variables in the debugger.
-      "Note: Multiple methods are available to further process the nodes.
-      DATA(root_element) = document_pa->get_root_element( ).
-      "First subnode
-      DATA(child_element) = root_element->get_first_child( ).
-      "Getting the value of that node
-      DATA(child_element_value) = child_element->get_value( ).
-      "Next adjacent node/getting the value
-      DATA(next_element_value) = child_element->get_next( )->get_value( ).
-
-      "Directly reading nodes using element names
-      "The result is the first element searched for.
-      DATA(element_by_name) = document_pa->find_from_name( name = `word3` )->get_value( ).
-      "A lot more options are available such as access by attributes.
-
-      "Reading using iterators, i.e. going over the XML nodes sequentially
-
-      "Creating an iterator
-      DATA(iterator_pa) = document_pa->create_iterator( ).
-      DO.
-        "For the iteration, you can use the get_next method to process the nodes one after another.
-        "Note: Here, all nodes are respected. You can also create filters to go over specific nodes.
-        DATA(node_i) = iterator_pa->get_next( ).
-        IF node_i IS INITIAL.
-          EXIT.
-        ELSE.
-          "Extracting properties
-          "For display purposes, the properties are stored in an internal table.
-          APPEND |gid: { node_i->get_gid( ) } / type: { node_i->get_type( ) } / name: { node_i->get_name( ) } / value: { node_i->get_value( ) }| TO properties.
-        ENDIF.
-
-        IF node_i->get_type( ) = if_ixml_node=>co_node_text.
-          "Modifying values
-          "Here, the values are capitalized.
-          node_i->set_value( to_upper( node_i->get_value( ) ) ).
-        ENDIF.
-
-        "Creating a new element
-        IF node_i->get_value( ) = 'are'.
-          document_pa->create_simple_element_ns( name   = 'word4'
-                                                 value  = 'you'
-                                                 parent = node_i->get_parent( ) ).
-        ENDIF.
+      DO error_pa_num TIMES.
+        DATA(error_pa) = parser_pa->get_error(
+                    index        = sy-index - 1
+                    min_severity = 3
+                  ).
+        DATA(reason_pa) = error_pa->get_reason( ).
+        out->write( |Error: { reason_pa }| ).
       ENDDO.
-
-      "Creating a renderer
-      DATA xml_pa TYPE xstring.
-      ixml_pa->create_renderer( document = document_pa
-                                ostream = ixml_pa->create_stream_factory( )->create_ostream_xstring( string = xml_pa )
-                              )->render( ).
-
-      "Getting XML
-      DATA(output_ixml_parsing) = format( cl_abap_conv_codepage=>create_in( )->convert( xml_pa ) ).
-
-      out->write( output_ixml_parsing ).
-      out->write( |\n| ).
-      out->write( `Node properties:` ).
-      out->write( properties ).
     ELSE.
-      out->write( `Parsing was not successful.` ).
+      "Processing document
+      IF document_pa IS NOT INITIAL.
+        DATA(iterator_pa) = document_pa->create_iterator( ).
+        DATA(node_pa) = iterator_pa->get_next( ).
+        WHILE NOT node_pa IS INITIAL.
+          DATA(indent) = node_pa->get_height( ) * 2.
+          "Rettrieving the node type
+          CASE node_pa->get_type( ).
+            WHEN if_ixml_node=>co_node_element.
+              "Retrieving attributes
+              DATA(attributes_pa) = node_pa->get_attributes( ).
+              out->write( |Element:{ repeat( val = ` ` occ = indent + 2  ) }{ node_pa->get_name( ) }| ).
+              IF NOT attributes_pa IS INITIAL.
+                DO attributes_pa->get_length( ) TIMES.
+                  DATA(attr) = attributes_pa->get_item( sy-index - 1 ).
+                  out->write( |Attribute:{ repeat( val = ` ` occ = indent ) }{ attr->get_name( ) } = { attr->get_value( ) } | ).
+                ENDDO.
+              ENDIF.
+            WHEN if_ixml_node=>co_node_text OR
+            if_ixml_node=>co_node_cdata_section.
+              out->write( |Text:{ repeat( val = ` ` occ = indent + 5 ) }{ node_pa->get_value( ) }| ).
+          ENDCASE.
+          "Retrieving the next node
+          node_pa = iterator_pa->get_next( ).
+        ENDWHILE.
+      ENDIF.
     ENDIF.
+
+    "Creating a renderer
+    DATA xml_pa TYPE xstring.
+    ixml_pa->create_renderer( document = document_pa
+                              ostream = ixml_pa->create_stream_factory( )->create_ostream_xstring( string = xml_pa )
+                            )->render( ).
+
+    "Getting XML
+    DATA(output_ixml_parsing) = cl_abap_conv_codepage=>create_in( )->convert( xml_pa ).
+
+    out->write( |\n| ).
+    out->write( output_ixml_parsing ).
 
 ***********************************************************************
 
@@ -426,13 +407,9 @@ CLASS zcl_demo_abap_xml_json IMPLEMENTATION.
 
     "Creating an internal table for display purposes
     DATA: BEGIN OF node_info,
-            node_type  TYPE string,
-            prefix     TYPE string,
-            name       TYPE string,
-            nsuri      TYPE string,
-            value_type TYPE string,
-            value      TYPE string,
-            value_raw  TYPE xstring,
+            node_type TYPE string,
+            name      TYPE string,
+            value     TYPE string,
           END OF node_info,
           nodes_tab LIKE TABLE OF node_info.
 
@@ -446,8 +423,7 @@ CLASS zcl_demo_abap_xml_json IMPLEMENTATION.
     "To iterate accros all nodes, you can call the NEXT_NODE method.
     TRY.
         DO.
-          "Check out other available methods in ADT by placing the cursor behind ->
-          "and choosing CTRL + Space.
+          CLEAR node_info.
           reader->next_node( ).
 
           "When reaching the end of the XML data, the loop is exited.
@@ -457,39 +433,21 @@ CLASS zcl_demo_abap_xml_json IMPLEMENTATION.
 
           "You can access the properties of the node directly.
           "For display purposes, the property information is stored in an internal table.
-          "The demo XML data that is used here does not include all properties. Therefore,
-          "the values for these are initial.
+          "The example here just uses simple demo JSON data. Not all properties are
+          "retrieved and displayed.
 
           "Node type, see the interface if_sxml_node
-          DATA(node_type) = SWITCH #( reader->node_type WHEN if_sxml_node=>co_nt_initial THEN `CO_NT_INITIAL`
-                                                        WHEN if_sxml_node=>co_nt_element_open THEN `CO_NT_ELEMENT_OPEN`
-                                                        WHEN if_sxml_node=>co_nt_element_close THEN `CO_NT_ELEMENT_CLOSE`
-                                                        WHEN if_sxml_node=>co_nt_value THEN `CO_NT_VALUE`
-                                                        WHEN if_sxml_node=>co_nt_attribute THEN `CO_NT_ATTRIBUTE`
-                                                        ELSE `Error` ).
-
-          DATA(prefix) = reader->prefix.  "Namespace prefix
-          DATA(name) = reader->name.      "Name of the element
-          DATA(nsuri) = reader->nsuri.    "Namespace URI
-
-          "Value type, see the interface if_sxml_value
-          DATA(value_type) = SWITCH #( reader->value_type WHEN 0 THEN `Initial`
-                                                          WHEN if_sxml_value=>co_vt_none THEN `CO_VT_NONE`
-                                                          WHEN if_sxml_value=>co_vt_text THEN `CO_VT_TEXT`
-                                                          WHEN if_sxml_value=>co_vt_raw THEN `CO_VT_RAW`
-                                                          WHEN if_sxml_value=>co_vt_any THEN `CO_VT_ANY`
-                                                          ELSE `Error` ).
-
-          DATA(value) = reader->value.            "Character-like value (if it is textual data)
-          DATA(value_raw) = reader->value_raw.    "Byte-like value (if it is raw data)
-
-          APPEND VALUE #( node_type  = node_type
-                          prefix     = prefix
-                          name       = name
-                          nsuri      = nsuri
-                          value_type = value_type
-                          value      = value
-                          value_raw  = value_raw ) TO nodes_tab.
+          node_info-node_type = SWITCH #( reader->node_type WHEN if_sxml_node=>co_nt_initial THEN `CO_NT_INITIAL`
+                                                            WHEN if_sxml_node=>co_nt_element_open THEN `CO_NT_ELEMENT_OPEN`
+                                                            WHEN if_sxml_node=>co_nt_element_close THEN `CO_NT_ELEMENT_CLOSE`
+                                                            WHEN if_sxml_node=>co_nt_value THEN `CO_NT_VALUE`
+                                                            WHEN if_sxml_node=>co_nt_attribute THEN `CO_NT_ATTRIBUTE`
+                                                            ELSE `Error` ).
+          "Name of the element
+          node_info-name = reader->name.
+          "Character-like value (if it is textual data)
+          node_info-value = COND #( WHEN reader->node_type = if_sxml_node=>co_nt_value THEN reader->value ).
+          APPEND node_info TO nodes_tab.
 
           "Once the method is called, you can directly access the attributes of the reader with the required
           "properties of the node. When the parser is on the node of an element opening, you can use the method
@@ -500,21 +458,17 @@ CLASS zcl_demo_abap_xml_json IMPLEMENTATION.
               IF reader->node_type <> if_sxml_node=>co_nt_attribute.
                 EXIT.
               ENDIF.
-              APPEND VALUE #( node_type  = `attribute`
-                              prefix     = reader->prefix
+              APPEND VALUE #( node_type  = `CO_NT_ATTRIBUTE`
                               name       = reader->name
-                              nsuri      = reader->nsuri
-                              value      = reader->value
-                              value_raw  = reader->value_raw ) TO nodes_tab.
+                              value      = reader->value ) TO nodes_tab.
             ENDDO.
           ENDIF.
         ENDDO.
+
+        out->write( nodes_tab ).
       CATCH cx_sxml_state_error INTO DATA(error_parse_token).
         out->write( error_parse_token->get_text( ) ).
     ENDTRY.
-
-    out->write( `Node properties:` ).
-    out->write( nodes_tab ).
 
 ***********************************************************************
 
@@ -551,20 +505,15 @@ CLASS zcl_demo_abap_xml_json IMPLEMENTATION.
               DATA(open_element) = CAST if_sxml_open_element( node_oo ).
 
               APPEND VALUE #( node_type = `open element`
-                              prefix    = open_element->prefix
                               name      = open_element->qname-name
-                              nsuri     = open_element->qname-namespace
                             ) TO nodes_tab.
 
               DATA(attributes) = open_element->get_attributes( ).
 
               LOOP AT attributes INTO DATA(attribute).
                 APPEND VALUE #( node_type = `attribute`
-                                prefix    = open_element->prefix
                                 name      = open_element->qname-name
-                                nsuri     = open_element->qname-namespace
                                 value  = SWITCH #( attribute->value_type WHEN if_sxml_value=>co_vt_text THEN attribute->get_value( ) )
-                                value_raw  = SWITCH #( attribute->value_type WHEN if_sxml_value=>co_vt_raw THEN attribute->get_value_raw( ) )
                               ) TO nodes_tab.
               ENDLOOP.
 
@@ -572,9 +521,7 @@ CLASS zcl_demo_abap_xml_json IMPLEMENTATION.
               DATA(close_element) = CAST if_sxml_close_element( node_oo ).
 
               APPEND VALUE #( node_type = `close element`
-                              prefix    = open_element->prefix
                               name      = open_element->qname-name
-                              nsuri     = open_element->qname-namespace
                             ) TO nodes_tab.
 
             WHEN  if_sxml_node=>co_nt_value.
@@ -582,7 +529,6 @@ CLASS zcl_demo_abap_xml_json IMPLEMENTATION.
 
               APPEND VALUE #( node_type = `value`
                               value     = SWITCH #( value_node_oo->value_type WHEN if_sxml_value=>co_vt_text THEN value_node_oo->get_value( ) )
-                              value_raw = SWITCH #( value_node_oo->value_type WHEN if_sxml_value=>co_vt_raw THEN value_node_oo->get_value_raw( ) )
                             ) TO nodes_tab.
 
             WHEN OTHERS.
@@ -593,7 +539,6 @@ CLASS zcl_demo_abap_xml_json IMPLEMENTATION.
         out->write( error_parse_oo->get_text( ) ).
     ENDTRY.
 
-    out->write( `Node properties:` ).
     out->write( nodes_tab ).
 
 ***********************************************************************
@@ -1223,7 +1168,7 @@ CLASS zcl_demo_abap_xml_json IMPLEMENTATION.
 
 ************************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `22) Dealing with JSON Data` ) ).
+    out->write( zcl_demo_abap_aux=>heading( `22) Transforming JSON Data Using Transformations` ) ).
     "Note: When the identity transformation ID is used, the format is asJSON.
 
     "Elementary type
@@ -1391,18 +1336,18 @@ CLASS zcl_demo_abap_xml_json IMPLEMENTATION.
 
 ************************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `23) XCO Classes for JSON` ) ).
+    out->write( zcl_demo_abap_aux=>heading( `23) Handling JSON Data with XCO Classes` ) ).
     "Note: Unlike above, the following snippets do not work with asJSON as intermediate
     "format.
 
     DATA: BEGIN OF carrier_struc,
-            carrier_id    TYPE c length 3,
-            connection_id TYPE n length 4,
-            city_from TYPE c length 20,
-            city_to TYPE c length 20,
+            carrier_id    TYPE c LENGTH 3,
+            connection_id TYPE n LENGTH 4,
+            city_from     TYPE c LENGTH 20,
+            city_to       TYPE c LENGTH 20,
           END OF carrier_struc.
 
-    DATA carriers_tab like TABLE OF carrier_struc WITH EMPTY KEY.
+    DATA carriers_tab LIKE TABLE OF carrier_struc WITH EMPTY KEY.
 
     carrier_struc = VALUE #( carrier_id = 'AA' connection_id = '17' city_from = 'New York' city_to = 'San Francisco' ).
     carriers_tab = VALUE #( ( carrier_id = 'AZ' connection_id = '788' city_from = 'Rome' city_to = 'Tokyo' )
@@ -1467,7 +1412,131 @@ CLASS zcl_demo_abap_xml_json IMPLEMENTATION.
 
 ************************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `24) Excursion: Compressing and Decompressing Binary Data` ) ).
+    out->write( zcl_demo_abap_aux=>heading( `24) Handling JSON Data with the  /ui2/cl_json Class` ) ).
+
+    TYPES: BEGIN OF demo_struc,
+             carrier_id    TYPE c LENGTH 3,
+             connection_id TYPE n LENGTH 4,
+             city_from     TYPE c LENGTH 20,
+             city_to       TYPE c LENGTH 20,
+           END OF demo_struc.
+    DATA itab TYPE TABLE OF demo_struc WITH EMPTY KEY.
+    itab = VALUE #( ( carrier_id = 'AA' connection_id = '0017' city_from = 'New York' city_to = 'San Francisco' )
+                    ( carrier_id = 'AZ' connection_id = '0789' city_from = 'Tokyo' city_to = 'Rome' ) ).
+
+    "---------------- Serializing ----------------
+
+    DATA(abap_to_json) = /ui2/cl_json=>serialize( data = itab ).
+    "Note the many additional, optional parameters such as for formatting the
+    "serialized JSON. For more information, see the class documentation.
+    DATA(abap_to_json_pretty) = /ui2/cl_json=>serialize( data = itab
+                                                         format_output = abap_true ).
+    DATA(abap_to_json_pretty_name) = /ui2/cl_json=>serialize( data = itab
+                                                              format_output = abap_true
+                                                              pretty_name = /ui2/cl_json=>pretty_mode-camel_case ).
+
+    out->write( `---------- ABAP -> JSON ----------` ).
+    out->write( abap_to_json ).
+    out->write( |\n| ).
+    out->write( `---------- ABAP -> JSON (pretty printed) ----------` ).
+    out->write( abap_to_json_pretty ).
+    out->write( |\n| ).
+    out->write( `---------- ABAP -> JSON (camel case) ----------` ).
+    out->write( abap_to_json_pretty_name ).
+    out->write( |\n| ).
+
+    "---------------- Deserializing ----------------
+
+    DATA(json_to_abap) = abap_to_json.
+    DATA itab_json_to_abap LIKE itab.
+
+    /ui2/cl_json=>deserialize( EXPORTING json = json_to_abap
+                               CHANGING data  = itab_json_to_abap ).
+
+    out->write( `---------- JSON -> ABAP ----------` ).
+    out->write( itab_json_to_abap ).
+    out->write( |\n| ).
+
+    "---------------- Deserializing: Applying name mapping ----------------
+    "Creating an internal table with different field names
+    TYPES: BEGIN OF demo_struc4map,
+             carr TYPE c LENGTH 3,
+             conn TYPE n LENGTH 4,
+             from TYPE c LENGTH 20,
+             to   TYPE c LENGTH 20,
+           END OF demo_struc4map.
+    DATA itab4map TYPE TABLE OF demo_struc4map WITH EMPTY KEY.
+
+    /ui2/cl_json=>deserialize( EXPORTING json = json_to_abap
+                               name_mappings = VALUE #( ( abap = 'CARR' json = `CARRIER_ID` )
+                                                        ( abap = 'CONN' json = `CONNECTION_ID` )
+                                                        ( abap = 'FROM' json = `CITY_FROM` )
+                                                        ( abap = 'TO' json = `CITY_TO` ) )
+                               CHANGING data  = itab4map ).
+
+    out->write( `---------- JSON -> ABAP (Name mapping) ----------` ).
+    out->write( itab4map ).
+    out->write( |\n| ).
+
+    "---------------- Deserializing: Using JSON as xstring ----------------
+
+    DATA(json_xstring) = cl_abap_conv_codepage=>create_out( )->convert(
+   `[` &&
+   `    {` &&
+   `        "carrier_id": "LH",` &&
+   `        "connection_id": "400",` &&
+   `        "city_from": "Frankfurt",` &&
+   `        "city_to": "Berlin"` &&
+   `    },` &&
+   `    {` &&
+   `        "carrier_id": "DL",` &&
+   `        "connection_id": "1984",` &&
+   `        "city_from": "San Francisco",` &&
+   `        "city_to": "New York"` &&
+   `    },` &&
+   `    {` &&
+   `        "carrier_id": "AZ",` &&
+   `        "connection_id": "790",` &&
+   `        "city_from": "Rome",` &&
+   `        "city_to": "Osaka"` &&
+   `    }` &&
+   `]` ).
+
+    DATA itab_json_xstr_to_abap LIKE itab.
+    /ui2/cl_json=>deserialize( EXPORTING jsonx = json_xstring
+                               CHANGING data  = itab_json_xstr_to_abap ).
+
+    out->write( `---------- JSON (xstring) -> ABAP ----------` ).
+    out->write( itab_json_xstr_to_abap ).
+    out->write( |\n| ).
+
+    "---------------- Deserializing: No equivalent ABAP type available ----------------
+
+    "The example assumes that there is no equivalent ABAP type available for JSON data
+    "that is to be deserialized. You can use the 'generate' method that has a
+    "returning parameter of the generic type 'ref to data'.
+    DATA(json) = `[{"CARRIER_ID":"AA","CONNECTION_ID":17,"CITY_FROM":"New York","CITY_TO":"San Francisco"},` &&
+                 `{"CARRIER_ID":"AZ","CONNECTION_ID":789,"CITY_FROM":"Tokyo","CITY_TO":"Rome"}]`.
+
+    DATA(dref) = /ui2/cl_json=>generate( json = json ).
+    DATA(dref_xstr) = /ui2/cl_json=>generate( jsonx = json_xstring ).
+
+    "You can further process the content, for example, with RTTS as outlined in the
+    "Dynamic Programming cheat sheet.
+    IF dref IS BOUND.
+      out->write( `---------- JSON -> ABAP (unknown type) ----------` ).
+      out->write( dref->* ).
+      out->write( |\n| ).
+    ENDIF.
+
+    IF dref_xstr IS BOUND.
+      out->write( `---------- JSON (xstring) -> ABAP (unknown type) ----------` ).
+      out->write( dref_xstr->* ).
+    ENDIF.
+
+************************************************************************
+
+    out->write( zcl_demo_abap_aux=>heading( `25) Excursion: Compressing and Decompressing Binary Data` ) ).
     "You may want to process or store binary data. The data can be very large.
     "You can compress the data in gzip format and decompress it for further processing using
     "the cl_abap_gzip class. Check out appropriate exceptions to be caught. The simple example
@@ -1503,6 +1572,7 @@ CLASS zcl_demo_abap_xml_json IMPLEMENTATION.
     IF xml_oref_a = xstr_decomp.
       out->write( `The decompressed binary data object has the same value as the original binary data object.` ).
     ENDIF.
+
   ENDMETHOD.
   METHOD format.
     TRY.

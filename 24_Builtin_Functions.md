@@ -16,6 +16,7 @@
     - [More (Special) Functions](#more-special-functions)
     - [coalesce Function](#coalesce-function)
   - [More Information](#more-information)
+  - [Executable Examples](#executable-examples)
 
 
 This ABAP cheat sheet includes a variety of built-in functions in ABAP, along with code snippets to demonstrate their functionality. Many of the functions covered here are also included in other ABAP cheat sheets that focus on specific topics.
@@ -537,7 +538,7 @@ Search functions
 <br><br>
 
 ``` abap
-DATA(str) =`Pieces of cakes.`.
+DATA(str) = `Pieces of cakes.`.
 
 "---------------- find ----------------
 "The find function searches for the substring specified and returns the offset
@@ -1690,13 +1691,6 @@ SELECT SINGLE
                     source_unit = unit`MI`,
                     target_unit = unit`KM` ) AS miles_to_km,
 
-  "Converts Euro to US dollars using today's rate
-  currency_conversion(
-                    amount = d34n`1`,
-                    source_currency = char`EUR`,
-                    target_currency = char`USD`,
-                    exchange_rate_date = @( cl_abap_context_info=>get_system_date( ) ) ) AS eur_to_usd,
-
   "Creating a unique UUID for each row
   uuid( ) AS uuid
 
@@ -1756,3 +1750,12 @@ SELECT tab2~key_field,
 - [Built-in functions in ABAP](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbuilt_in_functions.htm)
   - [Overview of functions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbuilt_in_functions_overview.htm)
 - [Built-in functions that can be used by ABAP CDS and ABAP SQL](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenddic_builtin_functions.htm)
+
+## Executable Examples
+
+[zcl_demo_abap_builtin_func](./src/zcl_demo_abap_builtin_func.clas.abap) 
+
+
+> **💡 Note**<br>
+> - The steps to import and run the code are outlined [here](README.md#-getting-started-with-the-examples).
+> - [Disclaimer](./README.md#%EF%B8%8F-disclaimer)

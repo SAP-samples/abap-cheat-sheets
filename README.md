@@ -92,7 +92,7 @@ ABAP cheat sheets[^1] ...
 |[Working with XML and JSON in ABAP](21_XML_JSON.md)|Covers processing XML using class libraries, XML transformations using XSLT and Simple Transformations (ST), serializations (ABAP to XML) and deserializations (XML to ABAP), dealing with JSON data|[zcl_demo_abap_xml_json](./src/zcl_demo_abap_xml_json.clas.abap)|
 |[Released ABAP Classes](22_Released_ABAP_Classes.md)|Contains a selection of ABAP classes, serving as a quick introduction, along with code snippets to explore the functionality in action|- (The cheat sheet includes copy and paste code snippets and example classes)|
 |[Date, Time, and Time Stamp](23_Date_and_Time.md)|Covers how to handle and process dates, times, and time stamps in ABAP|[zcl_demo_abap_date_time](./src/zcl_demo_abap_date_time.clas.abap)|
-|[Built-In Functions](24_Builtin_Functions.md)|Covers a variety of built-in functions in ABAP|- (The cheat sheet includes copy and paste code snippets)|
+|[Built-In Functions](24_Builtin_Functions.md)|Covers a variety of built-in functions in ABAP|[zcl_demo_abap_builtin_func](./src/zcl_demo_abap_builtin_func.clas.abap)|
 |[Authorization Checks](25_Authorization_Checks.md)|Provides a high-level overview of explicit and implicit authorization checks in ABAP|- (The cheat sheet includes a copy and paste example class)|
 |[ABAP Dictionary](26_ABAP_Dictionary.md)|Covers a selection of repository objects in the ABAP Dictionary (DDIC) that represent global types|- (The cheat sheet includes a copy and paste example class)|
 |[Exceptions and Runtime Errors](27_Exceptions.md)|Provides an overview on exceptions and runtime errors|[zcl_demo_abap_error_handling](./src/zcl_demo_abap_error_handling.clas.abap)|
