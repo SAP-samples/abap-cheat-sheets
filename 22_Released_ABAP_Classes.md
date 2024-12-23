@@ -2927,20 +2927,26 @@ ENDTRY.
 <tr>
 <td> <code>CL_BGMC_PROCESS_FACTORY</code> </td>
 <td>
-<ul>
-<li>Used in the context of the Background Processing Framework (bgPF) to run code asynchronously in the background.</li>
-<li>Different flavors are available:</li> 
-<ul>
-<li>Using bgPF without transactional control, for example, if you do not work with a RAP application or transactional control is not relevant in an ABAP program. In this case, you can implement the <code>IF_BGMC_OP_SINGLE_TX_UNCONTR</code> interface.</li> 
-<li>Using bgPF with transactional control, for example, if you work with a RAP application. In that case, you can implement the <code>IF_BGMC_OP_SINGLE</code> interface. Note: If you are in a RAP context, you do not need to implement <code>COMMIT/ROLLBACK WORK</code> because the RAP framework takes care of it.</li>
-</ul>
-<li>More information:</li> 
-<ul>
-<li><a href="https://help.sap.com/docs/abap-cloud/abap-concepts/background-processing-framework ">Background Processing Framework</a></li>
-<li>Transactional control with the <a href="https://help.sap.com/docs/abap-cloud/abap-concepts/controlled-sap-luw">controlled SAP LUW</a></li>
-</ul>
-<li>The following, self-contained, and oversimplified example is intended to give a rough idea about the functionality. It does not include transactional control. The example class can be run using F9 in ADT. It does the following: A demo database table of the cheat sheet repository is filled synchronously and asynchronously (using bgPF) with entries, just to show an effect and get an idea. Two entries are created in the background. <code>WAIT</code> statements are included to have a self-contained example, and that all created database entries can be shown in the output. In the example, the background processing may be visualized, for example, by the <code>MODIFY</code> statement that is followed by a <code>WAIT</code> statement in the loop. The output can show that the entry for the first asynchronously created entry was added before a synchronously created entry. For more visualization options regarding the execution in the background, you can, for example, check the ABAP Cross Trace. For more information, refer to the documentation.</li>
-</ul>
+
+
+- Used in the context of the Background Processing Framework (bgPF) to run code asynchronously in the background.
+- Different flavors are available:
+  - Using bgPF without transactional control, for example, if you do not work with a RAP application or transactional control is not relevant in an ABAP program. In this case, you can implement the <code>IF_BGMC_OP_SINGLE_TX_UNCONTR</code> interface. 
+  - Using bgPF with transactional control, for example, if you work with a RAP application. In that case, you can implement the <code>IF_BGMC_OP_SINGLE</code> interface. Note: If you are in a RAP context, you do not need to implement <code>COMMIT/ROLLBACK WORK</code> because the RAP framework takes care of it.
+- More information: 
+  - <a href="https://help.sap.com/docs/abap-cloud/abap-concepts/background-processing-framework ">Background Processing Framework</a>
+  - Transactional control with the <a href="https://help.sap.com/docs/abap-cloud/abap-concepts/controlled-sap-luw">controlled SAP LUW</a>
+
+
+**Example 1: Using bgPF without transactional control**
+
+<details>
+  <summary>🟢 Click to expand for example code (<i>Example 1</i>) </summary>
+  <!-- -->
+
+<br>
+The following, self-contained, and oversimplified example is intended to give a rough idea about the functionality. It does not include transactional control. The example class can be run using F9 in ADT. It does the following: A demo database table of the cheat sheet repository is filled synchronously and asynchronously (using bgPF) with entries, just to show an effect and get an idea. Two entries are created in the background. <code>WAIT</code> statements are included to have a self-contained example, and that all created database entries can be shown in the output. In the example, the background processing may be visualized, for example, by the <code>MODIFY</code> statement that is followed by a <code>WAIT</code> statement in the loop. The output can show that the entry for the first asynchronously created entry was added before a synchronously created entry. For more visualization options regarding the execution in the background, you can, for example, check the ABAP Cross Trace. For more information, refer to the documentation.
+
 <br>
 
 ``` abap
@@ -3028,6 +3034,154 @@ CLASS zcl_some_class IMPLEMENTATION.
   ENDMETHOD.
 ENDCLASS.
 ``` 
+
+</details>  
+
+<br>
+
+**Example 2: Using bgPF with transactional control**
+
+<details>
+  <summary>🟢 Click to expand for example code (<i>Example 2</i>)</summary>
+  <!-- -->
+
+<br>
+
+This example is similar to example 1. Unlike example 1, example 2 executes operations under transactional control. The transactional phase is explicitly switched using the `cl_abap_tx` class.
+
+<br>
+
+```abap
+CLASS zcl_some_class DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
+
+  PUBLIC SECTION.
+    INTERFACES if_oo_adt_classrun.
+    INTERFACES if_bgmc_op_single.
+    METHODS constructor IMPORTING num TYPE i OPTIONAL.
+
+  PRIVATE SECTION.
+    DATA num TYPE i.
+    DATA uuid TYPE sysuuid_x16.
+    DATA timestamp TYPE utclong.
+    METHODS modify.
+    METHODS save.
+    METHODS get_uuid RETURNING VALUE(uuid) TYPE sysuuid_x16.
+ENDCLASS.
+
+CLASS zcl_some_class IMPLEMENTATION.
+  METHOD if_oo_adt_classrun~main.
+    "Deleting a demo database table
+    DELETE FROM zdemo_abap_tabca.
+
+    "Synchronous entry creation
+    MODIFY zdemo_abap_tabca FROM @( VALUE #(
+      id = get_uuid( )
+      calc_result = |Synchronous entry creation in the MAIN method. "num" value: { num }|
+      crea_date_time = cl_abap_tstmp=>utclong2tstmp( utclong_current( ) ) ) ).
+
+    "Processing code in the background
+    DO 2 TIMES.
+      "Creating an instance of the example class (that implements the bgPF-relevant
+      "interface if_bgmc_op_single)
+      DATA(inst) = NEW zcl_some_class( num = sy-index ).
+
+      TRY.
+          "Getting the default factory for transactional background processes and
+          "creating a process for a single operation
+          DATA(backgr) = cl_bgmc_process_factory=>get_default( )->create( ).
+          "Setting a name of the process
+          backgr->set_name( `bgPF Test` ).
+          "Setting the transactionally controlled operation of the process
+          backgr->set_operation( inst ).
+          "Saving the background process for the asynchronous execution
+          backgr->save_for_execution(  ).
+          "An explicit COMMIT WORK is required to start the background process.
+          "This explicit call is not needed in the context of RAP because the RAP
+          "framework will take care of the commit call.
+          COMMIT WORK.
+        CATCH cx_bgmc INTO DATA(error).
+          out->write( error->get_text( ) ).
+          ROLLBACK WORK.
+      ENDTRY.
+
+      "Another synchronous entry creation
+      MODIFY zdemo_abap_tabca FROM @( VALUE #(
+        id = get_uuid( )
+        calc_result = |Synchronous entry creation in the MAIN method. "num" value: { num }|
+        crea_date_time = cl_abap_tstmp=>utclong2tstmp( utclong_current( ) ) ) ).
+      WAIT UP TO 1 SECONDS.
+    ENDDO.
+
+    WAIT UP TO 2 SECONDS.
+
+    "Displaying the content of a demo database table that was filled
+    "in the course of the class execution
+    SELECT id, calc_result, crea_date_time
+      FROM zdemo_abap_tabca
+      ORDER BY crea_date_time
+      INTO TABLE @DATA(itab).
+
+    out->write( itab ).
+  ENDMETHOD.
+
+  METHOD if_bgmc_op_single~execute.
+  "Executing the operation under transactional control
+  "Note:
+  "- The method execution is started in the MODIFY transactional phase
+  "- This means that only those operations are allowed that do not violate
+  "  transactional contracts to guarantee transactional consistency.
+  "- As an example, database modifications performed when the MODIFY transactional
+  "  phase is active are not allowed.
+  "- When the transactional phase is switched from MODIFY to SAVE, such database
+  "  modifications are allowed.
+  "- This may happen explicitly using the save method of the cl_abap_tx class,
+  "  as is the case in the example.
+  "- You can try out the following: Comment out the cl_abap_tx=>save( ). statement,
+  "  and run the example again. It results in a runtime error.
+
+    "Includes the modification of class attributes
+    modify( ).
+
+    "Explicitly switches from the MODIFY to the SAVE transactional phase
+    cl_abap_tx=>save( ).
+
+    "Includes a database modification
+    save( ).
+  ENDMETHOD.
+
+  METHOD get_uuid.
+    TRY.
+        uuid = cl_system_uuid=>create_uuid_x16_static( ) .
+      CATCH cx_uuid_error.
+    ENDTRY.
+  ENDMETHOD.
+  METHOD constructor.
+    IF num IS SUPPLIED.
+      me->num = num.
+    ENDIF.
+  ENDMETHOD.
+
+  METHOD modify.
+    me->uuid = get_uuid( ).
+    me->timestamp = utclong_current( ).
+  ENDMETHOD.
+
+  METHOD save.
+    MODIFY zdemo_abap_tabca FROM @( VALUE #(
+      id = uuid
+      calc_result = |Asynchronous entry creation in background in the EXECUTE method. "num" value: { num }|
+      crea_date_time = cl_abap_tstmp=>utclong2tstmp( utclong_current( ) ) ) ).
+  ENDMETHOD.
+
+ENDCLASS.
+```
+
+</details>  
+
+
 
 </td>
 </tr>

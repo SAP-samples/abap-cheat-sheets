@@ -20,11 +20,13 @@
     - [Creating Anonymous Data Objects](#creating-anonymous-data-objects)
     - [Constants and Immutable Variables](#constants-and-immutable-variables)
     - [Built-In Data Objects](#built-in-data-objects)
-  - [Type Conversions, Compatibility and Assignments](#type-conversions-compatibility-and-assignments)
-  - [Terms Related to Data Types and Objects in a Nutshell](#terms-related-to-data-types-and-objects-in-a-nutshell)
-  - [Notes on the Declaration Context](#notes-on-the-declaration-context)
-  - [Excursions](#excursions)
     - [ABAP Enumerated Types and Objects](#abap-enumerated-types-and-objects)
+  - [Notes in a Nutshell](#notes-in-a-nutshell)
+    - [Type Conversions, Compatibility and Assignments](#type-conversions-compatibility-and-assignments)
+    - [Terms Related to Data Types and Objects](#terms-related-to-data-types-and-objects)
+    - [Additions for Creating Data Types and Objects](#additions-for-creating-data-types-and-objects)
+    - [Declaration Context of Data Types](#declaration-context-of-data-types)
+  - [Excursions](#excursions)
     - [Getting Type Information and Creating Types/Data Objects at Runtime](#getting-type-information-and-creating-typesdata-objects-at-runtime)
     - [Ranges Tables](#ranges-tables)
     - [Typed Literals in ABAP SQL](#typed-literals-in-abap-sql)
@@ -482,6 +484,8 @@ ASSIGN s-xl1 TO <simple>.
 - Find more information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenddic_data_types.htm).
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
+
+
 
 ## Data Objects
 
@@ -1457,7 +1461,83 @@ ENDCLASS.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-## Type Conversions, Compatibility and Assignments
+### ABAP Enumerated Types and Objects
+- ABAP supports the concept of enumerations. 
+- Enumerations are a mixture of types and constants.
+- An [enumerated type](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenenum_type_glosry.htm) specifies a value set in addition to the actual type properties. 
+- [Enumerated objects](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenenumerated_object_glosry.htm) - data objects with an enumerated type - are mainly used to check allowed values. This usually restricts the actual parameters passed to methods to the enumerated values defined in the class. [Enumerated variables](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenenumerated_variable_glosry.htm) are variable enumerated objects. They can only contain the associated enumerated values. 
+- [CDS enumerated types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_enum_type_glosry.htm) are also available. Find more information in the [ABAP Dictionary (DDIC)](26_ABAP_Dictionary.md) cheat sheet.
+
+Syntax:
+
+```abap
+"The definition of an enumerated type in ABAP declares its enumerated constants (these are special enumerated objects).
+"a) In the case below, no explicit base type is specified. Then, the standard base type of the constants is i. The 
+"   enumerated values are counted up starting with 0 (a -> 0, b -> 1 ...).
+
+TYPES: BEGIN OF ENUM t_enum,
+         a,
+         b,
+         c,
+         d,
+       END OF ENUM t_enum.
+
+"b) Explicit base type is specified and start values provided using the VALUE addition
+"   Note that one value must be initial.
+
+TYPES: basetype TYPE c LENGTH 2,
+       BEGIN OF ENUM t_enum_base BASE TYPE basetype,         
+          e VALUE IS INITIAL,
+          f VALUE 'u',
+          g VALUE 'v',
+          h VALUE 'wx',
+          i VALUE 'yz',
+       END OF ENUM t_enum_base.
+
+"c) Optionally an enumerated structure can be declared in the context of the type declaration.
+"   A component of an enumerated structure: An enumerated constant that exists as a component 
+"   of a constant structure, not as a single data object.
+    
+TYPES: BEGIN OF ENUM t_enum_struc STRUCTURE en_struc BASE TYPE basetype,
+          j VALUE IS INITIAL,
+          k VALUE 'hi',
+          l VALUE 'ab',
+          m VALUE 'ap',
+        END OF ENUM t_enum_struc STRUCTURE en_struc.
+```
+
+Enumerated variables can be declared by referring to the enumerated type.
+They can only be assigned the enumerated values defined there that exist as the content of enumerated constants or components of an enumerated structure.
+
+```abap
+"Using the enumerated type from above
+DATA dobj_enum_a TYPE t_enum.
+
+dobj_enum_a = a.
+
+"Data object declared inline, the typed derived is t_enum
+DATA(dobj_enum_b) = b.   
+
+"Note: The technical data type of an enumerated value is the base type 
+"of the enumerated type. You can use the base type of an enumerated type 
+"in special conversions using CONV. A base type is flat, elementary, and 
+"has a maximum length of 16 bytes.
+DATA some_dobj TYPE c LENGTH 2 VALUE 'ap'.
+DATA(dobj_enum_c) = CONV t_enum_struc( some_dobj ).
+ASSERT dobj_enum_c = en_struc-m.
+
+"Conversion not possible
+DATA some_string TYPE string VALUE 'ap'.
+"DATA(dobj_enum_d) = CONV t_enum_struc( some_string ).
+```
+
+Find more information on enumerated types in the (commented code of the) cheat sheet example and [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenenumerated_types_usage.htm). 
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+## Notes in a Nutshell
+
+### Type Conversions, Compatibility and Assignments
 A value assignment means that the value of a data object is transferred to a target data object. If the data types of the source and target are compatible, the content is copied unchanged. If they are incompatible and a suitable [conversion rule](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconversion_rule_glosry.htm) exists, the content is converted.
 The following cases must be distinguished with regard to the data type: 
 - The source and target data types are compatible, i.e. all technical type properties match. The content is transferred from the source to the target without being converted. 
@@ -1534,9 +1614,24 @@ DATA itab_str    TYPE string_table.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-## Terms Related to Data Types and Objects in a Nutshell
+### Terms Related to Data Types and Objects
 
-```abap
+<table>
+
+<tr>
+<td> Terms </td> <td> Code Snippet </td>
+</tr>
+
+<tr>
+<td> 
+
+Standalone and bound data types
+
+ </td>
+
+ <td> 
+
+``` abap
 "----------------- Standalone and bound data types ----------------- 
 "Standalone: Data type that is defined using the statement TYPES in an 
 "            ABAP program, as a data type of the ABAP Dictionary or as 
@@ -1550,7 +1645,21 @@ TYPES te_a_c10 TYPE c LENGTH 10.
 DATA do_a_c20 TYPE c LENGTH 20.
 DATA do_b_like LIKE do_a_c20.
 TYPES te_b_like LIKE do_a_c20.
+``` 
 
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+Complex and elementary data type/object
+
+ </td>
+
+ <td> 
+
+``` abap
 "-------------- Complex and elementary data type/object --------------
 "Elementary: Data type of fixed or variable length that is neither 
 "            structured, nor a table type or a reference type.
@@ -1568,8 +1677,22 @@ DATA: BEGIN OF struc_a,
         comp4 TYPE string_table, "internal table
         comp5 TYPE REF TO i, "reference type
       END OF struc_a.
+``` 
 
-"------------------ Complete and generic data types ------------------
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+Complete and generic data type
+
+ </td>
+
+ <td> 
+
+``` abap
+"------------------ Complete and generic data type ------------------
 "Complete: Non-generic data type
 "Generic:
 "- Data type that does not set all properties of a data object.
@@ -1598,8 +1721,22 @@ DATA(itab_a) = VALUE string_table( ( `a` ) ( `b` ) ( `c` ) ).
 ASSIGN do_e_c5 TO <fs_b>.
 ASSIGN do_f_str TO <fs_b>.
 ASSIGN itab_a TO <fs_b>.
+``` 
 
-"------------------ Variable and constant data objects ------------------
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+Variable and constant data object
+
+ </td>
+
+ <td> 
+
+``` abap
+"------------------ Variable and constant data object ------------------
 "Variable: Named data object whose value can be changed during the runtime 
 "          of an ABAP program.
 "Constant: Named data object whose value cannot be changed at runtime.
@@ -1611,8 +1748,22 @@ do_g_i = 456.
 CONSTANTS con_a_i TYPE i VALUE 789.
 "Not changeable
 "con_a_i = 321.
+``` 
 
-"--------------------- Static and dynamic data objects --------------------
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+Static and dynamic data object
+
+ </td>
+
+ <td> 
+
+```abap
+"--------------------- Static and dynamic data object --------------------
 "Static:
 "- Data object for which all attributes, including memory use, are specified 
 "  statically by the data type.
@@ -1642,7 +1793,21 @@ do_h_c3 = 'defghi'.
 do_i_str = `abc`.
 do_i_str = `d`.
 do_i_str = `efghijklmnopqrstuvwxyz`.
+``` 
 
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+Static type and dynamic type
+
+ </td>
+
+ <td> 
+
+``` abap
 "------------------------ Static type and dynamic type -----------------------
 "Both are data types of a reference variable (reference type) that determine 
 "the objects a reference variable can point to.
@@ -1667,8 +1832,22 @@ dref_a_i = REF #( do_j_i ). "Only type i possible; the dynamic type is the same
 dref_b_data  = REF #( do_j_i ).
 dref_b_data  = REF #( do_k_str ).
 dref_b_data  = REF #( dref_a_i ).
+``` 
 
-"------------------------ Flat and deep data objects -----------------------
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+Flat and deep data object
+
+ </td>
+
+ <td> 
+
+``` abap
+"------------------------ Flat and deep data object -----------------------
 "Flat:
 "- Property of a data type, where the content of its data objects represents 
 "  the actual work data.
@@ -1700,8 +1879,21 @@ DATA: BEGIN OF struc_c_deep,
         comp3 TYPE string,  "string as deep data object
         comp4 TYPE string_table, "internal table as deep data object
       END OF struc_c_deep.
+``` 
 
-"---------------------- Named and unnamed data object ---------------------
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+Named and unnamed data object
+
+ </td>
+
+ <td> 
+
+``` abap
 "Named: Data object that can be identified via a name.
 "Unnamed: Data object that cannot be addressed by a name. Unnamed data 
 "         objects are literals and anonymous data objects.
@@ -1725,7 +1917,21 @@ SELECT *
   FROM zdemo_abap_carr
   INTO TABLE NEW @DATA(dref_d_tab)
   UP TO 3 ROWS.
+``` 
 
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+Compatibility, convertibility and conversion regarding source and target data objects
+
+ </td>
+
+ <td> 
+
+``` abap
 "--- Compatibility, convertibility and conversion regarding source and ---
 "--- target data objects -------------------------------------------------
 "1. Source and target are compatible, all technical type properties 
@@ -1756,11 +1962,432 @@ DATA itab_str    TYPE string_table.
 "Type conversion not possible
 "itab_str = some_number.
 "some_number = itab_str.  
-```
+``` 
+
+ </td>
+</tr>
+
+</table>
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-## Notes on the Declaration Context
+### Additions for Creating Data Types and Objects
+
+The following table shows a selection of additions for creating data types and objects. The examples mostly show data object declarations with `DATA`. `TYPES` statements are also possible in most contexts.
+
+
+<table>
+
+<tr>
+<td> Superclass of Exception Classes </td> <td> Notes </td>
+</tr>
+
+<tr>
+<td> 
+
+`TYPE`
+
+ </td>
+
+ <td> 
+
+
+``` abap
+"------------ TYPE ----------------
+
+"--- Elementary types/data objects ---
+
+"Built-in type
+DATA elem1 TYPE string.
+DATA elem2 TYPE i.
+"Local elementary type
+TYPES c3 TYPE c LENGTH 3.
+DATA elem3 TYPE c3.
+"Global elementary types (e.g. DDIC data elements, CDS simple types,
+"elementary types declared in global classes/interfaces, components of
+"local and global structures)
+DATA elem4 TYPE abap_boolean.
+DATA elem5 TYPE timestampl.
+DATA elem6 TYPE zcl_demo_abap_dtype_dobj=>t_pub_text_c30.
+DATA elem7 TYPE zdemo_abap_get_data_itf=>occ_rate.
+DATA elem8 TYPE zdemo_abap_carr-carrid.
+DATA elem9 TYPE zdemo_abap_carr_ve-carrname.
+
+"--- Structured types/data objects ---
+
+"Local structured type
+TYPES: BEGIN OF struct_ty1,
+          comp1 TYPE i,
+          comp2 TYPE string,
+          comp3 TYPE c LENGTH 3,
+        END OF struct_ty1.
+
+DATA struct1 TYPE struct_ty1.
+
+DATA: BEGIN OF struct2,
+        comp1 TYPE xstring,
+        comp2 TYPE timestampl,
+        comp3 TYPE abap_boolean,
+      END OF struct2.
+
+"Global structured types (e.g. DDIC database tables, DDIC structures,
+"CDS entities, structured types declared in global classes/interfaces)
+
+"Database table
+DATA struct3 TYPE zdemo_abap_carr.
+"View entity
+DATA struct4 TYPE zdemo_abap_carr_ve.
+TYPES struct_ty3 TYPE zdemo_abap_fli_ve.
+DATA struct5 TYPE zdemo_abap_fli_ve.
+"CDS abstract entity
+TYPES struct_ty4 TYPE zdemo_abap_abstract_ent.
+DATA struct6 TYPE zdemo_abap_abstract_ent.
+"CDS table function
+TYPES struct_ty5 TYPE zdemo_abap_table_function.
+DATA struct7 TYPE zdemo_abap_table_function.
+"Structured types declared in global classes/interfaces
+DATA struct8 TYPE zcl_demo_abap_amdp=>carr_fli_struc.
+
+"--- Table types ---
+
+"Referring to global table types with TYPE
+DATA itab1 TYPE string_table.
+DATA itab2 TYPE xstring_table.
+DATA itab3 TYPE string_hashed_table.
+
+"Table types declared in global classes/interfaces
+DATA itab5 TYPE zcl_demo_abap_amdp=>carr_tab.
+``` 
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+`TYPE TABLE OF`
+
+ </td>
+
+ <td> 
+
+
+``` abap
+"------------ TYPE TABLE OF ----------------
+
+"Table types and internal tables created with TYPE TABLE OF
+"The examples only include standard tables.
+
+"Structured line types
+"Local line/table type
+TYPES: BEGIN OF struct_ty6,
+          comp1 TYPE i,
+          comp2 TYPE string,
+          comp3 TYPE c LENGTH 3,
+        END OF struct_ty6.
+TYPES tab_ty1 TYPE TABLE OF struct_ty6 WITH EMPTY KEY.
+DATA itab6 TYPE TABLE OF struct_ty6 WITH EMPTY KEY.
+
+"Globally available line types (e.g. DDIC database tables, CDS entites, etc.)
+DATA itab7 TYPE TABLE OF zdemo_abap_carr WITH EMPTY KEY.
+DATA itab8 TYPE TABLE OF zdemo_abap_fli_ve WITH EMPTY KEY.
+DATA itab9 TYPE TABLE OF zdemo_abap_table_function WITH EMPTY KEY.
+DATA itab10 TYPE TABLE OF zcl_demo_abap_amdp=>carr_fli_struc WITH EMPTY KEY.
+
+"Local and global elementary types
+TYPES c20 TYPE c LENGTH 20.
+DATA itab11 TYPE TABLE OF c20 WITH EMPTY KEY.
+DATA itab12 TYPE TABLE OF string WITH EMPTY KEY.
+DATA itab13 TYPE TABLE OF utclong WITH EMPTY KEY.
+DATA itab14 TYPE TABLE OF zdemo_abap_carr-carrname WITH EMPTY KEY.
+DATA itab15 TYPE TABLE OF zdemo_abap_get_data_itf=>occ_rate WITH EMPTY KEY.
+``` 
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+`TYPE TABLE FOR/TYPE STRUCTURE FOR`
+
+ </td>
+
+ <td>
+
+Find more information in the [ABAP for RAP: Entity Manipulation Language (ABAP EML)](08_EML_ABAP_for_RAP.md) cheat sheet.
+
+ <br> 
+
+
+``` abap
+"------------ TYPE TABLE FOR/TYPE STRUCTURE FOR ----------------
+"BDEF derived types in the context of RAP
+DATA der_type1 TYPE TABLE FOR CREATE zdemo_abap_rap_ro_m.
+TYPES der_type2 TYPE TABLE FOR UPDATE zdemo_abap_rap_ro_m.
+DATA der_type3 TYPE TABLE FOR ACTION IMPORT zdemo_abap_rap_ro_m~multiply_by_2.
+DATA der_type4 TYPE TABLE FOR READ IMPORT zdemo_abap_rap_ro_m.
+
+TYPES der_type5 TYPE STRUCTURE FOR DELETE zdemo_abap_rap_ro_m.
+DATA der_type6 TYPE STRUCTURE FOR PERMISSIONS REQUEST zdemo_abap_rap_ro_m.
+``` 
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+`TYPE ... REF TO`
+
+ </td>
+
+ <td> 
+
+
+``` abap
+"------------ TYPE ... REF TO ----------------
+"Reference types
+
+"Reference to elemtary/structured types, including the
+"generic type data
+DATA ref1 TYPE REF TO i.
+DATA ref2 TYPE REF TO string.
+DATA ref3 TYPE REF TO zdemo_abap_carr.
+DATA ref4 TYPE REF TO data.
+
+"Classes and interfaces
+DATA oref TYPE REF TO zcl_demo_abap_objects.
+DATA iref TYPE REF TO zdemo_abap_get_data_itf.
+
+"Table types
+DATA ref5 TYPE TABLE OF REF TO data.
+DATA ref6 TYPE TABLE OF REF TO i.
+DATA ref7 TYPE TABLE OF REF TO zdemo_abap_carr.
+DATA ref8 TYPE TABLE OF REF TO zcl_demo_abap_objects.
+``` 
+
+ </td>
+</tr>
+
+
+<tr>
+<td> 
+
+`TYPE LINE OF`
+
+ </td>
+
+ <td> 
+
+
+``` abap
+"------------ TYPE LINE OF ----------------
+"Structured types based on the line type of internal tables
+
+"Local table type
+TYPES: BEGIN OF struct_ty7,
+          comp1 TYPE i,
+          comp2 TYPE string,
+          comp3 TYPE c LENGTH 3,
+        END OF struct_ty7.
+TYPES tab_ty2 TYPE TABLE OF struct_ty7 WITH EMPTY KEY.
+
+DATA struct9 TYPE LINE OF tab_ty2.
+DATA struct10 TYPE LINE OF zcl_demo_abap_oo_inheritance_1=>t_log.
+``` 
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+`LIKE`
+
+ </td>
+
+ <td> 
+
+
+``` abap
+"------------ LIKE ----------------
+"Types/data objects resusing types of other data objects
+
+"Elementary types/data objects
+DATA copy_elem TYPE c LENGTH 3.
+
+DATA like_elem1 LIKE copy_elem.
+TYPES like_elem2 LIKE copy_elem.
+DATA like_elem3 LIKE space.
+
+DATA copy_struc1 TYPE zdemo_abap_carr.
+DATA copy_struc2 TYPE zdemo_abap_fli_ve.
+
+DATA like_elem4 LIKE copy_struc1-carrid.
+DATA like_elem5 LIKE copy_struc2-fldate.
+DATA like_elem6 LIKE sy-index.
+
+"Structured types/data objects
+DATA like_struc1 LIKE copy_struc1.
+TYPES like_struc2 LIKE copy_struc2.
+
+"Table types/internal tables
+DATA copy_tab1 TYPE TABLE OF string.
+DATA copy_tab2 TYPE TABLE OF zdemo_abap_carr WITH EMPTY KEY.
+
+DATA like_tab1 LIKE copy_tab1.
+TYPES like_tab2 LIKE copy_tab2.
+``` 
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+`LIKE ...`
+
+ </td>
+
+ <td> 
+
+
+``` abap
+"------------ LIKE ... ----------------
+
+"--- Structured type/data object based on internal table using LIKE LINE OF ---
+DATA like_line_tab1 TYPE TABLE OF zdemo_abap_carr WITH EMPTY KEY.
+DATA like_line_tab2 TYPE TABLE OF string.
+
+DATA struc_like_line LIKE LINE OF like_line_tab1.
+DATA elem_like_line LIKE LINE OF like_line_tab2.
+
+"--- Reference based on existing data object using LIKE REF TO ---
+DATA str TYPE string.
+
+DATA ref9 LIKE REF TO str.
+DATA ref10 LIKE REF TO struc_like_line.
+
+"--- Reference table based on existing data object using LIKE TABLE REF TO ---
+DATA ref11 LIKE TABLE OF REF TO str.
+DATA ref12 LIKE TABLE OF REF TO struc_like_line.
+``` 
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+`BEGIN OF ENUM`
+
+ </td>
+
+ <td> 
+
+
+``` abap
+"------------ BEGIN OF ENUM ----------------
+"Creating ABAP enumerated types and objects
+
+"a) No explicit base type is specified, base type of the constants is i by default,
+"   values are counted up (a = 0, b = 1, ...)
+TYPES: BEGIN OF ENUM t_enum,
+          a,
+          b,
+          c,
+        END OF ENUM t_enum.
+
+"b) Explicit base type is specified, start values are provided (one of them must be initial)
+TYPES: basetype TYPE c LENGTH 2,
+        BEGIN OF ENUM t_enum_base BASE TYPE basetype,
+          d VALUE IS INITIAL,
+          e VALUE 'ab',
+          f VALUE 'cd',
+          g VALUE 'ef',
+        END OF ENUM t_enum_base.
+
+"c) Optionally declaring an enumerated structure
+TYPES: BEGIN OF ENUM t_enum_struc STRUCTURE en_struc BASE TYPE basetype,
+          h VALUE IS INITIAL,
+          i VALUE 'hi',
+          j VALUE 'ab',
+          k VALUE 'ap',
+        END OF ENUM t_enum_struc STRUCTURE en_struc.
+
+
+DATA enum1 TYPE t_enum.
+DATA enum2 TYPE t_enum_base.
+DATA enum3 TYPE t_enum_struc.
+DATA enum LIKE en_struc.
+``` 
+
+ </td>
+</tr>
+
+
+<tr>
+<td> 
+
+Excursion: Dynamically creating data objects using `CREATE DATA`
+
+ </td>
+
+ <td> 
+
+Find more information in the [Dynamic Programming](06_Dynamic_Programming.md) cheat sheet.
+
+<br>
+
+``` abap
+"The examples show various statement patterns
+DATA dref TYPE REF TO data.
+
+
+"CREATE DATA dref TYPE (typename) ...
+CREATE DATA dref TYPE ('STRING'). "Elementary data object
+CREATE DATA dref TYPE ('ZDEMO_ABAP_CARR'). "Structure
+CREATE DATA dref TYPE ('STRING_TABLE'). "Internal table
+
+"CREATE DATA dref TYPE ... TABLE OF (typename) ...
+CREATE DATA dref TYPE TABLE OF ('STRING'). "Internal table
+CREATE DATA dref TYPE SORTED TABLE OF ('ZDEMO_ABAP_FLI') WITH UNIQUE KEY carrid.
+
+
+"CREATE DATA dref TYPE REF TO (typename).
+CREATE DATA dref TYPE REF TO ('STRING').
+CREATE DATA dref TYPE REF TO ('ZDEMO_ABAP_FLI').
+
+"CREATE DATA dref TYPE LINE OF (typename).
+TYPES tab_ty3 TYPE TABLE OF zdemo_abap_fli WITH EMPTY KEY.
+CREATE DATA dref TYPE LINE OF ('TAB_TY3').
+
+"CREATE DATA dref LIKE struc-(compname).
+DATA struct11 TYPE zdemo_abap_fli.
+CREATE DATA dref LIKE struct11-('CARRID').
+
+"CREATE DATA dref TYPE (absolute_name).
+CREATE DATA dref TYPE ('\TYPE=STRING').
+"Getting an absolute type name; see more information further down
+DATA(absolute_name) = cl_abap_typedescr=>describe_by_name( 'ZDEMO_ABAP_CARR' )->absolute_name.
+CREATE DATA dref TYPE (absolute_name).
+
+"CREATE DATA dref TYPE HANDLE type_description_object.
+"Getting a type description object. Find more information about RTTI below.
+DATA(tdo_elem) = cl_abap_elemdescr=>get_c( 4 ). "type c length 4
+CREATE DATA dref TYPE HANDLE tdo_elem.
+``` 
+
+ </td>
+</tr>
+
+</table>
+
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+### Declaration Context of Data Types
 
 The declaration context of data types (and objects) determines the validity and visibility.
 
@@ -1775,84 +2402,13 @@ The declaration context of data types (and objects) determines the validity and 
     - The data types of the ABAP Dictionary are not declared with the `TYPES` statement, but using ADT tools (and/or SAP GUI tools in systems where SAP GUI is available).
     - The DDIC has many more [built-in types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbuiltin_ddic_type_glosry.htm) than ABAP. These types have other names. They cannot be used in ABAP programs. 
     - The DDIC provides many options for defining types, including elementary data types (defined as data elements), reference types, complex types such as structured types and table types. Note that the name of a database table or a view can be used in type declarations to address the line type of these repository objects (for example, a structure: `DATA a TYPE some_db_table.`).
+    - Furthermore, CDS also artifacts constitute global data types that can be referred to in ABAP.
     - Note the following trap: Local declarations hide global declarations of the same name. 
+    - Find more information in the [ABAP Dictionary](26_ABAP_Dictionary.md) cheat sheet.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## Excursions
-### ABAP Enumerated Types and Objects
-- ABAP supports the concept of enumerations. 
-- Enumerations are a mixture of types and constants.
-- An [enumerated type](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenenum_type_glosry.htm) specifies a value set in addition to the actual type properties. 
-- [Enumerated objects](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenenumerated_object_glosry.htm) - data objects with an enumerated type - are mainly used to check allowed values. This usually restricts the actual parameters passed to methods to the enumerated values defined in the class. [Enumerated variables](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenenumerated_variable_glosry.htm) are variable enumerated objects. They can only contain the associated enumerated values. 
-- [CDS enumerated types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_enum_type_glosry.htm) are also available. Find more information in the [ABAP Dictionary (DDIC)](26_ABAP_Dictionary.md) cheat sheet.
-
-Syntax:
-
-```abap
-"The definition of an enumerated type in ABAP declares its enumerated constants (these are special enumerated objects).
-"a) In the case below, no explicit base type is specified. Then, the standard base type of the constants is i. The 
-"   enumerated values are counted up starting with 0 (a -> 0, b -> 1 ...).
-
-TYPES: BEGIN OF ENUM t_enum,
-         a,
-         b,
-         c,
-         d,
-       END OF ENUM t_enum.
-
-"b) Explicit base type is specified and start values provided using the VALUE addition
-"   Note that one value must be initial.
-
-TYPES: basetype TYPE c LENGTH 2,
-       BEGIN OF ENUM t_enum_base BASE TYPE basetype,         
-          e VALUE IS INITIAL,
-          f VALUE 'u',
-          g VALUE 'v',
-          h VALUE 'wx',
-          i VALUE 'yz',
-       END OF ENUM t_enum_base.
-
-"c) Optionally an enumerated structure can be declared in the context of the type declaration.
-"   A component of an enumerated structure: An enumerated constant that exists as a component 
-"   of a constant structure, not as a single data object.
-    
-TYPES: BEGIN OF ENUM t_enum_struc STRUCTURE en_struc BASE TYPE basetype,
-          j VALUE IS INITIAL,
-          k VALUE 'hi',
-          l VALUE 'ab',
-          m VALUE 'ap',
-        END OF ENUM t_enum_struc STRUCTURE en_struc.
-```
-
-Enumerated variables can be declared by referring to the enumerated type.
-They can only be assigned the enumerated values defined there that exist as the content of enumerated constants or components of an enumerated structure.
-
-```abap
-"Using the enumerated type from above
-DATA dobj_enum_a TYPE t_enum.
-
-dobj_enum_a = a.
-
-"Data object declared inline, the typed derived is t_enum
-DATA(dobj_enum_b) = b.   
-
-"Note: The technical data type of an enumerated value is the base type 
-"of the enumerated type. You can use the base type of an enumerated type 
-"in special conversions using CONV. A base type is flat, elementary, and 
-"has a maximum length of 16 bytes.
-DATA some_dobj TYPE c LENGTH 2 VALUE 'ap'.
-DATA(dobj_enum_c) = CONV t_enum_struc( some_dobj ).
-ASSERT dobj_enum_c = en_struc-m.
-
-"Conversion not possible
-DATA some_string TYPE string VALUE 'ap'.
-"DATA(dobj_enum_d) = CONV t_enum_struc( some_string ).
-```
-
-Find more information on enumerated types in the (commented code of the) cheat sheet example and [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenenumerated_types_usage.htm). 
-
-<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ### Getting Type Information and Creating Types/Data Objects at Runtime
 

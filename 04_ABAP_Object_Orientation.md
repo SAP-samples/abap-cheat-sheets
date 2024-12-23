@@ -46,6 +46,7 @@
     - [Events](#events)
     - [Examples for Design Patterns: Factory Methods and Singletons](#examples-for-design-patterns-factory-methods-and-singletons)
     - [Class-Based Exceptions](#class-based-exceptions)
+    - [ABAP Unit Tests](#abap-unit-tests)
     - [ABAP Doc Comments](#abap-doc-comments)
   - [More Information](#more-information)
   - [Executable Examples](#executable-examples)
@@ -4422,6 +4423,16 @@ obj_factory = class=>factory_method( par = ... ).
 - Find an overview in the [Exceptions and Runtime Errors](27_Exceptions.md) cheat sheet.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
+
+### ABAP Unit Tests
+
+- [ABAP Unit](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_unit_glosry.htm) is a test tool integrated into the ABAP runtime framework. 
+- It can be used to run individual or mass tests, and to evaluate test results. 
+- In ABAP programs, individual unit tests are implemented as [test methods](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentest_method_glosry.htm) of local [test classes](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentest_class_glosry.htm). 
+- Find information on ABAP Unit tests in the [ABAP Unit Tests](14_ABAP_Unit_Tests.md) cheat sheet.
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
 
 ### ABAP Doc Comments
 
