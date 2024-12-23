@@ -1973,13 +1973,13 @@ DATA itab_str    TYPE string_table.
 
 ### Additions for Creating Data Types and Objects
 
-The following table shows a selection of additions for creating data types and objects. The examples mostly show data object declarations with `DATA`. `TYPES` statements are also possible in most contexts.
+The following table shows a selection of additions for creating data types and objects. The examples randomly show `DATA` or `TYPES` statements.
 
 
 <table>
 
 <tr>
-<td> Superclass of Exception Classes </td> <td> Notes </td>
+<td> Addition </td> <td> Code Snippet </td>
 </tr>
 
 <tr>
