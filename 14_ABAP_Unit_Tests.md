@@ -587,7 +587,6 @@ For more information about evaluating ABAP unit test results, see [here](https:/
   - [Unit Testing with ABAP Unit](https://help.sap.com/docs/ABAP_PLATFORM_NEW/c238d694b825421f940829321ffa326a/08c60b52cb85444ea3069779274b43db.html?locale=en-US)
   - [ABAP Unit](https://help.sap.com/docs/ABAP_PLATFORM_NEW/ba879a6e2ea04d9bb94c7ccd7cdac446/491cfd8926bc14cde10000000a42189b.html?locale=en-US)
 
-
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## Executable Examples
