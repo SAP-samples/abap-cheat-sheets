@@ -185,6 +185,7 @@ DATA(day_from_date) = xco_date->day.
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ### Validity of Date Fields
+
 - Before accessing date (or time) fields, ensure that the content of these fields is valid to avoid unexpected results, such as incorrect calculations.
 - The ABAP runtime framework checks the validity of these fields in various contexts, including lossless assignments and assignments to numeric fields (see [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenchar_date_time_fields_validity.htm)):
   - Lossless assignments: If an invalid value is encountered in a source field, an exception will be raised instead of producing the initial value. 
@@ -234,13 +235,73 @@ DATA(day_sub) = substring( val = some_date off = 6 len = 2 ). "02
 DATA(year_repl)  = replace( val = some_date off = 0 len = 4 with = `2025` ). "20250102
 
 "Offset and length specifications
+"Read access
+DATA(off_len_spec_year) = some_date(4). "2024
+DATA(off_len_spec_year_2) = some_date+0(4). "2024
+DATA(off_len_spec_month) = some_date+4(2). "01
 DATA(off_len_spec_day) = some_date+6(2). "02
+"Write access
 some_date+4(2) = '10'. "20241002
+
+"Excursion: Comparison rules for character-like date types
+"The following example specifies an internal table that has a component
+"of type d. Using a ranges table and SELECT statements different table
+"entries are retrieved.
+"Note the comparison rule for type d (and type t): Content is compared
+"from left to right, and the first different character determines which
+"operand is greater.
+
+TYPES: BEGIN OF str_w_date,
+          num  TYPE i,
+          date TYPE d,
+        END OF str_w_date,
+        tab_type_w_date TYPE TABLE OF str_w_date WITH EMPTY KEY.
+
+DATA(date_tab) = VALUE tab_type_w_date(
+    ( num = 1 date = '20241017' )
+    ( num = 2 date = '20241030' )
+    ( num = 3 date = '20241101' )
+    ( num = 4 date = '20241105' )
+    ( num = 5 date = '20241112' )
+    ( num = 6 date = '20241201' )
+    ( num = 7 date = '20241215' )
+    ( num = 8 date = '20241227' )
+    ( num = 9 date = '20241231' )
+    ( num = 10 date = '20250101' )
+    ( num = 11 date = '20250110' )
+    ( num = 12 date = '20250203' ) ).
+
+"Declaring a ranges table
+DATA rangestab TYPE RANGE OF d.
+
+"Populating a ranges table using VALUE
+"Include sign, including all December dates in the result set and all dates
+"earlier than November
+rangestab = VALUE #( sign   = 'I'
+                     option = 'BT' ( low = '20241201' high = '20241231' )
+                     option = 'LT' ( low = '20241101' ) ).
+
+"Using a SELECT statement and the IN addition to retrieve internal table
+"content based on the ranges table specifications
+SELECT num FROM @date_tab AS dtab
+    WHERE date IN @rangestab
+    INTO TABLE @DATA(date_result1).
+"The result includes: 1, 2, 6, 7, 8, 9
+
+"Exclude sign, excluding all December dates in the result set
+rangestab = VALUE #( sign   = 'E'
+                     option = 'BT' ( low = '20241201' high = '20241231' ) ).
+
+SELECT num FROM @date_tab AS dtab
+    WHERE date IN @rangestab
+    INTO TABLE @DATA(date_result2).
+"The result includes: 1, 2, 3, 4, 5, 10, 11, 12
 ```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ### Numeric Access/Calculations
+
 - When converting date fields to numeric values, the type `d` produces an integer representing the number of days since 01.01.0001. 
 - This is especially important when using date fields in calculations and converting the values to numeric types. 
 - The XCO library offers methods for performing calculations. In the code snippet, examples use the `value` attribute. The return value of the method calls is of type `string`. For more information,  refer to the class documentation.
@@ -443,6 +504,15 @@ DATA(hour_extr) = substring( val = some_time off = 0 len = 2 ). "12
 DATA(minute_extr) = substring( val = some_time off = 2 len = 2 ). "34
 DATA(second_extr) = substring( val = some_time off = 4 len = 2 ). "56
 
+"Offset and length specifications
+"Read access
+DATA(off_len_spec_hour) = some_time(2). "12
+DATA(off_len_spec_hour_2) = some_time+0(2). "12
+DATA(off_len_spec_minutes) = some_time+2(2). "34
+DATA(off_len_spec_seconds) = some_time+4(2). "56
+"Write access
+some_time+4(2) = '10'. "123410
+
 "Retrieving the current seconds, minutes, hours using XCO
 "e.g. 59
 DATA(sec_w_xco) = xco_cp=>sy->time( xco_cp_time=>time_zone->user )->second.
@@ -496,6 +566,109 @@ DATA(time_xco_subtr) = xco_cp=>sy->time( xco_cp_time=>time_zone->user
                                        )->subtract( iv_hour = 1 iv_minute = 1 iv_second = 1
                                        )->as( xco_cp_time=>format->iso_8601_extended
                                        )->value.
+
+"------------ Calculating the time delta between two time values ------------
+
+DATA: time1 TYPE t VALUE '210000',
+      time2 TYPE t VALUE '040000'.
+
+"Calculating the time difference by subtracting
+"Note that the resulting data object is of type i.
+"The time values are automatically converted to type i.
+"Following the conversion rule of type t to i, the resulting value
+"is calculated as follows: format hhmmss of type t -> integer values
+"as a result of the calculation hh * 3600 + mm * 60 + ss.
+
+"-61200
+DATA(time_diff) = time2 - time1.
+
+"75600
+DATA(time1_conv2i) = CONV i( time1 ).
+ASSERT time1_conv2i = ( 21 * 3600 ) + ( 00 * 60 ) + 00.
+
+"14400
+DATA(time2_conv2i) = CONV i( time2 ).
+ASSERT time2_conv2i = ( 04 * 3600 ) + ( 00 * 60 ) + 00.
+ASSERT time2_conv2i - time1_conv2i = time_diff.
+
+"---- Calculating the total values of the time difference in seconds, minutes and hours ----
+"The MOD operator is used and works in a way that the positive remainder
+"of the division of the left operand by the right is returned. Therefore,
+"it is irrelevant whether the time difference value is either positive or
+"negative.
+"The value 86400 is used as right operand, representing the number of seconds
+"per day/24 hours.
+"25200
+DATA(time_diff_seconds_total) = ( time2 - time1 ) MOD 86400.
+
+"120.05
+DATA(time_diff_minutes_total) = CONV decfloat34( ( ( time2 - time1 ) MOD 86400 ) / 60 ).
+
+"2.000833333333333333333333333333333
+DATA(time_diff_hours_total) = CONV decfloat34( ( ( ( time2 - time1 ) MOD 86400 ) / 3600 ) ).
+
+"---- Representing the time difference in a data object of type t ----
+DATA diff_time TYPE t.
+
+DATA(diff) = ( time2 - time1 ) MOD 86400.
+
+"The following calculations use the DIV operator
+"This operator returns the integer part of the division of the left operand
+"by the right
+DATA(hours) = diff DIV 3600.
+diff = diff MOD 3600.
+DATA(minutes) = diff DIV 60.
+DATA(seconds) = diff MOD 60.
+
+"diff_time: '070000'
+diff_time(2) = hours.
+diff_time+2(2) = minutes.
+diff_time+4(2) = seconds.
+
+"More examples
+time1 = '225958'.
+time2 = '010001'.
+
+"diff_time: '020003'
+diff_time(2) = ( ( time2 - time1 ) MOD 86400 ) DIV 3600.
+diff_time+2(2) = ( ( ( time2 - time1 ) MOD 86400 ) MOD 3600 ) DIV 60.
+diff_time+4(2) = ( ( ( time2 - time1 ) MOD 86400 ) MOD 3600 ) MOD 60.
+
+time1 = '010001'.
+time2 = '225958'.
+
+"diff_time: '215957'
+diff_time(2) = ( ( time2 - time1 ) MOD 86400 ) DIV 3600.
+diff_time+2(2) = ( ( ( time2 - time1 ) MOD 86400 ) MOD 3600 ) DIV 60.
+diff_time+4(2) = ( ( ( time2 - time1 ) MOD 86400 ) MOD 3600 ) MOD 60.
+
+"diff_time: '154342'
+time1 = '132415'.
+time2 = '050757'.
+diff_time(2) = ( ( time2 - time1 ) MOD 86400 ) DIV 3600.
+diff_time+2(2) = ( ( ( time2 - time1 ) MOD 86400 ) MOD 3600 ) DIV 60.
+diff_time+4(2) = ( ( ( time2 - time1 ) MOD 86400 ) MOD 3600 ) MOD 60.
+
+time1 = '050757'.
+time2 = '132415'.
+
+"diff_time: '081618'
+diff_time(2) = ( ( time2 - time1 ) MOD 86400 ) DIV 3600.
+diff_time+2(2) = ( ( ( time2 - time1 ) MOD 86400 ) MOD 3600 ) DIV 60.
+diff_time+4(2) = ( ( ( time2 - time1 ) MOD 86400 ) MOD 3600 ) MOD 60.
+
+"---- Excursion: / and DIV operators (and why DIV is used above) ----
+time1 = '132415'.
+time2 = '050757'.
+
+"Compare the result of the following statements that use different operators
+"15
+DATA(hours_w_div) = ( ( time2 - time1 ) MOD 86400 ) DIV 3600.
+
+"16 (result of type i, result is rounded)
+DATA(hours_no_div) = ( ( time2 - time1 ) MOD 86400 ) / 3600.
+"15.72833333333333333333333333333333
+DATA(hours_no_div_dec) = CONV decfloat34( ( ( time2 - time1 ) MOD 86400 ) / 3600 ).
 
 "------------ Conversions with the CL_ABAP_TIMEFM class ------------
 

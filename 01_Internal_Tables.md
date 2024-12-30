@@ -944,7 +944,7 @@ DATA str_tab_c TYPE string_table.
 </td>
 </tr>
 <tr>
-<td> Adding new lines without deleting existing content </td>
+<td> <code>BASE</code> addition: Adding new lines without deleting existing content </td>
 <td>
 
 When you use the above assignments to an existing internal table (`itab = ...`), the internal table is initialized and the existing content is deleted. To add new lines without deleting existing content, use the  [`BASE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenvalue_constructor_params_itab.htm) addition.
@@ -959,7 +959,7 @@ itab = VALUE #( BASE itab ( comp1 = a comp2 = b ... )
 </td>
 </tr>
 <tr>
-<td> Adding lines of other tables </td>
+<td> <code>LINES OF</code> addition: Adding lines of other tables </td>
 <td>
 
 ... using the `LINES OF` addition to the `VALUE` operator.
@@ -1017,7 +1017,7 @@ MOVE-CORRESPONDING itab3 TO itab.
 </tr>
 
 <tr>
-<td> Copying content and retaining existing content </td>
+<td> <code>BASE</code>/<code>KEEPING TARGET LINES</code> additions: Copying content and retaining existing content </td>
 <td>
 
 ... using the `CORRESPONDING` operator. 
@@ -1033,7 +1033,7 @@ MOVE-CORRESPONDING itab3 TO itab KEEPING TARGET LINES.
 </td>
 </tr>
 <tr>
-<td> Assigning components using mapping relationships </td>
+<td> <code>MAPPING</code> addition: Assigning components using mapping relationships </td>
 <td>
 
 - You can use the `MAPPING` addition of the `CORRESPONDING` operator to specify components of a source table that are assigned to the components of a target table in mapping relationships. 
@@ -1048,7 +1048,7 @@ itab = CORRESPONDING #( itab3 MAPPING a = c b = d ).
 </td>
 </tr>
 <tr>
-<td> Excluding components from the assignment </td>
+<td> <code>EXCEPT</code> addition: Excluding components from the assignment </td>
 <td>
 
 ... using the `EXCEPT` addition to the `CORRESPONDING` operator.
@@ -1067,7 +1067,7 @@ itab = CORRESPONDING #( itab3 EXCEPT * ).
 </tr>
 
 <tr>
-<td> Preventing runtime errors when duplicate lines are assigned </td>
+<td> <code>DISCARDING DUPLICATES</code> addition: Preventing runtime errors when duplicate lines are assigned </td>
 <td>
 
 ... to the target table that is defined to accept only unique keys using the `DISCARDING DUPLICATES` addition of the `CORRESPONDING` operator. 
@@ -1083,12 +1083,12 @@ itab = CORRESPONDING #( itab2 DISCARDING DUPLICATES ).
 </tr>
 
 <tr>
-<td> Copying data from deep internal tables </td>
+<td> <code>DEEP</code>/<code>EXPANDING NESTED TABLES</code> additions: Copying data from deep internal tables </td>
 <td>
 
 - A deep internal table is a table with [deep](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendeep_glosry.htm) line type, which means the table can itself contain internal tables as components, among others.
 - The `BASE` addition does not delete the existing content. 
-- See also the alternative `MOVE-CORRESPONDING` statements.
+- See also the alternative `MOVE-CORRESPONDING` statements that use the `EXPANDING NESTED TABLES` addition.
 
 <br>
 
@@ -4404,7 +4404,8 @@ ENDCLASS.
 ### Restrictions Regarding Selecting from Internal Tables 
 
 - This excursion is intended to underscore the restrictions mentioned above and in the [documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensql_engine_restr.htm) in more detail when selecting from internal tables. 
-- Components having deep types, such as strings, cannot be included, for example, in the `SELECT` list or `WHERE` clause. 
+- Components having deep types cannot be included, for example, in the `SELECT` list or `WHERE` clause. 
+- Among the non-allowed types of internal table components are strings (as they are deep types) and `utclong`.
 - Note that only those fields are checked (and sent to the database) that are actually used (as shown in the example below). 
 - However, the type string is allowed if it is declared using the built-in dictionary type `sstring` (for example, a component typed with a [data element](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendata_element_glosry.htm) or a [CDS simple type](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_simple_type_glosry.htm) that uses `sstring`).
 

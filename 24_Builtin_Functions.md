@@ -16,7 +16,7 @@
     - [More (Special) Functions](#more-special-functions)
     - [coalesce Function](#coalesce-function)
   - [More Information](#more-information)
-  - [Executable Examples](#executable-examples)
+  - [Executable Example](#executable-example)
 
 
 This ABAP cheat sheet includes a variety of built-in functions in ABAP, along with code snippets to demonstrate their functionality. Many of the functions covered here are also included in other ABAP cheat sheets that focus on specific topics.
@@ -1751,7 +1751,7 @@ SELECT tab2~key_field,
   - [Overview of functions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbuilt_in_functions_overview.htm)
 - [Built-in functions that can be used by ABAP CDS and ABAP SQL](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenddic_builtin_functions.htm)
 
-## Executable Examples
+## Executable Example
 
 [zcl_demo_abap_builtin_func](./src/zcl_demo_abap_builtin_func.clas.abap) 
 
