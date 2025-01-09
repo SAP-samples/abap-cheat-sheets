@@ -12,6 +12,11 @@
     - [Numeric Access/Calculations](#numeric-accesscalculations)
     - [CL\_ABAP\_DATFM: Date Conversions](#cl_abap_datfm-date-conversions)
   - [Time](#time)
+    - [Retrieving the Current Time](#retrieving-the-current-time)
+    - [Accessing Time Values](#accessing-time-values)
+    - [Creating Time Values](#creating-time-values)
+    - [Performing Time Calculations](#performing-time-calculations)
+    - [CL\_ABAP\_TIMEFM: Converting Time Values](#cl_abap_timefm-converting-time-values)
   - [Time Stamps](#time-stamps)
     - [Time Stamps of Type utclong](#time-stamps-of-type-utclong)
       - [Retrieving the Current Time Stamp](#retrieving-the-current-time-stamp)
@@ -478,6 +483,7 @@ ENDLOOP.
 ## Time
 The code snippet below provides examples of time processing, such as retrieving the current time, accessing time values, creating time values, and performing time calculations. You can also utilize the XCO library in different scenarios. Note that the return value in most of the code snippets using XCO is of type `string`.
 
+### Retrieving the Current Time
 
 ```abap
 "--------------------- Retrieving the current time --------------------
@@ -492,7 +498,11 @@ DATA(utc_time) = cl_abap_context_info=>get_system_time( ).
 DATA(time_w_xco) = xco_cp=>sy->time( xco_cp_time=>time_zone->user
                                     )->as( xco_cp_time=>format->iso_8601_extended
                                     )->value.
+```
 
+### Accessing Time Values
+
+```abap
 "--------------------- Accessing time values --------------------
 
 "Note: As mentioned in a previous section on dates, the access to time fields
@@ -520,7 +530,11 @@ DATA(sec_w_xco) = xco_cp=>sy->time( xco_cp_time=>time_zone->user )->second.
 DATA(min_w_xco) = xco_cp=>sy->time( xco_cp_time=>time_zone->user )->minute.
 "e.g. 10
 DATA(hr_w_xco) = xco_cp=>sy->time( xco_cp_time=>time_zone->user )->hour.
+```
 
+### Creating Time Values
+
+```abap
 "--------------------- Creating times --------------------
 
 DATA time_cr1 TYPE t.
@@ -541,7 +555,11 @@ DATA(time_cr4) = xco_time->as( xco_cp_time=>format->iso_8601_extended )->value.
 DATA(hours_from_time) = xco_time->hour. "08
 DATA(minutes_from_time) = xco_time->minute. "34
 DATA(seconds_from_time) = xco_time->second. "05
+```
 
+### Performing Time Calculations
+
+```abap
 "------------ Performing time calculations ------------
 
 "Retrieving seconds, minutes, and hours from a time value in a data object
@@ -669,7 +687,11 @@ DATA(hours_w_div) = ( ( time2 - time1 ) MOD 86400 ) DIV 3600.
 DATA(hours_no_div) = ( ( time2 - time1 ) MOD 86400 ) / 3600.
 "15.72833333333333333333333333333333
 DATA(hours_no_div_dec) = CONV decfloat34( ( ( time2 - time1 ) MOD 86400 ) / 3600 ).
+```
 
+### CL_ABAP_TIMEFM: Converting Time Values
+
+```abap
 "------------ Conversions with the CL_ABAP_TIMEFM class ------------
 
 "Using the CL_ABAP_TIMEFM class, you can perform conversions with external

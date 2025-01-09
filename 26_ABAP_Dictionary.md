@@ -758,7 +758,7 @@ Using the [XCO library](https://help.sap.com/docs/btp/sap-business-technology-pl
 > - The executable example uses both the created repository objects as described in this cheat sheet and some repository objects of the ABAP cheat sheet repository. The example explores and uses code snippets of this cheat sheet, emphasizing the use of global types in ABAP programs.
 > - [Disclaimer](./README.md#%EF%B8%8F-disclaimer)
 
-Expand the following collapsible section for example code. To try it out, create a demo class named `zcl_some_class` and paste the code into it. After activation, choose *F9* in ADT to execute the class. The example is set up to display output in the console.
+Expand the following collapsible section for example code. To try it out, create a demo class named `zcl_demo_abap` and paste the code into it. After activation, choose *F9* in ADT to execute the class. The example is set up to display output in the console.
 
 <details>
   <summary>🟢 Click to expand for example code</summary>
@@ -766,7 +766,7 @@ Expand the following collapsible section for example code. To try it out, create
 
 
 ```abap
-CLASS zcl_some_class DEFINITION
+CLASS zcl_demo_abap DEFINITION
       PUBLIC
       FINAL
       CREATE PUBLIC .
@@ -775,7 +775,7 @@ CLASS zcl_some_class DEFINITION
     INTERFACES if_oo_adt_classrun.
 ENDCLASS.
 
-CLASS zcl_some_class IMPLEMENTATION.
+CLASS zcl_demo_abap IMPLEMENTATION.
   METHOD if_oo_adt_classrun~main.
 
     "Populating demo database tables from the ABAP cheat sheet repository

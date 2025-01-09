@@ -665,26 +665,34 @@ FINAL(it_c) = it_a.
 
 "As shown below and in other cheat sheets, constructor operators
 "are handy when creating internal tables in place. The following
-"examples uses the VALUE operator and an internal table type.
+"examples uses the VALUE operator and an internal table type. You
+"may also use the NEW operator to create anonymous data objects.
 DATA(it_d) = VALUE string_table( ( `aaa` )
                                  ( `bbb` ) ).
 
+TYPES it_type TYPE TABLE OF zdemo_abap_carr with empty key.
+DATA(it_e) = VALUE it_type( ( carrid = 'XY' carrname = 'XY Airlines' )
+                            ( carrid = 'YZ' carrname = 'Air YZ' ) ).
+
 "Not providing any table lines means the table is initial
 "and has the same effect as the declaration of it_f.
-DATA(it_e) = VALUE string_table( ).
-DATA it_f TYPE string_table.
+DATA(it_f) = VALUE string_table( ).
+DATA it_g TYPE string_table.
+
+DATA(it_h) = VALUE it_type( ).
+DATA it_i TYPE it_type.
 
 "Excursion
 "Table declared inline in the context of a SELECT statement;
 "a prior extra declaration of an internal table is not needed.
-SELECT * FROM zdemo_abap_fli INTO TABLE @DATA(it_g).
+SELECT * FROM zdemo_abap_fli INTO TABLE @DATA(it_j).
 
 "Instead of
-DATA it_h TYPE TABLE OF zdemo_abap_fli WITH EMPTY KEY.
-SELECT * FROM zdemo_abap_fli INTO TABLE @it_h.
+DATA it_k TYPE TABLE OF zdemo_abap_fli WITH EMPTY KEY.
+SELECT * FROM zdemo_abap_fli INTO TABLE @it_k.
 
 "Using FINAL
-SELECT * FROM zdemo_abap_fli INTO TABLE @FINAL(it_i).
+SELECT * FROM zdemo_abap_fli INTO TABLE @FINAL(it_l).
 ```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
@@ -1233,7 +1241,7 @@ INSERT VALUE s( a = 'yyy' b = 3 ) INTO TABLE dref_tab->*.
 
 ### Example: Exploring Populating Internal Tables
 
-Expand the following collapsible section for example code. To try it out, create a demo class named `zcl_some_class` and paste the code into it. After activation, choose *F9* in ADT to execute the class. 
+Expand the following collapsible section for example code. To try it out, create a demo class named `zcl_demo_abap` and paste the code into it. After activation, choose *F9* in ADT to execute the class. 
 The example is set up to display output in the console, but only for few data objects. You may want to set a break point at the earliest possible position and walk through the example in the debugger. This will allow you to double-click on data objects and observe how the different statements affect their contents.
 
 <details>
@@ -1241,7 +1249,7 @@ The example is set up to display output in the console, but only for few data ob
   <!-- -->
 
 ```abap
-CLASS zcl_some_class DEFINITION
+CLASS zcl_demo_abap DEFINITION
   PUBLIC
   FINAL
   CREATE PUBLIC .
@@ -1255,7 +1263,7 @@ ENDCLASS.
 
 
 
-CLASS zcl_some_class IMPLEMENTATION.
+CLASS zcl_demo_abap IMPLEMENTATION.
 
   METHOD if_oo_adt_classrun~main.
 
@@ -1537,49 +1545,101 @@ There are three different ways to specify the line to read:
 - by free key
 
 The following code snippets include [`READ TABLE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapread_table.htm) statements and [table expressions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentable_expressions.htm) to read from internal tables.
+Note that you can also use ABAP SQL `SELECT` statements to read from internal tables. This is covered further down.
 
 ### Determining the Target Area when Reading Single Lines in READ TABLE Statements
 
--   Copying a line to a data object using the addition `INTO`.
-    After the copying, the line found exists separately in the internal table and
-    in the data object. If you change the
-    data object or the table line, the change does not affect the other.
-    However, you can modify the copied table line and use a
-    `MODIFY` statement to modify the table based on the modified
-    table line (see below). The `TRANSPORTING` addition 
-    specifies which components to copy. If
-    it is not specified, all components are respected.
-    ``` abap
-    READ TABLE itab INTO dobj ...   "dobj must have the table's structure type
+<table>
 
-    READ TABLE itab INTO DATA(dobj_inl) ...
+<tr>
+<td> Target Area </td> <td> Notes </td>
+</tr>
 
-    READ TABLE itab INTO ... TRANSPORTING comp1 [comp2 ... ].
-    ```
+<tr>
+<td> 
 
--   Assigning a line to a [field
-    symbol](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenfield_symbol_glosry.htm "Glossary Entry"),
-    for example, using an inline declaration (`... ASSIGNING FIELD-SYMBOL(<fs>) ...`). When you then access the field symbol, it means that you access the found table line. There is no actual copying of
-    content. Therefore, modifying the field symbol means
-    modifying the table line directly. Note that you cannot use the 
-    `TRANSPORTING` addition since the entire table is
-    assigned to the field symbol.
+Data object
 
-    ``` abap
-    READ TABLE itab ASSIGNING <fs1> ...                 "The field symbol must have an appropriate type.
+ </td>
 
-    READ TABLE itab ASSIGNING FIELD-SYMBOL(<fs2>) ...   "The field symbol is created inline.
-    ```
+ <td> 
 
--   Reading a line into a [data reference
-    variable](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendata_reference_variable_glosry.htm "Glossary Entry")
-    using `REFERENCE INTO`. In this case, no copying takes place. If you want to address the line, you must first [dereference](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendereferencing_operat_glosry.htm) the data reference. You cannot use the addition `TRANSPORTING`.
+- Used to copy a line to a data object using the addition `INTO`.
+- After the copying, the line found exists separately in the internal table and in the data object. 
+- If you change the data object or the table line, the change does not affect the other. 
+- However, you can modify the copied table line and use a `MODIFY` statement to modify the table based on the modified table line (see below). 
+- The `TRANSPORTING` addition specifies which components to copy. If it is not specified, all components are respected.
+    
+<br>
 
-    ``` abap
-    READ TABLE itab REFERENCE INTO dref ...
+``` abap
+"dobj must have the table's structure type
+READ TABLE itab INTO dobj ...   
 
-    READ TABLE itab REFERENCE INTO DATA(dref_inl) ...
-    ```
+READ TABLE itab INTO DATA(dobj_inl) ...
+
+READ TABLE itab INTO ... TRANSPORTING comp1 [comp2 ... ].
+```
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+Field symbol
+
+ </td>
+
+ <td> 
+
+- Assigning a line to a [field symbol](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenfield_symbol_glosry.htm "Glossary Entry"),
+  for example, using an inline declaration (`... ASSIGNING FIELD-SYMBOL(<fs>) ...`). 
+- When you then access the field symbol, it means that you access the found table line. There is no actual copying of content. Therefore, modifying the field symbol means
+    modifying the table line directly. 
+- Note that you cannot use the `TRANSPORTING` addition since the entire table is assigned to the field symbol.
+
+<br>
+
+``` abap
+"The field symbol must have an appropriate type.
+READ TABLE itab ASSIGNING <fs1> ...                 
+
+"Inline declaration
+READ TABLE itab ASSIGNING FIELD-SYMBOL(<fs2>) ...   
+```
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+Data reference variable
+
+ </td>
+
+ <td> 
+
+- Reading a line into a [data reference variable](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendata_reference_variable_glosry.htm "Glossary Entry") using `REFERENCE INTO`. 
+- In this case, no copying takes place. 
+- If you want to address the line, you must first [dereference](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendereferencing_operat_glosry.htm) the data reference. 
+- You cannot use the addition `TRANSPORTING`.
+
+<br>
+
+``` abap
+"The data reference variable must have an appropriate type.
+READ TABLE itab REFERENCE INTO dref ...
+
+"Inline declaration
+READ TABLE itab REFERENCE INTO DATA(dref_inl) ...
+```
+
+ </td>
+</tr>
+
+</table>
 
 > **✔️ Hint**<br>
 > Which to use then? Since all syntax options basically provide similar
@@ -2188,7 +2248,7 @@ READ TABLE itab WITH KEY ... BINARY SEARCH ...
 - Depending on the number of times you need to access the internal table, it is recommended to work with sorted tables or tables with secondary keys. If you only need to read one or a few data sets, consider the administrative costs of setting up the index.
 - Note: The `BINARY SEARCH` addition is not available for table expressions. If `KEY ...` is specified, an optimized search is performed by default. There are no performance differences between using the `READ TABLE` statement and table expressions.
 
-To try it out the following example, create a demo class named `zcl_some_class` and paste the code into it. After activation, choose *F9* in ADT to execute the class. The example is set up to display output in the console.
+To try it out the following example, create a demo class named `zcl_demo_abap` and paste the code into it. After activation, choose *F9* in ADT to execute the class. The example is set up to display output in the console.
 
 The example includes multiple reads on standard internal tables using a `READ TABLE` statement ...
 - without `BINARY SEARCH`. 
@@ -2198,7 +2258,7 @@ The runtime of the reads is determined and stored in internal tables. The read o
 The example is intended to demonstrate the performance gain using the `BINARY SEARCH` addition (and also using a secondary table key).
 
 ```abap
-CLASS zcl_some_class DEFINITION
+CLASS zcl_demo_abap DEFINITION
   PUBLIC
   FINAL
   CREATE PUBLIC .
@@ -2211,7 +2271,7 @@ ENDCLASS.
 
 
 
-CLASS zcl_some_class IMPLEMENTATION.
+CLASS zcl_demo_abap IMPLEMENTATION.
   METHOD if_oo_adt_classrun~main.
     "Line type and internal table declarations
     TYPES: BEGIN OF demo_struc,
@@ -2311,7 +2371,7 @@ ENDCLASS.
 
 ### Example: Exploring READ TABLE Statements and Table Expressions
 
-Expand the following collapsible section for example code. To try it out, create a demo class named `zcl_some_class` and paste the code into it. After activation, choose *F9* in ADT to execute the class. 
+Expand the following collapsible section for example code. To try it out, create a demo class named `zcl_demo_abap` and paste the code into it. After activation, choose *F9* in ADT to execute the class. 
 The example is not set up to display output in the console. You may want to set a break point at the first position possible and walk through the example in the debugger. This will allow you to double-click on data objects and observe how the different statements affect their contents.
 
 <details>
@@ -2319,7 +2379,7 @@ The example is not set up to display output in the console. You may want to set 
   <!-- -->
 
 ```abap
-CLASS zcl_some_class DEFINITION
+CLASS zcl_demo_abap DEFINITION
   PUBLIC
   FINAL
   CREATE PUBLIC .
@@ -2333,7 +2393,7 @@ ENDCLASS.
 
 
 
-CLASS zcl_some_class IMPLEMENTATION.
+CLASS zcl_demo_abap IMPLEMENTATION.
 
   METHOD if_oo_adt_classrun~main.
 
@@ -3216,7 +3276,7 @@ DATA(deep_tab) = VALUE tab_type( ( compa = 1
 DATA(num1) = deep_tab[ 2 ]-compb[ 1 ][ 2 ]-comp2.
 ASSERT num1 = 14.
 
-"Such a statement instead of, for example, multiple statements as follows.
+"A statement such as the previous one instead of, for example, multiple statements as follows.
 READ TABLE deep_tab INDEX 2 INTO DATA(wa1).
 READ TABLE wa1-compb INDEX 1 INTO DATA(wa2).
 READ TABLE wa2 INTO DATA(wa3) INDEX 2.
@@ -3328,14 +3388,14 @@ line = itab[ KEY primary_key (comp_name) = 1 ].
 - The following example emphasizes that table expressions - expression enabling in modern ABAP as such - comes in very handy. 
 - However, also take the maintainability, debuggability and readbility of your code into consideration. 
 - The example includes the table expression chaining example from above (that may be fairly hard to understand) and a nonsensical, bad example overusing table expressions (affecting performance).
-- Expand the following collapsible section for example code. To try it out, create a demo class named `zcl_some_class` and paste the code into it. After activation, choose *F9* in ADT to execute the class. The example is set up to display output in the console.
+- Expand the following collapsible section for example code. To try it out, create a demo class named `zcl_demo_abap` and paste the code into it. After activation, choose *F9* in ADT to execute the class. The example is set up to display output in the console.
 
 <details>
   <summary>🟢 Click to expand for example code</summary>
   <!-- -->
 
 ``` abap
-CLASS zcl_some_class DEFINITION
+CLASS zcl_demo_abap DEFINITION
   PUBLIC
   FINAL
   CREATE PUBLIC .
@@ -3348,7 +3408,7 @@ ENDCLASS.
 
 
 
-CLASS zcl_some_class IMPLEMENTATION.
+CLASS zcl_demo_abap IMPLEMENTATION.
   METHOD if_oo_adt_classrun~main.
 
     "-------------- Chaining table expressions -------------
@@ -4237,12 +4297,12 @@ Notes and restrictions:
   - the restrictions [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensql_engine_restr.htm).
   - the various ABAP SQL functionalities in the ABAP Keyword Documentation and in the [ABAP SQL cheat sheet](03_ABAP_SQL.md). The following code snippets cover a selection.
 
-The following example explores various `SELECT` queries with internal tables as data sources. To try it out, create a demo class named `zcl_some_class` and paste the code into it. After activation, choose *F9* in ADT to execute the class. The example uses objects of the ABAP cheat sheets repository and is set up to display output in the console.
+The following example explores various `SELECT` queries with internal tables as data sources. To try it out, create a demo class named `zcl_demo_abap` and paste the code into it. After activation, choose *F9* in ADT to execute the class. The example uses objects of the ABAP cheat sheets repository and is set up to display output in the console.
 
 Example: 
 
 ```abap
-CLASS zcl_some_class DEFINITION
+CLASS zcl_demo_abap DEFINITION
   PUBLIC
   FINAL
   CREATE PUBLIC .
@@ -4256,7 +4316,7 @@ ENDCLASS.
 
 
 
-CLASS zcl_some_class IMPLEMENTATION.
+CLASS zcl_demo_abap IMPLEMENTATION.
   METHOD if_oo_adt_classrun~main.
 
     "----------- Exploiting ABAP SQL functionality with internal tables -----------
@@ -5070,10 +5130,10 @@ More information:
 - Iteration expressions can also handle table grouping (`FOR ... IN GROUP`). For example, see the [Constructor Expressions](05_Constructor_Expressions.md) cheat sheet.
 - [Internal Tables: Grouping](11_Internal_Tables_Grouping.md) cheat sheet 
 
-The example class below demonstrates internal table grouping options. To try it out, create a demo class named `zcl_some_class` and paste the following code into it. After activation, choose *F9* in ADT to execute the class. The example is designed to display results in the console.
+The example class below demonstrates internal table grouping options. To try it out, create a demo class named `zcl_demo_abap` and paste the following code into it. After activation, choose *F9* in ADT to execute the class. The example is designed to display results in the console.
 
 ```abap
-CLASS zcl_some_class DEFINITION
+CLASS zcl_demo_abap DEFINITION
   PUBLIC
   FINAL
   CREATE PUBLIC .
@@ -5085,7 +5145,7 @@ CLASS zcl_some_class DEFINITION
   PRIVATE SECTION.
 ENDCLASS.
 
-CLASS zcl_some_class IMPLEMENTATION.
+CLASS zcl_demo_abap IMPLEMENTATION.
   METHOD if_oo_adt_classrun~main.
     TYPES: BEGIN OF demo_struct,
              comp1 TYPE c LENGTH 1,
@@ -5276,13 +5336,13 @@ Consider a scenario where you have a standard internal table, and you frequently
 The following example creates two demo internal tables. One without a secondary table key and the other with a secondary table key. The tables are populated with a lot of data. Then, in a `DO` loop, many reads are performed on the internal tables. One example uses a free key for the read, the other uses a secondary table key that includes the components used for the free key search. Before and after the reads, the current timestamp is stored in variables, from which the elapsed time is calculated. There should be a significant delta of the elapsed time.
 
 ```abap
-CLASS zcl_some_class DEFINITION PUBLIC FINAL CREATE PUBLIC.
+CLASS zcl_demo_abap DEFINITION PUBLIC FINAL CREATE PUBLIC.
   PUBLIC SECTION.
     INTERFACES if_oo_adt_classrun.
   PROTECTED SECTION.
   PRIVATE SECTION.
 ENDCLASS.
-CLASS zcl_some_class IMPLEMENTATION.
+CLASS zcl_demo_abap IMPLEMENTATION.
   METHOD if_oo_adt_classrun~main.
     TYPES: BEGIN OF demo_struc,
              idx TYPE i,
@@ -5374,7 +5434,7 @@ ENDCLASS.
 - Read accesses are executed using `READ TABLE` statements, which access the tables by: 
   - Index (both primary and secondary table index) 
   - Key (primary table key, secondary table key, free key)
-- To try this, create a demo class named `zcl_some_class` and insert the provided code. After activation, choose *F9* in ADT to execute the class. It may take some time to finish and display the output. The example is set up to display the results of the read performance test in the console.
+- To try this, create a demo class named `zcl_demo_abap` and insert the provided code. After activation, choose *F9* in ADT to execute the class. It may take some time to finish and display the output. The example is set up to display the results of the read performance test in the console.
 
 > **💡 Note**<br>
 > - This example is used for [exploration and experimentation ⚠️](./README.md#%EF%B8%8F-disclaimer). It is solely for demonstration purposes, and it is **not** a *tool* for proper and accurate runtime and performance testing. Due to its simplified nature, the results may not be entirely accurate. However, multiple test runs should reflect the notes below. 
@@ -5432,14 +5492,14 @@ Notes on ...
     - fast and optimized for both primary and secondary table keys 
     - consistent for large internal tables due to a special hash algorithm
 
-Expand the following collapsible section for example code. To try it out, create a demo class named `zcl_some_class` and paste the code into it. After activation, choose *F9* in ADT to execute the class. Note that, when running the class, it may take a while to complete and display output in the console.
+Expand the following collapsible section for example code. To try it out, create a demo class named `zcl_demo_abap` and paste the code into it. After activation, choose *F9* in ADT to execute the class. Note that, when running the class, it may take a while to complete and display output in the console.
 
 <details>
   <summary>🟢 Click to expand for example code</summary>
   <!-- -->
 
 ```abap
-CLASS zcl_some_class DEFINITION
+CLASS zcl_demo_abap DEFINITION
   PUBLIC
   FINAL
   CREATE PUBLIC .
@@ -5529,7 +5589,7 @@ CLASS zcl_some_class DEFINITION
     METHODS check_example_components RETURNING VALUE(are_included) TYPE abap_boolean.
 ENDCLASS.
 
-CLASS zcl_some_class IMPLEMENTATION.
+CLASS zcl_demo_abap IMPLEMENTATION.
   METHOD if_oo_adt_classrun~main.
 
     prepare_itabs( number_of_lines = 5000 ).
@@ -5828,7 +5888,7 @@ ENDCLASS.
 - The following example mainly demonstrates formal parameters of methods that are typed with generic table types. The method calls and the tables passed are only possible if the generic types fit. For example, you cannot pass a hashed table to a method whose importing parameter is typed with the generic type `INDEX TABLE`. Invalid method calls and table passing are commented out.
 
 ```abap
-CLASS zcl_some_class DEFINITION
+CLASS zcl_demo_abap DEFINITION
       PUBLIC
       FINAL
       CREATE PUBLIC .
@@ -5844,7 +5904,7 @@ CLASS zcl_some_class DEFINITION
 
 ENDCLASS.
 
-CLASS zcl_some_class IMPLEMENTATION.
+CLASS zcl_demo_abap IMPLEMENTATION.
   METHOD if_oo_adt_classrun~main.
 
     DATA standard_tab TYPE TABLE OF string WITH EMPTY KEY.

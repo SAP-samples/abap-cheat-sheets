@@ -530,10 +530,10 @@ CALL TRANSFORMATION ... SOURCE ...
 
 The following example explores various syntax options for `CALL TRANSFORMATION` statements, using the predefined identity transformation `ID`.
 
-To try the example out, create a demo class named `zcl_some_class` and paste the code into it. After activation, choose *F9* in ADT to execute the class. The example is set up to display output in the console.
+To try the example out, create a demo class named `zcl_demo_abap` and paste the code into it. After activation, choose *F9* in ADT to execute the class. The example is set up to display output in the console.
 
 ```abap
-CLASS zcl_some_class DEFINITION
+CLASS zcl_demo_abap DEFINITION
   PUBLIC
   FINAL
   CREATE PUBLIC .
@@ -546,7 +546,7 @@ CLASS zcl_some_class DEFINITION
 ENDCLASS.
 
 
-CLASS zcl_some_class IMPLEMENTATION.
+CLASS zcl_demo_abap IMPLEMENTATION.
 
   METHOD if_oo_adt_classrun~main.
 
@@ -729,7 +729,7 @@ ENDCLASS.
 > - For additional information and examples, see the [ABAP and JSON](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_json.htm) section of the ABAP Keyword Documentation.
 
 
-Expand the following collapsible section for example classes. To try them out, create a demo class named `zcl_some_class` and paste the code into it. After activation, choose *F9* in ADT to execute the class. This example is set up to display output in the console.
+Expand the following collapsible section for example classes. To try them out, create a demo class named `zcl_demo_abap` and paste the code into it. After activation, choose *F9* in ADT to execute the class. This example is set up to display output in the console.
 
 **Creating JSON Data using the sXML library**
 
@@ -744,7 +744,7 @@ Expand the following collapsible section for example classes. To try them out, c
 
 
 ```abap
-CLASS zcl_some_class DEFINITION
+CLASS zcl_demo_abap DEFINITION
   PUBLIC
   FINAL
   CREATE PUBLIC .
@@ -758,7 +758,7 @@ ENDCLASS.
 
 
 
-CLASS zcl_some_class IMPLEMENTATION.
+CLASS zcl_demo_abap IMPLEMENTATION.
   METHOD if_oo_adt_classrun~main.
 
     "In this example, the following JSON data should be created.
@@ -844,7 +844,7 @@ ENDCLASS.
 
 
 ```abap
-CLASS zcl_some_class DEFINITION
+CLASS zcl_demo_abap DEFINITION
   PUBLIC
   FINAL
   CREATE PUBLIC .
@@ -858,7 +858,7 @@ ENDCLASS.
 
 
 
-CLASS zcl_some_class IMPLEMENTATION.
+CLASS zcl_demo_abap IMPLEMENTATION.
   METHOD if_oo_adt_classrun~main.
 
     "Creating demo JSON data
@@ -1130,14 +1130,14 @@ DATA json_to_abap_table TYPE string_table.
                            CHANGING data  = json_to_abap_table ).
 ```
 
-Expand the following collapsible section for example code. To try it out, create a demo class named `zcl_some_class` and paste the code into it. After activation, choose *F9* in ADT to execute the class. This example is set up to display output in the console.
+Expand the following collapsible section for example code. To try it out, create a demo class named `zcl_demo_abap` and paste the code into it. After activation, choose *F9* in ADT to execute the class. This example is set up to display output in the console.
 
 <details>
   <summary>🟢 Click to expand for example code</summary>
   <!-- -->
 
 ```abap
-CLASS zcl_some_class DEFINITION
+CLASS zcl_demo_abap DEFINITION
   PUBLIC
   FINAL
   CREATE PUBLIC .
@@ -1151,7 +1151,7 @@ ENDCLASS.
 
 
 
-CLASS zcl_some_class IMPLEMENTATION.
+CLASS zcl_demo_abap IMPLEMENTATION.
   METHOD if_oo_adt_classrun~main.
 
     TYPES: BEGIN OF demo_struc,
@@ -1282,7 +1282,7 @@ ENDCLASS.
 - Find more information and examples [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenasxml_class_instances.htm) in the ABAP Keyword Documentation. 
 
 
-Expand the following collapsible section for example classes. To try them out, create a demo class named `zcl_some_class` and paste the code into it. After activation, choose *F9* in ADT to execute the class. The examples are set up to display output in the console.
+Expand the following collapsible section for example classes. To try them out, create a demo class named `zcl_demo_abap` and paste the code into it. After activation, choose *F9* in ADT to execute the class. The examples are set up to display output in the console.
 
 <details>
   <summary>🟢 Click to expand for example code</summary>
@@ -1299,7 +1299,7 @@ Expand the following collapsible section for example classes. To try them out, c
 - The values of all deserialized instance attributes are displayed.
 
 ```abap
-CLASS zcl_some_class DEFINITION
+CLASS zcl_demo_abap DEFINITION
   PUBLIC
   FINAL
   CREATE PUBLIC .
@@ -1317,7 +1317,7 @@ ENDCLASS.
 
 
 
-CLASS zcl_some_class IMPLEMENTATION.
+CLASS zcl_demo_abap IMPLEMENTATION.
 
   METHOD if_oo_adt_classrun~main.
 
@@ -1331,7 +1331,7 @@ CLASS zcl_some_class IMPLEMENTATION.
 
     "Creating objects, assigning values to instance attributes, and serializing objects
     DO 3 TIMES.
-      DATA(oref) = NEW zcl_some_class( ).
+      DATA(oref) = NEW zcl_demo_abap( ).
       oref->timestamp = utclong_current( ).
       oref->random_number = cl_abap_random_int=>create( seed = cl_abap_random=>seed( )
                                                         min  = 1
@@ -1351,7 +1351,7 @@ CLASS zcl_some_class IMPLEMENTATION.
 
     "Deserializing objects
     LOOP AT serialized_obj_tab INTO DATA(wa).
-      DATA deserialized_obj TYPE REF TO zcl_some_class.
+      DATA deserialized_obj TYPE REF TO zcl_demo_abap.
       CALL TRANSFORMATION id SOURCE XML wa
                              RESULT obj = deserialized_obj.
 
@@ -1383,7 +1383,7 @@ ENDCLASS.
 
 
 ```abap
-CLASS zcl_some_class DEFINITION
+CLASS zcl_demo_abap DEFINITION
   PUBLIC
   FINAL
   CREATE PUBLIC .
@@ -1407,7 +1407,7 @@ ENDCLASS.
 
 
 
-CLASS zcl_some_class IMPLEMENTATION.
+CLASS zcl_demo_abap IMPLEMENTATION.
 
   METHOD if_oo_adt_classrun~main.
 
@@ -1421,7 +1421,7 @@ CLASS zcl_some_class IMPLEMENTATION.
 
     "Creating objects, assigning values to instance attributes, and serializing objects
     DO 3 TIMES.
-      DATA(oref) = NEW zcl_some_class( ).
+      DATA(oref) = NEW zcl_demo_abap( ).
       oref->timestamp = utclong_current( ).
       oref->random_number = cl_abap_random_int=>create( seed = cl_abap_random=>seed( )
                                                         min  = 1
@@ -1441,7 +1441,7 @@ CLASS zcl_some_class IMPLEMENTATION.
 
     "Deserializing objects
     LOOP AT serialized_obj_tab INTO DATA(wa).
-      DATA deserialized_obj TYPE REF TO zcl_some_class.
+      DATA deserialized_obj TYPE REF TO zcl_demo_abap.
       CALL TRANSFORMATION id SOURCE XML wa
                              RESULT obj = deserialized_obj.
 
@@ -1573,7 +1573,7 @@ The following example covers:
 - Exporting and importing class objects
 
 ```abap
-CLASS zcl_some_class DEFINITION
+CLASS zcl_demo_abap DEFINITION
   PUBLIC
   FINAL
   CREATE PUBLIC .
@@ -1588,7 +1588,7 @@ CLASS zcl_some_class DEFINITION
     DATA text TYPE string.
 ENDCLASS.
 
-CLASS zcl_some_class IMPLEMENTATION.
+CLASS zcl_demo_abap IMPLEMENTATION.
   METHOD if_oo_adt_classrun~main.
 
     DATA buffer TYPE xstring.
@@ -1721,7 +1721,7 @@ CLASS zcl_some_class IMPLEMENTATION.
     DATA info_tab TYPE TABLE OF info WITH EMPTY KEY.
 
     DO 3 TIMES.
-      DATA(obj_ref) = NEW zcl_some_class( |Instance { sy-index }| ).
+      DATA(obj_ref) = NEW zcl_demo_abap( |Instance { sy-index }| ).
       CALL TRANSFORMATION id SOURCE oref = obj_ref RESULT XML DATA(xml).
 
       EXPORT xml_data = xml TO DATA BUFFER buffer COMPRESSION ON.

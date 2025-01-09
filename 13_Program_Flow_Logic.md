@@ -863,7 +863,7 @@ Here, the expression result is passed to the returning parameter without naming 
 
 Example:
 ```abap
-CLASS zcl_some_class DEFINITION
+CLASS zcl_demo_abap DEFINITION
   PUBLIC
   FINAL
   CREATE PUBLIC.
@@ -876,7 +876,7 @@ CLASS zcl_some_class DEFINITION
                 num2          TYPE i
       RETURNING VALUE(result) TYPE i.
 ENDCLASS.
-CLASS zcl_some_class IMPLEMENTATION.
+CLASS zcl_demo_abap IMPLEMENTATION.
   METHOD if_oo_adt_classrun~main.
     DATA(res1) = multiply( num1 = 2 num2 = 3 ).
     DATA(res2) = multiply( num1 = 10 num2 = 10 ).

@@ -60,7 +60,7 @@ It provides references to more detailed information on the topic.
     For deprecated and invalid syntax in ABAP for Cloud Development, refer to the following (nonsensical) example code. You can create a demo class and insert the code below (adjust the class name if necessary). Several syntax errors and warnings will be displayed: 
 
     ```abap
-    CLASS zcl_some_class DEFINITION
+    CLASS zcl_demo_abap DEFINITION
           PUBLIC
           FINAL
           CREATE PUBLIC .
@@ -69,7 +69,7 @@ It provides references to more detailed information on the topic.
         INTERFACES if_oo_adt_classrun.
     ENDCLASS.
 
-    CLASS zcl_some_class IMPLEMENTATION.
+    CLASS zcl_demo_abap IMPLEMENTATION.
       METHOD if_oo_adt_classrun~main.
         "Example that demonstrates (not) released APIs, deprecated and
         "invalid syntax in ABAP for Cloud Development

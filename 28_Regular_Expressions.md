@@ -680,10 +680,10 @@ ctrl_verb_string = replace( val = |abc\ndef\rghi\r\njkl|
 
 The following example shows how to use callouts to call an ABAP method from a PCRE regular expression. It creates an object-oriented representation of a PCRE regex using the `CL_ABAP_REGEX` class, applying different PCRE syntaxes for callout specifications. The class implements the `IF_ABAP_MATCHER_CALLOUT` interface, and the `callout` method uses a demo class instance as the callout handler. If the regex matches, the method is called for each callout position. The `callout` method populates a string table with accessible details. This demonstrates that regex processing can be influenced, and in the example, processing stops when a condition is met. As a result, `found` is false because the regex is not fully processed. For more details, refer to the class documentation.
 
-To try the example out, create a demo class named `zcl_some_class` and paste the code into it. After activation, choose *F9* in ADT to execute the class. The example is set up to display output in the console.
+To try the example out, create a demo class named `zcl_demo_abap` and paste the code into it. After activation, choose *F9* in ADT to execute the class. The example is set up to display output in the console.
 
 ```abap
-CLASS zcl_some_class DEFINITION
+CLASS zcl_demo_abap DEFINITION
   PUBLIC
   FINAL
   CREATE PUBLIC .
@@ -699,13 +699,13 @@ ENDCLASS.
 
 
 
-CLASS zcl_some_class IMPLEMENTATION.
+CLASS zcl_demo_abap IMPLEMENTATION.
 
   METHOD if_oo_adt_classrun~main.
     DATA(text_to_search) = `abcdefghijklmnopq`.
     DATA(regex) = cl_abap_regex=>create_pcre( pattern = `(...)(?C1)(..)(?C2)(....)(?C3)(.)(?C"D")(....)(?C"E")(...)(?C"F")` ).
     DATA(matcher) = regex->create_matcher( text = text_to_search ).
-    DATA(handler) = NEW zcl_some_class( ).
+    DATA(handler) = NEW zcl_demo_abap( ).
     matcher->set_callout( handler ).
     DATA(found) = matcher->match( ).
 

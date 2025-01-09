@@ -2419,11 +2419,11 @@ INSERT dbtab FROM TABLE @( CORRESPONDING #( another_itab MAPPING key_field = key
 
 ### Example: Exploring Create, Update, and Delete Operations with ABAP SQL Statements
 
-To try the following example out, create a demo class named `zcl_some_class` and paste the code into it. After activation, choose *F9* in ADT to execute the class. The example uses a database table of the ABAP cheat sheets repository and is set up to display output in the console.
+To try the following example out, create a demo class named `zcl_demo_abap` and paste the code into it. After activation, choose *F9* in ADT to execute the class. The example uses a database table of the ABAP cheat sheets repository and is set up to display output in the console.
 
 
 ```abap
-CLASS zcl_some_class DEFINITION
+CLASS zcl_demo_abap DEFINITION
   PUBLIC
   FINAL
   CREATE PUBLIC .
@@ -2437,7 +2437,7 @@ ENDCLASS.
 
 
 
-CLASS zcl_some_class IMPLEMENTATION.
+CLASS zcl_demo_abap IMPLEMENTATION.
 
   METHOD if_oo_adt_classrun~main.
 

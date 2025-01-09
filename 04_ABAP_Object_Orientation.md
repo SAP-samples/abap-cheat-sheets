@@ -45,7 +45,7 @@
       - [Friendship between Global and Local Classes](#friendship-between-global-and-local-classes)
     - [Events](#events)
     - [ABAP Examples of Design Patterns in Object-Oriented Programming](#abap-examples-of-design-patterns-in-object-oriented-programming)
-    - [Class-Based Exceptions](#class-based-exceptions)
+    - [Class-Based and Classic Exceptions](#class-based-and-classic-exceptions)
     - [ABAP Unit Tests](#abap-unit-tests)
     - [ABAP Doc Comments](#abap-doc-comments)
   - [More Information](#more-information)
@@ -396,7 +396,7 @@ Summary:
 #### Creating the Visibility Sections
 At least one section must be specified.
 ``` abap
-CLASS zcl_some_class DEFINITION
+CLASS zcl_demo_abap DEFINITION
   PUBLIC                       
   FINAL                        
   CREATE PUBLIC.  
@@ -468,7 +468,7 @@ can be used in the public visibility section. Effect:
 
 Declaring attributes in visibility sections. In the code snippet below, all attributes are declared in the public section.
 ``` abap
-CLASS zcl_some_class DEFINITION
+CLASS zcl_demo_abap DEFINITION
   PUBLIC                       
   FINAL                        
   CREATE PUBLIC.  
@@ -493,7 +493,7 @@ CLASS zcl_some_class DEFINITION
 
 ENDCLASS.
 
-CLASS zcl_some_class IMPLEMENTATION.
+CLASS zcl_demo_abap IMPLEMENTATION.
 
       ... "Here go all method implementations.
 
@@ -533,7 +533,7 @@ parameters of the demo methods below are defined by just using the
 parameter name. This means passing by reference (returning parameters
 require to be passed by value).
 ``` abap
-CLASS zcl_some_class DEFINITION
+CLASS zcl_demo_abap DEFINITION
   PUBLIC                       
   FINAL                        
   CREATE PUBLIC. 
@@ -588,7 +588,7 @@ CLASS zcl_some_class DEFINITION
 
 ENDCLASS.
 
-CLASS zcl_some_class IMPLEMENTATION.
+CLASS zcl_demo_abap IMPLEMENTATION.
    METHOD inst_meth1.
       ...
    ENDMETHOD.
@@ -615,8 +615,9 @@ In the simplest form, methods can have no parameter at all. Apart from that, met
 
 
 > **💡 Note**<br>
+> - It is advisable to avoid specifying multiple different output parameters (exporting, returning, changing) in a signature to reduce complexity. 
 > - Find more information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapmethods_general.htm).
-> - You may find the addition `EXCEPTIONS` especially in definitions of older classes. They are for non-class-based exceptions. This addition should not be used in ABAP for Cloud Development.
+> - You may find the addition `EXCEPTIONS` especially in definitions of older classes. They are for non-class-based exceptions. This addition should not be used in ABAP for Cloud Development. See the section [Class-Based Exceptions](#class-based-exceptions), and the section [Classic Exceptions](27_Exceptions.md#classic-exceptions) in the [Exceptions and Runtime Errors](27_Exceptions.md) cheat sheet.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
@@ -638,7 +639,7 @@ In the simplest form, methods can have no parameter at all. Apart from that, met
 The following example (which anticipates aspects described in the following sections, such as calling methods) shows a class with a simple method demonstrating the syntax for formal parameter specifications. Complete types are used. 
 
 ```abap
-CLASS zcl_some_class DEFINITION
+CLASS zcl_demo_abap DEFINITION
   PUBLIC
   FINAL
   CREATE PUBLIC .
@@ -659,7 +660,7 @@ ENDCLASS.
 
 
 
-CLASS zcl_some_class IMPLEMENTATION.
+CLASS zcl_demo_abap IMPLEMENTATION.
 
   METHOD if_oo_adt_classrun~main.
 
@@ -705,7 +706,7 @@ Syntax for [completely](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-
 > - The considerations also apply to the typing of field symbols.
 
 ```abap
-CLASS zcl_some_class DEFINITION
+CLASS zcl_demo_abap DEFINITION
   PUBLIC
   FINAL
   CREATE PUBLIC .
@@ -776,7 +777,7 @@ ENDCLASS.
 
 
 
-CLASS zcl_some_class IMPLEMENTATION.
+CLASS zcl_demo_abap IMPLEMENTATION.
 
   METHOD if_oo_adt_classrun~main.
 
@@ -802,7 +803,7 @@ ENDCLASS.
 Find more information on generic types in the [Data Types and Data Objects](16_Data_Types_and_Objects.md#generic-types) cheat sheet. The following code snippet anticipates aspects described in the following sections, such as calling methods.
 
 ```abap
-CLASS zcl_some_class DEFINITION
+CLASS zcl_demo_abap DEFINITION
   PUBLIC
   FINAL
   CREATE PUBLIC .
@@ -847,7 +848,7 @@ ENDCLASS.
 
 
 
-CLASS zcl_some_class IMPLEMENTATION.
+CLASS zcl_demo_abap IMPLEMENTATION.
 
   METHOD if_oo_adt_classrun~main.
 
@@ -1050,7 +1051,7 @@ num1: "7" / num2 (is not supplied; initial value): "0" / num3 (is supplied): "8"
 ```
 
 ```abap
-CLASS zcl_some_class DEFINITION
+CLASS zcl_demo_abap DEFINITION
   PUBLIC
   FINAL
   CREATE PUBLIC .
@@ -1070,7 +1071,7 @@ CLASS zcl_some_class DEFINITION
   PRIVATE SECTION.
 ENDCLASS.
 
-CLASS zcl_some_class IMPLEMENTATION.
+CLASS zcl_demo_abap IMPLEMENTATION.
   METHOD if_oo_adt_classrun~main.
 
     DATA(meth1_result_a) = meth1( ).
@@ -1133,7 +1134,7 @@ ENDCLASS.
 - When you call a method and specify a single actual parameter without specifying the name of the formal parameter in an assignment, the actual parameter is automatically assigned to the preferred parameter.
 
 The following example (which anticipates aspects described in the following sections, such as calling methods) shows a simple method with input parameters of type `i` (an addition is performed using the actual parameter values), where one parameter is preferred. The `IS SUPPLIED` addition in `COND` statements checks whether parameters are supplied. The final output shows the preferred parameter assigned automatically when the formal parameter is not specified explicitly.
-To try the example out, create a demo class named `zcl_some_class` and paste the code into it. After activation, choose *F9* in ADT to execute the class. The example is set up to display output in the console. The example should display the following:
+To try the example out, create a demo class named `zcl_demo_abap` and paste the code into it. After activation, choose *F9* in ADT to execute the class. The example is set up to display output in the console. The example should display the following:
 
 ```
 IS SUPPLIED: num1 "X", num2 "X", num3 "X" / Addition result "9"
@@ -1149,7 +1150,7 @@ IS SUPPLIED: num1 "X", num2 "", num3 "" / Addition result "4"
 Example code:
 
 ```abap
-CLASS zcl_some_class DEFINITION
+CLASS zcl_demo_abap DEFINITION
   PUBLIC
   FINAL
   CREATE PUBLIC .
@@ -1167,7 +1168,7 @@ CLASS zcl_some_class DEFINITION
   PRIVATE SECTION.
 ENDCLASS.
 
-CLASS zcl_some_class IMPLEMENTATION.
+CLASS zcl_demo_abap IMPLEMENTATION.
   METHOD if_oo_adt_classrun~main.
 
     DATA(text1) = meth( num1 = 3 num2 = 3 num3 = 3 ).
@@ -1234,7 +1235,7 @@ ENDCLASS.
     instantiated and an instance is created.
     - Can have `IMPORTING` parameters and raise exceptions.
 
-The following example (which anticipates aspects described in the following sections, such as creating instances of classes) demonstrates static and instance constructors. To try the example out, create a demo class named `zcl_some_class` and paste the code into it. After activation, choose *F9* in ADT to execute the class. The example is set up to display output in the console.
+The following example (which anticipates aspects described in the following sections, such as creating instances of classes) demonstrates static and instance constructors. To try the example out, create a demo class named `zcl_demo_abap` and paste the code into it. After activation, choose *F9* in ADT to execute the class. The example is set up to display output in the console.
 
 Notes:  
 - The example class defines the instance and static constructors.  
@@ -1256,7 +1257,7 @@ Notes:
 
 
 ```abap
-CLASS zcl_some_class DEFINITION
+CLASS zcl_demo_abap DEFINITION
   PUBLIC
   FINAL
   CREATE PUBLIC .
@@ -1274,13 +1275,13 @@ CLASS zcl_some_class DEFINITION
     CLASS-DATA instance_constr_call_count TYPE i.
 ENDCLASS.
 
-CLASS zcl_some_class IMPLEMENTATION.
+CLASS zcl_demo_abap IMPLEMENTATION.
   METHOD if_oo_adt_classrun~main.
 
     DATA itab TYPE string_table.
 
     DO 5 TIMES.
-      DATA(inst) = NEW zcl_some_class( |inst{ sy-index }| ).
+      DATA(inst) = NEW zcl_demo_abap( |inst{ sy-index }| ).
       APPEND |-------------- Instance "{ inst->instance_name }" --------------| TO itab.
       APPEND |instance_timestamp: { inst->instance_timestamp }| TO itab.
       APPEND |static_timestamp: { inst->static_timestamp }| TO itab.
@@ -1467,9 +1468,11 @@ methods are called using `->` via a reference variable.
 methods are called using `=>` via the class name. When used
 within the class in which it is declared, the static method can also be
 called without `class_name=>...`.
+- Static methods can but should not be called via reference variable (<s><code>oref->some_static_method( ).</code></s>).
 - When methods are called, the (non-optional) parameters must be specified within parentheses.
 - You might also stumble on method calls with [`CALL METHOD`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapcall_method_static.htm)
 statements. These statements should no longer be used. Note that `CALL METHOD` statements are the only option in the context of [dynamic programming](06_Dynamic_Programming.md). Therefore, `CALL METHOD` statements should be reserved for dynamic method calls.
+- Find an example class demonstrating various method calls in section [Excursion: Example Class](#excursion-example-class).
 
 
 Examples for instance method calls and static method calls:
@@ -1570,7 +1573,7 @@ class_name=>meth( EXPORTING i = j k = l RECEIVING m = DATA(n) ).
 - Additional code snippets illustrate various ways to use methods declared with returning parameters in expression positions.
 
 ```abap
-CLASS zcl_some_class DEFINITION
+CLASS zcl_demo_abap DEFINITION
   PUBLIC
   FINAL
   CREATE PUBLIC .
@@ -1589,17 +1592,17 @@ CLASS zcl_some_class DEFINITION
 ENDCLASS.
 
 
-CLASS zcl_some_class IMPLEMENTATION.
+CLASS zcl_demo_abap IMPLEMENTATION.
 
   METHOD if_oo_adt_classrun~main.    
-    "Note: Calling the method in the same class means specifying 'zcl_some_class=>' is optional here.
+    "Note: Calling the method in the same class means specifying 'zcl_demo_abap=>' is optional here.
 
     "Standalone method call
     "Specifying target data objects for all output parameters
     "Inline declarations are handy because you can create an
     "appropriately typed data object in place. No need to
     "create an extra variable, check on the type etc.
-    zcl_some_class=>meth1(
+    zcl_demo_abap=>meth1(
       EXPORTING
         i_str = `ABAP`
       IMPORTING
@@ -1614,7 +1617,7 @@ CLASS zcl_some_class IMPLEMENTATION.
     "Note: In this case, you cannot specify inline declarations for the exporting parameters.
     DATA e TYPE decfloat34.
     DATA f TYPE string_table.
-    DATA(g) = zcl_some_class=>meth1(
+    DATA(g) = zcl_demo_abap=>meth1(
       EXPORTING
         i_str = `ABAP`
       IMPORTING
@@ -1628,13 +1631,13 @@ CLASS zcl_some_class IMPLEMENTATION.
     "The following snippets show a selection (and ignore the available exporting
     "parameters).
 
-    CASE zcl_some_class=>meth1( i_str = `ABAP` ).
+    CASE zcl_demo_abap=>meth1( i_str = `ABAP` ).
       WHEN 0. ...
       WHEN 1. ...
       WHEN OTHERS. ...
     ENDCASE.
 
-    IF zcl_some_class=>meth1( i_str = `ABAP` ) > 5.
+    IF zcl_demo_abap=>meth1( i_str = `ABAP` ) > 5.
       ...
     ELSE.
       ...
@@ -1645,25 +1648,25 @@ CLASS zcl_some_class IMPLEMENTATION.
     "method call is not initial and false if it is initial. The data type of the result
     "of the functional meth1od call, i. e. the return value of the called functional method,
     "is arbitrary. A check is made for the type-dependent initial value.
-    IF zcl_some_class=>meth1( i_str = `ABAP` ).
+    IF zcl_demo_abap=>meth1( i_str = `ABAP` ).
       ...
     ELSE.
       ...
     ENDIF.
 
-    DO zcl_some_class=>meth1( i_str = `ABAP` ) TIMES.
+    DO zcl_demo_abap=>meth1( i_str = `ABAP` ) TIMES.
       ...
     ENDDO.
 
     "Method call result as actual parameter
-    DATA(j) = zcl_some_class=>meth1( i_str = `ABAP` i_tab = zcl_some_class=>meth2( ) ).
+    DATA(j) = zcl_demo_abap=>meth1( i_str = `ABAP` i_tab = zcl_demo_abap=>meth2( ) ).
 
     "Examples of returning parameters typed with a table type
-    LOOP AT zcl_some_class=>meth2( ) INTO DATA(wa1).
+    LOOP AT zcl_demo_abap=>meth2( ) INTO DATA(wa1).
       ...
     ENDLOOP.
 
-    READ TABLE zcl_some_class=>meth2( ) INTO DATA(wa2) INDEX 1.
+    READ TABLE zcl_demo_abap=>meth2( ) INTO DATA(wa2) INDEX 1.
 
   ENDMETHOD.
   
@@ -1696,7 +1699,7 @@ You can also address the entire object, which is illustrated in the example of s
 The following code snippet declares a local data object in a method. It has the same name as a data object declared in the private visibility section. shows a method implementation. `me` is used to access the non-local data object.
 
 ``` abap
-CLASS zcl_some_class DEFINITION
+CLASS zcl_demo_abap DEFINITION
   PUBLIC
   FINAL
   CREATE PUBLIC .
@@ -1709,7 +1712,7 @@ CLASS zcl_some_class DEFINITION
     METHODS meth RETURNING VALUE(text) TYPE string.
 ENDCLASS.
 
-CLASS zcl_some_class IMPLEMENTATION.
+CLASS zcl_demo_abap IMPLEMENTATION.
   METHOD if_oo_adt_classrun~main.
 
     str = `AP`.
@@ -1806,7 +1809,7 @@ DATA(json) = xco_cp_json=>data->builder( )->begin_object(
 Self-contained example class demonstrating chained method calls with a functional method call and a standalone statement:
 
 ```abap
-CLASS zcl_some_class DEFINITION
+CLASS zcl_demo_abap DEFINITION
   PUBLIC
   FINAL
   CREATE PUBLIC .
@@ -1814,9 +1817,9 @@ CLASS zcl_some_class DEFINITION
   PUBLIC SECTION.
     INTERFACES if_oo_adt_classrun.
     METHODS add_text IMPORTING str        TYPE string
-                     RETURNING VALUE(ref) TYPE REF TO zcl_some_class.
-    METHODS add_space RETURNING VALUE(ref) TYPE REF TO zcl_some_class.
-    METHODS add_period RETURNING VALUE(ref) TYPE REF TO zcl_some_class.
+                     RETURNING VALUE(ref) TYPE REF TO zcl_demo_abap.
+    METHODS add_space RETURNING VALUE(ref) TYPE REF TO zcl_demo_abap.
+    METHODS add_period RETURNING VALUE(ref) TYPE REF TO zcl_demo_abap.
     METHODS return_text RETURNING VALUE(str) TYPE string.
     METHODS display_text IMPORTING cl_run_ref TYPE REF TO if_oo_adt_classrun_out.
     DATA text TYPE string.
@@ -1824,7 +1827,7 @@ CLASS zcl_some_class DEFINITION
   PRIVATE SECTION.
 ENDCLASS.
 
-CLASS zcl_some_class IMPLEMENTATION.
+CLASS zcl_demo_abap IMPLEMENTATION.
   METHOD if_oo_adt_classrun~main.
 
     "----------------------------------------------------------------
@@ -1832,7 +1835,7 @@ CLASS zcl_some_class IMPLEMENTATION.
     "----------------------------------------------------------------
 
     "Hallo NAME. This is an example of method chaining.
-    DATA(text1) = NEW zcl_some_class(
+    DATA(text1) = NEW zcl_demo_abap(
                       )->add_text( `Hallo`
                       )->add_space(
                       )->add_text( xco_cp=>sy->user( )->name
@@ -1861,7 +1864,7 @@ CLASS zcl_some_class IMPLEMENTATION.
     "the attribute.
 
     "Example result: Today is 2025-03-05. It's 14:30:38. Have a nice day.
-    DATA(text2) = NEW zcl_some_class(
+    DATA(text2) = NEW zcl_demo_abap(
                       )->add_text( `Today`
                       )->add_space(
                       )->add_text( `is`
@@ -1898,7 +1901,7 @@ CLASS zcl_some_class IMPLEMENTATION.
     "includes the writing to the console.
 
     "Console output: Lorem ipsum dolor sit amet
-    NEW zcl_some_class( )->add_text( `Lorem`
+    NEW zcl_demo_abap( )->add_text( `Lorem`
                         )->add_space(
                         )->add_text( `ipsum`
                         )->add_space(
@@ -3977,7 +3980,7 @@ i_ref = NEW class( ).
 
 ### Excursion: Example Interface
 
-Expand the following collapsible section for example code. To try it out, create a demo interface named `zif_some_interface`, a class named `zcl_some_class`, and paste the code into the artifacts. After activation, choose *F9* in ADT to execute the class. The example is set up to display output in the console.
+Expand the following collapsible section for example code. To try it out, create a demo interface named `zif_some_interface`, a class named `zcl_demo_abap`, and paste the code into the artifacts. After activation, choose *F9* in ADT to execute the class. The example is set up to display output in the console.
 
 <details>
    <summary>🟢 Click to expand for more information and example code</summary>
@@ -4014,7 +4017,7 @@ Example class implementations:
 - The example class also implements the interface `if_oo_adt_classrun`.
 
 ```abap
-CLASS zcl_some_class DEFINITION
+CLASS zcl_demo_abap DEFINITION
   PUBLIC
   FINAL
   CREATE PUBLIC .
@@ -4028,7 +4031,7 @@ CLASS zcl_some_class DEFINITION
 ENDCLASS.
 
 
-CLASS zcl_some_class IMPLEMENTATION.
+CLASS zcl_demo_abap IMPLEMENTATION.
 
   METHOD if_oo_adt_classrun~main.
   ENDMETHOD.
@@ -4046,7 +4049,7 @@ ENDCLASS.
 - Adding the implementations for the interface methods declared with `DEFAULT IGNORE` and `DEFAULT FAIL`.
 
 ```abap
-CLASS zcl_some_class DEFINITION
+CLASS zcl_demo_abap DEFINITION
   PUBLIC
   FINAL
   CREATE PUBLIC .
@@ -4060,7 +4063,7 @@ CLASS zcl_some_class DEFINITION
 ENDCLASS.
 
 
-CLASS zcl_some_class IMPLEMENTATION.
+CLASS zcl_demo_abap IMPLEMENTATION.
 
   METHOD if_oo_adt_classrun~main.
   ENDMETHOD.
@@ -4089,7 +4092,7 @@ ENDCLASS.
 - The example demonstrates method calls using object and interface reference variables.
 
 ```abap
-CLASS zcl_some_class DEFINITION
+CLASS zcl_demo_abap DEFINITION
   PUBLIC
   FINAL
   CREATE PUBLIC .
@@ -4105,12 +4108,12 @@ CLASS zcl_some_class DEFINITION
 ENDCLASS.
 
 
-CLASS zcl_some_class IMPLEMENTATION.
+CLASS zcl_demo_abap IMPLEMENTATION.
 
   METHOD if_oo_adt_classrun~main.
 
     "Examples using an object reference variable
-    DATA(oref) = NEW zcl_some_class( ).
+    DATA(oref) = NEW zcl_demo_abap( ).
 
     oref->add( num1 = 1 num2 = 2 ).
     DATA(res1) = oref->res.
@@ -4136,7 +4139,7 @@ CLASS zcl_some_class IMPLEMENTATION.
 
     "Similar examples using an interface reference variable
     DATA iref TYPE REF TO zif_some_interface.
-    iref = NEW zcl_some_class( ).
+    iref = NEW zcl_demo_abap( ).
 
     iref->addition( num1 = 3 num2 = 5 ).
     DATA(res3) = iref->add_result.
@@ -4188,7 +4191,10 @@ tests](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file
     - Friends of a class can create instances of the class without restrictions.
     - Friendship is a one-way street, i. e. a class granting friendship to another class is not granded friendship the other way round. If class `a` grants friendship to class `b`, class `b` must also explicitly grant friendship to class `a` so that `a` can access the invisible components of class `b`.
     - Friendship and inheritance: Heirs of friends and interfaces that contain a friend as a component interface also become friends. However, granting friendship is not inherited, i. e. a friend of a superclass is not automatically a friend of its subclasses.
-
+- Additions in the context of granting friendship:
+  - `FRIENDS`: For local classes, e.g. local classes granting friendship to other local classes or the global class of the class pool
+  - `GLOBAL FRIENDS`: Used in global classes to grant friendship to other global classes and interfaces
+  - `LOCAL FRIENDS`: Used for global classes to grant friendship to local classes and interfaces in its own class pool; however, it is a dedicated statement, as shown in the example below (the declaration `CLASS zcl_demo_abap DEFINITION LOCAL FRIENDS local_class.` in the CCDEF include) 
 
 You specify the befriended class in the definition part using a `FRIENDS` addition:
 ``` abap
@@ -4220,15 +4226,30 @@ For more information, see the following topics:
 
 <br>
 
+<table>
 
-**Global class**
-- Create a new global class (the example uses the name `zcl_some_class`) and copy and paste the following code in the *Global Class* tab in ADT.
+<tr>
+<td> Class include </td> <td> Code </td>
+</tr>
+
+<tr>
+<td> 
+
+Global class
+
+ </td>
+
+ <td> 
+
+- Create a new global class (the example uses the name `zcl_demo_abap`) and copy and paste the following code in the *Global Class* tab in ADT.
 - The class has a type and method declaration in the private section. They are used in the local class.
 - Once activated (and the code of the other includes has been inserted), you can choose *F9* in ADT to run the class.
 - When running the class, a method of the local class that is declared in the private section there is called. As a result of this method call, a string is assigned to an attribute that is also declared in the private section of the local class. This attribute is accessed by the global class, and finally displayed in the ADT console.
 
+<br>
+
 ```abap
-CLASS zcl_some_class DEFINITION
+CLASS zcl_demo_abap DEFINITION
   PUBLIC
   FINAL
   CREATE PUBLIC .
@@ -4243,7 +4264,7 @@ ENDCLASS.
 
 
 
-CLASS zcl_some_class IMPLEMENTATION.
+CLASS zcl_demo_abap IMPLEMENTATION.
   METHOD if_oo_adt_classrun~main.
     local_class=>say_hello( ).
     DATA(hello) = local_class=>hello.
@@ -4255,42 +4276,71 @@ CLASS zcl_some_class IMPLEMENTATION.
 ENDCLASS.
 ```
 
-**CCDEF include (*Class-relevant Local Types* tab in ADT)**
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+CCDEF include (Class-relevant Local Types tab in ADT)
+
+ </td>
+
+ <td> 
+
 - Regarding the includes, see the information in section [Excursion: Class Pool and Include Programs](#excursion-class-pool-and-include-programs)
 - The `LOCAL FRIENDS` addition makes the local class a friend of the global class. The private components of the global class can then be accessed by the local class.
 
+<br>
+
 ```abap
 CLASS local_class DEFINITION DEFERRED.
-CLASS zcl_some_class DEFINITION LOCAL FRIENDS local_class.
+CLASS zcl_demo_abap DEFINITION LOCAL FRIENDS local_class.
 ```
 
-**CCIMP include (*Local Types* tab in ADT)**
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+CCIMP include (Local Types tab in ADT)
+
+ </td>
+
+ <td> 
+
 - The `FRIENDS` addition makes the global class a friend of the local class. The private components of the local class can then be accessed by the global class.
 - A type declared in the private section of the global class is used to type an attribute.
 - The method, which is also declared in the private section, includes a method call in the implementation. It is a method declared in the private section of the global class.
 
+<br>
 
 ```abap
-CLASS local_class DEFINITION FRIENDS zcl_some_class.
+CLASS local_class DEFINITION FRIENDS zcl_demo_abap.
 
   PUBLIC SECTION.
   PROTECTED SECTION.
   PRIVATE SECTION.
-    CLASS-DATA hello TYPE zcl_some_class=>str.
+    CLASS-DATA hello TYPE zcl_demo_abap=>str.
     CLASS-METHODS say_hello.
     
 ENDCLASS.
 
 CLASS local_class IMPLEMENTATION.
   METHOD say_hello.
-    hello = |{ zcl_some_class=>get_hello( ) } { sy-uname }.|.
+    hello = |{ zcl_demo_abap=>get_hello( ) } { sy-uname }.|.
   ENDMETHOD.
 ENDCLASS.
 ```
 
+ </td>
+</tr>
+
+</table>
+
 </details>  
-
-
 
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
@@ -6949,10 +6999,36 @@ ENDCLASS.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-### Class-Based Exceptions
+### Class-Based and Classic Exceptions
 
 - [Catchable exceptions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencatchable_exception_glosry.htm) are represented by exception objects of exception classes.
+- Predefined global exception classes exist, custom exception classes can be created. You can also create local exception classes.
 - Find an overview in the [Exceptions and Runtime Errors](27_Exceptions.md) cheat sheet.
+- See the following code snippet for an ABAP class that specifies the `EXCEPTIONS` addition, which should not be specified anymore for new developments, raising classic, non-class based exceptions. 
+  ```abap
+  "ABAP class (creates UUIDs) raising a class-based exception
+  TRY.
+      DATA(uuid) = cl_system_uuid=>create_uuid_x16_static( ).
+    CATCH cx_uuid_error.
+  ENDTRY.
+  
+  "ABAP class (provides type information, see the Dynamic Programming cheat sheet)  specified with the EXCEPTIONS addition raising a non-class based exception 
+  cl_abap_typedescr=>describe_by_name( EXPORTING p_name = `TYPE_THAT_DOES_NOT_EXIST`
+                                       RECEIVING p_descr_ref = DATA(tdo1)
+                                       EXCEPTIONS type_not_found = 4 ).
+
+  IF sy-subrc <> 0.
+  "Type not found
+  ...
+  ENDIF.
+
+  cl_abap_typedescr=>describe_by_name( EXPORTING p_name = `ABAP_BOOLEAN`
+                                       RECEIVING p_descr_ref = DATA(tdo2)
+                                       EXCEPTIONS type_not_found = 4 ).
+
+  ASSERT sy-subrc = 0.
+  ```
+
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
@@ -6984,7 +7060,7 @@ ENDCLASS.
 "!
 "! <p>This class serves as an example to illustrate comments for ABAP Doc.
 "! The comments begin with the string <strong>"!</strong>, a special form of regular comments introduced by <strong>"</strong>. <br/><br/>
-"! The {@link zcl_some_class.METH:calculate} method of the example class performs a calculation. </p>
+"! The {@link zcl_demo_abap.METH:calculate} method of the example class performs a calculation. </p>
 "! <h2>Notes</h2>
 "! <ul>
 "! <li>ABAP Doc documents declarations in ABAP programs.</li>
@@ -6995,7 +7071,7 @@ ENDCLASS.
 "! </ul>
 "! <h2>Steps</h2>
 "! <ol>
-"! <li>Create a demo class named <em>zcl_some_class</em></li>
+"! <li>Create a demo class named <em>zcl_demo_abap</em></li>
 "! <li>Copy and paste the code of this example and activate.</li>
 "! <li>Click the class name to display the comments in the <em>ABAP Element Info</em> ADT tab.</li>
 "! <li>You can also choose F2 for the class name to display the information.</li>
@@ -7005,21 +7081,21 @@ ENDCLASS.
 "! <h3>Link examples</h3>
 "! <ul>
 "! <li>Repository objects such as the following, and more:
-"! <ul><li>Classes, e.g. {@link zcl_some_class}</li>
+"! <ul><li>Classes, e.g. {@link zcl_demo_abap}</li>
 "! <li>Interfaces, e.g. {@link if_oo_adt_classrun}</li>
 "! <li>CDS artifacts, e.g. {@link i_apisforclouddevelopment}</li>
 "! <li>DDIC database tables, e.g. {@link zdemo_abap_carr}</li>
 "! <li>DDIC data elements, e.g. {@link land1}</li></ul>
-"! <li>Method: {@link zcl_some_class.METH:calculate}</li>
-"! <li>Constant: {@link zcl_some_class.DATA:const}</li>
-"! <li>Data object: {@link zcl_some_class.DATA:dobj}</li>
-"! <li>Method parameter: {@link zcl_some_class.METH:calculate.DATA:operator}</li>
-"! <li>Interface implemented in a class: {@link zcl_some_class.INTF:if_oo_adt_classrun}</li>
-"! <li>Interface method implemented in a class: {@link zcl_some_class.INTF:if_oo_adt_classrun.METH:main}</li>
+"! <li>Method: {@link zcl_demo_abap.METH:calculate}</li>
+"! <li>Constant: {@link zcl_demo_abap.DATA:const}</li>
+"! <li>Data object: {@link zcl_demo_abap.DATA:dobj}</li>
+"! <li>Method parameter: {@link zcl_demo_abap.METH:calculate.DATA:operator}</li>
+"! <li>Interface implemented in a class: {@link zcl_demo_abap.INTF:if_oo_adt_classrun}</li>
+"! <li>Interface method implemented in a class: {@link zcl_demo_abap.INTF:if_oo_adt_classrun.METH:main}</li>
 "! <li>DDIC domain: {@link DOMA:land1}</li>
 "! <li>XSLT: {@link XSLT:id}</li>
 "! </ul>
-CLASS zcl_some_class DEFINITION
+CLASS zcl_demo_abap DEFINITION
   PUBLIC
   FINAL
   CREATE PUBLIC .
@@ -7060,7 +7136,7 @@ CLASS zcl_some_class DEFINITION
   PRIVATE SECTION.
 ENDCLASS.
 
-CLASS zcl_some_class IMPLEMENTATION.
+CLASS zcl_demo_abap IMPLEMENTATION.
   METHOD if_oo_adt_classrun~main.
 
     DATA(result_plus) = calculate( num1 = 1 num2 = 10 operator = en_calc-plus ).

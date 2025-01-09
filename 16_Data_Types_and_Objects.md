@@ -557,7 +557,7 @@ DATA do_i_like_init LIKE do_i VALUE IS INITIAL.
 "the class, too.
 "Declaration in the example:
 "CLASS-DATA: read_only_attribute TYPE string VALUE `Hallo` READ-ONLY.
-IF zcl_some_class=>read_only_attribute = `abc`.
+IF zcl_demo_abap=>read_only_attribute = `abc`.
   ...  
 ELSE.
   ...
@@ -1145,7 +1145,7 @@ In [ABAP programs](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/in
 | `space` constant | It is of type type `c`, length 1, and contains a blank character. |
 | `me` self-reference  | Used in ABAP Objects, it's a local reference variable for instance method implementations. At runtime, it points to the instance executing the method. It is primarily used to be explicit about, for exmaple, using instance attributes of the class, especially if there is a local data object with the same name.|
 
-Expand the following collapsible section for example code. To try it out, create a demo class named `zcl_some_class` and paste the code into it. After activation, choose *F9* in ADT to execute the class. The example is set up to display output in the console.
+Expand the following collapsible section for example code. To try it out, create a demo class named `zcl_demo_abap` and paste the code into it. After activation, choose *F9* in ADT to execute the class. The example is set up to display output in the console.
 
 
 <details>
@@ -1153,7 +1153,7 @@ Expand the following collapsible section for example code. To try it out, create
   <!-- -->
 
 ```abap
-CLASS zcl_some_class DEFINITION
+CLASS zcl_demo_abap DEFINITION
   PUBLIC
   FINAL
   CREATE PUBLIC .
@@ -1167,7 +1167,7 @@ ENDCLASS.
 
 
 
-CLASS zcl_some_class IMPLEMENTATION.
+CLASS zcl_demo_abap IMPLEMENTATION.
   METHOD if_oo_adt_classrun~main.
 
     "In ABAP for Cloud Development, the following statement will show a syntax warning saying that

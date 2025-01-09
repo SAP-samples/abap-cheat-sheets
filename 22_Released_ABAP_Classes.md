@@ -128,7 +128,7 @@ The following example makes use of the <code>CL_DEMO_CLASSRUN</code> class. A st
 <br><br>
 
 ``` abap
-CLASS zcl_some_class DEFINITION
+CLASS zcl_demo_abap DEFINITION
   INHERITING FROM cl_demo_classrun
   PUBLIC
   CREATE PUBLIC.
@@ -139,7 +139,7 @@ CLASS zcl_some_class DEFINITION
   PRIVATE SECTION.
 ENDCLASS.
 
-CLASS zcl_some_class IMPLEMENTATION.
+CLASS zcl_demo_abap IMPLEMENTATION.
   METHOD main.
     TYPES: BEGIN OF s,
              comp1 TYPE string,
@@ -529,7 +529,7 @@ The following example explores the generation of arbitraty numeric values.
 
 
 ```abap
-CLASS zcl_some_class DEFINITION
+CLASS zcl_demo_abap DEFINITION
   PUBLIC
   FINAL
   CREATE PUBLIC .
@@ -540,7 +540,7 @@ CLASS zcl_some_class DEFINITION
   PRIVATE SECTION.
 ENDCLASS.
 
-CLASS zcl_some_class IMPLEMENTATION.
+CLASS zcl_demo_abap IMPLEMENTATION.
   METHOD if_oo_adt_classrun~main.
 
     TYPES: BEGIN OF random_values,
@@ -603,22 +603,21 @@ CLASS zcl_some_class IMPLEMENTATION.
     DATA(c) = cl_abap_random_float=>create( seed = cl_abap_random=>seed( ) )->get_next( ).
     DATA(d) = cl_abap_random_int=>create( seed = cl_abap_random=>seed( ) )->get_next( ).
     DATA(e) = cl_abap_random_int8=>create( seed = cl_abap_random=>seed( ) )->get_next( ).
-    DATA(f) = cl_abap_random_packed=>create( seed = cl_abap_random=>seed( ) )->get_next( ).
-    DATA(g) = cl_abap_random_packed=>create( seed = cl_abap_random=>seed( ) )->get_next( ).
-    DATA(h) = cl_abap_random_packed_dec1=>create( seed = cl_abap_random=>seed( ) )->get_next( ).
-    DATA(i) = cl_abap_random_packed_dec2=>create( seed = cl_abap_random=>seed( ) )->get_next( ).
-    DATA(j) = cl_abap_random_packed_dec3=>create( seed = cl_abap_random=>seed( ) )->get_next( ).
-    DATA(k) = cl_abap_random_packed_dec4=>create( seed = cl_abap_random=>seed( ) )->get_next( ).
-    DATA(l) = cl_abap_random_packed_dec5=>create( seed = cl_abap_random=>seed( ) )->get_next( ).
-    DATA(m) = cl_abap_random_packed_dec6=>create( seed = cl_abap_random=>seed( ) )->get_next( ).
-    DATA(n) = cl_abap_random_packed_dec7=>create( seed = cl_abap_random=>seed( ) )->get_next( ).
-    DATA(o) = cl_abap_random_packed_dec8=>create( seed = cl_abap_random=>seed( ) )->get_next( ).
-    DATA(p) = cl_abap_random_packed_dec9=>create( seed = cl_abap_random=>seed( ) )->get_next( ).
-    DATA(q) = cl_abap_random_packed_dec10=>create( seed = cl_abap_random=>seed( ) )->get_next( ).
-    DATA(r) = cl_abap_random_packed_dec11=>create( seed = cl_abap_random=>seed( ) )->get_next( ).
-    DATA(s) = cl_abap_random_packed_dec12=>create( seed = cl_abap_random=>seed( ) )->get_next( ).
-    DATA(t) = cl_abap_random_packed_dec13=>create( seed = cl_abap_random=>seed( ) )->get_next( ).
-    DATA(u) = cl_abap_random_packed_dec14=>create( seed = cl_abap_random=>seed( ) )->get_next( ).
+    DATA(f) = cl_abap_random_packed=>create( seed = cl_abap_random=>seed( ) )->get_next( ).    
+    DATA(g) = cl_abap_random_packed_dec1=>create( seed = cl_abap_random=>seed( ) )->get_next( ).
+    DATA(h) = cl_abap_random_packed_dec2=>create( seed = cl_abap_random=>seed( ) )->get_next( ).
+    DATA(i) = cl_abap_random_packed_dec3=>create( seed = cl_abap_random=>seed( ) )->get_next( ).
+    DATA(j) = cl_abap_random_packed_dec4=>create( seed = cl_abap_random=>seed( ) )->get_next( ).
+    DATA(k) = cl_abap_random_packed_dec5=>create( seed = cl_abap_random=>seed( ) )->get_next( ).
+    DATA(l) = cl_abap_random_packed_dec6=>create( seed = cl_abap_random=>seed( ) )->get_next( ).
+    DATA(m) = cl_abap_random_packed_dec7=>create( seed = cl_abap_random=>seed( ) )->get_next( ).
+    DATA(n) = cl_abap_random_packed_dec8=>create( seed = cl_abap_random=>seed( ) )->get_next( ).
+    DATA(o) = cl_abap_random_packed_dec9=>create( seed = cl_abap_random=>seed( ) )->get_next( ).
+    DATA(p) = cl_abap_random_packed_dec10=>create( seed = cl_abap_random=>seed( ) )->get_next( ).
+    DATA(q) = cl_abap_random_packed_dec11=>create( seed = cl_abap_random=>seed( ) )->get_next( ).
+    DATA(r) = cl_abap_random_packed_dec12=>create( seed = cl_abap_random=>seed( ) )->get_next( ).
+    DATA(s) = cl_abap_random_packed_dec13=>create( seed = cl_abap_random=>seed( ) )->get_next( ).
+    DATA(t) = cl_abap_random_packed_dec14=>create( seed = cl_abap_random=>seed( ) )->get_next( ).
 
   ENDMETHOD.
 
@@ -1294,10 +1293,10 @@ Provides context information relevant to the current ABAP session.
 <br><br>
 
 ``` abap
-"Getting current date in UTC (not the system or user time), e.g. 20240101
+"Getting the current date in UTC (not the system or user time), e.g. 20240101
 DATA(sys_date) = cl_abap_context_info=>get_system_date( ).
 
-"Getting current time in UTC, e.g. 152450
+"Getting the current time in UTC, e.g. 152450
 DATA(sys_time) = cl_abap_context_info=>get_system_time( ).
 ``` 
 
@@ -1880,7 +1879,7 @@ Provides methods to get information about filled components in structures allowi
 <br><br>
 
 ``` abap
-CLASS zcl_some_class DEFINITION
+CLASS zcl_demo_abap DEFINITION
   PUBLIC
   FINAL
   CREATE PUBLIC .
@@ -1890,7 +1889,7 @@ CLASS zcl_some_class DEFINITION
   PRIVATE SECTION.
 ENDCLASS.
 
-CLASS zcl_some_class IMPLEMENTATION.
+CLASS zcl_demo_abap IMPLEMENTATION.
   METHOD if_oo_adt_classrun~main.
     out->write( `---------- filled_components method ----------` ).
     "It returns an internal table containing the names of the non-initial
@@ -2137,6 +2136,7 @@ ENDTRY.
 <tr>
 <td> Class </td> <td> Details/Code Snippet </td>
 </tr>
+
 <tr>
 <td> <code>CL_ABAP_CONTEXT_INFO</code> </td>
 <td>
@@ -2146,8 +2146,6 @@ Provides context information relevant to the current ABAP session.
 ``` abap
 "User alias, e.g. XY0000001234
 DATA(alias) = cl_abap_context_info=>get_user_alias( ).
-"You can also get user information using XCO classes
-DATA(user_w_xco) = xco_cp=>sy->user( )->name.
 
 "Formatted name, e.g. John Doe
 TRY.
@@ -2157,15 +2155,27 @@ ENDTRY.
 
 "The class also provides the option to retrieve the current date and time 
 "in UTC.
-"Getting current date in UTC (not the system or user time), e.g. 20240101
+"Getting the current date in UTC (not the system or user time), e.g. 20240101
 DATA(sys_date) = cl_abap_context_info=>get_system_date( ).
 
-"Getting current time in UTC, e.g. 152450
+"Getting the current time in UTC, e.g. 152450
 DATA(sys_time) = cl_abap_context_info=>get_system_time( ).
 ``` 
 
 </td>
 </tr>
+
+<tr>
+<td> <code>XCO_CP</code> </td>
+<td>
+
+``` abap
+DATA(user_w_xco) = xco_cp=>sy->user( )->name.
+``` 
+
+</td>
+</tr>
+
 </table>
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
@@ -2350,8 +2360,8 @@ DATA(all_tables) = xco_cp_abap_repository=>objects->tabl->all->in( xco_cp_abap=>
 
 "Refining the search by applying a filter
 "Creating a filter and adding a search pattern
-  DATA(filter1) = xco_cp_abap_repository=>object_name->get_filter(
-    xco_cp_abap_sql=>constraint->contains_pattern( 'ZDEMO_ABAP_RAP_R%' ) ).
+DATA(filter1) = xco_cp_abap_repository=>object_name->get_filter(
+  xco_cp_abap_sql=>constraint->contains_pattern( 'ZDEMO_ABAP_RAP_R%' ) ).
 
 "Getting all BDEFs in the system having a specific pattern
 DATA(bdefs_in_package) = xco_cp_abap_repository=>objects->bdef->where( VALUE #( ( filter1 )
@@ -2370,6 +2380,42 @@ DATA(filter3) = xco_cp_system=>software_component->get_filter( xco_cp_abap_sql=>
 DATA(filter4) = xco_cp_abap_repository=>object_name->get_filter( xco_cp_abap_sql=>constraint->contains_pattern( '%CL_ABAP_RAND%' ) ).
 DATA(filtered_classes) = xco_cp_abap_repository=>objects->clas->where( VALUE #( ( filter3 ) ( filter4 )
   ) )->in( xco_cp_abap=>repository )->get( ).
+
+"Checking if a repository object with a specific name exists in the system
+DATA(type_names) = VALUE string_table( ( `ZDEMO_ABAP_FLI` ) ( `ZDEMO_ABAP_FLSCH_VE` ) ).
+LOOP AT type_names INTO DATA(type_name).
+  DATA(filter5) = xco_cp_abap_repository=>object_name->get_filter( xco_cp_abap_sql=>constraint->equal( type_name ) ).
+  "A table is returned containing found repository objects of the specified name
+  DATA(repo_objects) = xco_cp_abap_repository=>objects->where( VALUE #( ( filter5 ) ) )->in( xco_cp_abap=>repository )->get( ).
+
+  "Some examples for further processing the returned objects
+  "You can explore more options, e.g., by adding the object component selector (->)
+  "to the final parenthesis and checking the suggestions by ADT.
+  LOOP AT repo_objects INTO DATA(obj).
+    "Retrieving the four-character value of the object type
+    DATA(val) = obj->type->value.
+    "Retrieving the package name of the repository object
+    DATA(package) = obj->get_package( )->name.
+
+    "The following example implementation retrieves key component.
+    CASE val.
+      WHEN `TABL`.
+        "Retrieving the key component names of DDIC database tables
+        DATA(table_keys) = xco_cp_abap_repository=>object->tabl->database_table->for( CONV #( obj->name->value ) )->fields->key->get_names( ).
+      WHEN `DDLS`.
+        "Retrieving the key component names of CDS entities
+        DATA(ddls_key_spec) = xco_cp_abap_repository=>object->ddls->for( CONV #( obj->name->value ) )->entity( )->fields->all->get_names( ).
+        LOOP AT ddls_key_spec INTO DATA(field).
+          DATA(is_key) = xco_cp_abap_repository=>object->ddls->for( CONV #( obj->name->value ) )->view_entity( )->field( field )->content( )->get_key_indicator( ).
+          DATA ddls_keys TYPE string_table.
+          IF is_key IS NOT INITIAL.
+            APPEND field TO ddls_keys.
+          ENDIF.
+        ENDLOOP.
+        CLEAR ddls_keys.
+    ENDCASE.
+  ENDLOOP.
+ENDLOOP.
 
 "Getting information about some of the technical properties of different
 "repository objects. The examples show the creation of handlers. You can
@@ -2394,7 +2440,7 @@ DATA(subcl) = xco_cp_abap=>class( 'CL_ABAP_TYPEDESCR' )->subclasses->all->get( )
 "Getting the names of the subclasses
 DATA(subcl_names) = xco_cp_abap=>class( 'CL_ABAP_TYPEDESCR' )->subclasses->all->get_names( ).
 "Getting the direct superclass
-DATA(direct_super_class) = xco_cp_abap=>class( 'CL_ABAP_DATADESCR' )->definition->content( 
+DATA(direct_super_class) = xco_cp_abap=>class( 'CL_ABAP_DATADESCR' )->definition->content(
   )->get_superclass( )->name.
 
 "Taking an XCO handler for a database table as an example, see some of the
@@ -2716,7 +2762,7 @@ Notes on the example:
 <br>
 
 ```abap
-CLASS zcl_some_class DEFINITION
+CLASS zcl_demo_abap DEFINITION
   PUBLIC
   FINAL
   CREATE PUBLIC .
@@ -2740,15 +2786,15 @@ CLASS zcl_some_class DEFINITION
 
 ENDCLASS.
 
-CLASS zcl_some_class IMPLEMENTATION.
+CLASS zcl_demo_abap IMPLEMENTATION.
   METHOD if_oo_adt_classrun~main.
     APPEND VALUE #( time_stamp = time_stamp instance = `----` comment = `Time stamp stored when first running/calling the class` ) TO info.
 
-    DATA(inst1) = NEW zcl_some_class( `inst1` ).
-    DATA(inst2) = NEW zcl_some_class( `inst2` ).
-    DATA(inst3) = NEW zcl_some_class( `inst3` ).
-    DATA(inst4) = NEW zcl_some_class( `inst4` ).
-    DATA(inst5) = NEW zcl_some_class( `inst5` ).
+    DATA(inst1) = NEW zcl_demo_abap( `inst1` ).
+    DATA(inst2) = NEW zcl_demo_abap( `inst2` ).
+    DATA(inst3) = NEW zcl_demo_abap( `inst3` ).
+    DATA(inst4) = NEW zcl_demo_abap( `inst4` ).
+    DATA(inst5) = NEW zcl_demo_abap( `inst5` ).
 
     APPEND VALUE #( time_stamp = utclong_current( ) instance = `----` comment = `Time stamp stored before starting parallel processing` ) TO info.
 
@@ -2768,7 +2814,7 @@ CLASS zcl_some_class IMPLEMENTATION.
     APPEND VALUE #( time_stamp = utclong_current( ) instance = `----` comment = `Time stamp stored after the WAIT statement` ) TO info.
 
     LOOP AT result_info INTO DATA(wa).
-      DATA(res) = CAST zcl_some_class( wa-inst ).
+      DATA(res) = CAST zcl_demo_abap( wa-inst ).
       APPEND LINES OF res->parallel_proc TO info.
       APPEND VALUE #( time_stamp = res->time_stamp instance = res->instance_name comment = `Time stamp stored in constructor implementation when instantiating class` ) TO info.
     ENDLOOP.
@@ -2950,7 +2996,7 @@ The following, self-contained, and oversimplified example is intended to give a 
 <br>
 
 ``` abap
-CLASS zcl_some_class DEFINITION
+CLASS zcl_demo_abap DEFINITION
   PUBLIC
   FINAL
   CREATE PUBLIC .
@@ -2963,7 +3009,7 @@ CLASS zcl_some_class DEFINITION
     CLASS-DATA number TYPE i.
 ENDCLASS.
 
-CLASS zcl_some_class IMPLEMENTATION.
+CLASS zcl_demo_abap IMPLEMENTATION.
   METHOD if_oo_adt_classrun~main.
     "Deleting a demo database table
     DELETE FROM zdemo_abap_tabca.
@@ -2978,7 +3024,7 @@ CLASS zcl_some_class IMPLEMENTATION.
     DO 2 TIMES.
       "Creating an instance of the example class (that implements the bgPF-relevant
       "interface if_bgmc_op_single_tx_uncontr)
-      DATA(inst) = NEW zcl_some_class(  ).
+      DATA(inst) = NEW zcl_demo_abap(  ).
 
       TRY.
           "Getting the default factory for transactional background processes and
@@ -3052,7 +3098,7 @@ This example is similar to example 1. Unlike example 1, example 2 executes opera
 <br>
 
 ```abap
-CLASS zcl_some_class DEFINITION
+CLASS zcl_demo_abap DEFINITION
   PUBLIC
   FINAL
   CREATE PUBLIC .
@@ -3071,7 +3117,7 @@ CLASS zcl_some_class DEFINITION
     METHODS get_uuid RETURNING VALUE(uuid) TYPE sysuuid_x16.
 ENDCLASS.
 
-CLASS zcl_some_class IMPLEMENTATION.
+CLASS zcl_demo_abap IMPLEMENTATION.
   METHOD if_oo_adt_classrun~main.
     "Deleting a demo database table
     DELETE FROM zdemo_abap_tabca.
@@ -3086,7 +3132,7 @@ CLASS zcl_some_class IMPLEMENTATION.
     DO 2 TIMES.
       "Creating an instance of the example class (that implements the bgPF-relevant
       "interface if_bgmc_op_single)
-      DATA(inst) = NEW zcl_some_class( num = sy-index ).
+      DATA(inst) = NEW zcl_demo_abap( num = sy-index ).
 
       TRY.
           "Getting the default factory for transactional background processes and
@@ -3154,7 +3200,7 @@ CLASS zcl_some_class IMPLEMENTATION.
 
   METHOD get_uuid.
     TRY.
-        uuid = cl_system_uuid=>create_uuid_x16_static( ) .
+        uuid = cl_system_uuid=>create_uuid_x16_static( ).
       CATCH cx_uuid_error.
     ENDTRY.
   ENDMETHOD.
@@ -3252,7 +3298,7 @@ To check out examples in demo classes, expand the collapsible sections below.
 
 
 <details>
-  <summary>🟢 1. Read example: Getting Markdown content and sending ZIP file via email</summary>
+  <summary>🟢 1. Read example: Retrieving ABAP cheat sheet markdown content using a GitHub API and sending a ZIP file with the content via email</summary>
   <!-- -->
 
 > **⚠️ Note/Disclaimer**<br>
@@ -3265,13 +3311,13 @@ To check out examples in demo classes, expand the collapsible sections below.
 > - The example is generally about calling external APIs and parsing the HTTP responses. It retrieves the Markdown files of the ABAP cheat sheet documents Markdown contained in the ABAP cheat sheet GitHub repository.  
 > - Before using the GitHub APIs, make sure that you have consulted the following documentation: <a href="https://docs.github.com/en">GitHub Docs</a>, <a href="https://docs.github.com/en/enterprise-cloud@latest/rest/markdown/markdown?apiVersion=2022-11-28#render-a-markdown-document">Render a Markdown document</a>, <a href="https://docs.github.com/en/rest/using-the-rest-api/rate-limits-for-the-rest-api?apiVersion=2022-11-28">Rate limits for the REST API</a>
 > - For the example to work and send emails, make sure that the configurations from [here](https://help.sap.com/docs/btp/sap-business-technology-platform/emailing) have been performed.
-> - To run the example class, copy and paste the code into a class named `zcl_some_class`. Run the class using F9. The email sending status will be displayed, and you can expect an email to be sent.   
+> - To run the example class, copy and paste the code into a class named `zcl_demo_abap`. Run the class using F9. The email sending status will be displayed, and you can expect an email to be sent.   
 
 
 <br>
 
 ``` abap
-CLASS zcl_some_class DEFINITION
+CLASS zcl_demo_abap DEFINITION
   PUBLIC
   FINAL
   CREATE PUBLIC .
@@ -3298,7 +3344,7 @@ ENDCLASS.
 
 
 
-CLASS zcl_some_class IMPLEMENTATION.
+CLASS zcl_demo_abap IMPLEMENTATION.
 
 
   METHOD if_oo_adt_classrun~main.
@@ -3421,12 +3467,12 @@ ENDCLASS.
 
 > **⚠️ Note/Disclaimer**<br>
 > - As stated for the previous example, also note for this example: Before using the GitHub APIs, make sure that you have consulted the following documentation: <a href="https://docs.github.com/en">GitHub Docs</a>, <a href="https://docs.github.com/en/enterprise-cloud@latest/rest/markdown/markdown?apiVersion=2022-11-28#render-a-markdown-document">Render a Markdown document</a>, <a href="https://docs.github.com/en/rest/using-the-rest-api/rate-limits-for-the-rest-api?apiVersion=2022-11-28">Rate limits for the REST API</a>
-> - To run the example class, copy and paste the code into a class named `zcl_some_class`. Run the class using F9. It is set up to display HTML content in the console. Using the GitHub API, sample Markdown content is sent and converted to HTML.
+> - To run the example class, copy and paste the code into a class named `zcl_demo_abap`. Run the class using F9. It is set up to display HTML content in the console. Using the GitHub API, sample Markdown content is sent and converted to HTML.
 
 <br>
 
 ``` abap
-CLASS zcl_some_class DEFINITION
+CLASS zcl_demo_abap DEFINITION
   PUBLIC
   FINAL
   CREATE PUBLIC .
@@ -3440,7 +3486,7 @@ ENDCLASS.
 
 
 
-CLASS zcl_some_class IMPLEMENTATION.
+CLASS zcl_demo_abap IMPLEMENTATION.
 
 
   METHOD if_oo_adt_classrun~main.
@@ -3652,7 +3698,7 @@ The XLSX XCO module works with XLSX content in the form of an xstring. The follo
 
 **Exploring the XCO XLSX Module**
 
-Assuming you have the XLSX content created and uploaded above on your system, you can explore the following example using the XCO classes/methods. Set up a demo class called `zcl_some_class` and use the code provided below. After activating it, choose *F9* in ADT to run the class. The example is designed to show output in the console. 
+Assuming you have the XLSX content created and uploaded above on your system, you can explore the following example using the XCO classes/methods. Set up a demo class called `zcl_demo_abap` and use the code provided below. After activating it, choose *F9* in ADT to run the class. The example is designed to show output in the console. 
 
 > **💡 Note**<br>
 > - Refer to the comments in the code for information.
@@ -3660,7 +3706,7 @@ Assuming you have the XLSX content created and uploaded above on your system, yo
 > - If your artifacts have a different setup, names, or XLSX content, the example class will not function properly. You willl need to modify the class code to match your specific requirements.
 
 ```abap
-CLASS zcl_some_class DEFINITION
+CLASS zcl_demo_abap DEFINITION
   PUBLIC
   FINAL
   CREATE PUBLIC .
@@ -3674,7 +3720,7 @@ ENDCLASS.
 
 
 
-CLASS zcl_some_class IMPLEMENTATION.
+CLASS zcl_demo_abap IMPLEMENTATION.
 
 
   METHOD if_oo_adt_classrun~main.
@@ -4217,7 +4263,7 @@ cl_abap_unit_assert=>assert_equals(
 <br><br>
 
 ```abap
-CLASS zcl_some_class DEFINITION
+CLASS zcl_demo_abap DEFINITION
   PUBLIC
   FINAL
   CREATE PUBLIC .
@@ -4228,7 +4274,7 @@ CLASS zcl_some_class DEFINITION
   PRIVATE SECTION.
 ENDCLASS.
 
-CLASS zcl_some_class IMPLEMENTATION.
+CLASS zcl_demo_abap IMPLEMENTATION.
   METHOD if_oo_adt_classrun~main.
 
     DATA(dimension_inst) = cl_uom_dim_maintenance=>get_instance( ).
@@ -4461,7 +4507,7 @@ SELECT *
 <br>
 
 ```abap
-CLASS zcl_some_class DEFINITION
+CLASS zcl_demo_abap DEFINITION
   PUBLIC
   FINAL
   CREATE PUBLIC .
@@ -4472,12 +4518,12 @@ CLASS zcl_some_class DEFINITION
   PRIVATE SECTION.
 ENDCLASS.
 
-CLASS zcl_some_class IMPLEMENTATION.
+CLASS zcl_demo_abap IMPLEMENTATION.
   METHOD if_oo_adt_classrun~main.
 
     DATA num TYPE i VALUE 1.
     GET REFERENCE OF num INTO DATA(ref).
-
+    DATA(current_time) = sy-uzeit.
     out->write( `Some text` ).
 
 **********************************************************************
@@ -4488,7 +4534,7 @@ CLASS zcl_some_class IMPLEMENTATION.
         "Creating an ATC run and starting it
         "The ATC run result is stored in a variable.
         DATA(atc_result) = atc->create_run(
-        atc->create_run_configuration( atc->create_object_set_for_list( VALUE #( ( obj_type = 'CLAS' obj_name = 'ZCL_SOME_CLASS' ) ) )
+        atc->create_run_configuration( atc->create_object_set_for_list( VALUE #( ( obj_type = 'CLAS' obj_name = 'ZCL_DEMO_ABAP' ) ) )
         )->set_check_variant( atc->get_check_variant_by_name(
         'ABAP_CLOUD_READINESS'
         "'ABAP_CLOUD_DEVELOPMENT_DEFAULT'

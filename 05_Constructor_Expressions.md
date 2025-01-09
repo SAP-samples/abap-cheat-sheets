@@ -446,7 +446,6 @@ Assigning incompatible structures and internal tables
 - The example makes use of the `BASE` addition, and includes a `CORRESPONDING` expression.
 - The `s1` structure is assigned the identically named components of the `s2` structure. Other components are assigned by explicitly specifying them.
 - Another example performs an assignment with internal tables, using a table iteration with a `FOR` loop.
-- 
 
 <br>
 

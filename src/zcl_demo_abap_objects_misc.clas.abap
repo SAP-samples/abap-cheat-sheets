@@ -444,7 +444,7 @@ CLASS zcl_demo_abap_objects_misc IMPLEMENTATION.
 
     out->write( zcl_demo_abap_aux=>heading( `6) Excursion: Inline Declarations, Returning Parameters` ) ).
     "Note:
-    "- Calling the method in the same class means specifying 'zcl_some_class=>' is optional here.
+    "- Calling the method in the same class means specifying 'zcl_demo_abap=>' is optional here.
     "- There is no proper implementation in the method implementations.
     "- There is not output for this section as it is meant to visualize on syntax options.
 

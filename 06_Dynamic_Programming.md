@@ -614,22 +614,22 @@ is required to access objects and their components. That means objects are not d
 - Find more information in the [ABAP Keyword Documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapcreate_object.htm) and the [ABAP Object Orientation](04_ABAP_Object_Orientation.md) cheat sheet
 
 ```abap
-DATA oref_a TYPE REF TO zcl_some_class.
+DATA oref_a TYPE REF TO zcl_demo_abap.
 oref_a = NEW #( ).
 "Using inline declaration
-DATA(oref_b) = NEW zcl_some_class( ).
+DATA(oref_b) = NEW zcl_demo_abap( ).
 "Generic type
 DATA oref_c TYPE REF TO object.
-oref_c = NEW zcl_some_class( ).
+oref_c = NEW zcl_demo_abap( ).
 
 "This object creation with the NEW operator corresponds to the older 
 "syntax using CREATE OBJECT, and replaces it. See more examples in the 
 "context of dynamic object creation that require the CREATE OBJECT 
 "syntax further down.
-DATA oref_d TYPE REF TO zcl_some_class.
+DATA oref_d TYPE REF TO zcl_demo_abap.
 CREATE OBJECT oref_d.
 DATA oref_e TYPE REF TO object.
-CREATE OBJECT oref_e TYPE zcl_some_class.
+CREATE OBJECT oref_e TYPE zcl_demo_abap.
 ```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
@@ -2356,10 +2356,10 @@ CALL METHOD class=>(meth) PARAMETER-TABLE ptab.
 
 **Example class 1** 
 
-The following example class explores dynamic method calls with simple methods. You can create a demo class called `zcl_some_class` and copy and paste the following code. Once activated, you can choose *F9* in ADT to run the class. The example is not designed to display output in the console.
+The following example class explores dynamic method calls with simple methods. You can create a demo class called `zcl_demo_abap` and copy and paste the following code. Once activated, you can choose *F9* in ADT to run the class. The example is not designed to display output in the console.
 
 ```abap
-CLASS zcl_some_class DEFINITION
+CLASS zcl_demo_abap DEFINITION
   PUBLIC
   FINAL
   CREATE PUBLIC .
@@ -2376,12 +2376,12 @@ CLASS zcl_some_class DEFINITION
   PRIVATE SECTION.
 ENDCLASS.
 
-CLASS zcl_some_class IMPLEMENTATION.
+CLASS zcl_demo_abap IMPLEMENTATION.
   METHOD if_oo_adt_classrun~main.
 
     "The following examples use both named and unnamed data objects randomly,
     "i.e. ...=>(meth_name) or ...=>(`SOME_METH`), for example.
-    DATA(cl_name) = `ZCL_SOME_CLASS`.
+    DATA(cl_name) = `ZCL_DEMO_ABAP`.
     DATA(meth_name1) = `STAT_METH1`.
 
     "------------------------------------------------------------------------
@@ -2396,52 +2396,52 @@ CLASS zcl_some_class IMPLEMENTATION.
     CALL METHOD me->(meth_name1).
 
     "-------- Class specified statically, method specified dynamically --------
-    CALL METHOD zcl_some_class=>(meth_name1).
+    CALL METHOD zcl_demo_abap=>(meth_name1).
 
     "-------- Class specified dynamically, method specified statically --------
-    CALL METHOD (`ZCL_SOME_CLASS`)=>stat_meth1.
+    CALL METHOD (`ZCL_DEMO_ABAP`)=>stat_meth1.
 
     "-------- Class and method specified dynamically --------
-    CALL METHOD (`ZCL_SOME_CLASS`)=>(`STAT_METH1`).
+    CALL METHOD (`ZCL_DEMO_ABAP`)=>(`STAT_METH1`).
 
     "-------- Specifying non-optional parameters --------
-    CALL METHOD (`ZCL_SOME_CLASS`)=>stat_meth2 EXPORTING text = `hallo`.
+    CALL METHOD (`ZCL_DEMO_ABAP`)=>stat_meth2 EXPORTING text = `hallo`.
 
     "Specifying the output parameter is optional
     DATA res TYPE string.
-    CALL METHOD (`ZCL_SOME_CLASS`)=>stat_meth2 EXPORTING text = `hallo` IMPORTING result = res.
+    CALL METHOD (`ZCL_DEMO_ABAP`)=>stat_meth2 EXPORTING text = `hallo` IMPORTING result = res.
     ASSERT res = `HALLO`.
 
     "-------- Some examples for handling errors when calling methods wrongly --------
 
     "Instance method called using =>
     TRY.
-        CALL METHOD zcl_some_class=>(`INST_METH1`).
+        CALL METHOD zcl_demo_abap=>(`INST_METH1`).
       CATCH cx_sy_dyn_call_illegal_method.
     ENDTRY.
 
     "The example method declares a non-optional parameter.
     TRY.
-        CALL METHOD (`ZCL_SOME_CLASS`)=>stat_meth2.
+        CALL METHOD (`ZCL_DEMO_ABAP`)=>stat_meth2.
       CATCH cx_sy_dyn_call_param_missing.
     ENDTRY.
 
     "Specifying a wrong parameter name
     TRY.
-        CALL METHOD (`ZCL_SOME_CLASS`)=>stat_meth2 EXPORTING hallo = `hallo`.
+        CALL METHOD (`ZCL_DEMO_ABAP`)=>stat_meth2 EXPORTING hallo = `hallo`.
       CATCH cx_sy_dyn_call_param_missing.
     ENDTRY.
 
     "Assigning wrong, incompatible type
     TRY.
-        CALL METHOD (`ZCL_SOME_CLASS`)=>stat_meth2 EXPORTING text = VALUE string_table( ( `hi` ) ).
+        CALL METHOD (`ZCL_DEMO_ABAP`)=>stat_meth2 EXPORTING text = VALUE string_table( ( `hi` ) ).
       CATCH cx_sy_dyn_call_illegal_type.
     ENDTRY.
 
     "Specifying wrong parameter kinds (the example method specifies importing
     "and exporting parameters, and not a returning parameter)
     TRY.
-        CALL METHOD (`ZCL_SOME_CLASS`)=>stat_meth2 EXPORTING text = `hallo` RECEIVING result = res.
+        CALL METHOD (`ZCL_DEMO_ABAP`)=>stat_meth2 EXPORTING text = `hallo` RECEIVING result = res.
       CATCH cx_sy_dyn_call_illegal_type.
     ENDTRY.
 
@@ -2451,7 +2451,7 @@ CLASS zcl_some_class IMPLEMENTATION.
 
     "Creating an instance of a class by specifying the type dynamically
     DATA oref TYPE REF TO object.
-    CREATE OBJECT oref TYPE ('ZCL_SOME_CLASS').
+    CREATE OBJECT oref TYPE ('ZCL_DEMO_ABAP').
 
     "--- Object reference variable specified statically, method specified dynamically ---
     "Note: This is a also possible for interface reference variables.
@@ -2474,15 +2474,15 @@ CLASS zcl_some_class IMPLEMENTATION.
     "------------------------------------------------------------------------
 
     "------- Static equivalents to the dynamic statement below -------
-    DATA(oref_stat) = NEW zcl_some_class( ).
+    DATA(oref_stat) = NEW zcl_demo_abap( ).
     res = oref_stat->inst_meth2( `abc` ).
     ASSERT res = `ABC`.
     "For demo purposes, including chained method call options:
     "Functional method call
-    res = NEW zcl_some_class( )->inst_meth2( `def` ).
+    res = NEW zcl_demo_abap( )->inst_meth2( `def` ).
     ASSERT res = `DEF`.
     "Standalone statement
-    NEW zcl_some_class( )->inst_meth2( EXPORTING text = `ghi` RECEIVING result = res ).
+    NEW zcl_demo_abap( )->inst_meth2( EXPORTING text = `ghi` RECEIVING result = res ).
     ASSERT res = `GHI`.
 
     "------- Dynamic CALL METHOD statements using the PARAMETER-TABLE addition -------
@@ -2509,15 +2509,15 @@ CLASS zcl_some_class IMPLEMENTATION.
                                       value = NEW string( ) ) ).
 
     "Static/dynamic specification variants
-    CALL METHOD (`ZCL_SOME_CLASS`)=>(`STAT_METH2`) PARAMETER-TABLE ptab.
+    CALL METHOD (`ZCL_DEMO_ABAP`)=>(`STAT_METH2`) PARAMETER-TABLE ptab.
     res = ptab[ name = 'RESULT' ]-('VALUE')->*.
     ASSERT res = `MNO`.
 
-    CALL METHOD zcl_some_class=>(`STAT_METH2`) PARAMETER-TABLE ptab.
+    CALL METHOD zcl_demo_abap=>(`STAT_METH2`) PARAMETER-TABLE ptab.
     res = ptab[ name = 'RESULT' ]-('VALUE')->*.
     ASSERT res = `MNO`.
 
-    CALL METHOD (`ZCL_SOME_CLASS`)=>stat_meth2 PARAMETER-TABLE ptab.
+    CALL METHOD (`ZCL_DEMO_ABAP`)=>stat_meth2 PARAMETER-TABLE ptab.
     res = ptab[ name = 'RESULT' ]-('VALUE')->*.
     ASSERT res = `MNO`.
 
@@ -2724,7 +2724,7 @@ It is crucial to perform checks and handle dynamic programming techniques cautio
 
 For more details, refer to the ABAP Keyword Documentation [here (Standard ABAP documentation)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abendynamic_programming_scrty.htm).
 
-To try the example out, create a demo class named `zcl_some_class` and paste the code into it. After activation, choose *F9* in ADT to execute the class. The example uses  objects of the ABAP cheat sheets repository and is set up to display output in the console.
+To try the example out, create a demo class named `zcl_demo_abap` and paste the code into it. After activation, choose *F9* in ADT to execute the class. The example uses  objects of the ABAP cheat sheets repository and is set up to display output in the console.
 It covers the following aspects: 
 - Dynamic `WHERE` clause and specifying the data object holding external input as operand and literal
 - Verifying input for not allowed database table access
@@ -2734,7 +2734,7 @@ It covers the following aspects:
   
 
 ```abap
-CLASS zcl_some_class DEFINITION
+CLASS zcl_demo_abap DEFINITION
   PUBLIC
   FINAL
   CREATE PUBLIC .
@@ -2747,7 +2747,7 @@ ENDCLASS.
 
 
 
-CLASS zcl_some_class IMPLEMENTATION.
+CLASS zcl_demo_abap IMPLEMENTATION.
 
   METHOD if_oo_adt_classrun~main.
 
@@ -3193,11 +3193,11 @@ The type properties are represented by attributes that are accessible through th
 
 The following code example demonstrates a range of RTTI attribute accesses and method calls. It includes retrieving type information at runtime for elementary and enumerated types, structures, internal tables, data references, classes, and interfaces. Find more information in the section below. 
 
-To try the example out, create a demo class named `zcl_some_class` and paste the code into it. 
+To try the example out, create a demo class named `zcl_demo_abap` and paste the code into it. 
 The example is not set up to display output in the console. So, after activation, you may want to set a break point at the first position possible and choose *F9* in ADT to execute the class.  You can then walk through the example in the debugger. This will allow you to double-click on the variables and check out the contents. The example is similar to the one below, however, this only focuses on the method calls and attribute accesses without output preparation among others.
 
 ```abap
-CLASS zcl_some_class DEFINITION
+CLASS zcl_demo_abap DEFINITION
   PUBLIC
   FINAL
   CREATE PUBLIC .
@@ -3211,7 +3211,7 @@ ENDCLASS.
 
 
 
-CLASS zcl_some_class IMPLEMENTATION.
+CLASS zcl_demo_abap IMPLEMENTATION.
   METHOD if_oo_adt_classrun~main.
 
     "------------------------------------- Elementary types/data objects -------------------------------------
@@ -3386,7 +3386,7 @@ Notes:
 
 
 ```abap
-CLASS zcl_some_class DEFINITION
+CLASS zcl_demo_abap DEFINITION
   PUBLIC
   FINAL
   CREATE PUBLIC .
@@ -3398,7 +3398,7 @@ CLASS zcl_some_class DEFINITION
 
 ENDCLASS.
 
-CLASS zcl_some_class IMPLEMENTATION.
+CLASS zcl_demo_abap IMPLEMENTATION.
   METHOD if_oo_adt_classrun~main.
 
     "Data objects to work with in the example

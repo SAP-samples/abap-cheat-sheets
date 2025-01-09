@@ -1181,14 +1181,14 @@ Runtime errors ...
   - You can also check the content of the *Feed Reader* tab in ADT. There, expand your project and find the runtime errors caused by you.
 
 Example of a catchable exception not handled: 
-- In ADT, run a class (e.g. `zcl_some_class`) that, for example, contains the statement `DATA(res) = 1 / 0.`, without a `TRY` control structure to handle the exception.
+- In ADT, run a class (e.g. `zcl_demo_abap`) that, for example, contains the statement `DATA(res) = 1 / 0.`, without a `TRY` control structure to handle the exception.
 - When running the class, a popup is displayed.
 - Clicking the *Show* button opens the short dump, providing information such as the following: 
   ```
   Short Text  Division by 0 (type I or INT8)  
   Runtime Error  COMPUTE_INT_ZERODIVIDE  
-  Exception  CX_SY_ZERODIVIDE  
-  Program  ZCL_SOME_CLASS================CP
+  Exception  CX_SY_ZERODIVIDE    
+  Program  ZCL_DEMO_ABAP=================CP
   ...
   ```
 
@@ -1243,7 +1243,7 @@ ASSERT flag = abap_true.
 ### Local Exception Classes
 
 The following simplified example demonstrates a local exception class: 
-- In a class, e.g. `zcl_some_class`, go to the [CCDEF include](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenccdef_glosry.htm), i.e. the *Class-relevant local types* tab in ADT.
+- In a class, e.g. `zcl_demo_abap`, go to the [CCDEF include](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenccdef_glosry.htm), i.e. the *Class-relevant local types* tab in ADT.
 - Add the following local class declaration
   ```abap
   CLASS lcx_error DEFINITION INHERITING FROM cx_static_check.
@@ -1258,7 +1258,7 @@ The following simplified example demonstrates a local exception class:
   - You can run the class using *F9*.
 
   ```abap
-  CLASS zcl_some_class DEFINITION
+  CLASS zcl_demo_abap DEFINITION
     PUBLIC
     FINAL
     CREATE PUBLIC .
@@ -1274,7 +1274,7 @@ The following simplified example demonstrates a local exception class:
 
 
 
-  CLASS zcl_some_class IMPLEMENTATION.
+  CLASS zcl_demo_abap IMPLEMENTATION.
 
     METHOD if_oo_adt_classrun~main.
 

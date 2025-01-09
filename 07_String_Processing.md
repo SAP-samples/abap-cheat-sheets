@@ -514,22 +514,32 @@ the string function
 Syntax examples:
 ``` abap
 "&& and string template
-DATA(s1) = `AB` && `AP`. "ABAP
-DATA(s2) = `ab` && `ap` && ` ` && s1. "abap ABAP
-DATA(s3) = |{ s1 }. { s2 }!|. "ABAP. abap ABAP!
+"abcd
+DATA(s1) = `ab` && `cd`.
+"efgh abcd
+DATA(s2) = `ef` && `gh` && ` ` && s1.
+"abcd. efgh abcd!
+DATA(s3) = |{ s1 }. { s2 }!|.
 
 "CONCATENATE statements
-CONCATENATE s1 s2 INTO s3. "ABAPabap ABAP
+"uvwxyz
+DATA(s4) = `uvw`.
+DATA(s5) = `xyz`.
+CONCATENATE s4 s5 INTO s3.
 
 "Multiple data objects and target declared inline
-CONCATENATE s1 ` ` s2 INTO DATA(s5). "ABAP abap ABAP
+"uvw xyz
+CONCATENATE s4 ` ` s5 INTO DATA(s6).
 
-CONCATENATE s1 s2 s5 INTO DATA(s6). "ABAPabap ABAPABAP abap ABAP
+"abcdefgh abcduvwxyz
+CONCATENATE s1 s2 s4 s5 INTO DATA(s7).
 
 "You can also add a separation sign using the addition SEPARATED BY
-CONCATENATE s1 s2 INTO s3 SEPARATED BY ` `. "ABAP abap ABAP
+"uvw xyz
+CONCATENATE s4 s5 INTO DATA(s8) SEPARATED BY ` `.
 
-CONCATENATE s1 s2 INTO s3 SEPARATED BY `#`. "ABAP#abap ABAP
+"uvw#xyz
+CONCATENATE s4 s5 INTO DATA(s9) SEPARATED BY `#`.
 
 "Keeping trailing blanks in the result when concatenating fixed length
 "strings. The ones of variable length strings are respected by default.
@@ -1124,6 +1134,7 @@ removed from the result.
 - You can use 
 [`TRANSLATE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abaptranslate.htm)
 statements to perform replacements directly on the source field.
+- If you want to replace single characters or fixed sequences of characters with a specified string, you can also use `REPLACE` statements and the `replace` function.
 
 Syntax examples:
 ``` abap
@@ -1183,12 +1194,18 @@ Syntax Overview (see the syntax diagram in the [ABAP Keyword Documentation](http
 
 ``` abap
 FIND 
-  FIRST OCCURRENCE OF "(or) ALL OCCURRENCES OF
+  FIRST OCCURRENCE OF 
+  "or
+  ALL OCCURRENCES OF
     "1. Only the first occurrence is searched
     "2. All occurrences are searched
     "Note: If none of these two additions is specified, only the first occurrence is searched for.
   
-  SUBSTRING some_substring "(or) PCRE some_regex  
+  SUBSTRING some_substring 
+  "or 
+  some_substring
+  "or 
+  PCRE some_regex  
     "1. Searching for exactly one string, specifying SUBSTRING is optional (e.g. for emphasis);
     "   some_substring is a character-like operand; note: Trailing blanks are not ignored if it is of type string
     "2. Searching for a substring matching a regular expression; only the PCRE addition should be used;  
@@ -2509,14 +2526,14 @@ SPLIT xstr AT blank_xstr INTO TABLE DATA(xstr_tab) IN BYTE MODE.
     - Reads a bit at a specified position in a byte string into a target data object.
 
 
-Expand the following collapsible section for example code, which experiments with byte string processing (converting a hexadecimal value to the character-like representation of the binary values by reading bits, getting hexadecimal values from the character-like representation of the binary values, setting bits). To try it out, create a demo class named `zcl_some_class` and paste the code into it. After activation, choose *F9* in ADT to execute the class. The example is set up to display output in the console.
+Expand the following collapsible section for example code, which experiments with byte string processing (converting a hexadecimal value to the character-like representation of the binary values by reading bits, getting hexadecimal values from the character-like representation of the binary values, setting bits). To try it out, create a demo class named `zcl_demo_abap` and paste the code into it. After activation, choose *F9* in ADT to execute the class. The example is set up to display output in the console.
 
 <details>
   <summary>🟢 Click to expand for example code</summary>
   <!-- -->
 
 ```abap
-CLASS zcl_some_class DEFINITION
+CLASS zcl_demo_abap DEFINITION
   PUBLIC
   FINAL
   CREATE PUBLIC .
@@ -2529,7 +2546,7 @@ ENDCLASS.
 
 
 
-CLASS zcl_some_class IMPLEMENTATION.
+CLASS zcl_demo_abap IMPLEMENTATION.
 
   METHOD if_oo_adt_classrun~main.
 
