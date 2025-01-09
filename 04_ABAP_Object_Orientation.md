@@ -44,7 +44,7 @@
     - [Friendship](#friendship)
       - [Friendship between Global and Local Classes](#friendship-between-global-and-local-classes)
     - [Events](#events)
-    - [Examples for Design Patterns: Factory Methods and Singletons](#examples-for-design-patterns-factory-methods-and-singletons)
+    - [ABAP Examples of Design Patterns in Object-Oriented Programming](#abap-examples-of-design-patterns-in-object-oriented-programming)
     - [Class-Based Exceptions](#class-based-exceptions)
     - [ABAP Unit Tests](#abap-unit-tests)
     - [ABAP Doc Comments](#abap-doc-comments)
@@ -4351,69 +4351,2601 @@ SET HANDLER handler3.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-### Examples for Design Patterns: Factory Methods and Singletons
+### ABAP Examples of Design Patterns in Object-Oriented Programming
 
-In object-oriented programming, there a plenty of design patterns. Covering these ones here to get a rough idea: factory methods and singletons. Both are relevant if you want to restrict or control the instantiation of a class by external users of this class.
+- This section explores design patterns you may encounter in object-oriented programming, using ABAP classes.
+- In object-oriented programming, numerous design patterns enhance modularity, scalability, reusability, and more. 
+- Here, a selection of design patterns is covered, using simplified, non-semantic examples to avoid complexity and give a rough idea.
 
-A singleton is a design pattern in which it is only up to the class to create objects. In doing so, the class ensures that only one object exists for every internal session that is made available to consumers.
+> **💡 Note**<br>
+> - The examples are not best practices or role models but aim to experiment with the patterns and convey the basic concepts. 
+> - More design patterns exist beyond those covered here, and different implementations or class setup strategies may apply. 
+> - Most examples are structured for easy exploration using simple, self-contained ABAP classes (i.e. only 1 class pool including local classes instead of multiple global classes) as follows:
+>    - Global class:
+>      - Includes the `if_oo_adt_classrun` interface to run the class with F9 in ADT.
+>      - Serves as a *vehicle* for demonstrating the design pattern. Only the declarations and implementations in the CCIMP include are relevant for the for conceptual considerations.
+>    - CCIMP include (Local Types tab in ADT):
+>      - Contains various local classes (some also include interfaces) to demonstrate design patterns, allowing quick copying and pasting without creating multiple global classes. 
+>      - In some examples, note the use of the `DEFERRED` addition to class definitions, and not using the `PUBLIC` addition in all class definitions as they are local classes.
 
-The following code snippet shows an implementation of the singleton design pattern. The `get_instance` method is used to return the object reference to the object created. Only one instance can be created.
+Expand the following sections for further descriptions and example code. To try the examples, create a demo class named `zcl_demo_abap` and paste the code into it (*Global Class* and *Local Types* tabs in ADT). After activation, choose *F9* in ADT to execute the class. The examples are set up to display output in the console.
 
-```abap
-"Using the addition CREATE PRIVATE, objects can only be created by the class itself.
-CLASS singleton_class DEFINITION CREATE PRIVATE.
-  PUBLIC SECTION.
-    CLASS-METHODS get_instance RETURNING VALUE(ret) TYPE REF TO singleton_class.
+<details>
+  <summary>🟢 Factory method</summary>
+  <!-- -->
 
-  PRIVATE SECTION.
-    CLASS-DATA inst TYPE REF TO singleton_class.
-ENDCLASS.
+<br>
 
-CLASS singleton_class IMPLEMENTATION.
-  METHOD get_instance.
-    IF inst IS NOT BOUND.
-      inst = NEW #( ).
-    ENDIF.
-    ret = inst.
-  ENDMETHOD.
-ENDCLASS.
-```
+- Used, for example, to:  
+  - Provide users with an object of a class instead of them creating the objects themselves.  
+  - Control and simplify class instantiation for external users.  
+  - Offer a stable API for class users, so they only need to call one stable method. This way, the code may be modified or extended, and the changes to the class do not affect users.  
+- Typically, using the `CREATE PRIVATE` addition in a class definition prevents object creation outside the class. A factory method, usually a static method, then supplies users with class objects. You can also include input parameters in the factory method to control instantiation.  
+- Example of a predefined ABAP class with factory methods: `CL_ABAP_REGEX`.  
 
-Controlling the creation of objects - the instantiation of a class - can be realized using a factory method. For example, certain checks might be required before a class can be instantiated. If a check is not successful, the instantiation is denied.
-You might create a (static) factory method as follows:
-- A check is carried out in the factory method, for example, by evaluating importing parameters.
-- If the check is successful, an object of the class is created.
-- The method signature includes an output parameter that returns an object reference to the caller.
 
-This is rudimentarily demonstrated in the following snippet:
+Example notes:
+
+- This example demonstrates the factory design pattern with the following declarations and implementations:
+  - Global class:
+    - Implements the `if_oo_adt_classrun` interface and calls methods from local classes.
+    - Serves as a vehicle for demonstrating the design pattern. The declarations and implementations in the `CCIMP` are relevant for the for conceptual considerations.
+  - CCIMP include (Local Types tab in ADT):
+    - Defines the `lif_factory` interface, specifying a method that is implemented in all classes that implement the interface.
+    - Contains multiple local classes (`lcl_**`) implementing `lif_factory`. Each class returns a string in its method.
+    - Class `lcl_factory_cl` containing a factory method:
+      - Defined as `CREATE PRIVATE` to prevent object creation outside the class.
+      - Offers the `create_hello` factory method returning an interface reference. This method uses an input value to create the appropriate object, which the reference points to. Here, the input is an enumerated type that is defined in the interface.
+- The class execution includes the following:
+  - Multiple objects are created using the factory method with different input parameters.
+  - Based on the parameter, a specific object is created. The `say_hello` method will return a string as implemented in the resepctive class.
+
+
+<table>
+
+<tr>
+<td> Class include </td> <td> Code </td>
+</tr>
+
+<tr>
+<td> 
+
+Global class
+
+ </td>
+
+ <td> 
 
 ``` abap
-CLASS class DEFINITION CREATE PRIVATE.
+CLASS zcl_demo_abap DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
+
   PUBLIC SECTION.
-  CLASS-METHODS
-    factory_method IMPORTING par ...,
-                   RETURNING VALUE(obj) TYPE REF TO class.
-  ...
+    INTERFACES if_oo_adt_classrun.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
 ENDCLASS.
 
-CLASS class IMPLEMENTATION.
-  METHOD factory_method.
-    IF par = ...
-       obj = NEW class( ).
-      ELSE.
-      ...
-    ENDIF.
+CLASS zcl_demo_abap IMPLEMENTATION.
+  METHOD if_oo_adt_classrun~main.
+
+    "Saying hello in English
+    DATA(oref_en) = lcl_factory_cl=>create_hello( lif_factory=>en ).
+    DATA(hello_en) = oref_en->say_hello( ).
+    out->write( hello_en ).
+
+    "Saying hello in French
+    DATA(oref_fr) = lcl_factory_cl=>create_hello( lif_factory=>fr ).
+    DATA(hello_fr) = oref_fr->say_hello( ).
+    out->write( hello_fr ).
+
+    "Saying hello in Italian
+    DATA(oref_it) = lcl_factory_cl=>create_hello( lif_factory=>it ).
+    DATA(hello_it) = oref_it->say_hello( ).
+    out->write( hello_it ).
+
+    "Saying hello in Spanish
+    DATA(oref_es) = lcl_factory_cl=>create_hello( lif_factory=>es ).
+    DATA(hello_es) = oref_es->say_hello( ).
+    out->write( hello_es ).
+
+    "Saying hello in German
+    DATA(oref_de) = lcl_factory_cl=>create_hello( lif_factory=>de ).
+    DATA(hello_de) = oref_de->say_hello( ).
+    out->write( hello_de ).
+
+    "Default hello
+    DATA(oref_default) = lcl_factory_cl=>create_hello( lif_factory=>init ).
+    DATA(hello_default) = oref_default->say_hello( ).
+    out->write( hello_default ).
 
   ENDMETHOD.
-  ...
+
 ENDCLASS.
-...
+``` 
 
-"Calling a factory method.
-DATA obj_factory TYPE REF TO class.
+ </td>
+</tr>
 
-obj_factory = class=>factory_method( par = ... ).
-```
+<tr>
+<td> 
+
+CCIMP include (Local Types tab in ADT)
+
+ </td>
+
+ <td> 
+
+``` abap
+INTERFACE lif_factory.
+  TYPES: basetype TYPE i,
+         BEGIN OF ENUM enum_langu BASE TYPE basetype,
+           init VALUE IS INITIAL,
+           en   VALUE 1,
+           fr   VALUE 2,
+           it   VALUE 3,
+           es   VALUE 4,
+           de   VALUE 5,
+         END OF ENUM enum_langu.
+
+  METHODS say_hello RETURNING VALUE(hi) TYPE string.
+ENDINTERFACE.
+
+CLASS lcl_en DEFINITION FINAL CREATE PUBLIC.
+  PUBLIC SECTION.
+    INTERFACES lif_factory.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+ENDCLASS.
+
+CLASS lcl_en IMPLEMENTATION.
+  METHOD lif_factory~say_hello.
+    hi = `Hi`.
+  ENDMETHOD.
+ENDCLASS.
+
+CLASS lcl_fr DEFINITION FINAL CREATE PUBLIC.
+  PUBLIC SECTION.
+    INTERFACES lif_factory.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+ENDCLASS.
+
+CLASS lcl_fr IMPLEMENTATION.
+  METHOD lif_factory~say_hello.
+    hi = `Salut`.
+  ENDMETHOD.
+ENDCLASS.
+
+CLASS lcl_it DEFINITION FINAL CREATE PUBLIC.
+  PUBLIC SECTION.
+    INTERFACES lif_factory.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+ENDCLASS.
+
+CLASS lcl_it IMPLEMENTATION.
+  METHOD lif_factory~say_hello.
+    hi = `Ciao`.
+  ENDMETHOD.
+ENDCLASS.
+
+CLASS lcl_es DEFINITION FINAL CREATE PUBLIC.
+  PUBLIC SECTION.
+    INTERFACES lif_factory.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+ENDCLASS.
+
+CLASS lcl_es IMPLEMENTATION.
+  METHOD lif_factory~say_hello.
+    hi = `Hola`.
+  ENDMETHOD.
+ENDCLASS.
+
+CLASS lcl_de DEFINITION FINAL CREATE PUBLIC.
+  PUBLIC SECTION.
+    INTERFACES lif_factory.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+ENDCLASS.
+
+CLASS lcl_de IMPLEMENTATION.
+  METHOD lif_factory~say_hello.
+    hi = `Hallo`.
+  ENDMETHOD.
+ENDCLASS.
+
+**********************************************************************
+
+CLASS lcl_factory_cl DEFINITION FINAL CREATE PRIVATE.
+
+  PUBLIC SECTION.
+    CLASS-METHODS create_hello IMPORTING language     TYPE lif_factory=>enum_langu
+                               RETURNING VALUE(hello) TYPE REF TO lif_factory.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+ENDCLASS.
+
+CLASS lcl_factory_cl IMPLEMENTATION.
+  METHOD create_hello.
+    hello = SWITCH #( language
+                      WHEN lif_factory=>en THEN NEW lcl_en( )
+                      WHEN lif_factory=>fr THEN NEW lcl_fr( )
+                      WHEN lif_factory=>it THEN NEW lcl_it( )
+                      WHEN lif_factory=>es THEN NEW lcl_es( )
+                      WHEN lif_factory=>de THEN NEW lcl_de( )
+                      "E.g. raising an exception or returning a default object
+                      ELSE NEW lcl_en( ) ).
+  ENDMETHOD.
+ENDCLASS.
+``` 
+
+ </td>
+</tr>
+
+</table>
+
+</details>  
+
+<br>
+
+<details>
+  <summary>🟢 Singleton</summary>
+  <!-- -->
+
+<br>
+
+- Used to restrict external users from instantiating a class.  
+- As above, this is typically achieved by using the `CREATE PRIVATE` addition in a class definition, preventing object creation outside the class. A factory method, often a static method, then provides users with an instance of the class. The singleton pattern ensures only one instance per class within an internal session.  
+- Example of a predefined ABAP class: `CL_IXML_CORE`.  
+
+
+
+Example notes:
+
+ - This example demonstrates the singleton design pattern with the following declarations and implementations:
+  - Global class:
+    - Implements the `if_oo_adt_classrun` interface and calls methods from a local class.
+    - Acts as a consumer of an API (a local class) defined in the CCIMP include.
+  - CCIMP include (Local Types tab in ADT):
+    - Contains the local class `lcl_singleton`, which provides the static factory method `get_obj` that supplies consumers with an instance (a single instance in this case) of the `lcl_singleton` class.
+    - Specifies the `CREATE PRIVATE` addition to prevent instance creation outside the class.
+    - The `get_obj` method checks for an existing instance of the `lcl_singleton` class. If it exists, it returns that instance; otherwise, it creates and returns a new instance. A private static attribute stores the reference to this instance.
+    - To demonstrate the singleton pattern, an internal table, which represents a log table, is filled when calling the `add_log` method and providing some text. The content of the table is returned when the consumer (the example global class) calls the `get_log` method. The `get_obj` is called several times, i.e. multiple object reference variables were assigned the reference to the single instance of the class. Yet, the table content returned at the end of the example shows the same content for all method calls via different object reference variables. It shows consistent data across object reference variables (i.e. the table has not been filled anew etc.). This way, a consistent logging is ensured within an internal session, throughout class execution.
+    - Furthermore, the class implements both static and instance constructors. These constructors log time stamps and set static and instance attributes. The table that stores object reference variable names and time stamp values (created in the global class) and that is output to the console shows that the time stamps have not changed throughout the class execution, especially the time stamp set when calling the instance constructor, which is indeed called only once. 
+
+<table>
+
+<tr>
+<td> Class include </td> <td> Code </td>
+</tr>
+
+<tr>
+<td> 
+
+Global class
+
+ </td>
+
+ <td> 
+
+``` abap
+CLASS zcl_demo_abap DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
+
+  PUBLIC SECTION.
+    INTERFACES if_oo_adt_classrun.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+ENDCLASS.
+
+CLASS zcl_demo_abap IMPLEMENTATION.
+  METHOD if_oo_adt_classrun~main.
+
+    "Internal table to store and display object reference variable names and
+    "time stamp values
+    TYPES: BEGIN OF s_ts,
+             name               TYPE string,
+             timestamp_static   TYPE utclong,
+             timestamp_instance TYPE utclong,
+           END OF s_ts.
+    DATA ts_tab TYPE TABLE OF s_ts WITH EMPTY KEY.
+
+    "Object creation as follows is not possible
+    "DATA(oref) = NEW lcl_singleton( ).
+
+    "Creating object
+    DATA(oref1) = lcl_singleton=>get_obj( ).
+
+    "Retrieving time stamps, and adding the values to the internal table created above
+    "for display purposes
+    oref1->get_timestamps( IMPORTING ts_static   = DATA(ts_static)
+                                     ts_instance = DATA(ts_instance) ).
+    APPEND VALUE #( name = `oref1` timestamp_static = ts_static timestamp_instance = ts_instance ) TO ts_tab.
+
+    "Adding entries to a log table (represented by a private static attribute in the local class)
+    oref1->add_log( |Text 1 added at { utclong_current( ) } (using oref1)| ).
+    oref1->add_log( |Text 2 added at { utclong_current( ) } (using oref1)| ).
+
+    "Creating more objects (however, the one created previously is returned) and adding entries
+    "to the log table
+    "Time stamp values are also added the to the internal table for display purposes
+    DATA(oref2) = lcl_singleton=>get_obj( ).
+
+    oref2->get_timestamps( IMPORTING ts_static   = ts_static
+                                     ts_instance = ts_instance ).
+    APPEND VALUE #( name = `oref2` timestamp_static = ts_static timestamp_instance = ts_instance ) TO ts_tab.
+
+    oref2->add_log( |Text 3 added at { utclong_current( ) } (using oref2)| ).
+    oref2->add_log( |Text 4 added at { utclong_current( ) } (using oref2)| ).
+
+    oref1->add_log( |Text 5 added at { utclong_current( ) } (using oref1)| ).
+
+    DATA(oref3) = lcl_singleton=>get_obj( ).
+
+    oref3->get_timestamps( IMPORTING ts_static   = ts_static
+                                     ts_instance = ts_instance ).
+    APPEND VALUE #( name = `oref3` timestamp_static = ts_static timestamp_instance = ts_instance ) TO ts_tab.
+
+    oref3->add_log( |Text 6 added at { utclong_current( ) } (using oref3)| ).
+    oref3->add_log( |Text 7 added at { utclong_current( ) } (using oref3)| ).
+
+    oref1->add_log( |Text 8 added at { utclong_current( ) } (using oref1)| ).
+    oref2->add_log( |Text 9 added at { utclong_current( ) } (using oref2)| ).
+    oref3->add_log( |Text 10 added at { utclong_current( ) } (using oref3)| ).
+
+    DATA(oref4) = lcl_singleton=>get_obj( ).
+
+    oref4->get_timestamps( IMPORTING ts_static   = ts_static
+                                     ts_instance = ts_instance ).
+    APPEND VALUE #( name = `oref4` timestamp_static = ts_static timestamp_instance = ts_instance ) TO ts_tab.
+
+    oref4->add_log( |Text 11 added at { utclong_current( ) } (using oref4)| ).
+    oref4->add_log( |Text 12 added at { utclong_current( ) } (using oref4)| ).
+
+    "Retrieving the content of the log table per object
+    "However, as it is one and the same object that is dealt with, the content is the same.
+    DATA(log1) = oref1->get_log( ).
+    DATA(log2) = oref2->get_log( ).
+    DATA(log3) = oref3->get_log( ).
+
+    out->write( log1 ).
+    out->write( |\n| ).
+
+    ASSERT log1 = log2.
+    ASSERT log1 = log3.
+
+    "Displaying the time stamps visualizing the singleton pattern
+    SORT ts_tab BY name ASCENDING.
+    out->write( ts_tab ).
+
+  ENDMETHOD.
+
+ENDCLASS.
+``` 
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+CCIMP include (Local Types tab in ADT)
+
+ </td>
+
+ <td> 
+
+``` abap
+CLASS lcl_singleton DEFINITION CREATE PRIVATE.
+
+  PUBLIC SECTION.
+    CLASS-METHODS get_obj RETURNING VALUE(obj) TYPE REF TO lcl_singleton.
+
+    METHODS add_log IMPORTING text TYPE string.
+    METHODS get_log RETURNING VALUE(log) TYPE string_table.
+    METHODS get_timestamps EXPORTING ts_static   TYPE utclong
+                                     ts_instance TYPE utclong.
+
+    CLASS-METHODS class_constructor.
+    METHODS constructor.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+    CLASS-DATA oref TYPE REF TO lcl_singleton.
+    CLASS-DATA log_table TYPE string_table.
+    CLASS-DATA timestamp_static TYPE utclong.
+    DATA timestamp_instance TYPE utclong.
+ENDCLASS.
+
+CLASS lcl_singleton IMPLEMENTATION.
+  METHOD get_obj.
+    IF oref IS NOT BOUND.
+      oref = NEW lcl_singleton( ).
+    ENDIF.
+
+    obj = oref.
+  ENDMETHOD.
+
+  METHOD add_log.
+    INSERT text INTO TABLE log_table.
+  ENDMETHOD.
+
+  METHOD get_log.
+    log = log_table.
+  ENDMETHOD.
+
+  METHOD get_timestamps.
+    ts_static = timestamp_static.
+    ts_instance = timestamp_instance.
+  ENDMETHOD.
+
+  METHOD class_constructor.
+    timestamp_static = utclong_current( ).
+  ENDMETHOD.
+
+  METHOD constructor.
+    timestamp_instance = utclong_current( ).
+  ENDMETHOD.
+ENDCLASS.
+``` 
+
+ </td>
+</tr>
+
+</table>
+
+</details>  
+
+<br>
+
+<details>
+  <summary>🟢 Fluent interface</summary>
+  <!-- -->
+
+<br>
+
+- Enables method chaining  
+- Achieves method chaining by returning a reference to the current object. There may be variations in the implementation, for example, the returned object may be a modified copy or the modified original.  
+- Such a design may consolidate method calls for a simpler, more readable code flow, instead of having individual method calls.
+- Example of predefined ABAP classes: XCO library  
+
+Example notes:
+
+- This example demonstrates the fluent interface design pattern with the following declarations and implementations: 
+  - Global class:  
+    - Implements `if_oo_adt_classrun` and calls methods from local classes.  
+    - Acts as a consumer of APIs (local classes) defined in the CCIMP include.  
+  - CCIMP include (Local Types tab in ADT):  
+    - Example 1 (String building)  
+      - Local interface `lif_string_processing`:  
+        - Defines multiple methods for string modification  
+        - Most of the methods specify a reference to the interface as returning parameter
+      - Local class `lcl_string_processing`:  
+        - Specifies the `CREATE PRIVATE` addition to prevent instantiation from outside the class
+        - However, as `lcl_string` is declared as friend, `lcl_string` can instantiate the class. 
+        - Implements the interface
+        - The method implementations return a modified copy of the original object 
+      - Local class `lcl_string`:  
+        - Contains a static factory method returning an instance of `lcl_string_processing` (the returning parameter is typed with `TYPE REF TO lif_string_processing`)
+        - The factory method requires a string to be supplied, which represents the base string that can be modified using the methods that `lif_string_processing` offers     
+    - Example 2 (Simple calculations)  
+      - Local class `lcl_calc`:  
+        - Represents a simpler example of the fluent interface pattern  
+        - Instantiable class  
+        - Methods of the class return an object reference of the class 
+- The class execution includes the following by demonstrating chained method calls:
+  - Example 1: Multiple instances are created showing the variety of methods the interface offers for modifying a string (adding strings to strings, precedings strings with strings, splitting strings into a string table, performing replacements, transforming to lowercase and uppercase, reversing strings, inserting strings, removing spaces, retrieving the modified string)
+  - Example 2: Multiple instances are created performing consecutive calculations; note that there is no proper exception handling in the simple example (e.g. a zero division is just ignored)
+
+
+<table>
+
+<tr>
+<td> Class include </td> <td> Code </td>
+</tr>
+
+<tr>
+<td> 
+
+Global class
+
+ </td>
+
+ <td> 
+
+``` abap
+CLASS zcl_demo_abap DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
+
+  PUBLIC SECTION.
+    INTERFACES if_oo_adt_classrun.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+ENDCLASS.
+
+CLASS zcl_demo_abap IMPLEMENTATION.
+  METHOD if_oo_adt_classrun~main.
+
+*&---------------------------------------------------------------------*
+*& Example 1
+*&---------------------------------------------------------------------*
+
+    "Adding strings
+    "Retrieving the resulting string using the attribute 'str'
+    DATA(str1) = lcl_string=>string( `Lorem` )->add( ` ` )->add( `ipsum` )->str.
+
+    "Instead of extra method calls using the reference variable
+    DATA(str1b_ref) = lcl_string=>string( `Lorem` ).
+    str1b_ref->add( ` ` ).
+    str1b_ref->add( `ipsum` ).
+    DATA(str1b) = str1b_ref->str.
+
+    "Retrieving the resulting string using the method 'get_string'
+    DATA(str2) = lcl_string=>string( `Lorem` )->add( ` ` )->add( `ipsum` )->add( ` ` )->add( `dolor` )->add( ` ` )->add( `sit` )->add( ` ` )->add( `amet` )->get_string( ).
+
+    "Preceding strings
+    DATA(str3) = lcl_string=>string( `world` )->precede( ` ` )->precede( `Hello` )->str.
+    DATA(str4) = lcl_string=>string( `B` )->add( `A` )->precede( `A` )->add( `P` )->str.
+
+    "Splitting into string table
+    DATA(tab1) = lcl_string=>string( `Lorem` )->add( `#` )->add( `ipsum` )->add( `#` )->add( `dolor` )->add( `#` )->add( `sit` )->add( `#` )->add( `amet` )->split_into_table( `#` ).
+    DATA(tab2) = lcl_string=>string( `Lorem` )->add( ` ` )->add( `ipsum` )->split_into_table( ` ` ).
+
+    "Replacements
+    DATA(str5) = lcl_string=>string( `Lorem#ipsum#dolor#sit#amet` )->replace_all( sub = `#` with = ` ` )->str.
+    DATA(str6) = lcl_string=>string( `Lorem#ipsum#dolor#sit#amet` )->replace_occ( sub = `#` with = ` ` occ = 1 )->str.
+    DATA(str7) = lcl_string=>string( `Lorem#ipsum#dolor#sit#amet` )->replace_occ( sub = `#` with = ` ` occ = 2 )->str.
+    DATA(str8) = lcl_string=>string( `Lorem#ipsum#dolor#sit#amet` )->replace_occ( sub = `#` with = ` ` occ = -2 )->str.
+    DATA(tab3) = lcl_string=>string( `hello` )->add( `#` )->add( `world` )->replace_all( sub = `#` with = `,` )->split_into_table( `,` ).
+
+    "Transforming to lowercase and uppercase
+    DATA(str9) = lcl_string=>string( `ab` )->add( `ap` )->uppercase( )->str.
+    DATA(str10) = lcl_string=>string( `AP` )->precede( `AB` )->lowercase( )->str.
+    DATA(str11) = lcl_string=>string( `AB` )->lowercase( )->add( `ap` )->uppercase( )->str. "First lowercasing overridden
+
+    "Reversing string
+    DATA(str12) = lcl_string=>string( `OLL` )->add( `AH` )->lowercase( )->reverse_string( )->str.
+
+    "Inserting string
+    DATA(str13) = lcl_string=>string( `abcghi` )->insert_string( string = `def` off = 3 )->str.
+    DATA(str14) = lcl_string=>string( `vwxyz` )->insert_string( string = `stu` off = 0 )->str.
+
+    "Removing spaces
+    "All spaces
+    DATA(str15) = lcl_string=>string( ` a b  c` )->add( ` d  e   f     gh i   ` )->remove_all_spaces( )->str.
+    "Leading and trailing spaces
+    DATA(str16) = lcl_string=>string( `      ab c d   e f     g   h i     ` )->remove_leading_trailing_spaces( )->str.
+    DATA(str17) = lcl_string=>string( `abc     ` )->remove_leading_trailing_spaces( )->add( `def` )->str.
+
+    "Displaying results in the console
+    out->write( data = str1 name = `str1` ).
+    out->write( |\n| ).
+    out->write( data = str1b name = `str1b` ).
+    out->write( |\n| ).
+    out->write( data = str2 name = `str2` ).
+    out->write( |\n| ).
+    out->write( data = str3 name = `str3` ).
+    out->write( |\n| ).
+    out->write( data = str4 name = `str4` ).
+    out->write( |\n| ).
+    out->write( data = tab1 name = `tab1` ).
+    out->write( |\n| ).
+    out->write( data = tab2 name = `tab2` ).
+    out->write( |\n| ).
+    out->write( data = str5 name = `str5` ).
+    out->write( |\n| ).
+    out->write( data = str6 name = `str6` ).
+    out->write( |\n| ).
+    out->write( data = str7 name = `str7` ).
+    out->write( |\n| ).
+    out->write( data = str8 name = `str8` ).
+    out->write( |\n| ).
+    out->write( data = tab3 name = `tab3` ).
+    out->write( |\n| ).
+    out->write( data = str9 name = `str9` ).
+    out->write( |\n| ).
+    out->write( data = str10 name = `str10` ).
+    out->write( |\n| ).
+    out->write( data = str11 name = `str11` ).
+    out->write( |\n| ).
+    out->write( data = str12 name = `str12` ).
+    out->write( |\n| ).
+    out->write( data = str13 name = `str13` ).
+    out->write( |\n| ).
+    out->write( data = str14 name = `str14` ).
+    out->write( |\n| ).
+    out->write( data = str15 name = `str15` ).
+    out->write( |\n| ).
+    out->write( data = str16 name = `str16` ).
+    out->write( |\n| ).
+    out->write( data = str17 name = `str17` ).
+    out->write( |\n| ).
+
+**********************************************************************
+
+*&---------------------------------------------------------------------*
+*& Example 2
+*&---------------------------------------------------------------------*
+
+    DATA(calc1) = NEW lcl_calc( 1 )->plus( 2 )->get_result( ).
+    DATA(calc2) = NEW lcl_calc( 1 )->minus( 2 )->get_result( ).
+    DATA(calc3) = NEW lcl_calc( 5 )->plus( 2 )->minus( 1 )->multiply( 3 )->get_result( ).
+    DATA(calc4) = NEW lcl_calc( 10 )->multiply( 10 )->divide( 2 )->get_result( ).
+    DATA(calc5) = NEW lcl_calc( 0 )->plus( 1 )->divide( 5 )->get_result( ).
+    DATA(calc6) = NEW lcl_calc( '1.2' )->plus( '1.4' )->minus( '0.1' )->multiply( '2.5' )->divide( 2 )->get_result( ).
+
+    "Arithmetic errors are just ignored in the example
+    DATA(calc7) = NEW lcl_calc( 1 )->divide( 0 )->plus( 1 )->get_result( ).
+
+    "Method chaining with a standalone statements
+    NEW lcl_calc( 1 )->plus( 2 )->multiply( 5 )->minus( 5 )->divide( 2 )->get_result( RECEIVING result = DATA(calc8) ).
+
+    IF NEW lcl_calc( 1 )->plus( 2 )->minus( 3 )->plus( 4 )->minus( 5 )->get_result( ) <= 0.
+      DATA(if_statement) = `The result is equal to or lower than 0`.
+    ELSE.
+      if_statement = `The result is greater than 0`.
+    ENDIF.
+
+    out->write( data = calc1 name = `calc1` ).
+    out->write( |\n| ).
+    out->write( data = calc2 name = `calc2` ).
+    out->write( |\n| ).
+    out->write( data = calc3 name = `calc3` ).
+    out->write( |\n| ).
+    out->write( data = calc3 name = `calc3` ).
+    out->write( |\n| ).
+    out->write( data = calc4 name = `calc4` ).
+    out->write( |\n| ).
+    out->write( data = calc5 name = `calc5` ).
+    out->write( |\n| ).
+    out->write( data = calc6 name = `calc6` ).
+    out->write( |\n| ).
+    out->write( data = calc7 name = `calc7` ).
+    out->write( |\n| ).
+    out->write( data = calc8 name = `calc8` ).
+    out->write( |\n| ).
+    out->write( data = if_statement name = `if_statement` ).
+
+  ENDMETHOD.
+
+ENDCLASS.
+``` 
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+CCIMP include (Local Types tab in ADT)
+
+ </td>
+
+ <td> 
+
+``` abap
+*&---------------------------------------------------------------------*
+*& Example 1
+*&---------------------------------------------------------------------*
+
+INTERFACE lif_string_processing.
+  DATA str TYPE string READ-ONLY.
+  METHODS add IMPORTING string     TYPE clike
+              RETURNING VALUE(ref) TYPE REF TO lif_string_processing.
+  METHODS precede IMPORTING string     TYPE clike
+                  RETURNING VALUE(ref) TYPE REF TO lif_string_processing.
+  METHODS replace_all IMPORTING sub        TYPE clike
+                                with       TYPE clike
+                      RETURNING VALUE(ref) TYPE REF TO lif_string_processing.
+  METHODS replace_occ IMPORTING sub        TYPE clike
+                                with       TYPE clike
+                                occ        TYPE i DEFAULT 1
+                      RETURNING VALUE(ref) TYPE REF TO lif_string_processing.
+  METHODS lowercase RETURNING VALUE(ref) TYPE REF TO lif_string_processing.
+  METHODS uppercase RETURNING VALUE(ref) TYPE REF TO lif_string_processing.
+  METHODS remove_leading_trailing_spaces RETURNING VALUE(ref) TYPE REF TO lif_string_processing.
+  METHODS remove_all_spaces RETURNING VALUE(ref) TYPE REF TO lif_string_processing.
+  METHODS reverse_string RETURNING VALUE(ref) TYPE REF TO lif_string_processing.
+  METHODS insert_string IMPORTING string     TYPE clike
+                                  off        TYPE i
+                        RETURNING VALUE(ref) TYPE REF TO lif_string_processing.
+  METHODS get_string RETURNING VALUE(str) TYPE string.
+  METHODS split_into_table IMPORTING split_at   TYPE clike
+                           RETURNING VALUE(tab) TYPE string_table.
+ENDINTERFACE.
+
+CLASS lcl_string DEFINITION DEFERRED.
+CLASS lcl_string_processing DEFINITION FINAL CREATE PRIVATE FRIENDS lcl_string.
+  PUBLIC SECTION.
+    INTERFACES lif_string_processing.
+    ALIASES: add FOR lif_string_processing~add,
+             get_string FOR lif_string_processing~get_string,
+             insert_string FOR lif_string_processing~insert_string,
+             precede FOR lif_string_processing~precede,
+             remove_all_spaces FOR lif_string_processing~remove_all_spaces,
+             remove_leading_trailing_spaces FOR lif_string_processing~remove_leading_trailing_spaces,
+             replace_all FOR lif_string_processing~replace_all,
+             replace_occ FOR lif_string_processing~replace_occ,
+             reverse_string FOR lif_string_processing~reverse_string,
+             split_into_table FOR lif_string_processing~split_into_table,
+             lowercase FOR lif_string_processing~lowercase,
+             uppercase FOR lif_string_processing~uppercase.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+    ALIASES string_content FOR lif_string_processing~str.
+    METHODS constructor IMPORTING content TYPE string.
+    DATA oref TYPE REF TO lcl_string_processing.
+ENDCLASS.
+
+CLASS lcl_string_processing IMPLEMENTATION.
+  METHOD add.
+    oref->string_content &&= string.
+    ref = oref.
+  ENDMETHOD.
+
+  METHOD get_string.
+    str = oref->string_content.
+  ENDMETHOD.
+
+  METHOD insert_string.
+    TRY.
+        oref->string_content = insert( val = oref->string_content sub = string off = off ).
+      CATCH cx_sy_range_out_of_bounds.
+    ENDTRY.
+    ref = oref.
+  ENDMETHOD.
+
+  METHOD precede.
+    oref->string_content = string && oref->string_content.
+    ref = oref.
+  ENDMETHOD.
+
+  METHOD remove_all_spaces.
+    oref->string_content = condense( val = oref->string_content to = `` ).
+    ref = oref.
+  ENDMETHOD.
+
+  METHOD remove_leading_trailing_spaces.
+    oref->string_content = condense( val = oref->string_content from = `` ).
+    ref = oref.
+  ENDMETHOD.
+
+  METHOD replace_all.
+    oref->string_content = replace( val = oref->string_content sub = sub with = with  occ = 0 ).
+    ref = oref.
+  ENDMETHOD.
+
+  METHOD replace_occ.
+    oref->string_content = replace( val = oref->string_content sub = sub with = with occ = occ ).
+    ref = oref.
+  ENDMETHOD.
+
+  METHOD reverse_string.
+    oref->string_content = reverse( oref->string_content ).
+    ref = oref.
+  ENDMETHOD.
+
+  METHOD split_into_table.
+    SPLIT oref->string_content AT split_at INTO TABLE tab.
+  ENDMETHOD.
+
+  METHOD lowercase.
+    oref->string_content = to_lower( oref->string_content ).
+    ref = oref.
+  ENDMETHOD.
+
+  METHOD uppercase.
+    oref->string_content = to_upper( oref->string_content ).
+    ref = oref.
+  ENDMETHOD.
+
+  METHOD constructor.
+    string_content = content.
+    oref = me.
+  ENDMETHOD.
+ENDCLASS.
+
+CLASS lcl_string DEFINITION FINAL CREATE PRIVATE FRIENDS lcl_string_processing.
+  PUBLIC SECTION.
+    CLASS-METHODS string IMPORTING string     TYPE clike
+                         RETURNING VALUE(ref) TYPE REF TO lif_string_processing.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+ENDCLASS.
+
+CLASS lcl_string IMPLEMENTATION.
+  METHOD string.
+    ref = NEW lcl_string_processing( string ).
+  ENDMETHOD.
+ENDCLASS.
+
+**********************************************************************
+
+*&---------------------------------------------------------------------*
+*& Example 2
+*&---------------------------------------------------------------------*
+
+CLASS lcl_calc DEFINITION FINAL CREATE PUBLIC.
+  PUBLIC SECTION.
+    METHODS constructor IMPORTING num TYPE decfloat34.
+    METHODS plus IMPORTING num        TYPE decfloat34
+                 RETURNING VALUE(ref) TYPE REF TO lcl_calc.
+    METHODS minus IMPORTING num        TYPE decfloat34
+                  RETURNING VALUE(ref) TYPE REF TO lcl_calc.
+    METHODS multiply IMPORTING num        TYPE decfloat34
+                     RETURNING VALUE(ref) TYPE REF TO lcl_calc.
+    METHODS divide IMPORTING num        TYPE decfloat34
+                   RETURNING VALUE(ref) TYPE REF TO lcl_calc.
+    METHODS get_result RETURNING VALUE(result) TYPE decfloat34.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+    DATA number TYPE decfloat34.
+ENDCLASS.
+
+CLASS lcl_calc IMPLEMENTATION.
+  METHOD constructor.
+    number = num.
+  ENDMETHOD.
+
+  METHOD divide.
+    TRY.
+        number /= num.
+      CATCH cx_sy_arithmetic_error.
+    ENDTRY.
+    ref = me.
+  ENDMETHOD.
+
+  METHOD minus.
+    TRY.
+        number -= num.
+      CATCH cx_sy_arithmetic_error.
+    ENDTRY.
+    ref = me.
+  ENDMETHOD.
+
+  METHOD multiply.
+    TRY.
+        number *= num.
+      CATCH cx_sy_arithmetic_error.
+    ENDTRY.
+    ref = me.
+  ENDMETHOD.
+
+  METHOD plus.
+    TRY.
+        number += num.
+      CATCH cx_sy_arithmetic_error.
+    ENDTRY.
+    ref = me.
+  ENDMETHOD.
+
+  METHOD get_result.
+    result = number.
+  ENDMETHOD.
+ENDCLASS.
+``` 
+
+ </td>
+</tr>
+
+</table>
+
+</details>  
+
+<br>
+
+<details>
+  <summary>🟢 Adapter</summary>
+  <!-- -->
+
+<br>
+
+- Used when APIs are incompatible, and you want to integrate those APIs into an existing one to consolidate all functionality.
+- This can be achieved by using an adapter class to convert and transform functionality from a non-compatible API into the existing API.
+
+Example notes:
+
+- This example demonstrates the adapter design pattern with the following declarations and implementations: 
+  - Global class:  
+    - Implements `if_oo_adt_classrun` and calls methods from local classes.  
+    - Acts as a consumer of APIs (local classes) defined in the CCIMP include.  
+  - CCIMP include (Local Types tab in ADT):  
+    - The example is similar to the factory method example above.
+    - Local interface `lif_hello`: Defines an enumeration type and a method that returns a string. 
+    - Local classes `lcl_**` implement `lif_hello`.
+    - Local class `lcl_hello_factory`: Contains the factory method `create_hello`. The class specifies `CREATE PRIVATE` to prevent external instantiation. The `create_hello` returns a reference of type `REF TO lif_hello`.
+    - Assuming functionality is extended. An existing API is integrated and reused.
+    - This is represented by the `lcl_de_xstring` class. It implements a different interface. The method returns a data object of type `xstring`, which is not compatible with the `say_hello` method of the `lif_hello` interface that returns a `string`.
+    - An adapter class is introduced that implements the `lif_hello` interface and handles conversion (in the example case, `xstring` is transformed to `string`) to allow the use of the non-compatible API. 
+    - Users can the call methods of the adapter class.
+- The class execution includes the following:
+  - Multiple objects are created using the factory method with different input parameters.
+  - Based on the parameter, a specific object is created. The `say_hello` method returns a string as implemented in the resepctive class.
+  - When `lif_hello=>de` is supplied, an object is created using the adapter class.
+
+
+<table>
+
+<tr>
+<td> Class include </td> <td> Code </td>
+</tr>
+
+<tr>
+<td> 
+
+Global class
+
+ </td>
+
+ <td> 
+
+``` abap
+CLASS zcl_demo_abap DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
+
+  PUBLIC SECTION.
+    INTERFACES if_oo_adt_classrun.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+ENDCLASS.
+
+CLASS zcl_demo_abap IMPLEMENTATION.
+  METHOD if_oo_adt_classrun~main.
+
+    "Saying hello in English
+    DATA(oref_en) = lcl_hello_factory=>create_hello( lif_hello=>en ).
+    DATA(hello_en) = oref_en->say_hello( ).
+    out->write( hello_en ).
+
+    "Saying hello in French
+    DATA(oref_fr) = lcl_hello_factory=>create_hello( lif_hello=>fr ).
+    DATA(hello_fr) = oref_fr->say_hello( ).
+    out->write( hello_fr ).
+
+    "Saying hello in Italian
+    DATA(oref_it) = lcl_hello_factory=>create_hello( lif_hello=>it ).
+    DATA(hello_it) = oref_it->say_hello( ).
+    out->write( hello_it ).
+
+    "Saying hello in Spanish
+    DATA(oref_es) = lcl_hello_factory=>create_hello( lif_hello=>es ).
+    DATA(hello_es) = oref_es->say_hello( ).
+    out->write( hello_es ).
+
+    "Saying hello in German
+    "See the local class implementation. This method call demonstrates the adapter since
+    "the required data is originally available in a non-conform way ('Hallo' is
+    "available as xstring, coming from a different API that does not implement the same
+    "interface as the other classes). The adapter class (called when creating the instance
+    "in the factory method) integrates the non-conform API and transforms the content.
+    DATA(oref_de) = lcl_hello_factory=>create_hello( lif_hello=>de ).
+    DATA(hello_de) = oref_de->say_hello( ).
+    out->write( hello_de ).
+
+    "Default hello
+    DATA(oref_default) = lcl_hello_factory=>create_hello( lif_hello=>init ).
+    DATA(hello_default) = oref_default->say_hello( ).
+    out->write( hello_default ).
+
+  ENDMETHOD.
+
+ENDCLASS.
+``` 
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+CCIMP include (Local Types tab in ADT)
+
+ </td>
+
+ <td> 
+
+``` abap
+INTERFACE lif_hello.
+  TYPES: basetype TYPE i,
+         BEGIN OF ENUM enum_langu BASE TYPE basetype,
+           init VALUE IS INITIAL,
+           en   VALUE 1,
+           fr   VALUE 2,
+           it   VALUE 3,
+           es   VALUE 4,
+           de   VALUE 5,
+         END OF ENUM enum_langu.
+
+  METHODS say_hello RETURNING VALUE(hi) TYPE string.
+ENDINTERFACE.
+
+CLASS lcl_en DEFINITION FINAL CREATE PUBLIC.
+  PUBLIC SECTION.
+    INTERFACES lif_hello.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+ENDCLASS.
+
+CLASS lcl_en IMPLEMENTATION.
+  METHOD lif_hello~say_hello.
+    hi = `Hi`.
+  ENDMETHOD.
+ENDCLASS.
+
+CLASS lcl_fr DEFINITION FINAL CREATE PUBLIC.
+  PUBLIC SECTION.
+    INTERFACES lif_hello.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+ENDCLASS.
+
+CLASS lcl_fr IMPLEMENTATION.
+  METHOD lif_hello~say_hello.
+    hi = `Salut`.
+  ENDMETHOD.
+ENDCLASS.
+
+CLASS lcl_it DEFINITION FINAL CREATE PUBLIC.
+  PUBLIC SECTION.
+    INTERFACES lif_hello.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+ENDCLASS.
+
+CLASS lcl_it IMPLEMENTATION.
+  METHOD lif_hello~say_hello.
+    hi = `Ciao`.
+  ENDMETHOD.
+ENDCLASS.
+
+CLASS lcl_es DEFINITION FINAL CREATE PUBLIC.
+  PUBLIC SECTION.
+    INTERFACES lif_hello.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+ENDCLASS.
+
+CLASS lcl_es IMPLEMENTATION.
+  METHOD lif_hello~say_hello.
+    hi = `Hola`.
+  ENDMETHOD.
+ENDCLASS.
+
+**********************************************************************
+"Class that does not implement the lif_hello interface
+"The assumption is that functionality of the API is reused and integrated
+"into the exsisting API. The non-compatible type is converted using an
+"adapter class.
+
+INTERFACE lif_hello_as_xstring.
+  METHODS xstring_hello RETURNING VALUE(hi) TYPE xstring.
+ENDINTERFACE.
+
+CLASS lcl_de_xstring DEFINITION FINAL CREATE PUBLIC.
+  PUBLIC SECTION.
+    INTERFACES lif_hello_as_xstring.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+ENDCLASS.
+
+CLASS lcl_de_xstring IMPLEMENTATION.
+  METHOD lif_hello_as_xstring~xstring_hello.
+    hi = CONV xstring( `48616C6C6F` ).
+  ENDMETHOD.
+ENDCLASS.
+
+**********************************************************************
+"Adapter class
+
+CLASS lcl_de_adapter DEFINITION.
+  PUBLIC SECTION.
+    INTERFACES: lif_hello.
+ENDCLASS.
+
+CLASS lcl_de_adapter IMPLEMENTATION.
+  METHOD lif_hello~say_hello.
+    DATA(oref) = NEW lcl_de_xstring( ).
+    DATA(hello_as_xstring) = oref->lif_hello_as_xstring~xstring_hello( ).
+    hi = cl_abap_conv_codepage=>create_in( )->convert( hello_as_xstring ).
+  ENDMETHOD.
+ENDCLASS.
+
+**********************************************************************
+"Class containing a factory method
+
+CLASS lcl_hello_factory DEFINITION FINAL CREATE PRIVATE.
+
+  PUBLIC SECTION.
+    CLASS-METHODS create_hello IMPORTING language     TYPE lif_hello=>enum_langu
+                               RETURNING VALUE(hello) TYPE REF TO lif_hello.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+ENDCLASS.
+
+CLASS lcl_hello_factory IMPLEMENTATION.
+  METHOD create_hello.
+    hello = SWITCH #( language
+                      WHEN lif_hello=>en THEN NEW lcl_en( )
+                      WHEN lif_hello=>fr THEN NEW lcl_fr( )
+                      WHEN lif_hello=>it THEN NEW lcl_it( )
+                      WHEN lif_hello=>es THEN NEW lcl_es( )
+                      "Calling the method in the adapter class
+                      WHEN lif_hello=>de THEN NEW lcl_de_adapter( )
+                      "E.g. raising an exception or returning a default object
+                      ELSE NEW lcl_en( ) ).
+  ENDMETHOD.
+ENDCLASS.
+``` 
+
+ </td>
+</tr>
+
+</table>
+
+</details>  
+
+<br>
+
+<details>
+  <summary>🟢 Builder</summary>
+  <!-- -->
+
+<br>
+
+- The idea is to simplify the creation of complex objects, which may involve multiple steps, by hiding this complexity from users.
+- Depending on requirements or user input, the class setup should allow for the creation of different objects that share similar or the same creation steps and attributes.
+- The builder design pattern may be useful here. Builder classes consolidate the necessary steps to create objects and return specific ones, allowing users to get the objects without taking care of the exact process.
+- By using the builder pattern, you can flexibly create different objects that follow the same or similar building processes. Builder classes also centralize code changes, and you can add more builder classes for additional use cases or objects.
+- The example tries to demonstrate the builder design pattern with the following class setup: 
+  - An abstract builder class defines the steps for object creation and includes methods and attributes shared by concrete builder classes responsible for creating specific objects. The example does not use an interface because the abstract class includes non-abstract methods performing general tasks not requiring object-specific implementations.
+  - Multiple concrete builder classes inherit from the abstract superclass. They (can) follow the same object creation flow when redefining the superclass methods, but the implementation may vary among builder classes to serve different purposes for specific objects.
+  - Another class orchestrates object creation. This class contains factory methods and acts as an object provider for external users (the global class in the example), simplifying object creation and hiding complexity. Users call a factory method, providing certain input parameters. Based on these values, specific objects are created by dedicated concrete builder classes. The orchestration class ensures methods are called in the correct sequence and returns the final created object.
+
+Example notes:
+
+- Purpose: The example represents an automatic internal table creator and table content creator using random values.
+- Global class:
+  - Implements the `if_oo_adt_classrun` interface and calls methods from local classes.
+  - Acts as a consumer of APIs, i.e. local classes defined in the CCIMP include.
+- CCIMP include (Local Types tab in ADT):
+  - `lcl_itab_builder`:
+    - An abstract builder class defining instance attributes and abstract methods. Concreate builder classes inherit from this superclass.
+    - It is not an interface because it includes attributes and non-abstract methods for general tasks used by subclasses. These methods are in the public visibility section because the global example class also demonstrates their functionality.
+  - The common building steps (i.e. the abstract methods) are:
+    - `build_type_info`: Checks if the provided type is available.
+    - `build_components`: Retrieves component names and their types (e.g., `string`, `i`, `decfloat34`).
+    - `build_table_keys`: Builds or verifies a list of primary table keys used for internal table creation, depending on whether a custom key list is supplied or default keys are used. The latter retrieves key components specified centrally in the DDIC, such as when DDIC database tables are used as type names.
+    - `build_table_type`: Builds a type description object based on the line type, table kind, and keys.
+    - `build_data_object`: Creates the internal table. For flexibility, it is created as an anonymous data object (`TYPE REF TO data`) using a dynamic `CREATE DATA` statement and the created type description object.
+    - `build_random_data`: Adds table entries to the created internal table, using nonsense random content for components with elementary types. Methods for retrieving random values are implemented in the abstract superclass.
+  - `lcl_builder_*` classes:
+    - Concrete builder classes, such as `lcl_builder_std_itab_w_prkey`, that inherit from the abstract superclass.
+    - These classes implement the abstract methods of the superclass, representing the step-by-step building process to create specific objects.
+    - The example includes concrete builder classes that create standard tables with non-unique primary keys and empty keys, as well as sorted and hashed tables.
+  - `lcl_itab_data_provider`: A concrete builder class inheriting from the abstract builder class, used to populate existing internal tables with demo data. An internal table is passed as an actual parameter in a method described next.
+  - `lcl_itab_provider`:
+    - Orchestrates the step-by-step object building process and provides the objects to users to hide complexity and guide creation.
+    - Called by users, which is the global class in the example.
+    - Contains two factory methods:
+      - `create_itab`: Used for internal table creation based on input parameters. It expects a line type name: globally available line types, such as DDIC database table or CDS entity names, or globally available elementary types for simple internal tables. Optionally, you can specify key component names for the target table; if component names not in the structure are used, they are ignored. If not specified, default key components are used to create tables with primary keys. Optionally, you can specify the number of table entries to create. The method returns an object with the table available via an instance attribute.
+      - `populate_itab`: Supplies existing local internal tables with nonsense random demo data. The method returns an object with the populated table available via an instance attribute.
+- Note:
+  - This example is for experimentation and exploration. It does not claim to cover all aspects of the design pattern or internal table creation/population.
+  - Excluded aspects include: Limited exception handling (a failing `ASSERT` statement is available in some cases), secondary table key handling, proper handling of key uniqueness, fixed or enumerated values, deep or nested components (such as references, nested structures, and tables), uppercase letters for character-like types, unnecessary population of the client field, returning the internal table in an output parameter (the table is available in an instance attribute of type `REF to data`).
+  - The example uses repository objects from the ABAP cheat sheet repository. If you have not imported it, you can replace the `Z*` artifacts with others for exploration.
+
+<table>
+
+<tr>
+<td> Class include </td> <td> Code </td>
+</tr>
+
+<tr>
+<td> 
+
+Global class
+
+ </td>
+
+ <td> 
+
+``` abap
+"! ABAP example demonstrating the builder design pattern
+"! See the disclaimer in the ABAP cheat sheet repository's readme file.
+CLASS zcl_demo_abap DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
+
+  PUBLIC SECTION.
+    INTERFACES if_oo_adt_classrun.
+    CLASS-METHODS get_table_info IMPORTING itab TYPE ANY TABLE RETURNING VALUE(info) TYPE string_table.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+ENDCLASS.
+
+CLASS zcl_demo_abap IMPLEMENTATION.
+  METHOD if_oo_adt_classrun~main.
+
+    "Creating a string table that includes type names
+    "The entries include database table, CDS entity names of the ABAP cheat sheet repository.
+    "Plus, elementary types (built-in ABAP types) and a non-existent type are included.
+    DATA(type_names) = VALUE string_table(
+      ( `ZDEMO_ABAP_CARR` )
+      ( `ZDEMO_ABAP_FLI` )
+      ( `ZDEMO_ABAP_CARR_VE` )
+      ( `ZDEMO_ABAP_ABSTRACT_ENT` )
+      "Elementary types
+      ( `STRING` )
+      ( `UTCLONG` )
+      "Non-existent type
+      ( `TYPE_THAT_DOES_NOT_EXIST` ) ).
+
+    out->write( `1) Creating standard tables with non-unique primary table keys` ).
+    out->write( |\n| ).
+
+    "Specifying no key components, using default ones
+    LOOP AT type_names INTO DATA(name).
+      DATA(oref) = lcl_itab_provider=>create_itab(
+                     type_name         = name
+                     table_kind        = lcl_itab_provider=>standard_w_nonunique_pr_key
+                     table_entry_count = 10 ).
+
+      out->write( |------------- Table with line type { oref->type_name } -------------| ).
+      out->write( |\n| ).
+
+      IF oref->type_exists = abap_true.
+        "The example is designed to retrieve Table type informationrmation so as to display
+        "information such type and table keys of the internal table.
+        DATA(info) = get_table_info( oref->itab->* ).
+        out->write( `Table type information:` ).
+        out->write( info ).
+        out->write( |\n| ).
+        out->write( oref->itab->*  ).
+        out->write( |\n| ).
+      ELSE.
+        out->write( `Type does not exist. Internal table not created.` ).
+        out->write( |\n| ).
+      ENDIF.
+    ENDLOOP.
+
+    out->write( `------------- Key components explicitly specified -------------` ).
+    out->write( |\n| ).
+
+    "Key components explicitly specified (including a non-existent component name that is ignored)
+    DATA(oref_key_specified) = lcl_itab_provider=>create_itab(
+                   type_name         = `ZDEMO_ABAP_CARR`
+                   table_kind        = lcl_itab_provider=>standard_w_nonunique_pr_key
+                   key_components    = VALUE #( ( `CARRID` ) ( `CARRNAME` ) ( `FALSE_COMPONENT` ) )
+                   table_entry_count = 3 ).
+
+    out->write( `------------- Table with line type ZDEMO_ABAP_CARR -------------` ).
+    IF oref_key_specified->type_exists = abap_true.
+      info = get_table_info( oref_key_specified->itab->* ).
+      out->write( `Table type information:` ).
+      out->write( info ).
+      out->write( |\n| ).
+      out->write( oref_key_specified->itab->*  ).
+      out->write( |\n| ).
+    ELSE.
+      out->write( `Type does not exist. Internal table not created.` ).
+      out->write( |\n| ).
+    ENDIF.
+
+    out->write( repeat( val = `*` occ = 100 ) ).
+    out->write( |\n| ).
+
+**********************************************************************
+
+    out->write( `2) Creating standard tables with empty key` ).
+    out->write( |\n| ).
+
+    type_names = VALUE string_table(
+       ( `ZDEMO_ABAP_FLSCH` )
+       ( `D` ) ).
+
+    LOOP AT type_names INTO name.
+      DATA(oref_empty_key) = lcl_itab_provider=>create_itab(
+                     type_name         = name
+                     table_kind        = lcl_itab_provider=>standard_w_empty_key
+                     "Specified key components are ignored in the example
+                     "key_components    = VALUE #( ( `CARRID` ) ( `CARRNAME` ) )
+                     table_entry_count = 3 ).
+
+      out->write( |------------- Table with line type { oref_empty_key->type_name } -------------| ).
+      out->write( |\n| ).
+
+      IF oref_empty_key->type_exists = abap_true.
+        info = get_table_info( oref_empty_key->itab->* ).
+        out->write( `Table type information:` ).
+        out->write( info ).
+        out->write( |\n| ).
+        out->write( oref_empty_key->itab->*  ).
+        out->write( |\n| ).
+      ELSE.
+        out->write( `Type does not exist. Internal table not created.` ).
+        out->write( |\n| ).
+      ENDIF.
+    ENDLOOP.
+
+    out->write( repeat( val = `*` occ = 100 ) ).
+    out->write( |\n| ).
+
+**********************************************************************
+
+    out->write( `3) Creating sorted tables with unique primary keys` ).
+    out->write( |\n| ).
+
+    type_names = VALUE string_table(
+       ( `ZDEMO_ABAP_FLI` )
+       ( `ZDEMO_ABAP_TAB1` )
+       ( `T` ) ).
+
+    LOOP AT type_names INTO name.
+      DATA(oref_sorted) = lcl_itab_provider=>create_itab(
+                     type_name         = name
+                     table_kind        = lcl_itab_provider=>sorted_w_unique_pr_key
+                     table_entry_count = 3 ).
+
+      out->write( |------------- Table with line type { oref_sorted->type_name } -------------| ).
+      out->write( |\n| ).
+
+      IF oref_sorted->type_exists = abap_true.
+        info = get_table_info( oref_sorted->itab->* ).
+        out->write( `Table type information:` ).
+        out->write( info ).
+        out->write( |\n| ).
+        out->write( oref_sorted->itab->*  ).
+        out->write( |\n| ).
+      ELSE.
+        out->write( `Type does not exist. Internal table not created.` ).
+        out->write( |\n| ).
+      ENDIF.
+    ENDLOOP.
+
+    out->write( repeat( val = `*` occ = 100 ) ).
+    out->write( |\n| ).
+
+**********************************************************************
+
+    out->write( `4) Creating hashed tables with unique primary keys` ).
+    out->write( |\n| ).
+
+    type_names = VALUE string_table(
+       ( `ZDEMO_ABAP_CARR` )
+       ( `ZDEMO_ABAP_TAB2` )
+       ( `I` ) ).
+
+    LOOP AT type_names INTO name.
+      DATA(oref_hashed) = lcl_itab_provider=>create_itab(
+                     type_name         = name
+                     table_kind        = lcl_itab_provider=>hashed_w_unique_pr_key
+                     table_entry_count = 3 ).
+
+      out->write( |------------- Table with line type { oref_hashed->type_name } -------------| ).
+      out->write( |\n| ).
+
+      IF oref_hashed->type_exists = abap_true.
+        info = get_table_info( oref_hashed->itab->* ).
+        out->write( `Table type information:` ).
+        out->write( info ).
+        out->write( |\n| ).
+        out->write( oref_hashed->itab->*  ).
+        out->write( |\n| ).
+      ELSE.
+        out->write( `Type does not exist. Internal table not created.` ).
+        out->write( |\n| ).
+      ENDIF.
+    ENDLOOP.
+
+    out->write( repeat( val = `*` occ = 100 ) ).
+    out->write( |\n| ).
+
+**********************************************************************
+
+    out->write( `5) Populating internal tables with random data` ).
+    out->write( |\n| ).
+
+    "Demo internal tables to be filled
+    DATA it_std1 TYPE TABLE OF zdemo_abap_carr WITH EMPTY KEY.
+    DATA it_std2 TYPE string_table.
+    DATA it_std3 TYPE TABLE OF i.
+
+    TYPES: BEGIN OF various_types,
+             c1        TYPE c LENGTH 1,
+             c5        TYPE c LENGTH 5,
+             c10       TYPE c LENGTH 10,
+             str       TYPE string,
+             int       TYPE i,
+             f         TYPE f,
+             dec16     TYPE decfloat16,
+             dec34     TYPE decfloat34,
+             i8        TYPE int8,
+             n5        TYPE n LENGTH 5,
+             time      TYPE t,
+             date      TYPE d,
+             timestamp TYPE utclong,
+             x1        TYPE x LENGTH 1,
+             x5        TYPE x LENGTH 5,
+             xstr      TYPE xstring,
+             pl2d1     TYPE p LENGTH 2 DECIMALS 1,
+             pl3d2     TYPE p LENGTH 3 DECIMALS 2,
+             pl4d3     TYPE p LENGTH 4 DECIMALS 3,
+             pl5d4     TYPE p LENGTH 5 DECIMALS 4,
+             pl6d5     TYPE p LENGTH 6 DECIMALS 5,
+             pl7d6     TYPE p LENGTH 7 DECIMALS 6,
+             pl8d7     TYPE p LENGTH 8 DECIMALS 7,
+             pl9d8     TYPE p LENGTH 9 DECIMALS 8,
+             pl10d9    TYPE p LENGTH 10 DECIMALS 9,
+             pl11d10   TYPE p LENGTH 11 DECIMALS 10,
+             pl12d11   TYPE p LENGTH 12 DECIMALS 11,
+             pl13d12   TYPE p LENGTH 13 DECIMALS 12,
+             pl14d13   TYPE p LENGTH 14 DECIMALS 13,
+             pl15d14   TYPE p LENGTH 15 DECIMALS 14,
+           END OF various_types.
+
+    DATA it_std4 TYPE TABLE OF various_types WITH EMPTY KEY.
+
+    "Sorted tables
+    DATA it_sorted1 TYPE SORTED TABLE OF zdemo_abap_flsch WITH NON-UNIQUE KEY primary_key COMPONENTS carrid connid cityfrom.
+    DATA it_sorted2 TYPE SORTED TABLE OF zdemo_abap_fli WITH UNIQUE KEY carrid connid.
+    DATA it_sorted3 TYPE SORTED TABLE OF utclong WITH NON-UNIQUE KEY table_line.
+
+    "Hashed tables
+    DATA it_hashed1 TYPE HASHED TABLE OF zdemo_abap_flsch WITH UNIQUE KEY primary_key COMPONENTS carrid connid.
+    TYPES n5 TYPE n LENGTH 5.
+    DATA it_hashed2 TYPE HASHED TABLE OF n5 WITH UNIQUE KEY primary_key COMPONENTS table_line.
+
+    TYPES table_refs TYPE TABLE OF REF TO data WITH EMPTY KEY.
+    DATA(itab_refs) = VALUE table_refs(
+      ( REF #( it_std1 ) )
+      ( REF #( it_std2 ) )
+      ( REF #( it_std3 ) )
+      ( REF #( it_std4 ) )
+      ( REF #( it_sorted1 ) )
+      ( REF #( it_sorted2 ) )
+      ( REF #( it_sorted3 ) )
+      ( REF #( it_hashed1 ) )
+      ( REF #( it_hashed2 ) ) ).
+
+    LOOP AT itab_refs INTO DATA(ref).
+      DATA(tabix) = sy-tabix.
+      DATA(oref_populate_itab) = lcl_itab_provider=>populate_itab(
+                                   itab              = ref->*
+                                   table_entry_count = 3
+                                 ).
+
+      out->write( |------------- Internal table { tabix } -------------| ).
+      out->write( |\n| ).
+
+      info = get_table_info( oref_populate_itab->itab->* ).
+      out->write( `Table type information:` ).
+      out->write( info ).
+
+      out->write( |\n| ).
+      out->write( oref_populate_itab->itab->*  ).
+      out->write( |\n| ).
+    ENDLOOP.
+
+        out->write( repeat( val = `*` occ = 100 ) ).
+    out->write( |\n| ).
+
+**********************************************************************
+
+    out->write( `6) Other line types` ).
+    out->write( |\n| ).
+
+    "Other line types not supported in the example
+*DATA(oref_not_working) = lcl_itab_provider=>populate_itab(
+*                             itab              = itab_refs
+*                             table_entry_count = 3  ).
+
+    "Deep/nested line types are not supported
+    "These components remain initial.
+    TYPES: BEGIN OF deep_type,
+             flag   TYPE abap_boolean,
+             c5     TYPE c LENGTH 5,
+             strtab TYPE string_table,
+             struc  TYPE zdemo_abap_carr,
+           END OF deep_type.
+
+    DATA deep_itab TYPE TABLE OF deep_type WITH EMPTY KEY.
+
+    DATA(oref_deep) = lcl_itab_provider=>populate_itab(
+                                 itab              = deep_itab
+                                 table_entry_count = 3  ).
+
+    out->write( oref_deep->itab->*  ).
+    out->write( |\n| ).
+        out->write( repeat( val = `*` occ = 100 ) ).
+    out->write( |\n| ).
+
+**********************************************************************
+
+    out->write( `7) Exploring the random value creation methods` ).
+    out->write( |\n| ).
+
+    out->write( `---------------- Getting random strings ----------------` ).
+    DO 5 TIMES.
+      DATA(str) = lcl_itab_builder=>get_random_string( sy-index ).
+      out->write( str ).
+    ENDDO.
+
+    out->write( `---------------- Getting random number sequences ----------------` ).
+    DO 5 TIMES.
+      DATA(number_set) = lcl_itab_builder=>get_random_number_sequence( sy-index ).
+      out->write( number_set ).
+    ENDDO.
+
+    out->write( `---------------- Getting random packed numbers ----------------` ).
+    DO 15 TIMES.
+      DATA(random_p) = lcl_itab_builder=>get_random_p(
+                         length = 8
+                         decimals  = sy-index - 1 ).
+      out->write( random_p->* ).
+    ENDDO.
+
+    out->write( `---------------- Getting random dates ----------------` ).
+    DO 5 TIMES.
+      DATA(random_d) = lcl_itab_builder=>get_random_d( ).
+      out->write( random_d ).
+    ENDDO.
+
+    out->write( `---------------- Getting random times ----------------` ).
+    DO 5 TIMES.
+      DATA(random_t) = lcl_itab_builder=>get_random_t( ).
+      out->write( random_t ).
+    ENDDO.
+
+    out->write( `---------------- Getting random UTC timestamps ----------------` ).
+    DO 5 TIMES.
+      DATA(random_utc) = lcl_itab_builder=>get_random_utclong( ).
+      out->write( random_utc ).
+    ENDDO.
+
+    out->write( `---------------- Getting random data objects of type decfloat16 ----------------` ).
+    DO 5 TIMES.
+      DATA(random_dec16) = lcl_itab_builder=>get_random_dec16( ).
+      out->write( random_dec16 ).
+    ENDDO.
+
+    out->write( `---------------- Getting random data objects of type decfloat34 ----------------` ).
+    DO 5 TIMES.
+      DATA(random_dec34) = lcl_itab_builder=>get_random_dec34( ).
+      out->write( random_dec34 ).
+    ENDDO.
+
+    out->write( `---------------- Getting random data objects of type f ----------------` ).
+    DO 5 TIMES.
+      DATA(random_f) = lcl_itab_builder=>get_random_f( ).
+      out->write( random_f ).
+    ENDDO.
+
+    out->write( `---------------- Getting random data objects of type x ----------------` ).
+
+    DATA(xstr_1) = lcl_itab_builder=>get_random_x( 1 ).
+    DATA x1 TYPE x LENGTH 1.
+    x1 = xstr_1.
+    out->write( x1 ).
+
+    DATA(xstr_2) = lcl_itab_builder=>get_random_x( 2 ).
+    DATA x2 TYPE x LENGTH 2.
+    x2 = xstr_2.
+    out->write( x2 ).
+
+    DATA(xstr_8) = lcl_itab_builder=>get_random_x( 8 ).
+    DATA x8 TYPE x LENGTH 8.
+    x8 = xstr_8.
+    out->write( x8 ).
+
+    out->write( `---------------- Getting random data objects of type xstring ----------------` ).
+
+    DATA(xstr_a) = lcl_itab_builder=>get_random_xstring( ).
+    out->write( xstr_a ).
+    DATA(xstr_b) = lcl_itab_builder=>get_random_xstring( ).
+    out->write( xstr_b ).
+    DATA(xstr_c) = lcl_itab_builder=>get_random_xstring( ).
+    out->write( xstr_c ).
+
+  ENDMETHOD.
+
+  METHOD get_table_info.
+    DATA(tab_type_info) = CAST cl_abap_tabledescr( cl_abap_typedescr=>describe_by_data( itab ) ).
+
+    "Getting the table kind
+    "For the constant values of type abap_tablekind, see cl_abap_tabledescr. For example, 'S'
+    "stands for a standard table.
+    DATA(tab_table_kind) = tab_type_info->table_kind.
+    INSERT |Table kind: { tab_table_kind }| INTO TABLE info.
+
+    "Checking if the table has a unique key
+    DATA(tab_has_unique_key) = tab_type_info->has_unique_key.
+    INSERT |Has a unique key: "{ tab_has_unique_key }" | &&
+    |{ COND #( WHEN tab_has_unique_key IS INITIAL THEN `(no unique key)` ) }| INTO TABLE info.
+
+    "Returning a table with a description of all table keys, e.g. all components of a key,
+    "key kind (U, unique, in the example case), information whether the key is the primary
+    "key etc. For the constant values, see the cl_abap_tabledescr class.
+    DATA(tab_keys) = tab_type_info->get_keys( ).
+
+    INSERT |Table keys: { REDUCE string( INIT str = `` FOR <key2> IN tab_keys NEXT str = |{ str }| &&
+    |{ COND #( WHEN str IS NOT INITIAL THEN `, ` ) }{ REDUCE string( INIT str2 = `` FOR <key3> IN <key2>-components NEXT str2 = |{ str2 }| &&
+    |{ COND #( WHEN str2 IS NOT INITIAL THEN `/` ) }{ <key3>-name }| ) } (is primary: "{ <key2>-is_primary }", |  &&
+    |is unique: "{ <key2>-is_unique }", key kind: "{ <key2>-key_kind }", access kind: "{ <key2>-access_kind }")| ) }| INTO TABLE info.
+  ENDMETHOD.
+
+ENDCLASS.
+``` 
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+CCIMP include (Local Types tab in ADT)
+
+ </td>
+
+ <td> 
+
+``` abap
+"Class for the builder
+"An abstract class is used as there are more general tasks performed by the subclasses.
+"These tasks are implemented in non-abstract methods in the class.
+CLASS lcl_itab_builder DEFINITION ABSTRACT CREATE PUBLIC.
+  PUBLIC SECTION.
+    DATA type_name TYPE string.
+    DATA primary_key_components TYPE string_table.
+    DATA itab TYPE REF TO data.
+    DATA table_entries_to_create TYPE i.
+    DATA type_exists TYPE abap_boolean.
+    DATA components TYPE cl_abap_structdescr=>component_table.
+    DATA is_elementary_line_type TYPE abap_boolean.
+    DATA table_type_descr_obj TYPE REF TO cl_abap_tabledescr.
+    DATA line_type TYPE REF TO cl_abap_datadescr.
+
+    "----------------------- Abstract methods -----------------------
+    METHODS build_type_info ABSTRACT RETURNING VALUE(type_exists) TYPE abap_boolean.
+    METHODS build_components ABSTRACT.
+    METHODS build_table_keys ABSTRACT.
+    METHODS build_table_type ABSTRACT.
+    METHODS build_data_object ABSTRACT.
+    METHODS build_random_data ABSTRACT.
+
+    "----------------------- Constants used in non-abstract methods -----------------------
+    CONSTANTS character_set TYPE string VALUE `abcdefghijklmnopqrstuvwxyz0123456789`.
+    CONSTANTS number_set TYPE string VALUE `0123456789`.
+    CONSTANTS max_length TYPE i VALUE 10.
+    CONSTANTS start_date TYPE d VALUE '20250101'.
+    CONSTANTS start_time TYPE t VALUE '000000'.
+    CONSTANTS max_table_entry_count TYPE i VALUE 50.
+    CONSTANTS min_int_value TYPE i VALUE 1.
+    CONSTANTS max_int_value TYPE i VALUE 100.
+    CONSTANTS min_int8_value TYPE int8 VALUE 1.
+    CONSTANTS max_int8_value TYPE int8 VALUE 100.
+    CONSTANTS min_p_value TYPE p VALUE 0.
+    CONSTANTS max_p_value TYPE p VALUE 9.
+
+    "----------------------- Non-abstract methods used by subclasses -----------------------
+    "They are intentionally included in the public visibility section for the demo in the
+    "global class.
+    METHODS check_type.
+    METHODS handle_keys.
+    METHODS handle_components.
+
+    METHODS add_table_entries
+      IMPORTING
+        VALUE(table_entry_count) TYPE i.
+
+    CLASS-METHODS get_random_string
+      IMPORTING
+        length           TYPE i OPTIONAL
+        randomize_length TYPE abap_boolean DEFAULT abap_true
+          PREFERRED PARAMETER length
+      RETURNING
+        VALUE(str)       TYPE string.
+
+    CLASS-METHODS get_random_number_sequence
+      IMPORTING
+        length           TYPE i OPTIONAL
+        randomize_length TYPE abap_boolean DEFAULT abap_true
+          PREFERRED PARAMETER length
+      RETURNING
+        VALUE(numbers)   TYPE string.
+
+    CLASS-METHODS get_random_i
+      IMPORTING min_value     TYPE i DEFAULT min_int_value
+                max_value     TYPE i DEFAULT max_int_value
+      RETURNING VALUE(number) TYPE i.
+
+    CLASS-METHODS get_random_int8
+      IMPORTING min_value     TYPE int8 DEFAULT min_int8_value
+                max_value     TYPE int8 DEFAULT max_int8_value
+      RETURNING VALUE(number) TYPE i.
+
+    CLASS-METHODS get_random_p
+      IMPORTING length               TYPE i
+                decimals             TYPE i
+                min_value            TYPE p DEFAULT min_p_value
+                max_value            TYPE p DEFAULT max_p_value
+      RETURNING VALUE(packed_number) TYPE REF TO data.
+
+    CLASS-METHODS get_random_n
+      IMPORTING length          TYPE i
+      RETURNING VALUE(random_n) TYPE string.
+
+    CLASS-METHODS get_random_d
+      RETURNING VALUE(random_d) TYPE d.
+
+    CLASS-METHODS get_random_t
+      RETURNING VALUE(random_t) TYPE t.
+
+    CLASS-METHODS get_random_utclong
+      RETURNING VALUE(random_utc) TYPE utclong.
+
+    CLASS-METHODS get_random_dec16
+      RETURNING VALUE(random_dec16) TYPE decfloat16.
+
+    CLASS-METHODS get_random_dec34
+      RETURNING VALUE(random_dec34) TYPE decfloat34.
+
+    CLASS-METHODS get_random_f
+      RETURNING VALUE(random_f) TYPE f.
+
+    CLASS-METHODS get_random_x
+      IMPORTING length          TYPE i
+      RETURNING VALUE(random_x) TYPE xstring.
+
+    CLASS-METHODS get_random_xstring
+      RETURNING VALUE(random_xstring) TYPE xstring.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+
+ENDCLASS.
+
+CLASS lcl_itab_builder IMPLEMENTATION.
+
+  METHOD get_random_string.
+    IF length IS NOT SUPPLIED.
+      DATA(len) = cl_abap_random_int=>create( seed = cl_abap_random=>seed( )
+                                              min  = 1
+                                              max  = max_length )->get_next( ).
+    ELSE.
+      IF length NOT BETWEEN 1 AND max_length.
+        len = max_length.
+      ELSE.
+        len = length.
+      ENDIF.
+
+      IF randomize_length = abap_true.
+        len = cl_abap_random_int=>create( seed = cl_abap_random=>seed( )
+                                          min  = 1
+                                          max  = len )->get_next( ).
+      ENDIF.
+    ENDIF.
+
+    DO len TIMES.
+      DATA(num) = cl_abap_random_int=>create( seed = cl_abap_random=>seed( )
+                                              min  = 0
+                                              max  = strlen( character_set ) - 1 )->get_next( ).
+      str &&= character_set+num(1).
+    ENDDO.
+  ENDMETHOD.
+
+  METHOD get_random_number_sequence.
+    IF length IS NOT SUPPLIED.
+      DATA(len) = cl_abap_random_int=>create( seed = cl_abap_random=>seed( )
+                                              min  = 1
+                                              max  = max_length )->get_next( ).
+    ELSE.
+      IF length NOT BETWEEN 1 AND max_length.
+        len = max_length.
+      ELSE.
+        len = length.
+      ENDIF.
+      IF randomize_length = abap_true.
+        len = cl_abap_random_int=>create( seed = cl_abap_random=>seed( )
+                                          min  = 1
+                                          max  = len )->get_next( ).
+      ENDIF.
+    ENDIF.
+
+    DO len TIMES.
+      DATA(num) = cl_abap_random_int=>create( seed = cl_abap_random=>seed( )
+                                              min  = 0
+                                              max  = strlen( number_set ) - 1 )->get_next( ).
+      numbers &&= number_set+num(1).
+    ENDDO.
+  ENDMETHOD.
+
+  METHOD get_random_i.
+    RETURN cl_abap_random_int=>create( seed = cl_abap_random=>seed( )
+                                       min  = min_value
+                                       max  = max_value )->get_next( ).
+  ENDMETHOD.
+
+  METHOD get_random_int8.
+    RETURN cl_abap_random_int8=>create( seed = cl_abap_random=>seed( )
+                                        min  = min_value
+                                        max  = max_value )->get_next( ).
+  ENDMETHOD.
+
+  METHOD get_random_p.
+    IF length NOT BETWEEN 1 AND 16.
+      RETURN.
+    ENDIF.
+
+    IF decimals NOT BETWEEN 0 AND 14.
+      RETURN.
+    ENDIF.
+
+    TRY.
+        CASE decimals.
+          WHEN 0.
+            DATA(a) = cl_abap_random_packed=>create( seed = cl_abap_random=>seed( ) min = CONV cl_abap_random_packed=>p31_0( min_value ) max = CONV cl_abap_random_packed=>p31_0( max_value ) )->get_next( ).
+            CREATE DATA packed_number LIKE a.
+            packed_number->* = a.
+          WHEN 1.
+             DATA(b) = cl_abap_random_packed_dec1=>create( seed = cl_abap_random=>seed( )
+                min = COND #( WHEN length = 1 THEN CONV cl_abap_random_packed_dec1=>p31_1( '0.1' ) ELSE CONV cl_abap_random_packed_dec1=>p31_1( min_value ) )
+                max = COND #( WHEN length = 1 THEN CONV cl_abap_random_packed_dec1=>p31_1( '0.9' ) ELSE CONV cl_abap_random_packed_dec1=>p31_1( max_value ) )
+              )->get_next( ).
+            CREATE DATA packed_number LIKE b.
+            packed_number->* = b.
+          WHEN 2.
+            DATA(c) = cl_abap_random_packed_dec2=>create( seed = cl_abap_random=>seed( ) min = CONV cl_abap_random_packed_dec2=>p31_2( min_value ) max = CONV cl_abap_random_packed_dec2=>p31_2( max_value ) )->get_next( ).
+            CREATE DATA packed_number LIKE c.
+            packed_number->* = c.
+          WHEN 3.
+            DATA(d) = cl_abap_random_packed_dec3=>create( seed = cl_abap_random=>seed( ) min = CONV cl_abap_random_packed_dec3=>p31_3( min_value ) max = CONV cl_abap_random_packed_dec3=>p31_3( max_value ) )->get_next( ).
+            CREATE DATA packed_number LIKE d.
+            packed_number->* = d.
+          WHEN 4.
+            DATA(e) = cl_abap_random_packed_dec4=>create( seed = cl_abap_random=>seed( ) min = CONV cl_abap_random_packed_dec4=>p31_4( min_value ) max = CONV cl_abap_random_packed_dec4=>p31_4( max_value ) )->get_next( ).
+            CREATE DATA packed_number LIKE e.
+            packed_number->* = e.
+          WHEN 5.
+            DATA(f) = cl_abap_random_packed_dec5=>create( seed = cl_abap_random=>seed( ) min = CONV cl_abap_random_packed_dec5=>p31_5( min_value ) max = CONV cl_abap_random_packed_dec5=>p31_5( max_value ) )->get_next( ).
+            CREATE DATA packed_number LIKE f.
+            packed_number->* = f.
+          WHEN 6.
+            DATA(g) = cl_abap_random_packed_dec6=>create( seed = cl_abap_random=>seed( ) min = CONV cl_abap_random_packed_dec6=>p31_6( min_value ) max = CONV cl_abap_random_packed_dec6=>p31_6( max_value ) )->get_next( ).
+            CREATE DATA packed_number LIKE g.
+            packed_number->* = g.
+          WHEN 7.
+            DATA(h) = cl_abap_random_packed_dec7=>create( seed = cl_abap_random=>seed( ) min = CONV cl_abap_random_packed_dec7=>p31_7( min_value ) max = CONV cl_abap_random_packed_dec7=>p31_7( max_value ) )->get_next( ).
+            CREATE DATA packed_number LIKE h.
+            packed_number->* = h.
+          WHEN 8.
+            DATA(i) = cl_abap_random_packed_dec8=>create( seed = cl_abap_random=>seed( ) min = CONV cl_abap_random_packed_dec8=>p31_8( min_value ) max = CONV cl_abap_random_packed_dec8=>p31_8( max_value ) )->get_next( ).
+            CREATE DATA packed_number LIKE i.
+            packed_number->* = i.
+          WHEN 9.
+            DATA(j) = cl_abap_random_packed_dec9=>create( seed = cl_abap_random=>seed( ) min = CONV cl_abap_random_packed_dec9=>p31_9( min_value ) max = CONV cl_abap_random_packed_dec9=>p31_9( max_value ) )->get_next( ).
+            CREATE DATA packed_number LIKE j.
+            packed_number->* = j.
+          WHEN 10.
+            DATA(k) = cl_abap_random_packed_dec10=>create( seed = cl_abap_random=>seed( ) min = CONV cl_abap_random_packed_dec10=>p31_10( min_value ) max = CONV cl_abap_random_packed_dec10=>p31_10( max_value ) )->get_next( ).
+            CREATE DATA packed_number LIKE k.
+            packed_number->* = k.
+          WHEN 11.
+            DATA(l) = cl_abap_random_packed_dec11=>create( seed = cl_abap_random=>seed( ) min = CONV cl_abap_random_packed_dec11=>p31_11( min_value ) max = CONV cl_abap_random_packed_dec11=>p31_11( max_value ) )->get_next( ).
+            CREATE DATA packed_number LIKE l.
+            packed_number->* = l.
+          WHEN 12.
+            DATA(m) = cl_abap_random_packed_dec12=>create( seed = cl_abap_random=>seed( ) min = CONV cl_abap_random_packed_dec12=>p31_12( min_value ) max = CONV cl_abap_random_packed_dec12=>p31_12( max_value ) )->get_next( ).
+            CREATE DATA packed_number LIKE m.
+            packed_number->* = m.
+          WHEN 13.
+            DATA(n) = cl_abap_random_packed_dec13=>create( seed = cl_abap_random=>seed( ) min = CONV cl_abap_random_packed_dec13=>p31_13( min_value ) max = CONV cl_abap_random_packed_dec13=>p31_13( max_value ) )->get_next( ).
+            CREATE DATA packed_number LIKE n.
+            packed_number->* = n.
+          WHEN 14.
+            DATA(o) = cl_abap_random_packed_dec14=>create( seed = cl_abap_random=>seed( ) min = CONV cl_abap_random_packed_dec14=>p31_14( min_value ) max = CONV cl_abap_random_packed_dec14=>p31_14( max_value ) )->get_next( ).
+            CREATE DATA packed_number LIKE o.
+            packed_number->* = o.
+        ENDCASE.
+      CATCH cx_root.
+    ENDTRY.
+
+  ENDMETHOD.
+
+  METHOD get_random_n.
+    IF length > max_length OR length < 1.
+      DATA(len) = max_length.
+    ELSE.
+      len = length.
+    ENDIF.
+    random_n = get_random_number_sequence( len ).
+  ENDMETHOD.
+
+  METHOD get_random_d.
+    DATA(int) = cl_abap_random_int=>create( seed = cl_abap_random=>seed( )
+                                            min  = -100
+                                            max  = 100 )->get_next( ).
+    random_d =  start_date + int.
+  ENDMETHOD.
+
+  METHOD get_random_t.
+    DATA(int) = cl_abap_random_int=>create( seed = cl_abap_random=>seed( )
+                                            min  = -36000
+                                            max  = 36000 )->get_next( ).
+    random_t = start_time + int.
+  ENDMETHOD.
+
+  METHOD get_random_utclong.
+    DATA(int) = cl_abap_random_int=>create( seed = cl_abap_random=>seed( )
+                                            min  = -100
+                                            max  = 100 )->get_next( ).
+
+    random_utc = utclong_add( val = utclong_current( )
+                              days = int
+                              hours = int
+                              minutes = int
+                              seconds = int ).
+  ENDMETHOD.
+
+  METHOD get_random_dec16.
+    random_dec16 = cl_abap_random_decfloat16=>create( seed = cl_abap_random=>seed( ) )->get_next( ).
+  ENDMETHOD.
+
+  METHOD get_random_dec34.
+    random_dec34 = cl_abap_random_decfloat34=>create( seed = cl_abap_random=>seed( ) )->get_next( ).
+  ENDMETHOD.
+
+  METHOD get_random_f.
+    random_f = cl_abap_random_float=>create( seed = cl_abap_random=>seed( ) )->get_next( ).
+  ENDMETHOD.
+
+  METHOD get_random_x.
+    DATA(random_string) = get_random_string( length ).
+    random_x = cl_abap_conv_codepage=>create_out( codepage = `UTF-8` )->convert( random_string ).
+  ENDMETHOD.
+
+  METHOD get_random_xstring.
+    DATA(random_string) = get_random_string( ).
+    random_xstring = cl_abap_conv_codepage=>create_out( codepage = `UTF-8` )->convert( random_string ).
+  ENDMETHOD.
+
+  METHOD add_table_entries.
+
+    IF table_entry_count < 0.
+      table_entry_count = 1.
+    ENDIF.
+
+    IF table_entry_count > max_table_entry_count.
+      table_entry_count = max_table_entry_count.
+    ENDIF.
+
+    DO table_entry_count TIMES.
+      INSERT INITIAL LINE INTO TABLE itab->* ASSIGNING FIELD-SYMBOL(<line>).
+
+      LOOP AT components ASSIGNING FIELD-SYMBOL(<comp>).
+        DATA(tabix) = sy-tabix.
+
+        IF <comp>-type IS INSTANCE OF cl_abap_elemdescr.
+          DATA(tdo_elem) = CAST cl_abap_elemdescr( <comp>-type ).
+          DATA(type_kind) = tdo_elem->type_kind.
+          DATA(output_length) = tdo_elem->output_length.
+          DATA(length) = tdo_elem->length.
+          DATA(decimals) = tdo_elem->decimals.
+
+          CASE type_kind.
+            WHEN cl_abap_typedescr=>typekind_char.
+              IF is_elementary_line_type = abap_true.
+                <line> = lcl_itab_builder=>get_random_string( output_length ).
+              ELSE.
+                <line>-(tabix) = lcl_itab_builder=>get_random_string( output_length ).
+              ENDIF.
+            WHEN cl_abap_typedescr=>typekind_string.
+              IF is_elementary_line_type = abap_true.
+                <line> = lcl_itab_builder=>get_random_string( ).
+              ELSE.
+                <line>-(tabix) = lcl_itab_builder=>get_random_string( ).
+              ENDIF.
+            WHEN  cl_abap_typedescr=>typekind_hex.
+              IF is_elementary_line_type = abap_true.
+                <line> = lcl_itab_builder=>get_random_x( output_length ).
+              ELSE.
+                <line>-(tabix) = lcl_itab_builder=>get_random_x( output_length ).
+              ENDIF.
+            WHEN  cl_abap_typedescr=>typekind_xstring.
+              IF is_elementary_line_type = abap_true.
+                <line> = lcl_itab_builder=>get_random_xstring( ).
+              ELSE.
+                <line>-(tabix) = lcl_itab_builder=>get_random_xstring( ).
+              ENDIF.
+            WHEN cl_abap_typedescr=>typekind_num.
+              IF is_elementary_line_type = abap_true.
+                <line> = lcl_itab_builder=>get_random_n( output_length ).
+              ELSE.
+                <line>-(tabix) = lcl_itab_builder=>get_random_n( output_length ).
+              ENDIF.
+            WHEN cl_abap_typedescr=>typekind_time.
+              IF is_elementary_line_type = abap_true.
+                <line> = lcl_itab_builder=>get_random_t( ).
+              ELSE.
+                <line>-(tabix) = lcl_itab_builder=>get_random_t( ).
+              ENDIF.
+            WHEN cl_abap_typedescr=>typekind_date.
+              IF is_elementary_line_type = abap_true.
+                <line> = lcl_itab_builder=>get_random_d( ).
+              ELSE.
+                <line>-(tabix) = lcl_itab_builder=>get_random_d( ).
+              ENDIF.
+            WHEN cl_abap_typedescr=>typekind_utclong.
+              IF is_elementary_line_type = abap_true.
+                <line> = lcl_itab_builder=>get_random_utclong( ).
+              ELSE.
+                <line>-(tabix) = lcl_itab_builder=>get_random_utclong( ).
+              ENDIF.
+            WHEN cl_abap_typedescr=>typekind_int
+            OR cl_abap_typedescr=>typekind_int1 OR
+            cl_abap_typedescr=>typekind_int2.
+              IF is_elementary_line_type = abap_true.
+                <line> = lcl_itab_builder=>get_random_i(  ).
+              ELSE.
+                <line>-(tabix) = lcl_itab_builder=>get_random_i(  ).
+              ENDIF.
+            WHEN cl_abap_typedescr=>typekind_int8.
+              IF is_elementary_line_type = abap_true.
+                <line> = lcl_itab_builder=>get_random_int8( ).
+              ELSE.
+                <line>-(tabix) = lcl_itab_builder=>get_random_int8( ).
+              ENDIF.
+            WHEN  cl_abap_typedescr=>typekind_packed.
+              IF is_elementary_line_type = abap_true.
+                <line> = lcl_itab_builder=>get_random_p(
+                                  length    = length
+                                  decimals  = decimals
+                                )->*.
+              ELSE.
+                <line>-(tabix) = lcl_itab_builder=>get_random_p(
+                                     length    = length
+                                     decimals  = decimals
+                                   )->*.
+              ENDIF.
+            WHEN cl_abap_typedescr=>typekind_decfloat16.
+              IF is_elementary_line_type = abap_true.
+                <line> =  lcl_itab_builder=>get_random_dec16( ).
+              ELSE.
+                <line>-(tabix) = lcl_itab_builder=>get_random_dec16( ).
+              ENDIF.
+            WHEN cl_abap_typedescr=>typekind_decfloat34.
+              IF is_elementary_line_type = abap_true.
+                <line> = lcl_itab_builder=>get_random_dec34( ).
+              ELSE.
+                <line>-(tabix) = lcl_itab_builder=>get_random_dec34( ).
+              ENDIF.
+            WHEN cl_abap_typedescr=>typekind_float.
+              IF is_elementary_line_type = abap_true.
+                <line> =  lcl_itab_builder=>get_random_f( ).
+              ELSE.
+                <line>-(tabix) = lcl_itab_builder=>get_random_f( ).
+              ENDIF.
+          ENDCASE.
+        ENDIF.
+      ENDLOOP.
+    ENDDO.
+  ENDMETHOD.
+
+  METHOD check_type.
+    cl_abap_typedescr=>describe_by_name( EXPORTING p_name = type_name
+                                         RECEIVING p_descr_ref = DATA(tdo)
+                                         EXCEPTIONS type_not_found = 4 ).
+
+    IF sy-subrc <> 0.
+      type_exists = abap_false.
+      RETURN.
+    ELSE.
+      type_exists = abap_true.
+      line_type = CAST #( tdo ).
+    ENDIF.
+  ENDMETHOD.
+
+  METHOD handle_components.
+    CASE TYPE OF line_type.
+      WHEN TYPE cl_abap_structdescr.
+        components = CAST cl_abap_structdescr( line_type )->get_components( ).
+      WHEN TYPE cl_abap_elemdescr.
+        is_elementary_line_type = abap_true.
+        "Build the components table manually with TABLE_LINE to enable a loop..
+        DATA(tdo_elem) = CAST cl_abap_elemdescr( line_type ).
+        components = VALUE #( ( name = `TABLE_LINE` type = tdo_elem ) ).
+      WHEN OTHERS.
+        ASSERT 1 = 0.
+    ENDCASE.
+  ENDMETHOD.
+
+  METHOD handle_keys.
+    "Checking if the provided key names are components of the structured type
+    "In case of elementary line types, TABLE_LINE is used.
+    IF primary_key_components IS NOT INITIAL.
+      IF is_elementary_line_type = abap_true.
+        CLEAR primary_key_components.
+        APPEND `TABLE_LINE` TO primary_key_components.
+      ELSE.
+        DATA(comp_names) = CAST cl_abap_structdescr( line_type )->components.
+        LOOP AT primary_key_components INTO DATA(prkey).
+          IF NOT line_exists( components[ name = prkey ] ).
+            DELETE primary_key_components WHERE table_line = prkey.
+          ENDIF.
+        ENDLOOP.
+      ENDIF.
+    ENDIF.
+
+    "If no key names are provided, and the type refers to a global structured type such as
+    "DDIC database tables or CDS entites, the following implementation collects those components
+    "that are specified as keys for the repository object.
+    IF primary_key_components IS INITIAL AND is_elementary_line_type = abap_false.
+      "Checking whether the type is a global type, available as repository object.
+      DATA(filter) = xco_cp_abap_repository=>object_name->get_filter( xco_cp_abap_sql=>constraint->equal( type_name ) ).
+      DATA(repo_objects) = xco_cp_abap_repository=>objects->where( VALUE #( ( filter ) ) )->in( xco_cp_abap=>repository )->get( ).
+
+      LOOP AT repo_objects INTO DATA(obj).
+        DATA(val) = obj->type->value.
+        IF val = `DDLS`.
+          EXIT.
+        ELSEIF val = `TABL`.
+          EXIT.
+        ENDIF.
+      ENDLOOP.
+
+      CASE val.
+        WHEN `TABL`.
+          "Retrieving the key component names of DDIC database tables
+          primary_key_components = xco_cp_abap_repository=>object->tabl->database_table->for( CONV #( type_name ) )->fields->key->get_names( ).
+          "Assuming the first key field in the list is the client field, removing this field from the key components.
+          DELETE primary_key_components INDEX 1.
+        WHEN `DDLS`.
+          "Retrieving the key component names of CDS entities
+          DATA(ddls_key_spec) = xco_cp_abap_repository=>object->ddls->for( CONV #( type_name ) )->entity( )->fields->all->get_names( ).
+          LOOP AT ddls_key_spec INTO DATA(k).
+            DATA(is_key) = xco_cp_abap_repository=>object->ddls->for( CONV #( type_name ) )->view_entity( )->field( k )->content( )->get_key_indicator( ).
+            IF is_key IS NOT INITIAL.
+              APPEND k TO primary_key_components.
+            ENDIF.
+          ENDLOOP.
+      ENDCASE.
+    ENDIF.
+
+    "If the primary key table is still empty, e.g. when referring to an CDS abstract entity, the following implementation
+    "adds the first component as key component.
+    IF primary_key_components IS INITIAL AND is_elementary_line_type = abap_false.
+      comp_names = CAST cl_abap_structdescr( line_type )->components.
+      IF lines( comp_names ) > 0.
+        APPEND comp_names[ 1 ]-name TO primary_key_components.
+      ENDIF.
+    ENDIF.
+
+    "If an elementary line type is used, and the primary key table is still empty, adding TABLE_LINE.
+    IF primary_key_components IS INITIAL AND is_elementary_line_type = abap_true.
+      APPEND `TABLE_LINE` TO primary_key_components.
+    ENDIF.
+  ENDMETHOD.
+ENDCLASS.
+
+**********************************************************************
+"Concrete example classes inheriting from the abstract class
+"The example concrete builder classes construct internal table of different
+"kinds. Among them, standard tables with non-unique primary table key,
+"standard tables with empty key, sorted and hashed tables.
+"Additionally, a concrete builder class creates random data for an internal
+"table that is supplied when calling the object creation method.
+
+CLASS lcl_builder_std_itab_w_prkey DEFINITION INHERITING FROM lcl_itab_builder CREATE PUBLIC.
+  PUBLIC SECTION.
+    METHODS: build_type_info REDEFINITION,
+      build_table_type REDEFINITION,
+      build_data_object REDEFINITION,
+      build_random_data REDEFINITION,
+      build_table_keys REDEFINITION,
+      build_components REDEFINITION.
+
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+ENDCLASS.
+
+CLASS lcl_builder_std_itab_w_prkey IMPLEMENTATION.
+
+  METHOD build_type_info.
+    check_type( ).
+  ENDMETHOD.
+
+  METHOD build_components.
+    CHECK type_exists = abap_true.
+    handle_components( ).
+  ENDMETHOD.
+
+  METHOD build_table_keys.
+    CHECK type_exists = abap_true.
+    handle_keys( ).
+  ENDMETHOD.
+
+  METHOD build_table_type.
+    CHECK type_exists = abap_true.
+
+    table_type_descr_obj = cl_abap_tabledescr=>get(
+          p_line_type  = line_type
+          p_table_kind = cl_abap_tabledescr=>tablekind_std
+          p_key        = VALUE #( FOR wa IN primary_key_components ( name = wa ) )
+          p_unique     = cl_abap_typedescr=>false ).
+  ENDMETHOD.
+
+  METHOD build_data_object.
+    CHECK type_exists = abap_true.
+    CREATE DATA itab TYPE HANDLE table_type_descr_obj.
+    "Note: As the keys are non-unique, no temporary table is created as in other concrete
+    "builder classes.
+  ENDMETHOD.
+
+  METHOD build_random_data.
+    CHECK type_exists = abap_true.
+    add_table_entries( table_entries_to_create ).
+  ENDMETHOD.
+ENDCLASS.
+
+**********************************************************************
+
+CLASS lcl_builder_std_itab_empty_key DEFINITION INHERITING FROM lcl_itab_builder CREATE PUBLIC.
+  PUBLIC SECTION.
+    METHODS: build_type_info REDEFINITION,
+      build_table_keys REDEFINITION,
+      build_table_type REDEFINITION,
+      build_data_object REDEFINITION,
+      build_random_data REDEFINITION,
+      build_components REDEFINITION.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+ENDCLASS.
+
+CLASS lcl_builder_std_itab_empty_key IMPLEMENTATION.
+  METHOD build_type_info.
+    check_type( ).
+  ENDMETHOD.
+
+  METHOD build_components.
+    CHECK type_exists = abap_true.
+    handle_components( ).
+  ENDMETHOD.
+
+  METHOD build_table_keys.
+    CHECK type_exists = abap_true.
+    CLEAR primary_key_components.
+  ENDMETHOD.
+
+  METHOD build_table_type.
+    CHECK type_exists = abap_true.
+
+    table_type_descr_obj = cl_abap_tabledescr=>get(
+           p_line_type  = line_type
+           p_table_kind = cl_abap_tabledescr=>tablekind_std
+           p_key_kind = cl_abap_tabledescr=>keydefkind_empty ).
+  ENDMETHOD.
+
+  METHOD build_data_object.
+    CHECK type_exists = abap_true.
+    CREATE DATA itab TYPE HANDLE table_type_descr_obj.
+  ENDMETHOD.
+
+  METHOD build_random_data.
+    CHECK type_exists = abap_true.
+    add_table_entries( table_entries_to_create ).
+  ENDMETHOD.
+ENDCLASS.
+
+**********************************************************************
+
+CLASS lcl_builder_sorted_itab DEFINITION INHERITING FROM lcl_itab_builder CREATE PUBLIC.
+  PUBLIC SECTION.
+    METHODS: build_type_info REDEFINITION,
+      build_table_keys REDEFINITION,
+      build_table_type REDEFINITION,
+      build_data_object REDEFINITION,
+      build_random_data REDEFINITION,
+      build_components REDEFINITION.
+
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+    "Attributes for tables that stores content and the table type
+    DATA temporary_itab TYPE REF TO data.
+    DATA temporary_table_type TYPE REF TO cl_abap_tabledescr.
+ENDCLASS.
+
+CLASS lcl_builder_sorted_itab IMPLEMENTATION.
+  METHOD build_type_info.
+    check_type( ).
+  ENDMETHOD.
+
+  METHOD build_components.
+    CHECK type_exists = abap_true.
+    handle_components( ).
+  ENDMETHOD.
+
+  METHOD build_table_keys.
+    CHECK type_exists = abap_true.
+    handle_keys( ).
+  ENDMETHOD.
+
+  METHOD build_table_type.
+    CHECK type_exists = abap_true.
+
+    table_type_descr_obj = cl_abap_tabledescr=>get(
+           p_line_type  = line_type
+           p_table_kind = cl_abap_tabledescr=>tablekind_sorted
+           p_key        = VALUE #( FOR wa IN primary_key_components ( name = wa ) )
+           p_unique     = cl_abap_typedescr=>true ).
+
+    "In the previous statement, the type description object for the created table type
+    "is assigned. The following assignment is performed for a temporary table.
+    "This is done to not interfere with unique primary table keys and non-modifiable components
+    "when adding table entries (because the creation procedure shared by all objects is performed
+    "using the 'itab' attribute. Therefore, a standard table with empty key is created using the
+    "same line type. The table entries are added to this table. In a later step, the table entries
+    "are copied back to the original internal table.
+    temporary_table_type = cl_abap_tabledescr=>get(
+            p_line_type  = line_type
+            p_table_kind = cl_abap_tabledescr=>tablekind_std
+            p_key_kind = cl_abap_tabledescr=>keydefkind_empty ).
+
+  ENDMETHOD.
+
+  METHOD build_data_object.
+    CHECK type_exists = abap_true.
+
+    "Creating two internal tables
+    "See the comment in the build_table_type method.
+    CREATE DATA itab TYPE HANDLE temporary_table_type.
+    CREATE DATA temporary_itab TYPE HANDLE table_type_descr_obj.
+  ENDMETHOD.
+
+  METHOD build_random_data.
+    CHECK type_exists = abap_true.
+    add_table_entries( table_entries_to_create ).
+
+    "See the comment in the build_table_type method.
+    LOOP AT itab->* ASSIGNING FIELD-SYMBOL(<a>).
+      INSERT <a> INTO TABLE temporary_itab->*.
+    ENDLOOP.
+
+    CLEAR itab.
+    CREATE DATA itab LIKE temporary_itab->*.
+
+    LOOP AT temporary_itab->* ASSIGNING FIELD-SYMBOL(<b>).
+      INSERT <b> INTO TABLE itab->*.
+    ENDLOOP.
+  ENDMETHOD.
+ENDCLASS.
+
+**********************************************************************
+
+CLASS lcl_builder_hashed_itab DEFINITION INHERITING FROM lcl_itab_builder CREATE PUBLIC.
+  PUBLIC SECTION.
+    METHODS: build_type_info REDEFINITION,
+      build_table_keys REDEFINITION,
+      build_table_type REDEFINITION,
+      build_data_object REDEFINITION,
+      build_random_data REDEFINITION,
+      build_components REDEFINITION.
+
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+    "See the comment in the build_table_type method of class lcl_builder_sorted_itab.
+    DATA temporary_itab TYPE REF TO data.
+    DATA temporary_table_type TYPE REF TO cl_abap_tabledescr.
+ENDCLASS.
+
+CLASS lcl_builder_hashed_itab IMPLEMENTATION.
+
+  METHOD build_type_info.
+    check_type( ).
+  ENDMETHOD.
+
+  METHOD build_components.
+    CHECK type_exists = abap_true.
+    handle_components( ).
+  ENDMETHOD.
+
+  METHOD build_table_keys.
+    CHECK type_exists = abap_true.
+    handle_keys( ).
+  ENDMETHOD.
+
+  METHOD build_table_type.
+    CHECK type_exists = abap_true.
+
+    "See the comment in the build_table_type method of class lcl_builder_sorted_itab.
+    table_type_descr_obj = cl_abap_tabledescr=>get(
+           p_line_type  = line_type
+           p_table_kind = cl_abap_tabledescr=>tablekind_hashed
+           p_key        = VALUE #( FOR wa IN primary_key_components ( name = wa ) )
+           p_unique     = cl_abap_typedescr=>true ).
+
+    temporary_table_type = cl_abap_tabledescr=>get(
+            p_line_type  = line_type
+            p_table_kind = cl_abap_tabledescr=>tablekind_std
+            p_key_kind = cl_abap_tabledescr=>keydefkind_empty ).
+  ENDMETHOD.
+
+  METHOD build_data_object.
+    CHECK type_exists = abap_true.
+
+    "See the comment in the build_table_type method of class lcl_builder_sorted_itab.
+    CREATE DATA itab TYPE HANDLE temporary_table_type.
+    CREATE DATA temporary_itab TYPE HANDLE table_type_descr_obj.
+  ENDMETHOD.
+
+  METHOD build_random_data.
+    CHECK type_exists = abap_true.
+    add_table_entries( table_entries_to_create ).
+
+    "See the comment in the build_table_type method of class lcl_builder_sorted_itab.
+    LOOP AT itab->* ASSIGNING FIELD-SYMBOL(<a>).
+      INSERT <a> INTO TABLE temporary_itab->*.
+    ENDLOOP.
+
+    CLEAR itab.
+    CREATE DATA itab LIKE temporary_itab->*.
+
+    LOOP AT temporary_itab->* ASSIGNING FIELD-SYMBOL(<b>).
+      INSERT <b> INTO TABLE itab->*.
+    ENDLOOP.
+  ENDMETHOD.
+ENDCLASS.
+
+**********************************************************************
+
+CLASS lcl_itab_data_provider DEFINITION INHERITING FROM lcl_itab_builder CREATE PUBLIC.
+  PUBLIC SECTION.
+    METHODS: build_type_info REDEFINITION,
+      build_table_keys REDEFINITION,
+      build_table_type REDEFINITION,
+      build_data_object REDEFINITION,
+      build_random_data REDEFINITION,
+      build_components REDEFINITION.
+
+    METHODS constructor IMPORTING itab TYPE ANY TABLE.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+    "See the comment in the build_table_type method of class lcl_builder_sorted_itab.
+    DATA temporary_itab TYPE REF TO data.
+    DATA temporary_table_type TYPE REF TO cl_abap_tabledescr.
+ENDCLASS.
+
+CLASS lcl_itab_data_provider IMPLEMENTATION.
+
+  METHOD build_type_info.
+    line_type = table_type_descr_obj->get_table_line_type( ).
+  ENDMETHOD.
+
+  METHOD build_components.
+    handle_components( ).
+  ENDMETHOD.
+
+  METHOD build_table_keys.
+    "The table type including the key components is provided by the table supplied.
+    CLEAR primary_key_components.
+  ENDMETHOD.
+
+  METHOD build_table_type.
+    "See the comment in the build_table_type method of class lcl_builder_sorted_itab.
+    temporary_table_type = cl_abap_tabledescr=>get(
+            p_line_type  = line_type
+            p_table_kind = cl_abap_tabledescr=>tablekind_std
+            p_key_kind = cl_abap_tabledescr=>keydefkind_empty ).
+  ENDMETHOD.
+
+  METHOD build_data_object.
+    "See the comment in the build_table_type method of class lcl_builder_sorted_itab.
+    CREATE DATA itab TYPE HANDLE temporary_table_type.
+    CREATE DATA temporary_itab TYPE HANDLE table_type_descr_obj.
+  ENDMETHOD.
+
+  METHOD build_random_data.
+    add_table_entries( table_entries_to_create ).
+
+    "See the comment in the build_table_type method of class lcl_builder_sorted_itab.
+    LOOP AT itab->* ASSIGNING FIELD-SYMBOL(<a>).
+      INSERT <a> INTO TABLE temporary_itab->*.
+    ENDLOOP.
+
+    CLEAR itab.
+    CREATE DATA itab LIKE temporary_itab->*.
+
+    LOOP AT temporary_itab->* ASSIGNING FIELD-SYMBOL(<b>).
+      INSERT <b> INTO TABLE itab->*.
+    ENDLOOP.
+  ENDMETHOD.
+
+  METHOD constructor.
+    super->constructor( ).
+    table_type_descr_obj = CAST cl_abap_tabledescr( cl_abap_typedescr=>describe_by_data( itab ) ).
+  ENDMETHOD.
+ENDCLASS.
+
+**********************************************************************
+"Class that includes factory methods that provide objects of the
+"concrete builder classes
+"The class is used by the consumers such as the global class in this
+"example. It is responsible for a correct order of method calls so that
+"an appropriate and correct object is returned.
+
+CLASS lcl_itab_provider DEFINITION FINAL CREATE PRIVATE.
+  PUBLIC SECTION.
+    TYPES: BEGIN OF ENUM table_kind,
+             standard_w_nonunique_pr_key,
+             sorted_w_unique_pr_key,
+             hashed_w_unique_pr_key,
+             standard_w_empty_key,
+           END OF ENUM table_kind.
+
+    CLASS-METHODS create_itab IMPORTING VALUE(type_name)  TYPE string
+                                        table_kind        TYPE lcl_itab_provider=>table_kind DEFAULT standard_w_empty_key
+                                        key_components    TYPE string_table OPTIONAL
+                                        table_entry_count TYPE i DEFAULT 3
+                              RETURNING VALUE(build)      TYPE REF TO lcl_itab_builder.
+
+    CLASS-METHODS populate_itab IMPORTING itab              TYPE ANY TABLE
+                                          table_entry_count TYPE i DEFAULT 3
+                                RETURNING VALUE(build)      TYPE REF TO lcl_itab_builder.
+ENDCLASS.
+
+CLASS lcl_itab_provider IMPLEMENTATION.
+  METHOD create_itab.
+    type_name = to_upper( condense( val = type_name to = `` ) ).
+
+    CASE table_kind.
+      WHEN standard_w_nonunique_pr_key.
+        build = NEW lcl_builder_std_itab_w_prkey( ).
+      WHEN standard_w_empty_key.
+        build = NEW lcl_builder_std_itab_empty_key( ).
+      WHEN sorted_w_unique_pr_key.
+        build = NEW lcl_builder_sorted_itab( ).
+      WHEN hashed_w_unique_pr_key.
+        build = NEW lcl_builder_hashed_itab( ).
+      WHEN OTHERS.
+        ASSERT 1 = 0.
+    ENDCASE.
+
+    build->type_name = type_name.
+    build->table_entries_to_create = table_entry_count.
+    build->primary_key_components = key_components.
+    build->build_type_info( ).
+    build->build_components( ).
+    build->build_table_keys( ).
+    build->build_table_type( ).
+    build->build_data_object( ).
+    build->build_random_data( ).
+  ENDMETHOD.
+
+  METHOD populate_itab.
+    build = NEW lcl_itab_data_provider( itab ).
+    build->table_entries_to_create = table_entry_count.
+    build->build_type_info( ).
+    build->build_components( ).
+    build->build_table_type( ).
+    build->build_data_object( ).
+    build->build_random_data( ).
+  ENDMETHOD.
+ENDCLASS.
+``` 
+
+ </td>
+</tr>
+
+</table>
+
+</details>  
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
