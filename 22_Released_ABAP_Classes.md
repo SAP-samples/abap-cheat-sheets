@@ -1387,19 +1387,19 @@ DATA(low_timestamp)  = utclong_current( ).
 "utclong_add: Using the built-in function to create a UTC time stamp and
 "adding time values
 DATA(high_timestamp) = utclong_add( val     = low_timestamp
-                                     days    = 1
-                                     hours   = 2
-                                     minutes = 3
-                                     seconds = 4 ).
+                                    days    = 1
+                                    hours   = 2
+                                    minutes = 3
+                                    seconds = 4 ).
 
 "diff: Calculating time differences
 "In the example, the returned values correspond to the ones added above.
 cl_abap_utclong=>diff( EXPORTING high     = high_timestamp
                                  low      = low_timestamp
-                        IMPORTING days    = DATA(days)
-                                  hours   = DATA(hours)
-                                  minutes = DATA(minutes)
-                                  seconds = DATA(seconds) ).
+                       IMPORTING days    = DATA(days)
+                                 hours   = DATA(hours)
+                                 minutes = DATA(minutes)
+                                 seconds = DATA(seconds) ).
 
 "read: Reading a time stamp from a string
 DATA(ts) = |{ utclong_current( ) TIMESTAMP = ENVIRONMENT TIMEZONE = 'UTC' }|.
@@ -1811,13 +1811,13 @@ DATA: BEGIN OF s1,
         a TYPE i,
         b TYPE c LENGTH 3,
         c TYPE c LENGTH 5,
-        END OF s1.
+      END OF s1.
 
 DATA: BEGIN OF s2,
         a TYPE i,
         b TYPE c LENGTH 3,
         d TYPE string,
-        END OF s2.
+      END OF s2.
 
 "Populating structures
 s1 = VALUE #( a = 1 b = 'aaa' c = 'bbbbb' ).
@@ -2704,7 +2704,7 @@ DATA(sub_acc_id) = ten->get_subaccount_id( )->as_string( ).
 <tr>
 <td> <code>CX_*</code> </td>
 <td>
-Exception classes are special classes, usually starting with the name <code>CX_*</code>, that serve as the basis for <a href="https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencatchable_exception_glosry.htm">catchable exceptions</a>. When an exception is raised, an object of such an exception class is created. There are several predefined exception classes. Find more information in the cheat sheet about program flow logic. 
+Exception classes are special classes, usually starting with the name <code>CX_*</code>, that serve as the basis for <a href="https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencatchable_exception_glosry.htm">catchable exceptions</a>. When an exception is raised, an object of such an exception class is created. There are several predefined exception classes. Find more information in the [Exceptions and Runtime Errors](27_Exceptions.md) cheat sheet. 
 <br><br>
 
 ``` abap

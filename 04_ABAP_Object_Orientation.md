@@ -7,6 +7,7 @@
     - [Creating Classes](#creating-classes)
       - [Creating a Global Class](#creating-a-global-class)
       - [Creating a Local Class](#creating-a-local-class)
+      - [Additions in the Class Declaration Part](#additions-in-the-class-declaration-part)
       - [Excursion: Class Pool and Include Programs](#excursion-class-pool-and-include-programs)
     - [Visibility of Components](#visibility-of-components)
       - [Creating the Visibility Sections](#creating-the-visibility-sections)
@@ -38,7 +39,8 @@
   - [Interfaces](#interfaces)
     - [Defining Interfaces](#defining-interfaces)
     - [Implementing Interfaces](#implementing-interfaces)
-    - [Interface Reference Variables and Accessing Objects](#interface-reference-variables-and-accessing-objects)
+    - [Additions Related to Interface Implementations](#additions-related-to-interface-implementations)
+    - [Interface Reference Variables, Accessing Objects and Components](#interface-reference-variables-accessing-objects-and-components)
     - [Excursion: Example Interface](#excursion-example-interface)
   - [Excursions](#excursions)
     - [Friendship](#friendship)
@@ -48,6 +50,7 @@
     - [Class-Based and Classic Exceptions](#class-based-and-classic-exceptions)
     - [ABAP Unit Tests](#abap-unit-tests)
     - [ABAP Doc Comments](#abap-doc-comments)
+    - [Escaping Characters](#escaping-characters)
   - [More Information](#more-information)
   - [Executable Examples](#executable-examples)
 
@@ -149,19 +152,6 @@ CLASS global_class IMPLEMENTATION.
 
 ENDCLASS.
 ```
-> **💡 Note**<br>
-> - The code snippet above shows the syntax to create a global class (indicated by `PUBLIC`), that is instantiable everywhere (indicated by `CREATE PUBLIC`) but that does not allow inheritance (indicated by `FINAL`, and which is covered further down).
-> - There are more additions that can be specified. Find more information on the additions [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapclass_options.htm).
-> - Examples: 
->   - `... CREATE PROTECTED.`: The class can only be instantiated in methods of its [subclasses](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensubclass_glosry.htm "Glossary Entry"), of the class itself, and of its [friends](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenfriend_glosry.htm "Glossary Entry").
->   - `... CREATE PRIVATE.`: The class can only be instantiated in methods of the class itself or of its friends. Hence, it cannot be instantiated as an inherited component of subclasses.
->   - `... INHERITING FROM superclass ...`: As the name implies, it is used to inherit from a visible [superclass](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensuperclass_glosry.htm). If the addition is not specified, the created class implicitly inherits from the predefined empty, abstract class `object` (the root object).
->   - `... ABSTRACT ...`: To define [abstract](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabstract_glosry.htm) classes. These classes cannot be instantiated. Abstract methods can only be implemented in [subclasses](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensubclass_glosry.htm).
->   - `... [GLOBAL] FRIENDS class ...`: Used to define [friendships](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenfriend_glosry.htm) (also possible for interfaces). Friends of a class have unrestricted access to all components of that class. The `GLOBAL` addition can be used together with the `PUBLIC` addition and be specified with other global classes/interfaces following `GLOBAL FIRENDS`. Note: For local classes/interfaces, the addition [`LOCAL FRIENDS`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapclass_local_friends.htm) is available.
->   - `... FOR TESTING ...`: For [ABAP Unit](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_unit_glosry.htm) tests. Find more information in the [ABAP Unit Tests](14_ABAP_Unit_Tests.md) cheat sheet.
->   - `... FOR BEHAVIOR OF ...`: To define [ABAP behavior pools](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbehavior_pool_glosry.htm). Find more information in the [ABAP for RAP: Entity Manipulation Language (ABAP EML)](08_EML_ABAP_for_RAP.md) cheat sheet.
->   - `... DEFINITION DEFERRED.`: Making a local class known in a program before the actual class definition. It is typically used in test classes of ABAP Unit. Find more information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapclass_deferred.htm).
-
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
@@ -195,6 +185,181 @@ ENDCLASS.
 ```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
+
+
+#### Additions in the Class Declaration Part
+
+This section covers a selection of additions to declare classes. They are also covered in other sections below. Find more information on additions [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapclass_options.htm).
+
+<table>
+
+<tr>
+<td> Addition </td> <td> Notes </td>
+</tr>
+
+<tr>
+<td> 
+
+`PUBLIC`
+
+ </td>
+
+ <td> 
+
+Creates a global class
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+`FINAL`
+
+ </td>
+
+ <td> 
+
+The class does not allow inheritance.
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+`CREATE PUBLIC`
+
+ </td>
+
+ <td> 
+
+The class is instantiable anywhere.
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+`CREATE PROTECTED`
+
+ </td>
+
+ <td> 
+
+The class can only be instantiated in methods of its [subclasses](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensubclass_glosry.htm "Glossary Entry"), of the class itself, and of its [friends](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenfriend_glosry.htm "Glossary Entry").
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+`CREATE PRIVATE`
+
+ </td>
+
+ <td> 
+
+The class can only be instantiated in methods of the class itself or of its friends. Hence, it cannot be instantiated as an inherited component of subclasses.
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+`INHERITING FROM superclass`
+
+ </td>
+
+ <td> 
+
+As the name implies, it is used to inherit from a visible [superclass](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensuperclass_glosry.htm). If the addition is not specified, the created class implicitly inherits from the predefined empty, abstract class `object` (the root object).
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+`ABSTRACT`
+
+ </td>
+
+ <td> 
+
+To define [abstract](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabstract_glosry.htm) classes. These classes cannot be instantiated. These classes can contain both abstract methods and non-abstract methods. Abstract methods can only be implemented in [subclasses](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensubclass_glosry.htm) by redefinition. See a simple implementation example [here](#excursion-example-interface).
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+`[GLOBAL|LOCAL] FRIENDS class`
+
+ </td>
+
+ <td> 
+
+- Used to define [friendships](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenfriend_glosry.htm) (also possible for interfaces). Friends of a class have unrestricted access to all components of that class. 
+- `GLOBAL FRIENDS`: Used in global classes (together with the `PUBLIC` addition) to grant friendship to other global classes and interfaces
+- `FRIENDS`: For local classes, e.g. local classes granting friendship to other local classes or the global class of the class pool
+- `LOCAL FRIENDS`: Used for global classes to grant friendship to local classes and interfaces in its own class pool. However, it is a dedicated statement, as shown in the [Friendship](#friendship) section. 
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+`FOR TESTING`
+
+ </td>
+
+ <td> 
+
+For [ABAP Unit](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_unit_glosry.htm) tests. Find more information in the [ABAP Unit Tests](14_ABAP_Unit_Tests.md) cheat sheet.
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+`FOR BEHAVIOR OF`
+
+ </td>
+
+ <td> 
+
+To define [ABAP behavior pools](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbehavior_pool_glosry.htm). Find more information in the [ABAP for RAP: Entity Manipulation Language (ABAP EML)](08_EML_ABAP_for_RAP.md) cheat sheet.
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+`DEFINITION DEFERRED`
+
+ </td>
+
+ <td> 
+
+Makes a local class known in a program before the actual class definition. It is typically used in test classes of ABAP Unit. Find more information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapclass_deferred.htm).
+
+ </td>
+</tr>
+
+
+</table>
+
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
 
 #### Excursion: Class Pool and Include Programs
 
@@ -3822,13 +3987,17 @@ Interfaces ...
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ### Defining Interfaces
-- Can be done either globally in the repository or locally in an ABAP program.
+
+- You can define global and local interfaces. 
+- Like global classes, global interfaces are defined using the `PUBLIC` addition. 
+
 
 ``` abap
-INTERFACE intf.
-"The addition PUBLIC is for global interfaces:
-"INTERFACE intf_g PUBLIC.
-
+"The addition PUBLIC is for global interfaces
+INTERFACE intf_global PUBLIC.
+"Local interface
+"INTERFACE intf_local.
+        
     DATA ...
     CLASS-DATA ...
     METHODS ...
@@ -3839,71 +4008,76 @@ ENDINTERFACE.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-### Implementing Interfaces
+### Implementing Interfaces 
+
 -   A class can implement multiple interfaces.
--   Interfaces must be specified in the
-    declaration part of a class using the statement
+-   Interfaces must be specified in the declaration part of a class using the statement
     [`INTERFACES`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapinterfaces.htm).
--   Since all interface components are public, you must include this
-    statement and the interfaces in the public visibility section of a class. When an interface is implemented in a class, all interface components are added to the other components of the class in the public visibility section.
-- Interface components can be addressed using the [interface component
-    selector](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abeninterface_comp_selector_glosry.htm "Glossary Entry"): `... intf~comp ...`.
-- You can specify alias names for the interface components using the statement [`ALIASES ... FOR ...`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapaliases.htm). The components can then be addressed using the alias name.
-- The class must implement the methods of all implemented interfaces in it unless the methods are flagged as abstract or final. You can adapt some interface components to requirements of your class.
-    - You can specify the additions [`ABSTRACT METHODS`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapinterfaces_class.htm) followed by method names or [`ALL METHODS ABSTRACT`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapinterfaces_class.htm) for the `INTERFACES` statement in the declaration part of
-    classes. In this case, the class(es) need not
-    implement the methods of the interface. The implementation is then relevant for a subclass inheriting from a superclass that includes
-    such an interface declaration. Note that the whole class must be abstract.
-    - The additions [`FINAL METHODS`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapinterfaces_class.htm) followed by method names or [`ALL METHODS FINAL`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapinterfaces_class.htm) for the `INTERFACES` statement in the declaration part of classes flag the method(s) as final.
-- In the interface, methods can mark their implementation as optional using the additions [`DEFAULT IGNORE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapmethods_default.htm) or [`DEFAULT FAIL`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapmethods_default.htm).
-  - `DEFAULT IGNORE`: When a method with such a declaration is called without an implementation, it behaves as though no implementation exists.
-  - `DEFAULT FAIL`: If an unimplemented method is called, it triggers the `CX_SY_DYN_CALL_ILLEGAL_METHOD` exception.
+-   Since all interface components are public, you must include this statement and the interfaces in the public visibility section of a class. When an interface is implemented in a class, all interface components are added to the other components of the class in the public visibility section.
+- Classes must implement the methods of all implemented interfaces in them unless ...
+  - methods are flagged as abstract or final (see next section). 
+  - methods mark their implementation as optional using the additions [`DEFAULT IGNORE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapmethods_default.htm) or [`DEFAULT FAIL`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapmethods_default.htm) (see next section).
+- Interface components can be addressed using the [interface component selector](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abeninterface_comp_selector_glosry.htm "Glossary Entry"): `... intf~comp ...`.
+- You can also include other interfaces in interfaces.
 
+```abap
+"Local interface in a CCIMP include
+INTERFACE lif.
 
-Syntax for using interfaces in classes:
-``` abap
-CLASS class DEFINITION.
+  DATA str TYPE string.
+  CLASS-DATA number TYPE i.
+  CONSTANTS const_number TYPE i VALUE 1.
+  "All of the following methods must be implemented in classes
+  "that implement the interface.
+  METHODS inst_meth IMPORTING num TYPE i.
+  CLASS-METHODS stat_meth RETURNING VALUE(result) TYPE string.
+
+ENDINTERFACE.
+
+"Local class in a CCIMP include implementing the interface
+CLASS lcl DEFINITION.
   PUBLIC SECTION.
-    "Multiple interface implementations possible
-    INTERFACES intf.
-    ALIASES meth_alias FOR intf~some_method.
+    "Multiple interface implementations are possible
+    INTERFACES lif.
 ENDCLASS.
 
-CLASS class IMPLEMENTATION.
-  METHOD intf~some_meth.           "Method implementation using the original name
-   ...
-  ENDMETHOD.
+CLASS lcl IMPLEMENTATION.
 
-  "Just for demo purposes: Method implementation using the alias name
-  "METHOD meth_alias.
-  " ...
-  "ENDMETHOD.
-
-  ...
-ENDCLASS.
-
-"----------------------- Abstract class -----------------------
-CLASS cl_super DEFINITION ABSTRACT.
-  PUBLIC SECTION.
-    INTERFACES intf ALL METHODS ABSTRACT.
-    ALIASES:
-      meth1 FOR intf~meth1,
-      meth2 FOR intf~meth2.
-ENDCLASS.
-
-"Subclass inheriting from abstract class and implementing interface methods
-CLASS cl_sub DEFINITION INHERITING FROM cl_super.
-  PUBLIC SECTION.
-    METHODS:
-      meth1 REDEFINITION,
-      meth2 REDEFINITION.
-ENDCLASS.
-
-CLASS cl_sub IMPLEMENTATION.
-  METHOD meth1.
+  METHOD lif~inst_meth.
+    "Assuming lif~number is assigned a value somewhere.
+    DATA(addition) = num + lif~number.
     ...
   ENDMETHOD.
-  METHOD meth2.
+
+  METHOD lif~stat_meth.
+    ...
+  ENDMETHOD.
+
+ENDCLASS.
+
+**********************************************************************
+"Including interfaces in other interfaces
+
+INTERFACE lif2.
+  METHODS meth_of_lif2.
+  INTERFACES lif.
+ENDINTERFACE.
+
+CLASS lcl2 DEFINITION.
+  PUBLIC SECTION.
+    INTERFACES lif2.
+ENDCLASS.
+
+CLASS lcl2 IMPLEMENTATION.
+  METHOD lif2~meth_of_lif2.
+    ...
+  ENDMETHOD.
+
+  METHOD lif~inst_meth.
+    ...
+  ENDMETHOD.
+
+  METHOD lif~stat_meth.
     ...
   ENDMETHOD.
 ENDCLASS.
@@ -3911,7 +4085,555 @@ ENDCLASS.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-### Interface Reference Variables and Accessing Objects
+### Additions Related to Interface Implementations
+
+<table>
+
+<tr>
+<td> Addition </td> <td> Notes </td>
+</tr>
+
+<tr>
+<td> 
+
+[`ALIASES ... FOR ...`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapaliases.htm)
+
+ </td>
+
+ <td> 
+
+Specifies alias names for the interface components. The components can then be addressed using the alias name.
+
+<br>
+
+```abap
+"Local interface in a CCIMP include
+INTERFACE lif.
+  METHODS some_method.
+  DATA some_string type string.
+ENDINTERFACE.
+
+"Local class in a CCIMP include implementing the interface
+CLASS lcl DEFINITION.
+  PUBLIC SECTION.
+    INTERFACES lif.
+    ALIASES meth FOR lif~some_method.
+    ALIASES str FOR lif~some_string.
+ENDCLASS.
+
+CLASS lcl IMPLEMENTATION.
+  METHOD meth.
+    "This syntax is also possible: METHOD lif~some_method.
+    ...
+    DATA(string1) = str.
+    "This sytanx is also possible. However, when you have already addressed the component
+    "with the alias as in the assignment above, the following statement shows a syntax warning.
+    "DATA(string2) = lif~some_string.
+  ENDMETHOD.
+ENDCLASS.
+```
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+[`ABSTRACT METHODS`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapinterfaces_class.htm)
+
+ </td>
+
+ <td> 
+
+- Specifies instance methods as abstract.
+- Multiple methods can be specified. 
+- The addition can only be used when the whole class is defined as abstract.
+
+<br>
+
+``` abap
+INTERFACE lif3.
+  METHODS meth1.
+  METHODS meth2.
+ENDINTERFACE.
+
+"Local abstract class 
+"meth1 is specified as abstract method, meth2 is not.
+"Therefore, only meth2 must be implemented. meth1 must
+"be implemented by the subclasses.
+CLASS lcl3 DEFINITION ABSTRACT.
+  PUBLIC SECTION.    
+    INTERFACES lif3 ABSTRACT METHODS meth1.    
+ENDCLASS.
+
+CLASS lcl3 IMPLEMENTATION.  
+  METHOD lif3~meth2.
+    ...
+  ENDMETHOD.
+ENDCLASS.
+
+CLASS lcl4 DEFINITION INHERITING FROM lcl3.
+  PUBLIC SECTION.
+    METHODS lif3~meth1 REDEFINITION.       
+ENDCLASS.
+
+CLASS lcl4 IMPLEMENTATION.
+  METHOD lif3~meth1.
+    ...
+  ENDMETHOD.
+ENDCLASS.
+``` 
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+[`ALL METHODS ABSTRACT`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapinterfaces_class.htm)
+
+ </td>
+
+ <td> 
+
+See above. With this addition, all methods are specified as abstract.
+
+<br>
+
+``` abap
+INTERFACE lif.
+  METHODS meth1.
+  METHODS meth2.
+ENDINTERFACE.
+
+"Local abstract class
+"All methods are specified as abstract methods.
+"Therefore, all methods of the interface must be implemented
+"by the subclasses.
+CLASS lcl1 DEFINITION ABSTRACT.
+  PUBLIC SECTION.
+    INTERFACES lif ALL METHODS ABSTRACT.
+ENDCLASS.
+
+CLASS lcl1 IMPLEMENTATION.
+
+ENDCLASS.
+
+CLASS lcl2 DEFINITION INHERITING FROM lcl1.
+  PUBLIC SECTION.
+    METHODS lif~meth1 REDEFINITION.
+    METHODS lif~meth2 REDEFINITION.
+ENDCLASS.
+
+CLASS lcl2 IMPLEMENTATION.
+  METHOD lif~meth1.
+    ...
+  ENDMETHOD.
+
+  METHOD lif~meth2.
+    ...
+  ENDMETHOD.
+
+ENDCLASS.
+``` 
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+[`FINAL METHODS`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapinterfaces_class.htm)
+
+ </td>
+
+ <td> 
+
+Specifies methods as final so they cannot be further redefined. Multiple methods can be specified.
+
+<br>
+
+```abap
+INTERFACE lif.
+  METHODS meth1.
+  METHODS meth2.
+ENDINTERFACE.
+
+"meth1 is specified as final method, meth2 is not.
+"Therefore, only meth2 can be further redefined in subclasses.
+CLASS lcl1 DEFINITION.
+  PUBLIC SECTION.
+    INTERFACES lif FINAL METHODS meth1.
+ENDCLASS.
+
+CLASS lcl1 IMPLEMENTATION.
+
+  METHOD lif~meth1.
+    ...
+  ENDMETHOD.
+
+  METHOD lif~meth2.
+    ...
+  ENDMETHOD.
+
+ENDCLASS.
+
+CLASS lcl2 DEFINITION INHERITING FROM lcl1.
+  PUBLIC SECTION.
+    "meth1 cannot be redefined as it is declared as final in the superclass.
+    "METHODS lif~meth1 REDEFINITION.
+    METHODS lif~meth2 REDEFINITION.
+ENDCLASS.
+
+CLASS lcl2 IMPLEMENTATION.
+
+  METHOD lif~meth2.
+    ...
+  ENDMETHOD.
+
+ENDCLASS.
+``` 
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+[`ALL METHODS FINAL`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapinterfaces_class.htm)
+
+ </td>
+
+ <td> 
+
+See above. With this addition, all methods are specified as final.
+
+<br>
+
+``` abap
+INTERFACE lif.
+  METHODS meth1.
+  METHODS meth2.
+ENDINTERFACE.
+
+"All methods are specified as final. Therefore, they
+"cannot be further redefined in subclasses.
+CLASS lcl1 DEFINITION.
+  PUBLIC SECTION.
+    INTERFACES lif ALL METHODS FINAL.
+    METHODS meth3.
+ENDCLASS.
+
+CLASS lcl1 IMPLEMENTATION.
+
+  METHOD lif~meth1.
+    ...
+  ENDMETHOD.
+
+  METHOD lif~meth2.
+    ...
+  ENDMETHOD.
+
+  METHOD meth3.
+    ...
+  ENDMETHOD.
+
+ENDCLASS.
+
+CLASS lcl2 DEFINITION INHERITING FROM lcl1.
+  PUBLIC SECTION.
+    "meth1 and meth2 cannot be redefined.
+    "METHODS lif~meth1 REDEFINITION.
+    "METHODS lif~meth2 REDEFINITION.
+    METHODS meth3 REDEFINITION.
+ENDCLASS.
+
+CLASS lcl2 IMPLEMENTATION.
+
+  METHOD meth3.
+    ...
+  ENDMETHOD.
+
+ENDCLASS.
+``` 
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+[`DATA VALUES`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABAPINTERFACES_CLASS.html)
+
+ </td>
+
+ <td> 
+
+- Used to assign start values for attributes
+- Works in the style of `DATA ... VALUE ...` statements, e.g. `DATA number TYPE i VALUE 123`.
+
+<br>
+
+``` abap
+INTERFACE lif.
+  METHODS meth1 RETURNING VALUE(result) TYPE i.
+  DATA num1 TYPE i.
+  DATA num2 TYPE i.
+  CLASS-DATA num3 TYPE i.
+ENDINTERFACE.
+
+CLASS lcl1 DEFINITION.
+  PUBLIC SECTION.
+    INTERFACES lif DATA VALUES num1 = 1 num2 = 3 num3 = 6.
+ENDCLASS.
+
+CLASS lcl1 IMPLEMENTATION.
+
+  METHOD lif~meth1.
+    result = lif~num1 + lif~num2 + lif~num3.
+  ENDMETHOD.
+
+ENDCLASS.
+
+CLASS lcl3 DEFINITION.
+  PUBLIC SECTION.
+    CLASS-METHODS meth.
+ENDCLASS.
+
+CLASS lcl3 IMPLEMENTATION.
+
+  METHOD meth.
+    "result: 10
+    DATA(result) = NEW lcl1( )->lif~meth1( ).    
+  ENDMETHOD.
+
+ENDCLASS.
+``` 
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+[`PARTIALLY IMPLEMENTED`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABAPINTERFACES_PARTIALLY.html)
+
+ </td>
+
+ <td> 
+
+- Relevant only for test classes.
+- When you use the `PARTIALLY IMPLEMENTED` addition in test classes, you are not forced to implement all of the concrete non-optional methods. 
+- It is particularly useful for interfaces to implement test doubles, and not all methods are necessary.
+- See the [ABAP Unit Tests](14_ABAP_Unit_Tests.md) cheat sheet.
+
+<br>
+
+``` abap
+"Test double class in a test include
+CLASS ltd_test_double DEFINITION FOR TESTING.
+  PUBLIC SECTION.
+    INTERFACES some_intf PARTIALLY IMPLEMENTED.    
+ENDCLASS.
+
+CLASS ltd_test_double IMPLEMENTATION.
+  METHOD some_intf~some_meth.
+    ...   
+  ENDMETHOD.
+ENDCLASS.
+``` 
+
+ </td>
+</tr>
+
+
+
+<tr>
+<td> 
+
+[`DEFAULT IGNORE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapmethods_default.htm) 
+
+<br> (addition used in the interface definition)
+
+ </td>
+
+ <td> 
+
+- Marks the implementation of methods as optional
+- Defines a default behavior when non-implemented methods are called. When a method with such a declaration is called without an implementation, it behaves as though no implementation exists.
+- Can only be used in interfaces for instance and static methods (except constructors and test methods)
+
+<br>
+
+``` abap
+INTERFACE lif.
+  METHODS meth1 DEFAULT IGNORE.
+  METHODS meth2.
+ENDINTERFACE.
+
+CLASS lcl1 DEFINITION.
+  PUBLIC SECTION.
+    INTERFACES lif.
+ENDCLASS.
+
+"The class implementation does not include the optional
+"implementation of lif~meth1.
+CLASS lcl1 IMPLEMENTATION.
+
+  METHOD lif~meth2.
+    ...
+  ENDMETHOD.
+
+ENDCLASS.
+
+CLASS lcl2 DEFINITION.
+  PUBLIC SECTION.
+    INTERFACES lif.
+ENDCLASS.
+
+"The class implementation includes the optional
+"implementation of lif~meth1.
+CLASS lcl2 IMPLEMENTATION.
+
+  METHOD lif~meth1.
+    ...
+  ENDMETHOD.
+
+  METHOD lif~meth2.
+    ...
+  ENDMETHOD.
+
+ENDCLASS.
+
+CLASS lcl3 DEFINITION.
+  PUBLIC SECTION.
+    class-methods meth3.
+ENDCLASS.
+
+"The class implementation includes the optional
+"implementation of lif~meth1.
+CLASS lcl3 IMPLEMENTATION.
+
+  METHOD meth3.
+    DATA(oref1) = NEW lcl1( ).
+    DATA(oref2) = NEW lcl2( ).
+    
+    "Although not implemented, meth1 can be 'called' (i.e.
+    "it can be specified to be called). In this case, it is
+    "just like calling a method with empty implementation.
+    oref1->lif~meth1( ).
+    oref1->lif~meth2( ).
+    
+    "In this class, both methods are implemented.
+    oref2->lif~meth1( ).
+    oref2->lif~meth2( ).
+        
+  ENDMETHOD.
+
+ENDCLASS.
+``` 
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+[`DEFAULT FAIL`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapmethods_default.htm)
+
+<br> (addition used in the interface definition)
+
+ </td>
+
+ <td> 
+
+See above. The behavior with this addition is that when an unimplemented method is called, the `CX_SY_DYN_CALL_ILLEGAL_METHOD` exception is raised.
+
+<br>
+
+``` abap
+INTERFACE lif.
+  METHODS meth1 DEFAULT FAIL.
+  METHODS meth2.
+ENDINTERFACE.
+
+CLASS lcl1 DEFINITION.
+  PUBLIC SECTION.
+    INTERFACES lif.
+ENDCLASS.
+
+"The class implementation does not include the optional
+"implementation of lif~meth1.
+CLASS lcl1 IMPLEMENTATION.
+
+  METHOD lif~meth2.
+    ...
+  ENDMETHOD.
+
+ENDCLASS.
+
+CLASS lcl2 DEFINITION.
+  PUBLIC SECTION.
+    INTERFACES lif.
+ENDCLASS.
+
+"The class implementation includes the optional
+"implementation of lif~meth1.
+CLASS lcl2 IMPLEMENTATION.
+
+  METHOD lif~meth1.
+    ...
+  ENDMETHOD.
+
+  METHOD lif~meth2.
+    ...
+  ENDMETHOD.
+
+ENDCLASS.
+
+CLASS lcl3 DEFINITION.
+  PUBLIC SECTION.
+    CLASS-METHODS meth3.
+ENDCLASS.
+
+"The class implementation includes the optional
+"implementation of lif~meth1.
+CLASS lcl3 IMPLEMENTATION.
+
+  METHOD meth3.
+    DATA(oref1) = NEW lcl1( ).
+    DATA(oref2) = NEW lcl2( ).
+
+    "Although not implemented, meth1 can be 'called' (i.e.
+    "it can be specified to be called).
+    "However, with the DEFAULT FAIL addition, an exception is
+    "raised.
+    TRY.
+        oref1->lif~meth1( ).
+      CATCH cx_sy_dyn_call_illegal_method INTO DATA(error).
+        DATA(error_text) = error->get_text( ).
+    ENDTRY.
+    oref1->lif~meth2( ).
+
+    "In this class, both methods are implemented.
+    oref2->lif~meth1( ).
+    oref2->lif~meth2( ).
+
+  ENDMETHOD.
+
+ENDCLASS.
+``` 
+
+ </td>
+</tr>
+
+
+</table>
+
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+### Interface Reference Variables, Accessing Objects and Components
 
 - Addressing an object happens via an object reference variable with reference to a class.
 - An interface variable can contain references to objects of classes that implement the corresponding interface.
@@ -3931,6 +4653,7 @@ Addressing interface components:
 
 
 ``` abap
+"----------------------- Syntax patterns -----------------------
 "Addressing instance interface components using interface reference variable
 DATA i_ref TYPE REF TO intf.
 
@@ -3974,6 +4697,105 @@ i_ref = NEW class( ).
 "A constant can be addressed using the options mentioned above.
 "Plus, it can be addressed using the following pattern
 ... intf=>const ...
+```
+
+Example using local interfaces and classes
+
+```abap
+INTERFACE lif.
+  METHODS inst_meth.
+  CLASS-METHODS stat_meth.
+  TYPES c1 TYPE c LENGTH 1.
+  DATA inst_num TYPE i.
+  CLASS-DATA stat_str TYPE string.
+  CONSTANTS const TYPE string VALUE `ABAP`.
+ENDINTERFACE.
+
+CLASS lcl1 DEFINITION.
+  PUBLIC SECTION.
+    INTERFACES lif.
+ENDCLASS.
+
+CLASS lcl1 IMPLEMENTATION.
+
+  METHOD lif~inst_meth.
+    ...
+  ENDMETHOD.
+
+  METHOD lif~stat_meth.
+    ...
+  ENDMETHOD.
+
+ENDCLASS.
+
+"This class demonstrates addressing interface components
+CLASS lcl2 DEFINITION.
+  PUBLIC SECTION.
+    CLASS-METHODS meth.
+    DATA flag TYPE lif=>c1.
+ENDCLASS.
+
+CLASS lcl2 IMPLEMENTATION.
+
+  METHOD meth.
+
+    "Addressing instance interface components using interface reference variable
+    "Interface reference variable
+    DATA i_ref TYPE REF TO lif.
+    "Object reference variable
+    DATA cl_ref TYPE REF TO lcl1.
+
+    "Creating an instance of a class that implements the interface lif
+    cl_ref = NEW #( ).
+
+    "If the class lcl1 implements the interface lif,
+    "the class reference variable cl_ref can be assigned
+    "to the interface reference variable i_ref.
+    "The reference in i_ref then points to the same object
+    "as the reference in cl_ref.
+    i_ref = cl_ref.
+
+    "This can also be done directly, i. e. directly creating an object to
+    "which the interface reference variable points
+    DATA i_ref2 TYPE REF TO lif.
+    i_ref2 = NEW lcl1( ).
+
+    "Instance interface method via interface reference variable
+    i_ref->inst_meth( ).
+
+    "Instance interface attribute via interface reference variable
+    DATA(a) = i_ref->inst_num.
+
+    "Addressing instance components using the class reference variable
+    "is also possible but it is not the recommended way.
+    cl_ref->lif~inst_meth( ).
+    DATA(b) = cl_ref->lif~inst_num.
+
+    "Addressing static interface components
+    "The class name and => can be dropped if the method is called in the
+    "same class that implements the interface.
+    lcl1=>lif~stat_meth( ).
+    DATA(c) = lcl1=>lif~stat_str.
+
+    "Note: Static interface components can be called via reference variables, too.
+    i_ref->stat_meth( ).
+    DATA(d) = i_ref->stat_str.
+    cl_ref->lif~stat_meth( ).
+
+    "Constants
+    "A constant can be addressed using the options mentioned above.
+    "Plus, it can be addressed using the following pattern
+    DATA(e) = lif=>const.
+    DATA(f) = i_ref->const.
+    DATA(g) = cl_ref->lif~const.
+
+    "Types
+    DATA h TYPE lif=>c1.
+    "Referring to attributes in the interface
+    DATA i LIKE lif=>const.
+  ENDMETHOD.
+
+ENDCLASS.
 ```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
@@ -4413,10 +5235,9 @@ SET HANDLER handler3.
 > - Most examples are structured for easy exploration using simple, self-contained ABAP classes (i.e. only 1 class pool including local classes instead of multiple global classes) as follows:
 >    - Global class:
 >      - Includes the `if_oo_adt_classrun` interface to run the class with F9 in ADT.
->      - Serves as a *vehicle* for demonstrating the design pattern. Only the declarations and implementations in the CCIMP include are relevant for the for conceptual considerations.
+>      - Serves as a *vehicle* for demonstrating the design pattern. Only the declarations and implementations in the CCIMP include are relevant for the conceptual considerations.
 >    - CCIMP include (Local Types tab in ADT):
 >      - Contains various local classes (some also include interfaces) to demonstrate design patterns, allowing quick copying and pasting without creating multiple global classes. 
->      - In some examples, note the use of the `DEFERRED` addition to class definitions, and not using the `PUBLIC` addition in all class definitions as they are local classes.
 
 Expand the following sections for further descriptions and example code. To try the examples, create a demo class named `zcl_demo_abap` and paste the code into it (*Global Class* and *Local Types* tabs in ADT). After activation, choose *F9* in ADT to execute the class. The examples are set up to display output in the console.
 
@@ -7165,6 +7986,86 @@ ENDCLASS.
 ```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
+
+### Escaping Characters
+
+- You may stumble on [`!` characters](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABENNAMES_ESCAPING.html) specified before operands.
+- They are used to distinguish the operand's name from ABAP words. 
+- When compiling ABAP programs, the specifications with the escape character are not considered as ABAP words. 
+- When executing the programs, the escape characters are ignored.
+
+The following nonsensical example shows various specifications with the escape character that emphasize in the program that the operands are not to be confused with ABAP words. These specifications are not mandatory in the example. The example only addresses escape characters you may stumble on in ABAP code.
+
+```abap
+CLASS zcl_demo_abap DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
+
+  PUBLIC SECTION.
+    INTERFACES if_oo_adt_classrun.
+
+    DATA num TYPE i.
+    CLASS-DATA default TYPE i VALUE 1.
+    METHODS meth1 IMPORTING !num TYPE i.
+    METHODS !methods IMPORTING !raising   TYPE i OPTIONAL
+                               !optional  TYPE i
+                               !exporting TYPE i
+                     EXPORTING !importing TYPE i
+                               !changing  TYPE i
+                     CHANGING  !default   TYPE i.
+
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+
+ENDCLASS.
+
+CLASS zcl_demo_abap IMPLEMENTATION.
+
+  METHOD if_oo_adt_classrun~main.
+    meth1( 1 ).
+
+    DATA !exporting TYPE i.
+    DATA !changing TYPE i.
+    methods(
+      EXPORTING
+        raising   = 1
+        optional  = 5
+        exporting = 10
+      IMPORTING
+        importing = !exporting
+        changing  = !changing
+     CHANGING
+        default   = !default
+    ).
+
+  ENDMETHOD.
+  METHOD meth1.
+    DATA(a) = num.
+    DATA(b) = me->num.
+    DATA(c) = !num.
+
+    me->num = num.
+    me->num = !num.
+  ENDMETHOD.
+
+  METHOD methods.
+
+    !importing = !raising + !optional.
+    !changing = !exporting.
+    !default += 1.
+
+    importing = raising + optional.
+    changing = exporting.
+    default += 1.
+
+  ENDMETHOD.
+
+ENDCLASS.
+```
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
 
 ## More Information
 You can check the subtopics of

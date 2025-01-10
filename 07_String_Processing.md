@@ -125,12 +125,12 @@ The following code snippet shows a global class implementing the interface `if_o
 - The literals can be (but should not according to the [programming guidelines on literals (F1 docu for standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenliterals_guidl.htm)) used like constants of these types in [operand positions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenoperand_position_glosry.htm). They should be only used for start values when declaring [named data objects](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abennamed_data_object_glosry.htm).
 
 ```abap
-CLASS zcl_some_test_class DEFINITION PUBLIC FINAL CREATE PUBLIC.
+CLASS zcl_demo_abap_class DEFINITION PUBLIC FINAL CREATE PUBLIC.
   PUBLIC SECTION.
     INTERFACES if_oo_adt_classrun.
 ENDCLASS.
 
-CLASS zcl_some_test_class IMPLEMENTATION.
+CLASS zcl_demo_abap_class IMPLEMENTATION.
   METHOD if_oo_adt_classrun~main.
     out->write( `I am a text string literal` ).  "text string literal of type string
     out->write( 'I am a text field literal' ).   "text field literal of type c

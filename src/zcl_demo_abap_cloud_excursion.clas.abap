@@ -1,4 +1,4 @@
-"! <p class="shorttext"><strong>AMDP</strong><br/>Excursions into ABAP for Cloud Development</p>
+"! <p class="shorttext">Excursions into ABAP for Cloud Development</p>
 "!
 "! <p>The example class demonstrates released APIs and libraries with the restricted
 "! ABAP language version.<br/>
@@ -431,7 +431,7 @@ CLASS zcl_demo_abap_cloud_excursion IMPLEMENTATION.
         DATA(a4_del_cl) = a2_content-delivery_class->value.
         DATA(a5_data_maint) = a2_content-data_maintenance->if_xco_printable~get_text( )->get_lines( )->join( )->value.
         "Getting all fields of the database table
-        "The handler is further processed. In the example, only the field names are retreived.
+        "The handler is further processed. In the example, only the field names are retrieved.
         DATA(a6_fields) = db->fields->all->get( ).
 
         CLEAR str.

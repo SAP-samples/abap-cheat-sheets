@@ -29,6 +29,7 @@
     - [Dynamic Specifications in Statements for Processing Internal Tables](#dynamic-specifications-in-statements-for-processing-internal-tables)
     - [Dynamic ABAP SQL Statements](#dynamic-abap-sql-statements)
     - [Dynamic Method Calls](#dynamic-method-calls)
+    - [Dynamic Function Module Calls](#dynamic-function-module-calls)
     - [Dynamic ABAP EML Statements](#dynamic-abap-eml-statements)
     - [Dynamic Formatting Option Specifications in String Templates](#dynamic-formatting-option-specifications-in-string-templates)
     - [Dynamic Parameter List in EXPORT and IMPORT Statements](#dynamic-parameter-list-in-export-and-import-statements)
@@ -2617,6 +2618,31 @@ CLASS zcl_demo_test IMPLEMENTATION.
   ENDMETHOD.
 
 ENDCLASS.
+```
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+### Dynamic Function Module Calls
+
+The following code snippet shows a dynamic function module call. Similar to dynamic method calls, a parameter table is used. It has the type `abap_func_parmbind_tab`. The function module name is specified as the value of a character-like data object.
+See the section [Function Module Example](13_Program_Flow_Logic.md#function-module-example) in the [Program Flow Logic](13_Program_Flow_Logic.md) cheat sheet that includes the creation of a demo function module and static and dynamic function module calls.
+
+```abap
+DATA(func_name) = 'Z_DEMO_ABAP_TEST_FUNC_M'.
+DATA(ptab) = VALUE abap_func_parmbind_tab( ( name  = 'NUM1'
+                                              kind  = abap_func_exporting
+                                              value = NEW i( 3 ) )
+                                            ( name  = 'OPERATOR'
+                                              kind  = abap_func_exporting
+                                              value = NEW string( `+` ) )
+                                            ( name  = 'NUM2'
+                                              kind  = abap_func_exporting
+                                              value = NEW i( 5 ) )
+                                            ( name  = 'RESULT'
+                                              kind  = abap_func_importing
+                                              value = NEW string( ) ) ).
+
+CALL FUNCTION func_name PARAMETER-TABLE ptab.
 ```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
