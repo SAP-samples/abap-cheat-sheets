@@ -10,6 +10,8 @@
     - [Creating Structures](#creating-structures)
     - [Creating Structures Using Existing Structured Types](#creating-structures-using-existing-structured-types)
     - [Creating Structures by Inline Declaration](#creating-structures-by-inline-declaration)
+    - [Creating Constant and Immutable Structures](#creating-constant-and-immutable-structures)
+    - [Creating Enumerated Structures](#creating-enumerated-structures)
     - [Creating Anonymous Structures](#creating-anonymous-structures)
   - [Variants of Structures](#variants-of-structures)
   - [Accessing (Components of) Structures](#accessing-components-of-structures)
@@ -250,6 +252,67 @@ LOOP AT itab INTO DATA(wa_2).
   ...
 ENDLOOP.
 ```
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+###  Creating Constant and Immutable Structures
+
+- Constant structures can be created with the `... BEGIN OF ... END OF ...` additions. Their values cannot be changed.
+- As shown above, the [`FINAL`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenfinal_inline.htm) declaration operator is used to create [immutable variables](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenimmutable_variable_glosry.htm).
+
+```abap
+CONSTANTS: BEGIN OF const_struct,
+             num TYPE i VALUE 123,
+             str TYPE string VALUE `ABAP`,
+             n3  TYPE n LENGTH 3 VALUE '000',
+             c5  TYPE c LENGTH 5 VALUE 'abcde',
+           END OF const_struct.
+
+DATA(num) = const_struct-num.
+"const_struct-num = 456.
+
+TYPES struct_type LIKE const_struct.
+FINAL(final_struct) = VALUE struct_type( num = 987 str = `hello` n3 = '123' c5 = 'xyz' ).
+
+DATA(num_from_final) = final_struct-num.
+"final_struct-num = 1.
+
+SELECT * FROM zdemo_abap_carr INTO TABLE @DATA(itab).
+
+"The work area is specified as immutable variable. The variable's content cannot be changed
+"in the loop, however, the variable is exchanged with the next loop pass.
+LOOP AT itab INTO FINAL(wa).
+  DATA(carrid) = wa-carrid.
+  "wa-carrid = 'XY'.
+ENDLOOP.
+```
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+### Creating Enumerated Structures
+
+Find more information on [enumerated types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenenum_type_glosry.htm) in the [Data Types and Data Objects](16_Data_Types_and_Objects.md#abap-enumerated-types-and-objects) cheat sheet.
+
+```abap
+"When creating enumerated types, an enumerated structure can optionally be declared in 
+"the context of the type declaration.
+"A component of an enumerated structure: An enumerated constant that exists as a component
+"of a constant structure, not as a single data object.
+TYPES basetype TYPE i.
+TYPES: BEGIN OF ENUM t_enum_struc STRUCTURE en_struc BASE TYPE basetype,
+         a VALUE IS INITIAL,
+         b VALUE 1,
+         c VALUE 2,
+         d VALUE 3,
+       END OF ENUM t_enum_struc STRUCTURE en_struc.
+
+DATA(enum_comp) = en_struc-b.
+
+DATA(conv_enum_comp) = CONV basetype( en_struc-b ).
+ASSERT conv_enum_comp = 1.
+```
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ### Creating Anonymous Structures
 

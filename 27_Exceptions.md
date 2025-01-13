@@ -14,6 +14,7 @@
       - [RETRY Statements](#retry-statements)
       - [RESUME Statements and RESUMABLE Additions](#resume-statements-and-resumable-additions)
   - [Using Messages as Exception Texts](#using-messages-as-exception-texts)
+    - [System Interfaces for Messages](#system-interfaces-for-messages)
     - [Excursion: MESSAGE Statements](#excursion-message-statements)
   - [Syntax Variants of RAISE EXCEPTION/THROW](#syntax-variants-of-raise-exceptionthrow)
   - [Runtime Errors](#runtime-errors)
@@ -851,6 +852,13 @@ ENDLOOP.
 - If an exception is raised and ...
   - not handled, the exception text is displayed in the [short dump](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenshort_dump_glosry.htm) of the runtime error.
   - handled, the text can be retrieved using the `get_text` method as shown above.
+- As outlined in the next section, exception classes must implement one of the system interfaces for messages to use exception texts.
+ 
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+### System Interfaces for Messages
+
 - Exception classes must implement one of the system interfaces for messages to use exception texts:
   - `IF_T100_MESSAGE`:
     - Contains the `T100KEY` structured attribute (type `SCX_T100KEY`), specifying a message in the `T100` database table. Components are: `msgid` for the message class, `msgno` for the message number, and `attr1`/`attr2`/`attr3`/`attr4` for potential placeholders in message texts.
@@ -864,7 +872,7 @@ ENDLOOP.
     - The interface includes attributes to handle message-related attributes automatically for more comfortable message handling.
     - The interface can associate any messages with exception classes.
     - When exception classes implement the interface, more additions to ABAP statements are possible than with `IF_T100_MESSAGE`, such as `MESSAGE` and `WITH`. For example, the `MESSAGE` addition to `RAISE EXCEPTION` statements and `THROW` automatically assigns the correct values to the required exception class attributes, mapping the correct values to the `t100key` structure. `msgid` is assigned the message class, `msgno` is assigned the message number, and `attr1`/`attr2`/`attr3`/`attr4` are assigned the values of `if_t100_dyn_msg~msgv1` to `if_t100_dyn_msg~msgv4` (when including the `WITH` addition).
-- Optionally, up to four placeholders (`&1`, `&2`, `&3`, `&4`) can be specified for messages. At runtime, placeholders are replaced by values specified with the attributes.
+   - Optionally, up to four placeholders (`&1`, `&2`, `&3`, `&4`) can be specified for messages. At runtime, placeholders are replaced by values specified with the attributes.
 
 
 > **💡 Note**<br>

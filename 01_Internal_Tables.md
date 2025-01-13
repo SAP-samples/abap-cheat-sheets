@@ -3145,7 +3145,8 @@ DATA(line_ref) = REF #( itab[ 3 ] ).
 
 - You can specify default values for lines that are not found to avoid an exception.
 - The first example shows catching the execption with a `TRY` control structure.
-- The `OPTIONAL` and `DEFAULT` additions can be used in the context of statements using table expressions and constructor expressions (`VALUE` and `REF` are possible).
+- The `OPTIONAL` and `DEFAULT` additions can be used in the context of statements using table expressions and constructor expressions (`VALUE` and `REF` are possible). 
+- When using `OPTIONAL`, the type-specific initial value is set. After the `DEFAULT` addition, a value is expected that is convertible to the target type. You may also specify another table expression for an alternative table line to be searched.
 
 
 <br>

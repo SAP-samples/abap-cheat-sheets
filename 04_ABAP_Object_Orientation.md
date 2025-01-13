@@ -32,10 +32,11 @@
     - [Method Chaining and Chained Attribute Access](#method-chaining-and-chained-attribute-access)
     - [Excursion: Example Class](#excursion-example-class)
   - [Inheritance](#inheritance)
-    - [Inheritance-Related Syntax](#inheritance-related-syntax)
+    - [Additions Related to Inheritance and Instantion](#additions-related-to-inheritance-and-instantion)
     - [Excursion: Inheritance Example](#excursion-inheritance-example)
   - [Polymorphism and Casting (Upcast/Downcast)](#polymorphism-and-casting-upcastdowncast)
     - [Demonstrating Upcasts and Downcasts Using the RTTS Inheritance Tree](#demonstrating-upcasts-and-downcasts-using-the-rtts-inheritance-tree)
+      - [Checking the Dynamic Type of Object Reference Variables](#checking-the-dynamic-type-of-object-reference-variables)
   - [Interfaces](#interfaces)
     - [Defining Interfaces](#defining-interfaces)
     - [Implementing Interfaces](#implementing-interfaces)
@@ -189,7 +190,7 @@ ENDCLASS.
 
 #### Additions in the Class Declaration Part
 
-This section covers a selection of additions to declare classes. They are also covered in other sections below. Find more information on additions [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapclass_options.htm).
+This section covers a selection of additions to declare classes. They are also covered in other sections below, e.g. [Additions Related to Inheritance and Instantion](#inheritance--and-instantion-related-syntax). Find more information on the additions in the [ABAP Keyword Documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapclass_options.htm).
 
 <table>
 
@@ -364,7 +365,7 @@ Makes a local class known in a program before the actual class definition. It is
 #### Excursion: Class Pool and Include Programs
 
 - A class pool is an ABAP program containing the definition of one global class (*Global Class* tab in ADT)
-- Global classes are marked as such with the `PUBLIC` addition to the `CLASS` statement: `CLASS zcl_demo_test DEFINITION PUBLIC ...` 
+- Global classes are marked as such with the `PUBLIC` addition to the `CLASS` statement: `CLASS zcl_demo_abap DEFINITION PUBLIC ...` 
 - Additionally, a class pool can also contain local classes that are defined in dedicated include programs (CCDEF and the other include names are internal names the include programs end with):
   - CCDEF include (*Class-relevant Local Types* tab in ADT): Is included in front of the declaration part of the global class
   - CCIMP include (*Local Types* tab in ADT): Is included behind the declaration part and in front of the implementation part of the global class
@@ -377,7 +378,7 @@ The following simplified example demonstrates include programs.
   <!-- -->
 
   Global class:
-- Create a new global class (the example uses the name `zcl_demo_test`) and copy and paste the following code in the *Global Class* tab in ADT.
+- Create a new global class (the example uses the name `zcl_demo_abap`) and copy and paste the following code in the *Global Class* tab in ADT.
 - The method in the private section makes use of local types that are defined in the CCDEF include. In the example the method is deliberately included in the private visibility section. Having it like this in the public section is not possible due to the use of local types.
 - The `if_oo_adt_classrun~main` implementation contains method calls to this method. It also contains method calls to a method implemented in a local class in the CCIMP include.
 - As a prerequisite to activate the class, you also need to copy and paste the code snippets further down for the CCDEF and CCIMP include. Once you have pasted the code, the syntax errors in the global class will disappear.
@@ -385,7 +386,7 @@ The following simplified example demonstrates include programs.
 - When you have copied and pasted the CCAU code snippet for the simple ABAP Unit test, and activated the class, you can choose *CTRL+Shift+F10* in ADT to run the ABAP Unit test. Alternatively, you can make a right click in the class code, choose *Run As* and *4 ABAP Unit Test*.
 
 ```abap
-CLASS zcl_demo_test DEFINITION
+CLASS zcl_demo_abap DEFINITION
   PUBLIC
   FINAL
   CREATE PUBLIC .
@@ -404,7 +405,7 @@ CLASS zcl_demo_test DEFINITION
                       RAISING   lcx_wrong_operator.
 ENDCLASS.
 
-CLASS zcl_demo_test IMPLEMENTATION.
+CLASS zcl_demo_abap IMPLEMENTATION.
 
   METHOD if_oo_adt_classrun~main.
 
@@ -480,7 +481,7 @@ ENDCLASS.
 Code snippet for the test include (CCAU):
 ```abap
 CLASS ltc_test DEFINITION DEFERRED.
-CLASS zcl_demo_test DEFINITION LOCAL FRIENDS ltc_test.
+CLASS zcl_demo_abap DEFINITION LOCAL FRIENDS ltc_test.
 
 CLASS ltc_test DEFINITION FOR TESTING
 RISK LEVEL HARMLESS
@@ -495,7 +496,7 @@ CLASS ltc_test IMPLEMENTATION.
 
   METHOD test_calculate.
     "Creating an object of the class under test
-    DATA(ref_cut) = NEW zcl_demo_test( ).
+    DATA(ref_cut) = NEW zcl_demo_abap( ).
 
     "Calling method that is to be tested
     TRY.
@@ -1546,9 +1547,7 @@ This section covers some aspects of working with reference variables.
 
 **Assigning Reference Variables**
 
-To assign or copy reference variables, use the [assignment
-operator](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenassignment_operator_glosry.htm "Glossary Entry")
-`=`. In the example below, both object reference variables have the same type. Note the concepts of polymorphism, upcasts and downcasts when assigning reference variables covered further down.
+To assign or copy reference variables, use the [assignment operator](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenassignment_operator_glosry.htm "Glossary Entry") `=`. In the example below, both object reference variables have the same type. Note the concepts of polymorphism, upcasts and downcasts when assigning reference variables covered further down. 
 
 ``` abap
 DATA: ref1 TYPE REF TO some_class,
@@ -2110,7 +2109,7 @@ ENDCLASS.
 
 ### Excursion: Example Class
 
-Expand the following collapsible section for an example class. The commented example class explores various aspects covered in the previous sections. You can create a demo class called `zcl_demo_test` and copy and paste the following code. Once activated, you can choose *F9* in ADT to run the class. The example is designed to display output in the console that shows the result of calling different methods.
+Expand the following collapsible section for an example class. The commented example class explores various aspects covered in the previous sections. You can create a demo class called `zcl_demo_abap` and copy and paste the following code. Once activated, you can choose *F9* in ADT to run the class. The example is designed to display output in the console that shows the result of calling different methods.
 
 <details>
   <summary>🟢 Click to expand for example code</summary>
@@ -2119,7 +2118,7 @@ Expand the following collapsible section for an example class. The commented exa
 <br>
 
 ```abap
-CLASS zcl_demo_test DEFINITION
+CLASS zcl_demo_abap DEFINITION
   PUBLIC
   FINAL
   CREATE PUBLIC .
@@ -2219,7 +2218,7 @@ ENDCLASS.
 
 
 
-CLASS zcl_demo_test IMPLEMENTATION.
+CLASS zcl_demo_abap IMPLEMENTATION.
   METHOD if_oo_adt_classrun~main.
 
     "Note:
@@ -2236,7 +2235,7 @@ CLASS zcl_demo_test IMPLEMENTATION.
     "and an instance is created.
     "Creating an instance of a class and accessing an instance attribute
     "using the object component selector ->.
-    DATA(oref) = NEW zcl_demo_test( ).
+    DATA(oref) = NEW zcl_demo_abap( ).
     out->write( data = oref->inst_attr name = `oref->inst_attr` ).
 
     "Creating more instances
@@ -2244,10 +2243,10 @@ CLASS zcl_demo_test IMPLEMENTATION.
     "is assigned a time stamp when the instance constructor is called.
     "As instance constructors are called once for each instance, the
     "inst_attr values differ.
-    DATA(oref2) = NEW zcl_demo_test( ).
+    DATA(oref2) = NEW zcl_demo_abap( ).
     out->write( data = oref2->inst_attr name = `oref2->inst_attr` ).
 
-    DATA(oref3) = NEW zcl_demo_test( ).
+    DATA(oref3) = NEW zcl_demo_abap( ).
     out->write( data = oref3->inst_attr name = `oref3->inst_attr` ).
 
     "Static constructor: Automatically and immediately called once for each class
@@ -2260,7 +2259,7 @@ CLASS zcl_demo_test IMPLEMENTATION.
     "Therefore, the value of stat_attr is the same.
     "The access is done using the class name, the class component selector =>, and
     "the attribute name.
-    out->write( data = zcl_demo_test=>stat_attr name = `zcl_demo_test=>stat_attr` ).
+    out->write( data = zcl_demo_abap=>stat_attr name = `zcl_demo_abap=>stat_attr` ).
 
     "Static attributes are also accessible via the object reference variable
     out->write( data = oref->stat_attr name = `oref->stat_attr` ).
@@ -2279,7 +2278,7 @@ CLASS zcl_demo_test IMPLEMENTATION.
     "when the class is called for the first time).
     IF ( oref3->stat_attr = oref2->stat_attr )
     AND ( oref2->stat_attr = oref->stat_attr )
-    AND ( oref->stat_attr = zcl_demo_test=>stat_attr ).
+    AND ( oref->stat_attr = zcl_demo_abap=>stat_attr ).
       out->write( `Static attribute check: All values are identical.` ).
     ELSE.
       out->write( `Static attribute check: At least one check is not successful.` ).
@@ -2297,7 +2296,7 @@ CLASS zcl_demo_test IMPLEMENTATION.
     "The following is also possible inside the class (it is the only option outside of
     "this class):
     DATA(c) = oref->inst_attr.
-    DATA(d) = zcl_demo_test=>stat_attr.
+    DATA(d) = zcl_demo_abap=>stat_attr.
     DATA(e) = oref->stat_attr.
 
     "--------------- Method calls ---------------
@@ -2500,7 +2499,7 @@ CLASS zcl_demo_test IMPLEMENTATION.
     "  - attributes declared with READ-ONLY can be changed within
     "    the class they are declared.
     "  - static methods can only access static attributes.
-    DATA(res) = zcl_demo_test=>stat_meth1( ip1 = `a` "pass by reference (declaration with REFERENCE(...))
+    DATA(res) = zcl_demo_abap=>stat_meth1( ip1 = `a` "pass by reference (declaration with REFERENCE(...))
                                            ip2 = `b` "pass by reference (without REFERENCE(...))
                                            ip3 = `c` "pass by value (declaration with VALUE(...))
                                          ).
@@ -2510,16 +2509,16 @@ CLASS zcl_demo_test IMPLEMENTATION.
     "The method implementation includes the predicate expression IS SUPPLIED
     "that checks whether a formal parameter is populated.
 
-    DATA(res_tab1) = zcl_demo_test=>stat_meth2( ip1 = `aaa` ip2 = `bbb` ).
+    DATA(res_tab1) = zcl_demo_abap=>stat_meth2( ip1 = `aaa` ip2 = `bbb` ).
     out->write( data = res_tab1 name = `res_tab1` ).
 
-    DATA(res_tab2) = zcl_demo_test=>stat_meth2( ip1 = `ccc` ).
+    DATA(res_tab2) = zcl_demo_abap=>stat_meth2( ip1 = `ccc` ).
     out->write( data = res_tab2 name = `res_tab2` ).
 
-    DATA(res_tab3) = zcl_demo_test=>stat_meth2( ip2 = `ddd` ).
+    DATA(res_tab3) = zcl_demo_abap=>stat_meth2( ip2 = `ddd` ).
     out->write( data = res_tab3 name = `res_tab3` ).
 
-    DATA(res_tab4) = zcl_demo_test=>stat_meth2( ).
+    DATA(res_tab4) = zcl_demo_abap=>stat_meth2( ).
     out->write( data = res_tab4 name = `res_tab4` ).
 
     "--- Generically typed formal parameters ---
@@ -2528,7 +2527,7 @@ CLASS zcl_demo_test IMPLEMENTATION.
     "must be completely typed.
     "In the example, the value passed for parameter ip_clike (which is
     "convertible to type string) is returned.
-    DATA(res_gen1) = zcl_demo_test=>stat_meth3( ip_data = VALUE string_table( ( `hi` ) ) "any data type
+    DATA(res_gen1) = zcl_demo_abap=>stat_meth3( ip_data = VALUE string_table( ( `hi` ) ) "any data type
                                                 ip_clike = abap_true "Character-like data type (such as c, n, string, etc.)
                                                 ip_numeric = 1 "Numeric type (such as i, p, decfloat34 etc.)
                                                 ip_any_table = VALUE string_table( ( `ABAP` ) ) "Any table type (standard, sorted, hashed)
@@ -2536,7 +2535,7 @@ CLASS zcl_demo_test IMPLEMENTATION.
 
     out->write( data = res_gen1 name = `res_gen1` ).
 
-    DATA(res_gen2) = zcl_demo_test=>stat_meth3( ip_data = 123
+    DATA(res_gen2) = zcl_demo_abap=>stat_meth3( ip_data = 123
                                                 ip_clike = 'ABAP'
                                                 ip_numeric = CONV decfloat34( '1.23' )
                                                 ip_any_table = VALUE string_hashed_table( ( `hello` ) ( `world` ) )
@@ -2685,13 +2684,13 @@ ENDCLASS.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-### Inheritance-Related Syntax
+### Additions Related to Inheritance and Instantion
 
 The table below includes selected syntax related to inheritance in class and method declarations.  
 
 > **💡 Note**<br>
 > - Some of the syntax options have already been mentioned previously. This is to summarize. 
-> - Here, the emphasis is on global classes.
+> - The code examples shows local classes and interfaces declared, for example, in the [CCIMP include](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenccimp_glosry.htm) of a class pool. 
 > - The snippets provided do not represent all possible syntax combinations. For the complete picture, refer to the ABAP Keyword Documentation. Additional syntax options are available in the context of friendship (`GLOBAL FRIENDS/FRIENDS`), testing (`FOR TESTING`), [RAP](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenarap_glosry.htm) (`FOR BEHAVIOR OF`; to declare [ABAP behavior pools](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbehavior_pool_glosry.htm)), and more.
 > - The order of the additions can vary.
 
@@ -2723,6 +2722,44 @@ CLASS zcl_demo DEFINITION
 - `... FINAL ...`: Specifies that the class cannot have any subclasses, effectively prohibiting inheritance. This addition seals off a branch of the inheritance tree. In final classes, all methods are automatically final.
 - `... CREATE PUBLIC ...`: Specifies that the class can be instantiated wherever it is visible.
 
+<br>
+
+The following code example demonstrates local classes (no `... PUBLIC ...` addition is used): 
+
+```abap
+CLASS lcl1 DEFINITION FINAL CREATE PUBLIC.
+  PUBLIC SECTION.
+    METHODS meth1.
+ENDCLASS.
+
+CLASS lcl1 IMPLEMENTATION.
+  METHOD meth1.
+   "Creating an instance of lcl1 within the class itself.
+   DATA(oref1) = NEW lcl1( ).
+  ENDMETHOD.
+ENDCLASS.
+
+CLASS lcl2 DEFINITION FINAL CREATE PUBLIC.
+  PUBLIC SECTION.
+    CLASS-METHODS meth2.
+ENDCLASS.
+
+CLASS lcl2 IMPLEMENTATION.
+  METHOD meth2.
+   "Creating an instance of lcl1 wherever visible.
+   DATA(oref2) = NEW lcl1( ).
+  ENDMETHOD.
+ENDCLASS.
+
+"Inheriting from the class is not possible
+*CLASS lcl3 DEFINITION INHERITING FROM lcl1.
+*  PUBLIC SECTION.
+*ENDCLASS.
+*
+*CLASS lcl3 IMPLEMENTATION.
+*ENDCLASS.
+```
+
 </td>
 </tr>
 
@@ -2741,6 +2778,66 @@ CLASS zcl_demo DEFINITION
 <br>
 
 This class permits inheritance because it does not include the `FINAL` addition. Subclasses can be derived from this superclass.
+
+<br>
+
+The following code example demonstrates local classes: 
+
+```abap
+CLASS lcl1 DEFINITION CREATE PUBLIC.
+  PUBLIC SECTION.
+    METHODS meth1.
+ENDCLASS.
+
+CLASS lcl1 IMPLEMENTATION.
+  METHOD meth1.
+    "Creating an instance of lcl1 within the class itself.
+    DATA(oref1) = NEW lcl1( ).
+  ENDMETHOD.
+ENDCLASS.
+
+CLASS lcl2 DEFINITION FINAL CREATE PUBLIC.
+  PUBLIC SECTION.
+    CLASS-METHODS meth2.
+ENDCLASS.
+
+CLASS lcl2 IMPLEMENTATION.
+  METHOD meth2.
+    "Creating an instance of lcl1 wherever visible.
+    DATA(oref2) = NEW lcl1( ).
+  ENDMETHOD.
+ENDCLASS.
+
+"Inheriting from the class
+CLASS lcl3 DEFINITION INHERITING FROM lcl1.
+  PUBLIC SECTION.
+    METHODS meth1 REDEFINITION.
+ENDCLASS.
+
+CLASS lcl3 IMPLEMENTATION.
+  METHOD meth1.
+    super->meth1( ).
+    "Example instantiations (all classes allow instantation)
+    "Note: lcl3 does not specify CREATE PUBLIC explicitly. It is
+    "specified implicitly.
+    DATA(oref3) = NEW lcl1( ).
+    DATA(oref4) = NEW lcl2( ).
+    DATA(oref5) = NEW lcl3( ).
+  ENDMETHOD.
+ENDCLASS.
+
+CLASS lcl4 DEFINITION.
+  PUBLIC SECTION.
+    METHODS meth3.
+ENDCLASS.
+
+CLASS lcl4 IMPLEMENTATION.
+  METHOD meth3.
+    DATA(oref6) = NEW lcl3( ).
+    DATA(oref7) = NEW lcl1( ).
+  ENDMETHOD.
+ENDCLASS.
+```
 
 </td>
 </tr>
@@ -2761,6 +2858,84 @@ CLASS zcl_demo DEFINITION
 
 - This class permits inheritance because it does not include the `FINAL` addition. 
 - `... CREATE PROTECTED ...`: Specifies that the class can only be instantiated within its own methods, its subclasses' methods, or those of its friends.
+
+<br>
+
+The following code example demonstrates local classes: 
+
+```abap
+CLASS lcl1 DEFINITION CREATE PROTECTED.
+  PUBLIC SECTION.
+    METHODS meth1.
+ENDCLASS.
+
+CLASS lcl1 IMPLEMENTATION.
+  METHOD meth1.
+    "Creating an instance of lcl1 within the class itself.
+    DATA(oref1) = NEW lcl1( ).
+  ENDMETHOD.
+ENDCLASS.
+
+CLASS lcl2 DEFINITION FINAL CREATE PUBLIC.
+  PUBLIC SECTION.
+    CLASS-METHODS meth2.
+ENDCLASS.
+
+CLASS lcl2 IMPLEMENTATION.
+  METHOD meth2.
+    "Creating an instance of lcl1 is not possible as this class is not
+    "a subclass or friend
+    "DATA(oref2) = NEW lcl1( ).
+  ENDMETHOD.
+ENDCLASS.
+
+"Inheriting from the class
+CLASS lcl3 DEFINITION INHERITING FROM lcl1.
+  PUBLIC SECTION.
+    METHODS meth1 REDEFINITION.
+ENDCLASS.
+
+CLASS lcl3 IMPLEMENTATION.
+  METHOD meth1.
+    super->meth1( ).
+
+    "Creating an instance is possible as lcl3 is a subclass of lcl1
+    DATA(oref3) = NEW lcl1( ).
+  ENDMETHOD.
+ENDCLASS.
+
+**********************************************************************
+
+"Creating instances is allowed for friends
+"Note the DEFINITION DEFERRED additions for lcl5. It is used to make the class known in the program
+"before its actual definition. Such statements are particularly necessary in local classes, and if a
+"reference to a local class is made before it is defined.
+"A metehod of lcl5 includes the creation of an instance of lcl4, demonstrating that friends can
+"indeed create the instances. You can comment out FRIENDS lcl5 in the class declaration part of
+"lcl4. Consequently, a syntax error is displayed in lcl5 for the instance creation.
+CLASS lcl5 DEFINITION DEFERRED.
+CLASS lcl4 DEFINITION CREATE PROTECTED FRIENDS lcl5.
+  PUBLIC SECTION.
+    METHODS meth3.
+ENDCLASS.
+
+CLASS lcl4 IMPLEMENTATION.
+  METHOD meth3.
+  ENDMETHOD.
+ENDCLASS.
+
+CLASS lcl5 DEFINITION CREATE PROTECTED.
+  PUBLIC SECTION.
+    METHODS meth4.
+ENDCLASS.
+
+CLASS lcl5 IMPLEMENTATION.
+  METHOD meth4.
+    DATA(oref_friend) = NEW lcl4( ).
+  ENDMETHOD.
+ENDCLASS.
+```
+
 
 </td>
 </tr>
@@ -2788,6 +2963,106 @@ CLASS zcl_demo DEFINITION
 - The `FINAL` addition can be beneficial with `CREATE PRIVATE` to prevent the derivation of subclasses.
 - Note: In each class, the `CREATE PUBLIC`, `CREATE PROTECTED`, and `CREATE PRIVATE` additions of the `CLASS` statement control who can create an instance of the class and who can call its instance constructor.
 
+<br>
+
+The following code example demonstrates local classes: 
+
+```abap
+CLASS lcl1 DEFINITION CREATE PRIVATE.
+  PUBLIC SECTION.
+    METHODS meth1.
+ENDCLASS.
+
+CLASS lcl1 IMPLEMENTATION.
+  METHOD meth1.
+    "Creating an instance of lcl1 within the class itself.
+    DATA(oref1) = NEW lcl1( ).
+  ENDMETHOD.
+ENDCLASS.
+
+"Creating instances is not possible outside the class
+CLASS lcl2 DEFINITION CREATE PUBLIC.
+  PUBLIC SECTION.
+    METHODS meth2.
+ENDCLASS.
+
+CLASS lcl2 IMPLEMENTATION.
+  METHOD meth2.
+    "Creating an instance is not possible
+    "DATA(oref2) = NEW lcl1( ).
+  ENDMETHOD.
+ENDCLASS.
+
+"Note: lcl1 is not defined as FINAL, so derivation is not explicitly
+"disallowed. The following class definition shows a syntax warning as
+"instantiation is not allowed.
+*CLASS lcl3 DEFINITION INHERITING FROM lcl1.
+*  PUBLIC SECTION.
+*ENDCLASS.
+*
+*CLASS lcl3 IMPLEMENTATION.
+*ENDCLASS.
+
+**********************************************************************
+
+"Instantiation is only possible for befriended classes
+"Defining another class with CREATE PRIVATE, FINAL also specified
+"See the notes on DEFINITION DEFERRED above.
+CLASS lcl5 DEFINITION DEFERRED.
+CLASS lcl4 DEFINITION FINAL CREATE PRIVATE FRIENDS lcl5.
+  PUBLIC SECTION.
+    METHODS meth3.
+ENDCLASS.
+
+CLASS lcl4 IMPLEMENTATION.
+  METHOD meth3.
+    "Creating an instance of lcl4 in the class itself.
+    DATA(oref3) = NEW lcl4( ).
+
+    "Creating an instance of lcl1 not possible outside of the class.
+    DATA(oref4) = NEW lcl2( ).
+  ENDMETHOD.
+ENDCLASS.
+
+CLASS lcl5 DEFINITION.
+  PUBLIC SECTION.
+    METHODS meth4.
+ENDCLASS.
+
+CLASS lcl5 IMPLEMENTATION.
+  METHOD meth4.
+    "Creating instances of lcl4 is allowed as lcl5 is befriended.
+    DATA(oref_friend) = NEW lcl4( ).
+  ENDMETHOD.
+ENDCLASS.
+
+"Another class with CREATE PRIVATE, FINAL not specified
+CLASS lcl7 DEFINITION DEFERRED.
+CLASS lcl6 DEFINITION CREATE PRIVATE FRIENDS lcl7.
+  PUBLIC SECTION.
+    METHODS meth5.
+ENDCLASS.
+
+CLASS lcl6 IMPLEMENTATION.
+  METHOD meth5.
+    "Creating an instance of lcl6 in the class itself.
+    DATA(oref5) = NEW lcl6( ).
+  ENDMETHOD.
+ENDCLASS.
+
+"Creating a subclass of lcl6, which is befriended
+CLASS lcl7 DEFINITION INHERITING FROM lcl6.
+  PUBLIC SECTION.
+    METHODS meth5 REDEFINITION.
+ENDCLASS.
+
+CLASS lcl7 IMPLEMENTATION.
+  METHOD meth5.
+    "Creating instances of lcl6 is allowed as lcl7 is befriended.
+    DATA(oref_friend) = NEW lcl6( ).
+  ENDMETHOD.
+ENDCLASS.
+```
 
 </td>
 </tr>
@@ -2805,14 +3080,63 @@ CLASS zcl_demo DEFINITION
  </td>
 <td>
 
-<br>
-
 - `... ABSTRACT ...`:
   - Defines abstract classes
   - Abstract classes cannot be instantiated.
   - To use the instance components of an abstract class, you can instantiate a subclass of that class.
   - Abstract classes may contain both abstract and concrete instance methods. However, abstract methods are not implemented within abstract classes.
   - By adding the `FINAL` addition, abstract classes can be made final. In these cases, only static components are usable. While instance components may be declared, they are not usable.
+
+<br>
+
+The following code example demonstrates local classes: 
+
+```abap
+CLASS lcl1 DEFINITION ABSTRACT CREATE PUBLIC.
+  PUBLIC SECTION.
+    METHODS meth1.
+    DATA inst_attr TYPE i.
+ENDCLASS.
+
+CLASS lcl1 IMPLEMENTATION.
+  METHOD meth1.
+    "Creating an instance of lcl1 within the class itself
+    "is not possible. Generally, abstract classes cannot be
+    "instantiated.
+    "DATA(oref1) = NEW lcl1( ).
+  ENDMETHOD.
+ENDCLASS.
+
+"Creating instances is not possible outside the class
+CLASS lcl2 DEFINITION CREATE PUBLIC.
+PUBLIC SECTION.
+  METHODS meth2.
+ENDCLASS.
+
+CLASS lcl2 IMPLEMENTATION.
+  METHOD meth2.
+    "Creating an instance is not possible
+    "DATA(oref2) = NEW lcl1( ).
+  ENDMETHOD.
+ENDCLASS.
+
+"Using instance components of abstract classes only via subclasses
+CLASS lcl3 DEFINITION INHERITING FROM lcl1.
+PUBLIC SECTION.
+  METHODS meth1 REDEFINITION.
+ENDCLASS.
+
+CLASS lcl3 IMPLEMENTATION.
+  METHOD meth1.
+    ...
+    DATA(oref3) = NEW lcl3( ).
+    oref3->inst_attr = 1.
+
+    "Creating instances of abstract classes not possible
+    "DATA(oref4) = NEW lcl1( ).
+  ENDMETHOD.
+ENDCLASS.
+```
 
 </td>
 </tr>
@@ -2829,8 +3153,6 @@ CLASS zcl_sub DEFINITION
  </td>
 <td>
 
-<br>
-
 - `... INHERITING FROM ...`: 
   - Can be specified in subclasses inheriting from visible superclasses  
   - If not specified, the class implicitly inherits from the predefined, empty, abstract class `OBJECT` (the root object).
@@ -2842,6 +3164,65 @@ CLASS zcl_sub DEFINITION
   - Private components of superclasses are inaccessible in subclasses.
   - The properties of inherited components are immutable. However, subclasses can declare additional components (with unique names) and redefine inherited methods without altering the interface.
   - Upon instantiation of a subclass, all superclasses are also instantiated, ensuring the initialization of superclass attributes through calling superclass constructors.
+
+<br>
+
+The following code example demonstrates local classes: 
+
+```abap
+CLASS lcl1 DEFINITION CREATE PUBLIC.
+  PUBLIC SECTION.
+    METHODS meth1.
+    DATA num1 TYPE i.
+    CLASS-DATA str TYPE string.
+  PROTECTED SECTION.
+    DATA num2 TYPE i.
+  PRIVATE SECTION.
+    DATA num3 TYPE i.
+ENDCLASS.
+
+CLASS lcl1 IMPLEMENTATION.
+  METHOD meth1.
+    ...
+  ENDMETHOD.
+ENDCLASS.
+
+"Subclasses inheriting from lcl1
+CLASS lcl2 DEFINITION INHERITING FROM lcl1.
+  PUBLIC SECTION.
+    METHODS meth1 REDEFINITION.
+    "Data object with the same name as specified in the superclass
+    "is not possible in subclasses
+    "DATA num1 TYPE i.
+ENDCLASS.
+
+CLASS lcl2 IMPLEMENTATION.
+  METHOD meth1.
+    ...
+    "Only public and protected components can be accessed in subclasses.
+    DATA(oref) = NEW lcl2( ).
+    oref->num1 = 1.
+    oref->num2 = 2.
+    "Private components are not accessible
+    "oref->num3 = 3.
+
+    "Static attribute accessible with the name directly without class=> (which is also possible)
+    str = `hello`.
+    lcl1=>str = `hi`.
+  ENDMETHOD.
+ENDCLASS.
+
+CLASS lcl3 DEFINITION INHERITING FROM lcl1.
+  PUBLIC SECTION.
+    METHODS meth1 REDEFINITION.
+ENDCLASS.
+
+CLASS lcl3 IMPLEMENTATION.
+  METHOD meth1.
+    ...
+  ENDMETHOD.
+ENDCLASS.
+```
 
 </td>
 </tr>
@@ -2874,6 +3255,43 @@ METHODS some_meth FINAL ...
 - These methods cannot be overridden in subclasses.
 - Note: In final classes, all methods are inherently final. Therefore, the `FINAL` addition cannot be specified. Instance constructors are always final, but the use of the `FINAL` addition is optional.
 
+<br>
+
+The following code example demonstrates local classes: 
+
+```abap
+CLASS lcl1 DEFINITION CREATE PUBLIC.
+  PUBLIC SECTION.
+    METHODS meth1.
+    METHODS meth2 FINAL.
+ENDCLASS.
+
+CLASS lcl1 IMPLEMENTATION.
+  METHOD meth1.
+    ...
+  ENDMETHOD.
+  
+  METHOD meth2.
+    ...
+  ENDMETHOD.
+
+ENDCLASS.
+
+"Subclass inheriting from lcl1
+CLASS lcl2 DEFINITION INHERITING FROM lcl1.
+  PUBLIC SECTION.
+    METHODS meth1 REDEFINITION.
+    "meth2 is a final method and cannot be redefined
+    "METHODS meth2 REDEFINITION.    
+ENDCLASS.
+
+CLASS lcl2 IMPLEMENTATION.
+  METHOD meth1.
+    ...
+  ENDMETHOD.
+ENDCLASS.
+```
+
 </td>
 </tr>
 
@@ -2896,6 +3314,54 @@ METHODS some_meth ABSTRACT ...
 - Private methods cannot be redefined and can therefore not be declared as abstract.
 - If abstract methods are declared in classes that are both abstract and final, they cannot be implemented. Therefore, the methods are not usable.
 - In interfaces, methods are implicitly abstract as interfaces do not contain method implementations.
+
+<br>
+
+The following code example demonstrates local classes: 
+
+```abap
+CLASS lcl1 DEFINITION ABSTRACT CREATE PUBLIC.
+  PUBLIC SECTION.
+    METHODS meth1.
+    METHODS meth2 ABSTRACT.
+    DATA num TYPE i.
+ENDCLASS.
+
+CLASS lcl1 IMPLEMENTATION.
+  "meth1 is a nonabstract meth
+  METHOD meth1.
+    ...
+    num = 1.
+  ENDMETHOD.
+
+  "meth2 is defined as abstract and cannot be implemented
+  "in the abstract class
+*  METHOD meth2.
+*    ...
+*  ENDMETHOD.
+
+ENDCLASS.
+
+"Subclass inheriting from lcl1
+CLASS lcl2 DEFINITION INHERITING FROM lcl1.
+  PUBLIC SECTION.
+    METHODS meth1 REDEFINITION.
+    "The abstract method meth2 must be implemented in subclasses.
+    METHODS meth2 REDEFINITION.
+ENDCLASS.
+
+CLASS lcl2 IMPLEMENTATION.
+  METHOD meth1.
+    ...
+    super->meth1( ).
+    DATA(result) = num + 1.
+  ENDMETHOD.
+
+  METHOD meth2.
+    ...
+  ENDMETHOD.
+ENDCLASS.
+```
 
 </td>
 </tr>
@@ -2927,6 +3393,99 @@ CLASS-METHODS class_constructor.
   - A static constructor can only be called once during program runtime.
 
 
+<br>
+
+The following code example demonstrates constructors. When the constructors are called, a string is added to an internal table (a static attribute). You can try out the example and explore the calling of constructors as follows:
+
+1. Create a global class that implements the class run, and add the following codes. Local classes, implemented in the CCIMP include, are called. The example is designed to write the content of the internal table to the console. 
+
+```abap
+CLASS zcl_demo_abap DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
+
+  PUBLIC SECTION.
+    INTERFACES if_oo_adt_classrun.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+ENDCLASS.
+
+CLASS zcl_demo_abap IMPLEMENTATION.
+
+  METHOD if_oo_adt_classrun~main.
+    DATA(oref1) = NEW lcl2( ).
+    DATA(tab) = lcl1=>tab.
+    out->write( tab ).
+    out->write( |\n| ).
+    DATA(oref2) = NEW lcl3( ).
+    tab = lcl1=>tab.
+    out->write( tab ).
+  ENDMETHOD.
+
+ENDCLASS.
+```
+
+2. Add the following code to the CCIMP include (*Local Types* tab in ADT).
+
+
+```abap
+CLASS lcl1 DEFINITION CREATE PUBLIC.
+  PUBLIC SECTION.
+    METHODS constructor.
+    CLASS-METHODS class_constructor.
+    CLASS-DATA tab TYPE string_table.
+ENDCLASS.
+
+CLASS lcl1 IMPLEMENTATION.
+
+  METHOD class_constructor.
+    APPEND `lcl1 class_constructor` TO tab.
+  ENDMETHOD.
+
+  METHOD constructor.
+    APPEND `lcl1 constructor` TO tab.
+  ENDMETHOD.
+
+ENDCLASS.
+
+CLASS lcl2 DEFINITION INHERITING FROM lcl1.
+  PUBLIC SECTION.
+    METHODS constructor.
+    CLASS-METHODS class_constructor.
+ENDCLASS.
+
+CLASS lcl2 IMPLEMENTATION.
+  METHOD class_constructor.
+    APPEND `lcl2 class_constructor` TO tab.
+  ENDMETHOD.
+
+  METHOD constructor.
+    super->constructor( ).
+    APPEND `lcl2 constructor` TO tab.
+  ENDMETHOD.
+ENDCLASS.
+
+CLASS lcl3 DEFINITION INHERITING FROM lcl2.
+  PUBLIC SECTION.
+    METHODS constructor.
+    CLASS-METHODS class_constructor.
+ENDCLASS.
+
+CLASS lcl3 IMPLEMENTATION.
+  METHOD class_constructor.
+    APPEND `lcl3 class_constructor` TO tab.
+  ENDMETHOD.
+
+  METHOD constructor.
+    super->constructor( ).
+    APPEND `lcl3 constructor` TO tab.
+  ENDMETHOD.
+ENDCLASS.
+```
+
+3. Activate and go back to the global class. Choose F9 to run the example. The internal table content that is output demonstrates the sequence of constructor calls of the simple example.
+
 </td>
 </tr>
 
@@ -2950,6 +3509,58 @@ METHODS another_meth FINAL REDEFINITION.
 - The superclass's implementation can be called in the redefined method using the [pseudo reference](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenpseudo_reference_glosry.htm "Glossary Entry") `super->meth( ).`. Note that non-optional importing parameters must be filled.
 - The redefinition is valid for subclasses until the method is redefined again.
 - The `FINAL` addition can be specified, preventing further redefinition of the method in other subclasses.
+
+<br>
+
+The following code example demonstrates local classes: 
+
+```abap
+CLASS lcl1 DEFINITION CREATE PUBLIC.
+  PUBLIC SECTION.
+    METHODS meth1.
+    METHODS meth2.
+ENDCLASS.
+
+CLASS lcl1 IMPLEMENTATION.
+  METHOD meth1.
+    ...
+  ENDMETHOD.
+
+  METHOD meth2.
+    ...
+  ENDMETHOD.
+ENDCLASS.
+
+CLASS lcl2 DEFINITION INHERITING FROM lcl1.
+  PUBLIC SECTION.
+    METHODS meth1 REDEFINITION.
+    METHODS meth2 FINAL REDEFINITION.
+ENDCLASS.
+
+CLASS lcl2 IMPLEMENTATION.
+  METHOD meth1.
+    ...
+  ENDMETHOD.
+
+  METHOD meth2.
+    ...
+  ENDMETHOD.
+ENDCLASS.
+
+CLASS lcl3 DEFINITION INHERITING FROM lcl2.
+  PUBLIC SECTION.
+    METHODS meth1 REDEFINITION.
+    "meth2 cannot be further redefined as it is defined as FINAL
+    "in the class's superclass
+    "METHODS meth2 REDEFINITION.
+ENDCLASS.
+
+CLASS lcl3 IMPLEMENTATION.
+  METHOD meth1.
+    ...
+  ENDMETHOD.
+ENDCLASS.
+```
 
 </td>
 </tr>
@@ -3729,7 +4340,8 @@ DATA(rtti_d) = CAST cl_abap_structdescr(
 The examples in the following code snippet use object reference variables to illustrate the class hierarchy of the [Runtime Type Services (RTTS)](#runtime-type-services-rtts), which is covered in more detail in the [Dynamic Programming](06_Dynamic_Programming.md) cheat sheet. 
 
 Hierarchy tree of the classes:
-```abap
+
+```
 CL_ABAP_TYPEDESCR
   |
   |--CL_ABAP_DATADESCR
@@ -3834,40 +4446,53 @@ tdo_data = CAST #( tdo ).
 tdo_elem = CAST #( tdo_data ).
 "cl_abap_typedescr -> cl_abap_elemdescr
 tdo_elem = CAST #( tdo_super ).
+```
 
-"------------ Error prevention in downcasts ------------
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+#### Checking the Dynamic Type of Object Reference Variables
+
+- Special control structures using `IF ... IS INSTANCE OF ...` and `CASE TYPE OF` check the dynamic type of non-initial object reference variables and the static type of initial object reference variables.
+- The branch's first statement block is executed when a specified class or interface is more general than or equal to the given type.
+- In doing so, you can especially check if assignments between object reference variable work, and you can prevent errors in downcasts.
+
+
+```abap
+DATA type_descr_obj TYPE REF TO cl_abap_typedescr.
+DATA type_descr_obj_gen TYPE REF TO object.
+DATA str TYPE string.
 
 "In the examples above, the assignments work. The following code snippets
 "deal with examples in which a downcast is not possible. An exception is
 "raised.
 DATA str_table TYPE string_table.
-DATA tdo_table TYPE REF TO cl_abap_tabledescr.
+DATA type_descr_obj_table TYPE REF TO cl_abap_tabledescr.
 
-"With the following method call, tdo points to an object with
+"With the following method call, type_descr_obj points to an object with
 "reference to cl_abap_tabledescr.
-tdo = cl_abap_typedescr=>describe_by_data( str_table ).
+type_descr_obj = cl_abap_typedescr=>describe_by_data( str_table ).
 
 "Therefore, the following downcast works.
-tdo_table = CAST #( tdo ).
+type_descr_obj_table = CAST #( type_descr_obj ).
 
 "You could also achieve the same in one statement and with inline
 "declaration.
-DATA(tdo_table_2) = CAST cl_abap_tabledescr( cl_abap_typedescr=>describe_by_data( str_table ) ).
+DATA(type_descr_obj_table_2) = CAST cl_abap_tabledescr( cl_abap_typedescr=>describe_by_data( str_table ) ).
 
 "Example for an impossible downcast
 "The generic object reference variable points to cl_abap_elemdescr after the following
 "assignment.
-tdo_gen_obj = cl_abap_typedescr=>describe_by_data( some_string ).
+type_descr_obj_gen = cl_abap_typedescr=>describe_by_data( str ).
 
 "Without catching the exception, the runtime error MOVE_CAST_ERROR
 "occurs. There is no syntax error at compile time. The static type of
-"tdo_gen_obj is more generic than the static type of the target variable.
+"type_descr_obj_gen is more generic than the static type of the target variable.
 "The error occurs when trying to downcast, and the dynamic type is used.
 TRY.
-    tdo_table = CAST #( tdo_gen_obj ).
+    type_descr_obj_table = CAST #( type_descr_obj_gen ).
   CATCH cx_sy_move_cast_error.
 ENDTRY.
-"Note: tdo_table sill points to the reference as assigned above after trying
+"Note: type_descr_obj_table sill points to the reference as assigned above after trying
 "to downcast in the TRY control structure.
 
 "Using CASE TYPE OF and IS INSTANCE OF statements, you can check if downcasts
@@ -3877,40 +4502,40 @@ ENDTRY.
 "- initial object reference variables, the static type is checked.
 
 "------------ IS INSTANCE OF ------------
-DATA some_tdo TYPE REF TO cl_abap_typedescr.
-some_tdo = cl_abap_typedescr=>describe_by_data( str_table ).
+DATA some_type_descr_obj TYPE REF TO cl_abap_typedescr.
+some_type_descr_obj = cl_abap_typedescr=>describe_by_data( str_table ).
 
-IF some_tdo IS INSTANCE OF cl_abap_elemdescr.
-  DATA(tdo_a) = CAST cl_abap_elemdescr( some_tdo ).
+IF some_type_descr_obj IS INSTANCE OF cl_abap_elemdescr.
+  DATA(type_descr_obj_a) = CAST cl_abap_elemdescr( some_type_descr_obj ).
 ELSE.
   "This branch is executed. The downcast is not possible.
   ...
 ENDIF.
 
-IF some_tdo IS INSTANCE OF cl_abap_elemdescr.
-  DATA(tdo_b) = CAST cl_abap_elemdescr( some_tdo ).
-ELSEIF some_tdo IS INSTANCE OF cl_abap_refdescr.
-  DATA(tdo_c) = CAST cl_abap_refdescr( some_tdo ).
-ELSEIF some_tdo IS INSTANCE OF cl_abap_structdescr.
-  DATA(tdo_d) = CAST cl_abap_structdescr( some_tdo ).
-ELSEIF some_tdo IS INSTANCE OF cl_abap_tabledescr.
+IF some_type_descr_obj IS INSTANCE OF cl_abap_elemdescr.
+  DATA(type_descr_obj_b) = CAST cl_abap_elemdescr( some_type_descr_obj ).
+ELSEIF some_type_descr_obj IS INSTANCE OF cl_abap_refdescr.
+  DATA(type_descr_obj_c) = CAST cl_abap_refdescr( some_type_descr_obj ).
+ELSEIF some_type_descr_obj IS INSTANCE OF cl_abap_structdescr.
+  DATA(type_descr_obj_d) = CAST cl_abap_structdescr( some_type_descr_obj ).
+ELSEIF some_type_descr_obj IS INSTANCE OF cl_abap_tabledescr.
   "In this example, this branch is executed. With the check,
   "you can make sure that the downcast is indeed possible.
-  DATA(tdo_e) = CAST cl_abap_tabledescr( some_tdo ).
+  DATA(type_descr_obj_e) = CAST cl_abap_tabledescr( some_type_descr_obj ).
 ELSE.
   ...
 ENDIF.
 
-DATA initial_tdo TYPE REF TO cl_abap_typedescr.
+DATA initial_type_descr_obj TYPE REF TO cl_abap_typedescr.
 
-IF initial_tdo IS INSTANCE OF cl_abap_elemdescr.
-  DATA(tdo_f) = CAST cl_abap_elemdescr( some_tdo ).
-ELSEIF initial_tdo IS INSTANCE OF cl_abap_refdescr.
-  DATA(tdo_g) = CAST cl_abap_refdescr( some_tdo ).
-ELSEIF initial_tdo IS INSTANCE OF cl_abap_structdescr.
-  DATA(tdo_h) = CAST cl_abap_structdescr( some_tdo ).
-ELSEIF initial_tdo IS INSTANCE OF cl_abap_tabledescr.
-  DATA(tdo_i) = CAST cl_abap_tabledescr( some_tdo ).
+IF initial_type_descr_obj IS INSTANCE OF cl_abap_elemdescr.
+  DATA(type_descr_obj_f) = CAST cl_abap_elemdescr( some_type_descr_obj ).
+ELSEIF initial_type_descr_obj IS INSTANCE OF cl_abap_refdescr.
+  DATA(type_descr_obj_g) = CAST cl_abap_refdescr( some_type_descr_obj ).
+ELSEIF initial_type_descr_obj IS INSTANCE OF cl_abap_structdescr.
+  DATA(type_descr_obj_h) = CAST cl_abap_structdescr( some_type_descr_obj ).
+ELSEIF initial_type_descr_obj IS INSTANCE OF cl_abap_tabledescr.
+  DATA(type_descr_obj_i) = CAST cl_abap_tabledescr( some_type_descr_obj ).
 ELSE.
   "In this example, this branch is executed. The static
   "type of the initial object reference variable is used,
@@ -3922,33 +4547,33 @@ ENDIF.
 "The examples are desinged similarly to the IS INSTANCE OF examples.
 
 DATA(dref) = REF #( str_table ).
-some_tdo = cl_abap_typedescr=>describe_by_data( dref ).
+some_type_descr_obj = cl_abap_typedescr=>describe_by_data( dref ).
 
-CASE TYPE OF some_tdo.
+CASE TYPE OF some_type_descr_obj.
   WHEN TYPE cl_abap_elemdescr.
-    DATA(tdo_j) = CAST cl_abap_elemdescr( some_tdo ).
+    DATA(type_descr_obj_j) = CAST cl_abap_elemdescr( some_type_descr_obj ).
   WHEN TYPE cl_abap_refdescr.
     "In this example, this branch is executed. With the check,
     "you can make sure that the downcast is indeed possible.
-    DATA(tdo_k) = CAST cl_abap_refdescr( some_tdo ).
+    DATA(type_descr_obj_k) = CAST cl_abap_refdescr( some_type_descr_obj ).
   WHEN TYPE cl_abap_structdescr.
-    DATA(tdo_l) = CAST cl_abap_structdescr( some_tdo ).
+    DATA(type_descr_obj_l) = CAST cl_abap_structdescr( some_type_descr_obj ).
   WHEN TYPE cl_abap_tabledescr.
-    DATA(tdo_m) = CAST cl_abap_tabledescr( some_tdo ).
+    DATA(type_descr_obj_m) = CAST cl_abap_tabledescr( some_type_descr_obj ).
   WHEN OTHERS.
     ...
 ENDCASE.
 
 "Example with initial object reference variable
-CASE TYPE OF initial_tdo.
+CASE TYPE OF initial_type_descr_obj.
   WHEN TYPE cl_abap_elemdescr.
-    DATA(tdo_n) = CAST cl_abap_elemdescr( some_tdo ).
+    DATA(type_descr_obj_n) = CAST cl_abap_elemdescr( some_type_descr_obj ).
   WHEN TYPE cl_abap_refdescr.
-    DATA(tdo_o) = CAST cl_abap_refdescr( some_tdo ).
+    DATA(type_descr_obj_o) = CAST cl_abap_refdescr( some_type_descr_obj ).
   WHEN TYPE cl_abap_structdescr.
-    DATA(tdo_p) = CAST cl_abap_structdescr( some_tdo ).
+    DATA(type_descr_obj_p) = CAST cl_abap_structdescr( some_type_descr_obj ).
   WHEN TYPE cl_abap_tabledescr.
-    DATA(tdo_q) = CAST cl_abap_tabledescr( some_tdo ).
+    DATA(type_descr_obj_q) = CAST cl_abap_tabledescr( some_type_descr_obj ).
   WHEN OTHERS.
     "In this example, this branch is executed. The static
     "type of the initial object reference variable is used,
@@ -4002,6 +4627,9 @@ INTERFACE intf_global PUBLIC.
     CLASS-DATA ...
     METHODS ...
     CLASS-METHODS ...
+    CONSTANTS ...
+    TYPES ...
+    
 
 ENDINTERFACE.
 ```
@@ -4044,7 +4672,8 @@ ENDCLASS.
 CLASS lcl IMPLEMENTATION.
 
   METHOD lif~inst_meth.
-    "Assuming lif~number is assigned a value somewhere.
+    ...
+    "Assuming lif~number has been assigned a value somewhere.
     DATA(addition) = num + lif~number.
     ...
   ENDMETHOD.
@@ -4087,6 +4716,9 @@ ENDCLASS.
 
 ### Additions Related to Interface Implementations
 
+> **💡 Note**<br>
+> The code examples shows local classes and interfaces declared, for example, in the [CCIMP include](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenccimp_glosry.htm) of a class pool. 
+
 <table>
 
 <tr>
@@ -4123,10 +4755,10 @@ ENDCLASS.
 
 CLASS lcl IMPLEMENTATION.
   METHOD meth.
-    "This syntax is also possible: METHOD lif~some_method.
+    "The following syntax is also possible: METHOD lif~some_method.
     ...
     DATA(string1) = str.
-    "This sytanx is also possible. However, when you have already addressed the component
+    "The following sytanx is also possible. However, when you have already addressed the component
     "with the alias as in the assignment above, the following statement shows a syntax warning.
     "DATA(string2) = lif~some_string.
   ENDMETHOD.
@@ -4152,7 +4784,7 @@ ENDCLASS.
 <br>
 
 ``` abap
-INTERFACE lif3.
+INTERFACE lif.
   METHODS meth1.
   METHODS meth2.
 ENDINTERFACE.
@@ -4161,24 +4793,29 @@ ENDINTERFACE.
 "meth1 is specified as abstract method, meth2 is not.
 "Therefore, only meth2 must be implemented. meth1 must
 "be implemented by the subclasses.
-CLASS lcl3 DEFINITION ABSTRACT.
+CLASS lcl1 DEFINITION ABSTRACT.
   PUBLIC SECTION.    
-    INTERFACES lif3 ABSTRACT METHODS meth1.    
+    INTERFACES lif ABSTRACT METHODS meth1.    
 ENDCLASS.
 
-CLASS lcl3 IMPLEMENTATION.  
-  METHOD lif3~meth2.
+CLASS lcl1 IMPLEMENTATION.  
+  METHOD lif~meth2.
     ...
   ENDMETHOD.
 ENDCLASS.
 
-CLASS lcl4 DEFINITION INHERITING FROM lcl3.
+CLASS lcl2 DEFINITION INHERITING FROM lcl1.
   PUBLIC SECTION.
-    METHODS lif3~meth1 REDEFINITION.       
+    METHODS lif~meth1 REDEFINITION. 
+    METHODS lif~meth2 REDEFINITION.       
 ENDCLASS.
 
-CLASS lcl4 IMPLEMENTATION.
-  METHOD lif3~meth1.
+CLASS lcl2 IMPLEMENTATION.
+  METHOD lif~meth1.
+    ...
+  ENDMETHOD.
+  
+  METHOD lif~meth2.
     ...
   ENDMETHOD.
 ENDCLASS.
@@ -4233,7 +4870,6 @@ CLASS lcl2 IMPLEMENTATION.
   METHOD lif~meth2.
     ...
   ENDMETHOD.
-
 ENDCLASS.
 ``` 
 
@@ -4518,9 +5154,8 @@ CLASS lcl3 IMPLEMENTATION.
     DATA(oref1) = NEW lcl1( ).
     DATA(oref2) = NEW lcl2( ).
     
-    "Although not implemented, meth1 can be 'called' (i.e.
-    "it can be specified to be called). In this case, it is
-    "just like calling a method with empty implementation.
+    "Although not implemented, meth1 can be specified to be called. 
+    "In this case, it is just like calling a method with empty implementation.
     oref1->lif~meth1( ).
     oref1->lif~meth2( ).
     
@@ -4596,16 +5231,13 @@ CLASS lcl3 DEFINITION.
     CLASS-METHODS meth3.
 ENDCLASS.
 
-"The class implementation includes the optional
-"implementation of lif~meth1.
 CLASS lcl3 IMPLEMENTATION.
 
   METHOD meth3.
     DATA(oref1) = NEW lcl1( ).
     DATA(oref2) = NEW lcl2( ).
 
-    "Although not implemented, meth1 can be 'called' (i.e.
-    "it can be specified to be called).
+    "Although not implemented, meth1 can be specified to be called.
     "However, with the DEFAULT FAIL addition, an exception is
     "raised.
     TRY.
@@ -4784,7 +5416,7 @@ CLASS lcl2 IMPLEMENTATION.
 
     "Constants
     "A constant can be addressed using the options mentioned above.
-    "Plus, it can be addressed using the following pattern
+    "Plus, it can be addressed using the pattern intf=>...
     DATA(e) = lif=>const.
     DATA(f) = i_ref->const.
     DATA(g) = cl_ref->lif~const.
@@ -7825,7 +8457,7 @@ ENDCLASS.
 - [Catchable exceptions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencatchable_exception_glosry.htm) are represented by exception objects of exception classes.
 - Predefined global exception classes exist, custom exception classes can be created. You can also create local exception classes.
 - Find an overview in the [Exceptions and Runtime Errors](27_Exceptions.md) cheat sheet.
-- See the following code snippet for an ABAP class that specifies the `EXCEPTIONS` addition, which should not be specified anymore for new developments, raising classic, non-class based exceptions. 
+- See the following code snippet for an ABAP method that specifies the `EXCEPTIONS` addition, which should not be specified anymore for new developments, raising classic, non-class based exceptions. 
   ```abap
   "ABAP class (creates UUIDs) raising a class-based exception
   TRY.
@@ -7989,7 +8621,7 @@ ENDCLASS.
 
 ### Escaping Characters
 
-- You may stumble on [`!` characters](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABENNAMES_ESCAPING.html) specified before operands.
+- You may stumble on [`!` characters](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABENNAMES_ESCAPING.html) specified before operands, particularly in signatures of [procedures](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenprocedure_glosry.htm).
 - They are used to distinguish the operand's name from ABAP words. 
 - When compiling ABAP programs, the specifications with the escape character are not considered as ABAP words. 
 - When executing the programs, the escape characters are ignored.

@@ -430,6 +430,9 @@ ASSIGN s-xl1 TO <simple>.
 ASSIGN s-oref TO <object>.
 ```
 
+> **💡 Note**<br>
+> After `TYPE REF TO`, the only generic types you can specify are `data` for fully generic data reference variables and `object` for fully generic object reference variables.
+
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ### Data References

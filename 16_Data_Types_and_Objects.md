@@ -20,7 +20,7 @@
     - [Creating Anonymous Data Objects](#creating-anonymous-data-objects)
     - [Constants and Immutable Variables](#constants-and-immutable-variables)
     - [Built-In Data Objects](#built-in-data-objects)
-    - [ABAP Enumerated Types and Objects](#abap-enumerated-types-and-objects)
+  - [ABAP Enumerated Types and Objects](#abap-enumerated-types-and-objects)
   - [Notes in a Nutshell](#notes-in-a-nutshell)
     - [Type Conversions, Compatibility and Assignments](#type-conversions-compatibility-and-assignments)
     - [Terms Related to Data Types and Objects](#terms-related-to-data-types-and-objects)
@@ -166,6 +166,8 @@ TYPES te_utc TYPE utclong.
 "You might also stumble on a length specification in parentheses following the data type name.
 "It is recommended that you use addition LENGTH instead of the parentheses.
 TYPES te_cfour(4) TYPE c.
+TYPES te_nfive(5) TYPE n.
+TYPES te_xtwo(2) TYPE x.
 
 "**** Data type declarations based on existing types or data objects ****
 
@@ -509,7 +511,9 @@ DATA: do_i       TYPE i,
       do_str     TYPE string,
       "Specifying the length in parantheses instead of using the
       "LENGTH addition is not recommended
-      do_ctwo(2) TYPE c.
+      do_ctwo(2) TYPE c,
+      do_nthree(3) TYPE n,
+      do_xfour(4) TYPE x.
 
 "Referring to locally declared data types
 TYPES te_string TYPE string.
@@ -1461,7 +1465,7 @@ ENDCLASS.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-### ABAP Enumerated Types and Objects
+## ABAP Enumerated Types and Objects
 - ABAP supports the concept of enumerations. 
 - Enumerations are a mixture of types and constants.
 - An [enumerated type](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenenum_type_glosry.htm) specifies a value set in addition to the actual type properties. 
@@ -1789,6 +1793,9 @@ do_h_c3 = 'abc'.
 "here like this) is not an admissable value for the target type. 
 do_h_c3 = 'defghi'. 
 
+"'j' assigned, but length and memory do not change
+do_h_c3 = 'j'. 
+
 "Memory consumption changes for dynamic data objects
 do_i_str = `abc`.
 do_i_str = `d`.
@@ -2057,6 +2064,37 @@ DATA itab3 TYPE string_hashed_table.
 
 "Table types declared in global classes/interfaces
 DATA itab5 TYPE zcl_demo_abap_amdp=>carr_tab.
+``` 
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+`TYPE BEGIN OF`
+
+ </td>
+
+ <td> 
+
+
+``` abap
+"------------ TYPE BEGIN OF ----------------
+
+"Structured types and data objects created with TYPE BEGIN OF ... END OF ...
+
+TYPES: BEGIN OF some_struct_type,
+          comp1 TYPE i,
+          comp2 TYPE string,
+          comp3 TYPE c LENGTH 3,
+       END OF some_struct_type.
+
+DATA: BEGIN OF some_struct,
+        compa TYPE n LENGTH 5,
+        compb TYPE xstring,
+        compc TYPE p LENGTH 8 DECIMALS 2,
+      END OF some_struct.
 ``` 
 
  </td>
@@ -2488,7 +2526,7 @@ SELECT SINGLE
 
 ### Non-Admissible Values of Literals
 
-Note recent syntax warnings when using literals that represent invalid values for target types. The following example demonstrates the assignment of literals using admissible and non-admissible values. You can copy and paste the code into a demo class in your SAP BTP ABAP Environment to explore the syntax warnings.
+Syntax warnings are displayed when using literals that represent invalid values for target types. The following example demonstrates the assignment of literals using admissible and non-admissible values. You can copy and paste the code into a demo class in your SAP BTP ABAP Environment to explore the syntax warnings.
 
 
 ```abap

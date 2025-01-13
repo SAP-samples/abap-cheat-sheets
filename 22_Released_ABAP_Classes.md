@@ -2344,7 +2344,7 @@ DATA table_json_to_abap TYPE string_table.
 
 <ul>
 <li>Provides access to abstractions for ABAP Dictionary objects such as database tables, data elements, types and more.</li>
-<li>For more detailed examples, refer to the <a href="https://help.sap.com/docs/btp/sap-business-technology-platform/overview-of-xco-modules">SAP Help Portal</a>. See also the executable example of the ABAP for Cloud Development cheat sheet.</li>
+<li>For more detailed examples, refer to the <a href="https://help.sap.com/docs/btp/sap-business-technology-platform/overview-of-xco-modules">SAP Help Portal</a>. See also the executable example of the <a href="19_ABAP_for_Cloud_Development.md">ABAP for Cloud Development</a> cheat sheet.</li>
 <li>The code snippet contains a small selection and only hints at the many ways to retrieve different pieces of information that the classes provide.</li>
 <li>The snippet does not only include the <code>XCO_CP_ABAP_REPOSITORY</code> class but also others such as <code>XCO_CP_ABAP</code>, <code>XCO_CP_ABAP_SQL</code>, and <code>XCO_CP_CDS</code>. More XCO classes are available in that context.</li>
 </ul>
@@ -2704,7 +2704,9 @@ DATA(sub_acc_id) = ten->get_subaccount_id( )->as_string( ).
 <tr>
 <td> <code>CX_*</code> </td>
 <td>
+
 Exception classes are special classes, usually starting with the name <code>CX_*</code>, that serve as the basis for <a href="https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencatchable_exception_glosry.htm">catchable exceptions</a>. When an exception is raised, an object of such an exception class is created. There are several predefined exception classes. Find more information in the [Exceptions and Runtime Errors](27_Exceptions.md) cheat sheet. 
+
 <br><br>
 
 ``` abap
@@ -3301,6 +3303,8 @@ To check out examples in demo classes, expand the collapsible sections below.
   <summary>🟢 1. Read example: Retrieving ABAP cheat sheet markdown content using a GitHub API and sending a ZIP file with the content via email</summary>
   <!-- -->
 
+<br>
+
 > **⚠️ Note/Disclaimer**<br>
 > - The following self-contained and oversimplified example is not a representative best practice example, nor does it cover a meaningful use case. It only explores method calls and is intended to give a rough idea of the functionality.</li>
 > - The example uses the <code>create_by_url</code> method, which is only suitable for public services or testing purposes. No authentication is required for the APIs used.
@@ -3464,6 +3468,8 @@ ENDCLASS.
 <details>
   <summary>🟢 2. Post example: Demonstrating a post request by converting Markdown to HTML using the GitHub API</summary>
   <!-- -->
+
+<br>
 
 > **⚠️ Note/Disclaimer**<br>
 > - As stated for the previous example, also note for this example: Before using the GitHub APIs, make sure that you have consulted the following documentation: <a href="https://docs.github.com/en">GitHub Docs</a>, <a href="https://docs.github.com/en/enterprise-cloud@latest/rest/markdown/markdown?apiVersion=2022-11-28#render-a-markdown-document">Render a Markdown document</a>, <a href="https://docs.github.com/en/rest/using-the-rest-api/rate-limits-for-the-rest-api?apiVersion=2022-11-28">Rate limits for the REST API</a>
