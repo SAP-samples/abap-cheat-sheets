@@ -32,7 +32,7 @@
     - [Method Chaining and Chained Attribute Access](#method-chaining-and-chained-attribute-access)
     - [Excursion: Example Class](#excursion-example-class)
   - [Inheritance](#inheritance)
-    - [Additions Related to Inheritance and Instantion](#additions-related-to-inheritance-and-instantion)
+    - [Additions Related to Inheritance and Instantiation](#additions-related-to-inheritance-and-instantiation)
     - [Excursion: Inheritance Example](#excursion-inheritance-example)
   - [Polymorphism and Casting (Upcast/Downcast)](#polymorphism-and-casting-upcastdowncast)
     - [Demonstrating Upcasts and Downcasts Using the RTTS Inheritance Tree](#demonstrating-upcasts-and-downcasts-using-the-rtts-inheritance-tree)
@@ -91,7 +91,7 @@ Classes ...
         However, the values of these components are different from instance to instance. For example, one
         instance is a red sedan of brand A having a certain
         acceleration; another instance is a black SUV of brand B and so on. You can create an object (or instance respectively) that stands
-        for an actual vehicle with which you can work with. You might create any number of objects that are based on such a class - if instantiation is allowed.
+        for an actual vehicle which you can work with. You might create any number of objects that are based on such a class - if instantiation is allowed.
 -   contain
     [components](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencomponent_glosry.htm "Glossary Entry"):
     -   [Attributes](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenattribute_glosry.htm "Glossary Entry")
@@ -190,7 +190,7 @@ ENDCLASS.
 
 #### Additions in the Class Declaration Part
 
-This section covers a selection of additions to declare classes. They are also covered in other sections below, e.g. [Additions Related to Inheritance and Instantion](#inheritance--and-instantion-related-syntax). Find more information on the additions in the [ABAP Keyword Documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapclass_options.htm).
+This section covers a selection of additions to declare classes. They are also covered in other sections below, e.g. [Additions Related to Inheritance and Instantiation](#additions-related-to-inheritance-and-instantiation). Find more information on the additions in the [ABAP Keyword Documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapclass_options.htm).
 
 <table>
 
@@ -1632,7 +1632,7 @@ methods are called using `->` via a reference variable.
 methods are called using `=>` via the class name. When used
 within the class in which it is declared, the static method can also be
 called without `class_name=>...`.
-- Static methods can but should not be called via reference variable (<s><code>oref->some_static_method( ).</code></s>).
+- Static methods can but should not be called via reference variable (<code>oref->some_static_method( ).</code>).
 - When methods are called, the (non-optional) parameters must be specified within parentheses.
 - You might also stumble on method calls with [`CALL METHOD`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapcall_method_static.htm)
 statements. These statements should no longer be used. Note that `CALL METHOD` statements are the only option in the context of [dynamic programming](06_Dynamic_Programming.md). Therefore, `CALL METHOD` statements should be reserved for dynamic method calls.
@@ -2684,9 +2684,9 @@ ENDCLASS.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-### Additions Related to Inheritance and Instantion
+### Additions Related to Inheritance and Instantiation
 
-The table below includes selected syntax related to inheritance in class and method declarations.  
+The table below includes selected syntax related to inheritance in class and method declarations. It includes additions related to instantiation.  
 
 > **💡 Note**<br>
 > - Some of the syntax options have already been mentioned previously. This is to summarize. 
@@ -2910,7 +2910,7 @@ ENDCLASS.
 "Note the DEFINITION DEFERRED additions for lcl5. It is used to make the class known in the program
 "before its actual definition. Such statements are particularly necessary in local classes, and if a
 "reference to a local class is made before it is defined.
-"A metehod of lcl5 includes the creation of an instance of lcl4, demonstrating that friends can
+"A method of lcl5 includes the creation of an instance of lcl4, demonstrating that friends can
 "indeed create the instances. You can comment out FRIENDS lcl5 in the class declaration part of
 "lcl4. Consequently, a syntax error is displayed in lcl5 for the instance creation.
 CLASS lcl5 DEFINITION DEFERRED.
@@ -3273,8 +3273,7 @@ CLASS lcl1 IMPLEMENTATION.
   
   METHOD meth2.
     ...
-  ENDMETHOD.
-
+  ENDMETHOD.  
 ENDCLASS.
 
 "Subclass inheriting from lcl1
@@ -3339,7 +3338,6 @@ CLASS lcl1 IMPLEMENTATION.
 *  METHOD meth2.
 *    ...
 *  ENDMETHOD.
-
 ENDCLASS.
 
 "Subclass inheriting from lcl1
@@ -4602,7 +4600,7 @@ Interfaces ...
 -   are different from classes in the following ways:
     -   They only consist of a part declaring the components without an
         implementation part. The implementation is done in classes that use the interface.
-    -   There are no visibility sections. All components of an interface are visible.
+    -   There are no visibility sections. All components of an interface are public.
     -   No instances can be created from interfaces.
     -   Declarations as mentioned for classes, e. g. `DATA`,
         `CLASS-DATA`, `METHODS`,

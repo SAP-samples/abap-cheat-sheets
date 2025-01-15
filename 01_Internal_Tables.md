@@ -4294,6 +4294,16 @@ Notes and restrictions:
 - However, if a `SELECT` statement includes elements the ABAP SQL engine cannot handle in case of internal tables, the internal table data transfers to a temporary database table for query execution. 
 - Yet, only the data of one internal table can be transferred to the database. Thus, if a query involves multiple internal tables, it can only be executed if the ABAP SQL engine can manage it. This means that if data from more than one internal table must be transferred to the database, the query will not function. Similarly, joins of database tables and internal tables can only specify one internal table whose data can be passed to the database.
 - If the compiler detects a statement the ABAP SQL engine cannot process, a syntax warning appears. To suppress this warning, use the pragma `##itab_db_select`.
+- As mentioned, internal tables are treated like DDIC database tables. For example, if the internal table specifies a key that is not specified at the beginning of the line type, you cannot use `SELECT` to retrieve data from the table. 
+  ```abap
+  TYPES: BEGIN OF s,
+          comp1 TYPE i,
+          comp2 TYPE i,
+          comp3 TYPE i,
+         END OF s.
+  DATA itab TYPE TABLE OF s WITH KEY comp3.
+  "SELECT SINGLE * FROM @itab AS tab INTO @DATA(line).
+  ```
 - Find more information on ... 
   - the restrictions [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensql_engine_restr.htm).
   - the various ABAP SQL functionalities in the ABAP Keyword Documentation and in the [ABAP SQL cheat sheet](03_ABAP_SQL.md). The following code snippets cover a selection.
