@@ -593,7 +593,7 @@ string_opt_set = replace( val = |abc\ndef\nghi| pcre = `(?m).\Z` with = `#` occ 
 - Regular expressions with PCRE can be processed in normal or extended mode.
 - In extended mode, unescaped whitespaces in the pattern are ignored.
 - The extended mode is the default for ABAP statements and built-in functions, but you can disable it in the regex pattern with `(?-x)`. The `create_pcre` method of the `CL_ABAP_REGEX` class includes an `extended` parameter for this purpose.
-- To handle whitespaces in regular expressions, escape it with `\ `, match it using `\s`, or enable extended mode with `(?-x)`.
+- To handle whitespaces in regular expressions, escape it with `\ `, match it using `\s`, or disable extended mode with `(?-x)`.
 
 The following code snippet shows the extended mode enabled by default and then explicitly disabled in a PCRE regular expression.
 
