@@ -35,17 +35,18 @@
     - [Additions Related to Inheritance and Instantiation](#additions-related-to-inheritance-and-instantiation)
     - [Excursion: Inheritance Example](#excursion-inheritance-example)
   - [Polymorphism and Casting (Upcast/Downcast)](#polymorphism-and-casting-upcastdowncast)
-    - [Demonstrating Upcasts and Downcasts Using the RTTS Inheritance Tree](#demonstrating-upcasts-and-downcasts-using-the-rtts-inheritance-tree)
-      - [Checking the Dynamic Type of Object Reference Variables](#checking-the-dynamic-type-of-object-reference-variables)
+    - [Example with Local Classes Demonstrating Upcasts and Downcasts](#example-with-local-classes-demonstrating-upcasts-and-downcasts)
+    - [Upcasts and Downcasts Using the RTTS Inheritance Tree](#upcasts-and-downcasts-using-the-rtts-inheritance-tree)
+    - [Checking the Dynamic Type of Object Reference Variables](#checking-the-dynamic-type-of-object-reference-variables)
   - [Interfaces](#interfaces)
     - [Defining Interfaces](#defining-interfaces)
     - [Implementing Interfaces](#implementing-interfaces)
     - [Additions Related to Interface Implementations](#additions-related-to-interface-implementations)
     - [Interface Reference Variables, Accessing Objects and Components](#interface-reference-variables-accessing-objects-and-components)
     - [Excursion: Example Interface](#excursion-example-interface)
+  - [Friendship](#friendship)
+    - [Friendship between Global and Local Classes](#friendship-between-global-and-local-classes)
   - [Excursions](#excursions)
-    - [Friendship](#friendship)
-      - [Friendship between Global and Local Classes](#friendship-between-global-and-local-classes)
     - [Events](#events)
     - [ABAP Examples of Design Patterns in Object-Oriented Programming](#abap-examples-of-design-patterns-in-object-oriented-programming)
     - [Class-Based and Classic Exceptions](#class-based-and-classic-exceptions)
@@ -694,7 +695,7 @@ ENDCLASS.
 - `CLASS-METHODS` and `METHODS` can be followed by a colon to list one or more methods, separated by commas, or without a colon to declare a single method.
 
 
-The following code snippet shows (which anticipates aspects described in the following sections, such as specifying the method signature, constructors etc.) multiple method definitions in the public section of a global class. Most of the formal
+The following code snippet (which anticipates aspects described in the following sections, such as specifying the method signature, constructors etc.) shows multiple method definitions in the public section of a global class. Most of the formal
 parameters of the demo methods below are defined by just using the
 parameter name. This means passing by reference (returning parameters
 require to be passed by value).
@@ -2686,7 +2687,7 @@ ENDCLASS.
 
 ### Additions Related to Inheritance and Instantiation
 
-The table below includes selected syntax related to inheritance in class and method declarations. It includes additions related to instantiation.  
+The table below includes selected syntax related to inheritance in class and method declarations. It also includes additions related to instantiation.  
 
 > **💡 Note**<br>
 > - Some of the syntax options have already been mentioned previously. This is to summarize. 
@@ -4241,8 +4242,8 @@ Note the concept of static and dynamic type in this context:
 > **✔️ Hints**<br>
 > - The following basic rule applies: The static type is always more general than or the same as the dynamic type. The other way round: The dynamic type is always more special than or equal to the static type.
 >- That means:
->  - If the static type is a class, the dynamic type must be the same class or one of its subclasses.
->  - If the static type is an interface, the dynamic type must implement the interface.
+>   - If the static type is a class, the dynamic type must be the same class or one of its subclasses.
+>   - If the static type is an interface, the dynamic type must implement the interface.
 
 -   Regarding assignments: If it can be statically checked that an assignment is possible
     although the types are different, the assignment is done using the
@@ -4333,7 +4334,473 @@ DATA(rtti_d) = CAST cl_abap_structdescr(
       )->components.
 ```
 
-### Demonstrating Upcasts and Downcasts Using the RTTS Inheritance Tree
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+### Example with Local Classes Demonstrating Upcasts and Downcasts
+
+The following example class demonstrates upcasts and downcasts using multiple local classes to avoid the extra creation of multiple global classes and to have a self-contained example. To try the example out, create a demo class named `zcl_demo_abap` and paste the code into it (*Global Class* and *Local Types* tabs in ADT). After activation, choose *F9* in ADT to execute the class. The example is not set up to display output in the console, but it contains comments. You may want to set break points to and walk through the demo assignments.
+
+<table>
+
+<tr>
+<td> Class include </td> <td> Code </td>
+</tr>
+
+<tr>
+<td> 
+
+Global class
+
+ </td>
+
+ <td> 
+
+``` abap
+CLASS zcl_some_class DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
+
+  PUBLIC SECTION.
+    INTERFACES if_oo_adt_classrun.
+
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+ENDCLASS.
+
+CLASS zcl_some_class IMPLEMENTATION.
+  METHOD if_oo_adt_classrun~main.
+
+    "Object reference variables
+    "Create object references
+    DATA: oref1 TYPE REF TO lcl1,
+          oref2 TYPE REF TO lcl2,
+          oref3 TYPE REF TO lcl3,
+          oref4 TYPE REF TO lcl4.
+
+    "Creating objects
+    oref1 = NEW #( ).
+    oref2 = NEW #( ).
+    oref3 = NEW #( ).
+    oref4 = NEW #( ).
+
+    "Calling redefined methods
+    DATA text TYPE string.
+
+    "A
+    text = oref1->meth( ).
+    "B
+    text = oref2->meth( ).
+    "C
+    text = oref3->meth( ).
+    "D
+    text = oref4->meth( ).
+
+    "Polymorphism is demonstrated as follows: A reference variable typed with
+    "reference to a subclass can always be assigned to reference variables typed
+    "with reference to one of its superclasses.
+    "The following statements show upcasts using the assignment operator =.
+    "The upcast works because the basic rule is met that the static types of the
+    "targets are more general or identical to the static type of the sources.
+    "Example:
+    "- oref1 is statically typed with the type ref to lcl1.
+    "- oref2 is statically typed with the type ref to lcl2.
+    "- In the assignment 'oref1 = oref2.', the rule is met as the target variable's
+    "  static type of oref1 is more general (higher up in the inheritance tree).
+    "- For the assignment to finally work, the dynamic type (which is the actual
+    "  object the object reference points to at runtime) must be the same class or one
+    "  of its subclasses.
+
+    "lcl1 is the superclass of the other local classes
+    oref1 = oref2.
+    "B
+    text = oref1->meth( ).
+
+    oref1 = oref3.
+    "C
+    text = oref1->meth( ).
+
+    "lcl4 is a subclass of lcl3 (and thus also from lcl1)
+    oref1 = oref4.
+    "D
+    text = oref1->meth( ).
+
+    oref3 = oref4.
+    "D
+    text = oref3->meth( ).
+
+    "Upcasts also work if the static types are identical
+    DATA(oref1b) = NEW lcl1( ).
+    oref1 = oref1b.
+    text = oref1->meth( ).
+
+    "Re-creating objects
+    oref1 = NEW #( ).
+    oref2 = NEW #( ).
+    oref3 = NEW #( ).
+    oref4 = NEW #( ).
+
+    "The following statement (basically moving down the inheritance tree) cannot
+    "be specified using the assignment operator as there is a type conflict.
+    "The right-hand variable's type cannot be converted to the left-hand variable's type.
+    "If you indeed want to cast, you must perform a downcast.
+    "oref2 = oref1.
+
+    "Downcasts
+    "Here, the static type of the target variables are more specific than the static types
+    "of the source variables. The downcast must be triggered explicitly, e.g. by the CAST or
+    "the older ?= operator.
+    "However, note that the assignability is not checked until runtime. Only the syntax error
+    "as in the previous statement is not displayed anymore.
+
+    "The following example triggers a downcast explicitly. So, the syntax error from above
+    "is not displayed. However, that does not mean that the assignment actually works.
+    "For the downcast to work, the dynamic type must be the same class or one of its subclasses.
+    TRY.
+        oref2 = CAST #( oref1 ).
+      CATCH cx_sy_move_cast_error INTO DATA(error).
+        text = error->get_text( ).
+    ENDTRY.
+
+    "The following example performs an upcast so that the dynamic type of oref1 refers to
+    "one of the subclasses. However, the example downcast does not work either. lcl3 (static type
+    "of oref3) is not a subclass of lcl2 oref2 refers to.
+    oref1 = oref3.
+
+    TRY.
+        oref2 = CAST #( oref1 ).
+      CATCH cx_sy_move_cast_error INTO error.
+        text = error->get_text( ).
+    ENDTRY.
+
+    "The following downcasts work because the rule is met that the dynamic type must be the same
+    "class or one of its subclasses.
+    "Upcast before the downcast
+    oref1 = oref2.
+    "Downcast (dynamic type is the same)
+    oref2 = CAST #( oref1 ).
+    "B
+    text = oref2->meth( ).
+
+    "Downcast (dynamic type is one of the subclasses)
+    "Re-creating objects
+    oref1 = NEW #( ).
+    oref4 = NEW #( ).
+
+    "lcl4 (oref4 points to) is a subclass of lcl3 (oref3 points to), and thus of lcl1
+    "Upcast before the downcast
+    oref1 = oref4.
+    "Downcast (dynamic type is one of the subclasses)
+    oref3 = CAST #( oref1 ).
+    "D
+    text = oref3->meth( ).
+
+    "You can check whether downcasts are possible with IF and CASE statements
+    "Re-creating objects
+    oref1 = NEW #( ).
+    oref3 = NEW #( ).
+    oref4 = NEW #( ).
+
+    IF oref1 IS INSTANCE OF lcl3.
+      oref3 = CAST #( oref1 ).
+      text = oref3->meth( ).
+    ELSE.
+      "This section is executed in the example.
+      text = `...`.
+    ENDIF.
+
+    "Upcast
+    oref1 = oref4.
+
+    CASE TYPE OF oref1.
+      WHEN TYPE lcl3.
+        "This section is executed in the example.
+        oref3 = CAST #( oref1 ).
+        "D
+        text = oref3->meth( ).
+      WHEN OTHERS.
+        ...
+    ENDCASE.
+
+  ENDMETHOD.
+ENDCLASS.
+``` 
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+CCIMP include (Local Types tab in ADT)
+
+ </td>
+
+ <td> 
+
+``` abap
+CLASS lcl1 DEFINITION.
+  PUBLIC SECTION.
+    METHODS meth RETURNING VALUE(text) TYPE string.
+ENDCLASS.
+
+CLASS lcl1 IMPLEMENTATION.
+  METHOD meth.
+    text = `A`.
+  ENDMETHOD.
+ENDCLASS.
+
+CLASS lcl2 DEFINITION INHERITING FROM lcl1.
+  PUBLIC SECTION.
+    METHODS meth REDEFINITION.
+ENDCLASS.
+
+CLASS lcl2 IMPLEMENTATION.
+  METHOD meth.
+    text = `B`.
+  ENDMETHOD.
+ENDCLASS.
+
+CLASS lcl3 DEFINITION INHERITING FROM lcl1.
+  PUBLIC SECTION.
+    METHODS meth REDEFINITION.
+ENDCLASS.
+
+CLASS lcl3 IMPLEMENTATION.
+  METHOD meth.
+    text = `C`.
+  ENDMETHOD.
+ENDCLASS.
+
+CLASS lcl4 DEFINITION INHERITING FROM lcl3.
+  PUBLIC SECTION.
+    METHODS meth REDEFINITION.
+ENDCLASS.
+
+CLASS lcl4 IMPLEMENTATION.
+  METHOD meth.
+    text = `D`.
+  ENDMETHOD.
+ENDCLASS.
+``` 
+
+ </td>
+</tr>
+
+</table>
+
+<details>
+  <summary>🟢 Example with local classes implementing a local interface</summary>
+  <!-- -->
+
+<br>
+
+- This example, which anticipates interfaces, is similar to the previous one. Here, local classes implement a local interface. 
+- The example emphasizes that interface reference variables can point to objects of classes that implement the same interface.
+
+<table>
+
+<tr>
+<td> Class include </td> <td> Code </td>
+</tr>
+
+<tr>
+<td> 
+
+Global class
+
+ </td>
+
+ <td> 
+
+``` abap
+CLASS zcl_some_class DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
+
+  PUBLIC SECTION.
+    INTERFACES if_oo_adt_classrun.
+
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+ENDCLASS.
+
+CLASS zcl_some_class IMPLEMENTATION.
+  METHOD if_oo_adt_classrun~main.
+
+    "Object reference variables
+    "Creating object references
+    DATA:
+      "lcl1 implements the interface lif
+      "Up to oref4, the classes are in an inheritance relationship
+      oref1 TYPE REF TO lcl1,
+      oref2 TYPE REF TO lcl2,
+      oref3 TYPE REF TO lcl3,
+      oref4 TYPE REF TO lcl4,
+      "Implements the interface lif but is not in the inheritance relationship above
+      oref5 TYPE REF TO lcl5,
+      "Interface reference variable
+      iref  TYPE REF TO lif.
+
+    "Creating objects
+    oref1 = NEW #( ).
+    oref2 = NEW #( ).
+    oref3 = NEW #( ).
+    oref4 = NEW #( ).
+    oref5 = NEW #( ).
+
+    "Calling redefined methods
+    DATA text TYPE string.
+
+    "A
+    text = oref1->lif~meth( ).
+    "B
+    text = oref2->lif~meth( ).
+    "C
+    text = oref3->lif~meth( ).
+    "D
+    text = oref4->lif~meth( ).
+    "E
+    text = oref5->lif~meth( ).
+
+    "The static type can also refer to an interface.
+    "Assignments
+
+    "The static types of the example reference variables refer to classes
+    "that implement the interface and are in an inheritance relationship.
+    iref = oref1.
+    "A
+    text = iref->meth( ).
+
+    iref = oref2.
+    "B
+    text = iref->meth( ).
+
+    iref = oref3.
+    "C
+    text = iref->meth( ).
+
+    iref = oref4.
+    "D
+    text = iref->meth( ).
+
+    "Example class that implements the interface
+    iref = oref5.
+    "E
+    text = iref->meth( ).
+
+    "Both lcl1 (oref1) and lcl5 (oref5) implement the interface lif,
+    "so the assignment works as the static type of the interface reference
+    "variables is the same.
+    DATA irefb TYPE REF TO lif.
+    iref = oref1.
+    irefb = oref5.
+    iref = irefb.
+
+    "Downcasts
+    "Upcast before the downcast
+    iref = oref4.
+    "The following statement triggers a sytax error
+    "oref3 = iref.
+    oref3 = CAST #( iref ).
+    "D
+    text = oref3->lif~meth( ).
+
+    "Downcast not possible because the dynamic type is not the same or a subclass
+    TRY.
+        iref = oref2.
+        oref3 = CAST #( iref ).
+      CATCH cx_sy_move_cast_error INTO DATA(error).
+        text = error->get_text( ).
+    ENDTRY.
+  ENDMETHOD.
+ENDCLASS.
+``` 
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+CCIMP include (Local Types tab in ADT)
+
+ </td>
+
+ <td> 
+
+``` abap
+INTERFACE lif.
+  METHODS meth RETURNING VALUE(text) TYPE string.
+ENDINTERFACE.
+
+CLASS lcl1 DEFINITION.
+  PUBLIC SECTION.
+    INTERFACES lif.
+ENDCLASS.
+
+CLASS lcl1 IMPLEMENTATION.
+  METHOD lif~meth.
+    text = `A`.
+  ENDMETHOD.
+ENDCLASS.
+
+CLASS lcl2 DEFINITION INHERITING FROM lcl1.
+  PUBLIC SECTION.
+    METHODS lif~meth REDEFINITION.
+ENDCLASS.
+
+CLASS lcl2 IMPLEMENTATION.
+  METHOD lif~meth.
+    text = `B`.
+  ENDMETHOD.
+ENDCLASS.
+
+CLASS lcl3 DEFINITION INHERITING FROM lcl1.
+  PUBLIC SECTION.
+    METHODS lif~meth REDEFINITION.
+ENDCLASS.
+
+CLASS lcl3 IMPLEMENTATION.
+  METHOD lif~meth.
+    text = `C`.
+  ENDMETHOD.
+ENDCLASS.
+
+CLASS lcl4 DEFINITION INHERITING FROM lcl3.
+  PUBLIC SECTION.
+    METHODS lif~meth REDEFINITION.
+ENDCLASS.
+
+CLASS lcl4 IMPLEMENTATION.
+  METHOD lif~meth.
+    text = `D`.
+  ENDMETHOD.
+ENDCLASS.
+
+CLASS lcl5 DEFINITION.
+  PUBLIC SECTION.
+    INTERFACES lif.
+ENDCLASS.
+
+CLASS lcl5 IMPLEMENTATION.
+  METHOD lif~meth.
+    text = `E`.
+  ENDMETHOD.
+ENDCLASS.
+``` 
+
+ </td>
+</tr>
+
+</table>
+
+</details>  
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+### Upcasts and Downcasts Using the RTTS Inheritance Tree
 
 The examples in the following code snippet use object reference variables to illustrate the class hierarchy of the [Runtime Type Services (RTTS)](#runtime-type-services-rtts), which is covered in more detail in the [Dynamic Programming](06_Dynamic_Programming.md) cheat sheet. 
 
@@ -4448,7 +4915,7 @@ tdo_elem = CAST #( tdo_super ).
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-#### Checking the Dynamic Type of Object Reference Variables
+### Checking the Dynamic Type of Object Reference Variables
 
 - Special control structures using `IF ... IS INSTANCE OF ...` and `CASE TYPE OF` check the dynamic type of non-initial object reference variables and the static type of initial object reference variables.
 - The branch's first statement block is executed when a specified class or interface is more general than or equal to the given type.
@@ -5630,9 +6097,7 @@ ENDCLASS.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-## Excursions
-
-### Friendship
+## Friendship
 
 - The concept of friendship enters the picture if your use case for your classes is to work together very closely. This is true, for example, for [unit
 tests](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenunit_test_glosry.htm "Glossary Entry") if you want to test private methods.
@@ -5641,7 +6106,7 @@ tests](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file
 - Impact of friendship:
     - Access is granted to all components, regardless of the visibility section or the addition `READ-ONLY`.
     - Friends of a class can create instances of the class without restrictions.
-    - Friendship is a one-way street, i. e. a class granting friendship to another class is not granded friendship the other way round. If class `a` grants friendship to class `b`, class `b` must also explicitly grant friendship to class `a` so that `a` can access the invisible components of class `b`.
+    - Friendship is a one-way street, i. e. a class granting friendship to another class is not granted friendship the other way round. If class `a` grants friendship to class `b`, class `b` must also explicitly grant friendship to class `a` so that `a` can access the invisible components of class `b`.
     - Friendship and inheritance: Heirs of friends and interfaces that contain a friend as a component interface also become friends. However, granting friendship is not inherited, i. e. a friend of a superclass is not automatically a friend of its subclasses.
 - Additions in the context of granting friendship:
   - `FRIENDS`: For local classes, e.g. local classes granting friendship to other local classes or the global class of the class pool
@@ -5665,7 +6130,7 @@ CLASS global_class DEFINITION CREATE PUBLIC FRIENDS other_global_class ... .
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-#### Friendship between Global and Local Classes
+### Friendship between Global and Local Classes
 
 Expand the following collapsible section for an example class. It demonstrates granting friendship between a global class and a local class (in the CCIMP include, *Local Types* tab in ADT). In the example, friendship is granted in both ways so that the global class can access private components of the local class, and the local class can access private components of the global class.
 For more information, see the following topics: 
@@ -5797,6 +6262,9 @@ ENDCLASS.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
+
+## Excursions
+
 ### Events
 
 - [Events](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenevent_glosry.htm "Glossary Entry")
@@ -5857,7 +6325,7 @@ SET HANDLER handler3.
 
 - This section explores design patterns you may encounter in object-oriented programming, using ABAP classes.
 - In object-oriented programming, numerous design patterns enhance modularity, scalability, reusability, and more. 
-- Here, a selection of design patterns is covered, using simplified, non-semantic examples to avoid complexity and give a rough idea.
+- Here, a selection of design patterns is covered, using simplified, non-semantic examples to reduce complexity and give a rough idea.
 
 > **💡 Note**<br>
 > - The examples are not best practices or role models but aim to experiment with the patterns and convey the basic concepts. 
@@ -8619,12 +9087,12 @@ ENDCLASS.
 
 ### Escaping Characters
 
-- You may stumble on [`!` characters](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABENNAMES_ESCAPING.html) specified before operands, particularly in signatures of [procedures](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenprocedure_glosry.htm).
+- You may encounter [`!` characters](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABENNAMES_ESCAPING.html) specified before operands, particularly in signatures of [procedures](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenprocedure_glosry.htm).
 - They are used to distinguish the operand's name from ABAP words. 
 - When compiling ABAP programs, the specifications with the escape character are not considered as ABAP words. 
 - When executing the programs, the escape characters are ignored.
 
-The following nonsensical example shows various specifications with the escape character that emphasize in the program that the operands are not to be confused with ABAP words. These specifications are not mandatory in the example. The example only addresses escape characters you may stumble on in ABAP code.
+The following nonsensical example shows various specifications with the escape character that emphasize in the program that the operands are not to be confused with ABAP words. These specifications are not mandatory in the example. The example only addresses escape characters you may encounter in ABAP code.
 
 ```abap
 CLASS zcl_demo_abap DEFINITION
