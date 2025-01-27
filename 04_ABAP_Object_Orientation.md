@@ -849,6 +849,8 @@ CLASS zcl_demo_abap IMPLEMENTATION.
     "Input parameters passed by value can be changed in the method implementation.
     i_c += 1.
 
+    r_a = `ABAP`.
+
   ENDMETHOD.
 
 ENDCLASS.
@@ -2675,7 +2677,7 @@ ENDCLASS.
 -   Subclasses ...
     -   inherit and thus adopt all components from superclasses.
     -   can be made more specific by declaring new components and
-        redefining instance methods (i. e. you can alter the implementation of inherited methods). In case a subclass has no further components, it contains exactly the components of the superclass - but the ones of the private visibility section are not visible there.
+        redefining instance methods (i. e. you can alter the implementation of inherited methods). In case a subclass has no further components, it contains exactly the components of the superclass - but the ones of the private visibility section are not visible there. Note that static methods cannot be redefined.
     - can redefine the public and protected instance methods of all preceding superclasses. Note: Regarding the static components of superclasses, accessing them is possible but not redefining them.
     - can themselves have multiple direct subclasses but only one direct superclass.
 -   Components that are changed or added to subclasses are not visible to superclasses, hence, these changes are only relevant for the class itself and its subclasses.
@@ -4338,7 +4340,20 @@ DATA(rtti_d) = CAST cl_abap_structdescr(
 
 ### Example with Local Classes Demonstrating Upcasts and Downcasts
 
-The following example class demonstrates upcasts and downcasts using multiple local classes to avoid the extra creation of multiple global classes and to have a self-contained example. To try the example out, create a demo class named `zcl_demo_abap` and paste the code into it (*Global Class* and *Local Types* tabs in ADT). After activation, choose *F9* in ADT to execute the class. The example is not set up to display output in the console, but it contains comments. You may want to set break points to and walk through the demo assignments.
+The following example class demonstrates upcasts and downcasts using multiple local classes to avoid the extra creation of multiple global classes and to have a self-contained example. To try the example out, create a demo class named `zcl_demo_abap` and paste the code into it (*Global Class* and *Local Types* tabs in ADT). After activation, choose *F9* in ADT to execute the class. The example is not set up to display output in the console, but it contains comments. You may want to set break points and walk through the demo assignments.
+
+The inheritance tree of the local example classes is as follows: 
+
+```
+LCL1
+  |
+  |--LCL2
+  |
+  |--LCL3
+  |   |
+  |   |--LCL4
+```
+
 
 <table>
 

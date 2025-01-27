@@ -71,7 +71,7 @@ object](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?fil
 implies that the data object is initialized. However, for some
 constructor operators, there is an addition with which the
 initialization can be avoided.
->- As is true for many of the following syntax options, you can do a lot with constructor expressions, often with fewer lines (than older syntax equivalents) of code in a very elegant way. However, keep in mind the readability, maintainability, and debuggability of your code.
+>- As is true for many of the following syntax options, you can do a lot with constructor expressions, often with fewer lines (than older syntax equivalents) of code in a very elegant way. However, keep in mind the readability, maintainability, and debuggability of your code. For example, you can use iteration expressions instead of `LOOP` statements. The expressions are handy and more concise, but may be harder to read and they cannot be debugged.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
@@ -443,7 +443,7 @@ Assigning incompatible structures and internal tables
 
  <td> 
 
-- The example makes use of the `BASE` addition, and includes a `CORRESPONDING` expression.
+- The example makes use of the `BASE` addition, and includes a `CORRESPONDING` expression. Find more additions to `CORRESPONDING` expressions in the section below.
 - The `s1` structure is assigned the identically named components of the `s2` structure. Other components are assigned by explicitly specifying them.
 - Another example performs an assignment with internal tables, using a table iteration with a `FOR` loop.
 
@@ -517,10 +517,10 @@ Table iterations with `FOR`
 
 ``` abap
 TYPES: BEGIN OF s,
-            col1 TYPE c LENGTH 5,
-            col2 TYPE i,
-            col3 TYPE i,
-        END OF s.
+         col1 TYPE c LENGTH 5,
+         col2 TYPE i,
+         col3 TYPE i,
+       END OF s.
 TYPES itab_type TYPE TABLE OF s WITH EMPTY KEY.
 DATA(itab) = VALUE itab_type( ( col1 = 'a' col2 = 1 col3 = 30 )
                               ( col1 = 'bb' col2 = 2 col3 = 10 )
@@ -776,7 +776,7 @@ DATA it3 LIKE TABLE OF s1 WITH EMPTY KEY.
 
 "Populating internal tables
 it1 = VALUE #( ( a = 1 b = 'aaa' c = 'bbbbb' )
-                ( a = 2 b = 'ccc' c = 'ddddd' ) ).
+               ( a = 2 b = 'ccc' c = 'ddddd' ) ).
 it2 = VALUE #( ( a = 7 b = 'eee' d = 'fffff' ) ).
 it3 = VALUE #( ( a = 3 b = 'eee' c = 'fffff' ) ).
 
@@ -833,7 +833,7 @@ DATA: BEGIN OF struc1,
         c   TYPE i,
         d   TYPE string,
         e   TYPE i,
-        END OF struc1.
+      END OF struc1.
 
 DATA: BEGIN OF struc2,
         id2 TYPE i,
@@ -842,7 +842,7 @@ DATA: BEGIN OF struc2,
         c   TYPE i,
         d   TYPE string,
         z   TYPE i,
-        END OF struc2.
+      END OF struc2.
 
 DATA itab1 LIKE TABLE OF struc1 WITH EMPTY KEY.
 

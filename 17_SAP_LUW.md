@@ -373,7 +373,7 @@ After the import of the repository, proceed as follows:
 
 > **💡 Note**<br>
 > - The executable example ...
->   - demonstrates the SAP LUW using classic dynpros to provide a self-contained and simple example that highlights the considerations regarding implicit database commits, without putting the spotlight on dynpros. Note that classic dynpros are outdated for application programs. New developments should use web-based UIs, such as SAPUI5. 
+>   - demonstrates the SAP LUW using classic dynpros to provide a self-contained and simple example that highlights the considerations regarding implicit database commits, without putting the spotlight on dynpros. Note that classic dynpros are outdated for application programs. New developments should use web-based UIs, such as SAP Fiori UIs. 
 >   - covers the following topics in simple contexts:
 >     - Demonstrating synchronous update, asynchronous update, and local update triggered by `COMMIT WORK`, `COMMIT WORK AND WAIT`, and `SET UPDATE TASK LOCAL` using update function modules.
 >     - Demonstrating the statements `PERFORM ... ON COMMIT` and `PERFORM ... ON ROLLBACK` using subroutines.

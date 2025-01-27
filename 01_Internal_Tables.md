@@ -702,6 +702,9 @@ SELECT * FROM zdemo_abap_fli INTO TABLE @FINAL(it_l).
 
 ## Populating Internal Tables
 
+> **💡 Note**<br>
+> Various ABAP statements populate internal tables. The following sections cover a selection. ABAP SQL `SELECT`  statements are covered further down and in the [ABAP SQL](03_ABAP_SQL.md) cheat sheet.
+
 ### Copying Internal Tables
 
 To copy internal table content from one table to another, you can use the assignment operator. Such an assignment (without a constructor expression) deletes the existing content in the target internal table. The example below assumes that the source and target table have compatible line types. Using inline declaration is helpful to avoid an additional internal table declaration with an appropriate type.
@@ -2287,9 +2290,9 @@ CLASS zcl_demo_abap IMPLEMENTATION.
     DATA itab_sec TYPE STANDARD TABLE OF demo_struc
                  WITH EMPTY KEY
                  WITH NON-UNIQUE SORTED KEY sk COMPONENTS str num.
-    DATA num_of_table_lines TYPE i VALUE 5000.
-    DATA num_of_repetitions TYPE i VALUE 10.
-    DATA num_of_reads TYPE i VALUE 3000.
+    CONSTANTS: num_of_table_lines TYPE i VALUE 5000,
+               num_of_repetitions TYPE i VALUE 10,
+               num_of_reads TYPE i VALUE 3000.
 
     "Populating internal tables
     DO num_of_table_lines TIMES.
@@ -3702,6 +3705,20 @@ it_sorted = it.
 DATA(line_num_filtered3) = lines( FILTER #( it_sorted USING KEY sec_key WHERE comp2 = 1 ) ).
 "4
 DATA(line_num_filtered4) = lines( FILTER #( it_sorted USING KEY sec_key WHERE comp2 > 1 ) ).
+
+"Using LOOP statements
+CLEAR number_of_lines.
+"No WHERE condition as all lines shall be processed
+"7
+LOOP AT it REFERENCE INTO DATA(line).
+  number_of_lines += 1.
+ENDLOOP.
+
+CLEAR number_of_lines.
+"3
+LOOP AT it transporting no fields where comp2 = 1.
+  number_of_lines += 1.
+ENDLOOP.
 ```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
@@ -3709,7 +3726,7 @@ DATA(line_num_filtered4) = lines( FILTER #( it_sorted USING KEY sec_key WHERE co
 ### Getting Table (Type) Information at Runtime
 
 Using [Runtime Type Identification (RTTI)](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrun_time_type_identific_glosry.htm "Glossary Entry"),
-you can get type information on internal tables and table types at runtime 
+you can get type information on internal tables and table types at runtime. 
 
 For more information, see the [Dynamic Programming](06_Dynamic_Programming.md) ABAP cheat sheet.
 

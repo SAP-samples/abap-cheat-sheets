@@ -31,6 +31,7 @@
     - [Dynamic Method Calls](#dynamic-method-calls)
     - [Dynamic Function Module Calls](#dynamic-function-module-calls)
     - [Dynamic ABAP EML Statements](#dynamic-abap-eml-statements)
+    - [Dynamically Calling Transformations](#dynamically-calling-transformations)
     - [Dynamic Formatting Option Specifications in String Templates](#dynamic-formatting-option-specifications-in-string-templates)
     - [Dynamic Parameter List in EXPORT and IMPORT Statements](#dynamic-parameter-list-in-export-and-import-statements)
   - [Security Considerations in Dynamic Programming Using External Input](#security-considerations-in-dynamic-programming-using-external-input)
@@ -2653,10 +2654,73 @@ CALL FUNCTION func_name PARAMETER-TABLE ptab.
 ### Dynamic ABAP EML Statements
 
 In the context of [RAP](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_rap_glosry.htm), [ABAP EML](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_eml_glosry.htm) statements are available with dynamic forms. 
-Find an example in the [ABAP EML cheat sheet](08_EML_ABAP_for_RAP.md#dynamic-forms-of-eml-statements) and in the [ABAP Keyword Documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abeneml.htm).
+Find an example in the [ABAP EML](08_EML_ABAP_for_RAP.md#dynamic-forms-of-eml-statements) cheat sheet and in the [ABAP Keyword Documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abeneml.htm).
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
+### Dynamically Calling Transformations
+
+Find more information about calling transformations in the [Working with XML and JSON in ABAP](21_XML_JSON.md) cheat sheet.
+
+```abap
+TYPES: BEGIN OF line,
+         char TYPE c LENGTH 3,
+         int  TYPE i,
+       END OF line,
+       t_type TYPE TABLE OF line WITH EMPTY KEY.
+
+DATA(tab) = VALUE t_type( ( char = 'aaa' int = 1 )
+                          ( char = 'bbb' int = 2 )
+                          ( char = 'ccc' int = 3 ) ).
+
+"1. Dynamic specification of the transformation
+"   If the transformation does not exist, an exception is raised.
+"   The example specifies an ABAP data object (an internal table), which is
+"   trasnformed to asXML. The result is of type xstring.
+"   'itab' stands for the name of the XML element.
+TRY.
+    CALL TRANSFORMATION ('ID') SOURCE itab = tab
+                               RESULT XML DATA(xml_tab).
+  CATCH cx_invalid_transformation.
+ENDTRY.
+
+DATA(xml1) = cl_abap_conv_codepage=>create_in( )->convert( xml_tab ).
+
+"2. Dynamic specification of ABAP data objects as source
+"   The specification is done using an internal table of type abap_trans_srcbind_tab.
+"   As above, the transformation is specified dynamically. Also here, the example specifies an an
+"   internal table, which is transformed to asXML.
+
+DATA t_name TYPE string VALUE `ID`.
+
+DATA(srctab) = VALUE abap_trans_srcbind_tab( ( name = 'ITAB' value = REF #( tab ) ) ).
+CALL TRANSFORMATION (t_name) SOURCE (srctab)
+                             RESULT XML DATA(xml_tab2).
+
+DATA(xml2) = cl_abap_conv_codepage=>create_in( )->convert( xml_tab2 ).
+
+ASSERT xml2 = xml1.
+
+"3. Dynamic specification of ABAP data objects as result
+"   The specification is done using an internal table of type abap_trans_resbind_tab.
+"   The example transforms to ABAP data. The transformation is also specified dynamically.
+
+DATA tab2 LIKE tab.
+DATA(restab) = VALUE abap_trans_resbind_tab( ( name = 'ITAB' value = REF #( tab2 ) ) ).
+
+CALL TRANSFORMATION ('ID') SOURCE XML xml_tab
+                           RESULT (restab).
+
+ASSERT tab2 = tab.
+
+"4. Example with all syntax elements specified dynamically
+CALL TRANSFORMATION ('ID') SOURCE (srctab)
+                           RESULT (restab).
+
+ASSERT tab2 = tab.
+```
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ### Dynamic Formatting Option Specifications in String Templates
 
