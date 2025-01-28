@@ -4,8 +4,8 @@
 
 - [Released ABAP Classes](#released-abap-classes)
   - [Excursion: Available Classes in ABAP for Cloud Development](#excursion-available-classes-in-abap-for-cloud-development)
-  - [Creating and Transforming UUIDs](#creating-and-transforming-uuids)
   - [Displaying Output in the ADT Console](#displaying-output-in-the-adt-console)
+  - [Creating and Transforming UUIDs](#creating-and-transforming-uuids)
   - [RAP](#rap)
   - [Transactional Consistency](#transactional-consistency)
   - [Numbers and Calculations](#numbers-and-calculations)
@@ -68,65 +68,80 @@ SELECT ReleasedObjectType, ReleasedObjectName, ReleaseState
   INTO TABLE @DATA(released_classes).
 ```
 
-## Creating and Transforming UUIDs
-
-<table>
-<tr>
-<td> Class </td> <td> Details/Code Snippet </td>
-</tr>
-<tr>
-<td> <code>CL_SYSTEM_UUID</code> </td>
-<td>
-Creating and and converting system UUIDs with various algorithms 
-<br><br>
-
-``` abap
-"Creating UUIDs in binary format (16 bytes)
-TRY.
-    DATA(uuid) = cl_system_uuid=>create_uuid_x16_static( ) .
-  CATCH cx_uuid_error.
-ENDTRY.
-
-"e.g. B2B012691AC31EDEADA0A495A7130961
-``` 
-
-</td>
-</tr>
-<tr>
-<td> <code>XCO_CP_UUID</code> </td>
-<td>
-Transforming between different UUID formats
-<br><br>
-
-``` abap
-DATA(uuid_c36) = xco_cp_uuid=>format->c36->to_uuid( '7cd44fff-036a-4155-b0d2-f5a4dfbcee92' ).
-
-"7CD44FFF036A4155B0D2F5A4DFBCEE92
-DATA(uuid_c36_to_c32) =  CONV sysuuid_c32( xco_cp_uuid=>format->c32->from_uuid( uuid_c36 ) ).
-
-"7cd44fff-036a-4155-b0d2-f5a4dfbcee92
-DATA(uuid_c32_to_c36) = to_lower( CONV sysuuid_c36( xco_cp_uuid=>format->c36->from_uuid( uuid_c36 ) ) ).
-``` 
-
-</td>
-</tr>
-</table>
-
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## Displaying Output in the ADT Console
 
+The table includes the <code>IF_OO_ADT_CLASSRUN</code> interface.
+
 <table>
 <tr>
-<td> Class </td> <td> Details/Code Snippet </td>
+<td> Interface/Class </td> <td> Details/Code Snippet </td>
 </tr>
+
+<tr>
+<td> <code>IF_OO_ADT_CLASSRUN</code> </td>
+<td>
+
+- By implementing the <code>IF_OO_ADT_CLASSRUN</code> interface in a global class, you can make the class executable. 
+- In ADT, you can execute the class using F9. 
+- The statements that are processed when executing the class can be included in the implementation of the `if_oo_adt_classrun~main` method.
+- Using `out->write( ... ).` statements, you can output the content of data objects to the ADT console. The `name` parameter can be used to precede the data object content with a string.
+
+<br>
+
+``` abap
+CLASS zcl_demo_abap DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
+
+  PUBLIC SECTION.
+    INTERFACES if_oo_adt_classrun.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+ENDCLASS.
+
+CLASS zcl_demo_abap IMPLEMENTATION.
+  METHOD if_oo_adt_classrun~main.
+    out->write( `Hello world` ).
+
+    TYPES: BEGIN OF s,
+             comp1 TYPE string,
+             comp2 TYPE i,
+             comp3 TYPE string_table,
+             comp4 TYPE REF TO string,
+           END OF s,
+           it_type TYPE TABLE OF s WITH EMPTY KEY.
+
+    DATA(struct) = VALUE s( comp1 = `Hello`
+                            comp2 = 1
+                            comp3 = VALUE #( ( `a` ) ( `b` ) ( `a` ) ( `p` ) )
+                            comp4 = NEW #( `world` ) ).
+
+    DATA(itab) = VALUE it_type( ( struct )
+                                ( comp1 = `Hi`
+                                  comp2 = 2
+                                  comp3 = VALUE #( ( `x` ) ( `y` ) ( `z` ) )
+                                  comp4 = NEW #( `ABAP` ) ) ).
+
+    out->write( struct ).
+    out->write( data = itab name = `itab` ).
+  ENDMETHOD.
+ENDCLASS.
+``` 
+
+</td>
+</tr>
+
+
 <tr>
 <td> <code>CL_DEMO_CLASSRUN</code> </td>
 <td>
 As an alternative to using the <code>IF_OO_ADT_CLASSRUN</code> interface for displaying output in the console, you can also use the <code>CL_DEMO_CLASSRUN</code> class, which offers more methods.
 For more information, refer to <a href="https://blogs.sap.com/2023/10/24/abap-console-reloaded/">this blog</a>.
 The following example makes use of the <code>CL_DEMO_CLASSRUN</code> class. A structure and an internal table are displayed in the console. A structure component is a reference variable, which is automatically dereferenced. Plus, the <code>write_xml</code> method is shown, which displays XML data.
-<br><br>
+<br>
 
 ``` abap
 CLASS zcl_demo_abap DEFINITION
@@ -175,9 +190,89 @@ ENDCLASS.
 
 </td>
 </tr>
+
+<tr>
+<td> <code>CL_XCO_CP_ADT_SIMPLE_CLASSRUN</code> </td>
+<td>
+
+XCO alternative for output in the ADT console
+
+<br>
+
+``` abap
+CLASS zcl_demo_abap DEFINITION
+  PUBLIC
+  INHERITING FROM cl_xco_cp_adt_simple_classrun
+  FINAL
+  CREATE PUBLIC .
+
+  PUBLIC SECTION.
+  PROTECTED SECTION.
+    METHODS: main REDEFINITION.
+  PRIVATE SECTION.
+ENDCLASS.
+
+CLASS zcl_demo_abap IMPLEMENTATION.
+  METHOD main.
+    out->write( `Hello world` ).
+  ENDMETHOD.
+ENDCLASS.
+``` 
+
+</td>
+</tr>
+
 </table>
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
+
+## Creating and Transforming UUIDs
+
+<table>
+<tr>
+<td> Class </td> <td> Details/Code Snippet </td>
+</tr>
+<tr>
+<td> <code>CL_SYSTEM_UUID</code> </td>
+<td>
+Creating and and converting system UUIDs with various algorithms 
+<br><br>
+
+``` abap
+"Creating UUIDs in binary format (16 bytes)
+TRY.
+    DATA(uuid) = cl_system_uuid=>create_uuid_x16_static( ) .
+  CATCH cx_uuid_error.
+ENDTRY.
+
+"e.g. B2B012691AC31EDEADA0A495A7130961
+``` 
+
+</td>
+</tr>
+<tr>
+<td> <code>XCO_CP_UUID</code> </td>
+<td>
+Transforming between different UUID formats
+<br><br>
+
+``` abap
+DATA(uuid_c36) = xco_cp_uuid=>format->c36->to_uuid( '7cd44fff-036a-4155-b0d2-f5a4dfbcee92' ).
+
+"7CD44FFF036A4155B0D2F5A4DFBCEE92
+DATA(uuid_c36_to_c32) =  CONV sysuuid_c32( xco_cp_uuid=>format->c32->from_uuid( uuid_c36 ) ).
+
+"7cd44fff-036a-4155-b0d2-f5a4dfbcee92
+DATA(uuid_c32_to_c36) = to_lower( CONV sysuuid_c36( xco_cp_uuid=>format->c36->from_uuid( uuid_c36 ) ) ).
+``` 
+
+</td>
+</tr>
+</table>
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+
 
 ## RAP
 
@@ -519,7 +614,7 @@ DATA(random_num2) = cl_abap_random_int=>create( seed = cl_abap_random=>seed( )
 
 <br>
 
-The following example explores the generation of arbitraty numeric values. 
+The following example explores the generation of arbitrary numeric values. 
 - It uses dynamic programming techniques. Find more information in the [Dynamic Programming](06_Dynamic_Programming.md) cheat sheet.
 - The class names are constructed dynamically. They all begin with `CL_ABAP_RANDOM_`.
 - An object is created dynamically based on the constructed class name.
@@ -5030,8 +5125,7 @@ CLASS zcl_demo_abap IMPLEMENTATION.
           ENDIF.
         CATCH cx_apj_dt_content INTO DATA(error_jtempl_del).
           DATA(jtempl_del_error_msg) = error_jtempl_del->get_longtext( ).
-          out->write( jtempl_del_error_msg ).
-          RETURN.
+          out->write( jtempl_del_error_msg ).          
       ENDTRY.
 
 *&---------------------------------------------------------------------*
@@ -5049,8 +5143,7 @@ CLASS zcl_demo_abap IMPLEMENTATION.
 
         CATCH cx_apj_dt_content INTO DATA(error_jcat_del).
           DATA(jcat_del_error_msg) = error_jcat_del->get_text( ).
-          out->write( jcat_del_error_msg ).
-          RETURN.
+          out->write( jcat_del_error_msg ).          
       ENDTRY.
     ENDIF.
 

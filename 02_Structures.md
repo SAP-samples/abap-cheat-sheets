@@ -15,6 +15,7 @@
     - [Creating Anonymous Structures](#creating-anonymous-structures)
   - [Variants of Structures](#variants-of-structures)
   - [Accessing (Components of) Structures](#accessing-components-of-structures)
+    - [ASSIGN Statements](#assign-statements)
   - [Populating Structures](#populating-structures)
     - [Using the VALUE Operator](#using-the-value-operator)
     - [Using the NEW Operator](#using-the-new-operator)
@@ -459,6 +460,102 @@ Nested components can be addressed using chaining:
 
 > **💡 Note**<br>
 > There are syntax options for dynamically accessing structure components. See the [Dynamic Porgramming](06_Dynamic_Programming.md) cheat sheet.
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+### ASSIGN Statements
+
+```abap
+"A field symbol is set using an assignment of a memory area to the 
+"field symbol by ASSIGN statements.
+"Particularly, field symbols and ASSIGN statements are supporting elements for 
+"dynamic programming. ASSIGN statements have multiple additions. Find more information 
+"and examples in the Dynamic Programming cheat sheet.
+
+TYPES: BEGIN OF s,
+         comp1 TYPE i,
+         comp2 TYPE c LENGTH 3,
+         comp3 TYPE n LENGTH 5,
+         comp4 TYPE string,
+       END OF s.
+
+DATA(demo_struc) = VALUE s( comp1 = 1 comp2 = 'abc' comp3 = '12345' comp4 = `ABAP` ).
+
+"Defining a field symbol
+FIELD-SYMBOLS <a> TYPE s.
+
+"Assigning the entire structure to a field symbole
+ASSIGN demo_struc TO <a>.
+
+"Accessing a structure component via the field symbol
+DATA(comp1) = <a>-comp1.
+
+"Field symbol declared inline
+"Note: The typing depends on the memory area specified. In this case,
+"the field symbol <fd> has the structured type s. This is valid for static
+"assignments. In case of dynamic assignments, the type is the generic type
+"data.
+ASSIGN demo_struc TO FIELD-SYMBOL(<b>).
+comp1 = <b>-comp1.
+
+"Accessing components of structures by assigning components to field symbols
+"The field symbols is typed with the generic type data so that all components,
+"which have random types, can be assigned.
+FIELD-SYMBOLS <d> TYPE data.
+ASSIGN demo_struc-comp1 TO <d>.
+ASSIGN demo_struc-comp2 TO <d>.
+ASSIGN demo_struc-comp3 TO <d>.
+ASSIGN demo_struc-comp4 TO <d>.
+
+"Accessing structures and components dynamically
+"Note: In case of dynamic assignments, ...
+"- sy-subrc is set.
+"- the type of field symbols declared inline is the generic type data.
+ASSIGN ('DEMO_STRUC') TO FIELD-SYMBOL(<c>).
+ASSERT sy-subrc = 0.
+
+"Using ASSIGN COMPONENT statements
+"It is recommended to use the newer syntax, which sepcifies the component 
+"selector followed by a data object in a pair of parentheses.
+"After COMPONENT (and in the parentheses in the newer syntax), a character-like 
+"or numeric data object is expected.
+DATA(some_comp) = `COMP2`.
+ASSIGN COMPONENT some_comp OF STRUCTURE demo_struc TO <d>.
+ASSERT sy-subrc = 0.
+
+some_comp = `COMP5`.
+ASSIGN COMPONENT some_comp OF STRUCTURE demo_struc TO <d>.
+ASSERT sy-subrc = 4.
+
+"Numeric data objects
+"The data object is implicitly converted to type i (if required) and
+"interpreted as the position of the component in the structure.
+ASSIGN COMPONENT 1 OF STRUCTURE demo_struc TO <d>.
+ASSERT sy-subrc = 0.
+
+ASSIGN COMPONENT 5 OF STRUCTURE demo_struc TO <d>.
+ASSERT sy-subrc = 4.
+
+"0 means that the entire structure is assigned
+ASSIGN COMPONENT 0 OF STRUCTURE demo_struc TO <d>.
+ASSERT sy-subrc = 0.
+ASSERT <d> = demo_struc.
+
+"Newer syntax using the component selector followed by content in
+"a pair of parentheses.
+ASSIGN demo_struc-('COMP4') TO <d>.
+ASSIGN demo_struc-(some_comp) TO <d>.
+ASSIGN demo_struc-(3) TO <d>.
+ASSIGN demo_struc-(0) TO <d>.
+
+"Iterating across all structure components
+DO.
+  ASSIGN demo_struc-(sy-index) TO <d>.
+  IF sy-subrc <> 0.
+    EXIT.
+  ENDIF.
+ENDDO.
+``` 
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
@@ -1090,7 +1187,7 @@ ENDLOOP.
 - More information about the purpose of the individual components is available at [ABAP System Fields (F1 documentation for Standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abensystem_fields.htm).
 
 
-The following example demonstrates a selection of ABAP system fields. It uses artifacts from the ABAP cheat sheet repository. Note the comments in the code because a syntax warning will be displayed when inserting the code in a demo class that uses ABAP for Cloud Development. It is meant to emphasize that multiple system fields should not to be used in ABAP for Cloud Development.  
+The following example demonstrates a selection of ABAP system fields. It uses artifacts from the ABAP cheat sheet repository. Note the comments in the code because a syntax warning will be displayed when inserting the code in a demo class that uses ABAP for Cloud Development. It is meant to emphasize that multiple system fields should not be used in ABAP for Cloud Development.  
 To try the example out, create a demo class named `zcl_demo_abap` and paste the code into it. After activation, choose *F9* in ADT to execute the class. The example is set up to display output in the console. 
 
 ```abap

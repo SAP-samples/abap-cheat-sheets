@@ -52,7 +52,7 @@ ABAP cheat sheets[^1] ...
 - In order to have all ABAP cheat sheet documents in one place, the *main* branch (for examples to be imported into the SAP BTP ABAP environment) also contains the ABAP cheat sheet documents that are only relevant for classic ABAP. 
 - The example classes contained in the branches for classic ABAP mostly use syntax that is also available in ABAP for Cloud Development. Only the  `TEST_ABAP_CHEAT_SHEETS_CLASSIC` subpackage contains syntax relevant to Standard ABAP and that is not available in ABAP for Cloud Development, such as dynpro-related ABAP keywords.
 - The code snippets in the ABAP cheat sheet documents and the executable examples include many comments. While it is generally not recommended to overuse comments in your code, they are used here to explain and provide context directly where it is needed. In many cases, they illustrate the results of ABAP statements.
-- As previously mentioned, the cheat sheet documents and examples primarily focus on syntax options. The usage and names of data objects, classes, methods etc. are nonsemantic.
+- As previously mentioned, the cheat sheet documents and examples primarily focus on syntax options. Most of the executable examples, code snippets, names of data objects, classes, methods, interfaces, etc., are nonsemantic.
 - Many ABAP statements allow additions in various orders, and these orders are not always fixed.
 </details>
 
@@ -224,6 +224,7 @@ Use the standalone version of the abapGit report to import the demo examples of 
 ## ⚡ Known Issues
 - Only one user on the system can import this repository because all object names must be globally unique. 
 - Regarding possible code check warnings, e.g. for the many strings in the code, not using an `ORDER BY` clause, or messages regarding using `SELECT *`, the code deliberately avoids [pragmas](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenpragma_glosry.htm) and [pseudo comments](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenpseudo_comment_glosry.htm) in order to focus on the available ABAP syntax. See also the [Disclaimer](#%EF%B8%8F-disclaimer).
+- Importing the `main` branch in a system other than the SAP BTP ABAP Environment may cause errors in various cases. ABAP keywords, additions, and syntax options may not yet be available in the ABAP release. You can check the ABAP Release News in the ABAP Keyword Documentation.
 - Regarding the examples to be imported into a system supporting classic ABAP (where Standard ABAP is supported), note the following: In most cases, the cheat sheet documents and examples focus on ABAP for Cloud Development. Therefore, the lower the [ABAP release](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_release_glosry.htm) in your system, the fewer syntax options and examples are available. For example, the RAP examples need at least ABAP version 7.56. Or, the [`FINAL` declaration operator](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenfinal_inline.htm) is not available in ABAP version 7.56. The code examples in the classic ABAP branches do not necessarily reflect all (described) syntax variations and options that are available in classic ABAP and in the particular ABAP release. For more information on new ABAP features by release, see the ABAP Release News:
   - [ABAP Release News](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abennews.htm) for ABAP for Cloud Development. Note the ABAP release cycles listed there.
   - For Standard ABAP, see the ABAP relese news [here](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abennews.htm).
@@ -256,6 +257,6 @@ This is not intended to be a contribution repository, so please do not create pu
 <br>
 
 ## 📜 License
-Copyright (c) 2024 SAP SE or an SAP affiliate company. All rights reserved. This project is licensed under the Apache Software License, version 2.0 except as noted otherwise in the [LICENSE](LICENSE) file.
+Copyright (c) 2025 SAP SE or an SAP affiliate company. All rights reserved. This project is licensed under the Apache Software License, version 2.0 except as noted otherwise in the [LICENSE](LICENSE) file.
 
 [^1]: "A written [...] aid (such as a sheet of notes) that can be referred to for help in understanding or remembering something complex" (Definition for "cheat sheet" in Merriam-Webster Dictionary).

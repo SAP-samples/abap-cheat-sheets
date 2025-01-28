@@ -482,6 +482,7 @@ The following example creates two DDIC database tables exploring several options
 
     }
     ```
+    - Note: The numeric specification `abap.string(0);` for a component with type `string` (and also `rawstring`) means to specify the maximum length of the component. `0` in `abap.string(0);` means there is no restriction, `256` in `abap.string(256);` means restricting the length to 256. This restriction is checked in read and write operations.
   - Save and activate.
   - Proceed as above and create another DDIC database table using the name *ZDEMO_ABAP_TABL2*.
   - Insert the following code. The example includes a flat DDIC structure (created above) using the `include` specification. In doing so, you can avoid an extra declaration of table fields.

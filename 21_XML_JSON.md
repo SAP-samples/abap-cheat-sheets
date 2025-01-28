@@ -102,11 +102,22 @@ Parsing XML data using iXML:
 "Creating demo XML data to be used in the example as string. Using the cl_abap_conv_codepage
 "class, you can convert the string to xstring which is required for the example.
 DATA(some_xml) = cl_abap_conv_codepage=>create_out( )->convert(
-    `<hi>` &&
-    `  <word1>hallo</word1>` &&
-    `  <word2>how</word2>` &&
-    `  <word3>are</word3>` &&
-    `</hi>` ).
+      `<?xml version="1.0"?>` &&
+      `<node attr_a="123">` &&
+      ` <subnode1>` &&
+      `  <hallo>hi</hallo>` &&
+      ` </subnode1>` &&
+      ` <subnode2>` &&
+      `  <letter>a</letter>` &&
+      `  <date format="mm-dd-yyyy">01-01-2025</date>` &&
+      ` </subnode2>` &&
+      ` <subnode3>`  &&
+      `  <text attr_b="1" attr_c="a">abc</text>` &&
+      `  <text attr_b="2" attr_c="b">def</text>` &&
+      `  <text attr_b="3" attr_c="c">ghi</text>` &&
+      `  <text attr_b="4" attr_c="d">jkl</text>` &&
+      ` </subnode3>` &&
+      `</node>` ).
 
 "Creating one factory object of the access class cl_ixml_core using the
 "create method. It is used to access the iXML library.
@@ -127,7 +138,7 @@ DATA(parser_pa) = ixml_pa->create_parser(
 DATA(parsing_check) = parser_pa->parse( ).
 IF parsing_check = 0. "Parsing was successful
 
-  "--------------------- Directly reading nodes ----------------------  
+  "--------------------- Directly reading nodes ----------------------
 
   "Accessing the root element of the DOM. It can be used as the initial node
   "for accessing subnodes.
@@ -136,30 +147,56 @@ IF parsing_check = 0. "Parsing was successful
   "First subnode
   DATA(child_element) = root_element->get_first_child( ).
   "Gettng the value of that node
-  DATA(child_element_value) = child_element->get_value( ). "hallo
+  DATA(child_element_value) = child_element->get_value( ).
   "Next adjacent node/getting the value
-  DATA(next_element_value) = child_element->get_next( )->get_value( ). "how
+  DATA(next_element) = child_element->get_next( ).
+  DATA(next_element_value) = next_element->get_value( ).
   "Direct access using element names
   "Result: First element searched for
-  DATA(element_by_name) = document_pa->find_from_name( name = `word3` )->get_value( ). "are
-  
-  "--------------------- Reading using iterators ----------------------  
+  DATA(element_by_name) = document_pa->find_from_name( name = `letter` )->get_value( ).
+
+  "--------------------- Reading using iterators ----------------------
 
   "i.e. going over the XML nodes one after another
 
   "Creating an iterator
   DATA(iterator_pa) = document_pa->create_iterator( ).
-  DO.
-    "For the iteration, you can use the get_next method to process the nodes one after another.
-    "Note: Here, all nodes are respected. You can also create filters to go over specific nodes.
-    DATA(node_i) = iterator_pa->get_next( ).
-    IF node_i IS INITIAL.
-      "Exiting the loop when there are no more nodes to process. 
-      EXIT.
-    ELSE.
-      ... "Do something, e.g. modify values          
-    ENDIF.        
-  ENDDO.
+
+
+  DATA xml_nodes TYPE string_table.
+
+  DATA(node_pa) = iterator_pa->get_next( ).
+  "For the iteration, you can use the get_next method to process the nodes one after another.
+  "Note: Here, all nodes are respected. You can also create filters to go over specific nodes.
+  WHILE NOT node_pa IS INITIAL.
+    "DATA(indent) = node_pa->get_height( ) * 2.
+    "Rettrieving the node type
+    DATA(node_type) = node_pa->get_type( ).
+    CASE node_type.
+      WHEN if_ixml_node=>co_node_element.
+        APPEND |Element: "{ node_pa->get_name( ) }"| TO xml_nodes.
+        "Retrieving attributes
+        DATA(attributes_pa) = node_pa->get_attributes( ).
+        IF NOT attributes_pa IS INITIAL.
+          DO attributes_pa->get_length( ) TIMES.
+            DATA(attr) = attributes_pa->get_item( sy-index - 1 ).
+            APPEND |Attribute: "{ attr->get_name( ) } = { attr->get_value( ) }"| TO xml_nodes.
+          ENDDO.
+        ENDIF.
+      WHEN if_ixml_node=>co_node_text OR if_ixml_node=>co_node_cdata_section.
+        APPEND |Text: "{ node_pa->get_value( ) }"| TO xml_nodes.
+
+        "When iterating the XML nodes, you may want to perform certain actions, e.g.
+        "modifying values etc. Check out the many methods that are available.
+        "This example just transform the textual content to uppercase using the set_value method.
+        DATA(val) = to_upper( node_pa->get_value( ) ).
+        node_pa->set_value( val ).
+      WHEN OTHERS.
+        ...
+    ENDCASE.
+    "Retrieving the next node
+    node_pa = iterator_pa->get_next( ).
+  ENDWHILE.
 
   "Creating a renderer. It renders the XML document into an output stream
   "that is used to pass XML data from the renderer.
@@ -167,11 +204,48 @@ IF parsing_check = 0. "Parsing was successful
   ixml_pa->create_renderer( document = document_pa
                             ostream = ixml_pa->create_stream_factory( )->create_ostream_xstring( string = xml_pa )
                           )->render( ).
-  ...                        
+
 ELSE.
   "Parsing was not successful.
   ...
 ENDIF.
+
+DATA(conv_string) = cl_abap_conv_codepage=>create_in( )->convert( xml_pa ).
+
+*--- xml_nodes ---
+*Element: "node"
+*Attribute: "attr_a = 123"
+*Element: "subnode1"
+*Element: "hallo"
+*Text: "hi"
+*Element: "subnode2"
+*Element: "letter"
+*Text: "a"
+*Element: "date"
+*Attribute: "format = mm-dd-yyyy"
+*Text: "01-01-2025"
+*Element: "subnode3"
+*Element: "text"
+*Attribute: "attr_b = 1"
+*Attribute: "attr_c = a"
+*Text: "abc"
+*Element: "text"
+*Attribute: "attr_b = 2"
+*Attribute: "attr_c = b"
+*Text: "def"
+*Element: "text"
+*Attribute: "attr_b = 3"
+*Attribute: "attr_c = c"
+*Text: "ghi"
+*Element: "text"
+*Attribute: "attr_b = 4"
+*Attribute: "attr_c = d"
+*Text: "jkl"
+
+*--- conv_string ---
+*<?xml version="1.0" encoding="utf-8"?><node attr_a="123"><subnode1><hallo>HI</hallo></subnode1><subnode2><letter>A</letter>
+*<date format="mm-dd-yyyy">01-01-2025</date></subnode2><subnode3><text attr_b="1" attr_c="a">ABC</text>
+*<text attr_b="2" attr_c="b">DEF</text><text attr_b="3" attr_c="c">GHI</text><text attr_b="4" attr_c="d">JKL</text></subnode3></node>
 ```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
@@ -307,60 +381,139 @@ Parsing XML data using sXML:
 ```abap
 "--------------------- Token-based parsing ----------------------
 
+"Creating demo XML data to be used in the example
+TRY.
+    DATA(xml_to_parse) = cl_abap_conv_codepage=>create_out( )->convert(
+      `<?xml version="1.0"?>` &&
+      `<node attr_a="123">` &&
+      ` <subnode1>` &&
+      `  <hallo>hi</hallo>` &&
+      ` </subnode1>` &&
+      ` <subnode2>` &&
+      `  <letter>a</letter>` &&
+      `  <date format="mm-dd-yyyy">01-01-2025</date>` &&
+      ` </subnode2>` &&
+      ` <subnode3>`  &&
+      `  <text attr_b="1" attr_c="a">abc</text>` &&
+      `  <text attr_b="2" attr_c="b">def</text>` &&
+      `  <text attr_b="3" attr_c="c">ghi</text>` &&
+      `  <text attr_b="4" attr_c="d">jkl</text>` &&
+      ` </subnode3>` &&
+      `</node>` ).
+  CATCH cx_sy_conversion_codepage.
+ENDTRY.
+
+"Creating an internal table for demonstration purposes
+DATA: BEGIN OF node_info,
+        node_type TYPE string,
+        name      TYPE string,
+        value     TYPE string,
+      END OF node_info,
+      nodes_tab LIKE TABLE OF node_info.
+
 "Creating reader
-"Note: See the comments for the writer above. It is similar here. For readers,
+"Note: See the comments for the writer above which is similar. For readers,
 "the interface IF_SXML_READER exists. In this example, no special methods
 "are used. Therefore, a cast is not carried out.
-"The example uses the XML data from above.
-DATA(reader) = cl_sxml_string_reader=>create( xml_oo ).
+DATA(reader) = cl_sxml_string_reader=>create( xml_to_parse ).
 "DATA(reader_cast) = CAST if_sxml_reader( cl_sxml_string_reader=>create( xml_oo ) ).
 
 "To iterate accros all nodes, you can call the NEXT_NODE method.
 TRY.
     DO.
-      "Check out other available methods in ADT by placing the cursor behind '...->'
-      "and choose CTRL + Space.
+      CLEAR node_info.
       reader->next_node( ).
 
-      "Exiting the loop when reaching the end of the XML data.
+      "When reaching the end of the XML data, the loop is exited.
       IF reader->node_type = if_sxml_node=>co_nt_final.
         EXIT.
       ENDIF.
 
       "You can access the properties of the node directly.
-      DATA(node_type) = reader->node_type.    "Node type, see the interface if_sxml_node
-      DATA(prefix) = reader->prefix.          "Namespace prefix
-      DATA(name) = reader->name.              "Name of the element
-      DATA(value_type) = reader->value_type.  "Value type, see the interface if_sxml_value
-      DATA(value) = reader->value.            "Character-like value (if it is textual data)
-      DATA(value_raw) = reader->value_raw.    "Byte-like value (if it is raw data)
+      "For display purposes, the property information is stored in an internal table.
+      "The example here just uses simple demo JSON data. Not all properties are
+      "retrieved and displayed.
 
-      ...
+      "Node type, see the interface if_sxml_node
+      node_info-node_type = SWITCH #( reader->node_type WHEN if_sxml_node=>co_nt_initial THEN `CO_NT_INITIAL`
+                                                        WHEN if_sxml_node=>co_nt_element_open THEN `CO_NT_ELEMENT_OPEN`
+                                                        WHEN if_sxml_node=>co_nt_element_close THEN `CO_NT_ELEMENT_CLOSE`
+                                                        WHEN if_sxml_node=>co_nt_value THEN `CO_NT_VALUE`
+                                                        WHEN if_sxml_node=>co_nt_attribute THEN `CO_NT_ATTRIBUTE`
+                                                        ELSE `Error` ).
+      "Name of the element
+      node_info-name = reader->name.
+      "Character-like value (if it is textual data)
+      node_info-value = COND #( WHEN reader->node_type = if_sxml_node=>co_nt_value THEN reader->value ).
+      APPEND node_info TO nodes_tab.
 
+      "Once the method is called, you can directly access the attributes of the reader with the required
+      "properties of the node. When the parser is on the node of an element opening, you can use the method
+      "NEXT_ATTRIBUTE to iterate across the XML element attributes.
+      IF reader->node_type = if_sxml_node=>co_nt_element_open.
+        DO.
+          reader->next_attribute( ).
+          IF reader->node_type <> if_sxml_node=>co_nt_attribute.
+            EXIT.
+          ENDIF.
+          APPEND VALUE #( node_type  = `CO_NT_ATTRIBUTE`
+                          name       = reader->name
+                          value      = reader->value ) TO nodes_tab.
+        ENDDO.
+      ENDIF.
     ENDDO.
-  CATCH cx_sxml_parse_error.
-    ...
+  CATCH cx_sxml_state_error INTO DATA(error_parse_token).
+    DATA(error_text) = error_parse_token->get_text( ).
 ENDTRY.
+
+*--- nodes_tab ---
+*NODE_TYPE              NAME        VALUE     
+*CO_NT_ELEMENT_OPEN     node                  
+*CO_NT_ATTRIBUTE        attr_a      123       
+*CO_NT_ELEMENT_OPEN     subnode1              
+*CO_NT_ELEMENT_OPEN     hallo                 
+*CO_NT_VALUE            hallo       hi        
+*CO_NT_ELEMENT_CLOSE    hallo                 
+*CO_NT_ELEMENT_CLOSE    subnode1              
+*CO_NT_ELEMENT_OPEN     subnode2              
+*CO_NT_ELEMENT_OPEN     letter                
+*CO_NT_VALUE            letter      a         
+*CO_NT_ELEMENT_CLOSE    letter                
+*CO_NT_ELEMENT_OPEN     date                  
+*CO_NT_ATTRIBUTE        format      mm-dd-yyyy
+*CO_NT_VALUE            date        01-01-2025
+*CO_NT_ELEMENT_CLOSE    date                  
+*CO_NT_ELEMENT_CLOSE    subnode2              
+*CO_NT_ELEMENT_OPEN     subnode3              
+*CO_NT_ELEMENT_OPEN     text                  
+*CO_NT_ATTRIBUTE        attr_b      1         
+*CO_NT_ATTRIBUTE        attr_c      a         
+*CO_NT_VALUE            text        abc       
+*CO_NT_ELEMENT_CLOSE    text                  
+*CO_NT_ELEMENT_OPEN     text                  
+*CO_NT_ATTRIBUTE        attr_b      2         
+*CO_NT_ATTRIBUTE        attr_c      b         
+*CO_NT_VALUE            text        def       
+*CO_NT_ELEMENT_CLOSE    text                  
+*CO_NT_ELEMENT_OPEN     text                  
+*CO_NT_ATTRIBUTE        attr_b      3         
+*CO_NT_ATTRIBUTE        attr_c      c         
+*CO_NT_VALUE            text        ghi       
+*CO_NT_ELEMENT_CLOSE    text                  
+*CO_NT_ELEMENT_OPEN     text                  
+*CO_NT_ATTRIBUTE        attr_b      4         
+*CO_NT_ATTRIBUTE        attr_c      d         
+*CO_NT_VALUE            text        jkl       
+*CO_NT_ELEMENT_CLOSE    text                  
+*CO_NT_ELEMENT_CLOSE    subnode3              
+*CO_NT_ELEMENT_CLOSE    node                
 
 "--------------------- Object-oriented parsing ----------------------
 
-"Creating demo XML data to be used in the example.
-DATA(xml_oo_read) = cl_abap_conv_codepage=>create_out( )->convert(
-      `<?xml version="1.0"?>` &&
-      `<node attr_a="123">` &&
-      ` <subnode1>` &&
-      ` <status>A</status>` &&
-      ` <date format="mm-dd-yyyy">01-01-2024</date>` &&
-      ` </subnode1>` &&
-      ` <subnode2>`  &&
-      ` <text attr_b="1" attr_c="a">abc</text>` &&
-      ` <text attr_b="2" attr_c="b">def</text>` &&
-      ` <text attr_b="3" attr_c="c">ghi</text>` &&
-      ` </subnode2>` &&
-      `</node>` ).
+"The example uses the XML from above
+CLEAR nodes_tab.
+DATA(reader_oo) = cl_sxml_string_reader=>create( xml_to_parse ).
 
-"Creating reader
-DATA(reader_oo) = cl_sxml_string_reader=>create( xml_oo_read ).
 TRY.
     DO.
       "To iterate accros all nodes, you can call the READ_NEXT_NODE method.
@@ -377,21 +530,93 @@ TRY.
       "Getting the node type
       DATA(n_type) = node_oo->type.
 
-      "When the parser is currently on the node of an element opening,
+      "If the parser is currently on the node of an element opening,
       "the node object has the class CL_SXML_OPEN_ELEMENT that implements the
       "interface IF_SXML_OPEN_ELEMENT. With the methods included, you can
       "access the XML attributes of the element, e.g. using the GET_ATTRIBUTES
       "method to put the references for all attributes into an internal table.
       "To access the attributes, a downcast is required.
-      IF n_type = if_sxml_node=>co_nt_element_open.
-        DATA(attributes) = CAST if_sxml_open_element( node_oo )->get_attributes( ).
-        ...
-      ENDIF.
-      ...
+
+      CASE n_type.
+        WHEN if_sxml_node=>co_nt_element_open.
+          DATA(open_element) = CAST if_sxml_open_element( node_oo ).
+
+          APPEND VALUE #( node_type = `open element`
+                          name      = open_element->qname-name
+                        ) TO nodes_tab.
+
+          DATA(attributes) = open_element->get_attributes( ).
+
+          LOOP AT attributes INTO DATA(attribute).
+            APPEND VALUE #( node_type = `attribute`
+                            name      = attribute->qname-name
+                            value  = SWITCH #( attribute->value_type WHEN if_sxml_value=>co_vt_text THEN attribute->get_value( ) )
+                          ) TO nodes_tab.
+          ENDLOOP.
+
+        WHEN  if_sxml_node=>co_nt_element_close.
+          DATA(close_element) = CAST if_sxml_close_element( node_oo ).
+
+          APPEND VALUE #( node_type = `close element`
+                          name      = close_element->qname-name
+                        ) TO nodes_tab.
+
+        WHEN  if_sxml_node=>co_nt_value.
+          DATA(value_node_oo) = CAST if_sxml_value_node( node_oo ).
+
+          APPEND VALUE #( node_type = `value`
+                          value     = SWITCH #( value_node_oo->value_type WHEN if_sxml_value=>co_vt_text THEN value_node_oo->get_value( ) )
+                        ) TO nodes_tab.
+
+        WHEN OTHERS.
+          APPEND VALUE #( node_type = `Error` ) TO nodes_tab.
+      ENDCASE.
     ENDDO.
-  CATCH cx_sxml_parse_error.
-    ...
+  CATCH cx_sxml_state_error INTO DATA(error_parse_oo).
+    DATA(error_parse_oo_text) = error_parse_oo->get_text( ).
 ENDTRY.
+
+*--- nodes_tab ---
+*NODE_TYPE        NAME        VALUE     
+*open element     node                  
+*attribute        attr_a      123       
+*open element     subnode1              
+*open element     hallo                 
+*value                        hi        
+*close element    hallo                 
+*close element    subnode1              
+*open element     subnode2              
+*open element     letter                
+*value                        a         
+*close element    letter                
+*open element     date                  
+*attribute        format      mm-dd-yyyy
+*value                        01-01-2025
+*close element    date                  
+*close element    subnode2              
+*open element     subnode3              
+*open element     text                  
+*attribute        attr_b      1         
+*attribute        attr_c      a         
+*value                        abc       
+*close element    text                  
+*open element     text                  
+*attribute        attr_b      2         
+*attribute        attr_c      b         
+*value                        def       
+*close element    text                  
+*open element     text                  
+*attribute        attr_b      3         
+*attribute        attr_c      c         
+*value                        ghi       
+*close element    text                  
+*open element     text                  
+*attribute        attr_b      4         
+*attribute        attr_c      d         
+*value                        jkl       
+*close element    text                  
+*close element    subnode3              
+*close element    node              
 ```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
@@ -1479,7 +1704,7 @@ ENDCLASS.
 ### Converting string <-> xstring
 In the code snippets above and in the executable example, many operations are performed using binary data.
 This excursion shows the conversion of string <-> xstring using a codepage. The examples use UTF-8.
-For example, you can use the `cl_abap_conv_codepage` class and the [XCO library](https://help.sap.com/docs/btp/sap-business-technology-platform/xco-library?version=Cloud). Using the `xco_cp` class of the XCO library, you can also process Base64 representations of raw binary data (see the snippet for `xco_cp` in the [String Processing](/22_Released_ABAP_Classes.md#string-processing) section of the *Regular ABAP Classes* cheat sheet). 
+For example, you can use the `cl_abap_conv_codepage` class and the [XCO library](https://help.sap.com/docs/btp/sap-business-technology-platform/xco-library?version=Cloud). Using the `xco_cp` class of the XCO library, you can also process Base64 representations of raw binary data (see the snippet for `xco_cp` in the [String Processing](/22_Released_ABAP_Classes.md#string-processing) section of the *Released ABAP Classes* cheat sheet). 
 
 ```abap
 DATA(xml_string) = `<TXT>ABAP</TXT>`.

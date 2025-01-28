@@ -1527,8 +1527,19 @@ DATA(dobj_enum_b) = b.
 "in special conversions using CONV. A base type is flat, elementary, and 
 "has a maximum length of 16 bytes.
 DATA some_dobj TYPE c LENGTH 2 VALUE 'ap'.
-DATA(dobj_enum_c) = CONV t_enum_struc( some_dobj ).
+"M
+DATA(dobj_enum_c) = CONV t_enum_struc( some_dobj ). 
 ASSERT dobj_enum_c = en_struc-m.
+
+"Getting the base value of an enumerated type
+"hi
+DATA(base_value_k) = CONV basetype( en_struc-k ). 
+
+"yz
+DATA(base_value_i) = CONV basetype( i ). 
+
+"1
+DATA(base_value_b) = CONV i( b ). 
 
 "Conversion not possible
 DATA some_string TYPE string VALUE 'ap'.

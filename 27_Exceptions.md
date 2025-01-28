@@ -9,6 +9,7 @@
     - [Components of Exception Classes](#components-of-exception-classes)
     - [Raising Class-Based Exceptions](#raising-class-based-exceptions)
     - [Handling Exceptions Using TRY Control Structures](#handling-exceptions-using-try-control-structures)
+      - [TRY Control Structures](#try-control-structures)
       - [CATCH ... INTO ...: Storing Exception Objects and Evaluation](#catch--into--storing-exception-objects-and-evaluation)
       - [CLEANUP Statements](#cleanup-statements)
       - [RETRY Statements](#retry-statements)
@@ -249,6 +250,7 @@ Example:
   - `is_resumable`: Flag for [resumable exceptions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenresumable_exception_glosry.htm); indicates whether the exception can be resumed and leave a `CATCH BEFORE UNWIND` block
   
 > **💡 Note**<br>
+> - Further additions may be available depending on the exception object.
 > - Usually, instances of exception classes are created when exceptions are raised. However, instances can also be created programmatically, e.g., with the `NEW` operator (if the classes are not abstract).
 > - It is possible to define additional methods and attributes in exception classes, for example, for passing more information about error situations to handlers. Custom attributes should be defined as `READ-ONLY`.
 > - Find examples in the section below, covering `CATCH ... INTO ...`.
@@ -336,6 +338,8 @@ ENDDO.
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ### Handling Exceptions Using TRY Control Structures 
+
+#### TRY Control Structures
 
 - Exceptions can be handled locally using [`TRY`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abaptry.htm) control structures
 - To be prepared for potential exceptions that are raised when executing statements, statements can be included and executed within such a `TRY` control structure representing a *protected area*.

@@ -319,6 +319,7 @@ FIELD-SYMBOLS:
   <simple>         TYPE simple, "Elementary data type including enumerated types and
                                 "structured types with exclusively character-like flat components
   <object>         TYPE REF TO object. "object can only be specified after REF TO; can point to any object
+                                       "The types REF TO object and REF TO data are considered complete types.
 
 "Data objects to work with
 DATA: BEGIN OF s,
@@ -428,6 +429,7 @@ ASSIGN s-structure TO <simple>.
 ASSIGN s-xl1 TO <simple>.
 "ASSIGN s-tab_ha TO <simple>.
 
+s-oref = NEW cl_system_uuid( ).
 ASSIGN s-oref TO <object>.
 ```
 
@@ -459,15 +461,20 @@ ASSIGN s-oref TO <object>.
 #### Declaring Data Reference Variables
 
 ``` abap
-"Example declarations of data reference variables with static types.
-"The static types can be complete or generic (but only data can be used). 
-"Note that they do not yet point to a data object. At this stage, 
-"initial reference variables contain null references.
+"The following example shows a selection of declaration options with data reference 
+"variables with static types. The static types can be complete or generic (but 
+"only data can be used). 
+"Note that the variables do not yet point to a data object. At this stage, 
+"initial reference variables contain null references. 
+DATA num type i.
+
 DATA: ref_a TYPE REF TO i,                 "Complete data type
-      ref_b TYPE REF TO some_dbtab,        "Complete data type
-      ref_c LIKE REF TO some_data_object,
+      ref_b TYPE REF TO zdemo_abap_carr,   "Complete data type
+      ref_c LIKE REF TO num,
       ref_d TYPE REF TO data,              "Generic data type
-      ref_e LIKE ref_a.                    "Referring to an existing data reference variable                  
+      ref_e LIKE ref_a,                    "Referring to an existing data reference variable
+      ref_f TYPE TABLE OF REF TO i,        "Reference table, complete data type
+      ref_g TYPE TABLE OF REF TO data.     "Reference table, generic data type                 
 ```
 
 As shown below, instead of the explicit declaration, inline declarations are also possible. 
@@ -1047,6 +1054,7 @@ DATA(idx) = line_index( dref->*[ ('CARRID') = 'LH' ] ).
 Some example contexts of using data references are as follows:
 
 *Overwriting data reference variables*:
+
 ``` abap
 DATA dref TYPE REF TO data.
 dref = NEW i( 1 ).
@@ -1108,6 +1116,7 @@ READ TABLE fli_tab INDEX 1 REFERENCE INTO DATA(rt_ref).
 ```
 
 *Data reference variables as part of structures and internal tables*:
+
 ``` abap
 "Unlike field symbols, data reference variables can be used as
 "components of structures or columns in internal tables.
@@ -1127,6 +1136,19 @@ struc = VALUE #( num = 1 ref = NEW #( 2 ) ).
 DATA itab LIKE TABLE OF struc WITH EMPTY KEY.
 APPEND struc TO itab.
 itab[ 1 ]-ref->* = 123.
+```
+
+*Internal tables of type REF TO data can contain any data references*:
+
+```abap
+DATA it_ref TYPE TABLE OF REF TO data.
+
+"Such a table can hold any data type
+it_ref = VALUE #( ( NEW i( 3 ) ) "Elementary type
+                  ( NEW string( `hello` ) ) "Elementary type
+                  ( NEW zdemo_abap_flsch( carrid = 'XY' connid = '1234' ) ) "Structured type
+                  ( NEW string_table( ( `a` ) ( `b` ) ( `c` ) ) ) "Table type
+                ).
 ```
 
 > **✔️ Hint**<br>
@@ -2309,8 +2331,7 @@ ENDCLASS.
 
 ### Dynamic Method Calls
 
-
-- The following code snippet shows dynamically specifying method calls.
+- The following code snippet shows dynamically specifying method calls. Find three example classes below the syntax pattern snippet.
 - The snippet covers methods. Dynamic method calls require `CALL METHOD` statements. 
 - Find an example of a dynamic function module call - as another example of [procedure](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenprocedure_glosry.htm "Glossary Entry") calls - in the [Program Flow Logic](./13_Program_Flow_Logic.md#function-module-example) cheat sheet.
 
@@ -2359,7 +2380,14 @@ CALL METHOD class=>(meth) PARAMETER-TABLE ptab.
 "The addition EXCEPTION-TABLE for exceptions is not dealt with here.
 ```
 
-**Example class 1** 
+
+**Click to expand the expandable sections for example code**
+
+<details>
+  <summary>🟢 Example class 1</summary>
+  <!-- -->
+
+<br>
 
 The following example class explores dynamic method calls with simple methods. You can create a demo class called `zcl_demo_abap` and copy and paste the following code. Once activated, you can choose *F9* in ADT to run the class. The example is not designed to display output in the console.
 
@@ -2547,8 +2575,16 @@ CLASS zcl_demo_abap IMPLEMENTATION.
 ENDCLASS.
 ```
 
+</details>  
 
-**Example class 2** 
+<br>
+
+<details>
+  <summary>🟢 Example class 2</summary>
+  <!-- -->
+
+<br>
+
 
 The following simplified example highlights several things in the context of a dynamic method call example: 
 - Dynamic method call and assigning actual parameters to formal parameters statically
@@ -2623,6 +2659,110 @@ CLASS zcl_demo_test IMPLEMENTATION.
 
 ENDCLASS.
 ```
+
+</details>  
+
+<br>
+
+<details>
+  <summary>🟢 Example class 3</summary>
+  <!-- -->
+
+<br>
+
+The following example demonstrates dynamic method calls with methods defined in interfaces.
+
+<table>
+
+<tr>
+<td> Class include </td> <td> Code </td>
+</tr>
+
+<tr>
+<td> 
+
+Global class
+
+ </td>
+
+ <td> 
+
+``` abap
+CLASS zcl_demo_abap DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
+
+  PUBLIC SECTION.
+    INTERFACES if_oo_adt_classrun.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+ENDCLASS.
+
+CLASS zcl_demo_abap IMPLEMENTATION.
+  METHOD if_oo_adt_classrun~main.
+
+    "Creating an instance of the local class that implements
+    "an interface
+    DATA(oref) = NEW lcl( ).
+
+    "Static method call
+    DATA(number) = oref->lif~get_number( ).
+    out->write( number ).
+
+    "Dynamic method call
+    "Note the uppercase.
+    TRY.
+        CALL METHOD oref->('lif~get_number') RECEIVING number = number.
+        out->write( number ).
+      CATCH cx_sy_dyn_call_illegal_method INTO DATA(error).
+        DATA(error_text) = error->get_text( ).
+        out->write( error_text ).
+    ENDTRY.
+
+    CALL METHOD oref->('LIF~GET_NUMBER') RECEIVING number = number.
+    out->write( number ).
+  ENDMETHOD.
+ENDCLASS.
+``` 
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+CCIMP include (*Local Types* tab in ADT)
+
+ </td>
+
+ <td> 
+
+``` abap
+INTERFACE lif.
+  METHODS get_number RETURNING VALUE(number) TYPE i.
+ENDINTERFACE.
+
+CLASS lcl DEFINITION.
+  PUBLIC SECTION.
+    INTERFACES lif.
+ENDCLASS.
+
+CLASS lcl IMPLEMENTATION.
+  METHOD lif~get_number.
+    number = cl_abap_random_int=>create( seed = cl_abap_random=>seed( )
+                                         min  = 1
+                                         max  = 1000 )->get_next( ).
+  ENDMETHOD.
+ENDCLASS.
+``` 
+
+ </td>
+</tr>
+
+</table>
+</details>  
+
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 

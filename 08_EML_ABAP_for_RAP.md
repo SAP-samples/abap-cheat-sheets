@@ -8,6 +8,7 @@
   - [ABAP Behavior Pools (ABP)](#abap-behavior-pools-abp)
     - [RAP Handler Classes and Methods](#rap-handler-classes-and-methods)
     - [RAP Saver Class and Saver Methods](#rap-saver-class-and-saver-methods)
+    - [ABP Auxiliary Classes](#abp-auxiliary-classes)
   - [BDEF Derived Types](#bdef-derived-types)
     - [BDEF Derived Type Syntax and Declaring Data Types and Data Objects](#bdef-derived-type-syntax-and-declaring-data-types-and-data-objects)
     - [Components of BDEF Derived Types](#components-of-bdef-derived-types)
@@ -577,8 +578,7 @@ sequence](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?f
 methods](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabp_saver_method_glosry.htm "Glossary Entry")
 to save data from the transactional buffer to the database).
 
-> **💡 Note**<br>
-> You can optionally define auxiliary classes for ABPs using the syntax `... FOR BEHAVIOR OF bdef_name ...`. These classes reference a RAP business object and have enhanced access rights to it. Their main function is to support implementation in an ABAP behavior pool. They achieve this by offering reusable methods and enabling developers to implement RAP behavior simultaneously.
+
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
@@ -748,6 +748,17 @@ CLASS lsc_bdef DEFINITION INHERITING FROM cl_abap_behavior_saver.
 
 ENDCLASS.
 ```
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+### ABP Auxiliary Classes
+
+- You can optionally define auxiliary classes for ABPs using the syntax `... FOR BEHAVIOR OF bdef_name ...`. 
+- These classes are implicitly final global classes and reference a RAP business object.
+- They have enhanced access rights to RAP BOs, and ABAP EML statements with the `IN LOCAL MODE` and `PRIVILEGED` can be used. 
+- Their main function is to support implementation in an ABAP behavior pool. They achieve this by offering reusable methods and enabling developers to implement RAP behavior simultaneously. Furthermore, they can be used to provide utility methods for raising [RAP business events](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_entity_event_glosry.htm). 
+- Note that RAP handler, saver, and event handler methods as such can only be implemented in a behavior pool, but they can delegate tasks to methods in ABP auxiliary classes. It is not recommended to completely outsource the handler and saver method implementations to auxiliary classes to prevent unnecessary overhead.
+- As a prerequisite, the ABAP auxiliary class name is specified in the BDEF using the [`auxiliary class ...` notation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABENBDL_AUXILIARY_CLASS.html). Multiple ABAP auxiliary classes can be specified. 
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 

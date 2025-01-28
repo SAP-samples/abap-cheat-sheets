@@ -512,7 +512,7 @@ CLASS zcl_demo_abap_xml_json IMPLEMENTATION.
 
               LOOP AT attributes INTO DATA(attribute).
                 APPEND VALUE #( node_type = `attribute`
-                                name      = open_element->qname-name
+                                name      = attribute->qname-name
                                 value  = SWITCH #( attribute->value_type WHEN if_sxml_value=>co_vt_text THEN attribute->get_value( ) )
                               ) TO nodes_tab.
               ENDLOOP.
@@ -521,7 +521,7 @@ CLASS zcl_demo_abap_xml_json IMPLEMENTATION.
               DATA(close_element) = CAST if_sxml_close_element( node_oo ).
 
               APPEND VALUE #( node_type = `close element`
-                              name      = open_element->qname-name
+                              name      = close_element->qname-name
                             ) TO nodes_tab.
 
             WHEN  if_sxml_node=>co_nt_value.

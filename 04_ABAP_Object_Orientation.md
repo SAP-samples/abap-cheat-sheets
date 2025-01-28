@@ -4371,7 +4371,7 @@ Global class
  <td> 
 
 ``` abap
-CLASS zcl_some_class DEFINITION
+CLASS zcl_demo_abap DEFINITION
   PUBLIC
   FINAL
   CREATE PUBLIC .
@@ -4383,7 +4383,7 @@ CLASS zcl_some_class DEFINITION
   PRIVATE SECTION.
 ENDCLASS.
 
-CLASS zcl_some_class IMPLEMENTATION.
+CLASS zcl_demo_abap IMPLEMENTATION.
   METHOD if_oo_adt_classrun~main.
 
     "Object reference variables
@@ -4629,7 +4629,7 @@ Global class
  <td> 
 
 ``` abap
-CLASS zcl_some_class DEFINITION
+CLASS zcl_demo_abap DEFINITION
   PUBLIC
   FINAL
   CREATE PUBLIC .
@@ -4641,7 +4641,7 @@ CLASS zcl_some_class DEFINITION
   PRIVATE SECTION.
 ENDCLASS.
 
-CLASS zcl_some_class IMPLEMENTATION.
+CLASS zcl_demo_abap IMPLEMENTATION.
   METHOD if_oo_adt_classrun~main.
 
     "Object reference variables
