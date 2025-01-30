@@ -6343,7 +6343,7 @@ SET HANDLER handler3.
 - Here, a selection of design patterns is covered, using simplified, non-semantic examples to reduce complexity and give a rough idea.
 
 > **💡 Note**<br>
-> - The examples are not best practices or role models but aim to experiment with the patterns and convey the basic concepts. 
+> - The examples neither represent best practices nor role models. They only aim to experiment with the patterns in simplified contexts and convey the basic concepts. 
 > - More design patterns exist beyond those covered here, and different implementations or class setup strategies may apply. 
 > - Most examples are structured for easy exploration using simple, self-contained ABAP classes (i.e. only 1 class pool including local classes instead of multiple global classes) as follows:
 >    - Global class:
@@ -8930,6 +8930,372 @@ ENDCLASS.
 </table>
 
 </details>  
+
+<br>
+
+<details>
+  <summary>🟢 Decorator</summary>
+  <!-- -->
+
+<br>
+
+- Enhances and modifies existing objects by wrapping them in other objects (objects of decorator classes) without modifying the original object setup and class code.
+- Useful when flexibility is needed to handle various combinations and functionalities of objects.
+- An exemplary class setup may include:
+  - An interface that defines common functions
+  - A base class implementing the interface; objects of this class are meant to be enhanced (decorated)
+  - An abstract decorator class that delegates functionality enhancement
+  - Concrete decorator classes that enhance existing objects
+    - Objects of the base class can be wrapped in concrete decorator objects, enhancing functionality since all objects share features by implementing the interface
+- Advantages:
+  - Users can decorate objects with any decorator since all implement the interface.
+  - All classes implement the interface, allowing all objects to be accessed through the same interface reference variable. 
+  - Users can work with any base class object, be it a *direct* object of the base class or a decorated object.
+  - The pattern offers flexibility as you can dynamically enhance objects using any decorators to achieve any desired object.
+  - Maintenance can be simplified because each decorator class encapsulates specific functionality, and you can easily extend functionality by adding more decorator classes.
+
+The following example demonstrates the decorator design pattern in a pizza creation context. Starting with a basic pizza (object), you can create various pizzas (decorate the pizza object) by adding ingredients, which also changes the pizza's cost:
+ 
+- Global class:
+  - Implements the `if_oo_adt_classrun` interface and calls methods from local classes in the CCIMP include.  
+  - Demonstrates the decorator design pattern by creating an `lcl_basic_pizza` object. This object is enhanced (decorated) by wrapping it in objects of concrete decorator classes `lcl_decorator_*`.
+  - You can run the class by choosing F9 in ADT. The example displays output in the ADT console.
+- CCIMP include (*Local Types* tab in ADT):
+  - `lif_pizza`
+    - An interface defining a common setup for all decorators and decorated objects.
+    - Implemented by all other local classes in the example, including the concrete base class and decorator classes.
+    - Defines the methods `create_pizza` for pizza creation and `get_costs` for cost calculation.
+  - `lcl_basic_pizza` 
+    - Objects of the class represent basic objects that can be decorated.
+    - Implements the `lif_pizza` interface.
+    - Defines the instance `constructor` that specifies an integer as importing parameter to set the base cost.
+  - `lcl_pizza_decorator`
+    - Represents an abstract decorator class.
+    - Implements the `lif_pizza` interface.
+    - As an abstract class, object creation is restricted to its subclasses (the concrete decorator classes).
+    - The instance constructor receives the decorated pizza object, linking concrete decorators to the object being decorated. This reference is assigned to an interface reference variable in the protected section, allowing subclass access (though not relevant for this example). Subclasses call the constructor.
+    - The implemented interface methods delegate calls to the wrapped/decorated object using the interface reference variable.
+  - `lcl_decorator_*` classes
+    - Represent concrete decorator classes.
+    - Inherit from the abstract decorator class `lcl_pizza_decorator`.
+    - Their objects can wrap and enhance existing objects.
+    - Since `lcl_pizza_decorator` implements `lif_pizza`, the `lcl_decorator_*` classes can also redefine the interface methods.
+    - The superclass `lcl_pizza_decorator` defines an instance constructor expecting a reference (`REF TO lif_pizza`) as an importing parameter. It is mandatory that the subclasses call the superclass's constructor, yet it is not mandatory for the constructor to be explicitly defined and implemented. The subclasses in the example explicitly define and implement the instance constructor. You can, for example, check out the `lcl_decorator_salami` class, and remove the definition `METHODS constructor IMPORTING pizza TYPE REF TO lif_pizza.` and its implementation. There will not be syntax errors when creating objects in the global class using `lcl_decorator_salami`. Due to inheritance, a reference is still required to be passed for the importing parameter although not explicitly specified in the local subclass.
+    - Implementations of interface methods in these classes make simple modifications, like adding ingredients and adjusting total costs. Each concrete decorator class introduces its own functionality, allowing dynamic stacking of decorations. The `super->...` calls trigger the calling of superclass implementations. Since the link to the decorated object is estrablished, ingredients are added to the existing ingredients, and costs are added to the existing costs.
+
+<table>
+
+<tr>
+<td> Class include </td> <td> Code </td>
+</tr>
+
+<tr>
+<td> 
+
+Global class
+
+ </td>
+
+ <td> 
+
+``` abap
+CLASS zcl_demo_abap DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
+
+  PUBLIC SECTION.
+    INTERFACES if_oo_adt_classrun.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+ENDCLASS.
+
+CLASS zcl_demo_abap IMPLEMENTATION.
+  METHOD if_oo_adt_classrun~main.
+    DATA(divider) = |{ repeat( val = `_` occ = 75 ) }\n|.
+
+    "---------------- Basic pizza ----------------
+    DATA(basic_pizza) = NEW lcl_basic_pizza( 10 ).
+    DATA(basic_pizza_created) = basic_pizza->lif_pizza~create_pizza( ).
+    DATA(basic_pizza_costs) = basic_pizza->lif_pizza~get_costs( ).
+
+    out->write( `Basic pizza` ).
+    out->write( |\nIngredients:| ).
+    out->write( basic_pizza_created ).
+    out->write( |\nCosts:| ).
+    out->write( basic_pizza_costs ).
+    out->write( divider ).
+
+    "---------------- Salami pizza ----------------
+    DATA(salami_pizza) = NEW lcl_decorator_salami( pizza = basic_pizza ).
+    DATA(salami_pizza_created) = salami_pizza->lif_pizza~create_pizza( ).
+    DATA(salami_pizza_costs) = salami_pizza->lif_pizza~get_costs( ).
+
+    out->write( `Salami pizza` ).
+    out->write( |\nIngredients:| ).
+    out->write( salami_pizza_created ).
+    out->write( |\nCosts:| ).
+    out->write( salami_pizza_costs ).
+    out->write( divider ).
+
+    "---------------- Vegetable pizza ----------------
+    DATA(vegetarian_pizza) = NEW lcl_decorator_vegetables( pizza = basic_pizza ).
+    DATA(vegetarian_pizza_created) = vegetarian_pizza->lif_pizza~create_pizza( ).
+    DATA(vegetarian_pizza_costs) = vegetarian_pizza->lif_pizza~get_costs( ).
+
+    out->write( `Vegetable pizza` ).
+    out->write( |\nIngredients:| ).
+    out->write( vegetarian_pizza_created ).
+    out->write( |\nCosts:| ).
+    out->write( vegetarian_pizza_costs ).
+    out->write( divider ).
+
+    "---------------- Vegetable/salami pizza ----------------
+    DATA(vegetable_salami_pizza) = NEW lcl_decorator_vegetables(
+      pizza = NEW lcl_decorator_salami(
+      pizza = NEW lcl_basic_pizza( 10 ) ) ).
+    DATA(vegetable_salami_pizza_created) = vegetable_salami_pizza->lif_pizza~create_pizza( ).
+    DATA(vegetable_salami_pizza_costs) = vegetable_salami_pizza->lif_pizza~get_costs( ).
+
+    out->write( `Vegetable/salami pizza` ).
+    out->write( |\nIngredients:| ).
+    out->write( vegetable_salami_pizza_created ).
+    out->write( |\nCosts:| ).
+    out->write( vegetable_salami_pizza_costs ).
+    out->write( divider ).
+
+    "---------------- Mushroom/salami pizza ----------------
+    DATA(mushrooms_salami_pizza) = NEW lcl_decorator_mushrooms(
+      pizza = NEW lcl_decorator_salami(
+      pizza = NEW lcl_basic_pizza( 10 ) ) ).
+    DATA(mushrooms_salami_pizza_created) = mushrooms_salami_pizza->lif_pizza~create_pizza( ).
+    DATA(mushrooms_salami_pizza_costs) = mushrooms_salami_pizza->lif_pizza~get_costs( ).
+
+    out->write( `Mushrooms/salami pizza` ).
+    out->write( |\nIngredients:| ).
+    out->write( mushrooms_salami_pizza_created ).
+    out->write( |\nCosts:| ).
+    out->write( mushrooms_salami_pizza_costs ).
+    out->write( divider ).
+
+    "--- Various pizzas (created using the same interface reference variable) ---
+    DATA some_pizza TYPE REF TO lif_pizza.
+    some_pizza = NEW lcl_basic_pizza( 10 ).
+    DATA(some_pizza_created_a) = some_pizza->create_pizza( ).
+    DATA(some_pizza_costs_a) = some_pizza->get_costs( ).
+
+    some_pizza = NEW lcl_decorator_vegetables( pizza = some_pizza ).
+    DATA(some_pizza_created_b) = some_pizza->create_pizza( ).
+    DATA(some_pizza_costs_b) = some_pizza->get_costs( ).
+
+    some_pizza = NEW lcl_decorator_salami( pizza = some_pizza ).
+    DATA(some_pizza_created_c) = some_pizza->create_pizza( ).
+    DATA(some_pizza_costs_c) = some_pizza->get_costs( ).
+
+    "---------------- Allergy-friendly vegetable pizza ----------------
+    DATA(allergy_friendly_vegetbl_pizza) = NEW lcl_decorator_allergy_friendly(
+        pizza = NEW lcl_decorator_vegetables(
+        pizza = NEW lcl_basic_pizza( 10 ) ) ).
+    DATA(all_friendly_veg_pizza_created) = allergy_friendly_vegetbl_pizza->lif_pizza~create_pizza( ).
+    DATA(all_friendly_veg_pizza_costs) = allergy_friendly_vegetbl_pizza->lif_pizza~get_costs( ).
+
+    out->write( `Allergy-friendly vegetable pizza` ).
+    out->write( |\nIngredients:| ).
+    out->write( all_friendly_veg_pizza_created ).
+    out->write( |\nCosts:| ).
+    out->write( all_friendly_veg_pizza_costs ).
+    out->write( divider ).
+
+    "---------------- Pizza with all ingredients ----------------
+    "Using all concrete decorator classes of the example
+    DATA(misc_pizza) = NEW lcl_decorator_allergy_friendly(
+       pizza = NEW lcl_decorator_mushrooms(
+       pizza = NEW lcl_decorator_salami(
+       pizza = NEW lcl_decorator_vegetables(
+       pizza = NEW lcl_basic_pizza( 10 ) ) ) ) ).
+    DATA(misc_pizza_created) = misc_pizza->lif_pizza~create_pizza( ).
+    DATA(misc_pizza_costs) = misc_pizza->lif_pizza~get_costs( ).
+
+    out->write( `Pizza with all ingredients` ).
+    out->write( |\nIngredients:| ).
+    out->write( misc_pizza_created ).
+    out->write( |\nCosts:| ).
+    out->write( misc_pizza_costs ).
+  ENDMETHOD.
+ENDCLASS.
+``` 
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+CCIMP include (Local Types tab in ADT)
+
+ </td>
+
+ <td> 
+
+``` abap
+**********************************************************************
+"Interface
+
+INTERFACE lif_pizza.
+  METHODS create_pizza RETURNING VALUE(ingredients) TYPE string_table.
+  METHODS get_costs RETURNING VALUE(costs) TYPE i.
+ENDINTERFACE.
+
+**********************************************************************
+"Basic pizza to be decorated
+
+CLASS lcl_basic_pizza DEFINITION.
+  PUBLIC SECTION.
+    INTERFACES lif_pizza.
+    METHODS constructor IMPORTING basic_pizza_costs TYPE i.
+  PRIVATE SECTION.
+    DATA pizza_costs TYPE i.
+ENDCLASS.
+
+CLASS lcl_basic_pizza IMPLEMENTATION.
+  METHOD constructor.
+    pizza_costs = basic_pizza_costs.
+  ENDMETHOD.
+
+  METHOD lif_pizza~create_pizza.
+    ingredients = VALUE #( ( `dough` ) ( `tomato sauce` ) ( `cheese` ) ).
+  ENDMETHOD.
+
+  METHOD lif_pizza~get_costs.
+    costs = pizza_costs.
+  ENDMETHOD.
+ENDCLASS.
+
+**********************************************************************
+"Abstract decorator class
+
+CLASS lcl_pizza_decorator DEFINITION ABSTRACT.
+  PUBLIC SECTION.
+    INTERFACES lif_pizza.
+    METHODS constructor IMPORTING pizza TYPE REF TO lif_pizza.
+  PROTECTED SECTION.
+    DATA decorated_pizza TYPE REF TO lif_pizza.
+ENDCLASS.
+
+CLASS lcl_pizza_decorator IMPLEMENTATION.
+  METHOD constructor.
+    decorated_pizza = pizza.
+  ENDMETHOD.
+
+  METHOD lif_pizza~create_pizza.
+    ingredients = decorated_pizza->create_pizza( ).
+  ENDMETHOD.
+
+  METHOD lif_pizza~get_costs.
+    costs = decorated_pizza->get_costs( ).
+  ENDMETHOD.
+ENDCLASS.
+
+**********************************************************************
+"Concrete decorator classes
+
+CLASS lcl_decorator_salami DEFINITION INHERITING FROM lcl_pizza_decorator.
+  PUBLIC SECTION.
+    METHODS constructor IMPORTING pizza TYPE REF TO lif_pizza.
+    METHODS lif_pizza~create_pizza REDEFINITION.
+    METHODS lif_pizza~get_costs REDEFINITION.
+ENDCLASS.
+
+CLASS lcl_decorator_salami IMPLEMENTATION.
+  METHOD constructor.
+    super->constructor( pizza ).
+  ENDMETHOD.
+
+  METHOD lif_pizza~create_pizza.
+    ingredients = super->lif_pizza~create_pizza( ).
+    APPEND `salami` TO ingredients.
+  ENDMETHOD.
+
+  METHOD lif_pizza~get_costs.
+    costs = super->lif_pizza~get_costs( ) + 1.
+  ENDMETHOD.
+ENDCLASS.
+
+CLASS lcl_decorator_mushrooms DEFINITION INHERITING FROM lcl_pizza_decorator.
+  PUBLIC SECTION.
+    METHODS constructor IMPORTING pizza TYPE REF TO lif_pizza.
+    METHODS lif_pizza~create_pizza REDEFINITION.
+    METHODS lif_pizza~get_costs REDEFINITION.
+ENDCLASS.
+
+CLASS lcl_decorator_mushrooms IMPLEMENTATION.
+  METHOD constructor.
+    super->constructor( pizza ).
+  ENDMETHOD.
+
+  METHOD lif_pizza~create_pizza.
+    ingredients = super->lif_pizza~create_pizza( ).
+    APPEND `mushrooms` TO ingredients.
+  ENDMETHOD.
+
+  METHOD lif_pizza~get_costs.
+    costs = super->lif_pizza~get_costs( ) + 1.
+  ENDMETHOD.
+ENDCLASS.
+
+CLASS lcl_decorator_vegetables DEFINITION INHERITING FROM lcl_pizza_decorator.
+  PUBLIC SECTION.
+    METHODS constructor IMPORTING pizza TYPE REF TO lif_pizza.
+    METHODS lif_pizza~create_pizza REDEFINITION.
+    METHODS lif_pizza~get_costs REDEFINITION.
+ENDCLASS.
+
+CLASS lcl_decorator_vegetables IMPLEMENTATION.
+  METHOD constructor.
+    super->constructor( pizza ).
+  ENDMETHOD.
+
+  METHOD lif_pizza~create_pizza.
+    ingredients = super->lif_pizza~create_pizza( ).
+    APPEND LINES OF VALUE string_table( ( `red pepper` ) ( `zucchini` ) ( `broccoli` ) ) TO ingredients.
+  ENDMETHOD.
+
+  METHOD lif_pizza~get_costs.
+    costs = super->lif_pizza~get_costs( ) + 2.
+  ENDMETHOD.
+ENDCLASS.
+
+CLASS lcl_decorator_allergy_friendly DEFINITION INHERITING FROM lcl_pizza_decorator.
+  PUBLIC SECTION.
+    METHODS constructor IMPORTING pizza TYPE REF TO lif_pizza.
+    METHODS lif_pizza~create_pizza REDEFINITION.
+    METHODS lif_pizza~get_costs REDEFINITION.
+ENDCLASS.
+
+CLASS lcl_decorator_allergy_friendly IMPLEMENTATION.
+  METHOD constructor.
+    super->constructor( pizza ).
+  ENDMETHOD.
+
+  METHOD lif_pizza~create_pizza.
+    ingredients = super->lif_pizza~create_pizza( ).
+    REPLACE ALL OCCURRENCES OF `dough` IN TABLE ingredients WITH `gluten-free dough`.
+    REPLACE ALL OCCURRENCES OF `cheese` IN TABLE ingredients WITH `lactose-free cheese`.
+  ENDMETHOD.
+
+  METHOD lif_pizza~get_costs.
+    costs = super->lif_pizza~get_costs( ) + 1.
+  ENDMETHOD.
+ENDCLASS.
+``` 
+
+ </td>
+</tr>
+
+</table>
+
+</details>  
+
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 

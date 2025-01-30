@@ -239,31 +239,114 @@ Creating and and converting system UUIDs with various algorithms
 <br><br>
 
 ``` abap
-"Creating UUIDs in binary format (16 bytes)
 TRY.
-    DATA(uuid) = cl_system_uuid=>create_uuid_x16_static( ) .
-  CATCH cx_uuid_error.
-ENDTRY.
+    "----------- Creating UUIDs -----------
 
-"e.g. B2B012691AC31EDEADA0A495A7130961
+    "16 Byte System UUID in Binary Format
+    "Example: 429A229A88021EDFB7E2E25DF99A8E73
+    DATA(uuid_x16) = cl_system_uuid=>create_uuid_x16_static( ).
+
+    "16 Byte System UUID in Base64
+    "Example: GfeYceW27j{tuk9T{PgkSm
+    DATA(uuid_c22) = cl_system_uuid=>create_uuid_c22_static( ).
+
+    "16 Byte System UUID in Base32
+    "Example: IKNCFGUIAIPN7N7C4JO7TGWOOM
+    DATA(uuid_c26) = cl_system_uuid=>create_uuid_c26_static( ).
+
+    "16 Byte System UUID in Hex Format
+    "Example: 429A229A88021EDFB7E2E25DF99AEE73
+    DATA(uuid_c32) = cl_system_uuid=>create_uuid_c32_static( ).
+
+    "16 Byte System UUID in RFC4122 Format
+    "Example: 429A229A-8802-1EDF-B7E2-E25DF99B0E73
+    DATA(uuid_c36) = cl_system_uuid=>create_uuid_c36_static( ).
+
+    "----------- Converting UUIDs -----------
+
+    cl_system_uuid=>convert_uuid_x16_static(
+      EXPORTING
+        uuid     = uuid_x16
+      IMPORTING
+        uuid_c22 = DATA(x16_to_c22)
+        uuid_c32 = DATA(x16_to_c32)
+        uuid_c26 = DATA(x16_to_c26)
+        uuid_c36 = DATA(x16_to_c36) ).
+
+    cl_system_uuid=>convert_uuid_c22_static(
+      EXPORTING
+        uuid     = uuid_c22
+      IMPORTING
+        uuid_x16 = DATA(c22_to_x16)
+        uuid_c32 = DATA(c22_to_c32)
+        uuid_c26 = DATA(c22_to_c26)
+        uuid_c36 = DATA(c22_to_c36) ).
+
+    cl_system_uuid=>convert_uuid_c26_static(
+      EXPORTING
+        uuid     = uuid_c26
+      IMPORTING
+        uuid_x16 = DATA(c26_to_x16)
+        uuid_c22 = DATA(c26_to_c22)
+        uuid_c32 = DATA(c26_to_c32)
+        uuid_c36 = DATA(c26_to_c36) ).
+
+    cl_system_uuid=>convert_uuid_c32_static(
+      EXPORTING
+        uuid     = uuid_c32
+      IMPORTING
+        uuid_x16 = DATA(c32_to_x16)
+        uuid_c22 = DATA(c32_to_c22)
+        uuid_c26 = DATA(c32_to_c26)
+        uuid_c36 = DATA(c32_to_c36) ).
+
+    cl_system_uuid=>convert_uuid_c36_static(
+      EXPORTING
+        uuid     = uuid_c36
+      IMPORTING
+        uuid_x16 = DATA(c36_to_x16)
+        uuid_c22 = DATA(c36_to_c22)
+        uuid_c26 = DATA(c36_to_c26)
+        uuid_c32 = DATA(c36_to_c32) ).
+
+  CATCH cx_uuid_error INTO DATA(error).
+    DATA(error_text) = error->get_text( ).
+ENDTRY.
 ``` 
 
 </td>
 </tr>
 <tr>
-<td> <code>XCO_CP_UUID</code> </td>
+<td> <code>XCO_CP</code> <br> <code>XCO_CP_UUID</code> </td>
 <td>
-Transforming between different UUID formats
+Creating UUIDs and transforming between different UUID formats using XCO
 <br><br>
 
 ``` abap
-DATA(uuid_c36) = xco_cp_uuid=>format->c36->to_uuid( '7cd44fff-036a-4155-b0d2-f5a4dfbcee92' ).
+"Creating UUIDs
+"Type sysuuid_x16
+DATA(x16_uuid) = xco_cp=>uuid( )->value.
+"Other types using the 'as' method and providing a format
+"Note that a data object of type string is returned when using the 'value' attribute.
+DATA(c22_string) = xco_cp=>uuid( )->as( xco_cp_uuid=>format->c22 )->value.
+DATA(c32_string) = xco_cp=>uuid( )->as( xco_cp_uuid=>format->c32 )->value.
+DATA(c36_string) = xco_cp=>uuid( )->as( xco_cp_uuid=>format->c36 )->value.
 
-"7CD44FFF036A4155B0D2F5A4DFBCEE92
-DATA(uuid_c36_to_c32) =  CONV sysuuid_c32( xco_cp_uuid=>format->c32->from_uuid( uuid_c36 ) ).
+"Tranforming between different formats
+DATA(uuid_string_c36) = `429A229A-8802-1EDF-B7E2-E25DF99B0E73`.
+DATA(uuid_string_c32) = `429A229A88021EDFB7E2E25DF99B0E73`.
 
-"7cd44fff-036a-4155-b0d2-f5a4dfbcee92
-DATA(uuid_c32_to_c36) = to_lower( CONV sysuuid_c36( xco_cp_uuid=>format->c36->from_uuid( uuid_c36 ) ) ).
+DATA(uuid_x16) = xco_cp_uuid=>format->c36->to_uuid( uuid_string_c36 )->value.
+ASSERT uuid_x16 = uuid_string_c32.
+
+DATA(uuid_c32) = CONV sysuuid_c32( xco_cp_uuid=>format->c32->from_uuid( xco_cp_uuid=>format->c36->to_uuid( uuid_string_c36 ) ) ).
+ASSERT uuid_c32 = uuid_string_c32.
+
+uuid_x16 = xco_cp_uuid=>format->c32->to_uuid( uuid_string_c32 )->value.
+ASSERT uuid_x16 = uuid_string_c32.
+
+DATA(uuid_c36) = CONV sysuuid_c36( xco_cp_uuid=>format->c36->from_uuid( xco_cp_uuid=>format->c32->to_uuid( uuid_string_c32 ) ) ).
+ASSERT uuid_c36 = uuid_string_c36.
 ``` 
 
 </td>
