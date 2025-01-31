@@ -6,6 +6,7 @@
   - [Excursion: Available Classes in ABAP for Cloud Development](#excursion-available-classes-in-abap-for-cloud-development)
   - [Displaying Output in the ADT Console](#displaying-output-in-the-adt-console)
   - [Creating and Transforming UUIDs](#creating-and-transforming-uuids)
+  - [XCO Representations of SY Components](#xco-representations-of-sy-components)
   - [RAP](#rap)
   - [Transactional Consistency](#transactional-consistency)
   - [Numbers and Calculations](#numbers-and-calculations)
@@ -355,7 +356,186 @@ ASSERT uuid_c36 = uuid_string_c36.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
+## XCO Representations of SY Components
 
+<table>
+<tr>
+<td> Class </td> <td> Details/Code Snippet </td>
+</tr>
+<tr>
+<td> <code>XCO_CP</code> </td>
+<td>
+
+- Several `sy` components have XCO representations. 
+- Find general information on XCO and more code snippets on the [SAP Help Portal](https://help.sap.com/docs/btp/sap-business-technology-platform/standard-library&version=Cloud&locale=en-US). 
+- The following code snippet shows a selection of `sy` methods of the `XCO_CP` class. Some of the examples are also covered in other section of the cheat sheet.
+
+
+```abap
+"Currently, the following sy components are usable in ABAP for Cloud Development.
+DATA(syindex) = sy-index.
+DATA(sytabix) = sy-tabix.
+DATA(sydbcnt) = sy-dbcnt.
+DATA(syfdpos) = sy-fdpos.
+DATA(sysubrc) = sy-subrc.
+DATA(sylangu) = sy-langu.
+DATA(sybatch) = sy-batch.
+DATA(symandt) = sy-mandt.
+DATA(sysysid) = sy-sysid.
+DATA(syuname) = sy-uname.
+DATA(symsgid) = sy-msgid.
+DATA(symsgty) = sy-msgty.
+DATA(symsgno) = sy-msgno.
+DATA(symsgv1) = sy-msgv1.
+DATA(symsgv2) = sy-msgv2.
+DATA(symsgv3) = sy-msgv3.
+DATA(symsgv4) = sy-msgv4.
+
+"Others should not be used. For example, sy-datum.
+"Some sy components have an XCO representation.
+"The following example statements experiment with the API. To check out
+"more methods and attributes, position the cursor after '->' or a closing
+"parenthesis, and choose CTRL + Space.
+"Note:
+"- In many cases, importing parameters can be specified, e.g. to apply a
+"  a specific format, etc..
+"- Note the type when retrieving the value with the 'value' attribute.
+"- Some excursions are included (i.e. extra functionality the API offers, such as
+"  formatting options and other methods of xco_cp=>sy... that offer functionality
+"  beyond sy components).
+"- Some of the examples are also covered in other sections. More options are available
+"  to handle the values. For example, you can perform date and time calculations with
+"  the API.
+"- Some of the examples use artifacts from the ABAP cheat sheet repository.
+
+"Current user name
+DATA(user) = xco_cp=>sy->user( )->name.
+
+"Current date
+"User time zone
+"The example statements show different formats that can be applied. They can also be applied
+"to other statements below, but they are not all covered.
+"e.g. 2025-01-25
+DATA(date_user_iso) = xco_cp=>sy->date( xco_cp_time=>time_zone->user )->as( xco_cp_time=>format->iso_8601_extended )->value.
+"e.g. 20250125
+DATA(date_user_iso_basic) = xco_cp=>sy->date( xco_cp_time=>time_zone->user )->as( xco_cp_time=>format->iso_8601_basic )->value.
+DATA(date_user_abap) = xco_cp=>sy->date( xco_cp_time=>time_zone->user )->as( xco_cp_time=>format->abap )->value.
+"UTC
+DATA(date_utc_abap) = xco_cp=>sy->date( xco_cp_time=>time_zone->utc )->as( xco_cp_time=>format->abap )->value.
+
+"Current time
+"e.g. 09:23:40
+DATA(date_time_iso) = xco_cp=>sy->time( xco_cp_time=>time_zone->user )->as( xco_cp_time=>format->iso_8601_extended )->value.
+DATA(date_time_abap) = xco_cp=>sy->time( xco_cp_time=>time_zone->user )->as( xco_cp_time=>format->abap )->value.
+
+"Excursion: Time stamp
+"e.g. 2025-01-25T09:27:26
+DATA(moment_user_iso) = xco_cp=>sy->moment( xco_cp_time=>time_zone->user )->as( xco_cp_time=>format->iso_8601_extended )->value.
+"e.g. 20250125092726
+DATA(moment_user_abap) = xco_cp=>sy->moment( xco_cp_time=>time_zone->user )->as( xco_cp_time=>format->abap )->value.
+DATA(moment_utc_iso) = xco_cp=>sy->moment( xco_cp_time=>time_zone->utc )->as( xco_cp_time=>format->iso_8601_extended )->value.
+DATA(moment_utc_abap) = xco_cp=>sy->moment( xco_cp_time=>time_zone->utc )->as( xco_cp_time=>format->abap )->value.
+"Excursion: Unix time stamp
+DATA(unix_time_stamp_abap) = xco_cp=>sy->unix_timestamp( )->value.
+
+"Current language
+"e.g. E
+DATA(lang_value) = xco_cp=>sy->language( )->value.
+"e.g. English
+DATA(lang_name) = xco_cp=>sy->language( )->get_name( ).
+"e.g. EN
+DATA(lang_iso_639) = xco_cp=>sy->language( )->as( xco_cp_language=>format->iso_639 ).
+
+"Handling messages
+"Apart from retrieving msgid, msgty, msgv1, msgv2, msgv3, and msgv4 values of message
+"objects, the examples experiment with other methods available.
+
+"Creating a message object
+DATA(msg) = xco_cp=>sy->message( ).
+
+"Using the 'string' and 'as_message' methods to create message object
+"based on a random string, and using a default type, id, etc.
+"In the example, the created message object is assigned to previous to
+"work with in the example.
+msg = xco_cp=>string( `Test message` )->as_message( ).
+
+"The following data object is of type symsg.
+DATA(msg_value) = msg->value.
+
+"Using a message class from the ABAP cheat sheet repository
+msg = msg->overwrite( iv_msgty = 'E'
+                      iv_msgid = 'ZDEMO_ABAP_MESSAGES'
+                      iv_msgno = '5'
+                      iv_msgv1 = 'Some'
+                      iv_msgv2 = 'error'
+                      iv_msgv3 = 'text'
+                      iv_msgv4 = '' ).
+
+DATA(msg_val) = msg->value.
+DATA(msgid) = msg_val-msgid.
+DATA(msgty) = msg_val-msgty.
+DATA(msgv1) = msg_val-msgv1.
+DATA(msgv2) = msg_val-msgv2.
+DATA(msgv3) = msg_val-msgv3.
+DATA(msgv4) = msg_val-msgv4.
+"Some error text
+DATA(msg_text_a) = msg->get_text( ).
+"E
+DATA(msg_type) = msg->get_type( )->value.
+
+msg = msg->place_string( iv_string = `example`
+                         iv_msgv1  = abap_false
+                         iv_msgv2  = abap_false
+                         iv_msgv3  = abap_false
+                         iv_msgv4  = abap_true ).
+
+"Some error text example
+DATA(msg_text_b) = msg->get_text( ).
+"example
+DATA(msgv4_b) = msg->value-msgv4.
+
+DATA(err_obj) = NEW zcx_demo_abap_error_b( ).
+msg->write_to_t100_dyn_msg( err_obj ).
+
+TRY.
+    RAISE EXCEPTION err_obj.
+  CATCH zcx_demo_abap_error_b INTO DATA(error).
+    "Some error text example
+    DATA(error_text_a) = error->get_text( ).
+ENDTRY.
+
+"Converting a random string into a structured message
+"using the 'string' method
+xco_cp=>string( `Hello world` )->as_message( )->write_to_t100_dyn_msg( err_obj ).
+
+TRY.
+    RAISE EXCEPTION err_obj.
+  CATCH zcx_demo_abap_error_b INTO error.
+    "Hello world
+    DATA(error_text_b) = error->get_text( ).
+ENDTRY.
+
+msg->overwrite( iv_msgty = 'E'
+                iv_msgid = 'ZDEMO_ABAP_MESSAGES'
+                iv_msgno = '5'
+                iv_msgv1 = 'Another'
+                iv_msgv2 = 'example'
+                iv_msgv3 = 'error'
+                iv_msgv4 = 'text' )->write_to_t100_dyn_msg( err_obj ).
+
+TRY.
+    RAISE EXCEPTION err_obj.
+  CATCH zcx_demo_abap_error_b INTO error.
+    "Another example error text
+    DATA(error_text_c) = error->get_text( ).
+ENDTRY.
+``` 
+
+</td>
+</tr>
+</table>
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## RAP
 

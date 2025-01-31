@@ -6796,7 +6796,6 @@ ENDCLASS.
 - Enables method chaining  
 - Achieves method chaining by returning a reference to the current object. There may be variations in the implementation, for example, the returned object may be a modified copy or the modified original.  
 - Such a design may consolidate method calls for a simpler, more readable code flow, instead of having individual method calls.
-- Example of predefined ABAP classes: XCO library  
 
 Example notes:
 
