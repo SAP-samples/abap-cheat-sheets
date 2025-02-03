@@ -236,7 +236,7 @@ The class does not allow inheritance.
 
  <td> 
 
-The class is instantiable anywhere.
+The class is instantiable anywhere. Note that not specifying a `CREATE ...` addition means the class specifies  `CREATE PUBLIC` by default.
 
  </td>
 </tr>
@@ -2667,23 +2667,915 @@ ENDCLASS.
 
 ## Inheritance
 
--   Concept: Deriving a new class (i. e.
-    [subclass](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensubclass_glosry.htm "Glossary Entry"))
-    from an existing one
-    ([superclass](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensuperclass_glosry.htm "Glossary Entry")).
-- In doing so, you create a hierarchical relationship between superclasses and subclasses
-    (an [inheritance hierarchy](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abeninheritance_hierarchy_glosry.htm "Glossary Entry")) to form an [inheritance
-    tree](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abeninheritance_tree_glosry.htm "Glossary Entry"). This is relevant for a class that can have multiple subclasses and one direct superclass.
--   Subclasses ...
-    -   inherit and thus adopt all components from superclasses.
-    -   can be made more specific by declaring new components and
-        redefining instance methods (i. e. you can alter the implementation of inherited methods). In case a subclass has no further components, it contains exactly the components of the superclass - but the ones of the private visibility section are not visible there. Note that static methods cannot be redefined.
-    - can redefine the public and protected instance methods of all preceding superclasses. Note: Regarding the static components of superclasses, accessing them is possible but not redefining them.
-    - can themselves have multiple direct subclasses but only one direct superclass.
--   Components that are changed or added to subclasses are not visible to superclasses, hence, these changes are only relevant for the class itself and its subclasses.
--   Classes can rule out derivation: classes cannot inherit from classes that are specified with the addition
-        [`FINAL`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapmethods_abstract_final.htm#!ABAP_ADDITION_2@2@)
-        (e. g. `CLASS global_class DEFINITION PUBLIC FINAL CREATE PUBLIC. ...`).
+The following table covers a selection of aspects about inheritance. The code snippets demonstrate local classes.
+
+<table>
+
+<tr>
+<td> Aspect </td> <td> Notes/Code examples </td>
+</tr>
+
+<tr>
+<td> 
+
+Superclasses and subclasses
+
+ </td>
+
+ <td> 
+
+- Inheritance means deriving any number of new classes ([subclasses](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensubclass_glosry.htm)) from an existing class ([superclass](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensuperclass_glosry.htm)).  
+- This derivation establishes a hierarchical relationship between superclasses and subclasses, forming an inheritance tree. A class can have multiple subclasses but only one direct superclass.  
+- A subclass can also be a superclass to multiple direct subclasses but still has only one direct superclass.  
+
+<br>
+
+<details>
+  <summary>🟢 Click to expand for example code</summary>
+  <!-- -->
+
+<br>
+
+The inheritance tree of the example classes is as follows: `LCL1` is a superclass with direct subclasses `LCL2` and `LCL3`. `LCL3` is also a superclass from which more subclasses are derived. Similarly, `LCL5` is a superclass with `LCL6` as a direct subclass.
+
+
+```
+LCL1
+  |
+  |--LCL2
+  |
+  |--LCL3
+  |   |
+  |   |--LCL4
+  |   |
+  |   |--LCL5
+  |   |   |
+  |   |   |--LCL6
+```
+
+The classes are without any component specifications for demonstration purposes.
+
+
+``` abap
+CLASS lcl1 DEFINITION CREATE PUBLIC.
+  PUBLIC SECTION.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+ENDCLASS.
+
+CLASS lcl1 IMPLEMENTATION.
+ENDCLASS.
+
+CLASS lcl2 DEFINITION INHERITING FROM lcl1.
+  PUBLIC SECTION.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+ENDCLASS.
+
+CLASS lcl2 IMPLEMENTATION.
+ENDCLASS.
+
+CLASS lcl3 DEFINITION INHERITING FROM lcl1.
+  PUBLIC SECTION.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+ENDCLASS.
+
+CLASS lcl3 IMPLEMENTATION.
+ENDCLASS.
+
+CLASS lcl4 DEFINITION INHERITING FROM lcl3.
+  PUBLIC SECTION.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+ENDCLASS.
+
+CLASS lcl4 IMPLEMENTATION.
+ENDCLASS.
+
+CLASS lcl5 DEFINITION INHERITING FROM lcl3.
+  PUBLIC SECTION.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+ENDCLASS.
+
+CLASS lcl5 IMPLEMENTATION.
+ENDCLASS.
+
+CLASS lcl6 DEFINITION INHERITING FROM lcl5.
+  PUBLIC SECTION.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+ENDCLASS.
+
+CLASS lcl6 IMPLEMENTATION.
+ENDCLASS.
+``` 
+
+</details>  
+<br>
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+Components specified in superclasses
+
+ </td>
+
+ <td> 
+
+- Subclasses inherit and therefore adopt all components, such as attributes or methods, from superclasses.
+- Subclasses can use these components and add new ones.
+- Subclasses know about superclass components, but superclasses do not know about subclass components, unless a friendship relationgship is defined (see further down). Generally, superclasses are unaware of their subclasses.
+- By adding new components - and redefining methods, as covered below - subclasses become more specific, while superclasses remain more generic. This distinction is important for polymorphism and casting as outlined below.
+- If a subclass has no additional components, it contains only the components of the superclass, except for those in the private visibility section (unless friendship is granted).
+- Changes or additions to attributes in subclasses are not visible to superclasses, making these changes relevant only to the subclass and its subclasses.
+
+<br>
+
+<details>
+  <summary>🟢 Click to expand for example code</summary>
+  <!-- -->
+
+<br>
+
+The inheritance tree of the following example classes looks as follows:
+
+```
+LCL1
+  |
+  |--LCL2
+  |   |
+  |   |--LCL3
+```
+
+The code snippet includes various data object declarations and value assignments by exploring:
+
+- Subclasses adopt all components from the public and protected sections. The example does not cover redefining instance methods.
+- Adding new components.
+- Superclasses are unaware of their subclasses and their components.
+- Instance attributes are not accessible in static methods.
+
+
+``` abap
+CLASS lcl1 DEFINITION CREATE PUBLIC.
+  PUBLIC SECTION.
+    DATA pub_inst_str_lcl1 TYPE string.
+    CLASS-DATA pub_stat_str_lcl1 TYPE string.
+    METHODS inst_meth_lcl1.
+    CLASS-METHODS stat_meth_lcl1.
+  PROTECTED SECTION.
+    DATA prot_inst_str_lcl1 TYPE string.
+    CLASS-DATA prot_stat_str_lcl1 TYPE string.
+  PRIVATE SECTION.
+    DATA priv_inst_str_lcl1 TYPE string.
+    CLASS-DATA priv_stat_str_lcl1 TYPE string.
+ENDCLASS.
+
+CLASS lcl1 IMPLEMENTATION.
+  METHOD inst_meth_lcl1.
+    "Accessing attributes of the class itself
+    pub_inst_str_lcl1 = `a`.
+    pub_stat_str_lcl1 = `b`.
+
+    prot_inst_str_lcl1 = `c`.
+    prot_stat_str_lcl1 = `d`.
+
+    priv_inst_str_lcl1 = `e`.
+    priv_stat_str_lcl1 = `f`.
+
+    "Superclasses do not know of the components of their subclasses.
+    "Visible static, public components can be accessed using the class name
+    "followed by => and the component name. In case of this particular
+    "local class example, the definition part of lcl2 must be specified before
+    "the implementation part of lcl1 for the lcl2=>pub_stat_str_lcl2 ...
+    "statement to work.
+    "pub_inst_str_lcl2 = `g`.
+    "pub_stat_str_lcl2 = `h`.
+    "prot_inst_str_lcl2 = `i`.
+    "prot_stat_str_lcl2 = `j`.
+    "priv_inst_str_lcl2 = `k`.
+    "priv_stat_str_lcl2 = `l`.
+    "lcl2=>pub_stat_str_lcl2 = `m`.
+  ENDMETHOD.
+
+  METHOD stat_meth_lcl1.
+    "Instance attributes are not accessible in static methods.
+
+    "pub_inst_str_lcl1 = `g`.
+    pub_stat_str_lcl1 = `h`.
+
+    "prot_inst_str_lcl1 = `i`.
+    prot_stat_str_lcl1 = `j`.
+
+    "priv_inst_str_lcl1 = `k`.
+    priv_stat_str_lcl1 = `l`.
+  ENDMETHOD.
+
+ENDCLASS.
+
+CLASS lcl2 DEFINITION INHERITING FROM lcl1.
+  PUBLIC SECTION.
+    DATA pub_inst_str_lcl2 TYPE string.
+    CLASS-DATA pub_stat_str_lcl2 TYPE string.
+    DATA added_pub_inst_str_lcl2 TYPE string.
+    CLASS-DATA added_pub_stat_str_lcl2 TYPE string.
+    METHODS inst_meth_lcl2.
+    CLASS-METHODS stat_meth_lcl2.
+  PROTECTED SECTION.
+    DATA prot_inst_str_lcl2 TYPE string.
+    CLASS-DATA prot_stat_str_lcl2 TYPE string.
+    DATA added_prot_inst_str_lcl2 TYPE string.
+    CLASS-DATA added_prot_stat_str_lcl2 TYPE string.
+  PRIVATE SECTION.
+    DATA priv_inst_str_lcl2 TYPE string.
+    CLASS-DATA priv_stat_str_lcl2 TYPE string.
+    DATA added_priv_inst_str_lcl2 TYPE string.
+    CLASS-DATA added_priv_stat_str_lcl2 TYPE string.
+ENDCLASS.
+
+CLASS lcl2 IMPLEMENTATION.
+  METHOD inst_meth_lcl2.
+    "Accessing attributes of the class itself
+    pub_inst_str_lcl2 = `a`.
+    pub_stat_str_lcl2 = `b`.
+    added_pub_inst_str_lcl2 = `c`.
+    added_pub_stat_str_lcl2 = `d`.
+
+    prot_inst_str_lcl2 = `e`.
+    prot_stat_str_lcl2 = `f`.
+    added_prot_inst_str_lcl2 = `g`.
+    added_prot_stat_str_lcl2 = `h`.
+
+    priv_inst_str_lcl2 = `i`.
+    priv_stat_str_lcl2 = `j`.
+    added_priv_inst_str_lcl2 = `k`.
+    added_priv_stat_str_lcl2 = `l`.
+
+    "Accessing attributes of the superclass
+    pub_inst_str_lcl1 = `m`.
+    pub_stat_str_lcl1 = `n`.
+
+    prot_inst_str_lcl1 = `o`.
+    prot_stat_str_lcl1 = `p`.
+
+    "Private components of the superclass cannot be accessed
+    "priv_inst_str_lcl1 = `q`.
+    "priv_stat_str_lcl1 = `r`.
+
+    "The following statement shows a syntax warning as an identically named
+    "attribute as in the superclass is created.
+    "DATA pub_inst_str_lcl1 TYPE string.
+    "However, the following declaration using an identical name as one of the
+    "superclass attributes is possible because the private component of the
+    "superclass cannot be accessed.
+    DATA priv_inst_str_lcl1 TYPE string.
+  ENDMETHOD.
+
+  METHOD stat_meth_lcl2.
+    "Instance attributes are not accessible in static methods.
+
+    "Accessing attributes of the class itself
+    "pub_inst_str_lcl2 = `a`.
+    pub_stat_str_lcl2 = `b`.
+    "added_pub_inst_str_lcl2 = `c`.
+    added_pub_stat_str_lcl2 = `d`.
+
+    "prot_inst_str_lcl2 = `e`.
+    prot_stat_str_lcl2 = `f`.
+    "added_prot_inst_str_lcl2 = `g`.
+    added_prot_stat_str_lcl2 = `h`.
+
+    "priv_inst_str_lcl2 = `i`.
+    priv_stat_str_lcl2 = `j`.
+    "added_priv_inst_str_lcl2 = `k`.
+    added_priv_stat_str_lcl2 = `l`.
+
+    "Accessing attributes of the superclass
+    "pub_inst_str_lcl1 = `m`.
+    pub_stat_str_lcl1 = `n`.
+
+    "prot_inst_str_lcl1 = `o`.
+    prot_stat_str_lcl1 = `p`.
+
+    "Private components of the superclass cannot be accessed
+    "priv_inst_str_lcl1 = `q`.
+    "priv_stat_str_lcl1 = `r`.
+  ENDMETHOD.
+ENDCLASS.
+
+CLASS lcl3 DEFINITION INHERITING FROM lcl2.
+  PUBLIC SECTION.
+    DATA pub_inst_str_lcl3 TYPE string.
+    CLASS-DATA pub_stat_str_lcl3 TYPE string.
+    METHODS inst_meth_lcl3.
+    CLASS-METHODS stat_meth_lcl3.
+  PROTECTED SECTION.
+    DATA prot_inst_str_lcl3 TYPE string.
+    CLASS-DATA prot_stat_str_lcl3 TYPE string.
+  PRIVATE SECTION.
+    DATA priv_inst_str_lcl3 TYPE string.
+    CLASS-DATA priv_stat_str_lcl3 TYPE string.
+ENDCLASS.
+
+CLASS lcl3 IMPLEMENTATION.
+  METHOD inst_meth_lcl3.
+    "Accessing attributes of the class itself
+    pub_inst_str_lcl3 = `a`.
+    pub_stat_str_lcl3 = `b`.
+
+    prot_inst_str_lcl3 = `c`.
+    prot_stat_str_lcl3 = `d`.
+
+    priv_inst_str_lcl3 = `e`.
+    priv_stat_str_lcl3 = `f`.
+
+    "Accessing attributes of the superclasses
+    pub_inst_str_lcl1 = `g`.
+    pub_stat_str_lcl1 = `h`.
+
+    prot_inst_str_lcl1 = `i`.
+    prot_stat_str_lcl1 = `j`.
+
+    pub_inst_str_lcl2 = `k`.
+    pub_stat_str_lcl2 = `l`.
+    added_pub_inst_str_lcl2 = `m`.
+    added_pub_stat_str_lcl2 = `n`.
+
+    prot_inst_str_lcl2 = `o`.
+    prot_stat_str_lcl2 = `p`.
+    added_prot_inst_str_lcl2 = `q`.
+    added_prot_stat_str_lcl2 = `r`.
+
+    "Private components of the superclasses cannot be accessed
+    "priv_inst_str_lcl1 = `s`.
+    "priv_stat_str_lcl1 = `t`.
+
+    "priv_inst_str_lcl2 = `u`.
+    "priv_stat_str_lcl2 = `v`.
+    "added_priv_inst_str_lcl2 = `w`.
+    "added_priv_stat_str_lcl2 = `x`.
+  ENDMETHOD.
+
+  METHOD stat_meth_lcl3.
+    "Instance attributes are not accessible in static methods.
+
+    "Accessing attributes of the class itself
+    "pub_inst_str_lcl3 = `a`.
+    pub_stat_str_lcl3 = `b`.
+
+    "prot_inst_str_lcl3 = `c`.
+    prot_stat_str_lcl3 = `d`.
+
+    "priv_inst_str_lcl3 = `e`.
+    priv_stat_str_lcl3 = `f`.
+
+    "Accessing attributes of the superclasses
+    "pub_inst_str_lcl1 = `g`.
+    pub_stat_str_lcl1 = `h`.
+
+    "prot_inst_str_lcl1 = `i`.
+    prot_stat_str_lcl1 = `j`.
+
+    "pub_inst_str_lcl2 = `k`.
+    pub_stat_str_lcl2 = `l`.
+    "added_pub_inst_str_lcl2 = `m`.
+    added_pub_stat_str_lcl2 = `n`.
+
+    "prot_inst_str_lcl2 = `o`.
+    prot_stat_str_lcl2 = `p`.
+    "added_prot_inst_str_lcl2 = `q`.
+    added_prot_stat_str_lcl2 = `r`.
+
+    "Private components of the superclasses cannot be accessed
+    "priv_inst_str_lcl1 = `s`.
+    "priv_stat_str_lcl1 = `t`.
+
+    "priv_inst_str_lcl2 = `u`.
+    "priv_stat_str_lcl2 = `v`.
+    "added_priv_inst_str_lcl2 = `w`.
+    "added_priv_stat_str_lcl2 = `x`.
+  ENDMETHOD.
+ENDCLASS.
+``` 
+
+</details>
+<br>
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+Redefinition of superclass methods
+
+ </td>
+
+ <td> 
+
+- You can (but need not) reimplement public and protected instance methods of all preceding superclasses in subclasses through redefinition (`REDEFINITION` addition), making subclasses more specific.
+- Reimplementing methods allows you to reuse the parameter interface without changes.
+- You can use the pseudo-reference `super->...` to call direct superclass methods while implementing redefined instance methods, which is useful for taking over, overriding, or extending implementations.
+- Static methods can be accessed but not redefined.
+- Changes or additions of methods in subclasses are not visible to superclasses, affecting only the class itself and its subclasses.
+
+<br>
+
+<details>
+  <summary>🟢 Click to expand for example code</summary>
+  <!-- -->
+
+<br>
+
+The inheritance tree of the following example classes looks as follows:
+
+```
+LCL1
+  |
+  |--LCL2
+  |   |
+  |   |--LCL3
+```
+
+The example explores the redefinition of methods. 
+
+Global class to run the example and visualize the implementations of the local classes in the CCIMP include.
+The output should be as follows:
+
+```
+A
+A1
+B
+A12
+B3
+C
+```
+<br>
+
+``` abap
+CLASS zcl_demo_abap DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
+
+  PUBLIC SECTION.
+    INTERFACES if_oo_adt_classrun.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+
+ENDCLASS.
+
+CLASS zcl_demo_abap IMPLEMENTATION.
+  METHOD if_oo_adt_classrun~main.
+
+    DATA(str1) = NEW lcl1( )->meth_lcl1( ).
+    out->write( str1 ).
+    DATA(str2) = NEW lcl2( )->meth_lcl1( ).
+    out->write( str2 ).
+    DATA(str3) = NEW lcl2( )->meth_lcl2( ).
+    out->write( str3 ).
+    DATA(str4) = NEW lcl3( )->meth_lcl1( ).
+    out->write( str4 ).
+    DATA(str5) = NEW lcl3( )->meth_lcl2( ).
+    out->write( str5 ).
+    DATA(str6) = NEW lcl3( )->meth_lcl3( ).
+    out->write( str6 ).
+
+  ENDMETHOD.
+ENDCLASS.
+``` 
+
+Local classes in the CCIMP include:
+
+```abap
+CLASS lcl1 DEFINITION CREATE PUBLIC.
+  PUBLIC SECTION.
+    METHODS meth_lcl1 RETURNING VALUE(str1) TYPE string.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+ENDCLASS.
+
+CLASS lcl1 IMPLEMENTATION.
+  METHOD meth_lcl1.
+    str1 = `A`.
+  ENDMETHOD.
+ENDCLASS.
+
+CLASS lcl2 DEFINITION INHERITING FROM lcl1.
+  PUBLIC SECTION.
+    METHODS meth_lcl2 RETURNING VALUE(str2) TYPE string.
+    METHODS meth_lcl1 REDEFINITION.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+ENDCLASS.
+
+CLASS lcl2 IMPLEMENTATION.
+  METHOD meth_lcl2.
+    str2 = `B`.
+  ENDMETHOD.
+
+  METHOD meth_lcl1.
+    DATA(super_str_lcl1) = super->meth_lcl1( ).
+    str1 = super_str_lcl1 && `1`.
+  ENDMETHOD.
+ENDCLASS.
+
+CLASS lcl3 DEFINITION INHERITING FROM lcl2.
+  PUBLIC SECTION.
+    METHODS meth_lcl3 RETURNING VALUE(str3) TYPE string.
+    METHODS meth_lcl2 REDEFINITION.
+    METHODS meth_lcl1 REDEFINITION.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+ENDCLASS.
+
+CLASS lcl3 IMPLEMENTATION.
+  METHOD meth_lcl3.
+    str3 = `C`.
+  ENDMETHOD.
+  METHOD meth_lcl1.
+    DATA(super_str_lcl1) = super->meth_lcl1( ).
+    str1 = super_str_lcl1 && `2`.
+  ENDMETHOD.
+
+  METHOD meth_lcl2.
+    DATA(super_str_lcl2) = super->meth_lcl2( ).
+    str2 = super_str_lcl2 && `3`.
+  ENDMETHOD.
+ENDCLASS.
+```
+
+</details>  
+<br>
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+Visibility of components
+
+ </td>
+
+ <td> 
+
+- Components in the public visibility section are accessible from anywhere (where visible).
+- Protected components are accessible by subclasses and friends.
+- Private components are not accessible by subclasses unless friendship is granted.
+- See *Components specified in superclasses* for an example.
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+Additions impacting inheritance
+
+ </td>
+
+ <td> 
+
+- You can use the `FINAL` addition to prevent classes from being inherited. These classes cannot inherit from other classes.
+- You can also apply the `FINAL` addition to methods to prevent them from being redefined in subclasses.
+- Refer to the next section for notes on these topics and other inheritance and instantiation features.
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+Constructors 
+
+ </td>
+
+ <td> 
+
+
+- Instance constructors (`constructor`):
+  - Subclasses cannot redefine the instance constructors of superclasses.
+  - These constructors are called automatically when creating an object; they cannot be called explicitly.
+  - In inheritance, a subclass's constructor must call all its superclasses' constructors. When you implement the instance constructor in subclasses, you must use a `super->constructor( )` call to call the direct superclass's constructor, even if the superclass does not explicitly declare it. Similarly, even if a subclass does not define and implement its constructor, the superclass's constructor will be called.
+  - It is required to fill any non-optional importing parameters.
+  - Class instantiation is controlled by specific additions (`CREATE PUBLIC/PROTECTED/PRIVATE`), affecting the ability to call constructors. The constructor's visibility cannot be more specific than the instance creator's visibility. For example, if a class is declared using `CREATE PUBLIC`, the constructor must be in the public section. If a subclass implicitly specifies `CREATE PUBLIC`, its constructor must also be public. If it specifies `CREATE PROTECTED`, the constructor can be in the public or protected section, but not private. Subclasses can specify their instantiability independently from the superclass. In classes declared using `CREATE PRIVATE`, the constructor is only visible within the class itself, unless friendship is granted. Consider making such classes final to prevent derivation.
+- Static constructors (`class_constructor`):
+  - These constructors are implicitly available in all classes, whether declared or not.
+  - They are called when creating a class instance for the first time in an ABAP program or when accessing a static component, except for types and constants.
+  - In inheritance, static constructors in the entire inheritance tree are called first.
+  - A static constructor is called only once during program runtime.
+  - A static constructor is always public.
+
+<br>
+
+<details>
+  <summary>🟢 Example 1</summary>
+  <!-- -->
+
+<br>
+
+The inheritance tree of the following example classes looks as follows: 
+
+```
+LCL1
+  |
+  |--LCL2
+  |
+  |--LCL3
+  |   |
+  |   |--LCL4
+```
+
+This example explores how instance and static constructors can be specified. It shows that subclasses can determine their own instantiation independently of the superclass. The visibility of the constructor cannot be more specific than that of the `CREATE ...` specification.
+
+``` abap
+CLASS lcl1 DEFINITION CREATE PUBLIC.
+  PUBLIC SECTION.
+    METHODS constructor.
+    CLASS-METHODS class_constructor.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+ENDCLASS.
+
+CLASS lcl1 IMPLEMENTATION.
+  METHOD class_constructor.
+  ENDMETHOD.
+
+  METHOD constructor.
+  ENDMETHOD.
+ENDCLASS.
+
+"Implicit CREATE PUBLIC
+CLASS lcl2 DEFINITION INHERITING FROM lcl1.
+  PUBLIC SECTION.
+    METHODS constructor.
+    CLASS-METHODS class_constructor.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+ENDCLASS.
+
+CLASS lcl2 IMPLEMENTATION.
+  METHOD class_constructor.
+  ENDMETHOD.
+
+  METHOD constructor.
+    super->constructor( ).
+  ENDMETHOD.
+ENDCLASS.
+
+"CREATE PROTECTED
+CLASS lcl3 DEFINITION INHERITING FROM lcl1 CREATE PROTECTED.
+  PUBLIC SECTION.
+    CLASS-METHODS class_constructor.
+    "METHODS constructor.
+  PROTECTED SECTION.
+    METHODS constructor.
+  PRIVATE SECTION.
+ENDCLASS.
+
+CLASS lcl3 IMPLEMENTATION.
+  METHOD class_constructor.
+  ENDMETHOD.
+
+  METHOD constructor.
+    super->constructor( ).
+  ENDMETHOD.
+ENDCLASS.
+
+"CREATE PRIVATE
+CLASS lcl4 DEFINITION INHERITING FROM lcl3 CREATE PRIVATE FINAL.
+  PUBLIC SECTION.
+    CLASS-METHODS class_constructor.
+    METHODS constructor.
+  PROTECTED SECTION.
+    "METHODS constructor.
+  PRIVATE SECTION.
+    "METHODS constructor.
+ENDCLASS.
+
+CLASS lcl4 IMPLEMENTATION.
+  METHOD class_constructor.
+  ENDMETHOD.
+
+  METHOD constructor.
+    super->constructor( ).
+  ENDMETHOD.
+ENDCLASS.
+
+"No instances of the subclass can be created. unless friendship is created
+*CLASS lcl5 DEFINITION INHERITING FROM lcl4.
+*...
+``` 
+
+</details>  
+
+<br>
+
+<details>
+  <summary>🟢 Example 2</summary>
+  <!-- -->
+
+<br>
+
+The inheritance tree of the following example classes looks as follows: 
+
+```
+LCL1
+  |
+  |--LCL2
+  |   |
+  |   |--LCL3
+  |   |   |
+  |   |   |--LCL4
+```
+
+This example explores the order of instance and static constructor calls during object creation. The constructors add strings to a string table. To visualize the output, run the global class, which includes object creations. Refer to the notes on the example output below.
+
+Global class:
+
+```abap
+CLASS zcl_demo_abap DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
+
+  PUBLIC SECTION.
+    INTERFACES if_oo_adt_classrun.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+
+ENDCLASS.
+
+CLASS zcl_demo_abap IMPLEMENTATION.
+  METHOD if_oo_adt_classrun~main.
+    DATA(oref1) = NEW lcl1( ).
+    out->write( lcl1=>tab ).
+    out->write( repeat( val = `_` occ = 30 ) && |\n\n| ).
+
+    CLEAR lcl1=>tab.
+
+    DATA(oref2) = NEW lcl2( ).
+    out->write( lcl1=>tab ).
+    out->write( repeat( val = `_` occ = 30 ) && |\n\n| ).
+
+    CLEAR lcl1=>tab.
+
+    DATA(oref3) = NEW lcl3( ).
+    out->write( lcl1=>tab ).
+    out->write( repeat( val = `_` occ = 30 ) && |\n\n| ).
+
+    CLEAR lcl1=>tab.
+
+    DATA(oref4) = NEW lcl4( ).
+    out->write( lcl1=>tab ).
+  ENDMETHOD.
+ENDCLASS.
+```
+
+Local classes in the CCIMP include:
+
+```abap
+CLASS lcl1 DEFINITION CREATE PUBLIC.
+  PUBLIC SECTION.
+    METHODS constructor.
+    CLASS-METHODS class_constructor.
+    CLASS-DATA tab TYPE string_table.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+ENDCLASS.
+
+CLASS lcl1 IMPLEMENTATION.
+  METHOD class_constructor.
+    APPEND `lcl1 class_constructor` TO tab.
+  ENDMETHOD.
+
+  METHOD constructor.
+    APPEND `lcl1 constructor` TO tab.
+  ENDMETHOD.
+ENDCLASS.
+
+CLASS lcl2 DEFINITION INHERITING FROM lcl1.
+  PUBLIC SECTION.
+    METHODS constructor.
+    CLASS-METHODS class_constructor.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+ENDCLASS.
+
+CLASS lcl2 IMPLEMENTATION.
+  METHOD class_constructor.
+    APPEND `lcl2 class_constructor` TO tab.
+  ENDMETHOD.
+
+  METHOD constructor.
+    super->constructor( ).
+    APPEND `lcl2 constructor` TO tab.
+  ENDMETHOD.
+
+ENDCLASS.
+
+CLASS lcl3 DEFINITION INHERITING FROM lcl2.
+  PUBLIC SECTION.
+    METHODS constructor.
+    CLASS-METHODS class_constructor.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+ENDCLASS.
+
+CLASS lcl3 IMPLEMENTATION.
+  METHOD class_constructor.
+    APPEND `lcl3 class_constructor` TO tab.
+  ENDMETHOD.
+
+  METHOD constructor.
+
+    super->constructor( ).
+    APPEND `lcl3 constructor` TO tab.
+  ENDMETHOD.
+
+ENDCLASS.
+
+CLASS lcl4 DEFINITION INHERITING FROM lcl3.
+  PUBLIC SECTION.
+    METHODS constructor.
+    CLASS-METHODS class_constructor.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+ENDCLASS.
+
+CLASS lcl4 IMPLEMENTATION.
+  METHOD class_constructor.
+    APPEND `lcl4 class_constructor` TO tab.
+  ENDMETHOD.
+
+  METHOD constructor.
+    super->constructor( ).
+    APPEND `lcl4 constructor` TO tab.
+  ENDMETHOD.
+
+ENDCLASS.
+```
+
+Notes on the output: 
+
+- When an object is created, static constructors are called first, following the inheritance tree top down. Then, instance constructors are called, also top down.
+- Note that when the class runs, the example is executed in a single internal session. The static constructor of a class is called only once. Therefore, you will not see `lcl1 class_constructor` in the output when creating an object of `lcl2`, and so on.
+
+    ```
+    lcl1 class_constructor
+    lcl1 constructor      
+    ______________________________
+
+    lcl2 class_constructor
+    lcl1 constructor      
+    lcl2 constructor     
+    ...
+    ```
+    If you comment out `DATA(oref1) = NEW lcl1( ).` and `out->write( lcl1=>tab ).`, which are the statements accessing `lcl1` for the first time, and then run the class, you will see in the output (or while debugging) that the static constructor is indeed called. The same applies to the static constructor of `lcl2`, which is not called when creating an object for `lcl3`, and so on.
+    
+    ```
+    lcl1 class_constructor
+    lcl2 class_constructor
+    lcl1 constructor      
+    lcl2 constructor      
+    ______________________________
+
+    ...
+    ```
+
+
+</details>  
+
+<br>
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+`object` as root node of inheritance trees
+
+ </td>
+
+ <td> 
+
+- In inheritance trees, the root node is the predefined `object` class, representing an empty, abstract class.
+- If a class does not use the `INHERITING FROM` addition, it is implicitly a subclass of `object`.
+- The following statement uses a released ABAP class and RTTI (see the [Dynamic Programming]() cheat sheet) to determine that the root class of a class that does not explicitly inherit from another class is `object`.
+
+    ``` abap
+    DATA(superclass) = cast cl_abap_classdescr( cl_abap_typedescr=>describe_by_name( 'CL_SYSTEM_UUID' ) )->get_super_class_type( )->get_relative_name( ).
+    ASSERT superclass = `OBJECT`.
+    ``` 
+ </td>
+</tr>
+
+</table>
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
@@ -3383,16 +4275,7 @@ CLASS-METHODS class_constructor.
 
 <br>
 
-- Instance constructors (`constructor`):
-  - Subclasses cannot redefine the instance constructors of superclasses.
-  - These constructors are automatically invoked when creating an object, not explicitly called.
-  - In inheritance, a subclass's instance constructor must call the instance constructors of all its superclasses. This requires calling `super->constructor( ).` to call the instance constructor of the direct superclass, even if the superclass does not explicitly declare the instance constructor. Note that any non-optional importing parameters must be filled.
-- Static constructors (`class_constructor`):
-  - These constructors are implicitly available in all classes, whether declared or not.
-  - They are called when creating a class instance for the first time in an ABAP program or when addressing a static component, excluding types and constants.
-  - In inheritance, the static constructors of all classes up the inheritance tree are called first.
-  - A static constructor can only be called once during program runtime.
-
+Find information on constructors in the previous section.
 
 <br>
 
