@@ -1254,72 +1254,164 @@ ASSERT flag = abap_true.
 
 ### Local Exception Classes
 
-The following simplified example demonstrates a local exception class: 
-- In a class, e.g. `zcl_demo_abap`, go to the [CCDEF include](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenccdef_glosry.htm), i.e. the *Class-relevant local types* tab in ADT.
-- Add the following local class declaration
-  ```abap
-  CLASS lcx_error DEFINITION INHERITING FROM cx_static_check.
+- You can create local exception classes within your class pool for exceptions specific to your program that are not needed globally.
+- The following simplified example experiments with a local exception class. It uses a message class that is part of the ABAP cheat sheet repository. 
+- In the example, the global class uses the exception class in a private method's signature. Therefore, the exception class declaration is placed in the *Class-Relevant Local Types* tab ([CCDEF include](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenccdef_glosry.htm)). Its implementation is in the *Local Types* tab ([CCIMP include](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenccimp_glosry.htm)) in ADT.
+- You can add the following code to the three class includes of a demo class (the global class's name is `zcl_demo_abap` in the example), activate, and run the class using F9. The implementation of the private method, that includes the local exception class in the signature, contains several `RAISE EXCEPTION` statements demonstrating various syntax options of these statements. The example is designed to write exception texts to the console.
+
+<table>
+
+<tr>
+<td> Class include </td> <td> Notes </td>
+</tr>
+
+<tr>
+<td> 
+
+Global class
+
+ </td>
+
+ <td> 
+
+``` abap
+CLASS zcl_demo_abap DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
+
   PUBLIC SECTION.
-      INTERFACES if_t100_dyn_msg.
-  ENDCLASS.
-  ```
-- In the global class, add the following code. 
-  - A method declaration includes the local execption class following the `RAISING` addition.  
-  - In a simple way, the example explores the raising of the exception.
-  - A message class of the executable example is used. Without the `MESSAGE` addition after `THROW`, a default message would be used. 
-  - You can run the class using *F9*.
-
-  ```abap
-  CLASS zcl_demo_abap DEFINITION
-    PUBLIC
-    FINAL
-    CREATE PUBLIC .
-
-    PUBLIC SECTION.
-      INTERFACES if_oo_adt_classrun.
-    PROTECTED SECTION.
-    PRIVATE SECTION.
-      METHODS test_meth IMPORTING flag         TYPE abap_boolean
-                        RETURNING VALUE(hello) TYPE string
-                        RAISING   lcx_error.
-  ENDCLASS.
+    INTERFACES if_oo_adt_classrun.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+    METHODS raise_local_exception IMPORTING num TYPE i
+                                  RAISING   lcx_error.
+ENDCLASS.
 
 
+CLASS zcl_demo_abap IMPLEMENTATION.
 
-  CLASS zcl_demo_abap IMPLEMENTATION.
-
-    METHOD if_oo_adt_classrun~main.
-
+  METHOD if_oo_adt_classrun~main.
+    DO 6 TIMES.
       TRY.
-          DATA(hi1) = test_meth( abap_true ).
-          out->write( hi1 ).
-        CATCH lcx_error INTO DATA(error1).
-          out->write( error1->get_text( ) ).
+          raise_local_exception( sy-index ).
+        CATCH lcx_error INTO DATA(error).
+          out->write( error->get_text( ) ).
       ENDTRY.
+    ENDDO.
+  ENDMETHOD.
 
-      TRY.
-          DATA(hi2) = test_meth( abap_false ).
-          out->write( hi2 ).
-        CATCH lcx_error INTO DATA(error2).
-          out->write( error2->get_text( ) ).
-      ENDTRY.
+  METHOD raise_local_exception.
+    CASE num.
+      WHEN 1.
+        RAISE EXCEPTION TYPE lcx_error EXPORTING textid = lcx_error=>lcx_error.
+      WHEN 2.
+        RAISE EXCEPTION TYPE lcx_error EXPORTING textid = lcx_error=>some_error text = `Some error text`.
+      WHEN 3.
+        RAISE EXCEPTION TYPE lcx_error MESSAGE e002(zdemo_abap_messages).
+      WHEN 4.
+        RAISE EXCEPTION TYPE lcx_error MESSAGE e005(zdemo_abap_messages) WITH 'Some' 'error' 'occurred'.
+      WHEN 5.
+        RAISE EXCEPTION TYPE lcx_error MESSAGE ID 'ZDEMO_ABAP_MESSAGES' TYPE 'E' NUMBER '005' WITH 'Hello' 'world'.
+      WHEN OTHERS.
+        "Default message
+        RAISE EXCEPTION TYPE lcx_error.
+    ENDCASE.
+  ENDMETHOD.
 
-    ENDMETHOD.
+ENDCLASS.
+``` 
 
-    METHOD test_meth.
-      hello = COND #( WHEN flag = abap_true THEN |Hello, { xco_cp=>sy->user( )->name }.|
-                      ELSE THROW lcx_error( MESSAGE e005(zdemo_abap_messages) WITH |See you, { xco_cp=>sy->user( )->name }.| ) ).
-    ENDMETHOD.
+ </td>
+</tr>
 
-  ENDCLASS.
-  ```
+<tr>
+<td> 
+
+Class-Relevant Local Types tab (CCDEF include)
+
+ </td>
+
+ <td> 
+
+``` abap
+CLASS lcx_error DEFINITION INHERITING FROM cx_static_check.
+  PUBLIC SECTION.
+    INTERFACES if_t100_dyn_msg.
+
+    CONSTANTS:
+      BEGIN OF lcx_error,
+        msgid TYPE symsgid VALUE 'ZDEMO_ABAP_MESSAGES',
+        msgno TYPE symsgno VALUE '001',
+        attr1 TYPE scx_attrname VALUE '',
+        attr2 TYPE scx_attrname VALUE '',
+        attr3 TYPE scx_attrname VALUE '',
+        attr4 TYPE scx_attrname VALUE '',
+      END OF lcx_error.
+
+    CONSTANTS:
+      BEGIN OF some_error,
+        msgid TYPE symsgid VALUE 'ZDEMO_ABAP_MESSAGES',
+        msgno TYPE symsgno VALUE '005',
+        attr1 TYPE scx_attrname VALUE 'TEXT',
+        attr2 TYPE scx_attrname VALUE '',
+        attr3 TYPE scx_attrname VALUE '',
+        attr4 TYPE scx_attrname VALUE '',
+      END OF some_error.
+
+    DATA text TYPE string.
+
+    METHODS constructor
+      IMPORTING
+        textid   LIKE if_t100_message=>t100key OPTIONAL
+        previous LIKE previous OPTIONAL
+        text     TYPE string OPTIONAL.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+ENDCLASS.
+``` 
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+Local Types tab (CCIMP include)
+
+ </td>
+
+ <td> 
+
+``` abap
+CLASS lcx_error IMPLEMENTATION.
+  METHOD constructor ##ADT_SUPPRESS_GENERATION.
+    super->constructor( previous = previous ).
+
+    me->text = text.
+    CLEAR me->textid.
+    IF textid IS INITIAL.
+      if_t100_message~t100key = if_t100_message=>default_textid.
+    ELSE.
+      if_t100_message~t100key = textid.
+    ENDIF.
+  ENDMETHOD.
+ENDCLASS.
+``` 
+
+ </td>
+</tr>
+
+</table>
+
+
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ### Messages in RAP
 
 
-- From an ABAP EML perspective, the relevant [BDEF derived type](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_derived_type_glosry.htm) is `TYPE ... REPORTED`, available in the context of [RAP responses](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_response_glosry.htm).
+- In ABAP EML, the relevant [BDEF derived type](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_derived_type_glosry.htm) is `TYPE ... REPORTED`, available in the context of [RAP responses](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_response_glosry.htm).
 - The [RAP response parameter](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_response_param_glosry.htm) `reported` includes the `%msg` component of BDEF derived types.
 - `%msg` provides an instance of the message interface `IF_ABAP_BEHV_MESSAGE`.
 - If you need a custom implementation for your messages, you can implement the interface. Find an example in the [Development Guide for the ABAP RESTful Application Programming Model](https://help.sap.com/docs/ABAP_Cloud/f055b8bf582d4f34b91da667bc1fcce6/d0ba40477fba4ad5a373670c99d2956c.html). Otherwise, you can use the inherited methods `new_message` or `new_message_with_text` for a standard implementation.

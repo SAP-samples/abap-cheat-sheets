@@ -15,6 +15,7 @@
   - [Data Objects](#data-objects)
     - [Declaring Data Objects](#declaring-data-objects)
     - [Assigning Values to Data Objects](#assigning-values-to-data-objects)
+      - [Conversion Rules when Assigning Elementary Data Objects](#conversion-rules-when-assigning-elementary-data-objects)
     - [Creating Data Objects Using Inline Declaration](#creating-data-objects-using-inline-declaration)
     - [Assigning References to Data Reference Variables](#assigning-references-to-data-reference-variables)
     - [Creating Anonymous Data Objects](#creating-anonymous-data-objects)
@@ -760,6 +761,727 @@ str_a2 = |{ str_a1 } some more bla.|. "String templates. Note: Data objects are 
 "with the conversion rules.
 str_a2 = some_itab[ 2 ]-carrname.
 ```
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+#### Conversion Rules when Assigning Elementary Data Objects
+
+- The following code examples explore and comment on assignments of data objects with various elementary types. Conversion results are added as comments in the code.
+- They focus on conversion rules when assigning an source to an target data object of different elementary types.
+- Not all types or conversion options are covered, and some example assignments may seem nonsensical.
+- For more information, see [Assignment and Conversion Rules](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconversion_rules.htm) in the ABAP Keyword Documentation.
+
+<details>
+  <summary>🟢 Click to expand for example code</summary>
+  <!-- -->
+
+<br>
+
+```abap
+*&---------------------------------------------------------------------*
+*& Character-like source fields
+*&---------------------------------------------------------------------*
+
+*&---------------------------------------------------------------------*
+*& Source types: c / string
+*&---------------------------------------------------------------------*
+
+"The types c and string are demonstrated together because they have
+"similar conversion rules. The type n is also similar to c.
+
+DATA c5 TYPE c LENGTH 5.
+DATA str TYPE string.
+DATA error TYPE REF TO cx_root.
+
+"Numeric target fields
+"The general rule is that the source must contain a number. Various
+"notations, i.e. mathematical, commercial, scientific, are possible
+"depending on the target type. Otherwise, the CX_SY_CONVERSION_NO_NUMBER
+"exception is raised. CX_SY_CONVERSION_OVERFLOW is raised if the number
+"is not in the value range.
+
+"--- i ---
+DATA i TYPE i.
+
+c5 = '123'.
+str = `456`.
+i = c5. "123
+i = str. "456
+
+"Only blanks in the source are interepreted as 0. This also applies to
+"the other numeric types.
+c5 = '   '.
+str = ` `.
+i = c5. "0
+i = str. "0
+
+c5 = '1.567'.
+str = `3.499`.
+
+"Automatic rounding
+i = c5. "2
+i = str. "3
+
+c5 = 'abc'.
+TRY.
+    i = c5.
+  CATCH cx_sy_conversion_no_number INTO error.
+    DATA(error_text) = error->get_text( ). "Cannot be interpreted as a number
+ENDTRY.
+
+str = `11111111#`.
+TRY.
+    i = str.
+  CATCH cx_sy_conversion_no_number INTO error.
+    error_text = error->get_text( ). "Cannot be interpreted as a number
+ENDTRY.
+
+"Scientific numbers cannot be converted to i
+DATA c30 TYPE c LENGTH 30.
+c30 = '1.789E+3'.
+TRY.
+    i = c30.
+  CATCH cx_sy_conversion_no_number INTO error.
+    error_text = error->get_text( ). "Cannot be interpreted as a number
+ENDTRY.
+
+c30 = '99999999999999999999'.
+TRY.
+    i = c30.
+  CATCH cx_sy_conversion_overflow INTO error.
+    error_text = error->get_text( ). "Overflow
+ENDTRY.
+
+"Lossless assignment check
+TRY.
+    c5 = '1.567'.
+    i = EXACT #( c5 ).
+  CATCH cx_sy_conversion_rounding INTO error.
+    error_text = error->get_text( ). "Conversion cannot be executed exactly, a rounding is necessary
+ENDTRY.
+
+"--- int8 ---
+DATA int8 TYPE int8.
+
+c5 = '123'.
+int8 = c5. "123
+
+"--- p ---
+DATA pl8d2 TYPE p LENGTH 8 DECIMALS 2.
+
+c5 = '123'.
+str = `1`.
+pl8d2 = c5. "123.00
+pl8d2 = str. "1.00
+
+c5 = '3.567'.
+str = `1.43210`.
+pl8d2 = c5. "3.57
+pl8d2 = str. "1.43
+
+"Lossless assignment check
+TRY.
+    c5 = '3.567'.
+    pl8d2 = EXACT #( c5 ).
+  CATCH cx_sy_conversion_rounding  INTO error.
+    error_text = error->get_text( ). "Conversion cannot be executed exactly, a rounding is necessary
+ENDTRY.
+
+"--- decfloat16/decfloat34 ---
+"Special conversion rules apply. Refer to the ABAP Keyword Documentation.
+DATA dec16 TYPE decfloat16.
+DATA dec34 TYPE decfloat34.
+
+c5 = '1.012'.
+str = `9.87`.
+dec16 = c5. "1.012
+dec16 = str. "9.87
+dec34 = c5. "1.012
+dec34 = str. "9.87
+c30 = '1.12345678901234567890'.
+str = `9.98765432109876543210`.
+dec16 = c30. "1.123456789012346
+dec16 = str. "9.987654321098765
+dec34 = c30. "1.12345678901234567890
+dec34 = str. "9.98765432109876543210
+
+"Lossless assignment check
+TRY.
+    c30 = '1.12345678901234567890'.
+    dec16 = EXACT #( c30 ).
+  CATCH cx_sy_conversion_rounding  INTO error.
+    error_text = error->get_text( ). "Conversion cannot be executed exactly, a rounding is necessary
+ENDTRY.
+
+"--- f ---
+DATA f TYPE f.
+
+c30 = '3.0788507711716639E-01'.
+str = `7.8864684684943672E-01`.
+f = c30. "3.0788507711716639E-01
+f = str. "7.8864684684943676E-01
+
+c5 = '123'.
+str = `5`.
+f = c5. "1.2300000000000000E+02
+f = str. "5.0000000000000000E+00
+
+"Character-like target fields
+"--- c ---
+"- Source is passed to the target left-aligned, including leading spaces
+"  and excluding trailing spaces.
+"- If the target is shorter, truncation is applied. If the target is longer,
+"  spaces are padded on the right.
+"- Exception: When the source is a string, trailing spaces are retained.
+DATA c3 TYPE c LENGTH 3.
+c5 = 'abcde'.
+c3 = c5. "abc
+
+c5 = ' a    '.
+c3 = c5. "' a '
+
+c30 = 'abcdefghijklmn'.
+c5 = c30. "abcde
+
+str = `  #  `.
+c5 = str. "'  #  '
+
+str = `xyzabc`.
+c3 = str. "xyz
+
+"Lossless assignment check
+c30 = 'abcdefghijklmn'.
+TRY.
+    c5 = EXACT #( c30 ).
+  CATCH cx_sy_conversion_data_loss  INTO error.
+    error_text = error->get_text( ). "data loss occurred when converting
+ENDTRY.
+
+"--- n ---
+"- Number characters are passed aligned to the right.
+"- Other characters are ignored.
+"- If the target is longer, 0 characters are padded. If it is shorted,
+"  truncation is applied.
+DATA n5 TYPE n LENGTH 5.
+
+c3 = '12'.
+n5 = c3. "00012
+
+c5 = '3#4#5'.
+n5 = c5. "00345
+
+c30 = '1234567890'.
+n5 = c30. "67890
+
+c30 = '  123####4########'.
+n5 = c30. "01234
+
+"Lossless assignment check
+c30 = '1234567890'.
+TRY.
+    n5 = EXACT #( c30 ).
+  CATCH cx_sy_conversion_overflow INTO error.
+    error_text = error->get_text( ). "Overflow
+ENDTRY.
+
+"--- string ---
+"The passing is performed including leading blanks, and excluding
+"trailing blanks.
+DATA string TYPE string.
+
+c5 = 'abcd'.
+string = c5. "abcd
+
+c30 = '    abc         '.
+string = c30. "'    abc'
+
+c30 = 'abc                   '.
+string = c30. "abc
+
+c30 = '      abc'.
+string = c30. "'      abc'
+
+"Byte-like target fields
+"--- x ---
+"- Each source character is interpreted as half a byte in hexadecimal representation.
+"- Valid values are 0-9 and A-F.
+"- Padding uses hexadecimal 0.
+"- In case of an invalid character, the conversion stops, and padding with 0 is applied.
+
+DATA x4 TYPE x LENGTH 4.
+
+c5 = '12AB3'.
+x4 = c5. "12AB3000
+
+c5 = '89G'.
+x4 = c5. "89000000
+
+c5 = '1'.
+x4 = c5. "10000000
+
+"--- xstring ---
+"The behavior is similar to type x.
+DATA xstr TYPE xstring.
+
+c5 = '1234'.
+xstr = c5. "1234
+
+"An odd number of the source means the remaining half-byte is
+"padded with 0.
+c5 = '12345'.
+xstr = c5. "123450
+
+"Data/time target fields
+"--- d ---
+"The conversion is applied like type c length 8.
+"In case of type string as source type, trailing blanks are passed.
+DATA d TYPE d.
+
+c30 = '20250102'.
+d = c30. "20250102
+
+"Lossless assignment to check if the source has a valid date value
+TRY.
+    "The example date is valid.
+    d = EXACT #( c30 ).
+  CATCH cx_sy_conversion_no_date INTO error.
+    error_text = error->get_text( ).
+ENDTRY.
+
+"Invalid date value
+c30 = '202501##'.
+d = c30. "202501##
+
+"Lossless assignment to check if the source has a valid date value
+TRY.
+    d = EXACT #( c30 ).
+  CATCH cx_sy_conversion_no_date INTO error.
+    error_text = error->get_text( ). "Cannot be interpreted as a date
+ENDTRY.
+
+str = ``.
+d = str. "00000000
+
+"--- t ---
+"- The conversion is applied like type c length 6.
+"- Padding with 0 characters is applied if the target is longer.
+"- The valid format is yyyymmdd. Otherwise, the result is an invalid time value.
+DATA t TYPE t.
+
+c30 = '123456'.
+t = c30. "123456
+
+str = `230157`.
+t = str. "230157
+
+"Invalid time value
+c30 = '1234##'.
+t = c30. "1234##
+
+"Lossless assignment to check if the source has a valid time value
+TRY.
+    t = EXACT #( c30 ).
+  CATCH cx_sy_conversion_no_time INTO error.
+    error_text = error->get_text( ). "Cannot be interpreted as a time
+ENDTRY.
+
+str = `1234  `.
+t = str. "1234
+
+"--- utclong ---
+"- The source must be a valid representatin of a UTC time stamp:
+"  yyyy-mm-ddThh:mm:ss.fffffff
+"- The CX_SY_CONVERSION_NO_DATE_TIME exception can be raised.
+DATA utclong TYPE utclong.
+
+c30 = '2025-01-01T12:34:56.111'.
+utclong = c30. "2025-01-01 12:34:56.1110000
+
+str = `2025-05-12T22:01:30.5`.
+utclong = str. "2025-05-12 22:01:30.5000000
+
+c30 = '2025-01-01 12:34:56.111'.
+utclong = c30. "2025-01-01 12:34:56.1110000
+
+"Invalid time stamps
+TRY.
+    c30 = '2025-01-01 99:99:99.111'.
+    utclong = c30.
+  CATCH cx_sy_conversion_no_date_time INTO error.
+    error_text = error->get_text( ). "Invalid time stamp
+ENDTRY.
+
+TRY.
+    c30 = 'ABC'.
+    utclong = c30.
+  CATCH cx_sy_conversion_no_date_time INTO error.
+    error_text = error->get_text( ). "Invalid time stamp
+ENDTRY.
+
+*&---------------------------------------------------------------------*
+*& Source type: n
+*&---------------------------------------------------------------------*
+"- When assigning data objects of type n to character-like data objects,
+"  they function as character-like objects. The handling is similar to type c.
+"- When assigning them to numeric data objects, they function numerically.
+
+DATA n3 TYPE n LENGTH 3.
+
+"--- i ---
+n3 = '123'.
+i = n3. "123
+
+n3 = '000'.
+i = n3. "0
+
+"--- n ---
+"Passing aligned to the right
+DATA n2 TYPE n LENGTH 2.
+n3 = '456'.
+n2 = n3. "56
+
+*&---------------------------------------------------------------------*
+*& Numeric source fields
+*&---------------------------------------------------------------------*
+
+*&---------------------------------------------------------------------*
+*& Source type: i
+*&---------------------------------------------------------------------*
+
+"--- p ---
+"- The conversion is performed to the internal representation of a packed number.
+"- If the value range is too small, the CX_SY_CONVERSION_OVERFLOW exception is raised.
+DATA pl5d1 TYPE p LENGTH 5 DECIMALS 1.
+
+i = 123456.
+pl5d1 = i. "123456.0
+
+i = 999999999.
+
+TRY.
+    pl5d1 = i.
+  CATCH cx_sy_conversion_overflow INTO error.
+    error_text = error->get_text( ). "Overflow
+ENDTRY.
+
+"--- decfloat16/decfloat34 ---
+"Conversion to the internal representation of a decimal floating point number with scaling 0
+i = 999999999.
+dec16 = i. "999999999
+dec34 = i. "999999999
+i = 1.
+dec16 = i. "1
+dec34 = i. "1
+
+"--- f ---
+"Conversion to the internal format of a binary floating point number
+i = 999999999.
+f = i. "9.9999999900000000E+08
+
+i = 1.
+f = i. "1.0000000000000000E+00
+
+"--- c ---
+"- Integer value of the integer is formatted in commercial notation and passed aligned to the right.
+"- Negative value: - character is placed in the last position
+"- Positive value: a blank is placed in the last position there.
+"- Target field longer than the string of digits including the plus/minus sign: Padding with blanks
+"  on the left.
+"- Target field too short: Number representation is moved to the right by one place for positive values.
+"  If still too short (and for negative values), truncation is applied on the left and the * character
+"  is put in the first position of the target.
+
+i = 1.
+c3 = i. "' 1 '
+c5 = i. "'   1 '
+
+i = -1.
+c3 = i. "' 1-'
+c5 = i. "'   1-'
+
+i = 12345.
+c3 = i. "'*45'
+c5 = i. "'12345'
+
+i = -123456789.
+c5 = i. "'*789-'
+c30 = i. "'                    123456789-'
+
+"--- n ---
+"The absolute value of the integer number is passed aligned to the right. Padding
+"is applied with 0.
+i = 123.
+n5 = i. "00123
+
+i = -12.
+n5 = i. "00012
+
+i = 123456789.
+n5 = i. "56789
+
+i = -123456789.
+n5 = i. "56789
+
+"--- string ---
+"- Passing is performed without gaps
+"- The - character is put in the last position
+"- A blank is set for positive values
+
+i = 123.
+str = i. "`123 `
+DATA(len) = strlen( str ). "4
+ASSERT len = 4.
+
+i = -1234.
+str = i. "`1234-`
+len = strlen( str ). "5
+ASSERT len = 5.
+
+"--- d ---
+"- Integer value between 1 and 3652060: Intrepretation as the number of days since 01.01.0001; the resulting
+"  date is put in the target with the format yyyymmdd.
+"- Value outside of the range: Target is padded with 0.
+
+i = 739270.
+d = i. "20250118
+
+i = 1.
+d = i. "00010102
+
+i = 5555555.
+d = i. "00000000
+
+"--- t ---
+"- Integer value is divided by 86400 (i.e. the number of seconds of a day), and the
+"  integer remainder of the division is interpreted as the number of seconds since midnight.
+"- The result is put in the target in the format hhmmss.
+
+i = 60.
+t = i. "000100
+
+i = 86400.
+t = i. "000000
+
+i = 30000.
+t = i. "082000
+
+"--- utclong ---
+"This conversion is not supported.
+DATA dref TYPE REF TO data.
+dref = NEW utclong( ).
+
+TRY.
+    dref->* = i.
+  CATCH cx_sy_conversion_not_supported INTO error.
+    error_text = error->get_text( ). "Cannot be converted
+ENDTRY.
+
+*&---------------------------------------------------------------------*
+*& Source type: p
+*&---------------------------------------------------------------------*
+
+TYPES pl8d3_type TYPE p LENGTH 8 DECIMALS 3.
+DATA pl8d3 TYPE pl8d3_type.
+
+"--- i ---
+"Rounding is performed commercially to an integer number
+pl8d3 = CONV pl8d3_type( '0.815' ).
+i = pl8d3. "1
+
+pl8d3 = CONV pl8d3_type( '9.999' ).
+i = pl8d3. "10
+
+"--- p ---
+DATA pl4d1 TYPE p LENGTH 4 DECIMALS 1.
+pl8d3 = CONV pl8d3_type( '1.023' ).
+pl4d1 = pl8d3. "1.0
+
+"--- c ---
+"- Formatting is applied in commercial notation
+"- Passing to a target aligned to the right
+"- Negative value: The - character is put in the last position
+"- Positive value: A blank is put in the last position
+"- Truncation is applied too
+
+pl8d3 = CONV pl8d3_type( '1.023' ).
+c3 = pl8d3. "*23
+
+pl8d3 = CONV pl8d3_type( '-0.815' ).
+c5 = pl8d3. "'.815-'
+
+"--- n ---
+"- Rounding is performed commercial to an integer number
+"- The absolute value is passed to the target as string of
+"  digits aligned to the right.
+
+pl8d3 = CONV pl8d3_type( '4.123' ).
+n5 = pl8d3. "00004
+
+*&---------------------------------------------------------------------*
+*& Source types: decfloat16/decfloat34
+*&---------------------------------------------------------------------*
+
+dec16 = CONV decfloat16( '1.987654321098765' ).
+dec34 = CONV decfloat34( '4.567890123456789012345678901234567' ).
+
+"--- i ---
+"Rounding to an integer value
+i = dec16. "2
+i = dec34. "5
+
+"--- p ---
+"Rounding to the number of decimals places
+pl8d2 = dec16. "1.99
+pl8d2 = dec34. "4.57
+
+"--- decfloat16/decfloat34 ---
+"In case of a conversion of type decfloat34 to decfloat16, the
+"mantissa is truncated. Commercial rounding is applied.
+dec16 = dec34. "4.567890123456789
+
+dec16 = CONV decfloat16( '1.987654321098765' ).
+
+"--- c ---
+"- Passing to the target aligned to the right
+"- First, a conversion to the mathematical or scientific notation is performed.
+c30 = dec16. "'             1.987654321098765'
+c30 = dec34. "'4.5678901234567890123456789012'
+c3 = dec34. "4.6
+
+"--- n ---
+"Rounding to an absolute integer value, which is passed as string of digits
+"aligned to the right
+n5 = dec16. "00002
+
+*&---------------------------------------------------------------------*
+*& Source type: f
+*&---------------------------------------------------------------------*
+
+f = CONV f( '1.2345678E+3' ).
+
+"--- i ---
+"Rounding up to an integer value
+i = f. "1235
+
+"--- p ---
+"Rounding to the number of decimals places
+pl8d2 = f. "1234.57
+
+"--- decfloat16/decfloat34 ---
+"Rounding to 17 places
+f = CONV f( '1.23456781234567890123456789E+3' ).
+dec16 = f. "1234.567812345679
+dec34 = f. "1234.5678123456789
+
+*&---------------------------------------------------------------------*
+*& Byte-like source fields
+*&---------------------------------------------------------------------*
+"Note: Source fields of type xstring are handled similarly.
+
+"change example values
+DATA x2 TYPE x LENGTH 2 VALUE '6869'.
+xstr = CONV xstring( `48656C6C6F20776F726C64` ).
+
+"--- c ---
+"- Values of each half-byte in the source are converted to the hexadecimal
+"  characters 0-9 and A-F.
+"- They are passed to the target aligned to the left.
+"- If the target is longer than the number of characters passed, a padding is applied
+"  with blanks. If it is too short, truncation is applied.
+c5 = x2. "'6869 '
+c30 = x2. "'6869                          '
+
+"--- x ---
+"- Bytes in the source are passed to the source aligned to the left.
+"- If the target field is longer than the number of bytes passed, a padding with
+"  hexadecimal 0 is applied on the right. If the target field is shorter, truncation is
+"  applied.
+x4 = x2. "68690000
+
+*&---------------------------------------------------------------------*
+*& Date, time and time stamps as source fields
+*&---------------------------------------------------------------------*
+
+*&---------------------------------------------------------------------*
+*& Source type: d
+*&---------------------------------------------------------------------*
+"Note: The conversion to the types t and utclong is not supported.
+
+d = CONV d( '20250125' ).
+
+"--- i ---
+"The number of days since 01.01.0001 is calculated an converted to the
+"corresponding integer value.
+
+i = d. "739277
+
+"--- c ---
+"Passing to the target aligned to the left
+DATA c4 TYPE c LENGTH 4.
+c4 = d. "2025
+
+"--- n ---
+"Passing to the target aligned to the left; padding is applied if the
+"target is longer
+n5 = d. "20250
+n3 = d. "202
+DATA n10 TYPE n LENGTH 10.
+n10 = d. "2025012500
+
+*&---------------------------------------------------------------------*
+*& Source type: t
+*&---------------------------------------------------------------------*
+"Note: The conversion to the types d and utclong is not supported.
+
+t = CONV t( '123456' ).
+
+"--- i ---
+"The integer value is interpreted as a time specification in the format hhmmss.
+"From this value, the value hh*3600+mm*60+ss is calculated, which represents the
+"number of seconds passed since midnight.
+
+i = t. "45296
+
+DATA(seconds_since_midnight) = ( 12 * 3600 ) + ( 34 * 60 ) + 56.
+ASSERT i = seconds_since_midnight.
+
+"--- c ---
+c4 = t. "1234
+
+"--- n ---
+"Passing to the target aligned to the left; padding is applied if target
+"is longer
+n5 = t. "12345
+n3 = t. "123
+n10 = t. "1234560000
+
+*&---------------------------------------------------------------------*
+*& Source type: utclong
+*&---------------------------------------------------------------------*
+"Note: The conversion to types i, int8, p, decfloat16, decfloat34, f,
+"n, x, xstring, d, t is not supported.
+
+utclong = CONV utclong( '2025-01-01 12:34:56.1110000' ).
+
+"--- c ---
+"- Conversion to a character string that represents the time stamp in the
+"  notation yyyy-mm-dd hh:mm:ss.fffffff.
+"- There is a blank between the date and time specification
+"- If the target is shorter than 27 characters, truncation is applied on
+"  the right. If it is longer, blanks are padded on the right.
+
+c30 = utclong. "'2025-01-01 12:34:56.1110000   '
+c5 = utclong. "2025-
+
+"--- string ---
+"Same conversion as for a target of type c. The resulting length of the
+"target string is 27.
+str = utclong. "2025-01-01 12:34:56.1110000
+len = strlen( str ).
+ASSERT len = 27.
+```
+
+</details>  
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
