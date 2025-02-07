@@ -52,12 +52,16 @@
     - [Class-Based and Classic Exceptions](#class-based-and-classic-exceptions)
     - [ABAP Unit Tests](#abap-unit-tests)
     - [ABAP Doc Comments](#abap-doc-comments)
-    - [Escaping Characters](#escaping-characters)
+    - [Escape Character](#escape-character)
   - [More Information](#more-information)
   - [Executable Examples](#executable-examples)
 
+
+This ABAP cheat sheet provides an overview on selected syntax options and concepts related to ABAP object orientation.
+
 > **💡 Note**<br>
-> - This ABAP cheat sheet provides an overview on selected syntax options and concepts related to ABAP object orientation. It is supported by code snippets and an executable example. They are **not** suitable as role models for object-oriented design. Their primary focus is on the syntax and functionality. For more details, refer to the respective topics in the ABAP Keyword Documentation. Find an overview in the topic [ABAP Objects - Overview](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_objects_oview.htm).
+> - The cheat sheet is supported by code snippets and an executable example. They are **not** suitable as role models for object-oriented design. Their primary focus is on the syntax and functionality. 
+> - For more details, refer to the respective topics in the ABAP Keyword Documentation. Find an overview in the topic [ABAP Objects - Overview](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_objects_oview.htm).
 > - The [executable examples](#executable-examples) reflect several points and code snippets covered in the cheat sheet.
 
 
@@ -2802,7 +2806,7 @@ Components specified in superclasses
 
 <br>
 
-The inheritance tree of the following example classes looks as follows:
+The inheritance tree of the following example classes is as follows:
 
 ```
 LCL1
@@ -3240,7 +3244,7 @@ Additions impacting inheritance
 
  <td> 
 
-- You can use the `FINAL` addition to prevent classes from being inherited. These classes cannot inherit from other classes.
+- You can use the `FINAL` addition to prevent classes from being inherited. 
 - You can also apply the `FINAL` addition to methods to prevent them from being redefined in subclasses.
 - Refer to the next section for notes on these topics and other inheritance and instantiation features.
 
@@ -3278,7 +3282,7 @@ Constructors
 
 <br>
 
-The inheritance tree of the following example classes looks as follows: 
+The inheritance tree of the following example classes is as follows: 
 
 ```
 LCL1
@@ -3381,7 +3385,7 @@ ENDCLASS.
 
 <br>
 
-The inheritance tree of the following example classes looks as follows: 
+The inheritance tree of the following example classes is as follows: 
 
 ```
 LCL1
@@ -3585,7 +3589,7 @@ The table below includes selected syntax related to inheritance in class and met
 
 > **💡 Note**<br>
 > - Some of the syntax options have already been mentioned previously. This is to summarize. 
-> - The code examples shows local classes and interfaces declared, for example, in the [CCIMP include](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenccimp_glosry.htm) of a class pool. 
+> - The code examples show local classes and interfaces declared, for example, in the [CCIMP include](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenccimp_glosry.htm) of a class pool. 
 > - The snippets provided do not represent all possible syntax combinations. For the complete picture, refer to the ABAP Keyword Documentation. Additional syntax options are available in the context of friendship (`GLOBAL FRIENDS/FRIENDS`), testing (`FOR TESTING`), [RAP](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenarap_glosry.htm) (`FOR BEHAVIOR OF`; to declare [ABAP behavior pools](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbehavior_pool_glosry.htm)), and more.
 > - The order of the additions can vary.
 
@@ -3615,7 +3619,7 @@ CLASS zcl_demo DEFINITION
 
 - `... PUBLIC ...`: Specifies that the class is a global class, available globally within the class library. Most of the subsequent snippets use the `PUBLIC` addition as the focus is on global classes.
 - `... FINAL ...`: Specifies that the class cannot have any subclasses, effectively prohibiting inheritance. This addition seals off a branch of the inheritance tree. In final classes, all methods are automatically final.
-- `... CREATE PUBLIC ...`: Specifies that the class can be instantiated wherever it is visible.
+- `... CREATE PUBLIC ...`: Specifies that the class can be instantiated wherever it is visible. Not specifying the addition `CREATE ...` means `CREATE PUBLIC` by default.
 
 <br>
 
@@ -10348,7 +10352,7 @@ ENDCLASS.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-### Escaping Characters
+### Escape Character
 
 - You may encounter [`!` characters](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABENNAMES_ESCAPING.html) specified before operands, particularly in signatures of [procedures](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenprocedure_glosry.htm).
 - They are used to distinguish the operand's name from ABAP words. 

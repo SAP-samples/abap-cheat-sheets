@@ -761,87 +761,102 @@ ENDDO.
 
 Example:
 ```abap
-"----------------------------------------------------------------------------
-"------------ RESUMABLE addition in method declarations and  ----------------
-"------------ RESUMABLE addition with RAISE EXCEPTION/THROW -----------------
-"----------------------------------------------------------------------------
-"The following demo method declaration shows one prerequisite of resumable
-"exceptions. The RAISING clause specifies a demo exception class with the 
-"RESUMABLE addition.
+CLASS zcl_demo_abap DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
 
-CLASS-METHODS meth_resumable
-  IMPORTING num1              TYPE i
-            num2              TYPE i
-  RETURNING VALUE(div_result) TYPE string
-  RAISING   RESUMABLE(zcx_demo_abap_error_b).
+  PUBLIC SECTION.
+    INTERFACES if_oo_adt_classrun.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+    "The following demo method declaration shows one prerequisite of resumable
+    "exceptions. The RAISING clause specifies a demo exception class with the
+    "RESUMABLE addition.
+    CLASS-METHODS meth_resumable
+      IMPORTING num1              TYPE i
+                num2              TYPE i
+      RETURNING VALUE(div_result) TYPE string
+      RAISING   RESUMABLE(zcx_demo_abap_error_b).
+ENDCLASS.
 
-...
 
-"Demo method implementation demonstrating a RAISE EXCEPTION statement
-"with the RESUMABLE addition (and an example for statement using the COND 
-"operator commented out)
-METHOD meth_resumable.
+CLASS zcl_demo_abap IMPLEMENTATION.
 
-  IF num2 = 0 AND num1 <> 0.
-    RAISE RESUMABLE EXCEPTION TYPE zcx_demo_abap_error_b.
-    div_result = `No result. Resumed!`.
-  ELSE.
-    div_result = num1 / num2.
-  ENDIF.
+  METHOD if_oo_adt_classrun~main.
 
-  "div_result = COND #( WHEN num2 = 0 AND num1 <> 0 THEN num1 / num2
-  "                     ELSE THROW RESUMABLE zcx_demo_abap_error_b( ) ).
+    "----------------------------------------------------------------------------
+    "----------------------- CATCH BEFORE UNWIND  -------------------------------
+    "----------------------------------------------------------------------------
+    "Example using the method
+    "The following example creates a table containing integers from -5 to 5. This
+    "table is looped across to have different values for divisions. Here, this
+    "value represents the second operand. The first operand is the sy-tabix
+    "value. The result is added to an internal table. When the second operand's
+    "value is 0, the exception is raised. In the CATCH BEFORE UNWIND block, the
+    "is_resumable attribute is evaluated. An info message is added to the internal
+    "table, and the processing continues after executing the RESUME statement.
 
-ENDMETHOD.
+    DATA restab TYPE string_table.
+    TYPES ty_inttab TYPE TABLE OF i WITH EMPTY KEY.
+    DATA(inttab) = REDUCE ty_inttab( INIT tab = VALUE ty_inttab( )
+                                     FOR  i = -5 UNTIL i > 5
+                                     NEXT tab = VALUE #( BASE tab ( i ) ) ).
 
-"----------------------------------------------------------------------------
-"----------------------- CATCH BEFORE UNWIND  -------------------------------
-"----------------------------------------------------------------------------
-"Example using the method
-"The following example creates a table containing integers from -5 to 5. This
-"table is looped across to have different values for divisions. Here, this
-"value represents the second operand. The first operand is the sy-tabix 
-"value. The result is added to an internal table. When the second operand's
-"value is 0, the exception is raised. In the CATCH BEFORE UNWIND block, the
-"is_resumable attribute is evaluated. An info message is added to the internal
-"table, and the processing continues after executing the RESUME statement.
+    LOOP AT inttab INTO DATA(wa).
+      TRY.
+          DATA(divres) = meth_resumable(
+            num1 = sy-tabix
+            num2 = wa
+          ).
+          APPEND |{ sy-tabix } / { wa } = { divres }| TO restab.
+        CATCH BEFORE UNWIND zcx_demo_abap_error_b INTO DATA(error_resume).
+          DATA(is_resumable) = error_resume->is_resumable.
+          IF is_resumable IS NOT INITIAL.
+            APPEND |Exception raised. Is resumable? -> "{ is_resumable }"| TO restab.
+            RESUME.
+          ENDIF.
+      ENDTRY.
+    ENDLOOP.
 
-DATA restab TYPE string_table.
-TYPES ty_inttab TYPE TABLE OF i WITH EMPTY KEY.
-DATA(inttab) = REDUCE ty_inttab( INIT tab = VALUE ty_inttab( )
-                                 FOR  i = -5 UNTIL i > 5
-                                 NEXT tab = VALUE #( BASE tab ( i ) ) ).
-
-LOOP AT inttab INTO DATA(wa).
-  TRY.
-      DATA(divres) = meth_resumable(
-        num1 = sy-tabix
-        num2 = wa
-      ).
-      APPEND |{ sy-tabix } / { wa } = { divres }| TO restab.
-    CATCH BEFORE UNWIND zcx_demo_abap_error_b INTO DATA(error_resume).
-      DATA(is_resumable) = error_resume->is_resumable.
-      IF is_resumable IS NOT INITIAL.
-        APPEND |Exception raised. Is resumable? -> "{ is_resumable }"| TO restab.
-        RESUME.
-      ENDIF.
-  ENDTRY.
-ENDLOOP.
-
+    out->write( data = restab name = `restab` ).
 
 *Content of the result table:
-*1 / -5 = 0.2-                         
-*2 / -4 = 0.5-                         
-*3 / -3 = 1-                           
-*4 / -2 = 2-                           
-*5 / -1 = 5-                           
+*1 / -5 = 0.2-
+*2 / -4 = 0.5-
+*3 / -3 = 1-
+*4 / -2 = 2-
+*5 / -1 = 5-
 *Exception raised. Is resumable? -> "X"
-*6 / 0 = No result. Resumed!           
-*7 / 1 = 7                             
-*8 / 2 = 4                             
-*9 / 3 = 3                             
-*10 / 4 = 2.5                          
+*6 / 0 = No result. Resumed!
+*7 / 1 = 7
+*8 / 2 = 4
+*9 / 3 = 3
+*10 / 4 = 2.5
 *11 / 5 = 2.2
+
+  ENDMETHOD.
+
+  METHOD meth_resumable.
+
+    "Demo method implementation demonstrating a RAISE EXCEPTION statement
+    "with the RESUMABLE addition (and an example for statement using the COND
+    "operator commented out)
+
+    IF num2 = 0 AND num1 <> 0.
+      RAISE RESUMABLE EXCEPTION TYPE zcx_demo_abap_error_b.
+      div_result = `No result. Resumed!`.
+    ELSE.
+      div_result = num1 / num2.
+    ENDIF.
+
+    "Statement with COND operator using RESUMABLE
+    "div_result = COND #( WHEN num2 = 0 AND num1 <> 0 THEN num1 / num2
+    "                     ELSE THROW RESUMABLE zcx_demo_abap_error( ) ).
+
+  ENDMETHOD.
+
+ENDCLASS.
 ```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
@@ -856,7 +871,7 @@ ENDLOOP.
 - If an exception is raised and ...
   - not handled, the exception text is displayed in the [short dump](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenshort_dump_glosry.htm) of the runtime error.
   - handled, the text can be retrieved using the `get_text` method as shown above.
-- As outlined in the next section, exception classes must implement one of the system interfaces for messages to use exception texts.
+- As outlined in the next section, exception classes must implement one of the system interfaces (or inherit from classes implementing them) for messages to use exception texts.
  
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
@@ -1255,14 +1270,14 @@ ASSERT flag = abap_true.
 ### Local Exception Classes
 
 - You can create local exception classes within your class pool for exceptions specific to your program that are not needed globally.
-- The following simplified example experiments with a local exception class. It uses a message class that is part of the ABAP cheat sheet repository. 
+- The following simplified example explores a local exception class. It uses a message class that is part of the ABAP cheat sheet repository. 
 - In the example, the global class uses the exception class in a private method's signature. Therefore, the exception class declaration is placed in the *Class-Relevant Local Types* tab ([CCDEF include](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenccdef_glosry.htm)). Its implementation is in the *Local Types* tab ([CCIMP include](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenccimp_glosry.htm)) in ADT.
 - You can add the following code to the three class includes of a demo class (the global class's name is `zcl_demo_abap` in the example), activate, and run the class using F9. The implementation of the private method, that includes the local exception class in the signature, contains several `RAISE EXCEPTION` statements demonstrating various syntax options of these statements. The example is designed to write exception texts to the console.
 
 <table>
 
 <tr>
-<td> Class include </td> <td> Notes </td>
+<td> Class include </td> <td> Code </td>
 </tr>
 
 <tr>
@@ -1359,7 +1374,7 @@ CLASS lcx_error DEFINITION INHERITING FROM cx_static_check.
         attr4 TYPE scx_attrname VALUE '',
       END OF some_error.
 
-    DATA text TYPE string.
+    DATA text TYPE string READ-ONLY.
 
     METHODS constructor
       IMPORTING
@@ -1523,12 +1538,12 @@ ABAP contract checks include ...
 ### Classic Exceptions
 
 - In older ABAP code, you may encounter non-class-based exceptions, the predecessors of class-based exceptions.
-- They should no longer be used.
+- They should not be used in new developments.
 - They are specified in method signatures with the `EXCEPTIONS` addition.
 - Find more details in the [ABAP Keyword Documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenexceptions_non_class.htm).
 
 Example: 
-- The following example shows the longer available `describe_by_name` method available in the [Runtime Type Identification (RTTI)](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrun_time_type_identific_glosry.htm) class `cl_abap_typedescr` (find more information in the Dynamic Programming cheat sheet).
+- The following example shows the longer available `describe_by_name` method available in the [Runtime Type Identification (RTTI)](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrun_time_type_identific_glosry.htm) class `cl_abap_typedescr` (find more information in the [Dynamic Programming](06_Dynamic_Programming.md) cheat sheet).
 - This method specifies `EXCEPTIONS` in the method signature.
 - The example intentionally uses a class name that is (most probably) not available in the system.
 - The exception is raised, and the `sy-subrc` value is evaluated. 

@@ -217,13 +217,11 @@ ENDMETHOD.
 
 Note:
 
--   In the [restricted ABAP language
-    version](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrestricted_version_glosry.htm "Glossary Entry")
-    scope, only reads are allowed. Hence, the addition `OPTIONS READ-ONLY` is mandatory. Furthermore, you must make sure
+-   In [ABAP for Cloud Development](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenabap_for_sap_cloud_glosry.htm) (i.e. the [restricted ABAP language version](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrestricted_version_glosry.htm "Glossary Entry")
+    scope), only reads are allowed. Hence, the addition `OPTIONS READ-ONLY` is mandatory. Furthermore, you must make sure
     that the database objects that are specified after `USING` are accessible.
--   Generally, in the [unrestricted ABAP language
-    version](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenunrestricted_version_glosry.htm "Glossary Entry")
-    scope ([ABAP for Cloud Development](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenabap_for_sap_cloud_glosry.htm)), more syntax options are allowed for AMDP method declaration
+-   Generally, in [Standard ABAP](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenstandard_abap_glosry.htm) (i.e. the [unrestricted ABAP language
+    version](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenunrestricted_version_glosry.htm "Glossary Entry") scope), more syntax options are allowed for AMDP method declaration
     and implementation parts. Check the ABAP Keyword Documentation for
     more details as covered further down.
 
@@ -400,7 +398,7 @@ You can then use the CDS table function as source for a
 - Native SQL is passed directly to the database.
 - AMDP, which uses Native SQL, also does not support implicit client handling.
 - While AMDP is permitted in ABAP Cloud, accessing client-dependent data via Native SQL is not supported.
-- When using AMDP in ABAP Cloud, it is crucial to access only the current client. Client-safety must be ensured..
+- When using AMDP in ABAP Cloud, it is crucial to access only the current client. Client-safety must be ensured.
 - AMDP methods in ABAP Cloud must be client-safe, meaning the SQLScript code should access data only in your client. Use only artifacts that limit access to a single client or those that are client-independent.
 - Consequently, all objects in the `USING` list must be client-safe, including CDS table functions implemented as AMDP methods.
 - There are additions to cover client-safe aspects, ensuring access only to your client data.

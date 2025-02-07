@@ -1394,7 +1394,7 @@ MODIFY ENTITY root_ent
 
 - The example demonstrates the long form of an ABAP EML `MODIFY` statement.
 - The example statement uses the [`FROM`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapmodify_entity_entities_fields.htm) addition instead of `FIELDS ( ... ) WITH`. See more details in the documentation and below.
-- 
+
 
 ``` abap
 MODIFY ENTITIES OF root_ent      "full name of root entity
@@ -1714,7 +1714,7 @@ MODIFY ENTITIES OF root_ent
     current status of instances in the transactional buffer which
     includes unsaved modifications on instances. If an instance is not
     yet available in the transactional buffer, the currently persisted
-    data set is automatically read into the transactional buffer.
+    data set is (automatically - in case of a managed scenario) read into the transactional buffer.
 -   Note that read operations are always implicitly enabled for each
     entity listed in a BDEF, i. e. there is no extra definition in the
     BDEF in contrast to, for example, create or update.

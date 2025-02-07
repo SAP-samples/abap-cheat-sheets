@@ -1330,6 +1330,7 @@ After the import of the repository, proceed as follows:
 - Run the program by choosing `F8`.
 
 > **💡 Note**<br>
+> - The examples in the *main* branch of the ABAP cheat sheet repository are designed to be imported into the SAP BTP ABAP Environment. For Standard ABAP, you can find examples (such as `ZDEMO_ABAP_SELSCR_LISTS_INTRO`) in the other branches of the repository. 
 > - The executable examples ...
 >   - do not claim to include meaningful selection screens and lists.
 >   - are not intended to be role models for proper selection screen and list design.   

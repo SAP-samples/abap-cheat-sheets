@@ -230,7 +230,7 @@ The statements to end an SAP LUW have already been mentioned above: [`COMMIT WOR
 `ROLLBACK WORK`
 - Similar to `COMMIT WORK` statements, this statement closes the current SAP LUW and opens a new one.
 - Among other things, this statement ...
-  - causes all changes within a SAP LUW to be undone, that is, all previous registrations for the current SAP LUW are removed.
+  - causes all changes within an SAP LUW to be undone, that is, all previous registrations for the current SAP LUW are removed.
   - triggers a database rollback on all currently open database connections, which also terminates the current database LUW. 
 
 > **💡 Note**<br>
@@ -372,6 +372,7 @@ After the import of the repository, proceed as follows:
 - Run the program by choosing `F8`.
 
 > **💡 Note**<br>
+> - The examples in the *main* branch of the ABAP cheat sheet repository are designed to be imported into the SAP BTP ABAP Environment. For Standard ABAP, you can find examples (such as `zdemo_abap_sap_luw`) in the other branches of the repository. 
 > - The executable example ...
 >   - demonstrates the SAP LUW using classic dynpros to provide a self-contained and simple example that highlights the considerations regarding implicit database commits, without putting the spotlight on dynpros. Note that classic dynpros are outdated for application programs. New developments should use web-based UIs, such as SAP Fiori UIs. 
 >   - covers the following topics in simple contexts:
