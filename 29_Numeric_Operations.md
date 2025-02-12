@@ -930,11 +930,11 @@ ASSERT cl_abap_typedescr=>describe_by_data( res_dec_f )->type_kind = 'a'.
 
 "decfloat34 + f
 DATA(res_dec_g) = CONV decfloat34( '2.2' ) + CONV f( '2.23645E-01' ).
-ASSERT cl_abap_typedescr=>describe_by_data( res_dec_e )->type_kind = 'e'.
+ASSERT cl_abap_typedescr=>describe_by_data( res_dec_g )->type_kind = 'e'.
 
 "decfloat16 + f
 DATA(res_dec_h) = CONV decfloat16( '2.2' ) + CONV f( '2.23645E-01' ).
-ASSERT cl_abap_typedescr=>describe_by_data( res_dec_f )->type_kind = 'a'.
+ASSERT cl_abap_typedescr=>describe_by_data( res_dec_h )->type_kind = 'a'.
 
 "---- 2 ----
 "The calculation type is f if one of the types involved is f.
@@ -2340,11 +2340,11 @@ CLASS zcl_demo_abap IMPLEMENTATION.
 
     "decfloat34 + f
     DATA(res_dec_g) = CONV decfloat34( '2.2' ) + CONV f( '2.23645E-01' ).
-    ASSERT cl_abap_typedescr=>describe_by_data( res_dec_e )->type_kind = 'e'.
+    ASSERT cl_abap_typedescr=>describe_by_data( res_dec_g )->type_kind = 'e'.
 
     "decfloat16 + f
     DATA(res_dec_h) = CONV decfloat16( '2.2' ) + CONV f( '2.23645E-01' ).
-    ASSERT cl_abap_typedescr=>describe_by_data( res_dec_f )->type_kind = 'a'.
+    ASSERT cl_abap_typedescr=>describe_by_data( res_dec_h )->type_kind = 'a'.
 
     "---- 2 ----
     "The calculation type is f if one of the types involved is f.
