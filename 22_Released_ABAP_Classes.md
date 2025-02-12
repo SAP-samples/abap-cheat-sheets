@@ -455,7 +455,7 @@ DATA(msg) = xco_cp=>sy->message( ).
 
 "Using the 'string' and 'as_message' methods to create message object
 "based on a random string, and using a default type, id, etc.
-"In the example, the created message object is assigned to previous to
+"In the example, the created message object is assigned to the previous one
 "work with in the example.
 msg = xco_cp=>string( `Test message` )->as_message( ).
 

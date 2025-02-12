@@ -767,7 +767,7 @@ str_a2 = some_itab[ 2 ]-carrname.
 #### Conversion Rules when Assigning Elementary Data Objects
 
 - The following code examples explore and comment on assignments of data objects with various elementary types. Conversion results are added as comments in the code.
-- They focus on conversion rules when assigning an source to an target data object of different elementary types.
+- They focus on conversion rules when assigning a source to a target data object of different elementary types.
 - Not all types or conversion options are covered, and some example assignments may seem nonsensical.
 - For more information, see [Assignment and Conversion Rules](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconversion_rules.htm) in the ABAP Keyword Documentation.
 

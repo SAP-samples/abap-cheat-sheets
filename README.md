@@ -97,7 +97,7 @@ ABAP cheat sheets[^1] ...
 |[ABAP Dictionary](26_ABAP_Dictionary.md)|Covers a selection of repository objects in the ABAP Dictionary (DDIC) that represent global types|- (The cheat sheet includes a copy and paste example class)|
 |[Exceptions and Runtime Errors](27_Exceptions.md)|Provides an overview on exceptions and runtime errors|[zcl_demo_abap_error_handling](./src/zcl_demo_abap_error_handling.clas.abap)|
 |[Regular Expressions in ABAP](28_Regular_Expressions.md)|Includes an overview of common regular expressions and their use in ABAP through statements, built-in functions, and system classes|[zcl_demo_abap_regex](./src/zcl_demo_abap_regex.clas.abap)|
-
+|[Numeric Operations in ABAP](29_Numeric_Operations.md)|Explores various aspects of numeric operations and calculations in ABAP|- (The cheat sheet includes a copy and paste example class)|
 
 <br>
 
