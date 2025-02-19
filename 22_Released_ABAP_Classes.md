@@ -41,6 +41,7 @@
   - [Handling Number Ranges](#handling-number-ranges)
   - [Releasing APIs](#releasing-apis)
   - [Application Jobs](#application-jobs)
+  - [Generative AI](#generative-ai)
 
 
 This ABAP cheat sheet contains a selection of [released](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenreleased_api_glosry.htm) ABAP classes that are available in [ABAP for Cloud Development](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_for_cloud_dev_glosry.htm). It serves as a quick introduction, along with code snippets to explore the functionality in action.
@@ -5438,6 +5439,38 @@ ENDCLASS.
 ``` 
 
 </details>  
+</td>
+</tr>
+</table>
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+## Generative AI
+
+<table>
+<tr>
+<td> Class </td> <td> Details/Code Snippet </td>
+</tr>
+<tr>
+<td> <code>CL_AIC_ISLM_COMPL_API_FACTORY</code><br><code>CL_AIC_ISLM_PROMPT_TPL_FACTORY</code> </td>
+<td>
+
+- ABAP classes available in the *ABAP AI SDK powered by Intelligent Scenario Lifecycle Management* for interacting with large language models (LLMs) in custom implementations
+- Find more information in the [documentation](https://help.sap.com/docs/abap-ai/generative-ai-in-abap-cloud/generative-ai-in-abap-cloud?locale=en-US) and the [Generative AI](30_Generative_AI.md) cheat sheet.
+- The following method calls create an instance of the ISLM completion API, use a prompt as string, and retrieve the LLM answer.
+
+ <br>
+
+```abap
+TRY.
+    FINAL(ai_api) = cl_aic_islm_compl_api_factory=>get( )->create_instance( 'ZDEMO_ABAP_INT_SCEN' ).
+    FINAL(result) = ai_api->execute_for_string( `Tell me a joke.` ).
+    FINAL(completion) = result->get_completion( ).
+  CATCH cx_aic_api_factory cx_aic_completion_api INTO FINAL(error).
+    FINAL(error_text) = error->get_text( ).
+ENDTRY.
+```
+ 
 </td>
 </tr>
 </table>
