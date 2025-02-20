@@ -39,6 +39,7 @@
     - [Using Constructor Expressions in ABAP SQL Statements](#using-constructor-expressions-in-abap-sql-statements)
     - [Example: Exploring Create, Update, and Delete Operations with ABAP SQL Statements](#example-exploring-create-update-and-delete-operations-with-abap-sql-statements)
   - [Dynamic ABAP SQL Statements](#dynamic-abap-sql-statements)
+  - [CRUD Operations Using CDS Artifacts](#crud-operations-using-cds-artifacts)
   - [Excursions](#excursions)
     - [Evaluating ABAP System Fields after ABAP SQL Statements](#evaluating-abap-system-fields-after-abap-sql-statements)
     - [Typed Literals](#typed-literals)
@@ -68,7 +69,8 @@
     the focus is on syntax options.
 
 > **💡 Note**<br>
-> The syntax options for the `SELECT` statement are extensive. Make sure that you consult the ABAP Keyword Documentation for all available options. The cheat sheet and snippets demonstrate a selection.
+> - The syntax options for the `SELECT` statement are extensive. Make sure that you consult the ABAP Keyword Documentation for all available options. The cheat sheet and snippets demonstrate a selection.
+> - The code examples in the cheat sheet primarily use DDIC database tables for [CRUD operations](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencrud_glosry.htm). Note that there are also CDS artifacts that allow not only reading but also creating, updating, and deleting. See [this section](#crud-operations-using-cds-artifacts).
 
 
 ## Excursion: Database Tables and Views
@@ -148,6 +150,7 @@ Views](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm
         editor).
     -   are, in contrast to external views, supported by all database
         systems (that support the ABAP CDS characteristics).
+    -   Note that there are also CDS artifacts that allow not only reading but also creating, updating, and deleting. See [this section](#crud-operations-using-cds-artifacts).
 </details>
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
@@ -2197,7 +2200,8 @@ INTO @DATA(special_functions).
 ## Create, Update, and Delete Operations 
 
 > **💡 Note**<br>
-> The following sections include code patterns. To explore various syntax options with an executable example, see section [Example: Exploring ABAP SQL Statements Changing Data in Database Tables](#example-exploring-abap-sql-statements-changing-data-in-database-tables) below.
+> - The following sections include code patterns. To explore various syntax options with an executable example, see section [Example: Exploring ABAP SQL Statements Changing Data in Database Tables](#example-exploring-abap-sql-statements-changing-data-in-database-tables) below.
+> - There are also CDS artifacts that allow not only reading but also creating, updating, and deleting. See [this section](#crud-operations-using-cds-artifacts).
 
 ### Using INSERT
 
@@ -2746,6 +2750,270 @@ SELECT *
   WHERE ...
   INTO ...
 ```
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+## CRUD Operations Using CDS Artifacts
+
+- The code examples above primarily use DDIC database tables for [CRUD operations](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencrud_glosry.htm).
+- CDS artifacts are available that allow not only reading but also creating, updating, and deleting.
+- **Table Entities**
+  - Table entities are CDS entities that define database tables on the SAP HANA database linked to AS ABAP.
+  - They are - with restructions currently - considered successors of the classic DDIC database table, and also represent global structured types usable in ABAP.
+  - Syntax: `define table entity ...`.
+  - For more information, refer to the ABAP Data Models guide, for example, [here](https://help.sap.com/docs/ABAP_Cloud/aaae421481034feab3e71dd9e0f643bf/100ab51935544f18b4f4be9b4abb91e8.html).
+- **Writable CDS View Entities**
+  - Writable CDS view entities allow you to modify underlying database data using ABAP SQL.
+  - Syntax: `define writable view entity ...`.
+  - These entities, like many other CDS artifacts, represent global structured types usable in ABAP, but not in the ABAP Dictionary.
+  - Note that there are definition restrictions. For example, you cannot define writable CDS view entities if selecting from multiple data sources or using joins.
+  - Writable CDS external entities are available, too. They allow CRUD operations using external artifacts via service connections. Find more information [here](https://help.sap.com/docs/ABAP_Cloud/aaae421481034feab3e71dd9e0f643bf/51854921f45148f8bb4157fe8e16af48.html).
+
+**Example**
+
+- The following example demonstrates a table entity and a writable CDS view enitity.
+- The writable CDS view entity uses the table entity as its data source. A DDIC database is also possible.
+
+
+<details>
+  <summary>🟢 Click to expand for example code</summary>
+  <!-- -->
+
+<br>
+
+- The example uses a zoo animal context. To explore the example, create three ABAP repository objects: 2 CDS entities, 1 example class. 
+- For the CDS artifacts, right-click your package and choose *New -> Other ABAP Repository Objects* in ADT. Filter for *data definition*, and walk through the wizard. Use the example's artifact names (`zdemo_abap_animals_te` for the table entity, and `zdemo_abap_animals_we` for the writable CDS view entity), or use other names and adapt the code accordingly.
+- After activation, choose *F9* in the class in ADT to execute it. The example is set up to display output in the console.
+- The example class performs CRUD operations on both CDS artifacts. The example includes ABAP SQL `SELECT`, `INSERT`, `MODIFY`, `UPDATE`, and `DELETE` statements.
+
+<br>
+
+<table>
+
+<tr>
+<td> ABAP repository object </td> <td> Notes/Code </td>
+</tr>
+
+<tr>
+<td> 
+
+Table entity
+
+ </td>
+
+ <td> 
+
+
+```abap
+@ClientHandling.type: #CLIENT_INDEPENDENT
+@AbapCatalog.deliveryClass: #APPLICATION_DATA
+@AccessControl.authorizationCheck: #NOT_REQUIRED
+@EndUserText.label: 'CDS table entity'
+define table entity zdemo_abap_animals_te 
+{
+  key id            : abap.int4;
+  animal_name       : abap.char(20);
+  species           : abap.char(20);
+  age               : abap.int4;
+  country_of_origin : abap.char(20);
+  arrival_date      : abap.datn;
+  is_carnivore      : abap_boolean;
+}
+``` 
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+Writable CDS view entity
+
+ </td>
+
+ <td> 
+
+```abap
+@AccessControl.authorizationCheck: #NOT_REQUIRED
+@EndUserText.label: 'Writable CDS view entity'
+@Metadata.ignorePropagatedAnnotations: true
+define writable view entity zdemo_abap_animals_we
+  as select from zdemo_abap_animals_te
+{
+  key id,
+  animal_name,
+  species,
+  age,
+  country_of_origin,
+  arrival_date,
+  is_carnivore  
+}
+``` 
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+Class
+
+ </td>
+
+ <td> 
+
+
+```abap
+CLASS zcl_demo_abap DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
+
+  PUBLIC SECTION.
+    INTERFACES if_oo_adt_classrun.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+ENDCLASS.
+
+
+CLASS zcl_demo_abap IMPLEMENTATION.
+  METHOD if_oo_adt_classrun~main.
+
+*&---------------------------------------------------------------------*
+*& Using table entities and writable CDS view entities as data types
+*& in ABAP
+*&---------------------------------------------------------------------*
+
+    DATA struc_table_entity TYPE zdemo_abap_animals_te.
+    TYPES struc_type_table_entity TYPE zdemo_abap_animals_te.
+    DATA(another_struc_table_ent) = VALUE zdemo_abap_animals_te( id = 1 animal_name = 'Zeus' ).
+
+    DATA struc_writable_ve TYPE zdemo_abap_animals_we.
+    TYPES struc_type_writable_ve TYPE zdemo_abap_animals_we.
+    DATA(another_struc_writable_ve) = VALUE zdemo_abap_animals_we( id = 2 animal_name = 'Leo' ).
+
+*&---------------------------------------------------------------------*
+*& Performing CRUD operations using a table entity and ABAP SQL
+*&---------------------------------------------------------------------*
+
+    out->write( `---- Performing CRUD operations on table entities using ABAP SQL ----` ).
+    out->write( |\n| ).
+
+    DELETE FROM zdemo_abap_animals_te.
+
+    "DATA animals_table type table of zdemo_abap_animals_te with empty key.
+
+    INSERT zdemo_abap_animals_te FROM TABLE @( VALUE #(
+      ( id = 1 animal_name = 'Zeus' species = 'Lion' age = 5 country_of_origin = '' arrival_date = '20220115' is_carnivore = abap_true )
+      ( id = 2 animal_name = 'Leo' species = 'Lion' age = 7 country_of_origin = '' arrival_date = '20241205' is_carnivore = abap_true )
+      ( id = 3 animal_name = 'Jumbo' species = 'Elephant' age = 10 country_of_origin = 'India' arrival_date = '20190526' is_carnivore = abap_false )
+      ( id = 4 animal_name = 'Little' species = 'Elephant' age = 4 country_of_origin = 'India' arrival_date = '20240314' is_carnivore = abap_false )
+      ( id = 5 animal_name = 'Daisy' species = 'Zebra' age = 4 country_of_origin = 'South Africa' arrival_date = '20220207' is_carnivore = abap_false )
+      ( id = 6 animal_name = 'Buddy' species = 'Owl' age = 3 country_of_origin = 'Canada' arrival_date = '20210111' is_carnivore = abap_true )
+      ( id = 7 animal_name = 'Sunny' species = 'Dolphin' age = 7 country_of_origin = 'Australia' arrival_date = '20190527' is_carnivore = abap_false )
+      ( id = 8 animal_name = 'Nala' species = 'Giraffe' age = 6 country_of_origin = 'Tanzania' arrival_date = '20210807' is_carnivore = abap_false )
+      ( id = 9 animal_name = 'Oscar' species = 'Tiger' age = 8 country_of_origin = 'Russia' arrival_date = '20191018' is_carnivore = abap_true )
+      ( id = 10 animal_name = 'Charlie' species = 'Chimpanzee' is_carnivore = abap_false )
+      ( id = 12  ) ) ).
+    out->write( |sy-dbcnt after 1st INSERT: { sy-dbcnt }| ).
+
+    SELECT COUNT(*) FROM zdemo_abap_animals_te INTO @DATA(number_of_entries).
+    out->write( |Number of data entries after 1st INSERT: { number_of_entries }| ).
+
+    INSERT zdemo_abap_animals_te FROM TABLE @( VALUE #(
+      ( id = 1 animal_name = 'Lora' species = 'Parrot' age = 2 country_of_origin = 'Mexico' arrival_date = '20240712' is_carnivore = abap_false )
+      ( id = 11 animal_name = 'Teddy' species = 'Koala' age = 4 country_of_origin = 'Australia' arrival_date = '20240225' is_carnivore = abap_false ) ) )
+      ACCEPTING DUPLICATE KEYS.
+    out->write( |sy-dbcnt after 2nd INSERT: { sy-dbcnt }| ).
+
+    SELECT COUNT(*) FROM zdemo_abap_animals_te INTO @number_of_entries.
+    out->write( |Number of data entries after 1st INSERT: { number_of_entries }| ).
+
+    MODIFY zdemo_abap_animals_te FROM TABLE @( VALUE #(
+      ( id = 12 animal_name = 'Peanut' species = 'Penguin' age = 6 country_of_origin = 'Antarctica' arrival_date = '20200410' is_carnivore = abap_false )
+      ( id = 13 animal_name = 'Lora' species = 'Parrot' age = 2 country_of_origin = 'Mexico' arrival_date = '20240712' is_carnivore = abap_false )
+      ( id = 14 animal_name = 'Jumpy' species = 'Kangaroo' age = 4 country_of_origin = 'Australia' arrival_date = '20211117' is_carnivore = abap_false ) ) ).
+    out->write( |sy-dbcnt after MODIFY: { sy-dbcnt }| ).
+
+    SELECT COUNT(*) FROM zdemo_abap_animals_te INTO @number_of_entries.
+    out->write( |Number of data entries after MODIFY: { number_of_entries }| ).
+
+    SELECT SINGLE * FROM zdemo_abap_animals_te WHERE id = 10 INTO @DATA(data_set).
+    UPDATE zdemo_abap_animals_te FROM @( VALUE #( BASE data_set age = 3 country_of_origin = 'Uganda' arrival_date = '20231214' ) ).
+    out->write( |sy-dbcnt after 1st UPDATE: { sy-dbcnt }| ).
+
+    UPDATE zdemo_abap_animals_te SET country_of_origin = 'Kenya' WHERE country_of_origin IS INITIAL.
+    out->write( |sy-dbcnt after 2nd UPDATE: { sy-dbcnt }| ).
+
+    SELECT * FROM zdemo_abap_animals_te ORDER BY id INTO TABLE @DATA(itab_te).
+    out->write( `Table entries retrieved from table entity:` ).
+    out->write( itab_te ).
+
+    DELETE FROM zdemo_abap_animals_te WHERE id > 10.
+    out->write( |sy-dbcnt after DELETE: { sy-dbcnt }| ).
+
+    SELECT COUNT(*) FROM zdemo_abap_animals_te INTO @number_of_entries.
+    out->write( |Number of data entries after DELETE: { number_of_entries }| ).
+
+    out->write( |\n| ).
+    out->write( repeat( val = '_' occ = 100 ) ).
+    out->write( |\n| ).
+
+*&---------------------------------------------------------------------*
+*& Performing CRUD operations using a writable CDS view entities and ABAP SQL
+*&---------------------------------------------------------------------*
+
+    out->write( `---- Performing CRUD operations on a writable CDS view entity using ABAP SQL ----` ).
+    out->write( |\n| ).
+
+    SELECT COUNT(*) FROM zdemo_abap_animals_we INTO @DATA(we_number_of_entries).
+    out->write( |Number of data entries accessed via writable CDS view entity: { we_number_of_entries }| ).
+
+    INSERT zdemo_abap_animals_we FROM TABLE @( VALUE #(
+      ( id = 15 )
+      ( id = 16 animal_name = 'Fuzz' species = 'Polar bear' ) ) ).
+    out->write( |sy-dbcnt after INSERT: { sy-dbcnt }| ).
+
+    SELECT COUNT(*) FROM zdemo_abap_animals_we INTO @we_number_of_entries.
+    out->write( |Number of data entries after INSERT: { we_number_of_entries }| ).
+
+    MODIFY zdemo_abap_animals_we FROM @(
+      VALUE #( id = 15 animal_name = 'Hunter' species = 'Jaguar' age = 3 country_of_origin = 'Brazil' arrival_date = '20230423' is_carnivore = abap_true ) ).
+    out->write( |sy-dbcnt after MODIFY: { sy-dbcnt }| ).
+
+    SELECT SINGLE * FROM zdemo_abap_animals_we WHERE id = 16 INTO @DATA(entry).
+    UPDATE zdemo_abap_animals_we FROM @(
+      VALUE #( BASE entry animal_name = 'Fuzzy' age = 7 country_of_origin = 'Canada' arrival_date = '20190223' is_carnivore = abap_true ) ).
+    out->write( |sy-dbcnt after UPDATE: { sy-dbcnt }| ).
+
+    DELETE zdemo_abap_animals_we FROM @( VALUE #( id = 10 ) ).
+    out->write( |sy-dbcnt after 1st DELETE: { sy-dbcnt }| ).
+
+    SELECT COUNT(*) FROM zdemo_abap_animals_we INTO @we_number_of_entries.
+    out->write( |Number of data entries after 1st DELETE: { we_number_of_entries }| ).
+
+    DELETE FROM zdemo_abap_animals_we WHERE id <= 5.
+    out->write( |sy-dbcnt after 2nd DELETE: { sy-dbcnt }| ).
+
+    SELECT COUNT(*) FROM zdemo_abap_animals_we INTO @we_number_of_entries.
+    out->write( |Number of data entries after 2nd DELETE: { we_number_of_entries }| ).
+
+    SELECT * FROM zdemo_abap_animals_we ORDER BY id INTO TABLE @DATA(itab_we).
+    out->write( `Table entries retrieved via writable CDS view entity:` ).
+    out->write( itab_we ).
+  ENDMETHOD.
+
+ENDCLASS.
+``` 
+
+ </td>
+</tr>
+
+</table>
+
+
+</details>  
+
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 

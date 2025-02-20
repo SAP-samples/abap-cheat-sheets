@@ -19,6 +19,7 @@
       - [CDS Simple Types](#cds-simple-types)
       - [CDS Enumerated Types](#cds-enumerated-types)
     - [CDS Entities Usable as Structured Types](#cds-entities-usable-as-structured-types)
+    - [CRUD Operations Using CDS Artifacts](#crud-operations-using-cds-artifacts)
   - [Excursions](#excursions)
     - [Built-in Database Functions](#built-in-database-functions)
     - [Finding Released Repository Objects in the System](#finding-released-repository-objects-in-the-system)
@@ -673,6 +674,7 @@ DATA(members_cds_enum) = tdo_cds_enum->members.
 
 - Several [CDS entities](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_entity_glosry.htm) represent structured types usable in ABAP, however, they are not usable in DDIC objects. 
 - These include: 
+  - [CDS table entities](https://help.sap.com/docs/ABAP_Cloud/aaae421481034feab3e71dd9e0f643bf/100ab51935544f18b4f4be9b4abb91e8.html)
   - [CDS view entities](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_v2_view_glosry.htm) for data modeling and selection
   - [CDS table functions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_table_function_glosry.htm) for data selection with AMDP
   - [CDS abstract entities](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_abstract_entity_glosry.htm) for modeling structures, similar to DDIC structures but with advanced features for use in RAP
@@ -704,7 +706,14 @@ SELECT * FROM zdemo_abap_table_function INTO TABLE @itab_cds_tabfunc.
 > **💡 Note**<br>
 > - Some of the CDS entities can also be used as data sources in ABAP SQL statements, some cannot (for example, CDS custom entities).
 > - [DDIC-based views](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_v1_view_glosry.htm) are obsolete and should not be used anymore.
-> - There is more to come, such as CDS table entities, the successor of DDIC database tables. See the Devtoberfest session [Data Modeling with the latest features of ABAP Core Data Services](https://www.youtube.com/watch?v=s8i44J4t7J0) to get a preview.
+
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+### CRUD Operations Using CDS Artifacts
+
+- There are CDS artifacts that allow not only reading but also creating, updating, and deleting: Table entities and writable CDS view entities.  
+- Find example artifacts and an example class using various ABAP SQL statements in the [ABAP SQL](03_ABAP_SQL.md#crud-operations-using-cds-artifacts) cheat sheet.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
