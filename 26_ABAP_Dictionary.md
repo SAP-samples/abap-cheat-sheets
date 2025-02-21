@@ -602,7 +602,7 @@ DATA(applies_to_data_cds_st) = tdo_cds_simple_type->applies_to_data( CONV c5( 'a
 - The value set can be used to validate allowed values, similar to fixed values in DDIC domains.
 - They can be used ...
   - in ABAP CDS to type elements or parameters, for casting, and in comparisons. More details and examples are available [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_use_enum_type.htm).
-  - in ABAP for [enumerated variable](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenenumerated_variable_glosry.htm). An [enumerated structure](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenenumerated_structure_glosry.htm) with the CDS enumerated type name is automatically declared, functioning like [ABAP enumerated type](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenenumerated_type_glosry.htm).
+  - in ABAP for [enumerated variables](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenenumerated_variable_glosry.htm). An [enumerated structure](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenenumerated_structure_glosry.htm) with the CDS enumerated type name is automatically declared, functioning like [ABAP enumerated types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenenumerated_type_glosry.htm).
 - To create the types, you ...
   - specify a list of enumerated constants that are assigned values as untyped literals. One component must be set as initial to establish the base type's initial value.
   - define a base type. Possible base types include `int1`, `int2`, `int4`, `char`, and `numc`, with the last two having a maximum length of 8.

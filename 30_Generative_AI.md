@@ -27,7 +27,7 @@ This ABAP cheat sheet provides references to detailed information on *Generative
   
 ## Using the ABAP AI SDK
 
-- This section explores several released ABAP classes within the ABAP AI SDK for interacting with large language models (LLMs) in custom implementations.
+- This section explores released ABAP classes within the ABAP AI SDK for interacting with large language models (LLMs) in custom implementations.
 - Find more information in [Developing Your Own AI-Enabled Applications](https://help.sap.com/docs/ABAP_AI/c7f5ef43ab274d078baf22f995fd2161/27c5d27b480043f0a9fd8e46ae8275a2.html?locale=en-US).
 
 > **💡 Note**<br>
@@ -86,7 +86,7 @@ CLASS zcl_demo_abap IMPLEMENTATION.
     out->write( |1) Creating an instance of the ISLM completion API\n| ).
 
     TRY.
-        DATA(ai_api) = cl_aic_islm_compl_api_factory=>get( )->create_instance( islm_scenario ).
+        ai_api = cl_aic_islm_compl_api_factory=>get( )->create_instance( islm_scenario ).
       CATCH cx_aic_api_factory INTO error.
         error_text = error->get_text( ).
         out->write( error_text ).

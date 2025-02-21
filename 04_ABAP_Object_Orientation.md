@@ -165,12 +165,12 @@ ENDCLASS.
 
 - You can create local classes, for example, in the [CCIMP include](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenccimp_glosry.htm) (*Local Types* tab in ADT) of a [class pool](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenclass_pool_glosry.htm). 
 - Local classes are used in their own ABAP program. While dynamic access beyond program boundaries is possible, it is not recommended.
-- The cheat sheet's focus is on global classes. Local classes are also mentioned in the [friendship](#friendship) section.
+- In the cheat sheet, local classes are used in several sections, particularly for self-contained examples that require multiple classes.
 
 The following snippet shows the skeleton of local class declaration. 
-- It does not specify any class options after `DEFINITION`. 
-- The `PUBLIC` addition makes a class a global class in the class library. Not possible in the context of local classes.
+- The `PUBLIC` addition makes a class a global class in the class library. This is not possible for local classes.
 - It does not specify `CREATE ...`. Note that `CREATE PUBLIC` is the default, which means that not specifying any `CREATE ...` addition makes the class implicitly specified with `CREATE PUBLIC`.
+- More additions are possible. They are covered in the following sections.
 
 ``` abap
 "Declaration part
@@ -195,7 +195,7 @@ ENDCLASS.
 
 #### Additions in the Class Declaration Part
 
-This section covers a selection of additions to declare classes. They are also covered in other sections below, e.g. [Additions Related to Inheritance and Instantiation](#additions-related-to-inheritance-and-instantiation). Find more information on the additions in the [ABAP Keyword Documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapclass_options.htm).
+This section covers a selection of additions to declare classes. They are also covered in other sections below, e.g. [Additions Related to Inheritance and Instantiation](#additions-related-to-inheritance-and-instantiation). Find more information on the additions in the [ABAP Keyword Documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapclass_options.htm). The additions assume dealing with public classes, however, many of the additions are also possible for local classes. 
 
 <table>
 
@@ -546,8 +546,7 @@ In the class declaration part, you specify three [visibility sections](https://h
 <tr>
  <td><pre>PROTECTED SECTION.</pre></td>
     <td>Components declared in this section can be
-    accessed from within the class and <a href="https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensubclass_glosry.htm">subclasses</a> as well as <a href="https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenfriend_glosry.htm">friends</a>
-     - concepts related to <a href="https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abeninheritance_glosry.htm">inheritance</a>.</td>
+    accessed from within the class and <a href="https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensubclass_glosry.htm">subclasses</a> as well as <a href="https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenfriend_glosry.htm">friends</a>.</td>
 </tr>
   <tr>
  <td><pre>PRIVATE SECTION.</pre></td>
@@ -592,7 +591,7 @@ All components, i. e.
 objects),
 - methods (using `METHODS` and `CLASS-METHODS`),
 - events (using `EVENTS` and `CLASS-EVENTS`) as well as
-- interfaces,
+- interfaces (only in the public visibility section),
 
 are declared in the declaration part of the class. There, they must be
 assigned to a visibility section.
@@ -1641,8 +1640,8 @@ within the class in which it is declared, the static method can also be
 called without `class_name=>...`.
 - Static methods can but should not be called via reference variable (<code>oref->some_static_method( ).</code>).
 - When methods are called, the (non-optional) parameters must be specified within parentheses.
-- You might also stumble on method calls with [`CALL METHOD`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapcall_method_static.htm)
-statements. These statements should no longer be used. Note that `CALL METHOD` statements are the only option in the context of [dynamic programming](06_Dynamic_Programming.md). Therefore, `CALL METHOD` statements should be reserved for dynamic method calls.
+- You might also stumble on method calls with the older [`CALL METHOD`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapcall_method_static.htm)
+statements. It is recommended to use the new syntax in new developments. Note that `CALL METHOD` statements are still required in the context of [dynamic programming](06_Dynamic_Programming.md). Therefore, `CALL METHOD` statements should be reserved for dynamic method calls.
 - Find an example class demonstrating various method calls in section [Excursion: Example Class](#excursion-example-class).
 
 
@@ -6084,7 +6083,7 @@ ENDCLASS.
 ### Additions Related to Interface Implementations
 
 > **💡 Note**<br>
-> The code examples shows local classes and interfaces declared, for example, in the [CCIMP include](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenccimp_glosry.htm) of a class pool. 
+> The code examples show local classes and interfaces declared, for example, in the [CCIMP include](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenccimp_glosry.htm) of a class pool. 
 
 <table>
 

@@ -3,7 +3,9 @@
 # Released ABAP Classes
 
 - [Released ABAP Classes](#released-abap-classes)
-  - [Excursion: Available Classes in ABAP for Cloud Development](#excursion-available-classes-in-abap-for-cloud-development)
+  - [Excursions](#excursions)
+    - [Available Classes in ABAP for Cloud Development](#available-classes-in-abap-for-cloud-development)
+    - [Cloud Development Successors](#cloud-development-successors)
   - [Displaying Output in the ADT Console](#displaying-output-in-the-adt-console)
   - [Creating and Transforming UUIDs](#creating-and-transforming-uuids)
   - [XCO Representations of SY Components](#xco-representations-of-sy-components)
@@ -52,7 +54,9 @@ This ABAP cheat sheet contains a selection of [released](https://help.sap.com/do
 > - You might find that different classes can achieve similar or the same results, especially with the Extension Components Library (XCO), a general-purpose development library designed specifically for ABAP for Cloud Development. Choose the classes that best meet your needs.
 > - [Disclaimer](./README.md#%EF%B8%8F-disclaimer)
 
-## Excursion: Available Classes in ABAP for Cloud Development
+## Excursions
+
+### Available Classes in ABAP for Cloud Development
 
 If available to you, you have accessed an [SAP BTP ABAP Environment](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensap_btp_abap_env_glosry.htm) using the [ABAP development tools for Eclipse (ADT)](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenadt_glosry.htm).
 Access to SAP-provided repository objects is restricted to objects that have been released for [ABAP for Cloud Development](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_for_cloud_dev_glosry.htm) ([released APIs](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenreleased_api_glosry.htm)). You can find the released repository objects in the *Project Explorer* view in ADT under *Released Objects*. The classes are located in the *Source Code Library* folder:
@@ -71,6 +75,26 @@ SELECT ReleasedObjectType, ReleasedObjectName, ReleaseState
 ```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
+
+### Cloud Development Successors
+
+The `I_APIsWithCloudDevSuccessor` view provides information on objects that cannot or should no longer be used in ABAP for Cloud Development along with their successors that can be used.
+
+```abap
+SELECT * FROM I_APIsWithCloudDevSuccessor
+ INTO TABLE @DATA(successors_all).
+
+SELECT * FROM I_APIsWithCloudDevSuccessor
+ WHERE PredecessorObjectType = 'TABL'
+ INTO TABLE @DATA(successors_tables).
+
+SELECT SINGLE * FROM I_APIsWithCloudDevSuccessor
+ WHERE PredecessorObjectName = 'TADIR'
+ INTO @DATA(successor_tadir).
+```
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
 
 ## Displaying Output in the ADT Console
 
@@ -237,7 +261,7 @@ ENDCLASS.
 <tr>
 <td> <code>CL_SYSTEM_UUID</code> </td>
 <td>
-Creating and and converting system UUIDs with various algorithms 
+Creating and converting system UUIDs with various algorithms 
 <br><br>
 
 ``` abap
@@ -806,20 +830,68 @@ For calculations with integers of any size (e.g. to avoid the risk of an arithme
 <br><br>
 
 ``` abap
-"Creating an arbitrary precision integer from a variable of type i
-"and calculating the power; converting the result to string
-DATA(pow1) = cl_abap_bigint=>factory_from_int4( 10 )->pow( 10 )->to_string( ).
-"Comparison with integer value (the maximum value of type i; see the class above)
-DATA(compare_i) = cl_abap_bigint=>factory_from_int4( 10 )->pow( 10 )->compare_int4( cl_abap_math=>max_int4 ). "LARGER
+"Factories
+DATA(bigint_int4) = cl_abap_bigint=>factory_from_int4( 10 ).
+DATA(bigint_int4c) = cl_abap_bigint=>factory_from_string( `283469208407283452340` ).
+DATA(bigint_int4d) = cl_abap_bigint=>factory_from_int8( CONV int8( 1234567890123456 ) ).
 
-"10000000000 (result)
-"2147483647  (maximum value for type i)
+DATA(a1) = cl_abap_bigint=>factory_from_int4( -10 )->to_external( ).
+DATA(a2) = cl_abap_bigint=>factory_from_int4( -10 )->to_external( iv_flg_minus_in_front = abap_true ).
+DATA(a3) = cl_abap_bigint=>factory_from_int4( 100 )->to_utf8( ).
+DATA(a4) = cl_abap_bigint=>factory_from_string( `123` )->to_df34( ).
+DATA(a5) = cl_abap_bigint=>factory_from_int4( -10 )->to_string( ).
+DATA(a6) = cl_abap_bigint=>factory_from_int4( 4 )->add( bigint_int4 )->to_string( ).
+DATA(a7) = cl_abap_bigint=>factory_from_int4( 7 )->add_int4( 2 )->to_string( ).
+DATA(a8) = cl_abap_bigint=>factory_from_int4( -10 )->abs( )->to_string( ).
+DATA(a9) = cl_abap_bigint=>factory_from_int4( 19 )->compare_int4( 20 ).
+DATA(a10) = cl_abap_bigint=>factory_from_int4( 100 )->compare( bigint_int4 ).
+DATA(a11) = cl_abap_bigint=>factory_from_int4( 20 )->div( bigint_int4 ).
+DATA(a12) = a11-quotient->to_string( ).
+DATA(a13) = a11-remainder->to_string( ).
+DATA(a14) = cl_abap_bigint=>factory_from_int4( 10 )->div_int4( 3 ).
+DATA(a15) = a14-quotient->to_string( ).
+DATA(a16) = a14-remainder.
+DATA(a17) = cl_abap_bigint=>factory_from_int4( 10 )->div_by_two_power( CONV int8( 2 ) )->to_string( ).
+DATA(a18) = cl_abap_bigint=>factory_from_int4( 5 )->div_to_df34( bigint_int4 ).
+DATA(a19) = cl_abap_bigint=>factory_from_int4( 50 )->gcd( bigint_int4 )->to_string( ).
+DATA(a20) = cl_abap_bigint=>factory_from_int4( 1000 )->get_number_of_bits( ).
+DATA(a21) = cl_abap_bigint=>factory_from_int4( 10 )->is_equal( bigint_int4 ).
 
-"Comparison with the ipow function (here, an exception is raised)
-TRY.
-    DATA(pow2) = ipow( base = 10 exp = 10 ).
-  CATCH cx_sy_arithmetic_overflow.
-ENDTRY.
+cl_abap_bigint=>factory_from_string( `123` )->is_int4(
+  IMPORTING
+    ev_int4_value  = DATA(a22)
+  RECEIVING
+    rv_flg_is_int4 = DATA(a23)
+).
+DATA(a24) = cl_abap_bigint=>factory_from_int4( 11 )->is_larger( bigint_int4 ).
+DATA(a25) = cl_abap_bigint=>factory_from_int4( 10 )->is_larger_or_equal( bigint_int4 ).
+DATA(a26) = cl_abap_bigint=>factory_from_int4( -10 )->is_negative( ).
+DATA(a27) = cl_abap_bigint=>factory_from_int4( 0 )->is_zero( ).
+DATA(a28) = cl_abap_bigint=>factory_from_int4( 123 )->mod( bigint_int4 )->to_string( ).
+DATA(a29) = cl_abap_bigint=>factory_from_int4( 10 )->mod_int4( 3 ).
+DATA(a30) = cl_abap_bigint=>factory_from_int4( 10 )->mul( bigint_int4 )->to_string( ).
+DATA(a31) = cl_abap_bigint=>factory_from_int4( 5 )->mul_by_two_power( 2 )->to_string( ).
+DATA(a32) = cl_abap_bigint=>factory_from_int4( 2 )->mul_int4( 5 )->to_string( ).
+DATA(a33) = cl_abap_bigint=>factory_from_int4( 8 )->pow( 2 )->to_string( ).
+DATA(a34) = cl_abap_bigint=>factory_from_int4( 9 )->sqrt( )->to_string( ).
+DATA(a35) = cl_abap_bigint=>factory_from_int4( 18 )->sub( bigint_int4 )->to_string( ).
+DATA(a36) = cl_abap_bigint=>factory_from_int4( 15 )->sub_int4( 9 )->to_string( ).
+"Cloning
+DATA(a37) = cl_abap_bigint=>factory_from_int4( 15 ).
+DATA(a38) = cl_abap_bigint=>factory_from_int4( 5 ).
+"Adding a number to another number to not get a new instance but the original instance
+DATA(a39) = a37->add( a38 ).
+ASSERT a39 = a37.
+DATA(a40) = a37->to_string( ).
+DATA(a41) = a39->to_string( ).
+DATA(a42) = cl_abap_bigint=>factory_from_int4( 15 ).
+DATA(a43) = cl_abap_bigint=>factory_from_int4( 5 ).
+
+DATA(a44) = a42->clone( )->add( a43 ).
+ASSERT a44 <> a42.
+DATA(a45) = a42->to_string( ).
+DATA(a46) = a44->to_string( ).
+DATA(a47) = cl_abap_bigint=>factory_from_int4( 15 )->sub_int4( 9 )->clone( )->to_string( ).
 ``` 
 
 </td>
@@ -832,12 +904,28 @@ For calculations with rational numbers without precision loss and rounding error
 
 ``` abap
 "Creating a rational number from a string
-DATA(rat_num) = cl_abap_rational=>factory_from_string(
-  EXPORTING iv_value = `-1/3` ).
+DATA(rat_num) = cl_abap_rational=>factory_from_string( `-1/3` ).
 
 "Performing an addition and converting the result to string
-DATA(addition_res) = rat_num->add( cl_abap_rational=>factory_from_string(
-  EXPORTING iv_value = `3/2` ) )->to_string( ). "7/6
+"7/6
+DATA(addition_res) = rat_num->add( cl_abap_rational=>factory_from_string( `3/2` ) )->to_string( ). 
+
+"Factories
+DATA(r1) = cl_abap_rational=>factory_from_string( `-1/3` ).
+DATA(r2) = cl_abap_rational=>factory_from_bigint( cl_abap_bigint=>factory_from_int4( 11 ) ).
+
+TYPES p_l16d5 TYPE p LENGTH 16 DECIMALS 5.
+DATA(r3) = cl_abap_rational=>factory_from_dec( CONV p_l16d5( '123456.789' ) ).
+DATA(r4) = cl_abap_rational=>factory_from_decimal_string( `1.234567890` ).
+DATA(r5) = cl_abap_rational=>factory_from_df34( `1.4` ).
+DATA(r6) = cl_abap_rational=>factory_from_int4( 100 ).
+DATA(r7) = cl_abap_rational=>factory_from_int8( CONV int8( 123 ) ).
+DATA(r8) = cl_abap_rational=>factory_from_string( `-2/3` )->add_int4( 1 )->to_df34( ).
+DATA(r9) = cl_abap_rational=>factory_from_string( `-2/3` )->add_int4( 1 )->to_string( ).
+DATA r10 TYPE p_l16d5.
+cl_abap_rational=>factory_from_string( `-2/3` )->add_int4( 1 )->to_dec( IMPORTING ev_decimal = r10 ).
+"Methods that include cl_abap_bigint instances
+DATA(r11) = cl_abap_rational=>factory_from_string( `-2/3` )->add_bigint( cl_abap_bigint=>factory_from_int4( 1 ) )->to_string( ).
 ``` 
 
 </td>
@@ -2699,7 +2787,7 @@ DATA table_json_to_abap TYPE string_table.
 <td> Class </td> <td> Details/Code Snippet </td>
 </tr>
 <tr>
-<td> <code>XCO_CP_ABAP</code><br><code>XCO_CP_ABAP_REPOSITORY</code> </td>
+<td> <code>XCO_CP_ABAP</code><br><code>XCO_CP_ABAP_REPOSITORY</code><br><code>XCO_CP_ABAP_DICTIONARY</code> </td>
 <td>
 
 <ul>
@@ -2777,41 +2865,231 @@ LOOP AT type_names INTO DATA(type_name).
   ENDLOOP.
 ENDLOOP.
 
-"Getting information about some of the technical properties of different
-"repository objects. The examples show the creation of handlers. You can
-"explore more options, e.g., by adding the object component selector (->)
-"to the final parenthesis and checking the suggestions by ADT.
-"Database table
-DATA(handler_tabl) = xco_cp_abap_dictionary=>database_table( 'ZDEMO_ABAP_CARR' ).
-"Data element
-DATA(handler_dtel) = xco_cp_abap_dictionary=>data_element( 'MANDT' ).
-"Table type
-DATA(handler_table_type) = xco_cp_abap_dictionary=>table_type( 'STRING_TABLE' ).
-"CDS view entity
-DATA(handler_cds_ve) = xco_cp_cds=>view_entity( 'ZDEMO_ABAP_RAP_RO_M' ).
-"Interface
-DATA(handler_intf) = xco_cp_abap=>interface( 'ZDEMO_ABAP_OBJECTS_INTERFACE' ).
-"Getting information about where the interface is implemented
-DATA(where_is_intf_impl) = handler_intf->implementations->all->get_names( ).
-"Class
-DATA(handler_cl) = xco_cp_abap=>class( 'ZCL_DEMO_ABAP_UNIT_TEST' ).
-"Getting subclasses
-DATA(subcl) = xco_cp_abap=>class( 'CL_ABAP_TYPEDESCR' )->subclasses->all->get( ).
-"Getting the names of the subclasses
-DATA(subcl_names) = xco_cp_abap=>class( 'CL_ABAP_TYPEDESCR' )->subclasses->all->get_names( ).
-"Getting the direct superclass
-DATA(direct_super_class) = xco_cp_abap=>class( 'CL_ABAP_DATADESCR' )->definition->content(
-  )->get_superclass( )->name.
+"The following code snippets demonstrate getting information about some
+"of the technical properties of different ABAP repository objects.
+"Using the handlers, you can explore more options, e.g., by adding the object
+"component selector (->) to the final parenthesis and checking the suggestions
+"by ADT. The options shown are not comprehensive. They show a selection.
+"The same information may be accessed in different ways via the various
+"methods available.
 
-"Taking an XCO handler for a database table as an example, see some of the
-"details you can retrieve. The method names should be self-explanatory.
+*&---------------------------------------------------------------------*
+*& Database table
+*&---------------------------------------------------------------------*
+
+DATA(handler_tabl) = xco_cp_abap_dictionary=>database_table( 'ZDEMO_ABAP_CARR' ).
+DATA(dbtab_exists) = handler_tabl->exists( ).
 DATA(dbtab_name) = handler_tabl->name.
-DATA(dbtab_descr) = handler_tabl->content( )->get_short_description( ).
-DATA(dbtab_del_cl) = handler_tabl->content( )->get_delivery_class( )->value.
+DATA(dbtab_syntax_check_msg) = handler_tabl->check_syntax( )->messages.
+DATA(dbtab_content) = handler_tabl->content( ).
+"Technical information
+DATA(dbtab_short_description) = dbtab_content->get_short_description( ).
+DATA(dbtab_delivery_class) = dbtab_content->get_delivery_class( )->value.
+DATA(dbtab_technical_settings) = dbtab_content->get_technical_settings( ).
+DATA(dbtab_data_maintenance) = dbtab_content->get_data_maintenance( )->value.
+DATA(dbtab_enhancement_category) = dbtab_content->get_enhancement_category( )->value.
+DATA(dbtab_includes) = dbtab_content->get_includes( ).
+"Same information accessed in other ways
+DATA(dbtab_get_content) = dbtab_content->get( ).
+DATA(dbtab_data_maint_alt) = dbtab_get_content-data_maintenance->value.
+DATA(dbtab_delivery_cl_alt) = dbtab_get_content-delivery_class->value.
+DATA(dbtab_enh_cat_alt) = dbtab_get_content-enhancement_category->value.
+DATA(dbtab_includes_alt) = dbtab_get_content-includes.
+"Table fields and keys
 DATA(dbtab_field_names) = handler_tabl->fields->all->get_names( ).
+DATA(dbtab_fields_built_in_types) = handler_tabl->fields->all->content( )->get_underlying_built_in_types( ).
 DATA(dbtab_keys) = handler_tabl->fields->key->get_names( ).
-DATA(dbtab_vis) = handler_tabl->get_api_state( )->get_visibilities( ). "Initial for the cheat sheet table
-DATA(dbtab_rel_state) = handler_tabl->get_api_state( )->get_release_state( )->value.
+DATA(dbtab_included_fields) = handler_tabl->fields->included->get_names( ).
+"Release state and visibilities
+DATA(dbtab_visibilities) = handler_tabl->get_api_state( )->get_visibilities( ).
+DATA(dbtab_release_state) = handler_tabl->get_api_state( )->get_release_state( )->value.
+
+
+*&---------------------------------------------------------------------*
+*& Data element
+*&---------------------------------------------------------------------*
+
+DATA(handler_dtel) = xco_cp_abap_dictionary=>data_element( 'ABAP_BOOLEAN' ).
+DATA(dtel_exists) = handler_dtel->exists( ).
+DATA(dtel_name) = handler_dtel->name.
+DATA(dtel_syntax_check_msg) = handler_dtel->check_syntax( )->messages.
+DATA(dtel_content) = handler_dtel->content( ).
+"Labels
+DATA(dtel_heading_label) = dtel_content->get_heading_field_label( ).
+DATA(dtel_short_label) = dtel_content->get_short_field_label( ).
+DATA(dtel_long_label) = dtel_content->get_long_field_label( ).
+DATA(dtel_medium_label) = dtel_content->get_medium_field_label( ).
+DATA(dtel_description) = dtel_content->get_short_description( ).
+"Type information
+DATA(dtel_has_built_in_type) = dtel_content->has_underlying_built_in_type( ).
+IF dtel_has_built_in_type = abap_true.
+  DATA(dtel_built_in_type) = dtel_content->get_underlying_built_in_type( ).
+  DATA(dtel_built_in_type_length) = dtel_built_in_type->length.
+  DATA(dtel_buift_in_type_type) = dtel_built_in_type->type.
+  DATA(dtel_type_descriptor) = dtel_built_in_type->abap_type->get_type_descriptor( ).
+  DATA(dtel_built_in_type_abs_name) = dtel_built_in_type->abap_type->get_type_descriptor( )->absolute_name.
+  DATA(dtel_built_in_type_kind) = dtel_built_in_type->abap_type->get_type_descriptor( )->kind.
+ENDIF.
+"Domain information
+DATA(dtel_domain) = dtel_content->get_data_type( )->get_domain( ).
+IF dtel_domain IS NOT INITIAL.
+  DATA(dtel_domain_name) = dtel_domain->name.
+  DATA(dtel_domain_content) = dtel_domain->content( ).
+  DATA(dtel_domain_built_in_type) = dtel_domain_content->get_format( )->get_built_in_type( ).
+  DATA(dtel_domain_output_ch) = dtel_domain_content->get_output_characteristics( ).
+  DATA(dtel_domain_description) = dtel_domain_content->get_short_description( ).
+  DATA(dtel_domain_fixed_values) = dtel_domain->fixed_values->all->get( ).
+ENDIF.
+"Release state and visibilities
+DATA(dtel_release_state) = handler_dtel->get_api_state( )->get_release_state( )->value.
+DATA(dtel_visibilities) = handler_dtel->get_api_state( )->get_visibilities( ).
+
+*&---------------------------------------------------------------------*
+*& Table type
+*&---------------------------------------------------------------------*
+
+DATA(handler_table_type) = xco_cp_abap_dictionary=>table_type( 'ABP_BEHV_RESPONSE_TAB' ).
+DATA(table_type_exists) = handler_table_type->exists( ).
+DATA(table_type_name) = handler_table_type->name.
+DATA(table_type_syntax_check_msg) = handler_table_type->check_syntax( )->messages.
+DATA(table_type_content) = handler_table_type->content( ).
+DATA(table_type_access) = table_type_content->get_access( )->value.
+"Key information
+DATA(table_type_primary_key) = table_type_content->get_primary_key( ).
+DATA(table_type_key_category) = table_type_primary_key->key_category->value.
+DATA(table_type_key_components) = table_type_primary_key->key_components.
+DATA(table_type_key_definition) = table_type_primary_key->key_definition->value.
+DATA(table_type_secondary_keys) = table_type_content->get_secondary_keys( ).
+DATA(table_type_description) = table_type_content->get_short_description( ).
+"Row type information
+DATA(table_type_row_type) = table_type_content->get_row_type( ).
+DATA(table_type_structure) = table_type_row_type->get_structure( ).
+DATA(table_type_struct_name) = table_type_structure->name.
+DATA(table_type_struct_comp_names) = table_type_structure->components->all->get_names( ).
+DATA(table_type_struct_comps) = table_type_structure->components->all->get( ).
+DATA(table_type_content_get_alt) = table_type_content->get( ).
+DATA(table_type_pr_key_alt) = table_type_content_get_alt-primary_key->key_components.
+DATA(table_type_sec_key_alt) = table_type_content_get_alt-secondary_keys.
+"Release state and visibilities
+DATA(table_type_release_state) = handler_table_type->get_api_state( )->get_release_state( )->value.
+DATA(table_type_visibilities) = handler_table_type->get_api_state( )->get_visibilities( ).
+
+*&---------------------------------------------------------------------*
+*& CDS view entity
+*&---------------------------------------------------------------------*
+
+DATA(handler_cds_ve) = xco_cp_cds=>view_entity( 'ZDEMO_ABAP_RAP_RO_M' ).
+DATA(cds_ve_exists) = handler_cds_ve->exists( ).
+DATA(cds_ve_name) = handler_cds_ve->name.
+DATA(cds_ve_associations) = handler_cds_ve->associations->all->get( ).
+DATA(cds_ve_compositions) = handler_cds_ve->compositions->all->get( ).
+DATA(cds_ve_field_names) = handler_cds_ve->fields->all->get_names( ).
+"Field information
+DATA(cds_ve_fields) = handler_cds_ve->fields->all->get( ).
+LOOP AT cds_ve_fields INTO DATA(ve).
+  DATA(cds_ve_f_content) = ve->content( ).
+  DATA(cds_ve_f_alias) = cds_ve_f_content->get_alias( ).
+  DATA(cds_ve_f_assoc) = cds_ve_f_content->get_association( ).
+  DATA(cds_ve_f_comp) = cds_ve_f_content->get_composition( ).
+  DATA(cds_ve_f_key_indicator) = cds_ve_f_content->get_key_indicator( ).
+ENDLOOP.
+
+*&---------------------------------------------------------------------*
+*& Class
+*&---------------------------------------------------------------------*
+
+DATA(handler_cl) = xco_cp_abap=>class( 'CL_ABAP_TYPEDESCR' ).
+DATA(cl_exists) = handler_cl->exists( ).
+DATA(cl_name) = handler_cl->name.
+DATA(cl_syntax_check_msg) = handler_cl->check_syntax( )->messages.
+"Creation and change information
+DATA(cl_created_by) = handler_cl->get_created_by( ).
+DATA(cl_created_on) = handler_cl->get_created_on( ).
+DATA(cl_last_changed_by) = handler_cl->get_last_changed_by( ).
+DATA(cl_last_changed_on) = handler_cl->get_last_changed_on( ).
+"Subclasses
+DATA(cl_subclasses) = handler_cl->subclasses->all->get_names( ).
+"Information on the definition part
+DATA(cl_definition) = handler_cl->definition->content( ).
+DATA(cl_definition_get) = cl_definition->get( ).
+DATA(cl_final) = cl_definition->get_final_indicator( ).
+DATA(cl_abstract) = cl_definition->get_abstract_indicator( ).
+DATA(cl_friends) = cl_definition->get_global_friends( ).
+DATA(cl_interfaces) = cl_definition->get_interfaces( ).
+DATA(cl_definition_visibility) = cl_definition->get_visibility( )->value.
+"Superclass
+DATA(cl_superclass) = cl_definition->get_superclass( ).
+IF cl_superclass IS NOT INITIAL.
+  DATA(cl_superclass_name) = cl_superclass->name.
+  DATA(cl_superclass_content) = cl_superclass->content( ).
+ENDIF.
+"Associated behavior definition
+DATA(cl_for_behv) = cl_definition->get_for_behavior_of( ).
+IF cl_for_behv IS NOT INITIAL.
+  DATA(cl_for_behv_name) = cl_for_behv->name.
+  DATA(cl_for_behv_content) = cl_for_behv->content( ).
+ENDIF.
+"Information on components in the visibility sections
+DATA(cl_private_components) = handler_cl->definition->section-private->components.
+DATA(cl_protected_components) = handler_cl->definition->section-protected->components.
+DATA(cl_public_components) = handler_cl->definition->section-public->components.
+"Component information
+DATA(cl_all_public_inst_methods) = cl_public_components->method->all->get( ).
+DATA(cl_all_public_stat_methods) = cl_public_components->class_method->all->get( ).
+DATA(cl_all_public_inst_attr) = cl_public_components->data->all->get( ).
+DATA(cl_all_public_static_attr) = cl_public_components->class_data->all->get( ).
+DATA(cl_all_public_constants) = cl_public_components->constant->all->get( ).
+DATA(cl_all_public_alias_comps) = cl_public_components->alias->all->get( ).
+"More detailed information on components (the examples uses static methods of the class)
+LOOP AT cl_all_public_stat_methods INTO DATA(stat_meth).
+  DATA(meth_name) = stat_meth->name.
+  "Parameter information
+  DATA(meth_importing_params) = stat_meth->importing_parameters->all->get( ).
+  LOOP AT meth_importing_params INTO DATA(import).
+    DATA(import_param_name) = import->name.
+    DATA(import_param_content) = import->content( )->get( ).
+  ENDLOOP.
+
+  DATA(meth_exporting_params) = stat_meth->exporting_parameters->all->get( ).
+  DATA(meth_changing_params) = stat_meth->changing_parameters->all->get( ).
+  DATA(meth_returning_params) = stat_meth->returning_parameters->all->get( ).
+  DATA(meth_exceptions) = stat_meth->exceptions->all->get( ).
+  DATA(meth_all_param_names) = stat_meth->parameters->all->get_names( ).
+
+  DATA(meth_get) = stat_meth->content( )->get( ).
+  DATA(meth_abstract) = stat_meth->content( )->get_abstract_indicator( ).
+  DATA(meth_amdp) = stat_meth->content( )->get_amdp( ).
+  DATA(meth_final) = stat_meth->content( )->get_final_indicator( ).
+  DATA(meth_redefinition) = stat_meth->content( )->get_redefinition_indicator( ).
+  DATA(meth_description) = stat_meth->content( )->get_short_description( ).
+
+  "Source code of the method implementation
+  DATA(meth_implementation) = handler_cl->implementation->method( meth_name )->content( )->get( )-source.
+ENDLOOP.
+
+*&---------------------------------------------------------------------*
+*& Interface
+*&---------------------------------------------------------------------*
+
+DATA(handler_intf) = xco_cp_abap=>interface( 'ZDEMO_ABAP_OBJECTS_INTERFACE' ).
+DATA(intf_exists) = handler_intf->exists( ).
+DATA(intf_name) = handler_intf->name.
+DATA(intf_syntax_check_msg) = handler_intf->check_syntax( )->messages.
+"Creation and change information
+DATA(intf_created_by) = handler_intf->get_created_by( ).
+DATA(intf_created_on) = handler_intf->get_created_on( ).
+DATA(intf_last_changed_by) = handler_intf->get_last_changed_by( ).
+DATA(intf_last_changed_on) = handler_intf->get_last_changed_on( ).
+"Interface content information
+DATA(intf_get) = handler_intf->content( )->get( ).
+DATA(intf_description) = handler_intf->content( )->get_short_description( ).
+"Component information
+DATA(intf_components) = handler_intf->components.
+"Getting information about where the interface is implemented
+DATA(intf_implementations_get) = handler_intf->implementations->all->get( ).
+DATA(intf_implementations_names) = handler_intf->implementations->all->get_names( ).
+"Note that methods are available as shown for classes
+DATA(intf_static_meths) = handler_intf->components->class_method->all->get( ).
 ``` 
 
 </td>
@@ -3067,7 +3345,7 @@ DATA(sub_acc_id) = ten->get_subaccount_id( )->as_string( ).
 
 Exception classes are special classes, usually starting with the name <code>CX_*</code>, that serve as the basis for <a href="https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencatchable_exception_glosry.htm">catchable exceptions</a>. When an exception is raised, an object of such an exception class is created. There are several predefined exception classes. Find more information in the [Exceptions and Runtime Errors](27_Exceptions.md) cheat sheet. 
 
-<br><br>
+<br>
 
 ``` abap
 TRY.

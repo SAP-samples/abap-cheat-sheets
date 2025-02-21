@@ -13,7 +13,7 @@
   - [Numeric Functions](#numeric-functions)
   - [Calculations with System Classes](#calculations-with-system-classes)
   - [Calculations with Date, Time and Time Stamp Values](#calculations-with-date-time-and-time-stamp-values)
-  - [Arithmetic Expressions and Built-in Functions ABAP SQL and ABAP CDS](#arithmetic-expressions-and-built-in-functions-abap-sql-and-abap-cds)
+  - [Arithmetic Expressions and Built-in Functions in ABAP SQL and ABAP CDS](#arithmetic-expressions-and-built-in-functions-in-abap-sql-and-abap-cds)
   - [Executable Example](#executable-example)
 
 
@@ -30,7 +30,7 @@ This cheat sheet explores various aspects of numeric operations and calculations
 - Calculations use numeric data objects or those convertible to numeric types.
 - ABAP supports specific elementary numeric data types.
 - These types have distinct characteristics and value ranges, allowing the use for various purposes.
-- This cheat sheet covers only [built-in ABAP types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbuiltin_abap_type_glosry.htm). [Built-in DDIC types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbuiltin_ddic_type_glosry.htm) are also available for defining types in the [ABAP Dictionary DDIC)](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_dictionary_glosry.htm) and ABAP CDS. These types cannot be used directly in ABAP programs except for typed literals. They map to built-in ABAP types; for example, the DDIC type `INT4` maps to type `i`, and `DECFLOAT16` maps to the built-in ABAP type `decfloat16`.
+- This cheat sheet covers only [built-in ABAP types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbuiltin_abap_type_glosry.htm). [Built-in DDIC types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbuiltin_ddic_type_glosry.htm) are also available for defining types in the [ABAP Dictionary DDIC)](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_dictionary_glosry.htm) and ABAP CDS. These types cannot be used directly in ABAP programs except for typed literals. They are mapped to built-in ABAP types; for example, the DDIC type `INT4` is mapped to type `i`, and `DECFLOAT16` is mapped to the built-in ABAP type `decfloat16`.
 - Most types' values (except type `i`) cannot be directly specified in the program and must be represented by character literals interpretable as the respective type.
 
 <table>
@@ -52,7 +52,7 @@ This cheat sheet explores various aspects of numeric operations and calculations
 - The type `i` can hold 4-byte integers, typically used for counters or indexes (like `sy-index` or `sy-tabix`), quantities, and more.
 - `int8` holds 8-byte integers and offers a larger value range than `i`.
 - You can specify integer numbers with type `i` directly in ABAP programs as [numeric literals](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abennumeric_literal_glosry.htm).
-- You might encounter the types `b` (1-byte integers) and `s` (2-byte integers) for short integers. They cannot be directly specified in ABAP programs, but you can use the built-in DDIC types `INT1` and `INT2`. 
+- You might encounter the types `b` (1-byte integers) and `s` (2-byte integers) for short integers. They cannot be directly specified in ABAP programs, but you can use the DDIC types `INT1` and `INT2`. 
 - If these integer types do not meet your value range needs, consider using type `p` without decimal places or floating point types for larger ranges. However, calculations will be slower then.
 
  </td>
@@ -314,7 +314,7 @@ DATA(random_p_d14) = cl_abap_random_packed_dec14=>create( seed = cl_abap_random=
 
 - Most numeric types (except type `i`) cannot be directly specified in the program. These values use character literals that can be interpreted as their respective types.
 - The following code snippet demonstrates mathematical, commercial, and scientific notations. Not all notations are possible for each numeric type.
-- In this context, also check the [Formatting Options in String Templates](07_String_Processing.md#formatting-options-in-string-templates) in the *String Processing* cheat sheet.
+- In this context, you can also check the [Formatting Options in String Templates](07_String_Processing.md#formatting-options-in-string-templates) in the *String Processing* cheat sheet.
 
 ```abap
 "Mathematical notations
@@ -419,12 +419,12 @@ dec34_n = EXACT #( `.9E-3                  ` ).
   - Data objects of numeric data types (named and unnamed data objects)
   - Data objects whose content can be converted to numeric data types
   - Numeric functions returning a numeric value
-  - Functional methods calls returning a numeric value
+  - Functional method calls returning a numeric value
 - ABAP supports these arithmetic operators: `+`, `-`, `*`, `/`, `DIV`, `MOD`, and `**`. Notes:
   - `DIV`: Returns the integer part of the division of the left operand by the right, with a positive remainder. 
   - `MOD`: Returns a positive remainder of the division of the left operand by the right.
   - `**`: Raises the left operand to the power of the right (Note: Can produce type `f`; consider using the `ipow` function as an alternative if you want to avoid the type `f`.)
-  - Parentheses in arithmetic expressions prioritize the calculations inside them.
+- Parentheses in arithmetic expressions prioritize the calculations inside them.
 - You can combine one or more operands to perform calculations.
 - You can prefix operands with `+` or `-` signs.
 - Note that calculations can trigger exceptions. If not caught, these result in runtime errors. 
@@ -433,7 +433,7 @@ dec34_n = EXACT #( `.9E-3                  ` ).
 
 
 > **💡 Note**<br>
-> - A zero division if the first operand is also 0 does not raise an exception. The result is set to 0.
+> - If the first operand is also 0 in a zero division, an exception is not raised. Instead, the result is set to 0.
 > - For more information on the `DIV` and `MOD` operators, refer to [this blog](https://community.sap.com/t5/technology-blogs-by-sap/understanding-div-and-mod-in-abap-and-beyond/ba-p/14015181).
 
 
@@ -1056,7 +1056,7 @@ int_calc /= 2. "25
 ### Lossless Calculations
 
 - You can use the `EXACT` operator to verify lossless assignments and calculations.
-- It works for assignments between incompatible data objects, meaning those without matching type specifications.
+- It is suitable for assignments between incompatible data objects, meaning those without matching type specifications.
 - After an assignment with `EXACT`, the target data object will hold a valid value; otherwise, it raises an exception.
 - Forced rounding during an assignment indicates it is not lossless. In the context of arithmetic expressions, a lossless calculation is performed.
 
@@ -1746,13 +1746,13 @@ DATA(tsc) = cl_abap_tstmp=>subtractsecs( tstmp = tsa
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-## Arithmetic Expressions and Built-in Functions ABAP SQL and ABAP CDS
+## Arithmetic Expressions and Built-in Functions in ABAP SQL and ABAP CDS
 
 More information: 
 - ABAP SQL: [Arithmetic expressions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABENSQL_ARITH.html), [Numeric functions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABENSQL_ARITH_FUNC.html)
 - ABAP CDS: [Arithmetic expressions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABENCDS_ARITHMETIC_EXPRESSION_V2.html), [Numeric functions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABENCDS_SQL_FUNCTIONS_NUMERIC_V2.html)
 
-The following example code snippet includes an ABAP SQL `SELECT` statement with a selection of arithmetic expressions and numeric functions. You can also check [Aggregate expressions](03_ABAP_SQL.md#aggregate-expressions) that perform calculations as described in the *ABAP SQL* cheat sheet.
+The following example code snippet includes an ABAP SQL `SELECT` statement with a selection of arithmetic expressions and numeric functions. You can also check [aggregate expressions](03_ABAP_SQL.md#aggregate-expressions) that perform calculations as described in the *ABAP SQL* cheat sheet.
 
 ```abap
 SELECT SINGLE

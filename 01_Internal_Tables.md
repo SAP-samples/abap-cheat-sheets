@@ -1231,7 +1231,7 @@ TYPES: BEGIN OF s,
 DATA(dref_tab) = NEW tab_type( ( a = 'aaa' b = 1 )
                                ( a = 'bbb' b = 2 ) ).
 
-"Access by derefencing
+"Access by dereferencing
 DATA(copy_deref_itab) = dref_tab->*.
 DATA(read_line) = dref_tab->*[ 2 ].
 DATA(read_comp) = dref_tab->*[ 1 ]-a.
@@ -3060,7 +3060,7 @@ line = itab_so[ comp1 = 1 ].
 
 ``` abap
 "The search is and cannot be optimized as the component is not part of 
-"the primary table key of the sorted table. Plus, no appropriate 
+"the primary table key of the table. Plus, no appropriate 
 "secondary table key can be applied.
 line = itab[ comp4 = 'ccc' ].
 ``` 
@@ -3925,7 +3925,7 @@ ENDLOOP.
 "Table content: 3 / 6 / 9 / 12 / 15
 ```
 
-The expressions are covered in the cheat sheet [Constructor Expressions](05_Constructor_Expressions.md):
+The expressions are covered in the [Constructor Expressions](05_Constructor_Expressions.md) cheat sheet:
 - [Iteration Expressions Using FOR](05_Constructor_Expressions.md#iteration-expressions-using-for)
 - Special reduction operator `REDUCE` that is based on iteration expressions: [REDUCE](05_Constructor_Expressions.md#reduce)
 
@@ -3933,7 +3933,7 @@ The expressions are covered in the cheat sheet [Constructor Expressions](05_Cons
 
 ### Interrupting and Exiting Loops
 
-ABAP keywords such as `CONTINUE`, `CHECK`, and `EXIT`, are available to exit and interrupt loops. Find more information in the [Program Flow Logic](13_Program_Flow_Logic.md#interrupting-and-exiting-loops) cheat sheet.
+ABAP keywords such as `CONTINUE` (terminating the current loop pass, continuing with the next), `CHECK` (conditional termination termination of the current loop pass if the logical expression is false), and `EXIT` (loop terminated completely), are available to exit and interrupt loops. Find more information in the [Program Flow Logic](13_Program_Flow_Logic.md#interrupting-and-exiting-loops) cheat sheet.
 
 In the following example, the loop is exited using the `EXIT` statement when a certain condition is met.
 ```abap
@@ -4597,8 +4597,8 @@ DATA(itab1) = VALUE tab_type1( ( key1 = 1 a = 'a' b = 'b'  c = 'c' )
                                ( key1 = 2 a = 'd' b = 'e'  c = 'f' )
                                ( key1 = 3 a = 'g' b = 'h'  c = 'i' ) ).
 
-DATA(itab2) = VALUE tab_type2( ( key2 = 1 d = `j` e = `k` )
-                               ( key2 = 2 d = `l` e = `m` ) ).
+DATA(itab2) = VALUE tab_type2( ( key2 = 1 d = 'j' e = 'k' )
+                               ( key2 = 2 d = 'l' e = 'm' ) ).
 
 "SELECT statement, inner join
 "Note: With the inner join, the target table contains all

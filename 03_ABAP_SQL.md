@@ -166,7 +166,7 @@ Views](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm
 - However, there are plenty of additions and syntax variants, some of which are mentioned in the cheat sheet. In general, choose `F1` for the keywords and additions to get all the details in the ABAP Keyword Documentation.
 
 ``` abap
-SELECT FROM source   "What data source read from
+SELECT FROM source   "What data source to read from
   FIELDS field_list  "What columns should be read
   WHERE condition    "Specifies conditions on which a row/rows should be read
   INTO target.       "Specifies the target of the result set
@@ -1592,7 +1592,7 @@ SELECT FROM zdemo_abap_flsch
 ## SQL Expressions
 
 - SQL expressions can be specified in various positions of ABAP SQL statements.
-- They that passed to the database system for evaluation.
+- They are passed to the database system for evaluation.
 - For example, SQL expressions can be specified as columns in the
     `SELECT` list as demonstrated in most of the following examples.
 - Find information on more possible positions and general information
@@ -2781,7 +2781,7 @@ SELECT *
 
 <br>
 
-- The example uses a zoo animal context. To explore the example, create three ABAP repository objects: 2 CDS entities, 1 example class. 
+- The example uses a zoo animal context. To explore the example, create three ABAP repository objects: 2 CDS artifacts, 1 example class. 
 - For the CDS artifacts, right-click your package and choose *New -> Other ABAP Repository Objects* in ADT. Filter for *data definition*, and walk through the wizard. Use the example's artifact names (`zdemo_abap_animals_te` for the table entity, and `zdemo_abap_animals_we` for the writable CDS view entity), or use other names and adapt the code accordingly.
 - After activation, choose *F9* in the class in ADT to execute it. The example is set up to display output in the console.
 - The example class performs CRUD operations on both CDS artifacts. The example includes ABAP SQL `SELECT`, `INSERT`, `MODIFY`, `UPDATE`, and `DELETE` statements.
@@ -2960,7 +2960,7 @@ CLASS zcl_demo_abap IMPLEMENTATION.
     out->write( |\n| ).
 
 *&---------------------------------------------------------------------*
-*& Performing CRUD operations using a writable CDS view entities and ABAP SQL
+*& Performing CRUD operations using a writable CDS view entity and ABAP SQL
 *&---------------------------------------------------------------------*
 
     out->write( `---- Performing CRUD operations on a writable CDS view entity using ABAP SQL ----` ).
