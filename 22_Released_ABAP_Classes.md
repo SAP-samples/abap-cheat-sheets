@@ -1915,7 +1915,7 @@ DATA(utcl2tsl) = cl_abap_tstmp=>utclong2tstmp( ts2utcl ).
 
 
 <tr>
-<td> <code>XCO_CP_TIME</code> </td>
+<td> <code>XCO_CP_TIME</code><br><code>XCO_CP</code> </td>
 <td>
 Class of the XCO time library that provides abstractions for getting and working with date and time information. Find more details <a href="https://help.sap.com/docs/btp/sap-business-technology-platform/time-library">here</a>. 
 <br><br>

@@ -675,7 +675,7 @@ DATA(it_e) = VALUE it_type( ( carrid = 'XY' carrname = 'XY Airlines' )
                             ( carrid = 'YZ' carrname = 'Air YZ' ) ).
 
 "Not providing any table lines means the table is initial
-"and has the same effect as the declaration of it_f.
+"and has the same effect as the declaration of it_g.
 DATA(it_f) = VALUE string_table( ).
 DATA it_g TYPE string_table.
 

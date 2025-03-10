@@ -139,25 +139,37 @@ DATA(utc_date) = cl_abap_context_info=>get_system_date( ).
 
 "Using XCO
 "Notes:
-"- The result of the following chained statement is of type string.
+"- The results of the following chained statements are of type string.
 "- With the 'as' method, a given format (available via xco_cp_time=>format)
-"  is applied to the time.
-"- The 'date' method has a parameter for specifying the time zone.
-"  By default, the user's time zone is used. For the specification, you
-"  can use xco_cp_time=>time_zone.
-"e.g. 20240101
-DATA(date_1) = xco_cp=>sy->date( )->as( xco_cp_time=>format->iso_8601_basic )->value.
-"e.g. 2024-01-01
-DATA(date_2) = xco_cp=>sy->date( )->as( xco_cp_time=>format->iso_8601_extended )->value.
-"Specifying the default time zone explicitly
+"  is applied to the time. Several options are available.
+"- The 'date' method has an optional importing parameter for specifying the
+"  time zone. By default, the user's time zone is used. For the specification,
+"  you can use xco_cp_time=>time_zone.
+
+"The following three examples:
+"- do not specify the optional importing parameter for the 'date' method. In
+"  this case, the user time zone is used implicitly.
+"- specify an specific format in the 'as' method.
+
+"e.g. 20250101
+DATA(date_abap) = xco_cp=>sy->date( )->as( xco_cp_time=>format->abap )->value.
+
+"e.g. 20250101
+DATA(date_basic) = xco_cp=>sy->date( )->as( xco_cp_time=>format->iso_8601_basic )->value.
+
+"e.g. 2025-01-01
+DATA(date_ext) = xco_cp=>sy->date( )->as( xco_cp_time=>format->iso_8601_extended )->value.
+
+"Specifying the time zone explicitly in the 'date' method
 "The following method call retrieves the current user date.
-DATA(date_3) = xco_cp=>sy->date( xco_cp_time=>time_zone->user 
-                               )->as( xco_cp_time=>format->iso_8601_extended 
-                               )->value.
-"Specifying UTC
-DATA(date_4) = xco_cp=>sy->date( xco_cp_time=>time_zone->utc 
-                               )->as( xco_cp_time=>format->iso_8601_extended 
-                               )->value.
+DATA(date_user_tz) = xco_cp=>sy->date( xco_cp_time=>time_zone->user
+                                )->as( xco_cp_time=>format->iso_8601_basic
+                                )->value.
+
+"Specifying the UTC time zone
+DATA(date_utc_tz) = xco_cp=>sy->date( xco_cp_time=>time_zone->utc
+                                )->as( xco_cp_time=>format->iso_8601_basic
+                                )->value.
 
 "--------------------- Retrieving current date values (XCO) --------------------
 "e.g. 01
@@ -492,12 +504,38 @@ The code snippet below provides examples of time processing, such as retrieving 
 DATA(utc_time) = cl_abap_context_info=>get_system_time( ).
 
 "Using XCO
-"Note the optional time zone specification.
+"Notes:
+"- The results of the following chained statements are of type string.
+"- With the 'as' method, a given format (available via xco_cp_time=>format)
+"  is applied to the time. Several options are available.
+"- The 'time' method has an optional importing parameter for specifying the
+"  time zone. By default, the user's time zone is used. For the specification,
+"  you can use xco_cp_time=>time_zone.
+
+"The following three examples
+"- do not specify the optional importing parameter for the 'time' method. In
+"  this case, the user time zone is used implicitly.
+"- specify an specific format in the 'as' method.
+
+"e.g. 160907
+DATA(time_abap) = xco_cp=>sy->time( )->as( xco_cp_time=>format->abap )->value.
+
+"e.g. 160907
+DATA(time_basic) = xco_cp=>sy->time( )->as( xco_cp_time=>format->iso_8601_basic )->value.
+
+"e.g. 16:09:07
+DATA(time_ext) = xco_cp=>sy->time( )->as( xco_cp_time=>format->iso_8601_extended )->value.
+
+"Specifying the time zone explicitly in the 'time' method
 "The following method call retrieves the current user time.
-"Result: e.g. 14:39:10
-DATA(time_w_xco) = xco_cp=>sy->time( xco_cp_time=>time_zone->user
-                                    )->as( xco_cp_time=>format->iso_8601_extended
-                                    )->value.
+DATA(time_user_tz) = xco_cp=>sy->time( xco_cp_time=>time_zone->user
+                                )->as( xco_cp_time=>format->iso_8601_basic
+                                )->value.
+
+"Specifying the UTC time zone
+DATA(time_utc_tz) = xco_cp=>sy->time( xco_cp_time=>time_zone->utc
+                                )->as( xco_cp_time=>format->iso_8601_basic
+                                )->value.
 ```
 
 ### Accessing Time Values
@@ -748,25 +786,38 @@ More information: [`utclong_current`](https://help.sap.com/doc/abapdocu_cp_index
 DATA(ts1) = utclong_current( ).
 
 "Using XCO
-"In the case of XCO, the return value is of type string.
-"Retrieving a time stamp in the user's time zone (which is the default)
-"e.g. 2024-01-01T08:54:39
-DATA(ts2) = xco_cp=>sy->moment( xco_cp_time=>time_zone->user
-                              )->as( xco_cp_time=>format->iso_8601_extended
-                              )->value.
-"Current time stamp in UTC
-"e.g. 2024-01-01T08:54:39
-DATA(ts3) = xco_cp=>sy->moment( xco_cp_time=>time_zone->utc
-                              )->as( xco_cp_time=>format->iso_8601_extended
-                              )->value.
-"Different formatting options
-DATA(ts_xco) = xco_cp=>sy->moment( xco_cp_time=>time_zone->utc ).
-""e.g. 20240101123455
-DATA(ts4) = ts_xco->as( xco_cp_time=>format->abap )->value.
-"e.g. 20240101T123455
-DATA(ts5) = ts_xco->as( xco_cp_time=>format->iso_8601_basic )->value.
-"As used above, e.g. 2024-01-01T12:34:55
-DATA(ts6) = ts_xco->as( xco_cp_time=>format->iso_8601_extended )->value.
+"Notes:
+"- The results of the following chained statements are of type string.
+"- With the 'as' method, a given format (available via xco_cp_time=>format)
+"  is applied to the time. Several options are available.
+"- The 'moment' method has an optional importing parameter for specifying the
+"  time zone. By default, the user's time zone is used. For the specification,
+"  you can use xco_cp_time=>time_zone.
+
+"The following three examples
+"- do not specify the optional importing parameter for the 'moment' method. In
+"  this case, the user time zone is used implicitly.
+"- specify an specific format in the 'as' method.
+
+"e.g. 20250101162319
+DATA(ts_abap) = xco_cp=>sy->moment( )->as( xco_cp_time=>format->abap )->value.
+
+"e.g. 20250310T162320
+DATA(ts_basic) = xco_cp=>sy->moment( )->as( xco_cp_time=>format->iso_8601_basic )->value.
+
+"e.g. 2025-01-01T16:23:20
+DATA(ts_ext) = xco_cp=>sy->moment( )->as( xco_cp_time=>format->iso_8601_extended )->value.
+
+"Specifying the time zone explicitly in the 'moment' method
+"The following method call retrieves the current user time stamp.
+DATA(ts_user_tz) = xco_cp=>sy->moment( xco_cp_time=>time_zone->user
+                                )->as( xco_cp_time=>format->iso_8601_basic
+                                )->value.
+
+"Specifying the UTC time zone
+DATA(ts_utc_tz) = xco_cp=>sy->moment( xco_cp_time=>time_zone->utc
+                                )->as( xco_cp_time=>format->iso_8601_basic
+                                )->value.
 ```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
