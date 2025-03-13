@@ -7671,6 +7671,404 @@ ENDCLASS.
 
 </details>  
 
+
+<br>
+
+<details>
+  <summary>🟢 Abstract Factory</summary>
+  <!-- -->
+
+<br>
+
+- The pattern may be used when you need to create a set of related objects (a family of "products") that work together or are processed together for specific purposes. 
+- Such families of related objects may be required in different variants. However, the created objects must be compatible with each variant. 
+- Here are some examples to illustrate this:
+  - Consider a car manufacturer. Multiple components are needed to assemble a car, such as the chassis, engine, and equipment (certainly, there are more components). These components form a family of related objects to create car. All cars from the manufacturer follow the same setup: each requires a chassis, engine, and equipment. However, the manufacturer offers various car models like convertibles, sedans, SUVs, and pickup trucks. When producing these different variants, specific components may vary. The assembly must only use compatible objects. For example, when producing a convertible, a chassis with a sedan roof should not be used.
+  - Consider a restaurant offers various three-course menus (this is the example used by the demo classes). Menu items include starters, main dishes, and desserts, forming a family of related objects. Different variants exist to create specific menus. For example, the restaurant offers a vegan menu. When creating the menu, it should be ensured the menu does not include a beef steak as a main dish or dairy products in desserts.
+- In terms of code, you may need a setup to create related objects in an organized and consistent way. The abstract factory design pattern enables this by using a high level of abstraction in your class setup, i.e. it enables the creation of related objects that belong to the same family through abstractions like abstract classes, without bothering about their specific implementations and allowing for the creation of objects with appropriate types determined at runtime. A factory, such as an abstract factory class, sets up the object creation process by specifying methods that provide objects. Concrete factories then inherit from the abstract factory class and implement the methods to create specific kinds of objects. More abstraction is involved, as outlined in the example description below.
+- Some of the benefits of the pattern include: centralizing multiple object creations in one location, ensuring consistency and compatibility, simplifying object creation for users by hiding complexity, adding or modifying different variants without affecting existing code, providing flexibility and adaptability (however, adding new products might be cumbersome as it requires changes in many parts of the code).
+- The abstract factory pattern differs from the factory method design pattern in several ways. Both facilitate object creation through abstraction. The factory method uses a single interface as an abstraction layer and single factory methods, while the abstract factory pattern uses a higher degree of abstraction and multiple factories. The factory method pattern primarily creates single objects, whereas the abstract factory pattern involves creating multiple related objects.
+
+**Example Notes**
+
+The example uses the following class setup in the CCIMP include (Local Types tab in ADT) to illustrate the abstract factory pattern: 
+ 
+- Setting up abstract classes for products to establish a template for concrete products
+  - Abstract classes for the products (abstract products)
+    - In this example, the `starters`, `main_dishes`, and `desserts` classes serve as abstract classes for products.
+    - These classes provide a common interface for concrete products, ensuring all variants are created consistently.
+  - Concrete classes for the products (concrete products)
+    - In the example, concrete classes for the products, inheriting from the `starters`, `main_dishes`, and `desserts` abstract classes, are named using the format `starters_*`, `main_dishes_*`, and `desserts_*`.
+    - For each variant, such as the seafood menu, specific concrete products are provided. Here, the method implementations of the concrete classes involve adding various dishes to a string table, representing available menu options for customers. Numbers in parentheses (1-3) denote the menu course. Generally, the implementations must ensure that the products fit their specific variant.
+
+- Setting up an abstract factory and concrete factories
+  - Abstract factory class
+    - The abstract factory, represented by the `menu_factory` class, defines a common interface for product families to create related objects.
+    - It includes factory methods to provide these related objects.
+    - The returned related objects are typed with references to the abstract products (`starters`, `main_dishes`, and `desserts`).
+  - Concrete factory classes
+    - The variants enter the picture with concrete factories. Here, the concrete factories are represented by the `italian_menu_creator`, `seafood_menu_creator`, and `vegan_menu_creator` classes.
+    - Each variant has a concrete factory, and these factories inherit from the abstract factory class `menu_factory`.
+    - The concrete factories include factory methods to create and return concrete products at runtime. Note that the returning parameter is typed with reference to the abstract product. 
+    - This implementation ensures compatibility, meaning the seafood factory should only create and provide objects for starters, main dishes, and desserts related to seafood.
+
+- Setting up a client
+  - The `menu_provider` class represents the client. 
+  - The client uses the abstract factories for object creation, allowing it to work with any variant without dealing with concrete factories. 
+  - In this example, the implementation returns the entire menu (`create_menu` method) based on the selected menu variant. The "selection" of the menu variant is realized by the instance constructor of the class. The desired menu variant is passed to the instance constructor as an object reference, typed with reference to the abstract factory.
+  - At runtime, the abstract factories connect with concrete factories so that the `create_menu` method implementation can work with them. Regardless of which variant is chosen (i.e., which object reference is passed), the client can handle it, use compatible objects, and return the desired menu.
+  - The example includes the helper class `customer_order`, which has a factory method to create the appropriate object reference required by the client, based on the desired menu.
+
+Global class:
+- The global class implements the `if_oo_adt_classrun` interface and calls methods from local classes.
+- It serves as a vehicle for demonstrating the design pattern. The declarations and implementations in the `CCIMP` include are relevant for the conceptual considerations.
+- Using the `menu_provider` client class and specifying the variant using the `customer_order` class, a menu is created. During the method calls, all related objects (products) are created, and string tables are filled with various dishes to illustrate the pattern. As a result, a single string table is returned, containing meals for all three courses per variant offered by the restaurant. The example includes method calls for all three example variants and outputs the resulting string tables to the ADT console.
+ 
+<br>
+
+<table>
+
+<tr>
+<td> Class include </td> <td> Code </td>
+</tr>
+
+<tr>
+<td> 
+
+Global class
+
+ </td>
+
+ <td> 
+
+``` abap
+CLASS zcl_demo_abap DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
+
+  PUBLIC SECTION.
+    INTERFACES if_oo_adt_classrun.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+ENDCLASS.
+
+
+
+CLASS zcl_demo_abap IMPLEMENTATION.
+  METHOD if_oo_adt_classrun~main.
+  DATA(italian_menu) = NEW menu_provider( customer_order=>place_order( menu_factory=>italian ) )->create_menu(  ).
+  out->write( data = italian_menu name = `italian_menu` ).
+  out->write( |\n| ).
+
+  DATA(seafood_menu) = NEW menu_provider( customer_order=>place_order( menu_factory=>seafood ) )->create_menu(  ).
+  out->write( data = seafood_menu name = `seafood_menu` ).
+  out->write( |\n| ).
+
+  DATA(vegan_menu) = NEW menu_provider( customer_order=>place_order( menu_factory=>vegan ) )->create_menu(  ).
+  out->write( data = vegan_menu name = `vegan_menu` ).
+  out->write( |\n| ).
+  ENDMETHOD.
+ENDCLASS.
+``` 
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+CCIMP include (Local Types tab in ADT)
+
+ </td>
+
+ <td> 
+
+``` abap
+*&---------------------------------------------------------------------*
+*& Abstract products
+*&---------------------------------------------------------------------*
+
+CLASS starters DEFINITION ABSTRACT.
+  PUBLIC SECTION.
+    METHODS get_starters ABSTRACT RETURNING VALUE(starters) TYPE string_table.
+ENDCLASS.
+
+CLASS main_dishes DEFINITION ABSTRACT.
+  PUBLIC SECTION.
+    METHODS get_main_dishes ABSTRACT RETURNING VALUE(main_dishes) TYPE string_table.
+ENDCLASS.
+
+CLASS desserts DEFINITION ABSTRACT.
+  PUBLIC SECTION.
+    METHODS get_desserts ABSTRACT RETURNING VALUE(desserts) TYPE string_table.
+ENDCLASS.
+
+*&---------------------------------------------------------------------*
+*& Concrete products
+*&---------------------------------------------------------------------*
+
+CLASS starters_italian DEFINITION INHERITING FROM starters.
+  PUBLIC SECTION.
+    METHODS get_starters REDEFINITION.
+ENDCLASS.
+
+CLASS starters_italian IMPLEMENTATION.
+  METHOD get_starters.
+    starters = VALUE #( ( `Bruschetta (1)` ) ( `Caprese salad (1)` ) ( `Antipasto platter (1)` ) ).
+  ENDMETHOD.
+ENDCLASS.
+
+CLASS starters_vegan DEFINITION INHERITING FROM starters.
+  PUBLIC SECTION.
+    METHODS get_starters REDEFINITION.
+ENDCLASS.
+
+CLASS starters_vegan IMPLEMENTATION.
+  METHOD get_starters.
+    starters = VALUE #( ( `Stuffed mushrooms (1)` ) ( `Zucchini fritters (1)` ) ( `Tomato soup (1)` ) ).
+  ENDMETHOD.
+ENDCLASS.
+
+CLASS starters_seafood DEFINITION INHERITING FROM starters.
+  PUBLIC SECTION.
+    METHODS get_starters REDEFINITION.
+ENDCLASS.
+
+CLASS starters_seafood IMPLEMENTATION.
+  METHOD get_starters.
+    starters = VALUE #( ( `Shrimp cocktail (1)` ) ( `Crab cakes (1)` ) ( `Calamari (1)` ) ).
+  ENDMETHOD.
+ENDCLASS.
+
+CLASS main_dishes_italian DEFINITION INHERITING FROM main_dishes.
+  PUBLIC SECTION.
+    METHODS get_main_dishes REDEFINITION.
+ENDCLASS.
+
+CLASS main_dishes_italian IMPLEMENTATION.
+  METHOD get_main_dishes.
+    main_dishes = VALUE #( ( `Spaghetti Carbonara (2)` ) ( `Lasagna alla Bolognese (2)` ) ( `Saltimbocca alla Romana (2)` ) ).
+  ENDMETHOD.
+ENDCLASS.
+
+CLASS main_dishes_vegan DEFINITION INHERITING FROM main_dishes.
+  PUBLIC SECTION.
+    METHODS get_main_dishes REDEFINITION.
+ENDCLASS.
+
+CLASS main_dishes_vegan IMPLEMENTATION.
+  METHOD get_main_dishes.
+    main_dishes = VALUE #( ( `Chickpea curry (2)` ) ( `Cauliflower steak (2)` ) ( `Vegan burger (2)` ) ).
+  ENDMETHOD.
+ENDCLASS.
+
+CLASS main_dishes_seafood DEFINITION INHERITING FROM main_dishes.
+  PUBLIC SECTION.
+    METHODS get_main_dishes REDEFINITION.
+ENDCLASS.
+
+CLASS main_dishes_seafood IMPLEMENTATION.
+  METHOD get_main_dishes.
+    main_dishes = VALUE #( ( `Baked salmon (2)` ) ( `Grilled lobster (2)` ) ( `Fish and chips (2)` ) ).
+  ENDMETHOD.
+ENDCLASS.
+
+CLASS desserts_italian DEFINITION INHERITING FROM desserts.
+  PUBLIC SECTION.
+    METHODS get_desserts REDEFINITION.
+ENDCLASS.
+
+CLASS desserts_italian IMPLEMENTATION.
+  METHOD get_desserts.
+    desserts = VALUE #( ( `Tiramisu (3)` ) ( `Panna cotta (3)` ) ( `Tartufo (3)` ) ).
+  ENDMETHOD.
+ENDCLASS.
+
+CLASS desserts_vegan DEFINITION INHERITING FROM desserts.
+  PUBLIC SECTION.
+    METHODS get_desserts REDEFINITION.
+ENDCLASS.
+
+CLASS desserts_vegan IMPLEMENTATION.
+  METHOD get_desserts.
+    desserts = VALUE #( ( `Fruit sorbet (3)` ) ( `Almond milk vanilla pudding (3)` ) ( `Apple crumble (3)` ) ).
+  ENDMETHOD.
+ENDCLASS.
+
+CLASS desserts_seafood DEFINITION INHERITING FROM desserts.
+  PUBLIC SECTION.
+    METHODS get_desserts REDEFINITION.
+ENDCLASS.
+
+CLASS desserts_seafood IMPLEMENTATION.
+  METHOD get_desserts.
+    desserts = VALUE #( ( `Lemon sorbet (3)` ) ( `Cheesecake (3)` ) ( `Chocolate mousse (3)` ) ).
+  ENDMETHOD.
+ENDCLASS.
+
+*&---------------------------------------------------------------------*
+*& Abstract factory
+*&---------------------------------------------------------------------*
+
+CLASS menu_factory DEFINITION ABSTRACT.
+  PUBLIC SECTION.
+    TYPES: BEGIN OF ENUM menu_variant,
+             italian,
+             seafood,
+             vegan,
+           END OF ENUM menu_variant.
+
+    METHODS: create_starters ABSTRACT RETURNING VALUE(starters_ref) TYPE REF TO starters,
+      create_main_dishes ABSTRACT RETURNING VALUE(main_dishes_ref) TYPE REF TO main_dishes,
+      create_desserts ABSTRACT RETURNING VALUE(desserts_ref) TYPE REF TO desserts.
+ENDCLASS.
+
+*&---------------------------------------------------------------------*
+*& Concrete factories
+*&---------------------------------------------------------------------*
+
+CLASS italian_menu_creator DEFINITION INHERITING FROM menu_factory.
+  PUBLIC SECTION.
+    METHODS: create_starters REDEFINITION,
+      create_main_dishes REDEFINITION,
+      create_desserts REDEFINITION.
+
+ENDCLASS.
+
+CLASS italian_menu_creator IMPLEMENTATION.
+
+  METHOD create_starters.
+    starters_ref = NEW starters_italian( ).
+  ENDMETHOD.
+
+  METHOD create_main_dishes.
+    main_dishes_ref = NEW main_dishes_italian( ).
+  ENDMETHOD.
+
+  METHOD create_desserts.
+    desserts_ref = NEW desserts_italian( ).
+  ENDMETHOD.
+ENDCLASS.
+
+CLASS seafood_menu_creator DEFINITION INHERITING FROM menu_factory.
+  PUBLIC SECTION.
+    METHODS: create_starters REDEFINITION,
+      create_main_dishes REDEFINITION,
+      create_desserts REDEFINITION.
+
+ENDCLASS.
+
+CLASS seafood_menu_creator IMPLEMENTATION.
+
+  METHOD create_starters.
+    starters_ref = NEW starters_seafood( ).
+  ENDMETHOD.
+
+  METHOD create_main_dishes.
+    main_dishes_ref = NEW main_dishes_seafood( ).
+  ENDMETHOD.
+
+  METHOD create_desserts.
+    desserts_ref = NEW desserts_seafood( ).
+  ENDMETHOD.
+
+ENDCLASS.
+
+CLASS vegan_menu_creator DEFINITION INHERITING FROM menu_factory.
+  PUBLIC SECTION.
+    METHODS: create_starters REDEFINITION,
+      create_main_dishes REDEFINITION,
+      create_desserts REDEFINITION.
+
+ENDCLASS.
+
+CLASS vegan_menu_creator IMPLEMENTATION.
+
+  METHOD create_starters.
+    starters_ref = NEW starters_vegan( ).
+  ENDMETHOD.
+
+  METHOD create_main_dishes.
+    main_dishes_ref = NEW main_dishes_vegan( ).
+  ENDMETHOD.
+
+  METHOD create_desserts.
+    desserts_ref = NEW desserts_vegan( ).
+  ENDMETHOD.
+
+ENDCLASS.
+
+*&---------------------------------------------------------------------*
+*& Client
+*&---------------------------------------------------------------------*
+
+CLASS menu_provider DEFINITION.
+  PUBLIC SECTION.
+    METHODS: constructor IMPORTING factory TYPE REF TO menu_factory,
+             create_menu RETURNING VALUE(menu) TYPE string_table.
+  PRIVATE SECTION.
+    DATA factory TYPE REF TO menu_factory.
+    DATA starters_factory TYPE REF TO starters.
+    DATA main_dishes_factory TYPE REF TO main_dishes.
+    DATA desserts_factory TYPE REF TO desserts.
+ENDCLASS.
+
+CLASS menu_provider IMPLEMENTATION.
+  METHOD create_menu.
+    "The more detailed out code lines are to emphasize that this class deals
+    "with references to abstract types. Appending the lines may also
+    "be achieved with fewer lines of code, as commented out below.
+    starters_factory = factory->create_starters( ).
+    main_dishes_factory = factory->create_main_dishes( ).
+    desserts_factory = factory->create_desserts( ).
+
+    DATA(starters_for_menu) = starters_factory->get_starters( ).
+    DATA(main_dishes_for_menu) = main_dishes_factory->get_main_dishes( ).
+    DATA(desserts_for_menu) = desserts_factory->get_desserts( ).
+
+    APPEND LINES OF starters_for_menu TO menu.
+    APPEND LINES OF main_dishes_for_menu TO menu.
+    APPEND LINES OF desserts_for_menu TO menu.
+
+    "APPEND LINES OF factory->create_starters( )->get_starters( ) TO menu.
+    "APPEND LINES OF factory->create_main_dishes( )->get_main_dishes( ) TO menu.
+    "APPEND LINES OF factory->create_desserts( )->get_desserts( ) TO menu.
+  ENDMETHOD.
+
+  METHOD constructor.
+    me->factory = factory.
+  ENDMETHOD.
+ENDCLASS.
+
+"Helper class
+CLASS customer_order DEFINITION CREATE PRIVATE.
+  PUBLIC SECTION.
+    CLASS-METHODS place_order IMPORTING menu_variant   TYPE menu_factory=>menu_variant
+                              RETURNING VALUE(factory) TYPE REF TO menu_factory.
+ENDCLASS.
+
+CLASS customer_order IMPLEMENTATION.
+  METHOD place_order.
+    CASE menu_variant.
+      WHEN menu_factory=>italian.
+        factory = NEW italian_menu_creator( ).
+      WHEN menu_factory=>seafood.
+        factory = NEW seafood_menu_creator( ).
+      WHEN menu_factory=>vegan.
+        factory = NEW vegan_menu_creator( ).
+    ENDCASE.
+  ENDMETHOD.
+ENDCLASS.
+``` 
+
+ </td>
+</tr>
+
+</table>
+
+</details>  
+
 <br>
 
 <details>
