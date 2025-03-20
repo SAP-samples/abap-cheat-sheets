@@ -99,6 +99,7 @@ ABAP cheat sheets[^1] ...
 |[Regular Expressions in ABAP](28_Regular_Expressions.md)|Includes an overview of common regular expressions and their use in ABAP through statements, built-in functions, and system classes|[zcl_demo_abap_regex](./src/zcl_demo_abap_regex.clas.abap)|
 |[Numeric Operations in ABAP](29_Numeric_Operations.md)|Explores various aspects of numeric operations and calculations in ABAP|- (The cheat sheet includes a copy and paste example class)|
 |[Generative AI](30_Generative_AI.md)|Provides references to detailed information on *Generative AI in ABAP Cloud* and explores released ABAP classes available in the *ABAP AI SDK powered by Intelligent Scenario Lifecycle Management*|- (The cheat sheet includes a copy and paste example class)|
+|[WHERE Conditions](31_WHERE_Conditions.md)|Explores syntax options in ABAP statements that include `WHERE` for data filtering|- (The cheat sheet includes copy and paste example classes)|
 
 <br>
 
