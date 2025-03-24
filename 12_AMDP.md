@@ -9,7 +9,10 @@
   - [AMDP Procedures](#amdp-procedures)
   - [AMDP Functions](#amdp-functions)
     - [CDS Table Functions](#cds-table-functions)
-  - [Notes on Client Handling and Client Safety](#notes-on-client-handling-and-client-safety)
+  - [Using AMDP in ABAP for Cloud Development](#using-amdp-in-abap-for-cloud-development)
+    - [Notes on Client Handling and Client Safety](#notes-on-client-handling-and-client-safety)
+    - [Restrictions for AMDP Methods in ABAP for Cloud Development](#restrictions-for-amdp-methods-in-abap-for-cloud-development)
+    - [Making AMDP Methods Client-Safe in ABAP for Cloud Development](#making-amdp-methods-client-safe-in-abap-for-cloud-development)
   - [More Information](#more-information)
   - [Executable Example](#executable-example)
 
@@ -379,30 +382,81 @@ You can then use the CDS table function as source for a
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-## Notes on Client Handling and Client Safety
+
+## Using AMDP in ABAP for Cloud Development
+
+### Notes on Client Handling and Client Safety
 
 > **🌰 In brief**<br>
-> - ABAP SQL features implicit [client handling](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenclient_handling_glosry.htm). 
-> - While you can disable this in classic ABAP, it is not an option in ABAP Cloud, where you are limited to accessing your own client. 
-> - Unlike ABAP SQL, there is no implicit client handling in Native SQL. AMDP, which uses Native SQL, is usable in ABAP Cloud, but it is crucial to ensure that AMDP only accesses client-safe repository objects, meaning it only accesses data from your own client. For this purpose, dedicated additions are provided.
-  
-**ABAP SQL:**
-- An SAP system can have multiple clients, each distinguished by a unique [client ID](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenclient_identifier_glosry.htm). 
-- Each client can contain unique data. For instance, when you log into the system, you select a client and can only access the data within that specific client. If you log into client 000, for example, your access is restricted to the data of client 000, not any other clients.
-  - Client-dependent data is managed through a client column. So, if a database table has a client column, it contains client-dependent data. However, there are also client-independent data sources, which contain data not specific to any client. These are typically accessed by [system programs](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensystem_program_glosry.htm).
-- ABAP SQL features implicit client handling, i.e. it automatically handles client selection. When you execute an ABAP SQL statement in a client, the system automatically uses the current client. There is no need to specify the client separately, as the compiler automatically manages client handling. Exception: The [`USING CLIENT` (F1 docu for Standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapselect_client.htm) addition modifies this default behavior. It disables implicit client handling.
-- Find more information on client handling [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_sql_client_handling.htm).
+> - ABAP SQL features implicit client handling.
+> - You cannot disable this feature in ABAP for Cloud Development, as you can in [Standard ABAP](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenstandard_abap_glosry.htm). You can only access your own client in ABAP for Cloud Development.
+> - Native SQL, unlike ABAP SQL, does not feature implicit client handling. AMDP, which uses Native SQL, can be used in ABAP for Cloud Development. It is essential to ensure AMDP accesses only client-safe repository objects, meaning it retrieves data solely from client-dependent sources providing data of one client, i.e. the current client. Cross-client access must be avoided. Client-independent data sources are implicitly client-safe.
+> - Dedicated additions and annotations in the context of AMDP ensure client safety.
+
+**ABAP SQL**
+- An SAP system can have multiple clients, each distinguished by a unique client ID.
+- Each client holds specific data. When you log in, you select a client and can only access its data. For example, if you log into client 000, you access only client 000's data.
+- A client column manages client-dependent data. If a database table has a client column, it contains client-dependent data. There are also client-independent data sources accessed typically by system programs.
+- ABAP SQL features implicit client handling, automatically managing client selection. When you execute an ABAP SQL statement, it uses the current client without needing separate specification. The `USING CLIENT` addition to ABAP SQL statements can alter this behavior by disabling implicit client handling, however, this addition is not available in ABAP for Cloud Development.
 
 **Native SQL/AMDP**
-- Unlike ABAP SQL, Native SQL does not have implicit handling, so you must explicitly pass the client. 
-- Native SQL is passed directly to the database.
-- AMDP, which uses Native SQL, also does not support implicit client handling.
-- While AMDP is permitted in ABAP Cloud, accessing client-dependent data via Native SQL is not supported.
-- When using AMDP in ABAP Cloud, it is crucial to access only the current client. Client-safety must be ensured.
-- AMDP methods in ABAP Cloud must be client-safe, meaning the SQLScript code should access data only in your client. Use only artifacts that limit access to a single client or those that are client-independent.
-- Consequently, all objects in the `USING` list must be client-safe, including CDS table functions implemented as AMDP methods.
-- There are additions to cover client-safe aspects, ensuring access only to your client data.
-- Find more information about client safety in AMDP [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenamdp_client_safety.htm).
+- Unlike ABAP SQL, Native SQL requires you to explicitly pass the client as there is no implicit handling.
+- Native SQL is sent directly to the database. 
+- AMDP, which uses Native SQL, does not feature implicit client handling either.
+- Although AMDP is allowed in ABAP for Cloud Development, Native SQL cannot access client-dependent data.
+- When using AMDP in ABAP for Cloud Development, you must ensure access only to the current client. Client safety is essential.
+- AMDP methods in ABAP for Cloud Development must be client-safe. This means SQLScript code should access data only within your client. It is required to only use artifacts that restrict access to a single client or are client-independent.
+- Therefore, all objects in the `USING` list of AMDP methods must be client-safe, including CDS table functions implemented as AMDP methods.
+- Additions and annotations are available, ensuring client safety by restricting access to data of the current client only.
+
+### Restrictions for AMDP Methods in ABAP for Cloud Development 
+
+- The AMDP procedure implementation must be restricted to reads. The relevant additions are `AMDP OPTIONS READ-ONLY` in AMDP method declarations and `OPTIONS READ-ONLY` in AMDP method implementations.
+- AMDP method implementations can only use SQLScript code.
+- The data sources accessed must be released for ABAP for Cloud Development.
+- AMDP methods must be client-safe.
+
+### Making AMDP Methods Client-Safe in ABAP for Cloud Development
+
+To ensure client safety, the following prerequisites must be met. 
+
+- **AMDP method declarations** must use one of the following additions and specify particular objects in the **`USING` list**:
+
+    - `CDS SESSION CLIENT DEPENDENT`
+      - Declares the AMDP method as client-dependent when it uses at least one client-dependent object.
+      - Ensures client safety by specifying client-safe objects in the `USING` list that access data from the current client only.
+      - Data sources that can be specified in the `USING` list:
+        - Client-dependent CDS view entities filtered by the HANA session variable `CDS_CLIENT` (CDS session variable `$session.client`) 
+        - Client-dependent DDIC database tables 
+          - Note: AMDP methods with the addition `CDS SESSION CLIENT DEPENDENT` handle client safety automatically. A database view, that wraps the database table, is generated implicitly to access and select data for the client specified in the HANA session variable `CDS_CLIENT`, ensuring the data source is client-safe.          
+        - Client-safe CDS table functions 
+        - Other client-dependent or client-independent AMDP methods with the AMDP option `CDS SESSION CLIENT DEPENDENT` or `CLIENT INDEPENDENT` AMDP methods
+        - Client-independent CDS objects and DDIC database tables        
+
+    - `CLIENT INDEPENDENT`
+      - Declares the AMDP method as client-independent when it uses only client-independent objects.
+      - Client-independent data sources can be specified in the `USING` list: Client-independent CDS view entities, DDIC database tables, client-safe CDS table functions, AMDP methods (specifying `CLIENT INDEPENDENT`)
+
+
+- **CDS table functions** must have one of these annotations for client safety:  
+  - `@ClientHandling.type: CLIENT_DEPENDENT` (should be used together with the  `@ClientHandling.algorithm: #SESSION_VARIABLE` annotation)  
+  - `@ClientHandling.type: #CLIENT_INDEPENDENT`  
+  - Parameters should not be marked with `@Environment.systemField: #CLIENT`  
+  - Note: The annotation `@ClientHandling.clientSafe` ensures client-dependent CDS table functions are client-safe by enforcing client-safety checks. In ABAP for Cloud Development, specifying this annotation is unnecessary as the checks are automatically enabled.
+
+ - **SQLScript code** in implementations of AMDP methods
+    - Must not access database objects not managed by ABAP or not included in the `USING` list.
+    - Must not call built-in HANA functions that include a client ID parameter.
+    - The client parameter from AMDP method signatures should be removed.  If removal is not possible, for example, due to compatibility reasons, ensure the client is excluded from the SQLScript code to prevent interference from external callers.
+
+> **💡 Note**<br>
+> - Using pre-delivered repository objects in ABAP for Cloud Development:
+>   - Use only pre-delivered AMDP methods with a [C4 contract](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABENC4_CONTRACT_GLOSRY.html).
+>   - Create and use your own wrapper CDS view entities for pre-delivered CDS view entities with a [C1 contract](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABENC1_CONTRACT_GLOSRY.html).
+> - More information: 
+>   - The table in [this topic](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABENAMDP_CALL_MATRICES.html) shows an overview of specification options regarding client safety.
+>   - [Client Handling in CDS Table Functions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABENCDS_FUNC_CLIENT_HANDLING.html)
+
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
