@@ -3040,7 +3040,7 @@ DATA str TYPE string.
 DATA ref9 LIKE REF TO str.
 DATA ref10 LIKE REF TO struc_like_line.
 
-"--- Reference table based on existing data object using LIKE TABLE REF TO ---
+"--- Reference table based on existing data object using LIKE TABLE OF REF TO ---
 DATA ref11 LIKE TABLE OF REF TO str.
 DATA ref12 LIKE TABLE OF REF TO struc_like_line.
 ``` 

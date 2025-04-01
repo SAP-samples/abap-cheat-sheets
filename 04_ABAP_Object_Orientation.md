@@ -1540,7 +1540,7 @@ DATA(ref2) = NEW some_class( ).      "Reference variable declared inline, explic
 DATA(ref_mand_param) = NEW another_class( ip1 = ... ip2 = ... ).
 
 "Older syntax, replaced by NEW operator 
-"However, the CREATE OBJECT is required in dynamic object creation.
+"However, CREATE OBJECT is required in dynamic object creation.
 CREATE OBJECT ref3.                  "Type derived from already declared ref3
 CREATE OBJECT ref4 TYPE some_class.  "Corresponds to the result of the expression above
 ```
@@ -7675,7 +7675,7 @@ ENDCLASS.
 <br>
 
 <details>
-  <summary>🟢 Abstract Factory</summary>
+  <summary>🟢 Abstract factory</summary>
   <!-- -->
 
 <br>
@@ -7683,8 +7683,8 @@ ENDCLASS.
 - The pattern may be used when you need to create a set of related objects (a family of "products") that work together or are processed together for specific purposes. 
 - Such families of related objects may be required in different variants. However, the created objects must be compatible with each variant. 
 - Here are some examples to illustrate this:
-  - Consider a car manufacturer. Multiple components are needed to assemble a car, such as the chassis, engine, and equipment (certainly, there are more components). These components form a family of related objects to create car. All cars from the manufacturer follow the same setup: each requires a chassis, engine, and equipment. However, the manufacturer offers various car models like convertibles, sedans, SUVs, and pickup trucks. When producing these different variants, specific components may vary. The assembly must only use compatible objects. For example, when producing a convertible, a chassis with a sedan roof should not be used.
-  - Consider a restaurant offers various three-course menus (this is the example used by the demo classes). Menu items include starters, main dishes, and desserts, forming a family of related objects. Different variants exist to create specific menus. For example, the restaurant offers a vegan menu. When creating the menu, it should be ensured the menu does not include a beef steak as a main dish or dairy products in desserts.
+  - Consider a car manufacturer. Multiple components are needed to assemble a car, such as the chassis, engine, and equipment (certainly, there are more components). These components form a family of related objects to a create car. All cars from the manufacturer follow the same setup: each requires a chassis, engine, and equipment. However, the manufacturer offers various car models like convertibles, sedans, SUVs, and pickup trucks. When producing these different variants, specific components may vary. The assembly must only use compatible objects. For example, when producing a convertible, a chassis with a sedan roof should not be used.
+  - Consider a restaurant offers various three-course menus (this is the example used by the demo classes). Menu items include starters, main dishes, and desserts, forming a family of related objects. Different variants exist to create specific menus. For example, the restaurant offers a vegan menu. When creating the vegan menu, it should be ensured the menu does not include a beef steak as a main dish or dairy products in desserts.
 - In terms of code, you may need a setup to create related objects in an organized and consistent way. The abstract factory design pattern enables this by using a high level of abstraction in your class setup, i.e. it enables the creation of related objects that belong to the same family through abstractions like abstract classes, without bothering about their specific implementations and allowing for the creation of objects with appropriate types determined at runtime. A factory, such as an abstract factory class, sets up the object creation process by specifying methods that provide objects. Concrete factories then inherit from the abstract factory class and implement the methods to create specific kinds of objects. More abstraction is involved, as outlined in the example description below.
 - Some of the benefits of the pattern include: centralizing multiple object creations in one location, ensuring consistency and compatibility, simplifying object creation for users by hiding complexity, adding or modifying different variants without affecting existing code, providing flexibility and adaptability (however, adding new products might be cumbersome as it requires changes in many parts of the code).
 - The abstract factory pattern differs from the factory method design pattern in several ways. Both facilitate object creation through abstraction. The factory method uses a single interface as an abstraction layer and single factory methods, while the abstract factory pattern uses a higher degree of abstraction and multiple factories. The factory method pattern primarily creates single objects, whereas the abstract factory pattern involves creating multiple related objects.
@@ -10756,7 +10756,7 @@ ENDCLASS.
 - When compiling ABAP programs, the specifications with the escape character are not considered as ABAP words. 
 - When executing the programs, the escape characters are ignored.
 
-The following nonsensical example shows various specifications with the escape character that emphasize in the program that the operands are not to be confused with ABAP words. These specifications are not mandatory in the example. The example only addresses escape characters you may encounter in ABAP code.
+The following nonsensical example shows various specifications with the escape character that emphasize in the program that the operands are not to be confused with ABAP words. These specifications are not mandatory in the example. The example only addresses escape characters you may encounter in (older) ABAP code.
 
 ```abap
 CLASS zcl_demo_abap DEFINITION

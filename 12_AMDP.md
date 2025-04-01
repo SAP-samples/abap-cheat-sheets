@@ -12,7 +12,7 @@
   - [Using AMDP in ABAP for Cloud Development](#using-amdp-in-abap-for-cloud-development)
     - [Notes on Client Handling and Client Safety](#notes-on-client-handling-and-client-safety)
     - [Restrictions for AMDP Methods in ABAP for Cloud Development](#restrictions-for-amdp-methods-in-abap-for-cloud-development)
-    - [Making AMDP Methods Client-Safe in ABAP for Cloud Development](#making-amdp-methods-client-safe-in-abap-for-cloud-development)
+    - [Making AMDP Methods Client-Safe](#making-amdp-methods-client-safe)
   - [More Information](#more-information)
   - [Executable Example](#executable-example)
 
@@ -409,6 +409,8 @@ You can then use the CDS table function as source for a
 - Therefore, all objects in the `USING` list of AMDP methods must be client-safe, including CDS table functions implemented as AMDP methods.
 - Additions and annotations are available, ensuring client safety by restricting access to data of the current client only.
 
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
 ### Restrictions for AMDP Methods in ABAP for Cloud Development 
 
 - The AMDP procedure implementation must be restricted to reads. The relevant additions are `AMDP OPTIONS READ-ONLY` in AMDP method declarations and `OPTIONS READ-ONLY` in AMDP method implementations.
@@ -416,7 +418,9 @@ You can then use the CDS table function as source for a
 - The data sources accessed must be released for ABAP for Cloud Development.
 - AMDP methods must be client-safe.
 
-### Making AMDP Methods Client-Safe in ABAP for Cloud Development
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+### Making AMDP Methods Client-Safe
 
 To ensure client safety, the following prerequisites must be met. 
 
@@ -456,7 +460,6 @@ To ensure client safety, the following prerequisites must be met.
 > - More information: 
 >   - The table in [this topic](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABENAMDP_CALL_MATRICES.html) shows an overview of specification options regarding client safety.
 >   - [Client Handling in CDS Table Functions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABENCDS_FUNC_CLIENT_HANDLING.html)
-
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 

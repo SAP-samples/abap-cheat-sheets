@@ -1456,6 +1456,8 @@ CREATE DATA dref TYPE ('T_STR_REF').
 "----- Pattern: TYPE ... TABLE OF (typename) ... -----
 
 "Creating internal tables
+"Note that the syntax with CREATE DATA does not support the specification of
+"secondary table keys. This is possible with RTTI and using a type description object.
 
 CREATE DATA dref TYPE TABLE OF ('STRING').
 CREATE DATA dref TYPE TABLE OF ('T_FLI_STRUC') WITH EMPTY KEY.
@@ -4623,8 +4625,15 @@ CREATE DATA dref_struc TYPE HANDLE tdo_struc_3.
 #### Creating Table Types and Internal Tables Dynamically 
 
 ```abap
-"Note regarding cl_abap_tabledescr=>get( ... ): Specifying the line type is mandatory, 
-"the rest is optional.
+*&---------------------------------------------------------------------*
+*& Creating internal tables dynamically using type description objects
+*&---------------------------------------------------------------------*
+
+DATA dref_itab TYPE REF TO data.
+
+*&---------------------------------------------------------------------*
+*& Internal table with elementary line type and standard table key
+*&---------------------------------------------------------------------*
 
 "An internal table type such as the following shall be created dynamically
 "using a type description object.
@@ -4632,54 +4641,81 @@ TYPES std_tab_type_std_key TYPE STANDARD TABLE OF string WITH DEFAULT KEY.
 DATA itab_1 TYPE std_tab_type_std_key.
 
 "Creating the type dynamically (creating a type description object)
-"Not specifying the other optional parameters means that the
-"default values are used, for example, standard table is the
-"default value for p_table_kind.
+"Here, the cl_abap_tabledescr=>get( ... ) method is used. Note that specifying
+"the line type is mandatory, the rest is optional.
+"Not specifying the other optional parameters means that the default values are
+"used, for example, standard table is the default value for p_table_kind.
 DATA(tdo_tab_1) = cl_abap_tabledescr=>get(
         p_line_type  = cl_abap_elemdescr=>get_string( ) ).
 
 "Creating an internal table dynamically using a type description object
-DATA dref_itab TYPE REF TO data.
 CREATE DATA dref_itab TYPE HANDLE tdo_tab_1.
 
-ASSERT itab_1 = dref_itab->*.
+"Getting type information and checking type compatibility
+DATA(tdo_1a) = CAST cl_abap_tabledescr( cl_abap_typedescr=>describe_by_data( dref_itab->* ) ).
+DATA(tdo_1b) = CAST cl_abap_tabledescr( cl_abap_typedescr=>describe_by_data( itab_1 ) ).
+
+DATA(applies_1a) = tdo_1a->applies_to_data_descr( tdo_1b ).
+DATA(applies_1b) = tdo_1a->applies_to_data( itab_1 ).
+
+ASSERT applies_1a = abap_true.
+ASSERT applies_1b = abap_true.
+
+*&---------------------------------------------------------------------*
+*& Internal table with structured line type and custom table keys
+*&---------------------------------------------------------------------*
 
 "Another internal table type for which more parameter specifications
 "are needed. The following internal table type shall be created using
 "a type description object.
+"The structured type of demo DDIC database table is used.
 TYPES so_table_type TYPE SORTED TABLE OF zdemo_abap_flsch WITH UNIQUE KEY carrid connid.
 DATA itab_2 TYPE so_table_type.
 
-"Creating the type dynamically (creating a type description object)
+"Creating the type dynamically by creating a type description object
 "The following example also demonstrates how comfortably constructor
 "operators can be used at these positions.
 DATA(tdo_tab_2) = cl_abap_tabledescr=>get(
         p_line_type  = CAST cl_abap_structdescr( cl_abap_tabledescr=>describe_by_name( 'ZDEMO_ABAP_FLSCH' ) )
         p_table_kind = cl_abap_tabledescr=>tablekind_sorted
         p_key        = VALUE #( ( name = 'CARRID' ) ( name = 'CONNID' ) )
-        p_unique     = cl_abap_typedescr=>true ).
+        p_unique     = cl_abap_typedescr=>true
+        p_key_kind   = cl_abap_tabledescr=>keydefkind_user ).
 
 "Creating an internal table dynamically using a type description object
 CREATE DATA dref_itab TYPE HANDLE tdo_tab_2.
 
-ASSERT itab_2 = dref_itab->*.
+"Getting type information and checking type compatibility
+DATA(tdo_2a) = CAST cl_abap_tabledescr( cl_abap_typedescr=>describe_by_data( dref_itab->* ) ).
+DATA(tdo_2b) = CAST cl_abap_tabledescr( cl_abap_typedescr=>describe_by_data( itab_2 ) ).
+
+DATA(applies_2a) = tdo_2a->applies_to_data_descr( tdo_2b ).
+DATA(applies_2b) = tdo_2a->applies_to_data( itab_2 ).
+
+ASSERT applies_2a = abap_true.
+ASSERT applies_2b = abap_true.
+
+*&---------------------------------------------------------------------*
+*& Internal table with structured line type containing custom components
+*& and custom table key
+*&---------------------------------------------------------------------*
 
 "A table type and data object such as the following shall be created
 "dynamically using a type description object.
-TYPES: BEGIN OF struc_type_2,
-          a TYPE string,   "Built-in ABAP types
-          b TYPE i,
-          c TYPE c LENGTH 5,
-          d TYPE land1,    "DDIC data element
-        END OF struc_type_2.
-DATA itab_3 TYPE HASHED TABLE OF struc_type_2 WITH UNIQUE KEY a.
+TYPES: BEGIN OF struc_type,
+         a TYPE c LENGTH 5,   "Built-in ABAP types
+         b TYPE i,
+         c TYPE string,
+         d TYPE land1,    "DDIC data element
+       END OF struc_type.
+DATA itab_3 TYPE HASHED TABLE OF struc_type WITH UNIQUE KEY a.
 
-"Creating the type dynamically (creating a type description object)
+"Creating the type dynamically by creating a type description object
 DATA(tdo_tab_3) = cl_abap_tabledescr=>get(
         p_line_type  = cl_abap_structdescr=>get( VALUE #(
-          ( name = 'A' type = cl_abap_elemdescr=>get_string( ) )
+          ( name = 'A' type = cl_abap_elemdescr=>get_c( 5 ) )
           ( name = 'B' type = cl_abap_elemdescr=>get_i( ) )
-          ( name = 'C' type = cl_abap_elemdescr=>get_c( 5 ) )
+          ( name = 'C' type = cl_abap_elemdescr=>get_string( ) )
           ( name = 'D' type = CAST cl_abap_datadescr( cl_abap_typedescr=>describe_by_name( 'LAND1' ) ) ) ) )
         p_table_kind = cl_abap_tabledescr=>tablekind_hashed
         p_key        = VALUE #( ( name = 'A' )  )
@@ -4688,19 +4724,158 @@ DATA(tdo_tab_3) = cl_abap_tabledescr=>get(
 "Creating an internal table dynamically using a type description object
 CREATE DATA dref_itab TYPE HANDLE tdo_tab_3.
 
-ASSERT itab_3 = dref_itab->*.
+"Getting type information and checking type compatibility
+DATA(tdo_3a) = CAST cl_abap_tabledescr( cl_abap_typedescr=>describe_by_data( dref_itab->* ) ).
+DATA(line_type_3a) = CAST cl_abap_structdescr( tdo_3a->get_table_line_type( ) ).
+DATA(keys_3a) = tdo_3a->get_keys( ).
 
-"Excursion
-"The previous examples show the use of cl_abap_tabledescr=>get to create
-"type description objects. These examples show the creation based on
-"other methods/different casts getting type description objects.
-TYPES ty_str_tab TYPE TABLE OF string WITH EMPTY KEY.
-DATA itab_4 TYPE string_table.
+DATA(tdo_3b) = CAST cl_abap_tabledescr( cl_abap_typedescr=>describe_by_data( itab_3 ) ).
+DATA(line_type_3b) = CAST cl_abap_structdescr( tdo_3b->get_table_line_type( ) ).
+DATA(keys_3b) = tdo_3b->get_keys( ).
 
-DATA(tdo_tab_4) = CAST cl_abap_datadescr( cl_abap_typedescr=>describe_by_name( 'TY_STR_TAB' ) ).
+
+DATA(applies_3a) = tdo_3a->applies_to_data_descr( tdo_3b ).
+DATA(applies_3b) = tdo_3a->applies_to_data( itab_3 ).
+
+ASSERT applies_3a = abap_true.
+ASSERT applies_3b = abap_true.
+
+*&---------------------------------------------------------------------*
+*& Internal table with structured line type containing custom components
+*& and custom table key (primary and secondary table key)
+*&---------------------------------------------------------------------*
+
+"A table type and data object such as the following shall be created
+"dynamically using a type description object.
+TYPES: BEGIN OF struc_type_2,
+         e TYPE c LENGTH 5,       "Built-in ABAP types
+         f TYPE i,
+         g TYPE land1,            "DDIC data element
+         h TYPE zdemo_abap_flsch, "DDIC database table
+         i TYPE REF TO string,    "Reference type
+       END OF struc_type_2.
+DATA itab_4 TYPE SORTED TABLE OF struc_type_2
+  WITH NON-UNIQUE KEY e
+  WITH NON-UNIQUE SORTED KEY secondary_key COMPONENTS f.
+"Note that the default name primary_key does not need to be specified explicitly.
+"So, the following declaration corresponds to the previous one.
+DATA itab_4b TYPE SORTED TABLE OF struc_type_2
+  WITH NON-UNIQUE KEY primary_key COMPONENTS e
+  WITH NON-UNIQUE SORTED KEY sec_key COMPONENTS f.
+
+"Creating the type dynamically by creating a type description object
+"Here, the cl_abap_tabledescr=>get_with_keys( ... )  method is used. Check the class documentation
+"for more details.
+DATA(tdo_tab_4) = cl_abap_tabledescr=>get_with_keys(
+                      p_line_type  = cl_abap_structdescr=>get( VALUE #(
+                        ( name = 'E' type = cl_abap_elemdescr=>get_c( 5 ) )
+                        ( name = 'F' type = cl_abap_elemdescr=>get_i( ) )
+                        ( name = 'G' type = CAST cl_abap_datadescr( cl_abap_typedescr=>describe_by_name( 'LAND1' ) ) )
+                        ( name = 'H' type = CAST cl_abap_datadescr( cl_abap_typedescr=>describe_by_name( 'ZDEMO_ABAP_FLSCH' ) ) )
+                        ( name = 'I' type = CAST cl_abap_datadescr( CAST cl_abap_refdescr( cl_abap_typedescr=>describe_by_data( REF #( `hello` ) ) ) ) )
+                        ) )
+                      p_keys = VALUE #(
+                        ( name = VALUE #( )         "In case of the primary table key, a name must be provided here
+                                                    "for an alias. This example table does not specify an alias name.
+                          is_primary = abap_true
+                          access_kind = cl_abap_tabledescr=>tablekind_sorted
+                          is_unique = abap_false
+                          key_kind = cl_abap_tabledescr=>keydefkind_user
+                          components = VALUE #( ( name = 'E' ) ) )
+                        ( name = 'SECONDARY_KEY'
+                          is_primary = abap_false
+                          access_kind = cl_abap_tabledescr=>tablekind_sorted
+                          is_unique = abap_false
+                          key_kind = cl_abap_tabledescr=>keydefkind_user
+                          components = VALUE #( ( name = 'F' ) ) ) ) ).
+
+"Creating an internal table dynamically using a type description object
 CREATE DATA dref_itab TYPE HANDLE tdo_tab_4.
-DATA(tdo_tab_5) = CAST cl_abap_tabledescr( cl_abap_typedescr=>describe_by_data( itab_4 ) ).
+
+"Getting type information and checking type compatibility
+DATA(tdo_4a) = CAST cl_abap_tabledescr( cl_abap_typedescr=>describe_by_data( dref_itab->* ) ).
+DATA(line_type_4a) = CAST cl_abap_structdescr( tdo_4a->get_table_line_type( ) ).
+DATA(keys_4a) = tdo_4a->get_keys( ).
+
+DATA(tdo_4b) = CAST cl_abap_tabledescr( cl_abap_typedescr=>describe_by_data( itab_4 ) ).
+DATA(line_type_4b) = CAST cl_abap_structdescr( tdo_4b->get_table_line_type( ) ).
+DATA(keys_4b) = tdo_4b->get_keys( ).
+
+DATA(applies_4a) = tdo_4a->applies_to_data_descr( tdo_4b ).
+DATA(applies_4b) = tdo_4a->applies_to_data( itab_4 ).
+
+ASSERT applies_4a = abap_true.
+ASSERT applies_4b = abap_true.
+
+*&---------------------------------------------------------------------*
+*& Internal table with structured line type containing custom components
+*& and custom table key (primary and secondary table key), including
+*& alias names
+*&---------------------------------------------------------------------*
+
+"A internal table such as the following shall be
+"created dynamically using a type description object.
+DATA itab_5 TYPE HASHED TABLE OF struc_type
+  WITH UNIQUE KEY primary_key ALIAS pk COMPONENTS a
+  WITH NON-UNIQUE SORTED KEY sec_key ALIAS sk COMPONENTS b c.
+
+"Creating the type dynamically by creating a type description object
+DATA(tdo_tab_5) = cl_abap_tabledescr=>get_with_keys(
+                      p_line_type  = CAST cl_abap_structdescr( cl_abap_typedescr=>describe_by_name( 'STRUC_TYPE' ) )
+                      p_keys = VALUE #(
+                        ( name = 'PK' "Alias name for the primary table key.
+                          is_primary = abap_true
+                          access_kind = cl_abap_tabledescr=>tablekind_hashed
+                          is_unique = abap_true
+                          key_kind = cl_abap_tabledescr=>keydefkind_user
+                          components = VALUE #( ( name = 'A' ) ) )
+                        ( name = 'SEC_KEY'
+                          is_primary = abap_false
+                          access_kind = cl_abap_tabledescr=>tablekind_sorted
+                          is_unique = abap_false
+                          key_kind = cl_abap_tabledescr=>keydefkind_user
+                          components = VALUE #( ( name = 'B' ) ( name = 'C' ) ) ) )
+                       p_key_aliases = VALUE #( ( name = 'PRIMARY_KEY' alias = 'PK' ) "Specifying the default primary table key name PRIMARY_KEY
+                                                ( name = 'SEC_KEY'     alias = 'SK' ) ) ).
+
+"Creating an internal table dynamically using a type description object
 CREATE DATA dref_itab TYPE HANDLE tdo_tab_5.
+
+DATA(tdo_5a) = CAST cl_abap_tabledescr( cl_abap_typedescr=>describe_by_data( dref_itab->* ) ).
+DATA(line_type_5a) = CAST cl_abap_structdescr( tdo_5a->get_table_line_type( ) ).
+DATA(keys_5a) = tdo_5a->get_keys( ).
+DATA(key_aliases_5a) = tdo_5a->get_key_aliases( ).
+
+DATA(tdo_5b) = CAST cl_abap_tabledescr( cl_abap_typedescr=>describe_by_data( itab_5 ) ).
+DATA(line_type_5b) = CAST cl_abap_structdescr( tdo_5b->get_table_line_type( ) ).
+DATA(keys_5b) = tdo_5b->get_keys( ).
+DATA(key_aliases_5b) = tdo_5b->get_key_aliases( ).
+
+DATA(applies_5a) = tdo_5a->applies_to_data_descr( tdo_5b ).
+DATA(applies_5b) = tdo_5a->applies_to_data( itab_5 ).
+
+ASSERT applies_5a = abap_true.
+ASSERT applies_5b = abap_true.
+
+*&---------------------------------------------------------------------*
+*& Creating internal tables dynamically using type description objects
+*& based on existing table types and internal tables
+*&---------------------------------------------------------------------*
+
+"The previous examples show the use of cl_abap_tabledescr=>get* methods
+"to create type description objects. The following examples show the
+"creation based on other methods/different casts getting type description
+"objects.
+TYPES ty_str_tab TYPE TABLE OF string WITH EMPTY KEY.
+DATA itab_6 TYPE string_table.
+
+"Creating a type description object based on an existing table type
+DATA(tdo_tab_6) = CAST cl_abap_datadescr( cl_abap_typedescr=>describe_by_name( 'TY_STR_TAB' ) ).
+CREATE DATA dref_itab TYPE HANDLE tdo_tab_6.
+
+"Creating a type description object based on an existing internal table
+DATA(tdo_tab_7) = CAST cl_abap_tabledescr( cl_abap_typedescr=>describe_by_data( itab_4 ) ).
+CREATE DATA dref_itab TYPE HANDLE tdo_tab_7.
 ```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>

@@ -584,7 +584,7 @@ SELECT tab2~key_field, tab1~char2
 
  <td> 
 
-Dynamic `WHERE` condition specified as parenthesized data objects. This data objects should contain the syntax of a logical expression. As `dynamic_where_clause`, a character-like data object or a standard table with character-like line type is expected. The syntax is not case-sensitive. For more information, see the [Dynamic Programming cheat sheet](06_Dynamic_Programming.md), also with respect to potential security risks regarding dynamic specifications.
+Dynamic `WHERE` condition specified as parenthesized data objects. These data objects should contain the syntax of a logical expression. As `dynamic_where_clause`, a character-like data object or a standard table with character-like line type is expected. The syntax is not case-sensitive. For more information, see the [Dynamic Programming cheat sheet](06_Dynamic_Programming.md), also with respect to potential security risks regarding dynamic specifications.
 
  </td>
 

@@ -57,7 +57,7 @@
 
     | Keyword  | Purpose                                                                   |
     | -------- | ------------------------------------------------------------------------- |
-    | `SELECT` | Reads data from database tables                                           |
+    | `SELECT` | Reads data from data sources such as database tables and others           |
     | `INSERT` | Adds rows to database tables                                              |
     | `UPDATE` | Changes the content of rows of database tables                            |
     | `MODIFY` | Inserts rows into database tables or changes the content of existing rows |

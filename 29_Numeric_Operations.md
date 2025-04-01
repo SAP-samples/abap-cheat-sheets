@@ -89,7 +89,7 @@ This cheat sheet explores various aspects of numeric operations and calculations
 
 - Used to store binary floating point numbers, which are binary representations of numbers with mantissas and exponents.
 - Can represent decimal numbers with up to 17 decimal places in the mantissa (one before the decimal point, 16 after), and allow a three-digit exponent.
-- Expect a scientific notation for the numeric value assigned, or interpret it as such.
+- Expect a scientific notation for the numeric value assigned, or interpretable it as such.
 - Represented internally as binary fractions, so not every decimal number can be represented exactly.
 - The type may be used in exceptional cases when precision is less important and fast calculations are crucial. Comparisons and calculations with this type and other numeric types might yield unexpected results due to imprecision and possible rounding effects. Consider decimal floating point types for greater precision.
 

@@ -13,6 +13,7 @@
     - [Formatting Options in String Templates](#formatting-options-in-string-templates)
   - [Determining the Length of Strings](#determining-the-length-of-strings)
   - [Concatenating Strings](#concatenating-strings)
+    - [Concatenation Assignment Operator \&\&=](#concatenation-assignment-operator-)
     - [Literal Operator](#literal-operator)
   - [Splitting Strings](#splitting-strings)
   - [Modifying Strings](#modifying-strings)
@@ -560,6 +561,99 @@ CONCATENATE LINES OF itab INTO DATA(conc_tab3) SEPARATED BY `,`.
 "Using concat_lines_of
 s1 = concat_lines_of( table = itab ). "Without separator
 s1 = concat_lines_of( table = itab sep = ` ` ). "With separator
+```
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+### Concatenation Assignment Operator &&=
+
+- You can use the concatenation assignment operator `&&=` to concatenate strings in an assignment.
+
+```abap
+"This assignment using the concatenation assignment operator ...
+a &&= b.
+
+"... has the same effect as the following.
+a = a && b.
+```
+
+- `a` can be variables and writable expressions (such as certain constructor expressions, e.g. `CAST`, or table expressions). It cannot be an inline declaration.
+- `b` can be character-like data objects, constructor expressions, string expressions (such as string templates), table expressions or functions
+
+```abap
+DATA a1 TYPE string VALUE `a`.
+DATA a2 TYPE string VALUE `a`.
+DATA b TYPE string VALUE `b`.
+
+a1 &&= b.
+a2 = a2 && b.
+
+ASSERT a1 = a2.
+
+*&---------------------------------------------------------------------*
+*& Left-hand data object
+*&---------------------------------------------------------------------*
+"The left-hand data object can also be represented by a writable expression
+
+"Constructor expression with CAST
+DATA ref TYPE REF TO data.
+ref = NEW string( `h` ).
+CAST string( ref )->* &&= `ello`. "hello
+
+"Table expression
+DATA(str_table) = VALUE string_table( ( `AB` ) ).
+str_table[ 1 ] &&= `AP`. "ABAP
+
+*&---------------------------------------------------------------------*
+*& Right-hand data object
+*&---------------------------------------------------------------------*
+
+"The right-hand data object can be represented by a character-like data object, as
+"shown in the previous examples, or whose content can be converted, as well as ...
+
+"... constructor expressions
+DATA txt TYPE string.
+txt = `abc`.
+"abcdef
+txt &&= CONV string( 'def' ).
+
+txt = `ghi`.
+"The REDUCE operator itself uses the concatenation assignment operator
+"in the assignment of NEXT.
+"ghijkl
+txt &&= REDUCE string( INIT str = VALUE #( )
+                       FOR line IN VALUE string_table( ( `j` ) ( `k` ) ( `l` ) )
+                       NEXT str &&= line ).
+
+txt = `mno`.
+"mnopqr
+txt &&= COND #( WHEN txt = `mno` THEN `pqr` ELSE `stu` ).
+
+"... string expressions such as string templates
+CLEAR txt.
+DO 5 TIMES.
+  "1, 2, 3, 4, 5
+  txt &&= |{ COND #( WHEN sy-index <> 1 THEN `, ` ) }{ sy-index }|.
+ENDDO.
+
+"... table expressions
+DATA(tab) = VALUE string_table( ( `v` ) ( `w` ) ( `x` ) ).
+txt = `a`.
+"av
+txt &&= tab[ 1 ].
+
+"Content of tab[ 2 ]: wx
+tab[ 2 ] &&= tab[ 3 ].
+
+"... functions
+txt = `a`.
+"abbbbb
+txt &&= repeat( val = `b` occ = 5 ).
+
+DATA(strtab) = VALUE string_table( ( `b` ) ( `c` ) ( `d` ) ).
+txt = `a`.
+"abcd
+txt &&= concat_lines_of( table = strtab ).
 ```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>

@@ -1768,7 +1768,7 @@ ENDCASE.
 -   The conditions can either be based on single values or a [filter
     table](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconstructor_expr_filter_table.htm).
 - The source table must have at least one [sorted key](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensorted_key_glosry.htm "Glossary Entry") or a [hash key](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenhash_key_glosry.htm "Glossary Entry") for accessing. If the table does not have such a primary table key, a [secondary table key](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensecondary_table_key_glosry.htm "Glossary Entry") must be available.
-- Syntax options for the using the table key (i.e. specifying its components):
+- Syntax options for using the table key (i.e. specifying its components):
   - Using the [primary table key](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenprimary_table_key_glosry.htm) without the `USING KEY` addition
   - Using the default name `primary_key` for the primary key with `USING KEY`
   - Using the secondary table key with `USING KEY`

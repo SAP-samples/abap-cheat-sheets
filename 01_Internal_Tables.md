@@ -864,7 +864,7 @@ INSERT LINES OF itab2 FROM 5 TO 9 INTO TABLE itab.
 </tr>
 
 <tr>
-<td> Inserting one line or multiple lines from another internal table at a specific position </td>
+<td> Inserting one line represented by a structure or multiple lines from another internal table at a specific position </td>
 <td>
 
 `FROM` and `TO` can be used here, too.
@@ -3933,7 +3933,12 @@ The expressions are covered in the [Constructor Expressions](05_Constructor_Expr
 
 ### Interrupting and Exiting Loops
 
-ABAP keywords such as `CONTINUE` (terminating the current loop pass, continuing with the next), `CHECK` (conditional termination termination of the current loop pass if the logical expression is false), and `EXIT` (loop terminated completely), are available to exit and interrupt loops. Find more information in the [Program Flow Logic](13_Program_Flow_Logic.md#interrupting-and-exiting-loops) cheat sheet.
+ABAP keywords such as 
+- `CONTINUE` (terminating the current loop pass, continuing with the next)
+- `CHECK` (conditional termination termination of the current loop pass if the logical expression is false), and 
+- `EXIT` (loop terminated completely), 
+
+are available to exit and interrupt loops. Find more information in the [Program Flow Logic](13_Program_Flow_Logic.md#interrupting-and-exiting-loops) cheat sheet.
 
 In the following example, the loop is exited using the `EXIT` statement when a certain condition is met.
 ```abap

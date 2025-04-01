@@ -149,7 +149,7 @@ DATA(utc_date) = cl_abap_context_info=>get_system_date( ).
 "The following three examples:
 "- do not specify the optional importing parameter for the 'date' method. In
 "  this case, the user time zone is used implicitly.
-"- specify an specific format in the 'as' method.
+"- specify a specific format in the 'as' method.
 
 "e.g. 20250101
 DATA(date_abap) = xco_cp=>sy->date( )->as( xco_cp_time=>format->abap )->value.
@@ -515,7 +515,7 @@ DATA(utc_time) = cl_abap_context_info=>get_system_time( ).
 "The following three examples
 "- do not specify the optional importing parameter for the 'time' method. In
 "  this case, the user time zone is used implicitly.
-"- specify an specific format in the 'as' method.
+"- specify a specific format in the 'as' method.
 
 "e.g. 160907
 DATA(time_abap) = xco_cp=>sy->time( )->as( xco_cp_time=>format->abap )->value.
@@ -797,7 +797,7 @@ DATA(ts1) = utclong_current( ).
 "The following three examples
 "- do not specify the optional importing parameter for the 'moment' method. In
 "  this case, the user time zone is used implicitly.
-"- specify an specific format in the 'as' method.
+"- specify a specific format in the 'as' method.
 
 "e.g. 20250101162319
 DATA(ts_abap) = xco_cp=>sy->moment( )->as( xco_cp_time=>format->abap )->value.

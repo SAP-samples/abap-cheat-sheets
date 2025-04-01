@@ -383,7 +383,7 @@ that is, it refers to another structure. The following example has multiple subs
         END OF address_n.
     ```
 
-- **Deep structures**: Contains at least one internal table, reference type, or string as a component.
+- **Deep structures**: Contain at least one internal table, reference type, or string as a component.
     ``` abap
     DATA: BEGIN OF address_d,
             name    TYPE string VALUE `Mr. Duncan Pea`, 

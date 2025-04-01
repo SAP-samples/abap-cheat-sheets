@@ -31,6 +31,7 @@
       - [Read-by-Association Operation](#read-by-association-operation)
       - [Dynamic ABAP EML READ Statements](#dynamic-abap-eml-read-statements)
     - [COMMIT ENTITIES: Persisting to the Database](#commit-entities-persisting-to-the-database)
+    - [ROLLBACK ENTITIES](#rollback-entities)
     - [GET PERMISSIONS: Retrieving Information about RAP BO Permissions](#get-permissions-retrieving-information-about-rap-bo-permissions)
     - [Raising RAP Business Events](#raising-rap-business-events)
     - [IN LOCAL MODE Addition to ABAP EML Statements in ABAP Behavior Pools](#in-local-mode-addition-to-abap-eml-statements-in-abap-behavior-pools)
@@ -2104,6 +2105,50 @@ ENDDO.
 </tr>
 
 </table>
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+### ROLLBACK ENTITIES
+
+- The `ROLLBACK ENTITIES` statement rolls back all changes of the current [RAP transaction](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_luw_glosry.htm).
+- This rollback includes the clearing of the transactional buffer (by calling the `cleanup` method) and locks.
+- Note that in unmanaged scenarios, you must implement the behavior yourself. For example, the `cleanup` method must include an appropriate implementation to clear the transactional buffer.
+- Same as for `COMMIT ENTITIES`, in natively supported RAP scenarios, such as an SAP Fiori application using OData, the `ROLLBACK ENTITIES` call is implicitly and automatically performed by the RAP runtime engine.
+
+The following example demonstrates the effect of `ROLLBACK ENTITIES`. In the second loop pass, `ROLLBACK ENTITIES` clears the transactional buffer, leaving nothing to commit. Therefore, the assertions are also true for the second loop.
+
+
+```abap
+DELETE FROM zdemo_abap_rapt1.
+
+DO 2 TIMES.
+ MODIFY ENTITIES OF zdemo_abap_rap_ro_m
+  ENTITY root
+  CREATE FIELDS ( key_field )
+  AUTO FILL CID WITH VALUE #( ( key_field = sy-index ) )
+  MAPPED DATA(m1)
+  FAILED DATA(f1)
+  REPORTED DATA(r1).
+
+ IF sy-index = 2.
+   ROLLBACK ENTITIES.
+ ENDIF.
+
+COMMIT ENTITIES.
+
+ IF sy-subrc <> 0.
+  ...
+ ENDIF.
+
+ SELECT FROM zdemo_abap_rapt1
+  FIELDS key_field
+  ORDER BY key_field
+  INTO TABLE @DATA(tab).
+
+  ASSERT lines( tab ) = 1.
+  ASSERT tab[ 1 ]-key_field = 1.
+ENDDO.
+```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
