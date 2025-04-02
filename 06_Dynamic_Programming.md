@@ -4536,36 +4536,176 @@ DATA(tdo_elem_string2) = CAST cl_abap_elemdescr( cl_abap_typedescr=>describe_by_
 #### Creating Elementary Types and Data Objects Dynamically
 
 ```abap
-"An elementary type and data object such as the following shall be 
+DATA dref_elem TYPE REF TO data.
+
+*&---------------------------------------------------------------------*
+*& Creating a data object with elementary type dynamically
+*& Built-in ABAP type
+*&---------------------------------------------------------------------*
+
+"An elementary type and data object such as the following shall be
 "created dynamically using a type description object.
 TYPES ty_c3 TYPE c LENGTH 3.
-DATA elemdobj TYPE ty_c3.
+DATA elem_dobj_1a TYPE ty_c3.
+DATA elem_dobj_1b TYPE c LENGTH 3.
 
-"Creating the type dynamically (creating a type description object)
+"Creating a reference type dynamically using a type description object
 DATA(tdo_elem_1) = cl_abap_elemdescr=>get_c( 3 ).
 
-"Creating an elementary data object dynamically using a type description object
-DATA dref_elem TYPE REF TO data.
+"Creating a data reference variable dynamically using a type description object
 CREATE DATA dref_elem TYPE HANDLE tdo_elem_1.
 
-ASSERT elemdobj = dref_elem->*.
+"Getting type information and checking type compatibility
+DATA(tdo_for_dref_elem_1) = CAST cl_abap_elemdescr( cl_abap_typedescr=>describe_by_data( dref_elem->* ) ).
+DATA(applies_to_elem_1a) = tdo_for_dref_elem_1->applies_to_data( elem_dobj_1a ).
+DATA(applies_to_elem_1b) = tdo_for_dref_elem_1->applies_to_data( elem_dobj_1b ).
+ASSERT applies_to_elem_1a = abap_true.
+ASSERT applies_to_elem_1b = abap_true.
 
-"Excursions
-"As shown above, the type description object can be retrieved using
-"other methods.
-DATA(tdo_elem_2) = CAST cl_abap_elemdescr( cl_abap_typedescr=>describe_by_name( 'TY_C3' ) ).
-CREATE DATA dref_elem TYPE HANDLE tdo_elem_2.
-    
-DATA(tdo_elem_3) = CAST cl_abap_elemdescr( cl_abap_typedescr=>describe_by_data( elemdobj ) ).
+*&---------------------------------------------------------------------*
+*& get_* methods for built-in types
+*&---------------------------------------------------------------------*
+
+"Character-like types
+TYPES c5 TYPE c LENGTH 5.
+DATA(tdo_elem_c5) = cl_abap_elemdescr=>get_c( 5 ).
+CREATE DATA dref_elem TYPE HANDLE tdo_elem_c5.
+
+TYPES n4 TYPE n LENGTH 4.
+DATA(tdo_elem_n4) = cl_abap_elemdescr=>get_n( 4 ).
+CREATE DATA dref_elem TYPE HANDLE tdo_elem_n4.
+
+TYPES str TYPE string.
+DATA(tdo_elem_string) = cl_abap_elemdescr=>get_string( ).
+CREATE DATA dref_elem TYPE HANDLE tdo_elem_string.
+
+"Numeric types
+TYPES ty_i TYPE i.
+DATA(tdo_elem_i) = cl_abap_elemdescr=>get_i( ).
+CREATE DATA dref_elem TYPE HANDLE tdo_elem_i.
+
+TYPES ty_int1 TYPE int1.
+DATA(tdo_elem_int1) = cl_abap_elemdescr=>get_int1( ).
+CREATE DATA dref_elem TYPE HANDLE tdo_elem_int1.
+
+TYPES ty_int2 TYPE int2.
+DATA(tdo_elem_int2) = cl_abap_elemdescr=>get_int2( ).
+CREATE DATA dref_elem TYPE HANDLE tdo_elem_int2.
+
+TYPES ty_int8 TYPE int8.
+DATA(tdo_elem_int8) = cl_abap_elemdescr=>get_int8( ).
+CREATE DATA dref_elem TYPE HANDLE tdo_elem_int8.
+
+TYPES ty_dec16 TYPE decfloat16.
+DATA(tdo_elem_dec16) = cl_abap_elemdescr=>get_decfloat16( ).
+CREATE DATA dref_elem TYPE HANDLE tdo_elem_dec16.
+
+TYPES ty_dec34 TYPE decfloat34.
+DATA(tdo_elem_dec34) = cl_abap_elemdescr=>get_decfloat34( ).
+CREATE DATA dref_elem TYPE HANDLE tdo_elem_dec34.
+
+TYPES float TYPE f.
+DATA(tdo_elem_f) = cl_abap_elemdescr=>get_f( ).
+CREATE DATA dref_elem TYPE HANDLE tdo_elem_f.
+
+TYPES pl16d14 TYPE p LENGTH 16 DECIMALS 14.
+DATA(tdo_elem_p) = cl_abap_elemdescr=>get_p( p_length   = 16
+                                             p_decimals = 14 ).
+CREATE DATA dref_elem TYPE HANDLE tdo_elem_p.
+
+"Date, time, time stamp
+TYPES ty_date TYPE d.
+DATA(tdo_elem_d) = cl_abap_elemdescr=>get_d( ).
+CREATE DATA dref_elem TYPE HANDLE tdo_elem_d.
+
+TYPES ty_time TYPE t.
+DATA(tdo_elem_t) = cl_abap_elemdescr=>get_t( ).
+CREATE DATA dref_elem TYPE HANDLE tdo_elem_t.
+
+TYPES ty_utcl TYPE utclong.
+DATA(tdo_elem_utcl) = cl_abap_elemdescr=>get_utclong( ).
+CREATE DATA dref_elem TYPE HANDLE tdo_elem_utcl.
+
+"Byte-like types
+TYPES x10 TYPE x LENGTH 10.
+DATA(tdo_elem_x_l10) = cl_abap_elemdescr=>get_x( 10 ).
+CREATE DATA dref_elem TYPE HANDLE tdo_elem_x_l10.
+
+TYPES xstr TYPE xstring.
+DATA(tdo_elem_xstr) = cl_abap_elemdescr=>get_xstring( ).
+CREATE DATA dref_elem TYPE HANDLE tdo_elem_xstr.
+
+*&---------------------------------------------------------------------*
+*& Creating a data object with elementary type dynamically
+*& DDIC data element
+*&---------------------------------------------------------------------*
+
+"Note: The types int1 and int2 in the prvious code snippet represent
+"DDIC data elements, too.
+
+"A reference type and variable such as the following shall be created
+"using a type description object.
+TYPES ty_ts TYPE timestampl.
+DATA elem_dobj_2a TYPE ty_ts.
+DATA elem_dobj_2b TYPE timestampl.
+
+"Creating a reference type dynamically using a type description object
+"Note: The 'describe_by_name' method returns a reference of type ref to
+"cl_abap_typedescr. To use the type description object with the
+"CREATE DATA ... TYPE HANDLE ... statement, a cast is required.
+"The 'describe_by_name' method is available with cl_abap_typedescr,
+"cl_abap_elemdescr, and others.
+DATA(tdo_elem_2) = CAST cl_abap_datadescr( cl_abap_elemdescr=>describe_by_name( 'TIMESTAMPL' ) ).
+"Alternative using cl_abap_typedescr
+DATA(tdo_elem_w_cl_abap_typedescr) = CAST cl_abap_datadescr( cl_abap_typedescr=>describe_by_name( 'TIMESTAMPL' ) ).
+
+"Creating a data reference variable dynamically using a type description object
 CREATE DATA dref_elem TYPE HANDLE tdo_elem_2.
 
-"After HANDLE, a reference variable of the static type of class CL_ABAP_DATADESCR
-"or its subclasses is expected. So, the following CREATE DATA statement does not work. 
-"A cast is required.
-DATA(tdo_elem_4) = cl_abap_typedescr=>describe_by_data( elemdobj ).
-"CREATE DATA dref_elem TYPE HANDLE tdo_elem_4.
-DATA(tdo_elem_5) = CAST cl_abap_datadescr( cl_abap_typedescr=>describe_by_data( elemdobj ) ).
-CREATE DATA dref_elem TYPE HANDLE tdo_elem_5.
+"Getting type information and checking type compatibility
+DATA(tdo_for_dref_elem_2) = CAST cl_abap_elemdescr( cl_abap_typedescr=>describe_by_data( dref_elem->* ) ).
+DATA(applies_to_elem_2a) = tdo_for_dref_elem_2->applies_to_data( elem_dobj_2a ).
+DATA(applies_to_elem_2b) = tdo_for_dref_elem_2->applies_to_data( elem_dobj_2b ).
+ASSERT applies_to_elem_2a = abap_true.
+ASSERT applies_to_elem_2b = abap_true.
+
+*&---------------------------------------------------------------------*
+*& Excursions: Further methods of class cl_abap_elemdescr
+*&---------------------------------------------------------------------*
+
+"The following examples cover a selection. For more information, refer
+"to the class documentation.
+
+"---- 'describe_by_data' method ----
+"To get the underlying type's type description object.
+DATA a_number TYPE i.
+DATA(tdo_elem_descr_by_data) = cl_abap_elemdescr=>describe_by_data( a_number ).
+"Note: To use it with the CREATE DATA ... TYPE HANDLE ... statement, a cast is
+"required.
+DATA(cast_tdo_elem_descr_by_data) = CAST cl_abap_datadescr( tdo_elem_descr_by_data ).
+CREATE DATA dref_elem TYPE HANDLE cast_tdo_elem_descr_by_data.
+
+"---- 'describe_by_name' method ----
+"To get the type description object based on a type passed by relative or absolute name
+DATA(tdo_elem_descr_by_name) = cl_abap_elemdescr=>describe_by_name( 'LAND1' ).
+DATA(cast_tdo_elem_descr_by_name) = CAST cl_abap_datadescr( tdo_elem_descr_by_name ).
+CREATE DATA dref_elem TYPE HANDLE cast_tdo_elem_descr_by_name.
+
+"---- 'describe_by_data_ref' method ----
+"To get the underlying type's type description object, passed as reference.
+DATA data_ref TYPE REF TO data.
+data_ref = NEW i( 123 ).
+DATA(tdo_elem_descr_by_data_ref) = cl_abap_elemdescr=>describe_by_data_ref( data_ref ).
+DATA(cast_tdo_elem_desc_by_data_ref) = CAST cl_abap_datadescr( tdo_elem_descr_by_data_ref ).
+CREATE DATA dref_elem TYPE HANDLE cast_tdo_elem_desc_by_data_ref.
+
+"---- 'get_by_kind' method ----
+"To get a type description object by type kind.
+DATA(tdo_elem_get_by_kind_string) = cl_abap_elemdescr=>get_by_kind( cl_abap_elemdescr=>typekind_string ).
+CREATE DATA dref_elem TYPE HANDLE tdo_elem_get_by_kind_string.
+
+DATA(tdo_elem_get_by_kind_c5) = cl_abap_elemdescr=>get_by_kind( p_type_kind = cl_abap_elemdescr=>typekind_char p_length = 5 ).
+CREATE DATA dref_elem TYPE HANDLE tdo_elem_get_by_kind_c5.
 ```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
@@ -4573,51 +4713,128 @@ CREATE DATA dref_elem TYPE HANDLE tdo_elem_5.
 #### Creating Structured Types and Data Objects Dynamically
 
 ```abap
+DATA dref_struc TYPE REF TO data.
+
+*&---------------------------------------------------------------------*
+*& Creating a structured type and data object dynamically
+*& Flat structure
+*&---------------------------------------------------------------------*
+
 "A structured type and data object such as the following shall be created
 "dynamically using a type description object.
-TYPES: BEGIN OF struc_type,
-         a TYPE string,   "Built-in ABAP types
-         b TYPE i,
-         c TYPE c LENGTH 5,
-         d TYPE p LENGTH 4 DECIMALS 3,
-         e TYPE land1,          "DDIC data element
-         f TYPE zdemo_abap_fli, "Structure based on the line type of a database table
-         g TYPE string_table,   "Table type
-       END OF struc_type.
-DATA demo_struc_1 TYPE struc_type.
+TYPES: BEGIN OF flat_struc_type,
+         num    TYPE i,              "Built-in ABAP types
+         packed TYPE p LENGTH 16 DECIMALS 14,
+         text   TYPE c LENGTH 20,
+         date   TYPE d,
+         land   TYPE land1,          "DDIC data elements
+         ts     TYPE timestampl,
+       END OF flat_struc_type.
+DATA struc_1 TYPE flat_struc_type.
 
-"Creating a type description object using RTTC method
-"Using the get method, you can create the type description object
+"Creating a reference type dynamically using a type description object
+"Using the 'get' method, you can create the type description object
 "dynamically based on a component table. The component table is
 "of type abap_component_tab. In this example, the component table
 "is created inline.
 DATA(tdo_struc_1) = cl_abap_structdescr=>get(
     VALUE #(
-      ( name = 'A' type = cl_abap_elemdescr=>get_string( ) )
-      ( name = 'B' type = cl_abap_elemdescr=>get_i( ) )
-      ( name = 'C' type = cl_abap_elemdescr=>get_c( 5 ) )
-      ( name = 'D' type = cl_abap_elemdescr=>get_p( p_length = 4 p_decimals = 3 ) )
-      ( name = 'E' type = CAST cl_abap_datadescr( cl_abap_typedescr=>describe_by_name( 'LAND1' ) ) )
-      ( name = 'F' type = CAST cl_abap_datadescr( cl_abap_typedescr=>describe_by_name( 'ZDEMO_ABAP_FLI' ) ) )
-      ( name = 'G' type = CAST cl_abap_datadescr( cl_abap_typedescr=>describe_by_name( 'STRING_TABLE' ) ) ) ) ).
+      ( name = 'NUM' type = cl_abap_elemdescr=>get_i( ) )
+      ( name = 'PACKED' type = cl_abap_elemdescr=>get_p( p_length = 16 p_decimals = 14 ) )
+      ( name = 'TEXT' type = cl_abap_elemdescr=>get_c( 20 ) )
+      ( name = 'DATE' type = cl_abap_elemdescr=>get_d( ) )
+      ( name = 'LAND' type = CAST cl_abap_datadescr( cl_abap_typedescr=>describe_by_name( 'LAND1' ) ) )
+      ( name = 'TS' type = CAST cl_abap_datadescr( cl_abap_typedescr=>describe_by_name( 'TIMESTAMPL' ) ) )
+       ) ).
 
-"Creating a structured data object dynamically using a type description object
-DATA dref_struc TYPE REF TO data.
+"Creating a data reference variable dynamically using a type description object
 CREATE DATA dref_struc TYPE HANDLE tdo_struc_1.
 
-ASSERT demo_struc_1 = dref_struc->*.
+"Getting type information and checking type compatibility
+DATA(tdo_for_dref_struc_1) = CAST cl_abap_structdescr( cl_abap_typedescr=>describe_by_data( dref_struc->* ) ).
+DATA(applies_to_struc_1) = tdo_for_dref_struc_1->applies_to_data( struc_1 ).
+ASSERT applies_to_struc_1 = abap_true.
 
-"Excursion
-"The previous example shows the use of cl_abap_structdescr=>get to create a
-"type description object. The following examples show the creation based on
-"other methods/different casts getting type description objects.
-TYPES ty_struc TYPE zdemo_abap_carr.
-DATA demo_struc_2 TYPE zdemo_abap_carr.
-DATA(tdo_struc_2) = CAST cl_abap_datadescr( cl_abap_typedescr=>describe_by_data( demo_struc_2 ) ).
+*&---------------------------------------------------------------------*
+*& Creating a structured type and data object dynamically
+*& Deep structure
+*&---------------------------------------------------------------------*
+
+"A structured type and data object such as the following shall be created
+"dynamically using a type description object.
+TYPES: BEGIN OF deep_struc_type,
+         num          TYPE i,              "Built-in ABAP types
+         str          TYPE string,
+         flight_struc TYPE zdemo_abap_fli, "Structure based on the line type of a database table
+         string_tab   TYPE string_table,   "Global table type
+         local_tab    TYPE TABLE OF flat_struc_type WITH EMPTY KEY, "Table type based on local structured type
+       END OF deep_struc_type.
+DATA struc_2 TYPE deep_struc_type.
+
+"Creating a reference type dynamically using a type description object
+DATA(tdo_struc_2) = cl_abap_structdescr=>get(
+    VALUE #(
+      ( name = 'NUM' type = cl_abap_elemdescr=>get_i( ) )
+      ( name = 'STR' type = cl_abap_elemdescr=>get_string( ) )
+      ( name = 'FLIGHT_STRUC' type = CAST cl_abap_datadescr( cl_abap_typedescr=>describe_by_name( 'ZDEMO_ABAP_FLI' ) ) )
+      ( name = 'STRING_TAB' type = CAST cl_abap_datadescr( cl_abap_typedescr=>describe_by_name( 'STRING_TABLE' ) ) )
+      ( name = 'LOCAL_TAB' type = CAST cl_abap_datadescr( cl_abap_tabledescr=>get(
+                                            p_line_type  = CAST cl_abap_structdescr( cl_abap_tabledescr=>describe_by_name( 'FLAT_STRUC_TYPE' ) )
+                                            p_table_kind = cl_abap_tabledescr=>tablekind_std
+                                            p_unique     = cl_abap_typedescr=>false
+                                            p_key_kind   = cl_abap_tabledescr=>keydefkind_empty ) ) ) ) ).
+
+"Creating a data reference variable dynamically using a type description object
 CREATE DATA dref_struc TYPE HANDLE tdo_struc_2.
-ASSERT demo_struc_2 = dref_struc->*.
-DATA(tdo_struc_3) = CAST cl_abap_structdescr( cl_abap_typedescr=>describe_by_name( 'TY_STRUC' ) ).
-CREATE DATA dref_struc TYPE HANDLE tdo_struc_3.
+
+"Getting type information and checking type compatibility
+DATA(tdo_for_dref_struc_2) = CAST cl_abap_structdescr( cl_abap_typedescr=>describe_by_data( dref_struc->* ) ).
+DATA(applies_to_struc_2) = tdo_for_dref_struc_2->applies_to_data( struc_2 ).
+ASSERT applies_to_struc_2 = abap_true.
+
+*&---------------------------------------------------------------------*
+*& Excursions: Further methods of class cl_abap_structdescr
+*&---------------------------------------------------------------------*
+
+"The following examples cover a selection. For more information, refer
+"to the class documentation.
+
+"---- 'describe_by_data' method ----
+"To get the underlying type's type description object.
+DATA some_struct TYPE zdemo_abap_carr.
+DATA(tdo_struc_descr_by_data) = cl_abap_structdescr=>describe_by_data( some_struct ).
+"Note: To use it with the CREATE DATA ... TYPE HANDLE ... statement, a cast is
+"required.
+DATA(cast_tdo_struc_descr_by_data) = CAST cl_abap_datadescr( tdo_struc_descr_by_data ).
+CREATE DATA dref_struc TYPE HANDLE cast_tdo_struc_descr_by_data.
+
+"---- 'describe_by_name' method ----
+"To get the type description object based on a type passed by relative or absolute name
+DATA(tdo_struc_descr_by_name) = cl_abap_structdescr=>describe_by_name( 'ZDEMO_ABAP_CARR' ).
+DATA(cast_tdo_struc_descr_by_name) = CAST cl_abap_datadescr( tdo_struc_descr_by_name ).
+CREATE DATA dref_struc TYPE HANDLE cast_tdo_struc_descr_by_name.
+
+"---- 'describe_by_data_ref' method ----
+"To get the underlying type's type description object, passed as reference.
+DATA data_ref TYPE REF TO data.
+data_ref = NEW zdemo_abap_flsch( carrid = 'LH' ).
+DATA(tdo_struc_descr_by_data_ref) = cl_abap_structdescr=>describe_by_data_ref( data_ref ).
+DATA(cast_tdo_struc_desc_by_dref) = CAST cl_abap_datadescr( tdo_struc_descr_by_data_ref ).
+CREATE DATA dref_struc TYPE HANDLE cast_tdo_struc_desc_by_dref.
+
+"---- 'get_bdef_derived_type' method ----
+"To get a type description object for a BDEF derived type.
+DATA struc_der_type_create TYPE STRUCTURE FOR CREATE zdemo_abap_rap_ro_m.
+DATA(tdo_struc_bdef_derived_type) = cl_abap_structdescr=>get_bdef_derived_type(
+                                       p_entity   = 'ZDEMO_ABAP_RAP_RO_M'
+                                       p_kind     = abp_bdef_derived_type-create ).
+
+CREATE DATA dref_struc TYPE HANDLE tdo_struc_bdef_derived_type.
+
+"Getting type information and checking type compatibility
+DATA(tdo_for_dref_struc_der_type) = CAST cl_abap_structdescr( cl_abap_typedescr=>describe_by_data( dref_struc->* ) ).
+DATA(applies_to_struc_der_type) = tdo_for_dref_struc_der_type->applies_to_data( struc_der_type_create ).
+ASSERT applies_to_struc_der_type = abap_true.
 ```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
@@ -4625,14 +4842,11 @@ CREATE DATA dref_struc TYPE HANDLE tdo_struc_3.
 #### Creating Table Types and Internal Tables Dynamically 
 
 ```abap
-*&---------------------------------------------------------------------*
-*& Creating internal tables dynamically using type description objects
-*&---------------------------------------------------------------------*
-
 DATA dref_itab TYPE REF TO data.
 
 *&---------------------------------------------------------------------*
-*& Internal table with elementary line type and standard table key
+*& Creating table type and internal table with elementary line type and
+*& standard table key
 *&---------------------------------------------------------------------*
 
 "An internal table type such as the following shall be created dynamically
@@ -4652,17 +4866,13 @@ DATA(tdo_tab_1) = cl_abap_tabledescr=>get(
 CREATE DATA dref_itab TYPE HANDLE tdo_tab_1.
 
 "Getting type information and checking type compatibility
-DATA(tdo_1a) = CAST cl_abap_tabledescr( cl_abap_typedescr=>describe_by_data( dref_itab->* ) ).
-DATA(tdo_1b) = CAST cl_abap_tabledescr( cl_abap_typedescr=>describe_by_data( itab_1 ) ).
-
-DATA(applies_1a) = tdo_1a->applies_to_data_descr( tdo_1b ).
-DATA(applies_1b) = tdo_1a->applies_to_data( itab_1 ).
-
-ASSERT applies_1a = abap_true.
-ASSERT applies_1b = abap_true.
+DATA(tdo_1) = CAST cl_abap_tabledescr( cl_abap_typedescr=>describe_by_data( dref_itab->* ) ).
+DATA(applies_1) = tdo_1->applies_to_data( itab_1 ).
+ASSERT applies_1 = abap_true.
 
 *&---------------------------------------------------------------------*
-*& Internal table with structured line type and custom table keys
+*& Creating table type and internal table with structured line type and
+*& custom table keys
 *&---------------------------------------------------------------------*
 
 "Another internal table type for which more parameter specifications
@@ -4686,17 +4896,12 @@ DATA(tdo_tab_2) = cl_abap_tabledescr=>get(
 CREATE DATA dref_itab TYPE HANDLE tdo_tab_2.
 
 "Getting type information and checking type compatibility
-DATA(tdo_2a) = CAST cl_abap_tabledescr( cl_abap_typedescr=>describe_by_data( dref_itab->* ) ).
-DATA(tdo_2b) = CAST cl_abap_tabledescr( cl_abap_typedescr=>describe_by_data( itab_2 ) ).
-
-DATA(applies_2a) = tdo_2a->applies_to_data_descr( tdo_2b ).
-DATA(applies_2b) = tdo_2a->applies_to_data( itab_2 ).
-
-ASSERT applies_2a = abap_true.
-ASSERT applies_2b = abap_true.
+DATA(tdo_2) = CAST cl_abap_tabledescr( cl_abap_typedescr=>describe_by_data( dref_itab->* ) ).
+DATA(applies_2) = tdo_2->applies_to_data( itab_2 ).
+ASSERT applies_2 = abap_true.
 
 *&---------------------------------------------------------------------*
-*& Internal table with structured line type containing custom components
+*& Creating table type and internal table containing custom components
 *& and custom table key
 *&---------------------------------------------------------------------*
 
@@ -4733,15 +4938,11 @@ DATA(tdo_3b) = CAST cl_abap_tabledescr( cl_abap_typedescr=>describe_by_data( ita
 DATA(line_type_3b) = CAST cl_abap_structdescr( tdo_3b->get_table_line_type( ) ).
 DATA(keys_3b) = tdo_3b->get_keys( ).
 
-
-DATA(applies_3a) = tdo_3a->applies_to_data_descr( tdo_3b ).
-DATA(applies_3b) = tdo_3a->applies_to_data( itab_3 ).
-
-ASSERT applies_3a = abap_true.
-ASSERT applies_3b = abap_true.
+DATA(applies_3) = tdo_3a->applies_to_data( itab_3 ).
+ASSERT applies_3 = abap_true.
 
 *&---------------------------------------------------------------------*
-*& Internal table with structured line type containing custom components
+*& Creating table type and internal table containing custom components
 *& and custom table key (primary and secondary table key)
 *&---------------------------------------------------------------------*
 
@@ -4801,14 +5002,11 @@ DATA(tdo_4b) = CAST cl_abap_tabledescr( cl_abap_typedescr=>describe_by_data( ita
 DATA(line_type_4b) = CAST cl_abap_structdescr( tdo_4b->get_table_line_type( ) ).
 DATA(keys_4b) = tdo_4b->get_keys( ).
 
-DATA(applies_4a) = tdo_4a->applies_to_data_descr( tdo_4b ).
-DATA(applies_4b) = tdo_4a->applies_to_data( itab_4 ).
-
-ASSERT applies_4a = abap_true.
-ASSERT applies_4b = abap_true.
+DATA(applies_4) = tdo_4a->applies_to_data( itab_4 ).
+ASSERT applies_4 = abap_true.
 
 *&---------------------------------------------------------------------*
-*& Internal table with structured line type containing custom components
+*& Creating table type and internal table containing custom components
 *& and custom table key (primary and secondary table key), including
 *& alias names
 *&---------------------------------------------------------------------*
@@ -4851,31 +5049,53 @@ DATA(line_type_5b) = CAST cl_abap_structdescr( tdo_5b->get_table_line_type( ) ).
 DATA(keys_5b) = tdo_5b->get_keys( ).
 DATA(key_aliases_5b) = tdo_5b->get_key_aliases( ).
 
-DATA(applies_5a) = tdo_5a->applies_to_data_descr( tdo_5b ).
-DATA(applies_5b) = tdo_5a->applies_to_data( itab_5 ).
-
-ASSERT applies_5a = abap_true.
-ASSERT applies_5b = abap_true.
+DATA(applies_5) = tdo_5a->applies_to_data( itab_5 ).
+ASSERT applies_5 = abap_true.
 
 *&---------------------------------------------------------------------*
-*& Creating internal tables dynamically using type description objects
-*& based on existing table types and internal tables
+*& Excursions: Further methods of class cl_abap_tabledescr
 *&---------------------------------------------------------------------*
 
-"The previous examples show the use of cl_abap_tabledescr=>get* methods
-"to create type description objects. The following examples show the
-"creation based on other methods/different casts getting type description
-"objects.
-TYPES ty_str_tab TYPE TABLE OF string WITH EMPTY KEY.
-DATA itab_6 TYPE string_table.
+"The following examples cover a selection. For more information, refer
+"to the class documentation.
 
-"Creating a type description object based on an existing table type
-DATA(tdo_tab_6) = CAST cl_abap_datadescr( cl_abap_typedescr=>describe_by_name( 'TY_STR_TAB' ) ).
-CREATE DATA dref_itab TYPE HANDLE tdo_tab_6.
+"---- 'describe_by_data' method ----
+"To get the underlying type's type description object.
+DATA some_table TYPE TABLE OF zdemo_abap_carr WITH EMPTY KEY.
+DATA(tdo_tab_descr_by_data) = cl_abap_typedescr=>describe_by_data( some_table ).
+"Note: To use it with the CREATE DATA ... TYPE HANDLE ... statement, a cast is
+"required.
+DATA(cast_tdo_tab_descr_by_data) = CAST cl_abap_datadescr( tdo_tab_descr_by_data ).
+CREATE DATA dref_itab TYPE HANDLE cast_tdo_tab_descr_by_data.
 
-"Creating a type description object based on an existing internal table
-DATA(tdo_tab_7) = CAST cl_abap_tabledescr( cl_abap_typedescr=>describe_by_data( itab_4 ) ).
-CREATE DATA dref_itab TYPE HANDLE tdo_tab_7.
+"---- 'describe_by_name' method ----
+"To get the type description object based on a type passed by relative or absolute name
+DATA(tdo_tab_descr_by_name) = cl_abap_tabledescr=>describe_by_name( 'ZDEMO_ABAP_CARR' ).
+DATA(cast_tdo_tab_descr_by_name) = CAST cl_abap_datadescr( tdo_tab_descr_by_name ).
+CREATE DATA dref_itab TYPE HANDLE cast_tdo_tab_descr_by_name.
+
+"---- 'describe_by_data_ref' method ----
+"To get the underlying type's type description object, passed as reference.
+DATA data_ref TYPE REF TO data.
+TYPES ty_tab type table of zdemo_abap_carr WITH EMPTY KEY.
+data_ref = NEW ty_tab( ( carrid = 'LH' ) ( carrid = 'AA' ) ).
+DATA(tdo_tab_descr_by_data_ref) = cl_abap_tabledescr=>describe_by_data_ref( data_ref ).
+DATA(cast_tdo_tab_desc_by_dref) = CAST cl_abap_datadescr( tdo_tab_descr_by_data_ref ).
+CREATE DATA dref_itab TYPE HANDLE cast_tdo_tab_desc_by_dref.
+
+"---- 'get_bdef_derived_type' method ----
+"To get a type description object for a BDEF derived type.
+DATA tab_der_type_create TYPE TABLE FOR CREATE zdemo_abap_rap_ro_m.
+DATA(tdo_tab_bdef_derived_type) = cl_abap_tabledescr=>get_bdef_derived_type(
+                                       p_entity   = 'ZDEMO_ABAP_RAP_RO_M'
+                                       p_kind     = abp_bdef_derived_type-create ).
+
+CREATE DATA dref_itab TYPE HANDLE tdo_tab_bdef_derived_type.
+
+"Getting type information and checking type compatibility
+DATA(tdo_for_dref_tab_der_type) = CAST cl_abap_tabledescr( cl_abap_typedescr=>describe_by_data( dref_itab->* ) ).
+DATA(applies_to_tab_der_type) = tdo_for_dref_tab_der_type->applies_to_data( tab_der_type_create ).
+ASSERT applies_to_tab_der_type = abap_true.
 ```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
@@ -4883,37 +5103,174 @@ CREATE DATA dref_itab TYPE HANDLE tdo_tab_7.
 #### Creating Reference Types and Data Reference Variables Dynamically 
 
 ```abap
-"A reference type and variable such as the following shall be created 
-"using type description objects.
-TYPES ty_ref2string TYPE REF TO string.
-DATA dref_string TYPE REF TO string.
-
 DATA dref_ref TYPE REF TO data.
 
-"Creating the type dynamically (creating a type description object)
+*&---------------------------------------------------------------------*
+*& Creating a data reference with elementary type (built-in ABAP type)
+*&---------------------------------------------------------------------*
+
+"A reference type and variable such as the following shall be created
+"using a type description object.
+TYPES ty_ref_str TYPE REF TO string.
+DATA dref_1a TYPE ty_ref_str.
+DATA dref_1b TYPE REF TO string.
+
+"Creating a reference type dynamically using a type description object
 DATA(tdo_ref_1) = cl_abap_refdescr=>get( cl_abap_elemdescr=>get_string( ) ).
 
 "Creating a data reference variable dynamically using a type description object
 CREATE DATA dref_ref TYPE HANDLE tdo_ref_1.
 
-dref_ref = REF string( `hi` ).
-dref_string = REF string( `hi` ).
-ASSERT dref_string = dref_ref.
-ASSERT dref_string->* = dref_ref->*.
+"Getting type information and checking type compatibility
+DATA(tdo_for_dref_ref_1) = CAST cl_abap_refdescr( cl_abap_typedescr=>describe_by_data( dref_ref->* ) ).
+DATA(applies_to_1a) = tdo_for_dref_ref_1->applies_to_data( dref_1a ).
+DATA(applies_to_1b) = tdo_for_dref_ref_1->applies_to_data( dref_1b ).
+ASSERT applies_to_1a = abap_true.
+ASSERT applies_to_1b = abap_true.
 
-"Excursion
-"The previous examples show the use of cl_abap_refdescr=>get to create
-"a type description object. The following examples show the creation based
-"on other methods/different casts getting type description objects.
-DATA(tdo_ref_2) = CAST cl_abap_datadescr( cl_abap_typedescr=>describe_by_name( 'TY_REF2STRING' ) ).
+*&---------------------------------------------------------------------*
+*& Creating a data reference with elementary type (DDIC data element)
+*&---------------------------------------------------------------------*
+
+"A reference type and variable such as the following shall be created
+"using a type description object.
+TYPES ty_ref_ts TYPE REF TO timestampl.
+DATA dref_2a TYPE ty_ref_ts.
+DATA dref_2b TYPE REF TO timestampl.
+
+"Creating a reference type dynamically using a type description object
+DATA(tdo_ref_2) = cl_abap_refdescr=>get( cl_abap_typedescr=>describe_by_name( 'TIMESTAMPL' ) ).
+
+"Creating a data reference variable dynamically using a type description object
 CREATE DATA dref_ref TYPE HANDLE tdo_ref_2.
 
-DATA(tdo_ref_3) = CAST cl_abap_refdescr( cl_abap_typedescr=>describe_by_data( dref_string ) ).
+"Getting type information and checking type compatibility
+DATA(tdo_for_dref_ref_2) = CAST cl_abap_refdescr( cl_abap_typedescr=>describe_by_data( dref_ref->* ) ).
+DATA(applies_to_2a) = tdo_for_dref_ref_2->applies_to_data( dref_2a ).
+DATA(applies_to_2b) = tdo_for_dref_ref_2->applies_to_data( dref_2b ).
+ASSERT applies_to_2a = abap_true.
+ASSERT applies_to_2b = abap_true.
+
+*&---------------------------------------------------------------------*
+*& Creating a data reference with structured type
+*&---------------------------------------------------------------------*
+
+"A reference type and variable such as the following shall be created
+"using a type description object.
+TYPES ty_ref_db TYPE REF TO zdemo_abap_carr.
+DATA dref_3a TYPE ty_ref_db.
+DATA dref_3b TYPE REF TO zdemo_abap_carr.
+
+"Creating a reference type dynamically using a type description object
+"The example uses the structured type of a demo database table.
+DATA(tdo_ref_3) = cl_abap_refdescr=>get( cl_abap_typedescr=>describe_by_name( 'ZDEMO_ABAP_CARR' ) ).
+
+"Creating a data reference variable dynamically using a type description object
 CREATE DATA dref_ref TYPE HANDLE tdo_ref_3.
 
-"get_by_name method
-DATA(tdo_ref_4) = cl_abap_refdescr=>get_by_name( 'STRING' ).
+"Getting type information and checking type compatibility
+DATA(tdo_for_dref_ref_3) = CAST cl_abap_refdescr( cl_abap_typedescr=>describe_by_data( dref_ref->* ) ).
+DATA(applies_to_3a) = tdo_for_dref_ref_3->applies_to_data( dref_3a ).
+DATA(applies_to_3b) = tdo_for_dref_ref_3->applies_to_data( dref_3b ).
+ASSERT applies_to_3a = abap_true.
+ASSERT applies_to_3b = abap_true.
+
+*&---------------------------------------------------------------------*
+*& Creating a data reference with table type
+*&---------------------------------------------------------------------*
+
+"A reference type and variable such as the following shall be created
+"using a type description object.
+"The example uses a table type based on a locally declared structured type.
+TYPES: BEGIN OF struc_type,
+         comp1 TYPE i,               "Built-in ABAP types
+         comp2 TYPE c LENGTH 5,
+         comp3 TYPE p LENGTH 16 DECIMALS 14,
+         comp4 TYPE land1,           "DDIC data element
+         comp5 TYPE zdemo_abap_carr, "Structure based on the line type of a database table
+         comp6 TYPE string_table,    "Table type
+       END OF struc_type,
+       tab_type TYPE TABLE OF struc_type WITH EMPTY KEY.
+
+TYPES ty_ref_tab TYPE REF TO tab_type.
+DATA dref_4a TYPE ty_ref_tab.
+DATA dref_4b TYPE REF TO tab_type.
+
+"Creating a reference type dynamically using a type description object
+DATA(tdo_ref_4) = cl_abap_refdescr=>get( cl_abap_typedescr=>describe_by_name( 'TAB_TYPE' ) ).
+
+"Creating a data reference variable dynamically using a type description object
 CREATE DATA dref_ref TYPE HANDLE tdo_ref_4.
+
+"Getting type information and checking type compatibility
+DATA(tdo_for_dref_ref_4) = CAST cl_abap_refdescr( cl_abap_typedescr=>describe_by_data( dref_ref->* ) ).
+DATA(applies_to_4a) = tdo_for_dref_ref_4->applies_to_data( dref_4a ).
+DATA(applies_to_4b) = tdo_for_dref_ref_4->applies_to_data( dref_4b ).
+ASSERT applies_to_4a = abap_true.
+ASSERT applies_to_4b = abap_true.
+
+*&---------------------------------------------------------------------*
+*& Excursions: Further methods of class cl_abap_refdescr
+*&---------------------------------------------------------------------*
+
+"The following examples cover a selection. For more information, refer
+"to the class documentation.
+
+"---- 'get' method ----
+"To create or reuse reference types, which are passed as type
+"description objects.
+"Note: There is also the 'create' method. However, the 'get' method is
+"the recommended method.
+DATA(tdo_ref_int) = cl_abap_elemdescr=>get_i( ).
+DATA(tdo_ref_get_a) = cl_abap_refdescr=>get( tdo_ref_int ).
+CREATE DATA dref_ref TYPE HANDLE tdo_ref_get_a.
+
+"Object references can also be used
+DATA(tdo_cl_abap_typedescr) = cl_abap_typedescr=>describe_by_name( 'CL_ABAP_TYPEDESCR' ).
+DATA(tdo_ref_get_b) = cl_abap_refdescr=>get( tdo_cl_abap_typedescr ).
+CREATE DATA dref_ref TYPE HANDLE tdo_ref_get_b.
+
+"---- 'get_by_name' method ----
+"To create reference types, which are passed as name.
+"Note: There is also the 'create_by_name' method. However, the 'get_by_name'
+"method is the recommended method.
+DATA(tdo_ref_get_by_name) = cl_abap_refdescr=>get_by_name( 'TIMESTAMP' ).
+CREATE DATA dref_ref TYPE HANDLE tdo_ref_get_by_name.
+
+"---- 'describe_by_data' method ----
+"To get a reference to the underlying type's type description object.
+DATA some_number TYPE int8.
+DATA(tdo_ref_descr_by_data) = cl_abap_refdescr=>describe_by_data( some_number ).
+DATA(cast_tdo_ref_descr_by_data) = CAST cl_abap_datadescr( tdo_ref_descr_by_data ).
+CREATE DATA dref_ref TYPE HANDLE cast_tdo_ref_descr_by_data.
+
+"---- 'describe_by_data_ref' method ----
+"To get a reference to the underlying type's type description object, passed as
+"reference.
+DATA some_data TYPE REF TO data.
+some_data = NEW i( 123 ).
+DATA(tdo_ref_descr_by_data_ref) = cl_abap_refdescr=>describe_by_data_ref( some_data ).
+DATA(cast_tdo_ref_descr_by_data_ref) = CAST cl_abap_datadescr( tdo_ref_descr_by_data ).
+CREATE DATA dref_ref TYPE HANDLE cast_tdo_ref_descr_by_data_ref.
+
+"---- 'describe_by_name' method ----
+"To get the type description object based on a type passed by relative or absolute name
+DATA(tdo_ref_descr_by_name) = cl_abap_refdescr=>describe_by_name( 'TIMESTAMPL'  ).
+DATA(cast_tdo_ref_descr_by_name) = CAST cl_abap_datadescr( tdo_ref_descr_by_name ).
+CREATE DATA dref_ref TYPE HANDLE cast_tdo_ref_descr_by_name.
+
+"---- 'describe_by_object_ref' method ----
+"To get the type description object based on an an object type
+DATA(oref) = NEW cl_system_uuid( ).
+DATA(tdo_ref_descr_by_ntame) = cl_abap_refdescr=>describe_by_object_ref( oref ).
+
+"---- 'get_ref_to_data' method ----
+"To get the type description object for the type REF TO DATA
+DATA(tdo_ref_get_ref_to_data) = cl_abap_refdescr=>get_ref_to_data( ).
+
+"---- 'get_data_type_kind' method ----
+"To get the type description object for the type REF TO OBJECT
+DATA(tdo_ref_get_ref_to_object) = cl_abap_refdescr=>get_ref_to_object( ).
 ```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
