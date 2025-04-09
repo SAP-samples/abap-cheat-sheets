@@ -14,7 +14,7 @@
     - [SELECTION-SCREEN](#selection-screen)
       - [Variants of the SELECTION-SCREEN Statement](#variants-of-the-selection-screen-statement)
     - [Calling Selection Screens](#calling-selection-screens)
-    - [Excursion: SUBMIT](#excursion-submit)
+  - [Excursion: SUBMIT Statements](#excursion-submit-statements)
   - [ABAP Statements for Classic Lists](#abap-statements-for-classic-lists)
     - [Creating Lists](#creating-lists)
     - [Reading and Modifying in Lists](#reading-and-modifying-in-lists)
@@ -105,130 +105,645 @@ Selection screens can be created by using special ABAP statements in the global 
 - The parameter name can be up to eight characters long.
 - Multiple additions are available to define the appearance (e.g. `AS CHECKBOX`) or influence the user interface (e.g. `OBLIGATORY`).
 
+The following table includes code snippets with a selection of available syntax options:
+
 > **💡 Note**<br>
-> The parameter name is a technical name. You probably do not want to display technical names on the user interface. You can define proper names ([text elements](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abentext_element_glosry.htm)) in the ABAP Editor, e.g. for translation purposes.
+> - Various combinations of multiple additions are possible with `PARAMETERS` statement, and some are not. See the ABAP Keyword Documentation for details.
+> - To try out the code examples, you can create a demo executable program, copy and paste the code snippets, and run the programs using F8. They are designed to output content using classic lists.
+> - The code snippets anticipate topics outlined further down, for example, event blocks and `WRITE` statements.
 
-The following code snippets provide a commented selection of available syntax options.
-Note that various combinations of multiple additions are possible, and some are not. See the ABAP Keyword Documentation for details.
+<table>
 
-```abap
-"-------------------------- Type options --------------------------
+<tr>
+<td> Subject/Additions </td> <td> Notes </td> <td> Code Snippet </td>
+</tr>
 
-"Referring to a built-in type with TYPE 
-"In this case, a variable length character string can be inserted in the 
-"generated input field. Note the LOWER CASE addition further down.
-PARAMETERS pa TYPE string.
+<tr>
+<td> 
 
-"Referring to an existing data object with the LIKE addition
-DATA dobj TYPE i.
-PARAMETERS pb LIke dobj.
+Type specification options<br>
+Additions `TYPE` and `LIKE`
 
-"Reference to a data type from the ABAP Dictionary
-"All screen-relvant properties of that type are adopted, 
-"which is the case in the following example (spfli is an SAP-delivered 
-"demo table). A callable field help and input help is created.
-"Note that there is no automatic value check. For that, use the 
-"addition VALUE CHECK.
-PARAMETERS pc LIKE spfli-carrid.
+ </td>
 
-"Dynamic spefication is possible, e.g. using a dynamic 
-"reference to a data type from the ABAP Dictionary after LIKE.
-"some_dobj in the example may be the name of a component of a database table, 
-"provided in capital letters.
-DATA some_dobj TYPE c LENGTH 50.
-PARAMETERS pd LIKE (some_dobj).
+ <td> 
 
-"Length specifications
-"Similar to declarations with DATA, the length can be specified for data
-"types with generic length (i.e. the types c, n, p, and x).
-PARAMETERS pe TYPE c LENGTH 1.
-PARAMETERS pf TYPE n LENGTH 5.
+- You can specify data types for parameters similar to `DATA` statements. 
+- This includes the `TYPE` and `LIKE` additions. Types requiring a length specification use the `TYPE ... LENGTH ...` additions.
+- Regarding the type `c`, there are syntax variants to specify the length and the type itself (such as leaving out the explicit type or length specification; length specification in parentheses). 
+- Note that without the `LOWER CASE` addition, inserted character-like values are transformed to uppercase.
+- For type `p`, you can specify the `DECIMALS` addition.
 
-"Specifications in which the length is specified in parentheses.
-"For better readability, specifying LENGTH explicitly is recommended.
-PARAMETERS pg(2) TYPE c.
+ </td>
+
+<td> 
+
+``` abap
+PROGRAM.
+
+"TYPE addition
+"The example uses a built-in ABAP type
+"Note the LOWER CASE addition further down.
+PARAMETERS p_str TYPE string.
+
+"LIKE addition
+"Referring to an existing data object
+DATA some_number TYPE i.
+PARAMETERS p_num LIKE some_number.
+
+"TYPE ... LENGTH for types that require a length specification
+"such as c, n, p, and x
+PARAMETERS p_clen10 TYPE c LENGTH 10.
+PARAMETERS p_nlen5 TYPE n LENGTH 5.
+
+"Length specification variants
+"The length can be specified in parentheses, however, specifying LENGTH
+"explicitly is recommended for better readability.
+PARAMETERS p_lenpar(3) TYPE c.
 "No length specified means LENGTH 1 by default
-PARAMETERS ph TYPE c.
+PARAMETERS p_wo_len TYPE c.
 "No explicit type specification means TYPE c by default
-PARAMETERS pi(40).
-PARAMETERS pj length 40.
+PARAMETERS p_wo_c_a(20).
+PARAMETERS p_wo_c_b LENGTH 20.
 "No explicit type and length specification means TYPE c LENGTH 1 by default
-PARAMETERS pk.
+PARAMETERS p_woclen.
 
-"-------------------------- Value options --------------------------
+START-OF-SELECTION.
 
-"DEFAULT: Defining a start value (can also be a data object instead of a literal)
-PARAMETERS pl TYPE i DEFAULT 12345.
+  WRITE / `Inserted values (note that inserted characters are capitalized):`.
+  SKIP.
+  WRITE / |p_str: "{ p_str }"|.
+  WRITE / |p_num: "{ p_num }"|.
+  WRITE / |p_clen10: "{ p_clen10 }"|.
+  WRITE / |p_nlen5: "{ p_nlen5 }"|.
+  WRITE / |p_lenpar: "{ p_lenpar }"|.
+  WRITE / |p_wo_len: "{ p_wo_len }"|.
+  WRITE / |p_wo_c_a: "{ p_wo_c_a }"|.
+  WRITE / |p_wo_c_b: "{ p_wo_c_b }"|.
+  WRITE / |p_woclen: "{ p_woclen }"|.
+``` 
 
-"LOWER CASE: Prevents the effect of capitalizing the entry made when the content
-"is transported to the data object
-PARAMETERS pm TYPE string DEFAULT `Hello World`.  "Value you insert will be capitalized.
-PARAMETERS pn TYPE string DEFAULT `Hello World` LOWER CASE.
+ </td>
+</tr>
 
-"Note: There are more additions available, e.g. for linking the parameter to search help, 
-"or checking against fixed values defined in the domain of the data type, and so on.
-"You can also perform your custom input checks. See the event block section below.
+<tr>
+<td> 
 
-"-------------------------- Screen options --------------------------
+Parameters using ABAP Dicitionary input helps
 
-"OBLIGATORY: Declaring the input field as a required field
-"If there is no entry, the program cannot proceed when choosing Execute.
-"A message is displayed.
-PARAMETERS po TYPE string OBLIGATORY.
+ </td>
 
-"NO-DISPLAY: Hiding the input field on the selection screen
-"A value can be supplied when calling the program with SUBMIT and the WITH addition.
-"Note that with the NO-DISPLAY addition, the parameter can have any data types except
-"for reference/enumerated types, unlike in the other additions which require flat
-"types (except type string).
-PARAMETERS pp TYPE string NO-DISPLAY.
+ <td> 
 
-"VISIBLE LENGTH: Defining the visible length of the field
-PARAMETERS pq TYPE c LENGTH 5 VISIBLE LENGTH 3.
+- When referring to data types from the ABAP Dictionary, all screen-relvant properties of that type are adopted.
+- If the referred type includes input help functionality, a callable field help is automatically created.
+- The input helps inlcude search helps, check tables, fixed values and calendar/clock helps. Find more information [here](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenabap_dynpros_value_help_auto.htm).
+- Note that there is no automatic value check. For that, use the `VALUE CHECK` addition.
+- The code snippet includes input helps from a DDIC structure of an ABAP Keyword Documentation example.
 
-"AS CHECKBOX: Displaying input field as checkbox
-"Type c and length 1 is expected, but the explicit length specification is not allowed.
-"The checkbox is selected if the value has the value X or x.
-PARAMETERS pr AS CHECKBOX.        "Implicit type c
-PARAMETERS ps TYPE c AS CHECKBOX. "Explicit type specification (but no explicit length)
+ </td>
 
-"RADIOBUTTON GROUP: Defining a radio button group for parameters
-"Note:
-"- Group name can have a maximum of four characters
-"- Regarding the data type, the same applies as for AS CHECKBOX
-"- Only one parameter can be defined with the DEFAULT addition
-"- If DEFAULT is not specified, the first parameter of the group is set to the value X
-"- Here, a chained statement is used.
-PARAMETERS: prb1 RADIOBUTTON GROUP rbgr,
-            prb2 type c RADIOBUTTON GROUP rbgr,       "Explicit type specification
-            prb3 RADIOBUTTON GROUP rbgr DEFAULT 'X'.  "Select this radiobutton by default
+<td> 
 
-"AS LISTBOX VISIBLE LENGTH: Creating a dropdown list box
-"You can use the function module VRM_SET_VALUES by passing a suitable list at the 
-"events AT SELECTION-SCREEN OUTPUT or AT SELECTION-SCREEN ON VALUE-REQUEST. 
-"See the executable example.
-PARAMETERS pt TYPE i AS LISTBOX VISIBLE LENGTH 10.
+``` abap
+PROGRAM.
 
-"-------------------------- Assigning function codes --------------------------
+"carrier1 is based on DDIC data element demof4de, which has the search help
+"demo_f4_de assigned
+PARAMETERS p_carr1 TYPE demof4help-carrier1.
 
-"The AS CHECKBOX, RADIOBUTTON GROUP, AS LISTBOX additions can be combined
-"with the addition USER-COMMAND. That means, on selection, the event
-"AT SELECTION-SCREEN is raised and you can evaluate the function code there.
-"Note: To enable it, include the statement 'TABLES sscrfields.' in the code.
-"When the button is clicked, the event AT SELECTION-SCREEN is raised and the
-"function code ('cmd', 'rbcm' in the example) is passed to the 'ucomm' component
-"in the interface work area 'sscrfields' which can be evaluated and reacted upon
-"accordingly. See the executable example.
-PARAMETERS pu AS CHECKBOX USER-COMMAND cmd.
-"For radio buttons, the addition can be specified for the first selection 
-"parameter in a radio button group.
-PARAMETERS: pv RADIOBUTTON GROUP grp USER-COMMAND rbcm,
-            pw RADIOBUTTON GROUP grp.
+"carrier2 is assigned to check table scarr, which is assigned to the
+"search help h_scarr
+PARAMETERS p_carr2 TYPE demof4help-carrier2.
 
-"Note: The MODIF ID addition is possible for PARAMETERS and 
-"SELECT-OPTIONS. This is also true for SELECTION-SCREEN statements. See
-"the details there.              
-```
+"DDIC data element that has the search help s_carrier_id assigned
+PARAMETERS p_carr3 TYPE s_carr_id.
+
+"connid is assigned to the search help demo_f4_field
+PARAMETERS p_connid TYPE demof4help-connid.
+
+"Component of demo database table that specifies a foreign key
+PARAMETERS p_plane TYPE sflight-planetype.
+
+"Fixed values as input help
+PARAMETERS p_num TYPE demo_numbers.
+
+"ABAP Dictionary types such as DATS and TIMS have
+"a predefined input help (calendar and clock).
+PARAMETERS p_dats TYPE dats.
+PARAMETERS p_tims TYPE tims.
+
+START-OF-SELECTION.
+
+  WRITE / `Inserted values:`.
+  SKIP.
+  WRITE / |p_carr1: "{ p_carr1 }"|.
+  WRITE / |p_carr2: "{ p_carr2 }"|.
+  WRITE / |p_carr3: "{ p_carr3 }"|.
+  WRITE / |p_connid: "{ p_connid }"|.
+  WRITE / |p_plane: "{ p_plane }"|.
+  WRITE / |p_num: "{ p_num }"|.
+  WRITE / |p_dats: "{ p_dats }"|.
+  WRITE / |p_tims: "{ p_tims }"|.
+``` 
+
+ </td>
+</tr>
+
+
+<tr>
+<td> 
+
+Dynamically specifying the type<br>
+Addition `LIKE (...)`
+
+ </td>
+
+ <td> 
+
+- The dynamic specification works with `LIKE` followed by a data object name in parentheses.
+- As name, a character-like data object that contains the name of a structure component in the ABAP Dictionary in uppercase letters.
+- The parameter is then of type `c` length 132, however, the properties such as length and input help are taken from the type specified in parentheses.
+
+ </td>
+
+<td> 
+
+``` abap
+PROGRAM.
+
+"In the example, the currently loaded text pool does not contain a selection text 
+"for the parameters. Here, the output field displays the field label from the
+"ABAP Dictionary.
+DATA some_dobj TYPE c LENGTH 30.
+PARAMETERS p_dyn1 LIKE (some_dobj).
+
+DATA comp TYPE c LENGTH 20.
+PARAMETERS p_dyn2 LIKE (comp).
+
+"Parameter on the screen with type c length 132
+"Here, no selection text is created for the example, and no field
+"label field can be referred to. The output field displays the text 
+"'Dynamic Parameter'.
+DATA another_dobj like some_dobj.
+PARAMETERS p_dyn3 LIKE (another_dobj).
+
+"Text field literal, however, its content is not evaluated.
+"Also here, the parameter on the screen is of type
+"c length 132.
+PARAMETERS p_dyn4 LIKE ('SPFLI-CARRID').
+
+INITIALIZATION.
+  some_dobj = 'SPFLI-CARRID'.
+  comp = 'SFLIGHT-PLANETYPE'.
+
+START-OF-SELECTION.
+
+  WRITE / `Inserted values:`.
+  SKIP.
+  WRITE / |p_dyn1: "{ p_dyn1 }"|.
+  WRITE / |p_dyn2: "{ p_dyn2 }"|.
+  WRITE / |p_dyn3: "{ p_dyn3 }"|.
+  WRITE / |p_dyn4: "{ p_dyn4 }"|.
+``` 
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+Specifying value options<br>
+Additions `DEFAULT`, `LOWER CASE`, `MATCHOCODE OBJECT`, `MEMORY ID`, `VALUE CHECK`
+
+ </td>
+
+ <td> 
+
+- `DEFAULT`: Defines a start value (can also be a data object instead of a literal)
+- `LOWER CASE`: Prevents the effect of capitalizing the entry made when the content is transported to the data object
+- `MATCHOCODE OBJECT`: Links an input field with a DDIC search help
+- `MEMORY ID`: Links an input field with an SPA/GPA parameter in the user memory, i.e. data objects in the user memory accessible by ABAP programs. When calling the selection screen, the input field receives the SPA/GPA parameter value if the `PARAMETERS`'s data object is initial after processing of the `AT SELECTION-SCREEN OUTPUT` event block. The SPA/GPA parameters are set using [`SET PARAMETER`](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapset_parameter.htm) and read using [`GET PARAMETER`](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapget_parameter.htm) statements. See the names of the parameters in the `TPARA` database table.
+- `VALUE CHECK`: Checks input against fixed values defined for the domain of a data type. It can only be used for DDIC data types. Checks are also available for data types being components of foreign key tables. It is recommended to specify the `VALUE CHECK` addition with the `OBLIGATORY` addition as the check is also applied in case of empty input fields.
+
+ </td>
+
+<td> 
+
+``` abap
+PROGRAM.
+
+*&---------------------------------------------------------------------*
+*& DEFAULT addition
+*&---------------------------------------------------------------------*
+
+PARAMETERS p_deflti TYPE i DEFAULT 12345.
+PARAMETERS p_deflts TYPE string DEFAULT `This is some demo text`.
+
+*&---------------------------------------------------------------------*
+*& LOWER CASE addition
+*&---------------------------------------------------------------------*
+
+PARAMETERS p_upper TYPE string DEFAULT `Hello World`.
+PARAMETERS p_lower TYPE string DEFAULT `Hello World` LOWER CASE.
+
+*&---------------------------------------------------------------------*
+*& MATCHCODE OBJECT addition
+*&---------------------------------------------------------------------*
+
+"The following example uses a search help of an ABAP Keyword Documentation example.
+PARAMETERS p_carr1 TYPE s_carr_id MATCHCODE OBJECT demo_f4_de.
+"Another predelivered demo search help.
+PARAMETERS p_carr2 TYPE c LENGTH 3 MATCHCODE OBJECT s_carrier_id.
+"Non-existent search help (triggers a message in the status line)
+PARAMETERS p_nope TYPE s_carr_id MATCHCODE OBJECT demo_f4_de###.
+
+*&---------------------------------------------------------------------*
+*& MEMORY ID addition
+*&---------------------------------------------------------------------*
+
+"The example use the memory id 'rid' that stores the name of the program
+"processed last. The demo explicitly sets the value to a dummy program
+"name in the AT SELECTION-SCREEN OUTPUT event block using a SET PARAMETER ID
+"statement.
+PARAMETERS p_prog TYPE sy-repid MEMORY ID rid.
+
+*&---------------------------------------------------------------------*
+*& VALUE CHECK addition
+*&---------------------------------------------------------------------*
+
+"The example selection parameters are specified with reference to a
+"demo database table field for which the check table scarr is specified.
+"So, you can only enter values that are also contained in scarr.
+"When running the example program, you can ...
+"- make entries that are not contained in the list and execute the program 
+"  to demonstrate that the value check is applied.
+"- leave the input for pvalchk1 empty to demonstrate that the value check is 
+"  also applied on empty fields. Therefore, also specifying the OBLIGATORY 
+"  addition is recommended.
+PARAMETERS pvalchk1 TYPE spfli-carrid VALUE CHECK.
+PARAMETERS pvalchk2 TYPE spfli-carrid VALUE CHECK OBLIGATORY.
+
+AT SELECTION-SCREEN OUTPUT.
+  SET PARAMETER ID 'RID' FIELD 'SOME_TEST_REPORT'.
+
+START-OF-SELECTION.
+
+  WRITE / `Inserted values:`.
+  SKIP.
+  WRITE / |p_deflti: "{ p_deflti }"|.
+  WRITE / |p_deflts: "{ p_deflts }"|.
+  WRITE / |p_upper: "{ p_upper }"|.
+  WRITE / |p_lower: "{ p_lower }"|.
+  WRITE / |p_carr1: "{ p_carr1 }"|.
+  WRITE / |p_nope: "{ p_nope }"|.
+  WRITE / |p_prog: "{ p_prog }"|.
+  WRITE / |pvalchk1: "{ pvalchk1 }"|.
+  WRITE / |pvalchk2: "{ pvalchk2 }"|.
+``` 
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+Specifying screen options<br>
+Additions `OBLIGATORY`, `NO-DISPLAY`, `VISIBLE LENGTH`, `AS CHECKBOX`, `RADIOBUTTON GROUP`, `AS LISTBOX VISIBLE LENGTH`
+
+ </td>
+
+ <td> 
+
+- `OBLIGATORY`: Declares the input field as a required field. If there is no entry, the program cannot proceed when choosing *Execute*. A message will be displayed.
+- `NO-DISPLAY`: Hides the input field on the selection screen. A value can be supplied when calling the program with `SUBMIT` and the `WITH` addition. Note that with the `NO-DISPLAY` addition, the parameter can have any data types except for reference/enumerated types, unlike in the other additions which require flat types (except type `string`).
+- `VISIBLE LENGTH`: Defines the visible length of the field. If you specify the parameter with type `c` and length 10, and you specify the visible length as 3, the input field size is reduced accordingly, but you can still insert 10 characters.
+- `AS CHECKBOX`: Displays an input field as checkbox. Type `c` and length 1 is expected, but the explicit length specification is not allowed. The checkbox is selected if the value has the value `X` or `x`.
+- `RADIOBUTTON GROUP`: Defines a radio button group for parameters. Note:
+  - The group name can have a maximum of four characters.
+  - Regarding the data type, the same applies as for `AS CHECKBOX`.
+  - Only one parameter can be defined with the `DEFAULT` addition.
+  - If `DEFAULT` is not specified, the first parameter of the group is set to the value `X`.
+- `AS LISTBOX VISIBLE LENGTH`: Creates a dropdown list box. You can use the function module `VRM_SET_VALUES` by passing a suitable list at the 
+`AT SELECTION-SCREEN OUTPUT` or `AT SELECTION-SCREEN ON VALUE-REQUEST` events. You may want to specify the `OBLIGATORY` addition here, too, as the check is also applied to empty fields.
+
+> **💡 Note**<br>
+> The `USER-COMMAND` addition can be specified together with `AS CHECKBOX`, `RADIOBUTTON GROUP` and `AS LISTBOX VISIBLE LENGTH` to assign a function code to the selection parameter.
+
+
+
+ </td>
+
+<td> 
+
+``` abap
+PROGRAM.
+
+*&---------------------------------------------------------------------*
+*& OBLIGATORY addition
+*&---------------------------------------------------------------------*
+
+PARAMETERS p_oblgty TYPE c LENGTH 10 OBLIGATORY.
+
+*&---------------------------------------------------------------------*
+*& NO-DISPLAY addition
+*&---------------------------------------------------------------------*
+
+PARAMETERS p_hidden TYPE c LENGTH 10 NO-DISPLAY.
+"With NO-DISPLAY, also complex types (except reference types) can be
+"specified.
+PARAMETERS p_tabtyp TYPE string_table NO-DISPLAY.
+
+*&---------------------------------------------------------------------*
+*& VISIBLE LENGTH addition
+*&---------------------------------------------------------------------*
+
+PARAMETERS p_vislen TYPE c LENGTH 10 VISIBLE LENGTH 3.
+
+*&---------------------------------------------------------------------*
+*& AS CHECKBOX addition
+*&---------------------------------------------------------------------*
+
+"Implicit type c
+PARAMETERS p_chkbx1 AS CHECKBOX.
+"Explicit type specification (but no explicit length)
+PARAMETERS p_chkbx2 TYPE c AS CHECKBOX.
+
+*&---------------------------------------------------------------------*
+*& RADIOBUTTON GROUP addition
+*&---------------------------------------------------------------------*
+
+"The following example uses a chained statement.
+PARAMETERS: p_rb1a RADIOBUTTON GROUP rbg1,
+            p_rb1b TYPE c RADIOBUTTON GROUP rbg1,       "Explicit type specification
+            p_rb1c RADIOBUTTON GROUP rbg1 DEFAULT 'X'.  "Select this radiobutton by default
+
+"Separate specifications, no DEFAULT specification
+"Here, the first radio button is selected by default.
+PARAMETERS p_rb2a RADIOBUTTON GROUP rbg2.
+PARAMETERS p_rb2b RADIOBUTTON GROUP rbg2.
+PARAMETERS p_rb2c RADIOBUTTON GROUP rbg2.
+PARAMETERS p_rb2d RADIOBUTTON GROUP rbg2.
+
+*&---------------------------------------------------------------------*
+*& AS LISTBOX VISIBLE LENGTH
+*&---------------------------------------------------------------------*
+
+"See the implementation in the AT SELECTION-SCREEN OUTPUT event block
+PARAMETERS plistbox TYPE i AS LISTBOX VISIBLE LENGTH 10 OBLIGATORY.
+
+AT SELECTION-SCREEN OUTPUT.
+
+  "The following implementation is relevant for the AS LISTBOX VISIBLE LENGTH
+  "addition. Note:
+  "- The function module VRM_SET_VALUES is used.
+  "- Column TEXT: What is displayed in the list box.
+  "- Colum KEY: When a line is selected, the KEY value is added to the parameter
+  "- In the example, the numbers 1 - 10 are added as values.
+  CALL FUNCTION 'VRM_SET_VALUES'
+    EXPORTING
+      id     = CONV vrm_id( 'PLISTBOX' )
+      values = VALUE vrm_values( FOR i = 1 UNTIL i > 10 ( key = i text = |Value { i }| ) ).
+
+  "Filling the string table for the NO-DISPLAY example statement.
+  p_tabtyp = VALUE #( ( `Some` ) ( `demo` ) ( `strings` ) ).
+
+START-OF-SELECTION.
+
+  WRITE / `Inserted values:`.
+  SKIP.
+  WRITE / |p_oblgty: "{ p_oblgty }"|.
+  WRITE / |p_hidden: "{ p_hidden }"|.
+
+  LOOP AT p_tabtyp into data(wa).
+    WRITE / |p_tabtyp (line { sy-tabix }): "{ wa }"|.
+  endloop.
+
+  IF p_chkbx1 IS INITIAL.
+    WRITE / `Checkbox p_chkbx1 was not selected.`.
+  ELSE.
+    WRITE / `Checkbox p_chkbx1 was selected.`.
+  ENDIF.
+
+  IF p_chkbx2 IS INITIAL.
+    WRITE / `Checkbox p_chkbx2 was not selected.`.
+  ELSE.
+    WRITE / `Checkbox p_chkbx2 was selected.`.
+  ENDIF.
+
+  WRITE / |Radio button rbg1 selection: "{ COND #( WHEN p_rb1a IS NOT INITIAL THEN 'p_rb1a' WHEN p_rb1b IS NOT INITIAL THEN 'p_rb1b' ELSE 'p_rb1c' ) }"| .
+  WRITE / |Radio button rbg2 selection: "{ COND #( WHEN p_rb2a IS NOT INITIAL THEN 'p_rb2a' WHEN p_rb2b IS NOT INITIAL THEN 'p_rb2b' WHEN p_rb2c IS NOT INITIAL THEN 'p_rb2c' ELSE 'p_rb2d' ) }"| .
+
+  WRITE / |p_list: "{ plistbox }"|.
+``` 
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+Assigning function codes to selection parameters<br>
+Addition `USER-COMMAND`
+
+ </td>
+
+ <td> 
+
+- You can assign function codes to selection parameters using the `USER-COMMAND` addition.
+- The addition is supported by `PARAMETERS` statements specifying the `AS CHECKBOX`, `RADIOBUTTON GROUP` and `AS LISTBOX VISIBLE LENGTH` additions.
+- As a prerequisite, you must specify a [`TABLES`](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abaptables.htm) statement to declare an [interface work area](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abeninterface_work_area_glosry.htm) of the `sscrfields` DDIC structure.
+- On user selection (e.g. a checkbox or radio button is selected), the `AT SELECTION-SCREEN` event is raised, and the function code is passed to the `ucomm` component of `sscrfields`. For evaluation purposes, evaluate `sscrfields-ucomm` instead of `sy-ucomm` as it is not guaranteed that the latter is always passed the correct value during selection screen processing.
+
+ </td>
+
+<td> 
+
+``` abap
+PROGRAM.
+
+"Declaring interface work area
+TABLES sscrfields.
+
+*&---------------------------------------------------------------------*
+*& AS CHECKBOX USER-COMMAND
+*&---------------------------------------------------------------------*
+
+PARAMETERS p_chkbox AS CHECKBOX USER-COMMAND box_cmd.
+
+*&---------------------------------------------------------------------*
+*& RADIOBUTTON GROUP group USER-COMMAND
+*&---------------------------------------------------------------------*
+
+PARAMETERS: p_rb1 RADIOBUTTON GROUP rbg USER-COMMAND rb_cmd,
+            p_rb2 RADIOBUTTON GROUP rbg,
+            p_rb3 RADIOBUTTON GROUP rbg.
+
+*&---------------------------------------------------------------------*
+*& AS LISTBOX VISIBLE LENGTH ... USER-COMMAND
+*&---------------------------------------------------------------------*
+
+PARAMETERS plistbox TYPE i AS LISTBOX VISIBLE LENGTH 10 USER-COMMAND list_cmd.
+
+AT SELECTION-SCREEN OUTPUT.
+
+  CALL FUNCTION 'VRM_SET_VALUES'
+    EXPORTING
+      id     = CONV vrm_id( 'PLISTBOX' )
+      values = VALUE vrm_values( FOR i = 1 UNTIL i > 10 ( key = i text = |Value { i }| ) ).
+
+AT SELECTION-SCREEN.
+
+  CASE sscrfields-ucomm.
+    WHEN 'BOX_CMD'.
+      MESSAGE |Hallo { sy-uname }. You selected a checkbox.| TYPE 'I'.
+    WHEN 'RB_CMD'.
+      MESSAGE |Hallo { sy-uname }. You selected a radio button.| TYPE 'I'.
+    WHEN 'LIST_CMD'.
+      MESSAGE |Hallo { sy-uname }. You selected an item from the list box.| TYPE 'I'.
+  ENDCASE.
+
+START-OF-SELECTION.
+
+  WRITE / `Inserted values:`.
+  SKIP.
+
+  IF p_chkbox IS INITIAL.
+    WRITE / `Checkbox p_chkbox was not selected.`.
+  ELSE.
+    WRITE / `Checkbox p_chkbox was selected.`.
+  ENDIF.
+
+  WRITE / |Radio button rbg selection: "{ COND #( WHEN p_rb1 IS NOT INITIAL THEN 'p_rb1' WHEN p_rb2 IS NOT INITIAL THEN 'p_rb2' ELSE 'p_rb3' ) }"| .
+
+  WRITE / |p_list: "{ plistbox }"|.
+``` 
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+Assigning a screen element of a selection screen to a modification group<br>
+Addition `MODIF ID`
+
+ </td>
+
+ <td> 
+
+- The `PARAMETERS` statement can be specified with the `MODIF ID` addition to assign a screen element of a selection screen to a modification group, which represents a group of multiple screen elements of a dynpro having a three-character ID. This ID is used to modify the display properties of all those elements specifying the ID before they are actually displayed. For that purpose, you can use the `MODIFY SCREEN` statement. The ID is assigned to the `screen-grouop1` component that can be evaluated. 
+- Find more information [here](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenmodification_group_glosry.htm).
+
+ </td>
+
+<td> 
+
+``` abap
+PROGRAM.
+
+TABLES sscrfields.
+
+PARAMETERS showhide AS CHECKBOX USER-COMMAND box_cmd1.
+
+PARAMETERS p_input1 TYPE c LENGTH 20.
+PARAMETERS p_input2 TYPE c LENGTH 20 MODIF ID id1.
+PARAMETERS p_input3 TYPE c LENGTH 20.
+PARAMETERS p_input4 TYPE c LENGTH 20 MODIF ID id1.
+
+PARAMETERS colored AS CHECKBOX USER-COMMAND box_cmd2.
+
+PARAMETERS p_input5 TYPE c LENGTH 20 DEFAULT 'abcdefg'.
+PARAMETERS p_input6 TYPE c LENGTH 20 MODIF ID id2 DEFAULT 'hijklm'.
+PARAMETERS p_input7 TYPE c LENGTH 20 MODIF ID id2 DEFAULT 'nopqrs'.
+PARAMETERS p_input8 TYPE c LENGTH 20 DEFAULT 'tuvwxyz'.
+
+AT SELECTION-SCREEN.
+
+  CASE sscrfields-ucomm.
+    WHEN 'BOX_CMD1'.
+      MESSAGE |Hallo { sy-uname }. You selected the SHOWHIDE checkbox. Screen elements are about to be shown or hidden.| TYPE 'I'.
+    WHEN 'BOX_CMD2'.
+      MESSAGE |Hallo { sy-uname }. You selected the COLORED checkbox. The colors of output fields are about to be intensified or reverted.| TYPE 'I'.
+  ENDCASE.
+
+AT SELECTION-SCREEN OUTPUT.
+  LOOP AT SCREEN INTO DATA(screen_wa).
+    IF showhide = 'X' AND screen_wa-group1 = 'ID1'.
+      screen_wa-active = '0'.
+    ENDIF.
+    IF colored = 'X' AND screen_wa-group1 = 'ID2'.
+      screen_wa-intensified = '1'.
+    ENDIF.
+    MODIFY SCREEN FROM screen_wa.
+  ENDLOOP.
+
+START-OF-SELECTION.
+
+  WRITE / `Inserted values:`.
+  SKIP.
+  WRITE / |p_input1: "{ p_input1 }"|.
+  WRITE / |p_input2: "{ p_input2 }"|.
+  WRITE / |p_input3: "{ p_input3 }"|.
+  WRITE / |p_input4: "{ p_input4 }"|.
+  WRITE / |p_input5: "{ p_input5 }"|.
+  WRITE / |p_input6: "{ p_input6 }"|.
+  WRITE / |p_input7: "{ p_input7 }"|.
+  WRITE / |p_input8: "{ p_input8 }"|.
+``` 
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+Replacing the technical name displayed on the screen 
+
+
+ </td>
+
+ <td> 
+
+- The parameter name is a technical name. You probably do not want to display technical names on the user interface. You can define proper names ([text elements](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abentext_element_glosry.htm)) in the ABAP Editor, e.g. for translation purposes.
+- For the example code snippet, proceed as follows: 
+  - In ADT, make a right-click inside your demo report you copied the code to. Choose *Open Others -> Text Elements*.
+  - At the bottom of the opened window, select the *Selection Texts* tab.
+  - Insert `PARAM=Enter some text` and activate. Leave the *number* parameter unchanged. 
+  - You can also use `SELECTION-SCREEN` statements such as the `... COMMENT ...` statement, as outlined below, and assign a text value to the screen comment.
+  - When you execute the program, you will see the technical names replaced by *Enter some text* and *Enter a number*.
+
+ </td>
+
+<td> 
+
+``` abap
+PROGRAM.
+
+PARAMETERS param type string.
+
+SELECTION-SCREEN BEGIN OF LINE.
+  SELECTION-SCREEN COMMENT (33) txt.
+  PARAMETERS number type i.
+SELECTION-SCREEN END OF LINE.
+
+INITIALIZATION.
+
+  txt = 'Enter a number'.
+
+START-OF-SELECTION.
+
+  WRITE / `Inserted values:`.
+  SKIP.
+  WRITE / |param: "{ param }"|.
+  WRITE / |number: "{ number }"|.
+``` 
+
+ </td>
+</tr>
+
+</table>
+
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
@@ -537,7 +1052,7 @@ CALL SELECTION-SCREEN 9345 STARTING AT a b ENDING AT c d.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-### Excursion: SUBMIT
+## Excursion: SUBMIT Statements
 - [`SUBMIT`](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapsubmit.htm) statements call executable programs and, therefore, selection screens.
 - In general, every executable program is started implicitly with `SUBMIT`.
 - Selection screens can be considered a parameter interface if the program containing them is executed using `SUBMIT`.

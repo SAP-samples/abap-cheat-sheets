@@ -3040,7 +3040,7 @@ DATA(cl_all_public_inst_attr) = cl_public_components->data->all->get( ).
 DATA(cl_all_public_static_attr) = cl_public_components->class_data->all->get( ).
 DATA(cl_all_public_constants) = cl_public_components->constant->all->get( ).
 DATA(cl_all_public_alias_comps) = cl_public_components->alias->all->get( ).
-"More detailed information on components (the examples uses static methods of the class)
+"More detailed information on components (the examples use static methods of the class)
 LOOP AT cl_all_public_stat_methods INTO DATA(stat_meth).
   DATA(meth_name) = stat_meth->name.
   "Parameter information

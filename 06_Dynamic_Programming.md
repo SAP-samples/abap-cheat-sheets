@@ -4640,7 +4640,7 @@ CREATE DATA dref_elem TYPE HANDLE tdo_elem_xstr.
 *& DDIC data element
 *&---------------------------------------------------------------------*
 
-"Note: The types int1 and int2 in the prvious code snippet represent
+"Note: The types int1 and int2 in the previous code snippet represent
 "DDIC data elements, too.
 
 "A reference type and variable such as the following shall be created
@@ -5262,13 +5262,13 @@ CREATE DATA dref_ref TYPE HANDLE cast_tdo_ref_descr_by_name.
 "---- 'describe_by_object_ref' method ----
 "To get the type description object based on an an object type
 DATA(oref) = NEW cl_system_uuid( ).
-DATA(tdo_ref_descr_by_ntame) = cl_abap_refdescr=>describe_by_object_ref( oref ).
+DATA(tdo_ref_descr_by_oref) = cl_abap_refdescr=>describe_by_object_ref( oref ).
 
 "---- 'get_ref_to_data' method ----
 "To get the type description object for the type REF TO DATA
 DATA(tdo_ref_get_ref_to_data) = cl_abap_refdescr=>get_ref_to_data( ).
 
-"---- 'get_data_type_kind' method ----
+"---- 'get_ref_to_object' method ----
 "To get the type description object for the type REF TO OBJECT
 DATA(tdo_ref_get_ref_to_object) = cl_abap_refdescr=>get_ref_to_object( ).
 ```
