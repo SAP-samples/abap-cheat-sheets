@@ -10,7 +10,6 @@
     - [PARAMETERS](#parameters)
     - [SELECT-OPTIONS](#select-options)
     - [SELECTION-SCREEN](#selection-screen)
-      - [Variants of the SELECTION-SCREEN Statement](#variants-of-the-selection-screen-statement)
     - [Calling Selection Screens](#calling-selection-screens)
   - [Excursion: SUBMIT Statements](#excursion-submit-statements)
   - [ABAP Statements for Classic Lists](#abap-statements-for-classic-lists)
@@ -47,6 +46,7 @@ For more detailed information and syntax options, see the topics [Selection Scre
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ### Selection Screens
+
 - Are special [dynpros](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abendynpro_glosry.htm) in [executable programs](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenexecutable_program_glosry.htm) (*"reports"*; they're also possible in [function groups](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenfunction_group_glosry.htm) and [module pools](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenmodul_pool_glosry.htm), but the focus here is on executable programs).
 - Used for data entry in an executable program, i.e. they allow users to ...
   - enter parameters (for entering single values).
@@ -94,6 +94,7 @@ Selection screens can be created by using special ABAP statements in the global 
 - [`SELECTION-SCREEN`](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapselection-screen.htm)
 
 ### PARAMETERS
+
 - Creates ...
   - a program-global variable (similar to `DATA` statements) 
   - an input field on the selection screen automatically, i.e. the content of the program-global variable can be changed via the input field.
@@ -746,64 +747,466 @@ START-OF-SELECTION.
 
 - Declares selection criteria for a data object
 - Unlike the `PARAMETERS` statement, which specifies a single value for a variable, the `SELECT-OPTIONS` statement allows you to specify complex criteria, such as an value range or a list of single values, to include or exclude values, that can be evaluated.
-- The selection criteria are assigned to a selection table (see [ranges table](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenranges_table_glosry.htm) and the type `TYPE RANGE OF`).
-  - Such a table type contains four columns - `LOW`, `HIGH`, `OPTION`, `SIGN` - for determining range conditions. Each line of such a table represents a condition. 
+- The selection criteria are assigned to a [selection table](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenselection_table_glosry.htm):
+  - Such a table contains four columns - `LOW`, `HIGH`, `OPTION`, `SIGN` - for determining range conditions. Each line of such a table represents a condition. 
   - Typically, the content of the selection table can be evaluated in `SELECT` statements using the `IN` operator in the `WHERE` clause.
   - If the selection table is empty, all lines are respected.
+  - Selection tables have the same layout as [ranges table](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenranges_table_glosry.htm) that can be created using the syntax `TYPE RANGE OF`. 
+  - For historical reasons, the selection table is a table with [header line](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenheader_line_glosry.htm). Therefore, if you want to address the table content (beyond the use in a `SELECT ... WHERE ... IN ...` statement), use the syntax `a[]`.
+- Multiple additions are available, and combinations of them are possible.
 
-Example:
 
-```abap
-DATA wa TYPE some_tab.
-
-SELECT-OPTIONS sel FOR some_tab-some_comp.
-
-SELECT *
-       FROM some_tab
-       WHERE some_comp IN @sel
-       INTO @wa.
-  ...
-ENDSELECT.
-
-"Multiple additions and combinations are possible.
-
-"The following statement creates two input fields that can be 
-"used to specify selection criteria on the selection screen. 
-"In addition, the Multiple Selection button is available to 
-"further specify the selection criteria, e.g. what to include, 
-"exclude, etc.. As in all examples, the variable is an internal 
-"table of type TYPE RANGE OF whose contents can be evaluated.
-"The FOR addition is followed by an already declared data object.
-SELECT-OPTIONS a FOR some_dobj.
-"As mentioned above, NO-DISPLAY hides.
-SELECT-OPTIONS b FOR some_dobj NO-DISPLAY.
-"NO-EXTENSION: The Multiple Selection button is not created on the 
-"selection screen
-SELECT-OPTIONS c FOR some_dobj NO-EXTENSION.
-"NO INTERVALS: Only one input field. Intervals can still be selected 
-"using the Multiple Selection button.
-SELECT-OPTIONS d FOR some_dobj NO INTERVALS.
-"DEFAULT ... TO ...: Providing start values for the columns in the 
-"first line of the selection table (low and high values)
-SELECT-OPTIONS e FOR some_dobj DEFAULT 3 TO 10.
-"DEFAULT ... OPTION ... SIGN ...: Providing further start values.
-"See details further down.
-SELECT-OPTIONS f FOR some_dobj DEFAULT 4 TO 8 OPTION NB SIGN I.
-```
+The following table includes code snippets with a selection of available syntax options:
 
 > **💡 Note**<br>
-> Notes on the `OPTION` and `SIGN` additions: 
->  - `OPTION` 
->    - Start value for the `option` column for the condition in the form of comparison operators
->    - `TO` not specified: `EQ` (equal), `NE` (not equals), `GE` (greater than or equals), `GT` (greater than), `LE` (less than or equals), `LT` (less than), `CP` (conforms to pattern), or `NP` (does not conform to pattern) must be specified
->    - `TO` specified: Either `BT` (between) or `NB` (not between) must be specified
->    - `OPTION` not specified: `EQ`/`BT` is used
->    - For `CP` and `NP`, wildcard characters `*` or `+` must be specified.
->  - `SIGN` 
->    - Start value for the `sign` column 
->    - Either `I` or `E` must be specified to include/exclude the result of the condition 
->    - `SIGN` not specified: `I` by default
-> - For historical reasons, the selection table is a table with [header line](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenheader_line_glosry.htm). Therefore, if you want to address the table content (beyond the use in a `SELECT ... WHERE ... IN ...` statement), use the syntax `a[]`.
+> - Various combinations of multiple additions are possible with `SELECT-OPTIONS` statements.
+> - To try out the code examples, you can create a demo executable program, copy and paste the code snippets, and run the programs using F8. They are designed to output content using classic lists.
+> - The code snippets anticipate topics outlined further down, for example, event blocks and `WRITE` statements.
+
+<table>
+
+<tr>
+<td> Subject/Addition </td> <td> Notes </td> <td> Code Snippet </td>
+</tr>
+
+<tr>
+<td> 
+
+Determining the `low` and `high` columns in the selection table<br><br>
+Addition `FOR`
+
+ </td>
+
+ <td> 
+
+- Determines the `low` and `high` columns in the selection table.
+- Besides a statically defined data object from the program or public attributes of global classes, you can also dynamically specify a DDIC data type within parentheses.
+- Note:
+  - Without the addition `NO_DISPLAY`, the data types must be elementary and flat (except type `f` and enumerated types).
+  - When you specify a reference to a DDIC type, its screen-related properties are used.
+  - In case of the dynamic specification, the columns in the selection table are created using type `c` length 45. A constant or variable containing the name of component of a flat structure from the DDIC can be specified. Literals are not evaluated.
+
+ </td>
+
+<td> 
+
+The code snippet, copyable to a demo program and executable using F8, implements the following: 
+- A demo internal table is created. It is filled in the `INITIALIZATION` event block.
+- Two `SELECT-OPTIONS` statements are included. The first references a statically data object after `FOR`, the second a dynamically specified DDIC type. The latter demonstrates that screen-relevant properties are inherited.
+- When running the program, you can make entries. `SELECT` statements retrieve data from the internal table based on the specifications in the ranges table. To visualize the selection result, `WRITE` statements display table entries in a classic list.
+
+
+``` abap
+PROGRAM.
+
+DATA: BEGIN OF demo_structure,
+        carrid TYPE c LENGTH 3,
+        num    TYPE i,
+      END OF demo_structure.
+
+DATA itab LIKE TABLE OF demo_structure WITH EMPTY KEY.
+
+*&---------------------------------------------------------------------*
+*& Referencing a statically defined data object
+*&---------------------------------------------------------------------*
+
+"In the example, a structure component is specified.
+SELECT-OPTIONS sel1 FOR demo_structure-num.
+
+*&---------------------------------------------------------------------*
+*& Referencing a dynamically specified DDIC type
+*&---------------------------------------------------------------------*
+
+"Here, the name of a component of a flat structure from the DDIC
+"is passed. The example type involves search help functionality.
+"Screen-relevant properties are inherited.
+DATA dyn_spec TYPE c LENGTH 12.
+SELECT-OPTIONS sel2 FOR (dyn_spec).
+
+INITIALIZATION.
+
+  itab = VALUE #( ( carrid = 'AA' num = 1 )
+                  ( carrid = 'AC' num = 2 )
+                  ( carrid = 'AF' num = 3 )
+                  ( carrid = 'AZ' num = 4 )
+                  ( carrid = 'BA' num = 5 )
+                  ( carrid = 'FJ' num = 6 )
+                  ( carrid = 'LH' num = 7 )
+                  ( carrid = 'JL' num = 8 )
+                  ( carrid = 'NW' num = 9 )
+                  ( carrid = 'QF' num = 10 )
+                  ( carrid = 'SQ' num = 11 )
+                  ( carrid = 'UA' num = 12 ) ).
+
+  dyn_spec = 'SCARR-CARRID'.
+
+START-OF-SELECTION.
+
+  WRITE / `Selected values (sel1):`.
+  SKIP.
+
+  SELECT *
+         FROM @itab AS tab
+         WHERE num IN @sel1
+         INTO @demo_structure.
+    WRITE / |{ demo_structure-carrid } { demo_structure-num }|.
+  ENDSELECT.
+
+  SKIP.
+  SKIP.
+  WRITE / `Selected values (sel2):`.
+  SKIP.
+
+  SELECT *
+         FROM @itab AS tab
+         WHERE carrid IN @sel2
+         INTO @demo_structure.
+    WRITE / |{ demo_structure-carrid } { demo_structure-num }|.
+  ENDSELECT.
+``` 
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+Specifying screen options<br><br>
+Additions `OBLIGATORY`, `NO-DISPLAY`, `VISIBLE LENGTH`, `NO-EXTENSION`, `NO INTERVALS`, `MODIF ID`
+
+ </td>
+
+ <td> 
+
+- `OBLIGATORY`: Declares the first input field as a required field. If there is no entry, the program cannot proceed when choosing Execute. A message will be displayed.
+- `NO-DISPLAY`: Hides screen elements. Values (any flat types) can be supplied using `SUBMIT` statements. Note that there is no restriction to 45 characters. 
+- `VISIBLE LENGTH`: Defines the visible length of the input field.
+- `NO-EXTENSION`: Cancels the option for multiple selection on the screen.
+- `NO INTERVALS`: Removes the second input field on the screen.
+- `MODIF ID`: See a description in the previous section about `PARAMETERS`.
+- Note that combinations of the additions are possible.
+
+ </td>
+
+<td> 
+
+The code snippet, copyable to a demo program and executable using F8, implements the following: 
+- A demo internal table is created. It is filled in the `INITIALIZATION` event block.
+- Multiple `SELECT-OPTIONS` statements are included that specify additions. 
+- When running the program, you can make entries. `SELECT` statements retrieve data from the internal table based on the specifications in the ranges table. To visualize the selection result, `WRITE` statements display table entries in a classic list.
+
+
+``` abap
+PROGRAM.
+
+DATA: BEGIN OF demo_structure,
+        carrid TYPE c LENGTH 3,
+        num    TYPE i,
+      END OF demo_structure.
+
+DATA itab LIKE TABLE OF demo_structure WITH EMPTY KEY.
+
+*&---------------------------------------------------------------------*
+*& OBLIGATORY
+*&---------------------------------------------------------------------*
+
+SELECT-OPTIONS sel_oblg FOR demo_structure-num OBLIGATORY.
+
+*&---------------------------------------------------------------------*
+*& NO-DISPLAY
+*&---------------------------------------------------------------------*
+
+SELECT-OPTIONS sel_nodi FOR demo_structure-num NO-DISPLAY.
+
+*&---------------------------------------------------------------------*
+*& VISIBLE LENGTH
+*&---------------------------------------------------------------------*
+
+SELECT-OPTIONS sel_visl FOR demo_structure-carrid VISIBLE LENGTH 2.
+
+*&---------------------------------------------------------------------*
+*& NO-EXTENSION
+*&---------------------------------------------------------------------*
+
+SELECT-OPTIONS sel_noet FOR demo_structure-num NO-EXTENSION.
+
+*&---------------------------------------------------------------------*
+*& NO INTERVALS
+*&---------------------------------------------------------------------*
+
+SELECT-OPTIONS sel_noin FOR demo_structure-num NO INTERVALS.
+
+INITIALIZATION.
+
+  itab = VALUE #( ( carrid = 'AA' num = 1 )
+                  ( carrid = 'AC' num = 2 )
+                  ( carrid = 'AF' num = 3 )
+                  ( carrid = 'AZ' num = 4 )
+                  ( carrid = 'BA' num = 5 )
+                  ( carrid = 'FJ' num = 6 )
+                  ( carrid = 'LH' num = 7 )
+                  ( carrid = 'JL' num = 8 )
+                  ( carrid = 'NW' num = 9 )
+                  ( carrid = 'QF' num = 10 )
+                  ( carrid = 'SQ' num = 11 )
+                  ( carrid = 'UA' num = 12 ) ).
+
+START-OF-SELECTION.
+
+  WRITE / `Selected values (OBLIGATORY addition):`.
+  SKIP.
+
+  SELECT *
+         FROM @itab AS tab
+         WHERE num IN @sel_oblg
+         INTO @demo_structure.
+    WRITE / |{ demo_structure-carrid } { demo_structure-num }|.
+  ENDSELECT.
+
+  SKIP.
+  SKIP.
+  WRITE / `Selected values (NO-DISPLAY addition):`.
+  SKIP.
+
+  SELECT *
+         FROM @itab AS tab
+         WHERE num IN @sel_nodi
+         INTO @demo_structure.
+    WRITE / |{ demo_structure-carrid } { demo_structure-num }|.
+  ENDSELECT.
+
+  SKIP.
+  SKIP.
+  WRITE / `Selected values (VISIBLE LENGTH addition):`.
+  SKIP.
+
+  SELECT *
+         FROM @itab AS tab
+         WHERE carrid IN @sel_visl
+         INTO @demo_structure.
+    WRITE / |{ demo_structure-carrid } { demo_structure-num }|.
+  ENDSELECT.
+
+  SKIP.
+  SKIP.
+  WRITE / `Selected values (NO-EXTENSION addition):`.
+  SKIP.
+
+  SELECT *
+         FROM @itab AS tab
+         WHERE num IN @sel_noet
+         INTO @demo_structure.
+    WRITE / |{ demo_structure-carrid } { demo_structure-num }|.
+  ENDSELECT.
+
+  SKIP.
+  SKIP.
+  WRITE / `Selected values (NO INTERVALS addition):`.
+  SKIP.
+
+  SELECT *
+         FROM @itab AS tab
+         WHERE num IN @sel_noin
+         INTO @demo_structure.
+    WRITE / |{ demo_structure-carrid } { demo_structure-num }|.
+  ENDSELECT.
+``` 
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+Specifying value options<br><br>
+Additions `DEFAULT a [TO b] [OPTION c] [SIGN d]`, `LOWER CASE`, `MATCHCODE OBJECT`, `MEMORY ID`
+
+ </td>
+
+ <td> 
+
+- `DEFAULT a [TO b] [OPTION c] [SIGN d]`: Defines start values for the first line of the selection table. 
+  - `a` specifies the `low` column 
+  - `b` specifies the `high` column 
+  - `c` specifies the `option` column (specify the comparison expressions `eq`, `ne`, `ge`, `gt`, `le`, `lt`, `cp`, `np`, `bt`, `nb` directly after `OPTION`; restrictions apply if you do not specify `TO`; not specifying `OPTION` means `eq` or `bt` by default; to use patterns with `cp` and `np`, specify wildcard characters `*` or `+`)
+  - `d` specifies the `sign` column (specify either `i` or `e` to include or exclude; not specifying `SIGN` means `i` is used by default)
+- `LOWER CASE`: Avoid autoamtic transformation to uppercase letters.
+- `MATCHCODE OBJECT`: Links an input field with a DDIC search help
+- `MEMORY ID`: See a description in the previous section about `PARAMETERS`.
+
+
+ </td>
+
+<td> 
+
+The code snippet, copyable to a demo program and executable using F8, implements the following: 
+- A demo internal table is created. It is filled in the `INITIALIZATION` event block.
+- Multiple `SELECT-OPTIONS` statements are included that specify additions. 
+- When running the program, you can make entries. `SELECT` statements retrieve data from the internal table based on the specifications in the ranges table. To visualize the selection result, `WRITE` statements display table entries in a classic list. Additionally, the content of the ranges tables is displayed. 
+
+
+``` abap
+PROGRAM.
+
+DATA: BEGIN OF demo_structure,
+        carrid TYPE c LENGTH 3,
+        num    TYPE i,
+      END OF demo_structure.
+
+DATA itab LIKE TABLE OF demo_structure WITH EMPTY KEY.
+
+*&---------------------------------------------------------------------*
+*& DEFAULT a [TO b] [OPTION c] [SIGN d]
+*&---------------------------------------------------------------------*
+
+SELECT-OPTIONS sel_dfl1 FOR demo_structure-num DEFAULT 4.
+SELECT-OPTIONS sel_dfl2 FOR demo_structure-num DEFAULT 2 TO 8.
+SELECT-OPTIONS sel_dfl3 FOR demo_structure-num DEFAULT 5 TO 10 OPTION BT SIGN I.
+SELECT-OPTIONS sel_dfl4 FOR demo_structure-num DEFAULT 5 TO 10 OPTION BT SIGN E.
+SELECT-OPTIONS sel_dfl5 FOR demo_structure-carrid DEFAULT 'A*' OPTION CP SIGN I.
+
+*&---------------------------------------------------------------------*
+*& LOWER CASE
+*&---------------------------------------------------------------------*
+
+"The example is specified with DEFAULT ... TO ... and includes values
+"with uppercase and lowercase. If you leave the demo values, all table
+"entries are read (starting from AA which is the first) as there is no
+"lh value. It should be specified as LH in uppercase.
+SELECT-OPTIONS sel_lc FOR demo_structure-carrid DEFAULT 'AA' TO 'lh' LOWER CASE.
+
+*&---------------------------------------------------------------------*
+*& MATCHCODE OBJECT
+*&---------------------------------------------------------------------*
+
+"The specified type includes a search help
+SELECT-OPTIONS sel_mtch FOR demo_structure-carrid MATCHCODE OBJECT s_carrier_id.
+
+INITIALIZATION.
+
+  itab = VALUE #( ( carrid = 'AA' num = 1 )
+                  ( carrid = 'AC' num = 2 )
+                  ( carrid = 'AF' num = 3 )
+                  ( carrid = 'AZ' num = 4 )
+                  ( carrid = 'BA' num = 5 )
+                  ( carrid = 'FJ' num = 6 )
+                  ( carrid = 'JL' num = 7 )
+                  ( carrid = 'LH' num = 8 )
+                  ( carrid = 'NW' num = 9 )
+                  ( carrid = 'QF' num = 10 )
+                  ( carrid = 'SQ' num = 11 )
+                  ( carrid = 'UA' num = 12 ) ).
+
+START-OF-SELECTION.
+
+  WRITE / `Selected values (only DEFAULT):`.
+  LOOP AT sel_dfl1 ASSIGNING FIELD-SYMBOL(<st>).
+    WRITE / |low: { <st>-low }, high: { <st>-high }, option: { <st>-option }, sign: { <st>-sign }|.
+  ENDLOOP.
+  SKIP.
+
+  SELECT *
+         FROM @itab AS tab
+         WHERE num IN @sel_dfl1
+         INTO @demo_structure.
+    WRITE / |{ demo_structure-carrid } { demo_structure-num }|.
+  ENDSELECT.
+
+  SKIP.
+  SKIP.
+  WRITE / `Selected values (DEFAULT, TO):`.
+  LOOP AT sel_dfl2 ASSIGNING <st>.
+    WRITE / |low: { <st>-low }, high: { <st>-high }, option: { <st>-option }, sign: { <st>-sign }|.
+  ENDLOOP.
+  SKIP.
+
+  SELECT *
+         FROM @itab AS tab
+         WHERE num IN @sel_dfl2
+         INTO @demo_structure.
+    WRITE / |{ demo_structure-carrid } { demo_structure-num }|.
+  ENDSELECT.
+
+  SKIP.
+  SKIP.
+  WRITE / `Selected values (DEFAULT, TO, OPTION, SIGN include):`.
+  LOOP AT sel_dfl3 ASSIGNING <st>.
+    WRITE / |low: { <st>-low }, high: { <st>-high }, option: { <st>-option }, sign: { <st>-sign }|.
+  ENDLOOP.
+  SKIP.
+
+  SELECT *
+         FROM @itab AS tab
+         WHERE num IN @sel_dfl3
+         INTO @demo_structure.
+    WRITE / |{ demo_structure-carrid } { demo_structure-num }|.
+  ENDSELECT.
+
+  SKIP.
+  SKIP.
+  WRITE / `Selected values (DEFAULT, TO, OPTION, SIGN exclude):`.
+  LOOP AT sel_dfl4 ASSIGNING <st>.
+    WRITE / |low: { <st>-low }, high: { <st>-high }, option: { <st>-option }, sign: { <st>-sign }|.
+  ENDLOOP.
+  SKIP.
+
+  SELECT *
+         FROM @itab AS tab
+         WHERE num IN @sel_dfl4
+         INTO @demo_structure.
+    WRITE / |{ demo_structure-carrid } { demo_structure-num }|.
+  ENDSELECT.
+
+  SKIP.
+  SKIP.
+  WRITE / `Selected values (DEFAULT, OPTION using CP for patterns, SIGN include):`.
+  LOOP AT sel_dfl5 ASSIGNING FIELD-SYMBOL(<fs>).
+    WRITE / |low: { <fs>-low }, high: { <fs>-high }, option: { <fs>-option }, sign: { <fs>-sign }|.
+  ENDLOOP.
+  SKIP.
+
+  SELECT *
+         FROM @itab AS tab
+         WHERE carrid IN @sel_dfl5
+         INTO @demo_structure.
+    WRITE / |{ demo_structure-carrid } { demo_structure-num }|.
+  ENDSELECT.
+
+  SKIP.
+  SKIP.
+  WRITE / `Selected values (LOWER CASE):`.
+  LOOP AT sel_lc ASSIGNING <fs>.
+    WRITE / |low: { <fs>-low }, high: { <fs>-high }, option: { <fs>-option }, sign: { <fs>-sign }|.
+  ENDLOOP.
+  SKIP.
+
+  SELECT *
+         FROM @itab AS tab
+         WHERE carrid IN @sel_lc
+         INTO @demo_structure.
+    WRITE / |{ demo_structure-carrid } { demo_structure-num }|.
+  ENDSELECT.
+
+  SKIP.
+  SKIP.
+  WRITE / `Selected values (MATCHCODE OBJECT):`.
+  LOOP AT sel_mtch ASSIGNING <fs>.
+    WRITE / |low: { <fs>-low }, high: { <fs>-high }, option: { <fs>-option }, sign: { <fs>-sign }|.
+  ENDLOOP.
+  SKIP.
+
+  SELECT *
+         FROM @itab AS tab
+         WHERE carrid IN @sel_mtch
+         INTO @demo_structure.
+    WRITE / |{ demo_structure-carrid } { demo_structure-num }|.
+  ENDSELECT.
+``` 
+
+ </td>
+</tr>
+
+</table>
 
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
@@ -857,9 +1260,7 @@ SELECTION-SCREEN END OF SCREEN 9003.
 "Note: There are more additions available regarding display adjustment, among others.
 ```
 
-<p align="right"><a href="#top">⬆️ back to top</a></p>
-
-#### Variants of the SELECTION-SCREEN Statement
+**Variants of the SELECTION-SCREEN Statement**
 
 - The variants do not create selection screens, but are used to change the layout of selection screens, create additional screen elements, and so on.
 - Example: The `PARAMETERS` and `SELECT-OPTIONS` statements create input fields on an individual line. Using the variants of the `SELECTION-SCREEN` statement, you can arrange the layout differently.
