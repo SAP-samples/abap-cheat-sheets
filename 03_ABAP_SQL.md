@@ -30,7 +30,9 @@
     - [Numeric Functions](#numeric-functions)
     - [String Functions](#string-functions)
     - [coalesce Function](#coalesce-function)
-    - [More Functions](#more-functions)
+    - [Conversion Functions](#conversion-functions)
+    - [Date and Time Functions](#date-and-time-functions)
+    - [UUID Function](#uuid-function)
   - [Create, Update, and Delete Operations](#create-update-and-delete-operations)
     - [Using INSERT](#using-insert)
     - [Using UPDATE](#using-update)
@@ -1884,64 +1886,440 @@ SELECT tab2~key_field,
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-### More Functions
+### Conversion Functions
 
-More information:
-- [Special functions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_sql_special_functions.htm)
-- [UUID function](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensql_uuid.htm)
-- [Date and time functions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensql_uuid.htm)
-- It is also possible to call [SQL-based scalar functions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_sql_scalar_glosry.htm). Find more information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensql_cds_scalar_func.htm).
+[Type conversion functions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABENSQL_TYPE_CONV_FUNC.html): 
 
-The following example shows a selection. Other cheat sheets such as [Built-In Functions](24_Builtin_Functions.md) show more snippets about date and time functions.
-  
+<table>
+
+<tr>
+<td> Function </td> <td> Notes </td> <td> Code Snippet </td>
+</tr>
+
+<tr>
+<td> 
+
+`bintohex( ... )` 
+
+ </td>
+
+ <td> 
+
+Converts byte strings (type `raw`; mapped to ABAP type `x`) to character strings (type `char`)
+
+
+ </td>
+
+<td>
+
+The code snippet implements the following: 
+- To have a self-contained example, a demo internal table with elementary line type (byte-like type `x length 10`) is created. 
+- The table is filled with demo data. 
+- An ABAP SQL `SELECT` statement that includes the `bintohex` function retrieves data from the internal table. Note that a warning would be displayed that the `SELECT` command is executed on the database. The warning is suppressed with a pragma.
+- [Runtime Type Identification (RTTI)](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrun_time_type_identific_glosry.htm) (find more information in the Dynamic Programming cheat sheet) is used to demonstrate that the type of the `tline` (the alias name for `table_line`) is character-like. 
+<br>
+
+``` abap
+TYPES x10  TYPE x LENGTH 10.
+TYPES ty_raw_tab TYPE TABLE OF x10 WITH EMPTY KEY.
+
+DATA(raw_tab) = VALUE ty_raw_tab( ( CONV x10( '68656C6C6F' ) )
+                                  ( CONV x10( '776F726C64' ) )
+                                  ( CONV x10( '41424150' ) ) ).
+
+SELECT bintohex( table_line ) AS tline
+    FROM @raw_tab AS tab
+    INTO TABLE @DATA(conv_to_blob_tab) ##ITAB_DB_SELECT.
+
+DATA(tdo_itab) = CAST cl_abap_tabledescr( cl_abap_typedescr=>describe_by_data( conv_to_blob_tab ) ).
+DATA(table_components_itab) = CAST cl_abap_structdescr( tdo_itab->get_table_line_type( ) )->components.
+DATA(text_line_type_kind) = table_components_itab[ name = 'TLINE' ]-type_kind.
+ASSERT text_line_type_kind = cl_abap_typedescr=>typekind_char.
+``` 
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+`hextobin( ... )`
+
+ </td>
+
+ <td> 
+
+Converts character strings (type `char` or `numc`) to byte strings (type `raw`; mapped to ABAP type `x`)
+
+
+ </td>
+
+<td> 
+
+The code snippet implements the following: 
+- To have a self-contained example, a demo internal table with elementary line type (character-like type `c length 10`) is created. 
+- The table is filled with demo data. 
+- An ABAP SQL `SELECT` statement that includes the `hextobin` function retrieves data from the internal table. Note that a warning would be displayed that the `SELECT` command is executed on the database. The warning is suppressed with a pragma.
+- RTTI is used to demonstrate that the type of the `tline` (the alias name for `table_line`) is `x`. 
+
+<br>
+
+``` abap
+TYPES c10 TYPE c LENGTH 10.
+TYPES ty_c_tab TYPE TABLE OF c10 WITH EMPTY KEY.
+
+DATA(c_tab) = VALUE ty_c_tab( ( '68656C6C6F' )
+                              ( '776F726C64' )
+                              ( '41424150' ) ).
+
+SELECT hextobin( table_line ) AS tline
+    FROM @c_tab AS tab
+    INTO TABLE @DATA(hextobin_tab) ##ITAB_DB_SELECT.
+
+DATA(tdo_itab) = CAST cl_abap_tabledescr( cl_abap_typedescr=>describe_by_data( hextobin_tab ) ).
+DATA(table_components_itab) = CAST cl_abap_structdescr( tdo_itab->get_table_line_type( ) )->components.
+DATA(text_line_type_kind) = table_components_itab[ name = 'TLINE' ]-type_kind.
+ASSERT text_line_type_kind = cl_abap_typedescr=>typekind_hex.
+``` 
+
+ </td>
+</tr>
+
+
+<tr>
+<td> 
+
+`to_blob( ... )`
+
+ </td>
+
+ <td> 
+
+Converts from a byte field (type `raw`; mapped to ABAP type `x`) to a byte string (a blob, Binary Large Object; type `rawstring`; mapped to ABAP type `xstring`).
+
+ </td>
+
+<td> 
+
+The code snippet implements the following: 
+- To have a self-contained example, a demo internal table with elementary line type (byte-like type, `x length 10`) is created. 
+- The table is filled with demo data. 
+- An ABAP SQL `SELECT` statement that includes the `to_blob` function retrieves data from the internal table. Note that a warning would be displayed that the `SELECT` command is executed on the database. The warning is suppressed with a pragma.
+- RTTI is used to demonstrate that the type of the `tline` (the alias name for `table_line`) is `xstring`. 
+
+<br>
+
+``` abap
+TYPES x10  TYPE x LENGTH 10.
+TYPES ty_raw_tab TYPE TABLE OF x10 WITH EMPTY KEY.
+
+DATA(raw_tab) = VALUE ty_raw_tab( ( CONV x10( '68656C6C6F' ) )
+                                    ( CONV x10( '776F726C64' ) )
+                                    ( CONV x10( '41424150' ) ) ).
+
+SELECT to_blob( table_line ) AS tline
+    FROM @raw_tab AS tab
+    INTO TABLE @DATA(conv_to_blob_tab) ##ITAB_DB_SELECT.
+
+DATA(tdo_itab) = CAST cl_abap_tabledescr( cl_abap_typedescr=>describe_by_data( conv_to_blob_tab ) ).
+DATA(table_components_itab) = CAST cl_abap_structdescr( tdo_itab->get_table_line_type( ) )->components.
+DATA(text_line_type_kind) = table_components_itab[ name = 'TLINE' ]-type_kind.
+ASSERT text_line_type_kind = cl_abap_typedescr=>typekind_xstring.
+``` 
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+`to_clob( ... )`
+
+ </td>
+
+ <td> 
+
+- Converts a fixed-length character string (type `char` or `sstring`) to a clob (character large object; type `string`)
+- The argument specified in the parentheses can be a table column, literal, host variable/constant, or an SQL expression
+
+ </td>
+
+<td> 
+
+The example class, executable with F9 in ADT, implements the following: 
+- To have a self-contained example, a demo internal table is created. Among others, it includes the `text` component that is of type `c` with length 255.
+- The table is filled with lots of data. `text` receives random strings of a random length (1 - 255) to have data to work with.
+- An ABAP SQL `SELECT` statement that includes the `to_clob` function retrieves data from the internal table. Note that a warning would be displayed that the `SELECT` command is executed on the database. The warning is suppressed with a pragma.
+- The `to_clob` has an SQL expression as argument. In this case, it is an aggregate expression with `STRING_AGG`, which aggregates the value of multiple rows into a single value.
+- Using RTTI, it is demonstrated that the type of the `text_line` component (the alias name for `text`) is `string`. It is then evaluated how many characters the random strings contain. The example is set up to show that the aggregated string exceeds 1333 characters, which is the maximum length of fields of type `sstring`.
+
+<br>
+
+```abap
+CLASS zcl_demo_abap DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
+
+  PUBLIC SECTION.
+    INTERFACES if_oo_adt_classrun.
+    METHODS get_random_string IMPORTING VALUE(length) TYPE i OPTIONAL
+                              RETURNING VALUE(str)    TYPE string.
+    TYPES: BEGIN OF demo_struct,
+             num  TYPE i,
+             uuid TYPE sysuuid_x16,
+             text TYPE c LENGTH 255,
+           END OF demo_struct.
+    TYPES      ty_demo_tab TYPE SORTED TABLE OF demo_struct WITH UNIQUE KEY num uuid.
+
+    METHODS get_random_table_content IMPORTING VALUE(table_entry_count) TYPE i OPTIONAL
+                                     RETURNING VALUE(demo_tab)          TYPE ty_demo_tab.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+ENDCLASS.
+
+
+CLASS zcl_demo_abap IMPLEMENTATION.
+  METHOD if_oo_adt_classrun~main.
+
+    DATA(random_table) = get_random_table_content( 500 ).
+
+    SELECT num, to_clob( STRING_AGG( text, ',' ) ) AS text_line
+        FROM @random_table AS tab
+        GROUP BY num
+        ORDER BY num
+        INTO TABLE @DATA(aggregated_data) ##ITAB_DB_SELECT.
+
+    "Checking the type of the text_line component using RTTI
+    DATA(tdo_itab) = CAST cl_abap_tabledescr( cl_abap_typedescr=>describe_by_data( aggregated_data ) ).
+    DATA(table_components_itab) = CAST cl_abap_structdescr( tdo_itab->get_table_line_type( ) )->components.
+    DATA(text_line_type_kind) = table_components_itab[ name = 'TEXT_LINE' ]-type_kind.
+    IF text_line_type_kind = cl_abap_typedescr=>typekind_string.
+      out->write( `The text_line component is of type string.` ).
+      out->write( |\n| ).
+    ENDIF.
+
+    DATA(lines_w_more_than_1333) = REDUCE i( INIT int = 0
+                                             FOR line IN aggregated_data
+                                             NEXT int =  COND #( WHEN strlen( line-text_line ) > 1333 THEN int + 1 ELSE int ) ).
+
+    out->write( |{ lines_w_more_than_1333 } out of { lines( aggregated_data ) } lines of the internal table have a text_line value exceeding 1333 characters.| ).
+    out->write( |\n| ).
+
+  ENDMETHOD.
+
+  METHOD get_random_string.
+    IF length IS NOT SUPPLIED OR length > 255.
+      length =  cl_abap_random_int=>create( seed = cl_abap_random=>seed( )
+                                            min  = 1
+                                            max  = 255 )->get_next( ).
+    ENDIF.
+
+    DATA(characters) = `aAbBcCdDeEfFgGhHiIjJkKlLmMnNoOpPqQrRsStTuUvVwWxXyYzZ1234567890`.
+    DATA(off) = strlen( characters ) - 1.
+
+    DO length TIMES.
+      DATA(random_offset) = cl_abap_random_int=>create( seed = cl_abap_random=>seed( )
+                                                  min  = 0
+                                                  max  = off )->get_next( ).
+
+      TRY.
+          str &&= characters+random_offset(1).
+        CATCH cx_sy_range_out_of_bounds.
+      ENDTRY.
+    ENDDO.
+  ENDMETHOD.
+
+  METHOD get_random_table_content.
+    IF table_entry_count IS NOT SUPPLIED OR table_entry_count > 1000.
+      table_entry_count =  cl_abap_random_int=>create( seed = cl_abap_random=>seed( )
+                                                  min  = 1
+                                                  max  = 1000 )->get_next( ).
+    ENDIF.
+
+    "Example implementation: For the string aggregation in the SELECT statement,
+    "multiple lines should be created with the same key value in 'num'.
+    DATA(value4num) = 1.
+    DO table_entry_count TIMES.
+      IF sy-index MOD 25 = 0.
+        value4num += 1.
+      ENDIF.
+
+      INSERT VALUE #( num = value4num
+                      uuid = xco_cp=>uuid( )->value
+                      text = get_random_string( ) ) INTO TABLE demo_tab.
+    ENDDO.
+  ENDMETHOD.
+ENDCLASS.
+```
+
+
+ </td>
+</tr>
+
+
+<tr>
+<td> 
+
+`unit_conversion( ... )`
+
+ </td>
+
+ <td> 
+
+Converts units for a value passed to the `quantity` parameter
+
+ </td>
+
+<td> 
+
+The code snippet implements the following: 
+- To have a self-contained example, a demo internal table with elementary line type (packed number, `p length 16 decimals 14`) is created. 
+- The table is filled with demo data. 
+- Two ABAP SQL `SELECT` statements are included that specify the `unit_conversion` function. Data is retrieved from the internal table and converted. Note that a warning would be displayed that the `SELECT` command is executed on the database. The warning is suppressed with a pragma.
+- The example covers the conversion of miles to kilometers and vice versa.
+
+
+<br>
+
+```abap
+TYPES p_len16dec14 TYPE p LENGTH 16 DECIMALS 14.
+TYPES ty_plen16dec14_tab TYPE TABLE OF p_len16dec14 WITH EMPTY KEY.
+
+DATA(p_tab) = VALUE ty_plen16dec14_tab( ( CONV p_len16dec14( '1' ) )
+                                        ( CONV p_len16dec14( '5.7' ) )
+                                        ( CONV p_len16dec14( '4.2' ) )
+                                        ( CONV p_len16dec14( '25.78' ) ) ).
+
+SELECT unit_conversion( quantity = table_line,
+                        source_unit = unit`MI`,
+                        target_unit = unit`KM` ) AS miles_to_km
+    FROM @p_tab AS tab
+    INTO TABLE @DATA(unit_conv_mi2km_tab) ##ITAB_DB_SELECT.
+
+SELECT unit_conversion( quantity = miles_to_km,
+                        source_unit = unit`KM`,
+                        target_unit = unit`MI` ) AS km_to_miles
+    FROM @unit_conv_mi2km_tab AS tab
+    INTO TABLE @DATA(unit_conv_km2mi_tab) ##ITAB_DB_SELECT.
+```
+
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+`currency_conversion( ... )`
+
+ </td>
+
+ <td> 
+
+- Converts currencies for a value passed to the `amount` parameter
+- Multiple optional parameters can be specified (excluding `client` in ABAP for Cloud Development)
+
+ </td>
+
+<td> 
+
+The code snippet implements the following: 
+- To have a self-contained example, a demo internal table with elementary line type (packed number, `p length 16 decimals 2`) is created. 
+- The table is filled with demo data. 
+- An ABAP SQL `SELECT` statement that includes the `currency_conversion` function retrieves data from the internal table and converts currency values from Euro to US dollars. Note that a warning would be displayed that the `SELECT` command is executed on the database. The warning is suppressed with a pragma.
+
+<br>
+
+```abap
+TYPES p_len16dec2 TYPE p LENGTH 16 DECIMALS 2.
+TYPES ty_plen16dec2_tab TYPE TABLE OF p_len16dec2 WITH EMPTY KEY.
+
+DATA(p_tab) = VALUE ty_plen16dec2_tab( ( CONV p_len16dec2( '1' ) )
+                                        ( CONV p_len16dec2( '5.7' ) )
+                                        ( CONV p_len16dec2( '4.2' ) )
+                                        ( CONV p_len16dec2( '25.78' ) ) ).
+
+SELECT currency_conversion( amount = table_line,
+                            source_currency = char`EUR`,
+                            target_currency = char`USD`,
+                            exchange_rate_date = @( cl_abap_context_info=>get_system_date( ) ) ) AS eur2usd
+    FROM @p_tab AS tab
+    INTO TABLE @DATA(curr_unit_conv_eur2usd) ##ITAB_DB_SELECT.
+```
+
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+`as_geo_json( ... )`
+
+ </td>
+
+ <td> 
+
+Converts geometry input in the [Extended Well-Known Binary (EWKB) representation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABENDDIC_GEO_DATA.html) to a geometry object in JSON format
+
+
+ </td>
+
+<td> 
+
+
+```abap
+SELECT as_geo_json( some_geo_field ) 
+    FROM ... 
+    WHERE ...
+    INTO ... 
+```
+
+
+ </td>
+</tr>
+
+</table>
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+
+### Date and Time Functions
+
+Find more information in the [ABAP Keyword Documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensql_uuid.htm). The  [Built-In Functions](24_Builtin_Functions.md) cheat sheet covers code examples.
+
 ``` abap
 SELECT SINGLE
   carrid,
-
-  "Conversion functions
-  "When used: Special conversions that cannot be handled in a general
-  "CAST expression
-
-  "Type conversion: string of fixed length (e.g. of type c) to variable
-  "length string of type string
-  to_clob( carrid ) AS clob,
-
-  "Byte string -> character string
-  bintohex( raw`3599421128650F4EE00008000978B976` ) AS bintohex,
-
-  "Character string -> byte string
-  hextobin( char`3599421128650F4EE00008000978B976` ) AS hextobin,
-
-  "Byte field of type RAW to a byte string (BLOB) of type RAWSTRING
-  to_blob( raw`3599421128650F4EE00008000978B976` ) AS blob,
-
-  "Unit and currency conversion functions
-  "More parameters are available.
-
-  "Converts miles to kilometers
-  unit_conversion( quantity = d34n`1`,
-                   source_unit = unit`MI`,
-                   target_unit = unit`KM` ) AS miles_to_km,
-
-  "Converts Euro to US dollars using today's rate
-  currency_conversion(
-    amount = d34n`1`,
-    source_currency = char`EUR`,
-    target_currency = char`USD`,
-    exchange_rate_date = @( cl_abap_context_info=>get_system_date( ) )
-                     ) AS eur_to_usd,
-
-  "Date and time functions
+  
+  "Selection of time and date-related functions
   add_days( @( cl_abap_context_info=>get_system_date( ) ), 4 ) AS add_days,
   add_months( @( cl_abap_context_info=>get_system_date( ) ), 2 ) AS add_months,
   is_valid( @( cl_abap_context_info=>get_system_date( ) ) ) AS date_is_valid,
-  is_valid( @( cl_abap_context_info=>get_system_time( ) ) ) AS time_is_valid,
+  is_valid( @( cl_abap_context_info=>get_system_time( ) ) ) AS time_is_valid
+  "...
 
+FROM zdemo_abap_carr
+INTO @DATA(tab_w_date_time_func).
+```
+
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+### UUID Function
+
+[UUID function](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensql_uuid.htm)
+
+``` abap
+SELECT SINGLE
+  carrid,
+  
   "UUID
   uuid( ) AS uuid
 
 FROM zdemo_abap_carr
-INTO @DATA(special_functions).
+INTO @DATA(tab_w_uuid).
 ```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>

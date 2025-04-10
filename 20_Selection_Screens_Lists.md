@@ -4,11 +4,9 @@
 
 - [Selection Screens and Classic Lists](#selection-screens-and-classic-lists)
   - [Introduction](#introduction)
-  - [Terms](#terms)
     - [Selection Screens](#selection-screens)
     - [Classic Lists](#classic-lists)
   - [ABAP Statements for Selection Screens](#abap-statements-for-selection-screens)
-    - [Creating Selection Screens](#creating-selection-screens)
     - [PARAMETERS](#parameters)
     - [SELECT-OPTIONS](#select-options)
     - [SELECTION-SCREEN](#selection-screen)
@@ -48,8 +46,6 @@ For more detailed information and syntax options, see the topics [Selection Scre
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-## Terms
-
 ### Selection Screens
 - Are special [dynpros](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abendynpro_glosry.htm) in [executable programs](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenexecutable_program_glosry.htm) (*"reports"*; they're also possible in [function groups](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenfunction_group_glosry.htm) and [module pools](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenmodul_pool_glosry.htm), but the focus here is on executable programs).
 - Used for data entry in an executable program, i.e. they allow users to ...
@@ -71,6 +67,7 @@ For more detailed information and syntax options, see the topics [Selection Scre
     - Each executable program (and only there) contains a standard selection screen with the dynpro number 1000. Note: If you create a standalone selection screen, you cannot use dynpro number 1000.
     - The screen elements on the standard selection screen are defined by all `PARAMETERS`, `SELECT-OPTIONS`, and `SELECTION-SCREEN` statements that are defined outside of the statements mentioned above for creating standalone selection screens.
   
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ### Classic Lists
 - Used to output data in a structured and formatted way.
@@ -90,8 +87,6 @@ For more detailed information and syntax options, see the topics [Selection Scre
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## ABAP Statements for Selection Screens
-
-### Creating Selection Screens
 
 Selection screens can be created by using special ABAP statements in the global declaration part of executable programs: 
 - [`PARAMETERS`](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapparameters.htm)
@@ -121,7 +116,7 @@ The following table includes code snippets with a selection of available syntax 
 <tr>
 <td> 
 
-Type specification options<br>
+Type specification options<br><br>
 Additions `TYPE` and `LIKE`
 
  </td>
@@ -254,7 +249,7 @@ START-OF-SELECTION.
 <tr>
 <td> 
 
-Dynamically specifying the type<br>
+Dynamically specifying the type<br><br>
 Addition `LIKE (...)`
 
  </td>
@@ -313,8 +308,8 @@ START-OF-SELECTION.
 <tr>
 <td> 
 
-Specifying value options<br>
-Additions `DEFAULT`, `LOWER CASE`, `MATCHOCODE OBJECT`, `MEMORY ID`, `VALUE CHECK`
+Specifying value options<br><br>
+Additions `DEFAULT`, `LOWER CASE`, `MATCHCODE OBJECT`, `MEMORY ID`, `VALUE CHECK`
 
  </td>
 
@@ -322,7 +317,7 @@ Additions `DEFAULT`, `LOWER CASE`, `MATCHOCODE OBJECT`, `MEMORY ID`, `VALUE CHEC
 
 - `DEFAULT`: Defines a start value (can also be a data object instead of a literal)
 - `LOWER CASE`: Prevents the effect of capitalizing the entry made when the content is transported to the data object
-- `MATCHOCODE OBJECT`: Links an input field with a DDIC search help
+- `MATCHCODE OBJECT`: Links an input field with a DDIC search help
 - `MEMORY ID`: Links an input field with an SPA/GPA parameter in the user memory, i.e. data objects in the user memory accessible by ABAP programs. When calling the selection screen, the input field receives the SPA/GPA parameter value if the `PARAMETERS`'s data object is initial after processing of the `AT SELECTION-SCREEN OUTPUT` event block. The SPA/GPA parameters are set using [`SET PARAMETER`](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapset_parameter.htm) and read using [`GET PARAMETER`](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapget_parameter.htm) statements. See the names of the parameters in the `TPARA` database table.
 - `VALUE CHECK`: Checks input against fixed values defined for the domain of a data type. It can only be used for DDIC data types. Checks are also available for data types being components of foreign key tables. It is recommended to specify the `VALUE CHECK` addition with the `OBLIGATORY` addition as the check is also applied in case of empty input fields.
 
@@ -408,7 +403,7 @@ START-OF-SELECTION.
 <tr>
 <td> 
 
-Specifying screen options<br>
+Specifying screen options<br><br>
 Additions `OBLIGATORY`, `NO-DISPLAY`, `VISIBLE LENGTH`, `AS CHECKBOX`, `RADIOBUTTON GROUP`, `AS LISTBOX VISIBLE LENGTH`
 
  </td>
@@ -543,7 +538,7 @@ START-OF-SELECTION.
 <tr>
 <td> 
 
-Assigning function codes to selection parameters<br>
+Assigning function codes to selection parameters<br><br>
 Addition `USER-COMMAND`
 
  </td>
@@ -625,14 +620,14 @@ START-OF-SELECTION.
 <tr>
 <td> 
 
-Assigning a screen element of a selection screen to a modification group<br>
+Assigning a screen element of a selection screen to a modification group<br><br>
 Addition `MODIF ID`
 
  </td>
 
  <td> 
 
-- The `PARAMETERS` statement can be specified with the `MODIF ID` addition to assign a screen element of a selection screen to a modification group, which represents a group of multiple screen elements of a dynpro having a three-character ID. This ID is used to modify the display properties of all those elements specifying the ID before they are actually displayed. For that purpose, you can use the `MODIFY SCREEN` statement. The ID is assigned to the `screen-grouop1` component that can be evaluated. 
+- The `PARAMETERS` statement can be specified with the `MODIF ID` addition to assign a screen element of a selection screen to a modification group, which represents a group of multiple screen elements of a dynpro having a three-character ID. This ID is used to modify the display properties of all those elements specifying the ID before they are actually displayed. For that purpose, you can use the `MODIFY SCREEN` statement. The ID is assigned to the `screen-group1` component that can be evaluated. 
 - Find more information [here](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenmodification_group_glosry.htm).
 
  </td>
