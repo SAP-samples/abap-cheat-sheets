@@ -2183,47 +2183,364 @@ CALL SELECTION-SCREEN 9345 STARTING AT a b ENDING AT c d.
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## Excursion: SUBMIT Statements
+
 - [`SUBMIT`](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapsubmit.htm) statements call executable programs and, therefore, selection screens.
 - In general, every executable program is started implicitly with `SUBMIT`.
 - Selection screens can be considered a parameter interface if the program containing them is executed using `SUBMIT`.
+- Note that when using `SUBMIT`, an authorization check for the [authorization group](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenauthorization_group_glosry.htm) is performed using the `S_PROGRAM` authorization object.
 
-```abap
-"The calling program is ended
-SUBMIT some_program.     "Direct specification of the program name
+The following table includes a selection of additions and code snippets (2 programs use the demo names `zdemo_abap_report` for the calling program and `zdemo_abap_report_submit` for the called program):
 
-"Dynamic call
-"Note the security risks and consequences a program submitted from outside can cause;
-"you may use the class CL_ABAP_DYN_PRG to tackle security risks
-SUBMIT ('SOME_PROGRAM'). "Character-like data object in a pair of parentheses
+<table>
 
-"AND RETURN: The calling program is interrupted
-SUBMIT some_program AND RETURN.
+<tr>
+<td> Subject/Addition </td> <td> Notes </td> <td> Code Snippet </td>
+</tr>
 
-"Selection screen-related options for the SUBMIT statement
-"Specifies a particular selection screen to be called (but it's not displayed)
-SUBMIT some_program USING SELECTION-SCREEN 9123. 
+<tr>
+<td> 
 
-"Specifies that the selection screen to be called is displayed
-SUBMIT some_program VIA SELECTION-SCREEN.
-SUBMIT some_program USING SELECTION-SCREEN 9123 VIA SELECTION-SCREEN.
+Calling a program, ending the current program
 
-"You can pass values to the selection screen. There are a several options.
-"Check the ABAP Keyword Documentation. The following examples cover a selection.
+ </td>
 
-"In the followig example, it is assumed that the called program only has 1 
-"parameter with name par, type i. The addition USING SELECTION-SCREEN is 
-"omitted, i.e. the standard selection screen is called (but you can also call 
-"the dynpro 1000 explicitly). 
-SUBMIT some_program WITH par = 1. "Specifying EQ is also possible
+ <td> 
 
-"Displaying the selection screen, only interrupt the current program
-SUBMIT some_program VIA SELECTION-SCREEN WITH par = 1 AND RETURN.
+- The program name is specified directly.
+- If the program does not exist, a runtime error occurs.
+- Without the `AND RETURN` addition, the current [SAP LUW](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abensap_luw_glosry.htm) is terminated.
 
-"You can also pass multiple values, e.g. consider a program having multiple
-"PARAMETERS statements (you may also have multiple WITH additions), or SELECT-OPTIONS
-"statements. 
-SUBMIT some_program VIA SELECTION-SCREEN WITH SELECTION-TABLE tab.
-```
+ </td>
+
+<td> 
+
+`zdemo_abap_report`
+``` abap
+PROGRAM.
+
+SUBMIT zdemo_abap_report_submit.
+
+WRITE / |This will not be displayed as the calling program is ended.|.
+``` 
+
+<br>
+
+`zdemo_abap_report_submit`
+``` abap
+PROGRAM.
+
+WRITE / |The program { sy-repid } was executed at { utclong_current( ) TIMESTAMP = SPACE }.|.
+``` 
+
+
+ </td>
+</tr>
+
+<tr>
+<td> Subject/Addition </td> <td> Notes </td> <td> Code Snippet </td>
+</tr>
+
+<tr>
+<td> 
+
+Dynamically calling a program
+
+ </td>
+
+ <td> 
+
+- A parenthesized flat character-like data object (literal, constannt or variable) is specified.
+- The name must be specified in uppercase.
+- Note the security risks and consequences a program submitted from outside can cause. You can use the class `CL_ABAP_DYN_PRG` to tackle security risks.
+
+ </td>
+
+<td> 
+
+`zdemo_abap_report`
+``` abap
+PROGRAM.
+
+SUBMIT ('ZDEMO_ABAP_REPORT_SUBMIT').
+
+WRITE / `This will not be displayed, and the following SUBMIT ` && 
+        `statement will not be carried out as the calling program is ended.`.
+
+"Using the name of a program in a variable
+"The statement is not called in the example.
+DATA prog_name type syrepid value 'ZDEMO_ABAP_REPORT_SUBMIT'.
+SUBMIT (prog_name).
+``` 
+
+<br>
+
+`zdemo_abap_report_submit`
+``` abap
+PROGRAM.
+
+WRITE / |The program { sy-repid } was executed at { utclong_current( ) TIMESTAMP = SPACE }.|.
+``` 
+
+ </td>
+</tr>
+
+<tr>
+<td> Subject/Addition </td> <td> Notes </td> <td> Code Snippet </td>
+</tr>
+
+<tr>
+<td> 
+
+Calling a program, interrupting the current program and return<br><br>
+Addition `AND RETURN`
+
+ </td>
+
+ <td> 
+
+- The calling program is interrupted. 
+- With the `AND RETURN` addition, the called program starts in a new [internal session](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abeninternal_session_glosry.htm) and has its own [SAP LUW](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abensap_luw_glosry.htm). The current internal session and [SAP LUW](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abensap_luw_glosry.htm) is kept. When the called program is ended, the execution of the calling program continues.
+- Find [here](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapsubmit.htm) more information regarding the impact of the involved SAP LUWs. 
+
+ </td>
+
+<td> 
+
+The following code snippets, copyable to demo programs and executable using F8 (execute program `zdemo_abap_report`), implements the following:
+- `zdemo_abap_report` calls a program using the `AND RETURN` addition. Before and after the statement, the SAP LUW key is retrieved using a system class. 
+- The program interruption is demonstrated that the `WRITE` statements display content in a classic list, and both SAP LUW keys are the same. So, the SAP LUW has been kept. 
+- The called program also contains a statement to store the SAP LUW key. The `BREAK-POINT` statement starts the debugger. You can check the SAP LUW key value there, and - after continuing the program execution - compare the SAP LUW key values. They are different, thus, showing that two different SAP LUWs have been started.
+
+`zdemo_abap_report`
+``` abap
+PROGRAM.
+
+DATA(sap_luw_key_calling_prog1) = cl_system_transaction_state=>get_sap_luw_key( ).
+
+SUBMIT zdemo_abap_report_submit AND RETURN.
+
+DATA(sap_luw_key_calling_prog2) = cl_system_transaction_state=>get_sap_luw_key( ).
+
+WRITE / `This will be displayed as the calling program is only interrupted.`.
+WRITE / |sap_luw_key_calling_prog1: "{ sap_luw_key_calling_prog1 }"|.
+WRITE / |sap_luw_key_calling_prog2: "{ sap_luw_key_calling_prog2 }"|.
+``` 
+
+<br>
+
+`zdemo_abap_report_submit`
+``` abap
+PROGRAM.
+
+DATA(sap_luw_key_called_prog) = cl_system_transaction_state=>get_sap_luw_key( ).
+BREAK-POINT.
+``` 
+
+ </td>
+</tr>
+
+<tr>
+<td> Subject/Addition </td> <td> Notes </td> <td> Code Snippet </td>
+</tr>
+
+<tr>
+<td> 
+
+Specifying a particular selection screen to be called and display it or not<br>
+Additions `USING SELECTION-SCREEN` and `VIA SELECTION-SCREEN`
+
+ </td>
+
+ <td> 
+
+- `USING SELECTION-SCREEN`: Specifies the selection screen. If the addition is not specified, the standard selection screen 1000 is called. The specified seclection screen must exist, otherwise a runtime error occurs.
+- `VIA SELECTION-SCREEN`: Determines whether the selection is displayed or not.
+- The following sections outline options to pass parameter and selection criteria values.
+
+ </td>
+
+<td> 
+
+`zdemo_abap_report`
+``` abap
+PROGRAM.
+
+PARAMETERS: p_rb1 RADIOBUTTON GROUP rbg,
+            p_rb2 RADIOBUTTON GROUP rbg,
+            p_rb3 RADIOBUTTON GROUP rbg.
+
+START-OF-SELECTION.
+
+  CASE 'X'.
+    WHEN p_rb1.
+      "In this example, the called selection screen is not displayed. Therefore, none 
+      "of the parameters in the called program are assigned values.  
+      SUBMIT zdemo_abap_report_submit USING SELECTION-SCREEN 9000 AND RETURN.
+    WHEN p_rb2.
+      "The specified selection screen is called.
+      SUBMIT zdemo_abap_report_submit USING SELECTION-SCREEN 9000 VIA SELECTION-SCREEN AND RETURN.
+    WHEN p_rb3.
+      "The standard selection screen 1000 is called.
+      SUBMIT zdemo_abap_report_submit VIA SELECTION-SCREEN AND RETURN.
+  ENDCASE.
+``` 
+
+<br>
+
+`zdemo_abap_report_submit`
+``` abap
+PROGRAM.
+
+PARAMETERS param1 TYPE c LENGTH 10.
+
+SELECTION-SCREEN BEGIN OF SCREEN 9000.
+  PARAMETERS param2 TYPE c LENGTH 10.
+SELECTION-SCREEN END OF SCREEN 9000.
+
+START-OF-SELECTION.
+
+ WRITE / `Inserted values:`.
+  SKIP.
+  WRITE / |param1: "{ param1 }"|.
+  WRITE / |param2: "{ param2 }"|.
+```  
+
+ </td>
+</tr>
+
+<tr>
+<td> Subject/Addition </td> <td> Notes </td> <td> Code Snippet </td>
+</tr>
+
+<tr>
+<td> 
+
+Passing values to a called selection screen<br>
+Additions `WITH SELECTION-TABLE`, `WITH ...` 
+
+ </td>
+
+ <td> 
+
+- `WITH SELECTION-TABLE`: Passes values specified in an internal of a special line type (`RSPARAMS`, `RSPARAMSL_255`, without secondary table keys). The line type has specific component, among them: `selname` (parameter name in uppercase), `kind` (`P` for parameters, `S` for selection criteria), `sign`/`option`/`low`/`high` (ranges table components; note that for parameters, the value must be specified for `low`) 
+- `WITH ...` : Supplying individual values
+- More additions are available. Find more information [here](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapsubmit_selscreen_parameters.htm):
+  - `WITH FREE SELECTIONS`: For dynamic selections of selection screens of [logical databases](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenlogical_data_base_glosry.htm)
+  - `USING SELECTION-SET`: Passes values of a [selection screen variant](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenvariant_glosry.htm) 
+  - `USING SELECTION-SETS OF PROGRAM`: Passes values of a selection screen variant of a particular program
+
+ </td>
+
+<td> 
+
+`zdemo_abap_report`
+``` abap
+PROGRAM.
+
+PARAMETERS: wseltab1 RADIOBUTTON GROUP rbg,
+            wseltab2 RADIOBUTTON GROUP rbg,
+            wseltab3 RADIOBUTTON GROUP rbg,
+            simple_w RADIOBUTTON GROUP rbg,
+            with_sel RADIOBUTTON GROUP rbg,
+            singlrt  RADIOBUTTON GROUP rbg,
+            intv_rt  RADIOBUTTON GROUP rbg,
+            rangest  RADIOBUTTON GROUP rbg.
+
+START-OF-SELECTION.
+
+  CASE 'X'.
+    WHEN wseltab1.
+      DATA seltab1 TYPE TABLE OF rsparams WITH EMPTY KEY.
+      seltab1 = VALUE #( ( selname = 'PARAM2' kind = 'P' low = 'Test' ) ).
+      SUBMIT zdemo_abap_report_submit USING SELECTION-SCREEN 9000 WITH SELECTION-TABLE seltab1 AND RETURN.
+
+      WHEN wseltab2.DATA seltab2 TYPE TABLE OF rsparams WITH EMPTY KEY.
+      seltab2 = VALUE #( ( selname = 'SEL1' kind = 'S' low = 'A' high = 'M' option = 'BT' sign = 'I' ) ).
+      SUBMIT zdemo_abap_report_submit USING SELECTION-SCREEN 9001 WITH SELECTION-TABLE seltab2 AND RETURN.
+
+      WHEN wseltab3.DATA seltab3 TYPE TABLE OF rsparams WITH EMPTY KEY.
+      seltab3 = VALUE #( ( selname = 'PARAM3' kind = 'P' low = 'Hello' )
+                         ( selname = 'SEL2' kind = 'S' low = 1 high = 10 option = 'BT' sign = 'I' ) ).
+      SUBMIT zdemo_abap_report_submit USING SELECTION-SCREEN 9002 WITH SELECTION-TABLE seltab3 AND RETURN.
+
+    WHEN simple_w.
+      "Calls the standard selection screen
+      SUBMIT zdemo_abap_report_submit WITH param1 = 'ABAP' AND RETURN.
+
+    WHEN with_sel.SUBMIT zdemo_abap_report_submit USING SELECTION-SCREEN 9000 WITH param2 = 'lorem' AND RETURN.
+
+    WHEN singlrt.
+      "Single value passed for ranges table
+      "Note:
+      "- Specifying SIGN is optional. The default value for sign is 'I'.
+      "- Specify the comparions operations EQ|NE|CP|NP|GT|GE|LT|LE and =|INCL instead of EQ
+      SUBMIT zdemo_abap_report_submit USING SELECTION-SCREEN 9001 WITH sel1 = 'A' SIGN 'I' AND RETURN.
+
+    WHEN intv_rt.
+      "Passed interval for ranges table
+      SUBMIT zdemo_abap_report_submit USING SELECTION-SCREEN 9001 WITH sel1 BETWEEN 'A' AND 'M' SIGN 'I' AND RETURN.
+
+    WHEN rangest.
+      "Passing a ranges table
+      TYPES c10 TYPE c LENGTH 10.
+      DATA rangetab TYPE RANGE OF c10.
+      rangetab = VALUE #( sign   = 'I'
+                          option = 'BT' ( low = 'A'  high = 'C' )
+                                        ( low = 'F'  high = 'M' )
+                                        ( low = 'S'  high = 'U' )
+                          option = 'GE' ( low = 'X' ) ).
+
+      SUBMIT zdemo_abap_report_submit USING SELECTION-SCREEN 9001 WITH sel1 IN rangetab AND RETURN.
+
+  ENDCASE.
+``` 
+
+<br>
+
+`zdemo_abap_report_submit`
+``` abap
+PROGRAM.
+
+PARAMETERS param1 TYPE c LENGTH 10 LOWER CASE.
+
+SELECTION-SCREEN BEGIN OF SCREEN 9000.
+  PARAMETERS param2 TYPE c LENGTH 10 LOWER CASE.
+SELECTION-SCREEN END OF SCREEN 9000.
+
+DATA txt TYPE c LENGTH 10.
+SELECTION-SCREEN BEGIN OF SCREEN 9001.
+  SELECT-OPTIONS: sel1 FOR txt.
+SELECTION-SCREEN END OF SCREEN 9001.
+
+DATA num TYPE i.
+SELECTION-SCREEN BEGIN OF SCREEN 9002.
+  PARAMETERS param3 TYPE c LENGTH 10 LOWER CASE.
+  SELECT-OPTIONS: sel2 FOR num.
+SELECTION-SCREEN END OF SCREEN 9002.
+
+START-OF-SELECTION.
+
+  WRITE / `Inserted values:`.
+  SKIP.
+  WRITE / |param1: "{ param1 }"|.
+  WRITE / |param2: "{ param2 }"|.
+  WRITE / |param3: "{ param3 }"|.
+  SKIP.
+  WRITE / `Selection table content (sel1):`.
+  LOOP AT sel1 ASSIGNING FIELD-SYMBOL(<st1>).
+    WRITE / |low: { <st1>-low }, high: { <st1>-high }, option: { <st1>-option }, sign: { <st1>-sign }|.
+  ENDLOOP.
+  SKIP.
+  WRITE / `Selection table content (sel2):`.
+  LOOP AT sel2 ASSIGNING FIELD-SYMBOL(<st2>).
+    WRITE / |low: { <st2>-low }, high: { <st2>-high }, option: { <st2>-option }, sign: { <st2>-sign }|.
+  ENDLOOP.
+``` 
+
+ </td>
+</tr>
+
+</table>
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
