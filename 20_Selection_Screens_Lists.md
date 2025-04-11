@@ -10,6 +10,9 @@
     - [PARAMETERS](#parameters)
     - [SELECT-OPTIONS](#select-options)
     - [SELECTION-SCREEN](#selection-screen)
+      - [Creating Selection Screens](#creating-selection-screens)
+      - [Adapting the Selection Screen Layout](#adapting-the-selection-screen-layout)
+      - [Using Elements from Other Selection Screens](#using-elements-from-other-selection-screens)
     - [Calling Selection Screens](#calling-selection-screens)
   - [Excursion: SUBMIT Statements](#excursion-submit-statements)
   - [ABAP Statements for Classic Lists](#abap-statements-for-classic-lists)
@@ -831,8 +834,8 @@ INITIALIZATION.
                   ( carrid = 'AZ' num = 4 )
                   ( carrid = 'BA' num = 5 )
                   ( carrid = 'FJ' num = 6 )
-                  ( carrid = 'LH' num = 7 )
-                  ( carrid = 'JL' num = 8 )
+                  ( carrid = 'JL' num = 7 )
+                  ( carrid = 'LH' num = 8 )                  
                   ( carrid = 'NW' num = 9 )
                   ( carrid = 'QF' num = 10 )
                   ( carrid = 'SQ' num = 11 )
@@ -944,8 +947,8 @@ INITIALIZATION.
                   ( carrid = 'AZ' num = 4 )
                   ( carrid = 'BA' num = 5 )
                   ( carrid = 'FJ' num = 6 )
-                  ( carrid = 'LH' num = 7 )
-                  ( carrid = 'JL' num = 8 )
+                  ( carrid = 'JL' num = 7 )
+                  ( carrid = 'LH' num = 8 )                  
                   ( carrid = 'NW' num = 9 )
                   ( carrid = 'QF' num = 10 )
                   ( carrid = 'SQ' num = 11 )
@@ -1211,217 +1214,948 @@ START-OF-SELECTION.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-
 ### SELECTION-SCREEN
 
 - `SELECTION-SCREEN` statements can be used to create and modify the layout of standalone selection screens.
-- Note: The standard selection screen for executable programs is created automatically. That is, each executable program contains a standard selection screen with dynpro number 1000.
+- Note: The standard selection screen for executable programs is created automatically. That is, each executable program contains a standard selection screen with dynpro number 1000. The screen elements there are defined by all `PARAMETERS`, `SELECT-OPTIONS`, and `SELECTION-SCREEN` statements that are **not** specified within the `SELECTION-SCREEN BEGIN OF SCREEN ... SELECTION-SCREEN END OF SCREEN ...` block.
 - Selection screens can be created as regular dynpros or as subscreen dynpros.
-
-```abap
-"-------------------------- Pattern --------------------------
-
-SELECTION-SCREEN BEGIN OF SCREEN ...
-
-  ...
-  "Here go all PARAMETERS, SELECT-OPTIONS, and SELECTION-SCREEN statements 
-  "to define the screen elements of the standalone selection screen.  
-
-SELECTION-SCREEN END OF SCREEN ...
-
-
-"-------------------------- Regular dynpros --------------------------
-
-"Creating a selection screen as regular dynpro
-"Note that the dynpro number must be unique in the program. Do not use 1000.
-SELECTION-SCREEN BEGIN OF SCREEN 9000.
-  ...
-SELECTION-SCREEN END OF SCREEN 9000.
-
-"Note: The following additions can also be combined.
-"TITLE: Defining a title (e.g. the name of a text symbol) for the title bar 
-SELECTION-SCREEN BEGIN OF SCREEN 9001 TITLE some_title.
-  ...
-SELECTION-SCREEN END OF SCREEN 9001.
-
-"AS WINDOW: Displaying the selection screen in a modal dialog box
-SELECTION-SCREEN BEGIN OF SCREEN 9002 AS WINDOW.
-  ...
-SELECTION-SCREEN END OF SCREEN 9002.
-
-"-------------------------- Subscreen dynpros --------------------------
-
-"Can be included in other dynpros or selection screens, or in subscreen areas 
-"or tab pages. But they cannot be called explicitly.
-SELECTION-SCREEN BEGIN OF SCREEN 9003 AS SUBSCREEN.
-...
-SELECTION-SCREEN END OF SCREEN 9003.
-
-"Note: There are more additions available regarding display adjustment, among others.
-```
-
-**Variants of the SELECTION-SCREEN Statement**
-
-- The variants do not create selection screens, but are used to change the layout of selection screens, create additional screen elements, and so on.
+- Multiple syntax variants with `SELECTION-SCREEN` are available. Most of them do not create selection screens, but are used to change the layout of selection screens, create additional screen elements, and so on.
 - Example: The `PARAMETERS` and `SELECT-OPTIONS` statements create input fields on an individual line. Using the variants of the `SELECTION-SCREEN` statement, you can arrange the layout differently.
 - However, the selection screen cannot be generated if there are conflicts with existing screen elements.
-  - See the effect with the following snippet. Run a program with the code snippet and comment in the third line. The program terminates. The text to be created (in the same line as the first text) interferes with the first text. However, the fourth line would be possible because there is no overlap.
-    ```abap
-    PARAMETERS pa TYPE string.
-    SELECTION-SCREEN COMMENT /5(10) t1.
-    "SELECTION-SCREEN COMMENT 10(20) t2.
-    "SELECTION-SCREEN COMMENT 20(20) t3.
-    ```
+- See the effect with the following snippet. Run a program with the code snippet and comment in the third line. The program terminates. The text to be created (in the same line as the first text) interferes with the first text. However, the fourth line would be possible because there is no overlap.
+  ```abap
+  PARAMETERS pa TYPE string.
+  SELECTION-SCREEN COMMENT /5(10) t1.
+  "SELECTION-SCREEN COMMENT 10(20) t2.
+  "SELECTION-SCREEN COMMENT 20(20) t3.
+  ```
 
-Syntax examples:
+#### Creating Selection Screens
+
+<table>
+
+<tr>
+<td> Subject/Statement </td> <td> Notes </td> <td> Code Snippet </td>
+</tr>
+
+<tr>
+<td> 
+
+Creating a selection screen as regular dynpro<br><br>
+`SELECTION-SCREEN BEGIN OF SCREEN ...`
+
+ </td>
+
+ <td> 
+
+- Creates a selection screen as regular dynpro by specifying a dynpro number.
+- The dynpro number must be unique in the program. Do not use 1000.
+- Additions (which can be combined):    
+  - `... TITLE ...`: Defines a title (e.g. a random name or the name of a text symbol) for the title bar 
+  - `... AS WINDOW`: Displays the selection screen in a modal dialog box
+
+ </td>
+
+<td> 
+
+``` abap
+PROGRAM.
+
+SELECTION-SCREEN BEGIN OF SCREEN 9000.
+  PARAMETERS param TYPE string.
+  PARAMETERS number TYPE i.
+SELECTION-SCREEN END OF SCREEN 9000.
+
+START-OF-SELECTION.
+
+  CALL SELECTION-SCREEN 9000.
+
+  WRITE / `Inserted values:`.
+  SKIP.
+  WRITE / |param: "{ param }"|.
+  WRITE / |number: "{ number }"|.
+``` 
+
+<br>
+
+`TITLE` addition
+For the example, proceed as follows:
+- Copy and paste the code snippet to a demo executable program.
+- Create a text symbol by making a right-click in the source code, and choose *Open Others -> Text Elements*.
+- Select the *Text Symbols* tab.
+- Add the following code and activate.
+  ```abap
+  @MaxLength:64
+  001=Selection screen demo with the TITLE addition
+  ```
 
 ```abap
-"Note: More optional additions are available for the the following statements.
-"For the details, check the ABAP Keyword Documentation.
+PROGRAM.
 
-"Adding blank lines
-SELECTION-SCREEN SKIP.   "1 blank line by default
-SELECTION-SCREEN SKIP 5. "5 blank lines
+SELECTION-SCREEN BEGIN OF SCREEN 9001 TITLE TEXT-001.
+  PARAMETERS param TYPE string.
+  PARAMETERS number TYPE i.
+SELECTION-SCREEN END OF SCREEN 9001.
 
-"Creating a horizontal line
-"Line accross the whole screen below the lines that are already filled
-SELECTION-SCREEN ULINE.     
-"/: Line in a new line, 5: position, (10): length
-SELECTION-SCREEN ULINE /5(10).  
-"Note: The following statement commented out can only be specified 
-"inside a BEGIN/END OF LINE statement. Outside, specifying a position
-"is required.
-"SELECTION-SCREEN ULINE (10).      
+START-OF-SELECTION.
 
-"Providing text content on the selection screen (e.g. using a text symbol)
-"Also here, note the use outside of BEGIN/END OF LINE regarding the additions.
-"The optional FOR FIELD addition is, among others, used in the context of 
-"input/field help.
-SELECTION-SCREEN COMMENT /1(20) txt.
+  CALL SELECTION-SCREEN 9001.
 
-"Creating a pushbutton
-"The pushbutton is assigned a function code. 
-"Note: To enable it, include the statement 'TABLES sscrfields.' in the code. 
-"When the button is clicked, the event AT SELECTION-SCREEN is raised and the 
-"function code ('com' in the example) is passed to the 'ucomm' component in the 
-"interface work area 'sscrfields' which can be evaluated and reacted upon 
-"accordingly. See the executable example.
-SELECTION-SCREEN PUSHBUTTON /5(10) pb USER-COMMAND com.
+  WRITE / `Text of text symbol:`.
+  WRITE / TEXT-001.
+  SKIP.
+  SKIP.
+  WRITE / `Inserted values:`.
+  SKIP.
+  WRITE / |param: "{ param }"|.
+  WRITE / |number: "{ number }"|.
+```
 
-"Defining a new line with multiple elements
-SELECTION-SCREEN BEGIN OF LINE.  
-  "The following statement with the POSITION addition is only possible here.
-  "It specifies the output position of a screen element.
-  SELECTION-SCREEN POSITION 10.  
-  ...
-SELECTION-SCREEN END OF LINE.
+<br>
 
-"Chained statements come in handy
-"Watch out that there are no positioning conflicts with other screen elements.
-SELECTION-SCREEN: BEGIN OF LINE,
-                  PUSHBUTTON 2(5) button USER-COMMAND fc,
-                  POSITION 10.     "The statement specifies the position in which the 
-                                   "next element (PARAMETERS) is put. 
-PARAMETERS para TYPE c LENGTH 10.
-SELECTION-SCREEN: COMMENT 25(10) txt,
-                  END OF LINE.
+`AS WINDOW` addition
+- The example code includes multiple `SELECTION-SCREEN` statements that specify the `AS WINDOW` addition. They also specify the `TITLE` addition. In these cases, a random name is used. The name is assigned a value in the `INITIALIZATION` event block.
+- You can select a radio button. Depending on the selection a selection screen is called. 
+- The example demonstrates selection screens displayed as modal dialog box. They are called with `CALL SELECTION-SCREEN ... STARTING AT ...` statements (except one example, `p_winno` selection, that does not open a modal dialog box). 
 
-"Creating blocks
-"More additions available, e.g. WITH FRAME (to draw a frame around a block) 
-"and TITLE (to define a block title).
-SELECTION-SCREEN BEGIN OF BLOCK bl.
-  ...
-SELECTION-SCREEN END OF BLOCK bl.
+```abap
+PROGRAM.
 
-"Creating tabbed blocks (other optional additions are available)
-SELECTION-SCREEN BEGIN OF TABBED BLOCK tabbl FOR 5 LINES. "Specifies number of lines covered
-  ...
-  "In such a TABBED BLOCK statement, only TAB statements are allowed to integrate
-  "subscreen dynpros. 
-  "USER-COMMAND addition specifies a function code. When a tab is selected by users,
-  "the function code can be evaluated using the the component ucomm of the structure 
-  "'sscrfields' after the AT SELECTION-SCREEN event. See the executable example.
-  SELECTION-SCREEN TAB (10) tab USER-COMMAND cmd.
-...
-SELECTION-SCREEN END OF BLOCK tabbl.
+PARAMETERS: p_winat1 RADIOBUTTON GROUP rbg,
+            p_winat2 RADIOBUTTON GROUP rbg,
+            p_noat  RADIOBUTTON GROUP rbg.
 
-"MODIF ID addition for some of the previous statements (ULINE, COMMENT,
-"PUSHBUTTON, TAB, and also for PARAMETERS and SELECT-OPTIONS)
-"An identifier can be specified to assign a screen element to a modification group. 
-"This identifier is assigned to the component 'group1' of the SCREEN structure.
-"Using MODIFY SCREEN statements, the elements can be modified before displaying
-"in the AT SELECTION-SCREEN OUTPUT event block. 
-"In the following example, a radio button group consists of 4 radio buttons.
-"Two of them have the addition MODIF ID.
-SELECTION-SCREEN BEGIN OF BLOCK bl WITH FRAME.
-PARAMETERS: pa1 RADIOBUTTON GROUP gr MODIF ID mbl,
-            pa2 RADIOBUTTON GROUP gr MODIF ID mbl,
-            pa3 RADIOBUTTON GROUP gr,
-            pa4 RADIOBUTTON GROUP gr.
-SELECTION-SCREEN END OF BLOCK bl.
+SELECTION-SCREEN BEGIN OF SCREEN 9001 TITLE seltitl1 AS WINDOW.
+  PARAMETERS param1 TYPE string.
+SELECTION-SCREEN END OF SCREEN 9001.
 
-"Suppose you want to modify the elements before displaying, e.g. make the 
-"two radio buttons with the identifier invisible. In the AT SELECTION-SCREEN 
-"OUTPUT event block, you might implement it as follows.
-...
-AT SELECTION-SCREEN OUTPUT.
-  LOOP AT SCREEN INTO DATA(wa).
-     IF wa-group1 = 'MBL'.
-      wa-invisible = '1'.
-      MODIFY SCREEN FROM wa.
-    ENDIF.
-  ENDLOOP.
-...  
-
-"Adding pushbuttons in the application toolbar
-"There are five inactive pushbuttons to which the function codes FC01, FC02 up to FC05  
-"are assigned. The ... FUNCTION KEY ... statement activates the pushbuttons for 
-"the specified codes. 
-"Note: To enable it, include the statement 'TABLES sscrfields.' in the code. 
-"When the button is clicked, the event AT SELECTION-SCREEN is raised and the 
-"function code is passed to the 'ucomm' component in the interface 
-"work area 'sscrfields' which can be evaluated and reacted upon accordingly, e.g. 
-"in a CASE control structure. 
-"In the following example, three pushbuttons are added to the toolbar. To 
-"provide text for the buttons, assign values to the component functxt_0n (while
-"n stands for the numbers 1 - 5). Otherwise, there won't be any button text.
-TABLES sscrfields.
-PARAMETERS pa TYPE c LENGTH 10.
-SELECTION-SCREEN: FUNCTION KEY 1,  "Stands for FC01
-                  FUNCTION KEY 2,  "FC02 
-                  FUNCTION KEY 3.  "FC03
+SELECTION-SCREEN BEGIN OF SCREEN 9002 TITLE seltitl2 AS WINDOW.
+  PARAMETERS param2 TYPE string.
+SELECTION-SCREEN END OF SCREEN 9002.
 
 INITIALIZATION.
-  sscrfields-functxt_01 = 'Button 1'.
-  sscrfields-functxt_02 = 'Button 2'.
-  sscrfields-functxt_03 = 'Button 3'.
+
+  seltitl1 = 'Selection screen demo with the AS WINDOW addition (1)'.
+  seltitl2 = 'Another selection screen with the AS WINDOW addition (2)'.
+
+START-OF-SELECTION.
+
+  CASE 'X'.
+    WHEN p_winat1.
+      CALL SELECTION-SCREEN 9001 STARTING AT 10 10.
+      WRITE / `Inserted value:`.
+      SKIP.
+      WRITE / |param1: "{ param1 }"|.
+    WHEN p_winat2.
+      CALL SELECTION-SCREEN 9002 STARTING AT 1 5.
+      WRITE / `Inserted value:`.
+      SKIP.
+      WRITE / |param2: "{ param2 }"|.
+    WHEN p_noat.
+      CALL SELECTION-SCREEN 9001.
+      WRITE / `Inserted value:`.
+      SKIP.
+      WRITE / |param1: "{ param1 }"|.
+  ENDCASE.
+```
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+Creating a selection screen as subscreen dynpro<br><br>
+`SELECTION-SCREEN BEGIN OF SCREEN ... AS SUBSCREEN`
+
+ </td>
+
+ <td> 
+
+- Can be included in other dynpros or selection screens, or in subscreen areas or tab pages. 
+- They cannot be called explicitly using `CALL SELECTION-SCREEN` statements.
+- Additions: 
+  - `NO INTERVALS`: `NO INTERVALS` is implicitly used in `SELECT-OPTIONS` statements
+  - `NESTING LEVEL` Adjusts the subscreen width (a number between 0 and 4 is ecpected) when the subscreen is part of one or more frames in tabstrip controls
+
+ </td>
+
+<td> 
+
+The code snippet, copyable to a demo program and executable using F8, implements the following: 
+- Multiple selection screens are created as subscreen dynpros, each including a `PARAMETERS` statement.
+- They are included in a tabstrip control on the standard selection screen of an executable program. The `TABBED BLOCK` syntax is covered further down. In the example, the first tabbed block specifies default screens. The second does not. There, the switch on tab click is realized by evaluating `sscrfields-ucomm`.
+
+``` abap
+PROGRAM.
+
+TABLES sscrfields.
+
+SELECTION-SCREEN BEGIN OF SCREEN 9001 AS SUBSCREEN.
+  PARAMETERS param1 TYPE c LENGTH 20.
+SELECTION-SCREEN END OF SCREEN 9001.
+
+SELECTION-SCREEN BEGIN OF SCREEN 9002 AS SUBSCREEN.
+  PARAMETERS param2 TYPE c LENGTH 20.
+SELECTION-SCREEN END OF SCREEN 9002.
+
+SELECTION-SCREEN BEGIN OF SCREEN 9003 AS SUBSCREEN.
+  PARAMETERS param3 TYPE c LENGTH 20.
+SELECTION-SCREEN END OF SCREEN 9003.
+
+SELECTION-SCREEN BEGIN OF SCREEN 9004 AS SUBSCREEN.
+  PARAMETERS param4 TYPE c LENGTH 20.
+SELECTION-SCREEN END OF SCREEN 9004.
+
+SELECTION-SCREEN: BEGIN OF TABBED BLOCK tabbl1 FOR 2 LINES,
+TAB (20) tab1 USER-COMMAND push1 DEFAULT SCREEN 9001,
+TAB (20) tab2 USER-COMMAND push2 DEFAULT SCREEN 9002,
+END OF BLOCK tabbl1.
+
+SELECTION-SCREEN: BEGIN OF TABBED BLOCK tabbl2 FOR 2 LINES,
+TAB (20) tab3 USER-COMMAND push3,
+TAB (20) tab4 USER-COMMAND push4,
+END OF BLOCK tabbl2.
+
+INITIALIZATION.
+
+  tab1 = 'Subscreen 1'.
+  tab2 = 'Subscreen 2'.
+  tab3 = 'Subscreen 3'.
+  tab4 = 'Subscreen 4'.
+
+  tabbl2-prog = sy-repid.
+  tabbl2-dynnr = 9003.
+  tabbl2-activetab = 'TAB3'.
+
+AT SELECTION-SCREEN.
+
+  CASE sscrfields-ucomm.
+    WHEN 'PUSH1'.
+      tab1 = 'New subscreen title'.
+    WHEN 'PUSH2'.
+      tab2 = 'Some tab'.
+    WHEN 'PUSH3'.
+      tabbl2-dynnr = 9003.
+    WHEN 'PUSH4'.
+      tabbl2-dynnr = 9004.
+  ENDCASE.
+
+START-OF-SELECTION.
+
+  WRITE / `Inserted values:`.
+  SKIP.
+  WRITE / |param1: "{ param1 }"|.
+  WRITE / |param2: "{ param2 }"|.
+  WRITE / |param3: "{ param3 }"|.
+  WRITE / |param4: "{ param4 }"|.
+``` 
+
+ </td>
+</tr>
+
+</table>
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+#### Adapting the Selection Screen Layout
+
+<table>
+
+<tr>
+<td> Subject/Statement </td> <td> Notes </td> <td> Code Snippet </td>
+</tr>
+
+<tr>
+<td> 
+
+Adding blank lines<br><br>
+`SELECTION-SCREEN SKIP`
+
+ </td>
+
+ <td> 
+
+- Creates a specified number of lines
+- If a number is not specified, one blank line is created by default.
+
+ </td>
+
+<td> 
+
+``` abap
+PARAMETERS param1 TYPE c LENGTH 20.
+SELECTION-SCREEN SKIP.
+PARAMETERS param2 TYPE c LENGTH 20.
+SELECTION-SCREEN SKIP 3.
+PARAMETERS param3 TYPE c LENGTH 20.
+
+START-OF-SELECTION.
+
+  WRITE / `Inserted values:`.
+  SKIP.
+  WRITE / |param1: "{ param1 }"|.
+  WRITE / |param2: "{ param2 }"|.
+  WRITE / |param3: "{ param3 }"|.
+``` 
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+Creating horizontal lines<br><br>
+`SELECTION-SCREEN ULINE`
+
+ </td>
+
+ <td> 
+
+- Formatting options are available:
+  - Position from where to start the line and length specification 
+  - Either the position (1-83) is specified directly as number or with the additions `POS_LOW` (position of first input field) and `POS_HIGH` (position of second inut field).
+  - `/` creates the line a new line; cannot be specified if multiple elements are specified in a line
+- If no formatting options are specified, a line is created that goes accross the whole screen below the lines that are already filled.
+- The addition `MODIF ID` is supported. 
+- Find more details [here](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapselection-screen_uline.htm).
+  
+
+ </td>
+
+<td> 
+
+``` abap
+PROGRAM.
+
+PARAMETERS param1 TYPE c LENGTH 20.
+SELECTION-SCREEN ULINE.
+PARAMETERS param2 TYPE c LENGTH 20.
+"/ means the line is created in a new line
+"/ is followed by the position and the length in parentheses
+SELECTION-SCREEN ULINE /5(10).
+PARAMETERS param3 TYPE c LENGTH 20.
+"SELECTION-SCREEN ULINE 5(10).
+PARAMETERS param4 TYPE c LENGTH 20.
+SELECTION-SCREEN ULINE /pos_low(15).
+PARAMETERS param5 TYPE c LENGTH 20.
+SELECTION-SCREEN ULINE /pos_high(15).
+"/ can be ommitted if the elements are in the same line
+SELECTION-SCREEN BEGIN OF LINE.
+  PARAMETERS param6 TYPE c LENGTH 1.
+  SELECTION-SCREEN ULINE 4(5).
+  PARAMETERS param7 TYPE c LENGTH 1.
+  SELECTION-SCREEN ULINE pos_low(20).
+  PARAMETERS param8 TYPE c LENGTH 1.
+  SELECTION-SCREEN ULINE pos_high(40).
+SELECTION-SCREEN END OF LINE.
+
+START-OF-SELECTION.
+
+  WRITE / `Inserted values:`.
+  SKIP.
+  WRITE / |param1: "{ param1 }"|.
+  WRITE / |param2: "{ param2 }"|.
+  WRITE / |param3: "{ param3 }"|.
+  WRITE / |param4: "{ param4 }"|.
+  WRITE / |param5: "{ param5 }"|.
+  WRITE / |param6: "{ param6 }"|.
+  WRITE / |param7: "{ param7 }"|.
+  WRITE / |param8: "{ param8 }"|.
+``` 
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+Creating an output field/comment on the selection screen<br><br>
+`SELECTION-SCREEN COMMENT`
+
+ </td>
+
+ <td> 
+
+- Creates text content in a field
+- The statement expects a random name (maximum 8 characters; a global variable with type `c` and length 83 is implicitly created) or a text symbol
+- Additions
+  - Position-related additions as outlined for `SELECTION-SCREEN ULINE`
+  - `FOR FIELD`: Links output field to elements specified with `PARAMETERS` or `SELECT-OPTIONS`
+  - `VISIBLE LENGTH`: Defines the visible length of the output field
+  - `MODIF ID`: See above.
+
+
+
+ </td>
+
+<td> 
+
+``` abap
+PROGRAM.
+
+*&---------------------------------------------------------------------*
+*& Position-related additions
+*&---------------------------------------------------------------------*
+
+SELECTION-SCREEN COMMENT /1(20) txt1.
+SELECTION-SCREEN ULINE /1(50).
+PARAMETERS: rb1 RADIOBUTTON GROUP rbgr,
+            rb2 RADIOBUTTON GROUP rbgr,
+            rb3 RADIOBUTTON GROUP rbgr.
+SELECTION-SCREEN ULINE /1(50).
+
+SELECTION-SCREEN COMMENT /pos_high(40) txt2.
+
+"Providing a text for a parameter
+SELECTION-SCREEN BEGIN OF LINE.
+  SELECTION-SCREEN COMMENT (15) txt3.
+  PARAMETERS param1 TYPE c LENGTH 10.
+SELECTION-SCREEN END OF LINE.
+
+"Using a text symbol
+SELECTION-SCREEN COMMENT /1(20) TEXT-001.
+
+*&---------------------------------------------------------------------*
+*& VISIBLE LENGTH
+*&---------------------------------------------------------------------*
+
+SELECTION-SCREEN COMMENT /1(20) txt4 VISIBLE LENGTH 4.
+
+*&---------------------------------------------------------------------*
+*& MODIF ID
+*&---------------------------------------------------------------------*
+
+SELECTION-SCREEN COMMENT /1(50) txt5 MODIF ID mid.
+SELECTION-SCREEN COMMENT /1(50) txt6.
+SELECTION-SCREEN COMMENT /1(50) txt7 MODIF ID mid.
+
+AT SELECTION-SCREEN OUTPUT.
+  txt1 = 'Make a selection:'.
+  txt2 = 'Text with pos_high'.
+  txt3 = 'Make an entry'.
+  txt4 = 'Some long text'.
+  txt5 = 'First intensified text'.
+  txt6 = 'Not intensified text'.
+  txt7 = 'Second intensified tex'.
+  LOOP AT SCREEN INTO DATA(screen_wa).
+    IF screen_wa-group1 = 'MID'.
+      screen_wa-intensified = '1'.
+      MODIFY SCREEN FROM screen_wa.
+    ENDIF.
+  ENDLOOP.
+
+START-OF-SELECTION.
+
+  WRITE / `Inserted values:`.
+  SKIP.
+  WRITE / |Radio button selection: "{ COND #( WHEN rb1 IS NOT INITIAL THEN 'rb1' WHEN rb2 IS NOT INITIAL THEN 'rb2' ELSE 'rb3' ) }"|.
+  WRITE / |param1: "{ param1 }"|.
+
+  IF TEXT-001 IS INITIAL.
+    WRITE / |Text symbol TEXT-001 does not exist.|.
+  ENDIF.
+``` 
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+Specifying multiple elements in one line and their position in the line<br><br>
+`SELECTION-SCREEN BEGIN OF LINE. ... SELECTION-SCREEN END OF LINE.` and `SELECTION-SCREEN POSITION`
+
+ </td>
+
+ <td> 
+
+- Places all `PARAMETERS`, `SELECT-OPTIONS` and `SELECTION-SCREEN` statements in one line without spaces
+- The statement `SELECTION-SCREEN POSITION` can only be specified in the statement block. The position can be specified as number (1-83) or using the additions `POS_LOW` and `POS_HIGH`. The statement relates to positioning the following statement.
+- Note that if there are positioning conflicts, the selection screen cannot be created.
+- In the statement block, certain restrictions apply. See [here](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapselection-screen_line.htm).
+
+ </td>
+
+<td> 
+
+``` abap
+PROGRAM.
+
+SELECTION-SCREEN BEGIN OF LINE.
+  SELECTION-SCREEN COMMENT (10) txt1.
+  SELECTION-SCREEN POSITION 15.
+  PARAMETERS param1 TYPE c LENGTH 3.
+  SELECTION-SCREEN COMMENT (10) txt2.
+  SELECTION-SCREEN POSITION 45.
+  PARAMETERS param2 TYPE c LENGTH 3.
+  SELECTION-SCREEN COMMENT (10) txt3.
+  SELECTION-SCREEN POSITION 70.
+  SELECTION-SCREEN COMMENT (10) txt4.
+SELECTION-SCREEN END OF LINE.
+
+DATA dyn_spec TYPE c LENGTH 12.
+"Chained statement
+"The example emphasizes potential positioning
+"conflicts that can prevent the selection screen
+"from being created. For demo purposes, you can
+"comment in param3 and run the program, resulting
+"in a runtime error. Then you can comment in the
+"NO-EXTENSION and NO INTERVALS additions to the
+"SELECT-OPTIONS statement, and run the program
+"again. Since the extra screen elements are not
+"displayed, the selection screen can be created.
+SELECTION-SCREEN: BEGIN OF LINE,
+POSITION 5,
+COMMENT (10) txt5.
+SELECT-OPTIONS sel FOR (dyn_spec)
+"NO-EXTENSION
+"NO INTERVALS
+.
+"PARAMETERS param3 TYPE c LENGTH 3.
+SELECTION-SCREEN: POSITION 70,
+COMMENT (10) txt6,
+END OF LINE.
+
+INITIALIZATION.
+  txt1 = 'Some text'.
+  txt2 = 'Hello'.
+  txt3 = sy-uname.
+  txt4 = sy-datum.
+  txt5 = 'Select'.
+  txt6 = 'More text'.
+
+  dyn_spec = 'SCARR-CARRID'.
+
+START-OF-SELECTION.
+
+  WRITE / `Inserted values:`.
+  SKIP.
+  WRITE / |param1: "{ param1 }"|.
+  WRITE / |param2: "{ param2 }"|.
+  SKIP.
+  WRITE / `Selection table content:`.
+  LOOP AT sel ASSIGNING FIELD-SYMBOL(<st>).
+    WRITE / |low: { <st>-low }, high: { <st>-high }, option: { <st>-option }, sign: { <st>-sign }|.
+  ENDLOOP.
+``` 
+
+ </td>
+</tr>
+
+
+<tr>
+<td> 
+
+Creating pushbuttons<br><br>
+`SELECTION-SCREEN PUSHBUTTON`
+
+ </td>
+
+ <td> 
+
+- Typically, pushbuttons are used to modify the selection screen, not to control the program (e.g. to exit the program).
+- Additions: 
+  - Position-related additions as outlined above
+  - `USER-COMMAND`: Used to assign a function code. The pushbutton is enabled by implementing a `TABLES sscrfields.` statement. In doing so, an interface work area is created. When a pushbutton is clicked, the `AT SELECTION-SCREEN` event is raised, and the function code can be evaluated using `sscrfields-ucomm` (do not use `sy-ucomm`).
+  - `VISIBLE LENGTH`: Defines the visible length of the pushbutton
+  - `MODIF ID`: See above
+- You can use the function module `ICON_CREATE` to assign an icon, a tooltip, and a text to a pushbutton. 
+
+
+ </td>
+
+<td> 
+
+``` abap
+PROGRAM.
+
+TABLES sscrfields.
+
+SELECTION-SCREEN PUSHBUTTON /1(15) btn_a USER-COMMAND cmd1.
+SELECTION-SCREEN SKIP.
+SELECTION-SCREEN PUSHBUTTON /1(15) btn_b USER-COMMAND cmd2.
+SELECTION-SCREEN SKIP.
+SELECTION-SCREEN PUSHBUTTON /1(30) btn_c USER-COMMAND cmd3 VISIBLE LENGTH 7.
+
+INITIALIZATION.
+
+  btn_a = 'Button A'.
+  btn_c = 'Button C with long text'.
+
+  CALL FUNCTION 'ICON_CREATE'
+    EXPORTING
+      name   = icon_information
+      text   = 'Button B'
+      info   = 'Some info'
+    IMPORTING
+      result = btn_b
+    EXCEPTIONS
+      OTHERS = 0.
 
 AT SELECTION-SCREEN.
   CASE sscrfields-ucomm.
-    WHEN 'FC01'.      
-      ...
-    WHEN 'FC02'.
-      ...      
-    WHEN 'FC03'.      
-    ...
+    WHEN 'CMD1'.
+      MESSAGE |Hello { sy-uname }. You clicked button A.| TYPE 'I'.
+    WHEN 'CMD2'.
+      MESSAGE |Hello { sy-uname }. You clicked button B.| TYPE 'I'.
+    WHEN 'CMD3'.
+      MESSAGE |Hello { sy-uname }. You clicked button C.| TYPE 'I'.
   ENDCASE.
-...
-```
 
-`INCLUDE` addition for reusing already created elements of the same program:
+START-OF-SELECTION.
+
+  WRITE / `No content to display in this example.`.
+``` 
+
+ </td>
+</tr>
+
+
+<tr>
+<td> 
+
+Defining a block<br><br>
+`SELECTION-SCREEN BEGIN OF BLOCK ... SELECTION-SCREEN END OF BLOCK ...`
+
+ </td>
+
+ <td> 
+
+- You can also create blocks within blocks.
+- The blocks raise the `AT SELECTION-SCREEN ON BLOCK`. There, the entries of a block can be processed together.
+- Additions: 
+  - `WITH FRAME [TITLE ...]`: Draws a frame round a block. You can optionally specify a title either by specifying a random name or a text symbol.
+  - `NO INTERVALS`: When specified, `NO INTERVALS` is used implicitly for `SELECT-OPTIONS` (in all nested blocks).
+
+ </td>
+
+<td> 
+
+The code snippet, copyable to a demo program and executable using F8, implements the following:
+- Multiple blocks are created using `SELECTION-SCREEN ... BLOCK ...` statements, including different additions or none. One block contains nested blocks.
+- The raising of `AT SELECTION-SCREEN ON BLOCK` events for the blocks defined is demonstrated using messages displayed when the program is run.
+
+``` abap
+PROGRAM.
+
+*&---------------------------------------------------------------------*
+*& No addition
+*&---------------------------------------------------------------------*
+
+SELECTION-SCREEN BEGIN OF BLOCK block1.
+  PARAMETERS param1 TYPE c LENGTH 10 DEFAULT 'abc' LOWER CASE.
+  PARAMETERS param2 TYPE c LENGTH 10 DEFAULT 'def' LOWER CASE.
+SELECTION-SCREEN END OF BLOCK block1.
+
+*&---------------------------------------------------------------------*
+*& WITH FRAME
+*&---------------------------------------------------------------------*
+
+SELECTION-SCREEN BEGIN OF BLOCK block2 WITH FRAME.
+  PARAMETERS param3 TYPE c LENGTH 10 DEFAULT 'hij' LOWER CASE.
+  PARAMETERS param4 TYPE c LENGTH 10 DEFAULT 'klm' LOWER CASE.
+SELECTION-SCREEN END OF BLOCK block2.
+
+*&---------------------------------------------------------------------*
+*& WITH FRAME WITH TITLE
+*&---------------------------------------------------------------------*
+
+SELECTION-SCREEN BEGIN OF BLOCK block3 WITH FRAME TITLE titl.
+  PARAMETERS: rb1 RADIOBUTTON GROUP gr,
+              rb2 RADIOBUTTON GROUP gr,
+              rb3 RADIOBUTTON GROUP gr.
+SELECTION-SCREEN END OF BLOCK block3.
+
+*&---------------------------------------------------------------------*
+*& Nested blocks
+*&---------------------------------------------------------------------*
+
+SELECTION-SCREEN BEGIN OF BLOCK block4a WITH FRAME TITLE titl4a.
+  PARAMETERS param5 TYPE c LENGTH 10 DEFAULT 'nop' LOWER CASE.
+  SELECTION-SCREEN SKIP.
+  SELECTION-SCREEN BEGIN OF BLOCK block4b WITH FRAME TITLE titl4b.
+    PARAMETERS param6 TYPE c LENGTH 10 DEFAULT 'qrs' LOWER CASE.
+    SELECTION-SCREEN SKIP.
+    SELECTION-SCREEN BEGIN OF BLOCK block4c WITH FRAME TITLE titl4c.
+      PARAMETERS param7 TYPE c LENGTH 10 DEFAULT 'tuv' LOWER CASE.
+      SELECTION-SCREEN SKIP.
+    SELECTION-SCREEN END OF BLOCK block4c.
+  SELECTION-SCREEN END OF BLOCK block4b.
+SELECTION-SCREEN END OF BLOCK block4a.
+
+"Demo flags for the AT SELECTION-SCREEN ON BLOCK implementations
+DATA block1_flag TYPE abap_boolean.
+DATA block2_flag TYPE abap_boolean.
+DATA block3_flag TYPE abap_boolean.
+DATA block4a_flag TYPE abap_boolean.
+DATA block4b_flag TYPE abap_boolean.
+DATA block4c_flag TYPE abap_boolean.
+
+INITIALIZATION.
+  titl = 'Radiobutton Selection'.
+  titl4a = 'Title 1'.
+  titl4b = 'Title 2'.
+  titl4c = 'Title 3'.
+
+AT SELECTION-SCREEN ON BLOCK block1.
+  block1_flag = abap_true.
+  MESSAGE |Event AT SELECTION-SCREEN ON BLOCK block1 raised. Others already raised? | &&
+     |block2: "{ COND #( WHEN block2_flag = abap_true THEN abap_true ) }" | &&
+     |block3: "{ COND #( WHEN block3_flag = abap_true THEN abap_true ) }" | &&
+     |block4a: "{ COND #( WHEN block4a_flag = abap_true THEN abap_true ) }" | &&
+     |block4b: "{ COND #( WHEN block4b_flag = abap_true THEN abap_true ) }" | &&
+     |block4c: "{ COND #( WHEN block4c_flag = abap_true THEN abap_true ) }" | TYPE 'I'.
+
+AT SELECTION-SCREEN ON BLOCK block2.
+  block2_flag = abap_true.
+  MESSAGE |Event AT SELECTION-SCREEN ON BLOCK block2 raised. Others already raised? | &&
+     |block1: "{ COND #( WHEN block1_flag = abap_true THEN abap_true ) }" | &&
+     |block3: "{ COND #( WHEN block3_flag = abap_true THEN abap_true ) }" | &&
+     |block4a: "{ COND #( WHEN block4a_flag = abap_true THEN abap_true ) }" | &&
+     |block4b: "{ COND #( WHEN block4b_flag = abap_true THEN abap_true ) }" | &&
+     |block4c: "{ COND #( WHEN block4c_flag = abap_true THEN abap_true ) }" | TYPE 'I'.
+
+AT SELECTION-SCREEN ON BLOCK block3.
+  block3_flag = abap_true.
+  MESSAGE |Event AT SELECTION-SCREEN ON BLOCK block3 raised. Others already raised? | &&
+     |block1: "{ COND #( WHEN block1_flag = abap_true THEN abap_true ) }" | &&
+     |block2: "{ COND #( WHEN block2_flag = abap_true THEN abap_true ) }" | &&
+     |block4a: "{ COND #( WHEN block4a_flag = abap_true THEN abap_true ) }" | &&
+     |block4b: "{ COND #( WHEN block4b_flag = abap_true THEN abap_true ) }" | &&
+     |block4c: "{ COND #( WHEN block4c_flag = abap_true THEN abap_true ) }" | TYPE 'I'.
+
+AT SELECTION-SCREEN ON BLOCK block4a.
+  block4a_flag = abap_true.
+  MESSAGE |Event AT SELECTION-SCREEN ON BLOCK block4a raised. Others already raised? | &&
+     |block1: "{ COND #( WHEN block1_flag = abap_true THEN abap_true ) }" | &&
+     |block2: "{ COND #( WHEN block2_flag = abap_true THEN abap_true ) }" | &&
+     |block3: "{ COND #( WHEN block3_flag = abap_true THEN abap_true ) }" | &&
+     |block4b: "{ COND #( WHEN block4b_flag = abap_true THEN abap_true ) }" | &&
+     |block4c: "{ COND #( WHEN block4c_flag = abap_true THEN abap_true ) }" | TYPE 'I'.
+
+AT SELECTION-SCREEN ON BLOCK block4b.
+  block4b_flag = abap_true.
+
+  MESSAGE |Event AT SELECTION-SCREEN ON BLOCK block4b raised. Others already raised? | &&
+     |block1: "{ COND #( WHEN block1_flag = abap_true THEN abap_true ) }" | &&
+     |block2: "{ COND #( WHEN block2_flag = abap_true THEN abap_true ) }" | &&
+     |block3: "{ COND #( WHEN block3_flag = abap_true THEN abap_true ) }" | &&
+     |block4a: "{ COND #( WHEN block4a_flag = abap_true THEN abap_true ) }" | &&
+     |block4c: "{ COND #( WHEN block4c_flag = abap_true THEN abap_true ) }" | TYPE 'I'.
+
+AT SELECTION-SCREEN ON BLOCK block4c.
+  block4c_flag = abap_true.
+  MESSAGE |Event AT SELECTION-SCREEN ON BLOCK block4c raised. Others already raised? | &&
+   |block1: "{ COND #( WHEN block1_flag = abap_true THEN abap_true ) }" | &&
+   |block2: "{ COND #( WHEN block2_flag = abap_true THEN abap_true ) }" | &&
+   |block3: "{ COND #( WHEN block3_flag = abap_true THEN abap_true ) }" | &&
+   |block4a: "{ COND #( WHEN block4a_flag = abap_true THEN abap_true ) }" | &&
+   |block4b: "{ COND #( WHEN block4b_flag = abap_true THEN abap_true ) }" | TYPE 'I'.
+
+START-OF-SELECTION.
+
+  WRITE / `Inserted values:`.
+  SKIP.
+  WRITE / |param1: "{ param1 }"|.
+  WRITE / |param2: "{ param2 }"|.
+  WRITE / |param3: "{ param3 }"|.
+  WRITE / |param4: "{ param4 }"|.
+  WRITE / |param5: "{ param5 }"|.
+  WRITE / |param6: "{ param6 }"|.
+  WRITE / |param7: "{ param7 }"|.
+``` 
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+Defining tabstrips<br><br>
+`SELECTION-SCREEN BEGIN OF TABBED BLOCK ... SELECTION-SCREEN END OF BLOCK ...` and `SELECTION-SCREEN TAB`
+
+ </td>
+
+ <td> 
+
+- Within the statement block, you can only specify `SELECTION-SCREEN ... TAB ...` statements (they define tab titles).
+- Additions to `... TABBED BLOCK ...` statements: 
+  - `FOR ... LINES`: Defines the number of lines in the tabstrip area
+  - `NO INTERVALS`: To narrow the size for subscreen dynpros. 
+- Additions to `... TAB ...` statements: 
+  - `(...)`: Length specification
+  - `USER-COMMAND`: To assign a function code. See above.
+  - `DEFAULT [PROGRAM ...] SCREEN`: 
+    - The tab titles must be assigned a subscreen dynpro.
+    - For the tabstrip areas, structures are implicitly created having the specified name. They have 3 components: `prog`, `dynnr` and `activetab`. Not specifying `DEFAULT ...` means the values must be passed before the selection screen is sent. Find [here](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapselection-screen_tabbed.htm) more information.
+  - `MODIF ID`: See above
+
+
+ </td>
+
+<td> 
+
+See the example for `SELECTION-SCREEN BEGIN OF SCREEN ... AS SUBSCREEN` that uses `... TABBED BLOCK ...` and `... TAB ...` statements.
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+Adding pushbuttons in the application toolbar<br><br>
+`SELECTION-SCREEN FUNCTION KEY`
+
+ </td>
+
+ <td> 
+
+- The statement activates pushbuttons in the application toolbar for specific function codes (`FC0n`).
+- There are five inactive pushbuttons to which the function codes `FC01`, `FC02` up to `FC05` are assigned. 
+- To enable the pushbutton, include the `TABLES sscrfields.` statement in the code for the interface work area. 
+- When the button is clicked, the `AT SELECTION-SCREEN` event is raised and the function code is passed to `sscrfields-ucomm`, which can be evaluated and reacted upon accordingly.
+
+ </td>
+
+<td> 
+
+The code snippet, copyable to a demo program and executable using F8, implements the following:
+- Five pushbuttons are added to the application toolbar.
+- To provide text for the buttons, values are assigned to the `sscrfields-functxt_0n` component.
+- In the `AT SELECTION-SCREEN` event block, `sscrfields-ucomm` is evaluated. Depending on the function code, parameter values are assigned or messages are raised for demonstration purposes.
+
+
+``` abap
+PROGRAM.
+
+TABLES sscrfields.
+PARAMETERS param1 TYPE c LENGTH 20.
+PARAMETERS param2 TYPE c LENGTH 20.
+PARAMETERS param3 TYPE c LENGTH 20.
+
+SELECTION-SCREEN: FUNCTION KEY 1,  "Stands for FC01
+                  FUNCTION KEY 2,  "FC02
+                  FUNCTION KEY 3,  "FC03
+                  FUNCTION KEY 4,  "FC04
+                  FUNCTION KEY 5.  "FC05
+
+INITIALIZATION.
+  sscrfields-functxt_01 = 'Insert name'.
+  sscrfields-functxt_02 = 'Insert time'.
+  sscrfields-functxt_03 = 'Insert date'.
+  sscrfields-functxt_04 = 'Say hi'.
+  sscrfields-functxt_05 = 'Error message'.
+
+AT SELECTION-SCREEN.
+  CASE sscrfields-ucomm.
+    WHEN 'FC01'.
+      param1 = sy-uname.
+    WHEN 'FC02'.
+      param2 = sy-uzeit.
+    WHEN 'FC03'.
+      param3 = sy-datum.
+    WHEN 'FC04'.
+      MESSAGE |Hello { sy-uname }. You clicked the fourth button.| TYPE 'I'.
+    WHEN 'FC05'.
+      MESSAGE |Error message raised by clicking the fifth button.| TYPE 'E'.
+  ENDCASE.
+
+START-OF-SELECTION.
+
+  WRITE / `Inserted values:`.
+  SKIP.
+  WRITE / |param1: "{ param1 }"|.
+  WRITE / |param2: "{ param2 }"|.
+  WRITE / |param3: "{ param3 }"|.
+``` 
+
+ </td>
+</tr>
+
+</table>
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+#### Using Elements from Other Selection Screens
+
+- You can include screen elements created in other selection screens.
+- Statements include the `INCLUDE` addition. These are possible: 
+  - `SELECTION-SCREEN INCLUDE PARAMETERS`
+  - `SELECTION-SCREEN INCLUDE SELECT-OPTIONS`
+  - `SELECTION-SCREEN INCLUDE COMMENT`
+  - `SELECTION-SCREEN INCLUDE PUSHBUTTON`
+  - `SELECTION-SCREEN INCLUDE BLOCKS` 
+- Find more information in the subtopics [here](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapselection-screen_include.htm).
+
+
+The following code snippet, copyable to a demo program and executable using F8, implements the following:
+- Various screen elements are created. Many of them - all possible syntax options are reflected - are reused and included in another selection screen (9000). 
+- The selection screen with number 9000 is called if a checkbox is selected. This selection screen then opens in a modal dialog box.
 
 ```abap
-"Note: More optional additions are available. 
+PROGRAM.
 
-SELECTION-SCREEN BEGIN OF SCREEN ...
-...
-SELECTION-SCREEN INCLUDE PARAMETERS param.
-SELECTION-SCREEN INCLUDE SELECT-OPTIONS sel.
-SELECTION-SCREEN INCLUDE COMMENT (10) txt. 
-SELECTION-SCREEN INCLUDE PUSHBUTTON (10) rb.   
-SELECTION-SCREEN INCLUDE BLOCKS blck.
-...
-SELECTION-SCREEN END OF SCREEN ...
+TABLES sscrfields.
+
+SELECTION-SCREEN COMMENT /1(30) txt1.
+SELECTION-SCREEN SKIP.
+PARAMETERS param1 TYPE c LENGTH 10.
+SELECTION-SCREEN SKIP.
+DATA num TYPE c LENGTH 10.
+SELECT-OPTIONS sel FOR num.
+SELECTION-SCREEN SKIP.
+SELECTION-SCREEN COMMENT /1(30) txt2.
+SELECTION-SCREEN PUSHBUTTON /1(15) btn USER-COMMAND cmd.
+SELECTION-SCREEN SKIP.
+SELECTION-SCREEN COMMENT /1(70) txt3.
+PARAMETERS toincl AS CHECKBOX DEFAULT 'X'.
+SELECTION-SCREEN SKIP.
+SELECTION-SCREEN: BEGIN OF BLOCK blck,
+                  COMMENT /1(30) txt4,
+                  ULINE.
+   PARAMETERS param2 TYPE c LENGTH 10.
+SELECTION-SCREEN END OF BLOCK blck.
+
+SELECTION-SCREEN: BEGIN OF SCREEN 9000 AS WINDOW,
+                  INCLUDE PARAMETERS param1,
+                  INCLUDE SELECT-OPTIONS sel,
+                  INCLUDE COMMENT /1(10) txt2,
+                  INCLUDE PUSHBUTTON /1(15) btn,
+                  INCLUDE BLOCKS blck,
+END OF SCREEN 9000.
+
+INITIALIZATION.
+  txt1 = 'Standard Selection Screen'.
+  txt2 = 'Pushbutton:'.
+  txt3 = 'Select the checkbox to demonstrate SELECTION-SCREEN ... INCLUDE'.
+  txt4 = 'Some text'.
+  btn = 'Button'.
+
+AT SELECTION-SCREEN.
+  CASE sscrfields-ucomm.
+    WHEN 'CMD'.
+      MESSAGE |Hello { sy-uname }. You clicked the pushbutton| TYPE 'I'.
+  ENDCASE.
+
+START-OF-SELECTION.
+
+  IF toincl = 'X'.
+    CALL SELECTION-SCREEN 9000 STARTING AT 10 10.
+    WRITE / `The checkbox was selected, and the modal dialog box opened.`.
+    WRITE / `This modal dialog box contains multiple included elements.`.
+  ELSE.
+    WRITE / `The checkbox was not selected, so the modal dialog box was not opened.`.
+    WRITE / `This modal dialog box contains multiple included elements.`.
+  ENDIF.
+
+  SKIP.
+  WRITE / |param1: "{ param1 }"|.
+  WRITE / |param2: "{ param2 }"|.
+  WRITE / `Selection table content:`.
+  LOOP AT sel ASSIGNING FIELD-SYMBOL(<st>).
+    WRITE / |low: { <st>-low }, high: { <st>-high }, option: { <st>-option }, sign: { <st>-sign }|.
+  ENDLOOP.
 ```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
