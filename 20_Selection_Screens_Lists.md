@@ -2189,7 +2189,7 @@ CALL SELECTION-SCREEN 9345 STARTING AT a b ENDING AT c d.
 - Selection screens can be considered a parameter interface if the program containing them is executed using `SUBMIT`.
 - Note that when using `SUBMIT`, an authorization check for the [authorization group](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenauthorization_group_glosry.htm) is performed using the `S_PROGRAM` authorization object.
 
-The following table includes a selection of additions and code snippets (2 programs use the demo names `zdemo_abap_report` for the calling program and `zdemo_abap_report_submit` for the called program):
+The following table includes a selection of additions and code snippets. Two programs use the demo names `zdemo_abap_report` for the calling program and `zdemo_abap_report_submit` for the called program.
 
 <table>
 
@@ -2210,17 +2210,60 @@ Calling a program, ending the current program
 - If the program does not exist, a runtime error occurs.
 - Without the `AND RETURN` addition, the current [SAP LUW](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abensap_luw_glosry.htm) is terminated.
 
+
  </td>
 
 <td> 
+
+The following code snippets, copyable to demo programs and executable using F8 (execute program `zdemo_abap_report`), implements the following:
+- Using radio buttons in the calling program, you can determine which `SUBMIT` statement to execute. 
+- One statement specifies the `AND RETURN` addition, the others do not.
+- Regarding the third radiobutton: 
+  - The example is implemented to demonstrate the program interruption triggered by the `AND RETURN` addition. In the calling program, the SAP LUW key is retrieved using a system class before and after the `SUBMIT` statement. Both values are the same, demonstrating that the SAP LUW has been kept and is still the same. However, the called program has its own SAP LUW. The code of the called program also includes the retrieval of the SAP LUW key. This value differs from the SAP LUW key of the calling program, thus, showing that two different SAP LUWs have been started.
+  - As there is no "returning parameter-like" functionality when returning to the calling program, the called program uses an `EXPORT ... TO MEMORY ID` statement to store the SAP LUW key value in the ABAP memory. For display and demonstration, the calling program retrieves this stored content with an `IMPORT ... TO MEMORY ID` statement. It then writes the content to a list using a `WRITE` statement. Find more information and criteria for the use [here](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abendata_cluster.htm).
+
 
 `zdemo_abap_report`
 ``` abap
 PROGRAM.
 
-SUBMIT zdemo_abap_report_submit.
+PARAMETERS: noreturn RADIOBUTTON GROUP rbg,
+            w_return RADIOBUTTON GROUP rbg,
+            w_retkey RADIOBUTTON GROUP rbg.
 
-WRITE / |This will not be displayed as the calling program is ended.|.
+START-OF-SELECTION.
+
+  CASE 'X'.
+    WHEN noreturn.
+
+      SUBMIT zdemo_abap_report_submit.
+      "Text will not be written to the list since the calling program is ended.
+      WRITE / |This text was written to the list in program { sy-repid }.|.
+
+    WHEN w_return.
+
+      SUBMIT zdemo_abap_report_submit AND RETURN.
+      "Text will be written to the list since the calling program is only interrupted.
+      WRITE / |This text was written to the list in program { sy-repid }.|.
+
+    WHEN w_retkey.
+
+      "SAP LUW key information
+      DATA(sap_luw_key_calling_prog1) = cl_system_transaction_state=>get_sap_luw_key( ).
+      SUBMIT zdemo_abap_report_submit AND RETURN.
+      DATA(sap_luw_key_calling_prog2) = cl_system_transaction_state=>get_sap_luw_key( ).
+
+      DATA luw_key_called_prog TYPE sychar32.
+      IMPORT key = luw_key_called_prog FROM MEMORY ID 'ID4LUWKEY'.
+
+      WRITE / |This text was written to the list in program { sy-repid }.|.
+      SKIP.
+      ASSERT sap_luw_key_calling_prog1 <> luw_key_called_prog.
+      WRITE: / |SAP LUW key in calling program (1): { sap_luw_key_calling_prog1 }|.
+      WRITE: / |SAP LUW key in calling program (2): { sap_luw_key_calling_prog2 }|.
+      WRITE: / |SAP LUW key in called program: { luw_key_called_prog }|.
+
+  ENDCASE.
 ``` 
 
 <br>
@@ -2229,63 +2272,16 @@ WRITE / |This will not be displayed as the calling program is ended.|.
 ``` abap
 PROGRAM.
 
-WRITE / |The program { sy-repid } was executed at { utclong_current( ) TIMESTAMP = SPACE }.|.
+START-OF-SELECTION.
+
+DATA(sap_luw_key_called_prog) = cl_system_transaction_state=>get_sap_luw_key( ).
+EXPORT key = sap_luw_key_called_prog TO MEMORY ID 'ID4LUWKEY'.
+MESSAGE |Hello from program { sy-repid }, { sy-uname }. The SAP LUW key value is "{ sap_luw_key_called_prog }".| &&
+        | If you selected the first radiobutton (no "AND RETURN"), you must run the program again to check out more radiobuttons.| TYPE 'I'.
 ``` 
 
 
  </td>
-</tr>
-
-<tr>
-<td> Subject/Addition </td> <td> Notes </td> <td> Code Snippet </td>
-</tr>
-
-<tr>
-<td> 
-
-Dynamically calling a program
-
- </td>
-
- <td> 
-
-- A parenthesized flat character-like data object (literal, constannt or variable) is specified.
-- The name must be specified in uppercase.
-- Note the security risks and consequences a program submitted from outside can cause. You can use the class `CL_ABAP_DYN_PRG` to tackle security risks.
-
- </td>
-
-<td> 
-
-`zdemo_abap_report`
-``` abap
-PROGRAM.
-
-SUBMIT ('ZDEMO_ABAP_REPORT_SUBMIT').
-
-WRITE / `This will not be displayed, and the following SUBMIT ` && 
-        `statement will not be carried out as the calling program is ended.`.
-
-"Using the name of a program in a variable
-"The statement is not called in the example.
-DATA prog_name type syrepid value 'ZDEMO_ABAP_REPORT_SUBMIT'.
-SUBMIT (prog_name).
-``` 
-
-<br>
-
-`zdemo_abap_report_submit`
-``` abap
-PROGRAM.
-
-WRITE / |The program { sy-repid } was executed at { utclong_current( ) TIMESTAMP = SPACE }.|.
-``` 
-
- </td>
-</tr>
-
-<tr>
-<td> Subject/Addition </td> <td> Notes </td> <td> Code Snippet </td>
 </tr>
 
 <tr>
@@ -2306,24 +2302,86 @@ Addition `AND RETURN`
 
 <td> 
 
+See above.
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+Dynamically calling a program
+
+ </td>
+
+ <td> 
+
+- A parenthesized flat character-like data object (literal, constannt or variable) is specified.
+- The name must be specified in uppercase.
+- Note the security risks and consequences a program submitted from outside can cause. You can use the class `CL_ABAP_DYN_PRG` to tackle security risks.
+- As there is no "returning parameter-like" functionality when returning to the calling program, the called program uses an `EXPORT ... TO MEMORY ID` statement to store parameter values in a string table within the ABAP memory. For display and demonstration, the calling program retrieves this stored content with an `IMPORT ... TO MEMORY ID` statement. It then writes the content to a list using `WRITE` statements. Find more information and criteria for the use [here](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abendata_cluster.htm).
+
+ </td>
+
+<td> 
+
 The following code snippets, copyable to demo programs and executable using F8 (execute program `zdemo_abap_report`), implements the following:
-- `zdemo_abap_report` calls a program using the `AND RETURN` addition. Before and after the statement, the SAP LUW key is retrieved using a system class. 
-- The program interruption is demonstrated that the `WRITE` statements display content in a classic list, and both SAP LUW keys are the same. So, the SAP LUW has been kept. 
-- The called program also contains a statement to store the SAP LUW key. The `BREAK-POINT` statement starts the debugger. You can check the SAP LUW key value there, and - after continuing the program execution - compare the SAP LUW key values. They are different, thus, showing that two different SAP LUWs have been started.
+- Using radio buttons in the calling program, you can determine which dynamic `SUBMIT` statement to execute. 
+- Some statements specify the `AND RETURN` addition, some do not.
+- Regarding the fourth radiobutton, see the description in the first example.
+  
 
 `zdemo_abap_report`
 ``` abap
 PROGRAM.
 
-DATA(sap_luw_key_calling_prog1) = cl_system_transaction_state=>get_sap_luw_key( ).
+PARAMETERS: noreturn RADIOBUTTON GROUP rbg,
+            no_retdo RADIOBUTTON GROUP rbg,
+            w_return RADIOBUTTON GROUP rbg,
+            w_retkey RADIOBUTTON GROUP rbg.
 
-SUBMIT zdemo_abap_report_submit AND RETURN.
+START-OF-SELECTION.
 
-DATA(sap_luw_key_calling_prog2) = cl_system_transaction_state=>get_sap_luw_key( ).
+  CASE 'X'.
+    WHEN noreturn.
 
-WRITE / `This will be displayed as the calling program is only interrupted.`.
-WRITE / |sap_luw_key_calling_prog1: "{ sap_luw_key_calling_prog1 }"|.
-WRITE / |sap_luw_key_calling_prog2: "{ sap_luw_key_calling_prog2 }"|.
+      "Program name specified as literal
+      SUBMIT ('ZDEMO_ABAP_REPORT_SUBMIT').
+      "Text will not be written to the list since the calling program is ended.
+      WRITE / |This text was written to the list in program { sy-repid }.|.
+
+    WHEN no_retdo.
+
+      "Specifying the program with a variable
+      DATA prog_name TYPE syrepid VALUE 'ZDEMO_ABAP_REPORT_SUBMIT'.
+      SUBMIT (prog_name).
+      "Text will not be written to the list since the calling program is ended.
+      WRITE / |This text was written to the list in program { sy-repid }.|.
+
+    WHEN w_return.
+
+      SUBMIT ('ZDEMO_ABAP_REPORT_SUBMIT') AND RETURN.
+      "Text will be written to the list since the calling program is only interrupted.
+      WRITE / |This text was written to the list in program { sy-repid }.|.
+
+    WHEN w_retkey.
+
+      "SAP LUW key information
+      DATA(sap_luw_key_calling_prog1) = cl_system_transaction_state=>get_sap_luw_key( ).
+      SUBMIT ('ZDEMO_ABAP_REPORT_SUBMIT') AND RETURN.
+      DATA(sap_luw_key_calling_prog2) = cl_system_transaction_state=>get_sap_luw_key( ).
+
+      DATA luw_key_called_prog TYPE sychar32.
+      IMPORT key = luw_key_called_prog FROM MEMORY ID 'ID4LUWKEY'.
+
+      WRITE / |This text was written to the list in program { sy-repid }.|.
+      SKIP.
+      ASSERT sap_luw_key_calling_prog1 <> luw_key_called_prog.
+      WRITE: / |SAP LUW key in calling program (1): { sap_luw_key_calling_prog1 }|.
+      WRITE: / |SAP LUW key in calling program (2): { sap_luw_key_calling_prog2 }|.
+      WRITE: / |SAP LUW key in called program: { luw_key_called_prog }|.
+
+  ENDCASE.
 ``` 
 
 <br>
@@ -2332,16 +2390,18 @@ WRITE / |sap_luw_key_calling_prog2: "{ sap_luw_key_calling_prog2 }"|.
 ``` abap
 PROGRAM.
 
+START-OF-SELECTION.
+
 DATA(sap_luw_key_called_prog) = cl_system_transaction_state=>get_sap_luw_key( ).
-BREAK-POINT.
+EXPORT key = sap_luw_key_called_prog TO MEMORY ID 'ID4LUWKEY'.
+MESSAGE |Hello from program { sy-repid }, { sy-uname }. The SAP LUW key value is "{ sap_luw_key_called_prog }".| &&
+        | If you selected one of the first two radiobuttons (no "AND RETURN"), you must run the program again to check out more radiobuttons.| TYPE 'I'.
 ``` 
 
  </td>
 </tr>
 
-<tr>
-<td> Subject/Addition </td> <td> Notes </td> <td> Code Snippet </td>
-</tr>
+
 
 <tr>
 <td> 
@@ -2361,28 +2421,72 @@ Additions `USING SELECTION-SCREEN` and `VIA SELECTION-SCREEN`
 
 <td> 
 
+The following code snippets, copyable to demo programs and executable using F8 (execute program `zdemo_abap_report`), implements the following:
+- Using radio buttons in the calling program, you can determine which `SUBMIT` statement to execute. 
+- All statements use the `AND RETURN` addition.
+- Some statements anticipate the `WITH` addition with which you can pass values for parameters and selection criteria.
+- As there is no "returning parameter-like" functionality when returning to the calling program, the called program uses an `EXPORT ... TO MEMORY ID` statement to store parameter values in a string table within the ABAP memory. For display and demonstration, the calling program retrieves this stored content with an `IMPORT ... TO MEMORY ID` statement. It then writes the content to a list using `WRITE` statements. Find more information and criteria for the use [here](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abendata_cluster.htm).
+
+
 `zdemo_abap_report`
 ``` abap
 PROGRAM.
 
-PARAMETERS: p_rb1 RADIOBUTTON GROUP rbg,
-            p_rb2 RADIOBUTTON GROUP rbg,
-            p_rb3 RADIOBUTTON GROUP rbg.
+PARAMETERS: use_sel  RADIOBUTTON GROUP rbg,
+            use_selp RADIOBUTTON GROUP rbg,
+            use_sels RADIOBUTTON GROUP rbg,
+            sel_via  RADIOBUTTON GROUP rbg,
+            onlyvia  RADIOBUTTON GROUP rbg.
+
+DATA param1 TYPE c LENGTH 10.
+DATA param2 TYPE c LENGTH 10.
 
 START-OF-SELECTION.
 
   CASE 'X'.
-    WHEN p_rb1.
-      "In this example, the called selection screen is not displayed. Therefore, none 
-      "of the parameters in the called program are assigned values.  
+    WHEN use_sel.
+
+      "In this example, the called selection screen is not displayed. As no parameter values
+      "are passed (see next example), none of the parameters in the called program are assigned
+      "values.
       SUBMIT zdemo_abap_report_submit USING SELECTION-SCREEN 9000 AND RETURN.
-    WHEN p_rb2.
+
+    WHEN use_selp.
+
+      "The following statement does not specify VIA SELECTION-SCREEN either, but anticipates
+      "the WITH addition to pass parameter values.
+      SUBMIT zdemo_abap_report_submit WITH param2 = 'hello'
+                                      USING SELECTION-SCREEN 9000 AND RETURN.
+
+    WHEN use_sels.
+
+      "This example statement explicitly calls the standard selection screen.
+      SUBMIT zdemo_abap_report_submit WITH param1 = 'hi'
+                                      USING SELECTION-SCREEN 1000 AND RETURN.
+
+    WHEN sel_via.
+
       "The specified selection screen is called.
-      SUBMIT zdemo_abap_report_submit USING SELECTION-SCREEN 9000 VIA SELECTION-SCREEN AND RETURN.
-    WHEN p_rb3.
+      SUBMIT zdemo_abap_report_submit USING SELECTION-SCREEN 9000
+                                      VIA SELECTION-SCREEN
+                                      AND RETURN.
+
+    WHEN onlyvia.
+
       "The standard selection screen 1000 is called.
-      SUBMIT zdemo_abap_report_submit VIA SELECTION-SCREEN AND RETURN.
+      SUBMIT zdemo_abap_report_submit VIA SELECTION-SCREEN
+                                      AND RETURN.
+
+
   ENDCASE.
+
+  DATA input_values TYPE string_table.
+  IMPORT input = input_values FROM MEMORY ID 'DEMO_ID'.
+
+  WRITE / |This text was written to the list in program { sy-repid }.|.
+  LOOP AT input_values INTO DATA(wa).
+    WRITE / wa.
+  ENDLOOP.
 ``` 
 
 <br>
@@ -2391,25 +2495,24 @@ START-OF-SELECTION.
 ``` abap
 PROGRAM.
 
-PARAMETERS param1 TYPE c LENGTH 10.
+PARAMETERS param1 TYPE c LENGTH 10 LOWER CASE.
 
 SELECTION-SCREEN BEGIN OF SCREEN 9000.
-  PARAMETERS param2 TYPE c LENGTH 10.
+  PARAMETERS param2 TYPE c LENGTH 10 LOWER CASE.
 SELECTION-SCREEN END OF SCREEN 9000.
 
 START-OF-SELECTION.
 
- WRITE / `Inserted values:`.
-  SKIP.
-  WRITE / |param1: "{ param1 }"|.
-  WRITE / |param2: "{ param2 }"|.
+  DATA input_values TYPE string_table.
+  APPEND |param1: "{ param1 }"| TO input_values.
+  APPEND |param2: "{ param2 }"| TO input_values.
+
+  EXPORT input = input_values TO MEMORY ID 'DEMO_ID'.
+
+  MESSAGE |Hello from program { sy-repid }, { sy-uname }. The parameter values are param1 = "{ param1 }" and param2 = "{ param2 }".| TYPE 'I'.
 ```  
 
  </td>
-</tr>
-
-<tr>
-<td> Subject/Addition </td> <td> Notes </td> <td> Code Snippet </td>
 </tr>
 
 <tr>
@@ -2433,6 +2536,12 @@ Additions `WITH SELECTION-TABLE`, `WITH ...`
 
 <td> 
 
+The following code snippets, copyable to demo programs and executable using F8 (execute program `zdemo_abap_report`), implements the following:
+- Using radio buttons in the calling program, you can determine which `SUBMIT` statement to execute. 
+- The `SUBMIT` statements do not specify the `VIA SELECTION-SCREEN` addition on purpose. Parameter values and selection criteria are predefined in the calling program and then used by the `SUBMIT` statements.
+- As there is no "returning parameter-like" functionality when returning to the calling program, the called program uses an `EXPORT ... TO MEMORY ID` statement to store parameter values in a string table within the ABAP memory. For display and demonstration, the calling program retrieves this stored content with an `IMPORT ... TO MEMORY ID` statement. It then writes the content to a list using `WRITE` statements. Find more information and criteria for the use [here](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abendata_cluster.htm).
+
+
 `zdemo_abap_report`
 ``` abap
 PROGRAM.
@@ -2450,26 +2559,35 @@ START-OF-SELECTION.
 
   CASE 'X'.
     WHEN wseltab1.
+
       DATA seltab1 TYPE TABLE OF rsparams WITH EMPTY KEY.
       seltab1 = VALUE #( ( selname = 'PARAM2' kind = 'P' low = 'Test' ) ).
       SUBMIT zdemo_abap_report_submit USING SELECTION-SCREEN 9000 WITH SELECTION-TABLE seltab1 AND RETURN.
 
-      WHEN wseltab2.DATA seltab2 TYPE TABLE OF rsparams WITH EMPTY KEY.
+    WHEN wseltab2.
+
+      DATA seltab2 TYPE TABLE OF rsparams WITH EMPTY KEY.
       seltab2 = VALUE #( ( selname = 'SEL1' kind = 'S' low = 'A' high = 'M' option = 'BT' sign = 'I' ) ).
       SUBMIT zdemo_abap_report_submit USING SELECTION-SCREEN 9001 WITH SELECTION-TABLE seltab2 AND RETURN.
 
-      WHEN wseltab3.DATA seltab3 TYPE TABLE OF rsparams WITH EMPTY KEY.
+    WHEN wseltab3.
+
+      DATA seltab3 TYPE TABLE OF rsparams WITH EMPTY KEY.
       seltab3 = VALUE #( ( selname = 'PARAM3' kind = 'P' low = 'Hello' )
                          ( selname = 'SEL2' kind = 'S' low = 1 high = 10 option = 'BT' sign = 'I' ) ).
       SUBMIT zdemo_abap_report_submit USING SELECTION-SCREEN 9002 WITH SELECTION-TABLE seltab3 AND RETURN.
 
     WHEN simple_w.
+
       "Calls the standard selection screen
       SUBMIT zdemo_abap_report_submit WITH param1 = 'ABAP' AND RETURN.
 
-    WHEN with_sel.SUBMIT zdemo_abap_report_submit USING SELECTION-SCREEN 9000 WITH param2 = 'lorem' AND RETURN.
+    WHEN with_sel.
+
+      SUBMIT zdemo_abap_report_submit USING SELECTION-SCREEN 9000 WITH param2 = 'lorem' AND RETURN.
 
     WHEN singlrt.
+
       "Single value passed for ranges table
       "Note:
       "- Specifying SIGN is optional. The default value for sign is 'I'.
@@ -2477,10 +2595,12 @@ START-OF-SELECTION.
       SUBMIT zdemo_abap_report_submit USING SELECTION-SCREEN 9001 WITH sel1 = 'A' SIGN 'I' AND RETURN.
 
     WHEN intv_rt.
+
       "Passed interval for ranges table
       SUBMIT zdemo_abap_report_submit USING SELECTION-SCREEN 9001 WITH sel1 BETWEEN 'A' AND 'M' SIGN 'I' AND RETURN.
 
     WHEN rangest.
+
       "Passing a ranges table
       TYPES c10 TYPE c LENGTH 10.
       DATA rangetab TYPE RANGE OF c10.
@@ -2493,6 +2613,14 @@ START-OF-SELECTION.
       SUBMIT zdemo_abap_report_submit USING SELECTION-SCREEN 9001 WITH sel1 IN rangetab AND RETURN.
 
   ENDCASE.
+
+  DATA input_tab TYPE string_table.
+  IMPORT values = input_tab FROM MEMORY ID 'ID4INPUT'.
+
+  LOOP AT input_tab INTO DATA(wa).
+    SET BLANK LINES ON.
+    WRITE / wa.
+  ENDLOOP.
 ``` 
 
 <br>
@@ -2520,22 +2648,398 @@ SELECTION-SCREEN END OF SCREEN 9002.
 
 START-OF-SELECTION.
 
-  WRITE / `Inserted values:`.
-  SKIP.
-  WRITE / |param1: "{ param1 }"|.
-  WRITE / |param2: "{ param2 }"|.
-  WRITE / |param3: "{ param3 }"|.
-  SKIP.
-  WRITE / `Selection table content (sel1):`.
-  LOOP AT sel1 ASSIGNING FIELD-SYMBOL(<st1>).
-    WRITE / |low: { <st1>-low }, high: { <st1>-high }, option: { <st1>-option }, sign: { <st1>-sign }|.
-  ENDLOOP.
-  SKIP.
-  WRITE / `Selection table content (sel2):`.
-  LOOP AT sel2 ASSIGNING FIELD-SYMBOL(<st2>).
-    WRITE / |low: { <st2>-low }, high: { <st2>-high }, option: { <st2>-option }, sign: { <st2>-sign }|.
-  ENDLOOP.
+  DATA input_values TYPE string_table.
+
+  APPEND |param1: "{ param1 }"| TO input_values.
+  APPEND INITIAL LINE TO input_values.
+  APPEND |param2: "{ param2 }"| TO input_values.
+  APPEND INITIAL LINE TO input_values.
+  APPEND |param3: "{ param3 }"| TO input_values.
+  APPEND INITIAL LINE TO input_values.
+
+  IF sel1 IS INITIAL.
+    APPEND `No sel1 selection criteria.` TO input_values.
+  ELSE.
+    APPEND `sel1 selection criteria:` TO input_values.
+    LOOP AT sel1 ASSIGNING FIELD-SYMBOL(<st1>).
+      APPEND |low: { <st1>-low }, high: { <st1>-high }, option: { <st1>-option }, sign: { <st1>-sign }| TO input_values.
+    ENDLOOP.
+  ENDIF.
+  APPEND INITIAL LINE TO input_values.
+  IF sel2 IS INITIAL.
+    APPEND `No sel2 selection criteria.` TO input_values.
+  ELSE.
+    APPEND `sel2 selection criteria:` TO input_values.
+    LOOP AT sel2 ASSIGNING FIELD-SYMBOL(<st2>).
+      APPEND |low: { <st2>-low }, high: { <st2>-high }, option: { <st2>-option }, sign: { <st2>-sign }| TO input_values.
+    ENDLOOP.
+  ENDIF.
+
+  EXPORT values = input_values TO MEMORY ID 'ID4INPUT'.
 ``` 
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+Handling the list of the called program<br><br>
+Addition `EXPORTING LIST TO MEMORY`
+
+ </td>
+
+ <td> 
+
+- After a program has been called, the output statements of that program write to the [basic list](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenbasic_list_glosry.htm).
+- If this addition is used, the output list is stored in the [ABAP memory](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenabap_memory_glosry.htm) in an internal table of type `abaplist`. If it is not used, the list of the called program is displayed. That's why the examples above do not use `WRITE` statements in the called program.
+- The addition must be used with `AND RETURN`.
+- You can access the stored list in the calling program using these function modules: 
+  - `LIST_FROM_MEMORY`: Retrieves the list from the ABAP memory in an internal table of type `abaplist`
+  - `WRITE_LIST`: Writes the content of the table (of type `abaplist`) to the current list
+  - `DISPLAY_LIST`: Displays the content the content of the table (of type `abaplist`) in a separate [list dynpro](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenlist_dynpro_glosry.htm)
+  - `LIST_TO_ASCI`: Converts the content the content of the table (of type `abaplist`) to ASCII representation
+- Find more information in the [ABAP Keyword Documentation](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapsubmit_list_options.htm). More additions are available to handle lists:
+  - `TO SAP-SPOOL`: Sends the output list to the SAP spool system as spool list
+  - `LINE-SIZE`: Defines the line width of the basic list
+  - `LINE-COUNT`: Defines the page length the basic list
+
+
+ </td>
+
+<td> 
+
+The following code snippets, copyable to demo programs and executable using F8 (execute program `zdemo_abap_report`), implements the following:
+- Using radio buttons in the calling program, you can determine which `SUBMIT` statement to execute and how the list is handled afterwards. 
+- The examples cover the calling of the function modules mentioned above.
+
+`zdemo_abap_report`
+
+```abap
+PROGRAM.
+
+PARAMETERS: expwrite RADIOBUTTON GROUP rbg,
+            expdispl RADIOBUTTON GROUP rbg,
+            expascii RADIOBUTTON GROUP rbg.
+
+DATA list_tab TYPE TABLE OF abaplist.
+
+START-OF-SELECTION.
+
+  CASE 'X'.
+    WHEN expwrite.
+
+      SUBMIT zdemo_abap_report_submit WITH param = 'WRITE_LIST'
+                                      EXPORTING LIST TO MEMORY AND RETURN.
+
+      CALL FUNCTION 'LIST_FROM_MEMORY'
+        TABLES
+          listobject = list_tab
+        EXCEPTIONS
+          not_found  = 1
+          OTHERS     = 2.
+
+      IF sy-subrc = 0.
+        CALL FUNCTION 'WRITE_LIST'
+          TABLES
+            listobject = list_tab.
+      ELSE.
+        WRITE / `List not found.`.
+      ENDIF.
+
+      WRITE / |This text was written in the calling program { sy-repid }.|.
+
+    WHEN expdispl.
+
+      SUBMIT zdemo_abap_report_submit WITH param = 'DISPLAY_LIST'
+                                      EXPORTING LIST TO MEMORY AND RETURN.
+
+      CALL FUNCTION 'LIST_FROM_MEMORY'
+        TABLES
+          listobject = list_tab
+        EXCEPTIONS
+          not_found  = 1
+          OTHERS     = 2.
+
+      IF sy-subrc = 0.
+        CALL FUNCTION 'DISPLAY_LIST'
+          TABLES
+            listobject = list_tab
+          EXCEPTIONS
+            empty_list = 1
+            OTHERS     = 2.
+        IF sy-subrc <> 0.
+          WRITE / `Cannot display list.`.
+        ENDIF.
+      ELSE.
+        WRITE / `List not found.`.
+      ENDIF.
+
+      WRITE / |This text was written in the calling program { sy-repid }.|.
+
+    WHEN expascii.
+
+      SUBMIT zdemo_abap_report_submit WITH param = 'LIST_TO_ASCI'
+                                      EXPORTING LIST TO MEMORY AND RETURN.
+
+      CALL FUNCTION 'LIST_FROM_MEMORY'
+        TABLES
+          listobject = list_tab
+        EXCEPTIONS
+          not_found  = 1
+          OTHERS     = 2.
+
+      TYPES c255 TYPE c LENGTH 255.
+      DATA list_ascii TYPE TABLE OF c255 WITH EMPTY KEY.
+
+      IF sy-subrc = 0.
+        CALL FUNCTION 'LIST_TO_ASCI'
+          TABLES
+            listasci           = list_ascii
+            listobject         = list_tab
+          EXCEPTIONS
+            empty_list         = 1
+            list_index_invalid = 2
+            OTHERS             = 3.
+        IF sy-subrc <> 0.
+          WRITE / `Cannot convert list.`.
+        ELSE.
+          WRITE / `List converted to ASCII representation:`.
+          LOOP AT list_ascii INTO DATA(wa_ascii).
+            WRITE / wa_ascii.
+          ENDLOOP.
+        ENDIF.
+      ELSE.
+        WRITE / `List not found.`.
+      ENDIF.
+
+      SKIP.
+      WRITE / |This text was written in the calling program { sy-repid }.|.
+
+  ENDCASE.
+```
+
+
+<br>
+
+`zdemo_abap_report_submit`
+
+```abap
+PROGRAM.
+
+PARAMETERS param TYPE c LENGTH 20.
+
+START-OF-SELECTION.
+
+  IF param IS INITIAL.
+    WRITE / `No value passed for parameter "param".`.
+  ELSE.
+    WRITE / |param: "{ param }"|.
+  ENDIF.
+  SKIP.
+  WRITE / |Some text written in the called program { sy-repid }|.
+  DO 10 TIMES.
+    WRITE / |Text no. { sy-index } added to list.|.
+  ENDDO.
+```
+
+
+ </td>
+</tr>
+
+
+
+<tr>
+<td> 
+
+Running a program in the background<br><br>
+Addition `VIA JOB ... NUMBER ...` 
+
+ </td>
+
+ <td> 
+
+- Must be used with `AND RETURN`
+- Background jobs can be created programmatically using function modules. The example uses some of them, e.g. for creating, completing, and analyzing background jobs.
+- See the documentation for the [details](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapsubmit_via_job.htm).
+
+ </td>
+
+<td> 
+
+The following code snippets, copyable to demo programs and executable using F8 (execute program `zdemo_abap_report`), implements the following:
+- A program is scheduled as background task, and then completed and released.
+- The program execution is interrupted for one second. Then, function modules are used to analyze the background job.
+- Using the `cl_demo_output` class for demo output purposes, text and the content of data objects are displayed.
+- The transaction `SMX` is called to view the job overview. In the *Spool* column, you can click the icon to display the list output. On the next screen, the list of spool request is displayed. Choose the icon in the *Type* column. The `sy-batch` should be not initial denoting the run in the background.
+
+
+`zdemo_abap_report`
+
+```abap
+PROGRAM.
+
+PARAMETERS callbgr TYPE c AS CHECKBOX DEFAULT 'X'.
+
+DATA: number           TYPE tbtcjob-jobcount,
+      name             TYPE tbtcjob-jobname VALUE 'DEMO_JOB',
+      print_parameters TYPE pri_params.
+
+START-OF-SELECTION.
+
+  IF callbgr IS INITIAL.
+
+    MESSAGE `You chose not to run the called program in the background.` TYPE 'I'.
+    SUBMIT zdemo_abap_report_submit WITH param = 'not in background' AND RETURN.
+
+  ELSE.
+
+    MESSAGE `You chose to run the called program in the background.` TYPE 'I'.
+
+    "Creating background job
+    CALL FUNCTION 'JOB_OPEN'
+      EXPORTING
+        jobname          = name
+      IMPORTING
+        jobcount         = number
+      EXCEPTIONS
+        cant_create_job  = 1
+        invalid_job_data = 2
+        jobname_missing  = 3
+        OTHERS           = 4.
+
+    IF sy-subrc = 0.
+      "Scheduling a program as a background task using the number created previously
+      "and the name specified
+      SUBMIT zdemo_abap_report_submit WITH param = 'in background'
+                                      TO SAP-SPOOL
+                                      SPOOL PARAMETERS print_parameters
+                                      WITHOUT SPOOL DYNPRO
+                                      VIA JOB name NUMBER number
+                                      AND RETURN.
+
+      IF sy-subrc = 0.
+        "Completing the background job
+        CALL FUNCTION 'JOB_CLOSE'
+          EXPORTING
+            jobcount             = number
+            jobname              = name
+            strtimmed            = 'X'
+          EXCEPTIONS
+            cant_start_immediate = 1
+            invalid_startdate    = 2
+            jobname_missing      = 3
+            job_close_failed     = 4
+            job_nosteps          = 5
+            job_notex            = 6
+            lock_failed          = 7
+            OTHERS               = 8.
+        IF sy-subrc = 0.
+          cl_demo_output=>write( |The job { name } was submitted with number { number }| ).
+
+          "Interrupting the program shortly
+          WAIT UP TO 1 SECONDS.
+
+          "Analyzing the background job
+          DATA: BEGIN OF jobstate,
+                  aborted     TYPE c LENGTH 1,
+                  finished    TYPE c LENGTH 1,
+                  preliminary TYPE c LENGTH 1,
+                  ready       TYPE c LENGTH 1,
+                  running     TYPE c LENGTH 1,
+                  scheduled   TYPE c LENGTH 1,
+                  suspended   TYPE c LENGTH 1,
+                  other       TYPE c LENGTH 1,
+                END OF jobstate.
+
+          CALL FUNCTION 'SHOW_JOBSTATE'
+            EXPORTING
+              jobcount         = number
+              jobname          = name
+            IMPORTING
+              aborted          = jobstate-aborted
+              finished         = jobstate-finished
+              preliminary      = jobstate-preliminary
+              ready            = jobstate-ready
+              running          = jobstate-running
+              scheduled        = jobstate-scheduled
+              suspended        = jobstate-suspended
+              other            = jobstate-other
+            EXCEPTIONS
+              jobcount_missing = 1
+              jobname_missing  = 2
+              job_notex        = 3
+              OTHERS           = 4.
+          IF sy-subrc = 0.
+            cl_demo_output=>write( jobstate ).
+          ELSE.
+            cl_demo_output=>write( `Exception in SHOW_JOBSTATE` ).
+          ENDIF.
+
+          DATA joblog TYPE TABLE OF tbtc5.
+          CALL FUNCTION 'BP_JOBLOG_READ'
+            EXPORTING
+              jobcount              = number
+              jobname               = name
+            TABLES
+              joblogtbl             = joblog
+            EXCEPTIONS
+              cant_read_joblog      = 1
+              jobcount_missing      = 2
+              joblog_does_not_exist = 3
+              joblog_is_empty       = 4
+              joblog_name_missing   = 5
+              jobname_missing       = 6
+              job_does_not_exist    = 7
+              OTHERS                = 8.
+          IF sy-subrc = 0.
+            cl_demo_output=>write( joblog ).
+          ELSE.
+            cl_demo_output=>write( `Exception in BP_JOBLOG_READ` ).
+          ENDIF.
+
+        ELSE.
+          cl_demo_output=>write( `Exception in JOB_CLOSE` ).
+        ENDIF.
+      ELSE.
+        DATA(msg) = cl_abap_submit_handling=>get_error_message( ).
+        cl_demo_output=>write( msg ).
+      ENDIF.
+    ENDIF.
+
+    cl_demo_output=>display( ).
+    MESSAGE `You are redirected to transaction SMX.` TYPE 'I'.
+    CALL TRANSACTION 'SMX'.
+  ENDIF.
+```
+
+
+<br>
+
+`zdemo_abap_report_submit`
+
+```abap
+PROGRAM.
+
+PARAMETERS param TYPE c LENGTH 20 LOWER CASE.
+
+START-OF-SELECTION.
+
+  IF param IS INITIAL.
+    WRITE / `No value passed for parameter "param".`.
+  ELSE.
+    WRITE / |param: "{ param }"|.
+  ENDIF.
+  SKIP.
+  WRITE / |Some text written in the called program { sy-repid }|.
+  DO 10 TIMES.
+    WRITE / |Text no. { sy-index } added to list.|.
+  ENDDO.
+
+  SKIP.
+  WRITE / |Value of sy-batch: "{ sy-batch }"|.
+```
+
 
  </td>
 </tr>
