@@ -16,7 +16,9 @@
     - [Calling Selection Screens](#calling-selection-screens)
   - [Excursion: SUBMIT Statements](#excursion-submit-statements)
   - [ABAP Statements for Classic Lists](#abap-statements-for-classic-lists)
-    - [Creating Lists](#creating-lists)
+    - [Creating Lists with WRITE Statements](#creating-lists-with-write-statements)
+    - [Formatting Output Using FORMAT Statements](#formatting-output-using-format-statements)
+    - [List Creation-Related ABAP Keywords and Additions](#list-creation-related-abap-keywords-and-additions)
     - [Reading and Modifying in Lists](#reading-and-modifying-in-lists)
   - [Event Blocks](#event-blocks)
   - [Excursion: SAP List Viewer (ALV)](#excursion-sap-list-viewer-alv)
@@ -3050,131 +3052,548 @@ START-OF-SELECTION.
 
 ## ABAP Statements for Classic Lists
 
-### Creating Lists
+### Creating Lists with WRITE Statements
 
 - Lists consist of consecutive list lines that are filled one after the other using the statement [`WRITE`](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapwrite-.htm).
 - This way, you can output mostly flat data objects and strings/xstrings, types converted to a character-like value (i.e. no internal table content or structures directly).
 - Each time a data object is output, an output length is defined, either implicitly or explicitly (see [here](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenwrite_output_length.htm)).
 - The following snippets show a selection of additions to `WRITE` statements, covering positioning, creating special list elements, and formatting options.
 
-```abap
-"WRITE using an unnamed data object
-WRITE 'Hello ABAP.'.
-"Named data objects
-DATA some_text TYPE string VALUE `Hi, `.
-"Note: The text is written right after the previous text in one line.
-WRITE some_text && sy-uname.
-"/: Writes to a new line
-WRITE / 'new line'.
 
-"-------------------------- Positioning output --------------------------
-"Specifying the output position (and output in new line)
-WRITE /5 'positioned'.
-"Specifying the length, no position specified means the output is
-"written from the first column on
-WRITE /(3) 'not displayed completely'.
-"Specifying both length and position
-WRITE /5(30) 'this is displayed completely'.
-"Position/length only specified as numeric literals as above, then the
-"addition AT can be omitted
-WRITE AT /3(12) 'lorem ipsum'.
-"Length specifications with * or **. In that case, the output length 
-"depends on the data type of the data object. There are special rules. 
-"See the ABAP Keyword Documentation for the details.
-DATA dc34 TYPE decfloat34 VALUE '   1.2345    '.
-WRITE /(*) dc34.
-WRITE /1(**) dc34.
 
-"--------------------- Further specification options ----------------------
+<table>
 
-"Various examples for further specification options, among them function
-"calls, string expressions, method calls
-DATA txt TYPE string VALUE `abap`.
-"String template
-WRITE / |{ txt WIDTH = 20 ALIGN = RIGHT  CASE = UPPER }|.
-"The following statement uses a chained statement with colon.
-WRITE: / |{ 1 + 2 }|, "String template includes an arithmetic calculation
-        to_upper( txt ). "Function call
-"Concatenation using &&
+<tr>
+<td> Subject/Addition </td> <td> Notes </td> <td> Code Snippet </td>
+</tr>
+
+<tr>
+<td> 
+
+Writing content
+
+ </td>
+
+ <td> 
+
+- You can write flat data objects (including flat structures with character-like components), data objects of type `string` and `xstring` and enumerated types.
+- Also writable: result of function calls, string expressions and method calls
+- Writing expressions in string templates: They are useful for writing embedded arithmetic or bit expressions as these cannot be specified directly. Note that control characters such as `\n` for new lines are ignored.
+- Positioning options are avaialble - as outlined below - for the `WRITE` statement. Among them is `/` that places the output in the next line. Not specifying it means the output is written in the same line.
+
+ </td>
+
+<td> 
+
+
+``` abap
+"Writing in the same line
+"The example uses a character literal, i.e. an unnamed data object.
+"Note that there is a separating blank in the list output.
+WRITE 'Hello'.
+WRITE 'world'.
+
+"Using named data objects and string expressions
+DATA some_text TYPE string VALUE `Hi`.
+WRITE some_text && `, ` && sy-uname && `.`.
+
+"Writing to a new line with /
+WRITE / 'New line'.
+
+"More flat data objects
+"Note the default positioning of the output regarding
+"the numeric types.
+WRITE / CONV decfloat34( '1.23456789' ).
+TYPES n5 TYPE n LENGTH 5.
+DATA numc5 TYPE n5 VALUE '12345'.
+WRITE / numc5.
+DATA number TYPE i VALUE 123.
+WRITE / number.
+
+"Flat structure with character-like components
+"Note the conversion rules.
+DATA: BEGIN OF flat_struc,
+        comp1 TYPE c LENGTH 4 VALUE `ABAP`,
+        comp2 TYPE n LENGTH 3 VALUE '987',
+        comp3 TYPE abap_boolean VALUE 'X',
+        comp4 TYPE d VALUE '20250101',
+        comp5 TYPE t VALUE '123456',
+      END OF flat_struc.
+
+WRITE / flat_struc.
+
+"String templates
+WRITE / |Today's date is { sy-datum }.|.
+"Formatting options with string templates
+WRITE / |{ sy-uname WIDTH = 20 ALIGN = RIGHT CASE = LOWER }|.
+"Arithmetic expressions cannot be specified directly. You may use
+"the expressions in string templates.
+"WRITE / 1 + 2.
+WRITE / |{ 1 + 2 }|.
+WRITE / |{ CONV decfloat34( 1 / 3 ) DECIMALS = 3 }|.
+
+"Concatenating using &&
 WRITE / `conc` && `atenated`.
-"Method call (returns a random integer between 1 and 10)
-"Note the * specification. The returned value is of type i. Specifying *
-"for the length means the length required to output the current value
-"is used. You may want to try the following code snippet by removing (*).
-WRITE /(*) cl_abap_random_int=>create(
+
+"Function calls
+"Note: You can use chained statements with a colon.
+WRITE: / to_upper( 'abap' ),
+       / repeat( val = `*` occ = 50 ),
+       / replace( val = `He##o wor#d` sub = `#` with = `l` occ = 0 ).
+
+"Result of method calls
+"The example uses the retrieval of a random integer between 1 and 10
+WRITE / cl_abap_random_int=>create(
               seed = cl_abap_random=>seed( )
               min  = 1
               max  = 10 )->get_next( ).
 
-"UNDER: Output in the position of previous output
+"Note the * specification. The returned value is of type i. Specifying *
+"for the length means the length required to output the current value
+"is used.
+WRITE /(*) cl_abap_random_int=>create(
+              seed = cl_abap_random=>seed( )
+              min  = 1
+              max  = 10 )->get_next( ).
+``` 
+
+ </td>
+</tr>
+
+
+<tr>
+<td> 
+
+Positioning options (1)<br><br>
+Additions `/`, `AT ... position(length|*|**)`
+
+ </td>
+
+ <td> 
+
+- `/`: Places the output in the next line. Not specifying it means the output is written in the same line.
+- `AT`: 
+  - Explicitly specifying the output position and length
+  - `AT` can be omitted if the position and length are specified as numeric literals.
+  - The position should not be greater than the list width; otherwise, there is not output. A value less than 1 is ignored.
+  - The length value should also be between 1 and the list width.
+  - The length specifications `*` and `**` have characteristics specific to data types that are output. They are particularly useful for ensuring that all characters are output (`*`: minimum output: `**`: maximum output). Find information in the [documentation](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenarithmetic_expression_glosry.htm) and [here](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenwrite_output_length.htm) regarding the output length. 
+- `WRITE /.` works like `SKIP.`.
+
+ </td>
+
+<td> 
+
+
+``` abap
+*&---------------------------------------------------------------------*
+*& WRITE with and without /
+*&---------------------------------------------------------------------*
+
+"Writing output with and without specifying /
+WRITE 'Hello'.
+WRITE 'world'.
+WRITE / 'new line'.
+
+*&---------------------------------------------------------------------*
+*& Specifying the output position with(out) AT, position and length
+*&---------------------------------------------------------------------*
+
+WRITE / repeat( val = `*` occ = 80 ).
+WRITE /.
+
+"Specifying the output position, a length and new line
+"specification
+WRITE 20 'test'.
+"Note the overwriting in the following example.
+WRITE / 'Lorem ipsum dolor sit amet'.
+WRITE 10 '####'.
+
+"Specifying the length, ommitting position specification
+"This means that the output is written from the first column on.
+WRITE /(10) 'Not displayed completely'.
+
+"Specifying both length and position
+WRITE /5(30) 'This text displayed completely starting from position 5.'.
+
+"The AT addition can only be ommitted if position and length are specified
+"as numeric literals as above.
+WRITE AT /3(20) 'lorem ipsum'.
+WRITE /3(20) 'dolor sit amet'.
+"AT specification required
+DATA position TYPE i VALUE 10.
+DATA length TYPE i VALUE 50.
+WRITE AT /position(length) |This text is starts from position { position }. Length specification { length }.|.
+
+"Length specifications with * or **. In that case, the output length
+"depends on the data type of the data object. There are special rules.
+"See the ABAP Keyword Documentation for the details.
+
+"Example with type c
+DATA hi TYPE c LENGTH 10 VALUE 'Hello     '.
+
+WRITE: / hi,
+         sy-uname.
+"Minimum output (trailing blanks are ignored)
+WRITE: /(*) hi,
+         sy-uname.
+"Maximum output (doubled length of data object)
+WRITE: /(**) hi,
+         sy-uname.
+
+"Example with type i
+DATA some_number TYPE i VALUE 123.
+
+WRITE: / some_number,
+         '<- some_number'.
+"Minimum length required to output content
+WRITE: /(*) some_number,
+            '<- some_number'.
+"Maximum length to output content
+WRITE: /(**) some_number,
+             '<- some_number'.
+
+"Example with type p
+DATA some_packed_number TYPE p LENGTH 16 DECIMALS 14 VALUE '-123.4567890'.
+
+WRITE: / some_packed_number,
+         '<- some_packed_number'.
+"Minimum length required to output content including separators
+WRITE: /(*) some_packed_number,
+            '<- some_packed_number'.
+"Maximum length to output content including signs and separators
+WRITE: /(**) some_packed_number,
+             '<- some_packed_number'.
+``` 
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+Positioning options (2)<br><br>
+Additions `NO-GAP`, `UNDER`
+
+ </td>
+
+ <td> 
+
+- `NO-GAP`: Positions directly after the output
+- `UNDER`: Output in the position of previous output
+
+ </td>
+
+<td> 
+
+
+``` abap
+*&---------------------------------------------------------------------*
+*& NO-GAP
+*&---------------------------------------------------------------------*
+
+WRITE / repeat( val = `*` occ = 80 ).
+
+"Output: AB AP
+WRITE / 'AB'.
+WRITE 'AP'.
+"Output: ABAP
+WRITE: / 'AB' NO-GAP.
+WRITE 'AP'.
+
+*&---------------------------------------------------------------------*
+*& UNDER
+*&---------------------------------------------------------------------*
+
+WRITE / repeat( val = `*` occ = 80 ).
+
 "Note: If the output is written in the same line in which the previous output
 "is displayed, this output is overwritten.
 DATA abc TYPE c LENGTH 5 VALUE 'abcde'.
 WRITE /5(5) abc.
 WRITE / 'fghij' UNDER abc.
 
-"NO-GAP
-WRITE / 'g'.
-WRITE 'ap1'.  "Output: g ap1
-WRITE: / 'g' NO-GAP, 'ap2'.  "Output: gap2
+"Output in tabular form
+DATA: carrid   TYPE scarr-carrid,
+      carrname TYPE scarr-carrname,
+      currcode TYPE scarr-currcode,
+      url      TYPE scarr-url.
 
-"QUICKINFO: Creates a tooltip for the output
-WRITE / 'Place the mouse on the following output and check the tooltip:'.
-WRITE: (*) sy-uname QUICKINFO 'User name',
-       '/',
-       (*) sy-datum QUICKINFO 'Current date',
-       '/',
-       (*) sy-uzeit QUICKINFO 'Current time'.
+WRITE: /3 'Carrier', 12 'Name', 35 'Currency Code', 50 'URL'.
+WRITE / repeat( val = `=` occ = 80 ).
+SELECT carrid, carrname, currcode, url
+       FROM scarr
+       INTO @DATA(scarr_wa).
+  WRITE: / scarr_wa-carrid UNDER 'Carrier',
+           scarr_wa-carrname UNDER 'Name',
+           scarr_wa-currcode UNDER 'Currency Code',
+           scarr_wa-url UNDER 'URL'.
+ENDSELECT.
+WRITE / .
 
-"--------------------- Special list elements ----------------------
+"Excursion: Writing an internal table in table-like fashion. As a prerequisite,
+"all values are convertible to type string. The following example does not use
+"UNDER, but calculates position and length values. It is an exploration and not 
+"meant to present a best practice example, particularly because other options 
+"such as ALV are available for that purpose. It may not be suitable for each 
+"line and component type.
 
-"INPUT: Enabling fields for input
-"You can overwrite the output and further evaluate the overwritten
-"content in a list event. 
-WRITE / '   Enter your name here    ' INPUT.
+"Demo internal table
+TYPES: BEGIN OF demo_struc,
+         chars TYPE c LENGTH 5,
+         num   TYPE i,
+         dec   TYPE decfloat34,
+         text  TYPE string,
+         flag  TYPE abap_boolean,
+         date  TYPE d,
+       END OF demo_struc,
+       ty_tab TYPE TABLE OF demo_struc WITH EMPTY KEY.
 
-"AS CHECKBOX
-"The value (blank, X) is stored in the list buffer and can be 
-"evaluated during a list event.
-DATA: chck1 TYPE c LENGTH 1 VALUE 'X',
-      chck2 TYPE c LENGTH 1 VALUE ' '.
-WRITE: / chck1 AS CHECKBOX, 'A checkbox',
-       / chck2 AS CHECKBOX, 'Another checkbox'.
+DATA(itab) = VALUE ty_tab( ( chars = 'a' num = 123 dec = CONV decfloat34( '-123.456' ) text = `Hello world` flag = abap_true date = CONV d( '20250101' ) )
+                           ( chars = 'bcd' num = 4 dec = CONV decfloat34( '7.8945612' ) text = `Lorem ipsum` flag = abap_false date = CONV d( '20251227' ) )
+                           ( chars = 'efghi' num = 987654 dec = CONV decfloat34( '1.01' ) text = `ABAP` flag = abap_true date = CONV d( '20250621' ) )
+                           ( chars = 'jk' num = 321 dec = CONV decfloat34( '0.00000000000001' ) text = `test` flag = abap_true date = CONV d( '20251015' ) ) ).
 
-"AS ICON: Outputting icons
-"Check the type pool ICON for names of predefined icons.  
-WRITE / icon_green_light AS ICON.
-WRITE / icon_red_light AS ICON.
-WRITE / icon_yellow_light AS ICON.
-WRITE / icon_activate AS ICON.
+TYPES: BEGIN OF comp_struc,
+         name TYPE string,
+         len  TYPE i,
+         off  TYPE i,
+         dref TYPE REF TO string,
+       END OF comp_struc.
+DATA it_comps TYPE TABLE OF comp_struc WITH EMPTY KEY.
+DATA str TYPE string.
 
-"AS SYMBOL: Outputting symbols
-"Check the type pool SYM for names of predefined icons.  
-WRITE / sym_left_hand AS SYMBOL.
-WRITE / sym_caution AS SYMBOL.
+TRY.
+    DATA(type_descr_obj_tab) = CAST cl_abap_tabledescr( cl_abap_typedescr=>describe_by_data( itab ) ).
+    DATA(tab_comps) = CAST cl_abap_structdescr( type_descr_obj_tab->get_table_line_type( ) )->get_components( ).
+    LOOP AT tab_comps ASSIGNING FIELD-SYMBOL(<comp>).
+      APPEND VALUE #( name = <comp>-name len = strlen( <comp>-name ) ) TO it_comps.
+    ENDLOOP.
+  CATCH cx_sy_move_cast_error INTO DATA(error).
+    WRITE  / error->get_text( ).
+ENDTRY.
 
-"AS LINE: Outputting corners, crosses, lines, and T sections
-"Check the type pool LINE for names of predefined icons.  
-WRITE: /10 line_horizontal_line AS LINE NO-GAP,
-           line_space           AS LINE NO-GAP,
-           line_vertical_line   AS LINE NO-GAP.
-```
+IF error IS INITIAL.
+  "Implementation for properly aligning the content
+  "The example is implemented to check the length of the column names as well as the
+  "length of the values in the columns. It determines the length of the longest string
+  "in each column. Depending on the length values, either the length of the column name
+  "or the length of the longest string in a column is stored in an internal table that
+  "contains information for calculating the offset.
+  LOOP AT tab_comps ASSIGNING FIELD-SYMBOL(<len>).
+    ASSIGN it_comps[ name = <len>-name ] TO FIELD-SYMBOL(<co>).
+    DATA(max_content) = REDUCE i( INIT len = <co>-len
+                                  FOR <line> IN itab
+                                  NEXT len = COND #( LET lv = |{ <line>-(<co>-name) }| IN
+                                                     WHEN strlen( lv ) > len
+                                                     THEN strlen( lv )
+                                                     ELSE len ) ).
+    "Extend the length value to leave some more space
+    IF max_content > <co>-len.
+      <co>-len = max_content + 3.
+    ELSE.
+      <co>-len += 3.
+    ENDIF.
+  ENDLOOP.
+  "Calculating offset values
+  DATA max_str_len TYPE i.
+  LOOP AT it_comps ASSIGNING FIELD-SYMBOL(<off>).
+    DATA(tabix) = sy-tabix.
+    READ TABLE it_comps INDEX tabix - 1 ASSIGNING FIELD-SYMBOL(<prev>).
+    <off>-off = COND #( WHEN tabix = 1 THEN 0 ELSE <prev>-len + <prev>-off ).
+    max_str_len += <off>-len.
+  ENDLOOP.
+  "Providing enough space so that table row content can be inserted based on
+  "the offset specification
+  SHIFT str BY max_str_len PLACES RIGHT.
+  "Adding the column names first
+  LOOP AT it_comps ASSIGNING FIELD-SYMBOL(<header>).
+    str = insert( val = str sub = <header>-name off = <header>-off ).
+  ENDLOOP.
+  WRITE / str.
+  "Processing all lines in the internal table containing the retrieved table rows
+  LOOP AT itab ASSIGNING FIELD-SYMBOL(<wa>).
+    CLEAR str.
+    SHIFT str BY max_str_len PLACES RIGHT.
+    DO.
+      TRY.
+          str = insert( val = str sub = <wa>-(sy-index) off = it_comps[ sy-index ]-off ).
+        CATCH cx_sy_assign_illegal_component cx_sy_range_out_of_bounds cx_sy_itab_line_not_found.
+          EXIT.
+      ENDTRY.
+    ENDDO.
+    WRITE / str.
+  ENDLOOP.
+ENDIF.
+``` 
 
-<p align="right"><a href="#top">⬆️ back to top</a></p>
+ </td>
+</tr>
 
-Formatting options with `WRITE` and `FORMAT`: 
 
-```abap
-"The following examples show a selection. Various other additions are
-"available that deal with currency, unit, date and time-related formatting,
-"among others. See the ABAP Keyword Documentation.
+<tr>
+<td> 
+
+Adding quickinfo<br><br>
+Addition `QUICKINFO`
+
+ </td>
+
+ <td> 
+
+Creates a tooltip for the output
+
+ </td>
+
+<td> 
+
+
+``` abap
+WRITE / repeat( val = `*` occ = 80 ).
+WRITE / 'Place the cursor on the following output and check the tooltip:'.
+WRITE: /(*) sy-uname QUICKINFO 'User name',
+        '/',
+        (*) sy-datum QUICKINFO 'Current date',
+        '/',
+        (*) sy-uzeit QUICKINFO 'Current time'.
+``` 
+
+ </td>
+</tr>
+
+
+<tr>
+<td> 
+
+Adding list elements such as checkboxes, icons, symbols, and frames<br><br>
+Additions `INPUT`, `AS CHECKBOX`, `AS ICON`, `AS SYMBOL`, `AS LINE`
+
+ </td>
+
+ <td> 
+
+- `AS CHECKBOX`: The value (blank, or `X`) is stored in the list buffer and can be evaluated during a list event.
+- `AS ICON`: Outputs icons. Check the type pool `ICON` for names of predefined icons.
+- `AS SYMBOL`: Outputs symbols. Check the type pool `SYM` for names of predefined symbols. 
+- `AS LINE`: Outputs corners, crosses, lines, and T sections. Check the type pool `LINE` for names of predefined options. 
+
+ </td>
+
+<td> 
+
+
+``` abap
+PROGRAM.
+
+DATA: flag          TYPE c LENGTH 1,
+      checkbox_name TYPE c LENGTH 10,
+      wa            TYPE c LENGTH 20.
+
+START-OF-SELECTION.
+
+*&---------------------------------------------------------------------*
+*& AS CHECKBOX
+*&---------------------------------------------------------------------*
+
+  DO 5 TIMES.
+    checkbox_name = |Checkbox { sy-index }|.
+    WRITE: / flag AS CHECKBOX, (10) checkbox_name.
+  ENDDO.
+
+*&---------------------------------------------------------------------*
+*& AS ICON
+*&---------------------------------------------------------------------*
+
+  WRITE / icon_green_light AS ICON.
+  WRITE / icon_red_light AS ICON.
+  WRITE / icon_yellow_light AS ICON.
+  WRITE / icon_activate AS ICON.
+
+*&---------------------------------------------------------------------*
+*& AS SYMBOL
+*&---------------------------------------------------------------------*
+
+  WRITE / sym_left_hand AS SYMBOL.
+  WRITE / sym_caution AS SYMBOL.
+
+*&---------------------------------------------------------------------*
+*& AS LINE
+*&---------------------------------------------------------------------*
+
+  WRITE / line_horizontal_line AS LINE NO-GAP.
+  WRITE  line_space AS LINE NO-GAP.
+  WRITE  line_vertical_line AS LINE.
+
+*&---------------------------------------------------------------------*
+*& Evaluating the checkbox selections
+*&---------------------------------------------------------------------*
+
+AT LINE-SELECTION.
+
+  WRITE / |You clicked line { sy-lilli }. |.
+  WRITE / `Selected checkboxes:`.
+    DO.
+    READ LINE sy-index FIELD VALUE flag checkbox_name INTO wa.
+    IF sy-subrc <> 0.
+      EXIT.
+    ELSEIF flag = 'X'.
+      WRITE / wa.
+    ENDIF.
+  CLEAR wa.
+  ENDDO.
+``` 
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+Formatting options
+
+ </td>
+
+ <td> 
+
+- Various additions are available to format output. 
+- For example, they deal with aligning content, currency, unit, date and time-related formatting, among others. 
+- Find more information in the ABAP Keyword Documentation [here](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapwrite_int_options.htm) and [here](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapwrite_ext_options.htm). See also the [`FORMAT`](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapformat.htm) statement.
+
+ </td>
+
+<td> 
+
+The example only shows a selection. Check the documentation for all additions.
+
+``` abap
+*&---------------------------------------------------------------------*
+*& Additions for aligning content
+*&---------------------------------------------------------------------*
+
 WRITE /(10) 'X' RIGHT-JUSTIFIED. "'         X'
 WRITE /(10) 'X' CENTERED.        "'    X     '
-WRITE /(10) 'X' LEFT-JUSTIFIED.  "'X         ' 
-DATA dc TYPE decfloat34 VALUE '1.2345'.
-WRITE /(*) dc DECIMALS 2.        "1,23
+WRITE /(10) 'X' LEFT-JUSTIFIED.  "'X         '
 
-"COLOR addition
+*&---------------------------------------------------------------------*
+*& NO-ZERO
+*&---------------------------------------------------------------------*
+
+DATA: numc10  TYPE n LENGTH 10 VALUE '123'.
+WRITE /(10) numc10.
+WRITE /(10) numc10 NO-ZERO.
+
+*&---------------------------------------------------------------------*
+*& DECIMALS
+*&---------------------------------------------------------------------*
+
+DATA: packed_num TYPE p LENGTH 8 DECIMALS 4 VALUE '9876.5432'.
+WRITE /(*) packed_num.
+WRITE /(*) packed_num DECIMALS 2.
+
+*&---------------------------------------------------------------------*
+*& COLOR
+*&---------------------------------------------------------------------*
+
 "The commented out value stands for the value that can also
 "be directly specified in the syntax (except 0) or contained in
 "a data object. There are several additions with many options.
@@ -3196,120 +3615,529 @@ WRITE / 'COLOR 7 INTENSIFIED OFF' COLOR 7 INTENSIFIED OFF.
 "INVERSE: When ON, the foreground, i.e. the output is displayed
 "in the selected color
 WRITE / 'COLOR 7 INVERSE ON' COLOR 7 INVERSE ON.
+``` 
 
-"FORMAT: You can use FORMAT statements for applying settings on the following 
-"output statements up to a definition with new settings or ... OFF. 
-"Note: Many of the additions that are also possible for WRITE (e.g. COLOR, 
-"INTENSIFIED, INVERSE ...) are possible. The following example uses the already 
-"mentioned COLOR addition.
+ </td>
+</tr>
+
+</table>
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+### Formatting Output Using FORMAT Statements
+
+- [`FORMAT`](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapformat.htm) statements can be used to apply formattings to output statements.
+- The formats are valid until reverted by a new `FORMAT` statement, using the additions `OFF` or `RESET`.
+- Note that the additions for `FORMAT` are also available for `WRITE` statements and can be applied individually. See the ABAP Keyword Documentation for all details.
+
+<table>
+
+<tr>
+<td> Subject </td> <td> Notes </td> <td> Code Snippet </td>
+</tr>
+
+<tr>
+<td> 
+
+Coloring output <br><br>
+`COLOR` addition
+
+ </td>
+
+ <td> 
+
+
+
+ </td>
+
+<td> 
+
+
+``` abap
 FORMAT COLOR COL_POSITIVE.
 WRITE / 'ABC'.
 WRITE / 'DEF'.
 WRITE / 'GHI'.
 FORMAT COLOR OFF.
 
-"HOTSPOT addition: Displays the mouse pointer when hovering over an element. 
-"Here, a single click has then the same effect as a double click (i.e. the
-"selection of function key F2).
-FORMAT HOTSPOT ON.
-DO 5 TIMES.
-  WRITE / sy-index.
-ENDDO.
-FORMAT HOTSPOT OFF.
+WRITE / 'JKL'.
+WRITE / 'MNO'.
 
-"FRAMES addition: Defines whether the - and | characters are converted to line elements,
-"producing continuous lines.
+FORMAT COLOR COL_KEY.
+WRITE / 'PQR'.
+WRITE / 'STU'.
+FORMAT COLOR OFF.
+
+WRITE / 'VWX'.
+WRITE / 'YZ'.
+``` 
+
+ </td>
+</tr>
+
+
+<tr>
+<td> 
+
+Specifying a hotspot<br><br>
+`HOTSPOT` addition
+
+ </td>
+
+ <td> 
+
+- Displays the mouse pointer when hovering over an element. 
+- Here, a single click has then the same effect as a double click (i.e. the selection of function key *F2*).
+
+ </td>
+
+<td> 
+
+
+``` abap
+PROGRAM.
+
+START-OF-SELECTION.
+  FORMAT HOTSPOT.
+  DO 5 TIMES.
+    WRITE / |{ sy-index } - some clickable colored text showing the mouse pointer.| COLOR 5.
+  ENDDO.
+  FORMAT HOTSPOT OFF.
+
+  WRITE / `Some colored text that doesn't show the mouse pointer.` COLOR 6.
+
+AT LINE-SELECTION.
+
+  WRITE |You clicked line { sy-lilli }.|.
+``` 
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+Specifying an input field<br><br>
+`INPUT` addition
+
+ </td>
+
+ <td> 
+
+Enables user input that can be evaluated during a list event.
+
+ </td>
+
+<td> 
+
+
+``` abap
+PROGRAM.
+
+DATA: some_text   TYPE c LENGTH 100,
+      line_number TYPE i.
+
+START-OF-SELECTION.
+  WRITE 'Make an entry:'.
+  "Note: The input field is currently empty. Without the following statement,
+  "the input field would not be displayed.
+  SET BLANK LINES ON.
+  FORMAT INPUT.
+  WRITE / some_text.
+  FORMAT INPUT OFF.
+
+  WRITE / 'Submit' COLOR 5 HOTSPOT.
+
+AT LINE-SELECTION.
+  IF sy-lisel = 'Submit'.
+    line_number = sy-lilli - 1.
+    READ LINE line_number FIELD VALUE some_text.
+    WRITE: 'Your entry:',
+           / some_text.
+  ENDIF.
+``` 
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+Creating frames<br><br>
+`FRAME` addition
+
+ </td>
+
+ <td> 
+
+Defines whether the - and | characters are converted to line elements, producing continuous lines.
+
+ </td>
+
+<td> 
+
+
+``` abap
+
 FORMAT FRAMES ON.
 WRITE: / '----',
        / '|  |',
        / '----'.
 FORMAT FRAMES OFF.
+``` 
 
-"RESET addition: Resetting the formatting settings
-"This addition sets all formatting settings for which the corresponding addition is
-"not specified in the same FORMAT statement to the state OFF (exception: FRAMES).
-"In the following example, all settings are reset without specifying concrete
-"additions (e.g. INVERSE OFF). Note the effects of such a statement (e.g. INTENSIFIED
-"is ON by default at program start; now it is set to OFF). See the ABAP Keyword 
-"Documentation for more information. 
+ </td>
+</tr>
+
+
+<tr>
+<td> 
+
+Resetting formats<br><br>
+`RESET` addition
+
+ </td>
+
+ <td> 
+
+This addition sets all formatting settings for which the corresponding addition is not specified in the same `FORMAT` statement to the state `OFF` (exception: `FRAMES`).
+
+ </td>
+
+<td> 
+
+In the following example, all settings are reset without specifying concrete additions (e.g. `INVERSE OFF`). Note the effects of such a statement (e.g. `INTENSIFIED`
+is `ON` by default at program start. Now it is set to `OFF`. See the [ABAP Keyword Documentation](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapformat.htm) for more information. 
+
+
+``` abap
+WRITE / 'ABCD'.
 FORMAT COLOR 7 INVERSE ON.
-WRITE / 'ABC'.
+WRITE / 'DEFG'.
+WRITE / 'HIJK'.
 FORMAT RESET.
-WRITE / 'DEF'.
-```
+WRITE / 'LMNO'.
+``` 
+
+ </td>
+</tr>
+
+</table>
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-More list-related ABAP keywords:
+### List Creation-Related ABAP Keywords and Additions
 
-```abap
-"Creating a horizontal line
+<table>
+
+<tr>
+<td> Subject/Keyword </td> <td> Notes </td> <td> Code Snippet </td>
+</tr>
+
+<tr>
+<td> 
+
+Creating a horizontal line<br><br>
+`ULINE`
+
+ </td>
+
+ <td> 
+
+Additions are available such as for position and length.
+
+ </td>
+
+<td> 
+
+
+``` abap
 ULINE.
-"More additions are available e.g. for position and length
 ULINE AT 5(20).
+``` 
 
-"SET BLANK LINES: Specifying if blank lines created using WRITE are displayed
-"In the example, the content of a string table that contains blank lines
-"is output. 
-DATA(itab) = VALUE string_table( ( `a` ) ( `b` ) ( `` ) ( `` )  ( `c` ) ).
+ </td>
+</tr>
 
-"... OFF is set by default. Here it is explicitly specified.
-"In this case, the blank lines are not output.
-SET BLANK LINES OFF.
+
+<tr>
+<td> 
+
+Specifying if blank lines created using `WRITE` are displayed<br><br>
+`SET BLANK LINES`
+
+ </td>
+
+ <td> 
+
+- The statement must be specified with the additions `ON` and `OFF`.
+- Note that blank lines are not displayed by default.
+
+ </td>
+
+<td> 
+
+
+``` abap
+DATA(itab) = VALUE string_table( ( `a` ) ( `b` ) ( `` ) ( `` )  ( `c` ) ( `` ) ( `d` ) ).
+
+"Blank lines not output by default
 LOOP AT itab INTO DATA(wa).
   WRITE / wa.
 ENDLOOP.
 
-"... ON: The blank lines are output.
-SET BLANK LINES ON.
+WRITE / repeat( val = `*` occ = 80 ).
+
+"Explicitly specifying that blank lines should not be output
+SET BLANK LINES OFF.
 LOOP AT itab INTO wa.
   WRITE / wa.
 ENDLOOP.
 
-"Setting the list cursor explicitly (more statements are
-"available such as POSITION or BACK)
-"SKIP: Positions the list cursor in another line (creating blank lines)
-SKIP. "Skips 1 line
-SKIP 3. "Specifying the number of lines to be skipped
+WRITE / repeat( val = `*` occ = 80 ).
 
-"SKIP TO LINE
-"In the example, the list cursor is explicitly set to 
-"a particular number. Here, B and C are not output (i.e. 
+"Blank lines are output
+SET BLANK LINES ON.
+LOOP AT itab INTO wa.
+  WRITE / wa.
+ENDLOOP.
+``` 
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+Setting the list cursor explicitly in another line<br><br>
+`SKIP`, `SKIP TO LINE`, 
+
+ </td>
+
+ <td> 
+
+You can create blank lines, but also set to the cursor to a specified line.
+
+ </td>
+
+<td> 
+
+
+``` abap
+*&---------------------------------------------------------------------*
+*& Creating blank lines
+*&---------------------------------------------------------------------*
+
+WRITE / 'abc'.
+"Skips 1 line
+SKIP.
+WRITE / 'def'.
+"Specifying the number of lines to be skipped
+SKIP 3.
+WRITE / 'ghi'.
+SKIP.
+
+*&---------------------------------------------------------------------*
+*& Positioning the list cursor in another line
+*&---------------------------------------------------------------------*
+
+"In the example, the list cursor is explicitly set to
+"a particular number. Here, B and C are not output (i.e.
 "overwritten with the output that follows).
 WRITE / 'Text A'.
 WRITE / 'Text B'.
-DATA(line) = sy-linno. "The line number of the previous WRITE is retrieved.
+"The line number of the previous WRITE is retrieved.
+DATA(line) = sy-linno.
 WRITE / 'Text C'.
 SKIP TO LINE line.
 WRITE / 'Text D'.
 WRITE / 'Text E'.
+WRITE / 'Text F'.
+``` 
 
-"NEW-LINE: Setting list cursor to the first position of the next line
-"Additions are available to affect the scrolling behavior
+ </td>
+</tr>
+
+
+<tr>
+<td> 
+
+Setting list cursor to the first position of the next line<br><br>
+`NEW-LINE`
+
+ </td>
+
+ <td> 
+
+Additions are available to affect the scrolling behavior
+
+ </td>
+
+<td> 
+
+
+``` abap
 WRITE / 'Next statement is NEW-LINE'.
 NEW-LINE.
-WRITE 'WRITE statement without /'. "Output is in new line
+"The following output is in a new line.
+WRITE 'WRITE statement without /'. 
+``` 
 
-"HIDE: Storing the content of a flat variable together with the current list line.
-"Example: a (3) is the result of b (1) + c (2). Suppose you click the line  
-"where a is output. You may e.g. output then b and c (e.g. another WRITE in the 
-"AT LIST-SELECTION event block), then getting the correct context of the list line. 
-...
-a = b + c.
-WRITE / a.
-HIDE: b, c.
-...
+ </td>
+</tr>
 
-"RESERVE: Creating a page break if there is not enough space left on the current list 
-"page between the last output and the page end or page footer, as specified with the number.
-RESERVE 3 LINES.
-"Consider the 3 lines defined as block. When you use BACK after RESERVE, e.g. after a loop, you 
-"can put the suqsequent output to the first line of this block of lines. See the effect in the 
-"executable example.
-...
+
+<tr>
+<td> 
+
+Storing the content of a flat variable together with the current list line<br><br>
+`HIDE`
+
+ </td>
+
+ <td> 
+
+- You can read the stored content again during a list event.
+- Find more information [here](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abaphide.htm).
+
+ </td>
+
+<td> 
+
+
+``` abap
+PROGRAM.
+
+TYPES: BEGIN OF s,
+         num1 TYPE i,
+         num2 TYPE i,
+       END OF s,
+       ty_int_tab TYPE TABLE OF s WITH EMPTY KEY.
+DATA(itab) = VALUE ty_int_tab( ( num1 = 10 num2 = 5 )
+                               ( num1 = 2346 num2 = 3475 )
+                               ( num1 = 2 num2 = 4 )
+                               ( num1 = 347 num2 = 823 )
+                               ( num1 = 20 num2 = 54 ) ).
+
+DATA: addition_result TYPE i.
+
+START-OF-SELECTION.
+  FORMAT HOTSPOT.
+  LOOP AT itab INTO DATA(wa).
+    addition_result = wa-num1 + wa-num2.
+    WRITE / |{ wa-num1 } + { wa-num2 } = ...|.
+    HIDE: addition_result.
+  ENDLOOP.
+
+AT LINE-SELECTION.
+  WRITE (*) addition_result.
+``` 
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+Creating a page break<br><br>
+`RESERVE n LINES`
+
+ </td>
+
+ <td> 
+
+- Relevant if there's not sufficient space on the list page between the last output and page end or footer.
+- The page break creation raises the `END-OF-PAGE` event.
+- Has an impact on the behavior of `BACK` statements as shown below.
+
+
+ </td>
+
+<td> 
+
+- The following example creates multiple lines in a loop. 
+- Additions to `REPORT` are used to cater for the example demonstration with a small page length: 
+  - `NO STANDARD PAGE HEADING` suppresses the output of the standard page header in the basic list
+  - `LINE-COUNT` determines the page length. The number of lines in parentheses stands for the number of lines in the page footer. The footer can be defined in the `END-OF-PAGE` block. Find more information [here](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapreport_list_options.htm).
+- Due to the `RESERVE` statement, page breaks are created as there is not enough space left on the page. The loop writes 4 sample texts to the list and can be considered a line block. They should not be separated by page breaks.
+- You can try and comment out the line with the `RESERVE` statement to check out the difference.
+
+``` abap
+REPORT NO STANDARD PAGE HEADING LINE-COUNT 7(2).
+
+START-OF-SELECTION.
+  DO 5 TIMES.
+    RESERVE 4 LINES.
+    WRITE: / 'text a', / 'text b', / 'text c', / 'text d'.
+  ENDDO.
+
+END-OF-PAGE.
+  WRITE |--- { sy-pagno } ---|.
+``` 
+
+ </td>
+</tr>
+
+
+<tr>
+<td> 
+
+Positioning the list cursor in the first position of the first line of a logical unit<br><br>
+`BACK`
+
+ </td>
+
+ <td> 
+
+- Such a logical unit can be a line block determined using `RESERVE`
+- Find more information [here](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapback.htm).
+
+ </td>
+
+<td> 
+
+The following example demonstrates `BACK` with `RESERVE`.
+Consider the `RESERVE 5 LINES` statements as defining a block of 5 lines. When using `BACK` after `RESERVE`, e.g. after a loop, you can put the suqsequent output to the first line of this block of lines.
+
+``` abap
+DATA int_for_back TYPE i.
+
+WRITE / 'RESERVE without BACK:'.
+int_for_back = sy-colno.
+ULINE AT /(int_for_back).
+
+RESERVE 5 LINES.
+
+DO 5 TIMES.
+  WRITE / sy-index.
+ENDDO.
+
+int_for_back = sy-colno.
+
+WRITE AT int_for_back '   <- This is not number 1.'.
+SKIP.
+
+WRITE / 'RESERVE with BACK:'.
+int_for_back = sy-colno.
+ULINE AT /(int_for_back).
+
+RESERVE 5 LINES.
+
+DO 5 TIMES.
+  WRITE / sy-index.
+ENDDO.
+
+int_for_back = sy-colno.
+
 BACK.
-WRITE ... 
-```
+WRITE AT int_for_back '   <- This should be number 1.'.
+``` 
+
+ </td>
+</tr>
+
+
+</table>
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
