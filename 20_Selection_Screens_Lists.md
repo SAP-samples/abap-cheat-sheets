@@ -3200,6 +3200,7 @@ WRITE / 'new line'.
 *&---------------------------------------------------------------------*
 
 WRITE / repeat( val = `*` occ = 80 ).
+"WRITE statement working like SKIP.
 WRITE /.
 
 "Specifying the output position, a length and new line
@@ -3646,7 +3647,7 @@ Coloring output <br><br>
 
  <td> 
 
-
+As shown above, multiple colors are available. Instead of `COL_*`, the numbers that represent the color specifications can also be specified.
 
  </td>
 
