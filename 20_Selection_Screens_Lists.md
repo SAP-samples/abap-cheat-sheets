@@ -19,7 +19,7 @@
     - [Creating Lists with WRITE Statements](#creating-lists-with-write-statements)
     - [Formatting Output Using FORMAT Statements](#formatting-output-using-format-statements)
     - [List Creation-Related ABAP Keywords and Additions](#list-creation-related-abap-keywords-and-additions)
-    - [Reading and Modifying in Lists](#reading-and-modifying-in-lists)
+    - [Processing Lists in List Buffers](#processing-lists-in-list-buffers)
   - [Event Blocks](#event-blocks)
   - [Excursion: SAP List Viewer (ALV)](#excursion-sap-list-viewer-alv)
     - [Getting Started](#getting-started)
@@ -116,7 +116,7 @@ The following table includes code snippets with a selection of available syntax 
 <table>
 
 <tr>
-<td> Subject/Additions </td> <td> Notes </td> <td> Code Snippet </td>
+<th> Subject/Additions </th> <th> Notes </th> <th> Code Snippet </th>
 </tr>
 
 <tr>
@@ -771,7 +771,7 @@ The following table includes code snippets with a selection of available syntax 
 <table>
 
 <tr>
-<td> Subject/Addition </td> <td> Notes </td> <td> Code Snippet </td>
+<th> Subject/Addition </th> <th> Notes </th> <th> Code Snippet </th>
 </tr>
 
 <tr>
@@ -1237,7 +1237,7 @@ START-OF-SELECTION.
 <table>
 
 <tr>
-<td> Subject/Statement </td> <td> Notes </td> <td> Code Snippet </td>
+<th> Subject/Statement </th> <th> Notes </th> <th> Code Snippet </th>
 </tr>
 
 <tr>
@@ -1465,7 +1465,7 @@ START-OF-SELECTION.
 <table>
 
 <tr>
-<td> Subject/Statement </td> <td> Notes </td> <td> Code Snippet </td>
+<th> Subject/Statement </th> <th> Notes </th> <th> Code Snippet </th>
 </tr>
 
 <tr>
@@ -2196,7 +2196,7 @@ The following table includes a selection of additions and code snippets. Two pro
 <table>
 
 <tr>
-<td> Subject/Addition </td> <td> Notes </td> <td> Code Snippet </td>
+<th> Subject/Addition </th> <th> Notes </th> <th> Code Snippet </th>
 </tr>
 
 <tr>
@@ -2408,7 +2408,7 @@ MESSAGE |Hello from program { sy-repid }, { sy-uname }. The SAP LUW key value is
 <tr>
 <td> 
 
-Specifying a particular selection screen to be called and display it or not<br>
+Specifying a particular selection screen to be called and display it or not<br><br>
 Additions `USING SELECTION-SCREEN` and `VIA SELECTION-SCREEN`
 
  </td>
@@ -2520,7 +2520,7 @@ START-OF-SELECTION.
 <tr>
 <td> 
 
-Passing values to a called selection screen<br>
+Passing values to a called selection screen<br><br>
 Additions `WITH SELECTION-TABLE`, `WITH ...` 
 
  </td>
@@ -3064,7 +3064,7 @@ START-OF-SELECTION.
 <table>
 
 <tr>
-<td> Subject/Addition </td> <td> Notes </td> <td> Code Snippet </td>
+<th> Subject/Addition </th> <th> Notes </th> <th> Code Snippet </th>
 </tr>
 
 <tr>
@@ -3467,7 +3467,7 @@ WRITE: /(*) sy-uname QUICKINFO 'User name',
 <td> 
 
 Adding list elements such as checkboxes, icons, symbols, and frames<br><br>
-Additions `INPUT`, `AS CHECKBOX`, `AS ICON`, `AS SYMBOL`, `AS LINE`
+Additions `AS CHECKBOX`, `AS ICON`, `AS SYMBOL`, `AS LINE`
 
  </td>
 
@@ -3634,7 +3634,7 @@ WRITE / 'COLOR 7 INVERSE ON' COLOR 7 INVERSE ON.
 <table>
 
 <tr>
-<td> Subject </td> <td> Notes </td> <td> Code Snippet </td>
+<th> Subject/Addition </th> <th> Notes </th> <th> Code Snippet </th>
 </tr>
 
 <tr>
@@ -3832,7 +3832,7 @@ WRITE / 'LMNO'.
 <table>
 
 <tr>
-<td> Subject/Keyword </td> <td> Notes </td> <td> Code Snippet </td>
+<th> Subject/Keyword </th> <th> Notes </th> <th> Code Snippet </th>
 </tr>
 
 <tr>
@@ -3911,7 +3911,7 @@ ENDLOOP.
 <td> 
 
 Setting the list cursor explicitly in another line<br><br>
-`SKIP`, `SKIP TO LINE`, 
+`SKIP`, `SKIP TO LINE`
 
  </td>
 
@@ -3963,7 +3963,7 @@ WRITE / 'Text F'.
 <tr>
 <td> 
 
-Setting list cursor to the first position of the next line<br><br>
+Setting the list cursor to the first position of the next line<br><br>
 `NEW-LINE`
 
  </td>
@@ -4142,55 +4142,256 @@ WRITE AT int_for_back '   <- This should be number 1.'.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-### Reading and Modifying in Lists
+### Processing Lists in List Buffers
 
-`READ LINE` statements:
-- Assign the content of a line stored in the list buffer to the system field `sy-lisel`. 
-- Plus, it allows other target fields to be specified.
+- ABAP statements are available that allow lists to be processed that have already been saved as [screen lists](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenscreen_list_glosry.htm) in the [list buffer](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenlist_buffer_glosry.htm).
+- The following selection covers `READ [CURRENT] LINE` and `MODIFY [CURRENT] LINE`.
+
+
+<table>
+
+<tr>
+<th> Subject/Keyword </th> <th> Notes </th> <th> Code Snippet </th>
+</tr>
+
+<tr>
+<td> 
+
+Reading content of lines<br><br>
+`READ [CURRENT] LINE`
+
+ </td>
+
+ <td> 
+
+- Assigns the content of a line stored in the list buffer to the system field `sy-lisel`.
+- Allows other target fields to be specified.
 - `sy-subrc` is set: 0 (line was read), other than 0 (line does not exist)
+- Specifying the line with additions: 
+  - `READ LINE` and a concrete line
+  - `READ CURRENT LINE` to read the current line
+- More additions are available regarding the list level and assigning the output of individual data objects to target fields. Find more information in the [ABAP Keyword Documentation](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapread_line.htm).
 
-```abap
-"More additions than those covered are available (e.g. for
-"list level and list page)
-"sy-lisel contains the entire line content of the specified line
-READ LINE 1.
-"sy-lisel contains the entire line content of the current line
-READ CURRENT LINE.
-"Assigning the output of individual data objects
-"Here, it is the entire line content.
-DATA wa TYPE c LENGTH 50.
-READ CURRENT LINE LINE VALUE INTO wa.
-"Here, specific field values (val1/val2) are assigned to individual data objects
-DATA dobj1 TYPE c LENGTH 10.
-DATA dobj2 TYPE c LENGTH 10.
-READ CURRENT LINE FIELD VALUE val1 INTO dobj1 val2 INTO dobj2.
-```
+ </td>
 
-`MODIFY LINE` statements:
-- Overwrites a line stored in the list buffer with the content of the `sy-lisel` system field 
-- Plus, it allows additional modifications
+<td> 
 
-```abap
-"Overwrites line stored in sy-lisel (which is filled e.g. using a previous 
-"READ LINE statement)
-MODIFY CURRENT LINE.
-MODIFY LINE 2.
-"Specifying content to overwrite an existing line; the following examples
-"only use the addition CURRENT LINE
-"Overwrites the entire list line with the content
-MODIFY CURRENT LINE LINE VALUE FROM 'hi'.
-"Overwrite a specific field with specified content
-MODIFY CURRENT LINE FIELD VALUE a FROM b.
-"Mutliple fields specified
-MODIFY CURRENT LINE FIELD VALUE a FROM b c FROM d.
-"Change the format (here using COLOR)
-"... of a specific field
-MODIFY CURRENT LINE FIELD FORMAT a COLOR 3.
-"... of the line
-MODIFY CURRENT LINE LINE FORMAT COLOR 4.
-"Note: Multiple additions and combinations are possible, using COLOR here
-MODIFY CURRENT LINE FIELD FORMAT a COLOR 5 b COLOR 6 LINE FORMAT COLOR 7.
-```
+
+
+``` abap
+PROGRAM.
+
+DATA: flag          TYPE c LENGTH 1,
+      checkbox_name TYPE c LENGTH 10,
+      flag_check    TYPE c LENGTH 1,
+      target        TYPE c LENGTH 20.
+
+START-OF-SELECTION.
+
+  WRITE / 'Text A'.
+  WRITE / 'Text B'.
+  WRITE / 'Text C'.
+  WRITE / 'Text D'.
+  WRITE / 'Text E'.
+  WRITE / 'Text F'.
+  checkbox_name = 'Checkbox 1'.
+  flag = 'X'.
+  WRITE: / flag AS CHECKBOX, (10) checkbox_name.
+  checkbox_name = 'Checkbox 2'.
+  flag = 'X'.
+  WRITE: / flag AS CHECKBOX, (10) checkbox_name.
+
+AT LINE-SELECTION.
+
+  WRITE / |You selected line { sy-lilli } (value of sy-lilli).|.
+  "Accessing the clicked line using sy-lisel
+  WRITE / |Value of sy-lisel: "{ sy-lisel }"|.
+
+  SKIP.
+
+*&---------------------------------------------------------------------*
+*& READ LINE
+*&---------------------------------------------------------------------*
+
+  WRITE / `---------------- READ LINE ----------------`.
+
+  "Reading the content of the clicked line using READ LINE
+  READ LINE sy-lilli.
+  WRITE / |Value of sy-lisel after "READ LINE sy-lisel.": "{ sy-lisel }"|.
+
+  SKIP.
+
+  "Reading the content of all lines
+  "Note the output lines including the standard page header
+  DO.
+    READ LINE sy-index.
+    IF sy-subrc = 0.
+      WRITE / |Value of sy-lisel after READ LINE: "{ sy-lisel }"|.
+    ELSE.
+      EXIT.
+    ENDIF.
+  ENDDO.
+
+  SKIP.
+
+*&---------------------------------------------------------------------*
+*& READ CURRENT LINE
+*&---------------------------------------------------------------------*
+
+  WRITE / `---------------- READ CURRENT LINE ----------------`.
+
+  "sy-lisel contains the entire line content of the current line
+  "Note: The line is read where the screen cursor was last positioned or
+  "a line was last read.
+  "As the previous example reads all lines, the current line is here the
+  "last line available.
+  READ CURRENT LINE.
+  WRITE / |Value of sy-lisel after "READ CURRENT LINE.": "{ sy-lisel }"|.
+
+  SKIP.
+
+*&---------------------------------------------------------------------*
+*& READ [CURRENT] LINE LINE VALUE
+*&---------------------------------------------------------------------*
+
+  "Assigning the output of individual data objects
+  "Here, it is the entire line content.
+
+  SKIP.
+  WRITE / `---------------- READ ... LINE LINE VALUE ----------------`.
+
+  "Specifying the current line
+  "See the notes above regarding the current line.
+  DATA wa TYPE c LENGTH 50.
+  READ CURRENT LINE LINE VALUE INTO wa.
+  WRITE / |Content of target field after READ CURRENT LINE using the LINE VALUE addition: "{ wa }"|.
+  WRITE / |Value of sy-lisel after statement: "{ sy-lisel }"|.
+
+  "Specifying a concrete line
+  READ LINE 3 LINE VALUE INTO wa.
+  WRITE / |Content of target field after READ LINE n using the LINE VALUE addition: "{ wa }"|.
+  WRITE / |Value of sy-lisel after statement: "{ sy-lisel }"|.
+
+  SKIP.
+
+*&---------------------------------------------------------------------*
+*& READ [CURRENT] LINE FIELD VALUE
+*&---------------------------------------------------------------------*
+
+  "Assigning the output of data objects to these data objects or other target
+  "data objects.
+  "In the example, the checkbox selections are evaluated. Dedicated target
+  "objects are specified for both data objects using INTO.
+
+  WRITE / `---------------- READ ... LINE FIELD VALUE ----------------`.
+
+  DATA(no_selection) = 0.
+  DO.
+    READ LINE sy-index FIELD VALUE flag INTO flag_check checkbox_name INTO target.
+    IF sy-subrc <> 0.
+      EXIT.
+    ELSEIF flag_check = 'X'.
+      no_selection = 1.
+      WRITE / |Value of  sy-lilli: "{ sy-lilli }"|.
+      WRITE / |Value of target after READ LINE: "{ target }"|.
+      WRITE / |Value of sy-lisel after READ LINE: "{ sy-lisel }"|.
+      WRITE / `*****`.
+    ENDIF.
+    CLEAR: target, flag_check.
+  ENDDO.
+
+  IF no_selection = 0.
+    WRITE / `No checkbox selected.`.
+  ENDIF.
+``` 
+
+ </td>
+</tr>
+
+
+<tr>
+<td> 
+
+Overwriting line content and format<br><br>
+`MODIFY [CURRENT] LINE`
+
+ </td>
+
+ <td> 
+
+- Overwrites a line stored in the list buffer with the content of the `sy-lisel` system field
+- Allows additional modifications such as changing the value and format.
+- Find more information [here](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapmodify_line.htm).
+- 
+
+ </td>
+
+<td> 
+
+
+``` abap
+PROGRAM.
+
+DATA text TYPE c LENGTH 4 VALUE 'Text'.
+DATA letter TYPE c LENGTH 1.
+DATA linno4mod_a TYPE i.
+DATA linno4mod_b TYPE i.
+DATA linno4mod_c TYPE i.
+DATA linno4mod_d TYPE i.
+DATA linno4mod_e TYPE i.
+DATA linno4mod_f TYPE i.
+
+START-OF-SELECTION.
+
+  linno4mod_a = sy-linno.
+  letter = 'A'.
+  WRITE: / text, letter.
+  letter = 'B'.
+  WRITE: / text, letter.
+  linno4mod_b = sy-linno.
+  letter = 'C'.
+  WRITE: / text, letter.
+  letter = 'D'.
+  WRITE: / text, letter.
+  linno4mod_c = sy-linno.
+  letter = 'E'.
+  WRITE: / text, letter.
+  letter = 'F'.
+  WRITE: / text, letter.
+  linno4mod_d = sy-linno.
+  letter = 'G'.
+  WRITE: / text, letter.
+  letter = 'H'.
+  WRITE: / text, letter.
+  linno4mod_e = sy-linno.
+  letter = 'I'.
+  WRITE: / text, letter.
+  letter = 'J'.
+  WRITE: / text, letter.
+  linno4mod_f = sy-linno.
+
+AT LINE-SELECTION.
+
+  IF sy-lilli BETWEEN linno4mod_a + 2 AND linno4mod_b.
+    MODIFY CURRENT LINE LINE VALUE FROM 'Line overwritten'.
+  ELSEIF sy-lilli BETWEEN linno4mod_b + 1 AND linno4mod_c.
+    MODIFY CURRENT LINE FIELD VALUE text FROM 'ABAP'.
+  ELSEIF sy-lilli BETWEEN linno4mod_c + 1 AND linno4mod_d.
+    MODIFY CURRENT LINE FIELD FORMAT letter COLOR 3.
+  ELSEIF sy-lilli BETWEEN linno4mod_d + 1 AND linno4mod_e.
+    MODIFY CURRENT LINE LINE FORMAT COLOR 4.
+  ELSEIF sy-lilli BETWEEN linno4mod_e + 1 AND linno4mod_f.
+    MODIFY CURRENT LINE FIELD FORMAT text COLOR 5 letter COLOR 6 LINE FORMAT COLOR 7.
+  ELSE.
+    MESSAGE `That won't be modified.` TYPE 'I'.
+  ENDIF.
+``` 
+
+ </td>
+</tr>
+
+</table>
+
 
 > **💡 Note**<br>
 > - [Relevant sy components in the context of lists](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenlist_systemfields.htm)
@@ -4199,45 +4400,444 @@ MODIFY CURRENT LINE FIELD FORMAT a COLOR 5 b COLOR 6 LINE FORMAT COLOR 7.
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## Event Blocks
-- Notes
-  - Introduced by an [event keyword](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenevent_keyword_glosry.htm). 
-  - Ended by the next processing block (there's no closing statement).
-  - Should not contain separate declarations, i.e. you should put all data object declarations in the global declaration part (except for `AT SELECTION-SCREEN ...`)
-  - It is recommended that you use ABAP Objects and methods consistently for data encapsulation
-  - Should not be specified more than once in a program
-  - Called depending on the user action and the program state (even if not explicitly specified)
+
+- Event blocks are introduced by an [event keyword](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenevent_keyword_glosry.htm). 
+- Ended by the next processing block (there's no closing statement).
+- Should not contain separate declarations, i.e. you should put all data object declarations in the global declaration part (except for `AT SELECTION-SCREEN ...`)
+- It is recommended that you use ABAP Objects and methods consistently for data encapsulation
+- Should not be specified more than once in a program
+- Called depending on the user action and the program state (even if not explicitly specified)
+
+> **💡 Note**<br>
+> The main purpose of the examples is to visualize the calling of the events. Internal tables are filled during the events to log the event name and the time stamp when it is called. The tables are then output.
+
+<table>
+
+<tr>
+<th> Event block </th> <th> Notes </th> <th> Code Snippet </th>
+</tr>
+
+<tr>
+<td> 
+
+Program constructor  
+
+
+ </td>
+
+ <td> 
+
 - `LOAD-OF-PROGRAM` 
-  - Program constructor  
   - Called when a program is loaded into the internal session
   - Can be used to initialize the global data of a program. However, for executable programs, it is recommended that you use the event block `INITIALIZATION` for this task since the start values for parameters and selection criteria are set after `LOAD-OF-PROGRAM`.   
-- Reporting events related to executable programs in particular (and occur in predefined order). 
-  - `INITIALIZATION`
-    - Used to initialize executable programs and provide start values (that cannot be statically expressed using `DEFAULT`)
-    - Called directly after `LOAD-OF-PROGRAM` and before selection screen processing    
-  - `START-OF-SELECTION`
-    - Called after selection screen processing (see the following event blocks)
-    - If an executable program does not contain selection screens, this block is called automatically and implicitly.
-    - All statements are implicitly assigned to this block unless they are explicitly assigned to another block.
-    - Although it is optional, it is recommended that you specify the statement explicitly to improve readability.
-- Selection screen events 
-  - Used to individually evaluate selection screen elements, e.g. a specific parameter.
-  - In many cases, the events can be used for input validation (this should not wait until `START-OF-SELECTION`). If your custom input validation fails on an input, you can raise a message (e.g. a message of type `E`: `MESSAGE 'Error' TYPE 'E'.`) and allow users to edit the input again.  
-  - `AT SELECTION-SCREEN OUTPUT` <br>Called by the dynpro event PBO of a selection screen after `INITIALIZATION`; can be used for modifying screen elements (e.g. using `MODIFY SCREEN`)
-  - `AT SELECTION-SCREEN ON par` <br>Called when values for a parameter or selection criteria were passed to the program; note: the syntax is also available for selection criteria; an additional variant `... ON END OF ...` is available (this event block is called when the selection table is passed completely allowing to check the entire selection table content) 
-  - `AT SELECTION-SCREEN ON BLOCK bl` <br>Called when all input for a block is passed to the program
-  - `AT SELECTION-SCREEN ON RADIOBUTTON GROUP gr` <br>Called when the values for a radio button group were passed
-  - `AT SELECTION-SCREEN ON EXIT-COMMAND` <br>Called by *Back*, *Exit*, or *Cancel* (e.g. used for cleanup tasks)
-  - `AT SELECTION-SCREEN ON HELP-REQUEST | VALUE-REQUEST` <br>Relates to field (F1) and input (F4) help
-  - `AT SELECTION-SCREEN.` <br>Called as last event in the selection screen processing when all input values are passed to the program
-- List events 
-  - Are triggered during the list creation and after certain user actions on a displayed list.
-  - During list creation: 
-    - `TOP-OF-PAGE` <br>For definining page headers; called when a [basic list](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenbasic_list_glosry.htm) is created and when a new page begins (`... DURING LINE-SELECTION` is called when [details lists](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abendetails_list_glosry.htm) are created)
-    - `END-OF-PAGE` <br>For definining page footers; called when the end of a page is reached, for example, when the specified number of lines in the `LINE-COUNT` addition (e.g. `PROGRAM LINE-COUNT 20(3).`) has been reached
-  - After user actions: 
-    - `AT LINE-SELECTION` <br>Called when a screen list is displayed, the screen cursor is on a list line and a function is selected using the function code `PICK`; when specified, the function key F2 is enabled and, therefore, double click functionality; F2 and a double click are linked with the function code `PICK`.
-    - [`AT USER-COMMAND`](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapat_user-command.htm) <br>Called when a function with a user-defined function code is selected when a screen list is displayed; the function codes can be evaluated using `sy-ucomm`; you can set a list event programmatically using [`SET USER-COMMAND`](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapset_user-command.htm)
 
+ </td>
+
+<td> 
+
+See below
+
+ </td>
+</tr>
+
+
+<tr>
+<td> 
+
+Reporting events related to executable programs in particular
+
+ </td>
+
+ <td> 
+
+- `INITIALIZATION`
+  - Used to initialize executable programs and provide start values (that cannot be statically expressed using `DEFAULT`)
+  - Called directly after `LOAD-OF-PROGRAM` and before selection screen processing    
+- `START-OF-SELECTION`
+  - Called after selection screen processing (see the following event blocks)
+  - If an executable program does not contain selection screens, this block is called automatically and implicitly.
+  - All statements are implicitly assigned to this block unless they are explicitly assigned to another block.
+  - Although it is optional, it is recommended that you specify the statement explicitly to improve readability.
+
+ </td>
+
+<td> 
+
+
+``` abap
+PROGRAM.
+
+TYPES: BEGIN OF st,
+         id          TYPE c LENGTH 3,
+         event_block TYPE c LENGTH 50,
+         time        TYPE utclong,
+       END OF st.
+DATA log TYPE TABLE OF st WITH EMPTY KEY.
+DATA counter TYPE i.
+
+SELECTION-SCREEN BEGIN OF LINE.
+  SELECTION-SCREEN COMMENT (10) txt1.
+  PARAMETERS text1 TYPE c LENGTH 10 LOWER CASE.
+SELECTION-SCREEN END OF LINE.
+
+SELECTION-SCREEN BEGIN OF LINE.
+  SELECTION-SCREEN COMMENT (10) txt2.
+  PARAMETERS text2 TYPE c LENGTH 10 LOWER CASE.
+SELECTION-SCREEN END OF LINE.
+
+LOAD-OF-PROGRAM.
+  counter += 1.
+  APPEND VALUE #( id = counter event_block = `LOAD-OF-PROGRAM` time = utclong_current( ) ) TO log.
+
+INITIALIZATION.
+  counter += 1.
+  APPEND VALUE #( id = counter event_block = `INITIALIZATION` time = utclong_current( ) ) TO log.
+  text1 = 'Hello'.
+  text2 = 'World'.
+  txt1 = 'Text 1'.
+  txt2 = 'Text 2'.
+
+START-OF-SELECTION.
+  counter += 1.
+  APPEND VALUE #( id = counter event_block = `START-OF-SELECTION` time = utclong_current( ) ) TO log.
+
+  LOOP AT log INTO DATA(wa).
+    WRITE: /(*) wa-id, (20) wa-event_block, (40) wa-time.
+  ENDLOOP.
+``` 
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+Selection screen events 
+
+ </td>
+
+ <td> 
+
+- Used to individually evaluate selection screen elements, e.g. a specific parameter.
+- In many cases, the events can be used for input validation (this should not wait until `START-OF-SELECTION`). If your custom input validation fails on an input, you can raise a message (e.g. a message of type `E`: `MESSAGE 'Error' TYPE 'E'.`) and allow users to edit the input again.
+
+Event blocks:  
+- `AT SELECTION-SCREEN OUTPUT`: Called by the dynpro event PBO of a selection screen after `INITIALIZATION`; can be used for modifying screen elements (e.g. using `MODIFY SCREEN`)
+- `AT SELECTION-SCREEN ON par`: Called when values for a parameter or selection criteria were passed to the program; note: the syntax is also available for selection criteria; an additional variant `... ON END OF ...` is available (this event block is called when the selection table is passed completely allowing to check the entire selection table content) 
+- `AT SELECTION-SCREEN ON BLOCK bl`: Called when all input for a block is passed to the program
+- `AT SELECTION-SCREEN ON RADIOBUTTON GROUP gr`: Called when the values for a radio button group were passed
+- `AT SELECTION-SCREEN ON EXIT-COMMAND`: Called by *Back*, *Exit*, or *Cancel* (e.g. used for cleanup tasks)
+- `AT SELECTION-SCREEN ON HELP-REQUEST | VALUE-REQUEST`: Relates to field (F1) and input (F4) help
+- `AT SELECTION-SCREEN.`: Called as last event in the selection screen processing when all input values are passed to the program
+
+ </td>
+
+<td> 
+
+
+
+``` abap
+PROGRAM.
+
+TYPES: BEGIN OF st,
+         id          TYPE c LENGTH 3,
+         event_block TYPE c LENGTH 50,
+         time        TYPE utclong,
+       END OF st.
+DATA log TYPE TABLE OF st WITH EMPTY KEY.
+DATA counter TYPE i.
+
+SELECTION-SCREEN BEGIN OF LINE.
+  SELECTION-SCREEN COMMENT (10) txt1.
+  PARAMETERS text1 TYPE c LENGTH 10 LOWER CASE.
+SELECTION-SCREEN END OF LINE.
+
+SELECTION-SCREEN BEGIN OF BLOCK blk.
+  PARAMETERS text2 TYPE c LENGTH 10 LOWER CASE.
+  PARAMETERS text3 TYPE c LENGTH 10 LOWER CASE.
+SELECTION-SCREEN END OF BLOCK blk.
+
+PARAMETERS: rb1 RADIOBUTTON GROUP grp DEFAULT 'X',
+            rb2 RADIOBUTTON GROUP grp.
+
+LOAD-OF-PROGRAM.
+  counter += 1.
+  APPEND VALUE #( id = counter event_block = `LOAD-OF-PROGRAM` time = utclong_current( ) ) TO log.
+
+INITIALIZATION.
+  counter += 1.
+  APPEND VALUE #( id = counter event_block = `INITIALIZATION` time = utclong_current( ) ) TO log.
+  text1 = 'Hello'.
+  text2 = 'World'.
+  text3 = 'ABAP'.
+  txt1 = 'Text 1'.
+
+AT SELECTION-SCREEN OUTPUT.
+  counter += 1.
+  APPEND VALUE #( id = counter event_block = `AT SELECTION-SCREEN OUTPUT` time = utclong_current( ) ) TO log.
+
+  LOOP AT SCREEN INTO DATA(wa).
+    IF wa-name = 'TEXT1'.
+      wa-intensified = '1'.
+      MODIFY SCREEN FROM wa.
+    ENDIF.
+  ENDLOOP.
+
+AT SELECTION-SCREEN ON text1.
+  counter += 1.
+  APPEND VALUE #( id = counter event_block = `AT SELECTION-SCREEN ON` time = utclong_current( ) ) TO log.
+
+AT SELECTION-SCREEN ON BLOCK blk.
+  counter += 1.
+  APPEND VALUE #( id = counter event_block = `AT SELECTION-SCREEN ON BLOCK` time = utclong_current( ) ) TO log.
+
+AT SELECTION-SCREEN ON RADIOBUTTON GROUP grp.
+  counter += 1.
+  APPEND VALUE #( id = counter event_block = `AT SELECTION-SCREEN ON RADIOBUTTON GROUP` time = utclong_current( ) ) TO log.
+
+AT SELECTION-SCREEN ON EXIT-COMMAND.
+  counter += 1.
+  APPEND VALUE #( id = counter event_block = `AT SELECTION-SCREEN ON EXIT-COMMAND` time = utclong_current( ) ) TO log.
+
+  DATA msg TYPE string VALUE `These events have already been raised:`.
+  LOOP AT log INTO DATA(cmd).
+    msg &&= | { cmd-event_block }|.
+  ENDLOOP.
+  MESSAGE msg TYPE 'I'.
+
+AT SELECTION-SCREEN.
+  APPEND VALUE #( id = counter event_block = `AT SELECTION-SCREEN` time = utclong_current( ) ) TO log.
+
+START-OF-SELECTION.
+  counter += 1.
+  APPEND VALUE #( id = counter event_block = `START-OF-SELECTION` time = utclong_current( ) ) TO log.
+
+  LOOP AT log INTO DATA(wa).
+    WRITE: /(*) wa-id, (45) wa-event_block, (30) wa-time.
+  ENDLOOP.
+``` 
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+List events 
+
+ </td>
+
+ <td> 
+
+- Are triggered during the list creation and after certain user actions on a displayed list.
+- During list creation: 
+  - `TOP-OF-PAGE` <br>For definining page headers; called when a [basic list](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenbasic_list_glosry.htm) is created and when a new page begins (`... DURING LINE-SELECTION` is called when [details lists](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abendetails_list_glosry.htm) are created)
+  - `END-OF-PAGE` <br>For definining page footers; called when the end of a page is reached, for example, when the specified number of lines in the `LINE-COUNT` addition (e.g. `PROGRAM LINE-COUNT 20(3).`) has been reached
+- After user actions: 
+  - `AT LINE-SELECTION` <br>Called when a screen list is displayed, the screen cursor is on a list line and a function is selected using the function code `PICK`; when specified, the function key F2 is enabled and, therefore, double click functionality; F2 and a double click are linked with the function code `PICK`.
+  - [`AT USER-COMMAND`](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapat_user-command.htm) <br>Called when a function with a user-defined function code is selected when a screen list is displayed; the function codes can be evaluated using `sy-ucomm`; you can set a list event programmatically using [`SET USER-COMMAND`](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapset_user-command.htm).
+
+ </td>
+
+<td> 
+
+The following example is an excerpt of the executable example contained in the repository. Find more information in the comments there. The example is just intended to explore and visualize various list events. 
+
+
+``` abap
+PROGRAM LINE-COUNT 20(3).
+
+TYPES: BEGIN OF st,
+         id          TYPE c LENGTH 3,
+         event_block TYPE c LENGTH 50,
+         time        TYPE utclong,
+       END OF st.
+DATA: counter_line             TYPE i,
+      reporting_and_selscr_log TYPE TABLE OF st WITH EMPTY KEY,
+      list_log                 TYPE TABLE OF st WITH EMPTY KEY,
+      counter                  TYPE i,
+      tstmp                    TYPE utclong.
+
+SELECTION-SCREEN COMMENT /1(70) intro.
+SELECTION-SCREEN SKIP.
+
+PARAMETERS: text TYPE c length 10.
+
+SELECTION-SCREEN SKIP 2.
+SELECTION-SCREEN COMMENT /1(70) note.
+
+CLASS demo DEFINITION.
+  PUBLIC SECTION.
+    CLASS-METHODS:
+      sel_screen_evt IMPORTING evt TYPE string,
+      write_line IMPORTING evt TYPE string
+                           utc TYPE utclong,
+      counter,
+      list_evt IMPORTING evt TYPE string,
+      write_rep_sel_log,
+      write_list_log.
+    CLASS-DATA: li_wa  LIKE LINE OF list_log,
+                sel_wa LIKE LINE OF reporting_and_selscr_log.
+ENDCLASS.
+
+CLASS demo IMPLEMENTATION.
+  METHOD counter.
+    IF counter = 0.
+      counter = 1.
+    ELSE.
+      counter += 1.
+    ENDIF.
+  ENDMETHOD.
+
+  METHOD sel_screen_evt.
+    counter( ).
+    APPEND VALUE #( id = counter event_block  = evt time = utclong_current( ) ) TO reporting_and_selscr_log.
+  ENDMETHOD.
+
+  METHOD list_evt.
+    counter( ).
+    APPEND VALUE #( id = counter event_block  = evt time = utclong_current( ) ) TO list_log.
+  ENDMETHOD.
+
+  METHOD write_line.
+    counter( ).
+    WRITE: /3(*) counter,
+            15  evt,
+            60  utc.
+  ENDMETHOD.
+
+  METHOD write_rep_sel_log.
+    SKIP.
+    WRITE / '********** Log entries for reporting and selection screen events **********' COLOR 2.
+
+    FORMAT COLOR 2.
+    WRITE: /3 'ID', 15 'Event Block', 60 'Time' .
+    FORMAT COLOR OFF.
+    LOOP AT reporting_and_selscr_log INTO sel_wa.
+      WRITE: / sel_wa-id UNDER 'ID',
+              sel_wa-event_block UNDER 'Event Block',
+              sel_wa-time UNDER 'Time'.
+    ENDLOOP.
+  ENDMETHOD.
+
+  METHOD write_list_log.
+    WRITE / '********** Log entries for list events **********' COLOR 2.
+
+    FORMAT COLOR 2.
+    WRITE: /3 'ID', 15 'Event Block', 60 'Time' .
+    FORMAT COLOR OFF.
+    LOOP AT list_log INTO li_wa.
+      WRITE: / li_wa-id UNDER 'ID',
+              li_wa-event_block UNDER 'Event Block',
+              li_wa-time UNDER 'Time'.
+    ENDLOOP.
+  ENDMETHOD.
+ENDCLASS.
+
+**********************************************************************
+
+LOAD-OF-PROGRAM.
+
+  demo=>sel_screen_evt( `LOAD-OF-PROGRAM` ).
+
+**********************************************************************
+
+INITIALIZATION.
+
+  demo=>sel_screen_evt( `INITIALIZATION` ).
+  intro = 'Exploring list events'.
+  note = 'The Back/Exit/Cancel buttons raise the ON EXIT-COMMAND event.'.
+  text = 'Hello'.
+
+**********************************************************************
+
+START-OF-SELECTION.
+
+  SET USER-COMMAND 'START'.
+
+  demo=>sel_screen_evt( `START-OF-SELECTION` ).
+
+  WRITE / 'This is the basic list showing the content of a log table (mostly reporting and selection screen events). Double-click a line in this list to display more events in a details list.' COLOR 4.
+  SKIP.
+  WRITE / |Parameter value: "{ text }"| COLOR 2.
+
+
+  IF reporting_and_selscr_log IS NOT INITIAL.
+    demo=>write_rep_sel_log( ).
+  ENDIF.
+
+**********************************************************************
+
+AT LINE-SELECTION.
+
+  demo=>list_evt( evt = `AT LINE-SELECTION` ).
+
+  SET USER-COMMAND 'LINE'.
+
+  IF sy-lsind <= 1.
+    WRITE / 'This is a details list. It shows the content of another log table (mostly list events). Clicking in this list does nothing meaningful.' COLOR 4.
+    WRITE / 'You may want to go back to the basic list, double-click a line there to come back here, and see more log entries added for list events.' COLOR 4.
+    WRITE / 'When the counter reaches 40, the program is restarted :)' COLOR 4.
+    SKIP.
+    WRITE / `************** Some sy Components **************` COLOR 2.
+    WRITE / |Content of clicked line (sy-lisel): "{ sy-lisel }"|.
+    WRITE / |Number of clicked line (sy-lilli): "{ sy-lilli }"|.
+    WRITE / |List level of the current list (sy-lsind): "{ sy-lsind }"|.
+    SKIP.
+    IF list_log IS NOT INITIAL.
+      demo=>write_list_log( ).
+    ENDIF.
+  ENDIF.
+
+**********************************************************************
+
+AT USER-COMMAND.
+
+  CASE sy-ucomm.
+    WHEN 'START'.
+      demo=>list_evt( `AT USER-COMMAND (Function code: START)` ).
+      MESSAGE  |AT USER-COMMAND event raised (Function code: START). Counter value: { counter }.| TYPE 'I'.
+    WHEN 'LINE'.
+      demo=>list_evt( `AT USER-COMMAND (Function code: LINE)` ).
+      MESSAGE  |AT USER-COMMAND event raised (Function code: LINE). Counter value: { counter }.| TYPE 'I'.
+      IF counter >= 40.
+        MESSAGE  |The counter has reached the threshold. The program will be started again using a SUBMIT statement.| TYPE 'I'.
+        SUBMIT (sy-repid) VIA SELECTION-SCREEN.
+      ENDIF.
+  ENDCASE.
+
+**********************************************************************
+
+TOP-OF-PAGE.
+
+  tstmp = utclong_current( ).
+  demo=>counter( ).
+  APPEND VALUE #( id = counter event_block  = |TOP-OF-PAGE| time = tstmp ) TO list_log.
+  WRITE: / |********************* Title inserted at TOP-OF-PAGE event ({ counter }) *********************|.
+
+**********************************************************************
+
+TOP-OF-PAGE DURING LINE-SELECTION.
+
+  tstmp = utclong_current( ).
+  demo=>counter( ).
+  APPEND VALUE #( id = counter event_block  = |TOP-OF-PAGE DURING LINE-SELECTION| time = tstmp ) TO list_log.
+  WRITE: / |********************* Title inserted at TOP-OF-PAGE DURING LINE-SELECTION event ({ counter }) *********************|.
+
+**********************************************************************
+
+END-OF-PAGE.
+
+  tstmp = utclong_current( ).
+  demo=>counter( ).
+  APPEND VALUE #( id = counter event_block  = |END-OF-PAGE| time = tstmp ) TO list_log.
+  WRITE: / |********************* Footer inserted at END-OF-PAGE event ({ counter }) *********************|.
+``` 
+
+ </td>
+</tr>
+
+</table>
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
