@@ -34,7 +34,7 @@ It provides references to more detailed information on the topic.
   - Based on the ABAP technology without restrictions regarding the ...
     - ABAP language versions, i.e. you can use both [Standard ABAP](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenstandard_abap_glosry.htm) (the unrestricted ABAP language version) and ABAP for Cloud Development  
     - usage of tools (ADT and/or SAP GUI) 
-    - access to repository objects (i.e. also objects provided by SAP can be accessed). 
+    - access to repository objects (i.e. objects provided by SAP, beyond released APIs, can be accessed). 
   - Supported in [SAP S/4HANA](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensap_s4hana_glosry.htm)
 
 

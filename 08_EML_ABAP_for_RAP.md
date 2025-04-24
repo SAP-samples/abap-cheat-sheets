@@ -819,9 +819,9 @@ BDEF derived type examples:
 
 
 ```abap
-"---------------------------------------------------------------------
-"------- BDEF derived types demonstrating long and short forms -------
-"---------------------------------------------------------------------
+*&---------------------------------------------------------------------*
+*& BDEF derived types demonstrating long and short forms
+*&---------------------------------------------------------------------*
 
 "Short forms
 "Specifying the RAP BO root entity
@@ -855,14 +855,17 @@ DATA d7 TYPE TABLE FOR READ IMPORT zdemo_abap_rap_ro_m\\child\_parent.
 TYPES t8 TYPE TABLE FOR READ IMPORT zdemo_abap_rap_ch_m\_parent.
 DATA d8 TYPE TABLE FOR READ IMPORT zdemo_abap_rap_ch_m\_parent.
 
-"---------------------------------------------------------------------
-"---------------- Miscellaneous BDEF derived types -------------------
-"---------------------------------------------------------------------
+*&---------------------------------------------------------------------*
+*& Miscellaneous BDEF derived types
+*&---------------------------------------------------------------------*
 
 "The examples show a selection of possible types. The types mostly use
 "the short form.
 
-"-------------------------- Table types ------------------------------
+*&---------------------------------------------------------------------*
+*& Table types
+*&---------------------------------------------------------------------*
+
 "Create
 DATA create_tab TYPE TABLE FOR CREATE zdemo_abap_rap_ro_m.
 
@@ -897,7 +900,9 @@ DATA rba_import_child_to_parent_2 TYPE TABLE FOR READ IMPORT zdemo_abap_rap_ro_m
 DATA rba_result_child_to_parent TYPE TABLE FOR READ RESULT zdemo_abap_rap_ch_m\_parent.
 DATA rba_result_child_to_parent_2 TYPE TABLE FOR READ IMPORT zdemo_abap_rap_ro_m\\child\_parent.
 
-"-------------------------- Structured types ------------------------------
+*&---------------------------------------------------------------------*
+*& Structured types
+*&---------------------------------------------------------------------*
 
 DATA create_wa TYPE STRUCTURE FOR CREATE zdemo_abap_rap_ro_m.
 DATA update_wa TYPE STRUCTURE FOR UPDATE zdemo_abap_rap_ro_m.
@@ -916,9 +921,9 @@ DATA perm_req TYPE STRUCTURE FOR PERMISSIONS REQUEST zdemo_abap_rap_ro_m.
 "DATA validate TYPE TABLE FOR VALIDATION zdemo_abap_rap_ro_m~val.
 "DATA determine TYPE TABLE FOR DETERMINATION zdemo_abap_rap_ro_m~det_add_text.
 
-"---------------------------------------------------------------------
-"---- BDEF derived types relating to RAP response parameters ---------
-"---------------------------------------------------------------------
+*&---------------------------------------------------------------------*
+*& BDEF derived types relating to RAP response parameters
+*&---------------------------------------------------------------------*
 
 "Response parameters
 "Note: The addition EARLY or no addition is relevant in the context of the
@@ -941,10 +946,10 @@ DATA map_tab_early_1 TYPE TABLE FOR MAPPED zdemo_abap_rap_ro_m.
 DATA map_tab_early_2 TYPE TABLE FOR MAPPED EARLY zdemo_abap_rap_ro_m.
 DATA map_tab_late TYPE TABLE FOR MAPPED LATE zdemo_abap_rap_ro_m.
 
-"---------------------------------------------------------------------
-"---- BDEF derived types relating to the save phase in RAP -----------
-"---- additional and unmanaged save scenarios ------------------------
-"---------------------------------------------------------------------
+*&---------------------------------------------------------------------*
+*& BDEF derived types relating to the save phase in RAP additional
+*& and unmanaged save scenarios
+*&---------------------------------------------------------------------*
 
 "REQUEST FOR ... can only be used within implementation classes
 "For create and update operations
@@ -952,14 +957,13 @@ DATA map_tab_late TYPE TABLE FOR MAPPED LATE zdemo_abap_rap_ro_m.
 "For delete operations
 "DATA req_delete TYPE REQUEST FOR DELETE zdemo_abap_rap_ro_m_as.
 
-"---------------------------------------------------------------------
-"---- Excursion: Typing method parameters with BDEF derived types ----
-"---------------------------------------------------------------------
+*&---------------------------------------------------------------------*
+*& Excursion: Typing method parameters with BDEF derived types
+*&---------------------------------------------------------------------*
 
 "TYPES tab_type TYPE TABLE FOR CREATE zdemo_abap_rap_ro_m.
 "METHODS some_meth IMPORTING itab TYPE tab_type.
 ``` 
-
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
@@ -1008,56 +1012,283 @@ scenarios. The draft indicator
 is only relevant in the context of
 [draft](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbdl_with_draft.htm).
 
-Find more details on the available components in section [Components of
-BDEF Derived
-Types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapderived_types_comp.htm).
 
-Bullet points on selected `%` components:
+The following table covers a selection of available BDEF derived type components. Find more details on the available components in section [Components of BDEF Derived Types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapderived_types_comp.htm).
 
--   [`%cid`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapderived_types_cid.htm)
-    -   A string to define a content ID.
-    -   Content IDs are used as a unique and preliminary identifier for
-        RAP BO operations in which instances are created and especially
-        in cases where the key values of RAP BO instances are not yet
-        determined
-    -   Assume that you create a RAP BO instance with an EML create
-        request and the key value has not yet been determined. In the
-        same request - a save has not yet been triggered - an update is
-        requested for this RAP BO instance. Using the content ID, it is
-        guaranteed that the update operation happens for the desired
-        instance. For this purpose, derived types for operations like
-        update or delete include the component
-        [`%cid_ref`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapderived_types_cid_ref.htm)
-        to refer to the content ID `%cid` as the name implies.
-    -   Note: You should always fill `%cid` even if not
-        needed. The specified content ID is only valid within one ABAP
-        EML request. You can use the optional addition [`AUTO FILL CID`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapmodify_entity_entities_fields.htm#!ABAP_ONE_ADD@1@) in EML modify operations to create `%cid` automatically. However, if you use this addition, you cannot refer to `%cid` in subsequent operations.
--   [`%key`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapderived_types_key.htm)/[`%tky`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapderived_types_tky.htm)
-    -   Both are component groups summarizing all primary keys of a RAP
-        BO instance.
-    -   Where possible, it is recommended that you use `%tky`
-        instead of `%key`. `%tky` includes
-        `%key` and also the draft indicator
-        `%is_draft`. When using `%tky` in non-draft
-        scenarios, you are prepared for a potential, later switch to a
-        draft scenario. In doing so, you can avoid lots of adaptations
-        in your code by manually adding the indicator.
--   [`%control`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapderived_types_control.htm)
-    -   Structured component that is a component of many BDEF derived types. It contains the names of all key
-        and data fields of a RAP BO instance, which indicate flags.
-    -   For example, it is used to get information on which fields are provided or set a
-        flag for which fields are requested by RAP BO providers or RAP
-        BO consumers respectively during the current EML request.
-    -   For this purpose, the value of each field in the
-        `%control` structure is of type
-        `ABP_BEHV_FLAG`. For the value setting,
-        you can use the structured constant `mk` of interface
-        `IF_ABAP_BEHV`. Note that the technical
-        type is `x length 1`.
-    -   Example: If you want to read data from a RAP BO instance and
-        particular non-key fields in `%control` are set to
-        `if_abap_behv=>mk-off`, the values of these fields
-        are not returned in the result.
+<table>
+
+<tr>
+<th> Component </th> <th> Notes </th> <th> Code Snippet </th>
+</tr>
+
+<tr>
+<td> 
+
+[`%cid`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapderived_types_cid.htm), 
+[`%cid_ref`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapderived_types_cid_ref.htm)
+
+ </td>
+
+ <td> 
+
+- [`%cid`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapderived_types_cid.htm) is a string to define a content ID.
+- Content IDs are used as a unique and preliminary identifier for
+RAP BO operations in which instances are created and especially
+in cases where the key values of RAP BO instances are not yet
+determined
+-   Assume that you create a RAP BO instance with an EML create
+request and the key value has not yet been determined. In the
+same request - a save has not yet been triggered - an update is
+requested for this RAP BO instance. Using the content ID, it is
+guaranteed that the update operation happens for the desired
+instance. For this purpose, derived types for operations like
+update or delete include the component
+[`%cid_ref`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapderived_types_cid_ref.htm)
+to refer to the content ID `%cid` as the name implies.
+-   Note: You should always fill `%cid` even if not
+needed. The specified content ID is only valid within one ABAP
+EML request. You can use the optional addition [`AUTO FILL CID`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapmodify_entity_entities_fields.htm#!ABAP_ONE_ADD@1@) in EML modify operations to create `%cid` automatically. However, if you use this addition, you cannot refer to `%cid` in subsequent operations.
+
+ </td>
+
+<td> 
+
+``` abap
+MODIFY ENTITIES OF zdemo_abap_rap_ro_m
+    ENTITY root
+    CREATE FROM VALUE #(
+        %control-key_field = if_abap_behv=>mk-on
+        %control-field1 = if_abap_behv=>mk-on
+        %control-field2 = if_abap_behv=>mk-on
+        %control-field3 = if_abap_behv=>mk-on
+        %control-field4 = if_abap_behv=>mk-on
+        ( %cid = 'cid5'
+          key_field = 5
+          field1    = 'iii'
+          field2    = 'jjj'
+          field3    = 50
+          field4    = 51 ) )
+    UPDATE FIELDS ( field1 field3 field4 )
+        WITH VALUE #( ( %cid_ref = 'cid5'
+                        field1   = 'up_kkk'
+                        field2   = 'up_lll' "Value not considered
+                        field3   = 500
+                        field4   = 501 ) )
+    MAPPED FINAL(mapped)
+    FAILED FINAL(failed)
+    REPORTED FINAL(reported).
+``` 
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+[`%key`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapderived_types_key.htm), [`%tky`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapderived_types_tky.htm)
+
+ </td>
+
+ <td> 
+
+-   Both are component groups summarizing all primary keys of a RAP
+    BO instance.
+-   Where possible, it is recommended that you use `%tky`
+    instead of `%key`. `%tky` includes
+    `%key` and also the draft indicator
+    `%is_draft`. When using `%tky` in non-draft
+    scenarios, you are prepared for a potential, later switch to a
+    draft scenario. In doing so, you can avoid lots of adaptations
+    in your code by manually adding the indicator.
+
+ </td>
+
+<td> 
+
+The code snippet visualizes various specification options regarding `%key` and `%tky` as component groups, emphasizing how contained component may be accessed and that these component groups can contain further component groups. 
+
+``` abap
+MODIFY ENTITY zdemo_abap_rap_ro_m
+      CREATE FROM VALUE #(
+         %control = VALUE #( key_field = if_abap_behv=>mk-on
+                             field1 = if_abap_behv=>mk-on
+                             field2 = if_abap_behv=>mk-on
+                             field3 = if_abap_behv=>mk-on
+                             field4 = if_abap_behv=>mk-on )
+        ( %cid = 'cid1' %key-key_field = 1
+          field1 = 'aaa' field2 = 'bbb' field3 = 10 field4 = 11 )
+        ( %cid = 'cid2' %key = VALUE #( key_field = 2 )
+          field1 = 'ccc' field2 = 'ddd' field3 = 20 field4 = 21 )
+        ( %cid = 'cid3' key_field = 3
+          field1 = 'eee' field2 = 'fff' field3 = 30 field4 = 31 )
+        ( %cid = 'cid4' %data-%key-key_field = 4
+          field1 = 'ggg' field2 = 'hhh' field3 = 40 field4 = 41 )
+        ( %cid = 'cid5' %data-key_field = 5
+          field1 = 'iii' field2 = 'jjj' field3 = 50 field4 = 51 ) )
+      "Other options for referring to the key besides using %key
+      "are demonstrated.
+      UPDATE FIELDS ( field2 ) WITH VALUE #(
+        ( %key-key_field = 1 field2 = 'up1' )
+        ( key_field = 2 field2 = 'up2' )
+        ( %tky-%key-key_field = 3 field2 = 'up3' )
+        ( %tky-key_field = 4 field2 = 'up4' )
+        ( %tky-%pky-%key-key_field = 5 field2 = 'up5' )
+        ( %tky-%pky-key_field = 6 field2 = 'up6' )
+        ( %pky-key_field = 7 field2 = 'up7' )
+        ( %pky-%key-key_field = 8 field2 = 'up8' )
+        ( %data-%key-key_field = 9 field2 = 'up9' )
+        ( %data-key_field = 10 field2 = 'up10' ) )
+       MAPPED FINAL(mapped)
+       FAILED FINAL(failed)
+       REPORTED FINAL(reported).
+``` 
+
+ </td>
+</tr>
+
+
+<tr>
+<td> 
+
+[`%control`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapderived_types_control.htm)
+
+ </td>
+
+ <td> 
+
+-   Structured component that is a component of many BDEF derived types. It contains the names of all key
+and data fields of a RAP BO instance, which indicate flags.
+-   For example, it is used to get information on which fields are provided or set a
+flag for which fields are requested by RAP BO providers or RAP
+BO consumers respectively during the current EML request.
+-   For this purpose, the value of each field in the
+`%control` structure is of type
+`ABP_BEHV_FLAG`. For the value setting,
+you can use the structured constant `mk` of interface
+`IF_ABAP_BEHV`. Note that the technical
+type is `x length 1`.
+-   Example: If you want to read data from a RAP BO instance and
+particular non-key fields in `%control` are set to
+`if_abap_behv=>mk-off`, the values of these fields
+are not returned in the result.
+
+ </td>
+
+<td> 
+
+``` abap
+MODIFY ENTITY zdemo_abap_rap_ro_m 
+  CREATE FROM VALUE #(  %control-key_field = if_abap_behv=>mk-on 
+                        %control-field1 = if_abap_behv=>mk-on 
+                        %control-field2 = if_abap_behv=>mk-on 
+                        %control-field3 = if_abap_behv=>mk-on 
+                        %control-field4 = if_abap_behv=>mk-on 
+                        ( %cid = 'cid1' 
+                          key_field = 1 
+                          field1 = 'aaa' 
+                          field2 = 'bbb' 
+                          field3 = 10 
+                          field4 = 11 ) 
+                        ( %cid = 'cid2' 
+                          key_field = 2 
+                          field1 = 'ccc' 
+                          field2 = 'ddd' 
+                          field3 = 20 
+                          field4 = 21 ) ) 
+      MAPPED FINAL(mapped) 
+      FAILED FINAL(failed) 
+      REPORTED FINAL(reported). 
+``` 
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+[%is_draft](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapderived_types_is_draft.htm)
+
+ </td>
+
+ <td> 
+
+- Represents the draft indicator
+- Used in [RAP draft handling](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABENRAP_DRAFT_HANDLING_GLOSRY.html) and indicates whether a RAP BO instance is active or not. A RAP BO instance with the draft indicator set to true represents a [RAP draft instance](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_draft_instance_glosry.htm), e.g. created by a create operation. A commit triggers the saving of the instance to a [draft table](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendraft_table_glosry.htm).
+- Is contained in `%tky`
+- Is of type `ABP_BEHV_FLAG`
+
+ </td>
+
+<td> 
+
+``` abap
+MODIFY ENTITY zdemo_abap_rap_draft_m
+    CREATE AUTO FILL CID
+    FIELDS ( num1 arithm_op num2 )
+    WITH VALUE #( ( %is_draft = if_abap_behv=>mk-on
+                    num1 = 1 arithm_op = '+' num2 = 2 )
+                  ( %is_draft = if_abap_behv=>mk-on
+                    num1 = 2 arithm_op = '*' num2 = 4 )
+                  ( %is_draft = if_abap_behv=>mk-on
+                    num1 = 3 arithm_op = '-' num2 = 5 )
+                  ( %is_draft = if_abap_behv=>mk-on
+                    num1 = 1 arithm_op = '/' num2 = 4 )
+                  ( %is_draft = if_abap_behv=>mk-on
+                    num1 = 2 arithm_op = 'P' num2 = 5 ) )
+    FAILED FINAL(f)
+    REPORTED FINAL(r)
+    MAPPED FINAL(m).
+``` 
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+[%target](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapderived_types_target.htm)
+
+ </td>
+
+ <td> 
+
+- Used to address compositions such as child entities in create operations.
+- Includes the target's primary key and data fields.
+
+ </td>
+
+<td> 
+
+``` abap
+MODIFY ENTITIES OF zdemo_abap_rap_ro_m
+    ENTITY root
+    CREATE FIELDS ( key_field field1 field2 field3 field4 )
+    WITH VALUE #( ( %cid      = 'cid_cba'
+                    key_field = 9
+                    field1    = 'qqq'
+                    field2    = 'rrr'
+                    field3    = 90
+                    field4    = 91 ) )
+    CREATE BY \_child
+    FIELDS ( key_ch field_ch1 field_ch2 ) WITH VALUE #(      
+      ( %cid_ref = 'cid_cba'
+        %target = VALUE #( ( %cid      = 'cid_ch1'
+                             key_ch    = 9
+                             field_ch1 = 'aaa_ch'
+                             field_ch2 = 99 )
+                           ( %cid      = 'cid_ch2'
+                             key_ch    = 10
+                             field_ch1 = 'bbb_ch'
+                             field_ch2 =  100 ) ) ) )
+      MAPPED FINAL(mapped)
+      FAILED FINAL(failed)
+      REPORTED FINAL(reported).  
+``` 
+
+ </td>
+</tr>
+
+</table>
 
 
 The following code snippet illustrates the importance of careful component access and value assignment with component groups in BDEF derived types:
@@ -1185,7 +1416,10 @@ derived_type = VALUE #( key_field = 1
                                             field3    = if_abap_behv=>mk-on
                                             field4    = if_abap_behv=>mk-off ) ).
 
-"-------------------- USING CONTROL addition --------------------
+*&---------------------------------------------------------------------*
+*& USING CONTROL addition
+*&---------------------------------------------------------------------*
+
 "This addition respects the %control component of BDEF derived types, i.e.
 "only those fields for which the %control field has been marked as enabled
 "are respected by the mapping. A disabled %control field means that the
@@ -1199,7 +1433,10 @@ some_other_type = CORRESPONDING #( derived_type USING CONTROL ).
 *KEY_FIELD    FIELD1     FIELD2    FIELD3    FIELD4
 *1                       bbb       2         0
 
-"-------------------- CHANGING CONTROL addition --------------------
+*&---------------------------------------------------------------------*
+*& CHANGING CONTROL addition
+*&---------------------------------------------------------------------*
+
 "This variant fills the %control structure of a BDEF-derived type based on
 "a non-BDEF-derived type that does not include control information.
 "In the example, two components are not assigned (i.e. they remain initial).
@@ -1220,7 +1457,10 @@ derived_type = CORRESPONDING #( some_other_type CHANGING CONTROL ).
 The ABAP SQL statements `INSERT`, `UPDATE`, `MODIFY`, and `DELETE` offer the [`MAPPING FROM ENTITY`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapmapping_from_entity.htm) addition to handle BDEF derived types.
 
 ```abap
-"--------------- INSERT ---------------
+*&---------------------------------------------------------------------*
+*& INSERT
+*&---------------------------------------------------------------------*
+
 "Populating a BDEF derived type
 DATA cr_der_type TYPE STRUCTURE FOR CREATE zdemo_abap_rap_ro_m.
 "%control is not relevant in this example
@@ -1235,7 +1475,10 @@ INSERT zdemo_abap_rapt1 FROM @cr_der_type MAPPING FROM ENTITY.
 *KEY_FIELD    FIELD1    FIELD2    FIELD3    FIELD4
 *1            aaa       bbb       2         3
 
-"--------------- MODIFY ---------------
+*&---------------------------------------------------------------------*
+*& MODIFY
+*&---------------------------------------------------------------------*
+
 cr_der_type = VALUE #( BASE cr_der_type
                        field1 = 'YYY'
                        field2 = 'ZZZ' ).
@@ -1245,7 +1488,10 @@ MODIFY zdemo_abap_rapt1 FROM @cr_der_type MAPPING FROM ENTITY.
 *KEY_FIELD    FIELD1    FIELD2    FIELD3    FIELD4
 *1            YYY       ZZZ       2         3
 
-"--- UPDATE with the INDICATORS SET STRUCTURE %control addition ---
+*&---------------------------------------------------------------------*
+*& UPDATE with the INDICATORS SET STRUCTURE %control addition
+*&---------------------------------------------------------------------*
+
 "Populating a BDEF derived type
 "%control is relevant in this example. Some %control values are enabled,
 "some are not.
@@ -1266,7 +1512,10 @@ UPDATE zdemo_abap_rapt1 FROM @cr_der_type
 *KEY_FIELD    FIELD1    FIELD2    FIELD3    FIELD4
 *1            ###       ZZZ       2         200
 
-"--------------- DELETE ---------------
+*&---------------------------------------------------------------------*
+*& DELETE
+*&---------------------------------------------------------------------*
+
 DELETE zdemo_abap_rapt1 FROM @cr_der_type MAPPING FROM ENTITY.
 ```
 
@@ -2197,18 +2446,27 @@ GET PERMISSIONS ONLY GLOBAL ENTITY zdemo_abap_rap_ro_m
   - [Business Events](https://help.sap.com/docs/abap-cloud/abap-rap/business-events) in the SAP Help Portal
 
 ```abap
-"---- Syntax for the declaration part of a global RAP event handler class ----
+*&---------------------------------------------------------------------*
+*& Syntax for the declaration part of a global RAP event handler class
+*&---------------------------------------------------------------------*
+
 CLASS cl_event_handler DEFINITION PUBLIC FOR EVENTS OF some_bdef.
   ...
 ENDCLASS.
 
-"---- Syntax for the declaration part of a local event handler class ---- 
-"---- in the CCIMP include of a RAP event handler class ----
+*&---------------------------------------------------------------------*
+*& Syntax for the declaration part of a local event handler class
+*& in the CCIMP include of a RAP event handler class 
+*&---------------------------------------------------------------------*
+
 CLASS lhe_event DEFINITION INHERITING FROM cl_abap_behavior_event_handler.
   ...
 ENDCLASS.
 
-"---- RAP event handler method definition ----
+*&---------------------------------------------------------------------*
+*& RAP event handler method definition
+*&---------------------------------------------------------------------*
+
 "Notes: 
 "- Must be defined as instance methods in the private visibility section. 
 "- The input parameter par is an internal table of type TYPE TABLE FOR EVENT.
@@ -2217,8 +2475,11 @@ ENDCLASS.
 "- The methods do not contain RAP response parameters.
 METHODS meth FOR ENTITY EVENT par FOR some_bdef~some_evt.
 
-"---- RAISE ENTITY EVENT statement in an ABP, e.g. the save_modified method ----
-"---- in managed scenarios with additional save ----
+*&---------------------------------------------------------------------*
+*& RAISE ENTITY EVENT statement in an ABP, e.g. the save_modified method
+*& in managed scenarios with additional save
+*&---------------------------------------------------------------------*
+
 ...
 CLASS lsc IMPLEMENTATION.
   METHOD save_modified.

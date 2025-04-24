@@ -167,7 +167,7 @@ Internal Tables ...
 - It can be declared either explicitly or implicitly.
 - Standard key of an internal table with a ...
    - structured line type: The primary table key consists of all fields with character-like and byte-like data types.
-   - non-structured/elementary line type: The entire table is the key (`table_line`).
+   - non-structured/elementary line type: The entire table line is the key (`table_line`).
 - An internal table with no explicit key specification implicitly has the standard table key as the primary table key.
 - Why respecting standard keys is important:
   - Sorting of a table can produce unexpected results.
@@ -3143,7 +3143,7 @@ DATA(line_ref) = REF #( itab[ 3 ] ).
 </tr>
 
 <tr>
-<td> Specifying a default value for lines that are not found to avoid an exception </td>
+<td> Specifying a default value for lines that are not found or marking as optional to avoid an exception </td>
 <td>
 
 - You can specify default values for lines that are not found to avoid an exception.
@@ -3828,7 +3828,7 @@ ENDLOOP.
 - During the loop, the system field `sy-tabix` is set to the number of the currently processed table
 line. This is not true for hashed tables. There, `sy-tabix` is `0`. 
 - Note that if you want to work with the value of `sy-tabix`, you
-should do so immediately after the `LOOP` statement to avoid possible overwriting in statements contained in the loop block.
+should do so immediately after the `LOOP` statement (e.g. by storing the value in a helper variable) to avoid possible overwriting in statements contained in the loop block.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
@@ -4657,7 +4657,7 @@ LOOP AT itab1 INTO DATA(wa1).
     ref->* = CORRESPONDING #( BASE ( ref->* ) VALUE #( itab2[ key2 = ref->key1 ] OPTIONAL ) ).
 ENDLOOP.
 "Assume the second table's shared component was also key1. In the second CORRESPONDING
-"you could then work with the EXCEPT addition to not overwrite the identicall named
+"you could then work with the EXCEPT addition to not overwrite the identically named
 "component.
 
 "Example similar to the previous one
@@ -4753,7 +4753,7 @@ DATA it2 TYPE STANDARD TABLE OF zdemo_abap_fli WITH DEFAULT KEY.
 "Respecting the standard key when sorting
 SORT it1.
 ```
-Plus: Suppose there are only elementary numeric components in an internal table with a structured line type. In this case, sorting has no effect because the primary table key is considered empty. This is certainly also true for tables declared with `EMPTY KEY`.
+Plus: Suppose there are only elementary numeric components in an internal table with a structured line type. In this case, sorting has no effect because the primary table key is considered empty. This is also applies to tables declared with `EMPTY KEY`.
 
 </td>
 </tr>
@@ -5368,6 +5368,9 @@ ASSERT seats_tab_loop_grp = seats_tab_col.
 Consider a scenario where you have a standard internal table, and you frequently access its content using a free key. The table is declared without a secondary table key. You can add a secondary table key to improve read performance.
 The following example creates two demo internal tables. One without a secondary table key and the other with a secondary table key. The tables are populated with a lot of data. Then, in a `DO` loop, many reads are performed on the internal tables. One example uses a free key for the read, the other uses a secondary table key that includes the components used for the free key search. Before and after the reads, the current timestamp is stored in variables, from which the elapsed time is calculated. There should be a significant delta of the elapsed time.
 
+> **💡 Note**<br>
+> This example is for [exploration, experimentation, and demonstration](./README.md#%EF%B8%8F-disclaimer). It is not intended for accurate runtime or performance testing and is not a suitable method for such purposes. Due to its simplified nature, results may vary and not be entirely accurate, even across multiple runs.
+
 ```abap
 CLASS zcl_demo_abap DEFINITION PUBLIC FINAL CREATE PUBLIC.
   PUBLIC SECTION.
@@ -5470,7 +5473,7 @@ ENDCLASS.
 - To try this, create a demo class named `zcl_demo_abap` and insert the provided code. After activation, choose *F9* in ADT to execute the class. It may take some time to finish and display the output. The example is set up to display the results of the read performance test in the console.
 
 > **💡 Note**<br>
-> - This example is used for [exploration and experimentation ⚠️](./README.md#%EF%B8%8F-disclaimer). It is solely for demonstration purposes, and it is **not** a *tool* for proper and accurate runtime and performance testing. Due to its simplified nature, the results may not be entirely accurate. However, multiple test runs should reflect the notes below. 
+> - This example is for [exploration, experimentation, and demonstration](./README.md#%EF%B8%8F-disclaimer). It is not intended for accurate runtime or performance testing and is not a suitable method for such purposes. Due to its simplified nature, results may vary and not be entirely accurate, even across multiple runs.
 > - The example concentrates on a few demo internal tables, constructed using various declaration options. 
 > - The purpose of this example is to underscore the significance of choosing the right table categories for your internal tables, tailored to your specific use case and the frequency of table access.
 
