@@ -115,7 +115,7 @@ You can either create local or global classes:
 <table>
 <tr>
     <td><a href="https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenlocal_class_glosry.htm">Local classes</a></td>
-    <td><ul><li>can be defined within an <a href="[https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenlocal_class_glosry.htm](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_program_glosry.htm)">ABAP program</a> such as in the <a href="https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenccimp_glosry.htm">CCIMP include</a> of global classes (Local Types tab in ADT) or in executable programs ("reports"; in <a href="https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenstandard_abap_glosry.htm">Standard ABAP</a> only)</li><li>can only be used in the ABAP program in which the class is defined</li></ul></td>
+    <td><ul><li>can be defined within an <a href="https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_program_glosry.htm">ABAP program</a> such as in include programs of global classes (e.g. the <a href="https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenccimp_glosry.htm">CCIMP include</a>, <i>Local Types</i> table in ADT) or in executable programs ("reports"; in <a href="https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenstandard_abap_glosry.htm">Standard ABAP</a> only)</li><li>can only be used in the ABAP program in which the class is defined</li></ul></td>
 </tr>
 <tr>
     <td><a href="https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenglobal_class_glosry.htm">Global
@@ -1549,7 +1549,7 @@ CREATE OBJECT ref4 TYPE some_class.  "Corresponds to the result of the expressio
 
 ### Working with Reference Variables
 
-This section covers some aspects of working with reference variables.
+This section covers some aspects of working with reference variables. Find a copyable example demonstrating the aspects in the next section.
 
 **Assigning Reference Variables**
 
@@ -1570,10 +1570,16 @@ reference](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?
 is overwritten when a new object is created with a reference variable
 already pointing to an instance.
 ``` abap
-ref1 = NEW #( ).
+DATA ref TYPE REF TO some_class.
 
-"Existing reference is overwritten
-ref1 = NEW #( ).
+"Creating a new object
+"The example assumes there is a mandatory importing parameter for the 
+"instance constructor.
+ref = NEW #( 1 ).
+
+"Creating another object using the same object reference variable
+"The existing reference is overwritten.
+ref = NEW #( 1 ).
 ```
 
 **Retaining object references**:
@@ -1608,26 +1614,208 @@ the [object component selector](https://help.sap.com/doc/abapdocu_cp_index_htm/C
 `->` via a reference variable.
 - Static attributes: Accessed (if the attributes are visible) using the [class component
 selector](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenclass_component_select_glosry.htm "Glossary Entry")
-`=>` via the class name. You can also declare data objects and
-types by referring to static attributes.
+`=>` via the class name. Static attributes can but should not be addressed via a reference variable.
+
 ``` abap
 "Accessing instance attribute via an object reference variable
-
 ... ref->some_attribute ...
 
 "Accessing static attributes via the class name
-
 ... some_class=>static_attribute ...
 
 "Without the class name only within the class itself
 ... static_attribute ...
 
 "Type and data object declarations
-
 TYPES some_type LIKE some_class=>some_static_attribute.
 DATA dobj1      TYPE some_class=>some_type.
 DATA dobj2      LIKE some_class=>some_static_attribute.
 ```
+
+The following executable example addresses aspects of this section and the previous one:
+
+```abap
+CLASS zcl_demo_abap DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
+
+  PUBLIC SECTION.
+    INTERFACES if_oo_adt_classrun.
+    METHODS constructor IMPORTING ts TYPE utclong OPTIONAL.
+    DATA timestamp TYPE utclong.
+    DATA instance_number TYPE i.
+    CLASS-DATA static_number TYPE i.
+    TYPES chars TYPE c LENGTH 4.
+    CONSTANTS text TYPE chars VALUE `ABAP`.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+    CLASS-METHODS test_static_method.
+ENDCLASS.
+
+CLASS zcl_demo_abap IMPLEMENTATION.
+
+  METHOD if_oo_adt_classrun~main.
+
+    DATA oref TYPE REF TO zcl_demo_abap.
+    DATA oref2 TYPE REF TO zcl_demo_abap.
+
+*&---------------------------------------------------------------------*
+*& Assigning object reference variables
+*&---------------------------------------------------------------------*
+
+    oref = NEW #( utclong_current( ) ).
+
+    "Accessing instance attribute
+    DATA(ts1) = oref->timestamp.
+    out->write( data = ts1 name = `ts1` ).
+
+    "Assigning reference to existing reference variable
+    oref2 = oref.
+    DATA(ts2) = oref2->timestamp.
+    out->write( data = ts2 name = `ts2` ).
+
+*&---------------------------------------------------------------------*
+*& Overwriting a reference variable
+*&---------------------------------------------------------------------*
+
+    oref = NEW #( utclong_current( ) ).
+    DATA(ts3) = oref->timestamp.
+    out->write( data = ts3 name = `ts3` ).
+
+*&---------------------------------------------------------------------*
+*& Retaining object references
+*&---------------------------------------------------------------------*
+
+    DATA oref_tab TYPE TABLE OF REF TO zcl_demo_abap.
+
+    DO 3 TIMES.
+      oref = NEW #( utclong_current( ) ).
+      oref->instance_number = sy-index.
+      oref->static_number = sy-index.
+      oref_tab = VALUE #( BASE oref_tab ( oref ) ).
+    ENDDO.
+
+    out->write( data = oref_tab name = `oref_tab` ).
+
+*&---------------------------------------------------------------------*
+*& Clearing object references
+*&---------------------------------------------------------------------*
+
+    DATA oref_generic TYPE REF TO object.
+    oref_generic = NEW zcl_demo_abap( utclong_current( ) ).
+
+    IF oref_generic IS INITIAL.
+      out->write( `oref_generic is initial` ).
+    ELSE.
+      out->write( `oref_generic is not initial` ).
+    ENDIF.
+
+    IF oref_generic IS INSTANCE OF zcl_demo_abap.
+      out->write( `oref_generic is an instance of zcl_demo_abap` ).
+    ELSE.
+      out->write( `oref_generic is not an instance of zcl_demo_abap` ).
+    ENDIF.
+
+    CLEAR oref_generic.
+
+    IF oref_generic IS INITIAL.
+      out->write( `oref_generic is initial` ).
+    ELSE.
+      out->write( `oref_generic is not initial` ).
+    ENDIF.
+
+    IF oref_generic IS INSTANCE OF zcl_demo_abap.
+      out->write( `oref_generic is an instance of zcl_demo_abap` ).
+    ELSE.
+      out->write( `oref_generic is not an instance of zcl_demo_abap` ).
+    ENDIF.
+
+*&---------------------------------------------------------------------*
+*& Accessing class attributes
+*&---------------------------------------------------------------------*
+
+    "Accessing instance attribute via an object reference variable
+    oref = NEW #( utclong_current( ) ).
+    "Read access
+    DATA(ts4) = oref->timestamp.
+    "Write access
+    oref->instance_number = 123.
+
+    "Accessing static attributes via the class name
+    "Write access
+    zcl_demo_abap=>static_number = 456.
+    "Read access
+    DATA(static_attr_access) = zcl_demo_abap=>static_number.
+    "Read access (constant)
+    DATA(const_value) = zcl_demo_abap=>text.
+
+    "Accessing static attributes within the class without specifying the class name
+    "See the test_static_method method for restrictions regarding instance attributes.
+    "Write access
+    static_number = 789.
+    "Read access
+    static_attr_access = static_number.
+    "Read access (constant)
+    const_value = text.
+
+    "Type and data object declarations based on class attributes
+    TYPES type1 TYPE zcl_demo_abap=>chars.
+    TYPES type2 LIKE zcl_demo_abap=>static_number.
+    TYPES type3 LIKE zcl_demo_abap=>text.
+    DATA dobj1 TYPE zcl_demo_abap=>chars.
+    DATA dobj2 LIKE zcl_demo_abap=>static_number.
+    DATA dobj3 LIKE zcl_demo_abap=>text.
+
+    "Without class name specification within the class itself
+    TYPES type4 TYPE chars.
+    TYPES type5 LIKE static_number.
+    TYPES type6 LIKE text.
+    DATA dobj4 TYPE chars.
+    DATA dobj5 LIKE static_number.
+    DATA dobj6 LIKE text.
+
+    "Using instance attributes
+    "Note: You can access static attributes via object reference variables.
+    "However, it is advisable to access static attributes as shown above.
+    DATA(oref3) = NEW zcl_demo_abap( utclong_current( ) ).
+    TYPES type7 TYPE oref3->chars.
+    TYPES type8 LIKE oref3->instance_number.
+
+    DATA dobj7 TYPE oref3->chars.
+    DATA dobj8 LIKE oref3->timestamp.
+  ENDMETHOD.
+
+  METHOD constructor.
+    timestamp = ts.
+  ENDMETHOD.
+
+  METHOD test_static_method.
+    "Accessing static attributes
+    zcl_demo_abap=>static_number = 987.
+    "Read access
+    DATA(static_attr_access) = zcl_demo_abap=>static_number.
+    "Read access (constant)
+    DATA(const_value) = zcl_demo_abap=>text.
+
+    "Accessing attributes within the class without specifying the class name
+    "Write access
+    static_number = 654.
+    "Read access
+    static_attr_access = static_number.
+    "Read access (constant)
+    const_value = text.
+
+    "Access to instance attributes in static methods like above is not possible
+    DATA inst_attr_access TYPE utclong.
+    "inst_attr_access = timestamp.
+    "Instance attribute access via object reference variable
+    DATA(oref) = NEW zcl_demo_abap( utclong_current( ) ).
+    inst_attr_access = oref->timestamp.
+  ENDMETHOD.
+ENDCLASS.
+```
+
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
@@ -1643,6 +1831,7 @@ called without `class_name=>...`.
 - You might also stumble on method calls with the older [`CALL METHOD`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapcall_method_static.htm)
 statements. It is recommended to use the new syntax in new developments. Note that `CALL METHOD` statements are still required in the context of [dynamic programming](06_Dynamic_Programming.md). Therefore, `CALL METHOD` statements should be reserved for dynamic method calls.
 - Find an example class demonstrating various method calls in section [Excursion: Example Class](#excursion-example-class).
+- When calling methods that declare importing and/or exporting parameters, keep the following in mind: For methods with importing parameters, you can or must (if other parameters are available and specified in the method call) precede the parameters and their assignments with `EXPORTING`. For methods with exporting parameters, you can or must use `IMPORTING` before the parameters and their assignments.
 
 
 Examples for instance method calls and static method calls:
@@ -3616,7 +3805,7 @@ CLASS zcl_demo DEFINITION
 
 <br>
 
-- `... PUBLIC ...`: Specifies that the class is a global class, available globally within the class library. Most of the subsequent snippets use the `PUBLIC` addition as the focus is on global classes.
+- `... PUBLIC ...`: Specifies that the class is a global class, available globally within the class library. The cheat sheet also includes example classes that do not specify  `PUBLIC`, declaring these classes as local classes.
 - `... FINAL ...`: Specifies that the class cannot have any subclasses, effectively prohibiting inheritance. This addition seals off a branch of the inheritance tree. In final classes, all methods are automatically final.
 - `... CREATE PUBLIC ...`: Specifies that the class can be instantiated wherever it is visible. Not specifying the addition `CREATE ...` means `CREATE PUBLIC` by default.
 
@@ -7230,7 +7419,7 @@ SET HANDLER handler3.
 
 > **💡 Note**<br>
 > - The examples neither represent best practices nor role models. They only aim to experiment with the patterns in simplified contexts and convey the basic concepts. 
-> - More design patterns exist beyond those covered here, and different implementations or class setup strategies may apply. 
+> - More design patterns exist beyond those covered here. Different implementations, combinations of patterns and class setup strategies may apply. 
 > - Most examples are structured for easy exploration using simple, self-contained ABAP classes (i.e. only 1 class pool including local classes instead of multiple global classes) as follows:
 >    - Global class:
 >      - Includes the `if_oo_adt_classrun` interface to run the class with F9 in ADT.
@@ -10578,6 +10767,478 @@ ENDCLASS.
 </table>
 
 </details>  
+
+<br>
+
+<details>
+  <summary>🟢 Facade</summary>
+  <!-- -->
+
+<br>
+
+- Assume you must handle complex functionality that may involve creating objects from multiple classes and calling methods, maybe even in a specific sequence and involving certain dependencies. 
+- The facade design pattern's purpose is to provide a simplified API, hiding the complexity from users and allowing them to achieve desired results without dealing with and knowing about underlying complexities. 
+- Users can interact with this straightforward API instead of handling intricate steps and details.
+
+Example notes:
+- The simplified example uses a travel search context. Users receive information about available flights, hotels, and rental cars. This information is retrieved by creating instances of multiple classes and various method calls. A facade class provides a simplified API that manages complex underlying functionality. Users interact only with the facade class, eliminating the need to handle individual class objects directly.
+- The example demonstrates the facade design pattern with the following declarations and implementations:
+  - Global class:
+    - Implements the `if_oo_adt_classrun` interface and calls methods from local classes.
+    - Serves as a vehicle for demonstrating the design pattern. The declarations and implementations in the `CCIMP` are relevant for the for conceptual considerations.
+    - The global class represents the user of the simplified API the facade class offers. 
+  - CCIMP include (Local Types tab in ADT):    
+    - Contains multiple local classes (`lcl_*`) that provide information about available flights, hotels and rental cars. 
+    - The simple classes include a method that calls a method in another class. Information is retrieved based on origin, destination, and travel time span.   
+    - The `lcl_travel_facade` class serves as the facade class. The `plan_travel` method includes object creations and method calls. For simplicity, the method returns information about available flights, hotels, and rental cars in a string table.
+- The class execution involves the following:
+  - The global class contains several method calls to the facade class. 
+  - Based on the parameters passed, travel options are evaluated. As a result, a string table is output showing travel search information.
+
+<table>
+
+<tr>
+<td> Class include </td> <td> Code </td>
+</tr>
+
+<tr>
+<td> 
+
+Global class
+
+ </td>
+
+ <td> 
+
+``` abap
+CLASS zcl_demo_abap DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
+
+  PUBLIC SECTION.
+    INTERFACES if_oo_adt_classrun.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+ENDCLASS.
+
+CLASS zcl_demo_abap IMPLEMENTATION.
+
+  METHOD if_oo_adt_classrun~main.
+    DATA(travel_object) = NEW lcl_travel_facade( ).
+    DATA(travel_options_1) = travel_object->plan_travel(
+                from      = 'Frankfurt'
+                to        = 'Shanghai'
+                arrival   = '20250511'
+                departure = '20250521' ).
+
+    out->write( travel_options_1 ).
+    out->write( |\n{ repeat( val = `*` occ = 75 ) }\n\n| ).
+
+    DATA(travel_options_2) = travel_object->plan_travel(
+                from      = 'Frankfurt'
+                to        = 'Shanghai'
+                arrival   = '20250605'
+                departure = '20250617' ).
+
+    out->write( travel_options_2 ).
+    out->write( |\n{ repeat( val = `*` occ = 75 ) }\n\n| ).
+
+    DATA(travel_options_3) = travel_object->plan_travel(
+                  from      = 'Frankfurt'
+                  to        = 'Shanghai'
+                  arrival   = '20250403'
+                  departure = '20250410' ).
+
+    out->write( travel_options_3 ).
+  ENDMETHOD.
+ENDCLASS.
+``` 
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+CCIMP include (Local Types tab in ADT)
+
+ </td>
+
+ <td> 
+
+``` abap
+"Class that includes a method to get flights from a data source
+"In this simple, self-contained example, the data source is
+"simulated by an internal table that includes demo data.
+CLASS lcl_flight_retrieval DEFINITION.
+  PUBLIC SECTION.
+    TYPES: BEGIN OF flight_struc,
+             from        TYPE c LENGTH 20,
+             to          TYPE c LENGTH 20,
+             flight_date TYPE d,
+             flight_time TYPE t,
+           END OF flight_struc,
+           flight_tab_type TYPE TABLE OF flight_struc WITH EMPTY KEY.
+
+    METHODS get_flights
+      IMPORTING
+        from           TYPE string
+        to             TYPE string
+        flight_date    TYPE d
+      RETURNING
+        VALUE(flights) TYPE flight_tab_type.
+    CLASS-METHODS class_constructor.
+  PRIVATE SECTION.
+    CLASS-DATA flight_tab TYPE flight_tab_type.
+ENDCLASS.
+
+CLASS lcl_flight_retrieval IMPLEMENTATION.
+  METHOD get_flights.
+    SELECT * FROM @flight_tab AS tab
+      WHERE from = @from AND to = @to AND flight_date = @flight_date
+      INTO TABLE @flights.
+  ENDMETHOD.
+  METHOD class_constructor.
+    flight_tab = VALUE #(
+     ( from = 'Frankfurt' to = 'Shanghai' flight_date = '20250511' flight_time = '050000' )
+     ( from = 'Frankfurt' to = 'Shanghai' flight_date = '20250511' flight_time = '200000' )
+     ( from = 'Frankfurt' to = 'Shanghai' flight_date = '20250605' flight_time = '151500' )
+     ( from = 'Frankfurt' to = 'Shanghai' flight_date = '20250725' flight_time = '070000' )
+     ( from = 'Shanghai' to = 'Frankfurt' flight_date = '20250410' flight_time = '194500' )
+     ( from = 'Shanghai' to = 'Frankfurt' flight_date = '20250521' flight_time = '123000' )
+     ( from = 'Shanghai' to = 'Frankfurt' flight_date = '20250805' flight_time = '184500' ) ).
+  ENDMETHOD.
+ENDCLASS.
+
+"An object of the lcl_flight_search class is required for searching flights. This object is
+"created by the facade class. The lcl_flight_search class implementation includes the calling
+"of a method of the lcl_flight_retrieval class to retrieve a list of available flights.
+CLASS lcl_flight_search DEFINITION.
+  PUBLIC SECTION.
+    METHODS search_flights
+      IMPORTING
+        from               TYPE string
+        to                 TYPE string
+        arrival            TYPE d
+        departure          TYPE d
+      RETURNING
+        VALUE(flight_list) TYPE string_table.
+ENDCLASS.
+
+CLASS lcl_flight_search IMPLEMENTATION.
+  METHOD search_flights.
+    DATA(flight_obj) = NEW lcl_flight_retrieval( ).
+    DATA(result) = flight_obj->get_flights(
+                    from        = from
+                    to          = to
+                    flight_date = arrival ).
+
+    IF result IS INITIAL.
+      APPEND |X  \| There's no flight from { from } to { to } available on { arrival }.| TO flight_list.
+    ELSE.
+      LOOP AT result INTO DATA(flight_wa).
+        APPEND |OK \| Flight from { flight_wa-from } to { flight_wa-to } available on { flight_wa-flight_date } at { flight_wa-flight_time }.| TO flight_list.
+      ENDLOOP.
+    ENDIF.
+
+    result = flight_obj->get_flights(
+                  from        = to
+                  to          = from
+                  flight_date = departure ).
+
+    IF result IS INITIAL.
+      APPEND |X  \| There's no flight from { to } to { from } available on { departure }.| TO flight_list.
+    ELSE.
+      LOOP AT result INTO flight_wa.
+        APPEND |OK \| Flight from { flight_wa-from } to { flight_wa-to } available on { flight_wa-flight_date } at { flight_wa-flight_time }.| TO flight_list.
+      ENDLOOP.
+    ENDIF.
+  ENDMETHOD.
+ENDCLASS.
+
+**********************************************************************
+
+"Class to get hotels from a data source
+"In this simple, self-contained example, the data source is
+"simulated by an internal table that includes demo data with
+"hotel details such as unavailable dates.
+CLASS lcl_hotel_retrieval DEFINITION.
+  PUBLIC SECTION.
+    TYPES: BEGIN OF hotel_struc,
+             city         TYPE c LENGTH 20,
+             hotel_name   TYPE c LENGTH 20,
+             is_available TYPE abap_boolean,
+           END OF hotel_struc,
+           hotel_tab_type TYPE TABLE OF hotel_struc WITH EMPTY KEY.
+
+    METHODS get_hotels
+      IMPORTING
+        city          TYPE string
+        arrival       TYPE d
+        departure     TYPE  d
+      RETURNING
+        VALUE(hotels) TYPE hotel_tab_type.
+    CLASS-METHODS class_constructor.
+  PRIVATE SECTION.
+    CLASS-DATA hotel_tab TYPE hotel_tab_type.
+    TYPES: BEGIN OF hotel_struc_availability,
+             city             TYPE c LENGTH 20,
+             hotel_name       TYPE c LENGTH 20,
+             unavailable_date TYPE d,
+           END OF hotel_struc_availability,
+           hotel_tab_availability_type TYPE TABLE OF hotel_struc_availability WITH EMPTY KEY.
+    CLASS-DATA hotel_tab_availability TYPE hotel_tab_availability_type.
+    DATA date_tab TYPE TABLE OF d WITH EMPTY KEY.
+    DATA flag TYPE abap_boolean.
+ENDCLASS.
+
+CLASS lcl_hotel_retrieval IMPLEMENTATION.
+  METHOD get_hotels.
+    SELECT * FROM @hotel_tab_availability AS tab
+      WHERE city = @city
+      INTO TABLE @DATA(hotel_list).
+
+    LOOP AT hotel_list INTO DATA(waf) GROUP BY ( key = waf-hotel_name ) ASCENDING INTO DATA(keyf).
+      LOOP AT GROUP keyf INTO DATA(memberf).
+        APPEND memberf-unavailable_date TO date_tab.
+      ENDLOOP.
+
+      "Checking whether hotels are available during the travel time span
+      LOOP AT date_tab INTO DATA(date).
+        IF date >= arrival AND date <= departure.
+          flag = abap_false.
+          EXIT.
+        ELSE.
+          flag = abap_true.
+        ENDIF.
+      ENDLOOP.
+
+      IF flag = abap_true.
+        APPEND VALUE #( city = memberf-city hotel_name = memberf-hotel_name is_available = abap_true ) TO hotels.
+      ENDIF.
+
+      CLEAR flag.
+      CLEAR date_tab.
+    ENDLOOP.
+
+  ENDMETHOD.
+  METHOD class_constructor.
+    hotel_tab_availability = VALUE #(
+        ( city = 'Frankfurt' hotel_name = 'ABC' unavailable_date = '20250512' )
+        ( city = 'Frankfurt' hotel_name = 'ABC' unavailable_date = '20250612' )
+        ( city = 'Frankfurt' hotel_name = 'DEF' unavailable_date = '20250512' )
+        ( city = 'Frankfurt' hotel_name = 'DEF' unavailable_date = '20250712' )
+        ( city = 'Frankfurt' hotel_name = 'GHI' unavailable_date = '20250512' )
+        ( city = 'Frankfurt' hotel_name = 'GHI' unavailable_date = '20250812' )
+        ( city = 'Shanghai' hotel_name = 'JKL' unavailable_date = '20250512' )
+        ( city = 'Shanghai' hotel_name = 'JKL' unavailable_date = '20250610' )
+        ( city = 'Shanghai' hotel_name = 'MNO' unavailable_date = '20250712' )
+        ( city = 'Shanghai' hotel_name = 'MNO' unavailable_date = '20250611' )
+        ( city = 'Shanghai' hotel_name = 'PQR' unavailable_date = '20250408' )
+        ( city = 'Shanghai' hotel_name = 'PQR' unavailable_date = '20250912' )
+        ( city = 'Shanghai' hotel_name = 'PQR' unavailable_date = '20250612' ) ).
+  ENDMETHOD.
+ENDCLASS.
+
+"An object of the lcl_hotel_search class is required for searching hotels. This object is
+"created by the facade class. The lcl_hotel_search class implementation includes the calling
+"of a method of the lcl_hotel_retrieval class to retrieve a list of available hotels.
+CLASS lcl_hotel_search DEFINITION.
+  PUBLIC SECTION.
+    METHODS search_hotel
+      IMPORTING
+        destination       TYPE string
+        arrival           TYPE d
+        departure         TYPE d
+      RETURNING
+        VALUE(hotel_list) TYPE string_table.
+ENDCLASS.
+
+CLASS lcl_hotel_search IMPLEMENTATION.
+  METHOD search_hotel.
+
+    DATA(hotel_obj) = NEW lcl_hotel_retrieval( ).
+    DATA(result) = hotel_obj->get_hotels(
+                    city      = destination
+                    arrival   = arrival
+                    departure = departure ).
+
+    IF result IS INITIAL.
+      APPEND |X  \| There's no hotel available in { destination } during your trip from { arrival } to { departure }.| TO hotel_list.
+    ELSE.
+      LOOP AT result INTO DATA(hotel_wa).
+        APPEND |OK \| Hotel "{ hotel_wa-hotel_name }" in { destination } is availble during your trip from { arrival } to { departure }.| TO hotel_list.
+      ENDLOOP.
+    ENDIF.
+  ENDMETHOD.
+ENDCLASS.
+
+**********************************************************************
+
+"Class to get rental cars from a data source
+"In this simple, self-contained example, the data source is
+"simulated by an internal table that includes demo data with
+"rental car details such as unavailable dates.
+CLASS lcl_rental_car_retrieval DEFINITION.
+  PUBLIC SECTION.
+    TYPES: BEGIN OF rental_car_struc,
+             city         TYPE c LENGTH 20,
+             car          TYPE c LENGTH 20,
+             is_available TYPE abap_boolean,
+           END OF rental_car_struc,
+           rental_car_tab_type TYPE TABLE OF rental_car_struc WITH EMPTY KEY.
+
+    METHODS get_rental_cars
+      IMPORTING
+        city               TYPE string
+        arrival            TYPE d
+        departure          TYPE  d
+      RETURNING
+        VALUE(rental_cars) TYPE rental_car_tab_type.
+    CLASS-METHODS class_constructor.
+  PRIVATE SECTION.
+    CLASS-DATA rental_car_tab TYPE rental_car_tab_type.
+    TYPES: BEGIN OF rental_car_struc_availability,
+             city             TYPE c LENGTH 20,
+             car              TYPE c LENGTH 20,
+             unavailable_date TYPE d,
+           END OF rental_car_struc_availability,
+           rent_car_tab_availability_type TYPE TABLE OF rental_car_struc_availability WITH EMPTY KEY.
+    CLASS-DATA rental_car_availability_tab TYPE rent_car_tab_availability_type.
+    DATA date_tab TYPE TABLE OF d WITH EMPTY KEY.
+    DATA flag TYPE abap_boolean.
+ENDCLASS.
+
+CLASS lcl_rental_car_retrieval IMPLEMENTATION.
+  METHOD get_rental_cars.
+    SELECT * FROM @rental_car_availability_tab AS tab
+      WHERE city = @city
+      INTO TABLE @DATA(rental_car_list).
+
+    LOOP AT rental_car_list INTO DATA(waf) GROUP BY ( key = waf-car ) ASCENDING INTO DATA(keyf).
+      LOOP AT GROUP keyf INTO DATA(memberf).
+        APPEND memberf-unavailable_date TO date_tab.
+      ENDLOOP.
+
+      LOOP AT date_tab INTO DATA(date).
+        IF date >= arrival AND date <= departure.
+          flag = abap_false.
+          EXIT.
+        ELSE.
+          flag = abap_true.
+        ENDIF.
+      ENDLOOP.
+
+      IF flag = abap_true.
+        APPEND VALUE #( city = memberf-city car = memberf-car is_available = abap_true ) TO rental_cars.
+      ENDIF.
+
+      CLEAR flag.
+      CLEAR date_tab.
+    ENDLOOP.
+  ENDMETHOD.
+  METHOD class_constructor.
+    rental_car_availability_tab = VALUE #(
+      ( city = 'Frankfurt' car = 'Car 1' unavailable_date = '20250512' )
+      ( city = 'Frankfurt' car = 'Car 1' unavailable_date = '20250612' )
+      ( city = 'Frankfurt' car = 'Car 2' unavailable_date = '20250512' )
+      ( city = 'Frankfurt' car = 'Car 2' unavailable_date = '20250712' )
+      ( city = 'Frankfurt' car = 'Car 3' unavailable_date = '20250512' )
+      ( city = 'Frankfurt' car = 'Car 3' unavailable_date = '20250812' )
+      ( city = 'Shanghai' car = 'Car 4' unavailable_date = '20250512' )
+      ( city = 'Shanghai' car = 'Car 4' unavailable_date = '20250612' )
+      ( city = 'Shanghai' car = 'Car 5' unavailable_date = '20250607' )
+      ( city = 'Shanghai' car = 'Car 5' unavailable_date = '20250712' )
+      ( city = 'Shanghai' car = 'Car 5' unavailable_date = '20250812' )
+      ( city = 'Shanghai' car = 'Car 6' unavailable_date = '20250912' )
+      ( city = 'Shanghai' car = 'Car 6' unavailable_date = '20251012' ) ).
+  ENDMETHOD.
+ENDCLASS.
+
+"An object of the lcl_rental_car_search class is required for searching rental cars. This object is
+"created by the facade class. The lcl_rental_car_search class implementation includes the calling
+"of a method of the lcl_rental_car_retrieval class to retrieve a list of available rental cars.
+CLASS lcl_rental_car_search DEFINITION.
+  PUBLIC SECTION.
+    METHODS search_rental_car
+      IMPORTING
+        destination            TYPE string
+        arrival                TYPE d
+        departure              TYPE d
+      RETURNING
+        VALUE(rental_car_list) TYPE string_table.
+ENDCLASS.
+
+CLASS lcl_rental_car_search IMPLEMENTATION.
+  METHOD search_rental_car.
+    DATA(rental_car_obj) = NEW lcl_rental_car_retrieval( ).
+    DATA(res) = rental_car_obj->get_rental_cars(
+                  city      = destination
+                  arrival   = arrival
+                  departure = departure ).
+
+    IF res IS INITIAL.
+      APPEND |X  \| There's no rental car available in { destination } during your trip from { arrival } to { departure }.| TO rental_car_list.
+    ELSE.
+      LOOP AT res INTO DATA(rental_car_wa).
+        APPEND |OK \| "{ rental_car_wa-car }" is available as rental car in { destination } during your trip from { arrival } to { departure }.| TO rental_car_list.
+      ENDLOOP.
+    ENDIF.
+  ENDMETHOD.
+ENDCLASS.
+
+**********************************************************************
+
+"Facade class that represents a simplified API, hiding the complexity from users and allowing
+"them to achieve desired results without dealing with and knowing about underlying complexities.
+"It includes various object creations and method calls.
+CLASS lcl_travel_facade DEFINITION.
+  PUBLIC SECTION.
+    METHODS plan_travel
+      IMPORTING
+        from                       TYPE string
+        to                         TYPE string
+        arrival                    TYPE d
+        departure                  TYPE d
+      RETURNING
+        VALUE(reservation_options) TYPE string_table.
+ENDCLASS.
+
+CLASS lcl_travel_facade IMPLEMENTATION.
+  METHOD plan_travel.
+    "Abort proceeding with the example when the departure is before the arrival.
+    IF departure <= arrival.
+      ASSERT 1 = 0.
+    ENDIF.
+
+    "Creating multipled objects
+    DATA(flight_search) = NEW lcl_flight_search( ).
+    DATA(hotel_search) = NEW lcl_hotel_search( ).
+    DATA(rental_car_search) = NEW lcl_rental_car_search( ).
+
+    "Adding travel search information to a string table for demonstration and output purposes
+    APPEND |Travel options for: { from } - { to }, { arrival } - { departure }| TO reservation_options.
+    DATA(flights) = flight_search->search_flights( from = from to = to arrival = arrival departure = departure ).
+    APPEND `---------- FLIGHTS -----------------------------------------------------------------------------` TO reservation_options.
+    APPEND LINES OF flights TO reservation_options.
+    DATA(hotels) = hotel_search->search_hotel( destination = to arrival = arrival departure = departure  ).
+    APPEND `---------- HOTELS ------------------------------------------------------------------------------` TO reservation_options.
+    APPEND LINES OF hotels TO reservation_options.
+    DATA(rental_cars) = rental_car_search->search_rental_car( destination = to arrival = arrival departure = departure ).
+    APPEND `---------- RENTAL CARS -------------------------------------------------------------------------` TO reservation_options.
+    APPEND LINES OF rental_cars TO reservation_options.
+  ENDMETHOD.
+ENDCLASS.
+``` 
+
+ </td>
+</tr>
+
+</table>
+
+</details>  
+
 
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>

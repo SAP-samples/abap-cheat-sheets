@@ -2184,11 +2184,19 @@ DELETE FROM ('ZDEMO_ABAP_CARR') WHERE (where_cl).
 
 **Excursion**: To take up the use case mentioned in the introduction about retrieving the content of a database table, storing it in an internal table, and
 displaying it when the database table name is specified dynamically at
-runtime, see the following code snippet. Note the comments.
+runtime, see the following code snippet. 
+
+> **💡 Note**<br>
+> - The example retrieves the content of a database table, storing it in an internal table, and displaying it when the database table name is specified dynamically at runtime.
+> - For demo purposes in test programs, there are quite some ways to achieve it, and that work out of the box. For example, in ABAP for Cloud Development, you can implement the classrun interface `if_oo_adt_classrun` and output content to the ADT console using the `out->write(...).` method. You can also inherit from `cl_demo_classrun` in your class. In classic ABAP, you can, for example and additionally, use `cl_demo_output`.
+> - The following example is just ABAP code exploring dynamic programming aspects. Note the [Disclaimer](./README.md#%EF%B8%8F-disclaimer) in the *README* of the cheat sheet repository. It is an example that sets its focus on a dynamic `SELECT` statement and processing internal table content by dynamically accessing structure components.
+> - For simplicity, column contents are converted to string here if necessary, i.e. all column contents must be convertible to string. Using the ways mentioned above are way more powerful. For example, in most cases also nested and deep data objects can be displayed for demo purposes.
+> - To visualize the result, the snippet uses the classrun methods to display results sequentially - instead of displaying the internal table content retrieved by the `SELECT` statement directly.
+> - The example uses database tables from the cheat sheet repository. To fill them, you can use the method call `zcl_demo_abap_aux=>fill_dbtabs( ).`.
 
 
 ```abap
-CLASS zcl_example_class DEFINITION
+CLASS zcl_demo_abap DEFINITION
   PUBLIC
   FINAL
   CREATE PUBLIC .
@@ -2198,32 +2206,8 @@ CLASS zcl_example_class DEFINITION
   PROTECTED SECTION.
   PRIVATE SECTION.
 ENDCLASS.
-CLASS zcl_example_class IMPLEMENTATION.
+CLASS zcl_demo_abap IMPLEMENTATION.
   METHOD if_oo_adt_classrun~main.
-    "The example retrieves the content of a database table, storing it in an 
-    "internal table, and displaying it when the database table name is 
-    "specified dynamically at runtime.
-    "Certainly, there are quite some ways to achieve it, and that work out
-    "of the box. For example, in ABAP for Cloud Development, you can implement
-    "the classrun if_oo_adt_classrun and output content using the out->write(...)
-    "method. You can also inherit from cl_demo_classrun in your class. In
-    "classic ABAP, you can, for example and additionally, use cl_demo_output or
-    "ALV.
-    "Notes:
-    "- The following example is just ABAP code exploring dynamic programming
-    "  aspects. Note the disclaimer in the README of the cheat sheet repository.
-    "  It is an example that sets its focus on a dynamic SELECT statement and
-    "  processing internal table content by dynamically accessing structure
-    "  components.
-    "- The ways mentioned above are way more powerful (e.g. in most cases also
-    "  nested and deep data objects can be displayed for demo purposes).
-    "- For simplicity, column contents are converted to string here if necessary,
-    "  i.e. all column contents must be convertible to string.
-    "- For display purposes, the snippet uses the classrun methods to display
-    "  results sequentially - instead of displaying the internal table
-    "  content retrieved by the SELECT statement directly.
-    "- The example uses database tables from the cheat sheet repository. To fill
-    "  them, you can use the method call zcl_demo_abap_aux=>fill_dbtabs( )..
     zcl_demo_abap_aux=>fill_dbtabs( ).
 
     "Data objects and types relevant for the example (length and offset for
@@ -2281,8 +2265,8 @@ CLASS zcl_example_class IMPLEMENTATION.
             ASSIGN it_comps[ name = <len>-name ] TO FIELD-SYMBOL(<co>).
             DATA(max_content) = REDUCE i( INIT len = <co>-len
                                           FOR <line> IN itab->*
-                                          NEXT len = COND #( WHEN strlen( CONV string( <line>-(<co>-name) ) ) > len
-                                                             THEN strlen( CONV string( <line>-(<co>-name) ) )
+                                          NEXT len = COND #( LET lv = |{ <line>-(<co>-name) }| IN
+                                                             WHEN strlen( lv ) > len THEN strlen( lv )
                                                              ELSE len ) ).
             "Extend the length value to leave some more space
             IF max_content > <co>-len.
@@ -4957,7 +4941,7 @@ TYPES: BEGIN OF struc_type_2,
        END OF struc_type_2.
 DATA itab_4 TYPE SORTED TABLE OF struc_type_2
   WITH NON-UNIQUE KEY e
-  WITH NON-UNIQUE SORTED KEY secondary_key COMPONENTS f.
+  WITH NON-UNIQUE SORTED KEY sec_key COMPONENTS f.
 "Note that the default name primary_key does not need to be specified explicitly.
 "So, the following declaration corresponds to the previous one.
 DATA itab_4b TYPE SORTED TABLE OF struc_type_2
@@ -4983,7 +4967,7 @@ DATA(tdo_tab_4) = cl_abap_tabledescr=>get_with_keys(
                           is_unique = abap_false
                           key_kind = cl_abap_tabledescr=>keydefkind_user
                           components = VALUE #( ( name = 'E' ) ) )
-                        ( name = 'SECONDARY_KEY'
+                        ( name = 'SEC_KEY'
                           is_primary = abap_false
                           access_kind = cl_abap_tabledescr=>tablekind_sorted
                           is_unique = abap_false
@@ -5271,6 +5255,22 @@ DATA(tdo_ref_get_ref_to_data) = cl_abap_refdescr=>get_ref_to_data( ).
 "---- 'get_ref_to_object' method ----
 "To get the type description object for the type REF TO OBJECT
 DATA(tdo_ref_get_ref_to_object) = cl_abap_refdescr=>get_ref_to_object( ).
+
+"---- Note ----
+"Note the 'get_referenced_type' method when casting to cl_abap_refdescr.
+TYPES test_type TYPE c LENGTH 10.
+DATA test_dobj TYPE c LENGTH 10.
+DATA dref_dobj TYPE REF TO test_type.
+dref_dobj = NEW #( ).
+
+DATA(tdo_ref_get_elemdescr) = CAST cl_abap_refdescr( cl_abap_typedescr=>describe_by_data( dref_dobj ) ).
+DATA(tdo_ref_get_referenced_type) = tdo_ref_get_elemdescr->get_referenced_type( ).
+DATA(cast_tdo_ref_get_ref_type) = CAST cl_abap_datadescr( tdo_ref_get_referenced_type ).
+CREATE DATA dref_ref TYPE HANDLE cast_tdo_ref_get_ref_type.
+
+DATA(tdo4applies) = CAST cl_abap_elemdescr( cl_abap_typedescr=>describe_by_data( test_dobj ) ).
+DATA(applies_to_dobj) = tdo4applies->applies_to_data( dref_ref->* ).
+ASSERT applies_to_dobj = abap_true.
 ```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
