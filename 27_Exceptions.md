@@ -276,9 +276,9 @@ Syntax examples for raising exceptions programmatically:
 > More variants of the statements shown are possible. They are covered in a [separate section below](#syntax-variants-of-raise-exceptionthrow) because they relate to topics covered in the following sections.
 
 ```abap
-"-------------------------------------------------------------------
-"----------------- RAISE EXCEPTION statements ----------------------
-"-------------------------------------------------------------------
+*&---------------------------------------------------------------------*
+*& RAISE EXCEPTION statements 
+*&---------------------------------------------------------------------*
 
 "RAISE EXCEPTION statement with the TYPE addition, specifying
 "the name of a visible exception class; an exception
@@ -307,9 +307,9 @@ DATA dyn_exc TYPE REF TO cx_root.
 CREATE OBJECT dyn_exc TYPE ('CX_SY_ZERODIVIDE').
 RAISE EXCEPTION dyn_exc.
 
-"-------------------------------------------------------------------
-"----------- COND/SWITCH operators with THROW addition -------------
-"-------------------------------------------------------------------
+*&---------------------------------------------------------------------*
+*& COND/SWITCH operators with THROW addition
+*&---------------------------------------------------------------------*
 
 "THROW addition in conditional expressions with the COND and SWITCH operators
 "enabling raising class-based exceptions in operand positions
@@ -651,9 +651,10 @@ DO 2 TIMES.
   ENDTRY.
 ENDDO.
 
-"----------------------------------------------------------------------------
-"----------------------- INTO addition --------------------------------------
-"----------------------------------------------------------------------------
+*&---------------------------------------------------------------------*
+*& INTO addition
+*&---------------------------------------------------------------------*
+
 "The example is the same as above. Here, the CLEANUP statement is specified
 "with the addition INTO. If required, you can evaluate the exception information
 "as shown above.
@@ -785,9 +786,10 @@ CLASS zcl_demo_abap IMPLEMENTATION.
 
   METHOD if_oo_adt_classrun~main.
 
-    "----------------------------------------------------------------------------
-    "----------------------- CATCH BEFORE UNWIND  -------------------------------
-    "----------------------------------------------------------------------------
+*&---------------------------------------------------------------------*
+*& CATCH BEFORE UNWIND
+*&---------------------------------------------------------------------*
+
     "Example using the method
     "The following example creates a table containing integers from -5 to 5. This
     "table is looped across to have different values for divisions. Here, this
@@ -983,9 +985,9 @@ msgv4 = sy-msgv4. "H
 > - In the executable example, `zcx_demo_abap_error_a` implements the `IF_T100_MESSAGE` interface and  `zcx_demo_abap_error_b` implements `IF_T100_DYN_MSG`.
 
 ```abap
-"----------------------------------------------------------------------------
-"------------------- RAISE EXCEPTION statements  ----------------------------
-"----------------------------------------------------------------------------
+*&---------------------------------------------------------------------*
+*& RAISE EXCEPTION statements 
+*&---------------------------------------------------------------------*
 
 "Multiple additions and variants are possible. The following examples
 "demonstrate a selection.
@@ -1101,9 +1103,10 @@ RAISE EXCEPTION TYPE zcx_demo_abap_error_b MESSAGE ID sy-msgid
                                                    NUMBER sy-msgno
                                                    WITH sy-msgv1 sy-msgv2 sy-msgv3 sy-msgv4.
 
-"----------------------------------------------------------------------------
-"------------------- COND operator, THROW addition  -------------------------
-"----------------------------------------------------------------------------
+*&---------------------------------------------------------------------*
+*& COND operator, THROW addition 
+*&---------------------------------------------------------------------*
+
 DATA(flag) = 'X'.
 
 "Specifying the exception class after THROW including a mandatory pair of parentheses
@@ -1151,9 +1154,10 @@ MESSAGE e005(zdemo_abap_messages) WITH 'Some message' INTO DATA(msg6).
 DATA(cond_w_throw_8) = COND #( WHEN flag IS INITIAL THEN `works`
                                ELSE THROW zcx_demo_abap_error_b( USING MESSAGE ) ).
 
-"----------------------------------------------------------------------------
-"------------------- SWITCH operator, THROW addition  ----------------------
-"----------------------------------------------------------------------------
+*&---------------------------------------------------------------------*
+*& SWITCH operator, THROW addition 
+*&---------------------------------------------------------------------*
+
 DATA(switch_w_throw_1) = SWITCH #( flag WHEN '' THEN `works`
                                    ELSE THROW zcx_demo_abap_error_a( ) ).
 

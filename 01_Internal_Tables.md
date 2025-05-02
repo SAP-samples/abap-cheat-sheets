@@ -4,8 +4,8 @@
 
 - [Internal Tables](#internal-tables)
   - [Introduction](#introduction)
-  - [Basic Properties of Internal Tables](#basic-properties-of-internal-tables)
-  - [Table Keys (Primary, Secondary, Standard, Empty) and Table Indexes](#table-keys-primary-secondary-standard-empty-and-table-indexes)
+    - [Basic Properties of Internal Tables](#basic-properties-of-internal-tables)
+    - [Table Keys (Primary, Secondary, Standard, Empty) and Table Indexes](#table-keys-primary-secondary-standard-empty-and-table-indexes)
   - [Creating Internal Tables and Types](#creating-internal-tables-and-types)
     - [Specifying Keys in Internal Table Declarations](#specifying-keys-in-internal-table-declarations)
     - [Internal Tables Based on Locally Created Line/Table Types](#internal-tables-based-on-locally-created-linetable-types)
@@ -34,31 +34,31 @@
       - [BINARY SEARCH Addition: Optimized Read Access When Specifying Free Keys](#binary-search-addition-optimized-read-access-when-specifying-free-keys)
     - [Example: Exploring READ TABLE Statements and Table Expressions](#example-exploring-read-table-statements-and-table-expressions)
   - [Table Expressions](#table-expressions)
-  - [Getting Information about Internal Tables, Table Lines, Table Types](#getting-information-about-internal-tables-table-lines-table-types)
-    - [Checking the Existence of a Line in an Internal Table](#checking-the-existence-of-a-line-in-an-internal-table)
-    - [Checking the Index of a Line in an Internal Table](#checking-the-index-of-a-line-in-an-internal-table)
-    - [Checking How Many Lines Exist in an Internal Table](#checking-how-many-lines-exist-in-an-internal-table)
-    - [Getting Table (Type) Information at Runtime](#getting-table-type-information-at-runtime)
   - [Processing Multiple Internal Table Lines Sequentially](#processing-multiple-internal-table-lines-sequentially)
     - [Restricting the Area of a Table to Be Looped Over](#restricting-the-area-of-a-table-to-be-looped-over)
     - [Defining the Step Size and the Direction of Loop Passes](#defining-the-step-size-and-the-direction-of-loop-passes)
     - [Iteration Expressions](#iteration-expressions)
     - [Interrupting and Exiting Loops](#interrupting-and-exiting-loops)
     - [Inserting and Deleting Lines in Internal Tables in Loops](#inserting-and-deleting-lines-in-internal-tables-in-loops)
-  - [Operations with Internal Tables Using ABAP SQL SELECT Statements](#operations-with-internal-tables-using-abap-sql-select-statements)
-    - [Internal Tables as Target Data Objects in SELECT Queries](#internal-tables-as-target-data-objects-in-select-queries)
-    - [SELECT Queries with Internal Tables as Data Sources](#select-queries-with-internal-tables-as-data-sources)
-    - [Restrictions Regarding Selecting from Internal Tables](#restrictions-regarding-selecting-from-internal-tables)
-    - [Excursion: Joining/Merging Internal Tables into Internal Tables](#excursion-joiningmerging-internal-tables-into-internal-tables)
-  - [Sorting Internal Tables](#sorting-internal-tables)
   - [Modifying Internal Table Content](#modifying-internal-table-content)
     - [Modifying Read Table Lines](#modifying-read-table-lines)
     - [Modifying Table Lines Using ABAP MODIFY Statements](#modifying-table-lines-using-abap-modify-statements)
   - [Deleting Internal Table Content](#deleting-internal-table-content)
     - [Deleting Adjacent Duplicate Lines](#deleting-adjacent-duplicate-lines)
     - [Deleting the Entire Internal Table Content](#deleting-the-entire-internal-table-content)
+  - [Sorting Internal Tables](#sorting-internal-tables)
   - [Grouping Internal Tables](#grouping-internal-tables)
   - [Collecting Values](#collecting-values)
+  - [Getting Information about Internal Tables, Table Lines, Table Types](#getting-information-about-internal-tables-table-lines-table-types)
+    - [Checking the Existence of a Line in an Internal Table](#checking-the-existence-of-a-line-in-an-internal-table)
+    - [Checking the Index of a Line in an Internal Table](#checking-the-index-of-a-line-in-an-internal-table)
+    - [Checking How Many Lines Exist in an Internal Table](#checking-how-many-lines-exist-in-an-internal-table)
+    - [Getting Table (Type) Information at Runtime](#getting-table-type-information-at-runtime)
+  - [Operations with Internal Tables Using ABAP SQL SELECT Statements](#operations-with-internal-tables-using-abap-sql-select-statements)
+    - [Internal Tables as Target Data Objects in SELECT Queries](#internal-tables-as-target-data-objects-in-select-queries)
+    - [SELECT Queries with Internal Tables as Data Sources](#select-queries-with-internal-tables-as-data-sources)
+      - [Restrictions Regarding Internal Tables as Data Sources in ABAP SQL SELECT Statements](#restrictions-regarding-internal-tables-as-data-sources-in-abap-sql-select-statements)
+      - [Excursion: Joining/Merging Internal Tables into Internal Tables](#excursion-joiningmerging-internal-tables-into-internal-tables)
   - [Excursions](#excursions)
     - [Improving Read Performance with Secondary Table Keys](#improving-read-performance-with-secondary-table-keys)
     - [Example: Exploring Read Access Performance with Internal Tables](#example-exploring-read-access-performance-with-internal-tables)
@@ -88,7 +88,7 @@ Internal Tables ...
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-## Basic Properties of Internal Tables
+### Basic Properties of Internal Tables
 
 <details>
   <summary>🟢 Click to expand for more details</summary>
@@ -141,7 +141,7 @@ Internal Tables ...
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-## Table Keys (Primary, Secondary, Standard, Empty) and Table Indexes
+### Table Keys (Primary, Secondary, Standard, Empty) and Table Indexes
 
 <details>
   <summary>🟢 Click to expand for more details</summary>
@@ -481,7 +481,9 @@ This section explores various line and table type options when declaring interna
 
 
 ``` abap
-"------ Internal tables declared using elementary line types ------
+*&---------------------------------------------------------------------*
+*& Internal tables declared using elementary line types
+*&---------------------------------------------------------------------*
 "Note: In this case, the whole table line is the standard table key.
 
 "Elementary built-in ABAP types
@@ -529,7 +531,9 @@ DATA it_elem_11 TYPE TABLE OF zdemo_abap_carr_ve-url WITH EMPTY KEY.
 
 
 ``` abap
-"------ Internal tables declared using structured types ------
+*&---------------------------------------------------------------------*
+*& Internal tables declared using structured types
+*&---------------------------------------------------------------------*
 
 "Locally declared structured type
 TYPES: BEGIN OF local_struct,
@@ -581,7 +585,9 @@ DATA it_struc_7 TYPE TABLE OF loc_deep_struct WITH EMPTY KEY.
 
 
 ``` abap
-"------ Internal tables declared using table types ------
+*&---------------------------------------------------------------------*
+*& Internal tables declared using table types
+*&---------------------------------------------------------------------*
 
 "Locally declared table type (based on a locally declared structured type)
 TYPES: BEGIN OF loc_struct,
@@ -994,6 +1000,25 @@ itab = VALUE #( ( comp1 = a comp2 = b ...)
 </td>
 </tr>
 
+<tr>
+<td> Iteration expressions with <code>FOR</code> expressions </td>
+<td>
+
+Using the `VALUE` operator and iteration expressions with [`FOR`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenfor.htm), you can create content of an internal table by evaluating one or more source tables. The expressions are covered in the [Constructor Expressions](05_Constructor_Expressions.md) cheat sheet.
+<br>
+
+```abap
+TYPES ty_int_tab TYPE TABLE OF i WITH EMPTY KEY.
+DATA(int_table_a) = VALUE ty_int_tab( ( 1 ) ( 2 ) ( 3 ) ( 4 ) ( 5 ) ).
+DATA int_table_b TYPE ty_int_tab.
+int_table_b = VALUE #( FOR wa_b IN int_table_a ( wa_b * 2 ) ).
+"Table Content: 2 / 4 / 6 / 8 / 10
+```
+
+
+</td>
+</tr>
+
 </table>
 
 
@@ -1006,13 +1031,14 @@ itab = VALUE #( ( comp1 = a comp2 = b ...)
 <td> Subject </td> <td> Details/Code Snippet </td>
 </tr>
 <tr>
-<td> Copying the content of another internal table </td>
+<td> Copying the content of another (incompatible) internal table </td>
 <td>
 
 ... using the
 [`CORRESPONDING`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconstructor_expr_corresponding.htm) operator. 
 - Note that the existing content is deleted.
 - As an alternative to the `CORRESPONDING` operator, you can use [`MOVE-CORRESPONDING`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapmove-corresponding.htm) statements. 
+- The operator is particularly useful for incompatible source and target types. Value assignments are made based on identical components in the source and target. As shown further down, you can also specify mapping rules using the `MAPPING` addition.
 - The example assumes that the line types of the source and target table are not compatible. However, if the line types are compatible, the syntax will also work.
 - Several additions are possible. They can also be combined. Check the ABAP Keyword Documentation.
 
@@ -1988,7 +2014,9 @@ DATA(itab) = VALUE t_type_so( ( comp1 = 1 comp2 = 'lorem' comp3 = 30 comp4 = 'ip
 
 DATA wa TYPE s_demo.
 
-"--------- WHERE condition with comparison expressions ---------
+*&---------------------------------------------------------------------*
+*& WHERE condition with comparison expressions
+*&---------------------------------------------------------------------*
 
 "Examples: =/EQ, <>/NE, >/GT, </LT, >=,GE, <=/LE,
 "          CO, CN, CA, NA, CS, NS, CP, NP,
@@ -2010,7 +2038,9 @@ ASSERT sy-tabix = 2.
 READ TABLE itab INTO wa WHERE comp2 CS 'd'.
 ASSERT sy-tabix = 2.
 
-"--------- WHERE condition with predicate expressions ---------
+*&---------------------------------------------------------------------*
+*& WHERE condition with predicate expressions
+*&---------------------------------------------------------------------*
 
 "Examples: IS [NOT] INITIAL
 "          IS [NOT] BOUND
@@ -2019,7 +2049,9 @@ ASSERT sy-tabix = 2.
 READ TABLE itab INTO wa WHERE comp1 > 4 AND comp4 IS INITIAL.
 ASSERT sy-tabix = 5.
 
-"--------- WITH KEY instead of WHERE condition ---------
+*&---------------------------------------------------------------------*
+*& WITH KEY instead of WHERE condition
+*&---------------------------------------------------------------------*
 
 "Syntax warning in READ TABLE ... WHERE ... statements
 READ TABLE itab INTO wa WHERE comp4 IS INITIAL.
@@ -2034,7 +2066,9 @@ ASSERT sy-tabix = 5.
 READ TABLE itab INTO wa WHERE comp4 IS INITIAL ##read_where_ok.
 ASSERT sy-tabix = 5.
 
-"------------------- Further additions -------------------
+*&---------------------------------------------------------------------*
+*& Further additions
+*&---------------------------------------------------------------------*
 
 "TRANSPORTING NO FIELDS addition is possible
 READ TABLE itab TRANSPORTING NO FIELDS WHERE comp2 CS 'd'.
@@ -2047,7 +2081,9 @@ ASSERT sy-tabix = 3.
 READ TABLE itab USING KEY sk INTO wa WHERE comp3 > 40.
 ASSERT sy-tabix = 5.
 
-"------------------- Excursions -------------------
+*&---------------------------------------------------------------------*
+*& Excursions
+*&---------------------------------------------------------------------*
 
 "Note the comparison rules for character-like data types
 READ TABLE itab INTO wa WHERE comp2 = 'lorem' ##read_where_ok.
@@ -2080,7 +2116,9 @@ LOOP AT itab INTO wa WHERE comp2 CS 'd'.
     EXIT.
 ENDLOOP.
 
-"------------------- Dynamic WHERE condition -------------------
+*&---------------------------------------------------------------------*
+*& Dynamic WHERE condition
+*&---------------------------------------------------------------------*
 
 "Character-like data objects or standard tables with character-like line type
 "can be specified
@@ -2921,7 +2959,7 @@ itab_so = itab.
 
 DATA line TYPE s_demo.
 
-"------ Reading table line by index------
+"Reading table line by index
 "Just specifying the index number means referring to the primary table index.
 "In this case, the internal table must be an index table.
 
@@ -2972,7 +3010,9 @@ DATA(line_hashed_tab3) = itab_hashed[ KEY sk INDEX 2 ].
 <br>
 
 ``` abap
-"------------------ TABLE KEY addition ------------------
+*&---------------------------------------------------------------------*
+*& TABLE KEY addition
+*&---------------------------------------------------------------------*
 
 "Explicitly specifying the primary table key
 line = itab[ TABLE KEY primary_key COMPONENTS comp1 = 1 ].
@@ -2995,7 +3035,9 @@ line = itab[ TABLE KEY sk comp2 = 20 comp3 = 21 ].
 
 "line = itab[ TABLE KEY sk comp2 = 20 ].
 
-"------------------ KEY addition ------------------
+*&---------------------------------------------------------------------*
+*& KEY addition
+*&---------------------------------------------------------------------*
 
 "Using KEY and specifying all key components work like specifying TABLE KEY
 line = itab[ KEY primary_key COMPONENTS comp1 = 1 ].
@@ -3031,8 +3073,9 @@ line = itab[ comp2 = 10 ] ##primkey[sk].
 "Specifying the key name
 line = itab[ KEY sk comp2 = 10 ].
 
-
-"------------------ No TABLE KEY/KEY additions ------------------
+*&---------------------------------------------------------------------*
+*& No TABLE KEY/KEY additions
+*&---------------------------------------------------------------------*
 
 "Specifying a free key search, but including all components of the primary
 "table key
@@ -3558,209 +3601,6 @@ ENDCLASS.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-
-## Getting Information about Internal Tables, Table Lines, Table Types
-
-### Checking the Existence of a Line in an Internal Table
-
-This is relevant if you are not interested in the content of a table
-line, but only want to find out whether a line exists that matches to the
-index or key specifications. To do this, use a [`READ TABLE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapread_table.htm)
-statement with the `TRANSPORTING NO FIELDS` addition. The
-addition indicates that no actual content is to be read. If the search was
-successful and an entry exists, the system field `sy-subrc` is
-set to 0.
-
-A newer way to check the existence of a line is the [predicate
-function](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenpredicate_function_glosry.htm "Glossary Entry")
-[`line_exists( )`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenline_exists_function.htm).
-This function expects a [table
-expression](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentable_expression_glosry.htm "Glossary Entry") as an argument.
-See below for more on table expressions. Note that table expressions do not set system fields.
-``` abap
-"Read using a key
-READ TABLE it WITH KEY b = 2 TRANSPORTING NO FIELDS.
-
-IF sy-subrc = 0.
-  ...
-ENDIF.
-
-"Read using the index
-READ TABLE it INDEX 1 TRANSPORTING NO FIELDS.
-
-IF sy-subrc = 0.
-  ...
-ENDIF.
-
-"Read using the key
-IF line_exists( it[ b = 2 ] ).
-  ...
-ENDIF.
-
-"Read using the index
-IF line_exists( it[ 1 ] ).
-  ...
-ENDIF.
-```
-
-<p align="right"><a href="#top">⬆️ back to top</a></p>
-
-### Checking the Index of a Line in an Internal Table
-
-If you want to find out about the index of a line in an internal table, you can also make use of the `READ TABLE` statement above. If
-the line is found, the system field `sy-tabix` is set to the number of the index. Otherwise, the built-in function
-[`line_index( )`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenline_index_function.htm) can be used. It returns the index of the found line or 0 if the line does not exist.
-
-``` abap
-DATA(itab) = VALUE string_table( ( `aaa` ) ( `bbb` ) ).
-READ TABLE itab WITH KEY table_line = `bbb` TRANSPORTING NO FIELDS.
-"2
-DATA(tabix) = sy-tabix.
-
-"1
-DATA(idx) = line_index( itab[ table_line = `aaa` ] ).
-
-"Note: No primary table index with hashed tables
-DATA(hashed_tab) = VALUE string_hashed_table( ( `a` ) ( `b` ) ( `c` ) ).
-"-1
-DATA(hashed_primary_idx) = line_index( hashed_tab[ table_line = `c` ] ).
-
-"Index access in hashed tables only using a secondary table index
-TYPES: BEGIN OF s,
-          comp1 TYPE i,
-          comp2 TYPE i,
-        END OF s,
-        ttype TYPE HASHED TABLE OF s WITH UNIQUE KEY comp1 WITH NON-UNIQUE SORTED KEY sk COMPONENTS comp2.
-
-DATA(hashed_tab2) = VALUE ttype( ( comp1 = 1 comp2 = 10 )
-                                 ( comp1 = 2 comp2 = 8 )
-                                 ( comp1 = 3 comp2 = 9 ) ).
-
-"3
-DATA(hashed_secondary_idx) = line_index( hashed_tab2[ KEY sk comp2 = 10 ] ).
-"1
-hashed_secondary_idx = line_index( hashed_tab2[ KEY sk comp2 = 8 ] ).
-```
-
-<p align="right"><a href="#top">⬆️ back to top</a></p>
-
-### Checking How Many Lines Exist in an Internal Table
-
-`lines( )` is another built-in function that you can use to check how many lines exist in an internal table. It returns an integer value.
-
-``` abap
-DATA(itab) = VALUE string_table( ( `a` ) ( `b` ) ( `c` ) ( `d` ) ( `e` ) ).
-
-"5
-DATA(number_of_lines) = lines( itab ).
-
-"Excursion: Finding out the number of lines in a table by specifying concrete
-"component values, e.g. you want to find out how many lines exist in the table 
-"that have the value 1 for comp2
-TYPES: BEGIN OF struct,
-          comp1 TYPE c LENGTH 3,
-          comp2 TYPE i,
-        END OF struct,
-        tab_type TYPE TABLE OF struct WITH EMPTY KEY.
-
-DATA(it) = VALUE tab_type( ( comp1 = 'a' comp2 = 1  )
-                           ( comp1 = 'b' comp2 = 1  )
-                           ( comp1 = 'c' comp2 = 1  )
-                           ( comp1 = 'd' comp2 = 2  )
-                           ( comp1 = 'e' comp2 = 3  )
-                           ( comp1 = 'f' comp2 = 4  )
-                           ( comp1 = 'g' comp2 = 5  ) ).
-
-"7
-DATA(line_num) = lines( it ).
-
-"Finding out the number of lines in a table by component value, e.g.
-"using constructor expressions and specifying a WHERE clause.
-"The example creates an new internal table inline using VALUE and a FOR loop,
-"specified with a WHERE clause. The lines function is applied to the
-"table created inline.
-"3
-DATA(line_num_filtered1) = lines( VALUE tab_type( FOR wa IN it WHERE ( comp2 = 1 ) ( wa ) ) ).
-
-"Using the REDUCE operator
-"The example adds 1 to the resulting integer if the comp2 value of the iterated line is greater than 1.
-"The lines function is not relevant in the example.
-"4
-DATA(line_num_filtered2) = REDUCE i( INIT var = 0
-                                     FOR <line> IN it
-                                     WHERE ( comp2 > 1 )
-                                     NEXT var += 1 ).
-
-"Using the FILTER operator
-"Note: The source table must have at least one sorted key or a hash key for accessing.
-"If the table does not have such a primary table key, a secondary table key must be available.
-TYPES: tab_type_sorted TYPE TABLE OF struct with NON-UNIQUE SORTED KEY sec_key COMPONENTS comp2.
-DATA it_sorted type tab_type_sorted.
-it_sorted = it.
-
-"The example creates an new internal table inline using FILTER,
-"specified with a WHERE clause. The lines function is applied to the
-"table created inline.
-"3
-DATA(line_num_filtered3) = lines( FILTER #( it_sorted USING KEY sec_key WHERE comp2 = 1 ) ).
-"4
-DATA(line_num_filtered4) = lines( FILTER #( it_sorted USING KEY sec_key WHERE comp2 > 1 ) ).
-
-"Using LOOP statements
-CLEAR number_of_lines.
-"No WHERE condition as all lines shall be processed
-"7
-LOOP AT it REFERENCE INTO DATA(line).
-  number_of_lines += 1.
-ENDLOOP.
-
-CLEAR number_of_lines.
-"3
-LOOP AT it transporting no fields where comp2 = 1.
-  number_of_lines += 1.
-ENDLOOP.
-```
-
-<p align="right"><a href="#top">⬆️ back to top</a></p>
-
-### Getting Table (Type) Information at Runtime
-
-Using [Runtime Type Identification (RTTI)](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrun_time_type_identific_glosry.htm "Glossary Entry"),
-you can get type information on internal tables and table types at runtime. 
-
-For more information, see the [Dynamic Programming](06_Dynamic_Programming.md) ABAP cheat sheet.
-
-RTTI example: 
-```abap
-TYPES tab_type TYPE SORTED TABLE OF zdemo_abap_flsch
-       WITH UNIQUE KEY carrid connid
-       WITH NON-UNIQUE SORTED KEY sec_key ALIAS sk COMPONENTS countryfr cityto.
-DATA itab TYPE tab_type.
-
-DATA(tdo_d) = cl_abap_typedescr=>describe_by_data( itab ).
-"DATA(tdo_d) = cl_abap_typedescr=>describe_by_name( 'TAB_TYPE' ).
-
-"Cast to get more specific information
-DATA(tdo_itab) = CAST cl_abap_tabledescr( cl_abap_typedescr=>describe_by_data( itab ) ).
-"DATA(tdo_itab) = CAST cl_abap_tabledescr( tdo_d ).
-
-DATA(type_category_itab) = tdo_itab->kind.
-DATA(relative_name_itab) = tdo_itab->get_relative_name( ).
-... "Explore more options by positioning the cursor behind -> and choosing CTRL + Space
-DATA(table_kind_itab) = tdo_itab->table_kind.
-DATA(table_keys_itab) = tdo_itab->key.
-DATA(table_keys_more_details_itab) = tdo_itab->get_keys( ).
-DATA(table_has_unique_key_itab) = tdo_itab->has_unique_key.
-DATA(table_key_alias_itab) = tdo_itab->get_key_aliases( ).
-DATA(line_type_itab) = tdo_itab->get_table_line_type( ).
-DATA(table_component_info_itab) = CAST cl_abap_structdescr( tdo_itab->get_table_line_type( ) ).
-DATA(table_components_itab) = CAST cl_abap_structdescr( tdo_itab->get_table_line_type( ) )->components.
-DATA(table_comps_more_info_itab) = CAST cl_abap_structdescr( tdo_itab->get_table_line_type( ) )->get_components( ).
-DATA(applies_to_data_itab) = tdo_itab->applies_to_data( VALUE tab_type( ) ).
-```
-
-<p align="right"><a href="#top">⬆️ back to top</a></p>
-
 ## Processing Multiple Internal Table Lines Sequentially
 
 If you are interested not only in single table lines, but in the entire
@@ -3981,7 +3821,9 @@ TYPES: BEGIN OF s_loop_mod,
 DATA(itab_original) = VALUE t_loop_mod( FOR x = 1 WHILE x <= 10 ( text = x ) ).
 DATA(itab) = itab_original.
 
-"---------- Inserting a line after the current line ----------
+*&---------------------------------------------------------------------*
+*& Inserting a line after the current line
+*&---------------------------------------------------------------------*
 
 "The example inserts a line after the currently processed line
 "using an INSERT statement and specifying the index value
@@ -4020,7 +3862,9 @@ ENDLOOP.
 *4       0
 *...
 
-"---------- Deleting a line after the current line ----------
+*&---------------------------------------------------------------------*
+*& Deleting a line after the current line
+*&---------------------------------------------------------------------*
 
 "The example deletes a line after the current line using a
 "DELETE statement and the INDEX addition. The index value
@@ -4043,7 +3887,9 @@ ENDLOOP.
 *7       4
 *9       5
 
-"---------- Inserting a line before the current line ----------
+*&---------------------------------------------------------------------*
+*& Inserting a line before the current line
+*&---------------------------------------------------------------------*
 
 "The example insert a line before the currently processed line using
 "an INSERT statement. The current sy-tabix value is used as INDEX value,
@@ -4112,8 +3958,9 @@ ENDLOOP.
 *---- New line 10 ----                             19
 *10 (existing line, index before insertion: 19)    20
 
-
-"---------- Deleting a line before the current line ----------
+*&---------------------------------------------------------------------*
+*& Deleting a line before the current line
+*&---------------------------------------------------------------------*
 
 "The example explores the deletion of a line before the currently
 "processed line. The previous line in the table is deleted if
@@ -4163,7 +4010,9 @@ ENDLOOP.
 *9       5
 *10      6
 
-"---------- Deleting the currently processed table line ----------
+*&---------------------------------------------------------------------*
+*& Deleting the currently processed table line
+*&---------------------------------------------------------------------*
 
 "The example explores deleting the currently processed table line using
 "a string table. So, the DELETE statement specifies the current sy-tabix
@@ -4191,7 +4040,9 @@ ENDLOOP.
 *i
 *j
 
-"---------- Statements clearing the entire internal table are not allowed in loops ----------
+*&---------------------------------------------------------------------*
+*& Statements clearing the entire internal table are not allowed in loops
+*&---------------------------------------------------------------------*
 
 "The entire internal table cannot be deleted within loops.
 "The following statements commented out are not possible.
@@ -4203,593 +4054,6 @@ ENDLOOP.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-
-## Operations with Internal Tables Using ABAP SQL SELECT Statements
-
-### Internal Tables as Target Data Objects in SELECT Queries
-
-Adding multiple lines from a database table to an internal table using
-[`SELECT`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapselect.htm),
-for example, based on a condition. In the case below, the internal table
-is created inline. 
-``` abap
-SELECT FROM dbtab
-  FIELDS comp1, comp2 ...
-  WHERE ...
-  INTO TABLE @DATA(itab_sel).
-```
-
-Adding multiple lines from a database table using `SELECT`, for example, based on a condition when the database table has a line type that is incompatible with the internal table. The `*` character means that all fields are selected. The other examples define specific fields.
-The `APPENDING CORRESPONDING FIELDS INTO TABLE` addition appends the selected data to the end of the table without deleting existing
-table entries. The `INTO CORRESPONDING FIELDS OF TABLE` addition adds lines and deletes existing table entries.
-``` abap
-SELECT FROM dbtab2
-  FIELDS *
-  WHERE ...
-  APPENDING CORRESPONDING FIELDS OF TABLE @itab.
-
-SELECT FROM dbtab2
-  FIELDS *
-  WHERE ...
-  INTO CORRESPONDING FIELDS OF TABLE @itab.
-```
-
-Combining data from multiple database tables into one internal table using an [inner
-join](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abeninner_join_glosry.htm "Glossary Entry").
-The following example uses the [`INNER JOIN`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapselect_join.htm) addition. Note that the field list includes fields from both tables. The fields are referred to using `~`.
-``` abap
-SELECT db1~comp1, db1~comp2, db2~comp_abc, db2~comp_xyz ...
-  FROM db1
-  INNER JOIN db2 ON db1~comp1 = db2~comp1
-  INTO TABLE @DATA(it_join_result).
-```
-
-Populating an internal table from a database table using
-[subqueries](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensubquery_glosry.htm "Glossary Entry").
-The following two examples populate an internal table from a database table. In the first example, a subquery is specified in the
-`WHERE` clause with the `NOT IN` addition. It checks whether a value matches a value in a set of values
-specified in parentheses. The second example populates an internal table depending on data in another table. A subquery with the `EXISTS` addition is specified in
-the `WHERE` clause. In this
-case, the result of the subquery, which is another
-`SELECT` statement, is checked to see if an entry exists in
-a table based on the specified conditions.
-
-``` abap
-SELECT comp1, comp2, ...
-  FROM dbtab
-  WHERE comp1 NOT IN ( a, b, c ... )
-  INTO TABLE @DATA(it_subquery_result1).
-
-SELECT comp1, comp2, ...
-  FROM db1
-  WHERE EXISTS ( SELECT 'X' FROM db2
-                 WHERE comp1 = db1~comp1 )
-  INTO TABLE @DATA(it_subquery_result2).
-```
-
-Populating an internal table from a table based on the existence of data in
-another table using the [`FOR ALL ENTRIES`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenwhere_all_entries.htm) addition.
-
-> **💡 Note**<br>
-> Make sure that the internal table you are reading from is not initial. Therefore, it is recommended that you use a subquery as shown above: `... ( SELECT ... FROM ... WHERE ... ) ...`.
-
-``` abap
-IF itab IS NOT INITIAL.
-
-  SELECT dbtab~comp1, dbtab~comp2, ...
-    FROM dbtab
-    FOR ALL ENTRIES IN @itab
-    WHERE comp1 = @itab-comp1
-    INTO TABLE @DATA(it_select_result).
-
-ENDIF.
-```
-
-<p align="right"><a href="#top">⬆️ back to top</a></p>
-
-### SELECT Queries with Internal Tables as Data Sources
-
-- You can use internal tables as data sources in `SELECT` statements.
-
-   ``` abap
-   SELECT comp1, comp2, ...
-      FROM @itab AS it_alias
-      WHERE ...
-      INTO TABLE @DATA(itab_sel).
-   ```
-- Internal tables are specified as [host variables](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenhost_variable_glosry.htm) prefixed by `@` and provided with an alias name.
-- Deep and nested structured types are not allowed. Structured types cannot include strings, reference types, or internal tables. Exception: The type `string` is allowed if it is declared using a reference to the built-in dictionary type `sstring`.
-- When used as data sources in `SELECT` statements, internal tables are treated like DDIC database tables.
-  - This is the case even if they are not passed to the database.
-  - They are considered as client-independent tables, and the first column is not considered as a client column. 
-  - The ABAP types of the columns are mapped to appropriate DDIC built-in types.
-- Using `SELECT` statements with internal tables has significant advantages:
-  - You can leverage the extensive functionalities that ABAP SQL provides with `SELECT` statements, such as aggregate expressions.
-  - They can serve as alternatives to `READ TABLE` or `LOOP AT` statements, provided the data can be processed on the AS ABAP by the ABAP SQL engine and the SQL functionality surpasses the standard functionality of these ABAP statements.
-
-Notes and restrictions: 
-
-- In ABAP, database data is buffered in a [table buffer](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentable_buffer_glosry.htm) (internally, this happens in internal tables in the [shared memory](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenshared_memory_glosry.htm) of the ABAP server). 
-- During read access, it is checked if the data is in the buffer, and if so, a read happens directly from there. If not, the data is first loaded into the buffer. 
-- The [ABAP SQL engine](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_sql_engine_glosry.htm) is involved in the read process. It processes reads and is used when tabular data is read (with a `SELECT` statement). This includes both buffered data from database tables in the table buffer and also internal tables of the current internal session. 
-- Which means the ABAP SQL engine processes queries located on the AS ABAP, ABAP SQL is executed in the said buffer on the AS ABAP, not directly on the database.
-- However, if a `SELECT` statement includes elements the ABAP SQL engine cannot handle in case of internal tables, the internal table data transfers to a temporary database table for query execution. 
-- Yet, only the data of one internal table can be transferred to the database. Thus, if a query involves multiple internal tables, it can only be executed if the ABAP SQL engine can manage it. This means that if data from more than one internal table must be transferred to the database, the query will not function. Similarly, joins of database tables and internal tables can only specify one internal table whose data can be passed to the database.
-- If the compiler detects a statement the ABAP SQL engine cannot process, a syntax warning appears. To suppress this warning, use the pragma `##itab_db_select`.
-- As mentioned, internal tables are treated like DDIC database tables. For example, if the internal table specifies a key that is not specified at the beginning of the line type, you cannot use `SELECT` to retrieve data from the table. 
-  ```abap
-  TYPES: BEGIN OF s,
-          comp1 TYPE i,
-          comp2 TYPE i,
-          comp3 TYPE i,
-         END OF s.
-  DATA itab TYPE TABLE OF s WITH KEY comp3.
-  "SELECT SINGLE * FROM @itab AS tab INTO @DATA(line).
-  ```
-- Find more information on ... 
-  - the restrictions [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensql_engine_restr.htm).
-  - the various ABAP SQL functionalities in the ABAP Keyword Documentation and in the [ABAP SQL cheat sheet](03_ABAP_SQL.md). The following code snippets cover a selection.
-
-The following example explores various `SELECT` queries with internal tables as data sources. To try it out, create a demo class named `zcl_demo_abap` and paste the code into it. After activation, choose *F9* in ADT to execute the class. The example uses objects of the ABAP cheat sheets repository and is set up to display output in the console.
-
-Example: 
-
-```abap
-CLASS zcl_demo_abap DEFINITION
-  PUBLIC
-  FINAL
-  CREATE PUBLIC .
-
-  PUBLIC SECTION.
-    INTERFACES if_oo_adt_classrun.
-  PROTECTED SECTION.
-  PRIVATE SECTION.
-
-ENDCLASS.
-
-
-
-CLASS zcl_demo_abap IMPLEMENTATION.
-  METHOD if_oo_adt_classrun~main.
-
-    "----------- Exploiting ABAP SQL functionality with internal tables -----------
-
-    TYPES int_tab_type TYPE TABLE OF i WITH EMPTY KEY.
-    DATA(itab_a) = VALUE int_tab_type( ( 1 ) ( 32 ) ( 100 ) ( -24 ) ( 17 ) ( 99 ) ).
-
-    "SELECT query with an internal table as data source
-    "The example uses an aggregate expression. It is statically
-    "detected that the query cannot be processed by the ABAP SQL
-    "engine. The data must be passed to the database. Consequently,
-    "a syntax warning is displayed. It can be suppressed by a pragma.
-    SELECT MAX( table_line ) AS max_val
-      FROM @itab_a AS it
-      INTO @DATA(max_a).
-
-    "100
-    SELECT MAX( table_line ) AS max_val ##itab_db_select
-     FROM @itab_a AS it
-     INTO @DATA(max_b).
-
-    out->write( max_a ).
-    out->write( max_b ).
-
-    "Using the LIKE addition in the WHERE clause to extract internal table
-    "entries matching a specific pattern.
-    TYPES: BEGIN OF s1,
-             a TYPE c LENGTH 3,
-             b TYPE i,
-           END OF s1,
-           it_type_1 TYPE TABLE OF s1 WITH EMPTY KEY.
-    DATA(itab_b) = VALUE it_type_1( ( a = 'abc' b = 1 )
-                                    ( a = 'zbc' b = 2 )
-                                    ( a = 'bde' b = 3 )
-                                    ( a = 'yde' b = 4 ) ).
-
-    SELECT a, b
-      FROM @itab_b AS it_alias
-      WHERE a LIKE '%bc'
-      INTO TABLE @DATA(select_like_result).
-
-*A      B
-*abc    1
-*zbc    2
-
-    out->write( select_like_result ).
-
-    "----------- Using a SELECT loop with an internal table as data source -----------
-
-    TYPES: BEGIN OF s2,
-             comp1 TYPE c LENGTH 2,
-             comp2 TYPE i,
-           END OF s2,
-           it_type_2 TYPE TABLE OF s2 WITH EMPTY KEY.
-
-    DATA(itab_c) = VALUE it_type_2( ( comp1 = 'aa' comp2 = 2 )
-                                    ( comp1 = 'zz' comp2 = 9 )
-                                    ( comp1 = 'dd' comp2 = 1 )
-                                    ( comp1 = 'rr' comp2 = 7 )
-                                    ( comp1 = 'tt' comp2 = 5 )
-                                    ( comp1 = 'bb' comp2 = 6 ) ).
-
-    DATA itab_d TYPE int_tab_type.
-
-    "The following SELECT loop specifies an internal table as data source.
-    "The loop sequence is defined by a sort order. Such a functionality is
-    "not available with LOOP AT.
-    SELECT comp2
-           FROM @itab_c AS it
-           ORDER BY comp2 DESCENDING
-           INTO @DATA(wa).
-      INSERT wa INTO TABLE itab_d.
-    ENDSELECT.
-
-*9
-*7
-*6
-*5
-*2
-*1
-
-    out->write( itab_d ).
-
-    "------------------- Joins with internal tables -------------------
-
-    TYPES: BEGIN OF s3,
-             a TYPE c LENGTH 3,
-             b TYPE c LENGTH 3,
-             c TYPE i,
-           END OF s3,
-           it_type_3 TYPE TABLE OF s3 WITH EMPTY KEY.
-
-    DATA(itab_e) = VALUE it_type_3( ( a = 'aaa' b = 'bbb' c = 1 )
-                                    ( a = 'ccc' b = 'ddd' c = 1 )
-                                    ( a = 'eee' b = 'fff' c = 2 ) ).
-
-    DATA(itab_f) = VALUE it_type_3( ( a = 'ggg' b = 'hhh' c = 1 )
-                                    ( a = 'iii' b = 'jjj' c = 1 )
-                                    ( a = 'kkk' b = 'lll' c = 3 ) ).
-
-    "No syntax warning. The internal tables can be processed by the
-    "ABAP SQL engine.
-    SELECT it_alias1~a, it_alias2~b
-      FROM @itab_e AS it_alias1
-      INNER JOIN @itab_f AS it_alias2 ON it_alias1~c = it_alias2~c
-      INTO TABLE @DATA(itab_g).
-
-*A      B
-*aaa    hhh
-*aaa    jjj
-*ccc    hhh
-*ccc    jjj
-
-    out->write( itab_g ).
-
-    "Join with a database table and an internal table
-
-    "Preparing a demo database table and an internal table
-    DELETE FROM zdemo_abap_tab1.
-    INSERT zdemo_abap_tab1 FROM TABLE @( VALUE #( ( key_field = 1 char1 = 'aaa' )
-                                                  ( key_field = 2 char1 = 'bbb' )
-                                                  ( key_field = 3 char1 = 'ccc' ) ) ).
-
-    TYPES it_type_4 TYPE TABLE OF zdemo_abap_tab1 WITH EMPTY KEY.
-    DATA(itab_h) = VALUE it_type_4( ( key_field = 1 char2 = 'zzz' )
-                                    ( key_field = 2 char2 = 'yyy' ) ).
-
-    SELECT db~key_field, db~char1, it~char2
-      FROM zdemo_abap_tab1 AS db
-      INNER JOIN @itab_h AS it ON it~key_field = db~key_field
-      INTO TABLE @DATA(itab_i).
-
-*KEY_FIELD    CHAR1    CHAR2
-*1            aaa      zzz
-*2            bbb      yyy
-
-    out->write( itab_i ).
-  ENDMETHOD.
-ENDCLASS.
-```
-
-<p align="right"><a href="#top">⬆️ back to top</a></p>
-
-
-### Restrictions Regarding Selecting from Internal Tables 
-
-- This excursion is intended to underscore the restrictions mentioned above and in the [documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensql_engine_restr.htm) in more detail when selecting from internal tables. 
-- Components having deep types cannot be included, for example, in the `SELECT` list or `WHERE` clause. 
-- Among the non-allowed types of internal table components are strings (as they are deep types) and `utclong`.
-- Note that only those fields are checked (and sent to the database) that are actually used (as shown in the example below). 
-- However, the type string is allowed if it is declared using the built-in dictionary type `sstring` (for example, a component typed with a [data element](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendata_element_glosry.htm) or a [CDS simple type](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_simple_type_glosry.htm) that uses `sstring`).
-
-The following example demonstrates various `SELECT` statements. A demo internal table has a component that is typed with a CDS simple type, which can be created as follows:
-- In ADT, right-click your pacakage, and choose *New -> Other Repository Object* 
-- Insert *type* and select *Type* under *Core Data Services*.
-- Choose *Next* and provide a name (e.g. `zdemo_abap_string`) and a description.
-- Choose *Finish*.
-- Find more information on CDS simple types [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_simple_types.htm).
-
-The code of the CDS simple type may look as follows: 
-
-```abap
-@EndUserText.label: 'String type'
-define type zdemo_abap_string: abap.sstring( 1333 );
-```
-
-Commented code example:
-
-```abap
-"------ Internal table having a component of type string ------
-"Creating and populating an internal table that includes a component that is
-"typed with type string
-TYPES: BEGIN OF s1,
-         comp1 TYPE i,
-         comp2 TYPE c LENGTH 3,
-         comp3 TYPE string,
-       END OF s1,
-       tab_type_1 TYPE TABLE OF s1 WITH EMPTY KEY.
-DATA(itab1) = VALUE tab_type_1( ( comp1 = 1 comp2 = 'aaa' comp3 = `ABAP` ) ).
-
-"Columns of type string cannot be used in SELECT statements that
-"select from internal tables (* selects all fields). Therefore, the
-"following statements are commented out.
-
-"SELECT SINGLE * FROM @itab1 AS it WHERE comp1 = 1 INTO @DATA(res1).
-"SELECT SINGLE comp1 FROM @itab1 AS it where comp3 = `ABAP` INTO @DATA(res2).
-"SELECT SINGLE comp3 FROM @itab1 AS it where comp1 = 1 INTO @DATA(res3).
-
-"However, the following statements work. No component of type string is involved.
-SELECT SINGLE comp1 FROM @itab1 AS it WHERE comp2 = 'aaa' INTO @DATA(res4).
-SELECT SINGLE comp1, comp2 FROM @itab1 AS it INTO @DATA(res5).
-
-"--- Internal table having a component typed with a CDS simple type (sstring) ---
-"Creating and populating an internal table that includes a component that is typed
-"with a CDS simple type (sstring). Note: Built-in DDIC types such as sstring cannot
-"directly be used in ABAP statements, except for typed literals.
-TYPES: BEGIN OF s2,
-         comp1 TYPE i,
-         comp2 TYPE c LENGTH 3,
-         comp3 TYPE zdemo_abap_string,
-       END OF s2,
-       tab_type_2 TYPE TABLE OF s2 WITH EMPTY KEY.
-DATA(itab2) = VALUE tab_type_2( ( comp1 = 1 comp2 = 'aaa' comp3 = `ABAP` ) ).
-
-"Unlike above, the following SELECT statements are possible
-SELECT SINGLE * FROM @itab2 AS it WHERE comp1 = 1 INTO @DATA(res6).
-SELECT SINGLE comp1 FROM @itab2 AS it WHERE comp3 = `ABAP` INTO @DATA(res7).
-SELECT SINGLE comp1, comp3 FROM @itab2 AS it WHERE comp2 = 'aaa' AND comp3 = `ABAP` INTO @DATA(res8).
-"Note: `ABAP` represents a literal of type string. When specifying it here
-"like it is specified above, there is an implicit conversion. The following
-"example uses a typed literal.
-SELECT SINGLE comp1, comp2, comp3 FROM @itab2 AS it WHERE comp3 = sstring`ABAP` INTO @DATA(res9).
-```
-
-<p align="right"><a href="#top">⬆️ back to top</a></p>
-
-### Excursion: Joining/Merging Internal Tables into Internal Tables
-
-The following code snippets demonstrate joining/merging the content of two simple internal tables into another table. There may be several ways to achieve this. Here, the intention is to give an idea and, in particular, to emphasize SQL functionalities also available for internal tables (note the restrictions mentioned above and in the documentation).
-
-Assumptions:
-- The target table is either created inline or exists and includes components from the source tables or components that can be mapped.
-- One or more components are common between the source tables to perform a join or merge the table content.
-
-The code snippet shows a selection of syntax options and includes the following statements:
-- Joins with `SELECT` (`INNER JOIN`, `LEFT OUTER JOIN`, CTE)
-- Loops with `LOOP AT` statements, `FOR` loops using the `VALUE` and `REDUCE` operators
-
-```abap
-"Creating two internal tables whose content will be joined. The shared
-"value is represented by the key1 and key2 components.
-"Sorted tables are used in the example (having key1/key2 as unique keys)
-"to have unique values to perform joins.
-TYPES: BEGIN OF s1,
-            key1 TYPE i,
-            a    TYPE c LENGTH 1,
-            b    TYPE c LENGTH 1,
-            c    TYPE c LENGTH 1,
-        END OF s1,
-        tab_type1 TYPE SORTED TABLE OF s1 WITH UNIQUE KEY key1,
-        BEGIN OF s2,
-            key2 TYPE i,
-            d    TYPE c LENGTH 1,
-            e    TYPE c LENGTH 1,
-        END OF s2,
-        tab_type2 TYPE SORTED TABLE OF s2 WITH UNIQUE KEY key2.
-
-"Populating demo internal tables
-DATA(itab1) = VALUE tab_type1( ( key1 = 1 a = 'a' b = 'b'  c = 'c' )
-                               ( key1 = 2 a = 'd' b = 'e'  c = 'f' )
-                               ( key1 = 3 a = 'g' b = 'h'  c = 'i' ) ).
-
-DATA(itab2) = VALUE tab_type2( ( key2 = 1 d = 'j' e = 'k' )
-                               ( key2 = 2 d = 'l' e = 'm' ) ).
-
-"SELECT statement, inner join
-"Note: With the inner join, the target table contains all
-"combinations of rows for whose columns the join condition
-"is true.
-SELECT a~key1, a~a, a~b, b~d, b~e
-    FROM @itab1 AS a
-    INNER JOIN @itab2 AS b ON a~key1 = b~key2
-    INTO TABLE @DATA(itab3).
-
-*Result
-*KEY1    A    B    D    E
-*1       a    b    j    k
-*2       d    e    l    m
-
-"SELECT statement, left outer join
-"In contrast to the inner join above, the target table here
-"also contains the table row of the first table for which
-"no equivalent row exists in the second table.
-SELECT a~key1, a~a, a~b, b~d, b~e
-    FROM @itab1 AS a
-    LEFT OUTER JOIN @itab2 AS b ON a~key1 = b~key2
-    INTO TABLE @DATA(itab4).
-
-*Result
-*KEY1    A    B    D    E
-*1       a    b    j    k
-*2       d    e    l    m
-*3       g    h
-
-"------------------------ NOTE -----------------------------------
-"--- The following statements produce the same result as the -----
-"--- previous example (itab4). -----------------------------------
-"-----------------------------------------------------------------
-
-"Common table expression
-WITH +it1 AS ( SELECT a~key1, a~a, a~b FROM @itab1 AS a ),
-     +it2 AS ( SELECT b~key2, b~d, b~e FROM @itab2 AS b )
-SELECT +it1~key1, +it1~a, +it1~b, +it2~d, +it2~e FROM +it1 LEFT JOIN +it2 ON +it1~key1 = +it2~key2
-INTO TABLE @DATA(itab5).
-
-"LOOP statements
-"Using the CORRESPONDING operator to assign identically named components, 
-"BASE retains existing content
-"The assignment with CORRESPONDING ... BASE ... includes a table expression
-"in which table lines are read and inserted based on the key mapping. With the
-"OPTIONAL addition, errors can be avoided if a line does not exist.
-DATA itab6 LIKE itab4.
-LOOP AT itab1 INTO DATA(wa1).
-    INSERT CORRESPONDING #( wa1 ) INTO TABLE itab6 REFERENCE INTO DATA(ref).
-    ref->* = CORRESPONDING #( BASE ( ref->* ) VALUE #( itab2[ key2 = ref->key1 ] OPTIONAL ) ).
-ENDLOOP.
-"Assume the second table's shared component was also key1. In the second CORRESPONDING
-"you could then work with the EXCEPT addition to not overwrite the identically named
-"component.
-
-"Example similar to the previous one
-"Also here, a table expression is used to read a line from
-"the second internal table. The INSERT statement (without
-"CORRESPONDING) includes the concrete value assignments
-"with the VALUE operator.
-DATA itab7 LIKE itab4.
-LOOP AT itab1 INTO DATA(wa2).
-    DATA(line) = VALUE #( itab2[ key2 = wa2-key1 ] OPTIONAL ).
-
-    INSERT VALUE #( key1 = wa2-key1
-                    a = wa2-a
-                    b = wa2-b
-                    d = line-d
-                    e = line-e ) INTO TABLE itab7.
-ENDLOOP.
-
-"Example using a FOR loop with the VALUE operator
-TYPES tt_type3 LIKE itab4.
-DATA(itab8) = VALUE tt_type3( FOR wa3 IN itab1
-                              ( key1 = wa3-key1
-                                a = wa3-a
-                                b = wa3-b
-                                d = VALUE #( itab2[ key2 = wa3-key1 ]-d OPTIONAL )
-                                e = VALUE #( itab2[ key2 = wa3-key1 ]-e OPTIONAL ) ) ).
-
-"Similar example that includes a LET expression
-DATA(itab9) = VALUE tt_type3( FOR wa4 IN itab1
-                              LET tab_line = VALUE #( itab2[ key2 = wa4-key1 ] OPTIONAL ) IN
-                              ( key1 = wa4-key1
-                                a = wa4-a
-                                b = wa4-b
-                                d = tab_line-d
-                                e = tab_line-e ) ).
-
-"Example using a FOR loop with the REDUCE operator and LET
-DATA(itab10) = REDUCE tt_type3( INIT tab = VALUE #( )
-                                FOR wa5 IN itab1
-                                LET tableline = VALUE #( itab2[ key2 = wa5-key1 ] OPTIONAL ) IN
-                                NEXT tab = VALUE #( BASE tab
-                                ( key1 = wa5-key1
-                                  a = wa5-a
-                                  b = wa5-b
-                                  d = tableline-d
-                                  e = tableline-e ) ) ).
-```
-
-
-<p align="right"><a href="#top">⬆️ back to top</a></p>
-
-## Sorting Internal Tables
-
--   Sorted tables are stored in the memory in an automatically sorted
-    order, hence, they cannot be sorted explicitly with
-    [`SORT`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapsort_itab.htm).
--   For standard and hashed tables, the order can be changed.
--   When using `SORT` statements, the sort order is derived either
-    by the primary table key (Note: Secondary keys
-    cannot be used for the sorting.) or by explicitly specifying the
-    fields to be sorted by.
--   Explicit specification is the recommended way because it is
-    easier to understand and can prevent unwanted sorting results,
-    especially with tables with standard key.
--   You can also sort dynamically. For more information, refer to the [Dynamic Programming](06_Dynamic_Programming.md) cheat sheet.
-
-
-<table>
-<tr>
-<td> Subject </td> <td> Details/Code Snippet </td>
-</tr>
-<tr>
-<td> Sorting by primary table key </td>
-<td>
-
-``` abap
-"Implicit sorting by primary table key and in ascending order by default
-SORT itab.
-
-"Optional additions to determine the sort order
-"As mentioned above, ASCENDING is used implicitly. Here, specifying it explicitly.
-SORT itab ASCENDING.
-SORT itab DESCENDING.
-```
-
-The effect of sorting can have an unexpected result if you use the simple form of the statement and do not explicitly specify the keys. If an internal table has a structured line type and (perhaps inadvertently) the standard key as the primary table key, that is, all character-like and byte-like components make up the primary table key, all these components are taken into account when the table is sorted.
-``` abap
-"Is basically the same as it2
-DATA it1 TYPE TABLE OF zdemo_abap_fli.
-
-DATA it2 TYPE STANDARD TABLE OF zdemo_abap_fli WITH DEFAULT KEY.
-
-"Respecting the standard key when sorting
-SORT it1.
-```
-Plus: Suppose there are only elementary numeric components in an internal table with a structured line type. In this case, sorting has no effect because the primary table key is considered empty. This is also applies to tables declared with `EMPTY KEY`.
-
-</td>
-</tr>
-
-<tr>
-<td> Sorting by explicitly specifying components </td>
-<td>
-
-You can sort by any component of the internal table. It is also possible to specify the sort order 
-(even component-wise). Explicitly specifying the components has the advantage that your code is easier to understand and you can avoid unexpected results if you accidentally use `SORT` without the `BY` addition on empty and standard table keys.
-
-<br>
-
-``` abap
-DATA it3 TYPE TABLE OF struc WITH NON-UNIQUE KEY a.
-
-"Sorting by primary table key a
-SORT itab.
-
-"Specifying the component to sort for; here, it is the same as the key;
-"this way, the sorting is easier to understand
-SORT itab BY a.
-
-"Syntax showing multiple component sorting with component-wise sort order
-SORT itab BY a b ASCENDING c DESCENDING.
-
-"Sorting respecting the entire line (e. g. in the context of tables with
-"empty or standard keys)
-SORT itab BY table_line.
-```
-
-</td>
-</tr>
-</table>
-
-<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## Modifying Internal Table Content
 
@@ -4819,14 +4083,20 @@ it_st = VALUE #( ( comp1 = 1 comp2 = `AAAAAA` comp3 = 'bbb' )
 it_so = it_st.
 it_ha = it_st.
 
-"---- Modifying internal table content by changing the ----
-"---- content of READ TABLE statement target areas --------
+*&---------------------------------------------------------------------*
+*& Modifying internal table content by changing the content of READ 
+*& TABLE statement target areas
+*&---------------------------------------------------------------------*
+
 "Reading table line into a target area
 READ TABLE it_st INTO DATA(wa) INDEX 1.
 READ TABLE it_so ASSIGNING FIELD-SYMBOL(<fs>) INDEX 2.
 READ TABLE it_ha REFERENCE INTO DATA(dref) WITH TABLE KEY comp1 = 3. "No reading by index in case of hashed tables
 
-"------ Modification examples -------
+*&---------------------------------------------------------------------*
+*& Modification examples
+*&---------------------------------------------------------------------*
+
 "Modifying all non-key components using the VALUE operator and
 "the BASE addition
 <fs> = VALUE #( BASE <fs> comp2 = `IIIIII` comp3 = 'jjj' ).
@@ -4868,7 +4138,9 @@ dref->comp2 = `VVVVVV`.
 "dereferencing and component selector operators in the following way.
 dref->*-comp3 = 'www'.
 
-"---- Modifying internal table content using table expressions -----
+*&---------------------------------------------------------------------*
+*& Modifying internal table content using table expressions
+*&---------------------------------------------------------------------*
 
 "Changing the entire table line of a standard table
 "In standard tables, the key value change is allowed.
@@ -4890,14 +4162,20 @@ it_ha[ comp2 = `CCCCCC` ]-comp2 = `B2`.
 "it_ha[ comp2 = `AAAAAA` ]-comp1 = `C3`.
 it_st[ 1 ]-comp1 = 99.
 
-"---- Modifying table content in all table rows in a loop ----
+*&---------------------------------------------------------------------*
+*& Modifying table content in all table rows in a loop
+*&---------------------------------------------------------------------*
+
 "For more syntax options regarding loops, check the section above.
 "Target area: field symbol
 LOOP AT it_st ASSIGNING FIELD-SYMBOL(<lo>).
   <lo>-comp2 = sy-tabix.
 ENDLOOP.
 
-"---- Modifying table content restricting the rows that are looped across ----
+*&---------------------------------------------------------------------*
+*& Modifying table content restricting the rows that are looped across
+*&---------------------------------------------------------------------*
+
 "Target area: data reference variable
 LOOP AT it_st reference into data(lo) FROM 2 TO 3.
   lo->comp3 = sy-tabix.
@@ -4966,7 +4244,9 @@ MODIFY it FROM line TRANSPORTING b c WHERE a < 5.
 You can use [`DELETE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapdelete_itab.htm) statements to delete single and multiple lines in internal tables. The following additions can be used: `USING KEY` (for specifying a table key), `FROM`/`TO` (for specifying row ranges), `STEP` (for specifying the step size), and `WHERE` (for specifying conditions).
 
 ``` abap
-"-------------- Deleting via index --------------
+*&---------------------------------------------------------------------*
+*& Deleting via index 
+*&---------------------------------------------------------------------*
 
 "Example: The first line in the table is deleted.
 DELETE it INDEX 1.
@@ -4980,7 +4260,9 @@ DELETE it INDEX 1 USING KEY primary_key.
 "Deleting an index range; FROM or TO alone can also be specified
 DELETE it FROM 2 TO 5.
 
-"-------------- Deleting via keys --------------
+*&---------------------------------------------------------------------*
+*& Deleting via keys
+*&---------------------------------------------------------------------*
 
 "The line must have a compatible type to the tables line type and
 "include key values. The first found line with the corresponding keys
@@ -4999,7 +4281,9 @@ DELETE TABLE it WITH TABLE KEY primary_key COMPONENTS a = 1.
 
 DELETE TABLE it_sec WITH TABLE KEY sec_key COMPONENTS ...
 
-"---------- Deleting multiple lines based on a WHERE condition ----------
+*&---------------------------------------------------------------------*
+*& Deleting multiple lines based on a WHERE condition
+*&---------------------------------------------------------------------*
 
 "Specifying the additions USING KEY, FROM, TO is also possible.
 DELETE it WHERE a < 6.
@@ -5016,7 +4300,9 @@ DATA(str_table) = VALUE string_table( ( `abcZ` ) ( `Zdef` ) ( `gZhi` )
 DELETE str_table WHERE table_line CP `Z*`.
 "Result: abcZ / gZhi / pqrZ
 
-"---------- Deleting the current line inside a LOOP statement ----------
+*&---------------------------------------------------------------------*
+*& Deleting the current line inside a LOOP statement
+*&---------------------------------------------------------------------*
 
 "The following example illustrates deleting the current table line
 "using a DELETE statement within a LOOP statement. Lines with even
@@ -5123,6 +4409,182 @@ it = VALUE #( ).
 it_ref = NEW #( ).
 ```
 <p align="right"><a href="#top">⬆️ back to top</a></p>
+
+## Sorting Internal Tables
+
+-   Sorted tables are stored in the memory in an automatically sorted
+    order, hence, they cannot be sorted explicitly with
+    [`SORT`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapsort_itab.htm).
+-   For standard and hashed tables, the order can be changed.
+-   When using `SORT` statements, the sort order is derived either
+    by the primary table key (Note: Secondary keys
+    cannot be used for the sorting.) or by explicitly specifying the
+    fields to be sorted by.
+-   Explicit specification is the recommended way because it is
+    easier to understand and can prevent unwanted sorting results,
+    especially with tables with standard key.
+- Note that sorting is unstable by default concerning preserving the order of table lines with identical sort keys. Sorting results can vary if the table is sorted multiple times.
+- You can also sort dynamically. For more information, refer to the [Dynamic Programming](06_Dynamic_Programming.md) cheat sheet.
+
+
+<table>
+<tr>
+<td> Subject </td> <td> Details/Code Snippet </td>
+</tr>
+<tr>
+<td> Sorting by primary table key </td>
+<td>
+
+``` abap
+"Implicit sorting by primary table key and in ascending order by default
+SORT itab.
+
+"Optional additions to determine the sort order
+"As mentioned above, ASCENDING is used implicitly. Here, specifying it explicitly.
+SORT itab ASCENDING.
+SORT itab DESCENDING.
+```
+
+The effect of sorting can have an unexpected result if you use the simple form of the statement and do not explicitly specify the keys. If an internal table has a structured line type and (perhaps inadvertently) the standard key as the primary table key, that is, all character-like and byte-like components make up the primary table key, all these components are taken into account when the table is sorted.
+``` abap
+"Is basically the same as it2
+DATA it1 TYPE TABLE OF zdemo_abap_fli.
+
+DATA it2 TYPE STANDARD TABLE OF zdemo_abap_fli WITH DEFAULT KEY.
+
+"Respecting the standard key when sorting
+SORT it1.
+```
+Plus: Suppose there are only elementary numeric components in an internal table with a structured line type. In this case, sorting has no effect because the primary table key is considered empty. This is also applies to tables declared with `EMPTY KEY`.
+
+</td>
+</tr>
+
+<tr>
+<td> Sorting by explicitly specifying components </td>
+<td>
+
+You can sort by any component of the internal table. It is also possible to specify the sort order 
+(even component-wise). Explicitly specifying the components has the advantage that your code is easier to understand and you can avoid unexpected results if you accidentally use `SORT` without the `BY` addition on empty and standard table keys.
+
+<br>
+
+``` abap
+DATA it3 TYPE TABLE OF struc WITH NON-UNIQUE KEY a.
+
+"Sorting by primary table key a
+SORT itab.
+
+"Specifying the component to sort for; here, it is the same as the key;
+"this way, the sorting is easier to understand
+SORT itab BY a.
+
+"Syntax showing multiple component sorting with component-wise sort order
+SORT itab BY a b ASCENDING c DESCENDING.
+
+"Sorting respecting the entire line (e. g. in the context of tables with
+"empty or standard keys)
+SORT itab BY table_line.
+```
+
+</td>
+</tr>
+
+<tr>
+<td> Stable sorting </td>
+<td>
+
+By default, the sorting is unstable concerning preserving the order of table lines with identical sort keys. To ensure a stable sorting with preserving the order of table lines with identical 
+sort keys, you can use the `STABLE` addition.<br><br>
+This code example explores the difference in sorting results when using `STABLE` versus not using it with the `SORT` statement. A `SELECT` statement retrieves data from an internal table, specifying an `ORDER BY` clause for two columns. `SORT` statements sort the internal table. Using `STABLE` demonstrates that the relative order of the columns specified in the `ORDER BY` clause is preserved. Without `STABLE`, this relative order is not necessarily maintained. The `CL_ABAP_DIFF` class is used to compare the internal table content.
+
+<br>
+
+``` abap
+CLASS zcl_demo_abap DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
+
+  PUBLIC SECTION.
+    INTERFACES if_oo_adt_classrun.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+ENDCLASS.
+
+
+CLASS zcl_demo_abap IMPLEMENTATION.
+  METHOD if_oo_adt_classrun~main.
+    TYPES: BEGIN OF demo_flights,
+             carrid   TYPE c LENGTH 3,
+             connid   TYPE n LENGTH 4,
+             cityfrom TYPE c LENGTH 20,
+             cityto   TYPE c LENGTH 20,
+           END OF demo_flights,
+           ty_flights TYPE TABLE OF demo_flights WITH EMPTY KEY.
+
+    DATA(itab) = VALUE ty_flights(
+      ( carrid = 'AA' connid = '0017' cityfrom = 'NEW YORK' cityto = 'SAN FRANCISCO' )
+      ( carrid = 'AA' connid = '0064' cityfrom = 'SAN FRANCISCO' cityto = 'NEW YORK' )
+      ( carrid = 'AZ' connid = '0555' cityfrom = 'ROME' cityto = 'FRANKFURT' )
+      ( carrid = 'AZ' connid = '0788' cityfrom = 'ROME' cityto = 'TOKYO' )
+      ( carrid = 'AZ' connid = '0789' cityfrom = 'TOKYO' cityto = 'ROME' )
+      ( carrid = 'AZ' connid = '0790' cityfrom = 'ROME' cityto = 'OSAKA' )
+      ( carrid = 'DL' connid = '0106' cityfrom = 'NEW YORK' cityto = 'FRANKFURT' )
+      ( carrid = 'DL' connid = '1699' cityfrom = 'NEW YORK' cityto = 'SAN FRANCISCO' )
+      ( carrid = 'DL' connid = '1984' cityfrom = 'SAN FRANCISCO' cityto = 'NEW YORK' )
+      ( carrid = 'JL' connid = '0407' cityfrom = 'TOKYO' cityto = 'FRANKFURT' )
+      ( carrid = 'JL' connid = '0408' cityfrom = 'FRANKFURT' cityto = 'TOKYO' )
+      ( carrid = 'LH' connid = '0400' cityfrom = 'FRANKFURT' cityto = 'NEW YORK' )
+      ( carrid = 'LH' connid = '0401' cityfrom = 'NEW YORK' cityto = 'FRANKFURT' )
+      ( carrid = 'LH' connid = '0402' cityfrom = 'FRANKFURT' cityto = 'NEW YORK' )
+      ( carrid = 'LH' connid = '2402' cityfrom = 'FRANKFURT' cityto = 'BERLIN' )
+      ( carrid = 'LH' connid = '2407' cityfrom = 'BERLIN' cityto = 'FRANKFURT' )
+      ( carrid = 'QF' connid = '0005' cityfrom = 'SINGAPORE' cityto = 'FRANKFURT' )
+      ( carrid = 'QF' connid = '0006' cityfrom = 'FRANKFURT' cityto = 'SINGAPORE' )
+      ( carrid = 'SQ' connid = '0988' cityfrom = 'SINGAPORE' cityto = 'TOKYO' )
+      ( carrid = 'UA' connid = '0941' cityfrom = 'FRANKFURT' cityto = 'SAN FRANCISCO' )
+      ( carrid = 'UA' connid = '3504' cityfrom = 'SAN FRANCISCO' cityto = 'FRANKFURT' )
+      ( carrid = 'UA' connid = '3516' cityfrom = 'NEW YORK' cityto = 'FRANKFURT' )
+      ( carrid = 'UA' connid = '3517' cityfrom = 'FRANKFURT' cityto = 'NEW YORK' ) ).
+
+    SELECT carrid, connid, cityfrom, cityto
+           FROM @itab AS tab
+           ORDER BY carrid, connid
+           INTO TABLE @DATA(flights).
+
+    DATA(fl_stable) = flights.
+    DATA(fl_non_stable) = flights.
+
+    SORT fl_stable STABLE BY cityfrom cityto.
+    SORT fl_non_stable BY cityfrom cityto.
+
+    DATA is_identical TYPE abap_boolean.
+    DATA(comparison) = cl_abap_diff=>create( ).
+    TRY.
+        DATA(comp_result) = comparison->diff( EXPORTING target = fl_stable
+                                                        source = fl_non_stable
+                                              IMPORTING flag_identical = is_identical ).
+        IF is_identical = abap_true.
+          out->write( `Comparison result: Identical` ).
+        ELSE.
+          out->write( `Comparison result: Not identical` ).
+        ENDIF.
+      CATCH cx_abap_diff INTO DATA(error).
+        out->write( error->get_text( ) ).
+    ENDTRY.
+    out->write( comp_result ).
+  ENDMETHOD.
+ENDCLASS.
+```
+
+</td>
+</tr>
+
+</table>
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
 
 ## Grouping Internal Tables
 
@@ -5316,7 +4778,6 @@ ENDCLASS.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-
 ## Collecting Values
 
 - You can use `COLLECT` statements, for example, to add the values of numeric components to the corresponding values in an internal table. 
@@ -5358,6 +4819,719 @@ ENDLOOP.
 
 ASSERT seats_tab_loop_grp = seats_tab_col.
 ```
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+## Getting Information about Internal Tables, Table Lines, Table Types
+
+### Checking the Existence of a Line in an Internal Table
+
+This is relevant if you are not interested in the content of a table
+line, but only want to find out whether a line exists that matches to the
+index or key specifications. To do this, use a [`READ TABLE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapread_table.htm)
+statement with the `TRANSPORTING NO FIELDS` addition. The
+addition indicates that no actual content is to be read. If the search was
+successful and an entry exists, the system field `sy-subrc` is
+set to 0.
+
+A newer way to check the existence of a line is the [predicate
+function](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenpredicate_function_glosry.htm "Glossary Entry")
+[`line_exists( )`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenline_exists_function.htm).
+This function expects a [table
+expression](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentable_expression_glosry.htm "Glossary Entry") as an argument.
+See below for more on table expressions. Note that table expressions do not set system fields.
+``` abap
+"Read using a key
+READ TABLE it WITH KEY b = 2 TRANSPORTING NO FIELDS.
+
+IF sy-subrc = 0.
+  ...
+ENDIF.
+
+"Read using the index
+READ TABLE it INDEX 1 TRANSPORTING NO FIELDS.
+
+IF sy-subrc = 0.
+  ...
+ENDIF.
+
+"Read using the key
+IF line_exists( it[ b = 2 ] ).
+  ...
+ENDIF.
+
+"Read using the index
+IF line_exists( it[ 1 ] ).
+  ...
+ENDIF.
+```
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+### Checking the Index of a Line in an Internal Table
+
+If you want to find out about the index of a line in an internal table, you can also make use of the `READ TABLE` statement above. If
+the line is found, the system field `sy-tabix` is set to the number of the index. Otherwise, the built-in function
+[`line_index( )`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenline_index_function.htm) can be used. It returns the index of the found line or 0 if the line does not exist.
+
+``` abap
+DATA(itab) = VALUE string_table( ( `aaa` ) ( `bbb` ) ).
+READ TABLE itab WITH KEY table_line = `bbb` TRANSPORTING NO FIELDS.
+"2
+DATA(tabix) = sy-tabix.
+
+"1
+DATA(idx) = line_index( itab[ table_line = `aaa` ] ).
+
+"Note: No primary table index with hashed tables
+DATA(hashed_tab) = VALUE string_hashed_table( ( `a` ) ( `b` ) ( `c` ) ).
+"-1
+DATA(hashed_primary_idx) = line_index( hashed_tab[ table_line = `c` ] ).
+
+"Index access in hashed tables only using a secondary table index
+TYPES: BEGIN OF s,
+          comp1 TYPE i,
+          comp2 TYPE i,
+        END OF s,
+        ttype TYPE HASHED TABLE OF s WITH UNIQUE KEY comp1 WITH NON-UNIQUE SORTED KEY sk COMPONENTS comp2.
+
+DATA(hashed_tab2) = VALUE ttype( ( comp1 = 1 comp2 = 10 )
+                                 ( comp1 = 2 comp2 = 8 )
+                                 ( comp1 = 3 comp2 = 9 ) ).
+
+"3
+DATA(hashed_secondary_idx) = line_index( hashed_tab2[ KEY sk comp2 = 10 ] ).
+"1
+hashed_secondary_idx = line_index( hashed_tab2[ KEY sk comp2 = 8 ] ).
+```
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+### Checking How Many Lines Exist in an Internal Table
+
+`lines( )` is another built-in function that you can use to check how many lines exist in an internal table. It returns an integer value.
+
+``` abap
+DATA(itab) = VALUE string_table( ( `a` ) ( `b` ) ( `c` ) ( `d` ) ( `e` ) ).
+
+"5
+DATA(number_of_lines) = lines( itab ).
+
+"Excursion: Finding out the number of lines in a table by specifying concrete
+"component values, e.g. you want to find out how many lines exist in the table 
+"that have the value 1 for comp2
+TYPES: BEGIN OF struct,
+          comp1 TYPE c LENGTH 3,
+          comp2 TYPE i,
+        END OF struct,
+        tab_type TYPE TABLE OF struct WITH EMPTY KEY.
+
+DATA(it) = VALUE tab_type( ( comp1 = 'a' comp2 = 1  )
+                           ( comp1 = 'b' comp2 = 1  )
+                           ( comp1 = 'c' comp2 = 1  )
+                           ( comp1 = 'd' comp2 = 2  )
+                           ( comp1 = 'e' comp2 = 3  )
+                           ( comp1 = 'f' comp2 = 4  )
+                           ( comp1 = 'g' comp2 = 5  ) ).
+
+"7
+DATA(line_num) = lines( it ).
+
+"Finding out the number of lines in a table by component value, e.g.
+"using constructor expressions and specifying a WHERE clause.
+"The example creates an new internal table inline using VALUE and a FOR loop,
+"specified with a WHERE clause. The lines function is applied to the
+"table created inline.
+"3
+DATA(line_num_filtered1) = lines( VALUE tab_type( FOR wa IN it WHERE ( comp2 = 1 ) ( wa ) ) ).
+
+"Using the REDUCE operator
+"The example adds 1 to the resulting integer if the comp2 value of the iterated line is greater than 1.
+"The lines function is not relevant in the example.
+"4
+DATA(line_num_filtered2) = REDUCE i( INIT var = 0
+                                     FOR <line> IN it
+                                     WHERE ( comp2 > 1 )
+                                     NEXT var += 1 ).
+
+"Using the FILTER operator
+"Note: The source table must have at least one sorted key or a hash key for accessing.
+"If the table does not have such a primary table key, a secondary table key must be available.
+TYPES: tab_type_sorted TYPE TABLE OF struct with NON-UNIQUE SORTED KEY sec_key COMPONENTS comp2.
+DATA it_sorted type tab_type_sorted.
+it_sorted = it.
+
+"The example creates an new internal table inline using FILTER,
+"specified with a WHERE clause. The lines function is applied to the
+"table created inline.
+"3
+DATA(line_num_filtered3) = lines( FILTER #( it_sorted USING KEY sec_key WHERE comp2 = 1 ) ).
+"4
+DATA(line_num_filtered4) = lines( FILTER #( it_sorted USING KEY sec_key WHERE comp2 > 1 ) ).
+
+"Using LOOP statements
+CLEAR number_of_lines.
+"No WHERE condition as all lines shall be processed
+"7
+LOOP AT it REFERENCE INTO DATA(line).
+  number_of_lines += 1.
+ENDLOOP.
+
+CLEAR number_of_lines.
+"3
+LOOP AT it transporting no fields where comp2 = 1.
+  number_of_lines += 1.
+ENDLOOP.
+```
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+### Getting Table (Type) Information at Runtime
+
+Using [Runtime Type Identification (RTTI)](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrun_time_type_identific_glosry.htm "Glossary Entry"),
+you can get type information on internal tables and table types at runtime. 
+
+For more information, see the [Dynamic Programming](06_Dynamic_Programming.md) ABAP cheat sheet.
+
+RTTI example: 
+```abap
+TYPES tab_type TYPE SORTED TABLE OF zdemo_abap_flsch
+       WITH UNIQUE KEY carrid connid
+       WITH NON-UNIQUE SORTED KEY sec_key ALIAS sk COMPONENTS countryfr cityto.
+DATA itab TYPE tab_type.
+
+DATA(tdo_d) = cl_abap_typedescr=>describe_by_data( itab ).
+"DATA(tdo_d) = cl_abap_typedescr=>describe_by_name( 'TAB_TYPE' ).
+
+"Cast to get more specific information
+DATA(tdo_itab) = CAST cl_abap_tabledescr( cl_abap_typedescr=>describe_by_data( itab ) ).
+"DATA(tdo_itab) = CAST cl_abap_tabledescr( tdo_d ).
+
+DATA(type_category_itab) = tdo_itab->kind.
+DATA(relative_name_itab) = tdo_itab->get_relative_name( ).
+... "Explore more options by positioning the cursor behind -> and choosing CTRL + Space
+DATA(table_kind_itab) = tdo_itab->table_kind.
+DATA(table_keys_itab) = tdo_itab->key.
+DATA(table_keys_more_details_itab) = tdo_itab->get_keys( ).
+DATA(table_has_unique_key_itab) = tdo_itab->has_unique_key.
+DATA(table_key_alias_itab) = tdo_itab->get_key_aliases( ).
+DATA(line_type_itab) = tdo_itab->get_table_line_type( ).
+DATA(table_component_info_itab) = CAST cl_abap_structdescr( tdo_itab->get_table_line_type( ) ).
+DATA(table_components_itab) = CAST cl_abap_structdescr( tdo_itab->get_table_line_type( ) )->components.
+DATA(table_comps_more_info_itab) = CAST cl_abap_structdescr( tdo_itab->get_table_line_type( ) )->get_components( ).
+DATA(applies_to_data_itab) = tdo_itab->applies_to_data( VALUE tab_type( ) ).
+```
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+## Operations with Internal Tables Using ABAP SQL SELECT Statements
+
+### Internal Tables as Target Data Objects in SELECT Queries
+
+Adding multiple lines from a database table to an internal table using
+[`SELECT`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapselect.htm),
+for example, based on a condition. In the case below, the internal table
+is created inline. 
+``` abap
+SELECT FROM dbtab
+  FIELDS comp1, comp2 ...
+  WHERE ...
+  INTO TABLE @DATA(itab_sel).
+```
+
+Adding multiple lines from a database table using `SELECT`, for example, based on a condition when the database table has a line type that is incompatible with the internal table. The `*` character means that all fields are selected. The other examples define specific fields.
+The `APPENDING CORRESPONDING FIELDS INTO TABLE` addition appends the selected data to the end of the table without deleting existing
+table entries. The `INTO CORRESPONDING FIELDS OF TABLE` addition adds lines and deletes existing table entries.
+``` abap
+SELECT FROM dbtab2
+  FIELDS *
+  WHERE ...
+  APPENDING CORRESPONDING FIELDS OF TABLE @itab.
+
+SELECT FROM dbtab2
+  FIELDS *
+  WHERE ...
+  INTO CORRESPONDING FIELDS OF TABLE @itab.
+```
+
+Combining data from multiple database tables into one internal table using an [inner
+join](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abeninner_join_glosry.htm "Glossary Entry").
+The following example uses the [`INNER JOIN`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapselect_join.htm) addition. Note that the field list includes fields from both tables. The fields are referred to using `~`.
+``` abap
+SELECT db1~comp1, db1~comp2, db2~comp_abc, db2~comp_xyz ...
+  FROM db1
+  INNER JOIN db2 ON db1~comp1 = db2~comp1
+  INTO TABLE @DATA(it_join_result).
+```
+
+Populating an internal table from a database table using
+[subqueries](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensubquery_glosry.htm "Glossary Entry").
+The following two examples populate an internal table from a database table. In the first example, a subquery is specified in the
+`WHERE` clause with the `NOT IN` addition. It checks whether a value matches a value in a set of values
+specified in parentheses. The second example populates an internal table depending on data in another table. A subquery with the `EXISTS` addition is specified in
+the `WHERE` clause. In this
+case, the result of the subquery, which is another
+`SELECT` statement, is checked to see if an entry exists in
+a table based on the specified conditions.
+
+``` abap
+SELECT comp1, comp2, ...
+  FROM dbtab
+  WHERE comp1 NOT IN ( a, b, c ... )
+  INTO TABLE @DATA(it_subquery_result1).
+
+SELECT comp1, comp2, ...
+  FROM db1
+  WHERE EXISTS ( SELECT 'X' FROM db2
+                 WHERE comp1 = db1~comp1 )
+  INTO TABLE @DATA(it_subquery_result2).
+```
+
+Populating an internal table from a table based on the existence of data in
+another table using the [`FOR ALL ENTRIES`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenwhere_all_entries.htm) addition.
+
+> **💡 Note**<br>
+> Make sure that the internal table you are reading from is not initial. Therefore, it is recommended that you use a subquery as shown above: `... ( SELECT ... FROM ... WHERE ... ) ...`.
+
+``` abap
+IF itab IS NOT INITIAL.
+
+  SELECT dbtab~comp1, dbtab~comp2, ...
+    FROM dbtab
+    FOR ALL ENTRIES IN @itab
+    WHERE comp1 = @itab-comp1
+    INTO TABLE @DATA(it_select_result).
+
+ENDIF.
+```
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+### SELECT Queries with Internal Tables as Data Sources
+
+**General rule**: Use `SELECT` with internal tables as a data source only when SQL functionality, such as joins, exceeds ABAP statements.
+
+**Technical considerations**:
+- The [ABAP SQL in-memory engine](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_sql_inmemeng_glosry.htm) manages read access with ABAP SQL `SELECT` statements for tabular data within the memory of an [Application Server ABAP (AS ABAP)](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenas_abap_glosry.htm). The tabular data can include:
+  - Database table data (such as data from DDIC database tables or CDS entities) buffered in the [table buffer](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenas_abap_glosry.htm) within AS ABAP. Buffering ability is determined by specifications in the artifacts. If the data isn't buffered, the engine can't handle it, and the SQL statement is processed on the database.
+  - Internal tables present in the current internal session. They are treated like DDIC database tables. ABAP types are mapped to corresponding [built-in DDIC types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbuiltin_ddic_type_glosry.htm).
+- The ABAP SQL in-memory engine processes data on AS ABAP, not the database server. If a `SELECT` statement using internal tables as data sources includes elements beyond the engine's capability (for example, most subqueries aren't supported; see detailed restrictions [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABENSQL_ENGINE_RESTR.html)), the internal table content is transferred to a temporary database table before the query executes. Only components involved in the read access are transferred.
+- In such cases, the SQL statement runs directly on the database server, not within AS ABAP. If the compiler identifies a statement the ABAP SQL in-memory engine can't handle, a syntax warning occurs. You can suppress this warning using the pragma ##itab_db_select.
+- Currently, queries with multiple internal tables can only proceed if the ABAP SQL in-memory engine can manage them on AS ABAP directly. Transferring more than one internal table to the database is currently not supported.
+- The result of the ABAP SQL in-memory engine processing is identical to processing the read access directly on the database.
+
+**Using internal tables as data sources in ABAP SQL SELECT statements**:
+
+- You must specify internal tables as [host variables](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenhost_variable_glosry.htm) with an `@` prefix and give them an alias.
+   ``` abap
+   SELECT comp1, comp2, ...
+      FROM @itab AS it_alias
+      WHERE ...
+      INTO TABLE @DATA(itab_sel).
+   ```
+- Internal tables are treated like DDIC database tables, which leads to specific behaviors such as:
+  - They are handled like [client-independent](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenclient_independent_glosry.htm) database tables, and the first table column is not automatically considered a client column. You can change this default behavior using the `DECLARE CLIENT` addition. For example, if the internal table specifies a key that is not specified at the beginning of the line type, you cannot use `SELECT` to retrieve data from the table. 
+  ```abap
+  TYPES: BEGIN OF s,
+          comp1 TYPE i,
+          comp2 TYPE i,
+          comp3 TYPE i,
+         END OF s.
+  DATA itab TYPE TABLE OF s WITH KEY comp3.
+  "SELECT SINGLE * FROM @itab AS tab INTO @DATA(line).
+  ```
+  - You cannot use deep and nested components of internal tables in `SELECT` statements.
+  - The type string is supported only if declared as a reference to the built-in dictionary type sstring.
+- A key advantage of using `SELECT` statements with internal tables as data sources is the access to ABAP SQL's extensive functionalities, like aggregate expressions.
+- They can serve as an alternative to the `READ TABLE` or `LOOP AT` statements if the ABAP SQL in-memory engine can process the data without requiring a database transfer.
+- Note the general rule: You should use `SELECT` with internal tables as a data source only when SQL functionality exceeds that of ABAP statements, such as in joins. For tasks achievable with ABAP statements, it's preferable to use them as they are optimized for internal tables and offer better performance.
+
+**More information**:
+- [Restrictions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensql_engine_restr.htm).
+- See details on the various ABAP SQL functionalities in the ABAP Keyword Documentation and in the [ABAP SQL cheat sheet](03_ABAP_SQL.md). 
+
+The following example explores various `SELECT` queries with internal tables as data sources. To try it out, create a demo class named `zcl_demo_abap` and paste the code into it. After activation, choose *F9* in ADT to execute the class. The example uses objects of the ABAP cheat sheets repository and is set up to display output in the console.
+
+Example: 
+
+```abap
+CLASS zcl_demo_abap DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
+
+  PUBLIC SECTION.
+    INTERFACES if_oo_adt_classrun.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+
+ENDCLASS.
+
+
+
+CLASS zcl_demo_abap IMPLEMENTATION.
+  METHOD if_oo_adt_classrun~main.
+
+    "----------- Exploiting ABAP SQL functionality with internal tables -----------
+
+    TYPES int_tab_type TYPE TABLE OF i WITH EMPTY KEY.
+    DATA(itab_a) = VALUE int_tab_type( ( 1 ) ( 32 ) ( 100 ) ( -24 ) ( 17 ) ( 99 ) ).
+
+    "SELECT query with an internal table as data source
+    "The example uses an aggregate expression. It is statically
+    "detected that the query cannot be processed by the ABAP SQL
+    "engine. The data must be passed to the database. Consequently,
+    "a syntax warning is displayed. It can be suppressed by a pragma.
+    SELECT MAX( table_line ) AS max_val
+      FROM @itab_a AS it
+      INTO @DATA(max_a).
+
+    "100
+    SELECT MAX( table_line ) AS max_val ##itab_db_select
+     FROM @itab_a AS it
+     INTO @DATA(max_b).
+
+    out->write( max_a ).
+    out->write( max_b ).
+
+    "Using the LIKE addition in the WHERE clause to extract internal table
+    "entries matching a specific pattern.
+    TYPES: BEGIN OF s1,
+             a TYPE c LENGTH 3,
+             b TYPE i,
+           END OF s1,
+           it_type_1 TYPE TABLE OF s1 WITH EMPTY KEY.
+    DATA(itab_b) = VALUE it_type_1( ( a = 'abc' b = 1 )
+                                    ( a = 'zbc' b = 2 )
+                                    ( a = 'bde' b = 3 )
+                                    ( a = 'yde' b = 4 ) ).
+
+    SELECT a, b
+      FROM @itab_b AS it_alias
+      WHERE a LIKE '%bc'
+      INTO TABLE @DATA(select_like_result).
+
+*A      B
+*abc    1
+*zbc    2
+
+    out->write( select_like_result ).
+
+    "----------- Using a SELECT loop with an internal table as data source -----------
+
+    TYPES: BEGIN OF s2,
+             comp1 TYPE c LENGTH 2,
+             comp2 TYPE i,
+           END OF s2,
+           it_type_2 TYPE TABLE OF s2 WITH EMPTY KEY.
+
+    DATA(itab_c) = VALUE it_type_2( ( comp1 = 'aa' comp2 = 2 )
+                                    ( comp1 = 'zz' comp2 = 9 )
+                                    ( comp1 = 'dd' comp2 = 1 )
+                                    ( comp1 = 'rr' comp2 = 7 )
+                                    ( comp1 = 'tt' comp2 = 5 )
+                                    ( comp1 = 'bb' comp2 = 6 ) ).
+
+    DATA itab_d TYPE int_tab_type.
+
+    "The following SELECT loop specifies an internal table as data source.
+    "The loop sequence is defined by a sort order. Such a functionality is
+    "not available with LOOP AT.
+    SELECT comp2
+           FROM @itab_c AS it
+           ORDER BY comp2 DESCENDING
+           INTO @DATA(wa).
+      INSERT wa INTO TABLE itab_d.
+    ENDSELECT.
+
+*9
+*7
+*6
+*5
+*2
+*1
+
+    out->write( itab_d ).
+
+    "------------------- Joins with internal tables -------------------
+
+    TYPES: BEGIN OF s3,
+             a TYPE c LENGTH 3,
+             b TYPE c LENGTH 3,
+             c TYPE i,
+           END OF s3,
+           it_type_3 TYPE TABLE OF s3 WITH EMPTY KEY.
+
+    DATA(itab_e) = VALUE it_type_3( ( a = 'aaa' b = 'bbb' c = 1 )
+                                    ( a = 'ccc' b = 'ddd' c = 1 )
+                                    ( a = 'eee' b = 'fff' c = 2 ) ).
+
+    DATA(itab_f) = VALUE it_type_3( ( a = 'ggg' b = 'hhh' c = 1 )
+                                    ( a = 'iii' b = 'jjj' c = 1 )
+                                    ( a = 'kkk' b = 'lll' c = 3 ) ).
+
+    "No syntax warning. The internal tables can be processed by the
+    "ABAP SQL engine.
+    SELECT it_alias1~a, it_alias2~b
+      FROM @itab_e AS it_alias1
+      INNER JOIN @itab_f AS it_alias2 ON it_alias1~c = it_alias2~c
+      INTO TABLE @DATA(itab_g).
+
+*A      B
+*aaa    hhh
+*aaa    jjj
+*ccc    hhh
+*ccc    jjj
+
+    out->write( itab_g ).
+
+    "Join with a database table and an internal table
+
+    "Preparing a demo database table and an internal table
+    DELETE FROM zdemo_abap_tab1.
+    INSERT zdemo_abap_tab1 FROM TABLE @( VALUE #( ( key_field = 1 char1 = 'aaa' )
+                                                  ( key_field = 2 char1 = 'bbb' )
+                                                  ( key_field = 3 char1 = 'ccc' ) ) ).
+
+    TYPES it_type_4 TYPE TABLE OF zdemo_abap_tab1 WITH EMPTY KEY.
+    DATA(itab_h) = VALUE it_type_4( ( key_field = 1 char2 = 'zzz' )
+                                    ( key_field = 2 char2 = 'yyy' ) ).
+
+    SELECT db~key_field, db~char1, it~char2
+      FROM zdemo_abap_tab1 AS db
+      INNER JOIN @itab_h AS it ON it~key_field = db~key_field
+      INTO TABLE @DATA(itab_i).
+
+*KEY_FIELD    CHAR1    CHAR2
+*1            aaa      zzz
+*2            bbb      yyy
+
+    out->write( itab_i ).
+  ENDMETHOD.
+ENDCLASS.
+```
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+
+#### Restrictions Regarding Internal Tables as Data Sources in ABAP SQL SELECT Statements
+
+- This excursion is intended to underscore the restrictions mentioned above and in the [documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensql_engine_restr.htm) in more detail when selecting from internal tables. 
+- Components having deep types cannot be included, for example, in the `SELECT` list or `WHERE` clause. 
+- Among the non-allowed types of internal table components are strings (as they are deep types) and `utclong`.
+- Note that only those fields are checked (and sent to the database) that are actually used (as shown in the example below). 
+- However, the type string is allowed if it is declared using the built-in dictionary type `sstring` (for example, a component typed with a [data element](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendata_element_glosry.htm) or a [CDS simple type](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_simple_type_glosry.htm) that uses `sstring`).
+
+The following example demonstrates various `SELECT` statements. A demo internal table has a component that is typed with a CDS simple type, which can be created as follows:
+- In ADT, right-click your pacakage, and choose *New -> Other Repository Object* 
+- Insert *type* and select *Type* under *Core Data Services*.
+- Choose *Next* and provide a name (e.g. `zdemo_abap_string`) and a description.
+- Choose *Finish*.
+- Find more information on CDS simple types [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_simple_types.htm).
+
+The code of the CDS simple type may look as follows: 
+
+```abap
+@EndUserText.label: 'String type'
+define type zdemo_abap_string: abap.sstring( 1333 );
+```
+
+Commented code example:
+
+```abap
+*&---------------------------------------------------------------------*
+*& Internal table having a component of type string
+*&---------------------------------------------------------------------*
+
+"Creating and populating an internal table that includes a component that is
+"typed with type string
+TYPES: BEGIN OF s1,
+         comp1 TYPE i,
+         comp2 TYPE c LENGTH 3,
+         comp3 TYPE string,
+       END OF s1,
+       tab_type_1 TYPE TABLE OF s1 WITH EMPTY KEY.
+DATA(itab1) = VALUE tab_type_1( ( comp1 = 1 comp2 = 'aaa' comp3 = `ABAP` ) ).
+
+"Columns of type string cannot be used in SELECT statements that
+"select from internal tables (* selects all fields). Therefore, the
+"following statements are commented out.
+
+"SELECT SINGLE * FROM @itab1 AS it WHERE comp1 = 1 INTO @DATA(res1).
+"SELECT SINGLE comp1 FROM @itab1 AS it where comp3 = `ABAP` INTO @DATA(res2).
+"SELECT SINGLE comp3 FROM @itab1 AS it where comp1 = 1 INTO @DATA(res3).
+
+"However, the following statements work. No component of type string is involved.
+SELECT SINGLE comp1 FROM @itab1 AS it WHERE comp2 = 'aaa' INTO @DATA(res4).
+SELECT SINGLE comp1, comp2 FROM @itab1 AS it INTO @DATA(res5).
+
+*&---------------------------------------------------------------------*
+*& Internal table having a component typed with a CDS simple type (sstring)
+*&---------------------------------------------------------------------*
+
+"Creating and populating an internal table that includes a component that is typed
+"with a CDS simple type (sstring). Note: Built-in DDIC types such as sstring cannot
+"directly be used in ABAP statements, except for typed literals.
+TYPES: BEGIN OF s2,
+         comp1 TYPE i,
+         comp2 TYPE c LENGTH 3,
+         comp3 TYPE zdemo_abap_string,
+       END OF s2,
+       tab_type_2 TYPE TABLE OF s2 WITH EMPTY KEY.
+DATA(itab2) = VALUE tab_type_2( ( comp1 = 1 comp2 = 'aaa' comp3 = `ABAP` ) ).
+
+"Unlike above, the following SELECT statements are possible
+SELECT SINGLE * FROM @itab2 AS it WHERE comp1 = 1 INTO @DATA(res6).
+SELECT SINGLE comp1 FROM @itab2 AS it WHERE comp3 = `ABAP` INTO @DATA(res7).
+SELECT SINGLE comp1, comp3 FROM @itab2 AS it WHERE comp2 = 'aaa' AND comp3 = `ABAP` INTO @DATA(res8).
+"Note: `ABAP` represents a literal of type string. When specifying it here
+"like it is specified above, there is an implicit conversion. The following
+"example uses a typed literal.
+SELECT SINGLE comp1, comp2, comp3 FROM @itab2 AS it WHERE comp3 = sstring`ABAP` INTO @DATA(res9).
+```
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+#### Excursion: Joining/Merging Internal Tables into Internal Tables
+
+The following code snippets demonstrate joining/merging the content of two simple internal tables into another table. There may be several ways to achieve this. Here, the intention is to give an idea and, in particular, to emphasize SQL functionalities also available for internal tables (note the restrictions mentioned above and in the documentation).
+
+Assumptions:
+- The target table is either created inline or exists and includes components from the source tables or components that can be mapped.
+- One or more components are common between the source tables to perform a join or merge the table content.
+
+The code snippet shows a selection of syntax options and includes the following statements:
+- Joins with `SELECT` (`INNER JOIN`, `LEFT OUTER JOIN`, CTE)
+- Loops with `LOOP AT` statements, `FOR` loops using the `VALUE` and `REDUCE` operators
+
+```abap
+"Creating two internal tables whose content will be joined. The shared
+"value is represented by the key1 and key2 components.
+"Sorted tables are used in the example (having key1/key2 as unique keys)
+"to have unique values to perform joins.
+TYPES: BEGIN OF s1,
+            key1 TYPE i,
+            a    TYPE c LENGTH 1,
+            b    TYPE c LENGTH 1,
+            c    TYPE c LENGTH 1,
+        END OF s1,
+        tab_type1 TYPE SORTED TABLE OF s1 WITH UNIQUE KEY key1,
+        BEGIN OF s2,
+            key2 TYPE i,
+            d    TYPE c LENGTH 1,
+            e    TYPE c LENGTH 1,
+        END OF s2,
+        tab_type2 TYPE SORTED TABLE OF s2 WITH UNIQUE KEY key2.
+
+"Populating demo internal tables
+DATA(itab1) = VALUE tab_type1( ( key1 = 1 a = 'a' b = 'b'  c = 'c' )
+                               ( key1 = 2 a = 'd' b = 'e'  c = 'f' )
+                               ( key1 = 3 a = 'g' b = 'h'  c = 'i' ) ).
+
+DATA(itab2) = VALUE tab_type2( ( key2 = 1 d = 'j' e = 'k' )
+                               ( key2 = 2 d = 'l' e = 'm' ) ).
+
+"SELECT statement, inner join
+"Note: With the inner join, the target table contains all
+"combinations of rows for whose columns the join condition
+"is true.
+SELECT a~key1, a~a, a~b, b~d, b~e
+    FROM @itab1 AS a
+    INNER JOIN @itab2 AS b ON a~key1 = b~key2
+    INTO TABLE @DATA(itab3).
+
+*Result
+*KEY1    A    B    D    E
+*1       a    b    j    k
+*2       d    e    l    m
+
+"SELECT statement, left outer join
+"In contrast to the inner join above, the target table here
+"also contains the table row of the first table for which
+"no equivalent row exists in the second table.
+SELECT a~key1, a~a, a~b, b~d, b~e
+    FROM @itab1 AS a
+    LEFT OUTER JOIN @itab2 AS b ON a~key1 = b~key2
+    INTO TABLE @DATA(itab4).
+
+*Result
+*KEY1    A    B    D    E
+*1       a    b    j    k
+*2       d    e    l    m
+*3       g    h
+
+*&---------------------------------------------------------------------*
+*& Note: The following statements produce the same result as the
+*& previous example (itab4).
+*&---------------------------------------------------------------------*
+
+"Common table expression
+WITH +it1 AS ( SELECT a~key1, a~a, a~b FROM @itab1 AS a ),
+     +it2 AS ( SELECT b~key2, b~d, b~e FROM @itab2 AS b )
+SELECT +it1~key1, +it1~a, +it1~b, +it2~d, +it2~e FROM +it1 LEFT JOIN +it2 ON +it1~key1 = +it2~key2
+INTO TABLE @DATA(itab5).
+
+"LOOP statements
+"Using the CORRESPONDING operator to assign identically named components, 
+"BASE retains existing content
+"The assignment with CORRESPONDING ... BASE ... includes a table expression
+"in which table lines are read and inserted based on the key mapping. With the
+"OPTIONAL addition, errors can be avoided if a line does not exist.
+DATA itab6 LIKE itab4.
+LOOP AT itab1 INTO DATA(wa1).
+    INSERT CORRESPONDING #( wa1 ) INTO TABLE itab6 REFERENCE INTO DATA(ref).
+    ref->* = CORRESPONDING #( BASE ( ref->* ) VALUE #( itab2[ key2 = ref->key1 ] OPTIONAL ) ).
+ENDLOOP.
+"Assume the second table's shared component was also key1. In the second CORRESPONDING
+"you could then work with the EXCEPT addition to not overwrite the identically named
+"component.
+
+"Example similar to the previous one
+"Also here, a table expression is used to read a line from
+"the second internal table. The INSERT statement (without
+"CORRESPONDING) includes the concrete value assignments
+"with the VALUE operator.
+DATA itab7 LIKE itab4.
+LOOP AT itab1 INTO DATA(wa2).
+    DATA(line) = VALUE #( itab2[ key2 = wa2-key1 ] OPTIONAL ).
+
+    INSERT VALUE #( key1 = wa2-key1
+                    a = wa2-a
+                    b = wa2-b
+                    d = line-d
+                    e = line-e ) INTO TABLE itab7.
+ENDLOOP.
+
+"Example using a FOR loop with the VALUE operator
+TYPES tt_type3 LIKE itab4.
+DATA(itab8) = VALUE tt_type3( FOR wa3 IN itab1
+                              ( key1 = wa3-key1
+                                a = wa3-a
+                                b = wa3-b
+                                d = VALUE #( itab2[ key2 = wa3-key1 ]-d OPTIONAL )
+                                e = VALUE #( itab2[ key2 = wa3-key1 ]-e OPTIONAL ) ) ).
+
+"Similar example that includes a LET expression
+DATA(itab9) = VALUE tt_type3( FOR wa4 IN itab1
+                              LET tab_line = VALUE #( itab2[ key2 = wa4-key1 ] OPTIONAL ) IN
+                              ( key1 = wa4-key1
+                                a = wa4-a
+                                b = wa4-b
+                                d = tab_line-d
+                                e = tab_line-e ) ).
+
+"Example using a FOR loop with the REDUCE operator and LET
+DATA(itab10) = REDUCE tt_type3( INIT tab = VALUE #( )
+                                FOR wa5 IN itab1
+                                LET tableline = VALUE #( itab2[ key2 = wa5-key1 ] OPTIONAL ) IN
+                                NEXT tab = VALUE #( BASE tab
+                                ( key1 = wa5-key1
+                                  a = wa5-a
+                                  b = wa5-b
+                                  d = tableline-d
+                                  e = tableline-e ) ) ).
+```
+
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 

@@ -131,7 +131,10 @@ DATA(tz_w_xco_utc) = xco_cp_time=>time_zone->utc->value.
 To retrieve the current date, you can, for example, use the `get_system_date` method of the `cl_abap_context_info` class. You can also use the [XCO library](https://help.sap.com/docs/btp/sap-business-technology-platform/xco-library?version=Cloud).
 
 ```abap
-"--------------------- Retrieving the current date --------------------
+*&---------------------------------------------------------------------*
+*& Retrieving the current date
+*&---------------------------------------------------------------------*
+
 "Retrieving the current date with respect to UTC, e.g. 20240101
 "The result's base type is the DDIC type dats that is mapped to the
 "ABAP type d.
@@ -171,7 +174,10 @@ DATA(date_utc_tz) = xco_cp=>sy->date( xco_cp_time=>time_zone->utc
                                 )->as( xco_cp_time=>format->iso_8601_basic
                                 )->value.
 
-"--------------------- Retrieving current date values (XCO) --------------------
+*&---------------------------------------------------------------------*
+*& Retrieving the current date values using XCO
+*&---------------------------------------------------------------------*
+
 "e.g. 01
 DATA(day) = xco_cp=>sy->date( )->day.
 "e.g. 01
@@ -179,7 +185,10 @@ DATA(month) = xco_cp=>sy->date( )->month.
 "e.g. 2024
 DATA(year) = xco_cp=>sy->date( )->year.
 
-"--------------------- Creating dates --------------------
+*&---------------------------------------------------------------------*
+*& Creating dates
+*&---------------------------------------------------------------------*
+
 DATA date_cr1 TYPE d.
 date_cr1 = '20240101'.
 DATA date_cr2 TYPE d VALUE '20240202'.
@@ -338,7 +347,9 @@ DATA(weekday2) = ( 5 + date_calc_3  MOD 7 ) MOD 7 + 1. "6 (Saturday)
 DATA(date_w_first_day_of_month) =  CONV d( replace( val = `202403020` off = 6 len = 2 with = `01` ) ). "20240301
 DATA(date_w_last_day_of_prev_month) = CONV d( date_w_first_day_of_month - 1 ). "20240229
 
-"------------ Performing date additions and subtractions using the XCO library ------------
+*&---------------------------------------------------------------------*
+*& Performing date additions and subtractions using the XCO library
+*&---------------------------------------------------------------------*
 
 "Adding days to the current date using the 'add' method
 "e.g. 2024-03-16 (if the current date is 2024-03-11)
@@ -498,7 +509,9 @@ The code snippet below provides examples of time processing, such as retrieving 
 ### Retrieving the Current Time
 
 ```abap
-"--------------------- Retrieving the current time --------------------
+*&---------------------------------------------------------------------*
+*& Retrieving the current time
+*&---------------------------------------------------------------------*
 
 "Retrieving the current time in UTC, e.g. 152450
 DATA(utc_time) = cl_abap_context_info=>get_system_time( ).
@@ -541,8 +554,6 @@ DATA(time_utc_tz) = xco_cp=>sy->time( xco_cp_time=>time_zone->utc
 ### Accessing Time Values
 
 ```abap
-"--------------------- Accessing time values --------------------
-
 "Note: As mentioned in a previous section on dates, the access to time fields
 "works similar as date fields. As an example, seconds, minutes, and hours are
 "extracted from a time field.
@@ -573,8 +584,6 @@ DATA(hr_w_xco) = xco_cp=>sy->time( xco_cp_time=>time_zone->user )->hour.
 ### Creating Time Values
 
 ```abap
-"--------------------- Creating times --------------------
-
 DATA time_cr1 TYPE t.
 time_cr1 = '095812'.
 DATA time_cr2 TYPE t VALUE '112400'.
@@ -598,7 +607,9 @@ DATA(seconds_from_time) = xco_time->second. "05
 ### Performing Time Calculations
 
 ```abap
-"------------ Performing time calculations ------------
+*&---------------------------------------------------------------------*
+*& Performing time calculations
+*&---------------------------------------------------------------------*
 
 "Retrieving seconds, minutes, and hours from a time value in a data object
 "of type t
@@ -623,7 +634,9 @@ DATA(time_xco_subtr) = xco_cp=>sy->time( xco_cp_time=>time_zone->user
                                        )->as( xco_cp_time=>format->iso_8601_extended
                                        )->value.
 
-"------------ Calculating the time delta between two time values ------------
+*&---------------------------------------------------------------------*
+*& Calculating the time delta between two time values
+*&---------------------------------------------------------------------*
 
 DATA: time1 TYPE t VALUE '210000',
       time2 TYPE t VALUE '040000'.
@@ -647,7 +660,10 @@ DATA(time2_conv2i) = CONV i( time2 ).
 ASSERT time2_conv2i = ( 04 * 3600 ) + ( 00 * 60 ) + 00.
 ASSERT time2_conv2i - time1_conv2i = time_diff.
 
-"---- Calculating the total values of the time difference in seconds, minutes and hours ----
+*&----------------------------------------------------------------------------------*
+*& Calculating the total values of the time difference in seconds, minutes and hours
+*&----------------------------------------------------------------------------------*
+
 "The MOD operator is used and works in a way that the positive remainder
 "of the division of the left operand by the right is returned. Therefore,
 "it is irrelevant whether the time difference value is either positive or
@@ -730,8 +746,6 @@ DATA(hours_no_div_dec) = CONV decfloat34( ( ( time2 - time1 ) MOD 86400 ) / 3600
 ### CL_ABAP_TIMEFM: Converting Time Values
 
 ```abap
-"------------ Conversions with the CL_ABAP_TIMEFM class ------------
-
 "Using the CL_ABAP_TIMEFM class, you can perform conversions with external
 "and internal representations of a time, e.g. conversion of a time in a data
 "object of type string to type t and vice versa. Multiple methods are available,
@@ -825,7 +839,9 @@ DATA(ts_utc_tz) = xco_cp=>sy->moment( xco_cp_time=>time_zone->utc
 #### Creating/Modifying a Time Stamp
 
 ```abap
-"--------------------- Creating time stamps --------------------
+*&---------------------------------------------------------------------*
+*& Creating time stamps
+*&---------------------------------------------------------------------*
 
 DATA ts7 TYPE utclong.
 ts7 = utclong_current( ).
@@ -844,7 +860,9 @@ DATA(ts10) = xco_cp_time=>moment( iv_year   = '2024'
                                 )->as( xco_cp_time=>format->iso_8601_extended 
                                 )->value.
 
-"--------------------- Modifying time stamps (XCO) --------------------
+*&---------------------------------------------------------------------*
+*& Modifying time stamps (XCO)
+*&---------------------------------------------------------------------*
 
 "As covered for date and time types, you can modify time stamps using string 
 "processing functionalities. They are not covered here. XCO provides, for 

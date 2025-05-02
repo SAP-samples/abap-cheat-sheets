@@ -1822,7 +1822,10 @@ SELECT *
  [`FINAL`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenfinal_inline.htm).
 
 ```abap
-"--------------------- Constants --------------------
+*&---------------------------------------------------------------------*
+*& Constants
+*&---------------------------------------------------------------------*
+
 "As mentioned above, constants cannot be changed at runtime.
 CONSTANTS con_str TYPE string VALUE `hallo`.
 
@@ -1836,7 +1839,10 @@ CONSTANTS: BEGIN OF const_struct,
               char TYPE c LENGTH 4 VALUE 'ABAP',
            END OF const_struct.
 
-"--------------------- Immutable variables --------------------
+*&---------------------------------------------------------------------*
+*& Immutable variables
+*&---------------------------------------------------------------------*
+
 FINAL(do_final_inl) = 1.
 DATA(do_data_inl) = 1 + do_final_inl.
 "not possible
@@ -2292,7 +2298,9 @@ See the conversion rules for the different data types here: [Assignment and Conv
     
 
 ```abap
-"-------------------- Conversions --------------------
+*&---------------------------------------------------------------------*
+*& Conversions
+*&---------------------------------------------------------------------*
 
 "Implicit conversions of the types c and string
 DATA do_1_str TYPE string VALUE `abcdef`.
@@ -2317,7 +2325,9 @@ DATA(do_7_i) = CONV i( do_6_dcfl34 ).
 "`10-`
 DATA(i2str) = CONV string( -10 ).
 
-"-------------------- Compatibility --------------------
+*&---------------------------------------------------------------------*
+*& Compatibility
+*&---------------------------------------------------------------------*
 
 "1. Source and target are compatible, all technical type properties 
 "   match

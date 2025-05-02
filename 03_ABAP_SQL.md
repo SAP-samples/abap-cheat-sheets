@@ -2389,7 +2389,10 @@ UPDATE dbtab FROM TABLE @itab.
 UPDATE dbtab FROM TABLE @( VALUE #( ( comp1 = ... comp2 = ... )
                                     ( comp1 = ... comp2 = ... ) ) ).
 
-"-------------------------- SET addition --------------------------
+*&---------------------------------------------------------------------*
+*& SET addition
+*&---------------------------------------------------------------------*
+
 "Changing values of specific fields without overwriting other, non-specified 
 "fields
 "Changing values of specific fields in all table rows
@@ -2409,7 +2412,10 @@ UPDATE dbtab SET comp2 = 'X', comp3 = 'Y' WHERE comp4 > 100.
 "in the WHERE clause
 UPDATE dbtab SET comp2 = 'X' WHERE key_field = 'Y'.
 
-"--------------- INDICATORS ... SET STRUCTURE addition ---------------
+*&---------------------------------------------------------------------*
+*& INDICATORS ... SET STRUCTURE addition
+*&---------------------------------------------------------------------*
+
 "Similar to SET, using the INDICATORS ... addition, you  can change content 
 "of specific fields without overwriting existing values of other fields by 
 "specifying set indicators.
@@ -2501,7 +2507,10 @@ For more information about constructor expressions, see the ABAP Keyword Documen
 The following examples show a selection. The previous code snippets already include the use of the `VALUE` operator with which structures and internal tables can be created in place.
 
 ```abap
-"--- VALUE ---
+*&---------------------------------------------------------------------*
+*& VALUE
+*&---------------------------------------------------------------------*
+
 "VALUE operator as shown above, creating an internal table in place
 INSERT dbtab FROM TABLE @( VALUE #( ( key_field = 1 comp1 = ... )
                                     ( key_field = 2 comp1 = ... )
@@ -2533,7 +2542,10 @@ SELECT SINGLE * FROM dbtab WHERE key_field = ... INTO @DATA(read_line).
 "original content and are not initialized when writing to the database table.
 UPDATE dbtab FROM @( VALUE #( BASE read_line comp2 = ... comp4 = ... ) ).
 
-"--- CORRESPONDING ---
+*&---------------------------------------------------------------------*
+*& CORRESPONDING
+*&---------------------------------------------------------------------*
+
 "The following example assumes that some_itab has a different line type than dbtab.
 "I.e. some_itab may have more components that are not available in dbtab. The
 "corresponding fields with identical names are used. It is assumed that the components'
@@ -2572,8 +2584,10 @@ CLASS zcl_demo_abap IMPLEMENTATION.
 
   METHOD if_oo_adt_classrun~main.
 
-    "--------------------------- INSERT ---------------------------
-
+*&---------------------------------------------------------------------*
+*& INSERT
+*&---------------------------------------------------------------------*
+   
     "Deleting the contents of a demo database table to start with an empty database table
     DELETE FROM zdemo_abap_tab1.
 
@@ -2645,9 +2659,9 @@ CLASS zcl_demo_abap IMPLEMENTATION.
     SELECT * FROM zdemo_abap_tab1 INTO TABLE @DATA(itab_insert).
     out->write( data = itab_insert name = `itab_insert` ).
 
-**********************************************************************
-
-    "--------------------------- UPDATE ---------------------------
+*&---------------------------------------------------------------------*
+*& UPDATE
+*&---------------------------------------------------------------------*
 
     "Preparing a demo database table
     DELETE FROM zdemo_abap_tab1.
@@ -2721,9 +2735,10 @@ CLASS zcl_demo_abap IMPLEMENTATION.
     SELECT * FROM zdemo_abap_tab1 INTO TABLE @DATA(itab_update_set).
     out->write( data = itab_update_set name = `itab_update_set` ).
 
-**********************************************************************
+*&---------------------------------------------------------------------*
+*& MODIFY
+*&---------------------------------------------------------------------*
 
-    "--------------------------- MODIFY ---------------------------
     "The examples include INSERT statements to prepare the database table.
 
     "Deleting the contents of a demo database table to start with an empty database table
@@ -2753,9 +2768,9 @@ CLASS zcl_demo_abap IMPLEMENTATION.
     SELECT * FROM zdemo_abap_tab1 INTO TABLE @DATA(itab_modify).
     out->write( data = itab_modify name = `itab_modify` ).
 
-**********************************************************************
-
-    "--------------------------- DELETE ---------------------------
+*&---------------------------------------------------------------------*
+*& DELETE
+*&---------------------------------------------------------------------*
 
     "Deleting the contents of a demo database table to start with an empty database table
     DELETE FROM zdemo_abap_tab1.
@@ -2790,9 +2805,10 @@ CLASS zcl_demo_abap IMPLEMENTATION.
     SELECT * FROM zdemo_abap_tab1 INTO TABLE @itab_delete.
     out->write( data = itab_delete name = `itab_delete` ).
 
-**********************************************************************
+*&-----------------------------------------------------------------------*
+*& Exploring constructor expressions for internal tables created in place
+*&-----------------------------------------------------------------------*
 
-    "-------- Exploring constructor expressions for internal tables created in place --------
     "For more information about constructor expressions, see the ABAP Keyword Documentation and the
     "Constructor Expressions cheat sheet. Many additions are available. The examples show a
     "selection.
@@ -2886,7 +2902,7 @@ SELECT *
 - CDS artifacts are available that allow not only reading but also creating, updating, and deleting.
 - **Table Entities**
   - Table entities are CDS entities that define database tables on the SAP HANA database linked to AS ABAP.
-  - They are - with restructions currently - considered successors of the classic DDIC database table, and also represent global structured types usable in ABAP.
+  - They are - with restrictions currently - considered successors of the classic DDIC database table, and also represent global structured types usable in ABAP.
   - Syntax: `define table entity ...`.
   - For more information, refer to the ABAP Data Models guide, for example, [here](https://help.sap.com/docs/ABAP_Cloud/aaae421481034feab3e71dd9e0f643bf/100ab51935544f18b4f4be9b4abb91e8.html).
 - **Writable CDS View Entities**
@@ -3164,7 +3180,10 @@ The following example explores the setting of `sy-subrc` and `sy-dbcnt` by ABAP 
 "Clearing a demo database table
 DELETE FROM zdemo_abap_tab1.
 
-"--------------------- INSERT ---------------------
+*&---------------------------------------------------------------------*
+*& INSERT
+*&---------------------------------------------------------------------*
+
 INSERT zdemo_abap_tab1 FROM @( VALUE #( key_field = 1 ) ).
 
 ASSERT sy-subrc = 0.
@@ -3188,7 +3207,10 @@ INSERT zdemo_abap_tab1 FROM TABLE @( VALUE #( ( key_field = 3 )
 ASSERT sy-subrc = 4.
 ASSERT sy-dbcnt = 1.
 
-"--------------------- UPDATE ---------------------
+*&---------------------------------------------------------------------*
+*& UPDATE
+*&---------------------------------------------------------------------*
+
 UPDATE zdemo_abap_tab1 FROM @( VALUE #( key_field = 1 num1 = 1 ) ).
 
 ASSERT sy-subrc = 0.
@@ -3211,7 +3233,10 @@ UPDATE zdemo_abap_tab1 FROM TABLE @( VALUE #( ( key_field = 4 num1 = 4 )
 ASSERT sy-subrc = 4.
 ASSERT sy-dbcnt = 1.
 
-"--------------------- MODIFY ---------------------
+*&---------------------------------------------------------------------*
+*& MODIFY
+*&---------------------------------------------------------------------*
+
 MODIFY zdemo_abap_tab1 FROM @( VALUE #( key_field = 1 num1 = 11 ) ).
 
 ASSERT sy-subrc = 0.
@@ -3223,7 +3248,9 @@ MODIFY zdemo_abap_tab1 FROM TABLE @( VALUE #( ( key_field = 2 num1 = 22 )     "E
 ASSERT sy-subrc = 0.
 ASSERT sy-dbcnt = 2.
 
-"--------------------- SELECT ---------------------
+*&---------------------------------------------------------------------*
+*& SELECT
+*&---------------------------------------------------------------------*
 
 SELECT *
   FROM zdemo_abap_tab1
@@ -3249,7 +3276,10 @@ SELECT *
 ASSERT sy-subrc = 4.
 ASSERT sy-dbcnt = 0.
 
-"--------------------- DELETE ---------------------
+*&---------------------------------------------------------------------*
+*& DELETE
+*&---------------------------------------------------------------------*
+
 DELETE zdemo_abap_tab1 FROM @( VALUE #( key_field = 1 ) ).
 ASSERT sy-subrc = 0.
 ASSERT sy-dbcnt = 1.

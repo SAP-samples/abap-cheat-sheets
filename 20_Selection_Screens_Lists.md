@@ -4322,7 +4322,6 @@ Overwriting line content and format<br><br>
 - Overwrites a line stored in the list buffer with the content of the `sy-lisel` system field
 - Allows additional modifications such as changing the value and format.
 - Find more information [here](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapmodify_line.htm).
-- 
 
  </td>
 

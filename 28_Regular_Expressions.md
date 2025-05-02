@@ -819,9 +819,9 @@ string_cond_pattern = replace( val = `cd` pcre = `(ab)?cd` with = `${1:-yz}cd` )
 The following example demonstrates a selection of syntax options with `FIND` and `REPLACE`. There are multiple options as there is a rich variety of additions. For more details, refer to the [String Processing](07_String_Processing.md) cheat sheet.
 
 ```abap
-"-----------------------------------------------------------------------------
-"------------------------------- FIND ----------------------------------------
-"-----------------------------------------------------------------------------
+*&---------------------------------------------------------------------*
+*& FIND
+*&---------------------------------------------------------------------*
 
 DATA(str) = `Cathy's black cat on the mat played with Matt.`.
 
@@ -943,9 +943,9 @@ ASSERT url_parts = url_parts_for_loop.
 *abap-concepts
 *controlled-sap-luw
 
-"-----------------------------------------------------------------------------
-"------------------------------- REPLACE -------------------------------------
-"-----------------------------------------------------------------------------
+*&---------------------------------------------------------------------*
+*& REPLACE
+*&---------------------------------------------------------------------*
 
 DATA(str_replace) = `ab apppc app`.
 DATA(str_replace_copy) = str_replace.

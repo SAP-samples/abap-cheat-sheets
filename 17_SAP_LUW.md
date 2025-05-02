@@ -329,7 +329,10 @@ Example using `CL_ABAP_TX`:
 ```abap
 ...
 
-"------------- Activating the modify transactional phase -------------
+*&---------------------------------------------------------------------*
+*& Activating the modify transactional phase
+*&---------------------------------------------------------------------*
+
 cl_abap_tx=>modify( ).
 
 "The following database modification statement is not allowed in the
@@ -343,7 +346,10 @@ MODIFY zdemo_abap_carr FROM TABLE @( VALUE #(
 
 ...
 
-"------------- Activating the save transactional phase -------------
+*&---------------------------------------------------------------------*
+*& Activating the save transactional phase
+*&---------------------------------------------------------------------*
+
 cl_abap_tx=>save( ).
 
 "In this phase, database modifications are allowed.

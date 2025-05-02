@@ -80,7 +80,7 @@
   - The ABAP compiler cannot check the dynamic programming feature like the `SELECT` statement mentioned above. There is no syntax warning or suchlike. 
   - The checks are performed only at runtime, which has an impact on the performance. 
   - The testing of [procedures](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenprocedure_glosry.htm "Glossary Entry") that include dynamic programming features may be difficult.
-  - Including external input in dynamic ABAP SQL statements without an appropriate handling, there can be potential security risks. You can, for example, use the `CL_ABAP_DYN_PRG` class to manage security risks.
+  - ⚠️ Dynamic programming techniques can pose significant security risks if not used correctly. You should thoroughly check or escape any dynamic content received from external sources before using it in dynamic statements. You can achieve this using the system class `CL_ABAP_DYN_PRG` or the built-in `escape` function.
 
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
@@ -668,7 +668,9 @@ Excursion: Static vs. dynamic type, upcasts and downcasts
 The code snippet below demonstrates upcasts and downcasts with data reference variables, but also object reference variables to visualize moving up and down an inheritance tree. The examples in the code snippet use object reference variables to illustrate the class hierarchy of the [Runtime Type Services (RTTS)](#runtime-type-services-rtts), which is covered in more detail further down. You can find the hierarchy tree of the classes [here](#runtime-type-services-rtts).
 
 ``` abap
-"------------ Object reference variables ------------
+*&---------------------------------------------------------------------*
+*& Object reference variables
+*&---------------------------------------------------------------------*
 
 "Static and dynamic types
 "Defining an object reference variable with a static type
@@ -689,7 +691,9 @@ DATA tdo_elem TYPE REF TO cl_abap_elemdescr.
 DATA tdo_data TYPE REF TO cl_abap_datadescr.
 DATA tdo_gen_obj TYPE REF TO object.
 
-"------------ Upcasts ------------
+*&---------------------------------------------------------------------*
+*& Upcasts
+*&---------------------------------------------------------------------*
 
 "Moving up the inheritance tree
 "Assignments:
@@ -728,7 +732,9 @@ DATA(tdo_inl_cast) = CAST cl_abap_typedescr( tdo_elem ).
 
 CLEAR: tdo_super, tdo_elem, tdo_data, tdo_gen_obj.
 
-"------------ Downcasts ------------
+*&---------------------------------------------------------------------*
+*& Downcasts
+*&---------------------------------------------------------------------*
 
 "Moving down the inheritance tree
 "Assignments:
@@ -750,7 +756,9 @@ tdo_elem = CAST #( tdo_data ).
 "cl_abap_typedescr -> cl_abap_elemdescr
 tdo_elem = CAST #( tdo_super ).
 
-"------------ Error prevention in downcasts ------------
+*&---------------------------------------------------------------------*
+*& Error prevention in downcasts
+*&---------------------------------------------------------------------*
 
 "In the examples above, the assignments work. The following code snippets
 "deal with examples in which a downcast is not possible. An exception is
@@ -791,7 +799,10 @@ ENDTRY.
 "- non-initial object reference variables, the dynamic type is checked.
 "- initial object reference variables, the static type is checked.
 
-"------------ IS INSTANCE OF ------------
+*&---------------------------------------------------------------------*
+*& IS INSTANCE OF
+*&---------------------------------------------------------------------*
+
 DATA some_tdo TYPE REF TO cl_abap_typedescr.
 some_tdo = cl_abap_typedescr=>describe_by_data( str_table ).
 
@@ -833,7 +844,10 @@ ELSE.
   ...
 ENDIF.
 
-"------------ CASE TYPE OF ------------
+*&---------------------------------------------------------------------*
+*& CASE TYPE OF
+*&---------------------------------------------------------------------*
+
 "The examples are desinged similarly to the IS INSTANCE OF examples.
 
 DATA(dref) = REF #( str_table ).
@@ -871,9 +885,9 @@ CASE TYPE OF initial_tdo.
     ...
 ENDCASE.
 
-**********************************************************************
-
-"------------ Data reference variables ------------
+*&---------------------------------------------------------------------*
+*& Data reference variables
+*&---------------------------------------------------------------------*
 
 "Declaring data reference variables
 DATA ref1 TYPE REF TO i.
@@ -1196,7 +1210,10 @@ DATA dobj TYPE string VALUE `hallo`.
 "The following examples use a field symbol with generic type
 FIELD-SYMBOLS <fs> TYPE data.
 
-"------- Specifying the memory area dynamically ------
+*&---------------------------------------------------------------------*
+*& Specifying the memory area dynamically
+*&---------------------------------------------------------------------*
+
 "I.e. the memory area is not specified directly, but as content of a
 "character-like data object in parentheses.
 "Note:
@@ -1240,7 +1257,10 @@ DATA(some_named_dobj) = 'SOME_STRING'.
 "Development.
 "ASSIGN (some_named_dobj) TO FIELD-SYMBOL(<fs>).
 
-"------- Assigning components dynamically ------
+*&---------------------------------------------------------------------*
+*& Assigning components dynamically
+*&---------------------------------------------------------------------*
+
 "You can chain the names with the component selector (-), or, in
 "case of reference variables, the object component selector (->).
 ASSIGN st-('COL1') TO <fs>.
@@ -1271,7 +1291,10 @@ ASSIGN st-(0) TO <fs>.
 ASSIGN COMPONENT 'COL1' OF STRUCTURE st TO <fs>.
 ASSIGN COMPONENT 3 OF STRUCTURE st TO <fs>.
 
-"------- Assigning attributes of classes or interfaces dynamically ------
+*&---------------------------------------------------------------------*
+*& Assigning attributes of classes or interfaces dynamically
+*&---------------------------------------------------------------------*
+
 "The following syntax pattern shows the possible specifications.
 "... cref->(attr_name) ...  "object reference variable
 "... iref->(attr_name) ...  "interface reference variable
@@ -1327,7 +1350,10 @@ ASSERT sy-subrc = 0 AND <eu> IS ASSIGNED.
 ASSIGN ('DOES_NOT_EXIST') TO <eu> ELSE UNASSIGN.
 ASSERT sy-subrc = 4 AND <eu> IS NOT ASSIGNED.
 
-"------- Assigments and casting a dynamically specified type ------
+*&---------------------------------------------------------------------*
+*& Assigments and casting a dynamically specified type
+*&---------------------------------------------------------------------*
+
 "Pattern: ASSIGN ... TO <fs> CASTING TYPE (type_name).
 
 "Assigning a data object to a field symbol casting a dynamically
@@ -1369,7 +1395,9 @@ ENDLOOP.
 *Error! Exception raised: CX_SY_ASSIGN_CAST_UNKNOWN_TYPE; 'ASSIGN ... CASTING failed; NOPE is an unknown type'
 *Error! Exception raised: CX_SY_ASSIGN_CAST_ILLEGAL_CAST; 'ASSIGN ... CASTING failed: Incompatible type'
 
-"------- Assigments and dynamic casting using a type description object ------
+*&---------------------------------------------------------------------*
+*& Assigments and dynamic casting using a type description object
+*&---------------------------------------------------------------------*
 
 "Note: As covered further down and in the executable example,
 "CREATE DATA and ASSIGN statements have the HANDLE addition
@@ -1395,7 +1423,10 @@ ASSIGN dobj_c10 TO <casttype> CASTING TYPE HANDLE tdo_elem. "1234
 - You can also use type description objects and the [`TYPE HANDLE` addition](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapcreate_data_handle.htm) to create anonymous data objects dynamically. For this and the absolute names, find more information below in the section about RTTS.
 
 ``` abap
-"------------ CREATE DATA statement patterns ----------------
+*&---------------------------------------------------------------------*
+*& CREATE DATA statement patterns
+*&---------------------------------------------------------------------*
+
 "CREATE DATA dref TYPE (typename) ...
 "CREATE DATA dref TYPE ... TABLE OF (typename) ...
 "CREATE DATA dref TYPE REF TO (typename).
@@ -1404,7 +1435,9 @@ ASSIGN dobj_c10 TO <casttype> CASTING TYPE HANDLE tdo_elem. "1234
 "CREATE DATA dref TYPE (absolute_name).
 "CREATE DATA dref TYPE HANDLE type_description_object.
 
-"------------ Specifying a type name dynamically ------------
+*&---------------------------------------------------------------------*
+*& Specifying a type name dynamically
+*&---------------------------------------------------------------------*
 
 "Anonymous data objects are created using a type determined at
 "runtime. In this case, the name of the data type is specified
@@ -1432,8 +1465,9 @@ DATA carr_tab TYPE TABLE OF zdemo_abap_carr WITH EMPTY KEY.
 TYPES t_str_ref TYPE REF TO string.
 DATA str_ref TYPE REF TO string.
 
-
-"----- Pattern: TYPE (typename) ... -----
+*&---------------------------------------------------------------------*
+*& Pattern: TYPE (typename) ...
+*&---------------------------------------------------------------------*
 
 "Creating an elementary data object
 "Specifying a literal for the dynamic type name (used in most of the
@@ -1453,7 +1487,9 @@ CREATE DATA dref TYPE ('T_CARR_TAB').
 "Data reference
 CREATE DATA dref TYPE ('T_STR_REF').
 
-"----- Pattern: TYPE ... TABLE OF (typename) ... -----
+*&---------------------------------------------------------------------*
+*& Pattern: TYPE ... TABLE OF (typename) ...
+*&---------------------------------------------------------------------*
 
 "Creating internal tables
 "Note that the syntax with CREATE DATA does not support the specification of
@@ -1474,7 +1510,9 @@ DATA itab TYPE SORTED TABLE OF zdemo_abap_fli WITH UNIQUE KEY carrid connid flda
 DATA(key_table) = VALUE string_table( ( `CARRID` ) ( `CONNID` ) ( `FLDATE` ) ).
 CREATE DATA dref TYPE SORTED TABLE OF ('ZDEMO_ABAP_FLI') WITH UNIQUE KEY (key_table).
 
-"----- Pattern: TYPE REF TO (typename) -----
+*&---------------------------------------------------------------------*
+*& Pattern: TYPE REF TO (typename)
+*&---------------------------------------------------------------------*
 
 "Creating data reference variables
 
@@ -1483,23 +1521,31 @@ CREATE DATA dref TYPE REF TO ('T_C3').
 CREATE DATA dref TYPE REF TO ('T_FLI_STRUC').
 CREATE DATA dref TYPE REF TO ('T_CARR_TAB').
 
-"----- Pattern: TYPE LINE OF (typename) -----
+*&---------------------------------------------------------------------*
+*& Pattern: TYPE LINE OF (typename)
+*&---------------------------------------------------------------------*
 
 "Creating structures based on table types
 CREATE DATA dref TYPE LINE OF ('T_CARR_TAB').
 
-"----- Pattern: LIKE struc-(dobjname) -----
+*&---------------------------------------------------------------------*
+*& Pattern: LIKE struc-(dobjname)
+*&---------------------------------------------------------------------*
 
 CREATE DATA dref LIKE fli_struc-('CARRID').
 
-"----- Pattern: TYPE (absolute_name) -----
+*&---------------------------------------------------------------------*
+*& Pattern: TYPE (absolute_name)
+*&---------------------------------------------------------------------*
 
 CREATE DATA dref TYPE ('\TYPE=STRING').
 "Getting an absolute type name; see more information further down
 DATA(absolute_name) = cl_abap_typedescr=>describe_by_name( 'ZDEMO_ABAP_CARR' )->absolute_name.
 CREATE DATA dref TYPE (absolute_name).
 
-"----- Pattern: TYPE HANDLE type_description_object -----
+*&---------------------------------------------------------------------*
+*& Pattern: TYPE HANDLE type_description_object
+*&---------------------------------------------------------------------*
 
 "Getting a type description object. Find more information about RTTI below.
 DATA(tdo_elem) = cl_abap_elemdescr=>get_c( 4 ). "type c length 4
@@ -1706,9 +1752,9 @@ itab_ref = VALUE #( ( NEW demo_struct( col1 = 1 col2 = `aaa` col3 = `zzz` ) ) ).
 "- Many of the following statements provide similar additions offering dynamic
 "  specifications, such as USING KEY and dynamic component name specifications.
 
-"----------------------------------------------------------
-"------------------------ SORT (1) ------------------------
-"----------------------------------------------------------
+*&---------------------------------------------------------------------*
+*& SORT (1)
+*&---------------------------------------------------------------------*
 
 "Note: See more dynamic specifications with SORT statements
 "further down.
@@ -1719,9 +1765,9 @@ SORT itab_ek BY (field_name) DESCENDING.
 "Unnamed data object specified within parenteses
 SORT itab_ek BY ('COL2') ASCENDING.
 
-"-------------------------------------------------------------
-"------------------------ READ TABLE -------------------------
-"-------------------------------------------------------------
+*&---------------------------------------------------------------------*
+*& READ TABLE
+*&---------------------------------------------------------------------*
 
 "Reading by specifying keys dynamically
 "Implicitly specifying the table key values in a work area (USING KEY addition)
@@ -1772,9 +1818,9 @@ DATA(dyn_where_cond_tab) = VALUE string_table( ( `col3` ) ( `CS` ) ( `'x'` ) ).
 READ TABLE itab INTO dyn_res WHERE (dyn_where_cond_tab).
 ASSERT sy-tabix = 3.
 
-"-------------------------------------------------------------
-"------------------------ Table expressions ------------------
-"-------------------------------------------------------------
+*&---------------------------------------------------------------------*
+*& Table expressions
+*&---------------------------------------------------------------------*
 
 "Similar to READ TABLE statements, you can specify table lines with 3 alternatives:
 "index read, read using free key, table key
@@ -1801,9 +1847,9 @@ DATA(wa_te4) = itab[ KEY ('PRIMARY_KEY') COMPONENTS ('COL1') = 1 ].
 itab[ 1 ]-('COL2') = `jkl`.
 itab_ref[ 1 ]->('COL2') = `mno`.
 
-"--------------------------------------------------------
-"------------------------ LOOP AT -----------------------
-"--------------------------------------------------------
+*&---------------------------------------------------------------------*
+*& LOOP AT
+*&---------------------------------------------------------------------*
 
 "USING KEY addition: Overriding the standard order determined by the table category
 LOOP AT itab REFERENCE INTO DATA(ref) USING KEY ('SK').
@@ -1828,9 +1874,9 @@ LOOP AT itab REFERENCE INTO ref WHERE (cond_loop).
   ...
 ENDLOOP.
 
-"--------------------------------------------------------
-"------------------------ INSERT ------------------------
-"--------------------------------------------------------
+*&---------------------------------------------------------------------*
+*& INSERT
+*&---------------------------------------------------------------------*
 
 "The USING KEY addition (which accepts a dynamic specification) affects the order in which lines are inserted.
 
@@ -1859,9 +1905,9 @@ LOOP AT itab INTO DATA(wa_pk) USING KEY ('PRIMARY_KEY').
   APPEND wa_pk TO it_primekey_idx.
 ENDLOOP.
 
-"--------------------------------------------------------
-"------------------------ MODIFY ------------------------
-"--------------------------------------------------------
+*&---------------------------------------------------------------------*
+*& MODIFY
+*&---------------------------------------------------------------------*
 
 "In the following example, a line is modified based on a work area and a table key.
 "The component col1 is left out from the work area intentionally.
@@ -1881,9 +1927,9 @@ MODIFY itab INDEX 2 USING KEY ('SK') FROM VALUE #( col3 = `ttt` ) TRANSPORTING (
 DATA(cond_mod) = `COL1 < 3`.
 MODIFY itab FROM VALUE #( col3 = `sss` ) TRANSPORTING ('COL3') WHERE (cond_mod).
 
-"--------------------------------------------------------
-"------------------------ DELETE ------------------------
-"--------------------------------------------------------
+*&---------------------------------------------------------------------*
+*& DELETE
+*&---------------------------------------------------------------------*
 
 "A single line or multipled lines can be deleted.
 "Note that DELETE ADJACENT DUPLICATES statements can also be specified using
@@ -1908,9 +1954,9 @@ DATA(condition_tab) = VALUE string_table( ( `COL1 < 3` )
                                           ( `COL3 = ``www``` ) ).
 DELETE itab WHERE (condition_tab).
 
-"--------------------------------------------------------
-"------------------------ SORT (2) ------------------------
-"--------------------------------------------------------
+*&---------------------------------------------------------------------*
+*& SORT (2)
+*&---------------------------------------------------------------------*
 
 "Sorting by dynamically specified components in a sort table, i. e.an
 "internal table of type abap_sortorder_tab.
@@ -1995,7 +2041,9 @@ SORT it BY VALUE abap_sortorder_tab( FOR wa IN comp_names ( name = condense( to_
 ### Dynamic ABAP SQL Statements
 
 ```abap
-"--------------------- Dynamic SELECT list ---------------------
+*&---------------------------------------------------------------------*
+*& Dynamic SELECT list
+*&---------------------------------------------------------------------*
 
 DATA(select_list) = `CARRID, CONNID, FLDATE`.
 DATA fli_tab TYPE TABLE OF zdemo_abap_fli WITH EMPTY KEY.
@@ -2004,14 +2052,18 @@ SELECT (select_list)
   FROM zdemo_abap_fli
   INTO CORRESPONDING FIELDS OF TABLE @fli_tab.
 
-"--------------------- Dynamic FROM clause ---------------------
+*&---------------------------------------------------------------------*
+*& Dynamic FROM clause
+*&---------------------------------------------------------------------*
 
 DATA(table) = 'ZDEMO_ABAP_FLI'.
 SELECT *
   FROM (table)
   INTO TABLE @fli_tab.
 
-"--------------------- Excursion: Compatible target data objects ---------------------
+*&---------------------------------------------------------------------*
+*& Excursion: Compatible target data objects
+*&---------------------------------------------------------------------*
 
 "In the examples above, the data object/type is created statically.
 
@@ -2041,7 +2093,9 @@ SELECT *
   FROM (table)
   INTO TABLE NEW @DATA(dref_tab).
 
-"--------------------- Dynamic WHERE clause ---------------------
+*&---------------------------------------------------------------------*
+*& Dynamic WHERE clause
+*&---------------------------------------------------------------------*
 
 "The example includes a WHERE clause that is created as an internal
 "table with a character-like row type.
@@ -2062,14 +2116,18 @@ SELECT *
   WHERE (where_clause_string)
   INTO TABLE NEW @DATA(tab_dyn_where_str).
 
-"--------------------- Dynamic ORDER BY clause ---------------------
+*&---------------------------------------------------------------------*
+*& Dynamic ORDER BY clause
+*&---------------------------------------------------------------------*
 
 SELECT *
   FROM zdemo_abap_fli
   ORDER BY (`FLDATE`)
   INTO TABLE NEW @DATA(tab_dyn_order).
 
-"----- SELECT statement with miscellaneous dynamic specifications -----
+*&---------------------------------------------------------------------*
+*& SELECT statement with miscellaneous dynamic specifications
+*&---------------------------------------------------------------------*
 
 SELECT (`CARRID, CONNID, FLDATE`)
   FROM (`ZDEMO_ABAP_FLI`)
@@ -2077,7 +2135,9 @@ SELECT (`CARRID, CONNID, FLDATE`)
   ORDER BY (`FLDATE`)
   INTO TABLE NEW @DATA(tab_dyn_misc).
 
-"--------------------- Dynamic INSERT statement ---------------------
+*&---------------------------------------------------------------------*
+*& Dynamic INSERT statement
+*&---------------------------------------------------------------------*
 
 "Creating a structure to be inserted into the database table
 SELECT SINGLE *
@@ -2087,21 +2147,29 @@ dref_struc->('CARRID') = 'YZ'.
 
 INSERT (table) FROM @dref_struc->*.
 
-"--------------------- Dynamic UPDATE statement ---------------------
+*&---------------------------------------------------------------------*
+*& Dynamic UPDATE statement
+*&---------------------------------------------------------------------*
 
 dref_struc->('CURRENCY') = 'EUR'.
 UPDATE (table) FROM @dref_struc->*.
 
-"--------------------- Dynamic MODIFY statement ---------------------
+*&---------------------------------------------------------------------*
+*& Dynamic MODIFY statement
+*&---------------------------------------------------------------------*
 
 dref_struc->('SEATSOCC') = 10.
 MODIFY (table) FROM @dref_struc->*.
 
-"--------------------- Dynamic DELETE statement ---------------------
+*&---------------------------------------------------------------------*
+*& Dynamic DELETE statement
+*&---------------------------------------------------------------------*
 
 DELETE FROM (table) WHERE (`CARRID = 'YZ'`).
 
-"--------------------- Dynamic UPDATE ... SET ... statement ---------------------
+*&---------------------------------------------------------------------*
+*& Dynamic UPDATE ... SET ... statement
+*&---------------------------------------------------------------------*
 
 "Inserting demo data into the database table to work with
 TYPES carr_tab TYPE TABLE OF zdemo_abap_carr WITH EMPTY KEY.
@@ -2130,7 +2198,9 @@ set_clause = `CURRCODE = 'EUR'`.
 
 UPDATE ('ZDEMO_ABAP_CARR') SET (set_clause) WHERE (where_cl).
 
-"--------------------- Dynamic UPDATE ... INDICATORS ... statement ---------------------
+*&---------------------------------------------------------------------*
+*& Dynamic UPDATE ... INDICATORS ... statement 
+*&---------------------------------------------------------------------*
 
 "The statement changes values of specific fields without overwriting existing values of 
 "other fields.
@@ -2224,90 +2294,101 @@ CLASS zcl_demo_abap IMPLEMENTATION.
     "table is looped over to output content of all database tables
     DATA(dbtabs) = VALUE string_table( ( `ZDEMO_ABAP_CARR` )
                                        ( `ZDEMO_ABAP_FLI` )
+                                       ( `ZDEMO_WRONG_TABLE` )
                                        ( `ZDEMO_ABAP_FLSCH` ) ).
 
     LOOP AT dbtabs INTO DATA(dbtab).
-      "Retrieving database content of a dynamically specified database table (up to 5 rows)
+
+      "Checking for allowed input
       TRY.
-          SELECT *
-            FROM (dbtab)
-            INTO TABLE NEW @DATA(itab)
-            UP TO 5 ROWS.
-        CATCH cx_sy_dynamic_osql_semantics INTO DATA(sql_error).
-          CLEAR itab->*.
-          out->write( |Table { dbtab } does not exist.| ).
+          DATA(value1) = cl_abap_dyn_prg=>check_allowlist(
+              val           = dbtab
+              allowlist_str = `ZDEMO_ABAP_CARR,ZDEMO_ABAP_FLI,ZDEMO_ABAP_FLSCH` ).
+
+          "Retrieving database content of a dynamically specified database table (up to 5 rows)
+          TRY.
+              SELECT *
+                FROM (dbtab)
+                INTO TABLE NEW @DATA(itab)
+                UP TO 5 ROWS.
+            CATCH cx_sy_dynamic_osql_semantics INTO DATA(sql_error).
+              CLEAR itab->*.
+              out->write( sql_error->get_text( ) ).
+              CONTINUE.
+          ENDTRY.
+        CATCH cx_abap_not_in_allowlist INTO DATA(not_allowed).
+          out->write( not_allowed->get_text( ) ).
+          CONTINUE.
       ENDTRY.
 
-      IF sql_error IS INITIAL.
-        "Getting table component names using RTTI methods
-        TRY.
-            DATA(type_descr_obj_tab) = CAST cl_abap_tabledescr(
-              cl_abap_typedescr=>describe_by_data( itab->* ) ).
-            DATA(tab_comps) = CAST cl_abap_structdescr(
-              type_descr_obj_tab->get_table_line_type( ) )->get_components( ).
-            LOOP AT tab_comps ASSIGNING FIELD-SYMBOL(<comp>).
-              APPEND VALUE #( name = <comp>-name len = strlen( <comp>-name ) ) TO it_comps.
-            ENDLOOP.
-          CATCH cx_sy_move_cast_error INTO DATA(error).
-            out->write( |{ error->get_text( ) }| ).
-        ENDTRY.
+      "Getting table component names using RTTI methods
+      TRY.
+          DATA(type_descr_obj_tab) = CAST cl_abap_tabledescr(
+            cl_abap_typedescr=>describe_by_data( itab->* ) ).
+          DATA(tab_comps) = CAST cl_abap_structdescr(
+            type_descr_obj_tab->get_table_line_type( ) )->get_components( ).
+          LOOP AT tab_comps ASSIGNING FIELD-SYMBOL(<comp>).
+            APPEND VALUE #( name = <comp>-name len = strlen( <comp>-name ) ) TO it_comps.
+          ENDLOOP.
+        CATCH cx_sy_move_cast_error INTO DATA(error).
+          out->write( |{ error->get_text( ) }| ).
+      ENDTRY.
 
-        IF error IS INITIAL.
-          out->write( |\n| ).
-          out->write( |Retrieved content of database table { dbtab }:| ).
-          "Implementation for properly aligning the content
-          "The example is implemented to check the length of the column names as well as the
-          "length of the values in the columns. It determines the length of the longest string
-          "in each column. Depending on the length values, either the length of the column name
-          "or the length of the longest string in a column is stored in an internal table that
-          "contains information for calculating the offset.
-          LOOP AT tab_comps ASSIGNING FIELD-SYMBOL(<len>).
-            ASSIGN it_comps[ name = <len>-name ] TO FIELD-SYMBOL(<co>).
-            DATA(max_content) = REDUCE i( INIT len = <co>-len
-                                          FOR <line> IN itab->*
-                                          NEXT len = COND #( LET lv = |{ <line>-(<co>-name) }| IN
-                                                             WHEN strlen( lv ) > len THEN strlen( lv )
-                                                             ELSE len ) ).
-            "Extend the length value to leave some more space
-            IF max_content > <co>-len.
-              <co>-len = max_content + 3.
-            ELSE.
-              <co>-len += 3.
-            ENDIF.
-          ENDLOOP.
-          "Calculating offset values
-          DATA max_str_len TYPE i.
-          LOOP AT it_comps ASSIGNING FIELD-SYMBOL(<off>).
-            DATA(tabix) = sy-tabix.
-            READ TABLE it_comps INDEX tabix - 1 ASSIGNING FIELD-SYMBOL(<prev>).
-            <off>-off = COND #( WHEN tabix = 1 THEN 0 ELSE <prev>-len + <prev>-off ).
-            max_str_len += <off>-len.
-          ENDLOOP.
-          "Providing enough space so that table row content can be inserted based on
-          "the offset specification
-          SHIFT str BY max_str_len PLACES RIGHT.
-          "Adding the column names first
-          LOOP AT it_comps ASSIGNING FIELD-SYMBOL(<header>).
-            str = insert( val = str sub = <header>-name off = <header>-off ).
-          ENDLOOP.
-          out->write( str ).
-          "Processing all lines in the internal table containing the retrieved table rows
-          LOOP AT itab->* ASSIGNING FIELD-SYMBOL(<wa>).
-            CLEAR str.
-            SHIFT str BY max_str_len PLACES RIGHT.
-            DO.
-              TRY.
-                  str = insert( val = str sub = <wa>-(sy-index) off = it_comps[ sy-index ]-off ).
-                CATCH cx_sy_assign_illegal_component cx_sy_range_out_of_bounds cx_sy_itab_line_not_found.
-                  EXIT.
-              ENDTRY.
-            ENDDO.
-            out->write( str ).
-          ENDLOOP.
-        ENDIF.
+      IF error IS INITIAL.
         out->write( |\n| ).
-        CLEAR: str, it_comps.
+        out->write( |Retrieved content of database table { dbtab }:| ).
+        "Implementation for properly aligning the content
+        "The example is implemented to check the length of the column names as well as the
+        "length of the values in the columns. It determines the length of the longest string
+        "in each column. Depending on the length values, either the length of the column name
+        "or the length of the longest string in a column is stored in an internal table that
+        "contains information for calculating the offset.
+        LOOP AT tab_comps ASSIGNING FIELD-SYMBOL(<len>).
+          ASSIGN it_comps[ name = <len>-name ] TO FIELD-SYMBOL(<co>).
+          DATA(max_content) = REDUCE i( INIT len = <co>-len
+                                        FOR <line> IN itab->*
+                                        NEXT len = COND #( LET lv = |{ <line>-(<co>-name) }| IN
+                                                           WHEN strlen( lv ) > len THEN strlen( lv )
+                                                           ELSE len ) ).
+          "Extend the length value to leave some more space
+          IF max_content > <co>-len.
+            <co>-len = max_content + 3.
+          ELSE.
+            <co>-len += 3.
+          ENDIF.
+        ENDLOOP.
+        "Calculating offset values
+        DATA max_str_len TYPE i.
+        LOOP AT it_comps ASSIGNING FIELD-SYMBOL(<off>).
+          DATA(tabix) = sy-tabix.
+          READ TABLE it_comps INDEX tabix - 1 ASSIGNING FIELD-SYMBOL(<prev>).
+          <off>-off = COND #( WHEN tabix = 1 THEN 0 ELSE <prev>-len + <prev>-off ).
+          max_str_len += <off>-len.
+        ENDLOOP.
+        "Providing enough space so that table row content can be inserted based on
+        "the offset specification
+        SHIFT str BY max_str_len PLACES RIGHT.
+        "Adding the column names first
+        LOOP AT it_comps ASSIGNING FIELD-SYMBOL(<header>).
+          str = insert( val = str sub = <header>-name off = <header>-off ).
+        ENDLOOP.
+        out->write( str ).
+        "Processing all lines in the internal table containing the retrieved table rows
+        LOOP AT itab->* ASSIGNING FIELD-SYMBOL(<wa>).
+          CLEAR str.
+          SHIFT str BY max_str_len PLACES RIGHT.
+          DO.
+            TRY.
+                str = insert( val = str sub = <wa>-(sy-index) off = it_comps[ sy-index ]-off ).
+              CATCH cx_sy_assign_illegal_component cx_sy_range_out_of_bounds cx_sy_itab_line_not_found.
+                EXIT.
+            ENDTRY.
+          ENDDO.
+          out->write( str ).
+        ENDLOOP.
       ENDIF.
+      out->write( |\n| ).
+      CLEAR: str, it_comps.
     ENDLOOP.
   ENDMETHOD.
 ENDCLASS.
@@ -2403,9 +2484,9 @@ CLASS zcl_demo_abap IMPLEMENTATION.
     DATA(cl_name) = `ZCL_DEMO_ABAP`.
     DATA(meth_name1) = `STAT_METH1`.
 
-    "------------------------------------------------------------------------
-    "---------------- Calling static methods dynamically --------------------
-    "------------------------------------------------------------------------
+*&---------------------------------------------------------------------*
+*& Calling static methods dynamically
+*&---------------------------------------------------------------------*
 
     "-------- Method without mandatory parameters defined --------
     "The syntax is possible for methods of the same class.
@@ -2464,9 +2545,9 @@ CLASS zcl_demo_abap IMPLEMENTATION.
       CATCH cx_sy_dyn_call_illegal_type.
     ENDTRY.
 
-    "------------------------------------------------------------------------
-    "---------------- Calling instance methods dynamically ------------------
-    "------------------------------------------------------------------------
+*&---------------------------------------------------------------------*
+*& Calling instance methods dynamically
+*&---------------------------------------------------------------------*
 
     "Creating an instance of a class by specifying the type dynamically
     DATA oref TYPE REF TO object.
@@ -2488,9 +2569,9 @@ CLASS zcl_demo_abap IMPLEMENTATION.
     CALL METHOD oref->(`STAT_METH2`) EXPORTING text = `test` IMPORTING result = res.
     ASSERT res = `TEST`.
 
-    "------------------------------------------------------------------------
-    "------------------- PARAMETER-TABLE addition ---------------------------
-    "------------------------------------------------------------------------
+*&---------------------------------------------------------------------*
+*& PARAMETER-TABLE addition
+*&---------------------------------------------------------------------*
 
     "------- Static equivalents to the dynamic statement below -------
     DATA(oref_stat) = NEW zcl_demo_abap( ).
@@ -2973,11 +3054,10 @@ CLASS zcl_demo_abap IMPLEMENTATION.
     "Filling demo database tables of the ABAP cheat sheet repository
     zcl_demo_abap_aux=>fill_dbtabs( ).
 
-    "--------------------------------------------------------------------
-    "--- Specifying the data object holding external input as operand ---
-    "--- and literal ----------------------------------------------------
-    "--------------------------------------------------------------------
-
+*&-------------------------------------------------------------------------*
+*& Specifying the data object holding external input as operand and literal
+*&-------------------------------------------------------------------------*
+    
     "The example explores a dynamic WHERE clause. External content is used
     "in the WHERE clause, unchecked.
 
@@ -3025,9 +3105,10 @@ CLASS zcl_demo_abap IMPLEMENTATION.
     out->write( |\n\n| ).
     out->write( |{ repeat( val = `*` occ = 70 ) }| ).
 
-    "--------------------------------------------------------------------
-    "------------ Accessing not allowed database tables -----------------
-    "--------------------------------------------------------------------
+*&---------------------------------------------------------------------*
+*& Accessing not allowed database tables
+*&---------------------------------------------------------------------*
+
     "Assume the name of a database table is specified externally, and a
     "dynamic ABAP SQL statement uses this name. Potentially, users that
     "are actually not allowed to access the database table may get access.
@@ -3103,9 +3184,9 @@ CLASS zcl_demo_abap IMPLEMENTATION.
     out->write( |\n\n| ).
     out->write( |{ repeat( val = `*` occ = 70 ) }| ).
 
-    "--------------------------------------------------------------------
-    "------------ Verifying input against a given allowlist  ------------
-    "--------------------------------------------------------------------
+*&---------------------------------------------------------------------*
+*& Verifying input against a given allowlist
+*&---------------------------------------------------------------------*
 
     "Assume a SELECT statement dynamically specifies the column names
     "in the SELECT list. Table columns might be accessed although
@@ -3150,9 +3231,9 @@ CLASS zcl_demo_abap IMPLEMENTATION.
     out->write( |\n\n| ).
     out->write( |{ repeat( val = `*` occ = 70 ) }| ).
 
-    "--------------------------------------------------------------------
-    "------------ Potential manipulation of ABAP SQL clauses ------------
-    "--------------------------------------------------------------------
+*&---------------------------------------------------------------------*
+*& Potential manipulation of ABAP SQL clauses
+*&---------------------------------------------------------------------*
 
     "In the following example, a dynamic WHERE clause is set up. For this,
     "it is assumed that the WHERE clause uses external input via input fields.
@@ -3279,9 +3360,9 @@ CLASS zcl_demo_abap IMPLEMENTATION.
 
     out->write( |{ repeat( val = `*` occ = 70 ) }| ).
 
-    "--------------------------------------------------------------------
-    "---------------------------- Escaping ------------------------------
-    "--------------------------------------------------------------------
+*&---------------------------------------------------------------------*
+*& Escaping
+*&---------------------------------------------------------------------*
 
     "In various contexts, a replacement of special characters may be important.
     "Such an escaping is applied on characters contained in a string according
@@ -4442,11 +4523,10 @@ They use the following methods to get type description objects:
 - `...=>get*` (getting type description objects for elementary and other types; other get* methods are shown further down) 
 
 ```abap
-"------------------------------------------------------------------
-"--- Getting a type description object from an existing data ------
-"--- type name ----------------------------------------------------
-"--- describe_by_name method --------------------------------------
-"------------------------------------------------------------------
+*&---------------------------------------------------------------------*
+*& Getting a type description object from an existing data type name
+*& describe_by_name method
+*&---------------------------------------------------------------------*
 
 "Elementary and structured data object, internal table
 TYPES ty_elem TYPE c LENGTH 5.
@@ -4459,11 +4539,10 @@ DATA(tdo_from_name2) = cl_abap_typedescr=>describe_by_name( type_name ).
 "As shown above, using a cast to get more details.
 DATA(tdo_from_name3) = CAST cl_abap_tabledescr( cl_abap_typedescr=>describe_by_name( 'TY_TAB' ) ).
 
-"------------------------------------------------------------------
-"--- Getting a type description object from an existing data ------
-"--- object -------------------------------------------------------
-"--- describe_by_data method --------------------------------------
-"------------------------------------------------------------------
+*&---------------------------------------------------------------------*
+*& Getting a type description object from an existing data object
+*& describe_by_data method
+*&---------------------------------------------------------------------*
 
 "Elementary and structured data object, internal table
 DATA elem_dobj TYPE c LENGTH 5.
@@ -4475,11 +4554,10 @@ DATA(tdo_from_dobj2) = cl_abap_typedescr=>describe_by_data( struct_dobj ).
 "As shown above, using a cast to get more details.
 DATA(tdo_from_dobj3) = CAST cl_abap_tabledescr( cl_abap_typedescr=>describe_by_data( tab_dobj ) ).
 
-"----------------------------------------------------------------
-"--- Getting a type description object for built-in elementary -- 
-"--- types ------------------------------------------------------
-"--- cl_abap_elemdescr=>get* methods ----------------------------
-"----------------------------------------------------------------
+*&---------------------------------------------------------------------*
+*& Getting a type description object for built-in elementary types
+*& cl_abap_elemdescr=>get* methods
+*&---------------------------------------------------------------------*
 
 "Conceptually, all elementary, built-in ABAP types already
 "exist and can be accessed by the corresponding get_* methods.
@@ -4957,7 +5035,7 @@ DATA(tdo_tab_4) = cl_abap_tabledescr=>get_with_keys(
                         ( name = 'F' type = cl_abap_elemdescr=>get_i( ) )
                         ( name = 'G' type = CAST cl_abap_datadescr( cl_abap_typedescr=>describe_by_name( 'LAND1' ) ) )
                         ( name = 'H' type = CAST cl_abap_datadescr( cl_abap_typedescr=>describe_by_name( 'ZDEMO_ABAP_FLSCH' ) ) )
-                        ( name = 'I' type = CAST cl_abap_datadescr( CAST cl_abap_refdescr( cl_abap_typedescr=>describe_by_data( REF #( `hello` ) ) ) ) )
+                        ( name = 'I' type = CAST cl_abap_datadescr( cl_abap_refdescr=>get_by_name( 'STRING' ) ) )
                         ) )
                       p_keys = VALUE #(
                         ( name = VALUE #( )         "In case of the primary table key, a name must be provided here

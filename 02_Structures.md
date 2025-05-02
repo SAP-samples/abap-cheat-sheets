@@ -1225,9 +1225,9 @@ CLASS zcl_demo_abap IMPLEMENTATION.
 
     "Demonstrating prominent sy components that can be used in ABAP for Cloud Development
 
-    "------------------------------------------------------------------------------
-    "------------------ sy-subrc: Return code of ABAP statements ------------------
-    "------------------------------------------------------------------------------
+*&---------------------------------------------------------------------*
+*& sy-subrc: Return code of ABAP statements
+*&---------------------------------------------------------------------*
 
     "Many ABAP statements set a sy-subrc value. Check the ABAP Keyword Documentation
     "for individual statements. Usually, the value 0 indicates a successful execution.
@@ -1287,9 +1287,9 @@ CLASS zcl_demo_abap IMPLEMENTATION.
       out->write( `DELETE: No match according to the WHERE condition.` ).
     ENDIF.
 
-    "------------------------------------------------------------------------------
-    "--------------------------- sy-index: Loop indexes ---------------------------
-    "------------------------------------------------------------------------------
+*&---------------------------------------------------------------------*
+*& sy-index: Loop indexes
+*&---------------------------------------------------------------------*
 
     CLEAR some_string.
 
@@ -1323,10 +1323,10 @@ CLASS zcl_demo_abap IMPLEMENTATION.
 
     ASSERT some_string = `123456789`.
 
-    "------------------------------------------------------------------------------
-    "------------------- sy-tabix: Row index of internal tables -------------------
-    "------------------------------------------------------------------------------
-
+*&---------------------------------------------------------------------*
+*& sy-tabix: Row index of internal tables
+*&---------------------------------------------------------------------*
+   
     "Demo standard internal table with 5 entries
     DATA(std_itab) = VALUE string_table( ( `a` ) ( `b` ) ( `c` ) ( `d` ) ( `e` ) ).
 
@@ -1388,9 +1388,9 @@ CLASS zcl_demo_abap IMPLEMENTATION.
     ENDLOOP.
     ASSERT some_string = `00000`.
 
-    "------------------------------------------------------------------------------
-    "------------------------ sy-dbcnt: Edited table rows -------------------------
-    "------------------------------------------------------------------------------
+*&---------------------------------------------------------------------*
+*& sy-dbcnt: Edited table rows
+*&---------------------------------------------------------------------*
 
     DELETE FROM zdemo_abap_tab1.
     DATA(dbcnt) = sy-dbcnt.
@@ -1412,9 +1412,10 @@ CLASS zcl_demo_abap IMPLEMENTATION.
     DELETE FROM zdemo_abap_tab1 WHERE num1 IS INITIAL.
     ASSERT sy-dbcnt = 3.
 
-    "------------------------------------------------------------------------------
-    "------------- sy-fdpos: Occurrence in byte or character strings --------------
-    "------------------------------------------------------------------------------
+*&---------------------------------------------------------------------*
+*& sy-fdpos: Occurrence in byte or character strings
+*&---------------------------------------------------------------------*
+
     "For example, relevant in comparison expressions such as CS (constains string).
     "If the comparison is true, sy-fdpos contains the offset of the found value. If it
     "is false, sy-fdpos contains the length of the searched string.
@@ -1556,10 +1557,10 @@ CLASS zcl_demo_abap IMPLEMENTATION.
     "---- Comment in/out END ----
     DO 100000 TIMES.
 
-      "------------------------------------------------------------------------
-      "----------------------------- Comparison 1 -----------------------------
-      "------------------------------------------------------------------------
-
+*&---------------------------------------------------------------------*
+*& Comparison 1
+*&---------------------------------------------------------------------*
+ 
       "1) Internal table with boxed components: All boxed components empty
 
       "---- Comment in/out START ----
@@ -1578,9 +1579,9 @@ CLASS zcl_demo_abap IMPLEMENTATION.
 
 **************************************************************************************************
 
-      "------------------------------------------------------------------------
-      "----------------------------- Comparison 2 -----------------------------
-      "------------------------------------------------------------------------
+*&---------------------------------------------------------------------*
+*& Comparison 2
+*&---------------------------------------------------------------------*
 
       "3) Internal table with boxed components: All boxed components filled
 
@@ -1604,9 +1605,9 @@ CLASS zcl_demo_abap IMPLEMENTATION.
 
 **************************************************************************************************
 
-      "------------------------------------------------------------------------
-      "----------------------------- Comparison 3 -----------------------------
-      "------------------------------------------------------------------------
+*&---------------------------------------------------------------------*
+*& Comparison 3
+*&---------------------------------------------------------------------*
 
       "5) Internal table with boxed components: Only few boxed components filled
 

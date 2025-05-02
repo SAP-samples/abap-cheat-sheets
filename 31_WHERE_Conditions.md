@@ -10,6 +10,10 @@
 
 This cheat sheet focuses on `WHERE` conditions and explores various syntax options in ABAP statements that include `WHERE` for data filtering. This is relevant, for example, when retrieving data from a data source using ABAP SQL or when processing internal tables with ABAP statements. For all details and syntax options, refer to the [ABAP Keyword Documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABENABAP.html). Several aspects and code snippets in this cheat sheet are also available in other cheat sheets.
 
+> **💡 Note**<br>
+> - Most examples in the cheat sheet use internal tables as data sources for ABAP SQL `SELECT` statements to have self-contained examples. Use `SELECT` with internal tables as data sources only when SQL functionalities like joins exceed ABAP statements. For more details, refer to the [Internal Tables](01_Internal_Tables.md) cheat sheet.
+> - Some examples also use artifacts from the ABAP cheat sheet repository. To check out these examples, ensure you have imported the ABAP cheat sheet repository into your system.
+
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## WHERE Conditions in ABAP SQL Statements 
@@ -626,7 +630,7 @@ To try the example out, create a demo class named `zcl_demo_abap` and paste the 
 
 > **💡 Note**<br>
 > - Many ABAP SQL `SELECT` statements in the example use an internal table as the data source to work with simple data.
-> - Some examples also use subqueries. In these cases, another internal table cannot serve as the data source in the subquery. Therefore, examples use demo database tables from the ABAP cheat repository. They are also used to demonstrate `IS [NOT] NULL`. As a prerequisite, you have imported the ABAP cheat sheet repository to run the example class.
+> - Some examples also use subqueries. In these cases, another internal table cannot currently serve as the data source in the subquery. Therefore, examples use demo database tables from the ABAP cheat repository. They are also used to demonstrate `IS [NOT] NULL`. As a prerequisite, you have imported the ABAP cheat sheet repository to run the example class.
 
 
 ```abap

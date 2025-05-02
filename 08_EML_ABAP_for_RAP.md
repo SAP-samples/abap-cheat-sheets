@@ -301,8 +301,8 @@ an ABAP program using ABAP EML (which this cheat sheet and the examples focus on
   - [Structure of a RAP behavior definition](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_bdef.htm)
   - [Infos about BDL syntax](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbdl_syntax.htm)
   - [Infos about behavior definitions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbdl.htm)
+  - [RAP BDL - Feature Tables](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/abenrap_feature_table.html)
  
-
 The following example shows a commented BDEF, and is just an excursion. Note that there is a wide variety of possible specifications and options. The example shows only a selection. The example shows multiple specifications with comments and also syntax hidden with comments, just for the sake of showing more syntax options. For full details, correct specification and combination options, refer to the ABAP Keyword Documentation. For example, it is not possible to specify operations multiple times and more.
 
 ```js
@@ -1013,7 +1013,7 @@ is only relevant in the context of
 [draft](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbdl_with_draft.htm).
 
 
-The following table covers a selection of available BDEF derived type components. Find more details on the available components in section [Components of BDEF Derived Types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapderived_types_comp.htm).
+The following table covers a selection of available BDEF derived type components. Find more details on the available components in section [Components of BDEF Derived Types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapderived_types_comp.htm) of the ABAP Keyword Documentation.
 
 <table>
 
@@ -1105,7 +1105,7 @@ MODIFY ENTITIES OF zdemo_abap_rap_ro_m
 
 <td> 
 
-The code snippet visualizes various specification options regarding `%key` and `%tky` as component groups, emphasizing how contained component may be accessed and that these component groups can contain further component groups. 
+The code snippet visualizes various specification options regarding `%key` and `%tky` as component groups, emphasizing how contained components may be accessed and that these component groups can contain further component groups. 
 
 ``` abap
 MODIFY ENTITY zdemo_abap_rap_ro_m

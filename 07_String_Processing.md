@@ -347,7 +347,10 @@ ASSERT cl_abap_char_utilities=>cr_lf          = |\r\n|.
 - The following syntax examples demonstrate a selection. For information about all options, refer to [this topic](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapcompute_string_format_options.htm) in the ABAP Keyword Documentation.
 
 ```abap
-"---------------------- DATE ----------------------
+*&---------------------------------------------------------------------*
+*& DATE
+*&---------------------------------------------------------------------*
+
 "Defining the format of a date
 "The output is just an example and depends on your settings.
 DATA(d) = |The date is { cl_abap_context_info=>get_system_date( ) DATE = USER }.|. "The date is 01/01/2024.
@@ -355,7 +358,10 @@ d = |{ cl_abap_context_info=>get_system_date( ) DATE = RAW }|. "20240101
 d = |{ cl_abap_context_info=>get_system_date( ) DATE = ISO }|. "2024-01-01
 d = |{ cl_abap_context_info=>get_system_date( ) DATE = ENVIRONMENT }|. "01/01/2024
 
-"---------------------- TIME ----------------------
+*&---------------------------------------------------------------------*
+*& TIME
+*&---------------------------------------------------------------------*
+
 "Defining the format of a time 
 "The output is just an example and depends on your settings.
 DATA(tm) = |The time is { cl_abap_context_info=>get_system_time( ) TIME = ISO }.|. "The time is 14:37:24.
@@ -363,7 +369,10 @@ tm = |{ cl_abap_context_info=>get_system_time( ) TIME = RAW }|. "143724
 tm = |{ cl_abap_context_info=>get_system_time( ) TIME = USER }|. "14:37:24
 tm = |{ cl_abap_context_info=>get_system_time( ) TIME = ENVIRONMENT }|. "14:37:24
 
-"---------------------- TIMESTAMP ----------------------
+*&---------------------------------------------------------------------*
+*& TIMESTAMP
+*&---------------------------------------------------------------------*
+
 "Defining the format of a time stamp
 "The output is just an example and depends on your settings.
 DATA(ts) = |{ utclong_current( ) TIMESTAMP = SPACE }|. "2024-01-01 14:39:50.4069170
@@ -372,31 +381,49 @@ ts = |{ utclong_current( ) TIMESTAMP = USER }|. "01/01/2024 14:39:50.4072010
 ts = |{ utclong_current( ) TIMESTAMP = ENVIRONMENT }|. "01/01/2024 14:39:50.4073230
 ts = |{ utclong_current( ) }|. "2024-01-01 14:39:50.4074060 
 
-"---------------------- TIMEZONE ----------------------
+*&---------------------------------------------------------------------*
+*& TIMEZONE
+*&---------------------------------------------------------------------*
+
 "Defining the format of a time stamp using the rules for time zones
 DATA(tz) = |{ utclong_current( ) TIMEZONE = 'UTC' }|. "2024-12-30 14:43:20.6534640
 tz = |{ utclong_current( ) TIMEZONE = 'CET' COUNTRY = 'DE ' }|. "30.12.2024 15:43:20,6536320
 tz = |{ utclong_current( ) TIMEZONE = 'EST' COUNTRY = 'US ' }|. "12/30/2024 09:43:20.6889180 AM
 
-"---------------------- CASE ----------------------
+*&---------------------------------------------------------------------*
+*& CASE
+*&---------------------------------------------------------------------*
+
 "Lowercase and uppercase
 s1 = `AbCdEfG`.
 s2 = |{ s1 CASE = LOWER }|. "abcdefg
 s2 = |{ s1 CASE = UPPER }|. "ABCDEFG
 
-"---------------------- WIDTH/ALIGN ----------------------
+*&---------------------------------------------------------------------*
+*& WIDTH/ALIGN
+*&---------------------------------------------------------------------*
+
 s1 = `##`.
 s2 = |{ s1 WIDTH = 10 ALIGN = LEFT }<---|.   "'##        <---'
 s2 = |{ s1 WIDTH = 10 ALIGN = CENTER }<---|. "'    ##    <---'
 
-"---------------------- PAD ----------------------
+*&---------------------------------------------------------------------*
+*& PAD
+*&---------------------------------------------------------------------*
+
 "Used to pad any surplus places in the result with the specified character.
 s2 = |{ s1 WIDTH = 10 ALIGN = RIGHT PAD = `.` }<---|. "'........##<---'
 
-"---------------------- DECIMALS ----------------------
+*&---------------------------------------------------------------------*
+*& DECIMALS
+*&---------------------------------------------------------------------*
+
 s1 = |{ CONV decfloat34( - 1 / 3 ) DECIMALS = 3 }|. "'-0.333'
 
-"---------------------- SIGN ----------------------
+*&---------------------------------------------------------------------*
+*& SIGN
+*&---------------------------------------------------------------------*
+
 "Defining the format of the +/- sign when the string represented
 "by the embedded expression represents a numeric value
 "- left without space, no +
@@ -412,12 +439,18 @@ s1 =  |{ 1 SIGN = RIGHTPLUS }|. "1+
 "- left without space, blank right for +
 s1 =  |{ +1 SIGN = RIGHTSPACE }|. "1
 
-"---------------------- ZERO ----------------------
+*&---------------------------------------------------------------------*
+*& ZERO
+*&---------------------------------------------------------------------*
+
 "Defining the format of the numeric value zero.
 "Only to be specified if the embedded expression has a numeric data type.
 s1 = |'{ 0 ZERO = NO }' and '{ 0 ZERO = YES }'|. "'' and '0'
 
-"---------------------- XSD ----------------------
+*&---------------------------------------------------------------------*
+*& XSD
+*&---------------------------------------------------------------------*
+
 "Formatting is applied to an embedded expression (elementary data types) in asXML format that is
 "assigned to its data type. Check the information in the ABAP Keyword Documentation about the asXML
 "mapping of elementary ABAP types.
@@ -431,7 +464,10 @@ s1 = |{ dat XSD = YES }|. "2024-01-01
 s1 = |{ tim XSD = YES }|. "12:34:56
 s1 = |{ utc XSD = YES }|. "2024-01-01T13:51:38.57088Z
 
-"---------------------- STYLE ----------------------
+*&---------------------------------------------------------------------*
+*& STYLE
+*&---------------------------------------------------------------------*
+
 "Defining the style of decimal floating point numbers;
 "see the details in the ABAP Keyword Documentation.
 DATA(dcfl34) = CONV decfloat34( '-123.45600' ).
@@ -451,7 +487,10 @@ s1 = |{ dcfl34 STYLE = SCALE_PRESERVING_SCIENTIFIC }|. "-1.2345600E+0002
 "Technical format
 s1 = |{ dcfl34 STYLE = ENGINEERING }|. "-123.456E+00
 
-"---------------------- ALPHA ----------------------
+*&---------------------------------------------------------------------*
+*& ALPHA
+*&---------------------------------------------------------------------*
+
 "Adds or removes leading zeros from strings of digits; the data type
 "must be string, c, or n
 "Adding leading zeros
@@ -1897,7 +1936,10 @@ Examples:
 DATA(some_string) = `aa bb cc dd ee`.
 DATA(original_string) = some_string.
 
-"---------------- Statements ----------------
+*&---------------------------------------------------------------------*
+*& Statements
+*&---------------------------------------------------------------------*
+
 FIND ALL OCCURRENCES OF PCRE `\s` IN some_string RESULTS DATA(findings).
 *LINE    OFFSET    LENGTH    SUBMATCHES
 *0       2         1         OFFSET     LENGTH
@@ -1914,12 +1956,17 @@ REPLACE ALL OCCURRENCES OF PCRE `\s` IN some_string WITH `#`.
 
 some_string = original_string.
 
-"---------------- Classes ----------------
+*&---------------------------------------------------------------------*
+*& Classes
+*&---------------------------------------------------------------------*
+
 "The result is the same as 'findings'
 DATA(regex_cl1) = cl_abap_regex=>create_pcre( pattern = `\s` )->create_matcher( text = some_string )->find_all( ).
 
+*&---------------------------------------------------------------------*
+*& Built-in Functions
+*&---------------------------------------------------------------------*
 
-"---------------- Built-in Functions ----------------
 "2
 DATA(find_first_occ) = find( val = some_string pcre = `\s` ).
 
@@ -2459,11 +2506,13 @@ DATA off TYPE i.
 DATA(abc_str) = `abc def ghi jkl mno pqr stu vwx yz`.
 DATA(copy_str) = abc_str.
 
-"-----------------------------------------------------------------------------
-"------------------------ FIND and REPLACE statements ------------------------
-"-----------------------------------------------------------------------------
+*&---------------------------------------------------------------------*
+*& FIND and REPLACE statements
+*&---------------------------------------------------------------------*
 
-"------------------------ IN CHARACTER MODE addition ------------------------
+*&---------------------------------------------------------------------*
+*& IN CHARACTER MODE addition
+*&---------------------------------------------------------------------*
 
 "Searching for the first blank in the string
 "3
@@ -2494,7 +2543,9 @@ REPLACE ALL OCCURRENCES OF ` ` IN abc_str WITH `#` IN CHARACTER MODE.
 
 abc_str = copy_str.
 
-"------------------------ IN BYTE MODE addition ------------------------
+*&---------------------------------------------------------------------*
+*& IN BYTE MODE addition
+*&---------------------------------------------------------------------*
 
 "Converting to xstring
 "6162632064656620676869206A6B6C206D6E6F20707172207374752076777820797A
@@ -2524,9 +2575,9 @@ abc_xstr = copy_xstr.
 "6162632364656623676869236A6B6C236D6E6F23707172237374752376777823797A
 REPLACE ALL OCCURRENCES OF blank_xstr IN abc_xstr WITH repl_xstr IN BYTE MODE.
 
-"-----------------------------------------------------------------------------
-"--------------------------- CONCATENATE statements --------------------------
-"-----------------------------------------------------------------------------
+*&---------------------------------------------------------------------*
+*& CONCATENATE statements
+*&---------------------------------------------------------------------*
 
 DATA(part_str1) = `abc`.
 DATA(part_str2) = `def`.
@@ -2560,9 +2611,9 @@ CONCATENATE LINES OF xstr_table INTO DATA(concat_xstr_tab) IN BYTE MODE.
 "abcdef
 DATA(concat_xstr_tab_converted) = cl_abap_conv_codepage=>create_in( )->convert( concat_xstr_tab ).
 
-"-----------------------------------------------------------------------------
-"------------------------------- SHIFT statements ----------------------------
-"-----------------------------------------------------------------------------
+*&---------------------------------------------------------------------*
+*& SHIFT statements
+*&---------------------------------------------------------------------*
 
 DATA(str) = `abcdef`.
 DATA(copy) = str.
@@ -2582,9 +2633,9 @@ DATA(xstr) = cl_abap_conv_codepage=>create_out( )->convert( str ).
 "6263646566
 SHIFT xstr IN BYTE MODE.
 
-"-----------------------------------------------------------------------------
-"------------------------------- SPLIT statements ----------------------------
-"-----------------------------------------------------------------------------
+*&---------------------------------------------------------------------*
+*& SPLIT statements
+*&---------------------------------------------------------------------*
 
 str = `abc def`.
 

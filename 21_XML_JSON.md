@@ -262,7 +262,9 @@ DATA(conv_string) = cl_abap_conv_codepage=>create_in( )->convert( xml_pa ).
 Creating XML data using sXML:
 
 ```abap
-"--------------------- Token-based rendering ----------------------
+*&---------------------------------------------------------------------*
+*& Token-based rendering
+*&---------------------------------------------------------------------*
 
 "For sXML, there are specialized writer classes, such as CL_SXML_STRING_WRITE.
 "Writers created with this class render XML data to a byte string.
@@ -322,7 +324,9 @@ DATA(xml) = CAST cl_sxml_string_writer( writer )->get_output(  ).
 "  </flight>
 "</flights>
 
-"--------------------- Object-oriented rendering ----------------------
+*&---------------------------------------------------------------------*
+*& Object-oriented rendering
+*&---------------------------------------------------------------------*
 
 DATA(writer_oo) = CAST if_sxml_writer( cl_sxml_string_writer=>create( type     = if_sxml=>co_xt_xml10
                                                                       encoding = 'UTF-8' ) ).
@@ -379,7 +383,9 @@ DATA(xml_oo) =  CAST cl_sxml_string_writer( writer_oo )->get_output( ).
 Parsing XML data using sXML:
 
 ```abap
-"--------------------- Token-based parsing ----------------------
+*&---------------------------------------------------------------------*
+*& Token-based parsing
+*&---------------------------------------------------------------------*
 
 "Creating demo XML data to be used in the example
 TRY.
@@ -508,7 +514,9 @@ ENDTRY.
 *CO_NT_ELEMENT_CLOSE    subnode3              
 *CO_NT_ELEMENT_CLOSE    node                
 
-"--------------------- Object-oriented parsing ----------------------
+*&---------------------------------------------------------------------*
+*& Object-oriented parsing
+*&---------------------------------------------------------------------*
 
 "The example uses the XML from above
 CLEAR nodes_tab.
@@ -693,7 +701,10 @@ ENDTRY.
 There are multiple options. Check the executable example to explore them.
 
 ```abap
-"--------------------- Transforming XML data ----------------------
+*&---------------------------------------------------------------------*
+*& Transforming XML data
+*&---------------------------------------------------------------------*
+
 "Options for src: 
 "- Data object of type string or xstring containing XML data in XML 1.0 format
 "- Standard table with flat character-like or byte-like line type
@@ -702,7 +713,10 @@ There are multiple options. Check the executable example to explore them.
 CALL TRANSFORMATION ... SOURCE XML src
                         RESULT ...
 
-"--------------------- Transforming ABAP data ----------------------
+*&---------------------------------------------------------------------*
+*& Transforming ABAP data
+*&---------------------------------------------------------------------*
+
 "No XML specified after SOURCE
 "Options after SOURCE: 
 "- One or multiple ABAP data objects (abap1 in the snippet) can be specified as 
@@ -725,7 +739,10 @@ CALL TRANSFORMATION ... SOURCE (srctab)
 There are multiple options. Check the executable example to explore them in action.
 
 ```abap
-"--------------------- Transforming to XML data ----------------------
+*&---------------------------------------------------------------------*
+*& Transforming to XML data
+*&---------------------------------------------------------------------*
+
 "Options for res: 
 "- Data object of type string or xstring
 "- Data object declared inline (e.g. DATA(a) or FINAL(b)), which has then the type xstring
@@ -734,7 +751,10 @@ There are multiple options. Check the executable example to explore them in acti
 CALL TRANSFORMATION ... SOURCE ...
                         RESULT XML res.
 
-"--------------------- Transforming to ABAP data ----------------------
+*&---------------------------------------------------------------------*
+*& Transforming to ABAP data
+*&---------------------------------------------------------------------*
+
 "No XML specified after RESULT
 "Similar to above, multiple ABAP data objects can be specified as a static parameter list.
 CALL TRANSFORMATION ... SOURCE ...
@@ -1346,10 +1366,16 @@ For more information, see the class documentation. Note that there are many addi
 ```abap
 DATA(some_table) = VALUE string_table( ( `aaa` ) ( `bbb` ) ( `ccc` ) ).
 
-"--------- ABAP -> JSON ---------
+*&---------------------------------------------------------------------*
+*& ABAP -> JSON
+*&---------------------------------------------------------------------*
+
 DATA(abap_to_json) = /ui2/cl_json=>serialize( data = some_table ).
 
-"--------- JSON -> ABAP ---------
+*&---------------------------------------------------------------------*
+*& JSON -> ABAP
+*&---------------------------------------------------------------------*
+
 DATA json_to_abap_table TYPE string_table.
 /ui2/cl_json=>deserialize( EXPORTING json = abap_to_json
                            CHANGING data  = json_to_abap_table ).

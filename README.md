@@ -38,7 +38,7 @@ ABAP cheat sheets[^1] ...
 - are enriched by links to glossary entries and chapters of the **ABAP Keyword Documentation** (the *F1 help*) and more for you to deep dive into the respective ABAP topics and get more comprehensive information.
 
 <details>
-<summary>💡 Note</summary>
+<summary>🟢 Click to expand for more information</summary>
 <br>
 
 - Since the ABAP cheat sheets provide information in a nutshell, they do not claim to be fully comprehensive as far as the described syntax and concepts are concerned. If you need more details, you can always consult the ABAP Keyword Documentation, for example, by choosing *F1* on a keyword in your code, or by searching directly using the online or the system-internal version.
@@ -54,6 +54,7 @@ ABAP cheat sheets[^1] ...
 - The code snippets in the ABAP cheat sheet documents and the executable examples include many comments. While it is generally not recommended to overuse comments in your code, they are used here to explain and provide context directly where it is needed. In many cases, they illustrate the results of ABAP statements.
 - As previously mentioned, the cheat sheet documents and examples primarily focus on syntax options. Most of the executable examples, code snippets, names of data objects, classes, methods, interfaces, etc., are nonsemantic.
 - Many ABAP statements allow additions in various orders, and these orders are not always fixed.
+
 </details>
 
 <br>

@@ -672,8 +672,8 @@ DATA(it_val_1) = VALUE string_table( FOR GROUPS gr OF wa IN itab4grp
 The following table includes a selection of various possible additions to
 this operator. There are more variants available (also 
 [RAP](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_glosry.htm "Glossary Entry")-specific ones)
-that are not covered. Find more information in [this
-topic](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconstructor_expr_corresponding.htm) of the ABAP Keyword Documentation.
+that are not covered here. Find more information in [this
+topic](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconstructor_expr_corresponding.htm) of the ABAP Keyword Documentation, and example snippets in the executable example.
 
 
 | Addition  | Details |
@@ -690,7 +690,9 @@ topic](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file
 
 Examples:
 ``` abap
-"-------------- Patterns -------------
+*&---------------------------------------------------------------------*
+*& Patterns
+*&---------------------------------------------------------------------*
 
 "The following examples demonstrate simple assignments
 "with the CORRESPONDING operator using these syntax patterns.
@@ -705,7 +707,9 @@ Examples:
 "... CORRESPONDING #( z EXCEPT b ) ...
 "... CORRESPONDING #( it DISCARDING DUPLICATES ) ...
 
-"-------------- Structures -------------
+*&---------------------------------------------------------------------*
+*& Structures
+*&---------------------------------------------------------------------*
 
 "Data objects to work with in the examples
 "Two different structures; one component differs.
@@ -767,7 +771,9 @@ s2 = CORRESPONDING #( s1 MAPPING d = c EXCEPT * ).
 *A    B      D
 *0           bbbbb
 
-"-------------- Internal tables -------------
+*&---------------------------------------------------------------------*
+*& Internal tables
+*&---------------------------------------------------------------------*
 
 "Internal tables to work with in the examples
 DATA it1 LIKE TABLE OF s1 WITH EMPTY KEY.
@@ -817,7 +823,10 @@ it2 = CORRESPONDING #( it1 DISCARDING DUPLICATES ).
 *4    aaa
 *5    eee
 
-"-------------- DEFAULT addition when using MAPPING -------------
+*&---------------------------------------------------------------------*
+*& DEFAULT addition when using MAPPING
+*&---------------------------------------------------------------------*
+
 "- This addition allows the assignment of values for a target component based 
 "  on an expression (which is evaluated before the CORRESPONDING expression). 
 "- DEFAULT can be preceded by the source component. In this case, the source 
@@ -849,7 +858,10 @@ DATA itab1 LIKE TABLE OF struc1 WITH EMPTY KEY.
 "Populating structure
 struc1 = VALUE #( id1 = 1 a = `a` b = `b` c = 2 d = `d` e = 3 ).
 
-"--------- Assignment using CORRESPONDING (DEFAULT only) ---------
+*&---------------------------------------------------------------------*
+*& Assignment using CORRESPONDING (DEFAULT only)
+*&---------------------------------------------------------------------*
+
 "- Component a: It is not specified but it is mapped anyway
 "     due to the identical name and not being explicitly specified
 "  for mapping
@@ -873,8 +885,11 @@ struc2 = CORRESPONDING #(
 *ID2    A    B        C    D     Z 
 *1      a    hallo    6    hi    28
 
-"--- Assignment using CORRESPONDING (DEFAULT preceded by the source ---
-"--- component on the right-hand side) --------------------------------
+*&---------------------------------------------------------------------*
+*& Assignment using CORRESPONDING (DEFAULT preceded by the source
+*& component on the right-hand side)
+*&---------------------------------------------------------------------*
+
 "- The example is similar to above. Various expressions are included
 "    in combination with the DEFAULT addition
 "- Component a: It is not specified; see above.
@@ -1166,6 +1181,7 @@ it6 = CORRESPONDING #( it5 FROM lookup_table USING KEY sk c = a d = b ) ##operat
         No parameters are passed for a class without an explicit
         instance constructor. See more information:
         [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abennew_constructor_params_class.htm).
+- The `NEW` operator is also covered as part of the [ABAP Object Orientation](04_ABAP_Object_Orientation.md) cheat sheet.
 
 The following examples cover: 
 - Creating anonymous data objects
@@ -1173,7 +1189,10 @@ The following examples cover:
   
 
 ``` abap
-"-------------- Creating anonymous data objects -------------
+*&---------------------------------------------------------------------*
+*& Creating anonymous data objects
+*&---------------------------------------------------------------------*
+
 "Note that optional additions (see for VALUE expressions) when dealing 
 "with anonymous data objects (e.g. BASE). They are not covered here.
 
@@ -1210,7 +1229,9 @@ DATA dref5 TYPE REF TO string_table.
 dref5 = NEW string_table( ( `c` ) ( `d` ) ).
 DATA(dref6) = NEW string_table( VALUE #( ( `a` ) ( `b` ) ) ).
 
-"-------------- Creating objects/instances of classes -------------
+*&---------------------------------------------------------------------*
+*& Creating objects/instances of classes
+*&---------------------------------------------------------------------*
 
 "Using a cheat sheet example class (the class does not implement constructors)
 DATA oref1 TYPE REF TO zcl_demo_abap_objects.
@@ -1809,7 +1830,10 @@ fi_tab2 = fi_tab1.
 fi_tab3 = fi_tab1.
 fi_tab4 = fi_tab1.
 
-"---------------- Basic form: Filtering using single values ----------------
+*&---------------------------------------------------------------------*
+*& Basic form: Filtering using single values
+*&---------------------------------------------------------------------*
+
 "Syntax options for using a WHERE condition and the table key
 
 "Using the primary table key without specifying USING KEY
@@ -1887,7 +1911,9 @@ DATA(f10) = FILTER #( fi_tab4 EXCEPT USING KEY sec_hash_key WHERE a = 3 AND b = 
 *4    ddd    klm
 *5    eee    nop
 
-"---------------- Basic form: Filtering using a filter table ----------------
+*&---------------------------------------------------------------------*
+*& Basic form: Filtering using a filter table
+*&---------------------------------------------------------------------*
 
 "In the WHERE condition, the columns of source and filter table are compared.
 "Those lines in the source table are used for which at least one line in the
@@ -2098,7 +2124,9 @@ DATA(itab) = VALUE itab_type( ( col1 = 'a' col2 = 1 col3 = 30 )
                               ( col1 = 'bb' col2 = 2 col3 = 10 )
                               ( col1 = 'ccc' col2 = 3 col3 = 20 ) ).
 
-"-------------- Table iterations --------------
+*&---------------------------------------------------------------------*
+*& Table iterations
+*&---------------------------------------------------------------------*
 
 DATA(it1) = VALUE itab_type( FOR wa IN itab ( col1 = wa-col1 && 'z'
                                               col2 = wa-col2 + 1 ) ).
@@ -2144,7 +2172,9 @@ DATA(it3) = VALUE string_table( FOR <str> IN itab INDEX INTO idx
 *Table index 2 -> COL1: "bb" / COL2: "2" / COL3: "10"
 *Table index 3 -> COL1: "ccc" / COL2: "3" / COL3: "20"
 
-"---------- Excursions ----------
+*&---------------------------------------------------------------------*
+*& Excursions
+*&---------------------------------------------------------------------*
 
 "FOR expression are very handy, for example, in EML and other statements.
 "The following example commented out shows an EML statement in the implementation
@@ -2293,7 +2323,10 @@ DATA(it11) = VALUE itab_type( FOR wa IN itab USING KEY primary_key ( col1 = wa-c
 *bbt     9       12
 *ccct    9       13
 
-"---------- Conditional iterations ----------
+*&---------------------------------------------------------------------*
+*& Conditional iterations
+*&---------------------------------------------------------------------*
+
 "Notes:
 "- When used with VALUE/NEW for internal tables: New table lines are created in
 "  iteration steps and added to result
@@ -2386,7 +2419,9 @@ DATA(itab) = VALUE itab_type( ( col1 = 'a' col2 = 1 col3 = 30 )
                               ( col1 = 'bb' col2 = 2 col3 = 10 )
                               ( col1 = 'ccc' col2 = 3 col3 = 20 ) ).
 
-"---------- Table iterations ----------
+*&---------------------------------------------------------------------*
+*& Table iterations
+*&---------------------------------------------------------------------*
 
 "Calculating the sum of values in a table column
 "Result: 6
@@ -2443,7 +2478,9 @@ DATA(itred) = REDUCE s3_tab_type( INIT tab = VALUE s3_tab_type( )
 *1       30      31
 *2       10      12
 
-"---------- Conditional iterations ----------
+*&---------------------------------------------------------------------*
+*& Conditional iterations
+*&---------------------------------------------------------------------*
 
 "UNTIL addition
 "Iteratively calculating the sum from 1 to 10

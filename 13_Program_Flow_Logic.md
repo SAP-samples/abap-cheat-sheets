@@ -448,7 +448,10 @@ The following ABAP keywords are available for interrupting and exiting loops:
 | [`EXIT`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapexit_loop.htm)  | `EXIT.`  | The loop is terminated completely. The program flow resumes after the closing statement of the loop.  |
 
 ```abap
-"------------ CONTINUE ------------
+*&---------------------------------------------------------------------*
+*& CONTINUE
+*&---------------------------------------------------------------------*
+
 DATA str_c TYPE string.
 DO 15 TIMES.
   "Continue with the next loop pass if the number is even
@@ -462,7 +465,10 @@ DO 15 TIMES.
 ENDDO.
 "str_c: 1, 3, 5, 7, 9, 11, 13, 15
 
-"------------ CHECK ------------
+*&---------------------------------------------------------------------*
+*& CHECK
+*&---------------------------------------------------------------------*
+
 DATA str_d TYPE string.
 DO 15 TIMES.
   "Terminating the loop pass and continuing with the next loop pass if the condition is
@@ -481,7 +487,10 @@ DO 15 TIMES.
 ENDDO.
 "str_e: 1, 3, 5, 7, 9, 11, 13, 15
 
-"------------ EXIT ------------
+*&---------------------------------------------------------------------*
+*& EXIT
+*&---------------------------------------------------------------------*
+
 DATA str_f TYPE string.
 DO 15 TIMES.
   "Terminating the entire loop
@@ -636,7 +645,9 @@ TRY.
     ...
 ENDTRY.
 
-"---------- Dynamic function method calls ----------
+*&---------------------------------------------------------------------*
+*& Dynamic function method calls
+*&---------------------------------------------------------------------*
 
 "Function module name contained in a variable
 DATA(func_name) = 'SOME_FUNCTION_MODULE_C'.
@@ -791,7 +802,9 @@ CLASS zcl_demo_abap_func_test IMPLEMENTATION.
     out->write( calculation_result_table ).
     out->write( |\n\n\n| ).
 
-    "----- Dynamic function module call ----
+*&---------------------------------------------------------------------*
+*& Dynamic function module call
+*&---------------------------------------------------------------------*
 
     DATA(func_name) = 'Z_DEMO_ABAP_TEST_FUNC_M'.
     DATA(ptab) = VALUE abap_func_parmbind_tab( ( name  = 'NUM1'

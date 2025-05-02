@@ -414,7 +414,7 @@ CLASS zcl_demo_abap IMPLEMENTATION.
 
   METHOD if_oo_adt_classrun~main.
 
-    "---- The method called has formal parameters using type declarations from the CCDEF include ----
+    "The method called has formal parameters using type declarations from the CCDEF include
     TRY.
         DATA(result1) = calculate( num1 = 10 operator = '+' num2 = 4 ).
         out->write( data = result1 name = `result1` ).
@@ -436,13 +436,13 @@ CLASS zcl_demo_abap IMPLEMENTATION.
         out->write( `Operator not allowed` ).
     ENDTRY.
 
-    "---- Using local class implemented in the CCIMP include ----
+    "Using local class implemented in the CCIMP include
     DATA(hi1) = lcl_demo=>say_hello( ).
     out->write( data = hi1 name = `hi1` ).
     DATA(hi2) = lcl_demo=>say_hello( xco_cp=>sy->user( )->name ).
     out->write( data = hi2 name = `hi2` ).
 
-    "--------------- Test include (CCAU) ---------------
+    "Test include (CCAU)
     "For running the ABAP Unit test, choose CTRL+Shift+F10 in ADT.
     "Or you can make a right click in the class code, choose
     "'Run As' and '4 ABAP Unit Test'.
@@ -896,49 +896,49 @@ CLASS zcl_demo_abap DEFINITION
     "Note: The example parameters are all specified for passing
     "actual parameters by reference.
     METHODS: meth IMPORTING
-                    "---- Non-generic built-in ABAP types ----
+                    "Non-generic built-in ABAP types
                     i_a TYPE i
                     i_b TYPE string
-                    "---- ABAP DDIC types ----
+                    "ABAP DDIC types
                     i_c TYPE land1           "elementary type
                     i_d TYPE timestampl      "elementary type
                     i_e TYPE zdemo_abap_fli "structured type based on DDIC database table
                     i_f TYPE string_hashed_table "table type
-                    "---- ABAP CDS types (all of the examples are structured types) ----
+                    "ABAP CDS types (all of the examples are structured types)
                     i_g TYPE zdemo_abap_fli_ve "CDS view entity
                     i_h TYPE zdemo_abap_abstract_ent "CDS abstract entity
                     i_i TYPE zdemo_abap_table_function "CDS table function
-                    "---- Data types declared in public section of a class ----
+                    "Data types declared in public section of a class
                     i_j TYPE zcl_demo_abap_dtype_dobj=>t_pub_text_c30 "elementary type
                     i_k TYPE zcl_demo_abap_amdp=>carr_fli_struc "structured type
                     i_l TYPE zcl_demo_abap_amdp=>carr_fli_tab "table type
-                    "---- Data types declared in an interface ----
+                    "Data types declared in an interface
                     i_m TYPE zdemo_abap_get_data_itf=>occ_rate "elementary type
                     i_n TYPE zdemo_abap_get_data_itf=>carr_tab "table type
-                    "---- Local types ----
+                    "Local types
                     i_o TYPE c3 "elementary type
                     i_p TYPE der_type "table type (BDEF derived type)
-                    "---- Note: Examples such as the following are not allowed type specifications of formal parameters. ----
-                    "---- In the following cases, extra (local) type declarations with TYPES are required before the --------
-                    "---- method declaration to type the formal parameters. -------------------------------------------------
+                    "Note: Examples such as the following are not allowed type specifications of formal parameters.
+                    "In the following cases, extra (local) type declarations with TYPES are required before the
+                    "method declaration to type the formal parameters.
                     "i_no1 TYPE c LENGTH 3
                     "i_no2 TYPE TABLE OF zdemo_abap_fli WITH EMPTY KEY
-                    "---- Reference types ----
+                    "Reference types
                     i_q TYPE REF TO i "Data reference
                     i_r TYPE REF TO zdemo_abap_carr "Data reference
                     i_s TYPE REF TO zcl_demo_abap_unit_test "Object reference
                     i_t TYPE REF TO data "Data reference (considered as complete typing, too)
                     i_u TYPE REF TO object "Object reference (considered as complete typing, too)
-                    "---- TYPE LINE OF addition (structured type based on a table type) ----
+                    "TYPE LINE OF addition (structured type based on a table type)
                     i_v TYPE LINE OF zcl_demo_abap_amdp=>carr_fli_tab
                     i_w TYPE LINE OF der_type
-                    "---- LIKE addition (types based on existing data objects) ----
+                    "LIKE addition (types based on existing data objects)
                     i_x LIKE int "Local data object
                     i_y LIKE zcl_demo_abap_dtype_dobj=>comma "Constant specified in a class
                     i_z LIKE zdemo_abap_objects_interface=>stat_str "Data object specified in an interface
-                    "---- LIKE LINE OF addition (types based on existing internal tables) ----
+                    "LIKE LINE OF addition (types based on existing internal tables)
                     i_1 LIKE LINE OF itab "Local internal table
-                    "---- LIKE REF TO addition (reference types based on existing data object) ----
+                    "LIKE REF TO addition (reference types based on existing data object)
                     i_2 LIKE REF TO int "Local elementary data object
                     i_3 LIKE REF TO itab "Local internal table
                   .
@@ -985,11 +985,11 @@ CLASS zcl_demo_abap DEFINITION
 
     "Example method demonstrating the generic typing of formal parameters
     METHODS: meth IMPORTING
-                    "---- Any data type ----
+                    "Any data type
                     i_data           TYPE data
                     i_any            TYPE any
 
-                    "---- Character-like types ----
+                    "Character-like types
                     i_c              TYPE c         "Text field with a generic length
                     i_clike          TYPE clike     "Character-like (c, n, string, d, t, and character-like flat structures)
                     i_csequence      TYPE csequence "Text-like (c, string)
@@ -997,12 +997,12 @@ CLASS zcl_demo_abap DEFINITION
                     i_x              TYPE x         "Byte field with generic length
                     i_xsequence      TYPE xsequence "Byte-like (x, xstring)
 
-                    "---- Numeric types ----
+                    "Numeric types
                     i_decfloat       TYPE decfloat "decfloat16 decfloat34
                     i_numeric        TYPE numeric  "Numeric (i, int8, p, decfloat16, decfloat34, f, (b, s))
                     i_p              TYPE p        "Packed number (generic length and number of decimal places)
 
-                    "---- Internal table types ----
+                    "Internal table types
                     i_any_table      TYPE ANY TABLE      "Internal table with any table type
                     i_hashed_table   TYPE HASHED TABLE
                     i_index_table    TYPE INDEX TABLE
@@ -1010,7 +1010,7 @@ CLASS zcl_demo_abap DEFINITION
                     i_standard_table TYPE STANDARD TABLE
                     i_table          TYPE table          "Standard table
 
-                    "---- Other types ----
+                    "Other types
                     i_simple         TYPE simple "Elementary data type including enumerated types and
                     "structured types with exclusively character-like flat components
                   .
@@ -2189,9 +2189,9 @@ ENDCLASS.
 CLASS zcl_demo_abap IMPLEMENTATION.
   METHOD if_oo_adt_classrun~main.
 
-    "----------------------------------------------------------------
-    "-------- Method chaining with a functional method call ---------
-    "----------------------------------------------------------------
+*&---------------------------------------------------------------------*
+*& Method chaining with a functional method call
+*&---------------------------------------------------------------------*
 
     "Hallo NAME. This is an example of method chaining.
     DATA(text1) = NEW zcl_demo_abap(
@@ -2250,9 +2250,9 @@ CLASS zcl_demo_abap IMPLEMENTATION.
 
     out->write( text2 ).
 
-    "----------------------------------------------------------------
-    "-------- Method chaining with a standalone statement -----------
-    "----------------------------------------------------------------
+*&---------------------------------------------------------------------*
+*& Method chaining with a standalone statement
+*&---------------------------------------------------------------------*
 
     "In the example, the final method call in the chain receives
     "the classrun instance available in the implementation of the
@@ -2321,7 +2321,10 @@ CLASS zcl_demo_abap DEFINITION
   PUBLIC SECTION.
     INTERFACES if_oo_adt_classrun.
 
-    "------------------------ Attributes ------------------------
+*&---------------------------------------------------------------------*
+*& Attributes
+*&---------------------------------------------------------------------*
+
     "Instance attributes
     DATA: inst_attr   TYPE utclong,
           inst_string TYPE string.
@@ -2335,7 +2338,10 @@ CLASS zcl_demo_abap DEFINITION
     "subclasses (note that the example class does not allow inheritance).
     CLASS-DATA read_only_attr TYPE string VALUE `read only` READ-ONLY.
 
-    "------------------------ Methods ------------------------
+*&---------------------------------------------------------------------*
+*& Methods
+*&---------------------------------------------------------------------*
+    
     "The parameter interfaces (signatures) of the methods are intended to
     "demonstrate various syntax options described in the cheat sheet.
 
@@ -2424,7 +2430,9 @@ CLASS zcl_demo_abap IMPLEMENTATION.
     "To demonstrate 'calls from external', an instance of the class is
     "nevertheless created in the example.
 
-    "--------------- Constructors ---------------
+*&---------------------------------------------------------------------*
+*& Constructors
+*&---------------------------------------------------------------------*
 
     "Instance constructor: Automatically called when a class is instantiated
     "and an instance is created.
@@ -2494,7 +2502,9 @@ CLASS zcl_demo_abap IMPLEMENTATION.
     DATA(d) = zcl_demo_abap=>stat_attr.
     DATA(e) = oref->stat_attr.
 
-    "--------------- Method calls ---------------
+*&---------------------------------------------------------------------*
+*& Method calls
+*&---------------------------------------------------------------------*
 
     "Calling instance methods
     "Instance methods are called using the object component selector ->
@@ -5920,7 +5930,9 @@ CL_ABAP_TYPEDESCR
 Examples:
 
 ```abap
-"------------ Object reference variables ------------
+*&---------------------------------------------------------------------*
+*& Object reference variables
+*&---------------------------------------------------------------------*
 
 "Static and dynamic types
 "Defining an object reference variable with a static type
@@ -5941,7 +5953,9 @@ DATA tdo_elem TYPE REF TO cl_abap_elemdescr.
 DATA tdo_data TYPE REF TO cl_abap_datadescr.
 DATA tdo_gen_obj TYPE REF TO object.
 
-"------------ Upcasts ------------
+*&---------------------------------------------------------------------*
+*& Upcasts
+*&---------------------------------------------------------------------*
 
 "Moving up the inheritance tree
 "Assignments:
@@ -5980,7 +5994,9 @@ DATA(tdo_inl_cast) = CAST cl_abap_typedescr( tdo_elem ).
 
 CLEAR: tdo_super, tdo_elem, tdo_data, tdo_gen_obj.
 
-"------------ Downcasts ------------
+*&---------------------------------------------------------------------*
+*& Downcasts
+*&---------------------------------------------------------------------*
 
 "Moving down the inheritance tree
 "Assignments:
@@ -6056,7 +6072,10 @@ ENDTRY.
 "- non-initial object reference variables, the dynamic type is checked.
 "- initial object reference variables, the static type is checked.
 
-"------------ IS INSTANCE OF ------------
+*&---------------------------------------------------------------------*
+*& IS INSTANCE OF
+*&---------------------------------------------------------------------*
+
 DATA some_type_descr_obj TYPE REF TO cl_abap_typedescr.
 some_type_descr_obj = cl_abap_typedescr=>describe_by_data( str_table ).
 
@@ -6098,7 +6117,10 @@ ELSE.
   ...
 ENDIF.
 
-"------------ CASE TYPE OF ------------
+*&---------------------------------------------------------------------*
+*& CASE TYPE OF
+*&---------------------------------------------------------------------*
+
 "The examples are desinged similarly to the IS INSTANCE OF examples.
 
 DATA(dref) = REF #( str_table ).
