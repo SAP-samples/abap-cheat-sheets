@@ -1001,7 +1001,7 @@ itab = VALUE #( ( comp1 = a comp2 = b ...)
 </tr>
 
 <tr>
-<td> Iteration expressions with <code>FOR</code> expressions </td>
+<td> Iteration expressions with <code>FOR</code> </td>
 <td>
 
 Using the `VALUE` operator and iteration expressions with [`FOR`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenfor.htm), you can create content of an internal table by evaluating one or more source tables. The expressions are covered in the [Constructor Expressions](05_Constructor_Expressions.md) cheat sheet.
@@ -5147,7 +5147,7 @@ ENDIF.
 - Note the general rule: You should use `SELECT` with internal tables as a data source only when SQL functionality exceeds that of ABAP statements, such as in joins. For tasks achievable with ABAP statements, it's preferable to use them as they are optimized for internal tables and offer better performance.
 
 **More information**:
-- [Restrictions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensql_engine_restr.htm).
+- [Restrictions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensql_engine_restr.htm)
 - See details on the various ABAP SQL functionalities in the ABAP Keyword Documentation and in the [ABAP SQL cheat sheet](03_ABAP_SQL.md). 
 
 The following example explores various `SELECT` queries with internal tables as data sources. To try it out, create a demo class named `zcl_demo_abap` and paste the code into it. After activation, choose *F9* in ADT to execute the class. The example uses objects of the ABAP cheat sheets repository and is set up to display output in the console.

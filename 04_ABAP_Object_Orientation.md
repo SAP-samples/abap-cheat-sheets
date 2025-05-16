@@ -610,7 +610,7 @@ kinds of components are to be distinguished when, for example, looking at declar
     class (or interface).
 -   [Instance
     attributes](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abeninstance_attribute_glosry.htm "Glossary Entry")
-    (`DATA`): Determine the state of a objects of a class. The data
+    (`DATA`): Determine the state of objects of a class. The data
     is only valid in the context of an instance. As shown further down,
     instance attributes can only be accessed via an [object reference
     variable](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenobject_refer_variable_glosry.htm "Glossary Entry").
