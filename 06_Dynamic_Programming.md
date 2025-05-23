@@ -151,58 +151,313 @@ ENDLOOP.
 statements assign the memory area of a data object to a field symbol.
 Once the memory area is assigned, you can work with the content.
 
-``` abap
-"Some data object declarations to be used
-DATA: num      TYPE i,
-      struc    TYPE zdemo_abap_fli,  "Demo database table
-      itab_str TYPE string_table,
-      itab_fli TYPE TABLE OF zdemo_abap_fli WITH EMPTY KEY.
-APPEND INITIAL LINE TO itab_fli.
-
-"Declaring field symbols with complete types
-FIELD-SYMBOLS: <fs_i>     TYPE i,
-               <fs_struc> TYPE zdemo_abap_fli,
-               <fs_tab>   TYPE string_table.
-
-"Declaring field symbols with generic type
-FIELD-SYMBOLS <fs_gen> TYPE data.
-
-"Assigning data objects to field symbols
-"Using field symbols with a static type
-ASSIGN num   TO <fs_i>.
-ASSIGN struc TO <fs_struc>.
-ASSIGN itab_str TO <fs_tab>.
-"Using field symbol with a generic type
-ASSIGN num   TO <fs_gen>.
-ASSIGN itab_fli TO <fs_gen>.
-ASSIGN itab_fli[ 1 ] TO <fs_gen>.
-"Assigning components
-ASSIGN struc-carrid TO <fs_gen>.
-ASSIGN itab_fli[ 1 ]-connid TO <fs_gen>.
-
-"Inline declaration (the field symbol has the type data)
-ASSIGN num TO FIELD-SYMBOL(<fs_inl>).
-
-"CASTING addition for matching types of data object and field
-"symbol when assigning memory areas
-TYPES c_len_3 TYPE c LENGTH 3.
-DATA(chars) = 'abcdefg'.
-FIELD-SYMBOLS <fs1> TYPE c_len_3. 
-
-"Implicit casting
-ASSIGN chars TO <fs1> CASTING. "abc
-
-FIELD-SYMBOLS <fs2> TYPE data.
-
-"Explicit casting
-ASSIGN chars TO <fs2> CASTING TYPE c_len_3. "abc
-
-DATA chars_l4 TYPE c LENGTH 4.
-ASSIGN chars TO <fs2> CASTING LIKE chars_l4. "abcd
-```
+The table below includes a selection of `ASSIGN` statements, primarily featuring static assignments. More additions are covered further down. For more information, see the [ABAP Keyword Documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABENSET_FIELD_SYMBOLS.html).
 
 > **💡 Note**<br>
-> See more information on the addition `CASTING` [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapassign_casting.htm).
+> In the event of an unsuccessful static assignment, `sy-subrc` remains unchanged (with exceptions), and no memory area is allocated to the field symbol. After the statement, the field symbol is unassigned. The addition `ELSE UNASSIGN`, although it cannot be explicitly specified in static assignments, is used implicitly.
+
+
+<table>
+
+<tr>
+<th> Subject </th> <th> Example </th>
+</tr>
+
+<tr>
+<td> 
+
+Assigning memory area to an existing field symbol with [complete data type](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencomplete_data_type_glosry.htm)
+
+ </td>
+
+ <td> 
+
+
+``` abap
+DATA str_a TYPE string VALUE `ABAP`.
+DATA int_a TYPE i VALUE 123.
+DATA struc_a TYPE i_timezone.
+DATA tab_a TYPE string_table.
+
+FIELD-SYMBOLS <fs_str_a> TYPE string.
+FIELD-SYMBOLS <fs_int_a> TYPE i.
+FIELD-SYMBOLS <fs_struc_a> TYPE i_timezone.
+FIELD-SYMBOLS <fs_tab_a> LIKE tab_a.
+
+ASSIGN str_a TO <fs_str_a>.
+ASSIGN int_a TO <fs_int_a>.
+ASSIGN struc_a TO <fs_struc_a>.
+ASSIGN tab_a TO <fs_tab_a>.
+``` 
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+Assigning memory area to an existing field symbol with [generic data type](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abengeneric_data_type_glosry.htm)
+
+ </td>
+
+ <td> 
+
+
+``` abap
+DATA str_b TYPE string VALUE `ABAP`.
+DATA int_b TYPE i VALUE 123.
+DATA dec34_b TYPE decfloat34 VALUE '0.123'.
+DATA struc_b TYPE i_timezone.
+DATA strtab_b TYPE string_table.
+DATA hashtab_b TYPE string_hashed_table.
+
+FIELD-SYMBOLS <fs_any_b> TYPE any.
+FIELD-SYMBOLS <fs_numeric_b> TYPE numeric.
+FIELD-SYMBOLS <fs_clike_b> TYPE clike.
+FIELD-SYMBOLS <fs_anytab_b> TYPE ANY TABLE.
+
+ASSIGN str_b TO <fs_any_b>.
+ASSIGN int_b TO <fs_any_b>.
+ASSIGN dec34_b TO <fs_any_b>.
+ASSIGN struc_b TO <fs_any_b>.
+ASSIGN strtab_b TO <fs_any_b>.
+ASSIGN hashtab_b TO <fs_any_b>.
+
+ASSIGN int_b TO <fs_numeric_b>.
+ASSIGN dec34_b TO <fs_numeric_b>.
+
+ASSIGN str_b TO <fs_clike_b>.
+ASSIGN struc_b TO <fs_clike_b>.
+
+ASSIGN strtab_b TO <fs_anytab_b>.
+ASSIGN hashtab_b TO <fs_anytab_b>.
+``` 
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+Assigning memory area to a field symbol declared inline
+
+ </td>
+
+ <td> 
+
+
+``` abap
+DATA str_c TYPE string VALUE `ABAP`.
+DATA int_c TYPE i VALUE 123.
+DATA strtab_c TYPE string_table.
+
+ASSIGN str_c TO FIELD-SYMBOL(<fs_str_c>).
+ASSIGN int_c TO FIELD-SYMBOL(<fs_int_c>).
+
+LOOP AT strtab_c ASSIGNING FIELD-SYMBOL(<fs_wa_c>).
+ ...
+ENDLOOP.
+
+READ TABLE strtab_c ASSIGNING FIELD-SYMBOL(<fs_rt_c>) INDEX 1.
+``` 
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+Assigning components
+
+ </td>
+
+ <td> 
+
+
+``` abap
+DATA: BEGIN OF struc_d,
+        text TYPE c LENGTH 10,
+        num  TYPE i,
+      END OF struc_d.
+DATA tab_d LIKE TABLE OF struc_d WITH EMPTY KEY.
+struc_d = VALUE #( text = 'ABAP' num = 1 ).
+APPEND struc_d TO tab_d.
+
+FIELD-SYMBOLS <fs_txt_d> LIKE struc_d-text.
+
+ASSIGN struc_d-text TO <fs_txt_d>.
+
+"Note: With table expressions, sy-subrc is set.
+ASSIGN tab_d[ 1 ]-num TO FIELD-SYMBOL(<fs_wa_d>).
+ASSERT sy-subrc = 0.
+
+ASSIGN tab_d[ 2 ]-num TO <fs_wa_d>.
+ASSERT sy-subrc <> 0.
+``` 
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+Offset and length specifications
+
+ </td>
+
+ <td> 
+
+Find more information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABAPASSIGN_MEM_AREA_STATIC_DOBJ.html).
+
+<br>
+
+``` abap
+DATA txt_e TYPE c LENGTH 10 VALUE '0123456789'.
+TYPES c1 TYPE c LENGTH 1.
+FIELD-SYMBOLS <fs_txt_e> TYPE c1.
+
+DO 11 TIMES.
+  DATA(off) = sy-index - 1.
+  ASSIGN txt_e+off(1) TO <fs_txt_e>.
+
+  IF sy-index < 11.
+    ASSERT <fs_txt_e> IS ASSIGNED.
+  ELSE.
+    ASSERT <fs_txt_e> IS NOT ASSIGNED.
+  ENDIF.
+ENDDO.
+
+"The following example explores area limits of data objects that are assigned.
+"The first ASSIGN statement assigns the area limits of the data object txt_e to a field symbol.
+"In the second ASSIGN statement in a loop, the second field symbol takes over the area limits.
+"This ASSIGN statement does not specify the offset.
+"From a specific loop pass on, the assignment does not work anymore as a larger memory area
+"is assigned. Therefore, the logical expression is then false.
+
+FIELD-SYMBOLS: <fs_any1_e> TYPE any,
+               <fs_any2_e> TYPE any.
+"345
+ASSIGN txt_e+3(3) TO <fs_any1_e>.
+
+DATA strtab_e TYPE string_table.
+DO 10 TIMES.
+  ASSIGN <fs_any1_e>(sy-index) TO <fs_any2_e>.
+  IF <fs_any2_e> IS ASSIGNED.
+    APPEND |{ <fs_any2_e> } / sy-index = { sy-index }| TO strtab_e.
+  ELSE.
+    APPEND |Field symbol not assigned / sy-index = { sy-index }| TO strtab_e.
+  ENDIF.
+ENDDO.
+
+*strtab_e table content: 
+*3 / sy-index = 1                           
+*34 / sy-index = 2                          
+*345 / sy-index = 3                         
+*3456 / sy-index = 4                        
+*34567 / sy-index = 5                       
+*345678 / sy-index = 6                      
+*3456789 / sy-index = 7                     
+*Field symbol not assigned / sy-index = 8   
+*Field symbol not assigned / sy-index = 9   
+*Field symbol not assigned / sy-index = 10  
+``` 
+
+ </td>
+</tr>
+
+
+<tr>
+<td> 
+
+`CASTING` addition for matching types of data object and field symbol
+
+ </td>
+
+ <td> 
+
+Find more information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapassign_casting.htm).
+
+<br>
+
+``` abap
+DATA txt1_f TYPE c LENGTH 7 VALUE 'abcdefg'.
+TYPES c3 TYPE c LENGTH 3.
+FIELD-SYMBOLS <fs_c3_f> TYPE c3.
+
+"Implicit casting
+"abc
+ASSIGN txt1_f TO <fs_c3_f> CASTING. 
+
+FIELD-SYMBOLS <fs_data_f> TYPE data.
+
+"Explicit casting
+"abc
+ASSIGN txt1_f TO <fs_data_f> CASTING TYPE c3. 
+
+DATA txt2_f TYPE c LENGTH 4.
+"abcd
+ASSIGN txt1_f TO <fs_data_f> CASTING LIKE txt2_f. 
+``` 
+
+ </td>
+</tr>
+
+
+<tr>
+<td> 
+
+Assigning writable expressions
+
+ </td>
+
+ <td> 
+
+
+``` abap
+"Table expressions
+"Note: sy-subrc is set. If the line is found, sy-subrc is set to 0.
+
+DATA(strtab_f) = VALUE string_table( ( `ABAP` ) ).
+
+ASSIGN strtab_f[ 1 ] TO FIELD-SYMBOL(<fs_wa_g>).
+ASSERT sy-subrc = 0.
+
+ASSIGN strtab_f[ 2 ] TO <fs_wa_g>.
+ASSERT sy-subrc <> 0.
+
+"Constructor expressions
+
+"NEW
+"Assigning instance attributes of a class
+ASSIGN NEW zcl_demo_abap_objects( )->another_string TO FIELD-SYMBOL(<fs_attribute1_g>).
+
+"CAST
+TYPES: BEGIN OF struc_g,
+         comp1 TYPE i,
+         comp2 TYPE i,
+       END OF struc_g.
+
+DATA dref_g TYPE REF TO data.
+dref_g = NEW struc_g( comp1 = 1 comp2 = 2 ).
+
+ASSIGN CAST struc_g( dref_g )->comp1 TO FIELD-SYMBOL(<fs_comp1_g>).
+ASSIGN CAST struc_g( dref_g )->comp2 TO FIELD-SYMBOL(<fs_comp2_g>).
+ASSIGN CAST struc_g( dref_g )->* TO FIELD-SYMBOL(<fs_struc_g>).
+
+DATA iref TYPE REF TO zdemo_abap_objects_interface.
+DATA(oref) = NEW zcl_demo_abap_objects( ).
+oref->another_string = `hello`.
+iref = oref.
+iref->in_str = `world`.
+
+ASSIGN CAST zcl_demo_abap_objects( iref )->another_string TO FIELD-SYMBOL(<fs_attribute2_g>).
+ASSIGN CAST zdemo_abap_objects_interface( oref )->in_str TO FIELD-SYMBOL(<fs_attribute3_g>).
+``` 
+
+ </td>
+</tr>
+
+</table>
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
