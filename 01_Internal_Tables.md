@@ -5116,7 +5116,7 @@ ENDIF.
   - Database table data (such as data from DDIC database tables or CDS entities) buffered in the [table buffer](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenas_abap_glosry.htm) within AS ABAP. Buffering ability is determined by specifications in the artifacts. If the data isn't buffered, the engine can't handle it, and the SQL statement is processed on the database.
   - Internal tables present in the current internal session. They are treated like DDIC database tables. ABAP types are mapped to corresponding [built-in DDIC types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbuiltin_ddic_type_glosry.htm).
 - The ABAP SQL in-memory engine processes data on AS ABAP, not the database server. If a `SELECT` statement using internal tables as data sources includes elements beyond the engine's capability (for example, most subqueries aren't supported; see detailed restrictions [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABENSQL_ENGINE_RESTR.html)), the internal table content is transferred to a temporary database table before the query executes. Only components involved in the read access are transferred.
-- In such cases, the SQL statement runs directly on the database server, not within AS ABAP. If the compiler identifies a statement the ABAP SQL in-memory engine can't handle, a syntax warning occurs. You can suppress this warning using the pragma ##itab_db_select.
+- In such cases, the SQL statement runs directly on the database server, not within AS ABAP. If the compiler identifies a statement the ABAP SQL in-memory engine can't handle, a syntax warning occurs. You can suppress this warning using the pragma `##itab_db_select`.
 - Currently, queries with multiple internal tables can only proceed if the ABAP SQL in-memory engine can manage them on AS ABAP directly. Transferring more than one internal table to the database is currently not supported.
 - The result of the ABAP SQL in-memory engine processing is identical to processing the read access directly on the database.
 
@@ -5141,10 +5141,10 @@ ENDIF.
   "SELECT SINGLE * FROM @itab AS tab INTO @DATA(line).
   ```
   - You cannot use deep and nested components of internal tables in `SELECT` statements.
-  - The type string is supported only if declared as a reference to the built-in dictionary type sstring.
+  - The type string is supported only if declared as a reference to the built-in dictionary type `sstring`.
 - A key advantage of using `SELECT` statements with internal tables as data sources is the access to ABAP SQL's extensive functionalities, like aggregate expressions.
 - They can serve as an alternative to the `READ TABLE` or `LOOP AT` statements if the ABAP SQL in-memory engine can process the data without requiring a database transfer.
-- Note the general rule: You should use `SELECT` with internal tables as a data source only when SQL functionality exceeds that of ABAP statements, such as in joins. For tasks achievable with ABAP statements, it's preferable to use them as they are optimized for internal tables and offer better performance.
+- Note the general rule: You should use `SELECT` with internal tables as a data source only when SQL functionality exceeds that of ABAP statements, such as in joins. For tasks achievable with ABAP statements, it is preferable to use them as they are optimized for internal tables and offer better performance.
 
 **More information**:
 - [Restrictions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensql_engine_restr.htm)

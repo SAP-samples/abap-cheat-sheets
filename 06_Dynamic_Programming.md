@@ -2655,7 +2655,6 @@ ENDCLASS.
 
 - The following code snippet shows dynamically specifying method calls. Find three example classes below the syntax pattern snippet.
 - The snippet covers methods. Dynamic method calls require `CALL METHOD` statements. 
-- Find an example of a dynamic function module call - as another example of [procedure](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenprocedure_glosry.htm "Glossary Entry") calls - in the [Program Flow Logic](./13_Program_Flow_Logic.md#function-module-example) cheat sheet.
 
 
 Syntax patterns: 
@@ -3746,7 +3745,16 @@ The type properties are represented by attributes that are accessible through th
 
 #### RTTI: Attribute Access and Method Calls
 
-The following code example demonstrates a range of RTTI attribute accesses and method calls. It includes retrieving type information at runtime for elementary and enumerated types, structures, internal tables, data references, classes, and interfaces. Find more information in the section below. 
+The following code example demonstrates a range of RTTI attribute accesses and method calls. It includes retrieving type information at runtime for:
+- elementary types
+- enumerated types 
+- structures 
+- internal tables
+- data references 
+- classes 
+- interfaces 
+
+Find more information in the section below. 
 
 To try the example out, create a demo class named `zcl_demo_abap` and paste the code into it. 
 The example is not set up to display output in the console. So, after activation, you may want to set a break point at the first position possible and choose *F9* in ADT to execute the class.  You can then walk through the example in the debugger. This will allow you to double-click on the variables and check out the contents. The example is similar to the one below, however, this only focuses on the method calls and attribute accesses without output preparation among others.
@@ -5610,7 +5618,7 @@ ASSERT applies_to_dobj = abap_true.
 
 ## More Information
 - It is recommended that you also consult section [Dynamic Programming Techniques (F1 docu for standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abendynamic_prog_technique_gdl.htm) in the ABAP Keyword Documentation since it provides important aspects that should be considered when dealing with dynamic programming in general (e. g. security aspects or runtime error prevention).
-- There are even further dynamic programming techniques in the unrestricted ABAP language scope [Standard ABAP](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenstandard_abap_glosry.htm) such as the generation or execution of programs at runtime. They are not part of this cheat sheet. Find more details on the related syntax (e. g. `GENERATE SUBROUTINE POOL`, `READ REPORT` and `INSERT REPORT` in the ABAP Keyword Documentation for Standard ABAP: [Dynamic Program Development (F1 docu for Standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenabap_language_dynamic.htm)
+- There are even further dynamic programming techniques in the unrestricted ABAP language scope [Standard ABAP](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenstandard_abap_glosry.htm). Find more information in the ABAP Keyword Documentation for Standard ABAP: [Dynamic Program Development (F1 docu for Standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenabap_language_dynamic.htm).
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 

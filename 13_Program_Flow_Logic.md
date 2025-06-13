@@ -562,7 +562,7 @@ Further keywords for defining loops are as follows. They are not dealt with here
 - [`LOOP ... ENDLOOP`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abaploop_at_itab.htm) statements are meant for loops across internal tables. See also the cheat sheet on internal tables.
   - In contrast to the loops above, the system field `sy-index` is not set. Instead, the system field `sy-tabix` is set and which contains the table index of the current table line in the loop pass.
 - `FOR` loops: You can also realize loops using iteration expressions with `VALUE` and `REDUCE`. For more information, refer to the [Constructor Expressions](05_Constructor_Expressions.md) cheat sheet.
-- [`SELECT ... ENDSELECT`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapselect.htm) statements loop across the result set of a database access. See also the cheat sheet on ABAP SQL.
+- [`SELECT ... ENDSELECT`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapselect.htm) statements loop across the result set of a data source access. See also the cheat sheet on ABAP SQL.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 

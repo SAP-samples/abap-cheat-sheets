@@ -7,6 +7,7 @@
     - [Available Classes in ABAP for Cloud Development](#available-classes-in-abap-for-cloud-development)
     - [Cloud Development Successors](#cloud-development-successors)
   - [Displaying Output in the ADT Console](#displaying-output-in-the-adt-console)
+    - [Excursion: Exploring Demo Display Class Using IDE Actions](#excursion-exploring-demo-display-class-using-ide-actions)
   - [Creating and Transforming UUIDs](#creating-and-transforming-uuids)
   - [XCO Representations of SY Components](#xco-representations-of-sy-components)
   - [RAP](#rap)
@@ -52,6 +53,7 @@ This ABAP cheat sheet contains a selection of [released](https://help.sap.com/do
 > - The cheat sheet is not a comprehensive overview, and the code snippets do not claim to be comprehensive as far as options, methods, or parameters are concerned. It is intended to give you a rough overview, for you to get an idea. It is an invitation to a more in-depth exploration.
 > - For more information and where available, refer to the class documentation (for example, choose F2 when the cursor is on the class name in ADT), the ABAP Keyword Documentation, and the SAP Help Portal documentation.
 > - You might find that different classes can achieve similar or the same results, especially with the Extension Components Library (XCO), a general-purpose development library designed specifically for ABAP for Cloud Development. Choose the classes that best meet your needs.
+> - For XCO classes, the cheat sheet covers released XCO APIs. In [Standard ABAP](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenstandard_abap_glosry.htm), XCO APIs are also available that do not have `CP` in the class name. These classes are not covered here. 
 > - [Disclaimer](./README.md#%EF%B8%8F-disclaimer)
 
 ## Excursions
@@ -249,6 +251,1739 @@ ENDCLASS.
 </tr>
 
 </table>
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+### Excursion: Exploring Demo Display Class Using IDE Actions
+
+- IDE actions let you create simple features to extend ABAP development tools for Eclipse (ADT).
+- With IDE actions, you can build custom functionalities using ABAP, especially for AI-related use cases (see the ABAP classes available in the *ABAP AI SDK powered by Intelligent Scenario Lifecycle Management* below).
+- A feature of IDE actions is the ability to display HTML output in the result dialog.
+- The following examples use IDE actions to demonstrate the capabilities of the demo class `CL_DEMO_OUTPUT_CLOUD`.
+- These examples, intended for exploration and experimentation, use the class's HTML capabilities for display. When you execute the example IDE actions, they present data objects in HTML within the IDE action result dialog. You may recognize this HTML presentation from the `CL_DEMO_OUTPUT` class that is available in Standard ABAP and used for demo display purposes, especially useful for displaying internal table content.
+- The (non-AI-related) experiments include these IDE actions for demo display purposes:
+
+
+<table>
+
+<tr>
+<th> IDE Action </th> <th> Notes </th>
+</tr>
+
+<tr>
+<td> 
+
+**Class runner and data object displayer** 
+
+ </td>
+
+ <td> 
+
+- Similar to implementing the `IF_OO_ADT_CLASSRUN` interface (or its alternatives for demo display purposes), the demo IDE action lets you select and run a class that implements a specific demo interface.
+- The IDE action result dialog uses HTML to display the content of data objects, like elementary data objects, structures, internal tables, and references, with the help of `CL_DEMO_OUTPUT_CLOUD`, instead of plain text in the ADT console.
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+**Method runner and parameter displayer**
+
+ </td>
+
+ <td> 
+
+- The demo IDE action lets you select a usable and instantiable class. Once selected, you can choose a public instance or static method of that class to be called.
+- After choosing a method, the IDE action dialog presents its input parameters (if any), allowing you to provide actual parameters for the formal parameters. Note that the example is simplified, only allowing character-like input. For example, a calculator method may require three inputs: two numbers and an operator. The example focuses on basic cases and does not perform input validation at runtime.
+- When you run the IDE action, the method is executed. For instance methods, an instance of the class is created.
+- As a result, the parameter table (refer to the Dynamic Programming cheat sheet) is displayed as HTML in the IDE action result dialog using `CL_DEMO_OUTPUT_CLOUD`, including any the input and output parameters and their values (if any).
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+**XLSX file importer and content displayer**
+
+ </td>
+
+ <td> 
+
+- The demo IDE action lets you select an XLSX file from your local machine, retrieve its content, and display it in an internal table as HTML using `CL_DEMO_OUTPUT_CLOUD` in the IDE action result dialog.  
+- In the selection IDE action dialog, you can specify which worksheet contains the content to retrieve. You can also choose where to start retrieving the content (e.g., from column A, row 1) and indicate if there is a header line. If a header exists, the content of that cells in that line are used as field names for the internal table.  
+- When you run the IDE action, the XCO API is used to read the XLSX content. An internal table is created dynamically, and the worksheet content is added to it. Finally, this internal table is displayed as HTML in the IDE action result dialog.  
+
+ </td>
+</tr>
+
+</table>
+
+
+> **💡 Note**<br>
+> - Find more information on IDE actions and examples: 
+>   - [in the SAP documentation](https://help.sap.com/docs/abap-cloud/abap-development-tools-user-guide/working-with-ide-actions). 
+>   - [in this Devtoberfest session](https://youtu.be/YOIsyR5C2Mk?t=2304).
+> - Your user must be assigned to the `SAP_A4C_BC_DEV_AIA_PC` business catalog. 
+
+> **⚠️ Disclaimer**<br>
+> - The examples are simplified and not meant to represent best practices for IDE action implementation. They are only intended for exploration purposes to get a high-level idea.  
+> - All examples use `CL_DEMO_OUTPUT_CLOUD` to retrieve HTML output of data objects. Note that this class is intended for demo purposes only.  
+> - **NOTE**: The use of IDE actions is your responsibility. Development and use are up to you. Refer to [this repository's disclaimer](./README.md#%EF%B8%8F-disclaimer) and the [disclaimer in the IDE action documentation](https://help.sap.com/docs/abap-cloud/abap-development-tools-user-guide/working-with-ide-actions). 
+> - Be particularly mindful of the potential security risks when importing external content, which the simplified example code below does not address. The example code also uses dynmamic programming techniques. They can pose a security risk. Refer to the [Dynamic Programming cheat sheet](06_Dynamic_Programming.md) and the ABAP Keyword Documentation.
+
+
+**Demo IDE Actions Using `CL_DEMO_OUTPUT_CLOUD`**
+
+The setup is similar across all examples:  
+- Creation of repository objects for demo IDE actions.
+- Each demo IDE action involves two global classes:
+  - Implementing class
+  - Input UI configuration class
+- A demo class to demonstrate the IDE action (except for the *XLSX file importer and content displayer* example; the examples use a demo class named `ZCL_DEMO_ABAP`)
+- Some IDE action classes contain code within the CCIMP include.
+- One example requires creating a demo interface.
+
+
+Expand the following collapsible section for descriptions and example code:
+
+<details>
+  <summary>🟢 Class runner and data object displayer </summary>
+  <!-- -->
+<br>
+
+**Demo Purpose** 
+
+This demo IDE action runs classes and displays the content of data objects in an `IF_OO_ADT_CLASSRUN`-like style. Instead of plain text in the ADT console, it presents the results as HTML in an IDE action result dialog in ADT.
+
+**Steps**
+
+- Access your demo package in ADT in your SAP BTP ABAP Environment.
+- Create a new repository object e.g. by right-clicking the package and choosing *New -> Other ABAP Repository Object -> Filter for IDE Action*.
+- Action creation: 
+  - Name: *ZDEMO_ABAP_IDE_ACTION_OUTPUT*
+  - Description: *IDE Action for HTML Output*
+- Make the following entries on the IDE action screen: 
+  - Title: *Demo IDE Action: HTML Output*
+  - Summary: *Action to display the content of data objects as HTML in an IDE action result dialog* 
+  - Implementing Class: `ZCL_DEMO_ABAP_ACTION_OUTPUT`
+  - Input UI Configuration Class: `ZCL_DEMO_ABAP_ACTION_OUTPUT_UI`
+  - Number of Focused Resources: *Any*
+  - Filter Object Types: `CLAS` (choose *Add* and filter for `CLAS`)
+- Create the classes
+  - Click the *Implementing Class* link. A pop-up is displayed to start the class creation. Provide a description and walk through the wizard. Once the class has been created, activate the class having no implementation at this stage. 
+  - Go back and repeat the steps for the *Input UI Configuration Class*.
+- Once the classes have been created, activate the IDE action. The screen will show warnings regarding interfaces not implemented in the classes. 
+- For demo purposes, you can copy and paste the code from below. 
+- Perform a mass activation to activate the classes because one class uses types specified in the other class. 
+- To check out the action, proceed as follows: 
+  - Create an interface named `ZIF_DEMO_ABAP_OUTPUT` and use the code from below. `ZIF_DEMO_ABAP_OUTPUT` is essential to be implemented for checking out the IDE action.     
+  - Create a class named `ZCL_DEMO_ABAP` and use the code from below (contains a collection of various data objects that should be displayed). 
+  - In ADT, you have opened the demo class `ZCL_DEMO_ABAP` (or any class implementing the interface).
+  - Choose *STR + ALT/CMD + R* to run an IDE action.
+  - Select the IDE action. You can filter for *HTML Output*.
+  - Choose *Run*.
+  - An IDE action dialog is displayed prompting you to provide a class. Insert the testing class `ZCL_DEMO_ABAP` (or browse, or you have run the action in a class filling the input field automatically).
+  - Choose *Run*.
+  - The IDE action result dialog is displayed showing the HTML output of the data objects that were written using `out->write( ... ).` and other methods that the `CL_DEMO_OUTPUT_CLOUD` class offers..
+  - The example class is designed to demonstrate various data objects, ranging from elementary types to more complex types such as structures and internal tables, including nested structures, deep internal tables, and data references. 
+
+<table>
+
+<tr>
+<th> Class (include)/Interface </th> <th> Code </th>
+</tr>
+
+<tr>
+<td> 
+
+`ZCL_DEMO_ABAP_ACTION_OUTPUT` (global class; no code in other includes)
+
+ </td>
+
+ <td> 
+
+
+``` abap
+CLASS zcl_demo_abap_action_output DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC.
+
+  PUBLIC SECTION.
+    INTERFACES if_aia_action.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+    CLASS-METHODS get_output IMPORTING VALUE(class)  TYPE string
+                             RETURNING VALUE(result) TYPE string.
+ENDCLASS.
+
+
+
+CLASS zcl_demo_abap_action_output IMPLEMENTATION.
+  METHOD get_output.
+    class = condense( val = to_upper( class ) to = `` ).
+
+    "Checking if input is a class
+    cl_abap_classdescr=>describe_by_name(
+      EXPORTING
+        p_name         = class
+      RECEIVING
+        p_descr_ref    = DATA(tdo)
+      EXCEPTIONS
+        type_not_found = 1
+        OTHERS         = 2 ).
+
+    IF sy-subrc <> 0.
+      result = |Class { class } not found|.
+      RETURN.
+    ENDIF.
+
+    "Checking whether class is instantiatable
+    IF tdo->is_instantiatable( ) = abap_false.
+      result = |Class { class } cannot be instantiated|.
+      RETURN.
+    ENDIF.
+
+    "Checking whether the class implements the ZIF_DEMO_ABAP_OUTPUT interface
+    READ TABLE CAST cl_abap_classdescr( tdo )->interfaces WITH KEY name = 'ZIF_DEMO_ABAP_OUTPUT' TRANSPORTING NO FIELDS.
+
+    IF sy-subrc <> 0.
+      result = |Class { class } does not implement the ZIF_DEMO_ABAP_OUTPUT interface|.
+      RETURN.
+    ENDIF.
+
+    DATA oref TYPE REF TO object.
+    TRY.
+        DATA(output_oref) = cl_demo_output_cloud=>new( cl_demo_output_cloud=>html ).
+        CREATE OBJECT oref TYPE (class).
+        CALL METHOD oref->('ZIF_DEMO_ABAP_OUTPUT~MAIN') EXPORTING out = output_oref.
+        result = output_oref->get( ).
+      CATCH cx_root INTO DATA(error).
+        result = error->get_text( ).
+    ENDTRY.
+  ENDMETHOD.
+
+
+  METHOD if_aia_action~run.
+    DATA popup_result TYPE REF TO if_aia_popup_result.
+    popup_result = cl_aia_result_factory=>create_html_popup_result( ).
+
+    TRY.
+        DATA ui_input TYPE zcl_demo_abap_action_output_ui=>ty_input.
+        context->get_input_config_content( )->get_as_structure( IMPORTING result = ui_input ).
+      CATCH cx_sd_invalid_data INTO DATA(exception).
+        CLEAR ui_input.
+        popup_result->set_content( exception->get_text( ) ).
+        result = popup_result.
+        RETURN.
+    ENDTRY.
+
+    popup_result->set_content( get_output( ui_input-class_name ) ).
+    result = popup_result.
+  ENDMETHOD.
+ENDCLASS.
+``` 
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+`ZCL_DEMO_ABAP_ACTION_OUTPUT_UI` (global class)
+
+ </td>
+
+ <td> 
+
+
+``` abap
+CLASS zcl_demo_abap_action_output_ui DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
+
+  PUBLIC SECTION.
+    INTERFACES if_aia_sd_action_input.
+
+    TYPES:
+      "! <p class="shorttext">Provide a class that implements the interface zif_demo_abap_output</p>
+      BEGIN OF ty_input,
+        "! <p class="shorttext">Class</p>
+        "! $required
+        class_name TYPE string,
+      END OF ty_input.
+
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+ENDCLASS.
+
+
+
+CLASS zcl_demo_abap_action_output_ui IMPLEMENTATION.
+
+
+  METHOD if_aia_sd_action_input~create_input_config.
+
+    TRY.
+        DATA(resource) = CAST if_adt_context_src_based_obj( context->get_focused_resource( ) ).
+        DATA(focused_resources) = context->get_focused_resources( ).
+        LOOP AT focused_resources ASSIGNING FIELD-SYMBOL(<focused_resource>).
+          IF <focused_resource>->get_kind( ) = if_adt_context_resource=>kind-source_based_dev_object.
+            DATA(source_based_object) = CAST if_adt_context_src_based_obj( <focused_resource> ).
+            DATA(cl) = source_based_object->get_object_info( )-display_name.
+            DATA(type) = <focused_resource>->get_type( ).
+
+            IF type = `CLAS/OC`.
+              DATA(ok) = abap_true.
+              EXIT.
+            ENDIF.
+          ENDIF.
+        ENDLOOP.
+      CATCH cx_root.
+    ENDTRY.
+
+    "Default values for input data
+    DATA(input_data) = VALUE ty_input( class_name = cl ).
+
+    "Creating the configuration
+    DATA(configuration) = ui_information_factory->get_configuration_factory(
+                                               )->create_for_data( input_data ).
+    "Setting the layout
+    configuration->set_layout( if_sd_config_element=>layout-grid ).
+
+    "Setting element configuration
+    configuration->get_element( 'class_name' )->set_types( VALUE #( ( `CLAS/OC` ) ) ).
+
+    "Returning the UI information
+    result = ui_information_factory->for_abap_type( abap_type     = input_data
+                                                    configuration = configuration ).
+  ENDMETHOD.
+
+
+  METHOD if_aia_sd_action_input~get_value_help_provider.
+    "Getting a reference to the value help handler via the value help provider
+    "The example uses a local class as value help provider. The method implementation
+    "there is intentionally empty. The value help provider is required in the example
+    "for the class selection popup to display.
+    result = cl_sd_value_help_provider=>create( NEW lcl_demo_abap_action_output_vh( ) ).
+  ENDMETHOD.
+ENDCLASS.
+``` 
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+`ZCL_DEMO_ABAP_ACTION_OUTPUT_UI` (CCIMP include/Local Types tab in ADT)
+
+ </td>
+
+ <td> 
+
+
+``` abap
+CLASS lcl_demo_abap_action_output_vh DEFINITION.
+  PUBLIC SECTION.
+    INTERFACES if_sd_value_help_dsni.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+ENDCLASS.
+
+
+CLASS lcl_demo_abap_action_output_vh IMPLEMENTATION.
+  METHOD if_sd_value_help_dsni~get_value_help_items.
+   "The method implementation is intentionally empty.
+  ENDMETHOD.
+ENDCLASS.
+``` 
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+Interface to check out the IDE action<br><br>
+`ZIF_DEMO_ABAP_OUTPUT` 
+
+ </td>
+
+ <td> 
+
+
+``` abap
+INTERFACE zif_demo_abap_output
+  PUBLIC .
+  METHODS main
+    IMPORTING
+      out TYPE REF TO if_demo_output_cloud.
+ENDINTERFACE.
+``` 
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+Class to check out the IDE action<br><br>
+`ZCL_DEMO_ABAP` (global class) 
+
+ </td>
+
+ <td> 
+
+
+``` abap
+CLASS zcl_demo_abap DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
+
+  PUBLIC SECTION.
+    INTERFACES zif_demo_abap_output.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+ENDCLASS.
+
+
+CLASS zcl_demo_abap IMPLEMENTATION.
+  METHOD zif_demo_abap_output~main.
+
+    out->write_html( `<h2 style="color: green;">Displaying simple string</h2>` ).
+
+    out->write( `Hello, this is a demo example.` ).
+
+    out->line( ).
+
+**********************************************************************
+
+    out->write_html( `<h2 style="color: green;">Displaying flat structure</h2>` ).
+
+    TYPES: BEGIN OF struc_type,
+             comp1 TYPE i,
+             comp2 TYPE c LENGTH 5,
+             comp3 TYPE string,
+             comp4 TYPE n LENGTH 5,
+           END OF struc_type.
+
+    DATA(struct) = VALUE struc_type( comp1 = 123 comp2 = 'abcde' comp3 = `This is a string` comp4 = '12345' ).
+
+    out->write( struct ).
+
+    out->line( ).
+
+**********************************************************************
+
+    out->write_html( `<h2 style="color: green;">Displaying nested structure</h2>` ).
+
+    DATA: BEGIN OF address,
+            BEGIN OF name,
+              title   TYPE string VALUE `Mr.`,
+              prename TYPE string VALUE `Max`,
+              surname TYPE string VALUE `Mustermann`,
+            END OF name,
+            BEGIN OF street,
+              name TYPE string VALUE `Some Street`,
+              num  TYPE i VALUE 111,
+            END OF street,
+            BEGIN OF city,
+              zipcode TYPE n LENGTH 5 VALUE `12345`,
+              name    TYPE string VALUE `Some Place`,
+            END OF city,
+          END OF address.
+
+    out->write( address ).
+
+    out->line( ).
+
+**********************************************************************
+
+    out->write_html( `<h2 style="color: green;">Displaying internal table</h2>` ).
+
+    SELECT * FROM I_timezone INTO TABLE @DATA(timezones) UP TO 10 ROWS.
+
+    out->write( timezones ).
+
+    out->line( ).
+
+**********************************************************************
+
+    out->write_html( `<h2 style="color: green;">Displaying complex internal table</h2>` ).
+
+    TYPES: BEGIN OF deep_struc_type,
+             comp1 TYPE i,
+             comp2 TYPE c LENGTH 5,
+             comp3 TYPE struc_type,
+             comp4 TYPE string_table,
+             comp5 TYPE TABLE OF i_timezone WITH EMPTY KEY,
+             comp6 TYPE REF TO string,
+           END OF deep_struc_type,
+           deep_tab_type TYPE TABLE OF deep_struc_type WITH EMPTY KEY.
+
+    DATA(deep_itab) = VALUE deep_tab_type(
+      ( comp1 = 1
+        comp2 = 'abc'
+        comp3 = VALUE struc_type( comp1 = 123 comp2 = 'abcde' comp3 = `This is a string` comp4 = '12345' )
+        comp4 = VALUE #( ( `a` ) ( `b` ) ( `c` ) )
+        comp5 = VALUE #( ( LINES OF timezones TO 2 ) )
+        comp6 = NEW #( `Hello` ) )
+      ( comp1 = 2
+        comp2 = 'def'
+        comp3 = VALUE struc_type( comp1 = 456 comp2 = 'fghij' comp3 = `This is another string` comp4 = '67890' )
+        comp4 = VALUE #( ( `d` ) ( `e` ) ( `f` ) )
+        comp5 = VALUE #( ( LINES OF timezones FROM 3 TO 4 ) )
+        comp6 = NEW #( `World` ) ) ).
+
+    out->write( deep_itab ).
+
+    out->line( ).
+
+**********************************************************************
+
+    out->write_html( `<h2 style="color: green;">Displaying references</h2>` ).
+
+    DATA(dref_int) = NEW i( 123 ).
+    out->write( dref_int ).
+
+    DATA(dref_str) = NEW string( `Hello world` ).
+    out->write( dref_str ).
+
+    DATA(current_date) = xco_cp=>sy->date( )->as( xco_cp_time=>format->iso_8601_extended ).
+    out->write( current_date ).
+
+    out->line( ).
+
+**********************************************************************
+
+    out->write_html( `<h2 style="color: green;">Exploring further methods</h2>` ).
+
+    "write_html
+    out->write_html( `<h3>Test Heading</h3><p>This is some sample <span style="color: blue;">text</span>.</p><ul><li>a</li><li>b</li><li>c</li></ul>` ).
+
+    out->begin_code( `1` ).
+    "This is some code block
+    ASSERT 1 = 1.
+    out->end_code( `1` ).
+
+    out->begin_section( 'Heading level 1' ).
+    out->write_text( 'Lorem ipsum dolor sit amet (write_text method)' ).
+    out->write( 'Lorem ipsum dolor sit amet (write method; non proportional)' ).
+
+    out->begin_section( 'Heading level 2' ).
+
+    "write_data method
+    out->write_data( value = -100 ).
+
+    "Applying a custom name
+    out->write_data( value = -200 name = 'Custom name' ).
+
+    "Writes with named data objects
+    DATA some_num TYPE i VALUE -300.
+    out->write_data( some_num ).
+    out->write( some_num ).
+
+    "exclude/include parameters
+    SELECT * FROM I_timezone INTO TABLE @DATA(tz) UP TO 5 ROWS.
+
+    out->write( tz ).
+    out->write( data = tz include = `TimeZoneID, TimeZoneRule` name = `include parameter` ).
+    out->write( data = tz exclude = `TimeZoneIsActive` name = `exclude parameter` ).
+
+    out->begin_section( 'Heading level 3' ).
+
+    "write_json
+    out->write_json( /ui2/cl_json=>serialize( tz ) ).
+
+    CALL TRANSFORMATION id SOURCE itab = tz
+                           RESULT XML DATA(xml_tab).
+
+    "write_xml
+    out->write_xml( xml_tab ).
+
+    out->end_section( ).
+    out->end_section( ).
+    out->end_section( ).
+
+  ENDMETHOD.
+ENDCLASS.
+``` 
+
+ </td>
+</tr>
+
+</table>
+
+</details>  
+
+<br>
+
+<details>
+  <summary>🟢 Method runner and parameter displayer </summary>
+  <!-- -->
+<br>
+<br>
+
+**Demo Purpose**
+
+- This demo IDE action lets you select usable and instantiable classes, select one of their public instance or static methods, and provide the input parameters (if any) with character-like actual parameters. 
+- For example, a calculator method may require three inputs: two numbers and an operator. The example focuses on basic cases and does not perform input validation at runtime.
+- When you run the IDE action, the method is executed. 
+- As a result, the parameter table (refer to the Dynamic Programming cheat sheet) is displayed as HTML in the IDE action result dialog using `CL_DEMO_OUTPUT_CLOUD`, including any the input and output parameters and their values (if any).
+
+
+**Steps**
+ 
+- Access your demo package in ADT in your SAP BTP ABAP Environment.
+- Create a new repository object by, e.g. right-clicking the package and choosing *New -> Other ABAP Repository Object -> Filter for IDE Action*.
+- Action creation: 
+  - Name: *ZDEMO_ABAP_IDE_ACTION_M_RUN*
+  - Description: *IDE Action for Method Running and Parameter Displaying*
+- Make the following entries on the IDE Action screen: 
+  - Title: Demo IDE Action: Method Run
+  - Summary: Action to run public instance and static class methods and display the content of parameters as HTML in an IDE action pop-up 
+  - Implementing Class: `ZCL_DEMO_ABAP_ACTION_METHODRUN`
+  - Input UI Configuration Class: `ZCL_DEMO_ABAP_ACTION_M_RUN_UI`
+  - Number of Focused Resources: Any
+  - Filter Object Types: `CLAS`
+- Create the classes (see the description on the steps in the first expandable section).
+- Create a demo class named `ZCL_DEMO_ABAP` to check out the IDE action.
+- For the classes, you can use the code below.
+- To check out the demo IDE action, proceed as follows:   
+  - In ADT, you have opened the demo class `ZCL_DEMO_ABAP` (or any class implementing the interface).
+  - Choose *STR + ALT/CMD + R* to run an IDE action.
+  - Select the IDE action. You can filter for *Method Run*.
+  - Choose *Run*.
+  - An IDE action dialog is displayed prompting you to provide a class. 
+  - Once you have provided the class name, you can choose *Browse* for *Public Method*. Select the method you want to call.
+  - If the selected method has input parameters, they are displayed in the *Method Input Parameters* section.
+  - To provide actual parameters for the formal parameters, select the line and choose *Edit*. You can then provide input for *Valule*.
+  - Choose *Run*.
+  - The IDE action result dialog is displayed showing the HTML output of the parameter table (if any), i.e. also possible output parameters and their content.  
+
+<table>
+
+<tr>
+<th> Class (include) </th> <th> Code </th>
+</tr>
+
+<tr>
+<td> 
+
+`ZCL_DEMO_ABAP_ACTION_METHODRUN` (global class; no code in other includes)
+
+ </td>
+
+ <td> 
+
+
+``` abap
+CLASS zcl_demo_abap_action_methodrun DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC.
+
+  PUBLIC SECTION.
+    INTERFACES if_aia_action.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+    CLASS-METHODS get_output IMPORTING VALUE(ui_input) TYPE zcl_demo_abap_action_m_run_ui=>ty_input
+                             RETURNING VALUE(result)   TYPE string.
+
+    CLASS-DATA ptab TYPE abap_parmbind_tab.
+    CLASS-DATA dref TYPE REF TO data.
+    TYPES: BEGIN OF p_struct,
+             parameter TYPE string,
+             dref      TYPE REF TO data,
+           END OF p_struct.
+    CLASS-DATA tab TYPE TABLE OF p_struct WITH EMPTY KEY.
+    CLASS-DATA html TYPE string.
+ENDCLASS.
+
+
+
+CLASS zcl_demo_abap_action_methodrun IMPLEMENTATION.
+
+  METHOD get_output.
+
+    ui_input-class_name = condense( val = to_upper( ui_input-class_name ) to = `` ).
+
+    "The example is set up to allow only your own Z classes
+*    FIND PCRE `\AZ` IN ui_input-class_name.
+*    IF sy-subrc <> 0.
+*      result = |The example IDE action is set up to only process Z classes|.
+*      RETURN.
+*    ENDIF.
+*
+*    DATA(created_by) = xco_cp_abap=>class( CONV #( ui_input-class_name ) )->get_created_by( ).
+*    IF created_by <> sy-uname.
+*      result = |Class { ui_input-class_name } is not created by you. The example IDE action is set up to only process your own Z classes|.
+*      RETURN.
+*    ENDIF.
+
+    cl_abap_classdescr=>describe_by_name(
+      EXPORTING
+        p_name         = ui_input-class_name
+      RECEIVING
+        p_descr_ref    = DATA(tdo)
+      EXCEPTIONS
+        type_not_found = 1
+        OTHERS         = 2 ).
+
+    IF sy-subrc <> 0.
+      result = |Class { ui_input-class_name } not found|.
+      RETURN.
+    ENDIF.
+
+    DATA(tdo_cl) = CAST cl_abap_classdescr( tdo ).
+
+    "Checking whether the method is available
+    DATA(methods) = tdo_cl->methods.
+    READ TABLE methods ASSIGNING FIELD-SYMBOL(<meth>) WITH KEY name = ui_input-method_name.
+
+    IF sy-subrc <> 0.
+      result = |Method { ui_input-method_name } not available|.
+      RETURN.
+    ENDIF.
+
+    "Checking that the method is not one of the constructurs
+    IF <meth>-name = 'CLASS_CONSTRUCTOR' OR <meth>-name = 'CONSTRUCTOR'.
+      result = |Constructors cannot be called|.
+      RETURN.
+    ENDIF.
+
+    "Checking that the method is not the main method of the if_oo_adt_classrun interface
+    IF <meth>-name = 'IF_OO_ADT_CLASSRUN~MAIN'.
+      result = |The IF_OO_ADT_CLASSRUN~MAIN method cannot be called|.
+      RETURN.
+    ENDIF.
+
+    "Checking that the method is not abstract
+    IF <meth>-is_abstract = abap_true.
+      result = |Method { ui_input-method_name } is abstract|.
+      RETURN.
+    ENDIF.
+
+    "Checking that the method is public
+    IF <meth>-visibility <> 'U'.
+      result = |Method { ui_input-method_name } is not public|.
+      RETURN.
+    ENDIF.
+
+    "Checking whether the class is instantiatable and instance methods can be called
+    IF <meth>-is_class = abap_false AND tdo->is_instantiatable( ) = abap_false.
+      result = |Instance method { ui_input-method_name } cannot be called because { ui_input-class_name } cannot be instantiated|.
+      RETURN.
+    ENDIF.
+
+    "Processing method parameters
+    TRY.
+        LOOP AT <meth>-parameters ASSIGNING FIELD-SYMBOL(<m>).
+          DATA(param_type) = tdo_cl->get_method_parameter_type( p_method_name    = ui_input-method_name
+                                                                p_parameter_name = <m>-name  ).
+
+          "Checking types and creating data objects dynamically
+          CASE TYPE OF param_type.
+            WHEN TYPE cl_abap_tabledescr.
+              DATA(table_tdo) = CAST cl_abap_tabledescr( param_type ).
+              CASE table_tdo->table_kind.
+                WHEN cl_abap_tabledescr=>tablekind_any.
+                  CREATE DATA dref TYPE string_table.
+                WHEN cl_abap_tabledescr=>tablekind_index.
+                  CREATE DATA dref TYPE string_table.
+                WHEN cl_abap_tabledescr=>tablekind_std.
+                  IF table_tdo->is_instantiatable( ) = abap_true AND table_tdo->get_relative_name( ) IS NOT INITIAL.
+                    CREATE DATA dref TYPE HANDLE param_type.
+                  ELSE.
+                    CREATE DATA dref TYPE string_table.
+                  ENDIF.
+                WHEN cl_abap_tabledescr=>tablekind_hashed.
+                  IF table_tdo->is_instantiatable( ) = abap_true AND table_tdo->get_relative_name( ) IS NOT INITIAL.
+                    CREATE DATA dref TYPE HANDLE param_type.
+                  ELSE.
+                    CREATE DATA dref TYPE string_hashed_table.
+                  ENDIF.
+                WHEN cl_abap_tabledescr=>tablekind_sorted.
+                  IF table_tdo->is_instantiatable( ) = abap_true AND table_tdo->get_relative_name( ) IS NOT INITIAL.
+                    CREATE DATA dref TYPE HANDLE param_type.
+                  ELSE.
+                    TYPES sorted_tab TYPE SORTED TABLE OF string WITH NON-UNIQUE KEY table_line.
+                    CREATE DATA dref TYPE sorted_tab.
+                  ENDIF.
+              ENDCASE.
+            WHEN TYPE cl_abap_elemdescr.
+              DATA(elem_tdo) = CAST cl_abap_elemdescr( param_type ).
+              CASE elem_tdo->type_kind.
+                WHEN cl_abap_typedescr=>typekind_numeric.
+                  IF elem_tdo->is_instantiatable( ) = abap_true.
+                    CREATE DATA dref TYPE HANDLE param_type.
+                  ELSE.
+                    CREATE DATA dref TYPE i.
+                  ENDIF.
+                WHEN cl_abap_typedescr=>typekind_char.
+                  IF elem_tdo->is_instantiatable( ) = abap_true.
+                    CREATE DATA dref TYPE HANDLE param_type.
+                  ELSE.
+                    CREATE DATA dref TYPE c LENGTH 10.
+                  ENDIF.
+                WHEN cl_abap_typedescr=>typekind_clike.
+                  IF elem_tdo->is_instantiatable( ) = abap_true.
+                    CREATE DATA dref TYPE HANDLE param_type.
+                  ELSE.
+                    CREATE DATA dref TYPE c LENGTH 10.
+                  ENDIF.
+                WHEN cl_abap_typedescr=>typekind_csequence.
+                  IF elem_tdo->is_instantiatable( ) = abap_true.
+                    CREATE DATA dref TYPE HANDLE param_type.
+                  ELSE.
+                    CREATE DATA dref TYPE c LENGTH 10.
+                  ENDIF.
+                WHEN cl_abap_typedescr=>typekind_num.
+                  IF elem_tdo->is_instantiatable( ) = abap_true.
+                    CREATE DATA dref TYPE HANDLE param_type.
+                  ELSE.
+                    CREATE DATA dref TYPE n LENGTH 10.
+                  ENDIF.
+                WHEN cl_abap_typedescr=>typekind_hex.
+                  IF elem_tdo->is_instantiatable( ) = abap_true.
+                    CREATE DATA dref TYPE HANDLE param_type.
+                  ELSE.
+                    CREATE DATA dref TYPE x LENGTH 10.
+                  ENDIF.
+                WHEN cl_abap_typedescr=>typekind_xsequence.
+                  IF elem_tdo->is_instantiatable( ) = abap_true.
+                    CREATE DATA dref TYPE HANDLE param_type.
+                  ELSE.
+                    CREATE DATA dref TYPE xstring.
+                  ENDIF.
+                WHEN cl_abap_typedescr=>typekind_decfloat.
+                  IF elem_tdo->is_instantiatable( ) = abap_true.
+                    CREATE DATA dref TYPE HANDLE param_type.
+                  ELSE.
+                    CREATE DATA dref TYPE decfloat34.
+                  ENDIF.
+                WHEN cl_abap_typedescr=>typekind_packed.
+                  IF elem_tdo->is_instantiatable( ) = abap_true.
+                    CREATE DATA dref TYPE HANDLE param_type.
+                  ELSE.
+                    CREATE DATA dref TYPE p LENGTH 16 DECIMALS 14.
+                  ENDIF.
+                WHEN cl_abap_typedescr=>typekind_any.
+                  IF elem_tdo->is_instantiatable( ) = abap_true.
+                    CREATE DATA dref TYPE HANDLE param_type.
+                  ELSE.
+                    CREATE DATA dref TYPE string.
+                  ENDIF.
+                WHEN cl_abap_typedescr=>typekind_data.
+                  IF elem_tdo->is_instantiatable( ) = abap_true.
+                    CREATE DATA dref TYPE HANDLE param_type.
+                  ELSE.
+                    CREATE DATA dref TYPE string.
+                  ENDIF.
+                WHEN cl_abap_typedescr=>typekind_simple.
+                  IF elem_tdo->is_instantiatable( ) = abap_true.
+                    CREATE DATA dref TYPE HANDLE param_type.
+                  ELSE.
+                    CREATE DATA dref TYPE c LENGTH 10.
+                  ENDIF.
+              ENDCASE.
+            WHEN OTHERS.
+              CREATE DATA dref TYPE HANDLE param_type.
+          ENDCASE.
+
+          IF dref IS NOT BOUND.
+            CREATE DATA dref TYPE HANDLE param_type.
+          ENDIF.
+
+          "Preparing parameter table
+          APPEND VALUE #( parameter = <m>-name dref = dref ) TO tab ASSIGNING FIELD-SYMBOL(<val>).
+
+          IF <m>-parm_kind = 'I' OR <m>-parm_kind = 'C'.
+            DATA(type_descr) = cl_abap_typedescr=>describe_by_data( dref->* ).
+
+            IF type_descr IS INSTANCE OF cl_abap_elemdescr.
+              TRY.
+                  <val>-dref->* = VALUE #( ui_input-parameters[ parameter = <m>-name ]-value OPTIONAL ).
+                CATCH cx_root.
+              ENDTRY.
+            ELSE.
+              "In case of non-elementary types, assigning initial value.
+              TRY.
+                  IF <m>-parm_kind = 'R'.
+                    <val>-dref->* = dref.
+                  ELSE.
+                    <val>-dref->* = dref->*.
+                  ENDIF.
+                CATCH cx_root.
+              ENDTRY.
+
+            ENDIF.
+          ENDIF.
+          UNASSIGN <val>.
+
+          INSERT VALUE #( name = <m>-name
+                          kind = COND #( WHEN <m>-parm_kind = cl_abap_objectdescr=>importing THEN cl_abap_objectdescr=>exporting
+                                         WHEN <m>-parm_kind = cl_abap_objectdescr=>exporting THEN cl_abap_objectdescr=>importing
+                                         WHEN <m>-parm_kind = cl_abap_objectdescr=>changing THEN cl_abap_objectdescr=>changing
+                                         WHEN <m>-parm_kind = cl_abap_objectdescr=>returning THEN cl_abap_objectdescr=>returning )
+                          value = tab[ parameter = <m>-name ]-dref ) INTO TABLE ptab.
+          CLEAR dref.
+        ENDLOOP.
+
+        "Calling methods and preparing output
+        DATA(output_oref) = cl_demo_output_cloud=>new( cl_demo_output_cloud=>html ).
+        IF <meth>-is_class = abap_true.
+          CALL METHOD (ui_input-class_name)=>(ui_input-method_name) PARAMETER-TABLE ptab.
+          IF ptab IS INITIAL.
+            result = `**** Nothing to display ****`.
+          ELSE.
+            result = output_oref->get( ptab ).
+          ENDIF.
+        ELSE.
+          DATA oref TYPE REF TO object.
+          CREATE OBJECT oref TYPE (ui_input-class_name).
+          CALL METHOD oref->(ui_input-method_name) PARAMETER-TABLE ptab.
+          IF ptab IS INITIAL.
+            result = `**** Nothing to display ****`.
+          ELSE.
+            result = output_oref->get( ptab ).
+          ENDIF.
+        ENDIF.
+      CATCH cx_root INTO DATA(error).
+        result = error->get_text( ).
+    ENDTRY.
+  ENDMETHOD.
+
+  METHOD if_aia_action~run.
+    DATA(popup_result) = cl_aia_result_factory=>create_html_popup_result( ).
+
+    TRY.
+        DATA ui_input TYPE zcl_demo_abap_action_m_run_ui=>ty_input.
+        context->get_input_config_content( )->get_as_structure( IMPORTING result = ui_input ).
+      CATCH cx_sd_invalid_data INTO DATA(exception).
+        CLEAR ui_input.
+        popup_result->set_content( exception->get_text( ) ).
+        result = popup_result.
+        RETURN.
+    ENDTRY.
+
+    popup_result->set_content( get_output( ui_input = ui_input ) ).
+    result = popup_result.
+  ENDMETHOD.
+ENDCLASS.
+``` 
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+`ZCL_DEMO_ABAP_ACTION_M_RUN_UI` (global class)
+
+ </td>
+
+ <td> 
+
+
+``` abap
+CLASS zcl_demo_abap_action_m_run_ui DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
+
+  PUBLIC SECTION.
+    INTERFACES if_aia_sd_action_input.
+
+    TYPES:
+      "! <p class="shorttext">Input Parameters</p>
+      BEGIN OF ty_table_row,
+        "! <p class="shorttext">Parameter</p>
+        parameter TYPE c LENGTH 30,
+        "! <p class="shorttext">Value</p>
+        value     TYPE string,
+      END OF ty_table_row,
+
+      ty_table TYPE STANDARD TABLE OF ty_table_row WITH DEFAULT KEY,
+
+      "! <p class="shorttext">Provide class and method parameter values</p>
+      BEGIN OF ty_input,
+        "! <p class="shorttext">Class Name</p>
+        class_name  TYPE string,
+        "! <p class="shorttext">Public Method</p>
+        method_name TYPE string,
+        "! <p class="shorttext">Method Input Parameters</p>
+        parameters  TYPE ty_table,
+      END OF ty_input.
+
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+ENDCLASS.
+
+
+
+CLASS zcl_demo_abap_action_m_run_ui IMPLEMENTATION.
+
+  METHOD if_aia_sd_action_input~create_input_config.
+    TRY.
+        DATA(resource) = CAST if_adt_context_src_based_obj( context->get_focused_resource( ) ).
+        DATA(focused_resources) = context->get_focused_resources( ).
+        LOOP AT focused_resources ASSIGNING FIELD-SYMBOL(<focused_resource>).
+          IF <focused_resource>->get_kind( ) = if_adt_context_resource=>kind-source_based_dev_object.
+            DATA(source_based_object) = CAST if_adt_context_src_based_obj( <focused_resource> ).
+            DATA(cl) = source_based_object->get_object_info( )-display_name.
+            DATA(type) = <focused_resource>->get_type( ).
+            IF type = `CLAS/OC`.
+              DATA(ok) = abap_true.
+              EXIT.
+            ENDIF.
+          ENDIF.
+        ENDLOOP.
+      CATCH cx_root.
+    ENDTRY.
+
+    "Default values for input data
+    DATA(input_data) = VALUE ty_input( class_name = cl ).
+
+    "Creating the configuration
+    DATA(configuration) = ui_information_factory->get_configuration_factory(
+                                               )->create_for_data( input_data ).
+    "Setting the layout
+    configuration->set_layout( if_sd_config_element=>layout-grid ).
+
+    "Setting element and table configuration
+    configuration->get_element( 'class_name' )->set_types( VALUE #( ( `CLAS/OC` ) ) ).
+    configuration->get_element( 'method_name' )->set_values( if_sd_config_element=>values_kind-domain_specific_named_items ).
+    DATA(parameters) = configuration->get_structured_table( 'parameters' ).
+    parameters->set_layout( if_sd_config_element=>layout-table ).
+    parameters->if_sd_config_element~set_read_only( abap_true ).
+    parameters->get_line_structure( )->if_sd_config_element~set_read_only( abap_false ).
+    parameters->get_line_structure( )->get_element( 'parameter' )->set_read_only( abap_true ).
+    configuration->get_element( 'class_name' )->set_sideeffect( after_update = abap_true ).
+    configuration->get_element( 'method_name' )->set_sideeffect( after_update = abap_true ).
+
+    "Setting side effect on the table
+    parameters->get_line_structure( )->set_sideeffect( before_create   = abap_true
+                                                       feature_control = abap_true ).
+
+    "Returning the UI information
+    result = ui_information_factory->for_abap_type( abap_type     = input_data
+                                                    configuration = configuration ).
+  ENDMETHOD.
+
+
+  METHOD if_aia_sd_action_input~get_side_effect_provider.
+    "Getting a reference to the side effect handler via the side effect provider
+    "The example uses a local class as side effect provider.
+    result = cl_sd_sideeffect_provider=>create( feature_control = NEW lcl_demo_abap_action_m_run_se( )
+                                                determination   = NEW lcl_demo_abap_action_m_run_se( ) ).
+  ENDMETHOD.
+
+
+  METHOD if_aia_sd_action_input~get_value_help_provider.
+    "Getting a reference to the value help handler via the value help provider
+    "The example uses a local class as value help provider.
+    result = cl_sd_value_help_provider=>create( NEW lcl_demo_abap_action_m_run_vh( ) ).
+  ENDMETHOD.
+ENDCLASS.
+``` 
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+`ZCL_DEMO_ABAP_ACTION_M_RUN_UI` (CCIMP include/Local Types tab in ADT)
+
+ </td>
+
+ <td> 
+
+
+``` abap
+*&---------------------------------------------------------------------*
+*& Value help handler
+*&---------------------------------------------------------------------*
+
+CLASS lcl_demo_abap_action_m_run_vh DEFINITION.
+  PUBLIC SECTION.
+    INTERFACES if_sd_value_help_dsni.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+ENDCLASS.
+
+CLASS lcl_demo_abap_action_m_run_vh IMPLEMENTATION.
+
+  METHOD if_sd_value_help_dsni~get_value_help_items.
+    DATA items TYPE STANDARD TABLE OF if_sd_value_help_dsni=>ty_named_item.
+
+    IF model->get_data_type_name( ) = 'ZCL_DEMO_ABAP_ACTION_M_RUN_UI=>TY_INPUT'.
+      DATA creation_model TYPE zcl_demo_abap_action_m_run_ui=>ty_input.
+      model->get_as_structure( IMPORTING result = creation_model ).
+      DATA(tdo_cl) = CAST cl_abap_classdescr( cl_abap_typedescr=>describe_by_name( creation_model-class_name ) ).
+      DATA(methods_cl) = tdo_cl->methods.
+
+      LOOP AT methods_cl INTO DATA(wa) WHERE is_abstract = abap_false AND visibility = 'U'.
+        APPEND VALUE #( name = wa-name ) TO items.
+      ENDLOOP.
+
+      DELETE items WHERE name = 'CLASS_CONSTRUCTOR'.
+      DELETE items WHERE name = 'CONSTRUCTOR'.
+      DELETE items WHERE name = 'IF_OO_ADT_CLASSRUN~MAIN'.
+    ENDIF.
+
+    DELETE items WHERE name NOT IN search_pattern_range.
+    WHILE lines( items ) > max_item_count.
+      DELETE items INDEX lines( items ).
+    ENDWHILE.
+
+    "Returning the value help items
+    result = VALUE #( items            = items
+                      total_item_count = lines( items ) ).
+  ENDMETHOD.
+ENDCLASS.
+
+*&---------------------------------------------------------------------*
+*& Side effect handler
+*&---------------------------------------------------------------------*
+
+CLASS lcl_demo_abap_action_m_run_se DEFINITION.
+  PUBLIC SECTION.
+    INTERFACES:
+      if_sd_determination,
+      if_sd_feature_control.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+ENDCLASS.
+
+
+CLASS lcl_demo_abap_action_m_run_se IMPLEMENTATION.
+
+  METHOD if_sd_determination~run.
+    DATA(input_data) = VALUE zcl_demo_abap_action_m_run_ui=>ty_input( ).
+    model->get_as_structure( IMPORTING result = input_data ).
+    DATA(table_path) = path->get_as_table( ).
+
+    IF id = 'CLASS_NAME' AND determination_kind = if_sd_determination=>kind-after_update.
+      CLEAR input_data-method_name.
+      CLEAR input_data-parameters.
+    ENDIF.
+
+    IF id = 'METHOD_NAME' AND determination_kind = if_sd_determination=>kind-after_update.
+      CLEAR input_data-parameters.
+      DATA creation_model TYPE zcl_demo_abap_action_m_run_ui=>ty_input.
+      model->get_as_structure( IMPORTING result = creation_model ).
+      DATA(tdo_cl) = CAST cl_abap_classdescr( cl_abap_typedescr=>describe_by_name( creation_model-class_name ) ).
+      DATA(methods_cl) = tdo_cl->methods.
+      TRY.
+          DATA(meth) = methods_cl[ name = creation_model-method_name ].
+          LOOP AT meth-parameters INTO DATA(param).
+            IF param-parm_kind = cl_abap_objectdescr=>importing OR param-parm_kind = cl_abap_objectdescr=>changing.
+              APPEND VALUE #( parameter = param-name ) TO input_data-parameters.
+            ENDIF.
+          ENDLOOP.
+        CATCH cx_sy_itab_line_not_found.
+      ENDTRY.
+    ENDIF.
+
+    result = input_data.
+  ENDMETHOD.
+
+  METHOD if_sd_feature_control~run.
+    DATA(input_data) = VALUE zcl_demo_abap_action_m_run_ui=>ty_input( ).
+    model->get_as_structure( IMPORTING result = input_data ).
+    DATA(feature_control) = feature_control_factory->create_for_data( input_data ).
+
+    IF feature_control_kind = if_sd_feature_control=>kind-on_create.
+      feature_control->get_structured_table( 'parameters'
+                    )->get_line_structure(
+                    )->get_element( 'value'
+                    )->set_disabled( ).
+    ENDIF.
+
+    result = feature_control.
+  ENDMETHOD.
+
+ENDCLASS.
+``` 
+
+ </td>
+</tr>
+
+
+<tr>
+<td> 
+
+Class to check out the IDE action<br><br>
+`ZCL_DEMO_ABAP` (global class) 
+
+ </td>
+
+ <td> 
+
+- As an example, select the `stat_meth_calc` method that represents a simple calculator method, expecting three input parameters to be provided with actual parameters.
+- Note the simplified demo implementation. For example, the `stat_meth_all_params` method involves importing, exporting, changing and returning parameters. The changing parameter `number` expects a value of type `decfloat34`. If you provide a nonsensical character value through the IDE action, like *Test input* or others which cannot be converted, the method will not be able to process it. Or you provide a number that exceeds the maximum value for integers (parameters typed with `i`). In such situations,  initial or demo values are automatically used to ensure the method call works.
+
+
+<br>
+
+``` abap
+CLASS zcl_demo_abap DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
+
+  PUBLIC SECTION.
+    INTERFACES if_oo_adt_classrun.
+
+    TYPES: BEGIN OF elem_struc,
+             int     TYPE i,
+             int8    TYPE int8,
+             dec16   TYPE decfloat16,
+             dec34   TYPE decfloat34,
+             float   TYPE f,
+             c1      TYPE c LENGTH 1,
+             c20     TYPE c LENGTH 20,
+             n5      TYPE n LENGTH 5,
+             string  TYPE string,
+             pl8d2   TYPE p LENGTH 8 DECIMALS 2,
+             pl16d14 TYPE p  LENGTH 16 DECIMALS 14,
+             x4      TYPE x LENGTH 4,
+             xstring TYPE xstring,
+           END OF elem_struc.
+
+    CLASS-METHODS stat_meth_all_params
+      IMPORTING text           TYPE string
+      EXPORTING uppercase_text TYPE string
+      CHANGING  number         TYPE decfloat34
+      RETURNING VALUE(result)  TYPE string.
+
+    CLASS-METHODS inst_meth_all_params
+      IMPORTING text           TYPE string
+      EXPORTING uppercase_text TYPE string
+      CHANGING  number         TYPE decfloat34
+      RETURNING VALUE(result)  TYPE string.
+
+    CLASS-METHODS stat_meth_calc
+      IMPORTING num1          TYPE i
+                operator      TYPE elem_struc-c1
+                num2          TYPE i
+      RETURNING VALUE(result) TYPE string.
+
+    CLASS-METHODS stat_meth_no_importing
+      RETURNING
+        VALUE(result) TYPE string.
+
+    CLASS-METHODS stat_meth_no_params.
+
+    CLASS-METHODS stat_meth_mult_elem_imp_params
+      IMPORTING num_i              TYPE elem_struc-int
+                num_int8           TYPE elem_struc-int8
+                dec16              TYPE elem_struc-dec16
+                dec34              TYPE elem_struc-dec34
+                float              TYPE elem_struc-float
+                pl8d2              TYPE elem_struc-pl8d2
+                pl16d14            TYPE elem_struc-pl16d14
+                str                TYPE elem_struc-string
+                c1                 TYPE elem_struc-c1
+                c20                TYPE elem_struc-c20
+                n5                 TYPE elem_struc-n5
+                x4                 TYPE elem_struc-x4
+                xstr               TYPE elem_struc-xstring
+      RETURNING VALUE(elem_values) TYPE elem_struc.
+
+    CLASS-METHODS stat_meth_mult_params
+      IMPORTING text          TYPE string
+      EXPORTING upper_text    TYPE string
+                lower_text    TYPE string
+      CHANGING  str           TYPE string
+      RETURNING VALUE(result) TYPE string.
+
+    CLASS-METHODS stat_meth_generic_imp_par
+      IMPORTING any           TYPE any
+                data          TYPE data
+                c             TYPE c
+                clike         TYPE clike
+                csequence     TYPE csequence
+                n             TYPE n
+                x             TYPE x
+                xsequence     TYPE xsequence
+                dec           TYPE decfloat
+                numeric       TYPE numeric
+                p             TYPE p
+                simple        TYPE simple
+      RETURNING VALUE(result) TYPE string_table.
+
+    METHODS inst_meth_mult_params
+      IMPORTING text          TYPE string
+      EXPORTING upper_text    TYPE string
+                lower_text    TYPE string
+      CHANGING  str           TYPE string
+      RETURNING VALUE(result) TYPE string.
+
+    CLASS-METHODS inst_meth_mult_elem_imp_params
+      IMPORTING num_i              TYPE elem_struc-int
+                num_int8           TYPE elem_struc-int8
+                dec16              TYPE elem_struc-dec16
+                dec34              TYPE elem_struc-dec34
+                float              TYPE elem_struc-float
+                pl8d2              TYPE elem_struc-pl8d2
+                pl16d14            TYPE elem_struc-pl16d14
+                str                TYPE elem_struc-string
+                c1                 TYPE elem_struc-c1
+                c20                TYPE elem_struc-c20
+                n5                 TYPE elem_struc-n5
+                x4                 TYPE elem_struc-x4
+                xstr               TYPE elem_struc-xstring
+      RETURNING VALUE(elem_values) TYPE elem_struc.
+
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+ENDCLASS.
+
+
+
+CLASS zcl_demo_abap IMPLEMENTATION.
+  METHOD if_oo_adt_classrun~main.
+    out->write( 'hello' ).
+  ENDMETHOD.
+
+  METHOD stat_meth_no_importing.
+    result = `Hello world`.
+  ENDMETHOD.
+
+  METHOD stat_meth_no_params.
+    ...
+  ENDMETHOD.
+
+  METHOD stat_meth_mult_elem_imp_params.
+    elem_values = VALUE #( int  = num_i
+                           int8   = num_int8
+                           dec16 = dec16
+                           dec34 = dec34
+                           float = float
+                           pl8d2 = pl8d2
+                           pl16d14 = pl16d14
+                           string = str
+                           c1 = c1
+                           c20 = c20
+                           n5 = n5
+                           x4 = x4
+                           xstring = xstr ).
+  ENDMETHOD.
+
+  METHOD stat_meth_generic_imp_par.
+    APPEND LINES OF VALUE string_table( ( |any: { any }| )
+                                        ( |data: { data }| )
+                                        ( |c: { c }| )
+                                        ( |clike: { clike }| )
+                                        ( |csequence: { csequence }| )
+                                        ( |n: { n }| )
+                                        ( |x: { x }| )
+                                        ( |xsequence: { xsequence }| )
+                                        ( |dec: { dec }| )
+                                        ( |numeric: { numeric }| )
+                                        ( |p: { p }| )
+                                        ( |simple: { simple }| ) ) TO result.
+  ENDMETHOD.
+
+  METHOD stat_meth_mult_params.
+    upper_text = to_upper( text ).
+    lower_text = to_lower( text ).
+    str = reverse( str ).
+    result = |upper_text = "{ upper_text }"; lower_text = "{ lower_text }"|.
+  ENDMETHOD.
+
+  METHOD inst_meth_mult_params.
+    upper_text = to_upper( text ).
+    lower_text = to_lower( text ).
+    str = reverse( str ).
+    result = |upper_text = "{ upper_text }"; lower_text = "{ lower_text }"|.
+  ENDMETHOD.
+
+  METHOD inst_meth_mult_elem_imp_params.
+    elem_values = VALUE #( int  = num_i
+                           int8   = num_int8
+                           dec16 = dec16
+                           dec34 = dec34
+                           float = float
+                           pl8d2 = pl8d2
+                           pl16d14 = pl16d14
+                           string = str
+                           c1 = c1
+                           c20 = c20
+                           n5 = n5
+                           x4 = x4
+                           xstring = xstr ).
+  ENDMETHOD.
+
+  METHOD stat_meth_calc.
+    CASE operator.
+      WHEN '+'.
+        result = num1 + num2.
+      WHEN '-'.
+        result = num1 - num2.
+      WHEN '/'.
+        result = num1 / num2.
+      WHEN '*'.
+        result = num1 * num2.
+      WHEN OTHERS.
+        result = `Calculation not possible`.
+    ENDCASE.
+
+  ENDMETHOD.
+
+  METHOD inst_meth_all_params.
+    uppercase_text = to_upper( text ).
+    DATA(number_copy) = number.
+    number += 1.
+    result = |IMPORTING text = "{ text }" / EXPORTING uppercase_text = "{ uppercase_text }" / CHANGING number = "{ number }" (Original value = "{ number_copy }")|.
+  ENDMETHOD.
+
+  METHOD stat_meth_all_params.
+    uppercase_text = to_upper( text ).
+    DATA(number_copy) = number.
+    number += 1.
+    result = |IMPORTING text = "{ text }" / EXPORTING uppercase_text = "{ uppercase_text }" / CHANGING number = "{ number }" (Original value = "{ number_copy }")|.
+  ENDMETHOD.
+
+ENDCLASS.
+
+``` 
+
+ </td>
+</tr>
+
+</table>
+
+</details>  
+
+<br>
+
+<details>
+  <summary>🟢 XLSX file importer and content displayer </summary>
+  <!-- -->
+<br>
+
+
+**Demo Purpose**
+
+- The demo IDE action lets you select an XLSX file from your local machine, retrieve its content, and display it in an internal table as HTML using `CL_DEMO_OUTPUT_CLOUD` in the IDE action result dialog.  
+- In the selection IDE action dialog, you can specify which worksheet contains the content to retrieve. You can also choose where to start retrieving the content (e.g., from column A, row 1) and indicate if there is a header line. If a header exists, the content of that cells in that line are used as field names for the internal table.  
+- When you run the IDE action, the XCO API is used to read the XLSX content. An internal table is created dynamically, and the worksheet content is added to it. Finally, this internal table is displayed as HTML in the IDE action result dialog.  
+
+
+**Steps**
+
+- Access your demo package in ADT in your SAP BTP ABAP Environment.
+- Create a new repository object by, e.g. right-clicking the package and choosing *New -> Other ABAP Repository Object -> Filter for IDE Action*.
+- Action creation: 
+  - Name: *ZDEMO_ABAP_IDE_ACTION_IMPORT*
+  - Description: *IDE Action for XLSX file import*
+- Make the following entries on the IDE Action screen: 
+  - Title: Demo IDE Action: File Importer
+  - Summary: Action to import XLSX files and display the content in an internal table in an IDE action pop-up 
+  - Implementing Class: `ZCL_DEMO_ABAP_ACTION_IMPORT`
+  - Input UI Configuration Class: `ZCL_DEMO_ABAP_ACTION_IMPORT_UI`
+  - Number of Focused Resources: Any
+  - Filter Object Types: `CLAS` (choose *Add* and filter for `CLAS`)
+- Create the classes (see the description on the steps in the first expandable section). 
+- You do not need a demo class named `ZCL_DEMO_ABAP` to check out the IDE action for this example.
+- For the classes, you can use the code below. The table below also contains demo content you can provide your demo worksheet with.
+- To check out the demo IDE action, proceed as follows:   
+  - In ADT, you have opened a class (no particular class).
+  - Choose *STR + ALT/CMD + R* to run an IDE action.
+  - Select the IDE action. You can filter for *File import*.
+  - Choose *Run*.
+  - An IDE action dialog is displayed prompting you to provide a path to an XLSX file on your local machine. 
+  - The assumption is that a very simple worksheet is imported, for example, the content is available in the first worksheet and has a *header line*. The content starts at column A in row 1. If the content does not include a header line, you can select the checkbox. If the content starts elsewhere in the sheet (e.g. at column C, row 3), you can make the appropriate entry. 
+    - The table below includes descriptions for demonstrations.
+  - Choose *Run*.
+  - If the XLSX content processing is successful, the IDE action result dialog will display the XLSX content in an internal table, presented as HTML table. 
+
+> **⚠️ Disclaimer**<br>
+> Since the example IDE action lets you import a local file, be mindful of the potential security risks when importing external content. Refer to [this repository's disclaimer](./README.md#%EF%B8%8F-disclaimer) and to [the disclaimer in the documentation about XCO](https://help.sap.com/docs/btp/sap-business-technology-platform/xlsx-read-access).
+
+
+<table>
+
+<tr>
+<th> Subject/Class </th> <th> Notes/Code </th>
+</tr>
+
+<tr>
+<td> 
+
+`ZCL_DEMO_ABAP_ACTION_IMPORT` (global class; no code in other includes)
+
+ </td>
+
+ <td> 
+
+
+``` abap
+CLASS zcl_demo_abap_action_import DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC.
+
+  PUBLIC SECTION.
+    INTERFACES if_aia_action.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+    METHODS process_file_content
+      IMPORTING ui_input      TYPE zcl_demo_abap_action_import_ui=>ty_input
+      RETURNING VALUE(result) TYPE REF TO data.
+    METHODS get_input_as_html
+      IMPORTING ui_input      TYPE zcl_demo_abap_action_import_ui=>ty_input
+      RETURNING VALUE(result) TYPE string.
+    CONSTANTS error TYPE string VALUE `Cannot process input (e.g. column/row values are invalid for the selected file)`.
+ENDCLASS.
+
+
+
+CLASS zcl_demo_abap_action_import IMPLEMENTATION.
+  METHOD get_input_as_html.
+    DATA(output_oref) = cl_demo_output_cloud=>new( cl_demo_output_cloud=>html ).
+    DATA(ref) = process_file_content( ui_input ).
+    IF ref IS BOUND.
+      result = output_oref->get( ref->* ).
+    ELSE.
+      result = output_oref->get( error ).
+    ENDIF.
+  ENDMETHOD.
+
+  METHOD if_aia_action~run.
+    TRY.
+        DATA ui_input TYPE zcl_demo_abap_action_import_ui=>ty_input.
+        context->get_input_config_content( )->get_as_structure( IMPORTING result = ui_input ).
+      CATCH cx_sd_invalid_data INTO DATA(exception).
+        CLEAR ui_input.
+    ENDTRY.
+
+    "Creating HTML popup
+    DATA(popup_result) = cl_aia_result_factory=>create_html_popup_result( ).
+    popup_result->set_content( get_input_as_html( ui_input ) ).
+    result = popup_result.
+  ENDMETHOD.
+
+
+  METHOD process_file_content.
+    TRY.
+        DATA(val) = ui_input-path_text_field.
+        "Decoding XLSX file input
+        DATA(xlsx_content) = cl_web_http_utility=>decode_x_base64( ui_input-path_text_field ).
+        DATA(xlsx_doc) = xco_cp_xlsx=>document->for_file_content( xlsx_content ).
+
+        "Getting read access to XLSX content
+        DATA(read_xlsx) = xlsx_doc->read_access( ).
+        "Worksheet selection
+        DATA(worksheet) = read_xlsx->get_workbook( )->worksheet->at_position( COND #( WHEN ui_input-worksheet_number < 1 THEN 1 ELSE ui_input-worksheet_number ) ).
+        TRY.
+            DATA(cursor) = worksheet->cursor(
+              io_column = xco_cp_xlsx=>coordinate->for_alphabetic_value( COND #( WHEN ui_input-start_column IS INITIAL THEN `A` ELSE to_upper( ui_input-start_column ) ) )
+              io_row    = xco_cp_xlsx=>coordinate->for_numeric_value( COND #( WHEN ui_input-start_row < 1 THEN 1 ELSE ui_input-start_row ) ) ).
+          CATCH cx_root.
+            result = REF #( error ).
+            RETURN.
+        ENDTRY.
+
+        "Preparing table column names
+        DATA column_names TYPE string_table.
+        WHILE cursor->has_cell( ) = abap_true AND cursor->get_cell( )->has_value( ) = abap_true.
+          DATA(cell) = cursor->get_cell( ).
+          DATA(string_value) = ``.
+
+          IF ui_input-no_table_header = abap_true.
+            string_value = cursor->position->column->get_alphabetic_value( ).
+          ELSE.
+            cell->get_value(
+              )->set_transformation( xco_cp_xlsx_read_access=>value_transformation->string_value
+              )->write_to( REF #( string_value ) ).
+          ENDIF.
+
+          APPEND string_value TO column_names.
+
+          TRY.
+              cursor->move_right( ).
+            CATCH cx_xco_runtime_exception.
+              EXIT.
+          ENDTRY.
+        ENDWHILE.
+
+        IF column_names IS INITIAL.
+          result = REF #( `Cannot process input (e.g. column/row values are invalid for the file)` ).
+          RETURN.
+        ENDIF.
+
+        "Creating a table type dynamically
+        "The loop implementation includes name preparations so that they can be used as component names.
+        DATA components TYPE cl_abap_structdescr=>component_table.
+        LOOP AT column_names REFERENCE INTO DATA(wa).
+          wa->* = condense( val = wa->* to = `` ).
+          wa->* = replace( val = wa->* pcre = `\W` with = `` occ = 0 ).
+          wa->* = replace( val = wa->* pcre = `^(\d)` with = `_$1` ).
+          APPEND VALUE #( name = wa->* type = cl_abap_elemdescr=>get_string( ) ) TO components.
+        ENDLOOP.
+
+        DATA(tdo_tab) = cl_abap_tabledescr=>get( p_line_type  = cl_abap_structdescr=>get( components )
+                                                 p_table_kind = cl_abap_tabledescr=>tablekind_std
+                                                 p_key_kind   = cl_abap_tabledescr=>keydefkind_empty ).
+
+        DATA itab TYPE REF TO data.
+        CREATE DATA itab TYPE HANDLE tdo_tab.
+
+        "Specifying the pattern for the worksheet selection
+        DATA(pattern) = xco_cp_xlsx_selection=>pattern_builder->simple_from_to(
+              )->from_column( xco_cp_xlsx=>coordinate->for_alphabetic_value( ui_input-start_column )
+              )->from_row( xco_cp_xlsx=>coordinate->for_numeric_value( COND #( WHEN ui_input-no_table_header IS INITIAL THEN ui_input-start_row + 1 ELSE ui_input-start_row ) )
+              )->get_pattern( ).
+
+        worksheet->select( pattern
+              )->row_stream(
+              )->operation->write_to( REF #( itab->* )
+              )->execute( ).
+
+        result = itab.
+      CATCH cx_root.
+        result = REF #( error ).
+    ENDTRY.
+  ENDMETHOD.
+ENDCLASS.
+``` 
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+`ZCL_DEMO_ABAP_ACTION_IMPORT_UI` (global class; no code in other includes)
+
+ </td>
+
+ <td> 
+
+
+``` abap
+CLASS zcl_demo_abap_action_import_ui DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
+
+  PUBLIC SECTION.
+    INTERFACES if_aia_sd_action_input.
+    TYPES:
+      "! <p class="shorttext">Make entries for XLSX content retrieval:</p>
+      BEGIN OF ty_input,
+        "! <p class="shorttext">File Import from Path</p>
+        "! $contentMediaType 'application/xlsx'
+        "! $contentEncoding 'base64'
+        "! $required
+        path_text_field  TYPE string,
+        worksheet_number TYPE i,
+        start_column     TYPE string,
+        start_row        TYPE i,
+        "! <p class="shorttext">XLSX Content without Table Header Row</p>
+        no_table_header  TYPE abap_boolean,
+      END OF ty_input.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+ENDCLASS.
+
+
+
+CLASS zcl_demo_abap_action_import_ui IMPLEMENTATION.
+  METHOD if_aia_sd_action_input~create_input_config.
+    "Default values for input data
+    DATA(input_data) = VALUE ty_input( worksheet_number = 1
+                                       start_column = `A`
+                                       start_row = 1 ).
+
+    "Creating the configuration
+    DATA(configuration) = ui_information_factory->get_configuration_factory( )->create_for_data( input_data ).
+    "Setting the layout
+    configuration->set_layout( if_sd_config_element=>layout-grid ).
+    configuration->get_element( 'path_text_field' )->set_file_properties( kind          = if_sd_config_element=>file_properties_kind-path
+                                                                          transfer_mode = VALUE #( import = abap_true ) ).
+
+    "Returning the UI information
+    result = ui_information_factory->for_abap_type( abap_type     = input_data
+                                                    configuration = configuration ).
+  ENDMETHOD.
+ENDCLASS.
+``` 
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+Example XLSX content and demo execution steps
+
+ </td>
+
+ <td> 
+
+**First Example**
+
+- The following table shows content you can use for demonstration purposes.
+- You can copy the content of the entire table to the clipboard, go to your worksheet program and paste the content in the first worksheet, first cell, first column. Depending on your program, you may require to past the clipboard content into the worksheet without any formatting (or with a special pasting option) so that the content is properly inserted line by line.
+- Save the XLSX file and proceed with the IDE action execution as described above. 
+- On the selection IDE action dialog, just provide the path to the file and leave the other values unchanged. Run the IDE action.
+
+
+| Carrier ID  | Carrier Name         | Currency | URL                            |
+| ----------- | -------------------- | -------- | ------------------------------ |
+| AA          | American Airlines    | USD      | http://www.aa.com              |
+| AC          | Air Canada           | CAD      | http://www.aircanada.ca        |
+| AF          | Air France           | EUR      | http://www.airfrance.fr        |
+| BA          | British Airways      | GBP      | http://www.british-airways.com |
+| CO          | Continental Airlines | USD      | http://www.continental.com     |
+| DL          | Delta Airlines       | USD      | http://www.delta-air.com       |
+| LH          | Lufthansa            | EUR      | http://www.lufthansa.com       |
+| JL          | Japan Airlines       | JPY      | http://www.jal.co.jp           |
+| NW          | Northwest Airlines   | USD      | http://www.nwa.com             |
+| QF          | Qantas Airways       | AUD      | http://www.qantas.com.au       |
+| SA          | South African Air.   | ZAR      | http://www.saa.co.za           |
+| SQ          | Singapore Airlines   | SGD      | http://www.singaporeair.com    |
+| SR          | Swiss                | CHF      | http://www.swiss.com           |
+| UA          | United Airlines      | USD      | http://www.ual.com             |
+
+**Second Example**
+
+- In the XLSX file having the content from the first example, cut the entire content, and paste it to cell 3 in column 3.
+- Save the file and run the IDE action. 
+- On the selection IDE action dialog, provide the path to the file and specify these values and run the IDE action:
+  - *Start Column*: C  
+  - *Start Row*: 3 
+  
+
+**Third Example**
+
+- In the XLSX file having the content from the second example, clear the content of the third row, which represents the header line.
+- Save the file and run the IDE action. 
+- On the selection IDE action dialog, provide the path to the file and specify these values and run the IDE action:
+  - *Start Column*: C  
+  - *Start Row*: 4
+  - Select the *XLSX Content without Table Header Row* checkbox. This will create dummy names (the names of the worksheet columns) for the internal table that is created dynamically.
+
+
+ </td>
+</tr>
+
+</table>
+
+</details>  
+
+</details>  
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
@@ -4186,24 +5921,30 @@ ENDCLASS.
 <td> <code>XCO_CP_XLSX</code> </td>
 <td>
 
-The XCO library offers classes such as `XCO_CP_XLSX` and methods for reading and writing XLSX content. You can find more information [here](https://help.sap.com/docs/btp/sap-business-technology-platform/xlsx). The following example demonstrates a selection of  methods and includes the following steps:
+The XCO library offers classes such as `XCO_CP_XLSX` and methods for reading and writing XLSX content. You can find more information [here](https://help.sap.com/docs/btp/sap-business-technology-platform/xlsx). The following example demonstrates a selection of methods.
+
+Expand the following collapsible section for further information and example code.
+
+<details>
+  <summary>🟢 Click to expand for more information and example code</summary>
+  <!-- -->
+<br>
+
+The following example demonstrates a selection of methods and includes the following steps:
 
 - Importing existing XLSX content into your SAP BTP ABAP Environment system (not related to the XCO library; just to have content to work with in the self-contained example below)
-  - This is a simplified, nonsemantic, and explorative RAP example (not delving into RAP as such; just using various ABAP repository objects related to RAP) solely for importing XLSX content to work with in the example. 
-  - ⚠️ Note the repository's readme file for disclaimer and the [documentation](https://help.sap.com/docs/btp/sap-business-technology-platform/xlsx-read-access) for security considerations when importing and processing external content.
+  - This is a simplified, nonsemantic, and explorative RAP example (not delving into RAP as such; just using various ABAP repository objects related to RAP) solely for importing XLSX content to work with in the example.   
   - The import is done using an automatically created SAP Fiori Elements app preview, which provides a simple UI for uploading local XLSX content.
   - The repository objects are automatically created in ADT when walking through a wizard. Refer to the prerequisite steps for details.
 - Reading XLSX content into an internal table using XCO
 - Writing XLSX content using XCO based on internal table content
-  - A demo class explores a selection of XCO classes and methods. You can find the code in the expandable section.
+  - A demo class explores a selection of XCO classes and methods. 
 - Exporting the adapted XLSX content (not related to the XCO library; just to visualize newly created XLSX content using XCO)
 
-Expand the following collapsible section for example code.
+> **💡 Note**<br>
+> - Note [this repository's disclaimer](./README.md#%EF%B8%8F-disclaimer) and [the disclaimer in the documentation about XCO](https://help.sap.com/docs/btp/sap-business-technology-platform/xlsx-read-access) for security considerations when importing and processing external content.
+> - IDE actions represent a simple way of file import. Find more information in section [Excursion: Exploring Demo Display Class Using IDE Actions](#excursion-exploring-demo-display-class-using-ide-actions).
 
-<details>
-  <summary>🟢 Click to expand for example code</summary>
-  <!-- -->
-<br>
 
 **Prerequisite Steps for the XLSX Content Import into the SAP BTP ABAP Environment**
 
