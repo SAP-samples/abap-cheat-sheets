@@ -395,6 +395,8 @@ tz = |{ utclong_current( ) TIMEZONE = 'EST' COUNTRY = 'US ' }|. "12/30/2024 09:4
 *&---------------------------------------------------------------------*
 
 "Lowercase and uppercase
+DATA s1 TYPE string.
+DATA s2 TYPE string.
 s1 = `AbCdEfG`.
 s2 = |{ s1 CASE = LOWER }|. "abcdefg
 s2 = |{ s1 CASE = UPPER }|. "ABCDEFG

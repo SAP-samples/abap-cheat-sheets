@@ -82,10 +82,8 @@ in the ABAP Keyword Documentation.
 
 ## AMDP Classes
 
--   As mentioned above, an [AMDP
-    class](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenamdp_class_glosry.htm "Glossary Entry")
-    is an [ABAP
-    Repository](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_repository_glosry.htm "Glossary Entry")
+-   An [AMDP class](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenamdp_class_glosry.htm "Glossary Entry")
+    is an [ABAP repository](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_repository_glosry.htm "Glossary Entry")
     object like other global classes.
 -   However, an AMDP class includes the specification of the interface
     `IF_AMDP_MARKER_HDB` for the SAP HANA
@@ -238,7 +236,7 @@ Note:
 ## AMDP Functions
 
 [Scalar](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenamdp_scalar_function_glosry.htm "Glossary Entry") and [table functions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentable_function_glosry.htm "Glossary Entry") can be managed as [AMDP functions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenamdp_function_glosry.htm "Glossary Entry").
-[AMDP table functions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenamdp_table_function_glosry.htm "Glossary Entry"), as the name suggests, have a tabular [return value](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenreturn_value_glosry.htm "Glossary Entry"), while AMDP scalar functions have a scalar or elementary return value. These functions allow complex custom calculations to be executed directly on the SAP HANA database to boost performance, enhancing performance and enabling reuse.
+[AMDP table functions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenamdp_table_function_glosry.htm "Glossary Entry"), as the name suggests, have a tabular [return value](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenreturn_value_glosry.htm "Glossary Entry"), while AMDP scalar functions have a scalar (i.e. an elementary) return value. These functions allow complex custom calculations to be executed directly on the SAP HANA database to boost performance, enhancing performance and enabling reuse.
 
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>

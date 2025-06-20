@@ -88,7 +88,7 @@
 ## Excursion: Field Symbols and Data References
 
 [Field symbols](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenfield_symbol_glosry.htm "Glossary Entry")
-and [data references](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendata_reference_glosry.htm "Glossary Entry") are covered here since they are supporting elements for dynamic programming.
+and [data references](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendata_reference_glosry.htm "Glossary Entry") are supporting elements for dynamic programming.
 
 ### Field Symbols
 
@@ -133,7 +133,12 @@ ENDLOOP.
 ```
 
 > **💡 Note**<br>
->- After its declaration, a field symbol is initial, i. e. a memory area is not (yet) assigned to it (apart from the inline declaration). If you use an unassigned field symbol, an exception is raised.
+>- After its declaration, a field symbol is initial, i. e. a memory area is not (yet) assigned to it (apart from the inline declaration). If you use an unassigned field symbol, a runtime error occurs.     
+>    ```abap
+>    FIELD-SYMBOLS <fs> TYPE string.
+>    "As the field symbol is unassigned, the following statement causes a runtime error.
+>    <fs> = `hello`.
+>    ```
 >-   There are plenty of options for generic ABAP types. A prominent one
     is `data` that stands for any data type. See more information in the
     topic [Generic ABAP
@@ -463,8 +468,12 @@ ASSIGN CAST zdemo_abap_objects_interface( oref )->in_str TO FIELD-SYMBOL(<fs_att
 
 #### Checking Field Symbol Assignment and Unassigning Field Symbols
 
-- If you use an unassigned field symbol, an exception is raised. Before using it, you can check the assignment with the following logical expression. The statement is true if the field symbol is assigned.  
+- If you use an unassigned field symbol, an exception is raised. Before using it, you can check the assignment with the `IS ASSIGNED` logical expression. The statement is true if the field symbol is assigned.  
 - Using the statement `UNASSIGN`, you can explicitly remove the assignment of the field symbol. A `CLEAR` statement only initializes the value.
+
+> **💡 Note**<br>
+> As covered further down, in dynamic assignments of field symbols, `sy-subrc` is set, unlike in static assignments. You can use the `ELSE UNASSIGN` addition in dynamic assignments.  While `ELSE UNASSIGN` can't be explicitly specified in static assignments, it is used implicitly. Note a potential pitfall when checking field symbol assignments with `IS ASSIGNED` in dynamic assignments. An example in the dynamic assignment section illustrates the pitfall.
+
 
 ```abap
 FIELD-SYMBOLS <fs> TYPE string.
@@ -474,16 +483,25 @@ ASSIGN some_string TO <fs>.
 IF <fs> IS ASSIGNED.
   DATA(fs_assigned) = `is assigned`.
 ELSE.
-  ref_bound = `is not assigned`.
+  fs_assigned = `is not assigned`.
 ENDIF.
 
 DATA(fs_assigned_w_cond) = COND #( WHEN <fs> IS ASSIGNED THEN `is assigned` ELSE `is not assigned` ).
 
 UNASSIGN <fs>.
-FIELD-SYMBOLS <another_fs> TYPE i.
-
 ASSERT <fs> IS NOT ASSIGNED.
+
+FIELD-SYMBOLS <another_fs> TYPE i.
+DATA num TYPE i VALUE 1.
 ASSERT <another_fs> IS NOT ASSIGNED.
+ASSIGN num TO <another_fs>.
+ASSERT <another_fs> IS ASSIGNED.
+"The following statement only initializes the value and does 
+"not remove the assignment.
+CLEAR <another_fs>.
+ASSERT <another_fs> IS ASSIGNED.
+ASSERT <another_fs> = 0.
+ASSERT num = 0.
 ```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
@@ -1599,9 +1617,13 @@ ASSIGN NEW zcl_demo_abap_objects( )->('PUBLIC_STRING') TO <fs>.
 "Note: For the static variant of the ASSIGN statement, i.e. if the memory area
 "to be assigned following the ASSIGN keyword is statically specified, the addition
 "ELSE UNASSIGN is implicitly set and cannot be used explicitly.
-DATA(hallo) = `Hallo world`.
-ASSIGN ('HALLO') TO FIELD-SYMBOL(<eu>) ELSE UNASSIGN.
+DATA(hello) = `Hello world`.
+ASSIGN ('HELLO') TO FIELD-SYMBOL(<eu>) ELSE UNASSIGN.
 ASSERT sy-subrc = 0 AND <eu> IS ASSIGNED.
+"ASSIGN without ELSE UNASSIGN
+ASSIGN ('DOES_NOT_EXIST') TO <eu>.
+ASSERT sy-subrc = 4 AND <eu> IS ASSIGNED AND <eu> = `Hello world`.
+"ASSIGN with ELSE UNASSIGN
 ASSIGN ('DOES_NOT_EXIST') TO <eu> ELSE UNASSIGN.
 ASSERT sy-subrc = 4 AND <eu> IS NOT ASSIGNED.
 
@@ -1665,8 +1687,47 @@ ASSIGN dobj_c10 TO <casttype> CASTING TYPE HANDLE tdo_elem. "1234
 ```
 
 > **💡 Note**<br>
-> - The following `ASSIGN` statements set the `sy-subrc` value: dynamic assignments, dynamic component assignment, dynamic method calls, assignments of table expressions. 
+> - The following `ASSIGN` statements set the `sy-subrc` value: dynamic assignments, dynamic component assignment, dynamic method calls, assignments of table expressions. See an example below.
 > - The return code is not set for a static assignment and an assignment of the constructor operator `CAST`.
+
+The following example:
+- Highlights the setting of `sy-subrc` after a dynamic assignment and the `ELSE UNASSIGN` addition, only for dynamic assignments.
+- Points out a potential issue when checking field symbol assignment using `IS ASSIGNED` in dynamic assignments.
+- Demonstrates dynamic access to structure components sequentially (the `sy-index` value indicates the processed field from left to right in the structure). The number of loop iterations exceeds the number of structure components. The second loop uses the `ELSE UNASSIGN` addition. You can compare the results of the two internal tables.
+
+```abap
+DATA: BEGIN OF demo_struc,
+    comp1 TYPE c LENGTH 1 VALUE 'a',
+    comp2 TYPE c LENGTH 1 VALUE 'b',
+    comp3 TYPE c LENGTH 1 VALUE 'c',
+    comp4 TYPE c LENGTH 1 VALUE 'd',
+    comp5 TYPE c LENGTH 1 VALUE 'e',
+  END OF demo_struc.
+
+FIELD-SYMBOLS <fs> TYPE data.
+DATA fs_assignment_check_1 TYPE string_table.
+DATA fs_assignment_check_2 TYPE string_table.
+
+DO 7 TIMES.
+  APPEND |****** Loop pass no. { sy-index } ******************************************| TO fs_assignment_check_1.
+  APPEND |{ COND #( WHEN <fs> IS ASSIGNED THEN |Before dynamic assignment: <fs> is assigned, value "{ <fs> }"| ELSE `Check before dynamic assignment: <fs> is not assigned` ) }| TO fs_assignment_check_1.
+
+  ASSIGN demo_struc-(sy-index) TO <fs>.
+
+  APPEND |{ COND #( WHEN sy-subrc = 0 THEN |<fs> was successfully assigned, value "{ <fs> }"| ELSE `<fs> was not assigned` ) }| TO fs_assignment_check_1.
+  APPEND |{ COND #( WHEN <fs> IS ASSIGNED THEN |<fs> is assigned, value "{ <fs> }"| ELSE `<fs> is not assigned` ) }| TO fs_assignment_check_1.
+ENDDO.
+
+DO 7 TIMES.
+  APPEND |****** Loop pass no. { sy-index } ******************************************| TO fs_assignment_check_2.
+  APPEND |{ COND #( WHEN <fs> IS ASSIGNED THEN |Before dynamic assignment: <fs> is assigned, value "{ <fs> }"| ELSE `Check before dynamic assignment: <fs> is not assigned` ) }| TO fs_assignment_check_2.
+
+  ASSIGN demo_struc-(sy-index) TO <fs> ELSE UNASSIGN.
+
+  APPEND |{ COND #( WHEN sy-subrc = 0 THEN |<fs> was successfully assigned, value "{ <fs> }"| ELSE `<fs> was not assigned` ) }| TO fs_assignment_check_2.
+  APPEND |{ COND #( WHEN <fs> IS ASSIGNED THEN |<fs> is assigned, value "{ <fs> }"| ELSE `<fs> is not assigned` ) }| TO fs_assignment_check_2.
+ENDDO.
+```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
@@ -3906,6 +3967,16 @@ CLASS zcl_demo_abap IMPLEMENTATION.
     DATA(interfaces_cl) = tdo_cl->interfaces.
     DATA(events_cl) = tdo_cl->events.
     DATA(methods_cl) = tdo_cl->methods.
+    "Accessing Method/parameter information
+    LOOP AT methods_cl INTO DATA(meth_wa).
+      DATA(meth_name) = meth_wa-name.
+      LOOP AT meth_wa-parameters INTO DATA(param_wa).
+        "Getting type description object of method parameters
+        DATA(meth_param_type) = tdo_cl->get_method_parameter_type(
+                      p_method_name    =  meth_name
+                      p_parameter_name = param_wa-name ).
+      ENDLOOP.
+    ENDLOOP.
     DATA(super_class_cl) = tdo_cl->get_super_class_type( ).
     DATA(super_class_name_cl) = super_class_cl->absolute_name.
     DATA(is_instantiable_cl) = tdo_cl->is_instantiatable( ).
@@ -4783,7 +4854,7 @@ The following examples show snippets that have already been covered in several s
 They use the following methods to get type description objects: 
 - `cl_abap_typedescr=>describe_by_name` (based on an existing type name)
 - `cl_abap_typedescr=>describe_by_data` (based on an existing data object)
-- `...=>get*` (getting type description objects for elementary and other types; other get* methods are shown further down) 
+- `...=>get*` (getting type description objects for elementary and other types; other `get*` methods are shown further down) 
 
 ```abap
 *&---------------------------------------------------------------------*

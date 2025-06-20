@@ -34,7 +34,9 @@
     - [ROLLBACK ENTITIES](#rollback-entities)
     - [GET PERMISSIONS: Retrieving Information about RAP BO Permissions](#get-permissions-retrieving-information-about-rap-bo-permissions)
     - [Raising RAP Business Events](#raising-rap-business-events)
-    - [IN LOCAL MODE Addition to ABAP EML Statements in ABAP Behavior Pools](#in-local-mode-addition-to-abap-eml-statements-in-abap-behavior-pools)
+    - [Additions to ABAP EML Statements in ABAP Behavior Pools](#additions-to-abap-eml-statements-in-abap-behavior-pools)
+      - [IN LOCAL MODE Addition](#in-local-mode-addition)
+      - [AUGMENTING Addition to ABAP EML MODIFY Statements](#augmenting-addition-to-abap-eml-modify-statements)
   - [RAP Excursions](#rap-excursions)
     - [Using Keys and Identifying RAP BO Instances in a Nutshell](#using-keys-and-identifying-rap-bo-instances-in-a-nutshell)
       - [Assignment of Key Component Groups](#assignment-of-key-component-groups)
@@ -2436,7 +2438,7 @@ GET PERMISSIONS ONLY GLOBAL ENTITY zdemo_abap_rap_ro_m
 
 - [RAP business events](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_entity_event_glosry.htm) can be raised in ABAP behavior pools with [`RAISE ENTITY EVENT`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapraise_entity_event.htm) statements. 
 - The focus of the snippets is on the local consumption of RAP business events. Prerequisites:
-  - `event` specifications are available in the BDEF (e.g. `... event some_evt; ...`). For more details, refer to the [BDL documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbdl_event.htm)
+  - `event` specifications are available in the BDEF (e.g. `... event some_evt; ...`). For more details, refer to the [BDL documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbdl_event.htm).
   - A [RAP event handler class](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_event_handler_class_glosry.htm) is available that is used to implement [RAP event handler methods](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_event_handler_meth_glosry.htm). 
     - Note that these methods are called asynchronously.
     - Similar to RAP handler and saver methods, RAP event handler methods are implemented in the CCIMP include (*Local Types* tab in ADT) of the RAP event handler class.
@@ -2507,7 +2509,9 @@ ENDCLASS.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-### IN LOCAL MODE Addition to ABAP EML Statements in ABAP Behavior Pools
+### Additions to ABAP EML Statements in ABAP Behavior Pools
+
+#### IN LOCAL MODE Addition
 
 -   There are a [special additions when using EML in behavior
     pools](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abeneml_in_abp.htm).
@@ -2533,6 +2537,28 @@ MODIFY ENTITIES OF root_ent IN LOCAL MODE
   FROM action_tab
   ...
 ```
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+#### AUGMENTING Addition to ABAP EML MODIFY Statements
+
+- ABAP EML `MODIFY` statements include a special syntax variant used only in the context of projections: `MODIFY AUGMENTING ENTITY|ENTITIES`.
+  - RAP projection business objects prepare a business object for specific services, allowing flexible service consumption and role-based service design. Find more details in the [Development guide for the ABAP RESTful Application Programming Model](https://help.sap.com/docs/abap-cloud/abap-rap/business-object-projection).
+- Purpose: Modify and enrich requests from the base BO at the projection layer before storing the data in the transactional buffer. All standard operations and actions are supported.
+- You can use the statement with the `AUGMENTING` addition only in RAP BO providers.
+- Response parameters are not supported with these statements.
+- Note the `RELATING` addition in this context. This is relevant if the augmented request contains instances not in the original request. It establishes a relationship between the new instances and the original ones in a relationship table to associate potential responses.
+
+
+```abap
+MODIFY AUGMENTING ENTITY some_bdef
+    UPDATE FROM ...
+
+"relates_tab is of type abp_behv_relating_tab
+MODIFY AUGMENTING ENTITY some_bdef
+    UPDATE FROM ... RELATING TO some_instances BY relates_tab.
+```
+
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 

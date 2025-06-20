@@ -331,7 +331,7 @@ ENDCLASS.
 > - The examples are simplified and not meant to represent best practices for IDE action implementation. They are only intended for exploration purposes to get a high-level idea.  
 > - All examples use `CL_DEMO_OUTPUT_CLOUD` to retrieve HTML output of data objects. Note that this class is intended for demo purposes only.  
 > - **NOTE**: The use of IDE actions is your responsibility. Development and use are up to you. Refer to [this repository's disclaimer](./README.md#%EF%B8%8F-disclaimer) and the [disclaimer in the IDE action documentation](https://help.sap.com/docs/abap-cloud/abap-development-tools-user-guide/working-with-ide-actions). 
-> - Be particularly mindful of the potential security risks when importing external content, which the simplified example code below does not address. The example code also uses dynmamic programming techniques. They can pose a security risk. Refer to the [Dynamic Programming cheat sheet](06_Dynamic_Programming.md) and the ABAP Keyword Documentation.
+> - Be particularly mindful of the potential security risks when importing external content, which the simplified example code below does not address. The example code also uses dynamic programming techniques. They can pose a security risk. Refer to the [Dynamic Programming cheat sheet](06_Dynamic_Programming.md) and the ABAP Keyword Documentation.
 
 
 **Demo IDE Actions Using `CL_DEMO_OUTPUT_CLOUD`**
@@ -834,7 +834,7 @@ ENDCLASS.
 - This demo IDE action lets you select usable and instantiable classes, select one of their public instance or static methods, and provide the input parameters (if any) with character-like actual parameters. 
 - For example, a calculator method may require three inputs: two numbers and an operator. The example focuses on basic cases and does not perform input validation at runtime.
 - When you run the IDE action, the method is executed. 
-- As a result, the parameter table (refer to the Dynamic Programming cheat sheet) is displayed as HTML in the IDE action result dialog using `CL_DEMO_OUTPUT_CLOUD`, including any the input and output parameters and their values (if any).
+- As a result, the parameter table (refer to the Dynamic Programming cheat sheet) is displayed as HTML in the IDE action result dialog using `CL_DEMO_OUTPUT_CLOUD`, including any of the input and output parameters and their values (if any).
 
 
 **Steps**
@@ -862,7 +862,7 @@ ENDCLASS.
   - An IDE action dialog is displayed prompting you to provide a class. 
   - Once you have provided the class name, you can choose *Browse* for *Public Method*. Select the method you want to call.
   - If the selected method has input parameters, they are displayed in the *Method Input Parameters* section.
-  - To provide actual parameters for the formal parameters, select the line and choose *Edit*. You can then provide input for *Valule*.
+  - To provide actual parameters for the formal parameters, select the line and choose *Edit*. You can then provide input for *Value*.
   - Choose *Run*.
   - The IDE action result dialog is displayed showing the HTML output of the parameter table (if any), i.e. also possible output parameters and their content.  
 
@@ -1935,7 +1935,7 @@ Example XLSX content and demo execution steps
 **First Example**
 
 - The following table shows content you can use for demonstration purposes.
-- You can copy the content of the entire table to the clipboard, go to your worksheet program and paste the content in the first worksheet, first cell, first column. Depending on your program, you may require to past the clipboard content into the worksheet without any formatting (or with a special pasting option) so that the content is properly inserted line by line.
+- You can copy the content of the entire table to the clipboard, go to your worksheet program and paste the content in the first worksheet, first cell, first column. Depending on your program, you may require to pass the clipboard content into the worksheet without any formatting (or with a special pasting option) so that the content is properly inserted line by line.
 - Save the XLSX file and proceed with the IDE action execution as described above. 
 - On the selection IDE action dialog, just provide the path to the file and leave the other values unchanged. Run the IDE action.
 
@@ -5923,7 +5923,7 @@ ENDCLASS.
 
 The XCO library offers classes such as `XCO_CP_XLSX` and methods for reading and writing XLSX content. You can find more information [here](https://help.sap.com/docs/btp/sap-business-technology-platform/xlsx). The following example demonstrates a selection of methods.
 
-Expand the following collapsible section for further information and example code.
+Expand the following collapsible sections for further information and example code.
 
 <details>
   <summary>🟢 Click to expand for more information and example code</summary>

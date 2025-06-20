@@ -604,7 +604,7 @@ For more information about evaluating ABAP unit test results, see [here](https:/
 > - The executable examples contain comments in the code for more information.
 > - The examples are designed to display output in the console when they are run using `F9`. However, the focus is on ABAP Unit tests. Choose `Ctrl/Cmd + Shift + F10` to run the unit tests.
 > - The example classes are intentionally simplified and nonsemantic, designed to highlight basic unit tests and explore framework classes and methods. 
-> - They are not meant to serve as a model for proper unit test design. Always devise your own solutions for each unique case. 
+> - They are not meant to serve as a best practices and model for proper unit test design. The primary focus is on syntax, additions, and their basic functionality. Always devise your own solutions for each unique case. 
 > - Refer to the code comments, SAP Help Portal and class documentation for additional information.
 > - The steps to import and run the code are outlined [here](README.md#-getting-started-with-the-examples).
 > - [Disclaimer](./README.md#%EF%B8%8F-disclaimer)
