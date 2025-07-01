@@ -65,7 +65,7 @@ Access to SAP-provided repository objects is restricted to objects that have bee
 
 ![Released APIs](./files/released_APIs.png)
 
-You can also programmatically get the released obects. You can use specific XCO classes or a CDS view, as shown in the example code snippet below.
+You can also programmatically get the released objects. You can use specific XCO classes or a CDS view, as shown in the example code snippet below.
 
 ```abap
 SELECT ReleasedObjectType, ReleasedObjectName, ReleaseState
@@ -346,7 +346,7 @@ The setup is similar across all examples:
 - One example requires creating a demo interface.
 
 
-Expand the following collapsible section for descriptions and example code:
+Expand the following collapsible sections for descriptions and example code:
 
 <details>
   <summary>🟢 Class runner and data object displayer </summary>

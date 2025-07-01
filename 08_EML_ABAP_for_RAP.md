@@ -2511,13 +2511,11 @@ ENDCLASS.
 
 ### Additions to ABAP EML Statements in ABAP Behavior Pools
 
+There are a [special additions when using EML in behavior pools](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abeneml_in_abp.htm).
+
 #### IN LOCAL MODE Addition
 
--   There are a [special additions when using EML in behavior
-    pools](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abeneml_in_abp.htm).
-    One of them is [`IN LOCAL MODE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapin_local_mode.htm).
--   This addition can be used to exclude feature controls and
-    authorization checks.
+-   Using the [`IN LOCAL MODE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapin_local_mode.htm) addition to ABAP EML `READ` and `MODIFY` statements can be used to suppress feature controls, authorization checks, and prechecks.
 -   Consider the following use case: There is a field to display the
     booking status of a trip on a UI. In the BDEF, this field is
     specified as read-only. Hence, it cannot be modified by a user on

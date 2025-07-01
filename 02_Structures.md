@@ -5,7 +5,7 @@
 - [Structures](#structures)
   - [Introduction](#introduction)
   - [Globally Available Structures and Structured Types](#globally-available-structures-and-structured-types)
-  - [Creating Structures and Structured Types](#creating-structures-and-structured-types)
+  - [Creating Structures and Structured Types Locally](#creating-structures-and-structured-types-locally)
     - [Creating Structured Types](#creating-structured-types)
     - [Creating Structures](#creating-structures)
     - [Creating Structures Using Existing Structured Types](#creating-structures-using-existing-structured-types)
@@ -56,7 +56,7 @@ Structures ...
 "Database table
 DATA struc_from_dbtab TYPE zdemo_abap_fli.
 "CDS view entity
-DATA struc_from_cds_ve TYPE zdemo_abap_fli.
+DATA struc_from_cds_ve TYPE zdemo_abap_fli_ve.
 "CDS abstract entity
 DATA struc_from_cds_abs TYPE zdemo_abap_abstract_ent.
 "CDS table function
@@ -75,7 +75,7 @@ TYPES ty_struc_from_cds_ve TYPE zdemo_abap_fli.
 > - This cheat sheet focuses on locally defined structures and structured types.
 > - Classic [DDIC views](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenddic_view_glosry.htm) are not available in [ABAP Cloud](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_cloud_glosry.htm). They can only be used as structured types in [classic ABAP](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenclassic_abap_glosry.htm).
 
-## Creating Structures and Structured Types
+## Creating Structures and Structured Types Locally
 
 The typical language elements for creating structures and structured types locally in an ABAP program are [`BEGIN OF ... END OF ...`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abaptypes_struc.htm). They are used in combination with the [`TYPES`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abaptypes.htm) keyword to create a structured type and the [`DATA`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapdata.htm) keyword to create a structure.
 
