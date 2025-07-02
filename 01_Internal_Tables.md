@@ -33,7 +33,7 @@
       - [CASTING and ELSE UNASSIGN Additions when Specifying Field Symbols as Target Areas](#casting-and-else-unassign-additions-when-specifying-field-symbols-as-target-areas)
       - [BINARY SEARCH Addition: Optimized Read Access When Specifying Free Keys](#binary-search-addition-optimized-read-access-when-specifying-free-keys)
     - [Example: Exploring READ TABLE Statements and Table Expressions](#example-exploring-read-table-statements-and-table-expressions)
-  - [Table Expressions](#table-expressions)
+  - [Accessing Single Table Lines via Table Expressions](#accessing-single-table-lines-via-table-expressions)
   - [Processing Multiple Internal Table Lines Sequentially](#processing-multiple-internal-table-lines-sequentially)
     - [Restricting the Area of a Table to Be Looped Over](#restricting-the-area-of-a-table-to-be-looped-over)
     - [Defining the Step Size and the Direction of Loop Passes](#defining-the-step-size-and-the-direction-of-loop-passes)
@@ -2903,9 +2903,9 @@ ENDCLASS.
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
 
-## Table Expressions
+## Accessing Single Table Lines via Table Expressions
 
-Table expressions have been mentioned in sections above. This is to summarize.
+The previous sections also covered table expressions. This section provides a summary of their use.
 
 - Table expressions typically use the name of an internal table followed by square brackets with content `[ ... ]`, specifying a table line.
 - They allow read and write access to internal tables at various positions.

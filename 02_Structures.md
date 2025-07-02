@@ -1085,7 +1085,7 @@ are used in the context of local structures.
 >- By using the optional `AS` addition and specifying a name, the included components can be addressed by this common name as if they were actually components of a substructure.
 >- The optional `RENAMING WITH SUFFIX` addition, followed by a name, gives the included components a suffix name to avoid naming conflicts with other components.
 
-The following example shows how structured types and data objects are included in another structure. First, three structured types and a structured data object based on one of these types are created. Then, the types and the structure are included in the structured type `address_type`. The executable example demonstrates a structure that includes other structures in this way.
+The following example shows how structured types and data objects are included in another structure. First, three structured types and a structured data object based on one of these types are created. Then, the types and the structure are included in the structured type `address_type`. As an excursion, [Runtime Type Identification](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrun_time_type_identific_glosry.htm) is used to retrieve the component names of created structured type `address_type`. Refer to the [Getting Structured Type Information and Creating Structures at Runtime](#getting-structured-type-information-and-creating-structures-at-runtime) section. The executable example demonstrates a structure that includes other structures in this way.
 ``` abap
 TYPES: BEGIN OF name_type,
         title   TYPE string,
@@ -1108,6 +1108,20 @@ TYPES BEGIN OF address_type.
       INCLUDE TYPE street_type AS street RENAMING WITH SUFFIX _street.
       INCLUDE STRUCTURE city_struc AS city RENAMING WITH SUFFIX _city.
 TYPES END OF address_type.
+
+DATA component_names type string_table.
+LOOP AT CAST cl_abap_structdescr( cl_abap_typedescr=>describe_by_name( 'ADDRESS_TYPE' ) )->components INTO DATA(comp).
+  APPEND comp-name to component_names.
+ENDLOOP.
+
+*Content of COMPONENT_NAMES:
+*TITLE         
+*PRENAME       
+*SURNAME       
+*NAME_STREET   
+*NUM_STREET    
+*ZIPCODE_CITY  
+*NAME_CITY     
 ```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
