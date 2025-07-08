@@ -1109,10 +1109,8 @@ TYPES BEGIN OF address_type.
       INCLUDE STRUCTURE city_struc AS city RENAMING WITH SUFFIX _city.
 TYPES END OF address_type.
 
-DATA component_names type string_table.
-LOOP AT CAST cl_abap_structdescr( cl_abap_typedescr=>describe_by_name( 'ADDRESS_TYPE' ) )->components INTO DATA(comp).
-  APPEND comp-name to component_names.
-ENDLOOP.
+DATA(component_names) = VALUE string_table( FOR wa IN CAST cl_abap_structdescr(
+   cl_abap_typedescr=>describe_by_name( 'ADDRESS_TYPE' ) )->components ( CONV #( wa-name ) ) ).
 
 *Content of COMPONENT_NAMES:
 *TITLE         

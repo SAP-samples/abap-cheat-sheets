@@ -208,13 +208,13 @@ SELECT id FROM @itab AS tab
 <tr>
 <td> 
 
-`... AND ...` <br> `... OR ...` <br> `... ( ... ) ...`
+`... AND [NOT] ...` <br> `... OR [NOT] ...` <br> `... ( ... ) ...`
 
  </td>
 
  <td> 
 
-Combining multiple logical expressions into one logical expression using `AND` or `OR`. To further detail out the desired condition, expressions within parentheses are possible.
+Combining multiple logical expressions into one logical expression using `AND` or `OR` (inlcuding negations). To further detail out the desired condition, expressions within parentheses are possible.
 
  </td>
 
@@ -222,17 +222,27 @@ Combining multiple logical expressions into one logical expression using `AND` o
 
 ``` abap
 SELECT id FROM @itab AS tab
-  WHERE id = 1 AND animal = 'bear'
-  INTO TABLE @it. 
+  WHERE animal = 'bear' AND count = 5
+  INTO TABLE @it.
 
 SELECT id FROM @itab AS tab
   WHERE animal = 'kangaroo' OR count = 4
-  INTO TABLE @it. 
+  INTO TABLE @it.
 
 SELECT id FROM @itab AS tab
-  WHERE ( id = 1 AND animal = 'bear' )
-  OR ( id = 20 AND animal = 'lion' )
-  INTO TABLE @it. 
+  WHERE ( animal = 'bear' AND count = 5 )
+  AND ( animal = 'lion' AND count = 20 )
+  INTO TABLE @it.
+
+SELECT id FROM @itab AS tab
+  WHERE ( animal = 'bear' AND count = 5 )
+  OR ( animal = 'lion' AND count = 20 )
+  INTO TABLE @it.
+
+SELECT id FROM @itab AS tab
+  WHERE count > 10
+  OR NOT ( animal = 'kangaroo' AND count = 8 )
+  INTO TABLE @it.  
 ``` 
 
  </td>
@@ -316,7 +326,7 @@ SELECT id FROM @itab AS tab
 
  <td> 
 
-Checks whether the content of the left operand matches (or does not match) a specified pattern. The pattern can be specified by using wildcard characters. `%` stands for any character string, including an empty string. `_` stands for any character. <br> Using the `ESCAPE` addition, you can specify a single-character escape character of length 1 (e.g. `#`) in front of a wildcard character or the escaped character itsef. For example, to search for the pattern `100%`, you may use an expression such as the the following: `... LIKE '100#%' ESCAPE '#' ...`.
+Checks whether the content of the left operand matches (or does not match) a specified pattern. The pattern can be specified by using wildcard characters. `%` stands for any character string, including an empty string. `_` stands for any character. <br> Using the `ESCAPE` addition, you can specify a single-character escape character of length 1 (e.g. `#`) in front of a wildcard character or the escaped character itself. For example, to search for the pattern `100%`, you may use an expression such as the the following: `... LIKE '100#%' ESCAPE '#' ...`.
 
  </td>
 
@@ -706,7 +716,7 @@ CLASS zcl_demo_abap IMPLEMENTATION.
 *&---------------------------------------------------------------------*
 
     SELECT id FROM @itab AS tab
-      WHERE id = 1 AND animal = 'bear'
+      WHERE animal = 'bear' AND count = 5
       INTO TABLE @it. "1
 
     SELECT id FROM @itab AS tab
@@ -717,14 +727,29 @@ CLASS zcl_demo_abap IMPLEMENTATION.
     "in parentheses is false (AND is used between the expressions in parentheses).
     "In contrast, the example below returns an entry because of using OR.
     SELECT id FROM @itab AS tab
-      WHERE ( id = 1 AND animal = 'bear' )
-      AND ( id = 20 AND animal = 'lion' )
+      WHERE ( animal = 'bear' AND count = 5 )
+      AND ( animal = 'lion' AND count = 20 )
       INTO TABLE @it. "no entry
 
     SELECT id FROM @itab AS tab
-      WHERE ( id = 1 AND animal = 'bear' )
-      OR ( id = 20 AND animal = 'lion' )
+      WHERE ( animal = 'bear' AND count = 5 )
+      OR ( animal = 'lion' AND count = 20 )
       INTO TABLE @it. "1
+
+    "Negations with NOT
+    SELECT id FROM @itab AS tab
+      WHERE count > 4
+      AND NOT ( animal = 'kangaroo' AND count = 8 )
+      INTO TABLE @it. "1,2,3,4,5,8,9,11
+
+    SELECT id FROM @itab AS tab
+      WHERE count > 4
+      INTO TABLE @it.
+
+    SELECT id FROM @itab AS tab
+      WHERE count > 10
+      OR NOT ( animal = 'kangaroo' AND count = 8 )
+      INTO TABLE @it. "1,2,3,4,5,6,8,9,10,11,12
 
 *&---------------------------------------------------------------------*
 *& ... a [=|<>|>|<|...] [ALL|ANY|SOME] ( SELECT ... ) ...
@@ -1025,6 +1050,7 @@ CLASS zcl_demo_abap IMPLEMENTATION.
         LEFT OUTER JOIN zdemo_abap_tab1 AS tab1 ON tab1~char1 = tab2~char1
         WHERE tab1~char1 IS NULL
         INTO TABLE @DATA(joined_tab).
+*joined_tab:
 *KEY_FIELD    CHAR2
 *4
 
@@ -1049,6 +1075,7 @@ CLASS zcl_demo_abap IMPLEMENTATION.
       FROM zdemo_abap_tab2 AS tab2
       LEFT OUTER JOIN zdemo_abap_tab1 AS tab1 ON tab1~char1 = tab2~char1
       INTO TABLE @joined_tab_w_null_ind INDICATORS NULL STRUCTURE nulls.
+*joined_tab_w_null_ind:
 *S2                      NULLS
 *KEY_FIELD    CHAR2      KEY_FIELD    CHAR2
 *1            y
@@ -1065,6 +1092,7 @@ CLASS zcl_demo_abap IMPLEMENTATION.
       LEFT OUTER JOIN zdemo_abap_tab1 AS tab1 ON tab1~char1 = tab2~char1
       WHERE tab1~char1 IS NOT NULL
       INTO TABLE @joined_tab.
+*joined_tab:
 *KEY_FIELD    CHAR2
 *1            y
 *2            y
@@ -1216,18 +1244,21 @@ CLASS zcl_demo_abap IMPLEMENTATION.
     LOOP AT itab INTO DATA(wa) WHERE num = 0.
       str &&= wa-id.
     ENDLOOP.
+    ASSERT str = `13`.
     CLEAR str.
 
     LOOP AT itab INTO wa WHERE num > 20.
       str &&= wa-id.
     ENDLOOP.
+    ASSERT str = `45`.
     CLEAR str.
 
     "Combination of one or more logical expressions with the Boolean operators
     "NOT, AND, OR, EQUIV where parentheses are possible
-    LOOP AT itab INTO wa WHERE id >= 3 and num > 5.
+    LOOP AT itab INTO wa WHERE id >= 3 AND num > 5.
       str &&= wa-id.
     ENDLOOP.
+    ASSERT str = `45`.
     CLEAR str.
 
     "Two logical expressions can be combined with EQUIV, which creates a new
@@ -1244,21 +1275,25 @@ CLASS zcl_demo_abap IMPLEMENTATION.
     LOOP AT itab INTO wa WHERE id > 2 EQUIV num < 10.
       str &&= wa-id.
     ENDLOOP.
+    ASSERT str = `23`.
     CLEAR str.
 
     LOOP AT itab INTO wa WHERE num >= 40 OR num = 0.
       str &&= wa-id.
     ENDLOOP.
+    ASSERT str = `1345`.
     CLEAR str.
 
     LOOP AT itab INTO wa WHERE NOT num = 0.
       str &&= wa-id.
     ENDLOOP.
+    ASSERT str = `245`.
     CLEAR str.
 
     LOOP AT itab INTO wa WHERE ( id < 5 AND num > 10 ) AND text = `abc`.
       str &&= wa-id.
     ENDLOOP.
+    ASSERT str = `2`.
     CLEAR str.
 
     "Comparison operators for character-like data types
@@ -1266,59 +1301,69 @@ CLASS zcl_demo_abap IMPLEMENTATION.
     LOOP AT itab INTO wa WHERE text CO `abc`.
       str &&= wa-id.
     ENDLOOP.
+    ASSERT str = `12`.
     CLEAR str.
 
     "contains not only
     LOOP AT itab INTO wa WHERE text CN `abc`.
       str &&= wa-id.
     ENDLOOP.
+    ASSERT str = `345`.
     CLEAR str.
 
     "contains string
     LOOP AT itab INTO wa WHERE text CS `ef`.
       str &&= wa-id.
     ENDLOOP.
+    ASSERT str = `34`.
     CLEAR str.
 
     "contains no string
     LOOP AT itab INTO wa WHERE text NS `ef`.
       str &&= wa-id.
     ENDLOOP.
+    ASSERT str = `125`.
     CLEAR str.
 
     "contains any
     LOOP AT itab INTO wa WHERE text CA `xyzi`.
       str &&= wa-id.
     ENDLOOP.
+    ASSERT str = `5`.
     CLEAR str.
 
     "contains not any
     LOOP AT itab INTO wa WHERE text NA `a`.
       str &&= wa-id.
     ENDLOOP.
+    ASSERT str = `345`.
     CLEAR str.
 
     "conforms to pattern
     LOOP AT itab INTO wa WHERE text CP `*c`.
       str &&= wa-id.
     ENDLOOP.
+    ASSERT str = `12`.
     CLEAR str.
 
     "does not conform to pattern
     LOOP AT itab INTO wa WHERE text NA `*c`.
       str &&= wa-id.
     ENDLOOP.
+    ASSERT str = `345`.
     CLEAR str.
 
     "[NOT] BETWEEN ... AND ...
     LOOP AT itab INTO wa WHERE num BETWEEN 5 AND 45.
       str &&= wa-id.
     ENDLOOP.
+    ASSERT str = `24`.
     CLEAR str.
 
     LOOP AT itab INTO wa WHERE num NOT BETWEEN 5 AND 45.
       str &&= wa-id.
     ENDLOOP.
+    ASSERT str = `135`.
     CLEAR str.
 
     "[NOT] IN ranges_table
@@ -1328,6 +1373,7 @@ CLASS zcl_demo_abap IMPLEMENTATION.
     LOOP AT itab INTO wa WHERE num IN rangestab.
       str &&= wa-id.
     ENDLOOP.
+    ASSERT str = `24`.
     CLEAR str.
 
     rangestab = VALUE #( ( sign   = `I` option = `LT` low = 5 )
@@ -1336,39 +1382,46 @@ CLASS zcl_demo_abap IMPLEMENTATION.
     LOOP AT itab INTO wa WHERE num IN rangestab.
       str &&= wa-id.
     ENDLOOP.
+    ASSERT str = `1345`.
     CLEAR str.
 
     "IS [NOT] INITIAL
     LOOP AT itab INTO wa WHERE num IS INITIAL.
       str &&= wa-id.
     ENDLOOP.
+    ASSERT str = `13`.
     CLEAR str.
 
     LOOP AT itab INTO wa WHERE num IS NOT INITIAL.
       str &&= wa-id.
     ENDLOOP.
+    ASSERT str = `245`.
     CLEAR str.
 
     "IS [NOT] BOUND
     LOOP AT itab INTO wa WHERE ref IS BOUND.
       str &&= wa-id.
     ENDLOOP.
+    ASSERT str = `135`.
     CLEAR str.
 
     LOOP AT itab INTO wa WHERE ref IS NOT BOUND.
       str &&= wa-id.
     ENDLOOP.
+    ASSERT str = `24`.
     CLEAR str.
 
     "IS [NOT] INSTANCE OF
     LOOP AT itab INTO wa WHERE oref IS INSTANCE OF cl_system_uuid.
       str &&= wa-id.
     ENDLOOP.
+    ASSERT str = `13`.
     CLEAR str.
 
     LOOP AT itab INTO wa WHERE oref IS NOT INSTANCE OF cl_system_uuid.
       str &&= wa-id.
     ENDLOOP.
+    ASSERT str = `245`.
     CLEAR str.
 
     "Dynamic WHERE condition
@@ -1377,6 +1430,7 @@ CLASS zcl_demo_abap IMPLEMENTATION.
     LOOP AT itab INTO wa WHERE (dynamic_where_cond).
       str &&= wa-id.
     ENDLOOP.
+    ASSERT str = `45`.
     CLEAR str.
 
     DATA(dynamic_where_cond_tab) = VALUE string_table( ( `num > 20` )
@@ -1386,6 +1440,7 @@ CLASS zcl_demo_abap IMPLEMENTATION.
     LOOP AT itab INTO wa WHERE (dynamic_where_cond_tab).
       str &&= wa-id.
     ENDLOOP.
+    ASSERT str = `5`.
     CLEAR str.
 
 *&---------------------------------------------------------------------*
@@ -1395,91 +1450,192 @@ CLASS zcl_demo_abap IMPLEMENTATION.
     DATA(itab_copy) = itab.
 
     DELETE itab WHERE num > 20.
+
+    ASSERT REDUCE string( INIT string = ``
+                          FOR <line> IN itab
+                          NEXT string &&= <line>-id ) = `123`.
+
     itab = itab_copy.
 
     DELETE itab WHERE num = 0.
+
+    ASSERT REDUCE string( INIT string = ``
+                          FOR <line> IN itab
+                          NEXT string &&= <line>-id ) = `245`.
     itab = itab_copy.
 
     DELETE itab WHERE num > 5 AND id  >= 3.
+
+    ASSERT REDUCE string( INIT string = ``
+                          FOR <line> IN itab
+                          NEXT string &&= <line>-id ) = `123`.
     itab = itab_copy.
 
     DELETE itab WHERE num >= 40 OR num = 0.
+
+    ASSERT REDUCE string( INIT string = ``
+                          FOR <line> IN itab
+                          NEXT string &&= <line>-id ) = `2`.
     itab = itab_copy.
 
     DELETE itab WHERE NOT num = 0.
+
+    ASSERT REDUCE string( INIT string = ``
+                          FOR <line> IN itab
+                          NEXT string &&= <line>-id ) = `13`.
     itab = itab_copy.
 
     DELETE itab WHERE ( id < 5 AND num > 10 ) AND text = `abc`.
+
+    ASSERT REDUCE string( INIT string = ``
+                          FOR <line> IN itab
+                          NEXT string &&= <line>-id ) = `1345`.
     itab = itab_copy.
 
     "contains only
     DELETE itab WHERE text CO `abc`.
+
+    ASSERT REDUCE string( INIT string = ``
+                          FOR <line> IN itab
+                          NEXT string &&= <line>-id ) = `345`.
     itab = itab_copy.
 
     "contains not only
     DELETE itab WHERE text CN `abc`.
+
+    ASSERT REDUCE string( INIT string = ``
+                          FOR <line> IN itab
+                          NEXT string &&= <line>-id ) = `12`.
     itab = itab_copy.
 
     "contains string
     DELETE itab WHERE text CS `ef`.
+
+    ASSERT REDUCE string( INIT string = ``
+                          FOR <line> IN itab
+                          NEXT string &&= <line>-id ) = `125`.
     itab = itab_copy.
 
     "contains no string
     DELETE itab WHERE text NS `ef`.
+
+    ASSERT REDUCE string( INIT string = ``
+                          FOR <line> IN itab
+                          NEXT string &&= <line>-id ) = `34`.
     itab = itab_copy.
 
     "contains any
     DELETE itab WHERE text CA `xyzi`.
+
+    ASSERT REDUCE string( INIT string = ``
+                          FOR <line> IN itab
+                          NEXT string &&= <line>-id ) = `1234`.
     itab = itab_copy.
 
     "contains not any
     DELETE itab WHERE text NA `a`.
+
+    ASSERT REDUCE string( INIT string = ``
+                          FOR <line> IN itab
+                          NEXT string &&= <line>-id ) = `12`.
     itab = itab_copy.
 
     "conforms to pattern
     DELETE itab WHERE text CP `*c`.
+
+    ASSERT REDUCE string( INIT string = ``
+                          FOR <line> IN itab
+                          NEXT string &&= <line>-id ) = `345`.
     itab = itab_copy.
 
     "does not conform to pattern
     DELETE itab WHERE text NA `*c`.
+
+    ASSERT REDUCE string( INIT string = ``
+                          FOR <line> IN itab
+                          NEXT string &&= <line>-id ) = `12`.
     itab = itab_copy.
 
     DELETE itab WHERE num BETWEEN 5 AND 45.
+
+    ASSERT REDUCE string( INIT string = ``
+                          FOR <line> IN itab
+                          NEXT string &&= <line>-id ) = `135`.
     itab = itab_copy.
 
     DELETE itab WHERE num NOT BETWEEN 5 AND 45.
+
+    ASSERT REDUCE string( INIT string = ``
+                          FOR <line> IN itab
+                          NEXT string &&= <line>-id ) = `24`.
     itab = itab_copy.
 
     rangestab = VALUE #( ( sign = `I` option = `BT` low = 5 high = 45 ) ).
     DELETE itab WHERE num IN rangestab.
+
+    ASSERT REDUCE string( INIT string = ``
+                          FOR <line> IN itab
+                          NEXT string &&= <line>-id ) = `135`.
     itab = itab_copy.
 
     DELETE itab WHERE num IS INITIAL.
+
+    ASSERT REDUCE string( INIT string = ``
+                          FOR <line> IN itab
+                          NEXT string &&= <line>-id ) = `245`.
     itab = itab_copy.
 
     DELETE itab WHERE num IS NOT INITIAL.
+
+    ASSERT REDUCE string( INIT string = ``
+                          FOR <line> IN itab
+                          NEXT string &&= <line>-id ) = `13`.
     itab = itab_copy.
 
     DELETE itab WHERE ref IS BOUND.
+
+    ASSERT REDUCE string( INIT string = ``
+                          FOR <line> IN itab
+                          NEXT string &&= <line>-id ) = `24`.
     itab = itab_copy.
 
     DELETE itab WHERE ref IS NOT BOUND.
+
+    ASSERT REDUCE string( INIT string = ``
+                          FOR <line> IN itab
+                          NEXT string &&= <line>-id ) = `135`.
     itab = itab_copy.
 
     DELETE itab WHERE oref IS INSTANCE OF cl_system_uuid.
+
+    ASSERT REDUCE string( INIT string = ``
+                          FOR <line> IN itab
+                          NEXT string &&= <line>-id ) = `245`.
     itab = itab_copy.
 
     DELETE itab WHERE oref IS NOT INSTANCE OF cl_system_uuid.
+
+    ASSERT REDUCE string( INIT string = ``
+                          FOR <line> IN itab
+                          NEXT string &&= <line>-id ) = `13`.
     itab = itab_copy.
 
     dynamic_where_cond = `num > 20`.
     DELETE itab WHERE (dynamic_where_cond).
+
+    ASSERT REDUCE string( INIT string = ``
+                          FOR <line> IN itab
+                          NEXT string &&= <line>-id ) = `123`.
     itab = itab_copy.
 
     dynamic_where_cond_tab = VALUE string_table( ( `num > 20` )
                                                  ( `AND` )
                                                  ( `id > 4` ) ).
     DELETE itab WHERE (dynamic_where_cond_tab).
+
+    ASSERT REDUCE string( INIT string = ``
+                          FOR <line> IN itab
+                          NEXT string &&= <line>-id ) = `1234`.
     itab = itab_copy.
 
 *&---------------------------------------------------------------------*
@@ -1487,99 +1643,99 @@ CLASS zcl_demo_abap IMPLEMENTATION.
 *&---------------------------------------------------------------------*
 
     READ TABLE itab INTO DATA(line) WHERE num > 20.
-    DATA(tabix) = sy-tabix.
+    ASSERT sy-tabix = 4.
 
     "The following statement issues a warning, which can be suppressed by a
     "pragma. For better performance, the WHERE clause should be replaced by
     "a key specification with a simple component or operand pair list.
     READ TABLE itab INTO line WHERE num = 0 ##read_where_ok.
-    tabix = sy-tabix.
+    ASSERT sy-tabix = 1.
 
     READ TABLE itab INTO line WITH KEY num = 0.
-    tabix = sy-tabix.
+    ASSERT sy-tabix = 1.
 
 
     READ TABLE itab INTO line WHERE num > 5 AND id  >= 3.
-    tabix = sy-tabix.
+    ASSERT sy-tabix = 4.
 
     READ TABLE itab INTO line WHERE NOT num = 0.
-    tabix = sy-tabix.
+    ASSERT sy-tabix = 2.
 
     READ TABLE itab INTO line WHERE ( id < 5 AND num > 10 ) AND text = `abc`.
-    tabix = sy-tabix.
+    ASSERT sy-tabix = 2.
 
     "contains only
     READ TABLE itab INTO line WHERE text CO `abc`.
-    tabix = sy-tabix.
+    ASSERT sy-tabix = 1.
 
     "contains not only
     READ TABLE itab INTO line WHERE text CN `abc`.
-    tabix = sy-tabix.
+    ASSERT sy-tabix = 3.
 
     "contains string
     READ TABLE itab INTO line WHERE text CS `ef`.
-    tabix = sy-tabix.
+    ASSERT sy-tabix = 3.
 
     "contains no string
     READ TABLE itab INTO line WHERE text NS `ef`.
-    tabix = sy-tabix.
+    ASSERT sy-tabix = 1.
 
     "contains any
     READ TABLE itab INTO line WHERE text CA `xyzi`.
-    tabix = sy-tabix.
+    ASSERT sy-tabix = 5.
 
     "contains not any
     READ TABLE itab INTO line WHERE text NA `a`.
-    tabix = sy-tabix.
+    ASSERT sy-tabix = 3.
 
     "conforms to pattern
     READ TABLE itab INTO line WHERE text CP `*c`.
-    tabix = sy-tabix.
+    ASSERT sy-tabix = 1.
 
     "does not conform to pattern
     READ TABLE itab INTO line WHERE text NA `*c`.
-    tabix = sy-tabix.
+    ASSERT sy-tabix = 3.
 
     READ TABLE itab INTO line WHERE num BETWEEN 5 AND 45.
-    tabix = sy-tabix.
+    ASSERT sy-tabix = 2.
 
     READ TABLE itab INTO line WHERE num NOT BETWEEN 5 AND 45.
-    tabix = sy-tabix.
+    ASSERT sy-tabix = 1.
 
     rangestab = VALUE #( ( sign = `I` option = `BT` low = 5 high = 45 ) ).
     READ TABLE itab INTO line WHERE num IN rangestab.
-    tabix = sy-tabix.
+    ASSERT sy-tabix = 2.
 
     "Same as above. Without the pragma, a warning is issued. It is
     "recommended that you specify a key and a component or operand
     "pair list.
     READ TABLE itab INTO line WHERE num IS INITIAL ##read_where_ok.
-    tabix = sy-tabix.
+    ASSERT sy-tabix = 1.
 
     READ TABLE itab INTO line WHERE num IS NOT INITIAL.
-    tabix = sy-tabix.
+    ASSERT sy-tabix = 2.
 
     READ TABLE itab INTO line WHERE ref IS BOUND.
-    tabix = sy-tabix.
+    ASSERT sy-tabix = 1.
 
     READ TABLE itab INTO line WHERE ref IS NOT BOUND.
-    tabix = sy-tabix.
+    ASSERT sy-tabix = 2.
 
     READ TABLE itab INTO line WHERE oref IS INSTANCE OF cl_system_uuid.
-    tabix = sy-tabix.
+    ASSERT sy-tabix = 1.
 
     READ TABLE itab INTO line WHERE oref IS NOT INSTANCE OF cl_system_uuid.
-    tabix = sy-tabix.
+    ASSERT sy-tabix = 2.
 
     dynamic_where_cond = `num > 20`.
     READ TABLE itab INTO line WHERE (dynamic_where_cond).
-    tabix = sy-tabix.
+    ASSERT sy-tabix = 4.
 
     dynamic_where_cond_tab = VALUE string_table( ( `num > 20` )
                                                  ( `AND` )
                                                  ( `id > 4` ) ).
     READ TABLE itab INTO line WHERE (dynamic_where_cond_tab).
-    tabix = sy-tabix.
+    ASSERT sy-tabix = 5.
 
 *&---------------------------------------------------------------------*
 *& FILTER constructor operator
@@ -1692,7 +1848,7 @@ CLASS zcl_demo_abap IMPLEMENTATION.
     DATA(it20) = VALUE int_tab_type( FOR w IN itab WHERE ( ref IS BOUND ) ( w-id ) ).
     DATA(it21) = VALUE int_tab_type( FOR w IN itab WHERE ( ref IS NOT BOUND ) ( w-id ) ).
     DATA(it22) = VALUE int_tab_type( FOR w IN itab WHERE ( oref IS INSTANCE OF cl_system_uuid ) ( w-id ) ).
-    DATA(it23) = VALUE int_tab_type( FOR w IN itab WHERE ( oref IS NOT INSTANCE OF cl_system_uuid ) ( w-id ) ).    
+    DATA(it23) = VALUE int_tab_type( FOR w IN itab WHERE ( oref IS NOT INSTANCE OF cl_system_uuid ) ( w-id ) ).
     dynamic_where_cond = `num > 20`.
     DATA(it24) = VALUE int_tab_type( FOR w IN itab WHERE (dynamic_where_cond) ( w-id ) ).
     dynamic_where_cond_tab = VALUE string_table( ( `num > 20` )

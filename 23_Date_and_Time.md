@@ -1272,7 +1272,7 @@ ASSERT sy-subrc = 8.
 
 "Specified time stamp is invalid -> sy-subrc = 12
 CONVERT TIME STAMP CONV timestamp( '20249999112458' )
-        TIME ZONE 'NOPE'
+        TIME ZONE 'EST'
         INTO DATE dat.
 ASSERT sy-subrc = 12.
 ```
