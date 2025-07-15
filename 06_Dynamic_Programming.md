@@ -47,6 +47,7 @@
       - [Creating Structured Types and Data Objects Dynamically](#creating-structured-types-and-data-objects-dynamically)
       - [Creating Table Types and Internal Tables Dynamically](#creating-table-types-and-internal-tables-dynamically)
       - [Creating Reference Types and Data Reference Variables Dynamically](#creating-reference-types-and-data-reference-variables-dynamically)
+  - [Excursion: Dynamic Program Development in Standard ABAP](#excursion-dynamic-program-development-in-standard-abap)
   - [More Information](#more-information)
   - [Executable Example](#executable-example)
 
@@ -5687,9 +5688,1010 @@ ASSERT applies_to_dobj = abap_true.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
+## Excursion: Dynamic Program Development in Standard ABAP 
+
+- [Standard ABAP](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenstandard_abap_glosry.htm) includes language elements that allow for the dynamic creation and maintenance of program source code.
+- Creating executable code using dynamic programming techniques can be risky, especially when source code is determined at runtime or involves external data or user input. Therefore, these techniques should be used only in exceptional cases and require thorough validation and checks.
+- In [ABAP for Cloud Development](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenabap_for_cloud_dev_glosry.htm), you can access and modify source code using classes available in the XCO library. Refer to the [Released ABAP Classes](22_Released_ABAP_Classes.md) ABAP cheat sheet for examples.
+
+
+> **⚠️ Caution**<br>
+> - Dynamic programming techniques can pose serious security risks if used improperly. Always carefully check any dynamic content from external sources before incorporating it into dynamic statements. Prevent the injection of harmful ABAP code into programs, especially when using `GENERATE SUBROUTINE POOL` and `INSERT REPORT` statements, as they can create executable ABAP code.
+> - When using ABAP statements to manipulate source code, apply them cautiously. These statements do not include inherent authorization checks, so developers must implement these checks. For example, use appropriate `AUTHORITY-CHECK` statements. Potential checks include verifying the current user's development authorization or determining if the current system is a development or production environment.
+> - Find more information (note that the links refer to Standard ABAP) about:
+>   - [Dynamic program development](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenabap_language_dynamic.htm) and [security](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abengeneric_prog_scrty.htm) in the ABAP Keyword Documentation.
+>   - the ABAP authorization concept in the [ABAP Keyword Documentation](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenbc_authority_check.htm) and in the [SAP Help Portal](https://help.sap.com/docs/ABAP_PLATFORM_NEW/ad77b44570314f6d8c3a8a807273084c/4f4decf806b02892e10000000a42189b.html?locale=en-US).
+> - The code examples are primarily intended to visualize the syntax and semantics of ABAP statements. They are not best practices or recommended implementations and are not meant to solve concrete programming tasks. Refer to the repository's [disclaimer](./README.md#%EF%B8%8F-disclaimer).
+
+<br>
+
+<details>
+  <summary>🟢 Click to expand for more details and example code</summary>
+  <!-- -->
+
+<br>
+
+<table>
+
+<tr>
+<th> ABAP Statement </th> <th> Notes/Example Code </th>
+</tr>
+
+<tr>
+<td> 
+
+`SYNTAX-CHECK`
+
+ </td>
+
+ <td> 
+
+- Performs a syntax check for source code in internal tables.
+- For examples like `GENERATE SUBROUTINE POOL`, the syntax check occurs when these statements are executed.
+- Use the `PROGRAM` and `DIRECTORY ENTRY` options (with the specified data object matching the `TRDIR` database table structure) to set properties for the syntax check. At least one must be specified.
+- Find more information [here](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapsyntax-check_for_itab.htm).
+
+The example executable program includes several `SYNTAX-CHECK` statements. The examples include a syntax check with and without error found. Plus, an example represents a demo implementation to check ABAP for Cloud Development readiness. To check out the code - ⚠️ you are aware of the security risks associated with dynamic programming techniques - you can create a demo executable program called `ZDEMO_ABAP_REPORT_DYNAMIC_PROG` in your sandbox environment and choose `F8` to execute it. The example is designed to write the content of data objects to a [classic list](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenclassic_list_glosry.htm) using `WRITE` statements.
+
+<details>
+  <summary>🟢 Click to expand for example code</summary>
+  <!-- -->
+
+<br>
+
+```abap
+PROGRAM.
+
+DATA: tab TYPE string_table,
+      msg TYPE string,
+      lin TYPE i,
+      wrd TYPE string.
+
+CLASS lcl_demo DEFINITION.
+  PUBLIC SECTION.
+    CLASS-METHODS: check_sysubrc.
+ENDCLASS.
+
+CLASS lcl_demo IMPLEMENTATION.
+  METHOD check_sysubrc.
+    IF sy-subrc = 0.
+      WRITE / `Syntac check: Ok` COLOR COL_POSITIVE.
+    ELSE.
+      WRITE / |sy-subrc: { sy-subrc }| COLOR COL_NEGATIVE.
+      WRITE / |MESSAGE: { msg }| COLOR COL_NEGATIVE.
+      WRITE / |LINE: { lin }| COLOR COL_NEGATIVE.
+      WRITE / |WORD: { wrd }| COLOR COL_NEGATIVE.
+    ENDIF.
+  ENDMETHOD.
+ENDCLASS.
+
+START-OF-SELECTION.
+
+*&---------------------------------------------------------------------*
+*& Example 1
+*&---------------------------------------------------------------------*
+
+  WRITE / `***************************** Example 1 *****************************`.
+  SKIP.
+
+  tab = VALUE #(
+    ( `PROGRAM.`        )
+    ( `TYPES a TYPE i.` )
+    ( `DATA b TYPE a.`  )
+    ( `b = 1.`          ) ).
+
+  SYNTAX-CHECK FOR tab MESSAGE msg LINE lin WORD wrd PROGRAM sy-repid.
+
+  lcl_demo=>check_sysubrc( ).
+
+*&---------------------------------------------------------------------*
+*& Example 2
+*&---------------------------------------------------------------------*
+
+  "The following example includes a syntax error (missing period).
+
+  SKIP.
+  WRITE / `***************************** Example 2 *****************************`.
+  SKIP.
+
+  tab = VALUE #(
+    ( `PROGRAM.`        )
+    ( `TYPES a TYPE i.` )
+    ( `DATA b TYPE a`   )
+    ( `b = 1.`          ) ).
+
+  SYNTAX-CHECK FOR tab MESSAGE msg LINE lin WORD wrd PROGRAM sy-repid.
+
+  lcl_demo=>check_sysubrc( ).
+
+*&---------------------------------------------------------------------*
+*& Example 3
+*&---------------------------------------------------------------------*
+
+  "The following example performs a syntax check using the code skeleton of class.
+  "It represents a self-contained example with which to check ABAP for Cloud Development
+  "readiness, using a dynamically inserted code sample (i.e. not the actual code in
+  "a class).
+  "The assumption is that the demo class used is a class that has at least one method
+  "specified in the global class, without any further implementations in includes.
+  "The example uses a class from the ABAP cheat sheet repository.
+  "Note that not every class may be suitable for the demo.
+  "The class provides the skeleton for the source code that is constructed
+  "dynamically in the 'program' data object, which is a string table.
+  "The example uses demo code that is to be checked in the string table
+  "'code_to_check'. It is designed to perform a code check for both
+  "Standard ABAP and ABAP for Cloud Development. The SYNTAX-CHECK statement
+  "uses the DIRECTORY ENTRY addition, which expects an operand that corresponds to the
+  "structure of the TRDIR database table. The ABAP version check is determined by
+  "the value of the 'uccheck' component. '5' means checks are performed for
+  "ABAP for Cloud Development. The example uses a class because the program-initiating
+  "statements PROGRAM or REPORT are not possible in ABAP for Cloud Development, i.e.
+  "the syntax will return a message for these statements.
+  "The code to be checked includes a simple assignment, however, it uses the
+  "obsolete MOVE statement. While the statement may still be used (though not
+  "recommended) without syntax error in Standard ABAP, it is not possible in ABAP for
+  "Cloud Development. Consequently, the syntax check will show an error for the statement.
+  "The example just uses a random method implementation of the class skeleton (other
+  "method implementations, if any, are empty) in which the code to be checked
+  "is inserted. So, not the actual class code is checked but only the dummy code
+  "skeleton contained in the internal table, resembling the actual class, including code
+  "inserted dynmically at runtime.
+
+  SKIP.
+  WRITE / `***************************** Example 3 *****************************`.
+  SKIP.
+
+  "Data objects for the SYNTAX-CHECK statement
+  DATA: message  TYPE string,
+        line     TYPE i,
+        word     TYPE string,
+        direntry TYPE trdir.
+
+  "Demo code that is put in a random method implementation skeleton
+  DATA(code_to_check) = VALUE string_table(
+    ( `DATA some_random_number_a TYPE i VALUE 1.` )
+    ( `DATA some_random_number_b TYPE i VALUE 2.` )
+    ( `MOVE some_random_number_a TO some_random_number_b.` ) ).
+
+  "Constructing include names used in the class code skeleton
+  "The example uses an example class from the ABAP cheat sheet repository
+  TYPES t_c32 TYPE c LENGTH 32.
+  DATA(class_name) = CONV t_c32( 'ZCL_DEMO_ABAP_AUX' ).
+  DATA include_name LIKE class_name.
+  TYPES tt_c32 TYPE TABLE OF t_c32 WITH EMPTY KEY.
+
+  DATA(class_includes) = VALUE tt_c32(
+  ( '==============================CP' )
+  ( '==============================CU' )
+  ( '==============================CO' )
+  ( '==============================CI' )
+  ( '==============================CC' ) ).
+
+  LOOP AT class_includes REFERENCE INTO DATA(ref).
+    include_name = class_name.
+    OVERLAY include_name WITH ref->*.
+    ref->* = include_name.
+  ENDLOOP.
+
+  "Getting method name for the dummy implementation in the class code skeleton
+  TRY.
+      DATA dummy_implementations TYPE string_table.
+      LOOP AT CAST cl_abap_classdescr( cl_abap_typedescr=>describe_by_name( class_name ) )->methods INTO DATA(mwa)
+      WHERE is_inherited IS INITIAL AND name <> 'CONSTRUCTOR'.
+        IF sy-tabix = 1.
+          DATA(dummy_method) = mwa-name.
+        ELSE.
+          APPEND |  METHOD { mwa-name }. ENDMETHOD.| TO dummy_implementations.
+        ENDIF.
+      ENDLOOP.
+    CATCH cx_sy_rtti_syntax_error.
+      WRITE / |RTTI error with class { class_name }.| COLOR COL_NEGATIVE.
+      RETURN.
+  ENDTRY.
+
+  IF dummy_implementations IS INITIAL.
+    WRITE / |Class { class_name } is not a suitable class for this example.| COLOR COL_NEGATIVE.
+    RETURN.
+  ENDIF.
+
+  "Putting the code together to have suitable internal table content
+  "representing the code of a class, including the dummy method
+  "implementation with the code to be checked
+  APPEND LINES OF VALUE string_table(
+     ( |  METHOD { dummy_method }.| )
+     ( LINES OF code_to_check )
+     ( `ENDMETHOD.` ) ) TO dummy_implementations.
+
+  DATA(program) = VALUE string_table(
+    ( `CLASS-POOL.` )
+    ( |INCLUDE { class_includes[ 2 ] }.| ) "CU
+    ( |INCLUDE { class_includes[ 3 ] }.| ) "CO
+    ( |INCLUDE { class_includes[ 4 ] }.| ) "CI
+    ( `ENDCLASS.` )
+    ( |INCLUDE { class_includes[ 5 ] }IMP.| ) "CCIMP
+    ( |INCLUDE { class_includes[ 5 ] }AU.| ) "CCAU
+    ( |CLASS { class_name } IMPLEMENTATION.| )
+    ( LINES OF dummy_implementations )
+    ( ` ENDCLASS.` ) ).
+
+  "Retrieving TRDIR entry for the class in question
+  SELECT SINGLE *
+     FROM trdir
+     WHERE name = @( class_includes[ 1 ] ) "CP
+     INTO @direntry.
+
+  WRITE / |Class: { class_name }|.
+  WRITE / |Dummy method: { dummy_method }|.
+  SKIP.
+
+  "In the loop, the SYNTAX-CHECK statement performs a syntax check for both
+  "Standard ABAP and ABAP for Cloud Development.
+  DO 2 TIMES.
+    IF sy-index = 1.
+      "Standard ABAP
+      direntry-uccheck = 'X'.
+      WRITE / `************* Syntax check for Standard ABAP *************`.
+    ELSE.
+      "ABAP for Cloud Development
+      direntry-uccheck = '5'.
+      WRITE / `************* Syntax check for ABAP for Cloud Development *************`.
+    ENDIF.
+
+    SYNTAX-CHECK FOR program MESSAGE message LINE line WORD word DIRECTORY ENTRY direntry.
+
+    IF sy-subrc = 0.
+      WRITE / `Syntac check: Ok` COLOR COL_POSITIVE.
+      SKIP.
+    ELSE.
+      WRITE / |sy-subrc: { sy-subrc }| COLOR COL_NEGATIVE.
+      WRITE / |MESSAGE: { message }| COLOR COL_NEGATIVE.
+      WRITE / |LINE: { line }| COLOR COL_NEGATIVE.
+      WRITE / |WORD: { word }| COLOR COL_NEGATIVE.
+      SKIP.
+    ENDIF.
+    CLEAR: message, line, word.
+  ENDDO.
+```
+
+</details>  
+<br>
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+`READ REPORT`
+
+ </td>
+
+ <td> 
+
+- Reads the active source code of an ABAP program into an internal table.
+- The internal table's line type must be long enough to fit the longest code line.
+
+The example executable program includes several `READ REPORT` statements to read the source code of executable programs, classes and method implementations. To check out the code, you can create a demo executable program called `ZDEMO_ABAP_REPORT_DYNAMIC_PROG` in your sandbox environment and choose `F8` to execute it. The example is designed to write the content of data objects to a [classic list](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenclassic_list_glosry.htm) using `WRITE` statements.
+
+<details>
+  <summary>🟢 Click to expand for example code</summary>
+  <!-- -->
+
+<br>
+
+```abap
+PROGRAM.
+
+DATA itab TYPE string_table.
+
+*&---------------------------------------------------------------------*
+*& Example 1
+*&---------------------------------------------------------------------*
+
+"The example specifies the name of an executable program stored in a data object.
+
+WRITE / `***************************** Example 1 *****************************` COLOR COL_HEADING.
+SKIP.
+
+DATA(this_program) = sy-repid.
+READ REPORT this_program INTO itab.
+
+IF sy-subrc = 0.
+  WRITE / |The code was read into the internal table.| COLOR COL_POSITIVE.
+  SKIP.
+  SET BLANK LINES ON.
+  "Not writing all code lines to the classic list
+  LOOP AT itab INTO DATA(wa) TO 12.
+    WRITE / wa.
+  ENDLOOP.
+  WRITE / |... (skipping the rest of the code; number of code lines: { lines( itab ) })|.
+
+  SKIP.
+ELSE.
+  WRITE / |sy-subrc: { sy-subrc }| COLOR COL_NEGATIVE.
+  WRITE / |The code was not read.| COLOR COL_NEGATIVE.
+  SKIP.
+ENDIF.
+
+*&---------------------------------------------------------------------*
+*& Example 2
+*&---------------------------------------------------------------------*
+
+"The examples specify the names of executable programs as literals.
+
+SKIP.
+WRITE / `***************************** Example 2 *****************************` COLOR COL_HEADING.
+SKIP.
+
+READ REPORT 'ZDEMO_ABAP_REPORT_DYNAMIC_PROG' INTO itab.
+
+IF sy-subrc = 0.
+  WRITE / |The code was read into the internal table. Number of code lines: { lines( itab ) }| COLOR COL_POSITIVE.
+  SKIP.
+ELSE.
+  WRITE / |sy-subrc: { sy-subrc }| COLOR COL_NEGATIVE.
+  WRITE / |The code was not into the internal table.| COLOR COL_NEGATIVE.
+  SKIP.
+ENDIF.
+
+READ REPORT 'ZTHIS_PROG_MAY_NOT_EXIST' INTO itab.
+
+IF sy-subrc = 0.
+  WRITE / |The code was read into the internal table. Number of code lines: { lines( itab ) }| COLOR COL_POSITIVE.
+  SKIP.
+ELSE.
+  WRITE / |sy-subrc: { sy-subrc }| COLOR COL_NEGATIVE.
+  WRITE / |The code was not read into the internal table.| COLOR COL_NEGATIVE.
+  SKIP.
+ENDIF.
+
+*&---------------------------------------------------------------------*
+*& Example 3
+*&---------------------------------------------------------------------*
+
+"The examples reads the code of class includes.
+"The example is set up to write the content of the internal table. Note
+"that when writing the code lines, long code lines are cut.
+"A class from the ABAP cheat sheet repository is used because it contains
+"code in several includes.
+
+SKIP.
+WRITE / `***************************** Example 3 *****************************` COLOR COL_HEADING.
+SKIP.
+
+"Constructing include names
+"The example uses an example class from the ABAP cheat sheet repository.
+"Note that there are more includes available, e.g. also for each method as shown
+"below. The example constructs the names manually. You may also use a system class as
+"shown for the method include names.
+TYPES t_c35 TYPE c LENGTH 35.
+DATA(class_name) = CONV t_c35( 'ZCL_DEMO_ABAP_UNIT_TEST' ).
+DATA include_name LIKE class_name.
+TYPES tt_c35 TYPE TABLE OF t_c35 WITH EMPTY KEY.
+
+DATA(class_includes) = VALUE tt_c35(
+( '==============================CP' ) "Class pool
+( '==============================CU' ) "Public section
+( '==============================CO' ) "Protected section
+( '==============================CI' ) "Private section
+( '==============================CCDEF' ) "CCDEF include (Class-relevant Local Types tab in ADT)
+( '==============================CCIMP' ) "CCIMP include (Local Types tab in ADT)
+( '==============================CCAU' ) "Test include (Test Classes tab in ADT)
+( '==============================CS' )  "Complete global class (Global Class tab in ADT)
+).
+
+LOOP AT class_includes REFERENCE INTO DATA(ref).
+  include_name = class_name.
+  OVERLAY include_name WITH ref->*.
+  WRITE / |****************************************************| COLOR COL_NORMAL.
+  WRITE / |* Include { include_name }| COLOR COL_NORMAL.
+  WRITE / |****************************************************| COLOR COL_NORMAL.
+  SKIP.
+
+  READ REPORT include_name INTO itab.
+
+  IF sy-subrc = 0.
+    LOOP AT itab INTO DATA(incl_wa).
+      WRITE / incl_wa.
+    ENDLOOP.
+    SKIP.
+  ELSE.
+    WRITE / |sy-subrc: { sy-subrc }| COLOR COL_NEGATIVE.
+    WRITE / |The code was not read.| COLOR COL_NEGATIVE.
+    SKIP.
+  ENDIF.
+ENDLOOP.
+
+*&---------------------------------------------------------------------*
+*& Example 4
+*&---------------------------------------------------------------------*
+
+"The examples reads the code of method implementations.
+"A class from the ABAP cheat sheet repository is used because it contains
+"code in several methods. Unlike the example above, a system class is used
+"to retrieve method include names. The class also offers more methods with
+"which manual construction as above is unnecessary.
+
+SKIP.
+WRITE / `***************************** Example 4 *****************************` COLOR COL_HEADING.
+SKIP.
+
+"Processing includes of individual methods of the class
+DATA(methods) = cl_oo_classname_service=>get_all_method_includes( clsname = CONV #( class_name ) ).
+
+LOOP AT methods INTO DATA(meth_wa).
+  READ REPORT meth_wa-incname INTO itab.
+
+  IF sy-subrc = 0.
+    WRITE / |Class { meth_wa-cpdkey-clsname }, Method { meth_wa-cpdkey-cpdname }|.
+    WRITE / |Include { meth_wa-incname } was read into the internal table.| COLOR COL_POSITIVE.
+    SKIP.
+  ELSE.
+    WRITE / |Class { meth_wa-cpdkey-clsname }, Method { meth_wa-cpdkey-cpdname }|.
+    WRITE / |Include { meth_wa-incname } was not read into the internal table.| COLOR COL_NEGATIVE.
+    SKIP.
+  ENDIF.
+ENDLOOP.
+```
+
+</details>  
+<br>
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+`GENERATE SUBROUTINE POOL`
+
+ </td>
+
+ <td> 
+
+- Generates temporary [subroutine pools](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abensubroutine_pool_glosry.htm).
+- Takes source code for the subroutine pool from an internal table.
+  - Internal table properties: Must have a character-like line type with a maximum of 255 characters per line, no secondary table keys, and must include a statement to initiate a program (e.g., `PROGRAM.`).
+  - If the internal table code contains a syntax error, the subroutine pool is not generated. Specify additions for error handling (e.g., `MESSAGE` or `WORD`) to analyze syntax and generation errors.
+- After `NAME`, specify a character-like variable or declare a data object inline (e.g., using `DATA(var)`).
+- Note that subroutines are considered outdated for modularization. You might use a single subroutine with a local class.
+
+The example executable program includes several `GENERATE SUBROUTINE POOL` statements. To check out the code - ⚠️ you are aware of the security risks associated with dynamic programming techniques - you can create a demo executable program called `ZDEMO_ABAP_REPORT_DYNAMIC_PROG` in your sandbox environment and choose `F8` to execute it. The example is designed to write the content of data objects to a [classic list](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenclassic_list_glosry.htm) using `WRITE` statements.
+
+<details>
+  <summary>🟢 Click to expand for example code</summary>
+  <!-- -->
+
+<br>
+
+```abap
+PROGRAM.
+
+*&---------------------------------------------------------------------*
+*& Exemplary authorization and security checks
+*&---------------------------------------------------------------------*
+
+WRITE / `***************************** Authorization check *****************************` COLOR COL_HEADING.
+SKIP.
+
+"Here go authorization and security checks. See the INSERT REPORT example
+"for ideas.
+...
+
+"Checking whether the current system is a production system
+"Alternatively, you can use the TR_SYS_PARAMS function module.
+SELECT SINGLE @abap_true
+        FROM t000
+        WHERE cccategory = 'P'
+        INTO @DATA(flag).
+
+IF flag = abap_true.
+  WRITE / `The system is a production system.` COLOR COL_NEGATIVE.
+  RETURN.
+ELSE.
+  WRITE / `The system is not a production system.` COLOR COL_POSITIVE.
+ENDIF.
+SKIP.
+
+"Checking whether the current user can create temporary programs.
+AUTHORITY-CHECK OBJECT 'S_DEVELOP'
+  ID 'DEVCLASS' FIELD '$TMP'
+  ID 'OBJTYPE'  FIELD 'PROG'
+  ID 'OBJNAME'  DUMMY
+  ID 'P_GROUP'  DUMMY
+  ID 'ACTVT'    FIELD '02'.
+IF sy-subrc = 0.
+  WRITE / `You have development authorization in the $TMP package.` COLOR COL_POSITIVE.
+ELSE.
+  WRITE / `You do not have development authorization in the $TMP package.` COLOR COL_NEGATIVE.
+  RETURN.
+ENDIF.
+SKIP.
+
+*&---------------------------------------------------------------------*
+*& Example 1
+*&---------------------------------------------------------------------*
+
+WRITE / `***************************** Example 1 *****************************` COLOR COL_HEADING.
+SKIP.
+
+DATA tab1 TYPE string_table.
+
+tab1 = VALUE #(
+  ( `PROGRAM.`                        )
+  ( `FORM test.`                      )
+  ( ` WRITE / |Hello { sy-uname }.|.` )
+  ( `ENDFORM.`                        ) ).
+
+GENERATE SUBROUTINE POOL tab1 NAME DATA(prog1).
+
+IF sy-subrc = 0.
+  WRITE / `Example 1: Ok` COLOR COL_POSITIVE.
+  SKIP.
+  PERFORM ('TEST') IN PROGRAM (prog1) IF FOUND.
+ELSE.
+  WRITE / |sy-subrc: { sy-subrc }| COLOR COL_NEGATIVE.
+  WRITE / `Example 1: Error` COLOR COL_NEGATIVE.
+ENDIF.
+SKIP.
+
+*&---------------------------------------------------------------------*
+*& Example 2
+*&---------------------------------------------------------------------*
+
+"In this example, the code contained in the internal table intentionally
+"has a syntax error. A period is missing at the end of the DATA statement.
+"The GENERATE SUBROUTINE POOL statement uses more of the available
+"additions.
+
+SKIP.
+WRITE / `***************************** Example 2 *****************************` COLOR COL_HEADING.
+SKIP.
+
+"missing period at end of line
+DATA(tab2) = VALUE string_table(
+  ( `PROGRAM.`                                            )
+  ( `FORM test.`                                          )
+  ( ` DATA some_string TYPE string VALUE ``hello```       )
+  ( ` WRITE / |Value of some_string: "{ some_string }"|.` )
+  ( `ENDFORM.`                                            ) ).
+
+GENERATE SUBROUTINE POOL tab2 NAME DATA(prog2)
+         MESSAGE DATA(mess) "Error message text of first syntax error
+         INCLUDE DATA(incl) "Internal name beginning with %_ in case of successful generation
+         LINE DATA(lin) "Line number of the first syntax error
+         WORD DATA(wrd) "First token with an error
+         OFFSET DATA(off) "Offset of the first token with errors
+         MESSAGE-ID DATA(mid) "Key of the first error message stored in the TRMSG database table
+         SHORTDUMP-ID DATA(sid). "Exception that is raised during generation
+
+IF sy-subrc = 0.
+  WRITE / `Example 2: Ok` COLOR COL_POSITIVE.
+  PERFORM ('TEST') IN PROGRAM (prog2) IF FOUND.
+ELSE.
+  WRITE / |sy-subrc: { sy-subrc }| COLOR COL_NEGATIVE.
+  WRITE / |MESSAGE: { mess }| COLOR COL_NEGATIVE.
+  WRITE / |INCLUDE: { incl }| COLOR COL_NEGATIVE.
+  WRITE / |LINE: { lin }| COLOR COL_NEGATIVE.
+  WRITE / |WORD: { wrd }| COLOR COL_NEGATIVE.
+  WRITE / `MESSAGE-ID:` COLOR COL_NEGATIVE.
+  LOOP AT CAST cl_abap_structdescr( cl_abap_typedescr=>describe_by_data( mid ) )->components INTO DATA(comp).
+    ASSIGN COMPONENT comp-name OF STRUCTURE mid TO FIELD-SYMBOL(<fs>).
+    WRITE / |- { comp-name }: { <fs> }| COLOR COL_NEGATIVE.
+    "Or using newer syntax as an alternative
+*    WRITE / |- { comp-name }: { mid-(comp-name) }|.
+  ENDLOOP.
+  WRITE / |SHORTDUMP-ID: { sid }| COLOR COL_NEGATIVE.
+ENDIF.
+
+*&---------------------------------------------------------------------*
+*& Example 3
+*&---------------------------------------------------------------------*
+
+"In this example, the subroutine pool implements a local class with a
+"static and an instance method. These methods are called dynamically with
+"the help of the class's absolute type name.
+
+SKIP.
+WRITE / `***************************** Example 3 *****************************` COLOR COL_HEADING.
+SKIP.
+
+DATA(tab3) = VALUE string_table(
+  ( `PROGRAM.`                                                        )
+  ( `CLASS lcl_test DEFINITION.`                                      )
+  ( `  PUBLIC SECTION.`                                               )
+  ( `    CLASS-METHODS static_double IMPORTING num TYPE i`            )
+  ( `                                RETURNING VALUE(result) TYPE i.` )
+  ( `    METHODS instance_triple IMPORTING num TYPE i`                )
+  ( `                            RETURNING VALUE(result) TYPE i.`     )
+  ( `ENDCLASS.`                                                       )
+  ( `CLASS lcl_test IMPLEMENTATION.`                                  )
+  ( `  METHOD static_double.`                                         )
+  ( `    result = num * 2.`                                           )
+  ( `  ENDMETHOD.`                                                    )
+  ( `  METHOD instance_triple.`                                       )
+  ( `    result = num * 3.`                                           )
+  ( `  ENDMETHOD.`                                                    )
+  ( `ENDCLASS.`                                                       ) ).
+
+GENERATE SUBROUTINE POOL tab3 NAME DATA(prog3).
+
+IF sy-subrc = 0.
+
+  DATA(cl) = `\PROGRAM=` && prog3 && `\CLASS=LCL_TEST`.
+
+  "Static method
+  DATA res1 TYPE i.
+  CALL METHOD (cl)=>static_double
+    EXPORTING
+      num    = 4
+    RECEIVING
+      result = res1.
+
+  WRITE / |Result of calling static method (res1): { res1 }|.
+
+  "Instance method
+  DATA oref TYPE REF TO object.
+  DATA res2 TYPE i.
+
+  CREATE OBJECT oref TYPE (cl).
+
+  CALL METHOD oref->('INSTANCE_TRIPLE')
+    EXPORTING
+      num    = 5
+    RECEIVING
+      result = res2.
+
+  WRITE / |Result of calling instance method (res2): { res2 }|.
+
+ELSE.
+  WRITE / |sy-subrc: { sy-subrc }| COLOR COL_NEGATIVE.
+  WRITE / `Example 3: Error` COLOR COL_NEGATIVE.
+ENDIF.
+```
+
+</details>  
+<br>
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+`INSERT REPORT`
+
+ </td>
+
+ <td> 
+
+- Passes source code contained in an internal table to a specified ABAP program.
+- If the program exists, its source code is overwritten; otherwise, a new program is created with the specified name but is not assigned to a package. In this case, you must create an object directory entry.
+- Various additions are available to determine program properties.
+- Find more information in the [ABAP Keyword Documentation](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapinsert_report.htm).
+
+
+> **⚠️ Caution**<br>
+> - Dynamic program development statements should be reserved for exceptional cases. Use utmost caution with `INSERT REPORT` and `GENERATE SUBROUTINE POOL` statements to create executable ABAP code.  
+> - Dynamic code originating from external sources can inject malicious code. Any user with authorization for the program can execute the source code directly. `INSERT REPORT` can even overwrite existing programs.  
+> - It is crucial to implement appropriate authorization and security checks. Some considerations and examples:
+>   - Securing ABAP programs by checking the current user's development authorization.
+>   - Preventing overwriting source code by verifying a program name's existence in the `TRDIR` database table.
+>   - Preventing SQL injection in dynamic ABAP SQL statements when including external content, such as via a user interface, by using the `CL_ABAP_DYN_PRG` class. Injections may involve accessing unauthorized database tables or columns and manipulating dynamic WHERE conditions. Refer to the *Security Considerations in Dynamic Programming Using External Input* section for code examples.
+>   - Using the `CL_ABAP_DYN_PRG` class to perform checks against specific allowlists or excludelists.
+>   - Conduct custom code scans to detect prohibited patterns, like forbidden statements in dynamically created source code.
+>   - Although not related to a checking mechanism, consider storing and backing up source code before making any overwrites.
+> - A thorough understanding of program structures, names, and include programs is essential when using the statement.
+> - For general information, check the [Security Notes](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenabap_security.htm) in the ABAP Keyword Documentation.
+
+The following example programs use `INSERT REPORT` statements. To check out the code - ⚠️ you are aware of the security risks associated with dynamic programming techniques - create a demo executable program named `ZDEMO_ABAP_REPORT_DYNAMIC_PROG` in your sandbox environment if you have not done so. The example modifies source code and is configured to write data object content to a [classic list](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenclassic_list_glosry.htm) using `WRITE` statements. To run the program, choose `F8`. The `CL_DEMO_OUTPUT` class displays the output of the original source code as a backup. Close the output window. The list will then be displayed with content output using the `WRITE` statements. *Example 1* is similar to *Example 2*, but *Example 2* includes demo implementations regarding considerations for potential authorization and security checks. Make sure that you devise your own solutions for your specific use cases.
+
+<details>
+  <summary>🟢 Example 1</summary>
+  <!-- -->
+
+<br>
+
+```abap
+PROGRAM.
+
+*&---------------------------------------------------------------------*
+*& Dynamic source code to be inserted into an executable program
+*&---------------------------------------------------------------------*
+
+DATA(code) = VALUE string_table(
+( `PROGRAM.` )
+( `` )
+( `WRITE / 'This program was overwritten.'.` )
+).
+
+*&---------------------------------------------------------------------*
+*& Authorization and security checks
+*&---------------------------------------------------------------------*
+
+"Here go authorization and security checks. See the second INSERT REPORT
+"example for ideas.
+...
+
+"This example assumes you created a demo executable program named
+"ZDEMO_ABAP_REPORT_DYNAMIC_PROG in a sandbox environment.
+DATA(prog) = CONV sy-repid( 'ZDEMO_ABAP_REPORT_DYNAMIC_PROG' ).
+ASSERT sy-repid = prog.
+
+*&---------------------------------------------------------------------*
+*& Syntax check
+*&---------------------------------------------------------------------*
+
+DATA: msg TYPE string,
+      lin TYPE i,
+      wrd TYPE string.
+
+SYNTAX-CHECK FOR code MESSAGE msg LINE lin WORD wrd PROGRAM prog.
+
+IF sy-subrc = 0.
+  WRITE / `Syntax check: Ok` COLOR COL_POSITIVE.
+ELSE.
+  WRITE / |sy-subrc: { sy-subrc }| COLOR COL_NEGATIVE.
+  WRITE / |MESSAGE: { msg }| COLOR COL_NEGATIVE.
+  WRITE / |LINE: { lin }| COLOR COL_NEGATIVE.
+  WRITE / |WORD: { wrd }| COLOR COL_NEGATIVE.
+  RETURN.
+ENDIF.
+
+*&---------------------------------------------------------------------*
+*& Inserting source code into the program
+*&---------------------------------------------------------------------*
+
+INSERT REPORT prog FROM code.
+
+IF sy-subrc = 0.
+  WRITE / |Program { prog } was overwritten.| COLOR COL_POSITIVE.
+  SKIP.
+
+  DATA code_copy TYPE string_table.
+  READ REPORT prog INTO code_copy.
+  IF sy-subrc = 0.
+    WRITE / |New code of the program { prog }:|.
+    SKIP.
+
+    SET BLANK LINES ON.
+    LOOP AT code_copy INTO DATA(wa).
+      WRITE / wa .
+    ENDLOOP.
+  ELSE.
+    WRITE / `An error occured.` COLOR COL_NEGATIVE.
+  ENDIF.
+ENDIF.
+```
+
+</details>  
+<br>
+<details>
+  <summary>🟢 Example 2</summary>
+  <!-- -->
+
+<br>
+
+```abap
+PROGRAM.
+
+*&---------------------------------------------------------------------*
+*& Dynamic source code to be inserted into an executable program
+*&---------------------------------------------------------------------*
+
+DATA(code) = VALUE string_table(
+  ( `PROGRAM.` )
+  ( `` )
+  ( `WRITE / |The program { sy-repid } was overwritten.|.` ) ).
+
+*&---------------------------------------------------------------------*
+*& Exemplary authorization and security checks
+*&---------------------------------------------------------------------*
+
+"Here go authorization and security checks.
+...
+"The following example implementations demonstrate some considerations about
+"authorization and security checks. They are not intended as best practice
+"examples. Always develop your own solution for your program.
+
+"This example assumes you created a demo executable program named
+"ZDEMO_ABAP_REPORT_DYNAMIC_PROG in a sandbox environment.
+DATA(prog) = CONV sy-repid( 'ZDEMO_ABAP_REPORT_DYNAMIC_PROG' ).
+ASSERT sy-repid = prog.
+
+"Checking whether the current system is a production system
+"Alternatively, you can use the TR_SYS_PARAMS function module.
+SELECT SINGLE @abap_true
+        FROM t000
+        WHERE cccategory = 'P'
+        INTO @DATA(flag).
+
+IF flag = abap_true.
+  WRITE / `The system is a production system.` COLOR COL_NEGATIVE.
+  RETURN.
+ELSE.
+  WRITE / `The system is not a production system.` COLOR COL_POSITIVE.
+ENDIF.
+SKIP.
+
+"Exemplary authorization checks
+"The demo program is only allowed for users who are allowed
+"to use the ABAP Editor.
+CALL FUNCTION 'AUTHORITY_CHECK_TCODE'
+  EXPORTING
+    tcode  = 'SE38'
+  EXCEPTIONS
+    ok     = 1
+    not_ok = 2
+    OTHERS = 3.
+IF sy-subrc < 2.
+  WRITE / `You are allowed to use the ABAP Editor.` COLOR COL_POSITIVE.
+ELSE.
+  WRITE / `You are not allowed to use the ABAP Editor.` COLOR COL_NEGATIVE.
+  RETURN.
+ENDIF.
+SKIP.
+
+"Checking whether the current user can create temporary programs.
+"You may also consider restricting program access on a package level,
+"for example.
+AUTHORITY-CHECK OBJECT 'S_DEVELOP'
+  ID 'DEVCLASS' FIELD '$TMP'
+  ID 'OBJTYPE'  FIELD 'PROG'
+  ID 'OBJNAME'  DUMMY
+  ID 'P_GROUP'  DUMMY
+  ID 'ACTVT'    FIELD '02'.
+IF sy-subrc = 0.
+  WRITE / `You have development authorization in the $TMP package.` COLOR COL_POSITIVE.
+ELSE.
+  WRITE / `You do not have development authorization in the $TMP package.` COLOR COL_NEGATIVE.
+  RETURN.
+ENDIF.
+SKIP.
+
+"Verifying against a given allowlist/excludelist
+"The demo statement demonstrates calling a method from the cl_abap_dyn_prg class
+"to check input against an allowlist. The content of 'value' is not used further
+"in the program. The example assumes that a demo executable program named
+"ZDEMO_ABAP_REPORT_DYNAMIC_PROG is used. The allowlist includes further
+"demo program names from the ABAP cheat sheet repository.
+TRY.
+    DATA(value) = cl_abap_dyn_prg=>check_allowlist(
+        val           = prog
+        allowlist_htab = VALUE #( ( `ZDEMO_ABAP_REPORT_DYNAMIC_PROG` )
+                                  ( `ZDEMO_ABAP_LISTS` )
+                                  ( `ZDEMO_ABAP_ALV` ) ) ).
+
+    WRITE: / |The program { value } is in the allowlist.| COLOR COL_POSITIVE.
+  CATCH cx_abap_not_in_allowlist INTO DATA(error_not_allowed).
+    WRITE / |The program { value } is not in the allowlist.|.
+    WRITE / error_not_allowed->get_text( ) COLOR COL_NEGATIVE.
+    RETURN.
+ENDTRY.
+SKIP.
+
+"Checking if the program exists to avoid overwriting.
+"If the program does not exist, a new program with the specified name is created.
+"The self-contained example is designed to overwrite the existing demo program.
+SELECT SINGLE 'X'
+  FROM trdir
+  WHERE name = @prog
+  INTO @DATA(prog_exists).
+
+IF prog_exists IS INITIAL.
+  WRITE / |The program { prog } does not exist.| COLOR COL_POSITIVE.
+ELSE.
+  WRITE / |The program { prog } already exists.| COLOR COL_NEGATIVE.
+  WRITE / |The self-contained demo example { prog } is designed to overwrite the existing code.| COLOR COL_POSITIVE.
+  "RETURN.
+ENDIF.
+SKIP.
+
+"Reading and (potentially) backing up existing program code before overwriting.
+"In the self-contained example, the source code is read using a READ REPORT
+"statement and output using the demo class CL_DEMO_OUTPUT to avoid interfering
+"with WRITE statements of the program.
+"Your use case might also be to read the code, modify it in the internal table,
+"and then overwrite the program with the updated content.
+DATA code_copy TYPE string_table.
+READ REPORT prog INTO code_copy.
+cl_demo_output=>write_html( `<h3 style="color:green;">Close this output window.</h3>` ).
+cl_demo_output=>write_html( `<p>The output shows the original source code read, e.g. for backup purposes.` ).
+cl_demo_output=>line( ).
+cl_demo_output=>display( code_copy ).
+
+"Custom code scan to perform a basic check for excluded patterns.
+"However, it may produce false positives, such as findings in literals. The scan
+"in the example examines a limited set of patterns, including method calls and
+"certain modification statements.
+DATA(excluded_patterns) = VALUE string_table(
+  ( `=>` )
+  ( `->` )
+  ( `CALL FUNCTION` )
+  ( `INSERT` )
+  ( `MODIFY` )
+  ( `DELETE` )
+  ( `GENERATE SUBROUTINE POOL` )
+  ( `CALL TRANSACTION` )
+  ( `EXEC SQL` ) ).
+
+"Concatenating the string table containing the code for a more convenient
+"string processing.
+DATA(code_as_string) = concat_lines_of( table = code sep = ` ` ).
+
+LOOP AT excluded_patterns INTO DATA(p).
+  "Constructing a regex to search the source code
+  p = |{ replace( val = p pcre = `\s` with = `\\s+` occ = 0 ) }|.
+
+  FIND PCRE p IN code_as_string.
+  IF sy-subrc = 0.
+    WRITE / |The code scan found an excluded pattern: { p }| COLOR COL_NEGATIVE.
+    RETURN.
+  ENDIF.
+ENDLOOP.
+
+WRITE / `Code scan: Ok` COLOR COL_POSITIVE.
+SKIP.
+
+*&---------------------------------------------------------------------*
+*& Syntax check
+*&---------------------------------------------------------------------*
+
+DATA: msg TYPE string,
+      lin TYPE i,
+      wrd TYPE string.
+
+SYNTAX-CHECK FOR code MESSAGE msg LINE lin WORD wrd PROGRAM prog.
+
+IF sy-subrc = 0.
+  WRITE / `Syntax check: Ok` COLOR COL_POSITIVE.
+ELSE.
+  WRITE / |sy-subrc: { sy-subrc }| COLOR COL_NEGATIVE.
+  WRITE / |MESSAGE: { msg }| COLOR COL_NEGATIVE.
+  WRITE / |LINE: { lin }| COLOR COL_NEGATIVE.
+  WRITE / |WORD: { wrd }| COLOR COL_NEGATIVE.
+  RETURN.
+ENDIF.
+SKIP.
+
+*&---------------------------------------------------------------------*
+*& Inserting source code into the program
+*&---------------------------------------------------------------------*
+
+INSERT REPORT prog FROM code.
+
+IF sy-subrc = 0.
+  WRITE / |Program { prog } was overwritten.| COLOR COL_POSITIVE.
+  SKIP.
+
+  READ REPORT prog INTO code_copy.
+  IF sy-subrc = 0.
+    WRITE / |New code of the program { prog }:|.
+    SKIP.
+
+    SET BLANK LINES ON.
+    LOOP AT code_copy INTO DATA(wa).
+      WRITE / wa .
+    ENDLOOP.
+  ELSE.
+    WRITE / `An error occured with reading the program.` COLOR COL_NEGATIVE.
+  ENDIF.
+ELSE.
+  WRITE / `An error occured with inserting the source code into the program.` COLOR COL_NEGATIVE.
+ENDIF.
+```
+
+</details> 
+<br>
+ </td>
+</tr>
+
+</table>
+
+</details>  
+
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
 ## More Information
-- It is recommended that you also consult section [Dynamic Programming Techniques (F1 docu for standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abendynamic_prog_technique_gdl.htm) in the ABAP Keyword Documentation since it provides important aspects that should be considered when dealing with dynamic programming in general (e. g. security aspects or runtime error prevention).
-- There are even further dynamic programming techniques in the unrestricted ABAP language scope [Standard ABAP](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenstandard_abap_glosry.htm). Find more information in the ABAP Keyword Documentation for Standard ABAP: [Dynamic Program Development (F1 docu for Standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenabap_language_dynamic.htm).
+It is recommended that you consult the [Dynamic Programming Techniques (F1 docu for standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abendynamic_prog_technique_gdl.htm) section in the ABAP Keyword Documentation since it provides important aspects that should be considered when dealing with dynamic programming in general (e. g. security aspects or runtime error prevention).
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
