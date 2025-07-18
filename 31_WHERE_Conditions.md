@@ -10,7 +10,7 @@
 
 This cheat sheet focuses on `WHERE` conditions and explores various syntax options in ABAP statements that include `WHERE` for data filtering. This is relevant, for example, when retrieving data from a data source using ABAP SQL or when processing internal tables with ABAP statements. For all details and syntax options, refer to the [ABAP Keyword Documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABENABAP.html). Several aspects and code snippets in this cheat sheet are also available in other cheat sheets.
 
-> **💡 Note**<br>
+> [!NOTE]
 > - Most examples in the cheat sheet use internal tables as data sources for ABAP SQL `SELECT` statements to have self-contained examples. Use `SELECT` with internal tables as data sources only when SQL functionalities like joins exceed ABAP statements. For more details, refer to the [Internal Tables](01_Internal_Tables.md) cheat sheet.
 > - Some examples also use artifacts from the ABAP cheat sheet repository. To check out these examples, ensure you have imported the ABAP cheat sheet repository into your system.
 
@@ -626,7 +626,7 @@ SELECT id FROM @itab AS tab
 </table>
 
 
-> **💡 Note**<br>
+> [!NOTE]
 > - Some subqueries in the syntax variants must be scalar subqueries. This means that the subquery returns a single-column result set. The `SELECT` list of the subquery must only contain a single element.
 > - See [this topic](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABAPSQL_EXPR.html) in the ABAP Keyword Documentation what can be specified as operands on the left and right side. 
 > - The comparisons are done on the database, so there is no type conversions in ABAP beforehand. Note that platform-dependent conversion behavior may be applied. For SAP HANA Platform-related conversion rules, see [this topic](https://help.sap.com/docs/SAP_HANA_PLATFORM/4fe29514fd584807ac9f2a04f6754767/b4b0eec1968f41a099c828a4a6c8ca0f.html).
@@ -638,7 +638,7 @@ SELECT id FROM @itab AS tab
 
 To try the example out, create a demo class named `zcl_demo_abap` and paste the code into it. The example is not set up to display output in the console. Some results are included as comments for quick reference. After activation, you may want to set break points, choose *F9* in ADT to execute the class, and walk through the code to explore the effect of the statements. 
 
-> **💡 Note**<br>
+> [!NOTE]
 > - Many ABAP SQL `SELECT` statements in the example use an internal table as the data source to work with simple data.
 > - Some examples also use subqueries. In these cases, another internal table cannot currently serve as the data source in the subquery. Therefore, examples use demo database tables from the ABAP cheat repository. They are also used to demonstrate `IS [NOT] NULL`. As a prerequisite, you have imported the ABAP cheat sheet repository to run the example class.
 
@@ -1190,7 +1190,7 @@ ENDCLASS.
 
 ### Executable Example (Statements for Internal Tables) 
 
-> **💡 Note**  
+> [!NOTE] 
 > - The example snippets cover a selection and do not show all possible syntax variants, such as statements specifying table keys.
 > - The evaluation of the `WHERE` condition depends on the table category and table key. Find more information on optimizing the `WHERE` condition [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABENITAB_WHERE_OPTIMIZATION.html). These considerations are not relevant in the example snippets, as the focus is on syntax options.
 

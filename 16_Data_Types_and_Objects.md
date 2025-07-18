@@ -55,7 +55,7 @@ Data objects:
 - Are usually used in [ABAP statements](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_statement_glosry.htm) by specifying them in the [operand position](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenoperand_position_glosry.htm).
 
 
-> **💡 Note**<br>
+> [!NOTE]
 > There are several differentations that further distinguish and characterize data types and objects. See [here](#terms-related-to-data-types-and-objects-in-a-nutshell).
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
@@ -86,7 +86,7 @@ For an overview, see the [ABAP Type Hierarchy](https://help.sap.com/doc/abapdocu
   - Character-like type for [text strings](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentext_string_glosry.htm) (`string`)
   - Byte-like type for [byte strings](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbyte_string_glosry.htm) (`xstring`)
 
-> **💡 Note**<br>
+> [!NOTE]
 > - The data types `c`, `n`, `x`, and `p` are incomplete, i.e., [generic data types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abengeneric_data_type_glosry.htm), with respect to their length. The type definition syntax has a special addition for this (`LENGTH`). In addition, `p` is also generic with respect to the number of decimal places (`DECIMALS` addition). See more about generic types in the following sections.
 > - The other types can be considered as [complete data types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencomplete_data_type_glosry.htm). They don't need any additional syntax elements for the definition.
 > - The numeric data types `b` and `s` cannot be specified directly in ABAP programs for short integers. Alternative [built-in DDIC types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbuiltin_ddic_type_glosry.htm) are available.
@@ -107,7 +107,7 @@ For an overview, see the [ABAP Type Hierarchy](https://help.sap.com/doc/abapdocu
    - [BDEF derived types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_derived_type_glosry.htm): RAP-specific structured and table types. The typical syntax elements are `... TYPE STRUCTURE FOR ...` and `... TYPE TABLE FOR ...`. More information can be found [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrpm_derived_types.htm) and in the ABAP cheat sheet on ABAP EML.
 - A data object of a complex type can be accessed as a whole or by component. 
 
-> **💡 Note**<br>
+> [!NOTE]
 > Structured and table types are used in this cheat sheet as examples for complex types. For more information, see the ABAP Keyword Documentation and the ABAP cheat sheets for structures and internal tables.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
@@ -118,7 +118,7 @@ For an overview, see the [ABAP Type Hierarchy](https://help.sap.com/doc/abapdocu
 - A reference type must be defined either in the ABAP program or in the ABAP Dictionary. There are no built-in reference types in ABAP. 
 - The typical syntax element is `... REF TO ...`.
 
-> **💡 Note**<br>
+> [!NOTE]
 > There are [generic ABAP types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abengeneric_abap_type_glosry.htm). Generic data types are types that do not define all of the properties of a data object. They can only be used for the typing of [formal parameters](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenformal_parameter_glosry.htm) and [field symbols](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenfield_symbol_glosry.htm). See an example further down.
 The only generic types that can be used after `TYPE REF TO` are `data` for the generic typing of data references, and `object`, for the generic typing of object references.
 
@@ -321,7 +321,7 @@ TYPES tr_like_table_ref LIKE TABLE OF REF TO itab_str.
   - [Generic ABAP Types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbuilt_in_types_generic.htm)
   - [ABAP cheat sheet about dynamic programming](06_Dynamic_Programming.md) regarding field symbols and `ASSIGN` statements
 
-> **💡 Note**<br>
+> [!NOTE]
 > The `TYPE REF TO` addition types as a reference variable. A generic type cannot be specified after `REF TO`. A typing with `TYPE REF TO data` and `TYPE REF TO object` is considered as completely typing.
 
 
@@ -626,7 +626,7 @@ DATA struc_like_line LIKE LINE OF itab_ddic_tab.
 ```
 
 
-> **💡 Note**<br>
+> [!NOTE]
 > The above data objects are declared by assigning a dedicated name. These data objects can be addressed by that name. This is not true for [anonymous data objects](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenanonymous_data_object_glosry.htm), which can only be addressed through reference variables. This is covered [below](#assigning-references-to-data-reference-variables).
 
 
@@ -664,7 +664,7 @@ DATA dref_tab_str LIKE TABLE OF REF TO do_some_string.
 
 An assignment passes the contents of a source to a target data object.
 
-> **💡 Note**<br>
+> [!NOTE]
 > - There are conversion rules when assigning a source to a target data object that have different types. For more information, see the topic [Assignment and Conversion Rules](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconversion_rules.htm) in the ABAP Keyword Documentation, especially for complex types, since elementary types are usually demonstrated in the cheat sheet.
 > - There are many ways to assigning values to data objects in ABAP. They occur in the context of various ABAP statements. Here, assignments with the assignment operator `=` are mostly used.
 > - In older ABAP code, you may see `MOVE ... TO ...` statements for value assignments. These statements are obsolete. They are not to be confused with `MOVE-CORRESPONDING` statements for complex types. These are not obsolete.
@@ -1489,7 +1489,7 @@ ASSERT len = 27.
 
 An [inline declaration](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abeninline_declaration_glosry.htm) is made using the declaration operator [`DATA`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendata_inline.htm). It can be specified in any designated [declaration position](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendeclaration_position_glosry.htm). The result of the declaration is used in the current operand position, is  statically visible from the current position, and is valid in the current context.
 
-> **💡 Note**<br>
+> [!NOTE]
 > - In an assignment, if the data object is declared inline on the left side, there are many options for what can be placed on the right side as shown in the previous section. The data type of the variable is determined by the operand type. It must be possible to derive this type completely statically.
 > - For more information about the possible declaration positions, see [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendeclaration_positions.htm).    
 > - You can use the [`FINAL`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenfinal_inline.htm) declaration operator to create [immutable variables](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenimmutable_variable_glosry.htm), as shown below.
@@ -2289,7 +2289,7 @@ The following cases must be distinguished with regard to the data type:
 
 See the conversion rules for the different data types here: [Assignment and Conversion Rules](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconversion_rules.htm)
 
-> **💡 Note**<br>
+> [!NOTE]
 > - The [operands](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenoperand_glosry.htm) of many ABAP statements are assigned internally according to the assignment rules. 
 > - Typically, assignements are made using the assignment operator `=`. If necessary and applicable, the type is converted implicitly. However, you can also use the conversion operator [`CONV`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconstructor_expression_conv.htm) to convert types explicitly.
 > - For [lossless assignments](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenlossless_assignment_glosry.htm), the lossless operator [`EXACT`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconstructor_expression_exact.htm) can be used to perform checks before the conversion is performed to ensure that only valid values are assigned and that no values are lost in assignments.
@@ -3301,7 +3301,7 @@ date = '202511'.
 
 [zcl_demo_abap_dtype_dobj](./src/zcl_demo_abap_dtype_dobj.clas.abap)
 
-> **💡 Note**<br>
+> [!NOTE]
 > - The executable example ...
 >   - covers, among others, the following topics:
 >     - Declaring data types

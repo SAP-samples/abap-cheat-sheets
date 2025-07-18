@@ -71,13 +71,17 @@ TYPES ty_struc_from_dbtab TYPE zdemo_abap_fli.
 TYPES ty_struc_from_cds_ve TYPE zdemo_abap_fli.
 ```
 
-> **💡 Note**<br>
+> [!NOTE] 
 > - This cheat sheet focuses on locally defined structures and structured types.
 > - Classic [DDIC views](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenddic_view_glosry.htm) are not available in [ABAP Cloud](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_cloud_glosry.htm). They can only be used as structured types in [classic ABAP](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenclassic_abap_glosry.htm).
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## Creating Structures and Structured Types Locally
 
 The typical language elements for creating structures and structured types locally in an ABAP program are [`BEGIN OF ... END OF ...`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abaptypes_struc.htm). They are used in combination with the [`TYPES`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abaptypes.htm) keyword to create a structured type and the [`DATA`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapdata.htm) keyword to create a structure.
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 
 ### Creating Structured Types
@@ -131,9 +135,11 @@ TYPES: BEGIN OF struc_type,
 ```
 
 
-> **💡 Note**<br>
+> [!NOTE] 
 > Outside of classes, you can also refer to DDIC types using `LIKE` (`... comp11 LIKE ddic_type, ...`). If you actually want to refer to an existing data object, but due to typing errors you inadvertently specify a name that exists as DDIC type, errors may be unavoidable.
 
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ### Creating Structures
 
@@ -163,9 +169,11 @@ DATA BEGIN OF struc.
 DATA END OF struc.
 ```
 
-> **💡 Note**<br>
+> [!NOTE]  
 >-  The keywords [`CLASS-DATA`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapclass-data.htm) and [`CONSTANTS`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapconstants.htm) can also be used to create structures. In principle, they represent special cases of the general statement shown above. See the ABAP Keyword Documentation for more information. 
 >- Structures can also be created [inline](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abeninline_declaration_glosry.htm) using [`DATA(...)`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendata_inline.htm) or [`FINAL(...)`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenfinal_inline.htm), as shown below.
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ### Creating Structures Using Existing Structured Types
 
@@ -195,6 +203,7 @@ DATA: struc_6 LIKE struc_1,
       struc_8 TYPE LINE OF some_itab_type.
 ```
 
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ### Creating Structures by Inline Declaration 
 
@@ -401,7 +410,7 @@ that is, it refers to another structure. The following example has multiple subs
           END OF address.
     ```
 
-> **💡 Note**<br>
+> [!NOTE]  
 >- The data types of DDIC types are all flat (not nested) structures. Exception: Components of type `string` can be contained.
 >- [Work areas](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenwork_area_glosry.htm) of ABAP SQL statements cannot contain any deep components other than strings among others.
 >- Especially for assignments and comparisons of deep structures, the compatibility of the source and target structure must be taken into account.
@@ -458,7 +467,7 @@ Nested components can be addressed using chaining:
 ... address_n-name-title ...
 ```
 
-> **💡 Note**<br>
+> [!NOTE]  
 > There are syntax options for dynamically accessing structure components. See the [Dynamic Porgramming](06_Dynamic_Programming.md) cheat sheet.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
@@ -687,7 +696,7 @@ and the [`CORRESPONDING`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/e
 - The syntax also works for structures of the same type.
 - Also note the special [conversion](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconversion_struc.htm) and [comparison](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenlogexp_rules_operands_struc.htm) rules for structures in this context.
 
-> **💡 Note**<br>
+> [!NOTE]  
 >- The [`CL_ABAP_CORRESPONDING`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencl_abap_corresponding.htm) system class is available for making assignments. See the ABAP Keyword Documentation for the details.
 >- The `INTO` clause of ABAP SQL statements has the `CORRESPONDING` addition. There, the following basic rule applies, which affects the value assignment: Without the `CORRESPONDING ...` addition, column names do not matter, only the position. With the `CORRESPONDING ...` addition, the position of the columns does not matter, only the name. See examples in the ABAP SQL cheat sheet.
 
@@ -1079,7 +1088,7 @@ are used in the context of local structures.
 - `INCLUDE TYPE` can be used to include a structured type. 
 - You can use `INCLUDE STRUCTURE` to include a structure.
 
-> **💡 Note**<br>
+> [!NOTE]  
 > - They are not additions of `... BEGIN OF ... END OF ...` but individual ABAP statements.
 > - If you use a chained statement with a colon to declare the structure, the inclusion of other structures with these statements interrupts the chained statement, that is, the components of the included structures are included as direct components of the [superstructure](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensuperstructure_glosry.htm "Glossary Entry").
 >- By using the optional `AS` addition and specifying a name, the included components can be addressed by this common name as if they were actually components of a substructure.
@@ -1666,7 +1675,7 @@ ENDCLASS.
 ## Executable Example
 [zcl_demo_abap_structures](./src/zcl_demo_abap_structures.clas.abap)
 
-> **💡 Note**<br>
+> [!NOTE]  
 > - The executable example covers the following topics, among others:
 >     - Creating structures and structured types
 >     - Variants of structures

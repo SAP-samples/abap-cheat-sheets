@@ -22,7 +22,7 @@
 
 This cheat sheet contains basic information about [unit testing](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenunit_test_glosry.htm) in ABAP.
 
-> **💡 Note**<br>
+> [!NOTE]
 > - This cheat sheet focuses on testing methods. 
 > - See the [More Information](#more-information) section for links to more in-depth information.
 > - The executable examples are **not** suitable role models for ABAP unit tests. They are intended to give you a rough idea. You should always work out your own solution for each individual case.
@@ -49,7 +49,7 @@ This cheat sheet contains basic information about [unit testing](https://help.sa
 - Create test classes and methods
 - Run unit tests
 
-> **💡 Note**<br>
+> [!NOTE]
 > In some examples, the code does not have any dependent-on components. Therefore, the considerations about dependency isolation, test doubles, and their injection into the code are skipped.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
@@ -85,7 +85,7 @@ CLASS ltc_test_class IMPLEMENTATION.
 ENDCLASS.  
 ```
 
-> **💡 Note**<br>
+> [!NOTE]
 > - `FOR TESTING` can be used for multiple purposes:
 >   - Creating a test class containing test methods
 >   - Creating a test double
@@ -423,7 +423,7 @@ CLASS ltc_test_class IMPLEMENTATION.
 ENDCLASS.  
 ```
 
-> **💡 Note**<br>
+> [!NOTE]
 > You can also specify helper methods, for example, for recurring tasks such as the assertions.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
@@ -447,7 +447,7 @@ There are multiple ways to implement test doubles manually:
   - You can create your own local interface, adapt your production code accordingly, and implement interface methods.  
 - If the DOC is a method in a class that allows inheritance (i.e. it is not defined as `FINAL`), you can inherit from the class and redefine methods for which you need a test double. 
 
-> **💡 Note**<br>
+> [!NOTE]
 > See information and an example about frameworks such as the [ABAP OO Test Double Framework](https://help.sap.com/docs/ABAP_PLATFORM_NEW/c238d694b825421f940829321ffa326a/804c251e9c19426cadd1395978d3f17b.html?locale=en-US) below that support you with creating the test doubles.
 
 ### Injecting Test Doubles
@@ -600,7 +600,7 @@ For more information about evaluating ABAP unit test results, see [here](https:/
   - The example class is supported by two additional classes: [zcl_demo_abap_unit_dataprov](./src/zcl_demo_abap_unit_dataprov.clas.abap) (includes dependent-on-components that are replaced by test doubles when running ABAP Unit tests) and [ztcl_demo_abap_unit_tdf_testcl](./src/ztcl_demo_abap_unit_tdf_testcl.clas.abap) (includes the test class for testing class `zcl_demo_abap_unit_tdf`; the local test class includes the `"! @testing ...` syntax).
 
 
-> **💡 Note**<br>
+> [!NOTE]
 > - The executable examples contain comments in the code for more information.
 > - The examples are designed to display output in the console when they are run using `F9`. However, the focus is on ABAP Unit tests. Choose `Ctrl/Cmd + Shift + F10` to run the unit tests.
 > - The example classes are intentionally simplified and nonsemantic, designed to highlight basic unit tests and explore framework classes and methods. 

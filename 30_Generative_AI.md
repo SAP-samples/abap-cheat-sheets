@@ -30,7 +30,7 @@ This ABAP cheat sheet provides references to detailed information on *Generative
 - This section explores released ABAP classes within the ABAP AI SDK for interacting with large language models (LLMs) in custom implementations.
 - Find more information in [Developing Your Own AI-Enabled Applications](https://help.sap.com/docs/ABAP_AI/c7f5ef43ab274d078baf22f995fd2161/27c5d27b480043f0a9fd8e46ae8275a2.html?locale=en-US).
 
-> **💡 Note**<br>
+> [!NOTE]
 > - The ABAP AI SDK is integrated with the *Intelligent Scenario Lifecycle Management (ISLM)*. Before using the ABAP AI SDK, administrative tasks outlined in the [documentation](https://help.sap.com/docs/ABAP_AI/c7f5ef43ab274d078baf22f995fd2161/339bd7a66c8545159cec357ce7f183d4.html?locale=en-US) have to be performed.
 > - As a prerequisite to using the ABAP AI SDK, you have to create intelligent scenarios (ABAP repository objects containing various features to enable, for example, the instantiation of the completion API) and intelligent scenario models (defining, for example, which LLM is used).
 > - The code snippets use the intelligent scenario name `ZDEMO_ABAP_INT_SCEN`. Assume that an example intelligent scenario model with the name `ZDEMO_ABAP_INT_SCEN_MODEL` exists, which includes a prompt template ID named `ZDEMO_PROMPT_TEMPLATE`. 

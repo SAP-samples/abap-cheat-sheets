@@ -59,7 +59,7 @@
 
 This ABAP cheat sheet provides an overview on selected syntax options and concepts related to ABAP object orientation.
 
-> **💡 Note**<br>
+> [!NOTE] 
 > - The cheat sheet is supported by code snippets and an executable example. They are **not** suitable as role models for object-oriented design. Their primary focus is on the syntax and functionality. 
 > - For more details, refer to the respective topics in the ABAP Keyword Documentation. Find an overview in the topic [ABAP Objects - Overview](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_objects_oview.htm).
 > - The [executable examples](#executable-examples) reflect several points and code snippets covered in the cheat sheet.
@@ -125,7 +125,7 @@ classes</a></td>
 </tr>
 </table>
 
-> **💡 Note**<br>
+> [!NOTE] 
 > - If a class is only used in one ABAP program, creating a local class is enough. However, if you choose to create a global class, you must bear in mind that such a class can be used everywhere. Consider the impact on the users of the global class when you change, for example, the visibility section of a component or you delete it.
 > - Apart from ADT, global classes can also be created in the ABAP Workbench (`SE80`) or with transaction `SE24` in [classic ABAP](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenclassic_abap_glosry.htm).
 
@@ -622,7 +622,7 @@ kinds of components are to be distinguished when, for example, looking at declar
     static attributes can be accessed by both using an object reference variable and using the class name without a prior creation of an instance.
 
 
-> **💡 Note**<br>
+> [!NOTE] 
 > - You can declare constant data objects that should not be
 changed using
 [`CONSTANTS`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapconstants.htm)
@@ -784,7 +784,7 @@ In the simplest form, methods can have no parameter at all. Apart from that, met
 |`RAISING` | Used to declare the [class-based exceptions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenclass_based_exception_glosry.htm "Glossary Entry") that can be propagated from the method to the caller. It can also be specified with the addition `RESUMABLE` for [resumable exceptions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenresumable_exception_glosry.htm). Find more information in the [Exceptions and Runtime Errors](27_Exceptions.md) cheat sheet. |
 
 
-> **💡 Note**<br>
+> [!NOTE] 
 > - It is advisable to avoid specifying multiple different output parameters (exporting, returning, changing) in a signature to reduce complexity. 
 > - Find more information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapmethods_general.htm).
 > - You may find the addition `EXCEPTIONS` especially in definitions of older classes. They are for non-class-based exceptions. This addition should not be used in ABAP for Cloud Development. See the section [Class-Based Exceptions](#class-based-exceptions), and the section [Classic Exceptions](27_Exceptions.md#classic-exceptions) in the [Exceptions and Runtime Errors](27_Exceptions.md) cheat sheet.
@@ -871,7 +871,7 @@ Syntax for [completely](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-
 - `LIKE LINE OF dobj`
 - `LIKE REF TO dobj`
 
-> **💡 Note**<br>
+> [!NOTE] 
 > - `complete_type`: Stands for a non-generic built-in ABAP, ABAP DDIC, ABAP CDS, a public data type from a global class or interface, or a local type declared with `TYPES`
 > - `REF TO` types as a reference variable. A generic type cannot be specified after `REF TO`. A typing with `TYPE REF TO data` and `TYPE REF TO object` is considered as completely typing a formal parameter.
 > - Enumerated types can also be used to type the formal parameter.
@@ -1602,7 +1602,7 @@ statements to explicitly clear a reference variable.
 CLEAR ref.
 ```
 
-> **💡 Note**<br>
+> [!NOTE] 
 > Objects use up space in the memory and should therefore be
 cleared if they are no longer needed. However, the [garbage collector](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abengarbage_collector_glosry.htm "Glossary Entry") is called periodically and automatically by the [ABAP runtime framework](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_runtime_frmwk_glosry.htm "Glossary Entry") and clears all objects without any reference.
 
@@ -3785,7 +3785,7 @@ Notes on the output:
 
 The table below includes selected syntax related to inheritance in class and method declarations. It also includes additions related to instantiation.  
 
-> **💡 Note**<br>
+> [!NOTE] 
 > - Some of the syntax options have already been mentioned previously. This is to summarize. 
 > - The code examples show local classes and interfaces declared, for example, in the [CCIMP include](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenccimp_glosry.htm) of a class pool. 
 > - The snippets provided do not represent all possible syntax combinations. For the complete picture, refer to the ABAP Keyword Documentation. Additional syntax options are available in the context of friendship (`GLOBAL FRIENDS/FRIENDS`), testing (`FOR TESTING`), [RAP](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenarap_glosry.htm) (`FOR BEHAVIOR OF`; to declare [ABAP behavior pools](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbehavior_pool_glosry.htm)), and more.
@@ -4658,7 +4658,7 @@ ENDCLASS.
 
 ### Excursion: Inheritance Example
 
-> **💡 Note**<br>
+> [!NOTE] 
 > This example is also included in the ABAP cheat sheet repository: [zcl_demo_abap_oo_inheritance_1](./src/zcl_demo_abap_oo_inheritance_1.clas.abap)
 
 Expand the following collapsible section for example classes. The example classes explore inheritance and demonstrate a selection of the inheritance-related syntax described above. The inheritance tree consists of four example classes. The base class includes the implementation of the classrun interface. The example is designed to output information to the console. So, you can execute this class using F9 in ADT.
@@ -5326,7 +5326,7 @@ Note the concept of static and dynamic type in this context:
 - Similarly, the dynamic type also defines the class of an object which the reference variable points to. However, the dynamic type is determined at runtime, i. e. the class of an object which the reference variable points to can change.
 - Relevant for? This differentiation enters the picture in polymorphism when a reference variable typed with reference to a subclass can always be assigned to reference variables typed with reference to one of its superclasses or their interfaces. That's what is called [upcast](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenup_cast_glosry.htm "Glossary Entry") (or widening cast). Or the assignment is done the other way round. That's what is called [downcast](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendown_cast_glosry.htm "Glossary Entry") (or narrowing cast).
 
-> **✔️ Hints**<br>
+> [!TIP]
 > - The following basic rule applies: The static type is always more general than or the same as the dynamic type. The other way round: The dynamic type is always more special than or equal to the static type.
 >- That means:
 >   - If the static type is a class, the dynamic type must be the same class or one of its subclasses.
@@ -6293,7 +6293,7 @@ ENDCLASS.
 
 ### Additions Related to Interface Implementations
 
-> **💡 Note**<br>
+> [!NOTE]  
 > The code examples show local classes and interfaces declared, for example, in the [CCIMP include](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenccimp_glosry.htm) of a class pool. 
 
 <table>
@@ -7439,7 +7439,7 @@ SET HANDLER handler3.
 - In object-oriented programming, numerous design patterns enhance modularity, scalability, reusability, and more. 
 - Here, a selection of design patterns is covered, using simplified, non-semantic examples to reduce complexity and give a rough idea.
 
-> **💡 Note**<br>
+> [!NOTE]  
 > - The examples neither represent best practices nor role models. They only aim to experiment with the patterns in simplified contexts and convey the basic concepts. 
 > - More design patterns exist beyond those covered here. Different implementations, combinations of patterns and class setup strategies may apply. 
 > - Most examples are structured for easy exploration using simple, self-contained ABAP classes (i.e. only 1 class pool including local classes instead of multiple global classes) as follows:
@@ -11526,6 +11526,6 @@ in the ABAP Keyword Documentation.
 - [zcl_demo_abap_objects_misc](./src/zcl_demo_abap_objects_misc.clas.abap): Additional syntax examples  
 - [zcl_demo_abap_oo_inheritance_1](./src/zcl_demo_abap_oo_inheritance_1.clas.abap): Focuses on inheritance; the inheritance tree consists of 4 example classes 
 
-> **💡 Note**<br>
+> [!NOTE]  
 > - The steps to import and run the code are outlined [here](README.md#-getting-started-with-the-examples).
 > - [Disclaimer](./README.md#%EF%B8%8F-disclaimer)

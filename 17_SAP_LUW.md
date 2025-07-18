@@ -15,7 +15,7 @@
 
 ## Introduction
 
-> **💡 Note**<br>
+> [!NOTE]
 >  The concept is relevant to both ABAP Cloud and classic ABAP, but some of the statements covered in the cheat sheet and the executable example are only relevant to [classic ABAP](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenclassic_abap_glosry.htm).
 
 This cheat sheet provides a high-level overview of the [SAP LUW](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abensap_luw_glosry.htm) concept that deals with data consistency with a focus on SAP LUW-related statements, supported by an executable example to check the syntax in action.
@@ -29,7 +29,7 @@ Consider the following example of transactional consistency:
 - This transaction may include other related tasks. Data may be loaded into a buffer, processed there, and become inconsistent during this time. It may also take a while for the whole process to be completed.
 - However, at the end of the transaction, all data must be in a consistent state so that the database can be updated accordingly. Or, if errors occur during the transaction, it must be ensured that all changes can be reversed. It must not happen that money is credited to account B without also updating the totals of account A. In such a case, the previous consistent state must be restored.
 
-> **💡 Note**<br>
+> [!NOTE]
 > - This cheat sheet focuses on [classic ABAP](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenclassic_abap_glosry.htm). Hence, the links in this cheat sheet open topics in the ABAP Keyword Documentation for [Standard ABAP](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenstandard_abap_glosry.htm).
 > - The SAP LUW concept is also relevant to ABAP Cloud. The [ABAP RESTful Application Programming Model (RAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenarap_glosry.htm) is the transactional programming model for [ABAP Cloud](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_cloud_glosry.htm). It comes with a well-defined transactional model and follows the rules of the SAP LUW. Find out more in this [blog](https://blogs.sap.com/2022/12/05/the-sap-luw-in-abap-cloud/).
 
@@ -189,7 +189,7 @@ The following bundling techniques are available for classic ABAP. This means tha
     "COMMIT WORK AND WAIT.
     ```
 
-> **💡 Note**<br>
+> [!NOTE]
 > If a runtime error occurs during the update, the update work process executes a database rollback, and notifies the user whose program created the entries.
 
 **Using [remote-enabled function modules](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenremote_enabled_fm_glosry.htm)**
@@ -233,7 +233,7 @@ The statements to end an SAP LUW have already been mentioned above: [`COMMIT WOR
   - causes all changes within an SAP LUW to be undone, that is, all previous registrations for the current SAP LUW are removed.
   - triggers a database rollback on all currently open database connections, which also terminates the current database LUW. 
 
-> **💡 Note**<br>
+> [!NOTE]
 > Notes on database connections:
 > - The [database interface](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abendatabase_interface_glosry.htm) uses the [standard connection](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenstandard_db_connection_glosry.htm) of the current work process to access the [standard database](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenstandard_db_glosry.htm) by default.
 > - Optionally, database accesses can also be made by using [secondary connections](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abensecondary_db_connection_glosry.htm) to [secondary databases](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abensecondary_db_glosry.htm) or by using [service connections](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenservice_connection_glosry.htm) to the standard database. The secondary connections are usually used by technical components. For example, they are used for caches, traces, logs, and so on.
@@ -272,7 +272,7 @@ The following concepts are related to the SAP LUW to ensure transactional consis
   - [SAP Locks](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abensap_lock.htm)  
   - Note the information on the `CL_ABAP_LOCK_OBJECT_FACTORY` class that is related to this context [here](https://help.sap.com/docs/sap-btp-abap-environment/abap-environment/lock-objects). 
 
-> **💡 Note**<br>
+> [!NOTE]
 > For more information about related topics in RAP, see the sections [Authorization Control](https://help.sap.com/docs/SAP_S4HANA_CLOUD/e5522a8a7b174979913c99268bc03f1a/375a8124b22948688ac1c55297868d06.html) and [Concurrency Control](https://help.sap.com/docs/SAP_S4HANA_CLOUD/e5522a8a7b174979913c99268bc03f1a/d315c13677d94a6891beb3418e3e02ed.html) in the *Development guide for the ABAP RESTful Application Programming Model*.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
@@ -377,7 +377,7 @@ After the import of the repository, proceed as follows:
 - Enter `zdemo_abap_sap_luw` and open the program. 
 - Run the program by choosing `F8`.
 
-> **💡 Note**<br>
+> [!NOTE]
 > - The examples in the *main* branch of the ABAP cheat sheet repository are designed to be imported into the SAP BTP ABAP Environment. For Standard ABAP, you can find examples (such as `zdemo_abap_sap_luw`) in the other branches of the repository. 
 > - The executable example ...
 >   - demonstrates the SAP LUW using classic dynpros to provide a self-contained and simple example that highlights the considerations regarding implicit database commits, without putting the spotlight on dynpros. Note that classic dynpros are outdated for application programs. New developments should use web-based UIs, such as SAP Fiori UIs. 

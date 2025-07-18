@@ -61,7 +61,7 @@ The options include ABAP statements (e. g. [`FIND`](https://help.sap.com/doc/aba
 and built-in [string functions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenstring_function_glosry.htm "Glossary Entry")
 (e. g. [`strlen`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenlength_functions.htm)).
 
-> **💡 Note**<br>
+> [!NOTE]  
 >-  Compared to statements, expressions and string functions can help make your ABAP code more
     concise and straightforward. For example, you can perform string operations directly in [operand
     position](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenoperand_position_glosry.htm "Glossary Entry"),
@@ -262,7 +262,7 @@ within a pair of delimiters (`|...|`) if these expressions can be converted to `
 - To embed expressions, you enclose them in curly brackets: `{ ... }`.
 - Among the expressions that can be specified in the curly brackets are data objects and [functional method calls](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenfunctional_method_call_glosry.htm) that have a [return value](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenreturn_value_glosry.htm). The expression result must be convertible to type `string`.
 
-> **💡 Note**<br>
+> [!NOTE]  
 > - String templates form a [string
 expression](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenstring_expression_glosry.htm "Glossary Entry")
 that is compiled at runtime. Therefore, a string template that contains only
@@ -1877,7 +1877,8 @@ You can perform complex search and replace operations based on
 patterns. [PCRE regular
 expressions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenpcre_regex_glosry.htm "Glossary Entry")
 help you process strings effectively.
-> **💡 Note**<br>
+
+> [!NOTE]  
 > Do not use [POSIX
 regular
 expressions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenposix_regex_glosry.htm "Glossary Entry")
@@ -2804,7 +2805,7 @@ ENDCLASS.
 
 [zcl_demo_abap_string_proc](./src/zcl_demo_abap_string_proc.clas.abap)
 
-> **💡 Note**<br>
+> [!NOTE]  
 > - The executable example ...
 >   - covers the following topics:
 >     - Creating strings and assigning values

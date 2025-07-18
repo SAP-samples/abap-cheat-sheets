@@ -71,7 +71,7 @@ in the ABAP Keyword Documentation.
     executed only on the (SAP HANA) database and not in AS ABAP, i. e.
     method calls are sent to the database procedure or function.
 
-> **💡 Note**<br>
+> [!NOTE]
 >- The use of AMDP is not recommended if the same task can be
         achieved using [ABAP
         SQL](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_sql_glosry.htm "Glossary Entry").
@@ -367,7 +367,7 @@ Among the differences are:
 - The return value and the input parameters must have an elementary type.
 - The AMDP scalar function can be called like a regular method in ABAP.
 
-> **💡 Note**<br>
+> [!NOTE]
 > The executable example in the *AMDP Scalar Functions for CDS Scalar Functions* section includes *AMDP scalar functions for AMDP methods*.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
@@ -383,7 +383,7 @@ Among the differences are:
   - CDS view entities; different positions such as in the element list, in an `ON` or `WHERE` condition and others, are possible
   - ABAP SQL (possible for [SQL-based scalar functions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_sql_scalar_glosry.htm))
 
-> **💡 Note**<br>
+> [!NOTE]
 > - CDS scalar functions are available as [analytical scalar functions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_ana_scalar_glosry.htm) and [SQL-based scalar functions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_sql_scalar_glosry.htm), i.e. they are either evalauted by an SQL environment or an analytical runtime environment.
 > - The example below focuses on SQL-based scalar functions. Analytical scalar functions are predelivered [system functions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_system_func_glosry.htm) and cannot be user-defined. Find more information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABENCDS_ANA_SCALAR_FUNCTION.html).
 
@@ -449,7 +449,7 @@ define scalar function zdemo_abap_scalar_func
 
 The following example includes the creation of the three required artifacts (CDS scalar function, CDS scalar function implementation reference, AMDP class including an *AMDP scalar function for CDS scalar function*, as well as an *AMDP scalar function for AMDP method*). The AMDP class implements the `if_oo_adt_classrun` interface, making the class executable. The simplified example illustrates AMDP scalar functions at a high level. After activating all artifacts, choose *F9* in ADT to run the class. The example is set up to display output in the console. 
 
-> **💡 Note**<br>
+> [!NOTE]
 > As a prerequisite for exploring the example, you have imported the ABAP cheat sheet repository as the example uses some of its artifacts.
 
 <details>
@@ -489,7 +489,7 @@ define scalar function zdemo_abap_scalar_func
 - Insert the code below into the class. 
 - After activation, choose *F9* in ADT to run the class. The example is set up to display output in the console.
 
-> **💡 Note**<br>
+> [!NOTE]
 > - The demo class includes multiple AMDP methods demonstrating several aspects regarding AMDP scalar functions: 
 >   - `get_max_fltime` demonstrates an *AMDP scalar function for AMDP method*. It returns the longest flight time among all flights of a certain carrier.
 >   - `select_entries_w_max_fltime` demonstrates an AMDP procedure that includes calling the `get_max_fltime` AMDP scalar function. The effect is the same as shown with an ABAP SQL `SELECT` statement using `get_max_fltime`.
@@ -766,7 +766,7 @@ define view entity zdemo_abap_cds_ve_w_scalar
 
 ### Notes on Client Handling and Client Safety
 
-> **🌰 In brief**<br>
+> [!IMPORTANT]  
 > - ABAP SQL features implicit client handling.
 > - You cannot disable this feature in ABAP for Cloud Development, as you can in [Standard ABAP](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenstandard_abap_glosry.htm). You can only access your own client in ABAP for Cloud Development.
 > - Native SQL, unlike ABAP SQL, does not feature implicit client handling. AMDP, which uses Native SQL, can be used in ABAP for Cloud Development. It is essential to ensure AMDP accesses only client-safe repository objects, meaning it retrieves data solely from client-dependent sources providing data of one client, i.e. the current client. Cross-client access must be avoided. Client-independent data sources are implicitly client-safe.
@@ -832,7 +832,7 @@ To ensure client safety, the following prerequisites must be met.
     - Must not call built-in HANA functions that include a client ID parameter.
     - The client parameter from AMDP method signatures should be removed.  If removal is not possible, for example, due to compatibility reasons, ensure the client is excluded from the SQLScript code to prevent interference from external callers.
 
-> **💡 Note**<br>
+> [!NOTE]
 > - Using pre-delivered repository objects in ABAP for Cloud Development:
 >   - Use only pre-delivered AMDP methods with a [C4 contract](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABENC4_CONTRACT_GLOSRY.html).
 >   - Create and use your own wrapper CDS view entities for pre-delivered CDS view entities with a [C1 contract](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABENC1_CONTRACT_GLOSRY.html).
@@ -846,7 +846,7 @@ To ensure client safety, the following prerequisites must be met.
 
 - AMDP in ABAP for Cloud Development: [ABAP Keyword Documentation (ABAP for Cloud Development)](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenamdp.htm)
 - AMDP in Standard ABAP: [ABAP Keyword Documentation (Standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenamdp.htm)
-    > **✔️ Hint**<br>
+    > [!TIP]
     > Checking if AMDP is supported in classic ABAP: 
     >    ```abap
     >    IF NOT cl_abap_dbfeatures=>use_features(
@@ -864,7 +864,7 @@ To ensure client safety, the following prerequisites must be met.
 
 [zcl_demo_abap_amdp](./src/zcl_demo_abap_amdp.clas.abap)
 
-> **💡 Note**<br>
+> [!NOTE]
 > - The executable example covers the following topics:
 >   - AMDP procedures, calling AMDP procedures from SQLScript
 >   - AMDP table functions for AMDP methods

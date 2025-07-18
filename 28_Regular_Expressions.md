@@ -46,7 +46,7 @@ Regular expressions
     - PCRE regular expressions perform better 
     - A syntax warning for POSIX can be hidden with the pragma `##regex_posix`
 
-> **💡 Note**<br>
+> [!NOTE]
 > - You can perform complex searches using regular expressions. For simple pattern-based searches, refer to comparison operators (`CP`, `NP`) in the [String Processing](07_String_Processing.md) cheat sheets.
 > - The cheat sheet and examples focus on PCRE regular expressions. For other syntax types, find more information and links in the [ABAP Keyword Documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABENREGEX_SYNTAX.html). 
 > - In a system supporting [classic ABAP](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenclassic_abap_glosry.htm), you can check out the `demo_regex_toy` program for experimenting with regular expressions in ABAP.
@@ -55,7 +55,7 @@ Regular expressions
 
 ## Excursion: Common Regular Expressions
 
-> **💡 Note**<br>  
+> [!NOTE]  
 > - The sections below provide an overview of common PCRE expressions with examples. This is not a comprehensive overview; only selected regular expressions are included.
 > - For a complete guide to PCRE syntax, refer to the [official documentation](https://perldoc.perl.org/perlre). Note that ABAP-specific restrictions or modifications may apply to the standard syntax.
 > - The code snippets use `replace` functions to show the effects of PCRE regular expressions. Many examples use the `occ` parameter with the assignment `occ = 0` to replace all occurrences.
@@ -1450,7 +1450,7 @@ DATA(repl_result_not_extended) = matcher_not_extended->text.
 
 [zcl_demo_abap_regex](./src/zcl_demo_abap_regex.clas.abap)
 
-> **💡 Note**<br>
+> [!NOTE]
 > - The [executable example](./src/zcl_demo_abap_string_proc.clas.abap) of the [String Processing](07_String_Processing.md) cheat sheet also includes examples with regular expressions.
 > - The steps to import and run the code are outlined [here](README.md#-getting-started-with-the-examples).
 > - [Disclaimer](./README.md#%EF%B8%8F-disclaimer)

@@ -11,7 +11,7 @@ type. For example, a numeric data object can be assigned the result of a
 calculation:
 
 
-> **💡 Note**<br>
+> [!NOTE]
 > For checking out the code snippets in [ABAP Cloud](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_cloud_glosry.htm), you can use the interface `if_oo_adt_classrun` in a class by implementing the method `if_oo_adt_classrun~main`.
 
 ``` abap
@@ -169,7 +169,7 @@ exception occurs. The field symbols `<hex_text>` and
 fields `text` and `num` by casting them to a byte-like
 type.
 
-> **✔️ Hint**<br>
+> [!TIP]
 > For reasons of simplicity this sheet is restricted to named elementary
 variables. Note that in particular the same holds for
 [literals](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_literal_glosry.htm "Glossary Entry")

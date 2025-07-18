@@ -282,7 +282,7 @@ ABAP behavior implementation in an ABAP behavior pool (ABP)
 
 </table>
 
-> **💡 Note**<br>
+> [!NOTE]  
 > - Find more terms in the [RAP Glossary](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_glossary.htm) of the ABAP Keyword Documentation.
 > - There are more artifacts and concepts related to RAP that go way beyond the scope of this cheat sheet. For example, a RAP BO can be exposed as a [business service](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbusiness_service_glosry.htm "Glossary Entry") to be accessed from outside [AS ABAP](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenas_abap_sys_environ_glosry.htm "Glossary Entry") and consumed. A [RAP BO
 consumer](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_bo_consumer_glosry.htm "Glossary Entry")
@@ -773,7 +773,7 @@ These types are tailor-made for RAP purposes.
 As the name implies, the types are derived by the [ABAP runtime framework](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_runtime_frmwk_glosry.htm "Glossary Entry")
 from CDS entities and their behavior definition in the BDEF. With these special types, a type-safe access to RAP BOs is guaranteed.
 
-> **💡 Note**<br>
+> [!NOTE]  
 > - To explore BDEF derived types in your RAP BO, you can access the CCIMP include (*Local Types* tab in ADT) of your ABAP behavior pool, position the cursor on the methods, choose F2 and check the parameters typed with BDEF derived types. 
 > - As mentioned, CRUD operations are implicitly supported in managed scenarios (when specified in the BDEF). So, there will not be method declarations and implementations for CRUD operation methods. 
 
@@ -807,13 +807,13 @@ from CDS entities and their behavior definition in the BDEF. With these special 
   - Short form: For convenience, you can specify RAP BO entities such as the RAP BO root entity or other CDS entities of a CDS composition tree. Examples: `DATA d1 TYPE TABLE FOR CREATE zdemo_abap_rap_ro_m.` (root entity), `DATA d3 TYPE TABLE FOR UPDATE zdemo_abap_rap_ch_m.` (child entity). Note that most example codes in the cheat sheet and in the executable example use the short form.
   - Specifying associations defined in a BDEF preceded by `\`: For example, `DATA d4 TYPE TABLE FOR CREATE zdemo_abap_rap_ro_m\_child.`. The long form with `\\` followed by an entity name, `\`, and an association is also possible.
 
-> **💡 Note**<br>
+> [!NOTE]  
 > Certain types derived from the BDEF can only be specified and used within implementation classes, not beyond. These types include the following: `FOR CHANGE`, `FOR DETERMINATION`, `FOR VALIDATION`, `FOR ... FEATURES`, `FOR ... AUTHORIZATION`.
 
 
 BDEF derived type examples:
 
-> **💡 Note**<br>
+> [!NOTE]  
 > The demo BDEF `zdemo_abap_rap_ro_m` ...
 > - specifies the alias name `root` for the RAP BO root entity `zdemo_abap_rap_ro_m`.
 > - specifies the association `_child`.
@@ -1521,7 +1521,7 @@ UPDATE zdemo_abap_rapt1 FROM @cr_der_type
 DELETE zdemo_abap_rapt1 FROM @cr_der_type MAPPING FROM ENTITY.
 ```
 
-> **💡 Note**<br>
+> [!NOTE]  
 > More information and ABAP statements: [Type Mapping for RAP](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapeml_type_mapping.htm)
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
@@ -1553,7 +1553,7 @@ and [long
 form](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapmodify_entities_long.htm)
 of EML `MODIFY` statements.
 
-> **💡 Note**<br>
+> [!NOTE]
 > Unlike reading operations, modifying operations are not enabled by default. You must make the respective notations in the BDEF: 
 > ```
 > ...
@@ -1613,7 +1613,7 @@ MODIFY ENTITY root_ent
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-> **💡 Note**<br>
+> [!NOTE]
 > -   Addition [`FIELDS ( ... ) WITH`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapmodify_entity_entities_fields.htm):
     This field selection option specifies which fields are to be
     respected for the operation. The derived type, i. e. an internal
@@ -1681,7 +1681,7 @@ MODIFY ENTITIES OF root_ent
   REPORTED DATA(r2).
 ```
 
-> **💡 Note**<br>
+> [!NOTE]
 >-   The entity specified after `ENTITY` can be either the root
     entity itself or a child entity. If an alias is defined, the alias
     should be used.
@@ -2807,7 +2807,7 @@ The default ABAP statements for RAP are `COMMIT ENTITIES` (triggers the RAP save
 - `COMMIT ENTITIES` statements implicitly enforce local updates with `COMMIT WORK`, or `COMMIT WORK AND WAIT` if the local update fails. Therefore, the update is either a local update or a synchronous update, but never an asynchronous update. When `COMMIT WORK` is used, the RAP BO consumer can choose between synchronous and asynchronous update for RAP BO entities. 
 - `ROLLBACK ENTITIES` implicitly triggers `ROLLBACK WORK`. Both have the same effect when used in RAP. Therefore, they are interchangeable. 
 
-> **💡 Note**<br>
+> [!NOTE]
 > Special Case: Failures in the Late Save Phase
 > - In exceptional cases, for example, when [BAPIs](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenbapi_glosry.htm) are called to save RAP BO instances in the late save phase, it may happen that the basic rule that failures must not occur in the RAP late save phase and be detected in the RAP early save phase is violated. 
 > - In such cases, the base class `CL_ABAP_BEHAVIOR_SAVER_FAILED` can be used for the RAP saver class. 
@@ -2917,7 +2917,7 @@ This cheat sheet is supported by different executable examples demonstrating var
 - Demo RAP scenario ("RAP calculator") with a managed, draft-enabled RAP BO, late numbering [zcl_demo_abap_rap_draft_ln_m](./src/zcl_demo_abap_rap_draft_ln_m.clas.abap)
 - Demonstrating the local consumption of [RAP business events](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_entity_event_glosry.htm) in the context of a RAP demo scenario (managed RAP BO with managed [internal numbering](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_int_numbering_glosry.htm) and [additional save](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_add_save_glosry.htm)): [zcl_demo_abap_rap_m_as](./src/zcl_demo_abap_rap_m_as.clas.abap)
 
-> **💡 Note**<br>
+> [!NOTE]
 > - To reduce the complexity, the executable examples only focus on the technical side. ABAP classes play the role of a RAP BO consumer here.
 > - The examples do not represent real life scenarios and are not suitable as role models for proper RAP scenarios. They rather focus on the technical side by giving an idea how the communication and data exchange between a RAP BO consumer and RAP BO provider can work. Additionally, the examples show how the methods for non-standard RAP BO operations might be self-implemented in an ABAP behavior pool.
 > - Due to the simplification, the examples do not entirely meet all requirements of the [RAP BO contract](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenrap_bo_contract_glosry.htm) and do not represent semantic or best practice examples.

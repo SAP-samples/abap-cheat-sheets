@@ -70,7 +70,7 @@
     ABAP SQL. The considerations there are not relevant for this cheat sheet since
     the focus is on syntax options.
 
-> **💡 Note**<br>
+> [!NOTE]
 > - The syntax options for the `SELECT` statement are extensive. Make sure that you consult the ABAP Keyword Documentation for all available options. The cheat sheet and snippets demonstrate a selection.
 > - The code examples in the cheat sheet primarily use DDIC database tables for [CRUD operations](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencrud_glosry.htm). Note that there are also CDS artifacts that allow not only reading but also creating, updating, and deleting. See [this section](#crud-operations-using-cds-artifacts).
 
@@ -215,7 +215,7 @@ SELECT FROM source   "What data source to read from
 | `SELECT data_source~* ...` <br><br> `SELECT ... FIELDS data_source~* ...` | In this case, the name of the data source is followed by a tilde and the `*` character to specify all columns. Note that there are [special conditions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapselect_list.htm#!ABAP_VARIANT_1@1@) when using this variant. |
 | `SELECT col1 AS al1, col2 AS al2, col3 AS al3 ...` <br><br> `SELECT ... FIELDS col1 AS al1, col2 AS al2, col3 AS al3 ...` | Defining alias names for individual columns of the result set with [`AS`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapselect_list.htm); make sure that you use an alias name only once here. In the statement, the alias name can only be used after an `ORDER BY` clause; as shown further down, in some cases (e. g. when using SQL expressions) the specification of an alias name is required; setting an alias name for the data source is also possible (`SELECT FROM dbtab AS alias_name ...`). See the section on joins further down. |
 
-> **💡 Note**<br>
+> [!NOTE]
 > - You have plenty of options regarding the specification of the columns in the `SELECT` list, among them, the outlined direct specification of the column name. SQL expressions can be specified, too. See more details [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapselect_clause_col_spec.htm) and in the sections on SQL expressions further down.
 
 
@@ -917,7 +917,7 @@ The following example shows the ordering of the result set based on the
 content of the primary key of the [data source](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendata_source_glosry.htm "Glossary Entry").
 You can also order by any columns and by explicitly specifying the sort order. There are more ordering options, for example, by using SQL expressions. Find more information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abaporderby_clause.htm).
 
-> **💡 Note**<br>
+> [!NOTE]
 >- Not specifying `ORDER BY` means that the order of entries in the result set is undefined.
 >- If `ORDER BY` and `GROUP BY` clauses are used, all columns specified after `ORDER BY` must also be specified after `GROUP BY`.
 >- If aggregate functions are specified after `SELECT`, all columns that are specified after `ORDER BY` and that do not have an alias name for an aggregate function must also be specified after `SELECT` and after the `GROUP BY` clause which is required in this case, too.
@@ -1151,7 +1151,7 @@ SELECT carrid
 
 </table>
 
-> **💡 Note**<br>
+> [!NOTE]
 > - There are more join variants and syntax options available. See the ABAP Keyword Documentation on [joins](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapselect_join.htm)
 for more information.
 > - There a more syntax options and contexts for `UNION`, `INTERSECT`, and `EXCEPT`. Find more information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapunion.htm).
@@ -1198,7 +1198,7 @@ Setup of a statement with CTE:
     `ENDWITH.` (which fulfills the same task as
     `ENDSELECT.`).
 
-> **💡 Note**<br>
+> [!NOTE]
 >-   Each CTE must be used at least once, either in another CTE or in the
     main query. The main query must access at least one CTE.
 >-   The result set of a CTE never has a [client
@@ -1296,7 +1296,7 @@ operands](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?f
     [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensql_operands.htm).
 
 
-> **💡 Note**<br>
+> [!NOTE]
 > Questions about when to use what, what is possible in which contexts and positions, is beyond the scope of this cheat sheet. Check the details in the
 respective topics in the ABAP Keyword Documentation. Find a general overview of important operand positions in ABAP SQL [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensql_operand_positions_oview.htm). Due to the rich variety of options, the cheat sheet covers a selection.
 
@@ -1351,7 +1351,7 @@ SELECT FROM zdemo_abap_flsch
     [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapsql_expr.htm)
     and the subtopics there.
 
-> **💡 Note**<br>
+> [!NOTE]
 > You can [enclose SQL expressions in parentheses](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensql_exp_parentheses.htm).
 > ```abap
 > SELECT SINGLE
@@ -2326,7 +2326,7 @@ INTO @DATA(tab_w_uuid).
 
 ## Create, Update, and Delete Operations 
 
-> **💡 Note**<br>
+> [!NOTE]
 > - The following sections include code patterns. To explore various syntax options with an executable example, see section [Example: Exploring ABAP SQL Statements Changing Data in Database Tables](#example-exploring-abap-sql-statements-changing-data-in-database-tables) below.
 > - There are also CDS artifacts that allow not only reading but also creating, updating, and deleting. See [this section](#crud-operations-using-cds-artifacts).
 
@@ -3353,7 +3353,7 @@ SELECT SINGLE
 
 ### ABAP SQL and Client Handling
 
-> **🌰 In brief**<br>
+> [!IMPORTANT] 
 > - ABAP SQL features implicit [client handling](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenclient_handling_glosry.htm). 
 > - While you can disable this in classic ABAP, it is not an option in ABAP Cloud, where you are limited to accessing your own client. 
 > - Unlike ABAP SQL, there is no implicit client handling in Native SQL. AMDP, which uses Native SQL, is usable in ABAP Cloud, but it is crucial to ensure that AMDP only accesses client-safe repository objects, meaning it only accesses data from your own client. For this purpose, dedicated additions are provided.
@@ -3447,7 +3447,7 @@ There are [RAP](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index
 ## Executable Example
 [zcl_demo_abap_sql](./src/zcl_demo_abap_sql.clas.abap)
 
-> **💡 Note**<br>
+> [!NOTE] 
 > - The executable example covers the following topics, among others:
 >     - Reading from database tables using `SELECT`
 >     - Various additions to `SELECT` statements

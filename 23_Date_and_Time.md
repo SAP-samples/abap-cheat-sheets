@@ -60,7 +60,7 @@ The main data types for date, time, and time stamps in ABAP are as follows:
 | `utclong`  | 8 byte  | For storing a time stamp (i.e. a combined date/time specification). A time stamp field represents a unique time in UTC reference time (UTC: Coordinated Universal Time, which is the basis for representing worldwide time data).  | Internal 8-byte integer representation of a UTC time stamp exact to 100 nanoseconds, in ISO-8601 notation between 0001-01-01T00:00:00.0000000 and 9999-12-31T23:59:59.9999999  |  0 | Find more details, e.g. on the special initial value, [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenutclong.htm). | 
 
 
-> **💡 Note**<br>
+> [!NOTE]
 > - Regarding DDIC types: When saving dates and times in a database, it is recommended that you use the `datn` and `timn` types in your implementations. These types are optimized for their corresponding functions and expressions, offering an advantage over the older `dats` and `tims` types, which require conversion to actual date and time types. If you need UTC time stamps to be stored in the database, the `utclong` DDIC type is recommended.
 > - The [DDIC data elements](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendata_element_glosry.htm) `timestamp` and `timestampl` represent time stamps in [packed numbers](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenpacked_number_glosry.htm). They are [released](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenreleased_api_glosry.htm), and they are used in several ABAP statements and classes covered in the cheat sheet.
 >   - `timestamp`
@@ -95,7 +95,7 @@ DATA ts_long TYPE timestampl VALUE '20240101082802.1700020'.
 
 ## Retrieving the Time Zone
 
-> **💡 Note**<br>
+> [!NOTE]
 > Regarding time zones: 
 > - Find more information on time zones [here (F1 for standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abensystem_user_time_zones.htm). 
 > - In case of [SAP BTP ABAP Environments](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensap_btp_abap_env_glosry.htm), the time zone is set to UTC by default. Find more information about maintaining user-specific language and regional settings in the SAP Fiori Launchpad [here](https://help.sap.com/docs/btp/sap-fiori-launchpad-for-sap-btp-abap-environment/maintaining-your-language-and-regional-settings).
@@ -121,7 +121,7 @@ DATA(tz_w_xco_utc) = xco_cp_time=>time_zone->utc->value.
 
 ## Date
 
-> **💡 Note**<br>
+> [!NOTE]
 > - [AS ABAP](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenas_abap_glosry.htm) always implicitly references the Gregorian calendar. For output purposes, dates can be converted to country-specific calendars. 
 > - Regarding assignments of data objects with numeric data types and calculations: Valid values are converted to the number of days since 01.01.0001.  
 
@@ -1429,7 +1429,7 @@ tz_str = |{ utclong_current( ) TIMEZONE = 'EST' COUNTRY = 'US ' }|. "12/30/2024 
 
 ### Date and Time Functions in ABAP SQL and ABAP CDS
 
-> **💡 Note**<br>
+> [!NOTE]
 > - Date and time functions are available for both [ABAP SQL](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_sql_date_time_functions.htm) and [ABAP CDS](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_date_time_functions_v2.htm). They have the same names. See the [overview](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenddic_date_time_functions.htm) to find out which functions are available. The followig code snippet uses ABAP SQL.
 > - The following code snippets use [typed literals](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentyped_literal_glosry.htm) to have self-contained examples. For more information, refer to the [ABAP Keyword Documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_sql_typed_literals.htm) and the [Typed Literals in ABAP SQL](/16_Data_Types_and_Objects.md#typed-literals-in-abap-sql) section of the *Data Types and Data Objects* cheat sheet.
 
@@ -1541,7 +1541,7 @@ Find examples with classes for accessing calendar-related information in [this s
 ## Executable Example
 [zcl_demo_abap_date_time](./src/zcl_demo_abap_date_time.clas.abap)
 
-> **💡 Note**<br>
+> [!NOTE]
 > - The executable example covers the handling and processing of date, time, and time stamps. The snippets of this cheat sheet and more are included. 
 > - The steps to import and run the code are outlined [here](README.md#-getting-started-with-the-examples).
 > - [Disclaimer](./README.md#%EF%B8%8F-disclaimer)

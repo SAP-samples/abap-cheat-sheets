@@ -65,7 +65,7 @@
         appropriate type and result of the constructor expression in one
         go: ```DATA(strtable) = VALUE string_table( ( `a` ) ( `b` ) ( `c` ) ).``` or ```DATA(dec) = CONV decfloat34( '1.23' ).```.
 
-> **✔️ Hint**<br>
+> [!TIP]
 >-  The construction of a result, i. e. a target [data
 object](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendata_object_glosry.htm "Glossary Entry"),
 implies that the data object is initialized. However, for some
@@ -81,7 +81,7 @@ initialization can be avoided.
     [`VALUE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconstructor_expression_value.htm)
     operator construct a result in place based on a data type.
 -   This result can be structures or internal tables. It can also be initial values for any non-generic data types.   
-    > **💡 Note**<br>
+    > [!NOTE] 
     > Elementary data types and reference types cannot be
     explicitly specified for the construction of values here.
 -   Regarding the type specifications before and parameters within the
@@ -113,7 +113,7 @@ the use of `VALUE` expressions is handy, too, because you can create correspondi
 
 The following table illustrates a variety of syntax options and aspects regarding the `VALUE` operator. 
 
-> **💡 Note**<br>
+> [!NOTE] 
 > - The examples represent a selection. Check the documentation for all options. 
 > - Some of the additions and concepts mentioned here are also valid for other constructor expressions further down but not necessarily mentioned explicitly. See the details on the syntax
 options of the constructor operators in the ABAP Keyword Documentation.
@@ -916,7 +916,7 @@ struc2 = CORRESPONDING #(
 *1      a    hallo    2    d    30
 ```
 
-> **✔️ Hint**<br>
+> [!TIP]
 > `CORRESPONDING` operator versus
 [`MOVE-CORRESPONDING`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapmove-corresponding.htm) in the context of structures:
 Although the functionality is the same, note that, as the name implies,
@@ -2095,8 +2095,7 @@ ENDDO.
         looping across internal tables. New table lines are created in
         the iteration steps and inserted into a target table.
 -   The operand specified after `FOR` represents an iteration
-    variable, i. e. a [work
-    area](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenwork_area_glosry.htm "Glossary Entry")
+    variable, i. e. a [work area](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenwork_area_glosry.htm "Glossary Entry")
     that contains the data while looping across the table.
 -   This variable is only visible within the `FOR`
     expression, i. e. it cannot be used outside of the expression.
@@ -2109,6 +2108,8 @@ ENDDO.
     parenthesis.
 -   In contrast to `LOOP` statements, the sequential processing
     cannot be debugged.
+- Using `INDEX INTO n`, you can store the `sy-tabix` value for each loop iteration. The following variable is implicitly of type `i`. 
+- `LET` expressions following `FOR` are evaluated during each iteration of the loop.
 
 Examples:
 
@@ -2604,6 +2605,6 @@ DATA(it_reduced) = REDUCE string_table(
 
 [zcl_demo_abap_constructor_expr](./src/zcl_demo_abap_constructor_expr.clas.abap)
 
-> **💡 Note**<br>
+> [!NOTE] 
 > - The steps to import and run the code are outlined [here](README.md#-getting-started-with-the-examples).
 > - [Disclaimer](./README.md#%EF%B8%8F-disclaimer)

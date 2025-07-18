@@ -28,7 +28,7 @@ The functions can have one argument, which is a data object or an expression who
 
 Built-in functions are also available in ABAP SQL and ABAP CDS.
 
-> **💡 Note**<br>
+> [!NOTE]
 > - For more detailed information, refer to the topics linked in the [More Information](#more-information) section.
 > - Avoid naming your methods the same as built-in functions within classes. Otherwise, the methods will "[hide](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbuilt_in_functions_hiding.htm)" the built-in functions.
 > - The examples in the ABAP cheat sheet are not comprehensive in terms of functions covered, syntax options and parameters used. Always refer to the ABAP Keyword Documentation for more details.
@@ -36,7 +36,7 @@ Built-in functions are also available in ABAP SQL and ABAP CDS.
 
 ## Logical Functions 
 
-> **💡 Note**<br>
+> [!NOTE]
 > - Logical functions in ABAP return a [truth value](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentruth_value_glosry.htm), either true or false. They are primarily used in [logical expressions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenlogexp.htm), for example, in control statements like `IF ... ELSE ... ENDIF`, and other statements that involve conditions. 
 > - Note that ABAP does not have a Boolean data type for truth values, nor does it support [Boolean data objects](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenboolean_data_object_glosry.htm). Instead, the `xsdbool` function can be used to represent truth values in various situations where the `abap_bool` type from the `abap` type pool, i.e. the values `abap_true` ('X') and `abap_false` (''), is expected. 
 > - Many of the examples in this section utilize the `xsdbool` function to visualize the truth value, rather than using `IF` control structures, for example.
@@ -1243,7 +1243,7 @@ DATA(ts_diff2) = utclong_diff( high = ts5
 
 ## Table Functions 
 
-> **💡 Note**<br>
+> [!NOTE]
 > See the `line_exists` function in the [Logical Functions](#logical-functions) section.
 
 <table>
@@ -1341,7 +1341,7 @@ DATA(line_index7) = line_index( itab_str[ table_line = `zzz` ] ).
 
 ## Built-In Functions for ABAP CDS and ABAP SQL
 
-> **💡 Note**<br>
+> [!NOTE]
 > - The examples only demonstrate ABAP SQL statements. Refer to the [ABAP Keyword Documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenddic_builtin_functions.htm) for the complete picture.
 > - As with the previous examples, the following examples showcase a variety of available functions.
 > - The examples use [typed literals](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentyped_literal_glosry.htm) to ensure appropriate types are used and to provide self-contained examples.
@@ -1756,6 +1756,6 @@ SELECT tab2~key_field,
 [zcl_demo_abap_builtin_func](./src/zcl_demo_abap_builtin_func.clas.abap) 
 
 
-> **💡 Note**<br>
+> [!NOTE]
 > - The steps to import and run the code are outlined [here](README.md#-getting-started-with-the-examples).
 > - [Disclaimer](./README.md#%EF%B8%8F-disclaimer)

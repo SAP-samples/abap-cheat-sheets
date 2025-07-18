@@ -176,6 +176,6 @@ SIZE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file
 
 [zcl_demo_abap_sql_group_by](./src/zcl_demo_abap_sql_group_by.clas.abap)
 
-> **💡 Note**<br>
+> [!NOTE]
 > - The steps to import and run the code are outlined [here](README.md#-getting-started-with-the-examples).
 > - [Disclaimer](./README.md#%EF%B8%8F-disclaimer)

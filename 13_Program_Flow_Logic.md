@@ -229,7 +229,7 @@ ELSE.
 ENDIF.
 ```
 
-> **💡 Note**<br>
+> [!NOTE]
 > Logical expressions and functions can also be used in other ABAP statements.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
@@ -297,7 +297,7 @@ ELSE.
 ENDIF.
 ```
 
-> **💡 Note**<br>
+> [!NOTE]
 > - Control structures can be nested. It is recommended that you do not include more than 5 nested control structures since the code will
 >   get really hard to understand. Better go for outsourcing functionality into methods to reduce nested control structures.
 > - Keep the number of consecutive control structures low.
@@ -504,7 +504,7 @@ ENDDO.
 ```
 
 
-> **💡 Note**<br>
+> [!NOTE]
 > - [`RETURN`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapreturn.htm) statements immediately terminate the current processing block. However, according to the [guidelines (F1 docu for standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenexit_procedure_guidl.htm), `RETURN` should only be used to exit procedures like methods.
 > - `EXIT` and `CHECK` might also be used for exiting procedures. However, their use inside loops is recommended.
 
@@ -580,7 +580,7 @@ Note that methods and calling methods are described in the context of the [ABAP 
 
 ### Function Modules
 
-> **💡 Note**<br>
+> [!NOTE]
 > In [ABAP for Cloud Development](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_for_cloud_dev_glosry.htm), function modules can technically be used, but they are not recommended for new implementations. Many features available in standard ABAP, such as various includes, are not compatible with ABAP for Cloud Development (for example, [dynpro](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abendynpro_glosry.htm)-related functionality).
 
 Function modules ... 
@@ -952,7 +952,7 @@ Exceptions and runtime errors affect the program flow. Find an overview in the [
 
 [zcl_demo_abap_prog_flow_logic](./src/zcl_demo_abap_prog_flow_logic.clas.abap)
 
-> **💡 Note**<br>
+> [!NOTE]
 > - The executable example ...
 >   - covers the following topics, among others:
 >     - Control structures with `IF`, `CASE`, and `TRY`

@@ -133,7 +133,7 @@ LOOP AT itab ASSIGNING FIELD-SYMBOL(<line>).
 ENDLOOP.
 ```
 
-> **💡 Note**<br>
+> [!NOTE] 
 >- After its declaration, a field symbol is initial, i. e. a memory area is not (yet) assigned to it (apart from the inline declaration). If you use an unassigned field symbol, a runtime error occurs.     
 >    ```abap
 >    FIELD-SYMBOLS <fs> TYPE string.
@@ -159,7 +159,7 @@ Once the memory area is assigned, you can work with the content.
 
 The table below includes a selection of `ASSIGN` statements, primarily featuring static assignments. More additions are covered further down. For more information, see the [ABAP Keyword Documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABENSET_FIELD_SYMBOLS.html).
 
-> **💡 Note**<br>
+> [!NOTE] 
 > In the event of an unsuccessful static assignment, `sy-subrc` remains unchanged (with exceptions), and no memory area is allocated to the field symbol. After the statement, the field symbol is unassigned. The addition `ELSE UNASSIGN`, although it cannot be explicitly specified in static assignments, is used implicitly.
 
 
@@ -472,7 +472,7 @@ ASSIGN CAST zdemo_abap_objects_interface( oref )->in_str TO FIELD-SYMBOL(<fs_att
 - If you use an unassigned field symbol, an exception is raised. Before using it, you can check the assignment with the `IS ASSIGNED` logical expression. The statement is true if the field symbol is assigned.  
 - Using the statement `UNASSIGN`, you can explicitly remove the assignment of the field symbol. A `CLEAR` statement only initializes the value.
 
-> **💡 Note**<br>
+> [!NOTE] 
 > As covered further down, in dynamic assignments of field symbols, `sy-subrc` is set, unlike in static assignments. You can use the `ELSE UNASSIGN` addition in dynamic assignments.  While `ELSE UNASSIGN` can't be explicitly specified in static assignments, it is used implicitly. Note a potential pitfall when checking field symbol assignments with `IS ASSIGNED` in dynamic assignments. An example in the dynamic assignment section illustrates the pitfall.
 
 
@@ -707,7 +707,7 @@ s-oref = NEW cl_system_uuid( ).
 ASSIGN s-oref TO <object>.
 ```
 
-> **💡 Note**<br>
+> [!NOTE] 
 > After `TYPE REF TO`, the only generic types you can specify are `data` for fully generic data reference variables and `object` for fully generic object reference variables.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
@@ -809,7 +809,7 @@ DATA(ref3) = REF some_type( ... ).
 - expect a data reference variable when declared. The content of an anonymous data object can only be accessed using dereferenced variables as shown below or field symbols.
 - can be created using the statement [`CREATE DATA`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapcreate_data.htm), the instance operator [`NEW`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconstructor_expression_new.htm), or the addition [`NEW`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapselect_into_target.htm) of the `INTO` clause in a `SELECT` statement. 
 
-> **💡 Note**<br>
+> [!NOTE] 
 > The following snippet covers statically defined types. Data objects can also be created with `CREATE DATA` dynamically using dynamic type definitions (the type name is specified within a pair of parentheses) and type description objects ([`TYPE HANDLE` addition](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapcreate_data_handle.htm)) as shown further down. 
 
 ```abap
@@ -1439,7 +1439,7 @@ it_ref = VALUE #( ( NEW i( 3 ) ) "Elementary type
                 ).
 ```
 
-> **✔️ Hint**<br>
+> [!TIP]
 > When to actually use either a field symbol
 or a data reference variable? It depends on your use case. However, data
 reference variables are more powerful as far as their usage options are
@@ -1687,7 +1687,7 @@ DATA(tdo_elem) = cl_abap_elemdescr=>get_c( 4 ).
 ASSIGN dobj_c10 TO <casttype> CASTING TYPE HANDLE tdo_elem. "1234
 ```
 
-> **💡 Note**<br>
+> [!NOTE]  
 > - The following `ASSIGN` statements set the `sy-subrc` value: dynamic assignments, dynamic component assignment, dynamic method calls, assignments of table expressions. See an example below.
 > - The return code is not set for a static assignment and an assignment of the constructor operator `CAST`.
 
@@ -2573,7 +2573,7 @@ DELETE FROM ('ZDEMO_ABAP_CARR') WHERE (where_cl).
 displaying it when the database table name is specified dynamically at
 runtime, see the following code snippet. 
 
-> **💡 Note**<br>
+> [!NOTE]  
 > - The example retrieves the content of a database table, storing it in an internal table, and displaying it when the database table name is specified dynamically at runtime.
 > - For demo purposes in test programs, there are quite some ways to achieve it, and that work out of the box. For example, in ABAP for Cloud Development, you can implement the classrun interface `if_oo_adt_classrun` and output content to the ADT console using the `out->write(...).` method. You can also inherit from `cl_demo_classrun` in your class. In classic ABAP, you can, for example and additionally, use `cl_demo_output`.
 > - The following example is just ABAP code exploring dynamic programming aspects. Note the [Disclaimer](./README.md#%EF%B8%8F-disclaimer) in the *README* of the cheat sheet repository. It is an example that sets its focus on a dynamic `SELECT` statement and processing internal table content by dynamically accessing structure components.
@@ -3799,7 +3799,7 @@ To get the type information, you can get a reference to a type description objec
 The type properties are represented by attributes that are accessible through the type description object.
 
 
-> **💡 Note**<br>
+> [!NOTE]  
 > - For each type, there is exactly one type description object. 
 > - For each type category (elementary type, table, and so on), there is a type description class (e.g. `CL_ABAP_STRUCTDESCR` for structures, as shown in the hierarchy tree above) that has special attributes (i.e. the properties of the respective types). 
 > - References to type description objects can be used, for example, after the `TYPE HANDLE` addition of the `CREATE DATA` and `ASSIGN` statements.
@@ -4787,7 +4787,7 @@ ASSERT f = g.
 As mentioned earlier about type name specifications for statements such as `CREATE DATA` and `CREATE OBJECT`, and as shown in the previous example, in addition to character-like data objects for the type name (the [relative type name](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrelative_type_name_glosry.htm)) specified in the parentheses, you can also use [absolute type names](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabsolute_typename_glosry.htm).
 
 
-> **💡 Note**<br>
+> [!NOTE]  
 > In [ABAP for Cloud Development](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_for_cloud_dev_glosry.htm), absolute names having the pattern `\TYPE=%_...` (an internal technical name that is available for [bound data types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbound_data_type_glosry.htm); bound data types do not have a relative name) cannot be used for the dynamic creation. 
 
 
@@ -5695,7 +5695,7 @@ ASSERT applies_to_dobj = abap_true.
 - In [ABAP for Cloud Development](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenabap_for_cloud_dev_glosry.htm), you can access and modify source code using classes available in the XCO library. Refer to the [Released ABAP Classes](22_Released_ABAP_Classes.md) ABAP cheat sheet for examples.
 
 
-> **⚠️ Caution**<br>
+> [!CAUTION]
 > - Dynamic programming techniques can pose serious security risks if used improperly. Always carefully check any dynamic content from external sources before incorporating it into dynamic statements. Prevent the injection of harmful ABAP code into programs, especially when using `GENERATE SUBROUTINE POOL` and `INSERT REPORT` statements, as they can create executable ABAP code.
 > - When using ABAP statements to manipulate source code, apply them cautiously. These statements do not include inherent authorization checks, so developers must implement these checks. For example, use appropriate `AUTHORITY-CHECK` statements. Potential checks include verifying the current user's development authorization or determining if the current system is a development or production environment.
 > - Find more information (note that the links refer to Standard ABAP) about:
@@ -6368,7 +6368,7 @@ ENDIF.
 - Find more information in the [ABAP Keyword Documentation](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapinsert_report.htm).
 
 
-> **⚠️ Caution**<br>
+> [!CAUTION]
 > - Dynamic program development statements should be reserved for exceptional cases. Use utmost caution with `INSERT REPORT` and `GENERATE SUBROUTINE POOL` statements to create executable ABAP code.  
 > - Dynamic code originating from external sources can inject malicious code. Any user with authorization for the program can execute the source code directly. `INSERT REPORT` can even overwrite existing programs.  
 > - It is crucial to implement appropriate authorization and security checks. Some considerations and examples:
@@ -6699,7 +6699,7 @@ It is recommended that you consult the [Dynamic Programming Techniques (F1 docu 
 
 [zcl_demo_abap_dynamic_prog](./src/zcl_demo_abap_dynamic_prog.clas.abap)
 
-> **💡 Note**<br>
+> [!NOTE] 
 > - The executable example covers the following topics, among others:
 >     - Field symbols and data references as supporting elements for dynamic programming
 >     - Dynamic ABAP syntax components

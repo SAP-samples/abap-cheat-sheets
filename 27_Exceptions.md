@@ -32,7 +32,7 @@
 
 This cheat sheet includes an overview about syntax in the context of exceptions and runtime errors in ABAP.
 
-> **💡 Note**<br>
+> [!NOTE]
 > Several code snippets in the cheat sheet use artifacts from the [executable example](#executable-example).
 
 ## Exceptions
@@ -75,7 +75,7 @@ Exception classes ...
     RAISING   cx_sy_zerodivide.
   ```
 
-> **💡 Note**<br>
+> [!NOTE]
 > - Non-class-based exceptions are obsolete and should no longer be used in new developments. See the [guidelines (F1 docu for standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenclass_exception_guidl.htm).
 > -  Unhandled exceptions raised by the ABAP runtime environment trigger a corresponding runtime error. For example, the exception class `CX_SY_ZERODIVIDE` causes the runtime error `COMPUTE_INT_ZERODIVIDE`. For self-defined exception classes, unhandled exceptions generally trigger the runtime error `UNCAUGHT_EXCEPTION`.
 
@@ -229,7 +229,7 @@ Example:
 
 </table>
 
-> **💡 Note**<br>
+> [!NOTE]
 > - Basic rule: [Use a suitable exception category (F1 docu for standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenexception_category_guidl.htm).
 > - Directly deriving from `CX_ROOT` is not possible.
 > - As covered in the following sections, exception classes have specific components so that exceptions can be evaluated. 
@@ -249,7 +249,7 @@ Example:
   - `previous`: Reference to a previous exception; the type is a reference to `CX_ROOT`; also usually set by the constructor
   - `is_resumable`: Flag for [resumable exceptions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenresumable_exception_glosry.htm); indicates whether the exception can be resumed and leave a `CATCH BEFORE UNWIND` block
   
-> **💡 Note**<br>
+> [!NOTE]
 > - Further additions may be available depending on the exception object.
 > - Usually, instances of exception classes are created when exceptions are raised. However, instances can also be created programmatically, e.g., with the `NEW` operator (if the classes are not abstract).
 > - It is possible to define additional methods and attributes in exception classes, for example, for passing more information about error situations to handlers. Custom attributes should be defined as `READ-ONLY`.
@@ -272,7 +272,7 @@ Example:
 
 Syntax examples for raising exceptions programmatically:
 
-> **💡 Note**<br>
+> [!NOTE]
 > More variants of the statements shown are possible. They are covered in a [separate section below](#syntax-variants-of-raise-exceptionthrow) because they relate to topics covered in the following sections.
 
 ```abap
@@ -896,7 +896,7 @@ ENDCLASS.
    - Optionally, up to four placeholders (`&1`, `&2`, `&3`, `&4`) can be specified for messages. At runtime, placeholders are replaced by values specified with the attributes.
 
 
-> **💡 Note**<br>
+> [!NOTE]
 > When you create global exception classes in ADT, and you specify one of the exception superclasses to inherit from in the creation wizard, the resulting class code contains required implementations such as the instance constructor.
 
 
@@ -979,7 +979,7 @@ msgv4 = sy-msgv4. "H
   - `... THROW exc( MESSAGE ID ... TYPE ... NUMBER ... WITH ... ) ...`
   - `... THROW exc( USING MESSAGE ) ...`
 
-> **💡 Note**<br>
+> [!NOTE]
 > - The code snippets below use exception classes, a message class and messages from the executable demo example.
 > - The snippets include additions that are only available when exception classes implement the `IF_T100_DYN_MSG` interface. 
 > - In the executable example, `zcx_demo_abap_error_a` implements the `IF_T100_MESSAGE` interface and  `zcx_demo_abap_error_b` implements `IF_T100_DYN_MSG`.
@@ -1581,7 +1581,7 @@ ENDTRY.
 
 [zcl_demo_abap_error_handling](./src/zcl_demo_abap_error_handling.clas.abap)
 
-> **💡 Note**<br>
+> [!NOTE]
 > - The example involves the following artifacts: 
 >   - One executable class `zcl_demo_abap_error_handling`
 >   - Two self-defined example exception classes `zcx_demo_abap_error_a` and `zcx_demo_abap_error_b`  (one implements the `IF_T100_DYN_MSG`, the other implements `IF_T100_MESSAGE`)

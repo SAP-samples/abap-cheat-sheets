@@ -19,7 +19,7 @@
 
 This cheat sheet explores various aspects of numeric operations and calculations in ABAP, covering miscellaneous topics and code snippets.
 
-> **💡 Note**  
+> [!NOTE]  
 > - Several topics and similar or the same code snippets in this cheat sheet are also found in other cheat sheets. For example, date and time calculations appear in the [Date, Time, and Time Stamp](23_Date_and_Time.md) cheat sheet. They are included here in the context of calculations in ABAP.
 > - Find more information in the [ABAP Keyword Documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABENCOMPUTE_EXPRESSIONS.html).
 
@@ -113,7 +113,7 @@ This cheat sheet explores various aspects of numeric operations and calculations
 
 </table>
 
-> **💡 Note**<br>
+> [!NOTE]
 > - The built-in type `n` for numeric text fields is a character-like, not a numeric type, even though it only contains digits. It is not recommended for calculations. Use type `n` for purposes not involving calculations, like ID values or article numbers.
 > - Generic types such as `numeric`, `p` and `decfloat` can be specified as types of field symbols and formal parameters of procedures such as methods of classes. 
 
@@ -432,7 +432,7 @@ dec34_n = EXACT #( `.9E-3                  ` ).
 - The result of arithmetic expressions is a numeric value. Note the [calculation type](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencalculation_type_glosry.htm) as described below.
 
 
-> **💡 Note**<br>
+> [!NOTE]
 > - If the first operand is also 0 in a zero division, an exception is not raised. Instead, the result is set to 0.
 > - For more information on the `DIV` and `MOD` operators, refer to [this blog](https://community.sap.com/t5/technology-blogs-by-sap/understanding-div-and-mod-in-abap-and-beyond/ba-p/14015181).
 

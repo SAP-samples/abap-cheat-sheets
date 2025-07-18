@@ -159,7 +159,7 @@ Internal Tables ...
 - The primary table key has the predefined name `primary_key`, by which it can also be addressed explicitly. However, its use is optional, and it is usually not necessary to specify it explicitly. You can also specify an alias name for the primary key. 
 - When accessing internal tables using the table key, the primary key is always used implicitly in processing statements if no secondary key is specified. Note that the primary table key must be specified in table expressions if the primary key is to be used explicitly.
 
-> **💡 Note**<br>
+> [!NOTE]  
 > The key can consist of individual key fields or the entire line of the internal table. In this case, the pseudo component `table_line` can be used to denote the primary table key. For non-structured line types, this is the only way to define the key.
 
 **Standard key**
@@ -218,7 +218,7 @@ Internal Tables ...
 - For more details, see the programming guidelines for secondary keys: [Secondary
     Key (F1 docu for standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abensecondary_key_guidl.htm "Guideline").
 
-> **💡 Note**<br>
+> [!NOTE]  
 > - See examples of internal table declarations using the table keys mentioned above in the following section.
 > - See more information and examples that focus on table access using keys and index below.
  
@@ -243,7 +243,7 @@ DATA  itab3      TYPE                   itab_type1 ...  "Based on an existing in
 DATA  itab4      LIKE                   itab1 ...       "Based on an existing internal table       
 ```
 
-> **💡 Note**<br>
+> [!NOTE]  
 > - If the table category is not specified (`... TYPE TABLE OF ...`), it is automatically `... TYPE STANDARD TABLE OF ...`.
 > - Using [Runtime Type Creation (RTTC)](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrun_time_type_creation_glosry.htm "Glossary Entry"), you can define and  create new internal tables and table types as [type description objects](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentype_object_glosry.htm) at runtime. For more information, see the [Dynamic Programming](06_Dynamic_Programming.md) ABAP cheat sheet. Also find a snippet on creating internal tables dynamically by specifying the type dynamically [below](#creating-internal-tables-dynamically).
 
@@ -467,7 +467,7 @@ This section explores various line and table type options when declaring interna
 - Table types based on both locally declared and globally available table types
 - References
 
-> **💡 Note**<br>
+> [!NOTE]  
 > Types declared in the public visibility section of classes/interfaces are also globally visible and can be used for the creation.
 
 <table>
@@ -708,7 +708,7 @@ SELECT * FROM zdemo_abap_fli INTO TABLE @FINAL(it_l).
 
 ## Populating Internal Tables
 
-> **💡 Note**<br>
+> [!NOTE]  
 > Various ABAP statements populate internal tables. The following sections cover a selection. ABAP SQL `SELECT`  statements are covered further down and in the [ABAP SQL](03_ABAP_SQL.md) cheat sheet.
 
 ### Copying Internal Tables
@@ -722,7 +722,7 @@ DATA(itab3) = itab.
 FINAL(itab4) = itab.
 ```
 
-> **💡 Note**<br>
+> [!NOTE]  
 > - Internal tables can only be assigned to internal tables. 
 > - Internal tables can be assigned to each other if their line types are [compatible](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencompatible_glosry.htm) or [convertible](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconvertible_glosry.htm).
 > - An assignment can trigger an uncatchable exception if, for example, the target table is assigned a duplicate of a unique primary table key or secondary table.
@@ -894,7 +894,7 @@ INSERT LINES OF itab2 INTO itab INDEX i.
 ### Creating and Populating Internal Tables Using Constructor Expressions
 The constructor expressions can be specified in/with various positions/statements in ABAP. In most of the following snippets, simple assignments are demonstrated.
 
-> **💡 Note**<br>
+> [!NOTE]  
 > The following sections cover a selection. There are more constructor expressions used in the context of internal tables (e.g. for creating internal tables). Find more details in the [Constructor Expressions](05_Constructor_Expressions.md) cheat sheet.
 
 #### VALUE Operator
@@ -919,7 +919,7 @@ operator. The inline constructed table has two lines. `line`
 represents an existing structure with a compatible line type. The
 other line is constructed inline.
 
-> **💡 Note**<br>
+> [!NOTE]  
 > - The extra pair of parentheses represents a table line. The `#` character indicates that the line type can be derived from the context. The assignment deletes the existing content of the internal table on the left side.
 > - The existing content of the internal table is deleted, and the new content, which is created in place, is added.
 
@@ -1161,7 +1161,7 @@ MOVE-CORRESPONDING itab_nested1 TO itab_nested2 EXPANDING NESTED TABLES KEEPING 
 
 </table>
 
-> **💡 Note**<br>
+> [!NOTE]  
 > The `CL_ABAP_CORRESPONDING` class can be used for assignments. Find an example in the [Released ABAP Classes](22_Released_ABAP_Classes.md) cheat sheet.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
@@ -1237,7 +1237,7 @@ DATA(f10) = FILTER #( itab2 IN filter_tab2 USING KEY line WHERE num = table_line
 DATA(f11) = FILTER #( itab2 USING KEY sec_key EXCEPT IN filter_tab2 WHERE num = table_line ).
 ```
 
-> **💡 Note**<br>
+> [!NOTE]  
 > More constructor expressions are available to deal with internal tables, for example the `REDUCE` operator. Find more information and examples in the [Constructor Expression cheat sheet](05_Constructor_Expressions.md).
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
@@ -1670,7 +1670,7 @@ READ TABLE itab REFERENCE INTO DATA(dref_inl) ...
 
 </table>
 
-> **✔️ Hint**<br>
+> [!TIP]
 > Which to use then? Since all syntax options basically provide similar
 functionality, your use case, the
 performance or readability of the code may play a role. For more information, see 
@@ -4233,7 +4233,7 @@ MODIFY it FROM line USING KEY sec_key INDEX 1 TRANSPORTING c d.
 MODIFY it FROM line TRANSPORTING b c WHERE a < 5.
 ```
 
-> **💡 Note**<br>
+> [!NOTE] 
 > - The system field `sy-subrc` is set to `0` if at least one line was changed. It is set to `4` if no lines were changed.
 > - `MODIFY`, `DELETE`, and `INSERT` statements can be specified with and without the `TABLE` addition. With `TABLE` means an index access. Without `TABLE` means an access via the table key.
 
@@ -4376,7 +4376,7 @@ DELETE ADJACENT DUPLICATES FROM it USING KEY primary_key.
 DELETE ADJACENT DUPLICATES FROM it USING KEY sec_key.
 ```
 
-> **💡 Note**<br>
+> [!NOTE] 
 > The system field `sy-subrc` is set to `0` if at least one line has been deleted. It is set to `4` if no lines were deleted.
 
 ### Deleting the Entire Internal Table Content
@@ -5090,7 +5090,7 @@ SELECT comp1, comp2, ...
 Populating an internal table from a table based on the existence of data in
 another table using the [`FOR ALL ENTRIES`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenwhere_all_entries.htm) addition.
 
-> **💡 Note**<br>
+> [!NOTE] 
 > Make sure that the internal table you are reading from is not initial. Therefore, it is recommended that you use a subquery as shown above: `... ( SELECT ... FROM ... WHERE ... ) ...`.
 
 ``` abap
@@ -5542,7 +5542,7 @@ DATA(itab10) = REDUCE tt_type3( INIT tab = VALUE #( )
 Consider a scenario where you have a standard internal table, and you frequently access its content using a free key. The table is declared without a secondary table key. You can add a secondary table key to improve read performance.
 The following example creates two demo internal tables. One without a secondary table key and the other with a secondary table key. The tables are populated with a lot of data. Then, in a `DO` loop, many reads are performed on the internal tables. One example uses a free key for the read, the other uses a secondary table key that includes the components used for the free key search. Before and after the reads, the current timestamp is stored in variables, from which the elapsed time is calculated. There should be a significant delta of the elapsed time.
 
-> **💡 Note**<br>
+> [!NOTE] 
 > This example is for [exploration, experimentation, and demonstration](./README.md#%EF%B8%8F-disclaimer). It is not intended for accurate runtime or performance testing and is not a suitable method for such purposes. Due to its simplified nature, results may vary and not be entirely accurate, even across multiple runs.
 
 ```abap
@@ -5646,7 +5646,7 @@ ENDCLASS.
   - Key (primary table key, secondary table key, free key)
 - To try this, create a demo class named `zcl_demo_abap` and insert the provided code. After activation, choose *F9* in ADT to execute the class. It may take some time to finish and display the output. The example is set up to display the results of the read performance test in the console.
 
-> **💡 Note**<br>
+> [!NOTE] 
 > - This example is for [exploration, experimentation, and demonstration](./README.md#%EF%B8%8F-disclaimer). It is not intended for accurate runtime or performance testing and is not a suitable method for such purposes. Due to its simplified nature, results may vary and not be entirely accurate, even across multiple runs.
 > - The example concentrates on a few demo internal tables, constructed using various declaration options. 
 > - The purpose of this example is to underscore the significance of choosing the right table categories for your internal tables, tailored to your specific use case and the frequency of table access.
@@ -6388,7 +6388,7 @@ Topic [Internal Tables](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-
 ## Executable Example
 [zcl_demo_abap_internal_tables](./src/zcl_demo_abap_internal_tables.clas.abap)
 
-> **💡 Note**<br>
+> [!NOTE] 
 > - The executable example covers the following topics, among others: Creating, populating, reading from, sorting, modifying internal tables
 > - The steps to import and run the code are outlined [here](README.md#-getting-started-with-the-examples).
 > - [Disclaimer](./README.md#%EF%B8%8F-disclaimer)

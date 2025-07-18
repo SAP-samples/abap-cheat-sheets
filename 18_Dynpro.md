@@ -28,7 +28,7 @@
  
 ## Introduction
 
-> **💡 Note**<br>
+> [!NOTE]
 > The content of this cheat sheet and the executable example are only relevant to [classic ABAP](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenclassic_abap_glosry.htm).
 
 [User interfaces (UI)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenuser_interface_glosry.htm) are not limited to displaying some information, they must also allow the user to interact with the program. 
@@ -38,7 +38,7 @@ This is where [dynpros](https://help.sap.com/doc/abapdocu_latest_index_htm/lates
 
 This cheat sheet provides a high-level overview of classic dynpro topics with a focus on dynpro-related statements, supported by an executable example to check the syntax in action.
 
-> **💡 Note**<br>
+> [!NOTE]
 > - Classic dynpros are outdated for application programs. New developments should use web-based UIs, such as SAPUI5. 
 > - Dynpros cannot be created in ABAP Cloud.
 > - This cheat sheet ...
@@ -67,7 +67,7 @@ This cheat sheet provides a high-level overview of classic dynpro topics with a 
   - Have their own data objects, called [dynpro fields](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abendynpro_field_glosry.htm) (see more below)
   - Are called either by another dynpro (as the next dynpro), by a [transaction code](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abentransaction_code_glosry.htm) ([dialog transaction](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abendialog_transaction_glosry.htm)), or by ABAP statements (e.g. `CALL SCREEN`). Several dynpros in a single ABAP program can be called in sequence to form a dynpro sequence.
 
-> **💡 Note**<br>
+> [!NOTE]
 > There are special dynpros ([selection screens](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenselection_screen_glosry.htm), [classic lists](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenclassic_list_glosry.htm)). They are created implicitly. See the [Selection Screens and Classic Lists](20_Selection_Screens_Lists.md) cheat sheet.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
@@ -91,7 +91,7 @@ This cheat sheet provides a high-level overview of classic dynpro topics with a 
     - The dialog modules called at PAI evaluate the user entries and process them. 
     - When the processing is complete, the processing of the current dynpro ends and the next dynpro is called.
     
-      > **💡 Note**<br>
+      > [!NOTE]
       > - The PAI processing of the current dynpro and the PBO processing of the next dynpro take place one after the other in the same [work process](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenwork_process_glosry.htm) on the application server and together form a dialog step.
       > - As soon as the screen is ready for input again, only the presentation server is active until the next user action. During this time, the ABAP program waiting for user input does not occupy a work process on the application server.
 
@@ -468,7 +468,7 @@ SET SCREEN 0.
 - `LEAVE SCREEN.` exits the current dynpro and enters the next dynpro. This is either statically defined in the properties of the current dynpro or was previously set with the `SET SCREEN` statement.
 - `LEAVE TO SCREEN` does the same, but first sets the next dynpro to the specified dynpro number. This statement is a short form of the statements `SET SCREEN dynnr. LEAVE SCREEN.`.
 
-> **💡 Note**<br>
+> [!NOTE]
 > - The statements do not exit the entire dynpro sequence and instead branch to another dynpro in the same sequence. Only if the number 0 is used to branch to the next dynpro does a `LEAVE` statement terminate the dynpro sequence.
 > - A dialog transaction can be started from an ABAP program using the [`CALL TRANSACTION`](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapcall_transaction.htm) or [`LEAVE TO TRANSACTION`](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapleave_to_transaction.htm) statements, or directly by the user by entering the transaction code in the input field of the [standard toolbar](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenstandard_toolbar_glosry.htm). When a dialog transaction is started, the associated ABAP program is loaded and the PBO processing of the initial dynpro is called.
 > - [`LEAVE PROGRAM`](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapleave_program.htm) statements terminate the program. 
@@ -590,7 +590,7 @@ ENDMODULE.
     SET TITLEBAR title WITH text1 ... text9.
     ```
 
-> **💡 Note**<br>
+> [!NOTE]
 >  By separating the GUI status and title from the dynpro itself, the screen layout can remain constant when switching dynpros, and only the title and available functions can be changed.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
@@ -637,7 +637,7 @@ ENDLOOP.
 ...
 ```
 
-> **💡 Note**<br>
+> [!NOTE]
 > - In a modern program, it is more comfortable to use an ALV Grid control.
 > - More additions are available for the statement.
 
@@ -727,7 +727,7 @@ After the import of the repository, proceed as follows:
 - Enter `zdemo_abap_dynpro` and open the program. 
 - Run the program by choosing `F8`.
 
-> **💡 Note**<br>
+> [!NOTE]
 > - The examples in the *main* branch of the ABAP cheat sheet repository are designed to be imported into the SAP BTP ABAP Environment. For Standard ABAP, you can find examples (such as `zdemo_abap_dynpro`) in the other branches of the repository. 
 > - The executable example ...
 >   - covers the following topics:

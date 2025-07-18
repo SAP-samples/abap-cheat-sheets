@@ -116,14 +116,14 @@ The following topic covers authorization-related terms and provides you with the
 
 ## Executable Example (SAP BTP ABAP Environment)
 
-> **💡 Note**<br>
+> [!NOTE]
 > - The example is intentionally simplified and nonsemantic, designed to explore basic authorization checks.
 > - It is not meant to serve as a model for proper authorization check design. Always devise your own solutions for each unique case.
 > - [Disclaimer](./README.md#%EF%B8%8F-disclaimer)
 
 ### Implementation Steps
 
-> **💡 Note**<br>
+> [!NOTE]
 > - As a prerequisite, you have imported the ABAP cheat sheet GitHub repository. The example relies on some of its repository objects.
 > - To get more details on the general implementation steps, see this [tutorial](https://developers.sap.com/tutorials/abap-environment-authorization.html). Note that not all the steps there are covered and relevant for the executable example here. Plus, other artifact names are used.
 > - The purpose of the example is that activities are only allowed when the *countryfr* value is *US*. This is checked by the authorization check examples in the class further down.

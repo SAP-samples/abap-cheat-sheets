@@ -20,6 +20,7 @@
     - [Converting string \<-\> xstring](#converting-string---xstring)
     - [Compressing and Decompressing Binary Data](#compressing-and-decompressing-binary-data)
     - [Exporting and Importing Data Clusters](#exporting-and-importing-data-clusters)
+    - [Repairing and Cleaning up XML Documents](#repairing-and-cleaning-up-xml-documents)
   - [More Information](#more-information)
   - [Executable Example](#executable-example)
   
@@ -31,7 +32,7 @@ This cheat sheet provides a high-level overview of working with XML and JSON in 
 - `CALL TRANSFORMATION` syntax
 - Working with JSON data
 
-> **💡 Note**<br>
+> [!NOTE]  
 > - The cheat sheet snippets and the executable example cover simple cases. Find more executable examples of the ABAP Keyword Documentation following the links in the [More Information](#more-information) section. 
 > - For more detailed information, such as documentation on ST syntax, what asXML is, etc., also see the links in the [More Information](#more-information) section.
 
@@ -654,7 +655,7 @@ Possible transformations, some of which are covered in the example:
 | ABAP <-> XML | X  | X |
 | ABAP <-> ABAP | X  | - |
 
-> **💡 Note**<br>
+> [!NOTE]  
 > - asXML:
 >   - *ABAP Serialization XML*
 >   - Describes a format of XML data created when serializing ABAP data (ABAP -> XML) with the identity transformation 
@@ -670,7 +671,7 @@ Possible transformations, some of which are covered in the example:
 
 The following code snippets demonstrate a selection of possible syntax options when using [`CALL TRANSFORMATION`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapcall_transformation.htm) statements.
 
-> **💡 Note**<br>
+> [!NOTE]  
 > You can also transform ABAP to and from JSON data using transformations. Find examples in the [Transforming JSON Data Using Transformations](#transforming-json-data-using-transformations) section.
 
 
@@ -766,7 +767,7 @@ CALL TRANSFORMATION ... SOURCE ...
                         RESULT (restab).
 ```
 
-> **💡 Note**<br>
+> [!NOTE]  
 > More additions are available such as `PARAMETERS` (for parameter binding) and `OPTIONS` (for predefined transformation options). See the details in the [ABAP Keyword Documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapcall_transformation.htm).
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
@@ -967,7 +968,7 @@ ENDCLASS.
 
 ### Creating and Reading JSON Data Using sXML
 
-> **💡 Note**<br>
+> [!NOTE]  
 > - In ABAP, the sXML library processes JSON data using JSON-XML, an SAP-specific JSON data representation in XML format. This intermediate step is used for both reading and creating JSON data. Find more information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_json_xml.htm).
 > - The following examples provide basic implementations to give you an idea. You should always work out your own solutions.
 > - Both token-based and object-oriented rendering/parsing methods are available. These examples use the token-based approach.
@@ -1808,7 +1809,7 @@ DATA(is_equal) = xsdbool( len_xstr = len_xstr_decomp AND str = conv_str ).
   - `EXPORT` to write data objects to the memory medium
   - `IMPORT` to read from the memory medium and extract the data objects
 
-> **💡 Note**<br>
+> [!NOTE]  
 > - Regarding data clusters, the focus in this section is on the fast serialization and deserialization of data to and from `xstring`.
 > - Find more information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABENDATA_CLUSTER.html).
 > - More syntax options are available in [Standard ABAP](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenstandard_abap_glosry.htm).
@@ -2026,6 +2027,146 @@ ENDCLASS.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
+### Repairing and Cleaning up XML Documents
+
+The `CL_HTMLTIDY` class repairs and cleans up XML documents. See also [here](22_Released_ABAP_Classes.md#repairing-and-cleaning-up-html-and-xml-documents).
+
+<details>
+  <summary>🟢 Click to expand for example code</summary>
+  <!-- -->
+
+<br>
+
+To try the example out, create a demo class named `zcl_demo_abap` and paste the code into it. After activation, choose *F9* in ADT to execute the class. The example is set up to display output in the console.
+
+```abap
+CLASS zcl_demo_abap DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
+
+  PUBLIC SECTION.
+    INTERFACES if_oo_adt_classrun.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+    CLASS-METHODS is_successful IMPORTING option  TYPE string
+                                          success TYPE abap_boolean
+                                          out     TYPE REF TO  if_oo_adt_classrun_out.
+ENDCLASS.
+
+
+
+CLASS zcl_demo_abap IMPLEMENTATION.
+
+  METHOD if_oo_adt_classrun~main.
+
+    DATA success TYPE c LENGTH 1.
+
+    "Demo XML
+    DATA(xml) = cl_abap_conv_codepage=>create_out( )->convert(
+          `    <node attr_a="123">    <subnode1> <hallo>hi              </hallo>` &&
+          `</subnode1> <subnode2> <letter>a</letter> <date format="mm-dd-yyyy">01-01-2025</date>` &&
+          `</subnode2>` &&
+          `      <subnode3>`  &&
+          `        <text             attr_b="1"               attr_c="a">abc                </text>` &&
+          `    <text     attr_b="2" attr_c="b">def</text>` &&
+          `<text attr_b="3"           attr_c="c">   ghi  </text>` &&
+          `   <text attr_b="4" attr_c="d">jkl   </text>` &&
+          `   </subnode3>` &&
+          `</node>                ` ).
+
+    DATA(format_xml) = cl_htmltidy=>create( ).
+    "Resetting all option settings to default values
+    format_xml->reset_options( IMPORTING success = success ).
+
+    IF success IS INITIAL.
+      out->write( `Resetting all option settings to default values not successful.` ).
+    ENDIF.
+
+    "Setting options explicitly
+    "The following code demonstrates exemplary option settings, including settings
+    "particularly for XML documents.
+
+    "Using XML parser
+    format_xml->set_option( EXPORTING option  = 'input-xml'
+                                      value   = 'yes'
+                            IMPORTING success = success ).
+
+    is_successful( option = `input-xml` out = out success = success ).
+
+    "Writing well-formed XML
+    format_xml->set_option( EXPORTING option  = 'output-xml'
+                                      value   = 'yes'
+                            IMPORTING success = success ).
+
+    is_successful( option = `output-xml` out = out success = success ).
+
+    "Adding XML declaration
+    format_xml->set_option( EXPORTING option  = 'add-xml-decl'
+                                      value   = 'yes'
+                            IMPORTING success = success ).
+
+    is_successful( option = `add-xml-decl` out = out success = success ).
+
+    format_xml->set_option( EXPORTING option  = 'indent'
+                                      value   = 'auto'
+                            IMPORTING success = success ).
+
+    is_successful( option = `indent` out = out success = success ).
+
+    format_xml->repair(
+       EXPORTING
+         input              = xml
+         diagnostics        = 'X'
+       IMPORTING
+         output             = DATA(xml_output)
+         retcode            = DATA(xml_retcode)
+         errors             = DATA(xml_errors)
+         tidy_status        = DATA(xml_tidy_status)
+         num_error          = DATA(xml_num_error)
+         num_warning        = DATA(xml_num_warning)
+         num_access_warning = DATA(xml_num_access_warning)
+         num_config_error   = DATA(xml_num_config_error) ).
+
+    out->write( |xml_retcode: { xml_retcode }| ).
+    out->write( |xml_tidy_status: { xml_tidy_status }| ).
+    out->write( |xml_num_error: { xml_num_error }| ).
+    out->write( |xml_num_warning: { xml_num_warning }| ).
+    out->write( |xml_num_access_warning: { xml_num_access_warning }| ).
+    out->write( |xml_num_config_error: { xml_num_config_error }| ).
+    out->write( |\n\n| ).
+
+    format_xml->errtab(
+      EXPORTING
+        msgstr = xml_errors
+      IMPORTING
+        msgtab = DATA(errtab) ).
+
+    IF errtab IS NOT INITIAL.
+      out->write( `Error table:` ).
+      out->write( errtab ).
+      out->write( |\n\n| ).
+    ENDIF.
+
+    out->write( |output:\n| ).
+
+    DATA(formatted_xml_output) = cl_abap_conv_codepage=>create_in( )->convert( xml_output ).
+    out->write( formatted_xml_output ).
+
+  ENDMETHOD.
+
+  METHOD is_successful.
+    IF success IS INITIAL.
+      out->write( |Option setting for "{ option }" not successful.| ).
+    ENDIF.
+  ENDMETHOD.
+ENDCLASS.
+``` 
+
+</details>  
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
 ## More Information
 
 - [ABAP and XML (main topic in the ABAP Keyword Documentation)](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_xml.htm)
@@ -2047,7 +2188,7 @@ ENDCLASS.
 ## Executable Example
 [zcl_demo_abap_xml_json](./src/zcl_demo_abap_xml_json.clas.abap)
 
-> **💡 Note**<br>
+> [!NOTE]  
 > - The executable example ...
 >   - covers the following topics:
 >     - Creating/Parsing XML Data Using iXML

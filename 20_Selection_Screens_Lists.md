@@ -30,7 +30,7 @@
 
 ## Introduction
 
-> **💡 Note**<br>
+> [!NOTE]
 >  The content of this cheat sheet and the executable examples are only relevant to [classic ABAP](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenclassic_abap_glosry.htm).
 
 [Selection screens](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenselection_screen_glosry.htm) and [classic lists](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenclassic_list_glosry.htm) are among the classic ABAP user interfaces. They are integrated into the ABAP language itself, which means that special ABAP statements are available to create and handle them.
@@ -39,7 +39,7 @@ This cheat sheet provides a high-level overview of selection screens and classic
 
 For more detailed information and syntax options, see the topics [Selection Screens](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenselection_screen.htm) and [Classic Lists](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenabap_dynpro_list.htm) in the ABAP Keyword Documentation.
 
-> **💡 Note**<br>
+> [!NOTE]
 > - Although they are considered outdated for application programs, you will still find classic ABAP UIs frequently in classic ABAP.
 > - Classic ABAP UIs cannot be created in [ABAP Cloud](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenabap_cloud_glosry.htm).
 > - This cheat sheet ...
@@ -86,7 +86,7 @@ For more detailed information and syntax options, see the topics [Selection Scre
   - The list can be further implemented to respond to user interaction, such as clicking a line in the list.  
 - More modern alternatives for classic lists are available, such as the classes of the SAP List Viewer (ALV), for example `CL_SALV_TABLE`.
 
-> **💡 Note**<br>
+> [!NOTE]
 > The program is grouped into so-called [event blocks](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenevent_block_glosry.htm), which can contain implementations for various events (e.g. a [selection screen event](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenselection_screen_event_glosry.htm) when a user selects a radio button, or a [list event](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenlist_event_glosry.htm) when a user double-clicks a line in the list). These event blocks are introduced by special ABAP statements. When a particular event is triggered, the corresponding event block is called and the appropriate code can be implemented there to react to the user action. See more information [here](#event-blocks).
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
@@ -108,7 +108,7 @@ Selection screens can be created by using special ABAP statements in the global 
 
 The following table includes code snippets with a selection of available syntax options:
 
-> **💡 Note**<br>
+> [!NOTE]
 > - Various combinations of multiple additions are possible with `PARAMETERS` statement, and some are not. See the ABAP Keyword Documentation for details.
 > - To try out the code examples, you can create a demo executable program, copy and paste the code snippets, and run the programs using F8. They are designed to output content using classic lists.
 > - The code snippets anticipate topics outlined further down, for example, event blocks and `WRITE` statements.
@@ -428,7 +428,7 @@ Additions `OBLIGATORY`, `NO-DISPLAY`, `VISIBLE LENGTH`, `AS CHECKBOX`, `RADIOBUT
 - `AS LISTBOX VISIBLE LENGTH`: Creates a dropdown list box. You can use the function module `VRM_SET_VALUES` by passing a suitable list at the 
 `AT SELECTION-SCREEN OUTPUT` or `AT SELECTION-SCREEN ON VALUE-REQUEST` events. You may want to specify the `OBLIGATORY` addition here, too, as the check is also applied to empty fields.
 
-> **💡 Note**<br>
+> [!NOTE]
 > The `USER-COMMAND` addition can be specified together with `AS CHECKBOX`, `RADIOBUTTON GROUP` and `AS LISTBOX VISIBLE LENGTH` to assign a function code to the selection parameter.
 
 
@@ -763,7 +763,7 @@ START-OF-SELECTION.
 
 The following table includes code snippets with a selection of available syntax options:
 
-> **💡 Note**<br>
+> [!NOTE]
 > - Various combinations of multiple additions are possible with `SELECT-OPTIONS` statements.
 > - To try out the code examples, you can create a demo executable program, copy and paste the code snippets, and run the programs using F8. They are designed to output content using classic lists.
 > - The code snippets anticipate topics outlined further down, for example, event blocks and `WRITE` statements.
@@ -4392,7 +4392,7 @@ AT LINE-SELECTION.
 </table>
 
 
-> **💡 Note**<br>
+> [!NOTE]
 > - [Relevant sy components in the context of lists](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenlist_systemfields.htm)
 > - You can interact with a list by double-clicking a line (or pressing F2; the default `PICK` function code raises the `AT LINE-SELECTION` event). Other function codes usually trigger the `AT USER-COMMAND` event. See the event blocks below. In your ABAP program, you can react to the user action by implementing the individual event blocks. Regarding the function code, you can use the `sy-ucomm` system field for evaluation (unlike dynpros, there's no `OK_CODE` field to be filled).
 
@@ -4407,7 +4407,7 @@ AT LINE-SELECTION.
 - Should not be specified more than once in a program
 - Called depending on the user action and the program state (even if not explicitly specified)
 
-> **💡 Note**<br>
+> [!NOTE]
 > The main purpose of the examples is to visualize the calling of the events. Internal tables are filled during the events to log the event name and the time stamp when it is called. The tables are then output.
 
 <table>
@@ -4853,7 +4853,7 @@ END-OF-PAGE.
   - define the display type for the ALV output. By default, full-screen display is enabled. 
   - display the ALV output using the `display` method.
 
-> **💡 Note**<br>
+> [!NOTE]
 > - When working with ALV, make sure that you implement appropriate error handling. 
 > - The `factory` method also has optional exporting parameters. You can use the optional `list_display` parameter to specify whether you want to display the ALV output as classic list. It is set to false by default. There are also exporting parameters to display the ALV output in containers (e.g. see the dynpro cheat sheet example). The exporting parameters are not relevant in this example. Here, the ALV output is displayed on the entire screen (however, it is also possible to display the ALV output in a dialog box).
 
@@ -4887,7 +4887,7 @@ ENDTRY.
 - For simplicity of the snippet, the code only uses the root exception class. Make sure that you implement appropriate error handling and exception classes.  
 - You can copy and paste the code into your own test program to explore the ALV output and the effect of the method calls. 
 
-> **💡 Note**<br>
+> [!NOTE]
 > Check the comments for the custom functions. If there are errors in your test program, replace the relevant code section and enable the generic ALV functions.
 
 ```abap
@@ -5223,7 +5223,7 @@ After the import of the repository, proceed as follows:
   - `ZDEMO_ABAP_ALV`: Demonstrates the SAP List Viewer (ALV)
 - Run the program by choosing `F8`.
 
-> **💡 Note**<br>
+> [!NOTE]
 > - The examples in the *main* branch of the ABAP cheat sheet repository are designed to be imported into the SAP BTP ABAP Environment. For Standard ABAP, you can find examples (such as `ZDEMO_ABAP_SELSCR_LISTS_INTRO`) in the other branches of the repository. 
 > - The executable examples ...
 >   - do not claim to include meaningful selection screens and lists.

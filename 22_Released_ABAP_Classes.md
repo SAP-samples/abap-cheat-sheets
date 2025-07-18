@@ -323,13 +323,13 @@ ENDCLASS.
 </table>
 
 
-> **💡 Note**<br>
+> [!NOTE]  
 > - Find more information on IDE actions and examples: 
 >   - [in the SAP documentation](https://help.sap.com/docs/abap-cloud/abap-development-tools-user-guide/working-with-ide-actions). 
 >   - [in this Devtoberfest session](https://youtu.be/YOIsyR5C2Mk?t=2304).
 > - Your user must be assigned to the `SAP_A4C_BC_DEV_AIA_PC` business catalog. 
 
-> **⚠️ Disclaimer**<br>
+> [!WARNING]  
 > - The examples are simplified and not meant to represent best practices for IDE action implementation. They are only intended for exploration purposes to get a high-level idea.  
 > - All examples use `CL_DEMO_OUTPUT_CLOUD` to retrieve HTML output of data objects. Note that this class is intended for demo purposes only.  
 > - **NOTE**: The use of IDE actions is your responsibility. Development and use are up to you. Refer to [this repository's disclaimer](./README.md#%EF%B8%8F-disclaimer) and the [disclaimer in the IDE action documentation](https://help.sap.com/docs/abap-cloud/abap-development-tools-user-guide/working-with-ide-actions). 
@@ -1709,7 +1709,7 @@ ENDCLASS.
   - Choose *Run*.
   - If the XLSX content processing is successful, the IDE action result dialog will display the XLSX content in an internal table, presented as HTML table. 
 
-> **⚠️ Disclaimer**<br>
+> [!WARNING]  
 > Since the example IDE action lets you import a local file, be mindful of the potential security risks when importing external content. Refer to [this repository's disclaimer](./README.md#%EF%B8%8F-disclaimer) and to [the disclaimer in the documentation about XCO](https://help.sap.com/docs/btp/sap-business-technology-platform/xlsx-read-access).
 
 
@@ -3463,7 +3463,7 @@ DATA(repl_result_not_extended) = matcher_not_extended->text.
 
 ## Time and Date
 
-> **💡 Note**<br>
+> [!NOTE] 
 > In [ABAP for Cloud Development](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_for_cloud_dev_glosry.htm), do not use the date and time-related system fields such as `sy-datum` and `sy-uzeit`, and others. User-related time and date values can be retrieved using the XCO library. For code snippets, see the [Date, Time, and Time Stamp](23_Date_and_Time.md) cheat sheet.
 
 <table>
@@ -5680,7 +5680,7 @@ To check out examples in demo classes, expand the collapsible sections below.
 
 <br>
 
-> **⚠️ Note/Disclaimer**<br>
+> [!WARNING] 
 > - The following self-contained and oversimplified example is not a representative best practice example, nor does it cover a meaningful use case. It only explores method calls and is intended to give a rough idea of the functionality.</li>
 > - The example uses the <code>create_by_url</code> method, which is only suitable for public services or testing purposes. No authentication is required for the APIs used.
 > - Note the <a href="README.md#%EF%B8%8F-disclaimer">Disclaimer</a>.</li>
@@ -5846,7 +5846,7 @@ ENDCLASS.
 
 <br>
 
-> **⚠️ Note/Disclaimer**<br>
+> [!WARNING] 
 > - As stated for the previous example, also note for this example: Before using the GitHub APIs, make sure that you have consulted the following documentation: <a href="https://docs.github.com/en">GitHub Docs</a>, <a href="https://docs.github.com/en/enterprise-cloud@latest/rest/markdown/markdown?apiVersion=2022-11-28#render-a-markdown-document">Render a Markdown document</a>, <a href="https://docs.github.com/en/rest/using-the-rest-api/rate-limits-for-the-rest-api?apiVersion=2022-11-28">Rate limits for the REST API</a>
 > - To run the example class, copy and paste the code into a class named `zcl_demo_abap`. Run the class using F9. It is set up to display HTML content in the console. Using the GitHub API, sample Markdown content is sent and converted to HTML.
 
@@ -5943,7 +5943,7 @@ The following example demonstrates a selection of methods and includes the follo
   - A demo class explores a selection of XCO classes and methods. 
 - Exporting the adapted XLSX content (not related to the XCO library; just to visualize newly created XLSX content using XCO)
 
-> **💡 Note**<br>
+> [!NOTE]  
 > - Note [this repository's disclaimer](./README.md#%EF%B8%8F-disclaimer) and [the disclaimer in the documentation about XCO](https://help.sap.com/docs/btp/sap-business-technology-platform/xlsx-read-access) for security considerations when importing and processing external content.
 > - IDE actions represent a simple way of file import. Find more information in section [Excursion: Exploring Demo Display Class Using IDE Actions](#excursion-exploring-demo-display-class-using-ide-actions).
 
@@ -6044,7 +6044,7 @@ The XLSX XCO module works with XLSX content in the form of an xstring. The follo
 - Refer to the comments in the example class below. You can either exit the app now, leaving one entry in the database with the XLSX content, or use the UUID value of the created entry in the `WHERE` clause of the `SELECT` statement at the beginning of the `main` method implementation below.
 
 
-> **💡 Note**<br>
+> [!NOTE]  
 > - If there are issues with the UI (e.g. you cannot upload), try out UI V2.
 > - Create a new service definition, e.g. right-click the *Service Definition* folder and choose *New Service Definition*. 
 > - Provide a name (e.g. `ZUI_TDEMO_ABAP_XLSX_O2`) and description. Choose *Next*.
@@ -6087,7 +6087,7 @@ The XLSX XCO module works with XLSX content in the form of an xstring. The follo
 
 Assuming you have the XLSX content created and uploaded above on your system, you can explore the following example using the XCO classes/methods. Set up a demo class called `zcl_demo_abap` and use the code provided below. After activating it, choose *F9* in ADT to run the class. The example is designed to show output in the console. 
 
-> **💡 Note**<br>
+> [!NOTE]  
 > - Refer to the comments in the code for information.
 > - If you have used different names than those in this example, make sure to replace those names in the code.
 > - If your artifacts have a different setup, names, or XLSX content, the example class will not function properly. You willl need to modify the class code to match your specific requirements.
@@ -7517,7 +7517,7 @@ The following code snippet uses the `XCO_CP_CTS` class, among others, to demonst
   - Dynamically calling the `calculate` method to confirm the class creation. For more details, refer to the [Dynamic Programming](06_Dynamic_Programming.md) cheat sheet.
 - Programmatically releasing a transport task and request
 
-> **💡 Note**<br>
+> [!NOTE]  
 > - The example is simplified and non-semantic, exploring various functionalities offered by the XCO APIs. See the repository's [disclaimer](./README.md#%EF%B8%8F-disclaimer).
 > - For more information and code snippets, refer to the [SAP Help documentation](https://help.sap.com/docs/btp/sap-business-technology-platform/correction-and-transport-system).
 > - The example assumes you have a transportable package, represented by the `pkg_name` constant in the example.

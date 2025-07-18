@@ -33,7 +33,7 @@ This cheat sheet ...
 - focuses on [ABAP for Cloud Development](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_for_cloud_dev_glosry.htm), and therefore, does not cover certain DDIC topics and functionalities that are not relevant or supported in this context. 
 - invites you to a more in-depth exploration. Make sure that you refer to the documentation for more details and the complete picture.
 
-> **💡 Note**<br>
+> [!NOTE]
 > - While several DDIC objects are still supported in [ABAP Cloud](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_cloud_glosry.htm) (excluding, for example, classic DDIC views), it is recommended to use their ABAP CDS-based successors for new developments.
 
 ## Introduction
@@ -57,7 +57,7 @@ This cheat sheet ...
 - Many repository objects are created from source code using dedicated data definition languages, as opposed to the form-based creation you may be familiar from [classic ABAP](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenclassic_abap_glosry.htm).
 
 
-> **💡 Note**<br>
+> [!NOTE]
 > - DDIC provides a centralized location for defining and managing types that are frequently (re)used in DDIC, ABAP CDS, or ABAP programs. This means that a type change in DDIC will automatically update in all relevant places, potentially causing inconsistencies and making adjustments necessary. To find the users of a particular type in ADT, right-click the type and select *Get Where-Used List*.
 > - Global access to types is only possible if the package concept does not specify otherwise. A package, which encapsulates repository objects into self-contained units, can be set to disallow external access. Find more information [here](https://help.sap.com/docs/abap-cloud/abap-development-tools-user-guide/editing-abap-packages?locale=en-US&version=sap_btp).
 
@@ -92,7 +92,7 @@ DDIC supports the following data types:
   |  `raw` | Represents byte strings <br>Mapped to `x`  |
 
 
-> **💡 Note**<br>
+> [!NOTE]
 > - There are restrictions when using strings in ABAP CDS and ABAP SQL. For more information, see [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenddic_character_byte_types.htm).
 > - Built-in dictionary types cannot be used directly in ABAP, e.g. for typing local data objects. However, the types can be used in ABAP SQL, and also ABAP CDS, in the context of [typed literals](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentyped_literal_glosry.htm). Find more information in the [ABAP SQL](03_ABAP_SQL.md#typed-literals) cheat sheet.
 
@@ -121,7 +121,7 @@ They can be ...
   - Field labels, primarily for classic ABAP UIs, can be specified. The *Medium Text* field label is exposed to OData.
   - Domains provide additional semantic properties, such as a value range.
 
-> **💡 Note**<br>
+> [!NOTE]
 > - CDS simple types represent successor artifacts of DDIC data elements. 
 > - As is true for all the global types discussed, locally defined types hide identically named global types in ABAP programs.
 
@@ -135,7 +135,7 @@ They can be ...
 - Although domains define type properties, they cannot be used to declare types and data objects with `TYPES` and `DATA` in ABAP programs. They cannot be reused in repository objects other than data elements.
 - You can specify value ranges to set fixed values or intervals as a semantic property. These are typically used for input checks in classic ABAP UIs, which ABAP Cloud does not support. While these value ranges have no effect when used in ABAP statements, they can be used for value helps in the context of CDS views.
 
-> **💡 Note**<br>
+> [!NOTE]
 > In modern ABAP, CDS enumerated types offer a similar functionality for fixed values.
 
 **Example: DDIC Data Elements/Domains**
@@ -210,7 +210,7 @@ DATA char10_dtel_ref TYPE zdemo_abap_dtel_ref.
       - Table types
 - For comprehensive details and more annotations, refer to the [ABAP Keyword Documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenddicddl_define_structure.htm).
 
-> **💡 Note**<br>
+> [!NOTE]
 > DDIC database tables and several CDS entities also represent structured types that can be used as such in ABAP programs.
 
 **Example: DDIC Structures**
@@ -512,7 +512,7 @@ The following example creates two DDIC database tables exploring several options
 - Although DDIC objects can be used in CDS objects, the reverse is not true. For example, a CDS view entity cannot be used in a DDIC database table.
 - While ABAP Cloud still supports several DDIC objects, some have ABAP CDS-based successors. These successors offer advanced functionalities and support modern concepts such as ABAP RAP, which relies on data models defined in ABAP CDS and RAP behavior definitions that determine the model behavior.
 
-> **💡 Note**<br>
+> [!NOTE]
 > - This cheat sheet only emphasizes ABAP CDS objects as global types to be used in ABAP. It does not cover use cases, data modeling aspects, annotations, syntax, and more. Refer to the [documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds.htm) for the complete picture. The executable example of the [CDS View Entities](15_CDS_View_Entities.md) cheat sheet provides a demonstration of a selection of CDS-related syntax.
 > - ABAP CDS objects are created in ADT from source code.
 
@@ -608,7 +608,7 @@ DATA(applies_to_data_cds_st) = tdo_cds_simple_type->applies_to_data( CONV c5( 'a
   - define a base type. Possible base types include `int1`, `int2`, `int4`, `char`, and `numc`, with the last two having a maximum length of 8.
   - include [annotations](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_enum_type_anno.htm) if needed.
 
-> **💡 Note**<br>
+> [!NOTE]
 > - Enumerated types can also be specified in ABAP using the syntax `TYPES BEGIN OF ENUM`. See examples in the [Data Types and Data Objects](16_Data_Types_and_Objects.md) cheat sheet.
 > - Find more information about RTTI, which is used in this and the previous examples, in the [Dynamic Programming](06_Dynamic_Programming.md) cheat sheet.
 
@@ -703,7 +703,7 @@ SELECT * FROM zdemo_abap_fli_ve INTO TABLE @itab_cds_ve.
 SELECT * FROM zdemo_abap_table_function INTO TABLE @itab_cds_tabfunc.
 ```
 
-> **💡 Note**<br>
+> [!NOTE]
 > - Some of the CDS entities can also be used as data sources in ABAP SQL statements, some cannot (for example, CDS custom entities).
 > - [DDIC-based views](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_v1_view_glosry.htm) are obsolete and should not be used anymore.
 
@@ -764,7 +764,7 @@ Using the [XCO library](https://help.sap.com/docs/btp/sap-business-technology-pl
 
 ## Executable Example
 
-> **💡 Note**<br>
+> [!NOTE]
 > - The executable example uses both the created repository objects as described in this cheat sheet and some repository objects of the ABAP cheat sheet repository. The example explores and uses code snippets of this cheat sheet, emphasizing the use of global types in ABAP programs.
 > - [Disclaimer](./README.md#%EF%B8%8F-disclaimer)
 
