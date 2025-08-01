@@ -104,6 +104,7 @@ ABAP cheat sheets[^1] ...
 |[Numeric Operations in ABAP](29_Numeric_Operations.md)|Explores various aspects of numeric operations and calculations in ABAP|- (The cheat sheet includes a copy and paste example class)|
 |[Generative AI](30_Generative_AI.md)|Provides references to detailed information on *Generative AI in ABAP Cloud* and explores released ABAP classes available in the *ABAP AI SDK powered by Intelligent Scenario Lifecycle Management*|- (The cheat sheet includes a copy and paste example class)|
 |[WHERE Conditions](31_WHERE_Conditions.md)|Explores syntax options in ABAP statements that include `WHERE` for data filtering|- (The cheat sheet includes copy and paste example classes)|
+|[Performance Notes](32_Performance_Notes.md)|Explores a selection of performance-related examples, aimed to illustrate potentially inefficient techniques and use of statements|- (The cheat sheet includes a copy and paste example class)|
 
 <br>
 
