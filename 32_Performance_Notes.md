@@ -335,7 +335,7 @@ Overview of covered examples (see also the inline comments in the method impleme
 
 
 <details>
-  <summary>🟢 Click to expand for more information and example code</summary>
+  <summary>🟢 Click to expand for example code</summary>
   <!-- -->
 <br>
 
@@ -539,8 +539,8 @@ CLASS zcl_demo_abap IMPLEMENTATION.
 
     "Dynamically calling all exemplary methods (excluding the main method)
     "The method names are retrieved using RTTI. Refer to the Dynamic Programming ABAP cheat sheet.
-    DATA(oref) = NEW zcl_some_class( ).
-    DATA(methods) = CAST cl_abap_classdescr( cl_abap_typedescr=>describe_by_name( 'ZCL_SOME_CLASS' ) )->methods.
+    DATA(oref) = NEW zcl_demo_abap( ).
+    DATA(methods) = CAST cl_abap_classdescr( cl_abap_typedescr=>describe_by_name( 'ZCL_DEMO_ABAP' ) )->methods.
     DELETE methods WHERE name = 'IF_OO_ADT_CLASSRUN~MAIN'.
     SORT methods BY name ASCENDING.
 
