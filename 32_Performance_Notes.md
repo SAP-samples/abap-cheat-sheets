@@ -4,16 +4,17 @@
 
 - [ABAP Performance Notes](#abap-performance-notes)
   - [Database Access](#database-access)
-    - [Minimizing the Result Set](#minimizing-the-result-set)
-    - [Minimizing the Data Volume](#minimizing-the-data-volume)
-    - [Minimizing Database Accesses](#minimizing-database-accesses)
+    - [Reducing the Result Set](#reducing-the-result-set)
+    - [Reducing the Data Volume](#reducing-the-data-volume)
+    - [Reducing Database Accesses](#reducing-database-accesses)
     - [Using CDS views](#using-cds-views)
-    - [Minimizing the Use of Dynamic ABAP SQL Statements](#minimizing-the-use-of-dynamic-abap-sql-statements)
-    - [Minimizing the Database Load through Buffering](#minimizing-the-database-load-through-buffering)
-  - [Processing internal Tables](#processing-internal-tables)
+    - [Dynamic and Statics ABAP SQL Statements](#dynamic-and-statics-abap-sql-statements)
+    - [Using Buffering](#using-buffering)
+    - [Using Indexes](#using-indexes)
+  - [Processing Internal Tables](#processing-internal-tables)
     - [Single Line Access Using the Primary Table Key and Free Keys](#single-line-access-using-the-primary-table-key-and-free-keys)
     - [Multiline Access and Applying a WHERE Condition](#multiline-access-and-applying-a-where-condition)
-    - [Minimizing Content Transfer](#minimizing-content-transfer)
+    - [Reducing Content Transfer](#reducing-content-transfer)
     - [Block-wise Processing of Table Lines](#block-wise-processing-of-table-lines)
     - [Using Secondary Table Keys to Improve Read Performance](#using-secondary-table-keys-to-improve-read-performance)
     - [Applying a Sort Key when Sorting Internal Tables](#applying-a-sort-key-when-sorting-internal-tables)
@@ -37,7 +38,7 @@ Various factors can influence the runtime of an ABAP program. Key elements affec
 
 ## Database Access
 
-### Minimizing the Result Set
+### Reducing the Result Set
 
 - It is recommended to keep the number of data sets read to a minimum. Avoid reading unnecessary table rows.
 - You can minimize the result set by considering the following aspects:
@@ -52,7 +53,7 @@ Various factors can influence the runtime of an ABAP program. Key elements affec
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-### Minimizing the Data Volume
+### Reducing the Data Volume
 
 Minimizing the transferred data volume can be achieved by considering the following aspects:
 
@@ -61,12 +62,11 @@ Minimizing the transferred data volume can be achieved by considering the follow
 - When updating data with `UPDATE` statements, you can use the `SET` addition to specify specific columns to change. This approach is typically more efficient than modifying table line content in a work area - where only one or few columns are modified - and then applying `UPDATE` using that work area.
 
 > [!NOTE]
-> - The `INTO CORRESPONDING FIELDS` addition to `SELECT` statements requires the system to compare column names, which incurs runtime costs, especially with large data sets.
-> - Using aggregate functions, such as `SUM`, `AVG` or `COUNT`, for calculations can effectively reduce the data volume transferred from the database instead of performing calculations in the program. These aggregate functions incur runtime costs on the database. Positive performance impact can depend on factors such as the efficiency of function use and the number of data sets processed.
+> Using aggregate functions, such as `SUM`, `AVG` or `COUNT`, for calculations can effectively reduce the data volume transferred from the database instead of performing calculations in the program. These aggregate functions incur runtime costs on the database. Positive performance impact can depend on factors such as the efficiency of function use and the number of data sets processed.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-### Minimizing Database Accesses
+### Reducing Database Accesses
 
 You can minimize database accesses by considering the following aspects:
 
@@ -82,7 +82,7 @@ You can minimize database accesses by considering the following aspects:
 - Using joins and subqueries
   - When accessing and combining data from multiple databases, joins are preferable to handling individual data retrievals separately.
   - Subqueries in the `WHERE` and `HAVING` clauses do not transfer data from the database system.
-  - The `FOR ALL ENTRIES` addition in the `SELECT` statement can be used to avoid unnecessary data transfers from the database. The *outer loop* in a nested `SELECT` loop, as mentioned earlier, is here basically represented by internal table content. However, note that if the internal table is empty, all data will be read.
+  - If your use case is to match entries of an internal table when selecting data from a data source, you can also use joins and subqueries with internal tables in `SELECT` statements in modern ABAP to avoid unnecessary data transfers from the database. You may also stumble on the (older) `FOR ALL ENTRIES` addition in `SELECT` statements. Here, internal table content is used to match entries. However, note that if the internal table is empty, all data will be read.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
@@ -95,7 +95,7 @@ You can minimize database accesses by considering the following aspects:
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-### Minimizing the Use of Dynamic ABAP SQL Statements
+### Dynamic and Statics ABAP SQL Statements
 
 - ABAP SQL statements provide syntax options for dynamic programming, such as specifying the data source to read from dynamically.  
 - Dynamically specifying tokens requires runtime evaluation. Static token specification offers better performance.  
@@ -103,7 +103,7 @@ You can minimize database accesses by considering the following aspects:
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-### Minimizing the Database Load through Buffering
+### Using Buffering
 
 - Data from DDIC database tables or CDS entities can be buffered in a table buffer. 
 - Buffering capabilities are determined by the technical settings of the artifacts. For example, for a CDS entity, buffering is determined by annotations and a CDS entity buffer.  
@@ -119,7 +119,7 @@ You can minimize database accesses by considering the following aspects:
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-## Processing internal Tables
+## Processing Internal Tables
 
 > [!NOTE]
 > - Generally, a suitable table type should be chosen based on aspects such as the frequency of table access and modifications.
@@ -146,7 +146,7 @@ You can minimize database accesses by considering the following aspects:
 
 - If not really required, it is recommended to avoid full iteration of internal tables, for example, in `LOOP` statements. 
 - To restrict the table iteration, you can apply a `WHERE` condition and use other additions such as `FROM` and `TO` for index tables.
-- `WHERE` conditions are available for multiple internal table processing statements such `LOOP`, `MODIFY`, and `DELETE`.
+- `WHERE` conditions are available for multiple internal table processing statements such as `LOOP`, `MODIFY`, and `DELETE`.
 - Similar to the notes mentioned in the single line access section, a performant table access is determined by table key specification. Standard tables are iterated without optimization (unless using secondary table keys).
 - Further prerequisites for an optimzation in the `WHERE` conditions are these:
 	- The specified conditions should be transferable to key and value pairs. The key fields should be compared for equality and combined by `AND`, if any.
@@ -156,9 +156,9 @@ You can minimize database accesses by considering the following aspects:
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-### Minimizing Content Transfer
+### Reducing Content Transfer
 
-Contexts of minimizing content transfer are, for example, the following:
+Contexts of reducing content transfer are, for example, the following:
 
 - Using the `TRANSPORTING` addition
 	- Statements like `MODIFY`, `READ`, or `LOOP` support the `TRANSPORTING` addition, which lets you specify the exact fields to process, rather than processing all fields.
@@ -179,7 +179,7 @@ Contexts of minimizing content transfer are, for example, the following:
 - Processing entire table lines at once, such as for insertions or deletions, is more efficient than handling them one at a time.
 - Examples:
   - `INSERT` and `APPEND` statements allow you to add lines from one internal table to another using additions like `LINES OF`. This method is more efficient than copying content line by line.
-  - `FIND ... IN TABLE` and `REPLACE ... IN TABLE` statements used to perform block-wise operations in internal tables with character-like line types are more efficient than a line by line search and replacement.
+  - `FIND ... IN TABLE` and `REPLACE ... IN TABLE` statements used to perform operations in internal tables with character-like line types in one step are more efficient than a line by line search and replacement.
 
 			
 <p align="right"><a href="#top">⬆️ back to top</a></p>
@@ -248,6 +248,9 @@ Examples of string-related contexts:
 - String templates vs. string literals
   - A string template with only literal text is evaluated as an expression at runtime.
   - If a string template does not contain an expression to evaluate, a text string literal with backquotes is advisable.
+  
+- Pattern-based searching
+  - Particularly in basic pattern-based searches, it can be more efficient to use comparison operators and `IF` statements rather than regular expressions using, for example, `FIND ... PCRE` statements.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
@@ -278,12 +281,12 @@ Examples of string-related contexts:
 
 ## Executable Example
 
-To try the example out, create a demo class named `zcl_demo_abap` and paste the code into it. The example also includes a local class in the CCIMP include (Local Types tab in ADT). 
+To try the example out, create a demo class named `zcl_demo_abap` in the SAP BTP ABAP Environment and paste the code into it. The example also includes a local class in the CCIMP include (Local Types tab in ADT). 
 After activation, choose F9 in ADT to execute the class. The example is set up to display output in the console. The class execution may take a while to complete.
 
 The simplified example is set up as follows: 
 - The global class declares multiple components that are used in the demo, including various internal table declarations to illustrate specific examples, such as demonstrating secondary table keys.
-- Several methods are implemented, containing code snippets that show both inefficient and efficient statements. For example, the method `sql_01_reduce_t_rows_a` shows an efficient example for minimizing the result set of `SELECT` statements (Note: Methods include `_a` in the name for the rather efficient examples in many cases). The method `sql_01_reduce_t_rows_z` shows an inefficient example (Note: Methods include `_z` in the name, concluding the example context, showing a rather inefficient example in many cases).
+- Several methods are implemented, containing code snippets that show both inefficient and rather efficient statements. For example, the method `sql_01_reduce_t_rows_a` shows an efficient example for minimizing the result set of `SELECT` statements. The method `sql_01_reduce_t_rows_z` shows an inefficient example.
 - The runtime analysis in this self-contained example is as follows: The code snippet for which the runtime should be measured is enclosed by two timestamp retrievals using `utclong_current( )`. The runtime is analysed by calculating the delta of the two timestamp values, indicating the used runtime for the code snippet. To have a more meaningful example regarding the runtime analysis, the snippets are executed multiple times, indicated by enclosing them in a `DO` loop. The runtime delta value is added to an internal table collecting all runtime delta values for the specific code snippet for all loop iterations. Finally, the average runtime is calculated based on the collected runtime delta values. This average runtime value is output to the console for each code snippet, evaluated in each method. This approach aims to provide a balanced view of runtime. Note that this implementation is for exploration and demonstration purposes only. For proper analyses, the mentioned tools should be used.
 - The parallelization example uses a local class implemented in the CCIMP include.
 
@@ -295,22 +298,22 @@ Overview of covered examples (see also the inline comments in the method impleme
 	- Reading a specific number of datase using `UP TO n ROWS` vs. reading all table rows and discarding unnecessary data
 	- Specifying columns in the `SELECT` list vs. specifying `SELECT *`
 	- Single database access vs. multiple accesses in a loop
-	- Using `FOR ALL ENTRIES` vs. repeated database access in a loop
+	- Using joins, `WHERE EXISTS` and `FOR ALL ENTRIES` vs. repeated database access in a loop
 	- Block-wise modify operation vs. line by line modify operation in a loop
 	- Using a join vs. using a nested `SELECT` loop
 	- Using an `UPDATE ... SET` statement vs. `UPDATE` using a work area
 	- Using an aggregate function vs. reading all table rows and calculation of average value
 - <strong>Internal table processing</strong>
 	- Reading single lines using the primary table key: standard table vs. sorted table vs. hashed table	
-	- Reading single lines using the incomplete primary table key: hashed table vs. sorted table (both left-aligned partial key and not left-aligned, partial key)	
+	- Reading single lines using the incomplete primary table key: hashed table vs. sorted table (both partial, left-aligned key and partial, not left-aligned key)	
 	- Reading single lines in standard table using `BINARY SEARCH` and without the addition (both examples use a preceding `SORT` statement)
-	- Loop across internal table by specifying a `WHERE` condition: standard table vs. sorted (full key + partial,  left-algined key + partial, not left-algined key) vs. hashed (full key + partially specified key)
+	- Loop across internal table by specifying a `WHERE` condition: standard table vs. sorted (full key + partial,  left-aligned key + partial, not left-aligned key) vs. hashed (full key + partially specified key)
 	- Loop across standard table:  Specifying a `WHERE` condition vs. no `WHERE` condition and filtering out data in the loop
 	- Loop across deep standard table (includes a nested structure and internal table) specifying target areas: Work area vs. field symbol vs. data reference variable
 	- `READ TABLE ... WITH` statement vs. `READ TABLE ... WHERE` statement 
 	- Modifying internal table content in a loop: Work area as target area, modifying the target area, applying a `MODIFY` statement vs. direct modification using a field symbol vs. direct modification using a data reference variable
 	- Block-wise insertion into an internal table vs. line by line insertion in a loop
-	- Block-wise find and replace operation in an internal table with character-like data type vs. line by line search and replacement
+	- Find and replace operations on an internal table with character-like data type vs. line by line search and replacement
 	- Restricting the transfer of table line content using the `TRANSPORTING` addition vs. not using the addition and overwriting all table line content based on a work area
 	- Reading single lines from a standard table: Using a secondary table key vs. using the primary table key (which corresponds to the secondary table key in the other table)
 	- Loop across a standard table that specifies a secondary table key: Performing only reads in the loop vs. performing reads and modifications
@@ -321,6 +324,7 @@ Overview of covered examples (see also the inline comments in the method impleme
     - `WHILE` vs `DO`
     - Concatenating a variable-length string of type `string` vs. concatenating a fixed-length string of type `c`
 	- String specified as string literal using backquotes vs. string template only using characters, without embedded expression
+	- Pattern-based search using a comparison operator vs. a `FIND PCRE` statement and a regular expression
 	- Calculation of numbers that share the same type vs. calculation of numbers that have different types
 	- Actual parameters passed by reference vs. actual parameters passed by value
 	- Parallel processing vs. sequential processing
@@ -329,7 +333,7 @@ Overview of covered examples (see also the inline comments in the method impleme
 > [!NOTE]
 > - As a prerequisite, you have imported the ABAP cheat sheet repository, as this example uses some of its artifacts.
 > - Since the example contains multiple loops, the execution may take some time to complete.
-> - This example is for exploration, experimentation, and demonstration purposes only. It is <strong>not</strong> suitable for accurate runtime or performance testing (refer to the note in the cheat sheet introduction). Due to its simplified nature and the various factors that can influence the runtime of an ABAP program, results may vary and may not be entirely accurate, even across multiple runs. The displayed results may not always accurately reflect the performance notes from the cheat sheets. Some examples may be clearer than others, so you might consider running the example multiple times.
+> - This example is for exploration, experimentation, and demonstration purposes only. It is <strong>not</strong> suitable for accurate runtime or performance testing (refer to the note in the cheat sheet introduction). Due to its simplified nature and the various factors that can influence the runtime of an ABAP program, results may vary and may not be entirely accurate, even across multiple runs. The displayed results may not always accurately reflect the performance notes from the cheat sheets, and some may be clearer than others. You might run the example again.
 > - The example code snippets do not claim to illustrate best practices. Instead, they aim to highlight potential pitfalls when handling data-intensive tasks in ABAP programs. Despite manually calculating runtime, without tool support, the results should indicate trends and reveal inefficient coding styles. 
 > - Note the disclaimer in the ABAP cheat sheet repository's README.
 
@@ -383,6 +387,7 @@ CLASS zcl_demo_abap DEFINITION
     CONSTANTS loop_count_5 TYPE i VALUE 5.
     CONSTANTS loop_count_10 TYPE i VALUE 10.
     CONSTANTS loop_count_50 TYPE i VALUE 50.
+    CONSTANTS loop_count_250 TYPE i VALUE 250.
     CONSTANTS loop_count_500 TYPE i VALUE 500.
     CONSTANTS loop_count_1000 TYPE i VALUE 1000.
 
@@ -412,6 +417,8 @@ CLASS zcl_demo_abap DEFINITION
       sql_05_reduce_db_access_a IMPORTING out TYPE REF TO if_oo_adt_classrun_out name TYPE abap_methname,
       sql_05_reduce_db_access_z IMPORTING out TYPE REF TO if_oo_adt_classrun_out name TYPE abap_methname,
       sql_06_reduce_db_access_a IMPORTING out TYPE REF TO if_oo_adt_classrun_out name TYPE abap_methname,
+      sql_06_reduce_db_access_b IMPORTING out TYPE REF TO if_oo_adt_classrun_out name TYPE abap_methname,
+      sql_06_reduce_db_access_c IMPORTING out TYPE REF TO if_oo_adt_classrun_out name TYPE abap_methname,
       sql_06_reduce_db_access_z IMPORTING out TYPE REF TO if_oo_adt_classrun_out name TYPE abap_methname,
       sql_07_reduce_db_access_a IMPORTING out TYPE REF TO if_oo_adt_classrun_out name TYPE abap_methname,
       sql_07_reduce_db_access_z IMPORTING out TYPE REF TO if_oo_adt_classrun_out name TYPE abap_methname,
@@ -467,14 +474,16 @@ CLASS zcl_demo_abap DEFINITION
       misc_01_while_do_z IMPORTING out TYPE REF TO if_oo_adt_classrun_out name TYPE abap_methname,
       misc_02_strings_a IMPORTING out TYPE REF TO if_oo_adt_classrun_out name TYPE abap_methname,
       misc_02_strings_z IMPORTING out TYPE REF TO if_oo_adt_classrun_out name TYPE abap_methname,
-      misc_02_string_templates_a IMPORTING out TYPE REF TO if_oo_adt_classrun_out name TYPE abap_methname,
-      misc_02_string_templates_z IMPORTING out TYPE REF TO if_oo_adt_classrun_out name TYPE abap_methname,
-      misc_03_type_conversion_a IMPORTING out TYPE REF TO if_oo_adt_classrun_out name TYPE abap_methname,
-      misc_03_type_conversion_z IMPORTING out TYPE REF TO if_oo_adt_classrun_out name TYPE abap_methname,
-      misc_04_formal_parameters_a IMPORTING out TYPE REF TO if_oo_adt_classrun_out name TYPE abap_methname,
-      misc_04_formal_parameters_z IMPORTING out TYPE REF TO if_oo_adt_classrun_out name TYPE abap_methname,
-      misc_05_parallel_processing_a IMPORTING out TYPE REF TO if_oo_adt_classrun_out name TYPE abap_methname,
-      misc_05_parallel_processing_z IMPORTING out TYPE REF TO if_oo_adt_classrun_out name TYPE abap_methname,
+      misc_03_string_templates_a IMPORTING out TYPE REF TO if_oo_adt_classrun_out name TYPE abap_methname,
+      misc_03_string_templates_z IMPORTING out TYPE REF TO if_oo_adt_classrun_out name TYPE abap_methname,
+      misc_04_search_pattern_a IMPORTING out TYPE REF TO if_oo_adt_classrun_out name TYPE abap_methname,
+      misc_04_search_pattern_z IMPORTING out TYPE REF TO if_oo_adt_classrun_out name TYPE abap_methname,
+      misc_05_type_conversion_a IMPORTING out TYPE REF TO if_oo_adt_classrun_out name TYPE abap_methname,
+      misc_05_type_conversion_z IMPORTING out TYPE REF TO if_oo_adt_classrun_out name TYPE abap_methname,
+      misc_06_formal_parameters_a IMPORTING out TYPE REF TO if_oo_adt_classrun_out name TYPE abap_methname,
+      misc_06_formal_parameters_z IMPORTING out TYPE REF TO if_oo_adt_classrun_out name TYPE abap_methname,
+      misc_07_parallel_processing_a IMPORTING out TYPE REF TO if_oo_adt_classrun_out name TYPE abap_methname,
+      misc_07_parallel_processing_z IMPORTING out TYPE REF TO if_oo_adt_classrun_out name TYPE abap_methname,
       eml_01_eml_in_loop_a IMPORTING out TYPE REF TO if_oo_adt_classrun_out name TYPE abap_methname,
       eml_01_eml_in_loop_z IMPORTING out TYPE REF TO if_oo_adt_classrun_out name TYPE abap_methname.
 
@@ -499,10 +508,10 @@ CLASS zcl_demo_abap DEFINITION
     "Demo internal tables used by the examples
     TYPES: BEGIN OF ty_tab,
              comp1 TYPE i,
-             comp2 TYPE c LENGTH 20,
-             comp3 TYPE c LENGTH 20,
-             comp4 TYPE c LENGTH 20,
-             comp5 TYPE i,
+             comp2 TYPE i,
+             comp3 TYPE i,
+             comp4 TYPE c LENGTH 50,
+             comp5 TYPE c LENGTH 50,
              comp6 TYPE i,
            END OF ty_tab.
 
@@ -513,16 +522,17 @@ CLASS zcl_demo_abap DEFINITION
                 sorted_tab_mult_key_comp   TYPE SORTED TABLE OF ty_tab WITH UNIQUE KEY comp1 comp2 comp3,
                 hashed_tab_mult_key_comp   TYPE HASHED TABLE OF ty_tab WITH UNIQUE KEY comp1 comp2 comp3,
                 standard_tab_w_default_key TYPE TABLE OF ty_tab,
-                carrid_tab                 TYPE TABLE OF zdemo_abap_flsch-carrid WITH EMPTY KEY,
+                key_tab                    TYPE TABLE OF zdemo_abap_tab1-key_field WITH EMPTY KEY,
+                itab1                      TYPE TABLE OF zdemo_abap_tab1 WITH EMPTY KEY,
                 flsch_tab                  TYPE TABLE OF zdemo_abap_flsch WITH EMPTY KEY,
                 carr_tab                   TYPE TABLE OF zdemo_abap_carr WITH EMPTY KEY.
 
     TYPES: BEGIN OF ty_deep_tab,
              comp1 TYPE i,
-             comp2 TYPE c LENGTH 20,
-             comp3 TYPE c LENGTH 20,
-             comp4 TYPE c LENGTH 20,
-             comp5 TYPE i,
+             comp2 TYPE i,
+             comp3 TYPE i,
+             comp4 TYPE c LENGTH 50,
+             comp5 TYPE c LENGTH 50,
              comp6 TYPE i,
              comp7 TYPE string_table,
              comp8 TYPE ty_tab,
@@ -593,7 +603,9 @@ CLASS zcl_demo_abap IMPLEMENTATION.
     INSERT zdemo_abap_tab1 FROM TABLE @demo_tab.
 
     "Populating demo internal tables
-    carrid_tab = VALUE #( ( 'UA' ) ( 'DL' ) ( 'LH' ) ( 'AA' ) ( 'AZ' ) ).
+    DO loop_count_250 TIMES.
+      APPEND sy-index TO key_tab.
+    ENDDO.
 
     carr_tab = VALUE #( ( carrid = 'AB' carrname = 'AB Airways' )
           ( carrid = 'CD' carrname = 'CD Airways' )
@@ -603,18 +615,18 @@ CLASS zcl_demo_abap IMPLEMENTATION.
 
     DO loop_count_1000 TIMES.
       INSERT VALUE #( comp1 = sy-index comp2 = sy-index comp3 = sy-index comp4 = sy-index comp5 = sy-index comp6 = sy-index ) INTO TABLE sorted_tab ASSIGNING FIELD-SYMBOL(<fs>).
-      INSERT <fs> INTO TABLE standard_tab.
-      INSERT <fs> INTO TABLE hashed_tab.
-      INSERT <fs> INTO TABLE standard_tab_w_sec_key.
-      INSERT <fs> INTO TABLE sorted_tab_mult_key_comp.
-      INSERT <fs> INTO TABLE hashed_tab_mult_key_comp.
-      INSERT <fs> INTO TABLE standard_tab_w_default_key.
 
       INSERT CORRESPONDING #( <fs> ) INTO TABLE deep_standard_tab ASSIGNING FIELD-SYMBOL(<deep>).
       <deep>-comp7 = VALUE #( ( `A` ) ( `B` ) ( `A` ) ( `P` ) ).
       <deep>-comp8 = <fs>.
     ENDDO.
 
+    INSERT LINES OF sorted_tab INTO TABLE standard_tab.
+    INSERT LINES OF sorted_tab INTO TABLE hashed_tab.
+    INSERT LINES OF sorted_tab INTO TABLE standard_tab_w_sec_key.
+    INSERT LINES OF sorted_tab INTO TABLE sorted_tab_mult_key_comp.
+    INSERT LINES OF sorted_tab INTO TABLE hashed_tab_mult_key_comp.
+    INSERT LINES OF sorted_tab INTO TABLE standard_tab_w_default_key.
   ENDMETHOD.
 
   METHOD sql_10_db_logic_a.
@@ -920,17 +932,57 @@ CLASS zcl_demo_abap IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD sql_06_reduce_db_access_a.
+    "Using an inner join
+
+    DO loop_count_50 TIMES.
+      ts1 = utclong_current( ).
+**********************************************************************
+      SELECT key_field, char1, char2, num1, num2
+          FROM zdemo_abap_tab1
+          INNER JOIN @key_tab AS tab
+          ON zdemo_abap_tab1~key_field = tab~table_line
+          INTO CORRESPONDING FIELDS OF TABLE @itab1.
+**********************************************************************
+      store_runtime( high = utclong_current( ) low = ts1 ).
+    ENDDO.
+
+    runtime = get_avg_runtime(  ).
+    out->write( name ).
+    out->write( |{ runtime STYLE = SIMPLE }| ).
+  ENDMETHOD.
+
+  METHOD sql_06_reduce_db_access_b.
+    "Using WHERE EXISTS
+
+    DO loop_count_50 TIMES.
+      ts1 = utclong_current( ).
+**********************************************************************
+      SELECT key_field, char1, char2, num1, num2
+        FROM zdemo_abap_tab1
+        WHERE EXISTS ( SELECT 'X' FROM @key_tab AS tab WHERE zdemo_abap_tab1~key_field = tab~table_line )
+        INTO CORRESPONDING FIELDS OF TABLE @itab1.
+**********************************************************************
+      store_runtime( high = utclong_current( ) low = ts1 ).
+    ENDDO.
+
+    runtime = get_avg_runtime(  ).
+    out->write( name ).
+    out->write( |{ runtime STYLE = SIMPLE }| ).
+  ENDMETHOD.
+
+
+  METHOD sql_06_reduce_db_access_c.
     "Using the FOR ALL ENTRIES addition
 
     DO loop_count_50 TIMES.
       ts1 = utclong_current( ).
 **********************************************************************
-      IF carrid_tab IS NOT INITIAL.
-        SELECT carrid, connid, cityfrom, countryfr, cityto, countryto
-         FROM zdemo_abap_flsch
-         FOR ALL ENTRIES IN @carrid_tab
-         WHERE carrid = @carrid_tab-table_line
-         INTO CORRESPONDING FIELDS OF TABLE @flsch_tab.
+      IF key_tab IS NOT INITIAL.
+        SELECT key_field, char1, char2, num1, num2
+         FROM zdemo_abap_tab1
+         FOR ALL ENTRIES IN @key_tab
+         WHERE key_field = @key_tab-table_line
+         INTO CORRESPONDING FIELDS OF TABLE @itab1.
       ENDIF.
 **********************************************************************
       store_runtime( high = utclong_current( ) low = ts1 ).
@@ -947,11 +999,11 @@ CLASS zcl_demo_abap IMPLEMENTATION.
     DO loop_count_50 TIMES.
       ts1 = utclong_current( ).
 **********************************************************************
-      LOOP AT carrid_tab INTO DATA(wa).
-        SELECT carrid, connid, cityfrom, countryfr, cityto, countryto
-          FROM zdemo_abap_flsch
-          WHERE carrid = @wa
-          APPENDING CORRESPONDING FIELDS OF TABLE @flsch_tab.
+      LOOP AT key_tab INTO DATA(wa).
+        SELECT key_field, char1, char2, num1, num2
+          FROM zdemo_abap_tab1
+          WHERE key_field = @wa
+          APPENDING CORRESPONDING FIELDS OF TABLE @itab1.
       ENDLOOP.
 **********************************************************************
       store_runtime( high = utclong_current( ) low = ts1 ).
@@ -1073,8 +1125,8 @@ CLASS zcl_demo_abap IMPLEMENTATION.
         FROM zdemo_abap_tab1
         WHERE key_field < 20
         INTO @DATA(wa_tab).
-          wa_tab-char1 = 'X'.
-          UPDATE zdemo_abap_tab1 FROM @wa_tab.
+        wa_tab-char1 = 'X'.
+        UPDATE zdemo_abap_tab1 FROM @wa_tab.
       ENDSELECT.
 **********************************************************************
       store_runtime( high = utclong_current( ) low = ts1 ).
@@ -1883,7 +1935,7 @@ CLASS zcl_demo_abap IMPLEMENTATION.
     out->write( |{ runtime STYLE = SIMPLE }| ).
   ENDMETHOD.
 
-  METHOD misc_02_string_templates_a.
+  METHOD misc_03_string_templates_a.
     "String specified as string literal using backquotes
 
     DO 5000 TIMES.
@@ -1900,7 +1952,7 @@ CLASS zcl_demo_abap IMPLEMENTATION.
     out->write( |{ runtime STYLE = SIMPLE }| ).
   ENDMETHOD.
 
-  METHOD misc_02_string_templates_z.
+  METHOD misc_03_string_templates_z.
     "String template only using characters, without embedded expression
 
     DO 5000 TIMES.
@@ -1917,7 +1969,7 @@ CLASS zcl_demo_abap IMPLEMENTATION.
     out->write( |{ runtime STYLE = SIMPLE }| ).
   ENDMETHOD.
 
-  METHOD misc_03_type_conversion_a.
+  METHOD misc_05_type_conversion_a.
     "Calculation of numbers that share the same type
 
     DO loop_count_1000 TIMES.
@@ -1941,7 +1993,7 @@ CLASS zcl_demo_abap IMPLEMENTATION.
     out->write( |{ runtime STYLE = SIMPLE }| ).
   ENDMETHOD.
 
-  METHOD misc_03_type_conversion_z.
+  METHOD misc_05_type_conversion_z.
     "Calculation of numbers that have different types triggering implicit
     "type conversions
 
@@ -1984,7 +2036,7 @@ CLASS zcl_demo_abap IMPLEMENTATION.
     p = l.
   ENDMETHOD.
 
-  METHOD misc_04_formal_parameters_a.
+  METHOD misc_06_formal_parameters_a.
     "Actual parameters passed by reference
 
     DATA(str_tab) = VALUE string_table( ( `A` ) ( `B` ) ( `A` ) ( `P` ) ).
@@ -2005,7 +2057,7 @@ CLASS zcl_demo_abap IMPLEMENTATION.
     out->write( |{ runtime STYLE = SIMPLE }| ).
   ENDMETHOD.
 
-  METHOD misc_04_formal_parameters_z.
+  METHOD misc_06_formal_parameters_z.
     "Actual parameters passed by value
 
     DATA(str_tab) = VALUE string_table( ( `A` ) ( `B` ) ( `A` ) ( `P` ) ).
@@ -2026,7 +2078,7 @@ CLASS zcl_demo_abap IMPLEMENTATION.
     out->write( |{ runtime STYLE = SIMPLE }| ).
   ENDMETHOD.
 
-  METHOD misc_05_parallel_processing_a.
+  METHOD misc_07_parallel_processing_a.
     "Demonstrating parallelization using the cl_abap_parallel class
     "The implementation includes inserting many entries to a database
     "table, executed in parallel. Then, the added entries are retrieved.
@@ -2067,10 +2119,9 @@ CLASS zcl_demo_abap IMPLEMENTATION.
       out->write( |{ diff STYLE = SIMPLE }| ).
       out->write( |Table lines with value num1 = 1: { lines( it ) }| ).
     ENDIF.
-
   ENDMETHOD.
 
-  METHOD misc_05_parallel_processing_z.
+  METHOD misc_07_parallel_processing_z.
     "Sequential processing in contrast to the parallel processing
     "The implementation includes inserting many entries to a database
     "table, executed in parallel. Then, the added entries are retrieved.
@@ -2254,6 +2305,47 @@ CLASS zcl_demo_abap IMPLEMENTATION.
          ENTITY root
          UPDATE FIELDS ( field3 field4 ) WITH VALUE #( ( <fs> ) ).
       ENDLOOP.
+**********************************************************************
+      store_runtime( high = utclong_current( ) low = ts1 ).
+    ENDDO.
+
+    runtime = get_avg_runtime( ).
+    out->write( name ).
+    out->write( |{ runtime STYLE = SIMPLE }| ).
+  ENDMETHOD.
+
+  METHOD misc_04_search_pattern_a.
+  "Simple pattern-based search using IF and CP
+  DATA(str) = `abc_def_ghi`.
+
+  DO loop_count_50 TIMES.
+      ts1 = utclong_current( ).
+**********************************************************************
+      IF str CP `*f#_*`.
+       ...
+      ENDIF.
+**********************************************************************
+      store_runtime( high = utclong_current( ) low = ts1 ).
+    ENDDO.
+
+    runtime = get_avg_runtime( ).
+    out->write( name ).
+    out->write( |{ runtime STYLE = SIMPLE }| ).
+  ENDMETHOD.
+
+  METHOD misc_04_search_pattern_z.
+  "Using FIND and a regular expression
+
+  DATA(str) = `abc_def_ghi`.
+
+  DO loop_count_50 TIMES.
+      ts1 = utclong_current( ).
+**********************************************************************
+      FIND PCRE `.*f_.*` in str.
+
+      IF sy-subrc = 0.
+       ...
+      ENDIF.
 **********************************************************************
       store_runtime( high = utclong_current( ) low = ts1 ).
     ENDDO.
