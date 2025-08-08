@@ -11261,7 +11261,293 @@ ENDCLASS.
 
 </details>  
 
+<br>
 
+<details>
+  <summary>🟢 Proxy</summary>
+  <!-- -->
+
+<br>
+
+- The proxy design pattern proposes that an object of a class serves as a surrogate for another object.
+- This means users interact with objects of a proxy class instead of interacting directly with an object of the original class.
+- In this way, the proxy class can delegate and forward access to the original class as if users were working directly with it.
+- Among the use cases for this design pattern is access control. A proxy class manages and restricts access to objects of another class, particularly for sensitive operations that only authorized users should perform. This setup prevents unauthorized access to the original class, ensuring that its methods cannot be called through the proxy. Additionally, you can enhance the proxy class with features like a logging mechanism that the original class does not provide, without modifying the original class itself. Other potential use cases include proxy classes that serve as surrogates for objects located in remote destinations, allowing interaction with remote objects through these proxies.
+
+Example notes:
+- The simplified example illustrates an access control context where only authorized users can retrieve data via a proxy class.  
+- This example demonstrates the proxy design pattern with the following declarations and implementations:  
+  - Global class:  
+    - Implements the `if_oo_adt_classrun` interface, so the class can be run using F9 in ADT.
+    - Serves as a vehicle for showcasing the design pattern. The declarations and implementations in the CCIMP include are relevant for conceptual considerations.  
+    - The implementation includes multiple access attempts, i.e. method calls, through the proxy class. If authorized, the calls are delegated to the original class. It includes both successful and discarded calls, and finally, it retrieves and displays the content of a log table.
+  - CCIMP include (Local Types tab in ADT):  
+	- Interface `lif_user_info`: Defines the common interface for both the original and proxy classes.  
+	- Class `lcl_user_info`: Represents the original class that implements the interface and contains the logic for retrieving user information.
+	- Class `lcl_proxy`: 
+		- Represents the proxy class. 
+		- Implements the interface to serve as a surrogate of the original class. So, users interact with this class instead of the the original class. 
+		- The class maintains a reference to the original class and delegates requests to it. The logic can only be executed, and data can only be retrieved if authentication validation succeeds. The example uses hardcoded demo values for usernames and passwords. If validation fails, the an object of the original class cannot be created, and exception is raised (local exception class `lcx_error`). 
+		- The original class, `lcl_user_info`, is declared with `CREATE PRIVATE` to prevent external object creation. Only the class itself and its friends can instantiate objects, which is why the proxy class is declared as a friend of the class.
+		- The proxy class includes additional functionality by implementing a simple logging mechanism. In this example, logging is achieved through entries in an internal table, which is a static component to track all access attempts from the internal session. Logging to a database table for permanent storage may be an option.
+
+
+<table>
+
+<tr>
+<td> Class include </td> <td> Code </td>
+</tr>
+
+<tr>
+<td> 
+
+Global class
+
+ </td>
+
+ <td> 
+
+``` abap
+CLASS zcl_demo_abap DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
+
+  PUBLIC SECTION.
+    INTERFACES if_oo_adt_classrun.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+ENDCLASS.
+
+CLASS zcl_demo_abap IMPLEMENTATION.
+
+  METHOD if_oo_adt_classrun~main.
+
+    out->write( `User that is allowed to get user info` ).
+    TRY.
+        DATA(oref_power_user) = NEW lcl_proxy( username = `power_user` password = `abc123` ).
+        DATA(info_a) = oref_power_user->lif_user_info~get_user_info( user_id = `A0001` ).
+        DATA(info_b) = oref_power_user->lif_user_info~get_user_info( user_id = `A0002` ).
+
+        out->write( info_a ).
+        out->write( info_b ).
+      CATCH lcx_error INTO DATA(error).
+        out->write( error->get_text( ) ).
+    ENDTRY.
+
+    out->write( |\n| ).
+    out->write( `User that is not allowed to get user info` ).
+    TRY.
+        DATA(oref_other_user) = NEW lcl_proxy( username = `other_user` password = `some_pw` ).
+        DATA(info_c) = oref_other_user->lif_user_info~get_user_info( user_id = `A0003` ).
+        DATA(info_d) = oref_other_user->lif_user_info~get_user_info( user_id = `A0004` ).
+
+        out->write( info_c ).
+        out->write( info_d ).
+      CATCH lcx_error INTO error.
+        out->write( error->get_text( ) ).
+    ENDTRY.
+
+    out->write( |\n| ).
+    out->write( `Wrong credentials` ).
+    TRY.
+        DATA(oref_typo) = NEW lcl_proxy( username = `power_user` password = `abc1234` ).
+        DATA(info_e) = oref_typo->lif_user_info~get_user_info( user_id = `A0005` ).
+        DATA(info_f) = oref_typo->lif_user_info~get_user_info( user_id = `A0006` ).
+
+        out->write( info_e ).
+        out->write( info_f ).
+      CATCH lcx_error INTO error.
+        out->write( error->get_text( ) ).
+    ENDTRY.
+
+    out->write( |\n| ).
+    out->write( `Log` ).
+    DATA(log) = lcl_proxy=>get_log( ).
+    out->write( log ).
+
+  ENDMETHOD.
+ENDCLASS.
+``` 
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+CCIMP include (Local Types tab in ADT)
+
+ </td>
+
+ <td> 
+
+``` abap
+*&---------------------------------------------------------------------*
+*& Interface serving as the common interface for both the original
+*& and proxy classes
+*&---------------------------------------------------------------------*
+
+INTERFACE lif_user_info.
+  METHODS get_user_info IMPORTING user_id     TYPE string
+                        RETURNING VALUE(info) TYPE string.
+ENDINTERFACE.
+
+*&---------------------------------------------------------------------*
+*& Local exception class for errors due to failed authorization
+*& validations
+*&---------------------------------------------------------------------*
+
+CLASS lcx_error DEFINITION INHERITING FROM cx_static_check.
+  PUBLIC SECTION.
+    INTERFACES if_t100_dyn_msg.
+
+    DATA text TYPE string READ-ONLY.
+
+    METHODS constructor
+      IMPORTING
+        textid   LIKE if_t100_message=>t100key OPTIONAL
+        previous LIKE previous OPTIONAL
+        text     TYPE string OPTIONAL.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+ENDCLASS.
+
+CLASS lcx_error IMPLEMENTATION.
+  METHOD constructor ##ADT_SUPPRESS_GENERATION.
+    super->constructor( previous = previous ).
+
+    me->text = text.
+    CLEAR me->textid.
+    IF textid IS INITIAL.
+      if_t100_message~t100key = if_t100_message=>default_textid.
+    ELSE.
+      if_t100_message~t100key = textid.
+    ENDIF.
+  ENDMETHOD.
+ENDCLASS.
+
+*&---------------------------------------------------------------------*
+*& Original class
+*&---------------------------------------------------------------------*
+
+"- Contains the business logic for retrieving user information
+"- Declared with CREATE PRIVATE to prevent external object creation. Only the
+"  class itself and its friends can instantiate objects, which is why the proxy
+"  class is declared as a friend of the class. Since the proxy class is not
+"  known yet in the CCIMP include, the class declaration is deferred.
+
+CLASS lcl_proxy DEFINITION DEFERRED.
+
+CLASS lcl_user_info DEFINITION CREATE PRIVATE FRIENDS lcl_proxy.
+  PUBLIC SECTION.
+    INTERFACES lif_user_info.
+  PRIVATE SECTION.
+    "For demo purposes, adding hardcoded values for a user authorized
+    "to retrieve the data.
+    CONSTANTS: user_name TYPE string VALUE `power_user`,
+               pw        TYPE string VALUE `abc123`.
+ENDCLASS.
+
+CLASS lcl_user_info IMPLEMENTATION.
+  METHOD lif_user_info~get_user_info.
+
+    "Here goes an operation to get user information.
+*    SELECT user_id, info_a, info_b
+*     FROM some_data_source
+*     WHERE user_id = @user_id
+*     INTO ...
+
+    info = |Information for user { user_id }: Some information ...|.
+
+  ENDMETHOD.
+ENDCLASS.
+
+*&---------------------------------------------------------------------*
+*& Proxy class
+*&---------------------------------------------------------------------*
+
+"- Implements the interface to serve as a surrogate of the original class.
+"  So, users interact with this class instead of the the original class.
+"- Maintains a reference to the original class and delegates requests to it.
+"  The business logic can only be executed, and data can only be retrieved
+"  if authentication validation succeeds. If validation fails, the an object
+"  of the original class cannot be created, and exception is raised.
+"- Extra functionality is added to the proxy class by implementing a
+"  simplified logging mechanism, realized by an internal table in the example.
+CLASS lcl_proxy DEFINITION.
+  PUBLIC SECTION.
+    INTERFACES lif_user_info.
+    METHODS constructor IMPORTING username TYPE string
+                                  password TYPE string
+                        RAISING   lcx_error.
+
+    TYPES: BEGIN OF ty_log,
+             user           TYPE string,
+             time_stamp     TYPE utclong,
+             access_granted TYPE abap_boolean,
+           END OF ty_log,
+           tt_log TYPE TABLE OF ty_log WITH EMPTY KEY.
+
+    CLASS-METHODS: add_log_entry IMPORTING user_name      TYPE string
+                                           time_stamp     TYPE utclong
+                                           access_granted TYPE abap_boolean,
+                   get_log RETURNING VALUE(log) TYPE tt_log.
+
+  PRIVATE SECTION.
+
+    DATA oref TYPE REF TO lcl_user_info..
+    CLASS-DATA log_tab TYPE tt_log.
+ENDCLASS.
+
+CLASS lcl_proxy IMPLEMENTATION.
+  METHOD constructor.
+
+    "Here goes a proper authorization check ...
+    "The simplified example includes a dummy authorization check.
+    IF username = lcl_user_info=>user_name AND password = lcl_user_info=>pw.
+      "Adding a log entry
+      add_log_entry( user_name = username time_stamp = utclong_current( ) access_granted = abap_true ).
+
+      "Instantiating the original class
+      oref = NEW #( ).
+    ELSE.
+      "Add log entry
+      add_log_entry( user_name = username time_stamp = utclong_current( ) access_granted = abap_false ).
+
+      "Dummy authentication failed
+      RAISE EXCEPTION TYPE lcx_error.
+    ENDIF.
+
+  ENDMETHOD.
+
+  METHOD lif_user_info~get_user_info.
+    "Calling a method of the original class via the proxy class
+    "The calling is only possible if the authorization validation was successful
+    "and an instance was created.
+    TRY.
+        info = oref->lif_user_info~get_user_info( user_id ).
+      CATCH cx_sy_ref_is_initial.
+        info = `No authorization`.
+    ENDTRY.
+  ENDMETHOD.
+
+  METHOD add_log_entry.
+    APPEND VALUE #( user = user_name time_stamp = time_stamp access_granted = access_granted ) TO log_tab.
+  ENDMETHOD.
+
+  METHOD get_log.
+    log = log_tab.
+  ENDMETHOD.
+ENDCLASS.
+``` 
+
+ </td>
+</tr>
+
+</table>
+
+</details>  
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
@@ -11529,3 +11815,4 @@ in the ABAP Keyword Documentation.
 > [!NOTE]  
 > - The steps to import and run the code are outlined [here](README.md#-getting-started-with-the-examples).
 > - [Disclaimer](./README.md#%EF%B8%8F-disclaimer)
+
