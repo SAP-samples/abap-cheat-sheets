@@ -11549,6 +11549,1530 @@ ENDCLASS.
 
 </details>  
 
+<br>
+
+<details>
+  <summary>🟢 Template method</summary>
+  <!-- -->
+
+<br>
+
+- The template method design pattern suggests that a template method, typically included in an abstract superclass, defines and outlines the sequence of steps, i.e. method calls, needed to perform certain tasks.  
+- Abstract methods can be defined in the abstract superclass, and calls to these methods can be included in the template method. Subclasses that inherit from the abstract superclass provide the concrete implementations of these abstract methods.
+- The template method implementation may also include calls to non-abstract methods from the abstract superclass, which are implemented in the superclass. This ensures that all users share the same functionality.
+- Thus, the template method pattern allows to organize method calls into a common structure. It enables the standard functionality provided by the superclass while allowing subclasses to flexibly modify specific methods for custom implementations. This can be helpful for use cases that involve similar tasks and require the same sequence of method calls, while still allowing for customized functionality.
+- This approach can simplify code maintenance and promote encapsulation. For example, if you need to modify the standard functionality, you only have to adapt the code in the superclass. Similarly, if a specific subclass requires code changes, you can update the abstract method implementations without altering the underlying base structure.
+- A potential, high-level class design, which is also used in the example, might look as follows:
+	- An abstract class defines a common interface for its subclasses.
+	- The abstract class may include:
+		- Abstract methods for subclasses to implement.
+		- Non-abstract methods, providing standard functionality for all users in the template method. This approach avoids code duplication.
+		- A template method to orchestrate a specific sequence of method calls. These method calls may include both abstract methods (implemented in subclasses) and non-abstract methods (implemented in the abstract superclass).
+	- Subclasses, representing concrete classes, inherit from the abstract superclass and must implement the abstract methods.
+
+Example notes: 
+- The following example demonstrates a consistent flow of steps defined in a template method that is common to variants. It uses an XML and JSON parsing context. The steps in the template method are as follows:
+	- The XML and JSON data is provided as a string and converted to an xstring.
+	- The data is then parsed.
+	- The parsed data is output.
+- The example illustrates the template method design pattern with the following declarations and implementations:
+  - Global class:
+    - Implements the `if_oo_adt_classrun` interface and calls methods from local classes.
+    - Serves as a vehicle for demonstrating the design pattern. The declarations and implementations in the CCIMP include are relevant for the conceptual considerations.
+    - Represents the user who expects XML and JSON data to be parsed.
+  - CCIMP include (Local Types tab in ADT):    
+    - Abstract class `lcl_data_parser` 
+		- Serves as the common interface for all subclasses that inherit from this class.
+		- Includes protected non-abstract methods (`convert_to_xstring`, `output_data`) that are implemented in the superclass.
+		- Contains the abstract method `parse`, requiring subclasses to provide their own implementation.
+		- Includes the public, final template method `template_method`, which specifies the sequence of method calls mentioned earlier.
+	- Multiple concrete subclasses inherit from the abstract superclass, each providing custom functionality in the `parse` method:
+		- `lcl_xml_parser_ixml`: Reads XML data using the iXML library.
+		- `lcl_xml_parser_sxml`: Reads XML data using the sXML library.
+		- `lcl_json_parser_sxml`: Reads JSON data using the sXML library. This implementation is similar to `lcl_xml_parser_sxml` and is only included to add more concrete classes.
+		- `lcl_json_parser_ui2cljson`: Reads JSON data using the `/ui2/cl_json` class and the `generate` method, which creates an ABAP data object from JSON. It is also only included to add more demo concrete classes. Instead of the typical usage of the class to include JSON data in known (in this case, unknown) data objects, the implementation here explores the created data and dynamic programming techniques. It is meant for exploration purposes and neither represents best practices nor claims to cover all JSON variants (beyond the demo JSON data covered in the global class). 
+	- The simplified parsing returns values in a string table for display.
+	- Note that the example does not include proper error handling.
+
+      
+<table>
+
+<tr>
+<td> Class include </td> <td> Code </td>
+</tr>
+
+<tr>
+<td> 
+
+Global class
+
+ </td>
+
+ <td> 
+
+``` abap
+CLASS zcl_demo_abap DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
+
+  PUBLIC SECTION.
+    INTERFACES if_oo_adt_classrun.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+ENDCLASS.
+
+
+
+CLASS zcl_demo_abap IMPLEMENTATION.
+
+  METHOD if_oo_adt_classrun~main.
+
+    out->write( |1) Parsing XML using iXML \n\n| ).
+
+    DATA(demo_xml) =
+      `<?xml version="1.0"?>` &&
+      `<node attr_a="123">` &&
+      ` <subnode1>` &&
+      `  <hallo>hi</hallo>` &&
+      ` </subnode1>` &&
+      ` <subnode2>` &&
+      `  <letter>a</letter>` &&
+      `  <date format="mm-dd-yyyy">01-01-2025</date>` &&
+      ` </subnode2>` &&
+      ` <subnode3>`  &&
+      `  <text attr_b="1" attr_c="a">abc</text>` &&
+      `  <text attr_b="2" attr_c="b">def</text>` &&
+      `  <text attr_b="3" attr_c="c">ghi</text>` &&
+      `  <text attr_b="4" attr_c="d">jkl</text>` &&
+      ` </subnode3>` &&
+      `</node>`.
+
+    DATA(oref_ixml) = NEW lcl_xml_parser_ixml( ).
+    oref_ixml->template_method( data = demo_xml out = out ).
+
+    DATA(result_ixml) = oref_ixml->result.
+
+    out->write( |\n{ repeat( val = `*` occ = 75 ) }\n\n| ).
+
+**********************************************************************
+
+    out->write( |2) Parsing XML using sXML \n\n| ).
+
+    DATA(oref_sxml) = NEW lcl_xml_parser_sxml( ).
+    oref_sxml->template_method( data = demo_xml out = out ).
+
+    DATA(result_sxml) = oref_sxml->result.
+
+    out->write( |\n{ repeat( val = `*` occ = 75 ) }\n\n| ).
+
+**********************************************************************
+
+    out->write( |3) Parsing JSON using sXML \n\n| ).
+
+    DATA(demo_json) =
+       `[` &&
+       `    {` &&
+       `        "carrier_id": "LH",` &&
+       `        "connection_id": "400",` &&
+       `        "city_from": "Frankfurt",` &&
+       `        "city_to": "Berlin"` &&
+       `    },` &&
+       `    {` &&
+       `        "carrier_id": "DL",` &&
+       `        "connection_id": "1984",` &&
+       `        "city_from": "San Francisco",` &&
+       `        "city_to": "New York"` &&
+       `    },` &&
+       `    {` &&
+       `        "carrier_id": "AZ",` &&
+       `        "connection_id": "790",` &&
+       `        "city_from": "Rome",` &&
+       `        "city_to": "Osaka"` &&
+       `    }` &&
+       `]`.
+
+    DATA(oref_json_sxml) = NEW lcl_json_parser_sxml( ).
+    oref_json_sxml->template_method( data = demo_json out = out ).
+
+    DATA(result_json_sxml) = oref_json_sxml->result.
+
+    out->write( |\n{ repeat( val = `*` occ = 75 ) }\n\n| ).
+
+**********************************************************************
+
+    out->write( |4) Parsing JSON using /ui2/cl_json \n\n| ).
+
+    DATA(complex_json) =
+     `[` &&
+    `{` &&
+    `  "orderId": "9876",` &&
+    `  "customer": {` &&
+    `    "name": "John Doe",` &&
+    `    "email": "john.doe@example.com",` &&
+    `    "phone": "+49-01234-56789",` &&
+    `    "address": {` &&
+    `      "street": "Some Street 1",` &&
+    `      "city": "Walldorf",` &&
+    `      "zipcode": "12345",` &&
+    `      "state": "BW",` &&
+    `      "country": "Germany"` &&
+    `    }` &&
+    `  },` &&
+    `  "items": [` &&
+    `    {` &&
+    `      "productId": "123",` &&
+    `      "name": "Laptop",` &&
+    `      "quantity": 1,` &&
+    `      "price": 1200.00,` &&
+    `      "attributes": {` &&
+    `        "color": "Black",` &&
+    `        "warranty": "2 years"` &&
+    `      }` &&
+    `    },` &&
+    `    {` &&
+    `      "productId": "654",` &&
+    `      "name": "Keyboard",` &&
+    `      "quantity": 2,` &&
+    `      "price": 45.50,` &&
+    `      "attributes": {` &&
+    `        "color": "Grey",` &&
+    `        "warranty": "1 year"` &&
+    `      }` &&
+    `    }` &&
+    `  ],` &&
+    `  "payment": {` &&
+    `    "method": "Credit card",` &&
+    `    "transactionId": "t1234567890",` &&
+    `    "amount": 1291.00,` &&
+    `    "currency": "EUR"` &&
+    `  },` &&
+    `  "orderDate": "2025-15-01T15:36:10Z",` &&
+    `  "status": "In progress"` &&
+    `}` &&
+       `]`.
+
+    DATA(oref_json_ui2_cl_json) = NEW lcl_json_parser_ui2cljson( ).
+    oref_json_ui2_cl_json->template_method( data = complex_json out = out ).
+
+    out->write( |\n{ repeat( val = `*` occ = 75 ) }\n\n| ).
+
+    "More demo json
+    LOOP AT VALUE string_table(
+    ( `[` &&
+    `{` &&
+    `    "name": "Jane Doe",` &&
+    `    "age": 25,` &&
+    `    "height": null,` &&
+    `    "isStudent": true,` &&
+    `    "courses": ["Mathematics", "Computer Science", "Art History"]` &&
+    `}` &&
+    `]` )
+
+    ( `[` &&
+    `    "lion",` &&
+    `    "elephant",` &&
+    `    "bear",` &&
+    `    "penguin"` &&
+    `]` )
+
+    ( `{` &&
+    `    "personalInfo": {` &&
+    `        "basic": {` &&
+    `            "firstName": "Jane",` &&
+    `            "lastName": "Doe",` &&
+    `            "age": 24,` &&
+    `            "gender": "Female",` &&
+    `            "contactDetails": {` &&
+    `                "emails": [` &&
+    `                    "jane.doe@example.com",` &&
+    `                    "janedoe@example.com"` &&
+    `                ],` &&
+    `                "phone": [` &&
+    `                    {` &&
+    `                        "type": "mobile",` &&
+    `                        "phoneNumber": "0123456789"` &&
+    `                    },` &&
+    `                    {` &&
+    `                        "type": "home",` &&
+    `                        "phoneNumber": "9876543210"` &&
+    `                    }` &&
+    `                ]` &&
+    `            }` &&
+    `        },` &&
+    `        "address": {` &&
+    `            "currentAddress": {` &&
+    `                "street": "Some Street 1",` &&
+    `                "city": "Walldorf",` &&
+    `                "zipCode": "69190",` &&
+    `                "state": "AA",` &&
+    `                "country": "Germany"` &&
+    `            },` &&
+    `            "previousAddresses": [` &&
+    `                {` &&
+    `                    "street": "Some Street 2",` &&
+    `                    "city": "Somewhere",` &&
+    `                    "zipCode": "12345",` &&
+    `                    "state": "BB",` &&
+    `                    "country": "UK"` &&
+    `                },` &&
+    `                {` &&
+    `                    "street": "Some Street 3",` &&
+    `                    "city": "Another Place",` &&
+    `                    "zipCode": "98765",` &&
+    `                    "state": "CC",` &&
+    `                    "country": "USA"` &&
+    `                }` &&
+    `            ]` &&
+    `        },` &&
+    `        "career": [` &&
+    `            {` &&
+    `                "company": "Some company",` &&
+    `                "role": "Software Engineer",` &&
+    `                "timespan": "2018-2025",` &&
+    `                "jobInformation": {` &&
+    `                    "tasks": [` &&
+    `                        "Doing something",` &&
+    `                        "Doing another thing",` &&
+    `                        "Doing this"` &&
+    `                    ],` &&
+    `                    "projects": [` &&
+    `                        {` &&
+    `                            "name": "Project A",` &&
+    `                            "description": "Development of A"` &&
+    `                        },` &&
+    `                        {` &&
+    `                            "name": "Project B",` &&
+    `                            "description": "Development of B"` &&
+    `                        }` &&
+    `                    ]` &&
+    `                }` &&
+    `            },` &&
+    `            {` &&
+    `                "company": "Another company",` &&
+    `                "role": "Developer",` &&
+    `                "timespan": "2016-2018",` &&
+    `                "jobInformation": {` &&
+    `                    "tasks": [` &&
+    `                        "Doing abc",` &&
+    `                        "Doing def",` &&
+    `                        "Doing ghi"` &&
+    `                    ],` &&
+    `                    "projects": [` &&
+    `                        {` &&
+    `                            "name": "Project C",` &&
+    `                            "description": "Development of C"` &&
+    `                        }` &&
+    `                    ]` &&
+    `                }` &&
+    `            }` &&
+    `        ],` &&
+    `        "education": [` &&
+    `            {` &&
+    `                "institution": "Some University",` &&
+    `                "degree": "Degree A",` &&
+    `                "field": "Computer Science",` &&
+    `                "attendanceTime": "2012-2016",` &&
+    `                "achievements": [` &&
+    `                    "Achievement A",` &&
+    `                    "Achievement B"` &&
+    `                ]` &&
+    `            },` &&
+    `            {` &&
+    `                "institution": "Some School",` &&
+    `                "degree": "Diploma B",` &&
+    `                "attendanceTime": "2008-2012"` &&
+    `            }` &&
+    `        ]` &&
+    `    }` &&
+    `}` ) ) INTO DATA(json).
+
+      DATA(oref_json_ui2_cl_json_tests) = NEW lcl_json_parser_ui2cljson( ).
+      oref_json_ui2_cl_json_tests->template_method( data = json out = out ).
+
+      out->write( |\n{ repeat( val = `*` occ = 75 ) }\n\n| ).
+    ENDLOOP.
+  ENDMETHOD.
+
+ENDCLASS.
+``` 
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+CCIMP include (Local Types tab in ADT)
+
+ </td>
+
+ <td> 
+
+``` abap
+*&---------------------------------------------------------------------*
+*& Abstract class
+*&---------------------------------------------------------------------*
+"- Serves as the common interface for all subclasses that inherit from this class.
+"- Includes protected non-abstract methods ('convert_to_xstring', 'output_data')
+"  that are implemented in the superclass.
+"- Contains the abstract method 'parse', requiring subclasses to provide their own
+"  implementation.
+"- Includes the public, final template method 'template_method', which specifies
+"  the sequence of method calls.
+
+CLASS lcl_data_parser DEFINITION ABSTRACT.
+  PUBLIC SECTION.
+    METHODS template_method FINAL IMPORTING data TYPE string
+                                            out  TYPE REF TO if_oo_adt_classrun_out OPTIONAL.
+    DATA result TYPE string_table.
+  PROTECTED SECTION.
+    METHODS: parse ABSTRACT IMPORTING data          TYPE xstring
+                            RETURNING VALUE(result) TYPE string_table,
+      convert_to_xstring IMPORTING data        TYPE string
+                         RETURNING VALUE(xstr) TYPE xstring,
+      output_data IMPORTING data TYPE string_table
+                            out  TYPE REF TO if_oo_adt_classrun_out OPTIONAL.
+ENDCLASS.
+
+CLASS lcl_data_parser IMPLEMENTATION.
+
+  METHOD convert_to_xstring.
+    TRY.
+        xstr = cl_abap_conv_codepage=>create_out( codepage = `UTF-8` )->convert( data ).
+      CATCH cx_sy_conversion_codepage.
+        "If the conversion does not work, the program flow is interrupted.
+        "The example does not include a proper error handling and raise a runtime error in case of a failure at this stage.
+        "The example is designed for the demo input data.
+        ASSERT 1 = 2.
+    ENDTRY.
+  ENDMETHOD.
+
+  METHOD output_data.
+    IF out IS SUPPLIED AND out IS BOUND.
+      out->write( data ).
+    ENDIF.
+    "As an alternative to the output, the result is assigned
+    "to a public instance attribute, for example, if the reference
+    "variable cannot be supplied and so as to still be able to check
+    "out the parsing result.
+    result = data.
+  ENDMETHOD.
+
+  METHOD template_method.
+    "Predefined steps in the template method:
+    "- The XML and JSON data is provided as a string and converted to an xstring.
+    "- The data is then parsed.
+    "- The parsed data is output.
+
+    DATA(xstr) = convert_to_xstring( data ).
+
+    DATA(output) = parse( xstr ).
+
+    IF out IS SUPPLIED AND out IS BOUND.
+      output_data( data = output
+                   out  = out ).
+    ELSE.
+      output_data( data = output ).
+    ENDIF.
+  ENDMETHOD.
+
+ENDCLASS.
+
+*&---------------------------------------------------------------------*
+*& Concrete class 1 (XML parsing using iXML)
+*&---------------------------------------------------------------------*
+
+CLASS lcl_xml_parser_ixml DEFINITION INHERITING FROM lcl_data_parser.
+  PROTECTED SECTION.
+    METHODS parse REDEFINITION.
+ENDCLASS.
+
+CLASS lcl_xml_parser_ixml IMPLEMENTATION.
+  METHOD parse.
+    "For notes on the code example, see the XML and JSON cheat sheet.
+
+    DATA(ixml_pa) = cl_ixml_core=>create( ).
+    DATA(stream_factory_pa) = ixml_pa->create_stream_factory( ).
+    DATA(document_pa) = ixml_pa->create_document( ).
+    DATA(parser_pa) = ixml_pa->create_parser(
+                        istream = stream_factory_pa->create_istream_xstring( string = data )
+                        document = document_pa
+                        stream_factory = stream_factory_pa ).
+
+    DATA(parsing_check) = parser_pa->parse( ).
+    IF parsing_check = 0.
+      DATA(iterator_pa) = document_pa->create_iterator( ).
+      DATA(node_pa) = iterator_pa->get_next( ).
+      WHILE NOT node_pa IS INITIAL.
+        DATA(node_type) = node_pa->get_type( ).
+        CASE node_type.
+          WHEN if_ixml_node=>co_node_element.
+            APPEND |Element: "{ node_pa->get_name( ) }"| TO result.
+            DATA(attributes_pa) = node_pa->get_attributes( ).
+            IF NOT attributes_pa IS INITIAL.
+              DO attributes_pa->get_length( ) TIMES.
+                DATA(attr) = attributes_pa->get_item( sy-index - 1 ).
+                APPEND |Attribute: "{ attr->get_name( ) } = { attr->get_value( ) }"| TO result.
+              ENDDO.
+            ENDIF.
+          WHEN if_ixml_node=>co_node_text OR if_ixml_node=>co_node_cdata_section.
+            APPEND |Text: "{ node_pa->get_value( ) }"| TO result.
+            DATA(val) = to_upper( node_pa->get_value( ) ).
+            node_pa->set_value( val ).
+        ENDCASE.
+        node_pa = iterator_pa->get_next( ).
+      ENDWHILE.
+    ELSE.
+      "Parsing was not successful.
+      "The example does not include a proper error handling.
+      APPEND `--- Error ---` TO result.
+    ENDIF.
+  ENDMETHOD.
+ENDCLASS.
+
+*&---------------------------------------------------------------------*
+*& Concrete class 2 (XML parsing using sXML)
+*&---------------------------------------------------------------------*
+
+CLASS lcl_xml_parser_sxml DEFINITION INHERITING FROM lcl_data_parser.
+  PROTECTED SECTION.
+    METHODS parse REDEFINITION.
+ENDCLASS.
+
+CLASS lcl_xml_parser_sxml IMPLEMENTATION.
+  METHOD parse.
+    "For notes on the code, see the XML and JSON cheat sheet
+
+    DATA(reader) = cl_sxml_string_reader=>create( data ).
+
+    TRY.
+        DO.
+          reader->next_node( ).
+
+          IF reader->node_type = if_sxml_node=>co_nt_final.
+            EXIT.
+          ENDIF.
+
+          DATA(node_type) = SWITCH #( reader->node_type WHEN if_sxml_node=>co_nt_initial THEN `CO_NT_INITIAL`
+                                                        WHEN if_sxml_node=>co_nt_element_open THEN `CO_NT_ELEMENT_OPEN`
+                                                        WHEN if_sxml_node=>co_nt_element_close THEN `CO_NT_ELEMENT_CLOSE`
+                                                        WHEN if_sxml_node=>co_nt_value THEN `CO_NT_VALUE`
+                                                        WHEN if_sxml_node=>co_nt_attribute THEN `CO_NT_ATTRIBUTE`
+                                                        ELSE `Error` ).
+
+          DATA(name) = reader->name.
+          DATA(value) = COND #( WHEN reader->node_type = if_sxml_node=>co_nt_value THEN reader->value ).
+          APPEND |{ node_type }, { name }{ COND #( WHEN value IS NOT INITIAL THEN |, { value }| ) }| TO result.
+
+          IF reader->node_type = if_sxml_node=>co_nt_element_open.
+            DO.
+              reader->next_attribute( ).
+              IF reader->node_type <> if_sxml_node=>co_nt_attribute.
+                EXIT.
+              ENDIF.
+              APPEND |CO_NT_ATTRIBUTE, { reader->name }{ COND #( WHEN reader->value IS NOT INITIAL THEN |, { reader->value }| ) }| TO result.
+            ENDDO.
+          ENDIF.
+        ENDDO.
+      CATCH cx_sxml_state_error INTO DATA(error).
+        "The example does not include a proper error handling.
+        APPEND |--- Error: { error->get_text( ) } ---| TO result.
+    ENDTRY.
+  ENDMETHOD.
+ENDCLASS.
+
+*&---------------------------------------------------------------------*
+*& Concrete class 3 (JSON parsing using sXML)
+*&---------------------------------------------------------------------*
+
+"This class demonstrates the same code as lcl_xml_parser_sxml. It is
+"included to add more example classes.
+
+CLASS lcl_json_parser_sxml DEFINITION INHERITING FROM lcl_data_parser.
+  PROTECTED SECTION.
+    METHODS parse REDEFINITION.
+ENDCLASS.
+
+CLASS lcl_json_parser_sxml IMPLEMENTATION.
+  METHOD parse.
+    DATA(reader) = cl_sxml_string_reader=>create( data ).
+
+    TRY.
+        DO.
+          reader->next_node( ).
+
+          IF reader->node_type = if_sxml_node=>co_nt_final.
+            EXIT.
+          ENDIF.
+
+          DATA(node_type) = SWITCH #( reader->node_type WHEN if_sxml_node=>co_nt_initial THEN `CO_NT_INITIAL`
+                                                        WHEN if_sxml_node=>co_nt_element_open THEN `CO_NT_ELEMENT_OPEN`
+                                                        WHEN if_sxml_node=>co_nt_element_close THEN `CO_NT_ELEMENT_CLOSE`
+                                                        WHEN if_sxml_node=>co_nt_value THEN `CO_NT_VALUE`
+                                                        WHEN if_sxml_node=>co_nt_attribute THEN `CO_NT_ATTRIBUTE`
+                                                        ELSE `Error` ).
+
+          DATA(name) = reader->name.
+          DATA(value) = COND #( WHEN reader->node_type = if_sxml_node=>co_nt_value THEN reader->value ).
+          APPEND |{ node_type }, { name }{ COND #( WHEN value IS NOT INITIAL THEN |, { value }| ) }| TO result.
+
+          IF reader->node_type = if_sxml_node=>co_nt_element_open.
+            DO.
+              reader->next_attribute( ).
+              IF reader->node_type <> if_sxml_node=>co_nt_attribute.
+                EXIT.
+              ENDIF.
+              APPEND |CO_NT_ATTRIBUTE, { reader->name }{ COND #( WHEN reader->value IS NOT INITIAL THEN |, { reader->value }| ) }| TO result.
+            ENDDO.
+          ENDIF.
+        ENDDO.
+      CATCH cx_sxml_state_error INTO DATA(error).
+        "The example does not include a proper error handling.
+        APPEND |--- Error: { error->get_text( ) } ---| TO result.
+    ENDTRY.
+  ENDMETHOD.
+ENDCLASS.
+
+*&---------------------------------------------------------------------*
+*& Concrete class 4 (JSON parsing using /ui2/cl_json)
+*&---------------------------------------------------------------------*
+
+"This class reads JSON data using the '/ui2/cl_json' class and the 'generate'
+"method, which creates an ABAP data object from JSON. It is only included to
+"add more demo concrete classes.
+"Instead of the typical usage of the class to include JSON data in known (in
+"this case, unknown) data objects, the implementation here explores the created
+"data and experiments with dynamic programming techniques. It is a nonsensical
+"example that just explores and experiments. It neither represents best practices
+"nor claims to cover all JSON variants (beyond the demo JSON data covered in the
+"global class). Uncaught exceptions may occur. It is particulary not meant to
+"reinvent the wheel, especially with the availability of the sXML library for the
+"purpose. Like the other classes, the example just adds items to a string table.
+
+CLASS lcl_json_parser_ui2cljson DEFINITION INHERITING FROM lcl_data_parser.
+  PROTECTED SECTION.
+    METHODS parse REDEFINITION.
+  PRIVATE SECTION.
+
+    TYPES: BEGIN OF ty_node,
+             node_name     TYPE string,
+             ref           TYPE REF TO data,
+             is_nested     TYPE abap_boolean,
+             nesting_level TYPE i,
+             value         TYPE string,
+             done          TYPE abap_boolean,
+             kind          TYPE REF TO cl_abap_typedescr,
+           END OF ty_node,
+           ty_nodes TYPE TABLE OF ty_node WITH EMPTY KEY.
+
+    METHODS:
+      process_elementary IMPORTING data TYPE REF TO data
+                         CHANGING  node TYPE ty_node,
+      process_structure IMPORTING data          TYPE REF TO data
+                                  is_nested     TYPE abap_boolean DEFAULT abap_false
+                                  nesting_level TYPE i DEFAULT 0,
+      process_table IMPORTING data          TYPE REF TO data
+                              name          TYPE string OPTIONAL
+                              is_nested     TYPE abap_boolean DEFAULT abap_false
+                              nesting_level TYPE i DEFAULT 0.
+
+    DATA: json_data  TYPE TABLE OF REF TO data,
+          node_table TYPE ty_nodes,
+          error      TYPE REF TO cx_root,
+          tabix      LIKE sy-tabix.
+ENDCLASS.
+
+CLASS lcl_json_parser_ui2cljson IMPLEMENTATION.
+  METHOD parse.
+    DATA(abap_obj_from_json) = /ui2/cl_json=>generate( jsonx = data ).
+
+    "Checking JSON data and adding the data to an internal table for further processing
+    IF ( abap_obj_from_json IS INITIAL OR abap_obj_from_json IS NOT BOUND )
+    OR ( abap_obj_from_json->* IS INITIAL ).
+      APPEND `--- JSON parsing not possible ---` TO result.
+      RETURN.
+    ENDIF.
+
+    TRY.
+        DATA(tdo_json) = cl_abap_typedescr=>describe_by_data_ref( abap_obj_from_json ).
+
+        CASE TYPE OF tdo_json.
+          WHEN TYPE cl_abap_tabledescr.
+            LOOP AT abap_obj_from_json->* ASSIGNING FIELD-SYMBOL(<json>).
+              IF <json> IS BOUND.
+                IF <json>->* IS INITIAL.
+                  APPEND `--- INITIAL ---` TO result.
+                ELSE.
+                  APPEND <json> TO json_data.
+                ENDIF.
+              ELSE.
+                APPEND `--- JSON parsing not possible ---` TO result.
+              ENDIF.
+            ENDLOOP.
+          WHEN TYPE cl_abap_structdescr.
+            LOOP AT CAST cl_abap_structdescr( cl_abap_typedescr=>describe_by_data_ref( abap_obj_from_json ) )->components INTO DATA(comp_json).
+              ASSIGN abap_obj_from_json->(comp_json-name)->* TO FIELD-SYMBOL(<co>).
+              APPEND REF #( <co> ) TO json_data.
+            ENDLOOP.
+          WHEN OTHERS.
+            APPEND |--- Not supported by the example implementation ---| TO result.
+        ENDCASE.
+      CATCH cx_root INTO error .
+        APPEND |--- Error: { error->get_text( ) } ---| TO result.
+    ENDTRY.
+
+    "Processing JSON data in the node table
+    LOOP AT json_data ASSIGNING FIELD-SYMBOL(<data>).
+      DATA(tdo) = cl_abap_typedescr=>describe_by_data_ref( <data> ).
+      CASE TYPE OF tdo.
+        WHEN TYPE cl_abap_structdescr.
+          process_structure( <data> ).
+        WHEN TYPE  cl_abap_elemdescr.
+          APPEND VALUE #( ref = <data> ) TO node_table REFERENCE INTO DATA(elem_ref).
+
+          process_elementary( EXPORTING data = <data>
+                              CHANGING  node = elem_ref->* ).
+        WHEN OTHERS.
+          APPEND |--- Not supported by the example implementation ---| TO result.
+          RETURN.
+      ENDCASE.
+    ENDLOOP.
+
+    "Processing nested nodes
+    WHILE line_exists( node_table[ done = abap_false ] ).
+      LOOP AT node_table ASSIGNING FIELD-SYMBOL(<node>) WHERE done = abap_false.
+        tabix = sy-tabix.
+        <node>-done = abap_true.
+
+        IF <node>-kind IS BOUND.
+          CASE TYPE OF <node>-kind.
+            WHEN TYPE cl_abap_elemdescr.
+              process_elementary( EXPORTING data = <node>-ref CHANGING node = <node> ).
+            WHEN TYPE cl_abap_structdescr.
+              process_structure( data = <node>-ref is_nested = <node>-is_nested nesting_level = <node>-nesting_level ).
+            WHEN TYPE cl_abap_tabledescr.
+              process_table( data = <node>-ref is_nested = <node>-is_nested nesting_level = <node>-nesting_level name = <node>-node_name ).
+          ENDCASE.
+        ELSE.
+          IF <node>-ref IS INITIAL.
+            <node>-value = `%%%NULL%%%`.
+          ENDIF.
+        ENDIF.
+      ENDLOOP.
+    ENDWHILE.
+
+    "Putting the collected values into a string table
+    IF node_table IS NOT INITIAL.
+      result = VALUE #( BASE result FOR wa IN node_table
+        ( |{ repeat( val = ` ` occ = wa-nesting_level ) }{ COND #( WHEN wa-node_name IS NOT INITIAL THEN |{ wa-node_name } | ) }{ wa-value }| ) ).
+    ENDIF.
+  ENDMETHOD.
+
+  METHOD process_elementary.
+    node-value = |{ data->* }|.
+  ENDMETHOD.
+
+  METHOD process_structure.
+    LOOP AT CAST cl_abap_structdescr( cl_abap_typedescr=>describe_by_data_ref( data ) )->components INTO DATA(comp).
+      ASSIGN data->(comp-name) TO FIELD-SYMBOL(<comp>).
+
+      IF <comp> IS NOT INITIAL.
+        DATA(refdescr) = cl_abap_refdescr=>describe_by_data( <comp>->* ).
+      ELSE.
+        CLEAR refdescr.
+      ENDIF.
+
+      IF is_nested = abap_false.
+        APPEND VALUE #( node_name = comp-name
+                        ref = <comp>
+                        is_nested = COND #( WHEN refdescr IS INSTANCE OF cl_abap_structdescr OR refdescr IS INSTANCE OF cl_abap_tabledescr THEN abap_true )
+                        nesting_level = COND #( WHEN nesting_level IS SUPPLIED THEN nesting_level + 1 )
+                        kind = refdescr
+                       ) TO node_table.
+      ELSE.
+        tabix += 1.
+
+        INSERT VALUE #( node_name = comp-name
+                       ref           = <comp>
+                       is_nested = COND #( WHEN refdescr IS INSTANCE OF cl_abap_structdescr OR refdescr IS INSTANCE OF cl_abap_tabledescr THEN abap_true )
+                       nesting_level = COND #( WHEN nesting_level IS SUPPLIED THEN nesting_level + 1 )
+                       kind = refdescr
+                      ) INTO node_table INDEX tabix.
+      ENDIF.
+    ENDLOOP.
+  ENDMETHOD.
+
+  METHOD process_table.
+    LOOP AT data->* ASSIGNING FIELD-SYMBOL(<t>).
+      DATA(outer_index) = sy-tabix.
+
+      TRY.
+          LOOP AT CAST cl_abap_structdescr( cl_abap_typedescr=>describe_by_data_ref( <t> ) )->components INTO DATA(comp).
+            DATA(idx) = sy-tabix.
+
+            ASSIGN <t>->(comp-name) TO FIELD-SYMBOL(<comp>).
+            DATA(refdescr) = cl_abap_refdescr=>describe_by_data( <comp>->* ).
+
+            IF is_nested = abap_false.
+              IF idx = 1.
+                "Inserting a divider for table nodes
+                APPEND VALUE #( node_name = |--- { name }-{ outer_index } ---|
+                                nesting_level = COND #( WHEN nesting_level IS SUPPLIED THEN nesting_level + 1 )
+                                done          = abap_true
+                              ) TO node_table.
+              ENDIF.
+
+              APPEND VALUE #( node_name = comp-name
+                              ref           = <comp>
+                              is_nested = COND #( WHEN refdescr IS INSTANCE OF cl_abap_structdescr OR refdescr IS INSTANCE OF cl_abap_tabledescr THEN abap_true )
+                                nesting_level = COND #( WHEN nesting_level IS SUPPLIED THEN nesting_level + 1 )
+                                kind = refdescr
+                             ) TO node_table.
+            ELSE.
+              tabix += 1.
+
+              IF idx = 1.
+                "Inserting a divider for table nodes
+                INSERT VALUE #( node_name = |--- { name }-{ outer_index } ---|
+                                nesting_level = COND #( WHEN nesting_level IS SUPPLIED THEN nesting_level + 1 )
+                                done          = abap_true
+                              ) INTO node_table INDEX tabix.
+
+                tabix += 1.
+              ENDIF.
+
+              INSERT VALUE #( node_name = comp-name
+                             ref         = <comp>
+                             is_nested = COND #( WHEN refdescr IS INSTANCE OF cl_abap_structdescr OR refdescr IS INSTANCE OF cl_abap_tabledescr THEN abap_true )
+                             nesting_level = COND #( WHEN nesting_level IS SUPPLIED THEN nesting_level + 1 )
+                             kind = refdescr
+                            ) INTO node_table INDEX tabix.
+            ENDIF.
+          ENDLOOP.
+        CATCH cx_sy_move_cast_error.
+          IF is_nested = abap_false.
+            APPEND VALUE #( ref           = <t>
+                            is_nested = COND #( WHEN refdescr IS INSTANCE OF cl_abap_structdescr OR refdescr IS INSTANCE OF cl_abap_tabledescr THEN abap_true )
+                            nesting_level = COND #( WHEN nesting_level IS SUPPLIED THEN nesting_level + 1 )
+                            kind = cl_abap_typedescr=>describe_by_data( <t>->* )
+                           ) TO node_table.
+          ELSE.
+            tabix += 1.
+
+            INSERT VALUE #( ref           = <t>
+                           is_nested = COND #( WHEN refdescr IS INSTANCE OF cl_abap_structdescr OR refdescr IS INSTANCE OF cl_abap_tabledescr THEN abap_true )
+                           nesting_level = COND #( WHEN nesting_level IS SUPPLIED THEN nesting_level + 1 )
+                           kind = cl_abap_typedescr=>describe_by_data( <t>->* )
+                          ) INTO node_table INDEX tabix.
+          ENDIF.
+
+      ENDTRY.
+    ENDLOOP.
+  ENDMETHOD.
+ENDCLASS.
+``` 
+
+ </td>
+</tr>
+
+</table>
+
+</details>  
+
+<br>
+
+<details>
+  <summary>🟢 Prototype</summary>
+  <!-- -->
+
+<br>
+
+- The prototype design pattern suggests that you can clone objects to create copies of existing objects of classes.
+- Cloning objects lets you preserve, reuse, and enhance an object's current state without altering the original prototype.
+- This is especially useful when you want to delegate the task of object creation, particulary when the creation involves complex steps, instead of doing it manually. In cases where you need similar or the same objects, the prototype pattern simplifies and automates object creation, ensuring a consistent approach with the prototype providing a predefined state.
+- Reusing and enhancing prototypes allows you to create variants of original objects. This pattern offers an alternative to complex inheritance trees, with object variants created through subclasses.
+- In the pattern, prototype objects handle their own cloning. This can be done by providing a shared interface for all clonable objects. The interface may include a clone method. This clone method can be implemented to copy the entire state of the current object, including private attributes, or exclude attributes that should not be cloned. Instead of manually cloning objects to achieve a specific initial state, the prototype takes over the cloning, allowing users to easily retrieve the objects.
+
+
+Example notes:
+- The simplified example illustrates the prototype design pattern with the following declarations and implementations:
+  - Global class:
+    - Implements the `if_oo_adt_classrun` interface and calls methods from local classes.
+    - Serves as a vehicle for demonstrating the design pattern. The declarations and implementations in the `CCIMP` are relevant for the for conceptual considerations.
+    - The global class represents the user who creates objects of prototype classes and requires clones of these classes. 
+  - CCIMP include (Local Types tab in ADT):    
+    - Interface `lif_prototype` 
+		- Serves as the common interface for all prototype classes, enforcing the implementation of the `clone` method.
+		- This method allows the creation of an clone of an object of a class that implements this interface. 
+		- It returns a new reference, representing the object clone.
+	- Class `lcl_prototype_1`
+	  - This demo class implements the `lif_prototype` interface that allows users to retrieve a clone of an object from the class.
+	  - Contains various class attributes and methods. Methods such as `do_something` modify the value of class attributes.
+	  - The constructor (or any other part of the class that modifies the object's state) assumes there may be complex operations involved. However, this simplified example only assigns values to class attributes to demonstrate object cloning and enhancement.
+	  - The clone method `lif_prototype~clone` creates a clone of the current object by instantiating a new class instance with the `NEW` operator and copying the class attribute values. This example selectively clones certain attributes, showcasing a predefined state for the cloned object.  
+	- Class `lcl_prototype_2`
+	  - This class is structured similarly to `lcl_prototype_1`, but it features different attributes and behaviors.		
+- The class execution includes the following:
+  - The global class contains several method calls and class attribute accesses, demonstrating the prototype pattern. Both local classes, `lcl_prototype_1` and `lcl_prototype_2`, are included.
+  - Steps 1 and 4: Create objects of the prototype classes. Methods are called and class attributes are accessed to show changes in attribute values, resulting in specific object states.
+  - Steps 2 and 5: Clone objects using the `clone` method, which creates copies of existing objects. The assumption is that the user needs a copy of the object to reuse a specific state instead of creating a new object from scratch.
+  - Steps 3 and 6: Enhance the cloned objects. This involves casting to the prototype class to access its attributes and methods. The assumption is to create a variant of the object by modifying its attributes while using the original state as a foundation. Working with the variant involves a separate object, distinct from the original. A demo attribute shows that the clone method can be implemented to allow selective cloning, excluding certain attribute values.
+  - The example outputs various class attributes to illustrate both the original object states and the enhanced clone object states.
+      
+<table>
+
+<tr>
+<td> Class include </td> <td> Code </td>
+</tr>
+
+<tr>
+<td> 
+
+Global class
+
+ </td>
+
+ <td> 
+
+``` abap
+CLASS zcl_demo_abap DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
+
+  PUBLIC SECTION.
+    INTERFACES if_oo_adt_classrun.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+ENDCLASS.
+
+
+
+CLASS zcl_demo_abap IMPLEMENTATION.
+
+  METHOD if_oo_adt_classrun~main.
+
+    out->write( |1) Processing original object (prototype 1) \n\n| ).
+
+    "Notes:
+    "- Creating objects of the prototype classes.
+    "- Methods are called and class attributes are accessed to show changes in attribute values,
+    "  resulting in specific object states.
+
+    DATA(oref_1) = NEW lcl_prototype_1( str = `ABC` ).
+    oref_1->do_something( `DEF` ).
+    DATA(content) = oref_1->return_data( ).
+    DATA(num) = oref_1->number.
+    DATA(txt) = oref_1->txt.
+
+    "Displaying content
+    out->write( data = content name = `content` ).
+    out->write( |\n| ).
+    out->write( data = num name = `num` ).
+    out->write( |\n| ).
+    out->write( data = txt name = `txt` ).
+    out->write( |\n{ repeat( val = `*` occ = 75 ) }\n\n| ).
+
+**********************************************************************
+
+    out->write( |2) Cloning prototype (1) \n\n| ).
+
+    "Notes:
+    "- Cloning objects using the clone method, which creates copies of existing
+    "  objects.
+    "- The assumption is that the user needs a copy of the object to reuse a
+    "  specific state instead of creating a new object from scratch.
+    "- At this stage, the cloned object has the same state as the original object.
+
+    DATA(oref_2) = oref_1->lif_prototype~clone( ).
+
+    "Displaying the public class atrributes
+    out->write( data = oref_2 name = `oref_2` ).
+    out->write( |\n{ repeat( val = `*` occ = 75 ) }\n\n| ).
+
+**********************************************************************
+
+    out->write( |3) Enhancing cloned prototype (1) \n\n| ).
+
+    "Notes:
+    "- Enhancing the cloned objects.
+    "- This involves casting to the prototype class to access its attributes
+    "  and methods.
+    "- The assumption is to create a variant of the object by modifying its
+    "  attributes while using the original state as a foundation.
+    "- Working with the variant involves a separate object, distinct from the original.
+    "  A demo attribute shows that the clone method can be implemented to allow selective
+    "  cloning, excluding certain attribute values.
+
+    DATA(oref_3) = CAST lcl_prototype_1( oref_2 ).
+    content = oref_3->return_data( ).
+    num = oref_3->number.
+    txt = oref_3->txt.
+
+    "Displaying content (original state)
+    out->write( data = content name = `content` ).
+    out->write( |\n| ).
+    out->write( data = num name = `num` ).
+    out->write( |\n| ).
+    out->write( data = txt name = `txt` ).
+    out->write( |\n\n| ).
+
+    "Enhancing the cloned object
+    oref_3->do_something( `GHI` ).
+    content = oref_3->return_data( ).
+    num = oref_3->number.
+    txt = oref_3->txt.
+
+    "Displaying content (enhanced state)
+    out->write( data = content name = `content` ).
+    out->write( |\n| ).
+    out->write( data = num name = `num` ).
+    out->write( |\n| ).
+    out->write( data = txt name = `txt` ).
+    out->write( |\n{ repeat( val = `*` occ = 75 ) }\n\n| ).
+
+**********************************************************************
+
+    out->write( |4) Processing original object (prototype 2) \n\n| ).
+
+    "Notes:
+    "- Creating objects of the prototype classes.
+    "- Methods are called and class attributes are accessed to show changes in attribute values,
+    "  resulting in specific object states.
+
+    DATA(oref_4) = NEW lcl_prototype_2( `JKL` ).
+    oref_4->do_another_thing( `MNO` ).
+    DATA(tab) = oref_4->tab.
+    DATA(string) = oref_4->string.
+    DATA(state) = oref_4->get_state( ).
+
+    "Displaying content
+    out->write( data = tab name = `tab` ).
+    out->write( |\n| ).
+    out->write( data = string name = `string` ).
+    out->write( |\n| ).
+    out->write( data = state name = `state` ).
+    out->write( |\n{ repeat( val = `*` occ = 75 ) }\n\n| ).
+
+**********************************************************************
+
+    out->write( |5) Cloning prototype (2) \n\n| ).
+
+    "Notes:
+    "- Cloning objects using the clone method, which creates copies of existing
+    "  objects.
+    "- The assumption is that the user needs a copy of the object to reuse a
+    "  specific state instead of creating a new object from scratch.
+    "- At this stage, the cloned object has the same state as the original object.
+
+    DATA(oref_5) = oref_4->lif_prototype~clone( ).
+
+    "Displaying the public class atrributes
+    out->write( data = oref_5 name = `oref_5` ).
+    out->write( |\n{ repeat( val = `*` occ = 75 ) }\n\n| ).
+
+**********************************************************************
+
+    out->write( |6) Enhancing cloned prototype (2) \n\n| ).
+
+    "Notes:
+    "- Enhancing the cloned objects.
+    "- This involves casting to the prototype class to access its attributes
+    "  and methods.
+    "- The assumption is to create a variant of the object by modifying its
+    "  attributes while using the original state as a foundation.
+    "- Working with the variant involves a separate object, distinct from the original.
+    "  A demo attribute shows that the clone method can be implemented to allow selective
+    "  cloning, excluding certain attribute values.
+
+    DATA(oref_6) = CAST lcl_prototype_2( oref_5 ).
+    tab = oref_6->tab.
+    string = oref_6->string.
+    state = oref_6->get_state( ).
+
+    "Displaying content (original state)
+    out->write( data = tab name = `tab` ).
+    out->write( |\n| ).
+    out->write( data = string name = `string` ).
+    out->write( |\n| ).
+    out->write( data = state name = `state` ).
+    out->write( |\n\n| ).
+
+    "Enhancing the cloned object
+    oref_6->do_another_thing( `PQR` ).
+    tab = oref_6->tab.
+    string = oref_6->string.
+    state = oref_6->get_state( ).
+
+    "Displaying content (enhanced state)
+    out->write( data = tab name = `tab` ).
+    out->write( |\n| ).
+    out->write( data = string name = `string` ).
+    out->write( |\n| ).
+    out->write( data = state name = `state` ).
+  ENDMETHOD.
+
+ENDCLASS.
+``` 
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+CCIMP include (Local Types tab in ADT)
+
+ </td>
+
+ <td> 
+
+``` abap
+*&---------------------------------------------------------------------*
+*& Interface serving as the common interface for prototypes
+*&---------------------------------------------------------------------*
+"- The interface serves as the common interface for all prototype classes,
+"  enforcing the implementation of the clone method.
+"- This method allows the creation of an clone of an object of a class that
+"  implements this interface.
+"- It returns a new reference, representing the object clone.
+
+INTERFACE lif_prototype.
+  METHODS clone RETURNING VALUE(ref) TYPE REF TO lif_prototype.
+ENDINTERFACE.
+
+*&---------------------------------------------------------------------*
+*& Prototype class 1
+*&---------------------------------------------------------------------*
+"- This demo class implements the lif_prototype interface that allows users
+"  to retrieve a clone of an object from the class.
+"- Contains various class attributes and methods. Methods such as 'do_something'
+"  modify the value of class attributes.
+
+CLASS lcl_prototype_1 DEFINITION.
+  PUBLIC SECTION.
+    INTERFACES lif_prototype.
+    METHODS constructor IMPORTING str TYPE string.
+    METHODS do_something IMPORTING text TYPE string.
+    METHODS return_data RETURNING VALUE(str) TYPE string.
+
+    DATA number TYPE i.
+    DATA txt TYPE string.
+    DATA itab TYPE string_table.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+    DATA private_text TYPE string.
+ENDCLASS.
+
+CLASS lcl_prototype_1 IMPLEMENTATION.
+
+  METHOD constructor.
+    "The constructor (or any other part of the class that modifies the object's state) assumes
+    "there may be complex operations involved. However, this simplified example only assigns
+    "values to class attributes to demonstrate object cloning and enhancement.
+
+    txt = str.
+    private_text = `#`.
+    itab = VALUE #( ( |{ txt } (added at { utclong_current( ) })| ) ).
+  ENDMETHOD.
+
+  METHOD lif_prototype~clone.
+    "Creating a clone of the current object by instantiating a new class instance with the NEW
+    "operator and copying the class attribute values. This example selectively clones certain
+    "attributes, showcasing a predefined state for the cloned object.
+
+    DATA(obj_ref) = NEW lcl_prototype_1( txt ).
+    obj_ref->itab = me->itab.
+    obj_ref->txt = me->txt.
+    obj_ref->private_text = me->private_text.
+    ref = obj_ref.
+  ENDMETHOD.
+
+  METHOD do_something.
+    "The demo implementation includes some simple class attribute modifications.
+
+    APPEND |{ text } (added at { utclong_current( ) })| TO itab.
+    number += 1.
+    txt &&= `!`.
+    private_text &&= `#`.
+  ENDMETHOD.
+
+  METHOD return_data.
+    "The demo implementation returns the content of the string table as string.
+    "Additionally and for display purposes, the content of a private attribute
+    "is added to the result string.
+
+    str = concat_lines_of( table = itab sep = |\n| ).
+    str &&= |\nprivate_text = "{ private_text }"|.
+  ENDMETHOD.
+ENDCLASS.
+
+*&---------------------------------------------------------------------*
+*& Prototype class 2
+*&---------------------------------------------------------------------*
+"- This demo class implements the lif_prototype interface that allows users
+"  to retrieve a clone of an object from the class.
+"- It is structured similarly to lcl_prototype_1, but it features different
+"  attributes and behaviors.
+
+CLASS lcl_prototype_2 DEFINITION.
+  PUBLIC SECTION.
+    INTERFACES lif_prototype.
+    METHODS constructor IMPORTING t TYPE string.
+    METHODS do_another_thing IMPORTING text TYPE string.
+    METHODS get_state RETURNING VALUE(state) TYPE string.
+
+    DATA string TYPE string.
+    DATA tab TYPE string_table.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+    DATA private_integer TYPE i.
+ENDCLASS.
+
+CLASS lcl_prototype_2 IMPLEMENTATION.
+
+  METHOD constructor.
+    string = t.
+    tab = VALUE #( ( |{ string } (added at { utclong_current( ) }| ) ).
+  ENDMETHOD.
+
+  METHOD lif_prototype~clone.
+    DATA(obj_ref) = NEW lcl_prototype_2( string ).
+    obj_ref->tab = me->tab.
+    obj_ref->string = me->string.
+    ref = obj_ref.
+  ENDMETHOD.
+
+  METHOD do_another_thing.
+    APPEND |{ text } (added at { utclong_current( ) })| TO tab.
+    private_integer += 1.
+    string &&= `#`.
+  ENDMETHOD.
+
+  METHOD get_state.
+    "This demo implementation is intended to visualize enhancement of cloned objects.
+    "In this case, the value of the private attribute is evaluated.
+    IF private_integer > 0.
+      state = |State changed. Value of "private_integer": { private_integer }|.
+    ELSE.
+      state = |State not changed. Value of "private_integer": { private_integer }|.
+    ENDIF.
+  ENDMETHOD.
+ENDCLASS.
+``` 
+
+ </td>
+</tr>
+
+</table>
+
+</details> 
+
+<br>
+
+<details>
+  <summary>🟢 Multiton</summary>
+  <!-- -->
+
+<br>
+
+- The multiton design pattern is a variant of the singleton pattern designed to manage a fixed set of distinct instances, rather than just one.
+- While the singleton pattern ensures a class has only one instance across the entire application, returned through a factory method, the multiton pattern controls instantiation by managing multiple unique instances. These instances are differentiated by unique keys, allowing for controlled, instance-specific access.
+- The design pattern suggests that a key is mapped to a specific instance in an internal table. A factory method then returns that instance when the corresponding key is provided. If an instance does not exist for the provided key, the factory method can create a new instance, and add it to the internal table.
+- This approach is beneficial when you need to control the instantiation process without restricting it to just a single instance. It offers greater flexibility by allowing multiple controlled instances, each suited to handle different needs or contexts. Furthermore, it allows for instance reuse, which can be especially useful in data-intensive or complex scenarios.
+
+Example notes: 
+- The following example illustrates the multiton design pattern with the following declarations and implementations:
+  - Global class:
+    - Implements the `if_oo_adt_classrun` interface and calls methods from local classes.
+    - Serves as a vehicle for demonstrating the design pattern. The declarations and implementations in the CCIMP include are relevant for the conceptual considerations.
+    - Represents the user who requires instances to work with.
+  - CCIMP include (Local Types tab in ADT):    
+    - Class `lcl_multiton` 
+        - Specifies the `CREATE PRIVATE` addition to prevent instance creation outside the class.  
+        - Maintains one instance per unique key. The key values in this example are determined by ABAP enumerated types, which serve as identifiers for unique instances. The example assumes that users require specific configuration settings among a set of multiple settings, with each setting corresponding to a distinct class instance.  
+        - Instance maintenance occurs in the `instance_table` internal table within the private visibility section. This table contains entries for created class instances, mapped to specific keys (the ABAP enumerated types).
+        - The `get_instance` method is a public, static factory method that returns an instance of `lcl_multiton` for a given key. It first checks if an entry in the `instance_table` table already exists. If not, it creates a new instance and adds it to the table. Finally, it returns the instance corresponding to the provided key, ensuring that users receive the specific instance they need.
+        - The instance `constructor` is declared in the private visibility section to prevent direct instantiation. This assumptions is that instantiation may involve complex or data-intensive tasks, which should be avoided if users frequently require instances. The pattern promotes reuse and prevents duplicate instantiations. The simplified demo implementation only adds entries to an internal table for display purposes.
+        - Other implementations in the demo class, like the `do_something` dummy method, also serve display purposes. A string table collects information, including the current timestamp, to demonstrate multiple different entries added during class instantiation and method calls. The `log` table tracks the number of instance retrieval requests and the timestamps of the first instantiation per key within the internal session.
+
+      
+<table>
+
+<tr>
+<td> Class include </td> <td> Code </td>
+</tr>
+
+<tr>
+<td> 
+
+Global class
+
+ </td>
+
+ <td> 
+
+``` abap
+CLASS zcl_demo_abap DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
+
+  PUBLIC SECTION.
+    INTERFACES if_oo_adt_classrun.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+ENDCLASS.
+
+
+
+CLASS zcl_demo_abap IMPLEMENTATION.
+
+  METHOD if_oo_adt_classrun~main.
+
+    out->write( |1) First call with key { lcl_multiton=>config_a } \n\n| ).
+
+    DATA(oref_config_a_1) = lcl_multiton=>get_instance( key = lcl_multiton=>config_a ).
+    oref_config_a_1->do_something( ).
+    DATA(tab) = oref_config_a_1->get_config_change_tab( ).
+
+    out->write( data = tab name = `tab` ).
+    out->write( |\n\n| ).
+
+    out->write( |\n{ repeat( val = `*` occ = 75 ) }\n\n| ).
+
+**********************************************************************
+
+    out->write( |2) Second call with key { lcl_multiton=>config_a } \n\n| ).
+
+    DATA(oref_config_a_2) = lcl_multiton=>get_instance( key = lcl_multiton=>config_a ).
+    oref_config_a_2->do_something( ).
+    tab = oref_config_a_2->get_config_change_tab( ).
+
+    out->write( data = tab name = `tab` ).
+    out->write( |\n\n| ).
+
+**********************************************************************
+
+    out->write( |3) Third call with key { lcl_multiton=>config_a } \n\n| ).
+
+    DATA(oref_config_a_3) = lcl_multiton=>get_instance( key = lcl_multiton=>config_a ).
+    oref_config_a_3->do_something( ).
+    tab = oref_config_a_3->get_config_change_tab( ).
+
+    out->write( data = tab name = `tab` ).
+    out->write( |\n\n| ).
+
+**********************************************************************
+
+    out->write( |4) First call with key { lcl_multiton=>config_b } \n\n| ).
+
+    DATA(oref_config_b_1) = lcl_multiton=>get_instance( key = lcl_multiton=>config_b ).
+    oref_config_b_1->do_something( ).
+    tab = oref_config_b_1->get_config_change_tab( ).
+
+    out->write( data = tab name = `tab` ).
+    out->write( |\n\n| ).
+
+**********************************************************************
+
+    out->write( |5) Second call with key { lcl_multiton=>config_b } \n\n| ).
+
+    DATA(oref_config_b_2) = lcl_multiton=>get_instance( key = lcl_multiton=>config_b ).
+    oref_config_b_2->do_something( ).
+    tab = oref_config_b_2->get_config_change_tab( ).
+
+    out->write( data = tab name = `tab` ).
+    out->write( |\n\n| ).
+
+**********************************************************************
+
+    out->write( |6) Call with key { lcl_multiton=>config_c } \n\n| ).
+
+    DATA(oref_config_c) = lcl_multiton=>get_instance( key = lcl_multiton=>config_c ).
+    oref_config_c->do_something( ).
+    tab = oref_config_c->get_config_change_tab( ).
+
+    out->write( data = tab name = `tab` ).
+    out->write( |\n\n| ).
+
+**********************************************************************
+
+    "Using random keys
+    "The base type of the enumerated type is i, and the example type has 12 components.
+    "I.e. config_a corresponds to the value 0, ..., config_m corresponds to 11.
+    "Here, the cl_abap_random_int class is used to create random integer values within
+    "the range of 0 - 12. This random value is then passed when calling the get_instance
+    "method. The output will show which enumerated type component is used.
+    DO 5 TIMES.
+      DATA(random_number) = cl_abap_random_int=>create( seed = cl_abap_random=>seed( )
+                                                        min  = 0
+                                                        max  = 11 )->get_next( ).
+
+      DATA(enum) = CONV lcl_multiton=>t_enum( random_number ).
+
+      out->write( |{ 6 + sy-index }) Call with key { enum } \n\n| ).
+      DATA(oref_config_random) = lcl_multiton=>get_instance( key = enum ).
+      oref_config_random->do_something( ).
+      tab = oref_config_random->get_config_change_tab( ).
+
+      out->write( data = tab name = `tab` ).
+      out->write( |\n\n| ).
+    ENDDO.
+
+**********************************************************************
+
+    "Log table that tracks the timestamp of the first instantiation per
+    "key and the number of calls.
+    DATA(log) = lcl_multiton=>log.
+    out->write( data = log name = `log` ).
+
+  ENDMETHOD.
+
+ENDCLASS.
+``` 
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+CCIMP include (Local Types tab in ADT)
+
+ </td>
+
+ <td> 
+
+``` abap
+CLASS lcl_multiton DEFINITION
+  FINAL
+  CREATE PRIVATE.
+
+  PUBLIC SECTION.
+    "ABAP enumerated type serving as identifiers for unique
+    "instances
+    TYPES: BEGIN OF ENUM t_enum,
+             config_a,
+             config_b,
+             config_c,
+             config_e,
+             config_f,
+             config_g,
+             config_h,
+             config_i,
+             config_j,
+             config_k,
+             config_l,
+             config_m,
+           END OF ENUM t_enum.
+
+    "Factory method that returns distinct instances based on given key
+    CLASS-METHODS get_instance
+      IMPORTING key             TYPE t_enum
+      RETURNING VALUE(instance) TYPE REF TO lcl_multiton.
+
+    "Dummy methods
+    METHODS do_something.
+    METHODS get_config_change_tab RETURNING VALUE(tab) TYPE string_table.
+
+    "Table type and internal table used to store values for display purposes
+    TYPES: BEGIN OF ty_log_struc,
+             ikey      TYPE t_enum,
+             first_instantiation TYPE utclong,
+             instance_request_count type i,
+           END OF ty_log_struc.
+
+    CLASS-DATA log TYPE SORTED TABLE OF ty_log_struc WITH UNIQUE KEY ikey.
+
+  PRIVATE SECTION.
+
+    "Internal table containing the unique instances that are mapped to keys
+    TYPES: BEGIN OF ty_instance_struc,
+             ikey     TYPE t_enum,
+             instance TYPE REF TO lcl_multiton,
+           END OF ty_instance_struc,
+           ty_instance_tab TYPE HASHED TABLE OF ty_instance_struc WITH UNIQUE KEY ikey.
+
+    CLASS-DATA instance_table TYPE ty_instance_tab.
+
+    METHODS constructor IMPORTING key TYPE t_enum.
+
+    DATA config_change TYPE string_table.
+ENDCLASS.
+
+CLASS lcl_multiton IMPLEMENTATION.
+
+  METHOD get_instance.
+    "Factory method the returns an distinct instance out of a fixed set of
+    "instance based on a give key. The implementation returns that instance
+    "when the corresponding key is provided. If it is not yet stored in the
+    "internal table, a new instance is created, added to the table, and returned.
+
+    READ TABLE instance_table INTO DATA(ref) WITH KEY ikey = key.
+    IF ref-instance IS NOT BOUND.
+      ref-instance = NEW #( key ).
+      INSERT VALUE #( ikey = key instance = ref-instance ) INTO TABLE instance_table.
+    ENDIF.
+    instance = ref-instance.
+
+    "Modifying an entry in an internal table to log the number of instance retrieval requests
+    "for display purposes.
+    log[ ikey = key ]-instance_request_count += 1.
+  ENDMETHOD.
+
+  METHOD constructor.
+    DATA(timestamp) = utclong_current( ).
+
+    "Adding entries to an internal table for display purposes.
+    "The example simply adds text to a string table, including timestamp values,
+    "to illustrate different values when calling the method.
+    APPEND key TO config_change.
+    APPEND |constructor called at { timestamp }| TO config_change.
+
+    IF NOT line_exists( log[ ikey = key ] ).
+      INSERT VALUE #( ikey = key
+                      first_instantiation = timestamp ) INTO TABLE log.
+
+      APPEND |Instance for key { key } first created at at { timestamp }| TO config_change.
+    ENDIF.
+
+    "Assumption: Complex or data-intensive tasks are executed to create an initial state
+    "of instances.
+    CASE key.
+      WHEN config_a.
+        ...
+      WHEN config_b.
+        ...
+      WHEN config_c.
+        ...
+
+        ...
+    ENDCASE.
+
+  ENDMETHOD.
+
+  METHOD do_something.
+    APPEND |do_something called at { utclong_current( ) }| TO config_change.
+  ENDMETHOD.
+
+  METHOD get_config_change_tab.
+    APPEND |get_config_change_tab called at { utclong_current( ) }| TO config_change.
+
+    tab = config_change.
+  ENDMETHOD.
+
+ENDCLASS.
+``` 
+
+ </td>
+</tr>
+
+</table>
+
+</details>  
+
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ### Class-Based and Classic Exceptions
@@ -11815,4 +13339,5 @@ in the ABAP Keyword Documentation.
 > [!NOTE]  
 > - The steps to import and run the code are outlined [here](README.md#-getting-started-with-the-examples).
 > - [Disclaimer](./README.md#%EF%B8%8F-disclaimer)
+
 
