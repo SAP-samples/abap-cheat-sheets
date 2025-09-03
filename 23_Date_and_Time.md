@@ -499,6 +499,18 @@ ENDLOOP.
 "Note: When outputting the data object with the classrun,
 "20240202, which is of type d, is displayed as 2014-02-02 in 
 "the console for better readability.
+
+"Getting the currently active date format
+DATA(datfm) = cl_abap_datfm=>get_datfm( ).
+"Getting the date format of a specific country
+DATA(country_datfm) = cl_abap_datfm=>get_country_datfm( 'DE' ).
+
+"Checking whether the date format is valid
+DATA(is_valid) = cl_abap_datfm=>check_date_format( '1' ).
+ASSERT is_valid = abap_true.
+
+is_valid = cl_abap_datfm=>check_date_format( 'D' ).
+ASSERT is_valid = abap_false.
 ```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>

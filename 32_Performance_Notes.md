@@ -161,11 +161,11 @@ You can minimize database accesses by considering the following aspects:
 Contexts of reducing content transfer are, for example, the following:
 
 - Using the `TRANSPORTING` addition
-	- Statements like `MODIFY`, `READ`, or `LOOP` support the `TRANSPORTING` addition, which lets you specify the exact fields to process, rather than processing all fields.
+	- Statements like `MODIFY`, `READ`, or `LOOP` support the `TRANSPORTING` addition, which lets you specify the exact fields to process, rather than processing all fields. For read operations, this is true for specifying work areas as the target area.
 	- In some cases, `TRANSPORTING` can specify `NO FIELDS`, such as in a read operation when only system fields are needed.
   
 - Using field symbols and data reference variables instead of work areas
-	- Statements like `LOOP` and `READ` provide three options to specify the target area for the read table line.
+	- Statements like `LOOP` and `READ` provide three options to specify the target area for the read table line (or no target area using `TRANSPORTING NO FIELDS`): work areas, field symbols, data reference variables. 
 	- Depending on factors like the complexity of the internal table (e.g., nested components) or the number of reads, using work areas may be less efficient since the content of the table line is copied to the target variable, while other options behave like pointers. However, for simpler tables, reading into work areas may not be less efficient. Plus, the `TRANSPORTING` addition lets you exclude fields.
 	- Consider using field symbols or data reference variables as the target area instead of work areas if:
 		- Direct access to table lines is necessary (e.g., for modification).
@@ -221,7 +221,7 @@ Contexts of reducing content transfer are, for example, the following:
 
 ### Dynamic and Static Specifications when Processing Internal Tables
 
-- Statements that process internal table provide syntax options for dynamic programming, such as specifying the table key dynamically.  
+- Statements that process internal tables provide syntax options for dynamic programming, such as specifying the table key dynamically.  
 - Dynamic specifications require runtime evaluation. Static specifications offer better performance.  
 - For more information, refer to the Dynamic Programming cheat sheet.
 
@@ -295,7 +295,7 @@ Overview of covered examples (see also the inline comments in the method impleme
 	- Static vs. dynamic token specification
 	- Using a `WHERE` clause vs. reading all table rows, looping across the result set and filtering out data
 	- Using `SELECT SINGLE` to read a single data set vs. reading all table rows and filter out single data set vs. `SELECT ... UP TO 1 ROWS`
-	- Reading a specific number of datase using `UP TO n ROWS` vs. reading all table rows and discarding unnecessary data
+	- Reading a specific number of datasets using `UP TO n ROWS` vs. reading all table rows and discarding unnecessary data
 	- Specifying columns in the `SELECT` list vs. specifying `SELECT *`
 	- Single database access vs. multiple accesses in a loop
 	- Using joins, `WHERE EXISTS` and `FOR ALL ENTRIES` vs. repeated database access in a loop
@@ -334,7 +334,7 @@ Overview of covered examples (see also the inline comments in the method impleme
 > - As a prerequisite, you have imported the ABAP cheat sheet repository, as this example uses some of its artifacts.
 > - Since the example contains multiple loops, the execution may take some time to complete.
 > - This example is for exploration, experimentation, and demonstration purposes only. It is <strong>not</strong> suitable for accurate runtime or performance testing (refer to the note in the cheat sheet introduction). Due to its simplified nature and the various factors that can influence the runtime of an ABAP program, results may vary and may not be entirely accurate, even across multiple runs. The displayed results may not always accurately reflect the performance notes from the cheat sheets, and some may be clearer than others. You might run the example again.
-> - The example code snippets do not claim to illustrate best practices. Instead, they aim to highlight potential pitfalls when handling data-intensive tasks in ABAP programs. Despite manually calculating runtime, without tool support, the results should indicate trends and reveal inefficient coding styles. 
+> - The example code snippets do not claim to illustrate best practices. Instead, they aim to highlight potential pitfalls when handling data-intensive tasks in ABAP programs. Despite manually calculating runtime, without tool support, the results should indicate trends and reveal rather inefficient coding styles. 
 > - Note the disclaimer in the ABAP cheat sheet repository's README.
 
 

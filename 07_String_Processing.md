@@ -1219,6 +1219,7 @@ Built-in functions:
 
 ``` abap
 "Note that the functions may contain more parameters than those covered in the snippet.
+"Find an overview in the section about the string function 'find'.
 DATA(str) = `Pieces of cakes.`.
 DATA res TYPE i.
 
@@ -1607,6 +1608,7 @@ res = find( val = str sub = `OF` case = abap_false ). "7
 "Specifying occ
 res = find( val = str sub = `c` ). "3
 res = find( val = str sub = `c` occ = 2 ).  "10
+"Searching the first 'e' character from the end
 res = find( val = str sub = `e` occ = -1 ). "13
 res = find( val = str sub = `e` occ = -3 ). "2
 
@@ -1867,6 +1869,18 @@ res = replace( val = str  with = `#` len = 3 ). "#p ABAP abap
 "- len: not specified or 0
 "- Result: Value specified for 'with' is appended to the end of the string
 res = replace( val = str  with = `#` off = strlen( str ) ). "abap ABAP abap#
+
+"The following examples only highlight that expressions and functions 
+"can be specified for the parameter assignment. Find more information on
+"regular expressions in the Regular Expressions cheat sheet.
+"The examples replace the last character of a string. Note the possibility of 
+"invalid access to string position regarding offset specifications that can raise
+"the CX_SY_RANGE_OUT_OF_BOUNDS exception (e.g. assume 'str' is initial).
+"res: abap ABAP aba#
+
+res = reverse( val = replace( val = reverse( str ) off = 0 len = 1 with = `#` ) ).
+res = replace( val = str off = strlen( str ) - 1 len = 1 with = `#` ).
+res = replace( val = str pcre = `.\Z` with = `#` ).
 ```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>

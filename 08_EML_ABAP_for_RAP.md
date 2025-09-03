@@ -1314,7 +1314,7 @@ DATA(d) = itab[ 1 ]-%data-%key-key_field.
 
 ### Constants for BDEF Derived Type Components
 
-Several BDEF derived types contain `%` components, which have a specific type and represent flags. The mentioned `%control` structure of type `ABP_BEHV_FLAG` is such a component. When assigning values to these components, ensure you use appropriate values. The `IF_ABAP_BEHV` interface provides a range of structured constants for this purpose. Although these constants are technically identical, it is recommended that you use them in the right context.
+Several BDEF derived types contain `%` components, which have a specific type and represent flags. The mentioned `%control` structure, whose components are of type `ABP_BEHV_FLAG`, is such a component. When assigning values to these components, ensure you use appropriate values. The `IF_ABAP_BEHV` interface provides a range of structured constants for this purpose. Although these constants are technically identical, it is recommended that you use them in the right context.
 
 | Type    | Structured Constant | Details |
 | -------- | ------- | ------- |
@@ -1324,7 +1324,8 @@ Several BDEF derived types contain `%` components, which have a specific type an
 | `ABP_BEHV_FIELD_CTRL`  |  `IF_ABAP_BEHV=>FC-F`   |  For field feature control results, such as a field marked with no restrictions.   |
 | `ABP_BEHV_OP_CTRL` |  `IF_ABAP_BEHV=>FC-O`   |  For operation feature control results, such as a disabled update operation.   |
 | `ABP_BEHV_AUTH` |  `IF_ABAP_BEHV=>AUTH`   |  For authorization results, such as an unauthorized operation.   |
-| `IF_ABAP_BEHV=>T_CHAR01` |  `IF_ABAP_BEHV=>MK`   |  For dynamic ABAP EML statements; e.g. `if_abap_behv=>op-m-create` for create and `if_abap_behv=>op-r-read` for read operations. |
+| `IF_ABAP_BEHV=>T_CHAR01` |  `IF_ABAP_BEHV=>OP`   |  For dynamic ABAP EML statements; e.g. `if_abap_behv=>op-m-create` for create and `if_abap_behv=>op-r-read` for read operations. |
+| `IF_ABAP_BEHV=>T_CHAR01` |  `IF_ABAP_BEHV=>COP`   |  For accumulated change operation information such as in the context of draft additional save; e.g. `if_abap_behv=>cop-update` for update operations. |
 
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>

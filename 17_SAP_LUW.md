@@ -30,7 +30,7 @@ Consider the following example of transactional consistency:
 - However, at the end of the transaction, all data must be in a consistent state so that the database can be updated accordingly. Or, if errors occur during the transaction, it must be ensured that all changes can be reversed. It must not happen that money is credited to account B without also updating the totals of account A. In such a case, the previous consistent state must be restored.
 
 > [!NOTE]
-> - This cheat sheet focuses on [classic ABAP](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenclassic_abap_glosry.htm). Hence, the links in this cheat sheet open topics in the ABAP Keyword Documentation for [Standard ABAP](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenstandard_abap_glosry.htm).
+> - This cheat sheet focuses on [classic ABAP](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenclassic_abap_glosry.htm) and the unrestricted ABAP language version [Standard ABAP](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenstandard_abap_glosry.htm). Hence, the links in this cheat sheet open topics in the ABAP Keyword Documentation for [Standard ABAP](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenstandard_abap_glosry.htm).
 > - The SAP LUW concept is also relevant to ABAP Cloud. The [ABAP RESTful Application Programming Model (RAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenarap_glosry.htm) is the transactional programming model for [ABAP Cloud](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_cloud_glosry.htm). It comes with a well-defined transactional model and follows the rules of the SAP LUW. Find out more in this [blog](https://blogs.sap.com/2022/12/05/the-sap-luw-in-abap-cloud/).
 
 ## Terms
@@ -116,7 +116,7 @@ Using the above bank transfer as an example:
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ### Bundling Techniques
-The following bundling techniques are available for classic ABAP. This means that programming units are registered in different work processes, but are executed by a single work process. All database changes are put into one database LUW, and all changes are committed in one final database commit.
+The following bundling techniques are available in Standard ABAP. This means that programming units are registered in different work processes, but are executed by a single work process. All database changes are put into one database LUW, and all changes are committed in one final database commit.
 
 **Using [update function modules](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenupdate_function_module_glosry.htm)**
 - Are specially marked, i.e. the *update module* property is marked  

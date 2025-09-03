@@ -6,7 +6,7 @@
   - [Excursions](#excursions)
     - [Available Classes in ABAP for Cloud Development](#available-classes-in-abap-for-cloud-development)
     - [Cloud Development Successors](#cloud-development-successors)
-  - [Displaying Output in the ADT Console](#displaying-output-in-the-adt-console)
+  - [Running a Class and Displaying Output in the ADT Console](#running-a-class-and-displaying-output-in-the-adt-console)
     - [Excursion: Exploring Demo Display Class Using IDE Actions](#excursion-exploring-demo-display-class-using-ide-actions)
   - [Creating and Transforming UUIDs](#creating-and-transforming-uuids)
   - [XCO Representations of SY Components](#xco-representations-of-sy-components)
@@ -100,7 +100,7 @@ SELECT SINGLE * FROM I_APIsWithCloudDevSuccessor
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
 
-## Displaying Output in the ADT Console
+## Running a Class and Displaying Output in the ADT Console
 
 The table includes the <code>IF_OO_ADT_CLASSRUN</code> interface.
 
@@ -3011,16 +3011,16 @@ DATA match TYPE string.
 
 "yes
 IF xco_cp=>string( ` 1` )->matches( `\s\d` ).
-  match = 'yes'.
+  match = `yes`.
 ELSE.
-  match = 'no'.
+  match = `no`.
 ENDIF.
 
 "no
 IF xco_cp=>string( ` X` )->matches( `\s\d` ).
-  match = 'yes'.
+  match = `yes`.
 ELSE.
-  match = 'no'.
+  match = `no`.
 ENDIF.
 ``` 
 
@@ -5704,7 +5704,7 @@ To check out examples in demo classes, expand the collapsible sections below.
   <summary>🟢 1. Read example: Retrieving ABAP cheat sheet markdown content using a GitHub API and sending a ZIP file with the content via email</summary>
   <!-- -->
 
-<br>
+
 
 > [!WARNING] 
 > - The following self-contained and oversimplified example is not a representative best practice example, nor does it cover a meaningful use case. It only explores method calls and is intended to give a rough idea of the functionality.</li>
@@ -5713,13 +5713,13 @@ To check out examples in demo classes, expand the collapsible sections below.
 > - For more information, more meaningful examples, and tutorials that deal with the classes and methods, see the following links:
 >   - <a href="https://developers.sap.com/tutorials/abap-environment-external-api.html">Call an External API and Parse the Response in SAP BTP ABAP Environment</a>
 >   - <a href="https://community.sap.com/t5/technology-blogs-by-sap/how-to-call-a-remote-odata-service-from-the-trial-version-of-sap-cloud/ba-p/13411535">How to call a remote OData service from the trial version of SAP Cloud Platform ABAP environment</a>
-> - The example is generally about calling external APIs and parsing the HTTP responses. It retrieves the Markdown files of the ABAP cheat sheet documents Markdown contained in the ABAP cheat sheet GitHub repository.  
+> - The example is generally about calling external APIs and parsing the HTTP responses. It retrieves the Markdown files of the ABAP cheat sheet documents contained in the ABAP cheat sheet GitHub repository.  
 > - Before using the GitHub APIs, make sure that you have consulted the following documentation: <a href="https://docs.github.com/en">GitHub Docs</a>, <a href="https://docs.github.com/en/enterprise-cloud@latest/rest/markdown/markdown?apiVersion=2022-11-28#render-a-markdown-document">Render a Markdown document</a>, <a href="https://docs.github.com/en/rest/using-the-rest-api/rate-limits-for-the-rest-api?apiVersion=2022-11-28">Rate limits for the REST API</a>
 > - For the example to work and send emails, make sure that the configurations from [here](https://help.sap.com/docs/btp/sap-business-technology-platform/emailing) have been performed.
 > - To run the example class, copy and paste the code into a class named `zcl_demo_abap`. Run the class using F9. The email sending status will be displayed, and you can expect an email to be sent.   
 
 
-<br>
+
 
 ``` abap
 CLASS zcl_demo_abap DEFINITION
@@ -5870,13 +5870,13 @@ ENDCLASS.
   <summary>🟢 2. Post example: Demonstrating a post request by converting Markdown to HTML using the GitHub API</summary>
   <!-- -->
 
-<br>
+
 
 > [!WARNING] 
 > - As stated for the previous example, also note for this example: Before using the GitHub APIs, make sure that you have consulted the following documentation: <a href="https://docs.github.com/en">GitHub Docs</a>, <a href="https://docs.github.com/en/enterprise-cloud@latest/rest/markdown/markdown?apiVersion=2022-11-28#render-a-markdown-document">Render a Markdown document</a>, <a href="https://docs.github.com/en/rest/using-the-rest-api/rate-limits-for-the-rest-api?apiVersion=2022-11-28">Rate limits for the REST API</a>
 > - To run the example class, copy and paste the code into a class named `zcl_demo_abap`. Run the class using F9. It is set up to display HTML content in the console. Using the GitHub API, sample Markdown content is sent and converted to HTML.
 
-<br>
+
 
 ``` abap
 CLASS zcl_demo_abap DEFINITION
@@ -7547,7 +7547,7 @@ The following code snippet uses the `XCO_CP_CTS` class, among others, to demonst
 > - The example is simplified and non-semantic, exploring various functionalities offered by the XCO APIs. See the repository's [disclaimer](./README.md#%EF%B8%8F-disclaimer).
 > - For more information and code snippets, refer to the [SAP Help documentation](https://help.sap.com/docs/btp/sap-business-technology-platform/correction-and-transport-system).
 > - The example assumes you have a transportable package, represented by the `pkg_name` constant in the example.
-> - To try the example out, create a demo class named `ZCL_DEMO_ABAP` and paste the code into it. Edit the code by providng the `pkg_name` constant with your package name. It is assumed that a demo class named `ZCL_DEMO_ABAP_CALCULATE` does not exist. After activation, choose *F9* in ADT to execute the class. The example is set up to display output in the console. You may also want to open the created `ZCL_DEMO_ABAP_CALCULATE` class.
+> - To try the example out, create a demo class named `ZCL_DEMO_ABAP` and paste the code into it. Edit the code by providing the `pkg_name` constant with your package name. It is assumed that a demo class named `ZCL_DEMO_ABAP_CALCULATE` does not exist. After activation, choose *F9* in ADT to execute the class. The example is set up to display output in the console. You may also want to open the created `ZCL_DEMO_ABAP_CALCULATE` class.
 
  <br>
 

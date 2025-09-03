@@ -195,7 +195,7 @@ ENDCLASS.
 
 #### Additions in the Class Declaration Part
 
-This section covers a selection of additions to declare classes. They are also covered in other sections below, e.g. [Additions Related to Inheritance and Instantiation](#additions-related-to-inheritance-and-instantiation). Find more information on the additions in the [ABAP Keyword Documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapclass_options.htm). The additions assume dealing with public classes, however, many of the additions are also possible for local classes. 
+This section covers a selection of additions to declare classes. They are also covered in other sections below, e.g. [Additions Related to Inheritance and Instantiation](#additions-related-to-inheritance-and-instantiation). Find more information on the additions in the [ABAP Keyword Documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapclass_options.htm). The additions assume dealing with global classes, however, many of the additions are also possible for local classes. 
 
 <table>
 
@@ -613,13 +613,13 @@ kinds of components are to be distinguished when, for example, looking at declar
     (`DATA`): Determine the state of objects of a class. The data
     is only valid in the context of an instance. As shown further down,
     instance attributes can only be accessed via an [object reference
-    variable](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenobject_refer_variable_glosry.htm "Glossary Entry").
+    variable](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenobject_refer_variable_glosry.htm "Glossary Entry") (or [interface reference variable](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abeninterface_ref_variable_glosry.htm)).
 -   [Static
     attributes](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenstatic_attribute_glosry.htm "Glossary Entry")
     (`CLASS-DATA`): Their content is independent of instances of
     a class and, thus, valid for all instances.  That means that if you change such a static
     attribute, the change is visible in all instances. As shown further down,
-    static attributes can be accessed by both using an object reference variable and using the class name without a prior creation of an instance.
+    static attributes can be accessed by both using an object reference variable (however, this access is not recommended) and using the class name without a prior creation of an instance.
 
 
 > [!NOTE] 
@@ -694,7 +694,7 @@ ENDCLASS.
     methods](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abeninstance_method_glosry.htm "Glossary Entry")
     can access all of the attributes of a class and trigger all events.
     You declare them using `METHODS` statements in a visibility
-    section. Note that you must create an instance of a class first before using instance methods.
+    section. Note that you must create an instance of a class first before using instance methods. Called within the same class, an instance is not required.
 - `CLASS-METHODS` and `METHODS` can be followed by a colon to list one or more methods, separated by commas, or without a colon to declare a single method.
 
 
@@ -802,7 +802,7 @@ In the simplest form, methods can have no parameter at all. Apart from that, met
 - This formal parameter includes the specification of how the value passing should happen. Parameters can be passed by ...
   - [reference](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenpass_by_reference_glosry.htm "Glossary Entry"): `... REFERENCE(param) ...`; note that just specifying the parameter name `... param ...` - as a shorter syntax - means passing by reference by default) 
   - [value](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenpass_by_value_glosry.htm "Glossary Entry"): `... VALUE(param) ...`
-- An [Actual parameter](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenactual_parameter_glosry.htm "Glossary Entry") represents the data object whose content is passed to or copied from a formal parameter as an argument when a procedure is called. 
+- An [actual parameter](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenactual_parameter_glosry.htm "Glossary Entry") represents the data object whose content is passed to or copied from a formal parameter as an argument when a procedure is called. 
 - If passing by reference is used, a local data object is not created for the actual parameter. Instead, the procedure is given a [reference](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenreference_glosry.htm "Glossary Entry") to the actual parameter during the call and works with the actual parameter itself. 
 - Note that parameters that are input and passed by reference cannot be modified in the procedure. However, the use of a reference is beneficial regarding the performance compared to creating a local data object.
 
@@ -2140,7 +2140,7 @@ IF cl_abap_random_int=>create( seed = cl_abap_random=>seed( )
                                max  = 10 )->get_next( ) < 5.
   ... "The random number is lower than 5.
 ELSE.
-  ... "The random number is greater than 5.
+  ... "The random number is equal or greater than 5.
 ENDIF.
 
 "Examples using classes of the XCO library (see more information in the
@@ -11287,7 +11287,7 @@ Example notes:
 	- Class `lcl_proxy`: 
 		- Represents the proxy class. 
 		- Implements the interface to serve as a surrogate of the original class. So, users interact with this class instead of the the original class. 
-		- The class maintains a reference to the original class and delegates requests to it. The logic can only be executed, and data can only be retrieved if authentication validation succeeds. The example uses hardcoded demo values for usernames and passwords. If validation fails, the an object of the original class cannot be created, and exception is raised (local exception class `lcx_error`). 
+		- The class maintains a reference to the original class and delegates requests to it. The logic can only be executed, and data can only be retrieved if authentication validation succeeds. The example uses hardcoded demo values for usernames and passwords. If validation fails, an object of the original class cannot be created, an exception is raised (local exception class `lcx_error`). 
 		- The original class, `lcl_user_info`, is declared with `CREATE PRIVATE` to prevent external object creation. Only the class itself and its friends can instantiate objects, which is why the proxy class is declared as a friend of the class.
 		- The proxy class includes additional functionality by implementing a simple logging mechanism. In this example, logging is achieved through entries in an internal table, which is a static component to track all access attempts from the internal session. Logging to a database table for permanent storage may be an option.
 
@@ -12794,7 +12794,7 @@ Example notes:
         - Maintains one instance per unique key. The key values in this example are determined by ABAP enumerated types, which serve as identifiers for unique instances. The example assumes that users require specific configuration settings among a set of multiple settings, with each setting corresponding to a distinct class instance.  
         - Instance maintenance occurs in the `instance_table` internal table within the private visibility section. This table contains entries for created class instances, mapped to specific keys (the ABAP enumerated types).
         - The `get_instance` method is a public, static factory method that returns an instance of `lcl_multiton` for a given key. It first checks if an entry in the `instance_table` table already exists. If not, it creates a new instance and adds it to the table. Finally, it returns the instance corresponding to the provided key, ensuring that users receive the specific instance they need.
-        - The instance `constructor` is declared in the private visibility section to prevent direct instantiation. This assumptions is that instantiation may involve complex or data-intensive tasks, which should be avoided if users frequently require instances. The pattern promotes reuse and prevents duplicate instantiations. The simplified demo implementation only adds entries to an internal table for display purposes.
+        - The instance `constructor` is declared in the private visibility section to prevent direct instantiation. The assumption is that instantiation may involve complex or data-intensive tasks, which should be avoided if users frequently require instances. The pattern promotes reuse and prevents duplicate instantiations. The simplified demo implementation only adds entries to an internal table for display purposes.
         - Other implementations in the demo class, like the `do_something` dummy method, also serve display purposes. A string table collects information, including the current timestamp, to demonstrate multiple different entries added during class instantiation and method calls. The `log` table tracks the number of instance retrieval requests and the timestamps of the first instantiation per key within the internal session.
 
       
@@ -13035,7 +13035,7 @@ CLASS lcl_multiton IMPLEMENTATION.
       INSERT VALUE #( ikey = key
                       first_instantiation = timestamp ) INTO TABLE log.
 
-      APPEND |Instance for key { key } first created at at { timestamp }| TO config_change.
+      APPEND |Instance for key { key } first created at { timestamp }| TO config_change.
     ENDIF.
 
     "Assumption: Complex or data-intensive tasks are executed to create an initial state

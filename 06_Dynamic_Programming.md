@@ -5755,7 +5755,7 @@ ENDCLASS.
 CLASS lcl_demo IMPLEMENTATION.
   METHOD check_sysubrc.
     IF sy-subrc = 0.
-      WRITE / `Syntac check: Ok` COLOR COL_POSITIVE.
+      WRITE / `Syntax check: Ok` COLOR COL_POSITIVE.
     ELSE.
       WRITE / |sy-subrc: { sy-subrc }| COLOR COL_NEGATIVE.
       WRITE / |MESSAGE: { msg }| COLOR COL_NEGATIVE.

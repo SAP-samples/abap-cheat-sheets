@@ -188,7 +188,9 @@ Internal Tables ...
         if an unstructured line type is tabular.
     - Note: When using an [inline declaration](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abeninline_declaration_glosry.htm "Glossary Entry") such as `... INTO TABLE @DATA(itab) ...` in `SELECT` statements, the resulting table is a standard table and has an empty key.
 
-> **💡 Primary table index**<br>
+
+> [!NOTE]  
+> Primary table index
 > - Index tables, such as sorted and standard tables, have a primary table index. 
 > - Each table line receives a unique line number from the primary table index. 
 > - The index updates each time a line is added or removed. 
@@ -2295,6 +2297,7 @@ The example includes multiple reads on standard internal tables using a `READ TA
 - without `BINARY SEARCH`. 
 - with `BINARY SEARCH` and a previous `SORT` statement.
 - with a secondary table key whose components correspond to free key used in the previous statements.
+
 The runtime of the reads is determined and stored in internal tables. The read operations are repeated several times to have a more accurate runtime evaluation. The fastest time is output. 
 The example is intended to demonstrate the performance gain using the `BINARY SEARCH` addition (and also using a secondary table key).
 
@@ -5718,7 +5721,7 @@ ENDCLASS.
 > [!NOTE] 
 > - This example is for [exploration, experimentation, and demonstration](./README.md#%EF%B8%8F-disclaimer) purposes only. It is not suitable for accurate runtime or performance testing. Due to its simplified nature (for example, the table line type is fairly simple, and the key components are all of type `i`) and various factors that can influence the runtime of an ABAP program, results may vary and may not be entirely accurate, even across multiple runs. The displayed results may not always accurately reflect the performance notes from the cheat sheet.
 > - The example concentrates on a few demo internal tables, declared using various declaration options. 
-> - The runtime analysis in this self-contained example is as follows: The code snippet for which the runtime should be measured is enclosed by two timestamp retrievals using `utclong_current( )`. The runtime is analysed by calculating the delta of the two timestamp values, indicating the used runtime for the code snippet. To have a more meaningful example regarding the runtime analysis, the snippets are executed multiple times, indicated by enclosing them in a `DO` loop. The runtime delta value is added to an internal table collecting all runtime delta values for the specific code snippet for all loop iterations. Finally, the average runtime is calculated based on the collected runtime delta values. This average runtime value is added to an internal with other information. The approach with multiple iterations and the average runtime value aims to provide a balanced view of runtime. Note that this implementation is for exploration and demonstration purposes only.
+> - The runtime analysis in this self-contained example is as follows: The code snippet for which the runtime should be measured is enclosed by two timestamp retrievals using `utclong_current( )`. The runtime is analysed by calculating the delta of the two timestamp values, indicating the used runtime for the code snippet. To have a more meaningful example regarding the runtime analysis, the snippets are executed multiple times, indicated by enclosing them in a `DO` loop. The runtime delta value is added to an internal table collecting all runtime delta values for the specific code snippet for all loop iterations. Finally, the average runtime is calculated based on the collected runtime delta values. This average runtime value is added to an internal table with other information. The approach with multiple iterations and the average runtime value aims to provide a balanced view of runtime. Note that this implementation is for exploration and demonstration purposes only.
 > - Among the demonstrated read operations are the following:
 >   - Index accesses (standard and sorted tables, hashed tables using the secondary table index)
 >   - Primary table key accesses (various tables specified with a single and multiple key components; examples with full key, partial and left-aligned key, partial and not left-aligned key)
@@ -6748,11 +6751,10 @@ SELECT * FROM @inttab AS tab
 
 ### Comparing Content of Compatible Internal Tables 
 
-Using the methods of the `CL_ABAP_DIFF` class, you can compare the content of two compatible index tables. 
-
-Find ...
-- more information in the class documentation and in the [ABAP Keyword Documentation]([06_Dynamic_Programming.md](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencl_abap_diff.htm)). 
-- a code snippet in the [Released ABAP Classes](22_Released_ABAP_Classes.md) cheat sheet.
+You can compare internal tables: 
+- Using the methods of the `CL_ABAP_DIFF` class to compare the content of two compatible index tables programmatically. 
+  - Find more information in the class documentation and in the [ABAP Keyword Documentation]([06_Dynamic_Programming.md](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencl_abap_diff.htm)). A code snippet is available in the [Released ABAP Classes](22_Released_ABAP_Classes.md) cheat sheet.
+- Using the [Table Comparison Tool](https://help.sap.com/docs/abap-cloud/abap-development-tools-user-guide/comparing-internal-tables-085ab2303ceb4478ad7958053c2ebeb3?locale=en-US&version=LATEST) in ADT.   
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 

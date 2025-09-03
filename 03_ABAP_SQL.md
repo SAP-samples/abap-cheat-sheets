@@ -967,7 +967,7 @@ addition:
 - The logical expression is evaluated for each individual row of the internal table.
 - The result set of the `SELECT` statement is the union set of the result sets produced by the individual evaluations. Rows that occur more than once are removed from the result set automatically. The entire content of a row is respected.
 - If `FOR ALL ENTRIES` is specified, there must be at least one comparison with a column of the internal table.
-- For more information, especially restricitions and things to pay attention to (e. g. making sure that the internal table is not initial), see [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenwhere_all_entries.htm).
+- For more information, especially restricitions and things to pay attention to (e. g. making sure that the internal table is not initial), see [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenwhere_all_entries.htm). In modern ABAP, it is advisable to use internal tables as data sources in the `SELECT` statement, for example, in `WHERE` clauses or joins, instead of using the `FOR ALL ENTRIES` addition.
 
 ``` abap
 "Checking that table is not initial

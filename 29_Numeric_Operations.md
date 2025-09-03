@@ -1794,7 +1794,7 @@ SELECT SINGLE
 
 ## Executable Example
 
-Expand the following collapsible section for an example class. It contains the code snippets from the cheat sheet. To try it out, create a demo class named `zcl_demo_abap` and paste the code into it. After activation, choose *F9* in ADT to execute the class. The examples is set up to display output in the console only for the calculator snippet. To explore the effect of statements and content of variables, you may want to set break points and walk through the code in the debugger.
+Expand the following collapsible section for an example class. It contains the code snippets from the cheat sheet. To try it out, create a demo class named `zcl_demo_abap` and paste the code into it. After activation, choose *F9* in ADT to execute the class. The example is set up to display output in the console only for the calculator snippet. To explore the effect of statements and content of variables, you may want to set break points and walk through the code in the debugger.
 
 <details>
   <summary>🟢 Click to expand for example code</summary>
