@@ -2811,6 +2811,32 @@ ENDCLASS.
 
 </td>
 </tr>
+<tr>
+<td> <code>CL_ABAP_PROB_DISTRIBUTION</code><br><code>CL_ABAP_PROB_DISTRIBUTION_DF34</code> </td>
+<td>
+
+- For generating random numbers from various probability distributions and performing probability calculations. 
+- `CL_ABAP_PROB_DISTRIBUTION` calculates with float probabilities, `CL_ABAP_PROB_DISTRIBUTION_DF34` with decfloat34 probabilities.
+- For more information, refer to the class documentation and [this blog](https://community.sap.com/t5/technology-blog-posts-by-sap/random-numbers-and-probability-distributions-in-the-abap-environments-for/ba-p/14173266).
+
+<br>
+
+``` abap
+"The following code snippet shows the generation of many random numbers in one go.
+"20 random numbers in the value range 1 - 100 are created.
+DATA(random) = cl_abap_random=>create( seed = cl_abap_random=>seed( ) ).
+DATA ranges_tab TYPE if_abap_prob_types=>int_range.
+ranges_tab = VALUE #( ( sign = 'I' option = 'BT' low = 1 high = 100 ) ).
+DATA(distribution) = cl_abap_prob_distribution=>get_uniform_int_distribution( range = ranges_tab ).
+DATA(int_tab) = distribution->next_random_numbers( count = 20 rng = random ).
+
+"An initial ranges tables means that all numbers are respected.
+distribution = cl_abap_prob_distribution=>get_uniform_int_distribution( range = VALUE #( ) ).
+int_tab = distribution->next_random_numbers( count = 20 rng = random ).
+``` 
+
+</td>
+</tr>
 </table>
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
