@@ -21,7 +21,7 @@ This ABAP cheat sheet summarizes the release news from the ABAP Keyword Document
 > [!TIP]
 >
 > - As an addition and [excursion](./README.md#%EF%B8%8F-disclaimer) to the content of this ABAP cheat sheet, the following HTML file serves as an *ABAP Release News Viewer* - a simplified HTML document that allows for filtering and searching ABAP release news.  
-> - This HTML file is for offline use and includes excerpts of ABAP release news from the cheat sheet, formatted as JSON, which is used to construct a table.
+> - This HTML file includes excerpts of ABAP release news from the cheat sheet, formatted as JSON, which is used to construct a table.
 > - To explore it, download the file to your local machine and open it in a browser.
 > - 📄 [abap_release_news_viewer.html](./files/abap_release_news_viewer.html)
 > - The news content is presented in plain text and is unformatted for simplicity.
