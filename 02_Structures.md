@@ -524,7 +524,7 @@ ASSIGN ('DEMO_STRUC') TO FIELD-SYMBOL(<c>).
 ASSERT sy-subrc = 0.
 
 "Using ASSIGN COMPONENT statements
-"It is recommended to use the newer syntax, which sepcifies the component 
+"It is recommended to use the newer syntax, which specifies the component 
 "selector followed by a data object in a pair of parentheses.
 "After COMPONENT (and in the parentheses in the newer syntax), a character-like 
 "or numeric data object is expected.

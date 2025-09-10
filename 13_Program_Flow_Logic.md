@@ -575,6 +575,9 @@ Further keywords for defining loops are as follows. They are not dealt with here
 In modern ABAP programs, classes and methods are the way to go for modularization purposes (instead of [function modules](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenfunction_module_glosry.htm) and [subroutines](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensubroutine_glosry.htm) in most cases; the latter is only available in Standard ABAP).
 Note that methods and calling methods are described in the context of the [ABAP Object Orientation cheat sheet](04_ABAP_Object_Orientation.md). Find more information and examples there.
 
+> [!NOTE]  
+> Find information on [events](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenevent_glosry.htm) in the [ABAP Object Orientation](04_ABAP_Object_Orientation.md#events) cheat sheet.
+
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
 

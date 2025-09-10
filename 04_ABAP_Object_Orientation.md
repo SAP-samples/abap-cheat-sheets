@@ -46,8 +46,8 @@
     - [Excursion: Example Interface](#excursion-example-interface)
   - [Friendship](#friendship)
     - [Friendship between Global and Local Classes](#friendship-between-global-and-local-classes)
+  - [Events](#events)
   - [Excursions](#excursions)
-    - [Events](#events)
     - [ABAP Examples of Design Patterns in Object-Oriented Programming](#abap-examples-of-design-patterns-in-object-oriented-programming)
     - [Class-Based and Classic Exceptions](#class-based-and-classic-exceptions)
     - [ABAP Unit Tests](#abap-unit-tests)
@@ -7374,64 +7374,861 @@ ENDCLASS.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
+## Events
 
-## Excursions
+High-level steps involved:
+- Declaring an event
+- Declaring an event handler
+- Registering the raised event so that event handler can handle it
+- Raising an event
 
-### Events
+**Events**
+- [Events](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenevent_glosry.htm "Glossary Entry") can trigger the processing of [processing blocks](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenprocessing_block_glosry.htm "Glossary Entry"), meaning they can initiate the execution of event handlers (that is, other methods).
+- You can declare events in the visibility section of a class or interface declaration, for example:
+  - as an instance event using an [`EVENTS`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapevents.htm) statement.
+  - as a static event using [`CLASS-EVENTS`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapclass-events.htm).
+- The key difference is that instance events are bound to specific instances of classes and can only be raised by instance methods within the same class. In contrast, static events are independent of class instances and can be raised by any method in the class.
+- Parameter interface:
+  - In the declaration, you can only specify output parameters (using `EXPORTING` and formal parameters specifying passing by value) for an event. When the event is raised, actual parameters are transferred to event handlers.
+  - For instance events, the parameter interface includes an implicit output parameter called `sender`, which is a reference variable that automatically assigns the raising object.
+- Example declarations:
+    ``` abap
+    "Declaration part of a class/interface
+    "Instance events
+    EVENTS: i_evt1,
 
-- [Events](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenevent_glosry.htm "Glossary Entry")
-can trigger the processing of [processing blocks](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenprocessing_block_glosry.htm "Glossary Entry").
-- Declaring events: Can be declared in a visibility section of the declaration part of a class or in an interface, e. g. as
-  - instance event using an [`EVENTS`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapevents.htm) statement. Note that they can only be raised in instance methods of the same class.
-  - static event using [`CLASS-EVENTS`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapclass-events.htm). They can be raised in all methods of the same class or of a class that implements the interface. Static event handlers can be called by the event independently of an instance of the class.
+            "Events can only have output parameters that are passed by value
+            i_evt2 EXPORTING VALUE(num) TYPE i ...
+    ...
+    "Static events
+    CLASS-EVENTS: st_evt1,
+                st_evt2 EXPORTING VALUE(num) TYPE i ...
+    ```
+
+
+**Event handlers** 
+- An event is raised by a [`RAISE EVENT`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapraise_event.htm) statement in either another method or the same method.
+- Raising an event triggers the associated [event handlers](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenevent_handler_glosry.htm "Glossary Entry"), which are special methods that can handle the event.
+- Typically, event handlers are called indirectly using `RAISE EVENT` rather than through direct method calls.
+- To execute an event handler when an event is raised, you must register it with a `SET HANDLER` statement.
+- Both static and instance methods can function as event handlers. The main difference is that static event handlers can be called independently of class instances.
+- Use the `FOR EVENT some_event OF cl|intf` syntax for event handler declarations.
+- Pay attention to the visibility section of an event handler; it cannot be more general than the event's visibility section.
+- Case: Instance method as event handler:
+   - If `some_event` is an instance event, the event handler can manage events for all objects of class `cl`, its subclasses, or objects implementing the interface `intf`.
+   - If `some_event` is a static event, the event handler can manage events for class `cl`, its subclasses, or any classes implementing the interface `intf`.
+- You can also specify additions like `ABSTRACT` and `FINAL` for instance methods, and `DEFAULT IGNORE` or `DEFAULT FAIL` for both instance and static methods.
+- Parameter interface:
+   - You can use `IMPORTING` in the declaration to define input parameters.
+   - You may only specify those formal parameters defined as output parameters with `EXPORTING` in the declared event.
+   - Specify only the names of the formal parameters without modifiers like `TYPE`, `LIKE`, `OPTIONAL`, or `DEFAULT`. The properties will be inherited from the specified event parameters.
+   - You do not need to specify all output parameters.
+   - If `some_event` is an instance event, you can specify the `sender` formal parameter, which is an implicit output parameter for each instance event, providing a reference to the object that raised the event.
+- Example declarations:
+    ``` abap
+    "Event handlers for instance events
+    METHODS: handler_meth1 FOR EVENT i_evt1 OF some_class,
+
+            "Parameter names must be the same as declared;
+            "no further additions possible for the parameter (e.g. TYPE);
+            "the predefined, implicit parameter sender as another formal parameter is possible with instance events,
+            "it is typed as a reference variable, which itself has the class/interface as a static type,
+            "If the event handler is called by an instance event, it is passed a reference to the raising object in sender.
+            handler_meth2 FOR EVENT i_evt2 OF some_class IMPORTING num sender,
+    ...
+    ```
+
+**Registering and deregistering event handlers** 
+
+- Two syntax forms are available for (de)registering:
+  - For instance event handlers: `SET HANDLER handler1 handler2 ... FOR oref|ALL INSTANCES [ACTIVATION act].`
+    - `handler1`, etc. can be specified as follows: `meth` (methods from the same or other classes defined as instance event handlers; event handlers for static events cannot be specified), `oref->meth`, `class=>meth`
+    - `FOR oref`: (De)registers event handlers for a single object.
+    - `FOR ALL INSTANCES`: (De)registers all event handlers for all instances.
+    - `ACTIVATION`: Used to (de)register event handlers; expects a single-character text field. The default value is `X` (indicating registration; so, the addition is optional for registration). A blank value means it is deregistered.
+  - For static event handlers: `SET HANDLER handler1 handler2 ... [ACTIVATION act].`
+    - The statement (de)registers static event handlers (not instance events).
+    - Note that the (de)registration is independent of class instances and applies globally to the current [internal session](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abeninternal_session_glosry.htm).
+- `SET HANDLER` statements set the system field `sy-subrc`. See the example.
+  
+**Raising events**
+
+- Events are raised using [`RAISE EVENT`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapraise_event.htm) statements, which can only occur within methods.
+- After raising the event, all registered event handlers are executed, and the program flow continues after the statement.
+- You can use the `EXPORTING` addition (`RAISE EVENT some_event EXPORTING a = b c = d ...`) to pass actual parameters to event handlers.
+- If the formal parameter `sender` is declared for an event handler, it automatically receives a reference to the raising object when instance events are triggered. However, `sender` cannot be explicitly specified or assigned here.
+  
+> [!NOTE]  
+> In RAP, special [RAP business events](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_entity_event_glosry.htm) are available. They can be raised in [ABAP behavior pools](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbehavior_pool_glosry.htm) with [RAISE ENTITY EVENT](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapraise_entity_event.htm) statements. Find more information in the ABAP for RAP: Entity Manipulation Language (ABAP EML) cheat sheet.
+
+
+Expand the following collapsible section for example code. To try it out, create a demo class named `zcl_demo_abap` and paste the code into it. Note that the example includes code in the global class and the CCIMP include/Local Types tab in ADT. After activation, choose *F9* in ADT to execute the class. The example is set up to display output in the console. For more information on the example, see the inline comments.
+
+
+<details>
+  <summary>🟢 Click to expand for example code</summary>
+  <!-- -->
+
+<br>
+
+
+
+<table>
+
+<tr>
+<td> Class include </td> <td> Code </td>
+</tr>
+
+<tr>
+<td> 
+
+Global class
+
+ </td>
+
+ <td> 
 
 ``` abap
-"Declaration part of a class/interface
-"Instance events
-EVENTS: i_evt1,
+CLASS zcl_demo_abap DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
 
-"Events can only have output parameters that are passed by value
-        i_evt2 EXPORTING VALUE(num) TYPE i ...
-...
-"Static events
-CLASS-EVENTS: st_evt1,
-              st_evt2 EXPORTING VALUE(num) TYPE i ...
+  PUBLIC SECTION.
+    INTERFACES if_oo_adt_classrun.
+    CLASS-DATA event_log TYPE string_table.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+    CLASS-METHODS display_log_table IMPORTING out TYPE REF TO if_oo_adt_classrun_out.
+ENDCLASS.
 
-```
 
-- Event handlers:
-  - An event is raised by a [`RAISE EVENT`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapraise_event.htm) statement in another method or in the same method.
-  - Raising an event means that [event handlers](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenevent_handler_glosry.htm "Glossary Entry") are called.
-  - This event handler must be declared with the following syntax (see more information and more additions [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapmethods_event_handler.htm)):
+
+CLASS zcl_demo_abap IMPLEMENTATION.
+  METHOD if_oo_adt_classrun~main.
+
+*&-------------------------------------------------------------------------------------*
+*& 1) Basic events
+*&-------------------------------------------------------------------------------------*
+
+    "- The class lcl_greetings in the CCIMP include declares four instance events without parameters.
+    "- The same class also defines four event handler methods.
+    "- Additionally, a separate method implements the raising of the four events.
+    "- The event handlers are registered here using a SET HANDLER statement.
+    "- Based on the current time, a string (an instance attribute in the class) is populated with a
+    "  greeting appropriate for the time of day.
+
+    out->write( |1) Basic events\n\n| ).
+
+    DATA(ref_events) = NEW lcl_greetings( ).
+
+    "Registering event handler methods
+    SET HANDLER: ref_events->morning_greets
+                 ref_events->afternoon_greets
+                 ref_events->evening_greets
+                 ref_events->night_greets
+                 FOR ref_events.
+
+    "Calling method that raises an event
+    ref_events->greetings( ).
+
+    out->write( data = ref_events->greets name = `ref_events->greets` ).
+    out->write( |\n{ repeat( val = `*` occ = 75 ) }\n| ).
+
+*&-------------------------------------------------------------------------------------*
+*& 2) Various instance and static events
+*&-------------------------------------------------------------------------------------*
+
+    "- The following code snippets explore various instance and static events.
+    "- The class lcl_1 declares instance and static events, some with and some without
+    "  exporting parameters.
+    "- The class also declares event handlers. The evt_handler_c method intentionally omits the num2
+    "  formal parameter, demonstrating that it is optional to specify all parameters. Additionally,
+    "  explicitly specifying the sender parameter is also optional.
+    "- The example implementations populate a string table for visualization and display purposes.
+
+    out->write( |2) Various instance and static events\n\n| ).
+
+    DATA(oref_evt_1) = NEW lcl_1( ).
+    oref_evt_1->some_text = `ABAP`.
+
+    "Registering event handler methods
+    SET HANDLER: oref_evt_1->evt_handler_a
+                 oref_evt_1->evt_handler_b
+                 oref_evt_1->evt_handler_c
+                 FOR oref_evt_1.
+
+    SET HANDLER: lcl_1=>evt_handler_d lcl_1=>evt_handler_e.
+
+    "Calling method that raises an event
+    DO 5 TIMES.
+      oref_evt_1->raise_event( int = sy-index
+                               txt = CONV #( sy-index ) ).
+    ENDDO.
+
+    out->write( data = lcl_1=>event_log_lcl_1 name = `lcl_1=>event_log_lcl_1` ).
+    out->write( |{ repeat( val = `*` occ = 75 ) }\n| ).
+
+*&-------------------------------------------------------------------------------------*
+*& SET HANDLER syntax options
+*& 3a) Registering events
+*&-------------------------------------------------------------------------------------*
+
+    "- The following code snippets demonstrate syntax options of the SET HANDLER statement.
+    "- The demo class declares two instance events and a static event. The class also
+    "  includes the event handlers. The raise_event method raises a specific event based
+    "  on the value of the importing parameter. Note that for simplicity of the example,
+    "  the instance method raise_event also raises the static event.
+
+    out->write( |3) SET HANDLER syntax options\n| ).
+    out->write( |3a) Registering events\n\n| ).
+
+    DATA(oref_evt_2a) = NEW lcl_2( ).
+
+    "Registering instance events
+    SET HANDLER oref_evt_2a->evt_handler_f FOR oref_evt_2a.
+    "Optional specification of the ACTIVATION addition. The default value is X.
+    SET HANDLER oref_evt_2a->evt_handler_g FOR oref_evt_2a ACTIVATION 'X'.
+    "Registering static event
+    SET HANDLER lcl_2=>evt_handler_h ACTIVATION 'X'.
+
+    DO 3 TIMES.
+      oref_evt_2a->raise_event( num = sy-index ).
+    ENDDO.
+
+    out->write( data = lcl_2=>event_log_lcl_2 name = `lcl_2=>event_log_lcl_2` ).
+    out->write( |{ repeat( val = `*` occ = 75 ) }\n| ).
+    CLEAR lcl_2=>event_log_lcl_2.
+
+*&-------------------------------------------------------------------------------------*
+*& 3b) Deregistering events
+*&-------------------------------------------------------------------------------------*
+
+    out->write( |3b) Deregistering events\n\n| ).
+
+    DATA(oref_evt_2b) = NEW lcl_2( ).
+
+    "Registering and deregistering an instance event handler.
+    "Note that the handler for the static event is still registered from above, therefore it
+    "is called. In the loop it is explicitly deregistered. So the result will not show two
+    "entries for evt_handler_h.
+    SET HANDLER oref_evt_2b->evt_handler_f FOR oref_evt_2b ACTIVATION 'X'.
+    SET HANDLER oref_evt_2b->evt_handler_g FOR oref_evt_2b ACTIVATION ' '.
+
+    DO 4 TIMES.
+      IF sy-index < 4.
+        oref_evt_2b->raise_event( num = sy-index ).
+      ELSE.
+        SET HANDLER lcl_2=>evt_handler_h ACTIVATION ' '.
+        oref_evt_2b->raise_event( num = 3 ).
+      ENDIF.
+    ENDDO.
+
+    out->write( data = lcl_2=>event_log_lcl_2 name = `lcl_2=>event_log_lcl_2` ).
+    out->write( |{ repeat( val = `*` occ = 75 ) }\n| ).
+
+    CLEAR lcl_2=>event_log_lcl_2.
+
+*&-------------------------------------------------------------------------------------*
+*& 3c) sy-subrc value setting of SET HANDLER statements
+*&-------------------------------------------------------------------------------------*
+
+    "sy-subrc values set by SET HANDLER statements
+    "0: All specified handlers were successfully (de)registered.
+    "4: At least one specified handler was not registered because it was already registered for the same event.
+    "8: At least one specified handler was not deregistered because it was not registered for the current event.
+
+    out->write( |3c) sy-subrc value setting of SET HANDLER statements\n\n| ).
+
+    DATA(oref_evt_2c) = NEW lcl_2( ).
+
+    SET HANDLER oref_evt_2c->evt_handler_f
+                oref_evt_2c->evt_handler_g
+                FOR oref_evt_2c ACTIVATION 'X'.
+
+    DATA(subrc) = sy-subrc.
+
+    out->write( data = subrc name = `sy-subrc value (1)` ).
+    out->write( |\n| ).
+
+    SET HANDLER oref_evt_2c->evt_handler_f
+                oref_evt_2c->evt_handler_g
+                FOR oref_evt_2c ACTIVATION 'X'.
+
+    subrc = sy-subrc.
+
+    out->write( data = subrc name = `sy-subrc value (2)` ).
+    out->write( |\n| ).
+
+    SET HANDLER lcl_2=>evt_handler_h ACTIVATION ' '.
+    subrc = sy-subrc.
+
+    out->write( data = subrc name = `sy-subrc value (3)` ).
+    out->write( |\n| ).
+    out->write( |{ repeat( val = `*` occ = 75 ) }\n| ).
+    CLEAR lcl_2=>event_log_lcl_2.
+
+*&-------------------------------------------------------------------------------------*
+*& 3d) FOR ALL INSTANCES addition
+*&-------------------------------------------------------------------------------------*
+
+    out->write( |3d) FOR ALL INSTANCES addition\n| ).
+
+    DATA(oref_evt_2d) = NEW lcl_2( ).
+
+    out->write( |Example 1\n\n| ).
+
+    "- evt_handler_f is registered for all instances
+    "- evt_handler_g and evt_handler_h are not regitered
+    SET HANDLER oref_evt_2d->evt_handler_f FOR ALL INSTANCES.
+
+    "Creating some more instances
+    DATA(oref_evt_2e) = NEW lcl_2( ).
+    DATA(oref_evt_2f) = NEW lcl_2( ).
+
+    DO 3 TIMES.
+      CASE sy-index.
+        WHEN 1.
+          APPEND `-------------- oref_evt_2d --------------` TO lcl_2=>event_log_lcl_2.
+          DO 3 TIMES.
+            oref_evt_2d->raise_event( num = sy-index ).
+          ENDDO.
+        WHEN 2.
+          APPEND `-------------- oref_evt_2e --------------` TO lcl_2=>event_log_lcl_2.
+          DO 3 TIMES.
+            oref_evt_2e->raise_event( num = sy-index ).
+          ENDDO.
+        WHEN 3.
+          APPEND `-------------- oref_evt_2f --------------` TO lcl_2=>event_log_lcl_2.
+          DO 3 TIMES.
+            oref_evt_2f->raise_event( num = sy-index ).
+          ENDDO.
+      ENDCASE.
+    ENDDO.
+
+    out->write( data = lcl_2=>event_log_lcl_2 name = `lcl_2=>event_log_lcl_2` ).
+    out->write( |{ repeat( val = `*` occ = 75 ) }\n| ).
+    CLEAR lcl_2=>event_log_lcl_2.
+
+    out->write( |Example 2\n\n| ).
+
+    "- evt_handler_g is registered for all instances
+    "- evt_handler_f is still registered for all instances
+    "- evt_handler_h is not regitered
+    SET HANDLER oref_evt_2d->evt_handler_g FOR ALL INSTANCES.
+
+    DO 3 TIMES.
+      CASE sy-index.
+        WHEN 1.
+          APPEND `-------------- oref_evt_2d --------------` TO lcl_2=>event_log_lcl_2.
+          DO 3 TIMES.
+            oref_evt_2d->raise_event( num = sy-index ).
+          ENDDO.
+        WHEN 2.
+          APPEND `-------------- oref_evt_2e --------------` TO lcl_2=>event_log_lcl_2.
+          DO 3 TIMES.
+            oref_evt_2e->raise_event( num = sy-index ).
+          ENDDO.
+        WHEN 3.
+          APPEND `-------------- oref_evt_2f --------------` TO lcl_2=>event_log_lcl_2.
+          DO 3 TIMES.
+            oref_evt_2f->raise_event( num = sy-index ).
+          ENDDO.
+      ENDCASE.
+    ENDDO.
+
+    out->write( data = lcl_2=>event_log_lcl_2 name = `lcl_2=>event_log_lcl_2` ).
+    out->write( |{ repeat( val = `*` occ = 75 ) }\n| ).
+    CLEAR lcl_2=>event_log_lcl_2.
+
+    out->write( |Example 3\n\n| ).
+
+    "- Deregistering evt_handler_g and evt_handler_h for all instances
+    "- evt_handler_h is not regitered
+    SET HANDLER oref_evt_2d->evt_handler_f
+                oref_evt_2d->evt_handler_g
+                FOR ALL INSTANCES ACTIVATION ' '.
+
+    DO 3 TIMES.
+      CASE sy-index.
+        WHEN 1.
+          APPEND `-------------- oref_evt_2d --------------` TO lcl_2=>event_log_lcl_2.
+          DO 3 TIMES.
+            oref_evt_2d->raise_event( num = sy-index ).
+          ENDDO.
+        WHEN 2.
+          APPEND `-------------- oref_evt_2e --------------` TO lcl_2=>event_log_lcl_2.
+          DO 3 TIMES.
+            oref_evt_2e->raise_event( num = sy-index ).
+          ENDDO.
+        WHEN 3.
+          APPEND `-------------- oref_evt_2f --------------` TO lcl_2=>event_log_lcl_2.
+          DO 3 TIMES.
+            oref_evt_2f->raise_event( num = sy-index ).
+          ENDDO.
+      ENDCASE.
+    ENDDO.
+
+    out->write( data = lcl_2=>event_log_lcl_2 name = `lcl_2=>event_log_lcl_2` ).
+    out->write( |\n{ repeat( val = `*` occ = 75 ) }\n| ).
+
+*&-------------------------------------------------------------------------------------*
+*& 4) Excursion: Events in inheritance
+*&-------------------------------------------------------------------------------------*
+
+    out->write( |4) Excursion: Events in inheritance\n| ).
+    out->write( |4a) Static events\n| ).
+
+    "Inheritance tree of the example
+    "LCL_A
+    "  |
+    "  |--LCL_B
+    "  |   |
+    "  |   |--LCL_C
+    "
+    "LCL_D: Class that implements event handlers
+
+    "- Static and instance events are declared in the superclass lcl_a.
+    "- The superclass and its subclasses contain a static and an instance method that raise the events.
+    "- The class lcl_d declares event handlers for the events in lcl_b, which are inherited from the superclass lcl_a.
+    "- Different options are used to access methods. A log table visualizes the method call flow.
+    "- The event handler stat_evt_handler in class lcl_b can only handle events raised within this class or its subclasses.
+    "- Events raised by the static method stat_meth_1 in lcl_a are not handled, regardless of the class name used for the call.
+    "- The event handler inst_evt_handler in class lcl_b can also only handle events raised within this class or its subclasses.
+    "- Unlike calling static methods, events raised in the inherited instance method inst_meth_1 of the classes lcl_b and lcl_c
+    "  are handled. The object's class is always addressed when addressig an object using an object reference.
+
+    SET HANDLER lcl_d=>stat_evt_handler.
+
+    lcl_a=>stat_meth_1( ).
+
+    out->write( |lcl_a=>stat_meth_1( ): "{ lcl_a=>is_handled }"| ).
+    display_log_table( out ).
+
+    lcl_b=>stat_meth_1( ).
+
+    out->write( |lcl_b=>stat_meth_1( ): "{ lcl_a=>is_handled }"| ).
+    display_log_table( out ).
+
+    lcl_c=>stat_meth_1( ).
+
+    out->write( |lcl_c=>stat_meth_1( ): "{ lcl_a=>is_handled }"| ).
+    display_log_table( out ).
+
+    lcl_b=>stat_meth_2( ).
+
+    out->write( |lcl_b=>stat_meth_2( ): "{ lcl_a=>is_handled }"| ).
+    display_log_table( out ).
+
+    lcl_c=>stat_meth_2( ).
+
+    out->write( |lcl_c=>stat_meth_2( ): "{ lcl_a=>is_handled }"| ).
+    display_log_table( out ).
+
+    lcl_c=>stat_meth_3( ).
+
+    out->write( |lcl_c=>stat_meth_3( ): "{ lcl_a=>is_handled }"| ).
+    display_log_table( out ).
+    out->write( |{ repeat( val = `*` occ = 75 ) }\n| ).
+
+    out->write( |4b) Instance events\n| ).
+
+    DATA(oref1) = NEW lcl_a( ).
+    DATA(oref2) = NEW lcl_b( ).
+    DATA(oref3) = NEW lcl_c( ).
+    DATA(oref4) = NEW lcl_d( ).
+
+    SET HANDLER oref4->inst_evt_handler FOR ALL INSTANCES.
+
+    oref1->inst_meth_1( ).
+
+    out->write( |oref1->inst_meth_1( ): "{ lcl_a=>is_handled }"| ).
+    display_log_table( out ).
+
+    oref2->inst_meth_1( ).
+
+    out->write( |oref2->inst_meth_1( ): "{ lcl_a=>is_handled }"| ).
+    display_log_table( out ).
+
+    oref3->inst_meth_1( ).
+
+    out->write( |oref3->inst_meth_1( ): "{ lcl_a=>is_handled }"| ).
+    display_log_table( out ).
+
+    oref2->inst_meth_2( ).
+
+    out->write( |oref2->inst_meth_2( ): "{ lcl_a=>is_handled }"| ).
+    display_log_table( out ).
+
+    oref3->inst_meth_2( ).
+
+    out->write( |oref3->inst_meth_2( ): "{ lcl_a=>is_handled }"| ).
+    display_log_table( out ).
+
+    oref3->inst_meth_3( ).
+
+    out->write( |oref3->inst_meth_3( ): "{ lcl_a=>is_handled }"| ).
+    display_log_table( out ).
+  ENDMETHOD.
+
+  METHOD display_log_table.
+    out->write( data = lcl_a=>log_tab name = `lcl_a=>log_tab` ).
+    out->write( |\n\n| ).
+    CLEAR lcl_a=>log_tab.
+  ENDMETHOD.
+ENDCLASS.
+``` 
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+CCIMP include (Local Types tab in ADT)
+
+ </td>
+
+ <td> 
 
 ``` abap
-"Event handlers for instance events
-METHODS: handler_meth1 FOR EVENT i_evt1 OF some_class,
+*&---------------------------------------------------------------------*
+*& Example class 1
+*&---------------------------------------------------------------------*
 
-         "Parameter names must be the same as declared;
-         "no further additions possible for the parameter (e.g. TYPE);
-         "the predefined, implicit parameter sender as another formal parameter is possible with instance events,
-         "it is typed as a reference variable, which itself has the class/interface as a static type,
-         "If the event handler is called by an instance event, it is passed a reference to the raising object in sender.
-         handler_meth2 FOR EVENT i_evt2 OF some_class IMPORTING num sender,
-...
-```
+"- The class declares four instance events without parameters.
+"- The same class also defines four event handler methods.
+"- Additionally, a separate method implements the raising of the four events.
+"- Based on the current time, a string (an instance attribute in the class) is
+"  populated with a greeting appropriate for the time of day.
 
-- To make sure that an event handler handles a raised event, it must be registered with the statement [`SET HANDLER`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapset_handler.htm). See more information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapset_handler.htm) (for example, events can also be deregistered).
+CLASS lcl_greetings DEFINITION.
+  PUBLIC SECTION.
+    "Attributes for display purposes
+    DATA: greets TYPE string,
+          time   TYPE t.
 
-```abap
-"Registering event for a specific instance
-SET HANDLER handler1 FOR ref.
+    "Event declarations
+    EVENTS: morning,
+      afternoon,
+      evening,
+      night.
 
-"Registering event for all instances
-SET HANDLER handler2 FOR ALL INSTANCES.
+    "Event handler methods
+    METHODS: morning_greets FOR EVENT morning OF lcl_greetings,
+      afternoon_greets FOR EVENT afternoon OF lcl_greetings,
+      evening_greets FOR EVENT evening OF lcl_greetings,
+      night_greets FOR EVENT night OF lcl_greetings.
 
-"Registering static event for the whole class/interface
-SET HANDLER handler3.
-"Note that multiple handler methods can be specified.
-```
+    "Method that includes event raising in the implementation
+    METHODS: greetings.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+ENDCLASS.
+
+CLASS lcl_greetings IMPLEMENTATION.
+  METHOD greetings.
+    time = cl_abap_context_info=>get_system_time( ).
+
+    IF time BETWEEN '050001' AND '120000'.
+      RAISE EVENT morning.
+    ELSEIF time BETWEEN '120001' AND '170000'.
+      RAISE EVENT afternoon.
+    ELSEIF time BETWEEN '170001' AND '210000'.
+      RAISE EVENT evening.
+    ELSEIF time BETWEEN '210001' AND '050000'.
+      RAISE EVENT night.
+    ENDIF.
+  ENDMETHOD.
+
+  METHOD morning_greets.
+    greets = |Good morning, { sy-uname }. It's { time TIME = ENVIRONMENT }.|.
+  ENDMETHOD.
+
+  METHOD afternoon_greets.
+    greets = |Good afternoon, { sy-uname }. It's { time TIME = ENVIRONMENT }.|.
+  ENDMETHOD.
+
+  METHOD evening_greets.
+    greets = |Good evening, { sy-uname }. It's { time TIME = ENVIRONMENT }.|.
+  ENDMETHOD.
+
+  METHOD night_greets.
+    greets = |Good night, { sy-uname }. It's { time TIME = ENVIRONMENT }.|.
+  ENDMETHOD.
+ENDCLASS.
+
+*&---------------------------------------------------------------------*
+*& Example class 2
+*&---------------------------------------------------------------------*
+
+"- The class lcl_1 declares instance and static events, some with and some without
+"  exporting parameters.
+"- The class also declares event handlers. The evt_handler_c method intentionally omits the num2
+"  formal parameter, demonstrating that it is optional to specify all parameters. Additionally,
+"  explicitly specifying the sender parameter is also optional.
+"- The example implementations populate a string table for visualization and display purposes.
+"- Note that for simplicity of the example, the instance method raise_event not only raises instance
+"  events but also static events.
+"- Based on the value of the importing parameter of the raise_event method, a specific event
+"  is raised.
+
+CLASS lcl_1 DEFINITION.
+  PUBLIC SECTION.
+    "Attributes for display purposes
+    CLASS-DATA event_log_lcl_1 TYPE string_table.
+    DATA some_text TYPE string.
+
+    "Event declarations
+    "Instance events
+    EVENTS: inst_event_a,
+      inst_event_b EXPORTING VALUE(num) TYPE i,
+      inst_event_c EXPORTING VALUE(num1) TYPE i VALUE(num2) TYPE i VALUE(text) TYPE string.
+    "Static events
+    CLASS-EVENTS: stat_event_d,
+      stat_event_e EXPORTING VALUE(num) TYPE i.
+
+    "Event handler methods
+    "Instance methods
+    METHODS: evt_handler_a FOR EVENT inst_event_a OF lcl_1,
+      evt_handler_b FOR EVENT inst_event_b OF lcl_1 IMPORTING num,
+      evt_handler_c FOR EVENT inst_event_c OF lcl_1 IMPORTING num1 text sender.
+    "Static events
+    CLASS-METHODS: evt_handler_d FOR EVENT stat_event_d OF lcl_1,
+      evt_handler_e FOR EVENT stat_event_e OF lcl_1 IMPORTING num.
+
+    "Method that includes event raising in the implementation
+    METHODS raise_event IMPORTING int TYPE i
+                                  txt TYPE string.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+ENDCLASS.
+
+CLASS lcl_1 IMPLEMENTATION.
+  METHOD evt_handler_a.
+    APPEND `evt_handler_a: Event handled` TO event_log_lcl_1.
+    APPEND INITIAL LINE TO event_log_lcl_1.
+  ENDMETHOD.
+
+  METHOD evt_handler_b.
+    APPEND `evt_handler_b: Event handled` TO event_log_lcl_1.
+    APPEND |Value of num passed: { num }| TO event_log_lcl_1.
+    APPEND INITIAL LINE TO event_log_lcl_1.
+  ENDMETHOD.
+
+  METHOD evt_handler_c.
+    APPEND `evt_handler_c: Event handled` TO event_log_lcl_1.
+    APPEND |Value of num1 passed: { num1 }| TO event_log_lcl_1.
+    APPEND |Value of text passed: { text }| TO event_log_lcl_1.
+    DATA(sender_cl_name) = CAST cl_abap_classdescr( cl_abap_typedescr=>describe_by_object_ref( sender ) )->get_relative_name( ).
+    APPEND |Accessing sender reference variable; class name: { sender_cl_name }| TO event_log_lcl_1.
+    APPEND |Value of instance attribute, accessed via sender: { sender->some_text }| TO event_log_lcl_1.
+    APPEND INITIAL LINE TO event_log_lcl_1.
+  ENDMETHOD.
+
+  METHOD evt_handler_d.
+    APPEND `evt_handler_d: Event handled` TO event_log_lcl_1.
+    APPEND INITIAL LINE TO event_log_lcl_1.
+  ENDMETHOD.
+
+  METHOD evt_handler_e.
+    APPEND `evt_handler_e: Event handled` TO event_log_lcl_1.
+    APPEND |Value of num passed: { num }| TO event_log_lcl_1.
+    APPEND INITIAL LINE TO event_log_lcl_1.
+  ENDMETHOD.
+
+  METHOD raise_event.
+    CASE int.
+      WHEN 1.
+        RAISE EVENT inst_event_a.
+      WHEN 2.
+        RAISE EVENT inst_event_b EXPORTING num = int.
+      WHEN 3.
+        RAISE EVENT inst_event_c EXPORTING num1 = int num2 = int text = txt.
+      WHEN 4.
+        RAISE EVENT stat_event_d.
+      WHEN 5.
+        RAISE EVENT stat_event_e EXPORTING num = int.
+      WHEN OTHERS.
+        RAISE EVENT stat_event_d.
+    ENDCASE.
+  ENDMETHOD.
+ENDCLASS.
+
+*&---------------------------------------------------------------------*
+*& Example class 3
+*&---------------------------------------------------------------------*
+
+"This example class is setup similarly to lcl_1.
+
+CLASS lcl_2 DEFINITION.
+  PUBLIC SECTION.
+    "Attribute for display purposes
+    CLASS-DATA event_log_lcl_2 TYPE string_table.
+
+    "Event declarations
+    EVENTS: inst_event_f,
+            inst_event_g.
+    CLASS-EVENTS stat_event_h.
+
+    "Event handler methods
+    METHODS: evt_handler_f FOR EVENT inst_event_f OF lcl_2,
+           evt_handler_g FOR EVENT inst_event_g OF lcl_2.
+    CLASS-METHODS: evt_handler_h FOR EVENT stat_event_h OF lcl_2.
+
+    "Method that includes event raising in the implementation
+    METHODS raise_event IMPORTING num TYPE i.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+ENDCLASS.
+
+CLASS lcl_2 IMPLEMENTATION.
+  METHOD evt_handler_f.
+    APPEND `evt_handler_f: Event handled` TO event_log_lcl_2.
+    APPEND INITIAL LINE TO event_log_lcl_2.
+  ENDMETHOD.
+
+  METHOD evt_handler_g.
+    APPEND `evt_handler_g: Event handled` TO event_log_lcl_2.
+    APPEND INITIAL LINE TO event_log_lcl_2.
+  ENDMETHOD.
+
+  METHOD evt_handler_h.
+    APPEND `evt_handler_h: Event handled` TO event_log_lcl_2.
+    APPEND INITIAL LINE TO event_log_lcl_2.
+  ENDMETHOD.
+
+  METHOD raise_event.
+    CASE num.
+      WHEN 1.
+        RAISE EVENT inst_event_f.
+      WHEN 2.
+        RAISE EVENT inst_event_g.
+      WHEN OTHERS.
+        RAISE EVENT stat_event_h.
+    ENDCASE.
+  ENDMETHOD.
+ENDCLASS.
+
+*&---------------------------------------------------------------------*
+*& Example classes 4 - 7
+*&---------------------------------------------------------------------*
+
+    "The example classes 4 - 6 represent an inheritance tree:
+    "LCL_A
+    "  |
+    "  |--LCL_B
+    "  |   |
+    "  |   |--LCL_C
+    "
+    "Example class 7, LCL_D, is a class that implements event handlers.
+
+    "Example notes:
+    "- Static and instance events are declared in the superclass lcl_a.
+    "- The superclass and its subclasses contain a static and an instance
+    "  method that raise the events.
+    "- The class lcl_d declares event handlers for the events in lcl_b, which
+    "  are inherited from the superclass lcl_a.
+    "- In the global class, different options are used to access methods.
+    "- A log table visualizes the method call flow. Additionally, a flag is
+    "  populated illustrating whether the event is handled.
+
+CLASS lcl_a DEFINITION.
+  PUBLIC SECTION.
+    CLASS-DATA: log_tab TYPE string_table,
+                is_handled TYPE abap_boolean.
+    CLASS-EVENTS stat_event.
+    CLASS-METHODS stat_meth_1.
+    EVENTS  inst_event.
+    METHODS inst_meth_1.
+ENDCLASS.
+
+CLASS lcl_b DEFINITION INHERITING FROM lcl_a.
+  PUBLIC SECTION.
+    CLASS-METHODS stat_meth_2.
+    METHODS inst_meth_2.
+ENDCLASS.
+
+CLASS lcl_c DEFINITION INHERITING FROM lcl_b.
+  PUBLIC SECTION.
+    CLASS-METHODS stat_meth_3.
+    METHODS inst_meth_3.
+ENDCLASS.
+
+CLASS lcl_d DEFINITION.
+  PUBLIC SECTION.
+    CLASS-METHODS stat_evt_handler FOR EVENT stat_event OF lcl_b.
+    METHODS inst_evt_handler FOR EVENT inst_event OF lcl_b.
+ENDCLASS.
+
+CLASS lcl_a IMPLEMENTATION.
+  METHOD stat_meth_1.
+    CLEAR lcl_a=>is_handled.
+    APPEND `lcl_a/stat_meth_1 called` TO lcl_a=>log_tab.
+    RAISE EVENT stat_event.
+  ENDMETHOD.
+  METHOD inst_meth_1.
+    CLEAR lcl_a=>is_handled.
+    APPEND `lcl_a/inst_meth_1 called` TO lcl_a=>log_tab.
+    RAISE EVENT inst_event.
+  ENDMETHOD.
+ENDCLASS.
+
+CLASS lcl_b IMPLEMENTATION.
+  METHOD stat_meth_2.
+    CLEAR lcl_a=>is_handled.
+    APPEND `lcl_b/stat_meth_2 called` TO lcl_a=>log_tab.
+    RAISE EVENT stat_event.
+  ENDMETHOD.
+  METHOD inst_meth_2.
+    CLEAR lcl_a=>is_handled.
+    APPEND `lcl_b/inst_event called` TO lcl_a=>log_tab.
+    RAISE EVENT inst_event.
+  ENDMETHOD.
+ENDCLASS.
+
+CLASS lcl_c IMPLEMENTATION.
+  METHOD stat_meth_3.
+    CLEAR lcl_a=>is_handled.
+    APPEND `lcl_c/stat_meth_3 called` TO lcl_a=>log_tab.
+    RAISE EVENT stat_event.
+  ENDMETHOD.
+  METHOD inst_meth_3.
+    CLEAR lcl_a=>is_handled.
+    APPEND `lcl_c/inst_meth_3 called` TO lcl_a=>log_tab.
+    RAISE EVENT inst_event.
+  ENDMETHOD.
+ENDCLASS.
+
+CLASS lcl_d IMPLEMENTATION.
+  METHOD stat_evt_handler.
+    lcl_a=>is_handled = abap_true.
+    APPEND `lcl_d/stat_evt_handler called` TO lcl_a=>log_tab.
+    APPEND `--- Static event handled ---` TO lcl_a=>log_tab.
+  ENDMETHOD.
+  METHOD inst_evt_handler.
+    lcl_a=>is_handled = abap_true.
+    APPEND `lcl_d/inst_evt_handler called` TO lcl_a=>log_tab.
+    APPEND `--- Instance event handled ---` TO lcl_a=>log_tab.
+  ENDMETHOD.
+ENDCLASS.
+``` 
+
+ </td>
+</tr>
+
+</table>
+
+</details>  
+
+
+
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
+
+
+
+## Excursions
 
 ### ABAP Examples of Design Patterns in Object-Oriented Programming
 
