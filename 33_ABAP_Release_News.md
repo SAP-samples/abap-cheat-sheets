@@ -12,7 +12,7 @@ This ABAP cheat sheet summarizes the release news from the ABAP Keyword Document
 >
 > - ABAP releases are identified by numbers such as 7.58, 7.95, 7.96, 9.12, and so on. These numbers correspond to the technical release names of the *SAP_BASIS* software component. ABAP is not released independently; it is included with SAP products like the SAP BTP ABAP environment, SAP S/4HANA Cloud Public Edition and SAP S/4HANA, SAP S/4HANA Cloud Private Edition. Each of these products has its own release numbers that correspond to the ABAP releases. The releases of the underlying ABAP kernel are counted differently but can also be mapped to the ABAP releases. The numbers in brackets describe quarterly releases.
 > - The content is presented in a simplified, plain text format. You can also check out the demo HTML file mentioned below.  
-> - For a complete overview and links to related topics, and since the content may not reflect the latest releases or news, refer to the release news in the ABAP Keyword Documentation here:
+> - For a complete overview and links to related topics, and since **the content may not reflect the latest releases or news**, refer to the release news in the ABAP Keyword Documentation here:
 [ABAP for Cloud Development](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abennews.htm) / [Standard ABAP (latest)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abennews.htm)
 > - The ABAP Keyword Documentation provides detailed feature summaries on these topics:
 >   - [ABAP CDS](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/abencds_language_elements.html)
@@ -25,7 +25,7 @@ This ABAP cheat sheet summarizes the release news from the ABAP Keyword Document
 > - To explore it, download the file to your local machine and open it in a browser.
 > - 📄 [abap_release_news_viewer.html](./files/abap_release_news_viewer.html)
 > - The news content is presented in plain text and is unformatted for simplicity.
-> - The HTML file uses SAPUI5 and provides filtering and search options. This file is intended for [exploration, experimentation, and demonstration](./README.md#%EF%B8%8F-disclaimer). It does not represent best practices or model approaches. For more information about SAPUI5, refer to the [UI5 Demo Kit](https://sapui5.hana.ondemand.com/sdk/#/).
+> - The HTML file uses SAPUI5 and provides filtering and search options. This file is intended for [exploration, experimentation, and demonstration](./README.md#%EF%B8%8F-disclaimer). It does not represent best practices or role model approaches. For more information about SAPUI5, refer to the [UI5 Demo Kit](https://sapui5.hana.ondemand.com/sdk/#/).
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 

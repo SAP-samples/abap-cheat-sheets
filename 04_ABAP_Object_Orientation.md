@@ -7379,7 +7379,7 @@ ENDCLASS.
 High-level steps involved:
 - Declaring an event
 - Declaring an event handler
-- Registering the raised event so that event handler can handle it
+- Registering the event handler so that it can handle the event
 - Raising an event
 
 **Events**
@@ -7444,7 +7444,7 @@ High-level steps involved:
   - For instance event handlers: `SET HANDLER handler1 handler2 ... FOR oref|ALL INSTANCES [ACTIVATION act].`
     - `handler1`, etc. can be specified as follows: `meth` (methods from the same or other classes defined as instance event handlers; event handlers for static events cannot be specified), `oref->meth`, `class=>meth`
     - `FOR oref`: (De)registers event handlers for a single object.
-    - `FOR ALL INSTANCES`: (De)registers all event handlers for all instances.
+    - `FOR ALL INSTANCES`: (De)registers the event handlers for all instances.
     - `ACTIVATION`: Used to (de)register event handlers; expects a single-character text field. The default value is `X` (indicating registration; so, the addition is optional for registration). A blank value means it is deregistered.
   - For static event handlers: `SET HANDLER handler1 handler2 ... [ACTIVATION act].`
     - The statement (de)registers static event handlers (not instance events).
@@ -7459,10 +7459,10 @@ High-level steps involved:
 - If the formal parameter `sender` is declared for an event handler, it automatically receives a reference to the raising object when instance events are triggered. However, `sender` cannot be explicitly specified or assigned here.
   
 > [!NOTE]  
-> In RAP, special [RAP business events](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_entity_event_glosry.htm) are available. They can be raised in [ABAP behavior pools](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbehavior_pool_glosry.htm) with [RAISE ENTITY EVENT](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapraise_entity_event.htm) statements. Find more information in the ABAP for RAP: Entity Manipulation Language (ABAP EML) cheat sheet.
+> In RAP, special [RAP business events](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_entity_event_glosry.htm) are available. They can be raised in [ABAP behavior pools](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbehavior_pool_glosry.htm) with [RAISE ENTITY EVENT](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapraise_entity_event.htm) statements. Find more information in the [ABAP for RAP: Entity Manipulation Language (ABAP EML)](08_EML_ABAP_for_RAP.md) cheat sheet.
 
 
-Expand the following collapsible section for example code. To try it out, create a demo class named `zcl_demo_abap` and paste the code into it. Note that the example includes code in the global class and the CCIMP include/Local Types tab in ADT. After activation, choose *F9* in ADT to execute the class. The example is set up to display output in the console. For more information on the example, see the inline comments.
+Expand the following collapsible section for example code. To try it out, create a demo class named `zcl_demo_abap` and paste the code into it. Note that the example includes code in the global class and the CCIMP include (Local Types tab in ADT). After activation, choose *F9* in ADT to execute the class. The example is set up to display output in the console. For more information on the example, see the inline comments.
 
 
 <details>
@@ -8232,19 +8232,19 @@ ENDCLASS.
 
 ### ABAP Examples of Design Patterns in Object-Oriented Programming
 
-- This section explores design patterns you may encounter in object-oriented programming, using ABAP classes.
+- This section explores and experiments with design patterns you may encounter in object-oriented programming, using ABAP classes.
 - In object-oriented programming, numerous design patterns enhance modularity, scalability, reusability, and more. 
-- Here, a selection of design patterns is covered, using simplified, non-semantic examples to reduce complexity and give a rough idea.
+- Here, a selection of design patterns is covered, using simplified, non-semantic, and non-real-world examples to reduce complexity and give a rough idea.
 
 > [!NOTE]  
-> - The examples neither represent best practices nor role models. They only aim to experiment with the patterns in simplified contexts and convey the basic concepts. 
+> - The section is intended for [exploration, experimentation, and demonstration](./README.md#%EF%B8%8F-disclaimer). The code examples do not represent best practices or role model approaches. They only aim to experiment with the patterns in simplified contexts and convey the basic concepts. 
 > - More design patterns exist beyond those covered here. Different implementations, combinations of patterns and class setup strategies may apply. 
 > - Most examples are structured for easy exploration using simple, self-contained ABAP classes (i.e. only 1 class pool including local classes instead of multiple global classes) as follows:
 >    - Global class:
 >      - Includes the `if_oo_adt_classrun` interface to run the class with F9 in ADT.
 >      - Serves as a *vehicle* for demonstrating the design pattern. Only the declarations and implementations in the CCIMP include are relevant for the conceptual considerations.
 >    - CCIMP include (Local Types tab in ADT):
->      - Contains various local classes (some also include interfaces) to demonstrate design patterns, allowing quick copying and pasting without creating multiple global classes. 
+>      - Contains various local classes (some examples also include local interfaces) to demonstrate design patterns, allowing quick copying and pasting without creating multiple global classes. 
 
 Expand the following sections for further descriptions and example code. To try the examples, create a demo class named `zcl_demo_abap` and paste the code into it (*Global Class* and *Local Types* tabs in ADT). After activation, choose *F9* in ADT to execute the class. The examples are set up to display output in the console.
 
@@ -13860,6 +13860,528 @@ CLASS lcl_multiton IMPLEMENTATION.
     tab = config_change.
   ENDMETHOD.
 
+ENDCLASS.
+``` 
+
+ </td>
+</tr>
+
+</table>
+
+</details>  
+
+<br>
+
+<details>
+  <summary>🟢 Observer</summary>
+  <!-- -->
+
+<br>
+
+- The observer design pattern allows an object to notify other objects - the *observers* - whenever its state changes.
+- A class setup may include the following (as implemented in the first code example):
+  - Observers can register or unregister to receive notifications (or not receive them anymore) about state changes of an observed object. The notification of observers may include parameters to be passed. The observed class may contain an internal table to store references to observers, along with methods for adding and removing those references. When a change occurs, a notification method can inform the observers by iterating through the internal table and calling a method that all observers implement through a common interface. This enables the observed object to communicate with all registered observers.
+  - All registered observers can react to the information received.
+  - Users of the setup are responsible not only for the object creation but also for the flexible registration and unregistration of observers.
+- Such a setup can be useful when you want to avoid tightly coupling different objects while still providing a mechanism to transfer changes from a specific object to a random number of other objects.
+
+Example notes:
+
+- The example code includes two examples demonstrating the observer design pattern with the following declarations and implementations:
+  - Global class:
+    - Implements the `if_oo_adt_classrun` interface and calls methods from local classes.
+    - Serves as a vehicle for demonstrating the design pattern. The declarations and implementations in the `CCIMP` are relevant for the for conceptual considerations.
+  - CCIMP include (Local Types tab in ADT):
+    - *Example 1*  
+      - Defines the `lif_observer` interface that enables the observed object to communicate with observers via the `notify` method, which expects two numbers as important parameters, among others. The `calculate` method is common to all observers, performing a simple calculation based on the two integer values provided.  
+      - `lcl` represents the class for observed objects and offers several methods:  
+        - `set_numbers`: Changes the state of the observed object by setting two integer values. The implementation includes calling the `notify_observers` method.
+        - `register` and `unregister` are used to register and unregister observers. For that purpose, the internal table `observer_tab` is used to manage reference variables. When registering, references to observers are added. When unregistering, references are removed from the table.  
+        - `notify_observers`: The method is responsible for notifying observers. The notification is performed by looping across the reference table and calling the common notification method `notify` defined in the interface.  
+      - A string table is included for demonstration and display purposes, being populated throughout method calls to visualize the call flow.  
+    - Multiple local classes act as observers, performing simple calculations.  
+      - When the observed object calls the `notify` method, it informs the observer about the state change, passes values, and triggers a calculation by invoking the `calculate` method.  
+    - The global class represents the user, creating objects and registering and unregistering observers. The string table is ouput to visualize the method call flow.  
+    - *Example 2*  
+      - Provides a simpler example and setup, where the class being observed defines events.  
+      - An interface implemented by all observers defines an event handler.  
+      - Observers are notified through a `RAISE EVENT` statement, provided that event handlers are registered with `SET HANDLER` statements, which triggers the calling of event handlers. When they are not registered, the event handlers are not called.       
+      - Like in example 1, a string table logs the method call flow, which is output.  
+      - The user, represented by the global class implementation, manages object creation, and registration and unregistration using `SET HANDLER` statements. When the observed object's `set_text` method is called, the event is raised and handled accordingly by event handlers in the registered observers.
+
+<table>
+
+<tr>
+<td> Class include </td> <td> Code </td>
+</tr>
+
+<tr>
+<td> 
+
+Global class
+
+ </td>
+
+ <td> 
+
+``` abap
+CLASS zcl_demo_abap DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
+
+  PUBLIC SECTION.
+    INTERFACES if_oo_adt_classrun.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+ENDCLASS.
+
+
+
+CLASS zcl_demo_abap IMPLEMENTATION.
+  METHOD if_oo_adt_classrun~main.
+
+    out->write( |Example 1\n\n| ).
+
+*&-------------------------------------------------------------------------------------*
+*& 1) Creating objects, observes not registered
+*&-------------------------------------------------------------------------------------*
+
+    out->write( |1) Creating objects, observes not registered\n\n| ).
+
+    DATA(oref_observed) = NEW lcl( ).
+    "Observers
+    DATA(observer_add) = NEW lcl_addition( ).
+    DATA(observer_subtract) = NEW lcl_subtraction( ).
+    DATA(observer_multiply) = NEW lcl_multiplication( ).
+    DATA(observer_divide) = NEW lcl_division( ).
+
+    "Setting numbers representing a change of the object state
+    "The method implementation includes a call to the notification method.
+    oref_observed->set_numbers(
+      value1 = 1
+      value2 = 2
+    ).
+
+    "At this stage, there are no observers registered.
+    DATA(log) = lcl=>tab4display.
+
+    out->write( data = log name = `log` ).
+    out->write( |\n{ repeat( val = `*` occ = 75 ) }\n| ).
+    CLEAR lcl=>tab4display.
+
+*&-------------------------------------------------------------------------------------*
+*& 2) Registering observers
+*&-------------------------------------------------------------------------------------*
+
+    out->write( |2) Registering observers\n\n| ).
+
+    oref_observed->register( observer_add ).
+    oref_observed->register( observer_subtract ).
+    oref_observed->register( observer_multiply ).
+    oref_observed->register( observer_divide ).
+
+    oref_observed->set_numbers(
+      value1 = 7
+      value2 = 5
+    ).
+
+    log = lcl=>tab4display.
+
+    out->write( data = log name = `log` ).
+    out->write( |\n{ repeat( val = `*` occ = 75 ) }\n| ).
+
+    CLEAR lcl=>tab4display.
+
+*&-------------------------------------------------------------------------------------*
+*& 3) Unregistering observers
+*&-------------------------------------------------------------------------------------*
+
+    out->write( |3) Unregistering observers\n\n| ).
+
+    oref_observed->unregister( observer_multiply ).
+    oref_observed->unregister( observer_divide ).
+
+    oref_observed->set_numbers(
+      value1 = 15
+      value2 = 3 ).
+
+    log = lcl=>tab4display.
+
+    out->write( data = log name = `log` ).
+    out->write( |\n{ repeat( val = `*` occ = 75 ) }\n| ).
+
+    CLEAR lcl=>tab4display.
+
+*&-------------------------------------------------------------------------------------*
+*& 4) More example values
+*&-------------------------------------------------------------------------------------*
+
+    out->write( |4) More example values\n\n| ).
+
+    "Registering the unregistered observers again
+    oref_observed->register( observer_multiply ).
+    oref_observed->register( observer_divide ).
+
+    "Creating an internal table holding two integer values per line
+    TYPES: BEGIN OF struc_int,
+             number1 TYPE i,
+             number2 TYPE i,
+           END OF struc_int.
+
+    DATA numbers_tab TYPE TABLE OF struc_int WITH EMPTY KEY.
+
+    numbers_tab = VALUE #( ( number1 = 1 number2 = 8 )
+                           ( number1 = 50 number2 = 25 )
+                           ( number1 = 100 number2 = 4 )
+                           ( number1 = 24 number2 = 6 )
+                           ( number1 = 35 number2 = 7 )
+                           ( number1 = 2 number2 = 0 ) ).
+
+    LOOP AT numbers_tab INTO DATA(wa).
+      oref_observed->set_numbers(
+        value1 = wa-number1
+        value2 = wa-number2 ).
+
+      APPEND INITIAL LINE TO lcl=>tab4display.
+    ENDLOOP.
+
+    log = lcl=>tab4display.
+
+    out->write( data = log name = `log` ).
+    out->write( |{ repeat( val = `*` occ = 75 ) }| ).
+    out->write( |{ repeat( val = `*` occ = 75 ) }| ).
+    out->write( |{ repeat( val = `*` occ = 75 ) }\n| ).
+
+**********************************************************************
+**********************************************************************
+**********************************************************************
+
+*&-------------------------------------------------------------------------------------*
+*& Example 2
+*&-------------------------------------------------------------------------------------*
+
+    out->write( |Example 2\n\n| ).
+
+    out->write( |6) Registering event handlers\n\n| ).
+
+    DATA(o1) = NEW lcl_evt( ).
+    DATA iref1 TYPE REF TO lif_obs.
+    iref1 = NEW lcl_obs_1( ).
+    DATA iref2 TYPE REF TO lif_obs.
+    iref2 = NEW lcl_obs_2( ).
+
+    "Registering event handlers
+    SET HANDLER iref1->handle_event FOR o1.
+    SET HANDLER iref2->handle_event FOR o1.
+
+    o1->set_text( `AB` ).
+
+    log = lcl_evt=>tab4display.
+    out->write( data = log name = `log` ).
+    out->write( |\n{ repeat( val = `*` occ = 75 ) }\n| ).
+
+    CLEAR lcl_evt=>tab4display.
+
+**********************************************************************
+
+    out->write( |7) Unregistering an event handler\n\n| ).
+
+    SET HANDLER iref2->handle_event FOR o1 ACTIVATION ' '.
+
+    o1->set_text( `Hello AB` ).
+
+    log = lcl_evt=>tab4display.
+    out->write( data = log name = `log` ).
+  ENDMETHOD.
+ENDCLASS.
+``` 
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+CCIMP include (Local Types tab in ADT)
+
+ </td>
+
+ <td> 
+
+``` abap
+*&---------------------------------------------------------------------*
+*& Example 1
+*&---------------------------------------------------------------------*
+
+*&---------------------------------------------------------------------*
+*& Interface for observers
+*&---------------------------------------------------------------------*
+
+INTERFACE lif_observer.
+  METHODS: notify IMPORTING num1 TYPE i
+                           num2 TYPE i
+                           ts   TYPE utclong,
+   calculate IMPORTING num1          TYPE i
+                               num2          TYPE i
+                     RETURNING VALUE(result) TYPE string.
+ENDINTERFACE.
+
+*&---------------------------------------------------------------------*
+*& Class for observed object
+*&---------------------------------------------------------------------*
+
+CLASS lcl DEFINITION FINAL.
+  PUBLIC SECTION.
+    METHODS:
+      set_numbers IMPORTING value1 TYPE i value2 TYPE i,
+      register IMPORTING oref_observer TYPE REF TO lif_observer,
+      unregister IMPORTING oref_observer TYPE REF TO lif_observer,
+      notify_observers.
+
+    "String table for display purposes
+    CLASS-DATA tab4display TYPE string_table.
+  PROTECTED SECTION.
+    DATA: observer_tab TYPE TABLE OF REF TO lif_observer,
+          num1         TYPE i,
+          num2         TYPE i.
+ENDCLASS.
+
+CLASS lcl IMPLEMENTATION.
+  METHOD register.
+    IF NOT line_exists( observer_tab[ table_line = oref_observer ] ).
+      INSERT oref_observer INTO TABLE observer_tab.
+
+      "Populating a string table for display purposes.
+      APPEND |Object reference for { cl_abap_typedescr=>describe_by_object_ref( oref_observer )->get_relative_name( ) } inserted into observer table.| TO lcl=>tab4display.
+    ENDIF.
+  ENDMETHOD.
+  METHOD unregister.
+    DELETE TABLE observer_tab FROM oref_observer.
+
+    "Populating a string table for display purposes.
+    APPEND |Object reference for { cl_abap_typedescr=>describe_by_object_ref( oref_observer )->get_relative_name( ) } removed from observer table.| TO lcl=>tab4display.
+  ENDMETHOD.
+
+  METHOD notify_observers.
+    LOOP AT observer_tab ASSIGNING FIELD-SYMBOL(<fs>).
+      <fs>->notify( num1 = me->num1 num2 = me->num2 ts = utclong_current( ) ).
+    ENDLOOP.
+  ENDMETHOD.
+
+  METHOD set_numbers.
+    num1 = value1.
+    num2 = value2.
+    
+    "Populating a string table for display purposes.
+    APPEND |The number values { num1 } and { num2 } were set in the observed object. Observers are about to be notified.| TO lcl=>tab4display.
+    APPEND INITIAL LINE TO lcl=>tab4display.
+    notify_observers( ).
+  ENDMETHOD.
+ENDCLASS.
+
+*&---------------------------------------------------------------------*
+*& Classes for observers
+*&---------------------------------------------------------------------*
+
+CLASS lcl_addition DEFINITION.
+  PUBLIC SECTION.
+    INTERFACES lif_observer.
+ENDCLASS.
+
+CLASS lcl_addition IMPLEMENTATION.
+  METHOD lif_observer~notify.
+    "Populating a string table for display purposes.
+    APPEND |lcl_addition: Observer notified at { ts }.| TO lcl=>tab4display.
+
+    lif_observer~calculate( num1 = num1 num2 = num2 ).
+  ENDMETHOD.
+
+  METHOD lif_observer~calculate.
+    TRY.
+        result = |{ num1 + num2 STYLE = SIMPLE }|.
+      CATCH cx_sy_arithmetic_error INTO DATA(error).
+        result = error->get_text( ).
+    ENDTRY.
+
+    "Populating a string table for display purposes.
+    APPEND `lcl_addition: lif_observer~calculate called.` TO lcl=>tab4display.
+    APPEND |{ num1 } + { num2 } = { result }| TO lcl=>tab4display.
+    APPEND INITIAL LINE TO lcl=>tab4display.
+  ENDMETHOD.
+ENDCLASS.
+
+**********************************************************************
+
+CLASS lcl_subtraction DEFINITION.
+  PUBLIC SECTION.
+    INTERFACES lif_observer.
+ENDCLASS.
+
+CLASS lcl_subtraction IMPLEMENTATION.
+  METHOD lif_observer~notify.
+    "Populating a string table for display purposes.
+    APPEND |lcl_subtraction: Observer notified at { ts }.| TO lcl=>tab4display.
+
+    lif_observer~calculate( num1 = num1 num2 = num2 ).
+  ENDMETHOD.
+
+  METHOD lif_observer~calculate.
+    TRY.
+        result = |{ num1 - num2 STYLE = SIMPLE }|.
+      CATCH cx_sy_arithmetic_error INTO DATA(error).
+        result = error->get_text( ).
+    ENDTRY.
+
+    "Populating a string table for display purposes.
+    APPEND `lcl_subtraction: lif_observer~calculate called.` TO lcl=>tab4display.
+    APPEND |{ num1 } - { num2 } = { result }| TO lcl=>tab4display.
+    APPEND INITIAL LINE TO lcl=>tab4display.
+  ENDMETHOD.
+ENDCLASS.
+
+**********************************************************************
+
+CLASS lcl_multiplication DEFINITION.
+  PUBLIC SECTION.
+    INTERFACES lif_observer.
+ENDCLASS.
+
+CLASS lcl_multiplication IMPLEMENTATION.
+  METHOD lif_observer~notify.
+    "Populating a string table for display purposes.
+    APPEND |lcl_multiplication: Observer notified at { ts }.| TO lcl=>tab4display.
+
+    lif_observer~calculate( num1 = num1 num2 = num2 ).
+  ENDMETHOD.
+
+  METHOD lif_observer~calculate.
+    TRY.
+        result = |{ num1 * num2 STYLE = SIMPLE }|.
+      CATCH cx_sy_arithmetic_error INTO DATA(error).
+        result = error->get_text( ).
+    ENDTRY.
+
+    "Populating a string table for display purposes.
+    APPEND `lcl_multiplication: lif_observer~calculate called.` TO lcl=>tab4display.
+    APPEND |{ num1 } * { num2 } = { result }| TO lcl=>tab4display.
+    APPEND INITIAL LINE TO lcl=>tab4display.
+  ENDMETHOD.
+ENDCLASS.
+
+**********************************************************************
+
+CLASS lcl_division DEFINITION.
+  PUBLIC SECTION.
+    INTERFACES lif_observer.
+ENDCLASS.
+
+CLASS lcl_division IMPLEMENTATION.
+  METHOD lif_observer~notify.
+    "Populating a string table for display purposes.
+    APPEND |lcl_division: Observer notified at { ts }.| TO lcl=>tab4display.
+
+    lif_observer~calculate( num1 = num1 num2 = num2 ).
+  ENDMETHOD.
+
+  METHOD lif_observer~calculate.
+    TRY.
+        result = |{ CONV decfloat34( num1 / num2 ) STYLE = SIMPLE }|.
+      CATCH cx_sy_arithmetic_error INTO DATA(error).
+        result = error->get_text( ).
+    ENDTRY.
+
+    "Populating a string table for display purposes.
+    APPEND `lcl_division: lif_observer~calculate called.` TO lcl=>tab4display.
+    APPEND |{ num1 } / { num2 } = { result }| TO lcl=>tab4display.
+    APPEND INITIAL LINE TO lcl=>tab4display.
+  ENDMETHOD.
+
+ENDCLASS.
+
+**********************************************************************
+**********************************************************************
+**********************************************************************
+
+*&---------------------------------------------------------------------*
+*& Example 2
+*&---------------------------------------------------------------------*
+
+CLASS lcl_evt DEFINITION.
+  PUBLIC SECTION.
+    METHODS set_text IMPORTING txt TYPE string.
+    EVENTS evt EXPORTING VALUE(info) TYPE string.
+
+    CLASS-DATA tab4display TYPE string_table.
+  PROTECTED SECTION.
+    DATA text TYPE string.
+ENDCLASS.
+
+CLASS lcl_evt IMPLEMENTATION.
+  METHOD set_text.
+    text = txt.
+
+    "Populating a string table for display purposes.
+    APPEND |Object changed. "text" was assigned the value "{ text }". Event is about to be raised.| TO lcl_evt=>tab4display.
+    APPEND INITIAL LINE TO lcl_evt=>tab4display.
+
+    RAISE EVENT evt EXPORTING info = txt.
+  ENDMETHOD.
+ENDCLASS.
+
+INTERFACE lif_obs.
+  METHODS:
+    add_text IMPORTING txt TYPE string,
+    handle_event FOR EVENT evt OF lcl_evt IMPORTING info.
+  DATA some_text TYPE string.
+ENDINTERFACE.
+
+CLASS lcl_obs_1 DEFINITION.
+  PUBLIC SECTION.
+    INTERFACES lif_obs.
+ENDCLASS.
+
+CLASS lcl_obs_1 IMPLEMENTATION.
+
+  METHOD lif_obs~handle_event.
+    "Populating a string table for display purposes.
+    APPEND `lcl_obs_1: Event handled in lif_obs~handle_event.` TO lcl_evt=>tab4display.
+    APPEND |Text "{ info }" is about to be processed.| TO lcl_evt=>tab4display.
+
+    lif_obs~add_text( info ).
+  ENDMETHOD.
+
+  METHOD lif_obs~add_text.
+    lif_obs~some_text = |{ txt }AP|.
+
+    "Populating a string table for display purposes.
+    APPEND |Text was processed in lif_obs~add_text. Result: "{ lif_obs~some_text }"| TO lcl_evt=>tab4display.
+    APPEND INITIAL LINE TO lcl_evt=>tab4display.
+  ENDMETHOD.
+ENDCLASS.
+
+CLASS lcl_obs_2 DEFINITION.
+  PUBLIC SECTION.
+    INTERFACES lif_obs.
+ENDCLASS.
+
+CLASS lcl_obs_2 IMPLEMENTATION.
+
+  METHOD lif_obs~handle_event.
+    "Populating a string table for display purposes.
+    APPEND `lcl_obs_2: Event handled in lif_obs~handle_event.` TO lcl_evt=>tab4display.
+    APPEND |Text "{ info }" is about to be processed.| TO lcl_evt=>tab4display.
+
+    lif_obs~add_text( info ).
+  ENDMETHOD.
+
+  METHOD lif_obs~add_text.
+    lif_obs~some_text = |{ txt }CDEFHIJKLMNOPQRSTUVWXYZ|.
+
+    "Populating a string table for display purposes.
+    APPEND |Text was processed in lif_obs~add_text. Result: "{ lif_obs~some_text }"| TO lcl_evt=>tab4display.
+    APPEND INITIAL LINE TO lcl_evt=>tab4display.
+  ENDMETHOD.
 ENDCLASS.
 ``` 
 

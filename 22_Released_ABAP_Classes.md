@@ -7972,7 +7972,7 @@ CLASS zcl_demo_abap IMPLEMENTATION.
 
     out->write( |******************************** Repairing and cleaning up an HTML document ********************************\n| ).
 
-    "Creating a HTMLTidy instance
+    "Creating an HTMLTidy instance
     DATA(htmltidy) = cl_htmltidy=>create( ).
 
 **********************************************************************
