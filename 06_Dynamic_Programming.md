@@ -3969,7 +3969,7 @@ CLASS zcl_demo_abap IMPLEMENTATION.
     DATA(interfaces_cl) = tdo_cl->interfaces.
     DATA(events_cl) = tdo_cl->events.
     DATA(methods_cl) = tdo_cl->methods.
-    "Accessing Method/parameter information
+    "Accessing method/parameter information
     LOOP AT methods_cl INTO DATA(meth_wa).
       DATA(meth_name) = meth_wa-name.
       LOOP AT meth_wa-parameters INTO DATA(param_wa).
@@ -8270,7 +8270,7 @@ IF sy-subrc = 0.
   SKIP.
 ELSE.
   WRITE / |sy-subrc: { sy-subrc }| COLOR COL_NEGATIVE.
-  WRITE / |The code was not into the internal table.| COLOR COL_NEGATIVE.
+  WRITE / |The code was not read into the internal table.| COLOR COL_NEGATIVE.
   SKIP.
 ENDIF.
 

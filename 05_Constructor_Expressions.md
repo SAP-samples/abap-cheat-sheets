@@ -83,9 +83,8 @@ initialization can be avoided.
 -   This result can be structures or internal tables. It can also be initial values for any non-generic data types.   
     
     > [!NOTE] 
-    > Elementary data types and reference types cannot be
-    
-    explicitly specified for the construction of values here.
+    > Elementary data types and reference types cannot be explicitly specified for the construction of values here.
+
 -   Regarding the type specifications before and parameters within the
     parentheses:
     -   No parameter specified within the parentheses: The return value

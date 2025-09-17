@@ -7,6 +7,7 @@
   - [RAP Behavior Definition (BDEF)](#rap-behavior-definition-bdef)
   - [ABAP Behavior Pools (ABP)](#abap-behavior-pools-abp)
     - [RAP Handler Classes and Methods](#rap-handler-classes-and-methods)
+      - [Parameters of Handler Methods](#parameters-of-handler-methods)
     - [RAP Saver Class and Saver Methods](#rap-saver-class-and-saver-methods)
     - [ABP Auxiliary Classes](#abp-auxiliary-classes)
   - [BDEF Derived Types](#bdef-derived-types)
@@ -21,14 +22,17 @@
     - [ABAP EML Syntax for Modifying Operations](#abap-eml-syntax-for-modifying-operations)
       - [Create Operation Using the Short Form of ABAP EML MODIFY Statements](#create-operation-using-the-short-form-of-abap-eml-modify-statements)
       - [Create Operation Using the Long Form of ABAP EML MODIFY Statements](#create-operation-using-the-long-form-of-abap-eml-modify-statements)
-      - [Excursion: Specifying %control Component Values in the Short Form of VALUE Constructor Expressions](#excursion-specifying-control-component-values-in-the-short-form-of-value-constructor-expressions)
-      - [Combining Multiple Operations in One ABAP EML Request](#combining-multiple-operations-in-one-abap-eml-request)
+      - [Update Operations](#update-operations)
+      - [Delete Operations](#delete-operations)
       - [Dynamic Form of ABAP EML MODIFY Statements](#dynamic-form-of-abap-eml-modify-statements)
       - [Executing Actions](#executing-actions)
-      - [Creating Instances for the Root and Child Entity (Deep Create)](#creating-instances-for-the-root-and-child-entity-deep-create)
+      - [Excursions](#excursions)
+        - [Specifying %control Component Values in the Short Form of VALUE Constructor Expressions](#specifying-control-component-values-in-the-short-form-of-value-constructor-expressions)
+        - [Combining Multiple Operations in One ABAP EML Request](#combining-multiple-operations-in-one-abap-eml-request)
+        - [Creating Instances for the Root and Child Entity (Deep Create)](#creating-instances-for-the-root-and-child-entity-deep-create)
     - [ABAP EML Syntax for Reading Operations](#abap-eml-syntax-for-reading-operations)
-      - [ABAP EML READ Statement](#abap-eml-read-statement)
-      - [Read-by-Association Operation](#read-by-association-operation)
+      - [Reading Operations](#reading-operations)
+      - [Read-by-Association Operations](#read-by-association-operations)
       - [Dynamic ABAP EML READ Statements](#dynamic-abap-eml-read-statements)
     - [COMMIT ENTITIES: Persisting to the Database](#commit-entities-persisting-to-the-database)
     - [ROLLBACK ENTITIES](#rollback-entities)
@@ -289,6 +293,7 @@ consumer](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?f
 is either the [RAP transactional engine](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_transac_engine_glosry.htm "Glossary Entry") that handles requests from outside the AS ABAP or, from inside AS ABAP,
 an ABAP program using ABAP EML (which this cheat sheet and the examples focus on).
 > - The cheat sheet and the examples focus on a minimal number of artifacts - from database table and view entity, to BDEF and ABAP behavior pool, including an ABAP class as consumer. Many other RAP-related artifacts and aspects are beyond the scope. Get a more thorough insight in the [Development guide for the ABAP RESTful Application Programming Model](https://help.sap.com/docs/ABAP_PLATFORM_NEW/fc4c71aa50014fd1b43721701471913d/289477a81eec4d4e84c0302fb6835035.html).
+> - You can create all RAP service-related repository objects from scratch using a wizard in ADT. The wizard lets you manually input your RAP BO requirements or use the Joule chat. Find more information [here](https://help.sap.com/docs/abap-cloud/abap-rap/odata-ui-service-from-scratch).
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
@@ -639,7 +644,9 @@ METHODS some_action FOR MODIFY
       IMPORTING keys FOR ACTION bdef~some_action.
 ```
 
-**Parameters of Handler Methods**
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+#### Parameters of Handler Methods
 
 -   The handler method definitions contain RAP-specific additions like
     `FOR MODIFY`, `FOR CREATE` or `FOR READ` as
@@ -690,6 +697,8 @@ METHODS some_action FOR MODIFY
         imagine that such an error message is displayed on an SAP Fiori
         UI if something goes wrong to inform the user.
 
+> [!NOTE]  
+> It is essential to implement RAP handler methods correctly to ensure the stability and consistency of RAP business objects, particularly in populating the RAP response parameters. For more details on best practices for implementation, refer to the [documentation](https://help.sap.com/docs/abap-cloud/abap-rap/general-rap-bo-implementation-contract).
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
@@ -1301,13 +1310,30 @@ The following code snippet illustrates the importance of careful component acces
 - Especially in value assignments, make sure that there is only one assignment per component.
 
 ```abap
-DATA itab TYPE TABLE FOR CREATE zdemo_abap_rap_ro_m.
-itab = VALUE #( ( key_field = 1 ) ).
+DATA cr_tab TYPE TABLE FOR CREATE zdemo_abap_rap_ro_m.
+cr_tab = VALUE #( ( key_field = 1 ) ).
 
-DATA(a) = itab[ 1 ]-key_field.
-DATA(b) = itab[ 1 ]-%key-key_field.
-DATA(c) = itab[ 1 ]-%data-key_field.
-DATA(d) = itab[ 1 ]-%data-%key-key_field.
+DATA(a) = cr_tab[ 1 ]-key_field.
+DATA(b) = cr_tab[ 1 ]-%key-key_field.
+DATA(c) = cr_tab[ 1 ]-%data-key_field.
+DATA(d) = cr_tab[ 1 ]-%data-%key-key_field.
+
+"Even more specification options with another BDEF derived type.
+"This is only to visualize the variety of component groups in BDEF 
+"derived types.
+DATA upd_tab TYPE TABLE FOR UPDATE zdemo_abap_rap_ro_m.
+upd_tab = VALUE #( ( key_field = 1 ) ).
+
+DATA(e) = upd_tab[ 1 ]-key_field.
+DATA(f) = upd_tab[ 1 ]-%key-key_field.
+DATA(g) = upd_tab[ 1 ]-%tky-%key-key_field.
+DATA(h) = upd_tab[ 1 ]-%tky-key_field.
+DATA(i) = upd_tab[ 1 ]-%tky-%pky-%key-key_field.
+DATA(j) = upd_tab[ 1 ]-%tky-%pky-key_field.
+DATA(k) = upd_tab[ 1 ]-%pky-key_field.
+DATA(l) = upd_tab[ 1 ]-%pky-%key-key_field.
+DATA(m) = upd_tab[ 1 ]-%data-%key-key_field.
+DATA(o) = upd_tab[ 1 ]-%data-key_field.
 ```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
@@ -1709,70 +1735,157 @@ MODIFY ENTITIES OF root_ent
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-#### Excursion: Specifying %control Component Values in the Short Form of VALUE Constructor Expressions
+#### Update Operations
 
-- The following EML statement creates RAP BO instances. The BDEF derived type is created inline. 
-- With the `FROM` addition, the `%control` values must be specified explicitly. 
-- There is also a short form of `VALUE` constructor expressions. In this case, you can provide the corresponding values for all table lines  outside of the inner parentheses, instead of individually specifying the values for each instance within the parentheses. 
-- The corresponding `%control` component value is then assigned for all of the following table lines.
+``` abap
+*&---------------------------------------------------------------------*
+*& Short form of EML MODIFY statement
+*&---------------------------------------------------------------------*
 
-```abap
+"The example code snippet uses data objects declared upfront instead of
+"inline declarations.
+
+DATA: upd_tab       TYPE TABLE FOR UPDATE zdemo_abap_rap_ro_m,
+      failed_resp   TYPE RESPONSE FOR FAILED zdemo_abap_rap_ro_m,
+      reported_resp TYPE RESPONSE FOR REPORTED zdemo_abap_rap_ro_m.
+
+"Note:
+"The BDEF derived type does not have a %cid component but %cid_ref
+"to refer to an existing instance (its %cid value) within the same
+"EML request. The example includes the reference to an existing
+"instance using %cid_ref for demonstration purposes, commented out.
+"The example does not include an actually referable instance. When 
+"there is no referable instance, a runtime error occurs.
+
+upd_tab = VALUE #(
+        ( key_field = 1 field1 = 'A' field2 = 'B' field3 = 1 field4 = 2 )
+        ( key_field = 2 field1 = 'C' field2 = 'D' field3 = 3 field4 = 4 )
+        "( %cid_ref = `some_cid` field1 = 'E' field2 = 'F' field3 = 5 field4 = 6 )
+        ).
+
+"Note:
+"- The statement includes the field specification option FIELDS ( ... ) WITH.
+"  The fields to be respected are included in the parentheses. For these,
+"  %control is flagged as if_abap_behv=>mk-on. The others, field3 and field4,
+"  are not specified. Therefore, %control is flagged as if_abap_behv=>mk-off
+"  for these fields.
+"- Typically, the key fields are not included since changing them is ruled
+"  out in the example's BDEF: field ( readonly:update ) key_field;
+"- The EML statement does not have the mapped response parameter. No
+"  new instance are created in update operations.
+
+MODIFY ENTITY zdemo_abap_rap_ro_m
+  UPDATE
+  FIELDS ( field1 field2 ) WITH upd_tab
+  FAILED failed_resp
+  REPORTED reported_resp.
+
+*&---------------------------------------------------------------------*
+*& Long form of EML MODIFY statement
+*&---------------------------------------------------------------------*
+
+"Note:
+"- The statement's operands are all declared inline.
+"- The statement includes the field specification option FROM.
+"- This specification option requires %control to be filled explicitly.
+"  Unlike the previous example, the update operation also respects
+"  field3 and field4, indicated by flagging all non-key components with
+"  if_abap_behv=>mk-on. As above, changing the key values is ruled out.
+"  Flagging key_field with if_abap_behv=>mk-on results in a runtime error.
+"- See the excursion with specifying the %control component values.
+"  Applying the coding technique mentioned there (providing the corresponding
+"  values for all table lines outside of the inner parentheses), you can
+"  save the specification of code lines.
+"- As above, an example with %cid_ref is included but commented out since
+"  the example does not inlcude a referable instance.
+
 MODIFY ENTITIES OF zdemo_abap_rap_ro_m
-    ENTITY root
-    CREATE FROM VALUE #(
-        %control-key_field = if_abap_behv=>mk-on
-        %control-field1    = if_abap_behv=>mk-on
-        %control-field2    = if_abap_behv=>mk-on
-        %control-field3    = if_abap_behv=>mk-on
-        %control-field4    = if_abap_behv=>mk-off
-        ( %cid      = 'cid1'
-          key_field = 1
-          field1    = 'aaa'
-          field2    = 'bbb'
-          field3    = 10
-          field4    = 100 )
-        ( %cid      = 'cid2'
-          key_field = 2
-          field1    = 'ccc'
-          field2    = 'ddd'
-          field3    = 20
-          field4    = 200 ) )
-    MAPPED DATA(m)
-    FAILED DATA(f)
-    REPORTED DATA(r).
+  ENTITY root
+  UPDATE
+  FROM VALUE #(
+    ( key_field = 4 field1 = 'G' field2 = 'H' field3 = 7 field4 = 8
+      %control = VALUE #( key_field = if_abap_behv=>mk-off
+                          field1 = if_abap_behv=>mk-off
+                          field2 = if_abap_behv=>mk-on
+                          field3 = if_abap_behv=>mk-on
+                          field4 = if_abap_behv=>mk-on ) )
+    ( key_field = 5 field1 = 'I' field2 = 'J' field3 = 9 field4 = 10
+      %control = VALUE #( key_field = if_abap_behv=>mk-off
+                          field1 = if_abap_behv=>mk-on
+                          field2 = if_abap_behv=>mk-on
+                          field3 = if_abap_behv=>mk-on
+                          field4 = if_abap_behv=>mk-on ) )
+*    ( %cid_ref = `another_cid` field1 = 'K' field2 = 'L' field3 = 11 field4 = 12
+*      %control = VALUE #( key_field = if_abap_behv=>mk-off
+*                          field1 = if_abap_behv=>mk-on
+*                          field2 = if_abap_behv=>mk-on
+*                          field3 = if_abap_behv=>mk-on
+*                          field4 = if_abap_behv=>mk-on ) )
+     )
+  FAILED DATA(f_resp)
+  REPORTED DATA(r_resp).
 ```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-#### Combining Multiple Operations in One ABAP EML Request
 
-The following EML statement combines multiple operations in one EML request. It demonstrates the use of the BDEF derived type components `%cid` and `%cid_ref`. 
+#### Delete Operations
 
-- First, two instances are created by specifying `%cid`. 
-- An update operation in the same request only specifies a certain field within the parentheses of the `FIELDS ( ... ) WITH` addition which denotes that only this particular field should be updated. 
-- The other field values remain unchanged. 
-- The reference to the instance is made via `%cid_ref`. 
-- Consider an EML request in which no instance to refer to using `%cid_ref` exists, e. g. for an update operation. You can also make the reference using the unique key. 
-- A delete operation is available in the same request, too. 
-- `DELETE` can only be followed by the addition `FROM`. 
-- In contrast to other derived types, the derived type that is expected here (`TYPE TABLE FOR DELETE`) only has `%cid_ref` and the key as components.
 
 ``` abap
-MODIFY ENTITIES OF root_ent
+*&---------------------------------------------------------------------*
+*& Short form of EML MODIFY statement
+*&---------------------------------------------------------------------*
+
+"The example code snippet uses data objects declared upfront instead of
+"inline declarations.
+
+DATA: del_tab           TYPE TABLE FOR DELETE zdemo_abap_rap_ro_m,
+      failed_response   TYPE RESPONSE FOR FAILED zdemo_abap_rap_ro_m,
+      reported_response TYPE RESPONSE FOR REPORTED zdemo_abap_rap_ro_m.
+
+"Note:
+"The BDEF derived type only includes components to identify instances.
+"This can be either referring to an existing existing using %cid_ref
+"- its %cid value - within the same EML request, or the key. The example
+"includes the reference to an existing instance using %cid_ref for
+"demonstration purposes, commented out. The example does not include an
+"actually referable instance. When there is no referable instance, a
+"runtime error occurs.
+
+del_tab = VALUE #(
+    ( key_field = 1 )
+    ( key_field = 2 )
+    "( %cid_ref = `some_cid` )
+    ).
+
+"Note:
+"EML MODIFY staments for delete operations can only use the field
+"specification option FROM.
+
+MODIFY ENTITY zdemo_abap_rap_ro_m
+  DELETE
+  FROM del_tab
+  FAILED failed_response
+  REPORTED reported_response.
+
+*&---------------------------------------------------------------------*
+*& Long form of EML MODIFY statement
+*&---------------------------------------------------------------------*
+
+"Note:
+"The statement's operands are all declared inline.
+
+MODIFY ENTITIES OF zdemo_abap_rap_ro_m
   ENTITY root
-  CREATE FIELDS ( key_field field1 field2 ) WITH
-    VALUE #( ( %cid    = 'cid4' key_field = 4
-                field1 = 'G'    field2    = 'H' )
-              ( %cid   = 'cid5' key_field = 5
-                field1 = 'I'    field2    = 'J' ) )
-
-  UPDATE FIELDS ( field2 ) WITH
-    VALUE #( ( %cid_ref = 'cid4' field2 = 'Z' ) )
-
-  DELETE FROM
-    VALUE #( ( %cid_ref  = 'cid5' ) "Instance referenced via %cid_ref
-             ( key_field = 9 ) )    "Instance referenced via the key
-...
+  DELETE
+  FROM VALUE #(
+    ( key_field = 4 )
+    ( key_field = 5 )
+    "( %cid_ref = `another_cid` )
+    )
+  FAILED DATA(f_del_resp)
+  REPORTED DATA(r_del_resp).
 ```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
@@ -1928,7 +2041,77 @@ MODIFY ENTITIES OF zdemo_abap_rap_ro_m
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-#### Creating Instances for the Root and Child Entity (Deep Create)
+#### Excursions 
+
+##### Specifying %control Component Values in the Short Form of VALUE Constructor Expressions
+
+- The following EML statement creates RAP BO instances. The BDEF derived type is created inline. 
+- With the `FROM` addition, the `%control` values must be specified explicitly. 
+- There is also a short form of `VALUE` constructor expressions. In this case, you can provide the corresponding values for all table lines  outside of the inner parentheses, instead of individually specifying the values for each instance within the parentheses. 
+- The corresponding `%control` component value is then assigned for all of the following table lines.
+
+```abap
+MODIFY ENTITIES OF zdemo_abap_rap_ro_m
+    ENTITY root
+    CREATE FROM VALUE #(
+        %control-key_field = if_abap_behv=>mk-on
+        %control-field1    = if_abap_behv=>mk-on
+        %control-field2    = if_abap_behv=>mk-on
+        %control-field3    = if_abap_behv=>mk-on
+        %control-field4    = if_abap_behv=>mk-off
+        ( %cid      = 'cid1'
+          key_field = 1
+          field1    = 'aaa'
+          field2    = 'bbb'
+          field3    = 10
+          field4    = 100 )
+        ( %cid      = 'cid2'
+          key_field = 2
+          field1    = 'ccc'
+          field2    = 'ddd'
+          field3    = 20
+          field4    = 200 ) )
+    MAPPED DATA(m)
+    FAILED DATA(f)
+    REPORTED DATA(r).
+```
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+##### Combining Multiple Operations in One ABAP EML Request
+
+The following EML statement combines multiple operations in one EML request. It demonstrates the use of the BDEF derived type components `%cid` and `%cid_ref`. 
+
+- First, two instances are created by specifying `%cid`. 
+- An update operation in the same request only specifies a certain field within the parentheses of the `FIELDS ( ... ) WITH` addition which denotes that only this particular field should be updated. 
+- The other field values remain unchanged. 
+- The reference to the instance is made via `%cid_ref`. 
+- Consider an EML request in which no instance to refer to using `%cid_ref` exists, e. g. for an update operation. You can also make the reference using the unique key. 
+- A delete operation is available in the same request, too. 
+- `DELETE` can only be followed by the addition `FROM`. 
+- In contrast to other derived types, the derived type that is expected here (`TYPE TABLE FOR DELETE`) only has `%cid_ref` and the key as components.
+
+``` abap
+MODIFY ENTITIES OF root_ent
+  ENTITY root
+  CREATE FIELDS ( key_field field1 field2 ) WITH
+    VALUE #( ( %cid    = 'cid4' key_field = 4
+                field1 = 'G'    field2    = 'H' )
+              ( %cid   = 'cid5' key_field = 5
+                field1 = 'I'    field2    = 'J' ) )
+
+  UPDATE FIELDS ( field2 ) WITH
+    VALUE #( ( %cid_ref = 'cid4' field2 = 'Z' ) )
+
+  DELETE FROM
+    VALUE #( ( %cid_ref  = 'cid5' ) "Instance referenced via %cid_ref
+             ( key_field = 9 ) )    "Instance referenced via the key
+...
+```
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+##### Creating Instances for the Root and Child Entity (Deep Create)
 
 The following code snippet shows a deep create. 
 
@@ -1974,7 +2157,7 @@ MODIFY ENTITIES OF root_ent
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-#### ABAP EML READ Statement
+#### Reading Operations
 
 - The following code snippet shows the long form of the EML
 [`READ`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapread_entity_entities_op.htm)
@@ -1996,7 +2179,7 @@ READ ENTITIES OF root_ent
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-#### Read-by-Association Operation
+#### Read-by-Association Operations
 
 - Read-by-association operations include the optional addition
 [`LINK`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapread_entity_entities_op&sap-language=EN&sap-client=000&version=X&anchor=!ABAP_ONE_ADD@1@&tree=X) with which you can retrieve the keys of the source and target (i. e. the

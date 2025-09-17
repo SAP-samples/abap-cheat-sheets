@@ -8234,7 +8234,7 @@ ENDCLASS.
 
 - This section explores and experiments with design patterns you may encounter in object-oriented programming, using ABAP classes.
 - In object-oriented programming, numerous design patterns enhance modularity, scalability, reusability, and more. 
-- Here, a selection of design patterns is covered, using simplified, non-semantic, and non-real-world examples to reduce complexity and give a rough idea.
+- Here, a selection of design patterns is covered, using simplified, non-semantic, and non-real-world examples to reduce complexity and give a rough idea. If you want to explore these patterns further, many articles, books, and community resources offer deeper insights into their origins, purposes, and real-world examples.
 
 > [!NOTE]  
 > - The section is intended for [exploration, experimentation, and demonstration](./README.md#%EF%B8%8F-disclaimer). The code examples do not represent best practices or role model approaches. They only aim to experiment with the patterns in simplified contexts and convey the basic concepts. 
@@ -13893,15 +13893,15 @@ Example notes:
     - Serves as a vehicle for demonstrating the design pattern. The declarations and implementations in the `CCIMP` are relevant for the for conceptual considerations.
   - CCIMP include (Local Types tab in ADT):
     - *Example 1*  
-      - Defines the `lif_observer` interface that enables the observed object to communicate with observers via the `notify` method, which expects two numbers as important parameters, among others. The `calculate` method is common to all observers, performing a simple calculation based on the two integer values provided.  
+      - Defines the `lif_observer` interface that enables the observed object to communicate with observers via the `notify` method, which expects two numbers as importing parameters, among others. The `calculate` method is common to all observers, performing a simple calculation based on the two integer values provided.  
       - `lcl` represents the class for observed objects and offers several methods:  
         - `set_numbers`: Changes the state of the observed object by setting two integer values. The implementation includes calling the `notify_observers` method.
         - `register` and `unregister` are used to register and unregister observers. For that purpose, the internal table `observer_tab` is used to manage reference variables. When registering, references to observers are added. When unregistering, references are removed from the table.  
         - `notify_observers`: The method is responsible for notifying observers. The notification is performed by looping across the reference table and calling the common notification method `notify` defined in the interface.  
-      - A string table is included for demonstration and display purposes, being populated throughout method calls to visualize the call flow.  
-    - Multiple local classes act as observers, performing simple calculations.  
+      - A string table is included for demonstration and display purposes, being populated throughout method calls to visualize the method call flow.  
+      - Multiple local classes act as observers, performing simple calculations.  
       - When the observed object calls the `notify` method, it informs the observer about the state change, passes values, and triggers a calculation by invoking the `calculate` method.  
-    - The global class represents the user, creating objects and registering and unregistering observers. The string table is ouput to visualize the method call flow.  
+      - The global class represents the user, creating objects and registering and unregistering observers. The string table is output to visualize the method call flow.  
     - *Example 2*  
       - Provides a simpler example and setup, where the class being observed defines events.  
       - An interface implemented by all observers defines an event handler.  
@@ -13944,10 +13944,10 @@ CLASS zcl_demo_abap IMPLEMENTATION.
     out->write( |Example 1\n\n| ).
 
 *&-------------------------------------------------------------------------------------*
-*& 1) Creating objects, observes not registered
+*& 1) Creating objects, observers not registered
 *&-------------------------------------------------------------------------------------*
 
-    out->write( |1) Creating objects, observes not registered\n\n| ).
+    out->write( |1) Creating objects, observers not registered\n\n| ).
 
     DATA(oref_observed) = NEW lcl( ).
     "Observers
@@ -13960,8 +13960,7 @@ CLASS zcl_demo_abap IMPLEMENTATION.
     "The method implementation includes a call to the notification method.
     oref_observed->set_numbers(
       value1 = 1
-      value2 = 2
-    ).
+      value2 = 2 ).
 
     "At this stage, there are no observers registered.
     DATA(log) = lcl=>tab4display.
@@ -13983,8 +13982,7 @@ CLASS zcl_demo_abap IMPLEMENTATION.
 
     oref_observed->set_numbers(
       value1 = 7
-      value2 = 5
-    ).
+      value2 = 5 ).
 
     log = lcl=>tab4display.
 
@@ -14120,11 +14118,11 @@ CCIMP include (Local Types tab in ADT)
 
 INTERFACE lif_observer.
   METHODS: notify IMPORTING num1 TYPE i
-                           num2 TYPE i
-                           ts   TYPE utclong,
-   calculate IMPORTING num1          TYPE i
-                               num2          TYPE i
-                     RETURNING VALUE(result) TYPE string.
+                            num2 TYPE i
+                            ts   TYPE utclong,
+   calculate IMPORTING num1 TYPE i
+                       num2 TYPE i
+             RETURNING VALUE(result) TYPE string.
 ENDINTERFACE.
 
 *&---------------------------------------------------------------------*
@@ -14376,7 +14374,7 @@ CLASS lcl_obs_2 IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD lif_obs~add_text.
-    lif_obs~some_text = |{ txt }CDEFHIJKLMNOPQRSTUVWXYZ|.
+    lif_obs~some_text = |{ txt }CDEFGHIJKLMNOPQRSTUVWXYZ|.
 
     "Populating a string table for display purposes.
     APPEND |Text was processed in lif_obs~add_text. Result: "{ lif_obs~some_text }"| TO lcl_evt=>tab4display.
