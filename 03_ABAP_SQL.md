@@ -34,10 +34,10 @@
     - [Date and Time Functions](#date-and-time-functions)
     - [UUID Function](#uuid-function)
   - [Create, Update, and Delete Operations](#create-update-and-delete-operations)
-    - [Using INSERT](#using-insert)
-    - [Using UPDATE](#using-update)
-    - [Using MODIFY](#using-modify)
-    - [Using DELETE](#using-delete)
+    - [INSERT](#insert)
+    - [UPDATE](#update)
+    - [MODIFY](#modify)
+    - [DELETE](#delete)
     - [Using Constructor Expressions in ABAP SQL Statements](#using-constructor-expressions-in-abap-sql-statements)
     - [Example: Exploring Create, Update, and Delete Operations with ABAP SQL Statements](#example-exploring-create-update-and-delete-operations-with-abap-sql-statements)
   - [Dynamic ABAP SQL Statements](#dynamic-abap-sql-statements)
@@ -2330,7 +2330,7 @@ INTO @DATA(tab_w_uuid).
 > - The following sections include code patterns. To explore various syntax options with an executable example, see section [Example: Exploring ABAP SQL Statements Changing Data in Database Tables](#example-exploring-abap-sql-statements-changing-data-in-database-tables) below.
 > - There are also CDS artifacts that allow not only reading but also creating, updating, and deleting. See [this section](#crud-operations-using-cds-artifacts).
 
-### Using INSERT
+### INSERT
 
 - Inserts one or more rows into a database table specified.
 - The rows to be inserted are taken from a structure, an internal table, or the result set of an embedded subquery.
@@ -2371,7 +2371,7 @@ INSERT dbtab FROM ( SELECT ... ).
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-### Using UPDATE
+### UPDATE
 
 - Changes the content of one or more rows of a database table specified.
 - Similar to `INSERT`, `sy-subrc` and `sy-dbcnt` are set.
@@ -2442,7 +2442,7 @@ UPDATE dbtab FROM TABLE @ind_tab INDICATORS NOT SET STRUCTURE comp_ind.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-### Using MODIFY
+### MODIFY
 
 - Inserts one or more rows into a database table specified or overwrites existing ones.
 - As above, `sy-subrc` and `sy-dbcnt` are set.
@@ -2468,7 +2468,7 @@ MODIFY dbtab FROM ( SELECT ... ).
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-### Using DELETE
+### DELETE
 
 - Deletes one or more rows from a database table specified.
 - As above, `sy-subrc` and `sy-dbcnt` are set.

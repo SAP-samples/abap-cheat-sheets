@@ -14390,6 +14390,486 @@ ENDCLASS.
 
 </details>  
 
+<br>
+
+ <details>
+  <summary>🟢 Memento</summary>
+  <!-- -->
+
+<br>
+
+- The idea of the memento design pattern is to allow the storing and restoring of an object's state.
+- The state is stored in a separate object, the memento, which captures the object's state.
+- A potential class setup for this pattern may include a class for which mementos are created, a memento class, and a class to manage the mementos.
+- Use cases for this pattern include saving object states and providing undo (and possibly redo) functionality to revert changes.
+- The example demonstrates the memento design pattern with the following declarations and implementations:
+  - Global class:
+    - Implements the `if_oo_adt_classrun` interface and calls methods from local classes.
+    - Serves as a vehicle for demonstrating the design pattern. The declarations and implementations in the `CCIMP` are relevant for the for conceptual considerations.
+  - CCIMP include (Local Types tab in ADT):
+    - Several class setup and design strategies may apply. This simplified example includes three classes: 
+      - `lcl`: Represents the class for which mementos are created.
+      - `lcl_memento`: Captures the state of an `lcl` object.
+      - `lcl_memento_controller`: Manages mementos.
+    - More details:
+      - `lcl` class
+        - Represents the class for which mementos are created.
+        - It is defined as `FINAL` and `CREATE PRIVATE`, which prevents inheritance and direct instantiation by other classes. This setup implements the singleton design pattern, allowing instantiation only through the `get_obj` method.
+        - Attributes:
+          - `state`: Represents the state of an `lcl` object. In this simplified example, the state is a string that can change.
+          - `oref`: A static attribute holding a reference to the single `lcl` object.
+        - Methods:
+          - `get_obj`: Static method that returns a singleton instance of the `lcl` class.
+          - `get_state`: Returns the current state of the object.
+          - `change_state`: Updates the current state by appending text, with an optional leading space.
+          - `save`: Creates a memento of the current state with a specified tag.
+          - `restore`: Sets the current state to the state stored in the provided memento.
+
+      - `lcl_memento` class
+        - Captures the state of an `lcl` object. 
+        - Marked as `FINAL` and `CREATE PRIVATE`, which prevents inheritance and direct instantiation by other classes, except for its friend (using the `FRIENDS` addition) class, `lcl`.
+        - Attributes:
+          - `state`: Represents the state of an `lcl` object. In this simplified example, it is a string that can change. 
+          - `tag`: A string that labels each memento for identification.
+          - `time_stamp`: Records the UTC timestamp when the memento is created. In this example, it is included for logging and display purposes.
+        - Methods:
+          - `constructor`: Initializes the `state` and `tag` attributes and captures the current timestamp.
+          - `get_state`: Returns the memento's stored state.
+          - `get_tag`: Returns the tag associated with the memento.
+          - `get_timestamp`: Returns the creation timestamp of the memento.
+
+      - `lcl_memento_controller` class
+        - Manages mementos but does not modify their states.
+        - Attributes:
+          - `mementos_tab`: Internal table storing all created mementos.
+          - `redo_tab`: Internal table storing mementos for potential redo operations.
+          - `lcl_object`: Holds a reference to the `lcl` object for which it manages mementos.
+        - Methods:
+          - `constructor`: Initializes the reference variable for the `lcl_object`.
+          - `save_memento`: Adds a new memento to the `mementos_tab`.
+          - `undo`: Restores the `lcl` object to the previous state and adds the latest memento to the `redo_tab`.
+          - `redo`: Restores the `lcl` object to the next state in the `redo_tab`, if available.
+          - `restore_by_tag`: Searches for a memento by its tag in the `mementos_tab` and restores the `lcl` object to that state, also returning information on the success of the restoration.
+          - `get_memento_log`: Returns logs of all mementos in the `mementos_tab` and `redo_tab`.
+
+
+<table>
+
+<tr>
+<td> Class include </td> <td> Code </td>
+</tr>
+
+<tr>
+<td> 
+
+Global class
+
+ </td>
+
+ <td> 
+
+``` abap
+CLASS zcl_demo_abap DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
+
+  PUBLIC SECTION.
+    INTERFACES if_oo_adt_classrun.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+ENDCLASS.
+
+CLASS zcl_demo_abap IMPLEMENTATION.
+  METHOD if_oo_adt_classrun~main.
+
+*&-------------------------------------------------------------------------------------*
+*& 1) Creating objects and mementos, changing and getting states
+*&-------------------------------------------------------------------------------------*
+
+    out->write( |1) Creating objects and mementos, changing and getting states\n| ).
+
+    DATA(oref_lcl) = lcl=>get_obj( ).
+    DATA(oref_memento_ctrl)  = NEW lcl_memento_controller( oref_lcl ).
+
+    oref_lcl->change_state( `Lorem` ).
+    oref_memento_ctrl->save_memento( `TAG_1` ).
+
+    DATA(state_a) = oref_lcl->get_state( ).
+    out->write( state_a ).
+
+    oref_lcl->change_state( `ipsum` ).
+    oref_memento_ctrl->save_memento( `TAG_2` ).
+
+    DATA(state_b) = oref_lcl->get_state( ).
+    out->write( state_b ).
+
+    oref_lcl->change_state( `dolor` ).
+    oref_memento_ctrl->save_memento( `TAG_3` ).
+
+    DATA(state_c) = oref_lcl->get_state( ).
+    out->write( state_c ).
+
+    oref_lcl->change_state( `sit` ).
+    oref_memento_ctrl->save_memento( `TAG_4` ).
+
+    DATA(state_d) = oref_lcl->get_state(  ).
+    out->write( state_d ).
+
+    oref_lcl->change_state( `amet` ).
+    oref_memento_ctrl->save_memento( `TAG_5` ).
+
+    DATA(state_e) = oref_lcl->get_state( ).
+    out->write( state_e ).
+
+    out->write( |\n{ repeat( val = `*` occ = 75 ) }\n| ).
+
+*&-------------------------------------------------------------------------------------*
+*& 2) Memento log
+*&-------------------------------------------------------------------------------------*
+
+    out->write( |2) Memento log\n\n| ).
+
+
+    DATA(memento_log) = oref_memento_ctrl->get_memento_log( ).
+    out->write( data = memento_log name = `memento_log` ).
+
+    out->write( |\n{ repeat( val = `*` occ = 75 ) }\n| ).
+
+*&-------------------------------------------------------------------------------------*
+*& 3) Undo operations
+*&-------------------------------------------------------------------------------------*
+
+    out->write( |3) Undo operations\n| ).
+
+    DATA(state_f) = oref_lcl->get_state( ).
+    out->write( `Current state:` ).
+    out->write( state_f ).
+
+    out->write( |\n| ).
+    out->write( `State after first undo operation:` ).
+    oref_memento_ctrl->undo( CHANGING lcl_obj = oref_lcl ).
+
+    DATA(state_g) = oref_lcl->get_state( ).
+    out->write( state_g ).
+
+    oref_memento_ctrl->undo( CHANGING lcl_obj = oref_lcl ).
+
+    DATA(state_h) = oref_lcl->get_state( ).
+
+    out->write( |\n| ).
+    out->write( `State after second undo operation:` ).
+    out->write( state_h ).
+
+    oref_memento_ctrl->undo( CHANGING lcl_obj = oref_lcl ).
+
+    DATA(state_i) = oref_lcl->get_state( ).
+
+    out->write( |\n| ).
+    out->write( `State after third undo operation:` ).
+    out->write( state_i && |\n\n| ).
+
+    memento_log = oref_memento_ctrl->get_memento_log( ).
+    out->write( data = memento_log name = `memento_log` ).
+
+    out->write( |\n{ repeat( val = `*` occ = 75 ) }\n| ).
+
+*&-------------------------------------------------------------------------------------*
+*& 4) Redo operations
+*&-------------------------------------------------------------------------------------*
+
+    out->write( |4) Redo operations\n| ).
+
+    DATA(state_j) = oref_lcl->get_state( ).
+    out->write( `Current state:` ).
+    out->write( state_j ).
+
+    oref_memento_ctrl->redo( CHANGING lcl_obj = oref_lcl ).
+
+    DATA(state_k) = oref_lcl->get_state( ).
+
+    out->write( |\n| ).
+    out->write( `State after first redo operation:` ).
+    out->write( state_k && |\n\n| ).
+
+    memento_log = oref_memento_ctrl->get_memento_log( ).
+    out->write( data = memento_log name = `memento_log` ).
+
+    oref_memento_ctrl->redo( CHANGING lcl_obj = oref_lcl ).
+
+    DATA(state_l) = oref_lcl->get_state( ).
+
+    out->write( |\n| ).
+    out->write( `State after second redo operation:` ).
+    out->write( state_l && |\n\n| ).
+
+    memento_log = oref_memento_ctrl->get_memento_log( ).
+    out->write( data = memento_log name = `memento_log` ).
+
+    out->write( |\n{ repeat( val = `*` occ = 75 ) }\n| ).
+
+*&-------------------------------------------------------------------------------------*
+*& 5) Restoring by tag
+*&-------------------------------------------------------------------------------------*
+
+    out->write( |5) Restoring by tag\n| ).
+
+    DATA(state_m) = oref_lcl->get_state( ).
+    out->write( `Current state:` ).
+    out->write( state_m ).
+    out->write( |\n| ).
+
+    DATA flag TYPE abap_boolean.
+
+    "At this stage, the memento with the tag TAG_5 is not stored in the memento table but
+    "in the redo table. Therefore, the current state remains unchanged because the restoration
+    "only considers mementos available in the memento table in the example.
+    out->write( `Tag used: TAG_5` ).
+    oref_memento_ctrl->restore_by_tag( EXPORTING tag = `TAG_5`
+                                       CHANGING  lcl_obj = oref_lcl
+                                       RECEIVING restoration_ok = flag ).
+
+    DATA(state_n) = oref_lcl->get_state( ).
+    out->write( |Restoration operation successful? { COND #( WHEN flag = abap_true THEN `YES` ELSE `NO` ) }| ).
+    out->write( state_n ).
+    out->write( |\n| ).
+
+    out->write( `Tag used: TAG_2` ).
+    oref_memento_ctrl->restore_by_tag( EXPORTING tag = `TAG_2`
+                                       CHANGING  lcl_obj = oref_lcl
+                                       RECEIVING restoration_ok = flag ).
+
+    DATA(state_o) = oref_lcl->get_state( ).
+    out->write( |Restoration operation successful? { COND #( WHEN flag = abap_true THEN `YES` ELSE `NO` ) }| ).
+    out->write( state_o ).
+    out->write( |\n| ).
+
+    "Checking on multiple tags in a loop
+    DO 7 TIMES.
+      DATA(tag) = |TAG_{ sy-index }|.
+      out->write( |Tag used: { tag }| ).
+
+      oref_memento_ctrl->restore_by_tag( EXPORTING tag = tag
+                                         CHANGING  lcl_obj = oref_lcl
+                                         RECEIVING restoration_ok = flag ).
+
+      DATA(state_p) = oref_lcl->get_state( ).
+      out->write( |Restoration operation successful? { COND #( WHEN flag = abap_true THEN `YES` ELSE `NO` ) }| ).
+      out->write( state_p ).
+      out->write( |\n| ).
+    ENDDO.
+  ENDMETHOD.
+ENDCLASS.
+``` 
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+CCIMP include (Local Types tab in ADT)
+
+ </td>
+
+ <td> 
+
+``` abap
+CLASS lcl DEFINITION DEFERRED.
+
+*&---------------------------------------------------------------------*
+*& Memento class
+*&---------------------------------------------------------------------*
+
+CLASS lcl_memento DEFINITION FINAL CREATE PRIVATE FRIENDS lcl.
+  PUBLIC SECTION.
+    METHODS: get_tag RETURNING VALUE(ret_tag) TYPE string,
+             get_timestamp RETURNING VALUE(ret_ts) TYPE string.
+  PRIVATE SECTION.
+    METHODS: constructor IMPORTING state TYPE string
+                                   tag   TYPE string,
+             get_state RETURNING VALUE(ret_state) TYPE string.
+    DATA: state     TYPE string,
+          tag       TYPE string,
+          timestamp TYPE utclong.
+ENDCLASS.
+
+CLASS lcl_memento IMPLEMENTATION.
+  METHOD constructor.
+    me->state = state.
+    me->tag = tag.
+    me->timestamp = utclong_current( ).
+  ENDMETHOD.
+
+  METHOD get_state.
+    ret_state = me->state.
+  ENDMETHOD.
+
+  METHOD get_tag.
+    ret_tag = me->tag.
+  ENDMETHOD.
+
+  METHOD get_timestamp.
+    ret_ts = me->timestamp.
+  ENDMETHOD.
+ENDCLASS.
+
+*&---------------------------------------------------------------------*
+*& Class for which mementos should be created
+*&---------------------------------------------------------------------*
+
+CLASS lcl DEFINITION FINAL CREATE PRIVATE.
+  PUBLIC SECTION.
+    CLASS-METHODS get_obj RETURNING VALUE(obj) TYPE REF TO lcl.
+    METHODS: get_state RETURNING VALUE(ret_state) TYPE string,
+             change_state IMPORTING text      TYPE string
+                                    add_space TYPE abap_boolean DEFAULT abap_true,
+             save IMPORTING tag                 TYPE string
+                  RETURNING VALUE(oref_memento) TYPE REF TO lcl_memento,
+             restore IMPORTING memento TYPE REF TO lcl_memento.
+  PRIVATE SECTION.
+    CLASS-DATA oref TYPE REF TO lcl.
+    DATA state TYPE string.
+ENDCLASS.
+
+CLASS lcl IMPLEMENTATION.
+  METHOD get_state.
+    ret_state = state.
+  ENDMETHOD.
+
+  METHOD save.
+    oref_memento = NEW #( state = state
+                          tag   = tag ).
+  ENDMETHOD.
+
+  METHOD restore.
+    state = memento->get_state( ).
+  ENDMETHOD.
+
+  METHOD change_state.
+    state = |{ state }{ COND #( WHEN state IS NOT INITIAL AND add_space = abap_true THEN ` ` ) }{ text }|.
+  ENDMETHOD.
+
+  METHOD get_obj.
+    IF oref IS NOT BOUND.
+      oref = NEW lcl( ).
+    ENDIF.
+    obj = oref.
+  ENDMETHOD.
+ENDCLASS.
+
+*&---------------------------------------------------------------------*
+*& Class that manages mementos
+*&---------------------------------------------------------------------*
+
+CLASS lcl_memento_controller DEFINITION FINAL.
+  PUBLIC SECTION.
+    METHODS: save_memento IMPORTING tag TYPE string,
+             undo CHANGING lcl_obj TYPE REF TO lcl,
+             redo CHANGING lcl_obj TYPE REF TO lcl,
+             restore_by_tag IMPORTING tag                   TYPE string
+                            CHANGING  lcl_obj               TYPE REF TO lcl
+                            RETURNING VALUE(restoration_ok) TYPE abap_boolean,
+             get_memento_log RETURNING VALUE(states) TYPE string_table,
+             constructor IMPORTING oref TYPE REF TO lcl.
+  PRIVATE SECTION.
+    DATA mementos_tab TYPE TABLE OF REF TO lcl_memento WITH EMPTY KEY.
+    DATA redo_tab     TYPE TABLE OF REF TO lcl_memento WITH EMPTY KEY.
+    DATA lcl_object TYPE REF TO lcl.
+ENDCLASS.
+
+CLASS lcl_memento_controller IMPLEMENTATION.
+  METHOD save_memento.
+    "Clearing the redo table when a new state is added
+    CLEAR redo_tab.
+    "Adding the memento to the table holding all stored mementos
+    APPEND lcl_object->save( tag ) TO mementos_tab.
+  ENDMETHOD.
+
+  METHOD undo.
+    DATA(count) = lines( mementos_tab ).
+
+    IF count <= 1.
+      RETURN.
+    ENDIF.
+
+    "Adding the last memento from the memento table to the redo table
+    READ TABLE mementos_tab INTO DATA(memento_oref) INDEX count.
+    IF sy-subrc = 0.
+      APPEND memento_oref TO redo_tab.
+      DELETE mementos_tab INDEX count.
+    ENDIF.
+
+    "Restoring the previous state
+    READ TABLE mementos_tab INTO memento_oref INDEX lines( mementos_tab ).
+    IF sy-subrc = 0.
+      lcl_object->restore( memento_oref ).
+      lcl_obj = lcl_object.
+    ENDIF.
+  ENDMETHOD.
+
+  METHOD redo.
+    DATA(count) = lines( redo_tab ).
+
+    IF count = 0.
+      RETURN.
+    ENDIF.
+
+    "Restoring the state from the redo table
+    READ TABLE redo_tab INTO DATA(memento_oref) INDEX count.
+    IF sy-subrc = 0.
+      DELETE redo_tab INDEX count.
+      "Adding the memento to the memento table
+      APPEND memento_oref TO mementos_tab.
+      lcl_object->restore( memento_oref ).
+      lcl_obj = lcl_object.
+    ENDIF.
+  ENDMETHOD.
+
+  METHOD restore_by_tag.
+    LOOP AT mementos_tab INTO DATA(memento_oref).
+      IF memento_oref->get_tag( ) = tag.
+        lcl_object->restore( memento_oref ).
+        lcl_obj = lcl_object.
+        restoration_ok = abap_true.
+        RETURN.
+      ENDIF.
+    ENDLOOP.
+    restoration_ok = abap_false.
+  ENDMETHOD.
+
+  METHOD get_memento_log.
+    DATA idx TYPE i.
+    LOOP AT mementos_tab INTO DATA(memento_wa).
+      idx = sy-tabix.
+      APPEND |{ idx }) Memento created with tag "{ memento_wa->get_tag( ) }" at { memento_wa->get_timestamp( ) }| TO states.
+    ENDLOOP.
+
+    IF lines( redo_tab ) > 0.
+      APPEND INITIAL LINE TO states.
+      APPEND `*********************** Redo table entries ************************` TO states.
+      LOOP AT redo_tab INTO memento_wa.
+        idx = sy-tabix.
+        APPEND |{ idx }) Memento with tag "{ memento_wa->get_tag( ) }", created at { memento_wa->get_timestamp( ) }| TO states.
+      ENDLOOP.
+    ENDIF.
+  ENDMETHOD.
+
+  METHOD constructor.
+    IF lcl_object IS NOT BOUND.
+      lcl_object = oref.
+    ENDIF.
+  ENDMETHOD.
+ENDCLASS.
+``` 
+
+ </td>
+</tr>
+
+</table>
+
+</details>  
+
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ### Class-Based and Classic Exceptions

@@ -1166,7 +1166,7 @@ ENDCLASS.
   - Comparison expressions
     - Comparison operators as above (`=`, `EQ`, `<>`, `NE`, `>`, `GT`, `<`, `LT`, `>=`, `GE`, `<=`, `LE`)
     - Comparison operators for character-like data types `CO`, `CN`, `CA`, `NA`, `CS`, `NS`, `CP`, `NP` (see the [String Processing cheat sheet](07_String_Processing.md#comparison-operators-for-character-like-data-types-in-a-nutshell))
-    - [Comparison operators for byte-Like data types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenlogexp_bytes.htm), e.g. `BYTE-CO` and others; and [bit patterns](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABENLOGEXP_BITMASKS.html)
+    - [Comparison operators for byte-like data types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenlogexp_bytes.htm), e.g. `BYTE-CO` and others; and [bit patterns](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABENLOGEXP_BITMASKS.html)
     - `[NOT] BETWEEN ... AND ...`
     - `[NOT] IN ranges_table`
   - [Predicate expression](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenpredicate_expression_glosry.htm)

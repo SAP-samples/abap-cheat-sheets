@@ -2833,6 +2833,24 @@ DATA(int_tab) = distribution->next_random_numbers( count = 20 rng = random ).
 "An initial ranges tables means that all numbers are respected.
 distribution = cl_abap_prob_distribution=>get_uniform_int_distribution( range = VALUE #( ) ).
 int_tab = distribution->next_random_numbers( count = 20 rng = random ).
+
+"The following example gets random, distinct integer values from a specified range and stores
+"them in an internal table (integer table of type i). The example selects 10 distinct random 
+"numbers from the range of 1 to 100.
+TYPES ty_range TYPE if_abap_prob_types=>int_range.
+DATA(demo_range) = VALUE ty_range( ( sign = 'I' option = 'BT' low = 1 high = 100 ) ).
+
+DATA(nums) = REDUCE if_abap_prob_distribution_int=>random_numbers(
+  LET let_rng = cl_abap_random=>create( cl_abap_random=>seed( ) ) IN
+  INIT numbers = VALUE if_abap_prob_distribution_int=>random_numbers( )
+        rng = demo_range
+        number = 0
+        dist = cl_abap_prob_distribution=>get_uniform_int_distribution( range = demo_range )
+  FOR i = 1  UNTIL i > 10
+  NEXT number = dist->next_random_number( let_rng )
+        numbers = VALUE #( BASE numbers ( number ) )
+        rng = VALUE #( BASE rng ( sign = 'E' option = 'EQ' low = number ) )
+        dist =  cl_abap_prob_distribution=>get_uniform_int_distribution( range = rng ) ).
 ``` 
 
 </td>

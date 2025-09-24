@@ -80,11 +80,9 @@ initialization can be avoided.
 -   Expressions with the
     [`VALUE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconstructor_expression_value.htm)
     operator construct a result in place based on a data type.
--   This result can be structures or internal tables. It can also be initial values for any non-generic data types.   
-    
+-   This result can be structures or internal tables. It can also be initial values for any non-generic data types.
     > [!NOTE] 
-    > Elementary data types and reference types cannot be explicitly specified for the construction of values here.
-
+    > Elementary data types and reference types cannot be explicitly     specified for the construction of values here.
 -   Regarding the type specifications before and parameters within the
     parentheses:
     -   No parameter specified within the parentheses: The return value
@@ -680,7 +678,7 @@ topic](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file
 | Addition  | Details |
 |---|---|
 | `BASE` | Keeps original values. Unlike, for example, the operator `VALUE`, a pair of parentheses must be set around `BASE`.  |
-| `MAPPING`  | Enables the mapping of component names, i. e. a component of a source structure or source table can be assigned to a differently named component of a target structure or target table (e. g. `MAPPING c1 = c2`). The `DEFAULT` addition is possible when using the `MAPPING` addition. It allows the assignment of values for a target component based on an expression. Do not use the component selector `-` to refer to data objects in nested components in the mappings. |
+| `MAPPING` [ ... `DEFAULT` ...]  | Enables the mapping of component names, i. e. a component of a source structure or source table can be assigned to a differently named component of a target structure or target table (e. g. `MAPPING c1 = c2`). The `DEFAULT` addition is possible when using the `MAPPING` addition. It allows the assignment of values for a target component based on an expression. Do not use the component selector `-` to refer to data objects in nested components in the mappings. |
 | `EXCEPT`  | You can specify components that should not be assigned content in the target data object. They remain initial. In doing so, you exclude identically named components in the source and target object that are not compatible or convertible from the assignment to avoid syntax errors or runtime errors.  |
 | `DISCARDING DUPLICATES`  | Relevant for tabular components. Handles duplicate lines and prevents exceptions when dealing with internal tables that have a unique primary or secondary table key. |
 | `DEEP`  | Relevant for deep tabular components. They are resolved at every hierarchy level and identically named components are assigned line by line.  |
@@ -2513,6 +2511,25 @@ DATA(count) = REDUCE string( LET start = 10 IN
 DATA(abap_str) =  REDUCE string( INIT text = ``
                                  FOR t = `ab` THEN t && `ap` UNTIL strlen( t ) > 15
                                  NEXT text &&= |{ t } | ).
+
+"REDUCE using LET, FOR ... UNTIL, expressions with VALUE on the right side of assignments
+"The example purpose is to get random, distinct integer values from a specified range and store
+"them in an internal table (integer table of type i). The example selects 10 distinct random 
+"numbers from the range of 1 to 100.
+TYPES ty_range TYPE if_abap_prob_types=>int_range.
+DATA(demo_range) = VALUE ty_range( ( sign = 'I' option = 'BT' low = 1 high = 100 ) ).
+
+DATA(nums) = REDUCE if_abap_prob_distribution_int=>random_numbers(
+    LET let_rng = cl_abap_random=>create( cl_abap_random=>seed( ) ) IN
+    INIT numbers = VALUE if_abap_prob_distribution_int=>random_numbers( )
+        rng = demo_range
+        number = 0
+        dist = cl_abap_prob_distribution=>get_uniform_int_distribution( range = demo_range )
+    FOR i = 1  UNTIL i > 10
+    NEXT number = dist->next_random_number( let_rng )
+        numbers = VALUE #( BASE numbers ( number ) )
+        rng = VALUE #( BASE rng ( sign = 'E' option = 'EQ' low = number ) )
+        dist =  cl_abap_prob_distribution=>get_uniform_int_distribution( range = rng ) ).                                 
 ```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>

@@ -8,7 +8,7 @@
     - [Reducing the Data Volume](#reducing-the-data-volume)
     - [Reducing Database Accesses](#reducing-database-accesses)
     - [Using CDS views](#using-cds-views)
-    - [Dynamic and Statics ABAP SQL Statements](#dynamic-and-statics-abap-sql-statements)
+    - [Dynamic and Static ABAP SQL Statements](#dynamic-and-static-abap-sql-statements)
     - [Using Buffering](#using-buffering)
     - [Using Indexes](#using-indexes)
   - [Processing Internal Tables](#processing-internal-tables)
@@ -95,7 +95,7 @@ You can minimize database accesses by considering the following aspects:
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-### Dynamic and Statics ABAP SQL Statements
+### Dynamic and Static ABAP SQL Statements
 
 - ABAP SQL statements provide syntax options for dynamic programming, such as specifying the data source to read from dynamically.  
 - Dynamically specifying tokens requires runtime evaluation. Static token specification offers better performance.  

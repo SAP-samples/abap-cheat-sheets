@@ -231,7 +231,7 @@ Unmanaged RAP BOs
     implementation
 -   Unmanaged RAP BOs are, for example, relevant for brownfield
     scenarios, i. e. in scenarios in which transactional buffers and application logic is already
-    available and should be embedded in the RAP world. Note that it is possible to have a managed RAP BO with unamanged parts, e.g. unamanged save or additional save. Find more information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbdl_rap_bo.htm).
+    available and should be embedded in the RAP world. Note that it is possible to have a managed RAP BO with unmanaged parts, e.g. unmanaged save or additional save. Find more information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbdl_rap_bo.htm).
 
  </td>
 </tr>
@@ -652,7 +652,7 @@ METHODS some_action FOR MODIFY
     `FOR MODIFY`, `FOR CREATE` or `FOR READ` as
     well as mandatory or optional additions like `RESULT` that
     are followed by parameters.
--   Nearly all parameters are typed with [BDEF derived
+-   The parameters are typed with [BDEF derived
     types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_derived_type_glosry.htm "Glossary Entry")
     that have special RAP-related components as covered further down.
 -   The parameters' names can be chosen freely. This is also true for
