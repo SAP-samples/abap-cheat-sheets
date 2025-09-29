@@ -81,8 +81,10 @@ initialization can be avoided.
     [`VALUE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconstructor_expression_value.htm)
     operator construct a result in place based on a data type.
 -   This result can be structures or internal tables. It can also be initial values for any non-generic data types.
-    > [!NOTE] 
-    > Elementary data types and reference types cannot be explicitly     specified for the construction of values here.
+    
+> [!NOTE] 
+> Elementary data types and reference types cannot be explicitly specified for the construction of values here.
+
 -   Regarding the type specifications before and parameters within the
     parentheses:
     -   No parameter specified within the parentheses: The return value
@@ -683,7 +685,6 @@ topic](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file
 | `DISCARDING DUPLICATES`  | Relevant for tabular components. Handles duplicate lines and prevents exceptions when dealing with internal tables that have a unique primary or secondary table key. |
 | `DEEP`  | Relevant for deep tabular components. They are resolved at every hierarchy level and identically named components are assigned line by line.  |
 | `[DEEP] APPENDING`  | Relevant for (deep) tabular components. It ensures that the nested target tables are not deleted. The effect without `DEEP` is that lines of the nested source table are added using `CORRESPONDING` without addition. The effect with `DEEP` is that lines of the nested source table are added using `CORRESPONDING` with the addition `DEEP`.  |
-| `DEEP`  | Relevant for deep tabular components. They are resolved at every hierarchy level and identically named components are assigned line by line.  |
 | `FROM tab USING`  | Relevant for constructing an internal table by joining an internal table and a lookup table and comparing their components. |
 
 
@@ -2615,6 +2616,50 @@ DATA(it_reduced) = REDUCE string_table(
 *Group key: "a" | group size: 3 | group index: 1 | members: 1, 2 / 3, 4 / 5, 6
 *Group key: "b" | group size: 2 | group index: 2 | members: 7, 8 / 9, 10
 *Group key: "c" | group size: 1 | group index: 3 | members: 11, 12
+
+"The following example compares a LOOP AT statement with a FOR loop. The goal is to highlight
+"their syntactical similarities and differences, such as the greater flexibility of LOOP AT
+"statements in terms of additional specifications within the loop and the common use of FOR loops
+"to create an internal table.
+
+SELECT *
+    FROM zdemo_abap_flsch
+    INTO TABLE @DATA(fl_tab).
+
+DATA memb LIKE fl_tab.
+TYPES tab_type LIKE memb.
+DATA member_tab TYPE TABLE OF tab_type WITH EMPTY KEY.
+DATA tab TYPE string_table.
+
+"-------------------------- LOOP AT statement --------------------------
+LOOP AT fl_tab INTO DATA(flight)
+    GROUP BY ( carrier = flight-carrid cityfr = flight-cityfrom
+                size = GROUP SIZE index = GROUP INDEX )
+                ASCENDING REFERENCE INTO DATA(group_ref).
+
+    APPEND |carrier = "{ group_ref->carrier }", cityfr = "{ group_ref->cityfr }", size = "{ group_ref->size }", index = "{ group_ref->index }" | TO tab.
+
+    CLEAR memb.
+    LOOP AT GROUP group_ref ASSIGNING FIELD-SYMBOL(<flight>).
+    memb = VALUE #( BASE memb ( <flight> ) ).
+    ENDLOOP.
+
+    APPEND memb TO member_tab.
+ENDLOOP.
+
+"-------------------------- FOR loop --------------------------
+TYPES: BEGIN OF demo_struc,
+            member LIKE memb,
+            info   TYPE string,
+        END OF demo_struc.
+
+TYPES ty_itab_constr TYPE TABLE OF demo_struc WITH EMPTY KEY.
+
+DATA(itab_constr) = VALUE ty_itab_constr( FOR GROUPS g OF fl IN fl_tab
+        GROUP BY ( c = fl-carrid cifr = fl-cityfrom
+                    size = GROUP SIZE index = GROUP INDEX ) ASCENDING
+        LET m = VALUE tab_type( FOR <fl> IN GROUP g ( <fl> ) ) IN
+        ( member = m info = |carrier = "{ g-c }", cityfr = "{ g-cifr }", size = "{ g-size }", index = "{ g-index }" | ) ).
 ```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>

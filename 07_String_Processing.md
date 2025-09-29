@@ -90,7 +90,7 @@ In addition to these main data types for character strings, there are several ot
 -	`d` and `t` for date and time fields
     - These data types have a predefiend length of 6 and 8. Data objects of these types are used for character representations of dates and times in a predefined format. You can use them directly in date and time calculations. However, these fields can also contain invalid values.
 
-These data types are not covered further in this cheat sheet. The same is true for the [byte-like data types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbyte_like_data_typ_glosry.htm "Glossary Entry") `x` and `xstring` that are closely related to `c` and `string` but contain raw [byte strings](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbyte_string_glosry.htm).
+These data types are not covered further in this cheat sheet. Note that there are the [byte-like data types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbyte_like_data_typ_glosry.htm "Glossary Entry") `x` and `xstring` that are closely related to `c` and `string` but contain raw [byte strings](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbyte_string_glosry.htm).
 
 ### Differences Between Text Strings (Variable Length) and Text Fields (Fixed Length)
 - **Initial value**: The initial value of a text string is an

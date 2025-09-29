@@ -4779,6 +4779,50 @@ CLASS zcl_demo_abap IMPLEMENTATION.
 ENDCLASS.
 ```
 
+The following example compares a LOOP AT statement with a FOR loop in a constructor expression. The goal is to highlight their syntactical similarities and differences, such as the greater flexibility of `LOOP AT` statements in terms of additional specifications within the loop and the common use of `FOR` loops to create an internal table.
+
+
+```abap
+SELECT *
+    FROM zdemo_abap_flsch
+    INTO TABLE @DATA(fl_tab).
+
+DATA memb LIKE fl_tab.
+TYPES tab_type LIKE memb.
+DATA member_tab TYPE TABLE OF tab_type WITH EMPTY KEY.
+DATA tab TYPE string_table.
+
+"-------------------------- LOOP AT statement --------------------------
+LOOP AT fl_tab INTO DATA(flight)
+    GROUP BY ( carrier = flight-carrid cityfr = flight-cityfrom
+                size = GROUP SIZE index = GROUP INDEX )
+                ASCENDING REFERENCE INTO DATA(group_ref).
+
+    APPEND |carrier = "{ group_ref->carrier }", cityfr = "{ group_ref->cityfr }", size = "{ group_ref->size }", index = "{ group_ref->index }" | TO tab.
+
+    CLEAR memb.
+    LOOP AT GROUP group_ref ASSIGNING FIELD-SYMBOL(<flight>).
+    memb = VALUE #( BASE memb ( <flight> ) ).
+    ENDLOOP.
+
+    APPEND memb TO member_tab.
+ENDLOOP.
+
+"-------------------------- FOR loop --------------------------
+TYPES: BEGIN OF demo_struc,
+            member LIKE memb,
+            info   TYPE string,
+        END OF demo_struc.
+
+TYPES ty_itab_constr TYPE TABLE OF demo_struc WITH EMPTY KEY.
+
+DATA(itab_constr) = VALUE ty_itab_constr( FOR GROUPS g OF fl IN fl_tab
+        GROUP BY ( c = fl-carrid cifr = fl-cityfrom
+                    size = GROUP SIZE index = GROUP INDEX ) ASCENDING
+        LET m = VALUE tab_type( FOR <fl> IN GROUP g ( <fl> ) ) IN
+        ( member = m info = |carrier = "{ g-c }", cityfr = "{ g-cifr }", size = "{ g-size }", index = "{ g-index }" | ) ).
+```
+
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## Collecting Values
@@ -5148,6 +5192,54 @@ ENDIF.
 - A key advantage of using `SELECT` statements with internal tables as data sources is the access to ABAP SQL's extensive functionalities, like aggregate expressions.
 - They can serve as an alternative to the `READ TABLE` or `LOOP AT` statements if the ABAP SQL in-memory engine can process the data without requiring a database transfer.
 - Note the general rule: You should use `SELECT` with internal tables as a data source only when SQL functionality exceeds that of ABAP statements, such as in joins. For tasks achievable with ABAP statements, it is preferable to use them as they are optimized for internal tables and offer better performance.
+
+The following example tries to find duplicate entries in internal tables. For that purpose, `SELECT` and `LOOP AT` statements are used.
+
+```abap
+TYPES: BEGIN OF s_demo,
+          comp1 TYPE i,
+          comp2 TYPE c LENGTH 3,
+        END OF s_demo,
+        ty_tab_demo TYPE TABLE OF s_demo WITH EMPTY KEY.
+
+DATA(it) = VALUE ty_tab_demo(
+  ( comp1 = 1 comp2 = 'A' )
+  ( comp1 = 1 comp2 = 'B' )
+  ( comp1 = 1 comp2 = 'C' )
+  ( comp1 = 2 comp2 = 'A' )
+  ( comp1 = 2 comp2 = 'E' )
+  ( comp1 = 1 comp2 = 'D' )
+  ( comp1 = 3 comp2 = 'D' )
+  ( comp1 = 3 comp2 = 'G' )
+  ( comp1 = 4 comp2 = 'C' )
+  ( comp1 = 5 comp2 = 'A' ) ).
+
+"------------------ SELECT ------------------
+"Note: The SELECT command is executed on the database. Therefore, the pseudo
+"comment is include to suppress a syntax warning.
+SELECT comp1, COUNT(*) AS count
+  FROM @it AS it
+  GROUP BY comp1
+  HAVING COUNT(*) > 1
+  INTO TABLE @DATA(duplicates_sql) ##ITAB_DB_SELECT.
+
+"------------------ LOOP AT ------------------ 
+TYPES: BEGIN OF duplicates_struc,
+          comp1 TYPE s_demo-comp1,
+          count TYPE i,
+        END OF duplicates_struc,
+        ty_tab_duplicates TYPE TABLE OF duplicates_struc WITH EMPTY KEY.
+
+DATA duplicates_loop_at TYPE ty_tab_duplicates.
+LOOP AT it INTO DATA(wa) GROUP BY ( comp = wa-comp1 size = GROUP SIZE ) ASCENDING REFERENCE INTO DATA(group_ref).
+
+  IF group_ref->size > 1.
+    APPEND VALUE #( comp1 = group_ref->comp count = group_ref->size ) TO duplicates_loop_at.
+  ENDIF.
+
+ENDLOOP.
+```
+
 
 **More information**:
 - [Restrictions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensql_engine_restr.htm)

@@ -255,7 +255,7 @@ DATA(conv_string) = cl_abap_conv_codepage=>create_in( )->convert( xml_pa ).
 - Provides XML readers and writers for different sources and targets
 - Processes XML data sequentially
 - Allows you to parse and render XML data in a token-based (iterating across all nodes, i.e. tokens, in the tree structure of the XML data) and object-oriented way (wrapping methods of the token-based access; providing an object-oriented way to access XML nodes)
-- Unlike iXML, ...
+- In contrast to iXML, ...
   - more formats are possible (standard XML 1.0, but also XOP, binary XML, and JSON).
   - no document is created in DOM format (if you do not need a DOM representation and DTDs, sXML is a more performant alternative to iXML).
 

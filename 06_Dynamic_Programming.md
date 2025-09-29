@@ -7516,7 +7516,7 @@ ASSERT applies_1 = abap_true.
 "Another internal table type for which more parameter specifications
 "are needed. The following internal table type shall be created using
 "a type description object.
-"The structured type of demo DDIC database table is used.
+"The structured type of a demo DDIC database table is used.
 TYPES so_table_type TYPE SORTED TABLE OF zdemo_abap_flsch WITH UNIQUE KEY carrid connid.
 DATA itab_2 TYPE so_table_type.
 
