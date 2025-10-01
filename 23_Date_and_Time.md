@@ -960,9 +960,11 @@ DATA(ts19) = ts_ref2->add( iv_hour = 1 iv_minute = 2 iv_second = 4
                           )->value.
 
 "Adding an hour to the current time stamp
+"Note that you can pass time zone specifications for the moment method such
+"as xco_cp_time=>time_zone->user.
 DATA(ts20) = xco_cp=>sy->moment( )->add( iv_hour = 1
-                                  )->as( xco_cp_time=>format->iso_8601_extended
-                                  )->value.
+                               )->as( xco_cp_time=>format->iso_8601_extended
+                               )->value.
 
 "Substractions
 "2020-10-31T11:37:54

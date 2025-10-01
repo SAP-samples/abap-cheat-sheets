@@ -1262,6 +1262,43 @@ DATA(rescale3) = rescale( val = CONV decfloat34( '1234.56789' ) prec = 3 ).
 
 "1234.567890
 DATA(rescale4) = rescale( val = CONV decfloat34( '1234.56789' ) prec = 10 ).
+
+"------------- factorial -------------
+TYPES: BEGIN OF demo_fact_struc,
+         n             TYPE i,
+         res        TYPE string,
+         res_simple TYPE string,
+       END OF demo_fact_struc.
+DATA factorial_tab TYPE TABLE OF demo_fact_struc WITH EMPTY KEY.
+DATA count TYPE i.
+DO 26 TIMES.
+  DATA(result) = factorial( count ).
+  APPEND VALUE #( n           = count
+                  res        = result
+                  res_simple = |{ result STYLE = SIMPLE }| ) TO factorial_tab.
+  count += 1.
+ENDDO.
+
+"------------- binomial -------------
+TYPES: BEGIN OF demo_bin_struc,
+         n             TYPE i,
+         k             TYPE i,
+         res        TYPE string,
+         res_simple TYPE string,
+       END OF demo_bin_struc.
+DATA bin_tab TYPE TABLE OF demo_bin_struc WITH EMPTY KEY.
+DATA n_val TYPE i VALUE 21.
+DATA k_val TYPE i VALUE 11.
+DO 21 TIMES.
+  n_val -= 1.
+  k_val -= 1.
+  DATA(bin_coeff) = binomial( n = n_val k = k_val ).
+  APPEND VALUE #( n          = n_val
+                  k          = k_val
+                  res        = bin_coeff
+                  res_simple = |{ bin_coeff STYLE = SIMPLE }| ) TO bin_tab.
+ENDDO.
+
 ```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>

@@ -52,6 +52,7 @@
       - [Allowed/Forbidden Operations in a Behavior Implementation in a RAP Transaction](#allowedforbidden-operations-in-a-behavior-implementation-in-a-rap-transaction)
     - [RAP Additional and Unmanaged Save](#rap-additional-and-unmanaged-save)
     - [Handling Dependencies on RAP Business Objects in ABAP Unit](#handling-dependencies-on-rap-business-objects-in-abap-unit)
+    - [RAP-Related System Classes and Functionality](#rap-related-system-classes-and-functionality)
   - [More Information](#more-information)
   - [Executable Examples](#executable-examples)
 
@@ -3074,6 +3075,99 @@ The [ABAP Unit Tests](14_ABAP_Unit_Tests.md) cheat sheet includes an example dem
 - Mocking ABAP EML APIs using the `CL_BOTD_MOCKEMLAPI_BO_TEST_ENV` class
 
 Note that there is a RAP-specific variant of the `CREATE OBJECT` statement available. [`CREATE OBJECT ... FOR TESTING.`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapcreate_object_for_testing.htm) enables the instantiation of RAP handler classes. Find more information in the [Development guide for the ABAP RESTful Application Programming Model](https://help.sap.com/docs/abap-cloud/abap-rap/test).
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+### RAP-Related System Classes and Functionality
+
+Several RAP-related system classes and functionality are available, including (some of them are mentioned in the cheat sheet): 
+- Classes related to implementations of the saver class:
+  - `CL_ABAP_BEHAVIOR_SAVER`: Saver classes inherit from that class
+  - `CL_ABAP_BEHAVIOR_HANDLER`: Saver classes can inherit from that class in special cases, e.g. when failures in the late save phase cannot be ruled out
+- Class related to RAP business events
+  - `CL_ABAP_BEHAVIOR_EVENT_HANDLER`: An event handler class inherits from that class
+- Classes related to ABAP Unit 
+  - `CL_BOTD_TXBUFDBL_BO_TEST_ENV`: For creating transactional buffer test doubles
+  - `CL_BOTD_MOCKEMLAPI_BO_TEST_ENV`: For mocking ABAP EML APIs
+- `CL_ABAP_TX` class providing methods for setting transactional phases  
+  - This class is not exclusively related to RAP since the setting of transactional phases is implicitly done in RAP. However, it is, for example, relevant in the context of the local consumption of RAP business events when, for example, database modifications are performed in the event handler implementations. 
+  - Find more information [here](https://help.sap.com/docs/abap-cloud/abap-concepts/controlled-sap-luw).
+- `CL_ABAP_BEHV_AUX` class providing methods for retrieving various types of information, including:
+  - Details about the current RAP transactional phase, such as the RAP early save phase, RAP late save phase, or RAP interaction phase (using the `GET_CURRENT_PHASE` method)
+  - Context information for the current RAP handler and saver method (accessed through the `GET_CURRENT_CONTEXT` method)
+  - The method kind (obtained via the `GET_CURRENT_HANDLER_KIND` method)
+
+    ```abap
+    "Context information for the current handler
+    cl_abap_behv_aux=>get_current_context( IMPORTING
+          in_local_mode   = FINAL(loc_mode)
+          call_kind       = FINAL(call)
+          draft_activate  = FINAL(dr_act)
+          draft_user      = FINAL(dr_user)
+          for_permissions = FINAL(for_perm)
+          from_behavior   = FINAL(fr_behv)
+          from_interface  = FINAL(fr_int)
+          from_projection = FINAL(fr_proj)
+          privileged      = FINAL(priv) ).
+    ```
+
+- `get_bdef_derived_type` method in the context of RTTI for creating BDEF derived types dynamically, and the `get_base_type` method for retrieving the BDEF derived type (or dictionary type) 
+
+    ```abap
+    "TYPE TABLE FOR
+    DATA dref_itab TYPE REF TO data.
+
+    "Getting a type description object for a BDEF derived type
+    DATA tab_der_type_create TYPE TABLE FOR CREATE zdemo_abap_rap_ro_m.
+    DATA(tdo_tab_bdef_derived_type) = cl_abap_tabledescr=>get_bdef_derived_type(
+                                            p_entity   = 'ZDEMO_ABAP_RAP_RO_M'
+                                            p_kind     = abp_bdef_derived_type-create ).
+
+    CREATE DATA dref_itab TYPE HANDLE tdo_tab_bdef_derived_type.
+
+    "Getting type information and checking type compatibility
+    DATA(tdo_for_dref_tab_der_type) = CAST cl_abap_tabledescr( cl_abap_typedescr=>describe_by_data( dref_itab->* ) ).
+    DATA(applies_to_tab_der_type) = tdo_for_dref_tab_der_type->applies_to_data( tab_der_type_create ).
+    ASSERT applies_to_tab_der_type = abap_true.
+
+    "TYPE STRUCTURE FOR
+    DATA dref_struc TYPE REF TO data.
+
+    "Getting a type description object for a BDEF derived type
+    DATA struc_der_type_create TYPE STRUCTURE FOR CREATE zdemo_abap_rap_ro_m.
+    DATA(tdo_struc_bdef_derived_type) = cl_abap_structdescr=>get_bdef_derived_type(
+                                            p_entity   = 'ZDEMO_ABAP_RAP_RO_M'
+                                            p_kind     = abp_bdef_derived_type-create ).
+
+    CREATE DATA dref_struc TYPE HANDLE tdo_struc_bdef_derived_type.
+
+    "Getting type information and checking type compatibility
+    DATA(tdo_for_dref_struc_der_type) = CAST cl_abap_structdescr( cl_abap_typedescr=>describe_by_data( dref_struc->* ) ).
+    DATA(applies_to_struc_der_type) = tdo_for_dref_struc_der_type->applies_to_data( struc_der_type_create ).
+    ASSERT applies_to_struc_der_type = abap_true.
+
+    "Retrieving the BDEF derived type or dictionary type using the get_base_type method
+    TYPES der_type1 TYPE STRUCTURE FOR READ RESULT zdemo_abap_rap_ro_m.
+    TYPES der_type2 TYPE der_type1.
+
+    FINAL(tdo1) = CAST cl_abap_datadescr( cl_abap_typedescr=>describe_by_name( 'DER_TYPE1' ) ).
+    FINAL(tdo2) = CAST cl_abap_datadescr( cl_abap_typedescr=>describe_by_name( 'DER_TYPE2' ) ).
+
+    FINAL(abs_name1) = tdo1->absolute_name.
+    FINAL(abs_name2) = tdo2->absolute_name.
+
+    FINAL(base_type1) = tdo1->get_base_type( ).
+    FINAL(base_type2) = tdo2->get_base_type( ).
+
+    FINAL(abs_name_base1) = base_type1->absolute_name.
+    FINAL(abs_name_base2) = base_type2->absolute_name.
+
+    TYPES carr_tab_type TYPE zdemo_abap_carr.
+    FINAL(tdo3) = CAST cl_abap_datadescr( cl_abap_typedescr=>describe_by_name( 'CARR_TAB_TYPE' ) ).
+    FINAL(abs_name3) = tdo3->absolute_name.
+    FINAL(base_type3) = tdo3->get_base_type( ).
+    FINAL(abs_name_base3) = base_type3->absolute_name.
+    ```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 

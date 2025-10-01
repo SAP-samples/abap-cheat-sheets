@@ -745,7 +745,7 @@ to add lines to internal tables.
 
 -   `APPEND` ...
     -   always adds lines at the bottom of the internal table.
-    -   is not a problem for standard tables where lines are managed
+    -   is particularly suitable for standard tables where lines are managed
         by an index. When the statement is used, the system field
         `sy-tabix` is set to the index of the recently added
         line. `sy-tabix` is always set to the index with respect
@@ -773,7 +773,8 @@ to add lines to internal tables.
     -   Note: In the case of unique primary table keys, the table cannot have entries with duplicate
         keys. If a duplicate is inserted, the insertion fails and the
         system field `sy-subrc` is set to 4.
-- What to use? The recommendation is the `INSERT` statement. It covers all table and key types. Consider potential issues when you change table/key types, and you use `APPEND` in your code.         
+- What to use (for standard tables)? With the `INSERT` statement, you are prepared for a potential change of internal table definitions. It covers all table and key types. Consider potential issues when you change table/key types, and you use `APPEND` in your code. The ABAP cheat sheet examples often use `APPEND` statements, as standard tables are frequently used and those considerations are not relevant here. Additionally, explore constructor expressions for adding lines to internal tables.
+
 </details>
 <br>
 
@@ -4820,7 +4821,7 @@ DATA(itab_constr) = VALUE ty_itab_constr( FOR GROUPS g OF fl IN fl_tab
         GROUP BY ( c = fl-carrid cifr = fl-cityfrom
                     size = GROUP SIZE index = GROUP INDEX ) ASCENDING
         LET m = VALUE tab_type( FOR <fl> IN GROUP g ( <fl> ) ) IN
-        ( member = m info = |carrier = "{ g-c }", cityfr = "{ g-cifr }", size = "{ g-size }", index = "{ g-index }" | ) ).
+        ( member = m info = |carrid = "{ g-c }", cityfrom = "{ g-cifr }", size = "{ g-size }", index = "{ g-index }" | ) ).
 ```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
@@ -5193,7 +5194,8 @@ ENDIF.
 - They can serve as an alternative to the `READ TABLE` or `LOOP AT` statements if the ABAP SQL in-memory engine can process the data without requiring a database transfer.
 - Note the general rule: You should use `SELECT` with internal tables as a data source only when SQL functionality exceeds that of ABAP statements, such as in joins. For tasks achievable with ABAP statements, it is preferable to use them as they are optimized for internal tables and offer better performance.
 
-The following example tries to find duplicate entries in internal tables. For that purpose, `SELECT` and `LOOP AT` statements are used.
+The following example finds duplicate entries in internal tables. It uses a `SELECT` statement with the internal table as the data source. However, since the statement executes on the database, a syntax warning appears unless suppressed by the pragma. An advisable alternative is the internal-table-specific `LOOP AT` statement, which is optimized for operations on internal tables.
+
 
 ```abap
 TYPES: BEGIN OF s_demo,

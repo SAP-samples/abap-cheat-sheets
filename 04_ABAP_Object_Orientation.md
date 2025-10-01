@@ -14870,6 +14870,359 @@ ENDCLASS.
 
 </details>  
 
+<br>
+
+<details>
+  <summary>🟢 Visitor</summary>
+  <!-- -->
+
+<br>
+
+- The visitor design pattern allows you to add functionality to objects flexibly without altering the underlying class setup. This pattern enables you to perform various operations on the same object structure without bloating the class definitions.
+- The demo example below illustrates this pattern: an object holds data (in this case, database table entries are retrieved and stored in an internal table), while different visitors can process that data through various operations, such as XML or JSON conversion. The class setup eliminates the need to add methods for each new functionality in the underlying class. In the future, if more functionalities need to be added, this approach prevents class bloating that would occur from continually adding methods. The visitor pattern offers the flexibility to extend functionality as needed, allowing users to integrate new capabilities into the object without overcrowding the original class.
+
+Example notes:
+
+- The example code includes two examples demonstrating the observer design pattern with the following declarations and implementations:
+  - Global class:
+    - Implements the `if_oo_adt_classrun` interface and calls methods from local classes.
+    - Serves as a vehicle for demonstrating the design pattern. The declarations and implementations in the `CCIMP` are relevant for the for conceptual considerations.
+  - CCIMP include (Local Types tab in ADT):
+    - `lif_visitor`: 
+      - Defines the shared interface for visitor classes. 
+      - A method and attributes are defined that provide a way for different visitor implementations to interact with instances of the `lcl_visited` class.
+      - The `visit` method expects an instance of the the `lcl_visited` class and can be processed further by the visitor class for whatever purpose.
+      - The instance attributes `result_xstring` and `result_string` are included to store results of the processing in the `visit` method.
+    - `lcl_visited`
+      - Represents the class to be visited
+      - It encapsulates the logic for loading and storing entries of a data source, and and allows visitor classes to operate on it. 
+      - Methods:
+        - `set_itab_content_ref`: Takes a the name of a data source with an optional number of entries to perform a `SELECT` statement, storing results in the data reference variable `table_data_ref`, a private attribute.
+        - `get_itab_content_ref`: Returns a reference to the internal table data.
+        - `receive_visitor`: Accepts a visitor object and calls its `visit` method, passing an object of the class itself (`me`) as an argument.
+    - Concrete visitor classes 
+      - Each visitor class implements the `lif_visitor` interface to process the table data of `lcl_visited` differently. In doing so, the setup allows for extending the capabilities of `lcl_visited` without changing the underlying code.
+      - `lcl_visitor_xml`: Implements the conversion of table data into XML format using a `CALL TRANSFORMATION` statement.
+      - `lcl_visitor_json`: Implements the serialization of table data into JSON format using `/ui2/cl_json`.
+      - `lcl_visitor_count`: Determines the number of lines in the table.
+      - `lcl_visitor_cont_str`: Converts the table content into string format.
+  - The user, represented by the global class implementation, manages object creation, calls the `receive_visitor` method and passes appropriate objects. Accessing the `lif_visitor~result_xstring` and `lif_visitor~result_string` illustrates the results of the differently implemented operations. 
+
+<table>
+
+<tr>
+<td> Class include </td> <td> Code </td>
+</tr>
+
+<tr>
+<td> 
+
+Global class
+
+ </td>
+
+ <td> 
+
+``` abap
+CLASS zcl_demo_abap DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
+
+  PUBLIC SECTION.
+    INTERFACES if_oo_adt_classrun.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+ENDCLASS.
+
+CLASS zcl_demo_abap IMPLEMENTATION.
+  METHOD if_oo_adt_classrun~main.
+
+*&-------------------------------------------------------------------------------------*
+*& 1) Creating an object of the class to be visited, getting data from a data source
+*&-------------------------------------------------------------------------------------*
+
+    DATA(oref_lcl) = NEW lcl_visited( ).
+
+    "Getting data from a data source
+    "The example uses the name of a view that contains timezone data.
+    "Based on the name of the data source, a dynamic SELECT statement is used to
+    "retrieve data and store it in an internal table.
+    oref_lcl->set_itab_content_ref( data_source       = `I_TIMEZONE`
+                                    number_of_entries = 10 ).
+
+*&-------------------------------------------------------------------------------------*
+*& 2) Visitor 1 (XML transformation)
+*&-------------------------------------------------------------------------------------*
+
+    out->write( |Visitor 1: XML transformation of internal table content\n\n| ).
+
+    "This visitor example includes the creation of an interface reference variable.
+    "The other examples use an object reference variable with the visitor class
+    "as static type directly. In doing so, the cast can be avoided to access the
+    "attribute.
+    DATA iref_visitor_xml TYPE REF TO lif_visitor.
+
+    iref_visitor_xml = NEW lcl_visitor_xml( ).
+
+    oref_lcl->receive_visitor( iref_visitor_xml ).
+
+    "Transforming the internal table data to XML
+    DATA(result_xml_transformation) = CAST lcl_visitor_xml( iref_visitor_xml )->lif_visitor~result_xstring.
+
+    "Transformation XML -> ABAP for display purposes
+    DATA tab_from_xml TYPE TABLE OF i_timezone WITH EMPTY KEY.
+    CALL TRANSFORMATION id SOURCE XML result_xml_transformation
+                           RESULT itab = tab_from_xml.
+
+    out->write( data = tab_from_xml name = `tab_from_xml` ).
+
+    out->write( |\n{ repeat( val = `*` occ = 75 ) }\n| ).
+
+*&-------------------------------------------------------------------------------------*
+*& 3) Visitor 2 (JSON serialization)
+*&-------------------------------------------------------------------------------------*
+
+    out->write( |Visitor 2: JSON serialization\n\n| ).
+
+    DATA(oref_visitor_json) = NEW lcl_visitor_json( ).
+
+    oref_lcl->receive_visitor( oref_visitor_json ).
+
+    "Serializing the internal table data
+    DATA(result_json_serialization) = oref_visitor_json->lif_visitor~result_xstring.
+
+    "Deserializing for display purposes
+    DATA tab_from_json LIKE tab_from_xml.
+    /ui2/cl_json=>deserialize( EXPORTING jsonx = result_json_serialization
+                               CHANGING data  = tab_from_json ).
+
+    out->write( data = tab_from_json name = `tab_from_json` ).
+    out->write( |\n\n| ).
+
+    "The example implementation also includes the assignment of the
+    "interface attribute of type string.
+    DATA(result_json_serialization_str) = oref_visitor_json->lif_visitor~result_string.
+
+    out->write( result_json_serialization_str ).
+
+    out->write( |\n{ repeat( val = `*` occ = 75 ) }\n| ).
+
+*&-------------------------------------------------------------------------------------*
+*& 4) Visitor 3 (Counting table entries)
+*&-------------------------------------------------------------------------------------*
+
+    out->write( |Visitor 3: Counting the internal table entries\n| ).
+
+    DATA(oref_visitor_count) = NEW lcl_visitor_count( ).
+
+    oref_lcl->receive_visitor( oref_visitor_count ).
+
+    "Getting the table entry count
+    DATA(result_count) = oref_visitor_count->lif_visitor~result_string.
+
+    out->write( result_count ).
+
+    out->write( |\n{ repeat( val = `*` occ = 75 ) }\n| ).
+
+*&-------------------------------------------------------------------------------------*
+*& 5) Visitor 4 (Converting table content into string)
+*&-------------------------------------------------------------------------------------*
+
+    out->write( |Visitor 4: Converting the internal table content into a string\n| ).
+
+    DATA(oref_visitor_cont_str) = NEW lcl_visitor_cont_str( ).
+
+    oref_lcl->receive_visitor( oref_visitor_cont_str ).
+
+    "Getting the string holding the internal table content
+    DATA(result_cont_str) = oref_visitor_cont_str->lif_visitor~result_string.
+
+    out->write( result_cont_str ).
+  ENDMETHOD.
+ENDCLASS.
+``` 
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+CCIMP include (Local Types tab in ADT)
+
+ </td>
+
+ <td> 
+
+``` abap
+CLASS lcl_visited DEFINITION DEFERRED.
+
+*&---------------------------------------------------------------------*
+*& Interface
+*&---------------------------------------------------------------------*
+
+INTERFACE lif_visitor.
+  DATA result_xstring TYPE xstring.
+  DATA result_string TYPE string.
+  METHODS visit IMPORTING oref TYPE REF TO lcl_visited.
+ENDINTERFACE.
+
+*&---------------------------------------------------------------------*
+*& Class to be visited
+*&---------------------------------------------------------------------*
+
+CLASS lcl_visited DEFINITION.
+  PUBLIC SECTION.
+    METHODS: set_itab_content_ref IMPORTING VALUE(data_source) TYPE string
+                                            number_of_entries  TYPE i OPTIONAL,
+      get_itab_content_ref RETURNING VALUE(content) TYPE REF TO data,
+      receive_visitor IMPORTING obj TYPE REF TO lif_visitor.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+    DATA table_data_ref TYPE REF TO data.
+ENDCLASS.
+
+CLASS lcl_visited IMPLEMENTATION.
+
+  METHOD set_itab_content_ref.
+    data_source = to_upper( condense( val = data_source to = `` ) ).
+
+    "The example implementation includes a dynamic SELECT statement.
+    "The example goes without appropriate checks regarding dynamically
+    "inserting content from outside. Refer to the Dynamic Programming
+    "ABAP cheat sheet.
+    IF number_of_entries IS SUPPLIED.
+      SELECT * FROM (data_source) INTO TABLE NEW @table_data_ref UP TO @number_of_entries ROWS.
+    ELSE.
+      SELECT * FROM (data_source) INTO TABLE NEW @table_data_ref.
+    ENDIF.
+  ENDMETHOD.
+
+  METHOD receive_visitor.
+    "Passing an object of this class to the concrete vistor.
+    obj->visit( me ).
+  ENDMETHOD.
+
+  METHOD get_itab_content_ref.
+    IF table_data_ref IS BOUND.
+      TRY.
+          "Is a table
+          DATA(tdo) = CAST cl_abap_tabledescr( cl_abap_typedescr=>describe_by_data_ref( table_data_ref ) ).
+        CATCH cx_root.
+          "Is not a table
+          RETURN.
+      ENDTRY.
+      content = table_data_ref.
+    ENDIF.
+  ENDMETHOD.
+ENDCLASS.
+
+*&---------------------------------------------------------------------*
+*& Concrete vistor 1: XML transformation
+*&---------------------------------------------------------------------*
+
+CLASS lcl_visitor_xml DEFINITION.
+  PUBLIC SECTION.
+    INTERFACES lif_visitor.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+ENDCLASS.
+
+CLASS lcl_visitor_xml IMPLEMENTATION.
+  METHOD lif_visitor~visit.
+
+
+    DATA(tab_content) = oref->get_itab_content_ref( ).
+    IF tab_content IS BOUND.
+      CALL TRANSFORMATION id SOURCE itab = tab_content->*
+                             RESULT XML lif_visitor~result_xstring.
+    ENDIF.
+  ENDMETHOD.
+ENDCLASS.
+
+*&---------------------------------------------------------------------*
+*& Concrete vistor 2: JSON serialization
+*&---------------------------------------------------------------------*
+
+CLASS lcl_visitor_json DEFINITION.
+  PUBLIC SECTION.
+    INTERFACES lif_visitor.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+ENDCLASS.
+
+CLASS lcl_visitor_json IMPLEMENTATION.
+  METHOD lif_visitor~visit.
+    DATA(tab_content) = oref->get_itab_content_ref( ).
+    IF tab_content IS BOUND.
+      lif_visitor~result_string = /ui2/cl_json=>serialize( data = tab_content->* format_output = abap_true ).
+      lif_visitor~result_xstring = cl_abap_conv_codepage=>create_out( codepage = `UTF-8` )->convert( lif_visitor~result_string ).
+    ENDIF.
+  ENDMETHOD.
+ENDCLASS.
+
+*&---------------------------------------------------------------------*
+*& Concrete vistor 3: Counting table entries
+*&---------------------------------------------------------------------*
+
+CLASS lcl_visitor_count DEFINITION.
+  PUBLIC SECTION.
+    INTERFACES lif_visitor.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+ENDCLASS.
+
+CLASS lcl_visitor_count IMPLEMENTATION.
+  METHOD lif_visitor~visit.
+    DATA(tab_content) = oref->get_itab_content_ref( ).
+    IF tab_content IS BOUND.
+      lif_visitor~result_string = lines( tab_content->* ).
+    ENDIF.
+  ENDMETHOD.
+ENDCLASS.
+
+*&---------------------------------------------------------------------*
+*& Concrete vistor 4: Converting table content into string
+*&---------------------------------------------------------------------*
+
+CLASS lcl_visitor_cont_str DEFINITION.
+  PUBLIC SECTION.
+    INTERFACES lif_visitor.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+ENDCLASS.
+
+CLASS lcl_visitor_cont_str IMPLEMENTATION.
+  METHOD lif_visitor~visit.
+    DATA(tab_content) = oref->get_itab_content_ref( ).
+    IF tab_content IS BOUND.
+      LOOP AT tab_content->* ASSIGNING FIELD-SYMBOL(<fs>).
+        DO.
+          ASSIGN <fs>-(sy-index) TO FIELD-SYMBOL(<comp>).
+          IF sy-subrc = 0.
+            lif_visitor~result_string &&= <comp> && `, ` .
+          ELSE.
+            EXIT.
+          ENDIF.
+        ENDDO.
+        "Replacing the final comma in the string and adding a line break
+        lif_visitor~result_string = replace( val = lif_visitor~result_string pcre = `,([^,]*)$` with = `` ).
+        lif_visitor~result_string &&= |\n|.
+      ENDLOOP.
+    ENDIF.
+  ENDMETHOD.
+ENDCLASS.
+``` 
+
+ </td>
+</tr>
+
+</table>
+
+</details>  
+
+
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ### Class-Based and Classic Exceptions

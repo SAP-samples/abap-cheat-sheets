@@ -464,6 +464,55 @@ DATA(rescale4) = rescale( val = CONV decfloat34( '1234.56789' ) prec = 10 ).
 </td>
 </tr>
 
+<tr>
+<td> <code>factorial</code><br><code>binomial</code> </td>
+<td>
+
+<code>factorial</code> calculates the factorial of positive integers. <code>binomial</code> computes the binomial coefficient. Find more information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABENFACTORIAL_BINOMIAL_FUNCTIONS.html).
+
+<br>
+
+``` abap
+TYPES: BEGIN OF demo_fact_struc,
+         n             TYPE i,
+         res        TYPE string,
+         res_simple TYPE string,
+       END OF demo_fact_struc.
+DATA factorial_tab TYPE TABLE OF demo_fact_struc WITH EMPTY KEY.
+DATA count TYPE i.
+DO 26 TIMES.
+  DATA(result) = factorial( count ).
+  APPEND VALUE #( n           = count
+                  res        = result
+                  res_simple = |{ result STYLE = SIMPLE }| ) TO factorial_tab.
+  count += 1.
+ENDDO.
+
+
+TYPES: BEGIN OF demo_bin_struc,
+         n             TYPE i,
+         k             TYPE i,
+         res        TYPE string,
+         res_simple TYPE string,
+       END OF demo_bin_struc.
+DATA bin_tab TYPE TABLE OF demo_bin_struc WITH EMPTY KEY.
+DATA n_val TYPE i VALUE 21.
+DATA k_val TYPE i VALUE 11.
+DO 21 TIMES.
+  n_val -= 1.
+  k_val -= 1.
+  DATA(bin_coeff) = binomial( n = n_val k = k_val ).
+  APPEND VALUE #( n          = n_val
+                  k          = k_val
+                  res        = bin_coeff
+                  res_simple = |{ bin_coeff STYLE = SIMPLE }| ) TO bin_tab.
+ENDDO.
+```
+
+</td>
+</tr>
+
+
 </table>
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>

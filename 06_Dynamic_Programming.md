@@ -1566,6 +1566,31 @@ ASSIGN st-(0) TO <fs>.
 ASSIGN COMPONENT 'COL1' OF STRUCTURE st TO <fs>.
 ASSIGN COMPONENT 3 OF STRUCTURE st TO <fs>.
 
+"Looping across a structure
+"The example assumes that all component values are convertible
+"to string.
+DATA struc_as_string TYPE string.
+
+DO.
+  ASSIGN st-(sy-index) TO <fs>.
+  IF sy-subrc = 0.
+    struc_as_string &&= |{ <fs> } |.
+  ELSE.
+    EXIT.
+  ENDIF.
+ENDDO.
+
+CLEAR struc_as_string.
+
+DO.
+  ASSIGN COMPONENT sy-index OF STRUCTURE st TO <fs>.
+  IF sy-subrc = 0.
+    struc_as_string &&= |{ <fs> } |.
+  ELSE.
+    EXIT.
+  ENDIF.
+ENDDO.
+
 *&---------------------------------------------------------------------*
 *& Assigning attributes of classes or interfaces dynamically
 *&---------------------------------------------------------------------*

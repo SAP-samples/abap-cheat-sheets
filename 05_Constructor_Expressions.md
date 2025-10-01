@@ -645,6 +645,36 @@ DATA(it_val_1) = VALUE string_table( FOR GROUPS gr OF wa IN itab4grp
  </td>
 </tr>
 
+<tr>
+<td> 
+
+`OPTIONAL` and `DEFAULT` additions when specifying table expressions as arguments
+
+ </td>
+
+ <td> 
+
+- When specifying table expressions as arguments in `VALUE` expressions, you can avoid raising the exception `CX_SY_ITAB_LINE_NOT_FOUND` for lines not found using the `OPTIONAL` and `DEFAULT` additions, and assign default values.
+- `OPTIONAL`: The default value is an initial data object with the data type of the table expression.
+- `DEFAULT`: The default value is specified using a data object. It must be convertible to the data type of the table expression. 
+
+<br>
+
+``` abap
+DATA it TYPE TABLE OF struc_type WITH EMPTY KEY.
+
+TRY.
+    DATA(it_try) = VALUE #( it[ 1 ] ).
+  CATCH cx_sy_itab_line_not_found.
+ENDTRY.
+
+DATA(it_optional) = VALUE #( it[ 1 ] OPTIONAL ).
+DATA(it_default) = VALUE #( it[ 1 ] DEFAULT VALUE #( a = 1 b = 'abc' ) ).
+```
+
+ </td>
+</tr>
+
 </table>
 
 

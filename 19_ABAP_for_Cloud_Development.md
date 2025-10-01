@@ -225,6 +225,33 @@ It provides references to more detailed information on the topic.
      - Select *ABAP for Cloud Development* in the pop-up window and choose *Ok*.
      - You will then be able to work with a repository object with the restrictions mentioned above. As a result, the example class with the code snippets will have syntax errors and cannot be activated. In more meaningful, productive development contexts, appropriate refactoring is required.
 
+3) In a class using the ABAP language version *ABAP for Cloud Development*, you can insert the following code snippet.
+
+   - This snippet is intended to illustrate the use of a released APs while being cautious about typing. An API may be extended in the future, which can affect its usage. In the example below, a manually created type is used that could compromise type compatibility in future.
+   - The code uses the `CL_ABAP_PROB_DISTRIBUTION` class, which generates random numbers from various probability distributions and performs probability calculations. It extracts 10 distinct random integers from the range of 1 to 100 and stores them in an internal table. The range table is typed with `TYPE RANGE OF i`. 
+   - The contract for `CL_ABAP_PROB_DISTRIBUTION` is set as C1 at the time of creating the example. The code snippet will generate a syntax warning because the compatibility of the specified type is not guaranteed. This issue arises from the range table typed with `TYPE RANGE OF i`, while the `get_uniform_int_distribution` method requires a range table of type `if_abap_prob_types=>int_range`. At the time of creating this example, `if_abap_prob_types=>int_range` corresponded to `TYPE RANGE OF i`. However, a warning is  displayed, as the type might be extended in the future, potentially breaking the code. When you comment out the type defined with `TYPE RANGE OF i` and use the type defined with `if_abap_prob_types=>int_range`, the syntax warning disappears.
+
+      ```abap
+      TYPES ty_range TYPE RANGE OF i.
+      "TYPES ty_range TYPE if_abap_prob_types=>int_range.
+
+      DATA(range) = VALUE ty_range( ( sign = 'I' option = 'BT' low = 1 high = 10 ) ).
+
+      DATA(nums) = REDUCE if_abap_prob_distribution_int=>random_numbers(
+        LET rng = cl_abap_random=>create( cl_abap_random=>seed( ) ) IN
+        INIT numbers = VALUE if_abap_prob_distribution_int=>random_numbers( )
+              myrange = range
+              number = 0
+              dist = cl_abap_prob_distribution=>get_uniform_int_distribution( range = range )
+        FOR i = 1  UNTIL i > 5
+        NEXT number = dist->next_random_number( rng )
+              numbers = VALUE #( BASE numbers ( number ) )
+              myrange = VALUE #( BASE myrange ( sign = 'E' option = 'EQ' low = number ) )
+              dist =  cl_abap_prob_distribution=>get_uniform_int_distribution( range = myrange ) ).
+      ```
+
+
+
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## More Information
