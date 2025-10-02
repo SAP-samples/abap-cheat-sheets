@@ -15222,6 +15222,343 @@ ENDCLASS.
 
 </details>  
 
+<br>
+
+<details>
+  <summary>🟢 Strategy</summary>
+  <!-- -->
+
+<br>
+
+- Assume you have a class and want to incorporate a set of related functionalities. Instead of overcrowding this class with multiple methods, the strategy design pattern allows you to put these functionalities in separate classes. Users can flexibly select and execute the functionality at runtime without modifying the base class code.
+- To implement this, a strategy design pattern setup might look like this:  
+  - A strategy interface defines a method that all concrete strategy classes must implement.  
+  - Concrete strategy classes implement the strategy interface and provide specific functionalities.  
+  - A base class maintains a reference to the strategy. Based on the strategy chosen at runtime, it delegates the execution of functionality accordingly, allowing users to interchange strategies seamlessly.
+- This pattern enables flexibility in extending and maintaining functionality without requiring code modifications in the base class. It allows for the addition of more concrete strategy classes to enhance capabilities easily.
+
+Example notes:
+
+- The example code includes two examples demonstrating the observer design pattern with the following declarations and implementations:
+  - Global class:
+    - Implements the `if_oo_adt_classrun` interface and calls methods from local classes.
+    - Serves as a vehicle for demonstrating the design pattern. The declarations and implementations in the `CCIMP` are relevant for the for conceptual considerations.
+  - CCIMP include (Local Types tab in ADT):
+    - The example uses a simplified calculator context (simplified also in the sense, for example, that no proper error handling is implemented). The calculator performs various arithmetic operations, representing familiar functionalities. These operations are delegated to specific strategy classes.
+    - Two example setups are demonstrated: using an interface and an abstract class.
+    - Example setup with an interface:
+      - Interface `lif_calculation`: Defines the shared interface for concrete strategy classes, including the `calculate` method.
+      - Concrete strategy classes (`lcl_addition`, `lcl_subtraction`, `lcl_multiplication`, `lcl_division`) implement the `lif_calculation` interface and provide specific calculation strategies.
+      - The base class `lcl_calculator` has two methods:
+        - `set_strategy_ref`: Sets a reference to a strategy. It expects an object that implements the `lif_calculation` interface.
+        - `calculate`: Delegates execution to the concrete strategy class. This setup allows for flexible delegation at runtime to any concrete strategy class that implements the shared interface.
+    - Example setup with an abstract class:
+      - Abstract class `lcl_strategy_abstract`: Similar to the `lif_calculation` interface, it defines the shared interface that concrete strategy classes use.
+      - Concrete strategy classes inherit from the abstract superclass and implement the abstract method.
+    - The user, represented by the global class implementation, manages object creation, sets the strategy by calling the `set_strategy_ref` method, and passes appropriate objects. When the `calculate` method is called, the corresponding functionality is executed based on the previously passed object.
+
+<table>
+
+<tr>
+<td> Class include </td> <td> Code </td>
+</tr>
+
+<tr>
+<td> 
+
+Global class
+
+ </td>
+
+ <td> 
+
+``` abap
+CLASS zcl_demo_abap DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
+
+  PUBLIC SECTION.
+    INTERFACES if_oo_adt_classrun.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+ENDCLASS.
+
+CLASS zcl_demo_abap IMPLEMENTATION.
+  METHOD if_oo_adt_classrun~main.
+
+*&---------------------------------------------------------------------*
+*& 1) Example setup with an interface
+*&---------------------------------------------------------------------*
+
+    out->write( |1) Example setup with an interface\n| ).
+
+    DATA(calc) = NEW lcl_calculator( ).
+
+    calc->set_strategy_ref( NEW lcl_addition( ) ).
+    DATA(result) = calc->calculate( num1 = 7 num2 = 4 ).
+    out->write( |7 + 4 = { result }| ).
+
+    calc->set_strategy_ref( NEW lcl_subtraction( ) ).
+    result = calc->calculate( num1 = 25 num2 = 15 ).
+    out->write( |25 - 15 = { result }| ).
+
+    calc->set_strategy_ref( NEW lcl_multiplication( ) ).
+    result = calc->calculate( num1 = 8 num2 = 4 ).
+    out->write( |8 * 4 = { result }| ).
+
+    calc->set_strategy_ref( NEW lcl_division( ) ).
+    result = calc->calculate( num1 = 36 num2 = 6 ).
+    out->write( |36 / 6 = { result }| ).
+
+    out->write( |\n{ repeat( val = `*` occ = 75 ) }\n| ).
+
+*&---------------------------------------------------------------------*
+*& 2) Example setup with an abstract class
+*&---------------------------------------------------------------------*
+
+    out->write( |2) Example setup with an abstract class\n| ).
+
+    DATA(calc_abs) = NEW lcl_calc( ).
+
+    calc_abs->set_strategy_ref( NEW lcl_add( ) ).
+    result = calc_abs->calculate( num1 = 12 num2 = 8 ).
+    out->write( |12 + 8 = { result }| ).
+
+    calc_abs->set_strategy_ref( NEW lcl_sub( ) ).
+    result = calc_abs->calculate( num1 = 5 num2 = 10 ).
+    out->write( |5 - 10 = { result }| ).
+
+    calc_abs->set_strategy_ref( NEW lcl_mult( ) ).
+    result = calc_abs->calculate( num1 = 10 num2 = 10 ).
+    out->write( |10 * 10 = { result }| ).
+
+    calc_abs->set_strategy_ref( NEW lcl_div( ) ).
+    result = calc_abs->calculate( num1 = 81 num2 = 9 ).
+    out->write( |81 / 9 = { result }| ).
+  ENDMETHOD.
+ENDCLASS.
+``` 
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+CCIMP include (Local Types tab in ADT)
+
+ </td>
+
+ <td> 
+
+``` abap
+*&---------------------------------------------------------------------*
+*& 1) Example setup with an interface
+*&---------------------------------------------------------------------*
+
+*&---------------------------------------------------------------------*
+*& Interface
+*&---------------------------------------------------------------------*
+
+INTERFACE lif_calculation.
+  METHODS calculate
+    IMPORTING num1          TYPE i
+              num2          TYPE i
+    RETURNING VALUE(result) TYPE i.
+ENDINTERFACE.
+
+*&---------------------------------------------------------------------*
+*& Concrete strategy classes
+*&---------------------------------------------------------------------*
+
+CLASS lcl_addition DEFINITION.
+  PUBLIC SECTION.
+    INTERFACES lif_calculation.
+ENDCLASS.
+
+CLASS lcl_addition IMPLEMENTATION.
+  METHOD lif_calculation~calculate.
+    result = num1 + num2.
+  ENDMETHOD.
+ENDCLASS.
+
+CLASS lcl_subtraction DEFINITION.
+  PUBLIC SECTION.
+    INTERFACES lif_calculation.
+ENDCLASS.
+
+CLASS lcl_subtraction IMPLEMENTATION.
+  METHOD lif_calculation~calculate.
+    result = num1 - num2.
+  ENDMETHOD.
+ENDCLASS.
+
+CLASS lcl_multiplication DEFINITION.
+  PUBLIC SECTION.
+    INTERFACES lif_calculation.
+ENDCLASS.
+
+CLASS lcl_multiplication IMPLEMENTATION.
+  METHOD lif_calculation~calculate.
+    result = num1 * num2.
+  ENDMETHOD.
+ENDCLASS.
+
+CLASS lcl_division DEFINITION.
+  PUBLIC SECTION.
+    INTERFACES lif_calculation.
+ENDCLASS.
+
+CLASS lcl_division IMPLEMENTATION.
+  METHOD lif_calculation~calculate.
+    IF num1 <> 0 AND num2 = 0.
+      result = 0.
+    ELSE.
+      result = num1 / num2.
+    ENDIF.
+  ENDMETHOD.
+ENDCLASS.
+
+*&---------------------------------------------------------------------*
+*& Base class that delegates the execution of functionality
+*&---------------------------------------------------------------------*
+
+CLASS lcl_calculator DEFINITION.
+  PUBLIC SECTION.
+    METHODS:
+      set_strategy_ref IMPORTING strat_ref TYPE REF TO lif_calculation,
+      calculate IMPORTING num1          TYPE i
+                          num2          TYPE i
+                RETURNING VALUE(result) TYPE i.
+  PRIVATE SECTION.
+    DATA strategy TYPE REF TO lif_calculation.
+ENDCLASS.
+
+CLASS lcl_calculator IMPLEMENTATION.
+  METHOD set_strategy_ref.
+    me->strategy = strat_ref.
+  ENDMETHOD.
+
+  METHOD calculate.
+    IF strategy IS BOUND.
+      result = strategy->calculate( num1 = num1 num2 = num2 ).
+    ELSE.
+      RETURN.
+    ENDIF.
+  ENDMETHOD.
+ENDCLASS.
+
+**********************************************************************
+**********************************************************************
+**********************************************************************
+
+*&---------------------------------------------------------------------*
+*& 2) Example setup with an abstract class
+*&---------------------------------------------------------------------*
+
+*&---------------------------------------------------------------------*
+*& Abstract class
+*&---------------------------------------------------------------------*
+
+CLASS lcl_strategy_abstract DEFINITION ABSTRACT.
+  PUBLIC SECTION.
+    METHODS calculate ABSTRACT
+      IMPORTING
+        num1          TYPE i
+        num2          TYPE i
+      RETURNING
+        VALUE(result) TYPE i.
+ENDCLASS.
+
+*&---------------------------------------------------------------------*
+*& Concrete strategy classes
+*&---------------------------------------------------------------------*
+
+CLASS lcl_add DEFINITION INHERITING FROM lcl_strategy_abstract FINAL.
+  PUBLIC SECTION.
+    METHODS calculate REDEFINITION.
+ENDCLASS.
+
+CLASS lcl_add IMPLEMENTATION.
+  METHOD calculate.
+    result = num1 + num2.
+  ENDMETHOD.
+ENDCLASS.
+
+CLASS lcl_sub DEFINITION INHERITING FROM lcl_strategy_abstract FINAL.
+  PUBLIC SECTION.
+    METHODS calculate REDEFINITION.
+ENDCLASS.
+
+CLASS lcl_sub IMPLEMENTATION.
+  METHOD calculate.
+    result = num1 - num2.
+  ENDMETHOD.
+ENDCLASS.
+
+CLASS lcl_mult DEFINITION INHERITING FROM lcl_strategy_abstract FINAL.
+  PUBLIC SECTION.
+    METHODS calculate REDEFINITION.
+ENDCLASS.
+
+CLASS lcl_mult IMPLEMENTATION.
+  METHOD calculate.
+    result = num1 * num2.
+  ENDMETHOD.
+ENDCLASS.
+
+CLASS lcl_div DEFINITION INHERITING FROM lcl_strategy_abstract FINAL.
+  PUBLIC SECTION.
+    METHODS calculate REDEFINITION.
+ENDCLASS.
+
+CLASS lcl_div IMPLEMENTATION.
+  METHOD calculate.
+    IF num1 <> 0 AND num2 = 0.
+      result = 0.
+    ELSE.
+      result = num1 / num2.
+    ENDIF.
+  ENDMETHOD.
+ENDCLASS.
+
+*&---------------------------------------------------------------------*
+*& Base class that delegates the execution of functionality
+*&---------------------------------------------------------------------*
+
+CLASS lcl_calc DEFINITION.
+  PUBLIC SECTION.
+    METHODS:
+      set_strategy_ref IMPORTING strat_ref TYPE REF TO lcl_strategy_abstract,
+      calculate IMPORTING num1          TYPE i
+                          num2          TYPE i
+                RETURNING VALUE(result) TYPE i.
+  PRIVATE SECTION.
+    DATA strategy TYPE REF TO lcl_strategy_abstract.
+ENDCLASS.
+
+CLASS lcl_calc IMPLEMENTATION.
+  METHOD set_strategy_ref.
+    strategy = strat_ref.
+  ENDMETHOD.
+
+  METHOD calculate.
+    IF strategy IS BOUND.
+      result = strategy->calculate( num1 = num1 num2 = num2 ).
+    ELSE.
+      RETURN.
+    ENDIF.
+  ENDMETHOD.
+ENDCLASS.
+``` 
+
+ </td>
+</tr>
+
+</table>
+
+</details>  
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
