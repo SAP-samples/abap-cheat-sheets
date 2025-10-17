@@ -18,6 +18,7 @@
   - [Iteration Expressions](#iteration-expressions)
     - [Iteration Expressions Using FOR](#iteration-expressions-using-for)
     - [REDUCE](#reduce)
+    - [Scope of Local Helper Variables](#scope-of-local-helper-variables)
     - [Grouping Lines in Internal Tables with VALUE/REDUCE](#grouping-lines-in-internal-tables-with-valuereduce)
   - [Executable Example](#executable-example)
 
@@ -2565,6 +2566,91 @@ DATA(nums) = REDUCE if_abap_prob_distribution_int=>random_numbers(
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
+### Scope of Local Helper Variables
+
+In iteration expressions, local helper variables (including those defined in `LET` expressions) can only be used within the iteration expression itself, subexpressions, or for constructing the result. They can also be used in subsequent iteration expressions that use variables with the same name and type. Note that local helper variables cannot be used outside of iteration expressions. The following examples illustrate the behavior.
+
+```abap
+"Iteration expressions with FOR
+DATA itab1 TYPE string_table.
+DATA itab2 TYPE string_table.
+
+"Using the variable wa in an iteration expression with FOR.
+itab2 = VALUE #( FOR wa IN itab1 ( wa ) ).
+
+"Specifying an inline declaration and using the name of a local
+"variable already declared in an iteration expression is not possible.
+*LOOP AT itab1 INTO DATA(wa).
+*  APPEND wa TO itab2.
+*ENDLOOP.
+
+"The local variable of the iteration expression
+"cannot be used outside the iteration expression.
+*LOOP AT itab1 INTO wa.
+*  APPEND wa TO itab2.
+*ENDLOOP.
+
+"Reusing local variables is possible in subsequent iteration
+"expressions, provided they share the same type.
+itab2 = VALUE #( FOR wa IN itab1 ( wa ) ).
+
+"The following iteration expression is not possible due to
+"type incompatibility.
+DATA itab3 TYPE TABLE OF i WITH EMPTY KEY.
+*itab3 = VALUE #( FOR wa IN itab1 ( wa ) ).
+
+"Iteration expressions with REDUCE
+DATA(sum1) = REDUCE i( INIT a = 0
+                       FOR  b = 1 UNTIL b > 10
+                       NEXT a += b ).
+
+"It is not possible to use the local variables or their names
+"for new variables outside the iteration expression.
+*DATA(addition1) = 1 + a.
+*DATA(addition2) = 1 + b.
+*DATA(a) = 1 + 1.
+*DATA(b) = 2 + 2.
+
+"Reusing local variables is possible in subsequent iteration
+"expressions, provided they share the same type.
+DATA(sum2) = REDUCE i( INIT b = 0
+                       FOR  a = 1 UNTIL a > 20
+                       NEXT b += a ).
+
+"The following example yields this result for count:
+"x: \TYPE=I, y: \TYPE=STRING, z: \TYPE=I
+"10 9 8 7 6 5 4 3 2 1
+"For illustration purposes, RTTI (see the Dynamic Programming cheat sheet)
+"is used to determine and visualize the absolute type names of the local 
+"helper variables.
+DATA(count) = REDUCE string( LET x = 10 IN
+                             INIT y = ``
+                             FOR z = x THEN z - 1 WHILE z > 0
+                             NEXT y &&= |{ COND #( WHEN y IS INITIAL THEN |x: { CAST cl_abap_elemdescr( cl_abap_typedescr=>describe_by_data( x ) )->absolute_name }, | &&
+                                                                          |y: { CAST cl_abap_elemdescr( cl_abap_typedescr=>describe_by_data( y ) )->absolute_name }, | &&
+                                                                          |z: { CAST cl_abap_elemdescr( cl_abap_typedescr=>describe_by_data( z ) )->absolute_name }\n| ) }| &&
+                                        |{ z } | ).
+
+"In the following example, local helper variables declared in the
+"previous iteration expression are reused. The x and z variables
+"are swapped. The statement works since the variables have the 
+"same type.
+DATA(count2) = REDUCE string( LET z = 10 IN
+                              INIT y = ``
+                              FOR x = z THEN x - 1 WHILE x > 0
+                              NEXT y &&= |{ z } | ).
+
+"The following statement does not work. The y and z variables are
+"swapped. Since the variables are not type-compatible, the variables
+"cannot be reused in these positions.
+*DATA(count3) = REDUCE string( LET x = 10 IN
+*                          INIT z = ``
+*                          FOR y = x THEN y - 1 WHILE y > 0
+*                          NEXT z &&= |{ y } | ).
+```
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
 ### Grouping Lines in Internal Tables with VALUE/REDUCE
 
 Find more information in the [Internal Tables: Grouping](11_Internal_Tables_Grouping.md) cheat sheet.
@@ -2691,6 +2777,100 @@ DATA(itab_constr) = VALUE ty_itab_constr( FOR GROUPS g OF fl IN fl_tab
         LET m = VALUE tab_type( FOR <fl> IN GROUP g ( <fl> ) ) IN
         ( member = m info = |carrier = "{ g-c }", cityfr = "{ g-cifr }", size = "{ g-size }", index = "{ g-index }" | ) ).
 ```
+
+The following examples aim to identify and extract duplicates from an internal table based on a key value (in this case, the `comp1` component). If the occurrence count exceeds one, the information will be added to a target table. Various approaches might achieve this result. For example, you can use the ABAP SQL functionalities available for internal tables. However, note the comments in the example. This example illustrates different approaches to achieve the result using grouping in the context of `LOOP AT` statements and iteration expressions with `FOR` and `REDUCE`.
+
+```abap
+TYPES: BEGIN OF s_demo,
+         comp1 TYPE i,
+         comp2 TYPE c LENGTH 3,
+       END OF s_demo,
+       ty_tab_demo TYPE TABLE OF s_demo WITH EMPTY KEY.
+
+DATA(it) = VALUE ty_tab_demo( ( comp1 = 1 comp2 = 'A' )
+                              ( comp1 = 1 comp2 = 'B' )
+                              ( comp1 = 1 comp2 = 'C' )
+                              ( comp1 = 2 comp2 = 'A' )
+                              ( comp1 = 2 comp2 = 'E' )
+                              ( comp1 = 1 comp2 = 'D' )
+                              ( comp1 = 3 comp2 = 'D' )
+                              ( comp1 = 3 comp2 = 'G' )
+                              ( comp1 = 4 comp2 = 'C' )
+                              ( comp1 = 6 comp2 = 'J' )
+                              ( comp1 = 5 comp2 = 'A' )
+                              ( comp1 = 2 comp2 = 'H' )
+                              ( comp1 = 6 comp2 = 'I' )
+                              ( comp1 = 7 comp2 = 'K' ) ).
+
+*&---------------------------------------------------------------------*
+*& SELECT statement
+*&---------------------------------------------------------------------*
+
+"Note: The SELECT command is executed on the database. Therefore, the pseudo
+"comment is included to suppress a syntax warning. Consider the aspects
+"like performance in this context. The internal-table-related statements
+"are advisable.
+SELECT comp1, COUNT(*) AS count
+  FROM @it AS it
+  GROUP BY comp1
+  HAVING COUNT(*) > 1
+  INTO TABLE @DATA(duplicates_sql) ##ITAB_DB_SELECT.
+
+"The example avoids a manual creation of a local type for the following
+"example statement. Instead, the SELECT statement's target variable type
+"is reused.
+*  TYPES: BEGIN OF duplicates_struc,
+*         comp1 TYPE s_demo-comp1,
+*         count TYPE int8,
+*       END OF duplicates_struc,
+*       ty_tab_duplicates TYPE TABLE OF duplicates_struc WITH EMPTY KEY.
+
+TYPES ty_tab_duplicates LIKE duplicates_sql.
+DATA duplicates_loop_at TYPE ty_tab_duplicates.
+
+*&---------------------------------------------------------------------*
+*& LOOP AT statement
+*&---------------------------------------------------------------------*
+
+LOOP AT it INTO DATA(wa) GROUP BY ( comp = wa-comp1 size = GROUP SIZE ) ASCENDING REFERENCE INTO DATA(group_ref).
+  IF group_ref->size > 1.
+    APPEND VALUE #( comp1 = group_ref->comp count = group_ref->size ) TO duplicates_loop_at.
+  ENDIF.
+ENDLOOP.
+
+*&---------------------------------------------------------------------*
+*& FOR loop
+*&---------------------------------------------------------------------*
+
+DATA(duplicates_value_for) = VALUE ty_tab_duplicates(
+    LET tab = VALUE ty_tab_duplicates( FOR GROUPS gr OF internal_table IN it
+    GROUP BY ( comp = internal_table-comp1 size = GROUP SIZE ) ASCENDING WITHOUT MEMBERS ( comp1 = gr-comp count = gr-size ) )
+    IN FOR w IN tab WHERE ( count > 1 ) ( comp1 = w-comp1 count = w-count ) ).
+
+*&---------------------------------------------------------------------*
+*& REDUCE
+*&---------------------------------------------------------------------*
+
+DATA(duplicates_value_reduce) = REDUCE ty_tab_duplicates(
+       INIT li = VALUE #( )
+       FOR GROUPS grp OF grt IN it
+       GROUP BY ( grpkey = grt-comp1
+                  size = GROUP SIZE ) ASCENDING
+       NEXT li = COND #( WHEN grp-size > 1 THEN VALUE ty_tab_duplicates( BASE li ( comp1 = grp-grpkey count = grp-size ) ) ELSE li ) ).
+
+ASSERT duplicates_sql = duplicates_loop_at.
+ASSERT duplicates_sql = duplicates_value_for.
+ASSERT duplicates_sql = duplicates_value_reduce.
+
+*Result
+*COMP1  COUNT  
+*1      4      
+*2      3      
+*3      2      
+*6      2      
+```
+
+
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
