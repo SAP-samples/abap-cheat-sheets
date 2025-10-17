@@ -234,12 +234,18 @@ The statements to end an SAP LUW have already been mentioned above: [`COMMIT WOR
   - triggers a database rollback on all currently open database connections, which also terminates the current database LUW. 
 
 > [!NOTE]
-> Notes on database connections:
-> - The [database interface](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abendatabase_interface_glosry.htm) uses the [standard connection](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenstandard_db_connection_glosry.htm) of the current work process to access the [standard database](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenstandard_db_glosry.htm) by default.
-> - Optionally, database accesses can also be made by using [secondary connections](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abensecondary_db_connection_glosry.htm) to [secondary databases](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abensecondary_db_glosry.htm) or by using [service connections](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenservice_connection_glosry.htm) to the standard database. The secondary connections are usually used by technical components. For example, they are used for caches, traces, logs, and so on.
-> - The implicit database rollback is performed on all database connections that are currently open.
-> - Within the SAP LUW, database changes and commits are allowed on service connections or through secondary database connections.
-
+> - `COMMIT WORK` vs. `COMMIT WORK AND WAIT` in ABAP Cloud
+>   - Both `COMMIT WORK` and `COMMIT WORK AND WAIT` are valid syntax options in ABAP for Cloud Development.
+>   - However, the functionality of `COMMIT WORK` and `COMMIT WORK AND WAIT` - and also `SET UPDATE TASK LOCAL` - is primarily applicable in classic ABAP, where update function modules, among others, are available. These function modules are not applicable in ABAP Cloud.  
+>   - In ABAP Cloud, local updates are always enforced implicitly and automatically, meaning that updates occur in the same work process and are always synchronous. 
+>   - Consequently, in ABAP Cloud, `COMMIT WORK` and `COMMIT WORK AND WAIT` behave identically, rendering the choice between the two irrelevant.  
+>   - Typically, `COMMIT WORK` in ABAP Cloud returns a value of 0 for `sy-subrc`, while other values would result in a runtime error.  
+>   - In the context RAP, when committing in a RAP transaction, refer to the notes about `COMMIT ENTITIES` [here](08_EML_ABAP_for_RAP.md#commit-and-rollback-in-a-rap-transaction).
+> - Notes on database connections:
+>   - The [database interface](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abendatabase_interface_glosry.htm) uses the [standard connection](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenstandard_db_connection_glosry.htm) of the current work process to access the [standard database](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenstandard_db_glosry.htm) by default.
+>   - Optionally, database accesses can also be made by using [secondary connections](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abensecondary_db_connection_glosry.htm) to [secondary databases](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abensecondary_db_glosry.htm) or by using [service connections](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenservice_connection_glosry.htm) to the standard database. The secondary connections are usually used by technical components. For example, they are used for caches, traces, logs, and so on.
+>   - The implicit database rollback is performed on all database connections that are currently open.
+>   - Within the SAP LUW, database changes and commits are allowed on service connections or through secondary database connections.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
