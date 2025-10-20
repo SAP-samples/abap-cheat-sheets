@@ -6802,10 +6802,10 @@ This demo IDE action lets you upload and process files, as well as download them
 - Checking out the demo **display and download** functionality: 
   - The demo includes the display and download of XML, JSON, TXT and HTML content. The *Operation* dropdown list includes the respective selection options.
   - When you select a specific download option, the `zif_demo_abap_ide_imp_exp~export` method of the `ZCL_DEMO_ABAP` class is called. Depending on the selection, demo code is executed. This is realized by an enumerated type, defined in the interface. An importing parameter is typed with this enumerated type. Its value determines what code is executed, realized by a `CASE` statement.
-    - **XML** (asXML): Database table entries are retrieved using a `SELECT` statement. Using a `CALL TRANSFORMATION` statement, the internal table with the datasets is transformed (to asXML) and returned.
-    - **JSON**: Database table entries are retrieved using a `SELECT` statement. Using a `/UI2/CL_JSON` statement, the internal table with the datasets is converted to JSON and returned.
+    - **XML** (asXML): Database table entries are retrieved using a `SELECT` statement. Using a `CALL TRANSFORMATION` statement, the internal table content is transformed (to asXML) and returned.
+    - **JSON**: Database table entries are retrieved using a `SELECT` statement. Using the `/UI2/CL_JSON` class, the internal table content is converted to JSON and returned.
     - **TXT**: A simple string, representing the content of a TXT file, is returned.
-    - **HTML**: Database table entries are retrieved using a `SELECT` statement. Using the `CL_DEMO_OUTPUT_CLOUD` class, the internal table with the datasets is converted to HTML and returned.
+    - **HTML**: Database table entries are retrieved using a `SELECT` statement. Using the `CL_DEMO_OUTPUT_CLOUD` class, the internal table content is converted to HTML and returned.
   - You can use the *Export...* button to download the appropriate files. The file extension is predefined; for example, XML downloads use `*.xml`. 
     - The IDE action is designed so that the *Run* functionality cannot be selected for download; it is only available for checking the upload functionality.
     - The HTML content is directly displayed in the IDE action dialog. You can download the file by right-clicking the displayed HTML and selecting the option to save it to your local machine.

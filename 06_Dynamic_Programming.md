@@ -23,6 +23,7 @@
       - [Examples Using Data References](#examples-using-data-references)
   - [Dynamic ABAP Statements](#dynamic-abap-statements)
     - [Dynamic ASSIGN Statements](#dynamic-assign-statements)
+      - [ASSIGN Statements and Setting sy-subrc](#assign-statements-and-setting-sy-subrc)
     - [Creating Anonymous Data Objects by Specifying the Type Dynamically](#creating-anonymous-data-objects-by-specifying-the-type-dynamically)
     - [Creating Instances of Classes by Specifying the Type Dynamically](#creating-instances-of-classes-by-specifying-the-type-dynamically)
     - [Accessing Structure Components Dynamically](#accessing-structure-components-dynamically)
@@ -1713,9 +1714,216 @@ DATA(tdo_elem) = cl_abap_elemdescr=>get_c( 4 ).
 ASSIGN dobj_c10 TO <casttype> CASTING TYPE HANDLE tdo_elem. "1234
 ```
 
-> [!NOTE]  
-> - The following `ASSIGN` statements set the `sy-subrc` value: dynamic assignments, dynamic component assignment, dynamic method calls, assignments of table expressions. See an example below.
-> - The return code is not set for a static assignment and an assignment of the constructor operator `CAST`.
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+#### ASSIGN Statements and Setting sy-subrc
+
+The following code snippet focuses on `ASSIGN` statements and setting the `sy-subrc` value (0 = successful, 4 = unsuccessful):
+- For static assignments that fail, `sy-subrc` remains unset. The `ELSE UNASSIGN` addition cannot be explicitly defined for static assignments but is applied implicitly.
+- However, `sy-subrc` is set when using table expressions.
+- `sy-subrc` is set for unsuccessful dynamic assignments, including dynamic component access and dynamic class or interface component access.
+- In the case of dynamic assignments, you can explicitly specify the `ELSE UNASSIGN` addition.
+
+```abap
+"Demo data objects to work with
+DATA str TYPE string VALUE `hello`.
+DATA: BEGIN OF struct,
+        comp1 TYPE i,
+        comp2 TYPE string,
+      END OF struct.
+DATA itab LIKE TABLE OF struct WITH EMPTY KEY.
+struct = VALUE #( comp1 = 1 comp2 = `ABAP` ).
+APPEND struct TO itab.
+DATA dref TYPE REF TO i.
+
+FIELD-SYMBOLS <fs> TYPE data.
+
+*&---------------------------------------------------------------------*
+*& Static ASSIGN statements
+*&---------------------------------------------------------------------*
+
+ASSERT <fs> IS NOT ASSIGNED.
+
+ASSIGN str TO <fs>.
+ASSERT sy-subrc = 0.
+ASSERT <fs> IS ASSIGNED.
+
+UNASSIGN <fs>.
+ASSERT sy-subrc = 0.
+ASSERT <fs> IS NOT ASSIGNED.
+
+ASSIGN struct TO <fs>.
+ASSERT sy-subrc = 0.
+ASSERT <fs> IS ASSIGNED.
+
+ASSIGN struct-comp1 TO <fs>.
+ASSERT sy-subrc = 0.
+ASSERT <fs> IS ASSIGNED.
+
+ASSIGN itab TO <fs>.
+ASSERT sy-subrc = 0.
+ASSERT <fs> IS ASSIGNED.
+
+"Unsuccessful static assignment demonstrated with substring access
+FIELD-SYMBOLS <year>  TYPE n.
+FIELD-SYMBOLS <month> TYPE n.
+FIELD-SYMBOLS <day>   TYPE n.
+
+DATA(date) = cl_abap_context_info=>get_system_date( ).
+
+ASSIGN date+0(4) TO <year>.
+ASSERT sy-subrc = 0.
+ASSERT <year> IS ASSIGNED.
+
+ASSIGN date+4(2) TO <month>.
+ASSERT sy-subrc = 0.
+ASSERT <month> IS ASSIGNED.
+
+DATA len TYPE i VALUE 3.
+ASSIGN date+6(len) TO <day>.
+"Despite the unsuccessful assignment, sy-subrc is 0.
+ASSERT sy-subrc = 0.
+ASSERT <day> IS NOT ASSIGNED.
+
+"In static ASSIGN statements using table expressions, sy-subrc is set.
+ASSIGN itab[ 1 ] TO <fs>.
+ASSERT sy-subrc = 0.
+ASSERT <fs> IS ASSIGNED.
+
+ASSIGN itab[ 2 ] TO <fs>.
+ASSERT sy-subrc = 4.
+
+"Pitfall!
+"Although the previous assertion was not successfull,
+"the field symbol is still assigned from the ASSIGN
+"statement above.
+"ASSERT <fs> IS NOT ASSIGNED.
+
+ASSERT <fs> IS ASSIGNED.
+ASSERT <fs> = itab[ 1 ].
+
+"Assigning table components using table expressions
+ASSIGN itab[ 1 ]-comp1 TO <fs>.
+ASSERT sy-subrc = 0.
+ASSERT <fs> IS ASSIGNED.
+
+ASSIGN itab[ 2 ]-comp1 TO <fs>.
+ASSERT sy-subrc = 4.
+ASSERT <fs> IS ASSIGNED.
+ASSERT <fs> = itab[ 1 ]-comp1.
+
+*&---------------------------------------------------------------------*
+*& Dynamic ASSIGN statements
+*&---------------------------------------------------------------------*
+
+"Data reference variable is not bound
+ASSERT dref IS NOT BOUND.
+ASSIGN dref->* TO <fs>.
+ASSERT sy-subrc = 4.
+"Note: Despite the previous unsuccessful assignement,
+"the field symbol is still assigned.
+ASSERT <fs> IS ASSIGNED.
+ASSERT <fs> = itab[ 1 ]-comp1.
+
+"Data reference variable is bound
+dref = NEW #( 1 ).
+ASSERT dref IS BOUND.
+ASSIGN dref->* TO <fs>.
+ASSERT sy-subrc = 0.
+ASSERT <fs> IS ASSIGNED.
+
+"To explicitly unassign a field symbol in dynamic assignments,
+"you can specify the ELSE UNASSIGN addition.
+CLEAR dref.
+ASSERT dref IS NOT BOUND.
+ASSIGN dref->* TO <fs> ELSE UNASSIGN.
+ASSERT sy-subrc = 4.
+ASSERT <fs> IS NOT ASSIGNED.
+
+"Dynamic data object specification
+ASSIGN ('STR') TO <fs>.
+ASSERT sy-subrc = 0.
+ASSERT <fs> IS ASSIGNED.
+
+ASSIGN ('NOPE') TO <fs>.
+ASSERT sy-subrc = 4.
+"The field symbol is still assigned
+ASSERT <fs> IS ASSIGNED.
+
+ASSIGN ('BLABLA') TO <fs> ELSE UNASSIGN.
+ASSERT sy-subrc = 4.
+ASSERT <fs> IS NOT ASSIGNED.
+
+"Dynamic component assignment
+ASSIGN struct-('COMP2') TO <fs>.
+ASSERT sy-subrc = 0.
+ASSERT <fs> IS ASSIGNED.
+
+ASSIGN struct-('NOPE') TO <fs> ELSE UNASSIGN.
+ASSERT sy-subrc = 4.
+ASSERT <fs> IS NOT ASSIGNED.
+
+ASSIGN struct-(1) TO <fs> ELSE UNASSIGN.
+ASSERT sy-subrc = 0.
+ASSERT <fs> IS ASSIGNED.
+
+ASSIGN struct-(3) TO <fs> ELSE UNASSIGN.
+ASSERT sy-subrc = 4.
+ASSERT <fs> IS NOT ASSIGNED.
+
+"Dynamic class component assignment
+ASSIGN zcl_demo_abap_objects=>('PUBLIC_STRING') TO <fs> ELSE UNASSIGN.
+ASSERT sy-subrc = 0.
+ASSERT <fs> IS ASSIGNED.
+
+ASSIGN zcl_demo_abap_objects=>('NOPE') TO <fs> ELSE UNASSIGN.
+ASSERT sy-subrc = 4.
+ASSERT <fs> IS NOT ASSIGNED.
+
+"Note that there are cases of invalid dynamic specifications in dynamic
+"component assignments that raise exceptions and do not set sy-subrc.
+TRY.
+    ASSIGN itab[ 1 ]-('ZZZ') TO <fs>.
+  CATCH cx_sy_assign_illegal_component.
+ENDTRY.
+ASSERT sy-subrc = 0.
+
+"Assigning instance attributes of a class and directly creating the
+"instance
+"ELSE UNASSIGN cannot be specified here.
+ASSIGN NEW zcl_demo_abap_objects( )->another_string TO <fs>.
+ASSERT sy-subrc = 0.
+ASSERT <fs> IS ASSIGNED.
+
+TRY.
+    ASSIGN NEW zcl_demo_abap_objects( )->('NOPE') TO <fs>.
+  CATCH cx_sy_assign_illegal_component.
+ENDTRY.
+"Despite the unsuccessful assignment, sy-subrc is 0 and the
+"field symbol is still assigned.
+ASSERT sy-subrc = 0.
+ASSERT <fs> IS ASSIGNED.
+
+DATA iref TYPE REF TO zdemo_abap_objects_interface.
+DATA(oref) = NEW zcl_demo_abap_objects( ).
+oref->another_string = `hello`.
+iref = oref.
+
+"ELSE UNASSIGN cannot be specified here.
+ASSIGN CAST zcl_demo_abap_objects( iref )->another_string TO <fs>.
+ASSERT sy-subrc = 0.
+ASSERT <fs> IS ASSIGNED.
+
+TRY.
+    ASSIGN CAST zcl_demo_abap_objects( iref )->('NOPE') TO <fs>.
+  CATCH cx_sy_assign_illegal_component.
+ENDTRY.
+"Despite the unsuccessful assignment, sy-subrc is 0 and the
+"field symbol is still assigned.
+ASSERT sy-subrc = 0.
+ASSERT <fs> IS ASSIGNED.
+```
+
 
 The following example:
 - Highlights the setting of `sy-subrc` after a dynamic assignment and the `ELSE UNASSIGN` addition, only for dynamic assignments.
