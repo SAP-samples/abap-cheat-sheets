@@ -38,8 +38,14 @@
   - [Security Considerations in Dynamic Programming Using External Input](#security-considerations-in-dynamic-programming-using-external-input)
   - [Runtime Type Services (RTTS)](#runtime-type-services-rtts)
     - [Getting Type Information at Runtime (RTTI)](#getting-type-information-at-runtime-rtti)
-      - [RTTI: Attribute Access and Method Calls](#rtti-attribute-access-and-method-calls)
-      - [Example: Exploring the RTTI Type Hierarchy](#example-exploring-the-rtti-type-hierarchy)
+      - [Getting Type Information for Elementary Data Objects and Types](#getting-type-information-for-elementary-data-objects-and-types)
+      - [Getting Type Information for Enumerated Types](#getting-type-information-for-enumerated-types)
+      - [Getting Type Information for Structured Data Objects and Types](#getting-type-information-for-structured-data-objects-and-types)
+      - [Getting Type Information for Internal Tables and Table Types](#getting-type-information-for-internal-tables-and-table-types)
+      - [Getting Type Information for Data Reference Variables and Reference Types](#getting-type-information-for-data-reference-variables-and-reference-types)
+      - [Getting Type Information for Classes](#getting-type-information-for-classes)
+      - [Getting Type Information for Interfaces](#getting-type-information-for-interfaces)
+      - [Examples Demonstrating RTTI](#examples-demonstrating-rtti)
       - [Excursion: Inline Declaration, CAST Operator, Method Chaining](#excursion-inline-declaration-cast-operator-method-chaining)
       - [Absolute Names](#absolute-names)
       - [Constants of Type Description Classes](#constants-of-type-description-classes)
@@ -1794,7 +1800,7 @@ ASSIGN itab[ 2 ] TO <fs>.
 ASSERT sy-subrc = 4.
 
 "Pitfall!
-"Although the previous assertion was not successfull,
+"Although the previous assertion was not successful,
 "the field symbol is still assigned from the ASSIGN
 "statement above.
 "ASSERT <fs> IS NOT ASSIGNED.
@@ -4038,19 +4044,609 @@ The type properties are represented by attributes that are accessible through th
 > - For each type category (elementary type, table, and so on), there is a type description class (e.g. `CL_ABAP_STRUCTDESCR` for structures, as shown in the hierarchy tree above) that has special attributes (i.e. the properties of the respective types). 
 > - References to type description objects can be used, for example, after the `TYPE HANDLE` addition of the `CREATE DATA` and `ASSIGN` statements.
 
+#### Getting Type Information for Elementary Data Objects and Types
 
-#### RTTI: Attribute Access and Method Calls
+```abap
+*&---------------------------------------------------------------------*
+*& Elementary data objects and types
+*&---------------------------------------------------------------------*
 
-The following code example demonstrates a range of RTTI attribute accesses and method calls. It includes retrieving type information at runtime for:
-- elementary types
-- enumerated types 
-- structures 
-- internal tables
-- data references 
-- classes 
-- interfaces 
+"Demo data object and type
+TYPES elem_type_ts TYPE timestampl.
+DATA ts TYPE elem_type_ts VALUE '20250101081317.81011'.
 
-Find more information in the section below. 
+"--------- Getting general type information ---------
+
+"Note: The attribute accesses and method calls show a selection.
+
+"Getting general type information using cl_abap_typedescr without cast
+"describe_by_data method
+DATA(tdo_elem_gen1) = cl_abap_typedescr=>describe_by_data( ts ).
+
+"describe_by_name method
+DATA tdo_elem_gen2 TYPE REF TO cl_abap_typedescr.
+tdo_elem_gen2 = cl_abap_typedescr=>describe_by_name( 'ELEM_TYPE_TS' ).
+
+"Selection of retrievable, general information
+"The same information is also accessible after the cast below.
+"The examples use tdo_elem_gen1. tdo_elem_gen2 is also possible.
+DATA(type_category_elem_gen) = tdo_elem_gen1->kind.
+DATA(type_kind_elem_gen) = tdo_elem_gen1->type_kind.
+DATA(absolute_name_elem_gen) = tdo_elem_gen1->absolute_name.
+DATA(relative_name_elem_gen) = tdo_elem_gen1->get_relative_name( ).
+
+"--------- Getting more specific type information using a cast ---------
+
+"The data reference variable is of type ref to cl_abap_elemdescr.
+"Getting the reference in one go using inline declaration.
+DATA(tdo_elem) = CAST cl_abap_elemdescr( cl_abap_typedescr=>describe_by_data( ts ) ).
+
+"Selection of attribute accesses and method calls to get various
+"pieces of information
+DATA(type_category_elem) = tdo_elem->kind.
+DATA(type_kind_elem) = tdo_elem->type_kind.
+DATA(decimals_elem) = tdo_elem->decimals.
+DATA(output_length_elem) = tdo_elem->output_length.
+DATA(absolute_name_elem) = tdo_elem->absolute_name.
+DATA(relative_name_elem) = tdo_elem->get_relative_name( ).
+DATA(is_ddic_type_elem) = tdo_elem->is_ddic_type( ).
+"Checking type compatibility with other data objects
+"(only applies_to_datadescr_elem returns true in the example)
+DATA(applies_to_data_elem) = tdo_elem->applies_to_data( CONV timestamp( '20250808112458' ) ).
+DATA(applies_to_dataref_elem) = tdo_elem->applies_to_data_ref( REF #( '20250808112458' ) ).
+DATA(applies_to_datadescr_elem) = tdo_elem->applies_to_data_descr(
+  CAST cl_abap_datadescr( cl_abap_typedescr=>describe_by_data( CONV timestampl( '20250101121325.32042' ) ) ) ).
+
+"--------- Excursions ---------
+
+"Checking against the constants of class cl_abap_typedescr
+ASSERT type_category_elem = cl_abap_typedescr=>kind_elem.
+"The above example is not a DDIC type as it is a local type. The following
+"example uses a DDIC data element.
+ASSERT CAST cl_abap_elemdescr( cl_abap_typedescr=>describe_by_name( 'LAND1' ) )->is_ddic_type( ) = abap_true.
+"Using the result of the method calls above to get the data reference,
+"without inline declaration.
+DATA tdo_elem_2 TYPE REF TO cl_abap_elemdescr.
+tdo_elem_2 = CAST cl_abap_elemdescr( tdo_elem_gen1 ).
+"tdo_elem_gen2 is also possible
+tdo_elem_2 = CAST cl_abap_elemdescr( tdo_elem_gen2 ).
+"Creating elementary data objects dynamically based on an absolute name
+"and a type description object. Find more information in other sections.
+DATA dref_elem TYPE REF TO data.
+CREATE DATA dref_elem TYPE (absolute_name_elem).
+CREATE DATA dref_elem TYPE HANDLE tdo_elem.
+ASSERT tdo_elem->applies_to_data( dref_elem->* ) = abap_true.
+dref_elem->* = ts.
+```
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+#### Getting Type Information for Enumerated Types
+
+```abap
+*&---------------------------------------------------------------------*
+*& Enumerated types
+*&---------------------------------------------------------------------*
+
+TYPES: basetype TYPE c LENGTH 2,
+       BEGIN OF ENUM ty_enum BASE TYPE basetype,
+         a VALUE IS INITIAL,
+         b VALUE 'u',
+         c VALUE 'v',
+         d VALUE 'wx',
+         e VALUE 'yz',
+       END OF ENUM ty_enum.
+
+"--------- Getting general type information ---------
+
+"Note: The attribute accesses and method calls show a selection.
+
+"Getting general type information using cl_abap_typedescr without cast
+"describe_by_data method
+DATA(tdo_enum_gen1) = cl_abap_typedescr=>describe_by_data( a ).
+
+"describe_by_name method
+DATA tdo_enum_gen2 TYPE REF TO cl_abap_typedescr.
+tdo_enum_gen2 = cl_abap_typedescr=>describe_by_name( 'TY_ENUM' ).
+
+"Selection of retrievable, general information
+"The same information is also accessible after the cast below.
+"The examples use tdo_enum_gen1. tdo_enum_gen2 is also possible.
+DATA(type_category_enum_gen) = tdo_enum_gen1->kind.
+DATA(type_kind_enum_gen) = tdo_enum_gen1->type_kind.
+DATA(absolute_name_enum_gen) = tdo_enum_gen1->absolute_name.
+DATA(relative_name_enum_gen) = tdo_enum_gen1->get_relative_name( ).
+
+"--------- Getting more specific type information using a cast ---------
+
+"The data reference variable is of type ref to cl_abap_enumdescr.
+"Getting the reference in one go using inline declaration.
+DATA(tdo_enum) = CAST cl_abap_enumdescr( cl_abap_typedescr=>describe_by_data( a ) ).
+
+"Selection of attribute accesses and method calls to get various
+"pieces of information
+DATA(type_category_enum) = tdo_enum->kind.
+DATA(type_kind_enum) = tdo_enum->type_kind.
+DATA(decimals_enum) = tdo_enum->decimals.
+DATA(output_length_enum) = tdo_enum->output_length.
+DATA(absolute_name_enum) = tdo_enum->absolute_name.
+DATA(relative_name_enum) = tdo_enum->get_relative_name( ).
+DATA(is_ddic_type_enum) = tdo_enum->is_ddic_type( ).
+DATA(base_kind_enum) = tdo_enum->base_type_kind.
+DATA(members_enum) = tdo_enum->members.
+"Checking type compatibility with other data objects
+"(all return true in the example)
+DATA(applies_to_data_enum) = tdo_enum->applies_to_data( b ).
+DATA(applies_to_dataref_enum) = tdo_enum->applies_to_data_ref( REF #( c ) ).
+DATA(applies_to_datadescr_enum) = tdo_enum->applies_to_data_descr(
+  CAST cl_abap_datadescr( cl_abap_typedescr=>describe_by_data( d ) ) ).
+
+"--------- Excursions ---------
+
+"Checking against the constants of class cl_abap_typedescr
+"Enumerated types are considered elementary types.
+ASSERT type_category_enum = cl_abap_typedescr=>kind_elem.
+ASSERT type_kind_enum = cl_abap_typedescr=>typekind_enum.
+"Accessing the members table
+ASSERT members_enum[ name = 'D' ]-value = 'wx'.
+"Using the result of the method calls above to get the data reference,
+"without inline declaration.
+DATA tdo_enum_2 TYPE REF TO cl_abap_enumdescr.
+tdo_enum_2 = CAST #( tdo_enum_gen1 ).
+"tdo_enum_gen2 is also possible
+tdo_enum_2 = CAST #( tdo_enum_gen2 ).
+"Creating enumerated objects dynamically based on an absolute name
+"and a type description object. Find more information in other sections.
+DATA dref_enum TYPE REF TO data.
+CREATE DATA dref_enum TYPE (absolute_name_enum).
+CREATE DATA dref_enum TYPE HANDLE tdo_enum.
+ASSERT tdo_enum->applies_to_data( dref_enum->* ) = abap_true.
+dref_enum->* = e.
+ASSERT CONV basetype( dref_enum->* ) = 'yz'.
+```
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+#### Getting Type Information for Structured Data Objects and Types
+
+```abap
+*&---------------------------------------------------------------------*
+*& Structured data objects and types
+*&---------------------------------------------------------------------*
+
+TYPES: BEGIN OF demo_struc_type,
+         comp1 TYPE c LENGTH 3,
+         comp2 TYPE i,
+         comp3 TYPE string,
+       END OF demo_struc_type.
+DATA demo_struc TYPE demo_struc_type.
+
+"--------- Getting general type information ---------
+
+"Note: The attribute accesses and method calls show a selection.
+
+"Getting general type information using cl_abap_typedescr without cast
+"describe_by_data method
+DATA(tdo_struc_gen1) = cl_abap_typedescr=>describe_by_data( demo_struc ).
+
+"describe_by_name method
+DATA tdo_struc_gen2 TYPE REF TO cl_abap_typedescr.
+tdo_struc_gen2 = cl_abap_typedescr=>describe_by_name( 'DEMO_STRUC_TYPE' ).
+
+"Selection of retrievable, general information
+"The same information is also accessible after the cast below.
+"The examples use tdo_struc_gen1. tdo_struc_gen2 is also possible.
+DATA(type_category_struc_gen) = tdo_struc_gen1->kind.
+DATA(type_kind_struc_gen) = tdo_struc_gen1->type_kind.
+DATA(absolute_name_struc_gen) = tdo_struc_gen1->absolute_name.
+DATA(relative_name_struc_gen) = tdo_struc_gen1->get_relative_name( ).
+
+"--------- Getting more specific type information using a cast ---------
+
+"The data reference variable is of type ref to cl_abap_structdescr.
+"Getting the reference in one go using inline declaration.
+DATA(tdo_struc) = CAST cl_abap_structdescr( cl_abap_typedescr=>describe_by_data( demo_struc ) ).
+
+"Selection of attribute accesses and method calls to get various
+"pieces of information
+DATA(type_category_struc) = tdo_struc->kind.
+DATA(type_kind_struc) = tdo_struc->type_kind.
+DATA(decimals_struc) = tdo_struc->decimals.
+DATA(absolute_name_struc) = tdo_struc->absolute_name.
+DATA(relative_name_struc) = tdo_struc->get_relative_name( ).
+DATA(is_ddic_type_struc) = tdo_struc->is_ddic_type( ).
+DATA(comps_struc) = tdo_struc->components.
+DATA(comps_more_details_struc) = tdo_struc->get_components( ).
+DATA(include_struc) = tdo_struc->has_include.
+"Checking type compatibility with other data objects
+"(only the first does not return true in the example)
+DATA(applies_to_data_struc) = tdo_struc->applies_to_data( VALUE i_timezone( ) ).
+DATA(applies_to_dataref_struc) = tdo_struc->applies_to_data_ref( REF #( demo_struc ) ).
+DATA(applies_to_datadescr_struc) = tdo_struc->applies_to_data_descr(
+  CAST cl_abap_datadescr( cl_abap_typedescr=>describe_by_data( demo_struc ) ) ).
+
+"--------- Excursions ---------
+
+"Checking against the constants of class cl_abap_typedescr
+ASSERT type_category_struc = cl_abap_typedescr=>kind_struct.
+"typekind_struct1 refers to a flat structure (which the demo structure is not
+"because of the string component)
+ASSERT type_kind_struc <> cl_abap_typedescr=>typekind_struct1.
+"typekind_struct2 refers to a deep structure
+ASSERT type_kind_struc = cl_abap_typedescr=>typekind_struct2.
+
+"Example structure that has included structures
+TYPES BEGIN OF demo_struc_type_incl.
+INCLUDE TYPE demo_struc_type.
+INCLUDE TYPE demo_struc_type AS incl_struct RENAMING WITH SUFFIX _incl.
+TYPES comp4 TYPE n LENGTH 4.
+TYPES END OF demo_struc_type_incl.
+
+DATA(tdo_struc_incl) = CAST cl_abap_structdescr( cl_abap_typedescr=>describe_by_name( 'DEMO_STRUC_TYPE_INCL' ) ).
+DATA(include_struc_incl) = tdo_struc_incl->has_include.
+ASSERT include_struc_incl = abap_true.
+"get_included_view method (check the class documentation for more information)
+DATA(incl_view_struc_incl_lvl0) = tdo_struc_incl->get_included_view( 0 ).
+ASSERT xsdbool( line_exists( incl_view_struc_incl_lvl0[ name = 'INCL_STRUCT' ] ) ) = abap_true.
+ASSERT xsdbool( line_exists( incl_view_struc_incl_lvl0[ name = 'COMP1_INCL' ] ) ) = abap_false.
+DATA(incl_view_struc_incl_lvl1) = tdo_struc_incl->get_included_view( 1 ).
+ASSERT xsdbool( line_exists( incl_view_struc_incl_lvl1[ name = 'INCL_STRUCT' ] ) ) = abap_false.
+ASSERT xsdbool( line_exists( incl_view_struc_incl_lvl1[ name = 'COMP1_INCL' ] ) ) = abap_true.
+"get_symbols method: Returning component names of all components and substructures
+DATA(symbols_struc) = tdo_struc_incl->get_symbols( ).
+
+"Using the result of the method calls above to get the data reference,
+"without inline declaration.
+DATA tdo_struc_2 TYPE REF TO cl_abap_structdescr.
+tdo_struc_2 = CAST #( tdo_struc_gen1 ).
+"tdo_struc_gen2 is also possible
+tdo_struc_2 = CAST #( tdo_struc_gen2 ).
+"Creating structured data objects dynamically based on an absolute name
+"and a type description object. Find more information in other sections.
+DATA dref_struc TYPE REF TO data.
+CREATE DATA dref_struc TYPE (absolute_name_struc).
+CREATE DATA dref_struc TYPE HANDLE tdo_struc.
+ASSERT tdo_struc->applies_to_data( dref_struc->* ) = abap_true.
+dref_struc->* = demo_struc.
+```
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+#### Getting Type Information for Internal Tables and Table Types
+
+```abap
+*&---------------------------------------------------------------------*
+*& Internal tables and table types
+*&---------------------------------------------------------------------*
+
+TYPES: BEGIN OF struc_type,
+         comp1 TYPE c LENGTH 3,
+         comp2 TYPE i,
+         comp3 TYPE string,
+       END OF struc_type.
+
+TYPES ty_tab TYPE SORTED TABLE OF struc_type
+  WITH UNIQUE KEY primary_key ALIAS pk COMPONENTS comp1
+  WITH NON-UNIQUE SORTED KEY sec_key ALIAS sk COMPONENTS comp2.
+
+DATA itab TYPE ty_tab.
+
+"--------- Getting general type information ---------
+
+"Note: The attribute accesses and method calls show a selection.
+
+"Getting general type information using cl_abap_typedescr without cast
+"describe_by_data method
+DATA(tdo_tab_gen1) = cl_abap_typedescr=>describe_by_data( itab ).
+
+"describe_by_name method
+DATA tdo_tab_gen2 TYPE REF TO cl_abap_typedescr.
+tdo_tab_gen2 = cl_abap_typedescr=>describe_by_name( 'TY_TAB' ).
+
+"Selection of retrievable, general information
+"The same information is also accessible after the cast below.
+"The examples use tdo_tab_gen1. tdo_tab_gen2 is also possible.
+DATA(type_category_tab_gen) = tdo_tab_gen1->kind.
+DATA(type_kind_tab_gen) = tdo_tab_gen1->type_kind.
+DATA(absolute_name_tab_gen) = tdo_tab_gen1->absolute_name.
+DATA(relative_name_tab_gen) = tdo_tab_gen1->get_relative_name( ).
+
+"--------- Getting more specific type information using a cast ---------
+
+"The data reference variable is of type ref to cl_abap_tabtdescr.
+"Getting the reference in one go using inline declaration.
+DATA(tdo_tab) = CAST cl_abap_tabledescr( cl_abap_typedescr=>describe_by_data( itab ) ).
+
+"Selection of attribute accesses and method calls to get various
+"pieces of information
+DATA(type_category_tab) = tdo_tab->kind.
+DATA(type_kind_tab) = tdo_tab->type_kind.
+DATA(absolute_name_tab) = tdo_tab->absolute_name.
+DATA(relative_name_tab) = tdo_tab->get_relative_name( ).
+DATA(is_ddic_type_tab) = tdo_tab->is_ddic_type( ).
+DATA(table_kind_itab) = tdo_tab->table_kind.
+DATA(table_keys_itab) = tdo_tab->key.
+DATA(table_keys_more_details_itab) = tdo_tab->get_keys( ).
+DATA(table_has_unique_key_itab) = tdo_tab->has_unique_key.
+DATA(table_key_alias_itab) = tdo_tab->get_key_aliases( ).
+DATA(line_type_itab) = tdo_tab->get_table_line_type( ).
+DATA(table_component_info_itab) = CAST cl_abap_structdescr( tdo_tab->get_table_line_type( ) ).
+DATA(table_components_itab) = CAST cl_abap_structdescr( tdo_tab->get_table_line_type( ) )->components.
+DATA(table_comps_more_info_itab) = CAST cl_abap_structdescr( tdo_tab->get_table_line_type( ) )->get_components( ).
+"Checking type compatibility with other data objects
+"(only applies_to_dataref_tab returns true in the example)
+DATA(applies_to_data_tab) = tdo_tab->applies_to_data( VALUE string_table( ) ).
+DATA(applies_to_dataref_tab) = tdo_tab->applies_to_data_ref( REF #( itab ) ).
+DATA(applies_to_datadescr_tab) = tdo_tab->applies_to_data_descr(
+  CAST cl_abap_datadescr( cl_abap_typedescr=>describe_by_data( VALUE string_table( ) ) ) ).
+
+"--------- Excursions ---------
+
+"Checking against the constants of the classes cl_abap_typedescr and
+"cl_abap_tabledescr
+ASSERT type_category_tab = cl_abap_typedescr=>kind_table.
+ASSERT type_kind_tab = cl_abap_typedescr=>typekind_table.
+ASSERT table_kind_itab = cl_abap_tabledescr=>tablekind_sorted.
+
+"Using the result of the method calls above to get the data reference,
+"without inline declaration.
+DATA tdo_tab_2 TYPE REF TO cl_abap_tabledescr.
+tdo_tab_2 = CAST #( tdo_tab_gen1 ).
+"tdo_tab_gen2 is also possible
+tdo_tab_2 = CAST #( tdo_tab_gen2 ).
+"Creating tabtured data objects dynamically based on an absolute name
+"and a type description object. Find more information in other sections.
+DATA dref_tab TYPE REF TO data.
+CREATE DATA dref_tab TYPE (absolute_name_tab).
+CREATE DATA dref_tab TYPE HANDLE tdo_tab.
+ASSERT tdo_tab->applies_to_data( dref_tab->* ) = abap_true.
+dref_tab->* = itab.
+```
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+#### Getting Type Information for Data Reference Variables and Reference Types
+
+```abap
+*&---------------------------------------------------------------------*
+*& Date reference variables and reference types
+*&---------------------------------------------------------------------*
+
+"Note: The attribute accesses and method calls show a selection.
+
+TYPES dref_type TYPE REF TO i.
+DATA dref TYPE dref_type.
+dref = NEW #( 1 ).
+DATA(dref_b) = REF #( 2 ).
+
+"Getting general type information using cl_abap_typedescr without cast
+"describe_by_data method
+DATA(tdo_ref_gen1) = cl_abap_typedescr=>describe_by_data( dref ).
+
+"describe_by_name method
+DATA tdo_ref_gen2 TYPE REF TO cl_abap_typedescr.
+tdo_ref_gen2 = cl_abap_typedescr=>describe_by_name( 'DREF_TYPE' ).
+
+"Selection of retrievable, general information
+"The same information is also accessible after the cast below.
+"The examples use tdo_ref_gen1. tdo_ref_gen2 is also possible.
+DATA(type_category_ref_gen) = tdo_ref_gen1->kind.
+DATA(type_kind_ref_gen) = tdo_ref_gen1->type_kind.
+DATA(absolute_name_ref_gen) = tdo_ref_gen1->absolute_name.
+DATA(relative_name_ref_gen) = tdo_ref_gen1->get_relative_name( ).
+
+ASSERT type_category_ref_gen = cl_abap_typedescr=>kind_ref.
+ASSERT type_kind_ref_gen = cl_abap_typedescr=>typekind_dref.
+
+"Getting information about the referenced data object
+"describe_by_data_ref method
+DATA(tdo_ref_gen3) = cl_abap_typedescr=>describe_by_data_ref( dref ).
+
+DATA(type_category_referenced_dobj) = tdo_ref_gen3->kind.
+DATA(type_kind_referenced_dobj) = tdo_ref_gen3->type_kind.
+
+ASSERT type_category_referenced_dobj = cl_abap_typedescr=>kind_elem.
+ASSERT type_kind_referenced_dobj = cl_abap_typedescr=>typekind_int.
+
+"--------- Getting more specific type information using a cast ---------
+
+"The data reference variable is of type ref to cl_abap_reftdescr.
+"Getting the reference in one go using inline declaration.
+DATA(tdo_ref) = CAST cl_abap_refdescr( cl_abap_typedescr=>describe_by_data( dref ) ).
+
+"Selection of attribute accesses and method calls to get various
+"pieces of information
+DATA(type_category_ref) = tdo_ref->kind.
+DATA(type_kind_ref) = tdo_ref->type_kind.
+DATA(absolute_name_ref) = tdo_ref->absolute_name.
+DATA(relative_name_ref) = tdo_ref->get_relative_name( ).
+DATA(is_ddic_type_ref) = tdo_ref->is_ddic_type( ).
+"Checking type compatibility with other data objects
+"(all return true in the example)
+DATA(applies_to_data_ref) = tdo_ref->applies_to_data( dref_b ).
+DATA(applies_to_dataref_ref) = tdo_ref->applies_to_data_ref( REF #( dref_b ) ).
+DATA(applies_to_datadescr_ref) = tdo_ref->applies_to_data_descr(
+  CAST cl_abap_datadescr( cl_abap_typedescr=>describe_by_data( dref_b ) ) ).
+
+"Getting the referenced type
+DATA(referenced_type) = tdo_ref->get_referenced_type( ).
+
+ASSERT referenced_type IS INSTANCE OF cl_abap_elemdescr.
+"See the section on elementary types for further attribute accesses and
+"method calls.
+DATA(tdo_elem_from_ref) = CAST cl_abap_elemdescr( referenced_type ).
+DATA(type_kind_elem_from_ref) = tdo_elem_from_ref->type_kind.
+ASSERT type_kind_elem_from_ref = cl_abap_typedescr=>typekind_int.
+...
+```
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+#### Getting Type Information for Classes
+
+```abap
+*&---------------------------------------------------------------------*
+*& Classes
+*&---------------------------------------------------------------------*
+
+"Creating an object reference variable
+DATA(oref) = NEW zcl_demo_abap_objects( ).
+
+"--------- Getting general type information ---------
+
+"Note: 
+"- The attribute accesses and method calls show a selection.
+"- The example uses a demo class from the ABAP cheat sheet repository.
+
+"Getting general type information using cl_abap_typedescr without cast
+"describe_by_object_ref method
+DATA(tdo_cl_gen1) = cl_abap_typedescr=>describe_by_object_ref( oref ).
+
+"describe_by_name method
+DATA tdo_cl_gen2 TYPE REF TO cl_abap_typedescr.
+tdo_cl_gen2 = cl_abap_typedescr=>describe_by_name( 'ZCL_DEMO_ABAP_OBJECTS' ).
+
+"Selection of retrievable, general information
+"The same information is also accessible after the cast below.
+"The examples use tdo_cl_gen1. tdo_cl_gen2 is also possible.
+DATA(type_category_cl_gen) = tdo_cl_gen1->kind.
+DATA(type_kind_cl_gen) = tdo_cl_gen1->type_kind.
+DATA(absolute_name_cl_gen) = tdo_cl_gen1->absolute_name.
+DATA(relative_name_cl_gen) = tdo_cl_gen1->get_relative_name( ).
+
+"--------- Getting more specific type information using a cast ---------
+
+"The data reference variable is of type ref to cl_abap_classdescr.
+"Getting the reference in one go using inline declaration.
+DATA(tdo_cl) = CAST cl_abap_classdescr( cl_abap_typedescr=>describe_by_object_ref( oref ) ).
+
+"Selection of attribute accesses and method calls to get various
+"pieces of information
+DATA(type_category_cl) = tdo_cl->kind.
+DATA(type_kind_cl) = tdo_cl->type_kind.
+DATA(absolute_name_cl) = tdo_cl->absolute_name.
+DATA(relative_name_cl) = tdo_cl->get_relative_name( ).
+
+DATA(class_kind_cl) = tdo_cl->class_kind.
+DATA(attributes_cl) = tdo_cl->attributes.
+DATA(interfaces_cl) = tdo_cl->interfaces.
+DATA(events_cl) = tdo_cl->events.
+DATA(methods_cl) = tdo_cl->methods.
+"Accessing method/parameter information
+LOOP AT methods_cl INTO DATA(meth_wa).
+  DATA(meth_name) = meth_wa-name.
+  LOOP AT meth_wa-parameters INTO DATA(param_wa).
+    "Getting type description object of method parameters
+    DATA(meth_param_type) = tdo_cl->get_method_parameter_type(
+      p_method_name    = meth_name
+      p_parameter_name = param_wa-name ).
+  ENDLOOP.
+ENDLOOP.
+DATA(super_class_cl) = tdo_cl->get_super_class_type( ).
+DATA(super_class_name_cl) = super_class_cl->absolute_name.
+DATA(is_instantiable_cl) = tdo_cl->is_instantiatable( ).
+
+"--------- Excursions ---------
+
+"Checking against the constants of the classes cl_abap_typedescr and
+"cl_abap_classdescr
+ASSERT type_category_cl = cl_abap_typedescr=>kind_class.
+ASSERT type_kind_cl = cl_abap_typedescr=>typekind_class.
+ASSERT class_kind_cl = cl_abap_classdescr=>classkind_final.
+
+"Using the result of the method calls above to get the data reference,
+"without inline declaration.
+DATA tdo_cl_2 TYPE REF TO cl_abap_classdescr.
+tdo_cl_2 = CAST #( tdo_cl_gen1 ).
+"tdo_cl_gen2 is also possible
+tdo_cl_2 = CAST #( tdo_cl_gen2 ).
+
+"Checking whether the class name applies (the example returns false)
+DATA(applies_to_class) = tdo_cl->applies_to_class( 'CL_ABAP_DYN_PROG' ).
+```
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+#### Getting Type Information for Interfaces
+
+```abap
+*&---------------------------------------------------------------------*
+*& Interfaces
+*&---------------------------------------------------------------------*
+
+"--------- Getting general type information ---------
+
+"Note: 
+"- The attribute accesses and method calls show a selection.
+"- The example uses a demo interface from the ABAP cheat sheet repository.
+
+"Getting general type information using cl_abap_typedescr without cast
+"This example only uses the describe_by_name method
+DATA(tdo_intf_gen) = cl_abap_typedescr=>describe_by_name( 'ZDEMO_ABAP_OBJECTS_INTERFACE' ).
+
+"Selection of retrievable, general information
+"The same information is also accessible after the cast below.
+"The examples use tdo_if_gen1. tdo_if_gen2 is also possible.
+DATA(type_category_if_gen) = tdo_intf_gen->kind.
+DATA(type_kind_if_gen) = tdo_intf_gen->type_kind.
+DATA(absolute_name_if_gen) = tdo_intf_gen->absolute_name.
+DATA(relative_name_if_gen) = tdo_intf_gen->get_relative_name( ).
+
+"--------- Getting more specific type information using a cast ---------
+
+"The data reference variable is of type ref to cl_abap_typedescr.
+"Getting the reference in one go using inline declaration.
+DATA(tdo_if) = CAST cl_abap_intfdescr( cl_abap_typedescr=>describe_by_name( 'ZDEMO_ABAP_OBJECTS_INTERFACE' ) ).
+
+"Selection of attribute accesses and method calls to get various
+"pieces of information
+DATA(type_category_if) = tdo_if->kind.
+DATA(type_kind_if) = tdo_if->type_kind.
+DATA(absolute_name_if) = tdo_if->absolute_name.
+DATA(relative_name_if) = tdo_if->get_relative_name( ).
+
+DATA(kind_if) = tdo_if->intf_kind.
+DATA(attributes_if) = tdo_if->attributes.
+DATA(interfaces_if) = tdo_if->interfaces.
+DATA(events_if) = tdo_if->events.
+DATA(methods_if) = tdo_if->methods.
+
+"--------- Excursions ---------
+
+"Checking against the constants of the ifasses cl_abap_typedescr and
+"cl_abap_intfdescr
+ASSERT type_category_if = cl_abap_typedescr=>kind_intf.
+ASSERT type_kind_if = cl_abap_typedescr=>typekind_intf.
+ASSERT kind_if = cl_abap_intfdescr=>intfkind_flatt.
+
+"Using the result of the method calls above to get the data reference,
+"without inline deifaration.
+DATA tdo_if_2 TYPE REF TO cl_abap_intfdescr.
+tdo_if_2 = CAST #( tdo_intf_gen ).
+```
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+#### Examples Demonstrating RTTI
+
+The following code examples demonstrate a range of RTTI attribute accesses and method calls. They include retrieving type information at runtime for:
+- Elementary types
+- Enumerated types
+- Structures
+- Internal tables
+- Data references
+- Classes
+- Interfaces
+
+<br>
+
+Click to expand for example code:
+
+<details>
+  <summary>🟢 1) Attribute Access and Method Calls</summary>
+  <!-- -->
+
+<br>
 
 To try the example out, create a demo class named `zcl_demo_abap` and paste the code into it. 
 The example is not set up to display output in the console. So, after activation, you may want to set a break point at the first position possible and choose *F9* in ADT to execute the class.  You can then walk through the example in the debugger. This will allow you to double-click on the variables and check out the contents. The example is similar to the one below, however, this only focuses on the method calls and attribute accesses without output preparation among others.
@@ -4233,9 +4829,15 @@ CLASS zcl_demo_abap IMPLEMENTATION.
 ENDCLASS.
 ```
 
-<p align="right"><a href="#top">⬆️ back to top</a></p>
+</details>  
 
-#### Example: Exploring the RTTI Type Hierarchy
+<br>
+
+<details>
+  <summary>🟢 2) Exploring the RTTI Type Hierarchy</summary>
+  <!-- -->
+
+<br>
 
 The following example explores the RTTI type hierarchy and demonstrates how to retrieve various pieces of type information using RTTI attributes and methods. You can create a demo class (adapt the class name if needed), copy and paste the code, run the class with F9 in ADT, and check the output in the console.
 
@@ -4984,6 +5586,8 @@ CLASS zcl_demo_abap IMPLEMENTATION.
   ENDMETHOD.
 ENDCLASS.
 ```
+
+</details>  
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
