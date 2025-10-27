@@ -5700,7 +5700,8 @@ CLASS zcl_demo_abap DEFINITION
     DATA: ts1         TYPE utclong,
           runtime_tab TYPE TABLE OF decfloat34 WITH EMPTY KEY,
           description TYPE string,
-          idx         TYPE i.
+          idx         TYPE i,
+          idx_char    TYPE c LENGTH 20.
 
     CONSTANTS: loop_count TYPE i VALUE 5000.
 ENDCLASS.
@@ -5735,9 +5736,10 @@ CLASS zcl_demo_abap IMPLEMENTATION.
 
     DO loop_count TIMES.
       idx = sy-index.
+      idx_char = sy-index.
       ts1 = utclong_current( ).
 **********************************************************************
-      READ TABLE itab_w_primary_key TRANSPORTING NO FIELDS WITH TABLE KEY comp1 = idx comp2 = idx comp3 = idx.
+      READ TABLE itab_w_primary_key TRANSPORTING NO FIELDS WITH TABLE KEY comp1 = idx comp2 = idx_char comp3 = idx_char.
 **********************************************************************
       store_runtime( high = utclong_current( ) low = ts1 ).
     ENDDO.
@@ -5751,9 +5753,10 @@ CLASS zcl_demo_abap IMPLEMENTATION.
 
     DO loop_count TIMES.
       idx = sy-index.
+      idx_char = sy-index.
       ts1 = utclong_current( ).
 **********************************************************************
-      READ TABLE itab_empty_key TRANSPORTING NO FIELDS WITH KEY comp1 = idx comp2 = idx comp3 = idx.
+      READ TABLE itab_empty_key TRANSPORTING NO FIELDS WITH KEY comp1 = idx comp2 = idx_char comp3 = idx_char.
 **********************************************************************
       store_runtime( high = utclong_current( ) low = ts1 ).
     ENDDO.
@@ -5765,9 +5768,10 @@ CLASS zcl_demo_abap IMPLEMENTATION.
 
     DO loop_count TIMES.
       idx = sy-index.
+      idx_char = sy-index.
       ts1 = utclong_current( ).
 **********************************************************************
-      READ TABLE itab_w_secondary_key TRANSPORTING NO FIELDS WITH TABLE KEY sk COMPONENTS comp1 = idx comp2 = idx comp3 = idx.
+      READ TABLE itab_w_secondary_key TRANSPORTING NO FIELDS WITH TABLE KEY sk COMPONENTS comp1 = idx comp2 = idx_char comp3 = idx_char.
 **********************************************************************
       store_runtime( high = utclong_current( ) low = ts1 ).
     ENDDO.
@@ -5784,7 +5788,6 @@ CLASS zcl_demo_abap IMPLEMENTATION.
 
   METHOD get_avg_runtime.
     "Calculating the average runtime value
-
     DATA(sum) = REDUCE decfloat34( INIT s = VALUE #( )
                                    FOR wa IN runtime_tab
                                    NEXT s += wa ).

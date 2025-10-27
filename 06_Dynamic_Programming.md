@@ -4310,6 +4310,32 @@ ASSERT tdo_struc->applies_to_data( dref_struc->* ) = abap_true.
 dref_struc->* = demo_struc.
 ```
 
+You may find that some RTTI methods (you might know from code using Standard ABAP) are not supported in ABAP for Cloud Development. Alternatively, you can explore the classes and methods offered by the XCO library (see also in the [Released ABAP Classes](22_Released_ABAP_Classes.md) cheat sheet).
+
+```abap
+DATA(tdo_struc) = CAST cl_abap_structdescr( cl_abap_typedescr=>describe_by_name( 'ZDEMO_ABAP_CARR' ) ).
+"Method call not supported in ABAP for Cloud Development
+"DATA(ddic_field_list) = tdo_struc->get_ddic_field_list( ).
+
+DATA(handler_tabl) = xco_cp_abap_dictionary=>database_table( 'ZDEMO_ABAP_CARR' ).
+DATA(dbtab_exists) = handler_tabl->exists( ).
+IF dbtab_exists = abap_true.
+  DATA(dbtab_field_names) = handler_tabl->fields->all->get_names( ).
+  DATA(dbtab_fields_built_in_types) = handler_tabl->fields->all->content( )->get_underlying_built_in_types( ).
+  LOOP AT dbtab_fields_built_in_types INTO DATA(wa).
+    DATA(field_name) = wa-field->name.
+    DATA(tdo) = wa-underlying_built_in_type->abap_type->get_type_descriptor( ).
+    DATA(dec) = wa-underlying_built_in_type->decimals.
+    DATA(len) = wa-underlying_built_in_type->length.
+    DATA(ty) = wa-underlying_built_in_type->type.
+  ENDLOOP.
+  DATA(dbtab_keys) = handler_tabl->fields->key->get_names( ).
+  DATA(dbtab_included_fields) = handler_tabl->fields->included->get_names( ).
+ENDIF.
+```
+
+
+
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
 #### Getting Type Information for Internal Tables and Table Types

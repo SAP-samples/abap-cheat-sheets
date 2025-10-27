@@ -6,7 +6,7 @@
   - [ABAP for Cloud Development Documentation Release News](#abap-for-cloud-development-documentation-release-news)
   - [Standard ABAP Documentation Release News](#standard-abap-documentation-release-news)
 
-This ABAP cheat sheet summarizes the release news from the ABAP Keyword Documentation for both versions of the ABAP language: ABAP for Cloud Development and Standard ABAP. It organizes the information by release and topic, such as ABAP SQL and ABAP CDS. This cheat sheet is intended to collect ABAP news, enabling quick browsing and research on new features and changes by release and topic.
+This ABAP cheat sheet summarizes the release news from the ABAP Keyword Documentation for both versions of the ABAP language: ABAP for Cloud Development and Standard ABAP. It organizes the information by release and topic, such as ABAP SQL and ABAP CDS. This cheat sheet is intended to collect summarized and simplified ABAP news, enabling quick browsing and research on new features and changes by release and topic.
 
 > [!NOTE]  
 >
@@ -2822,6 +2822,467 @@ This ABAP cheat sheet summarizes the release news from the ABAP Keyword Document
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## Standard ABAP Documentation Release News
+
+<details>
+  <summary>🟢 Release 816</summary>
+  <!-- -->
+<br>
+  <table>
+        <tr>
+            <th>Tag</th>
+            <th>Title</th>
+            <th>Details</th>
+        </tr>
+<tr>
+            <td rowspan="20">ABAP_CDS</td>
+            <td>Stricter Rules for Association ON Conditions in CDS Custom Entities</td>
+            <td>Stricter rules for the association ON condition for CDS custom entities have been implemented. For details, see CDS DDL - DEFINE CUSTOM ENTITY, association. The same rules also apply if other CDS entities define associations with a CDS custom entity as an association target. </td>
+        </tr>
+<tr>
+            <td>Extended Cast Matrix</td>
+            <td>In CDS view entities and in CDS DDIC-based views (obsolete), casting from the data type CURR into the data types DECFLOAT16 and DECFLOAT34 is now possible. </td>
+        </tr>
+<tr>
+            <td>New Element Annotations</td>
+            <td>The following ABAP annotations are now supported as element annotations with the annotation scope \#ELEMENT. AbapCatalog.typeSpec.conversionExit AbapCatalog.typeSpec.outputLength ObjectModel.upperCase </td>
+        </tr>
+<tr>
+            <td>New Analytical Scalar Functions</td>
+            <td>The following analytical scalar functions are available as of ABAP release 8.16: LN LOG EXPONENTIAL POWER For a complete list, see the topic ABAP CDS - Analytical Scalar Functions. </td>
+        </tr>
+<tr>
+            <td>CDS Propagated Buffer</td>
+            <td>CDS buffer propagation can be defined for CDS view entities and CDS transactional queries now: Buffer propagation can be enabled and disabled with the annotation AbapCatalog.entityBuffer.propagationAllowed: true|false The propagated fields can be specified in a CDS propagated buffer defined by PROPAGATE VIEW ENTITY BUFFER ON cds_entity ... </td>
+        </tr>
+<tr>
+            <td>CDS Aspects</td>
+            <td>CDS aspects can now be used to define reusable elements of CDS entities using the syntax DEFINE ASPECT. The syntax BIND ASPECT binds the aspect to a CDS view entity, and with the syntax INCLUDE, individual components of the CDS aspect can be included in the select list of the CDS view entity and CDS projection views. </td>
+        </tr>
+<tr>
+            <td>CDS External Entities</td>
+            <td>A new kind of CDS entity is available: the CDS external entity. CDS external entities can be used to access data from external database systems within the AS ABAP. They are defined using the statement DEFINE EXTERNAL ENTITY. The properties of the connection between an external entity and the external system are configured using a CDS logical external schema. </td>
+        </tr>
+<tr>
+            <td>Writable CDS External Entities</td>
+            <td>CDS external entities can now be defined as writable using the syntax WRITABLE. Writable external entities allow modifying data on external database systems using the ABAP SQL INSERT, UPDATE, MODIFY, and DELETE operations. An ABAP SQL connection object is required to establish a service connection and enable the logical external schema for write access. </td>
+        </tr>
+<tr>
+            <td>Static External Entities</td>
+            <td>With the first release of CDS external entities, only dynamic external entities were available. Now, also static external entities are available. They are defined using the addition PROVIDED BY logical_external_schema in the data definition. </td>
+        </tr>
+<tr>
+            <td>Client Parameter in SQL Functions</td>
+            <td>For the following built-in functions, the session variable $session.client must be passed to the optional formal parameter client in ABAP for Cloud Development: UNIT_CONVERSION CURRENCY_CONVERSION ABAP_SYSTEM_TIMEZONE ABAP_USER_TIMEZONE TSTMP_TO_DATS TSTMP_TO_TIMS TSTMP_TO_DST DATS_TIMS_TO_TSTMP The same holds for usage of these functions in CDS DDIC-based views. </td>
+        </tr>
+<tr>
+            <td>Client Safety of CDS Table Functions</td>
+            <td>The annotation ClientHandling.clientSafe declares a CDS table function explicitly as client-safe and ensures the corresponding checks. </td>
+        </tr>
+<tr>
+            <td>CDS Enumerated Elements in CDS Conditions</td>
+            <td>CDS enumerated elements are now also supported as left-hand operands in logical expressions. For more details, see the topic CDS DDL - Using CDS Enumerated Types. </td>
+        </tr>
+<tr>
+            <td>Support of Data Types in Logical Expressions with IS INITIAL</td>
+            <td>In logical expressions with the operator INITIAL, the left-hand operand can now also have one of the following data types: RAW, DECFLOAT16, DECFLOAT34, DATN, TIMN, UTCL. This applies to all CDS entities except for CDS DDIC-based view. </td>
+        </tr>
+<tr>
+            <td>CDS Delegated Buffers</td>
+            <td>CDS delegated buffers can now be defined for CDS view entities using the syntax DEFINE VIEW ENTITY BUFFER ON ... cds_entity TYPE DELEGATED. Delegated buffers delegate the buffer usage of a CDS view entity to the buffer of its base object, which can improve performance. </td>
+        </tr>
+<tr>
+            <td>Writable CDS View Entities</td>
+            <td>CDS view entities can now be defined as writable using the syntax WRITABLE. Some restrictions apply, which are listed in the respective chapter. </td>
+        </tr>
+<tr>
+            <td>CDS Table Entities</td>
+            <td>A new kind of CDS entity is available: the CDS table entity. A CDS table entity defines a database table in ABAP CDS using the statement DEFINE TABLE ENTITY. CDS table entities are the ABAP Cloud successor of DDIC database tables. </td>
+        </tr>
+<tr>
+            <td>CDS Table Entity, Table Buffering</td>
+            <td>Table buffering can be defined for CDS table entities now: Table buffering can be enabled and disabled with the annotation @AbapCatalog.entityBuffer.definitionAllowed: true|false The buffering type can be specified with a CDS table entity buffer defined by DEFINE TABLE ENTITY BUFFER ON cds_table_entity ... Table buffering can be defined differently for the layers core, localization, industry, partner and customer. </td>
+        </tr>
+<tr>
+            <td>CDS Service Definitions Can Now Expose AMDP Procedure Implementations</td>
+            <td>The new keyword EXPOSE METHOD can now be used in CDS service definitions for exposing AMDP procedure implementations for consumption in a business service. </td>
+        </tr>
+<tr>
+            <td>CDS Static Caches</td>
+            <td>Static caches are now available in ABAP CDS. These can lead to performance gains when aggregated data is cached. </td>
+        </tr>
+<tr>
+            <td>New Reference Type for Annotations</td>
+            <td>A new reference type for annotations is available: DevelopmentObjectRef </td>
+        </tr>
+<tr>
+            <td rowspan="2">ABAP_DOCU</td>
+            <td>Documentation Language</td>
+            <td>From release 8.16 on, the ABAP Keyword Documentation is delivered and supported in English only. </td>
+        </tr>
+<tr>
+            <td>CDS Annotation Documentation</td>
+            <td>From release 8.16 on, properties and documentation for CDS annotations delivered as SAP annotations are shown under ABAP CDS - SAP Annotation Documentation. If available, the KTD of an annotation definition is embedded there and/or links to help portal documentation are shown. The documentation of the ABAP annotations that formerly appeared at their point of use in the ABAP Keyword Documentation was migrated to KTDs and is shown under ABAP Annotations now. </td>
+        </tr>
+<tr>
+            <td rowspan="1">ABAP_OBJECTS</td>
+            <td>Visibility Sections</td>
+            <td>For technical reasons a global class that can be part of an inheritance tree that is a subclass a non-final class that is not a subclass but can be a superclass must contain the statements PROTECTED SECTION and PRIVATE SECTION also for empty protected and private sections. Before Release 8.16, a syntax warning occurred in case of missing protected and private sections only for non-final classes. Now the warning occurs also for final subclasses. </td>
+        </tr>
+<tr>
+            <td rowspan="28">ABAP_SQL</td>
+            <td>Dynamic SELECT</td>
+            <td>The new dynamic forms of the statements WITH and OPEN CURSOR enable fully dynamic SELECT statements, where all clauses except the INTO clause and the ABAP-specific additions can be specified in one dynamic token. The new dynamic forms can be compared to an ADBC query that is also passed as a string. </td>
+        </tr>
+<tr>
+            <td>Connection Objects</td>
+            <td>An ABAP SQL connection object implementing the interface IF_ABAP_SQL_CONNECTION represents a database connection that can be used behind the CONNECTION addition of ABAP SQL statements. Connection objects enable using service connections in ABAP Cloud. </td>
+        </tr>
+<tr>
+            <td>Level-based Hierarchies</td>
+            <td>A new variant of the hierarchy generator HIERARCHY uses the addition LEVELS in order to generate level-based hierarchies. These allow access to hierarchical data in data sources that are defined by level columns. In contrast, the former variant of HIERARCHY uses the addition CHILD TO PARENT ASSOCIATION in order to generate parent-child-based hierarchies from parent-child relationships. </td>
+        </tr>
+<tr>
+            <td>Caching of Hierarchies</td>
+            <td>The new addition CACHE for SELECT, FROM HIERARCHY allows the caching policy to be defined for hierarchies. </td>
+        </tr>
+<tr>
+            <td>Database Hints for the ABAP SQL In-Memory Engine</td>
+            <td>Behind the addition %_HINTS, the database system ABAP can now be specified for listing database hints for the ABAP SQL in-memory engine. These database are documented under ABAP SQL In-Memory Engine, Database Hints. In the current release, there are not yet any hints available for the ABAP SQL in-memory engine. </td>
+        </tr>
+<tr>
+            <td>ORDER BY n</td>
+            <td>In the column list of the ORDER BY clause, a literal or a host constant of an integer type is handled as the column position in the result set of the query. This feature is available since the introduction of SQL expressions in the ORDER BY clause with release 7.57 but was undocumented and behaved partly undefined. With release 8.16 the behavior is defined and documented. </td>
+        </tr>
+<tr>
+            <td>OPTIONS</td>
+            <td>A new addition OPTIONS can and should be used in front of the ABAP-specific additions PRIVILEGED ACCESS, BYPASSING BUFFER and CONNECTION at the end of the statement2 SELECT, WITH or OPEN CURSOR. </td>
+        </tr>
+<tr>
+            <td>PROVIDED BY</td>
+            <td>A new addition PROVIDED BY to the data source of the FROM clause specifies a logical external schema in order to map a CDS external entity to an external system. </td>
+        </tr>
+<tr>
+            <td>Syntax Warning for Replacement Objects</td>
+            <td>Each ABAP SQL access to a DDIC database table or a DDIC database view with a replacement object produces a syntax check warning that can be suppressed by the pragma \#\#open_sql_redirect_dml[...]. The pragma is used to highlight such accesses in the code and indicates the special rules that must be observed for them. Before release 8.16, only write accesses led to warnings. </td>
+        </tr>
+<tr>
+            <td>CDS Scalar Functions</td>
+            <td>CDS scalar functions can be used as SQL expressions at all operand positions where expressions are allowed. </td>
+        </tr>
+<tr>
+            <td>Client Parameter in SQL Functions</td>
+            <td>In the following built-in functions, the optional formal parameter client must not be used in language version ABAP for Cloud Development any more: UNIT_CONVERSION CURRENCY_CONVERSION ABAP_SYSTEM_TIMEZONE ABAP_USER_TIMEZONE TSTMP_TO_DATS TSTMP_TO_TIMS TSTMP_TO_DST DATS_TIMS_TO_TSTMP Only the current client as the default value of the parameter must be used in these functions. Passing an explicit client leads to a syntax warning and later to a syntax error. </td>
+        </tr>
+<tr>
+            <td>Enhancement of STRING_AGG Function</td>
+            <td>The optional separator sep of the STRING_AGG function can now be a host variable. </td>
+        </tr>
+<tr>
+            <td>Enhancement of LTRIM and RTRIM Functions</td>
+            <td>The character char of the LTRIM and RTRIM functions can now be a host variable or an SQL expression. Additionally, the length of char can be other than 1. </td>
+        </tr>
+<tr>
+            <td>Aggregate Functions Processed by the ABAP SQL In-Memory Engine</td>
+            <td>The aggregate functions MIN, MAX, and SUM can be processed by the ABAP SQL in-memory engine in the SELECT list now. They no longer bypass table buffering and do not cause the transport of an internal table accessed by FROM @itab to the database. </td>
+        </tr>
+<tr>
+            <td>Binary Floating Point Types in Arithmetic Expressions</td>
+            <td>Operands of type FLTP or f can now be used in a decimal floating point expression and integer types can be used in a binary floating expression. </td>
+        </tr>
+<tr>
+            <td>Declaring a Client Column for Client-independent Data Sources</td>
+            <td>The addition DECLARE CLIENT in the FROM clause of an ABAP SQL query declares a column of a client-independent data source as a client column and the data source as client-dependent during the current access. Implicit client handling takes place and can be affected by the addition USING. </td>
+        </tr>
+<tr>
+            <td>Addition OPTIONS for DML Statements</td>
+            <td>The addition OPTIONS can now also be used for DML statements to introduce ABAP-specific additions. It can be used as OPTIONS for the DML statement itself. It can be used for subqueries of DML statements. </td>
+        </tr>
+<tr>
+            <td>Non-numeric Results in Aggregate Functions</td>
+            <td>The result of the aggregate functions MIN and MAX can now be non-numeric for window expressions and hierarchy aggregate navigators. </td>
+        </tr>
+<tr>
+            <td>Aggregate Functions in Hierarchy Aggregate Navigators</td>
+            <td>The aggregate function AVG can now be used for the hierarchy aggregate navigator HIERARCHY_DESCENDANTS_AGGREGATE if a JOIN condition is not defined and for the hierarchy aggregate navigator HIERARCHY_ANCESTORS_AGGREGATE. </td>
+        </tr>
+<tr>
+            <td>Spatial Functions</td>
+            <td>SAP HANA constructors, methods, and functions for accessing and manipulating spatial data are now available as functions in ABAP SQL. </td>
+        </tr>
+<tr>
+            <td>New Spatial Functions</td>
+            <td>The following spatial functions are now available: ST_3DLENGTH ST_ASMVTGEOM ST_BUFFER ST_CLOSESTPOINTOFAPPROACH ST_FRECHETDISTANCE ST_INTERIORRINGN ST_ISVALIDTRAJECTORY ST_MAKEPOLYGON ST_NEW_POINT ST_NEW_POINTM ST_NEW_POINTZ ST_NEW_POINTZM ST_REMOVEPOINT ST_REVERSE ST_TOUCHES ST_WITHIN </td>
+        </tr>
+<tr>
+            <td>DISTINCT in OVER Clause</td>
+            <td>The addition DISTINCT is now allowed for the aggregate function COUNT in a window expression. </td>
+        </tr>
+<tr>
+            <td>Enhancement of LPAD and RPAD Functions</td>
+            <td>The length len of the LPAD and RPAD functions can now be a host variable or an SQL expression. Additionally, the length of len can be less than 1 and greater than 1333. Both functions can produce the result type SSTRING with an undefined length. </td>
+        </tr>
+<tr>
+            <td>HIERARCHY_COMPOSITE_ID</td>
+            <td>The function HIERARCHY_COMPOSITE_ID can be used to generate composite node identifiers free of name clashes. </td>
+        </tr>
+<tr>
+            <td>New Aggregate Spatial Functions</td>
+            <td>The following aggregate spatial functions are now available: ST_ALPHASHAPEAGGR ST_ALPHASHAPEAREAAGGR ST_ASESRIJSON_MULTICOLUMN ST_ASGEOJSON_MULTICOLUMN ST_ASMVT ST_ASSVGAGGR ST_COLLECTAGGR ST_CONCAVEHULLAGGR ST_CONVEXHULLAGGR ST_ENVELOPEAGGR ST_INTERSECTIONAGGR ST_UNIONAGGR </td>
+        </tr>
+<tr>
+            <td>New SQL Functions GREATEST and LEAST</td>
+            <td>The SQL functions GREATEST and LEAST are now available. These functions determine the largest and smallest value of a set of arguments. </td>
+        </tr>
+<tr>
+            <td>Placing USING Behind OPTIONS</td>
+            <td>In an ABAP DQL statement, the addition USING can be placed behind OPTIONS in order to switch the implicit client handling of the client-dependent data sources of all queries of the statement at once. </td>
+        </tr>
+<tr>
+            <td>Exposing Client Columns of CDS Entities</td>
+            <td>The addition EXPOSE CLIENT to USING ... CLIENTS ... allows access to the client IDs of certain client-dependent CDS entities that do not have a client column. </td>
+        </tr>
+<tr>
+            <td rowspan="1">ADBC</td>
+            <td>Support of ABAP SQL Connection Objects</td>
+            <td>ADBC now supports ABAP SQL connection objects using the method ADAPTER_2_ABAP_SQL of the CL_SQL_ADBC_CONNECTION_BUILDER class. The ABAP SQL connection object must enable the ADBC adapter. </td>
+        </tr>
+<tr>
+            <td rowspan="3">AMDP</td>
+            <td>New AMDP Option CDS SESSION CLIENT DEPENDENT</td>
+            <td>The new addition CDS SESSION CLIENT DEPENDENT can be used after AMDP OPTIONS to set the HANA session variable CDS_CLIENT to its default value and to declare the AMDP method explicitly as client-dependent and to make it client-safe. The addition can be also used as an option after FOR DDL. </td>
+        </tr>
+<tr>
+            <td>Client Safety of AMDP Methods</td>
+            <td>In order to support the concept of client isolation, AMDP methods can be made client-safe. This is mandatory for ABAP for Cloud Development. </td>
+        </tr>
+<tr>
+            <td>FOR SQL SERVICE</td>
+            <td>A new addition FOR SQL SERVICE to the statement CLASS-METHODS specifies that an AMDP procedure implementation is intended to be exposed for external SQL access using an SQL service. </td>
+        </tr>
+<tr>
+            <td rowspan="1">CDS_ACCESS_CONTROL</td>
+            <td>Session Variables and Enumerated Constants on the Right Side of Literal Conditions</td>
+            <td>Literal conditions in CDS roles now support session variables and enumerated constants on the right side of the logical expression. For details, see the topic CDS DCL - DEFINE ROLE, literal_condition. </td>
+        </tr>
+<tr>
+            <td rowspan="17">CDS_BDL</td>
+            <td>RAP Type Mapping, Constants</td>
+            <td>It is now possible to specify a fixed value on the left side of a RAP type mapping using the syntax constant. This can be useful, for example, in scenarios where different entities are mapped to the same underlying RAP persistent table. </td>
+        </tr>
+<tr>
+            <td>RAP Default Values Function</td>
+            <td>A RAP default values function can be used to default values for fields or input parameters for RAP BO operations on the user interface. The syntax for defining a default values function is default function. </td>
+        </tr>
+<tr>
+            <td>ABP Auxiliary Class</td>
+            <td>The new statement auxiliary class can be used to specify one or more ABP auxiliary classes that allow the outsourcing of functionality from an ABAP behavior pool. The primary purpose of an ABP auxiliary class is to allow developers to concurrently implement RAP behavior. </td>
+        </tr>
+<tr>
+            <td>RAP Business Events for Child Entities</td>
+            <td>RAP business events can now also be defined for CDS child entities. Up to now, a RAP business event could only be defined for the root node of a RAP business object. </td>
+        </tr>
+<tr>
+            <td>BDEF Friends</td>
+            <td>The new optional addition with friends can be used to specify one or more BDEF extensions as BDEF friends. A BDEF friend has unrestricted access to all components of the original BDEF. For example, a BDEF friend can call internal RAP BO operations and read or modify RAP BO entities IN LOCAL MODE. BDEF friends can be used for modularization purposes. </td>
+        </tr>
+<tr>
+            <td>Subentities as Authorization Master</td>
+            <td>You can now define RAP BO entities as RAP authorization master entity that are not defined as root entity. </td>
+        </tr>
+<tr>
+            <td>Result Multiplicity in Factory Actions</td>
+            <td>RAP factory actions now allow result multiplicity. This means that the cardinality can have one of the following values: [0..*] [1..*] A factory action can be used to create none, one, or any number of entity instances. </td>
+        </tr>
+<tr>
+            <td>Abstract BDEF, with hierarchy like entity</td>
+            <td>The new addition with hierarchy like entity can now be used in the RAP behavior definition header of an abstract behavior definition. It imposes stricter syntax checks to ensure compatibility between the hierarchical BDEF derived type of the abstract BDEF in question and the structured type of the underlying CDS entity. </td>
+        </tr>
+<tr>
+            <td>BDEF Alternative Keys for Managed and Unmanaged Behavior Definitions</td>
+            <td>BDEF pure keys and BDEF secondary keys are now available. They define the signature of a RAP key function. </td>
+        </tr>
+<tr>
+            <td>RAP Key Functions</td>
+            <td>RAP key functions are now available. A RAP key function is defined with reference to a BDEF alternative key and it returns the entity instances with matching values. Modification authorization master ( none ) The authorization control type none can be specified for authorization master to implicitly mark operations in authorization-dependent entities with authorization:none. </td>
+        </tr>
+<tr>
+            <td>Event-Driven Side Effects</td>
+            <td>You can define a business event to trigger a side effect in your RAP business object using the syntax for side effects. Whenever a defined event is raised by the application server, the event-driven side effect is triggered and the defined targets are reloaded. </td>
+        </tr>
+<tr>
+            <td>Non-Standard Operations for Associations</td>
+            <td>You can now define nonstandard operations for associations. These are link action, unlink action, and inverse function. </td>
+        </tr>
+<tr>
+            <td>Editable Treeview</td>
+            <td>The editable treeview scenario is now available. You can use the syntax instance hierarchy to make a treeview editable. The RAP reorder action can optionally be specified to move a hierarchy node to a dedicated position among its siblings. It is defined using the syntax addition [managed] reorder action. </td>
+        </tr>
+<tr>
+            <td>Dedicated Authorizations for Create-by-Association Operations</td>
+            <td>RAP authorization dependent entities use the authorization control that is defined on the related authorization master entity. For RAP create-by-association operations on an authorization-dependent entity, the system applies the authorization check for updates of the authorization master entity by default. For create by association on CDS to-child associations, you can now deviate from this default and specify separate authorizations for create-by-association operations. </td>
+        </tr>
+<tr>
+            <td>Explicit Save Order</td>
+            <td>You can explicitly define the save order using save after. </td>
+        </tr>
+<tr>
+            <td>RAP Collaborative Draft</td>
+            <td>A new RAP draft handling with collaborative capabilities is now available. The RAP collaborative draft allows multiple users to work concurrently on the same draft instance. It is defined using the syntax with collaborative draft. </td>
+        </tr>
+<tr>
+            <td>Authorization Context for Disable: New Options</td>
+            <td>New options are available for the authorization context after the addition for disable: determination: The determinations that are invoked during the RAP save sequence automatically skip the authorization objects listed in the associated authorization context ContextName. validation: The validations that are invoked during the save sequence automatically skip the authorization objects listed in the associated authorization context ContextName. The new options are only available for the BDEF implementation type. </td>
+        </tr>
+<tr>
+            <td rowspan="1">DATASET</td>
+            <td>MESSAGE Addition is Mandatory for OPEN DATASET</td>
+            <td>In the statement OPEN DATASET, the addition MESSAGE must be used, otherwise a syntax warning occurs. Behind MESSAGE, an inline declaration is possible now. </td>
+        </tr>
+<tr>
+            <td rowspan="1">DATA_CLUSTER</td>
+            <td>Enhancement to CL_ABAP_EXPIMP_UTILITIES</td>
+            <td>New options for the CL_ABAP_EXPIMP_UTILITIES class are available. </td>
+        </tr>
+<tr>
+            <td rowspan="2">DDIC</td>
+            <td>Empty Key of Table Types</td>
+            <td>Empty table keys that are available in ABAP language since 7.40, SP02, can now also be defined for DDIC table types for standard tables. </td>
+        </tr>
+<tr>
+            <td>Removal of Extensibility Annotations</td>
+            <td>The following extensibility annotations are no longer available for the dictionary DDL of dictionary objects and they are no longer required for C0 release of a DDIC object: @AbapCatalog.enhancement.quotaShareCustomer @AbapCatalog.enhancement.quotaSharePartner </td>
+        </tr>
+<tr>
+            <td rowspan="12">EML</td>
+            <td>RAP Handler Methods for RAP Default Values Functions</td>
+            <td>RAP default values functions require an implementation in an ABAP behavior pool in a specific way. See the topic Handler Methods for RAP Default Values Functions. </td>
+        </tr>
+<tr>
+            <td>C1 Release of Class CL_ABAP_BEHAVIOR_SAVER_FAILED</td>
+            <td>The RAP saver class CL_ABAP_BEHAVIOR_SAVER_FAILED has been released with the C1 release contract for the ABAP language version ABAP for Cloud Development. See the blog post Using BAPIs in RAP for further details. </td>
+        </tr>
+<tr>
+            <td>ABP Auxiliary Class</td>
+            <td>ABP auxiliary classes, which enable extended access rights to a referenced RAP BO, are possible now. Find more information here. </td>
+        </tr>
+<tr>
+            <td>Commits in the Context of RAP Projections</td>
+            <td>Regarding commits in the context of RAP projections behavior definitions (or RAP interface behavior definitions): RAP BO instances that fail to be committed in the RAP save sequence for the base RAP BO are returned to the RAP BO consumer. The messages in the failed RAP response parameter are automatically mapped to projections. </td>
+        </tr>
+<tr>
+            <td>Unit Tests and Contract Check Violations</td>
+            <td>ABAP contract checks violations are made visible in unit tests, i.e. the unit tests will fail if a contract check violation occurs. </td>
+        </tr>
+<tr>
+            <td>FORWARDING PRIVILEGED Addition</td>
+            <td>Using the FORWARDING PRIVILEGED addition in READ, MODIFY, and GET PERMISSIONS statements, you can pass on the privileged context in subsequent ABAP EML requests. </td>
+        </tr>
+<tr>
+            <td>ABAP EML Read Operations Not Allowed in Late Save Phase</td>
+            <td>ABAP EML read operations are not allowed in the RAP late save phase. </td>
+        </tr>
+<tr>
+            <td>Runtime Type Service Method for BDEF Derived Types</td>
+            <td>Runtime Type Services now include a method to create BDEF derived types dynamically and type-safe. See the topic here. </td>
+        </tr>
+<tr>
+            <td>Using Custom Secondary Table Keys in BDEF Derived Types</td>
+            <td>It is possible to create your own secondary table keys for BDEF derived types, and use them in ABAP statements. Find more information here. </td>
+        </tr>
+<tr>
+            <td>New Contract Checks</td>
+            <td>The following contract checks have been added: Disallowed entries in the failed response parameter Entries with wrong fail causes in the failed response parameter Entries with non-initial %state_area components in the reported response in various contexts Violations result in the runtime error BEHAVIOR_BAD_HANDLER_RESPONSE. </td>
+        </tr>
+<tr>
+            <td>Retry Feature for RAP Local Event Executions</td>
+            <td>An automatic retry feature is now available to ensure RAP local events execute in case of temporary issues like locks on RAP BO instances. The framework will attempt to retry up to three times. You can design your implementation for the framework to automatically retry event execution after a specified time. </td>
+        </tr>
+<tr>
+            <td>New Method GET_PRIVILEGED_ACCESS_PROFILE of the CL_ABAP_BEHV_AUX Class</td>
+            <td>Returns information about the privileged context. It can be used for the save phase only. </td>
+        </tr>
+<tr>
+            <td rowspan="5">EXPRESSIONS</td>
+            <td>String Expressions in VALUE Operator</td>
+            <td>String expressions can now directly be assigned to incompatible components without using CONV in assignments to structure components:VALUE ...( comp = strg_expr ) vs. VALUE ...( comp = CONV \#( strg_expr ) ). </td>
+        </tr>
+<tr>
+            <td>FOR GROUPS ... OF Supported for NEW</td>
+            <td>The variant FOR GROUPS ... OF of the iteration expression FOR is now also supported for the constructor operator NEW. </td>
+        </tr>
+<tr>
+            <td>Syntax Warning for Multiple Assignments of Components</td>
+            <td>In the constructor operators NEW and VALUE for structures, it is not allowed to assign multiple values to a component. This leads to a syntax error, if the component is directly named. It leads now also to a syntax warning in cases, where component groups are involved. </td>
+        </tr>
+<tr>
+            <td>Factorial and Binomial Functions</td>
+            <td>The built-in function factorial computes the factorial of positive integer values. The binomial function computes the binomial coefficient. </td>
+        </tr>
+<tr>
+            <td>Numeric Functions for Statistics and Probability Theory in ABAP</td>
+            <td>The following numeric functions are now available: erf, erfc, erf_inv, and erfc_inv for calculations with floating point numbers and decimal floating points numbers implement the error function, the complementary error function and their inverses. gamma and log_gamma implement the gamma and log gamma functions for calculations with floating point numbers and decimal floating points numbers. gamma_lower implements the lower incomplete gamma function and its inverse for calculations with floating point numbers and decimal floating points numbers. </td>
+        </tr>
+<tr>
+            <td rowspan="3">ITAB</td>
+            <td>READ TABLE ... WHERE ...</td>
+            <td>The addition WHERE can now be used with the READ TABLE statement. It reads the first line of an internal table that fulfills the WHERE condition. In contrast to the addition WITH KEY, arbitrary logical expressions can be specified instead of equality conditions only. The syntax offers an easier to use alternative to the following frequently used pattern but does not offer any performance gain. LOOP AT itab ... [USING KEY ...] WHERE log_exp|(cond_syntax).   EXIT. ENDLOOP. The same rules are valid as for using a WHERE condition in other internal table statements ( LOOP AT, MODIFY, DELETE). In particular, it is also possible to specify a dynamic WHERE condition. </td>
+        </tr>
+<tr>
+            <td>Harmonization of Table Expressions and READ TABLE Statement</td>
+            <td>The variants for specifying a table line in table expressions are now mapped exactly to the respective variants of the READ TABLE statement. The same rules apply and the same syntax warnings can occur. For that, the internal behavior of the variants [KEY keyname [COMPONENTS]] ... was adjusted to match the behavior of the respective READ variants and a new variant TABLE KEY keyname [COMPONENTS] ... was introduced for READ ... WITH TABLE KEY .... Before, the syntax of the existing variants was not stringently mapped. Despite this adjustment, the behavior of existing programs is not changed. The adjustment offers new possibilities, such as specifying only a part of a table key or specifying additional search fields with a table key. Some new syntax warnings regarding performance might show up and can be either corrected or hidden by a pragma. </td>
+        </tr>
+<tr>
+            <td>IS [NOT] INITIAL in WHERE Condition of FILTER</td>
+            <td>In the basic form of the FILTER operator, the predicate IS [NOT] INITIAL is now possible. </td>
+        </tr>
+<tr>
+            <td rowspan="1">RFC</td>
+            <td>New Synchronous RFC</td>
+            <td>A synchronous RFC call specifying a remote session is now possible using the syntax CALL FUNCTION ... IN REMOTE SESSION .... </td>
+        </tr>
+<tr>
+            <td rowspan="2">SAP_GUI</td>
+            <td>EXCLUDING Addition of SET PF-STATUS</td>
+            <td>In order to prevent memory bottlenecks when handling the GUI status, duplicate entries are now removed from an internal table specified after the addition EXCLUDING of the statement SET PF-STATUS. This change is made available by a kernel correction down to release 7.53. </td>
+        </tr>
+<tr>
+            <td>Handling of the ! Character in Input Fields</td>
+            <td>The behavior of the character ! in the initial position of an input field on a dynpro screen can be controlled by the new profile parameter dynp/disable_input_reset: The value TRUE disables the former standard behavior, where all characters in the field are deleted before the data transport. The value FALSE (default) preserves that behavior. </td>
+        </tr>
+<tr>
+            <td rowspan="1">SXML</td>
+            <td>Header Options for sXML Library</td>
+            <td>Header options for the XML declaration are now available in the sXML Library: CO_OPT_VAL_NO (no XML header) This is the default option. CO_OPT_VAL_WITHOUT_ENCODING (version) CO_OPT_VAL_FULL (version and encoding) </td>
+        </tr>
+<tr>
+            <td rowspan="2">SYSTEM_CLASSES</td>
+            <td>System Classes for Probability Distribution</td>
+            <td>Two new system classes for probability distribution are available: CL_ABAP_PROB_DISTRIBUTION defines probability distributions in ABAP for probabilities of a floating point data type. CL_ABAP_PROB_DISTRIBUTION_DF34 defines probability distributions in ABAP for probabilities of the built-in data type decfloat34. Both classes allow the generation of random numbers and calculation of quantile, probabilities, and other aspects. The first release includes the following distributions: normal, log-normal, gamma, exponential, and uniform int/int8 distributions. Discrete and continuous distributions are supported. </td>
+        </tr>
+<tr>
+            <td>Mathematical Constants</td>
+            <td>The following constants for minimum and maximum values are now available as part of class CL_ABAP_MATH: Minimal positive and not subnormal value for type decfloat34 and decfloat16 Maximal value for type decfloat34 and decfloat16 Smallest floating point number &gt; 0 Difference between smallest floating point number &gt; 1 and 1 In addition, the following common mathematical constants are available in class CL_ABAP_MATH: Euler's constant e pi pi squared pi / 2 pi / 4 Square root of 2, 3, and pi Decimal logarithm (log10) and binary logarithm (log2) of e Decimal logarithm of the numbers 2 and 10 These constants are available as floating point numbers (f) and as decfloat34 numbers. </td>
+        </tr>
+<tr>
+            <td rowspan="4">TRANSFORMATIONS</td>
+            <td>Regular Expressions for XSLT</td>
+            <td>Regular expression functions can now be used in XSLT. The following functions are available: matches() replace() tokenize() </td>
+        </tr>
+<tr>
+            <td>New Domain for Mapping from ABAP to XML</td>
+            <td>The following new special domain has been introduced, which overrides the default mapping of elementary ABAP types to asXML. XSDGEO for spatial data </td>
+        </tr>
+<tr>
+            <td>New Format for format in the Attribute option of tt:value</td>
+            <td>The following new format can be specified in parentheses after format in the option attribute of the ST statement tt:value: geometry, geography, and geo=SRID to define a spatial reference system for the conversion of the EWKB representation to GeoJSON and vice versa. </td>
+        </tr>
+<tr>
+            <td>New Addition JSON for CALL TRANSFORMATION</td>
+            <td>The new additions SOURCE JSON and RESULT JSON are now available. </td>
+        </tr>
+  </table>
+</details>  
+<br>
 
 <details>
   <summary>🟢 Release 758</summary>

@@ -93,6 +93,8 @@ For an overview, see the [ABAP Type Hierarchy](https://help.sap.com/doc/abapdocu
 > - `decfloat16` and `decfloat34` for decimal floating point numbers can be regarded as more modern versions of `p` and `f`, combining their advantages.
 > - Although they are character-like, `t` and `d` can be used for calculations.
 > - See the ABAP Keyword Documentation [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbuilt_in_types.htm) for more information about the initial values of the data types, the standard length, and so on.
+> - [Enumerated types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenenum_type_glosry.htm) are considered elementary types. They specify a set of values in addition to the actual type properties. The typical syntax element is `... BEGIN OF ENUM ... END OF ENUM ...`. Find more information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenenumerated_types_usage.htm) and further down.  
+
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
@@ -102,7 +104,6 @@ For an overview, see the [ABAP Type Hierarchy](https://help.sap.com/doc/abapdocu
 - The following complex data types are available: 
    - [Structured types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenstructured_type_glosry.htm): Represent a sequence of arbitrary data types (i.e., they can be elementary, reference, or complex data types). The typical syntax element for the local definition of a structure is `... BEGIN OF ... END OF ...`.
    - [Table types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentable_type_glosry.htm): Consist of a sequence of any number of lines of the same data type. It can be any elementary type, reference type, or complex data type. The type definition includes other properties such as the [table category](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentable_category_glosry.htm) (defines how tables can be accessed) and [table key](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentable_key_glosry.htm) (to identify the table lines). The typical syntax element is `... TABLE OF ...`.
-   - [Enumerated types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenenum_type_glosry.htm): Specify a set of values in addition to the actual type properties. The typical syntax element is `... BEGIN OF ENUM ... END OF ENUM ...`. See more information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenenumerated_types_usage.htm) and further down.  
    - [Mesh types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenmesh_type_glosry.htm): Special structured type that contains only table types with structured line types as components that can be linked using mesh associations. The typical syntax element is `... BEGIN OF MESH ... END OF MESH ...`. See more information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abaptypes_mesh.htm).  
    - [BDEF derived types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_derived_type_glosry.htm): RAP-specific structured and table types. The typical syntax elements are `... TYPE STRUCTURE FOR ...` and `... TYPE TABLE FOR ...`. More information can be found [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrpm_derived_types.htm) and in the ABAP cheat sheet on ABAP EML.
 - A data object of a complex type can be accessed as a whole or by component. 
@@ -3102,6 +3103,46 @@ DATA enum1 TYPE t_enum.
 DATA enum2 TYPE t_enum_base.
 DATA enum3 TYPE t_enum_struc.
 DATA enum LIKE en_struc.
+``` 
+
+ </td>
+</tr>
+
+
+<tr>
+<td> 
+
+`TYPE RANGE OF`
+
+ </td>
+
+ <td> 
+
+Find more information in the [Internal Table](./01_Internal_Tables.md#ranges-tables) cheat sheet.
+
+<br>
+
+``` abap
+"Populating an integer table with values from 1 to 20
+TYPES int_tab_type TYPE TABLE OF i WITH EMPTY KEY.
+DATA(inttab) = VALUE int_tab_type( FOR x = 1 WHILE x <= 20 ( x ) ).
+
+"Declaring a ranges table
+DATA rangestab TYPE RANGE OF i.
+
+"Populating a ranges table using VALUE
+rangestab = VALUE #( sign   = 'I'
+                     option = 'BT' ( low = 1  high = 3 )
+                                   ( low = 6  high = 8 )
+                                   ( low = 12 high = 15 )
+                     option = 'GE' ( low = 18 ) ).
+
+"Using a SELECT statement and the IN addition to retrieve internal table
+"content based on the ranges table specifications
+SELECT * FROM @inttab AS tab
+    WHERE table_line IN @rangestab
+    INTO TABLE @DATA(result).
+"result: 1, 2, 3, 6, 7, 8, 12, 13, 14, 15, 18, 19, 20
 ``` 
 
  </td>

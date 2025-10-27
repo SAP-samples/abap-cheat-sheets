@@ -246,12 +246,13 @@ Use the standalone version of the abapGit report to import the demo examples of 
   - ... **classic ABAP**: Access the documentation in the SAP GUI via the transactions `ABAPDOCU` (opens the documentation directly) and `ABAPHELP` (opens an input field with which you can search the documentation content, for example, you can search for a keyword such as `SELECT`). Or, of course, choose `F1` on a keyword in your code. If you are in the SAP GUI (e.g. in `SE80`), the system-internal version opens. If you are in ADT, the documentation opens in the *ABAP Language Help* view.
 - Links to the online version of the ABAP Keyword Documentation for:
   - **Standard ABAP**: Unrestricted ABAP language scope for [classic ABAP](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenclassic_abap_glosry.htm):
-    - [Latest version (i.e. version 7.58 currently)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenabap.htm)
+    - [Latest version (i.e. version 8.16 currently)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenabap.htm)
+    - [Version 8.16](https://help.sap.com/doc/abapdocu_816_index_htm/8.16/en-US/ABENABAP.html)
     - [Version 7.58](https://help.sap.com/doc/abapdocu_758_index_htm/7.58/en-US/index.htm)
     - [Version 7.57](https://help.sap.com/doc/abapdocu_757_index_htm/7.57/en-US/index.htm)
     - [Version 7.56](https://help.sap.com/doc/abapdocu_756_index_htm/7.56/en-US/index.htm)
     - [Version 7.55](https://help.sap.com/doc/abapdocu_755_index_htm/7.55/en-US/index.htm)
-    - [Version 7.54](https://help.sap.com/doc/abapdocu_754_index_htm/7.54/en-US/index.htm)    
+    - [Version 7.54](https://help.sap.com/doc/abapdocu_754_index_htm/7.54/en-US/index.htm)
     - [Version 7.53](https://help.sap.com/doc/abapdocu_753_index_htm/7.53/en-US/index.htm)
     - [Version 7.52](https://help.sap.com/doc/abapdocu_752_index_htm/7.52/en-US/index.htm)
     - [Version 7.51](https://help.sap.com/doc/abapdocu_751_index_htm/7.51/en-US/index.htm)
