@@ -8234,7 +8234,7 @@ ENDCLASS.
 
 - This section explores and experiments with design patterns you may encounter in object-oriented programming, using ABAP classes.
 - In object-oriented programming, numerous design patterns enhance modularity, scalability, reusability, and more. 
-- Here, a selection of design patterns is covered, using simplified, non-semantic, and non-real-world examples to reduce complexity and give a rough idea. If you want to explore these patterns further, many articles, books, and community resources offer deeper insights into their origins, purposes, and real-world examples.
+- Here, a selection of design patterns is covered, using simplified, non-semantic, and non-real-world examples to reduce complexity and give a rough idea. If you want to explore these patterns further, many articles, books, and community resources offer deeper insights into their origins, purposes, real-world examples, similarities, differences, and more.
 
 > [!NOTE]  
 > - The section is intended for [exploration, experimentation, and demonstration](./README.md#%EF%B8%8F-disclaimer). The code examples do not represent best practices or role model approaches. They only aim to experiment with the patterns in simplified contexts and convey the basic concepts. 
@@ -15559,6 +15559,335 @@ ENDCLASS.
 </table>
 
 </details>  
+
+<br>
+
+<details>
+  <summary>🟢 State</summary>
+  <!-- -->
+
+<br>
+
+- The state of an object can be considered a specific situation that affects its behavior. So, an object's behavior depends on its current state.
+- The state design pattern allows an object of a class to have different states, enabling it to change its behavior dynamically during runtime based on its current state.
+- A potential setup, illustrated in the following example, may look like this:
+  - A class is defined whose objects' behavior changes. This class may manage the current state by storing a reference to the current state object as an attribute. Based on the current state, it forwards state-specific behavior calls to this object. 
+  - An interface is defined that declares methods whose concrete implementations represent behaviors related to different states.
+  - Concrete state classes implement the interface, including code for the distinct behaviors for each state in the interface methods.
+  - The actual state transitions, which enable the execution of different functionalities, may be implemented in various ways. The following example includes two approaches:
+    - Delegating the task to the client, which is the global class in the example
+    - Implementing state transitions within the class whose objects' behavior changes based on external input
+- The design pattern can be useful when you want to organize state-specific functionality in dedicated classes, enhancing maintenance and extensibility while reducing class complexity, aimed at not overcrowding classes with extensive code. It can also help avoid complex and repeated conditional logic.
+
+Example notes:
+
+- The example demonstrates the state design pattern through the following declarations and implementations. Note that this example is oversimplified, and multiple class setup strategies may apply. It uses a mathematical context to allow objects of the `lcl_math` and `lcl_math_cond` classes to perform mathematical operations. The object's behavior changes dynamically based on its current state or a condition.
+- Global class:
+  - Implements the `if_oo_adt_classrun` interface and calls methods from local classes.
+  - Serves as the client for demonstrating the design pattern. The declarations and implementations in the *CCIMP include* are relevant for conceptual considerations.  
+- CCIMP include (Local Types tab in ADT):  
+  - Interface `lif_calc`: Defines the shared interface for concrete state classes, including the `calculate` method for performing arithmetic operations. Each state class implements this method differently. 
+  - Concrete state classes `lcl_state_addition`, `lcl_state_subtraction`, and `lcl_state_multiplication`: These classes implement the `lif_calc` interface and perform specific and simple calculations.
+  - `lcl_math`:
+    - Represents the class whose objects' behavior changes.
+    - Declares private attributes, including the `state_ref` reference variable that holds the current object state, referencing an object that implements `lif_calc`.
+    - The `set_state` method updates the current state in `state_ref`. To work with the latest calculation result, the resulting values are assigned accordingly.
+    - The `execute` method calls the `calculate` method of the current state (if the reference variable is bound) and returns the result.
+  - The `lcl_math_cond` class is similar to `lcl_math`, but it handles state transitions through conditional logic, and includes the object creation in the class itself.
+
+<table>
+
+<tr>
+<td> Class include </td> <td> Code </td>
+</tr>
+
+<tr>
+<td> 
+
+Global class
+
+ </td>
+
+ <td> 
+
+``` abap
+CLASS zcl_demo_abap DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
+
+  PUBLIC SECTION.
+    INTERFACES if_oo_adt_classrun.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+ENDCLASS.
+
+
+CLASS zcl_demo_abap IMPLEMENTATION.
+  METHOD if_oo_adt_classrun~main.
+
+*&---------------------------------------------------------------------*
+*& Example 1
+*&---------------------------------------------------------------------*
+
+    "In Example 1, the client transitions the states of the objects by
+    "passing instances of the state classes to the set_state method.
+    "The example begins with the creation of an object of the lcl_math
+    "class. Its constructor expects an integer value, which serves as the
+    "first operand for the calculation. The example method calls illustrate
+    "several state transitions. When executing the execute method, the
+    "second operand is provided as an argument, and the calculation is
+    "performed based on the current state.
+
+    DATA(oref) = NEW lcl_math( 15 ).
+
+    "Performing additions by transitioning the state
+    DATA(oref_add) = NEW lcl_state_addition( ).
+
+    oref->set_state( oref_add ).
+    DATA(result) = oref->execute( 5 ).
+    out->write( result ).
+
+    result = oref->execute( 10 ).
+    out->write( result ).
+
+    result = oref->execute( 40 ).
+    out->write( result ).
+
+    "Performing subtractions by transitioning the state
+    DATA(oref_sub) = NEW lcl_state_subtraction( ).
+
+    oref->set_state( oref_sub ).
+    result = oref->execute( 10 ).
+    out->write( result ).
+
+    result = oref->execute( 80 ).
+    out->write( result ).
+
+    "Transitioning the state back to perform an addition
+    oref->set_state( oref_add ).
+
+    result = oref->execute( 25 ).
+    out->write( result ).
+
+    "Performing multiplications by transitioning the state
+    DATA(oref_mul) = NEW lcl_state_multiplication( ).
+
+    oref->set_state( oref_mul ).
+    result = oref->execute( 5 ).
+    out->write( result ).
+
+    result = oref->execute( 4 ).
+    out->write( result ).
+
+    "Transitioning the state back to perform a subtraction
+    oref->set_state( oref_sub ).
+    result = oref->execute( 99 ).
+    out->write( result ).
+
+    out->write( |\n{ repeat( val = `*` occ = 70 ) }\n\n| ).
+
+*&---------------------------------------------------------------------*
+*& Example 2
+*&---------------------------------------------------------------------*
+
+    "Example 2 is similar to Example 1, and yields the same results. Here,
+    "the state transitions are performed by the class whose objects' behavior
+    "changes, based on external input. In this case, the input is realized by
+    "passing an enumeration type, which is evaluated in the class.
+
+    DATA(oref_cond) = NEW lcl_math_cond( 15 ).
+
+    oref_cond->set_state( lcl_math_cond=>plus ).
+
+    result = oref_cond->execute( 5 ).
+    out->write( result ).
+
+    result = oref_cond->execute( 10 ).
+    out->write( result ).
+
+    result = oref_cond->execute( 40 ).
+    out->write( result ).
+
+    oref_cond->set_state( lcl_math_cond=>minus ).
+
+    result = oref_cond->execute( 10 ).
+    out->write( result ).
+
+    result = oref_cond->execute( 80 ).
+    out->write( result ).
+
+    oref_cond->set_state( lcl_math_cond=>plus ).
+
+    result = oref_cond->execute( 25 ).
+    out->write( result ).
+
+    oref_cond->set_state( lcl_math_cond=>multiply ).
+
+    result = oref_cond->execute( 5 ).
+    out->write( result ).
+
+    result = oref_cond->execute( 4 ).
+    out->write( result ).
+
+    oref_cond->set_state( lcl_math_cond=>minus ).
+
+    result = oref_cond->execute( 99 ).
+    out->write( result ).
+  ENDMETHOD.
+ENDCLASS.
+``` 
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+CCIMP include (Local Types tab in ADT)
+
+ </td>
+
+ <td> 
+
+``` abap
+*&---------------------------------------------------------------------*
+*& State interface
+*&---------------------------------------------------------------------*
+
+INTERFACE lif_calc.
+  DATA number TYPE i.
+  METHODS calculate IMPORTING value         TYPE i
+                    RETURNING VALUE(result) TYPE i.
+ENDINTERFACE.
+
+*&---------------------------------------------------------------------*
+*& Concrete state classes
+*&---------------------------------------------------------------------*
+
+CLASS lcl_state_addition DEFINITION.
+  PUBLIC SECTION.
+    INTERFACES lif_calc.
+ENDCLASS.
+
+CLASS lcl_state_addition IMPLEMENTATION.
+  METHOD lif_calc~calculate.
+    result = lif_calc~number + value.
+    lif_calc~number = result.
+  ENDMETHOD.
+ENDCLASS.
+
+CLASS lcl_state_subtraction DEFINITION.
+  PUBLIC SECTION.
+    INTERFACES lif_calc.
+ENDCLASS.
+
+CLASS lcl_state_subtraction IMPLEMENTATION.
+  METHOD lif_calc~calculate.
+    result = lif_calc~number - value.
+    lif_calc~number = result.
+  ENDMETHOD.
+ENDCLASS.
+
+CLASS lcl_state_multiplication DEFINITION.
+  PUBLIC SECTION.
+    INTERFACES lif_calc.
+ENDCLASS.
+
+CLASS lcl_state_multiplication IMPLEMENTATION.
+  METHOD lif_calc~calculate.
+    result = lif_calc~number * value.
+    lif_calc~number = result.
+  ENDMETHOD.
+ENDCLASS.
+
+*&---------------------------------------------------------------------*
+*& Class whose objects' behavior changes (Example 1)
+*&---------------------------------------------------------------------*
+
+CLASS lcl_math DEFINITION.
+  PUBLIC SECTION.
+    METHODS:
+      constructor IMPORTING start_num TYPE i,
+      set_state IMPORTING state TYPE REF TO lif_calc,
+      execute IMPORTING value TYPE i RETURNING VALUE(result) TYPE i.
+  PRIVATE SECTION.
+    DATA: num       TYPE i,
+          state_ref TYPE REF TO lif_calc.
+ENDCLASS.
+
+CLASS lcl_math IMPLEMENTATION.
+  METHOD constructor.
+    num = start_num.
+  ENDMETHOD.
+
+  METHOD set_state.
+    num = COND #( WHEN state_ref IS BOUND THEN state_ref->number ELSE num ).
+    state_ref = state.
+    state_ref->number = num.
+  ENDMETHOD.
+
+  METHOD execute.
+    IF state_ref IS BOUND.
+      result = state_ref->calculate( value ).
+    ELSE.
+      RETURN.
+    ENDIF.
+  ENDMETHOD.
+ENDCLASS.
+
+*&---------------------------------------------------------------------*
+*& Class whose objects' behavior changes (Example 2)
+*&---------------------------------------------------------------------*
+
+CLASS lcl_math_cond DEFINITION.
+  PUBLIC SECTION.
+    TYPES: BEGIN OF ENUM calc_operation,
+             plus,
+             minus,
+             multiply,
+           END OF ENUM calc_operation.
+    METHODS:
+      constructor IMPORTING start_num TYPE i,
+      set_state IMPORTING calc_operation TYPE lcl_math_cond=>calc_operation,
+      execute IMPORTING value TYPE i RETURNING VALUE(result) TYPE i.
+  PRIVATE SECTION.
+    DATA num TYPE i.
+    DATA state_ref TYPE REF TO lif_calc.
+ENDCLASS.
+
+CLASS lcl_math_cond IMPLEMENTATION.
+  METHOD constructor.
+    num = start_num.
+  ENDMETHOD.
+
+  METHOD set_state.
+    num = COND #( WHEN state_ref IS BOUND THEN state_ref->number ELSE num ).
+
+    state_ref = COND #( WHEN calc_operation = plus AND state_ref IS NOT INSTANCE OF lcl_state_addition THEN NEW lcl_state_addition( )
+                        WHEN calc_operation = minus AND state_ref IS NOT INSTANCE OF lcl_state_subtraction THEN NEW lcl_state_subtraction( )
+                        WHEN calc_operation = multiply AND state_ref IS NOT INSTANCE OF lcl_state_multiplication THEN NEW lcl_state_multiplication( ) ).
+
+    state_ref->number = num.
+  ENDMETHOD.
+
+  METHOD execute.
+    IF state_ref IS BOUND.
+      result = state_ref->calculate( value ).
+    ELSE.
+      RETURN.
+    ENDIF.
+  ENDMETHOD.
+ENDCLASS.
+``` 
+
+ </td>
+</tr>
+
+</table>
+
+</details>  
+
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
