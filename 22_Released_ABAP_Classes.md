@@ -9395,7 +9395,7 @@ CLASS zcl_demo_abap IMPLEMENTATION.
 *&---------------------------------------------------------------------*
 
 "NOTE:
-"To send emails, administrative tasks has to be performed. Refer to the
+"To send emails, administrative tasks have to be performed. Refer to the
 "SAP Help Portal documentation and the cheat sheet example.
 
     TRY.

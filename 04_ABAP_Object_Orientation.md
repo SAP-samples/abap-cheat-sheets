@@ -15888,6 +15888,464 @@ ENDCLASS.
 
 </details>  
 
+<br>
+
+<details>
+  <summary>🟢 Chain of responsibility</summary>
+  <!-- -->
+
+<br>
+
+
+- The idea behind the chain of responsibility design pattern is organizing handlers in a sequence (a chain), allowing for flexible request processing, potentially without knowing which handler will handle the request at compile time.
+- Requests move through this chain of handlers until one is found that can process it.
+- A potential setup, illustrated in the following example, may look like this:
+  - An interface defines methods for processing requests.
+  - An abstract handler class that implements the interface, includes default behavior, and maintains a reference to the next handler in the chain.
+  - Concrete handler classes that inherit from the abstract handler, deciding whether to process the request or pass it to the next handler.
+  - A client that establishes the chain of responsibility and sends requests.
+- This pattern may be useful for creating flexible and maintainable setups, especially when processing various types of requests differently, managing multiple handlers without knowing in advance which one will actually handle the requests, following indeed a specific processing sequence, enabling easy extension by adding new concrete handlers, and more.
+
+Example notes:
+
+- The example demonstrates the chain of responsibility design pattern through the following declarations and implementations. Note that the example is simplified, and various class setup strategies may apply.
+- As example context, it uses the retrieval of type information (RTTI) based on type description objects. For more details on RTTI and type description objects, refer to the Dynamic Programming cheat sheet. Different handler classes handle specific type description objects, including handlers for elementary, structured, and table types. Classes that can handle other types are not implemented. They should be handled by a default handler class.
+- Global class:
+  - Implements the `if_oo_adt_classrun` interface and calls methods from local classes.
+  - Acts as the client to demonstrate the design pattern. The declarations and implementations in the *CCIMP include* are relevant for conceptual considerations.
+- CCIMP include (Local Types tab in ADT):
+  - Interface `lif_chain_of_resp`:
+    - Defines the shared interface for concrete handler classes in the chain of responsibility.
+    - Includes the `process` method for processing type description objects and returning type information (mutliple pieces of information are stored in a string table for display purposes), and the `set_handler` method for assigning the next handler in the chain.
+  - Class `lcl_base_handler` 
+    - Represents an abstract handler class that provides default implementations for concrete handler classes inheriting from it.
+    - Since it is defined as an abstract class, it cannot be instantiated directly. Only its subclasses can be instantiated.
+    - The class maintains a reference to the next handler in the protected `iref_handler` attribute.
+    - By implementing the `lif_chain_of_resp` interface, it provides the methods `lif_chain_of_resp~set_handler` for setting the next handler and `lif_chain_of_resp~process` for processing requests.
+  - `lcl_concrete_handler*` classes
+    - Represents concrete handler classes that inherit from the `lcl_base_handler` class.
+    - These classes provide specific implementations for handling different types of type description objects.
+    - The example includes handler classes for processing elementary, structured, and table types. Other types are not addressed in detail.
+    - If a class cannot handle the request (because the type description object has another type), it calls the next handler in the chain. For types not covered by the example, the default handler class `lcl_concrete_handler4` can manage requests and provide general information (no casting is implemented to obtain more specific type information as in other concrete handler classes).
+- The purpose of the example is to illustrate the following:
+  - The client, represented by the implementations in the global class, determines the chain of responsibility by setting the concrete sequence of handler calls and starting requests.
+  - These requests (represented by passing a type description object) are processed by handler class objects.
+  - Each handler in the chain attempts to process the request. If a handler can handle the respective type description, it processes it. Otherwise, it delegates the request to the next handler in the chain.
+
+<table>
+
+<tr>
+<td> Class include </td> <td> Code </td>
+</tr>
+
+<tr>
+<td> 
+
+Global class
+
+ </td>
+
+ <td> 
+
+``` abap
+CLASS zcl_demo_abap DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
+
+  PUBLIC SECTION.
+    INTERFACES if_oo_adt_classrun.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+    METHODS process_chain IMPORTING type_description_object TYPE REF TO cl_abap_typedescr
+                                    example                 TYPE string
+                                    out                     TYPE REF TO if_oo_adt_classrun_out.
+ENDCLASS.
+
+
+CLASS zcl_demo_abap IMPLEMENTATION.
+  METHOD if_oo_adt_classrun~main.
+
+*&---------------------------------------------------------------------*
+*& Example 1: Elementary type (local type)
+*&---------------------------------------------------------------------*
+
+    TYPES packed TYPE p LENGTH 16 DECIMALS 14.
+    DATA(type_descr_obj) = cl_abap_typedescr=>describe_by_name( 'PACKED' ).
+
+    process_chain(
+      type_description_object = type_descr_obj
+      example = `1) Elementary type (local type)`
+      out                     = out
+    ).
+
+*&---------------------------------------------------------------------*
+*& Example 2: Elementary type (global DDIC type)
+*&---------------------------------------------------------------------*
+
+    type_descr_obj = cl_abap_typedescr=>describe_by_name( 'LAND1' ).
+
+    process_chain(
+      type_description_object = type_descr_obj
+      example = `2) Elementary type (global DDIC type)`
+      out                     = out
+    ).
+
+*&---------------------------------------------------------------------*
+*& Example 3: Structured type (local type)
+*&---------------------------------------------------------------------*
+
+    TYPES: BEGIN OF demo_struc,
+             comp1 TYPE c LENGTH 3,
+             comp2 TYPE i,
+             comp3 TYPE string,
+             comp4 TYPE n LENGTH 5,
+           END OF demo_struc.
+
+    type_descr_obj = cl_abap_typedescr=>describe_by_name( 'DEMO_STRUC' ).
+
+    process_chain(
+      type_description_object = type_descr_obj
+      example                 = `3) Structured type (local type)`
+      out                     = out
+    ).
+
+*&---------------------------------------------------------------------*
+*& Example 4: Structured type (global type)
+*&---------------------------------------------------------------------*
+
+    type_descr_obj = cl_abap_typedescr=>describe_by_name( 'I_TIMEZONE' ).
+
+    process_chain(
+      type_description_object = type_descr_obj
+      example                 = `4) Structured type (global type)`
+      out                     = out
+    ).
+
+*&---------------------------------------------------------------------*
+*& Example 5: Table type (local type)
+*&---------------------------------------------------------------------*
+
+    TYPES tab_type TYPE HASHED TABLE OF demo_struc
+      WITH UNIQUE KEY comp1 comp2
+      WITH NON-UNIQUE SORTED KEY sk COMPONENTS comp4.
+
+    type_descr_obj = cl_abap_typedescr=>describe_by_name( 'TAB_TYPE' ).
+
+    process_chain(
+      type_description_object = type_descr_obj
+      example                 = `5) Table type (local type)`
+      out                     = out
+    ).
+
+*&---------------------------------------------------------------------*
+*& Example 6: Table type (global type)
+*&---------------------------------------------------------------------*
+
+    type_descr_obj = cl_abap_typedescr=>describe_by_name( 'STRING_TABLE' ).
+
+    process_chain(
+      type_description_object = type_descr_obj
+      example                 = `6) Table type (global type)`
+      out                     = out
+    ).
+
+*&---------------------------------------------------------------------*
+*& Examples for types that are not covered by concrete handler classes
+*&---------------------------------------------------------------------*
+
+    "Enumerated type
+    TYPES: BEGIN OF ENUM t_enum,
+             a,
+             b,
+             c,
+             d,
+           END OF ENUM t_enum.
+
+    type_descr_obj = cl_abap_typedescr=>describe_by_name( 'T_ENUM' ).
+
+    process_chain(
+      type_description_object = type_descr_obj
+      example                 = `7) Enumerated type`
+      out                     = out
+    ).
+
+    "Reference type
+    TYPES ref TYPE REF TO string.
+
+    type_descr_obj = cl_abap_typedescr=>describe_by_name( 'REF' ).
+
+    process_chain(
+      type_description_object = type_descr_obj
+      example                 = `8) Reference type`
+      out                     = out
+    ).
+
+    "Class
+    type_descr_obj = cl_abap_typedescr=>describe_by_name( 'CL_SYSTEM_UUID' ).
+
+    process_chain(
+      type_description_object = type_descr_obj
+      example                 = `9) Class`
+      out                     = out
+    ).
+
+    "Interface
+    type_descr_obj = cl_abap_typedescr=>describe_by_name( 'IF_OO_ADT_CLASSRUN' ).
+
+    process_chain(
+      type_description_object = type_descr_obj
+      example                 = `10) Interface`
+      out                     = out
+    ).
+  ENDMETHOD.
+
+  METHOD process_chain.
+    DATA: handler1 TYPE REF TO lif_chain_of_resp,
+          handler2 TYPE REF TO lif_chain_of_resp,
+          handler3 TYPE REF TO lif_chain_of_resp,
+          handler4 TYPE REF TO lif_chain_of_resp,
+          info_tab TYPE string_table.
+
+    handler1 = NEW lcl_concrete_handler1( ).
+    handler2 = NEW lcl_concrete_handler2( ).
+    handler3 = NEW lcl_concrete_handler3( ).
+    handler4 = NEW lcl_concrete_handler4( ).
+
+    handler1->set_handler( handler2 ).
+    handler2->set_handler( handler3 ).
+    handler3->set_handler( handler4 ).
+
+    DATA(info) = handler1->process( type_description_object ).
+
+    IF info IS INITIAL.
+      APPEND |-------------------- { example } --------------------| TO info.
+    ELSE.
+      INSERT LINES OF VALUE string_table( ( |-------------------- { example } --------------------| ) ( ) ) INTO info INDEX 1.
+    ENDIF.
+
+    out->write( info ).
+    out->write( |\n{ repeat( val = `*` occ = 100 ) }\n\n| ).
+  ENDMETHOD.
+ENDCLASS.
+``` 
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+CCIMP include (Local Types tab in ADT)
+
+ </td>
+
+ <td> 
+
+``` abap
+*&---------------------------------------------------------------------*
+*& Interface
+*&---------------------------------------------------------------------*
+
+INTERFACE lif_chain_of_resp.
+  METHODS: process IMPORTING type_descr  TYPE REF TO cl_abap_typedescr
+                   RETURNING VALUE(info) TYPE string_table,
+    set_handler IMPORTING iref TYPE REF TO lif_chain_of_resp.
+ENDINTERFACE.
+
+*&---------------------------------------------------------------------*
+*& Abstract handler class
+*&---------------------------------------------------------------------*
+
+CLASS lcl_base_handler DEFINITION ABSTRACT.
+  PUBLIC SECTION.
+    INTERFACES lif_chain_of_resp.
+  PROTECTED SECTION.
+    DATA iref_handler TYPE REF TO lif_chain_of_resp.
+ENDCLASS.
+
+CLASS lcl_base_handler IMPLEMENTATION.
+  METHOD lif_chain_of_resp~set_handler.
+    me->iref_handler = iref.
+  ENDMETHOD.
+
+  METHOD lif_chain_of_resp~process.
+    IF iref_handler IS INITIAL.
+      APPEND `Cannot handle request` TO info.
+    ELSE.
+      info = iref_handler->process( type_descr ).
+    ENDIF.
+  ENDMETHOD.
+ENDCLASS.
+
+*&---------------------------------------------------------------------*
+*& Concrete handler classes
+*&---------------------------------------------------------------------*
+
+CLASS lcl_concrete_handler1 DEFINITION INHERITING FROM lcl_base_handler.
+  PUBLIC SECTION.
+    METHODS lif_chain_of_resp~process REDEFINITION.
+ENDCLASS.
+
+CLASS lcl_concrete_handler1 IMPLEMENTATION.
+  METHOD lif_chain_of_resp~process.
+    DATA(cl_name) = CAST cl_abap_classdescr( cl_abap_typedescr=>describe_by_object_ref( me ) )->get_relative_name( ).
+
+    IF type_descr IS INSTANCE OF cl_abap_elemdescr
+    AND type_descr IS NOT INSTANCE OF cl_abap_enumdescr.
+      APPEND |Class { cl_name } handled request.| TO info.
+      APPEND `--- Type information ---` TO info.
+
+      DATA(tdo_elem) = CAST cl_abap_elemdescr( type_descr ).
+      DATA(type_category_elem) = tdo_elem->kind.
+      DATA(type_kind_elem) = tdo_elem->type_kind.
+      DATA(decimals_elem) = tdo_elem->decimals.
+      DATA(output_length_elem) = tdo_elem->output_length.
+      DATA(absolute_name_elem) = tdo_elem->absolute_name.
+      DATA(relative_name_elem) = tdo_elem->get_relative_name( ).
+      DATA(is_ddic_type_elem) = tdo_elem->is_ddic_type( ).
+
+      APPEND |Type category: { type_category_elem }| TO info.
+      APPEND |Type kind: { type_kind_elem }| TO info.
+      APPEND |Decimals: { decimals_elem }| TO info.
+      APPEND |Output length: { output_length_elem }| TO info.
+      APPEND |Absolute name: { absolute_name_elem }| TO info.
+      APPEND |Relative name: { relative_name_elem }| TO info.
+      APPEND |Is DDIC type: { COND #( WHEN is_ddic_type_elem = abap_true THEN abap_true ELSE `-` ) }| TO info.
+    ELSE.
+      info = super->lif_chain_of_resp~process( type_descr ).
+      IF info IS INITIAL.
+        APPEND |Class { cl_name } could not handle request.| TO info.
+      ELSE.
+        INSERT |Class { cl_name } could not handle request.| INTO info INDEX 1.
+      ENDIF.
+    ENDIF.
+  ENDMETHOD.
+ENDCLASS.
+
+CLASS lcl_concrete_handler2 DEFINITION INHERITING FROM lcl_base_handler.
+  PUBLIC SECTION.
+    METHODS lif_chain_of_resp~process REDEFINITION.
+ENDCLASS.
+
+CLASS lcl_concrete_handler2 IMPLEMENTATION.
+  METHOD lif_chain_of_resp~process.
+    DATA(cl_name) = CAST cl_abap_classdescr( cl_abap_typedescr=>describe_by_object_ref( me ) )->get_relative_name( ).
+
+    IF type_descr IS INSTANCE OF cl_abap_structdescr.
+      APPEND |Class { cl_name } handled request.| TO info.
+      APPEND `--- Type information ---` TO info.
+
+      DATA(tdo_struc) = CAST cl_abap_structdescr( type_descr ).
+      DATA(type_category_struc) = tdo_struc->kind.
+      DATA(type_kind_struc) = tdo_struc->type_kind.
+      DATA(absolute_name_struc) = tdo_struc->absolute_name.
+      DATA(relative_name_struc) = tdo_struc->get_relative_name( ).
+      DATA(is_ddic_type_struc) = tdo_struc->is_ddic_type( ).
+      DATA(comps_struc) = tdo_struc->components.
+
+      APPEND |Type category: { type_category_struc }| TO info.
+      APPEND |Type kind: { type_kind_struc }| TO info.
+      APPEND |Absolute name: { absolute_name_struc }| TO info.
+      APPEND |Relative name: { relative_name_struc }| TO info.
+      APPEND |Is DDIC type: { COND #( WHEN is_ddic_type_struc = abap_true THEN abap_true ELSE `-` ) }| TO info.
+      APPEND |Components: { REDUCE string( INIT s = VALUE #( ) FOR wa IN comps_struc NEXT s &&= |{ COND #( WHEN s IS NOT INITIAL THEN ` ` ) }{ wa-name }| ) }| TO info.
+    ELSE.
+      info = super->lif_chain_of_resp~process( type_descr ).
+      IF info IS INITIAL.
+        APPEND |Class { cl_name } could not handle request.| TO info.
+      ELSE.
+        INSERT |Class { cl_name } could not handle request.| INTO info INDEX 1.
+      ENDIF.
+    ENDIF.
+  ENDMETHOD.
+ENDCLASS.
+
+CLASS lcl_concrete_handler3 DEFINITION INHERITING FROM lcl_base_handler.
+  PUBLIC SECTION.
+    METHODS lif_chain_of_resp~process REDEFINITION.
+ENDCLASS.
+
+CLASS lcl_concrete_handler3 IMPLEMENTATION.
+  METHOD lif_chain_of_resp~process.
+    DATA(cl_name) = CAST cl_abap_classdescr( cl_abap_typedescr=>describe_by_object_ref( me ) )->get_relative_name( ).
+
+    IF type_descr IS INSTANCE OF cl_abap_tabledescr.
+      APPEND |Class { cl_name } handled request.| TO info.
+      APPEND `--- Type information ---` TO info.
+
+      DATA(tdo_tab) = CAST cl_abap_tabledescr( type_descr ).
+      DATA(type_category_tab) = tdo_tab->kind.
+      DATA(type_kind_tab) = tdo_tab->type_kind.
+      DATA(absolute_name_tab) = tdo_tab->absolute_name.
+      DATA(relative_name_tab) = tdo_tab->get_relative_name( ).
+      DATA(table_kind_itab) = tdo_tab->table_kind.
+      DATA(table_has_unique_key_itab) = tdo_tab->has_unique_key.
+      DATA(table_keys_itab) = tdo_tab->get_keys( ).
+      DATA(table_is_ddic_typw) = tdo_tab->is_ddic_type( ).
+
+      APPEND |Type category: { type_category_tab }| TO info.
+      APPEND |Type kind: { type_kind_tab }| TO info.
+      APPEND |Absolute name: { absolute_name_tab }| TO info.
+      APPEND |Relative name: { relative_name_tab }| TO info.
+      APPEND |Table kind: { table_kind_itab }| TO info.
+      APPEND |Does table have a unique key: { COND #( WHEN table_has_unique_key_itab = abap_true THEN abap_true ELSE `-` ) }| TO info.
+      APPEND |Table keys: { REDUCE string( INIT str = `` FOR <key2> IN table_keys_itab NEXT str = |{ str }| &&
+             |{ COND #( WHEN str IS NOT INITIAL THEN `, ` ) }{ REDUCE string( INIT str2 = `` FOR <key3> IN <key2>-components NEXT str2 = |{ str2 }| &&
+             |{ COND #( WHEN str2 IS NOT INITIAL THEN `/` ) }{ <key3>-name }| ) } (is primary: "{ <key2>-is_primary }", |  &&
+             |is unique: "{ <key2>-is_unique }", key kind: "{ <key2>-key_kind }", access kind: "{ <key2>-access_kind }")| ) }| TO info.
+      APPEND |Is DDIC type: { COND #( WHEN table_is_ddic_typw = abap_true THEN abap_true ELSE `-` ) }| TO info.
+      TRY.
+          DATA(table_component_info_itab) = CAST cl_abap_structdescr( tdo_tab->get_table_line_type( ) )->components.
+          APPEND |Table components: { REDUCE string( INIT s = VALUE #( ) FOR w IN table_component_info_itab NEXT s &&= |{ COND #( WHEN s IS NOT INITIAL THEN ` ` ) }{ w-name }| ) }| TO info.
+        CATCH cx_sy_move_cast_error.
+          APPEND |Table components: The table has not a structured line type.| TO info.
+      ENDTRY.
+    ELSE.
+      info = super->lif_chain_of_resp~process( type_descr ).
+      IF info IS INITIAL.
+        APPEND |Class { cl_name } could not handle request.| TO info.
+      ELSE.
+        INSERT |Class { cl_name } could not handle request.| INTO info INDEX 1.
+      ENDIF.
+    ENDIF.
+  ENDMETHOD.
+ENDCLASS.
+
+CLASS lcl_concrete_handler4 DEFINITION INHERITING FROM lcl_base_handler.
+  PUBLIC SECTION.
+    METHODS: lif_chain_of_resp~process REDEFINITION.
+ENDCLASS.
+
+CLASS lcl_concrete_handler4 IMPLEMENTATION.
+  METHOD lif_chain_of_resp~process.
+    DATA(cl_name) = CAST cl_abap_classdescr( cl_abap_typedescr=>describe_by_object_ref( me ) )->get_relative_name( ).
+    APPEND |Class { cl_name } handled request.| TO info.
+    APPEND `--- Type information ---` TO info.
+
+    IF type_descr IS INITIAL.
+      APPEND `Cannot extract type information` TO info.
+    ELSE.
+      DATA(type_category) = type_descr->kind.
+      DATA(type_kind) = type_descr->type_kind.
+      DATA(absolute_name) = type_descr->absolute_name.
+      DATA(relative_name) = type_descr->get_relative_name( ).
+
+      APPEND |Type category: { type_category }| TO info.
+      APPEND |Type kind: { type_kind }| TO info.
+      APPEND |Absolute name: { absolute_name }| TO info.
+      APPEND |Relative name: { relative_name }| TO info.
+    ENDIF.
+  ENDMETHOD.
+ENDCLASS.
+``` 
+
+ </td>
+</tr>
+
+</table>
+
+</details>  
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
