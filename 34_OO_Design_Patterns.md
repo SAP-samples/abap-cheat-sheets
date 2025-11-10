@@ -4,13 +4,13 @@
 
 - [ABAP Examples Using Object-Oriented Design Patterns](#abap-examples-using-object-oriented-design-patterns)
   - [Example Setup and Running Example Classes](#example-setup-and-running-example-classes)
+  - [ABAP Unit: Backdoor Injection](#abap-unit-backdoor-injection)
+  - [ABAP Unit: Constructor Injection](#abap-unit-constructor-injection)
+  - [ABAP Unit: Parameter Injection](#abap-unit-parameter-injection)
+  - [ABAP Unit: Setter Injection](#abap-unit-setter-injection)
+  - [ABAP Unit: Test Double Injection Using Inheritance and Method Redefinition](#abap-unit-test-double-injection-using-inheritance-and-method-redefinition)
   - [Abstract Factory](#abstract-factory)
   - [Adapter](#adapter)
-  - [AUnit: Backdoor Injection](#aunit-backdoor-injection)
-  - [AUnit: Constructor Injection](#aunit-constructor-injection)
-  - [AUnit: Parameter Injection](#aunit-parameter-injection)
-  - [AUnit: Setter Injection](#aunit-setter-injection)
-  - [AUnit: Test Double Injection Using Inheritance and Method Redefinition](#aunit-test-double-injection-using-inheritance-and-method-redefinition)
   - [Builder](#builder)
   - [Chain of Responsibility](#chain-of-responsibility)
   - [Decorator](#decorator)
@@ -54,6 +54,1257 @@ In the following sections, click the expandable sections for further description
 > [!NOTE]
 > Some examples use artifacts such as database tables from the ABAP cheat sheet GitHub repository.
 
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+
+
+
+## ABAP Unit: Backdoor Injection
+
+- The backdoor injection technique can be applied in the context of ABAP Unit.
+- As described [here](https://help.sap.com/docs/ABAP_PLATFORM_NEW/c238d694b825421f940829321ffa326a/04a2d0fc9cd940db8aedf3fa29e5f07e.html?locale=en-US), multiple techniques exist for injecting test doubles into a class under test to ensure their usage during test execution. Also find more information in the ABAP Unit Tests cheat sheet.
+- A sample setup to inject test doubles, as illustrated in the example, may look as follows:
+  - A dependent-on component (DOC) is identified (for example, reading data from a database table).
+  - Ideally, an interface to the DOC is available (here, a local interface is used). A data provider class implements this interface for the data provisioning (here, a local class is used).
+  - The class under test has been prepared. This example uses:
+    - A private instance attribute declared with a reference to the interface.
+    - The method to be tested calls a method via this interface reference variable for the data retrieval.
+    - The class's instance contructor assigns the interface reference variable by creating an object of the data provider class, which implements the interface.
+  - The test class may be implemented as follows:
+    - Since private attributes are not accessible in local test classes, the local test class is declared as a local friend of the global class.
+    - In the test method, an object of the class under test and a test double are created. The test double is declared with a reference to the interface (here, a local class is used that creates a test double). The private attribute is then assigned the test double, realizing the backdoor injection.
+    - The effect is as follows: When the method to be tested is called "regularly" (for example, when executing the class using _F9_, as in the example case), the object refers to the "regular" data provider (in this example, it is of type `lcl_data_provider`), which means it uses production data. However, when the unit test is executed (for example, by choosing _Ctrl/Cmd + Shift + F10_), the object refers to the test double (in this case, of type `ltd_test_data`), which is the local test double that gets injected.
+
+
+
+<details>
+  <summary>🟢 Click to expand for more information and example code</summary>
+  <!-- -->
+
+<br>
+
+Unlike other examples, this example class has a different setup: 
+- It focuses on ABAP Unit tests. You can indeed execute the simple example class by choosing _F9_. To run the unit test, use _Ctrl/Cmd + Shift + F10_.
+- The example class includes code from the global class and the CCIMP include, as well as the CCDEF (_Class-relevant Local Types_ tab in ADT) and CCAU (_Test Classes_ tab in ADT) includes.
+- The example uses a demo database table (and a class to populate it) from the ABAP Cheat Sheet GitHub repository.
+
+<br>
+
+<table>
+
+<tr>
+<td> Class include </td> <td> Code </td>
+</tr>
+
+<tr>
+<td> 
+
+Global class
+
+ </td>
+
+ <td> 
+
+``` abap
+CLASS zcl_demo_abap DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
+
+  PUBLIC SECTION.
+    INTERFACES if_oo_adt_classrun.
+
+    TYPES: carr_tab TYPE TABLE OF zdemo_abap_fli WITH EMPTY KEY,
+           occ_rate TYPE p LENGTH 5 DECIMALS 2.
+
+    CLASS-METHODS class_constructor.
+
+    METHODS: constructor,
+      "Method to demonstrate test double injection using back door injection
+      get_occ_rate IMPORTING carrier_id            TYPE zdemo_abap_fli-carrid
+                   RETURNING VALUE(occupancy_rate) TYPE occ_rate.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+    DATA data_provider TYPE REF TO lif_get_data.
+ENDCLASS.
+
+
+CLASS zcl_demo_abap IMPLEMENTATION.
+  METHOD if_oo_adt_classrun~main.
+
+    "Filling an internal table with carrier IDs used to calculate
+    "the occupancy rate.
+    DATA(carrier_tab) = VALUE carr_tab( ( carrid = 'LH' )
+                                        ( carrid = 'AA' )
+                                        ( carrid = 'DL' ) ).
+
+    LOOP AT carrier_tab INTO DATA(carr).
+      DATA(occupancy_rate_local_itf) = get_occ_rate( carr-carrid ).
+
+      out->write( |The occupancy rate for airline { carr-carrid } is { occupancy_rate_local_itf }%.|  ).
+      out->write( |\n| ).
+    ENDLOOP.
+
+  ENDMETHOD.
+
+  METHOD class_constructor.
+    "Filling demo database tables.
+    zcl_demo_abap_aux=>fill_dbtabs( ).
+  ENDMETHOD.
+
+  METHOD get_occ_rate.
+
+    DATA total_seatsmax TYPE i.
+    DATA total_seatsocc TYPE i.
+
+    "When the method to be tested is called "regularly" (for example, when executing the class using F9),
+    "the object refers to the "regular" data provider (type ref to lcl_data_provider), which means it uses
+    "production data. However, when the unit test is executed (for example, by choosing Ctrl/Cmd + Shift + F10),
+    "the object refers to the test double (type ref to ltd_test_data), which is the local test double that gets
+    "injected.
+    DATA(flight_data) = data_provider->select_flight_data( carrier = carrier_id ).
+
+    LOOP AT flight_data INTO DATA(wa).
+      total_seatsmax = total_seatsmax + wa-seatsmax.
+      total_seatsocc = total_seatsocc + wa-seatsocc.
+    ENDLOOP.
+
+    occupancy_rate = total_seatsocc / total_seatsmax * 100.
+  ENDMETHOD.
+
+  METHOD constructor.
+    data_provider = NEW lcl_data_provider( ).
+  ENDMETHOD.
+
+ENDCLASS.
+``` 
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+CCDEF include (Class-relevant Local Types tab in ADT)
+
+ </td>
+
+ <td> 
+
+``` abap
+INTERFACE lif_get_data.
+  METHODS:
+    select_flight_data IMPORTING carrier            TYPE zdemo_abap_fli-carrid
+                       RETURNING VALUE(flight_data) TYPE zcl_demo_abap=>carr_tab.
+ENDINTERFACE.
+``` 
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+CCIMP include (Local Types tab in ADT)
+
+ </td>
+
+ <td> 
+
+``` abap
+CLASS lcl_data_provider DEFINITION.
+  PUBLIC SECTION.
+    INTERFACES lif_get_data.
+ENDCLASS.
+
+CLASS lcl_data_provider IMPLEMENTATION.
+  METHOD lif_get_data~select_flight_data.
+    SELECT seatsmax, seatsocc
+      FROM zdemo_abap_fli
+      WHERE carrid = @carrier
+      INTO CORRESPONDING FIELDS OF TABLE @flight_data.
+  ENDMETHOD.
+ENDCLASS.
+``` 
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+CCAU include (Test Classes tab in ADT)
+
+ </td>
+
+ <td> 
+
+``` abap
+*&---------------------------------------------------------------------*
+*& Local test double class
+*&---------------------------------------------------------------------*
+
+"The example uses manually created test doubles. You may also want to
+"check out creating test doubles using ABAP frameworks. Find more
+"information in the ABAP Unit Tests cheat sheet.
+
+CLASS ltd_test_data DEFINITION FOR TESTING.
+  PUBLIC SECTION.
+    INTERFACES lif_get_data PARTIALLY IMPLEMENTED.
+ENDCLASS.
+
+CLASS ltd_test_data IMPLEMENTATION.
+  METHOD lif_get_data~select_flight_data.
+
+    flight_data = SWITCH #( carrier
+      WHEN 'IJ' THEN VALUE #( ( carrid = carrier  seatsmax = 300 seatsocc = 200 )
+                              ( carrid = carrier  seatsmax = 350 seatsocc = 200 )
+                              ( carrid = carrier  seatsmax = 350 seatsocc = 300 ) )
+      WHEN 'KL' THEN VALUE #( ( carrid = carrier  seatsmax = 350 seatsocc = 300 )
+                              ( carrid = carrier  seatsmax = 350 seatsocc = 250 )
+                              ( carrid = carrier  seatsmax = 300 seatsocc = 250 ) ) ).
+
+  ENDMETHOD.
+ENDCLASS.
+
+*&---------------------------------------------------------------------*
+*& Test class demonstrating backdoor injection
+*&---------------------------------------------------------------------*
+
+"Note that the example uses a local interface.
+
+CLASS ltc_test DEFINITION
+  FOR TESTING RISK LEVEL HARMLESS
+  DURATION SHORT.
+  PRIVATE SECTION.
+    METHODS test_get_occ_rate FOR TESTING.
+ENDCLASS.
+
+"In this example, a test class is created in the test include. Since private
+"attributes are not accessible in local test classes, the local test class
+"is declared as a local friend of the global class.
+CLASS zcl_demo_abap DEFINITION LOCAL FRIENDS ltc_test.
+
+CLASS ltc_test IMPLEMENTATION.
+  METHOD test_get_occ_rate.
+    DATA(ref_cut) = NEW zcl_demo_abap( ).
+    DATA ref_data_prov TYPE REF TO lif_get_data.
+    ref_data_prov = NEW ltd_test_data( ).
+    ref_cut->data_provider = ref_data_prov.
+
+    DATA(act_occ_rate) = ref_cut->get_occ_rate( 'IJ' ).
+
+    cl_abap_unit_assert=>assert_equals(
+        act = act_occ_rate
+        exp = '70.00'
+        msg = |The expected occupancy rate for carrier 'IJ' is wrong.|
+        quit = if_abap_unit_constant=>quit-no ).
+
+    act_occ_rate = ref_cut->get_occ_rate( 'KL' ).
+
+    cl_abap_unit_assert=>assert_equals(
+        act = act_occ_rate
+        exp = '80.00'
+        msg = |The expected occupancy rate for carrier 'KL' is wrong.|
+        quit = if_abap_unit_constant=>quit-no ).
+  ENDMETHOD.
+ENDCLASS.
+``` 
+
+ </td>
+</tr>
+
+</table>
+
+</details>  
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+
+## ABAP Unit: Constructor Injection
+
+- The constructor injection technique can be applied in the context of ABAP Unit.
+- As described [here](https://help.sap.com/docs/ABAP_PLATFORM_NEW/c238d694b825421f940829321ffa326a/04a2d0fc9cd940db8aedf3fa29e5f07e.html?locale=en-US), multiple techniques exist for injecting test doubles into a class under test to ensure their usage during test execution. Also find more information in the ABAP Unit Tests cheat sheet.
+- Here, the test double is passed as a parameter to the instance constructor of the class under test.
+- A sample setup to inject test doubles, as illustrated in the example, may look as follows:
+  - A dependent-on component (DOC) is identified (for example, reading data from a database table).
+  - Ideally, an interface to the DOC is available. A data provider class implements this interface for the data provisioning.
+  - The class under test has been prepared. This example uses:
+    - A private instance attribute declared with a reference to the interface.
+    - The method to be tested calls a method via this interface reference variable for the data retrieval.
+    - The class's instance contructor is declared with an optional parameter referencing the interface. When an object of the class is created, the interface reference variable is assigned appropriately, i.e. using the "regular" data provider or the test double.
+  - The test class may be implemented as follows:
+    - Since private attributes are not accessible in local test classes, the local test class is declared as a local friend of the global class.
+    - In the test method, an object of the class under test and a test double are created. The test double is declared with a reference to the interface (here, a local class is used that creates a test double). By creating an object of the class under test, the test double is passed as parameter of the instance constructor. 
+    - The effect is as follows: When the method to be tested is called "regularly" (for example, when executing the class using _F9_, as in the example case), the object refers to the "regular" data provider (in this example, it is of type `lcl_data_provider`), which means it uses production data (an object is created in the instance constrctor implementation accordingly). However, when the unit test is executed (for example, by choosing _Ctrl/Cmd + Shift + F10_), the object refers to the test double (in this case, of type `ltd_test_data`), which is the local test double that gets injected via the constructor. In the instance constructor implementation, the instance attribute is assigned the reference to the test double.
+
+
+<br>
+
+<details>
+  <summary>🟢 Click to expand for more information and example code</summary>
+  <!-- -->
+
+<br>
+
+Unlike other examples, this example class has a different setup: 
+- It focuses on ABAP Unit tests. You can indeed execute the simple example class by choosing _F9_. To run the unit test, use _Ctrl/Cmd + Shift + F10_.
+- The example class includes code from the global class, the CCIMP and CCAU (_Test Classes_ tab in ADT) includes. 
+- The example uses a demo database table (and a class to populate it) and a global interface from the ABAP cheat sheet GitHub repository.
+
+<br>
+
+<table>
+
+<tr>
+<td> Class include </td> <td> Code </td>
+</tr>
+
+<tr>
+<td> 
+
+Global class
+
+ </td>
+
+ <td> 
+
+``` abap
+CLASS zcl_demo_abap DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
+
+  PUBLIC SECTION.
+    INTERFACES if_oo_adt_classrun.
+
+    TYPES: carr_tab TYPE TABLE OF zdemo_abap_fli WITH EMPTY KEY,
+           occ_rate TYPE p LENGTH 5 DECIMALS 2.
+
+    CLASS-METHODS class_constructor.
+    METHODS: constructor IMPORTING iref_data_prov TYPE REF TO zdemo_abap_get_data_itf OPTIONAL,
+      get_occ_rate IMPORTING carrier_id            TYPE zdemo_abap_fli-carrid
+                   RETURNING VALUE(occupancy_rate) TYPE occ_rate.
+
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+    DATA data_provider TYPE REF TO zdemo_abap_get_data_itf.
+ENDCLASS.
+
+
+CLASS zcl_demo_abap IMPLEMENTATION.
+  METHOD if_oo_adt_classrun~main.
+
+    "Filling an internal table with carrier IDs used to calculate
+    "the occupancy rate.
+    DATA(carrier_tab) = VALUE carr_tab( ( carrid = 'LH' )
+                                        ( carrid = 'AA' )
+                                        ( carrid = 'DL' ) ).
+
+    LOOP AT carrier_tab INTO DATA(carr).
+      DATA(occupancy_rate_local_itf) = get_occ_rate( carr-carrid ).
+
+      out->write( |The occupancy rate for airline { carr-carrid } is { occupancy_rate_local_itf }%.|  ).
+      out->write( |\n| ).
+    ENDLOOP.
+
+  ENDMETHOD.
+
+  METHOD class_constructor.
+    "Filling demo database tables.
+    zcl_demo_abap_aux=>fill_dbtabs( ).
+  ENDMETHOD.
+
+  METHOD get_occ_rate.
+    DATA total_seatsmax TYPE i.
+    DATA total_seatsocc TYPE i.
+
+    DATA(flight_data) = data_provider->select_flight_data( carrier = carrier_id ).
+
+    LOOP AT flight_data INTO DATA(wa).
+      total_seatsmax = total_seatsmax + wa-seatsmax.
+      total_seatsocc = total_seatsocc + wa-seatsocc.
+    ENDLOOP.
+
+    occupancy_rate = total_seatsocc / total_seatsmax * 100.
+  ENDMETHOD.
+
+  METHOD constructor.
+    IF iref_data_prov IS BOUND.
+      data_provider = iref_data_prov.
+    ELSE.
+      data_provider = NEW lcl_data_provider( ).
+    ENDIF.
+  ENDMETHOD.
+
+ENDCLASS.
+``` 
+
+ </td>
+</tr>
+
+
+<tr>
+<td> 
+
+CCIMP include (Local Types tab in ADT)
+
+ </td>
+
+ <td> 
+
+``` abap
+CLASS lcl_data_provider DEFINITION.
+  PUBLIC SECTION.
+    INTERFACES zdemo_abap_get_data_itf.
+ENDCLASS.
+
+CLASS lcl_data_provider IMPLEMENTATION.
+  METHOD zdemo_abap_get_data_itf~select_flight_data.
+    SELECT seatsmax, seatsocc
+      FROM zdemo_abap_fli
+      WHERE carrid = @carrier
+      INTO CORRESPONDING FIELDS OF TABLE @flight_data.
+  ENDMETHOD.
+
+  METHOD zdemo_abap_get_data_itf~say_hello.
+   "The implementation is not relevant for the example.
+   "See the executable example of the ABAP Unit Tests cheat sheet.
+  ENDMETHOD.
+ENDCLASS.
+``` 
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+CCAU include (Test Classes tab in ADT)
+
+ </td>
+
+ <td> 
+
+``` abap
+*&---------------------------------------------------------------------*
+*& Local test double class
+*&---------------------------------------------------------------------*
+
+"The example uses manually created test doubles. You may also want to
+"check out creating test doubles using ABAP frameworks. Find more
+"information in the ABAP Unit Tests cheat sheet.
+
+CLASS ltd_test_data DEFINITION FOR TESTING.
+  PUBLIC SECTION.
+    INTERFACES zdemo_abap_get_data_itf PARTIALLY IMPLEMENTED.
+ENDCLASS.
+
+CLASS ltd_test_data IMPLEMENTATION.
+  METHOD zdemo_abap_get_data_itf~select_flight_data.
+
+    flight_data = SWITCH #( carrier
+      WHEN 'IJ' THEN VALUE #( ( carrid = carrier  seatsmax = 300 seatsocc = 200 )
+                              ( carrid = carrier  seatsmax = 350 seatsocc = 200 )
+                              ( carrid = carrier  seatsmax = 350 seatsocc = 300 ) )
+      WHEN 'KL' THEN VALUE #( ( carrid = carrier  seatsmax = 350 seatsocc = 300 )
+                              ( carrid = carrier  seatsmax = 350 seatsocc = 250 )
+                              ( carrid = carrier  seatsmax = 300 seatsocc = 250 ) ) ).
+
+  ENDMETHOD.
+ENDCLASS.
+
+*&---------------------------------------------------------------------*
+*& Test class demonstrating constructor injection
+*&---------------------------------------------------------------------*
+
+"Note that the example uses a local interface.
+
+CLASS ltc_test DEFINITION
+  FOR TESTING RISK LEVEL HARMLESS
+  DURATION SHORT.
+  PRIVATE SECTION.
+    METHODS test_get_occ_rate FOR TESTING.
+ENDCLASS.
+
+"In this example, a test class is created in the test include. Since private
+"attributes are not accessible in local test classes, the local test class
+"is declared as a local friend of the global class.
+CLASS zcl_demo_abap DEFINITION LOCAL FRIENDS ltc_test.
+
+CLASS ltc_test IMPLEMENTATION.
+  METHOD test_get_occ_rate.
+    DATA ref_data_prov TYPE REF TO zdemo_abap_get_data_itf.
+
+    "Creating an instance of the local test double
+    ref_data_prov = NEW ltd_test_data( ).
+
+    "Instance is provided for the constructor injection
+    DATA(ref_cut) = NEW zcl_demo_abap( ref_data_prov ).
+
+    DATA(act_occ_rate) = ref_cut->get_occ_rate( carrier_id = 'IJ' ).
+
+    cl_abap_unit_assert=>assert_equals(
+        act = act_occ_rate
+        exp = '70.00'
+        msg = |The expected occupancy rate for carrier 'IJ' is wrong.|
+        quit = if_abap_unit_constant=>quit-no ).
+
+    act_occ_rate = ref_cut->get_occ_rate( carrier_id = 'KL' ).
+
+    cl_abap_unit_assert=>assert_equals(
+        act = act_occ_rate
+        exp = '80.00'
+        msg = |The expected occupancy rate for carrier 'KL' is wrong.|
+        quit = if_abap_unit_constant=>quit-no ).
+  ENDMETHOD.
+ENDCLASS.
+``` 
+
+ </td>
+</tr>
+
+</table>
+
+</details>  
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+## ABAP Unit: Parameter Injection
+
+- The parameter injection technique can be applied in the context of ABAP Unit.
+- As described [here](https://help.sap.com/docs/ABAP_PLATFORM_NEW/c238d694b825421f940829321ffa326a/04a2d0fc9cd940db8aedf3fa29e5f07e.html?locale=en-US), multiple techniques exist for injecting test doubles into a class under test to ensure their usage during test execution. Also find more information in the ABAP Unit Tests cheat sheet.
+- Here, the test double is passed as a parameter to the tested method (i.e. an optional importing parameter) in the class under test.
+- A sample setup to inject test doubles, as illustrated in the example, may look as follows:
+  - A dependent-on component (DOC) is identified (for example, reading data from a database table).
+  - Ideally, an interface to the DOC is available (here, a local interface is used). A data provider class implements this interface for the data provisioning (here, a local class is used).
+  - The class under test has been prepared. The method to be tested:        
+    - Calls a method via an interface reference variable for the data retrieval.
+    - Is defined with an optional parameter. It is typed with reference to the interface. 
+    - Includes a check whether the optional parameter is bound.
+    - Note: To use the local demo interface in the signature, the method is defined in the private visibility section.
+  - The test class may be implemented as follows:
+    - Since private attributes are not accessible in local test classes, the local test class is declared as a local friend of the global class.
+    - In the test method, an object of the class under test and a test double are created. The test double is declared with a reference to the interface (here, a local class is used that creates a test double). 
+    - The effect is as follows: When the method to be tested is called "regularly" (for example, when executing the class using _F9_, as in the example case) without passing the optional parameter, the an object of the "regular" data provider (in this example, it is of type `lcl_data_provider`) is created following the evaluation of the `IF` statement, which means it uses production data. However, when the unit test is executed (for example, by choosing _Ctrl/Cmd + Shift + F10_) and the optional parameter is supplied, the parameter is bound and, thus, uses the test double (in this case, of type `ltd_test_data`), which gets injected via the parameter.
+
+<br>
+
+<details>
+  <summary>🟢 Click to expand for more information and example code</summary>
+  <!-- -->
+
+<br>
+
+Unlike other examples, this example class has a different setup: 
+- It focuses on ABAP Unit tests. You can indeed execute the simple example class by choosing _F9_. To run the unit test, use _Ctrl/Cmd + Shift + F10_.
+- The example class includes code from the global class and the CCIMP include, as well as the CCDEF (_Class-relevant Local Types_ tab in ADT) and CCAU (_Test Classes_ tab in ADT) includes.
+- The example uses a demo database table (and a class to populate it) from the ABAP Cheat Sheet GitHub repository.
+
+<br>
+
+<table>
+
+<tr>
+<td> Class include </td> <td> Code </td>
+</tr>
+
+<tr>
+<td> 
+
+Global class
+
+ </td>
+
+ <td> 
+
+``` abap
+CLASS zcl_demo_abap DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
+
+  PUBLIC SECTION.
+    INTERFACES if_oo_adt_classrun.
+
+    TYPES: carr_tab TYPE TABLE OF zdemo_abap_fli WITH EMPTY KEY,
+           occ_rate TYPE p LENGTH 5 DECIMALS 2.
+
+    CLASS-METHODS class_constructor.
+
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+    "Method to demonstrate test double injection using parameter injection
+    "The example uses a private method to refer to a local interface.
+    METHODS  get_occ_rate IMPORTING carrier_id            TYPE zdemo_abap_fli-carrid
+                                    data_prov             TYPE REF TO lif_get_data OPTIONAL
+                          RETURNING VALUE(occupancy_rate) TYPE occ_rate.
+
+    " DATA data_provider TYPE REF TO lif_get_data.
+ENDCLASS.
+
+
+CLASS zcl_demo_abap IMPLEMENTATION.
+  METHOD if_oo_adt_classrun~main.
+
+    "Filling an internal table with carrier IDs used to calculate
+    "the occupancy rate.
+    DATA(carrier_tab) = VALUE carr_tab( ( carrid = 'LH' )
+                                        ( carrid = 'AA' )
+                                        ( carrid = 'DL' ) ).
+
+    LOOP AT carrier_tab INTO DATA(carr).
+      DATA(occupancy_rate_local_itf) = get_occ_rate( carr-carrid ).
+
+      out->write( |The occupancy rate for airline { carr-carrid } is { occupancy_rate_local_itf }%.|  ).
+      out->write( |\n| ).
+    ENDLOOP.
+
+  ENDMETHOD.
+
+  METHOD class_constructor.
+    "Filling demo database tables.
+    zcl_demo_abap_aux=>fill_dbtabs( ).
+  ENDMETHOD.
+
+  METHOD get_occ_rate.
+
+    DATA total_seatsmax TYPE i.
+    DATA total_seatsocc TYPE i.
+    DATA data_provider TYPE REF TO lif_get_data.
+
+    "The method has an optional importing parameter. When the unit test is executed,
+    "the parameter is bound. An object of the test double class is passed in that case.
+    "Otherwise, when the class is executed using F9, an object of the actual data provider
+    "is created.
+    IF data_prov IS BOUND.
+      data_provider = data_prov.
+    ELSE.
+      data_provider = NEW lcl_data_provider( ).
+    ENDIF.
+
+    DATA(flight_data) = data_provider->select_flight_data( carrier = carrier_id ).
+
+    LOOP AT flight_data INTO DATA(wa).
+      total_seatsmax = total_seatsmax + wa-seatsmax.
+      total_seatsocc = total_seatsocc + wa-seatsocc.
+    ENDLOOP.
+
+    occupancy_rate = total_seatsocc / total_seatsmax * 100.
+  ENDMETHOD.
+
+ENDCLASS.
+``` 
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+CCDEF include (Class-relevant Local Types tab in ADT)
+
+ </td>
+
+ <td> 
+
+``` abap
+INTERFACE lif_get_data.
+  METHODS:
+    select_flight_data IMPORTING carrier            TYPE zdemo_abap_fli-carrid
+                       RETURNING VALUE(flight_data) TYPE zcl_demo_abap=>carr_tab.
+ENDINTERFACE.
+``` 
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+CCIMP include (Local Types tab in ADT)
+
+ </td>
+
+ <td> 
+
+``` abap
+CLASS lcl_data_provider DEFINITION.
+  PUBLIC SECTION.
+    INTERFACES lif_get_data.
+ENDCLASS.
+
+CLASS lcl_data_provider IMPLEMENTATION.
+  METHOD lif_get_data~select_flight_data.
+    SELECT seatsmax, seatsocc
+      FROM zdemo_abap_fli
+      WHERE carrid = @carrier
+      INTO CORRESPONDING FIELDS OF TABLE @flight_data.
+  ENDMETHOD.
+ENDCLASS.
+``` 
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+CCAU include (Test Classes tab in ADT)
+
+ </td>
+
+ <td> 
+
+``` abap
+*&---------------------------------------------------------------------*
+*& Local test double class
+*&---------------------------------------------------------------------*
+
+"The example uses manually created test doubles. You may also want to
+"check out creating test doubles using ABAP frameworks. Find more
+"information in the ABAP Unit Tests cheat sheet.
+
+CLASS ltd_test_data DEFINITION FOR TESTING.
+  PUBLIC SECTION.
+    INTERFACES lif_get_data PARTIALLY IMPLEMENTED.
+ENDCLASS.
+
+CLASS ltd_test_data IMPLEMENTATION.
+  METHOD lif_get_data~select_flight_data.
+
+    flight_data = SWITCH #( carrier
+      WHEN 'IJ' THEN VALUE #( ( carrid = carrier  seatsmax = 300 seatsocc = 200 )
+                              ( carrid = carrier  seatsmax = 350 seatsocc = 200 )
+                              ( carrid = carrier  seatsmax = 350 seatsocc = 300 ) )
+      WHEN 'KL' THEN VALUE #( ( carrid = carrier  seatsmax = 350 seatsocc = 300 )
+                              ( carrid = carrier  seatsmax = 350 seatsocc = 250 )
+                              ( carrid = carrier  seatsmax = 300 seatsocc = 250 ) ) ).
+
+  ENDMETHOD.
+ENDCLASS.
+
+*&---------------------------------------------------------------------*
+*& Test class demonstrating parameter injection
+*&---------------------------------------------------------------------*
+
+"Note that the example uses a local interface.
+
+CLASS ltc_test DEFINITION
+  FOR TESTING RISK LEVEL HARMLESS
+  DURATION SHORT.
+  PRIVATE SECTION.
+    METHODS test_get_occ_rate FOR TESTING.
+ENDCLASS.
+
+"In this example, a test class is created in the test include. Since private
+"attributes are not accessible in local test classes, the local test class
+"is declared as a local friend of the global class.
+CLASS zcl_demo_abap DEFINITION LOCAL FRIENDS ltc_test.
+
+CLASS ltc_test IMPLEMENTATION.
+  METHOD test_get_occ_rate.
+    DATA(ref_cut) = NEW zcl_demo_abap( ).
+    DATA ref_data_prov TYPE REF TO lif_get_data.
+    ref_data_prov = NEW ltd_test_data( ).
+
+    DATA(act_occ_rate) = ref_cut->get_occ_rate( carrier_id = 'IJ'
+                                                data_prov  = ref_data_prov ).
+
+    cl_abap_unit_assert=>assert_equals(
+        act = act_occ_rate
+        exp = '70.00'
+        msg = |The expected occupancy rate for carrier 'IJ' is wrong.|
+        quit = if_abap_unit_constant=>quit-no ).
+
+    act_occ_rate = ref_cut->get_occ_rate( carrier_id = 'KL'
+                                          data_prov  = ref_data_prov ).
+
+    cl_abap_unit_assert=>assert_equals(
+        act = act_occ_rate
+        exp = '80.00'
+        msg = |The expected occupancy rate for carrier 'KL' is wrong.|
+        quit = if_abap_unit_constant=>quit-no ).
+  ENDMETHOD.
+ENDCLASS.
+``` 
+
+ </td>
+</tr>
+
+</table>
+
+</details>    
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+
+## ABAP Unit: Setter Injection 
+
+- The setter injection technique can be applied in the context of ABAP Unit.
+- As described [here](https://help.sap.com/docs/ABAP_PLATFORM_NEW/c238d694b825421f940829321ffa326a/04a2d0fc9cd940db8aedf3fa29e5f07e.html?locale=en-US), multiple techniques exist for injecting test doubles into a class under test to ensure their usage during test execution. Also find more information in the ABAP Unit Tests cheat sheet.
+- Here, the test double is passed as a parameter to a setter method.
+- A sample setup to inject test doubles, as illustrated in the example, may look as follows:
+  - A dependent-on component (DOC) is identified (for example, reading data from a database table).
+  - Ideally, an interface to the DOC is available (here, a local interface is used). A data provider class implements this interface for the data provisioning (here, a local class is used).
+  - The class under test has been prepared. This example uses:
+    - A private instance attribute declared with a reference to the interface.
+    - The method to be tested calls a method via this interface reference variable for the data retrieval.
+    - The class's instance contructor assigns the interface reference variable by creating an object of the data provider class, which implements the interface.
+    - A setter method is declared which expects a reference to the interface to be passed. To use the local demo interface in the signature, the setter method is defined in the private visibility section.
+  - The test class may be implemented as follows:
+    - Since private attributes are not accessible in local test classes, the local test class is declared as a local friend of the global class.
+    - In the test method, an object of the class under test and a test double are created. The test double is declared with a reference to the interface (here, a local class is used that creates a test double). The setter method is called, passing the test double. Following the setter method implementation, the interface reference variable is assigned the test double.
+    - The effect is as follows: When the method to be tested is called "regularly" (for example, when executing the class using _F9_, as in the example case), the object refers to the "regular" data provider (in this example, it is of type `lcl_data_provider`), which means it uses production data. However, when the unit test is executed (for example, by choosing _Ctrl/Cmd + Shift + F10_), the object refers to the test double (in this case, of type `ltd_test_data`), which is the local test double that gets injected via the setter method.
+
+<br>
+
+<details>
+  <summary>🟢 Click to expand for example code</summary>
+  <!-- -->
+
+<br>
+
+Unlike other examples, this example class has a different setup: 
+- It focuses on ABAP Unit tests. You can indeed execute the simple example class by choosing _F9_. To run the unit test, use _Ctrl/Cmd + Shift + F10_.
+- The example class includes code from the global class and the CCIMP include, as well as the CCDEF (_Class-relevant Local Types_ tab in ADT) and CCAU (_Test Classes_ tab in ADT) includes.
+- The example uses a demo database table (and a class to populate it) from the ABAP Cheat Sheet GitHub repository.
+
+<br>
+
+<table>
+
+<tr>
+<td> Class include </td> <td> Code </td>
+</tr>
+
+<tr>
+<td> 
+
+Global class
+
+ </td>
+
+ <td> 
+
+``` abap
+CLASS zcl_demo_abap DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
+
+  PUBLIC SECTION.
+    INTERFACES if_oo_adt_classrun.
+
+    TYPES: carr_tab TYPE TABLE OF zdemo_abap_fli WITH EMPTY KEY,
+           occ_rate TYPE p LENGTH 5 DECIMALS 2.
+
+    CLASS-METHODS class_constructor.
+    METHODS: constructor,
+            get_occ_rate IMPORTING carrier_id            TYPE zdemo_abap_fli-carrid
+                         RETURNING VALUE(occupancy_rate) TYPE occ_rate.
+
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+    "Method for setter injection
+    METHODS setter_meth IMPORTING data_prov TYPE REF TO lif_get_data.
+
+    DATA data_provider TYPE REF TO lif_get_data.
+ENDCLASS.
+
+
+CLASS zcl_demo_abap IMPLEMENTATION.
+  METHOD if_oo_adt_classrun~main.
+
+    "Filling an internal table with carrier IDs used to calculate
+    "the occupancy rate.
+    DATA(carrier_tab) = VALUE carr_tab( ( carrid = 'LH' )
+                                        ( carrid = 'AA' )
+                                        ( carrid = 'DL' ) ).
+
+    LOOP AT carrier_tab INTO DATA(carr).
+      DATA(occupancy_rate_local_itf) = get_occ_rate( carr-carrid ).
+
+      out->write( |The occupancy rate for airline { carr-carrid } is { occupancy_rate_local_itf }%.|  ).
+      out->write( |\n| ).
+    ENDLOOP.
+
+  ENDMETHOD.
+
+  METHOD class_constructor.
+    "Filling demo database tables.
+    zcl_demo_abap_aux=>fill_dbtabs( ).
+  ENDMETHOD.
+
+  METHOD get_occ_rate.
+    DATA total_seatsmax TYPE i.
+    DATA total_seatsocc TYPE i.
+
+    DATA(flight_data) = data_provider->select_flight_data( carrier = carrier_id ).
+
+    LOOP AT flight_data INTO DATA(wa).
+      total_seatsmax = total_seatsmax + wa-seatsmax.
+      total_seatsocc = total_seatsocc + wa-seatsocc.
+    ENDLOOP.
+
+    occupancy_rate = total_seatsocc / total_seatsmax * 100.
+  ENDMETHOD.
+
+  METHOD setter_meth.
+    "When the unit test is executed, an object of the test double class is passed as
+    "parameter. Then, the object used here refers the local test double.
+    data_provider = data_prov.
+  ENDMETHOD.
+
+  METHOD constructor.
+    data_provider = NEW lcl_data_provider( ).
+  ENDMETHOD.
+
+ENDCLASS.
+``` 
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+CCDEF include (Class-relevant Local Types tab in ADT)
+
+ </td>
+
+ <td> 
+
+``` abap
+INTERFACE lif_get_data.
+  METHODS:
+    select_flight_data IMPORTING carrier            TYPE zdemo_abap_fli-carrid
+                       RETURNING VALUE(flight_data) TYPE zcl_demo_abap=>carr_tab.
+ENDINTERFACE.
+``` 
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+CCIMP include (Local Types tab in ADT)
+
+ </td>
+
+ <td> 
+
+``` abap
+CLASS lcl_data_provider DEFINITION.
+  PUBLIC SECTION.
+    INTERFACES lif_get_data.
+ENDCLASS.
+
+CLASS lcl_data_provider IMPLEMENTATION.
+  METHOD lif_get_data~select_flight_data.
+    SELECT seatsmax, seatsocc
+      FROM zdemo_abap_fli
+      WHERE carrid = @carrier
+      INTO CORRESPONDING FIELDS OF TABLE @flight_data.
+  ENDMETHOD.
+ENDCLASS.
+``` 
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+CCAU include (Test Classes tab in ADT)
+
+ </td>
+
+ <td> 
+
+``` abap
+*&---------------------------------------------------------------------*
+*& Local test double class
+*&---------------------------------------------------------------------*
+
+"The example uses manually created test doubles. You may also want to
+"check out creating test doubles using ABAP frameworks. Find more
+"information in the ABAP Unit Tests cheat sheet.
+
+CLASS ltd_test_data DEFINITION FOR TESTING.
+  PUBLIC SECTION.
+    INTERFACES lif_get_data PARTIALLY IMPLEMENTED.
+ENDCLASS.
+
+CLASS ltd_test_data IMPLEMENTATION.
+  METHOD lif_get_data~select_flight_data.
+
+    flight_data = SWITCH #( carrier
+      WHEN 'IJ' THEN VALUE #( ( carrid = carrier  seatsmax = 300 seatsocc = 200 )
+                              ( carrid = carrier  seatsmax = 350 seatsocc = 200 )
+                              ( carrid = carrier  seatsmax = 350 seatsocc = 300 ) )
+      WHEN 'KL' THEN VALUE #( ( carrid = carrier  seatsmax = 350 seatsocc = 300 )
+                              ( carrid = carrier  seatsmax = 350 seatsocc = 250 )
+                              ( carrid = carrier  seatsmax = 300 seatsocc = 250 ) ) ).
+
+  ENDMETHOD.
+ENDCLASS.
+
+*&---------------------------------------------------------------------*
+*& Test class demonstrating setter injection
+*&---------------------------------------------------------------------*
+
+"Note that the example uses a local interface.
+
+CLASS ltc_test DEFINITION
+  FOR TESTING RISK LEVEL HARMLESS
+  DURATION SHORT.
+  PRIVATE SECTION.
+    METHODS test_get_occ_rate FOR TESTING.
+ENDCLASS.
+
+"In this example, a test class is created in the test include. Since private
+"attributes are not accessible in local test classes, the local test class
+"is declared as a local friend of the global class.
+CLASS zcl_demo_abap DEFINITION LOCAL FRIENDS ltc_test.
+
+CLASS ltc_test IMPLEMENTATION.
+  METHOD test_get_occ_rate.
+    DATA(ref_cut) = NEW zcl_demo_abap( ).
+    DATA ref_data_prov TYPE REF TO lif_get_data.
+    ref_data_prov = NEW ltd_test_data( ).
+    "Passing the test double as a parameter of a setter method
+    ref_cut->setter_meth( ref_data_prov ).
+
+    DATA(act_occ_rate) = ref_cut->get_occ_rate( carrier_id = 'IJ' ).
+
+    cl_abap_unit_assert=>assert_equals(
+        act = act_occ_rate
+        exp = '70.00'
+        msg = |The expected occupancy rate for carrier 'IJ' is wrong.|
+        quit = if_abap_unit_constant=>quit-no ).
+
+    act_occ_rate = ref_cut->get_occ_rate( carrier_id = 'KL' ).
+
+    cl_abap_unit_assert=>assert_equals(
+        act = act_occ_rate
+        exp = '80.00'
+        msg = |The expected occupancy rate for carrier 'KL' is wrong.|
+        quit = if_abap_unit_constant=>quit-no ).
+  ENDMETHOD.
+ENDCLASS.
+``` 
+
+ </td>
+</tr>
+
+</table>
+
+</details>   
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+
+## ABAP Unit: Test Double Injection Using Inheritance and Method Redefinition
+
+- This ABAP Unit test double injection technique makes use of inheritance and redefining methods.
+- Here, a local test double class is created by redefining a method of the class under test.
+- A sample setup to inject test doubles, as illustrated in the example, may look as follows:
+  - A dependent-on component (DOC) is identified (for example, reading data from a database table). Unlike the other ABAP Unit examples, there are no local or global interfaces involved.
+  - The global class that includes a method to be tested is not declared as a final class, allowing for the creation of subclasses. For simplicity, this global class implements a method specifically for the test. You can imagine that a data retrieval method is contained in another global class, which the class under test uses.
+  - The test class may be implemented as follows:
+    - A test double class is created that inherits from the global class and redefines the method identified as the DOC, enabling the provisioning of test data for the test classes.
+    - The test method does not instantiate the class under test. Instead, it creates an object of the test double class. The method to be tested is then called through the test double's reference variable.
+    - The effect is as follows: When the method to be tested is called "regularly" (for example, by executing the class using _F9_), it runs as usual with production data. However, when the unit test is executed (for example, by choosing _Ctrl/Cmd + Shift + F10_), the redefined method in the test class is called, injecting and using the test double.
+
+<br>
+
+<details>
+  <summary>🟢 Click to expand for example code</summary>
+  <!-- -->
+
+<br>
+
+Unlike other examples, this example class has a different setup: 
+- It focuses on ABAP Unit tests. You can indeed execute the simple example class by choosing _F9_. To run the unit test, use _Ctrl/Cmd + Shift + F10_.
+- The example class includes code from the global class and the CCAU include (_Test Classes_ tab in ADT).
+- The example uses a demo database table (and a class to populate it) from the ABAP Cheat Sheet GitHub repository.
+
+
+
+<table>
+
+<tr>
+<td> Class include </td> <td> Code </td>
+</tr>
+
+<tr>
+<td> 
+
+Global class
+
+ </td>
+
+ <td> 
+
+``` abap
+CLASS zcl_demo_abap DEFINITION
+  PUBLIC
+  CREATE PUBLIC .
+
+  PUBLIC SECTION.
+    INTERFACES if_oo_adt_classrun.
+
+    TYPES: carr_tab TYPE TABLE OF zdemo_abap_fli WITH EMPTY KEY,
+           occ_rate TYPE p LENGTH 5 DECIMALS 2.
+
+    CLASS-METHODS class_constructor.
+    METHODS get_occ_rate IMPORTING carrier_id            TYPE zdemo_abap_fli-carrid
+                         RETURNING VALUE(occupancy_rate) TYPE occ_rate.
+
+  PROTECTED SECTION.
+    METHODS select_flight_data IMPORTING carrier            TYPE zdemo_abap_fli-carrid
+                               RETURNING VALUE(flight_data) TYPE carr_tab.
+
+  PRIVATE SECTION.
+ENDCLASS.
+
+
+CLASS zcl_demo_abap IMPLEMENTATION.
+  METHOD if_oo_adt_classrun~main.
+
+    "Filling an internal table with carrier IDs used to calculate
+    "the occupancy rate.
+    DATA(carrier_tab) = VALUE carr_tab( ( carrid = 'LH' )
+                                        ( carrid = 'AA' )
+                                        ( carrid = 'DL' ) ).
+
+    LOOP AT carrier_tab INTO DATA(carr).
+      DATA(occupancy_rate_local_itf) = get_occ_rate( carr-carrid ).
+
+      out->write( |The occupancy rate for airline { carr-carrid } is { occupancy_rate_local_itf }%.|  ).
+      out->write( |\n| ).
+    ENDLOOP.
+
+  ENDMETHOD.
+
+  METHOD class_constructor.
+    "Filling demo database tables.
+    zcl_demo_abap_aux=>fill_dbtabs( ).
+  ENDMETHOD.
+
+  METHOD get_occ_rate.
+    DATA total_seatsmax TYPE i.
+    DATA total_seatsocc TYPE i.
+
+    "During the unit test, the redefined method in the test class is called.
+    DATA(flight_data) = select_flight_data( carrier = carrier_id ).
+
+    LOOP AT flight_data INTO DATA(wa).
+      total_seatsmax = total_seatsmax + wa-seatsmax.
+      total_seatsocc = total_seatsocc + wa-seatsocc.
+    ENDLOOP.
+
+    occupancy_rate = total_seatsocc / total_seatsmax * 100.
+  ENDMETHOD.
+
+  METHOD select_flight_data.
+    SELECT seatsmax, seatsocc
+      FROM zdemo_abap_fli
+      WHERE carrid = @carrier
+      INTO CORRESPONDING FIELDS OF TABLE @flight_data.
+  ENDMETHOD.
+ENDCLASS.
+``` 
+
+ </td>
+</tr>
+
+
+
+<tr>
+<td> 
+
+CCAU include (Test Classes tab in ADT)
+
+ </td>
+
+ <td> 
+
+``` abap
+*&---------------------------------------------------------------------*
+*& Local test double class
+*&---------------------------------------------------------------------*
+
+"The example uses manually created test doubles. You may also want to
+"check out creating test doubles using ABAP frameworks. Find more
+"information in the ABAP Unit Tests cheat sheet.
+
+CLASS ltd_test_data DEFINITION FOR TESTING
+INHERITING FROM zcl_demo_abap.
+  PROTECTED SECTION.
+    METHODS select_flight_data REDEFINITION.
+ENDCLASS.
+
+CLASS ltd_test_data IMPLEMENTATION.
+  METHOD select_flight_data.
+
+    flight_data = SWITCH #( carrier
+      WHEN 'IJ' THEN VALUE #( ( carrid = carrier  seatsmax = 300 seatsocc = 200 )
+                              ( carrid = carrier  seatsmax = 350 seatsocc = 200 )
+                              ( carrid = carrier  seatsmax = 350 seatsocc = 300 ) )
+      WHEN 'KL' THEN VALUE #( ( carrid = carrier  seatsmax = 350 seatsocc = 300 )
+                              ( carrid = carrier  seatsmax = 350 seatsocc = 250 )
+                              ( carrid = carrier  seatsmax = 300 seatsocc = 250 ) ) ).
+
+  ENDMETHOD.
+ENDCLASS.
+
+*&---------------------------------------------------------------------*
+*& Test class demonstrating test double injection using inheritance
+*& and method redefinition
+*&---------------------------------------------------------------------*
+
+CLASS ltc_test DEFINITION
+  FOR TESTING RISK LEVEL HARMLESS
+  DURATION SHORT.
+  PRIVATE SECTION.
+    METHODS test_get_occ_rate FOR TESTING.
+ENDCLASS.
+
+CLASS ltc_test IMPLEMENTATION.
+  METHOD test_get_occ_rate.
+    "Creating an object of the test double class that inherits
+    "from the class under test
+    DATA(ref_cut) = NEW ltd_test_data(  ).
+
+    DATA(act_occ_rate) = ref_cut->get_occ_rate( 'IJ' ).
+
+    cl_abap_unit_assert=>assert_equals(
+        act = act_occ_rate
+        exp = '70.00'
+        msg = |The expected occupancy rate for carrier 'IJ' is wrong.|
+        quit = if_abap_unit_constant=>quit-no ).
+
+    act_occ_rate = ref_cut->get_occ_rate( 'KL' ).
+
+    cl_abap_unit_assert=>assert_equals(
+        act = act_occ_rate
+        exp = '80.00'
+        msg = |The expected occupancy rate for carrier 'KL' is wrong.|
+        quit = if_abap_unit_constant=>quit-no ).
+  ENDMETHOD.
+ENDCLASS.
+``` 
+
+ </td>
+</tr>
+
+</table>
+
+</details>  
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
@@ -713,1256 +1964,6 @@ ENDCLASS.
 </details>  
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
-
-
-## AUnit: Backdoor Injection
-
-- The backdoor injection technique can be applied in the context of ABAP Unit.
-- As described [here](https://help.sap.com/docs/ABAP_PLATFORM_NEW/c238d694b825421f940829321ffa326a/04a2d0fc9cd940db8aedf3fa29e5f07e.html?locale=en-US), multiple techniques exist for injecting test doubles into a class under test to ensure their usage during test execution. Also find more information in the ABAP Unit Tests cheat sheet.
-- A sample setup to inject test doubles, as illustrated in the example, may look as follows:
-  - A dependent-on component (DOC) is identified (for example, reading data from a database table).
-  - Ideally, an interface to the DOC is available (here, a local interface is used). A data provider class implements this interface for the data provisioning (here, a local class is used).
-  - The class under test has been prepared. This example uses:
-    - A private instance attribute declared with a reference to the interface.
-    - The method to be tested calls a method via this interface reference variable for the data retrieval.
-    - The class's instance contructor assigns the interface reference variable by creating an object of the data provider class, which implements the interface.
-  - The test class may be implemented as follows:
-    - Since private attributes are not accessible in local test classes, the local test class is declared as a local friend of the global class.
-    - In the test method, an object of the class under test and a test double are created. The test double is declared with a reference to the interface (here, a local class is used that creates a test double). The private attribute is then assigned the test double, realizing the backdoor injection.
-    - The effect is as follows: When the method to be tested is called "regularly" (for example, when executing the class using _F9_, as in the example case), the object refers to the "regular" data provider (in this example, it is of type `lcl_data_provider`), which means it uses production data. However, when the unit test is executed (for example, by choosing _Ctrl/Cmd + Shift + F10_), the object refers to the test double (in this case, of type `ltd_test_data`), which is the local test double that gets injected.
-
-
-
-<details>
-  <summary>🟢 Click to expand for more information and example code</summary>
-  <!-- -->
-
-<br>
-
-Unlike other examples, this example class has a different setup: 
-- It focuses on ABAP Unit tests. You can indeed execute the simple example class by choosing _F9_. To run the unit test, use _Ctrl/Cmd + Shift + F10_.
-- The example class includes code from the global class and the CCIMP include, as well as the CCDEF (_Class-relevant Local Types_ tab in ADT) and CCAU (_Test Classes_ tab in ADT) includes.
-- The example uses a demo database table (and a class to populate it) from the ABAP Cheat Sheet GitHub repository.
-
-<br>
-
-<table>
-
-<tr>
-<td> Class include </td> <td> Code </td>
-</tr>
-
-<tr>
-<td> 
-
-Global class
-
- </td>
-
- <td> 
-
-``` abap
-CLASS zcl_demo_abap DEFINITION
-  PUBLIC
-  FINAL
-  CREATE PUBLIC .
-
-  PUBLIC SECTION.
-    INTERFACES if_oo_adt_classrun.
-
-    TYPES: carr_tab TYPE TABLE OF zdemo_abap_fli WITH EMPTY KEY,
-           occ_rate TYPE p LENGTH 5 DECIMALS 2.
-
-    CLASS-METHODS class_constructor.
-
-    METHODS: constructor,
-      "Method to demonstrate test double injection using back door injection
-      get_occ_rate IMPORTING carrier_id            TYPE zdemo_abap_fli-carrid
-                   RETURNING VALUE(occupancy_rate) TYPE occ_rate.
-  PROTECTED SECTION.
-  PRIVATE SECTION.
-    DATA data_provider TYPE REF TO lif_get_data.
-ENDCLASS.
-
-
-CLASS zcl_demo_abap IMPLEMENTATION.
-  METHOD if_oo_adt_classrun~main.
-
-    "Filling an internal table with carrier IDs used to calculate
-    "the occupancy rate.
-    DATA(carrier_tab) = VALUE carr_tab( ( carrid = 'LH' )
-                                        ( carrid = 'AA' )
-                                        ( carrid = 'DL' ) ).
-
-    LOOP AT carrier_tab INTO DATA(carr).
-      DATA(occupancy_rate_local_itf) = get_occ_rate( carr-carrid ).
-
-      out->write( |The occupancy rate for airline { carr-carrid } is { occupancy_rate_local_itf }%.|  ).
-      out->write( |\n| ).
-    ENDLOOP.
-
-  ENDMETHOD.
-
-  METHOD class_constructor.
-    "Filling demo database tables.
-    zcl_demo_abap_aux=>fill_dbtabs( ).
-  ENDMETHOD.
-
-  METHOD get_occ_rate.
-
-    DATA total_seatsmax TYPE i.
-    DATA total_seatsocc TYPE i.
-
-    "When the method to be tested is called "regularly" (for example, when executing the class using F9),
-    "the object refers to the "regular" data provider (type ref to lcl_data_provider), which means it uses
-    "production data. However, when the unit test is executed (for example, by choosing Ctrl/Cmd + Shift + F10),
-    "the object refers to the test double (type ref to ltd_test_data), which is the local test double that gets
-    "injected.
-    DATA(flight_data) = data_provider->select_flight_data( carrier = carrier_id ).
-
-    LOOP AT flight_data INTO DATA(wa).
-      total_seatsmax = total_seatsmax + wa-seatsmax.
-      total_seatsocc = total_seatsocc + wa-seatsocc.
-    ENDLOOP.
-
-    occupancy_rate = total_seatsocc / total_seatsmax * 100.
-  ENDMETHOD.
-
-  METHOD constructor.
-    data_provider = NEW lcl_data_provider( ).
-  ENDMETHOD.
-
-ENDCLASS.
-``` 
-
- </td>
-</tr>
-
-<tr>
-<td> 
-
-CCDEF include (Class-relevant Local Types tab in ADT)
-
- </td>
-
- <td> 
-
-``` abap
-INTERFACE lif_get_data.
-  METHODS:
-    select_flight_data IMPORTING carrier            TYPE zdemo_abap_fli-carrid
-                       RETURNING VALUE(flight_data) TYPE zcl_demo_abap=>carr_tab.
-ENDINTERFACE.
-``` 
-
- </td>
-</tr>
-
-<tr>
-<td> 
-
-CCIMP include (Local Types tab in ADT)
-
- </td>
-
- <td> 
-
-``` abap
-CLASS lcl_data_provider DEFINITION.
-  PUBLIC SECTION.
-    INTERFACES lif_get_data.
-ENDCLASS.
-
-CLASS lcl_data_provider IMPLEMENTATION.
-  METHOD lif_get_data~select_flight_data.
-    SELECT seatsmax, seatsocc
-      FROM zdemo_abap_fli
-      WHERE carrid = @carrier
-      INTO CORRESPONDING FIELDS OF TABLE @flight_data.
-  ENDMETHOD.
-ENDCLASS.
-``` 
-
- </td>
-</tr>
-
-<tr>
-<td> 
-
-CCAU include (Test Classes tab in ADT)
-
- </td>
-
- <td> 
-
-``` abap
-*&---------------------------------------------------------------------*
-*& Local test double class
-*&---------------------------------------------------------------------*
-
-"The example uses manually created test doubles. You may also want to
-"check out creating test doubles using ABAP frameworks. Find more
-"information in the ABAP Unit Tests cheat sheet.
-
-CLASS ltd_test_data DEFINITION FOR TESTING.
-  PUBLIC SECTION.
-    INTERFACES lif_get_data PARTIALLY IMPLEMENTED.
-ENDCLASS.
-
-CLASS ltd_test_data IMPLEMENTATION.
-  METHOD lif_get_data~select_flight_data.
-
-    flight_data = SWITCH #( carrier
-      WHEN 'IJ' THEN VALUE #( ( carrid = carrier  seatsmax = 300 seatsocc = 200 )
-                              ( carrid = carrier  seatsmax = 350 seatsocc = 200 )
-                              ( carrid = carrier  seatsmax = 350 seatsocc = 300 ) )
-      WHEN 'KL' THEN VALUE #( ( carrid = carrier  seatsmax = 350 seatsocc = 300 )
-                              ( carrid = carrier  seatsmax = 350 seatsocc = 250 )
-                              ( carrid = carrier  seatsmax = 300 seatsocc = 250 ) ) ).
-
-  ENDMETHOD.
-ENDCLASS.
-
-*&---------------------------------------------------------------------*
-*& Test class demonstrating backdoor injection
-*&---------------------------------------------------------------------*
-
-"Note that the example uses a local interface.
-
-CLASS ltc_test DEFINITION
-  FOR TESTING RISK LEVEL HARMLESS
-  DURATION SHORT.
-  PRIVATE SECTION.
-    METHODS test_get_occ_rate FOR TESTING.
-ENDCLASS.
-
-"In this example, a test class is created in the test include. Since private
-"attributes are not accessible in local test classes, the local test class
-"is declared as a local friend of the global class.
-CLASS zcl_demo_abap DEFINITION LOCAL FRIENDS ltc_test.
-
-CLASS ltc_test IMPLEMENTATION.
-  METHOD test_get_occ_rate.
-    DATA(ref_cut) = NEW zcl_demo_abap( ).
-    DATA ref_data_prov TYPE REF TO lif_get_data.
-    ref_data_prov = NEW ltd_test_data( ).
-    ref_cut->data_provider = ref_data_prov.
-
-    DATA(act_occ_rate) = ref_cut->get_occ_rate( 'IJ' ).
-
-    cl_abap_unit_assert=>assert_equals(
-        act = act_occ_rate
-        exp = '70.00'
-        msg = |The expected occupancy rate for carrier 'IJ' is wrong.|
-        quit = if_abap_unit_constant=>quit-no ).
-
-    act_occ_rate = ref_cut->get_occ_rate( 'KL' ).
-
-    cl_abap_unit_assert=>assert_equals(
-        act = act_occ_rate
-        exp = '80.00'
-        msg = |The expected occupancy rate for carrier 'KL' is wrong.|
-        quit = if_abap_unit_constant=>quit-no ).
-  ENDMETHOD.
-ENDCLASS.
-``` 
-
- </td>
-</tr>
-
-</table>
-
-</details>  
-
-<p align="right"><a href="#top">⬆️ back to top</a></p>
-
-
-## AUnit: Constructor Injection
-
-- The constructor injection technique can be applied in the context of ABAP Unit.
-- As described [here](https://help.sap.com/docs/ABAP_PLATFORM_NEW/c238d694b825421f940829321ffa326a/04a2d0fc9cd940db8aedf3fa29e5f07e.html?locale=en-US), multiple techniques exist for injecting test doubles into a class under test to ensure their usage during test execution. Also find more information in the ABAP Unit Tests cheat sheet.
-- Here, the test double is passed as a parameter to the instance constructor of the class under test.
-- A sample setup to inject test doubles, as illustrated in the example, may look as follows:
-  - A dependent-on component (DOC) is identified (for example, reading data from a database table).
-  - Ideally, an interface to the DOC is available. A data provider class implements this interface for the data provisioning.
-  - The class under test has been prepared. This example uses:
-    - A private instance attribute declared with a reference to the interface.
-    - The method to be tested calls a method via this interface reference variable for the data retrieval.
-    - The class's instance contructor is declared with an optional parameter referencing the interface. When an object of the class is created, the interface reference variable is assigned appropriately, i.e. using the "regular" data provider or the test double.
-  - The test class may be implemented as follows:
-    - Since private attributes are not accessible in local test classes, the local test class is declared as a local friend of the global class.
-    - In the test method, an object of the class under test and a test double are created. The test double is declared with a reference to the interface (here, a local class is used that creates a test double). By creating an object of the class under test, the test double is passed as parameter of the instance constructor. 
-    - The effect is as follows: When the method to be tested is called "regularly" (for example, when executing the class using _F9_, as in the example case), the object refers to the "regular" data provider (in this example, it is of type `lcl_data_provider`), which means it uses production data (an object is created in the instance constrctor implementation accordingly). However, when the unit test is executed (for example, by choosing _Ctrl/Cmd + Shift + F10_), the object refers to the test double (in this case, of type `ltd_test_data`), which is the local test double that gets injected via the constructor. In the instance constructor implementation, the instance attribute is assigned the reference to the test double.
-
-
-<br>
-
-<details>
-  <summary>🟢 Click to expand for more information and example code</summary>
-  <!-- -->
-
-<br>
-
-Unlike other examples, this example class has a different setup: 
-- It focuses on ABAP Unit tests. You can indeed execute the simple example class by choosing _F9_. To run the unit test, use _Ctrl/Cmd + Shift + F10_.
-- The example class includes code from the global class, the CCIMP and CCAU (_Test Classes_ tab in ADT) includes. 
-- The example uses a demo database table (and a class to populate it) and a global interface from the ABAP cheat sheet GitHub repository.
-
-<br>
-
-<table>
-
-<tr>
-<td> Class include </td> <td> Code </td>
-</tr>
-
-<tr>
-<td> 
-
-Global class
-
- </td>
-
- <td> 
-
-``` abap
-CLASS zcl_demo_abap DEFINITION
-  PUBLIC
-  FINAL
-  CREATE PUBLIC .
-
-  PUBLIC SECTION.
-    INTERFACES if_oo_adt_classrun.
-
-    TYPES: carr_tab TYPE TABLE OF zdemo_abap_fli WITH EMPTY KEY,
-           occ_rate TYPE p LENGTH 5 DECIMALS 2.
-
-    CLASS-METHODS class_constructor.
-    METHODS: constructor IMPORTING iref_data_prov TYPE REF TO zdemo_abap_get_data_itf OPTIONAL,
-      get_occ_rate IMPORTING carrier_id            TYPE zdemo_abap_fli-carrid
-                   RETURNING VALUE(occupancy_rate) TYPE occ_rate.
-
-  PROTECTED SECTION.
-  PRIVATE SECTION.
-    DATA data_provider TYPE REF TO zdemo_abap_get_data_itf.
-ENDCLASS.
-
-
-CLASS zcl_demo_abap IMPLEMENTATION.
-  METHOD if_oo_adt_classrun~main.
-
-    "Filling an internal table with carrier IDs used to calculate
-    "the occupancy rate.
-    DATA(carrier_tab) = VALUE carr_tab( ( carrid = 'LH' )
-                                        ( carrid = 'AA' )
-                                        ( carrid = 'DL' ) ).
-
-    LOOP AT carrier_tab INTO DATA(carr).
-      DATA(occupancy_rate_local_itf) = get_occ_rate( carr-carrid ).
-
-      out->write( |The occupancy rate for airline { carr-carrid } is { occupancy_rate_local_itf }%.|  ).
-      out->write( |\n| ).
-    ENDLOOP.
-
-  ENDMETHOD.
-
-  METHOD class_constructor.
-    "Filling demo database tables.
-    zcl_demo_abap_aux=>fill_dbtabs( ).
-  ENDMETHOD.
-
-  METHOD get_occ_rate.
-    DATA total_seatsmax TYPE i.
-    DATA total_seatsocc TYPE i.
-
-    DATA(flight_data) = data_provider->select_flight_data( carrier = carrier_id ).
-
-    LOOP AT flight_data INTO DATA(wa).
-      total_seatsmax = total_seatsmax + wa-seatsmax.
-      total_seatsocc = total_seatsocc + wa-seatsocc.
-    ENDLOOP.
-
-    occupancy_rate = total_seatsocc / total_seatsmax * 100.
-  ENDMETHOD.
-
-  METHOD constructor.
-    IF iref_data_prov IS BOUND.
-      data_provider = iref_data_prov.
-    ELSE.
-      data_provider = NEW lcl_data_provider( ).
-    ENDIF.
-  ENDMETHOD.
-
-ENDCLASS.
-``` 
-
- </td>
-</tr>
-
-
-<tr>
-<td> 
-
-CCIMP include (Local Types tab in ADT)
-
- </td>
-
- <td> 
-
-``` abap
-CLASS lcl_data_provider DEFINITION.
-  PUBLIC SECTION.
-    INTERFACES zdemo_abap_get_data_itf.
-ENDCLASS.
-
-CLASS lcl_data_provider IMPLEMENTATION.
-  METHOD zdemo_abap_get_data_itf~select_flight_data.
-    SELECT seatsmax, seatsocc
-      FROM zdemo_abap_fli
-      WHERE carrid = @carrier
-      INTO CORRESPONDING FIELDS OF TABLE @flight_data.
-  ENDMETHOD.
-
-  METHOD zdemo_abap_get_data_itf~say_hello.
-   "The implementation is not relevant for the example.
-   "See the executable example of the ABAP Unit Tests cheat sheet.
-  ENDMETHOD.
-ENDCLASS.
-``` 
-
- </td>
-</tr>
-
-<tr>
-<td> 
-
-CCAU include (Test Classes tab in ADT)
-
- </td>
-
- <td> 
-
-``` abap
-*&---------------------------------------------------------------------*
-*& Local test double class
-*&---------------------------------------------------------------------*
-
-"The example uses manually created test doubles. You may also want to
-"check out creating test doubles using ABAP frameworks. Find more
-"information in the ABAP Unit Tests cheat sheet.
-
-CLASS ltd_test_data DEFINITION FOR TESTING.
-  PUBLIC SECTION.
-    INTERFACES zdemo_abap_get_data_itf PARTIALLY IMPLEMENTED.
-ENDCLASS.
-
-CLASS ltd_test_data IMPLEMENTATION.
-  METHOD zdemo_abap_get_data_itf~select_flight_data.
-
-    flight_data = SWITCH #( carrier
-      WHEN 'IJ' THEN VALUE #( ( carrid = carrier  seatsmax = 300 seatsocc = 200 )
-                              ( carrid = carrier  seatsmax = 350 seatsocc = 200 )
-                              ( carrid = carrier  seatsmax = 350 seatsocc = 300 ) )
-      WHEN 'KL' THEN VALUE #( ( carrid = carrier  seatsmax = 350 seatsocc = 300 )
-                              ( carrid = carrier  seatsmax = 350 seatsocc = 250 )
-                              ( carrid = carrier  seatsmax = 300 seatsocc = 250 ) ) ).
-
-  ENDMETHOD.
-ENDCLASS.
-
-*&---------------------------------------------------------------------*
-*& Test class demonstrating constructor injection
-*&---------------------------------------------------------------------*
-
-"Note that the example uses a local interface.
-
-CLASS ltc_test DEFINITION
-  FOR TESTING RISK LEVEL HARMLESS
-  DURATION SHORT.
-  PRIVATE SECTION.
-    METHODS test_get_occ_rate FOR TESTING.
-ENDCLASS.
-
-"In this example, a test class is created in the test include. Since private
-"attributes are not accessible in local test classes, the local test class
-"is declared as a local friend of the global class.
-CLASS zcl_demo_abap DEFINITION LOCAL FRIENDS ltc_test.
-
-CLASS ltc_test IMPLEMENTATION.
-  METHOD test_get_occ_rate.
-    DATA ref_data_prov TYPE REF TO zdemo_abap_get_data_itf.
-
-    "Creating an instance of the local test double
-    ref_data_prov = NEW ltd_test_data( ).
-
-    "Instance is provided for the constructor injection
-    DATA(ref_cut) = NEW zcl_demo_abap( ref_data_prov ).
-
-    DATA(act_occ_rate) = ref_cut->get_occ_rate( carrier_id = 'IJ' ).
-
-    cl_abap_unit_assert=>assert_equals(
-        act = act_occ_rate
-        exp = '70.00'
-        msg = |The expected occupancy rate for carrier 'IJ' is wrong.|
-        quit = if_abap_unit_constant=>quit-no ).
-
-    act_occ_rate = ref_cut->get_occ_rate( carrier_id = 'KL' ).
-
-    cl_abap_unit_assert=>assert_equals(
-        act = act_occ_rate
-        exp = '80.00'
-        msg = |The expected occupancy rate for carrier 'KL' is wrong.|
-        quit = if_abap_unit_constant=>quit-no ).
-  ENDMETHOD.
-ENDCLASS.
-``` 
-
- </td>
-</tr>
-
-</table>
-
-</details>  
-
-<p align="right"><a href="#top">⬆️ back to top</a></p>
-
-## AUnit: Parameter Injection
-
-- The parameter injection technique can be applied in the context of ABAP Unit.
-- As described [here](https://help.sap.com/docs/ABAP_PLATFORM_NEW/c238d694b825421f940829321ffa326a/04a2d0fc9cd940db8aedf3fa29e5f07e.html?locale=en-US), multiple techniques exist for injecting test doubles into a class under test to ensure their usage during test execution. Also find more information in the ABAP Unit Tests cheat sheet.
-- Here, the test double is passed as a parameter to the tested method (i.e. an optional importing parameter) in the class under test.
-- A sample setup to inject test doubles, as illustrated in the example, may look as follows:
-  - A dependent-on component (DOC) is identified (for example, reading data from a database table).
-  - Ideally, an interface to the DOC is available (here, a local interface is used). A data provider class implements this interface for the data provisioning (here, a local class is used).
-  - The class under test has been prepared. The method to be tested:        
-    - Calls a method via an interface reference variable for the data retrieval.
-    - Is defined with an optional parameter. It is typed with reference to the interface. 
-    - Includes a check whether the optional parameter is bound.
-    - Note: To use the local demo interface in the signature, the method is defined in the private visibility section.
-  - The test class may be implemented as follows:
-    - Since private attributes are not accessible in local test classes, the local test class is declared as a local friend of the global class.
-    - In the test method, an object of the class under test and a test double are created. The test double is declared with a reference to the interface (here, a local class is used that creates a test double). 
-    - The effect is as follows: When the method to be tested is called "regularly" (for example, when executing the class using _F9_, as in the example case) without passing the optional parameter, the an object of the "regular" data provider (in this example, it is of type `lcl_data_provider`) is created following the evaluation of the `IF` statement, which means it uses production data. However, when the unit test is executed (for example, by choosing _Ctrl/Cmd + Shift + F10_) and the optional parameter is supplied, the parameter is bound and, thus, uses the test double (in this case, of type `ltd_test_data`), which gets injected via the parameter.
-
-<br>
-
-<details>
-  <summary>🟢 Click to expand for more information and example code</summary>
-  <!-- -->
-
-<br>
-
-Unlike other examples, this example class has a different setup: 
-- It focuses on ABAP Unit tests. You can indeed execute the simple example class by choosing _F9_. To run the unit test, use _Ctrl/Cmd + Shift + F10_.
-- The example class includes code from the global class and the CCIMP include, as well as the CCDEF (_Class-relevant Local Types_ tab in ADT) and CCAU (_Test Classes_ tab in ADT) includes.
-- The example uses a demo database table (and a class to populate it) from the ABAP Cheat Sheet GitHub repository.
-
-<br>
-
-<table>
-
-<tr>
-<td> Class include </td> <td> Code </td>
-</tr>
-
-<tr>
-<td> 
-
-Global class
-
- </td>
-
- <td> 
-
-``` abap
-CLASS zcl_demo_abap DEFINITION
-  PUBLIC
-  FINAL
-  CREATE PUBLIC .
-
-  PUBLIC SECTION.
-    INTERFACES if_oo_adt_classrun.
-
-    TYPES: carr_tab TYPE TABLE OF zdemo_abap_fli WITH EMPTY KEY,
-           occ_rate TYPE p LENGTH 5 DECIMALS 2.
-
-    CLASS-METHODS class_constructor.
-
-  PROTECTED SECTION.
-  PRIVATE SECTION.
-    "Method to demonstrate test double injection using parameter injection
-    "The example uses a private method to refer to a local interface.
-    METHODS  get_occ_rate IMPORTING carrier_id            TYPE zdemo_abap_fli-carrid
-                                    data_prov             TYPE REF TO lif_get_data OPTIONAL
-                          RETURNING VALUE(occupancy_rate) TYPE occ_rate.
-
-    " DATA data_provider TYPE REF TO lif_get_data.
-ENDCLASS.
-
-
-CLASS zcl_demo_abap IMPLEMENTATION.
-  METHOD if_oo_adt_classrun~main.
-
-    "Filling an internal table with carrier IDs used to calculate
-    "the occupancy rate.
-    DATA(carrier_tab) = VALUE carr_tab( ( carrid = 'LH' )
-                                        ( carrid = 'AA' )
-                                        ( carrid = 'DL' ) ).
-
-    LOOP AT carrier_tab INTO DATA(carr).
-      DATA(occupancy_rate_local_itf) = get_occ_rate( carr-carrid ).
-
-      out->write( |The occupancy rate for airline { carr-carrid } is { occupancy_rate_local_itf }%.|  ).
-      out->write( |\n| ).
-    ENDLOOP.
-
-  ENDMETHOD.
-
-  METHOD class_constructor.
-    "Filling demo database tables.
-    zcl_demo_abap_aux=>fill_dbtabs( ).
-  ENDMETHOD.
-
-  METHOD get_occ_rate.
-
-    DATA total_seatsmax TYPE i.
-    DATA total_seatsocc TYPE i.
-    DATA data_provider TYPE REF TO lif_get_data.
-
-    "The method has an optional importing parameter. When the unit test is executed,
-    "the parameter is bound. An object of the test double class is passed in that case.
-    "Otherwise, when the class is executed using F9, an object of the actual data provider
-    "is created.
-    IF data_prov IS BOUND.
-      data_provider = data_prov.
-    ELSE.
-      data_provider = NEW lcl_data_provider( ).
-    ENDIF.
-
-    DATA(flight_data) = data_provider->select_flight_data( carrier = carrier_id ).
-
-    LOOP AT flight_data INTO DATA(wa).
-      total_seatsmax = total_seatsmax + wa-seatsmax.
-      total_seatsocc = total_seatsocc + wa-seatsocc.
-    ENDLOOP.
-
-    occupancy_rate = total_seatsocc / total_seatsmax * 100.
-  ENDMETHOD.
-
-ENDCLASS.
-``` 
-
- </td>
-</tr>
-
-<tr>
-<td> 
-
-CCDEF include (Class-relevant Local Types tab in ADT)
-
- </td>
-
- <td> 
-
-``` abap
-INTERFACE lif_get_data.
-  METHODS:
-    select_flight_data IMPORTING carrier            TYPE zdemo_abap_fli-carrid
-                       RETURNING VALUE(flight_data) TYPE zcl_demo_abap=>carr_tab.
-ENDINTERFACE.
-``` 
-
- </td>
-</tr>
-
-<tr>
-<td> 
-
-CCIMP include (Local Types tab in ADT)
-
- </td>
-
- <td> 
-
-``` abap
-CLASS lcl_data_provider DEFINITION.
-  PUBLIC SECTION.
-    INTERFACES lif_get_data.
-ENDCLASS.
-
-CLASS lcl_data_provider IMPLEMENTATION.
-  METHOD lif_get_data~select_flight_data.
-    SELECT seatsmax, seatsocc
-      FROM zdemo_abap_fli
-      WHERE carrid = @carrier
-      INTO CORRESPONDING FIELDS OF TABLE @flight_data.
-  ENDMETHOD.
-ENDCLASS.
-``` 
-
- </td>
-</tr>
-
-<tr>
-<td> 
-
-CCAU include (Test Classes tab in ADT)
-
- </td>
-
- <td> 
-
-``` abap
-*&---------------------------------------------------------------------*
-*& Local test double class
-*&---------------------------------------------------------------------*
-
-"The example uses manually created test doubles. You may also want to
-"check out creating test doubles using ABAP frameworks. Find more
-"information in the ABAP Unit Tests cheat sheet.
-
-CLASS ltd_test_data DEFINITION FOR TESTING.
-  PUBLIC SECTION.
-    INTERFACES lif_get_data PARTIALLY IMPLEMENTED.
-ENDCLASS.
-
-CLASS ltd_test_data IMPLEMENTATION.
-  METHOD lif_get_data~select_flight_data.
-
-    flight_data = SWITCH #( carrier
-      WHEN 'IJ' THEN VALUE #( ( carrid = carrier  seatsmax = 300 seatsocc = 200 )
-                              ( carrid = carrier  seatsmax = 350 seatsocc = 200 )
-                              ( carrid = carrier  seatsmax = 350 seatsocc = 300 ) )
-      WHEN 'KL' THEN VALUE #( ( carrid = carrier  seatsmax = 350 seatsocc = 300 )
-                              ( carrid = carrier  seatsmax = 350 seatsocc = 250 )
-                              ( carrid = carrier  seatsmax = 300 seatsocc = 250 ) ) ).
-
-  ENDMETHOD.
-ENDCLASS.
-
-*&---------------------------------------------------------------------*
-*& Test class demonstrating parameter injection
-*&---------------------------------------------------------------------*
-
-"Note that the example uses a local interface.
-
-CLASS ltc_test DEFINITION
-  FOR TESTING RISK LEVEL HARMLESS
-  DURATION SHORT.
-  PRIVATE SECTION.
-    METHODS test_get_occ_rate FOR TESTING.
-ENDCLASS.
-
-"In this example, a test class is created in the test include. Since private
-"attributes are not accessible in local test classes, the local test class
-"is declared as a local friend of the global class.
-CLASS zcl_demo_abap DEFINITION LOCAL FRIENDS ltc_test.
-
-CLASS ltc_test IMPLEMENTATION.
-  METHOD test_get_occ_rate.
-    DATA(ref_cut) = NEW zcl_demo_abap( ).
-    DATA ref_data_prov TYPE REF TO lif_get_data.
-    ref_data_prov = NEW ltd_test_data( ).
-
-    DATA(act_occ_rate) = ref_cut->get_occ_rate( carrier_id = 'IJ'
-                                                data_prov  = ref_data_prov ).
-
-    cl_abap_unit_assert=>assert_equals(
-        act = act_occ_rate
-        exp = '70.00'
-        msg = |The expected occupancy rate for carrier 'IJ' is wrong.|
-        quit = if_abap_unit_constant=>quit-no ).
-
-    act_occ_rate = ref_cut->get_occ_rate( carrier_id = 'KL'
-                                          data_prov  = ref_data_prov ).
-
-    cl_abap_unit_assert=>assert_equals(
-        act = act_occ_rate
-        exp = '80.00'
-        msg = |The expected occupancy rate for carrier 'KL' is wrong.|
-        quit = if_abap_unit_constant=>quit-no ).
-  ENDMETHOD.
-ENDCLASS.
-``` 
-
- </td>
-</tr>
-
-</table>
-
-</details>    
-
-<p align="right"><a href="#top">⬆️ back to top</a></p>
-
-
-## AUnit: Setter Injection 
-
-- The setter injection technique can be applied in the context of ABAP Unit.
-- As described [here](https://help.sap.com/docs/ABAP_PLATFORM_NEW/c238d694b825421f940829321ffa326a/04a2d0fc9cd940db8aedf3fa29e5f07e.html?locale=en-US), multiple techniques exist for injecting test doubles into a class under test to ensure their usage during test execution. Also find more information in the ABAP Unit Tests cheat sheet.
-- Here, the test double is passed as a parameter to a setter method.
-- A sample setup to inject test doubles, as illustrated in the example, may look as follows:
-  - A dependent-on component (DOC) is identified (for example, reading data from a database table).
-  - Ideally, an interface to the DOC is available (here, a local interface is used). A data provider class implements this interface for the data provisioning (here, a local class is used).
-  - The class under test has been prepared. This example uses:
-    - A private instance attribute declared with a reference to the interface.
-    - The method to be tested calls a method via this interface reference variable for the data retrieval.
-    - The class's instance contructor assigns the interface reference variable by creating an object of the data provider class, which implements the interface.
-    - A setter method is declared which expects a reference to the interface to be passed. To use the local demo interface in the signature, the setter method is defined in the private visibility section.
-  - The test class may be implemented as follows:
-    - Since private attributes are not accessible in local test classes, the local test class is declared as a local friend of the global class.
-    - In the test method, an object of the class under test and a test double are created. The test double is declared with a reference to the interface (here, a local class is used that creates a test double). The setter method is called, passing the test double. Following the setter method implementation, the interface reference variable is assigned the test double.
-    - The effect is as follows: When the method to be tested is called "regularly" (for example, when executing the class using _F9_, as in the example case), the object refers to the "regular" data provider (in this example, it is of type `lcl_data_provider`), which means it uses production data. However, when the unit test is executed (for example, by choosing _Ctrl/Cmd + Shift + F10_), the object refers to the test double (in this case, of type `ltd_test_data`), which is the local test double that gets injected via the setter method.
-
-<br>
-
-<details>
-  <summary>🟢 Click to expand for example code</summary>
-  <!-- -->
-
-<br>
-
-Unlike other examples, this example class has a different setup: 
-- It focuses on ABAP Unit tests. You can indeed execute the simple example class by choosing _F9_. To run the unit test, use _Ctrl/Cmd + Shift + F10_.
-- The example class includes code from the global class and the CCIMP include, as well as the CCDEF (_Class-relevant Local Types_ tab in ADT) and CCAU (_Test Classes_ tab in ADT) includes.
-- The example uses a demo database table (and a class to populate it) from the ABAP Cheat Sheet GitHub repository.
-
-<br>
-
-<table>
-
-<tr>
-<td> Class include </td> <td> Code </td>
-</tr>
-
-<tr>
-<td> 
-
-Global class
-
- </td>
-
- <td> 
-
-``` abap
-CLASS zcl_demo_abap DEFINITION
-  PUBLIC
-  FINAL
-  CREATE PUBLIC .
-
-  PUBLIC SECTION.
-    INTERFACES if_oo_adt_classrun.
-
-    TYPES: carr_tab TYPE TABLE OF zdemo_abap_fli WITH EMPTY KEY,
-           occ_rate TYPE p LENGTH 5 DECIMALS 2.
-
-    CLASS-METHODS class_constructor.
-    METHODS: constructor,
-            get_occ_rate IMPORTING carrier_id            TYPE zdemo_abap_fli-carrid
-                         RETURNING VALUE(occupancy_rate) TYPE occ_rate.
-
-  PROTECTED SECTION.
-  PRIVATE SECTION.
-    "Method for setter injection
-    METHODS setter_meth IMPORTING data_prov TYPE REF TO lif_get_data.
-
-    DATA data_provider TYPE REF TO lif_get_data.
-ENDCLASS.
-
-
-CLASS zcl_demo_abap IMPLEMENTATION.
-  METHOD if_oo_adt_classrun~main.
-
-    "Filling an internal table with carrier IDs used to calculate
-    "the occupancy rate.
-    DATA(carrier_tab) = VALUE carr_tab( ( carrid = 'LH' )
-                                        ( carrid = 'AA' )
-                                        ( carrid = 'DL' ) ).
-
-    LOOP AT carrier_tab INTO DATA(carr).
-      DATA(occupancy_rate_local_itf) = get_occ_rate( carr-carrid ).
-
-      out->write( |The occupancy rate for airline { carr-carrid } is { occupancy_rate_local_itf }%.|  ).
-      out->write( |\n| ).
-    ENDLOOP.
-
-  ENDMETHOD.
-
-  METHOD class_constructor.
-    "Filling demo database tables.
-    zcl_demo_abap_aux=>fill_dbtabs( ).
-  ENDMETHOD.
-
-  METHOD get_occ_rate.
-    DATA total_seatsmax TYPE i.
-    DATA total_seatsocc TYPE i.
-
-    DATA(flight_data) = data_provider->select_flight_data( carrier = carrier_id ).
-
-    LOOP AT flight_data INTO DATA(wa).
-      total_seatsmax = total_seatsmax + wa-seatsmax.
-      total_seatsocc = total_seatsocc + wa-seatsocc.
-    ENDLOOP.
-
-    occupancy_rate = total_seatsocc / total_seatsmax * 100.
-  ENDMETHOD.
-
-  METHOD setter_meth.
-    "When the unit test is executed, an object of the test double class is passed as
-    "parameter. Then, the object used here refers the local test double.
-    data_provider = data_prov.
-  ENDMETHOD.
-
-  METHOD constructor.
-    data_provider = NEW lcl_data_provider( ).
-  ENDMETHOD.
-
-ENDCLASS.
-``` 
-
- </td>
-</tr>
-
-<tr>
-<td> 
-
-CCDEF include (Class-relevant Local Types tab in ADT)
-
- </td>
-
- <td> 
-
-``` abap
-INTERFACE lif_get_data.
-  METHODS:
-    select_flight_data IMPORTING carrier            TYPE zdemo_abap_fli-carrid
-                       RETURNING VALUE(flight_data) TYPE zcl_demo_abap=>carr_tab.
-ENDINTERFACE.
-``` 
-
- </td>
-</tr>
-
-<tr>
-<td> 
-
-CCIMP include (Local Types tab in ADT)
-
- </td>
-
- <td> 
-
-``` abap
-CLASS lcl_data_provider DEFINITION.
-  PUBLIC SECTION.
-    INTERFACES lif_get_data.
-ENDCLASS.
-
-CLASS lcl_data_provider IMPLEMENTATION.
-  METHOD lif_get_data~select_flight_data.
-    SELECT seatsmax, seatsocc
-      FROM zdemo_abap_fli
-      WHERE carrid = @carrier
-      INTO CORRESPONDING FIELDS OF TABLE @flight_data.
-  ENDMETHOD.
-ENDCLASS.
-``` 
-
- </td>
-</tr>
-
-<tr>
-<td> 
-
-CCAU include (Test Classes tab in ADT)
-
- </td>
-
- <td> 
-
-``` abap
-*&---------------------------------------------------------------------*
-*& Local test double class
-*&---------------------------------------------------------------------*
-
-"The example uses manually created test doubles. You may also want to
-"check out creating test doubles using ABAP frameworks. Find more
-"information in the ABAP Unit Tests cheat sheet.
-
-CLASS ltd_test_data DEFINITION FOR TESTING.
-  PUBLIC SECTION.
-    INTERFACES lif_get_data PARTIALLY IMPLEMENTED.
-ENDCLASS.
-
-CLASS ltd_test_data IMPLEMENTATION.
-  METHOD lif_get_data~select_flight_data.
-
-    flight_data = SWITCH #( carrier
-      WHEN 'IJ' THEN VALUE #( ( carrid = carrier  seatsmax = 300 seatsocc = 200 )
-                              ( carrid = carrier  seatsmax = 350 seatsocc = 200 )
-                              ( carrid = carrier  seatsmax = 350 seatsocc = 300 ) )
-      WHEN 'KL' THEN VALUE #( ( carrid = carrier  seatsmax = 350 seatsocc = 300 )
-                              ( carrid = carrier  seatsmax = 350 seatsocc = 250 )
-                              ( carrid = carrier  seatsmax = 300 seatsocc = 250 ) ) ).
-
-  ENDMETHOD.
-ENDCLASS.
-
-*&---------------------------------------------------------------------*
-*& Test class demonstrating setter injection
-*&---------------------------------------------------------------------*
-
-"Note that the example uses a local interface.
-
-CLASS ltc_test DEFINITION
-  FOR TESTING RISK LEVEL HARMLESS
-  DURATION SHORT.
-  PRIVATE SECTION.
-    METHODS test_get_occ_rate FOR TESTING.
-ENDCLASS.
-
-"In this example, a test class is created in the test include. Since private
-"attributes are not accessible in local test classes, the local test class
-"is declared as a local friend of the global class.
-CLASS zcl_demo_abap DEFINITION LOCAL FRIENDS ltc_test.
-
-CLASS ltc_test IMPLEMENTATION.
-  METHOD test_get_occ_rate.
-    DATA(ref_cut) = NEW zcl_demo_abap( ).
-    DATA ref_data_prov TYPE REF TO lif_get_data.
-    ref_data_prov = NEW ltd_test_data( ).
-    "Passing the test double as a parameter of a setter method
-    ref_cut->setter_meth( ref_data_prov ).
-
-    DATA(act_occ_rate) = ref_cut->get_occ_rate( carrier_id = 'IJ' ).
-
-    cl_abap_unit_assert=>assert_equals(
-        act = act_occ_rate
-        exp = '70.00'
-        msg = |The expected occupancy rate for carrier 'IJ' is wrong.|
-        quit = if_abap_unit_constant=>quit-no ).
-
-    act_occ_rate = ref_cut->get_occ_rate( carrier_id = 'KL' ).
-
-    cl_abap_unit_assert=>assert_equals(
-        act = act_occ_rate
-        exp = '80.00'
-        msg = |The expected occupancy rate for carrier 'KL' is wrong.|
-        quit = if_abap_unit_constant=>quit-no ).
-  ENDMETHOD.
-ENDCLASS.
-``` 
-
- </td>
-</tr>
-
-</table>
-
-</details>   
-
-<p align="right"><a href="#top">⬆️ back to top</a></p>
-
-
-## AUnit: Test Double Injection Using Inheritance and Method Redefinition
-
-- This ABAP Unit test double injection technique makes use of inheritance and redefining methods.
-- Here, a local test double class is created by redefining a method of the class under test.
-- A sample setup to inject test doubles, as illustrated in the example, may look as follows:
-  - A dependent-on component (DOC) is identified (for example, reading data from a database table). Unlike the other ABAP Unit examples, there are no local or global interfaces involved.
-  - The global class that includes a method to be tested is not declared as a final class, allowing for the creation of subclasses. For simplicity, this global class implements a method specifically for the test. You can imagine that a data retrieval method is contained in another global class, which the class under test uses.
-  - The test class may be implemented as follows:
-    - A test double class is created that inherits from the global class and redefines the method identified as the DOC, enabling the provisioning of test data for the test classes.
-    - The test method does not instantiate the class under test. Instead, it creates an object of the test double class. The method to be tested is then called through the test double's reference variable.
-    - The effect is as follows: When the method to be tested is called "regularly" (for example, by executing the class using _F9_), it runs as usual with production data. However, when the unit test is executed (for example, by choosing _Ctrl/Cmd + Shift + F10_), the redefined method in the test class is called, injecting and using the test double.
-
-<br>
-
-<details>
-  <summary>🟢 Click to expand for example code</summary>
-  <!-- -->
-
-<br>
-
-Unlike other examples, this example class has a different setup: 
-- It focuses on ABAP Unit tests. You can indeed execute the simple example class by choosing _F9_. To run the unit test, use _Ctrl/Cmd + Shift + F10_.
-- The example class includes code from the global class and the CCAU include (_Test Classes_ tab in ADT).
-- The example uses a demo database table (and a class to populate it) from the ABAP Cheat Sheet GitHub repository.
-
-
-
-<table>
-
-<tr>
-<td> Class include </td> <td> Code </td>
-</tr>
-
-<tr>
-<td> 
-
-Global class
-
- </td>
-
- <td> 
-
-``` abap
-CLASS zcl_demo_abap DEFINITION
-  PUBLIC
-  CREATE PUBLIC .
-
-  PUBLIC SECTION.
-    INTERFACES if_oo_adt_classrun.
-
-    TYPES: carr_tab TYPE TABLE OF zdemo_abap_fli WITH EMPTY KEY,
-           occ_rate TYPE p LENGTH 5 DECIMALS 2.
-
-    CLASS-METHODS class_constructor.
-    METHODS get_occ_rate IMPORTING carrier_id            TYPE zdemo_abap_fli-carrid
-                         RETURNING VALUE(occupancy_rate) TYPE occ_rate.
-
-  PROTECTED SECTION.
-    METHODS select_flight_data IMPORTING carrier            TYPE zdemo_abap_fli-carrid
-                               RETURNING VALUE(flight_data) TYPE carr_tab.
-
-  PRIVATE SECTION.
-ENDCLASS.
-
-
-CLASS zcl_demo_abap IMPLEMENTATION.
-  METHOD if_oo_adt_classrun~main.
-
-    "Filling an internal table with carrier IDs used to calculate
-    "the occupancy rate.
-    DATA(carrier_tab) = VALUE carr_tab( ( carrid = 'LH' )
-                                        ( carrid = 'AA' )
-                                        ( carrid = 'DL' ) ).
-
-    LOOP AT carrier_tab INTO DATA(carr).
-      DATA(occupancy_rate_local_itf) = get_occ_rate( carr-carrid ).
-
-      out->write( |The occupancy rate for airline { carr-carrid } is { occupancy_rate_local_itf }%.|  ).
-      out->write( |\n| ).
-    ENDLOOP.
-
-  ENDMETHOD.
-
-  METHOD class_constructor.
-    "Filling demo database tables.
-    zcl_demo_abap_aux=>fill_dbtabs( ).
-  ENDMETHOD.
-
-  METHOD get_occ_rate.
-    DATA total_seatsmax TYPE i.
-    DATA total_seatsocc TYPE i.
-
-    "During the unit test, the redefined method in the test class is called.
-    DATA(flight_data) = select_flight_data( carrier = carrier_id ).
-
-    LOOP AT flight_data INTO DATA(wa).
-      total_seatsmax = total_seatsmax + wa-seatsmax.
-      total_seatsocc = total_seatsocc + wa-seatsocc.
-    ENDLOOP.
-
-    occupancy_rate = total_seatsocc / total_seatsmax * 100.
-  ENDMETHOD.
-
-  METHOD select_flight_data.
-    SELECT seatsmax, seatsocc
-      FROM zdemo_abap_fli
-      WHERE carrid = @carrier
-      INTO CORRESPONDING FIELDS OF TABLE @flight_data.
-  ENDMETHOD.
-ENDCLASS.
-``` 
-
- </td>
-</tr>
-
-
-
-<tr>
-<td> 
-
-CCAU include (Test Classes tab in ADT)
-
- </td>
-
- <td> 
-
-``` abap
-*&---------------------------------------------------------------------*
-*& Local test double class
-*&---------------------------------------------------------------------*
-
-"The example uses manually created test doubles. You may also want to
-"check out creating test doubles using ABAP frameworks. Find more
-"information in the ABAP Unit Tests cheat sheet.
-
-CLASS ltd_test_data DEFINITION FOR TESTING
-INHERITING FROM zcl_demo_abap.
-  PROTECTED SECTION.
-    METHODS select_flight_data REDEFINITION.
-ENDCLASS.
-
-CLASS ltd_test_data IMPLEMENTATION.
-  METHOD select_flight_data.
-
-    flight_data = SWITCH #( carrier
-      WHEN 'IJ' THEN VALUE #( ( carrid = carrier  seatsmax = 300 seatsocc = 200 )
-                              ( carrid = carrier  seatsmax = 350 seatsocc = 200 )
-                              ( carrid = carrier  seatsmax = 350 seatsocc = 300 ) )
-      WHEN 'KL' THEN VALUE #( ( carrid = carrier  seatsmax = 350 seatsocc = 300 )
-                              ( carrid = carrier  seatsmax = 350 seatsocc = 250 )
-                              ( carrid = carrier  seatsmax = 300 seatsocc = 250 ) ) ).
-
-  ENDMETHOD.
-ENDCLASS.
-
-*&---------------------------------------------------------------------*
-*& Test class demonstrating test double injection using inheritance
-*& and method redefinition
-*&---------------------------------------------------------------------*
-
-CLASS ltc_test DEFINITION
-  FOR TESTING RISK LEVEL HARMLESS
-  DURATION SHORT.
-  PRIVATE SECTION.
-    METHODS test_get_occ_rate FOR TESTING.
-ENDCLASS.
-
-CLASS ltc_test IMPLEMENTATION.
-  METHOD test_get_occ_rate.
-    "Creating an object of the test double class that inherits
-    "from the class under test
-    DATA(ref_cut) = NEW ltd_test_data(  ).
-
-    DATA(act_occ_rate) = ref_cut->get_occ_rate( 'IJ' ).
-
-    cl_abap_unit_assert=>assert_equals(
-        act = act_occ_rate
-        exp = '70.00'
-        msg = |The expected occupancy rate for carrier 'IJ' is wrong.|
-        quit = if_abap_unit_constant=>quit-no ).
-
-    act_occ_rate = ref_cut->get_occ_rate( 'KL' ).
-
-    cl_abap_unit_assert=>assert_equals(
-        act = act_occ_rate
-        exp = '80.00'
-        msg = |The expected occupancy rate for carrier 'KL' is wrong.|
-        quit = if_abap_unit_constant=>quit-no ).
-  ENDMETHOD.
-ENDCLASS.
-``` 
-
- </td>
-</tr>
-
-</table>
-
-</details>  
-
-<p align="right"><a href="#top">⬆️ back to top</a></p>
-
 
 ## Builder
 

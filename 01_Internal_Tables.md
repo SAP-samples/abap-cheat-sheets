@@ -2292,15 +2292,14 @@ READ TABLE itab WITH KEY ... BINARY SEARCH ...
 - Depending on the number of times you need to access the internal table, it is recommended to work with sorted tables or tables with secondary keys. If you only need to read one or a few data sets, consider the administrative costs of setting up the index.
 - Note: The `BINARY SEARCH` addition is not available for table expressions. If `KEY ...` is specified, an optimized search is performed by default. There are no performance differences between using the `READ TABLE` statement and table expressions.
 
-To try it out the following example, create a demo class named `zcl_demo_abap` and paste the code into it. After activation, choose *F9* in ADT to execute the class. The example is set up to display output in the console.
+To try out the following example, create a demo class named `zcl_demo_abap` and paste the code into it. After activation, choose *F9* in ADT to execute the class. The example is set up to display output in the console.
 
 The example includes multiple reads on standard internal tables using a `READ TABLE` statement ...
-- without `BINARY SEARCH`. 
-- with `BINARY SEARCH` and a previous `SORT` statement.
+- without `BINARY SEARCH` by applying a sorting of the table a) every time and b) only once (the assumption is that after sorting once, only read accesses follow). 
+- with `BINARY SEARCH` (by applying a sorting of the table a) every time and b) only once (the assumption is that after sorting once, only read accesses follow).
 - with a secondary table key whose components correspond to free key used in the previous statements.
 
-The runtime of the reads is determined and stored in internal tables. The read operations are repeated several times to have a more accurate runtime evaluation. The fastest time is output. 
-The example is intended to demonstrate the performance gain using the `BINARY SEARCH` addition (and also using a secondary table key).
+The total runtime of multiple reads is determined to have a more representative runtime evaluation. The example is intended to demonstrate the performance gain using the `BINARY SEARCH` addition (and also using a secondary table key). Particularly, the result using `BINARY SEARCH` and `SORT` applied only once as well as the reads using the secondary table key should be relatively fast.
 
 ```abap
 CLASS zcl_demo_abap DEFINITION
@@ -2312,12 +2311,17 @@ CLASS zcl_demo_abap DEFINITION
     INTERFACES if_oo_adt_classrun.
   PROTECTED SECTION.
   PRIVATE SECTION.
-ENDCLASS.
 
+    METHODS:
+      read_wo_binary_search1 RETURNING VALUE(result) TYPE decfloat34,
+      read_wo_binary_search2 RETURNING VALUE(result) TYPE decfloat34,
+      read_with_binary_search1 RETURNING VALUE(result) TYPE decfloat34,
+      read_with_binary_search2 RETURNING VALUE(result) TYPE decfloat34,
+      read_w_secondary_table_key RETURNING VALUE(result) TYPE decfloat34.
 
+    DATA: ts1         TYPE utclong,
+          runtime_tab TYPE TABLE OF decfloat34 WITH EMPTY KEY.
 
-CLASS zcl_demo_abap IMPLEMENTATION.
-  METHOD if_oo_adt_classrun~main.
     "Line type and internal table declarations
     TYPES: BEGIN OF demo_struc,
              idx TYPE i,
@@ -2326,87 +2330,123 @@ CLASS zcl_demo_abap IMPLEMENTATION.
            END OF demo_struc.
 
     "Tables with empty primary table key
-    DATA itab_std1 TYPE STANDARD TABLE OF demo_struc WITH EMPTY KEY.
-    DATA itab_std2 LIKE itab_std1.
+    DATA itab_std TYPE STANDARD TABLE OF demo_struc WITH EMPTY KEY.
     "Table with empty primary table key, secondary table key specified
-    DATA itab_sec TYPE STANDARD TABLE OF demo_struc
-                 WITH EMPTY KEY
-                 WITH NON-UNIQUE SORTED KEY sk COMPONENTS str num.
-    CONSTANTS: num_of_table_lines TYPE i VALUE 5000,
-               num_of_repetitions TYPE i VALUE 10,
-               num_of_reads TYPE i VALUE 3000.
+    DATA itab_sec TYPE STANDARD TABLE OF demo_struc WITH EMPTY KEY
+                                                    WITH NON-UNIQUE SORTED KEY sk COMPONENTS idx.
+    CONSTANTS count TYPE i VALUE 1000.
+
+ENDCLASS.
+
+
+
+CLASS zcl_demo_abap IMPLEMENTATION.
+  METHOD if_oo_adt_classrun~main.
 
     "Populating internal tables
-    DO num_of_table_lines TIMES.
+    DO count TIMES.
       INSERT VALUE #( idx = sy-index
                       str = |INDEX{ sy-index }|
-                      num = sy-index ) INTO TABLE itab_std1.
+                      num = sy-index ) INTO TABLE itab_std.
     ENDDO.
-    itab_std2 = itab_std1.
-    itab_sec = itab_std1.
+    itab_sec = itab_std.
 
-    DATA no_binary_search TYPE TABLE OF decfloat34 WITH EMPTY KEY.
-    DATA with_sort_and_binary_search TYPE TABLE OF decfloat34 WITH EMPTY KEY.
-    DATA with_secondary_key TYPE TABLE OF decfloat34 WITH EMPTY KEY.
+    DATA(res1) = read_wo_binary_search1( ).
+    out->write( `Total runtime for read operations using READ TABLE with a free key, without the BINARY SEARCH addition, SORT always applied:` ).
+    out->write( |{ res1 STYLE = SIMPLE DECIMALS = 10 }| ).
 
-    "Repeating the reads several times for a more accurate result
+    DATA(res2) = read_wo_binary_search2( ).
+    out->write( `Total runtime for read operations using READ TABLE with a free key, without the BINARY SEARCH addition, SORT applied once:` ).
+    out->write( |{ res2 STYLE = SIMPLE DECIMALS = 10 }| ).
 
-    DO num_of_repetitions TIMES.
-      "---- Reading without the BINARY SEARCH addition ----
-      DATA(ts1) = utclong_current( ).
-      DO num_of_reads TIMES.
-        READ TABLE itab_std1 WITH KEY str = `INDEX` && sy-index num = sy-index TRANSPORTING NO FIELDS.
-      ENDDO.
-      DATA(ts2) = utclong_current( ).
-      cl_abap_utclong=>diff( EXPORTING high     = ts2
-                                       low      = ts1
-                              IMPORTING seconds = DATA(seconds) ).
-      APPEND seconds TO no_binary_search.
+    DATA(res3) = read_with_binary_search1( ).
+    out->write( `Total runtime for read operations using READ TABLE with a free key, with BINARY SEARCH addition, SORT always applied:` ).
+    out->write( |{ res3 STYLE = SIMPLE DECIMALS = 10 }| ).
 
-      "---- Reading with the BINARY SEARCH addition ----
-      ts1 = utclong_current( ).
-      "Sorting the internal table when using BINARY SEARCH
-      "In this simple example, the internal table is populated by having the free key components
-      "to be searched in ascending order anyway. This is to emphasize the requirement to
-      "sort the (standard) internal table when using BINARY SEARCH. Here, the SORT statement
-      "is counted to the runtime.
-      SORT itab_std2 BY str num.
+    DATA(res4) = read_with_binary_search2( ).
+    out->write( `Total runtime for read operations using READ TABLE with a free key, with BINARY SEARCH addition, SORT applied once:` ).
+    out->write( |{ res4 STYLE = SIMPLE DECIMALS = 10 }| ).
 
-      DO num_of_reads TIMES.
-        READ TABLE itab_std2 WITH KEY str = `INDEX` && sy-index num = sy-index BINARY SEARCH TRANSPORTING NO FIELDS.
-      ENDDO.
-      ts2 = utclong_current( ).
-      cl_abap_utclong=>diff( EXPORTING high     = ts2
-                                       low      = ts1
-                             IMPORTING seconds = seconds ).
-      APPEND seconds TO with_sort_and_binary_search.
+    DATA(res5) = read_w_secondary_table_key( ).
+    out->write( `Total runtime for read operations using READ TABLE and a secondary table key that corresponds to the free key in the other table:` ).
+    out->write( |{ res5 STYLE = SIMPLE DECIMALS = 10 }| ).
+  ENDMETHOD.
 
-      "---- Excursion: Reading with READ TABLE using a secondary table key ----
-      ts1 = utclong_current( ).
-      DO num_of_reads TIMES.
-        READ TABLE itab_sec WITH TABLE KEY sk COMPONENTS str = `INDEX` && sy-index num = sy-index TRANSPORTING NO FIELDS.
-      ENDDO.
-      ts2 = utclong_current( ).
-      cl_abap_utclong=>diff( EXPORTING high     = ts2
-                                       low      = ts1
-                             IMPORTING seconds = seconds ).
-      APPEND seconds TO with_secondary_key.
+  METHOD read_wo_binary_search1.
+
+    ts1 = utclong_current( ).
+    DO count TIMES.
+**********************************************************************
+      SORT itab_std BY str num.
+      READ TABLE itab_std WITH KEY idx = sy-index TRANSPORTING NO FIELDS.
+**********************************************************************
     ENDDO.
+    cl_abap_utclong=>diff( EXPORTING high    = utclong_current( )
+                                     low     = ts1
+                           IMPORTING seconds = result ).
 
-    SORT no_binary_search ASCENDING BY table_line.
-    SORT with_sort_and_binary_search ASCENDING BY table_line.
-    SORT with_secondary_key ASCENDING BY table_line.
+  ENDMETHOD.
 
-    out->write( |Number of read repetitions: { num_of_repetitions }| ).
-    out->write( |Number of reads per table: { num_of_reads }\n| ).
-    out->write( `Fastest run of reads using READ TABLE with a free key, without the BINARY SEARCH addition:` ).
-    out->write( no_binary_search[ 1 ] ).
-    out->write( repeat( val = `-` occ = 70 ) ).
-    out->write( `Fastest run of reads using SORT, and READ TABLE with a free key, and the BINARY SEARCH addition:` ).
-    out->write( with_sort_and_binary_search[ 1 ] ).
-    out->write( repeat( val = `-` occ = 70 ) ).
-    out->write( `Fastest run of reads using READ TABLE and a secondary table key:` ).
-    out->write( with_secondary_key[ 1 ] ).
+  METHOD read_wo_binary_search2.
+
+    ts1 = utclong_current( ).
+    DO count TIMES.
+**********************************************************************
+      IF sy-index = 1.
+        SORT itab_std BY str num.
+      ENDIF.
+      READ TABLE itab_std WITH KEY idx = sy-index TRANSPORTING NO FIELDS.
+**********************************************************************
+    ENDDO.
+    cl_abap_utclong=>diff( EXPORTING high    = utclong_current( )
+                                     low     = ts1
+                           IMPORTING seconds = result ).
+
+  ENDMETHOD.
+
+  METHOD read_with_binary_search1.
+
+    ts1 = utclong_current( ).
+    DO count TIMES.
+**********************************************************************
+      SORT itab_std BY str num.
+      READ TABLE itab_std WITH KEY idx = sy-index BINARY SEARCH TRANSPORTING NO FIELDS.
+**********************************************************************
+    ENDDO.
+    cl_abap_utclong=>diff( EXPORTING high    = utclong_current( )
+                                     low     = ts1
+                           IMPORTING seconds = result ).
+
+  ENDMETHOD.
+
+  METHOD read_with_binary_search2.
+
+    ts1 = utclong_current( ).
+    DO count TIMES.
+**********************************************************************
+      IF sy-index = 1.
+        SORT itab_std BY str num.
+      ENDIF.
+      READ TABLE itab_std WITH KEY idx = sy-index BINARY SEARCH TRANSPORTING NO FIELDS.
+**********************************************************************
+    ENDDO.
+    cl_abap_utclong=>diff( EXPORTING high    = utclong_current( )
+                                     low     = ts1
+                           IMPORTING seconds = result ).
+  ENDMETHOD.
+
+  METHOD read_w_secondary_table_key.
+
+    ts1 = utclong_current( ).
+    DO count TIMES.
+**********************************************************************
+      READ TABLE itab_sec WITH TABLE KEY sk COMPONENTS idx = sy-index TRANSPORTING NO FIELDS.
+**********************************************************************
+    ENDDO.
+    cl_abap_utclong=>diff( EXPORTING high    = utclong_current( )
+                                     low     = ts1
+                           IMPORTING seconds = result ).
+
   ENDMETHOD.
 ENDCLASS.
 ```

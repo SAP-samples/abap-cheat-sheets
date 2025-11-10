@@ -9285,7 +9285,7 @@ Notes on the example:
 - You can copy the example into a demo class (e.g., `zcl_demo_abap`) and run it using F9 in ADT. This example illustrates the methods of the two classes mentioned above.
 - It provides a basic exploration of class methods and is not meant to serve as a best practice implementation. For detailed information, check the [SAP Help Portal](https://help.sap.com/docs/btp/sap-business-technology-platform/development-output-management).
 - The example uses demo XDP and XML files from another SAP samples GitHub repository focused on ADS: [https://github.com/SAP-samples/forms-service-by-adobe-samples](https://github.com/SAP-samples/forms-service-by-adobe-samples). You can find more information there. The code retrieves the code of these files using the `cl_web_http_client_manager` class.
-- As a result of the demo, PDF files are sent via email. To enable email sending, refer to the *Sending Emails* section. Additionally, make sure to insert valid email addresses in the code before running the example. Note that the resulting PDF files do not show any detailed content apart from the template skeleton.
+- As a result of the demo, PDF files are sent via email. To enable email sending, refer to the *Sending Emails* section. Additionally, make sure to insert valid email addresses in the code before running the example. Note that the resulting PDF files do not show any detailed content apart from the template skeleton. The focus is on the functionality of the covered classes. 
 
 
 <br>
@@ -9324,8 +9324,8 @@ CLASS zcl_demo_abap IMPLEMENTATION.
            tabtype TYPE TABLE OF s WITH EMPTY KEY.
 
     DATA(tab) = VALUE tabtype(
-      ( url = `https://raw.githubusercontent.com/SAP-samples/forms-service-by-adobe-samples/refs/heads/main/abap/Form.xdp` )
-      ( url = `https://raw.githubusercontent.com/SAP-samples/forms-service-by-adobe-samples/refs/heads/main/abap/DSAG_DEMO_schema.xsd` ) ).
+      ( url = `https://raw.githubusercontent.com/SAP-samples/forms-service-by-adobe-samples/refs/heads/main/forms/ZF_CINE_TICKET.xdp` )
+      ( url = `https://raw.githubusercontent.com/SAP-samples/forms-service-by-adobe-samples/refs/heads/main/forms/ZCINE_TICKET_SRVD.xsd` ) ).
 
     "Retrieving the content from the URLs
     LOOP AT tab REFERENCE INTO DATA(wa).
