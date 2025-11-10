@@ -106,6 +106,8 @@ ABAP cheat sheets[^1] ...
 |[WHERE Conditions](31_WHERE_Conditions.md)|Explores syntax options in ABAP statements that include `WHERE` for data filtering|- (The cheat sheet includes copy and paste example classes)|
 |[Performance Notes](32_Performance_Notes.md)|Explores a selection of performance-related examples, aimed to illustrate potentially inefficient techniques and use of statements|- (The cheat sheet includes a copy and paste example class)|
 |[ABAP Release News](33_ABAP_Release_News.md)|Summarizes the release news from the ABAP Keyword Documentation for both versions of the ABAP language, ABAP for Cloud Development and Standard ABAP |-|
+|[ABAP Examples Using Object-Oriented Design Patterns](34_OO_Design_Patterns.md)|Does not cover ABAP-specific topics, but rather focuses on ABAP code experiments that explore design patterns in object-oriented programming. Many of these experiments are inspired by classic design patterns established by the _Gang of Four_ (GoF). |- (The cheat sheet includes copy and paste example classes)|
+
 
 <br>
 
