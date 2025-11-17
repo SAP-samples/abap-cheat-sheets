@@ -13,6 +13,7 @@
   - [Adapter](#adapter)
   - [Builder](#builder)
   - [Chain of Responsibility](#chain-of-responsibility)
+  - [Command](#command)
   - [Decorator](#decorator)
   - [Facade](#facade)
   - [Factory Method](#factory-method)
@@ -37,8 +38,9 @@ The examples largely draw inspiration from design patterns established by the _G
 
 > [!IMPORTANT]
 > - The focus of the examples in the ABAP cheat sheet is on basic conceptual considerations regarding the design patterns, and experimenting with ABAP syntax and concepts (such as interfaces, abstract classes, encapsulation, and more). The examples aim to illustrate basic design pattern ideas using simplified ABAP demo classes. 
-> - The examples are meant for exploration and demonstration, using non-semantic and non-real-world contexts to reduce complexity and give a rough idea. Due to their experimental nature, these examples do not represent best practices or model approaches, as various approaches and class setup strategies may apply. It is up to you to evaluate whether the patterns are suitable and beneficial for your setup. Always create your own solutions.
+> - The examples are meant for [exploration, experimentation, and demonstration](./README.md#%EF%B8%8F-disclaimer), using non-semantic and non-real-world contexts to reduce complexity and give a rough idea. Due to their experimental nature, these examples do not represent best practices or model approaches, as various approaches and class setup strategies may apply. It is up to you to evaluate whether the patterns are suitable and beneficial for your setup. Always create your own solutions.
 > - To further explore the patterns, many publications, articles, and community resources offer in-depth insights into their origins, purposes, real-world examples, similarities, differences, combinations of patterns, pros, cons, and more.
+
 
 ## Example Setup and Running Example Classes
 
@@ -52,7 +54,8 @@ Most examples are set up for easy exploration using simple, (mostly) self-contai
 In the following sections, click the expandable sections for further descriptions and example code. To try the examples out, create a demo class named `zcl_demo_abap` and paste the code into it (*Global Class* and *Local Types* tabs in ADT). After activation, choose *F9* in ADT to execute the class. The examples are set up to display output in the console.
 
 > [!NOTE]
-> Some examples use artifacts such as database tables from the ABAP cheat sheet GitHub repository.
+> - Some examples use artifacts such as database tables from the ABAP cheat sheet GitHub repository.
+> - [Disclaimer](./README.md#%EF%B8%8F-disclaimer)
 
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
@@ -140,9 +143,9 @@ CLASS zcl_demo_abap IMPLEMENTATION.
                                         ( carrid = 'DL' ) ).
 
     LOOP AT carrier_tab INTO DATA(carr).
-      DATA(occupancy_rate_local_itf) = get_occ_rate( carr-carrid ).
+      DATA(oc_rate) = get_occ_rate( carr-carrid ).
 
-      out->write( |The occupancy rate for airline { carr-carrid } is { occupancy_rate_local_itf }%.|  ).
+      out->write( |The occupancy rate for airline { carr-carrid } is { oc_rate }%.|  ).
       out->write( |\n| ).
     ENDLOOP.
 
@@ -403,9 +406,9 @@ CLASS zcl_demo_abap IMPLEMENTATION.
                                         ( carrid = 'DL' ) ).
 
     LOOP AT carrier_tab INTO DATA(carr).
-      DATA(occupancy_rate_local_itf) = get_occ_rate( carr-carrid ).
+      DATA(oc_rate) = get_occ_rate( carr-carrid ).
 
-      out->write( |The occupancy rate for airline { carr-carrid } is { occupancy_rate_local_itf }%.|  ).
+      out->write( |The occupancy rate for airline { carr-carrid } is { oc_rate }%.|  ).
       out->write( |\n| ).
     ENDLOOP.
 
@@ -587,7 +590,7 @@ ENDCLASS.
   - The test class may be implemented as follows:
     - Since private attributes are not accessible in local test classes, the local test class is declared as a local friend of the global class.
     - In the test method, an object of the class under test and a test double are created. The test double is declared with a reference to the interface (here, a local class is used that creates a test double). 
-    - The effect is as follows: When the method to be tested is called "regularly" (for example, when executing the class using _F9_, as in the example case) without passing the optional parameter, the an object of the "regular" data provider (in this example, it is of type `lcl_data_provider`) is created following the evaluation of the `IF` statement, which means it uses production data. However, when the unit test is executed (for example, by choosing _Ctrl/Cmd + Shift + F10_) and the optional parameter is supplied, the parameter is bound and, thus, uses the test double (in this case, of type `ltd_test_data`), which gets injected via the parameter.
+    - The effect is as follows: When the method to be tested is called "regularly" (for example, when executing the class using _F9_, as in the example case) without passing the optional parameter, an object of the "regular" data provider (in this example, it is of type `lcl_data_provider`) is created following the evaluation of the `IF` statement, which means it uses production data. However, when the unit test is executed (for example, by choosing _Ctrl/Cmd + Shift + F10_) and the optional parameter is supplied, the parameter is bound and, thus, uses the test double (in this case, of type `ltd_test_data`), which gets injected via the parameter.
 
 <br>
 
@@ -655,9 +658,9 @@ CLASS zcl_demo_abap IMPLEMENTATION.
                                         ( carrid = 'DL' ) ).
 
     LOOP AT carrier_tab INTO DATA(carr).
-      DATA(occupancy_rate_local_itf) = get_occ_rate( carr-carrid ).
+      DATA(oc_rate) = get_occ_rate( carr-carrid ).
 
-      out->write( |The occupancy rate for airline { carr-carrid } is { occupancy_rate_local_itf }%.|  ).
+      out->write( |The occupancy rate for airline { carr-carrid } is { oc_rate }%.|  ).
       out->write( |\n| ).
     ENDLOOP.
 
@@ -924,9 +927,9 @@ CLASS zcl_demo_abap IMPLEMENTATION.
                                         ( carrid = 'DL' ) ).
 
     LOOP AT carrier_tab INTO DATA(carr).
-      DATA(occupancy_rate_local_itf) = get_occ_rate( carr-carrid ).
+      DATA(oc_rate) = get_occ_rate( carr-carrid ).
 
-      out->write( |The occupancy rate for airline { carr-carrid } is { occupancy_rate_local_itf }%.|  ).
+      out->write( |The occupancy rate for airline { carr-carrid } is { oc_rate }%.|  ).
       out->write( |\n| ).
     ENDLOOP.
 
@@ -1182,9 +1185,9 @@ CLASS zcl_demo_abap IMPLEMENTATION.
                                         ( carrid = 'DL' ) ).
 
     LOOP AT carrier_tab INTO DATA(carr).
-      DATA(occupancy_rate_local_itf) = get_occ_rate( carr-carrid ).
+      DATA(oc_rate) = get_occ_rate( carr-carrid ).
 
-      out->write( |The occupancy rate for airline { carr-carrid } is { occupancy_rate_local_itf }%.|  ).
+      out->write( |The occupancy rate for airline { carr-carrid } is { oc_rate }%.|  ).
       out->write( |\n| ).
     ENDLOOP.
 
@@ -3873,6 +3876,424 @@ CLASS lcl_concrete_handler4 IMPLEMENTATION.
       APPEND |Type kind: { type_kind }| TO info.
       APPEND |Absolute name: { absolute_name }| TO info.
       APPEND |Relative name: { relative_name }| TO info.
+    ENDIF.
+  ENDMETHOD.
+ENDCLASS.
+``` 
+
+ </td>
+</tr>
+
+</table>
+
+</details>  
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+## Command
+
+- The idea behind the command design pattern is to wrap operations to be executed and the details required for the operations inside individual objects.  
+- By placing all details in these command objects, you can, for example, store these objects, pass them as arguments of method calls, execute them in a specific order, or delay their execution to a later time.  
+- Typically, objects invoking commands (invokers) are separated from the objects that receive the commands and finally execute the operations (receivers). Basically, invokers can execute any command without knowing the execution details defined by the receivers.
+- The pattern may be useful for creating a flexible setup that can be easily extended by adding new commands, without requiring a modification of existing classes. By storing commands, the setup can also support undo and redo functionalities.
+- A potential setup, illustrated in the following example, may look like this:
+  - Command interface (or an abstract class) 
+    - Defines a method for executing commands.
+    - The method can be defined without any input parameters to have a generic approach for various kinds of operations. The actual data to work with can be assigned to instance attributes of command objects.
+  - Concrete command classes 
+    - These classes implement the command interface.
+    - They execute the command by calling appropriate methods implemented by receiver objects, i.e. the actual operation is performed by the receivers.
+  - Receiver class 
+    - This class contains the implementation for executing the operations defined by the commands. 
+    - Methods in the receiver class are called by the concrete command classes.
+  - Invoker class
+    - Responsible for triggering command execution.
+    - Invokers are unaware of the implementation details.
+  - Client 
+    - Creates command objects and connects them with suitable receiver objects.
+
+<br>
+
+<details>
+  <summary>🟢 Click to expand for more information and example code</summary>
+  <!-- -->
+
+<br>
+
+**Example notes:**
+
+- The example demonstrates the command design pattern at a high level using the following context:
+  - Assume there is a simplified image editor app.
+  - The app may offer various functionalities, such as resizing and rotating images.
+  - In the app, a user edits an image by triggering resizing and rotation - each operation represents an individual command object - by providing specific values, such as width and height to resize the image.
+  - Additionally, the app supports undo and redo functionality.
+- The code demonstrates the design pattern with the following declarations and implementations:  
+  - CCIMP Include (_Local Types_ Tab in ADT):
+    - Command interface `lif_command`
+      - Defines a method for executing commands (`execute`) and a method for reverting executed commands (`undo`).
+    - Receiver class `lcl_receiver`
+      - Executes commands by implementing specific methods. In the image editor example, it includes methods like `resize` and `rotate` to edit images and change object states based on commands.
+      - The instance constructor initializes the image's values, which are provided during object creation for simplicity.
+      - The `get_current_state` method is implemented for logging and display purposes.
+    - Concrete command classes `lcl_cmd_resize` and `lcl_cmd_rotate`
+      - Implement the command interface.
+      - Objects of these classes represent specific commands.
+      - Each object of the classes holds a reference to the receiver (stored in the `rec` attribute), passed via the constructor. Details of the command are stored in instance attributes (`wd`, `ht`, `ang`), which the operation uses for execution.
+      - The `execute` method calls appropriate methods through the receiver objects.
+      - The `undo` method reverts changes by storing previous values in instance attributes during the `execute` method.
+    - Invoker class `lcl_invoker`
+      - Executes commands through the `exec_cmd` method.
+      - In this example, the command object is passed as an argument to the instance constructor.
+      - It includes internal tables that hold references for undo and redo operations (`undo_tab` and `redo_tab`). When executing a command via `exec_cmd`, a reference is added to `undo_tab`, and `redo_tab` is cleared. The `redo` method executes the last command from `redo_tab` and adds it to `undo_tab`.      
+  - Global class
+    - Implements the `if_oo_adt_classrun` interface and calls methods from local classes.
+    - Acts as the client.
+    - Creates objects of the receiver, invoker, and commands.
+    - Command objects are created with references to the receiver and the necessary execution details.
+
+
+<table>
+
+<tr>
+<td> Class include </td> <td> Code </td>
+</tr>
+
+<tr>
+<td> 
+
+Global class
+
+ </td>
+
+ <td> 
+
+``` abap
+CLASS zcl_demo_abap DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
+
+  PUBLIC SECTION.
+    INTERFACES if_oo_adt_classrun.
+    CLASS-DATA log TYPE string_table.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+ENDCLASS.
+
+
+CLASS zcl_demo_abap IMPLEMENTATION.
+  METHOD if_oo_adt_classrun~main.
+
+*&---------------------------------------------------------------------*
+*& Creating receiver, invoker and command objects and triggering
+*& the execution of commands
+*&---------------------------------------------------------------------*
+
+    "Creating an object of the receiver class representing a
+    "simplified image editor app
+    "Here, start values for the image are supplied, which are
+    "reflected in the current state that is retrieved.
+    DATA(receiver) = NEW lcl_receiver( width = 800 height = 600 ).
+
+    "For logging and display purposes, the current state of the
+    "image is retrieved. The current state is retrieved and output
+    "after each operation in the example.
+    DATA(state) = receiver->get_current_state( ).
+    out->write( state ).
+
+    "Creating an object of the invoker class
+    DATA(invoker) = NEW lcl_invoker( ).
+
+    "Creating concrete commands by linking them to the receiver
+    "In the example, a reference of the receiver class is passed as
+    "argument of the instance constructor.
+
+    "Resizing operation (1)
+    "Here and in all other concrete command creations, values are
+    "passed representing new values that should be applied for the
+    "operation.
+
+    DATA(cmd1) = NEW lcl_cmd_resize( receiver = receiver width = 1024 height = 768 ).
+
+    "Passing the command object to the invoker that takes care of
+    "executing the command. However, the invoker does not know about
+    "the concrete details of the operation.
+    invoker->exec_cmd( cmd1 ).
+
+    state = receiver->get_current_state( ).
+    out->write( state ).
+
+    "Resizing operation (2)
+    DATA(cmd2) = NEW lcl_cmd_resize( receiver = receiver width = 1920 height = 1080 ).
+    invoker->exec_cmd( cmd2 ).
+
+    state = receiver->get_current_state( ).
+    out->write( state ).
+
+    "Rotating operation (1)
+    DATA(cmd3) = NEW lcl_cmd_rotate( receiver = receiver angle = 20 ).
+    invoker->exec_cmd( cmd3 ).
+
+    state = receiver->get_current_state( ).
+    out->write( state ).
+
+    "Rotating operation (2)
+    DATA(cmd4) = NEW lcl_cmd_rotate( receiver = receiver angle = 45 ).
+    invoker->exec_cmd( cmd4 ).
+
+    state = receiver->get_current_state( ).
+    out->write( state ).
+
+    "Resizing operation (3)
+    DATA(cmd5) = NEW lcl_cmd_resize( receiver = receiver width = 1280  height = 720  ).
+    invoker->exec_cmd( cmd5 ).
+
+    state = receiver->get_current_state( ).
+    out->write( state ).
+
+    "Rotating operation (3)
+    DATA(cmd6) = NEW lcl_cmd_rotate( receiver = receiver angle = 180 ).
+    invoker->exec_cmd( cmd6 ).
+
+    state = receiver->get_current_state( ).
+    out->write( state ).
+
+*&---------------------------------------------------------------------*
+*& Undo operations
+*&---------------------------------------------------------------------*
+
+    out->write( |\n{ repeat( val = `*` occ = 70 ) }\n| ).
+    out->write( `********* Undo operations *********` ).
+
+    DO 3 TIMES.
+      invoker->undo( ).
+
+      state = receiver->get_current_state( ).
+      out->write( state ).
+    ENDDO.
+
+*&---------------------------------------------------------------------*
+*& Redo operations
+*&---------------------------------------------------------------------*
+
+    out->write( |\n{ repeat( val = `*` occ = 70 ) }\n| ).
+    out->write( `********* Redo operations *********` ).
+
+    DO 5 TIMES.
+      invoker->redo( ).
+
+      state = receiver->get_current_state( ).
+      out->write( state ).
+    ENDDO.
+
+*&---------------------------------------------------------------------*
+*& Log
+*&---------------------------------------------------------------------*
+
+    out->write( |\n{ repeat( val = `*` occ = 70 ) }\n| ).
+    out->write( `********* Log *********` ).
+    out->write( log ).
+  ENDMETHOD.
+ENDCLASS.
+``` 
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+CCIMP include (Local Types tab in ADT)
+
+ </td>
+
+ <td> 
+
+``` abap
+*&---------------------------------------------------------------------*
+*& Command interface
+*&---------------------------------------------------------------------*
+
+INTERFACE lif_command.
+  METHODS: execute,
+    undo.
+ENDINTERFACE.
+
+*&---------------------------------------------------------------------*
+*& Receiver class
+*&---------------------------------------------------------------------*
+
+CLASS lcl_receiver DEFINITION.
+  PUBLIC SECTION.
+    DATA: wd  TYPE i,
+          ht  TYPE i,
+          ang TYPE i.
+
+    METHODS:
+      constructor IMPORTING width TYPE i height TYPE i,
+      resize IMPORTING width TYPE i height TYPE i,
+      rotate IMPORTING angle TYPE i,
+      get_current_state RETURNING VALUE(state) TYPE string.
+ENDCLASS.
+
+CLASS lcl_receiver IMPLEMENTATION.
+  METHOD constructor.
+    wd  = width.
+    ht = height.
+    ang  = 0.
+  ENDMETHOD.
+
+  METHOD resize.
+    wd  = width.
+    ht = height.
+
+    APPEND |New image size: { wd }x{ ht }| TO zcl_demo_abap=>log.
+  ENDMETHOD.
+
+  METHOD rotate.
+    ang = ( ang + angle ) MOD 360.
+
+    APPEND |Image rotated to { ang } (angle used: { angle })| TO zcl_demo_abap=>log.
+  ENDMETHOD.
+
+  METHOD get_current_state.
+    state = |Current image state: { wd }x{ ht }, angle { ang } |.
+    APPEND state TO zcl_demo_abap=>log.
+  ENDMETHOD.
+ENDCLASS.
+
+*&---------------------------------------------------------------------*
+*& Concrete command classes
+*&---------------------------------------------------------------------*
+
+CLASS lcl_cmd_resize DEFINITION.
+  PUBLIC SECTION.
+    INTERFACES lif_command.
+    METHODS: constructor IMPORTING receiver TYPE REF TO object
+                                   width    TYPE i
+                                   height   TYPE i.
+  PRIVATE SECTION.
+    DATA: rec             TYPE REF TO object,
+          wd              TYPE i,
+          ht              TYPE i,
+          previous_width  TYPE i,
+          previous_height TYPE i.
+ENDCLASS.
+
+CLASS lcl_cmd_resize IMPLEMENTATION.
+  METHOD constructor.
+    rec = receiver.
+    wd  = width.
+    ht = height.
+  ENDMETHOD.
+
+  METHOD lif_command~execute.
+    IF rec IS BOUND AND rec IS INSTANCE OF lcl_receiver.
+      DATA(img) = CAST lcl_receiver( rec ).
+      previous_width  = img->wd.
+      previous_height = img->ht.
+      img->resize( width = wd height = ht ).
+    ENDIF.
+  ENDMETHOD.
+
+  METHOD lif_command~undo.
+    IF rec IS BOUND AND rec IS INSTANCE OF lcl_receiver.
+      DATA(img) = CAST lcl_receiver( rec ).
+      DATA(current_wd) = img->wd.
+      DATA(current_ht) = img->ht.
+      img->resize( width = previous_width height = previous_height ).
+      APPEND |Resizing undone: { previous_width }x{ previous_height } (previous value: { current_wd }x{ current_ht })| TO zcl_demo_abap=>log.
+    ENDIF.
+  ENDMETHOD.
+ENDCLASS.
+
+CLASS lcl_cmd_rotate DEFINITION.
+  PUBLIC SECTION.
+    INTERFACES lif_command.
+    METHODS: constructor IMPORTING receiver TYPE REF TO object
+                                   angle    TYPE i.
+  PRIVATE SECTION.
+    DATA: rec            TYPE REF TO object,
+          ang            TYPE i,
+          previous_angle TYPE i.
+ENDCLASS.
+
+CLASS lcl_cmd_rotate IMPLEMENTATION.
+  METHOD constructor.
+    rec = receiver.
+    ang = angle.
+  ENDMETHOD.
+
+  METHOD lif_command~execute.
+    IF rec IS BOUND AND rec IS INSTANCE OF lcl_receiver.
+      DATA(img) = CAST lcl_receiver( rec ).
+      previous_angle = img->ang.
+      img->rotate( angle = ang ).
+    ENDIF.
+  ENDMETHOD.
+
+  METHOD lif_command~undo.
+    IF rec IS BOUND AND rec IS INSTANCE OF lcl_receiver.
+      DATA(img) = CAST lcl_receiver( rec ).
+      DATA(current_value) = img->ang.
+      img->ang = previous_angle.
+      APPEND |Rotation undone: { previous_angle } (previous value: { current_value })| TO zcl_demo_abap=>log.
+    ENDIF.
+  ENDMETHOD.
+ENDCLASS.
+
+*&---------------------------------------------------------------------*
+*& Invoker classes
+*&---------------------------------------------------------------------*
+
+CLASS lcl_invoker DEFINITION.
+  PUBLIC SECTION.
+    METHODS:
+      exec_cmd IMPORTING cmd TYPE REF TO lif_command,
+      undo,
+      redo.
+  PRIVATE SECTION.
+    DATA: undo_tab TYPE TABLE OF REF TO lif_command WITH EMPTY KEY,
+          redo_tab TYPE TABLE OF REF TO lif_command WITH EMPTY KEY.
+ENDCLASS.
+
+CLASS lcl_invoker IMPLEMENTATION.
+  METHOD exec_cmd.
+    APPEND `---` TO zcl_demo_abap=>log.
+    IF cmd IS BOUND.
+      cmd->execute( ).
+      APPEND cmd TO undo_tab.
+      CLEAR redo_tab.
+    ELSE.
+      RETURN.
+    ENDIF.
+  ENDMETHOD.
+
+  METHOD undo.
+    APPEND `---` TO zcl_demo_abap=>log.
+    APPEND `Undo operation triggered` TO zcl_demo_abap=>log.
+    DATA(tabix) = lines( undo_tab ).
+    READ TABLE undo_tab INTO DATA(cmd) INDEX tabix.
+    IF sy-subrc = 0.
+      cmd->undo( ).
+      DELETE undo_tab INDEX tabix.
+      APPEND cmd TO redo_tab.
+    ELSE.
+      APPEND `Undo operation not possible` TO zcl_demo_abap=>log.
+    ENDIF.
+  ENDMETHOD.
+
+  METHOD redo.
+    APPEND `---` TO zcl_demo_abap=>log.
+    APPEND `Redo operation triggered` TO zcl_demo_abap=>log.
+    DATA(tabix) = lines( redo_tab ).
+    READ TABLE redo_tab INTO DATA(cmd) INDEX tabix.
+    IF sy-subrc = 0.
+      cmd->execute( ).
+      DELETE redo_tab INDEX tabix.
+      APPEND cmd TO undo_tab.
+    ELSE.
+      APPEND `Redo operation not possible` TO zcl_demo_abap=>log.
     ENDIF.
   ENDMETHOD.
 ENDCLASS.

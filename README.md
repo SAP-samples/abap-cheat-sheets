@@ -273,7 +273,7 @@ There is no guarantee for either the correctness or the completeness of the code
 <br>
 
 ## 📟 Support
-This is not intended to be a contribution repository, so please do not create pull requests. If you like to address issues or suggestions regarding additional syntax to be covered, please create an issue. However, this project is provided "as-is": there is no guarantee that raised issues will be answered or addressed in future releases.
+This is not intended to be a contribution repository, so please do not create pull requests. If you like to address issues, please create an issue. However, this project is provided "as-is": there is no guarantee that raised issues will be answered or addressed in future releases.
 
 <br>
 
