@@ -34,6 +34,7 @@
       - [Reading Operations](#reading-operations)
       - [Read-by-Association Operations](#read-by-association-operations)
       - [Dynamic ABAP EML READ Statements](#dynamic-abap-eml-read-statements)
+      - [Accessing Change Information](#accessing-change-information)
     - [COMMIT ENTITIES: Persisting to the Database](#commit-entities-persisting-to-the-database)
     - [ROLLBACK ENTITIES](#rollback-entities)
     - [GET PERMISSIONS: Retrieving Information about RAP BO Permissions](#get-permissions-retrieving-information-about-rap-bo-permissions)
@@ -2304,6 +2305,61 @@ op_tab = VALUE #(
 
 READ ENTITIES OPERATIONS op_tab.
 ```
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+#### Accessing Change Information
+
+- ABAP EML read operations using `WITH CHANGES` provide access to accumulated change information for RAP BO instances within a RAP transaction.
+- Syntax: 
+  - Short form: `READ ENTITY IN LOCAL MODE ... WITH CHANGES ...`
+  - Long form: `READ ENTITIES OF ... IN LOCAL MODE ENTITY ... WITH CHANGES ...`
+  - Regarding the dynamic form, see the notes further down.
+- After `RESULT`, the BDEF derived type `TYPE TABLE FOR READ CHANGES` is expected.
+- In addition to RAP BO instance data, the read result includes the component `%chg`, which indicates the accumulated operation.
+- Restrictions:
+  - Available only with managed RAP BOs (not applicable to unmanaged RAP BOs)
+  - Usable only in implementation classes
+  - Must be used in conjunction with `IN LOCAL MODE`
+  - Cannot be applied to read-by-association operations or when executing RAP functions.
+- The addition helps determine whether a RAP BO instance is unchanged or has been created, updated, or deleted during the current RAP transaction. The `%control` structure components in the read result indicate which fields have changed, but only for those components where the `%chg` value is either `if_abap_behv=>cop-create`, `if_abap_behv=>cop-update`, or `if_abap_behv=>cop-recreate`. In all other cases, the `%control` component value remains initial.
+- With regard to the dynamic form, `WITH CHANGES` cannot be specified. The functionality of `WITH CHANGES` is implemented in dynamic ABAP EML `READ` statements by setting the `full` component of the statement's operand to `if_abap_behv=>typekind-result_chg`.
+
+Example statements
+
+```abap
+"Short form
+DATA read_changes TYPE TABLE FOR READ CHANGES demo_rap_entity. 
+ 
+READ ENTITY IN LOCAL MODE demo_rap_entity 
+  WITH CHANGES 
+  ALL FIELDS WITH CORRESPONDING #( keys ) 
+  RESULT read_changes 
+  FAILED failed.
+
+"Dynamic form
+DATA: op_tab          TYPE abp_behv_retrievals_tab, 
+      read_dyn        TYPE TABLE FOR READ IMPORT demo_rap_entity, 
+      read_dyn_result TYPE TABLE FOR READ CHANGES demo_rap_entity, 
+      entity          TYPE abp_entity_name VALUE 'DEMO_RAP_ENTITY'. 
+ 
+read_dyn = VALUE #( FOR wa IN keys ( 
+  %key-key_field  = wa-key_field 
+  %control-field1 = if_abap_behv=>mk-on 
+  %control-field2 = if_abap_behv=>mk-on 
+  %control-field3 = if_abap_behv=>mk-on 
+  %control-field4 = if_abap_behv=>mk-on ) ). 
+ 
+op_tab = VALUE #( ( 
+  op          = if_abap_behv=>op-r-read 
+  entity_name = entity 
+  full        = if_abap_behv=>typekind-result_chg 
+  instances   = REF #( read_dyn ) 
+  results     = REF #( read_dyn_result ) ) ). 
+ 
+READ ENTITIES IN LOCAL MODE OPERATIONS op_tab FAILED DATA(f).
+```
+
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ### COMMIT ENTITIES: Persisting to the Database

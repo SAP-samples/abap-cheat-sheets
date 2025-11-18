@@ -1730,7 +1730,7 @@ ENDCLASS.
     - Implements `if_oo_adt_classrun` and calls methods from local classes.  
     - Acts as a consumer of APIs (local classes) defined in the CCIMP include.  
   - CCIMP include (Local Types tab in ADT):  
-    - The example is similar to the factory method example above.
+    - The example is similar to the factory method example.
     - Local interface `lif_hello`: Defines an enumeration type and a method that returns a string. 
     - Local classes `lcl_**` implement `lif_hello`.
     - Local class `lcl_hello_factory`: Contains the factory method `create_hello`. The class specifies `CREATE PRIVATE` to prevent external instantiation. The `create_hello` returns a reference of type `REF TO lif_hello`.
@@ -8149,7 +8149,7 @@ ENDCLASS.
 ## Singleton
 
 - Used to restrict external users from instantiating a class.  
-- As above, this is typically achieved by using the `CREATE PRIVATE` addition in a class definition, preventing object creation outside the class. A factory method, often a static method, then provides users with an instance of the class. The singleton pattern ensures only one instance per class within an internal session.  
+- This is typically achieved by using the `CREATE PRIVATE` addition in a class definition, preventing object creation outside the class. A factory method, often a static method, then provides users with an instance of the class. The singleton pattern ensures only one instance per class within an internal session.  
 - Example of a predefined ABAP class: `CL_IXML_CORE`.  
 
 <br>
