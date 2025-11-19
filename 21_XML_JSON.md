@@ -982,6 +982,8 @@ Expand the following collapsible section for example classes. To try them out, c
   <summary>🟢 Click to expand for example code</summary>
   <!-- -->
 
+<br>
+
 - The `create` method from the `cl_sxml_string_writer` class is used to create a JSON writer by setting the type to `if_sxml=>co_xt_json`. 
 - Note the comments about the cast in the XML section. 
 - Several elements and attributes are created using token-based rendering methods. 
@@ -1081,6 +1083,8 @@ ENDCLASS.
 <details>
   <summary>🟢 Click to expand for example code</summary>
   <!-- -->
+
+<br>
 
 - An internal table is created for display purposes. This table is populated when iterating over all nodes. It includes information such as the node's value. 
 - For more details on the *name* component and others, refer to the [ABAP Keyword Documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_json_xml.htm).
@@ -1200,6 +1204,12 @@ ENDCLASS.
 
 ### Transforming JSON Data Using Transformations
 
+- `CALL TRANSFORMATION` statements support JSON transformation, allowing conversion between JSON and ABAP using these options:  
+  - JSON readers  
+  - Additions `SOURCE JSON` and `RESULT JSON`    
+- Here, JSON data is processed in JSON-XML format, mapping JSON data to XML. This format enables all transformation categories for JSON that are also available for XML. For more information, see [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABENABAP_JSON_TRAFOS.html).  
+- Both custom transformations (using XSLT and ST) and predefined identity transformations (`ID`) are supported. For identity transformations, asJSON, the canonical JSON representation of ABAP data, is used. For more details, see [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABENABAP_ASJSON.html).
+
 The following code snippets show a selection of transformation options using the predefined identity transformation. Here, a JSON writer is specified as the target.
 
 ```abap
@@ -1279,6 +1289,79 @@ DATA(json_formatted) = cl_abap_conv_codepage=>create_in( )->convert( CAST cl_sxm
 * ]
 *}
 ```
+
+The following code snippets show the use of the `SOURCE JSON` and `RESULT JSON` additions in `CALL TRANSFORMATION` statements. The examples use the identity transformation (`ID`).
+
+```abap
+"ABAP (elementary data object) -> JSON
+DATA num TYPE i VALUE 123.
+
+CALL TRANSFORMATION id
+  SOURCE var = num
+  RESULT JSON DATA(json).
+
+DATA(res_json_elem) = cl_abap_conv_codepage=>create_in( )->convert( json ).
+
+"JSON -> ABAP (elementary data object)
+DATA int TYPE i.
+CALL TRANSFORMATION id
+  SOURCE JSON json
+  RESULT var = int.
+
+"ABAP (structure) -> JSON
+DATA: BEGIN OF struct,
+        num  TYPE i VALUE 987,
+        text TYPE string VALUE `hello world`,
+        date TYPE d VALUE '20260102',
+        time TYPE t VALUE '123456',
+      END OF struct.
+
+CALL TRANSFORMATION id
+  SOURCE structure = struct
+  RESULT JSON json.
+
+DATA(res_json_struct) = cl_abap_conv_codepage=>create_in( )->convert( json ).
+
+"JSON -> ABAP (structure)
+DATA struct2 LIKE struct.
+CALL TRANSFORMATION id
+  SOURCE JSON json
+  RESULT structure = struct2.
+
+"ABAP (internal table) -> JSON
+DATA itab LIKE TABLE OF struct WITH EMPTY KEY.
+APPEND struct TO itab.
+APPEND struct2 TO itab.
+
+CALL TRANSFORMATION id
+  SOURCE table = itab
+  RESULT JSON json.
+
+DATA(res_json_tab) = cl_abap_conv_codepage=>create_in( )->convert( json ).
+
+"JSON -> ABAP (internal table)
+DATA itab2 LIKE itab.
+CALL TRANSFORMATION id
+  SOURCE JSON json
+  RESULT table = itab2.
+
+"ABAP (data reference) -> JSON
+DATA dref TYPE REF TO string.
+dref = NEW #( `ABAP` ).
+
+CALL TRANSFORMATION id
+  SOURCE ref = dref
+  RESULT JSON json.
+
+DATA(res_json_ref) = cl_abap_conv_codepage=>create_in( )->convert( json ).
+
+"JSON -> ABAP (data reference)
+DATA dref2 LIKE dref.
+CALL TRANSFORMATION id
+  SOURCE JSON json
+  RESULT ref = dref2.
+```
+
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
@@ -1538,6 +1621,8 @@ Expand the following collapsible section for example classes. To try them out, c
 <details>
   <summary>🟢 Click to expand for example code</summary>
   <!-- -->
+
+<br>
 
 - When the class runs, it creates three instances, and three instance attributes are assigned values for each instance: the current UTC timestamp, a random number, and a UUID. 
 - These instances are then serialized and subsequently deserialized.

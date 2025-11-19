@@ -47,7 +47,7 @@ The examples largely draw inspiration from design patterns established by the _G
 Most examples are set up for easy exploration using simple, (mostly) self-contained ABAP classes, i.e. there is only one class pool including local classes/interfaces instead of multiple global classes/interfaces:
 - Global class (_Global Class_ tab in ADT):
   - Includes the `if_oo_adt_classrun` interface to run the class with F9 in ADT.
-  - Serves as the client that makes use of the local classes to demonstrate design pattern. Largely, the declarations and implementations in the CCIMP include are relevant for the conceptual considerations.
+  - Serves as the client that makes use of the local classes to demonstrate design patterns. Largely, the declarations and implementations in the CCIMP include are relevant for the conceptual considerations.
 - CCIMP include (_Local Types_ tab in ADT):
   - Contains various local classes/interfaces to demonstrate design patterns, allowing quick copying and pasting without creating multiple global classes.
 
@@ -6118,7 +6118,7 @@ CLASS lcl_flyweight_factory IMPLEMENTATION.
 
       INSERT VALUE #( evt = event fw_obj = obj ) INTO TABLE flyweight_tab.
 
-      "Adding information to an log table for display purposes.
+      "Adding information to a log table for display purposes.
       APPEND |Entry does not exist for key "{ event }". New object created and added to the internal table.| TO zcl_demo_abap=>log.
     ENDIF.
   ENDMETHOD.

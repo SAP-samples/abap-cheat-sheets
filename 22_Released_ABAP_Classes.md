@@ -48,6 +48,7 @@
   - [Repairing and Cleaning up HTML and XML Documents](#repairing-and-cleaning-up-html-and-xml-documents)
   - [Creating and Using IDE Actions](#creating-and-using-ide-actions)
   - [Output Management (PDF Rendering)](#output-management-pdf-rendering)
+  - [Writing Internal Table Content to CSV](#writing-internal-table-content-to-csv)
 
 
 This ABAP cheat sheet contains a selection of [released](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenreleased_api_glosry.htm) ABAP classes that are available in [ABAP for Cloud Development](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_for_cloud_dev_glosry.htm). It serves as a quick introduction, along with code snippets to explore the functionality in action.
@@ -9445,3 +9446,47 @@ ENDCLASS.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
+## Writing Internal Table Content to CSV
+
+<table>
+<tr>
+<td> Class </td> <td> Details/Code Snippet </td>
+</tr>
+<tr>
+<td> <code>CL_CSV_FACTORY</code> </td>
+<td>
+
+- The <code>CL_CSV_FACTORY</code> class represents a factory class to create CSV writers.
+- You can use the `write` method via the created object to write internal table content to CSV.
+- Various other methods are available for applying different settings.
+
+<br>
+
+```abap
+TYPES: BEGIN OF demo_struct,
+          num   TYPE i,
+          text  TYPE string,
+          chars TYPE c LENGTH 5,
+        END OF demo_struct,
+        tab_type TYPE TABLE OF demo_struct WITH EMPTY KEY.
+
+DATA(itab) = VALUE tab_type( ( num = 1 text = `abc` chars = 'def' )
+                             ( num = 2 text = `ghi` chars = 'jkl' )
+                             ( num = 3 text = `mno` chars = 'pqr' )
+                             ( num = 4 text = `stu` chars = 'vwx' )
+                             ( num = 5 text = `y` chars = 'z' ) ).
+
+DATA(csv_writer) = cl_csv_factory=>new_writer( ).
+
+TRY.
+    DATA(csv_xstring) = csv_writer->write( REF #( itab ) ).
+    
+    DATA(csv) = cl_abap_conv_codepage=>create_in( )->convert( csv_xstring ).
+  CATCH cx_csv_writer cx_csv_field_catalog cx_sy_conversion_codepage INTO DATA(err).
+    DATA(err_msg) = err->get_text( ).
+ENDTRY.
+``` 
+
+
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
