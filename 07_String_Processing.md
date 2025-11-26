@@ -507,6 +507,105 @@ s1 = |{ '   12' ALPHA = IN }|. "00012
 s1 = |{ '00001234' ALPHA = OUT }|. "1234
 "Do not apply formatting
 s1 = |{ '00001234' ALPHA = RAW }|. "00001234
+
+*&---------------------------------------------------------------------*
+*& EXPONENT
+*&---------------------------------------------------------------------*
+
+"Defining the exponent when formatting floating point numbers;
+"only usable with numeric data types; only affects data type f
+"or in combination with STYLE = scientific
+
+DATA(flp) = CONV f( 1 / 3 ).
+
+"0.33333333333333331
+s1 = |{ flp }|.
+"3.3333333333333331E-01
+s1 = |{ flp EXPONENT = -1 }|.
+"0.000000000033333333333333331E+10
+s1 = |{ flp EXPONENT = 10 }|.
+
+DATA(dec_num) = CONV decfloat34( '-123.45600' ).
+
+"-1.23456E+02
+s1 = |{ dec_num STYLE = SCIENTIFIC }|.
+"-1234.56E-01
+s1 = |{ dec_num STYLE = SCIENTIFIC EXPONENT = -1 }|.
+
+*&---------------------------------------------------------------------*
+*& CURRENCY
+*&---------------------------------------------------------------------*
+
+"Defining the number of decimal places in the context of currencies;
+"only usable with numeric data types; some options such as DECIMALS
+"cannot be specified together with CURRENCY, SIGN can be specified
+"for +/-; check descriptions of the behavior of the various numeric
+"types in the ABAP Keyword Documentation
+
+"Type i: A decimal separator is inserted at the place determined by
+"the currency
+"123456.78
+s1 = |{ 12345678 CURRENCY = 'EUR' }|.
+
+"Type f: Same effect as DECIMALS, number of decimal places is
+"determined by the currency
+"1.23
+s1 = |{ CONV f( '1.234' ) CURRENCY = 'EUR' }|.
+
+"Using CURRENCY and SIGN
+"+123.45
+s1 = |{ 12345 CURRENCY = 'EUR' SIGN = LEFTPLUS }|.
+
+*&---------------------------------------------------------------------*
+*& COUNTRY
+*&---------------------------------------------------------------------*
+
+"Temporarily setting country-specific formatting (alternative to using
+"the ENVIRONMENT option)
+
+DATA land TYPE land1 VALUE 'DE '.
+"987.654.321 (for example)
+s1 = |{ 987654321 COUNTRY = land }|.
+
+"987,654,321 (for exmaple)
+s1 = |{ 987654321 COUNTRY = 'US ' }|.
+
+"10/18/2025 (for example)
+s1 = |{ cl_abap_context_info=>get_system_date( ) COUNTRY = 'US ' }|.
+
+"14:21:12 (for example)
+s1 = |{ cl_abap_context_info=>get_system_time( ) COUNTRY = land }|.
+
+"Using non-existing country
+land = '&/§'.
+TRY.
+    s1 = |{ 987654321 COUNTRY = land }|.
+  CATCH cx_sy_strg_format INTO DATA(err).
+    s1 = err->get_text( ).
+ENDTRY.
+
+*&---------------------------------------------------------------------*
+*& NUMBER
+*&---------------------------------------------------------------------*
+
+"Defining the format of decimal representation (decimal and thousands
+"separators); only usable with numeric data types; only specific formats
+"can be specified (RAW being the default)
+
+DATA decimal_number TYPE decfloat34 VALUE '-123456.7890'.
+
+"Period as decimal separator, no thousands separators
+"-123456.789
+s1 = |{ decimal_number NUMBER = RAW }|.
+
+"Decimal/thousands separators based on user master record
+"-123.456,789 (for example)
+s1 = |{ decimal_number NUMBER = USER }|.
+
+"Decimal/thousands separators based on current language
+"environment
+"-123.456,789 (for example)
+s1 = |{ decimal_number NUMBER = ENVIRONMENT }|.
 ```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>

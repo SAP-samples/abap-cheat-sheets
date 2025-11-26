@@ -128,8 +128,7 @@ TYPES: BEGIN OF struc_type,
          comp6 TYPE REF TO i,          "data reference
          comp7 LIKE data_object,       "deriving type from a data object                  
          comp8 TYPE LINE OF itab_type, "component has structured type, type derived from internal table type 
-         comp9 LIKE LINE OF itab,      "component has structured type, type derived from internal table
-         comp10,                       "no TYPE/LIKE specification: component is of type c length 1          
+         comp9 LIKE LINE OF itab,      "component has structured type, type derived from internal table        
          ...,
        END OF struc_type.
 ```

@@ -11,6 +11,7 @@
   - [ABAP Unit: Test Double Injection Using Inheritance and Method Redefinition](#abap-unit-test-double-injection-using-inheritance-and-method-redefinition)
   - [Abstract Factory](#abstract-factory)
   - [Adapter](#adapter)
+  - [Bridge](#bridge)
   - [Builder](#builder)
   - [Chain of Responsibility](#chain-of-responsibility)
   - [Command](#command)
@@ -1967,6 +1968,406 @@ ENDCLASS.
 </details>  
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
+
+
+## Bridge
+
+- The idea behind the bridge design pattern is to categorize the class setup into an abstraction layer and an implementation layer, keeping them separate.
+- The abstraction defines high-level functionality, while it delegates actual operations to the implementation layer. The _bridging_ element enters the picture like this: The abstraction may hold a reference to an instance of the implementation side, enabling interaction through that instance.
+- The following example uses a car production scenario for demonstration. The abstraction layer is represented by a car (a base class, and potentially refinements - classes inheriting from the base class - for specific types, such as an SUV or a sports car) that outlines high-level production steps. The implementation layer is represented by car factories that execute these steps (a base class for factories, and classes inheriting from the base class for various factories). Find more information about the example in the expandable section.
+- The bridge design pattern may be beneficial when you can apply a decoupling of classes and determine different class hierarchies for the abstraction and implementation layers, still requiring them to work together flexibly, unlike relying on, for example, inheritance within a single, large class hierarchy:
+  - You might avoid an overcrowding of classes. For example, without the bridge pattern, you would need a separate class for each combination, such as a class for car type A with factory Z, car type A with factory Y, car type B with factory Z, car type B with factory Y, and so on. The bridge design pattern, however, may allow flexible combinations of the two layers at runtime.
+  - Without decoupling, maintenance and extensions may become inflexible. By using the bridge design pattern, you can easily add a new car type (that is, a new refined abstraction) without needing to modify the car factory classes on the implementation side, as the setup is made to have the layers independent from each other. Vice versa, adaptations on the implementation side may occur independently, without disrupting the code on the abstraction side.
+
+<br>
+
+<details>
+  <summary>🟢 Click to expand for more information and example code</summary>
+  <!-- -->
+
+<br>
+
+**Example notes:**
+
+- The example uses a car production context for demo purposes.
+- The abstraction layer is represented by a car (class `lcl_car` and its refinements). The implementation layer is represented by car factories that perform various production steps (class `lcl_car_factory` and its concrete classes for different factories).
+- The bridging element enters the picture with `lcl_car` holding an instance referencing a concrete factory, and delegating implementation-specific steps to the car factory.
+- The example code demonstrates the bridge design pattern by including the following declarations and implementations:
+  - CCIMP include (_Local Types_ tab in ADT):
+    - `lcl_car`
+      - This class represents the base class of the abstraction layer.
+      - It is an abstract class that defines high-level functionality by specifying methods for various car production steps.
+      - It specifies the instance constructor that subclasses must call, expecting an object of `lcl_car_factory` from the implementation layer to be passed.
+      - In this example, the non-abstract method `produce` orchestrates the production steps. For display purposes, a string table with comments on the production steps is filled throughout the method calls, which is returned as by the returning parameter.
+      - The protected visibility section specifies additional components, such as the `factory` instance attribute, which serves as the bridging element in the setup by holding an instance of a concrete car factory.
+      - The non-abstract methods `paint`, `control_quality`, and `test_drive` provide default implementations. These methods correspond to those declared by the `lcl_car_factory`, with method calls delegated to concrete implementations via the `factory` reference variable.
+      - The example is designed to include refined abstractions, allowing subclasses of `lcl_car` to either use the default implementations without modifications or refine the production steps with specific implementations. In some cases, the simplified example just involves adding strings to a string table to represent different, refined implementations. However, the default implementation is always used by calling the method with `super->`.
+      - The `car_type` method is abstract, requiring subclasses to implement it. In this example, its purpose is to determine the car type, which is also an attribute of `lcl_car` (`cartype`), not of the car factory classes.
+    - `lcl_compact_car`, `lcl_suv`, `lcl_sports_car`
+      - These classes inherit from `lcl_car` and represent refined abstractions, that is, different car types that can be produced in every factory available.
+      - Each class can, but does not have to, override the default implementation or add specific implementations.
+      - The example demonstrates specific implementations in some cases by adding strings to a string table, which represents different implementations. However, the default implementation is always used by calling the method with `super->`. For example, the assumption is that there are additional prerequisites for test-driving a sports car, such as needing access to a special test track.
+      - By allowing these classes to extend the default implementation, these refined abstractions illustrate how adaptations can be made flexibly without dependencies on other abstractions or the implementation layer.
+    - `lcl_car_factory` 
+      - Represents the base class of the implementation layer.  
+      - It is an abstract class that defines methods that inheriting classes must implement.  
+      - In the example setup, the method names correspond to those defined by `lcl_car`. The methods in `lcl_car` "know" about these methods but call them through the stored instance in `factory`. They do not know the concrete implementation details; they simply delegate to those methods.  
+    - `lcl_factory_a`, `lcl_factory_b`, `lcl_factory_c`
+      - These classes inherit from `lcl_car_factory` and represent the concrete implementations that perform operations in the implementation layer.
+      - Each class must redefine the abstract methods defined in the superclass `lcl_car_factory`.
+      - The simplified example adds a string to a string table, representing the unique operations performed by each car factory class. While the steps and functionalities, such as painting, quality checks, and test driving, remain consistent, the implementation may vary. An assumption might be that, for example, the painting is done using different machines in the car factories, or specific test tracks are used for the test drive.
+      - Because all factory classes use the same abstract interface, individual cars (`lcl_car` objects) can be used interchangeably with any factory.
+    - `lcl_log` 
+      - Not related to conceptual considerations. 
+      - It just serves display purposes by providing a string table to hold the production comments added throughout the method calls.
+  - Global class:
+    - Implements the `if_oo_adt_classrun` interface and calls methods from local classes.
+    - Serves as the client in the example. It is responsible for associating objects of the abstraction layer with objects of the implemenation layer.
+    - By calling the non-abstract method `produce`, the production process is orchestrated accordingly.
+    - The string table that is output visualizes the production steps.
+
+<table>
+
+<tr>
+<td> Class include </td> <td> Code </td>
+</tr>
+
+<tr>
+<td> 
+
+Global class
+
+ </td>
+
+ <td> 
+
+``` abap
+CLASS zcl_demo_abap DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
+
+  PUBLIC SECTION.
+    INTERFACES if_oo_adt_classrun.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+ENDCLASS.
+
+
+CLASS zcl_demo_abap IMPLEMENTATION.
+  METHOD if_oo_adt_classrun~main.
+
+    DATA compact_car1 TYPE REF TO lcl_compact_car.
+    DATA factory_a TYPE REF TO lcl_factory_a.
+    factory_a = NEW #( ).
+    compact_car1 = NEW lcl_compact_car( factory_a ).
+    DATA(log1) = compact_car1->produce( ).
+
+    out->write( log1 ).
+    out->write( |\n\n| ).
+
+    DATA(compact_car2) = NEW lcl_compact_car( NEW lcl_factory_b( ) ).
+    DATA(log2) = compact_car2->produce( ).
+    out->write( log2 ).
+    out->write( |\n\n| ).
+
+    DATA(suv1)    = NEW lcl_suv( NEW lcl_factory_c( ) ).
+    DATA(log3) = suv1->produce( ).
+    out->write( log3 ).
+    out->write( |\n\n| ).
+
+    DATA(suv2)    = NEW lcl_suv( NEW lcl_factory_a( ) ).
+    DATA(log4) = suv2->produce( ).
+    out->write( log4 ).
+    out->write( |\n\n| ).
+
+    DATA(sports_car1) = NEW lcl_sports_car( NEW lcl_factory_a( ) ).
+    DATA(log5) = sports_car1->produce( ).
+    out->write( log5 ).
+    out->write( |\n\n| ).
+
+    DATA(sports_car2) = NEW lcl_sports_car( NEW lcl_factory_b( ) ).
+    DATA(log6) = sports_car2->produce( ).
+    out->write( log6 ).
+    out->write( |\n\n| ).
+
+    DATA(sports_car3) = NEW lcl_sports_car( NEW lcl_factory_c( ) ).
+    DATA(log7) = sports_car3->produce( ).
+    out->write( log7 ).
+
+  ENDMETHOD.
+ENDCLASS.
+``` 
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+CCIMP include (Local Types tab in ADT)
+
+ </td>
+
+ <td> 
+
+``` abap
+"Class providing a string table representing a log table for
+"display purposes in the example
+CLASS lcl_log DEFINITION.
+  PUBLIC SECTION.
+    CLASS-DATA log TYPE string_table.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+ENDCLASS.
+
+*&---------------------------------------------------------------------*
+*& Base class of the implementation layer
+*&---------------------------------------------------------------------*
+
+CLASS lcl_car_factory DEFINITION ABSTRACT.
+  PUBLIC SECTION.
+    METHODS build ABSTRACT IMPORTING cartype TYPE string.
+    METHODS paint ABSTRACT IMPORTING cartype TYPE string.
+    METHODS control_quality ABSTRACT IMPORTING cartype TYPE string.
+    METHODS test_drive ABSTRACT IMPORTING cartype TYPE string.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+ENDCLASS.
+
+CLASS lcl_car_factory IMPLEMENTATION.
+ENDCLASS.
+
+*&---------------------------------------------------------------------*
+*& Concrete implementations
+*&---------------------------------------------------------------------*
+
+CLASS lcl_factory_a DEFINITION INHERITING FROM lcl_car_factory.
+  PUBLIC SECTION.
+    METHODS build REDEFINITION.
+    METHODS paint REDEFINITION.
+    METHODS control_quality REDEFINITION.
+    METHODS test_drive REDEFINITION.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+ENDCLASS.
+
+CLASS lcl_factory_a IMPLEMENTATION.
+  METHOD build.
+    APPEND |Factory A: { cartype } built| TO lcl_log=>log.
+  ENDMETHOD.
+
+  METHOD paint.
+    APPEND |Factory A: { cartype } painted| TO lcl_log=>log.
+  ENDMETHOD.
+
+  METHOD control_quality.
+    APPEND |Factory A: { cartype } checked| TO lcl_log=>log.
+  ENDMETHOD.
+
+  METHOD test_drive.
+    APPEND |Factory A: { cartype } test driven| TO lcl_log=>log.
+  ENDMETHOD.
+ENDCLASS.
+
+CLASS lcl_factory_b DEFINITION INHERITING FROM lcl_car_factory.
+  PUBLIC SECTION.
+    METHODS build REDEFINITION.
+    METHODS paint REDEFINITION.
+    METHODS control_quality REDEFINITION.
+    METHODS test_drive REDEFINITION.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+ENDCLASS.
+
+CLASS lcl_factory_b IMPLEMENTATION.
+  METHOD build.
+    APPEND |Factory B: { cartype } built| TO lcl_log=>log.
+  ENDMETHOD.
+
+  METHOD paint.
+    APPEND |Factory B: { cartype } painted| TO lcl_log=>log.
+  ENDMETHOD.
+
+  METHOD control_quality.
+    APPEND |Factory B: { cartype } checked| TO lcl_log=>log.
+  ENDMETHOD.
+
+  METHOD test_drive.
+    APPEND |Factory B: { cartype } test driven| TO lcl_log=>log.
+  ENDMETHOD.
+ENDCLASS.
+
+CLASS lcl_factory_c DEFINITION INHERITING FROM lcl_car_factory.
+  PUBLIC SECTION.
+    METHODS build REDEFINITION.
+    METHODS paint REDEFINITION.
+    METHODS control_quality REDEFINITION.
+    METHODS test_drive REDEFINITION.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+ENDCLASS.
+
+CLASS lcl_factory_c IMPLEMENTATION.
+  METHOD build.
+    APPEND |Factory C: { cartype } built| TO lcl_log=>log.
+  ENDMETHOD.
+
+  METHOD paint.
+    APPEND |Factory C: { cartype } painted| TO lcl_log=>log.
+  ENDMETHOD.
+
+  METHOD control_quality.
+    APPEND |Factory C: { cartype } checked| TO lcl_log=>log.
+  ENDMETHOD.
+
+  METHOD test_drive.
+    APPEND |Factory C: { cartype } test driven| TO lcl_log=>log.
+  ENDMETHOD.
+ENDCLASS.
+
+*&---------------------------------------------------------------------*
+*& Base class of the abstraction layer
+*&---------------------------------------------------------------------*
+
+CLASS lcl_car DEFINITION ABSTRACT.
+  PUBLIC SECTION.
+    METHODS constructor IMPORTING oref_factory TYPE REF TO lcl_car_factory.
+    METHODS produce RETURNING VALUE(log) TYPE string_table.
+  PROTECTED SECTION.
+    DATA factory TYPE REF TO lcl_car_factory.
+    DATA cartype TYPE string.
+    METHODS car_type ABSTRACT RETURNING VALUE(cartype) TYPE string.
+    METHODS paint.
+    METHODS control_quality.
+    METHODS test_drive.
+  PRIVATE SECTION.
+ENDCLASS.
+
+CLASS lcl_car IMPLEMENTATION.
+  METHOD constructor.
+    factory = oref_factory.
+  ENDMETHOD.
+
+  METHOD produce.
+    cartype = car_type( ).
+
+    APPEND |{ repeat( val = `-` occ = 80 ) }| TO lcl_log=>log.
+    DATA(relative_name) = CAST cl_abap_classdescr( cl_abap_typedescr=>describe_by_object_ref( factory ) )->get_relative_name( ).
+    DATA(factory_name) = to_upper( match( val = relative_name pcre = `.\Z` ) ).
+    APPEND |Starting production of { cartype } using factory { factory_name } (class { relative_name })| TO lcl_log=>log.
+
+    factory->build( cartype ).
+    paint( ).
+    control_quality( ).
+    test_drive( ).
+
+    APPEND |Factory { factory_name }: { cartype } produced| TO lcl_log=>log.
+
+    "Handling the log table for display purposes
+    log = lcl_log=>log.
+    CLEAR lcl_log=>log.
+  ENDMETHOD.
+
+  METHOD paint.
+    factory->paint( cartype ).
+  ENDMETHOD.
+
+  METHOD control_quality.
+    factory->control_quality( cartype ).
+  ENDMETHOD.
+
+  METHOD test_drive.
+    factory->test_drive( cartype ).
+  ENDMETHOD.
+ENDCLASS.
+
+*&---------------------------------------------------------------------*
+*& Refined abstractions
+*&---------------------------------------------------------------------*
+
+"test_drive, control_quality not refined
+CLASS lcl_compact_car DEFINITION INHERITING FROM lcl_car.
+  PUBLIC SECTION.
+  PROTECTED SECTION.
+    METHODS car_type REDEFINITION.
+    METHODS paint REDEFINITION.
+  PRIVATE SECTION.
+ENDCLASS.
+
+CLASS lcl_compact_car IMPLEMENTATION.
+  METHOD car_type.
+    cartype = `compact car`.
+  ENDMETHOD.
+
+  METHOD paint.
+    APPEND |Compact-car-specific preparation step for painting| TO lcl_log=>log.
+    super->paint( ).
+  ENDMETHOD.
+ENDCLASS.
+
+"test_drive not refined
+CLASS lcl_suv DEFINITION INHERITING FROM lcl_car.
+  PUBLIC SECTION.
+  PROTECTED SECTION.
+    METHODS car_type REDEFINITION.
+    METHODS paint REDEFINITION.
+    METHODS control_quality REDEFINITION.
+  PRIVATE SECTION.
+ENDCLASS.
+
+CLASS lcl_suv IMPLEMENTATION.
+  METHOD car_type.
+    cartype = `SUV`.
+  ENDMETHOD.
+
+  METHOD paint.
+    APPEND |SUV-specific preparation step for painting| TO lcl_log=>log.
+    super->paint( ).
+  ENDMETHOD.
+
+  METHOD control_quality.
+    APPEND |SUV-specific preparation step for quality control| TO lcl_log=>log.
+    super->control_quality( ).
+  ENDMETHOD.
+ENDCLASS.
+
+"paint not refined
+CLASS lcl_sports_car DEFINITION INHERITING FROM lcl_car.
+  PUBLIC SECTION.
+  PROTECTED SECTION.
+    METHODS car_type REDEFINITION.
+    METHODS test_drive REDEFINITION.
+    METHODS control_quality REDEFINITION.
+  PRIVATE SECTION.
+ENDCLASS.
+
+CLASS lcl_sports_car IMPLEMENTATION.
+  METHOD car_type.
+    cartype = `sports car`.
+  ENDMETHOD.
+
+  METHOD test_drive.
+    APPEND |Sports-car-specific preparation step for test drive| TO lcl_log=>log.
+    super->test_drive( ).
+  ENDMETHOD.
+
+  METHOD control_quality.
+    APPEND |Sports-car-specific preparation step for quality control| TO lcl_log=>log.
+    super->control_quality( ).
+  ENDMETHOD.
+ENDCLASS.
+``` 
+
+ </td>
+</tr>
+
+</table>
+
+</details>  
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
 
 ## Builder
 

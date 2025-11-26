@@ -4820,7 +4820,7 @@ CLASS zcl_demo_abap IMPLEMENTATION.
 ENDCLASS.
 ```
 
-The following example compares a LOOP AT statement with a FOR loop in a constructor expression. The goal is to highlight their syntactical similarities and differences, such as the greater flexibility of `LOOP AT` statements in terms of additional specifications within the loop and the common use of `FOR` loops to create an internal table.
+The following example compares a `LOOP AT` statement with a `FOR` loop in a constructor expression. The goal is to highlight their syntactical similarities and differences, such as the greater flexibility of `LOOP AT` statements in terms of additional specifications within the loop and the common use of `FOR` loops to create an internal table.
 
 
 ```abap

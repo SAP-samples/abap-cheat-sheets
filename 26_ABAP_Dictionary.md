@@ -67,7 +67,7 @@ This cheat sheet ...
 ## Data Types in DDIC
 
 DDIC supports the following data types:
-- Data Elements that describe elementary types and reference types
+- Data elements that describe elementary types and reference types
 - Structured types
 - Table types
 
