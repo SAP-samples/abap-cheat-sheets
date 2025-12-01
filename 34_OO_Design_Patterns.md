@@ -4,11 +4,12 @@
 
 - [ABAP Examples Using Object-Oriented Design Patterns](#abap-examples-using-object-oriented-design-patterns)
   - [Example Setup and Running Example Classes](#example-setup-and-running-example-classes)
-  - [ABAP Unit: Backdoor Injection](#abap-unit-backdoor-injection)
-  - [ABAP Unit: Constructor Injection](#abap-unit-constructor-injection)
-  - [ABAP Unit: Parameter Injection](#abap-unit-parameter-injection)
-  - [ABAP Unit: Setter Injection](#abap-unit-setter-injection)
-  - [ABAP Unit: Test Double Injection Using Inheritance and Method Redefinition](#abap-unit-test-double-injection-using-inheritance-and-method-redefinition)
+  - [ABAP Unit Test Double Injection Techniques](#abap-unit-test-double-injection-techniques)
+    - [Backdoor Injection](#backdoor-injection)
+    - [Constructor Injection](#constructor-injection)
+    - [Parameter Injection](#parameter-injection)
+    - [Setter Injection](#setter-injection)
+    - [Test Double Injection Using Inheritance and Method Redefinition](#test-double-injection-using-inheritance-and-method-redefinition)
   - [Abstract Factory](#abstract-factory)
   - [Adapter](#adapter)
   - [Bridge](#bridge)
@@ -20,6 +21,7 @@
   - [Factory Method](#factory-method)
   - [Fluent Interface](#fluent-interface)
   - [Flyweight](#flyweight)
+  - [Iterator](#iterator)
   - [Memento](#memento)
   - [Multiton](#multiton)
   - [Observer](#observer)
@@ -64,10 +66,12 @@ In the following sections, click the expandable sections for further description
 
 
 
-## ABAP Unit: Backdoor Injection
+## ABAP Unit Test Double Injection Techniques
 
-- The backdoor injection technique can be applied in the context of ABAP Unit.
-- As described [here](https://help.sap.com/docs/ABAP_PLATFORM_NEW/c238d694b825421f940829321ffa326a/04a2d0fc9cd940db8aedf3fa29e5f07e.html?locale=en-US), multiple techniques exist for injecting test doubles into a class under test to ensure their usage during test execution. Also find more information in the ABAP Unit Tests cheat sheet.
+The following sections cover injection techniques that can be applied in the context of ABAP Unit. As described [here](https://help.sap.com/docs/ABAP_PLATFORM_NEW/c238d694b825421f940829321ffa326a/04a2d0fc9cd940db8aedf3fa29e5f07e.html?locale=en-US), multiple techniques exist for injecting test doubles into a class under test to ensure their usage during test execution. Also find more information in the [ABAP Unit Tests](14_ABAP_Unit_Tests.md) cheat sheet.
+
+### Backdoor Injection
+
 - A sample setup to inject test doubles, as illustrated in the example, may look as follows:
   - A dependent-on component (DOC) is identified (for example, reading data from a database table).
   - Ideally, an interface to the DOC is available (here, a local interface is used). A data provider class implements this interface for the data provisioning (here, a local class is used).
@@ -326,10 +330,8 @@ ENDCLASS.
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
 
-## ABAP Unit: Constructor Injection
+### Constructor Injection
 
-- The constructor injection technique can be applied in the context of ABAP Unit.
-- As described [here](https://help.sap.com/docs/ABAP_PLATFORM_NEW/c238d694b825421f940829321ffa326a/04a2d0fc9cd940db8aedf3fa29e5f07e.html?locale=en-US), multiple techniques exist for injecting test doubles into a class under test to ensure their usage during test execution. Also find more information in the ABAP Unit Tests cheat sheet.
 - Here, the test double is passed as a parameter to the instance constructor of the class under test.
 - A sample setup to inject test doubles, as illustrated in the example, may look as follows:
   - A dependent-on component (DOC) is identified (for example, reading data from a database table).
@@ -575,10 +577,8 @@ ENDCLASS.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-## ABAP Unit: Parameter Injection
+### Parameter Injection
 
-- The parameter injection technique can be applied in the context of ABAP Unit.
-- As described [here](https://help.sap.com/docs/ABAP_PLATFORM_NEW/c238d694b825421f940829321ffa326a/04a2d0fc9cd940db8aedf3fa29e5f07e.html?locale=en-US), multiple techniques exist for injecting test doubles into a class under test to ensure their usage during test execution. Also find more information in the ABAP Unit Tests cheat sheet.
 - Here, the test double is passed as a parameter to the tested method (i.e. an optional importing parameter) in the class under test.
 - A sample setup to inject test doubles, as illustrated in the example, may look as follows:
   - A dependent-on component (DOC) is identified (for example, reading data from a database table).
@@ -844,10 +844,8 @@ ENDCLASS.
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
 
-## ABAP Unit: Setter Injection 
+### Setter Injection 
 
-- The setter injection technique can be applied in the context of ABAP Unit.
-- As described [here](https://help.sap.com/docs/ABAP_PLATFORM_NEW/c238d694b825421f940829321ffa326a/04a2d0fc9cd940db8aedf3fa29e5f07e.html?locale=en-US), multiple techniques exist for injecting test doubles into a class under test to ensure their usage during test execution. Also find more information in the ABAP Unit Tests cheat sheet.
 - Here, the test double is passed as a parameter to a setter method.
 - A sample setup to inject test doubles, as illustrated in the example, may look as follows:
   - A dependent-on component (DOC) is identified (for example, reading data from a database table).
@@ -1111,7 +1109,7 @@ ENDCLASS.
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
 
-## ABAP Unit: Test Double Injection Using Inheritance and Method Redefinition
+### Test Double Injection Using Inheritance and Method Redefinition
 
 - This ABAP Unit test double injection technique makes use of inheritance and redefining methods.
 - Here, a local test double class is created by redefining a method of the class under test.
@@ -6522,6 +6520,632 @@ CLASS lcl_flyweight_factory IMPLEMENTATION.
       "Adding information to a log table for display purposes.
       APPEND |Entry does not exist for key "{ event }". New object created and added to the internal table.| TO zcl_demo_abap=>log.
     ENDIF.
+  ENDMETHOD.
+ENDCLASS.
+``` 
+
+ </td>
+</tr>
+
+</table>
+
+</details>  
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+## Iterator
+
+- The iterator design pattern may be useful for processing collections, represented by a group of objects, sequentially. It allows you to iterate across a group of objects without  revealing internal details to the client or ensure that all objects of the collections are iterated (and, for example, processed more than once).
+- A potential setup, illustrated in the following example, may look like this:
+  - An iterator interface that defines operations for iterating across collections, such as retrieving individual elements, moving forward or backward, and checking for the end of the collection. The concrete iteration logic is implemented by concrete iterators that implement the interface. This approach enables flexible extension by adding new collections or iterators.
+  - Concrete iterators that implement the iterator interface contain specific logic for processing objects of a collection. These iterators may be associated with collections by passing collections to their instance constructors.
+  - A collection interface typically defines a method for creating/retrieving an iterator object linked to a specific concrete iterator.
+  - Concrete collection classes that implement the collection interface and include the actual collection of objects. They implement the iterator retrieval method and provide themselves as collection object linked to the iterator.
+  - Clients can retrieve the iterator and use it to iterate across the collection without concerning themselves with the internal details of the objects. They may also create items of the collections.
+
+<br>
+
+<details>
+  <summary>🟢 Click to expand for more information and example code</summary>
+  <!-- -->
+
+<br>
+
+**Example notes:**
+
+- The example code demonstrates the iterator design pattern by including the following declarations and implementations:
+  - CCIMP include (_Local Types_ tab in ADT):
+    - `lif_iterator` 
+      - This interface defines the operations for iterators that implement it.
+      - The interface includes the `get_next` and `get_previous` methods for iterating across collections. The `has_next` method checks for additional items to iterate over. The `get_current_position` method provides the current index, while `reset` returns to the start of the collection.
+    - `lif_collection` 
+      - This interface specifies methods for managing collections.
+      - The `get_iterator` method returns an iterator instance that allows access to the collection's items. 
+      - Additionally, the `get_number_of_items` and `get_item_at_position` methods are included for further interaction options with collections. 
+    - `lcl_iterator` 
+      - This class implements the `lif_iterator` interface and represents an iterator.
+      - In the example implementation, the instance constructor initializes the iterator, linking it to a specific collection.
+      - It implements the methods of the `lif_iterator` interface, providing the logic to process the collection's items.
+      - The class is designed to support two sample implementations of concrete collections.  
+    - `lcl_collection_strings`, `lcl_collection_line2string`
+      - Both classes represent concrete collections and implement the `lif_collection` interface.
+      - The `get_iterator` method returns an instance of `lcl_iterator` linked to the respective collection.
+      - In the simplified example, `lcl_collection_strings` holds in a string table, which can be iterated. The class allows adding strings to the collection using the `add` method.
+      - `lcl_collection_line2string` requires an index table to be supplied via the at instance constructor. This internal table is then iterated. The demo purpose of the example is to convert all table components to strings and return an entire table line as a comma-separated list. The implementation includes checks to ensure that all components are convertible to strings.
+  - Global class:
+    - Implements the `if_oo_adt_classrun` interface and calls methods from local classes.
+    - Serves as the client in the example. The client creates or supplies collections and retrieves iterators to iterate over the collection items.
+    - The global class code demonstrates 3 example contexts: 
+      - Example 1: Demonstrates `lcl_collection_strings`. Several strings are added to the collection. The code shows various options the demo code offers, such as creating a collection, retrieving an iterator, retrieving the number of items in the collection, retrieving an item at a specific position, moving backward and forward within the collection, retrieving the current position, checking if there a more items to be processed, resetting, two separate iterators iterating across the same collection.
+      - Example 2: Demonstrates `lcl_collection_line2string`. Some demo internal tables are created and supplied for iteration.
+      - Example 3: Demonstrates a released ABAP class used for processing XML data. For more information, refer to the _Working with XML and JSON in ABAP_ cheat sheet. The class reflects an iterator setup. In the example, XML data is cretaed, processed, item names and values are output, reflecting the iteration process.
+
+<table>
+
+<tr>
+<td> Class include </td> <td> Code </td>
+</tr>
+
+<tr>
+<td> 
+
+Global class
+
+ </td>
+
+ <td> 
+
+``` abap
+CLASS zcl_demo_abap DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
+
+  PUBLIC SECTION.
+    INTERFACES if_oo_adt_classrun.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+ENDCLASS.
+
+
+CLASS zcl_demo_abap IMPLEMENTATION.
+  METHOD if_oo_adt_classrun~main.
+
+*&---------------------------------------------------------------------*
+*& Example 1
+*&---------------------------------------------------------------------*
+
+    out->write( `------------------------- Example 1 -------------------------` ).
+    out->write( |\n| ).
+
+    DATA: col       TYPE REF TO lcl_collection_strings,
+          iterator  TYPE REF TO lif_iterator,
+          iterator2 TYPE REF TO lif_iterator,
+          item      TYPE string,
+          position  TYPE i,
+          count     TYPE i.
+
+    "Creating a collection and adding items
+    col = NEW lcl_collection_strings( ).
+    col->add( `lorem` ).
+    col->add( `ipsum` ).
+    col->add( `dolor` ).
+    col->add( `sit` ).
+    col->add( `amet` ).
+
+    "Checking the available methods
+    "Getting the number of items in the collection
+    count = col->lif_collection~get_number_of_items( ).
+    out->write( |Number of items in the collection: { count }| ).
+
+    "Getting an item from a specific position
+    position = 2.
+    item = col->lif_collection~get_item_at_position( position ).
+    out->write( |Item at position { position }: "{ item }"| ).
+    out->write( |\n| ).
+
+    "Getting an iterator for the collection
+    iterator = col->lif_collection~get_iterator( ).
+
+    "Iterating accross the collection
+    out->write( `Iterating accross the collection:` ).
+    "Performing the iteration as long as there are items to be processed
+    WHILE iterator->has_next( ) = abap_true.
+      "Getting the next item
+      item = iterator->get_next( ).
+      "Determining the current position
+      position = iterator->get_current_position( ).
+      out->write( |{ position } { item }| ).
+    ENDWHILE.
+    out->write( |\n| ).
+
+    "Checking the move backward and forward methods
+    out->write( `Moving backward and forward:` ).
+
+    item = iterator->get_previous( ).
+    position  = iterator->get_current_position( ).
+    out->write( |Move backward one step; position: "{ position }" item: "{ item }"| ).
+
+    item = iterator->get_previous( ).
+    position = iterator->get_current_position( ).
+    out->write( |Move backward one step; position: "{ position }" item: "{ item }"| ).
+
+    item = iterator->get_next( ).
+    position  = iterator->get_current_position( ).
+    out->write( |Move forward one step; position: "{ position }" item: "{ item }"| ).
+
+    DO 3 TIMES.
+      item = iterator->get_previous( ).
+      position  = iterator->get_current_position( ).
+      out->write( |Move backward one step; position: "{ position }" item: "{ item }"| ).
+    ENDDO.
+
+    item = iterator->get_next( ).
+    position  = iterator->get_current_position( ).
+    out->write( |Move forward one step; position: "{ position }" item: "{ item }"| ).
+
+    out->write( |\n| ).
+
+    "Resetting the iteration
+    out->write( `Reset:` ).
+    iterator->reset( ).
+    position = iterator->get_current_position( ).
+    out->write( |Position after reset: "{ position }"| ).
+
+    out->write( `Get next item after reset:` ).
+    item = iterator->get_next( ).
+    position = iterator->get_current_position( ).
+    out->write( |{ position } { item }| ).
+    out->write( |\n| ).
+
+    "Resetting and iterating
+    out->write( `Iteration after reset:` ).
+    iterator->reset( ).
+    WHILE iterator->has_next( ) = abap_true.
+      item = iterator->get_next( ).
+      position = iterator->get_current_position( ).
+      out->write( |{ position } { item }| ).
+    ENDWHILE.
+    out->write( |\n| ).
+
+    "Two separate iterators iterating across the same collection
+    out->write( `Two separate iterators iterating across the same collection:` ).
+    iterator  = col->lif_collection~get_iterator( ).
+    iterator2 = col->lif_collection~get_iterator( ).
+
+    "Different movements
+    iterator->get_next( ).
+    iterator->get_next( ).
+    iterator2->get_next( ).
+
+    position = iterator->get_current_position( ).
+    out->write( |First iterator, current position: { position }| ).
+
+    position = iterator2->get_current_position( ).
+    out->write( |Second iterator, current position: { position }| ).
+
+    item = iterator->get_next( ).
+    out->write( |First iterator, next element: "{ item }"| ).
+
+    item = iterator2->get_next( ).
+    out->write( |Second iterator, next element: "{ item }"| ).
+    out->write( |\n| ).
+
+    "Unavailable position
+    out->write( `Unavailable position:` ).
+    position = 10.
+    item = col->lif_collection~get_item_at_position( position ).
+    out->write( |{ position } { item }| ).
+    out->write( |\n| ).
+
+*&---------------------------------------------------------------------*
+*& Example 2
+*&---------------------------------------------------------------------*
+
+    out->write( |{ repeat( val = `*` occ = 100 ) }\n| ).
+    out->write( `------------------------- Example 2 -------------------------` ).
+    out->write( |\n| ).
+
+    out->write( `--- itab1 --- ` ).
+    out->write( |\n| ).
+
+    TYPES: BEGIN OF struct,
+             comp1 TYPE i,
+             comp2 TYPE c LENGTH 3,
+             comp3 TYPE string,
+             comp4 TYPE n LENGTH 5,
+           END OF struct,
+           ty_tab TYPE TABLE OF struct WITH EMPTY KEY.
+
+    DATA(itab1) = VALUE ty_tab( ( comp1 = 100 comp2 = 'abc' comp3 = `hello` comp4 = '123' )
+                                ( comp1 = 200 comp2 = 'def' comp3 = `world` comp4 = '456' )
+                                ( comp1 = 300 comp2 = 'ghi' comp3 = `ABAP` comp4 = '789' )
+                                ( comp1 = 400 comp2 = 'jkl' comp3 = sy-uname comp4 = '12345' ) ).
+
+    DATA(col_itab) = NEW lcl_collection_line2string( itab1 ).
+
+    count = col_itab->lif_collection~get_number_of_items( ).
+    out->write( |Number of items in the collection: { count }| ).
+
+    position = 2.
+    item = col_itab->lif_collection~get_item_at_position( position ).
+    out->write( |Item at position { position }: { item }| ).
+    out->write( |\n| ).
+
+    "Getting an iterator for  the collection
+    iterator = col_itab->lif_collection~get_iterator( ).
+
+    "Iterating across the collection
+    out->write( |Iterating across the collection| ).
+    WHILE iterator->has_next( ) = abap_true.
+      item = iterator->get_next( ).
+      position  = iterator->get_current_position( ).
+      out->write( |{ position } { item }| ).
+    ENDWHILE.
+
+    out->write( |\n| ).
+    out->write( `--- itab2 --- ` ).
+    out->write( |\n| ).
+
+    "Using an internal table with elementary line type
+    DATA(itab2) = VALUE string_table( ( `hello` ) ( `world` ) ( `ABAP` ) ).
+
+    col_itab = NEW lcl_collection_line2string( itab2 ).
+
+    count = col_itab->lif_collection~get_number_of_items( ).
+    out->write( |Number of items in the collection: { count }| ).
+
+    position = 2.
+    item = col_itab->lif_collection~get_item_at_position( position ).
+    out->write( |Item at position { position }: { item }| ).
+    out->write( |\n| ).
+
+    "Getting an iterator for the collection
+    iterator = col_itab->lif_collection~get_iterator( ).
+
+    "Iterating across the collection
+    out->write( |Iterating across the collection| ).
+    WHILE iterator->has_next( ) = abap_true.
+      item = iterator->get_next( ).
+      position  = iterator->get_current_position( ).
+      out->write( |{ position } { item }| ).
+    ENDWHILE.
+    out->write( |\n| ).
+
+    out->write( `--- Internal tables not supported by the example --- ` ).
+    out->write( |\n| ).
+    out->write( `--- itab3 --- ` ).
+    out->write( |\n| ).
+
+    TYPES: BEGIN OF struct2,
+             comp1 TYPE i,
+             comp2 TYPE string_table,
+           END OF struct2,
+           ty_tab2 TYPE TABLE OF struct2 WITH EMPTY KEY.
+
+    DATA(itab3) = VALUE ty_tab2( ( comp1 = 100  ) ).
+
+    TRY.
+        col_itab = NEW lcl_collection_line2string( itab3 ).
+      CATCH lcx_error INTO DATA(err).
+        out->write( err->get_text( ) ).
+    ENDTRY.
+    out->write( |\n| ).
+    out->write( `--- itab4 --- ` ).
+    out->write( |\n| ).
+
+    TYPES ty_tab_data TYPE TABLE OF REF TO data.
+    DATA itab4 TYPE ty_tab_data.
+    APPEND REF string( `nope` ) TO itab4.
+
+    TRY.
+        col_itab = NEW lcl_collection_line2string( itab4 ).
+      CATCH lcx_error INTO err.
+        out->write( err->get_text( ) ).
+    ENDTRY.
+    out->write( |\n| ).
+
+*&---------------------------------------------------------------------*
+*& Example 3
+*&---------------------------------------------------------------------*
+
+    "The following example demonstrates a released ABAP class, used for
+    "processing XML data. For more information, refer to the Working with
+    "XML and JSON in ABAP cheat sheet.
+    "The class reflects an iterator setup. XML data is processed, item
+    "names and values are added to a string table.
+
+    out->write( |{ repeat( val = `*` occ = 100 ) }\n| ).
+    out->write( `------------------------- Example 3 -------------------------` ).
+    out->write( |\n\n| ).
+
+    "Demo XML data
+    DATA(some_xml) = cl_abap_conv_codepage=>create_out( )->convert(
+          `<?xml version="1.0"?>` &&
+          `<node>` &&
+          ` <subnode1>` &&
+          `  <hallo>hi</hallo>` &&
+          ` </subnode1>` &&
+          ` <subnode2>` &&
+          `  <letter>a</letter>` &&
+          `  <date>01-01-2025</date>` &&
+          ` </subnode2>` &&
+          ` <subnode3>`  &&
+          `  <text>abc</text>` &&
+          `  <text>def</text>` &&
+          `  <text>ghi</text>` &&
+          `  <text>jkl</text>` &&
+          ` </subnode3>` &&
+          `</node>` ).
+
+    "Creating one factory object of the access class cl_ixml_core using the
+    "create method. It is used to access the iXML library.
+    DATA(ixml_pa) = cl_ixml_core=>create( ).
+    "Creating an input stream that is used for the input of XML data
+    DATA(stream_factory_pa) = ixml_pa->create_stream_factory( ).
+    "Creating an XML document stored in DOM format in the memory
+    DATA(document_pa) = ixml_pa->create_document( ).
+    "Creating a parser. It requires the following input parameters: input stream to be parsed,
+    "the XML document to which the stream is parsed, a factory required to create a stream
+    DATA(parser_pa) = ixml_pa->create_parser(
+                        istream = stream_factory_pa->create_istream_xstring( string = some_xml )
+                        document = document_pa
+                        stream_factory = stream_factory_pa ).
+
+    "Parsing XML data to a DOM representation in one go. It is put in the memory.
+    "Note: You can also parse sequentially, and not in one go.
+    DATA(parsing_check) = parser_pa->parse( ).
+    IF parsing_check = 0.
+      "Creating an iterator
+      DATA(iterator_pa) = document_pa->create_iterator( ).
+
+      "For the iteration, you can use the get_next method to process the nodes one after another.
+      DATA(node_pa) = iterator_pa->get_next( ).
+
+      WHILE NOT node_pa IS INITIAL.
+        DATA(node_type) = node_pa->get_type( ).
+        CASE node_type.
+          WHEN if_ixml_node=>co_node_element.
+            out->write( |Element: "{ node_pa->get_name( ) }"| ).
+          WHEN if_ixml_node=>co_node_text OR if_ixml_node=>co_node_cdata_section.
+            out->write( |Text: "{ node_pa->get_value( ) }"| ).
+          WHEN OTHERS.
+           ...
+        ENDCASE.
+        "Retrieving the next node
+        node_pa = iterator_pa->get_next( ).
+      ENDWHILE.
+    ELSE.
+      out->write( `Parsing was not successful` ).
+    ENDIF.
+  ENDMETHOD.
+ENDCLASS.
+``` 
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+CCIMP include (Local Types tab in ADT)
+
+ </td>
+
+ <td> 
+
+``` abap
+*&---------------------------------------------------------------------*
+*& Iterator interface
+*&---------------------------------------------------------------------*
+
+INTERFACE lif_iterator.
+  METHODS: get_next RETURNING VALUE(item) TYPE string,
+    get_previous RETURNING VALUE(item) TYPE string,
+    has_next RETURNING VALUE(has_next) TYPE abap_boolean,
+    get_current_position RETURNING VALUE(position) TYPE i,
+    reset.
+ENDINTERFACE.
+
+*&---------------------------------------------------------------------*
+*& Collection interface
+*&---------------------------------------------------------------------*
+
+INTERFACE lif_collection.
+  METHODS: get_iterator RETURNING VALUE(iterator) TYPE REF TO lif_iterator,
+    get_number_of_items RETURNING VALUE(count) TYPE i,
+    get_item_at_position IMPORTING idx         TYPE i
+                         RETURNING VALUE(item) TYPE string.
+ENDINTERFACE.
+
+*&---------------------------------------------------------------------*
+*& Concrete iterator
+*&---------------------------------------------------------------------*
+
+CLASS lcl_iterator DEFINITION.
+  PUBLIC SECTION.
+    INTERFACES lif_iterator.
+    METHODS constructor IMPORTING collection TYPE REF TO lif_collection.
+  PRIVATE SECTION.
+    DATA: coll  TYPE REF TO lif_collection,
+          index TYPE i.
+ENDCLASS.
+
+CLASS lcl_iterator IMPLEMENTATION.
+  METHOD constructor.
+    coll = collection.
+    index = 0.
+  ENDMETHOD.
+
+  METHOD lif_iterator~has_next.
+    IF coll IS BOUND.
+      DATA(num_items) = coll->get_number_of_items( ).
+      has_next = xsdbool( index < num_items ).
+    ELSE.
+      has_next = abap_false.
+    ENDIF.
+  ENDMETHOD.
+
+  METHOD lif_iterator~get_next.
+    IF coll IS NOT BOUND.
+      item = ``.
+      RETURN.
+    ENDIF.
+    IF lif_iterator~has_next( ) = abap_true.
+      index += 1.
+      item = coll->get_item_at_position( index ).
+    ELSE.
+      item = ``.
+    ENDIF.
+  ENDMETHOD.
+
+  METHOD lif_iterator~get_previous.
+    IF coll IS NOT BOUND OR index <= 1.
+      item = ``.
+      RETURN.
+    ENDIF.
+    index -= 1.
+    item = coll->get_item_at_position( index ).
+  ENDMETHOD.
+
+  METHOD lif_iterator~get_current_position.
+    position = index.
+  ENDMETHOD.
+
+  METHOD lif_iterator~reset.
+    index = 0.
+  ENDMETHOD.
+ENDCLASS.
+
+*&---------------------------------------------------------------------*
+*& Concrete collection (Example 1)
+*&---------------------------------------------------------------------*
+
+CLASS lcl_collection_strings DEFINITION.
+  PUBLIC SECTION.
+    INTERFACES lif_collection.
+    METHODS add IMPORTING item TYPE string.
+  PRIVATE SECTION.
+    DATA items TYPE string_table.
+ENDCLASS.
+
+CLASS lcl_collection_strings IMPLEMENTATION.
+  METHOD lif_collection~get_iterator.
+    iterator = NEW lcl_iterator( me ).
+  ENDMETHOD.
+
+  METHOD lif_collection~get_number_of_items.
+    count = lines( items ).
+  ENDMETHOD.
+
+  METHOD lif_collection~get_item_at_position.
+    IF idx BETWEEN 1 AND lines( items ).
+      item = items[ idx ].
+    ELSE.
+      item = ``.
+    ENDIF.
+  ENDMETHOD.
+
+  METHOD add.
+    APPEND item TO items.
+  ENDMETHOD.
+ENDCLASS.
+
+*&---------------------------------------------------------------------*
+*& Concrete collection (Example 2)
+*&---------------------------------------------------------------------*
+
+"Local exception class supporting the concrete collection class
+CLASS lcx_error DEFINITION INHERITING FROM cx_dynamic_check.
+  PUBLIC SECTION.
+    INTERFACES if_t100_dyn_msg.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+ENDCLASS.
+
+CLASS lcx_error IMPLEMENTATION.
+ENDCLASS.
+
+CLASS lcl_collection_line2string DEFINITION.
+  PUBLIC SECTION.
+    INTERFACES lif_collection.
+    METHODS constructor IMPORTING itab TYPE INDEX TABLE
+                        RAISING   lcx_error.
+  PRIVATE SECTION.
+    DATA: it                 TYPE REF TO data,
+          has_elem_line_type TYPE abap_boolean.
+ENDCLASS.
+
+CLASS lcl_collection_line2string IMPLEMENTATION.
+  METHOD lif_collection~get_iterator.
+    iterator = NEW lcl_iterator( me ).
+  ENDMETHOD.
+
+  METHOD lif_collection~get_number_of_items.
+    count = lines( it->* ).
+  ENDMETHOD.
+
+  METHOD lif_collection~get_item_at_position.
+    IF idx BETWEEN 1 AND lines( it->* ).
+      FIELD-SYMBOLS <fs> TYPE INDEX TABLE.
+      ASSIGN it->* TO <fs>.
+      ASSIGN <fs>[ idx ] TO FIELD-SYMBOL(<line>).
+
+      IF has_elem_line_type = abap_true.
+        item = <line>.
+      ELSE.
+        DO.
+          ASSIGN <line>-(sy-index) TO FIELD-SYMBOL(<comp>).
+          "Older syntax
+          "ASSIGN COMPONENT sy-index OF STRUCTURE <line> TO FIELD-SYMBOL(<comp>).
+          IF sy-subrc = 0.
+            item &&= COND #( WHEN sy-index = 1 THEN |{ <comp> }| ELSE |, { <comp> }| ).
+          ELSE.
+            EXIT.
+          ENDIF.
+        ENDDO.
+      ENDIF.
+    ELSE.
+      item = ``.
+    ENDIF.
+  ENDMETHOD.
+
+  METHOD constructor.
+    "Component check using RTTI
+    "The example only processes internal tables with elementary components.
+    DATA(tdo_tab) = CAST cl_abap_tabledescr( cl_abap_typedescr=>describe_by_data( itab ) ).
+
+    TRY.
+        DATA(table_comps) = CAST cl_abap_structdescr( tdo_tab->get_table_line_type( ) )->get_components( ).
+
+        LOOP AT table_comps INTO DATA(wa) WHERE type->kind <> cl_abap_typedescr=>kind_elem.
+          DATA(message) = xco_cp=>string( `Internal table not supported by the example (non-elementary component available)`
+            )->as_message( xco_cp_message=>type->error )->value.
+          RAISE EXCEPTION TYPE lcx_error MESSAGE ID message-msgid TYPE message-msgty
+                                         NUMBER message-msgno WITH message-msgv1 message-msgv2 message-msgv3 message-msgv4.
+        ENDLOOP.
+
+*"As an alternative to the LOOP statement, you may also choose to use the newer READ TABLE ... WHERE syntax.
+*READ TABLE table_comps TRANSPORTING NO fieldS WHERE type->kind <> cl_abap_typedescr=>kind_elem.
+*IF sy-subrc = 0.
+*  DATA(msg) = xco_cp=>string( `Internal table not supported by the example` )->as_message( xco_cp_message=>type->error )->value.
+*  RAISE EXCEPTION TYPE lcx_error MESSAGE ID msg-msgid TYPE msg-msgty NUMBER msg-msgno WITH msg-msgv1 msg-msgv2 msg-msgv3 msg-msgv4.
+*ENDIF.
+
+      CATCH cx_sy_move_cast_error.
+        DATA(tab_line_type) = tdo_tab->get_table_line_type( ).
+        IF tab_line_type IS INSTANCE OF cl_abap_elemdescr.
+          has_elem_line_type = abap_true.
+        ELSE.
+          DATA(m) = xco_cp=>string( `Internal table not supported by the example (line type not supported)`
+            )->as_message( xco_cp_message=>type->error )->value.
+          RAISE EXCEPTION TYPE lcx_error MESSAGE ID m-msgid TYPE m-msgty
+                                         NUMBER m-msgno WITH m-msgv1 m-msgv2 m-msgv3 m-msgv4.
+        ENDIF.
+    ENDTRY.
+
+    CREATE DATA it LIKE itab.
+    it->* = itab.
   ENDMETHOD.
 ENDCLASS.
 ``` 
