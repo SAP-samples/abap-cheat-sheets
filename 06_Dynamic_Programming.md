@@ -2591,6 +2591,15 @@ it = it_original.
 DATA(comp_names) = VALUE string_table( ( `comp1` ) ( `comp2` ) ).
 
 SORT it BY VALUE abap_sortorder_tab( FOR wa IN comp_names ( name = condense( to_upper( wa ) ) ) ).
+
+*&---------------------------------------------------------------------*
+*& CLEAR
+*&---------------------------------------------------------------------*
+
+DATA(s) = VALUE struct( comp1 = 1 comp2 = `B` comp3 = 'a' ).
+
+CLEAR s-('COMP1').
+ASSERT s-comp1 = 0.
 ```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>

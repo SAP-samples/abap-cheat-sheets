@@ -49,6 +49,7 @@
   - [Creating and Using IDE Actions](#creating-and-using-ide-actions)
   - [Output Management (PDF Rendering)](#output-management-pdf-rendering)
   - [Writing Internal Table Content to CSV](#writing-internal-table-content-to-csv)
+  - [Triggering Garbage Collection](#triggering-garbage-collection)
 
 
 This ABAP cheat sheet contains a selection of [released](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenreleased_api_glosry.htm) ABAP classes that are available in [ABAP for Cloud Development](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_for_cloud_dev_glosry.htm). It serves as a quick introduction, along with code snippets to explore the functionality in action.
@@ -9487,6 +9488,23 @@ TRY.
 ENDTRY.
 ``` 
 
+</td>
+</tr>
+</table>
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+## Triggering Garbage Collection
+
+- The `CL_ABAP_GARBAGE_COLLECTOR` class provides the `collect` method. 
+- Calling this method manually triggers garbage collection, regardless of current memory consumption or the garbage collector's state.  
+- The ABAP runtime framework periodically invokes the [garbage collector](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abengarbage_collector_glosry.htm), so it is generally unnecessary to trigger clearing explicitly. However, doing so can be beneficial in exceptional cases, such as when large, unnecessary objects consume significant memory or when explicit memory release is needed in resource-constrained environments. It can also help analyze memory usage and ensure proper memory release.
+
+<br>
+
+```abap
+cl_abap_garbage_collector=>collect( ).
+``` 
 
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>

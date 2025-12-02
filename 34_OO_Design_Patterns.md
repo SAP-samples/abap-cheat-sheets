@@ -1996,7 +1996,7 @@ ENDCLASS.
       - This class represents the base class of the abstraction layer.
       - It is an abstract class that defines high-level functionality by specifying methods for various car production steps.
       - It specifies the instance constructor that subclasses must call, expecting an object of `lcl_car_factory` from the implementation layer to be passed.
-      - In this example, the non-abstract method `produce` orchestrates the production steps. For display purposes, a string table with comments on the production steps is filled throughout the method calls, which is returned as by the returning parameter.
+      - In this example, the non-abstract method `produce` orchestrates the production steps. For display purposes, a string table with comments on the production steps is filled throughout the method calls, which is returned by the returning parameter.
       - The protected visibility section specifies additional components, such as the `factory` instance attribute, which serves as the bridging element in the setup by holding an instance of a concrete car factory.
       - The non-abstract methods `paint`, `control_quality`, and `test_drive` provide default implementations. These methods correspond to those declared by the `lcl_car_factory`, with method calls delegated to concrete implementations via the `factory` reference variable.
       - The example is designed to include refined abstractions, allowing subclasses of `lcl_car` to either use the default implementations without modifications or refine the production steps with specific implementations. In some cases, the simplified example just involves adding strings to a string table to represent different, refined implementations. However, the default implementation is always used by calling the method with `super->`.
@@ -6535,7 +6535,7 @@ ENDCLASS.
 
 ## Iterator
 
-- The iterator design pattern may be useful for processing collections, represented by a group of objects, sequentially. It allows you to iterate across a group of objects without  revealing internal details to the client or ensure that all objects of the collections are iterated (and, for example, processed more than once).
+- The iterator design pattern may be useful for processing collections, represented by a group of objects, sequentially. It allows you to iterate across a group of objects without revealing internal details to the client or ensure that all objects of the collections are iterated (and, for example, avoid the processing of individual objects more than once).
 - A potential setup, illustrated in the following example, may look like this:
   - An iterator interface that defines operations for iterating across collections, such as retrieving individual elements, moving forward or backward, and checking for the end of the collection. The concrete iteration logic is implemented by concrete iterators that implement the interface. This approach enables flexible extension by adding new collections or iterators.
   - Concrete iterators that implement the iterator interface contain specific logic for processing objects of a collection. These iterators may be associated with collections by passing collections to their instance constructors.
@@ -6570,15 +6570,15 @@ ENDCLASS.
     - `lcl_collection_strings`, `lcl_collection_line2string`
       - Both classes represent concrete collections and implement the `lif_collection` interface.
       - The `get_iterator` method returns an instance of `lcl_iterator` linked to the respective collection.
-      - In the simplified example, `lcl_collection_strings` holds in a string table, which can be iterated. The class allows adding strings to the collection using the `add` method.
-      - `lcl_collection_line2string` requires an index table to be supplied via the at instance constructor. This internal table is then iterated. The demo purpose of the example is to convert all table components to strings and return an entire table line as a comma-separated list. The implementation includes checks to ensure that all components are convertible to strings.
+      - In the simplified example, `lcl_collection_strings` holds a string table, which can be iterated. The class allows adding strings to the collection using the `add` method.
+      - `lcl_collection_line2string` requires an index table to be supplied via the instance constructor. This internal table is then iterated. The demo purpose of the example is to convert all table components to strings and return an entire table line as a comma-separated list. The implementation includes checks to ensure that all components are convertible to strings.
   - Global class:
     - Implements the `if_oo_adt_classrun` interface and calls methods from local classes.
     - Serves as the client in the example. The client creates or supplies collections and retrieves iterators to iterate over the collection items.
     - The global class code demonstrates 3 example contexts: 
       - Example 1: Demonstrates `lcl_collection_strings`. Several strings are added to the collection. The code shows various options the demo code offers, such as creating a collection, retrieving an iterator, retrieving the number of items in the collection, retrieving an item at a specific position, moving backward and forward within the collection, retrieving the current position, checking if there a more items to be processed, resetting, two separate iterators iterating across the same collection.
       - Example 2: Demonstrates `lcl_collection_line2string`. Some demo internal tables are created and supplied for iteration.
-      - Example 3: Demonstrates a released ABAP class used for processing XML data. For more information, refer to the _Working with XML and JSON in ABAP_ cheat sheet. The class reflects an iterator setup. In the example, XML data is cretaed, processed, item names and values are output, reflecting the iteration process.
+      - Example 3: Demonstrates a released ABAP class used for processing XML data. For more information, refer to the _Working with XML and JSON in ABAP_ cheat sheet. The class reflects an iterator setup. In the example, XML data is created, processed, item names and values are output, reflecting the iteration process.
 
 <table>
 

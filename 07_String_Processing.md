@@ -567,7 +567,7 @@ DATA land TYPE land1 VALUE 'DE '.
 "987.654.321 (for example)
 s1 = |{ 987654321 COUNTRY = land }|.
 
-"987,654,321 (for exmaple)
+"987,654,321 (for example)
 s1 = |{ 987654321 COUNTRY = 'US ' }|.
 
 "10/18/2025 (for example)

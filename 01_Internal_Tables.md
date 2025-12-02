@@ -3191,15 +3191,74 @@ ASSIGN itab[ 2 ] TO FIELD-SYMBOL(<line>).
 "Note: Table expressions do not set the sy-tabix
 "value, except when used with ASSIGN.
 ASSERT sy-tabix = 2.
-
-"Note: Assigning a non-existent line results in sy-subrc = 4
-"An exception is not raised.
-ASSIGN itab[ 99 ] TO <line>.
-ASSERT sy-subrc = 4.
 ``` 
 
 </td>
 </tr>
+
+<tr>
+<td> Assigning table lines to a field symbol and setting <code>sy</> components </td>
+<td>
+
+- Assigning a non-existent line results in a `sy-subrc` value that is not 0. An exception is not raised. A found line results in value 0 for `sy-subrc`.
+- If the assignment fails, `sy-subrc` is set to 4, unless the end of the table is reached during a binary search in sorted tables, in which case `sy-subrc` is set to 8.
+- Unlike in other use cases of table expressions, `sy-tabix` is set here. When the line is found, `sy-tabix` is set according to the primary or secondary table index used. In case of hash keys, it is 0. In case of a not found line and `sy-subrc` is 8, and the end of the searched table is reached, `sy-tabix` is set to the number of lines + 1.
+- Regarding the assignment, you can also check the [Dynamic Programming](06_Dynamic_Programming.md) cheat sheet regarding dynamic `ASSIGN` statements and the `ELSE UNASSIGN` addition.
+
+<br>
+
+``` abap
+TYPES: BEGIN OF s_demo,
+         comp1 TYPE i,
+         comp2 TYPE i,
+       END OF s_demo,
+       tab_type_sorted TYPE SORTED TABLE OF s_demo WITH UNIQUE KEY comp1,
+       tab_type_std    TYPE STANDARD TABLE OF s_demo WITH NON-UNIQUE KEY comp1,
+       tab_type_hashed TYPE HASHED TABLE OF s_demo WITH UNIQUE KEY comp1.
+
+DATA(itab_sorted) = VALUE tab_type_sorted( ( comp1 = 1 comp2 = 11 )
+                                           ( comp1 = 2 comp2 = 22 )
+                                           ( comp1 = 3 comp2 = 33 ) ).
+
+DATA itab_std TYPE tab_type_std.
+itab_std = itab_sorted.
+DATA itab_hashed TYPE tab_type_hashed.
+itab_hashed = itab_sorted.
+
+ASSIGN itab_std[ KEY primary_key COMPONENTS comp1 = 1 ] TO FIELD-SYMBOL(<fs1>).
+ASSERT sy-subrc = 0.
+ASSERT sy-tabix = 1.
+ASSERT <fs1> IS ASSIGNED.
+
+ASSIGN itab_sorted[ KEY primary_key COMPONENTS comp1 = 1 ] TO FIELD-SYMBOL(<fs2>).
+ASSERT sy-subrc = 0.
+ASSERT sy-tabix = 1.
+ASSERT <fs2> IS ASSIGNED.
+
+ASSIGN itab_hashed[ KEY primary_key COMPONENTS comp1 = 1 ] TO FIELD-SYMBOL(<fs3>).
+ASSERT sy-subrc = 0.
+ASSERT sy-tabix = 0.
+ASSERT <fs3> IS ASSIGNED.
+
+ASSIGN itab_std[ KEY primary_key COMPONENTS comp1 = 10 ] TO FIELD-SYMBOL(<fs4>).
+ASSERT sy-subrc = 4.
+ASSERT sy-tabix = 0.
+ASSERT <fs4> IS NOT ASSIGNED.
+
+ASSIGN itab_sorted[ KEY primary_key COMPONENTS comp1 = 10 ] TO FIELD-SYMBOL(<fs5>).
+ASSERT sy-subrc = 8.
+ASSERT sy-tabix = 4.
+ASSERT <fs5> IS NOT ASSIGNED.
+
+ASSIGN itab_hashed[ KEY primary_key COMPONENTS comp1 = 10 ] TO FIELD-SYMBOL(<fs6>).
+ASSERT sy-subrc = 4.
+ASSERT sy-tabix = 0.
+ASSERT <fs6> IS NOT ASSIGNED.
+``` 
+
+</td>
+</tr>
+
 
 <tr>
 <td> Data reference variables pointing to a table line </td>
