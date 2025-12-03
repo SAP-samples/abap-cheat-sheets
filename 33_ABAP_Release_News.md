@@ -32,6 +32,39 @@ This ABAP cheat sheet summarizes the release news from the ABAP Keyword Document
 ## ABAP for Cloud Development Documentation Release News
 
 <details>
+  <summary>🟢 Release 917 (2511)</summary>
+  <!-- -->
+<br>
+  <table>
+        <tr>
+            <th>Tag</th>
+            <th>Title</th>
+            <th>Details</th>
+        </tr>
+<tr>
+            <td rowspan="1">CDS_BDL</td>
+            <td>RAP Global Side Effects</td>
+            <td>RAP side effects are an optional part of a RAP behavior definition that define interdependencies among BO properties that trigger a reload of the affected properties on the user interface. Global side effects are invoked by an end user with a dedicated key stroke. It is defined using the following syntax: side effects { determine action MyDetermineAction executed on global affects field MyField; } </td>
+        </tr>
+<tr>
+            <td rowspan="1">EML</td>
+            <td>WITH CHANGES Addition to ABAP EML READ Statements</td>
+            <td>The WITH CHANGES addition to ABAP EML READ statements enables access to accumulated change operation information for RAP BO instances within a RAP transaction. </td>
+        </tr>
+<tr>
+            <td rowspan="2">SYSTEM_CLASSES</td>
+            <td>System Class for Writing CSV</td>
+            <td>The CL_CSV_FACTORY system class enables the creation of instances for CSV writers. Instance methods of the CSV writer implementing the IF_CSV_WRITER interface allow settings to be applied and internal table content to be converted into CSV format. </td>
+        </tr>
+<tr>
+            <td>System Class for Garbage Collection</td>
+            <td>The CL_ABAP_GARBAGE_COLLECTOR class provides the COLLECT method. Calling this method manually triggers garbage collection, regardless of the current memory consumption or the garbage collector's state. Since the ABAP runtime framework periodically invokes the garbage collector, it is generally unnecessary to trigger clearing explicitly. However, it can be beneficial in exceptional cases, such as when very large, unneeded objects consume a significant amount of memory, or when explicitly releasing memory in resource-constrained environments is required. It can also aid in analyzing memory consumption and ensuring proper memory release, or when large objects are created repeatedly in a short period. </td>
+        </tr>
+  </table>
+</details>  
+<br>
+
+<details>
   <summary>🟢 Release 916 (2508)</summary>
   <!-- -->
 <br>
