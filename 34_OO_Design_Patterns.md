@@ -22,6 +22,7 @@
   - [Fluent Interface](#fluent-interface)
   - [Flyweight](#flyweight)
   - [Iterator](#iterator)
+  - [Mediator](#mediator)
   - [Memento](#memento)
   - [Multiton](#multiton)
   - [Observer](#observer)
@@ -7146,6 +7147,549 @@ CLASS lcl_collection_line2string IMPLEMENTATION.
 
     CREATE DATA it LIKE itab.
     it->* = itab.
+  ENDMETHOD.
+ENDCLASS.
+``` 
+
+ </td>
+</tr>
+
+</table>
+
+</details>  
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+## Mediator
+
+- The mediator design pattern assumes that a group of objects interacts with each other, which can lead to complexity. 
+- Instead of direct interaction among these objects, a mediator serves as a central go to object that orchestrates and manages the interactions. 
+- The individual members of the group of objects only need to know about the mediator, which takes care of the necessary steps without requiring any awareness of other objects' implementations.  
+- This setup can be useful for avoiding tight coupling and dependencies, enabling greater flexibility and improved maintainability by centralizing the operational flow.
+- A potential setup, illustrated in the following example, may look like this:
+  - A mediator interface that defines methods for interactions among members of a group of objects.
+  - A concrete mediator that implements the mediator interface and is responsible for orchestrating interactions between members. This can be achieved by storing references to the member objects in instance attributes.
+  - Members of a group of objects: These members need to interact with one another. They can do so by storing a reference to the mediator in all member objects, allowing interactions to occur through this mediator reference.
+
+
+<br>
+
+<details>
+  <summary>🟢 Click to expand for more information and example code</summary>
+  <!-- -->
+
+<br>
+
+**Example notes:**
+
+- The example uses a shopping scenario as demo context with several members of a group of objects (represented by shopping cart, payment processing, stock management, customer notifications) interacting with one another.
+- The example code demonstrates the mediator design pattern by including the following declarations and implementations:
+  - CCIMP include (_Local Types_ tab in ADT):
+    - `lif_mediator`
+       - Represents the mediator interface that declares methods for interaction among members of a group of objects.
+       - An enumerated type defines the kinds of events (`item_added`, `item_reserved`, `item_removed`, etc.)
+       - The `notify` method is used to handle the communication between the members. It is called by member classes to inform the mediator. For this purpose, the method includes various importing parameters. The `log` method handles logging for display purposes.
+    - `lif_member`: 
+      - Represents the interface for the member classes. It defines the `set_mediator` method to link members and mediator. In the example setup, this method is called in the instance constructor of the concrete mediator to establish the linking.
+    - Member classes (Note: For simplicity, implementations in these classes are simulations.)
+      - `lcl_shopping_cart`: Manages products in the shopping cart with methods for adding and removing products. The `get_cart` method returns the current contents of the cart. The shopping cart itself is represented by a string table that holds the added products.
+      - `lcl_payment`: Processes payments for ordered products via the `process_payment` method.
+      - `lcl_stock`: Manages the stock with methods for reserving and releasing products.
+      - `lcl_notification`: Sends notifications to customers.
+    - `lcl_mediator`:
+      - Represents the concrete mediator by implementing the mediator interface.
+      - Contains references to objects of all members of the group. In the example, these references are bound by calling the `set_mediator` method in the instance constructor implementation.
+      - Implements the `notify` method for orchestrating the member interactions based on the provided enumerated type. It also logs activity records via the `log` method.
+      - Generally, the class manages the flow of the business logic by coordinating the operations and also their sequence. In the simplified example, the flow is as follows: When a product is added to the cart, the cart (that is, the member object of class `lcl_shopping_cart`) notifies the mediator. Then, the mediator instructs the stock manager to reserve the product. Once reserved, the mediator notes this confirmation. If a product is removed, the mediator instructs the stock object to release the it. When the checkout is initiated, the mediator processes the payment. After the payment, the mediator instructs the notification objet to send a confirmation.
+  - Global class:
+    - Implements the `if_oo_adt_classrun` interface and calls methods from local classes.
+    - Serves as the client in the example. Here, the client creates the set of members of a group of objects and links them through a mediator object. The example implementation includes for the client to add or remove products to a shopping cart, and trigger the checkout process.
+
+
+<table>
+
+<tr>
+<td> Class include </td> <td> Code </td>
+</tr>
+
+<tr>
+<td> 
+
+Global class
+
+ </td>
+
+ <td> 
+
+``` abap
+CLASS zcl_demo_abap DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
+
+  PUBLIC SECTION.
+    INTERFACES if_oo_adt_classrun.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+    DATA example_number TYPE i.
+    METHODS set_example_divider IMPORTING out  TYPE REF TO if_oo_adt_classrun_out
+                                          text TYPE string.
+ENDCLASS.
+
+
+CLASS zcl_demo_abap IMPLEMENTATION.
+  METHOD if_oo_adt_classrun~main.
+
+*&---------------------------------------------------------------------*
+*& Example 1
+*&---------------------------------------------------------------------*
+
+    example_number += 1.
+    set_example_divider( out  = out
+                         text = |{ example_number }: Purchasing products| ).
+    out->write( |\n| ).
+
+    "Creating instances of concrete component classes
+    DATA(product_manager) = NEW lcl_shopping_cart( ).
+    DATA(payment_processor) = NEW lcl_payment( ).
+    DATA(stock_manager) = NEW lcl_stock( ).
+    DATA(notification_service) = NEW lcl_notification( ).
+
+    "Creating mediator instance and link component classes
+    DATA(shopping_mediator) = NEW lcl_mediator( prod_m   = product_manager
+                                                pay_proc = payment_processor
+                                                inv_m    = stock_manager
+                                                notif    = notification_service ).
+
+    "Adding products to the shopping cart
+    product_manager->add_product( `Laptop` ).
+    product_manager->add_product( `Mouse` ).
+    product_manager->add_product( `Keyboard` ).
+
+    "Displaying the contents of the current shopping cart
+    out->write( |Contents of shopping cart { example_number }:| ).
+    DATA(cart_items) = product_manager->get_cart( ).
+    LOOP AT cart_items INTO DATA(item).
+      out->write( |  - { item }| ).
+    ENDLOOP.
+    out->write( |\n| ).
+
+    "Triggering the checkout for processing the payment and
+    "sending confirmation
+    shopping_mediator->checkout( ).
+
+    "Displaying the log
+    out->write( `Log:` ).
+    DATA(log) = shopping_mediator->get_log( ).
+    out->write( log ).
+    out->write( |\n| ).
+
+*&---------------------------------------------------------------------*
+*& Example 2
+*&---------------------------------------------------------------------*
+
+    example_number += 1.
+    set_example_divider( out  = out
+                         text = |{ example_number }: Adding and removing products| ).
+    out->write( |\n| ).
+
+    product_manager = NEW lcl_shopping_cart( ).
+    payment_processor = NEW lcl_payment( ).
+    stock_manager = NEW lcl_stock( ).
+    notification_service = NEW lcl_notification( ).
+
+    "Creating mediator instance and link component classes
+    shopping_mediator = NEW lcl_mediator( prod_m   = product_manager
+                                          pay_proc = payment_processor
+                                          inv_m    = stock_manager
+                                          notif    = notification_service ).
+
+    product_manager->add_product( `Smartphone` ).
+    product_manager->add_product( `Headphones` ).
+    product_manager->add_product( `Phone Case` ).
+
+    "Removing an item from the shopping cart
+    product_manager->remove_product( `Headphones` ).
+
+    out->write( |Contents of shopping cart { example_number }:| ).
+    cart_items = product_manager->get_cart( ).
+    LOOP AT cart_items INTO item.
+      out->write( |  - { item }| ).
+    ENDLOOP.
+    out->write( |\n| ).
+
+    shopping_mediator->checkout( ).
+
+    out->write( `Log:` ).
+    log = shopping_mediator->get_log( ).
+    out->write( log ).
+    out->write( |\n| ).
+
+*&---------------------------------------------------------------------*
+*& Example 3
+*&---------------------------------------------------------------------*
+
+    example_number += 1.
+    set_example_divider( out  = out
+                         text = |{ example_number }: Empty shopping cart| ).
+    out->write( |\n| ).
+
+    product_manager = NEW lcl_shopping_cart( ).
+    payment_processor = NEW lcl_payment( ).
+    stock_manager = NEW lcl_stock( ).
+    notification_service = NEW lcl_notification( ).
+
+    "Creating mediator instance and link component classes
+    shopping_mediator = NEW lcl_mediator( prod_m   = product_manager
+                                          pay_proc = payment_processor
+                                          inv_m    = stock_manager
+                                          notif    = notification_service ).
+
+    out->write( |Contents of shopping cart { example_number }:| ).
+    cart_items = product_manager->get_cart( ).
+    LOOP AT cart_items INTO item.
+      out->write( |  - { item }| ).
+    ENDLOOP.
+    out->write( |\n\n| ).
+
+    shopping_mediator->checkout( ).
+
+    out->write( `Log:` ).
+    log = shopping_mediator->get_log( ).
+    out->write( log ).
+    out->write( |\n| ).
+
+*&---------------------------------------------------------------------*
+*& Example 4
+*&---------------------------------------------------------------------*
+
+    example_number += 1.
+    set_example_divider( out  = out
+                         text = |{ example_number }: Adding and removing multiple products| ).
+    out->write( |\n| ).
+
+    product_manager = NEW lcl_shopping_cart( ).
+    payment_processor = NEW lcl_payment( ).
+    stock_manager = NEW lcl_stock( ).
+    notification_service = NEW lcl_notification( ).
+
+    "Creating mediator instance and link component classes
+    shopping_mediator = NEW lcl_mediator( prod_m   = product_manager
+                                          pay_proc = payment_processor
+                                          inv_m    = stock_manager
+                                          notif    = notification_service ).
+
+    "Adding and removing multiple products
+    product_manager->add_product( `Monitor` ).
+    product_manager->add_product( `USB Drive` ).
+    product_manager->remove_product( `USB Drive` ).
+    product_manager->add_product( `Smartphone` ).
+    product_manager->add_product( `Headphones` ).
+    product_manager->add_product( `Phone Case` ).
+    product_manager->add_product( `Printer` ).
+    product_manager->add_product( `Scanner` ).
+    product_manager->remove_product( `Printer` ).
+    product_manager->add_product( `Mouse` ).
+    product_manager->remove_product( `Phone Case` ).
+
+    out->write( |Contents of shopping cart { example_number }:| ).
+    cart_items = product_manager->get_cart( ).
+    LOOP AT cart_items INTO item.
+      out->write( |  - { item }| ).
+    ENDLOOP.
+    out->write( |\n\n| ).
+
+    shopping_mediator->checkout( ).
+
+    out->write( `Log:` ).
+    log = shopping_mediator->get_log( ).
+    out->write( log ).
+  ENDMETHOD.
+
+  METHOD set_example_divider.
+    out->write( |*&{ repeat( val = `-` occ = 70 ) }*| ).
+    out->write( |*& Example { text }| ).
+    out->write( |*&{ repeat( val = `-` occ = 70 ) }*| ).
+  ENDMETHOD.
+ENDCLASS.
+``` 
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+CCIMP include (Local Types tab in ADT)
+
+ </td>
+
+ <td> 
+
+``` abap
+*&---------------------------------------------------------------------*
+*& Mediator interface
+*&---------------------------------------------------------------------*
+
+INTERFACE lif_mediator.
+  TYPES: BEGIN OF ENUM ty_enum,
+           item_added,
+           item_reserved,
+           item_removed,
+           payment_done,
+           notification,
+         END OF ENUM ty_enum.
+
+  METHODS: notify IMPORTING oref  TYPE REF TO object
+                            event TYPE ty_enum
+                            text  TYPE string OPTIONAL,
+           log IMPORTING text TYPE string.
+ENDINTERFACE.
+
+*&---------------------------------------------------------------------*
+*& Interface for object group members
+*&---------------------------------------------------------------------*
+
+INTERFACE lif_member.
+  METHODS set_mediator IMPORTING mediator_oref TYPE REF TO lif_mediator.
+ENDINTERFACE.
+
+*&---------------------------------------------------------------------*
+*& Member class 1 (Shopping cart)
+*&---------------------------------------------------------------------*
+
+CLASS lcl_shopping_cart DEFINITION.
+  PUBLIC SECTION.
+    INTERFACES lif_member.
+    METHODS: add_product    IMPORTING product TYPE string,
+      remove_product IMPORTING product TYPE string,
+      get_cart       RETURNING VALUE(shopping_cart) TYPE string_table.
+  PRIVATE SECTION.
+    DATA: mediator  TYPE REF TO lif_mediator,
+          shop_cart TYPE string_table,
+          cl        TYPE string.
+ENDCLASS.
+
+CLASS lcl_shopping_cart IMPLEMENTATION.
+  METHOD lif_member~set_mediator.
+    mediator = mediator_oref.
+    cl = cl_abap_typedescr=>describe_by_object_ref( me )->get_relative_name( ).
+  ENDMETHOD.
+
+  METHOD add_product.
+    APPEND product TO shop_cart.
+
+    IF mediator IS BOUND.
+      mediator->log( |{ cl }: Product "{ product }" added to cart.| ).
+      mediator->notify( oref  = me
+                        event = lif_mediator=>item_added
+                        text  = product ).
+    ENDIF.
+  ENDMETHOD.
+
+  METHOD remove_product.
+    DELETE shop_cart WHERE table_line = product.
+
+    IF mediator IS BOUND.
+      mediator->log( |{ cl }: Product "{ product }" removed from cart.|  ).
+      mediator->notify( oref  = me
+                        event = lif_mediator=>item_removed
+                        text  = product ).
+    ENDIF.
+  ENDMETHOD.
+
+  METHOD get_cart.
+    shopping_cart = shop_cart.
+  ENDMETHOD.
+ENDCLASS.
+
+*&---------------------------------------------------------------------*
+*& Member class 2 (Payment Processor)
+*&---------------------------------------------------------------------*
+
+CLASS lcl_payment DEFINITION.
+  PUBLIC SECTION.
+    INTERFACES lif_member.
+    METHODS process_payment IMPORTING products TYPE string_table.
+  PRIVATE SECTION.
+    DATA: mediator TYPE REF TO lif_mediator,
+          cl       TYPE string.
+ENDCLASS.
+
+CLASS lcl_payment IMPLEMENTATION.
+  METHOD lif_member~set_mediator.
+    mediator = mediator_oref.
+    cl = cl_abap_typedescr=>describe_by_object_ref( me )->get_relative_name( ).
+  ENDMETHOD.
+
+  METHOD process_payment.
+    IF products IS INITIAL.
+      IF mediator IS BOUND.
+        mediator->log( |{ cl }: No items to process payment for.|  ).
+        RETURN.
+      ENDIF.
+    ENDIF.
+
+    DATA(prod) = concat_lines_of( table = products sep = `, ` ).
+
+    IF mediator IS BOUND.
+      mediator->log( |{ cl }: Processing payment for { lines( products ) } products ({ prod }) ...|  ).
+      mediator->log( |{ cl }: Payment processed successfully.|  ).
+      mediator->notify( oref  = me
+                        event = lif_mediator=>payment_done
+                        text  = prod ).
+    ENDIF.
+  ENDMETHOD.
+ENDCLASS.
+
+*&---------------------------------------------------------------------*
+*& Member class 3 (Stock Manager)
+*&---------------------------------------------------------------------*
+
+CLASS lcl_stock DEFINITION.
+  PUBLIC SECTION.
+    INTERFACES lif_member.
+    METHODS: reserve_stock IMPORTING product TYPE string,
+      release_stock IMPORTING product TYPE string.
+  PRIVATE SECTION.
+    DATA: mediator TYPE REF TO lif_mediator,
+          cl       TYPE string.
+ENDCLASS.
+
+CLASS lcl_stock IMPLEMENTATION.
+  METHOD lif_member~set_mediator.
+    mediator = mediator_oref.
+    cl = cl_abap_typedescr=>describe_by_object_ref( me )->get_relative_name( ).
+  ENDMETHOD.
+
+  METHOD reserve_stock.
+    IF mediator IS BOUND.
+      mediator->log( |{ cl }: Inventory reserved for "{ product }".|  ).
+      mediator->notify( oref  = me
+                        event = lif_mediator=>item_reserved
+                        text  = product ).
+    ENDIF.
+  ENDMETHOD.
+
+  METHOD release_stock.
+    IF mediator IS BOUND.
+      mediator->log( |{ cl }: Inventory released for "{ product }".|  ).
+    ENDIF.
+  ENDMETHOD.
+ENDCLASS.
+
+*&---------------------------------------------------------------------*
+*& Member class 4 (Notification Service)
+*&---------------------------------------------------------------------*
+
+CLASS lcl_notification DEFINITION.
+  PUBLIC SECTION.
+    INTERFACES lif_member.
+    METHODS send_confirmation.
+  PRIVATE SECTION.
+    DATA: mediator TYPE REF TO lif_mediator,
+          cl       TYPE string.
+ENDCLASS.
+
+CLASS lcl_notification IMPLEMENTATION.
+  METHOD lif_member~set_mediator.
+    mediator = mediator_oref.
+    cl = cl_abap_typedescr=>describe_by_object_ref( me )->get_relative_name( ).
+  ENDMETHOD.
+
+  METHOD send_confirmation.
+    IF mediator IS BOUND.
+      mediator->log( |{ cl }: Order confirmation sent to customer.|  ).
+    ENDIF.
+  ENDMETHOD.
+ENDCLASS.
+
+*&---------------------------------------------------------------------*
+*& Concrete Mediator
+*&---------------------------------------------------------------------*
+
+CLASS lcl_mediator DEFINITION.
+  PUBLIC SECTION.
+    INTERFACES lif_mediator.
+    METHODS: constructor IMPORTING prod_m   TYPE REF TO lcl_shopping_cart
+                                   pay_proc TYPE REF TO lcl_payment
+                                   inv_m    TYPE REF TO lcl_stock
+                                   notif    TYPE REF TO lcl_notification,
+      checkout,
+      get_log RETURNING VALUE(log) TYPE string_table.
+  PRIVATE SECTION.
+    DATA: product_manager   TYPE REF TO lcl_shopping_cart,
+          payment_processor TYPE REF TO lcl_payment,
+          inventory_manager TYPE REF TO lcl_stock,
+          notification      TYPE REF TO lcl_notification,
+          cl                TYPE string,
+          prod              TYPE string_table,
+          log_tab           TYPE string_table.
+ENDCLASS.
+
+CLASS lcl_mediator IMPLEMENTATION.
+  METHOD constructor.
+    product_manager   = prod_m.
+    payment_processor = pay_proc.
+    inventory_manager = inv_m.
+    notification  = notif.
+
+    product_manager->lif_member~set_mediator( me ).
+    payment_processor->lif_member~set_mediator( me ).
+    inventory_manager->lif_member~set_mediator( me ).
+    notification->lif_member~set_mediator( me ).
+
+    cl = cl_abap_typedescr=>describe_by_object_ref( me )->get_relative_name( ).
+  ENDMETHOD.
+
+  METHOD lif_mediator~notify.
+    CASE event.
+      WHEN lif_mediator=>item_added.
+        lif_mediator~log( |{ cl }: Reserving stock ...|  ).
+
+        IF inventory_manager IS BOUND.
+          inventory_manager->reserve_stock( text ).
+        ENDIF.
+      WHEN lif_mediator=>item_reserved.
+        lif_mediator~log( |{ cl }: Stock confirmed for "{ text }".| ).
+
+        APPEND text TO prod.
+      WHEN lif_mediator=>item_removed.
+        lif_mediator~log( |{ cl }: Releasing inventory...| ).
+
+        IF inventory_manager IS BOUND.
+          inventory_manager->release_stock( text ).
+        ENDIF.
+
+        DELETE prod WHERE table_line = text.
+      WHEN lif_mediator=>payment_done.
+        lif_mediator~log( |{ cl }: Payment completed, sending confirmation.| ).
+
+        IF notification IS BOUND.
+          notification->send_confirmation( ).
+        ENDIF.
+    ENDCASE.
+  ENDMETHOD.
+
+  METHOD checkout.
+    IF prod IS INITIAL.
+      lif_mediator~log( |{ cl }: No items to checkout. Exiting.| ).
+      RETURN.
+    ENDIF.
+
+    lif_mediator~log( |{ cl }: Initiating checkout ...| ).
+
+    IF payment_processor IS BOUND.
+      payment_processor->process_payment( prod ).
+    ENDIF.
+  ENDMETHOD.
+
+  METHOD get_log.
+    log = log_tab.
+  ENDMETHOD.
+
+  METHOD lif_mediator~log.
+    APPEND text TO log_tab.
   ENDMETHOD.
 ENDCLASS.
 ``` 

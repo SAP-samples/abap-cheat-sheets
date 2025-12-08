@@ -2055,7 +2055,7 @@ When implementing instance methods, you can optionally make use of the implicitl
 ```
 
 You can also address the entire object, which is illustrated in the example of section [Method Chaining and Chained Attribute Access](#method-chaining-and-chained-attribute-access).
-The following code snippet declares a local data object in a method. It has the same name as a data object declared in the private visibility section. shows a method implementation. `me` is used to access the non-local data object.
+The following code snippet declares a local data object in a method. It has the same name as a data object declared in the private visibility section. `me` is used to access the non-local data object.
 
 ``` abap
 CLASS zcl_demo_abap DEFINITION
@@ -5372,8 +5372,8 @@ does not work. A syntax error occurs saying the right-hand variable's type canno
 - If you indeed want to carry out this casting, you must use
 `CAST` (or you might see code using the older operator `?=`) to overcome this syntax error (but just the syntax error!). Note: You might also use these casting operators for the upcasts. That means `oref_super = oref_sub.` has the same effect as `oref_super = CAST #( oref_sub ).`. Using the casting operator for upcasts is usually not necessary.
 - At runtime, the assignment is checked and if the conversion does not work, you face a (catchable) exception. Even more so, the assignment `oref_sub = CAST #( oref_super ).` does not throw a syntax error but it does not work in this example either because it violates the rule mentioned above (`oref_sub` is more specific than `oref_super`).
-- To check whether such an assignment is possible
-on specific classes, you can use the predicate expression [`IS INSTANCE OF`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenlogexp_instance_of.htm)
+- To check whether such an assignment is (not) possible
+on specific classes, you can use the predicate expression [`IS [NOT] INSTANCE OF`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenlogexp_instance_of.htm)
 or the case distinction [`CASE TYPE OF`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapcase_type.htm). Carrying out an upcast before the downcast ensures that the left-hand variable's type is compatible to the right-hand variable's type.
 
 ``` abap

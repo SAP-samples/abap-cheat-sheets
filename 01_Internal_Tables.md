@@ -1954,33 +1954,65 @@ DATA(comp5) = dref->*-c.
 ### Excursions with READ TABLE Statements
 
 #### System Field Setting in READ TABLE Statements
+
 - For example, for checking if a line is found (`sy-subrc`) and stored in the target area, and what the index of the line is (`sy-tabix`). 
 - Find more information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapread_table.htm)
 
 ```abap
-TYPES: BEGIN OF demo_struc,
-          comp1 TYPE i,
-          comp2 TYPE c LENGTH 3,
-        END OF demo_struc,
-        ty_tab_demo TYPE TABLE OF demo_struc WITH EMPTY KEY.
+TYPES: BEGIN OF s_demo,
+         comp1 TYPE i,
+         comp2 TYPE i,
+       END OF s_demo,
+       tab_type_sorted TYPE SORTED TABLE OF s_demo WITH UNIQUE KEY comp1,
+       tab_type_std    TYPE STANDARD TABLE OF s_demo WITH NON-UNIQUE KEY comp1,
+       tab_type_hashed TYPE HASHED TABLE OF s_demo WITH UNIQUE KEY comp1.
 
-DATA(it) = VALUE ty_tab_demo( ( comp1 = 1 comp2 = `abc` )
-                              ( comp1 = 2 comp2 = `def` )
-                              ( comp1 = 1 comp2 = `ghi` ) ).
+DATA(itab_sorted) = VALUE tab_type_sorted( ( comp1 = 1 comp2 = 11 )
+                                           ( comp1 = 2 comp2 = 22 )
+                                           ( comp1 = 3 comp2 = 33 ) ).
 
-READ TABLE it INTO DATA(wa) WITH KEY comp2 = `def`.
+DATA itab_std TYPE tab_type_std.
+itab_std = itab_sorted.
+DATA itab_hashed TYPE tab_type_hashed.
+itab_hashed = itab_sorted.
 
-IF sy-subrc = 0.
-  ... "line found (which is the case in the example)
-ELSE.
-  ... "line not found
-ENDIF.
+"--------------- Line found ---------------
 
-ASSERT sy-tabix = 2.
+READ TABLE itab_std ASSIGNING FIELD-SYMBOL(<fs1>) WITH KEY primary_key COMPONENTS comp1 = 1.
+ASSERT sy-subrc = 0.
+ASSERT sy-tabix = 1.
+ASSERT <fs1> IS ASSIGNED.
 
-READ TABLE it INTO wa WITH KEY comp2 = `xyz`.
+READ TABLE itab_sorted ASSIGNING FIELD-SYMBOL(<fs2>) WITH KEY primary_key COMPONENTS comp1 = 1.
+ASSERT sy-subrc = 0.
+ASSERT sy-tabix = 1.
+ASSERT <fs2> IS ASSIGNED.
+
+"Note: sy-tabix is not set here as a hash key is used.  
+READ TABLE itab_hashed ASSIGNING FIELD-SYMBOL(<fs3>) WITH KEY primary_key COMPONENTS comp1 = 1.
+ASSERT sy-subrc = 0.
+ASSERT sy-tabix = 0.
+ASSERT <fs3> IS ASSIGNED.
+
+"--------------- Line not found ---------------
+
+READ TABLE itab_std ASSIGNING FIELD-SYMBOL(<fs4>) WITH KEY primary_key COMPONENTS comp1 = 10.
 ASSERT sy-subrc = 4.
 ASSERT sy-tabix = 0.
+ASSERT <fs4> IS NOT ASSIGNED.
+
+"Note: A binary search is performed in this case and a line was not found (sy-subrc = 8). 
+"      The sy-tabix value is set to the number of table lines plus 1. The value 8 for sy-subrc
+"      also means not found, but indicates that sy-tabix is set in a different way.
+READ TABLE itab_sorted ASSIGNING FIELD-SYMBOL(<fs5>) WITH KEY primary_key COMPONENTS comp1 = 10.
+ASSERT sy-subrc = 8.
+ASSERT sy-tabix = 4.
+ASSERT <fs5> IS NOT ASSIGNED.
+
+READ TABLE itab_hashed ASSIGNING FIELD-SYMBOL(<fs6>) WITH KEY primary_key COMPONENTS comp1 = 10.
+ASSERT sy-subrc = 4.
+ASSERT sy-tabix = 0.
+ASSERT <fs6> IS NOT ASSIGNED.
 ```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
