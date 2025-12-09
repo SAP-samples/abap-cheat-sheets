@@ -2019,7 +2019,7 @@ MODIFY ENTITIES OPERATIONS op_tab
 ``` abap
 "Example snippet taken from the executable example
 "The long form of the MODIFY statement is used. It includes
-"a create operation and executes an action 
+"a create operation and executes an action. 
 MODIFY ENTITIES OF zdemo_abap_rap_ro_m
     ENTITY root
     CREATE FIELDS ( key_field field1 field2 field3 field4 )

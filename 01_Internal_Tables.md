@@ -1963,9 +1963,13 @@ TYPES: BEGIN OF s_demo,
          comp1 TYPE i,
          comp2 TYPE i,
        END OF s_demo,
-       tab_type_sorted TYPE SORTED TABLE OF s_demo WITH UNIQUE KEY comp1,
-       tab_type_std    TYPE STANDARD TABLE OF s_demo WITH NON-UNIQUE KEY comp1,
-       tab_type_hashed TYPE HASHED TABLE OF s_demo WITH UNIQUE KEY comp1.
+       tab_type_sorted             TYPE SORTED TABLE OF s_demo WITH UNIQUE KEY comp1,
+       tab_type_std                TYPE STANDARD TABLE OF s_demo WITH NON-UNIQUE KEY comp1,
+       tab_type_hashed             TYPE HASHED TABLE OF s_demo WITH UNIQUE KEY comp1,
+       tab_type_std_sorted_sec_key TYPE STANDARD TABLE OF s_demo WITH EMPTY KEY
+                                                       WITH NON-UNIQUE SORTED KEY sec_so COMPONENTS comp1,
+       tab_type_std_hash_sec_key   TYPE STANDARD TABLE OF s_demo WITH EMPTY KEY
+                                                       WITH UNIQUE HASHED KEY sec_ha COMPONENTS comp1.                                                                 .
 
 DATA(itab_sorted) = VALUE tab_type_sorted( ( comp1 = 1 comp2 = 11 )
                                            ( comp1 = 2 comp2 = 22 )
@@ -1975,44 +1979,77 @@ DATA itab_std TYPE tab_type_std.
 itab_std = itab_sorted.
 DATA itab_hashed TYPE tab_type_hashed.
 itab_hashed = itab_sorted.
+DATA itab_std_so_sec TYPE tab_type_std_sorted_sec_key.
+itab_std_so_sec = itab_sorted.
+DATA itab_std_ha_sec TYPE tab_type_std_hash_sec_key.
+itab_std_ha_sec = itab_sorted.
 
 "--------------- Line found ---------------
 
-READ TABLE itab_std ASSIGNING FIELD-SYMBOL(<fs1>) WITH KEY primary_key COMPONENTS comp1 = 1.
+"Standard table
+READ TABLE itab_std ASSIGNING FIELD-SYMBOL(<fs1>) WITH TABLE KEY primary_key COMPONENTS comp1 = 1.
 ASSERT sy-subrc = 0.
 ASSERT sy-tabix = 1.
 ASSERT <fs1> IS ASSIGNED.
 
-READ TABLE itab_sorted ASSIGNING FIELD-SYMBOL(<fs2>) WITH KEY primary_key COMPONENTS comp1 = 1.
+"Sorted table
+READ TABLE itab_sorted ASSIGNING FIELD-SYMBOL(<fs2>) WITH TABLE KEY primary_key COMPONENTS comp1 = 1.
 ASSERT sy-subrc = 0.
 ASSERT sy-tabix = 1.
 ASSERT <fs2> IS ASSIGNED.
 
-"Note: sy-tabix is not set here as a hash key is used.  
-READ TABLE itab_hashed ASSIGNING FIELD-SYMBOL(<fs3>) WITH KEY primary_key COMPONENTS comp1 = 1.
+"Note: sy-tabix is not set here as a hash key is used.
+READ TABLE itab_hashed ASSIGNING FIELD-SYMBOL(<fs3>) WITH TABLE KEY primary_key COMPONENTS comp1 = 1.
 ASSERT sy-subrc = 0.
 ASSERT sy-tabix = 0.
 ASSERT <fs3> IS ASSIGNED.
 
+"Standard table, sorted secondary table key
+READ TABLE itab_std_so_sec ASSIGNING FIELD-SYMBOL(<fs4>) WITH TABLE KEY sec_so COMPONENTS comp1 = 1.
+ASSERT sy-subrc = 0.
+ASSERT sy-tabix = 1.
+ASSERT <fs4> IS ASSIGNED.
+
+"Standard table, hashed secondary table key
+READ TABLE itab_std_ha_sec ASSIGNING FIELD-SYMBOL(<fs5>) WITH TABLE KEY sec_ha COMPONENTS comp1 = 1.
+ASSERT sy-subrc = 0.
+ASSERT sy-tabix = 0.
+ASSERT <fs5> IS ASSIGNED.
+
 "--------------- Line not found ---------------
 
-READ TABLE itab_std ASSIGNING FIELD-SYMBOL(<fs4>) WITH KEY primary_key COMPONENTS comp1 = 10.
-ASSERT sy-subrc = 4.
-ASSERT sy-tabix = 0.
-ASSERT <fs4> IS NOT ASSIGNED.
-
-"Note: A binary search is performed in this case and a line was not found (sy-subrc = 8). 
-"      The sy-tabix value is set to the number of table lines plus 1. The value 8 for sy-subrc
-"      also means not found, but indicates that sy-tabix is set in a different way.
-READ TABLE itab_sorted ASSIGNING FIELD-SYMBOL(<fs5>) WITH KEY primary_key COMPONENTS comp1 = 10.
-ASSERT sy-subrc = 8.
-ASSERT sy-tabix = 4.
-ASSERT <fs5> IS NOT ASSIGNED.
-
-READ TABLE itab_hashed ASSIGNING FIELD-SYMBOL(<fs6>) WITH KEY primary_key COMPONENTS comp1 = 10.
+"Standard table, primary table key
+READ TABLE itab_std ASSIGNING FIELD-SYMBOL(<fs6>) WITH TABLE KEY primary_key COMPONENTS comp1 = 10.
 ASSERT sy-subrc = 4.
 ASSERT sy-tabix = 0.
 ASSERT <fs6> IS NOT ASSIGNED.
+
+"Sorted table, primary table key
+"Note: A binary search is performed in this case and a line was not found (sy-subrc = 8).
+"      The sy-tabix value is set to the number of table lines plus 1. The value 8 for sy-subrc
+"      also means not found, but indicates that sy-tabix is set in a different way.
+READ TABLE itab_sorted ASSIGNING FIELD-SYMBOL(<fs7>) WITH TABLE KEY primary_key COMPONENTS comp1 = 10.
+ASSERT sy-subrc = 8.
+ASSERT sy-tabix = 4.
+ASSERT <fs7> IS NOT ASSIGNED.
+
+"Hashed table, primary table key
+READ TABLE itab_hashed ASSIGNING FIELD-SYMBOL(<fs8>) WITH TABLE KEY primary_key COMPONENTS comp1 = 10.
+ASSERT sy-subrc = 4.
+ASSERT sy-tabix = 0.
+ASSERT <fs8> IS NOT ASSIGNED.
+
+"Standard table, sorted secondary table key
+READ TABLE itab_std_so_sec ASSIGNING FIELD-SYMBOL(<fs9>) WITH TABLE KEY sec_so COMPONENTS comp1 = 10.
+ASSERT sy-subrc = 8.
+ASSERT sy-tabix = 4.
+ASSERT <fs9> IS NOT ASSIGNED.
+
+"Standard table, hashed secondary table key
+READ TABLE itab_std_ha_sec ASSIGNING FIELD-SYMBOL(<fs10>) WITH TABLE KEY sec_ha COMPONENTS comp1 = 10.
+ASSERT sy-subrc = 4.
+ASSERT sy-tabix = 0.
+ASSERT <fs10> IS NOT ASSIGNED.
 ```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>

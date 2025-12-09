@@ -260,7 +260,7 @@ CCAU include (Test Classes tab in ADT)
 
 CLASS ltd_test_data DEFINITION FOR TESTING.
   PUBLIC SECTION.
-    INTERFACES lif_get_data PARTIALLY IMPLEMENTED.
+    INTERFACES lif_get_data.
 ENDCLASS.
 
 CLASS ltd_test_data IMPLEMENTATION.
@@ -7655,7 +7655,7 @@ CLASS lcl_mediator IMPLEMENTATION.
 
         APPEND text TO prod.
       WHEN lif_mediator=>item_removed.
-        lif_mediator~log( |{ cl }: Releasing inventory...| ).
+        lif_mediator~log( |{ cl }: Releasing inventory ...| ).
 
         IF inventory_manager IS BOUND.
           inventory_manager->release_stock( text ).
