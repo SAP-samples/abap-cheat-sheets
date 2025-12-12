@@ -16,6 +16,7 @@
   - [Builder](#builder)
   - [Chain of Responsibility](#chain-of-responsibility)
   - [Command](#command)
+  - [Composite](#composite)
   - [Decorator](#decorator)
   - [Facade](#facade)
   - [Factory Method](#factory-method)
@@ -4708,8 +4709,880 @@ ENDCLASS.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-## Decorator
 
+## Composite
+
+- The composite design pattern may be useful when you need to work with objects that form hierarchical, tree-like structures.
+- The composite refers to a component that can contain subordinate components in the tree-like structure. Subordinate components can be _leaves_ (individual components without subordinate components) or other composites (that can have further subordinates).
+- Addressing a composite typically means addressing its subordinate objects as well. In terms of coding, when a method is called on a composite object, it delegates processing to its subordinate objects. If a subordinate object has its own subordinates, the operation is further delegated. This approach allows operations to be performed across the entire object hierarchy, on individual composites (including their subordinates), or on single leaf objects.
+- This setup enables clients to uniformly address objects within the hierarchy, typically through a common interface implemented by all components. It also allows for flexible extension by adding composites and leaves without affecting existing code.
+- A potential setup, illustrated in the following example, may look like this:
+  - A component interface that defines common operations shared by all implementing classes.
+  - A leaf class that implements the component interface and whose objects represent individual objects without subordinates.
+  - A composite class whose objects represent more complex objects, consisting of subordinate objects, which may be leaves or other composites, forming the tree-like structure. Like leaf classes, composite classes implement the component interface, typically delegating processing to subordinate objects to, for example, combine results.
+  - With the common interface, clients can uniformly address the objects, no matter if interacting with the entire hierarchy, composites, or individual leaf objects. Clients need not be aware of dealing with a composite or leaf object.
+
+<br>
+
+<details>
+  <summary>🟢 Click to expand for more information and example code</summary>
+  <!-- -->
+
+<br>
+
+**Example notes:**
+
+- This example tries to illustrate the composite design pattern using an organizational hierarchy with managers and employees as demo context.
+- The example code demonstrates the composite design pattern by including the following declarations and implementations:
+  - CCIMP include (_Local Types_ tab in ADT):
+    - `lif_org`
+      - Represents the component interface that defines operations for both leaf nodes (individual employees) and composite nodes (managers with subordinates).
+      - Among the operations are:
+        - `get_salary`: Returns the individual or total salary (for leaf nodes, the value is the same; for composite nodes, it adds the manager's salary to the salaries of subordinates).
+        - `get_headcount`: Returns the count of individual members (for leaf nodes, the count is 1; for composite nodes, it is 1 plus the count of all subordinates).
+        - `get_employee_hierarchy`: Returns the organizational structure as a string table with proper indentation.
+        - `get_data`: Returns employee data.
+        - `set_manager`/`get_manager`: Sets or gets the reference to the manager node.
+        - `get_employees_by_role`: Returns employees filtered by job role.
+        - `get_employees_by_office`: Returns employees filtered by office location.
+        - `get_employee_info`: Returns JSON with employee information and reporting line.
+        - `assign_training`: Assigns training.
+      - The type `ty_employee_data` defines the structure for employee information. The `tt_org` table type is used to collect organization members.
+    - `lcl_employee`
+      - Represents the leaf class and implements the component interface.
+      - Objects of this class represent individual employees in the organizational hierarchy who have no subordinates.
+      - They store employee information (`employee_data`) and a reference to the manager (`mngr`) as instance attributes.
+    - `lcl_manager`
+      - Represents the composite class for managers who can have subordinates.
+      - Objects of this class represent managers in the organizational hierarchy who can have both kinds of subordinates, employees and other managers.
+      - Like objects of the `lcl_employee` class, objects of `lcl_manager` store employee information (of the manager, who is also an employee) and a reference to their manager (a higher-level manager).
+      - Because composites can have subordinates, the `subordinates_tab` table holds references to those subordinates.
+      - In addition to the shared interface methods, there are composite-specific methods:
+        - `add_subordinate`: Adds an employee or manager as a subordinate and establishes the manager reference.
+        - `remove_subordinate`: Removes a component from the subordinates.
+        - `get_subordinates`: Returns all direct subordinates.
+    - Further notes on the example:
+      - The client can uniformly interact with the entire organization, departments (represented by heads of department managers), sub-managers, or individual employees due to the common interface.
+      - Several methods reflect the composite design pattern by implementing recursive method calls. For example, they accumulate headcount and salary numbers across the hierarchy, build the hierarchy visualization recursively, filter employees recursively, and assign training recursively.
+      - Most example method implementations reflect moving down the hierarchy. Since both leaf and composite objects maintain references to their managers, the example also includes a sample implementation for moving up the hierarchy. The information returned by the `get_employee_info` method, formatted in JSON, includes details about the reporting line.
+      - The `remove_subordinate` method removes a component from the subordinates. The example implementation specifies that if a manager (a composite) is removed, their subordinates are reassigned to the next higher-level manager.
+  - Global class:
+    - Implements the `if_oo_adt_classrun` interface and calls methods from local classes.
+    - Serves as the client in the example. Here, the client creates and manages the hierarchy.
+    - Individual objects are created for both managers as composites and employees as leaf nodes. Each object is instantiated with specific employee data (ID, name, job role, salary, office). The hierarchical structure is established using the `add_subordinate` method to build the organization tree. The CEO represents the root node, with department heads as subordinates, each of whom may have further subordinates.
+    - The example implementation demonstrates the following operations:
+      - Retrieving the employee hierarchy for the entire organization and specific departments.
+      - Retrieving employees by role and office for the entire organization and specific departments.
+      - Assigning trainings to all employees, to all employees of a specific department, or to a single employee.
+      - Retrieving employee information as JSON, including the reporting line.
+      - Retrieving headcount and salary information for the entire organization, specific departments, and a specific employee.
+      - Removing subordinates, which is only possible for managers within their downward reporting line. After removal, the entire organization hierarchy and headcount is retrieved and displayed to demonstrate successful removal and, if a manager (a composite) was removed, the reassignment of subordinates.
+    - Throughout the implementation, the example demonstrates that the client can uniformly interact with the hierarchy by calling the same methods. Depending on the operation, it can be performed on the entire organization (starting with the CEO), the engineering department (starting with the head of engineering), the sales department (starting with the head of sales), and so on.
+
+<table>
+
+<tr>
+<td> Class include </td> <td> Code </td>
+</tr>
+
+<tr>
+<td> 
+
+Global class
+
+ </td>
+
+ <td> 
+
+``` abap
+CLASS zcl_demo_abap DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
+
+  PUBLIC SECTION.
+    INTERFACES if_oo_adt_classrun.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+    DATA example_number TYPE i.
+    METHODS set_example_divider IMPORTING out  TYPE REF TO if_oo_adt_classrun_out
+                                          text TYPE string.
+ENDCLASS.
+
+
+CLASS zcl_demo_abap IMPLEMENTATION.
+  METHOD if_oo_adt_classrun~main.
+
+*&---------------------------------------------------------------------*
+*& Creating members of the organization and setting up the
+*& organizational hierarchy
+*&---------------------------------------------------------------------*
+
+    example_number += 1.
+    set_example_divider( out  = out
+                         text = |{ example_number }: Creating members of the organization and setting up the organizational hierarchy| ).
+
+    "The CEO object represents to the root node of the organizational hierarchy
+    DATA(ceo) = NEW lcl_manager( is_data = VALUE #( id = 1 name = `Jasmin` job_role = `CEO` salary = 350000 office = `New York` ) ).
+    DATA(hr_specialist) = NEW lcl_employee( is_data = VALUE #( id = 2 name = `Grace` job_role = `HR Specialist` salary = 85000 office = `New York` ) ).
+    DATA(admin_assistant1) = NEW lcl_employee( is_data = VALUE #( id = 3 name = `Kim` job_role = `Administrative Assistant` salary = 85000 office = `New York` ) ).
+
+    "Engineering department
+    DATA(head_eng) = NEW lcl_manager( is_data = VALUE #( id = 4 name = `Michael` job_role = `Head of Engineering` salary = 220000 office = `San Francisco` ) ).
+    DATA(admin_assistant2) = NEW lcl_employee( is_data = VALUE #( id = 5 name = `Matthew` job_role = `Administrative Assistant` salary = 85000 office = `New York` ) ).
+    DATA(dev_manager) = NEW lcl_manager( is_data = VALUE #( id = 6 name = `Liam` job_role = `Development Manager` salary = 180000 office = `Berlin` ) ).
+    DATA(dev1) = NEW lcl_employee( is_data = VALUE #( id = 7 name = `Ava` job_role = `Developer` salary = 130000 office = `Shanghai` ) ).
+    DATA(dev2) = NEW lcl_employee( is_data = VALUE #( id = 8 name = `James` job_role = `Developer` salary = 120000 office = `Sydney` ) ).
+    DATA(dev3) = NEW lcl_employee( is_data = VALUE #( id = 9 name = `Charlotte` job_role = `Developer` salary = 115000 office = `Cape Town` ) ).
+    DATA(qa_manager) = NEW lcl_manager( is_data = VALUE #( id = 10 name = `Sophia` job_role = `QA Manager` salary = 170000 office = `Tokyo` ) ).
+    DATA(qa_tester) = NEW lcl_employee( is_data = VALUE #( id = 11 name = `Isabella` job_role = `QA Tester` salary = 95000 office = `Buenos Aires` ) ).
+    DATA(qa_automation) = NEW lcl_employee( is_data = VALUE #( id = 12 name = `William` job_role = `QA Automation Engineer` salary = 110000 office = `Toronto` ) ).
+
+    "Sales department
+    DATA(head_sales) = NEW lcl_manager( is_data = VALUE #( id = 13 name = `Olivia` job_role = `Head of Sales` salary = 210000 office = `London` ) ).
+    DATA(sales_rep1) = NEW lcl_employee( is_data = VALUE #( id = 14 name = `Mia` job_role = `Sales Representative` salary = 90000 office = `Paris` ) ).
+    DATA(sales_rep2) = NEW lcl_employee( is_data = VALUE #( id = 15 name = `Lucas` job_role = `Sales Representative` salary = 88000 office = `Dubai` ) ).
+    DATA(sales_analyst) = NEW lcl_employee( is_data = VALUE #( id = 16 name = `Amelia` job_role = `Sales Analyst` salary = 95000 office = `Mumbai` ) ).
+
+    "Building the hierarchy using the add_subordinate method,
+    "reflecting the various hierarchies and reporting lines.
+    "The add_subordinate method also establishes a reference
+    "to the manager. To display the hierarchy in a meaningful
+    "sequence (since the add_subordinate method just appends
+    "lines to a table with a reference type, without further
+    "sorting or ordering implementation for simplification),
+    "the organization`s members are added in a specific order
+    "for display purposes.
+    ceo->add_subordinate( hr_specialist ).
+    ceo->add_subordinate( admin_assistant1 ).
+
+    ceo->add_subordinate( head_eng ).
+    head_eng->add_subordinate( admin_assistant2 ).
+    head_eng->add_subordinate( dev_manager ).
+
+    dev_manager->add_subordinate( dev1 ).
+    dev_manager->add_subordinate( dev2 ).
+    dev_manager->add_subordinate( dev3 ).
+
+    head_eng->add_subordinate( qa_manager ).
+    qa_manager->add_subordinate( qa_tester ).
+    qa_manager->add_subordinate( qa_automation ).
+
+    ceo->add_subordinate( head_sales ).
+    head_sales->add_subordinate( sales_rep1 ).
+    head_sales->add_subordinate( sales_rep2 ).
+    head_sales->add_subordinate( sales_analyst ).
+
+    "Retrieving and displaying the employee hierarchy of
+    "the entire organization
+    out->write( |Hierarchy of the entire organization:\n\n| ).
+    DATA(org) = ceo->lif_org~get_employee_hierarchy( ).
+    out->write( org ).
+    out->write( |\n| ).
+
+    out->write( |Hierarchy of the engineering department:\n\n| ).
+    DATA(org_eng_dep) = head_eng->lif_org~get_employee_hierarchy( ).
+    out->write( org_eng_dep ).
+    out->write( |\n| ).
+
+    out->write( |Hierarchy of the sales department:\n\n| ).
+    DATA(org_sales_dep) = head_sales->lif_org~get_employee_hierarchy( ).
+    out->write( org_sales_dep ).
+    out->write( |\n| ).
+
+*&---------------------------------------------------------------------*
+*& Retrieving employees by role
+*&---------------------------------------------------------------------*
+
+    example_number += 1.
+    set_example_divider( out  = out
+                         text = |{ example_number }: Retrieving employees by role| ).
+
+    "Developers in the entire organization
+    DATA(role) = `Developer`.
+    DATA(devs_in_org) = ceo->lif_org~get_employees_by_role( role ).
+    DATA(count) = lines( devs_in_org ).
+    out->write( |There { COND #( WHEN count = 1 THEN `is` ELSE `are` ) } { count } { to_lower( role ) }{ COND #( WHEN count <> 1 THEN `s` ) } in the entire organization:| ).
+    LOOP AT devs_in_org INTO DATA(dev).
+      out->write( |- { dev->get_data( )-name }| ).
+    ENDLOOP.
+    out->write( |\n| ).
+
+    "Administrative assistants in the engineering department
+    role = `Administrative Assistant`.
+    DATA(admin_in_eng_dep) = head_eng->lif_org~get_employees_by_role( role ).
+    count = lines( admin_in_eng_dep ).
+    out->write( |There { COND #( WHEN count = 1 THEN `is` ELSE `are` ) } { count } { to_lower( role ) }{ COND #( WHEN count <> 1 THEN `s` ) } in the engineering department:| ).
+    LOOP AT admin_in_eng_dep INTO DATA(adm).
+      out->write( |- { adm->get_data( )-name }| ).
+    ENDLOOP.
+    out->write( |\n| ).
+
+    role = `Sales Representative`.
+    DATA(sales_reps_in_eng_dep) = head_eng->lif_org~get_employees_by_role( role ).
+    count = lines( sales_reps_in_eng_dep ).
+    out->write( |There { COND #( WHEN count = 1 THEN `is` ELSE `are` ) } { count } { to_lower( role ) }{ COND #( WHEN count <> 1 THEN `s` ) } in the engineering department.| ).
+    LOOP AT sales_reps_in_eng_dep INTO DATA(sales_rep).
+      out->write( |- { sales_rep->get_data( )-name }| ).
+    ENDLOOP.
+    out->write( |\n| ).
+
+*&---------------------------------------------------------------------*
+*& Retrieving employees by office
+*&---------------------------------------------------------------------*
+
+    example_number += 1.
+    set_example_divider( out  = out
+                         text = |{ example_number }: Retrieving employees by office| ).
+
+    DATA(office) = `New York`.
+    DATA(org_ny_location) = ceo->lif_org~get_employees_by_office( office ).
+    count = lines( org_ny_location ).
+    out->write( |There { COND #( WHEN count = 1 THEN `is` ELSE `are` ) } { count } member{ COND #( WHEN count <> 1 THEN `s` ) } in the organization located in the { office } office:| ).
+    LOOP AT org_ny_location INTO DATA(ny).
+      out->write( |- { ny->get_data( )-name }| ).
+    ENDLOOP.
+    out->write( |\n| ).
+
+    DATA(eng_dep_ny_location) = head_eng->lif_org~get_employees_by_office( office ).
+    count = lines( eng_dep_ny_location ).
+    out->write( |There { COND #( WHEN count = 1 THEN `is` ELSE `are` ) } { count } member{ COND #( WHEN count <> 1 THEN `s` ) } in the engineering department located in the { office } office:| ).
+    LOOP AT eng_dep_ny_location INTO DATA(ny_eng).
+      out->write( |- { ny_eng->get_data( )-name }| ).
+    ENDLOOP.
+    out->write( |\n| ).
+
+    DATA(sales_dep_ny_location) = head_sales->lif_org~get_employees_by_office( office ).
+    count = lines( sales_dep_ny_location ).
+    out->write( |There { COND #( WHEN count = 1 THEN `is` ELSE `are` ) } { count } member{ COND #( WHEN count <> 1 THEN `s` ) } in the sales department located in the { office } office.| ).
+    LOOP AT sales_dep_ny_location INTO DATA(ny_sales).
+      out->write( |- { ny_sales->get_data( )-name }| ).
+    ENDLOOP.
+    out->write( |\n| ).
+
+*&---------------------------------------------------------------------*
+*& Assigning training
+*&---------------------------------------------------------------------*
+
+    example_number += 1.
+    set_example_divider( out  = out
+                         text = |{ example_number }: Assigning training| ).
+
+    "Assigning training to all members of the organization
+    out->write( `Training A` ).
+    DATA(trainings_assigned) = ceo->lif_org~assign_training( `Training A` ).
+    out->write( trainings_assigned ).
+    out->write( |\n| ).
+
+    "Assigning training to all members of the engineering department
+    out->write( `Training B` ).
+    trainings_assigned = head_eng->lif_org~assign_training( `Training B` ).
+    out->write( trainings_assigned ).
+    out->write( |\n| ).
+
+    "Assigning training to a specific member
+    out->write( `Training C` ).
+    trainings_assigned = qa_tester->lif_org~assign_training( `Training C` ).
+    out->write( trainings_assigned ).
+    out->write( |\n| ).
+
+*&---------------------------------------------------------------------*
+*& Retrieving employee information as JSON (inluding reporting line)
+*&---------------------------------------------------------------------*
+
+    "The example is designed in a way that the ID must refer to a subordinate
+    "of the reference used. The example implementation does not, for example,
+    "work for ID 12 via the head_sales reference.
+
+    example_number += 1.
+    set_example_divider( out  = out
+                         text = |{ example_number }: Retrieving employee information as JSON (inluding reporting line)| ).
+
+    out->write( `Retrieving information about member with ID 3 in the hierarchy via the ceo reference` ).
+    out->write( |\n| ).
+    DATA(json_id_3) = ceo->lif_org~get_employee_info( 3 ).
+    out->write( json_id_3 ).
+    out->write( |\n| ).
+
+    out->write( `Retrieving information about member with ID 16 in the hierarchy via the head_sales reference` ).
+    out->write( |\n| ).
+    DATA(json_id_16) = head_sales->lif_org~get_employee_info( 16 ).
+    out->write( json_id_16 ).
+    out->write( |\n| ).
+
+    out->write( `Retrieving information about member with ID 12 in the hierarchy via the qa_manager reference` ).
+    out->write( |\n| ).
+    DATA(json_id_12a) = qa_manager->lif_org~get_employee_info( 12 ).
+    out->write( json_id_12a ).
+    out->write( |\n| ).
+
+    out->write( `Retrieving information about member with ID 12 in the hierarchy via the head_eng reference` ).
+    out->write( |\n| ).
+    DATA(json_id_12b) = head_eng->lif_org~get_employee_info( 12 ).
+    out->write( json_id_12b ).
+    out->write( |\n| ).
+
+    out->write( `Retrieving information about member with ID 12 in the hierarchy via the ceo reference` ).
+    out->write( |\n| ).
+    DATA(json_id_12c) = ceo->lif_org~get_employee_info( 12 ).
+    out->write( json_id_12c ).
+    out->write( |\n| ).
+
+    out->write( `No direct managers in case of ID 1 (the root node)` ).
+    out->write( |\n| ).
+    DATA(json_id_1) = ceo->lif_org~get_employee_info( 1 ).
+    out->write( json_id_1 ).
+    out->write( |\n| ).
+
+*&---------------------------------------------------------------------*
+*& Retrieving headcount
+*&---------------------------------------------------------------------*
+
+    example_number += 1.
+    set_example_divider( out  = out
+                         text = |{ example_number }: Retrieving headcount| ).
+
+    "Total headcount retrieved via the root node
+    DATA(headcount) = ceo->lif_org~get_headcount( ).
+    out->write( |Total headcount of the entire organization: { headcount }\n| ).
+
+    "Headcount of engineering department
+    headcount = head_eng->lif_org~get_headcount( ).
+    out->write( |Engineering department headcount: { headcount }\n| ).
+
+    "Headcount of sales department
+    headcount = head_sales->lif_org~get_headcount( ).
+    out->write( |Sales department headcount: { headcount }\n| ).
+
+    "Headcount of a specific member that has no subordinates
+    headcount = dev1->lif_org~get_headcount( ).
+    out->write( |Headcount of a specific member: { headcount }\n| ).
+
+*&---------------------------------------------------------------------*
+*& Retrieving salary
+*&---------------------------------------------------------------------*
+
+    example_number += 1.
+    set_example_divider( out  = out
+                         text = |{ example_number }: Retrieving salary| ).
+
+    "Salary of the CEO + the entire organization
+    ceo->lif_org~get_salary( IMPORTING individual_salary  = DATA(ind_salary)
+                                       accumulated_salary = DATA(acc_salary) ).
+
+    out->write( |Individual salary of the CEO: { ind_salary }| ).
+    out->write( |Total salary of the entire organization: { acc_salary }\n| ).
+
+    "Salary of the engineering department head + the entire engineering department
+    head_eng->lif_org~get_salary( IMPORTING individual_salary  = ind_salary
+                                            accumulated_salary = acc_salary ).
+
+    out->write( |Individual salary of the engineering department head: { ind_salary }| ).
+    out->write( |Total salary of the entire engineering department: { acc_salary }\n| ).
+
+    "Salary of the sales department head + the entire engineering department
+    head_sales->lif_org~get_salary( IMPORTING individual_salary  = ind_salary
+                                              accumulated_salary = acc_salary ).
+
+    out->write( |Individual salary of the sales department head: { ind_salary }| ).
+    out->write( |Total salary of the entire sales department: { acc_salary }\n| ).
+
+    "Salary of a specific member
+    dev1->lif_org~get_salary( IMPORTING individual_salary  = ind_salary
+                                        accumulated_salary = acc_salary ).
+
+    out->write( |Individual salary of a specific member: { ind_salary }| ).
+    out->write( |Total salary of a specific member (no subordinates): { acc_salary }\n| ).
+
+*&---------------------------------------------------------------------*
+*& Removing subordinates
+*&---------------------------------------------------------------------*
+
+    example_number += 1.
+    set_example_divider( out  = out
+                         text = |{ example_number }: Removing subordinates| ).
+
+    "A composite trying to remove itself is ruled out.
+    ceo->remove_subordinate( ceo  ).
+    DATA(org_test1) = ceo->lif_org~get_employee_hierarchy( ).
+    DATA(hc1) = ceo->lif_org~get_headcount( ).
+
+    "A composite trying to remove itself is ruled out.
+    dev_manager->remove_subordinate( dev_manager  ).
+    DATA(org_test2) = ceo->lif_org~get_employee_hierarchy( ).
+    DATA(hc2) = ceo->lif_org~get_headcount( ).
+    ASSERT org_test2 = org_test1.
+    ASSERT hc2 = hc1.
+
+    "A manager (composite) trying to remove an employee (leaf) that is not
+    "a subordinate is ruled out.
+    dev_manager->remove_subordinate( admin_assistant1 ).
+    DATA(org_test3) = ceo->lif_org~get_employee_hierarchy( ).
+    DATA(hc3) = ceo->lif_org~get_headcount( ).
+    ASSERT hc3 = hc1.
+    ASSERT org_test3 = org_test1.
+
+    "Removal example 1
+    "The removal is performed via the ceo reference (the root node).
+    out->write( |--------------- Removing member with ID 2 ---------------\n| ).
+    ceo->remove_subordinate( hr_specialist  ).
+    out->write( |New total headcount: { ceo->lif_org~get_headcount( ) }\n| ).
+    out->write( `New hierarchy:` ).
+    org = ceo->lif_org~get_employee_hierarchy( ).
+    out->write( org ).
+    out->write( |\n| ).
+
+    "Removal example 2
+    "The removal is performed via the head_sales reference.
+    out->write( |--------------- Removing member with ID 15 ---------------\n| ).
+    head_sales->remove_subordinate( sales_rep2 ).
+    out->write( |New total headcount: { ceo->lif_org~get_headcount( ) }\n| ).
+    out->write( `New hierarchy:` ).
+    org = ceo->lif_org~get_employee_hierarchy( ).
+    out->write( org ).
+    out->write( |\n| ).
+
+    "Removal example 3
+    "The removal is performed via the ceo reference (the root node). In this
+    "example, a composite is removed. The example is implemented in a way that
+    "the subordinate members arere assigned to the manager of the deleted manager.
+    out->write( |--------------- Removing member with ID 10 ---------------\n| ).
+    ceo->remove_subordinate( qa_manager ).
+    out->write( |New total headcount: { ceo->lif_org~get_headcount( ) }\n| ).
+    out->write( `New hierarchy:` ).
+    org = ceo->lif_org~get_employee_hierarchy( ).
+    out->write( org ).
+    out->write( |\n| ).
+
+    "Removal example 4
+    "The removal is performed via the ceo reference (the root node). In this example,
+    "another composite is removed.
+    out->write( |--------------- Removing member with ID 13 ---------------\n| ).
+    ceo->remove_subordinate( head_sales ).
+    out->write( |New total headcount: { ceo->lif_org~get_headcount( ) }\n| ).
+    out->write( `New hierarchy:` ).
+    org = ceo->lif_org~get_employee_hierarchy( ).
+    out->write( org ).
+    out->write( |\n| ).
+
+    "Removal example 5
+    "The removal is performed via the ceo reference (the root node). In this example,
+    "another composite is removed.
+    out->write( |--------------- Removing member with ID 4 ---------------\n| ).
+    ceo->remove_subordinate( head_eng ).
+    out->write( |New total headcount: { ceo->lif_org~get_headcount( ) }\n| ).
+    out->write( `New hierarchy:` ).
+    org = ceo->lif_org~get_employee_hierarchy( ).
+    out->write( org ).
+    out->write( |\n| ).
+  ENDMETHOD.
+
+  METHOD set_example_divider.
+    out->write( |*&{ repeat( val = `-` occ = 70 ) }*| ).
+    out->write( |*& Example { text }| ).
+    out->write( |*&{ repeat( val = `-` occ = 70 ) }*| ).
+    out->write( |\n| ).
+  ENDMETHOD.
+ENDCLASS.
+``` 
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+CCIMP include (Local Types tab in ADT)
+
+ </td>
+
+ <td> 
+
+``` abap
+*&---------------------------------------------------------------------*
+*& Component interface
+*&---------------------------------------------------------------------*
+
+INTERFACE lif_org.
+
+  "Type for information about individual organization members
+  TYPES: BEGIN OF ty_employee_data,
+           id       TYPE i,
+           name     TYPE string,
+           job_role TYPE string,
+           office   TYPE string,
+           salary   TYPE i,
+         END OF ty_employee_data,
+         tt_org TYPE TABLE OF REF TO lif_org WITH EMPTY KEY.
+
+  "Returns salary of individual members and combined
+  "salary of manager and subordinates
+  METHODS get_salary
+    EXPORTING individual_salary  TYPE i
+              accumulated_salary TYPE i.
+
+  "Returns headcount of individual members or combined
+  "headcount of manager and subordinates
+  METHODS get_headcount
+    RETURNING VALUE(count) TYPE i.
+
+  "Returns the organizational hierarchy
+  METHODS get_employee_hierarchy
+    IMPORTING level                   TYPE i DEFAULT 0
+    RETURNING VALUE(employee_details) TYPE string_table.
+
+  "Returns employee data
+  METHODS get_data
+    RETURNING VALUE(data) TYPE ty_employee_data.
+
+  "Sets the manager
+  METHODS set_manager
+    IMPORTING manager TYPE REF TO lif_org.
+
+  "Returns the manager
+  METHODS get_manager
+    RETURNING VALUE(manager) TYPE REF TO lif_org.
+
+  "Returns employees filtered by role
+  METHODS get_employees_by_role
+    IMPORTING role             TYPE string
+    RETURNING VALUE(employees) TYPE tt_org.
+
+  "Returns employees filtered by office
+  METHODS get_employees_by_office
+    IMPORTING office           TYPE string
+    RETURNING VALUE(employees) TYPE tt_org.
+
+  "Returns information about specific members as JSON,
+  "including the reporting line
+  METHODS get_employee_info
+    IMPORTING employee_id TYPE i
+    RETURNING VALUE(json) TYPE string.
+
+  "Assigns a training
+  METHODS assign_training
+    IMPORTING training_name    TYPE string
+    RETURNING VALUE(assignees) TYPE string_table.
+
+  "Types for the JSON creation in the get_employee_info
+  "method implemenation
+  TYPES: BEGIN OF ty_manager_info,
+           id       TYPE i,
+           name     TYPE string,
+           job_role TYPE string,
+         END OF ty_manager_info,
+         tt_manager_info TYPE TABLE OF ty_manager_info WITH EMPTY KEY,
+         BEGIN OF ty_employee_json,
+           id              TYPE i,
+           name            TYPE string,
+           job_role        TYPE string,
+           direct_managers TYPE tt_manager_info,
+         END OF ty_employee_json.
+
+ENDINTERFACE.
+
+*&---------------------------------------------------------------------*
+*& Leaf
+*&---------------------------------------------------------------------*
+
+CLASS lcl_employee DEFINITION FINAL.
+  PUBLIC SECTION.
+    INTERFACES lif_org.
+    METHODS constructor
+      IMPORTING is_data TYPE lif_org~ty_employee_data.
+
+  PRIVATE SECTION.
+    DATA: employee_data TYPE lif_org~ty_employee_data,
+          mngr          TYPE REF TO lif_org.
+ENDCLASS.
+
+CLASS lcl_employee IMPLEMENTATION.
+  METHOD constructor.
+    "Assumption: No duplicate IDs are expected.
+    employee_data = is_data.
+  ENDMETHOD.
+
+  METHOD lif_org~get_data.
+    data = employee_data.
+  ENDMETHOD.
+
+  METHOD lif_org~set_manager.
+    mngr = manager.
+  ENDMETHOD.
+
+  METHOD lif_org~get_salary.
+    individual_salary = employee_data-salary.
+    "Assiging the same value to accumulated_salary as
+    "leaves do not have subordinates.
+    accumulated_salary = employee_data-salary.
+  ENDMETHOD.
+
+  METHOD lif_org~get_headcount.
+    count = 1.
+  ENDMETHOD.
+
+  METHOD lif_org~get_employee_hierarchy.
+    DATA(indent) = ` `.
+    DO level TIMES.
+      indent &&= `       |`.
+    ENDDO.
+    APPEND |{ indent }-- (LEAF) ID { employee_data-id }, { employee_data-name }, { employee_data-job_role }, { employee_data-office }| TO employee_details.
+  ENDMETHOD.
+
+  METHOD lif_org~get_employees_by_role.
+    IF employee_data-job_role = role.
+      APPEND me TO employees.
+    ENDIF.
+  ENDMETHOD.
+
+  METHOD lif_org~get_employees_by_office.
+    IF employee_data-office = office.
+      APPEND me TO employees.
+    ENDIF.
+  ENDMETHOD.
+
+  METHOD lif_org~get_employee_info.
+    IF employee_data-id <> employee_id.
+      RETURN.
+    ENDIF.
+
+    DATA: employee_json   TYPE lif_org~ty_employee_json,
+          managers_tab    TYPE lif_org~tt_manager_info,
+          current_manager TYPE REF TO lif_org.
+
+    employee_json-id       = employee_data-id.
+    employee_json-name     = employee_data-name.
+    employee_json-job_role = employee_data-job_role.
+
+    "Moving up the hierachy to retrieve managers
+    current_manager = mngr.
+    WHILE current_manager IS BOUND.
+      DATA(manager_data) = current_manager->get_data( ).
+      APPEND VALUE #( id = manager_data-id name = manager_data-name job_role = manager_data-job_role ) TO managers_tab.
+      current_manager = current_manager->get_manager( ).
+    ENDWHILE.
+
+    employee_json-direct_managers = managers_tab.
+
+    json = /ui2/cl_json=>serialize( data          = employee_json
+                                    format_output = abap_true
+                                    pretty_name   = /ui2/cl_json=>pretty_mode-camel_case ).
+  ENDMETHOD.
+
+  METHOD lif_org~assign_training.
+    APPEND |Assigning training '{ training_name }' to employee { employee_data-name }| TO assignees.
+  ENDMETHOD.
+
+  METHOD lif_org~get_manager.
+    manager = mngr.
+  ENDMETHOD.
+ENDCLASS.
+
+*&---------------------------------------------------------------------*
+*& Composite
+*&---------------------------------------------------------------------*
+
+CLASS lcl_manager DEFINITION FINAL.
+  PUBLIC SECTION.
+    INTERFACES lif_org.
+
+    METHODS constructor
+      IMPORTING is_data TYPE lif_org~ty_employee_data.
+
+    METHODS add_subordinate
+      IMPORTING component TYPE REF TO lif_org.
+
+    METHODS remove_subordinate
+      IMPORTING component TYPE REF TO lif_org.
+
+    METHODS get_subordinates
+      RETURNING VALUE(subordinates) TYPE lif_org~tt_org.
+
+  PRIVATE SECTION.
+    DATA: employee_data    TYPE lif_org~ty_employee_data,
+          mngr             TYPE REF TO lif_org,
+          subordinates_tab TYPE lif_org~tt_org.
+ENDCLASS.
+
+CLASS lcl_manager IMPLEMENTATION.
+  METHOD constructor.
+    "Assumption: No duplicate IDs are expected.
+    employee_data = is_data.
+  ENDMETHOD.
+
+  METHOD lif_org~get_data.
+    data = employee_data.
+  ENDMETHOD.
+
+  METHOD add_subordinate.
+    APPEND component TO subordinates_tab.
+    "Setting the manager reference on the child
+    component->set_manager( me ).
+  ENDMETHOD.
+
+  METHOD remove_subordinate.
+    "Example logic:
+    "- Checking if the component is a direct subordinate. If it is a leaf, it is removed directly.
+    "  If it is a manager, its subordinates are assigned to the manager's manager. Then, the
+    "  component is removed.
+    "- If the component is not a direct subordinate, then the search is delegated to subordinates.
+    "- Each subordinate is checked if a type cast to manager can be performed. The remove_subordinate
+    "  method is called recursively. If the cast cannot be performed, it means the subordinate is a
+    "  leaf node which cannot contain other components. In that case, the iteration is continued with
+    "  the next subordinate.
+
+    READ TABLE subordinates_tab INTO DATA(ref) WITH KEY table_line = component.
+    IF sy-subrc = 0.
+      IF ref IS INSTANCE OF lcl_manager.
+        DATA(manager_of_manager) = ref->get_manager( ).
+        DATA(subordinates_of_manager) = CAST lcl_manager( ref )->get_subordinates( ).
+
+        LOOP AT subordinates_of_manager INTO DATA(sub).
+          sub->set_manager( manager_of_manager ).
+          CAST lcl_manager( manager_of_manager )->add_subordinate( sub ).
+        ENDLOOP.
+
+        DELETE subordinates_tab WHERE table_line = component.
+        RETURN.
+      ELSE.
+        DELETE subordinates_tab WHERE table_line = component.
+        RETURN.
+      ENDIF.
+    ENDIF.
+
+    LOOP AT subordinates_tab INTO sub.
+      IF sub IS INSTANCE OF lcl_manager.
+        "Type cast to manager as only managers can have subordinates
+        DATA(manager) = CAST lcl_manager( sub ).
+        manager->remove_subordinate( component ).
+      ELSE.
+        "Continuing with the iteration as the current node is
+        "a leaf node, which does not have subordinates.
+        CONTINUE.
+      ENDIF.
+    ENDLOOP.
+  ENDMETHOD.
+
+  METHOD lif_org~set_manager.
+    mngr = manager.
+  ENDMETHOD.
+
+  METHOD lif_org~get_manager.
+    manager = mngr.
+  ENDMETHOD.
+
+  METHOD lif_org~get_salary.
+    individual_salary = employee_data-salary.
+    accumulated_salary = employee_data-salary.
+
+    LOOP AT subordinates_tab INTO DATA(sub).
+      sub->get_salary( IMPORTING accumulated_salary = DATA(acc_salary) ).
+      accumulated_salary += acc_salary.
+    ENDLOOP.
+  ENDMETHOD.
+
+  METHOD lif_org~get_headcount.
+    count = 1.
+    LOOP AT subordinates_tab INTO DATA(sub).
+      count += sub->get_headcount( ).
+    ENDLOOP.
+  ENDMETHOD.
+
+  METHOD lif_org~get_employee_hierarchy.
+    DATA(indent) = ` `.
+    DO level TIMES.
+      indent &&= `       |`.
+    ENDDO.
+
+    APPEND |{ indent }-- (COMPOSITE) ID { employee_data-id }, { employee_data-name }, { employee_data-job_role }, { employee_data-office }| TO employee_details.
+
+    LOOP AT subordinates_tab INTO DATA(sub).
+      DATA(line) = sub->get_employee_hierarchy( level = level + 1 ).
+      APPEND LINES OF line TO employee_details.
+    ENDLOOP.
+  ENDMETHOD.
+
+  METHOD lif_org~get_employees_by_role.
+    IF employee_data-job_role = role.
+      APPEND me TO employees.
+    ENDIF.
+
+    LOOP AT subordinates_tab INTO DATA(sub).
+      DATA(empl) = sub->get_employees_by_role( role ).
+      APPEND LINES OF empl TO employees.
+    ENDLOOP.
+  ENDMETHOD.
+
+  METHOD lif_org~get_employees_by_office.
+    IF employee_data-office = office.
+      APPEND me TO employees.
+    ENDIF.
+
+    LOOP AT subordinates_tab INTO DATA(sub).
+      DATA(off) = sub->get_employees_by_office( office ).
+      APPEND LINES OF off TO employees.
+    ENDLOOP.
+  ENDMETHOD.
+
+  METHOD lif_org~get_employee_info.
+    IF employee_data-id = employee_id.
+      DATA: employee_json   TYPE lif_org~ty_employee_json,
+            managers_tab    TYPE lif_org~tt_manager_info,
+            current_manager TYPE REF TO lif_org.
+
+      employee_json-id       = employee_data-id.
+      employee_json-name     = employee_data-name.
+      employee_json-job_role = employee_data-job_role.
+
+      current_manager = mngr.
+      WHILE current_manager IS BOUND.
+        DATA(manager_data) = current_manager->get_data( ).
+        APPEND VALUE #( id = manager_data-id name = manager_data-name job_role = manager_data-job_role ) TO managers_tab.
+        current_manager = current_manager->get_manager( ).
+      ENDWHILE.
+
+      employee_json-direct_managers = managers_tab.
+
+      json = /ui2/cl_json=>serialize( data = employee_json
+                                      format_output = abap_true
+                                      pretty_name = /ui2/cl_json=>pretty_mode-camel_case ).
+      RETURN.
+    ENDIF.
+
+    LOOP AT subordinates_tab INTO DATA(sub).
+      DATA(lv_sub_json) = sub->get_employee_info( employee_id ).
+      IF lv_sub_json IS NOT INITIAL.
+        json = lv_sub_json.
+        RETURN.
+      ENDIF.
+    ENDLOOP.
+  ENDMETHOD.
+
+  METHOD lif_org~assign_training.
+    APPEND |Assigning training '{ training_name }' to manager { employee_data-name } and team| TO assignees.
+
+    LOOP AT subordinates_tab INTO DATA(sub).
+      DATA(trainings) = sub->assign_training( training_name = training_name ).
+      APPEND LINES OF trainings TO assignees.
+    ENDLOOP.
+  ENDMETHOD.
+
+  METHOD get_subordinates.
+    subordinates = subordinates_tab.
+  ENDMETHOD.
+ENDCLASS.
+``` 
+
+ </td>
+</tr>
+
+</table>
+
+</details>  
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+## Decorator
 
 - Enhances and modifies existing objects by wrapping them in other objects (objects of decorator classes) without modifying the original object setup and class code.
 - Useful when flexibility is needed to handle various combinations and functionalities of objects.
