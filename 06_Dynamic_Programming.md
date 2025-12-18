@@ -35,6 +35,7 @@
     - [Dynamically Calling Transformations](#dynamically-calling-transformations)
     - [Dynamic Formatting Option Specifications in String Templates](#dynamic-formatting-option-specifications-in-string-templates)
     - [Dynamic Parameter List in EXPORT and IMPORT Statements](#dynamic-parameter-list-in-export-and-import-statements)
+    - [Dynamic BAdI-Related Statements](#dynamic-badi-related-statements)
   - [Security Considerations in Dynamic Programming Using External Input](#security-considerations-in-dynamic-programming-using-external-input)
   - [Runtime Type Services (RTTS)](#runtime-type-services-rtts)
     - [Getting Type Information at Runtime (RTTI)](#getting-type-information-at-runtime-rtti)
@@ -3425,8 +3426,200 @@ CALL FUNCTION func_name PARAMETER-TABLE ptab.
 
 ### Dynamic ABAP EML Statements
 
-In the context of [RAP](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_rap_glosry.htm), [ABAP EML](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_eml_glosry.htm) statements are available with dynamic forms. 
-Find an example in the [ABAP EML](08_EML_ABAP_for_RAP.md#dynamic-forms-of-eml-statements) cheat sheet and in the [ABAP Keyword Documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abeneml.htm).
+- In the context of [RAP](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_rap_glosry.htm), [ABAP EML](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_eml_glosry.htm) statements are available with dynamic forms. 
+- For more information, refer to the [ABAP EML](08_EML_ABAP_for_RAP.md#dynamic-forms-of-eml-statements) cheat sheet and the [ABAP Keyword Documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abeneml.htm).
+
+<br>
+
+```abap
+*&---------------------------------------------------------------------*
+*& Dynamic ABAP EML MODIFY statement
+*&---------------------------------------------------------------------*
+
+DATA: op_tab           TYPE abp_behv_changes_tab,
+      create_root_tab  TYPE TABLE FOR CREATE zdemo_abap_rap_ro_m,
+      update_root_tab  TYPE TABLE FOR UPDATE zdemo_abap_rap_ro_m,
+      delete_root_tab  TYPE TABLE FOR UPDATE zdemo_abap_rap_ro_m,
+      cba              TYPE TABLE FOR CREATE zdemo_abap_rap_ro_m\_child,
+      update_child_tab TYPE TABLE FOR UPDATE zdemo_abap_rap_ch_m,
+      delete_child_tab TYPE TABLE FOR DELETE zdemo_abap_rap_ch_m.
+
+create_root_tab = VALUE #(
+            ( %cid = 'cid1'
+              key_field = 5
+              %control-key_field = if_abap_behv=>mk-on
+              field1 = 'a'
+              %control-field1 = if_abap_behv=>mk-on
+              field2 = 'b'
+              %control-field2 = if_abap_behv=>mk-on )
+            ( %cid = 'cid2'
+              key_field = 6
+              %control-key_field = if_abap_behv=>mk-on
+              field1 = 'd'
+              %control-field1 = if_abap_behv=>mk-on
+              field2 = 'd'
+              %control-field2 = if_abap_behv=>mk-on )
+            ( %cid = 'cid3'
+              key_field = 7
+              %control-key_field = if_abap_behv=>mk-on
+              field1 = 'e'
+              %control-field1 = if_abap_behv=>mk-on
+              field2 = 'f'
+              %control-field2 = if_abap_behv=>mk-on ) ).
+
+update_root_tab = VALUE #(
+            ( %cid_ref = 'cid2'
+              field1 = 'g'
+              %control-field1 = if_abap_behv=>mk-on
+              field2 = 'h'
+              %control-field2 = if_abap_behv=>mk-on ) ).
+
+cba = VALUE #(
+            ( %cid_ref = 'cid1'
+              %target = VALUE #( (
+              %cid = 'cid_cba1'
+              key_ch = 10
+              %control-key_ch = if_abap_behv=>mk-on
+              field_ch1 = 'i'
+              %control-field_ch1 = if_abap_behv=>mk-on
+              field_ch2 = 1
+              %control-field_ch2 = if_abap_behv=>mk-on
+            ) ) )
+            ( %cid_ref = 'cid2'
+              %target = VALUE #( (
+              %cid = 'cid_cba2'
+              key_ch = 20
+              %control-key_ch = if_abap_behv=>mk-on
+              field_ch1 = 'j'
+              %control-field_ch1 = if_abap_behv=>mk-on
+              field_ch2 = 2
+              %control-field_ch2 = if_abap_behv=>mk-on
+            ) ) )
+            ( %cid_ref = 'cid3'
+              %target = VALUE #( (
+              %cid = 'cid_cba3'
+              key_ch = 30
+              %control-key_ch = if_abap_behv=>mk-on
+              field_ch1 = 'k'
+              %control-field_ch1 = if_abap_behv=>mk-on
+              field_ch2 = 3
+              %control-field_ch2 = if_abap_behv=>mk-on ) ) ) ).
+
+update_child_tab = VALUE #(
+            ( key_field = 6
+              field_ch1 = 'l'
+              %control-field_ch1 = if_abap_behv=>mk-on
+              field_ch2 = 4
+              %control-field_ch2 = if_abap_behv=>mk-on ) ).
+
+delete_root_tab = VALUE #( ( key_field = 7 ) ).
+
+delete_child_tab = VALUE #( ( key_field = 7 ) ).
+
+op_tab = VALUE #(
+        ( op = if_abap_behv=>op-m-create
+          entity_name = 'ZDEMO_ABAP_RAP_RO_M'
+          instances   = REF #( create_root_tab ) )
+        ( op = if_abap_behv=>op-m-update
+          entity_name = 'ZDEMO_ABAP_RAP_RO_M'
+          instances   = REF #( update_root_tab ) )
+        ( op = if_abap_behv=>op-m-delete
+          entity_name = 'ZDEMO_ABAP_RAP_RO_M'
+          instances   = REF #( delete_root_tab ) )
+        ( op = if_abap_behv=>op-m-create_ba
+          entity_name = 'ZDEMO_ABAP_RAP_RO_M'
+          sub_name    = '_CHILD'
+          instances   = REF #( cba ) )
+        ( op = if_abap_behv=>op-m-update
+          entity_name = 'ZDEMO_ABAP_RAP_CH_M'
+          instances   = REF #( update_child_tab ) )
+        ( op = if_abap_behv=>op-m-delete
+          entity_name = 'ZDEMO_ABAP_RAP_CH_M'
+          instances   = REF #( delete_child_tab ) ) ).
+
+MODIFY ENTITIES OPERATIONS op_tab
+    MAPPED   DATA(m)
+    FAILED   DATA(f)
+    REPORTED DATA(r).
+
+*&---------------------------------------------------------------------*
+*& Dynamic ABAP EML READ statement
+*&---------------------------------------------------------------------*
+
+DATA: op_tab          TYPE abp_behv_retrievals_tab,    
+      read_dyn        TYPE TABLE FOR READ IMPORT zdemo_abap_rap_ro_m,
+      read_dyn_result TYPE TABLE FOR READ RESULT zdemo_abap_rap_ro_m,
+      rba_dyn         TYPE TABLE FOR READ IMPORT zdemo_abap_rap_ro_m\_child,
+      rba_dyn_result  TYPE TABLE FOR READ RESULT zdemo_abap_rap_ro_m\_child,
+      rba_dyn_link    TYPE TABLE FOR READ LINK zdemo_abap_rap_ro_m\_child.
+
+"Filling the internal tables, i.e. which instances are to be read
+"Root entity
+"Example:
+"- The key is comprised of the field 'key_field'. It is of type i.
+"- The %control structure is filled, flagging those fields that
+"  are to be read. Flagging the key field is not required.
+read_dyn = VALUE #(
+    ( %key-key_field = 1
+      %control = VALUE #(
+        field1 = if_abap_behv=>mk-on
+        field2 = if_abap_behv=>mk-on
+        field3 = if_abap_behv=>mk-on
+        field4 = if_abap_behv=>mk-on ) )
+    ( %key-key_field = 2
+      %control = VALUE #(
+        field1 = if_abap_behv=>mk-on
+        field2 = if_abap_behv=>mk-on
+        field3 = if_abap_behv=>mk-on
+        field4 = if_abap_behv=>mk-on ) ) ).
+
+"Child entity
+"Instances to be read for a read-by-association operation
+"The shared key is 'key_field'.
+rba_dyn = VALUE #(
+    ( %key-key_field = 1
+      %control = VALUE #(
+        key_ch    = if_abap_behv=>mk-on        
+        field_ch1 = if_abap_behv=>mk-on
+        field_ch2 = if_abap_behv=>mk-on ) )
+    ( %key-key_field = 2
+      %control = VALUE #(
+        key_ch    = if_abap_behv=>mk-on
+        field_ch1 = if_abap_behv=>mk-on
+        field_ch2 = if_abap_behv=>mk-on ) ) ).
+
+"Filling the internal table that is the operand of the
+"dynamic EML statement
+"This table has optional and mandatory components.
+op_tab = VALUE #(
+    ( "op: Specifies the operation to be executed; is mandatory;
+        "    can be set with the predefined constants, e.g. OP-R-READ
+        "    etc., of interface IF_ABAP_BEHV
+        op = if_abap_behv=>op-r-read
+        "entity_name: Specifies the name of the RAP BO entity for which
+        "             the operation is executed; is mandatory
+        entity_name = 'ZDEMO_ABAP_RAP_RO_M'
+        "instances: Specifies a reference to an internal table holding
+        "           the input keys; must be appropriately typed; is mandatory
+        instances   = REF #( read_dyn )
+        "results: Specifies a reference to an internal table with the required
+        "         BDEF derived type for the read results; is mandatory
+        results     = REF #( read_dyn_result ) )
+    ( op = if_abap_behv=>op-r-read_ba
+        entity_name = 'ZDEMO_ABAP_RAP_RO_M'
+        "sub_name: Only relevant for specifying association names in
+        "          read-by-association operations; in that context, it is mandatory
+        sub_name    = '_CHILD'
+        "full: Optional flag; specifies if all target instances are to be retrieved
+        full        = abap_true
+        instances   = REF #( rba_dyn )
+        results     = REF #( rba_dyn_result )
+        "links: Reference to internal table holding the key pairs of the source and
+        "       target
+        links       = REF #( rba_dyn_link ) ) ).
+
+READ ENTITIES OPERATIONS op_tab.
+```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
@@ -3496,8 +3689,11 @@ ASSERT tab2 = tab.
 
 ### Dynamic Formatting Option Specifications in String Templates
 
-The following code snippet demonstrates a small selection of dynamic formatting option specifications in string templates.
-For more details and a complete list of options, refer to the [ABAP Keyword Documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/abapcompute_string_format_options.htm), especially regarding the expected and supported input (attributes of the `CL_ABAP_FORMAT` class). General information on string templates can also be found there and in the [String Processing](07_String_Processing.md#string-templates) cheat sheet. 
+- The following code snippet demonstrates a small selection of dynamic formatting option specifications in string templates.
+- For more details and a complete list of options, refer to the [ABAP Keyword Documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/abapcompute_string_format_options.htm), especially regarding the expected and supported input (attributes of the `CL_ABAP_FORMAT` class). 
+- General information on string templates can also be found there and in the [String Processing](07_String_Processing.md#string-templates) cheat sheet. 
+
+<br> 
 
 ```abap
 "ALIGN
@@ -3535,6 +3731,8 @@ DATA(s6) = |{ some_string CASE = int_tab[ 1 ] }|. "AbAp
 
 - Used in the context of exporting and importing data clusters
 - Find more information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABENDATA_CLUSTER.html) and an executable example, including the code snippet below, in the [Working with XML and JSON in ABAP](21_XML_JSON.md) cheat sheet.
+
+<br> 
 
 ```abap
 DATA buffer TYPE xstring.
@@ -3577,6 +3775,75 @@ param_table = VALUE param_tab_type(
   ( name = `txt3` dobj = `values-txt3` ) ).
 
 IMPORT (param_table) FROM DATA BUFFER buffer.
+```
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+### Dynamic BAdI-Related Statements
+
+- The BAdI (Business Add-In)-related statements `GET BADI` and `CALL BADI` have dynamic variants.
+- For information, refer to the [Enhancements Using BAdIs](35_BAdIs.md) cheat sheet. It includes descriptions to create demo BAdIs step by step. These are used in the example snippet below, illustrating the dynamic variants.
+
+<br>  
+
+```abap
+"Character-like data objects to be used in the dynamic statements
+DATA(badi_name) = 'ZBADI_DEMO_ABAP_CALCULATOR'.
+DATA(method_name) = 'CALCULATE'.
+DATA dyn_result TYPE string.
+
+"Declaring a BAdI reference variable
+"The static type of the reference variable must reference CL_BADI_BASE,
+"the superclass of all BAdI classes.
+DATA badi_dyn TYPE REF TO cl_badi_base.
+
+"Dynamic GET BADI statement specifying the TYPE addition and
+"the name of a BAdI (a data object containing it) in parentheses.
+"The demo BAdI is defined for single use. It specifies filter conditions.
+GET BADI badi_dyn TYPE (badi_name) FILTERS operator = '-'.
+
+"Dynamic CALL BADI statement specifying the method name
+"dyanmically (i.e. a data object containing the name) in
+"parentheses following object component selector ->.
+CALL BADI badi_dyn->(method_name)
+  EXPORTING
+    num1   = 10
+    num2   = 8
+  RECEIVING
+    result = dyn_result.
+
+"Using the FILTER-TABLE addition in dynamic GET BADI statements
+"After the addition, a filter table of type badi_filter_bindings is
+"expected.
+DATA(op) = '/'.
+DATA(filter_name) = CONV badi_filter_name( 'OPERATOR' ).
+
+DATA(filter_tab) = VALUE badi_filter_bindings( ( name  = filter_name
+                                                 value = REF #( op ) ) ).
+
+GET BADI badi_dyn TYPE (badi_name) FILTER-TABLE filter_tab.
+
+CALL BADI badi_dyn->(method_name)
+  EXPORTING
+    num1   = 10
+    num2   = 5
+  RECEIVING
+    result = dyn_result.
+
+"Using the PARAMETER-TABLE addition in dynamic CALL BADI statements
+"Similar to dynamic CALL METHOD statements, dynamic CALL BADI statements
+"can specify a parameter table of type abap_parmbind_tab.
+DATA(ptab) = VALUE abap_parmbind_tab( ( name  = 'NUM1'
+                                        kind  = cl_abap_objectdescr=>exporting
+                                        value = NEW i( 10 ) )
+                                      ( name  = 'NUM2'
+                                        kind  = cl_abap_objectdescr=>exporting
+                                        value = NEW i( 5 ) )
+                                      ( name  = 'RESULT'
+                                        kind  = cl_abap_objectdescr=>returning
+                                        value = REF #( dyn_result ) ) ).
+
+CALL BADI badi_dyn->(method_name) PARAMETER-TABLE ptab.
 ```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
