@@ -119,7 +119,7 @@ The main focus of the ABAP cheat sheets is ABAP for Cloud Development. The examp
 For Standard ABAP, you can find examples in the other branches of the repository (note that except for specific examples, the example code there uses syntax that is also availabe in ABAP for Cloud Development) that you can import into your sandbox SAP system. Just select the appropriate version (*v757* stands for ABAP version 7.57). Check the information in the following collapsible sections for your system environment and perform the required steps.
 
 <details>
-  <summary>1) General info</summary>
+  <summary>🟢  1) General info</summary>
   <br>
 
 - Some **DDIC artifacts**, such as database tables, are part of the repository. They are used by the examples to ensure self-contained examples. All artifacts must be imported for all examples to work.
@@ -132,7 +132,7 @@ For Standard ABAP, you can find examples in the other branches of the repository
 </details>
 
 <details>
-  <summary>2a) SAP BTP ABAP environment</summary>
+  <summary>🟢 2a) SAP BTP ABAP environment</summary>
   <br>
 
 **Prerequisites**
@@ -175,7 +175,7 @@ https://github.com/SAP-samples/abap-cheat-sheets.git
 </details>
 
 <details>
-  <summary>2b) System supporting classic ABAP</summary>
+  <summary>🟢 2b) System supporting classic ABAP</summary>
 <br>
 
 **Prerequisites**
@@ -217,7 +217,7 @@ Use the standalone version of the abapGit report to import the demo examples of 
 </details>
 
 <details>
-  <summary>3) Run the code</summary>
+  <summary>🟢 3) Run the code</summary>
 <br>
 
 - Open the package you created containing the imported ABAP artifacts in the ABAP development tools for Eclipse (ADT).

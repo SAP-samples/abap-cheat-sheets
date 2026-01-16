@@ -747,7 +747,7 @@ SELECT ReleasedObjectType, ReleasedObjectName, ReleaseState
 
 ### Retrieving Repository Objects Information and Creating Repository Object Programmatically with XCO
 
-Using the [XCO library](https://help.sap.com/docs/btp/sap-business-technology-platform/generation-apis), you can create retrieve ABAP repository objects information and create the objects programmatically. The executable example ([zcl_demo_abap_cloud_excursion](src/zcl_demo_abap_cloud_excursion.clas.abap)) of the [ABAP for Cloud Development](19_ABAP_for_Cloud_Development.md) cheat sheet includes demo code snippets. The [Released ABAP Classes](22_Released_ABAP_Classes.md) cheat sheet also includes a small selection of code snippets in that context. For more information, refer to the [documentation](https://help.sap.com/docs/btp/sap-business-technology-platform/generation-apis).
+Using the [XCO library](https://help.sap.com/docs/btp/sap-business-technology-platform/generation-apis), you can retrieve ABAP repository objects information and create the objects programmatically. The executable example ([zcl_demo_abap_cloud_excursion](src/zcl_demo_abap_cloud_excursion.clas.abap)) of the [ABAP for Cloud Development](19_ABAP_for_Cloud_Development.md) cheat sheet includes demo code snippets. The [Released ABAP Classes](22_Released_ABAP_Classes.md) cheat sheet also includes a small selection of code snippets in that context. For more information, refer to the [documentation](https://help.sap.com/docs/btp/sap-business-technology-platform/generation-apis).
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 

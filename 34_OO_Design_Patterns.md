@@ -17,6 +17,7 @@
   - [Chain of Responsibility](#chain-of-responsibility)
   - [Command](#command)
   - [Composite](#composite)
+  - [Data Access Object (DAO)](#data-access-object-dao)
   - [Decorator](#decorator)
   - [Facade](#facade)
   - [Factory Method](#factory-method)
@@ -43,9 +44,7 @@ The examples largely draw inspiration from design patterns established by the _G
 
 > [!IMPORTANT]
 > - The focus of the examples in the ABAP cheat sheet is on basic conceptual considerations regarding the design patterns, and experimenting with ABAP syntax and concepts (such as interfaces, abstract classes, encapsulation, and more). The examples aim to illustrate basic design pattern ideas using simplified ABAP demo classes. 
-> - The examples are meant for [exploration, experimentation, and demonstration](./README.md#%EF%B8%8F-disclaimer), using non-semantic and non-real-world contexts to reduce complexity and give a rough idea. Due to their experimental nature, these examples do not represent best practices or model approaches, as various approaches and class setup strategies may apply. It is up to you to evaluate whether the patterns are suitable and beneficial for your setup. Always create your own solutions.
-> - To further explore the patterns, many publications, articles, and community resources offer in-depth insights into their origins, purposes, real-world examples, similarities, differences, combinations of patterns, pros, cons, and more.
-
+> - The examples are meant for [exploration, experimentation, and demonstration](./README.md#%EF%B8%8F-disclaimer), using non-semantic and non-real-world contexts to reduce complexity and give a rough idea. Due to their experimental nature, these examples do not represent best practices or model approaches, as various approaches and class setup strategies may apply. It is up to you to evaluate whether the patterns are suitable and beneficial for your setup. Always create your own solutions. The cheat sheet does not go into the details regarding the patterns' origins, purposes, real-world examples, similarities, differences, combinations of patterns, pros, or cons.
 
 ## Example Setup and Running Example Classes
 
@@ -1738,7 +1737,7 @@ ENDCLASS.
     - Assuming functionality is extended. An existing API is integrated and reused.
     - This is represented by the `lcl_de_xstring` class. It implements a different interface. The method returns a data object of type `xstring`, which is not compatible with the `say_hello` method of the `lif_hello` interface that returns a `string`.
     - An adapter class is introduced that implements the `lif_hello` interface and handles conversion (in the example case, `xstring` is transformed to `string`) to allow the use of the non-compatible API. 
-    - Users can the call methods of the adapter class.
+    - Users can then call methods of the adapter class.
 - The class execution includes the following:
   - Multiple objects are created using the factory method with different input parameters.
   - Based on the parameter, a specific object is created. The `say_hello` method returns a string as implemented in the resepctive class.
@@ -5080,7 +5079,7 @@ CLASS zcl_demo_abap IMPLEMENTATION.
     out->write( |Individual salary of the engineering department head: { ind_salary }| ).
     out->write( |Total salary of the entire engineering department: { acc_salary }\n| ).
 
-    "Salary of the sales department head + the entire engineering department
+    "Salary of the sales department head + the entire sales department
     head_sales->lif_org~get_salary( IMPORTING individual_salary  = ind_salary
                                               accumulated_salary = acc_salary ).
 
@@ -5569,6 +5568,445 @@ CLASS lcl_manager IMPLEMENTATION.
 
   METHOD get_subordinates.
     subordinates = subordinates_tab.
+  ENDMETHOD.
+ENDCLASS.
+``` 
+
+ </td>
+</tr>
+
+</table>
+
+</details>  
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+## Data Access Object (DAO)
+
+- A Data Access Object (DAO) provides an API for performing CRUD operations on a database table.
+- By providing an object-oriented approach for these oerpations, you can centralize and encapsulate standard operations, eliminating the need to write them throughout the code.
+- A potential setup, illustrated in the following example, may include:
+  - An interface that defines methods for accessing database tables.
+  - A class that implements the interface. The example DAO class here uses the singleton design pattern to provide users with a single object of the DAO class.
+
+<br>
+
+<details>
+  <summary>🟢 Click to expand for more information and example code</summary>
+  <!-- -->
+
+<br>
+
+**Example notes:**
+
+> [!NOTE]  
+> The example uses a demo database table (`zdemo_abap_carr`) from the ABAP cheat sheet repository.
+
+- This example tries to illustrate the Data Access Object (DAO) design pattern using the following declarations and implementations:
+  - CCIMP include (_Local Types_ tab in ADT):
+    - Interface `lif_dao`
+      - Describes a DAO for the database table `zdemo_abap_carr`, providing a single API to interact with it.
+      - Defines CRUD methods to interact with the database table, including `count_entries` to return the number of entries, `does_entry_exist` to check if a record with a specific key exists, `get_entry` to return a single row for the specified key, `get_all_entries` to return all rows in an internal table, `create_entry` to insert a single row, `create_entries` to insert multiple rows from an internal table, `upsert_entry` to insert or update a row, and `delete_entry` to delete a row by key.
+    - Class `lcl_dao`
+      - Implements the `lif_dao` interface and is implemented as a singleton.
+      - `CREATE PRIVATE` prevents direct instantiation of the class. Users can obtain a reference to the interface (stored in the static attribute `oref`) via the static `get_dao` method. 
+      - The methods use ABAP SQL `SELECT`, `INSERT`, `UPDATE`, and `DELETE` statements.
+  - Global class:
+    - Implements the `if_oo_adt_classrun` interface and calls methods from the local class `lcl_dao`.
+    - Acts as the client in the example. 
+    - The implementation illustrates all operations available through the interface methods.
+
+<table>
+
+<tr>
+<td> Class include </td> <td> Code </td>
+</tr>
+
+<tr>
+<td> 
+
+Global class
+
+ </td>
+
+ <td> 
+
+``` abap
+CLASS zcl_demo_abap DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
+
+  PUBLIC SECTION.
+    INTERFACES if_oo_adt_classrun.
+    METHODS prep_dbtab.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+    DATA example_number TYPE i.
+    METHODS set_example_divider IMPORTING out  TYPE REF TO if_oo_adt_classrun_out
+                                          text TYPE string.
+ENDCLASS.
+
+
+CLASS zcl_demo_abap IMPLEMENTATION.
+  METHOD if_oo_adt_classrun~main.
+
+    "Preparing the demo database table
+    prep_dbtab( ).
+
+    "Getting DAO
+    DATA(dao) = lcl_dao=>get_dao( ).
+
+*&---------------------------------------------------------------------*
+*& Counting entries
+*&---------------------------------------------------------------------*
+
+    example_number += 1.
+    set_example_divider( out  = out
+                         text = |{ example_number }) Counting entries| ).
+
+    DATA(count) = dao->count_entries( ).
+
+    out->write( |Number of database table entries: { count }| ).
+    out->write( |\n| ).
+
+*&---------------------------------------------------------------------*
+*& Getting entries
+*&---------------------------------------------------------------------*
+
+    example_number += 1.
+    set_example_divider( out  = out
+                         text = |{ example_number }) Getting entries| ).
+
+    "Getting all entries
+    DATA(entries) = dao->get_all_entries( ).
+    out->write( `All database table entries:` ).
+    out->write( entries ).
+    out->write( |\n| ).
+
+    "Getting single entries
+    "Non-existent entry
+    DATA(entry) = dao->get_entry( 'ZZ' ).
+    IF entry IS INITIAL.
+      out->write( `The returned data object is initial.` ).
+    ELSE.
+      out->write( entry ).
+    ENDIF.
+    out->write( |\n| ).
+
+    "Using the does_entry_exist method to check the existence
+    DATA(exists) = dao->does_entry_exist( 'ZZ' ).
+    out->write( |The entry with ID "ZZ" { COND #( WHEN exists = abap_true THEN `exists` ELSE `does not exist` ) }.| ).
+    out->write( |\n| ).
+    out->write( |\n| ).
+
+    "Existent single entries
+    entry = dao->get_entry( 'AB' ).
+    out->write( entry ).
+    out->write( |\n| ).
+
+    entry = dao->get_entry( 'EF' ).
+    out->write( entry ).
+    out->write( |\n| ).
+
+*&---------------------------------------------------------------------*
+*& Creating entries
+*&---------------------------------------------------------------------*
+
+    example_number += 1.
+    set_example_divider( out  = out
+                         text = |{ example_number }) Creating entries| ).
+
+    "Creating single entries
+    DATA(carr_data) = VALUE lif_dao=>ts_carr( carrid = 'MN' carrname = 'MN Regional'  currcode = 'CHF' url = 'url_for_MN' ).
+
+    DATA(done) = dao->create_entry( carr_data ).
+
+    out->write( |Insert operation { COND #( WHEN done = abap_true THEN `done` ELSE `not done` ) }.| ).
+    out->write( |\n| ).
+
+    exists = dao->does_entry_exist( 'MN' ).
+    out->write( |The entry with ID "MN" { COND #( WHEN exists = abap_true THEN `exists` ELSE `does not exist` ) }.| ).
+    out->write( |\n| ).
+
+    "Creating single entry with existing ID
+    done = dao->create_entry( carr_data ).
+
+    out->write( |Insert operation { COND #( WHEN done = abap_true THEN `done` ELSE `not done` ) }.| ).
+    out->write( |\n| ).
+
+    exists = dao->does_entry_exist( 'MN' ).
+    out->write( |The entry with ID "MN" { COND #( WHEN exists = abap_true THEN `exists` ELSE `does not exist` ) }.| ).
+    out->write( |\n| ).
+
+    "Creating multiple entries
+    DATA(carr_tab) = VALUE lif_dao=>tt_carr( ( carrid = 'OP' carrname = 'OP Cargo' currcode = 'CNY' url = 'url_for_OP' )
+                                             ( carrid = 'QR' carrname = 'QR International' currcode = 'INR' url = 'url_for_QR' ) ).
+
+    done = dao->create_entries( carr_tab ).
+
+    out->write( |Insert operation { COND #( WHEN done = abap_true THEN `done` ELSE `not or partly not done` ) }.| ).
+    out->write( |\n| ).
+
+    "Example input with one already existing entry
+    carr_tab = VALUE lif_dao=>tt_carr( ( carrid = 'OP' carrname = 'OP Cargo' currcode = 'CNY' url = 'url_for_OP' )
+                                       ( carrid = 'ST' carrname = 'ST Air Service' currcode = 'BRL' url = 'url_for_ST' ) ).
+
+    done = dao->create_entries( carr_tab ).
+
+    out->write( |Insert operation { COND #( WHEN done = abap_true THEN `done` ELSE `not or partly not done` ) }.| ).
+    out->write( |\n| ).
+
+    "Getting all database table entries
+    entries = dao->get_all_entries( ).
+    out->write( `All database table entries:` ).
+    out->write( entries ).
+    out->write( |\n| ).
+
+*&---------------------------------------------------------------------*
+*& Upserting entries
+*&---------------------------------------------------------------------*
+
+    example_number += 1.
+    set_example_divider( out  = out
+                         text = |{ example_number }) Upserting entries| ).
+
+    out->write( `--- Operation with ID "MN" ---` ).
+    out->write( |\n| ).
+
+    exists = dao->does_entry_exist( 'MN' ).
+    out->write( |The entry with ID "MN" { COND #( WHEN exists = abap_true THEN `exists` ELSE `does not exist` ) }.| ).
+    out->write( |\n| ).
+    out->write( |\n| ).
+    IF exists = abap_true.
+      entry = dao->get_entry( 'MN' ).
+      out->write( entry ).
+      out->write( |\n| ).
+    ENDIF.
+
+    carr_data = VALUE lif_dao=>ts_carr( carrid = 'MN' carrname = 'Air MN' currcode = 'AED' url = 'url_for_MN' ).
+
+    DATA(operation) = dao->upsert_entry( carr_data ).
+    out->write( |Entry was { COND #( WHEN operation = lif_dao=>update THEN `updated` ELSE `inserted` ) }.| ).
+    out->write( |\n| ).
+    out->write( |\n| ).
+
+    entry = dao->get_entry( 'MN' ).
+    out->write( entry ).
+    out->write( |\n| ).
+
+    out->write( `--- Operation with ID "YZ" ---` ).
+    out->write( |\n| ).
+
+    exists = dao->does_entry_exist( 'YZ' ).
+    out->write( |The entry with ID "YZ" { COND #( WHEN exists = abap_true THEN `exists` ELSE `does not exist` ) }.| ).
+    out->write( |\n| ).
+    IF exists = abap_true.
+      entry = dao->get_entry( 'YZ' ).
+      out->write( entry ).
+      out->write( |\n| ).
+    ENDIF.
+
+    carr_data = VALUE lif_dao=>ts_carr( carrid = 'YZ' carrname = 'YZ Air Lines' currcode = 'MXN' url = 'url_for_YZ' ).
+
+    operation = dao->upsert_entry( carr_data ).
+    out->write( |Entry was { COND #( WHEN operation = lif_dao=>update THEN `updated` ELSE `inserted` ) }.| ).
+    out->write( |\n| ).
+    out->write( |\n| ).
+
+    entry = dao->get_entry( 'YZ' ).
+    out->write( entry ).
+
+    out->write( |\n| ).
+
+*&---------------------------------------------------------------------*
+*& Deleting entries
+*&---------------------------------------------------------------------*
+
+    example_number += 1.
+    set_example_divider( out  = out
+                         text = |{ example_number }) Deleting entries| ).
+
+    "Non-existent entry
+    done = dao->delete_entry( 'XY' ).
+
+    out->write( |Delete operation { COND #( WHEN done = abap_true THEN `done` ELSE `not done` ) } for ID "XY".| ).
+    out->write( |\n| ).
+
+    done = dao->delete_entry( 'YZ' ).
+
+    out->write( |Delete operation { COND #( WHEN done = abap_true THEN `done` ELSE `not done` ) } for ID "YZ".| ).
+    out->write( |\n| ).
+
+    done = dao->delete_entry( 'AB' ).
+
+    out->write( |Delete operation { COND #( WHEN done = abap_true THEN `done` ELSE `not done` ) } for ID "AB".| ).
+    out->write( |\n| ).
+
+    "Getting count
+    count = dao->count_entries( ).
+
+    out->write( |Number of database table entries: { count }| ).
+    out->write( |\n| ).
+
+    "Getting all entries
+    entries = dao->get_all_entries( ).
+    out->write( `All database table entries:` ).
+    out->write( entries ).
+  ENDMETHOD.
+
+  METHOD set_example_divider.
+    out->write( |*&{ repeat( val = `-` occ = 70 ) }*| ).
+    out->write( |*& { text }| ).
+    out->write( |*&{ repeat( val = `-` occ = 70 ) }*| ).
+    out->write( |\n| ).
+  ENDMETHOD.
+
+  METHOD prep_dbtab.
+    DELETE FROM zdemo_abap_carr.
+
+    INSERT zdemo_abap_carr FROM TABLE @( VALUE #(
+      ( carrid = 'AB' carrname = 'AB Airways'     currcode = 'USD' url = 'url_for_AB' )
+      ( carrid = 'CD' carrname = 'CD Air'         currcode = 'EUR' url = 'url_for_CD' )
+      ( carrid = 'EF' carrname = 'EF Aviation'    currcode = 'GBP' url = 'url_for_EF' )
+      ( carrid = 'GH' carrname = 'GH Airlines'    currcode = 'JPY' url = 'url_for_GH' )
+      ( carrid = 'IJ' carrname = 'IJ Skyways'     currcode = 'AUD' url = 'url_for_IJ' )
+      ( carrid = 'KL' carrname = 'KL Air Express' currcode = 'ZAR' url = 'url_for_KL' ) ) ).
+  ENDMETHOD.
+ENDCLASS.
+``` 
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+CCIMP include (Local Types tab in ADT)
+
+ </td>
+
+ <td> 
+
+``` abap
+*&---------------------------------------------------------------------*
+*& Interface
+*&---------------------------------------------------------------------*
+
+INTERFACE lif_dao.
+
+  TYPES: ts_carr TYPE zdemo_abap_carr,
+         tt_carr TYPE TABLE OF zdemo_abap_carr WITH EMPTY KEY,
+         BEGIN OF ENUM enum_op,
+           update,
+           insert,
+         END OF ENUM enum_op.
+
+  METHODS count_entries
+    RETURNING VALUE(count) TYPE i.
+
+  METHODS does_entry_exist
+    IMPORTING carrid        TYPE ts_carr-carrid
+    RETURNING VALUE(exists) TYPE abap_boolean.
+
+  METHODS get_entry
+    IMPORTING carrid       TYPE ts_carr-carrid
+    RETURNING VALUE(entry) TYPE ts_carr.
+
+  METHODS get_all_entries
+    RETURNING VALUE(entries) TYPE tt_carr.
+
+  METHODS create_entry
+    IMPORTING entry       TYPE ts_carr
+    RETURNING VALUE(done) TYPE abap_boolean.
+
+  METHODS create_entries
+    IMPORTING entries     TYPE tt_carr
+    RETURNING VALUE(done) TYPE abap_boolean.
+
+  METHODS upsert_entry
+    IMPORTING entry            TYPE ts_carr
+    RETURNING VALUE(operation) TYPE enum_op.
+
+  METHODS delete_entry
+    IMPORTING carrid      TYPE ts_carr-carrid
+    RETURNING VALUE(done) TYPE abap_boolean.
+
+ENDINTERFACE.
+
+*&---------------------------------------------------------------------*
+*& Concrete class
+*&---------------------------------------------------------------------*
+
+CLASS lcl_dao DEFINITION FINAL CREATE PRIVATE.
+  PUBLIC SECTION.
+    INTERFACES lif_dao.
+    CLASS-METHODS get_dao RETURNING VALUE(dao) TYPE REF TO lif_dao.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+    CLASS-DATA oref TYPE REF TO lif_dao.
+ENDCLASS.
+
+CLASS lcl_dao IMPLEMENTATION.
+
+  METHOD lif_dao~count_entries.
+    SELECT COUNT( * ) FROM zdemo_abap_carr INTO @count.
+  ENDMETHOD.
+
+  METHOD lif_dao~create_entries.
+    INSERT zdemo_abap_carr FROM TABLE @entries ACCEPTING DUPLICATE KEYS.
+
+    IF sy-subrc = 0.
+      done = abap_true.
+    ENDIF.
+  ENDMETHOD.
+
+  METHOD lif_dao~create_entry.
+    INSERT zdemo_abap_carr FROM @entry.
+
+    IF sy-subrc = 0.
+      done = abap_true.
+    ENDIF.
+  ENDMETHOD.
+
+  METHOD lif_dao~delete_entry.
+    DELETE FROM zdemo_abap_carr WHERE carrid = @carrid.
+
+    IF sy-subrc = 0.
+      done = abap_true.
+    ENDIF.
+  ENDMETHOD.
+
+  METHOD lif_dao~does_entry_exist.
+    SELECT SINGLE @abap_true FROM zdemo_abap_carr WHERE carrid = @carrid INTO @exists.
+  ENDMETHOD.
+
+  METHOD lif_dao~get_all_entries.
+    SELECT * FROM zdemo_abap_carr ORDER BY carrid INTO TABLE @entries.
+  ENDMETHOD.
+
+  METHOD lif_dao~get_entry.
+    SELECT SINGLE * FROM zdemo_abap_carr WHERE carrid = @carrid INTO @entry.
+  ENDMETHOD.
+
+  METHOD lif_dao~upsert_entry.
+    DATA(exists) = lif_dao~does_entry_exist( entry-carrid ).
+
+    IF exists = abap_true.
+      UPDATE zdemo_abap_carr FROM @entry.
+      operation = lif_dao=>update.
+    ELSE.
+      INSERT zdemo_abap_carr FROM @entry.
+      operation = lif_dao=>insert.
+    ENDIF.
+  ENDMETHOD.
+
+  METHOD get_dao.
+    IF oref IS NOT BOUND.
+      oref = NEW lcl_dao( ).
+    ENDIF.
+
+    dao = oref.
   ENDMETHOD.
 ENDCLASS.
 ``` 

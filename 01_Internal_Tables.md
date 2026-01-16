@@ -32,7 +32,7 @@
       - [COMPARING and TRANSPORTING Additions: Comparing Fields and Specifying Fields for Transport](#comparing-and-transporting-additions-comparing-fields-and-specifying-fields-for-transport)
       - [CASTING and ELSE UNASSIGN Additions when Specifying Field Symbols as Target Areas](#casting-and-else-unassign-additions-when-specifying-field-symbols-as-target-areas)
       - [BINARY SEARCH Addition: Optimized Read Access When Specifying Free Keys](#binary-search-addition-optimized-read-access-when-specifying-free-keys)
-    - [Example: Exploring READ TABLE Statements and Table Expressions](#example-exploring-read-table-statements-and-table-expressions)
+    - [Exploring READ TABLE Statements and Table Expressions](#exploring-read-table-statements-and-table-expressions)
   - [Accessing Single Table Lines via Table Expressions](#accessing-single-table-lines-via-table-expressions)
   - [Processing Multiple Internal Table Lines Sequentially](#processing-multiple-internal-table-lines-sequentially)
     - [Restricting the Area of a Table to Be Looped Over](#restricting-the-area-of-a-table-to-be-looped-over)
@@ -727,7 +727,7 @@ FINAL(itab4) = itab.
 > [!NOTE]  
 > - Internal tables can only be assigned to internal tables. 
 > - Internal tables can be assigned to each other if their line types are [compatible](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencompatible_glosry.htm) or [convertible](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconvertible_glosry.htm).
-> - An assignment can trigger an uncatchable exception if, for example, the target table is assigned a duplicate of a unique primary table key or secondary table.
+> - An assignment can trigger an uncatchable exception if, for example, the target table is assigned a duplicate of a unique primary table key or secondary table key.
 > - More information: [Conversion Rules for Internal Tables](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconversion_itab.htm)
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
@@ -1605,7 +1605,7 @@ Data object
 <br>
 
 ``` abap
-"dobj must have the table's structure type
+"dobj must have the table's line type
 READ TABLE itab INTO dobj ...   
 
 READ TABLE itab INTO DATA(dobj_inl) ...
@@ -1682,7 +1682,7 @@ area (F1 docu for standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index
 A use case for `INTO dobj` is when the table should
 not be changed using the copied table line. However, copying comes
 at a performance cost. Imagine that your table contains many columns or
-nested components. In this case, it is better not to copy at all (although you can use 
+nested components. In this case, it is advisable not to copy at all (although you can use 
 the `TRANSPORTING` addition to restrict the fields to be copied).
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
@@ -2523,7 +2523,7 @@ ENDCLASS.
 </details>
 
 
-### Example: Exploring READ TABLE Statements and Table Expressions
+### Exploring READ TABLE Statements and Table Expressions
 
 Expand the following collapsible section for example code. To try it out, create a demo class named `zcl_demo_abap` and paste the code into it. After activation, choose *F9* in ADT to execute the class. 
 The example is not set up to display output in the console. You may want to set a break point at the first position possible and walk through the example in the debugger. This will allow you to double-click on data objects and observe how the different statements affect their contents.

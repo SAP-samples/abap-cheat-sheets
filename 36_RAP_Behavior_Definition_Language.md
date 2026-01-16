@@ -3,7 +3,6 @@
 # RAP Behavior Definition Language
 
 - [RAP Behavior Definition Language](#rap-behavior-definition-language)
-  - [Introduction](#introduction)
   - [RAP-BO-Related Repository Objects in a Nutshell](#rap-bo-related-repository-objects-in-a-nutshell)
   - [RAP BDL Syntax](#rap-bdl-syntax)
     - [Behavior Definition Header](#behavior-definition-header)
@@ -12,7 +11,6 @@
       - [Entity Behavior Body](#entity-behavior-body)
   - [More Information](#more-information)
 
-## Introduction
 
 This ABAP cheat sheet highlights key features and syntax options of the [RAP Behavior Definition Language (BDL)](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbdl_glosry.htm) for designing [RAP behavior definitions (BDEF)](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_behavior_definition_glosry.htm).
 
@@ -88,36 +86,6 @@ Core Data Services (CDS)
 <!-- -->
 
 <tr>
-<td> 
-
-Projections
-
- </td>
-
- <td> 
-
-CDS projection view, 
-RAP projection BDEF, 
-ABAP behavior pool
-
- </td>
-
-<td> 
-
-- Projections introduce an optional layer (a [RAP projection business object](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_projection_bo_glosry.htm)) that enables you to adapt the RAP BO's data model and functionality to tailor specific services for different [RAP BO consumers](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_bo_consumer_glosry.htm), such as UIs or APIs. For example, target group A may access a UI with the full functionality, while target group B may use a UI with certain disabled functionalities, such as delete operations. 
-- Projections involve creating artifacts like:
-  - [CDS projection view](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_projection_view_glosry.htm): Represents a special CDS view entity that is based on another CDS view entity. CDS projection views adapt a CDS data model for service-specific use cases. For a projection BO, the root entity must be a CDS projection view. 
-  - [RAP projection behavior definition](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_proj_bdef_glosry.htm): Created for the CDS projection view. Indicates that a base BDEF is projected. A projection BDEF builds on the base BDEF, reusing its operations and characteristics or limiting them to enable only a subset. Typical syntax elements are `use ...`, for example, `use create;`, `use update;`, `use action act;`, and so on.
-  - A separate [ABAP behavior pool](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbehavior_pool_glosry.htm) for the RAP projection BDEF, if required.
-- Find more information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABENBDL_PROJECTION_BO.html).
-
-
- </td>
-</tr>
-
-<!-- -->
-
-<tr>
 <td rowspan="2"> 
 
 RAP BO behavior
@@ -151,6 +119,36 @@ ABAP behavior pool (ABP)
 
 - Special [class pool](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenclass_pool_glosry.htm), typically prefixed with `*BP`, that implements the behavior and contains the actual business logic.
 - The actual implementation occurs in the [CCIMP include](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenccimp_glosry.htm) (_Local Types_ tab in ADT).
+
+ </td>
+</tr>
+
+<!-- -->
+
+<tr>
+<td> 
+
+Projections
+
+ </td>
+
+ <td> 
+
+CDS projection view, 
+RAP projection BDEF, 
+ABAP behavior pool
+
+ </td>
+
+<td> 
+
+- Projections introduce an optional layer (a [RAP projection business object](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_projection_bo_glosry.htm)) that enables you to adapt the RAP BO's data model and functionality to tailor specific services for different [RAP BO consumers](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_bo_consumer_glosry.htm), such as UIs or APIs. For example, target group A may access a UI with the full functionality, while target group B may use a UI with certain disabled functionalities, such as delete operations. 
+- Projections involve creating artifacts like:
+  - [CDS projection view](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_projection_view_glosry.htm): Represents a special CDS view entity that is based on another CDS view entity. CDS projection views adapt a CDS data model for service-specific use cases. For a projection BO, the root entity must be a CDS projection view. 
+  - [RAP projection behavior definition](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_proj_bdef_glosry.htm): Created for the CDS projection view. Indicates that a base BDEF is projected. A projection BDEF builds on the base BDEF, reusing its operations and characteristics or limiting them to enable only a subset. Typical syntax elements are `use ...`, for example, `use create;`, `use update;`, `use action act;`, and so on.
+  - A separate [ABAP behavior pool](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbehavior_pool_glosry.htm) for the RAP projection BDEF, if required.
+- Find more information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABENBDL_PROJECTION_BO.html).
+
 
  </td>
 </tr>

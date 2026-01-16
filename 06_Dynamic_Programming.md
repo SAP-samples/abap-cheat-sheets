@@ -62,7 +62,7 @@
 
 ## Introduction
 
--  Regarding "dynamic" in contrast to "static" aspects, [ABAP programs](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_program_glosry.htm) can include both dynamic and static parts.
+- [ABAP programs](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_program_glosry.htm) can include both dynamic and static parts.
 - Consider a [data object](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendata_object_glosry.htm "Glossary Entry") in your program:
     - It can be declared as a [static data object](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenstatic_data_object_glosry.htm), i. e. you provide all attributes by specifying the [data type](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendata_type_glosry.htm) and more statically in the code.
 
@@ -3782,7 +3782,7 @@ IMPORT (param_table) FROM DATA BUFFER buffer.
 ### Dynamic BAdI-Related Statements
 
 - The BAdI (Business Add-In)-related statements `GET BADI` and `CALL BADI` have dynamic variants.
-- For information, refer to the [Enhancements Using BAdIs](35_BAdIs.md) cheat sheet. It includes descriptions to create demo BAdIs step by step. These are used in the example snippet below, illustrating the dynamic variants.
+- For more information, refer to the [Enhancements Using BAdIs](35_BAdIs.md) cheat sheet. It includes descriptions to create demo BAdIs step by step. These are used in the example snippet below, illustrating the dynamic variants.
 
 <br>  
 
