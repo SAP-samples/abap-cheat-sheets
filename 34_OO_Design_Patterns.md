@@ -43,8 +43,12 @@ Design patterns address common software design challenges, aiming to improve mod
 The examples largely draw inspiration from design patterns established by the _Gang of Four_ (GoF), applicable across different object-oriented programming languages. Apart from selected, renowned GoF patterns, the sheet also includes a random selection of other techniques.
 
 > [!IMPORTANT]
-> - The focus of the examples in the ABAP cheat sheet is on basic conceptual considerations regarding the design patterns, and experimenting with ABAP syntax and concepts (such as interfaces, abstract classes, encapsulation, and more). The examples aim to illustrate basic design pattern ideas using simplified ABAP demo classes. 
+> - The focus of the examples - which are also available via a separate repository branch ([oo_patterns](https://github.com/SAP-samples/abap-cheat-sheets/tree/oo_patterns)) - in the ABAP cheat sheet is on basic conceptual considerations regarding the design patterns, and experimenting with ABAP syntax and concepts (such as interfaces, abstract classes, encapsulation, and more). The examples aim to illustrate basic design pattern ideas using simplified ABAP demo classes. 
 > - The examples are meant for [exploration, experimentation, and demonstration](./README.md#%EF%B8%8F-disclaimer), using non-semantic and non-real-world contexts to reduce complexity and give a rough idea. Due to their experimental nature, these examples do not represent best practices or model approaches, as various approaches and class setup strategies may apply. It is up to you to evaluate whether the patterns are suitable and beneficial for your setup. Always create your own solutions. The cheat sheet does not go into the details regarding the patterns' origins, purposes, real-world examples, similarities, differences, combinations of patterns, pros, or cons.
+
+> [!TIP]
+> The cheat sheet includes copy and paste example classes. These are included in the [oo_patterns](https://github.com/SAP-samples/abap-cheat-sheets/tree/oo_patterns) branch of the repository. Find more information [here](https://github.com/SAP-samples/abap-cheat-sheets/blob/oo_patterns/README.md) regarding the import.
+
 
 ## Example Setup and Running Example Classes
 
@@ -58,7 +62,7 @@ Most examples are set up for easy exploration using simple, (mostly) self-contai
 In the following sections, click the expandable sections for further descriptions and example code. To try the examples out, create a demo class named `zcl_demo_abap` and paste the code into it (*Global Class* and *Local Types* tabs in ADT). After activation, choose *F9* in ADT to execute the class. The examples are set up to display output in the console.
 
 > [!NOTE]
-> - Some examples use artifacts such as database tables from the ABAP cheat sheet GitHub repository.
+> - Some examples use artifacts such as database tables from the `main` branch of the ABAP cheat sheet GitHub repository. The [oo_patterns](https://github.com/SAP-samples/abap-cheat-sheets/tree/oo_patterns) branch of the repository also contains the example classes. This branch is designed to function independently from the `main` branch (for example, the said, few database tables are duplicated and renamed). Therefore, you can clone the `oo_patterns` branch without also cloning the `main` branch, or clone the `oo_patterns` branch without dependencies (such as name conflicts with already existing artifacts, in case the artifacts of the `main` branch have already been imported). 
 > - [Disclaimer](./README.md#%EF%B8%8F-disclaimer)
 
 

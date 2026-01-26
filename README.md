@@ -30,10 +30,11 @@ ABAP cheat sheets[^1] ...
 - focus on **ABAP syntax** in the restricted ABAP language version [ABAP for Cloud Development](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_for_cloud_dev_glosry.htm), particularly in the [SAP BTP ABAP Environment](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensap_btp_abap_env_glosry.htm).
 - include **code snippets**.
 - are supported by easy-to-consume **demonstration examples** that you can import into your system using [abapGit](https://abapgit.org/) to run and check out ABAP syntax in action in simple contexts:
-  | Environment    | Branch | ABAP language version |
-  | -------- | ------- | ------- |
-  | [SAP BTP ABAP Environment](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensap_btp_abap_env_glosry.htm)  | *main* branch | [ABAP for Cloud Development](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_for_cloud_dev_glosry.htm) |
-  | System that supports [classic ABAP](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenclassic_abap_glosry.htm)  | The repository branches other than *main*. Check the available ABAP releases. |[Standard ABAP](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenstandard_abap_glosry.htm)  |
+  |  Branch | Environment | ABAP language version | Notes |
+  | -------- | ------- | ------- | ------- |
+  |  [main](https://github.com/SAP-samples/abap-cheat-sheets/tree/main) |  [SAP BTP ABAP Environment](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensap_btp_abap_env_glosry.htm) | [ABAP for Cloud Development](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_for_cloud_dev_glosry.htm) | Contains the main examples of the ABAP cheat sheet repository |
+  | [v755](https://github.com/SAP-samples/abap-cheat-sheets/tree/v755), [v756](https://github.com/SAP-samples/abap-cheat-sheets/tree/v756), [v757](https://github.com/SAP-samples/abap-cheat-sheets/tree/v757), [v758](https://github.com/SAP-samples/abap-cheat-sheets/tree/v758)  | System that supports [classic ABAP](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenclassic_abap_glosry.htm) (the branch names indicate the ABAP release version) | [Standard ABAP](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenstandard_abap_glosry.htm)  | Contains many of the main examples and includes examples for classic ABAP only topics such as dynpro  |
+  | [oo_patterns](https://github.com/SAP-samples/abap-cheat-sheets/tree/oo_patterns) | [SAP BTP ABAP Environment](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensap_btp_abap_env_glosry.htm) | [ABAP for Cloud Development](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_for_cloud_dev_glosry.htm) | Contains example classes to illustrate object-oriented design patterns in a separate branch; see the [ABAP Examples Using Object-Oriented Design Patterns](34_OO_Design_Patterns.md) cheat sheet |
 
 - are enriched by links to glossary entries and chapters of the **ABAP Keyword Documentation** (the *F1 help*) and more for you to deep dive into the respective ABAP topics and get more comprehensive information.
 
@@ -107,7 +108,7 @@ ABAP cheat sheets[^1] ...
 |[WHERE Conditions](31_WHERE_Conditions.md)|Explores syntax options in ABAP statements that include `WHERE` for data filtering| [zcl_demo_abap_where_conditions](./src/zcl_demo_abap_where_conditions.clas.abap) |
 |[Performance Notes](32_Performance_Notes.md)|Explores a selection of performance-related examples, aimed to illustrate potentially inefficient techniques and use of statements|- (The cheat sheet includes a copy and paste example class)|
 |[ABAP Release News](33_ABAP_Release_News.md)|Summarizes the release news from the ABAP Keyword Documentation for both versions of the ABAP language, ABAP for Cloud Development and Standard ABAP |-|
-|[ABAP Examples Using Object-Oriented Design Patterns](34_OO_Design_Patterns.md)|Does not cover ABAP-specific topics, but rather focuses on ABAP code experiments that explore design patterns in object-oriented programming. Many of these experiments are inspired by classic design patterns established by the _Gang of Four_ (GoF). |- (The cheat sheet includes copy and paste example classes)|
+|[ABAP Examples Using Object-Oriented Design Patterns](34_OO_Design_Patterns.md)|Does not cover ABAP-specific topics, but rather focuses on ABAP code experiments that explore design patterns in object-oriented programming. Many of these experiments are inspired by classic design patterns established by the _Gang of Four_ (GoF). | The cheat sheet includes copy and paste example classes. These are included in the [oo_patterns](https://github.com/SAP-samples/abap-cheat-sheets/tree/oo_patterns) branch of the repository. Find more information [here](https://github.com/SAP-samples/abap-cheat-sheets/blob/oo_patterns/README.md). |
 |[Enhancements Using BAdIs](35_BAdIs.md)|Provides a high-level overview of enhancements using BAdIs (Business Add-Ins), focusing on related ABAP syntax.|- (The cheat sheet includes copy and paste example classes as well as descriptions to create demo BAdIs step by step)|
 
 
@@ -155,9 +156,9 @@ Use the abapGit plug-in to install the <em>ABAP cheat sheets</em> by carrying ou
 
 5. The *Link abapGit Repository* popup appears. Enter the following URL:
 
-```
-https://github.com/SAP-samples/abap-cheat-sheets.git
-```
+    ```
+    https://github.com/SAP-samples/abap-cheat-sheets.git
+    ```
 
 6. Choose *Next*.
 
@@ -225,6 +226,7 @@ Use the standalone version of the abapGit report to import the demo examples of 
   - Open one of the ABAP cheat sheet example classes listed in the [ABAP Cheat Sheets Overview](#-abap-cheat-sheets-overview) section, for example, *zcl_demo_abap_string_proc*. The classes are located in the *Source Code Library* → *Classes* folder.
   - Choose *F9* to run the class. Alternatively, choose *Run* → *Run As* → *2 ABAP Application (Console)* from the menu. 
   - Check the console output.
+    
     > [!NOTE] 
     >- Check the notes on the context and the ABAP syntax used that are included as comments in the class.
     >- Due to the amount of output in the console, in many cases, the variable name is displayed in the console. Therefore, to find the relevant output in the console more easily and quickly, simply search the console for the variable name, or use breakpoints in the code to check variables in the debugger.
@@ -233,6 +235,7 @@ Use the standalone version of the abapGit report to import the demo examples of 
     >   - These methods, named with an M followed by a digit, are called dynamically in the `if_oo_adt_classrun~main` method implementation. The method names are retrieved into an internal table using Runtime Type Identification (RTTI). For more information on RTTI, refer to the Dynamic Programming cheat sheet.
     >   - The table is iterated over, and only methods that follow the naming convention are called. The interface reference variable `out`, which is bound when executing the class, is passed to the individual methods to enable displaying data object content.
     >- You may want to clear the console by right-clicking in the console and choosing *Clear* before running another demo class to avoid confusing the output of multiple classes. Note that you can also add a setting to automatically clear the console.
+
 - Classic programs (_reports_):
   - The programs included in the repository can be executed with *F8* (or *Run* → *Run As* → *1 ABAP Application*). 
 
