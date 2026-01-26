@@ -4,9 +4,6 @@
   <asx:values>
    <DEVC>
     <CTEXT>ABAP Examples Using Object-Oriented Design Patterns</CTEXT>
-    <LANGUAGE>E</LANGUAGE>
-    <MASTERLANG>E</MASTERLANG>
-    <SRV_CHECK>X</SRV_CHECK>
    </DEVC>
   </asx:values>
  </asx:abap>
