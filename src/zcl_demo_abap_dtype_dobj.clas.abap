@@ -12,8 +12,10 @@
 "! <li>You can also use the F2 information for the many types and data
 "! objects. Simply select a type or object in the code and choose F2
 "! in ADT to check out the information.</li>
-"! <li>Find information on <strong>getting started with the example class</strong> and the
-"! <strong>disclaimer</strong> in the ABAP Doc comment of class {@link zcl_demo_abap_aux}.</li></ul>
+"! <li>Find the following information in the ABAP Doc comment of class {@link zcl_demo_abap_aux}:
+"! <ul><li>How to get started with the example class</li>
+"! <li>Structuring of (most of) the example classes</li>
+"! <li>Disclaimer</li></ul></li></ul>
 CLASS zcl_demo_abap_dtype_dobj DEFINITION
   PUBLIC
   FINAL
@@ -24,6 +26,32 @@ CLASS zcl_demo_abap_dtype_dobj DEFINITION
     CLASS-METHODS:
       class_constructor.
 
+    METHODS:
+      m01_data_types  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m02_complex_types  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m03_reference_types  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m04_data_objects  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m05_declaring_complex_dobj  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m06_declaring_data_ref  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m07_assigning_values2dobj  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m08_inline_declaration  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m09_assigning_data_ref  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m10_anonymous_dobj  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m11_conversion  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m12_strings  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m13_floating_point_numbers  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m14_byte_like_types  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m15_date_time  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m16_type_conversion_rules  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m17_constants_immutable_var  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m18_abap_terms  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m19_generic_types_formal_param  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m20_generic_types_fs  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m21_builtin_dobj_a  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m21_builtin_dobj_b  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m23_declaration_context  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m24_enum IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string.
+
     TYPES t_pub_text_c30 TYPE c LENGTH 30.
     CONSTANTS: comma TYPE string VALUE `, `.
     CLASS-DATA: read_only_attribute TYPE string VALUE `Hallo` READ-ONLY.
@@ -33,7 +61,7 @@ CLASS zcl_demo_abap_dtype_dobj DEFINITION
 
     TYPES t_prv_text_c30 TYPE c LENGTH 30.
     CLASS-DATA cl_text TYPE t_prv_text_c30.
-    DATA text TYPE t_pub_text_c30 VALUE '!!!'.
+    DATA txt TYPE t_pub_text_c30 VALUE '!!!'.
 
     METHODS adapt_text RETURNING VALUE(str) TYPE string.
 
@@ -79,38 +107,32 @@ CLASS zcl_demo_abap_dtype_dobj DEFINITION
              m VALUE 'ap',
            END OF ENUM t_enum_struc STRUCTURE en_struc.
 
-
     METHODS enum_meth_params IMPORTING char          TYPE t_enum
                              RETURNING VALUE(output) TYPE string.
     METHODS enum_processing RETURNING VALUE(output) TYPE string_table.
     METHODS rtti_enum RETURNING VALUE(output) TYPE string_table.
-
 ENDCLASS.
 
 
 
 CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
 
-
   METHOD adapt_text.
     DATA text TYPE t_pub_text_c30.
 
-    text = cl_text && comma && sy-uname && me->text.
+    text = cl_text && comma && sy-uname && me->txt.
 
-    str = text && | (Note: The value of me->text is "{ me->text }")|.
+    str = text && | (Note: The value of me->text is "{ me->txt }")|.
   ENDMETHOD.
-
 
   METHOD addition_with_generic_num.
     result = num1 + num2.
   ENDMETHOD.
 
-
   METHOD class_constructor.
     "Filling demo database tables.
     zcl_demo_abap_aux=>fill_dbtabs( ).
   ENDMETHOD.
-
 
   METHOD enum_meth_params.
 
@@ -122,9 +144,7 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
       WHEN OTHERS.
         output = `Either c or d: ` && char.
     ENDCASE.
-
   ENDMETHOD.
-
 
   METHOD enum_processing.
 
@@ -226,17 +246,86 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
     "Assigning enumerated constants to the variable structure
     do_s = en_struc.
     APPEND |do_s: { do_s-j } / { do_s-k } / { do_s-l } / { do_s-m }| TO output.
-
   ENDMETHOD.
-
 
   METHOD if_oo_adt_classrun~main.
 
-    out->write( |ABAP Cheat Sheet Example: Data Types and Data Objects\n\n| ).
+    zcl_demo_abap_aux=>set_example_divider(
+         out  = out
+         text = `ABAP Cheat Sheet Example: Data Types and Data Objects`
+       ).
 
-**********************************************************************
+    "Dynamically calling methods of the class
+    "The method names are retrieved using RTTI. For more information, refer to the
+    "Dynamic Programming ABAP cheat sheet.
+    "Only those methods should be called that follow the naming convention M + digit.
+    DATA(methods) = CAST cl_abap_classdescr( cl_abap_typedescr=>describe_by_object_ref( me ) )->methods.
+    SORT methods BY name ASCENDING.
 
-    out->write( |Declaring data types\n\n| ).
+    LOOP AT methods INTO DATA(meth_wa).
+      TRY.
+          "The find function result indicates that the method name begins (offset = 0) with M and a digit.
+          IF find( val = meth_wa-name pcre = `^M\d` case = abap_false ) = 0.
+            CALL METHOD (meth_wa-name) EXPORTING out = out text = CONV string( meth_wa-name ).
+          ENDIF.
+        CATCH cx_root INTO DATA(error).
+          out->write( error->get_text( ) ).
+      ENDTRY.
+    ENDLOOP.
+  ENDMETHOD.
+
+  METHOD rtti_enum.
+
+    DATA enum1 TYPE t_enum.
+    enum1 = d.
+
+    DATA enum2 TYPE t_enum_base.
+    enum2 = f.
+
+    "Return type information
+    DATA(enum_descr) = CAST cl_abap_enumdescr(
+          cl_abap_typedescr=>describe_by_data( enum1 ) ).
+
+    APPEND `------ Properties for enum1 ------` TO output.
+
+    APPEND ` kind: ` && enum_descr->kind TO output.
+    APPEND ` type_kind: ` && enum_descr->type_kind TO output.
+    APPEND ` base_type_kind: ` && enum_descr->base_type_kind TO output.
+
+    DATA mem_string TYPE string.
+
+    "For output purposes, the table content is put in a string.
+    "Note the object component selector -> when reading into data reference variables
+    "and accessing componts. You can also use the dereferencing operator followed by the
+    "structure component selector ref->*-comp.
+    LOOP AT enum_descr->members REFERENCE INTO DATA(ref_en1).
+      mem_string = mem_string && ` / Name: ` && ref_en1->name && `; Value: ` && ref_en1->*-value.
+    ENDLOOP.
+
+    REPLACE FIRST OCCURRENCE OF PCRE `/\s` IN mem_string WITH ``.
+    APPEND ` members:` && mem_string TO output.
+    CLEAR mem_string.
+
+    enum_descr = CAST cl_abap_enumdescr(
+         cl_abap_typedescr=>describe_by_data( enum2 ) ).
+
+    APPEND `------ Properties for enum2 ------` TO output.
+    APPEND ` kind: ` && enum_descr->kind TO output.
+    APPEND ` type_kind: ` && enum_descr->type_kind TO output.
+    APPEND ` base_type_kind: ` && enum_descr->base_type_kind TO output.
+
+    "For output purposes, the table content is put in a string.
+    LOOP AT enum_descr->members REFERENCE INTO DATA(ref_en2).
+      mem_string = mem_string && ` / Name: ` && ref_en2->name && `; Value: ` && ref_en2->value.
+    ENDLOOP.
+
+    REPLACE FIRST OCCURRENCE OF PCRE `/\s` IN mem_string WITH ``.
+    APPEND ` members:` && mem_string TO output.
+  ENDMETHOD.
+
+  METHOD m01_data_types.
+
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Declaring data types| ).
 
     "The following examples deal with the declaration of data types.
     "They show how data types can be declared locally in an ABAP program.
@@ -247,8 +336,6 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
     "  F2 on the types to get more information.
     "- The examples show a selection.
     "- Only non-generic types can be used.
-
-    out->write( |1) Declaring data types based on elementary types\n\n| ).
 
     "See the ABAP Keyword Documentation for the value ranges that are
     "accepted by these types.
@@ -338,12 +425,16 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
     TYPES te_const_in_tp LIKE abap_true.
 
     out->write( zcl_demo_abap_aux=>no_output ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m02_complex_types.
 
-    out->write( zcl_demo_abap_aux=>heading( `2) Declaring data types based on complex types` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Declaring data types based on complex types| ).
 
     "Structure and internal table types as examples for complex types
+
+    TYPES te_i TYPE i.
+    DATA do_num TYPE i.
 
     "Structure type, can contain any type
     TYPES: BEGIN OF ts_misc_comps,
@@ -406,10 +497,11 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
     TYPES tt_elem_type_from_itf TYPE TABLE OF zdemo_abap_get_data_itf=>occ_rate.
 
     out->write( zcl_demo_abap_aux=>no_output ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m03_reference_types.
 
-    out->write( zcl_demo_abap_aux=>heading( `3) Declaring reference types` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Declaring reference types| ).
 
     "Declaring reference types with static types
     TYPES tr_i TYPE REF TO i.
@@ -441,10 +533,11 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
     TYPES tr_like_table_ref LIKE TABLE OF REF TO itab_str.
 
     out->write( zcl_demo_abap_aux=>no_output ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m04_data_objects.
 
-    out->write( zcl_demo_abap_aux=>heading( `Declaring data objects` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Declaring data objects| ).
 
     "The following examples deal with the declaration of data ojects.
     "They show how data objects can be declared locally in an ABAP program.
@@ -462,7 +555,7 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
     "- The examples show a selection. For more information, check out the ABAP
     "  Keyword Documentation.
 
-    out->write( |4) Declaring data objects based on elementary data types\n\n| ).
+    "--- Declaring data objects based on elementary data types ---
 
     "The elementary, built-in data types can be used as shown for data type
     " declarations. Chained statements are also possible with DATA.
@@ -537,10 +630,11 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
     ENDIF.
 
     out->write( zcl_demo_abap_aux=>no_output ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m05_declaring_complex_dobj.
 
-    out->write( zcl_demo_abap_aux=>heading( `5) Declaring structures and internal tables as examples for complex types` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Declaring structures and internal tables as examples for complex types| ).
 
     "Note: See more details and examples in the ABAP Keyword Documentations and in the
     "respective ABAP cheat sheets.
@@ -596,10 +690,11 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
     DATA struc_like_line LIKE LINE OF itab_ddic_tab.
 
     out->write( zcl_demo_abap_aux=>no_output ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m06_declaring_data_ref.
 
-    out->write( zcl_demo_abap_aux=>heading( `6) Declaring data reference variables` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Declaring data reference variables| ).
 
     "Declaring data reference variables types with static types
     DATA dref_int TYPE REF TO i.
@@ -627,10 +722,11 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
     DATA dref_tab_str LIKE TABLE OF REF TO do_some_string.
 
     out->write( zcl_demo_abap_aux=>no_output ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m07_assigning_values2dobj.
 
-    out->write( zcl_demo_abap_aux=>heading( `7) Assigning values to data objects` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Assigning values to data objects| ).
 
     "An assignment passes the content of a source to a target data object.
     "Note:
@@ -729,10 +825,11 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
     str_a2 = some_itab[ 2 ]-carrname.
 
     out->write( zcl_demo_abap_aux=>no_output ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m08_inline_declaration.
 
-    out->write( zcl_demo_abap_aux=>heading( `8) Creating data objects by inline declaration` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Creating data objects by inline declaration| ).
 
     "The declaration operator DATA can be specified in any designated declaration position.
     "The data type of the variable is determined by the operand type. It must be possible
@@ -856,10 +953,11 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
                                      seconds = DATA(seconds) ).
 
     out->write( zcl_demo_abap_aux=>no_output ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m09_assigning_data_ref.
 
-    out->write( zcl_demo_abap_aux=>heading( `9) Assigning references to data reference variables` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Assigning references to data reference variables| ).
 
     "Note:
     "- As is true for other data object and types, there are special assignment rules
@@ -958,10 +1056,11 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
     "For upcasts, the operators can be used, too, but they are usually not necessary.
     "So, an assignment as follows is possible but not needed. Only using = is sufficient.
     dref_1_i = CAST #( dref_6_i ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m10_anonymous_dobj.
 
-    out->write( zcl_demo_abap_aux=>heading( `10) Creating anonymous data objects` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Creating anonymous data objects| ).
 
     "Anonymous data objects are a topic related to data reference variables.
     "These data objects are unnamed data objects.
@@ -1061,12 +1160,11 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
       INTO TABLE NEW @DATA(dref_14_inline).
 
     out->write( zcl_demo_abap_aux=>no_output ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m11_conversion.
 
-    out->write( zcl_demo_abap_aux=>heading( `Excursions: Elementary types and type conversions` ) ).
-
-    out->write( |11) Implicit and explicit conversion\n\n| ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Elementary types and type conversions (implicit and explicit conversion)| ).
 
     "Implicit conversions are performed in assignments using the assignment operator =
     "The content of a data object is converted according to the associated conversion rules.
@@ -1140,10 +1238,11 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
     DATA do_11_dcfl34 TYPE decfloat34 VALUE '4.56'.
 
     "Note that the EXACT operator is available for lossless assignments.
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m12_strings.
 
-    out->write( zcl_demo_abap_aux=>heading( `12) Character strings and text field strings` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Character strings and text field strings| ).
 
     "The following example shows the difference between text field strings
     "of type c and character strings of type string when it comes to trailing
@@ -1157,10 +1256,11 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
     result4 = '-->' && string_space && '<--'.
 
     out->write( |{ result3 }\n{ result4 }| ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m13_floating_point_numbers.
 
-    out->write( zcl_demo_abap_aux=>heading( `13) Floating point numbers` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Floating point numbers| ).
 
     "The following example shows the difference between binary and decimal
     "floating point numbers.
@@ -1172,10 +1272,11 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
 
     out->write( |Binary floating point: { result1 }\n| &&
     |Decimal floating point: { result2 }\n| ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m14_byte_like_types.
 
-    out->write( zcl_demo_abap_aux=>heading( `14) Byte-like types` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Byte-like types| ).
 
     "The following example shows byte-like types x and xstring.
 
@@ -1230,10 +1331,11 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
     ASSERT blank =  ` `.
 
     out->write( `-->` && blank && `<--` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m15_date_time.
 
-    out->write( zcl_demo_abap_aux=>heading( `15) Date and time` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Date and time| ).
 
     "In the example, a date field is assigned the current values
     "using the cl_abap_context_info class. A calculation follows. The date of next
@@ -1270,9 +1372,12 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
     date = falsedate.
     out->write( data = date name = `date` ).
 
-**********************************************************************
+  ENDMETHOD.
 
-    out->write( zcl_demo_abap_aux=>heading( `16) Type conversion rules` ) ).
+  METHOD m16_type_conversion_rules.
+
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Type conversion rules| ).
+
 
     "The purpose of this example is to emphasize the conversion rules
     "that should be noted when performing conversions. The example
@@ -1424,10 +1529,11 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
     ENDLOOP.
 
     out->write( data = tt_conv_tab name = `tt_conv_tab` ).
+    out->write( |\n| ).
 
-**********************************************************************
+*******************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `17) Excursion: RTTI` ) ).
+    out->write( `Excursion: RTTI` ).
 
     "Using RTTI to check type compatibility
     "In the following example the applies_to_data method of the RTTI class
@@ -1495,10 +1601,12 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
     ENDLOOP.
 
     out->write( data = rtti_tab name = `rtti_tab` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m17_constants_immutable_var.
 
-    out->write( zcl_demo_abap_aux=>heading( `18) Constants and immutable variables` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Constants and immutable variables| ).
+
 
     "As mentioned above, constants cannot be changed at runtime.
     CONSTANTS con_str TYPE string VALUE `hallo`.
@@ -1532,10 +1640,11 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
     SELECT * FROM zdemo_abap_carr INTO TABLE @FINAL(itab_final_inl).
 
     out->write( zcl_demo_abap_aux=>no_output ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m18_abap_terms.
 
-    out->write( zcl_demo_abap_aux=>heading( `19) Various ABAP glossary terms on data types and objects in a nutshell` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Various ABAP glossary terms on data types and objects in a nutshell| ).
 
     "Standalone and bound data types
     "Standalone: Data type that is defined using the statement TYPES in an ABAP program, as
@@ -1678,8 +1787,6 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
     "only 'def' assigned -> length and memory use do not change
     do_h_c5 = some_char.
 
-
-
     "Memory consumption changes for dynamic data objects
     do_i_str = `abc`.
     do_i_str = `d`.
@@ -1781,10 +1888,11 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
       UP TO 3 ROWS.
 
     out->write( data = dref_d_tab->* name = `dref_d_tab->*` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m19_generic_types_formal_param.
 
-    out->write( zcl_demo_abap_aux=>heading( `20a) Generic ABAP types for formal parameters of methods` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Generic ABAP types for formal parameters of methods| ).
 
     "Generic data types have already been covered above.
     "A generic data type is an incomplete type specification that covers multiple
@@ -1824,9 +1932,11 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
     out->write( |\n| ).
     out->write( data = error->get_text( ) name = `error->get_text( )` ).
 
-**********************************************************************
+  ENDMETHOD.
 
-    out->write( zcl_demo_abap_aux=>heading( `20b) Overview of generic ABAP types using field symbols` ) ).
+  METHOD m20_generic_types_fs.
+
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Overview of generic ABAP types using field symbols| ).
 
     FIELD-SYMBOLS:
       "Any data type
@@ -1970,10 +2080,11 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
     "ASSIGN s-tab_ha TO <simple>.
 
     out->write( zcl_demo_abap_aux=>no_output ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m21_builtin_dobj_a.
 
-    out->write( zcl_demo_abap_aux=>heading( `21a) Built-in data objects (1)` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Built-in data objects (1)| ).
 
     "This example demonstrates the availability of built-in data objects in ABAP.
 
@@ -2055,9 +2166,11 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
 
     out->write( data = res_str name = `res_str` ).
 
-**********************************************************************
+  ENDMETHOD.
 
-    out->write( zcl_demo_abap_aux=>heading( `21b) Built-in data objects (2)` ) ).
+  METHOD m21_builtin_dobj_b.
+
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Built-in data objects (2)| ).
 
     "This sections is an addition to the previous one.
 
@@ -2309,20 +2422,21 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
     "----------------------------- Self-reference me ------------------------------
     "------------------------------------------------------------------------------
 
-    DATA text TYPE string VALUE `Local data object 'text'`.
+    DATA txt TYPE string VALUE `Local data object 'text'`.
 
     "Demo assignments
     "dobj1 contains the value of the locally declared data object
-    DATA(dobj1) = text.
+    DATA(dobj1) = txt.
     "dobj2 contains the value of the class attribute
-    DATA(dobj2) = me->text.
+    DATA(dobj2) = me->txt.
 
     out->write( data = dobj1 name = `dobj1` ).
     out->write( data = dobj2 name = `dobj2` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m23_declaration_context.
 
-    out->write( zcl_demo_abap_aux=>heading( `22) Declaration context` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Declaration context| ).
 
     "The purpose of this example is to emphasize the importance of where
     "data objects are decalred. The example deals with local declarations
@@ -2370,9 +2484,11 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
     out->write( data = number_b name = `number_b` ).
     out->write( |\n| ).
 
-**********************************************************************
+  ENDMETHOD.
 
-    out->write( zcl_demo_abap_aux=>heading( `23) Enumerated Types and Objects` ) ).
+  METHOD m24_enum.
+
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Enumerated Types and Objects| ).
 
     "Examples for enumerated types and objects are contained in
     "separate methods. Check the comments there.
@@ -2417,7 +2533,7 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
     "Note that typed literals can be specified in read
     "positions where host variables are possible.
     DATA(tmstamp) = CONV timestamp( '20240808112517' ).
-    some_string = `Some string`.
+    DATA(some_string) = `Some string`.
     SELECT SINGLE
       FROM zdemo_abap_fli
       FIELDS
@@ -2439,55 +2555,5 @@ CLASS zcl_demo_abap_dtype_dobj IMPLEMENTATION.
       INTO @DATA(wa_misc_typed_literals).
 
     out->write( data = wa_misc_typed_literals name = `wa_misc_typed_literals` ).
-
-  ENDMETHOD.
-
-  METHOD rtti_enum.
-
-    DATA enum1 TYPE t_enum.
-    enum1 = d.
-
-    DATA enum2 TYPE t_enum_base.
-    enum2 = f.
-
-    "Return type information
-    DATA(enum_descr) = CAST cl_abap_enumdescr(
-          cl_abap_typedescr=>describe_by_data( enum1 ) ).
-
-    APPEND `------ Properties for enum1 ------` TO output.
-
-    APPEND ` kind: ` && enum_descr->kind TO output.
-    APPEND ` type_kind: ` && enum_descr->type_kind TO output.
-    APPEND ` base_type_kind: ` && enum_descr->base_type_kind TO output.
-
-    DATA mem_string TYPE string.
-
-    "For output purposes, the table content is put in a string.
-    "Note the object component selector -> when reading into data reference variables
-    "and accessing componts. You can also use the dereferencing operator followed by the
-    "structure component selector ref->*-comp.
-    LOOP AT enum_descr->members REFERENCE INTO DATA(ref_en1).
-      mem_string = mem_string && ` / Name: ` && ref_en1->name && `; Value: ` && ref_en1->*-value.
-    ENDLOOP.
-
-    REPLACE FIRST OCCURRENCE OF PCRE `/\s` IN mem_string WITH ``.
-    APPEND ` members:` && mem_string TO output.
-    CLEAR mem_string.
-
-    enum_descr = CAST cl_abap_enumdescr(
-         cl_abap_typedescr=>describe_by_data( enum2 ) ).
-
-    APPEND `------ Properties for enum2 ------` TO output.
-    APPEND ` kind: ` && enum_descr->kind TO output.
-    APPEND ` type_kind: ` && enum_descr->type_kind TO output.
-    APPEND ` base_type_kind: ` && enum_descr->base_type_kind TO output.
-
-    "For output purposes, the table content is put in a string.
-    LOOP AT enum_descr->members REFERENCE INTO DATA(ref_en2).
-      mem_string = mem_string && ` / Name: ` && ref_en2->name && `; Value: ` && ref_en2->value.
-    ENDLOOP.
-
-    REPLACE FIRST OCCURRENCE OF PCRE `/\s` IN mem_string WITH ``.
-    APPEND ` members:` && mem_string TO output.
   ENDMETHOD.
 ENDCLASS.

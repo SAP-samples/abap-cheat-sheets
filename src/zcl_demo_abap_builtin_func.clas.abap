@@ -3,9 +3,11 @@
 "! <p>The example class demonstrates built-in functions in ABAP.<br/>
 "! Choose F9 in ADT to run the class.</p>
 "!
-"! <h2>Information</h2>
-"! <p>Find information on getting started with the example class and the disclaimer in
-"! the ABAP Doc comment of class {@link zcl_demo_abap_aux}.</p>
+"! <h2>Note</h2>
+"! <p>Find the following information in the ABAP Doc comment of class {@link zcl_demo_abap_aux}:</p>
+"! <ul><li>How to get started with the example class</li>
+"! <li>Structuring of (most of) the example classes</li>
+"! <li>Disclaimer</li></ul>
 CLASS zcl_demo_abap_builtin_func DEFINITION
   PUBLIC
   FINAL
@@ -14,6 +16,45 @@ CLASS zcl_demo_abap_builtin_func DEFINITION
   PUBLIC SECTION.
     INTERFACES if_oo_adt_classrun.
     CLASS-METHODS class_constructor.
+    METHODS:
+      m01_boolc IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m02_xsdbool IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m03_contains IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m04_matches IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m05_line_exists IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m06_misc_numeric_functions IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m07_nmin_nmax IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m08_misc_numeric_func_2 IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m09_round_rescale IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m10_length_func IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m11_cmin_cmax IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m12_find IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m13_count IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m14_distance IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m15_repeat IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m16_condense IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m17_concat_lines_of IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m18_reverse IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m19_escape IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m20_insert IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m21_match IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m22_replace IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m23_segment IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m24_shift IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m25_substring IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m26_transform_cases IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m27_translate IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m28_utclong_current IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m29_utclong_add IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m30_utclong_diff IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m31_lines  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m32_line_index  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m33_sql_numeric  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m34_sql_string_functions  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m35_sql_time_date  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m36_sql_special_functions  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m37_sql_coalesce_function  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string.
+
   PROTECTED SECTION.
   PRIVATE SECTION.
 ENDCLASS.
@@ -21,13 +62,41 @@ ENDCLASS.
 CLASS zcl_demo_abap_builtin_func IMPLEMENTATION.
   METHOD if_oo_adt_classrun~main.
 
-    out->write( |ABAP cheat sheet example: Built-in Functions\n\n| ).
-    out->write( `1) Logical Functions` ).
-    out->write( |\n| ).
+    zcl_demo_abap_aux=>set_example_divider(
+         out  = out
+         text = `ABAP cheat sheet example: Built-in functions`
+       ).
 
-*&---------------------------------------------------------------------*
-*& boolc
-*&---------------------------------------------------------------------*
+    "Dynamically calling methods of the class
+    "The method names are retrieved using RTTI. For more information, refer to the
+    "Dynamic Programming ABAP cheat sheet.
+    "Only those methods should be called that follow the naming convention M + digit.
+    DATA(methods) = CAST cl_abap_classdescr( cl_abap_typedescr=>describe_by_object_ref( me ) )->methods.
+    SORT methods BY name ASCENDING.
+
+    LOOP AT methods INTO DATA(meth_wa).
+      TRY.
+          "The find function result indicates that the method name begins (offset = 0) with M and a digit.
+          IF find( val = meth_wa-name pcre = `^M\d` case = abap_false ) = 0.
+            CALL METHOD (meth_wa-name) EXPORTING out = out text = CONV string( meth_wa-name ).
+          ENDIF.
+        CATCH cx_root INTO DATA(error).
+          out->write( error->get_text( ) ).
+      ENDTRY.
+    ENDLOOP.
+
+  ENDMETHOD.
+
+  METHOD class_constructor.
+    "Filling demo database tables.
+    zcl_demo_abap_aux=>fill_dbtabs( ).
+  ENDMETHOD.
+
+  METHOD m01_boolc.
+    zcl_demo_abap_aux=>set_example_divider(
+         out  = out
+         text = |{ text }: boolc|
+       ).
 
     "boolc returns an X or a blank of type string
     DATA(int) = 0.
@@ -52,11 +121,13 @@ CLASS zcl_demo_abap_builtin_func IMPLEMENTATION.
     DATA(boolc5) = translate( val = boolc( int <> 0 ) from = ` ` to = `0` ).
     out->write( data = boolc5 name = `boolc5` ).
     out->write( |\n| ).
+  ENDMETHOD.
 
-*&---------------------------------------------------------------------*
-*& xsdbool
-*&---------------------------------------------------------------------*
-
+  METHOD m02_xsdbool.
+    zcl_demo_abap_aux=>set_example_divider(
+         out  = out
+         text = |{ text }: xsdbool|
+       ).
 
     DATA(xsdb1) = xsdbool( 3 > 1 ).
     out->write( data = xsdb1 name = `xsdb1` ).
@@ -98,9 +169,13 @@ CLASS zcl_demo_abap_builtin_func IMPLEMENTATION.
     out->write( data = truth_value2 name = `truth_value2` ).
     out->write( |\n| ).
 
-*&---------------------------------------------------------------------*
-*& contains, contains_any_of, contains_any_not_of
-*&---------------------------------------------------------------------*
+  ENDMETHOD.
+
+  METHOD m03_contains.
+    zcl_demo_abap_aux=>set_example_divider(
+         out  = out
+         text = |{ text }: contains, contains_any_of, contains_any_not_of|
+       ).
 
     "-------------------- contains --------------------
     "Specifying the minimum mandatory parameters
@@ -188,10 +263,13 @@ CLASS zcl_demo_abap_builtin_func IMPLEMENTATION.
     DATA(cont15) = xsdbool( contains_any_not_of( val = hi end = abc ) ).
     out->write( data = cont15 name = `cont15` ).
     out->write( |\n| ).
+  ENDMETHOD.
 
-*&---------------------------------------------------------------------*
-*& matches
-*&---------------------------------------------------------------------*
+  METHOD m04_matches.
+    zcl_demo_abap_aux=>set_example_divider(
+         out  = out
+         text = |{ text }: matches|
+       ).
 
     "Checking validity of an email address
     "abap_true
@@ -199,10 +277,13 @@ CLASS zcl_demo_abap_builtin_func IMPLEMENTATION.
                                       pcre = `\w+(\.\w+)*@(\w+\.)+(\w{2,4})` ) ).
     out->write( data = matches name = `matches` ).
     out->write( |\n| ).
+  ENDMETHOD.
 
-*&---------------------------------------------------------------------*
-*& line_exists
-*&---------------------------------------------------------------------*
+  METHOD m05_line_exists.
+    zcl_demo_abap_aux=>set_example_divider(
+         out  = out
+         text = |{ text }: line_exists|
+       ).
 
     TYPES: BEGIN OF s,
              comp1 TYPE i,
@@ -212,21 +293,17 @@ CLASS zcl_demo_abap_builtin_func IMPLEMENTATION.
     itab = VALUE #( ( comp1 = 1 comp2 = 'aaa' ) ( comp1 = 2 comp2 = 'bbb' ) ( comp1 = 3 comp2 = 'ccc' ) ).
     DATA(str_tab) = VALUE string_table( ( `abc` ) ( `def` ) ( `ghi` ) ).
 
-
     DATA(line_exists1) = xsdbool( line_exists( itab[ 1 ] ) ).
     out->write( data = line_exists1 name = `line_exists1` ).
     out->write( |\n| ).
-
 
     DATA(line_exists2) = xsdbool( line_exists( itab[ 4 ] ) ).
     out->write( data = line_exists2 name = `line_exists2` ).
     out->write( |\n| ).
 
-
     DATA(line_exists3) = xsdbool( line_exists( itab[ comp1 = 2 ] ) ).
     out->write( data = line_exists3 name = `line_exists3` ).
     out->write( |\n| ).
-
 
     DATA(line_exists4) = xsdbool( line_exists( str_tab[ 2 ] ) ).
     out->write( data = line_exists4 name = `line_exists4` ).
@@ -236,14 +313,14 @@ CLASS zcl_demo_abap_builtin_func IMPLEMENTATION.
     DATA(line_exists5) = xsdbool( line_exists( str_tab[ table_line = `xxx` ] ) ).
     out->write( data = line_exists5 name = `line_exists5` ).
     out->write( |\n| ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m06_misc_numeric_functions.
+    zcl_demo_abap_aux=>set_example_divider(
+         out  = out
+         text = |{ text }: abs, sign, ceil, floor, trunc, frac, ipow|
+       ).
 
-    out->write( zcl_demo_abap_aux=>heading( `2) Numeric Functions` ) ).
-
-*&---------------------------------------------------------------------*
-*& abs, sign, ceil, floor, trunc, frac, ipow
-*&---------------------------------------------------------------------*
 
     "----------- abs: Returning the absolute value -----------
 
@@ -356,11 +433,13 @@ CLASS zcl_demo_abap_builtin_func IMPLEMENTATION.
       CATCH cx_sy_arithmetic_overflow INTO DATA(error).
         out->write( error->get_text( ) ).
     ENDTRY.
+  ENDMETHOD.
 
-
-*&---------------------------------------------------------------------*
-*& nmin, nmax
-*&---------------------------------------------------------------------*
+  METHOD m07_nmin_nmax.
+    zcl_demo_abap_aux=>set_example_divider(
+         out  = out
+         text = |{ text }: nmin, nmax|
+       ).
 
     "A minimum of two, and a maximum of 9 arguments can be specified.
     "Numeric data objects and numeric expressions are possible
@@ -378,13 +457,15 @@ CLASS zcl_demo_abap_builtin_func IMPLEMENTATION.
                          val4 = CONV decfloat34( '0.999' ) ).
     out->write( data = nmax name = `nmax` ).
     out->write( |\n| ).
+  ENDMETHOD.
 
-*&---------------------------------------------------------------------*
-*& acos, asin, atan, cos, sin, tan, cosh, sinh, tanh, exp, log, log10, sqrt
-*&---------------------------------------------------------------------*
+  METHOD m08_misc_numeric_func_2.
+    zcl_demo_abap_aux=>set_example_divider(
+         out  = out
+         text = |{ text }: acos, asin, atan, cos, sin, tan, cosh, sinh, tanh, exp, log, log10, sqrt|
+       ).
 
     "Calculating the square root
-
     DATA(sqrt1) = sqrt( CONV decfloat34( '9' ) ).
     out->write( data = sqrt1 name = `sqrt1` ).
     out->write( |\n| ).
@@ -394,7 +475,6 @@ CLASS zcl_demo_abap_builtin_func IMPLEMENTATION.
     out->write( |\n| ).
 
     "Calculating the logarithm to base 10
-
     DATA(log10) = log10( CONV decfloat34( '1000' ) ).
     out->write( data = log10 name = `log10` ).
     out->write( |\n| ).
@@ -411,12 +491,15 @@ CLASS zcl_demo_abap_builtin_func IMPLEMENTATION.
     out->write( data = tangent name = `tangent` ).
     out->write( |\n| ).
 
-*&---------------------------------------------------------------------*
-*& round, rescale
-*&---------------------------------------------------------------------*
+  ENDMETHOD.
+
+  METHOD m09_round_rescale.
+    zcl_demo_abap_aux=>set_example_divider(
+         out  = out
+         text = |{ text }: round, rescale|
+       ).
 
     "Rounding to decimal places
-
     DATA(round1) = round( val = CONV decfloat34( '1.2374' ) dec = 2 ).
     out->write( data = round1 name = `round1` ).
     out->write( |\n| ).
@@ -426,7 +509,6 @@ CLASS zcl_demo_abap_builtin_func IMPLEMENTATION.
     out->write( |\n| ).
 
     "Rounding to precision
-
     DATA(round3) = round( val = CONV decfloat34( '1234567890123' ) prec = 10 ).
     out->write( data = round3 name = `round3` ).
     out->write( |\n| ).
@@ -438,7 +520,6 @@ CLASS zcl_demo_abap_builtin_func IMPLEMENTATION.
     "Rescaling function
     "Similar to the round function, the dec (for scaling) or prec (for precision)
     "parameters must be specified. The input is rounded if required.
-
     DATA(rescale1) = rescale( val = CONV decfloat34( '1234.56789' ) dec = 0 ).
     out->write( data = rescale1 name = `rescale1` ).
     out->write( |\n| ).
@@ -454,19 +535,17 @@ CLASS zcl_demo_abap_builtin_func IMPLEMENTATION.
     DATA(rescale4) = rescale( val = CONV decfloat34( '1234.56789' ) prec = 10 ).
     out->write( data = rescale4 name = `rescale4` ).
     out->write( |\n| ).
+  ENDMETHOD.
 
-**********************************************************************
-
-    out->write( zcl_demo_abap_aux=>heading( `3) String Functions` ) ).
-
-*&---------------------------------------------------------------------*
-*& numofchar, strlen, xstrlen
-*&---------------------------------------------------------------------*
+  METHOD m10_length_func.
+    zcl_demo_abap_aux=>set_example_divider(
+         out  = out
+         text = |{ text }: numofchar, strlen, xstrlen|
+       ).
 
     "numofchar: Trailing blanks are not counted in both strings of fixed and variable length
     "strlen: Trailing blanks are not counted in strings of fixed length; in strings of
     "        variable length, they are counted
-
     DATA(numofchar1)   = numofchar( 'abc   ' ).
     out->write( data = numofchar1 name = `numofchar1` ).
     out->write( |\n| ).
@@ -475,11 +554,9 @@ CLASS zcl_demo_abap_builtin_func IMPLEMENTATION.
     out->write( data = numofchar2 name = `numofchar2` ).
     out->write( |\n| ).
 
-
     DATA(strlen1) = strlen( 'abc   ' ).
     out->write( data = strlen1 name = `strlen1` ).
     out->write( |\n| ).
-
 
     DATA(strlen2) = strlen( `abc   ` ).
     out->write( data = strlen2 name = `strlen2` ).
@@ -494,10 +571,13 @@ CLASS zcl_demo_abap_builtin_func IMPLEMENTATION.
 
     "xstring -> string
     DATA(conv_str) = cl_abap_conv_codepage=>create_in( )->convert( xstr ).
+  ENDMETHOD.
 
-*&---------------------------------------------------------------------*
-*& cmin, cmax
-*&---------------------------------------------------------------------*
+  METHOD m11_cmin_cmax.
+    zcl_demo_abap_aux=>set_example_divider(
+         out  = out
+         text = |{ text }: cmin, cmax|
+       ).
 
     DATA(cmin) =  cmin( val1 = `zzzzzzz`
                         val2 = `zzazzzzzzzz` "smallest argument
@@ -514,10 +594,13 @@ CLASS zcl_demo_abap_builtin_func IMPLEMENTATION.
                         val6 = `aaaaaaaaaaaaaz` ).
     out->write( data = cmax name = `cmax` ).
     out->write( |\n| ).
+  ENDMETHOD.
 
-*&---------------------------------------------------------------------*
-*& find, find_end, find_any_of, find_any_not_of
-*&---------------------------------------------------------------------*
+  METHOD m12_find.
+    zcl_demo_abap_aux=>set_example_divider(
+         out  = out
+         text = |{ text }: find, find_end, find_any_of, find_any_not_of|
+       ).
 
     DATA(str) = `Pieces of cakes.`.
 
@@ -597,10 +680,13 @@ CLASS zcl_demo_abap_builtin_func IMPLEMENTATION.
     DATA(find_any_not_of2) = find_any_not_of( val = str sub = `P` ).
     out->write( data = find_any_not_of2 name = `find_any_not_of2` ).
     out->write( |\n| ).
+  ENDMETHOD.
 
-*&---------------------------------------------------------------------*
-*& count, count_any_of, count_any_not_of
-*&---------------------------------------------------------------------*
+  METHOD m13_count.
+    zcl_demo_abap_aux=>set_example_divider(
+         out  = out
+         text = |{ text }: count, count_any_of, count_any_not_of|
+       ).
 
     DATA(st) = `Pieces of cakes.`.
 
@@ -664,10 +750,13 @@ CLASS zcl_demo_abap_builtin_func IMPLEMENTATION.
     DATA(count_any_not_of2) = count_any_not_of( val = st sub = `Piecs ofak.` ).
     out->write( data = count_any_not_of2 name = `count_any_not_of2` ).
     out->write( |\n| ).
+  ENDMETHOD.
 
-*&---------------------------------------------------------------------*
-*& distance
-*&---------------------------------------------------------------------*
+  METHOD m14_distance.
+    zcl_demo_abap_aux=>set_example_divider(
+         out  = out
+         text = |{ text }: distance|
+       ).
 
     DATA(str_to_check) = `abap`.
 
@@ -686,10 +775,13 @@ CLASS zcl_demo_abap_builtin_func IMPLEMENTATION.
     DATA(dist4) = distance( val1 = str_to_check val2 = `zabapzzzzzzzzzzzz` max = 5 ).
     out->write( data = dist4 name = `dist4` ).
     out->write( |\n| ).
+  ENDMETHOD.
 
-*&---------------------------------------------------------------------*
-*& repeat
-*&---------------------------------------------------------------------*
+  METHOD m15_repeat.
+    zcl_demo_abap_aux=>set_example_divider(
+         out  = out
+         text = |{ text }: repeat|
+       ).
 
     "abapabapabapabapabap
     DATA(repeat1) = repeat( val = `abap` occ = 5 ).
@@ -704,10 +796,13 @@ CLASS zcl_demo_abap_builtin_func IMPLEMENTATION.
     DATA(repeat3) = COND #( WHEN repeat( val = `a` occ = 0 ) = `` THEN `Y` ELSE `Z` ).
     out->write( data = repeat3 name = `repeat3` ).
     out->write( |\n| ).
+  ENDMETHOD.
 
-*&---------------------------------------------------------------------*
-*& condense
-*&---------------------------------------------------------------------*
+  METHOD m16_condense.
+    zcl_demo_abap_aux=>set_example_divider(
+         out  = out
+         text = |{ text }: condense|
+       ).
 
     DATA(str_to_condense) = ` ab   cd `.
 
@@ -744,11 +839,13 @@ CLASS zcl_demo_abap_builtin_func IMPLEMENTATION.
                                 from = `x`
                                 to   = `n` ).
     out->write( data = condense5 name = `condense5` ).
-    out->write( |\n| ).
+  ENDMETHOD.
 
-*&---------------------------------------------------------------------*
-*& concat_lines_of
-*&---------------------------------------------------------------------*
+  METHOD m17_concat_lines_of.
+    zcl_demo_abap_aux=>set_example_divider(
+         out  = out
+         text = |{ text }: concat_lines_of|
+       ).
 
     DATA(stringtable) = VALUE string_table( ( `a` ) ( `b` ) ( `c` ) ).
 
@@ -762,19 +859,23 @@ CLASS zcl_demo_abap_builtin_func IMPLEMENTATION.
 
     DATA(con3) = concat_lines_of( table = stringtable sep = `/` ).
     out->write( data = con3 name = `con3` ).
-    out->write( |\n| ).
+  ENDMETHOD.
 
-*&---------------------------------------------------------------------*
-*& reverse
-*&---------------------------------------------------------------------*
+  METHOD m18_reverse.
+    zcl_demo_abap_aux=>set_example_divider(
+         out  = out
+         text = |{ text }: reverse|
+       ).
 
     DATA(reverse) = reverse( `paba` ).
     out->write( data = reverse name = `reverse` ).
-    out->write( |\n| ).
+  ENDMETHOD.
 
-*&---------------------------------------------------------------------*
-*& escape
-*&---------------------------------------------------------------------*
+  METHOD m19_escape.
+    zcl_demo_abap_aux=>set_example_divider(
+         out  = out
+         text = |{ text }: escape|
+       ).
 
     "Context: URLs
     DATA(esc1) = escape( val    = '...test: 5@8...'
@@ -792,11 +893,13 @@ CLASS zcl_demo_abap_builtin_func IMPLEMENTATION.
     DATA(esc3) = escape( val    = 'Special characters in string templates: |, \, {, }'
                          format = cl_abap_format=>e_string_tpl ).
     out->write( data = esc3 name = `esc3` ).
-    out->write( |\n| ).
+  ENDMETHOD.
 
-*&---------------------------------------------------------------------*
-*& insert
-*&---------------------------------------------------------------------*
+  METHOD m20_insert.
+    zcl_demo_abap_aux=>set_example_divider(
+         out  = out
+         text = |{ text }: insert|
+       ).
 
     DATA(to_be_inserted) = `ABAP`.
 
@@ -810,11 +913,13 @@ CLASS zcl_demo_abap_builtin_func IMPLEMENTATION.
 
     DATA(insert3) = insert( val = to_be_inserted sub = `#` off = strlen( to_be_inserted ) ).
     out->write( data = insert3 name = `insert3` ).
-    out->write( |\n| ).
+  ENDMETHOD.
 
-*&---------------------------------------------------------------------*
-*& match
-*&---------------------------------------------------------------------*
+  METHOD m21_match.
+    zcl_demo_abap_aux=>set_example_divider(
+         out  = out
+         text = |{ text }: match|
+       ).
 
     DATA(match1) = match( val = `The email address is jon.doe@email.com.`
                           pcre = `\w+(\.\w+)*@(\w+\.)+(\w{2,4})` ).
@@ -827,11 +932,13 @@ CLASS zcl_demo_abap_builtin_func IMPLEMENTATION.
                           pcre = `\s\K..`
                           occ = 2 ).
     out->write( data = match2 name = `match2` ).
-    out->write( |\n| ).
+  ENDMETHOD.
 
-*&---------------------------------------------------------------------*
-*& replace
-*&---------------------------------------------------------------------*
+  METHOD m22_replace.
+    zcl_demo_abap_aux=>set_example_divider(
+          out  = out
+          text = |{ text }: replace|
+        ).
 
     DATA(to_be_replaced) = `Pieces of cakes.`.
 
@@ -874,11 +981,13 @@ CLASS zcl_demo_abap_builtin_func IMPLEMENTATION.
 
     DATA(replace9) = replace( val = to_be_replaced off = 3 len = 7 with = `#` ).
     out->write( data = replace9 name = `replace9` ).
-    out->write( |\n| ).
+  ENDMETHOD.
 
-*&---------------------------------------------------------------------*
-*& segment
-*&---------------------------------------------------------------------*
+  METHOD m23_segment.
+    zcl_demo_abap_aux=>set_example_divider(
+          out  = out
+          text = |{ text }: segment|
+        ).
 
     "index: Number of segment
     "sep: Substring specified is searched and used as limit
@@ -912,11 +1021,13 @@ CLASS zcl_demo_abap_builtin_func IMPLEMENTATION.
       ENDTRY.
     ENDDO.
     out->write( data = segment_tab name = `segment_tab` ).
-    out->write( |\n| ).
+  ENDMETHOD.
 
-*&---------------------------------------------------------------------*
-*& shift_left, shift_right
-*&---------------------------------------------------------------------*
+  METHOD m24_shift.
+    zcl_demo_abap_aux=>set_example_divider(
+          out  = out
+          text = |{ text }: shift_left, shift_right|
+        ).
 
     DATA(to_be_shifted) = ` hallo `.
 
@@ -960,11 +1071,13 @@ CLASS zcl_demo_abap_builtin_func IMPLEMENTATION.
 
     DATA(shift_right4) = shift_right( val = to_be_shifted ).
     out->write( data = shift_right4 name = `shift_right4` ).
-    out->write( |\n| ).
+  ENDMETHOD.
 
-*&---------------------------------------------------------------------*
-*& substring, substring_after, substring_before, substring_to, substring_from
-*&---------------------------------------------------------------------*
+  METHOD m25_substring.
+    zcl_demo_abap_aux=>set_example_divider(
+          out  = out
+          text = |{ text }: substring, substring_after, substring_before, substring_to, substring_from|
+        ).
 
     DATA(s4func) = `Lorem ipsum dolor sit amet`.
 
@@ -1030,10 +1143,13 @@ CLASS zcl_demo_abap_builtin_func IMPLEMENTATION.
     DATA(substr_to) = substring_to( val = s4func sub = `um` ).
     out->write( data = substr_to name = `substr_to` ).
     out->write( |\n| ).
+  ENDMETHOD.
 
-*&---------------------------------------------------------------------*
-*& to_upper, to_lower, from_mixed, to_mixed
-*&---------------------------------------------------------------------*
+  METHOD m26_transform_cases.
+    zcl_demo_abap_aux=>set_example_divider(
+          out  = out
+          text = |{ text }: to_upper, to_lower, from_mixed, to_mixed|
+        ).
 
     "------------------- to_upper -------------------
     DATA(upper1) = to_upper( `AbaP` ).
@@ -1118,11 +1234,13 @@ CLASS zcl_demo_abap_builtin_func IMPLEMENTATION.
 
     DATA(to_mixed5) = to_mixed( val = `Abc/de/fghijklmno/pq` sep = `/` min = 5 ).
     out->write( data = to_mixed5 name = `to_mixed5` ).
-    out->write( |\n| ).
+  ENDMETHOD.
 
-*&---------------------------------------------------------------------*
-*& translate
-*&---------------------------------------------------------------------*
+  METHOD m27_translate.
+    zcl_demo_abap_aux=>set_example_divider(
+          out  = out
+          text = |{ text }: translate|
+        ).
 
     DATA(to_be_translated) = `___abc_def_____ghi_`.
 
@@ -1136,25 +1254,25 @@ CLASS zcl_demo_abap_builtin_func IMPLEMENTATION.
 
     DATA(translate2) = translate( val = to_be_translated from = `_`  to = `#?` ).
     out->write( data = translate2 name = `translate2` ).
-    out->write( |\n| ).
+  ENDMETHOD.
 
-**********************************************************************
-
-    out->write( zcl_demo_abap_aux=>heading( `4) Time Stamp Functions` ) ).
-
-
-*&---------------------------------------------------------------------*
-*& utclong_current
-*&---------------------------------------------------------------------*
+  METHOD m28_utclong_current.
+    zcl_demo_abap_aux=>set_example_divider(
+          out  = out
+          text = |{ text }: utclong_current|
+        ).
 
     "The return value has the type utclong.
     DATA(ts1) = utclong_current( ).
     out->write( data = ts1 name = `ts1` ).
     out->write( |\n| ).
+  ENDMETHOD.
 
-*&---------------------------------------------------------------------*
-*& utclong_add
-*&---------------------------------------------------------------------*
+  METHOD m29_utclong_add.
+    zcl_demo_abap_aux=>set_example_divider(
+          out  = out
+          text = |{ text }: utclong_add|
+        ).
 
     DATA(utc4calc) = CONV utclong( '2024-01-01 15:55:14.1173220' ).
 
@@ -1181,11 +1299,13 @@ CLASS zcl_demo_abap_builtin_func IMPLEMENTATION.
                              minutes = CONV int8( '13' )
                              seconds = CONV decfloat34( '53.12' ) ).
     out->write( data = ts4 name = `ts4` ).
-    out->write( |\n| ).
+  ENDMETHOD.
 
-*&---------------------------------------------------------------------*
-*& utclong_diff
-*&---------------------------------------------------------------------*
+  METHOD m30_utclong_diff.
+    zcl_demo_abap_aux=>set_example_divider(
+          out  = out
+          text = |{ text }: utclong_diff|
+        ).
 
     DATA(ts5) = CONV utclong( '2024-01-01 05:30:00' ).
     DATA(ts6) = CONV utclong( '2024-01-01 06:30:00' ).
@@ -1197,23 +1317,18 @@ CLASS zcl_demo_abap_builtin_func IMPLEMENTATION.
     out->write( data = ts_diff1 name = `ts_diff1` ).
     out->write( |\n| ).
 
-
     DATA(ts_diff2) = utclong_diff( high = ts5
                                    low = ts6 ).
     out->write( data = ts_diff2 name = `ts_diff2` ).
-    out->write( |\n| ).
+  ENDMETHOD.
 
-**********************************************************************
-
-    out->write( zcl_demo_abap_aux=>heading( `5) Table Functions` ) ).
-
-
-*&---------------------------------------------------------------------*
-*& lines
-*&---------------------------------------------------------------------*
+  METHOD m31_lines.
+    zcl_demo_abap_aux=>set_example_divider(
+          out  = out
+          text = |{ text }: lines|
+        ).
 
     DATA(strtab) = VALUE string_table( ( `aaa` ) ( `bbb` ) ( `ccc` ) ( `ddd` ) ( `eee` ) ).
-
 
     DATA(lines1) = lines( strtab ).
     out->write( data = lines1 name = `lines1` ).
@@ -1229,11 +1344,13 @@ CLASS zcl_demo_abap_builtin_func IMPLEMENTATION.
 
     DATA(lines3) = lines( strtab ).
     out->write( data = lines3 name = `lines3` ).
-    out->write( |\n| ).
+  ENDMETHOD.
 
-*&---------------------------------------------------------------------*
-*& line_index
-*&---------------------------------------------------------------------*
+  METHOD m32_line_index.
+    zcl_demo_abap_aux=>set_example_divider(
+          out  = out
+          text = |{ text }: line_index|
+        ).
 
     TYPES: BEGIN OF st,
              comp1 TYPE i,
@@ -1294,15 +1411,13 @@ CLASS zcl_demo_abap_builtin_func IMPLEMENTATION.
 
     DATA(line_index7) = line_index( itab_str[ table_line = `zzz` ] ).
     out->write( data = line_index7 name = `line_index7` ).
-    out->write( |\n| ).
+  ENDMETHOD.
 
-**********************************************************************
-
-    out->write( zcl_demo_abap_aux=>heading( `6) Built-In Functions for ABAP SQL` ) ).
-
-*&---------------------------------------------------------------------*
-*& Functions for Numeric Values
-*&---------------------------------------------------------------------*
+  METHOD m33_sql_numeric.
+    zcl_demo_abap_aux=>set_example_divider(
+          out  = out
+          text = |{ text }: SQL Functions for Numeric Values|
+        ).
 
     SELECT SINGLE
       "Division, result rounded to an integer
@@ -1339,11 +1454,13 @@ CLASS zcl_demo_abap_builtin_func IMPLEMENTATION.
       INTO @DATA(numeric_functions).
 
     out->write( data = numeric_functions name = `numeric_functions` ).
-    out->write( |\n| ).
+  ENDMETHOD.
 
-*&---------------------------------------------------------------------*
-*& Functions for Strings
-*&---------------------------------------------------------------------*
+  METHOD m34_sql_string_functions.
+    zcl_demo_abap_aux=>set_example_divider(
+          out  = out
+          text = |{ text }: SQL Functions for Strings|
+        ).
 
     SELECT SINGLE
       carrid,    "LH
@@ -1384,8 +1501,6 @@ CLASS zcl_demo_abap_builtin_func IMPLEMENTATION.
                     value = url ) AS like_regex,
 
       "Returns position of a substring in an expression,
-
-
 
       locate( carrname, 'a', 0, 2 ) AS locate,
 
@@ -1461,11 +1576,13 @@ CLASS zcl_demo_abap_builtin_func IMPLEMENTATION.
       INTO @DATA(string_functions).
 
     out->write( data = string_functions name = `string_functions` ).
-    out->write( |\n| ).
+  ENDMETHOD.
 
-*&---------------------------------------------------------------------*
-*& Functions for Date, Time, and Time Stamps
-*&---------------------------------------------------------------------*
+  METHOD m35_sql_time_date.
+    zcl_demo_abap_aux=>set_example_divider(
+          out  = out
+          text = |{ text }: SQL Functions for Date, Time, and Time Stamps|
+        ).
 
     DATA da TYPE d VALUE '20240122'.
     DATA ti TYPE t VALUE '123456'.
@@ -1535,12 +1652,9 @@ CLASS zcl_demo_abap_builtin_func IMPLEMENTATION.
       "As above, types d and utclong also possible; 1
       is_valid( @ti ) AS time_is_valid,
 
-
       extract_hour( @utc ) AS extr_hour,
 
-
       extract_minute( @ti ) AS extr_min,
-
 
       extract_second( @utc ) AS extr_sec,
 
@@ -1554,16 +1668,12 @@ CLASS zcl_demo_abap_builtin_func IMPLEMENTATION.
       "Generates a UTC time stamp; e.g. 2024-01-01 12:58:58.5070000
       utcl_current( ) AS utcl_current,
 
-
       utcl_add_seconds( @utc,5 ) AS sec_add_utc,
-
 
       utcl_seconds_between( utclong`2024-02-25 08:14:26`,utclong`2024-02-25 08:15:17` ) AS sec_bw_utc,
 
       "Functions specific to the type timetamp
-
       tstmp_is_valid( @tmst ) AS ts_is_valid,
-
 
       tstmp_current_utctimestamp( ) AS ts_current,
 
@@ -1572,7 +1682,6 @@ CLASS zcl_demo_abap_builtin_func IMPLEMENTATION.
 
       tstmp_seconds_between( tstmp1 = @tmst,
                              tstmp2 = CAST( dec`20240808112517` AS DEC( 15,0 ) ) ) AS sec_bw_ts,
-
 
       tstmp_add_seconds( tstmp    = @tmst,
                          seconds  = CAST( dec`10` AS DEC( 15,0 ) ) ) AS sec_add_ts,
@@ -1584,7 +1693,6 @@ CLASS zcl_demo_abap_builtin_func IMPLEMENTATION.
       tstmp_to_dats( tstmp = @tmst,
                      tzone =  CAST( char`EST` AS CHAR( 6 ) ) ) AS tstmp_to_dats,
 
-
       tstmp_to_tims( tstmp = @tmst,
                      tzone = CAST( char`EST` AS CHAR( 6 ) ) ) AS tstmp_to_tims,
 
@@ -1592,26 +1700,19 @@ CLASS zcl_demo_abap_builtin_func IMPLEMENTATION.
       tstmp_to_dst( tstmp = @tmst,
                     tzone = CAST( char`EST` AS CHAR( 6 ) ) ) AS tstmp_to_dst,
 
-
       dats_tims_to_tstmp( date = @da,
                           time = @ti,
                           tzone = CAST( char`EST` AS CHAR( 6 ) ) ) AS dats_tims_to_tstmp,
 
-
       tstmpl_to_utcl( tstmpl = @tmstlong ) AS tstmpl_to_utcl,
-
 
       tstmpl_from_utcl( utcl = @utc ) AS tstmpl_from_utcl,
 
-
       dats_to_datn( dats = dats`20240812` ) AS dats_to_datn,
-
 
       dats_from_datn( datn = datn`20240111` ) AS dats_from_datn,
 
-
       tims_to_timn( tims = tims`231256` ) AS tims_to_timn,
-
 
       tims_from_timn( timn = timn`155432` ) AS tims_from_timn
 
@@ -1619,11 +1720,13 @@ CLASS zcl_demo_abap_builtin_func IMPLEMENTATION.
     INTO @DATA(time_and_date_functions).
 
     out->write( data = time_and_date_functions name = `time_and_date_functions` ).
-    out->write( |\n| ).
+  ENDMETHOD.
 
-*&---------------------------------------------------------------------*
-*& More (Special) Functions
-*&---------------------------------------------------------------------*
+  METHOD m36_sql_special_functions.
+    zcl_demo_abap_aux=>set_example_divider(
+          out  = out
+          text = |{ text }: SQL Special Functions|
+        ).
 
     SELECT SINGLE
       carrid,
@@ -1657,11 +1760,13 @@ CLASS zcl_demo_abap_builtin_func IMPLEMENTATION.
       INTO @DATA(special_functions).
 
     out->write( data = special_functions name = `special_functions` ).
-    out->write( |\n| ).
+  ENDMETHOD.
 
-*&---------------------------------------------------------------------*
-*& coalesce Function
-*&---------------------------------------------------------------------*
+  METHOD m37_sql_coalesce_function.
+    zcl_demo_abap_aux=>set_example_divider(
+          out  = out
+          text = |{ text }: SQL coalesce Function|
+        ).
 
     "The null value is a special value that is returned by a database. It indicates an
     "undefined value or result. Note that, in ABAP, there are no special null values. Do
@@ -1695,14 +1800,5 @@ CLASS zcl_demo_abap_builtin_func IMPLEMENTATION.
         INTO TABLE @DATA(join_w_null).
 
     out->write( data = join_w_null name = `join_w_null` ).
-    out->write( |\n| ).
-
-
   ENDMETHOD.
-
-  METHOD class_constructor.
-    "Filling demo database tables.
-    zcl_demo_abap_aux=>fill_dbtabs( ).
-  ENDMETHOD.
-
 ENDCLASS.

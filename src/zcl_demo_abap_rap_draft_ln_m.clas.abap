@@ -102,7 +102,13 @@ CLASS zcl_demo_abap_rap_draft_ln_m DEFINITION
       m             TYPE RESPONSE FOR MAPPED zdemo_abap_rap_draft_m.
 
     CLASS-METHODS:
-      initialize_dbtabs.
+      initialize_dbtabs,
+      display_db_tab_content IMPORTING out TYPE REF TO if_oo_adt_classrun_out,
+      display_draft_db_tab_content IMPORTING out TYPE REF TO if_oo_adt_classrun_out,
+      display_responses IMPORTING out      TYPE REF TO if_oo_adt_classrun_out
+                                  failed   LIKE f OPTIONAL
+                                  reported LIKE r OPTIONAL
+                                  mapped   LIKE m OPTIONAL.
 
 ENDCLASS.
 
@@ -110,17 +116,21 @@ ENDCLASS.
 
 CLASS zcl_demo_abap_rap_draft_ln_m IMPLEMENTATION.
 
-
   METHOD class_constructor.
     initialize_dbtabs( ).
   ENDMETHOD.
 
-
   METHOD if_oo_adt_classrun~main.
 
-    out->write( `ABAP Cheat Sheet Example: RAP Calculator Using Managed, ` &&
-                      |Draft-Enabled RAP BO (Late Numbering)\n\n| ).
-    out->write( |1) Creating Instances and Saving to the database\n| ).
+    zcl_demo_abap_aux=>set_example_divider(
+         out  = out
+         text = `ABAP Cheat Sheet Example: RAP Calculator Using Managed, Draft-Enabled RAP BO (Late Numbering)`
+       ).
+
+    zcl_demo_abap_aux=>set_example_divider(
+       out  = out
+       text = `1) Creating Instances and Saving to the database`
+     ).
 
     "Creating instances; draft indicator %is_draft is enabled
     MODIFY ENTITY zdemo_abap_rap_draft_m
@@ -143,25 +153,7 @@ CLASS zcl_demo_abap_rap_draft_ln_m IMPLEMENTATION.
 
     "Displaying responses only if FAILED and REPORTED
     "response parameters are not initial
-    IF f IS NOT INITIAL OR r IS NOT INITIAL.
-      out->write( `Responses after MODIFY operation` ).
-      out->write( |\n| ).
-
-      IF m IS NOT INITIAL.
-        out->write( data = m name = `m` ).
-        out->write( |\n| ).
-      ENDIF.
-
-      IF f IS NOT INITIAL.
-        out->write( data = f name = `f` ).
-        out->write( |\n| ).
-      ENDIF.
-
-      IF r IS NOT INITIAL.
-        out->write( data = r name = `r` ).
-        out->write( |\n| ).
-      ENDIF.
-    ENDIF.
+    display_responses( out ).
 
     COMMIT ENTITIES.
 
@@ -169,20 +161,16 @@ CLASS zcl_demo_abap_rap_draft_ln_m IMPLEMENTATION.
       out->write( `An issue occurred in the RAP save sequence.` ).
     ENDIF.
 
-    "Retrieving draft table entries
-    SELECT id, num1, arithm_op, num2, calc_result, crea_date_time,
-           lchg_date_time, draftentitycreationdatetime,
-           draftentitylastchangedatetime
-     FROM zdemo_abap_draft
-     ORDER BY id
-     INTO TABLE @DATA(draft_parent_before_act).
-
-    "Retrieving database table entries
-    SELECT id, num1, arithm_op, num2, calc_result, crea_date_time,
-           lchg_date_time
-     FROM zdemo_abap_tabca
-     ORDER BY id
-     INTO TABLE @DATA(db_tab_root_before_act).
+    "Retrieving and displaying database table content
+    out->write( |1a) Draft and database tables before ACTIVATE action\n| ).
+    out->write( `Draft table before activation` ).
+    out->write( |\n| ).
+    display_draft_db_tab_content( out ).
+    out->write( |\n| ).
+    out->write( `Database table before activation` ).
+    out->write( |\n| ).
+    display_db_tab_content( out ).
+    out->write( |\n| ).
 
     "Filling the derived type for the ACTIVATE method by
     "getting %pid values
@@ -198,50 +186,33 @@ CLASS zcl_demo_abap_rap_draft_ln_m IMPLEMENTATION.
       FAILED f
       REPORTED r.
 
+    display_responses( out ).
+
     COMMIT ENTITIES.
 
     IF sy-subrc <> 0.
       out->write( `An issue occurred in the RAP save sequence.` ).
     ENDIF.
 
-    "Retrieving draft table entries
-    SELECT id, num1, arithm_op, num2, calc_result, crea_date_time,
-           lchg_date_time, draftentitycreationdatetime,
-           draftentitylastchangedatetime
-     FROM zdemo_abap_draft
-     ORDER BY id
-     INTO TABLE @DATA(draft_parent_afer_act).
 
-    "Retrieving database table entries
-    SELECT id, num1, arithm_op, num2, calc_result, crea_date_time,
-           lchg_date_time
-     FROM zdemo_abap_tabca
-     ORDER BY id
-     INTO TABLE @DATA(db_tab_root_after_act).
-
-    "Displaying entries
-    out->write( |1a) Draft and database tables before ACTIVATE action\n| ).
-    out->write( `Draft table before activation` ).
+    out->write( `1b) Draft and database tables after ` &&
+                   `ACTIVATE action` ).
     out->write( |\n| ).
-    out->write( data = draft_parent_before_act name = `draft_parent_before_act` ).
-    out->write( |\n| ).
-    out->write( `Database table before activation` ).
-    out->write( |\n| ).
-    out->write( data = db_tab_root_before_act name = `db_tab_root_before_act` ).
-
-    out->write( zcl_demo_abap_aux=>heading( `1b) Draft and database tables after ` &&
-                   `ACTIVATE action` ) ).
     out->write( `Draft table after activation` ).
     out->write( |\n| ).
-    out->write( data = draft_parent_afer_act name = `draft_parent_afer_act` ).
+    display_draft_db_tab_content( out ).
     out->write( |\n| ).
     out->write( `Database table after activation` ).
     out->write( |\n| ).
-    out->write( data = db_tab_root_after_act name = `db_tab_root_after_act` ).
+    display_db_tab_content( out ).
+    out->write( |\n| ).
 
 **********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `2) Creating Invalid Instances` ) ).
+    zcl_demo_abap_aux=>set_example_divider(
+       out  = out
+       text = `2) Creating Invalid Instances`
+     ).
 
     "Purposely creating invalid instances;
     "draft indicator %is_draft is enabled
@@ -261,26 +232,7 @@ CLASS zcl_demo_abap_rap_draft_ln_m IMPLEMENTATION.
 
     "Displaying responses only if FAILED and REPORTED
     "response parameters are not initial.
-    IF f IS NOT INITIAL OR r IS NOT INITIAL.
-      out->write( data = `Responses after MODIFY operation` ).
-      out->write( |\n| ).
-
-      IF m IS NOT INITIAL.
-        out->write( data = m name = `m` ).
-        out->write( |\n| ).
-      ENDIF.
-
-      IF f IS NOT INITIAL.
-        out->write( data = f name = `f` ).
-        out->write( |\n| ).
-      ENDIF.
-
-      IF r IS NOT INITIAL.
-        out->write( data = r name = `r` ).
-        out->write( |\n| ).
-      ENDIF.
-
-    ENDIF.
+    display_responses( out ).
 
     COMMIT ENTITIES.
 
@@ -288,20 +240,16 @@ CLASS zcl_demo_abap_rap_draft_ln_m IMPLEMENTATION.
       out->write( `An issue occurred in the RAP save sequence.` ).
     ENDIF.
 
-    "Retrieving draft table entries
-    SELECT id, num1, arithm_op, num2, calc_result, crea_date_time,
-           lchg_date_time, draftentitycreationdatetime,
-           draftentitylastchangedatetime
-     FROM zdemo_abap_draft
-     ORDER BY id
-     INTO TABLE @draft_parent_before_act.
-
-    "Retrieving database table entries
-    SELECT id, num1, arithm_op, num2, calc_result, crea_date_time,
-           lchg_date_time
-     FROM zdemo_abap_tabca
-     ORDER BY id
-     INTO TABLE @db_tab_root_before_act.
+    "Displaying entries
+    out->write( `2a) Draft and database tables before ` &&
+                   `ACTIVATE action` ).
+    out->write( `Draft table before activation` ).
+    out->write( |\n| ).
+    display_draft_db_tab_content( out ).
+    out->write( |\n| ).
+    out->write( `Database table before activation` ).
+    out->write( |\n| ).
+    display_db_tab_content( out ).
 
     "Filling the derived type for the ACTIVATE method by
     "getting %pid values; here, another table is filled for later use
@@ -323,26 +271,7 @@ CLASS zcl_demo_abap_rap_draft_ln_m IMPLEMENTATION.
 
     "Displaying responses only if FAILED and REPORTED
     "response parameters are not initial.
-    IF f IS NOT INITIAL OR r IS NOT INITIAL.
-      out->write( data = `Responses after MODIFY operation` ).
-      out->write( |\n| ).
-
-      IF m IS NOT INITIAL.
-        out->write( data = m name = `m` ).
-        out->write( |\n| ).
-      ENDIF.
-
-      IF f IS NOT INITIAL.
-        out->write( data = f name = `f` ).
-        out->write( |\n| ).
-      ENDIF.
-
-      IF r IS NOT INITIAL.
-        out->write( data = r name = `r` ).
-        out->write( |\n| ).
-      ENDIF.
-
-    ENDIF.
+    display_responses( out ).
 
     COMMIT ENTITIES.
 
@@ -350,45 +279,23 @@ CLASS zcl_demo_abap_rap_draft_ln_m IMPLEMENTATION.
       out->write( `An issue occurred in the RAP save sequence.` ).
     ENDIF.
 
-    "Retrieving draft table entries
-    SELECT id, num1, arithm_op, num2, calc_result, crea_date_time,
-           lchg_date_time, draftentitycreationdatetime,
-           draftentitylastchangedatetime
-     FROM zdemo_abap_draft
-     ORDER BY id
-     INTO TABLE @draft_parent_afer_act.
-
-    "Retrieving database table entries
-    SELECT id, num1, arithm_op, num2, calc_result, crea_date_time,
-           lchg_date_time
-     FROM zdemo_abap_tabca
-     ORDER BY id
-     INTO TABLE @db_tab_root_after_act.
-
-    "Displaying entries
-    out->write( zcl_demo_abap_aux=>heading( `2a) Draft and database tables before ` &&
-                   `ACTIVATE action` ) ).
-    out->write( `Draft table before activation` ).
+    out->write( `2b) Draft and database tables after ` &&
+                `ACTIVATE action` ).
     out->write( |\n| ).
-    out->write( data = draft_parent_before_act name = `draft_parent_before_act` ).
-    out->write( |\n| ).
-    out->write( `Database table before activation` ).
-    out->write( |\n| ).
-    out->write( data = db_tab_root_before_act name = `db_tab_root_before_act` ).
-
-    out->write( zcl_demo_abap_aux=>heading( `2b) Draft and database tables after ` &&
-                   `ACTIVATE action` ) ).
     out->write( `Draft table after activation` ).
     out->write( |\n| ).
-    out->write( data = draft_parent_afer_act name = `draft_parent_afer_act` ).
+    display_draft_db_tab_content( out ).
     out->write( |\n| ).
     out->write( `Database table after activation` ).
     out->write( |\n| ).
-    out->write( data = db_tab_root_after_act name = `db_tab_root_after_act` ).
+    display_db_tab_content( out ).
 
 **********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `3) Correcting and Updating Invalid Instances` ) ).
+    zcl_demo_abap_aux=>set_example_divider(
+       out  = out
+       text = `3) Correcting and Updating Invalid Instances`
+     ).
 
     "Preparing the derived type for the read operation to
     "retrieve the field values; the draft indicator is enabled
@@ -433,11 +340,27 @@ CLASS zcl_demo_abap_rap_draft_ln_m IMPLEMENTATION.
         REPORTED r
         MAPPED m.
 
+    "Displaying responses only if FAILED and REPORTED
+    "response parameters are not initial.
+    display_responses( out ).
+
     COMMIT ENTITIES.
 
     IF sy-subrc <> 0.
       out->write( `An issue occurred in the RAP save sequence.` ).
     ENDIF.
+
+    "Displaying entries
+    out->write( `3a) Draft and database tables before ` &&
+                   `ACTIVATE action` ).
+    out->write( `Draft table before activation` ).
+    out->write( |\n| ).
+    display_draft_db_tab_content( out ).
+    out->write( |\n| ).
+    out->write( `Database table before activation` ).
+    out->write( |\n| ).
+    display_db_tab_content( out ).
+
 
     MODIFY ENTITY zdemo_abap_rap_draft_m
       EXECUTE activate AUTO FILL CID WITH activate_tab3
@@ -445,42 +368,78 @@ CLASS zcl_demo_abap_rap_draft_ln_m IMPLEMENTATION.
       FAILED f
       REPORTED r.
 
+    "Displaying responses only if FAILED and REPORTED
+    "response parameters are not initial.
+    display_responses( out ).
+
     COMMIT ENTITIES.
 
     IF sy-subrc <> 0.
       out->write( `An issue occurred in the RAP save sequence.` ).
     ENDIF.
 
-    "Retrieving draft table entries
-    SELECT id, num1, arithm_op, num2, calc_result, crea_date_time,
-           lchg_date_time, draftentitycreationdatetime,
-           draftentitylastchangedatetime
-     FROM zdemo_abap_draft
-     ORDER BY id
-     INTO TABLE @draft_parent_afer_act.
-
-    "Retrieving database table entries
-    SELECT id, num1, arithm_op, num2, calc_result, crea_date_time,
-           lchg_date_time
-     FROM zdemo_abap_tabca
-     ORDER BY id
-     INTO TABLE @db_tab_root_after_act.
-
-    "Displaying entries
-    out->write( data = `Draft and database tables after ` &&
-                   `ACTIVATE action` ).
+    out->write( `3b) Draft and database tables after ` &&
+                `ACTIVATE action` ).
     out->write( |\n| ).
     out->write( `Draft table after activation` ).
     out->write( |\n| ).
-    out->write( data = draft_parent_afer_act name = `draft_parent_afer_act` ).
+    display_draft_db_tab_content( out ).
     out->write( |\n| ).
     out->write( `Database table after activation` ).
     out->write( |\n| ).
-    out->write( data = db_tab_root_after_act name = `db_tab_root_after_act` ).
+    display_db_tab_content( out ).
   ENDMETHOD.
 
   METHOD initialize_dbtabs.
     DELETE FROM zdemo_abap_tabca.
     DELETE FROM zdemo_abap_draft.
   ENDMETHOD.
+
+  METHOD display_db_tab_content.
+    "Retrieving database table entries
+    SELECT id, num1, arithm_op, num2, calc_result, crea_date_time,
+           lchg_date_time
+     FROM zdemo_abap_tabca
+     ORDER BY id
+     INTO TABLE @DATA(db_tab_content).
+
+    out->write( data = db_tab_content name = `db_tab_content` ).
+    out->write( |\n| ).
+  ENDMETHOD.
+
+  METHOD display_draft_db_tab_content.
+    "Retrieving draft table entries
+    SELECT id, num1, arithm_op, num2, calc_result, crea_date_time,
+           lchg_date_time, draftentitycreationdatetime,
+           draftentitylastchangedatetime
+     FROM zdemo_abap_draft
+     ORDER BY id
+     INTO TABLE @DATA(draft_tab_content).
+
+    out->write( data = draft_tab_content name = `draft_tab_content` ).
+    out->write( |\n| ).
+  ENDMETHOD.
+
+  METHOD display_responses.
+    IF f IS NOT INITIAL OR r IS NOT INITIAL.
+      out->write( `Responses after MODIFY operation` ).
+      out->write( |\n| ).
+
+      IF m IS NOT INITIAL.
+        out->write( data = m name = `m` ).
+        out->write( |\n| ).
+      ENDIF.
+
+      IF f IS NOT INITIAL.
+        out->write( data = f name = `f` ).
+        out->write( |\n| ).
+      ENDIF.
+
+      IF r IS NOT INITIAL.
+        out->write( data = r name = `r` ).
+        out->write( |\n| ).
+      ENDIF.
+    ENDIF.
+  ENDMETHOD.
+
 ENDCLASS.

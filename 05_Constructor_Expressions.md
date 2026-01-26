@@ -2295,6 +2295,7 @@ FIND ALL OCCURRENCES OF PCRE `(?<=\/)([^\/]+)(?=\/)` IN url RESULTS DATA(res).
 "- ([^\/]+) in between determines that any sequence of characters that are not `/` are matched
 "- The match is put in parentheses to store the submatch
 
+DATA url_parts TYPE string_table.
 LOOP AT res INTO DATA(finding).
   LOOP AT finding-submatches INTO DATA(sub).
     DATA(url_part) = substring( val = url off = sub-offset len = sub-length ).
@@ -2304,9 +2305,9 @@ ENDLOOP.
 
 "The following statement uses nested iteration expressions with FOR instead of nested
 "LOOP statements.
-DATA(url_parts_for_loop) = VALUE string_table( FOR wa1 IN res
-                                               FOR wa2 IN wa1-submatches
-                                               ( substring( val = url off = wa2-offset len = wa2-length ) ) ).
+DATA(url_parts_for_loop) = VALUE string_table( FOR w1 IN res
+                                               FOR w2 IN w1-submatches
+                                               ( substring( val = url off = w2-offset len = w2-length ) ) ).
 
 ASSERT url_parts = url_parts_for_loop.
 *Content:

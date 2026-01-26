@@ -800,7 +800,7 @@ DATA(ref3) = REF data( ... ).
 
 "A non-generic type can be used; only if an upcast works (see 
 "upcasts below)
-DATA(ref3) = REF some_type( ... ).
+DATA(ref4) = REF some_type( ... ).
 
 "The older syntax GET REFERENCE having the same effect should 
 "not be used anymore.
@@ -905,7 +905,7 @@ is required to access objects and their components. That means objects are not d
 - Using [`CREATE OBJECT`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapcreate_object.htm) statements, you can create an object as an instance of a class and assign the reference to the object to an [object reference variable](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenobject_refer_variable_glosry.htm). 
 - The instance operator [`NEW`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconstructor_expression_new.htm) basically replaces `CREATE OBJECT` statements. 
 - However, `CREATE OBJECT` statements are still required and they are the only option for creating objects dynamically (`NEW` is not possible in that context) as shown further down.
-- In the example, note the the built-in generic ABAP type `object` (`TYPE REF TO object`) that is used for the generic typing of object references. It is for any object type. `object` stands for the root class of the inheritance hierarchy. More information: [Generic ABAP Types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbuilt_in_types_generic.htm)
+- In the example, note the built-in generic ABAP type `object` (`TYPE REF TO object`) that is used for the generic typing of object references. It is for any object type. `object` stands for the root class of the inheritance hierarchy. More information: [Generic ABAP Types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbuilt_in_types_generic.htm)
 - Find more information in the [ABAP Keyword Documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapcreate_object.htm) and the [ABAP Object Orientation](04_ABAP_Object_Orientation.md) cheat sheet
 
 ```abap
@@ -3436,117 +3436,117 @@ CALL FUNCTION func_name PARAMETER-TABLE ptab.
 *& Dynamic ABAP EML MODIFY statement
 *&---------------------------------------------------------------------*
 
-DATA: op_tab           TYPE abp_behv_changes_tab,
-      create_root_tab  TYPE TABLE FOR CREATE zdemo_abap_rap_ro_m,
-      update_root_tab  TYPE TABLE FOR UPDATE zdemo_abap_rap_ro_m,
-      delete_root_tab  TYPE TABLE FOR UPDATE zdemo_abap_rap_ro_m,
-      cba              TYPE TABLE FOR CREATE zdemo_abap_rap_ro_m\_child,
-      update_child_tab TYPE TABLE FOR UPDATE zdemo_abap_rap_ch_m,
-      delete_child_tab TYPE TABLE FOR DELETE zdemo_abap_rap_ch_m.
+    DATA: op_tab           TYPE abp_behv_changes_tab,
+          create_root_tab  TYPE TABLE FOR CREATE zdemo_abap_rap_ro_m,
+          update_root_tab  TYPE TABLE FOR UPDATE zdemo_abap_rap_ro_m,
+          delete_root_tab  TYPE TABLE FOR DELETE zdemo_abap_rap_ro_m,
+          cba              TYPE TABLE FOR CREATE zdemo_abap_rap_ro_m\_child,
+          update_child_tab TYPE TABLE FOR UPDATE zdemo_abap_rap_ch_m,
+          delete_child_tab TYPE TABLE FOR DELETE zdemo_abap_rap_ch_m.
 
-create_root_tab = VALUE #(
-            ( %cid = 'cid1'
-              key_field = 5
-              %control-key_field = if_abap_behv=>mk-on
-              field1 = 'a'
-              %control-field1 = if_abap_behv=>mk-on
-              field2 = 'b'
-              %control-field2 = if_abap_behv=>mk-on )
-            ( %cid = 'cid2'
-              key_field = 6
-              %control-key_field = if_abap_behv=>mk-on
-              field1 = 'd'
-              %control-field1 = if_abap_behv=>mk-on
-              field2 = 'd'
-              %control-field2 = if_abap_behv=>mk-on )
-            ( %cid = 'cid3'
-              key_field = 7
-              %control-key_field = if_abap_behv=>mk-on
-              field1 = 'e'
-              %control-field1 = if_abap_behv=>mk-on
-              field2 = 'f'
-              %control-field2 = if_abap_behv=>mk-on ) ).
+    create_root_tab = VALUE #(
+                ( %cid = 'cid1'
+                  key_field = 5
+                  %control-key_field = if_abap_behv=>mk-on
+                  field1 = 'a'
+                  %control-field1 = if_abap_behv=>mk-on
+                  field2 = 'b'
+                  %control-field2 = if_abap_behv=>mk-on )
+                ( %cid = 'cid2'
+                  key_field = 6
+                  %control-key_field = if_abap_behv=>mk-on
+                  field1 = 'd'
+                  %control-field1 = if_abap_behv=>mk-on
+                  field2 = 'd'
+                  %control-field2 = if_abap_behv=>mk-on )
+                ( %cid = 'cid3'
+                  key_field = 7
+                  %control-key_field = if_abap_behv=>mk-on
+                  field1 = 'e'
+                  %control-field1 = if_abap_behv=>mk-on
+                  field2 = 'f'
+                  %control-field2 = if_abap_behv=>mk-on ) ).
 
-update_root_tab = VALUE #(
-            ( %cid_ref = 'cid2'
-              field1 = 'g'
-              %control-field1 = if_abap_behv=>mk-on
-              field2 = 'h'
-              %control-field2 = if_abap_behv=>mk-on ) ).
+    update_root_tab = VALUE #(
+                ( %cid_ref = 'cid2'
+                  field1 = 'g'
+                  %control-field1 = if_abap_behv=>mk-on
+                  field2 = 'h'
+                  %control-field2 = if_abap_behv=>mk-on ) ).
 
-cba = VALUE #(
-            ( %cid_ref = 'cid1'
-              %target = VALUE #( (
-              %cid = 'cid_cba1'
-              key_ch = 10
-              %control-key_ch = if_abap_behv=>mk-on
-              field_ch1 = 'i'
-              %control-field_ch1 = if_abap_behv=>mk-on
-              field_ch2 = 1
-              %control-field_ch2 = if_abap_behv=>mk-on
-            ) ) )
-            ( %cid_ref = 'cid2'
-              %target = VALUE #( (
-              %cid = 'cid_cba2'
-              key_ch = 20
-              %control-key_ch = if_abap_behv=>mk-on
-              field_ch1 = 'j'
-              %control-field_ch1 = if_abap_behv=>mk-on
-              field_ch2 = 2
-              %control-field_ch2 = if_abap_behv=>mk-on
-            ) ) )
-            ( %cid_ref = 'cid3'
-              %target = VALUE #( (
-              %cid = 'cid_cba3'
-              key_ch = 30
-              %control-key_ch = if_abap_behv=>mk-on
-              field_ch1 = 'k'
-              %control-field_ch1 = if_abap_behv=>mk-on
-              field_ch2 = 3
-              %control-field_ch2 = if_abap_behv=>mk-on ) ) ) ).
+    cba = VALUE #(
+                ( %cid_ref = 'cid1'
+                  %target = VALUE #( (
+                  %cid = 'cid_cba1'
+                  key_ch = 10
+                  %control-key_ch = if_abap_behv=>mk-on
+                  field_ch1 = 'i'
+                  %control-field_ch1 = if_abap_behv=>mk-on
+                  field_ch2 = 1
+                  %control-field_ch2 = if_abap_behv=>mk-on
+                ) ) )
+                ( %cid_ref = 'cid2'
+                  %target = VALUE #( (
+                  %cid = 'cid_cba2'
+                  key_ch = 20
+                  %control-key_ch = if_abap_behv=>mk-on
+                  field_ch1 = 'j'
+                  %control-field_ch1 = if_abap_behv=>mk-on
+                  field_ch2 = 2
+                  %control-field_ch2 = if_abap_behv=>mk-on
+                ) ) )
+                ( %cid_ref = 'cid3'
+                  %target = VALUE #( (
+                  %cid = 'cid_cba3'
+                  key_ch = 30
+                  %control-key_ch = if_abap_behv=>mk-on
+                  field_ch1 = 'k'
+                  %control-field_ch1 = if_abap_behv=>mk-on
+                  field_ch2 = 3
+                  %control-field_ch2 = if_abap_behv=>mk-on ) ) ) ).
 
-update_child_tab = VALUE #(
-            ( key_field = 6
-              field_ch1 = 'l'
-              %control-field_ch1 = if_abap_behv=>mk-on
-              field_ch2 = 4
-              %control-field_ch2 = if_abap_behv=>mk-on ) ).
+    update_child_tab = VALUE #(
+                ( key_field = 6
+                  field_ch1 = 'l'
+                  %control-field_ch1 = if_abap_behv=>mk-on
+                  field_ch2 = 4
+                  %control-field_ch2 = if_abap_behv=>mk-on ) ).
 
-delete_root_tab = VALUE #( ( key_field = 7 ) ).
+    delete_root_tab = VALUE #( ( key_field = 7 ) ).
 
-delete_child_tab = VALUE #( ( key_field = 7 ) ).
+    delete_child_tab = VALUE #( ( key_field = 7 ) ).
 
-op_tab = VALUE #(
-        ( op = if_abap_behv=>op-m-create
-          entity_name = 'ZDEMO_ABAP_RAP_RO_M'
-          instances   = REF #( create_root_tab ) )
-        ( op = if_abap_behv=>op-m-update
-          entity_name = 'ZDEMO_ABAP_RAP_RO_M'
-          instances   = REF #( update_root_tab ) )
-        ( op = if_abap_behv=>op-m-delete
-          entity_name = 'ZDEMO_ABAP_RAP_RO_M'
-          instances   = REF #( delete_root_tab ) )
-        ( op = if_abap_behv=>op-m-create_ba
-          entity_name = 'ZDEMO_ABAP_RAP_RO_M'
-          sub_name    = '_CHILD'
-          instances   = REF #( cba ) )
-        ( op = if_abap_behv=>op-m-update
-          entity_name = 'ZDEMO_ABAP_RAP_CH_M'
-          instances   = REF #( update_child_tab ) )
-        ( op = if_abap_behv=>op-m-delete
-          entity_name = 'ZDEMO_ABAP_RAP_CH_M'
-          instances   = REF #( delete_child_tab ) ) ).
+    op_tab = VALUE #(
+            ( op = if_abap_behv=>op-m-create
+              entity_name = 'ZDEMO_ABAP_RAP_RO_M'
+              instances   = REF #( create_root_tab ) )
+            ( op = if_abap_behv=>op-m-update
+              entity_name = 'ZDEMO_ABAP_RAP_RO_M'
+              instances   = REF #( update_root_tab ) )
+            ( op = if_abap_behv=>op-m-delete
+              entity_name = 'ZDEMO_ABAP_RAP_RO_M'
+              instances   = REF #( delete_root_tab ) )
+            ( op = if_abap_behv=>op-m-create_ba
+              entity_name = 'ZDEMO_ABAP_RAP_RO_M'
+              sub_name    = '_CHILD'
+              instances   = REF #( cba ) )
+            ( op = if_abap_behv=>op-m-update
+              entity_name = 'ZDEMO_ABAP_RAP_CH_M'
+              instances   = REF #( update_child_tab ) )
+            ( op = if_abap_behv=>op-m-delete
+              entity_name = 'ZDEMO_ABAP_RAP_CH_M'
+              instances   = REF #( delete_child_tab ) ) ).
 
-MODIFY ENTITIES OPERATIONS op_tab
-    MAPPED   DATA(m)
-    FAILED   DATA(f)
-    REPORTED DATA(r).
+    MODIFY ENTITIES OPERATIONS op_tab
+        MAPPED   DATA(m)
+        FAILED   DATA(f)
+        REPORTED DATA(r).
 
 *&---------------------------------------------------------------------*
 *& Dynamic ABAP EML READ statement
 *&---------------------------------------------------------------------*
 
-DATA: op_tab          TYPE abp_behv_retrievals_tab,    
+DATA: op_tab_read     TYPE abp_behv_retrievals_tab,    
       read_dyn        TYPE TABLE FOR READ IMPORT zdemo_abap_rap_ro_m,
       read_dyn_result TYPE TABLE FOR READ RESULT zdemo_abap_rap_ro_m,
       rba_dyn         TYPE TABLE FOR READ IMPORT zdemo_abap_rap_ro_m\_child,
@@ -3591,7 +3591,7 @@ rba_dyn = VALUE #(
 "Filling the internal table that is the operand of the
 "dynamic EML statement
 "This table has optional and mandatory components.
-op_tab = VALUE #(
+op_tab_read = VALUE #(
     ( "op: Specifies the operation to be executed; is mandatory;
         "    can be set with the predefined constants, e.g. OP-R-READ
         "    etc., of interface IF_ABAP_BEHV
@@ -3618,7 +3618,7 @@ op_tab = VALUE #(
         "       target
         links       = REF #( rba_dyn_link ) ) ).
 
-READ ENTITIES OPERATIONS op_tab.
+READ ENTITIES OPERATIONS op_tab_read.
 ```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>

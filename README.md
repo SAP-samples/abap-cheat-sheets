@@ -102,9 +102,9 @@ ABAP cheat sheets[^1] ...
 |[ABAP Dictionary](26_ABAP_Dictionary.md)|Covers a selection of repository objects in the ABAP Dictionary (DDIC) that represent global types|- (The cheat sheet includes a copy and paste example class)|
 |[Exceptions and Runtime Errors](27_Exceptions.md)|Provides an overview on exceptions and runtime errors|[zcl_demo_abap_error_handling](./src/zcl_demo_abap_error_handling.clas.abap)|
 |[Regular Expressions in ABAP](28_Regular_Expressions.md)|Includes an overview of common regular expressions and their use in ABAP through statements, built-in functions, and system classes|[zcl_demo_abap_regex](./src/zcl_demo_abap_regex.clas.abap)|
-|[Numeric Operations in ABAP](29_Numeric_Operations.md)|Explores various aspects of numeric operations and calculations in ABAP|- (The cheat sheet includes a copy and paste example class)|
+|[Numeric Operations in ABAP](29_Numeric_Operations.md)|Explores various aspects of numeric operations and calculations in ABAP| [zcl_demo_abap_numeric_op](./src/zcl_demo_abap_numeric_op.clas.abap) |
 |[Generative AI](30_Generative_AI.md)|Provides references to detailed information on *Generative AI in ABAP Cloud* and explores released ABAP classes available in the *ABAP AI SDK powered by Intelligent Scenario Lifecycle Management*|- (The cheat sheet includes a copy and paste example class)|
-|[WHERE Conditions](31_WHERE_Conditions.md)|Explores syntax options in ABAP statements that include `WHERE` for data filtering|- (The cheat sheet includes copy and paste example classes)|
+|[WHERE Conditions](31_WHERE_Conditions.md)|Explores syntax options in ABAP statements that include `WHERE` for data filtering| [zcl_demo_abap_where_conditions](./src/zcl_demo_abap_where_conditions.clas.abap) |
 |[Performance Notes](32_Performance_Notes.md)|Explores a selection of performance-related examples, aimed to illustrate potentially inefficient techniques and use of statements|- (The cheat sheet includes a copy and paste example class)|
 |[ABAP Release News](33_ABAP_Release_News.md)|Summarizes the release news from the ABAP Keyword Documentation for both versions of the ABAP language, ABAP for Cloud Development and Standard ABAP |-|
 |[ABAP Examples Using Object-Oriented Design Patterns](34_OO_Design_Patterns.md)|Does not cover ABAP-specific topics, but rather focuses on ABAP code experiments that explore design patterns in object-oriented programming. Many of these experiments are inspired by classic design patterns established by the _Gang of Four_ (GoF). |- (The cheat sheet includes copy and paste example classes)|
@@ -147,7 +147,7 @@ For Standard ABAP, you can find examples in the other branches of the repository
 
 Use the abapGit plug-in to install the <em>ABAP cheat sheets</em> by carrying out the following steps:
 
-1. In your ABAP cloud project, create a package, for example, *ZABAP_CHEAT_SHEETS* as the target package. It is recommended that you assign the package to a transport request that is suitable for demo content.
+1. In your ABAP cloud project, create a package, for example, *ZABAP_CHEAT_SHEETS* as the target package. The package should be local.
 2. Add the package to the *Favorite Packages* in the *Project Explorer* view in ADT.
 3. To add the <em>abapGit Repositories</em> view to the <em>ABAP</em> perspective, choose *Window* → *Show View* → *Other...* from the menu bar and choose *abapGit Repositories*.
 4. In the <em>abapGit Repositories</em> view, click the `+` icon in the upper right corner of the ADT tab to link a new abapGit repository.
@@ -163,12 +163,12 @@ https://github.com/SAP-samples/abap-cheat-sheets.git
 
 7. On the *Branch and Package Selection* screen, enter the name of the created package (for example, *ZABAP_CHEAT_SHEETS*) in the *Package* field.
 8. Choose *Next*.
-9.  On the *Select Transport Request* screen, select the created transport request that is suitable for the demo content and choose *Finish* to link the Git repository to your ABAP cloud project. If the created package is already assigned to a transport request for the demo content, and a message appears that an object is already locked in a transport request, choose *Finish*, too.
+9.  On the *Select Transport Request* screen, choose *Finish* to link the Git repository to your ABAP cloud project. The package should be local.
 10. In the *abapGit Repositories* view, filter for your package. The repository appears in the *abapGit Repositories* view with the status <em>Linked</em>.
 11. Right-click on the new abapGit repository and choose *Pull...* to start the cloning of the repository contents.
 12. On the *Branch and Package Selection* screen, choose *Next*.
 13. If the *Locally Modified Object* screen is displayed, select the objects (for example, the package to automatically select all artifacts) from the list and choose *Next*.
-14. On the next screen, select a transport request and choose *Finish*. Same as above, if an *object already locked* message is displayed, choose *Finish* as well. The status in the *abapGit Repositories* view changes to <em>Pull running...</em>. Note that the pull run may take several minutes.
+14. On the next screen - the package should be local - choose *Finish*. Same as above, if an *object already locked* message is displayed, choose *Finish* as well. The status in the *abapGit Repositories* view changes to <em>Pull running...</em>. Note that the pull run may take several minutes.
 15. Once the cloning is complete, the status changes to *Pulled Successfully*. You may need to refresh the *abapGit Repositories* view to see the progress of the import. To do this, choose the  *Refresh* icon in the upper right corner of the view.
 16. Refresh your project tree. For example, in ADT, right-click the package and choose *Refresh*. The package should contain all the artifacts from the GitHub repository.
 17. Make sure that all artifacts are active. To activate all inactive development objects, choose the *Activate all inactive ABAP development objects* button from the menu (or choose *CTRL+Shift+F3*).
@@ -227,9 +227,13 @@ Use the standalone version of the abapGit report to import the demo examples of 
   - Check the console output.
     > [!NOTE] 
     >- Check the notes on the context and the ABAP syntax used that are included as comments in the class.
-    >- Due to the amount of output in the console, the examples include numbers (e.g. 1) ..., 2) ..., 3) ...) that represent the headers of each example code section. Also, in most cases, the variable name is displayed in the console. Therefore, to find the relevant output in the console more easily and quickly, simply search the console for the number (e.g. search for *3)* for the particular output) or variable name (*CTRL+F* in the console), or use breakpoints in the code to check variables in the debugger.
-    >- You may want to clear the console by right-clicking in the console and choosing *Clear* before running another demo class to avoid confusing the output of multiple classes.
-- Programs:
+    >- Due to the amount of output in the console, in many cases, the variable name is displayed in the console. Therefore, to find the relevant output in the console more easily and quickly, simply search the console for the variable name, or use breakpoints in the code to check variables in the debugger.
+    >- Many of the example classes are structured as follows:
+    >   - Code snippets are organized by topic within dedicated methods (`m01_...`, `m02_...`, `m03_...`, and so on) to avoid overcrowding in the `if_oo_adt_classrun~main` method implementation. The `if_oo_adt_classrun~main` method must be implemented when specifying the `if_oo_adt_classrun` interface. It enables a class to be executed and display data object content (using the `out->write( ... )` method call).
+    >   - These methods, named with an M followed by a digit, are called dynamically in the `if_oo_adt_classrun~main` method implementation. The method names are retrieved into an internal table using Runtime Type Identification (RTTI). For more information on RTTI, refer to the Dynamic Programming cheat sheet.
+    >   - The table is iterated over, and only methods that follow the naming convention are called. The interface reference variable `out`, which is bound when executing the class, is passed to the individual methods to enable displaying data object content.
+    >- You may want to clear the console by right-clicking in the console and choosing *Clear* before running another demo class to avoid confusing the output of multiple classes. Note that you can also add a setting to automatically clear the console.
+- Classic programs (_reports_):
   - The programs included in the repository can be executed with *F8* (or *Run* → *Run As* → *1 ABAP Application*). 
 
 

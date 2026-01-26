@@ -68,7 +68,7 @@ This section provides high-level walkthrough examples to illustrate simplified B
 >   - Opened ADT.
 >   - Logged in to your SAP BTP ABAP Environment.
 >   - Created a package for demo content.
-> - The steps create demo repository objects step by step. You can also create objects separately and add them to the appropriate fields on the maintenance screens in ADT.
+> - The procedure description includes the creation of demo repository objects step by step . You can also create objects separately and add them to the appropriate fields on the maintenance screens in ADT.
 > - When enhancing existing functionality, you need to know about the existing BAdI and proceed with creating custom implementations.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
@@ -255,7 +255,7 @@ This section provides high-level walkthrough examples to illustrate simplified B
         
 3. **BAdI interface**
      - Create a BAdI interface with the name _ZIF_DEMO_ABAP_CONVERTER_.
-     - Note that only importing and changing parameters are possible here. For display purposes, the method definition includes a referene to the classrun output. In the executable example class, the calling class implements the classrun and supplies a bound interface reference variable when calling the BAdI method.
+     - Note that only importing and changing parameters are possible here. For display purposes, the method definition includes an importing parameter having a reference to the classrun output. In the executable example class, the calling class implements the classrun and supplies a bound interface reference variable when calling the BAdI method.
       
         ```abap
         INTERFACE zif_demo_abap_converter

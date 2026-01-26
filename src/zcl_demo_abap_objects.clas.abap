@@ -11,8 +11,10 @@
 "! <li>Artifacts related to this example: {@link zdemo_abap_objects_interface} (a separate global interface to
 "! demonstrate interface usage) and {@link zcl_demo_abap_objects_friend} (another global class used to
 "! demonstrate the concept of friendship</li>
-"! <li>Find information on <strong>getting started with the example class</strong> and the
-"! <strong>disclaimer</strong> in the ABAP Doc comment of class {@link zcl_demo_abap_aux}.</li></ul>
+"! <li>Find the following information in the ABAP Doc comment of class {@link zcl_demo_abap_aux}:
+"! <ul><li>How to get started with the example class</li>
+"! <li>Structuring of (most of) the example classes</li>
+"! <li>Disclaimer</li></ul></li></ul>
 CLASS zcl_demo_abap_objects DEFINITION
   PUBLIC
   FINAL
@@ -23,6 +25,33 @@ CLASS zcl_demo_abap_objects DEFINITION
     INTERFACES: if_oo_adt_classrun,
       zdemo_abap_objects_interface.
     ALIASES triple FOR zdemo_abap_objects_interface~triple.
+
+    METHODS:
+      m01_declare_oref  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m02_create_objects  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m03_assign_oref  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m04_overwrite_oref  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m05_retain_oref  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m06_clear_oref  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m07_access_class_attributes  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m08_call_methods  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m09_methods_importing_param  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m10_methods_exporting_param  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m11_methods_changing_param  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m12_methods_returning_param  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m13_methods_error_handling  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m14_constructors  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m15_param_generic_types  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m16_inheritance_redefinition  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m17_polymorphism_casting  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m18_downcast  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m19_rtti_downcasts_m_chaining  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m20_interfaces  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m21_singleton  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m22_factory_meth_abstract_cl  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m23_friendship  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m24_self_reference_me  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m25_events  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string.
 
     METHODS: hallo_instance_method,
       "Demo method for self-reference me
@@ -65,9 +94,37 @@ CLASS zcl_demo_abap_objects IMPLEMENTATION.
 
   METHOD if_oo_adt_classrun~main.
 
-    out->write( |ABAP cheat sheet example: ABAP Object Orientation (1)\n\n| ).
-    out->write( |Working with objects and components\n\n| ).
-    out->write( |1) Declaring reference variables\n\n| ).
+    zcl_demo_abap_aux=>set_example_divider(
+     out  = out
+     text = `ABAP cheat sheet example: ABAP Object Orientation (1)`
+   ).
+
+    "Dynamically calling methods of the class
+    "The method names are retrieved using RTTI. For more information, refer to the
+    "Dynamic Programming ABAP cheat sheet.
+    "Only those methods should be called that follow the naming convention M + digit.
+    DATA(methods) = CAST cl_abap_classdescr( cl_abap_typedescr=>describe_by_object_ref( me ) )->methods.
+    SORT methods BY name ASCENDING.
+
+    "To call a particular method only, you can comment in the WHERE clause and
+    "adapt the literal appropriately.
+    LOOP AT methods INTO DATA(meth_wa)
+    "WHERE name CS 'M01'
+    .
+      TRY.
+          "The find function result indicates that the method name begins (offset = 0) with M and a digit.
+          IF find( val = meth_wa-name pcre = `^M\d` case = abap_false ) = 0.
+            CALL METHOD (meth_wa-name) EXPORTING out = out text = CONV string( meth_wa-name ).
+          ENDIF.
+        CATCH cx_root INTO DATA(error).
+          out->write( error->get_text( ) ).
+      ENDTRY.
+    ENDLOOP.
+  ENDMETHOD.
+
+  METHOD m01_declare_oref.
+
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Declaring reference variables| ).
 
     "To create an object, a reference variable must be declared. This
     "variable is also necessary for accessing objects, i. e. objects
@@ -94,10 +151,12 @@ CLASS zcl_demo_abap_objects IMPLEMENTATION.
       out->write( `One or more of the declared reference ` &&
                     `variables are not initial.` ).
     ENDIF.
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m02_create_objects.
 
-    out->write( zcl_demo_abap_aux=>heading( `2) Creating objects` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Creating objects| ).
+
 
     "You create an object in the memory of an application by using the
     "instance operator NEW. In doing so, a new instance of a
@@ -125,10 +184,11 @@ CLASS zcl_demo_abap_objects IMPLEMENTATION.
       out->write( `One or more of the reference variables ` &&
       `do not point to instances of the class local_class.` ).
     ENDIF.
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m03_assign_oref.
 
-    out->write( zcl_demo_abap_aux=>heading( `3) Assigning object references` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Assigning object references| ).
 
     "Without an assignment, the reference variable is empty.
     "To assign or copy reference variable, use the assignment operator
@@ -145,10 +205,12 @@ CLASS zcl_demo_abap_objects IMPLEMENTATION.
     ELSE.
       out->write( `ref3b has not been assigned to ref3a.` ).
     ENDIF.
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m04_overwrite_oref.
 
-    out->write( zcl_demo_abap_aux=>heading( `4) Overwriting object references` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Overwriting object references| ).
+
 
     "An object reference is overwritten when a new object is created
     "with a reference variable already pointing to an instance.
@@ -167,9 +229,12 @@ CLASS zcl_demo_abap_objects IMPLEMENTATION.
 
     out->write( data = ref4->no_of_instances name = `ref4->no_of_instances` ).
 
-**********************************************************************
+  ENDMETHOD.
 
-    out->write( zcl_demo_abap_aux=>heading( `5) Keeping references variables in internal tables` ) ).
+  METHOD m05_retain_oref.
+
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Retaining references in internal tables| ).
+
 
     "The following code shows that the reference variable is
     "overwritten in the course of the loop multiple times.
@@ -188,10 +253,11 @@ CLASS zcl_demo_abap_objects IMPLEMENTATION.
     ENDDO.
 
     out->write( data = itab5 name = `itab5` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m06_clear_oref.
 
-    out->write( zcl_demo_abap_aux=>heading( `6) Clearing object references` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Clearing object references| ).
 
     "Use CLEAR statements to explicitly clear a reference variable.
     "Since objects use up space in the memory, they should be cleared
@@ -210,10 +276,12 @@ CLASS zcl_demo_abap_objects IMPLEMENTATION.
     ELSE.
       out->write( `ref6 is not initial.` ).
     ENDIF.
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m07_access_class_attributes.
 
-    out->write( zcl_demo_abap_aux=>heading( `7) Accessing and using attributes` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Accessing and using attributes| ).
+
 
     "Instance attributes are accessed using the object component
     "selector -> via a reference variable. Visible static attributes
@@ -243,9 +311,11 @@ CLASS zcl_demo_abap_objects IMPLEMENTATION.
     out->write( |\n| ).
     out->write( data = class_static_attr name = `class_static_attr` ).
 
-**********************************************************************
+  ENDMETHOD.
 
-    out->write( zcl_demo_abap_aux=>heading( `8) Calling static and instance methods` ) ).
+  METHOD m08_call_methods.
+
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Calling static and instance methods| ).
 
     "Similar to accessing attributes, instance methods are called
     "using -> via a reference variable. Static methods are called
@@ -280,11 +350,11 @@ CLASS zcl_demo_abap_objects IMPLEMENTATION.
     hallo_static_method( ).
 
     out->write( data = string name = `string` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m09_methods_importing_param.
 
-    out->write( zcl_demo_abap_aux=>heading( `9) Calling methods: Examples` &&
-                  ` with importing parameters` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Calling methods: Examples with importing parameters| ).
 
     "The example shows method calls. The methods used have only one or
     "two importing parameters.
@@ -330,11 +400,11 @@ CLASS zcl_demo_abap_objects IMPLEMENTATION.
     lcl_demo=>addition_optional( i_add_mand = 1 ).
 
     out->write( data = lcl_demo=>calc_result name = `lcl_demo=>calc_result` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m10_methods_exporting_param.
 
-    out->write( zcl_demo_abap_aux=>heading( `10) Calling methods: Examples ` &&
-                  `with exporting parameters` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Calling methods: Examples with exporting parameters| ).
 
     "Note: The methods have exporting parameters defined in the signature,
     "hence, when calling the method, the ABAP word IMPORTING must be used to
@@ -359,10 +429,11 @@ CLASS zcl_demo_abap_objects IMPLEMENTATION.
     out->write( data = hallo name = `hallo` ).
     out->write( |\n| ).
     out->write( data = subtraction_result name = `subtraction_result` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m11_methods_changing_param.
 
-    out->write( zcl_demo_abap_aux=>heading( `11) Calling methods: Example with changing parameter` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Calling methods: Example with changing parameter| ).
 
     "Changing parameters define one or multiple parameters that can
     "be both imported and exported. They should be reserved for
@@ -373,10 +444,11 @@ CLASS zcl_demo_abap_objects IMPLEMENTATION.
     lcl_demo=>square_root( CHANGING i_sqr = num ).
 
     out->write( data = num name = `num` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m12_methods_returning_param.
 
-    out->write( zcl_demo_abap_aux=>heading( `12) Calling methods: Examples with returning parameters` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Calling methods: Examples with returning parameters| ).
 
     "Methods having a returning parameter are called functional methods.
     "Returning parameters are preferable to exporting parameters since they
@@ -444,10 +516,11 @@ CLASS zcl_demo_abap_objects IMPLEMENTATION.
     out->write( data = random_no2 name = `random_no2` ).
     out->write( |\n| ).
     out->write( data = random_no3 name = `random_no3` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m13_methods_error_handling.
 
-    out->write( zcl_demo_abap_aux=>heading( `13) Calling methods: Examples with error handling` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Calling methods: Examples with error handling| ).
 
     "The examples show two method calls for a method that includes a
     "raising parameter. For this method, a class-based exception is
@@ -490,10 +563,11 @@ CLASS zcl_demo_abap_objects IMPLEMENTATION.
     ENDTRY.
 
     out->write( data = greets name = `greets` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m14_constructors.
 
-    out->write( zcl_demo_abap_aux=>heading( `14) Constructors` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Constructors| ).
 
     "Constructors cannot be explicitly called like other methods.
     "The examples demonstrate instance and static constructors.
@@ -546,10 +620,11 @@ CLASS zcl_demo_abap_objects IMPLEMENTATION.
     out->write( data = lcl_constructors=>stat_text name = `lcl_constructors=>stat_text` ).
     out->write( |\n| ).
     out->write( data = lcl_constructors=>stat_number name = `lcl_constructors=>stat_number` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m15_param_generic_types.
 
-    out->write( zcl_demo_abap_aux=>heading( `15) Parameters: Generic types` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Parameters: Generic types| ).
 
     "The use of generic types in method signatures is particularly relevant
     "for dynamic programming. The code shows various examples of parameters
@@ -590,10 +665,11 @@ CLASS zcl_demo_abap_objects IMPLEMENTATION.
 
     out->write( data = lcl_demo=>some_data->* name = `lcl_demo=>some_data->*` ).
     out->write( |\n| ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m16_inheritance_redefinition.
 
-    out->write( zcl_demo_abap_aux=>heading( `16) Inheritance: Method redefinition` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Inheritance: Method redefinition| ).
 
     "The example demonstrates inheritance in a very rudimentary way.
     "Class 1 is the superclass of class 2 that inherits from class 1. The
@@ -624,9 +700,11 @@ CLASS zcl_demo_abap_objects IMPLEMENTATION.
     out->write( |\n| ).
     out->write( data = third_string name = `third_string` ).
 
-**********************************************************************
+  ENDMETHOD.
 
-    out->write( zcl_demo_abap_aux=>heading( `17) Polymorphism and Casting` ) ).
+  METHOD m17_polymorphism_casting.
+
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Polymorphism and Casting| ).
 
     "The ref_pol1 object reference variable is created and points to class
     "lcl_class1, i. e. the superclass. The ref_pol2 object reference
@@ -665,10 +743,11 @@ CLASS zcl_demo_abap_objects IMPLEMENTATION.
     out->write( data = str1 name = `str1` ).
     out->write( |\n| ).
     out->write( data = str2 name = `str2` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m18_downcast.
 
-    out->write( zcl_demo_abap_aux=>heading( `18a) Downcast` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Downcast| ).
 
     "In this example, the possibility of downcasts are checked, i. e. the
     "assignment of a more generic object reference variable to a specific
@@ -768,10 +847,11 @@ CLASS zcl_demo_abap_objects IMPLEMENTATION.
     ENDLOOP.
 
     out->write( data = dc_check name = `dc_check` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m19_rtti_downcasts_m_chaining.
 
-    out->write( zcl_demo_abap_aux=>heading( `18b) Excursion RTTI: Downcasts and Method Chaining` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Excursion RTTI: Downcasts and Method Chaining| ).
 
     "Downcasts particularly play, for example, a role in the context of
     "retrieving type information using RTTI. Method chaining is handy
@@ -795,10 +875,11 @@ CLASS zcl_demo_abap_objects IMPLEMENTATION.
           )->components.
 
     out->write( data = rtti_d name = `rtti_d` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m20_interfaces.
 
-    out->write( zcl_demo_abap_aux=>heading( `19) Interfaces` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Interfaces| ).
 
     "Addressing instance interface components using interface reference variable
     DATA ref_if1 TYPE REF TO zdemo_abap_objects_interface.
@@ -888,10 +969,11 @@ CLASS zcl_demo_abap_objects IMPLEMENTATION.
     out->write( data = intf_const2 name = `intf_const2` ).
     out->write( |\n| ).
     out->write( data = intf_const3 name = `intf_const3` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m21_singleton.
 
-    out->write( zcl_demo_abap_aux=>heading( `20) Singleton` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Singleton| ).
 
     "The demonstrates an implementation of the singleton design pattern.
     "A static method allows access to the only object of the class.
@@ -941,10 +1023,11 @@ CLASS zcl_demo_abap_objects IMPLEMENTATION.
     out->write( data = timestamp name = `timestamp` ).
     out->write( |\n| ).
     out->write( data = no_of_instances name = `no_of_instances` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m22_factory_meth_abstract_cl.
 
-    out->write( zcl_demo_abap_aux=>heading( `21) Factory method in an abstract class` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Factory method in an abstract class| ).
 
     "The example demonstrates a factory method in an abstract class. An
     "instance is tried to be created two times. The factory method is
@@ -983,10 +1066,11 @@ CLASS zcl_demo_abap_objects IMPLEMENTATION.
     out->write( |\n| ).
     out->write( |\n| ).
     out->write( data = lcl_abstract=>message name = `lcl_abstract=>message` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m23_friendship.
 
-    out->write( zcl_demo_abap_aux=>heading( `22) Friendship: Accessing components of friends` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Friendship: Accessing components of friends| ).
 
     "Classes can grant friendship to other classes and interfaces to enable
     "the access to protected and private components. However, the friendship
@@ -1002,10 +1086,11 @@ CLASS zcl_demo_abap_objects IMPLEMENTATION.
     DATA(string_table) = zcl_demo_abap_objects_friend=>get_strings( ).
 
     out->write( data = string_table name = `string_table` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m24_self_reference_me.
 
-    out->write( zcl_demo_abap_aux=>heading( `23) Self-reference me` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Self-reference me| ).
 
     "This example demonstrates the use of the self-reference 'me' in an
     "instance method. The method implementation includes a variable of type
@@ -1023,10 +1108,11 @@ CLASS zcl_demo_abap_objects IMPLEMENTATION.
     out->write( data = string_without_me name = `string_without_me` ).
     out->write( |\n| ).
     out->write( data = string_with_me name = `string_with_me` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m25_events.
 
-    out->write( zcl_demo_abap_aux=>heading( `24) Events` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Events| ).
 
     "The example covers the use of instance events. Event handler methods
     "are registered for a particular instance. Events are raised in a method
@@ -1046,9 +1132,7 @@ CLASS zcl_demo_abap_objects IMPLEMENTATION.
     ref_events->greetings( ).
 
     out->write( data = ref_events->greets name = `ref_events->greets` ).
-
   ENDMETHOD.
-
 
   METHOD me_ref_meth.
     DATA another_string TYPE string VALUE `I'm a local string.`.
@@ -1058,18 +1142,15 @@ CLASS zcl_demo_abap_objects IMPLEMENTATION.
     e2 = me->another_string.
   ENDMETHOD.
 
-
   METHOD triple.
     zdemo_abap_objects_interface~in_str = `The result of calling triple (i. e. zdemo_abap_objects_interface~triple) is: `.
     r_triple = i_op * 3.
   ENDMETHOD.
 
-
   METHOD zdemo_abap_objects_interface~double.
     zdemo_abap_objects_interface~in_str = `The result of calling zdemo_abap_objects_interface~double is: `.
     r_double = i_op * 2.
   ENDMETHOD.
-
 
   METHOD zdemo_abap_objects_interface~halve.
     zdemo_abap_objects_interface~stat_str = `The result of calling zdemo_abap_objects_interface~halve is: `.

@@ -11,8 +11,10 @@
 "! the example class includes local classes in the CCIMP include (local types tab in ADT) whose
 "! methods return character-like content for use in ABAP statements. The content is predefined
 "! in these classes, but the actual content used is random.</li>
-"! <li>Find information on <strong>getting started with the example class</strong> and the
-"! <strong>disclaimer</strong> in the ABAP Doc comment of class {@link zcl_demo_abap_aux}.</li></ul>
+"! <li>Find the following information in the ABAP Doc comment of class {@link zcl_demo_abap_aux}:
+"! <ul><li>How to get started with the example class</li>
+"! <li>Structuring of (most of) the example classes</li>
+"! <li>Disclaimer</li></ul></li></ul>
 CLASS zcl_demo_abap_dynamic_prog DEFINITION
   PUBLIC
   FINAL
@@ -23,6 +25,64 @@ CLASS zcl_demo_abap_dynamic_prog DEFINITION
 
     CLASS-METHODS:
       class_constructor.
+
+    METHODS:
+      m01_declaring_field_symbols  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m02_assign_dobj2fs  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m03_check_fs_assignment  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m04_unassign_dobj_from_fs  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m05_fs_type_casting  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m06_address_fs  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m07_fs_itab  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m08_fs_structure_components  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m09_declare_dref  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m10_create_dref  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m11_create_dobj_dyn  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m12_assign_dref  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m13_address_dref  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m14_check_dereferencing  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m15_remove_ref  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m16_overwrite_dref  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m17_retain_dref  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m18_process_itab_with_dref  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m19_dref_in_itab_struc  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m20_generic_dref  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m21_dynamic_assign  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m22_dyn_access_structure_comp  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m23_create_dyn_dobj_misc  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m24_create_dyn_elem_dobj  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m25_create_dyn_struc  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m26_create_dyn_itab  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m27_anonymous_dobj_dyn_type  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m28_dyn_class_instances  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m29_absolute_name  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m30_dyn_itab  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m31_dyn_abap_sql  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m32_validate_dyn_input  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m33_dyn_method_calls  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m34_dyn_spec_string_templates  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m35_dyn_export_import  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m36_security_considerations  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m37_rtti_get_type_descr  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m38_rtti_misc_a  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m39_rtti_misc_b  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m40_rttc  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m41_rtti_elementary  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m42_rtti_enum  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m43_rtti_struc  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m44_rtti_itab  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m45_rtti_dref  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m46_rtti_classes  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m47_rtti_interfaces  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m48_type_descr_cl_constants  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m49_rttc_elementary  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m50_rttc_structures  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m51_rttc_itab  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m52_rttc_dref  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m53_assign_sy_subrc  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m54_dyn_eml  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m55_dyn_call_transformation  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string.
+
   PROTECTED SECTION.
   PRIVATE SECTION.
     METHODS inst_meth1.
@@ -31,27 +91,59 @@ CLASS zcl_demo_abap_dynamic_prog DEFINITION
     CLASS-METHODS stat_meth1.
     CLASS-METHODS stat_meth2 IMPORTING text   TYPE string
                              EXPORTING result TYPE string.
+
+    "Creating and populating various types/data objects to work with
+    TYPES: BEGIN OF st_type,
+             col1 TYPE i,
+             col2 TYPE string,
+             col3 TYPE string,
+           END OF st_type.
+    DATA structure TYPE st_type.
+    DATA it TYPE TABLE OF st_type WITH EMPTY KEY.
 ENDCLASS.
 
 
 
 CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
 
-
   METHOD class_constructor.
     "Filling demo database tables.
     zcl_demo_abap_aux=>fill_dbtabs( ).
   ENDMETHOD.
 
-
   METHOD if_oo_adt_classrun~main.
 
-    out->write( |ABAP Cheat Sheet Example: Dynamic Programming\n\n| ).
+    zcl_demo_abap_aux=>set_example_divider(
+         out  = out
+         text = `ABAP Cheat Sheet Example: Dynamic Programming`
+       ).
 
-**********************************************************************
+    "Dynamically calling methods of the class
+    "The method names are retrieved using RTTI. For more information, refer to the
+    "Dynamic Programming ABAP cheat sheet.
+    "Only those methods should be called that follow the naming convention M + digit.
+    DATA(methods) = CAST cl_abap_classdescr( cl_abap_typedescr=>describe_by_object_ref( me ) )->methods.
+    SORT methods BY name ASCENDING.
 
-    out->write( |Excursion: Field Symbols\n\n| ).
-    out->write( |1) Declaring Field Symbols\n\n| ).
+    "To call a particular method only, you can comment in the WHERE clause and
+    "adapt the literal appropriately.
+    LOOP AT methods INTO DATA(meth_wa)
+    "WHERE name CS 'M01'
+    .
+      TRY.
+          "The find function result indicates that the method name begins (offset = 0) with M and a digit.
+          IF find( val = meth_wa-name pcre = `^M\d` case = abap_false ) = 0.
+            CALL METHOD (meth_wa-name) EXPORTING out = out text = CONV string( meth_wa-name ).
+          ENDIF.
+        CATCH cx_root INTO DATA(error).
+          out->write( error->get_text( ) ).
+      ENDTRY.
+    ENDLOOP.
+  ENDMETHOD.
+
+  METHOD m01_declaring_field_symbols.
+
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Declaring Field Symbols| ).
 
     "Some data declarations and type definitions used further down
     DATA: str TYPE string.
@@ -92,9 +184,11 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
 
     out->write( zcl_demo_abap_aux=>no_output ).
 
-**********************************************************************
+  ENDMETHOD.
 
-    out->write( zcl_demo_abap_aux=>heading( `2) Assigning Data Objects to Field Symbols` ) ).
+  METHOD m02_assign_dobj2fs.
+
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Assigning Data Objects to Field Symbols| ).
 
     "ASSIGN statements assigns the memory area of a data object to a field symbol.
     "Once the memory area is assigned, you can work with the content.
@@ -284,10 +378,11 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
     ASSIGN s-oref TO <object>.
 
     out->write( zcl_demo_abap_aux=>no_output ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m03_check_fs_assignment.
 
-    out->write( zcl_demo_abap_aux=>heading( `3) Checking Field Symbol Assignment` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Checking Field Symbol Assignment| ).
 
     "When working with field symbols, you should make sure that they are
     "assigned. Otherwise, a runtime error occurs.
@@ -316,10 +411,11 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
     ELSE.
       out->write( `Field symbol <fs_str_b> is not assigned.` ).
     ENDIF.
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m04_unassign_dobj_from_fs.
 
-    out->write( zcl_demo_abap_aux=>heading( `4) Unassigning Data Objects from Field Symbols` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Unassigning Data Objects from Field Symbols| ).
 
     "If you use an unassigned field symbol, an exception is raised. Before
     "using it, you can check the assignment with the following logical
@@ -348,10 +444,11 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
     ELSE.
       out->write( `2. Field symbol <fs_i_c> is not assigned.` ).
     ENDIF.
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m05_fs_type_casting.
 
-    out->write( zcl_demo_abap_aux=>heading( `5) Type Casting with Field Symbols` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Type Casting with Field Symbols| ).
 
     "The example demonstrates the CASTING addition. Various additions after
     "CASTING are possible.
@@ -416,10 +513,11 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
     ASSIGN dobj_d_l10 TO <fs_d1> CASTING TYPE HANDLE sometype.
 
     out->write( data = <fs_d1> name = `<fs_d1>` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m06_address_fs.
 
-    out->write( zcl_demo_abap_aux=>heading( `6) Addressing Field Symbols` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Addressing Field Symbols| ).
 
     "The example includes multiple data objects that are assigned to field
     "symbols. It is demonstrated that field symbols are addressed in various
@@ -511,10 +609,11 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
       UP TO 3 ROWS.
 
     out->write( data = <fs_anytab_e> name = `<fs_anytab_e>` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m07_fs_itab.
 
-    out->write( zcl_demo_abap_aux=>heading( `7) Using Field Symbols when Processing Internal Tables` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Using Field Symbols when Processing Internal Tables| ).
 
     "By using field symbols in the context of loops across internal tables,
     "you can avoid an actual copying of content to a work area during
@@ -582,9 +681,11 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
     out->write( |\n| ).
     out->write( data = <fs_anytab_f> name = `<fs_anytab_f>` ).
 
-**********************************************************************
+  ENDMETHOD.
 
-    out->write( zcl_demo_abap_aux=>heading( `8) Structure Assigned to Field Symbol: Accessing Structure Components` ) ).
+  METHOD m08_fs_structure_components.
+
+    zcl_demo_abap_aux=>set_example_divider( out  = out text = |{ text }: Structure Assigned to Field Symbol: Accessing Structure Components| ).
 
     "In this example, all components of a structure are processed using
     "field symbols and an ASSIGN COMPONENT ... OF STRUCTURE ... statement.
@@ -627,11 +728,11 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
       ENDIF.
 
     ENDDO.
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m09_declare_dref.
 
-    out->write( zcl_demo_abap_aux=>heading( `Data References` ) ).
-    out->write( |9) Declaring Data References\n\n| ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Declaring Data References| ).
 
     "Like field symbols, data reference variables can be declared with both
     "a complete and a generic data type using DATA statements and the
@@ -651,11 +752,11 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
           ref_a6 TYPE REF TO data. "Generic data type
 
     out->write( zcl_demo_abap_aux=>no_output ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m10_create_dref.
 
-    out->write( zcl_demo_abap_aux=>heading( `10) Creating Data References ` &&
-    `to Existing Data Objects` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Creating Data References to Existing Data Objects| ).
 
     "The example includes data reference variables with both complete and
     "generic type. When using the REF operator, the '#' sign means that the
@@ -682,10 +783,11 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
     "DATA(ref_b3) = REF #( g ).
 
     out->write( zcl_demo_abap_aux=>no_output ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m11_create_dobj_dyn.
 
-    out->write( zcl_demo_abap_aux=>heading( `11) Dynamically Creating Data Objects at Runtime Using Static Type Definitions` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Dynamically Creating Data Objects at Runtime Using Static Type Definitions| ).
 
     "The example code shows the creation of anonymous data objects. They
     "can be created using the statement CREATE DATA, the instance operator
@@ -771,10 +873,11 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
     out->write( data = dref_c7->* name = `dref_c7->*` ).
     out->write( |\n| ).
     out->write( data = dref_c8->* name = `dref_c8->*` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m12_assign_dref.
 
-    out->write( zcl_demo_abap_aux=>heading( `12) Data References and Assignments` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Data References and Assignments| ).
 
     "Regarding the assignment, note that static types of both data
     "reference variables must be compatible. As a result of an assignment,
@@ -827,10 +930,11 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
     out->write( data = ref_data_d1->* name = `ref_data_d1->*` ).
     out->write( |\n| ).
     out->write( data = ref_d5->* name = `ref_d5->*` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m13_address_dref.
 
-    out->write( zcl_demo_abap_aux=>heading( `13) Addressing Data References ` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Addressing Data References| ).
 
     "Before addressing the content of data objects a data reference points
     "to, you must dereference data reference variables. Use the
@@ -899,11 +1003,11 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
 
     out->write( data = ref_e2->*-carrname name = `ref_e2->*-carrname` ).
     out->write( |\n| ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m14_check_dereferencing.
 
-    out->write( zcl_demo_abap_aux=>heading( `14) Checking if Data Reference ` &&
-   `Can Be Dereferenced` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Checking if Data Reference Can Be Dereferenced| ).
 
     "You can check if a data reference can be dereferenced by using
     "a logical expression with IS [NOT] BOUND.
@@ -936,10 +1040,11 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
     out->write( `COND operator:` ).
     is_bound = COND #( WHEN ref_f2 IS BOUND THEN `ref_f2 is bound.` ELSE `ref_f2 is not bound.` ).
     out->write( is_bound ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m15_remove_ref.
 
-    out->write( zcl_demo_abap_aux=>heading( `15) Explicitly Removing a Reference` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Explicitly Removing a Reference| ).
 
     "Note that the garbage collector takes care of removing the references
     "automatically once the data is not used any more by a reference.
@@ -977,10 +1082,11 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
     ELSE.
       out->write( `After CLEAR: ref_g1 is not bound.` ).
     ENDIF.
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m16_overwrite_dref.
 
-    out->write( zcl_demo_abap_aux=>heading( `16) Overwriting Data Reference Variables` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Overwriting Data Reference Variables| ).
 
     "A data reference variable is overwritten if a new object is created
     "with a data reference variable already pointing to a data object
@@ -995,10 +1101,11 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
     ref_h1 = NEW string( `ref_h1 overwritten.` ).
 
     out->write( data = ref_h1->* name = `ref_h1->*` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m17_retain_dref.
 
-    out->write( zcl_demo_abap_aux=>heading( `17) Retaining Data References` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Retaining Data References| ).
 
     "Storing data reference variables in an internal table using
     "TYPE TABLE OF REF TO prevents the overwriting.
@@ -1028,11 +1135,11 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
     out->write( data = `The derefenced value of the data reference - which ` &&
     `was changed in the course of the loop - in the second table ` &&
     `entry is ` && itab_i[ 2 ]->* && `.` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m18_process_itab_with_dref.
 
-    out->write( zcl_demo_abap_aux=>heading( `18) Processing Internal Tables Using ` &&
-    `Data References ` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Processing Internal Tables Using Data References| ).
 
     "Similar use case to using field symbols: In a loop across an internal table,
     "you can store the content of the line in a data reference variable
@@ -1057,11 +1164,11 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
     ENDLOOP.
 
     out->write( data = flsch_tab name = `flsch_tab` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m19_dref_in_itab_struc.
 
-    out->write( zcl_demo_abap_aux=>heading( `19) Data References as Part of ` &&
-   `Structures and Internal Tables` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Data References as Part of Structures and Internal Tables| ).
 
     "In contrast to field symbols, data reference variables can be used as
     "components of structures or columns in internal tables.
@@ -1099,10 +1206,11 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
     ENDDO.
 
     out->write( data = itab_l name = `itab_l` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m20_generic_dref.
 
-    out->write( zcl_demo_abap_aux=>heading( `20) Excursion: Generic Data References` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Generic Data References| ).
 
     "In modern ABAP, variables and field symbols of the generic types
     "'any' and 'data' can be used directly, for example, in LOOP and READ statements.
@@ -1153,11 +1261,13 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
 
     out->write( data = idx name = `idx` ).
     out->write( |\n| ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m21_dynamic_assign.
 
-    out->write( zcl_demo_abap_aux=>heading( `Dynamic ABAP Statements` ) ).
-    out->write( |21) Dynamic ASSIGN Statements (1) - Specifying the Memory Area Dynamically\n\n| ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Dynamic ASSIGN Statements| ).
+
+    "--- Specifying the Memory Area Dynamically ---
     "The memory area is not specified directly, but as content of a
     "character-like data object in parentheses.
     "Note:
@@ -1170,14 +1280,7 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
     "- Most of the following examples use an unnamed data object.
     "- The specification of the name is not case-sensitive.
 
-    "Creating and populating various types/data objects to work with
-    TYPES: BEGIN OF st_type,
-             col1 TYPE i,
-             col2 TYPE string,
-             col3 TYPE string,
-           END OF st_type.
-    DATA structure TYPE st_type.
-    DATA it TYPE TABLE OF st_type WITH EMPTY KEY.
+
     structure = VALUE #( col1 = 1 col2 = `aaa` col3 = `Z` ).
     APPEND structure TO it.
     DATA(struc_ref) = NEW st_type( col1 = 2 col2 = `b` col3 = `Y` ).
@@ -1203,7 +1306,7 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
 
 **********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `22) Dynamic ASSIGN Statements (2) - Assigning Components Dynamically` ) ).
+    "--- Assigning Components Dynamically ---
 
     "You can chain the names with the component selector (-), or, in
     "case of reference variables, the object component selector (->).
@@ -1293,7 +1396,7 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
 
 **********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `23) Dynamic ASSIGN Statements (3) - Assigning Attributes of Classes or Interfaces Dynamically (1)` ) ).
+    "--- Assigning Attributes of Classes or Interfaces Dynamically ---
     "The following syntax pattern shows the possible specifications.
     "... cref->(attr_name) ...  "object reference variable
     "... iref->(attr_name) ...  "interface reference variable
@@ -1336,11 +1439,9 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
     "because the operand position after ASSIGN is a result position.
     ASSIGN NEW zcl_demo_abap_objects( )->('PUBLIC_STRING') TO <fs>.
 
-    out->write( zcl_demo_abap_aux=>no_output ).
-
 **********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `24) Dynamic ASSIGN Statements (4) - Assigning Attributes of Classes or Interfaces Dynamically (2)` ) ).
+    "--- Assigning Attributes of Classes or Interfaces Dynamically ---
 
     "The following examples demonstrate a selection of various dynamic specifications
     "that are possible with ASSIGN statements.
@@ -1384,7 +1485,7 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
 
 **********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `25) Dynamic ASSIGN Statements (5) - Setting sy-subrc/ELSE UNASSIGN Addition` ) ).
+    "--- Setting sy-subrc/ELSE UNASSIGN Addition ---
 
     "In dynamic assignments, the statement ASSIGN sets the return code sy-subrc.
     "If ELSE UNASSIGN is specified, no memory area is assigned to the field symbol. It has the state unassigned after the ASSIGN statement.
@@ -1426,7 +1527,7 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
 
 **********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `26a) Dynamic ASSIGN Statements (6) - Type Casting` ) ).
+    "--- Type Casting ---
 
     "As covered above, the CASTING addition of the ASSIGN statement
     "has dynamic syntax elements.
@@ -1438,10 +1539,6 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
     ASSIGN dobj_c_l5 TO <fs_dyn_as> CASTING TYPE ('DTYPE_C_L2').
 
     out->write( data = <fs_dyn_as> name = `<fs_dyn_as1>` ).
-
-**********************************************************************
-
-    out->write( zcl_demo_abap_aux=>heading( `26b) Dynamic ASSIGN Statements (7) - Type Casting` ) ).
 
     "Assigning a data object to a field symbol casting a dynamically
     "specified type as also shown in the example above
@@ -1476,10 +1573,6 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
 
     out->write( data = assignment_results name = `assignment_results` ).
 
-**********************************************************************
-
-    out->write( zcl_demo_abap_aux=>heading( `26c) Dynamic ASSIGN Statements (8) - Type Casting` ) ).
-
     "Note: As covered further down CREATE DATA and ASSIGN statements have the HANDLE addition
     "after which dynamically created types can be specified. A type description object is expected.
 
@@ -1489,9 +1582,15 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
 
     out->write( data = <casttype> name = `<casttype>` ).
 
-**********************************************************************
+  ENDMETHOD.
 
-    out->write( zcl_demo_abap_aux=>heading( `27) Accessing Structure Components Dynamically (1)` ) ).
+  METHOD m22_dyn_access_structure_comp.
+
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Accessing Structure Components Dynamically| ).
+
+    structure = VALUE #( col1 = 1 col2 = `aaa` col3 = `Z` ).
+    APPEND structure TO it.
+    DATA(struc_ref) = NEW st_type( col1 = 2 col2 = `b` col3 = `Y` ).
 
     "You can achieve the access using ASSIGN statements as shown above, or
     "by statically specifying the structure and the (object) component selector
@@ -1532,10 +1631,6 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
     <gen>-('COL2') = `ABAP`.
     DATA(gen_comp) = CONV string( <gen>-('COL2') ).
 
-**********************************************************************
-
-    out->write( zcl_demo_abap_aux=>heading( `28) Accessing Structure Components Dynamically (2) - Excursion` ) ).
-
     "In the following example, a structure is assigned to a field symbol that
     "has a generic type. The components of the structure are accessed dynamically in
     "a DO loop. The sy-index value is interpreted as the position of the component
@@ -1565,10 +1660,11 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
 
     out->write( data = struc2string name = `struc2string` ).
 
-**********************************************************************
+  ENDMETHOD.
 
-    out->write( zcl_demo_abap_aux=>heading( `Dynamically Creating Data Objects at Runtime Using Dynamic Type Definitions` ) ).
-    out->write( |29) Miscellaneous Data Objects (1)\n\n| ).
+  METHOD m23_create_dyn_dobj_misc.
+
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Dynamically Creating Data Objects at Runtime Using Dynamic Type Definitions (Miscellaneous Data Objects)| ).
 
     "In an example above, anonymous data objects are created using static
     "type definitions. In this example, anonymous data objects are created
@@ -1657,10 +1753,11 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
           out->write( |\n| ).
       ENDCASE.
     ENDLOOP.
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m24_create_dyn_elem_dobj.
 
-    out->write( zcl_demo_abap_aux=>heading( `30) Elementary Data Object (2)` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Dynamically Creating Data Objects at Runtime Using Dynamic Type Definitions (Elementary Data Objects)| ).
 
     "The example demonstrates the following:
     "- The method call takes care of providing the name of a built-in data type and more
@@ -1700,10 +1797,11 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
       CATCH cx_root.
         out->write( `Something went wrong.` ).
     ENDTRY.
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m25_create_dyn_struc.
 
-    out->write( zcl_demo_abap_aux=>heading( `31) Structure (3)` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Dynamically Creating Data Objects at Runtime Using Dynamic Type Definitions (Structures)| ).
 
     "The example demonstrates the following:
     "- The method call takes care of providing the name of a database table name.
@@ -1730,9 +1828,11 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
     out->write( |\n| ).
     out->write( data = ref_dynstruc->* name = `ref_dynstruc->*`  ).
 
-**********************************************************************
+  ENDMETHOD.
 
-    out->write( zcl_demo_abap_aux=>heading( `32a) Internal Table (4)` ) ).
+  METHOD m26_create_dyn_itab.
+
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Dynamically Creating Data Objects at Runtime Using Dynamic Type Definitions (Internal Tables)| ).
 
     "The example demonstrates the following:
     "- The method call takes care of providing the name of a database table name.
@@ -1768,9 +1868,11 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
     out->write( |\n| ).
     out->write( data = ref_n->* name = `ref_n->*` ).
 
-**********************************************************************
+  ENDMETHOD.
 
-    out->write( zcl_demo_abap_aux=>heading( `32b) Creating Anonymous Data Objects by Specifying the Type Dynamically (Summarizing Syntax Patterns)` ) ).
+  METHOD m27_anonymous_dobj_dyn_type.
+
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Creating Anonymous Data Objects by Specifying the Type Dynamically (Summarizing Syntax Patterns)| ).
 
     "------------ Specifying a type name dynamically ------------
 
@@ -1871,10 +1973,11 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
     CREATE DATA data_ref TYPE HANDLE typedescrobj.
 
     out->write( zcl_demo_abap_aux=>no_output ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m28_dyn_class_instances.
 
-    out->write( zcl_demo_abap_aux=>heading( `33a) Creating Instances of Classes by Specifying the Type Dynamically` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Creating Instances of Classes by Specifying the Type Dynamically| ).
 
     DATA oref_dyn TYPE REF TO object.
     CREATE OBJECT oref_dyn TYPE ('ZCL_DEMO_ABAP_OBJECTS').
@@ -1889,10 +1992,11 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
     ENDTRY.
 
     out->write( zcl_demo_abap_aux=>no_output ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m29_absolute_name.
 
-    out->write( zcl_demo_abap_aux=>heading( `33b) Absolute Type Names for Dynamically Specifying Types` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Absolute Type Names for Dynamically Specifying Types| ).
 
     "In addition to character-like data objects for the type name specified within the
     "parentheses, you can also use absolute type names for statements such as CREATE DATA.
@@ -1920,11 +2024,13 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
     CREATE OBJECT oref4abs TYPE ('\CLASS=ZCL_DEMO_ABAP_DYNAMIC_PROG').
 
     out->write( zcl_demo_abap_aux=>no_output ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m30_dyn_itab.
 
-    out->write( zcl_demo_abap_aux=>heading( `Dynamically Specifying Components/Clauses in Statements for Processing Internal Tables with ...` ) ).
-    out->write( |34a) SORT (1)\n\n| ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Dynamically Specifying Components/Clauses in Statements for Processing Internal Tables| ).
+
+    "--- SORT (1) ---
 
     "A field is determined at runtime on whose basis a sorting is done on an
     "internal table.
@@ -1945,10 +2051,7 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
     out->write( |\n| ).
     out->write( data = carr_itab name = `carr_itab` ).
 
-**********************************************************************
-
-    out->write( zcl_demo_abap_aux=>heading( `34b) SORT (2)` ) ).
-
+    "--- SORT (2) ---
 
     "Sorting by dynamically specified components in a sort table, i. e.an
     "internal table of type abap_sortorder_tab.
@@ -2047,7 +2150,7 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
 
 **********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `35) READ TABLE (1)` ) ).
+    "--- READ TABLE (1) ---
 
     "Dynamic key specification in READ TABLE statements
 
@@ -2094,7 +2197,7 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
 
 **********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `36) READ TABLE (2)` ) ).
+    "--- READ TABLE (2) ---
 
     "Data objects and types to work with
     TYPES: BEGIN OF demo_struct,
@@ -2158,11 +2261,9 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
       ...
     ENDIF.
 
-    out->write( zcl_demo_abap_aux=>no_output ).
-
 **********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `37) Table Expressions` ) ).
+    "--- Table Expressions ---
 
     "Similar to READ TABLE statements, you can specify table lines with 3 alternatives:
     "index read, read using free key, table key
@@ -2189,11 +2290,9 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
     itab[ 1 ]-('COL2') = `jkl`.
     itab_ref[ 1 ]->('COL2') = `mno`.
 
-    out->write( zcl_demo_abap_aux=>no_output ).
-
 **********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `38) LOOP (1)` ) ).
+    "--- LOOP (1) ---
 
     "Dynamic specification of the key in LOOP statements
     "In the example, the loop can be executed with the entries 'SKEY' and 'PRIMARY_KEY'.
@@ -2225,7 +2324,7 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
 
 **********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `39) LOOP (2)` ) ).
+    "--- LOOP (2) ---
 
     "USING KEY addition: Overriding the standard order determined by the table category
     LOOP AT itab REFERENCE INTO DATA(ref) USING KEY ('SK').
@@ -2250,11 +2349,9 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
       ...
     ENDLOOP.
 
-    out->write( zcl_demo_abap_aux=>no_output ).
-
 **********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `40) INSERT` ) ).
+    "--- INSERT ---
 
     "The USING KEY addition (which accepts a dynamic specification) affects the order in which lines are inserted.
 
@@ -2290,7 +2387,7 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
 
 **********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `41) MODIFY (1)` ) ).
+    "--- MODIFY (1) ---
 
     "Dynamic WHERE condition in MODIFY statements
     "Note:
@@ -2342,7 +2439,7 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
 
 **********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `42) MODIFY (2)` ) ).
+    "--- MODIFY (2) ---
 
     "In the following example, a line is modified based on a work area and a table key.
     "The component col1 is left out from the work area intentionally.
@@ -2366,7 +2463,7 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
 
 **********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `43) DELETE (1)` ) ).
+    "--- "DELETE (1) ---
 
     "Dynamic WHERE condition in DELETE statements
 
@@ -2413,7 +2510,7 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
 
 **********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `44) DELETE (2)` ) ).
+    "--- DELETE (2) ---
 
     "A single line or multipled lines can be deleted.
     "Note that DELETE ADJACENT DUPLICATES statements can also be specified using
@@ -2439,11 +2536,13 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
     DELETE itab WHERE (condition_tab).
 
     out->write( data = itab name = `itab` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m31_dyn_abap_sql.
 
-    out->write( zcl_demo_abap_aux=>heading( `Dynamically Specifying Clauses in ABAP SQL SELECT Statements` ) ).
-    out->write( |45) SELECT List\n\n| ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Dynamically Specifying Clauses in ABAP SQL SELECT Statements| ).
+
+    "--- SELECT List ---
 
     "In the example, the SELECT list that is used in a SELECT statement is
     "determined at runtime.
@@ -2467,7 +2566,7 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
 
 **********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `46) FROM Clause` ) ).
+    "--- FROM Clause ---
 
     "In the example, the FROM clause that is used in a SELECT statement is
     "determined at runtime. Here, the number of entries of a database table
@@ -2485,7 +2584,7 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
 
 **********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `47) WHERE Clause` ) ).
+    "--- WHERE Clause ---
 
     "In the example, the WHERE clause that is used in a SELECT statement is
     "determined at runtime. Here, the WHERE clause is based on a string
@@ -2509,7 +2608,7 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
 
 **********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `48) ORDER BY Clause` ) ).
+    "--- ORDER BY Clause ---
 
     DATA(order_by) = 'FLTIME'.
 
@@ -2528,7 +2627,7 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
 
 **********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `49) Multiple Dynamically Specified Clauses in an ABAP SQL SELECT Statement` ) ).
+    "--- Multiple Dynamically Specified Clauses in an ABAP SQL SELECT Statement ---
 
     "In this example, multiple clauses in a SELECT statement are
     "determined at runtime to demonstrate the rich variety of possibilities.
@@ -2567,7 +2666,7 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
 
 **********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `50) Dynamic Specifications in Other ABAP SQL Statements` ) ).
+    "--- Dynamic Specifications in Other ABAP SQL Statements ---
 
     "Creating a structure to be inserted into the database table
     DATA(table) = 'ZDEMO_ABAP_CARR'.
@@ -2704,9 +2803,12 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
 
     DELETE FROM ('ZDEMO_ABAP_CARR') WHERE (where_cl).
 
-**********************************************************************
+  ENDMETHOD.
 
-    out->write( zcl_demo_abap_aux=>heading( `51) Validating Input for Dynamic Specifications` ) ).
+  METHOD m32_validate_dyn_input.
+
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Validating Input for Dynamic Specifications| ).
+
     "The following examples use methods of the CL_ABAP_DYN_PRG class, which supports
     "dynamic programming by checking the validity for dynamic specifications.
     "Check out the class documentation for more information.
@@ -2818,9 +2920,11 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
       ENDTRY.
     ENDLOOP.
 
-**********************************************************************
+  ENDMETHOD.
 
-    out->write( zcl_demo_abap_aux=>heading( `52) Dynamic Method Calls (1)` ) ).
+  METHOD m33_dyn_method_calls.
+
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Dynamic Method Calls| ).
 
     "In the example, both class and method are determined at runtime for
     "the method call. The suitable parameter table is filled in the
@@ -2867,7 +2971,6 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
 
 **********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `52b) Dynamic Method Calls (2)` ) ).
     "Another example for dynamic invoke, using an instance method.
 
     "Example that uses the PARAMETER-TABLE addition
@@ -2904,7 +3007,7 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
 
 **********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `52c) Dynamic Method Calls (Syntax Pattern Overview) (3)` ) ).
+    "--- Dynamic Method Calls (Syntax Pattern Overview) ---
 
     "The following examples use both named and unnamed data objects randomly,
     "i.e. ...=>(meth_name) or ...=>(`SOME_METH`), for example.
@@ -3049,11 +3152,11 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
     res = paramtab[ name = 'RESULT' ]-('VALUE')->*.
     ASSERT res = `MNO`.
 
-    out->write( zcl_demo_abap_aux=>no_output ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m34_dyn_spec_string_templates.
 
-    out->write( zcl_demo_abap_aux=>heading( `52d) Dynamic Formatting Option Specifications in String Templates` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Dynamic Formatting Option Specifications in String Templates| ).
 
     "ALIGN
     "Only to be used with WIDTH; only the associated values of the following attributes of the
@@ -3101,10 +3204,11 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
 
     out->write( data = s2 name = `s2` ).
     out->write( |\n| ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m35_dyn_export_import.
 
-    out->write( zcl_demo_abap_aux=>heading( `52e) Dynamic Parameter List in EXPORT and IMPORT Statements` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Dynamic Parameter List in EXPORT and IMPORT Statements| ).
 
     DATA buffer TYPE xstring.
 
@@ -3149,10 +3253,11 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
 
     out->write( data = values name = `values` ).
     out->write( |\n| ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m36_security_considerations.
 
-    out->write( zcl_demo_abap_aux=>heading( `52f) Security Considerations in Dynamic Programming Using External Input` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Security Considerations in Dynamic Programming Using External Input| ).
 
     "Filling demo database tables of the ABAP cheat sheet repository
     zcl_demo_abap_aux=>fill_dbtabs( ).
@@ -3243,6 +3348,7 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
 
     "check_table_name_tab method: Specifying multiple packages in an internal
     "table
+    DATA dbtab TYPE string.
     TRY.
         dbtab = cl_abap_dyn_prg=>check_table_name_tab(
           val      = to_upper( input_dbtab_name )
@@ -3390,7 +3496,7 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
       ENDTRY.
 
       DATA(cond_syntax) = to_upper( column ) && ` = ` &&
-      COND #( WHEN sy-index <> 4 THEN cl_abap_dyn_prg=>quote( to_upper( value ) ) ELSE to_upper( value ) ).
+      COND #( WHEN sy-index <> 4 THEN cl_abap_dyn_prg=>quote( to_upper( val ) ) ELSE to_upper( val ) ).
 
       TRY.
           SELECT *
@@ -3523,10 +3629,11 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
     out->write( data =  esc_backticks name = `esc_backticks` ).
     out->write( data =  esc_quotes_replace name = `esc_quotes_replace` ).
     out->write( data =  esc_backticks_replace name = `esc_backticks` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m37_rtti_get_type_descr.
 
-    out->write( zcl_demo_abap_aux=>heading( `53) RTTI: Getting Type Information at Runtime/Getting a Reference to a Type Description Object` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: RTTI: Getting Type Information at Runtime/Getting a Reference to a Type Description Object| ).
 
     "Getting a reference to a type description object of a type.
     "i.e. getting an instance of a type description class
@@ -3689,10 +3796,11 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
     DATA dref_var TYPE REF TO string.
     DATA(ty_des_obj_dref) = CAST cl_abap_refdescr(
       cl_abap_typedescr=>describe_by_data( dref_var ) ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m38_rtti_misc_a.
 
-    out->write( zcl_demo_abap_aux=>heading( `54a) RTTI: Getting Type Information at Runtime for Miscellaneous Types` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: RTTI: Getting Type Information at Runtime for Miscellaneous Types| ).
 
     "The example demonstrates RTTI as follows:
     "- The method call takes care of providing the name of a type. It is implemented
@@ -3821,10 +3929,11 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
         out->write( `Others ...` ).
       ENDIF.
     ENDIF.
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m39_rtti_misc_b.
 
-    out->write( zcl_demo_abap_aux=>heading( `54b) RTTI: Getting Type Information at Runtime for Miscellaneous Types` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: RTTI: Getting Type Information at Runtime for Miscellaneous Types| ).
 
     "Data objects to work with in the example
     DATA itab_refs TYPE TABLE OF REF TO data.
@@ -3887,7 +3996,6 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
                          ( REF #( demo_oref ) ) "object reference variable (8)
                          ( REF #( demo_iref ) ) "interface reference variable (9)
                       ).
-
 
     LOOP AT itab_refs INTO DATA(type).
       DATA(tabix) = sy-tabix.
@@ -4538,9 +4646,11 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
     out->write( |\n*************************************************************\n\n| ).
     out->write( str_tab ).
 
-**********************************************************************
+  ENDMETHOD.
 
-    out->write( zcl_demo_abap_aux=>heading( `55) RTTC: Dynamically Creating Data Types at Runtime` ) ).
+  METHOD m40_rttc.
+
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: RTTC: Dynamically Creating Data Types at Runtime| ).
 
     "You can create data types at program runtime using methods of the type
     "description classes of RTTS. These types are only valid locally in the
@@ -4635,11 +4745,9 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
     DATA(tdo_ref_3) = cl_abap_refdescr=>get_by_name( 'T' ).
     DATA(tdo_ref_4) = cl_abap_refdescr=>get_by_name( 'ZCL_DEMO_ABAP_DYNAMIC_PROG' ).
 
-    out->write( zcl_demo_abap_aux=>no_output ).
-
 **********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `56) Dynamically Creating Data Objects at Runtime Using Type Description Objects (1) - Miscellaneous` ) ).
+    " --- Dynamically Creating Data Objects at Runtime Using Type Description Objects (1) - Miscellaneous ---
 
     "Using the TYPE HANDLE addition to CREATE DATA statements, you can
     "dynamically create data objects at runtime based on type description objects.
@@ -4680,7 +4788,7 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
 
 **********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `57) Dynamically Creating Data Objects at Runtime Using Type Description Objects (2) - Structure` ) ).
+    "--- Dynamically Creating Data Objects at Runtime Using Type Description Objects (2) - Structure ---
 
     "This example includes the dynamic definition of a structure with three components
     "using the GET method of the CL_ABAP_STRUCTDESCR class.
@@ -4736,7 +4844,7 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
 
 **********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `58) Dynamically Creating Data Objects at Runtime Using Type Description Objects (3) - Internal Table` ) ).
+    "--- Dynamically Creating Data Objects at Runtime Using Type Description Objects (3) - Internal Table ---
 
     "In the example an internal table type is created based on a DDIC type.
     "See the comments in the code.
@@ -4795,6 +4903,1919 @@ CLASS zcl_demo_abap_dynamic_prog IMPLEMENTATION.
     out->write( |\n| ).
     out->write( data = ref_tab->* name = `ref_tab->*` ).
 
+  ENDMETHOD.
+
+  METHOD m41_rtti_elementary.
+
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Getting Type Information for Elementary Data Objects and Types| ).
+
+*&---------------------------------------------------------------------*
+*& Elementary data objects and types
+*&---------------------------------------------------------------------*
+
+    "Demo data object and type
+    TYPES elem_type_ts TYPE timestampl.
+    DATA ts TYPE elem_type_ts VALUE '20250101081317.81011'.
+
+    "--------- Getting general type information ---------
+
+    "Note: The attribute accesses and method calls show a selection.
+
+    "Getting general type information using cl_abap_typedescr without cast
+    "describe_by_data method
+    DATA(tdo_elem_gen1) = cl_abap_typedescr=>describe_by_data( ts ).
+
+    "describe_by_name method
+    DATA tdo_elem_gen2 TYPE REF TO cl_abap_typedescr.
+    tdo_elem_gen2 = cl_abap_typedescr=>describe_by_name( 'ELEM_TYPE_TS' ).
+
+    "Selection of retrievable, general information
+    "The same information is also accessible after the cast below.
+    "The examples use tdo_elem_gen1. tdo_elem_gen2 is also possible.
+    DATA(type_category_elem_gen) = tdo_elem_gen1->kind.
+    DATA(type_kind_elem_gen) = tdo_elem_gen1->type_kind.
+    DATA(absolute_name_elem_gen) = tdo_elem_gen1->absolute_name.
+    DATA(relative_name_elem_gen) = tdo_elem_gen1->get_relative_name( ).
+
+    "--------- Getting more specific type information using a cast ---------
+
+    "The data reference variable is of type ref to cl_abap_elemdescr.
+    "Getting the reference in one go using inline declaration.
+    DATA(tdo_elem) = CAST cl_abap_elemdescr( cl_abap_typedescr=>describe_by_data( ts ) ).
+
+    "Selection of attribute accesses and method calls to get various
+    "pieces of information
+    DATA(type_category_elem) = tdo_elem->kind.
+    DATA(type_kind_elem) = tdo_elem->type_kind.
+    DATA(decimals_elem) = tdo_elem->decimals.
+    DATA(output_length_elem) = tdo_elem->output_length.
+    DATA(absolute_name_elem) = tdo_elem->absolute_name.
+    DATA(relative_name_elem) = tdo_elem->get_relative_name( ).
+    DATA(is_ddic_type_elem) = tdo_elem->is_ddic_type( ).
+    "Checking type compatibility with other data objects
+    "(only applies_to_datadescr_elem returns true in the example)
+    DATA(applies_to_data_elem) = tdo_elem->applies_to_data( CONV timestamp( '20250808112458' ) ).
+    DATA(applies_to_dataref_elem) = tdo_elem->applies_to_data_ref( REF #( '20250808112458' ) ).
+    DATA(applies_to_datadescr_elem) = tdo_elem->applies_to_data_descr(
+      CAST cl_abap_datadescr( cl_abap_typedescr=>describe_by_data( CONV timestampl( '20250101121325.32042' ) ) ) ).
+
+    "--------- Excursions ---------
+
+    "Checking against the constants of class cl_abap_typedescr
+    ASSERT type_category_elem = cl_abap_typedescr=>kind_elem.
+    "The above example is not a DDIC type as it is a local type. The following
+    "example uses a DDIC data element.
+    ASSERT CAST cl_abap_elemdescr( cl_abap_typedescr=>describe_by_name( 'LAND1' ) )->is_ddic_type( ) = abap_true.
+    "Using the result of the method calls above to get the data reference,
+    "without inline declaration.
+    DATA tdo_elem_2 TYPE REF TO cl_abap_elemdescr.
+    tdo_elem_2 = CAST cl_abap_elemdescr( tdo_elem_gen1 ).
+    "tdo_elem_gen2 is also possible
+    tdo_elem_2 = CAST cl_abap_elemdescr( tdo_elem_gen2 ).
+    "Creating elementary data objects dynamically based on an absolute name
+    "and a type description object. Find more information in other sections.
+    DATA dref_elem TYPE REF TO data.
+    CREATE DATA dref_elem TYPE (absolute_name_elem).
+    CREATE DATA dref_elem TYPE HANDLE tdo_elem.
+    ASSERT tdo_elem->applies_to_data( dref_elem->* ) = abap_true.
+    dref_elem->* = ts.
+
+    out->write( data = dref_elem->* name = `dref_elem->*` ).
+
+  ENDMETHOD.
+
+  METHOD m42_rtti_enum.
+
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Getting Type Information for Enumerated Types| ).
+
+*&---------------------------------------------------------------------*
+*& Enumerated types
+*&---------------------------------------------------------------------*
+
+    TYPES: basetype TYPE c LENGTH 2,
+           BEGIN OF ENUM ty_enum BASE TYPE basetype,
+             a VALUE IS INITIAL,
+             b VALUE 'u',
+             c VALUE 'v',
+             d VALUE 'wx',
+             e VALUE 'yz',
+           END OF ENUM ty_enum.
+
+    "--------- Getting general type information ---------
+
+    "Note: The attribute accesses and method calls show a selection.
+
+    "Getting general type information using cl_abap_typedescr without cast
+    "describe_by_data method
+    DATA(tdo_enum_gen1) = cl_abap_typedescr=>describe_by_data( a ).
+
+    "describe_by_name method
+    DATA tdo_enum_gen2 TYPE REF TO cl_abap_typedescr.
+    tdo_enum_gen2 = cl_abap_typedescr=>describe_by_name( 'TY_ENUM' ).
+
+    "Selection of retrievable, general information
+    "The same information is also accessible after the cast below.
+    "The examples use tdo_enum_gen1. tdo_enum_gen2 is also possible.
+    DATA(type_category_enum_gen) = tdo_enum_gen1->kind.
+    DATA(type_kind_enum_gen) = tdo_enum_gen1->type_kind.
+    DATA(absolute_name_enum_gen) = tdo_enum_gen1->absolute_name.
+    DATA(relative_name_enum_gen) = tdo_enum_gen1->get_relative_name( ).
+
+    "--------- Getting more specific type information using a cast ---------
+
+    "The data reference variable is of type ref to cl_abap_enumdescr.
+    "Getting the reference in one go using inline declaration.
+    DATA(tdo_enum) = CAST cl_abap_enumdescr( cl_abap_typedescr=>describe_by_data( a ) ).
+
+    "Selection of attribute accesses and method calls to get various
+    "pieces of information
+    DATA(type_category_enum) = tdo_enum->kind.
+    DATA(type_kind_enum) = tdo_enum->type_kind.
+    DATA(decimals_enum) = tdo_enum->decimals.
+    DATA(output_length_enum) = tdo_enum->output_length.
+    DATA(absolute_name_enum) = tdo_enum->absolute_name.
+    DATA(relative_name_enum) = tdo_enum->get_relative_name( ).
+    DATA(is_ddic_type_enum) = tdo_enum->is_ddic_type( ).
+    DATA(base_kind_enum) = tdo_enum->base_type_kind.
+    DATA(members_enum) = tdo_enum->members.
+    "Checking type compatibility with other data objects
+    "(all return true in the example)
+    DATA(applies_to_data_enum) = tdo_enum->applies_to_data( b ).
+    DATA(applies_to_dataref_enum) = tdo_enum->applies_to_data_ref( REF #( c ) ).
+    DATA(applies_to_datadescr_enum) = tdo_enum->applies_to_data_descr(
+      CAST cl_abap_datadescr( cl_abap_typedescr=>describe_by_data( d ) ) ).
+
+    "--------- Excursions ---------
+
+    "Checking against the constants of class cl_abap_typedescr
+    "Enumerated types are considered elementary types.
+    ASSERT type_category_enum = cl_abap_typedescr=>kind_elem.
+    ASSERT type_kind_enum = cl_abap_typedescr=>typekind_enum.
+    "Accessing the members table
+    ASSERT members_enum[ name = 'D' ]-value = 'wx'.
+    "Using the result of the method calls above to get the data reference,
+    "without inline declaration.
+    DATA tdo_enum_2 TYPE REF TO cl_abap_enumdescr.
+    tdo_enum_2 = CAST #( tdo_enum_gen1 ).
+    "tdo_enum_gen2 is also possible
+    tdo_enum_2 = CAST #( tdo_enum_gen2 ).
+    "Creating enumerated objects dynamically based on an absolute name
+    "and a type description object. Find more information in other sections.
+    DATA dref_enum TYPE REF TO data.
+    CREATE DATA dref_enum TYPE (absolute_name_enum).
+    CREATE DATA dref_enum TYPE HANDLE tdo_enum.
+    ASSERT tdo_enum->applies_to_data( dref_enum->* ) = abap_true.
+    dref_enum->* = e.
+    ASSERT CONV basetype( dref_enum->* ) = 'yz'.
+
+    out->write( data = dref_enum->* name = `dref_enum->*` ).
+
+  ENDMETHOD.
+
+  METHOD m43_rtti_struc.
+
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Getting Type Information for Structured Data Objects and Types| ).
+
+*&---------------------------------------------------------------------*
+*& Structured data objects and types
+*&---------------------------------------------------------------------*
+
+    TYPES: BEGIN OF demo_struc_type,
+             comp1 TYPE c LENGTH 3,
+             comp2 TYPE i,
+             comp3 TYPE string,
+           END OF demo_struc_type.
+    DATA demo_struc TYPE demo_struc_type.
+
+    "--------- Getting general type information ---------
+
+    "Note: The attribute accesses and method calls show a selection.
+
+    "Getting general type information using cl_abap_typedescr without cast
+    "describe_by_data method
+    DATA(tdo_struc_gen1) = cl_abap_typedescr=>describe_by_data( demo_struc ).
+
+    "describe_by_name method
+    DATA tdo_struc_gen2 TYPE REF TO cl_abap_typedescr.
+    tdo_struc_gen2 = cl_abap_typedescr=>describe_by_name( 'DEMO_STRUC_TYPE' ).
+
+    "Selection of retrievable, general information
+    "The same information is also accessible after the cast below.
+    "The examples use tdo_struc_gen1. tdo_struc_gen2 is also possible.
+    DATA(type_category_struc_gen) = tdo_struc_gen1->kind.
+    DATA(type_kind_struc_gen) = tdo_struc_gen1->type_kind.
+    DATA(absolute_name_struc_gen) = tdo_struc_gen1->absolute_name.
+    DATA(relative_name_struc_gen) = tdo_struc_gen1->get_relative_name( ).
+
+    "--------- Getting more specific type information using a cast ---------
+
+    "The data reference variable is of type ref to cl_abap_structdescr.
+    "Getting the reference in one go using inline declaration.
+    DATA(tdo_struc) = CAST cl_abap_structdescr( cl_abap_typedescr=>describe_by_data( demo_struc ) ).
+
+    "Selection of attribute accesses and method calls to get various
+    "pieces of information
+    DATA(type_category_struc) = tdo_struc->kind.
+    DATA(type_kind_struc) = tdo_struc->type_kind.
+    DATA(decimals_struc) = tdo_struc->decimals.
+    DATA(absolute_name_struc) = tdo_struc->absolute_name.
+    DATA(relative_name_struc) = tdo_struc->get_relative_name( ).
+    DATA(is_ddic_type_struc) = tdo_struc->is_ddic_type( ).
+    DATA(comps_struc) = tdo_struc->components.
+    DATA(comps_more_details_struc) = tdo_struc->get_components( ).
+    DATA(include_struc) = tdo_struc->has_include.
+    "Checking type compatibility with other data objects
+    "(only the first does not return true in the example)
+    DATA(applies_to_data_struc) = tdo_struc->applies_to_data( VALUE i_timezone( ) ).
+    DATA(applies_to_dataref_struc) = tdo_struc->applies_to_data_ref( REF #( demo_struc ) ).
+    DATA(applies_to_datadescr_struc) = tdo_struc->applies_to_data_descr(
+      CAST cl_abap_datadescr( cl_abap_typedescr=>describe_by_data( demo_struc ) ) ).
+
+    "--------- Excursions ---------
+
+    "Checking against the constants of class cl_abap_typedescr
+    ASSERT type_category_struc = cl_abap_typedescr=>kind_struct.
+    "typekind_struct1 refers to a flat structure (which the demo structure is not
+    "because of the string component)
+    ASSERT type_kind_struc <> cl_abap_typedescr=>typekind_struct1.
+    "typekind_struct2 refers to a deep structure
+    ASSERT type_kind_struc = cl_abap_typedescr=>typekind_struct2.
+
+    "Example structure that has included structures
+    TYPES BEGIN OF demo_struc_type_incl.
+    INCLUDE TYPE demo_struc_type.
+    INCLUDE TYPE demo_struc_type AS incl_struct RENAMING WITH SUFFIX _incl.
+    TYPES comp4 TYPE n LENGTH 4.
+    TYPES END OF demo_struc_type_incl.
+
+    DATA(tdo_struc_incl) = CAST cl_abap_structdescr( cl_abap_typedescr=>describe_by_name( 'DEMO_STRUC_TYPE_INCL' ) ).
+    DATA(include_struc_incl) = tdo_struc_incl->has_include.
+    ASSERT include_struc_incl = abap_true.
+    "get_included_view method (check the class documentation for more information)
+    DATA(incl_view_struc_incl_lvl0) = tdo_struc_incl->get_included_view( 0 ).
+    ASSERT xsdbool( line_exists( incl_view_struc_incl_lvl0[ name = 'INCL_STRUCT' ] ) ) = abap_true.
+    ASSERT xsdbool( line_exists( incl_view_struc_incl_lvl0[ name = 'COMP1_INCL' ] ) ) = abap_false.
+    DATA(incl_view_struc_incl_lvl1) = tdo_struc_incl->get_included_view( 1 ).
+    ASSERT xsdbool( line_exists( incl_view_struc_incl_lvl1[ name = 'INCL_STRUCT' ] ) ) = abap_false.
+    ASSERT xsdbool( line_exists( incl_view_struc_incl_lvl1[ name = 'COMP1_INCL' ] ) ) = abap_true.
+    "get_symbols method: Returning component names of all components and substructures
+    DATA(symbols_struc) = tdo_struc_incl->get_symbols( ).
+
+    "Using the result of the method calls above to get the data reference,
+    "without inline declaration.
+    DATA tdo_struc_2 TYPE REF TO cl_abap_structdescr.
+    tdo_struc_2 = CAST #( tdo_struc_gen1 ).
+    "tdo_struc_gen2 is also possible
+    tdo_struc_2 = CAST #( tdo_struc_gen2 ).
+    "Creating structured data objects dynamically based on an absolute name
+    "and a type description object. Find more information in other sections.
+    DATA dref_struc TYPE REF TO data.
+    CREATE DATA dref_struc TYPE (absolute_name_struc).
+    CREATE DATA dref_struc TYPE HANDLE tdo_struc.
+    ASSERT tdo_struc->applies_to_data( dref_struc->* ) = abap_true.
+    dref_struc->* = demo_struc.
+
+    out->write( data = dref_struc->* name = `dref_struc->*` ).
+
+**********************************************************************
+
+    tdo_struc = CAST cl_abap_structdescr( cl_abap_typedescr=>describe_by_name( 'ZDEMO_ABAP_CARR' ) ).
+    "Method call not supported in ABAP for Cloud Development
+    "DATA(ddic_field_list) = tdo_struc->get_ddic_field_list( ).
+
+    DATA(handler_tabl) = xco_cp_abap_dictionary=>database_table( 'ZDEMO_ABAP_CARR' ).
+    DATA(dbtab_exists) = handler_tabl->exists( ).
+    IF dbtab_exists = abap_true.
+      DATA(dbtab_field_names) = handler_tabl->fields->all->get_names( ).
+      DATA(dbtab_fields_built_in_types) = handler_tabl->fields->all->content( )->get_underlying_built_in_types( ).
+      LOOP AT dbtab_fields_built_in_types INTO DATA(wa).
+        DATA(field_name) = wa-field->name.
+        DATA(tdo) = wa-underlying_built_in_type->abap_type->get_type_descriptor( ).
+        DATA(dec) = wa-underlying_built_in_type->decimals.
+        DATA(len) = wa-underlying_built_in_type->length.
+        DATA(ty) = wa-underlying_built_in_type->type.
+      ENDLOOP.
+      DATA(dbtab_keys) = handler_tabl->fields->key->get_names( ).
+      DATA(dbtab_included_fields) = handler_tabl->fields->included->get_names( ).
+    ENDIF.
+
+  ENDMETHOD.
+
+  METHOD m44_rtti_itab.
+
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Getting Type Information for Internal Tables and Table Types| ).
+
+*&---------------------------------------------------------------------*
+*& Internal tables and table types
+*&---------------------------------------------------------------------*
+
+    TYPES: BEGIN OF struc_type,
+             comp1 TYPE c LENGTH 3,
+             comp2 TYPE i,
+             comp3 TYPE string,
+           END OF struc_type.
+
+    TYPES ty_tab TYPE SORTED TABLE OF struc_type
+      WITH UNIQUE KEY primary_key ALIAS pk COMPONENTS comp1
+      WITH NON-UNIQUE SORTED KEY sec_key ALIAS sk COMPONENTS comp2.
+
+    DATA itab TYPE ty_tab.
+
+    "--------- Getting general type information ---------
+
+    "Note: The attribute accesses and method calls show a selection.
+
+    "Getting general type information using cl_abap_typedescr without cast
+    "describe_by_data method
+    DATA(tdo_tab_gen1) = cl_abap_typedescr=>describe_by_data( itab ).
+
+    "describe_by_name method
+    DATA tdo_tab_gen2 TYPE REF TO cl_abap_typedescr.
+    tdo_tab_gen2 = cl_abap_typedescr=>describe_by_name( 'TY_TAB' ).
+
+    "Selection of retrievable, general information
+    "The same information is also accessible after the cast below.
+    "The examples use tdo_tab_gen1. tdo_tab_gen2 is also possible.
+    DATA(type_category_tab_gen) = tdo_tab_gen1->kind.
+    DATA(type_kind_tab_gen) = tdo_tab_gen1->type_kind.
+    DATA(absolute_name_tab_gen) = tdo_tab_gen1->absolute_name.
+    DATA(relative_name_tab_gen) = tdo_tab_gen1->get_relative_name( ).
+
+    "--------- Getting more specific type information using a cast ---------
+
+    "The data reference variable is of type ref to cl_abap_tabtdescr.
+    "Getting the reference in one go using inline declaration.
+    DATA(tdo_tab) = CAST cl_abap_tabledescr( cl_abap_typedescr=>describe_by_data( itab ) ).
+
+    "Selection of attribute accesses and method calls to get various
+    "pieces of information
+    DATA(type_category_tab) = tdo_tab->kind.
+    DATA(type_kind_tab) = tdo_tab->type_kind.
+    DATA(absolute_name_tab) = tdo_tab->absolute_name.
+    DATA(relative_name_tab) = tdo_tab->get_relative_name( ).
+    DATA(is_ddic_type_tab) = tdo_tab->is_ddic_type( ).
+    DATA(table_kind_itab) = tdo_tab->table_kind.
+    DATA(table_keys_itab) = tdo_tab->key.
+    DATA(table_keys_more_details_itab) = tdo_tab->get_keys( ).
+    DATA(table_has_unique_key_itab) = tdo_tab->has_unique_key.
+    DATA(table_key_alias_itab) = tdo_tab->get_key_aliases( ).
+    DATA(line_type_itab) = tdo_tab->get_table_line_type( ).
+    DATA(table_component_info_itab) = CAST cl_abap_structdescr( tdo_tab->get_table_line_type( ) ).
+    DATA(table_components_itab) = CAST cl_abap_structdescr( tdo_tab->get_table_line_type( ) )->components.
+    DATA(table_comps_more_info_itab) = CAST cl_abap_structdescr( tdo_tab->get_table_line_type( ) )->get_components( ).
+    "Checking type compatibility with other data objects
+    "(only applies_to_dataref_tab returns true in the example)
+    DATA(applies_to_data_tab) = tdo_tab->applies_to_data( VALUE string_table( ) ).
+    DATA(applies_to_dataref_tab) = tdo_tab->applies_to_data_ref( REF #( itab ) ).
+    DATA(applies_to_datadescr_tab) = tdo_tab->applies_to_data_descr(
+      CAST cl_abap_datadescr( cl_abap_typedescr=>describe_by_data( VALUE string_table( ) ) ) ).
+
+    "--------- Excursions ---------
+
+    "Checking against the constants of the classes cl_abap_typedescr and
+    "cl_abap_tabledescr
+    ASSERT type_category_tab = cl_abap_typedescr=>kind_table.
+    ASSERT type_kind_tab = cl_abap_typedescr=>typekind_table.
+    ASSERT table_kind_itab = cl_abap_tabledescr=>tablekind_sorted.
+
+    "Using the result of the method calls above to get the data reference,
+    "without inline declaration.
+    DATA tdo_tab_2 TYPE REF TO cl_abap_tabledescr.
+    tdo_tab_2 = CAST #( tdo_tab_gen1 ).
+    "tdo_tab_gen2 is also possible
+    tdo_tab_2 = CAST #( tdo_tab_gen2 ).
+    "Creating tabtured data objects dynamically based on an absolute name
+    "and a type description object. Find more information in other sections.
+    DATA dref_tab TYPE REF TO data.
+    CREATE DATA dref_tab TYPE (absolute_name_tab).
+    CREATE DATA dref_tab TYPE HANDLE tdo_tab.
+    ASSERT tdo_tab->applies_to_data( dref_tab->* ) = abap_true.
+    dref_tab->* = itab.
+
+    out->write( data = dref_tab->* name = `dref_tab->*` ).
+  ENDMETHOD.
+
+  METHOD m45_rtti_dref.
+
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Getting Type Information for Data Reference Variables and Reference Types| ).
+
+*&---------------------------------------------------------------------*
+*& Date reference variables and reference types
+*&---------------------------------------------------------------------*
+
+    "Note: The attribute accesses and method calls show a selection.
+
+    TYPES dref_type TYPE REF TO i.
+    DATA dref TYPE dref_type.
+    dref = NEW #( 1 ).
+    DATA(dref_b) = REF #( 2 ).
+
+    "Getting general type information using cl_abap_typedescr without cast
+    "describe_by_data method
+    DATA(tdo_ref_gen1) = cl_abap_typedescr=>describe_by_data( dref ).
+
+    "describe_by_name method
+    DATA tdo_ref_gen2 TYPE REF TO cl_abap_typedescr.
+    tdo_ref_gen2 = cl_abap_typedescr=>describe_by_name( 'DREF_TYPE' ).
+
+    "Selection of retrievable, general information
+    "The same information is also accessible after the cast below.
+    "The examples use tdo_ref_gen1. tdo_ref_gen2 is also possible.
+    DATA(type_category_ref_gen) = tdo_ref_gen1->kind.
+    DATA(type_kind_ref_gen) = tdo_ref_gen1->type_kind.
+    DATA(absolute_name_ref_gen) = tdo_ref_gen1->absolute_name.
+    DATA(relative_name_ref_gen) = tdo_ref_gen1->get_relative_name( ).
+
+    ASSERT type_category_ref_gen = cl_abap_typedescr=>kind_ref.
+    ASSERT type_kind_ref_gen = cl_abap_typedescr=>typekind_dref.
+
+    "Getting information about the referenced data object
+    "describe_by_data_ref method
+    DATA(tdo_ref_gen3) = cl_abap_typedescr=>describe_by_data_ref( dref ).
+
+    DATA(type_category_referenced_dobj) = tdo_ref_gen3->kind.
+    DATA(type_kind_referenced_dobj) = tdo_ref_gen3->type_kind.
+
+    ASSERT type_category_referenced_dobj = cl_abap_typedescr=>kind_elem.
+    ASSERT type_kind_referenced_dobj = cl_abap_typedescr=>typekind_int.
+
+    "--------- Getting more specific type information using a cast ---------
+
+    "The data reference variable is of type ref to cl_abap_reftdescr.
+    "Getting the reference in one go using inline declaration.
+    DATA(tdo_ref) = CAST cl_abap_refdescr( cl_abap_typedescr=>describe_by_data( dref ) ).
+
+    "Selection of attribute accesses and method calls to get various
+    "pieces of information
+    DATA(type_category_ref) = tdo_ref->kind.
+    DATA(type_kind_ref) = tdo_ref->type_kind.
+    DATA(absolute_name_ref) = tdo_ref->absolute_name.
+    DATA(relative_name_ref) = tdo_ref->get_relative_name( ).
+    DATA(is_ddic_type_ref) = tdo_ref->is_ddic_type( ).
+    "Checking type compatibility with other data objects
+    "(all return true in the example)
+    DATA(applies_to_data_ref) = tdo_ref->applies_to_data( dref_b ).
+    DATA(applies_to_dataref_ref) = tdo_ref->applies_to_data_ref( REF #( dref_b ) ).
+    DATA(applies_to_datadescr_ref) = tdo_ref->applies_to_data_descr(
+      CAST cl_abap_datadescr( cl_abap_typedescr=>describe_by_data( dref_b ) ) ).
+
+    "Getting the referenced type
+    DATA(referenced_type) = tdo_ref->get_referenced_type( ).
+
+    ASSERT referenced_type IS INSTANCE OF cl_abap_elemdescr.
+    "See the section on elementary types for further attribute accesses and
+    "method calls.
+    DATA(tdo_elem_from_ref) = CAST cl_abap_elemdescr( referenced_type ).
+    DATA(type_kind_elem_from_ref) = tdo_elem_from_ref->type_kind.
+    ASSERT type_kind_elem_from_ref = cl_abap_typedescr=>typekind_int.
+
+    out->write( zcl_demo_abap_aux=>no_output ).
+
+  ENDMETHOD.
+
+  METHOD m46_rtti_classes.
+
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Getting Type Information for Classes| ).
+
+*&---------------------------------------------------------------------*
+*& Classes
+*&---------------------------------------------------------------------*
+
+    "Creating an object reference variable
+    DATA(oref) = NEW zcl_demo_abap_objects( ).
+
+    "--------- Getting general type information ---------
+
+    "Note:
+    "- The attribute accesses and method calls show a selection.
+    "- The example uses a demo class from the ABAP cheat sheet repository.
+
+    "Getting general type information using cl_abap_typedescr without cast
+    "describe_by_object_ref method
+    DATA(tdo_cl_gen1) = cl_abap_typedescr=>describe_by_object_ref( oref ).
+
+    "describe_by_name method
+    DATA tdo_cl_gen2 TYPE REF TO cl_abap_typedescr.
+    tdo_cl_gen2 = cl_abap_typedescr=>describe_by_name( 'ZCL_DEMO_ABAP_OBJECTS' ).
+
+    "Selection of retrievable, general information
+    "The same information is also accessible after the cast below.
+    "The examples use tdo_cl_gen1. tdo_cl_gen2 is also possible.
+    DATA(type_category_cl_gen) = tdo_cl_gen1->kind.
+    DATA(type_kind_cl_gen) = tdo_cl_gen1->type_kind.
+    DATA(absolute_name_cl_gen) = tdo_cl_gen1->absolute_name.
+    DATA(relative_name_cl_gen) = tdo_cl_gen1->get_relative_name( ).
+
+    "--------- Getting more specific type information using a cast ---------
+
+    "The data reference variable is of type ref to cl_abap_classdescr.
+    "Getting the reference in one go using inline declaration.
+    DATA(tdo_cl) = CAST cl_abap_classdescr( cl_abap_typedescr=>describe_by_object_ref( oref ) ).
+
+    "Selection of attribute accesses and method calls to get various
+    "pieces of information
+    DATA(type_category_cl) = tdo_cl->kind.
+    DATA(type_kind_cl) = tdo_cl->type_kind.
+    DATA(absolute_name_cl) = tdo_cl->absolute_name.
+    DATA(relative_name_cl) = tdo_cl->get_relative_name( ).
+
+    DATA(class_kind_cl) = tdo_cl->class_kind.
+    DATA(attributes_cl) = tdo_cl->attributes.
+    DATA(interfaces_cl) = tdo_cl->interfaces.
+    DATA(events_cl) = tdo_cl->events.
+    DATA(methods_cl) = tdo_cl->methods.
+    "Accessing method/parameter information
+    LOOP AT methods_cl INTO DATA(meth_wa).
+      DATA(meth_name) = meth_wa-name.
+      LOOP AT meth_wa-parameters INTO DATA(param_wa).
+        "Getting type description object of method parameters
+        DATA(meth_param_type) = tdo_cl->get_method_parameter_type(
+          p_method_name    = meth_name
+          p_parameter_name = param_wa-name ).
+      ENDLOOP.
+    ENDLOOP.
+    DATA(super_class_cl) = tdo_cl->get_super_class_type( ).
+    DATA(super_class_name_cl) = super_class_cl->absolute_name.
+    DATA(is_instantiable_cl) = tdo_cl->is_instantiatable( ).
+
+    "--------- Excursions ---------
+
+    "Checking against the constants of the classes cl_abap_typedescr and
+    "cl_abap_classdescr
+    ASSERT type_category_cl = cl_abap_typedescr=>kind_class.
+    ASSERT type_kind_cl = cl_abap_typedescr=>typekind_class.
+    ASSERT class_kind_cl = cl_abap_classdescr=>classkind_final.
+
+    "Using the result of the method calls above to get the data reference,
+    "without inline declaration.
+    DATA tdo_cl_2 TYPE REF TO cl_abap_classdescr.
+    tdo_cl_2 = CAST #( tdo_cl_gen1 ).
+    "tdo_cl_gen2 is also possible
+    tdo_cl_2 = CAST #( tdo_cl_gen2 ).
+
+    "Checking whether the class name applies (the example returns false)
+    DATA(applies_to_class) = tdo_cl->applies_to_class( 'CL_ABAP_DYN_PROG' ).
+
+    out->write( zcl_demo_abap_aux=>no_output ).
+  ENDMETHOD.
+
+  METHOD m47_rtti_interfaces.
+
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Getting Type Information for Interfaces| ).
+
+*&---------------------------------------------------------------------*
+*& Interfaces
+*&---------------------------------------------------------------------*
+
+    "--------- Getting general type information ---------
+
+    "Note:
+    "- The attribute accesses and method calls show a selection.
+    "- The example uses a demo interface from the ABAP cheat sheet repository.
+
+    "Getting general type information using cl_abap_typedescr without cast
+    "This example only uses the describe_by_name method
+    DATA(tdo_intf_gen) = cl_abap_typedescr=>describe_by_name( 'ZDEMO_ABAP_OBJECTS_INTERFACE' ).
+
+    "Selection of retrievable, general information
+    "The same information is also accessible after the cast below.
+    "The examples use tdo_if_gen1. tdo_if_gen2 is also possible.
+    DATA(type_category_if_gen) = tdo_intf_gen->kind.
+    DATA(type_kind_if_gen) = tdo_intf_gen->type_kind.
+    DATA(absolute_name_if_gen) = tdo_intf_gen->absolute_name.
+    DATA(relative_name_if_gen) = tdo_intf_gen->get_relative_name( ).
+
+    "--------- Getting more specific type information using a cast ---------
+
+    "The data reference variable is of type ref to cl_abap_typedescr.
+    "Getting the reference in one go using inline declaration.
+    DATA(tdo_if) = CAST cl_abap_intfdescr( cl_abap_typedescr=>describe_by_name( 'ZDEMO_ABAP_OBJECTS_INTERFACE' ) ).
+
+    "Selection of attribute accesses and method calls to get various
+    "pieces of information
+    DATA(type_category_if) = tdo_if->kind.
+    DATA(type_kind_if) = tdo_if->type_kind.
+    DATA(absolute_name_if) = tdo_if->absolute_name.
+    DATA(relative_name_if) = tdo_if->get_relative_name( ).
+
+    DATA(kind_if) = tdo_if->intf_kind.
+    DATA(attributes_if) = tdo_if->attributes.
+    DATA(interfaces_if) = tdo_if->interfaces.
+    DATA(events_if) = tdo_if->events.
+    DATA(methods_if) = tdo_if->methods.
+
+    "--------- Excursions ---------
+
+    "Checking against the constants of the ifasses cl_abap_typedescr and
+    "cl_abap_intfdescr
+    ASSERT type_category_if = cl_abap_typedescr=>kind_intf.
+    ASSERT type_kind_if = cl_abap_typedescr=>typekind_intf.
+    ASSERT kind_if = cl_abap_intfdescr=>intfkind_flatt.
+
+    "Using the result of the method calls above to get the data reference,
+    "without inline deifaration.
+    DATA tdo_if_2 TYPE REF TO cl_abap_intfdescr.
+    tdo_if_2 = CAST #( tdo_intf_gen ).
+
+    out->write( zcl_demo_abap_aux=>no_output ).
+  ENDMETHOD.
+
+  METHOD m48_type_descr_cl_constants.
+
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Constants of Type Description Classes| ).
+
+    DATA ref_tab TYPE TABLE OF REF TO data.
+
+    DATA flag TYPE abap_boolean.
+    DATA num TYPE i.
+
+    DATA: BEGIN OF struct1,
+            comp1 TYPE i,
+            comp2 TYPE c LENGTH 5,
+          END OF struct1.
+
+    DATA: BEGIN OF struct2,
+            comp1 TYPE i,
+            comp2 TYPE string,
+          END OF struct2.
+
+    DATA itab LIKE TABLE OF struct1 WITH EMPTY KEY.
+
+    APPEND REF #( flag ) TO ref_tab.
+    APPEND REF #( num ) TO ref_tab.
+    APPEND REF #( struct1 ) TO ref_tab.
+    APPEND REF #( struct2 ) TO ref_tab.
+    APPEND REF #( itab ) TO ref_tab.
+
+    LOOP AT ref_tab INTO DATA(wa).
+
+      DATA(a) = cl_abap_typedescr=>describe_by_data_ref( wa )->type_kind.
+      DATA(b) = cl_abap_typedescr=>describe_by_data( wa->* )->type_kind.
+
+      CASE sy-tabix.
+        WHEN 1.
+          ASSERT a = cl_abap_typedescr=>typekind_char.
+          ASSERT b = cl_abap_typedescr=>typekind_char.
+
+          ASSERT a = 'C'.
+          ASSERT b = 'C'.
+        WHEN 2.
+          ASSERT a = cl_abap_typedescr=>typekind_int.
+          ASSERT b = cl_abap_typedescr=>typekind_int.
+
+          ASSERT a = 'I'.
+          ASSERT b = 'I'.
+        WHEN 3.
+          "Flat structure
+          ASSERT a = cl_abap_typedescr=>typekind_struct1.
+          ASSERT b = cl_abap_typedescr=>typekind_struct1.
+
+          ASSERT a = 'u'.
+          ASSERT b = 'u'.
+        WHEN 4.
+          "Deep structure as a component is of type string
+          ASSERT a = cl_abap_typedescr=>typekind_struct2.
+          ASSERT b = cl_abap_typedescr=>typekind_struct2.
+
+          ASSERT a = 'v'.
+          ASSERT b = 'v'.
+        WHEN 5.
+          ASSERT a = cl_abap_typedescr=>typekind_table.
+          ASSERT b = cl_abap_typedescr=>typekind_table.
+
+          ASSERT a = 'h'.
+          ASSERT b = 'h'.
+      ENDCASE.
+    ENDLOOP.
+
+    out->write( zcl_demo_abap_aux=>no_output ).
+  ENDMETHOD.
+
+  METHOD m49_rttc_elementary.
+
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Creating Elementary Types and Data Objects Dynamically| ).
+
+    DATA dref_elem TYPE REF TO data.
+
+*&---------------------------------------------------------------------*
+*& Creating a data object with elementary type dynamically
+*& Built-in ABAP type
+*&---------------------------------------------------------------------*
+
+    "An elementary type and data object such as the following shall be
+    "created dynamically using a type description object.
+    TYPES ty_c3 TYPE c LENGTH 3.
+    DATA elem_dobj_1a TYPE ty_c3.
+    DATA elem_dobj_1b TYPE c LENGTH 3.
+
+    "Creating a reference type dynamically using a type description object
+    DATA(tdo_elem_1) = cl_abap_elemdescr=>get_c( 3 ).
+
+    "Creating a data reference variable dynamically using a type description object
+    CREATE DATA dref_elem TYPE HANDLE tdo_elem_1.
+
+    "Getting type information and checking type compatibility
+    DATA(tdo_for_dref_elem_1) = CAST cl_abap_elemdescr( cl_abap_typedescr=>describe_by_data( dref_elem->* ) ).
+    DATA(applies_to_elem_1a) = tdo_for_dref_elem_1->applies_to_data( elem_dobj_1a ).
+    DATA(applies_to_elem_1b) = tdo_for_dref_elem_1->applies_to_data( elem_dobj_1b ).
+    ASSERT applies_to_elem_1a = abap_true.
+    ASSERT applies_to_elem_1b = abap_true.
+
+*&---------------------------------------------------------------------*
+*& get_* methods for built-in types
+*&---------------------------------------------------------------------*
+
+    "Character-like types
+    TYPES c5 TYPE c LENGTH 5.
+    DATA(tdo_elem_c5) = cl_abap_elemdescr=>get_c( 5 ).
+    CREATE DATA dref_elem TYPE HANDLE tdo_elem_c5.
+
+    TYPES n4 TYPE n LENGTH 4.
+    DATA(tdo_elem_n4) = cl_abap_elemdescr=>get_n( 4 ).
+    CREATE DATA dref_elem TYPE HANDLE tdo_elem_n4.
+
+    TYPES str TYPE string.
+    DATA(tdo_elem_string) = cl_abap_elemdescr=>get_string( ).
+    CREATE DATA dref_elem TYPE HANDLE tdo_elem_string.
+
+    "Numeric types
+    TYPES ty_i TYPE i.
+    DATA(tdo_elem_i) = cl_abap_elemdescr=>get_i( ).
+    CREATE DATA dref_elem TYPE HANDLE tdo_elem_i.
+
+    TYPES ty_int1 TYPE int1.
+    DATA(tdo_elem_int1) = cl_abap_elemdescr=>get_int1( ).
+    CREATE DATA dref_elem TYPE HANDLE tdo_elem_int1.
+
+    TYPES ty_int2 TYPE int2.
+    DATA(tdo_elem_int2) = cl_abap_elemdescr=>get_int2( ).
+    CREATE DATA dref_elem TYPE HANDLE tdo_elem_int2.
+
+    TYPES ty_int8 TYPE int8.
+    DATA(tdo_elem_int8) = cl_abap_elemdescr=>get_int8( ).
+    CREATE DATA dref_elem TYPE HANDLE tdo_elem_int8.
+
+    TYPES ty_dec16 TYPE decfloat16.
+    DATA(tdo_elem_dec16) = cl_abap_elemdescr=>get_decfloat16( ).
+    CREATE DATA dref_elem TYPE HANDLE tdo_elem_dec16.
+
+    TYPES ty_dec34 TYPE decfloat34.
+    DATA(tdo_elem_dec34) = cl_abap_elemdescr=>get_decfloat34( ).
+    CREATE DATA dref_elem TYPE HANDLE tdo_elem_dec34.
+
+    TYPES float TYPE f.
+    DATA(tdo_elem_f) = cl_abap_elemdescr=>get_f( ).
+    CREATE DATA dref_elem TYPE HANDLE tdo_elem_f.
+
+    TYPES pl16d14 TYPE p LENGTH 16 DECIMALS 14.
+    DATA(tdo_elem_p) = cl_abap_elemdescr=>get_p( p_length   = 16
+                                                 p_decimals = 14 ).
+    CREATE DATA dref_elem TYPE HANDLE tdo_elem_p.
+
+    "Date, time, time stamp
+    TYPES ty_date TYPE d.
+    DATA(tdo_elem_d) = cl_abap_elemdescr=>get_d( ).
+    CREATE DATA dref_elem TYPE HANDLE tdo_elem_d.
+
+    TYPES ty_time TYPE t.
+    DATA(tdo_elem_t) = cl_abap_elemdescr=>get_t( ).
+    CREATE DATA dref_elem TYPE HANDLE tdo_elem_t.
+
+    TYPES ty_utcl TYPE utclong.
+    DATA(tdo_elem_utcl) = cl_abap_elemdescr=>get_utclong( ).
+    CREATE DATA dref_elem TYPE HANDLE tdo_elem_utcl.
+
+    "Byte-like types
+    TYPES x10 TYPE x LENGTH 10.
+    DATA(tdo_elem_x_l10) = cl_abap_elemdescr=>get_x( 10 ).
+    CREATE DATA dref_elem TYPE HANDLE tdo_elem_x_l10.
+
+    TYPES xstr TYPE xstring.
+    DATA(tdo_elem_xstr) = cl_abap_elemdescr=>get_xstring( ).
+    CREATE DATA dref_elem TYPE HANDLE tdo_elem_xstr.
+
+*&---------------------------------------------------------------------*
+*& Creating a data object with elementary type dynamically
+*& DDIC data element
+*&---------------------------------------------------------------------*
+
+    "Note: The types int1 and int2 in the previous code snippet represent
+    "DDIC data elements, too.
+
+    "A reference type and variable such as the following shall be created
+    "using a type description object.
+    TYPES ty_ts TYPE timestampl.
+    DATA elem_dobj_2a TYPE ty_ts.
+    DATA elem_dobj_2b TYPE timestampl.
+
+    "Creating a reference type dynamically using a type description object
+    "Note: The 'describe_by_name' method returns a reference of type ref to
+    "cl_abap_typedescr. To use the type description object with the
+    "CREATE DATA ... TYPE HANDLE ... statement, a cast is required.
+    "The 'describe_by_name' method is available with cl_abap_typedescr,
+    "cl_abap_elemdescr, and others.
+    DATA(tdo_elem_2) = CAST cl_abap_datadescr( cl_abap_elemdescr=>describe_by_name( 'TIMESTAMPL' ) ).
+    "Alternative using cl_abap_typedescr
+    DATA(tdo_elem_w_cl_abap_typedescr) = CAST cl_abap_datadescr( cl_abap_typedescr=>describe_by_name( 'TIMESTAMPL' ) ).
+
+    "Creating a data reference variable dynamically using a type description object
+    CREATE DATA dref_elem TYPE HANDLE tdo_elem_2.
+
+    "Getting type information and checking type compatibility
+    DATA(tdo_for_dref_elem_2) = CAST cl_abap_elemdescr( cl_abap_typedescr=>describe_by_data( dref_elem->* ) ).
+    DATA(applies_to_elem_2a) = tdo_for_dref_elem_2->applies_to_data( elem_dobj_2a ).
+    DATA(applies_to_elem_2b) = tdo_for_dref_elem_2->applies_to_data( elem_dobj_2b ).
+    ASSERT applies_to_elem_2a = abap_true.
+    ASSERT applies_to_elem_2b = abap_true.
+
+*&---------------------------------------------------------------------*
+*& Excursions: Further methods of class cl_abap_elemdescr
+*&---------------------------------------------------------------------*
+
+    "The following examples cover a selection. For more information, refer
+    "to the class documentation.
+
+    "---- 'describe_by_data' method ----
+    "To get the underlying type's type description object.
+    DATA a_number TYPE i.
+    DATA(tdo_elem_descr_by_data) = cl_abap_elemdescr=>describe_by_data( a_number ).
+    "Note: To use it with the CREATE DATA ... TYPE HANDLE ... statement, a cast is
+    "required.
+    DATA(cast_tdo_elem_descr_by_data) = CAST cl_abap_datadescr( tdo_elem_descr_by_data ).
+    CREATE DATA dref_elem TYPE HANDLE cast_tdo_elem_descr_by_data.
+
+    "---- 'describe_by_name' method ----
+    "To get the type description object based on a type passed by relative or absolute name
+    DATA(tdo_elem_descr_by_name) = cl_abap_elemdescr=>describe_by_name( 'LAND1' ).
+    DATA(cast_tdo_elem_descr_by_name) = CAST cl_abap_datadescr( tdo_elem_descr_by_name ).
+    CREATE DATA dref_elem TYPE HANDLE cast_tdo_elem_descr_by_name.
+
+    "---- 'describe_by_data_ref' method ----
+    "To get the underlying type's type description object, passed as reference.
+    DATA data_ref TYPE REF TO data.
+    data_ref = NEW i( 123 ).
+    DATA(tdo_elem_descr_by_data_ref) = cl_abap_elemdescr=>describe_by_data_ref( data_ref ).
+    DATA(cast_tdo_elem_desc_by_data_ref) = CAST cl_abap_datadescr( tdo_elem_descr_by_data_ref ).
+    CREATE DATA dref_elem TYPE HANDLE cast_tdo_elem_desc_by_data_ref.
+
+    "---- 'get_by_kind' method ----
+    "To get a type description object by type kind.
+    DATA(tdo_elem_get_by_kind_string) = cl_abap_elemdescr=>get_by_kind( cl_abap_elemdescr=>typekind_string ).
+    CREATE DATA dref_elem TYPE HANDLE tdo_elem_get_by_kind_string.
+
+    DATA(tdo_elem_get_by_kind_c5) = cl_abap_elemdescr=>get_by_kind( p_type_kind = cl_abap_elemdescr=>typekind_char p_length = 5 ).
+    CREATE DATA dref_elem TYPE HANDLE tdo_elem_get_by_kind_c5.
+
+    out->write( zcl_demo_abap_aux=>no_output ).
+  ENDMETHOD.
+
+  METHOD m50_rttc_structures.
+
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: | ).
+
+    DATA dref_struc TYPE REF TO data.
+
+*&---------------------------------------------------------------------*
+*& Creating a structured type and data object dynamically
+*& Flat structure
+*&---------------------------------------------------------------------*
+
+    "A structured type and data object such as the following shall be created
+    "dynamically using a type description object.
+    TYPES: BEGIN OF flat_struc_type,
+             num    TYPE i,              "Built-in ABAP types
+             packed TYPE p LENGTH 16 DECIMALS 14,
+             text   TYPE c LENGTH 20,
+             date   TYPE d,
+             land   TYPE land1,          "DDIC data elements
+             ts     TYPE timestampl,
+           END OF flat_struc_type.
+    DATA struc_1 TYPE flat_struc_type.
+
+    "Creating a reference type dynamically using a type description object
+    "Using the 'get' method, you can create the type description object
+    "dynamically based on a component table. The component table is
+    "of type abap_component_tab. In this example, the component table
+    "is created inline.
+    DATA(tdo_struc_1) = cl_abap_structdescr=>get(
+        VALUE #(
+          ( name = 'NUM' type = cl_abap_elemdescr=>get_i( ) )
+          ( name = 'PACKED' type = cl_abap_elemdescr=>get_p( p_length = 16 p_decimals = 14 ) )
+          ( name = 'TEXT' type = cl_abap_elemdescr=>get_c( 20 ) )
+          ( name = 'DATE' type = cl_abap_elemdescr=>get_d( ) )
+          ( name = 'LAND' type = CAST cl_abap_datadescr( cl_abap_typedescr=>describe_by_name( 'LAND1' ) ) )
+          ( name = 'TS' type = CAST cl_abap_datadescr( cl_abap_typedescr=>describe_by_name( 'TIMESTAMPL' ) ) )
+           ) ).
+
+    "Creating a data reference variable dynamically using a type description object
+    CREATE DATA dref_struc TYPE HANDLE tdo_struc_1.
+
+    "Getting type information and checking type compatibility
+    DATA(tdo_for_dref_struc_1) = CAST cl_abap_structdescr( cl_abap_typedescr=>describe_by_data( dref_struc->* ) ).
+    DATA(applies_to_struc_1) = tdo_for_dref_struc_1->applies_to_data( struc_1 ).
+    ASSERT applies_to_struc_1 = abap_true.
+
+*&---------------------------------------------------------------------*
+*& Creating a structured type and data object dynamically
+*& Deep structure
+*&---------------------------------------------------------------------*
+
+    "A structured type and data object such as the following shall be created
+    "dynamically using a type description object.
+    TYPES: BEGIN OF deep_struc_type,
+             num          TYPE i,              "Built-in ABAP types
+             str          TYPE string,
+             flight_struc TYPE zdemo_abap_fli, "Structure based on the line type of a database table
+             string_tab   TYPE string_table,   "Global table type
+             local_tab    TYPE TABLE OF flat_struc_type WITH EMPTY KEY, "Table type based on local structured type
+           END OF deep_struc_type.
+    DATA struc_2 TYPE deep_struc_type.
+
+    "Creating a reference type dynamically using a type description object
+    DATA(tdo_struc_2) = cl_abap_structdescr=>get(
+        VALUE #(
+          ( name = 'NUM' type = cl_abap_elemdescr=>get_i( ) )
+          ( name = 'STR' type = cl_abap_elemdescr=>get_string( ) )
+          ( name = 'FLIGHT_STRUC' type = CAST cl_abap_datadescr( cl_abap_typedescr=>describe_by_name( 'ZDEMO_ABAP_FLI' ) ) )
+          ( name = 'STRING_TAB' type = CAST cl_abap_datadescr( cl_abap_typedescr=>describe_by_name( 'STRING_TABLE' ) ) )
+          ( name = 'LOCAL_TAB' type = CAST cl_abap_datadescr( cl_abap_tabledescr=>get(
+                                                p_line_type  = CAST cl_abap_structdescr( cl_abap_tabledescr=>describe_by_name( 'FLAT_STRUC_TYPE' ) )
+                                                p_table_kind = cl_abap_tabledescr=>tablekind_std
+                                                p_unique     = cl_abap_typedescr=>false
+                                                p_key_kind   = cl_abap_tabledescr=>keydefkind_empty ) ) ) ) ).
+
+    "Creating a data reference variable dynamically using a type description object
+    CREATE DATA dref_struc TYPE HANDLE tdo_struc_2.
+
+    "Getting type information and checking type compatibility
+    DATA(tdo_for_dref_struc_2) = CAST cl_abap_structdescr( cl_abap_typedescr=>describe_by_data( dref_struc->* ) ).
+    DATA(applies_to_struc_2) = tdo_for_dref_struc_2->applies_to_data( struc_2 ).
+    ASSERT applies_to_struc_2 = abap_true.
+
+*&---------------------------------------------------------------------*
+*& Excursions: Further methods of class cl_abap_structdescr
+*&---------------------------------------------------------------------*
+
+    "The following examples cover a selection. For more information, refer
+    "to the class documentation.
+
+    "---- 'describe_by_data' method ----
+    "To get the underlying type's type description object.
+    DATA some_struct TYPE zdemo_abap_carr.
+    DATA(tdo_struc_descr_by_data) = cl_abap_structdescr=>describe_by_data( some_struct ).
+    "Note: To use it with the CREATE DATA ... TYPE HANDLE ... statement, a cast is
+    "required.
+    DATA(cast_tdo_struc_descr_by_data) = CAST cl_abap_datadescr( tdo_struc_descr_by_data ).
+    CREATE DATA dref_struc TYPE HANDLE cast_tdo_struc_descr_by_data.
+
+    "---- 'describe_by_name' method ----
+    "To get the type description object based on a type passed by relative or absolute name
+    DATA(tdo_struc_descr_by_name) = cl_abap_structdescr=>describe_by_name( 'ZDEMO_ABAP_CARR' ).
+    DATA(cast_tdo_struc_descr_by_name) = CAST cl_abap_datadescr( tdo_struc_descr_by_name ).
+    CREATE DATA dref_struc TYPE HANDLE cast_tdo_struc_descr_by_name.
+
+    "---- 'describe_by_data_ref' method ----
+    "To get the underlying type's type description object, passed as reference.
+    DATA data_ref TYPE REF TO data.
+    data_ref = NEW zdemo_abap_flsch( carrid = 'LH' ).
+    DATA(tdo_struc_descr_by_data_ref) = cl_abap_structdescr=>describe_by_data_ref( data_ref ).
+    DATA(cast_tdo_struc_desc_by_dref) = CAST cl_abap_datadescr( tdo_struc_descr_by_data_ref ).
+    CREATE DATA dref_struc TYPE HANDLE cast_tdo_struc_desc_by_dref.
+
+    "---- 'get_bdef_derived_type' method ----
+    "To get a type description object for a BDEF derived type.
+    DATA struc_der_type_create TYPE STRUCTURE FOR CREATE zdemo_abap_rap_ro_m.
+    DATA(tdo_struc_bdef_derived_type) = cl_abap_structdescr=>get_bdef_derived_type(
+                                           p_entity   = 'ZDEMO_ABAP_RAP_RO_M'
+                                           p_kind     = abp_bdef_derived_type-create ).
+
+    CREATE DATA dref_struc TYPE HANDLE tdo_struc_bdef_derived_type.
+
+    "Getting type information and checking type compatibility
+    DATA(tdo_for_dref_struc_der_type) = CAST cl_abap_structdescr( cl_abap_typedescr=>describe_by_data( dref_struc->* ) ).
+    DATA(applies_to_struc_der_type) = tdo_for_dref_struc_der_type->applies_to_data( struc_der_type_create ).
+    ASSERT applies_to_struc_der_type = abap_true.
+
+    out->write( zcl_demo_abap_aux=>no_output ).
+  ENDMETHOD.
+
+  METHOD m51_rttc_itab.
+
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Creating Table Types and Internal Tables Dynamically| ).
+
+    DATA dref_itab TYPE REF TO data.
+
+*&---------------------------------------------------------------------*
+*& Creating table type and internal table with elementary line type and
+*& standard table key
+*&---------------------------------------------------------------------*
+
+    "An internal table type such as the following shall be created dynamically
+    "using a type description object.
+    TYPES std_tab_type_std_key TYPE STANDARD TABLE OF string WITH DEFAULT KEY.
+    DATA itab_1 TYPE std_tab_type_std_key.
+
+    "Creating the type dynamically (creating a type description object)
+    "Here, the cl_abap_tabledescr=>get( ... ) method is used. Note that specifying
+    "the line type is mandatory, the rest is optional.
+    "Not specifying the other optional parameters means that the default values are
+    "used, for example, standard table is the default value for p_table_kind.
+    DATA(tdo_tab_1) = cl_abap_tabledescr=>get(
+            p_line_type  = cl_abap_elemdescr=>get_string( ) ).
+
+    "Creating an internal table dynamically using a type description object
+    CREATE DATA dref_itab TYPE HANDLE tdo_tab_1.
+
+    "Getting type information and checking type compatibility
+    DATA(tdo_1) = CAST cl_abap_tabledescr( cl_abap_typedescr=>describe_by_data( dref_itab->* ) ).
+    DATA(applies_1) = tdo_1->applies_to_data( itab_1 ).
+    ASSERT applies_1 = abap_true.
+
+*&---------------------------------------------------------------------*
+*& Creating table type and internal table with structured line type and
+*& custom table keys
+*&---------------------------------------------------------------------*
+
+    "Another internal table type for which more parameter specifications
+    "are needed. The following internal table type shall be created using
+    "a type description object.
+    "The structured type of a demo DDIC database table is used.
+    TYPES so_table_type TYPE SORTED TABLE OF zdemo_abap_flsch WITH UNIQUE KEY carrid connid.
+    DATA itab_2 TYPE so_table_type.
+
+    "Creating the type dynamically by creating a type description object
+    "The following example also demonstrates how comfortably constructor
+    "operators can be used at these positions.
+    DATA(tdo_tab_2) = cl_abap_tabledescr=>get(
+            p_line_type  = CAST cl_abap_structdescr( cl_abap_tabledescr=>describe_by_name( 'ZDEMO_ABAP_FLSCH' ) )
+            p_table_kind = cl_abap_tabledescr=>tablekind_sorted
+            p_key        = VALUE #( ( name = 'CARRID' ) ( name = 'CONNID' ) )
+            p_unique     = cl_abap_typedescr=>true
+            p_key_kind   = cl_abap_tabledescr=>keydefkind_user ).
+
+    "Creating an internal table dynamically using a type description object
+    CREATE DATA dref_itab TYPE HANDLE tdo_tab_2.
+
+    "Getting type information and checking type compatibility
+    DATA(tdo_2) = CAST cl_abap_tabledescr( cl_abap_typedescr=>describe_by_data( dref_itab->* ) ).
+    DATA(applies_2) = tdo_2->applies_to_data( itab_2 ).
+    ASSERT applies_2 = abap_true.
+
+*&---------------------------------------------------------------------*
+*& Creating table type and internal table containing custom components
+*& and custom table key
+*&---------------------------------------------------------------------*
+
+    "A table type and data object such as the following shall be created
+    "dynamically using a type description object.
+    TYPES: BEGIN OF struc_type,
+             a TYPE c LENGTH 5,   "Built-in ABAP types
+             b TYPE i,
+             c TYPE string,
+             d TYPE land1,    "DDIC data element
+           END OF struc_type.
+    DATA itab_3 TYPE HASHED TABLE OF struc_type WITH UNIQUE KEY a.
+
+    "Creating the type dynamically by creating a type description object
+    DATA(tdo_tab_3) = cl_abap_tabledescr=>get(
+            p_line_type  = cl_abap_structdescr=>get( VALUE #(
+              ( name = 'A' type = cl_abap_elemdescr=>get_c( 5 ) )
+              ( name = 'B' type = cl_abap_elemdescr=>get_i( ) )
+              ( name = 'C' type = cl_abap_elemdescr=>get_string( ) )
+              ( name = 'D' type = CAST cl_abap_datadescr( cl_abap_typedescr=>describe_by_name( 'LAND1' ) ) ) ) )
+            p_table_kind = cl_abap_tabledescr=>tablekind_hashed
+            p_key        = VALUE #( ( name = 'A' )  )
+            p_unique     = cl_abap_typedescr=>true ).
+
+    "Creating an internal table dynamically using a type description object
+    CREATE DATA dref_itab TYPE HANDLE tdo_tab_3.
+
+    "Getting type information and checking type compatibility
+    DATA(tdo_3a) = CAST cl_abap_tabledescr( cl_abap_typedescr=>describe_by_data( dref_itab->* ) ).
+    DATA(line_type_3a) = CAST cl_abap_structdescr( tdo_3a->get_table_line_type( ) ).
+    DATA(keys_3a) = tdo_3a->get_keys( ).
+
+    DATA(tdo_3b) = CAST cl_abap_tabledescr( cl_abap_typedescr=>describe_by_data( itab_3 ) ).
+    DATA(line_type_3b) = CAST cl_abap_structdescr( tdo_3b->get_table_line_type( ) ).
+    DATA(keys_3b) = tdo_3b->get_keys( ).
+
+    DATA(applies_3) = tdo_3a->applies_to_data( itab_3 ).
+    ASSERT applies_3 = abap_true.
+
+*&---------------------------------------------------------------------*
+*& Creating table type and internal table containing custom components
+*& and custom table key (primary and secondary table key)
+*&---------------------------------------------------------------------*
+
+    "A table type and data object such as the following shall be created
+    "dynamically using a type description object.
+    TYPES: BEGIN OF struc_type_2,
+             e TYPE c LENGTH 5,       "Built-in ABAP types
+             f TYPE i,
+             g TYPE land1,            "DDIC data element
+             h TYPE zdemo_abap_flsch, "DDIC database table
+             i TYPE REF TO string,    "Reference type
+           END OF struc_type_2.
+    DATA itab_4 TYPE SORTED TABLE OF struc_type_2
+      WITH NON-UNIQUE KEY e
+      WITH NON-UNIQUE SORTED KEY sec_key COMPONENTS f.
+    "Note that the default name primary_key does not need to be specified explicitly.
+    "So, the following declaration corresponds to the previous one.
+    DATA itab_4b TYPE SORTED TABLE OF struc_type_2
+      WITH NON-UNIQUE KEY primary_key COMPONENTS e
+      WITH NON-UNIQUE SORTED KEY sec_key COMPONENTS f.
+
+    "Creating the type dynamically by creating a type description object
+    "Here, the cl_abap_tabledescr=>get_with_keys( ... )  method is used. Check the class documentation
+    "for more details.
+    DATA(tdo_tab_4) = cl_abap_tabledescr=>get_with_keys(
+                          p_line_type  = cl_abap_structdescr=>get( VALUE #(
+                            ( name = 'E' type = cl_abap_elemdescr=>get_c( 5 ) )
+                            ( name = 'F' type = cl_abap_elemdescr=>get_i( ) )
+                            ( name = 'G' type = CAST cl_abap_datadescr( cl_abap_typedescr=>describe_by_name( 'LAND1' ) ) )
+                            ( name = 'H' type = CAST cl_abap_datadescr( cl_abap_typedescr=>describe_by_name( 'ZDEMO_ABAP_FLSCH' ) ) )
+                            ( name = 'I' type = CAST cl_abap_datadescr( cl_abap_refdescr=>get_by_name( 'STRING' ) ) )
+                            ) )
+                          p_keys = VALUE #(
+                            ( name = VALUE #( )         "In case of the primary table key, a name must be provided here
+                                                        "for an alias. This example table does not specify an alias name.
+                              is_primary = abap_true
+                              access_kind = cl_abap_tabledescr=>tablekind_sorted
+                              is_unique = abap_false
+                              key_kind = cl_abap_tabledescr=>keydefkind_user
+                              components = VALUE #( ( name = 'E' ) ) )
+                            ( name = 'SEC_KEY'
+                              is_primary = abap_false
+                              access_kind = cl_abap_tabledescr=>tablekind_sorted
+                              is_unique = abap_false
+                              key_kind = cl_abap_tabledescr=>keydefkind_user
+                              components = VALUE #( ( name = 'F' ) ) ) ) ).
+
+    "Creating an internal table dynamically using a type description object
+    CREATE DATA dref_itab TYPE HANDLE tdo_tab_4.
+
+    "Getting type information and checking type compatibility
+    DATA(tdo_4a) = CAST cl_abap_tabledescr( cl_abap_typedescr=>describe_by_data( dref_itab->* ) ).
+    DATA(line_type_4a) = CAST cl_abap_structdescr( tdo_4a->get_table_line_type( ) ).
+    DATA(keys_4a) = tdo_4a->get_keys( ).
+
+    DATA(tdo_4b) = CAST cl_abap_tabledescr( cl_abap_typedescr=>describe_by_data( itab_4 ) ).
+    DATA(line_type_4b) = CAST cl_abap_structdescr( tdo_4b->get_table_line_type( ) ).
+    DATA(keys_4b) = tdo_4b->get_keys( ).
+
+    DATA(applies_4) = tdo_4a->applies_to_data( itab_4 ).
+    ASSERT applies_4 = abap_true.
+
+*&---------------------------------------------------------------------*
+*& Creating table type and internal table containing custom components
+*& and custom table key (primary and secondary table key), including
+*& alias names
+*&---------------------------------------------------------------------*
+
+    "A internal table such as the following shall be
+    "created dynamically using a type description object.
+    DATA itab_5 TYPE HASHED TABLE OF struc_type
+      WITH UNIQUE KEY primary_key ALIAS pk COMPONENTS a
+      WITH NON-UNIQUE SORTED KEY sec_key ALIAS sk COMPONENTS b c.
+
+    "Creating the type dynamically by creating a type description object
+    DATA(tdo_tab_5) = cl_abap_tabledescr=>get_with_keys(
+                          p_line_type  = CAST cl_abap_structdescr( cl_abap_typedescr=>describe_by_name( 'STRUC_TYPE' ) )
+                          p_keys = VALUE #(
+                            ( name = 'PK' "Alias name for the primary table key.
+                              is_primary = abap_true
+                              access_kind = cl_abap_tabledescr=>tablekind_hashed
+                              is_unique = abap_true
+                              key_kind = cl_abap_tabledescr=>keydefkind_user
+                              components = VALUE #( ( name = 'A' ) ) )
+                            ( name = 'SEC_KEY'
+                              is_primary = abap_false
+                              access_kind = cl_abap_tabledescr=>tablekind_sorted
+                              is_unique = abap_false
+                              key_kind = cl_abap_tabledescr=>keydefkind_user
+                              components = VALUE #( ( name = 'B' ) ( name = 'C' ) ) ) )
+                           p_key_aliases = VALUE #( ( name = 'PRIMARY_KEY' alias = 'PK' ) "Specifying the default primary table key name PRIMARY_KEY
+                                                    ( name = 'SEC_KEY'     alias = 'SK' ) ) ).
+
+    "Creating an internal table dynamically using a type description object
+    CREATE DATA dref_itab TYPE HANDLE tdo_tab_5.
+
+    DATA(tdo_5a) = CAST cl_abap_tabledescr( cl_abap_typedescr=>describe_by_data( dref_itab->* ) ).
+    DATA(line_type_5a) = CAST cl_abap_structdescr( tdo_5a->get_table_line_type( ) ).
+    DATA(keys_5a) = tdo_5a->get_keys( ).
+    DATA(key_aliases_5a) = tdo_5a->get_key_aliases( ).
+
+    DATA(tdo_5b) = CAST cl_abap_tabledescr( cl_abap_typedescr=>describe_by_data( itab_5 ) ).
+    DATA(line_type_5b) = CAST cl_abap_structdescr( tdo_5b->get_table_line_type( ) ).
+    DATA(keys_5b) = tdo_5b->get_keys( ).
+    DATA(key_aliases_5b) = tdo_5b->get_key_aliases( ).
+
+    DATA(applies_5) = tdo_5a->applies_to_data( itab_5 ).
+    ASSERT applies_5 = abap_true.
+
+*&---------------------------------------------------------------------*
+*& Excursions: Further methods of class cl_abap_tabledescr
+*&---------------------------------------------------------------------*
+
+    "The following examples cover a selection. For more information, refer
+    "to the class documentation.
+
+    "---- 'describe_by_data' method ----
+    "To get the underlying type's type description object.
+    DATA some_table TYPE TABLE OF zdemo_abap_carr WITH EMPTY KEY.
+    DATA(tdo_tab_descr_by_data) = cl_abap_typedescr=>describe_by_data( some_table ).
+    "Note: To use it with the CREATE DATA ... TYPE HANDLE ... statement, a cast is
+    "required.
+    DATA(cast_tdo_tab_descr_by_data) = CAST cl_abap_datadescr( tdo_tab_descr_by_data ).
+    CREATE DATA dref_itab TYPE HANDLE cast_tdo_tab_descr_by_data.
+
+    "---- 'describe_by_name' method ----
+    "To get the type description object based on a type passed by relative or absolute name
+    DATA(tdo_tab_descr_by_name) = cl_abap_tabledescr=>describe_by_name( 'ZDEMO_ABAP_CARR' ).
+    DATA(cast_tdo_tab_descr_by_name) = CAST cl_abap_datadescr( tdo_tab_descr_by_name ).
+    CREATE DATA dref_itab TYPE HANDLE cast_tdo_tab_descr_by_name.
+
+    "---- 'describe_by_data_ref' method ----
+    "To get the underlying type's type description object, passed as reference.
+    DATA data_ref TYPE REF TO data.
+    TYPES ty_tab TYPE TABLE OF zdemo_abap_carr WITH EMPTY KEY.
+    data_ref = NEW ty_tab( ( carrid = 'LH' ) ( carrid = 'AA' ) ).
+    DATA(tdo_tab_descr_by_data_ref) = cl_abap_tabledescr=>describe_by_data_ref( data_ref ).
+    DATA(cast_tdo_tab_desc_by_dref) = CAST cl_abap_datadescr( tdo_tab_descr_by_data_ref ).
+    CREATE DATA dref_itab TYPE HANDLE cast_tdo_tab_desc_by_dref.
+
+    "---- 'get_bdef_derived_type' method ----
+    "To get a type description object for a BDEF derived type.
+    DATA tab_der_type_create TYPE TABLE FOR CREATE zdemo_abap_rap_ro_m.
+    DATA(tdo_tab_bdef_derived_type) = cl_abap_tabledescr=>get_bdef_derived_type(
+                                           p_entity   = 'ZDEMO_ABAP_RAP_RO_M'
+                                           p_kind     = abp_bdef_derived_type-create ).
+
+    CREATE DATA dref_itab TYPE HANDLE tdo_tab_bdef_derived_type.
+
+    "Getting type information and checking type compatibility
+    DATA(tdo_for_dref_tab_der_type) = CAST cl_abap_tabledescr( cl_abap_typedescr=>describe_by_data( dref_itab->* ) ).
+    DATA(applies_to_tab_der_type) = tdo_for_dref_tab_der_type->applies_to_data( tab_der_type_create ).
+    ASSERT applies_to_tab_der_type = abap_true.
+
+    out->write( zcl_demo_abap_aux=>no_output ).
+  ENDMETHOD.
+
+  METHOD m52_rttc_dref.
+
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Creating Reference Types and Data Reference Variables Dynamically| ).
+
+    DATA dref_ref TYPE REF TO data.
+
+*&---------------------------------------------------------------------*
+*& Creating a data reference with elementary type (built-in ABAP type)
+*&---------------------------------------------------------------------*
+
+    "A reference type and variable such as the following shall be created
+    "using a type description object.
+    TYPES ty_ref_str TYPE REF TO string.
+    DATA dref_1a TYPE ty_ref_str.
+    DATA dref_1b TYPE REF TO string.
+
+    "Creating a reference type dynamically using a type description object
+    DATA(tdo_ref_1) = cl_abap_refdescr=>get( cl_abap_elemdescr=>get_string( ) ).
+
+    "Creating a data reference variable dynamically using a type description object
+    CREATE DATA dref_ref TYPE HANDLE tdo_ref_1.
+
+    "Getting type information and checking type compatibility
+    DATA(tdo_for_dref_ref_1) = CAST cl_abap_refdescr( cl_abap_typedescr=>describe_by_data( dref_ref->* ) ).
+    DATA(applies_to_1a) = tdo_for_dref_ref_1->applies_to_data( dref_1a ).
+    DATA(applies_to_1b) = tdo_for_dref_ref_1->applies_to_data( dref_1b ).
+    ASSERT applies_to_1a = abap_true.
+    ASSERT applies_to_1b = abap_true.
+
+*&---------------------------------------------------------------------*
+*& Creating a data reference with elementary type (DDIC data element)
+*&---------------------------------------------------------------------*
+
+    "A reference type and variable such as the following shall be created
+    "using a type description object.
+    TYPES ty_ref_ts TYPE REF TO timestampl.
+    DATA dref_2a TYPE ty_ref_ts.
+    DATA dref_2b TYPE REF TO timestampl.
+
+    "Creating a reference type dynamically using a type description object
+    DATA(tdo_ref_2) = cl_abap_refdescr=>get( cl_abap_typedescr=>describe_by_name( 'TIMESTAMPL' ) ).
+
+    "Creating a data reference variable dynamically using a type description object
+    CREATE DATA dref_ref TYPE HANDLE tdo_ref_2.
+
+    "Getting type information and checking type compatibility
+    DATA(tdo_for_dref_ref_2) = CAST cl_abap_refdescr( cl_abap_typedescr=>describe_by_data( dref_ref->* ) ).
+    DATA(applies_to_2a) = tdo_for_dref_ref_2->applies_to_data( dref_2a ).
+    DATA(applies_to_2b) = tdo_for_dref_ref_2->applies_to_data( dref_2b ).
+    ASSERT applies_to_2a = abap_true.
+    ASSERT applies_to_2b = abap_true.
+
+*&---------------------------------------------------------------------*
+*& Creating a data reference with structured type
+*&---------------------------------------------------------------------*
+
+    "A reference type and variable such as the following shall be created
+    "using a type description object.
+    TYPES ty_ref_db TYPE REF TO zdemo_abap_carr.
+    DATA dref_3a TYPE ty_ref_db.
+    DATA dref_3b TYPE REF TO zdemo_abap_carr.
+
+    "Creating a reference type dynamically using a type description object
+    "The example uses the structured type of a demo database table.
+    DATA(tdo_ref_3) = cl_abap_refdescr=>get( cl_abap_typedescr=>describe_by_name( 'ZDEMO_ABAP_CARR' ) ).
+
+    "Creating a data reference variable dynamically using a type description object
+    CREATE DATA dref_ref TYPE HANDLE tdo_ref_3.
+
+    "Getting type information and checking type compatibility
+    DATA(tdo_for_dref_ref_3) = CAST cl_abap_refdescr( cl_abap_typedescr=>describe_by_data( dref_ref->* ) ).
+    DATA(applies_to_3a) = tdo_for_dref_ref_3->applies_to_data( dref_3a ).
+    DATA(applies_to_3b) = tdo_for_dref_ref_3->applies_to_data( dref_3b ).
+    ASSERT applies_to_3a = abap_true.
+    ASSERT applies_to_3b = abap_true.
+
+*&---------------------------------------------------------------------*
+*& Creating a data reference with table type
+*&---------------------------------------------------------------------*
+
+    "A reference type and variable such as the following shall be created
+    "using a type description object.
+    "The example uses a table type based on a locally declared structured type.
+    TYPES: BEGIN OF struc_type,
+             comp1 TYPE i,               "Built-in ABAP types
+             comp2 TYPE c LENGTH 5,
+             comp3 TYPE p LENGTH 16 DECIMALS 14,
+             comp4 TYPE land1,           "DDIC data element
+             comp5 TYPE zdemo_abap_carr, "Structure based on the line type of a database table
+             comp6 TYPE string_table,    "Table type
+           END OF struc_type,
+           tab_type TYPE TABLE OF struc_type WITH EMPTY KEY.
+
+    TYPES ty_ref_tab TYPE REF TO tab_type.
+    DATA dref_4a TYPE ty_ref_tab.
+    DATA dref_4b TYPE REF TO tab_type.
+
+    "Creating a reference type dynamically using a type description object
+    DATA(tdo_ref_4) = cl_abap_refdescr=>get( cl_abap_typedescr=>describe_by_name( 'TAB_TYPE' ) ).
+
+    "Creating a data reference variable dynamically using a type description object
+    CREATE DATA dref_ref TYPE HANDLE tdo_ref_4.
+
+    "Getting type information and checking type compatibility
+    DATA(tdo_for_dref_ref_4) = CAST cl_abap_refdescr( cl_abap_typedescr=>describe_by_data( dref_ref->* ) ).
+    DATA(applies_to_4a) = tdo_for_dref_ref_4->applies_to_data( dref_4a ).
+    DATA(applies_to_4b) = tdo_for_dref_ref_4->applies_to_data( dref_4b ).
+    ASSERT applies_to_4a = abap_true.
+    ASSERT applies_to_4b = abap_true.
+
+*&---------------------------------------------------------------------*
+*& Excursions: Further methods of class cl_abap_refdescr
+*&---------------------------------------------------------------------*
+
+    "The following examples cover a selection. For more information, refer
+    "to the class documentation.
+
+    "---- 'get' method ----
+    "To create or reuse reference types, which are passed as type
+    "description objects.
+    "Note: There is also the 'create' method. However, the 'get' method is
+    "the recommended method.
+    DATA(tdo_ref_int) = cl_abap_elemdescr=>get_i( ).
+    DATA(tdo_ref_get_a) = cl_abap_refdescr=>get( tdo_ref_int ).
+    CREATE DATA dref_ref TYPE HANDLE tdo_ref_get_a.
+
+    "Object references can also be used
+    DATA(tdo_cl_abap_typedescr) = cl_abap_typedescr=>describe_by_name( 'CL_ABAP_TYPEDESCR' ).
+    DATA(tdo_ref_get_b) = cl_abap_refdescr=>get( tdo_cl_abap_typedescr ).
+    CREATE DATA dref_ref TYPE HANDLE tdo_ref_get_b.
+
+    "---- 'get_by_name' method ----
+    "To create reference types, which are passed as name.
+    "Note: There is also the 'create_by_name' method. However, the 'get_by_name'
+    "method is the recommended method.
+    DATA(tdo_ref_get_by_name) = cl_abap_refdescr=>get_by_name( 'TIMESTAMP' ).
+    CREATE DATA dref_ref TYPE HANDLE tdo_ref_get_by_name.
+
+    "---- 'describe_by_data' method ----
+    "To get a reference to the underlying type's type description object.
+    DATA some_number TYPE int8.
+    DATA(tdo_ref_descr_by_data) = cl_abap_refdescr=>describe_by_data( some_number ).
+    DATA(cast_tdo_ref_descr_by_data) = CAST cl_abap_datadescr( tdo_ref_descr_by_data ).
+    CREATE DATA dref_ref TYPE HANDLE cast_tdo_ref_descr_by_data.
+
+    "---- 'describe_by_data_ref' method ----
+    "To get a reference to the underlying type's type description object, passed as
+    "reference.
+    DATA some_data TYPE REF TO data.
+    some_data = NEW i( 123 ).
+    DATA(tdo_ref_descr_by_data_ref) = cl_abap_refdescr=>describe_by_data_ref( some_data ).
+    DATA(cast_tdo_ref_descr_by_data_ref) = CAST cl_abap_datadescr( tdo_ref_descr_by_data ).
+    CREATE DATA dref_ref TYPE HANDLE cast_tdo_ref_descr_by_data_ref.
+
+    "---- 'describe_by_name' method ----
+    "To get the type description object based on a type passed by relative or absolute name
+    DATA(tdo_ref_descr_by_name) = cl_abap_refdescr=>describe_by_name( 'TIMESTAMPL'  ).
+    DATA(cast_tdo_ref_descr_by_name) = CAST cl_abap_datadescr( tdo_ref_descr_by_name ).
+    CREATE DATA dref_ref TYPE HANDLE cast_tdo_ref_descr_by_name.
+
+    "---- 'describe_by_object_ref' method ----
+    "To get the type description object based on an an object type
+    DATA(oref) = NEW cl_system_uuid( ).
+    DATA(tdo_ref_descr_by_oref) = cl_abap_refdescr=>describe_by_object_ref( oref ).
+
+    "---- 'get_ref_to_data' method ----
+    "To get the type description object for the type REF TO DATA
+    DATA(tdo_ref_get_ref_to_data) = cl_abap_refdescr=>get_ref_to_data( ).
+
+    "---- 'get_ref_to_object' method ----
+    "To get the type description object for the type REF TO OBJECT
+    DATA(tdo_ref_get_ref_to_object) = cl_abap_refdescr=>get_ref_to_object( ).
+
+    "---- Note ----
+    "Note the 'get_referenced_type' method when casting to cl_abap_refdescr.
+    TYPES test_type TYPE c LENGTH 10.
+    DATA test_dobj TYPE c LENGTH 10.
+    DATA dref_dobj TYPE REF TO test_type.
+    dref_dobj = NEW #( ).
+
+    DATA(tdo_ref_get_elemdescr) = CAST cl_abap_refdescr( cl_abap_typedescr=>describe_by_data( dref_dobj ) ).
+    DATA(tdo_ref_get_referenced_type) = tdo_ref_get_elemdescr->get_referenced_type( ).
+    DATA(cast_tdo_ref_get_ref_type) = CAST cl_abap_datadescr( tdo_ref_get_referenced_type ).
+    CREATE DATA dref_ref TYPE HANDLE cast_tdo_ref_get_ref_type.
+
+    DATA(tdo4applies) = CAST cl_abap_elemdescr( cl_abap_typedescr=>describe_by_data( test_dobj ) ).
+    DATA(applies_to_dobj) = tdo4applies->applies_to_data( dref_ref->* ).
+    ASSERT applies_to_dobj = abap_true.
+
+    out->write( zcl_demo_abap_aux=>no_output ).
+
+  ENDMETHOD.
+
+  METHOD m53_assign_sy_subrc.
+
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: ASSIGN Statements and Setting sy-subrc| ).
+
+    "Demo data objects to work with
+    DATA str TYPE string VALUE `hello`.
+    DATA: BEGIN OF struct,
+            comp1 TYPE i,
+            comp2 TYPE string,
+          END OF struct.
+    DATA itab LIKE TABLE OF struct WITH EMPTY KEY.
+    struct = VALUE #( comp1 = 1 comp2 = `ABAP` ).
+    APPEND struct TO itab.
+    DATA dref TYPE REF TO i.
+
+    FIELD-SYMBOLS <fs> TYPE data.
+
+*&---------------------------------------------------------------------*
+*& Static ASSIGN statements
+*&---------------------------------------------------------------------*
+
+    ASSERT <fs> IS NOT ASSIGNED.
+
+    ASSIGN str TO <fs>.
+    ASSERT sy-subrc = 0.
+    ASSERT <fs> IS ASSIGNED.
+
+    UNASSIGN <fs>.
+    ASSERT sy-subrc = 0.
+    ASSERT <fs> IS NOT ASSIGNED.
+
+    ASSIGN struct TO <fs>.
+    ASSERT sy-subrc = 0.
+    ASSERT <fs> IS ASSIGNED.
+
+    ASSIGN struct-comp1 TO <fs>.
+    ASSERT sy-subrc = 0.
+    ASSERT <fs> IS ASSIGNED.
+
+    ASSIGN itab TO <fs>.
+    ASSERT sy-subrc = 0.
+    ASSERT <fs> IS ASSIGNED.
+
+    "Unsuccessful static assignment demonstrated with substring access
+    FIELD-SYMBOLS <year>  TYPE n.
+    FIELD-SYMBOLS <month> TYPE n.
+    FIELD-SYMBOLS <day>   TYPE n.
+
+    DATA(date) = cl_abap_context_info=>get_system_date( ).
+
+    ASSIGN date+0(4) TO <year>.
+    ASSERT sy-subrc = 0.
+    ASSERT <year> IS ASSIGNED.
+
+    ASSIGN date+4(2) TO <month>.
+    ASSERT sy-subrc = 0.
+    ASSERT <month> IS ASSIGNED.
+
+    DATA len TYPE i VALUE 3.
+    ASSIGN date+6(len) TO <day>.
+    "Despite the unsuccessful assignment, sy-subrc is 0.
+    ASSERT sy-subrc = 0.
+    ASSERT <day> IS NOT ASSIGNED.
+
+    "In static ASSIGN statements using table expressions, sy-subrc is set.
+    ASSIGN itab[ 1 ] TO <fs>.
+    ASSERT sy-subrc = 0.
+    ASSERT <fs> IS ASSIGNED.
+
+    ASSIGN itab[ 2 ] TO <fs>.
+    ASSERT sy-subrc = 4.
+
+    "Pitfall!
+    "Although the previous assertion was not successful,
+    "the field symbol is still assigned from the ASSIGN
+    "statement above.
+    "ASSERT <fs> IS NOT ASSIGNED.
+
+    ASSERT <fs> IS ASSIGNED.
+    ASSERT <fs> = itab[ 1 ].
+
+    "Assigning table components using table expressions
+    ASSIGN itab[ 1 ]-comp1 TO <fs>.
+    ASSERT sy-subrc = 0.
+    ASSERT <fs> IS ASSIGNED.
+
+    ASSIGN itab[ 2 ]-comp1 TO <fs>.
+    ASSERT sy-subrc = 4.
+    ASSERT <fs> IS ASSIGNED.
+    ASSERT <fs> = itab[ 1 ]-comp1.
+
+*&---------------------------------------------------------------------*
+*& Dynamic ASSIGN statements
+*&---------------------------------------------------------------------*
+
+    "Data reference variable is not bound
+    ASSERT dref IS NOT BOUND.
+    ASSIGN dref->* TO <fs>.
+    ASSERT sy-subrc = 4.
+    "Note: Despite the previous unsuccessful assignement,
+    "the field symbol is still assigned.
+    ASSERT <fs> IS ASSIGNED.
+    ASSERT <fs> = itab[ 1 ]-comp1.
+
+    "Data reference variable is bound
+    dref = NEW #( 1 ).
+    ASSERT dref IS BOUND.
+    ASSIGN dref->* TO <fs>.
+    ASSERT sy-subrc = 0.
+    ASSERT <fs> IS ASSIGNED.
+
+    "To explicitly unassign a field symbol in dynamic assignments,
+    "you can specify the ELSE UNASSIGN addition.
+    CLEAR dref.
+    ASSERT dref IS NOT BOUND.
+    ASSIGN dref->* TO <fs> ELSE UNASSIGN.
+    ASSERT sy-subrc = 4.
+    ASSERT <fs> IS NOT ASSIGNED.
+
+    "Dynamic data object specification
+    ASSIGN ('STR') TO <fs>.
+    ASSERT sy-subrc = 0.
+    ASSERT <fs> IS ASSIGNED.
+
+    ASSIGN ('NOPE') TO <fs>.
+    ASSERT sy-subrc = 4.
+    "The field symbol is still assigned
+    ASSERT <fs> IS ASSIGNED.
+
+    ASSIGN ('BLABLA') TO <fs> ELSE UNASSIGN.
+    ASSERT sy-subrc = 4.
+    ASSERT <fs> IS NOT ASSIGNED.
+
+    "Dynamic component assignment
+    ASSIGN struct-('COMP2') TO <fs>.
+    ASSERT sy-subrc = 0.
+    ASSERT <fs> IS ASSIGNED.
+
+    ASSIGN struct-('NOPE') TO <fs> ELSE UNASSIGN.
+    ASSERT sy-subrc = 4.
+    ASSERT <fs> IS NOT ASSIGNED.
+
+    ASSIGN struct-(1) TO <fs> ELSE UNASSIGN.
+    ASSERT sy-subrc = 0.
+    ASSERT <fs> IS ASSIGNED.
+
+    ASSIGN struct-(3) TO <fs> ELSE UNASSIGN.
+    ASSERT sy-subrc = 4.
+    ASSERT <fs> IS NOT ASSIGNED.
+
+    "Dynamic class component assignment
+    ASSIGN zcl_demo_abap_objects=>('PUBLIC_STRING') TO <fs> ELSE UNASSIGN.
+    ASSERT sy-subrc = 0.
+    ASSERT <fs> IS ASSIGNED.
+
+    ASSIGN zcl_demo_abap_objects=>('NOPE') TO <fs> ELSE UNASSIGN.
+    ASSERT sy-subrc = 4.
+    ASSERT <fs> IS NOT ASSIGNED.
+
+    "Note that there are cases of invalid dynamic specifications in dynamic
+    "component assignments that raise exceptions and do not set sy-subrc.
+    TRY.
+        ASSIGN itab[ 1 ]-('ZZZ') TO <fs>.
+      CATCH cx_sy_assign_illegal_component.
+    ENDTRY.
+    ASSERT sy-subrc = 0.
+
+    "Assigning instance attributes of a class and directly creating the
+    "instance
+    "ELSE UNASSIGN cannot be specified here.
+    ASSIGN NEW zcl_demo_abap_objects( )->another_string TO <fs>.
+    ASSERT sy-subrc = 0.
+    ASSERT <fs> IS ASSIGNED.
+
+    TRY.
+        ASSIGN NEW zcl_demo_abap_objects( )->('NOPE') TO <fs>.
+      CATCH cx_sy_assign_illegal_component.
+    ENDTRY.
+    "Despite the unsuccessful assignment, sy-subrc is 0 and the
+    "field symbol is still assigned.
+    ASSERT sy-subrc = 0.
+    ASSERT <fs> IS ASSIGNED.
+
+    DATA iref TYPE REF TO zdemo_abap_objects_interface.
+    DATA(oref) = NEW zcl_demo_abap_objects( ).
+    oref->another_string = `hello`.
+    iref = oref.
+
+    "ELSE UNASSIGN cannot be specified here.
+    ASSIGN CAST zcl_demo_abap_objects( iref )->another_string TO <fs>.
+    ASSERT sy-subrc = 0.
+    ASSERT <fs> IS ASSIGNED.
+
+    TRY.
+        ASSIGN CAST zcl_demo_abap_objects( iref )->('NOPE') TO <fs>.
+      CATCH cx_sy_assign_illegal_component.
+    ENDTRY.
+    "Despite the unsuccessful assignment, sy-subrc is 0 and the
+    "field symbol is still assigned.
+    ASSERT sy-subrc = 0.
+    ASSERT <fs> IS ASSIGNED.
+
+    out->write( zcl_demo_abap_aux=>no_output ).
+  ENDMETHOD.
+
+  METHOD m54_dyn_eml.
+
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Dynamic ABAP EML| ).
+
+*&---------------------------------------------------------------------*
+*& Dynamic ABAP EML MODIFY statement
+*&---------------------------------------------------------------------*
+
+    DATA: op_tab           TYPE abp_behv_changes_tab,
+          create_root_tab  TYPE TABLE FOR CREATE zdemo_abap_rap_ro_m,
+          update_root_tab  TYPE TABLE FOR UPDATE zdemo_abap_rap_ro_m,
+          delete_root_tab  TYPE TABLE FOR DELETE zdemo_abap_rap_ro_m,
+          cba              TYPE TABLE FOR CREATE zdemo_abap_rap_ro_m\_child,
+          update_child_tab TYPE TABLE FOR UPDATE zdemo_abap_rap_ch_m,
+          delete_child_tab TYPE TABLE FOR DELETE zdemo_abap_rap_ch_m.
+
+    create_root_tab = VALUE #(
+                ( %cid = 'cid1'
+                  key_field = 5
+                  %control-key_field = if_abap_behv=>mk-on
+                  field1 = 'a'
+                  %control-field1 = if_abap_behv=>mk-on
+                  field2 = 'b'
+                  %control-field2 = if_abap_behv=>mk-on )
+                ( %cid = 'cid2'
+                  key_field = 6
+                  %control-key_field = if_abap_behv=>mk-on
+                  field1 = 'd'
+                  %control-field1 = if_abap_behv=>mk-on
+                  field2 = 'd'
+                  %control-field2 = if_abap_behv=>mk-on )
+                ( %cid = 'cid3'
+                  key_field = 7
+                  %control-key_field = if_abap_behv=>mk-on
+                  field1 = 'e'
+                  %control-field1 = if_abap_behv=>mk-on
+                  field2 = 'f'
+                  %control-field2 = if_abap_behv=>mk-on ) ).
+
+    update_root_tab = VALUE #(
+                ( %cid_ref = 'cid2'
+                  field1 = 'g'
+                  %control-field1 = if_abap_behv=>mk-on
+                  field2 = 'h'
+                  %control-field2 = if_abap_behv=>mk-on ) ).
+
+    cba = VALUE #(
+                ( %cid_ref = 'cid1'
+                  %target = VALUE #( (
+                  %cid = 'cid_cba1'
+                  key_ch = 10
+                  %control-key_ch = if_abap_behv=>mk-on
+                  field_ch1 = 'i'
+                  %control-field_ch1 = if_abap_behv=>mk-on
+                  field_ch2 = 1
+                  %control-field_ch2 = if_abap_behv=>mk-on
+                ) ) )
+                ( %cid_ref = 'cid2'
+                  %target = VALUE #( (
+                  %cid = 'cid_cba2'
+                  key_ch = 20
+                  %control-key_ch = if_abap_behv=>mk-on
+                  field_ch1 = 'j'
+                  %control-field_ch1 = if_abap_behv=>mk-on
+                  field_ch2 = 2
+                  %control-field_ch2 = if_abap_behv=>mk-on
+                ) ) )
+                ( %cid_ref = 'cid3'
+                  %target = VALUE #( (
+                  %cid = 'cid_cba3'
+                  key_ch = 30
+                  %control-key_ch = if_abap_behv=>mk-on
+                  field_ch1 = 'k'
+                  %control-field_ch1 = if_abap_behv=>mk-on
+                  field_ch2 = 3
+                  %control-field_ch2 = if_abap_behv=>mk-on ) ) ) ).
+
+    update_child_tab = VALUE #(
+                ( key_field = 6
+                  field_ch1 = 'l'
+                  %control-field_ch1 = if_abap_behv=>mk-on
+                  field_ch2 = 4
+                  %control-field_ch2 = if_abap_behv=>mk-on ) ).
+
+    delete_root_tab = VALUE #( ( key_field = 7 ) ).
+
+    delete_child_tab = VALUE #( ( key_field = 7 ) ).
+
+    op_tab = VALUE #(
+            ( op = if_abap_behv=>op-m-create
+              entity_name = 'ZDEMO_ABAP_RAP_RO_M'
+              instances   = REF #( create_root_tab ) )
+            ( op = if_abap_behv=>op-m-update
+              entity_name = 'ZDEMO_ABAP_RAP_RO_M'
+              instances   = REF #( update_root_tab ) )
+            ( op = if_abap_behv=>op-m-delete
+              entity_name = 'ZDEMO_ABAP_RAP_RO_M'
+              instances   = REF #( delete_root_tab ) )
+            ( op = if_abap_behv=>op-m-create_ba
+              entity_name = 'ZDEMO_ABAP_RAP_RO_M'
+              sub_name    = '_CHILD'
+              instances   = REF #( cba ) )
+            ( op = if_abap_behv=>op-m-update
+              entity_name = 'ZDEMO_ABAP_RAP_CH_M'
+              instances   = REF #( update_child_tab ) )
+            ( op = if_abap_behv=>op-m-delete
+              entity_name = 'ZDEMO_ABAP_RAP_CH_M'
+              instances   = REF #( delete_child_tab ) ) ).
+
+    MODIFY ENTITIES OPERATIONS op_tab
+        MAPPED   DATA(m)
+        FAILED   DATA(f)
+        REPORTED DATA(r).
+
+*&---------------------------------------------------------------------*
+*& Dynamic ABAP EML READ statement
+*&---------------------------------------------------------------------*
+
+    DATA: op_tab_read     TYPE abp_behv_retrievals_tab,
+          read_dyn        TYPE TABLE FOR READ IMPORT zdemo_abap_rap_ro_m,
+          read_dyn_result TYPE TABLE FOR READ RESULT zdemo_abap_rap_ro_m,
+          rba_dyn         TYPE TABLE FOR READ IMPORT zdemo_abap_rap_ro_m\_child,
+          rba_dyn_result  TYPE TABLE FOR READ RESULT zdemo_abap_rap_ro_m\_child,
+          rba_dyn_link    TYPE TABLE FOR READ LINK zdemo_abap_rap_ro_m\_child.
+
+    "Filling the internal tables, i.e. which instances are to be read
+    "Root entity
+    "Example:
+    "- The key is comprised of the field 'key_field'. It is of type i.
+    "- The %control structure is filled, flagging those fields that
+    "  are to be read. Flagging the key field is not required.
+    read_dyn = VALUE #(
+        ( %key-key_field = 1
+          %control = VALUE #(
+            field1 = if_abap_behv=>mk-on
+            field2 = if_abap_behv=>mk-on
+            field3 = if_abap_behv=>mk-on
+            field4 = if_abap_behv=>mk-on ) )
+        ( %key-key_field = 2
+          %control = VALUE #(
+            field1 = if_abap_behv=>mk-on
+            field2 = if_abap_behv=>mk-on
+            field3 = if_abap_behv=>mk-on
+            field4 = if_abap_behv=>mk-on ) ) ).
+
+    "Child entity
+    "Instances to be read for a read-by-association operation
+    "The shared key is 'key_field'.
+    rba_dyn = VALUE #(
+        ( %key-key_field = 1
+          %control = VALUE #(
+            key_ch    = if_abap_behv=>mk-on
+            field_ch1 = if_abap_behv=>mk-on
+            field_ch2 = if_abap_behv=>mk-on ) )
+        ( %key-key_field = 2
+          %control = VALUE #(
+            key_ch    = if_abap_behv=>mk-on
+            field_ch1 = if_abap_behv=>mk-on
+            field_ch2 = if_abap_behv=>mk-on ) ) ).
+
+    "Filling the internal table that is the operand of the
+    "dynamic EML statement
+    "This table has optional and mandatory components.
+    op_tab_read = VALUE #(
+        ( "op: Specifies the operation to be executed; is mandatory;
+            "    can be set with the predefined constants, e.g. OP-R-READ
+            "    etc., of interface IF_ABAP_BEHV
+            op = if_abap_behv=>op-r-read
+            "entity_name: Specifies the name of the RAP BO entity for which
+            "             the operation is executed; is mandatory
+            entity_name = 'ZDEMO_ABAP_RAP_RO_M'
+            "instances: Specifies a reference to an internal table holding
+            "           the input keys; must be appropriately typed; is mandatory
+            instances   = REF #( read_dyn )
+            "results: Specifies a reference to an internal table with the required
+            "         BDEF derived type for the read results; is mandatory
+            results     = REF #( read_dyn_result ) )
+        ( op = if_abap_behv=>op-r-read_ba
+            entity_name = 'ZDEMO_ABAP_RAP_RO_M'
+            "sub_name: Only relevant for specifying association names in
+            "          read-by-association operations; in that context, it is mandatory
+            sub_name    = '_CHILD'
+            "full: Optional flag; specifies if all target instances are to be retrieved
+            full        = abap_true
+            instances   = REF #( rba_dyn )
+            results     = REF #( rba_dyn_result )
+            "links: Reference to internal table holding the key pairs of the source and
+            "       target
+            links       = REF #( rba_dyn_link ) ) ).
+
+    READ ENTITIES OPERATIONS op_tab_read.
+
+    out->write( zcl_demo_abap_aux=>no_output ).
+
+  ENDMETHOD.
+
+  METHOD m55_dyn_call_transformation.
+
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Dynamically Calling Transformations| ).
+
+    TYPES: BEGIN OF line,
+             char TYPE c LENGTH 3,
+             int  TYPE i,
+           END OF line,
+           t_type TYPE TABLE OF line WITH EMPTY KEY.
+
+    DATA(tab) = VALUE t_type( ( char = 'aaa' int = 1 )
+                              ( char = 'bbb' int = 2 )
+                              ( char = 'ccc' int = 3 ) ).
+
+    "1. Dynamic specification of the transformation
+    "   If the transformation does not exist, an exception is raised.
+    "   The example specifies an ABAP data object (an internal table), which is
+    "   trasnformed to asXML. The result is of type xstring.
+    "   'itab' stands for the name of the XML element.
+    TRY.
+        CALL TRANSFORMATION ('ID') SOURCE itab = tab
+                                   RESULT XML DATA(xml_tab).
+      CATCH cx_invalid_transformation.
+    ENDTRY.
+
+    DATA(xml1) = cl_abap_conv_codepage=>create_in( )->convert( xml_tab ).
+
+    "2. Dynamic specification of ABAP data objects as source
+    "   The specification is done using an internal table of type abap_trans_srcbind_tab.
+    "   As above, the transformation is specified dynamically. Also here, the example specifies an an
+    "   internal table, which is transformed to asXML.
+
+    DATA t_name TYPE string VALUE `ID`.
+
+    DATA(srctab) = VALUE abap_trans_srcbind_tab( ( name = 'ITAB' value = REF #( tab ) ) ).
+    CALL TRANSFORMATION (t_name) SOURCE (srctab)
+                                 RESULT XML DATA(xml_tab2).
+
+    DATA(xml2) = cl_abap_conv_codepage=>create_in( )->convert( xml_tab2 ).
+
+    ASSERT xml2 = xml1.
+
+    "3. Dynamic specification of ABAP data objects as result
+    "   The specification is done using an internal table of type abap_trans_resbind_tab.
+    "   The example transforms to ABAP data. The transformation is also specified dynamically.
+
+    DATA tab2 LIKE tab.
+    DATA(restab) = VALUE abap_trans_resbind_tab( ( name = 'ITAB' value = REF #( tab2 ) ) ).
+
+    CALL TRANSFORMATION ('ID') SOURCE XML xml_tab
+                               RESULT (restab).
+
+    ASSERT tab2 = tab.
+
+    "4. Example with all syntax elements specified dynamically
+    CALL TRANSFORMATION ('ID') SOURCE (srctab)
+                               RESULT (restab).
+
+    ASSERT tab2 = tab.
+
+    out->write( zcl_demo_abap_aux=>no_output ).
   ENDMETHOD.
 
   METHOD inst_meth1.

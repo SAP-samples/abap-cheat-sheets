@@ -4,11 +4,10 @@
 "! Choose F9 in ADT to run the class.</p>
 "!
 "! <h2>Note</h2>
-"! <ul><li>Topics covered include expressions and functions for conditions,
-"! control structures with IF and CASE, the COND and SWITCH operators,
-"! unconditional loops with DO, conditional loops with WHILE, handling exceptions</li>
-"! <li>Find information on <strong>getting started with the example class</strong> and the
-"! <strong>disclaimer</strong> in the ABAP Doc comment of class {@link zcl_demo_abap_aux}.</li></ul>
+"! <p>Find the following information in the ABAP Doc comment of class {@link zcl_demo_abap_aux}:</p>
+"! <ul><li>How to get started with the example class</li>
+"! <li>Structuring of (most of) the example classes</li>
+"! <li>Disclaimer</li></ul>
 CLASS zcl_demo_abap_prog_flow_logic DEFINITION
   PUBLIC
   FINAL
@@ -17,8 +16,40 @@ CLASS zcl_demo_abap_prog_flow_logic DEFINITION
   PUBLIC SECTION.
     INTERFACES: if_oo_adt_classrun.
 
+    METHODS:
+      m01_if  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m02_if_sy_subrc  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m03_cond_operator  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m04_expr_func_conditions  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m05_is_supplied  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m06_case  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m07_case_type_of  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m08_switch  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m09_do  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m10_exit  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m11_continue_check  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m12_return  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m13_while  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m14_loop_at_itab  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m15_select_loop  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m16_try  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m17_catch_blocks  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m18_use_exc_class  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m19_store_exc_ref  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m20_raise_exc_programmatically  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m21_nested_try  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m22_exc_cond_expr  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m23_raising_param  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m24_cx_static_check  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m25_cx_dynamic_check  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m26_runtime_errors  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string.
+
   PROTECTED SECTION.
   PRIVATE SECTION.
+
+    DATA int_itab TYPE TABLE OF i.
+    DATA calc1 TYPE decfloat34.
+    DATA calc2 TYPE i.
 
     "Structured type for calculation example
     TYPES: BEGIN OF calc_results_struc,
@@ -70,122 +101,41 @@ ENDCLASS.
 
 CLASS zcl_demo_abap_prog_flow_logic IMPLEMENTATION.
 
-
-  METHOD addition.
-    res = num1 + num2.
-  ENDMETHOD.
-
-
-  METHOD calc.
-
-    DATA calc_if TYPE string.
-    DATA calc_case TYPE string.
-    DATA calc_cond TYPE string.
-    DATA calc_switch TYPE string.
-
-    "IF statements
-
-    IF operator = `+`.
-      calc_if = num1 + num2.
-    ELSEIF operator = `-`.
-      calc_if = num1 - num2.
-    ELSEIF operator = `*`.
-      calc_if = num1 * num2.
-    ELSEIF operator = `/`.
-
-      IF num2 = 0.
-        calc_if = `Division by 0`.
-      ELSE.
-        calc_if = num1 / num2.
-      ENDIF.
-    ELSE.
-      calc_if = |Check the operator { operator }.|.
-    ENDIF.
-
-    prep_calc_result( CHANGING res = calc_if ).
-
-    "CASE
-
-    CASE operator.
-      WHEN '+'.
-        calc_case = num1 + num2.
-      WHEN '-'.
-        calc_case = num1 - num2.
-      WHEN '*'.
-        calc_case = num1 * num2.
-      WHEN '/'.
-
-        CASE num2.
-          WHEN 0.
-            calc_case = `Division by 0`.
-          WHEN OTHERS.
-            calc_case = num1 / num2.
-        ENDCASE.
-
-      WHEN OTHERS.
-        calc_case = |Check the operator { operator }.|.
-    ENDCASE.
-
-    prep_calc_result( CHANGING res = calc_case ).
-
-    "COND
-
-    calc_cond = COND #( WHEN operator = '+'
-                  THEN num1 + num2
-                  WHEN operator = '-'
-                  THEN num1 - num2
-                  WHEN operator = '*'
-                  THEN num1 * num2
-                  WHEN operator = '/' AND num2 = 0 THEN `Division by 0`
-                  WHEN operator = '/' AND num2 <> 0 THEN num1 / num2
-                  ELSE |Check the operator { operator }.|
-     ).
-
-    prep_calc_result( CHANGING res = calc_cond ).
-
-    "SWITCH
-
-    calc_switch = SWITCH #( operator
-                  WHEN '+' THEN num1 + num2
-                  WHEN '-' THEN num1 - num2
-                  WHEN '*' THEN num1 * num2
-                  WHEN '/' THEN SWITCH #( num2 WHEN 0 THEN `Division by 0` ELSE num1 / num2 )
-                  ELSE |Check the operator { operator }.| ).
-
-    prep_calc_result( CHANGING res = calc_switch ).
-
-    res = VALUE #(  calculation = |{ num1 } { operator } { num2 }|
-      res_if = calc_if
-      res_case = calc_case
-      res_cond = calc_cond
-      res_switch = calc_switch
-      ).
-
-  ENDMETHOD.
-
-
-  METHOD check_is_supplied.
-    IF num1 IS SUPPLIED.
-      APPEND `num1 is supplied` TO res.
-    ELSE.
-      APPEND `num1 is not supplied` TO res.
-    ENDIF.
-
-    IF num2 IS NOT SUPPLIED.
-      APPEND `num2 is not supplied` TO res.
-    ELSE.
-      APPEND `num2 is supplied` TO res.
-    ENDIF.
-  ENDMETHOD.
-
-
   METHOD if_oo_adt_classrun~main.
 
-    out->write( |ABAP Cheat Sheet Example: Program Flow Logic\n\n| ).
+    zcl_demo_abap_aux=>set_example_divider(
+         out  = out
+         text = `ABAP Cheat Sheet Example: Program Flow Logic`
+       ).
 
-**********************************************************************
+    "Dynamically calling methods of the class
+    "The method names are retrieved using RTTI. For more information, refer to the
+    "Dynamic Programming ABAP cheat sheet.
+    "Only those methods should be called that follow the naming convention M + digit.
+    DATA(methods) = CAST cl_abap_classdescr( cl_abap_typedescr=>describe_by_object_ref( me ) )->methods.
+    SORT methods BY name ASCENDING.
 
-    out->write( |1) Control Structure with IF\n| ).
+    "To call a particular method only, you can comment in the WHERE clause and
+    "adapt the literal appropriately.
+    LOOP AT methods INTO DATA(meth_wa)
+    "WHERE name CS 'M01'
+    .
+      TRY.
+          "The find function result indicates that the method name begins (offset = 0) with M and a digit.
+          IF find( val = meth_wa-name pcre = `^M\d` case = abap_false ) = 0.
+            CALL METHOD (meth_wa-name) EXPORTING out = out text = CONV string( meth_wa-name ).
+          ENDIF.
+        CATCH cx_root INTO DATA(error).
+          out->write( error->get_text( ) ).
+      ENDTRY.
+    ENDLOOP.
+  ENDMETHOD.
+
+
+  METHOD m01_if.
+
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Control Structure with IF| ).
+
 
     "Simple control structure realized by an IF ... ELSEIF ... ELSE ... ENDIF.
     "statement. Multiple statement blocks can be included, of which only 1 is
@@ -210,10 +160,12 @@ CLASS zcl_demo_abap_prog_flow_logic IMPLEMENTATION.
     ELSE.
       out->write( |The operator { operator } is not possible.| ).
     ENDIF.
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m02_if_sy_subrc.
 
-    out->write( zcl_demo_abap_aux=>heading( `2) IF: Checking sy-subrc` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: IF: Checking sy-subrc| ).
+
 
     "A prominent use case for IF statements: Checking sy-subrc.
     "In the case below, a FIND statement is used. If there is a finding,
@@ -229,10 +181,12 @@ CLASS zcl_demo_abap_prog_flow_logic IMPLEMENTATION.
     ELSE.
       out->write( |'{ to_be_found }' was not found in the string '{ string_to_search }'.| ).
     ENDIF.
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m03_cond_operator.
 
-    out->write( zcl_demo_abap_aux=>heading( `3) Excursion: COND Operator` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Excursion: COND Operator| ).
+
 
     "The conditional operator COND can also be used to implement branches in operand positions
     "that are based on logical expressions. Such conditional expressions have a result that
@@ -250,10 +204,11 @@ CLASS zcl_demo_abap_prog_flow_logic IMPLEMENTATION.
                               ELSE |It's { syst_time TIME = ISO }. Good night, { sy-uname }.| ).
 
     out->write( data = greetings name = `greetings` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m04_expr_func_conditions.
 
-    out->write( zcl_demo_abap_aux=>heading( `4) Expressions and Functions for Conditions` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Expressions and Functions for Conditions| ).
 
     "Control structures are generally controlled by logical expressions that
     "define conditions for operands. The result of such an expression is either true or false.
@@ -391,10 +346,12 @@ CLASS zcl_demo_abap_prog_flow_logic IMPLEMENTATION.
     ELSE.
       out->write( `At least one of the logical expressions is false.` ).
     ENDIF.
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m05_is_supplied.
 
-    out->write( zcl_demo_abap_aux=>heading( `5) Predicate Expression with IS SUPPLIED` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Predicate Expression with IS SUPPLIED| ).
+
 
     "The predicate expression IS SUPPLIED is available in method implementations
     "and checks whether a formal parameter of a procedure is filled or requested.
@@ -410,10 +367,12 @@ CLASS zcl_demo_abap_prog_flow_logic IMPLEMENTATION.
     is_supplied = check_is_supplied( num2 = 456 ).
 
     out->write( data = is_supplied name = `is_supplied` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m06_case.
 
-    out->write( zcl_demo_abap_aux=>heading( `6) Control Structure with CASE` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Control Structure with CASE| ).
+
 
     "CASE statements are used for case distinctions. If the content of an operand
     "specified after WHEN matches the content specified after CASE, the statement
@@ -421,10 +380,10 @@ CLASS zcl_demo_abap_prog_flow_logic IMPLEMENTATION.
     "The example is basically the same as above.
 
     "Determining some operators for a calculation
-    operators = VALUE string_table( ( `+` ) ( `-` ) ( `#` ) ).
+    DATA(operators) = VALUE string_table( ( `+` ) ( `-` ) ( `#` ) ).
 
     "Getting a random operator from the table
-    idx = cl_abap_random_int=>create(
+    DATA(idx) = cl_abap_random_int=>create(
       seed = cl_abap_random=>seed( ) min = 1
                                      max = lines( operators ) )->get_next( ).
 
@@ -442,10 +401,12 @@ CLASS zcl_demo_abap_prog_flow_logic IMPLEMENTATION.
       WHEN OTHERS.
         out->write( |The operator { op } is not possible.| ).
     ENDCASE.
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m07_case_type_of.
 
-    out->write( zcl_demo_abap_aux=>heading( `7) CASE TYPE OF` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: CASE TYPE OF| ).
+
 
     "CASE TYPE OF: Checks the type of object reference variables
 
@@ -481,9 +442,11 @@ CLASS zcl_demo_abap_prog_flow_logic IMPLEMENTATION.
       out->write( `Other type.` ).
     ENDIF.
 
-**********************************************************************
+  ENDMETHOD.
 
-    out->write( zcl_demo_abap_aux=>heading( `8) Excursion: SWITCH Operator` ) ).
+  METHOD m08_switch.
+
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Excursion: SWITCH Operator| ).
 
     "The conditional operator SWITCH can also be used to make case
     "distinctions in operand positions. Such conditional expressions have
@@ -508,12 +471,11 @@ CLASS zcl_demo_abap_prog_flow_logic IMPLEMENTATION.
                                   ELSE `Oops ...` ).
 
     out->write( data = switch_res name = `switch_res` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m09_do.
 
-    out->write( zcl_demo_abap_aux=>heading( `Loops (Iterations)` ) ).
-
-    out->write( |9) Unconditional Loops with DO\n| ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Unconditional Loops with DO| ).
 
     "The example demonstrate the restriction of loop passes by specifying
     "a number (of maximum loop passes) and the TIMES addition in a DO loop.
@@ -531,15 +493,17 @@ CLASS zcl_demo_abap_prog_flow_logic IMPLEMENTATION.
     out->write( data = do_counter name = `do_counter` ).
     out->write( |\n| ).
     out->write( data = do_sy_index name = `do_sy_index` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m10_exit.
 
-    out->write( zcl_demo_abap_aux=>heading( `10) Terminating Loops Completely Using EXIT` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Terminating Loops Completely Using EXIT| ).
 
     "Using the EXIT statement, you can terminate a loop completely.
     "The program flow resumes after the closing statement of the loop.
 
-    CLEAR: do_counter, do_sy_index.
+    DATA do_counter TYPE i.
+    DATA do_sy_index TYPE string.
 
     DO.
       do_counter += 1.
@@ -553,8 +517,11 @@ CLASS zcl_demo_abap_prog_flow_logic IMPLEMENTATION.
     out->write( data = do_counter name = `do_counter` ).
     out->write( |\n| ).
     out->write( data = do_sy_index name = `do_sy_index` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m11_continue_check.
+
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Terminating Loop Passes| ).
 
     out->write( zcl_demo_abap_aux=>heading( `11) Terminating Loop Passes` ) ).
 
@@ -564,7 +531,8 @@ CLASS zcl_demo_abap_prog_flow_logic IMPLEMENTATION.
     "       is false, the current loop pass is terminated immediately and
     "       the program flow is continued with the next loop pass.
 
-    CLEAR: do_counter, do_sy_index.
+    DATA do_counter TYPE i.
+    DATA do_sy_index TYPE string.
 
     DO.
       IF sy-index = 2. "skipped
@@ -584,10 +552,11 @@ CLASS zcl_demo_abap_prog_flow_logic IMPLEMENTATION.
     out->write( data = do_counter name = `do_counter` ).
     out->write( |\n| ).
     out->write( data = do_sy_index name = `do_sy_index` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m12_return.
 
-    out->write( zcl_demo_abap_aux=>heading( `12) Excursion: Terminating Procedures Using RETURN` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Terminating Procedures Using RETURN| ).
 
     "RETURN statements immediately terminate the current processing block.
     "However, according to the guidelines, RETURN should only be used to exit
@@ -604,12 +573,13 @@ CLASS zcl_demo_abap_prog_flow_logic IMPLEMENTATION.
     DATA(return2) = meth_with_return( -9 ).
 
     out->write( data = return2 name = `return2` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m13_while.
 
-    out->write( zcl_demo_abap_aux=>heading( `Conditional Loops with WHILE` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Conditional Loops with WHILE| ).
 
-    out->write( |13) WHILE Example 1\n| ).
+    "--- WHILE Example 1 ---
 
     "The following example highlights the setting of sy-index within loop passes.
     "The value is added to an internal table. The loop iteration stops when
@@ -623,9 +593,7 @@ CLASS zcl_demo_abap_prog_flow_logic IMPLEMENTATION.
 
     out->write( data = int_itab name = `int_itab` ).
 
-**********************************************************************
-
-    out->write( zcl_demo_abap_aux=>heading( `14) WHILE Example 2` ) ).
+    "--- WHILE Example 2 ---
 
     "In the following example, all occurrences of a certain substring
     "should be replaced by another string. Instead of, for example, using
@@ -670,9 +638,7 @@ CLASS zcl_demo_abap_prog_flow_logic IMPLEMENTATION.
     out->write( |\n| ).
     out->write( data = while_string name = `while_string` ).
 
-**********************************************************************
-
-    out->write( zcl_demo_abap_aux=>heading( `15) WHILE Example 3` ) ).
+    "--- WHILE Example 3 ---
 
     "The example demonstrates the 3 options for loop terminations
     "in the context of a WHILE ... ENDWHILE statement.
@@ -703,12 +669,11 @@ CLASS zcl_demo_abap_prog_flow_logic IMPLEMENTATION.
     out->write( |\n| ).
     out->write( data = while_sy_index name = `while_sy_index` ).
 
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m14_loop_at_itab.
 
-    out->write( zcl_demo_abap_aux=>heading( `Loops across Tables` ) ).
-
-    out->write( |16) Loop across Internal Table Using LOOP ... ENDLOOP\n\n| ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Loop across Internal Table Using LOOP ... ENDLOOP| ).
 
     "LOOP ... ENDLOOP statements are meant for loops across internal tables.
     "For more examples, see the cheat sheet example on internal tables.
@@ -763,10 +728,11 @@ CLASS zcl_demo_abap_prog_flow_logic IMPLEMENTATION.
     ENDLOOP.
 
     out->write( data = calc_results name = `calc_results` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m15_select_loop.
 
-    out->write( zcl_demo_abap_aux=>heading( `17) SELECT Loop`  ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: SELECT Loop| ).
 
     "SELECT ... ENDSELECT statements loop across the result set of a database access.
     "For more examples, see the cheat sheet example on ABAP SQL.
@@ -814,11 +780,11 @@ CLASS zcl_demo_abap_prog_flow_logic IMPLEMENTATION.
 
     out->write( data = itab_select_loop name = `itab_select_loop` ).
 
-**********************************************************************
+  ENDMETHOD.
 
-    out->write( zcl_demo_abap_aux=>heading( `Exception Handling` ) ).
+  METHOD m16_try.
 
-    out->write( |18) TRY Control Structures\n\n| ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: TRY Control Structures| ).
 
     "TRY control structures are meant for handling catchable exceptions locally
     "The example shows divisions. The predefined exception class cx_sy_zerodivide
@@ -848,6 +814,7 @@ CLASS zcl_demo_abap_prog_flow_logic IMPLEMENTATION.
 
     "The following example shows a catchable exception that is
     "raised if a line is not found when using table expressions.
+    DATA(str_table) = VALUE string_table( ( `A` ) ( `B` ) ( `A` ) ( `P` ) ).
     TRY.
         DATA(line) = str_table[ 12345 ].
 
@@ -858,10 +825,11 @@ CLASS zcl_demo_abap_prog_flow_logic IMPLEMENTATION.
       CATCH cx_sy_itab_line_not_found.
         out->write( `The line was not found. The exception was caught.` ).
     ENDTRY.
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m17_catch_blocks.
 
-    out->write( zcl_demo_abap_aux=>heading( `19) Multiple CATCH Blocks` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Multiple CATCH Blocks| ).
 
     "It is possible to specify multiple exception classes in a list and
     "multiple CATCH blocks.
@@ -879,12 +847,12 @@ CLASS zcl_demo_abap_prog_flow_logic IMPLEMENTATION.
       TRY.
           out->write( |--- Calculations with { <fs_int> } ---| ).
 
-          DATA(calc1) = CONV decfloat34( 1 / <fs_int> ).
+          calc1 = 1 / <fs_int>.
 
           out->write( data = calc1 name = `calc1` ).
           out->write( |\n| ).
 
-          DATA(calc2) = ipow( base = <fs_int> exp = 2 ).
+          calc2 = ipow( base = <fs_int> exp = 2 ).
 
           out->write( data = calc2 name = `calc2` ).
           out->write( |\n| ).
@@ -895,10 +863,11 @@ CLASS zcl_demo_abap_prog_flow_logic IMPLEMENTATION.
       ENDTRY.
       out->write( |\n| ).
     ENDLOOP.
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m18_use_exc_class.
 
-    out->write( zcl_demo_abap_aux=>heading( `20) Using an Exception Class Higher Up in the Inheritance Tree` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Using an Exception Class Higher Up in the Inheritance Tree| ).
 
     "In the following CATCH block, the predefined exception class cx_sy_arithmetic_error
     "is specified. Both cx_sy_zerodivide and cx_sy_arithmetic_overflow are derived from
@@ -906,6 +875,8 @@ CLASS zcl_demo_abap_prog_flow_logic IMPLEMENTATION.
     "tree. Hence, cx_sy_arithmetic_error can be specified and handle both exceptions, too.
     "The following example is basically the same as above. However, only one exception
     "class is specified.
+
+    int_itab = VALUE #( ( 5 ) ( 0 ) ( 987654321 ) ).
 
     LOOP AT int_itab ASSIGNING FIELD-SYMBOL(<fs_int_inh>).
       TRY.
@@ -923,12 +894,13 @@ CLASS zcl_demo_abap_prog_flow_logic IMPLEMENTATION.
         CATCH cx_sy_arithmetic_error.
           out->write( `Arithmetic error. The exception was caught.` ).
       ENDTRY.
-       out->write( |\n| ).
+      out->write( |\n| ).
     ENDLOOP.
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m19_store_exc_ref.
 
-    out->write( zcl_demo_abap_aux=>heading( `21) Storing a Reference to the Exception Object` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Storing a Reference to the Exception Object| ).
 
     "You can use the addition INTO plus an object reference variable to store
     "a reference to an exception object. It is, for example, relevant to
@@ -964,10 +936,11 @@ CLASS zcl_demo_abap_prog_flow_logic IMPLEMENTATION.
       ENDTRY.
       out->write( |\n| ).
     ENDLOOP.
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m20_raise_exc_programmatically.
 
-    out->write( zcl_demo_abap_aux=>heading( `22) Raising Exceptions Programmatically` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Raising Exceptions Programmatically| ).
 
     "The following examples demonstrate the ABAP statement RAISE EXCEPTION
     "using the addition TYPE. Note there are more additions available that
@@ -1006,10 +979,11 @@ CLASS zcl_demo_abap_prog_flow_logic IMPLEMENTATION.
         out->write( `Default exception text for a local exception class:` ).
         out->write( data = exception_text name = `exception_text` ).
     ENDTRY.
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m21_nested_try.
 
-    out->write( zcl_demo_abap_aux=>heading( `23) Nested TRY Control Structure` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Nested TRY Control Structure| ).
 
     TRY.
         TRY.
@@ -1021,10 +995,11 @@ CLASS zcl_demo_abap_prog_flow_logic IMPLEMENTATION.
       CATCH lcx_some_error.
         out->write( `Outer CATCH` ).
     ENDTRY.
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m22_exc_cond_expr.
 
-    out->write( zcl_demo_abap_aux=>heading( `24) Raising an Exception in the Context of Conditional Expressions` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Raising an Exception in the Context of Conditional Expressions| ).
 
     "In this example, the optional addition THROW is used in a conditional
     "expression. A self-defined local exception class is used.
@@ -1041,17 +1016,18 @@ CLASS zcl_demo_abap_prog_flow_logic IMPLEMENTATION.
         exception_text = exception->get_text( ).
         out->write( data = exception_text name = `exception_text` ).
     ENDTRY.
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m23_raising_param.
 
-    out->write( zcl_demo_abap_aux=>heading( `25) RAISING Parameter in Method Delcarations` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: RAISING Parameter in Method Delcarations| ).
 
     "In the following example, a string table is looped across. The table
     "includes valid and invalid email addresses. The validity is checked
     "in a method. In the method, a local exception class is raised if the
     "email address is invalid.
 
-    str_table = VALUE string_table( ( `john.doe@email.com` )         "valid
+    DATA(str_table) = VALUE string_table( ( `john.doe@email.com` )         "valid
                                     ( `john.doe@#email.com` )        "invalid
                                     ( `jane.doe@email.com` )         "valid
                                     ( `jane#doe@email.com` )         "invalid
@@ -1084,10 +1060,11 @@ CLASS zcl_demo_abap_prog_flow_logic IMPLEMENTATION.
     ENDLOOP.
 
     out->write( data = itab_email_check name = `itab_email_check` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m24_cx_static_check.
 
-    out->write( zcl_demo_abap_aux=>heading( `26) Exception Classes Derived from CX_STATIC_CHECK` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Exception Classes Derived from CX_STATIC_CHECK| ).
 
     "Exception Classes of type cx_static_check force users to handle exceptions.
     "Exceptions that are declared in the method signature make users aware of which
@@ -1115,10 +1092,11 @@ CLASS zcl_demo_abap_prog_flow_logic IMPLEMENTATION.
         exception_text = exception->get_text( ).
         out->write( data = exception_text name = `exception_texts` ).
     ENDTRY.
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m25_cx_dynamic_check.
 
-    out->write( zcl_demo_abap_aux=>heading( `27) Exception Classes Derived from CX_DYNAMIC_CHECK` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Exception Classes Derived from CX_DYNAMIC_CHECK| ).
 
     "Exception Classes derived from cx_dynamic_check are for exceptions that
     "can be checked and avoided by preconditions.
@@ -1199,12 +1177,11 @@ CLASS zcl_demo_abap_prog_flow_logic IMPLEMENTATION.
 
         out->write( data = relative_name name = `relative_name` ).
     ENDTRY.
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m26_runtime_errors.
 
-    "Excursion: Runtime Errors and Terminating Programs
-
-    out->write( zcl_demo_abap_aux=>heading( `28) Excursion: Runtime Errors and Terminating Programs` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Excursion: Runtime Errors and Terminating Programs| ).
 
     "ASSERT statements are followed by a logical expression. If the expression is false,
     "the program is terminated and an uncatchable exception is raised resulting in the
@@ -1272,7 +1249,6 @@ CLASS zcl_demo_abap_prog_flow_logic IMPLEMENTATION.
     ENDIF.
   ENDMETHOD.
 
-
   METHOD validate_email.
     IF matches( val   = email
                 pcre = `\w+(\.\w+)*@(\w+\.)+(\w{2,4})` ).
@@ -1287,6 +1263,105 @@ CLASS zcl_demo_abap_prog_flow_logic IMPLEMENTATION.
       name = sy-uname.
     ELSE.
       RAISE EXCEPTION TYPE lcx_static_exc_class.
+    ENDIF.
+  ENDMETHOD.
+
+  METHOD addition.
+    res = num1 + num2.
+  ENDMETHOD.
+
+  METHOD calc.
+
+    DATA calc_if TYPE string.
+    DATA calc_case TYPE string.
+    DATA calc_cond TYPE string.
+    DATA calc_switch TYPE string.
+
+    "IF statements
+    IF operator = `+`.
+      calc_if = num1 + num2.
+    ELSEIF operator = `-`.
+      calc_if = num1 - num2.
+    ELSEIF operator = `*`.
+      calc_if = num1 * num2.
+    ELSEIF operator = `/`.
+
+      IF num2 = 0.
+        calc_if = `Division by 0`.
+      ELSE.
+        calc_if = num1 / num2.
+      ENDIF.
+    ELSE.
+      calc_if = |Check the operator { operator }.|.
+    ENDIF.
+
+    prep_calc_result( CHANGING res = calc_if ).
+
+    "CASE
+    CASE operator.
+      WHEN '+'.
+        calc_case = num1 + num2.
+      WHEN '-'.
+        calc_case = num1 - num2.
+      WHEN '*'.
+        calc_case = num1 * num2.
+      WHEN '/'.
+
+        CASE num2.
+          WHEN 0.
+            calc_case = `Division by 0`.
+          WHEN OTHERS.
+            calc_case = num1 / num2.
+        ENDCASE.
+
+      WHEN OTHERS.
+        calc_case = |Check the operator { operator }.|.
+    ENDCASE.
+
+    prep_calc_result( CHANGING res = calc_case ).
+
+    "COND
+    calc_cond = COND #( WHEN operator = '+'
+                  THEN num1 + num2
+                  WHEN operator = '-'
+                  THEN num1 - num2
+                  WHEN operator = '*'
+                  THEN num1 * num2
+                  WHEN operator = '/' AND num2 = 0 THEN `Division by 0`
+                  WHEN operator = '/' AND num2 <> 0 THEN num1 / num2
+                  ELSE |Check the operator { operator }.|
+     ).
+
+    prep_calc_result( CHANGING res = calc_cond ).
+
+    "SWITCH
+    calc_switch = SWITCH #( operator
+                  WHEN '+' THEN num1 + num2
+                  WHEN '-' THEN num1 - num2
+                  WHEN '*' THEN num1 * num2
+                  WHEN '/' THEN SWITCH #( num2 WHEN 0 THEN `Division by 0` ELSE num1 / num2 )
+                  ELSE |Check the operator { operator }.| ).
+
+    prep_calc_result( CHANGING res = calc_switch ).
+
+    res = VALUE #(  calculation = |{ num1 } { operator } { num2 }|
+      res_if = calc_if
+      res_case = calc_case
+      res_cond = calc_cond
+      res_switch = calc_switch ).
+  ENDMETHOD.
+
+  METHOD check_is_supplied.
+    IF num1 IS SUPPLIED.
+      APPEND `num1 is supplied` TO res.
+    ELSE.
+      APPEND `num1 is not supplied` TO res.
+    ENDIF.
+
+    IF num2 IS NOT SUPPLIED.
+      APPEND `num2 is not supplied` TO res.
+    ELSE.
+      APPEND `num2 is supplied` TO res.
     ENDIF.
   ENDMETHOD.
 ENDCLASS.

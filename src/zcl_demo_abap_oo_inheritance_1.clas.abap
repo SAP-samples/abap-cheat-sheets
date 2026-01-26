@@ -84,7 +84,7 @@ ENDCLASS.
 CLASS zcl_demo_abap_oo_inheritance_1 IMPLEMENTATION.
   METHOD if_oo_adt_classrun~main.
 
-    out->write( |ABAP cheat sheet example: ABAP Object Orientation - Inheritance\n\n| ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = `ABAP cheat sheet example: ABAP Object Orientation - Inheritance` ).
 
     "----- First level in the inheritance hierarchy ----
     "Creating an instance of the class

@@ -4,8 +4,10 @@
 "! Choose F9 in ADT to run the class.</p>
 "!
 "! <h2>Note</h2>
-"! <p>Find information on <strong>getting started with the example class</strong> and the
-"! <strong>disclaimer</strong> in the ABAP Doc comment of class {@link zcl_demo_abap_aux}.</p>
+"! <p>Find the following information in the ABAP Doc comment of class {@link zcl_demo_abap_aux}:</p>
+"! <ul><li>How to get started with the example class</li>
+"! <li>Structuring of (most of) the example classes</li>
+"! <li>Disclaimer</li></ul>
 CLASS zcl_demo_abap_xml_json DEFINITION
   PUBLIC
   FINAL
@@ -17,6 +19,28 @@ CLASS zcl_demo_abap_xml_json DEFINITION
       "deserialzing instances of classes (objects).
       if_serializable_object.
     CLASS-METHODS class_constructor.
+
+    METHODS:
+      m01_string_xstring_conversion  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m02_released_ixml_sxml_classes  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m03_ixml_create_xml  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m04_ixml_parse_xml  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m05_sxml_create_xml_tokenbased  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m06_sxml_create_xml_oo_render  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m07_sxml_parse_xml_tokenbased  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m08_sxml_parse_xml_oo_render  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m09_abap_sheet_transformation  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m10_xml_to_xml_w_xslt  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m11_abap_to_xml_w_xslt  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m12_simple_transformations  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m13_identity_transformation  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m14_serialize_deserialize_obj  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m15_call_transformation_syntax  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m16_json_transformation  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m17_json_xco  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m18_json_ui2_cl_json  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m19_source_result_json  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m20_compress_decompress  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string.
 
   PROTECTED SECTION.
   PRIVATE SECTION.
@@ -48,6 +72,16 @@ CLASS zcl_demo_abap_xml_json DEFINITION
                                    attr_string_b      TYPE string
                                    attr_concat_string TYPE string.
 
+    "Creating an internal table for display purposes
+    DATA: BEGIN OF node_info,
+            node_type TYPE string,
+            name      TYPE string,
+            value     TYPE string,
+          END OF node_info,
+          nodes_tab LIKE TABLE OF node_info.
+
+    METHODS get_demo_xml RETURNING VALUE(xml) TYPE xstring.
+
 ENDCLASS.
 
 
@@ -56,8 +90,55 @@ CLASS zcl_demo_abap_xml_json IMPLEMENTATION.
 
   METHOD if_oo_adt_classrun~main.
 
-    out->write( |ABAP Cheat Sheet Example: Working with XML and JSON in ABAP\n\n| ).
-    out->write( |1) Excursion: Converting string <-> xstring| ).
+    zcl_demo_abap_aux=>set_example_divider(
+     out  = out
+     text = `ABAP Cheat Sheet Example: Working with XML and JSON in ABAP`
+   ).
+
+    "Dynamically calling methods of the class
+    "The method names are retrieved using RTTI. For more information, refer to the
+    "Dynamic Programming ABAP cheat sheet.
+    "Only those methods should be called that follow the naming convention M + digit.
+    DATA(methods) = CAST cl_abap_classdescr( cl_abap_typedescr=>describe_by_object_ref( me ) )->methods.
+    SORT methods BY name ASCENDING.
+
+    "To call a particular method only, you can comment in the WHERE clause and
+    "adapt the literal appropriately.
+    LOOP AT methods INTO DATA(meth_wa)
+    "WHERE name CS 'M01'
+    .
+      TRY.
+          "The find function result indicates that the method name begins (offset = 0) with M and a digit.
+          IF find( val = meth_wa-name pcre = `^M\d` case = abap_false ) = 0.
+            CALL METHOD (meth_wa-name) EXPORTING out = out text = CONV string( meth_wa-name ).
+          ENDIF.
+        CATCH cx_root INTO DATA(error).
+          out->write( error->get_text( ) ).
+      ENDTRY.
+    ENDLOOP.
+  ENDMETHOD.
+
+  METHOD format.
+    TRY.
+        DATA(xstr) = cl_abap_conv_codepage=>create_out( )->convert( input ).
+        DATA(reader) = cl_sxml_string_reader=>create( xstr ).
+        DATA(writer) = CAST if_sxml_writer( cl_sxml_string_writer=>create(
+          type = COND #( WHEN xml = abap_true THEN  if_sxml=>co_xt_xml10 ELSE if_sxml=>co_xt_json ) ) ).
+        writer->set_option( option = if_sxml_writer=>co_opt_linebreaks ).
+        writer->set_option( option = if_sxml_writer=>co_opt_indent ).
+        reader->next_node( ).
+        reader->skip_node( writer ).
+        string = cl_abap_conv_codepage=>create_in( )->convert( CAST cl_sxml_string_writer( writer )->get_output( ) ).
+      CATCH cx_root.
+        string = `Issue when formatting.`.
+    ENDTRY.
+
+  ENDMETHOD.
+
+  METHOD m01_string_xstring_conversion.
+
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Excursion: Converting string <-> xstring| ).
+
     "In the following examples, many operations are performed using binary data.
     "This excursion shows the conversion of string to xstring and the other way round
     "using a codepage. The examples use UTF-8.
@@ -127,11 +208,12 @@ CLASS zcl_demo_abap_xml_json IMPLEMENTATION.
     out->write( conv_string  ).
     out->write( |\n| ).
     out->write( conv_string_xco  ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m02_released_ixml_sxml_classes.
 
-    out->write( zcl_demo_abap_aux=>heading( `2) Processing XML Using Class Libraries` ) ).
-    out->write( |Excursion: Usable iXML/sXML Classes and Interfaces\n\n| ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Excursion: Usable iXML/sXML Classes and Interfaces| ).
+
     "Using a released CDS view, classes and interfaces are retrieved that
     "have 'ixml' and 'sxml' in the name for you to explore the released classes
     "and interfaces in this context.
@@ -146,10 +228,12 @@ CLASS zcl_demo_abap_xml_json IMPLEMENTATION.
       INTO TABLE @DATA(released_xml_libs).
 
     out->write( zcl_demo_abap_aux=>no_output ).
+  ENDMETHOD.
 
-***********************************************************************
+  METHOD m03_ixml_create_xml.
 
-    out->write( zcl_demo_abap_aux=>heading( `3) Creating XML Data Using iXML` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Creating XML Data Using iXML| ).
+
     "In the following example, XML data is created using the iXML library.
     "This is done by creating DOM nodes step by step. The nodes are created as
     "elements and attributes. Content is inserted into the XML data.
@@ -193,10 +277,12 @@ CLASS zcl_demo_abap_xml_json IMPLEMENTATION.
     "Getting XML data
     DATA(xml_output) = format( cl_abap_conv_codepage=>create_in( )->convert( xml_doc ) ).
     out->write( xml_output ).
+  ENDMETHOD.
 
-***********************************************************************
+  METHOD m04_ixml_parse_xml.
 
-    out->write( zcl_demo_abap_aux=>heading( `4) Parsing XML Data Using iXML` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Parsing XML Data Using iXML| ).
+
     "Notes on the example:
     "- XML data is transformed to an input steam object and imported to a DOM object in one go using a parser object
     "- If the XML is successfully parsed, DOM object nodes are iterated and accessed
@@ -288,10 +374,12 @@ CLASS zcl_demo_abap_xml_json IMPLEMENTATION.
 
     out->write( |\n| ).
     out->write( output_ixml_parsing ).
+  ENDMETHOD.
 
-***********************************************************************
+  METHOD m05_sxml_create_xml_tokenbased.
 
-    out->write( zcl_demo_abap_aux=>heading( `5) Creating XML Data Using sXML (Token-Based Rendering)` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Creating XML Data Using sXML (Token-Based Rendering)| ).
+
     "For sXML, there are specialized writer classes, such as CL_SXML_STRING_WRITE.
     "Writers created with this class render XML data to a byte string.
     "The XML 1.0 format and UTF-8 are used by default in the create method.
@@ -335,10 +423,11 @@ CLASS zcl_demo_abap_xml_json IMPLEMENTATION.
 
     DATA(output_sxml_token_rendering) = format( cl_abap_conv_codepage=>create_in( )->convert( xml_sxml ) ).
     out->write( output_sxml_token_rendering ).
+  ENDMETHOD.
 
-***********************************************************************
+  METHOD m06_sxml_create_xml_oo_render.
 
-    out->write( zcl_demo_abap_aux=>heading( `6) Creating XML Data using sXML (Object-Oriented Rendering)` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Creating XML Data using sXML (Object-Oriented Rendering)| ).
 
     DATA(writer_oo) = CAST if_sxml_writer( cl_sxml_string_writer=>create( type     = if_sxml=>co_xt_xml10
                                                                           encoding = 'UTF-8' ) ).
@@ -381,42 +470,17 @@ CLASS zcl_demo_abap_xml_json IMPLEMENTATION.
 
     DATA(output_sxml_oo_rendering) = format( cl_abap_conv_codepage=>create_in( )->convert( xml_sxml_oo_rendering ) ).
     out->write( output_sxml_oo_rendering ).
+  ENDMETHOD.
 
-***********************************************************************
+  METHOD m07_sxml_parse_xml_tokenbased.
 
-    out->write( zcl_demo_abap_aux=>heading( `7) Parsing XML Data using sXML (Token-Based Parsing)` ) ).
-
-    "Creating demo XML data to be used in the example
-    TRY.
-        DATA(xml_to_parse) = cl_abap_conv_codepage=>create_out( )->convert(
-             `<?xml version="1.0"?>` &&
-             `<node attr_a="123">` &&
-             ` <subnode1>` &&
-             ` <letter>A</letter>` &&
-             ` <date format="mm-dd-yyyy">01-01-2024</date>` &&
-             ` </subnode1>` &&
-             ` <subnode2>`  &&
-             ` <text attr_b="1" attr_c="a">abc</text>` &&
-             ` <text attr_b="2" attr_c="b">def</text>` &&
-             ` <text attr_b="3" attr_c="c">ghi</text>` &&
-             ` <text attr_b="4" attr_c="d">jkl</text>` &&
-             ` </subnode2>` &&
-             `</node>` ).
-      CATCH cx_sy_conversion_codepage.
-    ENDTRY.
-
-    "Creating an internal table for display purposes
-    DATA: BEGIN OF node_info,
-            node_type TYPE string,
-            name      TYPE string,
-            value     TYPE string,
-          END OF node_info,
-          nodes_tab LIKE TABLE OF node_info.
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Parsing XML Data using sXML (Token-Based Parsing)| ).
 
     "Creating reader
     "Note: See the comments for the writer above which is similar. For readers,
     "the interface IF_SXML_READER exists. In this example, no special methods
     "are used. Therefore, a cast is not carried out.
+    DATA(xml_to_parse) = get_demo_xml( ).
     DATA(reader) = cl_sxml_string_reader=>create( xml_to_parse ).
     "DATA(reader_cast) = CAST if_sxml_reader( cl_sxml_string_reader=>create( xml_oo ) ).
 
@@ -469,12 +533,14 @@ CLASS zcl_demo_abap_xml_json IMPLEMENTATION.
       CATCH cx_sxml_state_error INTO DATA(error_parse_token).
         out->write( error_parse_token->get_text( ) ).
     ENDTRY.
+  ENDMETHOD.
 
-***********************************************************************
+  METHOD m08_sxml_parse_xml_oo_render.
 
-    out->write( zcl_demo_abap_aux=>heading( `8) Parsing XML Data using sXML (Object-Oriented Parsing)` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Parsing XML Data using sXML (Object-Oriented Parsing)| ).
 
     CLEAR nodes_tab.
+    DATA(xml_to_parse) = get_demo_xml( ).
     DATA(reader_oo) = cl_sxml_string_reader=>create( xml_to_parse ).
 
     TRY.
@@ -540,12 +606,12 @@ CLASS zcl_demo_abap_xml_json IMPLEMENTATION.
     ENDTRY.
 
     out->write( nodes_tab ).
+  ENDMETHOD.
 
-***********************************************************************
+  METHOD m09_abap_sheet_transformation.
 
-    out->write( zcl_demo_abap_aux=>heading( `XML Transformations` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Excursion: Available ABAP Cheat Sheet Transformations in the System| ).
 
-    out->write( |9) Excursion: Available ABAP Cheat Sheet Transformations in the System\n\n| ).
     "Excursion using the XCO library. In this example, tranformation programs are retrieved.
     "A filter is applied. Because of a filter that is applied, only the ABAP cheat sheet
     "transformation programs are returned.
@@ -572,9 +638,12 @@ CLASS zcl_demo_abap_xml_json IMPLEMENTATION.
       DATA(all_transformations_in_system) = VALUE cst( FOR tr IN all_transformations ( tr->name ) ).
     ENDIF.
 
-***********************************************************************
+  ENDMETHOD.
 
-    out->write( zcl_demo_abap_aux=>heading( `10) Transforming XML to XML Using XSLT` ) ).
+  METHOD m10_xml_to_xml_w_xslt.
+
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Transforming XML to XML Using XSLT| ).
+    .
     "In this example, XML is transformed to XML. For this purpose, a simple XSLT
     "program does the following:
     "- All nodes and attributes are copied from the source XML to the target XML
@@ -617,10 +686,12 @@ CLASS zcl_demo_abap_xml_json IMPLEMENTATION.
 
     DATA(conv_xml_a) = format( cl_abap_conv_codepage=>create_in( )->convert( xml_a ) ).
     out->write( conv_xml_a ).
+  ENDMETHOD.
 
-***********************************************************************
+  METHOD m11_abap_to_xml_w_xslt.
 
-    out->write( zcl_demo_abap_aux=>heading( `11) Transforming ABAP to XML Using XSLT` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Transforming ABAP to XML Using XSLT| ).
+
     "In the example, data entries are retrieved from a database table. Appropriate names for the
     "table columns are used with the AS addition so that the transformation can be carried
     "out based on the selected data.
@@ -643,10 +714,12 @@ CLASS zcl_demo_abap_xml_json IMPLEMENTATION.
 
     DATA(conv_xml_b) = format( cl_abap_conv_codepage=>create_in( )->convert( xml_b ) ).
     out->write( conv_xml_b ).
+  ENDMETHOD.
 
-***********************************************************************
+  METHOD m12_simple_transformations.
 
-    out->write( zcl_demo_abap_aux=>heading( `12) ABAP <-> XML using Simple Transformations (1)` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: ABAP <-> XML using Simple Transformations| ).
+
     "The following simple transformation examples transform ABAP to XML and back. The
     "Simple Transformation is implemented in a way to transform to the HTML format.
     "This example transforms string tables to html.
@@ -674,9 +747,8 @@ CLASS zcl_demo_abap_xml_json IMPLEMENTATION.
     out->write( `XML -> ABAP` ).
     out->write( string_table_b ).
 
-***********************************************************************
+*************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `13) ABAP <-> XML using Simple Transformations (2)` ) ).
     "In this example, an internal table is transformed to XML using Simple Transformation.
     "HTML tags are inserted into the XML data as literals.
 
@@ -711,15 +783,19 @@ CLASS zcl_demo_abap_xml_json IMPLEMENTATION.
     out->write( `XML -> ABAP` ).
     out->write( carr_tab_b ).
 
-***********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `ABAP <-> XML using XSLT (Using the Predefined Identity Transformation ID)` ) ).
+  ENDMETHOD.
+
+  METHOD m13_identity_transformation.
+
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: ABAP <-> XML using XSLT (Using the Predefined Identity Transformation ID)| ).
+
     "The following examples demonstrate serializations (ABAP to XML) and deserializations (XML to ABAP)
     "using the predefined identity transformation ID.
     "Note: In doing so, ABAP data is transformed to their asXML representations that can be used as an
     "      intermediate format and which define a mapping between ABAP data and XML.
 
-    out->write( |14) Elementary type\n\n| ).
+    "--- Elementary type ---
     "The example uses type string as an elementary type.
 
     "ABAP -> XML
@@ -742,9 +818,9 @@ CLASS zcl_demo_abap_xml_json IMPLEMENTATION.
     out->write( `XML -> ABAP` ).
     out->write( str_c ).
 
-************************************************************************
+*******************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `15) Structures` ) ).
+    "--- Structures ---
 
     SELECT SINGLE carrid, carrname, currcode, url
       FROM zdemo_abap_carr
@@ -770,9 +846,9 @@ CLASS zcl_demo_abap_xml_json IMPLEMENTATION.
     out->write( carr_struc_b ).
     out->write( |\n| ).
 
-************************************************************************
+**********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `16) Internal tables` ) ).
+    "--- Internal tables ---
 
     SELECT carrid, connid, fldate, price, currency
       FROM zdemo_abap_fli
@@ -800,7 +876,7 @@ CLASS zcl_demo_abap_xml_json IMPLEMENTATION.
 
 ************************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `17) Data References` ) ).
+    "--- Data References ---
 
     DATA(dref_a) = NEW i( 123 ).
 
@@ -822,10 +898,12 @@ CLASS zcl_demo_abap_xml_json IMPLEMENTATION.
 
     out->write( `XML -> ABAP` ).
     out->write( dref_b->* ).
+  ENDMETHOD.
 
-************************************************************************
+  METHOD m14_serialize_deserialize_obj.
 
-    out->write( zcl_demo_abap_aux=>heading( `18) Object References` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Serialization and Deserialization of Class Objects| ).
+
     "The following example demonstrates the serialization and deserialization of
     "instances of classes (objects). For example, to serialize instance attributes,
     "classes must implement the if_serializable_object interface. By default, all instance
@@ -891,9 +969,20 @@ CLASS zcl_demo_abap_xml_json IMPLEMENTATION.
       out->write( `The instance attribute attr_lowercase_str is initial. The serialization/deserialization is restricted.` ).
     ENDIF.
 
-************************************************************************
+  ENDMETHOD.
 
-    out->write( zcl_demo_abap_aux=>heading( `19) CALL TRANSFORMATION Syntax: Specifying Transformations` ) ).
+  METHOD m15_call_transformation_syntax.
+
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: CALL TRANSFORMATION Syntax| ).
+
+    SELECT carrid, carrname, currcode, url
+     FROM zdemo_abap_carr
+     INTO TABLE @DATA(carr_tab_a)
+     UP TO 2 ROWS.
+
+    "ABAP -> XML
+    DATA str_a TYPE string.
+
     "As already covered in the examples above, transformations are specified after
     "CALL TRANSFORMATION. They are either ...
 
@@ -902,6 +991,8 @@ CLASS zcl_demo_abap_xml_json IMPLEMENTATION.
                                                     RESULT XML str_a.
 
     "... predefined identity transformations
+    DATA xml_g TYPE xstring.
+    DATA(dref_a) = NEW i( 123 ).
     CALL TRANSFORMATION id SOURCE dref = dref_a
                            RESULT XML xml_g.
 
@@ -923,12 +1014,13 @@ CLASS zcl_demo_abap_xml_json IMPLEMENTATION.
     ENDTRY.
 
     "... Simple Transformation
+    DATA carr_tab_b LIKE carr_tab_a.
     CALL TRANSFORMATION zdemo_abap_st_carrhtml SOURCE XML str_a
                                                     RESULT carrier_info = carr_tab_b.
 
 ************************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `20) CALL TRANSFORMATION Syntax: Sources of Transformations` ) ).
+    "--- Sources of Transformations ---
     "The following examples use the predefined identity transformation ID.
     "The result is asXML data and stored in a variable of type xstring.
     "Multiple options and variants are possible. The examples cover a selection.
@@ -1057,7 +1149,7 @@ CLASS zcl_demo_abap_xml_json IMPLEMENTATION.
 
 *************************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `21) CALL TRANSFORMATION Syntax: Results of Transformations` ) ).
+    "--- Results of Transformations ---
     "As in the examples above, the predefined identity transformation is used here.
 
     "Creating demo XML data to be used in the example as the source.
@@ -1165,10 +1257,12 @@ CLASS zcl_demo_abap_xml_json IMPLEMENTATION.
 
     out->write( `Result: Multiple ABAP data objects in an internal table` ).
     out->write( restab ).
+  ENDMETHOD.
 
-************************************************************************
+  METHOD m16_json_transformation.
 
-    out->write( zcl_demo_abap_aux=>heading( `22) Transforming JSON Data Using Transformations` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Transforming JSON Data Using Transformations| ).
+
     "Note: When the identity transformation ID is used, the format is asJSON.
 
     "Elementary type
@@ -1334,9 +1428,12 @@ CLASS zcl_demo_abap_xml_json IMPLEMENTATION.
     out->write( `XML -> JSON using sXML` ).
     out->write( xml2json_sxml ).
 
-************************************************************************
+  ENDMETHOD.
 
-    out->write( zcl_demo_abap_aux=>heading( `23) Handling JSON Data with XCO Classes` ) ).
+  METHOD m17_json_xco.
+
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Handling JSON Data with XCO Classes| ).
+
     "Note: Unlike above, the following snippets do not work with asJSON as intermediate
     "format.
 
@@ -1410,9 +1507,11 @@ CLASS zcl_demo_abap_xml_json IMPLEMENTATION.
     out->write( `JSON -> ABAP (structure) using XCO demonstrating the apply method` ).
     out->write( json2struc_xco ).
 
-************************************************************************
+  ENDMETHOD.
 
-    out->write( zcl_demo_abap_aux=>heading( `24) Handling JSON Data with the  /ui2/cl_json Class` ) ).
+  METHOD m18_json_ui2_cl_json.
+
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Handling JSON Data with the /ui2/cl_json Class| ).
 
     TYPES: BEGIN OF demo_struc,
              carrier_id    TYPE c LENGTH 3,
@@ -1534,19 +1633,117 @@ CLASS zcl_demo_abap_xml_json IMPLEMENTATION.
       out->write( dref_xstr->* ).
     ENDIF.
 
-************************************************************************
+  ENDMETHOD.
 
-    out->write( zcl_demo_abap_aux=>heading( `25) Excursion: Compressing and Decompressing Binary Data` ) ).
+  METHOD m19_source_result_json.
+
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: CALL TRANSFORMATION statements Using the SOURCE JSON and RESULT JSON additions| ).
+
+
+    "ABAP (elementary data object) -> JSON
+    DATA num TYPE i VALUE 123.
+
+    CALL TRANSFORMATION id
+      SOURCE var = num
+      RESULT JSON DATA(json).
+
+    DATA(res_json_elem) = cl_abap_conv_codepage=>create_in( )->convert( json ).
+    out->write( data = res_json_elem name = `res_json_elem` ).
+    out->write( |\n| ).
+
+    "JSON -> ABAP (elementary data object)
+    DATA int TYPE i.
+    CALL TRANSFORMATION id
+      SOURCE JSON json
+      RESULT var = int.
+
+    out->write( data = int name = `int` ).
+    out->write( |\n| ).
+
+    "ABAP (structure) -> JSON
+    DATA: BEGIN OF struct,
+            num  TYPE i VALUE 987,
+            text TYPE string VALUE `hello world`,
+            date TYPE d VALUE '20260102',
+            time TYPE t VALUE '123456',
+          END OF struct.
+
+    CALL TRANSFORMATION id
+      SOURCE structure = struct
+      RESULT JSON json.
+
+    DATA(res_json_struct) = cl_abap_conv_codepage=>create_in( )->convert( json ).
+
+    out->write( data = res_json_struct name = `res_json_struct` ).
+    out->write( |\n| ).
+
+    "JSON -> ABAP (structure)
+    DATA struct2 LIKE struct.
+    CALL TRANSFORMATION id
+      SOURCE JSON json
+      RESULT structure = struct2.
+
+    out->write( data = struct2 name = `struct2` ).
+    out->write( |\n| ).
+
+    "ABAP (internal table) -> JSON
+    DATA itab LIKE TABLE OF struct WITH EMPTY KEY.
+    APPEND struct TO itab.
+    APPEND struct2 TO itab.
+
+    CALL TRANSFORMATION id
+      SOURCE table = itab
+      RESULT JSON json.
+
+    DATA(res_json_tab) = cl_abap_conv_codepage=>create_in( )->convert( json ).
+
+    out->write( data = res_json_tab name = `res_json_tab` ).
+    out->write( |\n| ).
+
+    "JSON -> ABAP (internal table)
+    DATA itab2 LIKE itab.
+    CALL TRANSFORMATION id
+      SOURCE JSON json
+      RESULT table = itab2.
+
+    out->write( data = itab2 name = `itab2` ).
+    out->write( |\n| ).
+
+    "ABAP (data reference) -> JSON
+    DATA dref TYPE REF TO string.
+    dref = NEW #( `ABAP` ).
+
+    CALL TRANSFORMATION id
+      SOURCE ref = dref
+      RESULT JSON json.
+
+    DATA(res_json_ref) = cl_abap_conv_codepage=>create_in( )->convert( json ).
+
+    "JSON -> ABAP (data reference)
+    DATA dref2 LIKE dref.
+    CALL TRANSFORMATION id
+      SOURCE JSON json
+      RESULT ref = dref2.
+
+    out->write( data = dref2 name = `dref2` ).
+  ENDMETHOD.
+
+  METHOD m20_compress_decompress.
+
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Excursion: Compressing and Decompressing Binary Data| ).
+
     "You may want to process or store binary data. The data can be very large.
     "You can compress the data in gzip format and decompress it for further processing using
     "the cl_abap_gzip class. Check out appropriate exceptions to be caught. The simple example
     "just specifies cx_root. See the class documentation for more information.
     "This example uses a data object of type xstring from a previous example.
 
+    DATA(xml) = get_demo_xml( ).
+
     "Compressing binary data
     DATA xstr_comp TYPE xstring.
     TRY.
-        cl_abap_gzip=>compress_binary( EXPORTING raw_in   = xml_oref_a
+        cl_abap_gzip=>compress_binary( EXPORTING raw_in   = xml
                                        IMPORTING gzip_out = xstr_comp ).
       CATCH cx_root INTO DATA(error_comp).
         out->write( error_comp->get_text( ) ).
@@ -1563,32 +1760,15 @@ CLASS zcl_demo_abap_xml_json IMPLEMENTATION.
     ENDTRY.
 
     "Checking the xstring length of the variables used and comparing the result
-    DATA(strlen_original_xstring) = xstrlen( xml_oref_a ).
+    DATA(strlen_original_xstring) = xstrlen( xml ).
     out->write( |Length of original binary data object: { strlen_original_xstring }| ).
     DATA(strlen_comp) = xstrlen( xstr_comp ).
     out->write( |Length of compressed binary data object: { strlen_comp }| ).
     DATA(strlen_decomp) = xstrlen( xstr_decomp ).
     out->write( |Length of decompressed binary data object: { strlen_decomp }| ).
-    IF xml_oref_a = xstr_decomp.
+    IF xml = xstr_decomp.
       out->write( `The decompressed binary data object has the same value as the original binary data object.` ).
     ENDIF.
-
-  ENDMETHOD.
-  METHOD format.
-    TRY.
-        DATA(xstr) = cl_abap_conv_codepage=>create_out( )->convert( input ).
-        DATA(reader) = cl_sxml_string_reader=>create( xstr ).
-        DATA(writer) = CAST if_sxml_writer( cl_sxml_string_writer=>create(
-          type = COND #( WHEN xml = abap_true THEN  if_sxml=>co_xt_xml10 ELSE if_sxml=>co_xt_json ) ) ).
-        writer->set_option( option = if_sxml_writer=>co_opt_linebreaks ).
-        writer->set_option( option = if_sxml_writer=>co_opt_indent ).
-        reader->next_node( ).
-        reader->skip_node( writer ).
-        string = cl_abap_conv_codepage=>create_in( )->convert( CAST cl_sxml_string_writer( writer )->get_output( ) ).
-      CATCH cx_root.
-        string = `Issue when formatting.`.
-    ENDTRY.
-
   ENDMETHOD.
 
   METHOD class_constructor.
@@ -1616,4 +1796,25 @@ CLASS zcl_demo_abap_xml_json IMPLEMENTATION.
     attr_lowercase_str = to_lower( attr_string_a && attr_string_b ).
   ENDMETHOD.
 
+  METHOD get_demo_xml.
+    "Creating demo XML data to be used in the example
+    TRY.
+        xml = cl_abap_conv_codepage=>create_out( )->convert(
+             `<?xml version="1.0"?>` &&
+             `<node attr_a="123">` &&
+             ` <subnode1>` &&
+             ` <letter>A</letter>` &&
+             ` <date format="mm-dd-yyyy">01-01-2024</date>` &&
+             ` </subnode1>` &&
+             ` <subnode2>`  &&
+             ` <text attr_b="1" attr_c="a">abc</text>` &&
+             ` <text attr_b="2" attr_c="b">def</text>` &&
+             ` <text attr_b="3" attr_c="c">ghi</text>` &&
+             ` <text attr_b="4" attr_c="d">jkl</text>` &&
+             ` </subnode2>` &&
+             `</node>` ).
+      CATCH cx_sy_conversion_codepage INTO DATA(error).
+        RAISE SHORTDUMP error.
+    ENDTRY.
+  ENDMETHOD.
 ENDCLASS.

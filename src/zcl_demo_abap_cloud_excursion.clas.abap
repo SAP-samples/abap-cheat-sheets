@@ -5,13 +5,14 @@
 "! Choose F9 in ADT to run the class.</p>
 "!
 "! <h2>Note</h2>
-"! <ul>
-"! <li>The example class includes constants in the private visbility
+"! <ul><li>The example class includes constants in the private visbility
 "! section. The names specified there are used by code snippets.
 "! Make sure that you insert suitable values before running the
 "! example class if you want to explore all syntax examples.</li>
-"! <li>Find information on <strong>getting started with the example class</strong> and the
-"! <strong>disclaimer</strong> in the ABAP Doc comment of class {@link zcl_demo_abap_aux}.</li></ul>
+"! <li>Find the following information in the ABAP Doc comment of class {@link zcl_demo_abap_aux}:
+"! <ul><li>How to get started with the example class</li>
+"! <li>Structuring of (most of) the example classes</li>
+"! <li>Disclaimer</li></ul></li></ul>
 CLASS zcl_demo_abap_cloud_excursion DEFINITION
   PUBLIC
   FINAL
@@ -19,6 +20,21 @@ CLASS zcl_demo_abap_cloud_excursion DEFINITION
 
   PUBLIC SECTION.
     INTERFACES if_oo_adt_classrun.
+
+    METHODS:
+      m01_restrictions  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m02_using_released_apis  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m03_xco_get_repo_obj_info  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m04_xco_get_dbtab_info  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m05_xco_get_dtel_info  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m06_xco_get_table_type_info  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m07_xco_get_cds_info  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m08_xco_get_interface_info  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m09_xco_get_class_info  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m10_xco_get_amdp_info  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m11_xco_get_date_time  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m12_xco_generate_repo_obj  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string.
+
   PROTECTED SECTION.
   PRIVATE SECTION.
     TYPES: BEGIN OF details_struc,
@@ -29,8 +45,6 @@ CLASS zcl_demo_abap_cloud_excursion DEFINITION
     CLASS-DATA details_tab TYPE TABLE OF details_struc WITH EMPTY KEY.
     CLASS-DATA str TYPE string.
     CLASS-DATA infos TYPE string_table.
-    CLASS-METHODS heading IMPORTING text          TYPE string
-                          RETURNING VALUE(output) TYPE string.
 
     "NOTE:
     "The names specified for the following constants are used by several
@@ -46,7 +60,7 @@ CLASS zcl_demo_abap_cloud_excursion DEFINITION
     "Name of the package in which you want to generate the repository objects
     CONSTANTS package4gen TYPE sxco_package VALUE 'ZABAP_CHEAT_SHEETS'.
     "ID of a modifiable transport request
-    CONSTANTS tr_req_id TYPE sxco_transport VALUE 'ID0A123456'.
+    CONSTANTS tr_req_id TYPE sxco_transport VALUE '...'.
     "Name of the data element to be created
     CONSTANTS gen_dtel TYPE sxco_ad_object_name VALUE 'ZDEMO_ABAP_DTEL'.
     "Name of the domain to be created
@@ -55,22 +69,45 @@ CLASS zcl_demo_abap_cloud_excursion DEFINITION
     CONSTANTS gen_tabl TYPE sxco_dbt_object_name VALUE 'ZDEMO_ABAP_BOOK'.
     "To enable the generation, specify "abap_true" for the contant value.
     CONSTANTS generation_ok TYPE abap_bool VALUE abap_false.
-
 ENDCLASS.
 
 
 
 CLASS zcl_demo_abap_cloud_excursion IMPLEMENTATION.
 
+  METHOD if_oo_adt_classrun~main.
+    zcl_demo_abap_aux=>set_example_divider(
+     out  = out
+     text = `ABAP Cheat Sheet Example: Excursions into ABAP for Cloud Development`
+   ).
 
-  METHOD heading.
-    output = |\n_________________________________________________________________________________\n\n{ text }\n\n|.
+    "Dynamically calling methods of the class
+    "The method names are retrieved using RTTI. For more information, refer to the
+    "Dynamic Programming ABAP cheat sheet.
+    "Only those methods should be called that follow the naming convention M + digit.
+    DATA(methods) = CAST cl_abap_classdescr( cl_abap_typedescr=>describe_by_object_ref( me ) )->methods.
+    SORT methods BY name ASCENDING.
+
+    "To call a particular method only, you can comment in the WHERE clause and
+    "adapt the literal appropriately.
+    LOOP AT methods INTO DATA(meth_wa)
+    "WHERE name CS 'M01'
+    .
+      TRY.
+          "The find function result indicates that the method name begins (offset = 0) with M and a digit.
+          IF find( val = meth_wa-name pcre = `^M\d` case = abap_false ) = 0.
+            CALL METHOD (meth_wa-name) EXPORTING out = out text = CONV string( meth_wa-name ).
+          ENDIF.
+        CATCH cx_root INTO DATA(error).
+          out->write( error->get_text( ) ).
+      ENDTRY.
+    ENDLOOP.
   ENDMETHOD.
 
+  METHOD m01_restrictions.
 
-  METHOD if_oo_adt_classrun~main.
-    out->write( |ABAP Cheat Sheet Example: Excursions into ABAP for Cloud Development\n| ).
-    out->write( `1) Restrictions in ABAP for Cloud Development` ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Restrictions in ABAP for Cloud Development| ).
+
     out->write( |\nYou can check the code of this section by commenting it in and out. Note the comments in the code.| ).
     "The following statements demonstrate a selection of restrictions in ABAP for Cloud Development.
     "It includes (not) released APIs, deprecated and invalid syntax in ABAP for Cloud Development.
@@ -192,105 +229,110 @@ CLASS zcl_demo_abap_cloud_excursion IMPLEMENTATION.
 *    WRITE 'hi'.
 *    BREAK-POINT.
 
-**********************************************************************
+  ENDMETHOD.
 
-    out->write( heading( `2) Using released APIs` ) ).
-    "The following code uses several released APIs.
+  METHOD m02_using_released_apis.
+
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Using released APIs| ).
+
+    "The following code uses several released APIs. To explore it, comment it in.
     "You can check out Released Objects in the Project Explorer in ADT in
     "ABAP Cloud.
 
-    "In the example, a released API is used to return the current date in UTC.
-    "You can use forward navigation by placing the cursor on the class,
-    "choosing CTRL and clicking. In the opened class, go to the Properties
-    "tab and choose API state to find the release contract for this class.
-    DATA(date) = cl_abap_context_info=>get_system_date(  ).
-    DATA(current_year) = date(4).
-    DATA(up_to_year) = 2050.
+*    "In the example, a released API is used to return the current date in UTC.
+*    "You can use forward navigation by placing the cursor on the class,
+*    "choosing CTRL and clicking. In the opened class, go to the Properties
+*    "tab and choose API state to find the release contract for this class.
+*    DATA(date) = cl_abap_context_info=>get_system_date(  ).
+*    DATA(current_year) = date(4).
+*    DATA(up_to_year) = 2050.
+*
+*    "The statement retrieves the leap years between the current year and
+*    "the specified year. A released CDS view is used as data source.
+*    SELECT calendaryear
+*      FROM i_calendaryear
+*      WHERE calendaryear BETWEEN @current_year AND @up_to_year
+*      AND IsLeapYear IS NOT INITIAL
+*      INTO TABLE @DATA(future_leap_years).
+*
+*    "To display output, the example class uses a released API. You can implement
+*    "the interface if_oo_adt_classrun and the main method. The write method displays
+*    "content in the console when running the class using F9 in ADT.
+*    out->write( data = future_leap_years name = `future_leap_years` ).
+*
+*    "Using a released data element
+*    DATA number TYPE int4.
+*    number = lines( future_leap_years ).
+*
+*    out->write( |\nBetween { current_year } and { up_to_year }, there are { number } leap years.| ).
+*
+*    "Using a released API as data source of a SELECT statement
+*    "Among others, the month names of specified languages are retrieved in the example.
+*    "The WHERE clause is specified in a way to only retrieve a selected set of months.
+*    "For this purpose, more released APIs (classes cl_abap_random_int, cl_abap_random)
+*    "are used. A minimum of 5 months and a maximum of all months is to be returned.
+*    DATA(number_of_months) = cl_abap_random_int=>create(
+*      seed = cl_abap_random=>seed( ) min = 5
+*                                     max = 12 )->get_next( ).
+*
+*    SELECT CalendarMonth, CalendarMonthName, Language
+*      FROM i_calendarmonthtext
+*      WHERE Language IN ( 'E', 'I', 'D' )
+*      AND CalendarMonth <= @number_of_months
+*      ORDER BY Language, CalendarMonth
+*      INTO TABLE @DATA(months).
+*
+*    "Using a released table type
+*    DATA string_tab TYPE string_table.
+*
+*    "Inserting the retrieved data into a table of type string
+*    LOOP AT months INTO DATA(month_wa).
+*      APPEND |{ month_wa-CalendarMonth } { month_wa-CalendarMonthName } ({ month_wa-Language })| TO string_tab.
+*    ENDLOOP.
+*
+*    "Creating a JSON string from a data object using a released API
+*    DATA(json_str) = xco_cp_json=>data->from_abap( months )->to_string( ).
+*
+*    out->write( |\nNumber of months per language: { number_of_months }| ).
+*    out->write( |\nMonths returned:| ).
+*    out->write( data = string_tab name = `string_tab` ).
+*    out->write( |\nMonths returned (JSON string):| ).
+*    out->write( data = json_str name = `json_str` ).
+*
+*    "Getting APIs for use in ABAP for Cloud Development
+*    "The released CDS view contains the relevant information. In the example,
+*    "the names of released classes are retrieved with a specific name pattern.
+*    SELECT ReleasedObjectType, ReleasedObjectName, ReleaseState
+*      FROM i_apisforclouddevelopment
+*      WHERE releasestate = 'RELEASED'
+*      AND ReleasedObjectType = 'CLAS'
+*      AND ReleasedObjectName LIKE 'CL_ABAP_RANDOM_P%'
+*      INTO TABLE @DATA(rel_cl_abap_random).
+*
+*    out->write( |\nRead result:| ).
+*    out->write( data = rel_cl_abap_random name = `rel_cl_abap_random` ).
+*
+*    "Getting the number of all released classes in the system
+*    SELECT COUNT(*)
+*      FROM i_apisforclouddevelopment
+*      WHERE releasestate = 'RELEASED'
+*      AND ReleasedObjectType = 'CLAS'
+*      INTO @DATA(num_rel_cl).
+*
+*    "Getting the number of all released interfaces in the system
+*    SELECT COUNT(*)
+*      FROM i_apisforclouddevelopment
+*      WHERE releasestate = 'RELEASED'
+*      AND ReleasedObjectType = 'INTF'
+*      INTO @DATA(num_rel_intf).
+*
+*    out->write( |\nThere are { num_rel_cl } released classes and { num_rel_intf } released interfaces in the system.|  ).
+  ENDMETHOD.
 
-    "The statement retrieves the leap years between the current year and
-    "the specified year. A released CDS view is used as data source.
-    SELECT calendaryear
-      FROM i_calendaryear
-      WHERE calendaryear BETWEEN @current_year AND @up_to_year
-      AND IsLeapYear IS NOT INITIAL
-      INTO TABLE @DATA(future_leap_years).
+  METHOD m03_xco_get_repo_obj_info.
 
-    "To display output, the example class uses a released API. You can implement
-    "the interface if_oo_adt_classrun and the main method. The write method displays
-    "content in the console when running the class using F9 in ADT.
-    out->write( data = future_leap_years name = `future_leap_years` ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Getting Repository Object-Related Information| ).
 
-    "Using a released data element
-    DATA number TYPE int4.
-    number = lines( future_leap_years ).
-
-    out->write( |\nBetween { current_year } and { up_to_year }, there are { number } leap years.| ).
-
-    "Using a released API as data source of a SELECT statement
-    "Among others, the month names of specified languages are retrieved in the example.
-    "The WHERE clause is specified in a way to only retrieve a selected set of months.
-    "For this purpose, more released APIs (classes cl_abap_random_int, cl_abap_random)
-    "are used. A minimum of 5 months and a maximum of all months is to be returned.
-    DATA(number_of_months) = cl_abap_random_int=>create(
-      seed = cl_abap_random=>seed( ) min = 5
-                                     max = 12 )->get_next( ).
-
-    SELECT CalendarMonth, CalendarMonthName, Language
-      FROM i_calendarmonthtext
-      WHERE Language IN ( 'E', 'I', 'D' )
-      AND CalendarMonth <= @number_of_months
-      ORDER BY Language, CalendarMonth
-      INTO TABLE @DATA(months).
-
-    "Using a released table type
-    DATA string_tab TYPE string_table.
-
-    "Inserting the retrieved data into a table of type string
-    LOOP AT months INTO DATA(month_wa).
-      APPEND |{ month_wa-CalendarMonth } { month_wa-CalendarMonthName } ({ month_wa-Language })| TO string_tab.
-    ENDLOOP.
-
-    "Creating a JSON string from a data object using a released API
-    DATA(json_str) = xco_cp_json=>data->from_abap( months )->to_string( ).
-
-    out->write( |\nNumber of months per language: { number_of_months }| ).
-    out->write( |\nMonths returned:| ).
-    out->write( data = string_tab name = `string_tab` ).
-    out->write( |\nMonths returned (JSON string):| ).
-    out->write( data = json_str name = `json_str` ).
-
-    "Getting APIs for use in ABAP for Cloud Development
-    "The released CDS view contains the relevant information. In the example,
-    "the names of released classes are retrieved with a specific name pattern.
-    SELECT ReleasedObjectType, ReleasedObjectName, ReleaseState
-      FROM i_apisforclouddevelopment
-      WHERE releasestate = 'RELEASED'
-      AND ReleasedObjectType = 'CLAS'
-      AND ReleasedObjectName LIKE 'CL_ABAP_RANDOM_P%'
-      INTO TABLE @DATA(rel_cl_abap_random).
-
-    out->write( |\nRead result:| ).
-    out->write( data = rel_cl_abap_random name = `rel_cl_abap_random` ).
-
-    "Getting the number of all released classes in the system
-    SELECT COUNT(*)
-      FROM i_apisforclouddevelopment
-      WHERE releasestate = 'RELEASED'
-      AND ReleasedObjectType = 'CLAS'
-      INTO @DATA(num_rel_cl).
-
-    "Getting the number of all released interfaces in the system
-    SELECT COUNT(*)
-      FROM i_apisforclouddevelopment
-      WHERE releasestate = 'RELEASED'
-      AND ReleasedObjectType = 'INTF'
-      INTO @DATA(num_rel_intf).
-
-    out->write( |\nThere are { num_rel_cl } released classes and { num_rel_intf } released interfaces in the system.|  ).
-
-**********************************************************************
-
-    out->write( heading( `Excursions into the XCO Library` ) ).
     "The following code snippets focus on the XCO library that provides
     "predefined functionality and can be used in ABAP for Cloud Development.
     "The examples cover a selection of options for you to explore. For more
@@ -303,16 +345,12 @@ CLASS zcl_demo_abap_cloud_excursion IMPLEMENTATION.
     "  put the cursor behind => or -> and choose CTRL + Space to get input
     "  suggestions.
 
-    out->write( |3) Getting Repository Object-Related Information| ).
-
     "Getting all accessible repository objects in the system (indicated by the
     "value provided for "in")
     "To further process the returned values, you can loop over them.
     DATA(all_obj) = xco_cp_abap_repository=>objects->all->in( xco_cp_abap=>repository )->get( ).
 
     out->write( |\nThere are { lines( all_obj ) } accessible repository objects in the system. Note that this number also includes custom artifacts.| ).
-
-**********************************************************************
 
     "Getting all accessible database tables
     "You can specify concrete artifacts (check CTRL + Space after objects->)
@@ -404,10 +442,13 @@ CLASS zcl_demo_abap_cloud_excursion IMPLEMENTATION.
       ) )->in( xco_cp_abap=>repository )->get( ).
 
     out->write( |\nThere are { lines( filtered_classes ) } accessible classes with the specified name pattern and software component.| ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m04_xco_get_dbtab_info.
 
-    out->write( heading( `4) Getting Database Table-Related Information` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Getting Database Table-Related Information with XCO| ).
+
+    DATA(package_handle) = xco_cp_abap_repository=>package->for( package ).
 
     "Creating a filter with a search pattern
     DATA(pattern) = 'ZDEMO_ABAP_FL%'.
@@ -542,10 +583,11 @@ CLASS zcl_demo_abap_cloud_excursion IMPLEMENTATION.
     ELSE.
       out->write( |\nThe database table { db_table } does not exist.| ).
     ENDIF.
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m05_xco_get_dtel_info.
 
-    out->write( heading( `5) Getting Data Element-Related Information` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Getting Data Element-Related Information with XCO| ).
 
     "Getting information about a released data element
     DATA(dtel) = CONV sxco_ad_object_name( 'MANDT' ).
@@ -585,10 +627,11 @@ CLASS zcl_demo_abap_cloud_excursion IMPLEMENTATION.
     ELSE.
       out->write( |\nThe data element { dtel } does not exist.| ).
     ENDIF.
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m06_xco_get_table_type_info.
 
-    out->write( heading( `6) Getting Table Type-Related Information` ) ).
+    zcl_demo_abap_aux=>set_example_divider( out  = out text = |{ text }: Getting Table Type-Related Information with XCO| ).
 
     DATA(tab_type) = CONV sxco_ad_object_name( 'STRING_TABLE' ).
     DATA(e1_handler) = xco_cp_abap_dictionary=>table_type( tab_type ).
@@ -628,10 +671,11 @@ CLASS zcl_demo_abap_cloud_excursion IMPLEMENTATION.
     ELSE.
       out->write( |\nThe table type { tab_type } does not exist.| ).
     ENDIF.
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m07_xco_get_cds_info.
 
-    out->write( heading( `7) Getting CDS View Entity-Related Information` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Getting CDS View Entity-Related Information with XCO| ).
 
     DATA(cds) = CONV sxco_cds_object_name( 'ZDEMO_ABAP_CDS_VE_ASSOC' ).
     DATA(f1_handler) = xco_cp_cds=>view_entity( cds ).
@@ -684,8 +728,6 @@ CLASS zcl_demo_abap_cloud_excursion IMPLEMENTATION.
     ELSE.
       out->write( |\nThe CDS view entity { cds } does not exist.| ).
     ENDIF.
-
-**********************************************************************
 
     out->write( |\nCDS View Entity Example with Parameters| ).
 
@@ -759,9 +801,11 @@ CLASS zcl_demo_abap_cloud_excursion IMPLEMENTATION.
       out->write( |\nThe CDS view entity { cds } does not exist.| ).
     ENDIF.
 
-**********************************************************************
+  ENDMETHOD.
 
-    out->write( heading( `8) Getting Interface-Related Information` ) ).
+  METHOD m08_xco_get_interface_info.
+
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Getting Interface-Related Information with XCO| ).
 
     "Getting a list of all implementations of a given interface
     DATA(intf) = CONV sxco_ao_object_name( 'ZDEMO_ABAP_OBJECTS_INTERFACE' ).
@@ -822,10 +866,11 @@ CLASS zcl_demo_abap_cloud_excursion IMPLEMENTATION.
     ELSE.
       out->write( |\nThe interface { intf } does not exist.| ).
     ENDIF.
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m09_xco_get_class_info.
 
-    out->write( heading( `9) Getting Class-Related Information` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Getting Class-Related Information with XCO| ).
 
     DATA(cl) = CONV sxco_ao_object_name( 'ZCL_DEMO_ABAP_UNIT_TEST' ).
     DATA(j1_handler) = xco_cp_abap=>class( cl ).
@@ -881,8 +926,6 @@ CLASS zcl_demo_abap_cloud_excursion IMPLEMENTATION.
       out->write( |\nThe class { cl } does not exist.| ).
     ENDIF.
 
-**********************************************************************
-
     out->write( |\nGetting Subclasses| ).
 
     cl = 'CL_ABAP_TYPEDESCR'.
@@ -899,12 +942,15 @@ CLASS zcl_demo_abap_cloud_excursion IMPLEMENTATION.
       out->write( |\nThe class { cl } does not exist.| ).
     ENDIF.
 
-**********************************************************************
 
-    out->write( heading( `10) Getting AMDP-Related Information` ) ).
+  ENDMETHOD.
 
-    cl = 'ZCL_DEMO_ABAP_AMDP'.
-    method_name = 'SELECT_GET_CARR_FLI'.
+  METHOD m10_xco_get_amdp_info.
+
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Getting AMDP-Related Information with XCO| ).
+
+    DATA(cl) = CONV sxco_ao_object_name( 'ZCL_DEMO_ABAP_AMDP' ).
+    DATA(method_name) = CONV  sxco_clas_method_name( 'SELECT_GET_CARR_FLI' ).
     DATA(l1_handler) = xco_cp_abap=>class( cl ).
     DATA(l2_exists) = l1_handler->exists( ).
     IF l2_exists IS NOT INITIAL.
@@ -939,12 +985,14 @@ CLASS zcl_demo_abap_cloud_excursion IMPLEMENTATION.
       out->write( |\nSource code of implementation part of method { method_name }| ).
       out->write( l6_meth_source_code ).
     ELSE.
-      out->write( |\nThe interface { intf } does not exist.| ).
+      out->write( |\nThe class { cl } does not exist.| ).
     ENDIF.
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m11_xco_get_date_time.
 
-    out->write( heading( `11) Getting Date and Time Information Using XCO` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Getting Date and Time Information Using XCO| ).
+
     "Among others, the examples cover time and date-related information.
 
     "Creating a time stamp
@@ -1028,10 +1076,12 @@ CLASS zcl_demo_abap_cloud_excursion IMPLEMENTATION.
     out->write( data = m19_subtract_date name = `m19_subtract_date` ).
     out->write( |\n| ).
     out->write( data = m20_user_name name = `m20_user_name` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m12_xco_generate_repo_obj.
 
-    out->write( heading( `12) Generating Repository Objects Using XCO` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Generating Repository Objects Using XCO| ).
+
     "The example covers the generation of a domain, data element and a
     "database table using XCO.
     "NOTE:
@@ -1168,4 +1218,5 @@ CLASS zcl_demo_abap_cloud_excursion IMPLEMENTATION.
       out->write( details_tab ).
     ENDIF.
   ENDMETHOD.
+
 ENDCLASS.

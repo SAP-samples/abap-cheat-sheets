@@ -72,7 +72,12 @@ ENDCLASS.
 
 CLASS zcl_demo_abap_rap_m_as IMPLEMENTATION.
   METHOD if_oo_adt_classrun~main.
-    out->write( |ABAP Cheat Sheet Example: Local Consumption of RAP Business Events\n\n| ).
+
+    zcl_demo_abap_aux=>set_example_divider(
+     out  = out
+     text = `ABAP Cheat Sheet Example: Local Consumption of RAP Business Events`
+   ).
+
     "RAP create operation that creates multiple calculations
     "Note the AUTO FILL CID addition with which the required %cid values
     "for RAP BO instances are created automatically. Since the scenario is

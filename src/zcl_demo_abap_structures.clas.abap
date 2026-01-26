@@ -4,8 +4,10 @@
 "! Choose F9 in ADT to run the class.</p>
 "!
 "! <h2>Note</h2>
-"! <p>Find information on <strong>getting started with the example class</strong> and the
-"! <strong>disclaimer</strong> in the ABAP Doc comment of class {@link zcl_demo_abap_aux}.</p>
+"! <p>Find the following information in the ABAP Doc comment of class {@link zcl_demo_abap_aux}:</p>
+"! <ul><li>How to get started with the example class</li>
+"! <li>Structuring of (most of) the example classes</li>
+"! <li>Disclaimer</li></ul>
 CLASS zcl_demo_abap_structures DEFINITION
   PUBLIC
   FINAL
@@ -15,6 +17,36 @@ CLASS zcl_demo_abap_structures DEFINITION
     INTERFACES: if_oo_adt_classrun.
 
     CLASS-METHODS: class_constructor.
+
+    METHODS:
+      m01_global_structures  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m02_local_structures  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m03_structure_variants  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m04_component_selector  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m05_populate_struc_value_op  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m06_create_struc_value_op  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m07_access_w_comp_sel  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m08_address_comp_ref  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m09_use_comp_for_types_dobj  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m10_anonymous_structure  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m11_copy_structure  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m12_copy_incompatible_struc  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m13_copy_deep_struc  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m14_clear_comp_struc  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m15_sql_read_compatible_type  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m16_sql_read_incompatible_type  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m17_sql_read_itab_line  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m18_read_table  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m19_table_expression  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m20_select_loop  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m21_insert_row_into_db  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m22_update_row  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m23_update_wo_overwriting  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m24_modify_row  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m25_insert_update_row  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m26_include_structure  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m27_get_struc_type_info  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m28_sy_structure  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string.
 
   PROTECTED SECTION.
   PRIVATE SECTION.
@@ -72,52 +104,46 @@ CLASS zcl_demo_abap_structures DEFINITION
       fill_deep_structures,
       select_from_dbtab.
 
+    DATA ls_struc_db TYPE zdemo_abap_tab1.
 ENDCLASS.
 
 
 
 CLASS zcl_demo_abap_structures IMPLEMENTATION.
 
-
-  METHOD class_constructor.
-    initialize_dbtabs( ).
-    fill_deep_structures( ).
-    "Filling demo database tables.
-    zcl_demo_abap_aux=>fill_dbtabs( ).
-  ENDMETHOD.
-
-
-  METHOD fill_deep_structures.
-    "Clearing all content of gs_deep2
-    CLEAR gs_deep2.
-    "Filling nested tables in deep structures
-    gs_deep2-substruc = VALUE #( comp1 = `aaa`
-                                 comp2 = `bbb`
-                                 comp3 = `ccc` ).
-
-    gs_deep1-itab = VALUE #(
-      ( col1 = 111 col2 = 222 )
-      ( col1 = 333 col2 = 444
-      ) ).
-
-    gs_deep2-itab = VALUE #(
-      ( col2 = 1 col3 = 2 col4 = 3 )
-      ( col2 = 4 col3 = 5 col4 = 6 )
-      ( col2 = 7 col3 = 8 col4 = 9 )
-      ).
-
-    "Filling individual component that is not shared by both structures
-    gs_deep2-comp4 = 999.
-  ENDMETHOD.
-
-
   METHOD if_oo_adt_classrun~main.
 
-    out->write( |ABAP cheat sheet example: Structures\n\n| ).
+    zcl_demo_abap_aux=>set_example_divider(
+         out  = out
+         text = `ABAP cheat sheet example: Structures`
+       ).
 
-**********************************************************************
+    "Dynamically calling methods of the class
+    "The method names are retrieved using RTTI. For more information, refer to the
+    "Dynamic Programming ABAP cheat sheet.
+    "Only those methods should be called that follow the naming convention M + digit.
+    DATA(methods) = CAST cl_abap_classdescr( cl_abap_typedescr=>describe_by_object_ref( me ) )->methods.
+    SORT methods BY name ASCENDING.
 
-    out->write( |1) Globally available structures and structured types\n| ).
+    "To call a particular method only, you can comment in the WHERE clause and
+    "adapt the literal appropriately.
+    LOOP AT methods INTO DATA(meth_wa)
+    "WHERE name CS 'M01'
+    .
+      TRY.
+          "The find function result indicates that the method name begins (offset = 0) with M and a digit.
+          IF find( val = meth_wa-name pcre = `^M\d` case = abap_false ) = 0.
+            CALL METHOD (meth_wa-name) EXPORTING out = out text = CONV string( meth_wa-name ).
+          ENDIF.
+        CATCH cx_root INTO DATA(error).
+          out->write( error->get_text( ) ).
+      ENDTRY.
+    ENDLOOP.
+  ENDMETHOD.
+
+  METHOD m01_global_structures.
+
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Globally available structures and structured types| ).
 
     "Creating structures based on globally available structured types
     "Database table
@@ -138,10 +164,11 @@ CLASS zcl_demo_abap_structures IMPLEMENTATION.
     TYPES ty_struc_from_cds_ve TYPE zdemo_abap_fli.
 
     out->write( zcl_demo_abap_aux=>no_output ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m02_local_structures.
 
-    out->write( zcl_demo_abap_aux=>heading( `2) Nested structure` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Local structures| ).
 
     "The following declarations are just included for demonstration purposes
     "to show how declarations of local structures and structured
@@ -205,11 +232,13 @@ CLASS zcl_demo_abap_structures IMPLEMENTATION.
     DATA(struc_inl2) = VALUE lty_struc( num1 = 1 num2 = 2 ).
 
     out->write( zcl_demo_abap_aux=>no_output ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m03_structure_variants.
 
-    out->write( zcl_demo_abap_aux=>heading( `Variants of structures` ) ).
-    out->write( |3) Flat structure with default values\n\n| ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Variants of structures| ).
+
+    "--- Flat structure with default values ---
 
     "Flat structures only contain elementary data types
 
@@ -226,7 +255,7 @@ CLASS zcl_demo_abap_structures IMPLEMENTATION.
 
 **********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `4) Nested structure` ) ).
+    "--- Nested structure ---
 
     "Nested structures contain at least one structure as component
 
@@ -251,23 +280,23 @@ CLASS zcl_demo_abap_structures IMPLEMENTATION.
 
 **********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `5) Deep structure with strings` ) ).
+    "--- Deep structure with strings ---
 
     "Deep structures contain at least one deep component, for
     "example, internal tables, strings.
 
     "Deep structure with strings and with default values.
-    DATA: BEGIN OF ls_flat_address,
+    DATA: BEGIN OF ls_address,
             name   TYPE string VALUE `Mr. Duncan Pea`,
             street TYPE string VALUE `Vegetable Lane 11`,
             city   TYPE string VALUE `349875 Botanica`,
-          END OF ls_flat_address.
+          END OF ls_address.
 
-    out->write( data = ls_flat_address name = `ls_flat_address` ).
+    out->write( data = ls_address name = `ls_address` ).
 
 **********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `6) Deep structure with internal table as component` ) ).
+    "--- Deep structure with internal table as component ---
 
     "Structured type for nested internal table
     TYPES: BEGIN OF lty_flights,
@@ -295,11 +324,11 @@ CLASS zcl_demo_abap_structures IMPLEMENTATION.
       UP TO 4 ROWS.
 
     out->write( data = ls_flights name = `ls_flights` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m04_component_selector.
 
-    out->write( zcl_demo_abap_aux=>heading( `Accessing and populating structures` ) ).
-    out->write( |7) Populating structure components using the component selector\n\n| ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Populating structure components using the component selector| ).
 
     gs_struc-num1  = 1.
     gs_struc-num2  = 2.
@@ -308,11 +337,11 @@ CLASS zcl_demo_abap_structures IMPLEMENTATION.
     gs_struc-pnum  = '333.33'.
 
     out->write( data = gs_struc name = `gs_struc` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m05_populate_struc_value_op.
 
-    out->write( zcl_demo_abap_aux=>heading( `8) Populating structure components ` &&
-    `using the VALUE operator` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Populating structure components using the VALUE operator| ).
 
     "Value assignments by addressing the structure components individually
     "can be very bulky. Hence, the use of the VALUE operator is
@@ -329,6 +358,22 @@ CLASS zcl_demo_abap_structures IMPLEMENTATION.
                         pnum  = '555.55' ).
 
     "Nested structure
+    DATA: BEGIN OF ls_nested_address,
+            BEGIN OF name,
+              title      TYPE string VALUE `Mr.`,
+              first_name TYPE string VALUE `Duncan`,
+              surname    TYPE string VALUE `Pea`,
+            END OF name,
+            BEGIN OF street,
+              name   TYPE string VALUE `Vegetable Lane`,
+              number TYPE string VALUE `11`,
+            END OF street,
+            BEGIN OF city,
+              zipcode TYPE string VALUE `349875`,
+              name    TYPE string VALUE `Botanica`,
+            END OF city,
+          END OF ls_nested_address.
+
     ls_nested_address = VALUE #(
       name   = VALUE #( title = `Mrs.`
                         first_name = `Jane`
@@ -339,6 +384,22 @@ CLASS zcl_demo_abap_structures IMPLEMENTATION.
                         name = `London` ) ).
 
     "Deep structure
+    TYPES: BEGIN OF lty_flights,
+             connid    TYPE zdemo_abap_flsch-connid,
+             countryfr TYPE zdemo_abap_flsch-countryfr,
+             cityfrom  TYPE zdemo_abap_flsch-cityfrom,
+             airpfrom  TYPE zdemo_abap_flsch-airpfrom,
+             countryto TYPE zdemo_abap_flsch-countryto,
+             cityto    TYPE zdemo_abap_flsch-cityto,
+             airpto    TYPE zdemo_abap_flsch-airpto,
+           END OF lty_flights.
+
+    DATA: BEGIN OF ls_flights,
+            carrier      TYPE zdemo_abap_flsch-carrid VALUE 'LH',
+            carrier_name TYPE zdemo_abap_carr-carrname VALUE 'Lufthansa',
+            lt_flights   TYPE TABLE OF lty_flights WITH EMPTY KEY,
+          END OF ls_flights.
+
     ls_flights = VALUE #(
         carrier      = 'AA'
         carrier_name = 'American Airlines'
@@ -361,11 +422,11 @@ CLASS zcl_demo_abap_structures IMPLEMENTATION.
     out->write( data = ls_nested_address name = `ls_nested_address` ).
     out->write( |\n| ).
     out->write( data = ls_flights name = `ls_flights` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m06_create_struc_value_op.
 
-    out->write( zcl_demo_abap_aux=>heading( `9) Creating and populating a new structure ` &&
-    `using the VALUE operator` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Creating and populating a new structure using the VALUE operator| ).
 
     "In the example below in which a new structure is created by declaring
     "a variable inline the '#' sign cannot be used before the parentheses
@@ -379,20 +440,52 @@ CLASS zcl_demo_abap_structures IMPLEMENTATION.
                                      pnum  = '555.55' ).
 
     out->write( data = ls_copy name = `ls_copy` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m07_access_w_comp_sel.
 
-    out->write( zcl_demo_abap_aux=>heading( `10) Accessing individual components using the ` &&
-    `component selector` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Accessing individual components using the component selector| ).
 
     "Assigning value of individual component to a variable
     DATA(lv_copy) = gs_struc-num1.
 
     "Assigning a value to a component in a nested structure.
+    DATA: BEGIN OF ls_nested_address,
+            BEGIN OF name,
+              title      TYPE string VALUE `Mr.`,
+              first_name TYPE string VALUE `Duncan`,
+              surname    TYPE string VALUE `Pea`,
+            END OF name,
+            BEGIN OF street,
+              name   TYPE string VALUE `Vegetable Lane`,
+              number TYPE string VALUE `11`,
+            END OF street,
+            BEGIN OF city,
+              zipcode TYPE string VALUE `349875`,
+              name    TYPE string VALUE `Botanica`,
+            END OF city,
+          END OF ls_nested_address.
+
     ls_nested_address-name-first_name = 'Emma'.
 
     "Assigning a value to a component in a deep structure.
     "The table line is determined using a table expression.
+    TYPES: BEGIN OF lty_flights,
+             connid    TYPE zdemo_abap_flsch-connid,
+             countryfr TYPE zdemo_abap_flsch-countryfr,
+             cityfrom  TYPE zdemo_abap_flsch-cityfrom,
+             airpfrom  TYPE zdemo_abap_flsch-airpfrom,
+             countryto TYPE zdemo_abap_flsch-countryto,
+             cityto    TYPE zdemo_abap_flsch-cityto,
+             airpto    TYPE zdemo_abap_flsch-airpto,
+           END OF lty_flights.
+
+    DATA: BEGIN OF ls_flights,
+            carrier      TYPE zdemo_abap_flsch-carrid VALUE 'LH',
+            carrier_name TYPE zdemo_abap_carr-carrname VALUE 'Lufthansa',
+            lt_flights   TYPE TABLE OF lty_flights WITH EMPTY KEY,
+          END OF ls_flights.
+
     ls_flights-lt_flights[ 1 ]-cityto = 'San Fran'.
 
     out->write( data = lv_copy name = `lv_copy` ).
@@ -401,10 +494,11 @@ CLASS zcl_demo_abap_structures IMPLEMENTATION.
     out->write( |\n| ).
     out->write( data = ls_flights-lt_flights[ 1 ]-cityto name = `ls_flights-lt_flights[ 1 ]-cityto` ).
 
-**********************************************************************
+  ENDMETHOD.
 
-    out->write( zcl_demo_abap_aux=>heading( `11) Excursion: Addressing components of a variable` &&
-    ` referring to a structure ` ) ).
+  METHOD m08_address_comp_ref.
+
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Addressing components of a variable referring to a structure| ).
 
     "Creating a data reference variable.
     DATA(ref) = NEW gty_struc( ).
@@ -421,11 +515,11 @@ CLASS zcl_demo_abap_structures IMPLEMENTATION.
     out->write( data = ref_comp1 name = `ref_comp1` ).
     out->write( |\n| ).
     out->write( data = ref_comp2 name = `ref_comp2` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m09_use_comp_for_types_dobj.
 
-    out->write( zcl_demo_abap_aux=>heading( `12) Using structure components for ` &&
-    `data type and data object declarations` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Using structure components for data type and data object declarations| ).
 
     TYPES: lty_1 TYPE gty_struc-num1,
            lty_2 LIKE gs_struc-num2.
@@ -436,11 +530,11 @@ CLASS zcl_demo_abap_structures IMPLEMENTATION.
     out->write( data = lv_num1 name = `lv_num1` ).
     out->write( |\n| ).
     out->write( data = lv_num2 name = `lv_num2` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m10_anonymous_structure.
 
-    out->write( zcl_demo_abap_aux=>heading( `13) Creating and populating an anonymous structure ` &&
-    `using the NEW operator` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Creating and populating an anonymous structure using the NEW operator| ).
 
     "In the example below in which a new structure is created by declaring
     "a variable inline the '#' sign cannot be used before the parentheses
@@ -448,7 +542,12 @@ CLASS zcl_demo_abap_structures IMPLEMENTATION.
     "specified before the parentheses explicitly.
 
     "Creating a data reference variable
-    TYPES struc_type LIKE ls_flat_address.
+    TYPES: BEGIN OF ls_address,
+             name   TYPE string,
+             street TYPE string,
+             city   TYPE string,
+           END OF ls_address.
+    TYPES struc_type TYPE ls_address.
     DATA addr_ref1 TYPE REF TO struc_type.
 
     "Populating the anonymous structure
@@ -468,11 +567,11 @@ CLASS zcl_demo_abap_structures IMPLEMENTATION.
     addr_ref2->* = VALUE #( BASE addr_ref2->* name = `Mr. John Doe` ).
 
     out->write( data = addr_ref2->* name = `addr_ref2->*` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m11_copy_structure.
 
-    out->write( zcl_demo_abap_aux=>heading( `14) Copying content of a structure to another ` &&
-    ` that has the same type using the assignment operator` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Copying content of a structure to another that has the same type using the assignment operator| ).
 
     "Note: In the case below, a MOVE-CORRESPONDING statement as shown
     "further down would have the same effect:
@@ -483,12 +582,13 @@ CLASS zcl_demo_abap_structures IMPLEMENTATION.
     gs_struc_2 = gs_struc.
 
     out->write( data = gs_struc_2 name = `gs_struc_2` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m12_copy_incompatible_struc.
 
-    out->write( zcl_demo_abap_aux=>heading( `15) Copying content of a structure to another` &&
-    ` that has an incompatible type using` &&
-    ` MOVE-CORRESPONDING statemtns and the CORRESPONDING operator` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Copying content of a structure to another that has an incompatible type using| ).
+
+    "--- MOVE-CORRESPONDING statemtns and the CORRESPONDING operator ---
 
     "Both statements with MOVE-CORRESPONDING and the CORRESPONDING
     "operator are used to assign identically named components of
@@ -552,11 +652,12 @@ CLASS zcl_demo_abap_structures IMPLEMENTATION.
     out->write( data = gs_struc_diff4 name = `gs_struc_diff4` ).
     out->write( |\n| ).
     out->write( data = gs_struc_diff5 name = `gs_struc_diff5` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m13_copy_deep_struc.
 
-    out->write( zcl_demo_abap_aux=>heading( `16) Copying content of a deep ` &&
-    `structure to another` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Copying content of a deep structure to another| ).
+
     out->write( |Original content of deep structures:\n\n| ).
 
     "Note: The example purposely uses non-fitting components
@@ -568,7 +669,7 @@ CLASS zcl_demo_abap_structures IMPLEMENTATION.
 
 **********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `17) MOVE-CORRESPONDING without additions` ) ).
+    out->write( `--- MOVE-CORRESPONDING without additions ---` ).
 
     "Notes on the result:
     "- Existing content of identically named components is replaced.
@@ -592,8 +693,7 @@ CLASS zcl_demo_abap_structures IMPLEMENTATION.
 
 **********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `18) MOVE-CORRESPONDING with the ` &&
-    `EXPANDING NESTED TABLES addition` ) ).
+    out->write( `--- MOVE-CORRESPONDING with the EXPANDING NESTED TABLES addition ---` ).
 
     "Notes on the result:
     "- Existing content of identically named components is replaced.
@@ -614,8 +714,7 @@ CLASS zcl_demo_abap_structures IMPLEMENTATION.
 
 **********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `19) MOVE-CORRESPONDING with the` &&
-    ` KEEPING TARGET LINES addition` ) ).
+    out->write( `--- MOVE-CORRESPONDING with the KEEPING TARGET LINES addition ---` ).
 
     "Notes on the result:
     "- Existing content of identically named components is replaced.
@@ -638,8 +737,8 @@ CLASS zcl_demo_abap_structures IMPLEMENTATION.
 
 **********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `20) MOVE-CORRESPONDING with the ` &&
-    `EXPANDING NESTED TABLES KEEPING TARGET LINES addition` ) ).
+    out->write( `--- MOVE-CORRESPONDING with the EXPANDING NESTED TABLES KEEPING TARGET LINES addition ---` ).
+
 
     "Notes on the result:
     "- Existing content of identically named components is replaced.
@@ -663,7 +762,7 @@ CLASS zcl_demo_abap_structures IMPLEMENTATION.
 
 **********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `21) CORRESPONDING operator without additions` ) ).
+    out->write( `--- CORRESPONDING operator without additions ---` ).
 
     "Notes on the result:
     "- Existing content of identically named components is replaced.
@@ -684,8 +783,7 @@ CLASS zcl_demo_abap_structures IMPLEMENTATION.
 
 **********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `22) CORRESPONDING operator with the` &&
-    ` DEEP addition` ) ).
+    out->write( `--- CORRESPONDING operator with the DEEP addition ---` ).
 
     "Notes on the result:
     "- Existing content of identically named components is replaced.
@@ -706,8 +804,7 @@ CLASS zcl_demo_abap_structures IMPLEMENTATION.
 
 **********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `23) CORRESPONDING operator with the` &&
-    ` BASE addition` ) ).
+    out->write( `--- CORRESPONDING operator with the BASE addition ---` ).
 
     "Notes on the result:
     "- Existing content of identically named components is replaced.
@@ -730,8 +827,7 @@ CLASS zcl_demo_abap_structures IMPLEMENTATION.
 
 **********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `24) CORRESPONDING operator with the ` &&
-    `DEEP BASE addition` ) ).
+    out->write( `--- CORRESPONDING operator with the DEEP BASE addition ---` ).
 
     "Notes on the result:
     "- Existing content of identically named components is replaced.
@@ -753,8 +849,7 @@ CLASS zcl_demo_abap_structures IMPLEMENTATION.
 
 **********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `25) CORRESPONDING operator with the ` &&
-    `APPENDING addition` ) ).
+    out->write( `--- CORRESPONDING operator with the APPENDING addition ---` ).
 
     "Notes on the result:
     "- Existing content of identically named components is replaced.
@@ -777,8 +872,7 @@ CLASS zcl_demo_abap_structures IMPLEMENTATION.
 
 **********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `26) CORRESPONDING operator with the ` &&
-    `DEEP APPENDING addition` ) ).
+    out->write( `--- CORRESPONDING operator with the DEEP APPENDING addition ---` ).
 
     "Notes on the result:
     "- Existing content of identically named components is replaced.
@@ -798,10 +892,11 @@ CLASS zcl_demo_abap_structures IMPLEMENTATION.
 
     out->write( data = gs_deep2 name = `gs_deep2` ).
 
-**********************************************************************
+  ENDMETHOD.
 
-    out->write( zcl_demo_abap_aux=>heading( `27) Clearing individual components of a ` &&
-    `structure and the complete structure` ) ).
+  METHOD m14_clear_comp_struc.
+
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Clearing individual components of a structure and the complete structure| ).
 
     "Clearing individual component
     CLEAR gs_struc-char1.
@@ -815,22 +910,27 @@ CLASS zcl_demo_abap_structures IMPLEMENTATION.
     out->write( data = gs_struc name = `gs_struc` ).
 
     "Note: An assignment using the VALUE operator without entries in the parentheses clears the structure.
-    ls_flat_address = VALUE #( name = `Mr. Duncan Pea` ).
-    ls_flat_address = VALUE #( ).
+    DATA: BEGIN OF ls_address,
+            name   TYPE string,
+            street TYPE string,
+            city   TYPE string,
+          END OF ls_address.
+    ls_address = VALUE #( name = `Mr. Duncan Pea` ).
+    ls_address = VALUE #( ).
 
-    ASSERT ls_flat_address IS INITIAL.
+    ASSERT ls_address IS INITIAL.
 
     "The same applies to data reference variables pointing to structures.
-    addr_ref2 = NEW struc_type( name = `Mr. Duncan Pea` ).
+    TYPES struc_type LIKE ls_address.
+    DATA(addr_ref2) = NEW struc_type( name = `Mr. Duncan Pea` ).
     addr_ref2 = NEW #( ).
 
     ASSERT addr_ref2->* IS INITIAL.
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m15_sql_read_compatible_type.
 
-    out->write( zcl_demo_abap_aux=>heading( `Processing structures` ) ).
-    out->write( |Reading a row from a database table into a structure ...\n\n| ).
-    out->write( |28) ... that has a compatible type\n\n| ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Reading a row from a database table into a structure that has a compatible type| ).
 
     "The first entry that is found according to the WHERE condition is
     "returned. Instead of creating a structure having a compatible type,
@@ -851,10 +951,11 @@ CLASS zcl_demo_abap_structures IMPLEMENTATION.
     out->write( data = ls_flsch1 name = `ls_flsch1` ).
     out->write( |\n| ).
     out->write( data = ls_flsch2 name = `ls_flsch2` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m16_sql_read_incompatible_type.
 
-    out->write( zcl_demo_abap_aux=>heading( `29) ... that has a different type` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Reading a row from a database table into a structure that has a different type| ).
 
     "Creating structure having a different type.
     DATA: BEGIN OF ls_fli_diff,
@@ -873,11 +974,13 @@ CLASS zcl_demo_abap_structures IMPLEMENTATION.
       INTO CORRESPONDING FIELDS OF @ls_fli_diff.
 
     out->write( data = ls_fli_diff name = `ls_fli_diff` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m17_sql_read_itab_line.
 
-    out->write( zcl_demo_abap_aux=>heading( `Reading a line from an internal table into a structure ...` ) ).
-    out->write( |30) ... using a SELECT statement\n\n| ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Reading a line from an internal table into a structure| ).
+
+    out->write( zcl_demo_abap_aux=>heading( `Reading a line from an internal table into a structure using a SELECT statement` ) ).
 
     "Creating and filling an internal table to be read from
     DATA itab TYPE TABLE OF zdemo_abap_flsch WITH EMPTY KEY.
@@ -894,10 +997,18 @@ CLASS zcl_demo_abap_structures IMPLEMENTATION.
       INTO @DATA(ls_select_itab).
 
     out->write( data = ls_select_itab name = `ls_select_itab` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m18_read_table.
 
-    out->write( zcl_demo_abap_aux=>heading( `31) ... using a READ TABLE statement` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Reading a line from an internal table into a structure using a READ TABLE statement| ).
+
+    DATA itab TYPE TABLE OF zdemo_abap_flsch WITH EMPTY KEY.
+    SELECT FROM zdemo_abap_flsch
+      FIELDS *
+      WHERE carrid = 'LH' ORDER BY PRIMARY KEY
+      INTO TABLE @itab
+      UP TO 4 ROWS.
 
     "The example shows the reading of one line into a work area, field
     "symbol and a data reference variable, all representing structured
@@ -918,21 +1029,37 @@ CLASS zcl_demo_abap_structures IMPLEMENTATION.
     out->write( data = <fs1> name = `<fs1>` ).
     out->write( |\n| ).
     out->write( data = dref->* name = `dref->*` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m19_table_expression.
 
-    out->write( zcl_demo_abap_aux=>heading( `32) ... using a table expression` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Reading a line from an internal table using a table expression| ).
+
+    DATA itab TYPE TABLE OF zdemo_abap_flsch WITH EMPTY KEY.
+    SELECT FROM zdemo_abap_flsch
+      FIELDS *
+      WHERE carrid = 'LH' ORDER BY PRIMARY KEY
+      INTO TABLE @itab
+      UP TO 4 ROWS.
+
     "The line number, that is, the index, is specified in square
     "brackets.
 
     DATA(ls_table_exp) = itab[ 3 ].
 
     out->write( data = ls_table_exp name = `ls_table_exp` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m20_select_loop.
 
-    out->write( zcl_demo_abap_aux=>heading( `Sequentially reading ...` ) ).
-    out->write( |33) ... a row from a database table into a structure\n\n| ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Sequentially passing a row from a database table read result into a structure (SELECT loop)| ).
+
+    DATA itab TYPE TABLE OF zdemo_abap_flsch WITH EMPTY KEY.
+    SELECT FROM zdemo_abap_flsch
+      FIELDS *
+      WHERE carrid = 'LH' ORDER BY PRIMARY KEY
+      INTO TABLE @itab
+      UP TO 4 ROWS.
 
     "In the given simple example, the line that is found and returned
     "in a structure, that is declared inline, is simply added to an
@@ -948,32 +1075,16 @@ CLASS zcl_demo_abap_structures IMPLEMENTATION.
     ENDSELECT.
 
     out->write( data = itab name = `itab` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m21_insert_row_into_db.
 
-    out->write( zcl_demo_abap_aux=>heading( `34) ... a line from an internal table into a structure` ) ).
-
-    "The given example covers the reading of a line into a field symbol.
-    "Within the loop, a modification is carried out on a component
-    "of the structures.
-
-    LOOP AT itab ASSIGNING FIELD-SYMBOL(<fs_loop>) WHERE carrid <> 'LH'.
-      <fs_loop>-carrid = 'XY'.
-    ENDLOOP.
-
-    out->write( data = itab name = `itab` ).
-
-**********************************************************************
-
-    out->write( zcl_demo_abap_aux=>heading( `35) Inserting a single row ` &&
-    `into a database table from a structure` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Inserting a single row into a database table from a structure| ).
 
     "The statements in the given example can be considered as
     "alternatives. The third statement demonstrates that the structure
     "might also be created and filled in place instead of inserting a
     "line from an existing structure.
-
-    DATA ls_struc_db TYPE zdemo_abap_tab1.
 
     ls_struc_db = VALUE #( key_field = 1
                            char1     = 'aaa'
@@ -1001,11 +1112,13 @@ CLASS zcl_demo_abap_structures IMPLEMENTATION.
 
     select_from_dbtab( ).
     out->write( data = gt_tab name = `gt_tab` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m22_update_row.
 
-    out->write( zcl_demo_abap_aux=>heading( `36) Updating a single row ` &&
-    `in a database table from a structure` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Updating a single row in a database table from a structure| ).
+
+
 
     ls_struc_db = VALUE #( key_field = 2
                            char1     = 'GGG'
@@ -1023,12 +1136,12 @@ CLASS zcl_demo_abap_structures IMPLEMENTATION.
 
     select_from_dbtab( ).
     out->write( data = gt_tab name = `gt_tab` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m23_update_wo_overwriting.
 
-    out->write( zcl_demo_abap_aux=>heading( `37) Updating a single row ` &&
-    `in a database table from a structure without overwriting specific ` &&
-    `components` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Updating a single row in a database table from | &
+                                                               |a structure without overwriting specific components`| ).
 
     "If you want to update a database table row from a structure by
     "specifying components to be changed without overwriting other
@@ -1046,11 +1159,11 @@ CLASS zcl_demo_abap_structures IMPLEMENTATION.
 
     select_from_dbtab( ).
     out->write( data = gt_tab name = `gt_tab` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m24_modify_row.
 
-    out->write( zcl_demo_abap_aux=>heading( `38) Updating or creating a single` &&
-    ` row in a database table from a structure using MODIFY` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Updating or creating a single row in a database table from a structure using MODIFY| ).
 
     "You can update or create an individual row in a database table
     "from a structure using ABAP SQL statements with MODIFY. If a
@@ -1088,11 +1201,11 @@ CLASS zcl_demo_abap_structures IMPLEMENTATION.
 
     select_from_dbtab( ).
     out->write( data = gt_tab name = `gt_tab` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m25_insert_update_row.
 
-    out->write( zcl_demo_abap_aux=>heading( `39) Adding rows to and updating single rows` &&
-    ` in an internal table from a structure` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Adding rows to and updating single rows in an internal table from a structure| ).
 
     "INSERT and MODIFY are ABAP statements in this context, not ABAP SQL
     "statements. Both INSERT and APPEND add one line (or more) to an
@@ -1143,10 +1256,11 @@ CLASS zcl_demo_abap_structures IMPLEMENTATION.
                                       num2      = 29 ).
 
     out->write( data = gt_tab name = `gt_tab` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m26_include_structure.
 
-    out->write( zcl_demo_abap_aux=>heading( `40) Including structures` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Including structures| ).
 
     "The example shows the inclusion of structured types and data
     "objects in another structure. First, three structured types as
@@ -1195,10 +1309,11 @@ CLASS zcl_demo_abap_structures IMPLEMENTATION.
     address-name_city = `Botanica`.
 
     out->write( data = address name = `address` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m27_get_struc_type_info.
 
-    out->write( zcl_demo_abap_aux=>heading( `41) Getting Structured Type Information and Creating Structures at Runtime` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Getting Structured Type Information and Creating Structures at Runtime| ).
 
     TYPES: BEGIN OF demo_struc_type,
              comp1 TYPE c LENGTH 3,
@@ -1242,10 +1357,11 @@ CLASS zcl_demo_abap_structures IMPLEMENTATION.
     ENDLOOP.
 
     out->write( data = looped_struc name = `looped_struc` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m28_sy_structure.
 
-    out->write( zcl_demo_abap_aux=>heading( `42) sy Structure` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: sy Structure| ).
 
     "Demonstrating prominent sy components that can be used in ABAP for Cloud Development
 
@@ -1465,22 +1581,47 @@ CLASS zcl_demo_abap_structures IMPLEMENTATION.
       out->write( |The substring is not found. Length of searched string: { sy-fdpos }| ).
       ASSERT sy-fdpos = strlen( some_string ).
     ENDIF.
-
   ENDMETHOD.
 
+  METHOD class_constructor.
+    initialize_dbtabs( ).
+    fill_deep_structures( ).
+    "Filling demo database tables.
+    zcl_demo_abap_aux=>fill_dbtabs( ).
+  ENDMETHOD.
+
+
+  METHOD fill_deep_structures.
+    "Clearing all content of gs_deep2
+    CLEAR gs_deep2.
+    "Filling nested tables in deep structures
+    gs_deep2-substruc = VALUE #( comp1 = `aaa`
+                                 comp2 = `bbb`
+                                 comp3 = `ccc` ).
+
+    gs_deep1-itab = VALUE #(
+      ( col1 = 111 col2 = 222 )
+      ( col1 = 333 col2 = 444
+      ) ).
+
+    gs_deep2-itab = VALUE #(
+      ( col2 = 1 col3 = 2 col4 = 3 )
+      ( col2 = 4 col3 = 5 col4 = 6 )
+      ( col2 = 7 col3 = 8 col4 = 9 ) ).
+
+    "Filling individual component that is not shared by both structures
+    gs_deep2-comp4 = 999.
+  ENDMETHOD.
 
   METHOD initialize_dbtabs.
     DELETE FROM zdemo_abap_tab1.
   ENDMETHOD.
 
-
   METHOD select_from_dbtab.
-
     SELECT FROM zdemo_abap_tab1
       FIELDS *
       WHERE key_field <> 0
       ORDER BY key_field
       INTO TABLE @gt_tab.
-
   ENDMETHOD.
 ENDCLASS.

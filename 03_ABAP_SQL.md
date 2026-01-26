@@ -626,10 +626,10 @@ SELECT * FROM dbtab
 </tr>
 
 <tr>
-<td> <code>SELECT</code> loop: Sequentially retrieving multiple rows </td>
+<td> <code>SELECT</code> loop: Sequentially passing multiple rows </td>
 <td>
 
-- A `SELECT` loop can be opened if the assignment is made to a structure and the addition `SINGLE` is not used.
+- A `SELECT` loop can be opened if the assignment is made to a structure and the addition `SINGLE` is not used. The content of a result set is passed sequentially to the ABAP program.
 - If the row is found, the system field `sy-subrc` is set to `0`.
 - The loop must be closed using `ENDSELECT`.
 - To terminate the loop completely, you can use the statement [`EXIT`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapexit_loop.htm).
@@ -2882,7 +2882,7 @@ ENDCLASS.
 
 - ABAP SQL statements offer syntax options for dynamic programming. 
 - For example, you can specify the data source to read from dynamically. 
-- Find more information and code snippets in the ABAP Keyword Documentation or the [ABAP cheat sheet on dynamic programming](06_Dynamic_Programming.md).
+- Find more information and code snippets in the ABAP Keyword Documentation or the [Dynamic Programming](06_Dynamic_Programming.md) cheat sheet.
 
 ```abap
 DATA(dbtab) = 'ZDEMO_ABAP_FLSCH'.

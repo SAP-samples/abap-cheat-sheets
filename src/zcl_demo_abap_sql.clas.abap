@@ -4,8 +4,10 @@
 "! Choose F9 in ADT to run the class.</p>
 "!
 "! <h2>Note</h2>
-"! <p>Find information on <strong>getting started with the example class</strong> and the
-"! <strong>disclaimer</strong> in the ABAP Doc comment of class {@link zcl_demo_abap_aux}.</p>
+"! <p>Find the following information in the ABAP Doc comment of class {@link zcl_demo_abap_aux}:</p>
+"! <ul><li>How to get started with the example class</li>
+"! <li>Structuring of (most of) the example classes</li>
+"! <li>Disclaimer</li></ul>
 CLASS zcl_demo_abap_sql DEFINITION
   PUBLIC
   FINAL
@@ -16,6 +18,59 @@ CLASS zcl_demo_abap_sql DEFINITION
     CLASS-METHODS:
       class_constructor.
 
+    METHODS:
+      m01_read_single_row  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m02_read_multiple_rows  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m03_select_loop  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m04_corresponding_fields  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m05_check_row_existence  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m06_distinct  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m07_select_list_variants  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m08_select_itab  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m09_up_to  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m10_offset  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m11_read_into_dobj  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m12_appending_table  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m13_read_into_packages  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m14_read_into_anonymous_dobj  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m15_sql_operands  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m16_numeric_functions  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m17_string_functions  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m18_special_functions  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m19_coalesce_functions  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m20_aggregate_expressions  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m20_arithmetic_expressions  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m20_cast_expressions  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m23_string_expressions  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m24_case_expressions  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m25_null_expressions  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m26_window_expressions  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m27_sql_conditions  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m28_group_by  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m29_having  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m30_order_by  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m31_for_all_entries  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m32_subquery  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m33_inner_join  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m34_left_outer_join  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m35_right_outer_join  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m36_union  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m37_intersect  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m38_except  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m39_cte  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m40_insert_single_row  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m41_insert_multiple_rows  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m42_insert_accepting_dupl_keys  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m43_insert_using_subquery  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m44_update_existing_rows  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m45_update_set  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m46_update_indicators  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m47_modify  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m48_delete  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m49_abap_sql_constructor_expr  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m50_evaluate_system_fields  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m51_typed_literals  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string.
+
   PROTECTED SECTION.
   PRIVATE SECTION.
     CLASS-METHODS: select_from_dbtab.
@@ -25,24 +80,57 @@ CLASS zcl_demo_abap_sql DEFINITION
       itab     TYPE TABLE OF zdemo_abap_flsch,
       itab_res TYPE TABLE OF zdemo_abap_carr.
 
+    TYPES: BEGIN OF struc_type,
+             carrid   TYPE zdemo_abap_flsch-carrid,
+             connid   TYPE zdemo_abap_flsch-connid,
+             cityfrom TYPE zdemo_abap_flsch-cityfrom,
+             cityto   TYPE zdemo_abap_flsch-cityto,
+           END OF struc_type.
+
 ENDCLASS.
 
 
 
 CLASS zcl_demo_abap_sql IMPLEMENTATION.
 
-
   METHOD class_constructor.
     "Filling demo database tables.
     zcl_demo_abap_aux=>fill_dbtabs( ).
   ENDMETHOD.
 
-
   METHOD if_oo_adt_classrun~main.
 
-    out->write( |ABAP cheat sheet example: ABAP SQL\n\n| ).
-    out->write( |Using SELECT for multiple purposes\n| ).
-    out->write( |1) Reading a single row from database table into a structure\n\n| ).
+    zcl_demo_abap_aux=>set_example_divider(
+      out  = out
+      text = `ABAP cheat sheet example: ABAP SQL`
+    ).
+
+    "Dynamically calling methods of the class
+    "The method names are retrieved using RTTI. For more information, refer to the
+    "Dynamic Programming ABAP cheat sheet.
+    "Only those methods should be called that follow the naming convention M + digit.
+    DATA(methods) = CAST cl_abap_classdescr( cl_abap_typedescr=>describe_by_object_ref( me ) )->methods.
+    SORT methods BY name ASCENDING.
+
+    "To call a particular method only, you can comment in the WHERE clause and
+    "adapt the literal appropriately.
+    LOOP AT methods INTO DATA(meth_wa)
+    "WHERE name CS 'M01'
+    .
+      TRY.
+          "The find function result indicates that the method name begins (offset = 0) with M and a digit.
+          IF find( val = meth_wa-name pcre = `^M\d` case = abap_false ) = 0.
+            CALL METHOD (meth_wa-name) EXPORTING out = out text = CONV string( meth_wa-name ).
+          ENDIF.
+        CATCH cx_root INTO DATA(error).
+          out->write( error->get_text( ) ).
+      ENDTRY.
+    ENDLOOP.
+  ENDMETHOD.
+
+  METHOD m01_read_single_row.
+
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Reading a single row from database table into a structure| ).
 
     "Note that, although it is optional, a WHERE clause should always be
     "specified for performance reasons and to restrict the read result.
@@ -98,9 +186,11 @@ CLASS zcl_demo_abap_sql IMPLEMENTATION.
     out->write( |\n| ).
     out->write( data = struct_1d name = `struct_1d` ).
 
-**********************************************************************
+  ENDMETHOD.
 
-    out->write( zcl_demo_abap_aux=>heading( `2) Reading mutliple rows into an internal table` ) ).
+  METHOD m02_read_multiple_rows.
+
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Reading mutliple rows into an internal table| ).
 
     "Reading all fields into an existing internal table
     SELECT FROM zdemo_abap_flsch
@@ -130,10 +220,11 @@ CLASS zcl_demo_abap_sql IMPLEMENTATION.
     out->write( data = itab_2a name = `itab_2a` ).
     out->write( |\n| ).
     out->write( data = itab_2b name = `itab_2b` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m03_select_loop.
 
-    out->write( zcl_demo_abap_aux=>heading( `3) SELECT loop: Sequentially reading multiple rows` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: SELECT loop: Sequentially passing rows of a multi-row result set| ).
 
     "In the example below, the individual rows that are read are
     "modified before they are appended to an internal table.
@@ -159,11 +250,15 @@ CLASS zcl_demo_abap_sql IMPLEMENTATION.
     ENDSELECT.
 
     out->write( data = itab3 name = `itab3` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m04_corresponding_fields.
+
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: INTO CORRESPONDING FIELDS OF: Reading into existing | &
+                                                               |target variables that have a line type not matching the type of the data source| ).
 
     out->write( zcl_demo_abap_aux=>heading( `4) INTO CORRESPONDING FIELDS OF: Reading into existing` &&
-    ` target variables that have a line type not matching the type of the data source` ) ).
+     ` target variables that have a line type not matching the type of the data source` ) ).
 
     "Note: The addition CORRESPONDING FIELDS OF is needed when using
     "an existing variable to read data into, otherwise a type
@@ -173,13 +268,6 @@ CLASS zcl_demo_abap_sql IMPLEMENTATION.
     "a matching type.
 
     "Creating structure type, structure and internal table.
-    TYPES: BEGIN OF struc_type,
-             carrid   TYPE zdemo_abap_flsch-carrid,
-             connid   TYPE zdemo_abap_flsch-connid,
-             cityfrom TYPE zdemo_abap_flsch-cityfrom,
-             cityto   TYPE zdemo_abap_flsch-cityto,
-           END OF struc_type.
-
     DATA struc4 TYPE struc_type.
     DATA itab4 TYPE TABLE OF struc_type.
 
@@ -198,15 +286,11 @@ CLASS zcl_demo_abap_sql IMPLEMENTATION.
     out->write( data = struc4 name = `struc4` ).
     out->write( |\n| ).
     out->write( data = itab4 name = `itab4` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m05_check_row_existence.
 
-    out->write( zcl_demo_abap_aux=>heading( `Clause variations and additions in SELECT statements` ) ).
-
-    "SELECT/FROM clause variants
-    out->write( |SELECT/FROM clause variants\n| ).
-
-    out->write( |5) Checking the existence of a row in a database table\n| ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Checking the existence of a row in a database table| ).
 
     "Instead of @abap_true, you could also use 'X' in the example below.
 
@@ -220,10 +304,11 @@ CLASS zcl_demo_abap_sql IMPLEMENTATION.
     ELSE.
       out->write( `Nothing found.` ).
     ENDIF.
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m06_distinct.
 
-    out->write( zcl_demo_abap_aux=>heading( `6) DISTINCT addition: Removing duplicative rows from the result set` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: DISTINCT addition: Removing duplicative rows from the result set| ).
 
     "The example shows the comparison of statements with and without
     "the use of DISTINCT. When used without DISTINCT, the result
@@ -247,10 +332,11 @@ CLASS zcl_demo_abap_sql IMPLEMENTATION.
     out->write( data = itab_6a name = `itab_6a` ).
     out->write( |\n| ).
     out->write( data = itab_6b name = `itab_6b` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m07_select_list_variants.
 
-    out->write( zcl_demo_abap_aux=>heading( `7) SELECT list variants` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: SELECT list variants| ).
 
     "Example 1: All fields
     SELECT * FROM zdemo_abap_flsch
@@ -330,10 +416,11 @@ CLASS zcl_demo_abap_sql IMPLEMENTATION.
     out->write( data = itab_7f name = `itab_7f` ).
     out->write( |\n| ).
     out->write( data = itab_7g name = `itab_7g` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m08_select_itab.
 
-    out->write( zcl_demo_abap_aux=>heading( `8) Reading from an internal table using SELECT` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Reading from an internal table using SELECT| ).
 
     "Note: The internal table from which to be read must be specified
     "as host variable. The internal table should have an explicitly
@@ -355,11 +442,11 @@ CLASS zcl_demo_abap_sql IMPLEMENTATION.
       INTO TABLE @DATA(itab_read2).
 
     out->write( data = itab_read2 name = `itab_read2` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m09_up_to.
 
-    out->write( zcl_demo_abap_aux=>heading( 'INTO clause variants' ) ).
-    out->write( |9) UP TO: Limiting the number of returned table rows\n\n| ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: UP TO: Limiting the number of returned table rows| ).
 
     "Restricting the absolute number of returned table rows
     "by specifying a number n in the addition UP TO n ROWS.
@@ -379,10 +466,11 @@ CLASS zcl_demo_abap_sql IMPLEMENTATION.
       UP TO 2 ROWS.
 
     out->write( data = itab_up name = `itab_up` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m10_offset.
 
-    out->write( zcl_demo_abap_aux=>heading( `10) OFFSET: Returning only the table rows after a row with a specified count from the result set` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: OFFSET: Returning only the table rows after a row with a specified count from the result set| ).
 
     "In the example, data of all flights are retrieved, except for the 2 flights
     "with the shortest flight time.
@@ -405,10 +493,11 @@ CLASS zcl_demo_abap_sql IMPLEMENTATION.
       OFFSET 2.
 
     out->write( data = itab_w_off name = `itab_w_off` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m11_read_into_dobj.
 
-    out->write( zcl_demo_abap_aux=>heading( `11) Reading into individual elementary data objects` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Reading into individual elementary data objects| ).
 
     "The field list and the INTO list must have the
     "same number of elements.
@@ -439,16 +528,23 @@ CLASS zcl_demo_abap_sql IMPLEMENTATION.
     ENDSELECT.
 
     out->write( data = itab_ind name = `itab_ind` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m12_appending_table.
 
-    out->write( zcl_demo_abap_aux=>heading( `12) Appending the result set to an existing internal table` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Appending the result set to an existing internal table| ).
 
     "APPEDNING TABLE
 
     "In the example, the existing internal table has the same line type
     "as the database table. The internal table from the previous
     "example is used to have a table with entries.
+    SELECT *
+       FROM zdemo_abap_flsch
+       WHERE carrid = 'LH'
+       ORDER BY carrid
+       INTO TABLE @DATA(itab_up)
+       UP TO 2 ROWS.
 
     SELECT *
       FROM zdemo_abap_flsch
@@ -483,10 +579,11 @@ CLASS zcl_demo_abap_sql IMPLEMENTATION.
       APPENDING CORRESPONDING FIELDS OF TABLE @itab_corr.
 
     out->write( data = itab_corr name = `itab_corr` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m13_read_into_packages.
 
-    out->write( zcl_demo_abap_aux=>heading( `13) Reading into packages of a specified number of rows` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Reading into packages of a specified number of rows| ).
 
     "After PACKAGE SIZE, the number of rows is specified denoting the number
     "of rows to be inserted in the target object per iteration The internal
@@ -517,10 +614,11 @@ CLASS zcl_demo_abap_sql IMPLEMENTATION.
     out->write( data = pack_table name = `pack_table` ).
     out->write( |\n| ).
     out->write( data = itab_pack name = `itab_pack` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m14_read_into_anonymous_dobj.
 
-    out->write( zcl_demo_abap_aux=>heading( `14) Specifying an anonymous data object as target object` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Specifying an anonymous data object as target object| ).
 
     SELECT *
       FROM zdemo_abap_flsch
@@ -529,11 +627,11 @@ CLASS zcl_demo_abap_sql IMPLEMENTATION.
       UP TO 2 ROWS.
 
     out->write( data = dref->* name = `dref->*` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m15_sql_operands.
 
-    out->write( zcl_demo_abap_aux=>heading( `Excursion: ABAP SQL - Operands and Expressions` ) ).
-    out->write( |15) SQL operands\n\n| ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: SQL operands| ).
 
     "SQL operands are elementary operands in an ABAP SQL statement.
     "Can be database table or view columns, a literal, host variables
@@ -581,10 +679,11 @@ CLASS zcl_demo_abap_sql IMPLEMENTATION.
     "UP TO @( 10 - 7 ) ROWS. "Host expression
 
     out->write( data = sql_operands name = `sql_operands` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m16_numeric_functions.
 
-    out->write( zcl_demo_abap_aux=>heading( `16) Numeric functions ` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Numeric functions| ).
 
     "You can use built-in functions in ABAP SQL.
     "Result: Value with the associated dictionary type.
@@ -621,10 +720,11 @@ CLASS zcl_demo_abap_sql IMPLEMENTATION.
        INTO @DATA(numeric_functions).
 
     out->write( data = numeric_functions name = `numeric_functions` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m17_string_functions.
 
-    out->write( zcl_demo_abap_aux=>heading( `17) String functions` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: String functions| ).
 
     SELECT SINGLE
      carrid,  "LH
@@ -728,10 +828,11 @@ CLASS zcl_demo_abap_sql IMPLEMENTATION.
      INTO @DATA(string_functions).
 
     out->write( data = string_functions name = `string_functions` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m18_special_functions.
 
-    out->write( zcl_demo_abap_aux=>heading( `18a) Special functions` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Special functions| ).
 
     SELECT SINGLE
       carrid,
@@ -787,10 +888,11 @@ CLASS zcl_demo_abap_sql IMPLEMENTATION.
     out->write( data = components name = `components` ).
     out->write( |\n| ).
     out->write( data = special_functions name = `special_functions` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m19_coalesce_functions.
 
-    out->write( zcl_demo_abap_aux=>heading( `18b) coalesce Function` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: coalesce Function| ).
 
     "The null value is a special value that is returned by a database. It indicates an
     "undefined value or result. Note that, in ABAP, there are no special null values. Do
@@ -831,9 +933,11 @@ CLASS zcl_demo_abap_sql IMPLEMENTATION.
 
     out->write( data = join_w_null name = `join_w_null` ).
 
-**********************************************************************
+  ENDMETHOD.
 
-    out->write( zcl_demo_abap_aux=>heading( `19) Aggregate Expressions` ) ).
+  METHOD m20_aggregate_expressions.
+
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Aggregate Expressions| ).
 
     "Consist of aggregate functions and aggregate the values of
     "multiple rows of the result set of a query into a single value.
@@ -872,10 +976,11 @@ CLASS zcl_demo_abap_sql IMPLEMENTATION.
      INTO TABLE @DATA(agg_exp).
 
     out->write( data = agg_exp name = `agg_exp` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m20_arithmetic_expressions.
 
-    out->write( zcl_demo_abap_aux=>heading( `20a) Arithmetic Expressions` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Arithmetic Expressions| ).
 
     SELECT SINGLE
     carrid,
@@ -896,10 +1001,11 @@ CLASS zcl_demo_abap_sql IMPLEMENTATION.
   INTO @DATA(arithmetic_sql_expr).
 
     out->write( data = arithmetic_sql_expr name = `arithmetic_sql_expr` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m20_cast_expressions.
 
-    out->write( zcl_demo_abap_aux=>heading( `20b) Cast Expressions` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Cast Expressions| ).
 
     SELECT SINGLE
         carrid,
@@ -916,10 +1022,11 @@ CLASS zcl_demo_abap_sql IMPLEMENTATION.
     INTO @DATA(cast_expr).
 
     out->write( data = cast_expr name = `cast_expr` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m23_string_expressions.
 
-    out->write( zcl_demo_abap_aux=>heading( `20c) String Expressions` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: String Expressions| ).
 
     SELECT SINGLE
         carrid,
@@ -934,10 +1041,11 @@ CLASS zcl_demo_abap_sql IMPLEMENTATION.
     INTO @DATA(string_expr).
 
     out->write( data = string_expr name = `string_expr` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m24_case_expressions.
 
-    out->write( zcl_demo_abap_aux=>heading( `20d) Case Expressions` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Case Expressions| ).
 
     SELECT SINGLE
       carrid,
@@ -969,31 +1077,33 @@ CLASS zcl_demo_abap_sql IMPLEMENTATION.
     INTO @DATA(case_expr).
 
     out->write( data = case_expr name = `case_expr` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m25_null_expressions.
 
-    out->write( zcl_demo_abap_aux=>heading( `20e) Null Expressions` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Null Expressions| ).
 
     SELECT
-    carrid,
-    carrname,
-    "The type of the null value is determined by the context.
-    "When the null value is passed to the internal table,
-    "it is converted to the initial value. In the first case,
-    "it is ' '. In the second case, it is 0..
-    CASE WHEN length( carrname ) > 12 THEN char`X`
-      ELSE NULL
-    END AS long_name,
-    CAST( NULL AS INT1 ) AS null_val
+   carrid,
+   carrname,
+   "The type of the null value is determined by the context.
+   "When the null value is passed to the internal table,
+   "it is converted to the initial value. In the first case,
+   "it is ' '. In the second case, it is 0..
+   CASE WHEN length( carrname ) > 12 THEN char`X`
+     ELSE NULL
+   END AS long_name,
+   CAST( NULL AS INT1 ) AS null_val
 
-FROM zdemo_abap_carr
-INTO TABLE @DATA(null_expr).
+    FROM zdemo_abap_carr
+    INTO TABLE @DATA(null_expr).
 
     out->write( data = null_expr name = `null_expr` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m26_window_expressions.
 
-    out->write( zcl_demo_abap_aux=>heading( `21) Window expressions (1)` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Window expressions| ).
 
     "A simple window is constructed in the OVER clause,
     "window functions - here aggregate functions - are applied.
@@ -1013,8 +1123,6 @@ INTO TABLE @DATA(null_expr).
     out->write( data = win name = `win` ).
 
 **********************************************************************
-
-    out->write( zcl_demo_abap_aux=>heading( `22) Window expressions (2)` ) ).
 
     SELECT carrid, currency, fldate,
       "Sorts the rows by some columns and counts the number of rows from
@@ -1063,11 +1171,12 @@ INTO TABLE @DATA(null_expr).
       INTO TABLE @DATA(win_order).
 
     out->write( data = win_order name = `win_order` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m27_sql_conditions.
 
-    out->write( zcl_demo_abap_aux=>heading( `SQL conditions` ) ).
-    out->write( |23) SQL conditions (1)\n\n| ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: SQL conditions| ).
+
     "The example demonstrates a WHERE clause with =, >, <, <=, >=, AND
 
     SELECT * FROM zdemo_abap_fli
@@ -1082,8 +1191,6 @@ INTO TABLE @DATA(null_expr).
 
 **********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `24) SQL conditions (2)` ) ).
-
     "The example demonstrates a WHERE clause with
     "BETWEEN, NOT BETWEEN, OR
 
@@ -1095,8 +1202,6 @@ INTO TABLE @DATA(null_expr).
     out->write( data = it_sql_cond name = `it_sql_cond` ).
 
 **********************************************************************
-
-    out->write( zcl_demo_abap_aux=>heading( `25) SQL conditions (3)` ) ).
 
     "The example demonstrates a WHERE clause with character literals:
     "- LIKE '%FRAN%': Condition is true if the column cityfrom contains
@@ -1114,12 +1219,9 @@ INTO TABLE @DATA(null_expr).
         AND cityto NOT IN ( 'SYDNEY' )
       INTO TABLE @DATA(itab_like_in).
 
-
     out->write( data = itab_like_in name = `itab_like_in` ).
 
 **********************************************************************
-
-    out->write( zcl_demo_abap_aux=>heading( `25b) SQL conditions (4)` ) ).
 
     "---- SQL conditions demonstrated with the WHERE clause ----
     "Note:
@@ -1238,7 +1340,6 @@ INTO TABLE @DATA(null_expr).
       WHERE ( id, name ) IN ( ( 1, 'bear' ), ( 3, 'rabbit' ), ( 8, 'zebra' ), ( 20, 'dog' ) )
       INTO TABLE @it.
 
-
     "------------------------ [NOT] IN (using a subquery) ------------------------
     "[NOT] IN for matching a value contained in the result set of a subquery
 
@@ -1264,7 +1365,6 @@ INTO TABLE @DATA(null_expr).
                          ( sign   = 'I' option = 'GE' low = 10  ) ).
 
     SELECT id FROM @itab_sql_cond AS tab WHERE id IN @rangestab INTO TABLE @it.
-
 
     "You cannot use logical operators such as CP (conforms to pattern) in the WHERE clause.
     "In a ranges table, they are possible.
@@ -1347,14 +1447,12 @@ INTO TABLE @DATA(null_expr).
       LEFT OUTER JOIN zdemo_abap_tab1 AS tab1 ON tab1~char1 = tab2~char1
       WHERE tab1~char1 IS NOT NULL
       INTO TABLE @joined_tab.
+  ENDMETHOD.
 
-    out->write( zcl_demo_abap_aux=>no_output ).
+  METHOD m28_group_by.
 
-**********************************************************************
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: GROUP BY: Combining groups of table rows in the result set| ).
 
-    out->write( zcl_demo_abap_aux=>heading( `Further clauses in SELECT statements` ) ).
-
-    out->write( |26) GROUP BY: Combining groups of table rows in the result set\n\n| ).
     "In the example, the database table rows that have the same content
     "in column CARRID are combined. The lowest and highest values in
     "column PRICE are determined for each of these groups and placed
@@ -1372,11 +1470,11 @@ INTO TABLE @DATA(null_expr).
       INTO TABLE @DATA(itab_gr).
 
     out->write( data = itab_gr name = `itab_gr` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m29_having.
 
-    out->write( zcl_demo_abap_aux=>heading( `27) HAVING: Limiting the number of rows` &&
-    ` in groups in the result set` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: HAVING: Limiting the number of rows in groups in the result set| ).
 
     "The addition HAVING limits the number of rows in groups in the
     "result set of a query by using a logical expression on these rows.
@@ -1392,11 +1490,11 @@ INTO TABLE @DATA(null_expr).
       INTO TABLE @DATA(itab_hav).
 
     out->write( data = itab_hav name = `itab_hav` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m30_order_by.
 
-    out->write( zcl_demo_abap_aux=>heading( `28) ORDER BY: Sorting the result set by ` &&
-    `specified columns` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: ORDER BY: Sorting the result set by specified columns| ).
 
     "The following example shows the ordering of the result set based
     "on the content of the primary key of the data source. You can also
@@ -1423,11 +1521,12 @@ INTO TABLE @DATA(null_expr).
     out->write( data = itab_ord1 name = `itab_ord1` ).
     out->write( |\n| ).
     out->write( data = itab_ord2 name = `itab_ord2` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m31_for_all_entries.
 
-    out->write( zcl_demo_abap_aux=>heading( `WHERE clause variants: Selecting data by evaluating the content of other tables` ) ).
-    out->write( |29) FOR ALL ENTRIES addition\n\n| ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: FOR ALL ENTRIES addition| ).
+
 
     "In the example, only those entries should be read from the
     "database table if entries exist in the internal table that meet
@@ -1452,10 +1551,11 @@ INTO TABLE @DATA(null_expr).
     ENDIF.
 
     out->write( data = itab_forall name = `itab_forall` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m32_subquery.
 
-    out->write( zcl_demo_abap_aux=>heading( `30) Checking the result set of a subquery` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Checking the result set of a subquery| ).
 
     "In the example, all available flights leaving from a city with
     "FRAN in the name (San Francisco, Frankfurt) existing in another
@@ -1473,11 +1573,12 @@ INTO TABLE @DATA(null_expr).
       INTO TABLE @DATA(itab_sub).
 
     out->write( data = itab_sub name = `itab_sub` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m33_inner_join.
 
-    out->write( zcl_demo_abap_aux=>heading( `Combining Data of Multiple Database Tables` ) ).
-    out->write( |31) Inner join\n\n| ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Inner join| ).
+
     "Result set:
     "- Columns of the rows in the result set of the left side with the columns
     "  of the rows in the result set of the right side are joined into a single
@@ -1507,10 +1608,11 @@ INTO TABLE @DATA(null_expr).
     out->write( data = itab_in1 name = `itab_in1` ).
     out->write( |\n| ).
     out->write( data = itab_in2 name = `itab_in2` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m34_left_outer_join.
 
-    out->write( zcl_demo_abap_aux=>heading( `32) Left outer join` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Left outer join| ).
 
     "Result set:
     "- Same result set as the inner join.
@@ -1533,10 +1635,27 @@ INTO TABLE @DATA(null_expr).
       INTO TABLE @DATA(itab_lo).
 
     out->write( data = itab_lo name = `itab_lo` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m35_right_outer_join.
 
-    out->write( zcl_demo_abap_aux=>heading( `33) Merging the result sets of multiple queries into a single result set using UNION` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Right outer join| ).
+
+
+    SELECT s~carrid, s~carrname, p~connid
+       FROM zdemo_abap_carr AS s
+       RIGHT OUTER JOIN zdemo_abap_flsch AS p
+         ON s~carrid = p~carrid AND p~cityfrom = 'FRANKFURT'
+       WHERE s~carrid <> 'UA'
+       ORDER BY s~carrid
+       INTO TABLE @DATA(itab_ro).
+
+    out->write( data = itab_ro name = `itab_ro` ).
+  ENDMETHOD.
+
+  METHOD m36_union.
+
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Merging the result sets of multiple queries into a single result set using UNION| ).
 
     "Effect: The rows of the result set of the query after UNION are
     "inserted into the result set of the query in front of UNION.
@@ -1561,10 +1680,11 @@ INTO TABLE @DATA(null_expr).
        INTO TABLE @DATA(itab_union).
 
     out->write( data = itab_union name = `itab_union` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m37_intersect.
 
-    out->write( zcl_demo_abap_aux=>heading( `33b) Returning distinct rows of a result set using INTERSECT` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Returning distinct rows of a result set using INTERSECT| ).
 
     SELECT zdemo_abap_flsch~carrid, zdemo_abap_carr~carrname
         FROM zdemo_abap_flsch
@@ -1586,17 +1706,17 @@ INTO TABLE @DATA(null_expr).
         INTO TABLE @DATA(itab_w_intersect).
 
     out->write( data = itab_no_intersect name = `itab_w_intersect` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m38_except.
 
-    out->write( zcl_demo_abap_aux=>heading( `33c) Returning distinct rows of a result set using EXCEPT` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Returning distinct rows of a result set using EXCEPT| ).
 
     "Selecting all carrier IDs from a database table that do not exist in an
     "internal table
     TYPES: ty_demo_tab TYPE TABLE OF zdemo_abap_flsch WITH EMPTY KEY.
     DATA(itab_except) = VALUE ty_demo_tab( ( carrid = 'LH' ) ( carrid = 'LH' ) ( carrid = 'LH' )
                                            ( carrid = 'AA' ) ( carrid = 'AA' ) ).
-
 
     "Selecting all carrier IDs for comparison
     SELECT carrid
@@ -1615,10 +1735,11 @@ INTO TABLE @DATA(null_expr).
         INTO TABLE @DATA(itab_w_except).
 
     out->write( data = itab_w_except name = `itab_w_except` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m39_cte.
 
-    out->write( zcl_demo_abap_aux=>heading( `34) Common Table Expressions (CTE) (1)` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Common Table Expressions (CTE)| ).
 
     "The result sets of both common table expressions +connections
     "and +sum_seats are merged in the subquery of the CTE +result in
@@ -1655,7 +1776,7 @@ INTO TABLE @DATA(null_expr).
 
 **********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `35) CTE and a SELECT Loop (2)` ) ).
+    "--- CTE and a SELECT Loop ---
     "The example shows a WITH statement, whose main query creates a
     "tabular result set. Since the data is written into work area
     "rather than to an internal table, a SELECT loop is opened, which
@@ -1674,10 +1795,11 @@ INTO TABLE @DATA(null_expr).
       out->write( data = wa_cte_loop name = `wa_cte_loop` ).
       out->write( |\n| ).
     ENDWITH.
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m40_insert_single_row.
 
-    out->write( zcl_demo_abap_aux=>heading( `Changing data in database tables` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: INSERT: Inserting individual line into a database table| ).
 
     "Deleting database table to work with
     DELETE FROM zdemo_abap_carr.
@@ -1692,10 +1814,6 @@ INTO TABLE @DATA(null_expr).
                                         carrname = 'United Airlines'
                                         currcode = 'USD'
                                         url =  'http://www.ual.com' ).
-
-**********************************************************************
-
-    out->write( |36) INSERT: Inserting individual line into a database table\n\n| ).
 
     "Inserting from an existing structure
     INSERT INTO zdemo_abap_carr VALUES @row1.
@@ -1714,12 +1832,14 @@ INTO TABLE @DATA(null_expr).
     select_from_dbtab( ).
     out->write( data = itab_res name = `itab_res` ).
 
-**********************************************************************
+  ENDMETHOD.
 
-    out->write( zcl_demo_abap_aux=>heading( `37) INSERT: Inserting multiple rows into a database table` ) ).
+  METHOD m41_insert_multiple_rows.
+
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: INSERT: Inserting multiple rows into a database table| ).
 
     "Creating and filling an internal table
-    DATA itab_insert TYPE TABLE OF zdemo_abap_carr.
+    DATA itab_insert TYPE TABLE OF zdemo_abap_carr WITH EMPTY KEY.
 
     itab_insert = VALUE #( ( carrid = 'BA'
                              carrname = 'British Airways'
@@ -1747,10 +1867,11 @@ INTO TABLE @DATA(null_expr).
 
     select_from_dbtab( ).
     out->write( data = itab_res name = `itab_res` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m42_insert_accepting_dupl_keys.
 
-    out->write( zcl_demo_abap_aux=>heading( `38) INSERT: Inserting multiple rows into a database table accepting duplicate keys` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: INSERT: Inserting multiple rows into a database table accepting duplicate keys| ).
 
     "ACCEPTING DUPLICATE KEYS addition: To avoid a runtime error when
     "inserting entries from an internal table having duplicate keys,
@@ -1758,7 +1879,7 @@ INTO TABLE @DATA(null_expr).
     "table regarding the keys are discarded and sy-subrc is set to 4.
 
     "Creating and filling an internal table
-    DATA itab_adk TYPE TABLE OF zdemo_abap_carr.
+    DATA itab_adk TYPE TABLE OF zdemo_abap_carr WITH EMPTY KEY.
 
     itab_adk = VALUE #( ( carrid = 'SQ'
                           carrname = 'Singapore Airlines'
@@ -1777,10 +1898,11 @@ INTO TABLE @DATA(null_expr).
     out->write( data = itab_res name = `itab_res` ).
     out->write( |\n| ).
     out->write( data = subrc name = `subrc` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m43_insert_using_subquery.
 
-    out->write( zcl_demo_abap_aux=>heading( `39) INSERT: Using a subquery` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: INSERT: Using a subquery| ).
 
     "The purpose of this abstract example is just to visualize that
     "subqueries are possible in INSERT statements. In the example,
@@ -1796,10 +1918,11 @@ INTO TABLE @DATA(null_expr).
 
     select_from_dbtab( ).
     out->write( data = itab_res name = `itab_res` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m44_update_existing_rows.
 
-    out->write( zcl_demo_abap_aux=>heading( `40) UPDATE: Changing content of existing rows` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: UPDATE: Changing content of existing rows| ).
 
     "Creating and filling structure
     "In the case below, all field values except the key field are updated.
@@ -1810,7 +1933,7 @@ INTO TABLE @DATA(null_expr).
                             url      =  'http://www.lufthansa.com' ).
 
     "Creating and filling internal table
-    DATA itab_update LIKE itab_insert.
+    DATA itab_update TYPE TABLE OF zdemo_abap_carr WITH EMPTY KEY.
 
     itab_update = VALUE #( ( carrid = 'BA'
                              carrname = 'British Airways'
@@ -1828,10 +1951,11 @@ INTO TABLE @DATA(null_expr).
 
     select_from_dbtab( ).
     out->write( data = itab_res name = `itab_res` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m45_update_set.
 
-    out->write( zcl_demo_abap_aux=>heading( `41) UPDATE: Changing values of specific fields in all table rows` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: UPDATE: Changing values of specific fields in all table rows| ).
 
     "Using the SET addition, you can change the values of specific
     "fields in all table rows without overwriting existing values in
@@ -1845,12 +1969,13 @@ INTO TABLE @DATA(null_expr).
 
     select_from_dbtab( ).
     out->write( data = itab_res name = `itab_res` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m46_update_indicators.
 
-    out->write( zcl_demo_abap_aux=>heading( `42) INDICATORS addition to UPDATE statements: ` &&
-    `Changing values of specific fields without overwriting ` &&
-    `existing values of other fields ` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: INDICATORS addition to UPDATE statements: | &
+                                                               |Changing values of specific fields without overwriting | &
+                                                               |existing values of other fields| ).
 
     "Example:
     "- Structured type is created with WITH INDICATORS addition
@@ -1883,10 +2008,12 @@ INTO TABLE @DATA(null_expr).
 
     select_from_dbtab( ).
     out->write( data = itab_res name = `itab_res` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m47_modify.
 
-    out->write( zcl_demo_abap_aux=>heading( `43) MODIFY: Inserting and changing rows` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: MODIFY: Inserting and changing rows| ).
+
     "The example only uses host expressions.
 
     "Modifying an entry based on a row. Here, a new entry is created in
@@ -1922,10 +2049,12 @@ INTO TABLE @DATA(null_expr).
     out->write( data = itab_res name = `itab_res` ).
     out->write( |\n| ).
     out->write( |{ dbcnt } table rows were modified.| ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m48_delete.
 
-    out->write( zcl_demo_abap_aux=>heading( `44) DELETE: Deleting table rows` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: DELETE: Deleting table rows| ).
+
     "Note that you specify the key fields only.
 
     "Deleting an entry based on a row. Here, the example uses a
@@ -1943,27 +2072,25 @@ INTO TABLE @DATA(null_expr).
     select_from_dbtab( ).
     out->write( data = itab_res name = `itab_res` ).
 
-**********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `45) DELETE: Deleting table rows based on a condition` ) ).
+    "--- DELETE: Deleting table rows based on a condition ---
 
     DELETE FROM zdemo_abap_carr WHERE currcode <> 'EUR'.
 
     select_from_dbtab( ).
     out->write( data = itab_res name = `itab_res` ).
 
-**********************************************************************
-
-    out->write( zcl_demo_abap_aux=>heading( `46) DELETE: Delete complete table` ) ).
+    "--- DELETE: Delete complete table ---
 
     DELETE FROM zdemo_abap_carr.
 
     select_from_dbtab( ).
     out->write( data = itab_res name = `itab_res` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m49_abap_sql_constructor_expr.
 
-    out->write( zcl_demo_abap_aux=>heading( `47) Exploring ABAP SQL statements using constructor expressions created in place` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Exploring ABAP SQL statements using constructor expressions created in place| ).
 
     TYPES it_type TYPE TABLE OF zdemo_abap_tab1 WITH EMPTY KEY.
     DELETE FROM zdemo_abap_tab1.
@@ -2027,10 +2154,11 @@ INTO TABLE @DATA(null_expr).
     SELECT * FROM zdemo_abap_tab1 INTO TABLE @DATA(itab_constr).
 
     out->write( zcl_demo_abap_aux=>no_output ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m50_evaluate_system_fields.
 
-    out->write( zcl_demo_abap_aux=>heading( `48) Evaluating ABAP System Fields after ABAP SQL Statements` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Evaluating ABAP System Fields after ABAP SQL Statements| ).
 
     "Clearing a demo database table
     DELETE FROM zdemo_abap_tab1.
@@ -2149,10 +2277,11 @@ INTO TABLE @DATA(null_expr).
     ASSERT sy-dbcnt = 0.
 
     out->write( zcl_demo_abap_aux=>no_output ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m51_typed_literals.
 
-    out->write( zcl_demo_abap_aux=>heading( `49) Typed literals` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Typed literals| ).
 
     "Miscellaneous typed literals in an ABAP SQL statement
     "Note that typed literals can be specified in read
@@ -2180,9 +2309,7 @@ INTO TABLE @DATA(null_expr).
       INTO @DATA(misc_typed_literals).
 
     out->write( data = misc_typed_literals name = `misc_typed_literals` ).
-
   ENDMETHOD.
-
 
   METHOD select_from_dbtab.
     SELECT *
@@ -2190,4 +2317,5 @@ INTO TABLE @DATA(null_expr).
       ORDER BY carrid
       INTO TABLE @itab_res.
   ENDMETHOD.
+
 ENDCLASS.

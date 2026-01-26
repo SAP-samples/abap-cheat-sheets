@@ -4,8 +4,10 @@
 "! Choose F9 in ADT to run the class.</p>
 "!
 "! <h2>Note</h2>
-"! <p>Find information on <strong>getting started with the example class</strong> and the
-"! <strong>disclaimer</strong> in the ABAP Doc comment of class {@link zcl_demo_abap_aux}.</p>
+"! <p>Find the following information in the ABAP Doc comment of class {@link zcl_demo_abap_aux}:</p>
+"! <ul><li>How to get started with the example class</li>
+"! <li>Structuring of (most of) the example classes</li>
+"! <li>Disclaimer</li></ul>
 CLASS zcl_demo_abap_string_proc DEFINITION
   PUBLIC
   FINAL
@@ -13,6 +15,42 @@ CLASS zcl_demo_abap_string_proc DEFINITION
 
   PUBLIC SECTION.
     INTERFACES: if_oo_adt_classrun.
+    METHODS:
+      m01_create_strings_assign_val  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m02_chain_strings  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m03_string_templates  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m04_string_templates_format  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m05_string_length  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m06_concatenate  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m07_literal_operator  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m08_split  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m09_lowercase_uppercase  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m10_shift  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m11_condense  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m12_reverse  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m13_insert_substrings  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m14_overlay  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m15_process_substrings  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m16_search_characters  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m17_replace_characters  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m18_search_substrings_comp_op  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m19_find_statement  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m20_find_in_table  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m21_find_function  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m22_replace_statement  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m23_replace_section  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m24_replace_in_table  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m25_replace_function  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m26_search_pattern_logical_op  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m27_search_regex  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m28_replacements_using_regex  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m29_regex_system_classes  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m30_distance_function  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m31_repeat_function  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m32_cmin_cmax_functions  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m33_escape_function  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m34_string_processing_xco  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m35_byte_string_processing  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string.
 
   PROTECTED SECTION.
   PRIVATE SECTION.
@@ -25,8 +63,37 @@ CLASS zcl_demo_abap_string_proc IMPLEMENTATION.
 
   METHOD if_oo_adt_classrun~main.
 
-    out->write( |ABAP Cheat Sheet Example: String Processing\n\n| ).
-    out->write( |1) Creating Strings and Assigning Values\n\n| ).
+    zcl_demo_abap_aux=>set_example_divider(
+      out  = out
+      text = `ABAP Cheat Sheet Example: String Processing`
+    ).
+
+    "Dynamically calling methods of the class
+    "The method names are retrieved using RTTI. For more information, refer to the
+    "Dynamic Programming ABAP cheat sheet.
+    "Only those methods should be called that follow the naming convention M + digit.
+    DATA(methods) = CAST cl_abap_classdescr( cl_abap_typedescr=>describe_by_object_ref( me ) )->methods.
+    SORT methods BY name ASCENDING.
+
+    "To call a particular method only, you can comment in the WHERE clause and
+    "adapt the literal appropriately.
+    LOOP AT methods INTO DATA(meth_wa)
+    "WHERE name CS 'M01'
+    .
+      TRY.
+          "The find function result indicates that the method name begins (offset = 0) with M and a digit.
+          IF find( val = meth_wa-name pcre = `^M\d` case = abap_false ) = 0.
+            CALL METHOD (meth_wa-name) EXPORTING out = out text = CONV string( meth_wa-name ).
+          ENDIF.
+        CATCH cx_root INTO DATA(error).
+          out->write( error->get_text( ) ).
+      ENDTRY.
+    ENDLOOP.
+  ENDMETHOD.
+
+  METHOD m01_create_strings_assign_val.
+
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Creating Strings and Assigning Values| ).
 
     "Data object declarations providing default values
     DATA: flag   TYPE c LENGTH 1 VALUE 'X',    "Single quotes
@@ -96,10 +163,11 @@ CLASS zcl_demo_abap_string_proc IMPLEMENTATION.
     out->write( data = str_a7 name = `str_a7` ).
     out->write( |\n| ).
     out->write( data = str_a8 name = `str_a8` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m02_chain_strings.
 
-    out->write( zcl_demo_abap_aux=>heading( `2) Chaining Strings` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Chaining Strings| ).
 
     DATA(str_b1) = `Hallo`.
     DATA(str_b2) = `how`.
@@ -117,10 +185,13 @@ CLASS zcl_demo_abap_string_proc IMPLEMENTATION.
     out->write( data = str_b4 name = `str_b4` ).
     out->write( |\n| ).
     out->write( data = char_b1 name = `char_b1` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m03_string_templates.
 
-    out->write( zcl_demo_abap_aux=>heading( `3a) String Templates (1): Constructing Strings` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: String Templates| ).
+
+    "--- Constructing Strings ---
 
     "The expression must be convertible to a string. A blank (not
     "within the curly brackets) means a blank in the resulting string.
@@ -132,9 +203,7 @@ CLASS zcl_demo_abap_string_proc IMPLEMENTATION.
 
     out->write( data = str_c4 name = `str_c4` ).
 
-**********************************************************************
-
-    out->write( zcl_demo_abap_aux=>heading( `3b) String Templates (2): Control Characters` ) ).
+    "--- String Templates (2): Control Characters ---
 
     "Interpretation of character combinations as control characters
     "\n interpreted as a line break
@@ -164,64 +233,279 @@ CLASS zcl_demo_abap_string_proc IMPLEMENTATION.
     out->write( |\n| ).
     out->write( data = str_c9 name = `str_c9` ).
 
-**********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `4) String Templates (3): Formatting Options` ) ).
-    "Time, date
-    DATA(str_d1a) = |Date: { cl_abap_context_info=>get_system_date( ) DATE = USER }|.
-    DATA(str_d1b) = |Time: { cl_abap_context_info=>get_system_time( ) TIME = ISO }|.
-    DATA(str_d1c) = |Timestamp: { utclong_current( ) TIMESTAMP = SPACE }|.
+  ENDMETHOD.
 
-    "Upper, lower case
-    DATA(str_d2) = |AbCdEfG|.
-    DATA(str_d3) = |{ str_d2 CASE = LOWER }|.
-    DATA(str_d4) = |{ str_d2 CASE = UPPER }|.
+  METHOD m04_string_templates_format.
 
-    "Width and alignment
-    DATA(str_d5) = |{ 'Left'   WIDTH = 20 ALIGN = LEFT }<---|.
-    DATA(str_d6) = |{ 'Center' WIDTH = 20 ALIGN = CENTER }<---|.
-    DATA(str_d7) = |{ 'Right'  WIDTH = 20 ALIGN = RIGHT }<---|.
-    DATA(str_d8) = |{ 'Left'   WIDTH = 20 ALIGN = LEFT  PAD = '.'  }<---|.
-    DATA(str_d9) = |{ 'Center' WIDTH = 20 ALIGN = CENTER PAD = '.' }<---|.
-    DATA(str_d10) = |{ 'Right' WIDTH = 20 ALIGN = RIGHT  PAD = '.' }<---|.
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: String Templates: Formatting Options| ).
 
-    "Numbers
-    DATA(str_d11) = |{                   - 2 / 3   DECIMALS = 3 }, {
-                        CONV decfloat34( - 2 / 3 ) DECIMALS = 3 }, {
-                        CONV          f( - 2 / 3 ) DECIMALS = 3 }|.
+*&---------------------------------------------------------------------*
+*& DATE
+*&---------------------------------------------------------------------*
 
-    "Escaping \|{}  in string templates
-    DATA(str_d14) = |\\ \| \{ \}|.
+    "Defining the format of a date
+    "The output is just an example and depends on your settings.
+    DATA(d) = |The date is { cl_abap_context_info=>get_system_date( ) DATE = USER }.|. "The date is 01/01/2024.
+    d = |{ cl_abap_context_info=>get_system_date( ) DATE = RAW }|. "20240101
+    d = |{ cl_abap_context_info=>get_system_date( ) DATE = ISO }|. "2024-01-01
+    d = |{ cl_abap_context_info=>get_system_date( ) DATE = ENVIRONMENT }|. "01/01/2024
 
-    out->write( data = str_d1a name = `str_d1a` ).
-    out->write( |\n| ).
-    out->write( data = str_d1b name = `str_d1b` ).
-    out->write( |\n| ).
-    out->write( data = str_d1c name = `str_d1c` ).
-    out->write( |\n| ).
-    out->write( data = str_d3 name = `str_d3` ).
-    out->write( |\n| ).
-    out->write( data = str_d4 name = `str_d4` ).
-    out->write( |\n| ).
-    out->write( data = str_d5 name = `str_d5` ).
-    out->write( |\n| ).
-    out->write( data = str_d6 name = `str_d6` ).
-    out->write( |\n| ).
-    out->write( data = str_d7 name = `str_d7` ).
-    out->write( |\n| ).
-    out->write( data = str_d8 name = `str_d8` ).
-    out->write( |\n| ).
-    out->write( data = str_d9 name = `str_d9` ).
-    out->write( |\n| ).
-    out->write( data = str_d10 name = `str_d10` ).
-    out->write( |\n| ).
-    out->write( data = str_d11 name = `str_d11` ).
-    out->write( |\n| ).
-    out->write( data = str_d14 name = `str_d14` ).
+*&---------------------------------------------------------------------*
+*& TIME
+*&---------------------------------------------------------------------*
 
-**********************************************************************
+    "Defining the format of a time
+    "The output is just an example and depends on your settings.
+    DATA(tm) = |The time is { cl_abap_context_info=>get_system_time( ) TIME = ISO }.|. "The time is 14:37:24.
+    tm = |{ cl_abap_context_info=>get_system_time( ) TIME = RAW }|. "143724
+    tm = |{ cl_abap_context_info=>get_system_time( ) TIME = USER }|. "14:37:24
+    tm = |{ cl_abap_context_info=>get_system_time( ) TIME = ENVIRONMENT }|. "14:37:24
 
-    out->write( zcl_demo_abap_aux=>heading( `5) Determining the Length of Strings` ) ).
+*&---------------------------------------------------------------------*
+*& TIMESTAMP
+*&---------------------------------------------------------------------*
+
+    "Defining the format of a time stamp
+    "The output is just an example and depends on your settings.
+    DATA(ts) = |{ utclong_current( ) TIMESTAMP = SPACE }|. "2024-01-01 14:39:50.4069170
+    ts = |{ utclong_current( ) TIMESTAMP = ISO }|. "2024-01-01T14:39:50,4071110
+    ts = |{ utclong_current( ) TIMESTAMP = USER }|. "01/01/2024 14:39:50.4072010
+    ts = |{ utclong_current( ) TIMESTAMP = ENVIRONMENT }|. "01/01/2024 14:39:50.4073230
+    ts = |{ utclong_current( ) }|. "2024-01-01 14:39:50.4074060
+
+*&---------------------------------------------------------------------*
+*& TIMEZONE
+*&---------------------------------------------------------------------*
+
+    "Defining the format of a time stamp using the rules for time zones
+    DATA(tz) = |{ utclong_current( ) TIMEZONE = 'UTC' }|. "2024-12-30 14:43:20.6534640
+    tz = |{ utclong_current( ) TIMEZONE = 'CET' COUNTRY = 'DE ' }|. "30.12.2024 15:43:20,6536320
+    tz = |{ utclong_current( ) TIMEZONE = 'EST' COUNTRY = 'US ' }|. "12/30/2024 09:43:20.6889180 AM
+
+*&---------------------------------------------------------------------*
+*& CASE
+*&---------------------------------------------------------------------*
+
+    "Lowercase and uppercase
+    DATA s1 TYPE string.
+    DATA s2 TYPE string.
+    s1 = `AbCdEfG`.
+    s2 = |{ s1 CASE = LOWER }|. "abcdefg
+    s2 = |{ s1 CASE = UPPER }|. "ABCDEFG
+
+*&---------------------------------------------------------------------*
+*& WIDTH/ALIGN
+*&---------------------------------------------------------------------*
+
+    s1 = `##`.
+    s2 = |{ s1 WIDTH = 10 ALIGN = LEFT }<---|.   "'##        <---'
+    s2 = |{ s1 WIDTH = 10 ALIGN = CENTER }<---|. "'    ##    <---'
+
+*&---------------------------------------------------------------------*
+*& PAD
+*&---------------------------------------------------------------------*
+
+    "Used to pad any surplus places in the result with the specified character.
+    s2 = |{ s1 WIDTH = 10 ALIGN = RIGHT PAD = `.` }<---|. "'........##<---'
+
+*&---------------------------------------------------------------------*
+*& DECIMALS
+*&---------------------------------------------------------------------*
+
+    s1 = |{ CONV decfloat34( - 1 / 3 ) DECIMALS = 3 }|. "'-0.333'
+
+*&---------------------------------------------------------------------*
+*& SIGN
+*&---------------------------------------------------------------------*
+
+    "Defining the format of the +/- sign when the string represented
+    "by the embedded expression represents a numeric value
+    "- left without space, no +
+    s1 =  |{ +1 SIGN = LEFT }|. "1
+    "- and + left without space
+    s1 =  |{ 1 SIGN = LEFTPLUS }|. "+1
+    "- left without space, blank left for +
+    s1 =  |{ 1 SIGN = LEFTSPACE }|. " 1
+    "- right without space, no +
+    s1 =  |{ -1 SIGN = RIGHT }|. "1-
+    "- and + right without space
+    s1 =  |{ 1 SIGN = RIGHTPLUS }|. "1+
+    "- left without space, blank right for +
+    s1 =  |{ +1 SIGN = RIGHTSPACE }|. "1
+
+*&---------------------------------------------------------------------*
+*& ZERO
+*&---------------------------------------------------------------------*
+
+    "Defining the format of the numeric value zero.
+    "Only to be specified if the embedded expression has a numeric data type.
+    s1 = |'{ 0 ZERO = NO }' and '{ 0 ZERO = YES }'|. "'' and '0'
+
+*&---------------------------------------------------------------------*
+*& XSD
+*&---------------------------------------------------------------------*
+
+    "Formatting is applied to an embedded expression (elementary data types) in asXML format that is
+    "assigned to its data type. Check the information in the ABAP Keyword Documentation about the asXML
+    "mapping of elementary ABAP types.
+    DATA xstr TYPE xstring  VALUE `41424150`.
+    DATA dat TYPE d VALUE '20240101'.
+    DATA tim TYPE t VALUE '123456'.
+    DATA(utc) = utclong_current( ). "e.g. 2024-01-01 13:51:38.5708800
+
+    s1 = |{ xstr XSD = YES }|. "QUJBUA==
+    s1 = |{ dat XSD = YES }|. "2024-01-01
+    s1 = |{ tim XSD = YES }|. "12:34:56
+    s1 = |{ utc XSD = YES }|. "2024-01-01T13:51:38.57088Z
+
+*&---------------------------------------------------------------------*
+*& STYLE
+*&---------------------------------------------------------------------*
+
+    "Defining the style of decimal floating point numbers;
+    "see the details in the ABAP Keyword Documentation.
+    DATA(dcfl34) = CONV decfloat34( '-123.45600' ).
+    s1 = |{ dcfl34 }|. "-123.456
+    "Creates the predefined format
+    s1 = |{ dcfl34 STYLE = SIMPLE }|. "-123.456
+    "+/- added to the right, removes trailing zeros
+    s1 = |{ dcfl34 STYLE = SIGN_AS_POSTFIX  }|. "123.456-
+    "Retains trailing zeros
+    s1 = |{ dcfl34 STYLE = SCALE_PRESERVING }|. "-123.45600
+    "Scientific notation; at least a two digit exponent with a plus/minus sign
+    s1 = |{ dcfl34 STYLE = SCIENTIFIC }|. "-1.23456E+02
+    "Scientific notation; only one integer digit with the value 0
+    s1 = |{ dcfl34 STYLE = SCIENTIFIC_WITH_LEADING_ZERO }|. "-0.123456E+03
+    "Scientific notation; exponent has 3 digits for decfloat16 and 4 digits for decfloat34
+    s1 = |{ dcfl34 STYLE = SCALE_PRESERVING_SCIENTIFIC }|. "-1.2345600E+0002
+    "Technical format
+    s1 = |{ dcfl34 STYLE = ENGINEERING }|. "-123.456E+00
+
+*&---------------------------------------------------------------------*
+*& ALPHA
+*&---------------------------------------------------------------------*
+
+    "Adds or removes leading zeros from strings of digits; the data type
+    "must be string, c, or n
+    "Adding leading zeros
+    "Additionally specifying WIDTH
+    "Note: The specified length is only used if it is greater than
+    "the length of provided string (without leading zeros)
+    s1 = |{ '1234' ALPHA = IN WIDTH = 10 }|.                "0000001234
+    s1 = |{ '00000000000000000000000012' ALPHA = IN WIDTH = 10 }|. "0000000012
+    "Fixed-length string provided, WIDTH not specified
+    s1 = |{ '   12' ALPHA = IN }|. "00012
+    "Removing leading zeros
+    s1 = |{ '00001234' ALPHA = OUT }|. "1234
+    "Do not apply formatting
+    s1 = |{ '00001234' ALPHA = RAW }|.                      "00001234
+
+*&---------------------------------------------------------------------*
+*& EXPONENT
+*&---------------------------------------------------------------------*
+
+    "Defining the exponent when formatting floating point numbers;
+    "only usable with numeric data types; only affects data type f
+    "or in combination with STYLE = scientific
+
+    DATA(flp) = CONV f( 1 / 3 ).
+
+    "0.33333333333333331
+    s1 = |{ flp }|.
+    "3.3333333333333331E-01
+    s1 = |{ flp EXPONENT = -1 }|.
+    "0.000000000033333333333333331E+10
+    s1 = |{ flp EXPONENT = 10 }|.
+
+    DATA(dec_num) = CONV decfloat34( '-123.45600' ).
+
+    "-1.23456E+02
+    s1 = |{ dec_num STYLE = SCIENTIFIC }|.
+    "-1234.56E-01
+    s1 = |{ dec_num STYLE = SCIENTIFIC EXPONENT = -1 }|.
+
+*&---------------------------------------------------------------------*
+*& CURRENCY
+*&---------------------------------------------------------------------*
+
+    "Defining the number of decimal places in the context of currencies;
+    "only usable with numeric data types; some options such as DECIMALS
+    "cannot be specified together with CURRENCY, SIGN can be specified
+    "for +/-; check descriptions of the behavior of the various numeric
+    "types in the ABAP Keyword Documentation
+
+    "Type i: A decimal separator is inserted at the place determined by
+    "the currency
+                                                            "123456.78
+    s1 = |{ 12345678 CURRENCY = 'EUR' }|.
+
+    "Type f: Same effect as DECIMALS, number of decimal places is
+    "determined by the currency
+    "1.23
+    s1 = |{ CONV f( '1.234' ) CURRENCY = 'EUR' }|.
+
+    "Using CURRENCY and SIGN
+    "+123.45
+    s1 = |{ 12345 CURRENCY = 'EUR' SIGN = LEFTPLUS }|.
+
+*&---------------------------------------------------------------------*
+*& COUNTRY
+*&---------------------------------------------------------------------*
+
+    "Temporarily setting country-specific formatting (alternative to using
+    "the ENVIRONMENT option)
+
+    DATA land TYPE land1 VALUE 'DE '.
+    "987.654.321 (for example)
+    s1 = |{ 987654321 COUNTRY = land }|.
+
+    "987,654,321 (for example)
+    s1 = |{ 987654321 COUNTRY = 'US ' }|.
+
+    "10/18/2025 (for example)
+    s1 = |{ cl_abap_context_info=>get_system_date( ) COUNTRY = 'US ' }|.
+
+    "14:21:12 (for example)
+    s1 = |{ cl_abap_context_info=>get_system_time( ) COUNTRY = land }|.
+
+    "Using non-existing country
+    land = '&/§'.
+    TRY.
+        s1 = |{ 987654321 COUNTRY = land }|.
+      CATCH cx_sy_strg_format INTO DATA(err).
+        s1 = err->get_text( ).
+    ENDTRY.
+
+*&---------------------------------------------------------------------*
+*& NUMBER
+*&---------------------------------------------------------------------*
+
+    "Defining the format of decimal representation (decimal and thousands
+    "separators); only usable with numeric data types; only specific formats
+    "can be specified (RAW being the default)
+
+    DATA decimal_number TYPE decfloat34 VALUE '-123456.7890'.
+
+    "Period as decimal separator, no thousands separators
+    "-123456.789
+    s1 = |{ decimal_number NUMBER = RAW }|.
+
+    "Decimal/thousands separators based on user master record
+    "-123.456,789 (for example)
+    s1 = |{ decimal_number NUMBER = USER }|.
+
+    "Decimal/thousands separators based on current language
+    "environment
+    "-123.456,789 (for example)
+    s1 = |{ decimal_number NUMBER = ENVIRONMENT }|.
+
+    out->write( zcl_demo_abap_aux=>no_output ).
+  ENDMETHOD.
+
+  METHOD m05_string_length.
+
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Determining the Length of Strings| ).
 
     DATA(str_e1)  = `abc def ghi   `.
     DATA(char_e1) = 'abc def ghi   '.
@@ -266,10 +550,11 @@ CLASS zcl_demo_abap_string_proc IMPLEMENTATION.
     out->write( data = int_e1 name = `int_e1` ).
     out->write( |\n| ).
     out->write( data = int_e2 name = `int_e2` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m06_concatenate.
 
-    out->write( zcl_demo_abap_aux=>heading( `6a) Concatenating Strings` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Concatenating Strings| ).
 
     DATA(str_f1) = `Hallo`.
     DATA(str_f2) = `world`.
@@ -347,10 +632,11 @@ CLASS zcl_demo_abap_string_proc IMPLEMENTATION.
     out->write( data = alphabet4 name = `alphabet4` ).
     out->write( |\n| ).
     out->write( data = alphabet5 name = `alphabet5` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m07_literal_operator.
 
-    out->write( zcl_demo_abap_aux=>heading( `6b) Literal Operator` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Literal Operator| ).
 
     "Literal operator
     "Used to combine character literals of the same type into a single character literal
@@ -399,10 +685,12 @@ CLASS zcl_demo_abap_string_proc IMPLEMENTATION.
     out->write( data = len1 name = `len1` ).
     out->write( |\n| ).
     out->write( data = len2 name = `len2` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m08_split.
 
-    out->write( zcl_demo_abap_aux=>heading( `7) Splitting Strings` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Splitting Strings| ).
+
 
     DATA(str_g1) = `Hallo,world,12345`.
 
@@ -480,11 +768,11 @@ CLASS zcl_demo_abap_string_proc IMPLEMENTATION.
     out->write( data = str4 name = `str4` ).
     out->write( |\n| ).
     out->write( data = tab name = `tab` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m09_lowercase_uppercase.
 
-    out->write( zcl_demo_abap_aux=>heading( `Modifying Strings` ) ).
-    out->write( |8) Transforming to Lower and Upper Case\n\n| ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Transforming to Lower and Upper Case| ).
 
     DATA(str_h1) = `It's a string`.
     DATA(str_h2) = str_h1.
@@ -530,10 +818,11 @@ CLASS zcl_demo_abap_string_proc IMPLEMENTATION.
     out->write( data = str_h8 name = `str_h8` ).
     out->write( |\n| ).
     out->write( data = str_h9 name = `str_h9` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m10_shift.
 
-    out->write( zcl_demo_abap_aux=>heading( `9) Shifting Content in Strings` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Shifting Content in Strings| ).
 
     DATA(str_i1) = `hallo`.
     DATA(str_i2) = str_i1.
@@ -635,10 +924,11 @@ CLASS zcl_demo_abap_string_proc IMPLEMENTATION.
     out->write( data = str_i14 name = `str_i14` ).
     out->write( |\n| ).
     out->write( data = str_i15 name = `str_i15` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m11_condense.
 
-    out->write( zcl_demo_abap_aux=>heading( `10) Condensing Strings` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Condensing Strings| ).
 
     DATA(char_j1) = ' some text '.
     DATA(char_j2) = '    some     more text   '.
@@ -720,18 +1010,21 @@ CLASS zcl_demo_abap_string_proc IMPLEMENTATION.
     out->write( data = str_j6 name = `str_j6` ).
     out->write( |\n| ).
     out->write( data = str_j7 name = `str_j7` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m12_reverse.
 
-    out->write( zcl_demo_abap_aux=>heading( `11) Reversing Strings` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Reversing Strings| ).
+
 
     DATA(str_k) = reverse( `ollah` ).
 
     out->write( data = str_k name = `str_k` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m13_insert_substrings.
 
-    out->write( zcl_demo_abap_aux=>heading( `12) Inserting Substrings into Strings` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Inserting Substrings into Strings| ).
 
     DATA(str_l1) = `abcghi`.
 
@@ -750,9 +1043,11 @@ CLASS zcl_demo_abap_string_proc IMPLEMENTATION.
     out->write( |\n| ).
     out->write( data = str_l4 name = `str_l4` ).
 
-**********************************************************************
+  ENDMETHOD.
 
-    out->write( zcl_demo_abap_aux=>heading( `13) Overlaying Content` ) ).
+  METHOD m14_overlay.
+
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Overlaying Content| ).
 
     DATA(incl) = '==============================CP'.
     DATA(cl_name) = 'CL_SOME_CLASS                   '.
@@ -770,10 +1065,11 @@ CLASS zcl_demo_abap_string_proc IMPLEMENTATION.
     out->write( data = cl_name name = `cl_name` ).
     out->write( |\n| ).
     out->write( data = t1 name = `t1` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m15_process_substrings.
 
-    out->write( zcl_demo_abap_aux=>heading( `14) Processing Substrings` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Processing Substrings| ).
 
     DATA(str_m1) = `Lorem ipsum dolor sit amet`.
 
@@ -861,11 +1157,11 @@ CLASS zcl_demo_abap_string_proc IMPLEMENTATION.
     out->write( data = str_m12 name = `str_m12` ).
     out->write( |\n| ).
     out->write( data = str_m13 name = `str_m13` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m16_search_characters.
 
-    out->write( zcl_demo_abap_aux=>heading( `Searching and Replacing in Strings` ) ).
-    out->write( |15) Searching Specific Characters in Strings Using Comparison Operators and String Functions\n| ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Searching Specific Characters in Strings Using Comparison Operators and String Functions| ).
 
     DATA(str_n1) = `cheers`.
 
@@ -968,10 +1264,11 @@ CLASS zcl_demo_abap_string_proc IMPLEMENTATION.
     out->write( data = res_n12 name = `res_n12` ).
     out->write( |\n| ).
     out->write( data = res_n13 name = `res_n13` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m17_replace_characters.
 
-    out->write( zcl_demo_abap_aux=>heading( `16) Replacing Specific Characters in Strings` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Replacing Specific Characters in Strings| ).
 
     DATA(str_o1) = `___abc_def_____ghi_`.
 
@@ -1000,11 +1297,11 @@ CLASS zcl_demo_abap_string_proc IMPLEMENTATION.
     out->write( data = str_o3 name = `str_o3` ).
     out->write( |\n| ).
     out->write( data = str_o1 name = `str_o1` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m18_search_substrings_comp_op.
 
-    out->write( zcl_demo_abap_aux=>heading( `Searching for Substrings in Strings` ) ).
-    out->write( |17) Substring Search: Simple Search Using Comparison Operators\n| ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Substring Search: Simple Search Using Comparison Operators| ).
 
     DATA(str_p1) = `cheers`.
 
@@ -1033,10 +1330,12 @@ CLASS zcl_demo_abap_string_proc IMPLEMENTATION.
       out->write( |\n| ).
     ENDIF.
 
-**********************************************************************
+  ENDMETHOD.
 
-    out->write( zcl_demo_abap_aux=>heading( `18) Substring Search in Strings ` &&
-    `Using FIND Statements` ) ).
+  METHOD m19_find_statement.
+
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Substring Search in Strings Using FIND Statements| ).
+
     "The code examples demonstrate different additions.
 
     DATA(str_qa) = `She sells seashells by the seashore.`.
@@ -1173,11 +1472,11 @@ CLASS zcl_demo_abap_string_proc IMPLEMENTATION.
     out->write( data = res_q15 name = `res_q15` ).
     out->write( |\n| ).
     out->write( data = res_q16 name = `res_q16` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m20_find_in_table.
 
-    out->write( zcl_demo_abap_aux=>heading( `19) Substring Search in Internal Tables ` &&
-    `Using FIND ... IN TABLE Statements` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Substring Search in Internal Tables Using FIND ... IN TABLE Statements| ).
 
     DATA(str_table_r) = VALUE string_table( ( `aZbzZ` ) ( `cdZze` ) ( `Zzzf` ) ( `ghz` ) ).
 
@@ -1215,10 +1514,11 @@ CLASS zcl_demo_abap_string_proc IMPLEMENTATION.
     out->write( |\n| ).
     out->write( data = len_r5 name = `len_r5` ).
 
-**********************************************************************
+  ENDMETHOD.
 
-    out->write( zcl_demo_abap_aux=>heading( `20) Substring Search in Strings ` &&
-    `Using the String Function find` ) ).
+  METHOD m21_find_function.
+
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Substring Search in Strings Using the String Function find| ).
 
     DATA(str_s) = `Pieces of cakes.`.
 
@@ -1284,10 +1584,11 @@ CLASS zcl_demo_abap_string_proc IMPLEMENTATION.
       CATCH cx_sy_range_out_of_bounds.
         out->write( `The exception cx_sy_range_out_of_bounds was raised.` ).
     ENDTRY.
+  ENDMETHOD.
 
-***********************************************************************
+  METHOD m22_replace_statement.
 
-    out->write( zcl_demo_abap_aux=>heading( `21) Replacing Substrings in Strings Using REPLACE Statments` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Replacing Substrings in Strings Using REPLACE Statments| ).
 
     DATA(str_t) = `abap ABAP abap`.
     DATA(str_t1) = str_t.
@@ -1408,10 +1709,11 @@ CLASS zcl_demo_abap_string_proc IMPLEMENTATION.
     out->write( data = str_t18 name = `str_t18` ).
     out->write( |\n| ).
     out->write( data = struc_t19 name = `struc_t19` ).
+  ENDMETHOD.
 
-***********************************************************************
+  METHOD m23_replace_section.
 
-    out->write( zcl_demo_abap_aux=>heading( `21) Position-Based Replacements with REPLACE SECTION ... OF` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Position-Based Replacements with REPLACE SECTION ... OF| ).
 
     DATA(str_u) = `abap ABAP abap`.
     DATA(str_u1) = str_u.
@@ -1434,10 +1736,11 @@ CLASS zcl_demo_abap_string_proc IMPLEMENTATION.
     REPLACE SECTION LENGTH 6 OF str_u3 WITH `#`.
 
     out->write( data = str_u3 name = `str_u3` ).
+  ENDMETHOD.
 
-***********************************************************************
+  METHOD m24_replace_in_table.
 
-    out->write( zcl_demo_abap_aux=>heading( `22) Replacements in Internal Tables with REPLACE ... IN TABLE` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Replacements in Internal Tables with REPLACE ... IN TABLE| ).
 
     DATA(tab_v) = VALUE string_table( ( `aZbzZ` ) ( `cdZze` ) ( `Zzzf` ) ( `ghz` ) ).
     DATA(tab_v1) = tab_v.
@@ -1489,10 +1792,11 @@ CLASS zcl_demo_abap_string_proc IMPLEMENTATION.
       RESPECTING CASE.
 
     out->write( data = tab_v6 name = `tab_v6` ).
+  ENDMETHOD.
 
-***********************************************************************
+  METHOD m25_replace_function.
 
-    out->write( zcl_demo_abap_aux=>heading( `23) Replacing Substrings in Strings Using the String Function replace` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Replacing Substrings in Strings Using the String Function replace| ).
 
     DATA(str_w) = `abap ABAP abap`.
 
@@ -1551,12 +1855,11 @@ CLASS zcl_demo_abap_string_proc IMPLEMENTATION.
     out->write( data = str_w_9 name = `str_w_9` ).
     out->write( |\n| ).
     out->write( data = str_w_10 name = `str_w_10` ).
+  ENDMETHOD.
 
-***********************************************************************
+  METHOD m26_search_pattern_logical_op.
 
-    out->write( zcl_demo_abap_aux=>heading( `Pattern-Based Searching and Replacing in Strings` ) ).
-    out->write( `24) Simple Pattern-Based Searching ` &&
-                     `Using Logical Operators` ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Simple Pattern-Based Searching Using Logical Operators| ).
 
     DATA(str_x) = `abc_def_ghi`.
 
@@ -1587,11 +1890,12 @@ CLASS zcl_demo_abap_string_proc IMPLEMENTATION.
       out->write( |NP: The string covers the pattern. |
       && |The offset is { sy-fdpos }.| ).
     ENDIF.
+  ENDMETHOD.
 
-***********************************************************************
+  METHOD m27_search_regex.
 
-    out->write( zcl_demo_abap_aux=>heading( `25) Complex Searching Using ` &&
-    `Regular Expressions` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Complex Searching Using Regular Expressions| ).
+
     "Also note the cheat sheet example on regular expressions in ABAP.
 
     DATA(str_y) = `Cathy's black cat was fast asleep on the mat. ` &&
@@ -1733,10 +2037,11 @@ CLASS zcl_demo_abap_string_proc IMPLEMENTATION.
     out->write( data = res_y16 name = `res_y16` ).
     out->write( |\n| ).
     out->write( data = tab_y17 name = `tab_y17` ).
+  ENDMETHOD.
 
-***********************************************************************
+  METHOD m28_replacements_using_regex.
 
-    out->write( zcl_demo_abap_aux=>heading( `26) Replacing Using Regular Expressions` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Replacing Using Regular Expressions| ).
 
     DATA(str_z) = `Cathy's black cat was fast asleep on the mat. ` &&
                    `Later that day, the cat played with Matt.`.
@@ -1980,10 +2285,11 @@ CLASS zcl_demo_abap_string_proc IMPLEMENTATION.
     out->write( data = itab_z name = `itab_z` ).
     out->write( |\n| ).
     out->write( data = |Number of replacements in itab (cnt_z26): { cnt_z26 }| ).
+  ENDMETHOD.
 
-***********************************************************************
+  METHOD m29_regex_system_classes.
 
-    out->write( zcl_demo_abap_aux=>heading( `27) Excursion: System Classes for Regular Expressions` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: System Classes for Regular Expressions| ).
 
     "Searching for all occurrences
     DATA(some_string) = `a1 # B2 ? cd . E3`.
@@ -2027,12 +2333,12 @@ CLASS zcl_demo_abap_string_proc IMPLEMENTATION.
     ENDIF.
 
     out->write( data = str_tab_reg_find name = `str_tab_reg_find` ).
+  ENDMETHOD.
 
-***********************************************************************
+  METHOD m30_distance_function.
 
-    out->write( zcl_demo_abap_aux=>heading( `More String Functions` ) ).
-    out->write( `29) Checking the Similarity of Strings` ).
-    out->write( |\n| ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Checking the Similarity of Strings| ).
+
 
     DATA(str_to_check) = `abap`.
     DATA(dist1) = distance( val1 = str_to_check val2 = `abap` ).
@@ -2055,10 +2361,11 @@ CLASS zcl_demo_abap_string_proc IMPLEMENTATION.
       CATCH cx_sy_strg_par_val INTO DATA(dist_err).
         out->write( data = dist_err->get_text( ) name = `dist_err->get_text( )` ).
     ENDTRY.
+  ENDMETHOD.
 
-***********************************************************************
+  METHOD m31_repeat_function.
 
-    out->write( zcl_demo_abap_aux=>heading( `30) Repeating Strings` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Repeating Strings| ).
 
     DATA(repeat1) = repeat( val = `abap` occ = 5 ).
     DATA(repeat2) = |#{ repeat( val = ` ` occ = 10 ) }#|.
@@ -2077,10 +2384,11 @@ CLASS zcl_demo_abap_string_proc IMPLEMENTATION.
       CATCH cx_sy_strg_par_val INTO DATA(rep_err).
         out->write( data = rep_err->get_text( ) name = `rep_err->get_text( )` ).
     ENDTRY.
+  ENDMETHOD.
 
-***********************************************************************
+  METHOD m32_cmin_cmax_functions.
 
-    out->write( zcl_demo_abap_aux=>heading( `31) Returning the Smallest/Biggest of a Set of Character-Like Arguments` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Returning the Smallest/Biggest of a Set of Character-Like Arguments| ).
 
     DATA(min) =  cmin( val1 = `zzzzzzz`
                    val2 = `zzazzzzzzzz`
@@ -2096,10 +2404,11 @@ CLASS zcl_demo_abap_string_proc IMPLEMENTATION.
     out->write( data = min name = `min` ).
     out->write( |\n| ).
     out->write( data = max name = `max` ).
+  ENDMETHOD.
 
-***********************************************************************
+  METHOD m33_escape_function.
 
-    out->write( zcl_demo_abap_aux=>heading( `32) Escaping Special Characters` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Escaping Special Characters| ).
 
     "Context: URLs
     DATA(esc1) = escape( val    = '...test: 5@8...'
@@ -2128,9 +2437,11 @@ CLASS zcl_demo_abap_string_proc IMPLEMENTATION.
         out->write( data = esc_err->get_text( ) name = `esc_err->get_text( )` ).
     ENDTRY.
 
-***********************************************************************
+  ENDMETHOD.
 
-    out->write( zcl_demo_abap_aux=>heading( `33) Excursion: String Processing Using the XCO Library` ) ).
+  METHOD m34_string_processing_xco.
+
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Excursion: String Processing Using the XCO Library| ).
 
     "--------- Extracting a substring from a string ---------
     DATA(abc) = `abcdefghijklmnopqrstuvwxyz`.
@@ -2283,11 +2594,13 @@ CLASS zcl_demo_abap_string_proc IMPLEMENTATION.
 
     out->write( data = match name = `match` ).
 
-***********************************************************************
+  ENDMETHOD.
 
-    "------------------------ Byte String Processing ------------------------
+  METHOD m35_byte_string_processing.
 
-    out->write( zcl_demo_abap_aux=>heading( `34) Determining the Length of xstrings` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Byte String Processing| ).
+
+    "--- Determining the Length of xstrings ---
 
     DATA(hi) = `Hello world`.
 
@@ -2301,7 +2614,7 @@ CLASS zcl_demo_abap_string_proc IMPLEMENTATION.
 
 ***********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `35) Character String and Byte String Processing with ABAP Statements` ) ).
+    "--- Character String and Byte String Processing with ABAP Statements ---
 
     DATA off TYPE i.
     DATA(abc_str) = `abc def ghi jkl mno pqr stu vwx yz`.
@@ -2433,8 +2746,6 @@ CLASS zcl_demo_abap_string_proc IMPLEMENTATION.
 
     SPLIT test_xstr AT blank_xstr INTO DATA(xstr1) DATA(xstr2) IN BYTE MODE.
     SPLIT test_xstr AT blank_xstr INTO TABLE DATA(xstr_tab) IN BYTE MODE.
-
-    out->write( zcl_demo_abap_aux=>no_output ).
-
   ENDMETHOD.
+
 ENDCLASS.

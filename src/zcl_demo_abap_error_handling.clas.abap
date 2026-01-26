@@ -3,9 +3,11 @@
 "! <p>The example class demonstrates syntax and concepts related to exceptions and runtime errors.<br/>
 "! Choose F9 in ADT to run the class.</p>
 "!
-"! <h2>Information</h2>
-"! <p>Find information on getting started with the example class and the disclaimer in
-"! the ABAP Doc comment of class {@link zcl_demo_abap_aux}.</p>
+"! <h2>Note</h2>
+"! <p>Find the following information in the ABAP Doc comment of class {@link zcl_demo_abap_aux}:</p>
+"! <ul><li>How to get started with the example class</li>
+"! <li>Structuring of (most of) the example classes</li>
+"! <li>Disclaimer</li></ul>
 CLASS zcl_demo_abap_error_handling DEFINITION
   PUBLIC
   FINAL
@@ -13,6 +15,18 @@ CLASS zcl_demo_abap_error_handling DEFINITION
 
   PUBLIC SECTION.
     INTERFACES if_oo_adt_classrun.
+
+    METHODS:
+      m01_exception_categories  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m02_raise_cl_based_exceptions  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m03_try_excursions  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m04_cleanup  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m05_retry  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m06_resume  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m07_message  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m08_raise_exception_throw  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m09_excursions  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m10_raise_runtime_errors IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string.
 
     CLASS-METHODS meth_a
       IMPORTING num TYPE i
@@ -45,8 +59,38 @@ ENDCLASS.
 CLASS zcl_demo_abap_error_handling IMPLEMENTATION.
   METHOD if_oo_adt_classrun~main.
 
-    out->write( |ABAP cheat sheet example: Exceptions and Runtime Errors\n\n| ).
-    out->write( `1) Exception Categories` ).
+    zcl_demo_abap_aux=>set_example_divider(
+      out  = out
+      text = `ABAP cheat sheet example: Exceptions and Runtime Errors`
+    ).
+
+    "Dynamically calling methods of the class
+    "The method names are retrieved using RTTI. For more information, refer to the
+    "Dynamic Programming ABAP cheat sheet.
+    "Only those methods should be called that follow the naming convention M + digit.
+    DATA(methods) = CAST cl_abap_classdescr( cl_abap_typedescr=>describe_by_object_ref( me ) )->methods.
+    SORT methods BY name ASCENDING.
+
+    "To call a particular method only, you can comment in the WHERE clause and
+    "adapt the literal appropriately.
+    LOOP AT methods INTO DATA(meth_wa)
+    "WHERE name CS 'M01'
+    .
+      TRY.
+          "The find function result indicates that the method name begins (offset = 0) with M and a digit.
+          IF find( val = meth_wa-name pcre = `^M\d` case = abap_false ) = 0.
+            CALL METHOD (meth_wa-name) EXPORTING out = out text = CONV string( meth_wa-name ).
+          ENDIF.
+        CATCH cx_root INTO DATA(error).
+          out->write( error->get_text( ) ).
+      ENDTRY.
+    ENDLOOP.
+  ENDMETHOD.
+
+
+  METHOD m01_exception_categories.
+
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Exception Categories| ).
 
     "Method specifying an exception class that inherits from CX_DYNAMIC_CHECK
 
@@ -71,10 +115,11 @@ CLASS zcl_demo_abap_error_handling IMPLEMENTATION.
         DATA(uuid2) = get_uuid( ).
       CATCH cx_uuid_error.
     ENDTRY.
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m02_raise_cl_based_exceptions.
 
-    out->write( zcl_demo_abap_aux=>heading( `2) Raising Class-Based Exceptions` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Raising Class-Based Exceptions| ).
 
     "Note: The examples show a selection. More additions are available.
     "Some are demonstrated further down.
@@ -152,10 +197,11 @@ CLASS zcl_demo_abap_error_handling IMPLEMENTATION.
           EXIT.
       ENDTRY.
     ENDDO.
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m03_try_excursions.
 
-    out->write( zcl_demo_abap_aux=>heading( `3) Excursions with TRY control structures` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Excursions with TRY control structures| ).
 
     "TRY control structures are meant for handling catchable exceptions locally
     "The example shows divisions. The predefined exception class cx_sy_zerodivide
@@ -313,12 +359,12 @@ CLASS zcl_demo_abap_error_handling IMPLEMENTATION.
             DATA(powers) = ipow( base = 10 exp = 100 ).
           ENDIF.
         CATCH cx_sy_arithmetic_error INTO DATA(error_arithm).
-          DATA(text) = error_arithm->get_text( ).
+          DATA(txt) = error_arithm->get_text( ).
           "Using RTTI to retrieve the relative name of the class
           DATA(cl_name) = CAST cl_abap_classdescr(
             cl_abap_typedescr=>describe_by_object_ref( error_arithm ) )->get_relative_name( ).
 
-          out->write( text ).
+          out->write( txt ).
           out->write( cl_name ).
       ENDTRY.
     ENDDO.
@@ -354,7 +400,7 @@ CLASS zcl_demo_abap_error_handling IMPLEMENTATION.
 
     DATA(acc_err) = CAST cx_root( err3 ).
     WHILE acc_err IS BOUND.
-      DATA(txt) = acc_err->get_text( ).
+      DATA(t) = acc_err->get_text( ).
 
       acc_err->get_source_position(
         IMPORTING
@@ -371,7 +417,7 @@ CLASS zcl_demo_abap_error_handling IMPLEMENTATION.
 
       "Populating the info table
       APPEND |--------------- { sy-index } ---------------| TO info.
-      APPEND |Text: { txt }| TO info.
+      APPEND |Text: { t }| TO info.
       APPEND |Position of raised exception: { prog_name } / { incl_name } / { src_line }| TO info.
       APPEND |Exception class name: { cl_relative_name }| TO info.
       APPEND |Superclass of exception class: { superclass }| TO info.
@@ -385,10 +431,11 @@ CLASS zcl_demo_abap_error_handling IMPLEMENTATION.
     ENDWHILE.
 
     out->write( data = info name = `info` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m04_cleanup.
 
-    out->write( zcl_demo_abap_aux=>heading( `4) CLEANUP` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: CLEANUP| ).
 
     "The following example shows nested TRY control structures.
     "The inner TRY control structure includes a CLEANUP block.
@@ -479,10 +526,11 @@ CLASS zcl_demo_abap_error_handling IMPLEMENTATION.
     ENDDO.
 
     out->write( data = info_tab_b name = `info_tab_b` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m05_retry.
 
-    out->write( zcl_demo_abap_aux=>heading( `5) RETRY` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: RETRY| ).
 
     "The following example includes a division of 1 by another number.
     "In a DO loop 1 is divided by all numbers from 10 to -10.
@@ -522,10 +570,11 @@ CLASS zcl_demo_abap_error_handling IMPLEMENTATION.
     ENDDO.
 
     out->write( data = division_result_tab name = `division_result_tab` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m06_resume.
 
-    out->write( zcl_demo_abap_aux=>heading( `6) RESUME` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: RESUME| ).
 
     DATA restab TYPE string_table.
     TYPES ty_inttab TYPE TABLE OF i WITH EMPTY KEY.
@@ -550,10 +599,11 @@ CLASS zcl_demo_abap_error_handling IMPLEMENTATION.
     ENDLOOP.
 
     out->write( data = restab name = `restab` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m07_message.
 
-    out->write( zcl_demo_abap_aux=>heading( `7) MESSAGE` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: MESSAGE| ).
 
     "The following examples demonstrate several MESSAGE statements.
     TYPES c50 TYPE c LENGTH 50.
@@ -618,10 +668,12 @@ CLASS zcl_demo_abap_error_handling IMPLEMENTATION.
     ENDDO.
 
     out->write( data = messages name = `messages` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m08_raise_exception_throw.
 
-    out->write( zcl_demo_abap_aux=>heading( `8) Syntax Variants of RAISE EXCEPTION/THROW` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Syntax Variants of RAISE EXCEPTION/THROW| ).
+
 
     "In the example, the RAISE EXCEPTION/THROW statements are implemented in a method.
     "Depending on a value, specific statements are called.
@@ -680,11 +732,13 @@ CLASS zcl_demo_abap_error_handling IMPLEMENTATION.
 
     out->write( data = tab_exception_info name = `tab_exception_info` ).
 
-**********************************************************************
+  ENDMETHOD.
 
-    out->write( zcl_demo_abap_aux=>heading( `9) Excursions` ) ).
+  METHOD m09_excursions.
 
-    "Exploring the inheritance tree of exception classes
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Excursions| ).
+
+      "Exploring the inheritance tree of exception classes
     DATA inheritance_tree TYPE string_table.
 
     DATA(class_name_table) = VALUE string_table( ( `CX_SY_ZERODIVIDE` )
@@ -784,22 +838,22 @@ CLASS zcl_demo_abap_error_handling IMPLEMENTATION.
         out->write( data = error_text name = `error_text` ).
     ENDTRY.
 
-**********************************************************************
+  ENDMETHOD.
 
-    out->write( zcl_demo_abap_aux=>heading( `10) Programmatically Raising Runtime Erros` ) ).
+  METHOD m10_raise_runtime_errors.
+
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Programmatically Raising Runtime Erros| ).
 
     out->write( `Obviously, the statements raising a runtime error are commented out :)` ).
 
-
-    "RAISE SHORTDUMP TYPE cx_sy_zerodivide.
+*    RAISE SHORTDUMP TYPE cx_sy_zerodivide.
 
     DATA(flag) = abap_true.
-    "DATA(cond_w_throw_shortdump) = COND #( WHEN flag IS INITIAL THEN `works`
-    "                                       ELSE THROW SHORTDUMP zcx_demo_abap_error_b( ) ).
+*    DATA(cond_w_throw_shortdump) = COND #( WHEN flag IS INITIAL THEN `works`
+*                                           ELSE THROW SHORTDUMP zcx_demo_abap_error_b( ) ).
 
-    "DATA(switch_w_throw_shortdump) = SWITCH #( flag WHEN '' THEN `works`
-    "                                           ELSE THROW SHORTDUMP zcx_demo_abap_error_b( ) ).
-
+*    DATA(switch_w_throw_shortdump) = SWITCH #( flag WHEN '' THEN `works`
+*                                               ELSE THROW SHORTDUMP zcx_demo_abap_error_b( ) ).
 
     DATA(number) = 0.
     ASSERT number IS INITIAL.
@@ -808,25 +862,10 @@ CLASS zcl_demo_abap_error_handling IMPLEMENTATION.
     ASSERT number = 1.
 
     flag = abap_false.
-    "ASSERT flag = abap_true.
+*    ASSERT flag = abap_true.
   ENDMETHOD.
 
-  METHOD meth_resumable.
-
-    IF num2 = 0 AND num1 <> 0.
-      RAISE RESUMABLE EXCEPTION TYPE zcx_demo_abap_error_b.
-      div_result = `No result. Resumed!`.
-    ELSE.
-      div_result = num1 / num2.
-    ENDIF.
-
-    "Statement with COND operator using RESUMABLE
-    "div_result = COND #( WHEN num2 = 0 AND num1 <> 0 THEN num1 / num2
-    "                     ELSE THROW RESUMABLE zcx_demo_abap_error( ) ).
-
-  ENDMETHOD.
-
-  METHOD meth_a.
+   METHOD meth_a.
     "Note: A selection of additions is covered.
 
     DATA(flag) = 'X'.
@@ -1071,6 +1110,21 @@ CLASS zcl_demo_abap_error_handling IMPLEMENTATION.
     ENDCASE.
   ENDMETHOD.
 
+  METHOD meth_resumable.
+
+    IF num2 = 0 AND num1 <> 0.
+      RAISE RESUMABLE EXCEPTION TYPE zcx_demo_abap_error_b.
+      div_result = `No result. Resumed!`.
+    ELSE.
+      div_result = num1 / num2.
+    ENDIF.
+
+    "Statement with COND operator using RESUMABLE
+    "div_result = COND #( WHEN num2 = 0 AND num1 <> 0 THEN num1 / num2
+    "                     ELSE THROW RESUMABLE zcx_demo_abap_error( ) ).
+
+  ENDMETHOD.
+
   METHOD divide.
     div_result = num1 / num2.
   ENDMETHOD.
@@ -1078,5 +1132,4 @@ CLASS zcl_demo_abap_error_handling IMPLEMENTATION.
   METHOD get_uuid.
     uuid = cl_system_uuid=>create_uuid_x16_static( ).
   ENDMETHOD.
-
 ENDCLASS.

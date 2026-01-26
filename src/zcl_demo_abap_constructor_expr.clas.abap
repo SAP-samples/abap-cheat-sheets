@@ -4,13 +4,10 @@
 "! Choose F9 in ADT to run the class.</p>
 "!
 "! <h2>Note</h2>
-"! <ul><li>Topics covered:<ul>
-"! <li>Operators VALUE, CORRESPONDING, NEW, CONV, EXACT, REF,
-"! CAST, COND, SWITCH, FILTER, REDUCE</li>
-"! <li>Iteration expressions with FOR</li>
-"! <li>LET expressions</li></ul>
-"! <li>Find information on <strong>getting started with the example class</strong> and the
-"! <strong>disclaimer</strong> in the ABAP Doc comment of class {@link zcl_demo_abap_aux}.</li></ul>
+"! <p>Find the following information in the ABAP Doc comment of class {@link zcl_demo_abap_aux}:</p>
+"! <ul><li>How to get started with the example class</li>
+"! <li>Structuring of (most of) the example classes</li>
+"! <li>Disclaimer</li></ul>
 CLASS zcl_demo_abap_constructor_expr DEFINITION
   PUBLIC
   FINAL
@@ -18,9 +15,39 @@ CLASS zcl_demo_abap_constructor_expr DEFINITION
 
   PUBLIC SECTION.
     INTERFACES: if_oo_adt_classrun.
+    METHODS:
+      m01_value_structures  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m02_value_itab  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m03_value_initial  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m04_value_short  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m05_value_in_use  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m06_value_deep  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m07_corresponding  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m08_new_anonymous_dobj  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m09_new_instances  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m10_conv  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m11_exact  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m12_ref  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m13_cast  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m14_cond  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m15_switch  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m16_filter  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m17_iteration_expr_for  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m18_reduce  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m19_let_expr  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string.
 
   PROTECTED SECTION.
   PRIVATE SECTION.
+
+    TYPES: BEGIN OF struc_type,
+             num   TYPE i,
+             char1 TYPE c LENGTH 3,
+             char2 TYPE c LENGTH 3,
+           END OF struc_type.
+
+    TYPES: itab_type TYPE STANDARD TABLE OF struc_type
+                         WITH NON-UNIQUE KEY num.
+
     TYPES: BEGIN OF line1,
              col1 TYPE i,
              col2 TYPE i,
@@ -82,7 +109,6 @@ ENDCLASS.
 
 CLASS zcl_demo_abap_constructor_expr IMPLEMENTATION.
 
-
   METHOD fill_deep_structures.
     "Clearing all contents of struc2
     CLEAR struc2.
@@ -105,7 +131,6 @@ CLASS zcl_demo_abap_constructor_expr IMPLEMENTATION.
     "Filling individual component that is not shared by both structures
     struc2-comp4 = 999.
   ENDMETHOD.
-
 
   METHOD fill_struc_and_tab.
     CLEAR: s1, s2, tab1, tab2, tab3.
@@ -134,24 +159,46 @@ CLASS zcl_demo_abap_constructor_expr IMPLEMENTATION.
     tab4 = tab3.
   ENDMETHOD.
 
-
   METHOD if_oo_adt_classrun~main.
 
-    out->write( `ABAP Cheat Sheet Example: Constructor Expressions` ).
+    zcl_demo_abap_aux=>set_example_divider(
+       out  = out
+       text = `ABAP Cheat Sheet Example: Constructor Expressions`
+     ).
 
-    out->write( |\nVALUE\n| ).
-    out->write( |1) Structures: Populating a flat structure\n\n| ).
+    "Dynamically calling methods of the class
+    "The method names are retrieved using RTTI. For more information, refer to the
+    "Dynamic Programming ABAP cheat sheet.
+    "Only those methods should be called that follow the naming convention M + digit.
+    DATA(methods) = CAST cl_abap_classdescr( cl_abap_typedescr=>describe_by_object_ref( me ) )->methods.
+    SORT methods BY name ASCENDING.
+
+    LOOP AT methods INTO DATA(meth_wa).
+      TRY.
+          "The find function result indicates that the method name begins (offset = 0) with M and a digit.
+          IF find( val = meth_wa-name pcre = `^M\d` case = abap_false ) = 0.
+            CALL METHOD (meth_wa-name) EXPORTING out = out text = CONV string( meth_wa-name ).
+          ENDIF.
+        CATCH cx_root INTO DATA(error).
+          out->write( error->get_text( ) ).
+      ENDTRY.
+    ENDLOOP.
+
+  ENDMETHOD.
+
+  METHOD m01_value_structures.
+
+    zcl_demo_abap_aux=>set_example_divider(
+       out  = out
+       text = |{ text }: VALUE (Structures)|
+     ).
+
+    "--- Structures: Populating a flat structure ---
 
     "A flat structure is created based on a data type defined with a
     "TYPES statement. The structure is then filled using a constructor
     "expression with VALUE by specifying the components and assigning
     "values. Here, the type can be inferred, hence, a # character can be used.
-
-    TYPES: BEGIN OF struc_type,
-             num   TYPE i,
-             char1 TYPE c LENGTH 3,
-             char2 TYPE c LENGTH 3,
-           END OF struc_type.
 
     DATA struc TYPE struc_type.
 
@@ -160,9 +207,7 @@ CLASS zcl_demo_abap_constructor_expr IMPLEMENTATION.
 
     out->write( data = struc name = `struc` ).
 
-**********************************************************************
-
-    out->write( zcl_demo_abap_aux=>heading( `2) Structures: Omitting value assignment to components / BASE addition` ) ).
+    "--- Structures: Omitting value assignment to components / BASE addition ---
 
     "The same structure is then filled purposely omitting components, i.
     "e. these components remain initial.
@@ -179,9 +224,7 @@ CLASS zcl_demo_abap_constructor_expr IMPLEMENTATION.
     out->write( |\n| ).
     out->write( data = struc name = `struc` ).
 
-**********************************************************************
-
-    out->write( zcl_demo_abap_aux=>heading( `3) Structures: Inline declaration, explicit type specification` ) ).
+    "--- Structures: Inline declaration, explicit type specification ---
 
     "The example demonstrates a variable that is declared inline. Here,
     "the result is a structure which is filled using a constructor
@@ -196,9 +239,15 @@ CLASS zcl_demo_abap_constructor_expr IMPLEMENTATION.
 
     out->write( data = struc_inl name = `struc_inl` ).
 
-**********************************************************************
+  ENDMETHOD.
 
-    out->write( zcl_demo_abap_aux=>heading( `4) Internal tables: Declaration and population` ) ).
+  METHOD m02_value_itab.
+    zcl_demo_abap_aux=>set_example_divider(
+         out  = out
+         text = |{ text }: VALUE (Internal Tables)|
+       ).
+
+    "--- Internal tables: Declaration and population ---
 
     "The example demonstrates the declaration of an internal table. The
     "internal table is then filled using a constructor expression with
@@ -216,17 +265,12 @@ CLASS zcl_demo_abap_constructor_expr IMPLEMENTATION.
 
     out->write( data = itab name = `itab` ).
 
-**********************************************************************
-
-    out->write( zcl_demo_abap_aux=>heading( `5) Internal tables: Inline declaration, explicit type specification` ) ).
+    "--- Internal tables: Inline declaration, explicit type specification ---
 
     "The example demonstrates an internal table declared inline that is
     "filled using a constructor expression with VALUE by specifying the
     "internal table type explicitly. Note that the internal table type
     "cannot be generic in this context.
-
-    TYPES: itab_type TYPE STANDARD TABLE OF struc_type
-                        WITH NON-UNIQUE KEY num.
 
     DATA(itab2) = VALUE itab_type(
                     ( num = 4 char1 = 'ddd' char2 = 'ghi' )
@@ -242,9 +286,7 @@ CLASS zcl_demo_abap_constructor_expr IMPLEMENTATION.
     out->write( |\n| ).
     out->write( data = str_table name = `str_table` ).
 
-**********************************************************************
-
-    out->write( zcl_demo_abap_aux=>heading( `6) LINES OF addition` ) ).
+    "--- LINES OF addition ---
 
     "Using the LINES OF addition, you can add lines of other tables.
     "Note: The line type of the other internal table must match the one of
@@ -258,9 +300,7 @@ CLASS zcl_demo_abap_constructor_expr IMPLEMENTATION.
 
     out->write( data = itab2 name = `itab2` ).
 
-**********************************************************************
-
-    out->write( zcl_demo_abap_aux=>heading( `7) BASE addition for keeping existing data` ) ).
+    "--- BASE addition for keeping existing data ---
 
     "Using the BASE addition, you can keep existing content of the source
     "internal table.
@@ -269,9 +309,13 @@ CLASS zcl_demo_abap_constructor_expr IMPLEMENTATION.
 
     out->write( data = itab2 name = `itab2` ).
 
-**********************************************************************
+  ENDMETHOD.
 
-    out->write( zcl_demo_abap_aux=>heading( `8) Assignemnt with the VALUE operator without specifying content in parentheses` ) ).
+  METHOD m03_value_initial.
+    zcl_demo_abap_aux=>set_example_divider(
+         out  = out
+         text = |{ text }: Assignemnt with the VALUE operator without specifying content in parentheses|
+       ).
 
     "Using the VALUE operator without populating anything in the parentheses,
     "data objects are initialized.
@@ -286,7 +330,9 @@ CLASS zcl_demo_abap_constructor_expr IMPLEMENTATION.
     some_str = VALUE #( ).
 
     "Initializing internal table/structure
+    DATA(str_table) = VALUE string_table( ( `hello` ) ).
     str_table = VALUE #( ).
+    DATA(struc) = VALUE struc_type( num = 1 char1 = 'aaa' char2 = 'bbb' ).
     struc = VALUE #( ).
 
     out->write( data = some_num name = `some_num` ).
@@ -298,10 +344,13 @@ CLASS zcl_demo_abap_constructor_expr IMPLEMENTATION.
     out->write( data = str_table name = `str_table` ).
     out->write( |\n| ).
     out->write( data = struc name = `struc` ).
+  ENDMETHOD.
 
-**********************************************************************
-
-    out->write( zcl_demo_abap_aux=>heading( `9) Short form for internal tables with structured line types` ) ).
+  METHOD m04_value_short.
+    zcl_demo_abap_aux=>set_example_divider(
+         out  = out
+         text = |{ text }: Short form for internal tables with structured line types|
+       ).
 
     TYPES: BEGIN OF stype,
              a TYPE i,
@@ -341,39 +390,41 @@ CLASS zcl_demo_abap_constructor_expr IMPLEMENTATION.
         INTO TABLE @DATA(result_tab).
 
     out->write( data = result_tab name = `result_tab` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m05_value_in_use.
+    zcl_demo_abap_aux=>set_example_divider(
+         out  = out
+         text = |{ text }: VALUE operator in use with ABAP statements and ABAP SQL statements|
+       ).
 
-    out->write( zcl_demo_abap_aux=>heading( `Excursions: VALUE operator in use with ABAP statements and ABAP SQL statements` ) ).
+    DATA(itab2) = VALUE itab_type(
+                        ( num = 1 char1 = 'aaa' char2 = 'bbb' )
+                        ( num = 2 char1 = 'ccc'  char2 = 'ddd' )
+                        ( num = 3 char1 = 'eee'  char2 = 'fff' ) ).
 
     "The following examples use ABAP and ABAP SQL statements in which table lines
     "are constructed inline using the VALUE operator.
 
-    out->write( `10) Modifying internal table from a structure created inline` && |\n\n| ).
+    "--- Modifying internal table from a structure created inline ---
 
     MODIFY TABLE itab2 FROM VALUE #( num   = 7 char1 = 'hhh' char2 = 'stu' ).
 
     out->write( data = itab2 name = `itab2` ).
 
-**********************************************************************
-
-    out->write( zcl_demo_abap_aux=>heading( `11) Inserting a table line that is created inline into an internal table` ) ).
+    "--- Inserting a table line that is created inline into an internal table ---
 
     INSERT VALUE #( num = 8 char1 = 'iii'  char2 = 'vwx' ) INTO TABLE itab2.
 
     out->write( data = itab2 name = `itab2` ).
 
-**********************************************************************
-
-    out->write( zcl_demo_abap_aux=>heading( `12) Deleting a table entry based on a line created inline` ) ).
+    "--- Deleting a table entry based on a line created inline ---
 
     DELETE TABLE itab2 FROM VALUE #( num = 3 ).
 
     out->write( data = itab2 name = `itab2` ).
 
-**********************************************************************
-
-    out->write( zcl_demo_abap_aux=>heading( `13) Modifying a database table based on an internal table created inline` ) ).
+    "--- Modifying a database table based on an internal table created inline ---
 
     "Deleting demo database table entries for the following example
     DELETE FROM zdemo_abap_carr.
@@ -386,8 +437,7 @@ CLASS zcl_demo_abap_constructor_expr IMPLEMENTATION.
            ( carrid = 'SQ'
              carrname = 'Singapore Airlines'
              currcode = 'SGD'
-             url =  'http://www.singaporeair.com' )
-           ) ).
+             url =  'http://www.singaporeair.com' ) ) ).
 
     "Retrieving table entries for display purposes
     SELECT FROM zdemo_abap_carr
@@ -396,11 +446,15 @@ CLASS zcl_demo_abap_constructor_expr IMPLEMENTATION.
            INTO TABLE @DATA(itab_carr).
 
     out->write( data = itab_carr name = `itab_carr` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m06_value_deep.
+    zcl_demo_abap_aux=>set_example_divider(
+         out  = out
+         text = |{ text }: Deep structures and tables|
+       ).
 
-    out->write( zcl_demo_abap_aux=>heading( `Excursion: Deep structures and tables` ) ).
-    out->write( |14) Deep structure\n| ).
+    "--- Deep structure ---
 
     "The example demonstrates the use of constructor expressions with
     "VALUE in the context of a deep structure. Here, a structure is declared
@@ -422,9 +476,7 @@ CLASS zcl_demo_abap_constructor_expr IMPLEMENTATION.
 
     out->write( data = deep_struc name = `deep_struc` ).
 
-**********************************************************************
-
-    out->write( zcl_demo_abap_aux=>heading( `15) Deep internal table` ) ).
+    "--- Deep internal table ---
 
     "A deep internal table is created. Also here, nested VALUE
     "expressions are demonstrated.
@@ -443,16 +495,19 @@ CLASS zcl_demo_abap_constructor_expr IMPLEMENTATION.
 
     out->write( data = deep_itab name = `deep_itab` ).
 
-**********************************************************************
+  ENDMETHOD.
 
-    out->write( zcl_demo_abap_aux=>heading( `CORRESPONDING` ) ).
-    out->write( |Simple Examples with structures and internal tables\n| ).
+  METHOD m07_corresponding.
+    zcl_demo_abap_aux=>set_example_divider(
+         out  = out
+         text = |{ text }: CORRESPONDING|
+       ).
 
     "Method to fill demo structures and internal tables
     "with values to work with
     fill_struc_and_tab( ).
 
-    out->write( `16) Original structure and table content` && |\n\n| ).
+    "Original structure and table content
 
     "Displaying the original structures and tables that are filled in the
     "course of a method call. The structures and tables are filled anew
@@ -467,9 +522,7 @@ CLASS zcl_demo_abap_constructor_expr IMPLEMENTATION.
     out->write( |\n| ).
     out->write( data = tab2 name = `it_st` ).
 
-**********************************************************************
-
-    out->write( zcl_demo_abap_aux=>heading( `17) CORRESPONDING without addition` ) ).
+    "--- CORRESPONDING without addition ---
 
     "The target structure and table have a different type but identically
     "named components. The identically named components are filled. Note
@@ -486,9 +539,7 @@ CLASS zcl_demo_abap_constructor_expr IMPLEMENTATION.
     out->write( |\n| ).
     out->write( data = tab2 name = `tab2` ).
 
-**********************************************************************
-
-    out->write( zcl_demo_abap_aux=>heading( `18) BASE addition for keeping original content` ) ).
+    "--- BASE addition for keeping original content ---
 
     "The BASE addition keeps the original content. Structure: The non-
     "identical component name retains its value. Internal table: Existing
@@ -504,9 +555,7 @@ CLASS zcl_demo_abap_constructor_expr IMPLEMENTATION.
     out->write( |\n| ).
     out->write( data = tab2 name = `tab2` ).
 
-**********************************************************************
-
-    out->write( zcl_demo_abap_aux=>heading( `19) MAPPING/EXCEPT additions` ) ).
+    "--- MAPPING/EXCEPT additions ---
 
     "The example demonstrates the additions MAPPING and EXCEPT. MAPPING:
     "One component of the target structure is assigned the value of a
@@ -523,12 +572,7 @@ CLASS zcl_demo_abap_constructor_expr IMPLEMENTATION.
     out->write( |\n| ).
     out->write( data = tab2 name = `tab2` ).
 
-**********************************************************************
-
-    out->write( zcl_demo_abap_aux=>heading( `CORRESPONDING: Demonstrating various` &&
-    ` additions using deep structures` ) ).
-
-    out->write( `20) Original content of deep structures` && |\n\n| ).
+    "--- Demonstrating various additions using deep structures ---
 
     "Displaying the original deep structures and tables that are filled in
     "the course of a method call. The deep structures and tables are filled
@@ -543,9 +587,7 @@ CLASS zcl_demo_abap_constructor_expr IMPLEMENTATION.
     out->write( |\n| ).
     out->write( data = struc2 name = `struc2` ).
 
-**********************************************************************
-
-    out->write( zcl_demo_abap_aux=>heading( `21) CORRESPONDING without addition` ) ).
+    "CORRESPONDING without addition
 
     "CORRESPONDING operator without addition
     "Existing contents of identically named components are replaced.
@@ -566,9 +608,7 @@ CLASS zcl_demo_abap_constructor_expr IMPLEMENTATION.
 
     out->write( data = struc2 name = `struc2` ).
 
-**********************************************************************
-
-    out->write( zcl_demo_abap_aux=>heading( `22) DEEP addition` ) ).
+    "--- DEEP addition ---
 
     "CORRESPONDING operator with the addition DEEP
     "Existing contents of identically named components are replaced.
@@ -589,9 +629,7 @@ CLASS zcl_demo_abap_constructor_expr IMPLEMENTATION.
 
     out->write( data = struc2 name = `struc2` ).
 
-**********************************************************************
-
-    out->write( zcl_demo_abap_aux=>heading( `23) BASE addition` ) ).
+    "--- BASE addition ---
 
     "CORRESPONDING operator with the addition BASE
     "Existing contents of identically named components are replaced.
@@ -615,9 +653,7 @@ CLASS zcl_demo_abap_constructor_expr IMPLEMENTATION.
 
     out->write( data = struc2 name = `struc2` ).
 
-**********************************************************************
-
-    out->write( zcl_demo_abap_aux=>heading( `24) DEEP BASE addition` ) ).
+    "--- DEEP BASE addition ---
 
     "CORRESPONDING operator with the additions DEEP BASE
     "Existing contents of identically named components are replaced.
@@ -639,9 +675,7 @@ CLASS zcl_demo_abap_constructor_expr IMPLEMENTATION.
 
     out->write( data = struc2 name = `struc2` ).
 
-**********************************************************************
-
-    out->write( zcl_demo_abap_aux=>heading( `25) APPENDING addition` ) ).
+    "--- APPENDING addition ---
 
     "CORRESPONDING operator with the addition APPENDING
     "Existing contents of identically named components are replaced.
@@ -665,9 +699,7 @@ CLASS zcl_demo_abap_constructor_expr IMPLEMENTATION.
 
     out->write( data = struc2 name = `struc2` ).
 
-**********************************************************************
-
-    out->write( zcl_demo_abap_aux=>heading( `26) DEEP APPENDING` ) ).
+    "--- DEEP APPENDING ---
 
     "CORRESPONDING operator with the additions DEEP APPENDING
     "Existing contents of identically named components are replaced.
@@ -689,11 +721,13 @@ CLASS zcl_demo_abap_constructor_expr IMPLEMENTATION.
     struc2 = CORRESPONDING #( DEEP APPENDING ( struc2 ) struc1 ).
 
     out->write( data = struc2 name = `struc2` ).
+  ENDMETHOD.
 
-**********************************************************************
-
-    out->write( zcl_demo_abap_aux=>heading( `NEW` ) ).
-    out->write( `27) Creating Anonymous Data Objects` && |\n\n| ).
+  METHOD m08_new_anonymous_dobj.
+    zcl_demo_abap_aux=>set_example_divider(
+         out  = out
+         text = |{ text }: NEW: Creating Anonymous Data Objects|
+       ).
 
     "The examples show the creation of anonymous data objects.
     "First, data reference variables are declared using a DATA statement.
@@ -753,10 +787,13 @@ CLASS zcl_demo_abap_constructor_expr IMPLEMENTATION.
     out->write( data = dref5 name = `dref5` ).
     out->write( |\n| ).
     out->write( data = dref6 name = `dref6` ).
+  ENDMETHOD.
 
-**********************************************************************
-
-    out->write( zcl_demo_abap_aux=>heading( `28) Creating Instances of Classes` ) ).
+  METHOD m09_new_instances.
+    zcl_demo_abap_aux=>set_example_divider(
+         out  = out
+         text = |{ text }: NEW: Creating Instances of Classes|
+       ).
 
     "The example demonstrates the creation of instances of classes.
     "First, an object reference variable is declared with a DATA statement.
@@ -797,10 +834,13 @@ CLASS zcl_demo_abap_constructor_expr IMPLEMENTATION.
 
     out->write( data = result name = `result` ).
     out->write( |\n| ).
+  ENDMETHOD.
 
-**********************************************************************
-
-    out->write( zcl_demo_abap_aux=>heading( `29) CONV` ) ).
+  METHOD m10_conv.
+    zcl_demo_abap_aux=>set_example_divider(
+         out  = out
+         text = |{ text }: CONV|
+       ).
 
     "The examples show the effect of the CONV operator.
     "A variable of type i is declared and assigned a value. Then,
@@ -878,9 +918,7 @@ CLASS zcl_demo_abap_constructor_expr IMPLEMENTATION.
     out->write( |\n| ).
     out->write( data = <it> name = `<it>` ).
 
-**********************************************************************
-
-    out->write( zcl_demo_abap_aux=>heading( `30) Constructing Data Objects with the CONV Operator` ) ).
+    "--- Constructing Data Objects with the CONV Operator ---
 
     DATA(decnum1) = CONV decfloat34( '0.4' ).
 
@@ -890,11 +928,13 @@ CLASS zcl_demo_abap_constructor_expr IMPLEMENTATION.
     DATA decnum3 TYPE decfloat34.
     decnum3 = '0.4'.
 
-    out->write( `No output for this section. See the code.` ).
+  ENDMETHOD.
 
-**********************************************************************
-
-    out->write( zcl_demo_abap_aux=>heading( `31) EXACT` ) ).
+  METHOD m11_exact.
+    zcl_demo_abap_aux=>set_example_divider(
+         out  = out
+         text = |{ text }: EXACT|
+       ).
 
     "-------------- Lossless assignments -------------
 
@@ -911,7 +951,6 @@ CLASS zcl_demo_abap_constructor_expr IMPLEMENTATION.
     out->write( |\n| ).
     out->write( data = as2 name = `as2` ).
     out->write( |\n| ).
-
 
     "Catching exception
     TRY.
@@ -940,10 +979,13 @@ CLASS zcl_demo_abap_constructor_expr IMPLEMENTATION.
       CATCH cx_sy_conversion_rounding INTO DATA(lc_err).
         out->write( data = lc_err->get_text( ) name = `lc_err->get_text( )` ).
     ENDTRY.
+  ENDMETHOD.
 
-**********************************************************************
-
-    out->write( zcl_demo_abap_aux=>heading( `32) REF` ) ).
+  METHOD m12_ref.
+    zcl_demo_abap_aux=>set_example_divider(
+         out  = out
+         text = |{ text }: REF|
+       ).
 
     "The example includes the declaration of a data object and some data
     "reference variables. One data reference variable is typed with a
@@ -985,10 +1027,13 @@ CLASS zcl_demo_abap_constructor_expr IMPLEMENTATION.
     out->write( data = dref_d name = `dref_d` ).
     out->write( |\n| ).
     out->write( data = oref_b name = `oref_b` ).
+  ENDMETHOD.
 
-**********************************************************************
-
-    out->write( zcl_demo_abap_aux=>heading( `33) CAST` ) ).
+  METHOD m13_cast.
+    zcl_demo_abap_aux=>set_example_divider(
+         out  = out
+         text = |{ text }: CAST|
+       ).
 
     "The example demonstrates the CAST operator in the context of Run Time
     "Type Identification (RTTI).
@@ -1038,10 +1083,13 @@ CLASS zcl_demo_abap_constructor_expr IMPLEMENTATION.
     out->write( data = components_s1 name = `components_s1` ).
     out->write( |\n| ).
     out->write( data = dref_i name = `dref_i` ).
+  ENDMETHOD.
 
-**********************************************************************
-
-    out->write( zcl_demo_abap_aux=>heading( `34) COND` ) ).
+  METHOD m14_cond.
+    zcl_demo_abap_aux=>set_example_divider(
+         out  = out
+         text = |{ text }: COND|
+       ).
 
     DATA(day_or_night) = COND #( WHEN cl_abap_context_info=>get_system_time( ) BETWEEN '050000' AND '220000'
                                  THEN `day`
@@ -1106,9 +1154,13 @@ CLASS zcl_demo_abap_constructor_expr IMPLEMENTATION.
 *      CATCH cx_sy_zerodivide.
 *    ENDTRY.
 
-**********************************************************************
+  ENDMETHOD.
 
-    out->write( zcl_demo_abap_aux=>heading( `35) SWITCH` ) ).
+  METHOD m15_switch.
+    zcl_demo_abap_aux=>set_example_divider(
+         out  = out
+         text = |{ text }: SWITCH|
+       ).
 
     "The example demonstrates the use of the SWITCH operator. Here,
     "calculations are carried out. For this
@@ -1161,10 +1213,13 @@ CLASS zcl_demo_abap_constructor_expr IMPLEMENTATION.
     ENDCASE.
 
     out->write( data = calc_result name = `calc_result` ).
+  ENDMETHOD.
 
-**********************************************************************
-
-    out->write( zcl_demo_abap_aux=>heading( `36) FILTER` ) ).
+  METHOD m16_filter.
+    zcl_demo_abap_aux=>set_example_divider(
+         out  = out
+         text = |{ text }: FILTER|
+       ).
 
     "This section covers multiple examples demonstrating the syntactical variety
     "of the FILTER operator.
@@ -1273,10 +1328,13 @@ CLASS zcl_demo_abap_constructor_expr IMPLEMENTATION.
 
     out->write( data = f11 name = `f11` ).
     out->write( |\n| ).
+  ENDMETHOD.
 
-**********************************************************************
-
-    out->write( zcl_demo_abap_aux=>heading(  `37) Iteration Expressions with FOR` ) ).
+  METHOD m17_iteration_expr_for.
+    zcl_demo_abap_aux=>set_example_divider(
+         out  = out
+         text = |{ text }: Iteration Expressions with FOR|
+       ).
 
     "Data objects and types to work with in the examples
     TYPES: BEGIN OF s,
@@ -1442,10 +1500,6 @@ CLASS zcl_demo_abap_constructor_expr IMPLEMENTATION.
     out->write( data = it13 name = `it13` ).
     out->write( |\n| ).
 
-**********************************************************************
-
-    out->write( zcl_demo_abap_aux=>heading( `38) More Examples with Iteration Expressions with FOR` ) ).
-
     "The examples demonstrate iteration expressions with FOR. The examples
     "are based on demo internal tables that are filled using a method. The
     "tables are displayed to show the original content of the internal
@@ -1576,10 +1630,13 @@ CLASS zcl_demo_abap_constructor_expr IMPLEMENTATION.
     out->write( data = for5 name = `for5` ).
     out->write( |\n| ).
     out->write( data = for6 name = `for6` ).
+  ENDMETHOD.
 
-**********************************************************************
-
-    out->write( zcl_demo_abap_aux=>heading( `39) REDUCE` ) ).
+  METHOD m18_reduce.
+    zcl_demo_abap_aux=>set_example_divider(
+         out  = out
+         text = |{ text }: REDUCE|
+       ).
 
     "Data objects and types to work with in the examples
     TYPES: BEGIN OF st,
@@ -1679,9 +1736,9 @@ CLASS zcl_demo_abap_constructor_expr IMPLEMENTATION.
     "to specify a helper variable.
     "Result: Counting downwards starting with 10: 10 9 8 7 6 5 4 3 2 1
     DATA(count) = REDUCE string( LET start = 10 IN
-                                 INIT text = |Counting downwards starting with { start }:|
+                                 INIT txt = |Counting downwards starting with { start }:|
                                  FOR n = start THEN n - 1 WHILE n > 0
-                                 NEXT text &&= | { n }| ).
+                                 NEXT txt &&= | { n }| ).
 
     out->write( data = count name = `count` ).
     out->write( |\n| ).
@@ -1689,9 +1746,9 @@ CLASS zcl_demo_abap_constructor_expr IMPLEMENTATION.
     "Example similar to the previous one. Using UNTIL, a text string is enlarged until
     "it has reached a specific size.
     "Result: ab abap abapap abapapap abapapapap abapapapapap abapapapapapap
-    DATA(abap_str) =  REDUCE string( INIT text = ``
+    DATA(abap_str) =  REDUCE string( INIT txt = ``
                                      FOR t = `ab` THEN t && `ap` UNTIL strlen( t ) > 15
-                                     NEXT text &&= |{ t } | ).
+                                     NEXT txt &&= |{ t } | ).
 
     out->write( data = abap_str name = `abap_str` ).
     out->write( |\n| ).
@@ -1759,10 +1816,13 @@ CLASS zcl_demo_abap_constructor_expr IMPLEMENTATION.
 
     out->write( data = it_reduced name = `it_reduced` ).
     out->write( |\n| ).
+  ENDMETHOD.
 
-**********************************************************************
-
-    out->write( zcl_demo_abap_aux=>heading( `40) LET Expressions` ) ).
+  METHOD m19_let_expr.
+    zcl_demo_abap_aux=>set_example_divider(
+         out  = out
+         text = |{ text }: LET Expressions|
+       ).
 
     "Data type and object to work with in the example
     TYPES: BEGIN OF st_type,
@@ -1864,11 +1924,7 @@ CLASS zcl_demo_abap_constructor_expr IMPLEMENTATION.
 
     out->write( data = str_tab name = `str_tab` ).
 
-**********************************************************************
-
-    out->write( zcl_demo_abap_aux=>heading( `41) More LET Examples` ) ).
-
-    "The examples demonstrate LET expressions in different contexts.
+    "The following examples demonstrate LET expressions in different contexts.
 
     "1) LET within a constructor expression with VALUE: The temporary
     "variable is assigned a value of type string and all lines of the

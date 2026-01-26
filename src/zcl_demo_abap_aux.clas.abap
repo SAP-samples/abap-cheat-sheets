@@ -15,6 +15,19 @@
 "! console. Alternatively, debug the class using the debugger to check the data
 "! objects' content and values.</li></ol>
 "!
+"! <h2>Example Structure</h2>
+"! <p>Most of the example classes are structured as follows:</p>
+"! <ul><li>Code snippets are organized by topic within dedicated methods to avoid overcrowding
+"! in the <em>main</em> method implementation. The main method must be implemented when specifying
+"! the {@link if_oo_adt_classrun}. It enables a class to be executed and display data object
+"! content.</li>
+"! <li>These methods, named with an <em>M</em> followed by a digit, are called dynamically in the
+"! class run implementation. The method names are retrieved into an internal table using RTTI (for
+"! more information, refer to the Dynamic Programming ABAP cheat sheet).</li>
+"! <li>The table is iterated over, and only methods that follow the naming convention are called.
+"! The interface reference variable <em>out</em>, which is bound when executing the <em>main</em>
+"! method, is passed to the individual methods to enable displaying data object content.</li></ul>
+"!
 "! <h2>Disclaimer</h2>
 "! <p>The code presented in this class is only meant for supporting the ABAP
 "! cheat sheets. It is not intended for direct use in a
@@ -36,7 +49,9 @@ CLASS zcl_demo_abap_aux DEFINITION
     CLASS-METHODS: clear_dbtabs,
       fill_dbtabs,
       heading IMPORTING text          TYPE string
-              RETURNING VALUE(output) TYPE string.
+              RETURNING VALUE(output) TYPE string,
+      set_example_divider IMPORTING out  TYPE REF TO if_oo_adt_classrun_out
+                                    text TYPE string.
     CONSTANTS no_output TYPE string VALUE `No output for this section. You can set breakpoints and check the content of data objects (if available) in the debugger.`.
 
   PROTECTED SECTION.
@@ -717,8 +732,18 @@ CLASS zcl_demo_abap_aux IMPLEMENTATION.
           seatsocc_f = 20 ) ) ).
 
   ENDMETHOD.
+
   METHOD heading.
     output = |\n_________________________________________________________________________________\n\n{ text }\n\n|.
+  ENDMETHOD.
+
+  METHOD set_example_divider.
+    out->write( |\n| ).
+    out->write( |*&{ repeat( val = `-` occ = strlen( text ) + 2 ) }*| ).
+    out->write( |*& { text }| ).
+    out->write( |*&{ repeat( val = `-` occ = strlen( text ) + 2 ) }*| ).
+    out->write( |\n| ).
+    out->write( |\n| ).
   ENDMETHOD.
 
 ENDCLASS.

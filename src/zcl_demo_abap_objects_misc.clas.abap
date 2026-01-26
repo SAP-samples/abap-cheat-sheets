@@ -5,8 +5,10 @@
 "! Choose F9 in ADT to run the class.</p>
 "!
 "! <h2>Note</h2>
-"! <p>Find information on <strong>getting started with the example class</strong> and the
-"! <strong>disclaimer</strong> in the ABAP Doc comment of class {@link zcl_demo_abap_aux}.</p>
+"! <p>Find the following information in the ABAP Doc comment of class {@link zcl_demo_abap_aux}:</p>
+"! <ul><li>How to get started with the example class</li>
+"! <li>Structuring of (most of) the example classes</li>
+"! <li>Disclaimer</li></ul>
 CLASS zcl_demo_abap_objects_misc DEFINITION
   PUBLIC
   FINAL
@@ -17,6 +19,23 @@ CLASS zcl_demo_abap_objects_misc DEFINITION
     INTERFACES zdemo_abap_objects_interface.
     METHODS constructor IMPORTING text TYPE string OPTIONAL.
     CLASS-METHODS class_constructor.
+
+    METHODS:
+      m01_complete_typing_param  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m02_generic_typing_param  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m03_optional_param  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m04_preferred_param  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m05_constructors  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m06_inline_decl_returning_p  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m07_self_reference_me  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m08_chaining  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m09_upcast_downcast  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m10_interface_implementation  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m11_friendship_global_local_cl  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m12_intf_default_ignore_fail  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m13_events  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m14_cl_based_classic_excptn  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string.
+
   PROTECTED SECTION.
   PRIVATE SECTION.
 
@@ -173,7 +192,7 @@ CLASS zcl_demo_abap_objects_misc DEFINITION
                                         .
     "-----------------------------------------------------------
 
-
+    CLASS-METHODS display_log_table IMPORTING out TYPE REF TO if_oo_adt_classrun_out.
 ENDCLASS.
 
 
@@ -181,15 +200,46 @@ ENDCLASS.
 CLASS zcl_demo_abap_objects_misc IMPLEMENTATION.
   METHOD if_oo_adt_classrun~main.
 
-    out->write( |ABAP cheat sheet example: ABAP Object Orientation (2)\n\n| ).
-    out->write( |1) Complete Typing of Formal Parameters\n\n| ).
+    zcl_demo_abap_aux=>set_example_divider(
+     out  = out
+     text = `ABAP cheat sheet example: ABAP Object Orientation (2)`
+   ).
+
+    "Dynamically calling methods of the class
+    "The method names are retrieved using RTTI. For more information, refer to the
+    "Dynamic Programming ABAP cheat sheet.
+    "Only those methods should be called that follow the naming convention M + digit.
+    DATA(methods) = CAST cl_abap_classdescr( cl_abap_typedescr=>describe_by_object_ref( me ) )->methods.
+    SORT methods BY name ASCENDING.
+
+    "To call a particular method only, you can comment in the WHERE clause and
+    "adapt the literal appropriately.
+    LOOP AT methods INTO DATA(meth_wa)
+    "WHERE name CS 'M01'
+    .
+      TRY.
+          "The find function result indicates that the method name begins (offset = 0) with M and a digit.
+          IF find( val = meth_wa-name pcre = `^M\d` case = abap_false ) = 0.
+            CALL METHOD (meth_wa-name) EXPORTING out = out text = CONV string( meth_wa-name ).
+          ENDIF.
+        CATCH cx_root INTO DATA(error).
+          out->write( error->get_text( ) ).
+      ENDTRY.
+    ENDLOOP.
+  ENDMETHOD.
+
+  METHOD m01_complete_typing_param.
+
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Complete Typing of Formal Parameters| ).
 
     out->write( `No output for this section. See the signature of the formal_params_compl_types method, `
     && `which demonstrates multiple syntax variants for typing formal parameters completely.` ).
 
-**********************************************************************
+  ENDMETHOD.
 
-    out->write( zcl_demo_abap_aux=>heading( `2) Generic Typing of Formal Parameters` ) ).
+  METHOD m02_generic_typing_param.
+
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Generic Typing of Formal Parameters| ).
 
     "Structure including various components of specific types
     "They represent actual parameters in the method call below
@@ -350,10 +400,11 @@ CLASS zcl_demo_abap_objects_misc IMPLEMENTATION.
        ).
 
     out->write( zcl_demo_abap_aux=>no_output ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m03_optional_param.
 
-    out->write( zcl_demo_abap_aux=>heading( `3) Defining Parameters as Optional` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Defining Parameters as Optional| ).
 
     DATA(meth_opt_1_result_a) = meth_opt_1( ).
     DATA(meth_opt_1_result_b) = meth_opt_1( 2 ).
@@ -382,9 +433,11 @@ CLASS zcl_demo_abap_objects_misc IMPLEMENTATION.
     out->write( |\n| ).
     out->write( data = meth_opt_3_result_d name = `meth_opt_3_result_d` ).
 
-**********************************************************************
+  ENDMETHOD.
 
-    out->write( zcl_demo_abap_aux=>heading( `4) Defining Input Parameters as Preferred` ) ).
+  METHOD m04_preferred_param.
+
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Defining Input Parameters as Preferred| ).
 
     DATA(text1) = meth_pref( num1 = 3 num2 = 3 num3 = 3 ).
     out->write( text1 ).
@@ -412,10 +465,11 @@ CLASS zcl_demo_abap_objects_misc IMPLEMENTATION.
     "parameter.
     DATA(text8) = meth_pref( 3 ).
     out->write( text8 ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m05_constructors.
 
-    out->write( zcl_demo_abap_aux=>heading( `5) Constructors` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Constructors| ).
 
     "Notes:
     "- The static constructor is called only once, even when multiple class instances are created,
@@ -440,9 +494,11 @@ CLASS zcl_demo_abap_objects_misc IMPLEMENTATION.
 
     out->write( data = itab_constr name = `itab_constr` ).
 
-**********************************************************************
+  ENDMETHOD.
 
-    out->write( zcl_demo_abap_aux=>heading( `6) Excursion: Inline Declarations, Returning Parameters` ) ).
+  METHOD m06_inline_decl_returning_p.
+
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Inline Declarations, Returning Parameters| ).
     "Note:
     "- Calling the method in the same class means specifying 'zcl_demo_abap=>' is optional here.
     "- There is no proper implementation in the method implementations.
@@ -520,18 +576,20 @@ CLASS zcl_demo_abap_objects_misc IMPLEMENTATION.
     READ TABLE zcl_demo_abap_objects_misc=>meth2( ) INTO DATA(wa2) INDEX 1.
 
     out->write( zcl_demo_abap_aux=>no_output ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m07_self_reference_me.
 
-    out->write( zcl_demo_abap_aux=>heading( `7) Self-Reference me` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Self-Reference me| ).
 
     str = `AP`.
-    DATA(text) = meth( ).
-    out->write( data = text name = `text` ).
+    DATA(txt) = meth( ).
+    out->write( data = txt name = `txt` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m08_chaining.
 
-    out->write( zcl_demo_abap_aux=>heading( `8) Method Chaining and Chained Attribute Access` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Method Chaining and Chained Attribute Access| ).
 
     DATA(txt1) = NEW zcl_demo_abap_objects_misc(
                          )->add_text( `Hallo`
@@ -591,6 +649,7 @@ CLASS zcl_demo_abap_objects_misc IMPLEMENTATION.
     out->write( data = txt2 name = `txt2` ).
     out->write( |\n| ).
 
+
     "----------------------------------------------------------------
     "-------- Method chaining with a standalone statement -----------
     "----------------------------------------------------------------
@@ -611,10 +670,11 @@ CLASS zcl_demo_abap_objects_misc IMPLEMENTATION.
                         )->add_space(
                         )->add_text( `amet`
                         )->display_text( out ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m09_upcast_downcast.
 
-    out->write( zcl_demo_abap_aux=>heading( `9) Demonstrating Upcasts and Downcasts Using the RTTS Inheritance Tree` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Demonstrating Upcasts and Downcasts Using the RTTS Inheritance Tree| ).
 
 *Hierarchy tree of the classes:
 *
@@ -842,9 +902,11 @@ CLASS zcl_demo_abap_objects_misc IMPLEMENTATION.
 
     out->write( zcl_demo_abap_aux=>no_output ).
 
-**********************************************************************
+  ENDMETHOD.
 
-    out->write( zcl_demo_abap_aux=>heading( `10) Interface Implementation` ) ).
+  METHOD m10_interface_implementation.
+
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Interface Implementation| ).
 
     "Note:
     "- The example demonstrates that the interface methods declared with DEFAULT
@@ -921,9 +983,11 @@ CLASS zcl_demo_abap_objects_misc IMPLEMENTATION.
         out->write( |\n| ).
     ENDTRY.
 
-**********************************************************************
+  ENDMETHOD.
 
-    out->write( zcl_demo_abap_aux=>heading( `11) Friendship between Global and Local Classes` ) ).
+  METHOD m11_friendship_global_local_cl.
+
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Friendship between Global and Local Classes| ).
 
     "Notes:
     "- Global class: When running the class, a method of the local class that is declared in the private
@@ -943,10 +1007,423 @@ CLASS zcl_demo_abap_objects_misc IMPLEMENTATION.
     DATA(hello) = local_class=>hello.
 
     out->write( data = hello name = `hello` ).
+  ENDMETHOD.
+
+  METHOD m12_intf_default_ignore_fail.
+
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Interface methods declared with DEFAULT IGNORE and DEFAULT FAIL| ).
+
+    out->write( `--- Demo class with implementation of the DEFAULT IGNORE and DEFAULT FAIL methods ---` ).
+    lcl_with_impl=>run_cl( out ).
+    out->write( |\n| ).
+    out->write( `--- Demo class without implementation of the DEFAULT IGNORE and DEFAULT FAIL methods ---` ).
+    lcl_without_impl=>run_cl( out ).
 
   ENDMETHOD.
 
-  METHOD formal_params_compl_types.
+  METHOD m13_events.
+
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Events| ).
+
+*&-------------------------------------------------------------------------------------*
+*& 1) Basic events
+*&-------------------------------------------------------------------------------------*
+
+    "- The class lcl_greetings in the CCIMP include declares four instance events without parameters.
+    "- The same class also defines four event handler methods.
+    "- Additionally, a separate method implements the raising of the four events.
+    "- The event handlers are registered here using a SET HANDLER statement.
+    "- Based on the current time, a string (an instance attribute in the class) is populated with a
+    "  greeting appropriate for the time of day.
+
+    out->write( |1) Basic events\n\n| ).
+
+    DATA(ref_events) = NEW lcl_greetings( ).
+
+    "Registering event handler methods
+    SET HANDLER: ref_events->morning_greets
+                 ref_events->afternoon_greets
+                 ref_events->evening_greets
+                 ref_events->night_greets
+                 FOR ref_events.
+
+    "Calling method that raises an event
+    ref_events->greetings( ).
+
+    out->write( data = ref_events->greets name = `ref_events->greets` ).
+    out->write( |\n{ repeat( val = `*` occ = 75 ) }\n| ).
+
+*&-------------------------------------------------------------------------------------*
+*& 2) Various instance and static events
+*&-------------------------------------------------------------------------------------*
+
+    "- The following code snippets explore various instance and static events.
+    "- The class lcl_1 declares instance and static events, some with and some without
+    "  exporting parameters.
+    "- The class also declares event handlers. The evt_handler_c method intentionally omits the num2
+    "  formal parameter, demonstrating that it is optional to specify all parameters. Additionally,
+    "  explicitly specifying the sender parameter is also optional.
+    "- The example implementations populate a string table for visualization and display purposes.
+
+    out->write( |2) Various instance and static events\n\n| ).
+
+    DATA(oref_evt_1) = NEW lcl_1( ).
+    oref_evt_1->some_text = `ABAP`.
+
+    "Registering event handler methods
+    SET HANDLER: oref_evt_1->evt_handler_a
+                 oref_evt_1->evt_handler_b
+                 oref_evt_1->evt_handler_c
+                 FOR oref_evt_1.
+
+    SET HANDLER: lcl_1=>evt_handler_d lcl_1=>evt_handler_e.
+
+    "Calling method that raises an event
+    DO 5 TIMES.
+      oref_evt_1->raise_event( int = sy-index
+                               txt = CONV #( sy-index ) ).
+    ENDDO.
+
+    out->write( data = lcl_1=>event_log_lcl_1 name = `lcl_1=>event_log_lcl_1` ).
+    out->write( |{ repeat( val = `*` occ = 75 ) }\n| ).
+
+*&-------------------------------------------------------------------------------------*
+*& SET HANDLER syntax options
+*& 3a) Registering events
+*&-------------------------------------------------------------------------------------*
+
+    "- The following code snippets demonstrate syntax options of the SET HANDLER statement.
+    "- The demo class declares two instance events and a static event. The class also
+    "  includes the event handlers. The raise_event method raises a specific event based
+    "  on the value of the importing parameter. Note that for simplicity of the example,
+    "  the instance method raise_event also raises the static event.
+
+    out->write( |3) SET HANDLER syntax options\n| ).
+    out->write( |3a) Registering events\n\n| ).
+
+    DATA(oref_evt_2a) = NEW lcl_2( ).
+
+    "Registering instance events
+    SET HANDLER oref_evt_2a->evt_handler_f FOR oref_evt_2a.
+    "Optional specification of the ACTIVATION addition. The default value is X.
+    SET HANDLER oref_evt_2a->evt_handler_g FOR oref_evt_2a ACTIVATION 'X'.
+    "Registering static event
+    SET HANDLER lcl_2=>evt_handler_h ACTIVATION 'X'.
+
+    DO 3 TIMES.
+      oref_evt_2a->raise_event( num = sy-index ).
+    ENDDO.
+
+    out->write( data = lcl_2=>event_log_lcl_2 name = `lcl_2=>event_log_lcl_2` ).
+    out->write( |{ repeat( val = `*` occ = 75 ) }\n| ).
+    CLEAR lcl_2=>event_log_lcl_2.
+
+*&-------------------------------------------------------------------------------------*
+*& 3b) Deregistering events
+*&-------------------------------------------------------------------------------------*
+
+    out->write( |3b) Deregistering events\n\n| ).
+
+    DATA(oref_evt_2b) = NEW lcl_2( ).
+
+    "Registering and deregistering an instance event handler.
+    "Note that the handler for the static event is still registered from above, therefore it
+    "is called. In the loop it is explicitly deregistered. So the result will not show two
+    "entries for evt_handler_h.
+    SET HANDLER oref_evt_2b->evt_handler_f FOR oref_evt_2b ACTIVATION 'X'.
+    SET HANDLER oref_evt_2b->evt_handler_g FOR oref_evt_2b ACTIVATION ' '.
+
+    DO 4 TIMES.
+      IF sy-index < 4.
+        oref_evt_2b->raise_event( num = sy-index ).
+      ELSE.
+        SET HANDLER lcl_2=>evt_handler_h ACTIVATION ' '.
+        oref_evt_2b->raise_event( num = 3 ).
+      ENDIF.
+    ENDDO.
+
+    out->write( data = lcl_2=>event_log_lcl_2 name = `lcl_2=>event_log_lcl_2` ).
+    out->write( |{ repeat( val = `*` occ = 75 ) }\n| ).
+
+    CLEAR lcl_2=>event_log_lcl_2.
+
+*&-------------------------------------------------------------------------------------*
+*& 3c) sy-subrc value setting of SET HANDLER statements
+*&-------------------------------------------------------------------------------------*
+
+    "sy-subrc values set by SET HANDLER statements
+    "0: All specified handlers were successfully (de)registered.
+    "4: At least one specified handler was not registered because it was already registered for the same event.
+    "8: At least one specified handler was not deregistered because it was not registered for the current event.
+
+    out->write( |3c) sy-subrc value setting of SET HANDLER statements\n\n| ).
+
+    DATA(oref_evt_2c) = NEW lcl_2( ).
+
+    SET HANDLER oref_evt_2c->evt_handler_f
+                oref_evt_2c->evt_handler_g
+                FOR oref_evt_2c ACTIVATION 'X'.
+
+    DATA(subrc) = sy-subrc.
+
+    out->write( data = subrc name = `sy-subrc value (1)` ).
+    out->write( |\n| ).
+
+    SET HANDLER oref_evt_2c->evt_handler_f
+                oref_evt_2c->evt_handler_g
+                FOR oref_evt_2c ACTIVATION 'X'.
+
+    subrc = sy-subrc.
+
+    out->write( data = subrc name = `sy-subrc value (2)` ).
+    out->write( |\n| ).
+
+    SET HANDLER lcl_2=>evt_handler_h ACTIVATION ' '.
+    subrc = sy-subrc.
+
+    out->write( data = subrc name = `sy-subrc value (3)` ).
+    out->write( |\n| ).
+    out->write( |{ repeat( val = `*` occ = 75 ) }\n| ).
+    CLEAR lcl_2=>event_log_lcl_2.
+
+*&-------------------------------------------------------------------------------------*
+*& 3d) FOR ALL INSTANCES addition
+*&-------------------------------------------------------------------------------------*
+
+    out->write( |3d) FOR ALL INSTANCES addition\n| ).
+
+    DATA(oref_evt_2d) = NEW lcl_2( ).
+
+    out->write( |Example 1\n\n| ).
+
+    "- evt_handler_f is registered for all instances
+    "- evt_handler_g and evt_handler_h are not regitered
+    SET HANDLER oref_evt_2d->evt_handler_f FOR ALL INSTANCES.
+
+    "Creating some more instances
+    DATA(oref_evt_2e) = NEW lcl_2( ).
+    DATA(oref_evt_2f) = NEW lcl_2( ).
+
+    DO 3 TIMES.
+      CASE sy-index.
+        WHEN 1.
+          APPEND `-------------- oref_evt_2d --------------` TO lcl_2=>event_log_lcl_2.
+          DO 3 TIMES.
+            oref_evt_2d->raise_event( num = sy-index ).
+          ENDDO.
+        WHEN 2.
+          APPEND `-------------- oref_evt_2e --------------` TO lcl_2=>event_log_lcl_2.
+          DO 3 TIMES.
+            oref_evt_2e->raise_event( num = sy-index ).
+          ENDDO.
+        WHEN 3.
+          APPEND `-------------- oref_evt_2f --------------` TO lcl_2=>event_log_lcl_2.
+          DO 3 TIMES.
+            oref_evt_2f->raise_event( num = sy-index ).
+          ENDDO.
+      ENDCASE.
+    ENDDO.
+
+    out->write( data = lcl_2=>event_log_lcl_2 name = `lcl_2=>event_log_lcl_2` ).
+    out->write( |{ repeat( val = `*` occ = 75 ) }\n| ).
+    CLEAR lcl_2=>event_log_lcl_2.
+
+    out->write( |Example 2\n\n| ).
+
+    "- evt_handler_g is registered for all instances
+    "- evt_handler_f is still registered for all instances
+    "- evt_handler_h is not regitered
+    SET HANDLER oref_evt_2d->evt_handler_g FOR ALL INSTANCES.
+
+    DO 3 TIMES.
+      CASE sy-index.
+        WHEN 1.
+          APPEND `-------------- oref_evt_2d --------------` TO lcl_2=>event_log_lcl_2.
+          DO 3 TIMES.
+            oref_evt_2d->raise_event( num = sy-index ).
+          ENDDO.
+        WHEN 2.
+          APPEND `-------------- oref_evt_2e --------------` TO lcl_2=>event_log_lcl_2.
+          DO 3 TIMES.
+            oref_evt_2e->raise_event( num = sy-index ).
+          ENDDO.
+        WHEN 3.
+          APPEND `-------------- oref_evt_2f --------------` TO lcl_2=>event_log_lcl_2.
+          DO 3 TIMES.
+            oref_evt_2f->raise_event( num = sy-index ).
+          ENDDO.
+      ENDCASE.
+    ENDDO.
+
+    out->write( data = lcl_2=>event_log_lcl_2 name = `lcl_2=>event_log_lcl_2` ).
+    out->write( |{ repeat( val = `*` occ = 75 ) }\n| ).
+    CLEAR lcl_2=>event_log_lcl_2.
+
+    out->write( |Example 3\n\n| ).
+
+    "- Deregistering evt_handler_g and evt_handler_h for all instances
+    "- evt_handler_h is not regitered
+    SET HANDLER oref_evt_2d->evt_handler_f
+                oref_evt_2d->evt_handler_g
+                FOR ALL INSTANCES ACTIVATION ' '.
+
+    DO 3 TIMES.
+      CASE sy-index.
+        WHEN 1.
+          APPEND `-------------- oref_evt_2d --------------` TO lcl_2=>event_log_lcl_2.
+          DO 3 TIMES.
+            oref_evt_2d->raise_event( num = sy-index ).
+          ENDDO.
+        WHEN 2.
+          APPEND `-------------- oref_evt_2e --------------` TO lcl_2=>event_log_lcl_2.
+          DO 3 TIMES.
+            oref_evt_2e->raise_event( num = sy-index ).
+          ENDDO.
+        WHEN 3.
+          APPEND `-------------- oref_evt_2f --------------` TO lcl_2=>event_log_lcl_2.
+          DO 3 TIMES.
+            oref_evt_2f->raise_event( num = sy-index ).
+          ENDDO.
+      ENDCASE.
+    ENDDO.
+
+    out->write( data = lcl_2=>event_log_lcl_2 name = `lcl_2=>event_log_lcl_2` ).
+    out->write( |\n{ repeat( val = `*` occ = 75 ) }\n| ).
+
+*&-------------------------------------------------------------------------------------*
+*& 4) Excursion: Events in inheritance
+*&-------------------------------------------------------------------------------------*
+
+    out->write( |4) Excursion: Events in inheritance\n| ).
+    out->write( |4a) Static events\n| ).
+
+    "Inheritance tree of the example
+    "LCL_A
+    "  |
+    "  |--LCL_B
+    "  |   |
+    "  |   |--LCL_C
+    "
+    "LCL_D: Class that implements event handlers
+
+    "- Static and instance events are declared in the superclass lcl_a.
+    "- The superclass and its subclasses contain a static and an instance method that raise the events.
+    "- The class lcl_d declares event handlers for the events in lcl_b, which are inherited from the superclass lcl_a.
+    "- Different options are used to access methods. A log table visualizes the method call flow.
+    "- The event handler stat_evt_handler in class lcl_b can only handle events raised within this class or its subclasses.
+    "- Events raised by the static method stat_meth_1 in lcl_a are not handled, regardless of the class name used for the call.
+    "- The event handler inst_evt_handler in class lcl_b can also only handle events raised within this class or its subclasses.
+    "- Unlike calling static methods, events raised in the inherited instance method inst_meth_1 of the classes lcl_b and lcl_c
+    "  are handled. The object's class is always addressed when addressig an object using an object reference.
+
+    SET HANDLER lcl_d=>stat_evt_handler.
+
+    lcl_a=>stat_meth_1( ).
+
+    out->write( |lcl_a=>stat_meth_1( ): "{ lcl_a=>is_handled }"| ).
+    display_log_table( out ).
+
+    lcl_b=>stat_meth_1( ).
+
+    out->write( |lcl_b=>stat_meth_1( ): "{ lcl_a=>is_handled }"| ).
+    display_log_table( out ).
+
+    lcl_c=>stat_meth_1( ).
+
+    out->write( |lcl_c=>stat_meth_1( ): "{ lcl_a=>is_handled }"| ).
+    display_log_table( out ).
+
+    lcl_b=>stat_meth_2( ).
+
+    out->write( |lcl_b=>stat_meth_2( ): "{ lcl_a=>is_handled }"| ).
+    display_log_table( out ).
+
+    lcl_c=>stat_meth_2( ).
+
+    out->write( |lcl_c=>stat_meth_2( ): "{ lcl_a=>is_handled }"| ).
+    display_log_table( out ).
+
+    lcl_c=>stat_meth_3( ).
+
+    out->write( |lcl_c=>stat_meth_3( ): "{ lcl_a=>is_handled }"| ).
+    display_log_table( out ).
+    out->write( |{ repeat( val = `*` occ = 75 ) }\n| ).
+
+    out->write( |4b) Instance events\n| ).
+
+    DATA(oref1) = NEW lcl_a( ).
+    DATA(oref2) = NEW lcl_b( ).
+    DATA(oref3) = NEW lcl_c( ).
+    DATA(oref4) = NEW lcl_d( ).
+
+    SET HANDLER oref4->inst_evt_handler FOR ALL INSTANCES.
+
+    oref1->inst_meth_1( ).
+
+    out->write( |oref1->inst_meth_1( ): "{ lcl_a=>is_handled }"| ).
+    display_log_table( out ).
+
+    oref2->inst_meth_1( ).
+
+    out->write( |oref2->inst_meth_1( ): "{ lcl_a=>is_handled }"| ).
+    display_log_table( out ).
+
+    oref3->inst_meth_1( ).
+
+    out->write( |oref3->inst_meth_1( ): "{ lcl_a=>is_handled }"| ).
+    display_log_table( out ).
+
+    oref2->inst_meth_2( ).
+
+    out->write( |oref2->inst_meth_2( ): "{ lcl_a=>is_handled }"| ).
+    display_log_table( out ).
+
+    oref3->inst_meth_2( ).
+
+    out->write( |oref3->inst_meth_2( ): "{ lcl_a=>is_handled }"| ).
+    display_log_table( out ).
+
+    oref3->inst_meth_3( ).
+
+    out->write( |oref3->inst_meth_3( ): "{ lcl_a=>is_handled }"| ).
+    display_log_table( out ).
+
+  ENDMETHOD.
+
+  METHOD m14_cl_based_classic_excptn.
+
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Class-Based and Classic Exceptions| ).
+
+    "ABAP class (creates UUIDs) raising a class-based exception
+    TRY.
+        DATA(uuid) = cl_system_uuid=>create_uuid_x16_static( ).
+      CATCH cx_uuid_error.
+    ENDTRY.
+
+    "ABAP class (provides type information, see the Dynamic Programming cheat sheet)
+    "specified with the EXCEPTIONS addition raising a non-class based exception
+    cl_abap_typedescr=>describe_by_name( EXPORTING p_name = `TYPE_THAT_DOES_NOT_EXIST`
+                                         RECEIVING p_descr_ref = DATA(tdo1)
+                                         EXCEPTIONS type_not_found = 4 ).
+
+    IF sy-subrc = 0.
+      out->write( `Type found` ).
+    ELSE.
+      out->write( `Type not found` ).
+    ENDIF.
+
+    cl_abap_typedescr=>describe_by_name( EXPORTING p_name = `ABAP_BOOLEAN`
+                                         RECEIVING p_descr_ref = DATA(tdo2)
+                                         EXCEPTIONS type_not_found = 4 ).
+
+    IF sy-subrc = 0.
+      out->write( `Type found` ).
+    ELSE.
+      out->write( `Type not found` ).
+    ENDIF.
+  ENDMETHOD.
+
+   METHOD formal_params_compl_types.
     ... "No implementation
   ENDMETHOD.
 
@@ -1062,6 +1539,12 @@ CLASS zcl_demo_abap_objects_misc IMPLEMENTATION.
 
   METHOD get_hello.
     hello = `Hello`.
+  ENDMETHOD.
+
+  METHOD display_log_table.
+    out->write( data = lcl_a=>log_tab name = `lcl_a=>log_tab` ).
+    out->write( |\n\n| ).
+    CLEAR lcl_a=>log_tab.
   ENDMETHOD.
 
 ENDCLASS.

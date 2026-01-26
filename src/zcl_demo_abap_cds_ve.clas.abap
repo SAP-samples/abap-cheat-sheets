@@ -11,8 +11,10 @@
 "! of CDS view entities, input parameters, joins, associations.</li>
 "! <li>Note: In ADT, hold CTRL and click on the CDS view entity in this example to
 "! access the artifact. You can choose F8 there to open the data preview.</li>
-"! <li>Find information on <strong>getting started with the example class</strong> and the
-"! <strong>disclaimer</strong> in the ABAP Doc comment of class {@link zcl_demo_abap_aux}.</li></ul>
+"! <li>Find the following information in the ABAP Doc comment of class {@link zcl_demo_abap_aux}:
+"! <ul><li>How to get started with the example class</li>
+"! <li>Structuring of (most of) the example classes</li>
+"! <li>Disclaimer</li></ul></li></ul>
 CLASS zcl_demo_abap_cds_ve DEFINITION
   PUBLIC
   FINAL
@@ -23,6 +25,18 @@ CLASS zcl_demo_abap_cds_ve DEFINITION
       if_oo_adt_classrun.
 
     CLASS-METHODS class_constructor.
+
+    METHODS:
+      m01_op_expr_func  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m02_aggregate_expressions  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m03_joins  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m04_sql_joins  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m05_associations  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m06_associations_select  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m07_associations_from  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m08_associations_attr  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m09_associations_where  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string .
+
   PROTECTED SECTION.
   PRIVATE SECTION.
 ENDCLASS.
@@ -67,13 +81,38 @@ CLASS zcl_demo_abap_cds_ve IMPLEMENTATION.
     MODIFY zdemo_abap_fli FROM TABLE @( VALUE #( ( carrid = 'UA' ) ) ).
   ENDMETHOD.
 
-
   METHOD if_oo_adt_classrun~main.
 
-    out->write( |ABAP Cheat Sheet Example: CDS view entities\n\n| ).
+    zcl_demo_abap_aux=>set_example_divider(
+         out  = out
+         text = `ABAP Cheat Sheet Example: CDS view entities`
+       ).
 
-    out->write( `1) Operands, expressions and built-in functions ` &&
-    |in a CDS view entity\n\n|  ).
+    "Dynamically calling methods of the class
+    "The method names are retrieved using RTTI. For more information, refer to the
+    "Dynamic Programming ABAP cheat sheet.
+    "Only those methods should be called that follow the naming convention M + digit.
+    DATA(methods) = CAST cl_abap_classdescr( cl_abap_typedescr=>describe_by_object_ref( me ) )->methods.
+    SORT methods BY name ASCENDING.
+
+    LOOP AT methods INTO DATA(meth_wa).
+      TRY.
+          "The find function result indicates that the method name begins (offset = 0) with M and a digit.
+          IF find( val = meth_wa-name pcre = `^M\d` case = abap_false ) = 0.
+            CALL METHOD (meth_wa-name) EXPORTING out = out text = CONV string( meth_wa-name ).
+          ENDIF.
+        CATCH cx_root INTO DATA(error).
+          out->write( error->get_text( ) ).
+      ENDTRY.
+    ENDLOOP.
+  ENDMETHOD.
+
+  METHOD m01_op_expr_func.
+
+    zcl_demo_abap_aux=>set_example_divider(
+       out  = out
+       text = |{ text }: Operands, expressions and built-in functions in a CDS view entity|
+     ).
 
     "The following ABAP SQL SELECT statement uses a CDS view entity as
     "the data source. All data is retrieved. The sample CDS view entity
@@ -91,10 +130,13 @@ CLASS zcl_demo_abap_cds_ve IMPLEMENTATION.
       INTO TABLE @DATA(select_from_cds).
 
     out->write( data = select_from_cds name = `select_from_cds` ).
+  ENDMETHOD.
 
-**********************************************************************
-
-    out->write( zcl_demo_abap_aux=>heading( `2) Aggregate Expressions` ) ).
+  METHOD m02_aggregate_expressions.
+    zcl_demo_abap_aux=>set_example_divider(
+         out  = out
+         text = |{ text }: Aggregate Expressions|
+       ).
 
     "The following ABAP SQL SELECT statement uses a CDS view entity as
     "the data source. All data is retrieved. The sample CDS view entity
@@ -106,10 +148,13 @@ CLASS zcl_demo_abap_cds_ve IMPLEMENTATION.
       INTO TABLE @DATA(agg_expr).
 
     out->write( data = agg_expr name = `agg_expr` ).
+  ENDMETHOD.
 
-**********************************************************************
-
-    out->write( zcl_demo_abap_aux=>heading( `3) Joins` ) ).
+  METHOD m03_joins.
+    zcl_demo_abap_aux=>set_example_divider(
+         out  = out
+         text = |{ text }: Joins|
+       ).
 
     "The following ABAP SQL SELECT statement uses a CDS view entity as
     "the data source. All data is retrieved. The sample CDS view entity
@@ -126,10 +171,13 @@ CLASS zcl_demo_abap_cds_ve IMPLEMENTATION.
       INTO TABLE @DATA(cds_joins).
 
     out->write( data = cds_joins name = `cds_joins` ).
+  ENDMETHOD.
 
-**********************************************************************
-
-    out->write( zcl_demo_abap_aux=>heading( `4) Excursion: ABAP SQL and joins` ) ).
+  METHOD m04_sql_joins.
+    zcl_demo_abap_aux=>set_example_divider(
+         out  = out
+         text = |{ text }: Excursion: ABAP SQL and joins|
+       ).
 
     "The following ABAP SQL SELECT statements are intended to reproduce
     "the different joins that are performed by the CDS view entity.
@@ -213,33 +261,29 @@ CLASS zcl_demo_abap_cds_ve IMPLEMENTATION.
     out->write( |\n| ).
 
     "Just a check what join example is currently commented in
+    SELECT *
+    FROM zdemo_abap_cds_ve_joins
+    ORDER BY carrid
+    INTO TABLE @DATA(cds_joins).
+
     IF cds_joins = sql_inner_join.
-
       out->write( `In the example CDS view entity, the inner join example is commented in.` ).
-
     ELSEIF cds_joins = sql_left_outer_join.
-
       out->write( `In the example CDS view entity, the left outer join example is commented in.` ).
-
     ELSEIF cds_joins = sql_right_outer_join.
-
       out->write( `In the example CDS view entity, the right outer join example is commented in.` ).
-
     ELSEIF cds_joins = sql_cross_join.
-
       out->write( `In the example CDS view entity, the cross join example is commented in.` ).
-
     ELSE.
-
       out->write( `In the example CDS view entity, there is some other code present.` ).
-
     ENDIF.
+  ENDMETHOD.
 
-**********************************************************************
-
-    out->write( zcl_demo_abap_aux=>heading( `Associations` ) ).
-
-    out->write( |5) Selecting data from a CDS view that contains associations\n\n|  ).
+  METHOD m05_associations.
+    zcl_demo_abap_aux=>set_example_divider(
+         out  = out
+         text = |{ text }: Selecting data from a CDS view that contains associations|
+       ).
 
     "The following ABAP SQL SELECT statement uses a CDS view entity as
     "the data source. All data is retrieved. The sample CDS view entity
@@ -258,14 +302,16 @@ CLASS zcl_demo_abap_cds_ve IMPLEMENTATION.
 
     out->write( data = assoc name = `assoc` ).
 
-**********************************************************************
+  ENDMETHOD.
 
-    out->write( zcl_demo_abap_aux=>heading( `Using exposed associations in ABAP SQL statements: ...` ) ).
+  METHOD m06_associations_select.
+    zcl_demo_abap_aux=>set_example_divider(
+         out  = out
+         text = |{ text }: Using exposed associations in ABAP SQL statements: SELECT clause|
+       ).
 
     "The following examples use path expressions to access the association
     "targets of exposed associations.
-
-    out->write( |6) ... SELECT clause\n\n|  ).
 
     "The following ABAP SQL SELECT statement uses a CDS view entity as
     "the data source. The statement uses an exposed association.
@@ -289,10 +335,13 @@ CLASS zcl_demo_abap_cds_ve IMPLEMENTATION.
       INTO TABLE @DATA(assoc_exp_select).
 
     out->write( data = assoc_exp_select name = `assoc_exp_select` ).
+  ENDMETHOD.
 
-**********************************************************************
-
-    out->write( zcl_demo_abap_aux=>heading( `7) ... FROM clause` ) ).
+  METHOD m07_associations_from.
+    zcl_demo_abap_aux=>set_example_divider(
+         out  = out
+         text = |{ text }: Using exposed associations in ABAP SQL statements: FROM clause|
+       ).
 
     "The following ABAP SQL SELECT statement uses a CDS view entity as
     "the data source. All data is retrieved.
@@ -342,10 +391,13 @@ CLASS zcl_demo_abap_cds_ve IMPLEMENTATION.
     ELSE.
       out->write( `The result sets are differrent.` ).
     ENDIF.
+  ENDMETHOD.
 
-**********************************************************************
-
-    out->write( zcl_demo_abap_aux=>heading( `8) ... Specifying attributes` ) ).
+  METHOD m08_associations_attr.
+    zcl_demo_abap_aux=>set_example_divider(
+         out  = out
+         text = |{ text }: Using exposed associations in ABAP SQL statements: Specifying attributes|
+       ).
 
     "The following ABAP SQL SELECT statement uses a CDS view entity as
     "the data source. The statement uses an exposed association.
@@ -426,10 +478,13 @@ CLASS zcl_demo_abap_cds_ve IMPLEMENTATION.
       INTO TABLE @DATA(assoc_attr_where).
 
     out->write( data = assoc_attr_where name = `assoc_attr_where` ).
+  ENDMETHOD.
 
-**********************************************************************
-
-    out->write( zcl_demo_abap_aux=>heading( `9) ... WHERE clause` ) ).
+  METHOD m09_associations_where.
+    zcl_demo_abap_aux=>set_example_divider(
+         out  = out
+         text = |{ text }: Using exposed associations in ABAP SQL statements: WHERE clause|
+       ).
 
     "The following ABAP SQL SELECT statement uses a CDS view entity as
     "the data source. The statement uses an exposed association.
@@ -446,6 +501,5 @@ CLASS zcl_demo_abap_cds_ve IMPLEMENTATION.
       INTO TABLE @DATA(assoc_exp_where).
 
     out->write( data = assoc_exp_where name = `assoc_exp_where` ).
-
   ENDMETHOD.
 ENDCLASS.

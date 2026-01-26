@@ -676,7 +676,7 @@ The following code snippet shows several ways to assign values to data objects.
 "As mentioned, a start value can be directly assigned when declaring a data object.
 DATA some_int TYPE i VALUE 123.
 
-"Assignment using the assignement operator =
+"Assignment using the assignment operator =
 "The source of the assigment on the right side (also known as general expressions posisiton) 
 "can be specified with many things.
 
@@ -1499,7 +1499,7 @@ An [inline declaration](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-
 
  
 ```abap
-"Data object declarations and assignements as shown above.
+"Data object declarations and assignments as shown above.
 DATA str_b1 TYPE string VALUE `abc`.
 
 DATA str_b2 TYPE string.
@@ -1604,7 +1604,7 @@ SELECT * FROM zdemo_abap_carr INTO TABLE @DATA(itab_b3).
 SELECT * FROM zdemo_abap_carr INTO TABLE NEW @DATA(itab_ref).
 ```
 
-Inline declaration is useful for specifying data objects as actual parameters in method calls. It automatically determines the appropriate type, eliminating the need for additional variable declarations. However, it is important to note that inline declarations cannot be used when a method call is included in an expression. For example, if a method has both returning and exporting parameters, and you want to make a method call and assignement as shown in the example commented out, while also using inline declarations for the exporting parameters, this is not possible. This is because the assignment involves a method call expression on the right-hand side.
+Inline declaration is useful for specifying data objects as actual parameters in method calls. It automatically determines the appropriate type, eliminating the need for additional variable declarations. However, it is important to note that inline declarations cannot be used when a method call is included in an expression. For example, if a method has both returning and exporting parameters, and you want to make a method call and assignment as shown in the example commented out, while also using inline declarations for the exporting parameters, this is not possible. This is because the assignment involves a method call expression on the right-hand side.
 
 ```abap
 "The following method calculates the difference in days, hours, minutes,
@@ -2292,7 +2292,7 @@ See the conversion rules for the different data types here: [Assignment and Conv
 
 > [!NOTE]
 > - The [operands](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenoperand_glosry.htm) of many ABAP statements are assigned internally according to the assignment rules. 
-> - Typically, assignements are made using the assignment operator `=`. If necessary and applicable, the type is converted implicitly. However, you can also use the conversion operator [`CONV`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconstructor_expression_conv.htm) to convert types explicitly.
+> - Typically, assignments are made using the assignment operator `=`. If necessary and applicable, the type is converted implicitly. However, you can also use the conversion operator [`CONV`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconstructor_expression_conv.htm) to convert types explicitly.
 > - For [lossless assignments](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenlossless_assignment_glosry.htm), the lossless operator [`EXACT`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconstructor_expression_exact.htm) can be used to perform checks before the conversion is performed to ensure that only valid values are assigned and that no values are lost in assignments.
 > - In general, no checks are performed on assignments between compatible data objects. If a data object already contains an invalid value, for example, an invalid date or time in a date or time field, it is passed a valid value when the assignment is made to a compatible data object.
 > - The `applies_to_data` method of the [RTTI](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrun_time_type_identific_glosry.htm) class `cl_abap_datadescr` can be used to check type compatibility. See the executable example and the [Dynamic Programming cheat sheet](06_Dynamic_Programming.md).

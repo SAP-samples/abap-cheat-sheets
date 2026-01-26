@@ -4,8 +4,10 @@
 "! Choose F9 in ADT to run the class.</p>
 "!
 "! <h2>Note</h2>
-"! <p>Find information on <strong>getting started with the example class</strong> and the
-"! <strong>disclaimer</strong> in the ABAP Doc comment of class {@link zcl_demo_abap_aux}.</p>
+"! <p>Find the following information in the ABAP Doc comment of class {@link zcl_demo_abap_aux}:</p>
+"! <ul><li>How to get started with the example class</li>
+"! <li>Structuring of (most of) the example classes</li>
+"! <li>Disclaimer</li></ul>
 CLASS zcl_demo_abap_date_time DEFINITION
   PUBLIC
   FINAL
@@ -13,22 +15,68 @@ CLASS zcl_demo_abap_date_time DEFINITION
 
   PUBLIC SECTION.
     INTERFACES if_oo_adt_classrun.
-
+    METHODS:
+      m01_retrieve_timezone  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m02_retrieve_create_date  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m03_validity_date_fields  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m04_date_field_access  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m05_numeric_acc_calc  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m06_date_conversion  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m07_time_processing  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m08_ts_utclong  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m09_ts_create_modify  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m10_ts_calculation  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m11_ts_calculation_xco  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m12_utclong_diff  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m13_CONVERT_UTCLONG  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m14_CONVERT_INTO_UTCLONG  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m15_CL_ABAP_UTCLONG  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m16_get_time_stamp  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m17_convert_time_stamp  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m18_convert_into_time_stamp  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m19_CL_ABAP_TSTMP  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m20_unix_ts  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m21_string_templates  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m22_sql_typed_literals  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m23_sql_date_time_func  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m24_excursion_stopwatch  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string.
   PROTECTED SECTION.
   PRIVATE SECTION.
 ENDCLASS.
-
 
 
 CLASS zcl_demo_abap_date_time IMPLEMENTATION.
 
   METHOD if_oo_adt_classrun~main.
 
-    out->write( |ABAP Cheat Sheet Example: Date, Time, and Time Stamp\n\n| ).
+    zcl_demo_abap_aux=>set_example_divider(
+      out  = out
+      text = `ABAP Cheat Sheet Example: Date, Time, and Time Stamp`
+    ).
 
-**********************************************************************
+    "Dynamically calling methods of the class
+    "The method names are retrieved using RTTI. For more information, refer to the
+    "Dynamic Programming ABAP cheat sheet.
+    "Only those methods should be called that follow the naming convention M + digit.
+    DATA(methods) = CAST cl_abap_classdescr( cl_abap_typedescr=>describe_by_object_ref( me ) )->methods.
+    SORT methods BY name ASCENDING.
 
-    out->write( |1) Retrieving the Time Zone\n\n| ).
+    LOOP AT methods INTO DATA(meth_wa).
+      TRY.
+          "The find function result indicates that the method name begins (offset = 0) with M and a digit.
+          IF find( val = meth_wa-name pcre = `^M\d` case = abap_false ) = 0.
+            CALL METHOD (meth_wa-name) EXPORTING out = out text = CONV string( meth_wa-name ).
+          ENDIF.
+        CATCH cx_root INTO DATA(error).
+          out->write( error->get_text( ) ).
+      ENDTRY.
+    ENDLOOP.
+
+  ENDMETHOD.
+
+  METHOD m01_retrieve_timezone.
+
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Retrieving the Time Zone| ).
 
     "Retrieving the time zone of a given user
     TRY.
@@ -49,10 +97,11 @@ CLASS zcl_demo_abap_date_time IMPLEMENTATION.
     out->write( data = tz_user_xco name = `tz_user_xco` ).
     out->write( |\n| ).
     out->write( data = tz_utc_xco name = `tz_utc_xco` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m02_retrieve_create_date.
 
-    out->write( zcl_demo_abap_aux=>heading( `2) Retrieving and Creating Dates` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Retrieving and Creating Dates| ).
 
     "--------------------- Retrieving the current date --------------------
     "Retrieving the current date with respect to UTC.
@@ -129,11 +178,12 @@ CLASS zcl_demo_abap_date_time IMPLEMENTATION.
     out->write( data = day_from_date name = `day_from_date` ).
     out->write( |\n| ).
     out->write( data = month_from_date name = `month_from_date` ).
-    out->write( |\n| ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m03_validity_date_fields.
 
-    out->write( zcl_demo_abap_aux=>heading( `3) Validity of Date Fields` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Validity of Date Fields| ).
+
     "Before accessing date (or time) fields, ensure that the content of these
     "fields is valid to avoid unexpected results, such as incorrect calculations.
     "The ABAP runtime framework checks the validity of these fields in various
@@ -173,9 +223,12 @@ CLASS zcl_demo_abap_date_time IMPLEMENTATION.
       out->write( `inv_date3 = 0` ).
     ENDIF.
 
-**********************************************************************
+  ENDMETHOD.
 
-    out->write( zcl_demo_abap_aux=>heading( `4) Character-Like Access to Date Fields` ) ).
+  METHOD m04_date_field_access.
+
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Character-Like Access to Date Fields| ).
+
     "Since the content is character-like, you can use string processing functionalities
     "to access date values. This also applies to time fields of type t.
     "The following examples show a selection.
@@ -204,10 +257,12 @@ CLASS zcl_demo_abap_date_time IMPLEMENTATION.
     out->write( data = off_len_spec_day name = `off_len_spec_day` ).
     out->write( |\n| ).
     out->write( data = some_date name = `some_date` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m05_numeric_acc_calc.
 
-    out->write( zcl_demo_abap_aux=>heading( `5) Numeric Access and Calculations` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Numeric Access and Calculations| ).
+
     "When converting date fields to numeric values, the type d produces an integer
     "representing the number of days since 01.01.000
     "This is especially important when using date fields in calculations and converting
@@ -318,10 +373,12 @@ CLASS zcl_demo_abap_date_time IMPLEMENTATION.
     ELSE.
       out->write( data = err_ult->get_text( ) name = `err_ult->get_text( )` ).
     ENDIF.
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m06_date_conversion.
 
-    out->write( zcl_demo_abap_aux=>heading( `6) CL_ABAP_DATFM: Date Conversions` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: CL_ABAP_DATFM: Date Conversions| ).
+
     "Using the CL_ABAP_DATFM class, you can perform conversions with external
     "and internal representations of a time according to the date format, e.g.
     "the conversion of a date in a data object of type string to type d and vice
@@ -385,10 +442,12 @@ CLASS zcl_demo_abap_date_time IMPLEMENTATION.
     "20240202, which is of type d, is displayed as 2014-02-02 in
     "the console for better readability.
     out->write( data = date_tab name = `date_tab` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m07_time_processing.
 
-    out->write( zcl_demo_abap_aux=>heading( `7) Examples for Time Processing` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Examples for Time Processing| ).
+
     "The code snippet below provides examples of time processing, such
     "as retrieving the current time, accessing time values, creating time
     "values, and performing time calculations. You can also utilize the
@@ -535,10 +594,11 @@ CLASS zcl_demo_abap_date_time IMPLEMENTATION.
     "it is displayed in the format hh:mm:ss in the console for better
     "readability.
     out->write( data = conv_time_t name = `conv_time_t` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m08_ts_utclong.
 
-    out->write( zcl_demo_abap_aux=>heading( `8) Time Stamps of Type utclong` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Time Stamps of Type utclong| ).
 
     "Retrieving an UTC time stamp using the built-in function utclong_current
     "The return value has the type utclong.
@@ -571,10 +631,11 @@ CLASS zcl_demo_abap_date_time IMPLEMENTATION.
     out->write( data = ts5 name = `ts5` ).
     out->write( |\n| ).
     out->write( data = ts6 name = `ts6` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m09_ts_create_modify.
 
-    out->write( zcl_demo_abap_aux=>heading( `9) Creating/Modifying a Time Stamp` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Creating/Modifying a Time Stamp| ).
 
     "--------------------- Creating time stamps --------------------
 
@@ -623,10 +684,11 @@ CLASS zcl_demo_abap_date_time IMPLEMENTATION.
     out->write( data = ts10 name = `ts10` ).
     out->write( |\n| ).
     out->write( data = ts12 name = `ts12` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m10_ts_calculation.
 
-    out->write( zcl_demo_abap_aux=>heading( `10) Time Stamp Calculations with the Built-In Function utclong_add` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Time Stamp Calculations with the Built-In Function utclong_add| ).
 
     "With the built-in function utclong_add, at least one parameter must be specified
     "besides 'val'.
@@ -654,10 +716,11 @@ CLASS zcl_demo_abap_date_time IMPLEMENTATION.
     out->write( data = ts14 name = `ts14` ).
     out->write( |\n| ).
     out->write( data = ts15 name = `ts15` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m11_ts_calculation_xco.
 
-    out->write( zcl_demo_abap_aux=>heading( `11) Time Stamp Calculations with XCO` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Time Stamp Calculations with XCO| ).
 
     "Creating two time stamps with XCO
     DATA(ts_ref1) =  xco_cp_time=>moment( iv_year   = '2024'
@@ -747,10 +810,11 @@ CLASS zcl_demo_abap_date_time IMPLEMENTATION.
     out->write( data = ts_interval_low name = `ts_interval_low` ).
     out->write( |\n| ).
     out->write( data = ts_interval_high name = `ts_interval_high` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m12_utclong_diff.
 
-    out->write( zcl_demo_abap_aux=>heading( `12) Calculating Time Stamp Differences Using the Built-In Function utclong_diff` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Calculating Time Stamp Differences Using the Built-In Function utclong_diff| ).
 
     DATA(ts16) = CONV utclong( '2024-01-01 05:30:00' ).
     DATA(ts17) = CONV utclong( '2024-01-01 06:30:00' ).
@@ -766,10 +830,12 @@ CLASS zcl_demo_abap_date_time IMPLEMENTATION.
     out->write( data = ts_diff1 name = `ts_diff1` ).
     out->write( |\n| ).
     out->write( data = ts_diff2 name = `ts_diff2` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m13_CONVERT_UTCLONG.
 
-    out->write( zcl_demo_abap_aux=>heading( `13) CONVERT UTCLONG: Time Stamp (utclong) -> Local Date/Time` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: CONVERT UTCLONG: Time Stamp (utclong) -> Local Date/Time| ).
+
 
     DATA ts_utc TYPE utclong VALUE '2024-11-03 05:30:00'.
 
@@ -831,10 +897,12 @@ CLASS zcl_demo_abap_date_time IMPLEMENTATION.
     ELSE.
       out->write( data = err_conv->get_text( ) name = `err_conv->get_text( )` ).
     ENDIF.
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m14_CONVERT_INTO_UTCLONG.
 
-    out->write( zcl_demo_abap_aux=>heading( `14) CONVERT INTO UTCLONG: Local Date/Time -> Time Stamp (utclong)` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: CONVERT INTO UTCLONG: Local Date/Time -> Time Stamp (utclong)| ).
+
 
     DATA date2utcl TYPE d VALUE '20240101'.
     DATA time2utcl TYPE t VALUE '112458'.
@@ -952,10 +1020,11 @@ CLASS zcl_demo_abap_date_time IMPLEMENTATION.
     ENDDO.
 
     out->write( data = error_checks name = `error_checks` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m15_CL_ABAP_UTCLONG.
 
-    out->write( zcl_demo_abap_aux=>heading( `15) CL_ABAP_UTCLONG: Utilities for Time Stamps (utclong)` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: CL_ABAP_UTCLONG: Utilities for Time Stamps (utclong)| ).
 
     "Check the class documentation. More methods are available.
     DATA(low_timestamp) = CONV utclong( '2024-01-01 05:30:00' ).
@@ -988,10 +1057,11 @@ CLASS zcl_demo_abap_date_time IMPLEMENTATION.
     out->write( data = diff_seconds name = `diff_seconds` ).
     out->write( |\n| ).
     out->write( data = utc_ts name = `utc_ts` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m16_get_time_stamp.
 
-    out->write( zcl_demo_abap_aux=>heading( `16) GET TIME STAMP: Retrieving the Current Time Stamp` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: GET TIME STAMP: Retrieving the Current Time Stamp| ).
 
     "Short form
     DATA ts_short TYPE timestamp.
@@ -1010,10 +1080,11 @@ CLASS zcl_demo_abap_date_time IMPLEMENTATION.
     out->write( data = ts_long name = `ts_long` ).
     out->write( |\n| ).
     out->write( data = ts_inl name = `ts_inl` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m17_convert_time_stamp.
 
-    out->write( zcl_demo_abap_aux=>heading( `17) CONVERT TIME STAMP: Time Stamp in Packed Numbers -> Local Date/Time` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: CONVERT TIME STAMP: Time Stamp in Packed Numbers -> Local Date/Time| ).
 
     GET TIME STAMP FIELD DATA(tsf). "Type timestamp
     "Retrieving the time zone of a given user
@@ -1089,10 +1160,11 @@ CLASS zcl_demo_abap_date_time IMPLEMENTATION.
     IF sy-subrc = 12.
       out->write( `sy-subrc = 12` ).
     ENDIF.
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m18_convert_into_time_stamp.
 
-    out->write( zcl_demo_abap_aux=>heading( `18) CONVERT INTO TIME STAMP: Local Date/Time -> Time Stamp in Packed Numbers` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: CONVERT INTO TIME STAMP: Local Date/Time -> Time Stamp in Packed Numbers| ).
 
     DATA date4conv TYPE d VALUE '20240101'.
     DATA time4conv TYPE t VALUE '112458'.
@@ -1117,10 +1189,11 @@ CLASS zcl_demo_abap_date_time IMPLEMENTATION.
             TIME ZONE 'EST'.
 
     out->write( data = tsl_conv name = `tsl_conv` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m19_CL_ABAP_TSTMP.
 
-    out->write( zcl_demo_abap_aux=>heading( `19) CL_ABAP_TSTMP: Calculating and Converting Time Stamps in Packed Numbers` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: CL_ABAP_TSTMP: Calculating and Converting Time Stamps in Packed Numbers| ).
 
     "The following code snippets show a selection of methods available.
 
@@ -1163,10 +1236,12 @@ CLASS zcl_demo_abap_date_time IMPLEMENTATION.
     out->write( data = utcl2ts name = `utcl2ts` ).
     out->write( |\n| ).
     out->write( data = utcl2tsl name = `utcl2tsl` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m20_unix_ts.
 
-    out->write( zcl_demo_abap_aux=>heading( `20) Excursion: Unix Time Stamps` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Unix Time Stamps| ).
+
     "Unix time stamp: Seconds passed since 1970-01-01 00:00:00 (UTC).
 
     "Getting the current UNIX time stamp using XCO
@@ -1203,10 +1278,11 @@ CLASS zcl_demo_abap_date_time IMPLEMENTATION.
     out->write( data = ts_from_unix2 name = `ts_from_unix2` ).
     out->write( |\n| ).
     out->write( data = ts_from_unix3 name = `ts_from_unix3` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m21_string_templates.
 
-    out->write( zcl_demo_abap_aux=>heading( `21) Date, Time, and Time Stamp in String Templates` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Date, Time, and Time Stamp in String Templates| ).
 
     "DATE: Defining the format of a date
     "The output is just an example and depends on your settings.
@@ -1266,10 +1342,11 @@ CLASS zcl_demo_abap_date_time IMPLEMENTATION.
     out->write( data = tz_str2 name = `tz_str2` ).
     out->write( |\n| ).
     out->write( data = tz_str3 name = `tz_str3` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m22_sql_typed_literals.
 
-    out->write( zcl_demo_abap_aux=>heading( `22) Excursion: Typed Literals in ABAP SQL` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Typed Literals in ABAP SQL| ).
 
     SELECT SINGLE
       FROM i_timezone
@@ -1320,10 +1397,11 @@ CLASS zcl_demo_abap_date_time IMPLEMENTATION.
     out->write( |\n| ).
     out->write( data = wa_some_typed_literals name = `wa_some_typed_literals` ).
     out->write( |\n| ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m23_sql_date_time_func.
 
-    out->write( zcl_demo_abap_aux=>heading( `23) Date and Time Functions in ABAP SQL` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Date and Time Functions in ABAP SQL| ).
 
     "The following demo ABAP SQL SELECT statement selects from a
     "CDS view. The FIELDS list contains many functions related to
@@ -1413,10 +1491,12 @@ CLASS zcl_demo_abap_date_time IMPLEMENTATION.
     INTO @DATA(wa).
 
     out->write( data = wa name = `wa` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m24_excursion_stopwatch.
 
-    out->write( zcl_demo_abap_aux=>heading( `24) Excursion: ABAP Stopwatch` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Excursion: ABAP Stopwatch| ).
+
     "This excursion example demonstrates an ABAP stopwatch. This stopwatch
     "is represented by a local class implemented in the CCIMP include of the
     "class ('Local Types' tab in ADT). With the stopwatch, the elapsed

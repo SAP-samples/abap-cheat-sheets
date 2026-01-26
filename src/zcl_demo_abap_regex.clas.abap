@@ -3,9 +3,11 @@
 "! <p>The example class demonstrates regular expressions in ABAP.<br/>
 "! Choose F9 in ADT to run the class.</p>
 "!
-"! <h2>Information</h2>
-"! <p>Find information on getting started with the example class and the disclaimer in
-"! the ABAP Doc comment of class {@link zcl_demo_abap_aux}.</p>
+"! <h2>Note</h2>
+"! <p>Find the following information in the ABAP Doc comment of class {@link zcl_demo_abap_aux}:</p>
+"! <ul><li>How to get started with the example class</li>
+"! <li>Structuring of (most of) the example classes</li>
+"! <li>Disclaimer</li></ul>
 CLASS zcl_demo_abap_regex DEFINITION
   PUBLIC
   FINAL
@@ -14,6 +16,26 @@ CLASS zcl_demo_abap_regex DEFINITION
   PUBLIC SECTION.
     INTERFACES if_oo_adt_classrun.
     INTERFACES if_abap_matcher_callout.
+
+    METHODS:
+      m01_characters  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m02_escaped_characters  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m03_quant_rep_alternatives  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m04_character_sets_ranges  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m05_anchors_positions  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m06_capt_repl_backref  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m07_lookarounds  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m08_case_conversions  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m09_settings_ctrl_verbs  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m10_extended_mode  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m11_control_verbs  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m12_callouts  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m13_conditional_patterns  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m14_abap_statements  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m15_builtin_functions  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m16_builtin_functions_sql_cds  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m17_system_classes  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string.
+
   PROTECTED SECTION.
   PRIVATE SECTION.
     CLASS-DATA callout TYPE i.
@@ -23,8 +45,37 @@ ENDCLASS.
 CLASS zcl_demo_abap_regex IMPLEMENTATION.
   METHOD if_oo_adt_classrun~main.
 
-    out->write( |ABAP cheat sheet example: Regular Expressions in ABAP\n\n| ).
-    out->write( `1) Characters and Character Types` ).
+    zcl_demo_abap_aux=>set_example_divider(
+     out  = out
+     text = `ABAP cheat sheet example: Regular Expressions in ABAP`
+   ).
+
+    "Dynamically calling methods of the class
+    "The method names are retrieved using RTTI. For more information, refer to the
+    "Dynamic Programming ABAP cheat sheet.
+    "Only those methods should be called that follow the naming convention M + digit.
+    DATA(methods) = CAST cl_abap_classdescr( cl_abap_typedescr=>describe_by_object_ref( me ) )->methods.
+    SORT methods BY name ASCENDING.
+
+    "To call a particular method only, you can comment in the WHERE clause and
+    "adapt the literal appropriately.
+    LOOP AT methods INTO DATA(meth_wa)
+    "WHERE name CS 'M01'
+    .
+      TRY.
+          "The find function result indicates that the method name begins (offset = 0) with M and a digit.
+          IF find( val = meth_wa-name pcre = `^M\d` case = abap_false ) = 0.
+            CALL METHOD (meth_wa-name) EXPORTING out = out text = CONV string( meth_wa-name ).
+          ENDIF.
+        CATCH cx_root INTO DATA(error).
+          out->write( error->get_text( ) ).
+      ENDTRY.
+    ENDLOOP.
+  ENDMETHOD.
+
+  METHOD m01_characters.
+
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Characters and Character Types| ).
 
     DATA string_chars_types TYPE string.
 
@@ -60,10 +111,11 @@ CLASS zcl_demo_abap_regex IMPLEMENTATION.
     "Any character that is not a word character
     string_chars_types = replace( val = `(ab 12_c)` pcre = `\W` with = `#` occ = 0 ).
     out->write( string_chars_types ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m02_escaped_characters.
 
-    out->write( zcl_demo_abap_aux=>heading( `2) Escaped Characters and Special Variants` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Escaped Characters and Special Variants| ).
 
     DATA string_esc_chars TYPE string.
 
@@ -114,10 +166,11 @@ CLASS zcl_demo_abap_regex IMPLEMENTATION.
 
     string_esc_chars = replace( val = `Hello ABAP` pcre = `\P{Lu}+` with = `#` occ = 0 ).
     out->write( string_esc_chars ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m03_quant_rep_alternatives.
 
-    out->write( zcl_demo_abap_aux=>heading( `3) Quantifiers, Repetitions and Alternatives` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Quantifiers, Repetitions and Alternatives| ).
 
     DATA string_quan_rep_alt TYPE string.
 
@@ -170,10 +223,11 @@ CLASS zcl_demo_abap_regex IMPLEMENTATION.
 
     string_quan_rep_alt = replace( val = `<span>Hallo</span>` pcre = `<.+?>` with = `#` occ = 0 ).
     out->write( string_quan_rep_alt ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m04_character_sets_ranges.
 
-    out->write( zcl_demo_abap_aux=>heading( `4) Character Sets and Ranges` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Character Sets and Ranges| ).
 
     DATA string_char_sets_ranges TYPE string.
 
@@ -192,10 +246,12 @@ CLASS zcl_demo_abap_regex IMPLEMENTATION.
     "Matching any single character not within the range
     string_char_sets_ranges = replace( val = `ABCDabcd123456` pcre = `[^A-Ca-c1-4]` with = `#` occ = 0 ).
     out->write( string_char_sets_ranges ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m05_anchors_positions.
 
-    out->write( zcl_demo_abap_aux=>heading( `5) Anchors and Positions` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Anchors and Positions| ).
+
 
     DATA string_anchors_pos TYPE string.
 
@@ -237,10 +293,11 @@ CLASS zcl_demo_abap_regex IMPLEMENTATION.
     "Resetting the starting point of a match
     string_anchors_pos = replace( val = `abcd` pcre = `a.\Kc` with = `#` occ = 0 ).
     out->write( string_anchors_pos ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m06_capt_repl_backref.
 
-    out->write( zcl_demo_abap_aux=>heading( `6) Capturing Groups, Replacements and Backreferences` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Capturing Groups, Replacements and Backreferences| ).
 
     DATA string_capt_group TYPE string.
 
@@ -296,10 +353,11 @@ CLASS zcl_demo_abap_regex IMPLEMENTATION.
     "capturing group is made using \1.
     string_capt_group = replace( val = `abcdefabghij` pcre = `(a.)(\w*)\1` with = `#` ).
     out->write( string_capt_group ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m07_lookarounds.
 
-    out->write( zcl_demo_abap_aux=>heading( `7) Lookarounds` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Lookarounds| ).
 
     DATA string_look_arounds TYPE string.
 
@@ -318,10 +376,12 @@ CLASS zcl_demo_abap_regex IMPLEMENTATION.
     "Negative lookbehind
     string_look_arounds = replace( val = `ab c abcd` pcre = `(?<!\s)c` with = `#` occ = 0 ).
     out->write( string_look_arounds ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m08_case_conversions.
 
-    out->write( zcl_demo_abap_aux=>heading( `8) Case Conversions in Replacement Patterns` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Case Conversions in Replacement Patterns| ).
+
 
     DATA string_case_conv TYPE string.
 
@@ -348,10 +408,11 @@ CLASS zcl_demo_abap_regex IMPLEMENTATION.
     "The following example is a comparison to similar syntax without specifying \E
     string_case_conv = replace( val = `abcdefg` pcre = `c(..)(..)` with = `c\U$1$2` ).
     out->write( string_case_conv ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m09_settings_ctrl_verbs.
 
-    out->write( zcl_demo_abap_aux=>heading( `9) Setting Options and Control Verbs` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Setting Options and Control Verbs| ).
 
     DATA string_opt_set TYPE string.
 
@@ -393,10 +454,11 @@ CLASS zcl_demo_abap_regex IMPLEMENTATION.
     "\Z syntax (the result is the same as with `.$`)
     string_opt_set = replace( val = |abc\ndef\nghi| pcre = `(?m).\Z` with = `#` occ = 0 ).
     out->write( string_opt_set ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m10_extended_mode.
 
-    out->write( zcl_demo_abap_aux=>heading( `10) Extended Mode` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Extended Mode| ).
 
     DATA some_string TYPE string.
 
@@ -426,10 +488,12 @@ CLASS zcl_demo_abap_regex IMPLEMENTATION.
     "Disabling the extended mode so that whitespaces are not ignored
     some_string = replace( val = `abc def` pcre = `(?-x)abc def` with = `#` ).
     out->write( some_string ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m11_control_verbs.
 
-    out->write( zcl_demo_abap_aux=>heading( `11) Control verbs` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Control verbs| ).
+
 
     DATA ctrl_verb_string TYPE string.
 
@@ -458,10 +522,11 @@ CLASS zcl_demo_abap_regex IMPLEMENTATION.
     ctrl_verb_string = replace( val = |abc\ndef\rghi\r\njkl|
                                 pcre = `(*ANYCRLF)(?m)^` with = `_` occ = 0 ).
     out->write( ctrl_verb_string ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m12_callouts.
 
-    out->write( zcl_demo_abap_aux=>heading( `12) Callouts` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Callouts| ).
 
     "The following example shows how to use callouts to call an ABAP method from a PCRE
     "regular expression. It creates an object-oriented representation of a PCRE regex using
@@ -485,10 +550,11 @@ CLASS zcl_demo_abap_regex IMPLEMENTATION.
     ENDIF.
 
     out->write( callout_tab ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m13_conditional_patterns.
 
-    out->write( zcl_demo_abap_aux=>heading( `13) Conditional Patterns` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Conditional Patterns| ).
 
     DATA string_cond_pattern TYPE string.
 
@@ -539,10 +605,11 @@ CLASS zcl_demo_abap_regex IMPLEMENTATION.
     "applied
     string_cond_pattern = replace( val = `cd` pcre = `(ab)?cd` with = `${1:-yz}cd` ).
     out->write( string_cond_pattern ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m14_abap_statements.
 
-    out->write( zcl_demo_abap_aux=>heading( `14) ABAP Statements Using Regular Expressions` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: ABAP Statements Using Regular Expressions| ).
 
     "-----------------------------------------------------------------------------
     "------------------------------- FIND ----------------------------------------
@@ -722,32 +789,32 @@ CLASS zcl_demo_abap_regex IMPLEMENTATION.
       WITH `#`.
 
     out->write( str_table ).
+  ENDMETHOD.
 
+  METHOD m15_builtin_functions.
 
-**********************************************************************
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Built-In Functions in ABAP Using Regular Expressions| ).
 
-    out->write( zcl_demo_abap_aux=>heading( `15) Built-In Functions in ABAP Using Regular Expressions` ) ).
-
-    DATA(text) = `Pieces of cakes.`.
+    DATA(txt) = `Pieces of cakes.`.
 
     "---------------- find ----------------
-    "The find function searches for the subtexting specified and returns the offset
+    "The find function searches for the subtxting specified and returns the offset
 
-    DATA(find) = find( val = text pcre = `\.` ).
+    DATA(find) = find( val = txt pcre = `\.` ).
     out->write( find ).
 
     "---------------- find_end ----------------
     "find_end returns the sum of the offset of the occurrence plus the length of the match
 
-    DATA(find_end) = find_end( val = text pcre = `\s` ).
+    DATA(find_end) = find_end( val = txt pcre = `\s` ).
     out->write( find_end ).
 
     "---------------- count ----------------
 
-    DATA(count_a)  = count( val = text pcre = `\s` ).
+    DATA(count_a)  = count( val = txt pcre = `\s` ).
     out->write( count_a ).
 
-    DATA(count_b)  = count( val = text pcre = `.` ).
+    DATA(count_b)  = count( val = txt pcre = `.` ).
     out->write( count_b ).
 
     "---------------- match ----------------
@@ -767,36 +834,36 @@ CLASS zcl_demo_abap_regex IMPLEMENTATION.
 
     "---------------- replace ----------------
 
-    DATA(replace_a) = replace( val = text pcre = `\s` with = `#` ).
+    DATA(replace_a) = replace( val = txt pcre = `\s` with = `#` ).
 
     out->write( replace_a ).
 
-    DATA(replace_b) = replace( val = text pcre = `\s` occ = 2 with = `#` ).
+    DATA(replace_b) = replace( val = txt pcre = `\s` occ = 2 with = `#` ).
 
     out->write( replace_b ).
 
     "---------------- substring_* ----------------
 
-    text = `Lorem ipsum dolor sit amet`.
+    txt = `Lorem ipsum dolor sit amet`.
 
     "Extracting a substring ...
     "... after a matching regular expression
-    DATA(substring_after) = substring_after( val = text pcre = `\s` occ = 2 ).
+    DATA(substring_after) = substring_after( val = txt pcre = `\s` occ = 2 ).
 
     out->write( substring_after ).
 
     "... before a matching regular expression
-    DATA(substring_before) = substring_before( val = text pcre = `\s` occ = 2 ).
+    DATA(substring_before) = substring_before( val = txt pcre = `\s` occ = 2 ).
 
     out->write( substring_before ).
 
     "... from a matching regular expression on including the match
-    DATA(substring_from) = substring_from( val = text pcre = `\s` occ = 2  ).
+    DATA(substring_from) = substring_from( val = txt pcre = `\s` occ = 2  ).
 
     out->write( substring_from ).
 
     "... up to a matching regular expression including the match
-    DATA(substring_to) = substring_to( val = text pcre = `\s` occ = 2 ).
+    DATA(substring_to) = substring_to( val = txt pcre = `\s` occ = 2 ).
 
     out->write( substring_to ).
 
@@ -807,7 +874,7 @@ CLASS zcl_demo_abap_regex IMPLEMENTATION.
     DATA(contains) = xsdbool( contains( val = `abc def` pcre = `\s`  ) ).
     out->write( contains ).
 
-    "The built-in functions 'matches' compares a search range of the textual argument
+    "The built-in functions 'matches' compares a search range of the txtual argument
     "with a regular expression.
 
     DATA(matches) = xsdbool( matches( val  = `jon.doe@email.com`
@@ -815,9 +882,12 @@ CLASS zcl_demo_abap_regex IMPLEMENTATION.
 
     out->write( matches ).
 
-**********************************************************************
 
-    out->write( zcl_demo_abap_aux=>heading( `16) Built-In Functions in ABAP SQL and CDS Using Regular Expressions` ) ).
+  ENDMETHOD.
+
+  METHOD m16_builtin_functions_sql_cds.
+
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Built-In Functions in ABAP SQL and CDS Using Regular Expressions| ).
 
     "Populating demo database tables
     zcl_demo_abap_aux=>fill_dbtabs( ).
@@ -872,10 +942,12 @@ CLASS zcl_demo_abap_regex IMPLEMENTATION.
       INTO @DATA(builtin_func_regex).
 
     out->write( builtin_func_regex ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m17_system_classes.
 
-    out->write( zcl_demo_abap_aux=>heading( `17) System Classes for Regular Expressions: CL_ABAP_REGEX and CL_ABAP_MATCHER` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: System Classes for Regular Expressions: CL_ABAP_REGEX and CL_ABAP_MATCHER| ).
+
     "Note: The example results are not output except one.
 
     "Example test_stringing
@@ -1114,5 +1186,4 @@ CLASS zcl_demo_abap_regex IMPLEMENTATION.
       APPEND |This callout was called at { ts }| TO callout_tab.
     ENDIF.
   ENDMETHOD.
-
 ENDCLASS.

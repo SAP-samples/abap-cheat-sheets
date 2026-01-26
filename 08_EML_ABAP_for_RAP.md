@@ -1423,12 +1423,11 @@ MODIFY ENTITY root_ent
     entry for this particular instance in the `failed_resp`
     operand and potentially an error message in
     `reported_resp`, too. Nevertheless, especially in ABP
-    implementations and depending on the context, you should implement
+    implementations and depending on the context (in those methods you self-implement), you should implement
     and fill these parameters according to the [RAP BO
     contract](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_bo_contract_glosry.htm "Glossary Entry")
     to meet the variety of implementation rules.
->-   `%cid` should be provided even if you are not interested in
-    it and subsequent operations do not require the reference.
+>-  `%cid` should (or rather must) be provided even if you are not interested in its and subsequent operations do not require the reference. For an automatic provision of the `%cid` value, you can use the `AUTO FILL CID` addition in create operations.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 

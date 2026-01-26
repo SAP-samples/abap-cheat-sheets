@@ -4,8 +4,10 @@
 "! Choose F9 in ADT to run the class.</p>
 "!
 "! <h2>Note</h2>
-"! <p>Find information on <strong>getting started with the example class</strong> and the
-"! <strong>disclaimer</strong> in the ABAP Doc comment of class {@link zcl_demo_abap_aux}.</p>
+"! <p>Find the following information in the ABAP Doc comment of class {@link zcl_demo_abap_aux}:</p>
+"! <ul><li>How to get started with the example class</li>
+"! <li>Structuring of (most of) the example classes</li>
+"! <li>Disclaimer</li></ul>
 CLASS zcl_demo_abap_internal_tables DEFINITION
   PUBLIC
   FINAL
@@ -14,9 +16,145 @@ CLASS zcl_demo_abap_internal_tables DEFINITION
   PUBLIC SECTION.
     INTERFACES if_oo_adt_classrun.
     CLASS-METHODS class_constructor.
+
+    METHODS:
+      m01_create_itab_inline  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m02_itab_append_insert  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m03_add_initial_line  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m04_add_line_fs_ref  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m05_add_all_lines  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m06_add_lines_index_range  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m07_insert_index  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m08_add_with_value_operator  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m09_corresponding  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m10_deep_nested_tables  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m11_corresponding_lookup_table  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m12_new_operator  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m13_filter_operator  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m14_read_table_index  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m15_read_table_system_fields  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m16_read_table_keys  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m17_read_table_free_keys  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m18_address_read_lines  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m19_comparing_transporting  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m20_casting_else_unassign  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m21_read_table_where_condition  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m22_table_expressions_read  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m23_table_expressions_chaining  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m24_table_expressions_writepos  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m25_check_line_exists  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m26_check_line_index  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m27_check_how_many_lines  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m28_rtti  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m29_loop_different_targets  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m30_loop_keys  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m31_loop_restrict  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m32_loop_step_direction  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m33_loop_interrupt_exit  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m34_iteration_expressions  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m35_loop_retrieve  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m36_loop_insert_delete  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m37_itab_sql  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m38_itab_join_merge  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m39_itab_sort  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m40_itab_direct_modification  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m41_itab_modify_statements  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m42_delete  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m43_delete_adjacent  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m44_delete_content  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m45_itab_grouping  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m46_collect  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m47_hashed_tab_sec_key  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m48_empty_keys_itab_inl  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m49_ranges_tables  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m50_dynamic_itab  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string.
+
   PROTECTED SECTION.
   PRIVATE SECTION.
     CLASS-METHODS fill_dbtabs.
+    METHODS prep_itabs.
+
+    TYPES: BEGIN OF st_a,
+             num  TYPE i,
+             str  TYPE string,
+             char TYPE c LENGTH 2,
+           END OF st_a,
+           ty_tab_a TYPE TABLE OF st_a WITH EMPTY KEY.
+    DATA it_a TYPE ty_tab_a.
+    DATA it_b TYPE ty_tab_a.
+
+    TYPES: BEGIN OF st_h,
+             a TYPE i,
+             b TYPE c LENGTH 2,
+             c TYPE string,
+           END OF st_h,
+           ty_tab_f TYPE SORTED TABLE OF st_h WITH UNIQUE KEY a WITH NON-UNIQUE SORTED KEY sk COMPONENTS b.
+
+    TYPES: BEGIN OF st_i,
+             num  TYPE i,
+             str  TYPE string,
+             char TYPE c LENGTH 2,
+           END OF st_i.
+
+    DATA it_k TYPE SORTED TABLE OF st_i
+      WITH NON-UNIQUE KEY primary_key ALIAS pk COMPONENTS num
+      WITH NON-UNIQUE SORTED KEY sec_key ALIAS sk COMPONENTS char.
+
+    TYPES: BEGIN OF s_demo,
+             comp1 TYPE i,
+             comp2 TYPE i,
+             comp3 TYPE i,
+             comp4 TYPE c LENGTH 3,
+           END OF s_demo,
+           ttyp        TYPE SORTED TABLE OF s_demo WITH UNIQUE KEY comp1 WITH NON-UNIQUE SORTED KEY sk COMPONENTS comp2 comp3,
+           ttyp_hashed TYPE HASHED TABLE OF s_demo WITH UNIQUE KEY comp1 WITH NON-UNIQUE SORTED KEY sk COMPONENTS comp2 comp3,
+           ttyp2       TYPE SORTED TABLE OF s_demo WITH UNIQUE KEY comp1 comp2 WITH NON-UNIQUE SORTED KEY sk COMPONENTS comp3.
+
+    DATA line TYPE s_demo.
+    DATA itab TYPE ttyp.
+    DATA itab_hashed TYPE ttyp_hashed.
+    DATA itab_so TYPE ttyp2.
+
+    TYPES: BEGIN OF s,
+             a TYPE c LENGTH 3,
+             b TYPE i,
+           END OF s,
+           tab_type TYPE TABLE OF s WITH EMPTY KEY.
+
+    TYPES: BEGIN OF s_loop,
+             compa TYPE i,
+             compb TYPE string,
+             compc TYPE i,
+           END OF s_loop,
+           ttype_loop TYPE SORTED TABLE OF s_loop WITH UNIQUE KEY primary_key ALIAS pk COMPONENTS compa
+           WITH NON-UNIQUE SORTED KEY sec_key ALIAS sk COMPONENTS compc.
+
+    DATA it_loop TYPE ttype_loop.
+    DATA wal LIKE LINE OF it_loop.
+    DATA loop_str TYPE string.
+
+    TYPES ty_int_tab TYPE TABLE OF i WITH EMPTY KEY.
+
+    "Creating structured data types.
+    TYPES: "Line types for internal tables
+      BEGIN OF struc1,
+        a TYPE i,
+        b TYPE c LENGTH 3,
+        c TYPE c LENGTH 3,
+        d TYPE c LENGTH 3,
+      END OF struc1.
+
+    "Declaring demo sorted/hashed tables having primary and
+    "secondary keys as well as alias names defined
+
+    DATA it_std TYPE TABLE OF struc1 WITH NON-UNIQUE KEY a.
+    DATA it_so_sec TYPE SORTED TABLE OF struc1
+      WITH NON-UNIQUE KEY primary_key ALIAS pk COMPONENTS a
+      WITH NON-UNIQUE SORTED KEY sec_key ALIAS sk COMPONENTS b.
+
+    DATA it_ha_sec TYPE HASHED TABLE OF struc1
+      WITH UNIQUE KEY primary_key ALIAS pkh COMPONENTS a
+      WITH NON-UNIQUE SORTED KEY sec_key_h ALIAS skh COMPONENTS b.
 ENDCLASS.
 
 
@@ -27,7 +165,6 @@ CLASS zcl_demo_abap_internal_tables IMPLEMENTATION.
     zcl_demo_abap_aux=>fill_dbtabs( ).
     fill_dbtabs( ).
   ENDMETHOD.
-
 
   METHOD fill_dbtabs.
     "Initializing and populating database tables to have data to work with
@@ -49,9 +186,36 @@ CLASS zcl_demo_abap_internal_tables IMPLEMENTATION.
 
   METHOD if_oo_adt_classrun~main.
 
-    out->write( |ABAP cheat sheet example: Internal tables\n\n| ).
+    zcl_demo_abap_aux=>set_example_divider(
+      out  = out
+      text = `ABAP cheat sheet example: Internal tables`
+    ).
 
-    out->write( |1) Creating Internal Tables By Inline Declaration\n\n| ).
+    "Dynamically calling methods of the class
+    "The method names are retrieved using RTTI. For more information, refer to the Dynamic
+    "Programming ABAP cheat sheet.
+    "Only those methods should be called that follow the naming convention M + digit.
+    DATA(methods) = CAST cl_abap_classdescr( cl_abap_typedescr=>describe_by_object_ref( me ) )->methods.
+    SORT methods BY name ASCENDING.
+
+    LOOP AT methods INTO DATA(meth_wa).
+      TRY.
+          "The find function result indicates that the method name begins (offset = 0) with M and a digit.
+          IF find( val = meth_wa-name pcre = `^M\d` case = abap_false ) = 0.
+            CALL METHOD (meth_wa-name) EXPORTING out = out text = CONV string( meth_wa-name ).
+          ENDIF.
+        CATCH cx_root INTO DATA(error).
+          out->write( error->get_text( ) ).
+      ENDTRY.
+    ENDLOOP.
+  ENDMETHOD.
+
+  METHOD m01_create_itab_inline.
+
+    zcl_demo_abap_aux=>set_example_divider(
+      out  = out
+      text = |{ text }: Creating Internal Tables By Inline Declaration|
+    ).
 
     "Table declared inline in the context of an assignment
     "The examples show the copying of a table including the content
@@ -92,18 +256,14 @@ CLASS zcl_demo_abap_internal_tables IMPLEMENTATION.
     SELECT * FROM zdemo_abap_fli INTO TABLE @FINAL(it_9).
 
     out->write( zcl_demo_abap_aux=>no_output ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m02_itab_append_insert.
 
-    out->write( zcl_demo_abap_aux=>heading( `2) Populating internal tables by adding a line (structure) using APPEND ... TO/INSERT ... INTO` ) ).
-
-    TYPES: BEGIN OF st_a,
-             num  TYPE i,
-             str  TYPE string,
-             char TYPE c LENGTH 2,
-           END OF st_a,
-           ty_tab_a TYPE TABLE OF st_a WITH EMPTY KEY.
-    DATA it_a TYPE ty_tab_a.
+    zcl_demo_abap_aux=>set_example_divider(
+    out  = out
+    text = |{ text }: Populating internal tables by adding a line (structure) using APPEND ... TO/INSERT ... INTO|
+  ).
 
     "Adding a line created inline
     APPEND VALUE #( num = 1 str = `A` char = 'bb' ) TO it_a.
@@ -122,19 +282,28 @@ CLASS zcl_demo_abap_internal_tables IMPLEMENTATION.
     INSERT struc_b INTO TABLE it_a.
 
     out->write( data = it_a name = `it_a` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m03_add_initial_line.
 
-    out->write( zcl_demo_abap_aux=>heading( `3) Adding an initial line` ) ).
+    zcl_demo_abap_aux=>set_example_divider(
+       out  = out
+       text = |{ text }: Adding an initial line|
+     ).
 
     APPEND INITIAL LINE TO it_a.
     INSERT INITIAL LINE INTO TABLE it_a.
 
     out->write( data = it_a name = `it_a` ).
 
-**********************************************************************
+  ENDMETHOD.
 
-    out->write( zcl_demo_abap_aux=>heading( `4) Adding a line and assigning the added line to a field symbol or data reference variable` ) ).
+  METHOD m04_add_line_fs_ref.
+
+    zcl_demo_abap_aux=>set_example_divider(
+       out  = out
+       text = |{ text }: Adding a line and assigning the added line to a field symbol or data reference variable|
+     ).
 
     "Creating field symbol inline
     APPEND VALUE st_a( num = 5 str =  `I` char = 'jj' ) TO it_a ASSIGNING FIELD-SYMBOL(<fs_a>).
@@ -162,14 +331,17 @@ CLASS zcl_demo_abap_internal_tables IMPLEMENTATION.
     ENDDO.
 
     out->write( data = it_a name = `it_a` ).
+  ENDMETHOD.
 
-**********************************************************************
-
-    out->write( zcl_demo_abap_aux=>heading( `5) Adding all lines from another internal table (LINES OF addition)` ) ).
+  METHOD m05_add_all_lines.
+    zcl_demo_abap_aux=>set_example_divider(
+       out  = out
+       text = |{ text }: Adding all lines from another internal table (LINES OF addition)|
+     ).
 
     "Adding lines to one internal table that are all added to
     "another one
-    DATA it_b TYPE ty_tab_a.
+
     INSERT VALUE #( num = 99 str =  `L` char = 'mm' ) INTO TABLE it_b.
     INSERT VALUE #( num = 100 str =  `N` char = 'oo' ) INTO TABLE it_b.
 
@@ -177,10 +349,13 @@ CLASS zcl_demo_abap_internal_tables IMPLEMENTATION.
     INSERT LINES OF it_b INTO TABLE it_a.
 
     out->write( data = it_a name = `it_a` ).
+  ENDMETHOD.
 
-**********************************************************************
-
-    out->write( zcl_demo_abap_aux=>heading( `6) Adding multiple lines from another internal table with a specified index range` ) ).
+  METHOD m06_add_lines_index_range.
+    zcl_demo_abap_aux=>set_example_divider(
+       out  = out
+       text = |{ text }: Adding multiple lines from another internal table with a specified index range|
+     ).
 
     APPEND LINES OF it_a FROM 5 TO 7 TO it_b.
     APPEND LINES OF it_a FROM 12 TO it_b. "further lines up to the last line
@@ -188,10 +363,13 @@ CLASS zcl_demo_abap_internal_tables IMPLEMENTATION.
     INSERT LINES OF it_a FROM 8 TO 10 INTO TABLE it_b.
 
     out->write( data = it_b name = `it_b` ).
+  ENDMETHOD.
 
-**********************************************************************
-
-    out->write( zcl_demo_abap_aux=>heading( `7) Inserting one line or multiple lines from another internal table at a specific position (INDEX addition)` ) ).
+  METHOD m07_insert_index.
+    zcl_demo_abap_aux=>set_example_divider(
+          out  = out
+          text = |{ text }: Inserting one line or multiple lines from another internal table at a specific position (INDEX addition)|
+        ).
 
     "To be used for index tables.
 
@@ -201,10 +379,13 @@ CLASS zcl_demo_abap_internal_tables IMPLEMENTATION.
     INSERT LINES OF it_a FROM 1 TO 3 INTO it_b INDEX 1.
 
     out->write( data = it_b name = `it_b` ).
+  ENDMETHOD.
 
-**********************************************************************
-
-    out->write( zcl_demo_abap_aux=>heading( `8) Adding lines using the VALUE operator` ) ).
+  METHOD m08_add_with_value_operator.
+    zcl_demo_abap_aux=>set_example_divider(
+          out  = out
+          text = |{ text }: Adding lines using the VALUE operator|
+        ).
 
     DATA(struc_d) = VALUE st_a( num = 11 str =  `T` char = 'uu' ).
     DATA it_c TYPE ty_tab_a.
@@ -244,10 +425,13 @@ CLASS zcl_demo_abap_internal_tables IMPLEMENTATION.
     out->write( data = it_d name = `it_d` ).
     out->write( |\n| ).
     out->write( data = it_c name = `it_c` ).
+  ENDMETHOD.
 
-**********************************************************************
-
-    out->write( zcl_demo_abap_aux=>heading( `9) CORRESPONDING operator / MOVE-CORRESPONDING statements` ) ).
+  METHOD m09_corresponding.
+    zcl_demo_abap_aux=>set_example_divider(
+          out  = out
+          text = |{ text }: CORRESPONDING operator / MOVE-CORRESPONDING statements|
+        ).
 
     "Creating and populating demo internal tables
     TYPES: BEGIN OF st_b,
@@ -362,11 +546,13 @@ CLASS zcl_demo_abap_internal_tables IMPLEMENTATION.
     it_g = CORRESPONDING #( it_e DISCARDING DUPLICATES ).
 
     out->write( data = it_g name = `it_g` ).
-    out->write( |\n| ).
+  ENDMETHOD.
 
-**********************************************************************
-
-    out->write( zcl_demo_abap_aux=>heading( `10) DEEP addition to the CORRESPONDING operator / EXPANDING NESTED TABLES addition to MOVE-CORRESPONDING statements` ) ).
+  METHOD m10_deep_nested_tables.
+    zcl_demo_abap_aux=>set_example_divider(
+          out  = out
+          text = |{ text }: DEEP addition to the CORRESPONDING operator / EXPANDING NESTED TABLES addition to MOVE-CORRESPONDING statements|
+        ).
 
     "Handling deep components such as nested internal tables
 
@@ -429,10 +615,13 @@ CLASS zcl_demo_abap_internal_tables IMPLEMENTATION.
     it_h = it_h_original.
     MOVE-CORRESPONDING it_i TO it_h EXPANDING NESTED TABLES KEEPING TARGET LINES.
     out->write( it_h ).
+  ENDMETHOD.
 
-**********************************************************************
-
-    out->write( zcl_demo_abap_aux=>heading( `11) CORRESPONDING with lookup table` ) ).
+  METHOD m11_corresponding_lookup_table.
+    zcl_demo_abap_aux=>set_example_divider(
+          out  = out
+          text = |{ text }: CORRESPONDING with lookup table|
+        ).
 
     "The following examples construct an internal tables by joining an internal table
     "and a lookup table and comparing their components.
@@ -570,15 +759,13 @@ CLASS zcl_demo_abap_internal_tables IMPLEMENTATION.
 
     out->write( data = it_lk6 name = `it_lk6` ).
 
-**********************************************************************
+  ENDMETHOD.
 
-    out->write( zcl_demo_abap_aux=>heading( `12) Creating anonymous internal tables with the NEW operator` ) ).
-
-    TYPES: BEGIN OF s,
-             a TYPE c LENGTH 3,
-             b TYPE i,
-           END OF s,
-           tab_type TYPE TABLE OF s WITH EMPTY KEY.
+  METHOD m12_new_operator.
+    zcl_demo_abap_aux=>set_example_divider(
+          out  = out
+          text = |{ text }: Creating anonymous internal tables with the NEW operator|
+        ).
 
     "Creating and populating an anonymous data object
     DATA(dref_tab) = NEW tab_type( ( a = 'aaa' b = 1 )
@@ -592,11 +779,13 @@ CLASS zcl_demo_abap_internal_tables IMPLEMENTATION.
     ASSERT dref_tab->*[ 1 ]-a = 'zzz'.
     INSERT VALUE s( a = 'yyy' b = 3 ) INTO TABLE dref_tab->*.
     out->write( data = dref_tab->* name = `dref_tab->*` ).
-    out->write( |\n| ).
+  ENDMETHOD.
 
-**********************************************************************
-
-    out->write( zcl_demo_abap_aux=>heading( `13) FILTER: Filtering internal table by condition` ) ).
+  METHOD m13_filter_operator.
+    zcl_demo_abap_aux=>set_example_divider(
+          out  = out
+          text = |{ text }: FILTER: Filtering internal table by condition|
+        ).
 
     "This section covers multiple examples demonstrating the syntactical variety
     "of the FILTER operator.
@@ -704,19 +893,15 @@ CLASS zcl_demo_abap_internal_tables IMPLEMENTATION.
     DATA(f11) = FILTER #( fi_tab2 USING KEY sec_key EXCEPT IN filter_tab2 WHERE a = table_line ).
 
     out->write( data = f11 name = `f11` ).
+  ENDMETHOD.
 
-**********************************************************************
-
-    out->write( zcl_demo_abap_aux=>heading( `14) READ TABLE: Reading a single line by index` ) ).
+  METHOD m14_read_table_index.
+    zcl_demo_abap_aux=>set_example_divider(
+          out  = out
+          text = |{ text }: READ TABLE: Reading a single line by index|
+        ).
 
     "Creating and populating an internal table
-    TYPES: BEGIN OF st_h,
-             a TYPE i,
-             b TYPE c LENGTH 2,
-             c TYPE string,
-           END OF st_h,
-           ty_tab_f TYPE SORTED TABLE OF st_h WITH UNIQUE KEY a WITH NON-UNIQUE SORTED KEY sk COMPONENTS b.
-
     DATA(it_j) = VALUE ty_tab_f( ( a = 1 b = 'zz' c = `B` )
                                  ( a = 2 b = 'xx' c = `D` )
                                  ( a = 3 b = 'yy' c = `F` ) ).
@@ -761,10 +946,19 @@ CLASS zcl_demo_abap_internal_tables IMPLEMENTATION.
     READ TABLE it_j_alias INTO struc_e INDEX 1 USING KEY sk.
 
     out->write( zcl_demo_abap_aux=>no_output ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m15_read_table_system_fields.
+    zcl_demo_abap_aux=>set_example_divider(
+          out  = out
+          text = |{ text }: System field setting with READ TABLE statements|
+        ).
 
-    out->write( zcl_demo_abap_aux=>heading( `15) System field setting with READ TABLE statements` ) ).
+    DATA(it_j) = VALUE ty_tab_f( ( a = 1 b = 'zz' c = `B` )
+                                 ( a = 2 b = 'xx' c = `D` )
+                                 ( a = 3 b = 'yy' c = `F` ) ).
+    DATA struc_e TYPE st_h.
+
 
     READ TABLE it_j INTO struc_e INDEX 999.
     IF sy-subrc = 0.
@@ -780,21 +974,15 @@ CLASS zcl_demo_abap_internal_tables IMPLEMENTATION.
 
     out->write( zcl_demo_abap_aux=>no_output ).
 
-**********************************************************************
+  ENDMETHOD.
 
-    out->write( zcl_demo_abap_aux=>heading( `16) READ TABLE: Reading a single line using table keys` ) ).
+  METHOD m16_read_table_keys.
+    zcl_demo_abap_aux=>set_example_divider(
+          out  = out
+          text = |{ text }: READ TABLE: Reading a single line using table keys|
+        ).
 
     "Creating and populating a demo internal table
-    TYPES: BEGIN OF st_i,
-             num  TYPE i,
-             str  TYPE string,
-             char TYPE c LENGTH 2,
-           END OF st_i.
-
-    DATA it_k TYPE SORTED TABLE OF st_i
-      WITH NON-UNIQUE KEY primary_key ALIAS pk COMPONENTS num
-      WITH NON-UNIQUE SORTED KEY sec_key ALIAS sk COMPONENTS char.
-
     it_k = VALUE #( ( num = 1 str = `A` char = 'zz' )
                     ( num = 2 str = `C` char = 'yy' )
                     ( num = 3 str = `E` char = 'xx' ) ).
@@ -831,20 +1019,26 @@ CLASS zcl_demo_abap_internal_tables IMPLEMENTATION.
     READ TABLE it_k FROM sec_key USING KEY sk INTO struc_i.
 
     out->write( zcl_demo_abap_aux=>no_output ).
+  ENDMETHOD.
 
-**********************************************************************
-
-    out->write( zcl_demo_abap_aux=>heading( `17) READ TABLE: Reading a single line using a free key` ) ).
+  METHOD m17_read_table_free_keys.
+    zcl_demo_abap_aux=>set_example_divider(
+          out  = out
+          text = |{ text }: READ TABLE: Reading a single line using a free key|
+        ).
 
     "Note: Instead if READ TABLE ... WITH TABLE KEY ..., it is ... WITH KEY.
 
     READ TABLE it_k INTO DATA(struc_j) WITH KEY str = `A`.
 
     out->write( zcl_demo_abap_aux=>no_output ).
+  ENDMETHOD.
 
-**********************************************************************
-
-    out->write( zcl_demo_abap_aux=>heading( `18) Examples for addressing individual components of read lines` ) ).
+  METHOD m18_address_read_lines.
+    zcl_demo_abap_aux=>set_example_divider(
+          out  = out
+          text = |{ text }: Examples for addressing individual components of read lines|
+        ).
 
     "Examples for addressing individual components of read lines
     "The assertions emphasize the difference of work areas and field
@@ -872,10 +1066,13 @@ CLASS zcl_demo_abap_internal_tables IMPLEMENTATION.
     DATA(comp_e) = dref_e->*-char.
 
     out->write( zcl_demo_abap_aux=>no_output ).
+  ENDMETHOD.
 
-**********************************************************************
-
-    out->write( zcl_demo_abap_aux=>heading( `19) READ TABLE: COMPARING / TRANSPORTING additions` ) ).
+  METHOD m19_comparing_transporting.
+    zcl_demo_abap_aux=>set_example_divider(
+          out  = out
+          text = |{ text }: READ TABLE: COMPARING / TRANSPORTING additions|
+        ).
 
     "Comparing fields and specifying fields to be transported
     TYPES ty_tab_h TYPE TABLE OF st_i WITH EMPTY KEY.
@@ -1002,10 +1199,13 @@ CLASS zcl_demo_abap_internal_tables IMPLEMENTATION.
     ASSERT nums_subrc_2 = `123458`.
 
     out->write( zcl_demo_abap_aux=>no_output ).
+  ENDMETHOD.
 
-**********************************************************************
-
-    out->write( zcl_demo_abap_aux=>heading( `20) READ TABLE: CASTING / ELSE UNASSIGN additions` ) ).
+  METHOD m20_casting_else_unassign.
+    zcl_demo_abap_aux=>set_example_divider(
+          out  = out
+          text = |{ text }: READ TABLE: CASTING / ELSE UNASSIGN additions|
+        ).
 
     "Additions when assigning the read result to a field symbol
 
@@ -1048,11 +1248,15 @@ CLASS zcl_demo_abap_internal_tables IMPLEMENTATION.
       ENDIF.
     ENDDO.
 
-   out->write( zcl_demo_abap_aux=>no_output ).
+    out->write( zcl_demo_abap_aux=>no_output ).
 
-**********************************************************************
+  ENDMETHOD.
 
-    out->write( zcl_demo_abap_aux=>heading( `21) READ TABLE: Specifying a WHERE Condition` ) ).
+  METHOD m21_read_table_where_condition.
+    zcl_demo_abap_aux=>set_example_divider(
+          out  = out
+          text = |{ text }: READ TABLE: Specifying a WHERE Condition|
+        ).
 
     "Creating and populating demo internal tables
     TYPES: BEGIN OF s_where,
@@ -1178,34 +1382,15 @@ CLASS zcl_demo_abap_internal_tables IMPLEMENTATION.
     ASSERT sy-tabix = 2.
 
     out->write( zcl_demo_abap_aux=>no_output ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m22_table_expressions_read.
+    zcl_demo_abap_aux=>set_example_divider(
+          out  = out
+          text = |{ text }: Table expressions|
+        ).
 
-    out->write( zcl_demo_abap_aux=>heading( `22) Table expressions: Reading table lines by index` ) ).
-
-    "Creating and populating demo internal tables
-    "Note: These demo tables are relevant for most of the code snippets
-    "in this section.
-    TYPES: BEGIN OF s_demo,
-             comp1 TYPE i,
-             comp2 TYPE i,
-             comp3 TYPE i,
-             comp4 TYPE c LENGTH 3,
-           END OF s_demo,
-           ttyp        TYPE SORTED TABLE OF s_demo WITH UNIQUE KEY comp1 WITH NON-UNIQUE SORTED KEY sk COMPONENTS comp2 comp3,
-           ttyp_hashed TYPE HASHED TABLE OF s_demo WITH UNIQUE KEY comp1 WITH NON-UNIQUE SORTED KEY sk COMPONENTS comp2 comp3,
-           ttyp2       TYPE SORTED TABLE OF s_demo WITH UNIQUE KEY comp1 comp2 WITH NON-UNIQUE SORTED KEY sk COMPONENTS comp3.
-
-    DATA(itab) = VALUE ttyp( ( comp1 = 1 comp2 = 30 comp3 = 31 comp4 = 'aaa' )
-                             ( comp1 = 2 comp2 = 20 comp3 = 21 comp4 = 'bbb' )
-                             ( comp1 = 3 comp2 = 10 comp3 = 11 comp4 = 'ccc' ) ).
-
-    DATA itab_hashed TYPE ttyp_hashed.
-    itab_hashed = itab.
-    DATA itab_so TYPE ttyp2.
-    itab_so = itab.
-
-    DATA line TYPE s_demo.
+    prep_itabs( ).
 
     "------ Reading table line by index------
     "Just specifying the index number means referring to the primary table index.
@@ -1229,11 +1414,7 @@ CLASS zcl_demo_abap_internal_tables IMPLEMENTATION.
     "Secondary table index access is possible for hashed tables
     DATA(line_hashed_tab3) = itab_hashed[ KEY sk INDEX 2 ].
 
-   out->write( zcl_demo_abap_aux=>no_output ).
-
-**********************************************************************
-
-    out->write( zcl_demo_abap_aux=>heading( `23) Table expressions: Reading table lines by table key` ) ).
+    "Reading table lines by table key
 
     "------------------ TABLE KEY addition ------------------
 
@@ -1305,22 +1486,16 @@ CLASS zcl_demo_abap_internal_tables IMPLEMENTATION.
     "example table is specified)
     line = itab_so[ comp1 = 1 ].
 
-    out->write( zcl_demo_abap_aux=>no_output ).
 
-**********************************************************************
-
-    out->write( zcl_demo_abap_aux=>heading( `24) Table expressions: Reading table lines using free keys` ) ).
+    "---------- Reading table lines using free keys ----------
 
     "The search is and cannot be optimized as the component is not part of
     "the primary table key of the sorted table. Plus, no appropriate
     "secondary table key can be applied.
     line = itab[ comp4 = 'ccc' ].
 
-    out->write( zcl_demo_abap_aux=>no_output ).
 
-**********************************************************************
-
-    out->write( zcl_demo_abap_aux=>heading( `25) Table expressions: Assigning table lines to a field symbol, data reference variables pointing to a table line` ) ).
+    " --- Assigning table lines to a field symbol, data reference variables pointing to a table line ---
 
     "Assigning table lines to a field symbol
 
@@ -1340,21 +1515,13 @@ CLASS zcl_demo_abap_internal_tables IMPLEMENTATION.
     dref_te = NEW s_demo(  ).
     dref_te->* = itab[ 1 ].
 
-    out->write( zcl_demo_abap_aux=>no_output ).
-
-**********************************************************************
-
-    out->write( zcl_demo_abap_aux=>heading( `26) Table expressions: Specifying table expressions as operands in constructor expressions with VALUE and REF` ) ).
+    "--- Specifying table expressions as operands in constructor expressions with VALUE and REF ---
 
     line = VALUE #( itab[ 2 ] ).
     "Works like READ TABLE ... REFERENCE INTO ...
     DATA(line_ref) = REF #( itab[ 3 ] ).
 
-    out->write( zcl_demo_abap_aux=>no_output ).
-
-**********************************************************************
-
-    out->write( zcl_demo_abap_aux=>heading( `27) Table expressions: Specifying a default value for lines that are not found to avoid an exception` ) ).
+    "--- Specifying a default value for lines that are not found to avoid an exception ---
 
     TRY.
         line = itab[ 4 ].
@@ -1366,11 +1533,8 @@ CLASS zcl_demo_abap_internal_tables IMPLEMENTATION.
     line = VALUE #( itab[ 5 ] DEFAULT itab[ 1 ]  ).
     line = VALUE #( itab[ 6 ] DEFAULT VALUE #( ) ).
 
-    out->write( zcl_demo_abap_aux=>no_output ).
+    "--- Field symbols and dereferenced data references specified before the square brackets ---
 
-**********************************************************************
-
-    out->write( zcl_demo_abap_aux=>heading( `28) Table expressions: Field symbols and dereferenced data references specified before the square brackets` ) ).
 
     ASSIGN itab TO FIELD-SYMBOL(<tab>).
     line = <tab>[ 1 ].
@@ -1381,11 +1545,7 @@ CLASS zcl_demo_abap_internal_tables IMPLEMENTATION.
     dref_t->* = itab.
     line = dref_t->*[ 2 ].
 
-    out->write( zcl_demo_abap_aux=>no_output ).
-
-**********************************************************************
-
-    out->write( zcl_demo_abap_aux=>heading( `29) Table expressions: Reading individual components of table lines` ) ).
+    "--- Reading individual components of table lines ---
 
     "Read component via line read using ...
     "... index
@@ -1397,10 +1557,10 @@ CLASS zcl_demo_abap_internal_tables IMPLEMENTATION.
     DATA(compd) = itab[ comp4 = 'ccc' ]-comp1.
 
     out->write( zcl_demo_abap_aux=>no_output ).
+  ENDMETHOD.
 
-**********************************************************************
-
-    out->write( zcl_demo_abap_aux=>heading( `30) Table expressions: Chaining table expressions in the context of nested internal tables` ) ).
+  METHOD m23_table_expressions_chaining.
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Table expressions: Chaining table expressions in the context of nested internal tables| ).
 
     "Creating deep internal table
     TYPES: BEGIN OF s_sub,
@@ -1448,10 +1608,10 @@ CLASS zcl_demo_abap_internal_tables IMPLEMENTATION.
     DATA(dref_compb) = itab_ref[ 1 ]->*-comp4.
 
     out->write( zcl_demo_abap_aux=>no_output ).
+  ENDMETHOD.
 
-**********************************************************************
-
-    out->write( zcl_demo_abap_aux=>heading( `31) Table expressions in write positions: Writes on the entire line and writes on individual components` ) ).
+  METHOD m24_table_expressions_writepos.
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Table expressions in write positions: Writes on the entire line and writes on individual components| ).
 
     "The demo table is a key table. Therefore, writes on entire lines produce runtime errors.
     "itab[ 3 ] = VALUE #( ).
@@ -1466,6 +1626,10 @@ CLASS zcl_demo_abap_internal_tables IMPLEMENTATION.
 
     "Table expressions in write positions: Writes on individual components
     itab[ 3 ]-comp4 = 'yyy'.
+
+    DATA itab_ref TYPE TABLE OF REF TO s_demo WITH EMPTY KEY.
+    itab_ref = VALUE #( ( NEW s_demo( comp1 = 1 comp2 = 30 comp3 = 31 comp4 = 'aaa' ) ) ).
+
     itab_ref[ 1 ]->comp3 = 123.
     "No key value change allowed in key tables
     "The following statement causes a runtime error.
@@ -1475,10 +1639,13 @@ CLASS zcl_demo_abap_internal_tables IMPLEMENTATION.
     itab_std[ 3 ]-comp1 = 456.
 
     out->write( zcl_demo_abap_aux=>no_output ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m25_check_line_exists.
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Checking the Existence of a Line in an Internal Table| ).
 
-    out->write( zcl_demo_abap_aux=>heading( `32) Checking the Existence of a Line in an Internal Table` ) ).
+    DATA itab_std TYPE TABLE OF s_demo WITH NON-UNIQUE KEY comp1 WITH NON-UNIQUE SORTED KEY sk COMPONENTS comp2 comp3.
+    itab_std = itab.
 
     "Read using a key
     READ TABLE itab_std WITH KEY comp1 = 2 TRANSPORTING NO FIELDS.
@@ -1505,10 +1672,10 @@ CLASS zcl_demo_abap_internal_tables IMPLEMENTATION.
     ENDIF.
 
     out->write( zcl_demo_abap_aux=>no_output ).
+  ENDMETHOD.
 
-**********************************************************************
-
-    out->write( zcl_demo_abap_aux=>heading( `33) Checking the index of a line in an internal table` ) ).
+  METHOD m26_check_line_index.
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Checking the index of a line in an internal table| ).
 
     DATA(itab_idx) = VALUE string_table( ( `aaa` ) ( `bbb` ) ).
     READ TABLE itab_idx WITH KEY table_line = `bbb` TRANSPORTING NO FIELDS.
@@ -1529,11 +1696,10 @@ CLASS zcl_demo_abap_internal_tables IMPLEMENTATION.
     DATA(hashed_secondary_idx) = line_index( hashed_tab2[ KEY sk table_line = `c` ] ).
 
     out->write( zcl_demo_abap_aux=>no_output ).
+  ENDMETHOD.
 
-**********************************************************************
-
-    out->write( zcl_demo_abap_aux=>heading( `34) Checking How Many Lines Exist in an Internal Table` ) ).
-
+  METHOD m27_check_how_many_lines.
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Checking How Many Lines Exist in an Internal Table| ).
 
     DATA(itab_li1) = VALUE string_table( ( `a` ) ( `b` ) ( `c` ) ( `d` ) ( `e` ) ).
 
@@ -1592,10 +1758,10 @@ CLASS zcl_demo_abap_internal_tables IMPLEMENTATION.
     DATA(line_num_filtered4) = lines( FILTER #( it_sorted USING KEY sec_key WHERE comp2 > 1 ) ).
 
     out->write( zcl_demo_abap_aux=>no_output ).
+  ENDMETHOD.
 
-**********************************************************************
-
-    out->write( zcl_demo_abap_aux=>heading( `35) Getting Table (Type) Information at Runtime` ) ).
+  METHOD m28_rtti.
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Getting Table (Type) Information at Runtime| ).
 
     TYPES tab_info_type TYPE SORTED TABLE OF zdemo_abap_flsch
            WITH UNIQUE KEY carrid connid
@@ -1624,27 +1790,12 @@ CLASS zcl_demo_abap_internal_tables IMPLEMENTATION.
     DATA(applies_to_data_itab) = tdo_itab->applies_to_data( VALUE tab_type( ) ).
 
     out->write( zcl_demo_abap_aux=>no_output ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m29_loop_different_targets.
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Loop statements with different targets| ).
 
-    out->write( zcl_demo_abap_aux=>heading( `Processing Multiple Internal Table Lines Sequentially` ) ).
-
-    out->write( `36) Loop statements with different targets` ).
-
-    TYPES: BEGIN OF s_loop,
-             compa TYPE i,
-             compb TYPE string,
-             compc TYPE i,
-           END OF s_loop,
-           ttype_loop TYPE SORTED TABLE OF s_loop WITH UNIQUE KEY primary_key ALIAS pk COMPONENTS compa
-           WITH NON-UNIQUE SORTED KEY sec_key ALIAS sk COMPONENTS compc.
-
-    DATA(it_loop) = VALUE ttype_loop( ( compa = 1 compb = `aaa` compc = 50 )
-    ( compa = 2 compb = `bbb` compc = 20 )
-    ( compa = 3 compb = `ccc` compc = 40 )
-    ( compa = 4 compb = `ddd` compc = 30 )
-    ( compa = 5 compb = `eee` compc = 10 )
-    ).
+    prep_itabs( ).
 
     DATA(tabix_counter) = 0.
 
@@ -1704,14 +1855,15 @@ CLASS zcl_demo_abap_internal_tables IMPLEMENTATION.
     CLEAR tabix_counter.
 
     out->write( zcl_demo_abap_aux=>no_output ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m30_loop_keys.
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Loop statements with different table key specifications| ).
 
-    out->write( zcl_demo_abap_aux=>heading( `37) Loop statements with different table key specifications` ) ).
+    prep_itabs( ).
+
     "The specified table key affects the order in which the table lines
     "are accessed and the evaluation of the other conditions.
-
-    DATA loop_str TYPE string.
 
     LOOP AT it_loop INTO wal USING KEY primary_key.
       loop_str &&= wal-compa.
@@ -1735,11 +1887,13 @@ CLASS zcl_demo_abap_internal_tables IMPLEMENTATION.
       loop_str &&= wal-compa.
     ENDLOOP.
     out->write( loop_str ).
-    CLEAR loop_str.
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m31_loop_restrict.
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Restricting the Area of a Table to Be Looped Over| ).
 
-    out->write( zcl_demo_abap_aux=>heading( `38) Restricting the Area of a Table to Be Looped Over` ) ).
+    prep_itabs( ).
+
     "FROM/TO: Only for index tables
 
     "Specifying an index range
@@ -1776,11 +1930,11 @@ CLASS zcl_demo_abap_internal_tables IMPLEMENTATION.
       loop_str &&= sy-tabix.
     ENDLOOP.
     out->write( loop_str ).
-    CLEAR loop_str.
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m32_loop_step_direction.
 
-    out->write( zcl_demo_abap_aux=>heading( `39) Defining the Step Size and the Direction of Loop Passes` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Defining the Step Size and the Direction of Loop Passes| ).
 
     "STEP addition for defining the step size and the direction of the loop
     "- Step size: Specified by the absolute value of an integer
@@ -1812,10 +1966,10 @@ CLASS zcl_demo_abap_internal_tables IMPLEMENTATION.
       loop_str &&= wal-compa.
     ENDLOOP.
     out->write( loop_str ).
+  ENDMETHOD.
 
-**********************************************************************
-
-    out->write( zcl_demo_abap_aux=>heading( `40) Interrupting and Exiting Loops` ) ).
+  METHOD m33_loop_interrupt_exit.
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Interrupting and Exiting Loops| ).
 
     DATA(str_table) = VALUE string_table( ( `a` ) ( `b` ) ( `c` ) ( `d` ) ( `e` ) ( `f` ) ).
     LOOP AT str_table INTO DATA(wa_exit).
@@ -1827,12 +1981,11 @@ CLASS zcl_demo_abap_internal_tables IMPLEMENTATION.
     ASSERT tab_idx = 5.
 
     out->write( zcl_demo_abap_aux=>no_output ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m34_iteration_expressions.
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Iteration Expressions| ).
 
-    out->write( zcl_demo_abap_aux=>heading( `41) Iteration Expressions` ) ).
-
-    TYPES ty_int_tab TYPE TABLE OF i WITH EMPTY KEY.
     DATA(int_table_a) = VALUE ty_int_tab( ( 1 ) ( 2 ) ( 3 ) ( 4 ) ( 5 ) ).
     DATA int_table_b TYPE ty_int_tab.
     int_table_b = VALUE #( FOR wa_b IN int_table_a ( wa_b * 2 ) ).
@@ -1855,11 +2008,13 @@ CLASS zcl_demo_abap_internal_tables IMPLEMENTATION.
                                        ( ls1-compa ) ).
 
     out->write( data = lv_num_a name = `lv_num_a` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m35_loop_retrieve.
 
-    out->write( zcl_demo_abap_aux=>heading( `41) Retrieving values of one column in ` &&
-      `an internal table based on conditions` ) ).
+    "--- Retrieving values of one column in an internal table based on conditions ---
+
+    out->write( zcl_demo_abap_aux=>heading( `41) ` ) ).
 
     DATA(lv_num_b) = VALUE ty_int_tab( FOR ls2 IN it_loop
                                        WHERE ( compa < 3 ) ( ls2-compc ) ).
@@ -1867,9 +2022,7 @@ CLASS zcl_demo_abap_internal_tables IMPLEMENTATION.
     out->write( data = lv_num_b name = `lv_num_b` ).
     out->write( |\n| ).
 
-    out->write( zcl_demo_abap_aux=>heading( `42) Looping across 2 tables ` &&
-         `and retrieving values based on conditions` ) ).
-    "Internal table type
+    "--- Looping across 2 tables and retrieving values based on conditions ---
     DATA(it_int) = VALUE ty_int_tab( FOR x = 1 WHILE x <= 4 ( x ) ).
 
     DATA(itab_for_2tab) =
@@ -1879,10 +2032,11 @@ CLASS zcl_demo_abap_internal_tables IMPLEMENTATION.
                                               ( compa = ls3 compb = ls4-compb ) ).
 
     out->write( data = itab_for_2tab name = `itab_for_2tab` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m36_loop_insert_delete.
 
-    out->write( zcl_demo_abap_aux=>heading( `43) Inserting and Deleting Lines in Internal Tables in Loops` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Inserting and Deleting Lines in Internal Tables in Loops| ).
 
     "Inserting and Deleting Lines in Internal Tables in Loops
 
@@ -2055,10 +2209,13 @@ CLASS zcl_demo_abap_internal_tables IMPLEMENTATION.
       "CLEAR str_tab.
       "str_tab = VALUE #( ).
     ENDLOOP.
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m37_itab_sql.
 
-    out->write( zcl_demo_abap_aux=>heading( `44) Selecting multiple rows from a database table into an internal table` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Using internal tables in ABAP SQL SELECT statements| ).
+
+    "--- Selecting multiple rows from a database table into an internal table ---
 
     SELECT FROM zdemo_abap_tab1
       FIELDS key_field, char1, char2, num1, num2
@@ -2067,9 +2224,7 @@ CLASS zcl_demo_abap_internal_tables IMPLEMENTATION.
 
     out->write( data = itab_select1 name = `itab_select1` ).
 
-**********************************************************************
-
-    out->write( zcl_demo_abap_aux=>heading(  `45) Sequentially adding multiple rows from a database table to an internal table` ) ).
+    "--- Sequentially adding multiple rows from a database table to an internal table ---
 
     DATA itab_sql TYPE TABLE OF zdemo_abap_tab1 WITH NON-UNIQUE KEY client key_field.
 
@@ -2090,11 +2245,8 @@ CLASS zcl_demo_abap_internal_tables IMPLEMENTATION.
 
     out->write( data = itab_sql name = `itab_sql` ).
 
-**********************************************************************
-
-    out->write( zcl_demo_abap_aux=>heading( `46) Adding multiple rows from a database table ` &&
-      `to an internal table that has a different line type than the ` &&
-      `database table and keeping existing table content` ) ).
+    "--- Adding multiple rows from a database table to an internal table that has a
+    "different line type than the database table and keeping existing table content ---
 
     SELECT FROM zdemo_abap_tab2
       FIELDS *
@@ -2103,23 +2255,7 @@ CLASS zcl_demo_abap_internal_tables IMPLEMENTATION.
 
     out->write( data = itab_sql name = `itab_sql` ).
 
-**********************************************************************
-
-    out->write( zcl_demo_abap_aux=>heading( `47) Adding multiple rows from a database table ` &&
-      `to an internal table that has a different line type than the ` &&
-      `database table and deleting existing table content` ) ).
-
-    SELECT FROM zdemo_abap_tab2
-      FIELDS *
-      WHERE num1 > 10
-      INTO CORRESPONDING FIELDS OF TABLE @itab_sql.
-
-    out->write( data = itab_sql name = `itab_sql` ).
-
-**********************************************************************
-
-    out->write( zcl_demo_abap_aux=>heading( `48) Adding multiple rows from an internal table ` &&
-      `to an internal table using SELECT` ) ).
+    "--- Adding multiple rows from an internal table to an internal table using SELECT ---
 
     SELECT key_field, char1, char2, num1, num2
       FROM @itab_sql AS itab_alias
@@ -2127,10 +2263,7 @@ CLASS zcl_demo_abap_internal_tables IMPLEMENTATION.
 
     out->write( data = itab_clone name = `itab_clone` ).
 
-**********************************************************************
-
-    out->write( zcl_demo_abap_aux=>heading( `49) Combining data of multiple tables into an` &&
-      ` internal table using an inner join` ) ).
+    "--- Combining data of multiple tables into an internal table using an inner join ---
 
     "Filling table to be selected from
     itab_sql =  VALUE #( ( key_field = 500 char1 = 'uuu' char2 = 'vvv'
@@ -2150,10 +2283,7 @@ CLASS zcl_demo_abap_internal_tables IMPLEMENTATION.
 
     out->write( data = join_result name = `join_result` ).
 
-**********************************************************************
-
-    out->write( zcl_demo_abap_aux=>heading( `50) Filling internal table ` &&
-      `using a subquery (1)` ) ).
+    "--- Filling internal table using a subquery (1) ---
 
     "A subquery is specified in the WHERE clause
     "Here, data is selected from a database table depending on
@@ -2166,10 +2296,7 @@ CLASS zcl_demo_abap_internal_tables IMPLEMENTATION.
 
     out->write( data = subquery_result1 name = `subquery_result1` ).
 
-**********************************************************************
-
-    out->write( zcl_demo_abap_aux=>heading( `51) Filling internal table ` &&
-      `using a subquery (2)` ) ).
+    "--- Filling internal table using a subquery (2) ---
 
     "A subquery using EXISTS in the WHERE clause.
     "In the example, data is selected from a database table depending
@@ -2185,11 +2312,8 @@ CLASS zcl_demo_abap_internal_tables IMPLEMENTATION.
 
     out->write( data = subquery_result2 name = `subquery_result2` ).
 
-**********************************************************************
-
-    out->write( zcl_demo_abap_aux=>heading( `52) Filling an internal table from a table ` &&
-      `depending on the existence of data in another internal table ` &&
-      `using the addition FOR ALL ENTRIES` ) ).
+    "--- Filling an internal table from a table depending on the existence
+    "of data in another internal table using the addition FOR ALL ENTRIES ---
 
     "In the example, data is selected from a database table depending
     "on the existence of data in an internal table. Only if a line
@@ -2206,10 +2330,8 @@ CLASS zcl_demo_abap_internal_tables IMPLEMENTATION.
 
     out->write( data = select_result name = `select_result` ).
 
-**********************************************************************
-
-    out->write( zcl_demo_abap_aux=>heading( `53) Adding content from a database to internal` &&
-      ` table by using alias names in the SELECT list` ) ).
+    "--- Adding content from a database to internal table by using alias names
+    "in the SELECT list ---
 
     DATA itab_sql2 TYPE TABLE OF zdemo_abap_tab2 WITH EMPTY KEY.
 
@@ -2224,9 +2346,7 @@ CLASS zcl_demo_abap_internal_tables IMPLEMENTATION.
 
     out->write( data = itab_sql2 name = `itab_sql2` ).
 
-**********************************************************************
-
-    out->write( zcl_demo_abap_aux=>heading( `54) SELECT Queries with Internal Tables as Data Sources` ) ).
+    "--- SELECT Queries with Internal Tables as Data Sources ---
 
     TYPES int_tab_type TYPE TABLE OF i WITH EMPTY KEY.
     DATA(itab_a) = VALUE int_tab_type( ( 1 ) ( 32 ) ( 100 ) ( -24 ) ( 17 ) ( 99 ) ).
@@ -2341,15 +2461,12 @@ CLASS zcl_demo_abap_internal_tables IMPLEMENTATION.
       INNER JOIN @itab_h AS it ON it~key_field = db~key_field
       INTO TABLE @DATA(itab_i).
 
-
     out->write( data = itab_i name = `itab_i` ).
-    out->write( |\n| ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m38_itab_join_merge.
 
-    out->write( zcl_demo_abap_aux=>heading( `55) Excursion: Joining/Merging Internal Tables into Internal Tables` ) ).
-
-    "Excursion: Joining/Merging Internal Tables into Internal Tables
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Joining/Merging Internal Tables into Internal Tables| ).
 
     "Creating two internal tables whose content will be joined. The shared
     "value is represented by the key1 and key2 components.
@@ -2484,13 +2601,11 @@ CLASS zcl_demo_abap_internal_tables IMPLEMENTATION.
                                       e = tableline-e ) ) ).
 
     out->write( data = itab10 name = `itab10` ).
-    out->write( |\n| ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m39_itab_sort.
 
-    "Sorting internal tables
-
-    out->write( zcl_demo_abap_aux=>heading( `56) Sorting internal tables` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Sorting internal tables| ).
 
     "Creating structured data types
     TYPES: BEGIN OF struc_sort1,
@@ -2528,19 +2643,14 @@ CLASS zcl_demo_abap_internal_tables IMPLEMENTATION.
     out->write( |\n| ).
     out->write( data = it2 name = `it2` ).
 
-**********************************************************************
-
-    out->write( zcl_demo_abap_aux=>heading( `57) Sorting by primary table key` ) ).
+    "--- Sorting by primary table key ---
 
     "Primary key: component a
     SORT it1.
 
     out->write( data = it1 name = `it1` ).
 
-**********************************************************************
-
-    out->write( zcl_demo_abap_aux=>heading( `58) Sorting by primary table key in ascending` &&
-      ` order` ) ).
+    "--- Sorting by primary table key in ascending order ---
 
     "The sorting result is the same as above (where ASCENDING is used
     "implicitly). Here, it is explicitly specified.
@@ -2548,10 +2658,7 @@ CLASS zcl_demo_abap_internal_tables IMPLEMENTATION.
 
     out->write( data = it1 name = `it1` ).
 
-**********************************************************************
-
-    out->write( zcl_demo_abap_aux=>heading( `59) Sorting by primary table key respecting all ` &&
-      `non-numeric fields` ) ).
+    "--- Sorting by primary table key respecting all non-numeric fields ---
 
     "Primary key: standard table key (all non-numeric fields)
     SORT it2.
@@ -2564,61 +2671,44 @@ CLASS zcl_demo_abap_internal_tables IMPLEMENTATION.
     "SORT it3.
     "out->write( data = it3 name = `it3` ).
 
-**********************************************************************
-
-    out->write( zcl_demo_abap_aux=>heading( `60) Sorting by primary table key in ` &&
-      `descending order` ) ).
+    "--- Sorting by primary table key in descending order ---
 
     "Sorting in descending order and by primary table key
     SORT it1 DESCENDING.
 
     out->write( data = it1 name = `it1` ).
 
-**********************************************************************
-
-    out->write( zcl_demo_abap_aux=>heading( `61) Sorting by explicitly specified component (1)` ) ).
+    "--- Sorting by explicitly specified component (1) ---
     "Here, the component is the primary table key.
     "The sorting result is the same as above.
     SORT it1 BY a DESCENDING.
 
     out->write( data = it1 name = `it1` ).
 
-**********************************************************************
-
-    out->write( zcl_demo_abap_aux=>heading( `62) Sorting by explicitly specified component (2)` ) ).
+    "--- Sorting by explicitly specified component (2) ---
 
     "Sorting by arbitrary, non-key field
     SORT it1 BY d DESCENDING.
 
     out->write( data = it1 name = `it1` ).
 
-**********************************************************************
-
-    out->write( zcl_demo_abap_aux=>heading( `63) Sorting by multiple explicitly specified` &&
-      ` components` ) ).
+    "--- Sorting by multiple explicitly specified components ---
 
     "Sorting by multiple components and specifying the sort order
     SORT it1 BY b ASCENDING c DESCENDING.
 
     out->write( data = it1 name = `it1` ).
 
-**********************************************************************
-
-    out->write( zcl_demo_abap_aux=>heading( `64) Sorting by respecting the values of all` &&
-      ` components` ) ).
+    "--- Sorting by respecting the values of all components ---
 
     "Sorting by considering the values of each field of the table line
     SORT it1 BY table_line.
 
     out->write( data = it1 name = `it1` ).
+  ENDMETHOD.
 
-**********************************************************************
-
-    out->write( zcl_demo_abap_aux=>heading( `65) Modifying Internal Table Content: Direct modification of recently read table lines` ) ).
-
-
-
-    "direct modification of recently read table lines:
+  METHOD m40_itab_direct_modification.
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Modifying Internal Table Content: Direct modification of recently read table lines| ).
 
     "Declaring and populating demo internal tables
     TYPES: BEGIN OF ty_struc,
@@ -2731,40 +2821,12 @@ CLASS zcl_demo_abap_internal_tables IMPLEMENTATION.
     ENDLOOP.
 
     out->write( zcl_demo_abap_aux=>no_output ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m41_itab_modify_statements.
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Modifying Internal Table Content: MODIFY statements| ).
 
-    out->write( zcl_demo_abap_aux=>heading( `66) Modifying Internal Table Content: MODIFY statements` ) ).
-
-    "Creating structured data types.
-    TYPES: "Line types for internal tables
-      BEGIN OF struc1,
-        a TYPE i,
-        b TYPE c LENGTH 3,
-        c TYPE c LENGTH 3,
-        d TYPE c LENGTH 3,
-      END OF struc1.
-
-    "Declaring demo sorted/hashed tables having primary and
-    "secondary keys as well as alias names defined
-
-    DATA it_std TYPE TABLE OF struc1 WITH NON-UNIQUE KEY a.
-    DATA it_so_sec TYPE SORTED TABLE OF struc1
-      WITH NON-UNIQUE KEY primary_key ALIAS pk COMPONENTS a
-      WITH NON-UNIQUE SORTED KEY sec_key ALIAS sk COMPONENTS b.
-
-    DATA it_ha_sec TYPE HASHED TABLE OF struc1
-      WITH UNIQUE KEY primary_key ALIAS pkh COMPONENTS a
-      WITH NON-UNIQUE SORTED KEY sec_key_h ALIAS skh COMPONENTS b.
-
-    "Filling internal table
-    it_so_sec = VALUE #( ( a = 1 b = 'bbb' c = '###' d = '###' )
-                         ( a = 2 b = 'ccc' c = '###' d = '###' )
-                         ( a = 3 b = 'aaa' c = 'zzz' d = '###' )
-                         ( a = 4 b = 'ddd' c = '###' d = '###' ) ).
-
-    "Filling internal table with the content above
-    it_ha_sec = it_so_sec.
+    prep_itabs( ).
 
     DATA(mod_line) = VALUE struc1( a = 2 b = 'zzz' c = 'yyy' ).
 
@@ -2811,25 +2873,26 @@ CLASS zcl_demo_abap_internal_tables IMPLEMENTATION.
       USING KEY sec_key_h
       TRANSPORTING d.
 
-    out->write( data = it_st name = `it_st` ).
+    out->write( data = it_std name = `it_std` ).
     out->write( |\n| ).
     out->write( data = it_so_sec name = `it_so_sec` ).
     out->write( |\n| ).
     out->write( data = it_ha_sec name = `it_ha_sec` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m42_delete.
 
-    out->write( zcl_demo_abap_aux=>heading( `67) Deleting internal table content` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Deleting internal table content| ).
 
     "Deleting via index
     "Primary table index is used implicitly.
-    DELETE it_st INDEX 1.
+    DELETE it_std INDEX 1.
 
     "If USING KEY is not used, INDEX can only be used with index
     "tables. If a secondary key is specified, the secondary table
     "index is respected.
     "The following example has the same effect as above.
-    DELETE it_st INDEX 1 USING KEY primary_key.
+    DELETE it_std INDEX 1 USING KEY primary_key.
 
     "Hashed table. The secondary table index is respected.
     DELETE it_ha_sec INDEX 1 USING KEY sec_key_h.
@@ -2855,7 +2918,7 @@ CLASS zcl_demo_abap_internal_tables IMPLEMENTATION.
     "Note: Specifying the additions USING KEY/FROM/TO is also possible
     DELETE it_std WHERE a > 3.
 
-    out->write( data = it_st name = `it_st` ).
+    out->write( data = it_std name = `it_std` ).
     out->write( |\n| ).
     out->write( data = it_so_sec name = `it_so_sec` ).
     out->write( |\n| ).
@@ -2918,39 +2981,23 @@ CLASS zcl_demo_abap_internal_tables IMPLEMENTATION.
     ENDLOOP.
 
     out->write( data = itab_del_loop2 name = `itab_del_loop2` ).
-    out->write( |\n| ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m43_delete_adjacent.
 
-    out->write( zcl_demo_abap_aux=>heading( `68) Deleting adjacent duplicate entries` ) ).
-    out->write( `Original table content (restored before` &&
-      ` each of the following examples)` ).
-    out->write( |\n| ).
-    out->write( |\n| ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Deleting adjacent duplicate entries| ).
 
-    it_std = VALUE #( ( a = 1 b = 'BBB' c = '###' d = '###' )
-                     ( a = 2 b = '###' c = '###' d = '###' )
-                     ( a = 1 b = '###' c = '###' d = '###' )
-                     ( a = 3 b = '###' c = '###' d = '###' )
-                     ( a = 4 b = '###' c = 'CCC' d = '###' )
-                     ( a = 1 b = 'BBB' c = '###' d = '###' )
-                     ( a = 2 b = 'BBB' c = '###' d = '###' )
-                     ( a = 4 b = 'BBB' c = '###' d = '###' )
-                     ( a = 2 b = 'BBB' c = '###' d = '###' )
-                     ( a = 3 b = '###' c = '###' d = '###' ) ).
+    prep_itabs( ).
 
     SORT it_std BY table_line.
 
-    "Filling another table so that the same content above
+    "Filling another table so that the same content
     "is available for the examples below.
     DATA(it_std2) = it_std.
 
     out->write( data = it_std2 name = `it_std2` ).
 
-**********************************************************************
-
-    out->write( zcl_demo_abap_aux=>heading( `69) Deleting adjacent duplicates based on` &&
-      ` primary table key` ) ).
+    "--- Deleting adjacent duplicates based on primary table key ---
 
     "Note: Using the primary table key can have unexpected consequences
     "if the primary table key is the standard key or if it is empty.
@@ -2960,10 +3007,7 @@ CLASS zcl_demo_abap_internal_tables IMPLEMENTATION.
 
     it_std2 = it_std.
 
-**********************************************************************
-
-    out->write( zcl_demo_abap_aux=>heading( `70) Deleting adjacent duplicates by comparing ` &&
-      `all field values` ) ).
+    "--- Deleting adjacent duplicates by comparing all field values ---
 
     DELETE ADJACENT DUPLICATES FROM it_std2 COMPARING ALL FIELDS.
 
@@ -2971,10 +3015,7 @@ CLASS zcl_demo_abap_internal_tables IMPLEMENTATION.
 
     it_std2 = it_std.
 
-**********************************************************************
-
-    out->write( zcl_demo_abap_aux=>heading( `71) Deleting adjacent duplicates by comparing ` &&
-      `specific field values` ) ).
+    "--- Deleting adjacent duplicates by comparing specific field values ---
 
     DELETE ADJACENT DUPLICATES FROM it_std2 COMPARING a c.
 
@@ -2982,24 +3023,36 @@ CLASS zcl_demo_abap_internal_tables IMPLEMENTATION.
 
     it_std2 = it_std.
 
-**********************************************************************
-
-    out->write( zcl_demo_abap_aux=>heading( `72) Deleting adjacent duplicates by using a` &&
-      ` table key` ) ).
+    "--- Deleting adjacent duplicates by using a table key ---
 
     "In this case, the result is the same as in the first example.
     DELETE ADJACENT DUPLICATES FROM it_std2 USING KEY primary_key.
 
     out->write( data = it_std2 name = `it_std2` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m44_delete_content.
 
-    out->write( zcl_demo_abap_aux=>heading( `73) Deleting the entire internal table content` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Deleting the entire internal table content| ).
+
+    it_std = VALUE #( ( a = 1 b = 'BBB' c = '###' d = '###' )
+                      ( a = 2 b = '###' c = '###' d = '###' )
+                      ( a = 3 b = '###' c = '###' d = '###' ) ).
 
     CLEAR it_std.
 
+    out->write( data = it_std name = `it_std` ).
+    out->write( |\n| ).
+
     "Additionally, FREE releases memory space.
-    FREE it_std2.
+    it_std = VALUE #( ( a = 1 b = 'BBB' c = '###' d = '###' )
+                      ( a = 2 b = '###' c = '###' d = '###' )
+                      ( a = 3 b = '###' c = '###' d = '###' ) ).
+
+    FREE it_std.
+
+    out->write( data = it_std name = `it_std` ).
+    out->write( |\n| ).
 
     "Excursion: Assigning an empty constructor expression with VALUE clears
     "the internal table.
@@ -3007,20 +3060,19 @@ CLASS zcl_demo_abap_internal_tables IMPLEMENTATION.
 
     it_stdr = VALUE #( ).
 
+    out->write( data = it_stdr name = `it_stdr` ).
+    out->write( |\n| ).
+
     "Same applies to NEW
     DATA(it_stdr_new) = NEW string_table( ( `a` ) ( `b` ) ( `c` ) ).
     it_stdr_new = NEW #( ).
 
-    out->write( data = it_std name = `it_std` ).
-    out->write( |\n| ).
-    out->write( data = it_std2 name = `it_std2` ).
-    out->write( |\n| ).
-    out->write( data = it_stdr name = `it_stdr` ).
+    out->write( data = it_stdr_new->* name = `it_stdr_new->*` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m45_itab_grouping.
 
-    out->write( zcl_demo_abap_aux=>heading( `74) Grouping Internal Tables` ) ).
-
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Grouping Internal Tables| ).
 
     TYPES: BEGIN OF demo_struct,
              comp1 TYPE c LENGTH 1,
@@ -3098,7 +3150,7 @@ CLASS zcl_demo_abap_internal_tables IMPLEMENTATION.
     "In the following example, the group is sorted in ascending order. Note that the
     "group index value uses the original position in the group index. The group key
     "binding information is added to a string table for visualizing its content.
-    CLEAR str_table.
+    DATA str_table TYPE string_table.
     LOOP AT it INTO DATA(wae) GROUP BY ( key = wae-comp1 gi = GROUP INDEX gs = GROUP SIZE ) ASCENDING INTO DATA(keye).
       APPEND |Key component: '{ keye-key }', group index: '{ keye-gi }', group size: '{ keye-gs }'| TO string_table.
     ENDLOOP.
@@ -3159,11 +3211,11 @@ CLASS zcl_demo_abap_internal_tables IMPLEMENTATION.
       ENDLOOP.
     ENDLOOP.
     out->write( data = iti name = `iti` ).
-    out->write( |\n| ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m46_collect.
 
-    out->write( zcl_demo_abap_aux=>heading( `75) Collecting Values` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Collecting Values| ).
 
     "This example demonstrates how to insert data from a database table
     "into an internal table in a compressed way. Within a SELECT loop,
@@ -3201,11 +3253,11 @@ CLASS zcl_demo_abap_internal_tables IMPLEMENTATION.
     ENDLOOP.
 
     ASSERT seats_tab_loop_grp = seats_tab_col.
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m47_hashed_tab_sec_key.
 
-    out->write( zcl_demo_abap_aux=>heading( `Excursions` ) ).
-    out->write( |76) Secondary table keys and hashed tables\n\n| ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Secondary table keys and hashed tables| ).
 
     "Declaring a hashed table
     DATA hashed_table
@@ -3243,10 +3295,12 @@ CLASS zcl_demo_abap_internal_tables IMPLEMENTATION.
     DATA(line_of_ht) = hashed_table[ KEY sec_key INDEX 2 ].
 
     out->write( data = line_of_ht name = `line_of_ht` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m48_empty_keys_itab_inl.
 
-    out->write( zcl_demo_abap_aux=>heading( `77) Empty keys in internal table created inline` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Empty keys in internal table created inline| ).
+
     "This example visualizes the fact that when using an inline
     "construction like INTO TABLE @DATA(itab) in SELECT statements, the
     "resulting table has an empty table key. Here, the key information
@@ -3283,10 +3337,11 @@ CLASS zcl_demo_abap_internal_tables IMPLEMENTATION.
                             )->get_keys( ).
 
     out->write( data = k2 name = `k2` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m49_ranges_tables.
 
-    out->write( zcl_demo_abap_aux=>heading( `78) Ranges tables` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Ranges tables| ).
 
     "Populating an integer table with values from 1 to 20
     TYPES intgr_tab_type TYPE TABLE OF i WITH EMPTY KEY.
@@ -3309,10 +3364,11 @@ CLASS zcl_demo_abap_internal_tables IMPLEMENTATION.
         INTO TABLE @DATA(result).
 
     out->write( data = result name = `result` ).
+  ENDMETHOD.
 
-**********************************************************************
+  METHOD m50_dynamic_itab.
 
-    out->write( zcl_demo_abap_aux=>heading( `79) Creating Internal Tables Dynamically` ) ).
+    zcl_demo_abap_aux=>set_example_divider(  out  = out text = |{ text }: Creating Internal Tables Dynamically| ).
 
     DATA(some_type) = 'STRING'.
     DATA dataref TYPE REF TO data.
@@ -3336,6 +3392,39 @@ CLASS zcl_demo_abap_internal_tables IMPLEMENTATION.
     CREATE DATA dataref TYPE ('STRING_TABLE').
 
     out->write( zcl_demo_abap_aux=>no_output ).
+  ENDMETHOD.
 
+  METHOD prep_itabs.
+    itab = VALUE ttyp( ( comp1 = 1 comp2 = 30 comp3 = 31 comp4 = 'aaa' )
+                       ( comp1 = 2 comp2 = 20 comp3 = 21 comp4 = 'bbb' )
+                       ( comp1 = 3 comp2 = 10 comp3 = 11 comp4 = 'ccc' ) ).
+
+    itab_hashed = itab.
+    itab_so = itab.
+
+    it_loop = VALUE #( ( compa = 1 compb = `aaa` compc = 50 )
+    ( compa = 2 compb = `bbb` compc = 20 )
+    ( compa = 3 compb = `ccc` compc = 40 )
+    ( compa = 4 compb = `ddd` compc = 30 )
+    ( compa = 5 compb = `eee` compc = 10 ) ).
+
+    "Filling internal table
+    it_so_sec = VALUE #( ( a = 1 b = 'bbb' c = '###' d = '###' )
+                         ( a = 2 b = 'ccc' c = '###' d = '###' )
+                         ( a = 3 b = 'aaa' c = 'zzz' d = '###' )
+                         ( a = 4 b = 'ddd' c = '###' d = '###' ) ).
+
+    "Filling internal table with the content above
+    it_ha_sec = it_so_sec.
+    it_std = VALUE #( ( a = 1 b = 'BBB' c = '###' d = '###' )
+                     ( a = 2 b = '###' c = '###' d = '###' )
+                     ( a = 1 b = '###' c = '###' d = '###' )
+                     ( a = 3 b = '###' c = '###' d = '###' )
+                     ( a = 4 b = '###' c = 'CCC' d = '###' )
+                     ( a = 1 b = 'BBB' c = '###' d = '###' )
+                     ( a = 2 b = 'BBB' c = '###' d = '###' )
+                     ( a = 4 b = 'BBB' c = '###' d = '###' )
+                     ( a = 2 b = 'BBB' c = '###' d = '###' )
+                     ( a = 3 b = '###' c = '###' d = '###' ) ).
   ENDMETHOD.
 ENDCLASS.

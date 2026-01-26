@@ -5584,7 +5584,7 @@ ENDCLASS.
 ## Data Access Object (DAO)
 
 - A Data Access Object (DAO) provides an API for performing CRUD operations on a database table.
-- By providing an object-oriented approach for these oerpations, you can centralize and encapsulate standard operations, eliminating the need to write them throughout the code.
+- By providing an object-oriented approach for these operations, you can centralize and encapsulate standard operations, eliminating the need to write them throughout the code.
 - A potential setup, illustrated in the following example, may include:
   - An interface that defines methods for accessing database tables.
   - A class that implements the interface. The example DAO class here uses the singleton design pattern to provide users with a single object of the DAO class.
@@ -5599,8 +5599,10 @@ ENDCLASS.
 
 **Example notes:**
 
-> [!NOTE]  
-> The example uses a demo database table (`zdemo_abap_carr`) from the ABAP cheat sheet repository.
+
+  > [!NOTE]  
+  > The example uses a demo database table (`zdemo_abap_carr`) from the ABAP cheat sheet repository.
+
 
 - This example tries to illustrate the Data Access Object (DAO) design pattern using the following declarations and implementations:
   - CCIMP include (_Local Types_ tab in ADT):
@@ -7781,7 +7783,7 @@ CLASS lcl_flyweight IMPLEMENTATION.
     DATA(customer_info) = customer_ref->get_customer_info( ).
 
     msg = VALUE #( ( |Hallo, { customer_info-name }. { me->text }| )
-                   ( |Customer info: ID: { customer_info-customer_id }, Name: { customer_info-name }, Birthday: { customer_info-customer_id }, | &&
+                   ( |Customer info: ID: { customer_info-customer_id }, Name: { customer_info-name }, Birthday: { customer_info-birthday }, | &&
                      |Address: { customer_info-address }, Email: { customer_info-email }| ) ).
   ENDMETHOD.
 ENDCLASS.
