@@ -1,0 +1,68 @@
+"! <p class="shorttext"><strong>Adapter</strong>
+"! <br/>ABAP cheat sheet example class</p>
+"!
+"! <p>The example class demonstrates the adapter design pattern.<br/>
+"! Choose F9 in ADT to run the class.</p>
+"!
+"! <h2>Note</h2>
+"! <ul><li><strong>Global class</strong> (<em>Global Class</em> tab in ADT): Serves as the client that makes use
+"! of local classes to demonstrate the design pattern. Largely, the declarations and
+"! implementations in the CCIMP include are relevant for the conceptual considerations.</li>
+"! <li><strong>CCIMP include</strong> (<em>Local Types</em> tab in ADT): Contains various local classes/interfaces
+"! to demonstrate the design pattern.</li>
+"! <li>See the <strong>disclaimer</strong> in the ABAP Doc comment of class {@link zcl_demo_abap_oodp_aux}.</li></ul>
+CLASS zcl_demo_abap_oodp_adapter DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
+
+  PUBLIC SECTION.
+    INTERFACES if_oo_adt_classrun.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+ENDCLASS.
+
+
+
+CLASS zcl_demo_abap_oodp_adapter IMPLEMENTATION.
+  METHOD if_oo_adt_classrun~main.
+
+    zcl_demo_abap_oodp_aux=>set_example_divider( out  = out text = `Adapter` ).
+
+    "Saying hello in English
+    DATA(oref_en) = lcl_hello_factory=>create_hello( lif_hello=>en ).
+    DATA(hello_en) = oref_en->say_hello( ).
+    out->write( hello_en ).
+
+    "Saying hello in French
+    DATA(oref_fr) = lcl_hello_factory=>create_hello( lif_hello=>fr ).
+    DATA(hello_fr) = oref_fr->say_hello( ).
+    out->write( hello_fr ).
+
+    "Saying hello in Italian
+    DATA(oref_it) = lcl_hello_factory=>create_hello( lif_hello=>it ).
+    DATA(hello_it) = oref_it->say_hello( ).
+    out->write( hello_it ).
+
+    "Saying hello in Spanish
+    DATA(oref_es) = lcl_hello_factory=>create_hello( lif_hello=>es ).
+    DATA(hello_es) = oref_es->say_hello( ).
+    out->write( hello_es ).
+
+    "Saying hello in German
+    "See the local class implementation. This method call demonstrates the adapter since
+    "the required data is originally available in a non-conform way ('Hallo' is
+    "available as xstring, coming from a different API that does not implement the same
+    "interface as the other classes). The adapter class (called when creating the instance
+    "in the factory method) integrates the non-conform API and transforms the content.
+    DATA(oref_de) = lcl_hello_factory=>create_hello( lif_hello=>de ).
+    DATA(hello_de) = oref_de->say_hello( ).
+    out->write( hello_de ).
+
+    "Default hello
+    DATA(oref_default) = lcl_hello_factory=>create_hello( lif_hello=>init ).
+    DATA(hello_default) = oref_default->say_hello( ).
+    out->write( hello_default ).
+  ENDMETHOD.
+
+ENDCLASS.
