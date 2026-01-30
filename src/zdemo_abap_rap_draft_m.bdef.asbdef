@@ -1,0 +1,34 @@
+managed implementation in class zbp_demo_abap_rap_draft_m unique;
+strict(2);
+with draft;
+
+define behavior for ZDEMO_ABAP_RAP_DRAFT_M alias calc
+persistent table zdemo_abap_tabca
+draft table zdemo_abap_draft
+lock master
+total etag crea_date_time
+etag master lchg_date_time
+authorization master ( global )
+late numbering
+{
+  create;
+  update;
+  delete;
+  field ( readonly ) id, calc_result, crea_date_time, lchg_date_time;
+  field ( mandatory ) num1, num2, arithm_op;
+  static action delete_all;
+  internal action calculation;
+  side effects { field num1 affects field calc_result;
+                 field num2 affects field calc_result;
+                 field arithm_op affects field calc_result; }
+  validation validate on save { create; field num1, arithm_op, num2; }
+  determination det_modify on modify { field num1, num2, arithm_op; }
+  draft action Resume;
+  draft action Edit;
+  draft action Activate optimized;
+  draft action Discard;
+  draft determine action Prepare
+  {
+    validation validate;
+  }
+}

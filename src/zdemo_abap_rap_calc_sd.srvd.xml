@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_SRVD" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <SRVD>
+    <NAME>ZDEMO_ABAP_RAP_CALC_SD</NAME>
+    <TYPE>SRVD/SRV</TYPE>
+    <DESCRIPTION>Service definition for RAP Calculator</DESCRIPTION>
+    <LANGUAGE>EN</LANGUAGE>
+    <MASTER_LANGUAGE>EN</MASTER_LANGUAGE>
+    <SOURCE_URI>./zdemo_abap_rap_calc_sd/source/main</SOURCE_URI>
+    <SOURCE_TYPE>ABAP_SOURCE</SOURCE_TYPE>
+    <SOURCE_ORIGIN_DESCRIPTION>ABAP Development Tools</SOURCE_ORIGIN_DESCRIPTION>
+    <SRVD_SOURCE_TYPE>S</SRVD_SOURCE_TYPE>
+    <SRVD_SOURCE_TYPE_DESC>Definition</SRVD_SOURCE_TYPE_DESC>
+   </SRVD>
+  </asx:values>
+ </asx:abap>
+</abapGit>

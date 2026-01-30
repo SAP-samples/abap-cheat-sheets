@@ -1,0 +1,63 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_FUGR" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <AREAT>Demo function group</AREAT>
+   <INCLUDES>
+    <SOBJ_NAME>LZDEMO_ABAP_FUGRTOP</SOBJ_NAME>
+    <SOBJ_NAME>SAPLZDEMO_ABAP_FUGR</SOBJ_NAME>
+   </INCLUDES>
+   <FUNCTIONS>
+    <item>
+     <FUNCNAME>ZDEMO_ABAP_DELETE_FU</FUNCNAME>
+     <UPDATE_TASK>1</UPDATE_TASK>
+     <SHORT_TEXT>Demo update function module</SHORT_TEXT>
+    </item>
+    <item>
+     <FUNCNAME>ZDEMO_ABAP_LOG_FU</FUNCNAME>
+     <UPDATE_TASK>1</UPDATE_TASK>
+     <SHORT_TEXT>Demo update function module</SHORT_TEXT>
+     <IMPORT>
+      <RSIMP>
+       <PARAMETER>LOG</PARAMETER>
+       <TYP>ZCL_DEMO_ABAP_SAP_LUW_HELPER=&gt;LOG_TYPE</TYP>
+      </RSIMP>
+      <RSIMP>
+       <PARAMETER>CAUSE_ERROR</PARAMETER>
+       <DEFAULT>ABAP_FALSE</DEFAULT>
+       <OPTIONAL>X</OPTIONAL>
+       <TYP>ABAP_BOOL</TYP>
+      </RSIMP>
+     </IMPORT>
+     <DOCUMENTATION>
+      <RSFDO>
+       <PARAMETER>LOG</PARAMETER>
+       <KIND>P</KIND>
+      </RSFDO>
+      <RSFDO>
+       <PARAMETER>CAUSE_ERROR</PARAMETER>
+       <KIND>P</KIND>
+      </RSFDO>
+     </DOCUMENTATION>
+    </item>
+    <item>
+     <FUNCNAME>ZDEMO_ABAP_MODIFY_FU</FUNCNAME>
+     <UPDATE_TASK>1</UPDATE_TASK>
+     <SHORT_TEXT>Demo update function module</SHORT_TEXT>
+     <IMPORT>
+      <RSIMP>
+       <PARAMETER>VALUES</PARAMETER>
+       <TYP>ZDEMO_ABAP_LUW_T</TYP>
+      </RSIMP>
+     </IMPORT>
+     <DOCUMENTATION>
+      <RSFDO>
+       <PARAMETER>VALUES</PARAMETER>
+       <KIND>P</KIND>
+      </RSFDO>
+     </DOCUMENTATION>
+    </item>
+   </FUNCTIONS>
+  </asx:values>
+ </asx:abap>
+</abapGit>
