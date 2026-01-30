@@ -2171,6 +2171,9 @@ DATA(dref) = NEW st_type( col1 = 2 col2 = `b` col3 = `Y` ).
 "You can achieve the access using ASSIGN statements as shown above
 "(using field symbols), ...
 ASSIGN st-('COL1') TO FIELD-SYMBOL(<col1>).
+"Using the older ASSIGN COMPONENT statement, however, the 
+"previous statement replaces this syntax.
+ASSIGN COMPONENT 'COL1' OF STRUCTURE st TO FIELD-SYMBOL(<col1_comp>).
 
 "... or by statically specifying the structure and the (object) component
 "selector followed by a character-like data object in parentheses.
@@ -8164,7 +8167,7 @@ DATA: BEGIN OF struct2,
         comp2 TYPE string,
       END OF struct2.
 
-DATA itab TYPE TABLE OF struct WITH EMPTY KEY.
+DATA itab LIKE TABLE OF struct1 WITH EMPTY KEY.
 
 APPEND REF #( flag ) TO ref_tab.
 APPEND REF #( num ) TO ref_tab.
