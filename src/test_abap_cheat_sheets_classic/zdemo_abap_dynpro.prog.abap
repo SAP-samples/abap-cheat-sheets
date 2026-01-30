@@ -824,4 +824,3 @@ ENDMODULE.
 MODULE cancel INPUT.
   local_class=>cancel( ).
 ENDMODULE.
-
