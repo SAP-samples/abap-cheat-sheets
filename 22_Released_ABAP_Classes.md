@@ -50,6 +50,7 @@
   - [Output Management (PDF Rendering)](#output-management-pdf-rendering)
   - [Writing Internal Table Content to CSV](#writing-internal-table-content-to-csv)
   - [Triggering Garbage Collection](#triggering-garbage-collection)
+  - [Message Utility Class](#message-utility-class)
 
 
 This ABAP cheat sheet contains a selection of [released](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenreleased_api_glosry.htm) ABAP classes that are available in [ABAP for Cloud Development](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_for_cloud_dev_glosry.htm). It serves as a quick introduction, along with code snippets to explore the functionality in action.
@@ -9777,6 +9778,217 @@ ENDTRY.
 ```abap
 cl_abap_garbage_collector=>collect( ).
 ``` 
+
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+## Message Utility Class
+
+- The `CL_MESSAGE_HELPER` class offers several helper methods for handling messages.  
+- For more information, refer to the class documentation. The example, which uses artifacts from the ABAP cheat sheet repository, illustrates a selection of methods.
+
+
+<br>
+
+<details>
+  <summary>🟢 Click to expand for example code</summary>
+  <!-- -->
+
+<br>
+
+```abap
+CLASS zcl_demo_abap DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
+
+  PUBLIC SECTION.
+    INTERFACES if_oo_adt_classrun.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+ENDCLASS.
+
+
+
+CLASS zcl_demo_abap IMPLEMENTATION.
+
+  METHOD if_oo_adt_classrun~main.
+
+    DATA error TYPE REF TO cx_root.
+
+*&---------------------------------------------------------------------*
+*& get_latest_t100_exception
+*& Gets the most recent T100 exception from an exception object chain
+*&---------------------------------------------------------------------*
+
+    out->write( |\n---------- get_latest_t100_exception method ----------\n\n| ).
+
+    DO 5 TIMES.
+      TRY.
+          RAISE EXCEPTION TYPE zcx_demo_abap_error_a
+            EXPORTING
+              textid   = zcx_demo_abap_error_a=>error_003
+              p_003_a  = `Error no.`
+              p_003_b  = CONV #( sy-index )
+              previous = error.
+        CATCH zcx_demo_abap_error_a INTO error.
+      ENDTRY.
+    ENDDO.
+
+    DATA(t100_exc) = cl_message_helper=>get_latest_t100_exception( error ).
+
+    IF t100_exc IS BOUND.
+      DATA(t100key) = t100_exc->t100key.
+      out->write( t100key ).
+      IF t100_exc->t100key <> if_t100_message=>default_textid.
+        DATA(error_text) = t100_exc->if_message~get_text( ).
+        out->write( error_text ).
+      ENDIF.
+    ELSE.
+      out->write( `not bound` ).
+    ENDIF.
+
+    out->write( |\n{ repeat( val = `-` occ = 50 ) }\n| ).
+
+    DATA prev TYPE REF TO cx_root.
+    prev = error->previous.
+    WHILE prev IS NOT INITIAL.
+      t100_exc = cl_message_helper=>get_latest_t100_exception( prev ).
+
+      IF t100_exc IS BOUND.
+        error_text = t100_exc->if_message~get_text( ).
+
+        t100key = t100_exc->t100key.
+        out->write( error_text ).
+        out->write( t100key ).
+      ELSE.
+        out->write( `not bound` ).
+      ENDIF.
+      out->write( |\n{ repeat( val = `-` occ = 15 ) }\n| ).
+
+      prev = prev->previous.
+
+    ENDWHILE.
+
+    out->write( |\n{ repeat( val = `*` occ = 80 ) }\n| ).
+
+*&---------------------------------------------------------------------*
+*& set_msg_vars_for_if_msg
+*& Sets sy-msg* variables based on reference of type IF_MESSAGE
+*&---------------------------------------------------------------------*
+
+    out->write( |\n---------- set_msg_vars_for_if_msg method ----------\n\n| ).
+
+    "Sets MESSAGE Variables,
+    "Extracts message variables from objects implementing the IF_MESSAGE interface and sets them into system variables (&1, &2, etc.)
+
+    TRY.
+        RAISE EXCEPTION TYPE zcx_demo_abap_error_b MESSAGE e005(zdemo_abap_messages) WITH 'Lorem' 'ipsum' 'dolor' 'sit'.
+
+      CATCH zcx_demo_abap_error_b INTO error.
+
+        DATA(msgid) = sy-msgid.
+        DATA(msgno) = sy-msgno.
+        DATA(msgv1) = sy-msgv1.
+        DATA(msgv2) = sy-msgv2.
+        DATA(msgv3) = sy-msgv3.
+        DATA(msgv4) = sy-msgv4.
+
+        DATA sytab TYPE string_table.
+        sytab = VALUE #( ( |sy-msgid: "{ msgid }"| ) ( |sy-msgno: "{ msgno }"| ) ( |sy-msgv1: "{ msgv1 }"| )
+        ( |sy-msgv2: "{ msgv2 }"| ) ( |sy-msgv3: "{ msgv3 }"| ) ( |sy-msgv4: "{ msgv4 }"| ) ).
+
+        out->write( |\n--- sy-msg* variables before ---\n\n| ).
+        out->write( sytab ).
+        out->write( |\n{ repeat( val = `-` occ = 15 ) }\n| ).
+
+        cl_message_helper=>set_msg_vars_for_if_msg( error ).
+
+        msgid = sy-msgid.
+        msgno = sy-msgno.
+        msgv1 = sy-msgv1.
+        msgv2 = sy-msgv2.
+        msgv3 = sy-msgv3.
+        msgv4 = sy-msgv4.
+
+        sytab = VALUE #( ( |sy-msgid: "{ msgid }"| ) ( |sy-msgno: "{ msgno }"| ) ( |sy-msgv1: "{ msgv1 }"| )
+        ( |sy-msgv2: "{ msgv2 }"| ) ( |sy-msgv3: "{ msgv3 }"| ) ( |sy-msgv4: "{ msgv4 }"| ) ).
+
+        out->write( |\n--- sy-msg* variables after ---\n\n| ).
+        out->write( sytab ).
+        out->write( |\n{ repeat( val = `-` occ = 15 ) }\n| ).
+
+        MESSAGE ID msgid
+            TYPE 'E'
+            NUMBER msgno
+            WITH msgv1 msgv2 msgv3 msgv4
+            INTO DATA(msg).
+
+        out->write( msg ).
+    ENDTRY.
+
+    out->write( |\n{ repeat( val = `*` occ = 80 ) }\n| ).
+
+*&---------------------------------------------------------------------*
+*& set_msg_vars_for_clike
+*& Sets sy-msg* variables based on text
+*&---------------------------------------------------------------------*
+
+    out->write( |\n---------- set_msg_vars_for_clike method ----------\n\n| ).
+
+    DATA(some_message) = `Lorem ipsum dolor sit amet, consectetur adipiscing elit, ` &&
+    `sed eiusmod tempor incidunt ut labore et dolore magna aliqua. This is some long example text ` &&
+    `that is split into sy-msg* fields.`.
+
+    cl_message_helper=>set_msg_vars_for_clike( some_message ).
+
+    msgid = sy-msgid.
+    msgno = sy-msgno.
+    msgv1 = sy-msgv1.
+    msgv2 = sy-msgv2.
+    msgv3 = sy-msgv3.
+    msgv4 = sy-msgv4.
+
+    sytab = VALUE #( ( |sy-msgv1: "{ msgv1 }"| )
+     ( |sy-msgv2: "{ msgv2 }"| ) ( |sy-msgv3: "{ msgv3 }"| ) ( |sy-msgv4: "{ msgv4 }"| ) ).
+
+    out->write( sytab ).
+    out->write( |\n{ repeat( val = `-` occ = 15 ) }\n| ).
+
+    MESSAGE ID 'ZDEMO_ABAP_MESSAGES'
+            TYPE 'E'
+            NUMBER '005'
+            WITH msgv1 msgv2 msgv3 msgv4
+            INTO msg.
+    out->write( msg ).
+
+    out->write( |\n{ repeat( val = `*` occ = 80 ) }\n| ).
+
+*&---------------------------------------------------------------------*
+*& get_text_for_message
+*& Returns short text for parameters
+*&---------------------------------------------------------------------*
+
+    out->write( |\n---------- get_text_for_message method ----------\n\n| ).
+
+    TRY.
+        RAISE EXCEPTION TYPE zcx_demo_abap_error_b MESSAGE e005(zdemo_abap_messages) WITH 'This' 'is' 'some' 'text'.
+      CATCH zcx_demo_abap_error_b INTO error.
+
+        cl_message_helper=>get_text_for_message(
+          EXPORTING
+            text   = error
+          RECEIVING
+            result = DATA(res)
+        ).
+
+        out->write( res ).
+    ENDTRY.
+  ENDMETHOD.
+ENDCLASS.
+```
+
+</details>  
 
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
