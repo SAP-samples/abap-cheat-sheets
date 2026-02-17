@@ -40,6 +40,7 @@
     - [DELETE](#delete)
     - [Using Constructor Expressions in ABAP SQL Statements](#using-constructor-expressions-in-abap-sql-statements)
     - [Example: Exploring Create, Update, and Delete Operations with ABAP SQL Statements](#example-exploring-create-update-and-delete-operations-with-abap-sql-statements)
+  - [MERGE: Modification Operations on a Data Source by Evaluating Another Data Source](#merge-modification-operations-on-a-data-source-by-evaluating-another-data-source)
   - [Dynamic ABAP SQL Statements](#dynamic-abap-sql-statements)
   - [CRUD Operations Using CDS Artifacts](#crud-operations-using-cds-artifacts)
   - [Excursions](#excursions)
@@ -1155,6 +1156,7 @@ SELECT carrid
 > - There are more join variants and syntax options available. See the ABAP Keyword Documentation on [joins](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapselect_join.htm)
 for more information.
 > - There a more syntax options and contexts for `UNION`, `INTERSECT`, and `EXCEPT`. Find more information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapunion.htm).
+> - `MERGE` statements allow modification operations on a data source by evaluating another data source. Find more information [here](#merge-modification-operations-on-a-data-source-by-evaluating-another-data-source).
 
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
@@ -2875,6 +2877,615 @@ CLASS zcl_demo_abap IMPLEMENTATION.
   ENDMETHOD.
 ENDCLASS.
 ```
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+## MERGE: Modification Operations on a Data Source by Evaluating Another Data Source
+
+The following code snippet shows a selection of syntax options for ABAP SQL `MERGE` statements:
+
+```abap
+MERGE INTO target [AS target_alias]
+    USING { source [AS source_alias] | @itab AS itab_alias [DECLARE CLIENT clnt] } ON join_condition
+    WHEN MATCHED [AND match_condition1 [AND match_condition2 ... ] ] THEN { UPDATE { ALL | SET set_condition } | DELETE }
+    WHEN NOT MATCHED [AND match_condition [AND match_condition2 ... ]] THEN INSERT { ALL | ( columns_list ) VALUES ( values_expressions ) } ... .
+```    
+
+- `MERGE` allows modification operations on a data source by evaluating another data source.
+- It combines the logic of insert, update, and delete operations into a single statement based on matching datasets using join conditions. Note that `MERGE` statements perform a right outer join.
+- Modifications can be made by specifying whether the datasets in the source and target match or do not match, or both of them.
+- Notes on the syntax:
+  - `USING` clause:
+    - You can specify writable database objects for the target, such as database tables or CDS table entities.
+    - The source table is in a read position, allowing you to specify both writable database objects and read-only data sources, as well as internal tables.
+    - Optionally, you can provide alias names for the target and source tables. For internal tables, use `@` to escape the table, and an alias is mandatory. If available, you can specify the client field for an internal table using `DECLARE CLIENT`.
+    - The join conditions following `ON` are those of `SELECT` statements.
+  - The syntax allows for a `WHEN MATCHED` clause, a `WHEN NOT MATCHED` clause, or both. If both are used, the `WHEN MATCHED` clause must come before the `WHEN NOT MATCHED` clause.
+  - `WHEN MATCHED` clause:
+    - You can optionally enhance it with additional match conditions using `AND`.
+    - Conditions can involve both source and target components.
+    - It allows an update or delete operation when the datasets match.
+    - `UPDATE`: Updates the target with source content based on match conditions. Using `ALL` means all source fields are considered for the update. `SET` allows specifying conditions for conditional updates. Conditions can be represented by expressions, such as ABAP SQL functions.
+    - `DELETE`: Deletes datasets from the target when matching datasets are found in the source.
+  - `WHEN NOT MATCHED` clause:
+    - It allows an insert operation when the datasets do not match.
+    - You can optionally enhance it with additional match conditions using `AND` and involving both source and target components. 
+    - Using `ALL` means all unmatched datasets in the source are inserted into the target table. The number of columns must be the same for both the target and source.
+    - The `VALUES` addition allows you to specify concrete columns and values to insert. `VALUES` is preceded by a parenthesized, comma-separated list of column names, which can be a single column name and can only be specified once. `VALUES` is followed by a parenthesized, comma-separated list of values that correspond to the specified columns. The number of values must match the number of specified column names.
+  
+Expand the following collapsible section for example code. To try it out, create a demo class named `zcl_demo_abap` and paste the code into it. After activation, choose *F9* in ADT to execute the class. The example is set up to display output in the console.
+
+<details>
+  <summary>🟢 Click to expand for example code</summary>
+  <!-- -->
+
+<br>
+
+
+```abap
+CLASS zcl_demo_abap DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
+
+  PUBLIC SECTION.
+    INTERFACES if_oo_adt_classrun.
+
+    METHODS del.
+    METHODS prep_db.
+    METHODS prep_it.
+    METHODS display_dbtab_content IMPORTING out TYPE REF TO if_oo_adt_classrun_out.
+    METHODS set_example_divider IMPORTING out  TYPE REF TO if_oo_adt_classrun_out
+                                          text TYPE string.
+
+    DATA itabdb TYPE TABLE OF zdemo_abap_tab1 WITH EMPTY KEY.
+
+    TYPES: BEGIN OF s1,
+             comp_a TYPE i,
+             comp_b TYPE c LENGTH 10,
+             comp_c TYPE c LENGTH 10,
+             comp_d TYPE i,
+             comp_e TYPE i,
+           END OF s1.
+
+    DATA it TYPE TABLE OF s1 WITH EMPTY KEY.
+
+    METHODS:
+      m01_alias_names  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m02_join_conditions  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m03_wm_extra_condition  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m04_using_itab  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m05_wm_then_update_all  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m06_wm_then_delete  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m07_wnm_then_insert_all  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m08_wm_and_wnm_then_insert_all  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m09_wnm_then_insert_col_list  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m10_coalesce  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m11_dynamic_merge  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m12_system_fields  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string.
+
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+ENDCLASS.
+
+
+
+CLASS zcl_demo_abap IMPLEMENTATION.
+
+  METHOD if_oo_adt_classrun~main.
+
+    "Dynamically calling methods of the class
+    "The method names are retrieved using RTTI. For more information, refer to the
+    "Dynamic Programming ABAP cheat sheet.
+    "Only those methods should be called that follow the naming convention M + digit.
+    DATA(methods) = CAST cl_abap_classdescr( cl_abap_typedescr=>describe_by_object_ref( me ) )->methods.
+    SORT methods BY name ASCENDING.
+
+    "To call a particular method only, you can comment in the WHERE clause and
+    "adapt the literal appropriately.
+    LOOP AT methods INTO DATA(meth_wa)
+    "WHERE name CS 'M01'
+    .
+      TRY.
+          "The find function result indicates that the method name begins (offset = 0) with M and a digit.
+          IF find( val = meth_wa-name pcre = `^M\d` case = abap_false ) = 0.
+            CALL METHOD (meth_wa-name) EXPORTING out = out text = CONV string( meth_wa-name ).
+          ENDIF.
+        CATCH cx_root INTO DATA(error).
+          out->write( error->get_text( ) ).
+      ENDTRY.
+    ENDLOOP.
+  ENDMETHOD.
+
+  METHOD prep_db.
+    del( ).
+
+    INSERT zdemo_abap_tab1 FROM TABLE @(
+      VALUE #(
+        ( key_field       = 1
+          char1       = 'A1'
+          char2       = 'A2'
+          num1       = 1
+          num2       = 2 )
+        ( key_field       = 2
+          char1       = 'B1'
+          char2       = 'B2'
+          num1       = 3
+          num2       = 4 )
+        ( key_field       = 3
+          char1       = 'C1'
+          char2       = 'C2'
+          num1       = 5
+          num2       = 6 )
+        ( key_field       = 4
+          char1       = 'D1'
+          char2       = 'D2'
+          num1       = 7
+          num2       = 8 )
+         ( key_field   = 9
+          char1       = 'E1'
+          char2       = 'E2'
+          num1       = 9
+          num2       = 10 )
+        ( key_field   = 10
+          char1       = 'F1'
+          char2       = 'F2'
+          num1       = 11
+          num2       = 12 ) ) ).
+
+    INSERT zdemo_abap_tab2 FROM TABLE @(
+       VALUE #(
+         ( key_field       = 1
+           char1       = 'Z'
+           num1       = 100
+           numlong       = 200 )
+         ( key_field       = 2
+           char1       = 'Y'
+           num1       = 300
+           numlong       = 400 )
+         ( key_field       = 3
+           char1       = 'X'
+           num1       = 500
+           numlong       = 600 )
+         ( key_field       = 4
+           char1       = 'W'
+           num1       = 700
+           numlong       = 800 )
+         ( key_field       = 6
+           char1       = 'V'
+           num1       = 900
+           numlong       = 1000 )
+         ( key_field       = 7
+           char1       = 'W'
+           num1       = 1100
+           numlong       = 1200 ) ) ).
+  ENDMETHOD.
+
+  METHOD del.
+    DELETE FROM zdemo_abap_tab1.
+    DELETE FROM zdemo_abap_tab2.
+  ENDMETHOD.
+
+  METHOD display_dbtab_content.
+    SELECT * FROM zdemo_abap_tab1 ORDER BY key_field INTO TABLE @itabdb.
+    out->write( itabdb ).
+  ENDMETHOD.
+
+  METHOD prep_it.
+    CLEAR it.
+
+    it = VALUE #(
+      ( comp_a = 1
+        comp_b = 'IT_1'
+        comp_c = 'IT_2'
+        comp_d = 100
+        comp_e = 99 )
+      ( comp_a = 2
+        comp_b = 'IT_3'
+        comp_c = 'IT_4'
+        comp_d = 98
+        comp_e = 97 )
+       ( comp_a = 3
+         comp_b = 'IT_5'
+         comp_c = 'IT_6'
+         comp_d = 96
+         comp_e = 95 )
+       ( comp_a = 4
+         comp_b = 'IT_7'
+         comp_c = 'IT_8'
+         comp_d = 94
+         comp_e = 93 )
+       ( comp_a = 5
+         comp_b = 'IT_9'
+         comp_c = 'IT_10'
+         comp_d = 92
+         comp_e = 91 )
+       ( comp_a = 6
+         comp_b = 'IT_11'
+         comp_c = 'IT_12'
+         comp_d = 90
+         comp_e = 89 ) ).
+  ENDMETHOD.
+
+  METHOD m01_alias_names.
+
+    set_example_divider(  out  = out text = |{ text }: (Not) Using alias names| ).
+
+    "The following example statements use and do not use alias names for the source
+    "and target.
+    "The statements use the WHEN MATCHED clause and THEN UPDATE SET.
+    "WHEN MATCHED THEN UPDATE SET allows specifying set conditions to perform
+    "conditional update operations. The follwing examples illustrate that the
+    "values specified for the conditions can be represented by expressions, for
+    "example, using ABAP SQL functions.
+
+    prep_db( ).
+
+    "Without alias names
+    MERGE INTO zdemo_abap_tab1
+       USING zdemo_abap_tab2
+       ON zdemo_abap_tab1~key_field = zdemo_abap_tab2~key_field
+       WHEN MATCHED THEN UPDATE SET char1 = '#'.
+
+    display_dbtab_content( out ).
+    out->write( |\n| ).
+
+    prep_db( ).
+
+    "With alias names
+    MERGE INTO zdemo_abap_tab1 AS a
+          USING zdemo_abap_tab2 AS b
+          ON a~key_field = b~key_field
+          WHEN MATCHED THEN UPDATE SET char1 = '#'.
+
+    display_dbtab_content( out ).
+
+  ENDMETHOD.
+
+  METHOD m02_join_conditions.
+
+    set_example_divider(  out  = out text = |{ text }: Join condition options| ).
+
+    "Most of the statements in this example use fairly simple join conditions using
+    "comparisons per field values. This is to emphasize that more complex conditions
+    "such as using AND, OR, and parenthesized expressions are possible.
+
+    prep_db( ).
+
+    MERGE INTO zdemo_abap_tab1 AS a
+          USING zdemo_abap_tab2 AS b
+          ON ( a~key_field = b~key_field AND b~numlong = 400 )
+          OR ( a~key_field = b~key_field AND b~num1 > 600 )
+          WHEN MATCHED THEN UPDATE SET char1 = '#'.
+
+    display_dbtab_content( out ).
+
+  ENDMETHOD.
+
+  METHOD m03_wm_extra_condition.
+
+    set_example_divider(  out  = out text = |{ text }: WHEN MATCHED with extra condition| ).
+
+    "After WHEN MATCHED, AND can optionally be used to specify extra conditions.
+    "Multiple AND additions followed by condition specifications can be used.
+    "The WHEN NOT MATCHED clause can also be specified with extra conditions.
+
+    prep_db( ).
+
+    MERGE INTO zdemo_abap_tab1 AS a
+          USING zdemo_abap_tab2 AS b
+          ON a~key_field = b~key_field
+          WHEN MATCHED AND b~num1 <> 100
+          THEN UPDATE SET char1 = '#'.
+
+    display_dbtab_content( out ).
+
+  ENDMETHOD.
+
+  METHOD m04_using_itab.
+
+    set_example_divider(  out  = out text = |{ text }: USING with internal table| ).
+
+    "In the example MERGE statements here, the INTO clause uses a database table as
+    "target. You can also use other data sources such as CDS table entities.
+    "In the USING clause, internal tables can be specified.
+
+    prep_db( ).
+    prep_it( ).
+
+    MERGE INTO zdemo_abap_tab1 AS a
+          USING @it AS b
+          ON a~key_field = b~comp_a
+          WHEN MATCHED THEN UPDATE SET char1 = '#'.
+
+    display_dbtab_content( out ).
+
+  ENDMETHOD.
+
+  METHOD m05_wm_then_update_all.
+
+    set_example_divider(  out  = out text = |{ text }: WHEN MATCHED THEN UPDATE ALL| ).
+
+    prep_db( ).
+    prep_it( ).
+
+    "Note:
+    "- The number of columns of the target table and values must be equal.
+    "  Therefore, the first statement does not work. The database tables
+    "  have a different number of columns.
+    "- The column names in the target and source table do not have to match,
+    "  but the columns' types must be compatible.
+
+*    MERGE INTO zdemo_abap_tab1 AS a
+*          USING zdemo_abap_tab2 AS b
+*          ON a~key_field = b~key_field
+*          WHEN MATCHED THEN UPDATE ALL.
+
+    MERGE INTO zdemo_abap_tab1 AS a
+          USING @it AS b
+          ON a~key_field = b~comp_a
+          WHEN MATCHED THEN UPDATE ALL.
+
+    display_dbtab_content( out ).
+  ENDMETHOD.
+
+  METHOD m06_wm_then_delete.
+
+    set_example_divider(  out  = out text = |{ text }: WHEN MATCHED THEN DELETE| ).
+
+    prep_db( ).
+
+    MERGE INTO zdemo_abap_tab1 AS a
+          USING zdemo_abap_tab2 AS b
+          ON a~key_field = b~key_field
+          WHEN MATCHED THEN DELETE.
+
+    display_dbtab_content( out ).
+  ENDMETHOD.
+
+  METHOD m07_wnm_then_insert_all.
+
+    set_example_divider(  out  = out text = |{ text }: WHEN NOT MATCHED THEN INSERT ALL| ).
+
+    prep_db( ).
+    prep_it( ).
+
+    "Note:
+    "- The number of columns of the target table and values must be equal.
+    "- The example statement uses the WHEN NOT MATCHED clause only.
+
+    MERGE INTO zdemo_abap_tab1 AS a
+          USING @it AS b
+          ON a~key_field = b~comp_a
+          WHEN NOT MATCHED THEN INSERT ALL.
+
+    display_dbtab_content( out ).
+    out->write( |\n| ).
+
+    prep_db( ).
+
+    "The following example emphasizes that joins, depending on the join
+    "conditions, can result in duplicate entries.
+
+    it = VALUE #( ( comp_a = 1
+                    comp_b = 'X'
+                    comp_c = 'Y'
+                    comp_d = 100
+                    comp_e = 99 ) ).
+
+    TRY.
+        MERGE INTO zdemo_abap_tab1 AS a
+              USING @it AS b
+              ON a~char1 = b~comp_b
+              WHEN NOT MATCHED THEN INSERT ALL.
+
+        display_dbtab_content( out ).
+      CATCH cx_sy_open_sql_db INTO DATA(e).
+        out->write( e->get_text( ) ).
+    ENDTRY.
+
+  ENDMETHOD.
+
+  METHOD m08_wm_and_wnm_then_insert_all.
+
+    set_example_divider(  out  = out text = |{ text }: WHEN NOT MATCHED THEN INSERT ALL, with WHEN MATCHED clause| ).
+
+    "Note:
+    "- The WHEN MATCHED clause always precedes the WHEN NOT MATCHED clause.
+    "- The example reflects an upsert, i.e. when matched, entries are updated,
+    "  otherwise, an insertion occurs.
+    "- Specifying both clauses is optional.
+
+    prep_db( ).
+    prep_it( ).
+
+    MERGE INTO zdemo_abap_tab1 AS a
+          USING @it AS b
+          ON a~key_field = b~comp_a
+          WHEN MATCHED THEN UPDATE SET char1 = '#'
+          WHEN NOT MATCHED THEN INSERT ALL.
+
+    display_dbtab_content( out ).
+  ENDMETHOD.
+
+  METHOD m09_wnm_then_insert_col_list.
+    set_example_divider(  out  = out text = |{ text }: WHEN NOT MATCHED THEN INSERT columns_list| ).
+
+    prep_db( ).
+    prep_it( ).
+
+    MERGE INTO zdemo_abap_tab1 AS a
+          USING zdemo_abap_tab2 AS b
+          ON a~key_field = b~key_field
+          WHEN NOT MATCHED
+          THEN INSERT ( key_field, char1, char2 ) VALUES ( b~key_field, 'AB', 'AP' ).
+
+    display_dbtab_content( out ).
+  ENDMETHOD.
+
+  METHOD m10_coalesce.
+    set_example_divider(  out  = out text = |{ text }: coalesce| ).
+
+    "The following example illustrates that for certain column specifications
+    "and join conditions, null values can be produced. If detected by the
+    "compiler, a syntax warning occurs. In such cases, the coalesce function
+    "can be specified.
+
+    prep_db( ).
+
+    MERGE INTO zdemo_abap_tab1 AS a
+          USING zdemo_abap_tab2 AS b
+          ON a~key_field = b~key_field
+          WHEN NOT MATCHED
+          THEN INSERT ( key_field, char1 ) VALUES ( b~key_field, coalesce( b~char1, 'ABAP' ) ).
+
+    display_dbtab_content( out ).
+  ENDMETHOD.
+
+  METHOD m11_dynamic_merge.
+
+    set_example_divider(  out  = out text = |{ text }: Dynamic MERGE statements | ).
+
+    prep_db( ).
+
+    DATA(dyn_merge) = `INTO zdemo_abap_tab1 USING zdemo_abap_tab2 ` &&
+       `ON zdemo_abap_tab1~key_field = zdemo_abap_tab2~key_field ` &&
+       `WHEN MATCHED THEN UPDATE SET char1 = '#'`.
+
+    MERGE (dyn_merge).
+
+    display_dbtab_content( out ).
+    out->write( |\n| ).
+    prep_db( ).
+
+    "Erroneous content for dynamic merge statement
+    "In the example statement, INTO is missing.
+
+    DATA(dyn_merge_error) = `zdemo_abap_tab1 USING zdemo_abap_tab2 ` &&
+           `ON zdemo_abap_tab1~key_field = zdemo_abap_tab2~key_field ` &&
+           `WHEN MATCHED THEN UPDATE SET char1 = '?'`.
+
+    TRY.
+        MERGE (dyn_merge_error).
+        display_dbtab_content( out ).
+      CATCH cx_sy_dynamic_osql_syntax INTO DATA(err).
+        out->write( err->get_text( ) ).
+    ENDTRY.
+
+    out->write( |\n| ).
+    out->write( |\n| ).
+    prep_db( ).
+
+    "The following statement illustrates a dynamic MERGE statetement
+    "using a string table.
+
+    DATA(dyn_merge_tab) = VALUE string_table(
+      ( `INTO zdemo_abap_tab1 USING zdemo_abap_tab2` )
+      ( `ON zdemo_abap_tab1~key_field = zdemo_abap_tab2~key_field` )
+      ( `WHEN MATCHED THEN UPDATE SET char1 = '*'` ) ).
+
+    MERGE (dyn_merge_tab).
+
+    display_dbtab_content( out ).
+  ENDMETHOD.
+
+  METHOD m12_system_fields.
+
+    set_example_divider(  out  = out text = |{ text }: System field setting| ).
+
+    "sy-subrc: 0 if at least one entry in the target was updated, inserted
+    "          or deleted; otherwise, the value is 4.
+    "sy-dbcnt: The sum of all entries updated, inserted and/or deleted in
+    "          the target.
+
+    prep_db( ).
+    prep_it( ).
+
+    MERGE INTO zdemo_abap_tab1 AS a
+          USING @it AS b
+          ON a~key_field = b~comp_a
+          WHEN MATCHED THEN UPDATE SET char1 = '#'
+          WHEN NOT MATCHED THEN INSERT ALL.
+
+    DATA(sysubrc) = sy-subrc.
+    DATA(sydbcnt) = sy-dbcnt.
+
+    out->write( |sy-subrc: { sysubrc }| ).
+    out->write( |sy-dbcnt: { sydbcnt }| ).
+    out->write( |\n| ).
+    out->write( |\n| ).
+    display_dbtab_content( out ).
+    out->write( |\n| ).
+    out->write( |\n| ).
+
+    prep_db( ).
+
+    it = VALUE #( ( comp_a = 123
+                    comp_b = 'IT_A'
+                    comp_c = 'IT_B'
+                    comp_d = 456
+                    comp_e = 789 ) ).
+
+    MERGE INTO zdemo_abap_tab1 AS a
+          USING @it AS b
+          ON a~key_field = b~comp_a
+          WHEN MATCHED THEN UPDATE SET char1 = '#'.
+
+    sysubrc = sy-subrc.
+    sydbcnt = sy-dbcnt.
+
+    out->write( |sy-subrc: { sysubrc }| ).
+    out->write( |sy-dbcnt: { sydbcnt }| ).
+    out->write( |\n| ).
+    out->write( |\n| ).
+
+    display_dbtab_content( out ).
+    out->write( |\n| ).
+    out->write( |\n| ).
+    prep_db( ).
+
+    it = VALUE #( ( comp_a = 1 )
+                  ( comp_a = 2 )
+                  ( comp_a = 123
+                    comp_b = 'IT_A'
+                    comp_c = 'IT_B'
+                    comp_d = 100
+                    comp_e = 200 )
+                  ( comp_a = 456
+                    comp_b = 'IT_C'
+                    comp_c = 'IT_D'
+                    comp_d = 300
+                    comp_e = 400 ) ).
+
+    MERGE INTO zdemo_abap_tab1 AS a
+          USING @it AS b
+          ON a~key_field = b~comp_a
+          WHEN MATCHED THEN DELETE
+          WHEN NOT MATCHED THEN INSERT ALL.
+
+    sysubrc = sy-subrc.
+    sydbcnt = sy-dbcnt.
+
+    out->write( |sy-subrc: { sysubrc }| ).
+    out->write( |sy-dbcnt: { sydbcnt }| ).
+    out->write( |\n| ).
+    out->write( |\n| ).
+
+    display_dbtab_content( out ).
+  ENDMETHOD.
+
+  METHOD set_example_divider.
+    out->write( |\n| ).
+    out->write( |*&{ repeat( val = `-` occ = strlen( text ) + 2 ) }*| ).
+    out->write( |*& { text }| ).
+    out->write( |*&{ repeat( val = `-` occ = strlen( text ) + 2 ) }*| ).
+    out->write( |\n| ).
+    out->write( |\n| ).
+  ENDMETHOD.
+ENDCLASS.
+```
+
+</details>
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
