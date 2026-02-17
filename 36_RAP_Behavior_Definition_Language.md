@@ -216,7 +216,8 @@ define behavior for ZR_DEMO_ABAP alias demo_abap
 persistent table zdemoabap
 draft table zdemoabap_d
 etag master LocalLastChangedAt
-lock master total etag LastChangedAt
+lock master 
+total etag LastChangedAt
 authorization master ( none )
 late numbering
 // -------------- Entity Behavior Body --------------

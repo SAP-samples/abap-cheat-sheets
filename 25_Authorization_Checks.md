@@ -599,7 +599,7 @@ METHOD get_instance_authorizations.
       RETURN.
     ENDIF.
 
-    LOOP AT res INTO FINAL(r).
+    LOOP AT res INTO DATA(r).
       
       ...
 
@@ -610,7 +610,7 @@ METHOD get_instance_authorizations.
            ID 'ZAUTH_FIELD' FIELD r-some_field
            ID 'ACTVT'       FIELD '06'.
 
-        FINAL(is_delete_allowed) = COND #( WHEN sy-subrc = 0 THEN if_abap_behv=>auth-allowed ELSE if_abap_behv=>auth-unauthorized ).
+        DATA(is_delete_allowed) = COND #( WHEN sy-subrc = 0 THEN if_abap_behv=>auth-allowed ELSE if_abap_behv=>auth-unauthorized ).
       ENDIF.
 
       ...

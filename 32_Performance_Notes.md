@@ -333,8 +333,8 @@ Overview of covered examples (see also the inline comments in the method impleme
 > [!NOTE]
 > - As a prerequisite, you have imported the ABAP cheat sheet repository, as this example uses some of its artifacts.
 > - Since the example contains multiple loops, the execution may take some time to complete.
-> - This example is for exploration, experimentation, and demonstration purposes only. It is <strong>not</strong> suitable for accurate runtime or performance testing (refer to the note in the cheat sheet introduction). Due to its simplified nature and the various factors that can influence the runtime of an ABAP program, results may vary and may not be entirely accurate, even across multiple runs. The displayed results may not always accurately reflect the performance notes from the cheat sheets, and some may be clearer than others. You might run the example again.
-> - The example code snippets do not claim to illustrate best practices. Instead, they aim to highlight potential pitfalls when handling data-intensive tasks in ABAP programs. Despite manually calculating runtime, without tool support, the results should indicate trends and reveal rather inefficient coding styles. 
+> - This example is for exploration, experimentation, and demonstration purposes only. It is <strong>not</strong> suitable for accurate runtime or performance testing (refer to the note in the cheat sheet introduction). Due to its simplified nature and the various factors that can influence the runtime of an ABAP program, results may vary and may not be entirely accurate, even across multiple runs. The displayed results may not always accurately reflect the performance notes from the cheat sheets, and some may be clearer than others. You might run the example again. Despite manually calculating runtime, without tool support, the results should indicate trends and reveal rather inefficient coding styles. 
+> - The example code snippets do not claim to illustrate best practices. Instead, they aim to highlight potential pitfalls when handling data-intensive tasks in ABAP programs. 
 > - Note the disclaimer in the ABAP cheat sheet repository's README.
 
 

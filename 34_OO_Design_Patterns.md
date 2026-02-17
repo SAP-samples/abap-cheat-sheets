@@ -5604,8 +5604,8 @@ ENDCLASS.
 **Example notes:**
 
 
-  > [!NOTE]  
-  > The example uses a demo database table (`zdemo_abap_carr`) from the ABAP cheat sheet repository.
+> [!NOTE]  
+> The example uses a demo database table (`zdemo_abap_carr`) from the ABAP cheat sheet repository.
 
 
 - This example tries to illustrate the Data Access Object (DAO) design pattern using the following declarations and implementations:

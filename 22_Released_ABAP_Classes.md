@@ -51,6 +51,7 @@
   - [Writing Internal Table Content to CSV](#writing-internal-table-content-to-csv)
   - [Triggering Garbage Collection](#triggering-garbage-collection)
   - [Message Utility Class](#message-utility-class)
+  - [SAP Codes Conversion](#sap-codes-conversion)
 
 
 This ABAP cheat sheet contains a selection of [released](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenreleased_api_glosry.htm) ABAP classes that are available in [ABAP for Cloud Development](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_for_cloud_dev_glosry.htm). It serves as a quick introduction, along with code snippets to explore the functionality in action.
@@ -6914,7 +6915,7 @@ The (non-AI-related) experiments include these IDE actions for demo purposes:
 - The demo IDE action lets you select a usable and instantiable class. Once selected, you can choose a public instance or static method of that class to be called.
 - After choosing a method, the IDE action dialog presents its input parameters (if any), allowing you to provide actual parameters for the formal parameters. Note that the example is simplified, only allowing character-like input. For example, a calculator method may require three inputs: two numbers and an operator. The example focuses on basic cases and does not perform input validation at runtime.
 - When you run the IDE action, the method is executed. For instance methods, an instance of the class is created.
-- As a result, the parameter table (refer to the Dynamic Programming cheat sheet) is displayed as HTML in the IDE action result dialog using `CL_DEMO_OUTPUT_CLOUD`, including any the input and output parameters and their values (if any).
+- As a result, the parameter table (refer to the Dynamic Programming cheat sheet) is displayed as HTML in the IDE action result dialog using `CL_DEMO_OUTPUT_CLOUD`, including any of the input and output parameters and their values (if any).
 
  </td>
 </tr>
@@ -9990,5 +9991,177 @@ ENDCLASS.
 
 </details>  
 
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+## SAP Codes Conversion
+
+- The `CL_CONVERSION_EXT_INT ` class provides several methods to convert from ISO to SAP internal format and vice versa. 
+- Among the methods are options for currency code, currency amount, language code, and units of measurement conversion.
+- Find more information [here](https://help.sap.com/docs/sap-btp-abap-environment/abap-environment/conversion-of-sap-codes?version=Cloud).
+
+<br>
+
+<details>
+  <summary>🟢 Click to expand for example code</summary>
+  <!-- -->
+
+<br>
+
+```abap
+CLASS zcl_demo_abap DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
+
+  PUBLIC SECTION.
+    INTERFACES if_oo_adt_classrun.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+ENDCLASS.
+
+
+
+CLASS zcl_demo_abap IMPLEMENTATION.
+
+  METHOD if_oo_adt_classrun~main.
+
+*&---------------------------------------------------------------------*
+*& Currency code conversion
+*&---------------------------------------------------------------------*
+
+    TRY.
+        DATA(curr_code_conv) = cl_conversion_ext_int=>get_instance( ).
+
+        "Conversion of ISO currency code into SAP internal currency key
+        curr_code_conv->currency_code_ext_to_int(
+          EXPORTING
+            iso_code = 'EUR'
+          IMPORTING
+            sap_code = DATA(sap_code)
+            is_unique = DATA(unique)
+        ).
+        out->write( |SAP code: { sap_code }| ).
+        out->write( |Is unique: "{ unique }"| ).
+        out->write( |\n| ).
+
+        "Conversion of SAP internal currency key into ISO currency code
+        curr_code_conv->currency_code_int_to_ext(
+          EXPORTING
+            sap_code = 'EUR'
+          IMPORTING
+            iso_code = DATA(curr_code_iso)
+        ).
+        out->write( |ISO code: { curr_code_iso }| ).
+
+      CATCH cx_conversion_ext_int INTO DATA(error_curr_code_conv).
+        out->write( error_curr_code_conv->get_text( ) ).
+    ENDTRY.
+
+    out->write( |\n| ).
+    out->write( repeat( val = `*` occ = 80 ) ).
+    out->write( |\n| ).
+
+*&---------------------------------------------------------------------*
+*& Currency amount conversion
+*&---------------------------------------------------------------------*
+
+    TRY.
+        DATA(curr_amount_conv) = cl_conversion_ext_int=>get_instance( ).
+
+        "Conversion of ISO currency amount into the SAP internal currency amount
+        curr_amount_conv->currency_amount_ext_to_int(
+          EXPORTING
+            currency = 'JPY'
+            bapi_amount = CONV #( '15' )
+          IMPORTING
+            sap_amount = DATA(sap_curr_amount)
+        ).
+
+        out->write( |SAP currency amount: { sap_curr_amount } | ).
+        out->write( |\n| ).
+
+        "Conversion of SAP internal currency amount into ISO currency amount
+        curr_amount_conv->currency_amount_int_to_ext(
+          EXPORTING
+            currency = 'JPY'
+            sap_amount = CONV #( '0.1500' )
+          IMPORTING
+            bapi_amount = DATA(iso_curr_amount)
+        ).
+        out->write( |ISO currency amount: { iso_curr_amount } | ).
+      CATCH cx_conversion_ext_int INTO DATA(error_curr_amount_conv).
+        out->write( error_curr_amount_conv->get_text( ) ).
+    ENDTRY.
+
+    out->write( |\n| ).
+    out->write( repeat( val = `*` occ = 80 ) ).
+    out->write( |\n| ).
+
+*&---------------------------------------------------------------------*
+*& Language code conversion
+*&---------------------------------------------------------------------*
+
+    TRY.
+        DATA(lang_code_conv) = cl_conversion_ext_int=>get_instance( ).
+
+        "Conversion of ISO language code into the SAP internal format
+        lang_code_conv->language_code_ext_to_int(
+          EXPORTING
+            iso_code = 'EN'
+          IMPORTING
+            sap_code = DATA(sap_lang_code)
+        ).
+        out->write( |SAP language code: { sap_lang_code } | ).
+        out->write( |\n| ).
+
+        "Conversion of SAP internal format into ISO language code
+        lang_code_conv->language_code_int_to_ext(
+           EXPORTING
+             sap_code = 'E'
+           IMPORTING
+             iso_code = DATA(iso_lang_code)
+         ).
+        out->write( |ISO language code: { iso_lang_code } | ).
+      CATCH cx_conversion_ext_int INTO DATA(error_lang_code_conv).
+        out->write( error_lang_code_conv->get_text( ) ).
+    ENDTRY.
+
+    out->write( |\n| ).
+    out->write( repeat( val = `*` occ = 80 ) ).
+    out->write( |\n| ).
+
+*&---------------------------------------------------------------------*
+*& Conversion of units of measurement
+*&---------------------------------------------------------------------*
+
+    TRY.
+        DATA(uom_conv) = cl_conversion_ext_int=>get_instance( ).
+
+        "Conversion of ISO code for the unit of measurement into the SAP internal format
+        uom_conv->unit_of_measure_ext_to_int(
+         EXPORTING
+           iso_code = 'MTR'
+         IMPORTING
+           sap_code = DATA(sap_uom_code)
+       ).
+        out->write( |SAP UoM code: { sap_uom_code } | ).
+        out->write( |\n| ).
+
+        "Conversion of the SAP internal format into the ISO code for the unit of measurement
+        uom_conv->unit_of_measure_int_to_ext(
+           EXPORTING
+             sap_code = 'KM'
+           IMPORTING
+             iso_code = DATA(iso_uom_code)
+         ).
+        out->write( |ISO UoM code: { iso_uom_code } | ).
+      CATCH cx_conversion_ext_int INTO DATA(error_uom_conv).
+        out->write( error_uom_conv->get_text( ) ).
+    ENDTRY.
+  ENDMETHOD.
+ENDCLASS.
+``` 
+
+</details>
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>

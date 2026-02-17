@@ -884,7 +884,7 @@ SELECT SINGLE FROM @itab AS itab_alias
 
 <tr>
 <td> 
-Sequentially reading a row from a database table into a structure
+Sequentially passing rows of a read result into a structure
 </td>
 <td>
 
