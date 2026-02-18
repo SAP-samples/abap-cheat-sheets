@@ -1,0 +1,37 @@
+managed with additional save
+implementation in class ZBP_R_DEMO_ABAP96 unique;
+strict ( 2 );
+auxiliary class zcl_demo_abap_abp_aux_cl96;
+
+define behavior for ZR_DEMO_ABAP96 alias demo_abap
+persistent table zdemoabap96
+lock master
+authorization master ( global, instance )
+{
+  field ( numbering : managed, readonly ) UUID;
+  field ( readonly ) Country;
+  field ( mandatory : create, readonly : update ) Num1;
+
+  create;
+  update;
+  delete;
+
+  event created;
+  event updated parameter ZDEMO_ABAP_ABSTRACT96;
+  event deleted parameter ZDEMO_ABAP_ABSTRACT96;
+
+  static action ( authorization : none ) check_log;
+
+  determination det_save on save { create; }
+
+  mapping for zdemoabap96 corresponding
+    {
+      UUID    = UUID;
+      Text1   = TEXT1;
+      Text2   = TEXT2;
+      Num1    = NUM1;
+      Num2    = NUM2;
+      Country = COUNTRY;
+    }
+
+}

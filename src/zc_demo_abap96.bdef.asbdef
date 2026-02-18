@@ -1,0 +1,11 @@
+projection;
+strict ( 2 );
+
+define behavior for ZC_DEMO_ABAP96 alias demo_abap
+{
+  use create;
+  use update;
+  use delete;
+
+  use action check_log;
+}

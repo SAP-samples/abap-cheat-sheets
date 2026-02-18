@@ -1,0 +1,56 @@
+managed implementation in class ZBP_R_DEMO_ABAP99 unique;
+strict ( 2 );
+with draft;
+
+define behavior for ZR_DEMO_ABAP99 alias demo_abap
+persistent table zdemoabap99
+draft table zdemoabap_d99
+etag master LocalLastChangedAt
+lock master total etag LastChangedAt
+authorization master ( none )
+late numbering
+{
+  field ( readonly ) ID, CalcResult, LocalCreatedBy, LocalCreatedAt,
+                     LocalLastChangedBy, LocalLastChangedAt, LastChangedAt;
+
+  field ( mandatory ) Number1, Number2, Operator;
+
+  create;
+  update;
+  delete;
+
+  validation validate on save { create; field Number1, Number2, Operator; }
+  determination det_modify on modify { field Number1, Number2, Operator; }
+  internal action calculation;
+
+  draft action Resume;
+  draft action Edit;
+  draft action Activate optimized;
+  draft action Discard;
+  draft determine action Prepare
+  {
+    validation validate;
+  }
+
+  side effects
+  {
+    field Number1 affects field CalcResult;
+    field Number2 affects field CalcResult;
+    field Operator affects field CalcResult;
+    determine action Prepare executed on field ( Number1, Number2, Operator, CalcResult ) affects messages;
+  }
+
+  mapping for zdemoabap99 corresponding
+    {
+      ID                 = ID;
+      Number1            = Number1;
+      Number2            = Number2;
+      Operator           = Operator;
+      CalcResult         = calcresult;
+      LocalCreatedBy     = LOCAL_CREATED_BY;
+      LocalCreatedAt     = LOCAL_CREATED_AT;
+      LocalLastChangedBy = LOCAL_LAST_CHANGED_BY;
+      LocalLastChangedAt = LOCAL_LAST_CHANGED_AT;
+      LastChangedAt      = LAST_CHANGED_AT;
+    }
+}

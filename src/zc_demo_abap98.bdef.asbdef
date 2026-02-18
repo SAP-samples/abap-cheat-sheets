@@ -1,0 +1,28 @@
+projection;
+strict ( 2 );
+use draft;
+
+define behavior for ZC_DEMO_ABAP98 alias demo_abap
+use etag
+{
+  use create;
+  use update;
+  use delete;
+
+  use action uppercase;
+  use action add_random_numbers;
+  use action addition;
+  use action count;
+  use action lowercase;
+  use action reverse_text;
+  use action increment_numbers;
+  use action copy_instance;
+  use action new_instance;
+
+  use action Edit;
+  use action Activate;
+  use action Discard;
+  use action Resume;
+  use action Prepare;
+
+}

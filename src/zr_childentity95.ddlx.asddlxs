@@ -1,0 +1,86 @@
+@Metadata.layer: #CORE
+@UI.headerInfo.title.type: #STANDARD
+@UI.headerInfo.title.value: 'UUID'
+@UI.headerInfo.description.type: #STANDARD
+@UI.headerInfo.description.value: 'UUID'
+annotate view ZR_CHILDENTITY95 with
+{
+  @EndUserText.label: 'UUID'
+  @UI.identification: [ {
+    position: 10 , 
+    label: 'UUID'
+  } ]
+  @UI.lineItem: [ {
+    position: 10 , 
+    label: 'UUID'
+  } ]
+  @UI.selectionField: [ {
+    position: 10 
+  } ]
+  UUID;
+  
+  @EndUserText.label: 'ParentID'
+  @UI.facet: [ {
+    label: 'General Information', 
+    id: 'GeneralInfo', 
+    purpose: #STANDARD, 
+    position: 20 , 
+    type: #IDENTIFICATION_REFERENCE
+  } ]
+  @UI.identification: [ {
+    position: 20 , 
+    label: 'ParentID'
+  } ]
+  @UI.lineItem: [ {
+    position: 20 , 
+    label: 'ParentID'
+  } ]
+  @UI.selectionField: [ {
+    position: 20 
+  } ]
+  ParentID;
+  
+  @EndUserText.label: 'ChildText'
+  @UI.identification: [ {
+    position: 30 , 
+    label: 'ChildText'
+  } ]
+  @UI.lineItem: [ {
+    position: 30 , 
+    label: 'ChildText'
+  } ]
+  @UI.selectionField: [ {
+    position: 30 
+  } ]
+  ChildText;
+  
+  @EndUserText.label: 'Text'
+  @UI.identification: [ {
+    position: 40 , 
+    label: 'Text'
+  } ]
+  @UI.lineItem: [ {
+    position: 40 , 
+    label: 'Text'
+  } ]
+  @UI.selectionField: [ {
+    position: 40 
+  } ]
+  Text;
+  
+  @EndUserText.label: 'Num'
+  @UI.identification: [ {
+    position: 50 , 
+    label: 'Num'
+  } ]
+  @UI.lineItem: [ {
+    position: 50 , 
+    label: 'Num'
+  } ]
+  @UI.selectionField: [ {
+    position: 50 
+  } ]
+  Num;
+  
+
+}

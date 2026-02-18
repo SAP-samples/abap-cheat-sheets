@@ -1,0 +1,10 @@
+@EndUserText.label: 'Demo DCL'
+@MappingRole: true
+define role ZDEMO_ABAP_DCL96 {
+  grant 
+    select
+      on
+        ZR_DEMO_ABAP96
+          where
+            (Country) = aspect pfcg_auth(ZAUTHOBJ96, ZAUTHFLD96, ACTVT = '03');            
+}

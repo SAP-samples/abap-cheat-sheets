@@ -1,0 +1,100 @@
+@Metadata.layer: #CORE
+@UI.headerInfo.title.type: #STANDARD
+@UI.headerInfo.title.value: 'UUID'
+@UI.headerInfo.description.type: #STANDARD
+@UI.headerInfo.description.value: 'UUID'
+annotate entity ZC_DEMO_ABAP96 with
+{
+  @EndUserText.label: 'UUID'
+  @UI.facet: [ {
+    label: 'General Information',
+    id: 'GeneralInfo',
+    purpose: #STANDARD,
+    position: 10 ,
+    type: #IDENTIFICATION_REFERENCE
+  } ]
+  @UI.identification: [ {
+    position: 10 ,
+    label: 'UUID'
+  } ]
+  @UI.lineItem: [ {
+    position: 10 ,
+    label: 'UUID'
+  },
+  { type: #FOR_ACTION, dataAction: 'check_log', label: 'Check Log Table' }
+  ]
+  @UI.selectionField: [ {
+    position: 10
+  } ]
+  UUID;
+
+  @EndUserText.label: 'Text1'
+  @UI.identification: [ {
+    position: 20 ,
+    label: 'Text1'
+  } ]
+  @UI.lineItem: [ {
+    position: 20 ,
+    label: 'Text1'
+  } ]
+  @UI.selectionField: [ {
+    position: 20
+  } ]
+  Text1;
+
+  @EndUserText.label: 'Text2'
+  @UI.identification: [ {
+    position: 30 ,
+    label: 'Text2'
+  } ]
+  @UI.lineItem: [ {
+    position: 30 ,
+    label: 'Text2'
+  } ]
+  @UI.selectionField: [ {
+    position: 30
+  } ]
+  Text2;
+
+  @EndUserText.label: 'Num1'
+  @UI.identification: [ {
+    position: 40 ,
+    label: 'Num1'
+  } ]
+  @UI.lineItem: [ {
+    position: 40 ,
+    label: 'Num1'
+  } ]
+  @UI.selectionField: [ {
+    position: 40
+  } ]
+  Num1;
+
+  @EndUserText.label: 'Num2'
+  @UI.identification: [ {
+    position: 50 ,
+    label: 'Num2'
+  } ]
+  @UI.lineItem: [ {
+    position: 50 ,
+    label: 'Num2'
+  } ]
+  @UI.selectionField: [ {
+    position: 50
+  } ]
+  Num2;
+
+  @EndUserText.label: 'Country'
+  @UI.identification: [ {
+    position: 60 ,
+    label: 'Country'
+  } ]
+  @UI.lineItem: [ {
+    position: 60 ,
+    label: 'Country'
+  } ]
+  @UI.selectionField: [ {
+    position: 60
+  } ]
+  Country;
+}

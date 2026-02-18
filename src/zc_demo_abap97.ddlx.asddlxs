@@ -1,0 +1,86 @@
+@Metadata.layer: #CORE
+@UI.headerInfo.title.type: #STANDARD
+@UI.headerInfo.title.value: 'ID'
+@UI.headerInfo.description.type: #STANDARD
+@UI.headerInfo.description.value: 'ID'
+annotate entity ZC_DEMO_ABAP97 with
+{
+@EndUserText.label: 'ID'
+  @UI.facet: [ {
+    label: 'General Information', 
+    id: 'GeneralInfo', 
+    purpose: #STANDARD, 
+    position: 10 , 
+    type: #IDENTIFICATION_REFERENCE
+  } ]
+  @UI.identification: [ {
+    position: 10 , 
+    label: 'ID'
+  } ]
+  @UI.lineItem: [ {
+    position: 10 , 
+    label: 'ID'
+  } ]
+  @UI.selectionField: [ {
+    position: 10 
+  } ]
+  id;
+  
+  @EndUserText.label: 'Number1'
+  @UI.identification: [ {
+    position: 20 , 
+    label: 'Number1'
+  } ]
+  @UI.lineItem: [ {
+    position: 20 , 
+    label: 'Number1'
+  } ]
+  @UI.selectionField: [ {
+    position: 20 
+  } ]
+  number1;
+  
+  @EndUserText.label: 'Operator'
+  @UI.identification: [ {
+    position: 30 , 
+    label: 'Operator'
+  } ]
+  @UI.lineItem: [ {
+    position: 30 , 
+    label: 'Operator'
+  } ]
+  @UI.selectionField: [ {
+    position: 30 
+  } ]
+  operator;
+  
+  @EndUserText.label: 'Number2'
+  @UI.identification: [ {
+    position: 40 , 
+    label: 'Number2'
+  } ]
+  @UI.lineItem: [ {
+    position: 40 , 
+    label: 'Number2'
+  } ]
+  @UI.selectionField: [ {
+    position: 40 
+  } ]
+  number2;
+  
+  @EndUserText.label: 'Result'
+  @UI.identification: [ {
+    position: 50 , 
+    label: 'Result'
+  } ]
+  @UI.lineItem: [ {
+    position: 50 , 
+    label: 'Result'
+  } ]
+  @UI.selectionField: [ {
+    position: 50 
+  } ]
+  calcresult; 
+  
+  
+}

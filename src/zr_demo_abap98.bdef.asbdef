@@ -1,0 +1,65 @@
+managed implementation in class ZBP_R_DEMO_ABAP98 unique;
+strict ( 2 );
+with draft;
+
+define behavior for ZR_DEMO_ABAP98 alias demo_abap
+persistent table zdemoabap98
+draft table zdemoabap_d98
+etag master LocalLastChangedAt
+lock master total etag LastChangedAt
+authorization master ( none )
+{
+  field ( readonly ) UUID, LocalCreatedBy, LocalCreatedAt, LocalLastChangedBy,
+  LocalLastChangedAt, LastChangedAt;
+
+  field ( numbering : managed ) UUID;
+
+  create;
+  update;
+  delete;
+
+  draft action Activate optimized;
+  draft action Discard;
+  draft action Edit;
+  draft action Resume;
+  draft determine action Prepare;
+
+  //Non-factory action
+  action uppercase;
+  //Non-factory action with output parameter
+  action add_random_numbers result [1] $self;
+  //Non-factory action with output and input parameters
+  action addition parameter ZDEMO_ABAP_ABSTRACT98 result [1] $self;
+  //Non-factory static action
+  static action count;
+  //Internal action
+  internal action create_random_strings;
+
+  //RAP BDL operation additions
+  //precheck prevents unwanted changes from reaching the application buffer.
+  action ( precheck ) lowercase result [1] $self;
+
+  //global feature control
+  action ( features : global ) reverse_text result [1] $self;
+
+  //instance feature control
+  action ( features : instance ) increment_numbers result [1] $self;
+
+  //Factory actions
+  factory action copy_instance [1];
+  static factory action new_instance [1];
+
+  mapping for zdemoabap98 corresponding
+    {
+      UUID               = UUID;
+      Text1              = TEXT1;
+      Text2              = TEXT2;
+      Num1               = NUM1;
+      Num2               = NUM2;
+      LocalCreatedBy     = LOCAL_CREATED_BY;
+      LocalCreatedAt     = LOCAL_CREATED_AT;
+      LocalLastChangedBy = LOCAL_LAST_CHANGED_BY;
+      LocalLastChangedAt = LOCAL_LAST_CHANGED_AT;
+      LastChangedAt      = LAST_CHANGED_AT;
+    }
+}

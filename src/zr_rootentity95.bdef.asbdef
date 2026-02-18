@@ -1,0 +1,58 @@
+managed implementation in class ZBP_R_ROOTENTITY95 unique;
+strict ( 2 );
+
+define behavior for ZR_ROOTENTITY95 alias RootEntity
+persistent table zrootentity95
+lock master
+authorization master ( none )
+early numbering
+{
+  field ( readonly ) ID;
+
+  create;
+  update;
+  delete;
+
+  static factory action new_instances parameter ZDEMO_ABAP_ABSTRACT95 [1];
+  action execute_functions;
+  function ( authorization : none ) calc_inst result [1] ZDEMO_ABAP_ABSTR95;
+  static function ( authorization : none ) calc_stat result [1] ZDEMO_ABAP_ABSTR95;
+
+  mapping for zrootentity95 corresponding
+    {
+      ID       = ID;
+      RootText = ROOT_TEXT;
+      Text1    = TEXT1;
+      Text2    = TEXT2;
+      Num1     = NUM1;
+      Num2     = NUM2;
+    }
+
+  association _ChildEntity { create; }
+
+}
+
+define behavior for ZR_CHILDENTITY95 alias ChildEntity
+persistent table zchildentity95
+lock dependent by _RootEntity
+authorization dependent by _RootEntity
+{
+  field ( readonly ) UUID, ParentID;
+
+  field ( numbering : managed ) UUID;
+
+  update;
+  delete;
+
+  mapping for zchildentity95 corresponding
+    {
+      UUID      = UUID;
+      ParentID  = PARENT_ID;
+      ChildText = CHILD_TEXT;
+      Text      = TEXT;
+      Num       = NUM;
+    }
+
+  association _RootEntity;
+
+}

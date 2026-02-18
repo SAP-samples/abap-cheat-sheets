@@ -1,0 +1,4 @@
+define service ZUI_DEMO_ABAP_O499
+  provider contracts odata_v4_ui {
+  expose ZC_DEMO_ABAP99 as demo_abap;
+}

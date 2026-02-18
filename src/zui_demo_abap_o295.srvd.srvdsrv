@@ -1,0 +1,5 @@
+define service ZUI_DEMO_ABAP_O295
+  provider contracts odata_v2_ui {
+  expose ZR_ROOTENTITY95  as RootEntity;
+  expose ZR_CHILDENTITY95 as ChildEntity;
+}

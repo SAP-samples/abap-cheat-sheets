@@ -1,0 +1,151 @@
+@Metadata.layer: #CORE
+@UI.headerInfo.title.type: #STANDARD
+@UI.headerInfo.title.value: 'UUID'
+@UI.headerInfo.description.type: #STANDARD
+@UI.headerInfo.description.value: 'UUID'
+annotate entity ZC_DEMO_ABAP98 with
+{
+ @EndUserText.label: 'UUID'
+  @UI.facet: [ {
+    label: 'General Information', 
+    id: 'GeneralInfo', 
+    purpose: #STANDARD, 
+    position: 10 , 
+    type: #IDENTIFICATION_REFERENCE
+  } ]
+  @UI.identification: [ {
+    position: 10 , 
+    label: 'UUID'
+  } ]
+  @UI.lineItem: [ {
+    position: 10 , 
+    label: 'UUID'
+  }, 
+  { type: #FOR_ACTION, dataAction: 'uppercase', label: 'To Upper' },
+  { type: #FOR_ACTION, dataAction: 'add_random_numbers', label: 'Random Numbers' },
+  { type: #FOR_ACTION, dataAction: 'addition', label: 'Addition' },
+  { type: #FOR_ACTION, dataAction: 'count', label: 'Count' },
+  { type: #FOR_ACTION, dataAction: 'new_instance', label: 'New Instance' },
+  { type: #FOR_ACTION, dataAction: 'copy_instance', label: 'Copy Instance' },
+  { type: #FOR_ACTION, dataAction: 'lowercase', label: 'To Lower' },
+  { type: #FOR_ACTION, dataAction: 'reverse_text', label: 'Reverse Text Fields' },
+  { type: #FOR_ACTION, dataAction: 'increment_numbers', label: 'Increment Number Fields' }
+    
+   ]
+  @UI.selectionField: [ {
+    position: 10 
+  } ]
+  UUID;
+  
+  @EndUserText.label: 'Text1'
+  @UI.identification: [ {
+    position: 20 , 
+    label: 'Text1'
+  } ]
+  @UI.lineItem: [ {
+    position: 20 , 
+    label: 'Text1'
+  } ]
+  @UI.selectionField: [ {
+    position: 20 
+  } ]
+  Text1;
+  
+  @EndUserText.label: 'Text2'
+  @UI.identification: [ {
+    position: 30 , 
+    label: 'Text2'
+  } ]
+  @UI.lineItem: [ {
+    position: 30 , 
+    label: 'Text2'
+  } ]
+  @UI.selectionField: [ {
+    position: 30 
+  } ]
+  Text2;
+  
+  @EndUserText.label: 'Num1'
+  @UI.identification: [ {
+    position: 40 , 
+    label: 'Num1'
+  } ]
+  @UI.lineItem: [ {
+    position: 40 , 
+    label: 'Num1'
+  } ]
+  @UI.selectionField: [ {
+    position: 40 
+  } ]
+  Num1;
+  
+  @EndUserText.label: 'Num2'
+  @UI.identification: [ {
+    position: 50 , 
+    label: 'Num2'
+  } ]
+  @UI.lineItem: [ {
+    position: 50 , 
+    label: 'Num2'
+  } ]
+  @UI.selectionField: [ {
+    position: 50 
+  } ]
+  Num2;
+  
+  @UI.identification: [ {
+    position: 60 
+  } ]
+  @UI.lineItem: [ {
+    position: 60 
+  } ]
+  @UI.selectionField: [ {
+    position: 60 
+  } ]
+  LocalCreatedBy;
+  
+  @UI.identification: [ {
+    position: 70 
+  } ]
+  @UI.lineItem: [ {
+    position: 70 
+  } ]
+  @UI.selectionField: [ {
+    position: 70 
+  } ]
+  LocalCreatedAt;
+  
+  @UI.identification: [ {
+    position: 80 
+  } ]
+  @UI.lineItem: [ {
+    position: 80 
+  } ]
+  @UI.selectionField: [ {
+    position: 80 
+  } ]
+  LocalLastChangedBy;
+  
+  @UI.identification: [ {
+    position: 90 
+  } ]
+  @UI.lineItem: [ {
+    position: 90 
+  } ]
+  @UI.selectionField: [ {
+    position: 90 
+  } ]
+  LocalLastChangedAt;
+  
+  @UI.identification: [ {
+    position: 100 
+  } ]
+  @UI.lineItem: [ {
+    position: 100 
+  } ]
+  @UI.selectionField: [ {
+    position: 100 
+  } ]
+  LastChangedAt;
+ 
+}

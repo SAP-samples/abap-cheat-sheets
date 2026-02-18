@@ -1,0 +1,24 @@
+unmanaged implementation in class ZBP_R_DEMO_ABAP97 unique;
+strict ( 2 );
+
+define behavior for ZR_DEMO_ABAP97 alias demo_abap
+lock master
+authorization master ( none )
+{
+  create;
+  update;
+  delete;
+
+  field ( readonly ) CalcResult;
+  field ( mandatory : create, readonly : update ) ID;
+  field ( mandatory ) Number1, Number2, Operator;
+
+  mapping for zdemoabap97 corresponding
+    {
+      ID         = ID;
+      Number1    = Number1;
+      Number2    = Number2;
+      Operator   = Operator;
+      CalcResult = calcresult;
+    }
+}

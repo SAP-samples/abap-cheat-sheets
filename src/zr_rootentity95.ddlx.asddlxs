@@ -1,0 +1,111 @@
+@Metadata.layer: #CORE
+@UI.headerInfo.title.type: #STANDARD
+@UI.headerInfo.title.value: 'ID'
+@UI.headerInfo.description.type: #STANDARD
+@UI.headerInfo.description.value: 'ID'
+annotate view ZR_ROOTENTITY95 with
+{
+  @EndUserText.label: 'ID'
+  @UI.identification: [ {
+    position: 10 , 
+    label: 'ID'
+  } ]
+  @UI.lineItem: [ {
+    position: 10 , 
+    label: 'ID'
+  } ]
+  @UI.selectionField: [ {
+    position: 10 
+  } ]
+  ID;
+  
+  @EndUserText.label: 'RootText'
+  @UI.facet: [ {
+    label: 'General Information', 
+    id: 'GeneralInfo', 
+    purpose: #STANDARD, 
+    position: 20 , 
+    type: #IDENTIFICATION_REFERENCE
+  }, 
+  {
+    label: 'ChildEntity Items', 
+    id: 'ChildEntityItems', 
+    purpose: #STANDARD, 
+    position: 21 , 
+    type: #LINEITEM_REFERENCE, 
+    targetElement: '_ChildEntity'
+  } ]
+  @UI.identification: [ {
+    position: 20 , 
+    label: 'RootText'
+  } ]
+  @UI.lineItem: [ {
+    position: 20 , 
+    label: 'RootText'
+  },
+  { type: #FOR_ACTION, dataAction: 'new_instances', label: 'Create New Instances' },
+  { type: #FOR_ACTION, dataAction: 'execute_functions', label: 'Execute Functions' } ]  
+  @UI.selectionField: [ {
+    position: 20 
+  } ]
+  RootText;
+  
+  
+  @EndUserText.label: 'Text1'
+  @UI.identification: [ {
+    position: 30 , 
+    label: 'Text1'
+  } ]
+  @UI.lineItem: [ {
+    position: 30 , 
+    label: 'Text1'
+  } ]
+  @UI.selectionField: [ {
+    position: 30 
+  } ]
+  Text1;
+  
+  @EndUserText.label: 'Text2'
+  @UI.identification: [ {
+    position: 40 , 
+    label: 'Text2'
+  } ]
+  @UI.lineItem: [ {
+    position: 40 , 
+    label: 'Text2'
+  } ]
+  @UI.selectionField: [ {
+    position: 40 
+  } ]
+  Text2;
+  
+  @EndUserText.label: 'Num1'
+  @UI.identification: [ {
+    position: 50 , 
+    label: 'Num1'
+  } ]
+  @UI.lineItem: [ {
+    position: 50 , 
+    label: 'Num1'
+  } ]
+  @UI.selectionField: [ {
+    position: 50 
+  } ]
+  Num1;
+  
+  @EndUserText.label: 'Num2'
+  @UI.identification: [ {
+    position: 60 , 
+    label: 'Num2'
+  } ]
+  @UI.lineItem: [ {
+    position: 60 , 
+    label: 'Num2'
+  } ]
+  @UI.selectionField: [ {
+    position: 60 
+  } ]
+  Num2;
+  
+
+}
