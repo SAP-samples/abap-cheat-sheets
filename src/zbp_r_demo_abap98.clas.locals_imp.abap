@@ -205,21 +205,12 @@ CLASS lhc_zr_demo_abap98 IMPLEMENTATION.
 *& The example implementation creates new instances.
 *&---------------------------------------------------------------------*
 
-    "only %cid in keys
-    "demo use case: creating new instances
-
     MODIFY ENTITIES OF zr_demo_abap98 IN LOCAL MODE
             ENTITY demo_abap
               CREATE FIELDS ( Text1 Text2 Num1 Num2 ) WITH
                VALUE #( FOR <instance> IN keys
                                      ( %cid      = <instance>-%cid
-                                       %is_draft =
-
-                                       "<instance>-%param-%is_draft
-                                       if_abap_behv=>mk-off
-
-*                                       Text1 = 'a'
-*                                       Text2 = 'b'
+                                       %is_draft = if_abap_behv=>mk-off
                                        Num1 = cl_abap_random_int=>create( seed = cl_abap_random=>seed( )
                                                     min  = 1
                                                     max  = 1000 )->get_next( )
@@ -295,45 +286,6 @@ CLASS lhc_zr_demo_abap98 IMPLEMENTATION.
 *& key values.
 *&---------------------------------------------------------------------*
 
-
-    "see /dmo/bp_travel_m
-
-
-*    READ ENTITIES OF zr_demo_abap98 IN LOCAL MODE
-*      ENTITY demo_abap
-*      FIELDS ( Text1 Text2 Num1 Num2 ) WITH CORRESPONDING #( keys )
-*      RESULT DATA(read_result)
-*      FAILED failed.
-*
-*    "Setting %action value in the failed response parameter
-*    LOOP AT failed-demo_abap ASSIGNING FIELD-SYMBOL(<f>).
-*      <f>-%action-copy_instance = if_abap_behv=>mk-on.
-*    ENDLOOP.
-*
-*    "If read result is initial, stop further method execution.
-*    CHECK read_result IS NOT INITIAL.
-*
-*    DATA create_tab TYPE TABLE FOR CREATE zr_demo_abap98.
-*    LOOP AT read_result ASSIGNING FIELD-SYMBOL(<instance>).
-*      APPEND CORRESPONDING #( <instance> ) TO create_tab ASSIGNING FIELD-SYMBOL(<line>).
-*      <line>-%data = read_result[ KEY id %tky = <instance>-%tky ]-%data.
-*    ENDLOOP.
-*
-*    MODIFY ENTITIES OF zr_demo_abap98 IN LOCAL MODE
-*              ENTITY demo_abap
-*                CREATE AUTO FILL CID FIELDS ( Text1 Text2 Num1 Num2 ) WITH
-*                 create_tab
-*                MAPPED data(m)
-**                FAILED failed
-**                REPORTED reported
-*                .
-*
-*mapped-demo_abap = m-demo_abap.
-
-
-**********************************************************************
-    "/dmo/bp_travel_m
-
     DATA create_tab TYPE TABLE FOR CREATE zr_demo_abap98.
 
     READ TABLE keys WITH KEY %cid = '' INTO DATA(key_with_inital_cid).
@@ -385,31 +337,6 @@ CLASS lhc_zr_demo_abap98 IMPLEMENTATION.
 *& fields to lowercase.
 *&---------------------------------------------------------------------*
 
-
-*   "Retrieving instances based on requested keys
-*    READ ENTITIES OF zr_demo_abap98 IN LOCAL MODE
-*      ENTITY demo_abap
-*      FIELDS ( text1 text2 ) WITH CORRESPONDING #( keys )
-*      RESULT DATA(read_result)
-*      FAILED failed.
-*
-*    "Setting %action value in the failed response parameter
-*    LOOP AT failed-demo_abap ASSIGNING FIELD-SYMBOL(<f>).
-*      <f>-%action-uppercase = if_abap_behv=>mk-on.
-*    ENDLOOP.
-*
-*    "If read result is initial, stop further method execution.
-*    CHECK read_result IS NOT INITIAL.
-*
-*    "Setting field value
-*    MODIFY ENTITIES OF zr_demo_abap98 IN LOCAL MODE
-*      ENTITY demo_abap
-*      UPDATE FIELDS ( text1 text2 ) WITH VALUE #( FOR key IN result ( %tky   = key-%tky
-*                                                                      text1 = to_lower( key-%param-text1 )
-*                                                                      text2 = to_lower( key-%param-text2 ) ) ).
-*
-
-
     "Retrieving instances based on requested keys
     READ ENTITIES OF zr_demo_abap98 IN LOCAL MODE
       ENTITY demo_abap
@@ -457,9 +384,6 @@ CLASS lhc_zr_demo_abap98 IMPLEMENTATION.
 *& lowercase action is denied.
 *&---------------------------------------------------------------------*
 
-
-    "if either text1 or text2 or both include numbers, then action exection is denied
-
     READ ENTITIES OF zr_demo_abap98 IN LOCAL MODE
       ENTITY demo_abap
       FIELDS ( Text1 Text2 ) WITH CORRESPONDING #( keys )
@@ -482,7 +406,7 @@ CLASS lhc_zr_demo_abap98 IMPLEMENTATION.
       IF found = abap_true.
 
         ASSIGN keys[ KEY id %tky = <instance>-%tky ]-%cid_ref TO FIELD-SYMBOL(<cid>).
-        "Fill FAILED/REPORTED response structures.
+
         APPEND VALUE #( %tky = <instance>-%tky
                         %cid = <cid>
                         %action-lowercase      = if_abap_behv=>mk-off
@@ -510,10 +434,6 @@ CLASS lhc_zr_demo_abap98 IMPLEMENTATION.
 *& assignments.
 *&---------------------------------------------------------------------*
 
-
-    "Global feature control determined by certain value
-    "to switch the value, run the COUNT action
-
     DATA time1 TYPE t.
     DATA time2 TYPE t.
 
@@ -525,14 +445,7 @@ CLASS lhc_zr_demo_abap98 IMPLEMENTATION.
 
     result = VALUE #( %action-reverse_text = COND #( WHEN cl_abap_context_info=>get_system_time( ) BETWEEN time1 AND time2
                                                                THEN if_abap_behv=>fc-o-disabled
-                                                               ELSE if_abap_behv=>fc-o-enabled
-
-                                                                )
-                    ).
-
-
-*    result = VALUE #( %action-initalize = COND #( WHEN zbp_r_demo_abap98=>flag = abap_true THEN if_abap_behv=>fc-o-disabled
-*                                                                               ELSE if_abap_behv=>fc-o-enabled ) ).
+                                                               ELSE if_abap_behv=>fc-o-enabled ) ).
 
     IF result-%action-reverse_text = if_abap_behv=>fc-o-disabled.
       APPEND VALUE #( %msg    = new_message_with_text( text     = `Action execution is currently not allowed.`
@@ -540,7 +453,6 @@ CLASS lhc_zr_demo_abap98 IMPLEMENTATION.
                       %global = if_abap_behv=>mk-on
                     ) TO reported-demo_abap.
     ENDIF.
-
 
   ENDMETHOD.
 
@@ -604,8 +516,6 @@ CLASS lhc_zr_demo_abap98 IMPLEMENTATION.
 *& the current values is greater than or equal to 100.
 *&---------------------------------------------------------------------*
 
-    "demo use case: when field1 has a specific value, then read only
-
     "Retrieving instances based on requested keys
     READ ENTITIES OF zr_demo_abap98 IN LOCAL MODE
       ENTITY demo_abap
@@ -618,18 +528,6 @@ CLASS lhc_zr_demo_abap98 IMPLEMENTATION.
                        ( %tky                   = wa-%tky
                          %features-%action-increment_numbers = COND #( WHEN wa-Num1 >= 100 OR wa-Num2 >= 100
                                                                        THEN if_abap_behv=>fc-o-disabled ELSE if_abap_behv=>fc-o-enabled ) ) ).
-    "braucht man reported??
-*  loop at result into data(res).
-*
-*    IF res-%action-increment_numbers = if_abap_behv=>fc-o-disabled.
-*      APPEND VALUE #( %msg    = new_message_with_text( text     = `Num1 and/or Num2 value higher than 100. Action execution not allowed.`
-*                                                       severity = if_abap_behv_message=>severity-information )
-*                      "%cid = keys[ KEY id %tky = <instance>-%tky ]-
-*                      %tky = res-%tky
-*                    ) TO reported-demo_abap.
-*    ENDIF.
-*  endloop.
-
 
   ENDMETHOD.
 
