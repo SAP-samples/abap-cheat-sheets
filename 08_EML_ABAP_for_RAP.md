@@ -56,6 +56,8 @@
     - [RAP-Related System Classes and Functionality](#rap-related-system-classes-and-functionality)
   - [More Information](#more-information)
   - [Executable Examples](#executable-examples)
+    - [main Branch](#main-branch)
+    - [rap Branch](#rap-branch)
 
 ## RAP Terms
 
@@ -3005,6 +3007,8 @@ Several RAP-related system classes and functionality are available, including (s
 
 ## Executable Examples
 
+### main Branch
+
 This cheat sheet is supported by different executable examples demonstrating various scenarios:
 - Demo RAP scenario with a managed RAP BO, external numbering: [zcl_demo_abap_rap_ext_num_m](./src/zcl_demo_abap_rap_ext_num_m.clas.abap)
 - Demo RAP scenario with an unmanaged RAP BO, external numbering: [zcl_demo_abap_rap_ext_num_u](./src/zcl_demo_abap_rap_ext_num_u.clas.abap)
@@ -3018,3 +3022,16 @@ This cheat sheet is supported by different executable examples demonstrating var
 > - You can check out the "RAP calculator" example using the preview version of an SAP Fiori Elements UI. See the comments in the class for more information.
 > - The steps to import and run the code are outlined [here](README.md#-getting-started-with-the-examples).
 > - [Disclaimer](./README.md#%EF%B8%8F-disclaimer)
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+### rap Branch
+
+The ABAP cheat sheets GitHub repository features simplified, non-semantic demo RAP BOs in the [rap](https://github.com/SAP-samples/abap-cheat-sheets/tree/rap) branch for exploring various RAP-related features, syntax, and concepts in simple contexts. Topics include managed and unmanaged RAP BOs, draft-enabled RAP BOs, numbering concepts like early and late numbering, field-specific characteristics, standard operations (CRUD), actions as non-standard operations, authorizations, local RAP business events, and more.
+
+Unlike the examples included in the `main` branch - they primarily focus on ABAP EML and include ABAP classes as RAP BO consumers - the example RAP BOs in the `rap` branch are set up to be explored using preview SAP Fiori UIs.
+
+For more detailed information and semantic RAP examples, refer to the [Development guide for the ABAP RESTful Application Programming Model](https://help.sap.com/docs/ABAP_PLATFORM_NEW/fc4c71aa50014fd1b43721701471913d/289477a81eec4d4e84c0302fb6835035.html) and the [ABAP Flight Reference Scenario for the ABAP RESTful Application Programming Model](https://github.com/SAP-samples/abap-platform-refscen-flight).
+
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>

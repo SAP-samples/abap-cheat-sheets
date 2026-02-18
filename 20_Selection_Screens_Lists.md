@@ -751,7 +751,7 @@ START-OF-SELECTION.
 ### SELECT-OPTIONS
 
 - Declares selection criteria for a data object
-- Unlike the `PARAMETERS` statement, which specifies a single value for a variable, the `SELECT-OPTIONS` statement allows you to specify complex criteria, such as an value range or a list of single values, to include or exclude values, that can be evaluated.
+- Unlike the `PARAMETERS` statement, which specifies a single value for a variable, the `SELECT-OPTIONS` statement allows you to specify complex criteria, such as a value range or a list of single values, to include or exclude values, that can be evaluated.
 - The selection criteria are assigned to a [selection table](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenselection_table_glosry.htm):
   - Such a table contains four columns - `LOW`, `HIGH`, `OPTION`, `SIGN` - for determining range conditions. Each line of such a table represents a condition. 
   - Typically, the content of the selection table can be evaluated in `SELECT` statements using the `IN` operator in the `WHERE` clause.

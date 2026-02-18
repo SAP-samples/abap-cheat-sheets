@@ -10,6 +10,7 @@
       - [Entity Behavior Characteristics](#entity-behavior-characteristics)
       - [Entity Behavior Body](#entity-behavior-body)
   - [More Information](#more-information)
+  - [Executable Examples](#executable-examples)
 
 
 This ABAP cheat sheet highlights key features and syntax options of the [RAP Behavior Definition Language (BDL)](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbdl_glosry.htm) for designing [RAP behavior definitions (BDEF)](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_behavior_definition_glosry.htm).
@@ -1255,3 +1256,12 @@ mapping for demo_dbtab_root
 - [ABAP Data Models guide](https://help.sap.com/docs/abap-cloud/abap-data-models/abap-data-models)
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
+
+## Executable Examples
+
+The ABAP cheat sheets GitHub repository features simplified, non-semantic demo RAP BOs in the [rap](https://github.com/SAP-samples/abap-cheat-sheets/tree/rap) branch for exploring various RAP-related features, syntax, and concepts in simple contexts.
+
+Topics include managed and unmanaged RAP BOs, draft-enabled RAP BOs, numbering concepts like early and late numbering, field-specific characteristics, standard operations (CRUD), actions as non-standard operations, authorizations, local RAP business events, and more:
+
+- [Example Notes](https://github.com/SAP-samples/abap-cheat-sheets/blob/rap/README.md#example-notes)
+- [Getting Started](https://github.com/SAP-samples/abap-cheat-sheets/blob/rap/README.md#getting-started)

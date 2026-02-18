@@ -32,6 +32,35 @@ This ABAP cheat sheet summarizes the release news from the ABAP Keyword Document
 ## ABAP for Cloud Development Documentation Release News
 
 <details>
+  <summary>🟢 Release 918 (2602)</summary>
+  <!-- -->
+<br>
+  <table>
+        <tr>
+            <th>Tag</th>
+            <th>Title</th>
+            <th>Details</th>
+        </tr>
+<tr>
+            <td rowspan="1">ABAP_CDS</td>
+            <td>CDS Propagated Buffers Are Obsolete</td>
+            <td>CDS propagated buffers, defined by the PROPAGATE VIEW ENTITY BUFFER ON statement, are now obsolete. For new data models, using propagated buffers does not provide performance benefits, so they can be excluded from future designs.</td>
+        </tr>
+<tr>
+            <td rowspan="1">ABAP_SQL</td>
+            <td>New Keyword MERGE</td>
+            <td>The MERGE keyword is now available in ABAP SQL. With MERGE, you can perform insert, update, and delete operations on one data source based on the evaluation of another data source.</td>
+        </tr>
+<tr>
+            <td rowspan="1">CDS_BDL</td>
+            <td>RAP Recommendations</td>
+            <td>RAP recommendations enhance value helps by providing context-aware suggestions through a deterministic approach or artificial intelligence. You must define a source and a target field within the behavior definition. To create the RAP recommendation, embed the function in a side effect. The recommended values can then be implemented in the ABAP behavior pool.</td>
+        </tr>
+  </table>
+</details>  
+<br>
+
+<details>
   <summary>🟢 Release 917 (2511)</summary>
   <!-- -->
 <br>

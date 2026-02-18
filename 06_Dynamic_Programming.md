@@ -2818,6 +2818,26 @@ DATA(dyn_ind) = `SET STRUCTURE comp_ind`.
 UPDATE ('ZDEMO_ABAP_CARR') FROM TABLE @ind_tab INDICATORS (dyn_ind).
 
 DELETE FROM ('ZDEMO_ABAP_CARR') WHERE (where_cl).
+
+*&---------------------------------------------------------------------*
+*& Dynamic MERGE statement
+*&---------------------------------------------------------------------*
+
+DATA(dyn_merge) = `INTO zdemo_abap_tab1 USING zdemo_abap_tab2 ` &&
+    `ON zdemo_abap_tab1~key_field = zdemo_abap_tab2~key_field ` &&
+    `WHEN MATCHED THEN UPDATE SET char1 = '#'`.
+
+MERGE (dyn_merge).
+
+"The following statement illustrates a dynamic MERGE statetement
+"using a string table.
+
+DATA(dyn_merge_tab) = VALUE string_table(
+  ( `INTO zdemo_abap_tab1 USING zdemo_abap_tab2` )
+  ( `ON zdemo_abap_tab1~key_field = zdemo_abap_tab2~key_field` )
+  ( `WHEN MATCHED THEN UPDATE SET char1 = '*'` ) ).
+
+MERGE (dyn_merge_tab).
 ```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>

@@ -2242,6 +2242,10 @@ TYPES: BEGIN OF ENUM t_enum_struc STRUCTURE en_struc BASE TYPE basetype,
 Enumerated variables can be declared by referring to the enumerated type.
 They can only be assigned the enumerated values defined there that exist as the content of enumerated constants or components of an enumerated structure.
 
+> [!NOTE]
+> Base types are flat, elementary, and have a maximum length of 16 bytes. These technical base types are typically not meant to be read, unlike the names of enum constants. It is advisable not to define a base type explicitly but to use the default integer. The reason for choosing another base type may be facilitating the migration of existing non-enums. If the current type does not resemble an enum type, it is likely not "migratable".
+
+
 ```abap
 "Using the enumerated type from above
 DATA dobj_enum_a TYPE t_enum.
@@ -2251,16 +2255,12 @@ dobj_enum_a = a.
 "Data object declared inline, the typed derived is t_enum
 DATA(dobj_enum_b) = b.   
 
-"Note: The technical data type of an enumerated value is the base type 
-"of the enumerated type. You can use the base type of an enumerated type 
-"in special conversions using CONV. A base type is flat, elementary, and 
-"has a maximum length of 16 bytes.
+"Note: Refer to the note above.
 DATA some_dobj TYPE c LENGTH 2 VALUE 'ap'.
 "M
 DATA(dobj_enum_c) = CONV t_enum_struc( some_dobj ). 
 ASSERT dobj_enum_c = en_struc-m.
 
-"Getting the base value of an enumerated type
 "hi
 DATA(base_value_k) = CONV basetype( en_struc-k ). 
 

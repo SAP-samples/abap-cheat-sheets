@@ -68,6 +68,7 @@
     - [Comparing Content of Compatible Internal Tables](#comparing-content-of-compatible-internal-tables)
     - [BDEF Derived Types (ABAP EML)](#bdef-derived-types-abap-eml)
     - [Creating Internal Tables Dynamically](#creating-internal-tables-dynamically)
+    - [System Field sy-tabix](#system-field-sy-tabix)
   - [More Information](#more-information)
   - [Executable Example](#executable-example)
 
@@ -247,6 +248,7 @@ DATA  itab4      LIKE                   itab1 ...       "Based on an existing in
 
 > [!NOTE]  
 > - If the table category is not specified (`... TYPE TABLE OF ...`), it is automatically `... TYPE STANDARD TABLE OF ...`.
+> - You can also create global table types in the ABAP Dictionary. This is not covered in the cheat sheet. 
 > - Using [Runtime Type Creation (RTTC)](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrun_time_type_creation_glosry.htm "Glossary Entry"), you can define and  create new internal tables and table types as [type description objects](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentype_object_glosry.htm) at runtime. For more information, see the [Dynamic Programming](06_Dynamic_Programming.md) ABAP cheat sheet. Also find a snippet on creating internal tables dynamically by specifying the type dynamically [below](#creating-internal-tables-dynamically).
 
 The following code snippets contain various internal table declarations. It is intended to demonstrate a selection of the rich variety of possible internal tables mentioned in the previous sections, e.g. in *Table Keys in Internal Tables*.
@@ -636,7 +638,7 @@ DATA it_ref_3 TYPE TABLE OF REF TO zdemo_abap_carr.
 
 DATA it_ref_4 TYPE TABLE OF REF TO data.
 
-"Such a table can hold any data type
+"Such a table can hold a reference to any data type
 it_ref_4 = VALUE #( ( NEW i( 3 ) ) "Elementary type
                     ( NEW string( `hello` ) ) "Elementary type
                     ( NEW zdemo_abap_flsch( carrid = 'XY' connid = '1234' ) ) "Structured type
@@ -7072,6 +7074,106 @@ CREATE DATA dataref TYPE ('STRING_TABLE').
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
+### System Field sy-tabix
+
+The system field (i.e. a built-in data object that is filled depending on the context by the ABAP runtime framework) `sy-tabix` is used in various contexts and examples of the cheat sheet. It is of type `i`. The value of `sy-tabix` represents the line number in the table index of an internal table. `sy-tabix` contains the last line addressed using a primary or secondary table index. Note that it is set to 0 when accessed using a hash algorithm.
+
+The following code snippet illustrates `sy-tabix` with `READ TABLE` statements.
+
+```abap
+DATA(it_std) = VALUE string_table( ( `A` ) ( `B` ) ( `C` ) ).
+DATA it_so TYPE TABLE OF string WITH NON-UNIQUE KEY table_line.
+it_so = VALUE #( ( `A` ) ( `B` ) ( `C` ) ).
+DATA(it_hashed) = VALUE string_hashed_table( ( `A` ) ( `B` ) ( `C` ) ).
+DATA it_std_sec_hashed_key TYPE TABLE OF string WITH EMPTY KEY WITH UNIQUE HASHED KEY sk COMPONENTS table_line.
+it_std_sec_hashed_key = VALUE #( ( `A` ) ( `B` ) ( `C` ) ).
+
+READ TABLE it_std INTO DATA(tline_std) WITH KEY table_line = `A`.
+ASSERT sy-tabix = 1.
+
+READ TABLE it_so INTO DATA(tline_so) WITH KEY table_line = `B`.
+ASSERT sy-tabix = 2.
+
+READ TABLE it_hashed INTO DATA(tline_hashed) WITH KEY table_line = `C`.
+ASSERT sy-tabix = 0.
+
+READ TABLE it_std_sec_hashed_key INTO DATA(tline_std_w_sk) WITH TABLE KEY sk COMPONENTS table_line = `C`.
+ASSERT sy-tabix = 0.
+```
+
+The example in the expandable section highlights a potential pitfall when using the `sy-tabix` value. An internal table is looped over, checking for the presence of a specific value. If the value is found, the current table line is deleted. This process occurs twice: first, by using the `sy-tabix` value directly and second, by storing the `sy-tabix` value in a variable for later use. The issue arises when other statements intervene before you actually use the value. In this case, the `sy-tabix` might change due to those statements, leading to unintended results in the first loop.
+
+<details>
+  <summary>🟢 Click to expand for example code</summary>
+  <!-- -->
+
+<br>
+
+```abap
+CLASS zcl_demo_abap DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
+
+  PUBLIC SECTION.
+    INTERFACES if_oo_adt_classrun.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+ENDCLASS.
+
+
+
+CLASS zcl_demo_abap IMPLEMENTATION.
+  METHOD if_oo_adt_classrun~main.
+
+    DATA(str_tab) = VALUE string_table( ( `a` ) ( `#` ) ( `c` ) ( `d` ) ( `e` )
+                                        ( `f` ) ( `#` ) ( `h` ) ( `i` ) ( `#` ) ).
+
+    DATA(str_tab_copy) = str_tab.
+    DATA subrc TYPE sy-subrc.
+    DATA(num) = 0.
+
+    LOOP AT str_tab REFERENCE INTO DATA(dref).
+      num += 1.
+      out->write( |Loop pass: { num }| ).
+      out->write( |sy-tabix: { sy-tabix }| ).
+      IF dref->* CS `#`.
+        DELETE str_tab INDEX sy-tabix.
+        subrc = sy-subrc.
+        out->write( |sy-subrc: { subrc }| ).
+      ENDIF.
+      out->write( `-------` ).
+    ENDLOOP.
+    out->write( str_tab ).
+
+    out->write( |{ repeat( val = `-` occ = 50 ) }| ).
+
+    str_tab = str_tab_copy.
+    CLEAR num.
+    DATA tabix TYPE sy-tabix.
+
+    LOOP AT str_tab REFERENCE INTO dref.
+      tabix = sy-tabix.
+      num += 1.
+      out->write( |Loop pass: { num }| ).
+      out->write( |sy-tabix: { tabix }| ).
+      IF dref->* CS `#`.
+        DELETE str_tab INDEX tabix.
+        subrc = sy-subrc.
+        out->write( |sy-subrc: { subrc }| ).
+      ENDIF.
+      out->write( `-------` ).
+    ENDLOOP.
+    out->write( str_tab ).
+
+  ENDMETHOD.
+ENDCLASS.
+```
+
+</details>  
+
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## More Information
 Topic [Internal Tables](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenitab.htm) in the ABAP Keyword Documentation.
