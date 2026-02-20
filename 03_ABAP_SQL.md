@@ -2564,7 +2564,7 @@ INSERT dbtab FROM TABLE @( CORRESPONDING #( another_itab MAPPING key_field = key
 
 ### Example: Exploring Create, Update, and Delete Operations with ABAP SQL Statements
 
-To try the following example out, create a demo class named `zcl_demo_abap` and paste the code into it. After activation, choose *F9* in ADT to execute the class. The example uses a database table of the ABAP cheat sheets repository and is set up to display output in the console.
+To try the example out, create a demo class named `zcl_demo_abap`. If it already exists, reuse it. Otherwise, create a new class with a different name. Paste the code into it. If you choose a different class name, update the class name in the code snippet accordingly. After activation, choose *F9* in ADT to execute the class. The example uses a database table of the ABAP cheat sheets repository and is set up to display output in the console.
 
 
 ```abap
@@ -2913,7 +2913,7 @@ MERGE INTO target [AS target_alias]
     - Using `ALL` means all unmatched datasets in the source are inserted into the target table. The number of columns must be the same for both the target and source.
     - The `VALUES` addition allows you to specify concrete columns and values to insert. `VALUES` is preceded by a parenthesized, comma-separated list of column names, which can be a single column name and can only be specified once. `VALUES` is followed by a parenthesized, comma-separated list of values that correspond to the specified columns. The number of values must match the number of specified column names.
   
-Expand the following collapsible section for example code. To try it out, create a demo class named `zcl_demo_abap` and paste the code into it. After activation, choose *F9* in ADT to execute the class. The example is set up to display output in the console.
+Expand the following collapsible section for example code. To try the example out, create a demo class named `zcl_demo_abap`. If it already exists, reuse it. Otherwise, create a new class with a different name. Paste the code into it. If you choose a different class name, update the class name in the code snippet accordingly. After activation, choose *F9* in ADT to execute the class. The example is set up to display output in the console.
 
 <details>
   <summary>🟢 Click to expand for example code</summary>

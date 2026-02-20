@@ -1878,7 +1878,7 @@ In [ABAP programs](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/in
 | `space` constant | It is of type `c`, length 1, and contains a blank character. |
 | `me` self-reference  | Used in ABAP Objects, it's a local reference variable for instance method implementations. At runtime, it points to the instance executing the method. It is primarily used to be explicit about, for exmaple, using instance attributes of the class, especially if there is a local data object with the same name.|
 
-Expand the following collapsible section for example code. To try it out, create a demo class named `zcl_demo_abap` and paste the code into it. After activation, choose *F9* in ADT to execute the class. The example is set up to display output in the console.
+Expand the following collapsible section for example code. To try it out, create a demo class named `zcl_demo_abap`. If it already exists, reuse it. Otherwise, create a new class with a different name. Paste the code into it. If you choose a different class name, update the class name in the code snippet accordingly. After activation, choose *F9* in ADT to execute the class. The example is set up to display output in the console.
 
 
 <details>

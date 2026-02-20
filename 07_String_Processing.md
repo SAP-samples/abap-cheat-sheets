@@ -2787,7 +2787,7 @@ SPLIT xstr AT blank_xstr INTO TABLE DATA(xstr_tab) IN BYTE MODE.
     - Reads a bit at a specified position in a byte string into a target data object.
 
 
-Expand the following collapsible section for example code, which experiments with byte string processing (converting a hexadecimal value to the character-like representation of the binary values by reading bits, getting hexadecimal values from the character-like representation of the binary values, setting bits). To try it out, create a demo class named `zcl_demo_abap` and paste the code into it. After activation, choose *F9* in ADT to execute the class. The example is set up to display output in the console.
+Expand the following collapsible section for example code, which experiments with byte string processing (converting a hexadecimal value to the character-like representation of the binary values by reading bits, getting hexadecimal values from the character-like representation of the binary values, setting bits). To try it out, create a demo class named `zcl_demo_abap`. If it already exists, reuse it. Otherwise, create a new class with a different name. Paste the code into it. If you choose a different class name, update the class name in the code snippet accordingly. After activation, choose *F9* in ADT to execute the class. The example is set up to display output in the console.
 
 <details>
   <summary>🟢 Click to expand for example code</summary>

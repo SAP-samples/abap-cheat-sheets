@@ -69,6 +69,7 @@
     - [BDEF Derived Types (ABAP EML)](#bdef-derived-types-abap-eml)
     - [Creating Internal Tables Dynamically](#creating-internal-tables-dynamically)
     - [System Field sy-tabix](#system-field-sy-tabix)
+    - [WITH\[OUT\] FURTHER SECONDARY KEYS](#without-further-secondary-keys)
   - [More Information](#more-information)
   - [Executable Example](#executable-example)
 
@@ -1275,7 +1276,7 @@ INSERT VALUE s( a = 'yyy' b = 3 ) INTO TABLE dref_tab->*.
 
 ### Example: Exploring Populating Internal Tables
 
-Expand the following collapsible section for example code. To try it out, create a demo class named `zcl_demo_abap` and paste the code into it. After activation, choose *F9* in ADT to execute the class. 
+Expand the following collapsible section for example code. To try it out, create a demo class named `zcl_demo_abap`. If it already exists, reuse it. Otherwise, create a new class with a different name. Paste the code into it. If you choose a different class name, update the class name in the code snippet accordingly. After activation, choose *F9* in ADT to execute the class. 
 The example is set up to display output in the console, but only for few data objects. You may want to set a break point at the earliest possible position and walk through the example in the debugger. This will allow you to double-click on data objects and observe how the different statements affect their contents.
 
 <details>
@@ -2527,7 +2528,7 @@ ENDCLASS.
 
 ### Exploring READ TABLE Statements and Table Expressions
 
-Expand the following collapsible section for example code. To try it out, create a demo class named `zcl_demo_abap` and paste the code into it. After activation, choose *F9* in ADT to execute the class. 
+Expand the following collapsible section for example code. To try it out, create a demo class named `zcl_demo_abap`. If it already exists, reuse it. Otherwise, create a new class with a different name. Paste the code into it. If you choose a different class name, update the class name in the code snippet accordingly. After activation, choose *F9* in ADT to execute the class. 
 The example is not set up to display output in the console. You may want to set a break point at the first position possible and walk through the example in the debugger. This will allow you to double-click on data objects and observe how the different statements affect their contents.
 
 <details>
@@ -3609,7 +3610,7 @@ line = itab[ KEY primary_key (comp_name) = 1 ].
 - The following example emphasizes that table expressions - expression enabling in modern ABAP as such - comes in very handy. 
 - However, also take the maintainability, debuggability and readbility of your code into consideration. 
 - The example includes the table expression chaining example from above (that may be fairly hard to understand) and a nonsensical, bad example overusing table expressions (affecting performance).
-- Expand the following collapsible section for example code. To try it out, create a demo class named `zcl_demo_abap` and paste the code into it. After activation, choose *F9* in ADT to execute the class. The example is set up to display output in the console.
+- Expand the following collapsible section for example code. To try it out, create a demo class named `zcl_demo_abap`. If it already exists, reuse it. Otherwise, create a new class with a different name. Paste the code into it. If you choose a different class name, update the class name in the code snippet accordingly. After activation, choose *F9* in ADT to execute the class. The example is set up to display output in the console.
 
 <details>
   <summary>🟢 Click to expand for example code</summary>
@@ -4799,7 +4800,7 @@ More information:
 - Iteration expressions can also handle table grouping (`FOR ... IN GROUP`). For example, see the [Constructor Expressions](05_Constructor_Expressions.md) cheat sheet.
 - [Internal Tables: Grouping](11_Internal_Tables_Grouping.md) cheat sheet 
 
-The example class below demonstrates internal table grouping options. To try it out, create a demo class named `zcl_demo_abap` and paste the following code into it. After activation, choose *F9* in ADT to execute the class. The example is designed to display results in the console.
+The example class below demonstrates internal table grouping options. To try the example out, create a demo class named `zcl_demo_abap`. If it already exists, reuse it. Otherwise, create a new class with a different name. Paste the code into it. If you choose a different class name, update the class name in the code snippet accordingly. After activation, choose *F9* in ADT to execute the class. The example is designed to display results in the console.
 
 ```abap
 CLASS zcl_demo_abap DEFINITION
@@ -5417,7 +5418,7 @@ ENDLOOP.
 - [Restrictions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensql_engine_restr.htm)
 - See details on the various ABAP SQL functionalities in the ABAP Keyword Documentation and in the [ABAP SQL cheat sheet](03_ABAP_SQL.md). 
 
-The following example explores various `SELECT` queries with internal tables as data sources. To try it out, create a demo class named `zcl_demo_abap` and paste the code into it. After activation, choose *F9* in ADT to execute the class. The example uses objects of the ABAP cheat sheets repository and is set up to display output in the console.
+The following example explores various `SELECT` queries with internal tables as data sources. To try it out, create a demo class named `zcl_demo_abap`. If it already exists, reuse it. Otherwise, create a new class with a different name. Paste the code into it. If you choose a different class name, update the class name in the code snippet accordingly. After activation, choose *F9* in ADT to execute the class. The example uses objects of the ABAP cheat sheets repository and is set up to display output in the console.
 
 Example: 
 
@@ -5810,7 +5811,7 @@ DATA(itab10) = REDUCE tt_type3( INIT tab = VALUE #( )
 - In both cases, the read performance is slow because these accesses are not optimized in standard tables.
 - You can add a secondary key to optimize access and improve read performance.
 - The following example creates three demo internal tables: two without a secondary key, accessed by the primary key and a free key, and a third table declared with a secondary key. All tables are populated with many table lines. Then, in a `DO` loop, multiple reads are performed on the internal tables. Before and after the reads, the current timestamp is retrieved to evaluate runtime. Find additional details in the similarly structured example in the next section. The results should demonstrate a significant performance improvement for reads on an internal table using the secondary key.
-- To try the example out, create a demo class named `zcl_demo_abap` and insert the provided code. After activation, choose *F9* in ADT to execute the class. The example is set up to display the results in the console.
+- To try the example out, create a demo class named `zcl_demo_abap`. If it already exists, reuse it. Otherwise, create a new class with a different name. Paste the code into it. If you choose a different class name, update the class name in the code snippet accordingly. After activation, choose *F9* in ADT to execute the class. The example is set up to display the results in the console.
 
 > [!NOTE] 
 > This example is for [exploration, experimentation, and demonstration](./README.md#%EF%B8%8F-disclaimer). It is not intended for accurate runtime or performance testing and is not a suitable method for such purposes. Due to its simplified nature, results may vary and not be entirely accurate, even across multiple runs.
@@ -5983,7 +5984,7 @@ ENDCLASS.
 - The read accesses are executed using `READ TABLE` statements, which access the tables by: 
   - Index (both primary and secondary table index) 
   - Key (primary table key, secondary table key, free key)
-- To try the example out, create a demo class named `zcl_demo_abap` and insert the provided code. After activation, choose *F9* in ADT to execute the class. It may take some time to finish and display the output. The example is set up to display the results in the console.
+- To try the example out, create a demo class named `zcl_demo_abap`. If it already exists, reuse it. Otherwise, create a new class with a different name. Paste the code into it. If you choose a different class name, update the class name in the code snippet accordingly. After activation, choose *F9* in ADT to execute the class. It may take some time to finish and display the output. The example is set up to display the results in the console.
 
 > [!NOTE] 
 > - This example is for [exploration, experimentation, and demonstration](./README.md#%EF%B8%8F-disclaimer) purposes only. It is not suitable for accurate runtime or performance testing. Due to its simplified nature (for example, the table line type is fairly simple, and the key components are all of type `i`) and various factors that can influence the runtime of an ABAP program, results may vary and may not be entirely accurate, even across multiple runs. The displayed results may not always accurately reflect the performance notes from the cheat sheet.
@@ -7172,6 +7173,83 @@ ENDCLASS.
 
 </details>  
 
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+### WITH[OUT] FURTHER SECONDARY KEYS
+
+The following code snippet illustrates the additions `WITH FURTHER SECONDARY KEYS` and `WITHOUT FURTHER SECONDARY KEYS` to table type definitions. In the first case, the table type may include additional secondary keys. In the second case, it cannot. Find more information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abaptypes_keydef.htm).
+
+
+```abap
+CLASS zcl_demo_abap DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
+
+  PUBLIC SECTION.
+    INTERFACES if_oo_adt_classrun.
+
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+    TYPES ty_tab_w_sk TYPE SORTED TABLE OF zdemo_abap_carr
+                   WITH UNIQUE KEY carrid
+                   WITH FURTHER SECONDARY KEYS.
+
+    METHODS meth_w_sk_tab IMPORTING it TYPE ty_tab_w_sk.
+
+    TYPES ty_tab_wo_sk TYPE SORTED TABLE OF zdemo_abap_carr
+                   WITH UNIQUE KEY carrid
+                   WITHOUT FURTHER SECONDARY KEYS.
+
+    METHODS meth_wo_sk_tab IMPORTING it TYPE ty_tab_wo_sk.
+ENDCLASS.
+
+
+CLASS zcl_demo_abap IMPLEMENTATION.
+  METHOD if_oo_adt_classrun~main.
+
+    DATA itab TYPE SORTED TABLE OF zdemo_abap_carr
+               WITH UNIQUE KEY carrid
+               WITH NON-UNIQUE SORTED KEY sk COMPONENTS carrname.
+
+    "Method whose importing parameter is specified with
+    "WITH FURTHER SECONDARY KEYS
+    meth_w_sk_tab( itab ).
+
+    "Method whose importing parameter is specified with
+    "WITHOUT FURTHER SECONDARY KEYS
+    "The method call will show a syntax error. The internal table
+    "defined with a secondary table key cannot be passed.
+    "meth_wo_sk_tab( itab ).
+
+    "Assigning the internal table with secondary table key
+    "to a field symbol and passing it to the method.
+    FIELD-SYMBOLS <tab> TYPE ANY TABLE.
+    ASSIGN itab TO <tab>.
+
+    meth_w_sk_tab( <tab> ).
+
+    TRY.
+        "No syntax error shown for the generic type of the
+        "field symbol. However, an exception will be raised
+        "because of the wrong parameter type.
+        meth_wo_sk_tab( <tab> ).
+      CATCH cx_sy_dyn_call_illegal_type INTO DATA(error).
+        out->write( error->get_text( ) ).
+    ENDTRY.
+
+  ENDMETHOD.
+
+  METHOD meth_w_sk_tab.
+    ...
+  ENDMETHOD.
+
+  METHOD meth_wo_sk_tab.
+    ...
+  ENDMETHOD.
+
+ENDCLASS.
+```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
@@ -7184,5 +7262,4 @@ Topic [Internal Tables](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-
 > [!NOTE] 
 > - The executable example covers the following topics, among others: Creating, populating, reading from, sorting, modifying internal tables
 > - The steps to import and run the code are outlined [here](README.md#-getting-started-with-the-examples).
-
 > - [Disclaimer](./README.md#%EF%B8%8F-disclaimer)

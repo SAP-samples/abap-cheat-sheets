@@ -485,7 +485,7 @@ define scalar function zdemo_abap_scalar_func
 
 **Create an AMDP class that includes an AMDP function implementing the scalar function as database function**
 
-- Create a demo class named `zcl_demo_abap`. 
+- To try the example out, create a demo class named `zcl_demo_abap`. If it already exists, reuse it. Otherwise, create a new class with a different name. Paste the code into it. If you choose a different class name, update the class name in the code snippet accordingly. 
 - Insert the code below into the class. 
 - After activation, choose *F9* in ADT to run the class. The example is set up to display output in the console.
 

@@ -2439,7 +2439,7 @@ GET PERMISSIONS ONLY GLOBAL ENTITY zdemo_abap_rap_ro_m
 
 ### Raising RAP Business Events
 
-- [RAP business events](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_entity_event_glosry.htm) can be raised in ABAP behavior pools with [`RAISE ENTITY EVENT`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapraise_entity_event.htm) statements. 
+- [RAP business events](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_entity_event_glosry.htm) can be raised in ABAP behavior pools with [`RAISE ENTITY EVENT`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapraise_entity_event.htm) statements, typically in the save phase. 
 - The focus of the snippets is on the local consumption of RAP business events. Prerequisites:
   - `event` specifications are available in the BDEF (e.g. `... event some_evt; ...`). For more details, refer to the [BDL documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbdl_event.htm).
   - A [RAP event handler class](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_event_handler_class_glosry.htm) is available that is used to implement [RAP event handler methods](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_event_handler_meth_glosry.htm). 

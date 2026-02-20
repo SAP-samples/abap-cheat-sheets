@@ -4283,7 +4283,7 @@ To check out examples in demo classes, expand the collapsible sections below.
 > - The example is generally about calling external APIs and parsing the HTTP responses. It retrieves the Markdown files of the ABAP cheat sheet documents contained in the ABAP cheat sheet GitHub repository.  
 > - Before using the GitHub APIs, make sure that you have consulted the following documentation: <a href="https://docs.github.com/en">GitHub Docs</a>, <a href="https://docs.github.com/en/enterprise-cloud@latest/rest/markdown/markdown?apiVersion=2022-11-28#render-a-markdown-document">Render a Markdown document</a>, <a href="https://docs.github.com/en/rest/using-the-rest-api/rate-limits-for-the-rest-api?apiVersion=2022-11-28">Rate limits for the REST API</a>
 > - For the example to work and send emails, make sure that the configurations from [here](https://help.sap.com/docs/btp/sap-business-technology-platform/emailing) have been performed.
-> - To run the example class, copy and paste the code into a class named `zcl_demo_abap`. Run the class using F9. The email sending status will be displayed, and you can expect an email to be sent.   
+> - To try it out, create a demo class named `zcl_demo_abap`. If it already exists, reuse it. Otherwise, create a new class with a different name. Paste the code into it. If you choose a different class name, update the class name in the code snippet accordingly. Run the class using F9. The email sending status will be displayed, and you can expect an email to be sent.   
 
 
 
@@ -4441,7 +4441,7 @@ ENDCLASS.
 
 > [!WARNING] 
 > - As stated for the previous example, also note for this example: Before using the GitHub APIs, make sure that you have consulted the following documentation: <a href="https://docs.github.com/en">GitHub Docs</a>, <a href="https://docs.github.com/en/enterprise-cloud@latest/rest/markdown/markdown?apiVersion=2022-11-28#render-a-markdown-document">Render a Markdown document</a>, <a href="https://docs.github.com/en/rest/using-the-rest-api/rate-limits-for-the-rest-api?apiVersion=2022-11-28">Rate limits for the REST API</a>
-> - To run the example class, copy and paste the code into a class named `zcl_demo_abap`. Run the class using F9. It is set up to display HTML content in the console. Using the GitHub API, sample Markdown content is sent and converted to HTML.
+> - To try it out, create a demo class named `zcl_demo_abap`. If it already exists, reuse it. Otherwise, create a new class with a different name. Paste the code into it. If you choose a different class name, update the class name in the code snippet accordingly. Run the class using F9. It is set up to display HTML content in the console. Using the GitHub API, sample Markdown content is sent and converted to HTML.
 
 
 
@@ -4678,7 +4678,7 @@ The XLSX XCO module works with XLSX content in the form of an xstring. The follo
 
 **Exploring the XCO XLSX Module**
 
-Assuming you have the XLSX content created and uploaded above on your system, you can explore the following example using the XCO classes/methods. Set up a demo class called `zcl_demo_abap` and use the code provided below. After activating it, choose *F9* in ADT to run the class. The example is designed to show output in the console. 
+Assuming you have the XLSX content created and uploaded above on your system, you can explore the following example using the XCO classes/methods. To try it out, create a demo class named `zcl_demo_abap`. If it already exists, reuse it. Otherwise, create a new class with a different name. Paste the code into it. If you choose a different class name, update the class name in the code snippet accordingly. After activating it, choose *F9* in ADT to run the class. The example is designed to show output in the console. 
 
 > [!NOTE]  
 > - Refer to the comments in the code for information.
@@ -5682,7 +5682,7 @@ ENDTRY.
 - `cl_apj_rt_api`: Provides methods to schedule and manage application jobs programmatically.
 - A prerequisite for application jobs is a class implementing the `if_apj_rt_run` interface, with its `execute` method run by the background job.
 - Find more information [here](https://help.sap.com/docs/btp/sap-business-technology-platform/application-jobs).
-- The example, which you can copy into a demo class (e.g. `zcl_demo_abap`) and run using F9 in ADT, covers methods of both classes and explores:
+- To try the example out, create a demo class named `zcl_demo_abap`. If it already exists, reuse it. Otherwise, create a new class with a different name. Paste the code into it. If you choose a different class name, update the class name in the code snippet accordingly. Run it using F9 in ADT. It covers methods of both classes and explores:
   - Creating an application job catalog entry
   - Creating an application job template
   - Scheduling an application job
@@ -6114,7 +6114,7 @@ The following code snippet uses the `XCO_CP_CTS` class, among others, to demonst
 > - The example is simplified and non-semantic, exploring various functionalities offered by the XCO APIs. See the repository's [disclaimer](./README.md#%EF%B8%8F-disclaimer).
 > - For more information and code snippets, refer to the [SAP Help documentation](https://help.sap.com/docs/btp/sap-business-technology-platform/correction-and-transport-system).
 > - The example assumes you have a transportable package, represented by the `pkg_name` constant in the example.
-> - To try the example out, create a demo class named `ZCL_DEMO_ABAP` and paste the code into it. Edit the code by providing the `pkg_name` constant with your package name. It is assumed that a demo class named `ZCL_DEMO_ABAP_CALCULATE` does not exist. After activation, choose *F9* in ADT to execute the class. The example is set up to display output in the console. You may also want to open the created `ZCL_DEMO_ABAP_CALCULATE` class.
+> - To try the example out, create a demo class named `zcl_demo_abap`. If it already exists, reuse it. Otherwise, create a new class with a different name. Paste the code into it. If you choose a different class name, update the class name in the code snippet accordingly. Edit the code by providing the `pkg_name` constant with your package name. It is assumed that a demo class named `ZCL_DEMO_ABAP_CALCULATE` does not exist. After activation, choose *F9* in ADT to execute the class. The example is set up to display output in the console. You may also want to open the created `ZCL_DEMO_ABAP_CALCULATE` class.
 
  <br>
 
@@ -6397,7 +6397,7 @@ The following example explores some of the capabilities of the `CL_HTMLTIDY` cla
   - Evaluating the cleanup operation result
 - Repairing and cleaning up an XML document
   
-To try the example out, create a demo class named `zcl_demo_abap` and paste the code into it. After activation, choose *F9* in ADT to execute the class. The example is set up to display output in the console.
+To try the example out, create a demo class named `zcl_demo_abap`. If it already exists, reuse it. Otherwise, create a new class with a different name. Paste the code into it. If you choose a different class name, update the class name in the code snippet accordingly. After activation, choose *F9* in ADT to execute the class. The example is set up to display output in the console.
 
 
 ```abap
@@ -6983,7 +6983,7 @@ This demo IDE action lets you upload and process files, as well as download them
      - Create an interface named `ZIF_DEMO_ABAP_IDE_IMP_EXP` and use the code below. Implementing `ZIF_DEMO_ABAP_IDE_IMP_EXP` is essential for checking out the IDE action. 
      - This interface defines the methods `process_import` and `export`, which include custom logic to process content for upload and download. For example, the example demonstrates uploading an XLSX file. The `process_import` method implementation in the `ZCL_DEMO_ABAP` class is specifically tailored for this example, allowing XLSX content to be uploaded and processed using the XLSX XCO API. The `export` method is designed to provide content for download based on the selected operation in the IDE action dialog. 
 4. Create a class that implements the demo logic for uploading, downloading, and processing file content
-    - Create a class named `ZCL_DEMO_ABAP` and use the code provided below. 
+    - To try the example out, create a demo class named `zcl_demo_abap`. If it already exists, reuse it. Otherwise, create a new class with a different name. Paste the code into it. If you choose a different class name, update the class name in the code snippet accordingly. 
     - Note: The examples use a demo database table from the ABAP cheat sheet repository. If you have not imported the repository, create the `ZDEMO_ABAP_CARR` database table by reusing the code from the repository (see below). You can run this class using F9 in ADT to initialize the demo database table and add entries for testing. Refer to the comments in the class code, as you need to comment out a section of the code beforehand.
       ```abap
       @EndUserText.label : 'Demo table: Airline'
@@ -7923,7 +7923,7 @@ This demo IDE action runs classes and displays the content of data objects in an
 - Perform a mass activation to activate the classes because one class uses types specified in the other class. 
 - To check out the action, proceed as follows: 
   - Create an interface named `ZIF_DEMO_ABAP_OUTPUT` and use the code from below. `ZIF_DEMO_ABAP_OUTPUT` is essential to be implemented for checking out the IDE action.     
-  - Create a class named `ZCL_DEMO_ABAP` and use the code from below (contains a collection of various data objects that should be displayed). 
+  - To try the example out, create a demo class named `zcl_demo_abap`. The code contains a collection of various data objects that should be displayed. 
   - In ADT, you have opened the demo class `ZCL_DEMO_ABAP` (or any class implementing the interface).
   - Choose *STR + ALT/CMD + R* to run an IDE action.
   - Select the IDE action. You can filter for *HTML Output*.
@@ -9558,7 +9558,7 @@ Find more information [here](https://help.sap.com/docs/btp/sap-business-technolo
 
 Notes on the example:
 
-- You can copy the example into a demo class (e.g., `zcl_demo_abap`) and run it using F9 in ADT. This example illustrates the methods of the two classes mentioned above.
+- To try the example out, create a demo class named `zcl_demo_abap`. If it already exists, reuse it. Otherwise, create a new class with a different name. Paste the code into it. If you choose a different class name, update the class name in the code snippet accordingly. After activation, run it using F9 in ADT. This example illustrates the methods of the two classes mentioned above.
 - It provides a basic exploration of class methods and is not meant to serve as a best practice implementation. For detailed information, check the [SAP Help Portal](https://help.sap.com/docs/btp/sap-business-technology-platform/development-output-management).
 - The example uses demo XDP and XML files from another SAP samples GitHub repository focused on ADS: [https://github.com/SAP-samples/forms-service-by-adobe-samples](https://github.com/SAP-samples/forms-service-by-adobe-samples). You can find more information there. The code retrieves the code of these files using the `cl_web_http_client_manager` class.
 - As a result of the demo, PDF files are sent via email. To enable email sending, refer to the *Sending Emails* section. Additionally, make sure to insert valid email addresses in the code before running the example. Note that the resulting PDF files do not show any detailed content apart from the template skeleton. The focus is on the functionality of the covered classes. 

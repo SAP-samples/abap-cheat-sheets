@@ -3045,7 +3045,7 @@ CALL METHOD class=>(meth) PARAMETER-TABLE ptab.
 
 <br>
 
-The following example class explores dynamic method calls with simple methods. You can create a demo class called `zcl_demo_abap` and copy and paste the following code. Once activated, you can choose *F9* in ADT to run the class. The example is not designed to display output in the console.
+The following example class explores dynamic method calls with simple methods. To try the example out, create a demo class named `zcl_demo_abap`. If it already exists, reuse it. Otherwise, create a new class with a different name. Paste the code into it. If you choose a different class name, update the class name in the code snippet accordingly. Once activated, you can choose *F9* in ADT to run the class. The example is not designed to display output in the console.
 
 ```abap
 CLASS zcl_demo_abap DEFINITION
@@ -3879,7 +3879,7 @@ It is crucial to perform checks and handle dynamic programming techniques cautio
 
 For more details, refer to the ABAP Keyword Documentation [here (Standard ABAP documentation)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abendynamic_programming_scrty.htm).
 
-To try the example out, create a demo class named `zcl_demo_abap` and paste the code into it. After activation, choose *F9* in ADT to execute the class. The example uses  objects of the ABAP cheat sheets repository and is set up to display output in the console.
+To try the example out, create a demo class named `zcl_demo_abap`. If it already exists, reuse it. Otherwise, create a new class with a different name. Paste the code into it. If you choose a different class name, update the class name in the code snippet accordingly. After activation, choose *F9* in ADT to execute the class. The example uses  objects of the ABAP cheat sheets repository and is set up to display output in the console.
 It covers the following aspects: 
 - Dynamic `WHERE` clause and specifying the data object holding external input as operand and literal
 - Verifying input for not allowed database table access
@@ -4973,7 +4973,7 @@ Click to expand for example code:
 
 <br>
 
-To try the example out, create a demo class named `zcl_demo_abap` and paste the code into it. 
+To try the example out, create a demo class named `zcl_demo_abap`. If it already exists, reuse it. Otherwise, create a new class with a different name. Paste the code into it. If you choose a different class name, update the class name in the code snippet accordingly.
 The example is not set up to display output in the console. So, after activation, you may want to set a break point at the first position possible and choose *F9* in ADT to execute the class.  You can then walk through the example in the debugger. This will allow you to double-click on the variables and check out the contents. The example is similar to the one below, however, this only focuses on the method calls and attribute accesses without output preparation among others.
 
 ```abap

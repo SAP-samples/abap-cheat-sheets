@@ -5425,7 +5425,7 @@ DATA(rtti_d) = CAST cl_abap_structdescr(
 
 ### Example with Local Classes Demonstrating Upcasts and Downcasts
 
-The following example class demonstrates upcasts and downcasts using multiple local classes to avoid the extra creation of multiple global classes and to have a self-contained example. To try the example out, create a demo class named `zcl_demo_abap` and paste the code into it (*Global Class* and *Local Types* tabs in ADT). After activation, choose *F9* in ADT to execute the class. The example is not set up to display output in the console, but it contains comments. You may want to set break points and walk through the demo assignments.
+The following example class demonstrates upcasts and downcasts using multiple local classes to avoid the extra creation of multiple global classes and to have a self-contained example. To try the example out, create a demo class named `zcl_demo_abap`. If it already exists, reuse it. Otherwise, create a new class with a different name. Paste the code into it. If you choose a different class name, update the class name in the code snippet accordingly. Note to copy the code in the *Global Class* and *Local Types* tabs in ADT. After activation, choose *F9* in ADT to execute the class. The example is not set up to display output in the console, but it contains comments. You may want to set break points and walk through the demo assignments.
 
 The inheritance tree of the local example classes is as follows: 
 
@@ -7011,7 +7011,7 @@ ENDCLASS.
 
 ### Excursion: Example Interface
 
-Expand the following collapsible section for example code. To try it out, create a demo interface named `zif_some_interface`, a class named `zcl_demo_abap`, and paste the code into the artifacts. After activation, choose *F9* in ADT to execute the class. The example is set up to display output in the console.
+Expand the following collapsible section for example code. To try the example out, create a demo interface named `zif_some_interface` and a demo class named `zcl_demo_abap`. If they already exist, reuse them. Otherwise, create new artifacts with different names. Paste the code into them. If you choose a different names, update the names in the code snippet accordingly. After activation, choose *F9* in ADT to execute the class. The example is set up to display output in the console.
 
 <details>
    <summary>🟢 Click to expand for more information and example code</summary>
@@ -7270,7 +7270,7 @@ Global class
 
  <td> 
 
-- Create a new global class (the example uses the name `zcl_demo_abap`) and copy and paste the following code in the *Global Class* tab in ADT.
+- To try the example out, create a demo class named `zcl_demo_abap`. If it already exists, reuse it. Otherwise, create a new class with a different name. Paste the code into it (_Global class_ tab). If you choose a different class name, update the class name in the code snippet accordingly. 
 - The class has a type and method declaration in the private section. They are used in the local class.
 - Once activated (and the code of the other includes has been inserted), you can choose *F9* in ADT to run the class.
 - When running the class, a method of the local class that is declared in the private section there is called. As a result of this method call, a string is assigned to an attribute that is also declared in the private section of the local class. This attribute is accessed by the global class, and finally displayed in the ADT console.
@@ -7462,7 +7462,7 @@ High-level steps involved:
 > In RAP, special [RAP business events](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_entity_event_glosry.htm) are available. They can be raised in [ABAP behavior pools](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbehavior_pool_glosry.htm) with [RAISE ENTITY EVENT](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapraise_entity_event.htm) statements. Find more information in the [ABAP for RAP: Entity Manipulation Language (ABAP EML)](08_EML_ABAP_for_RAP.md) cheat sheet.
 
 
-Expand the following collapsible section for example code. To try it out, create a demo class named `zcl_demo_abap` and paste the code into it. Note that the example includes code in the global class and the CCIMP include (Local Types tab in ADT). After activation, choose *F9* in ADT to execute the class. The example is set up to display output in the console. For more information on the example, see the inline comments.
+Expand the following collapsible section for example code. To try it out, create a demo class named `zcl_demo_abap`. If it already exists, reuse it. Otherwise, create a new class with a different name. Paste the code into it. If you choose a different class name, update the class name in the code snippet accordingly. Note that the example includes code in the global class and the CCIMP include (Local Types tab in ADT). After activation, choose *F9* in ADT to execute the class. The example is set up to display output in the console. For more information on the example, see the inline comments.
 
 
 <details>

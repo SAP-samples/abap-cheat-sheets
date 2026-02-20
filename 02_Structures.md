@@ -1149,7 +1149,7 @@ DATA(component_names) = VALUE string_table( FOR wa IN CAST cl_abap_structdescr(
 
 
 The following example demonstrates a selection of ABAP system fields. It uses artifacts from the ABAP cheat sheet repository. Note the comments in the code because a syntax warning will be displayed when inserting the code in a demo class that uses ABAP for Cloud Development. It is meant to emphasize that multiple system fields should not be used in ABAP for Cloud Development.  
-To try the example out, create a demo class named `zcl_demo_abap` and paste the code into it. After activation, choose *F9* in ADT to execute the class. The example is set up to display output in the console. 
+To try the example out, create a demo class named `zcl_demo_abap`. If it already exists, reuse it. Otherwise, create a new class with a different name. Paste the code into it. If you choose a different class name, update the class name in the code snippet accordingly. After activation, choose *F9* in ADT to execute the class. The example is set up to display output in the console. 
 
 ```abap
 CLASS zcl_demo_abap DEFINITION
@@ -1498,7 +1498,7 @@ The following example illustrates boxed components:
 - The tables are populated in a loop under various conditions.
 - The example demonstrates the impact of boxed components on memory usage.
 - To try it out, proceed as follows:  
-  - Create a demo class named `zcl_demo_abap`, paste the code into it, and activate it.
+  - To try the example out, create a demo class named `zcl_demo_abap`. If it already exists, reuse it. Otherwise, create a new class with a different name. Paste the code into it. If you choose a different class name, update the class name in the code snippet accordingly. Activate the class.
   - The example does not display output in the console.
   - It includes sections you can comment in and out. See notes in the examples.
   - The code sections compare the memory usage of boxed and non-boxed components:

@@ -768,7 +768,7 @@ Using the [XCO library](https://help.sap.com/docs/btp/sap-business-technology-pl
 > - The executable example uses both the created repository objects as described in this cheat sheet and some repository objects of the ABAP cheat sheet repository. The example explores and uses code snippets of this cheat sheet, emphasizing the use of global types in ABAP programs.
 > - [Disclaimer](./README.md#%EF%B8%8F-disclaimer)
 
-Expand the following collapsible section for example code. To try it out, create a demo class named `zcl_demo_abap` and paste the code into it. After activation, choose *F9* in ADT to execute the class. The example is set up to display output in the console.
+Expand the following collapsible section for example code. To try it out, create a demo class named `zcl_demo_abap`. If it already exists, reuse it. Otherwise, create a new class with a different name. Paste the code into it. If you choose a different class name, update the class name in the code snippet accordingly. After activation, choose *F9* in ADT to execute the class. The example is set up to display output in the console.
 
 <details>
   <summary>🟢 Click to expand for example code</summary>

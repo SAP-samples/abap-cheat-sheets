@@ -775,7 +775,7 @@ CALL TRANSFORMATION ... SOURCE ...
 
 The following example explores various syntax options for `CALL TRANSFORMATION` statements, using the predefined identity transformation `ID`.
 
-To try the example out, create a demo class named `zcl_demo_abap` and paste the code into it. After activation, choose *F9* in ADT to execute the class. The example is set up to display output in the console.
+To try the example out, create a demo class named `zcl_demo_abap`. If it already exists, reuse it. Otherwise, create a new class with a different name. Paste the code into it. If you choose a different class name, update the class name in the code snippet accordingly. After activation, choose *F9* in ADT to execute the class. The example is set up to display output in the console.
 
 ```abap
 CLASS zcl_demo_abap DEFINITION
@@ -974,7 +974,7 @@ ENDCLASS.
 > - For additional information and examples, see the [ABAP and JSON](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_json.htm) section of the ABAP Keyword Documentation.
 
 
-Expand the following collapsible section for example classes. To try them out, create a demo class named `zcl_demo_abap` and paste the code into it. After activation, choose *F9* in ADT to execute the class. This example is set up to display output in the console.
+Expand the following collapsible section for example classes. To try the examples out, create a demo class named `zcl_demo_abap`. If it already exists, reuse it. Otherwise, create a new class with a different name. Paste the code into it. If you choose a different class name, update the class name in the code snippet accordingly. After activation, choose *F9* in ADT to execute the class. This example is set up to display output in the console.
 
 **Creating JSON Data using the sXML library**
 
@@ -1464,7 +1464,7 @@ DATA json_to_abap_table TYPE string_table.
                            CHANGING data  = json_to_abap_table ).
 ```
 
-Expand the following collapsible section for example code. To try it out, create a demo class named `zcl_demo_abap` and paste the code into it. After activation, choose *F9* in ADT to execute the class. This example is set up to display output in the console.
+Expand the following collapsible section for example code. To try it out, create a demo class named `zcl_demo_abap`. If it already exists, reuse it. Otherwise, create a new class with a different name. Paste the code into it. If you choose a different class name, update the class name in the code snippet accordingly. After activation, choose *F9* in ADT to execute the class. This example is set up to display output in the console.
 
 <details>
   <summary>🟢 Click to expand for example code</summary>
@@ -1616,7 +1616,7 @@ ENDCLASS.
 - Find more information and examples [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenasxml_class_instances.htm) in the ABAP Keyword Documentation. 
 
 
-Expand the following collapsible section for example classes. To try them out, create a demo class named `zcl_demo_abap` and paste the code into it. After activation, choose *F9* in ADT to execute the class. The examples are set up to display output in the console.
+Expand the following collapsible section for example classes. To try the examples out, create a demo class named `zcl_demo_abap`. If it already exists, reuse it. Otherwise, create a new class with a different name. Paste the code into it. If you choose a different class name, update the class name in the code snippet accordingly. After activation, choose *F9* in ADT to execute the class. The examples are set up to display output in the console.
 
 <details>
   <summary>🟢 Click to expand for example code</summary>
