@@ -19,7 +19,7 @@
     - [BDEF and Implementation Notes](#bdef-and-implementation-notes-1)
     - [Preparation Steps](#preparation-steps-1)
     - [Example Exploration Steps](#example-exploration-steps-1)
-  - [\*97: Unmanaged / External Numbering / Side Effects](#97-unmanaged--external-numbering--side-effects)
+  - [\*97: Unmanaged / External Numbering](#97-unmanaged--external-numbering)
     - [Example Context](#example-context-2)
     - [Involved Artifacts](#involved-artifacts-2)
     - [BDEF and Implementation Notes](#bdef-and-implementation-notes-2)
@@ -505,7 +505,7 @@ Focus Topics
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-## *97: Unmanaged / External Numbering / Side Effects
+## *97: Unmanaged / External Numbering
 
 ### Example Context
 
