@@ -56,6 +56,7 @@ The `rap` branch of the [ABAP cheat sheet GitHub repository](https://github.com/
 > - The example RAP BOs are (randomly) set up to showcase specific features through smaller BOs, each focusing on selected RAP topics.
 > - Given their experimental nature, these examples do not represent best practices for RAP BO setup and implementation. They do not claim to fully meet the [RAP BO contract](https://help.sap.com/docs/ABAP_PLATFORM_NEW/fc4c71aa50014fd1b43721701471913d/3a402c5cf6a74bc1a1de080b2a7c6978.html) requirements. Always create your own solutions.
 > - For more detailed information and semantic RAP examples, refer to the [Development guide for the ABAP RESTful Application Programming Model](https://help.sap.com/docs/ABAP_PLATFORM_NEW/fc4c71aa50014fd1b43721701471913d/289477a81eec4d4e84c0302fb6835035.html) and the [ABAP Flight Reference Scenario for the ABAP RESTful Application Programming Model](https://github.com/SAP-samples/abap-platform-refscen-flight).
+> - The examples are designed primarily for the SAP BTP ABAP Environment. 
 
 
 ## Getting Started
@@ -407,7 +408,7 @@ Focus Topics
 
 ### BDEF and Implementation Notes
 
-- Managed the draft-enabled RAP BO
+- Managed, draft-enabled RAP BO
 - In addition to the persistent table, the draft table specification is necessary.
 - The authorization master is none and is used here for demonstration purposes (every user can access and modify it).
 - Numbering scenario: Managed internal early numbering is defined using the UUID field and the `(numbering: managed)` specification.
@@ -633,14 +634,13 @@ Focus Topics
 - CUD operations are enabled.
 - Three RAP business events are specified, two of which use a parameter represented by a CDS abstract entity with two components (text and timestamp).
 - Static factory action `check_log`: This action is solely for checking and visualizing the effect of event raising.
-- Defines validation and determination.
 - Mapping relationship.
 
 
 > [!NOTE]  
 > - See comments in the ABP for more information on the demo implementations.
 > - If you choose not to include the setup and walk through preparation steps for authorization, the code offers simplified alternatives that allow you to check authorization-relevant effects without those steps.
-> - Due to the additional save specification, the RAP BO implementation includes a local saver class that requires the implementation of the `save_modified` method. In this example, the method raises local RAP business events for demonstration purposes. Three event types are defined for create, update, and delete operations. An event is raised based on the input parameters of the `save_modified` method, determining the evaluation of the input BDEF derived type, and indicating affected instances. The create event does not include additional specifications, unlike the update and delete events. In those cases, a demo text and the current timestamp are assigned to `%param`. The associated event handler class is `zcl_demo_abap_evt_handler96`.
+> - Due to the additional save specification, the RAP BO implementation includes a local saver class that requires the implementation of the `save_modified` method. In this example, the method raises local RAP business events for demonstration purposes. Three kinds of events are defined for create, update, and delete operations. These events are raised in the `save_modified` method in the RAP saver class. 
 > - The event handler class `zcl_demo_abap_evt_handler96` includes a local class that inherits from `cl_abap_behavior_event_handler`. It implements three event handler methods for the defined events. In this simplified example, event raising is represented by inserting information into a database log table. For update and delete events, values from `%param` are used. For create, which has no specified parameters, the information is supplied within the method implementation. Note the required call to `cl_abap_tx=>save( ).` to switch the transactional phase for database modification statements (for more information, refer to [Controlled SAP LUW](https://github.com/SAP-samples/abap-cheat-sheets/blob/main/17_SAP_LUW.md#controlled-sap-luw)). The result of the event raising is visualized through the static action `check_log`. Choosing the associated button (`Check Log Table`) in the UI displays the content of the log database table. The demo text added indicates which event was triggered, along with a timestamp indicating when the event was raised (or when the content was added to the log table in the case of the create event).
 > - The ABP auxiliary class illustrates how functionality can be outsourced to an ABP auxiliary class. The main purpose of auxiliary classes is to provide reusable methods for an ABAP behavior pool. The demo implementation includes a method with `SELECT` statements (for data required in the context of the static action) and a method with an ABAP EML read request. The latter demonstrates that the `IN LOCAL MODE` can be used outside the original ABP. Furthermore, an enumeration type is defined, which is used in the determination implementation. Note that completely outsourcing handler method implementations to auxiliary classes is not recommended, as it incurs significant overhead, including additional BDEF derived type declarations for method parameters.
 
@@ -649,7 +649,7 @@ Focus Topics
 ### Preparation Steps
 
 > [!NOTE]  
-> - If you choose not to walk through the authorization preparation steps, the code includes dummy implementations in the `get_global_autorizations` and `get_instance_authorizations` method (constants indicating authorized or not authorized) that you can use and modify. You can comment these in while commenting out the other code (see the comments in the implementation) to explore global and instance authorization functionality.
+> - If you choose not to walk through the authorization-related preparation steps, the code includes dummy implementations in the `get_global_autorizations` and `get_instance_authorizations` methods (constants indicating authorized or not authorized) that you can use. You can comment these in while commenting out the other code (see the comments in the implementation) to explore global and instance authorization functionality (for example, by setting values differently so as not to grant authorization and check the effect in the SAP Fiori preview UI).
 > - The authorization setup in this example is intended to only meet the requirements of this simplified example to illustrate authorization-specific functionality. Note that the example is created in the SAP BTP ABAP Environment. Make sure to consult the [SAP Help documentation](https://help.sap.com/docs/sap-btp-abap-environment/abap-environment/apps-identity-and-access-management?locale=en-US) for further and the latest information.
 
 1. **Preparation steps for authorization functionality**
