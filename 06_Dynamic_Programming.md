@@ -2696,6 +2696,69 @@ SELECT *
   INTO TABLE NEW @DATA(tab_dyn_order).
 
 *&---------------------------------------------------------------------*
+*& Dynamic GROUP and ORDER BY clauses
+*&---------------------------------------------------------------------*
+
+"The following example illustrates dynamic GROUP and ORDER BY clauses. 
+"The selected data is organized by the specified column, which combines 
+"similar entries. In the data object 'count', the number of flight connections 
+"is determined for the various values in column 'col'. 'CITYFROM' is designated 
+"as 'col'. Then, the number of destinations for each departure city in 'count' 
+"is determined.
+DATA col TYPE c LENGTH 20 VALUE 'CITYFROM'.
+DATA dref TYPE REF TO data.
+TRY.
+    DATA(name) = `ZDEMO_ABAP_FLSCH-`  && col.
+    CREATE DATA dref TYPE (name).
+  CATCH cx_sy_create_data_error.
+ENDTRY.
+
+DATA count TYPE i.
+DATA(field_list) = col && `, count(*)`.
+TRY.
+    SELECT DISTINCT (field_list)
+           FROM ZDEMO_ABAP_FLSCH
+           GROUP BY (col)
+           ORDER BY (col)
+           INTO (@dref->*, @count).
+      out->write( |{ dref->* } {
+                     count }| ).
+    ENDSELECT.
+  CATCH cx_sy_dynamic_osql_error.
+ENDTRY.
+
+*&---------------------------------------------------------------------*
+*& Dynamic CTE
+*&---------------------------------------------------------------------*
+
+DATA(dyn_cte) =
+`+connections AS ( ` &&
+`  SELECT zdemo_abap_flsch~carrid, carrname, connid, cityfrom, cityto ` &&
+`    FROM zdemo_abap_flsch ` &&
+`    INNER JOIN zdemo_abap_carr ` &&
+`    ON zdemo_abap_carr~carrid = zdemo_abap_flsch~carrid ` &&
+`    WHERE zdemo_abap_flsch~carrid BETWEEN 'AA' AND 'JL' ), ` &&
+`+sum_seats AS ( ` &&
+`  SELECT carrid, connid, SUM( seatsocc ) AS sum_seats ` &&
+`    FROM zdemo_abap_fli ` &&
+`    WHERE carrid BETWEEN 'AA' AND 'JL' ` &&
+`    GROUP BY carrid, connid ), ` &&
+`+result( name, connection, departure, arrival, occupied ) AS ( ` &&
+`  SELECT carrname, c~connid, cityfrom, cityto, sum_seats ` &&
+`    FROM +connections AS c ` &&
+`    INNER JOIN +sum_seats AS s ` &&
+`    ON c~carrid = s~carrid AND c~connid = s~connid ) ` &&
+`SELECT * ` &&
+`  FROM +result ` &&
+`  ORDER BY name, connection `.
+
+TRY.
+    WITH (dyn_cte)
+     INTO TABLE new @data(result_ref).
+  CATCH cx_sy_dynamic_osql_error INTO DATA(exc).
+ENDTRY.
+
+*&---------------------------------------------------------------------*
 *& SELECT statement with miscellaneous dynamic specifications
 *&---------------------------------------------------------------------*
 

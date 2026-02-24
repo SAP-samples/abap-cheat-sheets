@@ -3827,7 +3827,7 @@ ENDCLASS.
 <tr>
 <td> <code>CL_BALI_LOG</code> </td>
 <td>
-For creating and reading application logs. Refer to <a href="https://help.sap.com/docs/btp/sap-business-technology-platform/application-logs">this documentation</a> for more information and code snippets. Note that there is also an XCO module available dealing with business application log (<code>XCO_CP_BAL</code>; see <a href="https://help.sap.com/docs/btp/sap-business-technology-platform/business-application-log">this documentation</a>).
+For creating and reading application logs. Refer to <a href="https://help.sap.com/docs/btp/sap-business-technology-platform/application-logs">this documentation</a> for more information and code snippets. 
 <br><br>
 
 ``` abap
@@ -3926,6 +3926,218 @@ TRY.
     ENDLOOP.
   CATCH cx_bali_runtime.
 ENDTRY.
+``` 
+
+</td>
+</tr>
+
+<tr>
+<td> <code>XCO_CP_BAL</code> </td>
+<td>
+The XCO module <code>XCO_CP_BAL</code> is available to deal with the business application log. For more information, see <a href="https://help.sap.com/docs/btp/sap-business-technology-platform/business-application-log">here</a>.
+<br><br>
+
+``` abap
+CLASS zcl_demo_abap DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
+
+  PUBLIC SECTION.
+    INTERFACES if_oo_adt_classrun.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+
+ENDCLASS.
+
+
+CLASS zcl_demo_abap IMPLEMENTATION.
+  METHOD if_oo_adt_classrun~main.
+    CONSTANTS: obj         TYPE sxco_aplo_object_name VALUE 'DEMO_LOG',
+               subobj      TYPE if_xco_aplo_subobject=>tv_name VALUE 'DEMO_SUB',
+               external_id TYPE if_xco_cp_bal_log_header=>tv_external_id VALUE 'DEMO_EXT_ID'.
+
+    "Creating filter
+    DATA(filter) = xco_cp_bal=>log_filter->external_id(
+      xco_cp_abap_sql=>constraint->equal( external_id )
+    ).
+
+    "Deleting existing messages from log (based on filter)
+    DATA(handles) = xco_cp_bal=>for->database( )->logs->where( VALUE #( ( filter ) ) )->get_handles( ).
+
+    LOOP AT handles ASSIGNING FIELD-SYMBOL(<h>).
+      xco_cp_bal=>for->database( )->log->delete( iv_handle = <h> ).
+    ENDLOOP.
+
+    "Creating a log
+    TRY.
+        DATA(log) = xco_cp_bal=>for->database( )->log->create(
+              iv_object      = obj
+              iv_subobject   = subobj
+              iv_external_id = external_id ).
+      CATCH cx_root INTO DATA(e).
+        out->write( e->get_text( ) ).
+        RETURN.
+    ENDTRY.
+
+    "Adding messages
+    "The code snippet illustrate a selection of add* methods to
+    "add messages to the log.
+
+    "add_message method
+    "Creating a message object using XCO
+    "Using the 'string' and 'as_message' methods to create message object
+    "based on a random string, and using a default type, id, etc.
+    DATA(msg) = xco_cp=>string( `Some error message` )->as_message( xco_cp_message=>type->error ).
+
+    log->add_message( msg->value ).
+
+    "Using a MESSAGE statement to populate sy-msg* fields
+    MESSAGE ID 'ZDEMO_ABAP_MESSAGES'
+        TYPE 'E'
+        NUMBER '005'
+        WITH 'This' 'is an' 'error' 'message'
+        INTO DATA(message).
+
+    DATA(msg_val) = VALUE symsg( msgid = sy-msgid msgno = sy-msgno msgty = sy-msgty
+                                 msgv1 = sy-msgv1 msgv2 = sy-msgv2 msgv3 = sy-msgv3
+                                 msgv4 = sy-msgv4 ).
+
+    log->add_message( msg_val ).
+
+    "add_news method
+    MESSAGE ID 'ZDEMO_ABAP_MESSAGES'
+        TYPE 'I'
+        NUMBER '004'
+        WITH 'Hello' 'world'
+        INTO message.
+
+    log->add_news( xco_cp=>sy ).
+
+    "add_text method
+    DATA(strtab) = VALUE string_table( ( `hello` ) ).
+    TRY.
+        DATA(line) = strtab[ 2 ].
+      CATCH cx_sy_itab_line_not_found INTO DATA(err_tab).
+        log->add_text( xco_cp=>string( err_tab->get_text( ) ) ).
+    ENDTRY.
+
+    log->add_text( xco_cp=>string( `Another demo text` ) ).
+    log->add_text( xco_cp=>string( `Lorem ipsum dolor sit amet` ) ).
+
+    WAIT UP TO 1 SECONDS.
+
+    "Reading messages
+    "Getting all messages via the current log handle
+    DATA(messages) = log->messages->all->get( ).
+
+    TYPES: BEGIN OF msg_struc,
+             msgty TYPE symsgty,
+             msgid TYPE symsgid,
+             msgno TYPE symsgno,
+             msgv1 TYPE symsgv,
+             msgv2 TYPE symsgv,
+             msgv3 TYPE symsgv,
+             msgv4 TYPE symsgv,
+             ts    TYPE if_xco_cp_bal_lm_timestamp=>tv_value,
+             text  TYPE string,
+           END OF msg_struc.
+    DATA msg_tab TYPE TABLE OF msg_struc WITH EMPTY KEY.
+
+    LOOP AT messages INTO DATA(msg_wa).
+      DATA(msg_ts) = msg_wa->value-timestamp->value.
+      DATA(message_val) = msg_wa->value-message->value.
+      DATA(msg_text) = msg_wa->value-message->get_text( ).
+
+      APPEND CORRESPONDING #( message_val ) TO msg_tab ASSIGNING FIELD-SYMBOL(<m>).
+      <m> = VALUE #( BASE <m> ts = msg_ts text = msg_text ).
+    ENDLOOP.
+
+    out->write( msg_tab ).
+    out->write( |\n| ).
+
+    "The following example snippet applies a filter.
+    "Unlike the filter above, this example uses a pattern.
+    filter = xco_cp_bal=>log_filter->external_id(
+      xco_cp_abap_sql=>constraint->contains_pattern( '*DEMO_EXT*' ) ).
+
+    DATA(logs) = xco_cp_bal=>for->database( )->logs->where( VALUE #( ( filter ) ) )->get( ).
+
+    TYPES: BEGIN OF log_msg_struc,
+             obj_name    TYPE sxco_aplo_object_name,
+             subobj_name TYPE if_xco_aplo_subobject=>tv_name,
+             ext_id      TYPE if_xco_cp_bal_log_header=>tv_external_id,
+             msg_tab     LIKE msg_tab,
+           END OF log_msg_struc.
+    DATA log_msg_tab TYPE TABLE OF log_msg_struc WITH EMPTY KEY.
+
+    LOOP AT logs INTO DATA(l).
+      "Note that there are separate methods available
+      "to retrieve information.
+      DATA(log_header) = l->header->get( ).
+      DATA(obj_name) = log_header-object->name.
+      DATA(subobj_name) = log_header-subobject->name.
+      DATA(ext_id) = log_header-external_id.
+
+      APPEND VALUE #( obj_name = obj_name subobj_name = subobj_name ext_id = ext_id ) TO log_msg_tab
+       ASSIGNING FIELD-SYMBOL(<fs>).
+
+      DATA(log_msg) = l->messages->all->get( ).
+      LOOP AT log_msg INTO DATA(m).
+
+        msg_ts = m->value-timestamp->value.
+        message_val = m->value-message->value.
+        msg_text = m->value-message->get_text( ).
+
+        APPEND CORRESPONDING #( message_val ) TO <fs>-msg_tab ASSIGNING <m>.
+        <m> = VALUE #( BASE <m> ts = msg_ts text = msg_text ).
+      ENDLOOP.
+    ENDLOOP.
+
+    out->write( log_msg_tab ).
+
+************************************************************************
+
+    "Creating filter
+    filter = xco_cp_bal=>log_filter->external_id(
+       xco_cp_abap_sql=>constraint->equal( external_id )
+     ).
+
+    "Using the memory method
+    DATA(handles_mem) = xco_cp_bal=>for->memory( )->logs->where( VALUE #( ( filter ) ) )->get_handles( ).
+
+    "Creating a log
+    TRY.
+        log = xco_cp_bal=>for->memory( )->log->create(
+              iv_object      = obj
+              iv_subobject   = subobj
+              iv_external_id = external_id ).
+      CATCH cx_root INTO e.
+        out->write( e->get_text( ) ).
+        RETURN.
+    ENDTRY.
+
+    msg = xco_cp=>string( `Message for the memory` )->as_message( xco_cp_message=>type->error ).
+
+    log->add_message( msg->value ).
+
+    messages = log->messages->all->get( ).
+
+    CLEAR msg_tab.
+
+    LOOP AT messages INTO msg_wa.
+      msg_ts = msg_wa->value-timestamp->value.
+      message_val = msg_wa->value-message->value.
+      msg_text = msg_wa->value-message->get_text( ).
+
+      APPEND CORRESPONDING #( message_val ) TO msg_tab ASSIGNING <m>.
+      <m> = VALUE #( BASE <m> ts = msg_ts text = msg_text ).
+    ENDLOOP.
+
+    out->write( |\n| ).
+    out->write( msg_tab ).
+  ENDMETHOD.
+ENDCLASS.
 ``` 
 
 </td>

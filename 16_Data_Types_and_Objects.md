@@ -32,6 +32,7 @@
     - [Ranges Tables](#ranges-tables)
     - [Typed Literals in ABAP SQL](#typed-literals-in-abap-sql)
     - [Non-Admissible Values of Literals](#non-admissible-values-of-literals)
+    - [TYPES ... WITH INDICATORS](#types--with-indicators)
   - [Executable Example](#executable-example)
 
 ## Introduction
@@ -3337,6 +3338,35 @@ date = '202511'.
 ```    
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
+
+### TYPES ... WITH INDICATORS
+
+- In the context of ABAP SQL `UPDATE` statements, you can use structured types defined with `TYPES ... WITH INDICATORS ...`.
+- Using `UPDATE` statements with the addition `INDICATORS`, you can change content of specific fields without overwriting existing values of other fields by specifying set indicators.
+- The example code snippet is set up as follows:
+  - A structured type is created with the `WITH INDICATORS` addition.
+  - An internal table from which to update the database table is created. It includes the indicator structure `comp_ind`.
+  - The internal table is filled. Only one component is flagged as to be updated.
+  - Other fields remain unchanged. Note that key fields must be included in `ind_tab` (indicator setting for key fields has no effect).
+- Find more information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapupdate.htm).
+
+```abap
+TYPES ind_wa TYPE dbtab WITH INDICATORS comp_ind TYPE abap_bool.
+
+DATA ind_tab TYPE TABLE OF ind_wa.
+
+ind_tab = VALUE #(
+       ( comp1 = ... comp2 = ... comp_ind-comp2 = abap_true )
+       ( comp1 = ... comp2 = ... comp_ind-comp2 = abap_true ) ).
+
+UPDATE dbtab FROM TABLE @ind_tab INDICATORS SET STRUCTURE comp_ind.
+
+"In the following example, the logic is reversed using NOT.
+UPDATE dbtab FROM TABLE @ind_tab INDICATORS NOT SET STRUCTURE comp_ind.
+```    
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
 
 ## Executable Example
 

@@ -5604,7 +5604,7 @@ ENDCLASS.
 **Example notes:**
 
 
-> [!NOTE]  
+> NOTE  
 > The example uses a demo database table (`zdemo_abap_carr`) from the ABAP cheat sheet repository.
 
 
