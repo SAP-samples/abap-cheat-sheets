@@ -196,7 +196,7 @@ Parameters using ABAP Dicitionary input helps
 
  <td> 
 
-- When referring to data types from the ABAP Dictionary, all screen-relvant properties of that type are adopted.
+- When referring to data types from the ABAP Dictionary, all screen-relevant properties of that type are adopted.
 - If the referred type includes input help functionality, a callable field help is automatically created.
 - The input helps inlcude search helps, check tables, fixed values and calendar/clock helps. Find more information [here](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenabap_dynpros_value_help_auto.htm).
 - Note that there is no automatic value check. For that, use the `VALUE CHECK` addition.
