@@ -28,6 +28,7 @@
     - [Accessing Attributes](#accessing-attributes)
     - [Calling Methods](#calling-methods)
       - [Excursion: Inline Declarations, Returning Parameters](#excursion-inline-declarations-returning-parameters)
+      - [RETURN](#return)
     - [Self-Reference me](#self-reference-me)
     - [Method Chaining and Chained Attribute Access](#method-chaining-and-chained-attribute-access)
     - [Excursion: Example Class](#excursion-example-class)
@@ -369,7 +370,7 @@ Makes a local class known in a program before the actual class definition. It is
 
 #### Excursion: Class Pool and Include Programs
 
-- A class pool is an ABAP program containing the definition of one global class (*Global Class* tab in ADT)
+- A class pool is an ABAP program containing the definition of one global class (*Global Class* tab in ADT).
 - Global classes are marked as such with the `PUBLIC` addition to the `CLASS` statement: `CLASS zcl_demo_abap DEFINITION PUBLIC ...` 
 - Additionally, a class pool can also contain local classes that are defined in dedicated include programs (CCDEF and the other include names are internal names the include programs end with):
   - CCDEF include (*Class-relevant Local Types* tab in ADT): Is included in front of the declaration part of the global class
@@ -2045,6 +2046,100 @@ ENDCLASS.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
+#### RETURN
+
+- [`RETURN`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapreturn.htm) statements immediately terminate the current processing block. Usually, the statement is intended for leaving processing blocks early. 
+- To exit procedures such as methods explicitly, it is recommended to use `RETURN`. `EXIT` and `CHECK` statements might also be used for exiting procedures. However, their use inside loops is recommended. According to the [guidelines (F1 docu for standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenexit_procedure_guidl.htm), `RETURN` is the recommendation.
+- In case of functional methods, i.e. methods that have one returning parameter, the `RETURN` statement can also be specified with an expression. In doing so, the 
+following statement
+```abap
+res = some_expr.
+RETURN.
+```
+can also be specified as follows: 
+```abap
+RETURN some_expr.
+```
+
+In the following examples, the expression result is passed to the returning parameter without naming it explicitly. As an expression, you can specify a constructor expression (and using type inference with `#` means using the type of the returning parameter).
+
+```abap
+CLASS zcl_demo_abap DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC.
+  PUBLIC SECTION.
+    INTERFACES: if_oo_adt_classrun.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+    CLASS-METHODS multiply
+      IMPORTING num1          TYPE i
+                num2          TYPE i
+      RETURNING VALUE(result) TYPE i.
+ENDCLASS.
+CLASS zcl_demo_abap IMPLEMENTATION.
+  METHOD if_oo_adt_classrun~main.
+    DATA(res1) = multiply( num1 = 2 num2 = 3 ).
+    DATA(res2) = multiply( num1 = 10 num2 = 10 ).
+    DATA(res3) = multiply( num1 = 99999999 num2 = 99999999 ).
+    out->write( res1 ). "6
+    out->write( res2 ). "100
+    out->write( res3 ). "0
+  ENDMETHOD.
+  METHOD multiply.
+    TRY.        
+        "result = num1 * num2.
+        RETURN num1 * num2.
+      CATCH cx_sy_arithmetic_error.
+        "The following statement is actually not needed in the example, but used nevertheless
+        "to showcase the specification of a constructor expression after RETURN.
+        RETURN VALUE #( ).
+    ENDTRY.
+  ENDMETHOD.
+ENDCLASS.
+```
+
+```abap
+CLASS zcl_demo_abap DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
+
+  PUBLIC SECTION.
+    INTERFACES if_oo_adt_classrun.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+    METHODS add IMPORTING num1          TYPE i
+                          num2          TYPE i
+                RETURNING VALUE(result) TYPE i.
+
+    METHODS subtract IMPORTING num1          TYPE i
+                               num2          TYPE i
+                     RETURNING VALUE(result) TYPE i.
+ENDCLASS.
+
+CLASS zcl_demo_abap IMPLEMENTATION.
+  METHOD if_oo_adt_classrun~main.
+    DATA(result_add) = add( num1 = 10 num2 = 20 ).
+    out->write( result_add ).
+
+    DATA(result_subtract) = subtract( num1 = 10 num2 = 20 ).
+    out->write( result_subtract ).
+  ENDMETHOD.
+
+  METHOD add.
+    result = num1 + num2.
+  ENDMETHOD.
+
+  METHOD subtract.
+    RETURN num1 - num2.
+  ENDMETHOD.
+ENDCLASS.
+```
+
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
 ### Self-Reference me
 
 When implementing instance methods, you can optionally make use of the implicitly available object reference variable [`me`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenme.htm) which is always available at runtime and points to the respective object itself. You can use it, for example, to refer to components of the instance of a particular class:
@@ -2300,6 +2395,8 @@ ENDCLASS.
 ```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
+
+
 
 
 ### Excursion: Example Class

@@ -11597,7 +11597,7 @@ ENDCLASS.
 
 **Example notes:**
 
-- The example code includes two examples demonstrating the observer design pattern with the following declarations and implementations:
+- The example code includes two examples demonstrating the strategy design pattern with the following declarations and implementations:
   - Global class:
     - Implements the `if_oo_adt_classrun` interface and calls methods from local classes.
     - Serves as a vehicle for demonstrating the design pattern. The declarations and implementations in the `CCIMP` are relevant for the for conceptual considerations.
@@ -12773,7 +12773,7 @@ ENDCLASS.
 
 **Example notes:**
 
-- The example code includes two examples demonstrating the observer design pattern with the following declarations and implementations:
+- The example code includes two examples demonstrating the visitor design pattern with the following declarations and implementations:
   - Global class:
     - Implements the `if_oo_adt_classrun` interface and calls methods from local classes.
     - Serves as a vehicle for demonstrating the design pattern. The declarations and implementations in the `CCIMP` are relevant for the for conceptual considerations.

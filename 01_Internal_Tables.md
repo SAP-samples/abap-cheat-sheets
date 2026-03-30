@@ -60,8 +60,14 @@
       - [Restrictions Regarding Internal Tables as Data Sources in ABAP SQL SELECT Statements](#restrictions-regarding-internal-tables-as-data-sources-in-abap-sql-select-statements)
       - [Excursion: Joining/Merging Internal Tables into Internal Tables](#excursion-joiningmerging-internal-tables-into-internal-tables)
   - [Excursions](#excursions)
-    - [Improving Read Performance with Secondary Table Keys](#improving-read-performance-with-secondary-table-keys)
-    - [Example: Exploring Read Access Performance with Internal Tables](#example-exploring-read-access-performance-with-internal-tables)
+    - [Secondary Table Keys](#secondary-table-keys)
+      - [Secondary Table Keys in a Nutshell](#secondary-table-keys-in-a-nutshell)
+      - [Declaration Options](#declaration-options)
+      - [Using Secondary Table Keys in Internal Table Processing Statements](#using-secondary-table-keys-in-internal-table-processing-statements)
+      - [Update Behavior and Performance](#update-behavior-and-performance)
+      - [Improving Read Performance with Secondary Table Keys](#improving-read-performance-with-secondary-table-keys)
+      - [Table Type Definitions Using WITH\[OUT\] FURTHER SECONDARY KEYS](#table-type-definitions-using-without-further-secondary-keys)
+    - [Exploring Read Access Performance with Internal Tables](#exploring-read-access-performance-with-internal-tables)
     - [Generic Table Types with Formal Parameters of Methods and Field Symbols](#generic-table-types-with-formal-parameters-of-methods-and-field-symbols)
     - [Searching and Replacing Substrings in Internal Tables with Character-Like Data Types](#searching-and-replacing-substrings-in-internal-tables-with-character-like-data-types)
     - [Ranges Tables](#ranges-tables)
@@ -69,7 +75,6 @@
     - [BDEF Derived Types (ABAP EML)](#bdef-derived-types-abap-eml)
     - [Creating Internal Tables Dynamically](#creating-internal-tables-dynamically)
     - [System Field sy-tabix](#system-field-sy-tabix)
-    - [WITH\[OUT\] FURTHER SECONDARY KEYS](#without-further-secondary-keys)
   - [More Information](#more-information)
   - [Executable Example](#executable-example)
 
@@ -5805,7 +5810,1181 @@ DATA(itab10) = REDUCE tt_type3( INIT tab = VALUE #( )
 
 ## Excursions
 
-### Improving Read Performance with Secondary Table Keys
+### Secondary Table Keys
+
+This section serves as an overview of specific aspects of secondary table keys in internal tables. Some of these topics are also discussed in previous sections.
+
+#### Secondary Table Keys in a Nutshell
+
+<table>
+
+<tr>
+<th> Subject </th> <th> Notes </th>
+</tr>
+
+<tr>
+<td> 
+
+General aspects
+
+ </td>
+
+ <td> 
+
+Secondary table keys:
+- Optional for all table categories (up to 15 secondary table keys): standard, sorted, and hashed.
+- Can be:
+  - Unique or non-unique sorted keys 
+  - Unique hash keys
+- Have self-defined names (in contrast to the predefined name `primary_key` for the primary table key). An alias name can be specified. Note that alias names for the primary table key are also possible.
+
+[Secondary table index](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensecondary_table_index_glosry.htm):
+- Created internally for each sorted secondary key. 
+- Allows index access to hashed tables via a sorted secondary table key. In this case, `sy-tabix` is set.
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+How to declare
+
+ </td>
+
+ <td> 
+
+Note that the following snippet demonstrates internal table declarations using `DATA` only. You can create table types with the `TYPES` statement. A more comprehensive snippet is provided further down.
+
+```abap
+"Secondary table key specified for a standard table
+DATA it_std TYPE TABLE OF zdemo_abap_flsch                    
+  WITH NON-UNIQUE KEY carrid connid                         "primary table key
+  WITH UNIQUE SORTED KEY cities COMPONENTS cityfrom cityto. "secondary table key
+
+"Secondary table key specified for a hashed table
+DATA it_hashed TYPE HASHED TABLE OF zdemo_abap_flsch 
+  WITH UNIQUE KEY carrid connid                                    "primary table key
+  WITH NON-UNIQUE SORTED KEY airports COMPONENTS airpfrom airpto.  "secondary table key 
+
+"Secondary table key specified for a sorted table
+DATA it_sorted TYPE SORTED TABLE OF zdemo_abap_flsch              
+  WITH UNIQUE KEY carrid connid                                     "primary table key
+  WITH UNIQUE HASHED KEY countries COMPONENTS countryfr countryto.  "secondary table key
+
+"Specifying multiple secondary keys are possible
+DATA it_multi TYPE TABLE OF zdemo_abap_flsch
+  WITH NON-UNIQUE KEY primary_key COMPONENTS carrid connid      "primary table key
+  WITH NON-UNIQUE SORTED KEY cities COMPONENTS cityfrom cityto  "secondary table key 1 
+  WITH UNIQUE HASHED KEY airports COMPONENTS airpfrom airpto.   "secondary table key 2
+
+"Specifying alias names for table keys
+DATA it_key_alias TYPE SORTED TABLE OF zdemo_abap_flsch
+  WITH NON-UNIQUE KEY primary_key ALIAS pk COMPONENTS carrid connid        "primary table key 
+  WITH NON-UNIQUE SORTED KEY cities ALIAS sk_c COMPONENTS cityfrom cityto  "secondary table key 1 
+  WITH UNIQUE HASHED KEY airports ALIAS sk_a COMPONENTS airpfrom airpto.   "secondary table key 2
+```
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+When and why to use
+
+ </td>
+
+ <td> 
+
+- Accessing tables with secondary table keys is always optimized, enhancing read performance.
+- Use cases for secondary table keys include the following:
+  - Enabling different key accesses for an internal table
+  - Providing additional optimized key access for internal tables, even for standard tables that do not offer optimized access by default
+  - Enabling index access for hashed tables using sorted secondary table keys
+  - Ensuring unique entries in standard tables where primary table keys cannot be unique. The benefits of guaranteeing uniqueness through a secondary table key may justify the additional administrative costs for smaller tables.
+  - Typically used for large internal tables that are populated once and changed infrequently
+  - Non-unique sorted secondary table keys are especially suitable for existing internal tables that are augmented with a table key specification, as this change does not affect existing statements, preventing code breakage due to key non-uniqueness.
+- Refer to the notes below regarding the associated administrative costs.
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+How to use
+
+ </td>
+
+ <td> 
+
+- By default, internal tables are accessed using the primary table key. When using a secondary table key, you must specify the key name or its alias. 
+- Secondary table keys are not selected and used automatically. If a secondary table key is not specified in a processing statement, the system always uses the primary table key or primary table index.  
+- You can use secondary table keys in internal table processing statements such as:  
+  - `READ TABLE`  
+  - Table expressions  
+  - `LOOP AT` (to control the processing sequence and conditions with a secondary table key)  
+  - `INSERT` (allows to specify secondary table keys for the source table when inserting multiple lines)  
+  - `APPEND` (refer to the comment on `INSERT`)  
+  - `MODIFY`  
+  - `DELETE`  
+- These statements support additions like `WITH ... KEY ... COMPONENTS ...` or `USING KEY`, which allow you to specify the key explicitly.
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+Additionals notes
+
+ </td>
+
+ <td> 
+
+- Defining secondary table keys incurs extra administrative costs, including increased memory usage and key updates.
+- Unique secondary table keys update immediately, while non-unique secondary table keys only update when the table is accessed using the key.
+- For hash keys, additional hashing administration and a separate secondary table index for each sorted key are necessary.
+- Reserve the use of secondary table keys for situations where their benefits exceed the associated costs. It is generally not advisable to use secondary table keys for very small tables or if you frequently change the table's content.
+- For more details, see the programming guidelines for secondary keys: [Secondary Key Guideline (F1 docu for standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abensecondary_key_guidl.htm).
+- Write protection for key fields of a secondary table key applies only when the secondary table key is used within a `LOOP` or `MODIFY` statement. Otherwise, the secondary table key fields are not write-protected.
+
+ </td>
+</tr>
+
+</table>
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+
+#### Declaration Options
+
+The code snippet shows internal table declarations, illustrating the specification of secondary table keys.
+
+```abap
+"Demo structured type
+TYPES: BEGIN OF s,
+            comp1 TYPE i,
+            comp2 TYPE i,
+            comp3 TYPE c LENGTH 3,
+        END OF s.
+
+*&---------------------------------------------------------------------*
+*& Internal table declaration options with secondary table keys
+*&---------------------------------------------------------------------*
+
+"-------------------- Standard tables --------------------
+
+"Standard table with non-unique sorted secondary table key
+DATA it_std_non_uni_so_sk TYPE TABLE OF s WITH EMPTY KEY
+                                          WITH NON-UNIQUE SORTED KEY nu_so COMPONENTS comp1.
+
+"Standard table with unique sorted secondary table key
+DATA it_std_uni_so_sk TYPE TABLE OF s WITH EMPTY KEY
+                                      WITH UNIQUE SORTED KEY uni_so COMPONENTS comp1.
+
+"Standard table with hashed secondary table key
+DATA it_std_hash_sk TYPE TABLE OF s WITH EMPTY KEY
+                                    WITH UNIQUE HASHED KEY hak COMPONENTS comp1.
+
+"-------------------- Sorted tables --------------------
+
+"Sorted table with non-unique sorted secondary table key
+DATA it_so_non_uni_so_sk TYPE SORTED TABLE OF s WITH NON-UNIQUE KEY comp1
+                                                WITH NON-UNIQUE SORTED KEY nu_so COMPONENTS comp2.
+
+"Sorted table with non-unique sorted secondary table key
+DATA it_so_uni_so_sk TYPE SORTED TABLE OF s WITH NON-UNIQUE KEY comp1
+                                            WITH UNIQUE SORTED KEY uni_so COMPONENTS comp2.
+
+"Sorted table with hashed secondary table key
+DATA it_so_hash_sk TYPE SORTED TABLE OF s WITH NON-UNIQUE KEY comp1
+                                          WITH UNIQUE HASHED KEY hak COMPONENTS comp2.
+
+"-------------------- Hashed tables --------------------
+
+"Hashed table with non-unique sorted secondary table key
+DATA it_ha_non_uni_so_sk TYPE HASHED TABLE OF s WITH UNIQUE KEY comp1
+                                                WITH NON-UNIQUE SORTED KEY nu_so COMPONENTS comp2.
+
+"Hashed table with non-unique sorted secondary table key
+DATA it_ha_uni_so_sk TYPE HASHED TABLE OF s WITH UNIQUE KEY comp1
+                                            WITH UNIQUE SORTED KEY uni_so COMPONENTS comp2.
+
+"Hashed table with hashed secondary table key
+DATA it_ha_hash_sk TYPE HASHED TABLE OF s WITH UNIQUE KEY comp1
+                                          WITH UNIQUE HASHED KEY hak COMPONENTS comp2.
+
+"-------------------- Secondary table keys with alias names --------------------
+
+"Standard table with non-unique sorted secondary table key
+DATA it_std_non_uni_so_sk_al TYPE TABLE OF s WITH EMPTY KEY
+                                             WITH NON-UNIQUE SORTED KEY nu_so ALIAS s1 COMPONENTS comp1.
+
+"Sorted table with non-unique sorted secondary table key
+DATA it_so_non_uni_so_sk_al TYPE SORTED TABLE OF s WITH NON-UNIQUE KEY comp1
+                                                   WITH NON-UNIQUE SORTED KEY nu_so ALIAS s2 COMPONENTS comp2.
+
+"Hashed table with hashed secondary table key
+DATA it_ha_hash_sk_al TYPE HASHED TABLE OF s WITH UNIQUE KEY comp1
+                                             WITH UNIQUE HASHED KEY hak ALIAS s3 COMPONENTS comp2.
+
+*&---------------------------------------------------------------------*
+*& Table type declaration
+*&---------------------------------------------------------------------*
+
+"Table type: Hashed table with hashed secondary table key
+TYPES ha_hash_sk_al TYPE HASHED TABLE OF s WITH UNIQUE KEY comp1
+                                           WITH UNIQUE HASHED KEY hak ALIAS s3 COMPONENTS comp2.
+
+DATA it_ha_hash_sk_al_2 TYPE ha_hash_sk_al.
+```
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+#### Using Secondary Table Keys in Internal Table Processing Statements
+
+The following example illustrates various internal table processing statements using secondary table keys. The snippets primarily use a demo table with a non-unique sorted secondary table key to demonstrate the statements without risking duplicate keys. 
+
+> [!NOTE]  
+> When adding content to internal tables declared with non-unique sorted secondary table keys, entries with identical keys are placed above existing entries.
+
+Expand the following collapsible section for example code. To try it out, create a demo class named `zcl_demo_abap`, or reuse it if it already exists. Paste the code into it. If you choose a different class name, update the class name in the code snippet accordingly. After activation, choose *F9* in ADT to execute the class. The example is set up to display output in the console.
+
+<details>
+  <summary>🟢 Click to expand for example code</summary>
+  <!-- -->
+
+<br>
+
+
+```abap
+CLASS zcl_demo_abap DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
+
+  PUBLIC SECTION.
+    INTERFACES if_oo_adt_classrun.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+    "Demo structured type
+    TYPES: BEGIN OF s,
+             comp1 TYPE i,
+             comp2 TYPE i,
+             comp3 TYPE c LENGTH 3,
+           END OF s.
+
+    "Internal table declarations to work with in the example
+    DATA it_std_empty_pr_key TYPE TABLE OF s WITH EMPTY KEY.
+
+    "Standard table with non-unique sorted secondary table key
+    DATA it_std_non_uni_so_sk TYPE TABLE OF s WITH EMPTY KEY
+                                              WITH NON-UNIQUE SORTED KEY nu_so COMPONENTS comp1.
+
+    "Standard table with unique sorted secondary table key
+    DATA it_std_uni_so_sk TYPE TABLE OF s WITH EMPTY KEY
+                                          WITH UNIQUE SORTED KEY uni_so COMPONENTS comp1.
+
+    "Standard table with hashed secondary table key
+    DATA it_std_hash_sk TYPE TABLE OF s WITH EMPTY KEY
+                                        WITH UNIQUE HASHED KEY hak COMPONENTS comp1.
+
+    "Dummy table to illustrate the secondary table index
+    DATA it_demo_table_key_index TYPE TABLE OF s WITH EMPTY KEY.
+
+    METHODS:
+      set_example_divider IMPORTING out  TYPE REF TO if_oo_adt_classrun_out
+                                    text TYPE string,
+      m01_populate_itabs IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m02_loop_at IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m03_read_table IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m04_table_expressions IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m05_insert IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m06_append IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m07_modify IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m08_delete IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string.
+ENDCLASS.
+
+CLASS zcl_demo_abap IMPLEMENTATION.
+  METHOD if_oo_adt_classrun~main.
+    "Populating internal table with demo values
+    it_std_empty_pr_key = VALUE #( ( comp1 = 3 comp2 = 333 comp3 = 'i' )
+                                   ( comp1 = 1 comp2 = 111 comp3 = 'c' )
+                                   ( comp1 = 4 comp2 = 44 comp3 = 'j' )
+                                   ( comp1 = 2 comp2 = 22 comp3 = 'e' )
+                                   ( comp1 = 1 comp2 = 11 comp3 = 'b' )
+                                   ( comp1 = 3 comp2 = 3 comp3 = 'g' )
+                                   ( comp1 = 2 comp2 = 222 comp3 = 'f' )
+                                   ( comp1 = 1 comp2 = 1 comp3 = 'a' )
+                                   ( comp1 = 2 comp2 = 2 comp3 = 'd' )
+                                   ( comp1 = 3 comp2 = 33 comp3 = 'h' )
+                                   ( comp1 = 4 comp2 = 444 comp3 = 'k' )
+                                   ( comp1 = 4 comp2 = 4 comp3 = 'l' ) ).
+
+    "Dynamically calling methods of the class
+    "The method names are retrieved using RTTI. For more information, refer to the
+    "Dynamic Programming ABAP cheat sheet.
+    "Only those methods should be called that follow the naming convention M + digit.
+    DATA(methods) = CAST cl_abap_classdescr( cl_abap_typedescr=>describe_by_object_ref( me ) )->methods.
+    SORT methods BY name ASCENDING.
+
+    LOOP AT methods INTO DATA(meth_wa).
+      TRY.
+          "The find function result indicates that the method name begins (offset = 0) with M and a digit.
+          IF find( val = meth_wa-name pcre = `^M\d` case = abap_false ) = 0.
+            CALL METHOD (meth_wa-name) EXPORTING out = out text = CONV string( meth_wa-name ).
+          ENDIF.
+        CATCH cx_root INTO DATA(error).
+          out->write( error->get_text( ) ).
+      ENDTRY.
+    ENDLOOP.
+  ENDMETHOD.
+
+  METHOD m01_populate_itabs.
+
+    set_example_divider( out = out text = |{ text }: Populating the internal tables with secondary table keys| ).
+
+    "Assigning the source to the target table
+    "The following assignment works as the target table does not specify
+    "a unique secondary table key.
+    it_std_non_uni_so_sk = it_std_empty_pr_key.
+
+    out->write( `Assignment result (1):` ).
+
+    out->write( it_std_non_uni_so_sk ).
+
+    out->write( |\n| ).
+
+    "Due to unique keys in the target tables and duplicate keys in the
+    "source table, the following assignments would trigger a runtime error.
+*    it_std_uni_so_sk     = it_std_empty_pr_key.
+*    it_std_hash_sk       = it_std_empty_pr_key.
+
+    "Using an INSERT statement to populate the internal table with secondary table keys
+    "The source table is looped over, and individual table lines are added to the
+    "target table. The statement illustrates that the INSERT statement supports
+    "the raising of a catchable exception regarding duplicates and unique secondary
+    "table keys.
+    LOOP AT it_std_empty_pr_key INTO DATA(wa).
+      TRY.
+          INSERT wa INTO TABLE it_std_uni_so_sk.
+        CATCH cx_sy_itab_duplicate_key INTO DATA(error).
+          out->write( error->get_text( ) ).
+          out->write( |Affected row: { wa-comp1 }, { wa-comp2 }, { wa-comp3 }| ).
+      ENDTRY.
+    ENDLOOP.
+
+    out->write( |\n| ).
+
+    out->write( `Assignment result (2):` ).
+    out->write( it_std_uni_so_sk ).
+
+    out->write( |\n| ).
+
+    "Using the CORRESPONDING operator and the DISCARDING DUPLICATES addition
+    it_std_hash_sk = CORRESPONDING #( it_std_empty_pr_key DISCARDING DUPLICATES ).
+
+    out->write( `Assignment result (3):` ).
+    out->write( it_std_hash_sk ).
+  ENDMETHOD.
+
+  METHOD m02_loop_at.
+
+    set_example_divider( out = out text = |{ text }: LOOP AT statements using secondary table keys| ).
+
+    "The following examples illustrate the primary and secondary table index.
+
+    "Notes on the resulting table that illustrates the secondary table index of
+    "the source table that is looped over using the secondary table key:
+    "- Non-unique secondary keys: When assiging table lines, the entries having an
+    "  identical key are put on top of existing entries with that key.
+    "- Unique secondary keys: The mechanism is similar to above, however, the
+    "  entry with identical is discarded - if a statement with appropriate addition
+    "  is used. Otherwise, a runtime error occurs since a duplicate key violation
+    "  occurs regarding the secondary key.
+
+    CLEAR it_demo_table_key_index.
+
+    "Demonstrating primary table index (no USING KEY addition)
+    LOOP AT it_std_non_uni_so_sk INTO DATA(wa).
+      APPEND wa TO it_demo_table_key_index.
+    ENDLOOP.
+    out->write( `Illustrating the primary table index (1):` ).
+    out->write( it_demo_table_key_index ).
+    out->write( |\n| ).
+    DATA(copy) = it_demo_table_key_index.
+    CLEAR it_demo_table_key_index.
+
+    "Demonstrating primary table index (USING KEY addition)
+    LOOP AT it_std_non_uni_so_sk INTO wa USING KEY primary_key.
+      APPEND wa TO it_demo_table_key_index.
+    ENDLOOP.
+    out->write( `Illustrating the primary table index (2):` ).
+    out->write( it_demo_table_key_index ).
+    out->write( |\n| ).
+    ASSERT copy = it_demo_table_key_index.
+    CLEAR it_demo_table_key_index.
+
+    "Demonstrating secondary table index (USING KEY addition)
+    LOOP AT it_std_non_uni_so_sk INTO wa USING KEY nu_so.
+      APPEND wa TO it_demo_table_key_index.
+    ENDLOOP.
+    out->write( `Illustrating the secondary table index:` ).
+    out->write( it_demo_table_key_index ).
+
+    CLEAR it_demo_table_key_index.
+  ENDMETHOD.
+
+  METHOD m03_read_table.
+
+    set_example_divider( out = out text = |{ text }: READ TABLE statements using secondary table keys| ).
+
+    "WITH TABLE KEY addition
+    READ TABLE it_std_non_uni_so_sk INTO DATA(wa) WITH TABLE KEY nu_so COMPONENTS comp1 = 1.
+    IF sy-subrc = 0.
+      DATA(tabix) = sy-tabix.
+      out->write( wa ).
+      out->write( |\n| ).
+      out->write( |Secondary table index: { tabix }| ).
+    ELSE.
+      out->write( `Table entry not found` ).
+    ENDIF.
+    out->write( |\n| ).
+    out->write( |\n| ).
+
+    READ TABLE it_std_uni_so_sk INTO wa WITH TABLE KEY uni_so COMPONENTS comp1 = 1.
+
+    IF sy-subrc = 0.
+      tabix = sy-tabix.
+      out->write( wa ).
+      out->write( |\n| ).
+      out->write( |Secondary table index: { tabix }| ).
+    ELSE.
+      out->write( `Table entry not found` ).
+    ENDIF.
+
+    out->write( |\n| ).
+    out->write( |\n| ).
+
+    READ TABLE it_std_hash_sk INTO wa WITH TABLE KEY hak COMPONENTS comp1 = 1.
+
+    IF sy-subrc = 0.
+      tabix = sy-tabix.
+      out->write( wa ).
+      out->write( |\n| ).
+      "Hash key -> no sy-tabix value
+      out->write( |Secondary table index: { tabix }| ).
+    ELSE.
+      out->write( `Table entry not found` ).
+    ENDIF.
+
+    out->write( |\n| ).
+    out->write( |\n| ).
+
+    "WITH KEY addition
+    "Allows more components to be specified, not just those of the table key specified
+    READ TABLE it_std_non_uni_so_sk INTO wa WITH KEY nu_so COMPONENTS comp1 = 1 comp2 = 111.
+    IF sy-subrc = 0.
+      tabix = sy-tabix.
+      out->write( wa ).
+      out->write( |\n| ).
+      out->write( |Secondary table index: { tabix }| ).
+    ELSE.
+      out->write( `Table entry not found` ).
+    ENDIF.
+    out->write( |\n| ).
+    out->write( |\n| ).
+
+    "This entry will not be found.
+    READ TABLE it_std_uni_so_sk INTO wa WITH KEY uni_so COMPONENTS comp1 = 1 comp2 = 1.
+    IF sy-subrc = 0.
+      tabix = sy-tabix.
+      out->write( wa ).
+      out->write( |\n| ).
+      out->write( |Secondary table index: { tabix }| ).
+    ELSE.
+      out->write( `Table entry not found` ).
+    ENDIF.
+  ENDMETHOD.
+
+  METHOD m04_table_expressions.
+
+    set_example_divider( out = out text = |{ text }: Table expressions using secondary table keys| ).
+
+    "TABLE KEY addition
+    DATA(wa) = it_std_non_uni_so_sk[ TABLE KEY nu_so COMPONENTS comp1 = 1 ].
+    out->write( wa ).
+    out->write( |\n| ).
+
+    "KEY addition
+    wa = it_std_non_uni_so_sk[ KEY nu_so COMPONENTS comp1 = 1 comp2 = 111 ].
+    out->write( wa ).
+    out->write( |\n| ).
+
+    TRY.
+        wa = it_std_uni_so_sk[ KEY uni_so COMPONENTS comp1 = 1 comp2 = 1 ].
+        out->write( wa ).
+      CATCH cx_sy_itab_line_not_found INTO DATA(not_found).
+        out->write( not_found->get_text( ) ).
+    ENDTRY.
+    out->write( |\n| ).
+
+    "Getting the line index
+    DATA(tabix) = line_index( it_std_non_uni_so_sk[ KEY nu_so COMPONENTS comp1 = 1 comp2 = 111 ] ).
+    out->write( |Secondary table index: { tabix }| ).
+  ENDMETHOD.
+
+  METHOD m05_insert.
+
+    set_example_divider( out = out text = |{ text }: INSERT statements using secondary table keys| ).
+
+    "The example illustrates block-wise insertions into a target internal
+    "table with and without using the USING KEY specification. It uses the
+    "demo table with a non-unique secondary sorted key.
+    "Note that the order for the insertion is affected by the table key
+    "specification.
+
+    DATA tab LIKE it_std_non_uni_so_sk.
+    DATA copy1 LIKE it_std_non_uni_so_sk.
+    DATA copy2 LIKE it_std_non_uni_so_sk.
+    copy1 = it_std_non_uni_so_sk.
+    copy2 = it_std_non_uni_so_sk.
+
+    tab = VALUE #( ( comp1 = 5 comp2 = 55 comp3 = 'm' )
+                   ( comp1 = 4 comp2 = 4444 comp3 = 'n' )
+                   ( comp1 = 5 comp2 = 5 comp3 = 'o' ) ).
+
+    "Insert using a secondary table key
+    INSERT LINES OF tab USING KEY nu_so INTO TABLE copy1.
+    out->write( copy1 ).
+
+    out->write( |\n| ).
+
+    "Insert using the primary table key (implicitly)
+    INSERT LINES OF tab INTO TABLE copy2.
+    out->write( copy2 ).
+    out->write( |\n| ).
+
+    CLEAR it_demo_table_key_index.
+    LOOP AT copy1 INTO DATA(wa) USING KEY nu_so.
+      APPEND wa TO it_demo_table_key_index.
+    ENDLOOP.
+
+    DATA(copy) = it_demo_table_key_index.
+    CLEAR it_demo_table_key_index.
+    LOOP AT copy2 INTO wa USING KEY nu_so.
+      APPEND wa TO it_demo_table_key_index.
+    ENDLOOP.
+
+    IF copy = it_demo_table_key_index.
+      out->write( `The table indexes reflect the same line sequence.` ).
+    ELSE.
+      out->write( `The table indexes reflect a different line sequence.` ).
+    ENDIF.
+    CLEAR it_demo_table_key_index.
+  ENDMETHOD.
+
+  METHOD m06_append.
+    "See the notes for INSERT above.
+    set_example_divider( out = out text = |{ text }: APPEND statements using secondary table keys| ).
+
+    DATA tab LIKE it_std_non_uni_so_sk.
+    DATA copy3 LIKE it_std_non_uni_so_sk.
+    DATA copy4 LIKE it_std_non_uni_so_sk.
+    copy3 = it_std_non_uni_so_sk.
+    copy4 = it_std_non_uni_so_sk.
+
+    tab = VALUE #( ( comp1 = 5 comp2 = 55 comp3 = 'm' )
+                   ( comp1 = 4 comp2 = 4444 comp3 = 'n' )
+                   ( comp1 = 5 comp2 = 5 comp3 = 'o' ) ).
+
+    APPEND LINES OF tab USING KEY nu_so TO copy3.
+    out->write( copy3 ).
+    out->write( |\n| ).
+
+    APPEND LINES OF tab TO copy4.
+    out->write( copy4 ).
+    out->write( |\n| ).
+
+    CLEAR it_demo_table_key_index.
+    LOOP AT copy3 INTO DATA(wa) USING KEY nu_so.
+      APPEND wa TO it_demo_table_key_index.
+    ENDLOOP.
+
+    DATA(copy) = it_demo_table_key_index.
+    CLEAR it_demo_table_key_index.
+    LOOP AT copy4 INTO wa USING KEY nu_so.
+      APPEND wa TO it_demo_table_key_index.
+    ENDLOOP.
+
+    IF copy = it_demo_table_key_index.
+      out->write( `The table indexes reflect the same line sequence.` ).
+    ELSE.
+      out->write( `The table indexes reflect a different line sequence.` ).
+    ENDIF.
+    CLEAR it_demo_table_key_index.
+  ENDMETHOD.
+
+  METHOD m07_modify.
+
+    set_example_divider( out = out text = |{ text }: MODIFY statements using secondary table keys| ).
+
+    DATA line LIKE LINE OF it_std_non_uni_so_sk.
+    line = VALUE #( comp1 = 3 comp2 = 3333 comp3 = '###' ).
+
+    MODIFY TABLE it_std_non_uni_so_sk
+       USING KEY nu_so
+       FROM line.
+
+    out->write( it_std_non_uni_so_sk ).
+    out->write( |\n| ).
+
+    "The illustration of the secondary table index shows that
+    "the first entry with comp1 = 3 was changed.
+    CLEAR it_demo_table_key_index.
+    LOOP AT it_std_non_uni_so_sk INTO DATA(wa) USING KEY nu_so.
+      APPEND wa TO it_demo_table_key_index.
+    ENDLOOP.
+    out->write( it_demo_table_key_index ).
+  ENDMETHOD.
+
+  METHOD m08_delete.
+
+    set_example_divider( out = out text = |{ text }: DELETE statements using secondary table keys| ).
+
+    "Retrieving all comp1 = 3 values
+    "The line order reflects the order in the secondary table. The comp3
+    "value is assigned the table index value reflecting the position in the
+    "secondary table index.
+    CLEAR it_demo_table_key_index.
+    LOOP AT it_std_non_uni_so_sk INTO DATA(wa) USING KEY nu_so WHERE comp1 = 3.
+      wa-comp3 = sy-tabix.
+      APPEND wa TO it_demo_table_key_index.
+    ENDLOOP.
+    out->write( it_demo_table_key_index ).
+    out->write( |\n| ).
+
+    "This entry gets deleted with the following DELETE statement.
+    DATA(first_entry_in_sec_index) = it_demo_table_key_index[ 1 ].
+
+    DATA line LIKE LINE OF it_std_non_uni_so_sk.
+    line = VALUE #( comp1 = 3 ).
+
+    DELETE TABLE it_std_non_uni_so_sk FROM line USING KEY nu_so.
+
+    out->write( it_std_non_uni_so_sk ).
+    out->write( |\n| ).
+
+    IF line_exists( it_std_non_uni_so_sk[ KEY nu_so comp1 = first_entry_in_sec_index-comp1
+                                                    comp2 = first_entry_in_sec_index-comp2  ] ).
+      out->write( |The first entry in the secondary table index with the value comp1 = { first_entry_in_sec_index-comp1 } was not deleted.| ).
+    ELSE.
+      out->write( |The first entry in the secondary table index with the value comp1 = { first_entry_in_sec_index-comp1 } was deleted.| ).
+    ENDIF.
+  ENDMETHOD.
+
+  METHOD set_example_divider.
+    out->write( |\n| ).
+    out->write( |*&{ repeat( val = `-` occ = strlen( text ) + 2 ) }*| ).
+    out->write( |*& { text }| ).
+    out->write( |*&{ repeat( val = `-` occ = strlen( text ) + 2 ) }*| ).
+    out->write( |\n| ).
+    out->write( |\n| ).
+  ENDMETHOD.
+ENDCLASS.
+```
+
+</details>  
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+#### Update Behavior and Performance
+
+The following example class illustrates aspects of update behavior and performance concerning the use of secondary table keys in internal tables.
+
+Among them:
+- For internal tables with non-unique, sorted secondary table keys, the secondary table index does not update immediately. It updates only upon the first access of the table using the secondary table key.
+- These tables can be populated quickly, as there are no checks for duplicate entries regarding the secondary table key. However, the recreation of the secondary index should be considered during the first access. Subsequent reads (when not altering the table content) are significantly faster.
+- In contrast, internal tables with unique sorted or hashed keys update the secondary table index immediately when the table content is modified. This update incurs runtime costs, but subsequent reads remain consistently fast.
+
+> [!NOTE] 
+> This example is for [exploration, experimentation, and demonstration](./README.md#%EF%B8%8F-disclaimer). It is not intended for accurate runtime or performance testing and is not a suitable method for such purposes. Due to its simplified nature, results may vary and not be entirely accurate, even across multiple runs. It is similarly set up as the example in section _Exploring Read Access Performance with Internal Tables_. Check more information and, particularly, the disclaimer regarding the runtime measurement there.
+
+The example includes runtime performance evaluations using these comparisons:
+
+1. Multiple reads on internal tables using non-unique keys:
+   - A standard table defined with a non-unique primary table key
+   - A sorted table defined with a non-unique, sorted primary table key
+   - A standard table defined with a non-unique, sorted secondary table key (implemented in two methods: one with a first read after population and one without)
+
+2. Multiple insertions into an internal table defined with:
+   - A non-unique, sorted secondary table key
+   - A unique, sorted secondary table key
+
+3. Multiple reads on standard tables reflecting secondary table key variants:
+   - A standard table defined with a non-unique, sorted secondary key (implemented in two methods: one with a first read after population and one without)
+   - A standard table defined with a unique, sorted secondary key
+   - A standard table defined with a unique, hashed secondary key
+
+Notes on the example implementation: 
+- As noted, check the information in the example of the section "Exploring Read Access Performance with Internal Tables," as this example is similarly structured. 
+- The comparisons are illustrated in an internal table for each comparison variant. 
+- These tables include the measured average runtimes for multiple reads and insertions performed within a `DO` loop. One entry provides a benchmark score of 100, while the other average runtimes are compared to this score to demonstrate the percentage difference in average runtime.
+
+Notes on the expected outcome:
+- Re-running the example multiple times should reveal patterns in the runtime. 
+- Comparison 1 
+  - The average runtime for reads on the standard table using the primary table key should show no optimized access, resulting in slow performance.
+  - In contrast, other read accesses using secondary table keys and the primary table key in a sorted table are significantly faster. 
+  - The result for reads using the non-unique, sorted secondary key - including the first access after population - should indicate the additional effort needed to recreate the secondary index.
+- Comparison 2
+  - Insert operations into a table with a non-unique, sorted secondary key should be faster than into a comparable table with a unique, sorted secondary key.
+- Comparison 3 
+  - In this example with numerous reads, read access with the hashed secondary table key should demonstrate the fastest performance.
+  - Read accesses using both non-unique and unique, sorted secondary table keys should be fast. 
+  - Read accesses using the non-unique sorted secondary keys - including the first read after table population - should be slower than other accesses.
+
+Expand the following collapsible section for example code. To try it out, create a demo class named `zcl_demo_abap`, or reuse it if it already exists. Paste the code into it. If you choose a different class name, update the class name in the code snippet accordingly. After activation, choose *F9* in ADT to execute the class. The example is set up to display output in the console.
+
+
+<details>
+  <summary>🟢 Click to expand for example code</summary>
+  <!-- -->
+
+<br>
+
+
+```abap
+CLASS zcl_demo_abap DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
+
+  PUBLIC SECTION.
+    INTERFACES if_oo_adt_classrun.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+    METHODS:
+      comparison1_nuk_primary_std,
+      comparison1_nuk_primary_so,
+      comparison1_nuk_sec_key_std_a,
+      comparison1_nuk_sec_key_std_b,
+
+      comparison2_nuk_sec_insert,
+      comparison2_uk_sec_insert,
+
+      comparison3_nu_so_sec_key_rd_a,
+      comparison3_nu_so_sec_key_rd_b,
+      comparison3_uni_so_sec_key_rd,
+      comparison3_uni_ha_sec_key_rd,
+
+      store_runtime IMPORTING high TYPE utclong low  TYPE utclong,
+      get_avg_runtime RETURNING VALUE(avg_runtime) TYPE decfloat34,
+      calculate_score.
+
+    "Demo structured type
+    TYPES: BEGIN OF s,
+             comp1  TYPE c LENGTH 10,
+             comp2  TYPE c LENGTH 10,
+             comp3  TYPE c LENGTH 10,
+             comp4  TYPE c LENGTH 10,
+             comp5  TYPE c LENGTH 10,
+             comp6  TYPE c LENGTH 10,
+             comp7  TYPE c LENGTH 10,
+             comp8  TYPE c LENGTH 10,
+             comp9  TYPE c LENGTH 10,
+             comp10 TYPE c LENGTH 10,
+           END OF s.
+
+    "Internal table declarations to work with in the example
+    DATA itab_content TYPE TABLE OF s WITH EMPTY KEY.
+
+    "Standard table with non-unique primary table key
+    DATA it_std_nu_pr_key TYPE TABLE OF s WITH NON-UNIQUE KEY primary_key COMPONENTS comp1 comp2 comp3 comp4 comp5.
+
+    "Standard table with empty primary table key and non-unique, sorted secondary table key
+    DATA it_std_nu_so_sk TYPE TABLE OF s WITH EMPTY KEY
+                                         WITH NON-UNIQUE SORTED KEY nu_so COMPONENTS comp1 comp2 comp3 comp4 comp5.
+
+    "Sorted table with non-unique, sorted primary table key
+    DATA it_so_nu_pr_key TYPE SORTED TABLE OF s WITH NON-UNIQUE KEY primary_key COMPONENTS comp1 comp2 comp3 comp4 comp5.
+
+    "Standard table with empty primary table key and unique, sorted secondary table key
+    DATA it_std_uni_so_sk TYPE TABLE OF s WITH EMPTY KEY
+                                          WITH UNIQUE SORTED KEY uni_so COMPONENTS comp1 comp2 comp3 comp4 comp5.
+
+    "Standard table with empty primary table key and unique, hashed secondary table key
+    DATA it_std_hash_sk TYPE TABLE OF s WITH EMPTY KEY
+                                        WITH UNIQUE HASHED KEY hak COMPONENTS comp1 comp2 comp3 comp4 comp5.
+
+    DATA: ts1         TYPE utclong,
+          runtime_tab TYPE TABLE OF decfloat34 WITH EMPTY KEY,
+          idx_char    TYPE c LENGTH 10.
+
+    CONSTANTS: table_lines_10k TYPE i VALUE 10000,
+               loop_count_1k   TYPE i VALUE 1000,
+               benchmark100 TYPE decfloat34 VALUE '100'.
+
+    "Internal tables for illustrating comparisons and display purposes
+    TYPES: BEGIN OF comparison_struc,
+             method      TYPE string,
+             avg_runtime TYPE string,
+             score       TYPE string,
+             description TYPE string,
+             count       TYPE i,
+           END OF comparison_struc.
+
+    DATA comparison1 TYPE TABLE OF comparison_struc WITH EMPTY KEY.
+    DATA comparison2 TYPE TABLE OF comparison_struc WITH EMPTY KEY.
+    DATA comparison3 TYPE TABLE OF comparison_struc WITH EMPTY KEY.
+ENDCLASS.
+
+
+CLASS zcl_demo_abap IMPLEMENTATION.
+  METHOD if_oo_adt_classrun~main.
+
+    "Populating internal table as the basis for other internal tables
+    DO table_lines_10k TIMES.
+      INSERT VALUE #( comp1 = sy-index comp2 = sy-index comp3 = sy-index comp4 = sy-index comp5 = sy-index
+                      comp6 = sy-index comp7 = sy-index comp8 = sy-index comp9 = sy-index comp10 = sy-index
+                    ) INTO TABLE itab_content.
+    ENDDO.
+
+    "Comparison 1
+    comparison1_nuk_primary_std( ).
+    comparison1_nuk_primary_so( ).
+    comparison1_nuk_sec_key_std_a( ).
+    comparison1_nuk_sec_key_std_b( ).
+
+    "Comparison 2
+    comparison2_nuk_sec_insert( ).
+    comparison2_uk_sec_insert( ).
+
+    "Comparison 3
+    comparison3_nu_so_sec_key_rd_a( ).
+    comparison3_nu_so_sec_key_rd_b( ).
+    comparison3_uni_so_sec_key_rd( ).
+    comparison3_uni_ha_sec_key_rd( ).
+
+    "Calculating the score for the comparisons
+    calculate_score( ).
+
+    "Displaying the internal tables illustrating the comparisons
+    out->write( `----- Comparison 1 -----` ).
+    out->write( comparison1 ).
+    out->write( |\n| ).
+    out->write( |\n| ).
+    out->write( `----- Comparison 2 -----` ).
+    out->write( comparison2 ).
+    out->write( |\n| ).
+    out->write( |\n| ).
+    out->write( `----- Comparison 3 -----` ).
+    out->write( comparison3 ).
+
+  ENDMETHOD.
+
+  METHOD store_runtime.
+    cl_abap_utclong=>diff( EXPORTING high    = high
+                                     low     = low
+                           IMPORTING seconds = DATA(seconds) ).
+
+    APPEND seconds TO runtime_tab.
+  ENDMETHOD.
+
+  METHOD get_avg_runtime.
+    DATA(sum) = REDUCE decfloat34( INIT s = VALUE #( )
+                                   FOR wa IN runtime_tab
+                                   NEXT s += wa ).
+
+    TRY.
+        avg_runtime = sum / lines( runtime_tab ).
+      CATCH cx_sy_zerodivide.
+    ENDTRY.
+
+    CLEAR runtime_tab.
+  ENDMETHOD.
+
+  METHOD calculate_score.
+
+    FIELD-SYMBOLS <tab> TYPE ANY TABLE.
+    FIELD-SYMBOLS <avg> TYPE string.
+
+    DO 3 TIMES.
+
+      CASE sy-index.
+        WHEN 1.
+          ASSIGN comparison1 TO <tab>.
+        WHEN 2.
+          ASSIGN comparison2 TO <tab>.
+        WHEN 3.
+          ASSIGN comparison3 TO <tab>.
+      ENDCASE.
+
+      READ TABLE <tab> WITH KEY ('SCORE') = benchmark100 ASSIGNING FIELD-SYMBOL(<entry>).
+
+      IF sy-subrc = 0.
+        ASSIGN <entry>-('AVG_RUNTIME') TO <avg>.
+
+        IF sy-subrc = 0.
+          LOOP AT <tab> ASSIGNING FIELD-SYMBOL(<line>) WHERE ('SCORE IS INITIAL').
+            TRY.
+                <line>-('SCORE') = |{ 100 / <avg> * <line>-('AVG_RUNTIME') STYLE = SIMPLE DECIMALS = 5 }|.
+              CATCH cx_sy_zerodivide.
+            ENDTRY.
+          ENDLOOP.
+        ENDIF.
+      ENDIF.
+    ENDDO.
+  ENDMETHOD.
+
+  METHOD comparison1_nuk_primary_std.
+    FREE it_std_nu_pr_key.
+    it_std_nu_pr_key = itab_content.
+
+    DO loop_count_1k TIMES.
+      idx_char = sy-index.
+
+      ts1 = utclong_current( ).
+**********************************************************************
+      READ TABLE it_std_nu_pr_key TRANSPORTING NO FIELDS
+        WITH TABLE KEY primary_key COMPONENTS comp1 = idx_char comp2 = idx_char comp3 = idx_char comp4 = idx_char comp5 = idx_char.
+**********************************************************************
+      store_runtime( high = utclong_current( ) low = ts1 ).
+    ENDDO.
+
+    APPEND VALUE #( method = `comparison1_nuk_primary_std`
+                    avg_runtime = |{ get_avg_runtime( ) STYLE = SIMPLE }|
+                    score = |{ benchmark100 STYLE = SIMPLE }|
+                    description = `Reading from a standard table using the non-unique primary table key`
+                    count = CONV #( idx_char )
+                  ) TO comparison1.
+  ENDMETHOD.
+
+  METHOD comparison1_nuk_primary_so.
+    FREE it_so_nu_pr_key.
+    it_so_nu_pr_key = itab_content.
+
+    DO loop_count_1k TIMES.
+      idx_char = sy-index.
+
+      ts1 = utclong_current( ).
+**********************************************************************
+      READ TABLE it_so_nu_pr_key TRANSPORTING NO FIELDS
+        WITH TABLE KEY primary_key COMPONENTS comp1 = idx_char comp2 = idx_char comp3 = idx_char comp4 = idx_char comp5 = idx_char.
+**********************************************************************
+      store_runtime( high = utclong_current( ) low = ts1 ).
+    ENDDO.
+
+    APPEND VALUE #( method = `comparison1_nuk_primary_so`
+                    avg_runtime = |{ get_avg_runtime( ) STYLE = SIMPLE }|
+                    description = `Reading from a sorted table using the non-unique sorted primary table key`
+                    count = CONV #( idx_char )
+                  ) TO comparison1.
+  ENDMETHOD.
+
+  METHOD comparison1_nuk_sec_key_std_a.
+    FREE it_std_nu_so_sk.
+    it_std_nu_so_sk = itab_content.
+
+    DO loop_count_1k TIMES.
+      idx_char = sy-index.
+
+      ts1 = utclong_current( ).
+**********************************************************************
+      READ TABLE it_std_nu_so_sk TRANSPORTING NO FIELDS
+        WITH TABLE KEY nu_so COMPONENTS comp1 = idx_char comp2 = idx_char comp3 = idx_char comp4 = idx_char comp5 = idx_char.
+**********************************************************************
+      store_runtime( high = utclong_current( ) low = ts1 ).
+    ENDDO.
+
+    APPEND VALUE #( method = `comparison1_nuk_sec_key_std_a`
+                    avg_runtime = |{ get_avg_runtime( ) STYLE = SIMPLE }|
+                    description = `Reading from a standard table using the secondary, non-unique sorted table key`
+                    count = CONV #( idx_char )
+                  ) TO comparison1.
+  ENDMETHOD.
+
+  METHOD comparison1_nuk_sec_key_std_b.
+    FREE it_std_nu_so_sk.
+    it_std_nu_so_sk = itab_content.
+
+    READ TABLE it_std_nu_so_sk TRANSPORTING NO FIELDS
+            WITH TABLE KEY nu_so COMPONENTS comp1 = '1' comp2 = '1' comp3 = '1' comp4 = '1' comp5 = '1'.
+
+    DO loop_count_1k TIMES.
+      idx_char = sy-index.
+
+      ts1 = utclong_current( ).
+**********************************************************************
+      READ TABLE it_std_nu_so_sk TRANSPORTING NO FIELDS
+        WITH TABLE KEY nu_so COMPONENTS comp1 = idx_char comp2 = idx_char comp3 = idx_char comp4 = idx_char comp5 = idx_char.
+**********************************************************************
+      store_runtime( high = utclong_current( ) low = ts1 ).
+    ENDDO.
+
+    APPEND VALUE #( method = `comparison1_nuk_sec_key_std_b`
+                    avg_runtime = |{ get_avg_runtime( ) STYLE = SIMPLE }|
+                    description = `Same as comparison1_nuk_sec_key_std_a but without first read after population`
+                    count = CONV #( idx_char )
+                  ) TO comparison1.
+  ENDMETHOD.
+
+  METHOD comparison2_nuk_sec_insert.
+    FREE it_std_nu_so_sk.
+
+    DATA from TYPE i VALUE 1.
+    DATA to TYPE i VALUE 5.
+
+    DO loop_count_1k TIMES.
+      idx_char = sy-index.
+      IF sy-index <> 1.
+        from += 5.
+        to += 5.
+      ENDIF.
+
+      ts1 = utclong_current( ).
+**********************************************************************
+      INSERT LINES OF itab_content FROM from TO to INTO TABLE it_std_nu_so_sk.
+**********************************************************************
+      store_runtime( high = utclong_current( ) low = ts1 ).
+    ENDDO.
+
+    APPEND VALUE #( method = `comparison2_nuk_sec_insert`
+                    avg_runtime = |{ get_avg_runtime( ) STYLE = SIMPLE }|
+                    score = |{ benchmark100 STYLE = SIMPLE }|
+                    description = `Insertion into an internal with a non-unique, sorted secondary table key`
+                    count = CONV #( idx_char )
+                  ) TO comparison2.
+  ENDMETHOD.
+
+  METHOD comparison2_uk_sec_insert.
+    FREE it_std_uni_so_sk.
+
+    DATA from TYPE i VALUE 1.
+    DATA to TYPE i VALUE 5.
+
+    DO loop_count_1k TIMES.
+      idx_char = sy-index.
+      IF sy-index <> 1.
+        from += 5.
+        to += 5.
+      ENDIF.
+
+      ts1 = utclong_current( ).
+**********************************************************************
+      INSERT LINES OF itab_content FROM from TO to INTO TABLE it_std_uni_so_sk.
+**********************************************************************
+      store_runtime( high = utclong_current( ) low = ts1 ).
+    ENDDO.
+
+    APPEND VALUE #( method = `comparison2_uk_sec_insert`
+                    avg_runtime = |{ get_avg_runtime( ) STYLE = SIMPLE }|
+                    description = `Insertion into an internal with a unique, sorted secondary table key`
+                    count = CONV #( idx_char )
+                  ) TO comparison2.
+  ENDMETHOD.
+
+  METHOD comparison3_nu_so_sec_key_rd_a.
+    FREE it_std_nu_so_sk.
+    it_std_nu_so_sk = itab_content.
+
+    DO loop_count_1k TIMES.
+      idx_char = sy-index.
+
+      READ TABLE it_std_nu_so_sk TRANSPORTING NO FIELDS
+        WITH TABLE KEY nu_so COMPONENTS comp1 = idx_char comp2 = idx_char comp3 = idx_char comp4 = idx_char comp5 = idx_char.
+
+      ts1 = utclong_current( ).
+**********************************************************************
+      READ TABLE it_std_nu_so_sk TRANSPORTING NO FIELDS
+        WITH TABLE KEY nu_so COMPONENTS comp1 = idx_char comp2 = idx_char comp3 = idx_char comp4 = idx_char comp5 = idx_char.
+**********************************************************************
+      store_runtime( high = utclong_current( ) low = ts1 ).
+    ENDDO.
+
+    APPEND VALUE #( method = `comparison3_nu_so_sec_key_rd_a`
+                    avg_runtime = |{ get_avg_runtime( ) STYLE = SIMPLE }|
+                    score = |{ benchmark100 STYLE = SIMPLE }|
+                    description = `Reading from a standard table using the secondary, non-unique sorted table key (without first read after population)`
+                    count = CONV #( idx_char )
+                  ) TO comparison3.
+  ENDMETHOD.
+
+  METHOD comparison3_nu_so_sec_key_rd_b.
+    FREE it_std_nu_so_sk.
+    it_std_nu_so_sk = itab_content.
+
+    DO loop_count_1k TIMES.
+      idx_char = sy-index.
+
+      ts1 = utclong_current( ).
+**********************************************************************
+      READ TABLE it_std_nu_so_sk TRANSPORTING NO FIELDS
+        WITH TABLE KEY nu_so COMPONENTS comp1 = idx_char comp2 = idx_char comp3 = idx_char comp4 = idx_char comp5 = idx_char.
+**********************************************************************
+      store_runtime( high = utclong_current( ) low = ts1 ).
+    ENDDO.
+
+    APPEND VALUE #( method = `comparison3_nu_so_sec_key_rd_b`
+                    avg_runtime = |{ get_avg_runtime( ) STYLE = SIMPLE }|
+                    description = `Reading from a standard table using the secondary, non-unique sorted table key (with first read after population)`
+                    count = CONV #( idx_char )
+                  ) TO comparison3.
+  ENDMETHOD.
+
+  METHOD comparison3_uni_ha_sec_key_rd.
+    FREE it_std_hash_sk.
+    it_std_hash_sk = itab_content.
+
+    DO loop_count_1k TIMES.
+      idx_char = sy-index.
+
+      ts1 = utclong_current( ).
+**********************************************************************
+      READ TABLE it_std_hash_sk TRANSPORTING NO FIELDS
+        WITH TABLE KEY hak COMPONENTS comp1 = idx_char comp2 = idx_char comp3 = idx_char comp4 = idx_char comp5 = idx_char.
+**********************************************************************
+      store_runtime( high = utclong_current( ) low = ts1 ).
+    ENDDO.
+
+    APPEND VALUE #( method = `comparison3_uni_ha_sec_key_rd`
+                    avg_runtime = |{ get_avg_runtime( ) STYLE = SIMPLE }|
+                    description = `Reading from a standard table using the secondary, unique hashed table key`
+                    count = CONV #( idx_char )
+                  ) TO comparison3.
+  ENDMETHOD.
+
+  METHOD comparison3_uni_so_sec_key_rd.
+    FREE it_std_uni_so_sk.
+    it_std_uni_so_sk = itab_content.
+
+    DO loop_count_1k TIMES.
+      idx_char = sy-index.
+
+      ts1 = utclong_current( ).
+**********************************************************************
+      READ TABLE it_std_uni_so_sk TRANSPORTING NO FIELDS
+        WITH TABLE KEY uni_so COMPONENTS comp1 = idx_char comp2 = idx_char comp3 = idx_char comp4 = idx_char comp5 = idx_char.
+**********************************************************************
+      store_runtime( high = utclong_current( ) low = ts1 ).
+    ENDDO.
+
+    APPEND VALUE #( method = `comparison3_uni_so_sec_key_rd`
+                    avg_runtime = |{ get_avg_runtime( ) STYLE = SIMPLE }|
+                    description = `Reading from a standard table using the secondary, unique sorted table key`
+                    count = CONV #( idx_char )
+                  ) TO comparison3.
+  ENDMETHOD.
+ENDCLASS.
+```
+
+</details>
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+#### Improving Read Performance with Secondary Table Keys
 
 - Consider a scenario where you have a standard internal table that you access frequently using the primary table key or a free key. The table is declared without a secondary key. 
 - In both cases, the read performance is slow because these accesses are not optimized in standard tables.
@@ -5814,7 +6993,7 @@ DATA(itab10) = REDUCE tt_type3( INIT tab = VALUE #( )
 - To try the example out, create a demo class named `zcl_demo_abap`. If it already exists, reuse it. Otherwise, create a new class with a different name. Paste the code into it. If you choose a different class name, update the class name in the code snippet accordingly. After activation, choose *F9* in ADT to execute the class. The example is set up to display the results in the console.
 
 > [!NOTE] 
-> This example is for [exploration, experimentation, and demonstration](./README.md#%EF%B8%8F-disclaimer). It is not intended for accurate runtime or performance testing and is not a suitable method for such purposes. Due to its simplified nature, results may vary and not be entirely accurate, even across multiple runs.
+> This example is for [exploration, experimentation, and demonstration](./README.md#%EF%B8%8F-disclaimer). It is not intended for accurate runtime or performance testing and is not a suitable method for such purposes. Due to its simplified nature, results may vary and not be entirely accurate, even across multiple runs. It is similarly set up as the example in section _Exploring Read Access Performance with Internal Tables_. Check more information and, particularly, the disclaimer regarding the runtime measurement there.
 
 <br>
 
@@ -5977,7 +7156,86 @@ ENDCLASS.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-### Example: Exploring Read Access Performance with Internal Tables
+#### Table Type Definitions Using WITH[OUT] FURTHER SECONDARY KEYS
+
+The following code snippet illustrates the additions `WITH FURTHER SECONDARY KEYS` and `WITHOUT FURTHER SECONDARY KEYS` to table type definitions. In the first case, the table type may include additional secondary keys. In the second case, it cannot. Find more information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abaptypes_keydef.htm).
+
+
+```abap
+CLASS zcl_demo_abap DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
+
+  PUBLIC SECTION.
+    INTERFACES if_oo_adt_classrun.
+
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+    TYPES ty_tab_w_sk TYPE SORTED TABLE OF zdemo_abap_carr
+                   WITH UNIQUE KEY carrid
+                   WITH FURTHER SECONDARY KEYS.
+
+    METHODS meth_w_sk_tab IMPORTING it TYPE ty_tab_w_sk.
+
+    TYPES ty_tab_wo_sk TYPE SORTED TABLE OF zdemo_abap_carr
+                   WITH UNIQUE KEY carrid
+                   WITHOUT FURTHER SECONDARY KEYS.
+
+    METHODS meth_wo_sk_tab IMPORTING it TYPE ty_tab_wo_sk.
+ENDCLASS.
+
+
+CLASS zcl_demo_abap IMPLEMENTATION.
+  METHOD if_oo_adt_classrun~main.
+
+    DATA itab TYPE SORTED TABLE OF zdemo_abap_carr
+               WITH UNIQUE KEY carrid
+               WITH NON-UNIQUE SORTED KEY sk COMPONENTS carrname.
+
+    "Method whose importing parameter is specified with
+    "WITH FURTHER SECONDARY KEYS
+    meth_w_sk_tab( itab ).
+
+    "Method whose importing parameter is specified with
+    "WITHOUT FURTHER SECONDARY KEYS
+    "The method call will show a syntax error. The internal table
+    "defined with a secondary table key cannot be passed.
+    "meth_wo_sk_tab( itab ).
+
+    "Assigning the internal table with secondary table key
+    "to a field symbol and passing it to the method.
+    FIELD-SYMBOLS <tab> TYPE ANY TABLE.
+    ASSIGN itab TO <tab>.
+
+    meth_w_sk_tab( <tab> ).
+
+    TRY.
+        "No syntax error shown for the generic type of the
+        "field symbol. However, an exception will be raised
+        "because of the wrong parameter type.
+        meth_wo_sk_tab( <tab> ).
+      CATCH cx_sy_dyn_call_illegal_type INTO DATA(error).
+        out->write( error->get_text( ) ).
+    ENDTRY.
+
+  ENDMETHOD.
+
+  METHOD meth_w_sk_tab.
+    ...
+  ENDMETHOD.
+
+  METHOD meth_wo_sk_tab.
+    ...
+  ENDMETHOD.
+
+ENDCLASS.
+```
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+
+### Exploring Read Access Performance with Internal Tables
 
 - The following example explores the performance of read accesses to internal tables of various kinds in a simplified and self-contained manner. 
 - The scenario is: Lines of a large internal table (2000 table lines) are read frequently. 
@@ -7175,83 +8433,6 @@ ENDCLASS.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-### WITH[OUT] FURTHER SECONDARY KEYS
-
-The following code snippet illustrates the additions `WITH FURTHER SECONDARY KEYS` and `WITHOUT FURTHER SECONDARY KEYS` to table type definitions. In the first case, the table type may include additional secondary keys. In the second case, it cannot. Find more information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abaptypes_keydef.htm).
-
-
-```abap
-CLASS zcl_demo_abap DEFINITION
-  PUBLIC
-  FINAL
-  CREATE PUBLIC .
-
-  PUBLIC SECTION.
-    INTERFACES if_oo_adt_classrun.
-
-  PROTECTED SECTION.
-  PRIVATE SECTION.
-    TYPES ty_tab_w_sk TYPE SORTED TABLE OF zdemo_abap_carr
-                   WITH UNIQUE KEY carrid
-                   WITH FURTHER SECONDARY KEYS.
-
-    METHODS meth_w_sk_tab IMPORTING it TYPE ty_tab_w_sk.
-
-    TYPES ty_tab_wo_sk TYPE SORTED TABLE OF zdemo_abap_carr
-                   WITH UNIQUE KEY carrid
-                   WITHOUT FURTHER SECONDARY KEYS.
-
-    METHODS meth_wo_sk_tab IMPORTING it TYPE ty_tab_wo_sk.
-ENDCLASS.
-
-
-CLASS zcl_demo_abap IMPLEMENTATION.
-  METHOD if_oo_adt_classrun~main.
-
-    DATA itab TYPE SORTED TABLE OF zdemo_abap_carr
-               WITH UNIQUE KEY carrid
-               WITH NON-UNIQUE SORTED KEY sk COMPONENTS carrname.
-
-    "Method whose importing parameter is specified with
-    "WITH FURTHER SECONDARY KEYS
-    meth_w_sk_tab( itab ).
-
-    "Method whose importing parameter is specified with
-    "WITHOUT FURTHER SECONDARY KEYS
-    "The method call will show a syntax error. The internal table
-    "defined with a secondary table key cannot be passed.
-    "meth_wo_sk_tab( itab ).
-
-    "Assigning the internal table with secondary table key
-    "to a field symbol and passing it to the method.
-    FIELD-SYMBOLS <tab> TYPE ANY TABLE.
-    ASSIGN itab TO <tab>.
-
-    meth_w_sk_tab( <tab> ).
-
-    TRY.
-        "No syntax error shown for the generic type of the
-        "field symbol. However, an exception will be raised
-        "because of the wrong parameter type.
-        meth_wo_sk_tab( <tab> ).
-      CATCH cx_sy_dyn_call_illegal_type INTO DATA(error).
-        out->write( error->get_text( ) ).
-    ENDTRY.
-
-  ENDMETHOD.
-
-  METHOD meth_w_sk_tab.
-    ...
-  ENDMETHOD.
-
-  METHOD meth_wo_sk_tab.
-    ...
-  ENDMETHOD.
-
-ENDCLASS.
-```
-
-<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## More Information
 Topic [Internal Tables](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenitab.htm) in the ABAP Keyword Documentation.

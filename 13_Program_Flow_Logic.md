@@ -880,9 +880,9 @@ can also be specified as follows:
 ```abap
 RETURN some_expr.
 ```
-Here, the expression result is passed to the returning parameter without naming it explicitly. As an expression, you can specify a constructor expression (and using type inference with `#` means using the type of the returning parameter).
 
-Example:
+In the following example, the expression result is passed to the returning parameter without naming it explicitly. As an expression, you can specify a constructor expression (and using type inference with `#` means using the type of the returning parameter).
+
 ```abap
 CLASS zcl_demo_abap DEFINITION
   PUBLIC
@@ -911,6 +911,8 @@ CLASS zcl_demo_abap IMPLEMENTATION.
         "result = num1 * num2.
         RETURN num1 * num2.
       CATCH cx_sy_arithmetic_error.
+        "The following statement is actually not needed in the example, but used nevertheless
+        "to showcase the specification of a constructor expression after RETURN.
         RETURN VALUE #( ).
     ENDTRY.
   ENDMETHOD.
