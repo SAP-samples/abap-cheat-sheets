@@ -3099,6 +3099,396 @@ CALL METHOD class=>(meth) PARAMETER-TABLE ptab.
 "The addition EXCEPTION-TABLE for exceptions is not dealt with here.
 ```
 
+The following demo class illustrates a selection of aspects about dynamic method calls. See also the example code in the expandable sections below.
+Note that the code uses an interface from the ABAP cheat sheets GitHub repository, and that the code will show a syntax warning when using ABAP for Cloud Development (due to the old `EXCEPTIONS` addition that should not be used anymore).
+
+```abap
+CLASS zcl_demo_abap DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
+
+  PUBLIC SECTION.
+    INTERFACES if_oo_adt_classrun.
+    "Interface from the ABAP cheat sheets GitHub repository
+    INTERFACES zdemo_abap_get_data_itf.
+
+*&---------------------------------------------------------------------*
+*& Static methods
+*&---------------------------------------------------------------------*
+
+    CLASS-METHODS st_meth1.
+    CLASS-METHODS st_meth2 IMPORTING num TYPE i.
+    CLASS-METHODS st_meth3 EXPORTING num TYPE i.
+    CLASS-METHODS st_meth4 IMPORTING num1   TYPE i
+                                     num2   TYPE i
+                           EXPORTING result TYPE i.
+    CLASS-METHODS st_meth5 CHANGING text TYPE string.
+    CLASS-METHODS st_meth6 RETURNING VALUE(result) TYPE string.
+    CLASS-METHODS st_meth7 IMPORTING num1         TYPE i
+                           EXPORTING num2         TYPE i
+                           CHANGING  text1        TYPE string
+                           RETURNING VALUE(text2) TYPE string.
+    CLASS-METHODS st_meth8 IMPORTING num1 TYPE i
+                                     num2 TYPE i
+                           RAISING   cx_sy_zerodivide.
+    "Note: In ABAP for Cloud Development, EXCEPTIONS for non-class-based exceptions
+    "should not be used anymore. Instead, use RAISING and class-based exceptions.
+    "The code will show a syntax warning. It is only included here for illustration
+    "purposes.
+    CLASS-METHODS st_meth9 EXCEPTIONS exc.
+
+*&---------------------------------------------------------------------*
+*& Instance methods
+*&---------------------------------------------------------------------*
+
+    METHODS in_meth1.
+    METHODS in_meth2 IMPORTING num TYPE i.
+    METHODS in_meth3 EXPORTING num TYPE i.
+    METHODS in_meth4 IMPORTING num1   TYPE i
+                               num2   TYPE i
+                     EXPORTING result TYPE i.
+    METHODS in_meth5 CHANGING text TYPE string.
+    METHODS in_meth6 RETURNING VALUE(result) TYPE string.
+    METHODS in_meth7 IMPORTING num1         TYPE i
+                     EXPORTING num2         TYPE i
+                     CHANGING  text1        TYPE string
+                     RETURNING VALUE(text2) TYPE string.
+    METHODS in_meth8 IMPORTING num1 TYPE i
+                               num2 TYPE i
+                     RAISING   cx_sy_zerodivide.
+
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+ENDCLASS.
+
+CLASS zcl_demo_abap IMPLEMENTATION.
+
+  METHOD if_oo_adt_classrun~main.
+
+    "Creating an instance of the class
+    "DATA(oref) = NEW zcl_demo_abap( ).
+
+    "In this example, using an instance created dynamically.
+    DATA oref TYPE REF TO object.
+    CREATE OBJECT oref TYPE ('ZCL_DEMO_ABAP').
+
+*&---------------------------------------------------------------------*
+*& Methods without parameters
+*&---------------------------------------------------------------------*
+
+    "Note: All example method calls use literals.
+    "The following method call without specifying the object reference variable works for
+    "instance methods of the same class.
+    CALL METHOD ('IN_METH1').
+    "The method name can also be specified using named, character-like data objects
+    "containing the method name.
+    DATA(meth_name) = `IN_METH1`.
+    CALL METHOD (meth_name).
+
+    "For calling instance methods of the same class, the method call above
+    "works like me->(meth).
+    CALL METHOD me->('IN_METH1').
+
+    "Calling instance method using an object reference variable
+    "The object reference variable specified statically;
+    "also possible for interface reference variables
+    CALL METHOD oref->('IN_METH1').
+
+    "The following static method call without specifying the class name works for
+    "static methods of the same class.
+    CALL METHOD ('ST_METH1').
+
+    "The following statements are possible for all visible static methods
+    "Class specified statically
+    CALL METHOD zcl_demo_abap=>('ST_METH1').
+
+    "Class dynamically specified
+    CALL METHOD ('ZCL_DEMO_ABAP')=>st_meth1.
+
+    "Class and method dynamically specified
+    CALL METHOD ('ZCL_DEMO_ABAP')=>('ST_METH1').
+
+*&---------------------------------------------------------------------*
+*& Static methods with parameters
+*&---------------------------------------------------------------------*
+
+    "Note that inline declarations are not possible for specifying actual parameters
+    "in dynamic method calls.
+    DATA number1 TYPE i.
+    DATA number2 TYPE i.
+    DATA str1 TYPE string.
+    DATA str2 TYPE string.
+
+    "Note: The following static method calls specify the class name and =>.
+    "In the example, this would not be required as the methods from the same
+    "class are called.
+
+    "Static method defining an importing parameter
+    CALL METHOD zcl_demo_abap=>('ST_METH2') EXPORTING num = 1.
+
+    "Static method defining an exporting parameter
+    CALL METHOD zcl_demo_abap=>('ST_METH3') IMPORTING num = number1.
+
+    "Static method defining importing and exporting parameters
+    CALL METHOD zcl_demo_abap=>('ST_METH4')
+      EXPORTING
+        num1   = 1
+        num2   = 2
+      IMPORTING
+        result = number1.
+
+    "Static method defining changing parameters
+    CALL METHOD zcl_demo_abap=>('ST_METH5') CHANGING text = str1.
+
+    "Static method defining returning parameters
+    CALL METHOD zcl_demo_abap=>('ST_METH6') RECEIVING result = str1.
+
+    "Static method defining importing, exporting, changing and returning parameters
+    CALL METHOD zcl_demo_abap=>('ST_METH7')
+      EXPORTING
+        num1  = 1
+      IMPORTING
+        num2  = number1
+      CHANGING
+        text1 = str1
+      RECEIVING
+        text2 = str2.
+
+    "Static method defining importing, exporting and changing parameters
+    TRY.
+        CALL METHOD zcl_demo_abap=>('ST_METH8')
+          EXPORTING
+            num1 = 1
+            num2 = 2.
+      CATCH cx_sy_zerodivide.
+    ENDTRY.
+
+    "Static method defining an non-class-based exception
+    CALL METHOD zcl_demo_abap=>('ST_METH9') EXCEPTIONS exc = 1.
+
+*&---------------------------------------------------------------------*
+*& Instance methods with parameters
+*&---------------------------------------------------------------------*
+
+    "Note: The following instance method calls specify an object reference variable
+    "and ->. In the example, this would not be required as the methods from the same
+    "class are called.
+
+    "Instance method defining an importing parameter
+    CALL METHOD oref->('IN_METH2') EXPORTING num = 1.
+
+    "Instance method defining an exporting parameter
+    CALL METHOD oref->('IN_METH3') IMPORTING num = number1.
+
+    "Instance method defining importing and exporting parameters
+    CALL METHOD oref->('IN_METH4')
+      EXPORTING
+        num1   = 1
+        num2   = 2
+      IMPORTING
+        result = number1.
+
+    "Instance method defining changing parameters
+    CALL METHOD oref->('IN_METH5') CHANGING text = str1.
+
+    "Instance method defining returning parameters
+    CALL METHOD oref->('IN_METH6') RECEIVING result = str1.
+
+    "Instance method defining importing, exporting, changing and returning parameters
+    CALL METHOD oref->('IN_METH7')
+      EXPORTING
+        num1  = 1
+      IMPORTING
+        num2  = number1
+      CHANGING
+        text1 = str1
+      RECEIVING
+        text2 = str2.
+
+    "Instance method defining importing, exporting and changing parameters
+    TRY.
+        CALL METHOD oref->('IN_METH8')
+          EXPORTING
+            num1 = 1
+            num2 = 2.
+      CATCH cx_sy_zerodivide.
+        ...
+    ENDTRY.
+
+*&---------------------------------------------------------------------*
+*& Dynamic method calls with parameter table
+*&---------------------------------------------------------------------*
+
+    DATA(ptab) = VALUE abap_parmbind_tab( ( name  = 'NUM1'
+                                            kind  = cl_abap_objectdescr=>exporting
+                                            value = NEW i( 1 ) )
+                                          ( name  = 'NUM2'
+                                            kind  = cl_abap_objectdescr=>importing
+                                            value = NEW i( ) )
+                                          ( name  = 'TEXT1'
+                                            kind  = cl_abap_objectdescr=>changing
+                                            value = NEW string( ) )
+                                          ( name  = 'TEXT2'
+                                            kind  = cl_abap_objectdescr=>receiving
+                                            value = NEW string( ) ) ).
+
+    CALL METHOD zcl_demo_abap=>('ST_METH7') PARAMETER-TABLE ptab.
+
+    ptab = VALUE #( ( name  = 'NUM1'
+                      kind  = cl_abap_objectdescr=>exporting
+                      value = NEW i( 1 ) )
+                    ( name  = 'NUM2'
+                      kind  = cl_abap_objectdescr=>exporting
+                      value = NEW i( 2 ) )
+                    ( name  = 'RESULT'
+                      kind  = cl_abap_objectdescr=>importing
+                      value = NEW i( ) ) ).
+
+    CALL METHOD oref->('IN_METH4') PARAMETER-TABLE ptab.
+
+*&---------------------------------------------------------------------*
+*& Potential errors with dynamic method calls
+*&---------------------------------------------------------------------*
+
+    "Note: The examples show a selection. The examples highlight that there is no
+    "static check possible for dynamic specifications.
+
+    "Non-existent method
+    TRY.
+        CALL METHOD ('ZCL_DEMO_ABAP')=>meth_that_does_not_exist.
+      CATCH cx_sy_dyn_call_illegal_method.
+    ENDTRY.
+
+    "Mandatory parameter missing
+    TRY.
+        CALL METHOD zcl_demo_abap=>('ST_METH2').
+      CATCH cx_sy_dyn_call_param_missing.
+    ENDTRY.
+
+    "Non-compliant type of actual parameter
+    TRY.
+        CALL METHOD zcl_demo_abap=>('ST_METH2') EXPORTING num = `string`.
+      CATCH cx_sy_dyn_call_illegal_type.
+    ENDTRY.
+
+    "Method not found; note the uppercasing
+
+    "The following method call ...
+    TRY.
+        CALL METHOD oref->('in_meth2') EXPORTING num = 1.
+      CATCH cx_sy_dyn_call_illegal_method.
+    ENDTRY.
+
+    "... compared to this.
+    CALL METHOD oref->('IN_METH2') EXPORTING num = 1.
+
+*&---------------------------------------------------------------------*
+*& Dynamic interface method calls
+*&---------------------------------------------------------------------*
+
+    "Note: The example uses an interface from the ABAP cheat sheets GitHub repository.
+
+    "Non-dynamic interface method calls
+    "Note: These calls are only possible this way when creating the object reference statically,
+    "e.g. using DATA(oref) = NEW zcl_demo_abap( )., which is commented out in the example.
+*    DATA(hi) = oref->zdemo_abap_get_data_itf~say_hello( ).
+*
+*    DATA(flight_data) = oref->zdemo_abap_get_data_itf~select_flight_data( carrier = 'LH' ).
+
+    "Dynamic interface method calls
+    CALL METHOD oref->('ZDEMO_ABAP_GET_DATA_ITF~SAY_HELLO') RECEIVING hi = str1.
+
+    DATA fl_data TYPE zdemo_abap_get_data_itf=>carr_tab.
+
+    CALL METHOD oref->('ZDEMO_ABAP_GET_DATA_ITF~SELECT_FLIGHT_DATA')
+      EXPORTING
+        carrier     = 'LH'
+      RECEIVING
+        flight_data = fl_data.
+
+  ENDMETHOD.
+
+  METHOD in_meth1.
+
+  ENDMETHOD.
+
+  METHOD in_meth2.
+
+  ENDMETHOD.
+
+  METHOD in_meth3.
+
+  ENDMETHOD.
+
+  METHOD in_meth4.
+
+  ENDMETHOD.
+
+  METHOD in_meth5.
+
+  ENDMETHOD.
+
+  METHOD in_meth6.
+
+  ENDMETHOD.
+
+  METHOD in_meth7.
+
+  ENDMETHOD.
+
+  METHOD in_meth8.
+
+  ENDMETHOD.
+
+  METHOD st_meth1.
+
+  ENDMETHOD.
+
+  METHOD st_meth2.
+
+  ENDMETHOD.
+
+  METHOD st_meth3.
+
+  ENDMETHOD.
+
+  METHOD st_meth4.
+
+  ENDMETHOD.
+
+  METHOD st_meth5.
+
+  ENDMETHOD.
+
+  METHOD st_meth6.
+
+  ENDMETHOD.
+
+  METHOD st_meth7.
+
+  ENDMETHOD.
+
+  METHOD st_meth8.
+
+  ENDMETHOD.
+
+  METHOD st_meth9.
+
+  ENDMETHOD.
+
+  METHOD zdemo_abap_get_data_itf~say_hello.
+
+  ENDMETHOD.
+
+  METHOD zdemo_abap_get_data_itf~select_flight_data.
+
+  ENDMETHOD.
+
+ENDCLASS.
+```
+
+
 
 **Click to expand the expandable sections for example code**
 

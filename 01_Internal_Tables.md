@@ -5937,7 +5937,7 @@ How to use
 <tr>
 <td> 
 
-Additionals notes
+Additional notes
 
  </td>
 
@@ -6502,12 +6502,10 @@ ENDCLASS.
 
 #### Update Behavior and Performance
 
-The following example class illustrates aspects of update behavior and performance concerning the use of secondary table keys in internal tables.
-
-Among them:
+The following example class illustrates aspects of update behavior and performance concerning the use of secondary table keys in internal tables. Among them:
 - For internal tables with non-unique, sorted secondary table keys, the secondary table index does not update immediately. It updates only upon the first access of the table using the secondary table key.
 - These tables can be populated quickly, as there are no checks for duplicate entries regarding the secondary table key. However, the recreation of the secondary index should be considered during the first access. Subsequent reads (when not altering the table content) are significantly faster.
-- In contrast, internal tables with unique sorted or hashed keys update the secondary table index immediately when the table content is modified. This update incurs runtime costs, but subsequent reads remain consistently fast.
+- In contrast, internal tables with unique sorted keys update the secondary table index immediately when the table content is modified. This update incurs runtime costs, but subsequent reads remain consistently fast.
 
 > [!NOTE] 
 > This example is for [exploration, experimentation, and demonstration](./README.md#%EF%B8%8F-disclaimer). It is not intended for accurate runtime or performance testing and is not a suitable method for such purposes. Due to its simplified nature, results may vary and not be entirely accurate, even across multiple runs. It is similarly set up as the example in section _Exploring Read Access Performance with Internal Tables_. Check more information and, particularly, the disclaimer regarding the runtime measurement there.
@@ -7245,7 +7243,7 @@ ENDCLASS.
 - To try the example out, create a demo class named `zcl_demo_abap`. If it already exists, reuse it. Otherwise, create a new class with a different name. Paste the code into it. If you choose a different class name, update the class name in the code snippet accordingly. After activation, choose *F9* in ADT to execute the class. It may take some time to finish and display the output. The example is set up to display the results in the console.
 
 > [!NOTE] 
-> - This example is for [exploration, experimentation, and demonstration](./README.md#%EF%B8%8F-disclaimer) purposes only. It is not suitable for accurate runtime or performance testing. Due to its simplified nature (for example, the table line type is fairly simple, and the key components are all of type `i`) and various factors that can influence the runtime of an ABAP program, results may vary and may not be entirely accurate, even across multiple runs. The displayed results may not always accurately reflect the performance notes from the cheat sheet.
+> - This example is for [exploration, experimentation, and demonstration](./README.md#%EF%B8%8F-disclaimer) purposes only. It is not suitable for accurate runtime or performance testing. Due to its simplified nature (for example, the table line type is fairly simple, and the key components are all of type `i`) and various factors that can influence the runtime of an ABAP program, results may vary and may not be entirely accurate, even across multiple runs. The displayed results may not always accurately reflect the performance-related notes from the cheat sheet.
 > - The example concentrates on a few demo internal tables, declared using various declaration options. 
 > - The runtime analysis in this self-contained example is as follows: The code snippet for which the runtime should be measured is enclosed by two timestamp retrievals using `utclong_current( )`. The runtime is analysed by calculating the delta of the two timestamp values, indicating the used runtime for the code snippet. To have a more meaningful example regarding the runtime analysis, the snippets are executed multiple times, indicated by enclosing them in a `DO` loop. The runtime delta value is added to an internal table collecting all runtime delta values for the specific code snippet for all loop iterations. Finally, the average runtime is calculated based on the collected runtime delta values. This average runtime value is added to an internal table with other information. The approach with multiple iterations and the average runtime value aims to provide a balanced view of runtime. Note that this implementation is for exploration and demonstration purposes only.
 > - Among the demonstrated read operations are the following:

@@ -2050,16 +2050,17 @@ ENDCLASS.
 
 - [`RETURN`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapreturn.htm) statements immediately terminate the current processing block. Usually, the statement is intended for leaving processing blocks early. 
 - To exit procedures such as methods explicitly, it is recommended to use `RETURN`. `EXIT` and `CHECK` statements might also be used for exiting procedures. However, their use inside loops is recommended. According to the [guidelines (F1 docu for standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenexit_procedure_guidl.htm), `RETURN` is the recommendation.
-- In case of functional methods, i.e. methods that have one returning parameter, the `RETURN` statement can also be specified with an expression. In doing so, the 
-following statement
-```abap
-res = some_expr.
-RETURN.
-```
-can also be specified as follows: 
-```abap
-RETURN some_expr.
-```
+- In case of functional methods, i.e. methods that have one returning parameter, the `RETURN` statement can also be specified with an expression. In doing so, the following statement
+  ```abap
+  res = some_expr.
+  RETURN.
+  ```
+
+  can also be specified as follows: 
+
+  ```abap
+  RETURN some_expr.
+  ```
 
 In the following examples, the expression result is passed to the returning parameter without naming it explicitly. As an expression, you can specify a constructor expression (and using type inference with `#` means using the type of the returning parameter).
 
