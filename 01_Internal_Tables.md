@@ -41,8 +41,6 @@
     - [Interrupting and Exiting Loops](#interrupting-and-exiting-loops)
     - [Inserting and Deleting Lines in Internal Tables in Loops](#inserting-and-deleting-lines-in-internal-tables-in-loops)
   - [Modifying Internal Table Content](#modifying-internal-table-content)
-    - [Modifying Read Table Lines](#modifying-read-table-lines)
-    - [Modifying Table Lines Using ABAP MODIFY Statements](#modifying-table-lines-using-abap-modify-statements)
   - [Deleting Internal Table Content](#deleting-internal-table-content)
     - [Deleting Adjacent Duplicate Lines](#deleting-adjacent-duplicate-lines)
     - [Deleting the Entire Internal Table Content](#deleting-the-entire-internal-table-content)
@@ -4237,185 +4235,856 @@ ENDLOOP.
 
 ## Modifying Internal Table Content
 
-As mentioned above, you can modify the content of internal table lines directly in the context of `READ TABLE` and `LOOP AT` statements using field symbols and data reference variables. You can also use table expressions for direct modification (as also covered in section [Table Expressions](#table-expressions)). Note that the key fields of the primary table key of sorted and hashed tables are always read-only. If you try to modify a key field, a runtime error occurs. However, this is not checked until runtime.
+[`MODIFY [TABLE]`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapmodify_itab.htm) statements provide multiple ways of changing the content of single and multiple table lines by specifying the table key or a table index, without first reading the lines into a target area. Apart from the statements that directly modify internal table lines, several other methods are available for changing table content. This section includes a selection of these methods.
 
-### Modifying Read Table Lines
+The following example covers these aspects:
+- `MODIFY [TABLE]` statements
+  - Modifying table lines based on key values
+  - Setting the sy-subrc value
+  - `MODIFY` statements with standard tables defining empty keys
+  - Modifying table lines via the index
+  - Restricting the components modified using the `TRANSPORTING` addition
+  - Modifications with the `USING KEY` addition concerning primary and secondary table keys, including modifications within loops using `loop_key`
+  - Pitfalls of modifying table content related to keys
+  - Modifying a line using `MODIFY` and assigning a field symbol or setting a data reference
+  - Modifying multiple table lines with `MODIFY` statements
+- Modifying read table lines in the context of `READ TABLE` statements
+  - Directly modifying table line content enabled through field symbols or data reference variables as target areas
+  - Indirectly modifying table lines by using a work area as the target area, followed by a `MODIFY` statement
+  - The table line content modification options include value assignments with the component selector (and object component selector for data reference variables) and constructor expressions like `VALUE` and `CORRESPONDING`
+- Directly modifying internal table content with table expressions
+- Modifying table content within loops
+  - Modifying all table lines
+  - Restricting the table lines processed in loops to modify only a restricted set of table entries
 
-The following examples demonstrate direct modification of recently read table lines:
-``` abap
-"Declaring and populating demo internal tables
-TYPES: BEGIN OF ty_struc,
-          comp1 TYPE i,
-          comp2 TYPE string,
-          comp3 TYPE c LENGTH 3,
-       END OF ty_struc.
+> [!NOTE]  
+> - The example code contains various comments to provide more details and descriptions in place. Note that you may achieve the same results through different means.
+> - Table modification aspects may also be mentioned in the context of `READ TABLE` and `LOOP AT` statements as well as table expressions. Find more details, especially regarding syntax options, in the respective sections. They are not detailed out here.
+> - Key fields of the primary table key of sorted and hashed tables are always read-only. If you try to modify a key field, a runtime error occurs. However, this is not checked until runtime. Find more information in the example.
+> - Regarding `MODIFY` statements: 
+>   - The system field `sy-subrc` is set to `0` if at least one line was changed. It is set to `4` if no lines were changed.
+>   - `MODIFY` (and also `DELETE` and `INSERT`) statements can be specified with and without the `TABLE` addition. With `TABLE` means an index access. Without `TABLE` means an access via the table key.
+>   - Do not confuse the ABAP statement `MODIFY` with the ABAP SQL statement [`MODIFY`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABAPMODIFY_DBTAB.html).
 
-DATA it_st TYPE TABLE OF ty_struc WITH NON-UNIQUE KEY comp1.
-DATA it_so TYPE SORTED TABLE OF ty_struc WITH UNIQUE KEY comp1.
-DATA it_ha TYPE HASHED TABLE OF ty_struc WITH UNIQUE KEY comp1.
+To try the example out, create a demo class named `zcl_demo_abap`, or reuse it if it already exists. Paste the code into it. If you choose a different class name, update the class name in the code snippet accordingly. After activation, choose *F9* in ADT to execute the class. The example is set up to display output in the console.
 
-it_st = VALUE #( ( comp1 = 1 comp2 = `AAAAAA` comp3 = 'bbb' )
-                 ( comp1 = 2 comp2 = `CCCCCC` comp3 = 'ddd' )
-                 ( comp1 = 3 comp2 = `EEEEEE` comp3 = 'fff' )
-                 ( comp1 = 4 comp2 = `GGGGGG` comp3 = 'hhh' )
-               ).
+```abap
+CLASS zcl_demo_abap DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
 
-it_so = it_st.
-it_ha = it_st.
+  PUBLIC SECTION.
+    INTERFACES:
+      if_oo_adt_classrun.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
 
-*&---------------------------------------------------------------------*
-*& Modifying internal table content by changing the content of READ 
-*& TABLE statement target areas
-*&---------------------------------------------------------------------*
+    TYPES: BEGIN OF s,
+             comp1 TYPE i,
+             comp2 TYPE c LENGTH 10,
+             comp3 TYPE i,
+             comp4 TYPE string,
+           END OF s,
+           BEGIN OF s4corr,
+             comp1 TYPE i,
+             comp2 TYPE c LENGTH 10,
+             compy TYPE i,
+             compz TYPE string,
+           END OF s4corr.
 
-"Reading table line into a target area
-READ TABLE it_st INTO DATA(wa) INDEX 1.
-READ TABLE it_so ASSIGNING FIELD-SYMBOL(<fs>) INDEX 2.
-READ TABLE it_ha REFERENCE INTO DATA(dref) WITH TABLE KEY comp1 = 3. "No reading by index in case of hashed tables
+    DATA: std_tab          TYPE TABLE OF s WITH EMPTY KEY,
+          sorted_tab       TYPE SORTED TABLE OF s WITH UNIQUE KEY comp1,
+          hashed_tab       TYPE HASHED TABLE OF s WITH UNIQUE KEY comp1,
+          std_tab_w_keys   TYPE TABLE OF s WITH NON-UNIQUE KEY comp1
+                                           WITH NON-UNIQUE SORTED KEY sk COMPONENTS comp3,
+          std_tab_w_uni_sk TYPE TABLE OF s WITH NON-UNIQUE KEY comp1
+                                           WITH UNIQUE SORTED KEY sk COMPONENTS comp3,
+          line             TYPE s,
+          line4corr        TYPE s4corr.
 
-*&---------------------------------------------------------------------*
-*& Modification examples
-*&---------------------------------------------------------------------*
+    METHODS:
+      m01_modify_table_from  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m02_modify_table_sy_subrc  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m03_modify_table_from_std_tab  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m04_modify_index  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m05_modify_transporting  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m06_modify_using_key  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m07_modify_key_pitfalls  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m08_modify_using_key_loop_key IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m09_modify_fs_dref  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m10_modify_multiple_lines  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m11_read_table_modify_target  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m12_table_expressions  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m13_modifications_in_loops  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      m14_restrict_modif_in_loops  IMPORTING out TYPE REF TO if_oo_adt_classrun_out text TYPE string,
+      prepare_itabs.
 
-"Modifying all non-key components using the VALUE operator and
-"the BASE addition
-<fs> = VALUE #( BASE <fs> comp2 = `IIIIII` comp3 = 'jjj' ).
+    CLASS-METHODS set_example_divider IMPORTING out  TYPE REF TO if_oo_adt_classrun_out
+                                                text TYPE string.
+ENDCLASS.
 
-"In the following example, the key value is assigned a new
-"value. Key values are protected against change in case of key tables.
-"A runtime error occurs.
-"<fs> = VALUE #( comp1 = 5 comp2 = `IIIIII` comp3 = 'jjj' ).
 
-dref->* = VALUE #( BASE dref->* comp2 = `KKKKKK` comp3 = 'lll' ).
+CLASS zcl_demo_abap IMPLEMENTATION.
 
-"Same as above. Key values cannot be changed in this case.
-"dref->* = VALUE #( comp1 = 5 comp2 = `MMMMMM` comp3 = 'nnn' ).
+  METHOD if_oo_adt_classrun~main.
 
-"Using a MODIFY statement outlined below for changing internal
-"table content based on a read line in a work area
-MODIFY TABLE it_st FROM VALUE #( BASE wa comp2 = `OOOOOO` comp3 = 'ppp' ).
+    "Dynamically calling methods of the class
+    "The method names are retrieved using RTTI. For more information, refer to the
+    "Dynamic Programming ABAP cheat sheet.
+    "Only those methods should be called that follow the naming convention M + digit.
+    DATA(methods) = CAST cl_abap_classdescr( cl_abap_typedescr=>describe_by_object_ref( me ) )->methods.
+    SORT methods BY name ASCENDING.
 
-"Modifying individual components
-READ TABLE it_st INTO wa INDEX 2.
-READ TABLE it_so ASSIGNING <fs> INDEX 3.
-READ TABLE it_ha REFERENCE INTO dref WITH TABLE KEY comp1 = 4.
+    LOOP AT methods INTO DATA(meth_wa).
+      TRY.
+          "The find function result indicates that the method name begins (offset = 0) with M and a digit.
+          IF find( val = meth_wa-name pcre = `^M\d` case = abap_false ) = 0.
+            "Preparing the demo internal tables before each method call
+            prepare_itabs( ).
 
-"Using VALUE/BASE
-<fs> = VALUE #( BASE <fs> comp2 = `QQQQQQ` ).
-dref->* = VALUE #( BASE dref->* comp2 = `RRRRRR` ).
-MODIFY TABLE it_st FROM VALUE #( BASE wa comp2 = `SSSSSS` ).
+            CALL METHOD (meth_wa-name) EXPORTING out = out text = CONV string( meth_wa-name ).
+          ENDIF.
+        CATCH cx_root INTO DATA(error).
+          out->write( error->get_text( ) ).
+      ENDTRY.
+    ENDLOOP.
+  ENDMETHOD.
 
-"Using the component selector
-<fs>-comp3 = 'ttt'.
+  METHOD m01_modify_table_from.
+    set_example_divider(  out = out text = |{ text }: Modifying table lines based on key values using MODIFY statements| ).
 
-READ TABLE it_st INTO wa INDEX 3.
-wa-comp3 = 'uuu'.
-MODIFY TABLE it_st FROM wa.
+    "After FROM a line with a matching line type is expected.
+    "The key values determine the line to be modified.
 
-"Object component selector in case of dereferencing ...
-dref->comp2 = `VVVVVV`.
-"... which is a more comfortable option compared to using the
-"dereferencing and component selector operators in the following way.
-dref->*-comp3 = 'www'.
+    "Populating a structure to have a line based on which an internal table
+    "line is modified.
+    "The line includes key values.
+    line = VALUE #( comp1 = 1 comp2 = '###' comp3 = 555 comp4 = `ABAP` ).
 
-*&---------------------------------------------------------------------*
-*& Modifying internal table content using table expressions
-*&---------------------------------------------------------------------*
+    MODIFY TABLE sorted_tab FROM line.
+    MODIFY TABLE hashed_tab FROM line.
+    MODIFY TABLE std_tab_w_keys FROM line.
 
-"Changing the entire table line of a standard table
-"In standard tables, the key value change is allowed.
-it_st[ 3 ] = VALUE #( comp1 = 9 comp2 = `XXXXXX` comp3 = 'yyy' ).
-"As above, the sorted table is a key table having a unique key,
-"therefore a write cannot be performed on the entire entry. Runtime
-"errors can occur.
-"it_so[ 3 ] = VALUE #( comp2 = `XXXXXX` comp3 = 'yyy' ).
-"The same applies to hashed tables.
-"it_ha[ comp2 = `OOOOOO` ] = VALUE #( comp2 = `XXXXXX` comp3 = 'yyy' ).
+    "The following structure does not include all components. Therefore,
+    "these values are initial and the existing component values in the
+    "internal table are assigned the initial value.
+    line = VALUE #( comp1 = 2 comp2 = '***' ).
 
-"Changing individual components
-it_st[ 3 ]-comp2 = `ZZZZZZ`.
-it_so[ 3 ]-comp3 = 'A1'.
-it_ha[ comp2 = `CCCCCC` ]-comp2 = `B2`.
-"As above, no key field change in key tables. Allowed in standard
-"tables.
-"it_so[ 3 ]-comp1 = 10.
-"it_ha[ comp2 = `AAAAAA` ]-comp1 = `C3`.
-it_st[ 1 ]-comp1 = 99.
+    MODIFY TABLE sorted_tab FROM line.
+    MODIFY TABLE hashed_tab FROM line.
+    MODIFY TABLE std_tab_w_keys FROM line.
 
-*&---------------------------------------------------------------------*
-*& Modifying table content in all table rows in a loop
-*&---------------------------------------------------------------------*
+    "The line can also be constructed inline
+    MODIFY TABLE sorted_tab FROM VALUE #( comp1 = 3 comp2 = 'ZZZ' comp3 = 123 comp4 = `YYY` ).
+    MODIFY TABLE hashed_tab FROM VALUE #( comp1 = 3 comp2 = 'XXX' comp3 = 456 comp4 = `WWW` ).
+    MODIFY TABLE std_tab_w_keys FROM VALUE #( comp1 = 3 comp2 = 'VVV' comp3 = 789 comp4 = `UUU` ).
 
-"For more syntax options regarding loops, check the section above.
-"Target area: field symbol
-LOOP AT it_st ASSIGNING FIELD-SYMBOL(<lo>).
-  <lo>-comp2 = sy-tabix.
-ENDLOOP.
+    out->write( data = sorted_tab name = `sorted_tab` ).
+    out->write( |\n| ).
+    out->write( data = hashed_tab name = `hashed_tab` ).
+    out->write( |\n| ).
+    out->write( data = std_tab_w_keys name = `std_tab_w_keys` ).
+  ENDMETHOD.
 
-*&---------------------------------------------------------------------*
-*& Modifying table content restricting the rows that are looped across
-*&---------------------------------------------------------------------*
+  METHOD m02_modify_table_sy_subrc.
+    set_example_divider(  out  = out text = |{ text }: MODIFY statements and setting sy-subrc| ).
 
-"Target area: data reference variable
-LOOP AT it_st reference into data(lo) FROM 2 TO 3.
-  lo->comp3 = sy-tabix.
-ENDLOOP.
+    line = VALUE #( comp1 = 1 comp2 = '###' comp3 = 555 comp4 = `ABAP` ).
 
-"Target area: work area
-LOOP AT it_so into data(wa_lo) where comp1 < 4.
-  wa_lo-comp2 = sy-tabix.
-  MODIFY TABLE it_so FROM wa_lo.
-ENDLOOP.
+    MODIFY TABLE sorted_tab FROM line.
+
+    IF sy-subrc = 0.
+      out->write( |sy-subrc value: { sy-subrc }| ).
+      out->write( `Table line was modified` ).
+    ELSE.
+      out->write( |sy-subrc value: { sy-subrc }| ).
+      out->write( `Table line was not modified` ).
+    ENDIF.
+    out->write( |\n| ).
+
+    "The following example tries to modify a table line based
+    "on a non-existant key.
+    line = VALUE #( comp1 = 1000 ).
+
+    MODIFY TABLE sorted_tab FROM line.
+
+    IF sy-subrc = 0.
+      out->write( |sy-subrc value: { sy-subrc }| ).
+      out->write( `Table line was modified` ).
+    ELSE.
+      out->write( |sy-subrc value: { sy-subrc }| ).
+      out->write( `Table line was not modified` ).
+    ENDIF.
+    out->write( |\n| ).
+    out->write( |\n| ).
+
+    out->write( data = sorted_tab name = `sorted_tab` ).
+
+  ENDMETHOD.
+
+  METHOD m03_modify_table_from_std_tab.
+    set_example_divider(  out  = out text = |{ text }: MODIFY TABLE statements with standard tables defining empty keys| ).
+
+    "Note:
+    "- Such statements should be avoided due to their non-intuitive semantics.
+    "- These statements always modify the first line of the table.
+    "- A syntax warning is displayed. The statements are included in the example
+    "  only for illustration purposes.
+
+    "Although the line with comp1, for example, is not found, the first line
+    "is modified by default.
+
+    "To check out the behavior, uncomment the code.
+
+*    line = VALUE #( comp1 = 100 comp2 = 'AAA' comp3 = 1000 comp4 = `BBB` ).
+*
+*    MODIFY TABLE std_tab FROM line.
+*
+*    out->write( data = std_tab name = `std_tab` ).
+*    out->write( |\n| ).
+*
+*    line = VALUE #( comp1 = 200 comp2 = 'CCC' comp3 = 2000 comp4 = `DDD` ).
+*
+*    MODIFY TABLE std_tab FROM line.
+*
+*    out->write( data = std_tab name = `std_tab` ).
+
+  ENDMETHOD.
+
+  METHOD m04_modify_index.
+    set_example_divider(  out  = out text = |{ text }: Modifications via index using MODIFY| ).
+
+    "Note that when using the INDEX addition, the statement is MODIFY, not MODIFY TABLE.
+
+    line = VALUE #( comp1 = 100 comp2 = 'AA' comp3 = 1000 comp4 = `BB` ).
+
+    "Modifying the first line according to the primary table index.
+    "Note the standard table with empty key. Unlike shown in another method, this modify
+    "operations work for these tables as the concrete index is specified.
+    MODIFY std_tab INDEX 5 FROM line.
+
+    MODIFY std_tab_w_keys INDEX 4 FROM line.
+
+    out->write( data = std_tab name = `std_tab` ).
+    out->write( |\n| ).
+    out->write( data = std_tab_w_keys name = `std_tab_w_keys` ).
+
+    "--- Note ---
+    "- The previous examples illustrate table line modification based on an
+    "  existing line. In that line, all components are specified, including the
+    "  primary key field (which is in the case above true for the second standard
+    "  specifying a concrete primary table key). Primary table key fields are not
+    "  write-protected. These fields are non-unique by default.
+    "- In case of sorted and hashed tables, their primary key fields are write-protected
+    "  and cannot be modified. Therefore, the following, commented out statements
+    "  would cause a runtime error.
+    "- See the examples about the TRANSPORTING addition, with which key fields can
+    "  be excluded. Without the TRANSPORTING addition, all table line components
+    "  are modified.
+    "- In case of the example statement using the hashed table, a runtime error is
+    "  caused since explicit or implicit index operations cannot be used on hashed
+    "  tables (regarding the primary table index).
+
+*    MODIFY sorted_tab INDEX 3 FROM line.
+
+*    MODIFY hashed_tab INDEX 2 FROM line.
+
+  ENDMETHOD.
+
+  METHOD m05_modify_transporting.
+    set_example_divider(  out  = out text = |{ text }: Modifications using the TRANSPORTING addition| ).
+
+    "Note:
+    "- The TRANSPORTING addition can be used to restrict the components to be modified.
+    "- If TRANSPORTING is not specified, all components are respected for modification.
+    "- Key fields of the primary table key in sorted and hashed tables are read-only and,
+    "  thus, write-protected. In such cases, using the TRANSPORTING addition is useful to
+    "  exnclude the key fields.
+    "- Key fields of the secondary table key are only read-only when the key is actually
+    "  used.
+
+    line = VALUE #( comp1 = 100 comp2 = 'ABC' comp3 = 1000 comp4 = `DEF` ).
+
+    "Index-based modification of a line of a standard table defining an empty key
+    "The TRANSPORTING addition only specifies some of the fields. The others
+    "remain unmodified.
+    MODIFY std_tab INDEX 1 FROM line TRANSPORTING comp1 comp4.
+
+    "Key-based modification of a line of a standard table defining a primary table key
+    "and restricting the value assignment using TRANSPORTING
+    line = VALUE #( comp1 = 2 comp2 = 'GHI' comp3 = 1000 comp4 = `JKL` ).
+    MODIFY TABLE std_tab_w_keys FROM line TRANSPORTING comp2.
+
+    "Index-based modification of a line of a sorted table and excluding
+    "the key field.
+    line = VALUE #( comp1 = 100 comp2 = 'MNO' comp3 = 1000 comp4 = `PQR` ).
+    MODIFY sorted_tab INDEX 5 FROM line TRANSPORTING comp2 comp3 comp4.
+
+    line = VALUE #( comp1 = 5 comp2 = 'STU' comp3 = 1000 comp4 = `VWX` ).
+
+    "Not possible due to the key field protection
+    "MODIFY TABLE hashed_tab FROM line TRANSPORTING comp1 comp2.
+
+    MODIFY TABLE hashed_tab FROM line TRANSPORTING comp2 comp3.
+
+    out->write( data = std_tab name = `std_tab` ).
+    out->write( |\n| ).
+    out->write( data = std_tab_w_keys name = `std_tab_w_keys` ).
+    out->write( |\n| ).
+    out->write( data = sorted_tab name = `sorted_tab` ).
+    out->write( |\n| ).
+    out->write( data = hashed_tab name = `hashed_tab` ).
+  ENDMETHOD.
+
+  METHOD m06_modify_using_key.
+    set_example_divider(  out  = out text = |{ text }: Modifications using the USING KEY addition (1)| ).
+
+    "Note:
+    "If the USING KEY addition is not specified, the primary table key is used by default.
+    "Otherwise, it is the explicitly specified table key that is used.
+
+    line = VALUE #( comp1 = 100 comp2 = 'ABC' comp3 = 1000 comp4 = `DEF` ).
+
+    "Specifying the primary table key explicitly using the predefined name primary_key
+    MODIFY std_tab_w_keys USING KEY primary_key INDEX 1 FROM line.
+    DATA(mod1) = std_tab_w_keys[ 1 ].
+
+    "The result corresponds to the following statement. The primary table
+    "key is used by default.
+    MODIFY std_tab_w_keys INDEX 1 FROM line.
+    DATA(mod2) = std_tab_w_keys[ 1 ].
+
+    ASSERT mod1 = mod2.
+
+    "The following statement is not possible as the primary table key field
+    "is write-protected.
+*    MODIFY sorted_tab USING KEY primary_key INDEX 4 FROM line.
+
+    "Using the TRANSPORTING addition to exclude the secondary table key component
+    MODIFY sorted_tab USING KEY primary_key INDEX 4 FROM line TRANSPORTING comp2 comp3 comp4.
+
+    "Specifying a secondary table key
+    "The following statement is not possible as it would overwrite the
+    "secondary table key's value.
+*    MODIFY std_tab_w_keys USING KEY sk INDEX 1 FROM line.
+
+    "Using the TRANSPORTING addition to exclude the secondary table key component
+    "Note: In the example table, the secondary table key (comp3) is a non-unique sorted key.
+    "Therefore (and due to the demo table content), note the modified table line, which
+    "is the last line in the example table. The secondary table index is used here. Since
+    "the original comp3 value is 1 it comes first in the table index.
+    line = VALUE #( comp1 = 99 comp2 = 'GHI' comp3 = 999 comp4 = `JKL` ).
+    MODIFY std_tab_w_keys USING KEY sk INDEX 1 FROM line TRANSPORTING comp1 comp2 comp4.
+
+    out->write( data = std_tab_w_keys name = `std_tab_w_keys` ).
+    out->write( |\n| ).
+    out->write( data = sorted_tab name = `sorted_tab` ).
+  ENDMETHOD.
+
+  METHOD m07_modify_key_pitfalls.
+    set_example_divider(  out  = out text = |{ text }: Pitfalls when modifying table content regarding keys| ).
+
+    "This example highlights pitfalls regarding duplicate keys
+    "when modifying internal table content.
+
+    "The following line specifies a value for the secondary table key
+    "component comp3 that already exists.
+    line = VALUE #( comp1 = 2 comp2 = 'ABC' comp3 = 1 comp4 = `DEF` ).
+
+    "Avoiding to run the first statement. It will cause a runtime error.
+    "Instead, running the second statement that includes the TRANSPORTING
+    "addition, excluding comp3.
+    IF 1 = 2.
+      MODIFY TABLE std_tab_w_uni_sk FROM line.
+    ELSE.
+      MODIFY TABLE std_tab_w_uni_sk FROM line TRANSPORTING comp1 comp2 comp4.
+    ENDIF.
+
+    "The following example highlights pitfalls regarding write-protected
+    "key fields when modifying internal table content.
+
+    "The first statement would try to change a write-protected key field.
+    "Instead, running the second statement that includes the TRANSPORTING
+    "addition, excluding comp1.
+    IF 1 = 2.
+      MODIFY TABLE sorted_tab FROM line.
+    ELSE.
+      MODIFY TABLE sorted_tab FROM line TRANSPORTING comp2 comp3 comp4.
+    ENDIF.
+
+    "Secondary table key fields are only read-only when using the key.
+    "Otherwise, the fields can be modified.
+    line = VALUE #( comp1 = 1 comp2 = 'GHI' comp3 = 100 comp4 = `JKL` ).
+
+    "Comparing the behavior of the following two statements with internal
+    "tables defining a primary table key and one that also specifies
+    "a secondary table key.
+
+    "The statement with the table defining a unique secondary table key cannot
+    "be specified. A syntax error is displayed, therefore, the line is commented
+    "out.
+*    MODIFY std_tab_w_uni_sk USING KEY sk INDEX 4 FROM line.
+
+    "In contrast, the following example statement uses a table that defines a unique
+    "primary table key. It optionally specifies the USING KEY addition with the
+    "default primary key name primary_key. This statement does not show a syntax error.
+    "The key overwriting is only checked until runtime. The statement is not to be
+    "run as it would cause a runtime error because the key fields are
+    "write-protected.
+    IF 1 = 2.
+      MODIFY sorted_tab USING KEY primary_key INDEX 4 FROM line.
+    ELSE.
+      MODIFY sorted_tab USING KEY primary_key INDEX 4 FROM line TRANSPORTING comp2 comp3 comp4.
+    ENDIF.
+
+    out->write( data = std_tab_w_uni_sk name = `std_tab_w_uni_sk` ).
+    out->write( |\n| ).
+    out->write( data = sorted_tab name = `sorted_tab` ).
+  ENDMETHOD.
+
+  METHOD m08_modify_using_key_loop_key.
+    set_example_divider(  out  = out text = |{ text }: Modifications using the USING KEY addition and modifications within loops using loop_key (2)| ).
+
+    line = VALUE #( comp1 = 100 comp2 = 'ABC' comp3 = 1000 comp4 = `DEF` ).
+
+    "Index-based modification using the primary table index
+    "Specifying the primary table key explicitly using the predefined name primary_key
+    MODIFY std_tab_w_keys USING KEY primary_key INDEX 1 FROM line.
+
+    line = VALUE #( comp1 = 200 comp2 = 'GHI' comp3 = 2000 comp4 = `JKL` ).
+
+    "Index-based modification using the secondary table index
+    "Without the TRANSPORTING addition and excluding the secondary table key comp3, the
+    "statement would show a syntax error.
+    MODIFY std_tab_w_keys USING KEY sk INDEX 1 FROM line TRANSPORTING comp1 comp2 comp4.
+
+    line = VALUE #( comp1 = 3 comp2 = 'MNO' comp3 = 3000 comp4 = `PQR` ).
+
+    "Key-based modification using the primary table key
+    MODIFY TABLE std_tab_w_keys USING KEY primary_key FROM line.
+
+    line = VALUE #( comp1 = 400 comp2 = 'STU' comp3 = 4 comp4 = `VWX` ).
+
+    "Key-based modification using the secondary table key
+    MODIFY TABLE std_tab_w_keys USING KEY sk FROM line.
+
+    out->write( data = std_tab_w_keys name = `std_tab_w_keys` ).
+    out->write( |\n| ).
+
+    "Resetting the table content
+    prepare_itabs( ).
+
+    "----------- USING KEY loop_key addition -----------
+
+    "Notes:
+    "- Specifying MODIFY ... USING KEY loop_key is required if the table key used by
+    "  the LOOP statement is specified explicitly. Otherwise, the addition USING KEY
+    "  loop_key is optional.
+    "- The effect is that the current table line of the loop pass is modified.
+    "- loop_key is a predefined name and must be used.
+
+    "LOOP statement specifying the primary table key explicitly
+    LOOP AT std_tab_w_keys INTO DATA(wa) USING KEY primary_key.
+      wa-comp2 = 'A' && sy-tabix.
+      wa-comp4 = 'B' && sy-tabix.
+
+      "Unlike the next example, this statement is possible without the TRANSPORTING
+      "addition regarding the secondary table key. Nevertheless, it is specified
+      "to have similar examples. In the example case, the secondary table key
+      "is a non-unique sorted key here. So, uniqueness of the key in case of
+      "overwriting is not an issue in the example case.
+      MODIFY std_tab_w_keys USING KEY loop_key FROM wa TRANSPORTING comp2 comp4.
+
+      "This statement is not possible. loop_key must be specified.
+*      MODIFY std_tab_w_keys USING KEY primary_key FROM wa TRANSPORTING comp2 comp4.
+    ENDLOOP.
+
+    out->write( data = std_tab_w_keys name = `std_tab_w_keys` ).
+    out->write( |\n| ).
+    "Resetting the table content
+    prepare_itabs( ).
+
+    "LOOP statement specifying the secondary table key explicitly
+    LOOP AT std_tab_w_keys INTO wa USING KEY sk.
+      wa-comp2 = 'C' && sy-tabix.
+      wa-comp4 = 'D' && sy-tabix.
+
+      "This statement is not possible without the TRANSPORTING addition
+      "due to the secondary table key whose overwriting should be prevented.
+      MODIFY std_tab_w_keys USING KEY loop_key FROM wa TRANSPORTING comp2 comp4.
+
+      "This statement is not possible. loop_key must be specified.
+*      MODIFY std_tab_w_keys USING KEY sk FROM wa TRANSPORTING comp2 comp4.
+    ENDLOOP.
+
+    out->write( data = std_tab_w_keys name = `std_tab_w_keys` ).
+  ENDMETHOD.
+
+  METHOD m09_modify_fs_dref.
+    set_example_divider(  out  = out text = |{ text }: Modifying a line and assigning a field symbol or setting a data reference| ).
+
+    "When you modify single table lines using MODIFY [TABLE], you can
+    "assign the successfully modified line to a field symbol or set it
+    "to a data reference variable.
+
+    "--- Assigning the line to a field symbol ---
+
+    FIELD-SYMBOLS <fs1> LIKE LINE OF std_tab.
+    line = VALUE #( comp1 = 100 comp2 = 'ABC' comp3 = 1000 comp4 = `DEF` ).
+    MODIFY std_tab INDEX 1 FROM line ASSIGNING <fs1>.
+
+    "Using inline declaration
+    line = VALUE #( comp1 = 200 comp2 = 'GHI' comp3 = 2000 comp4 = `JKL` ).
+    MODIFY std_tab INDEX 2 FROM line ASSIGNING FIELD-SYMBOL(<fs2>).
+
+    "--- Setting the line to a data reference variable ---
+
+    DATA dref1 TYPE REF TO s.
+    line = VALUE #( comp1 = 300 comp2 = 'MNO' comp3 = 3000 comp4 = `PQR` ).
+    MODIFY std_tab INDEX 3 FROM line REFERENCE INTO dref1.
+
+    "Using inline declaration
+    line = VALUE #( comp1 = 400 comp2 = 'STU' comp3 = 4000 comp4 = `VWX` ).
+    MODIFY std_tab INDEX 4 FROM line REFERENCE INTO DATA(dref2).
+
+    out->write( data = <fs1> name = `<fs1>` ).
+    out->write( |\n| ).
+    out->write( data = <fs2> name = `<fs2>` ).
+    out->write( |\n| ).
+    out->write( data = dref1->* name = `dref1->*` ).
+    out->write( |\n| ).
+    out->write( data = dref2->* name = `dref2->*` ).
+    out->write( |\n| ).
+
+    "--- Examples where the assignment/setting is unsuccessful ---
+    MODIFY std_tab INDEX 123 FROM line ASSIGNING FIELD-SYMBOL(<fs3>).
+    IF sy-subrc = 0.
+      out->write( `Assignment successful` ).
+    ELSE.
+      out->write( `Assignment not successful` ).
+    ENDIF.
+    out->write( |\n| ).
+
+    MODIFY std_tab INDEX 123 FROM line REFERENCE INTO DATA(dref3).
+    IF sy-subrc = 0.
+      out->write( `Reference setting successful` ).
+    ELSE.
+      out->write( `Reference setting not successful` ).
+    ENDIF.
+    out->write( |\n| ).
+
+    "The ASSIGNING FIELD-SYMBOL addition also supports ELSE UNASSIGN
+    FIELD-SYMBOLS <fs4> LIKE LINE OF std_tab.
+
+    "Assigning a line to the field symbol to ensure that is assigned
+    "before the MODIFY statements below
+    ASSIGN line TO <fs4>.
+    IF sy-subrc = 0.
+      out->write( `Assignment successful` ).
+    ELSE.
+      out->write( `Assignment not successful` ).
+    ENDIF.
+    out->write( |\n| ).
+
+    "The following example shows two unsuccessful assignments after specifying
+    "a non-existent table line using INDEX. In the first loop pass, the ELSE
+    "UNASSIGN addition is not specified. That means, although the modification
+    "was not successful, the field symbol is still assigned. This is not the
+    "case after the MODIFY statement in the second loop pass when specifying
+    "ELSE UNASSIGN.
+    DO 2 TIMES.
+      out->write( |------------- Loop pass { sy-index } -------------| ).
+      out->write( |\n| ).
+
+      IF sy-index = 1.
+        MODIFY std_tab INDEX 123 FROM line ASSIGNING <fs4>.
+      ELSE.
+        MODIFY std_tab INDEX 123 FROM line ASSIGNING <fs4> ELSE UNASSIGN.
+      ENDIF.
+
+      IF sy-subrc = 0.
+        out->write( `Assignment with MODIFY successful` ).
+      ELSE.
+        out->write( `Assignment with MODIFY not successful` ).
+      ENDIF.
+      out->write( |\n| ).
+
+      IF <fs4> IS ASSIGNED.
+        out->write( `Field symbol is assigned` ).
+      ELSE.
+        out->write( `Field symbol is not assigned` ).
+      ENDIF.
+      out->write( |\n| ).
+    ENDDO.
+  ENDMETHOD.
+
+  METHOD m10_modify_multiple_lines.
+    set_example_divider(  out  = out text = |{ text }: Modifying multiple table lines using MODIFY statements| ).
+
+    "Modifying multiple lines in internal tables is possible using MODIFY statements.
+    "The additions TRANSPORTING and WHERE are both mandatory. USING KEY is optional.
+    "All lines matching the logical expression in the WHERE clause are modified
+    "based on the values a line.
+
+    line = VALUE #( comp1 = 123 comp2 = '###' comp3 = 123 comp4 = `***` ).
+
+    MODIFY std_tab_w_keys FROM line TRANSPORTING comp2 comp4 WHERE comp1 <= 3.
+
+    MODIFY sorted_tab FROM line TRANSPORTING comp2 comp4 WHERE comp1 IS NOT INITIAL.
+
+    out->write( data = std_tab_w_keys name = `std_tab_w_keys` ).
+    out->write( |\n| ).
+    out->write( data = sorted_tab name = `sorted_tab` ).
+  ENDMETHOD.
+
+  METHOD m11_read_table_modify_target.
+    set_example_divider(  out  = out text = |{ text }: Modifying internal table content in the context of READ TABLE statements| ).
+
+    "The examples here deal with modifying internal table content in the context of READ TABLE statements.
+    "The described use case is to modify the content of read table lines.
+    "When choosing field symbols or data reference variables as target areas, you can directly modify the
+    "table line content. When choosing a work area as target area, you can indirectly modify the table line,
+    "e.g. by modifying the copied values in the work area and then modifying the internal table based on
+    "the changed values and a MODIFY statement.
+
+    "The examples use the following for modifying field values:
+    "- Component selector
+    "- Constructor expressions such as VALUE and CORRESPONDING
+
+    "Indirect modification using a subsequent MODIFY statement
+    READ TABLE sorted_tab INDEX 1 INTO line.
+
+    "Modifying individual components using the component selector
+    "comp1 is not modified in the example as it is a write-protected key field.
+    line-comp2 = 'AB'.
+    line-comp3 = 100.
+    line-comp4 = `CD`.
+
+    MODIFY TABLE sorted_tab FROM line.
+
+    "Direct modification
+    "Using a field symbol
+    READ TABLE sorted_tab INDEX 2 ASSIGNING FIELD-SYMBOL(<fs>).
+
+    <fs>-comp2 = 'EF'.
+    <fs>-comp3 = 200.
+    <fs>-comp4 = `GH`.
+
+    "Using a data reference variable
+    READ TABLE sorted_tab INDEX 3 REFERENCE INTO DATA(dref).
+
+    "Using the object component selector in case of dereferencing ...
+    dref->comp2 = 'IJ'.
+    dref->comp3 = 300.
+    "... which is a more comfortable option compared to using the
+    "dereferencing and component selector operators in the following way.
+    dref->*-comp4 = `KL`.
+
+    "Using constructor expressions
+    "The following example uses a standard table that modifies the entire table line.
+    READ TABLE std_tab INDEX 1 INTO line.
+
+    line = VALUE #( comp1 = 100 comp2 = 'AB' comp3 = 1000 comp4 = `CD` ).
+    MODIFY std_tab INDEX 1 FROM line.
+
+    "Specifying the constructor expression inline
+    MODIFY std_tab INDEX 2 FROM VALUE #( comp1 = 200 comp2 = 'EF' comp3 = 2000 comp4 = `GH` ).
+
+    "Using the BASE addition (see below)
+    MODIFY std_tab INDEX 3 FROM VALUE #( BASE line comp3 = 3000 comp4 = `IJ` ).
+
+    "The following example uses a sorted table.
+    READ TABLE sorted_tab INDEX 4 REFERENCE INTO dref.
+
+    "Key values are write-protected. Using the BASE addition, the not specified
+    "components (including the key component) are retained and not modified.
+    dref->* = VALUE #( BASE dref->* comp3 = 400 comp4 = `MN` ).
+
+    READ TABLE sorted_tab INDEX 5 ASSIGNING <fs>.
+    <fs> = VALUE #( BASE <fs> comp3 = 500 comp4 = `OP` ).
+
+    out->write( data = std_tab name = `std_tab` ).
+    out->write( |\n| ).
+    out->write( data = sorted_tab name = `sorted_tab` ).
+    out->write( |\n| ).
+
+    "The following examples use the CORRESPONDING operator
+    "For that purpose a demo line has an incompatible type. Some fields have
+    "identical names, some have not.
+    line4corr = VALUE #( comp1 = 12 comp2 = 'ZY' compy = 34 compz = `XW` ).
+
+    "Standard table, modifying the entire line
+    READ TABLE std_tab_w_keys INDEX 1 INTO line.
+    line = CORRESPONDING #( line4corr ).
+    MODIFY std_tab_w_keys INDEX 1 FROM line.
+
+    READ TABLE std_tab_w_keys INDEX 2 INTO line.
+    line4corr = VALUE #( comp1 = 56 comp2 = 'VU' compy = 78 compz = `TS` ).
+    MODIFY std_tab_w_keys INDEX 2 FROM CORRESPONDING #( line4corr ).
+
+    "Applying a mapping for the non-identical components
+    READ TABLE std_tab_w_keys INDEX 3 INTO line.
+    line4corr = VALUE #( comp1 = 90 comp2 = 'RQ' compy = 12 compz = `PO` ).
+    line = CORRESPONDING #( line4corr MAPPING comp3 = compy comp4 = compz ).
+    MODIFY std_tab_w_keys INDEX 3 FROM line.
+
+    "EXCEPT addition (MAPPING can but need not be specified too)
+    READ TABLE std_tab_w_keys INDEX 4 INTO line.
+    line4corr = VALUE #( comp1 = 98 comp2 = 'NM' compy = 76 compz = `LK` ).
+    line = CORRESPONDING #( line4corr MAPPING comp3 = compy comp4 = compz EXCEPT comp2 ).
+    MODIFY std_tab_w_keys INDEX 4 FROM line.
+
+    "Hahsed table, modifying components, excluding the key fields
+    READ TABLE hashed_tab WITH KEY comp1 = 1 INTO line.
+    line4corr = VALUE #( comp1 = 11 comp2 = 'AB' compy = 22 compz = `CD` ).
+    "Using BASE to retain the key value
+    line = CORRESPONDING #( BASE ( line ) line4corr MAPPING comp3 = compy comp4 = compz EXCEPT comp1 ).
+    MODIFY TABLE hashed_tab FROM line.
+
+    out->write( data = std_tab_w_keys name = `std_tab_w_keys` ).
+    out->write( |\n| ).
+    out->write( data = hashed_tab name = `hashed_tab` ).
+  ENDMETHOD.
+
+  METHOD m12_table_expressions.
+    set_example_divider(  out  = out text = |{ text }: Modifying internal table content using table expressions| ).
+
+    "Changing the entire table line of a standard table
+    line = VALUE #( comp1 = 100 comp2 = 'AB' comp3 = 1000 comp4 = `CD` ).
+
+    std_tab[ 1 ] = line.
+
+    "Note: See further approaches using constructor expressions in the method
+    "that includes READ TABLE statements. These approaches are not detailed out
+    "here.
+    std_tab[ 2 ] = VALUE #( comp1 = 200 comp2 = 'EF' comp3 = 2000 comp4 = `GH` ).
+
+    "Changing the values of individual components
+    std_tab[ 3 ]-comp2 = 'IJ'.
+    std_tab[ 3 ]-comp4 = `KL`.
+    std_tab[ 4 ]-comp3 = 4000.
+
+    "Changing the entire line is not possible for tables with unique keys
+*    sorted_tab[ 1 ] = line.
+
+    "Changing individual non-key fields
+    sorted_tab[ 1 ]-comp2 = 'AB'.
+    sorted_tab[ 2 ]-comp3 = 3000.
+
+    "Multiple table expression specifications for the same line is not advisable
+    "due to the repeated read access
+    "Alternatively, you may want, for example, set the line to a data reference variable
+    "or assign it to a field symbol.
+    DATA(dref) = REF #( sorted_tab[ 3 ] ).
+    dref->comp2 = 'CD'.
+    dref->comp3 = 3000.
+    dref->comp4 = `EF`.
+
+    ASSIGN sorted_tab[ 4 ] TO FIELD-SYMBOL(<fs>).
+    <fs>-comp2 = 'GH'.
+    <fs>-comp3 = 4000.
+    <fs>-comp4 = `IJ`.
+
+    out->write( data = std_tab name = `std_tab` ).
+    out->write( |\n| ).
+    out->write( data = sorted_tab name = `sorted_tab` ).
+  ENDMETHOD.
+
+  METHOD m13_modifications_in_loops.
+    set_example_divider(  out  = out text = |{ text }: Modifying table content in all table rows in a loop| ).
+
+    "LOOP AT statements without any additions regarding restrictions (WHERE condition or
+    "index specifications) loop over the entire table, enabling the modification of
+    "all table lines.
+
+    "Indirect modification using a work area as target area and a MODIFY statement
+    LOOP AT sorted_tab INTO DATA(wa).
+      wa-comp2 = 'A' && sy-tabix.
+      wa-comp3 = sy-tabix.
+      wa-comp4 = 'B' && sy-tabix.
+
+      MODIFY sorted_tab FROM wa.
+    ENDLOOP.
+
+    "Direct modification using a field symbol as target area
+    DATA count TYPE i.
+    LOOP AT hashed_tab ASSIGNING FIELD-SYMBOL(<fs>).
+      count += 1.
+      <fs>-comp2 = 'C' && count.
+      "Note: No primary table index in case of hashed table. Therefore,
+      "the sy-tabix value is initial.
+      <fs>-comp3 = sy-tabix.
+      <fs>-comp4 = 'D' && count.
+    ENDLOOP.
+
+    "Direct modification using a data reference variable as target area
+    LOOP AT std_tab REFERENCE INTO DATA(dref).
+      "Key field in standard tables not write-protected
+      dref->comp1 = sy-tabix.
+      dref->comp2 = 'E' && sy-tabix.
+      dref->comp3 = sy-tabix.
+      dref->comp4 = 'F' && sy-tabix.
+    ENDLOOP.
+
+    out->write( data = sorted_tab name = `sorted_tab` ).
+    out->write( |\n| ).
+    out->write( data = hashed_tab name = `hashed_tab` ).
+    out->write( |\n| ).
+    out->write( data = std_tab name = `std_tab` ).
+  ENDMETHOD.
+
+  METHOD m14_restrict_modif_in_loops.
+    set_example_divider(  out  = out text = |{ text }: Sequentially modify table content restricting the lines that are looped across| ).
+
+    "The examples only use data reference variables as target area.
+
+    "Using a WHERE condition to restrict the table lines to be looped across
+    LOOP AT std_tab REFERENCE INTO DATA(dref) WHERE comp1 >= 3.
+      dref->comp2 = 'G' && sy-tabix.
+      dref->comp3 = sy-tabix.
+      dref->comp4 = 'H' && sy-tabix.
+    ENDLOOP.
+
+    "Specifying the FROM and TO additions to set index values to
+    "restrict the table lines to be looped across.
+    "Note that you need not mandatorily specify both additions.
+    "When not specifying FROM, it means starting from 1. When not
+    "specifying TO, it means looping to the end of the table.
+    LOOP AT sorted_tab REFERENCE INTO dref FROM 2 TO 4.
+      dref->comp2 = 'I' && sy-tabix.
+      dref->comp3 = sy-tabix.
+      dref->comp4 = 'J' && sy-tabix.
+    ENDLOOP.
+
+    out->write( data = sorted_tab name = `sorted_tab` ).
+    out->write( |\n| ).
+    out->write( data = hashed_tab name = `hashed_tab` ).
+  ENDMETHOD.
+
+  METHOD set_example_divider.
+    out->write( |\n| ).
+    out->write( |*&{ repeat( val = `-` occ = strlen( text ) + 2 ) }*| ).
+    out->write( |*& { text }| ).
+    out->write( |*&{ repeat( val = `-` occ = strlen( text ) + 2 ) }*| ).
+    out->write( |\n| ).
+    out->write( |\n| ).
+  ENDMETHOD.
+
+  METHOD prepare_itabs.
+    std_tab = VALUE #( ( comp1 = 1 comp2 = 'a' comp3 = 5 comp4 = `f` )
+                       ( comp1 = 2 comp2 = 'b' comp3 = 4 comp4 = `g` )
+                       ( comp1 = 3 comp2 = 'c' comp3 = 3 comp4 = `h` )
+                       ( comp1 = 4 comp2 = 'd' comp3 = 2 comp4 = `i` )
+                       ( comp1 = 5 comp2 = 'e' comp3 = 1 comp4 = `j` ) ).
+
+    sorted_tab = std_tab.
+    hashed_tab = std_tab.
+    std_tab_w_keys = std_tab.
+    std_tab_w_uni_sk = std_tab.
+  ENDMETHOD.
+ENDCLASS.
 ```
-
-### Modifying Table Lines Using ABAP MODIFY Statements
-
-[`MODIFY`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapmodify_itab.htm)
-statements provide multiple ways of changing the content of single and multiple table lines by specifying the table key or a table index,
-without first reading the lines into a target area. Do not confuse the ABAP statement `MODIFY` with the ABAP SQL statement [`MODIFY`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABAPMODIFY_DBTAB.html).
-
-``` abap
-"Addition FROM ...; specified key values determine the line to be modified
-
-"line: existing line including key values
-MODIFY TABLE it FROM line.
-
-"line constructed inline
-MODIFY TABLE it FROM VALUE #( a = 1 b = 2 ... ).
-
-"Respecting only specified fields with the addition TRANSPORTING
-"In case of sorted/hashed tables, key values cannot be specified.
-MODIFY TABLE it FROM line TRANSPORTING b c.
-
-"Modification via index
-"Note that it is only MODIFY, not MODIFY TABLE.
-"Example: It modifies the line with number 1 in the primary table index.
-MODIFY it FROM line INDEX 1.
-
-"Without the addition TRANSPORTING, the entire line is changed.
-"Example: It modifies specific values.
-MODIFY it FROM line INDEX 1 TRANSPORTING b c.
-
-"USING KEY addition
-"If the addition is not specified, the primary table key is used;
-"otherwise, it is the explicitly specified table key that is used.
-"Example: It is the same as MODIFY it FROM line INDEX 1.
-MODIFY it FROM line USING KEY primary_key INDEX 1.
-
-"The statement below uses a secondary key and an index specification
-"for the secondary table index. Only specific fields are modified.
-MODIFY it FROM line USING KEY sec_key INDEX 1 TRANSPORTING c d.
-
-"Modifying multiple lines in internal tables
-"All lines matching the logical expression in the WHERE clause are modified
-"as specified in line.
-"The additions TRANSPORTING and WHERE are both mandatory; USING KEY is optional.
-MODIFY it FROM line TRANSPORTING b c WHERE a < 5.
-```
-
-> [!NOTE] 
-> - The system field `sy-subrc` is set to `0` if at least one line was changed. It is set to `4` if no lines were changed.
-> - `MODIFY`, `DELETE`, and `INSERT` statements can be specified with and without the `TABLE` addition. With `TABLE` means an index access. Without `TABLE` means an access via the table key.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
