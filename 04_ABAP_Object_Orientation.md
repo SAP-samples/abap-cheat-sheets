@@ -8597,7 +8597,7 @@ ENDCLASS.
 
 ### Name Shadowing
 
-The following example highlights potential pitfalls regarding name shadowing in ABAP. It occurs in ABAP Objects, for example, when a local variable or parameter has an identical name as a variable in an outer scope. It can also occur in the context of type and method naming. This can lead to confusion and bugs if inadvertently referencing the wrong variable. The following (nonsensical) example illustrates these pitfalls.
+The following example highlights potential pitfalls regarding name shadowing in ABAP. It occurs in ABAP Objects when a local variable or parameter shares the same name as, for example, a variable specified in a visibility section. It can also happen with type and method naming. This overlap can cause confusion and may lead to errors if the wrong variable is referenced unintentionally. The following nonsensical example illustrates these pitfalls. 
 
 Expand the following collapsible section for example code. To try it out, create a demo class named `zcl_demo_abap`, or reuse it if it already exists. Paste the code into it. If you choose a different class name, update the class name in the code snippet accordingly. Note that the example includes code in the global class and the CCIMP include (Local Types tab in ADT). After activation, choose *F9* in ADT to execute the class. The example is set up to display output in the console. Note the comments in the code.
 
