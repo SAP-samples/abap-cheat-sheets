@@ -54,6 +54,7 @@
     - [ABAP Unit Tests](#abap-unit-tests)
     - [ABAP Doc Comments](#abap-doc-comments)
     - [Escape Character](#escape-character)
+    - [Name Shadowing](#name-shadowing)
   - [More Information](#more-information)
   - [Executable Examples](#executable-examples)
 
@@ -2165,6 +2166,7 @@ CLASS zcl_demo_abap DEFINITION
   PRIVATE SECTION.
     DATA str TYPE string.
     METHODS meth RETURNING VALUE(text) TYPE string.
+    METHODS pass_me_ref RETURNING VALUE(oref) TYPE REF TO zcl_demo_abap.
 ENDCLASS.
 
 CLASS zcl_demo_abap IMPLEMENTATION.
@@ -2172,7 +2174,15 @@ CLASS zcl_demo_abap IMPLEMENTATION.
 
     str = `AP`.
     DATA(text) = meth( ).
-    ASSERT text = `ABAP`.
+    out->write( text ). "ABAP
+
+    str = `Hello`.
+    DATA(oref) = pass_me_ref( ).
+    out->write( oref->str ).
+
+    str = `World`.
+    oref = pass_me_ref( ).
+    out->write( oref->str ).
 
   ENDMETHOD.
 
@@ -2190,6 +2200,11 @@ CLASS zcl_demo_abap IMPLEMENTATION.
 
     text = local_string && other_string.
 
+  ENDMETHOD.
+
+  METHOD pass_me_ref.
+    "Adressing the object using the self-reference me
+    oref = me.
   ENDMETHOD.
 
 ENDCLASS.
@@ -8580,6 +8595,309 @@ ENDCLASS.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
+### Name Shadowing
+
+The following example highlights potential pitfalls regarding name shadowing in ABAP. It occurs in ABAP Objects, for example, when a local variable or parameter has an identical name as a variable in an outer scope. It can also occur in the context of type and method naming. This can lead to confusion and bugs if inadvertently referencing the wrong variable. The following (nonsensical) example illustrates these pitfalls.
+
+Expand the following collapsible section for example code. To try it out, create a demo class named `zcl_demo_abap`, or reuse it if it already exists. Paste the code into it. If you choose a different class name, update the class name in the code snippet accordingly. Note that the example includes code in the global class and the CCIMP include (Local Types tab in ADT). After activation, choose *F9* in ADT to execute the class. The example is set up to display output in the console. Note the comments in the code.
+
+<details>
+  <summary>🟢 Click to expand for example code</summary>
+  <!-- -->
+
+<br>
+
+<table>
+
+<tr>
+<td> Class include </td> <td> Code </td>
+</tr>
+
+<tr>
+<td> 
+
+Global class
+
+ </td>
+
+ <td> 
+
+``` abap
+CLASS zcl_demo_abap DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
+
+  PUBLIC SECTION.
+    INTERFACES if_oo_adt_classrun.
+
+    "Method that is named like a string function
+    "Unlike the numofchar string function, this method returns
+    "the total number of characters without any blanks.
+    METHODS numofchar IMPORTING text          TYPE csequence
+                      RETURNING VALUE(result) TYPE i.
+
+    "Data object declarations whose name match the names of
+    "a method parameter and a local variable declared in a
+    "method
+    DATA num TYPE i.
+    DATA str TYPE string.
+
+    METHODS addition IMPORTING num     TYPE i
+                               num2    TYPE i
+                               flag    TYPE c
+                     EXPORTING result1 TYPE i
+                               result2 TYPE string.
+
+    "Local type that is named like a globally available type
+    TYPES: BEGIN OF ENUM abap_boolean,
+             abap_true,
+             abap_false,
+           END OF ENUM abap_boolean.
+
+    METHODS demo_method IMPORTING flag TYPE abap_boolean
+                                      out  TYPE REF TO if_oo_adt_classrun_out.
+
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+ENDCLASS.
+
+
+CLASS zcl_demo_abap IMPLEMENTATION.
+
+  METHOD if_oo_adt_classrun~main.
+
+*&---------------------------------------------------------------------*
+*& Name shadowing with methods
+*&---------------------------------------------------------------------*
+
+    "In this example, a method is named like the string function 'numofchar'.
+
+    DATA(text) = ` ABAP `.
+
+    "Calling the local numofchar method
+    DATA(numofchar) = numofchar( text ).
+
+    out->write( numofchar ).
+
+    "Calling a method that implements the numofchar string function
+    "to compare the results.
+    numofchar = lcl_demo=>get_numofchar( text ).
+    out->write( numofchar ).
+    out->write( repeat( val = `*` occ = 30 ) ).
+
+*&---------------------------------------------------------------------*
+*& Name shadowing with data objects
+*&---------------------------------------------------------------------*
+
+    "In this example, two data objects are declared in the public visibility section
+    "of the demo class. A method parameter is identically named as one of the data objects.
+    "Another data object that has the same name as the second data object in the
+    "public visibility section is declared in the method implementation.
+
+    "As an alternative to the following specification ...
+    num = 10.
+    "... you can also and optionally specify the self-reference
+    "'me' explicitly.
+    me->num = 10.
+
+    DO 2 TIMES.
+
+      IF sy-index = 1.
+        str = `CD`.
+        "or
+        me->str = `CD`.
+      ELSE.
+        str = `AP`.
+        "or
+        me->str = `AP`.
+      ENDIF.
+
+      addition(
+        EXPORTING
+          num     = 1
+          num2    = 2
+          flag    = SWITCH #( sy-index WHEN 1 THEN 'X' ELSE '' )
+        IMPORTING
+          result1 = DATA(result1)
+          result2 = DATA(result2)
+      ).
+
+      out->write( result1 ).
+      out->write( result2 ).
+    ENDDO.
+    out->write( repeat( val = `*` occ = 30 ) ).
+
+*&---------------------------------------------------------------------*
+*& Name shadowing with types
+*&---------------------------------------------------------------------*
+
+    "In this example, a type is named like a globally available type.
+    "Here, the type ABAP_BOOLEAN is created in the public visibility section of the
+    "demo class as enumerated type. ABAP_BOOLEAN is a globally available data element,
+    "representing a type for truth values.
+
+    DO 2 TIMES.
+
+      IF sy-index = 1.
+        demo_method(
+          flag = abap_true
+          out  = out
+        ).
+      ELSE.
+        demo_method(
+          flag = abap_false
+          out  = out
+        ).
+      ENDIF.
+
+    ENDDO.
+
+    "Getting type information using RTTI
+    "The example illustrates that the first RTTI call uses the locally declared type, while
+    "the second RTTI call uses the type information returned by the method get_type_descr_obj
+    "of the local class. As the name is not referenced using the class name, the type information
+    "is retrieved for the globally available data element.
+    DATA(type_name) = 'ABAP_BOOLEAN'.
+    DATA(tdo) = CAST cl_abap_elemdescr( cl_abap_typedescr=>describe_by_name( type_name ) ).
+
+    IF tdo IS INSTANCE OF cl_abap_enumdescr.
+      out->write( |The type { type_name } is an enumerated type.| ).
+    ELSE.
+      out->write( |The type { type_name } is not an enumerated type.| ).
+    ENDIF.
+
+    tdo = CAST cl_abap_elemdescr( lcl_demo=>get_type_descr_obj( type_name ) ).
+
+    IF tdo IS INSTANCE OF cl_abap_enumdescr.
+      out->write( |The type { type_name } is an enumerated type.| ).
+    ELSE.
+      out->write( |The type { type_name } is not an enumerated type.| ).
+    ENDIF.
+    out->write( |\n| ).
+
+    "In the following example, a structured type is created whose name
+    "corresponds to the view i_timezone. A work area of that type is used
+    "as target of a SELECT statement. However, the type is not type-compatible.
+    "The SELECT statement will result in a syntax error. Since a static
+    "specification of the SELECT statement would show a syntax error (due to the
+    "type-incompatibility), the example uses a dynamic statement to illustrate
+    "the error.
+    TYPES: BEGIN OF i_timezone,
+             comp1 TYPE i,
+             comp2 TYPE i,
+           END OF i_timezone.
+
+    DATA tz TYPE i_timezone.
+
+    TRY.
+        SELECT SINGLE * FROM ('I_TIMEZONE') INTO @tz.
+        out->write( tz ).
+      CATCH cx_sy_dynamic_osql_semantics INTO DATA(err).
+        out->write( err->get_text( ) ).
+    ENDTRY.
+
+  ENDMETHOD.
+
+  METHOD numofchar.
+
+    TRY.
+        DO.
+          DATA(idx) = sy-index - 1.
+          DATA(char) = substring( val = text off = idx len = 1 ).
+          IF char <> ` `.
+            result += 1.
+          ENDIF.
+        ENDDO.
+      CATCH cx_sy_range_out_of_bounds.
+    ENDTRY.
+
+  ENDMETHOD.
+
+  METHOD addition.
+
+    IF flag IS NOT INITIAL.
+      result1 = num + num2.
+    ELSE.
+      result1 = me->num + num2.
+    ENDIF.
+
+    "Declaring a local data object having the same
+    "name as a data object declared in a visibility section.
+    DATA str TYPE string VALUE `AB`.
+
+    "Addressing locally declared data object
+    DATA(local_string) = str.
+
+    "Addressing data object declared in private visibility section
+    DATA(other_string) = me->str.
+
+    result2 = local_string && other_string.
+  ENDMETHOD.
+
+  METHOD demo_method.
+
+    IF flag = abap_true.
+      out->write( |flag: { flag }| ).
+      out->write( |flag base value: { CONV i( flag ) }| ).
+    ELSE.
+      out->write( |flag: { flag }| ).
+      out->write( |flag base value: { CONV i( flag ) }| ).
+    ENDIF.
+    out->write( `------` ).
+
+  ENDMETHOD.
+
+ENDCLASS.
+``` 
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+CCIMP include (Local Types tab in ADT)
+
+ </td>
+
+ <td> 
+
+``` abap
+CLASS lcl_demo DEFINITION.
+  PUBLIC SECTION.
+    CLASS-METHODS: get_numofchar IMPORTING text          TYPE csequence
+                                 RETURNING VALUE(result) TYPE i.
+    CLASS-METHODS: get_type_descr_obj IMPORTING type_name          TYPE csequence
+                                 RETURNING VALUE(tdo) TYPE ref to cl_abap_typedescr.
+ENDCLASS.
+
+CLASS lcl_demo IMPLEMENTATION.
+
+  METHOD get_numofchar.
+
+    "Assume the method was also named numofchar, then the calling of this method
+    "would result in an infinite loop as the method would be called iteratively.
+
+    result = numofchar( text ).
+
+  ENDMETHOD.
+
+  METHOD get_type_descr_obj.
+      tdo = cl_abap_typedescr=>describe_by_name( type_name ).
+  ENDMETHOD.
+
+ENDCLASS.
+``` 
+
+ </td>
+</tr>
+
+</table>
+
+</details>  
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## More Information
 You can check the subtopics of

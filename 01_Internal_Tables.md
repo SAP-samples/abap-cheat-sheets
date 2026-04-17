@@ -4266,7 +4266,156 @@ The following example covers these aspects:
 >   - `MODIFY` (and also `DELETE` and `INSERT`) statements can be specified with and without the `TABLE` addition. With `TABLE` means an index access. Without `TABLE` means an access via the table key.
 >   - Do not confuse the ABAP statement `MODIFY` with the ABAP SQL statement [`MODIFY`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABAPMODIFY_DBTAB.html).
 
-To try the example out, create a demo class named `zcl_demo_abap`, or reuse it if it already exists. Paste the code into it. If you choose a different class name, update the class name in the code snippet accordingly. After activation, choose *F9* in ADT to execute the class. The example is set up to display output in the console.
+The following code snippet shows high-level syntax patterns. Find more details and an executable example in the collapsible section below.
+
+``` abap
+*&---------------------------------------------------------------------*
+*& MODIFY [TABLE] statements
+*&---------------------------------------------------------------------*
+
+"Modifying table lines based on key values
+"'line' represents an existing structure including key values. The line
+"can also be created inline using constructor expressions.
+MODIFY TABLE it FROM line.
+MODIFY TABLE it FROM VALUE #( a = 1 b = 2 ... ).
+
+"Modifying table lines via the index
+"Note: 
+"- It is only MODIFY, not MODIFY TABLE.
+"- The example statement modifies the line with number 1 in the primary table index.
+"- The order of additions may vary.
+MODIFY it FROM line INDEX 1.
+
+"Restricting the components modified using the TRANSPORTING addition
+"Note: 
+"- Without the TRANSPORTING addition, the entire line is changed.
+"- In case of sorted and hashed tables, key values cannot be specified.
+MODIFY TABLE it FROM line TRANSPORTING b c.
+
+"Modifications with the USING KEY addition concerning primary and secondary table keys
+"If the addition is not specified, the primary table key is used. Otherwise, it is 
+"the explicitly specified table key that is used.
+"The example statement with the explicitly specified primary table key has the same 
+"effect as the statement 'MODIFY it FROM line INDEX 1.'.
+MODIFY it FROM line USING KEY primary_key INDEX 1.
+
+"Using a secondary table key and an index specification for the secondary table index. 
+"The example also uses the TRANSPORTING addition to modify only specific fields.
+MODIFY it FROM line USING KEY sec_key INDEX 1 TRANSPORTING c d.
+
+"Modifying a line using MODIFY and assigning a field symbol or setting a data reference
+"Both of the following examples specify the target inline.
+MODIFY it INDEX 1 FROM line ASSIGNING FIELD-SYMBOL(<fs>).
+MODIFY it INDEX 2 FROM line REFERENCE INTO DATA(dref).
+
+"Modifying multiple lines in internal tables
+"All lines matching the logical expression in the WHERE clause are modified
+"as specified in 'line'.
+"The additions TRANSPORTING and WHERE are both mandatory; USING KEY is optional.
+MODIFY it FROM line TRANSPORTING b c WHERE a < 5.
+
+*&---------------------------------------------------------------------*
+*& Modifying read table lines in the context of READ TABLE statements
+*&---------------------------------------------------------------------*
+
+"Indirect modification using a subsequent MODIFY statement
+READ TABLE it INDEX 1 INTO line.
+
+IF sy-subrc = 0.
+  "Modifying individual components using the component selector
+  "Instead of assigning individual components, you can also use constructor expressions 
+  "as shown below.
+  line-comp1 = 'ABAP'.
+  ...
+
+  MODIFY TABLE it FROM line.
+ENDIF.
+
+"Direct modification
+"Using a field symbol
+READ TABLE it INDEX 1 ASSIGNING FIELD-SYMBOL(<line>).
+
+IF sy-subrc = 0.
+  "Instead of assigning individual components, using constructor expressions 
+  "line-comp1 = 'ABAP'.
+  "...  
+
+  <line> = VALUE #( BASE <line> comp1 = ... comp2 = ... ).
+ENDIF.  
+
+"Using a data reference variable
+READ TABLE it INDEX 1 REFERENCE INTO DATA(ref).
+
+IF sy-subrc = 0.
+  ref->* = VALUE #( BASE ref->* comp1 = ... comp2 = ... ).
+ENDIF.
+
+*&---------------------------------------------------------------------*
+*& Table expressions
+*&---------------------------------------------------------------------*
+
+"Changing the entire table line of a standard table
+it[ 1 ] = line.
+it[ 1 ] = VALUE #( comp1 = ... comp2 = ... ).
+
+"Changing the values of individual components
+it[ 1 ]-comp1 = ...
+it[ 2 ]-comp2 = ...
+it[ 3 ]-comp3 = ...
+
+*&---------------------------------------------------------------------*
+*& Modifying table content within loops
+*&---------------------------------------------------------------------*
+
+"Modifying all table lines
+"Indirect modification using a work area as target area and a MODIFY statement
+LOOP AT it INTO DATA(wa).
+  wa-comp1 = ...
+  ...
+
+  MODIFY it FROM wa.
+ENDLOOP.
+
+"Direct modification ...
+"... using a field symbol as target area
+LOOP AT it ASSIGNING FIELD-SYMBOL(<l>).  
+  <l>-comp1 = ...  
+  ...
+ENDLOOP.
+
+"... using a data reference variable as target area
+LOOP AT it REFERENCE INTO DATA(r).  
+  r->comp1 = ...
+  ...  
+ENDLOOP.
+
+"Restricting the table lines processed in loops to modify only a 
+"restricted set of table entries
+"Using a WHERE condition to restrict the table lines to be looped across
+LOOP AT it REFERENCE INTO r WHERE comp1 >= 3.
+  r->comp2 = ...
+  ...
+ENDLOOP.
+
+"Specifying the FROM and TO additions to set index values to
+"restrict the table lines to be looped across.
+"Note that you need not mandatorily specify both additions.
+"When not specifying FROM, it means starting from 1. When not
+"specifying TO, it means looping to the end of the table.
+LOOP AT it REFERENCE INTO r FROM 2 TO 4.
+  r->comp2 = ...
+  ...
+ENDLOOP.
+```
+
+Expand the following collapsible section for example code. To try it out, create a demo class named `zcl_demo_abap` and paste the code into it. Note that the example includes code in the global class and the CCIMP include (Local Types tab in ADT). After activation, choose *F9* in ADT to execute the class. The example is set up to display output in the console. For more information on the example, see the inline comments.
+
+<details>
+  <summary>🟢 Click to expand for example code</summary>
+  <!-- -->
+
+<br>
+
 
 ```abap
 CLASS zcl_demo_abap DEFINITION
@@ -5085,6 +5234,8 @@ CLASS zcl_demo_abap IMPLEMENTATION.
   ENDMETHOD.
 ENDCLASS.
 ```
+
+</details> 
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 

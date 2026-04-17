@@ -3264,7 +3264,7 @@ CLASS zcl_demo_abap IMPLEMENTATION.
       CATCH cx_sy_zerodivide.
     ENDTRY.
 
-    "Static method defining an non-class-based exception
+    "Static method defining a non-class-based exception
     CALL METHOD zcl_demo_abap=>('ST_METH9') EXCEPTIONS exc = 1.
 
 *&---------------------------------------------------------------------*
