@@ -372,7 +372,7 @@ DATA(c22_string) = xco_cp=>uuid( )->as( xco_cp_uuid=>format->c22 )->value.
 DATA(c32_string) = xco_cp=>uuid( )->as( xco_cp_uuid=>format->c32 )->value.
 DATA(c36_string) = xco_cp=>uuid( )->as( xco_cp_uuid=>format->c36 )->value.
 
-"Tranforming between different formats
+"Transforming between different formats
 DATA(uuid_string_c36) = `429A229A-8802-1EDF-B7E2-E25DF99B0E73`.
 DATA(uuid_string_c32) = `429A229A88021EDFB7E2E25DF99B0E73`.
 

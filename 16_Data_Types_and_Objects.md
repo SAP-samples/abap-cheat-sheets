@@ -1412,7 +1412,7 @@ x4 = x2. "68690000
 d = CONV d( '20250125' ).
 
 "--- i ---
-"The number of days since 01.01.0001 is calculated an converted to the
+"The number of days since 01.01.0001 is calculated and converted to the
 "corresponding integer value.
 
 i = d. "739277

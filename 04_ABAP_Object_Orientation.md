@@ -8837,13 +8837,8 @@ CLASS zcl_demo_abap IMPLEMENTATION.
 
   METHOD demo_method.
 
-    IF flag = abap_true.
-      out->write( |flag: { flag }| ).
-      out->write( |flag base value: { CONV i( flag ) }| ).
-    ELSE.
-      out->write( |flag: { flag }| ).
-      out->write( |flag base value: { CONV i( flag ) }| ).
-    ENDIF.
+    out->write( |flag: { flag }| ).
+    out->write( |flag base value: { CONV i( flag ) }| ).
     out->write( `------` ).
 
   ENDMETHOD.

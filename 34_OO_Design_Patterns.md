@@ -23,6 +23,7 @@
   - [Factory Method](#factory-method)
   - [Fluent Interface](#fluent-interface)
   - [Flyweight](#flyweight)
+  - [Getters and Setters](#getters-and-setters)
   - [Iterator](#iterator)
   - [Mediator](#mediator)
   - [Memento](#memento)
@@ -40,7 +41,7 @@
 This ABAP cheat sheet includes a selection of design patterns you may have come across in object-oriented programming. It serves as an excursion. Unlike other ABAP cheat sheets, it does not cover ABAP-specific topics as such. Instead, it includes ABAP code explorations and experiments related to various design patterns.
 
 Design patterns address common software design challenges, aiming to improve modularity, scalability, reusability, and more.
-The examples largely draw inspiration from design patterns established by the _Gang of Four_ (GoF), applicable across different object-oriented programming languages. Apart from selected, renowned GoF patterns, the sheet also includes a random selection of other techniques.
+The examples largely draw inspiration from design patterns established by the _Gang of Four_ (GoF), applicable across different object-oriented programming languages. Apart from selected, renowned GoF patterns, the sheet also includes a random selection of other techniques and approaches.
 
 > [!IMPORTANT]
 > - The focus of the examples - which are also available via a separate repository branch ([oo_patterns](https://github.com/SAP-samples/abap-cheat-sheets/tree/oo_patterns)) - in the ABAP cheat sheet is on basic conceptual considerations regarding the design patterns, and experimenting with ABAP syntax and concepts (such as interfaces, abstract classes, encapsulation, and more). The examples aim to illustrate basic design pattern ideas using simplified ABAP demo classes. 
@@ -1321,7 +1322,7 @@ ENDCLASS.
 - The pattern may be used when you need to create a set of related objects (a family of "products") that work together or are processed together for specific purposes. 
 - Such families of related objects may be required in different variants. However, the created objects must be compatible with each variant. 
 - Here are some examples to illustrate this:
-  - Consider a car manufacturer. Multiple components are needed to assemble a car, such as the chassis, engine, and equipment (certainly, there are more components). These components form a family of related objects to a create car. All cars from the manufacturer follow the same setup: each requires a chassis, engine, and equipment. However, the manufacturer offers various car models like convertibles, sedans, SUVs, and pickup trucks. When producing these different variants, specific components may vary. The assembly must only use compatible objects. For example, when producing a convertible, a chassis with a sedan roof should not be used.
+  - Consider a car manufacturer. Multiple components are needed to assemble a car, such as the chassis, engine, and equipment (certainly, there are more components). These components form a family of related objects to create a car. All cars from the manufacturer follow the same setup: each requires a chassis, engine, and equipment. However, the manufacturer offers various car models like convertibles, sedans, SUVs, and pickup trucks. When producing these different variants, specific components may vary. The assembly must only use compatible objects. For example, when producing a convertible, a chassis with a sedan roof should not be used.
   - Consider a restaurant offers various three-course menus (this is the example used by the demo classes). Menu items include starters, main dishes, and desserts, forming a family of related objects. Different variants exist to create specific menus. For example, the restaurant offers a vegan menu. When creating the vegan menu, it should be ensured the menu does not include a beef steak as a main dish or dairy products in desserts.
 - In terms of code, you may need a setup to create related objects in an organized and consistent way. The abstract factory design pattern enables this by using a high level of abstraction in your class setup, i.e. it enables the creation of related objects that belong to the same family through abstractions like abstract classes, without bothering about their specific implementations and allowing for the creation of objects with appropriate types determined at runtime. A factory, such as an abstract factory class, sets up the object creation process by specifying methods that provide objects. Concrete factories then inherit from the abstract factory class and implement the methods to create specific kinds of objects. More abstraction is involved, as outlined in the example description below.
 - Some of the benefits of the pattern include: centralizing multiple object creations in one location, ensuring consistency and compatibility, simplifying object creation for users by hiding complexity, adding or modifying different variants without affecting existing code, providing flexibility and adaptability (however, adding new products might be cumbersome as it requires changes in many parts of the code).
@@ -7850,6 +7851,390 @@ ENDCLASS.
 </details>  
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
+
+
+## Getters and Setters
+
+- For encapsulation purposes, getters and setters are an object-oriented programming approach to control access to object-internal data.
+- Getters provide read access through public methods that retrieve the content of private attributes, while setters offer write access through public methods that modify the content of private attributes. Setters may also include validation to ensure that only valid data is stored. In contrast, public attributes can be directly modified without validation.
+- This ensures that data access occurs solely through these methods, creating a stable API for external users. Changes to the underlying implementation typically do not affect how users interact with the API.
+- As an alternative to providing setter methods, if your use case requires creating an object whose internal data should not be modified after initialization, you might choose to initialize object data only through the constructor without providing setter methods.
+
+<br>
+
+<details>
+  <summary>🟢 Click to expand for information on an ADT quick fix for creating getters and setters</summary>
+  <!-- -->
+
+<br>
+
+- The ABAP Development Tools for Eclipse (ADT) have a built-in option for creating getters and setters.
+- Consider the following class skeleton with a private attribute called `str`.
+
+```abap
+CLASS zcl_demo_abap DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
+
+  PUBLIC SECTION.
+    INTERFACES if_oo_adt_classrun.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+    DATA str TYPE string.
+ENDCLASS.
+
+CLASS zcl_demo_abap IMPLEMENTATION.
+  METHOD if_oo_adt_classrun~main.
+    ...
+  ENDMETHOD.
+ENDCLASS.
+```
+
+- Place the cursor on `str` and choose _STRG + 1_.
+- The quick fix menu will display various options, including _Generate Getter and Setter for str_ (or options to create just a getter or a setter). 
+- Double-clicking the option should generate code similar to this:
+
+
+```abap
+CLASS zcl_demo_abap DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
+
+  PUBLIC SECTION.
+    INTERFACES if_oo_adt_classrun.
+    METHODS: get_str RETURNING VALUE(r_result) TYPE string,
+             set_str IMPORTING i_str TYPE string.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+    DATA str TYPE string.
+ENDCLASS.
+
+CLASS zcl_demo_abap IMPLEMENTATION.
+  METHOD if_oo_adt_classrun~main.
+    ...
+  ENDMETHOD.
+  METHOD get_str.
+    r_result = me->str.
+  ENDMETHOD.
+
+  METHOD set_str.
+    me->str = i_str.
+  ENDMETHOD.
+ENDCLASS.
+```
+
+</details>  
+
+
+<br>
+
+<details>
+  <summary>🟢 Click to expand for more information and demo code</summary>
+  <!-- -->
+
+<br>
+
+**Example notes:**
+
+- The example code demonstrates a getter and setter method through simple declarations and implementations. It uses an object to represent personal information that can be accessed and (partly) modified.  
+  - Global class:
+    - Implements the `if_oo_adt_classrun` interface and calls methods from a local class.
+    - Acts as the external user that calls the getter and setter methods in the example. 
+    - The implementation includes internal tables that store demo data, which are iterated over to show various scenarios of valid and invalid input. Initially, objects are created using demo data. If there is invalid input, such as incorrect dates or placeholders for first and last names, the objects are not created. If the input is valid, the objects are created and added to an internal table. This table of valid objects is then processed, with the getter and setter methods being called. The setter method is first called using a demo email address. If the email address is invalid, the object's state remains unchanged, and the email value is not assigned to the private instance attribute. Then, the getter method is called to return the internal data. If the email setting is successful, the data will include the email address, demonstrating that the object's state has been modified.  
+  - CCIMP include (Local Types tab in ADT):
+    - `lcx_error`: 
+      - Local exception class used for raising exceptions when creating an object with incorrect or initial data, as well as for email validation.
+    - `lcl_demo`: 
+      - Definitions in the public visibility section:
+        - The instance constructor initializes the object by setting parts of the personal information (first name, last name, birthday). It validates input values. If they are invalid, it raises an exception to prevent object creation. If the values are valid, they are assigned to the private `p_info` attribute.
+          - Note: The example design with the (partly) state setting through the instance constructor references the previously mentioned alternative approach.
+        - Getter method `get_personal_info`: Returns the personal information stored in the private `p_info` attribute.
+        - Setter method `set_email`: Calls the `validate_email` method to check the email format. If validation succeeds, the `email` component in the `p_info` structure is updated. If it fails, an exception is raised.
+      - Definitions in the private visibility section:  
+        - Includes the structured instance attribute `p_info`, which stores the actual personal information data.
+        - `validate_email` method: It checks the passed email against a regex pattern. It raises an exception if the email does not match the required format, ensuring data integrity by preventing changes to the object's state with invalid external input.
+
+
+<table>
+
+<tr>
+<td> Class include </td> <td> Code </td>
+</tr>
+
+<tr>
+<td> 
+
+Global class
+
+ </td>
+
+ <td> 
+
+``` abap
+CLASS zcl_demo_abap DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
+
+  PUBLIC SECTION.
+    INTERFACES if_oo_adt_classrun.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+ENDCLASS.
+
+
+
+CLASS zcl_demo_abap IMPLEMENTATION.
+
+  METHOD if_oo_adt_classrun~main.
+
+    DATA oref_tab TYPE TABLE OF REF TO lcl_demo.
+
+    "The following types are declared for demo data purposes.
+    "Note that birthday is intentionally defined with type string. If it was
+    "specified with type d, the demo value assignment would show a syntax warning
+    "for those examples that inlcude an invalid data specification (in ABAP for
+    "Cloud Development and the latest ABAP releases).
+    TYPES:
+      BEGIN OF p_info4demo_data,
+        first_name TYPE string,
+        last_name  TYPE string,
+        birthday   TYPE string,
+      END OF p_info4demo_data.
+
+    TYPES tab_p_info_demo_data TYPE TABLE OF p_info4demo_data WITH EMPTY KEY.
+
+    LOOP AT VALUE tab_p_info_demo_data(
+     "--- Good examples ---
+     ( first_name = `John`    last_name  = `Doe`     birthday = `19850515` )
+     ( first_name = `Jane`    last_name  = `Smith`   birthday = `19900228` )
+     ( first_name = `Alice`   last_name  = `Johnson` birthday = `19781110` )
+     ( first_name = `Bob`     last_name  = `Brown`   birthday = `19820707` )
+     ( first_name = `Charlie` last_name  = `Davis`   birthday = `19950125` )
+     ( first_name = `Emily`   last_name  = `Clark`   birthday = `20001212` )
+     ( first_name = `Jasmin`  last_name  = `Miller`
+ birthday = `20031028` )
+     "--- Examples with invalid data ---
+     ( first_name = ``        last_name  = `White`   birthday = `19701201` )  "initial first_name
+     ( first_name = `Henry`   last_name  = ``        birthday = `19650320` )  "initial last_name
+     ( first_name = `Max`     last_name  = `Wolf`    birthday = `` )          "initial birthday
+     ( first_name = `Zoe`     last_name  = `Black`   birthday = `hello` )     "invalid date
+     ( first_name = `Tom`     last_name  = `Green`   birthday = `20261301` )  "invalid month
+    ) INTO DATA(wa).
+
+      TRY.
+          out->write( |---------- Example { sy-tabix } ----------| ).
+          out->write( |\n| ).
+          out->write( `*** Input ***` ).
+          out->write( |first_name: "{ wa-first_name }"| ).
+          out->write( |last_name: "{ wa-last_name }"| ).
+          out->write( |birthday: "{ wa-birthday }"| ).
+          out->write( |\n| ).
+
+          DATA(oref) = NEW lcl_demo(
+            first_name = wa-first_name
+            last_name  = wa-last_name
+            birthday   = CONV d( wa-birthday )
+          ).
+
+          "Add valid objects to an internal table
+          APPEND oref TO oref_tab.
+
+        CATCH lcx_error INTO DATA(error).
+          out->write( `*** Error ***` ).
+          out->write( error->get_text( ) ).
+      ENDTRY.
+      out->write( |\n| ).
+    ENDLOOP.
+
+    out->write( repeat( val = `*` occ = 80 ) ).
+    out->write( |\n| ).
+
+    "Exploring the getter and setter methods using the valid objects
+
+    "Constructing an internal table holding both valid and invalid
+    "demo email addresses
+    DATA(email_tab) = VALUE string_table( ( `my_email@example.com` )
+                                          ( `testmail@testdomain.org` )
+                                          ( `hello.world@mailservice.net` )
+                                          ( `invalid_email@.com` )
+                                          ( `invalidemail@domain,com` )
+                                          ( `invalid.mail.com` )
+                                          ( `invalid mail@example.com` ) ).
+
+    LOOP AT oref_tab INTO DATA(ref).
+      DATA(email_address) = VALUE #( email_tab[ sy-tabix ] DEFAULT email_tab[ 1 ] ).
+
+      out->write( |---------- Email { email_address } ----------| ).
+      out->write( |\n| ).
+
+      "Calling setter method
+      TRY.
+          ref->set_email( email_address ).
+        CATCH lcx_error INTO DATA(email_error).
+          out->write( `*** Error ***` ).
+          out->write( email_error->get_text( ) ).
+      ENDTRY.
+      out->write( |\n| ).
+      out->write( |\n| ).
+
+      "Calling getter method
+      DATA(personal_info) = ref->get_personal_info( ).
+      out->write( data = personal_info name = `personal_info` ).
+
+      out->write( |\n| ).
+    ENDLOOP.
+  ENDMETHOD.
+ENDCLASS.
+``` 
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+CCIMP include (Local Types tab in ADT)
+
+ </td>
+
+ <td> 
+
+``` abap
+*&---------------------------------------------------------------------*
+*& Local exception class
+*&---------------------------------------------------------------------*
+
+CLASS lcx_error DEFINITION INHERITING FROM cx_dynamic_check.
+  PUBLIC SECTION.
+    INTERFACES if_t100_dyn_msg.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+ENDCLASS.
+
+CLASS lcx_error IMPLEMENTATION.
+ENDCLASS.
+
+*&---------------------------------------------------------------------*
+*& Demo class that implements a getter and setter method
+*&---------------------------------------------------------------------*
+
+CLASS lcl_demo DEFINITION.
+  PUBLIC SECTION.
+
+    TYPES:
+      BEGIN OF personal_info,
+        first_name TYPE string,
+        last_name  TYPE string,
+        birthday   TYPE d,
+        email      TYPE string,
+      END OF personal_info.
+
+    METHODS constructor
+      IMPORTING
+        first_name TYPE string
+        last_name  TYPE string
+        birthday   TYPE d
+      RAISING
+        lcx_error.
+
+    "Getter method
+    METHODS get_personal_info
+      RETURNING VALUE(info) TYPE personal_info.
+
+    "Setter method with validation
+    METHODS set_email
+      IMPORTING
+        email TYPE string
+      RAISING
+        lcx_error.
+
+  PRIVATE SECTION.
+
+    DATA p_info TYPE personal_info.
+
+    "Private method for validation
+    METHODS validate_email
+      IMPORTING
+        email TYPE string
+      RAISING
+        lcx_error.
+ENDCLASS.
+
+CLASS lcl_demo IMPLEMENTATION.
+  METHOD constructor.
+
+    "Raising exceptions when passing:
+    "- Initial first_name values
+    "- Initial last_name values
+    "- Invalid date values
+    "  Note: The following expression uses a d to i conversion to determine data validity.
+    "        If there is a valid date, the number of days since 01.01.0001 is calculated and
+    "        converted to the corresponding integer value. If the date is invalid, the returned
+    "        integer value is 0.
+
+    DATA error_text TYPE string.
+
+    IF first_name IS INITIAL.
+      error_text = `Initial first name`.
+    ELSEIF last_name IS INITIAL.
+      error_text = `Initial last name`.
+    ELSEIF birthday IS INITIAL.
+     error_text = `Initial birthday`.
+    ELSEIF CONV i( birthday ) = 0.
+      error_text = `Invalid date`.
+    ENDIF.
+
+    IF error_text IS INITIAL.
+      "Initializing personal information via the instance constructor
+      p_info = VALUE #( first_name = first_name
+                        last_name = last_name
+                        birthday = birthday ).
+
+    ELSE.
+      "For simplification purposes, this self-contained and simplified example uses a local exception
+      "class and uses an XCO API to create an error message.
+      DATA(err_obj) = NEW lcx_error( ).
+      xco_cp=>string( error_text )->as_message( xco_cp_message=>type->error )->write_to_t100_dyn_msg( err_obj ).
+      RAISE EXCEPTION err_obj.
+
+    ENDIF.
+  ENDMETHOD.
+
+  METHOD get_personal_info.
+    info = p_info.
+  ENDMETHOD.
+
+  METHOD set_email.
+    "Validating the email passed before setting the value
+    validate_email( email ).
+
+    p_info-email = email.
+  ENDMETHOD.
+
+  METHOD validate_email.
+    IF NOT matches( val  = email
+                    pcre = `\w+(\.\w+)*@(\w+\.)+(\w{2,4})` ).
+
+      DATA(err_obj) = NEW lcx_error( ).
+      xco_cp=>string( `Invalid email` )->as_message( xco_cp_message=>type->error )->write_to_t100_dyn_msg( err_obj ).
+      RAISE EXCEPTION err_obj.
+    ENDIF.
+  ENDMETHOD.
+ENDCLASS.
+``` 
+
+ </td>
+</tr>
+
+</table>
+
+</details>  
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
 
 ## Iterator
 
