@@ -8055,32 +8055,37 @@ ENDCLASS.
 
 ### Exploring Read Access Performance with Internal Tables
 
-- The following example explores the performance of read accesses to internal tables of various kinds in a simplified and self-contained manner. 
-- The scenario is: Lines of a large internal table (2000 table lines) are read frequently. 
-- The read accesses are executed using `READ TABLE` statements, which access the tables by: 
+- The following example explores the performance of read accesses to different types of internal tables (standard, sorted, hashed tables, with and without secondary table keys) in a simplified and self-contained manner. 
+- The scenario involves reading lines of large internal tables (10000 table lines) frequently (10000 times) after initial population. 
+- The read accesses use `READ TABLE` statements (including the `TRANSPORTING NO FIELDS` addition, as the table content and its storage or further processing are not relevant to this example) to access the tables by: 
   - Index (both primary and secondary table index) 
   - Key (primary table key, secondary table key, free key)
-- To try the example out, create a demo class named `zcl_demo_abap`. If it already exists, reuse it. Otherwise, create a new class with a different name. Paste the code into it. If you choose a different class name, update the class name in the code snippet accordingly. After activation, choose *F9* in ADT to execute the class. It may take some time to finish and display the output. The example is set up to display the results in the console.
+- Among the demonstrated read operations are the following:
+   - Index accesses (standard and sorted tables, hashed tables using the secondary table index)
+   - Primary table key accesses (various tables specified with a single and multiple key components; examples with full key, partial and left-aligned key, partial and not left-aligned key)
+   - Secondary table key access
+   - Free key access
+   - Dynamic key specifications
+- To try the example out, create a demo class named `zcl_demo_abap`. If it already exists, reuse it. Otherwise, create a new class with a different name. Paste the code into it. If you choose a different class name, update the class name in the code snippet accordingly. After activation, choose *F9* in ADT to execute the class. The example is set up to display the results in the console. It may take some time to finish and display the output. See the following note on the expected results.
+
+> [!IMPORTANT] 
+> This example:
+> - Is for [exploration, experimentation, and demonstration](./README.md#%EF%B8%8F-disclaimer) purposes only. It is not suitable for accurate runtime or performance testing (see the notes in the _ABAP Performance Notes_ cheat sheet). Due to its simplified nature (for example, the table line type is flat and includes fairly simple components of type `i`) and various factors that can influence the runtime of an ABAP program, results may vary and may not be entirely accurate, even across multiple runs. The displayed results may not always accurately reflect the performance-related notes from the cheat sheet (see also the general notes in the first expandable below). 
+> - Is intended to underscore the significance of choosing the right table categories and specifications for your internal tables, tailored to your specific use case and the frequency of table access.
 
 > [!NOTE] 
-> - This example is for [exploration, experimentation, and demonstration](./README.md#%EF%B8%8F-disclaimer) purposes only. It is not suitable for accurate runtime or performance testing. Due to its simplified nature (for example, the table line type is fairly simple, and the key components are all of type `i`) and various factors that can influence the runtime of an ABAP program, results may vary and may not be entirely accurate, even across multiple runs. The displayed results may not always accurately reflect the performance-related notes from the cheat sheet.
-> - The example concentrates on a few demo internal tables, declared using various declaration options. 
-> - The runtime analysis in this self-contained example is as follows: The code snippet for which the runtime should be measured is enclosed by two timestamp retrievals using `utclong_current( )`. The runtime is analysed by calculating the delta of the two timestamp values, indicating the used runtime for the code snippet. To have a more meaningful example regarding the runtime analysis, the snippets are executed multiple times, indicated by enclosing them in a `DO` loop. The runtime delta value is added to an internal table collecting all runtime delta values for the specific code snippet for all loop iterations. Finally, the average runtime is calculated based on the collected runtime delta values. This average runtime value is added to an internal table with other information. The approach with multiple iterations and the average runtime value aims to provide a balanced view of runtime. Note that this implementation is for exploration and demonstration purposes only.
-> - Among the demonstrated read operations are the following:
->   - Index accesses (standard and sorted tables, hashed tables using the secondary table index)
->   - Primary table key accesses (various tables specified with a single and multiple key components; examples with full key, partial and left-aligned key, partial and not left-aligned key)
->   - Secondary table key access
->   - Free key access
->   - Dynamic key specifications
+> - The runtime analysis in this example is as follows: The code snippets (i.e., `READ TABLE` statements) to measure runtime are included in method implementations. The methods are called, with each call surrounded by two timestamp retrievals using `utclong_current( )`. The runtime is analysed by calculating the delta between these two timestamp values, indicating the runtime for the code snippet. To provide a more meaningful analysis, the methods are called multiple times, which is achieved by enclosing them in a `DO` loop. The runtime delta is stored in an internal table that collects all delta values for the specific code snippet across all iterations. Finally, the average runtime is calculated based on these collected delta values and added to an internal table along with other relevant information. This approach of using multiple iterations and computing an average runtime aims to offer a balanced view of performance. Note that this implementation is for exploratory and demonstration purposes only.
 > - The following points should be reflected by the result: 
->   - Index access is generally very fast.
->   - (Full) primary table key access in hashed tables is fast.
->   - Standard tables with specified secondary keys offer optimized access.
->   - Both full and partial, left-aligned key accesses in sorted tables are optimized.
->   - Free key searches are generally slower (unless used with the BINARY SEARCH addition in standard tables).
->   - Key access in standard tables is relatively slow, except for secondary table keys.
->   - Dynamic key specifications require effort for evaluation.
-> - The purpose of this example is to underscore the significance of choosing the right table categories for your internal tables, tailored to your specific use case and the frequency of table access.
+>   - Index access (both primary and secondary table index) is generally very fast.
+>   - Hash key access (both full primary table keys of hashed tables and hashed secondary table keys) is fast. 
+>   - Table access using secondary table keys is optimized. 
+>     - Specifying secondary table keys for standard tables enables optimized access and fast key access also for standard tables.  
+>     - For internal tables with non-unique, sorted secondary table keys, the secondary table index does not update immediately. It updates only upon the first access of the table using the secondary table key. The example includes two methods that attempt to illustrate the behavior: Read access by secondary table key with and without counting in the first read access by key. The runtime measurement for the example without the first key access should (on multiple example executions) reflect the extra administrational effort.
+>   - Both full and partial, left-aligned key accesses in sorted tables are optimized. The example access using a not left-aligned key should reflect a slower, non-optimized access.
+>   - Free key searches are generally slower.
+>     - `READ TABLE` statements with standard tables can include the `BINARY SEARCH` addition (which is no longer recommended; see the section on `BINARY SEARCH`). This method optimizes read access but generally requires sorting beforehand. The example presents two methods to demonstrate reading using `BINARY SEARCH`: one with a prior sorting and the other without.
+>   - Primary table key access in standard tables is relatively slow. Secondary table key access is optimized.
+>   - Dynamic key specifications require effort for evaluation. The example includes methods that illustrate static key access and a comparable dynamic key access.
 
 
 <details>
@@ -8156,8 +8161,8 @@ Notes on ...
 "! <p class="shorttext"><strong>Exploring Read Access Performance with Internal Tables</strong><br/>
 "! ABAP cheat sheet example class</p>
 "!
-"! <p>The example class includes several methods that explore both inefficient and potentially more
-"! efficient code examples affecting performance.</p>
+"! <p>The example class includes several methods that explore the performance of read accesses to
+"! internal tables of various kinds.</p>
 "! <p>In ADT, choose F9 in ADT to run the class.</p>
 "!
 "! <h2>Note</h2>
@@ -8177,22 +8182,9 @@ CLASS zcl_demo_abap DEFINITION
   PROTECTED SECTION.
   PRIVATE SECTION.
 
-    "Constants
-    CONSTANTS loop_count_2000 TYPE i VALUE 2000.
-
-    "Components used for calculating the average runtime
-    DATA: ts1         TYPE utclong,
-          runtime_tab TYPE TABLE OF decfloat34 WITH EMPTY KEY,
-          runtime     TYPE decfloat34,
-          description TYPE string,
-          idx         TYPE i.
-
-    "Collects timestamps to calculate the average runtime
-    METHODS store_runtime IMPORTING high TYPE utclong
-                                    low  TYPE utclong.
-
-    "Calculates the average runtime
-    METHODS get_avg_runtime RETURNING VALUE(avg_runtime) TYPE decfloat34.
+    "Types and data object used for providing and
+    "storing information such as method name, internal
+    "table kind, runtime
 
     TYPES: BEGIN OF ENUM enum_access,
              index,
@@ -8208,65 +8200,35 @@ CLASS zcl_demo_abap DEFINITION
              hashed,
            END OF ENUM enum_category.
 
-    TYPES: BEGIN OF result_struc,
-             meth_name       TYPE string,
+    TYPES: BEGIN OF s_table_info,
+             method_name     TYPE string,
              avg_runtime     TYPE string,
              table_category  TYPE enum_category,
              access          TYPE enum_access,
              description     TYPE string,
              iteration_count TYPE i,
-           END OF result_struc.
+           END OF s_table_info.
 
-    DATA result_meth TYPE result_struc.
-    DATA result_tab TYPE TABLE OF result_struc WITH EMPTY KEY.
-
-    "Exemplary methods containing READ TABLE statements
-    METHODS:
-      "Standard tables
-      std_01_index IMPORTING name TYPE abap_methname RETURNING VALUE(result) TYPE result_struc,
-      std_02_pr_key_single_comp IMPORTING name TYPE abap_methname RETURNING VALUE(result) TYPE result_struc,
-      std_03_mult_key_full IMPORTING name TYPE abap_methname RETURNING VALUE(result) TYPE result_struc,
-      std_04_mult_key_partial_la IMPORTING name TYPE abap_methname RETURNING VALUE(result) TYPE result_struc,
-      std_05_mult_key_partial_non IMPORTING name TYPE abap_methname RETURNING VALUE(result) TYPE result_struc,
-      std_06_mult_key_dynamic IMPORTING name TYPE abap_methname RETURNING VALUE(result) TYPE result_struc,
-      std_07_free_key IMPORTING name TYPE abap_methname RETURNING VALUE(result) TYPE result_struc,
-      std_08_free_key_binary_search IMPORTING name TYPE abap_methname RETURNING VALUE(result) TYPE result_struc,
-      std_09_sec_key_nonuni_sorted IMPORTING name TYPE abap_methname RETURNING VALUE(result) TYPE result_struc,
-      std_10_sec_key_nonuni_sort_idx IMPORTING name TYPE abap_methname RETURNING VALUE(result) TYPE result_struc,
-      std_10_sec_key_unique_sorted IMPORTING name TYPE abap_methname RETURNING VALUE(result) TYPE result_struc,
-      std_11_sec_key_unique_hashed IMPORTING name TYPE abap_methname RETURNING VALUE(result) TYPE result_struc,
-      "Sorted tables
-      sorted_01_index IMPORTING name TYPE abap_methname RETURNING VALUE(result) TYPE result_struc,
-      sorted_02_pr_key_single_comp IMPORTING name TYPE abap_methname RETURNING VALUE(result) TYPE result_struc,
-      sorted_03_mult_key_full IMPORTING name TYPE abap_methname RETURNING VALUE(result) TYPE result_struc,
-      sorted_04_mult_key_partial_la IMPORTING name TYPE abap_methname RETURNING VALUE(result) TYPE result_struc,
-      sorted_05_mult_key_partial_non IMPORTING name TYPE abap_methname RETURNING VALUE(result) TYPE result_struc,
-      sorted_06_mult_key_dynamic IMPORTING name TYPE abap_methname RETURNING VALUE(result) TYPE result_struc,
-      sorted_07_free_key IMPORTING name TYPE abap_methname RETURNING VALUE(result) TYPE result_struc,
-      "Hashed tables
-      hashed_01_pr_key_single_comp IMPORTING name TYPE abap_methname RETURNING VALUE(result) TYPE result_struc,
-      hashed_02_mult_key_full IMPORTING name TYPE abap_methname RETURNING VALUE(result) TYPE result_struc,
-      hashed_03_mult_key_partial_la IMPORTING name TYPE abap_methname RETURNING VALUE(result) TYPE result_struc,
-      hashed_04_mult_key_partial_non IMPORTING name TYPE abap_methname RETURNING VALUE(result) TYPE result_struc,
-      hashed_05_mult_key_dynamic IMPORTING name TYPE abap_methname RETURNING VALUE(result) TYPE result_struc,
-      hashed_06_free_key IMPORTING name TYPE abap_methname RETURNING VALUE(result) TYPE result_struc,
-      hashed_07_sec_key_nonun_so_idx IMPORTING name TYPE abap_methname RETURNING VALUE(result) TYPE result_struc.
+    CLASS-DATA t_table_info TYPE TABLE OF s_table_info WITH EMPTY KEY.
 
     "Demo internal tables used by the examples
+
     TYPES: BEGIN OF ty_tab,
              comp1 TYPE i,
              comp2 TYPE i,
              comp3 TYPE i,
-             comp4 TYPE c LENGTH 20,
-             comp5 TYPE c LENGTH 20,
-             comp6 TYPE c LENGTH 20,
+             comp4 TYPE i,
+             comp5 TYPE i,
+             comp6 TYPE i,
              comp7 TYPE i,
            END OF ty_tab.
 
-    CLASS-DATA: "Standard tables
+    CLASS-DATA:
+      base_tab                      TYPE TABLE OF ty_tab WITH EMPTY KEY,
+
+      "Standard tables
       standard_tab                  TYPE TABLE OF ty_tab WITH NON-UNIQUE KEY comp1,
       standard_tab_mult_key_comp    TYPE TABLE OF ty_tab WITH NON-UNIQUE KEY comp1 comp2 comp3,
-      "standard_tab_empty_key        TYPE TABLE OF ty_tab WITH EMPTY KEY,
       standard_tab_non_uni_so_sec_k TYPE TABLE OF ty_tab WITH EMPTY KEY WITH NON-UNIQUE SORTED KEY non_uni_so_key COMPONENTS comp1,
       standard_tab_uni_so_sec_k     TYPE TABLE OF ty_tab WITH EMPTY KEY WITH UNIQUE SORTED KEY uni_so_key COMPONENTS comp1,
       standard_tab_hashed_sec_k     TYPE TABLE OF ty_tab WITH EMPTY KEY WITH UNIQUE HASHED KEY hashed_key COMPONENTS comp1,
@@ -8281,30 +8243,284 @@ CLASS zcl_demo_abap DEFINITION
       hashed_tab_mult_key_comp      TYPE HASHED TABLE OF ty_tab WITH UNIQUE KEY comp1 comp2 comp3,
       hashed_tab_w_sec_key          TYPE HASHED TABLE OF ty_tab WITH UNIQUE KEY comp1 WITH NON-UNIQUE SORTED KEY non_uni_so_key COMPONENTS comp2.
 
+    "Constant determining the number of internal table lines and
+    "read accesses
+    CONSTANTS loop_count TYPE i VALUE 10000.
+
+    "Data objects used for calculating the average runtime
+    DATA: ts1         TYPE utclong,
+          runtime_tab TYPE TABLE OF decfloat34 WITH EMPTY KEY,
+          runtime     TYPE decfloat34,
+          description TYPE string,
+          idx         TYPE i.
+
+    "Exemplary methods containing READ TABLE statements
+    "The method names reflect the illustration purpose.
+    METHODS:
+      "Standard tables
+      std_01_index,
+      std_02_pr_key_single_comp,
+      std_03_mult_key_full,
+      std_04_mult_key_partial_la,
+      std_05_mult_key_partial_non,
+      std_06_mult_key_dynamic,
+      std_07_free_key,
+      std_08a_free_key_binary_search,
+      std_08b_free_key_binary_search,
+      std_09a_sec_key_nonuni_sorted,
+      std_09b_sec_key_nonuni_sorted,
+      std_10_sec_key_nonuni_sort_idx,
+      std_10_sec_key_unique_sorted,
+      std_11_sec_key_unique_hashed,
+      "Sorted tables
+      sorted_01_index,
+      sorted_02_pr_key_single_comp,
+      sorted_03_mult_key_full,
+      sorted_04_mult_key_partial_la,
+      sorted_05_mult_key_partial_non,
+      sorted_06_mult_key_dynamic,
+      sorted_07_free_key,
+      "Hashed tables
+      hashed_01_pr_key_single_comp,
+      hashed_02_mult_key_full,
+      hashed_03_mult_key_partial_la,
+      hashed_04_mult_key_partial_non,
+      hashed_05_mult_key_dynamic,
+      hashed_06_free_key,
+      hashed_07_sec_key_nonun_so_idx.
+
+    METHODS:
+      "Preparation methods that populate respective tables anew
+      prep_std_tabs,
+      prep_sorted_tabs,
+      prep_hashed_tabs,
+      "Collects timestamps to calculate the average runtime
+      store_runtime IMPORTING high TYPE utclong
+                              low  TYPE utclong,
+      "Calculates the average runtime
+      get_avg_runtime RETURNING VALUE(avg_runtime) TYPE decfloat34.
+
 ENDCLASS.
+
 
 
 CLASS zcl_demo_abap IMPLEMENTATION.
 
+  METHOD class_constructor.
+    "Providing demo content for the base table that is used to populate all
+    "demo tables that are accessed throughout the method calls.
+    DO loop_count TIMES.
+      INSERT VALUE #( comp1 = sy-index comp2 = sy-index comp3 = sy-index comp4 = sy-index
+                      comp5 = sy-index comp6 = sy-index comp7 = sy-index  ) INTO TABLE base_tab.
+    ENDDO.
+
+    "Initially populating an info table, which as output in the console after calling all
+    "methods and assigning the average runtime value.
+    t_table_info = VALUE #(
+   ( method_name = `std_01_index`
+     table_category = standard
+     access = index
+     description = `Read standard table lines by index` )
+   ( method_name = `std_02_pr_key_single_comp`
+     table_category = standard
+     access = primary_table_key
+     description = `Read standard table lines by primary table key (single key component)` )
+   ( method_name = `std_03_mult_key_full`
+     table_category = standard
+     access = primary_table_key
+     description = `Read standard table lines by the full primary table key (multiple key components)` )
+   ( method_name = `std_04_mult_key_partial_la`
+     table_category = standard
+     access = primary_table_key
+     description = `Read standard table lines by the partial, left-aligned primary table key` )
+   ( method_name = `std_05_mult_key_partial_non`
+     table_category = standard
+     access = primary_table_key
+     description = `Read standard table lines by the partial, not left-aligned primary table key` )
+   ( method_name = `std_06_mult_key_dynamic`
+     table_category = standard
+     access = primary_table_key
+     description = `Read standard table lines by primary table key, dynamic key specifications` )
+   ( method_name = `std_07_free_key`
+     table_category = standard
+     access = free_key
+     description = `Read standard table lines by free key` )
+   ( method_name = `std_08a_free_key_binary_search`
+     table_category = standard
+     access = free_key
+     description = `Read standard table lines with free key and binary search (SORT included in measurement)` )
+   ( method_name = `std_08b_free_key_binary_search`
+     table_category = standard
+     access = free_key
+     description = `Read standard table lines with free key and binary search (SORT not included in measurement)` )
+   ( method_name = `std_09a_sec_key_nonuni_sorted`
+     table_category = standard
+     access = secondary_table_key
+     description = `Read standard table lines by secondary table key (non-unique sorted key; measurement includes first read after population)` )
+   ( method_name = `std_09b_sec_key_nonuni_sorted`
+     table_category = standard
+     access = secondary_table_key
+     description = `Read standard table lines by secondary table key (non-unique sorted key; measurement does not include first read after population)` )
+   ( method_name = `std_10_sec_key_nonuni_sort_idx`
+     table_category = standard
+     access = secondary_table_index
+     description = `Read standard table lines by secondary table index (non-unique sorted key)` )
+   ( method_name = `std_10_sec_key_unique_sorted`
+     table_category = standard
+     access = secondary_table_key
+     description = `Read standard table lines by secondary table key (unique sorted key)` )
+   ( method_name = `std_11_sec_key_unique_hashed`
+     table_category = standard
+     access = secondary_table_key
+     description = `Read standard table lines by secondary table key (unique hashed key)` )
+   ( method_name = `sorted_01_index`
+     table_category = sorted
+     access = index
+     description = `Read sorted table lines by index` )
+   ( method_name = `sorted_02_pr_key_single_comp`
+     table_category = sorted
+     access = primary_table_key
+     description = `Read sorted table lines by primary table key (single key component)` )
+   ( method_name = `sorted_03_mult_key_full`
+     table_category = sorted
+     access = primary_table_key
+     description = `Read sorted table lines by the full primary table key (multiple key components)` )
+   ( method_name = `sorted_04_mult_key_partial_la`
+     table_category = sorted
+     access = primary_table_key
+     description = `Read sorted table lines by partial, left-aligned primary table key` )
+   ( method_name = `sorted_05_mult_key_partial_non`
+     table_category = sorted
+     access = primary_table_key
+     description = `Read sorted table lines by partial, not left-aligned primary table key` )
+   ( method_name = `sorted_06_mult_key_dynamic`
+     table_category = sorted
+     access = primary_table_key
+     description = `Read sorted table lines by primary table key, dynamic key specification` )
+   ( method_name = `sorted_07_free_key`
+     table_category = sorted
+     access = free_key
+     description = `Read sorted table lines by free key` )
+   ( method_name = `hashed_01_pr_key_single_comp`
+     table_category = hashed
+     access = primary_table_key
+     description = `Read hashed table lines by primary table key (single key component)` )
+   ( method_name = `hashed_02_mult_key_full`
+     table_category = hashed
+     access = primary_table_key
+     description = `Read hashed table lines by the full primary table key (multiple key components)` )
+   ( method_name = `hashed_03_mult_key_partial_la`
+     table_category = hashed
+     access = primary_table_key
+     description =  `Read hashed table lines by partial, left-aligned primary table key` )
+   ( method_name = `hashed_04_mult_key_partial_non`
+     table_category = hashed
+     access = primary_table_key
+     description = `Read hashed table lines by partial, not left-aligned primary table key` )
+   ( method_name = `hashed_05_mult_key_dynamic`
+     table_category = hashed
+     access = primary_table_key
+     description = `Read hashed table lines by primary table key, dynamic key specification` )
+   ( method_name = `hashed_06_free_key`
+     table_category = hashed
+     access = free_key
+     description = `Read hashed table lines by free key` )
+   ( method_name = `hashed_07_sec_key_nonun_so_idx`
+     table_category = hashed
+     access = secondary_table_index
+     description = `Read hashed table lines by secondary table index (non-unique sorted key)` )
+   ).
+
+  ENDMETHOD.
+
   METHOD if_oo_adt_classrun~main.
 
-    "Dynamically calling all exemplary methods (excluding the main method)
-    "The method names are retrieved using RTTI. Refer to the Dynamic Programming ABAP cheat sheet.
-    DATA(oref) = NEW zcl_demo_abap( ).
-    DATA(methods) = CAST cl_abap_classdescr( cl_abap_typedescr=>describe_by_name( 'ZCL_DEMO_ABAP' ) )->methods.
-    DELETE methods WHERE name = 'IF_OO_ADT_CLASSRUN~MAIN'.
-    SORT methods BY name ASCENDING.
+    "Dynamically calling all methods that were inserted into the info table,
+    "and which include READ TABLE statements
+    LOOP AT t_table_info REFERENCE INTO DATA(t).
+      t->method_name = to_upper( condense( val = t->method_name to = `` ) ).
 
-    LOOP AT methods INTO DATA(meth_wa).
+      "Populating relevant demo tables anew with every method call procedure
+      CASE t->table_category.
+        WHEN standard.
+          prep_std_tabs( ).
+        WHEN sorted.
+          prep_sorted_tabs( ).
+        WHEN hashed.
+          prep_hashed_tabs( ).
+      ENDCASE.
+
+      "Preparation steps for selected methods to illustrate specific behavior
+      CASE t->method_name.
+        WHEN `STD_08B_FREE_KEY_BINARY_SEARCH`.
+          "Excluding a prior sorting from the runtime measurement for an example that uses BINARY SEARCH
+          SORT standard_tab BY comp7 ASCENDING.
+        WHEN `STD_09B_SEC_KEY_NONUNI_SORTED`.
+          "For internal tables with non-unique, sorted secondary table keys, the secondary table index does not update immediately.
+          "It updates only upon the first access of the table using the secondary table key. For this example run, the first read
+          "is not considered for the runtime measurement.
+          READ TABLE standard_tab_non_uni_so_sec_k TRANSPORTING NO FIELDS WITH TABLE KEY non_uni_so_key COMPONENTS comp1 = 1.
+      ENDCASE.
+
       TRY.
-          CALL METHOD oref->(meth_wa-name) EXPORTING name = meth_wa-name RECEIVING result = result_meth.
-          APPEND result_meth TO result_tab.
-        CATCH cx_root.
+          DO loop_count TIMES.
+            idx = sy-index.
+
+            ts1 = utclong_current( ).
+            "Dynamically calling methods using the method names stored
+            "in the info internal table
+            CALL METHOD (t->method_name).
+            store_runtime( high = utclong_current( ) low = ts1 ).
+          ENDDO.
+          runtime = get_avg_runtime( ).
+
+          t->avg_runtime = |{ runtime STYLE = SIMPLE }|.
+          t->iteration_count = idx.
+        CATCH cx_root INTO DATA(error).
+          RAISE SHORTDUMP error.
       ENDTRY.
     ENDLOOP.
 
-    SORT result_tab BY avg_runtime ASCENDING.
-    out->write( result_tab ).
+    SORT t_table_info BY avg_runtime ASCENDING.
+    out->write( t_table_info ).
+  ENDMETHOD.
+
+  METHOD prep_hashed_tabs.
+    FREE: hashed_tab, hashed_tab_mult_key_comp, hashed_tab_w_sec_key.
+    INSERT LINES OF base_tab INTO TABLE hashed_tab.
+    INSERT LINES OF base_tab INTO TABLE hashed_tab_mult_key_comp.
+    INSERT LINES OF base_tab INTO TABLE hashed_tab_w_sec_key.
+  ENDMETHOD.
+
+  METHOD prep_sorted_tabs.
+    FREE: sorted_tab, sorted_tab_mult_key_comp, sorted_tab_w_sec_key.
+    INSERT LINES OF base_tab INTO TABLE sorted_tab.
+    INSERT LINES OF base_tab INTO TABLE sorted_tab_mult_key_comp.
+    INSERT LINES OF base_tab INTO TABLE sorted_tab_w_sec_key.
+  ENDMETHOD.
+
+  METHOD prep_std_tabs.
+    FREE: standard_tab, standard_tab_mult_key_comp, standard_tab_non_uni_so_sec_k, standard_tab_uni_so_sec_k, standard_tab_hashed_sec_k.
+    INSERT LINES OF base_tab INTO TABLE standard_tab.
+    INSERT LINES OF base_tab INTO TABLE standard_tab_mult_key_comp.
+    INSERT LINES OF base_tab INTO TABLE standard_tab_non_uni_so_sec_k.
+    INSERT LINES OF base_tab INTO TABLE standard_tab_uni_so_sec_k.
+    INSERT LINES OF base_tab INTO TABLE standard_tab_hashed_sec_k.
+  ENDMETHOD.
+
+  METHOD get_avg_runtime.
+    "Calculating the average runtime value
+    DATA(sum) = REDUCE decfloat34( INIT s = VALUE #( )
+                                   FOR wa IN runtime_tab
+                                   NEXT s += wa ).
+
+    TRY.
+        avg_runtime = sum / lines( runtime_tab ).
+      CATCH cx_sy_zerodivide INTO DATA(error).
+        RAISE SHORTDUMP error.
+    ENDTRY.
+
+    CLEAR runtime_tab.
   ENDMETHOD.
 
   METHOD store_runtime.
@@ -8314,545 +8530,122 @@ CLASS zcl_demo_abap IMPLEMENTATION.
 
     APPEND seconds TO runtime_tab.
   ENDMETHOD.
-
-  METHOD class_constructor.
-
-    DO loop_count_2000 TIMES.
-      INSERT VALUE #( comp1 = sy-index comp2 = sy-index comp3 = sy-index comp4 = sy-index
-                      comp5 = sy-index comp6 = sy-index comp7 = sy-index  ) INTO TABLE sorted_tab.
-
-
-    ENDDO.
-
-    "Populating standard tables
-    INSERT LINES OF sorted_tab INTO TABLE standard_tab.
-    INSERT LINES OF sorted_tab INTO TABLE standard_tab_mult_key_comp.
-    INSERT LINES OF sorted_tab INTO TABLE standard_tab_non_uni_so_sec_k.
-    INSERT LINES OF sorted_tab INTO TABLE standard_tab_uni_so_sec_k.
-    INSERT LINES OF sorted_tab INTO TABLE standard_tab_hashed_sec_k.
-
-    "Populating sorted tables
-    INSERT LINES OF sorted_tab INTO TABLE sorted_tab_mult_key_comp.
-    INSERT LINES OF sorted_tab INTO TABLE sorted_tab_w_sec_key.
-
-    "populating hashed tables
-    INSERT LINES OF sorted_tab INTO TABLE hashed_tab.
-    INSERT LINES OF sorted_tab INTO TABLE hashed_tab_mult_key_comp.
-    INSERT LINES OF sorted_tab INTO TABLE hashed_tab_w_sec_key.
-  ENDMETHOD.
-
-  METHOD get_avg_runtime.
-    "Calculating the average runtime value
-
-    DATA(sum) = REDUCE decfloat34( INIT s = VALUE #( )
-                                   FOR wa IN runtime_tab
-                                   NEXT s += wa ).
-
-    TRY.
-        avg_runtime = sum / lines( runtime_tab ).
-      CATCH cx_sy_zerodivide.
-    ENDTRY.
-
-    CLEAR runtime_tab.
-  ENDMETHOD.
-
-  METHOD std_01_index.
-    description = `Read standard table lines by index`.
-    DO loop_count_2000 TIMES.
-      idx = sy-index.
-      ts1 = utclong_current( ).
-**********************************************************************
-      READ TABLE standard_tab TRANSPORTING NO FIELDS INDEX idx.
-**********************************************************************
-      store_runtime( high = utclong_current( ) low = ts1 ).
-    ENDDO.
-    runtime = get_avg_runtime( ).
-    result = VALUE #( meth_name = name
-                      avg_runtime = |{ runtime STYLE = SIMPLE }|
-                      table_category = standard
-                      access      = index
-                      description = description
-                      iteration_count = idx ).
-  ENDMETHOD.
-
-  METHOD std_02_pr_key_single_comp.
-    description = `Read standard table lines by primary table key (single key component)`.
-    DO loop_count_2000 TIMES.
-      idx = sy-index.
-      ts1 = utclong_current( ).
-**********************************************************************
-      READ TABLE standard_tab TRANSPORTING NO FIELDS WITH TABLE KEY comp1 = idx.
-**********************************************************************
-      store_runtime( high = utclong_current( ) low = ts1 ).
-    ENDDO.
-    runtime = get_avg_runtime( ).
-    result = VALUE #( meth_name = name
-                      avg_runtime = |{ runtime STYLE = SIMPLE }|
-                      table_category = standard
-                      access      = primary_table_key
-                      description = description
-                      iteration_count = idx ).
-  ENDMETHOD.
-
-  METHOD std_03_mult_key_full.
-    description = `Read standard table lines by the full primary table key (multiple key component)`.
-    DO loop_count_2000 TIMES.
-      idx = sy-index.
-      ts1 = utclong_current( ).
-**********************************************************************
-      READ TABLE standard_tab_mult_key_comp TRANSPORTING NO FIELDS WITH TABLE KEY comp1 = idx comp2 = idx comp3 = idx.
-**********************************************************************
-      store_runtime( high = utclong_current( ) low = ts1 ).
-    ENDDO.
-    runtime = get_avg_runtime( ).
-    result = VALUE #( meth_name = name
-                      avg_runtime = |{ runtime STYLE = SIMPLE }|
-                      table_category = standard
-                      access      = primary_table_key
-                      description = description
-                      iteration_count = idx ).
-  ENDMETHOD.
-
-  METHOD std_04_mult_key_partial_la.
-    description = `Read standard table lines by the partial, left-aligned primary table key`.
-    DO loop_count_2000 TIMES.
-      idx = sy-index.
-      ts1 = utclong_current( ).
-**********************************************************************
-      READ TABLE standard_tab_mult_key_comp TRANSPORTING NO FIELDS WITH KEY comp1 = idx comp2 = idx.
-**********************************************************************
-      store_runtime( high = utclong_current( ) low = ts1 ).
-    ENDDO.
-    runtime = get_avg_runtime( ).
-    result = VALUE #( meth_name = name
-                      avg_runtime = |{ runtime STYLE = SIMPLE }|
-                      table_category = standard
-                      access      = primary_table_key
-                      description = description
-                      iteration_count = idx ).
-  ENDMETHOD.
-
-  METHOD std_05_mult_key_partial_non.
-    description = `Read standard table lines by the partial, not left-aligned primary table key`.
-    DO loop_count_2000 TIMES.
-      idx = sy-index.
-      ts1 = utclong_current( ).
-**********************************************************************
-      READ TABLE standard_tab_mult_key_comp TRANSPORTING NO FIELDS WITH KEY comp2 = idx comp3 = idx.
-**********************************************************************
-      store_runtime( high = utclong_current( ) low = ts1 ).
-    ENDDO.
-    runtime = get_avg_runtime( ).
-    result = VALUE #( meth_name = name
-                      avg_runtime = |{ runtime STYLE = SIMPLE }|
-                      table_category = standard
-                      access      = primary_table_key
-                      description = description
-                      iteration_count = idx ).
-  ENDMETHOD.
-
-  METHOD std_06_mult_key_dynamic.
-    description = `Read standard table lines by primary table key, dynamic key specifications`.
-    DO loop_count_2000 TIMES.
-      idx = sy-index.
-      ts1 = utclong_current( ).
-**********************************************************************
-      READ TABLE standard_tab_mult_key_comp TRANSPORTING NO FIELDS WITH TABLE KEY ('COMP1') = idx ('COMP2') = idx ('COMP3') = idx.
-**********************************************************************
-      store_runtime( high = utclong_current( ) low = ts1 ).
-    ENDDO.
-    runtime = get_avg_runtime( ).
-    result = VALUE #( meth_name = name
-                      avg_runtime = |{ runtime STYLE = SIMPLE }|
-                      table_category = standard
-                      access      = primary_table_key
-                      description = description
-                      iteration_count = idx ).
-  ENDMETHOD.
-
-  METHOD std_07_free_key.
-    description = `Read standard table lines by free key`.
-    DO loop_count_2000 TIMES.
-      idx = sy-index.
-      ts1 = utclong_current( ).
-**********************************************************************
-      READ TABLE standard_tab TRANSPORTING NO FIELDS WITH KEY comp7 = idx.
-**********************************************************************
-      store_runtime( high = utclong_current( ) low = ts1 ).
-    ENDDO.
-    runtime = get_avg_runtime( ).
-    result = VALUE #( meth_name = name
-                      avg_runtime = |{ runtime STYLE = SIMPLE }|
-                      table_category = standard
-                      access      = free_key
-                      description = description
-                      iteration_count = idx ).
-  ENDMETHOD.
-
-  METHOD std_08_free_key_binary_search.
-    description = `Read standard table lines with free key and binary search`.
-    DO loop_count_2000 TIMES.
-      idx = sy-index.
-      ts1 = utclong_current( ).
-**********************************************************************
-      IF idx = 1.
-        SORT standard_tab BY comp7 ASCENDING.
-      ENDIF.
-      READ TABLE standard_tab TRANSPORTING NO FIELDS WITH KEY comp7 = idx BINARY SEARCH.
-**********************************************************************
-      store_runtime( high = utclong_current( ) low = ts1 ).
-    ENDDO.
-    runtime = get_avg_runtime( ).
-    result = VALUE #( meth_name = name
-                      avg_runtime = |{ runtime STYLE = SIMPLE }|
-                      table_category = standard
-                      access      = free_key
-                      description = description
-                      iteration_count = idx ).
-  ENDMETHOD.
-
-  METHOD std_09_sec_key_nonuni_sorted.
-    description = `Read standard table lines by secondary table key (non-unique sorted key)`.
-    DO loop_count_2000 TIMES.
-      idx = sy-index.
-      ts1 = utclong_current( ).
-**********************************************************************
-      READ TABLE standard_tab_non_uni_so_sec_k TRANSPORTING NO FIELDS WITH TABLE KEY non_uni_so_key COMPONENTS comp1 = idx.
-**********************************************************************
-      store_runtime( high = utclong_current( ) low = ts1 ).
-    ENDDO.
-    runtime = get_avg_runtime( ).
-    result = VALUE #( meth_name = name
-                      avg_runtime = |{ runtime STYLE = SIMPLE }|
-                      table_category = standard
-                      access      = secondary_table_key
-                      description = description
-                      iteration_count = idx ).
-  ENDMETHOD.
-
-  METHOD std_10_sec_key_nonuni_sort_idx.
-    description = `Read standard table lines by secondary table index (non-unique sorted key)`.
-    DO loop_count_2000 TIMES.
-      idx = sy-index.
-      ts1 = utclong_current( ).
-**********************************************************************
-      READ TABLE standard_tab_non_uni_so_sec_k TRANSPORTING NO FIELDS USING KEY non_uni_so_key INDEX idx.
-**********************************************************************
-      store_runtime( high = utclong_current( ) low = ts1 ).
-    ENDDO.
-    runtime = get_avg_runtime( ).
-    result = VALUE #( meth_name = name
-                      avg_runtime = |{ runtime STYLE = SIMPLE }|
-                      table_category = standard
-                      access      = secondary_table_index
-                      description = description
-                      iteration_count = idx ).
-  ENDMETHOD.
-
-  METHOD std_10_sec_key_unique_sorted.
-    description = `Read standard table lines by secondary table key (unique sorted key)`.
-    DO loop_count_2000 TIMES.
-      idx = sy-index.
-      ts1 = utclong_current( ).
-**********************************************************************
-      READ TABLE standard_tab_uni_so_sec_k TRANSPORTING NO FIELDS WITH TABLE KEY uni_so_key COMPONENTS comp1 = idx.
-**********************************************************************
-      store_runtime( high = utclong_current( ) low = ts1 ).
-    ENDDO.
-    runtime = get_avg_runtime( ).
-    result = VALUE #( meth_name = name
-                      avg_runtime = |{ runtime STYLE = SIMPLE }|
-                      table_category = standard
-                      access      = secondary_table_key
-                      description = description
-                      iteration_count = idx ).
-  ENDMETHOD.
-
-  METHOD std_11_sec_key_unique_hashed.
-    description = `Read standard table lines by secondary table key (unique hashed key)`.
-    DO loop_count_2000 TIMES.
-      idx = sy-index.
-      ts1 = utclong_current( ).
-**********************************************************************
-      READ TABLE standard_tab_hashed_sec_k TRANSPORTING NO FIELDS WITH TABLE KEY hashed_key COMPONENTS comp1 = idx.
-**********************************************************************
-      store_runtime( high = utclong_current( ) low = ts1 ).
-    ENDDO.
-    runtime = get_avg_runtime( ).
-    result = VALUE #( meth_name = name
-                      avg_runtime = |{ runtime STYLE = SIMPLE }|
-                      table_category = standard
-                      access      = secondary_table_key
-                      description = description
-                      iteration_count = idx ).
-  ENDMETHOD.
-
+  
   METHOD sorted_01_index.
-    description = `Read sorted table lines by index`.
-    DO loop_count_2000 TIMES.
-      idx = sy-index.
-      ts1 = utclong_current( ).
-**********************************************************************
-      READ TABLE sorted_tab TRANSPORTING NO FIELDS INDEX idx.
-**********************************************************************
-      store_runtime( high = utclong_current( ) low = ts1 ).
-    ENDDO.
-    runtime = get_avg_runtime( ).
-    result = VALUE #( meth_name = name
-                      avg_runtime = |{ runtime STYLE = SIMPLE }|
-                      table_category = sorted
-                      access      = index
-                      description = description
-                      iteration_count = idx ).
+    READ TABLE sorted_tab TRANSPORTING NO FIELDS INDEX idx.
   ENDMETHOD.
 
   METHOD sorted_02_pr_key_single_comp.
-    description = `Read sorted table lines by primary table key (single key component)`.
-    DO loop_count_2000 TIMES.
-      idx = sy-index.
-      ts1 = utclong_current( ).
-**********************************************************************
-      READ TABLE sorted_tab TRANSPORTING NO FIELDS WITH TABLE KEY comp1 = idx.
-**********************************************************************
-      store_runtime( high = utclong_current( ) low = ts1 ).
-    ENDDO.
-    runtime = get_avg_runtime( ).
-    result = VALUE #( meth_name = name
-                      avg_runtime = |{ runtime STYLE = SIMPLE }|
-                      table_category = sorted
-                      access      = primary_table_key
-                      description = description
-                      iteration_count = idx ).
+    READ TABLE sorted_tab TRANSPORTING NO FIELDS WITH TABLE KEY comp1 = idx.
   ENDMETHOD.
 
   METHOD sorted_03_mult_key_full.
-    description = `Read sorted table lines by the full primary table key (multiple key components)`.
-    DO loop_count_2000 TIMES.
-      idx = sy-index.
-      ts1 = utclong_current( ).
-**********************************************************************
-      READ TABLE sorted_tab_mult_key_comp TRANSPORTING NO FIELDS WITH TABLE KEY comp1 = idx comp2 = idx comp3 = idx.
-**********************************************************************
-      store_runtime( high = utclong_current( ) low = ts1 ).
-    ENDDO.
-    runtime = get_avg_runtime( ).
-    result = VALUE #( meth_name = name
-                      avg_runtime = |{ runtime STYLE = SIMPLE }|
-                      table_category = sorted
-                      access      = primary_table_key
-                      description = description
-                      iteration_count = idx ).
+    READ TABLE sorted_tab_mult_key_comp TRANSPORTING NO FIELDS WITH TABLE KEY comp1 = idx comp2 = idx comp3 = idx.
   ENDMETHOD.
 
   METHOD sorted_04_mult_key_partial_la.
-    description = `Read sorted table lines by partial, left-aligned primary table key`.
-    DO loop_count_2000 TIMES.
-      idx = sy-index.
-      ts1 = utclong_current( ).
-**********************************************************************
-      READ TABLE sorted_tab_mult_key_comp TRANSPORTING NO FIELDS WITH KEY comp1 = idx comp2 = idx.
-**********************************************************************
-      store_runtime( high = utclong_current( ) low = ts1 ).
-    ENDDO.
-    runtime = get_avg_runtime( ).
-    result = VALUE #( meth_name = name
-                      avg_runtime = |{ runtime STYLE = SIMPLE }|
-                      table_category = sorted
-                      access      = primary_table_key
-                      description = description
-                      iteration_count = idx ).
+    READ TABLE sorted_tab_mult_key_comp TRANSPORTING NO FIELDS WITH KEY comp1 = idx comp2 = idx.
   ENDMETHOD.
 
   METHOD sorted_05_mult_key_partial_non.
-    description = `Read sorted table lines by partial, not left-aligned primary table key`.
-    DO loop_count_2000 TIMES.
-      idx = sy-index.
-      ts1 = utclong_current( ).
-**********************************************************************
-      READ TABLE sorted_tab_mult_key_comp TRANSPORTING NO FIELDS WITH KEY comp2 = idx comp3 = idx.
-**********************************************************************
-      store_runtime( high = utclong_current( ) low = ts1 ).
-    ENDDO.
-    runtime = get_avg_runtime( ).
-    result = VALUE #( meth_name = name
-                      avg_runtime = |{ runtime STYLE = SIMPLE }|
-                      table_category = sorted
-                      access      = primary_table_key
-                      description = description
-                      iteration_count = idx ).
+    READ TABLE sorted_tab_mult_key_comp TRANSPORTING NO FIELDS WITH KEY comp2 = idx comp3 = idx.
   ENDMETHOD.
 
   METHOD sorted_06_mult_key_dynamic.
-    description = `Read sorted table lines by primary table key, dynamic key specification`.
-    DO loop_count_2000 TIMES.
-      idx = sy-index.
-      ts1 = utclong_current( ).
-**********************************************************************
-      READ TABLE sorted_tab_mult_key_comp TRANSPORTING NO FIELDS WITH TABLE KEY ('COMP1') = idx ('COMP2') = idx ('COMP3') = idx.
-**********************************************************************
-      store_runtime( high = utclong_current( ) low = ts1 ).
-    ENDDO.
-    runtime = get_avg_runtime( ).
-    result = VALUE #( meth_name = name
-                      avg_runtime = |{ runtime STYLE = SIMPLE }|
-                      table_category = sorted
-                      access      = primary_table_key
-                      description = description
-                      iteration_count = idx ).
+    READ TABLE sorted_tab_mult_key_comp TRANSPORTING NO FIELDS WITH TABLE KEY ('COMP1') = idx ('COMP2') = idx ('COMP3') = idx.
   ENDMETHOD.
 
   METHOD sorted_07_free_key.
-    description = `Read sorted table lines by free key`.
-    DO loop_count_2000 TIMES.
-      idx = sy-index.
-      ts1 = utclong_current( ).
-**********************************************************************
-      READ TABLE sorted_tab TRANSPORTING NO FIELDS WITH KEY comp7 = idx.
-**********************************************************************
-      store_runtime( high = utclong_current( ) low = ts1 ).
-    ENDDO.
-    runtime = get_avg_runtime( ).
-    result = VALUE #( meth_name = name
-                      avg_runtime = |{ runtime STYLE = SIMPLE }|
-                      table_category = sorted
-                      access      = free_key
-                      description = description
-                      iteration_count = idx ).
+    READ TABLE sorted_tab TRANSPORTING NO FIELDS WITH KEY comp7 = idx.
   ENDMETHOD.
 
+  METHOD std_01_index.
+    READ TABLE standard_tab TRANSPORTING NO FIELDS INDEX idx.
+  ENDMETHOD.
 
+  METHOD std_02_pr_key_single_comp.
+    READ TABLE standard_tab TRANSPORTING NO FIELDS WITH TABLE KEY comp1 = idx.
+  ENDMETHOD.
+
+  METHOD std_03_mult_key_full.
+    READ TABLE standard_tab_mult_key_comp TRANSPORTING NO FIELDS WITH TABLE KEY comp1 = idx comp2 = idx comp3 = idx.
+  ENDMETHOD.
+
+  METHOD std_04_mult_key_partial_la.
+    READ TABLE standard_tab_mult_key_comp TRANSPORTING NO FIELDS WITH KEY comp1 = idx comp2 = idx.
+  ENDMETHOD.
+
+  METHOD std_05_mult_key_partial_non.
+    READ TABLE standard_tab_mult_key_comp TRANSPORTING NO FIELDS WITH KEY comp2 = idx comp3 = idx.
+  ENDMETHOD.
+
+  METHOD std_06_mult_key_dynamic.
+    READ TABLE standard_tab_mult_key_comp TRANSPORTING NO FIELDS WITH TABLE KEY ('COMP1') = idx ('COMP2') = idx ('COMP3') = idx.
+  ENDMETHOD.
+
+  METHOD std_07_free_key.
+    READ TABLE standard_tab TRANSPORTING NO FIELDS WITH KEY comp7 = idx.
+  ENDMETHOD.
+
+  METHOD std_08a_free_key_binary_search.
+    IF idx = 1.
+      SORT standard_tab BY comp7 ASCENDING.
+    ENDIF.
+    READ TABLE standard_tab TRANSPORTING NO FIELDS WITH KEY comp7 = idx BINARY SEARCH.
+  ENDMETHOD.
+
+  METHOD std_08b_free_key_binary_search.
+    READ TABLE standard_tab TRANSPORTING NO FIELDS WITH KEY comp7 = idx BINARY SEARCH.
+  ENDMETHOD.
+
+  METHOD std_09a_sec_key_nonuni_sorted.
+    READ TABLE standard_tab_non_uni_so_sec_k TRANSPORTING NO FIELDS WITH TABLE KEY non_uni_so_key COMPONENTS comp1 = idx.
+  ENDMETHOD.
+
+  METHOD std_09b_sec_key_nonuni_sorted.
+    READ TABLE standard_tab_non_uni_so_sec_k TRANSPORTING NO FIELDS WITH TABLE KEY non_uni_so_key COMPONENTS comp1 = idx.
+  ENDMETHOD.
+
+  METHOD std_10_sec_key_nonuni_sort_idx.
+    READ TABLE standard_tab_non_uni_so_sec_k TRANSPORTING NO FIELDS USING KEY non_uni_so_key INDEX idx.
+  ENDMETHOD.
+
+  METHOD std_10_sec_key_unique_sorted.
+    READ TABLE standard_tab_uni_so_sec_k TRANSPORTING NO FIELDS WITH TABLE KEY uni_so_key COMPONENTS comp1 = idx.
+  ENDMETHOD.
+
+  METHOD std_11_sec_key_unique_hashed.
+    READ TABLE standard_tab_hashed_sec_k TRANSPORTING NO FIELDS WITH TABLE KEY hashed_key COMPONENTS comp1 = idx.
+  ENDMETHOD.
+    
   METHOD hashed_01_pr_key_single_comp.
-    description = `Read hashed table lines by primary table key (single key component)`.
-    DO loop_count_2000 TIMES.
-      idx = sy-index.
-      ts1 = utclong_current( ).
-**********************************************************************
-      READ TABLE hashed_tab TRANSPORTING NO FIELDS WITH TABLE KEY comp1 = idx.
-**********************************************************************
-      store_runtime( high = utclong_current( ) low = ts1 ).
-    ENDDO.
-    runtime = get_avg_runtime( ).
-    result = VALUE #( meth_name = name
-                      avg_runtime = |{ runtime STYLE = SIMPLE }|
-                      table_category = hashed
-                      access      = primary_table_key
-                      description = description
-                      iteration_count = idx ).
+    READ TABLE hashed_tab TRANSPORTING NO FIELDS WITH TABLE KEY comp1 = idx.
   ENDMETHOD.
 
   METHOD hashed_02_mult_key_full.
-    description = `Read hashed table lines by the full primary table key (multiple key components)`.
-    DO loop_count_2000 TIMES.
-      idx = sy-index.
-      ts1 = utclong_current( ).
-**********************************************************************
-      READ TABLE hashed_tab_mult_key_comp TRANSPORTING NO FIELDS WITH TABLE KEY comp1 = idx comp2 = idx comp3 = idx.
-**********************************************************************
-      store_runtime( high = utclong_current( ) low = ts1 ).
-    ENDDO.
-    runtime = get_avg_runtime( ).
-    result = VALUE #( meth_name = name
-                      avg_runtime = |{ runtime STYLE = SIMPLE }|
-                      table_category = hashed
-                      access      = primary_table_key
-                      description = description
-                      iteration_count = idx ).
+    READ TABLE hashed_tab_mult_key_comp TRANSPORTING NO FIELDS WITH TABLE KEY comp1 = idx comp2 = idx comp3 = idx.
   ENDMETHOD.
 
   METHOD hashed_03_mult_key_partial_la.
-    description = `Read hashed table lines by partial, left-aligned primary table key`.
-    DO loop_count_2000 TIMES.
-      idx = sy-index.
-      ts1 = utclong_current( ).
-**********************************************************************
-      READ TABLE hashed_tab_mult_key_comp TRANSPORTING NO FIELDS WITH KEY comp1 = idx comp2 = idx.
-**********************************************************************
-      store_runtime( high = utclong_current( ) low = ts1 ).
-    ENDDO.
-    runtime = get_avg_runtime( ).
-    result = VALUE #( meth_name = name
-                      avg_runtime = |{ runtime STYLE = SIMPLE }|
-                      table_category = hashed
-                      access      = primary_table_key
-                      description = description
-                      iteration_count = idx ).
+    READ TABLE hashed_tab_mult_key_comp TRANSPORTING NO FIELDS WITH KEY comp1 = idx comp2 = idx.
   ENDMETHOD.
 
   METHOD hashed_04_mult_key_partial_non.
-    description = `Read hashed table lines by partial, not left-aligned primary table key`.
-    DO loop_count_2000 TIMES.
-      idx = sy-index.
-      ts1 = utclong_current( ).
-**********************************************************************
-      READ TABLE hashed_tab_mult_key_comp TRANSPORTING NO FIELDS WITH KEY comp2 = idx comp3 = idx.
-**********************************************************************
-      store_runtime( high = utclong_current( ) low = ts1 ).
-    ENDDO.
-    runtime = get_avg_runtime( ).
-    result = VALUE #( meth_name = name
-                      avg_runtime = |{ runtime STYLE = SIMPLE }|
-                      table_category = hashed
-                      access      = primary_table_key
-                      description = description
-                      iteration_count = idx ).
+    READ TABLE hashed_tab_mult_key_comp TRANSPORTING NO FIELDS WITH KEY comp2 = idx comp3 = idx.
   ENDMETHOD.
 
   METHOD hashed_05_mult_key_dynamic.
-    description = `Read hashed table lines by primary table key, dynamic key specification`.
-    DO loop_count_2000 TIMES.
-      idx = sy-index.
-      ts1 = utclong_current( ).
-**********************************************************************
-      READ TABLE hashed_tab_mult_key_comp TRANSPORTING NO FIELDS WITH TABLE KEY ('COMP1') = idx ('COMP2') = idx ('COMP3') = idx.
-**********************************************************************
-      store_runtime( high = utclong_current( ) low = ts1 ).
-    ENDDO.
-    runtime = get_avg_runtime( ).
-    result = VALUE #( meth_name = name
-                      avg_runtime = |{ runtime STYLE = SIMPLE }|
-                      table_category = hashed
-                      access      = primary_table_key
-                      description = description
-                      iteration_count = idx ).
+    READ TABLE hashed_tab_mult_key_comp TRANSPORTING NO FIELDS WITH TABLE KEY ('COMP1') = idx ('COMP2') = idx ('COMP3') = idx.
   ENDMETHOD.
 
   METHOD hashed_06_free_key.
-    description = `Read hashed table lines by free key`.
-    DO loop_count_2000 TIMES.
-      idx = sy-index.
-      ts1 = utclong_current( ).
-**********************************************************************
-      READ TABLE hashed_tab TRANSPORTING NO FIELDS WITH KEY comp7 = idx.
-**********************************************************************
-      store_runtime( high = utclong_current( ) low = ts1 ).
-    ENDDO.
-    runtime = get_avg_runtime( ).
-    result = VALUE #( meth_name = name
-                      avg_runtime = |{ runtime STYLE = SIMPLE }|
-                      table_category = hashed
-                      access      = free_key
-                      description = description
-                      iteration_count = idx ).
+    READ TABLE hashed_tab TRANSPORTING NO FIELDS WITH KEY comp7 = idx.
   ENDMETHOD.
 
   METHOD hashed_07_sec_key_nonun_so_idx.
-    description = `Read hashed table lines by secondary table index (non-unique sorted key)`.
-    DO loop_count_2000 TIMES.
-      idx = sy-index.
-      ts1 = utclong_current( ).
-**********************************************************************
-      READ TABLE hashed_tab_w_sec_key TRANSPORTING NO FIELDS USING KEY non_uni_so_key INDEX idx.
-**********************************************************************
-      store_runtime( high = utclong_current( ) low = ts1 ).
-    ENDDO.
-    runtime = get_avg_runtime( ).
-    result = VALUE #( meth_name = name
-                      avg_runtime = |{ runtime STYLE = SIMPLE }|
-                      table_category = hashed
-                      access      = secondary_table_index
-                      description = description
-                      iteration_count = idx ).
+    READ TABLE hashed_tab_w_sec_key TRANSPORTING NO FIELDS USING KEY non_uni_so_key INDEX idx.
   ENDMETHOD.
+
 ENDCLASS.
 ```
 

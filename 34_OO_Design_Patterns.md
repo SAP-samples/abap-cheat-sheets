@@ -8014,8 +8014,7 @@ CLASS zcl_demo_abap IMPLEMENTATION.
      ( first_name = `Bob`     last_name  = `Brown`   birthday = `19820707` )
      ( first_name = `Charlie` last_name  = `Davis`   birthday = `19950125` )
      ( first_name = `Emily`   last_name  = `Clark`   birthday = `20001212` )
-     ( first_name = `Jasmin`  last_name  = `Miller`
- birthday = `20031028` )
+     ( first_name = `Jasmin`  last_name  = `Miller`  birthday = `20031028` )
      "--- Examples with invalid data ---
      ( first_name = ``        last_name  = `White`   birthday = `19701201` )  "initial first_name
      ( first_name = `Henry`   last_name  = ``        birthday = `19650320` )  "initial last_name
