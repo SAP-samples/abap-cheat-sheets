@@ -544,6 +544,56 @@ DATA(it1) = VALUE itab_type( FOR wa IN itab ( col1 = wa-col1 && 'z'
 <tr>
 <td> 
 
+`STEP` addition in table iterations with `FOR`
+
+ </td>
+
+ <td> 
+
+- The optional `STEP` addition determines the step size and loop order for processing internal tables. 
+- The addition is also possible for `NEW`.
+- Find more information in the [Internal Tables](01_Internal_Tables.md#step-addition) cheat sheet.
+
+<br>
+
+``` abap
+DATA(itab) = VALUE string_table( ( `A` ) ( `B` ) ( `C` ) ( `D` ) ( `E` )
+                                 ( `F` ) ( `G` ) ( `H` ) ( `I` ) ( `J` ) ).
+DATA text TYPE string.
+
+"VALUE
+DATA(itab_for1) = VALUE string_table( FOR line IN itab STEP 2 ( line ) ).
+"ACEGI
+text = concat_lines_of( table = itab_for1 ).
+
+CLEAR text.
+
+DATA(itab_for2) = VALUE string_table( FOR line IN itab STEP -1 ( line ) ).
+"JIHGFEDCBA
+text = concat_lines_of( table = itab_for2 ).
+
+CLEAR text.
+
+"Other additions
+DATA(itab_for3) = VALUE string_table( FOR line IN itab STEP -1 WHERE ( table_line CA `ACXYGZD` ) ( line ) ).
+"GDCA
+text = concat_lines_of( table = itab_for3 ).
+
+CLEAR text.
+
+DATA(itab_for4) = VALUE string_table( FOR line IN itab FROM 2 TO 6 STEP 2 ( line ) ).
+"BDF
+text = concat_lines_of( table = itab_for4 ).
+
+CLEAR text.
+``` 
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
 `LET` expressions
 
  </td>

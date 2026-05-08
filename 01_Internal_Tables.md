@@ -73,6 +73,7 @@
     - [BDEF Derived Types (ABAP EML)](#bdef-derived-types-abap-eml)
     - [Creating Internal Tables Dynamically](#creating-internal-tables-dynamically)
     - [System Field sy-tabix](#system-field-sy-tabix)
+    - [STEP Addition](#step-addition)
   - [More Information](#more-information)
   - [Executable Example](#executable-example)
 
@@ -3840,7 +3841,7 @@ ENDLOOP.
 ```
 
 - The order in which tables are iterated depends on the table category. 
-  - Note the [`STEP`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abaploop_at_itab_cond.htm#!ABAP_ADDITION_3@3@) addition, which is also available for other ABAP statements.  
+  - Note the [`STEP`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abaploop_at_itab_cond.htm) addition, which is also available for other ABAP statements.  
 - Index tables are looped over in ascending order by the index. 
 - Hashed tables are looped in the order in which the lines were added to the table. You can also sort the table before the loop. 
 - During the loop, the system field `sy-tabix` is set to the number of the currently processed table
@@ -3892,7 +3893,7 @@ ENDLOOP.
 
 ### Defining the Step Size and the Direction of Loop Passes
 
-Find more information in the [`STEP`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abaploop_at_itab_cond.htm#!ABAP_ADDITION_3@3@) topic. The addition is also available for other ABAP statements.  
+Find more information in the [`STEP`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abaploop_at_itab_cond.htm) topic and in the section [`STEP` Addition](#step-addition). Note that the addition is also available for other ABAP statements.  
 
 ``` abap
 "STEP addition for defining the step size and the direction of the loop
@@ -8083,7 +8084,7 @@ ENDCLASS.
 >     - For internal tables with non-unique, sorted secondary table keys, the secondary table index does not update immediately. It updates only upon the first access of the table using the secondary table key. The example includes two methods that attempt to illustrate the behavior: Read access by secondary table key with and without counting in the first read access by key. The runtime measurement for the example without the first key access should (on multiple example executions) reflect the extra administrational effort.
 >   - Both full and partial, left-aligned key accesses in sorted tables are optimized. The example access using a not left-aligned key should reflect a slower, non-optimized access.
 >   - Free key searches are generally slower.
->     - `READ TABLE` statements with standard tables can include the `BINARY SEARCH` addition (which is no longer recommended; see the section on `BINARY SEARCH`). This method optimizes read access but generally requires sorting beforehand. The example presents two methods to demonstrate reading using `BINARY SEARCH`: one with a prior sorting and the other without.
+>     - `READ TABLE` statements with standard tables can include the `BINARY SEARCH` addition (which is no longer recommended; see the section on `BINARY SEARCH`). This method optimizes read access but generally requires sorting beforehand. The example includes two methods to demonstrate reading using `BINARY SEARCH`: one where the runtime measurement includes and does not include a prior, single sorting.
 >   - Primary table key access in standard tables is relatively slow. Secondary table key access is optimized.
 >   - Dynamic key specifications require effort for evaluation. The example includes methods that illustrate static key access and a comparable dynamic key access.
 
@@ -9044,6 +9045,391 @@ ENDCLASS.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
+### STEP Addition
+
+- The optional `STEP` addition determines the step size and loop order for processing internal tables.
+- It is available in the following contexts:
+  - `LOOP AT`
+  - `FOR` loops with constructor expressions using `VALUE` and `NEW`
+  - `APPEND`
+  - `INSERT`
+  - `DELETE`
+- The `STEP` addition expects a numeric expression, which must be an integer. It determines the step size. For example, a value of 2 means every second line. The step size must not be 0.
+- The sign of the numeric expression determines the loop order: a positive sign means a forward loop, while a negative sign indicates a backward loop.
+- If `STEP` is not specified, the implicit step size is 1, and the table category or the `USING KEY` addition determine the loop order.
+- Combination options with other additions:
+  - `FROM` and `TO`: Define index range conditions to process only a subset of table lines.
+  - `WHERE`: When `WHERE` is used after `STEP`, the numeric value can only be 1 or -1.
+- Note:
+  - For backward processing regarding primary and secondary table keys and indexes:
+    - Index tables: Starts at the highest index entry in the primary table index.
+    - Hashed tables: Processes table lines in reverse order of insertion.
+    - Secondary sorted key (specified with the `USING KEY` addition): Processes the secondary table index backwards starting with the highest index.
+    - Secondary hashed key (also specified with the `USING KEY` addition): The behavior is the same as for hashed tables.
+  - The `sy-tabix` value reflects the current line number.
+
+The following code snippets illustrate the `STEP` addition in various contexts. Note that most of the snippets use the string table `itab` and the string `text` from the first example for demonstration purposes. Comments outline the effect of using the `STEP` addition with the content of the `text` variable.   
+
+<table>
+
+<tr>
+<th> Context </th> <th> Code Snippet </th>
+</tr>
+
+<tr>
+<td> 
+
+`LOOP AT`
+
+ </td>
+
+ <td> 
+
+``` abap
+DATA(itab) = VALUE string_table( ( `A` ) ( `B` ) ( `C` ) ( `D` ) ( `E` )
+                                 ( `F` ) ( `G` ) ( `H` ) ( `I` ) ( `J` ) ).
+DATA text TYPE string.
+
+"ABCDEFGHIJ
+LOOP AT itab INTO DATA(wa) STEP 1.
+  text &&= wa.
+ENDLOOP.
+
+CLEAR text.
+
+"JIHGFEDCBA
+LOOP AT itab INTO wa STEP -1.
+  text &&= wa.
+ENDLOOP.
+
+CLEAR text.
+
+"ACEGI
+LOOP AT itab INTO wa STEP 2.
+  text &&= wa.
+ENDLOOP.
+
+CLEAR text.
+
+"JHFDB
+LOOP AT itab INTO wa STEP -2.
+  text &&= wa.
+ENDLOOP.
+
+CLEAR text.
+
+"AEI
+LOOP AT itab INTO wa STEP 4.
+  text &&= wa.
+ENDLOOP.
+
+CLEAR text.
+``` 
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+Combining `LOOP AT ... STEP ...` with further additions (`FROM`, `TO`, and `WHERE`)
+
+ </td>
+
+ <td> 
+
+Note that these combination options are also possible for constructor expressions.
+
+``` abap
+"FROM/TO
+
+"ACE
+LOOP AT itab INTO wa FROM 1 TO 5 STEP 2.
+  text &&= wa.
+ENDLOOP.
+
+CLEAR text.
+
+"Note the behavior and reverse logic when using FROM and TO. When
+"performing a backward loop, the FROM value must be greater than or
+"equal to the TO value. When performing a forward loop, the
+LOOP AT itab INTO wa FROM 1 TO 5 STEP -2.
+  text &&= wa.
+ENDLOOP.
+
+ASSERT text IS INITIAL.
+
+"ECA
+LOOP AT itab INTO wa FROM 5 TO 1 STEP -2.
+  text &&= wa.
+ENDLOOP.
+
+CLEAR text.
+
+"Only FROM (implicit processing up to the start/end)
+"BDFHJ
+LOOP AT itab INTO wa FROM 2 STEP 2.
+  text &&= wa.
+ENDLOOP.
+
+CLEAR text.
+
+"Only TO (implicit processing from the start/end)
+"JHFD
+LOOP AT itab INTO wa TO 4 STEP -2.
+  text &&= wa.
+ENDLOOP.
+
+CLEAR text.
+
+"WHERE condition combined with STEP
+"Numeric value can only be 1 or -1. Other values cause errors.
+"WHERE can only be positioned after the STEP addition.
+
+"GDCA
+LOOP AT itab INTO wa STEP -1 WHERE table_line CA `ACXYGZD`.
+  text &&= wa.
+ENDLOOP.
+
+CLEAR text.
+
+"The following example raises the ITAB_ILLEGAL_STEP_SIZE runtime error.
+DATA minus_2 type i value -2.
+"LOOP AT itab INTO wa STEP minus_2 WHERE table_line CA `ACXYGZD`.
+"ENDLOOP.
+``` 
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+Backward loops with hashed table
+
+ </td>
+
+ <td> 
+
+
+``` abap
+"Hashed tables: Table lines processed in reverse order in which they were inserted.
+DATA(itab_h) = VALUE string_hashed_table( ( `A` ) ( `C` ) ( `E` ) ).
+INSERT `D` INTO TABLE itab_h.
+INSERT `B` INTO TABLE itab_h.
+
+"BDECA
+LOOP AT itab_h INTO wa STEP -1.
+  text &&= wa.
+ENDLOOP.
+
+CLEAR text.
+
+"Prior sorting
+SORT itab_h ASCENDING.
+"EDCBA
+LOOP AT itab_h INTO wa STEP -1.
+  text &&= wa.
+ENDLOOP.
+
+CLEAR text.
+``` 
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+Backward loops with tables defining secondary table keys
+
+ </td>
+
+ <td> 
+
+
+``` abap
+TYPES: BEGIN OF s,
+         comp1 TYPE i,
+         comp2 TYPE string,
+       END OF s.
+
+TYPES ty_tab_so_sec TYPE TABLE OF s WITH EMPTY KEY
+                                    WITH UNIQUE SORTED KEY sk COMPONENTS comp2.
+
+DATA(itab_so_sec) = VALUE ty_tab_so_sec( ( comp1 = 1 comp2 = `C` )
+                                         ( comp1 = 2 comp2 = `D` )
+                                         ( comp1 = 3 comp2 = `A` )
+                                         ( comp1 = 4 comp2 = `B` ) ).
+
+"2D 1C 4B 3A
+LOOP AT itab_so_sec INTO DATA(w) USING KEY sk STEP -1.
+  text &&= |{ w-comp1 }{ w-comp2 } |.
+ENDLOOP.
+
+CLEAR text.
+
+TYPES ty_tab_ha_sec TYPE TABLE OF s WITH EMPTY KEY
+                                    WITH UNIQUE HASHED KEY sk COMPONENTS comp2.
+DATA itab_ha_sec TYPE ty_tab_ha_sec.
+
+INSERT VALUE #( comp1 = 2 comp2 = `D` ) INTO TABLE itab_ha_sec.
+INSERT VALUE #( comp1 = 3 comp2 = `A` ) INTO TABLE itab_ha_sec.
+INSERT VALUE #( comp1 = 4 comp2 = `B` ) INTO TABLE itab_ha_sec.
+INSERT VALUE #( comp1 = 1 comp2 = `C` ) INTO TABLE itab_ha_sec.
+
+"1C 4B 3A 2D
+LOOP AT itab_ha_sec INTO w USING KEY sk STEP -1.
+  text &&= |{ w-comp1 }{ w-comp2 } |.
+ENDLOOP.
+
+CLEAR text.
+``` 
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+Using `STEP` in the context of `FOR` loops with `VALUE` and `NEW` constructor expressions
+
+ </td>
+
+ <td> 
+
+
+``` abap
+"VALUE
+DATA(itab_for1) = VALUE string_table( FOR line IN itab STEP 2 ( line ) ).
+"ACEGI
+text = concat_lines_of( table = itab_for1 ).
+
+CLEAR text.
+
+DATA(itab_for2) = VALUE string_table( FOR line IN itab STEP -1 ( line ) ).
+"JIHGFEDCBA
+text = concat_lines_of( table = itab_for2 ).
+
+CLEAR text.
+
+"Other additions
+DATA(itab_for3) = VALUE string_table( FOR line IN itab STEP -1 WHERE ( table_line CA `ACXYGZD` ) ( line ) ).
+"GDCA
+text = concat_lines_of( table = itab_for3 ).
+
+CLEAR text.
+
+DATA(itab_for4) = VALUE string_table( FOR line IN itab FROM 2 TO 6 STEP 2 ( line ) ).
+"BDF
+text = concat_lines_of( table = itab_for4 ).
+
+CLEAR text.
+
+"NEW
+DATA(itab_for5) = NEW string_table( FOR line IN itab STEP 3 ( line ) ).
+"ADGJ
+text = concat_lines_of( table = itab_for5->* ).
+
+CLEAR text.
+``` 
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+`APPEND LINES OF ... STEP ...`
+
+ </td>
+
+ <td> 
+
+
+``` abap
+DATA itab_append LIKE itab.
+
+APPEND LINES OF itab STEP 2 TO itab_append.
+
+"ACEGI
+text = concat_lines_of( table = itab_append ).
+
+CLEAR text.
+
+"Note: In this context, the numeric expression must be positive.
+"The following APPEND statement commented out raises the ITAB_ILLEGAL_STEP_SIZE
+"runtime error.
+DATA num type i value -1.
+"APPEND LINES OF itab STEP num TO itab_append.
+``` 
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+`INSERT LINES OF ... STEP ...`
+
+ </td>
+
+ <td> 
+
+
+``` abap
+DATA itab_insert LIKE itab.
+
+"Note: In this context, the numeric expression must be positive.
+INSERT LINES OF itab STEP 4 INTO TABLE itab_insert.
+
+"AEI
+text = concat_lines_of( table = itab_insert ).
+
+CLEAR text.
+``` 
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+`DELETE ... STEP ...`
+
+ </td>
+
+ <td> 
+
+
+``` abap
+DATA itab_delete LIKE itab.
+itab_delete = itab.
+
+"Note: In this context, the numeric expression must be positive and
+"WHERE cannot be used.
+DELETE itab_delete STEP 3.
+
+"BCEFHI
+text = concat_lines_of( table = itab_delete ).
+
+CLEAR text.
+itab_delete = itab.
+
+DELETE itab_delete FROM 2 TO 6 STEP 2.
+
+"ACEGHIJ
+text = concat_lines_of( table = itab_delete ).
+
+CLEAR text.
+``` 
+
+ </td>
+</tr>
+
+</table>
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## More Information
 Topic [Internal Tables](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenitab.htm) in the ABAP Keyword Documentation.

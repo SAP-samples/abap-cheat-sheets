@@ -213,7 +213,7 @@ SELECT FROM source   "What data source to read from
 | `SELECT * ...` <br><br> `SELECT ... FIELDS * ...` | As outlined above, the `*` character defines all columns to be read from a data source (in the order specified there).  |
 | `SELECT col1, col2, col3 ...` <br><br> `SELECT ... FIELDS col1, col2, col3 ...` | A comma-separated list of individual column names.   |
 | `SELECT data_source~col1, data_source~col2, data_source~col3 ...`  <br><br> `SELECT ... FIELDS data_source~col1, data_source~col2, data_source~col3 ...` | A comma-separated list of individual column names. Here, the name of the data source is explicitly specified and precedes the column name, separated by a tilde. |
-| `SELECT data_source~* ...` <br><br> `SELECT ... FIELDS data_source~* ...` | In this case, the name of the data source is followed by a tilde and the `*` character to specify all columns. Note that there are [special conditions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapselect_list.htm#!ABAP_VARIANT_1@1@) when using this variant. |
+| `SELECT data_source~* ...` <br><br> `SELECT ... FIELDS data_source~* ...` | In this case, the name of the data source is followed by a tilde and the `*` character to specify all columns. Note that there are [special conditions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapselect_list.htm) when using this variant. |
 | `SELECT col1 AS al1, col2 AS al2, col3 AS al3 ...` <br><br> `SELECT ... FIELDS col1 AS al1, col2 AS al2, col3 AS al3 ...` | Defining alias names for individual columns of the result set with [`AS`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapselect_list.htm); make sure that you use an alias name only once here. In the statement, the alias name can only be used after an `ORDER BY` clause; as shown further down, in some cases (e. g. when using SQL expressions) the specification of an alias name is required; setting an alias name for the data source is also possible (`SELECT FROM dbtab AS alias_name ...`). See the section on joins further down. |
 
 > [!NOTE]
@@ -480,7 +480,7 @@ SELECT * FROM dbtab
 <td> <code>NEW</code> addition: Specifying an anonymous data object as target object </td>
 <td>
 
-- Specifying an [anonymous data object](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenanonymous_data_object_glosry.htm) as target object using the addition [`NEW`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapselect_into_target.htm#!ABAP_ALTERNATIVE_3@3@) 
+- Specifying an [anonymous data object](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenanonymous_data_object_glosry.htm) as target object using the addition [`NEW`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapselect_into_target.htm) 
 - Only to be used after `INTO` and not `APPENDING`.
 
 <br>
@@ -514,7 +514,7 @@ Note:
 - The comma-separated list must have the same number of elements as columns in the result set.
 - The content of the columns in the result set is assigned to the data objects specified in the list from left to right in accordance with the order specified in the `SELECT` list.
 - Note the [assignment rules](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenselect_into_conversion.htm) also in this context.
-- More information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapinto_clause.htm#!ABAP_ALTERNATIVE_1@1@).
+- More information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapinto_clause.htm).
 
 ``` abap
 "Elementary data objects as target data objects 
@@ -732,7 +732,7 @@ SELECT * FROM dbtab
 <td> <code>OFFSET n</code> addition: Returning only the table rows after a row with a specified count from the result set</td>
 <td>
 
-- [`OFFSET n`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapselect_up_to_offset.htm#!ABAP_ADDITION_2@2@) 
+- [`OFFSET n`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapselect_up_to_offset.htm) 
 - You can only use the addition, if an `ORDER BY` clause is specified.
 
 <br>
@@ -756,7 +756,7 @@ SELECT *
 <td>
 
 
-The addition [`PACKAGE SIZE n`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapinto_clause.htm#!ABAP_ONE_ADD@1@) can be specified after `INTO TABLE` and `APPENDING TABLE`. A `SELECT` loop ist opened. After `PACKAGE SIZE`, the number of rows is specified (which can be a host variable, host expression or a literal of type `i`) denoting the number of rows to be inserted in the target object per iteration.
+The addition [`PACKAGE SIZE n`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapinto_clause.htm) can be specified after `INTO TABLE` and `APPENDING TABLE`. A `SELECT` loop ist opened. After `PACKAGE SIZE`, the number of rows is specified (which can be a host variable, host expression or a literal of type `i`) denoting the number of rows to be inserted in the target object per iteration.
 
 <br>
 
@@ -1062,7 +1062,7 @@ SELECT a~comp1, a~comp2, b~comp3,
 <td> Merging the result sets of multiple queries into a single result set </td>
 <td>
 
-... using the [set operator](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_set_operators_glosry.htm) [`UNION`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapunion.htm#!ABAP_VARIANT_1@1@). In this case, the rows of the result set of the query after `UNION` are inserted into the result set of the query in front of `UNION`.
+... using the [set operator](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_set_operators_glosry.htm) [`UNION`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapunion.htm). In this case, the rows of the result set of the query after `UNION` are inserted into the result set of the query in front of `UNION`.
 
 <br>
 

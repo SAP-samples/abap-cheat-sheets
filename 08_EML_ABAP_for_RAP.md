@@ -823,7 +823,7 @@ update or delete include the component
 to refer to the content ID `%cid` as the name implies.
 -   Note: You should always fill `%cid` even if not
 needed. The specified content ID is only valid within one ABAP
-EML request. You can use the optional addition [`AUTO FILL CID`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapmodify_entity_entities_fields.htm#!ABAP_ONE_ADD@1@) in EML modify operations to create `%cid` automatically. However, if you use this addition, you cannot refer to `%cid` in subsequent operations.
+EML request. You can use the optional addition [`AUTO FILL CID`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapmodify_entity_entities_fields.htm) in EML modify operations to create `%cid` automatically. However, if you use this addition, you cannot refer to `%cid` in subsequent operations.
 
  </td>
 
@@ -1495,7 +1495,7 @@ MODIFY ENTITIES OF root_ent
     creating a root entity instance and related instances of a child
     entity in one EML request). Long and short forms are also available
     for other EML statements.
->-  The [`SET FIELDS WITH`](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapmodify_entity_entities_fields.htm#!ABAP_VARIANT_4@4@) addition is available as another field specification option. However, it has limitations that you should be aware of. It can cause syntax warnings. Check the documentation. It is recommended that you use `FIELDS ... WITH` and `FROM`.
+>-  The [`SET FIELDS WITH`](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapmodify_entity_entities_fields.htm) addition is available as another field specification option. However, it has limitations that you should be aware of. It can cause syntax warnings. Check the documentation. It is recommended that you use `FIELDS ... WITH` and `FROM`.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
