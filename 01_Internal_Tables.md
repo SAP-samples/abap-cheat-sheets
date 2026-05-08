@@ -9150,9 +9150,10 @@ ENDLOOP.
 
 CLEAR text.
 
-"Note the behavior and reverse logic when using FROM and TO. When
+"Note the behavior and logic when using FROM and TO. When
 "performing a backward loop, the FROM value must be greater than or
-"equal to the TO value. When performing a forward loop, the
+"equal to the TO value. When performing a forward loop, the reverse
+"logic applies.
 LOOP AT itab INTO wa FROM 1 TO 5 STEP -2.
   text &&= wa.
 ENDLOOP.
