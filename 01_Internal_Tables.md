@@ -74,6 +74,7 @@
     - [Creating Internal Tables Dynamically](#creating-internal-tables-dynamically)
     - [System Field sy-tabix](#system-field-sy-tabix)
     - [STEP Addition](#step-addition)
+    - [Empty Standard Table Key](#empty-standard-table-key)
   - [More Information](#more-information)
   - [Executable Example](#executable-example)
 
@@ -191,7 +192,7 @@ Internal Tables ...
     -   Explicit declaration using the addition `EMPTY KEY`.
     -   Implicit declaration when using the standard key if a structured
         line type does not contain non-numeric elementary components or
-        if an unstructured line type is tabular.
+        if an unstructured line type is tabular. See an excursion regarding this aspect [here](#empty-standard-table-key).
     - Note: When using an [inline declaration](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abeninline_declaration_glosry.htm "Glossary Entry") such as `... INTO TABLE @DATA(itab) ...` in `SELECT` statements, the resulting table is a standard table and has an empty key.
 
 
@@ -3677,7 +3678,7 @@ CLASS zcl_demo_abap IMPLEMENTATION.
     out->write( num2 ).
 
     "-------------- Overusing table expression -------------
-    "The following examples performes many reads and writes
+    "The following examples performs many reads and writes
     "using table expressions. The first example includes multiple
     "table expressions, while the second one is differently designed,
     "without many table expressions. The runtimes of the loops are
@@ -8080,7 +8081,7 @@ ENDCLASS.
 >   - Index access (both primary and secondary table index) is generally very fast.
 >   - Hash key access (both full primary table keys of hashed tables and hashed secondary table keys) is fast. 
 >   - Table access using secondary table keys is optimized. 
->     - Specifying secondary table keys for standard tables enables optimized access and fast key access also for standard tables.  
+>     - Specifying secondary table keys for standard tables means enabling optimized access and fast key access also for this table category.  
 >     - For internal tables with non-unique, sorted secondary table keys, the secondary table index does not update immediately. It updates only upon the first access of the table using the secondary table key. The example includes two methods that attempt to illustrate the behavior: Read access by secondary table key with and without counting in the first read access by key. The runtime measurement for the example without the first key access should (on multiple example executions) reflect the extra administrational effort.
 >   - Both full and partial, left-aligned key accesses in sorted tables are optimized. The example access using a not left-aligned key should reflect a slower, non-optimized access.
 >   - Free key searches are generally slower.
@@ -9431,6 +9432,187 @@ CLEAR text.
 </table>
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
+
+### Empty Standard Table Key
+
+- As outline previously, it is recommended to always specify the primary table key explicitly. Using the standard key as the primary table key by mistake can lead to unexpected behavior when processing the table.
+- In an internal table declaration like `DATA itab TYPE TABLE OF zdemo_abap_flsch.`, if an explicit table key is not specified, the standard table key is used by default. 
+- In this case, all character and byte-like fields comprise the primary table key. This can lead to performance issues during key accesses, and it may also result in unintentionally working with an internal table that has an empty primary table key, especially when standard tables have a structured line type with all numeric components.
+- The following example illustrates these aspects:
+  - Two standard tables implicitly set the standard key as the primary table key. One table uses a structured type with only numeric components, resulting in an empty primary table key. The other table contains several numeric components along with one character-like type. A third table explicitly specifies an empty table key. Using RTTI (see the _Dynamic Programming_ cheat sheet for more information), the example demonstrates that the first and third tables have an empty primary table key. The second table, however, does not have an empty primary table key, as it includes at least one non-numeric component.
+  - `SORT` and `READ TABLE` statements are applied to an internal table with an empty primary table key. To avoid syntax warnings - since it is statically determined that the table has an empty primary table key - dynamic programming is employed. The effects are as follows:
+    - Sorting does not change the table.
+    - The line read from the table is the first line, even though the `FROM` clause specifies a component value not present in that line.
+
+To try the example out, create a demo class named `zcl_demo_abap` and paste the code into it. After activation, choose *F9* in ADT to execute the class. The example is set up to display output in the console.
+
+```abap
+CLASS zcl_demo_abap DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
+
+  PUBLIC SECTION.
+    INTERFACES if_oo_adt_classrun.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+    METHODS has_empty_primary_key IMPORTING tab                  TYPE ANY TABLE
+                                  RETURNING VALUE(has_empty_key) TYPE abap_boolean.
+    METHODS get_key_components IMPORTING tab         TYPE ANY TABLE
+                               RETURNING VALUE(keys) TYPE abap_keydescr_tab.
+ENDCLASS.
+
+
+CLASS zcl_demo_abap IMPLEMENTATION.
+  METHOD if_oo_adt_classrun~main.
+
+    out->write( `------ Example 1: Finding out about empty table key ------` ).
+    out->write( |\n| ).
+
+    "Structured type that includes several components of numeric types only.
+    TYPES:
+      BEGIN OF demo_struc1,
+        comp1 TYPE i,
+        comp2 TYPE i,
+        comp3 TYPE decfloat34,
+        comp4 TYPE decfloat16,
+        comp5 TYPE p LENGTH 8 DECIMALS 2,
+      END OF demo_struc1.
+
+    "Structured type that includes several components of numeric types only.
+    TYPES:
+      BEGIN OF demo_struc2,
+        comp1 TYPE i,
+        comp2 TYPE i,
+        comp3 TYPE decfloat34,
+        comp4 TYPE decfloat16,
+        comp5 TYPE p LENGTH 8 DECIMALS 2,
+        comp6 TYPE c LENGTH 3,
+      END OF demo_struc2.
+
+    "Internal tables that do not include an explicit table key specification.
+    "The primary table key is implicitly the standard table key.
+    DATA itab1 TYPE TABLE OF demo_struc1.
+    DATA itab2 TYPE TABLE OF demo_struc2.
+
+    "Note: The standard table key can also be specified explicitly.
+    "The table is not used in the example.
+    DATA itab_expl_std_key TYPE TABLE OF demo_struc1 WITH DEFAULT KEY.
+
+    "Explicitly specifying an empty table key.
+    DATA itab3 TYPE TABLE OF demo_struc1 WITH EMPTY KEY.
+
+    "Using RTTI to determine if the tables' primary table key is empty and
+    "retrieving the keys.
+
+    DATA has_empty_key TYPE abap_boolean.
+    DATA key_table TYPE abap_keydescr_tab.
+
+    DO 3 TIMES.
+      CASE sy-index.
+        WHEN 1.
+          has_empty_key = has_empty_primary_key( itab1 ).
+          key_table = get_key_components( itab1 ).
+        WHEN 2.
+          has_empty_key = has_empty_primary_key( itab2 ).
+          key_table = get_key_components( itab2 ).
+        WHEN 3.
+          has_empty_key = has_empty_primary_key( itab3 ).
+          key_table = get_key_components( itab3 ).
+      ENDCASE.
+
+      out->write( |itab{ sy-index }:| ).
+      out->write( |has_empty_key: "{ has_empty_key }"| ).
+      IF key_table IS INITIAL.
+        out->write( `key_table is initial` ).
+      ELSE.
+        out->write( data = key_table name = `key_table` ).
+      ENDIF.
+      out->write( |\n| ).
+    ENDDO.
+
+**********************************************************************
+
+    out->write( |\n| ).
+    out->write( `------ Example 2: Sorting and reading from tables based on the primary table key although the tables have an empty key ------` ).
+    out->write( |\n| ).
+
+    itab1 = VALUE #(
+      ( comp1 = 1 comp2 = 10 comp3 = '1.2' comp4 = '2.34' comp5 = '1234.56' )
+      ( comp1 = 2 comp2 = 20 comp3 = '2.3' comp4 = '3.45' comp5 = '2345.67' )
+      ( comp1 = 5 comp2 = 50 comp3 = '5.6' comp4 = '6.78' comp5 = '5678.90' )
+      ( comp1 = 6 comp2 = 60 comp3 = '6.7' comp4 = '7.89' comp5 = '6789.01' )
+      ( comp1 = 7 comp2 = 70 comp3 = '7.8' comp4 = '8.90' comp5 = '7890.12' )
+      ( comp1 = 3 comp2 = 30 comp3 = '3.4' comp4 = '4.56' comp5 = '3456.78' )
+      ( comp1 = 4 comp2 = 40 comp3 = '4.5' comp4 = '5.67' comp5 = '4567.89' )
+    ).
+
+    DATA(itab1_copy) = itab1.
+
+    "The following statement raises a syntax warning.
+    "SORT itab1 DESCENDING.
+
+    "Using dynamic programming to circumvent the syntax warning.
+    FIELD-SYMBOLS <tab> TYPE ANY TABLE.
+    ASSIGN itab1 TO <tab>.
+
+    SORT <tab> DESCENDING.
+
+    IF <tab> = itab1_copy.
+      out->write( `The table content is identical` ).
+    ELSE.
+      out->write( `The table content is not identical` ).
+    ENDIF.
+    out->write( |\n| ).
+    out->write( |\n| ).
+
+    DATA(k) = VALUE demo_struc1( comp1 = 4 ).
+
+    "The following statement raises a syntax warning.
+    "READ TABLE itab1 FROM k USING KEY primary_key INTO DATA(wa).
+
+    "Using dynamic programming to circumvent the syntax warning.
+    READ TABLE itab1 FROM k USING KEY ('primary_key') INTO DATA(wa).
+    out->write( data = wa name = `wa` ).
+    out->write( |\n| ).
+
+    itab2 = VALUE #(
+        ( comp1 = 1 comp2 = 10 comp3 = '1.2' comp4 = '2.34' comp5 = '1234.56' comp6 = 'a' )
+        ( comp1 = 2 comp2 = 20 comp3 = '2.3' comp4 = '3.45' comp5 = '2345.67' comp6 = 'e' )
+        ( comp1 = 5 comp2 = 50 comp3 = '5.6' comp4 = '6.78' comp5 = '5678.90' comp6 = 'f' )
+        ( comp1 = 6 comp2 = 60 comp3 = '6.7' comp4 = '7.89' comp5 = '6789.01' comp6 = 'b' )
+        ( comp1 = 7 comp2 = 70 comp3 = '7.8' comp4 = '8.90' comp5 = '7890.12' comp6 = 'd' )
+        ( comp1 = 3 comp2 = 30 comp3 = '3.4' comp4 = '4.56' comp5 = '3456.78' comp6 = 'g' )
+        ( comp1 = 4 comp2 = 40 comp3 = '4.5' comp4 = '5.67' comp5 = '4567.89' comp6 = 'c' )
+      ).
+
+    SORT itab2 DESCENDING.
+    out->write( data = itab2 name = `Sorting result:` ).
+    out->write( |\n| ).
+
+    DATA(k2) = VALUE demo_struc2( comp6 = 'd' ).
+    READ TABLE itab2 FROM k2 USING KEY primary_key INTO DATA(wa2).
+    out->write( data = wa2 name = `wa2` ).
+
+  ENDMETHOD.
+
+  METHOD has_empty_primary_key.
+    DATA(table_descr) = CAST cl_abap_tabledescr( cl_abap_typedescr=>describe_by_data( tab ) ).
+    DATA(keys) = table_descr->get_keys( ).
+    DATA(primary_key) = keys[ 1 ].
+    IF primary_key-key_kind = cl_abap_tabledescr=>keydefkind_empty OR primary_key-components IS INITIAL.
+      RETURN abap_true.
+    ENDIF.
+  ENDMETHOD.
+
+  METHOD get_key_components.
+    keys = CAST cl_abap_tabledescr( cl_abap_typedescr=>describe_by_data( tab ) )->key.
+  ENDMETHOD.
+ENDCLASS.
+```
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
 
 ## More Information
 Topic [Internal Tables](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenitab.htm) in the ABAP Keyword Documentation.

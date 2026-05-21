@@ -230,7 +230,16 @@ ENDIF.
 ```
 
 > [!NOTE]
-> Logical expressions and functions can also be used in other ABAP statements.
+> - Logical expressions and functions can also be used in other ABAP statements.
+> - Similar to predicative method calls, individual data objects can represent a relational expression, returning a truth value. The expression evaluates to true if the operand's content is not initial. The type-specific initial value is checked. As an example, `IF flag. ...` corresponds to `IF flag IS NOT INITIAL. ...`.
+>   ```abap
+>   DATA(flag) = 'X'.
+>   IF flag.
+>     ...
+>    ELSE.
+>     ...
+>   ENDIF.
+>   ```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
@@ -324,6 +333,9 @@ greetings_cond = COND #( WHEN current_utc_time_cond BETWEEN '050000' AND '115959
                          ELSE |Good night, it's { current_utc_time_cond TIME = ISO }.| ).
 
 ```
+
+> [!NOTE]  
+> There are special rules regarding type inference when using expressions with `COND` and `SWITCH` with `#` for actual parameters in case of generic formal parameters. Find more information [here](04_ABAP_Object_Orientation.md#condswitch-and-type-inference-with--for-actual-parameters-in-case-of-generic-formal-parameters).
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 

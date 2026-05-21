@@ -20,6 +20,7 @@
     - [Applying a Sort Key when Sorting Internal Tables](#applying-a-sort-key-when-sorting-internal-tables)
     - [Clearing with CLEAR and FREE](#clearing-with-clear-and-free)
     - [Dynamic and Static Specifications when Processing Internal Tables](#dynamic-and-static-specifications-when-processing-internal-tables)
+    - [Overusing Table Expressions](#overusing-table-expressions)
   - [Miscellaneous Contexts](#miscellaneous-contexts)
     - [Using DO and WHILE](#using-do-and-while)
     - [Using Strings](#using-strings)
@@ -227,6 +228,126 @@ Contexts of reducing content transfer are, for example, the following:
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
+
+### Overusing Table Expressions
+
+- Table expressions - expression enabling in modern ABAP as such - are quite useful in various positions.
+- It is recommended to avoid multiple accesses to the same table line when using multiple table expressions. Instead, it is advisable to reference the table line with a field symbol or data reference variable first and then perform the necessary accesses.
+
+<details>
+  <summary>🟢 Click to expand for example code</summary>
+  <!-- -->
+
+<br>
+
+The following example demonstrates multiple reads and writes using table expressions. The first loop includes multiple table expressions, while the second loop is designed differently, referencing the table line by a field symbol and involving fewer table expressions. The runtimes of both loops are recorded, showing that the second loop has a significantly shorter runtime than the first.
+
+Note: This example is for [exploration, experimentation, and demonstration](./README.md#%EF%B8%8F-disclaimer). It is not intended for accurate runtime or performance testing and is not a suitable method for such purposes.
+
+
+```abap
+CLASS zcl_demo_abap DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
+
+  PUBLIC SECTION.
+    INTERFACES if_oo_adt_classrun.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+ENDCLASS.
+
+
+CLASS zcl_demo_abap IMPLEMENTATION.
+  METHOD if_oo_adt_classrun~main.
+
+CONSTANTS: num_of_repetitions     TYPE i VALUE 100,
+           num_of_assignment_runs TYPE i VALUE 1000.
+
+    TYPES: BEGIN OF struct,
+             a TYPE i,
+             b TYPE i,
+             c TYPE i,
+             d TYPE i,
+             e TYPE i,
+             f TYPE i,
+           END OF struct.
+
+    DATA it TYPE TABLE OF struct WITH EMPTY KEY.
+
+    it = VALUE #( ( a = 0 b = 0 c = 0 d = 0 e = 0 f = 0 )
+                  ( a = 1 b = 1 c = 1 d = 1 e = 1 f = 1 ) ).
+    DATA(it_original) = it.
+
+    DATA runtime_tab TYPE TABLE OF decfloat34 WITH EMPTY KEY.
+
+    DO num_of_repetitions TIMES.
+      DATA(ts1) = utclong_current( ).
+      DO num_of_assignment_runs TIMES.
+        it[ 1 ]-a = sy-index.
+        it[ 1 ]-b = sy-index.
+        it[ 1 ]-c = sy-index.
+        it[ 2 ]-d = sy-index.
+        it[ 2 ]-e = sy-index.
+        it[ 2 ]-f = sy-index.
+        it[ 1 ]-d = it[ 2 ]-d.
+        it[ 1 ]-e = it[ 2 ]-e.
+        it[ 1 ]-f = it[ 2 ]-f.
+        INSERT it[ 1 ] INTO TABLE it.
+        INSERT it[ 2 ] INTO TABLE it.
+      ENDDO.
+      DATA(ts2) = utclong_current( ).
+      cl_abap_utclong=>diff( EXPORTING high    = ts2
+                                       low     = ts1
+                             IMPORTING seconds = DATA(seconds) ).
+
+      APPEND seconds TO runtime_tab.
+    ENDDO.
+
+    SORT runtime_tab BY table_line ASCENDING.
+
+    out->write( `Multiple table expressions, fastest run:` ).
+    out->write( runtime_tab[ 1 ] ).
+
+    CLEAR runtime_tab.
+    it = it_original.
+
+    DO num_of_repetitions TIMES.
+      ts1 = utclong_current( ).
+      DO num_of_assignment_runs TIMES.
+        ASSIGN it[ 1 ] TO FIELD-SYMBOL(<fs1>).
+        ASSIGN it[ 2 ] TO FIELD-SYMBOL(<fs2>).
+        <fs1>-a = sy-index.
+        <fs1>-b = sy-index.
+        <fs1>-c = sy-index.
+        <fs2>-d = sy-index.
+        <fs2>-e = sy-index.
+        <fs2>-f = sy-index.
+        <fs1>-d = <fs2>-d.
+        <fs1>-e = <fs2>-e.
+        <fs1>-f = <fs2>-f.
+        INSERT <fs1> INTO TABLE it.
+        INSERT <fs2> INTO TABLE it.
+      ENDDO.
+      ts2 = utclong_current( ).
+      cl_abap_utclong=>diff( EXPORTING high    = ts2
+                                       low     = ts1
+                             IMPORTING seconds = seconds ).
+
+      APPEND seconds TO runtime_tab.
+    ENDDO.
+
+    SORT runtime_tab BY table_line ASCENDING.
+
+    out->write( `Avoiding overusing table expressions, fastest run:` ).
+    out->write( runtime_tab[ 1 ] ).
+  ENDMETHOD.
+ENDCLASS.
+```
+
+</details>  
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## Miscellaneous Contexts
 

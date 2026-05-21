@@ -1704,8 +1704,10 @@ DATA(methods) = CAST cl_abap_objectdescr(
   - Find examples on the `THROW` addition in the [Exceptions and Runtime Errors](27_Exceptions.md) cheat sheet.
 - There can be multiple logical expressions initiated by `WHEN` followed by the result specified after `THEN`. If none of the logical expressions are true, you can
     specify an `ELSE` clause at the end. If this clause is not specified, the result is the initial value of the specified or derived data type.
-- Note that all operands specified after `THEN` must be convertible to the specified or derived data type.
 
+> [!NOTE]  
+> - All operands specified after `THEN` must be convertible to the specified or derived data type.
+> - There are special rules regarding type inference when using expressions with `COND` and `SWITCH` with `#` for actual parameters in case of generic formal parameters. Find more information [here](04_ABAP_Object_Orientation.md#condswitch-and-type-inference-with--for-actual-parameters-in-case-of-generic-formal-parameters).
 
 
 <table>

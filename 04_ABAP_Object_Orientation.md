@@ -53,8 +53,10 @@
     - [Class-Based and Classic Exceptions](#class-based-and-classic-exceptions)
     - [ABAP Unit Tests](#abap-unit-tests)
     - [ABAP Doc Comments](#abap-doc-comments)
+      - [ABAP Doc Comments for Inline Declarations](#abap-doc-comments-for-inline-declarations)
     - [Escape Character](#escape-character)
     - [Name Shadowing](#name-shadowing)
+    - [COND/SWITCH and Type Inference with # for Actual Parameters in Case of Generic Formal Parameters](#condswitch-and-type-inference-with--for-actual-parameters-in-case-of-generic-formal-parameters)
   - [More Information](#more-information)
   - [Executable Examples](#executable-examples)
 
@@ -8516,6 +8518,61 @@ ENDCLASS.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
+#### ABAP Doc Comments for Inline Declarations
+
+- ABAP Doc comments are supported for inline declarations.
+- This includes data objects, immutable variables, data reference variables, and field symbols.
+- Supported contexts:
+  - Declarations where you declare variables using `DATA` or `FINAL` on the left side of an assignment with the `=` operator. In these cases, do not use the `@variable` syntax, as the ABAP Doc comment automatically associates with the declared variable.
+  - Inline declarations, such as those in method calls, internal table processing, or `ASSIGN` statements, can include ABAP Doc comments (currently excluding ABAP SQL). These comments should be placed immediately before the statement and explicitly reference the variable name using the `@variable` syntax. For method calls involving multiple inline declarations, you can define ABAP Doc comments with multiple `@variable` specifications, each referring to a specific actual parameter.
+
+```abap
+"! Calculation result
+DATA(result1) = 1 + 3.
+
+"! <p>Calculation result<br>
+"! This is a link to { @link .DATA:result1 }</p>
+FINAL(result2) = 6 - 2.
+
+"ABAP Doc comments for actual paramters declared inline
+TRY.
+    "! 16 Byte System UUID in Binary Format
+    DATA(uuid_x16) = cl_system_uuid=>create_uuid_x16_static( ).
+
+    "! @variable c22 | 16 Byte System UUID in Base64
+    "! @variable c32 | 16 Byte System UUID in Base32
+    "! @variable c26 | 16 Byte System UUID in Hex Format
+    "! @variable c36 | 16 Byte System UUID in RFC4122 Format
+    cl_system_uuid=>convert_uuid_x16_static(
+      EXPORTING
+        uuid     = uuid_x16
+      IMPORTING
+        uuid_c22 = FINAL(c22)
+        uuid_c32 = FINAL(c32)
+        uuid_c26 = FINAL(c26)
+        uuid_c36 = FINAL(c36) ).
+  CATCH cx_uuid_error.
+ENDTRY.
+
+"! Demo string table
+DATA(str_table) = VALUE string_table( ( `AB,AP` ) ( `Hel,lo` )
+                                      ( `Wor,ld` ) ).
+
+"! @variable <line> | Table line assigned to field symbol
+LOOP AT str_table ASSIGNING FIELD-SYMBOL(<line>).
+  "! @variable split1 | First split result
+  "! @variable split2 | Second split result
+  SPLIT <line> AT ',' INTO DATA(split1) FINAL(split2).
+ENDLOOP.
+
+"! @variable dref | Table line referenced via a data reference variable
+LOOP AT str_table REFERENCE INTO DATA(dref).
+  ...
+ENDLOOP.
+```
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
 ### Escape Character
 
 - You may encounter [`!` characters](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABENNAMES_ESCAPING.html) specified before operands, particularly in signatures of [procedures](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenprocedure_glosry.htm).
@@ -8893,6 +8950,163 @@ ENDCLASS.
 </details>  
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
+
+### COND/SWITCH and Type Inference with # for Actual Parameters in Case of Generic Formal Parameters
+
+This section outlines special rules for using constructor expressions with `COND`/`SWITCH` and `#` when passing actual parameters to generic formal parameters. 
+
+```abap
+... meth( some_param = COND #( ... THEN ... ) ) ...
+```
+
+When using `#` for the operand type, the following rules apply for type inference:
+
+- If the operand's data type after the first `THEN` is known statically and matches the formal parameter's generic type, that data type will be used.
+- If it does not match, the type is derived from the generic type in a specific manner. For example, the type `string` is derived for `csequence` and `clike`. For more information, see [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencond_constructor_inference.htm).
+
+The following example class demonstrates this behavior: 
+- Example 1: 
+  - Shows that the operand's data type after the first `THEN` is known statically and matches the generic formal parameter type. This type is used for all subsequent `THEN` branches.
+  - The method has an importing parameter of type `csequence`.
+  - The operand's type after the first `THEN` is `c LENGTH 5`, so all other `THEN` branches use this type. For example, the result for `c10`, which is of type `c LENGTH 10` with the value '1234567890', is '12345'.
+- Example 2: 
+  - Uses a `CASE` statement and contrasts with example 1.
+  - Unlike example 1, the actual parameters are directly assigned. As a result, certain assignments are not possible, leading to syntax errors due to incompatible types of the passed actual parameters. 
+- Example 3: 
+  - Similar to example 1, but it uses `SWITCH` and includes an importing parameter of type `numeric`. 
+  - The operand's type after the first `THEN` is `p LENGTH 8 DECIMALS 2`, so all other `THEN` branches use this type. For example, the integer value -123 is converted to -123.00.    
+- Example 4: 
+  - Uses `COND` with an importing parameter of type `clike`.
+  - It illustrates the second special rule. Here, the operand's data type after the first `THEN` does not match the generic type. The example uses a demo data object of type `decfloat34` for the assignment.
+  - Since the generic type is `clike`, the type `string` is automatically derived by default  (which also applies to `csequence`). Consequently, all other `THEN` branches use this type.
+- All method implementations include an RTTI call to retrieve type information at runtime (for more details, see the _Dynamic Programming_ cheat sheet). In the results displayed in the console, the type information `g` represents type `string`, `C` indicates type `c`, and `P` signifies type `p`.
+
+
+```abap
+CLASS zcl_demo_abap DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
+
+  PUBLIC SECTION.
+    INTERFACES if_oo_adt_classrun.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+    METHODS meth1   IMPORTING input         TYPE csequence
+                    RETURNING VALUE(result) TYPE string.
+
+    METHODS meth2   IMPORTING input         TYPE numeric
+                    RETURNING VALUE(result) TYPE string.
+
+    METHODS meth3 IMPORTING input         TYPE clike
+                  RETURNING VALUE(result) TYPE string.
+
+ENDCLASS.
+
+
+CLASS zcl_demo_abap IMPLEMENTATION.
+  METHOD if_oo_adt_classrun~main.
+
+    DATA result TYPE string.
+
+    out->write( `------ Example 1 ------` ).
+
+    DATA str TYPE string VALUE `abcdefghijklmnopqrstuvwxyz`.
+    DATA c5 TYPE c LENGTH 5 VALUE 'hello'.
+    DATA c10 TYPE c LENGTH 10 VALUE '1234567890'.
+    DATA n7 TYPE n LENGTH 7 VALUE '1234567'.
+    DATA int TYPE i VALUE -123.
+
+    DO 5 TIMES.
+      result = meth1( COND #( WHEN sy-index = 1 THEN c5
+                              WHEN sy-index = 2 THEN c10
+                              WHEN sy-index = 3 THEN n7
+                              WHEN sy-index = 4 THEN str
+                              WHEN sy-index = 5 THEN int ) ).
+
+      out->write( result ).
+    ENDDO.
+
+    out->write( |\n| ).
+    out->write( `------ Example 2 ------` ).
+
+    DO 5 TIMES.
+      CASE sy-index.
+        WHEN 1.
+          result = meth1( c5 ).
+          out->write( result ).
+        WHEN 2.
+          result = meth1( c10 ).
+          out->write( result ).
+        WHEN 3.
+          "result = meth1( n5 ).
+        WHEN 4.
+          result = meth1( str ).
+          out->write( result ).
+        WHEN 5.
+          "result = meth1( int ).
+      ENDCASE.
+
+    ENDDO.
+
+    out->write( |\n| ).
+    out->write( `------ Example 3 ------` ).
+
+    DATA d34 TYPE decfloat34 VALUE '1.0234'.
+    DATA d16 TYPE decfloat16 VALUE '9.8765'.
+    DATA integer TYPE i VALUE -123.
+    DATA packed TYPE p LENGTH 8 DECIMALS 2 VALUE '1.23'.
+    str = `112.5243`.
+
+    DO 5 TIMES.
+      result = meth2( SWITCH #( sy-index WHEN 1 THEN packed
+                                         WHEN 2 THEN integer
+                                         WHEN 3 THEN d34
+                                         WHEN 4 THEN d16
+                                         WHEN 5 THEN str ) ).
+
+      out->write( result ).
+    ENDDO.
+
+    out->write( |\n| ).
+    out->write( `------ Example 4 ------` ).
+
+    d34 = '1.0234'.
+    d16 = '9.876526548964654'.
+    integer = -1234567890.
+    packed = '-12345.67'.
+
+    DO 4 TIMES.
+      "Note: The code inlcudes a pragma to suppress a syntax warning since the
+      "compiler can detect that the operand's data type after the first THEN
+      "does not match the generic type
+      result = meth3( COND #( WHEN sy-index = 1 THEN d34
+                              WHEN sy-index = 2 THEN d16
+                              WHEN sy-index = 3 THEN integer
+                              WHEN sy-index = 4 THEN packed ) ) ##TYPE.
+      out->write( result ).
+    ENDDO.
+  ENDMETHOD.
+
+  METHOD meth1.
+    DATA(t) = CAST cl_abap_datadescr( cl_abap_typedescr=>describe_by_data( input ) )->type_kind.
+    result = |Value: "{ input }"; type: { t }|.
+  ENDMETHOD.
+
+  METHOD meth2.
+    DATA(t) = CAST cl_abap_datadescr( cl_abap_typedescr=>describe_by_data( input ) )->type_kind.
+    result = |Value: "{ input }"; type: { t }|.
+  ENDMETHOD.
+
+  METHOD meth3.
+    DATA(t) = CAST cl_abap_datadescr( cl_abap_typedescr=>describe_by_data( input ) )->type_kind.
+    result = |Value: "{ input }"; type: { t }|.
+  ENDMETHOD.
+ENDCLASS.
+```
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
 
 ## More Information
 You can check the subtopics of

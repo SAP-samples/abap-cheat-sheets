@@ -1497,6 +1497,7 @@ An [inline declaration](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-
 > - You can use the [`FINAL`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenfinal_inline.htm) declaration operator to create [immutable variables](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenimmutable_variable_glosry.htm), as shown below.
 > - [Programming guidelines for inline declarations (F1 documentation for Standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abendeclaration_inline_guidl.htm)
 > - Inline declarations are particularly useful in combination with constructor expressions, such as `VALUE`. Find more information and examples in other cheat sheets, for example, [Constructor Expressions](05_Constructor_Expressions.md).
+> - ABAP Doc comments are supported for inline declarations. Find more information [here](04_ABAP_Object_Orientation.md#abap-doc-comments-for-inline-declarations).
 
  
 ```abap
