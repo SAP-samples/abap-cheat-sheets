@@ -42,6 +42,7 @@
     - [Inserting and Deleting Lines in Internal Tables in Loops](#inserting-and-deleting-lines-in-internal-tables-in-loops)
   - [Modifying Internal Table Content](#modifying-internal-table-content)
   - [Deleting Internal Table Content](#deleting-internal-table-content)
+    - [Deleting Duplicate Lines](#deleting-duplicate-lines)
     - [Deleting Adjacent Duplicate Lines](#deleting-adjacent-duplicate-lines)
     - [Deleting the Entire Internal Table Content](#deleting-the-entire-internal-table-content)
   - [Sorting Internal Tables](#sorting-internal-tables)
@@ -5357,11 +5358,191 @@ ENDLOOP.
 *10
 ```
 
-### Deleting Adjacent Duplicate Lines
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
-`DELETE ADJACENT DUPLICATES` statements allow you to delete all adjacent lines except for the first line that have the same content in certain components. You usually need to perform some appropriate sorting before using these statements.
+### Deleting Duplicate Lines
+
+- `DELETE DUPLICATES FROM` statements delete all lines except the first in groups where multiple lines share the same content in specific components.
+- These statements operate similarly to `DELETE ADJACENT DUPLICATES FROM` but do not require prior sorting.
+- `COMPARING` addition:
+  - If not specified, the groups are determined by the content of the key fields of the table key used, which can be referenced implicitly or explicitly using `USING KEY`.
+  - You can specify individual fields for comparison (e.g., `COMPARING comp1 comp2`) or use `ALL FIELDS` to compare all contents (`COMPARING ALL FIELDS`).
+  - Using the pseudo component `table_line` in `COMPARING table_line` is equivalent to `COMPARING ALL FIELDS`.
+- `USING KEY` addition:
+  - This explicitly specifies the table key.
+  - It affects the order of table lines used to form the groups.
+  - Specifying the primary table key explicitly has the same effect as omitting it since the primary table key is used implicitly.
+  - Secondary table key specification and line processing:
+    - For a sorted key: Lines are processed in ascending order according to the secondary table index.
+    - For a hashed key: Lines are processed in the order they were inserted. Prior sorting does not alter the order when using secondary hashed keys.
+- If no explicit table key is specified, the primary table key is used implicitly.
+
+> [!NOTE]  
+> - Duplicate deletion statements that use the primary table key implicitly should not be used for standard tables whose primary table key is empty. 
+> - Using the standard table key as the primary table key may lead to unexpected results. In the case of structured line types, the standard table key can include all character- and byte-like components. Additionally, the standard key of a standard table can be empty.  
+> - The system field `sy-subrc` is set to `0` if at least one row has been deleted and is set to `4` if no rows were deleted.
+
+Syntax patterns: 
 
 ``` abap
+"Implicitly using the primary table key
+DELETE DUPLICATES FROM it.
+
+"Deletion respecting the values of the entire line
+DELETE DUPLICATES FROM it COMPARING ALL FIELDS.
+
+"Only lines are deleted with matching content in specific fields
+DELETE DUPLICATES FROM it COMPARING a c.
+
+"Deletion respecting a specified table key
+"Using a secondary table key
+DELETE DUPLICATES FROM it USING KEY sec_key.
+
+"Using the primary table key by specifying its default name;
+"the example statement corresponds to the first statement above
+"as it uses the primary table key implicitly
+DELETE DUPLICATES FROM it USING KEY primary_key.
+
+"Combining COMPARING and USING KEY
+DELETE DUPLICATES FROM it USING KEY primary_key COMPARING a.
+```
+
+To try out the following executable example, create a demo class named `zcl_demo_abap`, or reuse it if it already exists. Paste the code into it. If you choose a different class name, update the class name in the code snippet accordingly. After activation, choose *F9* in ADT to execute the class. The example is set up to display output in the console. 
+
+
+```abap
+CLASS zcl_demo_abap DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
+
+  PUBLIC SECTION.
+    INTERFACES if_oo_adt_classrun.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+ENDCLASS.
+
+
+CLASS zcl_demo_abap IMPLEMENTATION.
+  METHOD if_oo_adt_classrun~main.
+
+*&---------------------------------------------------------------------*
+*& DELETE DUPLICATES FROM statements
+*&---------------------------------------------------------------------*
+
+    "Demo structured type
+    TYPES:
+      BEGIN OF demo_struc,
+        a TYPE i,
+        b TYPE c LENGTH 3,
+      END OF demo_struc.
+
+    "Demo internal tables with different key definitions
+    DATA it_std_pr_key TYPE TABLE OF demo_struc WITH NON-UNIQUE KEY a.
+    DATA it_std_sec_key TYPE TABLE OF demo_struc WITH EMPTY KEY
+                                                 WITH NON-UNIQUE SORTED KEY sk COMPONENTS a.
+    DATA copy_tab TYPE TABLE OF demo_struc WITH EMPTY KEY.
+
+    "Populating internal tables with demo data
+    "Note that the duplicates are intentionally scattered.
+    copy_tab = VALUE #( ( a = 1 b = 'aaa' )
+                        ( a = 3 b = 'ccc' )
+                        ( a = 2 b = 'bbb' )
+                        ( a = 1 b = 'aaa' )
+                        ( a = 4 b = 'eee' )
+                        ( a = 1 b = 'ddd' )
+                        ( a = 2 b = 'bbb' )
+                        ( a = 3 b = 'ccc' )
+                        ( a = 2 b = 'aaa' )
+                        ( a = 3 b = 'ccc' )
+                        ( a = 3 b = 'ddd' ) ).
+
+    it_std_pr_key = copy_tab.
+    it_std_sec_key = copy_tab.
+
+*&---------------------------------------------------------------------*
+*& DELETE DUPLICATES statements without further addition
+*&---------------------------------------------------------------------*
+
+    out->write( `1) No addition (standard table with defined primary table key)` ).
+
+    DELETE DUPLICATES FROM it_std_pr_key.
+
+    DATA(veri_tab) = it_std_pr_key.
+    out->write( data = it_std_pr_key name = `it_std_pr_key` ).
+    out->write( |\n| ).
+
+*&---------------------------------------------------------------------*
+*& COMPARING addition
+*&---------------------------------------------------------------------*
+
+    out->write( `2) COMPARING ALL FIELDS` ).
+
+    DELETE DUPLICATES FROM it_std_pr_key COMPARING ALL FIELDS.
+
+    out->write( data = it_std_pr_key name = `it_std_pr_key` ).
+    out->write( |\n| ).
+
+    out->write( `3) COMPARING comp ...` ).
+
+    it_std_pr_key = copy_tab.
+
+    DELETE DUPLICATES FROM it_std_pr_key COMPARING b.
+
+    out->write( data = it_std_pr_key name = `it_std_pr_key` ).
+    out->write( |\n| ).
+
+*&---------------------------------------------------------------------*
+*& USING KEY addition
+*&---------------------------------------------------------------------*
+
+    out->write( `4) USING KEY (secondary table key)` ).
+
+    DELETE DUPLICATES FROM it_std_sec_key USING KEY sk.
+
+    out->write( data = it_std_sec_key name = `it_std_sec_key` ).
+    out->write( |\n| ).
+
+    out->write( `5) USING KEY (secondary table key; plus COMPARING)` ).
+
+    it_std_sec_key = copy_tab.
+
+    DELETE DUPLICATES FROM it_std_sec_key USING KEY sk COMPARING b.
+
+    out->write( data = it_std_sec_key name = `it_std_sec_key` ).
+    out->write( |\n| ).
+
+    out->write( `6) USING KEY (primary table key)` ).
+
+    it_std_pr_key = copy_tab.
+
+    DELETE DUPLICATES FROM it_std_pr_key USING KEY primary_key.
+
+    out->write( data = it_std_pr_key name = `it_std_pr_key` ).
+    out->write( |\n| ).
+    IF veri_tab = it_std_pr_key.
+      out->write( `The compared tables have identical content.` ).
+    ELSE.
+      out->write( `The compared tables have different content.` ).
+    ENDIF.
+  ENDMETHOD.
+ENDCLASS.
+```
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+### Deleting Adjacent Duplicate Lines
+
+- `DELETE ADJACENT DUPLICATES` statements allow you to remove all adjacent duplicate lines except for the first line in groups with identical content in specific components.  
+- Generally, you should sort the data appropriately before using these statements, unlike `DELETE DUPLICATES FROM` statements.  
+- Refer to the _Deleting Duplicate Lines_ section for additional information.
+
+Syntax patterns: 
+
+``` abap
+"Sorting before using DELETE ADJACENT DUPLICATES FROM
+SORT it ...
+
 "Implicitly using the primary table key
 DELETE ADJACENT DUPLICATES FROM it.
 
@@ -5372,14 +5553,166 @@ DELETE ADJACENT DUPLICATES FROM it COMPARING ALL FIELDS.
 DELETE ADJACENT DUPLICATES FROM it COMPARING a c.
 
 "Deletion respecting a specified table key
-"Same as first example above
+"Using a secondary table key
+DELETE ADJACENT DUPLICATES FROM it USING KEY sec_key.
+
+"Using the primary table key by specifying its default name;
+"the example statement corresponds to the first statement above
+"as it uses the primary table key implicitly
 DELETE ADJACENT DUPLICATES FROM it USING KEY primary_key.
 
-DELETE ADJACENT DUPLICATES FROM it USING KEY sec_key.
+"Combining COMPARING and USING KEY
+DELETE ADJACENT DUPLICATES FROM it USING KEY primary_key COMPARING a.
+```
+ 
+To try out the following executable example, create a demo class named `zcl_demo_abap`, or reuse it if it already exists. Paste the code into it. If you choose a different class name, update the class name in the code snippet accordingly. After activation, choose *F9* in ADT to execute the class. The example is set up to display output in the console. 
+
+```abap
+CLASS zcl_demo_abap DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
+
+  PUBLIC SECTION.
+    INTERFACES if_oo_adt_classrun.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+ENDCLASS.
+
+
+CLASS zcl_demo_abap IMPLEMENTATION.
+  METHOD if_oo_adt_classrun~main.
+
+*&---------------------------------------------------------------------*
+*& DELETE ADJACENT DUPLICATES statements
+*&
+*& Note: As the statements usually require a suitable sorting, the demo
+*&       DELETE ADJACENT DUPLICATES statements are preceded by SORT
+*&       statements.
+*&---------------------------------------------------------------------*
+
+    "Demo structured type
+    TYPES:
+      BEGIN OF demo_struc,
+        a TYPE i,
+        b TYPE c LENGTH 3,
+      END OF demo_struc.
+
+    "Demo internal tables with different key definitions
+    DATA it_std_pr_key TYPE TABLE OF demo_struc WITH NON-UNIQUE KEY a.
+    DATA it_std_sec_key TYPE TABLE OF demo_struc WITH EMPTY KEY
+                                                 WITH NON-UNIQUE SORTED KEY sk COMPONENTS a.
+    DATA copy_tab TYPE TABLE OF demo_struc WITH EMPTY KEY.
+
+    "Populating internal tables with demo data
+    "Note that the duplicates are intentionally scattered.
+    copy_tab = VALUE #( ( a = 1 b = 'aaa' )
+                        ( a = 3 b = 'ccc' )
+                        ( a = 2 b = 'bbb' )
+                        ( a = 1 b = 'aaa' )
+                        ( a = 4 b = 'eee' )
+                        ( a = 1 b = 'ddd' )
+                        ( a = 2 b = 'bbb' )
+                        ( a = 3 b = 'ccc' )
+                        ( a = 2 b = 'aaa' )
+                        ( a = 3 b = 'ccc' )
+                        ( a = 3 b = 'ddd' ) ).
+
+    it_std_pr_key = copy_tab.
+    it_std_sec_key = copy_tab.
+
+*&---------------------------------------------------------------------*
+*& DELETE ADJACENT DUPLICATES statements without further addition
+*&---------------------------------------------------------------------*
+
+    out->write( `1) No addition (standard table with defined primary table key)` ).
+    SORT it_std_pr_key.
+
+    out->write( data = it_std_pr_key name = `it_std_pr_key after sorting` ).
+    out->write( |\n| ).
+
+    DELETE ADJACENT DUPLICATES FROM it_std_pr_key.
+
+    DATA(veri_tab) = it_std_pr_key.
+    out->write( data = it_std_pr_key name = `it_std_pr_key after deleting` ).
+    out->write( |\n| ).
+
+*&---------------------------------------------------------------------*
+*& COMPARING addition
+*&---------------------------------------------------------------------*
+
+    out->write( `2) COMPARING ALL FIELDS` ).
+
+    it_std_pr_key = copy_tab.
+    SORT it_std_pr_key BY table_line.
+    out->write( data = it_std_pr_key name = `it_std_pr_key after sorting` ).
+    out->write( |\n| ).
+
+    DELETE ADJACENT DUPLICATES FROM it_std_pr_key COMPARING ALL FIELDS.
+
+    out->write( data = it_std_pr_key name = `it_std_pr_key after deleting` ).
+    out->write( |\n| ).
+
+    out->write( `4) COMPARING comp ...` ).
+
+    it_std_pr_key = copy_tab.
+    SORT it_std_pr_key BY b.
+    out->write( data = it_std_pr_key name = `it_std_pr_key after sorting` ).
+    out->write( |\n| ).
+
+    DELETE ADJACENT DUPLICATES FROM it_std_pr_key COMPARING b.
+
+    out->write( data = it_std_pr_key name = `it_std_pr_key after deleting` ).
+    out->write( |\n| ).
+
+*&---------------------------------------------------------------------*
+*& USING KEY addition
+*&---------------------------------------------------------------------*
+
+    out->write( `5) USING KEY (secondary table key)` ).
+
+    SORT it_std_sec_key BY a.
+    out->write( data = it_std_sec_key name = `it_std_sec_key after sorting` ).
+    out->write( |\n| ).
+
+    DELETE ADJACENT DUPLICATES FROM it_std_sec_key USING KEY sk.
+
+    out->write( data = it_std_sec_key name = `it_std_sec_key after deleting` ).
+    out->write( |\n| ).
+
+    out->write( `6) USING KEY (secondary table key; plus COMPARING)` ).
+
+    it_std_sec_key = copy_tab.
+    SORT it_std_sec_key BY b.
+    out->write( data = it_std_sec_key name = `it_std_sec_key after sorting` ).
+    out->write( |\n| ).
+
+    DELETE ADJACENT DUPLICATES FROM it_std_sec_key USING KEY sk COMPARING b.
+
+    out->write( data = it_std_sec_key name = `it_std_sec_key after deleting` ).
+    out->write( |\n| ).
+
+    out->write( `7) USING KEY (primary table key)` ).
+
+    it_std_pr_key = copy_tab.
+    SORT it_std_pr_key BY a.
+    out->write( data = it_std_pr_key name = `it_std_pr_key after sorting` ).
+    out->write( |\n| ).
+
+    DELETE ADJACENT DUPLICATES FROM it_std_pr_key USING KEY primary_key.
+
+    out->write( data = it_std_pr_key name = `it_std_pr_key after deleting` ).
+    out->write( |\n| ).
+    IF veri_tab = it_std_pr_key.
+      out->write( `The compared tables have identical content.` ).
+    ELSE.
+      out->write( `The compared tables have different content.` ).
+    ENDIF.
+  ENDMETHOD.
+ENDCLASS.
 ```
 
-> [!NOTE] 
-> The system field `sy-subrc` is set to `0` if at least one line has been deleted. It is set to `4` if no lines were deleted.
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ### Deleting the Entire Internal Table Content
 
