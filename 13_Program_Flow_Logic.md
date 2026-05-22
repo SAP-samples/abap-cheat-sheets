@@ -58,7 +58,8 @@ ENDIF.
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## Expressions and Functions for Conditions
-- So, such control structures are executed depending on conditions as specified above: `... num = 2 ...` - a [logical expression](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenlogical_expression_glosry.htm).
+
+- Control structures are executed depending on conditions as specified above: `... num = 2 ...` - a [logical expression](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenlogical_expression_glosry.htm).
 - Control structures are generally controlled by logical expressions that define conditions for [operands](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenoperand_glosry.htm).
 - The result of such an expression is either true or false.
 - Logical expressions are either single [relational expressions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrelational_expression_glosry.htm) or expressions combined from one or more logical expressions with Boolean operators like `NOT`, `AND` and `OR`.
@@ -240,6 +241,9 @@ ENDIF.
 >     ...
 >   ENDIF.
 >   ```
+
+> [!TIP]
+> Find more information in the [Logical Expressions and Functions](37_Logical_Expressions_and_Functions.md) ABAP cheat sheet. 
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
