@@ -12,8 +12,8 @@
     - [Predicate Functions](#predicate-functions)
     - [Predicative Method Calls, Data Objects as Relational Expressions](#predicative-method-calls-data-objects-as-relational-expressions)
   - [Boolean Operators and Parentheses](#boolean-operators-and-parentheses)
-    - [Excursion: Operands of Logical Expressions](#excursion-operands-of-logical-expressions)
   - [Boolean Functions](#boolean-functions)
+  - [Excursion: Operands of Logical Expressions](#excursion-operands-of-logical-expressions)
 
 
 This ABAP cheat sheet covers logical expressions and functions that are used to process data based on specific conditions and to control program flow.
@@ -362,11 +362,6 @@ SELECT * FROM @int_tab AS tab
   WHERE table_line IN @rangestab
   INTO TABLE @DATA(result_tab).
 
-DATA(sdf) = REDUCE string( INIT string = ``
-                      FOR <line> IN result_tab
-                      NEXT string &&= <line> && `|` ).
-
-
 ASSERT REDUCE string( INIT string = ``
                       FOR <line> IN result_tab
                       NEXT string &&= <line> && `|` ) = `1|2|3|4|5|6|7|8|9|10|`.
@@ -402,7 +397,7 @@ ASSERT REDUCE string( INIT string = ``
 </tr>
 <tr>
     <td><code>CA</code></td>
-<td><i>Contains any</i><br>To determine whether any character of a given character set is contained
+<td><i>Contains any</i><br><br>To determine whether any character of a given character set is contained
 in a string. <br>Note: The search is case-sensitive. <code>sy-fdpos</code> contains the offset of the first character found, while 0 stands for the very first position. If nothing is found, <code>sy-fdpos</code> contains the length of the string.</td>
 <td>
 
@@ -416,7 +411,7 @@ IF s1 CA `xy`. ...    "false; sy-fdpos: 6
 </tr>
 <tr>
 <td><code>NA</code></td>
-<td><i>Contains not any</i><br>To determine whether any character of a given character set is not contained
+<td><i>Contains not any</i><br><br>To determine whether any character of a given character set is not contained
 in a string. See the note above. </td>
 <td>
 
@@ -430,7 +425,7 @@ IF s2 NA `bcdeH`. ... "false; sy-fdpos: 0
 </tr>
 <tr>
 <td><code>CO</code></td>  
-<td><i>Contains only</i><br>To determine whether a string contains only a certain set of characters. See the note above.</td>
+<td><i>Contains only</i><br><br>To determine whether a string contains only a certain set of characters. See the note above.</td>
 <td>
 
 ```abap
@@ -443,7 +438,7 @@ IF s3 CO `abCd`. ... "false; sy-fdpos: 2
 </tr>
 <tr>
 <td><code>CN</code></td>
-<td><i>Contains not only</i><br>To determine whether a string does not only contain a certain set of characters, i.e. whether a string contains characters other than those in the character set. See the note above.</td>
+<td><i>Contains not only</i><br><br>To determine whether a string does not only contain a certain set of characters, i.e. whether a string contains characters other than those in the character set. See the note above.</td>
 <td>
 
 ```abap
@@ -456,7 +451,7 @@ IF s4 CN `abp`. ... "false; sy-fdpos: 4
 </tr>
 <tr>
 <td><code>CS</code></td>
-<td><i>Contains string</i><br>For simple substring searches and determining whether a string contains a substring. <br>Note: The search is not case-sensitive. <code>sy-fdpos</code> contains the offset of the first substring found. If it is not found, <code>sy-fdpos</code> contains the length of the string searched.</td>
+<td><i>Contains string</i><br><br>For simple substring searches and determining whether a string contains a substring. <br>Note: The search is not case-sensitive. <code>sy-fdpos</code> contains the offset of the first substring found. If it is not found, <code>sy-fdpos</code> contains the length of the string searched.</td>
 <td>
 
 ```abap
@@ -469,7 +464,7 @@ IF s5 CS `zz`. ... "false; sy-fdpos: 27
 </tr>
 <tr>
 <td><code>NS</code></td>
-<td><i>Contains no string</i><br>To determine whether a substring is not contained in a string. See the note for <code>CS</code>.</td>
+<td><i>Contains no string</i><br><br>To determine whether a substring is not contained in a string. See the note for <code>CS</code>.</td>
 <td>
 
 ```abap
@@ -482,7 +477,7 @@ IF s6 NS `TEST`. ...  "false; sy-fdpos: 5
 </tr>
 <tr>
 <td><code>CP</code></td>
-<td><i>Conforms to pattern</i><br>For simple pattern searches and determining whether a set of characters is contained in a string that matches a particular pattern. You can use the following special characters as patterns: <ul><li><code>*</code>: Any character sequence (including blanks)</li><li><code>+</code>: Any character (only one character, including blanks)</li><li><code>#</code>: Escape character. The following character is marked for an exact comparison.</li></ul>Patterns are not case-sensitive except for characters marked with
+<td><i>Conforms to pattern</i><br><br>For simple pattern searches and determining whether a set of characters is contained in a string that matches a particular pattern. You can use the following special characters as patterns: <ul><li><code>*</code>: Any character sequence (including blanks)</li><li><code>+</code>: Any character (only one character, including blanks)</li><li><code>#</code>: Escape character. The following character is marked for an exact comparison.</li></ul>Patterns are not case-sensitive except for characters marked with
 <code>#</code>. If a pattern is found, <code>sy-fdpos</code> returns the offset of the first occurrence. Otherwise, it contains the length of the string searched.
 </td>
 <td>
@@ -503,7 +498,7 @@ IF s7 CP `*i+`. ... "false; sy-fdpos: 11
 </tr>
     <tr>
 <td><code>NP</code></td>
-<td><i>Does not conform to pattern</i><br>Negation of <code>CP</code>. See the previous notes.</td>
+<td><i>Does not conform to pattern</i><br><br>Negation of <code>CP</code>. See the previous notes.</td>
 <td>
 
 ```abap
@@ -1259,6 +1254,8 @@ ELSE.
 ENDIF.
 
 ASSERT is_initial = abap_true.
+ASSERT is_initial.
+ASSERT NOT number.
 
 number = 1.
 
@@ -1269,7 +1266,7 @@ ELSE.
 ENDIF.
 
 ASSERT is_initial = abap_false.
-
+ASSERT NOT is_initial.
 ASSERT number.
 ``` 
 
@@ -1346,32 +1343,32 @@ ASSERT is_found = abap_false.
 DATA(num1) = 1.
 DATA(num2) = 1.
 DATA(num3) = 1.
-DATA all_true TYPE abap_boolean.
+DATA result TYPE abap_boolean.
 
 IF num1 IS NOT INITIAL AND num2 IS NOT INITIAL.
-  all_true = abap_true.
+  result = abap_true.
 ELSE.
-  all_true = abap_false.
+  result = abap_false.
 ENDIF.
 
-ASSERT all_true = abap_true.
+ASSERT result = abap_true.
 
 IF num1 IS NOT INITIAL AND num2 IS NOT INITIAL AND num3 IS NOT INITIAL.
-  all_true = abap_true.
+  result = abap_true.
 ELSE.
-  all_true = abap_false.
+  result = abap_false.
 ENDIF.
 
-ASSERT all_true = abap_true.
+ASSERT result = abap_true.
 
 num3 = 0.
 IF num1 IS NOT INITIAL AND num2 IS NOT INITIAL AND num3 IS NOT INITIAL.
-  all_true = abap_true.
+  result = abap_true.
 ELSE.
-  all_true = abap_false.
+  result = abap_false.
 ENDIF.
 
-ASSERT all_true = abap_false.
+ASSERT result = abap_false.
 ``` 
 
  </td>
@@ -1536,75 +1533,6 @@ ASSERT result = abap_true.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-
-### Excursion: Operands of Logical Expressions
-
-In most cases, operands of logical expressions can include:
-
-- Data objects
-- Built-in functions
-- Functional methods
-- Calculation expressions
-- Constructor expressions
-- Table expressions
-
-
-```abap
-DATA(num) = 1.
-DATA(str_table) = VALUE string_table( ( `a` ) ( `b` ) ( `c` ) ).
-DATA result TYPE abap_boolean.
-
-IF
-"---- Data object/literals ----
-  num = 1
-AND
-  'ABAP' IS NOT INITIAL
-AND
-"---- Built-in functions ----
-  reverse( `PABA` ) = `ABAP`
-AND
-  condense( val = ` A B A P ` to = `` ) = `ABAP`
-AND
-  repeat( val = `*` occ = 5 ) = `*****`
-AND
-  count( val = `hello` sub = `l` ) = 2
-AND
-  strlen( `ABAP` ) = 4
-AND
-  ipow( base = 2 exp = 3 ) = 8
-AND
-  xsdbool( 3 > 1 ) = abap_true
-AND
-"---- Functional methods ----
-  cl_abap_random_int=>create( seed = cl_abap_random=>seed( ) min = 1 max  = 10 )->get_next( ) BETWEEN 1 AND 10
-AND
-  cl_abap_random_int=>create( seed = cl_abap_random=>seed( ) min = 1 max  = 10 )->get_next( )
-AND
-"---- Calculation expressions ----
-  1 + 2 = 3
-AND
-  5 = ( 11 - 5 ) - 1
-AND
-"---- Constructor expressions ----
-  VALUE i( ) = 0
-AND
-  CONV string( 'abc    ' ) = `abc`
-AND
-  COND #( WHEN num = 1 THEN `A` ELSE `B` ) = `A`
-AND
-"---- Table expressions ----
-str_table[ 2 ] = `b`
-.
-  result = abap_true.
-ELSE.
-  result = abap_false.
-ENDIF.
-
-ASSERT result = abap_true.
-```
-
-<p align="right"><a href="#top">⬆️ back to top</a></p>
-
 ## Boolean Functions
 
 Like predicate functions, Boolean functions are built-in logical functions that evaluate a logical expression and return a truth value.
@@ -1697,5 +1625,73 @@ DATA(truth_value2) = COND #( WHEN -1 < 1 THEN abap_true ELSE abap_false ).
 
 
 </table>
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+## Excursion: Operands of Logical Expressions
+
+In most cases, operands of logical expressions can include:
+
+- Data objects
+- Built-in functions
+- Functional methods
+- Calculation expressions
+- Constructor expressions
+- Table expressions
+
+
+```abap
+DATA(num) = 1.
+DATA(str_table) = VALUE string_table( ( `a` ) ( `b` ) ( `c` ) ).
+DATA result TYPE abap_boolean.
+
+IF
+"---- Data object/literals ----
+  num = 1
+AND
+  'ABAP' IS NOT INITIAL
+AND
+"---- Built-in functions ----
+  reverse( `PABA` ) = `ABAP`
+AND
+  condense( val = ` A B A P ` to = `` ) = `ABAP`
+AND
+  repeat( val = `*` occ = 5 ) = `*****`
+AND
+  count( val = `hello` sub = `l` ) = 2
+AND
+  strlen( `ABAP` ) = 4
+AND
+  ipow( base = 2 exp = 3 ) = 8
+AND
+  xsdbool( 3 > 1 ) = abap_true
+AND
+"---- Functional methods ----
+  cl_abap_random_int=>create( seed = cl_abap_random=>seed( ) min = 1 max  = 10 )->get_next( ) BETWEEN 1 AND 10
+AND
+  cl_abap_random_int=>create( seed = cl_abap_random=>seed( ) min = 1 max  = 10 )->get_next( )
+AND
+"---- Calculation expressions ----
+  1 + 2 = 3
+AND
+  5 = ( 11 - 5 ) - 1
+AND
+"---- Constructor expressions ----
+  VALUE i( ) = 0
+AND
+  CONV string( 'abc    ' ) = `abc`
+AND
+  COND #( WHEN num = 1 THEN `A` ELSE `B` ) = `A`
+AND
+"---- Table expressions ----
+str_table[ 2 ] = `b`
+.
+  result = abap_true.
+ELSE.
+  result = abap_false.
+ENDIF.
+
+ASSERT result = abap_true.
+```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
