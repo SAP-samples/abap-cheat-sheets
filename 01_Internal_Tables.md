@@ -9768,7 +9768,7 @@ CLEAR text.
 
 ### Empty Standard Table Key
 
-- As outline previously, it is recommended to always specify the primary table key explicitly. Using the standard key as the primary table key by mistake can lead to unexpected behavior when processing the table.
+- As outlined previously, it is recommended to always specify the primary table key explicitly. Using the standard key as the primary table key by mistake can lead to unexpected behavior when processing the table.
 - In an internal table declaration like `DATA itab TYPE TABLE OF zdemo_abap_flsch.`, if an explicit table key is not specified, the standard table key is used by default. 
 - In this case, all character and byte-like fields comprise the primary table key. This can lead to performance issues during key accesses, and it may also result in unintentionally working with an internal table that has an empty primary table key, especially when standard tables have a structured line type with all numeric components.
 - The following example illustrates these aspects:
@@ -9812,7 +9812,7 @@ CLASS zcl_demo_abap IMPLEMENTATION.
         comp5 TYPE p LENGTH 8 DECIMALS 2,
       END OF demo_struc1.
 
-    "Structured type that includes several components of numeric types only.
+    "Structured type that includes several components of numeric types and one component with character-like type.
     TYPES:
       BEGIN OF demo_struc2,
         comp1 TYPE i,

@@ -330,10 +330,6 @@ ASSERT o NOT BETWEEN m AND n.
  </td>
 </tr>
 
-
-
-
-
 <tr>
 <td> 
 
@@ -520,18 +516,14 @@ IF s8 NP `*c#D*`. ... "false; sy-fdpos: 2
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-
-
 ## Predicates
 
 Predicates are relational expressions that determine a truth value based on an operand. In ABAP, you can find these predicates in predicate expressions, predicate functions, and predicative method calls.
-
 
 ### Predicate Expressions
 
 - Predicate expressions are relational expressions with the predicate operator `IS`. 
 - The addition `NOT` (`IS NOT`) negates.
-
 
 <table>
 <tr>
