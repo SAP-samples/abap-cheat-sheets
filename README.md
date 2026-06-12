@@ -241,7 +241,6 @@ Use the standalone version of the abapGit report to import the demo examples of 
 - Classic programs (_reports_):
   - The programs included in the repository can be executed with *F8* (or *Run* → *Run As* → *1 ABAP Application*). 
 
-
 </details>
 
 <br>
