@@ -29,6 +29,7 @@
     - [sy Structure](#sy-structure)
     - [Getting Structured Type Information and Creating Structures at Runtime](#getting-structured-type-information-and-creating-structures-at-runtime)
     - [Boxed Components](#boxed-components)
+    - [Recursive Structure References](#recursive-structure-references)
   - [Executable Example](#executable-example)
 
 ## Introduction
@@ -112,7 +113,7 @@ TYPES END OF struc_type.
 
 - The simplest structures and structured types have [elementary](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenelementary_data_type_glosry.htm "Glossary Entry")
 components.
-- As mentioned above, the components can be of any type, i.e. they can be of structured types themselves, internal table types, or [reference types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenreference_type_glosry.htm). 
+- As mentioned previously, the components can be of any type, i.e. they can be of structured types themselves, internal table types, or [reference types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenreference_type_glosry.htm). 
 - You can use the [`TYPE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapdata_simple.htm)
 and [`LIKE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapdata_referring.htm) additions for the types of the components. 
 You can use the `LINE OF` addition to refer to a table type or an internal table. 
@@ -120,22 +121,24 @@ You can use the `LINE OF` addition to refer to a table type or an internal table
 
 ``` abap
 TYPES: BEGIN OF struc_type,
-         comp1 TYPE i,                 "elementary type           
-         comp2 TYPE c LENGTH 5,        "elementary type
-         comp3 TYPE structured_type,   "structured type
-         comp4 TYPE itab_type,         "internal table type
-         comp5 TYPE ddic_type,         "DDIC type
-         comp6 TYPE REF TO i,          "data reference
-         comp7 LIKE data_object,       "deriving type from a data object                  
-         comp8 TYPE LINE OF itab_type, "component has structured type, type derived from internal table type 
-         comp9 LIKE LINE OF itab,      "component has structured type, type derived from internal table        
+         comp1 TYPE i,                  "elementary type           
+         comp2 TYPE c LENGTH 5,         "elementary type
+         comp3 TYPE structured_type,    "structured type
+         comp4 TYPE itab_type,          "internal table type
+         comp5 TYPE ddic_type,          "DDIC type
+         comp6 TYPE REF TO i,           "data reference
+         comp7 LIKE data_object,        "deriving type from a data object                  
+         comp8 TYPE LINE OF itab_type,  "component has structured type, type derived from internal table type 
+         comp9 LIKE LINE OF itab,       "component has structured type, type derived from internal table
+         comp10 TYPE REF TO struc_type, "recursive structure refererence        
          ...,
        END OF struc_type.
 ```
 
 
 > [!NOTE] 
-> Outside of classes, you can also refer to DDIC types using `LIKE` (`... comp11 LIKE ddic_type, ...`). If you actually want to refer to an existing data object, but due to typing errors you inadvertently specify a name that exists as DDIC type, errors may be unavoidable.
+> - Outside of classes, you can also refer to DDIC types using `LIKE` (`... comp11 LIKE ddic_type, ...`). If you actually want to refer to an existing data object, but due to typing errors you inadvertently specify a name that exists as DDIC type, errors may be unavoidable.
+> - It is possible to create [recursive structure references](#recursive-structure-references). These are components of a structured type that represent data references to the same structure in which they are defined (see the `comp10` component in the `struc_type` example). 
 
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
@@ -1664,9 +1667,174 @@ ENDCLASS.
 
 </details>  
 
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+
+### Recursive Structure References
+
+- Recursive structure references are components of a structured type that represent data references to the same structure in which they are defined. 
+- They enable, for example, linked lists that can be processed in a type-safe manner.
+
+```abap
+TYPES: BEGIN OF struc_type, 
+         num  TYPE i, 
+         text TYPE string, 
+         sref TYPE REF TO struc_type, 
+       END OF struc_type.
+```
+
+Expand the following collapsible section for example code. To try it out, create a demo class named `zcl_demo_abap`, or reuse it if it already exists. Paste the code into it. If you choose a different class name, update the class name in the code snippet accordingly. After activation, choose *F9* in ADT to execute the class. The example is set up to display output in the console. 
+
+
+<details>
+  <summary>🟢 Click to expand for more information and example code</summary>
+  <!-- -->
+
+<br>
+
+- The example class includes three demos. It demonstrates a recursive structure reference (demo 1). Additionally, it incorporates another structure containing a component of type `REF TO data` (demos 2a and 2b).
+- Structures used in the demos:
+  - `struc_rec` (demo 1): A recursive structure with an integer value and a reference to itself.
+  - `struc_data` (demos 2a and 2b): Similar to `struc_rec`, but includes a component of type `REF TO data`.
+- It provides methods for adding elements and reversing linked lists.
+  - The `prepend1` (for demo 1) and `prepend2` (for demos 2a and 2b) methods add elements to linked lists.
+  - `reverse1` (for demo 1) and `reverse2` (for demos 2a and 2b) reverse those lists.
+- The `main` method shows how to add elements to the lists and reverse them:
+  - Demo 1: Illustrates the structure with a recursive reference. The `reverse1` method demonstrates type-safe access, while `reverse2` (for demos 2a and 2b) uses a cast that may raise an exception when handling the other structure.
+  - Demos 2a and 2b: Show the structure without a recursive reference. Demo 2a represents a successful case, whereas demo 2b triggers an exception.
+
+```abap
+CLASS zcl_demo_abap DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
+
+  PUBLIC SECTION.
+    INTERFACES if_oo_adt_classrun .
+  PRIVATE SECTION.
+    "Components for demo 1
+    TYPES:
+      BEGIN OF struc_rec,
+        value TYPE i,
+        next  TYPE REF TO struc_rec,
+      END OF struc_rec.
+
+    DATA head1 TYPE REF TO struc_rec.
+
+    METHODS prepend1 IMPORTING value TYPE i.
+    METHODS reverse1.
+
+    "Components for demos 2a/b
+    TYPES:
+      BEGIN OF struc_data,
+        value TYPE i,
+        next  TYPE REF TO data,
+      END OF struc_data.
+
+    DATA head2 TYPE REF TO struc_data.
+
+    METHODS prepend2 IMPORTING value TYPE i.
+    METHODS reverse2 RAISING cx_sy_move_cast_error.
+ENDCLASS.
 
 
 
+CLASS zcl_demo_abap IMPLEMENTATION.
+
+  METHOD if_oo_adt_classrun~main.
+    out->write( `-------- Demo 1 (uses a recursive structure reference) --------` ).
+
+    DATA(list1) = NEW zcl_demo_abap( ).
+    list1->prepend1( 1 ).
+    list1->prepend1( 2 ).
+    list1->prepend1( 3 ).
+
+    out->write( list1->head1 ).
+
+    list1->reverse1( ).
+
+    out->write( list1->head1 ).
+
+    out->write( repeat( val = `*` occ = 100 ) ).
+    out->write( `-------- Demo 2a (does not use a recursive structure reference) --------` ).
+
+    DATA(list2a) = NEW zcl_demo_abap( ).
+    list2a->prepend2( 4 ).
+    list2a->prepend2( 5 ).
+    list2a->prepend2( 6 ).
+
+    out->write( list2a->head2 ).
+
+    TRY.
+        list2a->reverse2( ).
+        out->write( list2a->head2 ).
+      CATCH cx_sy_move_cast_error INTO DATA(err2a).
+        out->write( err2a->get_text( ) ).
+    ENDTRY.
+
+    out->write( repeat( val = `*` occ = 100 ) ).
+    out->write( `-------- Demo 2b (does not use a recursive structure reference and raises an exception) --------` ).
+
+    DATA(list2b) = NEW zcl_demo_abap( ).
+    list2b->prepend2( 7 ).
+    list2b->prepend2( 8 ).
+    list2b->prepend2( 9 ).
+
+    out->write( list2b->head2 ).
+
+    "Manipulation for provoking an error
+    DATA(error) = 'error'.
+    list2b->head2->next = REF #( error ).
+
+    TRY.
+        list2b->reverse2( ).
+        out->write( list2b->head2 ).
+      CATCH cx_sy_move_cast_error INTO DATA(err2b).
+        out->write( err2b->get_text( ) ).
+    ENDTRY.
+  ENDMETHOD.
+
+  METHOD prepend1.
+    head1 = NEW #( next = head1 value = value ).
+  ENDMETHOD.
+
+  METHOD reverse1.
+    DATA last1 TYPE REF TO struc_rec.
+    DATA(current1) = head1.
+
+    WHILE current1 IS NOT INITIAL.
+      DATA(next1) = current1->next.
+      current1->next = last1.
+      last1 = current1.
+      current1 = next1.
+    ENDWHILE.
+
+    head1 = last1.
+  ENDMETHOD.
+
+  METHOD prepend2.
+    head2 = NEW #( next = head2 value = value ).
+  ENDMETHOD.
+
+  METHOD reverse2.
+    DATA last2 TYPE REF TO struc_data.
+    DATA(current2) = head2.
+
+    WHILE current2 IS NOT INITIAL.
+      DATA next2 TYPE REF TO struc_data.
+      next2 = CAST #( current2->next ).
+      current2->next = last2.
+      last2 = current2.
+      current2 = next2.
+    ENDWHILE.
+
+    head2 = last2.
+  ENDMETHOD.
+ENDCLASS.
+```
+
+
+</details>  
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
