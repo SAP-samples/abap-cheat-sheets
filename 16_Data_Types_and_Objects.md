@@ -121,8 +121,9 @@ For an overview, see the [ABAP Type Hierarchy](https://help.sap.com/doc/abapdocu
 - The typical syntax element is `... REF TO ...`.
 
 > [!NOTE]
-> There are [generic ABAP types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abengeneric_abap_type_glosry.htm). Generic data types are types that do not define all of the properties of a data object. They can only be used for the typing of [formal parameters](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenformal_parameter_glosry.htm) and [field symbols](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenfield_symbol_glosry.htm). See an example further down.
-The only generic types that can be used after `TYPE REF TO` are `data` for the generic typing of data references, and `object`, for the generic typing of object references.
+> - There are [generic ABAP types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abengeneric_abap_type_glosry.htm). Generic data types are types that do not define all of the properties of a data object. They can only be used for the typing of [formal parameters](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenformal_parameter_glosry.htm) and [field symbols](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenfield_symbol_glosry.htm). See an example further down. 
+> - The only generic types that can be used after `TYPE REF TO` are `data` for data references, and `object` for object references. However, such a typing is considered as completely typing.
+
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 

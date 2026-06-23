@@ -38,6 +38,7 @@
     - [COMMIT ENTITIES: Persisting to the Database](#commit-entities-persisting-to-the-database)
     - [ROLLBACK ENTITIES](#rollback-entities)
     - [GET PERMISSIONS: Retrieving Information about RAP BO Permissions](#get-permissions-retrieving-information-about-rap-bo-permissions)
+    - [SET LOCKS: Exclusively Locking Instances](#set-locks-exclusively-locking-instances)
     - [Raising RAP Business Events](#raising-rap-business-events)
     - [Additions to ABAP EML Statements in ABAP Behavior Pools](#additions-to-abap-eml-statements-in-abap-behavior-pools)
       - [IN LOCAL MODE Addition](#in-local-mode-addition)
@@ -2434,6 +2435,193 @@ GET PERMISSIONS ONLY GLOBAL ENTITY zdemo_abap_rap_ro_m
     FAILED DATA(failed)
     REPORTED DATA(reported).
 ```
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+### SET LOCKS: Exclusively Locking Instances
+
+- To modify RAP BO instances, they must be locked first. The RAP framework automatically locks these instances for subsequent modifications by the user.
+- If the RAP BO consumer needs an [exclusive lock](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenexclusive_lock_glosry.htm) to prevent other users from modifying the same instance simultaneously, you can use the ABAP EML `SET LOCKS` statements to establish enqueue locks for RAP BO instances. This will prevent concurrent modifications.
+- The lock remains active until the [RAP transaction](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_luw_glosry.htm) concludes.
+- Three statement forms are available:
+  - Short form (`SET LOCKS ENTITY ...`): Locks instances of a single RAP BO entity.
+  - Long form (`SET LOCKS OF ...`): Locks instances of multiple RAP BO entities in a [CDS composition tree](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_composition_tree_glosry.htm).
+  - Dynamic form (`SET LOCKS locks_tab ...`): Collects instances of multiple RAP BO entities.
+- The short and long forms require the BDEF derived type `TYPE TABLE FOR KEY OF`, which is an internal table containing instance key values. The dynamic form uses an internal table of type `ABP_BEHV_LOCKS_TAB`.
+
+Example code snippet illustrating all forms:
+
+```abap
+DATA key_tab TYPE TABLE FOR KEY OF zdemo_abap_rap_ro_u.
+key_tab = VALUE #( ( key_field = 1 )
+                   ( key_field = 2 ) ).
+
+"Short form
+SET LOCKS ENTITY zdemo_abap_rap_ro_u
+    FROM key_tab
+    FAILED DATA(f_short).
+
+"Long form
+"The statements specifies the key table inline.
+SET LOCKS OF zdemo_abap_rap_ro_u
+    ENTITY root FROM VALUE #( ( key_field = 1 ) )
+    ENTITY child FROM VALUE #( ( key_field = 2 ) )
+    FAILED   DATA(f_long)
+    REPORTED DATA(r_long).
+
+"Dynamic form
+DATA root_keys TYPE TABLE FOR KEY OF zdemo_abap_rap_ro_u.
+DATA child_keys TYPE TABLE FOR KEY OF zdemo_abap_rap_ch_u.
+
+root_keys  = VALUE #( ( key_field = 1 ) ).
+child_keys = VALUE #( ( key_field = 2 )
+                      ( key_field = 3 ) ).
+
+"Populating the lock table that is of type abp_behv_locks_tab
+"Components:
+"- entity_name: Name of RAP BO entity in capital letters
+"- instances: Reference to an internal table typed with the derived type TYPE TABLE FOR KEY OF
+DATA(locks_tab) = VALUE abp_behv_locks_tab(
+  ( entity_name = 'ZDEMO_ABAP_RAP_RO_U' instances = REF #( root_keys ) )
+  ( entity_name = 'ZDEMO_ABAP_RAP_CH_U' instances = REF #( child_keys ) ) ).
+
+SET LOCKS locks_tab FAILED   DATA(f_dyn)
+                    REPORTED DATA(r_dyn_).
+```                    
+
+The code in the collapsible section illustrates the effect of a `SET LOCKS` statement using artifacts from the ABAP cheat sheet repository.
+
+<details>
+  <summary>🟢 Click to expand for example code</summary>
+  <!-- -->
+
+<br>
+
+- This simplified example visualizes the locking of RAP BO instances using a `SET LOCKS` statement.
+- To explore the example, create two demo classes that implement the `if_oo_adt_classrun` interface. As a prerequisite, the ABAP cheat sheet repository has been imported into the system.
+- Class 1:
+  - Prepares a demo database table and inserts four entries.
+  - Uses a `SET LOCKS` statement (in its short form) to lock two instances (key fields with value 1 and 2).
+  - An `ASSERT` statement is included to set a breakpoint.
+
+```abap
+CLASS zcl_class1 DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
+
+  PUBLIC SECTION.
+    INTERFACES if_oo_adt_classrun.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+ENDCLASS.
+
+CLASS zcl_class1 IMPLEMENTATION.
+  METHOD if_oo_adt_classrun~main.
+
+    DELETE FROM zdemo_abap_rapt1.
+    MODIFY zdemo_abap_rapt1 FROM TABLE @( VALUE #( ( key_field = 1 )
+                                                   ( key_field = 2 )
+                                                   ( key_field = 3 )
+                                                   ( key_field = 4 ) ) ).
+
+    DATA key_tab  TYPE TABLE FOR KEY OF zdemo_abap_rap_ro_u.
+    key_tab = VALUE #(
+              ( key_field = 1 )
+              ( key_field = 2 ) ).
+
+    SET LOCKS ENTITY zdemo_abap_rap_ro_u
+        FROM key_tab
+        FAILED   DATA(f)
+        REPORTED DATA(r).
+
+    ASSERT 1 = 1.
+
+  ENDMETHOD.
+ENDCLASS.
+```
+
+- Class 2:
+  - Includes:
+    - Using the `cl_abap_lock_object_factory` class to enqueue instances.
+    - Specifying another `SET LOCKS` statement.
+  - Both attempt to lock instances with key values 1 to 4.
+  - `cl_abap_lock_object_factory` class calls include adding information to the `enq` string table, and the failed response parameter `f` is specified for the `SET LOCKS` statement.
+
+```abap
+CLASS zcl_class2 DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
+
+  PUBLIC SECTION.
+    INTERFACES if_oo_adt_classrun.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+ENDCLASS.
+
+
+CLASS zcl_class2 IMPLEMENTATION.
+  METHOD if_oo_adt_classrun~main.
+
+    DATA key_tab TYPE TABLE FOR KEY OF zdemo_abap_rap_ro_u.
+    key_tab = VALUE #( ( key_field = 1 )
+                       ( key_field = 2 )
+                       ( key_field = 3 )
+                       ( key_field = 4 ) ).
+
+    DATA enq TYPE string_table.
+    TRY.
+        DATA(lo_lock) = cl_abap_lock_object_factory=>get_instance( iv_name = 'EZDEMO_ABAP_LOCK' ).
+
+        LOOP AT key_tab REFERENCE INTO DATA(lr_key).
+          APPEND |key_field = { lr_key->key_field }| TO enq.
+          TRY.
+              lo_lock->enqueue( it_parameter = VALUE #(
+                ( name = 'KEY_FIELD' value = REF #( lr_key->key_field ) ) ) ).
+              APPEND |  - Enqueue ok| TO enq.
+            CATCH cx_abap_foreign_lock INTO DATA(err_foreign_lock).
+              APPEND |  - { err_foreign_lock->get_text( ) }| TO enq.
+            CATCH cx_abap_lock_failure INTO DATA(err_lock_failure).
+              APPEND |  - { err_lock_failure->get_text( ) }| TO enq.
+          ENDTRY.
+        ENDLOOP.
+      CATCH cx_abap_lock_failure INTO err_lock_failure.
+        APPEND err_lock_failure->get_text( ) TO enq.
+    ENDTRY.
+
+    out->write( enq ).
+
+    SET LOCKS ENTITY zdemo_abap_rap_ro_u
+        FROM key_tab
+        FAILED DATA(f).
+
+    out->write( f ).
+
+  ENDMETHOD.
+ENDCLASS.
+```
+
+- How to proceed:  
+  - In class 1, set a breakpoint on the `ASSERT` statement.  
+  - Run class 1 and enter the debugger. Leave the debugger session open. This indicates that the RAP transaction is not yet complete.  
+  - Run class 2.  
+  - The expected outcome is as follows: The `SET LOCKS` statement in class 1 locks two instances (1 and 2) out of four. Consequently, the `cl_abap_lock_object_factory` calls and the additional `SET LOCKS` statement in class 2 should generate errors for attempting to lock instances with key values 1 and 2, since they are already locked.  
+- The `enq` string table should contain the following entries, and the failed response parameter `f` should have two entries for 1 and 2 with the failure cause *locked*.  
+
+
+    ```
+    key_field = 1                       
+      - Object is locked by user ...  
+    key_field = 2                       
+      - Object is locked by user ...
+    key_field = 3                       
+      - Enqueue ok                      
+    key_field = 4                       
+      - Enqueue ok     
+    ```
+
+</details>  
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 

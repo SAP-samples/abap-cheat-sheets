@@ -32,29 +32,69 @@ This ABAP cheat sheet summarizes the release news from the ABAP Keyword Document
 ## ABAP for Cloud Development Documentation Release News
 
 <details>
+  <summary>🟢 Release 919 (2605)</summary>
+  <!-- -->
+<br>
+  <table>
+        <tr>
+            <th>Topic</th>
+            <th>Title</th>
+            <th>Details</th>
+        </tr>
+<tr>
+            <td rowspan="1">EXPRESSIONS</td>
+            <td>Data Objects as Relational Expressions</td>
+            <td>Individual data objects can now represent relational expressions, returning a truth value. The expression evaluates to true if the operand's content is not initial. It evaluates to false if it is initial. The concrete type of the operand is arbitrary, as the type-specific initial value is checked. </td>
+        </tr>
+<tr>
+            <td rowspan="1">ITAB</td>
+            <td>DELETE DUPLICATES FROM ...</td>
+            <td>The syntax DELETE DUPLICATES FROM itab removes duplicates from an internal table, similar to the statement DELETE ADJACENT DUPLICATES FROM itab, however, without requiring a prior sorting. </td>
+        </tr>
+<tr>
+            <td rowspan="1">TYPES</td>
+            <td>Recursive Structure References</td>
+            <td>Recursive structure references are components of a structured type that represent data references to the same structure in which they are defined. </td>
+        </tr>
+  </table>
+</details>  
+<br>
+
+
+<details>
   <summary>🟢 Release 918 (2602)</summary>
   <!-- -->
 <br>
   <table>
         <tr>
-            <th>Tag</th>
+            <th>Topic</th>
             <th>Title</th>
             <th>Details</th>
         </tr>
 <tr>
             <td rowspan="1">ABAP_CDS</td>
             <td>CDS Propagated Buffers Are Obsolete</td>
-            <td>CDS propagated buffers, defined by the PROPAGATE VIEW ENTITY BUFFER ON statement, are now obsolete. For new data models, using propagated buffers does not provide performance benefits, so they can be excluded from future designs.</td>
+            <td>CDS propagated buffer, defined using the statement PROPAGATE VIEW ENTITY BUFFER ON, are obsolete. When creating new data models, it is no longer the case that performance gains are to be gained by using propagated buffers, so they can be left out of future models. </td>
+        </tr>
+<tr>
+            <td rowspan="1">ABAP_DOC</td>
+            <td>ABAP Doc Comments for Inline Declarations</td>
+            <td>It is now possible to add ABAP Doc comments to inline declarations with DATA and FINAL. </td>
         </tr>
 <tr>
             <td rowspan="1">ABAP_SQL</td>
             <td>New Keyword MERGE</td>
-            <td>The MERGE keyword is now available in ABAP SQL. With MERGE, you can perform insert, update, and delete operations on one data source based on the evaluation of another data source.</td>
+            <td>The MERGE keyword is now available in ABAP SQL. Using MERGE, insert, update, and delete operations can be done on a data source by evaluating another data source. </td>
         </tr>
 <tr>
             <td rowspan="1">CDS_BDL</td>
             <td>RAP Recommendations</td>
-            <td>RAP recommendations enhance value helps by providing context-aware suggestions through a deterministic approach or artificial intelligence. You must define a source and a target field within the behavior definition. To create the RAP recommendation, embed the function in a side effect. The recommended values can then be implemented in the ABAP behavior pool.</td>
+            <td>RAP recommendations are an enhancement to value helps, adding context-aware suggestions through a deterministic approach or leveraging artificial intelligence. In the behavior definition, a source and a target field need to be defined. To define the RAP recommendation itself, the function must be embedded in a side effect. The recommended values can then be implemented in the ABAP behavior pool. </td>
+        </tr>
+<tr>
+            <td rowspan="1">SYSTEM_CLASSES</td>
+            <td>System Class for Weak References</td>
+            <td>The CL_ABAP_WEAK_OBJECT_REFERENCE system class enables the use of weak references in ABAP Cloud. Objects of the CL_ABAP_WEAK_OBJECT_REFERENCE class represent weak references to an object. Unlike regular object references, weak references do not keep the referenced object alive. If the Garbage Collector is running and the referenced object is accessible only through a weak reference, the object is released. </td>
         </tr>
   </table>
 </details>  
