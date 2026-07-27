@@ -1,278 +1,452 @@
-<br />
-<div align="center">
-  <a href="https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenabap.htm">
-    <img src="./files/ABAP_Keyword_Documentation.png" alt="ABAP Keyword Documentation" >
-  </a>
-
-  <h3 align="center" style="font-size: 40px; color: #FCB913;">ABAP Cheat Sheets</h3>
-
-  <p align="center">
-    Explore ABAP syntax in a nutshell & executable examples
-    <br />
-    <!--<a href=""><strong>Expore ABAP syntax in a nutshell & executable examples</strong></a>
-    <br />-->
-    <br />
-    <a href="#%EF%B8%8F-how-to-use">How to Use</a>
-    ·
-    <a href="#-abap-cheat-sheets-overview">Cheat Sheets</a>
-    ·
-    <a href="#-getting-started-with-the-examples">Examples</a>
-  </p>
-</div>
-<br>
-<hr>
-<br>
-
 [![REUSE status](https://api.reuse.software/badge/github.com/SAP-samples/abap-cheat-sheets)](https://api.reuse.software/info/github.com/SAP-samples/abap-cheat-sheets)
 
-ABAP cheat sheets[^1] ...
-- provide a **collection of information on selected ABAP topics** in a nutshell for your reference.
-- focus on **ABAP syntax** in the restricted ABAP language version [ABAP for Cloud Development](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_for_cloud_dev_glosry.htm), particularly in the [SAP BTP ABAP Environment](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensap_btp_abap_env_glosry.htm).
-- include **code snippets**.
-- are supported by easy-to-consume **demonstration examples** that you can import into your system using [abapGit](https://abapgit.org/) to run and check out ABAP syntax in action in simple contexts:
-  |  Branch | Environment | ABAP language version | Notes |
-  | -------- | ------- | ------- | ------- |
-  |  [main](https://github.com/SAP-samples/abap-cheat-sheets/tree/main) |  [SAP BTP ABAP Environment](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensap_btp_abap_env_glosry.htm) | [ABAP for Cloud Development](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_for_cloud_dev_glosry.htm) | Contains the main examples of the ABAP cheat sheet repository |
-  | [rap](https://github.com/SAP-samples/abap-cheat-sheets/tree/rap) | [SAP BTP ABAP Environment](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensap_btp_abap_env_glosry.htm) | [ABAP for Cloud Development](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_for_cloud_dev_glosry.htm) | Features a selection of simplified, non-semantic demo RAP BOs designed to illustrate various RAP-related features, syntax, and concepts. Find more information [here](https://github.com/SAP-samples/abap-cheat-sheets/blob/rap/README.md). The examples are related to the [RAP BDL](36_RAP_Behavior_Definition_Language.md) and [ABAP EML](08_EML_ABAP_for_RAP.md) cheat sheets. |  
-  | [v755](https://github.com/SAP-samples/abap-cheat-sheets/tree/v755), [v756](https://github.com/SAP-samples/abap-cheat-sheets/tree/v756), [v757](https://github.com/SAP-samples/abap-cheat-sheets/tree/v757), [v758](https://github.com/SAP-samples/abap-cheat-sheets/tree/v758), [v816](https://github.com/SAP-samples/abap-cheat-sheets/tree/v816)  | System that supports [classic ABAP](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenclassic_abap_glosry.htm) (the branch names indicate the ABAP release version) | [Standard ABAP](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenstandard_abap_glosry.htm)  | Contains many of the main examples and includes examples for classic ABAP only topics such as dynpro  |
-  | [oo_patterns](https://github.com/SAP-samples/abap-cheat-sheets/tree/oo_patterns) | [SAP BTP ABAP Environment](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensap_btp_abap_env_glosry.htm) | [ABAP for Cloud Development](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_for_cloud_dev_glosry.htm) | Contains example classes to illustrate object-oriented design patterns in a separate branch; see the [ABAP Examples Using Object-Oriented Design Patterns](34_OO_Design_Patterns.md) cheat sheet |
+<a name="top"></a>
 
-- are enriched by links to glossary entries and chapters of the **ABAP Keyword Documentation** (the *F1 help*) and more for you to deep dive into the respective ABAP topics and get more comprehensive information.
+# ABAP Cheat Sheets: Demo ABAP Unit Tests
 
-<br>
-
-> [!IMPORTANT] 
-> - Unless otherwise stated in the cheat sheets, the content of this repository is relevant for these ABAP language versions, with a focus on ABAP for Cloud Development, particularly in the SAP BTP ABAP Environment ⚠️:
->   - <b>[ABAP for Cloud Development](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenabap_for_sap_cloud_glosry.htm)</b> <br>Restricted ABAP language scope for [ABAP Cloud](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_cloud_glosry.htm) <br>🔗 [Online version of the ABAP Keyword Documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm)
->   - <b>[Standard ABAP](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenstandard_abap_glosry.htm)</b> <br>Unrestricted ABAP language scope, for example, for [classic ABAP](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenclassic_abap_glosry.htm) <br>🔗 [Online version of the ABAP Keyword Documentation (latest version)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenabap.htm)
-> - The ABAP cheat sheet documents and examples mainly highlight and explore ABAP syntax options. Most executable examples, code snippets, names of data objects, classes, methods, and interfaces are non-semantic. The code examples do not claim to illustrate best practices. They are simply meant to illustrate ABAP statements and additions to give an idea of their functionality.
-
-<br>
-
-> [!NOTE]  
-> - Since the ABAP cheat sheets provide information in a nutshell, they are not fully comprehensive as far as the described syntax and concepts are concerned. If you need more details, you can always consult the ABAP Keyword Documentation, for example, by choosing *F1* on a keyword in your code, or by searching directly using the online or the system-internal version.
->- Some of the embedded code snippets in the cheat sheets only display high-level code patterns, while others are fully functional and can be directly copied into an ABAP test program for exploration.
->- Check the [Known Issues](#-known-issues) and [Disclaimer](#%EF%B8%8F-disclaimer).
->- The cheat sheets provide links to glossary entries and topics in the ABAP Keyword Documentation. Note that unlike the classic ABAP-only cheat sheets, in most cases these links refer to ABAP for Cloud Development.
->- [Here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrestricted_abap_elements.htm) is an overview of the different ABAP language elements in the different ABAP versions, i.e. what is allowed in ABAP for Cloud Development and what is not. See also the released APIs [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenreleased_apis.htm).
->- In order to have all ABAP cheat sheet documents in one place, the *main* branch (for examples to be imported into the SAP BTP ABAP environment) also contains the ABAP cheat sheet documents that are only relevant for [Standard ABAP](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenstandard_abap_glosry.htm). 
->- The example classes contained in the branches for classic ABAP mostly use syntax that is also available in ABAP for Cloud Development. Only the  `TEST_ABAP_CHEAT_SHEETS_CLASSIC` subpackage contains syntax relevant to Standard ABAP and that is not available in ABAP for Cloud Development, such as dynpro-related ABAP keywords.
->- The code snippets in the ABAP cheat sheet documents and the executable examples include many comments. While it is generally not recommended to overuse comments in your code, they are used here to explain and provide context directly with ABAP statements. In many cases, they illustrate the results of ABAP statements.
->- Many ABAP statements allow additions in various orders, and these orders are not always fixed.
-
-</details>
-
-<br>
-
-## 🏗️ How to Use
-
-1. **ABAP syntax info**: Get info in a nutshell on ABAP syntax and concepts related to various ABAP topics in the [ABAP cheat sheets](#-abap-cheat-sheets-overview).
-2. **Demo examples**: Import the ABAP development objects of this repository (Note: *main* branch for the SAP BTP ABAP environment only) into your system using [abapGit](https://abapgit.org/) as described [here](#-getting-started-with-the-examples) and run the demo classes by choosing *F9* in the [ABAP development tools for Eclipse (ADT)](https://tools.eu1.hana.ondemand.com/) for checking out the ABAP syntax in action.
-
-<br>
-
-## 📝 ABAP Cheat Sheets Overview
-
-| Cheat Sheet        | Topics Covered           |  Demo Example  |
-| ------------- | ------------- | ----- |
-|[ABAP for Cloud Development](19_ABAP_for_Cloud_Development.md)| Briefly outlines the terms ABAP Cloud and classic ABAP to set the context for ABAP for Cloud Development | [zcl_demo_abap_cloud_excursion](./src/zcl_demo_abap_cloud_excursion.clas.abap) (see the notes in the cheat sheet) |
-|[Data Types and Data Objects](16_Data_Types_and_Objects.md)| Contains basic information about data types and data objects in ABAP  | [zcl_demo_abap_dtype_dobj](./src/zcl_demo_abap_dtype_dobj.clas.abap)   |
-|[Internal Tables](01_Internal_Tables.md)| Creating, filling, reading from, sorting, modifying internal tables  | [zcl_demo_abap_internal_tables](./src/zcl_demo_abap_internal_tables.clas.abap)   |
-|[Structures](02_Structures.md)| Some basics when working with structures  |  [zcl_demo_abap_structures](./src/zcl_demo_abap_structures.clas.abap)  |
-|[ABAP SQL](03_ABAP_SQL.md)| Reading from database tables using `SELECT`, changing data in database tables using `INSERT`, `UPDATE`, `MODIFY` and `DELETE`    | [zcl_demo_abap_sql](./src/zcl_demo_abap_sql.clas.abap)   |
-|[ABAP Object Orientation](04_ABAP_Object_Orientation.md)| Working with objects and components, concepts such as inheritance, interfaces, and more |<ul><li>[zcl_demo_abap_objects](./src/zcl_demo_abap_objects.clas.abap)</li><li>[zcl_demo_abap_objects_misc](./src/zcl_demo_abap_objects_misc.clas.abap)</li><li>[zcl_demo_abap_oo_inheritance_1](./src/zcl_demo_abap_oo_inheritance_1.clas.abap)</li></ul> |
-|[Constructor Expressions](05_Constructor_Expressions.md)| Covers constructor expressions with operators such as `VALUE`, `CORRESPONDING`, `NEW`, `CONV`, `EXACT`, `REF`, `CAST`, `COND`, `SWITCH`, `FILTER`, `REDUCE`, iteration expressions with `FOR`, `LET` expressions  | [zcl_demo_abap_constructor_expr](./src/zcl_demo_abap_constructor_expr.clas.abap) |
-|[Dynamic Programming](06_Dynamic_Programming.md)| Covers field symbols and data references as supporting elements for dynamic programming, dynamic ABAP syntax components, runtime type services (RTTS), i. e. runtime type identification (RTTI) and runtime type creation (RTTC) |  [zcl_demo_abap_dynamic_prog](./src/zcl_demo_abap_dynamic_prog.clas.abap)  |
-|[String Processing](07_String_Processing.md)| Creating strings and assigning values, chaining strings, string templates, concatenating, splitting, modifying strings, searching and replacing |  [zcl_demo_abap_string_proc](./src/zcl_demo_abap_string_proc.clas.abap)  |
-|[ABAP for RAP: Entity Manipulation Language (ABAP EML)](08_EML_ABAP_for_RAP.md)| Setting EML in the context of RAP, standard (create, read, update, delete) and non-standard operations (actions) | <ul><li>[Demo RAP scenario with a managed RAP BO, external numbering (zcl_demo_abap_rap_ext_num_m)](./src/zcl_demo_abap_rap_ext_num_m.clas.abap)</li><br><li>[Demo RAP scenario with an unmanaged RAP BO, external numbering (zcl_demo_abap_rap_ext_num_u)](./src/zcl_demo_abap_rap_ext_num_u.clas.abap)</li><br><li>[Demo RAP scenario ("RAP calculator") with a managed, draft-enabled RAP BO,  late numbering (zcl_demo_abap_rap_draft_ln_m)](./src/zcl_demo_abap_rap_draft_ln_m.clas.abap)</li><br><li>[Demonstrating the local consumption of RAP business events in the context of a RAP demo scenario, managed RAP BO with managed internal numbering and additional save (zcl_demo_abap_rap_m_as)](./src/zcl_demo_abap_rap_m_as.clas.abap)</li></ul> Note the examples in the [rap](https://github.com/SAP-samples/abap-cheat-sheets/tree/rap) branch of the ABAP cheat sheets GitHub repository. |
-|[RAP Behavior Definition Language](36_RAP_Behavior_Definition_Language.md)|Highlights key features and syntax options of the RAP Behavior Definition Language (BDL) for designing RAP behavior definitions (BDEF)|The ABAP cheat sheets GitHub repository features simplified, non-semantic demo RAP business objects (BOs) in the [rap](https://github.com/SAP-samples/abap-cheat-sheets/tree/rap) branch for exploring a selection of various RAP-related features, syntaxes and concepts in simplified, non-real-world contexts. Topics include managed and unmanaged RAP BOs, draft-enabled RAP BOs, numbering concepts like early and late numbering, field-specific characteristics, standard operations (CRUD), actions as non-standard operations, authorizations, local RAP business events, and more.|
-|[Excursion Down to Bits and Bytes](09_Bits_and_Bytes.md)|Covers the technical background of data types and data objects|-|
-|[ABAP SQL: Working with Hierarchies](10_ABAP_SQL_Hierarchies.md)|Summarizes the functions ABAP SQL offers together with ABAP CDS for working with hierarchical data that is stored in database tables|-|
-|[Internal Tables: Grouping](11_Internal_Tables_Grouping.md)|Covers the `GROUP BY` clause in statements for internal tables.|[zcl_demo_abap_sql_group_by](./src/zcl_demo_abap_sql_group_by.clas.abap)|
-|[ABAP Managed Database Procedures (AMDP)](12_AMDP.md)|Covers ABAP Managed Database Procedures (AMDP): AMDP Procedures and AMDP Functions (including CDS Table Functions)|[zcl_demo_abap_amdp](./src/zcl_demo_abap_amdp.clas.abap)|
-|[Program Flow Logic](13_Program_Flow_Logic.md)|Deals with control structures (`IF`, `CASE`), loops (`DO`, `WHILE`)|[zcl_demo_abap_prog_flow_logic](./src/zcl_demo_abap_prog_flow_logic.clas.abap)|
-|[Logical Expressions and Functions](37_Logical_Expressions_and_Functions.md)|Covers logical expressions and functions that are used to process data based on specific conditions and to control program flow.|- (The cheat sheet includes code snippets)|
-|[ABAP Unit Tests](14_ABAP_Unit_Tests.md)|Contains basic information about unit testing in ABAP|[zcl_demo_abap_unit_test](./src/zcl_demo_abap_unit_test.clas.abap)|
-|[CDS View Entities](15_CDS_View_Entities.md)|The cheat sheet provides references to information on ABAP CDS. Find a feature table for available language elements in ABAP CDS in the [ABAP Keyword Documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/abencds_language_elements.html) with links to detailed topics. The focus here is on the example CDS artifacts and the [executable example class](./src/zcl_demo_abap_cds_ve.clas.abap), which include comments.|[zcl_demo_abap_cds_ve](./src/zcl_demo_abap_cds_ve.clas.abap)|
-|[SAP LUW](17_SAP_LUW.md)|Provides a high-level overview of the [SAP LUW](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abensap_luw_glosry.htm) concept that deals with data consistency with a focus on SAP LUW-related statements <br> 💡 Several statements covered in the cheat sheet and the executable example are only relevant to [Standard ABAP](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenstandard_abap_glosry.htm).|Program `ZDEMO_ABAP_SAP_LUW`|
-|[Dynpro](18_Dynpro.md)|Provides a high-level overview of dynpro topics with a focus on dynpro-related statements <br> 💡 The content of this cheat sheet and the executable example are only relevant to [Standard ABAP](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenstandard_abap_glosry.htm).|Program `ZDEMO_ABAP_DYNPRO`|
-|[Selection Screens and Classic Lists](20_Selection_Screens_Lists.md)|Provides a high-level overview of selection screens and classic lists with a focus on related statements. It includes an excursion into the SAP List Viewer (ALV). <br> 💡 The content of this cheat sheet and the executable examples are only relevant to [Standard ABAP](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenstandard_abap_glosry.htm).|Program `ZDEMO_ABAP_SELSCR_LISTS_INTRO` (the "intro" program, from which the other related example programs can be started)|
-|[Working with XML and JSON in ABAP](21_XML_JSON.md)|Covers processing XML using class libraries, XML transformations using XSLT and Simple Transformations (ST), serializations (ABAP to XML) and deserializations (XML to ABAP), dealing with JSON data|[zcl_demo_abap_xml_json](./src/zcl_demo_abap_xml_json.clas.abap)|
-|[Released ABAP Classes](22_Released_ABAP_Classes.md)|Contains a selection of ABAP classes, serving as a quick introduction, along with code snippets to explore the functionality in action|- (The cheat sheet includes copy and paste code snippets and example classes)|
-|[Date, Time, and Time Stamp](23_Date_and_Time.md)|Covers how to handle and process dates, times, and time stamps in ABAP|[zcl_demo_abap_date_time](./src/zcl_demo_abap_date_time.clas.abap)|
-|[Built-In Functions](24_Builtin_Functions.md)|Covers a variety of built-in functions in ABAP|[zcl_demo_abap_builtin_func](./src/zcl_demo_abap_builtin_func.clas.abap)|
-|[Authorization Checks](25_Authorization_Checks.md)|Provides a high-level overview of explicit and implicit authorization checks in ABAP|- (The cheat sheet includes a copy and paste example class)|
-|[ABAP Dictionary](26_ABAP_Dictionary.md)|Covers a selection of repository objects in the ABAP Dictionary (DDIC) that represent global types|- (The cheat sheet includes a copy and paste example class)|
-|[Exceptions and Runtime Errors](27_Exceptions.md)|Provides an overview on exceptions and runtime errors|[zcl_demo_abap_error_handling](./src/zcl_demo_abap_error_handling.clas.abap)|
-|[Regular Expressions in ABAP](28_Regular_Expressions.md)|Includes an overview of common regular expressions and their use in ABAP through statements, built-in functions, and system classes|[zcl_demo_abap_regex](./src/zcl_demo_abap_regex.clas.abap)|
-|[Numeric Operations in ABAP](29_Numeric_Operations.md)|Explores various aspects of numeric operations and calculations in ABAP| [zcl_demo_abap_numeric_op](./src/zcl_demo_abap_numeric_op.clas.abap) |
-|[Generative AI](30_Generative_AI.md)|Provides references to detailed information on *Generative AI in ABAP Cloud* and explores released ABAP classes available in the *ABAP AI SDK powered by Intelligent Scenario Lifecycle Management*|- (The cheat sheet includes a copy and paste example class)|
-|[WHERE Conditions](31_WHERE_Conditions.md)|Explores syntax options in ABAP statements that include `WHERE` for data filtering| [zcl_demo_abap_where_conditions](./src/zcl_demo_abap_where_conditions.clas.abap) |
-|[Performance Notes](32_Performance_Notes.md)|Explores a selection of performance-related examples, aimed to illustrate potentially inefficient techniques and use of statements|- (The cheat sheet includes a copy and paste example class)|
-|[ABAP Release News](33_ABAP_Release_News.md)|Summarizes the release news from the ABAP Keyword Documentation for both versions of the ABAP language, ABAP for Cloud Development and Standard ABAP |-|
-|[ABAP Examples Using Object-Oriented Design Patterns](34_OO_Design_Patterns.md)|Does not cover ABAP-specific topics, but rather focuses on ABAP code experiments that explore design patterns in object-oriented programming. Many of these experiments are inspired by classic design patterns established by the _Gang of Four_ (GoF). | The cheat sheet includes copy and paste example classes. These are included in the [oo_patterns](https://github.com/SAP-samples/abap-cheat-sheets/tree/oo_patterns) branch of the repository. Find more information [here](https://github.com/SAP-samples/abap-cheat-sheets/blob/oo_patterns/README.md). |
-|[Enhancements Using BAdIs](35_BAdIs.md)|Provides a high-level overview of enhancements using BAdIs (Business Add-Ins), focusing on related ABAP syntax.|- (The cheat sheet includes copy and paste example classes as well as descriptions to create demo BAdIs step by step)|
+- [ABAP Cheat Sheets: Demo ABAP Unit Tests](#abap-cheat-sheets-demo-abap-unit-tests)
+  - [Getting Started](#getting-started)
+  - [Examples](#examples)
+    - [Example Notes](#example-notes)
+  - [⚠️ Disclaimer](#️-disclaimer)
+  - [📟 Support and Contribution](#-support-and-contribution)
+  - [📜 License](#-license)
 
 
-<br>
+The `unit_tests` branch of the [ABAP cheat sheet GitHub repository](https://github.com/SAP-samples/abap-cheat-sheets) features a selection of simplified ABAP Unit test scenarios across various contexts. These examples are associated with the *ABAP Unit Tests* cheat sheets.
 
-## 🎬 Getting Started with the Examples
+> [!IMPORTANT]
+> - The examples aim to illustrate basic ABAP unit tests with and without the use of ABAP frameworks, using simplified, non-semantic demo implementations, intended to reduce complexity and provide a high-level overview. 
+> - Given their experimental nature, these examples do not claim to represent best practices for ABAP unit test setup and implementation. Always create your own solutions.
 
-The main focus of the ABAP cheat sheets is ABAP for Cloud Development. The examples in the *main* branch of the repository are designed to be imported into the SAP BTP ABAP environment.
-For Standard ABAP, you can find examples in the other branches of the repository (note that except for specific examples, the example code there uses syntax that is also availabe in ABAP for Cloud Development) that you can import into your sandbox SAP system. Just select the appropriate version (*v757* stands for ABAP version 7.57). Check the information in the following collapsible sections for your system environment and perform the required steps.
+
+## Getting Started
+
+> [!NOTE]
+> - The code examples in this branch are designed to function independently from those in the `main` branch. Therefore, you can clone this branch without also cloning the `main` branch.
+> - The following steps outline the import procedure in the SAP BTP ABAP environment.
+> - If you have already imported the `main` branch of the ABAP cheat sheet repository, the repository is still linked in the *abapGit Repositories* view, and you want to have the artifacts of the `unit_tests` branch in the same package, you can proceed with the steps in the note below. Otherwise, open the *abapGit Repositories* view in ADT, filter for the linked repository, right-click it, and choose _Unlink_.
+
+Use the [abapGit](https://github.com/abapGit/eclipse.abapgit.org) plug-in to install the examples by carrying out the following steps:
 
 <details>
-  <summary>🟢  1) General info</summary>
-  <br>
+  <summary>🟢 Click for the installation steps</summary>
+  <!-- -->
 
-- Some **DDIC artifacts**, such as database tables, are part of the repository. They are used by the examples to ensure self-contained examples. All artifacts must be imported for all examples to work.
-- Most examples are designed to **display some output in the ADT console**. Once successfully imported, you can **run** the examples in ADT by choosing *F9* to display the output in the ADT console. The programs included in the branches for classic ABAP can be executed with *F8*.
-- The examples **include descriptions and comments** in the code to provide explanations and set the context.
-- Note that only one user on the system can import this repository because all object names must be globally unique. 
-- Regarding the examples to be imported into a system supporting classic ABAP (where Standard ABAP is supported), note the following: In most cases, the cheat sheet documents and examples focus on ABAP for Cloud Development. Therefore, the lower the [ABAP release](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_release_glosry.htm) in your system, the fewer syntax options and examples are available. For example, the RAP examples need at least ABAP version 7.56. Or, the [`FINAL` declaration operator](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenfinal_inline.htm) is not available in ABAP version 7.56. The code examples in the classic ABAP branches do not necessarily reflect all (described) syntax variations and options that are available in classic ABAP and in the particular ABAP release. For more information on new ABAP features by release, see the ABAP Release News:
-  - [ABAP Release News](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abennews.htm) for ABAP for Cloud Development. Note the ABAP release cycles listed there.
-  - For Standard ABAP, see the ABAP relese news [here](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abennews.htm).
-</details>
-
-<details>
-  <summary>🟢 2a) SAP BTP ABAP environment</summary>
-  <br>
-
-**Prerequisites**
-- [x] You have access to an SAP BTP ABAP Environment instance (see [here](https://blogs.sap.com/2018/09/04/sap-cloud-platform-abap-environment) for additional information).
-- [x] You have downloaded and installed the ABAP development tools for Eclipse (ADT). Make sure that you are using the latest version, as indicated on the [installation page](https://tools.hana.ondemand.com/#abap).
-- [x] Before importing the code, you have performed a system-wide search for classes named `ZCL_DEMO_ABAP*`, for example, so that you do not run into errors when you try to import the code. If someone has already imported the content into the system, you can simply check out that imported version and proceed to the step *3) Run the code*.
-- [x] You have created an ABAP cloud project in ADT that allows you to access your SAP BTP ABAP Environment instance (see [here](https://help.sap.com/viewer/5371047f1273405bb46725a417f95433/Cloud/en-US/99cc54393e4c4e77a5b7f05567d4d14c.html) for more information). Your login language is English.
-- [x] You have installed the [abapGit](https://github.com/abapGit/eclipse.abapgit.org) plug-in for ADT from the [update site](http://eclipse.abapgit.org/updatesite/).
+<br>
 
 
-**Import Code**
-
-Use the abapGit plug-in to install the <em>ABAP cheat sheets</em> by carrying out the following steps:
-
-1. In your ABAP cloud project, create a package, for example, *ZABAP_CHEAT_SHEETS* as the target package. The package should be local.
+1. In your ABAP cloud project, create a package, for example, *ZABAP_DEMO_AUNIT* as the target package. The package should be local.
 2. Add the package to the *Favorite Packages* in the *Project Explorer* view in ADT.
 3. To add the <em>abapGit Repositories</em> view to the <em>ABAP</em> perspective, choose *Window* → *Show View* → *Other...* from the menu bar and choose *abapGit Repositories*.
-4. In the <em>abapGit Repositories</em> view, click the `+` icon in the upper right corner of the ADT tab to link a new abapGit repository.
-  <br>![ADT](./files/abapGit_Repositories.png)
-
-5. The *Link abapGit Repository* popup appears. Enter the following URL:
+4. In the <em>abapGit Repositories</em> view, choose the `+` icon in the upper right corner of the ADT tab to link a new abapGit repository.
+5. The *Link abapGit Repository* popup appears. Enter the following URL. Note that if you have already imported the `main` branch of the ABAP cheat sheet repository and linked it, unlink it first as described in the note above. 
 
     ```
     https://github.com/SAP-samples/abap-cheat-sheets.git
     ```
 
-6. Choose *Next*.
+6. Choose *Next*. 
+7. Provide your Git user and password/token.
+8. Choose *Next*. A pop-up is displayed prompting you to choose to store or delete credentials in/from secure storage.
+9.  On the *Branch and Package Selection* screen, select the `unit_tests` branch and enter the name of the created package (for example, *ZABAP_DEMO_AUNIT*) in the *Package* field. 
+10. Choose *Next*.
+11. On the *Select Transport Request* screen, choose *Finish* to link the Git repository to your ABAP cloud project. The package should be local.
+12. In the *abapGit Repositories* view, filter for your package. The repository appears in the *abapGit Repositories* view with the status <em>Linked</em>.
+13. Right-click on the new abapGit repository and choose *Pull...* to start the cloning of the repository contents. Note that you can also choose the pulling in a previous wizard step.
+14. On the *Branch and Package Selection* screen, choose *Next*.
+15. On the next screen, select the objects (select the package/top-most selection box to automatically select all artifacts) from the list and choose *Next*.
+16. On the next screen - the package should be local - choose *Finish*. Same as above, if an *object already locked* message is displayed, choose *Finish* as well. The status in the *abapGit Repositories* view changes to <em>Pull running...</em>. Note that the pull run may take several minutes.
+17. Once the cloning is complete, the status changes to *Pulled Successfully*. You may need to refresh the *abapGit Repositories* view to see the progress of the import. To do this, choose the  *Refresh* icon in the upper right corner of the view.
+18. Refresh your project tree. For example, in ADT, right-click the package and choose *Refresh*. The package should contain all the artifacts from the GitHub repository.
+19. Make sure that all artifacts are active. To activate all inactive development objects, choose the *Activate all inactive ABAP development objects* button from the menu (or choose *CTRL+Shift+F3*). 
 
-7. On the *Branch and Package Selection* screen, enter the name of the created package (for example, *ZABAP_CHEAT_SHEETS*) in the *Package* field.
-8. Choose *Next*.
-9.  On the *Select Transport Request* screen, choose *Finish* to link the Git repository to your ABAP cloud project. The package should be local.
-10. In the *abapGit Repositories* view, filter for your package. The repository appears in the *abapGit Repositories* view with the status <em>Linked</em>.
-11. Right-click on the new abapGit repository and choose *Pull...* to start the cloning of the repository contents.
-12. On the *Branch and Package Selection* screen, choose *Next*.
-13. If the *Locally Modified Object* screen is displayed, select the objects (for example, the package to automatically select all artifacts) from the list and choose *Next*.
-14. On the next screen - the package should be local - choose *Finish*. Same as above, if an *object already locked* message is displayed, choose *Finish* as well. The status in the *abapGit Repositories* view changes to <em>Pull running...</em>. Note that the pull run may take several minutes.
-15. Once the cloning is complete, the status changes to *Pulled Successfully*. You may need to refresh the *abapGit Repositories* view to see the progress of the import. To do this, choose the  *Refresh* icon in the upper right corner of the view.
-16. Refresh your project tree. For example, in ADT, right-click the package and choose *Refresh*. The package should contain all the artifacts from the GitHub repository.
-17. Make sure that all artifacts are active. To activate all inactive development objects, choose the *Activate all inactive ABAP development objects* button from the menu (or choose *CTRL+Shift+F3*).
-</details>
+
+
+</details>  
+
+<br>
+
+> [!NOTE]
+> If you have already imported the `main` branch of the ABAP cheat sheet repository, and linking the repository anew is rejected, proceed as follows to include the artifacts in the package of the already imported repository: 
+> - Open the *abapGit Repositories* view in ADT. 
+> - Right-click the line with the above GitHub URL. Choose _Switch Branch_. Provide user credentials when prompted.
+> - On the *Branch Selection* screen, select the `unit_tests` branch. The package entry remains unchanged.
+> - Choose *Next*.
+> - In the *abapGit Repositories* view, the _Status_ should be _Linked_.
+> - Right-click the line and choose _Pull_.
+> - In the _Object Selection for Pull_ screen, you may choose _Next_ without selecting any artifacts for deletion.
+> - Once having finished the wizard, the _Status_ should be _Pull starting_. You can choose the *Refresh* icon to check on the progress.
+> - Make sure that all artifacts are active. To activate all inactive development objects, choose the *Activate all inactive ABAP development objects* button from the menu (or choose *CTRL+Shift+F3*).
+
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+## Examples
+
+The following examples illustrate simplified ABAP Unit test scenarios across various contexts, including:
+
+- Testing methods without dependent-on components (DOCs) and without ABAP frameworks
+- Testing methods with DOCs and without ABAP frameworks
+- Using ABAP frameworks to manage these DOCs (for example, by creating and injecting test doubles):
+    - Classes (ABAP OO Test Double Framework)
+    - Database (ABAP SQL Test Double Framework)
+    - CDS view entity (CDS Test Double Framework)
+    - RAP business object (creating transactional buffer test doubles and mocking ABAP EML APIs)
+    - Authority check dependencies
+    - Function module (Function Module Test Double Framework)
+    - Inspecting background processing using bgPF
+- Using test seams
+- Test classes located in an external class rather than the class being tested, demonstrating the use of the `"!@testing ...` syntax
+
+> [!NOTE]  
+> - Several contexts are covered in the ABAP cheat sheet's executable examples of the `main` branch, combining various scenarios and the use of ABAP frameworks to reduce the number of artifacts. The ABAP Unit examples here focus on the various contexts in individual classes, independent of artifacts from the ABAP cheat sheet repository.
+> - The examples do not claim to represent best practices or model approaches and setups. They serve only to illustrate ABAP Unit aspects and functionality, most of them making use of the available frameworks. Make sure that you create your own solutions.
+> - For more information on the frameworks, refer to the ABAP Doc comments in the classes.
+> - For simplicity, many example methods used for unit tests are similar or identical across the example classes.
+
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+### Example Notes
+
+<table>
+
+<tr>
+<td> Context </td> <td> Notes </td>
+</tr>
+
+<tr>
+<td> 
+Testing methods without dependent-on components (DOC) and without ABAP frameworks
+</td>
+<td> 
+
+- **Class**: `zcl_demo_aunit_no_tdf`
+- **Purpose**: 
+    - Demonstrates ABAP Unit tests for a method that does not involve any dependent-on component (DOC) and does not use an ABAP framework.
+    - The test values are hard-coded.
+- **Global class**: 
+    - Contains a private calculation method.
+    - Takes two integer values and an enumeration type (indicating the operator) to calculate the result.
+- **Test class**: 
+    - Defines the local test class `ltc_calculate`.
+    - Since the method being tested is private, the global class and the local test class are befriended using the `LOCAL FRIENDS` addition.
+    - Several test methods assess various operations, including addition, subtraction, multiplication, and division. Edge cases, such as division by zero and arithmetic overflow, are also tested using hard-coded values.
+
+
+</td>
+</tr>
+
+
+<tr>
+<td> 
+Testing methods with DOC and without ABAP frameworks
+</td>
+<td> 
+
+- **Class**: `zcl_demo_aunit_no_tdf_doc`
+- **Purpose**:
+    - Demonstrates ABAP Unit tests for methods that involve dependent-on components (DOCs) without using an ABAP test double framework.
+    - Uses self-created local test doubles and hard-coded test data.
+- **Global class**:
+    - Implements constructor-based dependency injection for two DOC interfaces (price provider and flights provider), with default productive providers as fallback options.
+    - Provides two methods:
+        - Calculating price from the current price and discount (retrieves discount information from the DOC).
+        - Computing occupancy rate from flight seat data (retrieves flight data from the DOC).
+- **Test class**:
+    - Defines local test doubles (`ltd_test_double_discount`, `ltd_test_double_occupancy`) and local test classes (`ltc_calculate_price`, `ltc_occupancy_rate`).
+    - Injects the local test doubles into the constructor.
+    - Includes multiple hard-coded test scenarios for normal, boundary, invalid, rounding, and no data cases for both price and occupancy calculations.
+
+
+</td>
+</tr>
+
+<tr>
+<td> 
+Classes (ABAP OO Test Double Framework)
+</td>
+<td> 
+
+- **Class**: `zcl_demo_aunit_abap_oo_tdf`
+- **Purpose**:
+    - Demonstrates ABAP Unit tests with a DOC using the ABAP OO Test Double Framework.
+    - Illustrates constructor injection to replace a dependency during testing.
+- **Global class**:
+    - Contains constructor-based injection of a discount provider interface (`zif_demo_aunit_price`), with a default fallback for the productive provider.
+    - Implements price calculation from the current price and discount.
+- **Test class**:
+    - Defines the local test class that creates and configures an ABAP OO framework test double for the discount provider interface.
+    - Injects the configured test double into the class under test and verifies outcomes.
+    - Asserts normal, boundary, invalid, and rounding scenarios.
+
+</td>
+</tr>
+
+<tr>
+<td> 
+Database (ABAP SQL Test Double Framework)
+</td>
+<td> 
+
+- **Class**: `zcl_demo_aunit_sql_tdf`
+- **Purpose**:
+    - Demonstrates ABAP Unit tests for database-dependent logic using the ABAP SQL Test Double Framework.
+    - Shows testing of calculations without relying on productive database table data.
+- **Global class**:
+    - Contains a method that reads seat data from a database table for a carrier, aggregates totals, and calculates the rounded occupancy rate.    
+- **Test class**:
+    - Defines a local test class that creates an SQL test environment for the database table `ztaunitflights`.
+    - Clears doubles per test, injects predefined table data, and verifies expected occupancy outcomes.
+    - Asserts normal, full, zero, rounding, non-existing carrier, and no data scenarios.
+
+
+</td>
+</tr>
+
+<tr>
+<td> 
+CDS view entity (CDS Test Double Framework)
+</td>
+<td> 
+
+- **Class**: `zcl_demo_aunit_cds_tdf`
+- **Purpose**: 
+    - Demonstrates ABAP Unit tests for CDS-dependent logic using the ABAP CDS Test Double Framework.
+    - Shows testing of calculations without relying on productive data available via a CDS entity.    
+- **Global class**: 
+    - Contains a method that retrieves flight seat data from CDS entity `zraunitflights`, aggregates totals, and calculates the rounded occupancy rate.    
+- **Test class**: 
+    - Defines a local test class that creates a CDS test environment for `zraunitflights`.
+    - Clears doubles per test, injects test datasets, and asserts expected calculation results.
+    - Asserts normal, full, zero, rounding, non-existing carrier, and no data scenarios.
+
+</td>
+</tr>
+
+<tr>
+<td> 
+RAP business object: Creating transactional buffer test doubles
+</td>
+<td> 
+
+- **Class**: `zcl_demo_aunit_rap_buffer`
+- **Purpose**: 
+    - Demonstrates ABAP Unit tests for RAP BO interaction logic using the RAP transaction buffer test double framework.
+    - Shows testing of EML read behavior without productive RAP BO data.
+- **Global class**: 
+    - Contains a method that reads RAP BO instances via `READ ENTITY` and returns the results along with any failed responses.
+    - Adapts each returned flight by deriving `Planetype` from `Seatsmax` using explicit threshold rules (`A`, `B`, `C`).
+- **Test class**: 
+    - Defines a local test class that creates a RAP transaction buffer BO test environment and retrieves the RAP BO test double.
+    - Clears doubles per test, inserts test instances, executes the method under test, and validates the results and failed response behavior.
+    - Asserts scenarios with existing keys, mixed existing and non-existing keys, and situations with no data.
+
+</td>
+</tr>
+
+<tr>
+<td> 
+RAP business object: Mocking ABAP EML APIs
+</td>
+<td> 
+
+- **Class**: `zcl_demo_aunit_rap_eml`
+- **Purpose**: 
+    - Demonstrates ABAP Unit tests with ABAP EML requests as DOCs
+    - Shows mocking of ABAP EML requests for both both read and modify requests.
+- **Global class**: 
+    - Provides wrapper methods around RAP EML for demonstration purposes:
+      - `demo_eml_modify` for `MODIFY ENTITY ... CREATE` with mapped/ and failed responses.
+      - `demo_eml_read` for `READ ENTITY` with the result and failed responses.    
+- **Test class**: 
+    - Defines a local test class that creates the ABAP EML mock environment and clears doubles per test.
+    - Configures input/output expectations on the ABAP EML test double for read and modify operations, executes the code under test, and verifies responses.
+    - Asserts successful, failed, and unconfigured test double scenarios for both read and create requests.
+
+
+
+</td>
+</tr>
+
+<tr>
+<td> 
+RAP business object: Testing ABAP behavior pool
+</td>
+<td> 
+
+- **Class**: `zbp_zraunitflights`
+- **Purpose**: 
+    - Demonstrates ABAP Unit tests for an ABAP behavior pool
+    - Shows testing an action and a validation
+- **Global class**: 
+    - Contains only the class definition skeleton    
+- **Local types**:     
+    - Includes the behavior implementation.
+    - Defines friendship between local and test class to allow the test class to access private methods.
+    - Action `calc_occ_rate`: Retrieves flight seat information based on instance keys and calculates the occupancy rate using this data.
+    - Validation `val`: Triggered when saving seat-related fields. It retrieves flight seat information based on instance keys and fails if there are invalid entries (if seatsmax or seatsocc are below 0, or if seatsocc exceeds seatsmax).    
+- **Test class**: 
+    - Defines a local test class that creates transactional buffer test doubles. 
+    - Uses the statement `CREATE OBJECT ... FOR TESTING` to instantiate the class under test.
+    - Test methods address different aspects, including valid and invalid cases.
+
+</td>
+</tr>
+
+<tr>
+<td> 
+Authority check dependencies
+</td>
+<td> 
+
+Note the prerequisites before exploring the demo. For the details, expand the collapsible section below.
 
 <details>
-  <summary>🟢 2b) System supporting classic ABAP</summary>
-<br>
-
-**Prerequisites**
-- [x] You are running an [ABAP release](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abennews-75.htm) for which examples are available. See the different branches of the repository. For example, you can find out about your ABAP release by checking the value of `sy-saprl`:  
-  ```abap
-  DATA rel LIKE sy-saprl.
-  rel = sy-saprl.
-  BREAK-POINT.
-  ```
-- [x] Before importing the code, you have performed a system-wide search for classes named *ZCL_DEMO_ABAP**, for example, to avoid errors when you try to import the code. If someone has already imported the content into the system, you can simply check out that imported version and proceed to the step *3) Run the code*.
-- [x] You have downloaded and installed the ABAP development tools for Eclipse (ADT). Make sure that you are using the latest version, as indicated on the [installation page](https://tools.hana.ondemand.com/#abap).
-- [x] You have created an ABAP project in ADT that allows you to access your application server as mentioned above. Your login language is English.
-- [x] You have downloaded and installed the standalone version of the abapGit report. Make sure you are using the latest version, as indicated on the [installation page](https://docs.abapgit.org/). You can create a report, for example, *zabapgit_standalone*, and copy and paste [this code](https://raw.githubusercontent.com/abapGit/build/main/zabapgit_standalone.prog.abap) into the program.
-
-**Import Code**
-
-Use the standalone version of the abapGit report to import the demo examples of the ABAP cheat sheets by performing the following steps:
-1. In your ABAP project, create a package, such as *TEST_ABAP_CHEAT_SHEETS* as a target package suitable for demo content (for example, by using *LOCAL* as the software component).
-2. Add the package to the *Favorite Packages* in the *Project Explorer* view in ADT.
-3. Run the standalone version of the abapGit report.
-4. Choose the *New Online* button. If the button is not available, for example, if another repository is already open, choose the *Repository List* button.
-5. On the *New Online Repository* screen, make the following entries:
-   - ***Git Repository URL***:
-
-      ```
-      https://github.com/SAP-samples/abap-cheat-sheets.git
-      ```
-
-   - ***Package***: Your demo package, for example, *TEST_ABAP_CHEAT_SHEETS*
-   - ***Branch***: Choose the button with the 3 dots to the right of the input field. In the pop-up window, select the appropriate branch, e.g. *v757* if your ABAP release is 7.57, and choose the *Continue* (✔️) button. **Note**: The examples in the *main* branch are designed to be imported into the SAP BTP ABAP environment only. 
-   - ***Folder Logic***: *Full*
-6. Choose *Create Online Repo*.
-7. The *Repository* screen displays the available ABAP artifacts to be imported into your ABAP system.
-8. Choose the *Pull* button. The import of the artifacts is triggered. This may take a while.
-9. If the *Inactive Objects* popup is displayed, select all artifacts and choose *Continue* (✔️).
-10.	When the cloning is complete, refresh your project tree. For example, in ADT, right-click on the package and choose *Refresh*. The package should contain all artifacts from the GitHub repository.
-11. Make sure that all artifacts are active. To activate all inactive development objects, choose the *Activate all inactive ABAP development objects* button from the menu (or choose *CTRL+Shift+F3*).
-
-</details>
-
-<details>
-  <summary>🟢 3) Run the code</summary>
-<br>
-
-- Open the package you created containing the imported ABAP artifacts in the ABAP development tools for Eclipse (ADT).
-- Classes: 
-  - Open one of the ABAP cheat sheet example classes listed in the [ABAP Cheat Sheets Overview](#-abap-cheat-sheets-overview) section, for example, *zcl_demo_abap_string_proc*. The classes are located in the *Source Code Library* → *Classes* folder.
-  - Choose *F9* to run the class. Alternatively, choose *Run* → *Run As* → *2 ABAP Application (Console)* from the menu. 
-  - Check the console output.
-    
-    > [!NOTE] 
-    >- Check the notes on the context and the ABAP syntax used that are included as comments in the class.
-    >- Due to the amount of output in the console, in many cases, the variable name is displayed in the console. Therefore, to find the relevant output in the console more easily and quickly, simply search the console for the variable name, or use breakpoints in the code to check variables in the debugger.
-    >- Many of the example classes are structured as follows:
-    >   - Code snippets are organized by topic within dedicated methods (`m01_...`, `m02_...`, `m03_...`, and so on) to avoid overcrowding in the `if_oo_adt_classrun~main` method implementation. The `if_oo_adt_classrun~main` method must be implemented when specifying the `if_oo_adt_classrun` interface. It enables a class to be executed and display data object content (using the `out->write( ... )` method call).
-    >   - These methods, named with an M followed by a digit, are called dynamically in the `if_oo_adt_classrun~main` method implementation. The method names are retrieved into an internal table using Runtime Type Identification (RTTI). For more information on RTTI, refer to the Dynamic Programming cheat sheet.
-    >   - The table is iterated over, and only methods that follow the naming convention are called. The interface reference variable `out`, which is bound when executing the class, is passed to the individual methods to enable displaying data object content.
-    >- You may want to clear the console by right-clicking in the console and choosing *Clear* before running another demo class to avoid confusing the output of multiple classes. Note that you can also add a setting to automatically clear the console.
-
-- Classic programs (_reports_):
-  - The programs included in the repository can be executed with *F8* (or *Run* → *Run As* → *1 ABAP Application*). 
-
-</details>
+  <summary>🟢 Click for the prerequisites of the authority check dependencies example</summary>
+  <!-- -->
 
 <br>
 
-## ⚡ Known Issues
-- Regarding possible code check warnings, e.g. for the many strings in the code, not using an `ORDER BY` clause, or messages regarding using `SELECT *`, the code deliberately avoids [pragmas](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenpragma_glosry.htm) and [pseudo comments](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenpseudo_comment_glosry.htm) in order to focus on the available ABAP syntax. See also the [Disclaimer](#%EF%B8%8F-disclaimer).
-- Importing the `main` branch (and other branches of the GitHub repository) in a system other than the SAP BTP ABAP Environment may cause errors in various cases. This may also be true when checking out various code snippets and example classes available in the ABAP cheat sheet documents. ABAP keywords, additions, and syntax options may not yet be available in the ABAP release. You can check the ABAP Release News in the ABAP Keyword Documentation. Also note the *General Info* in the [Getting Started with the Examples](#-getting-started-with-the-examples) section.
-- If you encounter import problems with the XSLT/ST objects, try to manually paste the code from the 3 `...source.xml` files ([zdemo_abap_st_carrhtml](./src/zdemo_abap_st_carrhtml.xslt.source.xml), [zdemo_abap_st_strhtml](./src/zdemo_abap_st_strhtml.xslt.source.xml), [zdemo_abap_xslt_fl](./src/zdemo_abap_xslt_fl.xslt.source.xml)) into the improperly imported objects and activate all inactive objects.
+- **Note**: 
+  - The examples are designed for the SAP BTP ABAP Environment. 
+  - The following steps are only relevant if you are using an SAP BTP ABAP Environment and you want to explore the example regarding the unit tests for the authority check dependencies using the demo authorization object `ZAUTH_OB`.
+  - If you are using an on-premise environment and want to skip creating the demo authorization object `ZAUTH_OB` and the steps to add a role to your user, you can replace the literal with the demo authorization object in the example class code with `S_DEVELOP` and omit the following (SAP BTP ABAP Environment-related) steps.
+- Details regarding the demo authorization object and steps:
+  - Object class: CPAE
+  - Authorization field ACTVT should be available.
+  - Permitted activities: 01 (create or generate), 02 (change), 03 (display), 06 (delete).
+- SAP BTP ABAP Environment-related steps:
+  - Refer to the implementation details in the [Authorization Checks](25_Authorization_Checks.md) cheat sheet, section [Executable Example (SAP BTP ABAP Environment)](25_Authorization_Checks.md#executable-example-sap-btp-abap-environment). 
+  - High-level steps: 
+    - Create an IAM app, for example, `ZDEMO_AUTH_IAM`. Use External app as the application type. In the Authorization tab, add the demo object and select ACTVT. After adding it, select all field values for ACTVT, such as create, change, etc. Publish it locally.
+    - Create a business catalog, for example, `ZDEMO_BUSINESS_CATALOG`. In the Apps tab, add `ZDEMO_AUTH_IAM_EXT`. Publish it locally.
+    - Log in to the system and access the SAP Fiori Launchpad as an administrator. Open the Maintain Business Roles app. Create a business role, e.g., `ZBRAUTHDEMO`, add the created business catalog, and assign it to your user.
+
+
+
+</details>  
 
 <br>
 
-## ℹ️ More Information
-- For the system-internal version of the ABAP Keyword Documentation in 
-  - ... **ABAP Cloud**: In ADT, the documentation is in the *ABAP Language Help* view, where you can also search. If you choose `F1` on a keyword in your code, the documentation opens there.
-  - ... **classic ABAP**: Access the documentation in the SAP GUI via the transactions `ABAPDOCU` (opens the documentation directly) and `ABAPHELP` (opens an input field with which you can search the documentation content, for example, you can search for a keyword such as `SELECT`). Or, of course, choose `F1` on a keyword in your code. If you are in the SAP GUI (e.g. in `SE80`), the system-internal version opens. If you are in ADT, the documentation opens in the *ABAP Language Help* view.
-- Links to the online version of the ABAP Keyword Documentation for:
-  - **Standard ABAP**: Unrestricted ABAP language scope for [classic ABAP](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenclassic_abap_glosry.htm):
-    - [Latest version (i.e. version 8.16 currently)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenabap.htm)
-    - [Version 8.16](https://help.sap.com/doc/abapdocu_816_index_htm/8.16/en-US/ABENABAP.html)
-    - [Version 7.58](https://help.sap.com/doc/abapdocu_758_index_htm/7.58/en-US/index.htm)
-    - [Version 7.57](https://help.sap.com/doc/abapdocu_757_index_htm/7.57/en-US/index.htm)
-    - [Version 7.56](https://help.sap.com/doc/abapdocu_756_index_htm/7.56/en-US/index.htm)
-    - [Version 7.55](https://help.sap.com/doc/abapdocu_755_index_htm/7.55/en-US/index.htm)
-    - [Version 7.54](https://help.sap.com/doc/abapdocu_754_index_htm/7.54/en-US/index.htm)
-    - [Version 7.53](https://help.sap.com/doc/abapdocu_753_index_htm/7.53/en-US/index.htm)
-    - [Version 7.52](https://help.sap.com/doc/abapdocu_752_index_htm/7.52/en-US/index.htm)
-    - [Version 7.51](https://help.sap.com/doc/abapdocu_751_index_htm/7.51/en-US/index.htm)
-    - [Version 7.50](https://help.sap.com/doc/abapdocu_750_index_htm/7.50/en-US/index.htm)  
-  - **ABAP for Cloud Development**: Restricted ABAP language scope for developments, for example, in the SAP BTP ABAP environment → [Online version of the documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm)
-- For demonstration examples of the ABAP Keyword Documentation, see the `SABAPDEMOS` package. This package contains all the examples used in the ABAP Keyword Documentation. For the context, class names, etc., see the example page ([Cloud](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/abenabap_examples.html)/[Classic](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenabap_examples.htm)), which is also available in the system-internal version as a node in the topic tree and which summarizes the executable examples. Of course, you can also find the example topics in the context of the individual topic of the ABAP keyword documentation. The example topics are marked with a ⚙️ icon:
+- **Class**: `zcl_demo_aunit_auth`
+- **Purpose**: 
+    - Demonstrates ABAP Unit tests for authorization-dependent logic as a DOC scenario.
+    - Shows testing of `AUTHORITY-CHECK` behavior by controlling the authorization context.    
+- **Global class**: 
+    - Defines an enumerated type representing activities (`create`, `change`, `display`, `delete`) and maps each value to its corresponding `ACTVT` code.
+    - A method executes `AUTHORITY-CHECK` for the demo object `ZAUTH_OB` and returns `abap_true` when `sy-subrc = 0`.
+- **Test class**: 
+    - Defines a local test class that uses an API for authorization checks.
+    - Note that the API only restricts the authorizations of the user running the test and does not grant additional authorizations. To follow the example fully, complete the prerequisite steps, create the demo authorization object, and assign a business role to your user (along with any necessary steps in the SAP BTP ABAP Environment). In an on-premise environment, you could replace the demo authorization object in the code with `S_DEVELOP`, for example.
+    - Configures different authorization sets, executes `call_authority_check`, and verifies expected outcomes for each action.
+    - The demo authorization object assumes your user has the `create`, `change`, `display`, and `delete` authorizations. Therefore, the unrestricted test methods should return true for the authorization check. Some test methods are designed to restrict certain authorizations (only `change` and `display`). For example, even though deletion is actually authorized, the restriction setting using the API will indicate that deletion is not permitted.
+    - Asserts both positive and negative authorization cases and covers execution log behavior.
 
-  ![](./files/example_topics.png)
+
+
+
+
+</td>
+</tr>
+
+<tr>
+<td> 
+Function module (Function Module Test Double Framework)
+</td>
+<td> 
+
+
+- **Class**: `zcl_demo_aunit_func_tdf`
+- **Purpose**: 
+    - Demonstrates ABAP Unit tests for logic that depends on a function module.
+- **Global class**: 
+    - Defines an enumeration type for arithmetic operators and a `calculate` method that accepts two integers and an operator.
+    - Delegates calculations to the `ZFUNC_DEMO_AUNIT` function module and returns the its result.
+- **Test class**: 
+    - Creates a local test class that sets up a test environment for `ZFUNC_DEMO_AUNIT`.
+    - Configures test double behavior for specific input combinations (returned values and raised exceptions), executes the code under test, and asserts outcomes.
+    - Asserts normal arithmetic operations and error scenarios, including division by zero and arithmetic overflow.
+
+</td>
+</tr>
+
+<tr>
+<td> 
+Inspecting background processing using bgPF
+</td>
+<td> 
+
+- **Class**: `zcl_demo_aunit_bgpf`
+- **Purpose**: 
+    - Demonstrates ABAP Unit tests for background processing logic using the ABAP Background Processing Framework (bgPF).
+    - Shows how background processing can be inspected with framework test spies instead of real asynchronous execution.
+- **Global class**: 
+    - Implements bgPF operation and scheduling behavior (`if_bgmc_op_single~execute`, `execute`, `execute_2`).
+    - The example includes a transactionally controlled scenario (see [Controlled SAP LUW](https://help.sap.com/docs/abap-cloud/abap-concepts/controlled-sap-luw)). For that purpose, the `if_bgmc_op_single~execute` implementation includes a `cl_abap_tx=>save( ).` call, followed by a method call that modifies a database table. The previous method call, `set_attribute( ).`, is meant to transform a string that was passed via instance constructor to upper case and assign the value to an instance attribute (which can be retrieved by a `get_input` method call).
+    - The methods `execute` and `execute_2` are tested. The include the (double) triggering of background processes.
+    - The class can also be run using F9 as it implements the `if_oo_adt_classrun~main` method, illustrating the effect of the background processing.    
+- **Test class**: 
+    - Defines a local test class that creates a bgPF spy.
+    - The test methods show various method calls the API offers, among them assertions regarding the number of background processes - which are not actually triggered.
+- Find more information on bgPF and a similar example [here](https://help.sap.com/docs/abap-cloud/abap-concepts/background-processing-framework).
+
+</td>
+</tr>
+
+<tr>
+<td> 
+Using test seams
+</td>
+<td> 
+
+- **Class**: `zcl_demo_aunit_test_seams`
+- **Purpose**: 
+    - Demonstrates ABAP Unit tests using ABAP test seams.
+    - Shows how `TEST-SEAM` and `TEST-INJECTION` statements can isolate database access. The examples do not use ABAP frameworks.
+- **Global class**: 
+    - Includes a method for calculating occupancy rates with a seam (`select_from_db`) that wraps around the database selection logic.
+    - Contains a demo method with seams (`ts1`, `ts2`) to illustrate how injected test code functions.
+- **Test class**: 
+    - Defines local test classes that inject code to control input data and behavior.
+    - Verifies occupancy rate calculation scenarios (normal, full, zero, rounding, no data) via injected datasets.
+    - Verifies behavior with and without injections (`ts1`, `ts2`).
+
+</td>
+</tr>
+
+<tr>
+<td> 
+Test classes located in an external class rather than the class being tested
+</td>
+<td> 
+
+- **Purpose**: 
+    - Demonstrates ABAP Unit testing with an external test class for scenarios where tests are outside the production class, showing the use of the `"! @testing ...` syntax.            
+- **Involved classes**: 
+    - `zcl_demo_aunit_external_cl`
+        - Represents the class to be tested. 
+        - Does not include DOCs.
+        - Includes identical calculation methods in both public and private visibility section.
+        - To enable the external test, class `zcl_demo_aunit_external_cl` befriends `ztcl_demo_aunit_external_cl`.
+    - `ztcl_demo_aunit_external_cl`
+        - Represents the class that includes the tests for class `zcl_demo_aunit_external_cl`
+        - **Global class**: 
+            - The example setup contains a private static method `call_private_calculate` that represents a bridge method to enable testing of the private method, which is accessible here in the global class due to the friendship.
+        - **Test class**: 
+            - Defines two local test classes for both the public and private method.
+            - Test methods cover standard arithmetic operations and edge cases (division by zero, overflow) with explicit assertions.        
+            - The test classes use the specification `"!@testing zcl_demo_aunit_external_cl`.
+            - The test class testing the private method via the bridge is befriended with the global class to enable instantiation of the global class. The instance is passed in the test, along with demo values.
+
+</td>
+</tr>
+
+
+</table>
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 <br>
 
@@ -280,14 +454,14 @@ Use the standalone version of the abapGit report to import the demo examples of 
 The code examples presented in this repository are only syntax examples and are not intended for direct use in a production system environment. The code examples are primarily intended to provide a better explanation and visualization of the syntax and semantics of ABAP statements and not to solve concrete programming tasks. For production application programs, a dedicated solution should therefore always be worked out for each individual case.
 There is no guarantee for either the correctness or the completeness of the code. In addition, there is no legal responsibility or liability for possible errors or their consequences, which occur through the use of the example code.
 
-<br>
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
-## 📟 Support
-This is not intended to be a contribution repository, so please do not create pull requests. If you like to address issues, please create an issue. However, this project is provided "as-is": there is no guarantee that raised issues will be answered or addressed in future releases.
+## 📟 Support and Contribution
+This is not intended to be a contribution repository, so please do not create pull requests. If you like to address issues or suggestions, please create an issue. However, this project is provided "as-is": there is no guarantee that raised issues will be answered or addressed in future releases.
 
-<br>
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## 📜 License
-Copyright (c) 2026 SAP SE or an SAP affiliate company. All rights reserved. This project is licensed under the Apache Software License, version 2.0 except as noted otherwise in the [LICENSE](LICENSE) file.
+Copyright (c) 2022 SAP SE or an SAP affiliate company. All rights reserved. This project is licensed under the Apache Software License, version 2.0 except as noted otherwise in the [LICENSE](LICENSE) file.
 
-[^1]: "A written [...] aid (such as a sheet of notes) that can be referred to for help in understanding or remembering something complex" (Definition for "cheat sheet" in Merriam-Webster Dictionary).
+<p align="right"><a href="#top">⬆️ back to top</a></p>

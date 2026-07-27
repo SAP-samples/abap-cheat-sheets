@@ -1,0 +1,45 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_CLAS" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <VSEOCLASS>
+    <CLSNAME>ZCL_DEMO_AUNIT_RAP_BUFFER</CLSNAME>
+    <LANGU>E</LANGU>
+    <DESCRIPT>ABAP Unit Demo</DESCRIPT>
+    <STATE>1</STATE>
+    <CLSCCINCL>X</CLSCCINCL>
+    <FIXPT>X</FIXPT>
+    <UNICODE>X</UNICODE>
+    <WITH_UNIT_TESTS>X</WITH_UNIT_TESTS>
+   </VSEOCLASS>
+   <DESCRIPTIONS>
+    <SEOCOMPOTX>
+     <CLSNAME>ZCL_DEMO_AUNIT_RAP_BUFFER</CLSNAME>
+     <CMPNAME>ADAPT_PLANETYPE</CMPNAME>
+     <LANGU>E</LANGU>
+     <DESCRIPT>Adapts flight Planetype based on Seatsmax values</DESCRIPT>
+    </SEOCOMPOTX>
+   </DESCRIPTIONS>
+   <DESCRIPTIONS_SUB>
+    <SEOSUBCOTX>
+     <CMPNAME>ADAPT_PLANETYPE</CMPNAME>
+     <SCONAME>FAILED_RESP</SCONAME>
+     <LANGU>E</LANGU>
+     <DESCRIPT>Response for any failures during read operations</DESCRIPT>
+    </SEOSUBCOTX>
+    <SEOSUBCOTX>
+     <CMPNAME>ADAPT_PLANETYPE</CMPNAME>
+     <SCONAME>FLIGHTS</SCONAME>
+     <LANGU>E</LANGU>
+     <DESCRIPT>Table of flights retrieved from the entity</DESCRIPT>
+    </SEOSUBCOTX>
+    <SEOSUBCOTX>
+     <CMPNAME>ADAPT_PLANETYPE</CMPNAME>
+     <SCONAME>KEYS</SCONAME>
+     <LANGU>E</LANGU>
+     <DESCRIPT>Keys to identify the flights to read</DESCRIPT>
+    </SEOSUBCOTX>
+   </DESCRIPTIONS_SUB>
+  </asx:values>
+ </asx:abap>
+</abapGit>

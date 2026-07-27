@@ -1,0 +1,15 @@
+managed implementation in class zbp_ZRAUNITFLIGHTS unique;
+strict ( 2 );
+
+define behavior for ZRAUNITFLIGHTS
+persistent table ztaunitflights
+lock master
+authorization master ( none )
+{
+  create;
+  update;
+  delete;
+  field ( readonly : update ) Carrid, Connid, Fldate;
+  action calc_occ_rate result [1] d34n;
+  validation val on save { field Seatsmax, Seatsocc; }
+}
