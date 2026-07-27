@@ -1,0 +1,39 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_CLAS" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <VSEOCLASS>
+    <CLSNAME>ZCL_DEMO_AUNIT_SQL_TDF</CLSNAME>
+    <LANGU>E</LANGU>
+    <DESCRIPT>ABAP Unit Demo</DESCRIPT>
+    <STATE>1</STATE>
+    <CLSCCINCL>X</CLSCCINCL>
+    <FIXPT>X</FIXPT>
+    <UNICODE>X</UNICODE>
+    <WITH_UNIT_TESTS>X</WITH_UNIT_TESTS>
+   </VSEOCLASS>
+   <DESCRIPTIONS>
+    <SEOCOMPOTX>
+     <CLSNAME>ZCL_DEMO_AUNIT_SQL_TDF</CLSNAME>
+     <CMPNAME>CALCULATE_OCCUPANCY_RATE</CMPNAME>
+     <LANGU>E</LANGU>
+     <DESCRIPT>Calculates the occupancy rate for a given carrier</DESCRIPT>
+    </SEOCOMPOTX>
+   </DESCRIPTIONS>
+   <DESCRIPTIONS_SUB>
+    <SEOSUBCOTX>
+     <CMPNAME>CALCULATE_OCCUPANCY_RATE</CMPNAME>
+     <SCONAME>CARRIER_ID</SCONAME>
+     <LANGU>E</LANGU>
+     <DESCRIPT>ID of the carrier for which to calculate occupancy</DESCRIPT>
+    </SEOSUBCOTX>
+    <SEOSUBCOTX>
+     <CMPNAME>CALCULATE_OCCUPANCY_RATE</CMPNAME>
+     <SCONAME>OCCUPANCY_RATE</SCONAME>
+     <LANGU>E</LANGU>
+     <DESCRIPT>Calculated occupancy rate as a decimal value</DESCRIPT>
+    </SEOSUBCOTX>
+   </DESCRIPTIONS_SUB>
+  </asx:values>
+ </asx:abap>
+</abapGit>

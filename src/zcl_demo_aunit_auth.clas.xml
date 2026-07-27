@@ -1,0 +1,39 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_CLAS" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <VSEOCLASS>
+    <CLSNAME>ZCL_DEMO_AUNIT_AUTH</CLSNAME>
+    <LANGU>E</LANGU>
+    <DESCRIPT>ABAP Unit Demo</DESCRIPT>
+    <STATE>1</STATE>
+    <CLSCCINCL>X</CLSCCINCL>
+    <FIXPT>X</FIXPT>
+    <UNICODE>X</UNICODE>
+    <WITH_UNIT_TESTS>X</WITH_UNIT_TESTS>
+   </VSEOCLASS>
+   <DESCRIPTIONS>
+    <SEOCOMPOTX>
+     <CLSNAME>ZCL_DEMO_AUNIT_AUTH</CLSNAME>
+     <CMPNAME>CALL_AUTHORITY_CHECK</CMPNAME>
+     <LANGU>E</LANGU>
+     <DESCRIPT>Checks user authorization for the specified field value</DESCRIPT>
+    </SEOCOMPOTX>
+   </DESCRIPTIONS>
+   <DESCRIPTIONS_SUB>
+    <SEOSUBCOTX>
+     <CMPNAME>CALL_AUTHORITY_CHECK</CMPNAME>
+     <SCONAME>FIELD_VALUE</SCONAME>
+     <LANGU>E</LANGU>
+     <DESCRIPT>Activity enum value to check authorization for</DESCRIPT>
+    </SEOSUBCOTX>
+    <SEOSUBCOTX>
+     <CMPNAME>CALL_AUTHORITY_CHECK</CMPNAME>
+     <SCONAME>IS_AUTHORIZED</SCONAME>
+     <LANGU>E</LANGU>
+     <DESCRIPT>Boolean indicating if the authorization check was successful</DESCRIPT>
+    </SEOSUBCOTX>
+   </DESCRIPTIONS_SUB>
+  </asx:values>
+ </asx:abap>
+</abapGit>

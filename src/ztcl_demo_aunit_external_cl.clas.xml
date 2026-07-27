@@ -1,0 +1,63 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_CLAS" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <VSEOCLASS>
+    <CLSNAME>ZTCL_DEMO_AUNIT_EXTERNAL_CL</CLSNAME>
+    <LANGU>E</LANGU>
+    <DESCRIPT>ABAP Unit Demo</DESCRIPT>
+    <STATE>1</STATE>
+    <CLSCCINCL>X</CLSCCINCL>
+    <FIXPT>X</FIXPT>
+    <UNICODE>X</UNICODE>
+    <WITH_UNIT_TESTS>X</WITH_UNIT_TESTS>
+   </VSEOCLASS>
+   <DESCRIPTIONS>
+    <SEOCOMPOTX>
+     <CLSNAME>ZTCL_DEMO_AUNIT_EXTERNAL_CL</CLSNAME>
+     <CMPNAME>CALL_PRIVATE_CALCULATE</CMPNAME>
+     <LANGU>E</LANGU>
+     <DESCRIPT>Invokes a private calculation method for unit tests</DESCRIPT>
+    </SEOCOMPOTX>
+   </DESCRIPTIONS>
+   <DESCRIPTIONS_SUB>
+    <SEOSUBCOTX>
+     <CMPNAME>CALL_PRIVATE_CALCULATE</CMPNAME>
+     <SCONAME>CUT</SCONAME>
+     <LANGU>E</LANGU>
+     <DESCRIPT>Instance reference of the class to test</DESCRIPT>
+    </SEOSUBCOTX>
+    <SEOSUBCOTX>
+     <CMPNAME>CALL_PRIVATE_CALCULATE</CMPNAME>
+     <SCONAME>CX_SY_ARITHMETIC_ERROR</SCONAME>
+     <LANGU>E</LANGU>
+     <DESCRIPT>Exception raised for arithmetic errors</DESCRIPT>
+    </SEOSUBCOTX>
+    <SEOSUBCOTX>
+     <CMPNAME>CALL_PRIVATE_CALCULATE</CMPNAME>
+     <SCONAME>NUM1</SCONAME>
+     <LANGU>E</LANGU>
+     <DESCRIPT>First operand for the arithmetic operation</DESCRIPT>
+    </SEOSUBCOTX>
+    <SEOSUBCOTX>
+     <CMPNAME>CALL_PRIVATE_CALCULATE</CMPNAME>
+     <SCONAME>NUM2</SCONAME>
+     <LANGU>E</LANGU>
+     <DESCRIPT>Second operand for the arithmetic operation</DESCRIPT>
+    </SEOSUBCOTX>
+    <SEOSUBCOTX>
+     <CMPNAME>CALL_PRIVATE_CALCULATE</CMPNAME>
+     <SCONAME>OPERATION</SCONAME>
+     <LANGU>E</LANGU>
+     <DESCRIPT>Type of arithmetic operation to perform</DESCRIPT>
+    </SEOSUBCOTX>
+    <SEOSUBCOTX>
+     <CMPNAME>CALL_PRIVATE_CALCULATE</CMPNAME>
+     <SCONAME>RESULT</SCONAME>
+     <LANGU>E</LANGU>
+     <DESCRIPT>String result of the arithmetic operation</DESCRIPT>
+    </SEOSUBCOTX>
+   </DESCRIPTIONS_SUB>
+  </asx:values>
+ </asx:abap>
+</abapGit>
