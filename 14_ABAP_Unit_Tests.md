@@ -18,8 +18,8 @@
   - [Running and Evaluating ABAP Unit Tests](#running-and-evaluating-abap-unit-tests)
   - [More Information](#more-information)
   - [Executable Examples](#executable-examples)
-    - [ABAP Unit Demo Examples](#abap-unit-demo-examples)
-    - [Examples in the main Branch](#examples-in-the-main-branch)
+    - [unit\_tests Branch](#unit_tests-branch)
+    - [main Branch](#main-branch)
  
 
 This cheat sheet contains basic information about [unit testing](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenunit_test_glosry.htm) in ABAP.
@@ -599,9 +599,13 @@ For more information about evaluating ABAP unit test results, see [here](https:/
 
 ## Executable Examples
 
-### ABAP Unit Demo Examples
+### unit_tests Branch
 
-The following examples illustrate simplified ABAP Unit test scenarios across various contexts, including:
+The [unit_tests](https://github.com/SAP-samples/abap-cheat-sheets/tree/unit_tests) branch of the ABAP cheat sheet GitHub repository features a selection of simplified ABAP Unit test scenarios across various contexts. 
+
+Unlike the examples included in the `main` branch - they combine various scenarios and the use of ABAP frameworks to reduce the number of artifacts - the examples in the `unit_tests` branch are set up to be explored in individual classes. The code examples in this branch are designed to function independently from those in the `main` branch. Therefore, you can clone this branch without also cloning the main branch.
+
+The following example contexts are covered:
 
 - Testing methods without dependent-on components (DOCs) and without ABAP frameworks
 - Testing methods with DOCs and without ABAP frameworks
@@ -615,6 +619,13 @@ The following examples illustrate simplified ABAP Unit test scenarios across var
     - Inspecting background processing using bgPF
 - Using test seams
 - Test classes located in an external class rather than the class being tested, demonstrating the use of the `"!@testing ...` syntax
+
+If you prefer not to clone the branch and instead want to manually implement the examples, refer to the information in the collapsible section below.
+
+<details>
+  <summary>🟢 Click to expand for information and example code</summary>
+
+<br>
 
 > [!NOTE]  
 > - Several contexts are covered in the ABAP cheat sheet's executable examples, combining various scenarios and the use of ABAP frameworks to reduce the number of artifacts. The ABAP Unit examples here focus on the various contexts in individual classes, independent of artifacts from the ABAP cheat sheet repository.
@@ -1097,7 +1108,6 @@ CLASS ltc_calculate IMPLEMENTATION.
 					operation = zcl_demo_aunit_no_tdf=>division ).
 				cl_abap_unit_assert=>fail( msg = `Expected arithmetic error for division by zero.` ).
 			CATCH cx_sy_arithmetic_error.
-				cl_abap_unit_assert=>assert_true( act = abap_true ).
 		ENDTRY.
 	ENDMETHOD.
 
@@ -1109,7 +1119,6 @@ CLASS ltc_calculate IMPLEMENTATION.
 					operation = zcl_demo_aunit_no_tdf=>addition ).
 				cl_abap_unit_assert=>fail( msg = `Expected arithmetic overflow.` ).
 			CATCH cx_sy_arithmetic_error.
-				cl_abap_unit_assert=>assert_true( act = abap_true ).
 		ENDTRY.
 	ENDMETHOD.
 ENDCLASS.
@@ -3588,7 +3597,6 @@ CLASS ltc_calculate_func_td IMPLEMENTATION.
         				num2 = 0 ).
         			cl_abap_unit_assert=>fail( msg = 'Expected cx_sy_arithmetic_error for 0 / 0' ).
       		CATCH cx_sy_arithmetic_error.
-        			cl_abap_unit_assert=>assert_true( act = abap_true ).
     		ENDTRY.
   	ENDMETHOD.
 
@@ -3606,7 +3614,6 @@ CLASS ltc_calculate_func_td IMPLEMENTATION.
         				num2 = 0 ).
         			cl_abap_unit_assert=>fail( msg = 'Expected cx_sy_arithmetic_error for 1 / 0' ).
       		CATCH cx_sy_arithmetic_error.
-        			cl_abap_unit_assert=>assert_true( act = abap_true ).
     		ENDTRY.
   	ENDMETHOD.
 
@@ -3624,7 +3631,6 @@ CLASS ltc_calculate_func_td IMPLEMENTATION.
         				num2 = 2147483647 ).
         			cl_abap_unit_assert=>fail( msg = 'Expected cx_sy_arithmetic_error for overflow multiplication' ).
       		CATCH cx_sy_arithmetic_error.
-        			cl_abap_unit_assert=>assert_true( act = abap_true ).
     		ENDTRY.
   	ENDMETHOD.
 
@@ -4468,7 +4474,6 @@ CLASS ltc_calculate IMPLEMENTATION.
           operation = zcl_demo_aunit_external_cl=>division ).
         cl_abap_unit_assert=>fail( msg = `Expected arithmetic error for division by zero.` ).
       CATCH cx_sy_arithmetic_error.
-        cl_abap_unit_assert=>assert_true( act = abap_true ).
     ENDTRY.
   ENDMETHOD.
 
@@ -4480,7 +4485,6 @@ CLASS ltc_calculate IMPLEMENTATION.
           operation = zcl_demo_aunit_external_cl=>addition ).
         cl_abap_unit_assert=>fail( msg = `Expected arithmetic overflow.` ).
       CATCH cx_sy_arithmetic_error.
-        cl_abap_unit_assert=>assert_true( act = abap_true ).
     ENDTRY.
   ENDMETHOD.
 ENDCLASS.
@@ -4569,7 +4573,6 @@ CLASS ltc_calculate_private_bridge IMPLEMENTATION.
           operation = zcl_demo_aunit_external_cl=>division ).
         cl_abap_unit_assert=>fail( msg = `Expected arithmetic error for private division by zero.` ).
       CATCH cx_sy_arithmetic_error.
-        cl_abap_unit_assert=>assert_true( act = abap_true ).
     ENDTRY.
   ENDMETHOD.
 
@@ -4582,7 +4585,6 @@ CLASS ltc_calculate_private_bridge IMPLEMENTATION.
           operation = zcl_demo_aunit_external_cl=>addition ).
         cl_abap_unit_assert=>fail( msg = `Expected arithmetic overflow.` ).
       CATCH cx_sy_arithmetic_error.
-        cl_abap_unit_assert=>assert_true( act = abap_true ).
     ENDTRY.
   ENDMETHOD.
 ENDCLASS.
@@ -4595,9 +4597,11 @@ ENDCLASS.
 
 </details>   
 
+</details>  
+
 <p align="right"><a href="#top">⬆️ back to top</a></p>  
 
-### Examples in the main Branch
+### main Branch
 
 - [zcl_demo_abap_unit_test](./src/zcl_demo_abap_unit_test.clas.abap): 
   - Explores test classes and test/special methods, implementing and injecting test doubles (constructor injection, back door injection, test seams)
