@@ -26,6 +26,7 @@
     - [Messages in RAP](#messages-in-rap)
     - [Violations of ABAP Contract Checks Causing Runtime Errors](#violations-of-abap-contract-checks-causing-runtime-errors)
     - [Classic Exceptions](#classic-exceptions)
+    - [CL\_MESSAGE\_HELPER Class](#cl_message_helper-class)
   - [More Information](#more-information)
   - [Executable Example](#executable-example)
 
