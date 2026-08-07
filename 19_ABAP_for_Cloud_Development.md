@@ -41,6 +41,7 @@ It provides references to more detailed information on the topic.
 > [!NOTE]
 > - See more information in the topic [ABAP Language Versions, Release Contracts and Released APIs](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_versions_and_apis.htm). 
 > - See the topic [Language Elements in ABAP Versions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrestricted_abap_elements.htm) that provides a table showing which ABAP language elements are allowed in which ABAP language version 
+> - See the [Released ABAP Classes](22_Released_ABAP_Classes.md) cheat sheet to programmatically find out if classes (repository objects in general) are released and available in ABAP for Cloud Development.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
   

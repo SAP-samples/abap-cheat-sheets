@@ -4,7 +4,7 @@
 
 - [Released ABAP Classes](#released-abap-classes)
   - [Excursions](#excursions)
-    - [Available Classes in ABAP for Cloud Development](#available-classes-in-abap-for-cloud-development)
+    - [Classes Available in ABAP for Cloud Development](#classes-available-in-abap-for-cloud-development)
     - [Cloud Development Successors](#cloud-development-successors)
   - [Running a Class and Displaying Output in the ADT Console](#running-a-class-and-displaying-output-in-the-adt-console)
   - [Creating and Transforming UUIDs](#creating-and-transforming-uuids)
@@ -65,7 +65,7 @@ This ABAP cheat sheet contains a selection of [released](https://help.sap.com/do
 
 ## Excursions
 
-### Available Classes in ABAP for Cloud Development
+### Classes Available in ABAP for Cloud Development
 
 If available to you, you have accessed an [SAP BTP ABAP Environment](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensap_btp_abap_env_glosry.htm) using the [ABAP development tools for Eclipse (ADT)](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenadt_glosry.htm).
 Access to SAP-provided repository objects is restricted to objects that have been released for [ABAP for Cloud Development](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_for_cloud_dev_glosry.htm) ([released APIs](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenreleased_api_glosry.htm)). You can find the released repository objects in the *Project Explorer* view in ADT under *Released Objects*. The classes are located in the *Source Code Library* folder:
@@ -9998,8 +9998,11 @@ cl_abap_garbage_collector=>collect( ).
 ## Message Utility Class
 
 - The `CL_MESSAGE_HELPER` class offers several helper methods for handling messages.  
-- For more information, refer to the class documentation. The example, which uses artifacts from the ABAP cheat sheet repository, illustrates a selection of methods.
-
+- For more information, refer to the class documentation. The example, which uses artifacts from the ABAP cheat sheet repository, illustrates a selection of methods:
+  - Getting the most recent T100 exception from an exception object chain
+  - Setting sy-msg* variables based on exception objects with reference to the types IF_MESSAGE and IF_T100_MESSAGE
+  - Setting sy-msg* variables based on text
+  - Returning short text for parameters
 
 <br>
 
@@ -10090,15 +10093,24 @@ CLASS zcl_demo_abap IMPLEMENTATION.
 *& Sets sy-msg* variables based on reference of type IF_MESSAGE
 *&---------------------------------------------------------------------*
 
-    out->write( |\n---------- set_msg_vars_for_if_msg method ----------\n\n| ).
+    out->write( |\n---------- set_msg_vars_for_if_msg / set_msg_vars_for_if_t100_msg methods ----------\n\n| ).
 
-    "Sets MESSAGE Variables,
-    "Extracts message variables from objects implementing the IF_MESSAGE interface and sets them into system variables (&1, &2, etc.)
+    "Sets MESSAGE Variables
+    "Extracts message variables from objects implementing the IF_MESSAGE / IF_T100_MESSAGE interfaces and sets them into system variables (&1, &2, etc.)
+    "Note that IF_T100_MESSAGE incorporates IF_MESSAGE. Therefore, both methods work for exception objects that implement IF_T100_MESSAGE.
+
+    "Using a demo exception class that implements the IF_T100_MESSAGE interface
+    out->write( `1) Demo exception class that implements the IF_T100_MESSAGE interface` ).
 
     TRY.
         RAISE EXCEPTION TYPE zcx_demo_abap_error_b MESSAGE e005(zdemo_abap_messages) WITH 'Lorem' 'ipsum' 'dolor' 'sit'.
 
-      CATCH zcx_demo_abap_error_b INTO error.
+        "Note: The 'error' exception object was specified with TYPE REF TO cx_root.
+        "cx_root implements IF_MESSAGE. Therefore, the method call 'cl_message_helper=>set_msg_vars_for_if_msg( error ).'
+        "using the exception object works. However, it would not work for 'cl_message_helper=>set_msg_vars_for_if_t100_msg( error ).'.
+        "Therefore, the example uses an exception object declared inline which derives the exception class reference automatically.
+        "Then, both method calls work as the exception class implements IF_T100_MESSAGE.
+      CATCH zcx_demo_abap_error_b INTO DATA(err1).
 
         DATA(msgid) = sy-msgid.
         DATA(msgno) = sy-msgno.
@@ -10115,7 +10127,9 @@ CLASS zcl_demo_abap IMPLEMENTATION.
         out->write( sytab ).
         out->write( |\n{ repeat( val = `-` occ = 15 ) }\n| ).
 
-        cl_message_helper=>set_msg_vars_for_if_msg( error ).
+        "Both method calls work for the exception object
+        cl_message_helper=>set_msg_vars_for_if_msg( err1 ).
+        cl_message_helper=>set_msg_vars_for_if_t100_msg( err1 ).
 
         msgid = sy-msgid.
         msgno = sy-msgno.
@@ -10136,6 +10150,57 @@ CLASS zcl_demo_abap IMPLEMENTATION.
             NUMBER msgno
             WITH msgv1 msgv2 msgv3 msgv4
             INTO DATA(msg).
+
+        out->write( msg ).
+    ENDTRY.
+
+    "Using a standard exception class that implements the IF_MESSAGE interface.
+    "The example uses the standard message.
+    out->write( |\n2) Standard exception class that implements the IF_MESSAGE interface| ).
+
+    TRY.
+        RAISE EXCEPTION TYPE cx_sy_conversion_codepage.
+
+      CATCH cx_sy_conversion_codepage INTO DATA(err2).
+
+        msgid = sy-msgid.
+        msgno = sy-msgno.
+        msgv1 = sy-msgv1.
+        msgv2 = sy-msgv2.
+        msgv3 = sy-msgv3.
+        msgv4 = sy-msgv4.
+
+        sytab = VALUE #( ( |sy-msgid: "{ msgid }"| ) ( |sy-msgno: "{ msgno }"| ) ( |sy-msgv1: "{ msgv1 }"| )
+        ( |sy-msgv2: "{ msgv2 }"| ) ( |sy-msgv3: "{ msgv3 }"| ) ( |sy-msgv4: "{ msgv4 }"| ) ).
+
+        out->write( |\n--- sy-msg* variables before ---\n\n| ).
+        out->write( sytab ).
+        out->write( |\n{ repeat( val = `-` occ = 15 ) }\n| ).
+
+        "Unlike in the example above, the set_msg_vars_for_if_t100_msg method call does not work here,
+        "as the exception class does not implement IF_T100_MESSAGE.
+        cl_message_helper=>set_msg_vars_for_if_msg( err2 ).
+        "cl_message_helper=>set_msg_vars_for_if_t100_msg( err2 ).
+
+        msgid = sy-msgid.
+        msgno = sy-msgno.
+        msgv1 = sy-msgv1.
+        msgv2 = sy-msgv2.
+        msgv3 = sy-msgv3.
+        msgv4 = sy-msgv4.
+
+        sytab = VALUE #( ( |sy-msgid: "{ msgid }"| ) ( |sy-msgno: "{ msgno }"| ) ( |sy-msgv1: "{ msgv1 }"| )
+        ( |sy-msgv2: "{ msgv2 }"| ) ( |sy-msgv3: "{ msgv3 }"| ) ( |sy-msgv4: "{ msgv4 }"| ) ).
+
+        out->write( |\n--- sy-msg* variables after ---\n\n| ).
+        out->write( sytab ).
+        out->write( |\n{ repeat( val = `-` occ = 15 ) }\n| ).
+
+        MESSAGE ID msgid
+            TYPE 'E'
+            NUMBER msgno
+            WITH msgv1 msgv2 msgv3 msgv4
+            INTO msg.
 
         out->write( msg ).
     ENDTRY.
