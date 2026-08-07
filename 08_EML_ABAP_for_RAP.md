@@ -2486,7 +2486,7 @@ DATA(locks_tab) = VALUE abp_behv_locks_tab(
   ( entity_name = 'ZDEMO_ABAP_RAP_CH_U' instances = REF #( child_keys ) ) ).
 
 SET LOCKS locks_tab FAILED   DATA(f_dyn)
-                    REPORTED DATA(r_dyn_).
+                    REPORTED DATA(r_dyn).
 ```                    
 
 The code in the collapsible section illustrates the effect of a `SET LOCKS` statement using artifacts from the ABAP cheat sheet repository.

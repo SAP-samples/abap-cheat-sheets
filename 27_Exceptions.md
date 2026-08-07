@@ -1574,6 +1574,36 @@ ENDTRY.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
+### CL_MESSAGE_HELPER Class
+
+- The `CL_MESSAGE_HELPER` class offers several helper methods for handling messages.  
+- For more information, refer to the class documentation. Find an executable example in the [Released ABAP Classes](22_Released_ABAP_Classes.md#message-utility-class) cheat sheet, which illustrates a selection of methods:
+  - Getting the most recent T100 exception from an exception object chain
+  - Setting sy-msg* variables based on exception objects with reference to the types IF_MESSAGE and IF_T100_MESSAGE
+  - Setting sy-msg* variables based on text
+  - Returning short text for parameters
+
+```abap
+"Setting sy-msg* variables based on an exception object with reference to type IF_T100_MESSAGE  
+TRY.
+    RAISE EXCEPTION TYPE zcx_demo_abap_error_b MESSAGE e005(zdemo_abap_messages) WITH 'Lorem' 'ipsum' 'dolor' 'sit'.
+  CATCH zcx_demo_abap_error_b INTO DATA(error).
+
+    cl_message_helper=>set_msg_vars_for_if_t100_msg( error ).
+
+    DATA(msgid) = sy-msgid.
+    DATA(msgno) = sy-msgno.
+    DATA(msgv1) = sy-msgv1.
+    DATA(msgv2) = sy-msgv2.
+    DATA(msgv3) = sy-msgv3.
+    DATA(msgv4) = sy-msgv4.
+
+ENDTRY.
+```
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+
 ## More Information 
 [ABAP Keyword Documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_exceptions.htm)
 
