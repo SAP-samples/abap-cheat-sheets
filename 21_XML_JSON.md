@@ -51,7 +51,7 @@ This cheat sheet provides a high-level overview of working with XML and JSON in 
 - Advantages: Easy access to the individual parts of an XML document possible, DTDs (Document Type Definitions) are possible
 - Disadvantages: High memory consumption of the DOM (if the complete DOM is created)
 
-The following code snippets demonstrate a selection of iXML methods for handling XML data. Note that the snippets use classes available for [ABAP for Cloud Development](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_for_cloud_dev_glosry.htm). Find documentation on the classes for [classic ABAP](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenclassic_abap_glosry.htm) [here (F1 documentation for Standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenabap_ixml_lib.htm).
+The following code snippets demonstrate a selection of iXML methods for handling XML data. Note that the snippets use classes available for [ABAP for Cloud Development](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-for-cloud-development). Find documentation on the classes for [classic ABAP](https://help.sap.com/docs/abap-cloud/abap-keyword/classic-abap) [here (F1 documentation for Standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenabap_ixml_lib.htm).
 
 Creating XML data using iXML:
 
@@ -661,14 +661,14 @@ Possible transformations, some of which are covered in the example:
 >   - This format is a prerequisite for deserializations (XML -> ABAP) using identity transformations.
 >   - Used as an intermediate format that defines a mapping between ABAP data and XML
 >   - Therefore, if you want to deserialize XML data in ABAP, you must first transform it to the asXML format.
-> - Make sure that you use appropriate exception classes for potential errors in transformations. See the section [Catchable Exceptions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapcall_transformation.htm) in the `CALL TRANSFORMATION` topic.
-> - For serializing instances of classes, find more information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenasxml_class_instances.htm) in the ABAP Keyword Documentation. The classes must implement the `IF_SERIALIZABLE_OBJECT` interface (find a demo in the executable example and further down). 
+> - Make sure that you use appropriate exception classes for potential errors in transformations. See the section [Catchable Exceptions](https://help.sap.com/docs/abap-cloud/abap-keyword/call-transformation) in the `CALL TRANSFORMATION` topic.
+> - For serializing instances of classes, find more information [here](https://help.sap.com/docs/abap-cloud/abap-keyword/asxml-instances-of-classes) in the ABAP Keyword Documentation. The classes must implement the `IF_SERIALIZABLE_OBJECT` interface (find a demo in the executable example and further down). 
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ### CALL TRANSFORMATION Syntax
 
-The following code snippets demonstrate a selection of possible syntax options when using [`CALL TRANSFORMATION`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapcall_transformation.htm) statements.
+The following code snippets demonstrate a selection of possible syntax options when using [`CALL TRANSFORMATION`](https://help.sap.com/docs/abap-cloud/abap-keyword/call-transformation) statements.
 
 > [!NOTE]  
 > You can also transform ABAP to and from JSON data using transformations. Find examples in the [Transforming JSON Data Using Transformations](#transforming-json-data-using-transformations) section.
@@ -767,7 +767,7 @@ CALL TRANSFORMATION ... SOURCE ...
 ```
 
 > [!NOTE]  
-> More additions are available such as `PARAMETERS` (for parameter binding) and `OPTIONS` (for predefined transformation options). See the details in the [ABAP Keyword Documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapcall_transformation.htm).
+> More additions are available such as `PARAMETERS` (for parameter binding) and `OPTIONS` (for predefined transformation options). See the details in the [ABAP Keyword Documentation](https://help.sap.com/docs/abap-cloud/abap-keyword/call-transformation).
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
@@ -968,10 +968,10 @@ ENDCLASS.
 ### Creating and Reading JSON Data Using sXML
 
 > [!NOTE]  
-> - In ABAP, the sXML library processes JSON data using JSON-XML, an SAP-specific JSON data representation in XML format. This intermediate step is used for both reading and creating JSON data. Find more information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_json_xml.htm).
+> - In ABAP, the sXML library processes JSON data using JSON-XML, an SAP-specific JSON data representation in XML format. This intermediate step is used for both reading and creating JSON data. Find more information [here](https://help.sap.com/docs/abap-cloud/abap-keyword/json-xml-xml-representation-of-json).
 > - The following examples provide basic implementations to give you an idea. You should always work out your own solutions.
 > - Both token-based and object-oriented rendering/parsing methods are available. These examples use the token-based approach.
-> - For additional information and examples, see the [ABAP and JSON](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_json.htm) section of the ABAP Keyword Documentation.
+> - For additional information and examples, see the [ABAP and JSON](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-and-json) section of the ABAP Keyword Documentation.
 
 
 Expand the following collapsible section for example classes. To try the examples out, create a demo class named `zcl_demo_abap`. If it already exists, reuse it. Otherwise, create a new class with a different name. Paste the code into it. If you choose a different class name, update the class name in the code snippet accordingly. After activation, choose *F9* in ADT to execute the class. This example is set up to display output in the console.
@@ -1087,7 +1087,7 @@ ENDCLASS.
 <br>
 
 - An internal table is created for display purposes. This table is populated when iterating over all nodes. It includes information such as the node's value. 
-- For more details on the *name* component and others, refer to the [ABAP Keyword Documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_json_xml.htm).
+- For more details on the *name* component and others, refer to the [ABAP Keyword Documentation](https://help.sap.com/docs/abap-cloud/abap-keyword/json-xml-xml-representation-of-json).
 - The `create` method from the `cl_sxml_string_reader` class is used to create a JSON reader. 
 - After iterating through all the nodes, the retrieved information that has been added to the internal table is displayed.
 
@@ -1207,8 +1207,8 @@ ENDCLASS.
 - `CALL TRANSFORMATION` statements support JSON transformation, allowing conversion between JSON and ABAP using these options:  
   - JSON readers  
   - Additions `SOURCE JSON` and `RESULT JSON`    
-- Here, JSON data is processed in JSON-XML format, mapping JSON data to XML. This format enables all transformation categories for JSON that are also available for XML. For more information, see [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABENABAP_JSON_TRAFOS.html).  
-- Both custom transformations (using XSLT and ST) and predefined identity transformations (`ID`) are supported. For identity transformations, asJSON, the canonical JSON representation of ABAP data, is used. For more details, see [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABENABAP_ASJSON.html).
+- Here, JSON data is processed in JSON-XML format, mapping JSON data to XML. This format enables all transformation categories for JSON that are also available for XML. For more information, see [here](https://help.sap.com/docs/abap-cloud/abap-keyword/json-transformations).  
+- Both custom transformations (using XSLT and ST) and predefined identity transformations (`ID`) are supported. For identity transformations, asJSON, the canonical JSON representation of ABAP data, is used. For more details, see [here](https://help.sap.com/docs/abap-cloud/abap-keyword/asjson-canonical-json-representation).
 
 The following code snippets show a selection of transformation options using the predefined identity transformation. Here, a JSON writer is specified as the target.
 
@@ -1613,7 +1613,7 @@ ENDCLASS.
 ### Serializing and Deserializing Objects
 
 - To serialize and deserialize objects (i.e. instances of classes), you can use `CALL TRANSFORMATION` statements. As a prerequisite, the classes must implement the `IF_SERIALIZABLE_OBJECT` interface. The example uses the predefined identity transformation `ID`.
-- Find more information and examples [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenasxml_class_instances.htm) in the ABAP Keyword Documentation. 
+- Find more information and examples [here](https://help.sap.com/docs/abap-cloud/abap-keyword/asxml-instances-of-classes) in the ABAP Keyword Documentation. 
 
 
 Expand the following collapsible section for example classes. To try the examples out, create a demo class named `zcl_demo_abap`. If it already exists, reuse it. Otherwise, create a new class with a different name. Paste the code into it. If you choose a different class name, update the class name in the code snippet accordingly. After activation, choose *F9* in ADT to execute the class. The examples are set up to display output in the console.
@@ -1895,10 +1895,10 @@ DATA(is_equal) = xsdbool( len_xstr = len_xstr_decomp AND str = conv_str ).
 
 > [!NOTE]  
 > - Regarding data clusters, the focus in this section is on the fast serialization and deserialization of data to and from `xstring`.
-> - Find more information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABENDATA_CLUSTER.html).
-> - More syntax options are available in [Standard ABAP](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenstandard_abap_glosry.htm).
-> - Various exceptions can be raised when using these statements; see the related subtopics in the [documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABENDATA_CLUSTER.html).
-> - Additions to `IMPORT` statements offer [conversion options](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABAPIMPORT_CONVERSION.html).
+> - Find more information [here](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-data-cluster).
+> - More syntax options are available in [Standard ABAP](https://help.sap.com/docs/abap-cloud/abap-keyword/standard-abap).
+> - Various exceptions can be raised when using these statements; see the related subtopics in the [documentation](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-data-cluster).
+> - Additions to `IMPORT` statements offer [conversion options](https://help.sap.com/docs/abap-cloud/abap-keyword/import-conversion-options).
 
 The following example covers:
 - Exporting a data cluster, storing it in a byte string, and importing it back to a data object
@@ -2113,19 +2113,19 @@ ENDCLASS.
 
 ## More Information
 
-- [ABAP and XML (main topic in the ABAP Keyword Documentation)](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_xml.htm)
-- [sXML](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_sxml_lib.htm)
-- [iXML Library for ABAP Cloud](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_ixml_lib_cloud.htm)
+- [ABAP and XML (main topic in the ABAP Keyword Documentation)](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-and-xml)
+- [sXML](https://help.sap.com/docs/abap-cloud/abap-keyword/sxml-library)
+- [iXML Library for ABAP Cloud](https://help.sap.com/docs/abap-cloud/abap-keyword/ixml-library-for-abap-cloud)
   - [iXML Library Classic (F1 documentation for Standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenabap_ixml_lib.htm)
-- [XSLT](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_xslt.htm)
+- [XSLT](https://help.sap.com/docs/abap-cloud/abap-keyword/xsl-transformations)
 - [SAP XSLT Processor Reference](https://help.sap.com/docs/ABAP_PLATFORM_NEW/31bfc625c2674acdb9aa7547b62db9cc/3cb7463c32a3fe13e10000000a114084.html)
-- [ST](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_st.htm)
-  - [ST Examples](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenst_abexas.htm)
-- [asXML](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_xslt_asxml.htm)
-- [asJSON](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_asjson.htm)
-  - [JSON Examples](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_json_abexas.htm)
-- [`CALL TRANSFORMATION`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapcall_transformation.htm)
-  - [`CALL TRANSFORMATION` Examples](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencall_transformation_abexas.htm)
+- [ST](https://help.sap.com/docs/abap-cloud/abap-keyword/simple-transformations-st)
+  - [ST Examples](https://help.sap.com/docs/abap-cloud/abap-keyword/st-examples)
+- [asXML](https://help.sap.com/docs/abap-cloud/abap-keyword/canonical-xml-representation-asxml)
+- [asJSON](https://help.sap.com/docs/abap-cloud/abap-keyword/asjson-canonical-json-representation)
+  - [JSON Examples](https://help.sap.com/docs/abap-cloud/abap-keyword/json-examples)
+- [`CALL TRANSFORMATION`](https://help.sap.com/docs/abap-cloud/abap-keyword/call-transformation)
+  - [`CALL TRANSFORMATION` Examples](https://help.sap.com/docs/abap-cloud/abap-keyword/call-transformation-examples)
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 

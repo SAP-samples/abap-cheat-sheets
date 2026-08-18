@@ -21,7 +21,7 @@ This cheat sheet explores various aspects of numeric operations and calculations
 
 > [!NOTE]  
 > - Several topics and similar or the same code snippets in this cheat sheet are also found in other cheat sheets. For example, date and time calculations appear in the [Date, Time, and Time Stamp](23_Date_and_Time.md) cheat sheet. They are included here in the context of calculations in ABAP.
-> - Find more information in the [ABAP Keyword Documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABENCOMPUTE_EXPRESSIONS.html).
+> - Find more information in the [ABAP Keyword Documentation](https://help.sap.com/docs/abap-cloud/abap-keyword/numeric-calculations).
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
@@ -30,7 +30,7 @@ This cheat sheet explores various aspects of numeric operations and calculations
 - Calculations use numeric data objects or those convertible to numeric types.
 - ABAP supports specific elementary numeric data types.
 - These types have distinct characteristics and value ranges, allowing the use for various purposes.
-- This cheat sheet covers only [built-in ABAP types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbuiltin_abap_type_glosry.htm). [Built-in DDIC types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbuiltin_ddic_type_glosry.htm) are also available for defining types in the [ABAP Dictionary (DDIC)](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_dictionary_glosry.htm) and ABAP CDS. These types cannot be used directly in ABAP programs except for typed literals. They are mapped to built-in ABAP types; for example, the DDIC type `INT4` is mapped to type `i`, and `DECFLOAT16` is mapped to the built-in ABAP type `decfloat16`.
+- This cheat sheet covers only [built-in ABAP types](https://help.sap.com/docs/abap-cloud/abap-keyword/built-in-abap-type). [Built-in DDIC types](https://help.sap.com/docs/abap-cloud/abap-keyword/built-in-ddic-type) are also available for defining types in the [ABAP Dictionary (DDIC)](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-dictionary) and ABAP CDS. These types cannot be used directly in ABAP programs except for typed literals. They are mapped to built-in ABAP types; for example, the DDIC type `INT4` is mapped to type `i`, and `DECFLOAT16` is mapped to the built-in ABAP type `decfloat16`.
 - Most types' values (except type `i`) cannot be directly specified in the program and must be represented by character literals interpretable as the respective type.
 
 <table>
@@ -48,10 +48,10 @@ This cheat sheet explores various aspects of numeric operations and calculations
 
  <td> 
 
-- Used to store [integer numbers](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abeninteger_number_glosry.htm) of various value ranges.
+- Used to store [integer numbers](https://help.sap.com/docs/abap-cloud/abap-keyword/integer-number) of various value ranges.
 - The type `i` can hold 4-byte integers, typically used for counters or indexes (like `sy-index` or `sy-tabix`), quantities, and more.
 - `int8` holds 8-byte integers and offers a larger value range than `i`.
-- You can specify integer numbers with type `i` directly in ABAP programs as [numeric literals](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abennumeric_literal_glosry.htm).
+- You can specify integer numbers with type `i` directly in ABAP programs as [numeric literals](https://help.sap.com/docs/abap-cloud/abap-keyword/numeric-literal).
 - You might encounter the types `b` (1-byte integers) and `s` (2-byte integers) for short integers. They cannot be directly specified in ABAP programs, but you can use the DDIC types `INT1` and `INT2`. 
 - If these integer types do not meet your value range needs, consider using type `p` without decimal places or floating point types for larger ranges. However, calculations will be slower then.
 
@@ -413,7 +413,7 @@ dec34_n = EXACT #( `.9E-3                  ` ).
 
 ## Arithmetic Expressions and Operators
 
-- Numeric calculations can be performed using [arithmetic expressions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenarithmetic_expression_glosry.htm) with [arithmetic operators](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenarithmetic_operator_glosry.htm).
+- Numeric calculations can be performed using [arithmetic expressions](https://help.sap.com/docs/abap-cloud/abap-keyword/arithmetic-expression-abenarithmetic_expression_glosry) with [arithmetic operators](https://help.sap.com/docs/abap-cloud/abap-keyword/arithmetic-operator).
 - Typically, the calculations are performed in operand positions and on the right side of assignments using the assignment operator `=`. Though more positions are possible, this cheat sheet focuses on simple assignments with `=`.
 - In arithmetic expressions in ABAP, data objects can include:
   - Data objects of numeric data types (named and unnamed data objects)
@@ -429,7 +429,7 @@ dec34_n = EXACT #( `.9E-3                  ` ).
 - You can prefix operands with `+` or `-` signs.
 - Note that calculations can trigger exceptions. If not caught, these result in runtime errors. 
   - Examples: Division by zero and overflows (if values exceed the supported range).
-- The result of arithmetic expressions is a numeric value. Note the [calculation type](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencalculation_type_glosry.htm) as described below.
+- The result of arithmetic expressions is a numeric value. Note the [calculation type](https://help.sap.com/docs/abap-cloud/abap-keyword/calculation-type) as described below.
 
 
 > [!NOTE]
@@ -877,7 +877,7 @@ ENDCLASS.
   - `utclong` is not supported
 - It is advisable to ensure all operands and the target data object share the same numeric type to avoid unnecessary conversions (this is intentionally not taken into consideration in many of the examples).
 - The `CONV` operator can be used to adjust the calculation type on the right side of an assignment.
-- Find more information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABENARITH_TYPE.html).
+- Find more information [here](https://help.sap.com/docs/abap-cloud/abap-keyword/arith-exp-calculation-type-and-calculation-rules).
 
 Examples
 
@@ -1786,8 +1786,8 @@ DATA(tsc) = cl_abap_tstmp=>subtractsecs( tstmp = tsa
 ## Arithmetic Expressions and Built-in Functions in ABAP SQL and ABAP CDS
 
 More information: 
-- ABAP SQL: [Arithmetic expressions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABENSQL_ARITH.html), [Numeric functions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABENSQL_ARITH_FUNC.html)
-- ABAP CDS: [Arithmetic expressions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABENCDS_ARITHMETIC_EXPRESSION_V2.html), [Numeric functions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABENCDS_SQL_FUNCTIONS_NUMERIC_V2.html)
+- ABAP SQL: [Arithmetic expressions](https://help.sap.com/docs/abap-cloud/abap-keyword/sql-exp-sql-arith), [Numeric functions](https://help.sap.com/docs/abap-cloud/abap-keyword/sql-func-numeric-functions)
+- ABAP CDS: [Arithmetic expressions](https://help.sap.com/docs/abap-cloud/abap-keyword/cds-ddl-cds-view-entity-arith-expr), [Numeric functions](https://help.sap.com/docs/abap-cloud/abap-keyword/cds-ddl-cds-view-entity-numeric-functions)
 
 The following example code snippet includes an ABAP SQL `SELECT` statement with a selection of arithmetic expressions and numeric functions. You can also check [aggregate expressions](03_ABAP_SQL.md#aggregate-expressions) that perform calculations as described in the *ABAP SQL* cheat sheet.
 

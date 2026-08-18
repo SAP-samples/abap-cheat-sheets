@@ -90,7 +90,7 @@ You can minimize database accesses by considering the following aspects:
 ### Using CDS views	
 
 - ABAP CDS (Core Data Services) represent a framework for defining and consuming semantically rich data models on AS ABAP.  
-- ABAP CDS can enhance database access performance by leveraging the capabilities of the [SAP HANA database](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenhana_database_glosry.htm).
+- ABAP CDS can enhance database access performance by leveraging the capabilities of the [SAP HANA database](https://help.sap.com/docs/abap-cloud/abap-keyword/sap-hana-database).
 - Data-intensive operations, such as complex calculations or joins, can be pushed down to the database layer and executed in the SAP HANA database instead of performing them in ABAP.
 - Find more information in the [ABAP Data Models guide](https://help.sap.com/docs/abap-cloud/abap-data-models/abap-data-models?version=sap_btp).
 
@@ -109,14 +109,14 @@ You can minimize database accesses by considering the following aspects:
 - Data from DDIC database tables or CDS entities can be buffered in a table buffer. 
 - Buffering capabilities are determined by the technical settings of the artifacts. For example, for a CDS entity, buffering is determined by annotations and a CDS entity buffer.  
 - The table buffering is applied implicitly when the database is accessed using ABAP SQL. 
-- Find more information in the [ABAP Keyword Documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABENSAP_PUFFERING.html).
+- Find more information in the [ABAP Keyword Documentation](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-sql-table-buffering).
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ### Using Indexes
 
 - Indexes are special structures on the database that enhance query processing times and offer additional capabilities.
-- Find more information in the [ABAP Keyword Documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABENDDIC_DATABASE_TABLES_INDEX.html).
+- Find more information in the [ABAP Keyword Documentation](https://help.sap.com/docs/abap-cloud/abap-keyword/ddic-indexes-in-database-tables).
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
@@ -152,7 +152,7 @@ You can minimize database accesses by considering the following aspects:
 - Further prerequisites for an optimzation in the `WHERE` conditions are these:
 	- The specified conditions should be transferable to key and value pairs. The key fields should be compared for equality and combined by `AND`, if any.
 	- The operands of the `WHERE` condition should be type-compliant. Otherwise, type conversion costs are inferred.
-- For more information about optimizing the `WHERE` condition, refer to the [ABAP Keyword Documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/abenitab_where_optimization.html).
+- For more information about optimizing the `WHERE` condition, refer to the [ABAP Keyword Documentation](https://help.sap.com/docs/abap-cloud/abap-keyword/itab-optimizing-where-condition).
 - `READ TABLE` also supports the specification of a `WHERE` condition. If a `READ TABLE` statement can be expressed using `WITH KEY`, the use of `WITH KEY` is recommended as it is more performant. A syntax warning occurs but can be suppressed with the pragma `##read_where_ok`.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
@@ -363,7 +363,7 @@ Examples of string-related contexts:
 
 - Fixed-length and variable-length strings
   - Strings (and internal tables) are addressed internally through references.
-  - They support the concept of [sharing](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensharing_glosry.htm), which offers performance advantages.
+  - They support the concept of [sharing](https://help.sap.com/docs/abap-cloud/abap-keyword/sharing), which offers performance advantages.
   - Depending on the length of the fixed-length strings (e.g., type `c`), operations using variable-length strings (type `string`) may be faster.
 
 - String templates vs. string literals
@@ -2528,4 +2528,4 @@ ENDCLASS.
 
 </details> 
 
-<p align="right"><a href="#top">⬆️ back to top</a></p>
+<p align="right"><a href="#top">⬆️ back to top</a></p>

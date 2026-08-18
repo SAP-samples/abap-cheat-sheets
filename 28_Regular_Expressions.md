@@ -48,8 +48,8 @@ Regular expressions
 
 > [!NOTE]
 > - You can perform complex searches using regular expressions. For simple pattern-based searches, refer to comparison operators (`CP`, `NP`) in the [String Processing](07_String_Processing.md) cheat sheets.
-> - The cheat sheet and examples focus on PCRE regular expressions. For other syntax types, find more information and links in the [ABAP Keyword Documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABENREGEX_SYNTAX.html). 
-> - In a system supporting [classic ABAP](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenclassic_abap_glosry.htm), you can check out the `demo_regex_toy` program for experimenting with regular expressions in ABAP.
+> - The cheat sheet and examples focus on PCRE regular expressions. For other syntax types, find more information and links in the [ABAP Keyword Documentation](https://help.sap.com/docs/abap-cloud/abap-keyword/regex-syntax). 
+> - In a system supporting [classic ABAP](https://help.sap.com/docs/abap-cloud/abap-keyword/classic-abap), you can check out the `demo_regex_toy` program for experimenting with regular expressions in ABAP.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
@@ -129,7 +129,7 @@ Note that some of the example strings are represented by string templates.
 | `\R` | Line feed sequence, ensuring that regular expression matches all kinds of newlines, such as `\n`, `\r`, or `\r\n` (carriage return followed by line feed)  | `\R.` | <code>\|abc\rdef\nghi\r\njkl mno\|</code> | <code>\|\rd\|</code>, <code>\|\ng\|</code>, <code>\|\r\nj\|</code> | <code>\| m\|</code> |
 | `\x{...}` | Character with hex code | `\x{00A0}#` (non-breaking space and #) | <code>\|#{ cl_abap_conv_codepage=>create_in( codepage = \`UTF-16BE\` )->convert( source = CONV xstring( \`00A0\` ) ) }#\|</code> | The non-breaking space plus the second # character | The first # character |
 | `\N{U+...}` | Character with Unicode code point | `\N{U+00A0}#` (non-breaking space and # as above) | See the example below | See the example below | |
-| `\p{..}` | Character with a specified Unicode character property; see the [documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/abenregex_pcre_syntax_specials.html) for options; among them, there are, for example, properties for lowercase (`Ll`) and uppercase (`Lu`) letters; negation: `\P{..}` | 1. `\p{Ll}+` <br> 2. `\p{Lu}+` <br> 3. `\P{Lu}+`  | Hello ABAP | 1. H<ins>**ello**</ins> ABAP <br> 2. <ins>**H**</ins>ello <ins>**ABAP**</ins> <br> 3. H<ins>**ello&nbsp;**</u></ins>ABAP (the space is also matched) | 1. Upper case letter sequences <br> 2. Lower case letter sequences <br> 3. Upper case letter sequences |
+| `\p{..}` | Character with a specified Unicode character property; see the [documentation](https://help.sap.com/docs/abap-cloud/abap-keyword/pcre-regex-special-characters) for options; among them, there are, for example, properties for lowercase (`Ll`) and uppercase (`Lu`) letters; negation: `\P{..}` | 1. `\p{Ll}+` <br> 2. `\p{Lu}+` <br> 3. `\P{Lu}+`  | Hello ABAP | 1. H<ins>**ello**</ins> ABAP <br> 2. <ins>**H**</ins>ello <ins>**ABAP**</ins> <br> 3. H<ins>**ello&nbsp;**</u></ins>ABAP (the space is also matched) | 1. Upper case letter sequences <br> 2. Lower case letter sequences <br> 3. Upper case letter sequences |
 
 Examples:
 
@@ -514,7 +514,7 @@ string_case_conv = replace( val = `abcdefg` pcre = `c(..)(..)` with = `c\U$1$2` 
 
 ### Setting Options and Control Verbs
 
-There are various [setting options](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/abenregex_pcre_syntax_specials.html) for specifying PCRE syntax. The following examples demonstrate a selection:
+There are various [setting options](https://help.sap.com/docs/abap-cloud/abap-keyword/pcre-regex-special-characters) for specifying PCRE syntax. The following examples demonstrate a selection:
 
 *Multi- and single-line modes*
 - `(?m)` enables multi-line mode.
@@ -1119,8 +1119,8 @@ DATA(matches) = xsdbool( matches( val  = `jon.doe@email.com`
 
 ## Built-In Functions in ABAP SQL and CDS Using Regular Expressions
 
-The following example demonstrates [built-in functions using regular expressions in ABAP SQL](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABENSQL_FUNCTIONS_STRING.html). 
-For more information on the built-in functions for ABAP CDS, refer to the [ABAP Keyword Documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenddic_builtin_functions.htm). The example assumes that the ABAP cheat sheet repository has been imported into the system as it uses some of its repository objects.
+The following example demonstrates [built-in functions using regular expressions in ABAP SQL](https://help.sap.com/docs/abap-cloud/abap-keyword/ddic-sql-functions-for-strings). 
+For more information on the built-in functions for ABAP CDS, refer to the [ABAP Keyword Documentation](https://help.sap.com/docs/abap-cloud/abap-keyword/ddic-built-in-functions). The example assumes that the ABAP cheat sheet repository has been imported into the system as it uses some of its repository objects.
 
 ```abap
 "Populating demo database tables

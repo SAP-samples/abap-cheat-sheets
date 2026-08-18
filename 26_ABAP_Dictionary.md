@@ -29,12 +29,12 @@
 
 
 This cheat sheet ...
-- covers a selection of [repository objects](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrepository_object_glosry.htm) in the [ABAP Dictionary (DDIC)](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_dictionary_glosry.htm) that represent [global types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenglobal_type_glosry.htm). Additionally, [CDS objects](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_object_glosry.htm) also representing global types are mentioned. 
-- focuses on [ABAP for Cloud Development](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_for_cloud_dev_glosry.htm), and therefore, does not cover certain DDIC topics and functionalities that are not relevant or supported in this context. 
+- covers a selection of [repository objects](https://help.sap.com/docs/abap-cloud/abap-keyword/repository-object) in the [ABAP Dictionary (DDIC)](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-dictionary) that represent [global types](https://help.sap.com/docs/abap-cloud/abap-keyword/global-type). Additionally, [CDS objects](https://help.sap.com/docs/abap-cloud/abap-keyword/cds-object) also representing global types are mentioned. 
+- focuses on [ABAP for Cloud Development](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-for-cloud-development), and therefore, does not cover certain DDIC topics and functionalities that are not relevant or supported in this context. 
 - invites you to a more in-depth exploration. Make sure that you refer to the documentation for more details and the complete picture.
 
 > [!NOTE]
-> - While several DDIC objects are still supported in [ABAP Cloud](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_cloud_glosry.htm) (excluding, for example, classic DDIC views), it is recommended to use their ABAP CDS-based successors for new developments.
+> - While several DDIC objects are still supported in [ABAP Cloud](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-cloud) (excluding, for example, classic DDIC views), it is recommended to use their ABAP CDS-based successors for new developments.
 
 ## Introduction
 
@@ -53,8 +53,8 @@ This cheat sheet ...
 - DDIC offers many objects and functionalities particularly suited for classic ABAP technologies and user interfaces, such as dynpros. However, these are not relevant in ABAP Cloud and are not covered in this cheat sheet. For example, DDIC search helps (that are used to create value lists for input fields on dynpros) can be replaced by CDS-based search helps.
 - The more modern concept, ABAP CDS, is integrated into the DDIC, allowing for the creation of dedicated CDS objects that can replace DDIC objects to be used in newer concepts like RAP.
 - DDIC objects are transportable.
-- In terms of repository objects in ABAP Cloud, you can use only those SAP-delivered repository objects that are released as APIs for the ABAP language version ABAP for Cloud Development, in addition to your custom repository objects. See a list of released APIs [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenreleased_apis.htm). Also, ABAP development tools for Eclipse (ADT) are the only supported tools for creating repository objects.
-- Many repository objects are created from source code using dedicated data definition languages, as opposed to the form-based creation you may be familiar from [classic ABAP](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenclassic_abap_glosry.htm).
+- In terms of repository objects in ABAP Cloud, you can use only those SAP-delivered repository objects that are released as APIs for the ABAP language version ABAP for Cloud Development, in addition to your custom repository objects. See a list of released APIs [here](https://help.sap.com/docs/abap-cloud/abap-keyword/released-apis-of-current-system). Also, ABAP development tools for Eclipse (ADT) are the only supported tools for creating repository objects.
+- Many repository objects are created from source code using dedicated data definition languages, as opposed to the form-based creation you may be familiar from [classic ABAP](https://help.sap.com/docs/abap-cloud/abap-keyword/classic-abap).
 
 
 > [!NOTE]
@@ -79,12 +79,12 @@ DDIC supports the following data types:
     - In data definition languages, you can refer to these types using `abap.type`.
   - are not directly usable in ABAP, except for types specified in ABAP SQL. You can use them through DDIC or CDS objects that include the built-in dictionary types.
   - In ABAP programs, the built-in dictionary types are mapped to corresponding ABAP data types.
-- For all available types and more details, refer to the [ABAP Keyword Documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenddic_builtin_types.htm). The following list shows a selection of available built-in dicitionary types: 
+- For all available types and more details, refer to the [ABAP Keyword Documentation](https://help.sap.com/docs/abap-cloud/abap-keyword/ddic-overview-of-all-built-in-dictionary-types). The following list shows a selection of available built-in dicitionary types: 
 
   | Built-in Dictionary Type  |  Details |
   |---|---|
   |  `int4`  | Represents 4-byte integers <br>Mapped to the ABAP type `i`  |
-  | `char`   | Represents strings of fixed length <br>Mapped to the ABAP type `c` with a dedicated length <br>For example, in database tables and fields of CDS entities, the maximum length is 1333 characters. <br><br>The built-in dictionary type `clnt` is a special character-like type and has special semantics. It denotes the [client column](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenclient_column_glosry.htm) in [client-dependent](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenclient_dependent_glosry.htm) DDIC database tables. The type is mapped to the ABAP type `c`, length 3.   |
+  | `char`   | Represents strings of fixed length <br>Mapped to the ABAP type `c` with a dedicated length <br>For example, in database tables and fields of CDS entities, the maximum length is 1333 characters. <br><br>The built-in dictionary type `clnt` is a special character-like type and has special semantics. It denotes the [client column](https://help.sap.com/docs/abap-cloud/abap-keyword/client-column) in [client-dependent](https://help.sap.com/docs/abap-cloud/abap-keyword/client-dependent) DDIC database tables. The type is mapped to the ABAP type `c`, length 3.   |
   | `string`  | Represents strings of variable length<br>In DDIC, it is handled like a character large object/CLOB. <br>A maximum length can be specified, but there is no upper limit. The type cannot be used to specify key fields in database tables. In the tables, a maximum length of at least 256 can be specfied to restrict the length of database table fields. <br>Mapped to the identically named ABAP type `string` <br><br>Another built-in dicitionary type mapped to the ABAP type `string` is `sstring`, which represents shorter text strings having a maximum length of 1333. It is handled like `char` and can be used as type for a database table key field (unlike `string`; note that trailing blanks are removed).   |
   |  `datn`/`timn` | Represent date and time formats <br>Mapped to `d`/`t` <br><br>`dats`/`tims` are older types. `datn`/`timn` are preferred because `dats`/`tims` require conversion to actual date and time types.   |
   |  `utclong` | Represents time stamps <br>Mapped to the identically named ABAP data type `utclong`   |
@@ -93,15 +93,15 @@ DDIC supports the following data types:
 
 
 > [!NOTE]
-> - There are restrictions when using strings in ABAP CDS and ABAP SQL. For more information, see [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenddic_character_byte_types.htm).
-> - Built-in dictionary types cannot be used directly in ABAP, e.g. for typing local data objects. However, the types can be used in ABAP SQL, and also ABAP CDS, in the context of [typed literals](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentyped_literal_glosry.htm). Find more information in the [ABAP SQL](03_ABAP_SQL.md#typed-literals) cheat sheet.
+> - There are restrictions when using strings in ABAP CDS and ABAP SQL. For more information, see [here](https://help.sap.com/docs/abap-cloud/abap-keyword/ddic-character-like-types-and-byte-like-types).
+> - Built-in dictionary types cannot be used directly in ABAP, e.g. for typing local data objects. However, the types can be used in ABAP SQL, and also ABAP CDS, in the context of [typed literals](https://help.sap.com/docs/abap-cloud/abap-keyword/typed-literal). Find more information in the [ABAP SQL](03_ABAP_SQL.md#typed-literals) cheat sheet.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ### DDIC Data Types
 
 They can be ... 
-- defined in the DDIC and represent [global types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenglobal_type_glosry.htm).
+- defined in the DDIC and represent [global types](https://help.sap.com/docs/abap-cloud/abap-keyword/global-type).
 - accessed by all repository objects (as long as the package concept allows it).
 - referenced in ABAP programs, for example, using `TYPES` and `DATA` statements.
 - used to type components in other repository objects.
@@ -116,7 +116,7 @@ They can be ...
   - elementary types are based on a built-in dictionary type. Length, decimal places, and other attributes (if applicable) can be specified either directly in the data element or inherited from a domain.
   - reference types allow for the creation of data and object references. Data references can refer to existing DDIC types or built-in types, or be the generic type `data`. Object references can refer to classes and interfaces, or be the generic type `object`. Reference types cannot be used to type database table fields.
 - The technical properties specified depend on the built-in type. For example, the output length includes the total number of characters. For the `dec` type used for packed numbers, a length of 5 with 2 decimals means the output length is 6, including a decimal point. If a sign is selected, the first character is reserved for the + or - sign, making the output length 7.
-- Details on semantic properties for data elements can be found [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenddic_data_elements_sema.htm). 
+- Details on semantic properties for data elements can be found [here](https://help.sap.com/docs/abap-cloud/abap-keyword/ddic-semantic-properties-of-data-elements). 
   - Some semantic properties apply only to classic ABAP, particularly classic UIs, and cannot be specified in ABAP for Cloud Development. 
   - Field labels, primarily for classic ABAP UIs, can be specified. The *Medium Text* field label is exposed to OData.
   - Domains provide additional semantic properties, such as a value range.
@@ -199,7 +199,7 @@ DATA char10_dtel_ref TYPE zdemo_abap_dtel_ref.
   - can be incorporated into other structures. A suffix can be assigned to the components of the included substructure.
 - In ADT, structures are created using data definition language:
   - The primary syntax element to define a structure in DDIC is `DEFINE STRUCTURE`.
-  - Before this syntax, annotations are used to define structure properties. These include a descriptive text and the enhancement category that determines specific classifications (e.g., `#NOT_EXTENSIBLE` indicates that the object cannot be enhanced). Find more information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenddic_structures_enh_cat.htm).
+  - Before this syntax, annotations are used to define structure properties. These include a descriptive text and the enhancement category that determines specific classifications (e.g., `#NOT_EXTENSIBLE` indicates that the object cannot be enhanced). Find more information [here](https://help.sap.com/docs/abap-cloud/abap-keyword/ddic-enhancement-category-of-structures).
   - Structure components are listed and separated by semicolons; includes are possible.
     - Structure components can also be specified with annotations.
     - The following list contains a selection of possible types that can be defined for components:
@@ -208,7 +208,7 @@ DATA char10_dtel_ref TYPE zdemo_abap_dtel_ref.
       - Structures (DDIC structures or database tables) as substructures.
       - An include structure can be specified using `INCLUDE`; optionally, a three-character suffix can be specified.
       - Table types
-- For comprehensive details and more annotations, refer to the [ABAP Keyword Documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenddicddl_define_structure.htm).
+- For comprehensive details and more annotations, refer to the [ABAP Keyword Documentation](https://help.sap.com/docs/abap-cloud/abap-keyword/ddic-ddl-define-structure).
 
 > [!NOTE]
 > DDIC database tables and several CDS entities also represent structured types that can be used as such in ABAP programs.
@@ -425,7 +425,7 @@ The following example creates three DDIC table types exploring several options:
   - are DDIC objects that describe physical database tables in the current standard database.
   - function as two-dimensional matrices with rows and columns.
   - include a table key, which is a field or combination of fields that uniquely identifies each row. Every database table must have a primary key.
-    - Note the concept of foreign keys, where one or more columns in a database table can serve as primary keys in another table. See more information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenddic_database_tables_forkey.htm).  
+    - Note the concept of foreign keys, where one or more columns in a database table can serve as primary keys in another table. See more information [here](https://help.sap.com/docs/abap-cloud/abap-keyword/ddic-foreign-keys).  
   - have a non-nested structured type. 
   - include both technical and semantic properties. 
   - act as structured types and can be referenced as such in ABAP.
@@ -437,12 +437,12 @@ The following example creates three DDIC table types exploring several options:
   - Reference types, substructures, and table types are not allowed.
   - One or more key fields must be specified at the beginning to uniquely identify table entries.
     - Among others, key fields cannot be of the types `string` and `rawstring`.
-  - The `NOT NULL` flag is always set for key fields, meaning they cannot have a [null value](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abennull_value_glosry.htm).
+  - The `NOT NULL` flag is always set for key fields, meaning they cannot have a [null value](https://help.sap.com/docs/abap-cloud/abap-keyword/null-value).
   - Typically, the first column of DDIC database tables is a key field with the built-in type `clnt`, indicating the table is client-dependent. Tables in the delivery class A are generally client-dependent.
   - Some field types, such as `curr` (currency) or `quan` (quantity), require specific specifications and must have reference tables specified.
   - For table field typing, you can use built-in types and data elements.
   - You can specify non-nested structures to be included in tables to avoid redundant structure definitions.
-- Specific technical and semantic properties for DDIC database tables can or must be specified. More information is available [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenddic_database_tables_techspec.htm). Among the specifications are the following. They are added by default when creating a new DDIC database table. Certain specifications are added by default when creating a new DDIC database table. 
+- Specific technical and semantic properties for DDIC database tables can or must be specified. More information is available [here](https://help.sap.com/docs/abap-cloud/abap-keyword/ddic-table-specific-technical-properties-of-database-tables). Among the specifications are the following. They are added by default when creating a new DDIC database table. Certain specifications are added by default when creating a new DDIC database table. 
 
   | Specification  | Purpose  |
   |---|---|
@@ -452,7 +452,7 @@ The following example creates three DDIC table types exploring several options:
   | `@AbapCatalog.deliveryClass : #A`  | The delivery class controls the transport of table data in installations, upgrades, and so on. <br>*A* stands for an application table for master and transaction data.  |
   | `@AbapCatalog.dataMaintenance : #RESTRICTED`  | Defines whether it is possible to display/maintain a database table or view its contents using tools. In the example, the table can be displayed using Data Preview in ADT. |
 
-- Find more information about DDIC database tables in the [ABAP Keyword Documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenddic_database_tables.htm). 
+- Find more information about DDIC database tables in the [ABAP Keyword Documentation](https://help.sap.com/docs/abap-cloud/abap-keyword/ddic-database-tables). 
 
 **Example: DDIC Database Tables**
 
@@ -513,7 +513,7 @@ The following example creates two DDIC database tables exploring several options
 - While ABAP Cloud still supports several DDIC objects, some have ABAP CDS-based successors. These successors offer advanced functionalities and support modern concepts such as ABAP RAP, which relies on data models defined in ABAP CDS and RAP behavior definitions that determine the model behavior.
 
 > [!NOTE]
-> - This cheat sheet only emphasizes ABAP CDS objects as global types to be used in ABAP. It does not cover use cases, data modeling aspects, annotations, syntax, and more. Refer to the [documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds.htm) for the complete picture. The executable example of the [CDS View Entities](15_CDS_View_Entities.md) cheat sheet provides a demonstration of a selection of CDS-related syntax.
+> - This cheat sheet only emphasizes ABAP CDS objects as global types to be used in ABAP. It does not cover use cases, data modeling aspects, annotations, syntax, and more. Refer to the [documentation](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-core-data-services-abap-cds) for the complete picture. The executable example of the [CDS View Entities](15_CDS_View_Entities.md) cheat sheet provides a demonstration of a selection of CDS-related syntax.
 > - ABAP CDS objects are created in ADT from source code.
 
 ### CDS Types Usable as Elementary Types
@@ -524,7 +524,7 @@ CDS built-in types...
 - Are elementary types derived from the built-in dictionary types.
 - Can be used in various ABAP CDS contexts, such as elements in CDS entities (for example, elements in CDS abstract entities, typed literals in CDS view entities, etc.) or in CDS simple types, and for casting in ABAP CDS.
 - Are denoted using `abap.type`, with optional or mandatory length and decimal specifications in parentheses. For example, `abap.char(len)` corresponds to the DDIC type `char` with a length specification.
-- A comprehensive list can be found [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_overview_builtin_types.htm).
+- A comprehensive list can be found [here](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-cds-built-in-data-types).
 
 #### CDS Simple Types
 
@@ -537,9 +537,9 @@ CDS built-in types...
 - They can be used ...
   - in ABAP CDS for typing elements or parameters and for casting
   - in ABAP for defining types
-- CDS annotations can enhance these types with metadata, which frameworks like RAP evaluate (for example, in the context of OData). When using a data element, DDIC properties are inherited. For more information, see [this topic](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_dtel.htm).
+- CDS annotations can enhance these types with metadata, which frameworks like RAP evaluate (for example, in the context of OData). When using a data element, DDIC properties are inherited. For more information, see [this topic](https://help.sap.com/docs/abap-cloud/abap-keyword/cds-ddl-cds-simple-type-data-element).
 - CDS simple types support type stacking.
-- Find more information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_define_simple_type.htm).
+- Find more information [here](https://help.sap.com/docs/abap-cloud/abap-keyword/cds-ddl-define-type-simple-type).
 
 **Example: CDS Simple Types**
 
@@ -598,15 +598,15 @@ DATA(applies_to_data_cds_st) = tdo_cds_simple_type->applies_to_data( CONV c5( 'a
 #### CDS Enumerated Types
 
 - CDS enumerated types are user-defined types in ABAP CDS.
-- Such an [enumerated type](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenenum_type_glosry.htm) is a data type that specifies a value set in addition to the actual type properties.  
+- Such an [enumerated type](https://help.sap.com/docs/abap-cloud/abap-keyword/enumerated-type) is a data type that specifies a value set in addition to the actual type properties.  
 - The value set can be used to validate allowed values, similar to fixed values in DDIC domains.
 - They can be used ...
-  - in ABAP CDS to type elements or parameters, for casting, and in comparisons. More details and examples are available [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_use_enum_type.htm).
-  - in ABAP for [enumerated variables](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenenumerated_variable_glosry.htm). An [enumerated structure](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenenumerated_structure_glosry.htm) with the CDS enumerated type name is automatically declared, functioning like [ABAP enumerated types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenenumerated_type_glosry.htm).
+  - in ABAP CDS to type elements or parameters, for casting, and in comparisons. More details and examples are available [here](https://help.sap.com/docs/abap-cloud/abap-keyword/cds-ddl-using-cds-enumerated-types).
+  - in ABAP for [enumerated variables](https://help.sap.com/docs/abap-cloud/abap-keyword/enumerated-variable). An [enumerated structure](https://help.sap.com/docs/abap-cloud/abap-keyword/enumerated-structure) with the CDS enumerated type name is automatically declared, functioning like [ABAP enumerated types](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-enumerated-type).
 - To create the types, you ...
   - specify a list of enumerated constants that are assigned values as untyped literals. One component must be set as initial to establish the base type's initial value.
   - define a base type. Possible base types include `int1`, `int2`, `int4`, `char`, and `numc`, with the last two having a maximum length of 8.
-  - include [annotations](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_enum_type_anno.htm) if needed.
+  - include [annotations](https://help.sap.com/docs/abap-cloud/abap-keyword/cds-ddl-cds-enumerated-type-type-annot) if needed.
 
 > [!NOTE]
 > - Enumerated types can also be specified in ABAP using the syntax `TYPES BEGIN OF ENUM`. See examples in the [Data Types and Data Objects](16_Data_Types_and_Objects.md) cheat sheet.
@@ -672,15 +672,15 @@ DATA(members_cds_enum) = tdo_cds_enum->members.
 
 ### CDS Entities Usable as Structured Types
 
-- Several [CDS entities](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_entity_glosry.htm) represent structured types usable in ABAP, however, they are not usable in DDIC objects. 
+- Several [CDS entities](https://help.sap.com/docs/abap-cloud/abap-keyword/cds-entity) represent structured types usable in ABAP, however, they are not usable in DDIC objects. 
 - These include: 
   - [CDS table entities](https://help.sap.com/docs/ABAP_Cloud/aaae421481034feab3e71dd9e0f643bf/100ab51935544f18b4f4be9b4abb91e8.html)
-  - [CDS view entities](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_v2_view_glosry.htm) for data modeling and selection
-  - [CDS table functions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_table_function_glosry.htm) for data selection with AMDP
-  - [CDS abstract entities](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_abstract_entity_glosry.htm) for modeling structures, similar to DDIC structures but with advanced features for use in RAP
-  - [CDS hierarchies](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_hierarchy_glosry.htm) for retrieving hierarchical data nodes
-  - [CDS custom entities](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_custom_entity_glosry.htm) for implementing custom data retrieval with ABAP
-- For an overview and additional details about CDS entities, see [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_view_entity.htm) and the [ABAP Data Models Guide](https://help.sap.com/docs/abap-cloud/abap-data-models/abap-data-models?locale=en-US?version=sap_btp).
+  - [CDS view entities](https://help.sap.com/docs/abap-cloud/abap-keyword/cds-view-entity) for data modeling and selection
+  - [CDS table functions](https://help.sap.com/docs/abap-cloud/abap-keyword/cds-table-function) for data selection with AMDP
+  - [CDS abstract entities](https://help.sap.com/docs/abap-cloud/abap-keyword/cds-abstract-entity) for modeling structures, similar to DDIC structures but with advanced features for use in RAP
+  - [CDS hierarchies](https://help.sap.com/docs/abap-cloud/abap-keyword/cds-hierarchy) for retrieving hierarchical data nodes
+  - [CDS custom entities](https://help.sap.com/docs/abap-cloud/abap-keyword/cds-custom-entity) for implementing custom data retrieval with ABAP
+- For an overview and additional details about CDS entities, see [here](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-cds-cds-entities) and the [ABAP Data Models Guide](https://help.sap.com/docs/abap-cloud/abap-data-models/abap-data-models?locale=en-US?version=sap_btp).
 
 ```abap
 "Creating structured types and data objects using ABAP cheat sheet
@@ -705,7 +705,7 @@ SELECT * FROM zdemo_abap_table_function INTO TABLE @itab_cds_tabfunc.
 
 > [!NOTE]
 > - Some of the CDS entities can also be used as data sources in ABAP SQL statements, some cannot (for example, CDS custom entities).
-> - [DDIC-based views](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_v1_view_glosry.htm) are obsolete and should not be used anymore.
+> - [DDIC-based views](https://help.sap.com/docs/abap-cloud/abap-keyword/cds-ddic-based-view) are obsolete and should not be used anymore.
 
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
@@ -753,10 +753,10 @@ Using the [XCO library](https://help.sap.com/docs/btp/sap-business-technology-pl
 
 ## More Information
 - ABAP Keyword Documentation (ABAP for Cloud Development)
-  - [Dictionary (DDIC)](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_dictionary.htm)
-  - [Core Data Services (ABAP CDS)](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds.htm)
-  - [ABAP CDS - Type Definitions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_tdl.htm)
-  - [ABAP CDS - SAP Annotation Documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_annotations_ktd_docu.htm)
+  - [Dictionary (DDIC)](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-dictionary-ddic)
+  - [Core Data Services (ABAP CDS)](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-core-data-services-abap-cds)
+  - [ABAP CDS - Type Definitions](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-cds-type-definitions)
+  - [ABAP CDS - SAP Annotation Documentation](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-cds-sap-annotation-documentation)
 - [Working with Classic Objects in ABAP Dictionary](https://help.sap.com/docs/abap-cloud/abap-development-tools-user-guide/working-with-classic-objects-in-abap-dictionary?locale=en-US&version=sap_btp)
 - [ABAP Data Models Guide](https://help.sap.com/docs/abap-cloud/abap-data-models/abap-data-models?locale=en-US?version=sap_btp)
 
@@ -1234,4 +1234,4 @@ ENDCLASS.
 ```
 
 </details>  
-
+

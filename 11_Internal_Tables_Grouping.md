@@ -13,13 +13,13 @@
 
 ## Introduction
 
-Similar to SQL's [`GROUP BY`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapgroupby_clause.htm),
-there is also a [`GROUP BY`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abaploop_at_itab_group_by.htm)
-for working with internal tables that can be used behind [`LOOP AT itab`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abaploop_at_itab_variants.htm)
-or in the form [`IN GROUP`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenfor_in_group.htm)
+Similar to SQL's [`GROUP BY`](https://help.sap.com/docs/abap-cloud/abap-keyword/select-group-by),
+there is also a [`GROUP BY`](https://help.sap.com/docs/abap-cloud/abap-keyword/loop-at-itab-group-by)
+for working with internal tables that can be used behind [`LOOP AT itab`](https://help.sap.com/docs/abap-cloud/abap-keyword/loop-at-itab)
+or in the form [`IN GROUP`](https://help.sap.com/docs/abap-cloud/abap-keyword/for-in-group)
 in a table iteration with
-[`FOR`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenfor_itab.htm).
-It replaces the clumsy group level processing with statements [`AT NEW ...`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapat_itab.htm)
+[`FOR`](https://help.sap.com/docs/abap-cloud/abap-keyword/for-table-iterations).
+It replaces the clumsy group level processing with statements [`AT NEW ...`](https://help.sap.com/docs/abap-cloud/abap-keyword/at-group-level-processing)
 that relies on the order of table columns and content that is sorted
 respectively.
 
@@ -27,7 +27,7 @@ Thi cheat sheet explains the grouping of internal tables step by step
 using a very simple case of an internal table `spfli_tab` that
 is filled with data from the database table `SPFLI`. The
 following steps show how the content of the internal table can be
-grouped using [`LOOP AT GROUP BY`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abaploop_at_itab_group_by.htm).
+grouped using [`LOOP AT GROUP BY`](https://help.sap.com/docs/abap-cloud/abap-keyword/loop-at-itab-group-by).
 
 ## Grouping by One Column
 
@@ -90,7 +90,7 @@ inserted as when grouping by one column.
 ## Group Key Binding when Grouping by One Column
 
 By explicitly specifying an [output
-area](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abaploop_at_itab_group_by_binding.htm)
+area](https://help.sap.com/docs/abap-cloud/abap-keyword/loop-at-itab-group-result)
 for the group key, a group key binding can be defined explicitly instead
 of the representative binding in which the output area of the group loop
 is reused:
@@ -107,11 +107,11 @@ The difference to the example with representative binding is the
 `INTO` addition after `GROUP BY`. Instead of reusing
 `wa`, an elementary data object `key` represents the
 group. This can be generated inline. The additions [`GROUP
-SIZE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abaploop_at_itab_group_by_key.htm),
+SIZE`](https://help.sap.com/docs/abap-cloud/abap-keyword/loop-at-itab-group-key),
 [`GROUP
-INDEX`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abaploop_at_itab_group_by_key.htm),
+INDEX`](https://help.sap.com/docs/abap-cloud/abap-keyword/loop-at-itab-group-key),
 and [`WITHOUT
-MEMBERS`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abaploop_at_itab_group_by.htm)
+MEMBERS`](https://help.sap.com/docs/abap-cloud/abap-keyword/loop-at-itab-group-by)
 can only be used in the group key binding, which gives it more functions
 than the representative binding. If these are not required, the
 representative binding can be used. The group key binding can also be
@@ -150,7 +150,7 @@ Here, `key` is a structure with the components `key1`
 and `key2`. A member loop can be inserted in exactly the same
 way as when grouping by one column.
 
-If the group members are not relevant, the addition [`WITHOUT MEMBERS`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abaploop_at_itab_group_by.htm)
+If the group members are not relevant, the addition [`WITHOUT MEMBERS`](https://help.sap.com/docs/abap-cloud/abap-keyword/loop-at-itab-group-by)
 can be used to save time and memory.
 
 ``` abap
@@ -166,9 +166,9 @@ ENDLOOP.
 It is no longer possible to use a member loop here. Instead, the group
 key was enriched with optional components for further information using
 [`GROUP
-INDEX`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abaploop_at_itab_group_by_key.htm)
+INDEX`](https://help.sap.com/docs/abap-cloud/abap-keyword/loop-at-itab-group-key)
 [`GROUP
-SIZE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abaploop_at_itab_group_by_key.htm).
+SIZE`](https://help.sap.com/docs/abap-cloud/abap-keyword/loop-at-itab-group-key).
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 

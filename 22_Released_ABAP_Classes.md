@@ -54,21 +54,21 @@
   - [SAP Codes Conversion](#sap-codes-conversion)
 
 
-This ABAP cheat sheet contains a selection of [released](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenreleased_api_glosry.htm) ABAP classes that are available in [ABAP for Cloud Development](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_for_cloud_dev_glosry.htm). It serves as a quick introduction, along with code snippets to explore the functionality in action.
+This ABAP cheat sheet contains a selection of [released](https://help.sap.com/docs/abap-cloud/abap-keyword/released-api) ABAP classes that are available in [ABAP for Cloud Development](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-for-cloud-development). It serves as a quick introduction, along with code snippets to explore the functionality in action.
 
 > [!NOTE]  
 > - The cheat sheet is not a comprehensive overview, and the code snippets do not claim to be comprehensive as far as options, methods, or parameters are concerned. It is intended to give you a rough overview, for you to get an idea. It is an invitation to a more in-depth exploration.
 > - For more information and where available, refer to the class documentation (for example, choose F2 when the cursor is on the class name in ADT), the ABAP Keyword Documentation, and the SAP Help Portal documentation.
 > - You might find that different classes can achieve similar or the same results, especially with the Extension Components Library (XCO), a general-purpose development library designed specifically for ABAP for Cloud Development. Choose the classes that best meet your needs.
-> - For XCO classes, the cheat sheet covers released XCO APIs. In [Standard ABAP](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenstandard_abap_glosry.htm), XCO APIs are also available that do not have `CP` in the class name. These classes are not covered here.
+> - For XCO classes, the cheat sheet covers released XCO APIs. In [Standard ABAP](https://help.sap.com/docs/abap-cloud/abap-keyword/standard-abap), XCO APIs are also available that do not have `CP` in the class name. These classes are not covered here.
 > - [Disclaimer](./README.md#%EF%B8%8F-disclaimer)
 
 ## Excursions
 
 ### Classes Available in ABAP for Cloud Development
 
-If available to you, you have accessed an [SAP BTP ABAP Environment](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensap_btp_abap_env_glosry.htm) using the [ABAP development tools for Eclipse (ADT)](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenadt_glosry.htm).
-Access to SAP-provided repository objects is restricted to objects that have been released for [ABAP for Cloud Development](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_for_cloud_dev_glosry.htm) ([released APIs](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenreleased_api_glosry.htm)). You can find the released repository objects in the *Project Explorer* view in ADT under *Released Objects*. The classes are located in the *Source Code Library* folder:
+If available to you, you have accessed an [SAP BTP ABAP Environment](https://help.sap.com/docs/abap-cloud/abap-keyword/sap-btp-abap-environment) using the [ABAP development tools for Eclipse (ADT)](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-development-tools-for-eclipse).
+Access to SAP-provided repository objects is restricted to objects that have been released for [ABAP for Cloud Development](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-for-cloud-development) ([released APIs](https://help.sap.com/docs/abap-cloud/abap-keyword/released-api)). You can find the released repository objects in the *Project Explorer* view in ADT under *Released Objects*. The classes are located in the *Source Code Library* folder:
 
 ![Released APIs](./files/released_APIs.png)
 
@@ -585,7 +585,7 @@ ENDTRY.
 <tr>
 <td> <code>CL_ABAP_BEHV_AUX</code> </td>
 <td>
-A utility class for retrieving information about RAP handler implementations, such as the current context of RAP handler/saver methods, the handler kind, and the current <a href="https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentransactional_phase_glosry.htm">RAP transactional phase</a> (e.g., <a href="https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_int_phase_glosry.htm">RAP interaction phase</a>.
+A utility class for retrieving information about RAP handler implementations, such as the current context of RAP handler/saver methods, the handler kind, and the current <a href="https://help.sap.com/docs/abap-cloud/abap-keyword/rap-transactional-phase">RAP transactional phase</a> (e.g., <a href="https://help.sap.com/docs/abap-cloud/abap-keyword/rap-interaction-phase">RAP interaction phase</a>.
 <br><br>
 
 ``` abap
@@ -614,7 +614,7 @@ FINAL(phase) = cl_abap_behv_aux=>get_current_phase( ).
 <tr>
 <td> <code>CL_ABAP_BEHAVIOR_HANDLER</code> </td>
 <td>
-Used for <a href="https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabp_handler_class_glosry.htm">RAP handler classes</a> that inherit from class <code>CL_ABAP_BEHAVIOR_HANDLER</code>. 
+Used for <a href="https://help.sap.com/docs/abap-cloud/abap-keyword/rap-handler-class">RAP handler classes</a> that inherit from class <code>CL_ABAP_BEHAVIOR_HANDLER</code>. 
 <br><br>
 
 ``` abap
@@ -633,7 +633,7 @@ ENDCLASS.
 <tr>
 <td> <code>CL_ABAP_BEHAVIOR_SAVER</code> </td>
 <td>
-Used as base class from which a <a href="https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabp_saver_class_glosry.htm">RAP saver class</a> in an <a href="https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbehavior_pool_glosry.htm">ABAP behavior pool (ABP)</a> inherits. The RAP saver class must be defined in the <a href="https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenccimp_glosry.htm">CCIMP include</a> of an ABP. 
+Used as base class from which a <a href="https://help.sap.com/docs/abap-cloud/abap-keyword/rap-saver-class">RAP saver class</a> in an <a href="https://help.sap.com/docs/abap-cloud/abap-keyword/abap-behavior-pool">ABAP behavior pool (ABP)</a> inherits. The RAP saver class must be defined in the <a href="https://help.sap.com/docs/abap-cloud/abap-keyword/ccimp-include">CCIMP include</a> of an ABP. 
 <br><br>
 
 ``` abap
@@ -657,8 +657,8 @@ ENDCLASS.
 <td>
 <ul>
 <li>Same as <code>CL_ABAP_BEHAVIOR_SAVER</code>. It is used as base class from which a RAP saver class in an ABAP behavior pool (ABP) inherits. </li>
-<li>Normally, the basic rule is that failures must not occur in the RAP late save phase, but must be detected in the <a href="https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenearly_rap_save_phase_glosry.htm">RAP early save phase</a> in order for the save to be successful. The base class <code>CL_ABAP_BEHAVIOR_SAVER_FAILED</code> can be used in exceptional cases where the basic rule cannot be met.</li>
-<li>For more information, see the <a href="https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabp_cl_abap_beh_saver_failed.htm">ABAP Keyword Documentation</a>.</li>
+<li>Normally, the basic rule is that failures must not occur in the RAP late save phase, but must be detected in the <a href="https://help.sap.com/docs/abap-cloud/abap-keyword/rap-early-save-phase">RAP early save phase</a> in order for the save to be successful. The base class <code>CL_ABAP_BEHAVIOR_SAVER_FAILED</code> can be used in exceptional cases where the basic rule cannot be met.</li>
+<li>For more information, see the <a href="https://help.sap.com/docs/abap-cloud/abap-keyword/cl-abap-behavior-saver-failed-rap-saver-class">ABAP Keyword Documentation</a>.</li>
 </ul>
 <br>
 
@@ -681,7 +681,7 @@ ENDCLASS.
 <td> <code>CL_ABAP_BEHAVIOR_EVENT_HANDLER</code> </td>
 <td>
 It is used as base class from which a RAP event handler class in its CCIMP include inherits. Its purpose is to locally consume RAP business events.
-More information: <a href="https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_events.htm">ABAP for RAP Business Events</a>.
+More information: <a href="https://help.sap.com/docs/abap-cloud/abap-keyword/abap-for-rap-business-events">ABAP for RAP Business Events</a>.
 <br><br>
 
 ``` abap
@@ -722,12 +722,12 @@ ENDCLASS.
 <td> <code>CL_ABAP_TX</code> </td>
 <td>
 <ul>
-<li>Explicitly setting <a href="https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentr_phase_glosry.htm">transactional phases</a> (the modify and save transactional phase) to enable transactional consistency checks with the <a href="https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencontrolled_sap_luw_glosry.htm">controlled SAP LUW</a> (which is an extension of the SAP LUW concept)</li>
+<li>Explicitly setting <a href="https://help.sap.com/docs/abap-cloud/abap-keyword/transactional-phase) to enable transactional consistency checks with the <a href="https://help.sap.com/docs/abap-cloud/abap-keyword/controlled-sap-luw-abencontrolled_sap_luw_glosry)</li>
 <li>The controlled SAP LUW is automatically and implicitly supported by newer ABAP concepts such as RAP, i.e. the transactional phases are implicitly active when RAP handler methods are called.</li>
 <li>Operations that are not allowed in a transactional phase are detected, resulting in a runtime error in certain contexts (or the violations are logged). 
 For example, database modifications are only allowed in the save transactional phase because the data being processed in the modify phase may be inconsistent. Therefore, a database modification in the modify phase can disrupt the SAP LUW.</li>
 <li>For more information, refer to the chapter <a href="https://help.sap.com/docs/abap-cloud/abap-concepts/controlled-sap-luw">Controlled SAP LUW</a>.</li>
-<li>See the restrictions in the ABAP Keyword Documentation: <a href="https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapinvalid_stmts_in_tx.htm">ABAP for Cloud Development</a> / <a href="https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapinvalid_stmts_in_tx.htm">Standard ABAP</a>.</li>
+<li>See the restrictions in the ABAP Keyword Documentation: <a href="https://help.sap.com/docs/abap-cloud/abap-keyword/restrictions-in-transactional-phases">ABAP for Cloud Development</a> / <a href="https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapinvalid_stmts_in_tx.htm">Standard ABAP</a>.</li>
 </ul>
 <br>
 
@@ -1785,7 +1785,7 @@ DATA(repl_result_not_extended) = matcher_not_extended->text.
 ## Time and Date
 
 > [!NOTE] 
-> In [ABAP for Cloud Development](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_for_cloud_dev_glosry.htm), do not use the date and time-related system fields such as `sy-datum` and `sy-uzeit`, and others. User-related time and date values can be retrieved using the XCO library. For code snippets, see the [Date, Time, and Time Stamp](23_Date_and_Time.md) cheat sheet.
+> In [ABAP for Cloud Development](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-for-cloud-development), do not use the date and time-related system fields such as `sy-datum` and `sy-uzeit`, and others. User-related time and date values can be retrieved using the XCO library. For code snippets, see the [Date, Time, and Time Stamp](23_Date_and_Time.md) cheat sheet.
 
 <table>
 <tr>
@@ -2308,7 +2308,7 @@ DATA(intf_attr) = tdo_iref->attributes.
 <td> <code>CL_ABAP_CORRESPONDING</code> </td>
 <td>
 
-For assignments of components between structures or between internal tables with dynamically specified mapping rules. For more information, you can refer to the <a href="https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencl_abap_corresponding.htm">ABAP Keyword Documentation</a>.
+For assignments of components between structures or between internal tables with dynamically specified mapping rules. For more information, you can refer to the <a href="https://help.sap.com/docs/abap-cloud/abap-keyword/cl-abap-corresponding-system-class">ABAP Keyword Documentation</a>.
 The example shows simple assignments with structures.
 <br><br>
 
@@ -2473,7 +2473,7 @@ ENDCLASS.
 <tr>
 <td> <code>CL_ABAP_DIFF</code> </td>
 <td>
-Using the methods <code>diff</code> and <code>diff_with_line_ref</code> of the <code>CL_ABAP_DIFF</code> class, you can compare the content of two compatible index tables. The returning parameter is an internal table showing how the content of one internal table can be modified to match another one. <code>diff_with_line_ref</code> also returns a reference to the original table lines. Various importing parameters are available to adjust the comparison. Find more information in the class documentation and in the <a href="https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencl_abap_diff.htm">ABAP Keyword Documentation</a>.
+Using the methods <code>diff</code> and <code>diff_with_line_ref</code> of the <code>CL_ABAP_DIFF</code> class, you can compare the content of two compatible index tables. The returning parameter is an internal table showing how the content of one internal table can be modified to match another one. <code>diff_with_line_ref</code> also returns a reference to the original table lines. Various importing parameters are available to adjust the comparison. Find more information in the class documentation and in the <a href="https://help.sap.com/docs/abap-cloud/abap-keyword/itab-system-class-cl-abap-diff">ABAP Keyword Documentation</a>.
 
 <br>
 
@@ -3673,7 +3673,7 @@ DATA(sub_acc_id) = ten->get_subaccount_id( )->as_string( ).
 <td> <code>CX_*</code> </td>
 <td>
 
-Exception classes are special classes, usually starting with the name <code>CX_*</code>, that serve as the basis for <a href="https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencatchable_exception_glosry.htm">catchable exceptions</a>. When an exception is raised, an object of such an exception class is created. There are several predefined exception classes. Find more information in the [Exceptions and Runtime Errors](27_Exceptions.md) cheat sheet. 
+Exception classes are special classes, usually starting with the name <code>CX_*</code>, that serve as the basis for <a href="https://help.sap.com/docs/abap-cloud/abap-keyword/catchable-exception) cheat sheet. 
 
 <br>
 
@@ -9984,7 +9984,7 @@ ENDTRY.
 
 - The `CL_ABAP_GARBAGE_COLLECTOR` class provides the `collect` method. 
 - Calling this method manually triggers garbage collection, regardless of current memory consumption or the garbage collector's state.  
-- The ABAP runtime framework periodically invokes the [garbage collector](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abengarbage_collector_glosry.htm), so it is generally unnecessary to trigger clearing explicitly. However, doing so can be beneficial in exceptional cases, such as when large, unnecessary objects consume significant memory or when explicit memory release is needed in resource-constrained environments. It can also help analyze memory usage and ensure proper memory release.
+- The ABAP runtime framework periodically invokes the [garbage collector](https://help.sap.com/docs/abap-cloud/abap-keyword/garbage-collector), so it is generally unnecessary to trigger clearing explicitly. However, doing so can be beneficial in exceptional cases, such as when large, unnecessary objects consume significant memory or when explicit memory release is needed in resource-constrained environments. It can also help analyze memory usage and ensure proper memory release.
 
 <br>
 

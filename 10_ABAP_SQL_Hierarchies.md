@@ -21,11 +21,11 @@
 
 This cheat sheet summarizes the functions ABAP SQL offers together with
 ABAP CDS for working with [hierarchical
-data](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenhierarchy_glosry.htm "Glossary Entry")
+data](https://help.sap.com/docs/abap-cloud/abap-keyword/hierarchy-abenhierarchy_glosry)
 that is stored in database tables. Hierarchical data in database tables
 means that lines of one or more database tables are connected by
 [parent-child
-relationships](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenpcr_glosry.htm "Glossary Entry").
+relationships](https://help.sap.com/docs/abap-cloud/abap-keyword/parent-child-relationship).
 There are many use cases where hierarchical data plays a role and where
 accessing information about the hierarchical relationship is important.
 For example, a common task can be to find out the descendants or
@@ -36,9 +36,9 @@ ancestors of a given hierarchy node or to aggregate values of subtrees.
 In former times you had to load the data from the database into internal
 tables and program it all by yourself (if you did not find an
 appropriate API). In between,
-[meshes](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenmesh_glosry.htm "Glossary Entry")
+[meshes](https://help.sap.com/docs/abap-cloud/abap-keyword/mesh)
 offered some features for working with hierarchies, as shown in this
-[example](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenmesh_for_reflex_sngl_abexa.htm),
+[example](https://help.sap.com/docs/abap-cloud/abap-keyword/meshes-reflexive-associations-in-mesh-paths),
 but have not found wide distribution.
 
 Meanwhile, the standard AS ABAP database is a SAP HANA database that
@@ -48,7 +48,7 @@ hierarchical data directly on the database and that you can look up in
 the [SAP HANA
 documentation](https://help.sap.com/docs/SAP_HANA_PLATFORM/4fe29514fd584807ac9f2a04f6754767/2969da89b87f4abd85fd0b5f9f5bc395.html?version=2.0.06&locale=en-US).
 Now you might expect that you must use
-[AMDP](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenamdp.htm)
+[AMDP](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-managed-database-procedures-amdp)
 in order to access these functions from your ABAP programs, but no need
 to do so! ABAP SQL and ABAP CDS support hierarchies directly by wrapping
 the HANA built-in functions without any loss of performance. You can
@@ -64,13 +64,13 @@ learn some additional syntax and then you can start right away.
 ## SQL Hierarchies
 
 With [SQL
-hierarchy](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensql_hierarchy_glosry.htm "Glossary Entry")
+hierarchy](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-sql-hierarchy)
 we denote a special [hierarchical data
-source](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenselect_hierarchy_data.htm)
+source](https://help.sap.com/docs/abap-cloud/abap-keyword/select-from-hierarchy-data)
 that you can use in the `FROM` clause of ABAP SQL queries. A SQL
 hierarchy is a tabular set of rows which form the hierarchy nodes of a
 hierarchy and which contains additionally [hierarchy
-columns](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenhierarchy_column_glosry.htm "Glossary Entry")
+columns](https://help.sap.com/docs/abap-cloud/abap-keyword/hierarchy-column)
 that contain hierarchy attributes with hierarchy-specific information
 for each row. For creating a SQL hierarchy, you need the following:
 
@@ -109,14 +109,14 @@ created and accessed.
 
 ### ABAP CDS Hierarchies
 With [CDS
-hierarchies](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenhierarchy_column_glosry.htm "Glossary Entry"),
+hierarchies](https://help.sap.com/docs/abap-cloud/abap-keyword/hierarchy-column),
 you outsource the hierarchy data source and the creation of the SQL
 hierarchy from your ABAP program to ABAP CDS. Here the hierarchy is a
 fully fledged CDS entity, it is reusable in different programs or in
 other CDS entities (views), and can be part of your data model including
 access control using CDS DCL. For a CDS hierarchy, the hierarchy source
 cannot be anything else but a CDS view that exposes a [hierarchy
-association](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenhierarchy_association_glosry.htm "Glossary Entry").
+association](https://help.sap.com/docs/abap-cloud/abap-keyword/hierarchy-association).
 Here is a very simple example for that:
 
 ``` 
@@ -136,7 +136,7 @@ define view entity DEMO_CDS_SIMPLE_TREE_VIEW
 This CDS view entity accesses the database table
 `DEMO_SIMPLE_TREE`, where the actual data is
 stored, and exposes a
-[self-association](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenself_association_glosry.htm "Glossary Entry")
+[self-association](https://help.sap.com/docs/abap-cloud/abap-keyword/self-association)
 `_tree`. The `ON` condition of the association
 defines a parent-child relation between the elements `id` and
 `parent`. It simply means that a row of the result set where
@@ -172,7 +172,7 @@ define hierarchy DEMO_CDS_SIMPLE_TREE
 ```
 
 The CDS DDL statement [`DEFINE
-HIERARCHY`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_f1_define_hierarchy.htm)
+HIERARCHY`](https://help.sap.com/docs/abap-cloud/abap-keyword/cds-ddl-define-hierarchy)
 that can be used in the DDL source code editor of ADT defines a CDS
 hierarchy as a CDS entity that can be accessed in CDS views or ABAP SQL
 as a SQL hierarchy. The most important additions of the statement are:
@@ -191,7 +191,7 @@ as a SQL hierarchy. The most important additions of the statement are:
     the SQL hierarchy, here simply all elements of the hierarchy source.
 
 For a full description and all other additions see [`DEFINE
-HIERARCHY`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_f1_define_hierarchy.htm).
+HIERARCHY`](https://help.sap.com/docs/abap-cloud/abap-keyword/cds-ddl-define-hierarchy).
 
 When you access the CDS hierarchy, all lines are selected from the
 original data source, in our case the database table
@@ -208,7 +208,7 @@ allowed or how orphans or cycles should be handled.
 
 Besides the elements of the hierarchy, the element list can also contain
 the hierarchy attributes listed under [Hierarchy
-Attributes](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_hierarchy_attributes.htm).
+Attributes](https://help.sap.com/docs/abap-cloud/abap-keyword/cds-ddl-hierarchy-attributes).
 Then the SQL hierarchy is enriched with columns containing information
 about the role, the current line plays as a hierarchy node, as, for
 example, the hierarchy rank or the hierarchy level. In our example, we
@@ -241,7 +241,7 @@ SELECT FROM demo_cds_simple_tree( p_id = @root_id )
 And although we did not define any hierarchy attributes in the element
 list of the CDS hierarchy, we can add all the hierarchy columns listed
 under [Hierarchy
-Columns](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenddddl_hierarchy.htm)
+Columns](https://help.sap.com/docs/abap-cloud/abap-keyword/hierarchy-columns)
 to the `SELECT` list of our ABAP SQL statement! This is always
 possible when a SQL hierarchy is accessed in ABAP SQL. We can pass any
 ID to the CDS hierarchy now and see what happens. If such a line is
@@ -262,9 +262,9 @@ involving more ABAP, until we do not use any CDS more in the end.
 
 ### ABAP SQL Hierarchy Generator HIERARCHY
 The ABAP SQL [hierarchy
-generator](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenhierarchy_generator_glosry.htm "Glossary Entry")
+generator](https://help.sap.com/docs/abap-cloud/abap-keyword/hierarchy-generator)
 is a ABAP SQL function named
-[`HIERARCHY`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenselect_hierarchy_generator.htm),
+[`HIERARCHY`](https://help.sap.com/docs/abap-cloud/abap-keyword/select-from-hierarchy-abenselect_hierarchy_generator),
 that allows you to define a SQL hierarchy in the ABAP program itself.
 Let us look directly at an example:
 
@@ -351,7 +351,7 @@ ASSERT asql_cte_result = cds_result.
 
 Common table expressions (CTEs) are a very powerful tool for defining
 subqueries that can be used in subsequent queries of the same
-[`WITH`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapwith.htm)
+[`WITH`](https://help.sap.com/docs/abap-cloud/abap-keyword/with)
 statement. They can be regarded as an internal ABAP SQL definition of
 data sources that fulfill the same functionality as program external
 data sources, especially CDS views. As you see above, the CTE
@@ -360,7 +360,7 @@ data sources, especially CDS views. As you see above, the CTE
 
 -   It accesses the database table `DEMO_SIMPLE_TREE`.
 -   It exposes an association `_tree` by using the addition
-    [`WITH ASSOCIATIONS`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapwith_associations.htm).
+    [`WITH ASSOCIATIONS`](https://help.sap.com/docs/abap-cloud/abap-keyword/with-associations).
 
 The main query of the `WITH` statement uses the hierarchy
 generator in the same way as the `SELECT` above, just with the
@@ -368,7 +368,7 @@ CTE as a data source instead of the CDS view and the result is - of
 course - the same.
 
 For a full description of the hierarchy generator and all other
-additions see [`SELECT, FROM HIERARCHY`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenselect_hierarchy_generator.htm).
+additions see [`SELECT, FROM HIERARCHY`](https://help.sap.com/docs/abap-cloud/abap-keyword/select-from-hierarchy-abenselect_hierarchy_generator).
 
 We managed to create a SQL hierarchy with ABAP SQL means only. Last but
 not least we will use CTEs as hierarchies themselves. You might skip the
@@ -380,7 +380,7 @@ are not too interested in this syntactic gimmicks.
 ### ABAP CTE Hierarchies
 
 A CTE that produces hierarchical data can declare itself as a SQL
-hierarchy of a freely defined name with the addition [`WITH HIERARCHY`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapwith_hierarchy.htm).
+hierarchy of a freely defined name with the addition [`WITH HIERARCHY`](https://help.sap.com/docs/abap-cloud/abap-keyword/with-hierarchy).
 That simply means that subsequent queries of the same `WITH`
 statement can use the CTE as a hierarchy with its implicit hierarchy
 columns or - more important - in hierarchy navigators.
@@ -494,9 +494,9 @@ assertions are fulfilled.
 ## Hierarchy Navigators
 
 [Hierarchy
-navigators](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenhierarchy_navigator_glosry.htm "Glossary Entry")
+navigators](https://help.sap.com/docs/abap-cloud/abap-keyword/hierarchy-navigator)
 are an additional set of [hierarchy
-functions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenhierarchy_function_glosry.htm "Glossary Entry")
+functions](https://help.sap.com/docs/abap-cloud/abap-keyword/hierarchy-function)
 in ABAP SQL that allow you to work on existing SQL hierarchies instead
 of creating them. Hierarchy navigators can work on SQL hierarchies
 created as shown above, namely on CDS hierarchies, the hierarchy
@@ -510,7 +510,7 @@ set that offer additional options for the evaluation.
 In the following examples, we access our CDS hierarchy with hierarchy
 navigators. But you could also replace it with the hierarchy generator
 or a CTE hierarchy. Check the examples of the
-[documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenselect_hierarchy_navigators.htm),
+[documentation](https://help.sap.com/docs/abap-cloud/abap-keyword/select-from-hierarchy-navigator),
 where this is also shown.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
@@ -518,7 +518,7 @@ where this is also shown.
 ### Hierarchy Node Navigator HIERARCHY_DESCENDANTS
 
 As the name says,
-[`HIERARCHY_DESCENDANTS`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenselect_hierarchy_node_navis.htm)
+[`HIERARCHY_DESCENDANTS`](https://help.sap.com/docs/abap-cloud/abap-keyword/select-from-hierarchy-node-navigator)
 fetches all descendants for any nodes from a SQL hierarchy. It adds
 `HIERARCHY_DISTANCE` as an additional hierarchy column to
 the result set. Let us look at an example. All examples are code
@@ -555,7 +555,7 @@ distance to the respective start node.
 ### Hierarchy Node Navigator HIERARCHY_ANCESTORS
 
 Now the other way around: ABAP SQL function
-[`HIERARCHY_ANCESTORS`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenselect_hierarchy_node_navis.htm)
+[`HIERARCHY_ANCESTORS`](https://help.sap.com/docs/abap-cloud/abap-keyword/select-from-hierarchy-node-navigator)
 returns the ancestors of any given node of an existing hierarchy:
 
 ``` abap
@@ -590,7 +590,7 @@ Besides descendants and ancestors, hierarchy nodes also can have
 siblings, that is nodes that have the same parent node. You can find
 these by looking for all nodes with the same value in hierarchy column
 `HIERARCHY_PARENT_RANK`. But there is also
-[`HIERARCHY_SIBLINGS`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenselect_hierarchy_node_navis.htm)
+[`HIERARCHY_SIBLINGS`](https://help.sap.com/docs/abap-cloud/abap-keyword/select-from-hierarchy-node-navigator)
 as a hierarchy function for that:
 
 ``` abap
@@ -621,15 +621,15 @@ a node that definitely has some siblings, shows the result.
 ### Hierarchy Aggregate Navigators
 
 Finally let us turn to the [hierarchy aggregate
-navigators](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenhierarchy_agg_navi_glosry.htm "Glossary Entry")
+navigators](https://help.sap.com/docs/abap-cloud/abap-keyword/hierarchy-aggregate-navigator)
 that allow you to apply some aggregate functions to descendants and
 ancestors of any node of a SQL hierarchy:
 
--   [`HIERARCHY_DESCENDANTS_AGGREGATE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenselect_hierarchy_desc_agg.htm)
--   [`HIERARCHY_ANCESTORS_AGGREGATE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenselect_hierarchy_ancs_agg.htm)
+-   [`HIERARCHY_DESCENDANTS_AGGREGATE`](https://help.sap.com/docs/abap-cloud/abap-keyword/select-from-hierarchy-descendants-aggregate)
+-   [`HIERARCHY_ANCESTORS_AGGREGATE`](https://help.sap.com/docs/abap-cloud/abap-keyword/select-hierarchy-ancestors-aggregate)
 
 We will show an example for the descendants case and refer to the
-[documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenselect_hierarchy_ancs_agg.htm)
+[documentation](https://help.sap.com/docs/abap-cloud/abap-keyword/select-hierarchy-ancestors-aggregate)
 for the ancestors.
 
 Applying aggregate functions to columns normally means that you have
@@ -711,7 +711,7 @@ The example does the following:
         `WHERE` condition.
 
     For more `WITH` additions see the
-    [documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenselect_hierarchy_desc_agg.htm).
+    [documentation](https://help.sap.com/docs/abap-cloud/abap-keyword/select-from-hierarchy-descendants-aggregate).
 
 Running `CL_DEMO_SQL_HIERARCHIES` shows the
 result. It also shows the result of the joined data source, where you
@@ -721,4 +721,4 @@ can check that the calculated values are correct.
 
 
 ## More Information
-For the complete reference documentation about SQL hierarchies, see [`SELECT, FROM hierarchy_data`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenselect_hierarchy_data.htm).
+For the complete reference documentation about SQL hierarchies, see [`SELECT, FROM hierarchy_data`](https://help.sap.com/docs/abap-cloud/abap-keyword/select-from-hierarchy-data).

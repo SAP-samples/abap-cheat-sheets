@@ -22,7 +22,7 @@
     - [main Branch](#main-branch)
  
 
-This cheat sheet contains basic information about [unit testing](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenunit_test_glosry.htm) in ABAP.
+This cheat sheet contains basic information about [unit testing](https://help.sap.com/docs/abap-cloud/abap-keyword/unit-test) in ABAP.
 
 > [!NOTE]
 > - This cheat sheet focuses on testing methods. 
@@ -34,8 +34,8 @@ This cheat sheet contains basic information about [unit testing](https://help.sa
   - ensure the functional correctness of individual software units (i.e. a unit of code whose execution has a verifiable effect). 
   - are designed to test that the individual components of a larger software unit work correctly during the development and quality assurance phases. Typically, such individual software units are methods (the focus of this cheat sheet).
   - must be created and run by developers.
-- In ABAP, developers have [ABAP Unit](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_unit_glosry.htm) - a test tool integrated into the ABAP runtime framework - at their disposal. It can be used to run individual or mass tests, and to evaluate test results. Note that comprehensive test runs can be performed using the [ABAP Test Cockpit](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_test_cockpit_glosry.htm)
-- In ABAP programs, individual unit tests are implemented as [test methods](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentest_method_glosry.htm) of local [test classes](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentest_class_glosry.htm). 
+- In ABAP, developers have [ABAP Unit](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-unit-abenabap_unit_glosry) - a test tool integrated into the ABAP runtime framework - at their disposal. It can be used to run individual or mass tests, and to evaluate test results. Note that comprehensive test runs can be performed using the [ABAP Test Cockpit](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-test-cockpit)
+- In ABAP programs, individual unit tests are implemented as [test methods](https://help.sap.com/docs/abap-cloud/abap-keyword/test-method) of local [test classes](https://help.sap.com/docs/abap-cloud/abap-keyword/test-class). 
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>  
 
@@ -61,12 +61,12 @@ This cheat sheet contains basic information about [unit testing](https://help.sa
 Before we look at test doubles and injections, we will look at the creation of the test classes and methods to get an idea of the code skeletons (in which test doubles and injections can be implemented). 
 
 Test classes ...
-- are special [local](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenlocal_class_glosry.htm) or [global classes](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenglobal_class_glosry.htm) in which tests for ABAP Unit are implemented in the form of test methods. 
+- are special [local](https://help.sap.com/docs/abap-cloud/abap-keyword/local-class) or [global classes](https://help.sap.com/docs/abap-cloud/abap-keyword/global-class) in which tests for ABAP Unit are implemented in the form of test methods. 
   - You can define a test relation between a test class or a test method and another repository object using the ABAP Doc comment `"! @testing ...`. This is demonstrated by an [executable example](#executable-examples) class.
-- are created in [class pools](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenclass_pool_glosry.htm) in special [test includes](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentest_include_glosry.htm). See the *Test Classes* tab in the ADT. 
+- are created in [class pools](https://help.sap.com/docs/abap-cloud/abap-keyword/class-pool-abenclass_pool_glosry) in special [test includes](https://help.sap.com/docs/abap-cloud/abap-keyword/test-include). See the *Test Classes* tab in the ADT. 
 - can only be used as part of test runs.
 - are not generated in production systems, i.e. the source code of a test class is not part of the production code of its program.
-- can contain test methods, the special methods for the [fixture](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenfixture_glosry.htm), and other components.
+- can contain test methods, the special methods for the [fixture](https://help.sap.com/docs/abap-cloud/abap-keyword/fixture), and other components.
   - It is recommended that all components required for ABAP unit tests are defined in test classes only (so that they cannot be generated in production systems and cannot be addressed by production code). The components also include test doubles and other helper classes that do not contain test methods.
 
 
@@ -92,7 +92,7 @@ ENDCLASS.
 >   - Creating a test class containing test methods
 >   - Creating a test double
 >   - Creating helper methods to support ABAP unit tests
->   - Note the possible [syntax options](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapclass_options.htm) before `FOR TESTING` 
+>   - Note the possible [syntax options](https://help.sap.com/docs/abap-cloud/abap-keyword/class-class-options) before `FOR TESTING` 
 > - Optional addition `RISK LEVEL ...`: 
 >   - `CRITICAL`: test changes system settings or customizing data (default)
 >   - `DANGEROUS`: test changes persistent data
@@ -103,7 +103,7 @@ ENDCLASS.
 >   - `LONG`: execution time of more than one minute is expected  
 > - To create a class in ADT, type "test" in the "Test Classes" tab and choose `CTRL + SPACE` to display the template suggestions. You can then choose "testClass – Test class (ABAP Unit)". The skeleton of a test class is automatically generated. 
 
-To test protected or private methods, you must declare [friendship](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenfriend_glosry.htm) with the class to be tested (class under test).
+To test protected or private methods, you must declare [friendship](https://help.sap.com/docs/abap-cloud/abap-keyword/friend) with the class to be tested (class under test).
 Example:
 
 ``` abap
@@ -127,7 +127,7 @@ CLASS ltc_test_class IMPLEMENTATION.
 ENDCLASS.  
 ```
 
-If you have multiple test classes in the test include, you can place the friendship declaration for all classes at the top, for example, as follows. Note the [`DEFERRED`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapclass_deferred.htm) addition.
+If you have multiple test classes in the test include, you can place the friendship declaration for all classes at the top, for example, as follows. Note the [`DEFERRED`](https://help.sap.com/docs/abap-cloud/abap-keyword/class-deferred) addition.
 
 ``` abap
 "Test include
@@ -187,9 +187,9 @@ ENDCLASS.
 ## Creating Test Methods
 
 Test methods ...
-- are special [instance methods](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abeninstance_method_glosry.htm) of a test class in which a test is implemented. 
+- are special [instance methods](https://help.sap.com/docs/abap-cloud/abap-keyword/instance-method) of a test class in which a test is implemented. 
   - As with test classes, the `FOR TESTING` addition also applies to the test method declaration.
-  - Note that there are other syntax options, such as [`ABSTRACT` and others](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapmethods_testing.htm).
+  - Note that there are other syntax options, such as [`ABSTRACT` and others](https://help.sap.com/docs/abap-cloud/abap-keyword/methods-for-testing).
 - are called by the ABAP Unit framework during a test run.
 - are used to call units of production code and to check the result.
   - The results are checked using methods of the class `CL_ABAP_UNIT_ASSERT`.
@@ -349,7 +349,7 @@ For the class and methods, as well as the paramters, check the F2 information in
 
 
 ### Special Methods for Implementing the Test Fixture
-- Special private methods for implementing the test [fixture](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenfixture_glosry.htm), which may include test data and test objects among others, can be included in the local test class.
+- Special private methods for implementing the test [fixture](https://help.sap.com/docs/abap-cloud/abap-keyword/fixture), which may include test data and test objects among others, can be included in the local test class.
 - They are not test methods and the `FOR TESTING` addition cannot be used.
 - They have no parameters.
 - Instance methods: 
@@ -463,13 +463,13 @@ Among them, there are the following. They are demonstrated in the executable exa
 - Constructor injection: The test double is passed as a parameter to the instance constructor `constructor` of the class under test.
 - Setter injection: The test double is passed as a parameter to a setter method.
 - Parameter injection: The test double is passed as a parameter to the tested method (i.e. an optional importing parameter) in the class under test. 
-- Back door injection: A *back door* is created to inject a test double into the class under test. This *back door* is implemented by granting [friendship](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenfriend_glosry.htm) to the test class. This makes internal attributes of the class under test accessible from the test class.
+- Back door injection: A *back door* is created to inject a test double into the class under test. This *back door* is implemented by granting [friendship](https://help.sap.com/docs/abap-cloud/abap-keyword/friend) to the test class. This makes internal attributes of the class under test accessible from the test class.
  
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ### Test Seams
 - Seams are sections of the production source code that can be dynamically included or replaced. 
-- In ABAP, [test seams](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentest_seam_glosry.htm) can be used to replace source code in the production code by an injection when running unit tests. For more informarion, see [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abaptest-seam.htm).
+- In ABAP, [test seams](https://help.sap.com/docs/abap-cloud/abap-keyword/test-seam-abentest_seam_glosry) can be used to replace source code in the production code by an injection when running unit tests. For more informarion, see [here](https://help.sap.com/docs/abap-cloud/abap-keyword/test-seam).
 - This is particularly useful in situations where tests cannot be executed properly or are even prevented from doing so. For example: 
   - Authorization checks
   - Reading or modifying persistent data from the database
@@ -589,8 +589,8 @@ For more information about evaluating ABAP unit test results, see [here](https:/
 
 - [Writing Testable Code for ABAP](https://learning.sap.com/courses/writing-testable-code-for-abap) course
 - ABAP Keyword Documentation
-  - [ABAP Unit](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_unit.htm)
-  - [Testing repository objects](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentest_relations.htm)
+  - [ABAP Unit](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-unit)
+  - [Testing repository objects](https://help.sap.com/docs/abap-cloud/abap-keyword/test-relations)
 - SAP Help Portal: 
   - [Unit Testing with ABAP Unit](https://help.sap.com/docs/ABAP_PLATFORM_NEW/c238d694b825421f940829321ffa326a/08c60b52cb85444ea3069779274b43db.html?locale=en-US)
   - [ABAP Unit](https://help.sap.com/docs/ABAP_PLATFORM_NEW/ba879a6e2ea04d9bb94c7ccd7cdac446/491cfd8926bc14cde10000000a42189b.html?locale=en-US)

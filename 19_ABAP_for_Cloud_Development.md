@@ -9,7 +9,7 @@
   - [Executable Example](#executable-example)
 
 
-This ABAP cheat sheet briefly outlines the terms ABAP Cloud and classic ABAP to get an idea about [ABAP for Cloud Development](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_for_cloud_dev_glosry.htm). 
+This ABAP cheat sheet briefly outlines the terms ABAP Cloud and classic ABAP to get an idea about [ABAP for Cloud Development](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-for-cloud-development). 
 It provides references to more detailed information on the topic.
 
 ## Terms
@@ -17,30 +17,29 @@ It provides references to more detailed information on the topic.
 - ABAP Cloud 
   - Progamming paradigm for state-of-the-art, cloud-ready and upgrade-stable solutions 
   - ABAP technology (the entire technology provided for and by an ABAP system for developing and executing ABAP-based applications) is used with the following restrictions:
-    - [ABAP language version](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_version_glosry.htm): 
-      - The available ABAP language version is [ABAP for Cloud Development](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_for_cloud_dev_glosry.htm) that presents a [restricted ABAP language version](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrestricted_version_glosry.htm).
-    - [Released APIs](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenreleased_api_glosry.htm):
+    - [ABAP language version](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-language-version): 
+      - The available ABAP language version is [ABAP for Cloud Development](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-for-cloud-development) that presents a [restricted ABAP language version](https://help.sap.com/docs/abap-cloud/abap-keyword/restricted-abap-language-version).
+    - [Released APIs](https://help.sap.com/docs/abap-cloud/abap-keyword/released-api):
       - Access to SAP-delivered repository objects is restricted to objects released for ABAP for Cloud Development
-      - For example, most of the database tables provided by SAP cannot be read directly (although there are abstractions/[CDS entities](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_entity_glosry.htm) for many that can be accessed).
+      - For example, most of the database tables provided by SAP cannot be read directly (although there are abstractions/[CDS entities](https://help.sap.com/docs/abap-cloud/abap-keyword/cds-entity) for many that can be accessed).
       - Libraries are available with predefined functionality.
-      - Note that repository objects can be classified by a [release contract](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrelease_contract_glosry.htm) (e.g. C0, C1 etc.). Find more information [here](https://help.sap.com/docs/ABAP_PLATFORM_NEW/c238d694b825421f940829321ffa326a/c479660d07374c15a1a5fe83fdbb1337.html?locale=en-US).
+      - Note that repository objects can be classified by a [release contract](https://help.sap.com/docs/abap-cloud/abap-keyword/release-contract) (e.g. C0, C1 etc.). Find more information [here](https://help.sap.com/docs/ABAP_PLATFORM_NEW/c238d694b825421f940829321ffa326a/c479660d07374c15a1a5fe83fdbb1337.html?locale=en-US).
     - Tools:
-      - [ABAP development tools for Eclipse (ADT)](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenadt_glosry.htm) are the only supported tools 
+      - [ABAP development tools for Eclipse (ADT)](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-development-tools-for-eclipse) are the only supported tools 
       - There is no access to SAP GUI (transactions `SE80`, `SE24` etc. you may know from classic ABAP)
-  - The [ABAP RESTful Application Programming Model (RAP)](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenarap_glosry.htm) is the transactional programming model for ABAP Cloud.
+  - The [ABAP RESTful Application Programming Model (RAP)](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-restful-application-programming-model) is the transactional programming model for ABAP Cloud.
   - Supported in all SAP products that are based on ABAP technology (in the products it can be fully or partly mandatory).
 - Classic ABAP
   - Progamming paradigm for legacy solutions
   - Based on the ABAP technology without restrictions regarding the ...
-    - ABAP language versions, i.e. you can use both [Standard ABAP](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenstandard_abap_glosry.htm) (the unrestricted ABAP language version) and ABAP for Cloud Development  
+    - ABAP language versions, i.e. you can use both [Standard ABAP](https://help.sap.com/docs/abap-cloud/abap-keyword/standard-abap) (the unrestricted ABAP language version) and ABAP for Cloud Development  
     - usage of tools (ADT and/or SAP GUI) 
     - access to repository objects (i.e. objects provided by SAP, beyond released APIs, can be accessed). 
-  - Supported in [SAP S/4HANA](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensap_s4hana_glosry.htm)
+  - Supported in [SAP S/4HANA](https://help.sap.com/docs/abap-cloud/abap-keyword/sap-s-4hana)
 
 
 > [!NOTE]
-> - See more information in the topic [ABAP Language Versions, Release Contracts and Released APIs](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_versions_and_apis.htm). 
-> - See the topic [Language Elements in ABAP Versions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrestricted_abap_elements.htm) that provides a table showing which ABAP language elements are allowed in which ABAP language version 
+> - See more information in the topic [ABAP Language Versions, Release Contracts and Released APIs](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-apis). 
 > - See the [Released ABAP Classes](22_Released_ABAP_Classes.md) cheat sheet to programmatically find out if classes (repository objects in general) are released and available in ABAP for Cloud Development.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
@@ -53,7 +52,7 @@ It provides references to more detailed information on the topic.
 
     ![Released APIs](./files/released_APIs.png)
 
-    As an example of a released API, consider the `CL_ABAP_RANDOM_INT` class (computes random integers). In ADT, once you have opened the class, check the *Properties* tab. Click *API State* on the left to display information about the release contracts. In this case, it is C1. As mentioned above, see [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_versions_and_apis.htm#@@ITOC@@ABENABAP_VERSIONS_AND_APIS_2) for more information on C1, and so on. This is also true for ABAP repository objects in classic ABAP.
+    As an example of a released API, consider the `CL_ABAP_RANDOM_INT` class (computes random integers). In ADT, once you have opened the class, check the *Properties* tab. Click *API State* on the left to display information about the release contracts. In this case, it is C1. As mentioned above, see [here](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-apis) for more information on C1, and so on. This is also true for ABAP repository objects in classic ABAP.
    
     ![Release contract](./files/release_contract.png)
 
@@ -268,10 +267,7 @@ It provides references to more detailed information on the topic.
   - [ABAP Cloud - Technical Use Cases and Recommended Technologies](https://www.sap.com/documents/2023/05/74fc05e6-747e-0010-bca6-c68f7e60039b.html)
   - [SAP Business Technology Platform](https://help.sap.com/docs/btp/sap-business-technology-platform/sap-business-technology-platform?version=Cloud) on the SAP Help Portal
     - Section [Released Components and Objects](https://help.sap.com/docs/btp/sap-business-technology-platform/released-components-and-objects?version=Cloud) including the topic [XCO Library](https://help.sap.com/docs/btp/sap-business-technology-platform/xco-library?version=Cloud)
-  - ABAP Keyword Documentation 
-    - [Rules for ABAP Cloud](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_strict_rules.htm)
-    - [Language Elements in ABAP Versions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrestricted_abap_elements.htm): A table showing which ABAP language elements are allowed in which ABAP language version 
-    - [Contract Rules for ABAP Released APIs](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrestricted_apis.htm)
+
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 

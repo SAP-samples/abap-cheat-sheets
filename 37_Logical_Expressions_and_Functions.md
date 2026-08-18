@@ -43,10 +43,10 @@ Logical functions:
 - The comparison follows specific rules. 
 
 > [!TIP]
-> Find more details on the comparison rules [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenlogexp_rules.htm).
+> Find more details on the comparison rules [here](https://help.sap.com/docs/abap-cloud/abap-keyword/rel-exp-comparison-rules).
 
 > [!NOTE]
-> ABAP includes special comparison operators for byte-like data types and bit patterns, which are not covered here. For more information, refer to the [ABAP Keyword Documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABENLOGEXP_BYTES.html).
+> ABAP includes special comparison operators for byte-like data types and bit patterns, which are not covered here. For more information, refer to the [ABAP Keyword Documentation](https://help.sap.com/docs/abap-cloud/abap-keyword/rel-exp-comparison-operators-for-byte-like-data-types).
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
@@ -340,7 +340,7 @@ ASSERT o NOT BETWEEN m AND n.
  <td> 
 
 Tabular comparison operator<br><br>
-Checks whether the operand on the left side  of `IN` matches (or does not match) [ranges conditions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenranges_condition_glosry.htm) specified in a [ranges table](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenranges_table_glosry.htm). Note that the operators `CP` and `NP` are transformed into `LIKE` conditions (as a consequence, the conditions for `CP` and `NP` are case-sensitive). 
+Checks whether the operand on the left side  of `IN` matches (or does not match) [ranges conditions](https://help.sap.com/docs/abap-cloud/abap-keyword/ranges-condition) specified in a [ranges table](https://help.sap.com/docs/abap-cloud/abap-keyword/ranges-table). Note that the operators `CP` and `NP` are transformed into `LIKE` conditions (as a consequence, the conditions for `CP` and `NP` are case-sensitive). 
 
  </td>
 
@@ -1530,7 +1530,7 @@ ASSERT result = abap_true.
 Like predicate functions, Boolean functions are built-in logical functions that evaluate a logical expression and return a truth value.
 
 > [!NOTE]  
-> The boolean function `boolx` is available for byte-like types. Find more information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABENBOOLE_FUNCTIONS.html). 
+> The boolean function `boolx` is available for byte-like types. Find more information [here](https://help.sap.com/docs/abap-cloud/abap-keyword/boolc-boolx-xsdbool-boolean-functions). 
 
 
 <table>

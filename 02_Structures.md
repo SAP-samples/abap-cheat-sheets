@@ -35,22 +35,22 @@
 ## Introduction
 Structures ...
 
--   are [data objects](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendata_object_glosry.htm "Glossary Entry")
-    with [structured data types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenstructured_type_glosry.htm "Glossary Entry") (which is a [complex data type](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencomplex_data_type_glosry.htm "Glossary Entry") because it is composed of other data types). 
--   consist of a sequence of [components](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencomponent_glosry.htm "Glossary Entry") of any data type, that is, the components of a structure can be, for example, [elementary data objects](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenelementary_data_object_glosry.htm), structures themselves, [internal tables](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abeninternal_table_glosry.htm "Glossary Entry") or [references](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenreference_glosry.htm).
+-   are [data objects](https://help.sap.com/docs/abap-cloud/abap-keyword/data-object)
+    with [structured data types](https://help.sap.com/docs/abap-cloud/abap-keyword/structured-type) (which is a [complex data type](https://help.sap.com/docs/abap-cloud/abap-keyword/complex-data-type) because it is composed of other data types). 
+-   consist of a sequence of [components](https://help.sap.com/docs/abap-cloud/abap-keyword/component) of any data type, that is, the components of a structure can be, for example, [elementary data objects](https://help.sap.com/docs/abap-cloud/abap-keyword/elementary-data-object), structures themselves, [internal tables](https://help.sap.com/docs/abap-cloud/abap-keyword/internal-table) or [references](https://help.sap.com/docs/abap-cloud/abap-keyword/reference).
 - are used to combine different data objects that belong together. A typical example is an address. It has several components, such as name, street, city, and so on, that belong together.
-- play an important role in the context of internal tables and [database tables](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendatabase_table_glosry.htm "Glossary Entry"). Structured types serve as [line types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrow_type_glosry.htm) for these tables. Most internal tables across [ABAP programs](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_program_glosry.htm) may have structured line types. For database tables, there is no alternative to structured line types.
+- play an important role in the context of internal tables and [database tables](https://help.sap.com/docs/abap-cloud/abap-keyword/database-table). Structured types serve as [line types](https://help.sap.com/docs/abap-cloud/abap-keyword/line-type) for these tables. Most internal tables across [ABAP programs](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-program) may have structured line types. For database tables, there is no alternative to structured line types.
 - can be created locally in an ABAP program and globally. This cheat sheet focuses on locally defined structures and structured types.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## Globally Available Structures and Structured Types
 
-- Apart from the local declaration of a structured type, you can create such a type, for example, as global [DDIC structure](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenddic_structure_glosry.htm) in the [ABAP Dictionary](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_dictionary_glosry.htm). Such a DDIC structure defines a globally available structured type ([DDIC type](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenddic_type_glosry.htm)).
+- Apart from the local declaration of a structured type, you can create such a type, for example, as global [DDIC structure](https://help.sap.com/docs/abap-cloud/abap-keyword/ddic-structure) in the [ABAP Dictionary](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-dictionary). Such a DDIC structure defines a globally available structured type ([DDIC type](https://help.sap.com/docs/abap-cloud/abap-keyword/ddic-type)).
 - There are other structured types available globally, which may be the structured types most commonly used in ABAP programs:
-    - [Database tables](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenddic_db_table_glosry.htm) defined in the ABAP Dictionary can be used as data types just like DDIC structures in an ABAP program. This means that when you create a structure in your ABAP program, for example, you can simply use the name of a database table to address the line type of the table. The structure you created will then have the same structured type as the database table. Typically, you use the database tables to create structures of such a type, or internal tables of such a structured line type, to process data read from the database table in structures or internal tables.     
-    - Various [CDS entities](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_entity_glosry.htm) are globally available structured types. For example, a [CDS view entity](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_v2_view_glosry.htm) represents a structured data type and can be used as such in ABAP programs (but not in the ABAP Dictionary). 
-    - Structures and structured data types can be defined in the public [visibility section](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenvisibility_section_glosry.htm) of [global classes](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenglobal_class_glosry.htm) or in [global interfaces](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenglobal_interface_glosry.htm) and then used globally.
+    - [Database tables](https://help.sap.com/docs/abap-cloud/abap-keyword/ddic-database-table) defined in the ABAP Dictionary can be used as data types just like DDIC structures in an ABAP program. This means that when you create a structure in your ABAP program, for example, you can simply use the name of a database table to address the line type of the table. The structure you created will then have the same structured type as the database table. Typically, you use the database tables to create structures of such a type, or internal tables of such a structured line type, to process data read from the database table in structures or internal tables.     
+    - Various [CDS entities](https://help.sap.com/docs/abap-cloud/abap-keyword/cds-entity) are globally available structured types. For example, a [CDS view entity](https://help.sap.com/docs/abap-cloud/abap-keyword/cds-view-entity) represents a structured data type and can be used as such in ABAP programs (but not in the ABAP Dictionary). 
+    - Structures and structured data types can be defined in the public [visibility section](https://help.sap.com/docs/abap-cloud/abap-keyword/visibility-section) of [global classes](https://help.sap.com/docs/abap-cloud/abap-keyword/global-class) or in [global interfaces](https://help.sap.com/docs/abap-cloud/abap-keyword/global-interface) and then used globally.
 
 ```abap
 "Creating structures based on globally available structured types
@@ -74,13 +74,13 @@ TYPES ty_struc_from_cds_ve TYPE zdemo_abap_fli.
 
 > [!NOTE] 
 > - This cheat sheet focuses on locally defined structures and structured types.
-> - Classic [DDIC views](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenddic_view_glosry.htm) are not available in [ABAP Cloud](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_cloud_glosry.htm). They can only be used as structured types in [classic ABAP](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenclassic_abap_glosry.htm).
+> - Classic [DDIC views](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenddic_view_glosry.htm) are not available in [ABAP Cloud](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-cloud). They can only be used as structured types in [classic ABAP](https://help.sap.com/docs/abap-cloud/abap-keyword/classic-abap).
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## Creating Structures and Structured Types Locally
 
-The typical language elements for creating structures and structured types locally in an ABAP program are [`BEGIN OF ... END OF ...`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abaptypes_struc.htm). They are used in combination with the [`TYPES`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abaptypes.htm) keyword to create a structured type and the [`DATA`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapdata.htm) keyword to create a structure.
+The typical language elements for creating structures and structured types locally in an ABAP program are [`BEGIN OF ... END OF ...`](https://help.sap.com/docs/abap-cloud/abap-keyword/types-begin-of-struct-type). They are used in combination with the [`TYPES`](https://help.sap.com/docs/abap-cloud/abap-keyword/types) keyword to create a structured type and the [`DATA`](https://help.sap.com/docs/abap-cloud/abap-keyword/data) keyword to create a structure.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
@@ -89,7 +89,7 @@ The typical language elements for creating structures and structured types local
 
 - The following statement defines a structured type introduced by `TYPES`. The type name is preceded by `BEGIN OF` (which marks the beginning of the structured type definition) and `END OF` (the end of the definition). 
 - The components - at least one must be defined - are listed in between.
-- Such structured type definitions are usually grouped together in a [chained statement](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenchained_statement_glosry.htm), i.e. `TYPES` is followed by a colon, and the components are separated by commas.
+- Such structured type definitions are usually grouped together in a [chained statement](https://help.sap.com/docs/abap-cloud/abap-keyword/chained-statement), i.e. `TYPES` is followed by a colon, and the components are separated by commas.
 
 
 ``` abap
@@ -111,11 +111,11 @@ TYPES BEGIN OF struc_type.
 TYPES END OF struc_type.
 ```
 
-- The simplest structures and structured types have [elementary](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenelementary_data_type_glosry.htm "Glossary Entry")
+- The simplest structures and structured types have [elementary](https://help.sap.com/docs/abap-cloud/abap-keyword/elementary-data-type)
 components.
-- As mentioned previously, the components can be of any type, i.e. they can be of structured types themselves, internal table types, or [reference types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenreference_type_glosry.htm). 
-- You can use the [`TYPE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapdata_simple.htm)
-and [`LIKE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapdata_referring.htm) additions for the types of the components. 
+- As mentioned previously, the components can be of any type, i.e. they can be of structured types themselves, internal table types, or [reference types](https://help.sap.com/docs/abap-cloud/abap-keyword/reference-type). 
+- You can use the [`TYPE`](https://help.sap.com/docs/abap-cloud/abap-keyword/data-type-abap-type)
+and [`LIKE`](https://help.sap.com/docs/abap-cloud/abap-keyword/data-type-like) additions for the types of the components. 
 You can use the `LINE OF` addition to refer to a table type or an internal table. 
 
 
@@ -147,7 +147,7 @@ TYPES: BEGIN OF struc_type,
 
 - To create a structure (i.e. a structured data object) in an ABAP program, you can use the `DATA` keyword. 
 - It works in the same way as the `TYPES` statement above. 
-- Unlike the `TYPES` statement, you can use the [`VALUE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapdata_options.htm) addition to set default values.  
+- Unlike the `TYPES` statement, you can use the [`VALUE`](https://help.sap.com/docs/abap-cloud/abap-keyword/data-data-options) addition to set default values.  
 
 ``` abap
 DATA: BEGIN OF struc,
@@ -172,8 +172,8 @@ DATA END OF struc.
 ```
 
 > [!NOTE]  
->-  The keywords [`CLASS-DATA`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapclass-data.htm) and [`CONSTANTS`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapconstants.htm) can also be used to create structures. In principle, they represent special cases of the general statement shown above. See the ABAP Keyword Documentation for more information. 
->- Structures can also be created [inline](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abeninline_declaration_glosry.htm) using [`DATA(...)`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendata_inline.htm) or [`FINAL(...)`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenfinal_inline.htm), as shown below.
+>-  The keywords [`CLASS-DATA`](https://help.sap.com/docs/abap-cloud/abap-keyword/class-data) and [`CONSTANTS`](https://help.sap.com/docs/abap-cloud/abap-keyword/constants) can also be used to create structures. In principle, they represent special cases of the general statement shown above. See the ABAP Keyword Documentation for more information. 
+>- Structures can also be created [inline](https://help.sap.com/docs/abap-cloud/abap-keyword/inline-declaration) using [`DATA(...)`](https://help.sap.com/docs/abap-cloud/abap-keyword/data-inline-declaration-for-variables) or [`FINAL(...)`](https://help.sap.com/docs/abap-cloud/abap-keyword/final-inline-declaration-for-immutable-variables), as shown below.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
@@ -209,9 +209,9 @@ DATA: struc_6 LIKE struc_1,
 
 ### Creating Structures by Inline Declaration 
 
-- This is particularly useful for declaring data objects at the [operand positions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenoperand_position_glosry.htm) where you actually need them. 
+- This is particularly useful for declaring data objects at the [operand positions](https://help.sap.com/docs/abap-cloud/abap-keyword/operand-position) where you actually need them. 
 - In this way, you can avoid an extra declaration of the structure in different contexts.
-- You can use the declaration operator using `DATA(...)`. The [`FINAL`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenfinal_inline.htm) declaration operator is used to create [immutable variables](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenimmutable_variable_glosry.htm).
+- You can use the declaration operator using `DATA(...)`. The [`FINAL`](https://help.sap.com/docs/abap-cloud/abap-keyword/final-inline-declaration-for-immutable-variables) declaration operator is used to create [immutable variables](https://help.sap.com/docs/abap-cloud/abap-keyword/immutable-variable).
 - You can also create structures using the `VALUE` operator (and also fill them as shown below). Without specifying component values in the parentheses, you create an initial structure. 
 
 ``` abap
@@ -270,7 +270,7 @@ ENDLOOP.
 ###  Creating Constant and Immutable Structures
 
 - Constant structures can be created with the `... BEGIN OF ... END OF ...` additions. Their values cannot be changed.
-- As shown above, the [`FINAL`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenfinal_inline.htm) declaration operator is used to create [immutable variables](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenimmutable_variable_glosry.htm).
+- As shown above, the [`FINAL`](https://help.sap.com/docs/abap-cloud/abap-keyword/final-inline-declaration-for-immutable-variables) declaration operator is used to create [immutable variables](https://help.sap.com/docs/abap-cloud/abap-keyword/immutable-variable).
 
 ```abap
 CONSTANTS: BEGIN OF const_struct,
@@ -303,7 +303,7 @@ ENDLOOP.
 
 ### Creating Enumerated Structures
 
-Find more information on [enumerated types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenenum_type_glosry.htm) in the [Data Types and Data Objects](16_Data_Types_and_Objects.md#abap-enumerated-types-and-objects) cheat sheet.
+Find more information on [enumerated types](https://help.sap.com/docs/abap-cloud/abap-keyword/enumerated-type) in the [Data Types and Data Objects](16_Data_Types_and_Objects.md#abap-enumerated-types-and-objects) cheat sheet.
 
 ```abap
 "When creating enumerated types, an enumerated structure can optionally be declared in 
@@ -328,9 +328,9 @@ ASSERT conv_enum_comp = 1.
 
 ### Creating Anonymous Structures
 
-Using the instance operator [`NEW`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconstructor_expression_new.htm) and [`CREATE DATA`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapcreate_data.htm) statements, you can create [anonymous data objects](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenanonymous_data_object_glosry.htm "Glossary Entry"), such as anonymous structures. 
+Using the instance operator [`NEW`](https://help.sap.com/docs/abap-cloud/abap-keyword/new-instance-operator) and [`CREATE DATA`](https://help.sap.com/docs/abap-cloud/abap-keyword/create-data) statements, you can create [anonymous data objects](https://help.sap.com/docs/abap-cloud/abap-keyword/anonymous-data-object), such as anonymous structures. 
 The `NEW` addition of the `INTO` clause of an ABAP SQL `SELECT` statement also creates an anonymous data object. 
-As outlined below, you can access the components or the entire data objects by [dereferencing](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendereferencing_operat_glosry.htm). 
+As outlined below, you can access the components or the entire data objects by [dereferencing](https://help.sap.com/docs/abap-cloud/abap-keyword/dereferencing-operator-abendereferencing_operat_glosry). 
 For more information, refer to the [Dynamic Programming](06_Dynamic_Programming.md) and [Constructor Expressions](05_Constructor_Expressions.md) cheat sheets.
 
 ```abap
@@ -360,9 +360,9 @@ SELECT SINGLE carrid, carrname
 
 ## Variants of Structures
 
-Depending on the component type, the structure can be a [flat structure](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenflat_structure_glosry.htm "Glossary Entry"),
-a [nested structure](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abennested_structure_glosry.htm "Glossary Entry"),
-or a [deep structure](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendeep_structure_glosry.htm "Glossary Entry").
+Depending on the component type, the structure can be a [flat structure](https://help.sap.com/docs/abap-cloud/abap-keyword/flat-structure),
+a [nested structure](https://help.sap.com/docs/abap-cloud/abap-keyword/nested-structure),
+or a [deep structure](https://help.sap.com/docs/abap-cloud/abap-keyword/deep-structure).
 
 - **Flat structures** contain only elementary types that have a fixed length, that is, there are no internal tables, reference types or strings as components. Nesting does not matter in this context. Even a nested structure is considered flat unless a substructure contains a deep component.
     ``` abap
@@ -374,7 +374,7 @@ or a [deep structure](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US
           END OF struc.
     ```    
 
-- **Nested structures**: At least one component of a structure is a [substructure](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensubstructure_glosry.htm "Glossary Entry"),
+- **Nested structures**: At least one component of a structure is a [substructure](https://help.sap.com/docs/abap-cloud/abap-keyword/substructure),
 that is, it refers to another structure. The following example has multiple substructures.
     ``` abap
     DATA: BEGIN OF address_n,
@@ -414,7 +414,7 @@ that is, it refers to another structure. The following example has multiple subs
 
 > [!NOTE]  
 >- The data types of DDIC types are all flat (not nested) structures. Exception: Components of type `string` can be contained.
->- [Work areas](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenwork_area_glosry.htm) of ABAP SQL statements cannot contain any deep components other than strings among others.
+>- [Work areas](https://help.sap.com/docs/abap-cloud/abap-keyword/work-area) of ABAP SQL statements cannot contain any deep components other than strings among others.
 >- Especially for assignments and comparisons of deep structures, the compatibility of the source and target structure must be taken into account.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
@@ -422,9 +422,9 @@ that is, it refers to another structure. The following example has multiple subs
 ## Accessing (Components of) Structures
 
 - Structures can be accessed as a whole. You can also address the individual components of structures at the appropriate operand positions. 
-- To address the components, use the [structure component selector](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenstructure_component_sel_glosry.htm "Glossary Entry")
+- To address the components, use the [structure component selector](https://help.sap.com/docs/abap-cloud/abap-keyword/structure-component-selector-abenstructure_component_sel_glosry)
 `-`. 
-- For variables with reference to a structured data object, the [object component selector](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenobject_component_select_glosry.htm) `->` can be used: `...dref->comp ...`. The following syntax also works, but is less *convenient*: `... dref->*-comp ...`.
+- For variables with reference to a structured data object, the [object component selector](https://help.sap.com/docs/abap-cloud/abap-keyword/object-component-selector-abenobject_component_select_glosry) `->` can be used: `...dref->comp ...`. The following syntax also works, but is less *convenient*: `... dref->*-comp ...`.
 - ADT and the ABAP Editor provide code completion for structure components after the component selectors.
 ``` abap
 "Addressing components via the structure component selector
@@ -572,8 +572,8 @@ ENDDO.
 
 ## Populating Structures 
 
-You can copy the content of a structure to another using the [assignment operator](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenassignment_operator_glosry.htm) `=`. 
-In the following example, it is assumed that the target and source structures are of compatible types. In general, note that special [conversion](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconversion_struc.htm) and [comparison rules](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenlogexp_rules_operands_struc.htm) apply to value assignments involving structures.
+You can copy the content of a structure to another using the [assignment operator](https://help.sap.com/docs/abap-cloud/abap-keyword/assignment-operator-abenassignment_operator_glosry) `=`. 
+In the following example, it is assumed that the target and source structures are of compatible types. In general, note that special [conversion](https://help.sap.com/docs/abap-cloud/abap-keyword/conversion-rules-for-structures) and [comparison rules](https://help.sap.com/docs/abap-cloud/abap-keyword/rel-exp-comparing-structures) apply to value assignments involving structures.
 ``` abap
 some_struc = another_struc.
 
@@ -602,11 +602,11 @@ address-city   = `349875 Botanica`.
 
 ### Using the VALUE Operator
 
-- The [`VALUE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconstructor_expression_value.htm) operator can be used to construct the content of complex data objects such as structures or internal tables. 
-- It is particularly useful because assigning values by addressing the structure components individually can be very cumbersome, especially when assigning values to structure components at the [operand position](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenoperand_position_glosry.htm "Glossary Entry").
+- The [`VALUE`](https://help.sap.com/docs/abap-cloud/abap-keyword/value-value-operator) operator can be used to construct the content of complex data objects such as structures or internal tables. 
+- It is particularly useful because assigning values by addressing the structure components individually can be very cumbersome, especially when assigning values to structure components at the [operand position](https://help.sap.com/docs/abap-cloud/abap-keyword/operand-position).
 - If the type of the operand can be inferred implicitly, the `#` character can be used used before the parentheses. Otherwise, the type must be  specified explicitly. 
 - The `VALUE` operator and inline declarations can be used to create and populate structures in one go.
-- Note that there are special [conversion](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconversion_struc.htm) and [comparison](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenlogexp_rules_operands_struc.htm) rules for structures. See the ABAP Keyword Documentation for more details.
+- Note that there are special [conversion](https://help.sap.com/docs/abap-cloud/abap-keyword/conversion-rules-for-structures) and [comparison](https://help.sap.com/docs/abap-cloud/abap-keyword/rel-exp-comparing-structures) rules for structures. See the ABAP Keyword Documentation for more details.
 
 
 ``` abap
@@ -667,7 +667,7 @@ DATA(str_ref) = NEW struc_nested( a        = 1
 
 ### Using the NEW Operator
 
-Using the instance operator [`NEW`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconstructor_expression_new.htm), you can create [anonymous data objects](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenanonymous_data_object_glosry.htm "Glossary Entry"), such as anonymous structures. You can access the components or the entire data objects by [dereferencing](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendereferencing_operat_glosry.htm). For more information, refer to the  [Dynamic Programming](06_Dynamic_Programming.md) and [Constructor Expressions](05_Constructor_Expressions.md) cheat sheets.
+Using the instance operator [`NEW`](https://help.sap.com/docs/abap-cloud/abap-keyword/new-instance-operator), you can create [anonymous data objects](https://help.sap.com/docs/abap-cloud/abap-keyword/anonymous-data-object), such as anonymous structures. You can access the components or the entire data objects by [dereferencing](https://help.sap.com/docs/abap-cloud/abap-keyword/dereferencing-operator-abendereferencing_operat_glosry). For more information, refer to the  [Dynamic Programming](06_Dynamic_Programming.md) and [Constructor Expressions](05_Constructor_Expressions.md) cheat sheets.
 
 ```abap
 "Creating a data reference variable 
@@ -692,14 +692,14 @@ addr_ref2->* = VALUE #( BASE addr_ref2->* name = `Mr. John Doe` ).
 
 ### Using the CORRESPONDING Operator and MOVE-CORRESPONDING Statements
 
-- You can use statements with [`MOVE-CORRESPONDING`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapmove-corresponding.htm)
-and the [`CORRESPONDING`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconstructor_expr_corresponding.htm) operator to assign values to structure components, especially when assigning values from a source structure to a target structure which have incompatible types and/or differently named components. 
+- You can use statements with [`MOVE-CORRESPONDING`](https://help.sap.com/docs/abap-cloud/abap-keyword/move-corresponding)
+and the [`CORRESPONDING`](https://help.sap.com/docs/abap-cloud/abap-keyword/corresponding-component-operator) operator to assign values to structure components, especially when assigning values from a source structure to a target structure which have incompatible types and/or differently named components. 
 - Both are used to assign identically named components of structures to each other. 
 - The syntax also works for structures of the same type.
-- Also note the special [conversion](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconversion_struc.htm) and [comparison](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenlogexp_rules_operands_struc.htm) rules for structures in this context.
+- Also note the special [conversion](https://help.sap.com/docs/abap-cloud/abap-keyword/conversion-rules-for-structures) and [comparison](https://help.sap.com/docs/abap-cloud/abap-keyword/rel-exp-comparing-structures) rules for structures in this context.
 
 > [!NOTE]  
->- The [`CL_ABAP_CORRESPONDING`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencl_abap_corresponding.htm) system class is available for making assignments. See the ABAP Keyword Documentation for the details.
+>- The [`CL_ABAP_CORRESPONDING`](https://help.sap.com/docs/abap-cloud/abap-keyword/cl-abap-corresponding-system-class) system class is available for making assignments. See the ABAP Keyword Documentation for the details.
 >- The `INTO` clause of ABAP SQL statements has the `CORRESPONDING` addition. There, the following basic rule applies, which affects the value assignment: Without the `CORRESPONDING ...` addition, column names do not matter, only the position. With the `CORRESPONDING ...` addition, the position of the columns does not matter, only the name. See examples in the ABAP SQL cheat sheet.
 
 The following examples demonstrate the value assignment using `MOVE-CORRESPONDING` statements and the `CORRESPONDING` operator with various additions. 
@@ -727,7 +727,7 @@ diff_struc = CORRESPONDING #( BASE ( diff_struc ) struc EXCEPT comp1 ).
 ```
 
 Value assignments in deep structures 
-- In the context of deep structures, there are additional syntax variants available for [`MOVE-CORRESPONDING`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapmove-corresponding.htm) statements and the [`CORRESPONDING`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconstructor_expr_corresponding.htm) operator.
+- In the context of deep structures, there are additional syntax variants available for [`MOVE-CORRESPONDING`](https://help.sap.com/docs/abap-cloud/abap-keyword/move-corresponding) statements and the [`CORRESPONDING`](https://help.sap.com/docs/abap-cloud/abap-keyword/corresponding-component-operator) operator.
 - The following examples focus on internal tables as structure components. Check out the syntax in action in the executable example.
 
 ``` abap
@@ -787,7 +787,7 @@ diff_deep_struc = CORRESPONDING #( DEEP APPENDING BASE ( diff_struc ) deep_struc
 ## Clearing Structures
 
 You can reset individual components to their initial values and clear the
-entire structure using the [`CLEAR`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapclear.htm) keyword. Note that [`FREE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapfree_dataobject.htm) statements also deletes the content, but they also release the initially allocated memory.
+entire structure using the [`CLEAR`](https://help.sap.com/docs/abap-cloud/abap-keyword/clear) keyword. Note that [`FREE`](https://help.sap.com/docs/abap-cloud/abap-keyword/free) statements also deletes the content, but they also release the initially allocated memory.
 space. 
 
 ``` abap
@@ -808,7 +808,7 @@ struc_ref = NEW #( ).
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## Processing Structures
-Structures are primarily used to process data from tables. In this context, structures often take on the role of a [work area](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenwork_area_glosry.htm "Glossary Entry"). 
+Structures are primarily used to process data from tables. In this context, structures often take on the role of a [work area](https://help.sap.com/docs/abap-cloud/abap-keyword/work-area). 
 The following code snippets cover only a selection. For more examples, see the cheat sheets about internal tables and ABAP SQL. 
 
 ### Structures in ABAP SQL Statements
@@ -828,7 +828,7 @@ Reading a row from a database table into a structure that has a compatible type
 <td>
 
 Note that, since database tables are flat, the
-target structure must also be flat. In the example below, the [`SINGLE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapselect_single.htm)
+target structure must also be flat. In the example below, the [`SINGLE`](https://help.sap.com/docs/abap-cloud/abap-keyword/select-single)
 addition reads only a single row into the structure. It returns the first entry that matches the `WHERE` condition.
 
 ``` abap
@@ -911,7 +911,7 @@ ENDSELECT.
 <td> 
 
 Inserting a single row into a database table from a structure using  ABAP SQL statements with
-[`INSERT`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapinsert_dbtab.htm)
+[`INSERT`](https://help.sap.com/docs/abap-cloud/abap-keyword/insert-writable-obj)
 </td>
 <td>
 
@@ -930,7 +930,7 @@ INSERT dbtab FROM @( VALUE #( comp1 = ... comp2 = ... ) ).
 <tr>
 <td> 
 
-Updating a single row in a database table from a structure using ABAP SQL statements with [`UPDATE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapupdate.htm)
+Updating a single row in a database table from a structure using ABAP SQL statements with [`UPDATE`](https://help.sap.com/docs/abap-cloud/abap-keyword/update-writable-obj)
 </td>
 <td>
 
@@ -956,7 +956,7 @@ UPDATE dbtab FROM @( VALUE #( BASE wa comp2 = ... comp4 = ... ) ).
 <td> 
 
 Updating or creating a single row in a database table from a structure using ABAP SQL statements with
-[`MODIFY`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapmodify_dbtab.htm) 
+[`MODIFY`](https://help.sap.com/docs/abap-cloud/abap-keyword/modify-writable-obj) 
 </td>
 <td>
 
@@ -973,7 +973,7 @@ MODIFY dbtab FROM @( VALUE #( comp1 = ... comp2 = ... ) ).
 <td> 
 
 Deleting a single row in a database table from a structure using ABAP SQL statements with
-[`DELETE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapdelete_dbtab.htm) 
+[`DELETE`](https://help.sap.com/docs/abap-cloud/abap-keyword/delete-writable-obj) 
 </td>
 <td>
 
@@ -1007,7 +1007,7 @@ Reading a line from an internal table into a structure using a `READ TABLE` stat
 </td>
 <td>
 
-The code snippet below shows the reading of a line into a [work area](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenwork_area_glosry.htm "Glossary Entry"), a [field symbol](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenfield_symbol_glosry.htm "Glossary Entry"), and a [data reference variable](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendata_reference_variable_glosry.htm "Glossary Entry"), all of which 
+The code snippet below shows the reading of a line into a [work area](https://help.sap.com/docs/abap-cloud/abap-keyword/work-area), a [field symbol](https://help.sap.com/docs/abap-cloud/abap-keyword/field-symbol), and a [data reference variable](https://help.sap.com/docs/abap-cloud/abap-keyword/data-reference-variable), all of which 
 represent structured data objects that are declared inline. In the following example, a line is read based on the line number by
 specifying `INDEX`. For more details, see the section *Determining the target area* in the cheat sheet [Internal Tables](01_Internal_Tables.md#).
 ``` abap
@@ -1024,7 +1024,7 @@ READ TABLE itab REFERENCE INTO DATA(dref) INDEX 3.
 <tr>
 <td>
 
-Reading a line from an internal table into a structure using a [table expression](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentable_expression_glosry.htm "Glossary Entry")
+Reading a line from an internal table into a structure using a [table expression](https://help.sap.com/docs/abap-cloud/abap-keyword/table-expression)
 </td>
 <td>
 
@@ -1038,7 +1038,7 @@ DATA(ls_table_exp) = itab[ 3 ].
 <tr>
 <td> 
 
-Sequentially reading a line from an internal table into a structure using a [`LOOP AT`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abaploop_at_itab_variants.htm) statement
+Sequentially reading a line from an internal table into a structure using a [`LOOP AT`](https://help.sap.com/docs/abap-cloud/abap-keyword/loop-at-itab) statement
 </td>
 <td>
 
@@ -1083,8 +1083,8 @@ MODIFY TABLE itab FROM struc.
 
 ## Including Structures
 
-- [`INCLUDE TYPE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapinclude_type.htm)
-and [`INCLUDE STRUCTURE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapinclude_type.htm) statements 
+- [`INCLUDE TYPE`](https://help.sap.com/docs/abap-cloud/abap-keyword/include-type-structure)
+and [`INCLUDE STRUCTURE`](https://help.sap.com/docs/abap-cloud/abap-keyword/include-type-structure) statements 
 are used in the context of local structures. 
 - Structured data objects and types created with `... BEGIN OF... END OF ...` can use this syntax to include components of another structure, whether it is a locally defined or global structure, without creating  substructures. 
 - `INCLUDE TYPE` can be used to include a structured type. 
@@ -1092,11 +1092,11 @@ are used in the context of local structures.
 
 > [!NOTE]  
 > - They are not additions of `... BEGIN OF ... END OF ...` but individual ABAP statements.
-> - If you use a chained statement with a colon to declare the structure, the inclusion of other structures with these statements interrupts the chained statement, that is, the components of the included structures are included as direct components of the [superstructure](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensuperstructure_glosry.htm "Glossary Entry").
+> - If you use a chained statement with a colon to declare the structure, the inclusion of other structures with these statements interrupts the chained statement, that is, the components of the included structures are included as direct components of the [superstructure](https://help.sap.com/docs/abap-cloud/abap-keyword/superstructure).
 >- By using the optional `AS` addition and specifying a name, the included components can be addressed by this common name as if they were actually components of a substructure.
 >- The optional `RENAMING WITH SUFFIX` addition, followed by a name, gives the included components a suffix name to avoid naming conflicts with other components.
 
-The following example shows how structured types and data objects are included in another structure. First, three structured types and a structured data object based on one of these types are created. Then, the types and the structure are included in the structured type `address_type`. As an excursion, [Runtime Type Identification](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrun_time_type_identific_glosry.htm) is used to retrieve the component names of created structured type `address_type`. Refer to the [Getting Structured Type Information and Creating Structures at Runtime](#getting-structured-type-information-and-creating-structures-at-runtime) section. The executable example demonstrates a structure that includes other structures in this way.
+The following example shows how structured types and data objects are included in another structure. First, three structured types and a structured data object based on one of these types are created. Then, the types and the structure are included in the structured type `address_type`. As an excursion, [Runtime Type Identification](https://help.sap.com/docs/abap-cloud/abap-keyword/runtime-type-identification) is used to retrieve the component names of created structured type `address_type`. Refer to the [Getting Structured Type Information and Creating Structures at Runtime](#getting-structured-type-information-and-creating-structures-at-runtime) section. The executable example demonstrates a structure that includes other structures in this way.
 ``` abap
 TYPES: BEGIN OF name_type,
         title   TYPE string,
@@ -1141,13 +1141,13 @@ DATA(component_names) = VALUE string_table( FOR wa IN CAST cl_abap_structdescr(
 
 - The `sy` (or `syst`) structure is a built-in data object. 
 - The components of the structure represent ABAP system fields. 
-- These fields, filled by the [ABAP runtime framework](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_runtime_frmwk_glosry.htm), can be used to query system information and more. 
+- These fields, filled by the [ABAP runtime framework](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-runtime-framework), can be used to query system information and more. 
 - Typically, they should only be read, and not overwritten. 
 - Prominent system fields are the following 
   - `sy-subrc`: Return code of many ABAP statements; typically, the value 0 indicates success
   - `sy-tabix`: Row index of internal tables
   - `sy-index`: Loop pass index
-- These ones and others can be used in [ABAP for Cloud Development](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_for_cloud_dev_glosry.htm). However, most of the fields should not be used in ABAP for Cloud Development (indicated by a syntax warning) because they refer to [Standard ABAP](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenstandard_abap_glosry.htm) contexts (e.g. classic dynpros and lists), or their values are not relevant in a cloud context. 
+- These ones and others can be used in [ABAP for Cloud Development](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-for-cloud-development). However, most of the fields should not be used in ABAP for Cloud Development (indicated by a syntax warning) because they refer to [Standard ABAP](https://help.sap.com/docs/abap-cloud/abap-keyword/standard-abap) contexts (e.g. classic dynpros and lists), or their values are not relevant in a cloud context. 
 - More information about the purpose of the individual components is available at [ABAP System Fields (F1 documentation for Standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abensystem_fields.htm).
 
 
@@ -1415,10 +1415,10 @@ ENDCLASS.
 
 ### Getting Structured Type Information and Creating Structures at Runtime
 
-Using [Runtime Type Services (RTTS)](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrun_time_type_services_glosry.htm "Glossary Entry")
+Using [Runtime Type Services (RTTS)](https://help.sap.com/docs/abap-cloud/abap-keyword/runtime-type-services)
 you can ...
-- get type information on data objects, data types or [instances](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abeninstance_glosry.htm "Glossary Entry") at runtime ([Runtime Type Identification (RTTI)](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrun_time_type_identific_glosry.htm "Glossary Entry")).
-- define and create new data types as [type description objects](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentype_object_glosry.htm) at runtime ([Runtime Type Creation (RTTC)](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrun_time_type_creation_glosry.htm "Glossary Entry")).
+- get type information on data objects, data types or [instances](https://help.sap.com/docs/abap-cloud/abap-keyword/instance) at runtime ([Runtime Type Identification (RTTI)](https://help.sap.com/docs/abap-cloud/abap-keyword/runtime-type-identification)).
+- define and create new data types as [type description objects](https://help.sap.com/docs/abap-cloud/abap-keyword/type-description-object) at runtime ([Runtime Type Creation (RTTC)](https://help.sap.com/docs/abap-cloud/abap-keyword/runtime-type-creation)).
 
 For more information, see the [Dynamic Programming](06_Dynamic_Programming.md) cheat sheet.
 
@@ -1477,7 +1477,7 @@ ENDLOOP.
 
 
 - In structures, boxed components represent nested structures managed by an internal reference.  
-- Currently, static boxes are supported as boxed components, enabling [initial value sharing](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABENINITIAL_VALUE_SHARING_GLOSRY.html). Find more information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABENSTATIC_BOXES.html).
+- Currently, static boxes are supported as boxed components, enabling [initial value sharing](https://help.sap.com/docs/abap-cloud/abap-keyword/initial-value-sharing). Find more information [here](https://help.sap.com/docs/abap-cloud/abap-keyword/static-boxes).
 - The relevant addition in a structured type declaration is `BOXED`. Syntax example: 
   ```abap
   TYPES: BEGIN OF struct, 

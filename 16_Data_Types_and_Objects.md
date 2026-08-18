@@ -36,24 +36,24 @@
   - [Executable Example](#executable-example)
 
 ## Introduction
-[ABAP statements](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_statement_glosry.htm) usually work with [data objects](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendata_object_glosry.htm), that is, with transient data that occupies memory space while the [data type](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendata_type_glosry.htm) defines the technical properties of the data objects.
+[ABAP statements](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-statement) usually work with [data objects](https://help.sap.com/docs/abap-cloud/abap-keyword/data-object), that is, with transient data that occupies memory space while the [data type](https://help.sap.com/docs/abap-cloud/abap-keyword/data-type) defines the technical properties of the data objects.
 Since data types and data objects are closely related, this cheat sheet covers both topics. 
 Note that the topics covered here are also partly covered in other ABAP cheat sheets. The purpose of this cheat sheet is to summarize the basics.
 
 ## Data Types and Objects: Definition
 
 Data types
-- Define technical properties of all data objects that have these data types, such as the maximum length of a [text field](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentext_field_glosry.htm). 
+- Define technical properties of all data objects that have these data types, such as the maximum length of a [text field](https://help.sap.com/docs/abap-cloud/abap-keyword/text-field). 
 - Are descriptions only, with no data memory attached except for administrative information. 
-- Can occur in [ABAP programs](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_program_glosry.htm) as [bound data types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbound_data_type_glosry.htm), that is, the type is a property of a data object, or as a [standalone data type](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenstand-alone_data_type_glosry.htm), that is, the data type is defined independently. 
-- Can be defined locally in an ABAP program or globally in classes, interfaces and in the [ABAP Dictionary (DDIC)](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_dictionary_glosry.htm). 
+- Can occur in [ABAP programs](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-program) as [bound data types](https://help.sap.com/docs/abap-cloud/abap-keyword/bound-data-type), that is, the type is a property of a data object, or as a [standalone data type](https://help.sap.com/docs/abap-cloud/abap-keyword/standalone-data-type), that is, the data type is defined independently. 
+- Can be defined locally in an ABAP program or globally in classes, interfaces and in the [ABAP Dictionary (DDIC)](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-dictionary). 
 
 Data objects: 
-- Are objects (or [instances](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abeninstance_glosry.htm)) of a data type (similar to objects/instances of classes in [ABAP Objects](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_objects_glosry.htm)).
+- Are objects (or [instances](https://help.sap.com/docs/abap-cloud/abap-keyword/instance)) of a data type (similar to objects/instances of classes in [ABAP Objects](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-objects)).
 - Occupy memory space and exist in different forms, for example, numeric or textual data can be contained in data objects.
 - The type of data that a data object can receive is determined by its data type.
 - Like data types, their existence and visibility depend on the declaration context.
-- Are usually used in [ABAP statements](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_statement_glosry.htm) by specifying them in the [operand position](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenoperand_position_glosry.htm).
+- Are usually used in [ABAP statements](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-statement) by specifying them in the [operand position](https://help.sap.com/docs/abap-cloud/abap-keyword/operand-position).
 
 
 > [!NOTE]
@@ -65,36 +65,36 @@ Data objects:
 
 ABAP is rich in built-in data types and offers a wide range of options for defining data types and data objects in different contexts.
 Data types can be divided into three groups: 
-- [Elementary data types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenelementary_data_type_glosry.htm)
-- [Complex data types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencomplex_data_type_glosry.htm)
-- [Reference type](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenreference_type_glosry.htm)
+- [Elementary data types](https://help.sap.com/docs/abap-cloud/abap-keyword/elementary-data-type)
+- [Complex data types](https://help.sap.com/docs/abap-cloud/abap-keyword/complex-data-type)
+- [Reference type](https://help.sap.com/docs/abap-cloud/abap-keyword/reference-type)
 
-For an overview, see the [ABAP Type Hierarchy](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentype_hierarchy.htm) in the ABAP Keyword Documentation.
+For an overview, see the [ABAP Type Hierarchy](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-type-hierarchy) in the ABAP Keyword Documentation.
 
 ### Elementary Data Types
-- Elementary (or scalar) data types are based directly on a set of [built-in ABAP types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbuiltin_abap_type_glosry.htm).
+- Elementary (or scalar) data types are based directly on a set of [built-in ABAP types](https://help.sap.com/docs/abap-cloud/abap-keyword/built-in-abap-type).
 - Are not composed of other data types. 
 - Are types for holding numeric values, text information, binary data and special types for date and time.
 - Are further divided into elementary types of fixed and variable length.
   - Note: The length and the memory requirements of data objects of fixed length data types are fixed, that is, they cannot change at runtime. The length and memory requirements of data objects of variable length data types can actually change at runtime, depending on their contents.
 - The following built-in elementary data types of fixed length are available:
-  - Numeric types: Integers (`b`, `s`, `i`, `int8`), [decimal floating point numbers](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendecfloat_glosry.htm) (`decfloat16`, `decfloat34`), [binary floating point numbers](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbinfloat_glosry.htm) (`f`), and [packed numbers](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenpacked_number_glosry.htm) (`p`)
-  - Character-like types: text fields (`c`) and [numeric text fields](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abennumeric_text_field_glosry.htm) (`n`)
-  - Byte-like type: [byte fields](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbyte_field_glosry.htm) (`x`)
+  - Numeric types: Integers (`b`, `s`, `i`, `int8`), [decimal floating point numbers](https://help.sap.com/docs/abap-cloud/abap-keyword/decimal-floating-point-number) (`decfloat16`, `decfloat34`), [binary floating point numbers](https://help.sap.com/docs/abap-cloud/abap-keyword/binary-floating-point-number) (`f`), and [packed numbers](https://help.sap.com/docs/abap-cloud/abap-keyword/packed-number) (`p`)
+  - Character-like types: text fields (`c`) and [numeric text fields](https://help.sap.com/docs/abap-cloud/abap-keyword/numeric-text-field) (`n`)
+  - Byte-like type: [byte fields](https://help.sap.com/docs/abap-cloud/abap-keyword/byte-field) (`x`)
   - Character-like date and time types: date fields (`d`) and time fields (`t`)
   - Time stamp type for time stamp fields (`utclong`).
 - Variable length:
-  - Character-like type for [text strings](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentext_string_glosry.htm) (`string`)
-  - Byte-like type for [byte strings](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbyte_string_glosry.htm) (`xstring`)
+  - Character-like type for [text strings](https://help.sap.com/docs/abap-cloud/abap-keyword/text-string) (`string`)
+  - Byte-like type for [byte strings](https://help.sap.com/docs/abap-cloud/abap-keyword/byte-string) (`xstring`)
 
 > [!NOTE]
-> - The data types `c`, `n`, `x`, and `p` are incomplete, i.e., [generic data types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abengeneric_data_type_glosry.htm), with respect to their length. The type definition syntax has a special addition for this (`LENGTH`). In addition, `p` is also generic with respect to the number of decimal places (`DECIMALS` addition). See more about generic types in the following sections.
-> - The other types can be considered as [complete data types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencomplete_data_type_glosry.htm). They don't need any additional syntax elements for the definition.
-> - The numeric data types `b` and `s` cannot be specified directly in ABAP programs for short integers. Alternative [built-in DDIC types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbuiltin_ddic_type_glosry.htm) are available.
+> - The data types `c`, `n`, `x`, and `p` are incomplete, i.e., [generic data types](https://help.sap.com/docs/abap-cloud/abap-keyword/generic-data-type), with respect to their length. The type definition syntax has a special addition for this (`LENGTH`). In addition, `p` is also generic with respect to the number of decimal places (`DECIMALS` addition). See more about generic types in the following sections.
+> - The other types can be considered as [complete data types](https://help.sap.com/docs/abap-cloud/abap-keyword/complete-data-type). They don't need any additional syntax elements for the definition.
+> - The numeric data types `b` and `s` cannot be specified directly in ABAP programs for short integers. Alternative [built-in DDIC types](https://help.sap.com/docs/abap-cloud/abap-keyword/built-in-ddic-type) are available.
 > - `decfloat16` and `decfloat34` for decimal floating point numbers can be regarded as more modern versions of `p` and `f`, combining their advantages.
 > - Although they are character-like, `t` and `d` can be used for calculations.
-> - See the ABAP Keyword Documentation [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbuilt_in_types.htm) for more information about the initial values of the data types, the standard length, and so on.
-> - [Enumerated types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenenum_type_glosry.htm) are considered elementary types. They specify a set of values in addition to the actual type properties. The typical syntax element is `... BEGIN OF ENUM ... END OF ENUM ...`. Find more information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenenumerated_types_usage.htm) and further down.  
+> - See the ABAP Keyword Documentation [here](https://help.sap.com/docs/abap-cloud/abap-keyword/built-in-data-types) for more information about the initial values of the data types, the standard length, and so on.
+> - [Enumerated types](https://help.sap.com/docs/abap-cloud/abap-keyword/enumerated-type) are considered elementary types. They specify a set of values in addition to the actual type properties. The typical syntax element is `... BEGIN OF ENUM ... END OF ENUM ...`. Find more information [here](https://help.sap.com/docs/abap-cloud/abap-keyword/enumerated-objects-enum) and further down.  
 
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
@@ -103,10 +103,10 @@ For an overview, see the [ABAP Type Hierarchy](https://help.sap.com/doc/abapdocu
 
 - Are composed of other types. 
 - The following complex data types are available: 
-   - [Structured types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenstructured_type_glosry.htm): Represent a sequence of arbitrary data types (i.e., they can be elementary, reference, or complex data types). The typical syntax element for the local definition of a structure is `... BEGIN OF ... END OF ...`.
-   - [Table types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentable_type_glosry.htm): Consist of a sequence of any number of lines of the same data type. It can be any elementary type, reference type, or complex data type. The type definition includes other properties such as the [table category](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentable_category_glosry.htm) (defines how tables can be accessed) and [table key](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentable_key_glosry.htm) (to identify the table lines). The typical syntax element is `... TABLE OF ...`.
-   - [Mesh types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenmesh_type_glosry.htm): Special structured type that contains only table types with structured line types as components that can be linked using mesh associations. The typical syntax element is `... BEGIN OF MESH ... END OF MESH ...`. See more information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abaptypes_mesh.htm).  
-   - [BDEF derived types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_derived_type_glosry.htm): RAP-specific structured and table types. The typical syntax elements are `... TYPE STRUCTURE FOR ...` and `... TYPE TABLE FOR ...`. More information can be found [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrpm_derived_types.htm) and in the ABAP cheat sheet on ABAP EML.
+   - [Structured types](https://help.sap.com/docs/abap-cloud/abap-keyword/structured-type): Represent a sequence of arbitrary data types (i.e., they can be elementary, reference, or complex data types). The typical syntax element for the local definition of a structure is `... BEGIN OF ... END OF ...`.
+   - [Table types](https://help.sap.com/docs/abap-cloud/abap-keyword/table-type): Consist of a sequence of any number of lines of the same data type. It can be any elementary type, reference type, or complex data type. The type definition includes other properties such as the [table category](https://help.sap.com/docs/abap-cloud/abap-keyword/table-category) (defines how tables can be accessed) and [table key](https://help.sap.com/docs/abap-cloud/abap-keyword/table-key) (to identify the table lines). The typical syntax element is `... TABLE OF ...`.
+   - [Mesh types](https://help.sap.com/docs/abap-cloud/abap-keyword/mesh-type): Special structured type that contains only table types with structured line types as components that can be linked using mesh associations. The typical syntax element is `... BEGIN OF MESH ... END OF MESH ...`. See more information [here](https://help.sap.com/docs/abap-cloud/abap-keyword/types-begin-of-mesh-mesh-type).  
+   - [BDEF derived types](https://help.sap.com/docs/abap-cloud/abap-keyword/bdef-derived-type): RAP-specific structured and table types. The typical syntax elements are `... TYPE STRUCTURE FOR ...` and `... TYPE TABLE FOR ...`. More information can be found [here](https://help.sap.com/docs/abap-cloud/abap-keyword/bdef-derived-types) and in the ABAP cheat sheet on ABAP EML.
 - A data object of a complex type can be accessed as a whole or by component. 
 
 > [!NOTE]
@@ -115,13 +115,13 @@ For an overview, see the [ABAP Type Hierarchy](https://help.sap.com/doc/abapdocu
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ### Reference Types
-- Describe data objects that contain [references](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenreference_glosry.htm) to other objects (data objects and instances of classes), which are known as [reference variables](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenreference_variable_glosry.htm). 
-- There are two kinds of references: [Data references](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendata_reference_glosry.htm) (references to data objects) and [object references](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenobject_reference_glosry.htm) (references to objects as instances of classes). 
+- Describe data objects that contain [references](https://help.sap.com/docs/abap-cloud/abap-keyword/reference) to other objects (data objects and instances of classes), which are known as [reference variables](https://help.sap.com/docs/abap-cloud/abap-keyword/reference-variable). 
+- There are two kinds of references: [Data references](https://help.sap.com/docs/abap-cloud/abap-keyword/data-reference) (references to data objects) and [object references](https://help.sap.com/docs/abap-cloud/abap-keyword/object-reference) (references to objects as instances of classes). 
 - A reference type must be defined either in the ABAP program or in the ABAP Dictionary. There are no built-in reference types in ABAP. 
 - The typical syntax element is `... REF TO ...`.
 
 > [!NOTE]
-> - There are [generic ABAP types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abengeneric_abap_type_glosry.htm). Generic data types are types that do not define all of the properties of a data object. They can only be used for the typing of [formal parameters](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenformal_parameter_glosry.htm) and [field symbols](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenfield_symbol_glosry.htm). See an example further down. 
+> - There are [generic ABAP types](https://help.sap.com/docs/abap-cloud/abap-keyword/generic-abap-type). Generic data types are types that do not define all of the properties of a data object. They can only be used for the typing of [formal parameters](https://help.sap.com/docs/abap-cloud/abap-keyword/formal-parameter) and [field symbols](https://help.sap.com/docs/abap-cloud/abap-keyword/field-symbol). See an example further down. 
 > - The only generic types that can be used after `TYPE REF TO` are `data` for data references, and `object` for object references. However, such a typing is considered as completely typing.
 
 
@@ -129,7 +129,7 @@ For an overview, see the [ABAP Type Hierarchy](https://help.sap.com/doc/abapdocu
 
 ### Declaring Data Types
 
-Data types are defined in an ABAP program using the [`TYPES`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abaptypes.htm) statement. Depending on the declaration context, the types can be accessed either locally or globally. As mentioned, data types can also be declared in the ABAP Dictionary. The focus here is on data type declarations in ABAP programs using `TYPES` statements.
+Data types are defined in an ABAP program using the [`TYPES`](https://help.sap.com/docs/abap-cloud/abap-keyword/types) statement. Depending on the declaration context, the types can be accessed either locally or globally. As mentioned, data types can also be declared in the ABAP Dictionary. The focus here is on data type declarations in ABAP programs using `TYPES` statements.
 You can use built-in and user-defined data types to create data types (and data objects). 
 
 The following code snippet shows various syntax options for declaring data types:
@@ -316,12 +316,12 @@ TYPES tr_like_table_ref LIKE TABLE OF REF TO itab_str.
 
 ### Generic Types
 
-- Generic types are available with which [formal parameters](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenformal_parameter_glosry.htm) of methods or [field symbols](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenfield_symbol_glosry.htm) can be specified.
-- At runtime, the actual data type is copied from the assigned [actual parameter](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenactual_parameter_glosry.htm) or
+- Generic types are available with which [formal parameters](https://help.sap.com/docs/abap-cloud/abap-keyword/formal-parameter) of methods or [field symbols](https://help.sap.com/docs/abap-cloud/abap-keyword/field-symbol) can be specified.
+- At runtime, the actual data type is copied from the assigned [actual parameter](https://help.sap.com/docs/abap-cloud/abap-keyword/actual-parameter) or
   memory area, i.e. they receive the complete data type only when an actual parameter
   is passed or a memory area is assigned.
 - More information: 
-  - [Generic ABAP Types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbuilt_in_types_generic.htm)
+  - [Generic ABAP Types](https://help.sap.com/docs/abap-cloud/abap-keyword/generic-abap-types)
   - [ABAP cheat sheet about dynamic programming](06_Dynamic_Programming.md) regarding field symbols and `ASSIGN` statements
 
 > [!NOTE]
@@ -477,17 +477,17 @@ ASSIGN s-xl1 TO <simple>.
 
 ### Global Data Types
 
-- Global data types are created as [repository objects](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrepository_object_glosry.htm) in the ABAP Dictionary: 
+- Global data types are created as [repository objects](https://help.sap.com/docs/abap-cloud/abap-keyword/repository-object) in the ABAP Dictionary: 
   - The ABAP Dictionary (DDIC) serves as a persistent repository for type definitions represented by dictionary objects. 
   - These objects constitute global data types that are accessible by other repository objects.
-  - DDIC types such as [DDIC data elements](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendata_element_glosry.htm) (elementary data types or reference types), [DDIC structures](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenddic_structure_glosry.htm), [DDIC table types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenddic_table_type_glosry.htm). Find more information in the [ABAP Dictionary](26_ABAP_Dictionary.md) cheat sheet.
-  - Furthermore, [database tables](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendatabase_table_glosry.htm) and [CDS entities](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_entity_glosry.htm) and their components can also be used as data types in ABAP programs. 
-  - For many of the classic DDIC objects, which are still supported in [ABAP Cloud](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_cloud_glosry.htm), CDS-based successor objects are available.
+  - DDIC types such as [DDIC data elements](https://help.sap.com/docs/abap-cloud/abap-keyword/ddic-data-element) (elementary data types or reference types), [DDIC structures](https://help.sap.com/docs/abap-cloud/abap-keyword/ddic-structure), [DDIC table types](https://help.sap.com/docs/abap-cloud/abap-keyword/ddic-table-type). Find more information in the [ABAP Dictionary](26_ABAP_Dictionary.md) cheat sheet.
+  - Furthermore, [database tables](https://help.sap.com/docs/abap-cloud/abap-keyword/database-table) and [CDS entities](https://help.sap.com/docs/abap-cloud/abap-keyword/cds-entity) and their components can also be used as data types in ABAP programs. 
+  - For many of the classic DDIC objects, which are still supported in [ABAP Cloud](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-cloud), CDS-based successor objects are available.
   - Find a high-level overview in the [ABAP Dictionary](26_ABAP_Dictionary.md) cheat sheet.
-  - Note that there are predefined global types available. However, in ABAP Cloud, only [released APIs](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenreleased_api_glosry.htm) can be used there.  
-  - In [classic ABAP](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenclassic_abap_glosry.htm), you may stumble on the option to create global data types in [type pools](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentype_pool_glosry.htm), which is not possible in ABAP for Cloud Development. However, the predefined type pool `abap` can be used in ABAP for Cloud Development.
+  - Note that there are predefined global types available. However, in ABAP Cloud, only [released APIs](https://help.sap.com/docs/abap-cloud/abap-keyword/released-api) can be used there.  
+  - In [classic ABAP](https://help.sap.com/docs/abap-cloud/abap-keyword/classic-abap), you may stumble on the option to create global data types in [type pools](https://help.sap.com/docs/abap-cloud/abap-keyword/type-pool), which is not possible in ABAP for Cloud Development. However, the predefined type pool `abap` can be used in ABAP for Cloud Development.
 - Data types declared in interfaces and in the public visibility section of global classes are also globally visibile. Global classes and interfaces as such are global types to refer to. 
-- Find more information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenddic_data_types.htm).
+- Find more information [here](https://help.sap.com/docs/abap-cloud/abap-keyword/ddic-data-types).
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
@@ -497,7 +497,7 @@ ASSIGN s-xl1 TO <simple>.
 
 ### Declaring Data Objects
     
-The [`DATA`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapdata.htm) statement declares a data object of any data type. The declaration of a data object is similar to that of a data type, with only slight differences in terms of the number of possible additions, and follows this syntax pattern:
+The [`DATA`](https://help.sap.com/docs/abap-cloud/abap-keyword/data) statement declares a data object of any data type. The declaration of a data object is similar to that of a data type, with only slight differences in terms of the number of possible additions, and follows this syntax pattern:
 `DATA dobj TYPE abap_type [LENGTH len] [DECIMALS dec] [VALUE val] [READ-ONLY].`
 
 Note that `READ-ONLY` can only be used for class attributes.
@@ -630,7 +630,7 @@ DATA struc_like_line LIKE LINE OF itab_ddic_tab.
 
 
 > [!NOTE]
-> The above data objects are declared by assigning a dedicated name. These data objects can be addressed by that name. This is not true for [anonymous data objects](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenanonymous_data_object_glosry.htm), which can only be addressed through reference variables. This is covered [below](#assigning-references-to-data-reference-variables).
+> The above data objects are declared by assigning a dedicated name. These data objects can be addressed by that name. This is not true for [anonymous data objects](https://help.sap.com/docs/abap-cloud/abap-keyword/anonymous-data-object), which can only be addressed through reference variables. This is covered [below](#assigning-references-to-data-reference-variables).
 
 
 Data reference variables:
@@ -668,7 +668,7 @@ DATA dref_tab_str LIKE TABLE OF REF TO do_some_string.
 An assignment passes the contents of a source to a target data object.
 
 > [!NOTE]
-> - There are conversion rules when assigning a source to a target data object that have different types. For more information, see the topic [Assignment and Conversion Rules](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconversion_rules.htm) in the ABAP Keyword Documentation, especially for complex types, since elementary types are usually demonstrated in the cheat sheet.
+> - There are conversion rules when assigning a source to a target data object that have different types. For more information, see the topic [Assignment and Conversion Rules](https://help.sap.com/docs/abap-cloud/abap-keyword/assignment-and-conversion-rules) in the ABAP Keyword Documentation, especially for complex types, since elementary types are usually demonstrated in the cheat sheet.
 > - There are many ways to assigning values to data objects in ABAP. They occur in the context of various ABAP statements. Here, assignments with the assignment operator `=` are mostly used.
 > - In older ABAP code, you may see `MOVE ... TO ...` statements for value assignments. These statements are obsolete. They are not to be confused with `MOVE-CORRESPONDING` statements for complex types. These are not obsolete.
 
@@ -772,7 +772,7 @@ str_a2 = some_itab[ 2 ]-carrname.
 - The following code examples explore and comment on assignments of data objects with various elementary types. Conversion results are added as comments in the code.
 - They focus on conversion rules when assigning a source to a target data object of different elementary types.
 - Not all types or conversion options are covered, and some example assignments may seem nonsensical.
-- For more information, see [Assignment and Conversion Rules](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconversion_rules.htm) in the ABAP Keyword Documentation.
+- For more information, see [Assignment and Conversion Rules](https://help.sap.com/docs/abap-cloud/abap-keyword/assignment-and-conversion-rules) in the ABAP Keyword Documentation.
 
 <details>
   <summary>🟢 Click to expand for example code</summary>
@@ -1490,12 +1490,12 @@ ASSERT len = 27.
 
 ### Creating Data Objects Using Inline Declaration
 
-An [inline declaration](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abeninline_declaration_glosry.htm) is made using the declaration operator [`DATA`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendata_inline.htm). It can be specified in any designated [declaration position](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendeclaration_position_glosry.htm). The result of the declaration is used in the current operand position, is  statically visible from the current position, and is valid in the current context.
+An [inline declaration](https://help.sap.com/docs/abap-cloud/abap-keyword/inline-declaration) is made using the declaration operator [`DATA`](https://help.sap.com/docs/abap-cloud/abap-keyword/data-inline-declaration-for-variables). It can be specified in any designated [declaration position](https://help.sap.com/docs/abap-cloud/abap-keyword/declaration-position). The result of the declaration is used in the current operand position, is  statically visible from the current position, and is valid in the current context.
 
 > [!NOTE]
 > - In an assignment, if the data object is declared inline on the left side, there are many options for what can be placed on the right side as shown in the previous section. The data type of the variable is determined by the operand type. It must be possible to derive this type completely statically.
-> - For more information about the possible declaration positions, see [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendeclaration_positions.htm).    
-> - You can use the [`FINAL`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenfinal_inline.htm) declaration operator to create [immutable variables](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenimmutable_variable_glosry.htm), as shown below.
+> - For more information about the possible declaration positions, see [here](https://help.sap.com/docs/abap-cloud/abap-keyword/declaration-positions).    
+> - You can use the [`FINAL`](https://help.sap.com/docs/abap-cloud/abap-keyword/final-inline-declaration-for-immutable-variables) declaration operator to create [immutable variables](https://help.sap.com/docs/abap-cloud/abap-keyword/immutable-variable), as shown below.
 > - [Programming guidelines for inline declarations (F1 documentation for Standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abendeclaration_inline_guidl.htm)
 > - Inline declarations are particularly useful in combination with constructor expressions, such as `VALUE`. Find more information and examples in other cheat sheets, for example, [Constructor Expressions](05_Constructor_Expressions.md).
 > - ABAP Doc comments are supported for inline declarations. Find more information [here](04_ABAP_Object_Orientation.md#abap-doc-comments-for-inline-declarations).
@@ -1631,9 +1631,9 @@ cl_abap_utclong=>diff( EXPORTING high     = CONV utclong( '2024-01-01 15:30:00' 
 
 ### Assigning References to Data Reference Variables
     
-- As with other data objects and types, there are [special assignment rules](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconversion_references.htm) for [data reference variable](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendata_reference_variable_glosry.htm). See the ABAP Keyword Documentation.
-- An initial reference variable contains the [null reference](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abennull_reference_glosry.htm), which does not point to any objects. This means that it has neither a data type nor a class as a [dynamic type](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendynamic_type_glosry.htm).
-- The concepts of [upcast](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenup_cast_glosry.htm) and [downcast](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendown_cast_glosry.htm) enter the picture here. See the following code snippet.
+- As with other data objects and types, there are [special assignment rules](https://help.sap.com/docs/abap-cloud/abap-keyword/assignment-rules-for-reference-variables) for [data reference variable](https://help.sap.com/docs/abap-cloud/abap-keyword/data-reference-variable). See the ABAP Keyword Documentation.
+- An initial reference variable contains the [null reference](https://help.sap.com/docs/abap-cloud/abap-keyword/null-reference), which does not point to any objects. This means that it has neither a data type nor a class as a [dynamic type](https://help.sap.com/docs/abap-cloud/abap-keyword/dynamic-type).
+- The concepts of [upcast](https://help.sap.com/docs/abap-cloud/abap-keyword/upcast) and [downcast](https://help.sap.com/docs/abap-cloud/abap-keyword/downcast) enter the picture here. See the following code snippet.
 
 ```abap
 "Declaring data reference variables with static types
@@ -1726,15 +1726,15 @@ dref_1_i = CAST #( dref_6_i ).
 
 ### Creating Anonymous Data Objects
 
-[Anonymous data objects](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenanonymous_data_object_glosry.htm) are a topic related to data reference variables.
-These data objects are [unnamed data objects](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenunnamed_data_object_glosry.htm).
+[Anonymous data objects](https://help.sap.com/docs/abap-cloud/abap-keyword/anonymous-data-object) are a topic related to data reference variables.
+These data objects are [unnamed data objects](https://help.sap.com/docs/abap-cloud/abap-keyword/unnamed-data-object).
 Most of the data objects in the snippets above are named data objects (excluding the data reference variables), meaning that they can be addressed by a specific name. Unnamed data objects are literals and anonymous data objects. Anonymous data objects can be addressed using data reference variables.
 Unlike data objects created with the `DATA` statement, anonymous data objects are created at runtime. Data objects declared with `DATA` are created when the program is loaded.
 
 There are several ways to create anonymous data objects:
-- [`CREATE DATA`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapcreate_data.htm) statements
-- Using the instance operator [`NEW`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconstructor_expression_new.htm)
-- Addition `NEW` of the [`INTO`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapselect_into_target.htm) clause in ABAP SQL `SELECT` statements
+- [`CREATE DATA`](https://help.sap.com/docs/abap-cloud/abap-keyword/create-data) statements
+- Using the instance operator [`NEW`](https://help.sap.com/docs/abap-cloud/abap-keyword/new-instance-operator)
+- Addition `NEW` of the [`INTO`](https://help.sap.com/docs/abap-cloud/abap-keyword/select-into-target) clause in ABAP SQL `SELECT` statements
 
 ```abap
 "--------------------- CREATE DATA statements --------------------
@@ -1820,10 +1820,10 @@ SELECT *
 
 ### Constants and Immutable Variables
 
-[Constants](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconstant_glosry.htm) are [named data objects](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abennamed_data_object_glosry.htm) whose value cannot be changed at runtime. You declare them with the [`CONSTANTS`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapconstants.htm) statement. Unlike the `DATA` statement, a start value must be specified with the `VALUE` addition.
+[Constants](https://help.sap.com/docs/abap-cloud/abap-keyword/constant) are [named data objects](https://help.sap.com/docs/abap-cloud/abap-keyword/named-data-object) whose value cannot be changed at runtime. You declare them with the [`CONSTANTS`](https://help.sap.com/docs/abap-cloud/abap-keyword/constants) statement. Unlike the `DATA` statement, a start value must be specified with the `VALUE` addition.
 
-[Immutable variables](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenimmutable_variable_glosry.htm) can also be declared inline with the [declaration operator](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendeclaration_operator_glosry.htm)
- [`FINAL`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenfinal_inline.htm).
+[Immutable variables](https://help.sap.com/docs/abap-cloud/abap-keyword/immutable-variable) can also be declared inline with the [declaration operator](https://help.sap.com/docs/abap-cloud/abap-keyword/declaration-operator)
+ [`FINAL`](https://help.sap.com/docs/abap-cloud/abap-keyword/final-inline-declaration-for-immutable-variables).
 
 ```abap
 *&---------------------------------------------------------------------*
@@ -1873,11 +1873,11 @@ SELECT * FROM zdemo_abap_carr INTO TABLE @FINAL(itab_final_inl).
 
 ### Built-In Data Objects
 
-In [ABAP programs](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_program_glosry.htm), you can use built-in data objects, including:
+In [ABAP programs](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-program), you can use built-in data objects, including:
 
 | Built-in data object | Details |
 | -------- | ------- |
-| ABAP system fields | These fields, filled by the [ABAP runtime framework](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_runtime_frmwk_glosry.htm), can be used to query system information and more. Typically, they should only be read, and not overwritten. The fields are components of the built-in structure `sy` (or `syst`). Prominent ones are `sy-subrc` (return code of many ABAP statements; typically, the value 0 indicates success), `sy-tabix` (row index of internal tables), and `sy-index` (loop pass index), which can be used in [ABAP for Cloud Development](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_for_cloud_dev_glosry.htm). However, most of these fields should not be used in ABAP for Cloud Development (indicated by a syntax warning) because they refer to [Standard ABAP](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenstandard_abap_glosry.htm) contexts (e.g. classic dynpros and lists), or their values are not relevant in a cloud context. More information about the purpose of the individual components is available at [ABAP System Fields (F1 documentation for Standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abensystem_fields.htm).|
+| ABAP system fields | These fields, filled by the [ABAP runtime framework](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-runtime-framework), can be used to query system information and more. Typically, they should only be read, and not overwritten. The fields are components of the built-in structure `sy` (or `syst`). Prominent ones are `sy-subrc` (return code of many ABAP statements; typically, the value 0 indicates success), `sy-tabix` (row index of internal tables), and `sy-index` (loop pass index), which can be used in [ABAP for Cloud Development](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-for-cloud-development). However, most of these fields should not be used in ABAP for Cloud Development (indicated by a syntax warning) because they refer to [Standard ABAP](https://help.sap.com/docs/abap-cloud/abap-keyword/standard-abap) contexts (e.g. classic dynpros and lists), or their values are not relevant in a cloud context. More information about the purpose of the individual components is available at [ABAP System Fields (F1 documentation for Standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abensystem_fields.htm).|
 | `space` constant | It is of type `c`, length 1, and contains a blank character. |
 | `me` self-reference  | Used in ABAP Objects, it's a local reference variable for instance method implementations. At runtime, it points to the instance executing the method. It is primarily used to be explicit about, for exmaple, using instance attributes of the class, especially if there is a local data object with the same name.|
 
@@ -2200,9 +2200,9 @@ ENDCLASS.
 ## ABAP Enumerated Types and Objects
 - ABAP supports the concept of enumerations. 
 - Enumerations are a mixture of types and constants.
-- An [enumerated type](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenenum_type_glosry.htm) specifies a value set in addition to the actual type properties. 
-- [Enumerated objects](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenenumerated_object_glosry.htm) - data objects with an enumerated type - are mainly used to check allowed values. This usually restricts the actual parameters passed to methods to the enumerated values defined in the class. [Enumerated variables](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenenumerated_variable_glosry.htm) are variable enumerated objects. They can only contain the associated enumerated values. 
-- [CDS enumerated types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_enum_type_glosry.htm) are also available. Find more information in the [ABAP Dictionary (DDIC)](26_ABAP_Dictionary.md) cheat sheet.
+- An [enumerated type](https://help.sap.com/docs/abap-cloud/abap-keyword/enumerated-type) specifies a value set in addition to the actual type properties. 
+- [Enumerated objects](https://help.sap.com/docs/abap-cloud/abap-keyword/enumerated-object) - data objects with an enumerated type - are mainly used to check allowed values. This usually restricts the actual parameters passed to methods to the enumerated values defined in the class. [Enumerated variables](https://help.sap.com/docs/abap-cloud/abap-keyword/enumerated-variable) are variable enumerated objects. They can only contain the associated enumerated values. 
+- [CDS enumerated types](https://help.sap.com/docs/abap-cloud/abap-keyword/cds-enumerated-type) are also available. Find more information in the [ABAP Dictionary (DDIC)](26_ABAP_Dictionary.md) cheat sheet.
 
 Syntax:
 
@@ -2278,27 +2278,27 @@ DATA some_string TYPE string VALUE 'ap'.
 "DATA(dobj_enum_d) = CONV t_enum_struc( some_string ).
 ```
 
-Find more information on enumerated types in the (commented code of the) cheat sheet example and [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenenumerated_types_usage.htm). 
+Find more information on enumerated types in the (commented code of the) cheat sheet example and [here](https://help.sap.com/docs/abap-cloud/abap-keyword/enumerated-objects-enum). 
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## Notes in a Nutshell
 
 ### Type Conversions, Compatibility and Assignments
-A value assignment means that the value of a data object is transferred to a target data object. If the data types of the source and target are compatible, the content is copied unchanged. If they are incompatible and a suitable [conversion rule](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconversion_rule_glosry.htm) exists, the content is converted.
+A value assignment means that the value of a data object is transferred to a target data object. If the data types of the source and target are compatible, the content is copied unchanged. If they are incompatible and a suitable [conversion rule](https://help.sap.com/docs/abap-cloud/abap-keyword/conversion-rule) exists, the content is converted.
 The following cases must be distinguished with regard to the data type: 
 - The source and target data types are compatible, i.e. all technical type properties match. The content is transferred from the source to the target without being converted. 
 - The source and target data types are incompatible, but can be converted. The content of the source is converted according to the conversion rules and then transferred to the target. Two data types are convertible if a conversion rule exists for them. An exception is raised if the content of the source cannot be handled according to the conversion rules.
-- If the data objects are neither compatible nor convertible, no assignment can take place. If the syntax check detects this state, a syntax error is raised, otherwise an [uncatchable exception](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenuncatchable_exception_glosry.htm) is raised when the program is executed.
+- If the data objects are neither compatible nor convertible, no assignment can take place. If the syntax check detects this state, a syntax error is raised, otherwise an [uncatchable exception](https://help.sap.com/docs/abap-cloud/abap-keyword/uncatchable-exception) is raised when the program is executed.
 
-See the conversion rules for the different data types here: [Assignment and Conversion Rules](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconversion_rules.htm)
+See the conversion rules for the different data types here: [Assignment and Conversion Rules](https://help.sap.com/docs/abap-cloud/abap-keyword/assignment-and-conversion-rules)
 
 > [!NOTE]
-> - The [operands](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenoperand_glosry.htm) of many ABAP statements are assigned internally according to the assignment rules. 
-> - Typically, assignments are made using the assignment operator `=`. If necessary and applicable, the type is converted implicitly. However, you can also use the conversion operator [`CONV`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconstructor_expression_conv.htm) to convert types explicitly.
-> - For [lossless assignments](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenlossless_assignment_glosry.htm), the lossless operator [`EXACT`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconstructor_expression_exact.htm) can be used to perform checks before the conversion is performed to ensure that only valid values are assigned and that no values are lost in assignments.
+> - The [operands](https://help.sap.com/docs/abap-cloud/abap-keyword/operand) of many ABAP statements are assigned internally according to the assignment rules. 
+> - Typically, assignments are made using the assignment operator `=`. If necessary and applicable, the type is converted implicitly. However, you can also use the conversion operator [`CONV`](https://help.sap.com/docs/abap-cloud/abap-keyword/conv-conversion-operator) to convert types explicitly.
+> - For [lossless assignments](https://help.sap.com/docs/abap-cloud/abap-keyword/lossless-assignment-abenlossless_assignment_glosry), the lossless operator [`EXACT`](https://help.sap.com/docs/abap-cloud/abap-keyword/exact-lossless-operator) can be used to perform checks before the conversion is performed to ensure that only valid values are assigned and that no values are lost in assignments.
 > - In general, no checks are performed on assignments between compatible data objects. If a data object already contains an invalid value, for example, an invalid date or time in a date or time field, it is passed a valid value when the assignment is made to a compatible data object.
-> - The `applies_to_data` method of the [RTTI](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrun_time_type_identific_glosry.htm) class `cl_abap_datadescr` can be used to check type compatibility. See the executable example and the [Dynamic Programming cheat sheet](06_Dynamic_Programming.md).
+> - The `applies_to_data` method of the [RTTI](https://help.sap.com/docs/abap-cloud/abap-keyword/runtime-type-identification) class `cl_abap_datadescr` can be used to check type compatibility. See the executable example and the [Dynamic Programming cheat sheet](06_Dynamic_Programming.md).
     
 
 ```abap
@@ -3221,11 +3221,11 @@ The declaration context of data types (and objects) determines the validity and 
     - For example, methods. The local data and types can only be addressed within the method itself.
   - Class and interface attributes
     - Data types and objects can be declared in the declaration part of classes and interfaces. In classes, the visibility sections, as the name implies, determine how the attributes are visible. For example, attributes declared in the `PUBLIC SECTION` are visible globally. 
-    - Note the difference between [static](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenstatic_attribute_glosry.htm) and [instance attributes](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abeninstance_attribute_glosry.htm). Instance attributes of classes are bound to the lifetime of objects. They are created when an object is instantiated.
+    - Note the difference between [static](https://help.sap.com/docs/abap-cloud/abap-keyword/static-attribute) and [instance attributes](https://help.sap.com/docs/abap-cloud/abap-keyword/instance-attribute). Instance attributes of classes are bound to the lifetime of objects. They are created when an object is instantiated.
 - Program-independent data types 
-  - Declarations in the ABAP Dictionary, which is a special storage for the declarations of data types that are visible in all repository objects, provided that the [package](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenpackage_glosry.htm) check allows this.
+  - Declarations in the ABAP Dictionary, which is a special storage for the declarations of data types that are visible in all repository objects, provided that the [package](https://help.sap.com/docs/abap-cloud/abap-keyword/package) check allows this.
     - The data types of the ABAP Dictionary are not declared with the `TYPES` statement, but using ADT tools (and/or SAP GUI tools in systems where SAP GUI is available).
-    - The DDIC has many more [built-in types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbuiltin_ddic_type_glosry.htm) than ABAP. These types have other names. They cannot be used in ABAP programs. 
+    - The DDIC has many more [built-in types](https://help.sap.com/docs/abap-cloud/abap-keyword/built-in-ddic-type) than ABAP. These types have other names. They cannot be used in ABAP programs. 
     - The DDIC provides many options for defining types, including elementary data types (defined as data elements), reference types, complex types such as structured types and table types. Note that the name of a database table or a view can be used in type declarations to address the line type of these repository objects (for example, a structure: `DATA a TYPE some_db_table.`).
     - Furthermore, CDS also artifacts constitute global data types that can be referred to in ABAP.
     - Note the following trap: Local declarations hide global declarations of the same name. 
@@ -3237,10 +3237,10 @@ The declaration context of data types (and objects) determines the validity and 
 
 ### Getting Type Information and Creating Types/Data Objects at Runtime
 
-Using [Runtime Type Services (RTTS)](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrun_time_type_services_glosry.htm "Glossary Entry")
+Using [Runtime Type Services (RTTS)](https://help.sap.com/docs/abap-cloud/abap-keyword/runtime-type-services)
 you can ...
-- get type information on data objects, data types or [instances](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abeninstance_glosry.htm "Glossary Entry") at runtime ([Runtime Type Identification (RTTI)](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrun_time_type_identific_glosry.htm "Glossary Entry")).
-- define and create new data types as [type description objects](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentype_object_glosry.htm) at runtime ([Runtime Type Creation (RTTC)](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrun_time_type_creation_glosry.htm "Glossary Entry")).
+- get type information on data objects, data types or [instances](https://help.sap.com/docs/abap-cloud/abap-keyword/instance) at runtime ([Runtime Type Identification (RTTI)](https://help.sap.com/docs/abap-cloud/abap-keyword/runtime-type-identification)).
+- define and create new data types as [type description objects](https://help.sap.com/docs/abap-cloud/abap-keyword/type-description-object) at runtime ([Runtime Type Creation (RTTC)](https://help.sap.com/docs/abap-cloud/abap-keyword/runtime-type-creation)).
 
 For more information, see the [Dynamic Programming](06_Dynamic_Programming.md) cheat sheet.
 
@@ -3258,14 +3258,14 @@ For more information, see the [Dynamic Programming](06_Dynamic_Programming.md) c
 ### Typed Literals in ABAP SQL
 
 Typed literal:
-- Literal whose data types is defined by specifying a [built-in dictionary type](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenddic_builtin_types.htm) explicitly. 
+- Literal whose data types is defined by specifying a [built-in dictionary type](https://help.sap.com/docs/abap-cloud/abap-keyword/ddic-overview-of-all-built-in-dictionary-types) explicitly. 
 - Available for most but not all ABAP Dictionary data types.
 - Can be used in ABAP SQL and in ABAP CDS. 
 - Advantages of typed literals over untyped literals
   - Allow type-safe use of literals
   - Eliminate the need for (implicit type) conversions and casts, which can lead to surprising or erroneous results; also consider the conversion costs in terms of performance (typed literals are passed to the database and evaluated there without ABAP-specific type conversions). 
   - For better readability (you can immediately see what type is being used)
-- More information: Typed literals in [ABAP SQL](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_sql_typed_literals.htm) ([cast expressions in ABAP SQL](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensql_cast.htm)) and [ABAP CDS](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_typed_literal_v2.htm)
+- More information: Typed literals in [ABAP SQL](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-sql-typed-literals) ([cast expressions in ABAP SQL](https://help.sap.com/docs/abap-cloud/abap-keyword/sql-exp-sql-cast)) and [ABAP CDS](https://help.sap.com/docs/abap-cloud/abap-keyword/cds-ddl-cds-view-entity-typed-literals)
 
 ```abap
 "Specifying a built-in ABAP Dictionary type instead of an
@@ -3350,7 +3350,7 @@ date = '202511'.
   - An internal table from which to update the database table is created. It includes the indicator structure `comp_ind`.
   - The internal table is filled. Only one component is flagged as to be updated.
   - Other fields remain unchanged. Note that key fields must be included in `ind_tab` (indicator setting for key fields has no effect).
-- Find more information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapupdate.htm).
+- Find more information [here](https://help.sap.com/docs/abap-cloud/abap-keyword/update-writable-obj).
 
 ```abap
 TYPES ind_wa TYPE dbtab WITH INDICATORS comp_ind TYPE abap_bool.
@@ -3391,4 +3391,4 @@ UPDATE dbtab FROM TABLE @ind_tab INDICATORS NOT SET STRUCTURE comp_ind.
 > - [Disclaimer](./README.md#%EF%B8%8F-disclaimer)
 
 
-
+

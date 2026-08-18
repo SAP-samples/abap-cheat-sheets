@@ -16,7 +16,7 @@
 
 This cheat sheet ... 
 - provides a high-level overview on authorization checks in ABAP, supported by an executable example to explore the authorization checks in action. 
-- focuses on the SAP BTP ABAP Environment. Therefore, the procedure of assigning authorizations is different from, for example, [classic ABAP](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenclassic_abap_glosry.htm).
+- focuses on the SAP BTP ABAP Environment. Therefore, the procedure of assigning authorizations is different from, for example, [classic ABAP](https://help.sap.com/docs/abap-cloud/abap-keyword/classic-abap).
 - is meant to give an idea about the topic. Make sure that you consult the documentation for more details and the complete picture.
 
 ## Introduction
@@ -56,19 +56,19 @@ The following topic covers authorization-related terms and provides you with the
   ```
 
 - Notes on the statement:
-  - The authorization of the current user is checked. In [Standard ABAP](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenstandard_abap_glosry.htm), an addition is available with which you can specify other users.
-  - `'ZAUTH_OBJ'` stands for the name of an authorization object in uppercase letters. In [ABAP for Cloud Development](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_for_cloud_dev_glosry.htm), it must be a literal. It cannot be a (flat character-like) data object.
+  - The authorization of the current user is checked. In [Standard ABAP](https://help.sap.com/docs/abap-cloud/abap-keyword/standard-abap), an addition is available with which you can specify other users.
+  - `'ZAUTH_OBJ'` stands for the name of an authorization object in uppercase letters. In [ABAP for Cloud Development](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-for-cloud-development), it must be a literal. It cannot be a (flat character-like) data object.
   - `ID ... FIELD ...`: Specifies at least one and a maximum of 10 different authorization fields for the specified authorization object. The name of the autorization field in uppercase letters comes after `ID`, the value after `FIELD`.
   - The `DUMMY` addition specifies that an authorization field is not checked.
-  - The authorization check result is determined by the `sy-subrc` value. The value 0 means that the authorization check is successful or no check was performed. 4 means that the check is not successful. For information on other values, see the [ABAP Keyword Documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapauthority-check.htm).
+  - The authorization check result is determined by the `sy-subrc` value. The value 0 means that the authorization check is successful or no check was performed. 4 means that the check is not successful. For information on other values, see the [ABAP Keyword Documentation](https://help.sap.com/docs/abap-cloud/abap-keyword/authority-check-object).
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## Implicit Authorization Checks Using CDS Access Control for Read Accesses
 
 
-- Implicit authorization checks apply to several CDS entities, including [CDS view entities](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_v2_view_glosry.htm). 
-- These checks come into play when you access the entities via ABAP SQL and have defined access conditions in a [CDS role](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_role_glosry.htm). 
+- Implicit authorization checks apply to several CDS entities, including [CDS view entities](https://help.sap.com/docs/abap-cloud/abap-keyword/cds-view-entity). 
+- These checks come into play when you access the entities via ABAP SQL and have defined access conditions in a [CDS role](https://help.sap.com/docs/abap-cloud/abap-keyword/cds-role). 
 - These roles, which are evaluated for each user, are defined by CDS artifacts using `DEFINE ROLE` statements in DCL (data control language) source code. 
 - As a result, the returned data is limited to only what is permitted. 
 - The `@AccessControl.authorizationCheck` CDS entity annotation influences access control with the following options:
@@ -91,7 +91,7 @@ The following topic covers authorization-related terms and provides you with the
   }
   ```
 
-- Example CDS access control, which defines a CDS role and an [access rule](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_dcl_role_rules.htm).
+- Example CDS access control, which defines a CDS role and an [access rule](https://help.sap.com/docs/abap-cloud/abap-keyword/cds-dcl-define-role-access-rules).
   - Note that there are multiple access rules available to be specified. Refer to the documentation. 
   - In the example case, a conditional access rule is used with `grant select on ... where`.
   - `aspect pfcg_auth` is followed by a specification of an authorization object and authorization fields. The value for `ACTVT` is `03` (display authorization). See the example further down for the effect.
@@ -110,7 +110,7 @@ The following topic covers authorization-related terms and provides you with the
   }
   ```
 
-- Find more details in the ABAP Keyword Documentation and the subtopics: [ABAP CDS - Access Control](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_access_control.htm)
+- Find more details in the ABAP Keyword Documentation and the subtopics: [ABAP CDS - Access Control](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-cds-access-control)
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
@@ -467,15 +467,15 @@ ENDCLASS.
 
 ## Excursion: Authorization Control in RAP
 
-- This section focuses on [authorization control](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_auth_control_glosry.htm) in the ABAP RESTful Application Programming Model (RAP). 
+- This section focuses on [authorization control](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-authorization-control) in the ABAP RESTful Application Programming Model (RAP). 
 - The authorization control features safeguard your RAP business objects from unauthorized data access. 
-- You can define authorization control in the [RAP behavior definition (BDEF)](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_behavior_definition_glosry.htm) for each entity, which then needs to be implemented in the [RAP handler methods](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabp_handler_method_glosry.htm) of the [ABAP behavior pool (ABP)](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbehavior_pool_glosry.htm). 
-- In the BDEF, you can set authorization control for all [RAP BO operations](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_bo_operation_glosry.htm) of a specific entity or for particular RAP BO operations.
+- You can define authorization control in the [RAP behavior definition (BDEF)](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-behavior-definition) for each entity, which then needs to be implemented in the [RAP handler methods](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-handler-method) of the [ABAP behavior pool (ABP)](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-behavior-pool). 
+- In the BDEF, you can set authorization control for all [RAP BO operations](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-bo-operation) of a specific entity or for particular RAP BO operations.
 - For read operations on RAP business objects, you can utilize the CDS access control, which is automatically applied in managed scenarios. 
 - For modify operations, dedicated authorization implementation options are available, such as the following: 
   - Global authorization restricts data access or the ability to perform certain operations for an entire RAP BO, regardless of individual instances. This can depend on user roles. For example, if a user is not allowed to delete following the authorization check, the method handling the delete operation in the ABAP behavior pool is not invoked. In doing so, it allows you to reject a request before it reaches any other method of the behavior handler classes.
   - Instance authorization, on the other hand, applies checks based on the state of an entity instance. Both global and instance authorizazion checks can be implemented simultaneously. The authorization checks can be implemented using authorization objects.
-  - You can also implement authorization checks against incoming values using [RAP BO precheck](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_bo_precheck_glosry.htm). This prevents unwanted values from reaching the transactional buffer. Find more information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbdl_precheck.htm).
+  - You can also implement authorization checks against incoming values using [RAP BO precheck](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-bo-precheck). This prevents unwanted values from reaching the transactional buffer. Find more information [here](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-precheck).
 
 The following code snippets provide a rudimentary code skeleton to get an idea about global and instance authorization implementations. For more detailed examples, refer to the links provided below.
 
@@ -628,18 +628,18 @@ More information and implementation examples:
 - For the complete picture, see the following topics in the Development guide for the ABAP RESTful Application Programming Model: 
   - [Authorization Control](https://help.sap.com/docs/abap-cloud/abap-rap/authorization-control?version=sap_btp)
   - [Developing Authorization](https://help.sap.com/docs/abap-cloud/abap-rap/developing-authorization?version=sap_btp)
-- Find more information on the variety of syntax options in the BDEF in the ABAP Keyword Documentation [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbdl_authorization.htm)
-- The BDEF syntax also allows to specify [authorization contexts](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbdl_authorization_context.htm).
-- Using the [PRIVILEGED](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapeml_privileged.htm) mode, you can circumvent authorization checks performed by authorization objects that are called, for example, by global and instance authorization RAP handler methods.
+- Find more information on the variety of syntax options in the BDEF in the ABAP Keyword Documentation [here](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-authorization)
+- The BDEF syntax also allows to specify [authorization contexts](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-authorizationcontext).
+- Using the [PRIVILEGED](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-eml-privileged) mode, you can circumvent authorization checks performed by authorization objects that are called, for example, by global and instance authorization RAP handler methods.
 
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## More Information
 - [Identity and Access Management (IAM)](https://help.sap.com/docs/btp/sap-business-technology-platform/identity-and-access-management-iam)
-- [`AUTHORITY-CHECK OBJECT`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapauthority-check.htm)
+- [`AUTHORITY-CHECK OBJECT`](https://help.sap.com/docs/abap-cloud/abap-keyword/authority-check-object)
 - CDS Access Control
   - [SAP Help Portal](https://help.sap.com/docs/abap-cloud/abap-data-models/cds-authorization-concept)
-  - [ABAP Keyword Documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_access_control.htm)
+  - [ABAP Keyword Documentation](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-cds-access-control)
 - [Tutorial: Create Authorization Model and App in SAP BTP, ABAP Environment](https://developers.sap.com/tutorials/abap-environment-authorization.html)
 - [Authorization Control in RAP](https://help.sap.com/docs/ABAP_Cloud/f055b8bf582d4f34b91da667bc1fcce6/375a8124b22948688ac1c55297868d06.html?version=sap_btp)
