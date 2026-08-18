@@ -5,14 +5,14 @@ data objects. It may be helpful for a better understanding of how to
 handle data in ABAP including a glance on casting and conversions.
 
 After its declaration, a [data
-object](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendata_object_glosry.htm "Glossary Entry")
+object](https://help.sap.com/docs/abap-cloud/abap-keyword/data-object)
 is usable in its context (procedure, class, program) according to its
 type. For example, a numeric data object can be assigned the result of a
 calculation:
 
 
 > [!NOTE]
-> For checking out the code snippets in [ABAP Cloud](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_cloud_glosry.htm), you can use the interface `if_oo_adt_classrun` in a class by implementing the method `if_oo_adt_classrun~main`.
+> For checking out the code snippets in [ABAP Cloud](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-cloud), you can use the interface `if_oo_adt_classrun` in a class by implementing the method `if_oo_adt_classrun~main`.
 
 ``` abap
 DATA num TYPE i.
@@ -34,7 +34,7 @@ object. This directly represents the binary value `0011 0010 0000 0000
 0011 0111 0000 0000` stored in the 4 bytes allocated to the 4-byte
 integer number in the memory. This value is platform dependent and for
 numeric types is defined by the [byte
-order](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbyte_order_glosry.htm "Glossary Entry")
+order](https://help.sap.com/docs/abap-cloud/abap-keyword/byte-order-abenbyte_order_glosry)
 order, where either the most significant (big endian) or least
 significant (little endian) byte is written to the first memory
 location. The decimal value of the hexadecimal value `32003700` shown here
@@ -62,7 +62,7 @@ the data type, that derives the value `27` from the actual hexadecimal
 content, which is `32003700` as in the previous example! In
 this case, `32003700` is the encoding of the string
 `27` in the Unicode character representation
-[UCS-2](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenucs2_glosry.htm "Glossary Entry"),
+[UCS-2](https://help.sap.com/docs/abap-cloud/abap-keyword/ucs-2),
 which is supported by ABAP in Unicode systems. The Unicode character
 representation also depends on the platform-dependent byte order.
 
@@ -89,15 +89,15 @@ responsible for the fact, that different kind of operations (numeric
 calculation, string concatenation, bit-operation) can be applied to the
 respective data objects. Using these examples we can have now look at
 the basic concepts of
-[casting](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencast_casting_glosry.htm "Glossary Entry")
+[casting](https://help.sap.com/docs/abap-cloud/abap-keyword/casting)
 and [type
-conversion](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentype_conversion_glosry.htm "Glossary Entry")
+conversion](https://help.sap.com/docs/abap-cloud/abap-keyword/type-conversion)
 and their relation to bits and bytes.
 
 In ABAP, the term casting means nothing more than treating a data object
 according to a different data type than the one that is permanently
 assigned to it. This can be done using [field
-symbols](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenfield_symbol_glosry.htm "Glossary Entry"),
+symbols](https://help.sap.com/docs/abap-cloud/abap-keyword/field-symbol),
 with which a new (symbolic) name and a new type can be defined for the
 memory area of a data object. When the memory area is accessed using a
 field symbol, it is handled according to the type of the field symbol.
@@ -129,7 +129,7 @@ objects of different data types. The goal of such a conversion is to
 preserve the type-specific meaning of the content in the source field as
 far as possible for the data type of the target field. For this purpose,
 ABAP contains a large set of [conversion
-rules](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconversion_rules.htm).
+rules](https://help.sap.com/docs/abap-cloud/abap-keyword/assignment-and-conversion-rules).
 A simple example is shown here:
 
 ``` abap
@@ -172,10 +172,10 @@ type.
 > [!TIP]
 > For reasons of simplicity this sheet is restricted to named elementary
 variables. Note that in particular the same holds for
-[literals](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_literal_glosry.htm "Glossary Entry")
+[literals](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-literal)
 that are handled internally in such a way as if they were constants of
 the data type assigned to the literal. In the preceding example,
 `text` can be replaced by a literal `'27'` yielding
 the same results.
 
-
+

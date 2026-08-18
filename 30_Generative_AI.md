@@ -6,7 +6,7 @@
   - [Information and Documentation](#information-and-documentation)
   - [Using the ABAP AI SDK](#using-the-abap-ai-sdk)
 
-This ABAP cheat sheet provides references to detailed information on *Generative AI in ABAP Cloud* and explores [released](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenreleased_api_glosry.htm) ABAP classes available in the *ABAP AI SDK powered by Intelligent Scenario Lifecycle Management*.
+This ABAP cheat sheet provides references to detailed information on *Generative AI in ABAP Cloud* and explores [released](https://help.sap.com/docs/abap-cloud/abap-keyword/released-api) ABAP classes available in the *ABAP AI SDK powered by Intelligent Scenario Lifecycle Management*.
 
 ## Information and Documentation
 

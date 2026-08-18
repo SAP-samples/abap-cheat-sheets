@@ -24,9 +24,9 @@
 
 This cheat sheet gathers basic information on [ABAP Managed Database
 Procedures
-(AMDP)](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_managed_db_proc_glosry.htm "Glossary Entry").
+(AMDP)](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-managed-database-procedures).
 Find more details
-[here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenamdp.htm)
+[here](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-managed-database-procedures-amdp)
 in the ABAP Keyword Documentation.
 
 ## Introduction
@@ -34,39 +34,39 @@ in the ABAP Keyword Documentation.
 -   AMDP are a class-based framework for managing and calling
 
     -   [database
-        procedures](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendatabase_procedure_glosry.htm "Glossary Entry")
+        procedures](https://help.sap.com/docs/abap-cloud/abap-keyword/database-procedure)
         (which is a synonym for [stored
-        procedures](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenstored_procedure_glosry.htm "Glossary Entry"), i.
+        procedures](https://help.sap.com/docs/abap-cloud/abap-keyword/stored-procedure), i.
         e. the procedures are stored in the database - the [SAP HANA
-        database](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenhana_database_glosry.htm "Glossary Entry")
+        database](https://help.sap.com/docs/abap-cloud/abap-keyword/sap-hana-database)
         in this case - and executed there)
     -   [database
-        functions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendatabase_function_glosry.htm "Glossary Entry")
+        functions](https://help.sap.com/docs/abap-cloud/abap-keyword/database-function)
         (which are [SQLScript
-        functions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensql_script_function_glosry.htm "Glossary Entry")
+        functions](https://help.sap.com/docs/abap-cloud/abap-keyword/sqlscript-function)
         in the SAP HANA database)
 
-    in [AS ABAP](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenas_abap_glosry.htm "Glossary Entry").
+    in [AS ABAP](https://help.sap.com/docs/abap-cloud/abap-keyword/application-server-abap).
 
 -   "ABAP managed" enters the picture in ABAP with the option of
     implementing special [AMDP
-    procedures](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenamdp_procedure_glosry.htm "Glossary Entry")
+    procedures](https://help.sap.com/docs/abap-cloud/abap-keyword/amdp-procedure)
     as database procedures and [AMDP
-    functions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenamdp_function_glosry.htm "Glossary Entry")
+    functions](https://help.sap.com/docs/abap-cloud/abap-keyword/amdp-function)
     as database functions.
 -   The implementations are programmed using a database-specific
     language. Currently, AMDP only supports database procedures and
     functions from the SAP HANA database. That is,
-    [SQLScript](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensql_script_glosry.htm "Glossary Entry")
+    [SQLScript](https://help.sap.com/docs/abap-cloud/abap-keyword/sqlscript)
     is the programming language of choice.
 -   AMDP procedures and functions are part of a dedicated [AMDP
-    class](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenamdp_class_glosry.htm "Glossary Entry")
+    class](https://help.sap.com/docs/abap-cloud/abap-keyword/amdp-class)
     and declared and implemented as part of a method. The classes and
     methods have certain characteristics as outlined further down.
 -   The AMDP framework replicates the procedure or function to the
     database system, i. e. despite the fact that the programming happens
     in an AMDP class (which is an [ABAP
-    Repository](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_repository_glosry.htm "Glossary Entry")
+    Repository](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-repository)
     object as other global classes, too), the (SQLScript) code is
     executed only on the (SAP HANA) database and not in AS ABAP, i. e.
     method calls are sent to the database procedure or function.
@@ -74,26 +74,26 @@ in the ABAP Keyword Documentation.
 > [!NOTE]
 >- The use of AMDP is not recommended if the same task can be
         achieved using [ABAP
-        SQL](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_sql_glosry.htm "Glossary Entry").
+        SQL](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-sql-abenabap_sql_glosry).
 >- AMDP classes can only be edited with the [ABAP development tools for Eclipse
-        (ADT)](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenadt_glosry.htm "Glossary Entry").
+        (ADT)](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-development-tools-for-eclipse).
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## AMDP Classes
 
--   An [AMDP class](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenamdp_class_glosry.htm "Glossary Entry")
-    is an [ABAP repository](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_repository_glosry.htm "Glossary Entry")
+-   An [AMDP class](https://help.sap.com/docs/abap-cloud/abap-keyword/amdp-class)
+    is an [ABAP repository](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-repository)
     object like other global classes.
 -   However, an AMDP class includes the specification of the interface
     `IF_AMDP_MARKER_HDB` for the SAP HANA
     database (indicated by `HDB`), which is currently the
     only possible database.
 -   An AMDP class can contain both (one or more) [AMDP
-    methods](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenamdp_method_glosry.htm "Glossary Entry")
+    methods](https://help.sap.com/docs/abap-cloud/abap-keyword/amdp-method)
     and non-AMDP methods.
 
-Example for a [declaration  part](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendeclaration_part_glosry.htm "Glossary Entry")
+Example for a [declaration  part](https://help.sap.com/docs/abap-cloud/abap-keyword/declaration-part)
 of an AMDP class:
 
 ```abap
@@ -114,15 +114,15 @@ ENDCLASS.
 ## AMDP Methods
 
 -   Can be created as [instance
-    methods](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abeninstance_method_glosry.htm "Glossary Entry")
+    methods](https://help.sap.com/docs/abap-cloud/abap-keyword/instance-method)
     using <code>METHODS</code> or [static
-    methods](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenstatic_method_glosry.htm "Glossary Entry")
+    methods](https://help.sap.com/docs/abap-cloud/abap-keyword/static-method)
     using <code>CLASS-METHODS</code> in any visibility section.
 -   Cannot be identified as AMDP methods in the declaration part of the
     class since there are no specific additions to the methods.
-    Exceptions: AMDP function implementations that implement any [CDS table functions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_table_function_glosry.htm "Glossary Entry")
+    Exceptions: AMDP function implementations that implement any [CDS table functions](https://help.sap.com/docs/abap-cloud/abap-keyword/cds-table-function)
     as shown further down and method declarations using [`AMDP
-    OPTIONS`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapmethods_amdp_options.htm)
+    OPTIONS`](https://help.sap.com/docs/abap-cloud/abap-keyword/class-methods-amdp-options)
     that are not dealt with here.
 
 AMDP method declarations in any visibility section like non-AMDP
@@ -149,23 +149,23 @@ PRIVATE SECTION.
 
 Despite the fact that AMDP methods cannot be identified as such from the
 [declaration
-part](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendeclaration_part_glosry.htm "Glossary Entry")
+part](https://help.sap.com/docs/abap-cloud/abap-keyword/declaration-part)
 (apart from the exceptions mentioned above), the declaration part of
 [AMDP
-procedures](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenamdp_procedure_glosry.htm "Glossary Entry")
+procedures](https://help.sap.com/docs/abap-cloud/abap-keyword/amdp-procedure)
 has special characteristics:
 
 -   Parameters must be [passed by
-    value](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenpass_by_value_glosry.htm "Glossary Entry")
+    value](https://help.sap.com/docs/abap-cloud/abap-keyword/pass-by-value)
     using <code>VALUE(...)</code>. [Passing by
-    reference](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenpass_by_reference_glosry.htm "Glossary Entry")
+    reference](https://help.sap.com/docs/abap-cloud/abap-keyword/pass-by-reference)
     is not allowed.
 -   Parameter types ...
     -   must not be generic.
     -   can only be [elementary data
-        types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenelementary_data_type_glosry.htm "Glossary Entry")
+        types](https://help.sap.com/docs/abap-cloud/abap-keyword/elementary-data-type)
         and [table
-        types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentable_type_glosry.htm "Glossary Entry")
+        types](https://help.sap.com/docs/abap-cloud/abap-keyword/table-type)
         with a structured row type (and this type can only contain
         elementary data types as components).
 -   Return values cannot be declared using <code>RETURNING</code>.
@@ -188,7 +188,7 @@ PUBLIC SECTION.
 ```
 
 In contrast to the declaration part, the [implementation
-part](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenamdp_procedure_method_glosry.htm "Glossary Entry")
+part](https://help.sap.com/docs/abap-cloud/abap-keyword/amdp-procedure-implementation)
 of an AMDP method has multiple special additions for AMDP purposes
 following <code>METHOD</code> and the method name:
 
@@ -223,11 +223,11 @@ ENDMETHOD.
 
 Note:
 
--   In [ABAP for Cloud Development](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenabap_for_sap_cloud_glosry.htm) (i.e. the [restricted ABAP language version](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrestricted_version_glosry.htm "Glossary Entry")
+-   In [ABAP for Cloud Development](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenabap_for_sap_cloud_glosry.htm) (i.e. the [restricted ABAP language version](https://help.sap.com/docs/abap-cloud/abap-keyword/restricted-abap-language-version)
     scope), only reads are allowed. Hence, the addition `OPTIONS READ-ONLY` is mandatory. Furthermore, you must make sure
     that the database objects that are specified after `USING` are accessible.
--   Generally, in [Standard ABAP](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenstandard_abap_glosry.htm) (i.e. the [unrestricted ABAP language
-    version](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenunrestricted_version_glosry.htm "Glossary Entry") scope), more syntax options are allowed for AMDP method declaration
+-   Generally, in [Standard ABAP](https://help.sap.com/docs/abap-cloud/abap-keyword/standard-abap) (i.e. the [unrestricted ABAP language
+    version](https://help.sap.com/docs/abap-cloud/abap-keyword/unrestricted-abap-language-version) scope), more syntax options are allowed for AMDP method declaration
     and implementation parts. Check the ABAP Keyword Documentation for
     more details as covered further down.
 
@@ -235,8 +235,8 @@ Note:
 
 ## AMDP Functions
 
-[Scalar](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenamdp_scalar_function_glosry.htm "Glossary Entry") and [table functions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentable_function_glosry.htm "Glossary Entry") can be managed as [AMDP functions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenamdp_function_glosry.htm "Glossary Entry").
-[AMDP table functions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenamdp_table_function_glosry.htm "Glossary Entry"), as the name suggests, have a tabular [return value](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenreturn_value_glosry.htm "Glossary Entry"), while AMDP scalar functions have a scalar (i.e. an elementary) return value. These functions allow complex custom calculations to be executed directly on the SAP HANA database to boost performance, enhancing performance and enabling reuse.
+[Scalar](https://help.sap.com/docs/abap-cloud/abap-keyword/amdp-scalar-function) and [table functions](https://help.sap.com/docs/abap-cloud/abap-keyword/table-function) can be managed as [AMDP functions](https://help.sap.com/docs/abap-cloud/abap-keyword/amdp-function).
+[AMDP table functions](https://help.sap.com/docs/abap-cloud/abap-keyword/amdp-table-function), as the name suggests, have a tabular [return value](https://help.sap.com/docs/abap-cloud/abap-keyword/return-value), while AMDP scalar functions have a scalar (i.e. an elementary) return value. These functions allow complex custom calculations to be executed directly on the SAP HANA database to boost performance, enhancing performance and enabling reuse.
 
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
@@ -246,7 +246,7 @@ Note:
 Two kinds of AMDP table functions are available:
 
 - *AMDP table functions for AMDP methods*: Functions that can only be accessed in other AMDP methods (i. e. other AMDP functions or procedures) and cannot be called directly in ABAP
-- *AMDP table functions for CDS table functions*: Functions that implement [CDS table functions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_table_function_glosry.htm "Glossary Entry") that can be accessed in ABAP SQL (described further down)
+- *AMDP table functions for CDS table functions*: Functions that implement [CDS table functions](https://help.sap.com/docs/abap-cloud/abap-keyword/cds-table-function) that can be accessed in ABAP SQL (described further down)
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
@@ -306,13 +306,13 @@ ENDMETHOD.
 
 #### AMDP Table Functions for CDS Table Functions
 
-- Each [CDS table function](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_table_function_glosry.htm "Glossary Entry") is linked with an AMDP function in which it is implemented using SQLScript.
+- Each [CDS table function](https://help.sap.com/docs/abap-cloud/abap-keyword/cds-table-function) is linked with an AMDP function in which it is implemented using SQLScript.
 - Can be used as data sources of ABAP SQL read statements.
 - Characteristics for method declaration and implementation parts regarding *AMDP functions for CDS table functions*:
   - Method can only be declared as a static method in the public visibility section of an AMDP class using `CLASS-METHODS`.
   - For the declaration, there is a special form with the addition `FOR TABLE FUNCTION`.
-  - The [parameter interface](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenparameter_interface_glosry.htm "Glossary Entry")
-    is not specified. Instead, the input parameters are determined by the [input parameters](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abeninput_parameter_glosry.htm "Glossary Entry") of the CDS table function (i. e. the names and data types - which are always elementary - specified there are used). As the
+  - The [parameter interface](https://help.sap.com/docs/abap-cloud/abap-keyword/parameter-interface)
+    is not specified. Instead, the input parameters are determined by the [input parameters](https://help.sap.com/docs/abap-cloud/abap-keyword/input-parameter) of the CDS table function (i. e. the names and data types - which are always elementary - specified there are used). As the
       return value, a standard table with an empty key is generated based on the structured row type including the components as specified in the CDS table function.
 
 **Using AMDP table functions for CDS table functions**
@@ -343,11 +343,11 @@ define table function some_ddl_source
   implemented by method amdp_class=>amdp_method;
 ```
 
-- You define a [CDS DDL](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_ddl_glosry.htm "Glossary Entry") source, i. e. a [CDS entity](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_entity_glosry.htm "Glossary Entry"), with the notation `define table function`.
+- You define a [CDS DDL](https://help.sap.com/docs/abap-cloud/abap-keyword/cds-ddl) source, i. e. a [CDS entity](https://help.sap.com/docs/abap-cloud/abap-keyword/cds-entity), with the notation `define table function`.
 - Optionally, you can specify input parameters using `... with parameters parameter1, parameter2, ...` in a comma-separated list. Elementary data types are expected.
-- You must specify an element list using `... returns { element1; element2; ...; } ...`. The elements - elementary data types are expected - are separated by semicolons and determine the components of the structured data type of the tabular return value. The syntax allows to specify key elements using the `key` addition. Find more information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABENCDS_F1_RETURN_LIST_ELEMENT.html).
+- You must specify an element list using `... returns { element1; element2; ...; } ...`. The elements - elementary data types are expected - are separated by semicolons and determine the components of the structured data type of the tabular return value. The syntax allows to specify key elements using the `key` addition. Find more information [here](https://help.sap.com/docs/abap-cloud/abap-keyword/cds-ddl-define-table-function-element).
 - You must specify the `implemented by method` addition followed by a fully qualified method name in the form of `amdp_class=>amdp_method` using the names of the AMDP class and method.
-- Find more information on table functions [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_table_functions.htm) and in the subtopics. Regarding the annotations that can be specified, in [ABAP for Cloud Development](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_for_cloud_dev_glosry.htm) in particular, pay attention to client handling and client safety. 
+- Find more information on table functions [here](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-cds-table-functions) and in the subtopics. Regarding the annotations that can be specified, in [ABAP for Cloud Development](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-for-cloud-development) in particular, pay attention to client handling and client safety. 
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
@@ -356,7 +356,7 @@ define table function some_ddl_source
 Two kinds of AMDP scalar functions are available:
 
 - *AMDP scalar functions for AMDP methods*: Functions that can be accessed in other AMDP methods (i. e. other AMDP functions or procedures) and called directly in ABAP
-- *AMDP scalar functions for CDS scalar functions*: Functions that implement [CDS scalar functions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_scalar_function_glosry.htm) that can be accessed in ABAB CDS and ABAP SQL (described further down)
+- *AMDP scalar functions for CDS scalar functions*: Functions that implement [CDS scalar functions](https://help.sap.com/docs/abap-cloud/abap-keyword/cds-scalar-function) that can be accessed in ABAB CDS and ABAP SQL (described further down)
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
@@ -381,18 +381,18 @@ Among the differences are:
 - No parameter interface is specified in the declaration. Parameters are derived from the associated CDS scalar function. Input parameters (optional) and a return value are available. All  must be typed with an elementary type.
 - Where used: 
   - CDS view entities; different positions such as in the element list, in an `ON` or `WHERE` condition and others, are possible
-  - ABAP SQL (possible for [SQL-based scalar functions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_sql_scalar_glosry.htm))
+  - ABAP SQL (possible for [SQL-based scalar functions](https://help.sap.com/docs/abap-cloud/abap-keyword/sql-based-scalar-function))
 
 > [!NOTE]
-> - CDS scalar functions are available as [analytical scalar functions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_ana_scalar_glosry.htm) and [SQL-based scalar functions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_sql_scalar_glosry.htm), i.e. they are either evalauted by an SQL environment or an analytical runtime environment.
-> - The example below focuses on SQL-based scalar functions. Analytical scalar functions are predelivered [system functions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_system_func_glosry.htm) and cannot be user-defined. Find more information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABENCDS_ANA_SCALAR_FUNCTION.html).
+> - CDS scalar functions are available as [analytical scalar functions](https://help.sap.com/docs/abap-cloud/abap-keyword/analytical-scalar-function) and [SQL-based scalar functions](https://help.sap.com/docs/abap-cloud/abap-keyword/sql-based-scalar-function), i.e. they are either evalauted by an SQL environment or an analytical runtime environment.
+> - The example below focuses on SQL-based scalar functions. Analytical scalar functions are predelivered [system functions](https://help.sap.com/docs/abap-cloud/abap-keyword/cds-system-function) and cannot be user-defined. Find more information [here](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-cds-analytical-scalar-functions).
 
 **Using AMDP scalar functions for CDS scalar functions**
 
 To use CDS scalar functions, you need these three development objects:
 
 - CDS scalar function as CDS entity defined using `define scalar function`
-- [CDS scalar function implementation reference](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_dsfi_glosry.htm) that binds the scalar function to the SQL environment and to an AMDP function implementation
+- [CDS scalar function implementation reference](https://help.sap.com/docs/abap-cloud/abap-keyword/cds-scalar-function-implementation-reference) that binds the scalar function to the SQL environment and to an AMDP function implementation
 - AMDP function implementing the scalar function as database function in an AMDP class
   - Declaration: `CLASS-METHODS some_meth FOR SCALAR FUNCTION some_cds_scalar_func.` 
   - Note that there is no parameter interface. Parameters are derived from the CDS scalar function.
@@ -438,13 +438,13 @@ define scalar function zdemo_abap_scalar_func
 - Input parameters can optionally be specified with `with parameter` in a comma-separated list, 
 - Non-optional scalar return value
 - Typing options:
-  - [Built-in DDIC types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbuiltin_ddic_type_glosry.htm), [CDS simple types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_simple_type_glosry.htm), [DDIC data elements](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendata_element_glosry.htm)
+  - [Built-in DDIC types](https://help.sap.com/docs/abap-cloud/abap-keyword/built-in-ddic-type), [CDS simple types](https://help.sap.com/docs/abap-cloud/abap-keyword/cds-simple-type), [DDIC data elements](https://help.sap.com/docs/abap-cloud/abap-keyword/ddic-data-element)
   - Referencing types using `TYPE OF some_inp_param`: `some_inp_param` can be the name of any input parameter from the list, and that does not reference a type itself
   - Input parameters can be typed with the generic types `any` and `numeric`
   - `with reference type` addition: 
     - Specifies a reference type and refines what type is allowed for the actual parameter passed for the input and return parameters
     - Specification options include a reference to a currency key (`#CUKY`), a unit key (`#UNIT`), or a calculated unit (`#CALC`), or none of them (`#NONE`); for some types such as `abap.quan` and `abap.curr`, the reference type is required 
-    - The addition also allows to specify reference types dynamically using a `case` statement; find more information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_scalar_typing.htm)
+    - The addition also allows to specify reference types dynamically using a `case` statement; find more information [here](https://help.sap.com/docs/abap-cloud/abap-keyword/cds-ddl-typing)
 
 
 The following example includes the creation of the three required artifacts (CDS scalar function, CDS scalar function implementation reference, AMDP class including an *AMDP scalar function for CDS scalar function*, as well as an *AMDP scalar function for AMDP method*). The AMDP class implements the `if_oo_adt_classrun` interface, making the class executable. The simplified example illustrates AMDP scalar functions at a high level. After activating all artifacts, choose *F9* in ADT to run the class. The example is set up to display output in the console. 
@@ -768,7 +768,7 @@ define view entity zdemo_abap_cds_ve_w_scalar
 
 > [!IMPORTANT]  
 > - ABAP SQL features implicit client handling.
-> - You cannot disable this feature in ABAP for Cloud Development, as you can in [Standard ABAP](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenstandard_abap_glosry.htm). You can only access your own client in ABAP for Cloud Development.
+> - You cannot disable this feature in ABAP for Cloud Development, as you can in [Standard ABAP](https://help.sap.com/docs/abap-cloud/abap-keyword/standard-abap). You can only access your own client in ABAP for Cloud Development.
 > - Native SQL, unlike ABAP SQL, does not feature implicit client handling. AMDP, which uses Native SQL, can be used in ABAP for Cloud Development. It is essential to ensure AMDP accesses only client-safe repository objects, meaning it retrieves data solely from client-dependent sources providing data of one client, i.e. the current client. Cross-client access must be avoided. Client-independent data sources are implicitly client-safe.
 > - Dedicated additions and annotations in the context of AMDP ensure client safety.
 
@@ -834,17 +834,17 @@ To ensure client safety, the following prerequisites must be met.
 
 > [!NOTE]
 > - Using pre-delivered repository objects in ABAP for Cloud Development:
->   - Use only pre-delivered AMDP methods with a [C4 contract](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABENC4_CONTRACT_GLOSRY.html).
->   - Create and use your own wrapper CDS view entities for pre-delivered CDS view entities with a [C1 contract](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABENC1_CONTRACT_GLOSRY.html).
+>   - Use only pre-delivered AMDP methods with a [C4 contract](https://help.sap.com/docs/abap-cloud/abap-keyword/c4-contract-use-in-abap-managed-database-procedures).
+>   - Create and use your own wrapper CDS view entities for pre-delivered CDS view entities with a [C1 contract](https://help.sap.com/docs/abap-cloud/abap-keyword/c1-contract-use-system-internally).
 > - More information: 
->   - The table in [this topic](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABENAMDP_CALL_MATRICES.html) shows an overview of specification options regarding client safety.
->   - [Client Handling in CDS Table Functions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABENCDS_FUNC_CLIENT_HANDLING.html)
+>   - The table in [this topic](https://help.sap.com/docs/abap-cloud/abap-keyword/class-methods-client-handling-using-matrices) shows an overview of specification options regarding client safety.
+>   - [Client Handling in CDS Table Functions](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-cds-client-handling-in-cds-table-functions)
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## More Information 
 
-- AMDP in ABAP for Cloud Development: [ABAP Keyword Documentation (ABAP for Cloud Development)](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenamdp.htm)
+- AMDP in ABAP for Cloud Development: [ABAP Keyword Documentation (ABAP for Cloud Development)](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-managed-database-procedures-amdp)
 - AMDP in Standard ABAP: [ABAP Keyword Documentation (Standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenamdp.htm)
     > [!TIP]
     > Checking if AMDP is supported in classic ABAP: 

@@ -33,12 +33,12 @@ The cheat sheet aims to illustrate the BAdI-related ABAP syntax with simple, sel
     - With the first two properties set, BAdIs are considered context-free. 
     - Context-dependent instantiation means the context controls instantiation, allowing only one instance for each context and implementing class. The prerequisite is the implementation of the tag interface `IF_BADI_CONTEXT`. The `GET BADI` statement includes the `CONTEXT` addition relevant here, which is not covered in this cheat sheet. Refer to the documentation for more details.
 - BAdI methods are implemented in BAdI implementations.
-  - A BAdI implementation consists of a BAdI implementation class whose instances enhance the functionality at runtime in the form of an [object plug-in](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenobject_plugin_glosry.htm).
+  - A BAdI implementation consists of a BAdI implementation class whose instances enhance the functionality at runtime in the form of an [object plug-in](https://help.sap.com/docs/abap-cloud/abap-keyword/object-plug-in).
   - Multiple BAdI implementations can be assigned to a single BAdI.
   - BAdI methods can be called in ABAP programs exclusively via the associated BAdI object using `CALL BADI`.
 
 > [!NOTE]
-> The steps and syntax outlined in this document focus on the kernel-based BAdI concept, which integrates BAdIs in ABAP for use with related ABAP syntax. Legacy classic BAdIs found in [classic ABAP](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenclassic_abap_glosry.htm) are not covered here. In classic ABAP, the BAdI builder, an ABAP Workbench tool, allows you to create and maintain BAdIs. The relevant transaction codes are `SE18` for defining and `SE19` for implementing BAdIs.
+> The steps and syntax outlined in this document focus on the kernel-based BAdI concept, which integrates BAdIs in ABAP for use with related ABAP syntax. Legacy classic BAdIs found in [classic ABAP](https://help.sap.com/docs/abap-cloud/abap-keyword/classic-abap) are not covered here. In classic ABAP, the BAdI builder, an ABAP Workbench tool, allows you to create and maintain BAdIs. The relevant transaction codes are `SE18` for defining and `SE19` for implementing BAdIs.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
@@ -379,12 +379,12 @@ This section provides high-level walkthrough examples to illustrate simplified B
 
 - Creates a new BAdI object and assigns the BAdI reference to a BAdI reference variable.
 - If the BAdI includes filters, the addition `FILTERS` must be specified, followed by assignments. The arguments for the filters must by type-compliant. Note that filters can also be defined to use only constants. In this case, only literals and constants can be specified. If a BAdI does not define filters, the `FILTERS` addition cannot be specified.
-- After instantiation, the system searches for BAdI implementation classes. Only active classes that match the filter criteria are included in the search. If no matching implementations are found, the system will look for standard implementations. If none are found, it will use the fallback class, if available. For more information, refer to the [ABAP Keyword Documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABAPGET_BADI.html).
+- After instantiation, the system searches for BAdI implementation classes. Only active classes that match the filter criteria are included in the search. If no matching implementations are found, the system will look for standard implementations. If none are found, it will use the fallback class, if available. For more information, refer to the [ABAP Keyword Documentation](https://help.sap.com/docs/abap-cloud/abap-keyword/get-badi).
 - In addition to a static variant, a dynamic variant is also available:
   - The dynamic variant uses the addition `TYPE` and requires the name of a BAdI as a character-like data object in parentheses.
   - The static type of the reference variable must be `CL_BADI_BASE`, the superclass of all BAdI classes.
   - The `FILTERS` addition can also be applied in the dynamic variant. Alternatively, the `FILTER-TABLE` addition can be used, requiring a table of type `badi_filter_bindings`. Its components are `name` (type c, length 30; the filter name should be in uppercase) and `value` (type `REF TO data`; it expects a pointer to a matching data object).
-- For context-dependent BAdIs, the `CONTEXT` addition is available. Find more details in the [ABAP Keyword Documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABAPGET_BADI.html).
+- For context-dependent BAdIs, the `CONTEXT` addition is available. Find more details in the [ABAP Keyword Documentation](https://help.sap.com/docs/abap-cloud/abap-keyword/get-badi).
 
  </td>
 </tr>
@@ -518,7 +518,7 @@ CALL BADI badi_dyn->(method_name) PARAMETER-TABLE ptab.
 
 ## More Information
 
-- [Enhancements Using BAdIs (ABAP Keyword Documentation)](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbadi_enhancement.htm)
+- [Enhancements Using BAdIs (ABAP Keyword Documentation)](https://help.sap.com/docs/abap-cloud/abap-keyword/enhancements-using-badis)
 - [Business Add-Ins (BAdIs) on SAP Help Portal](https://help.sap.com/docs/ABAP_PLATFORM_NEW/46a2cfc13d25463b8b9a3d2a3c3ba0d9/8ff2e540f8648431e10000000a1550b0.html?version=LATEST&locale=en-US) (Note that the context of the documentation is classic ABAP)
 - [Extend SAP S/4HANA in the cloud and on premise with ABAP based extensions](https://www.sap.com/documents/2022/10/52e0cd9b-497e-0010-bca6-c68f7e60039b.html)  
 - Exploring usable standard BAdIs:

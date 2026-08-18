@@ -41,14 +41,14 @@
   - [Executable Example](#executable-example)
 
 
-This ABAP cheat sheet covers options of how to handle and process dates, times, and time stamps in ABAP. Note the different types when working with them in ABAP, such as for calculations, evaluations, or displaying on a user interface. As with most of the ABAP cheat sheets, the focus here is on [ABAP for Cloud Development](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_for_cloud_dev_glosry.htm).
+This ABAP cheat sheet covers options of how to handle and process dates, times, and time stamps in ABAP. Note the different types when working with them in ABAP, such as for calculations, evaluations, or displaying on a user interface. As with most of the ABAP cheat sheets, the focus here is on [ABAP for Cloud Development](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-for-cloud-development).
 
 ## Data Types for Date, Time and Time Stamp
 
 The main data types for date, time, and time stamps in ABAP are as follows:
-- [Built-in ABAP types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbuiltin_abap_type_glosry.htm): `d`, `t`, `utclong`
-- [Built-in DDIC types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbuiltin_ddic_type_glosry.htm) such as `datn`, `timn`, `utclong` and more. These types are mapped to ABAP types (e.g. `datn` is mapped to `d`, `utclong` is mapped to the identically named ABAP type `utclong`). Find more information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenddic_builtin_types.htm#@@ITOC@@ABENDDIC_BUILTIN_TYPES_6).
-  - Note that the built-in DDIC types are used in artifacts such as [DDIC database tables](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenddic_db_table_glosry.htm) and [CDS entities](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_entity_glosry.htm), but not in ABAP programs (except for [typed literals](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentyped_literal_glosry.htm)).
+- [Built-in ABAP types](https://help.sap.com/docs/abap-cloud/abap-keyword/built-in-abap-type): `d`, `t`, `utclong`
+- [Built-in DDIC types](https://help.sap.com/docs/abap-cloud/abap-keyword/built-in-ddic-type) such as `datn`, `timn`, `utclong` and more. These types are mapped to ABAP types (e.g. `datn` is mapped to `d`, `utclong` is mapped to the identically named ABAP type `utclong`). Find more information [here](https://help.sap.com/docs/abap-cloud/abap-keyword/ddic-overview-of-all-built-in-dictionary-types).
+  - Note that the built-in DDIC types are used in artifacts such as [DDIC database tables](https://help.sap.com/docs/abap-cloud/abap-keyword/ddic-database-table) and [CDS entities](https://help.sap.com/docs/abap-cloud/abap-keyword/cds-entity), but not in ABAP programs (except for [typed literals](https://help.sap.com/docs/abap-cloud/abap-keyword/typed-literal)).
    
     
 
@@ -57,12 +57,12 @@ The main data types for date, time, and time stamps in ABAP are as follows:
 |---|---|---|---|---|---|
 | `d`  | 8 characters  | For storing a calendar date (i.e. an exact day, week, or month of the Gregorian calendar) in a date field. A valid value has the format `yyyymmdd`.     | Any eight Unicode characters that can be encoded in UCS-2 are valid values. These values must be digits that conform to the calendar rules in the format `yyyymmdd`. yyyy (year): 0001 to 9999; mm (month): 01 to 12; dd (day): 01 to 31  | 00000000  | It is a character-like type and mostly used for input and output of dates. Regarding assignments of data objects with numeric data types and calculations: Valid values are converted to the number of days since 01.01.0001. | 
 | `t` |  6 characters	 | For storing a time in a time field. A valid value has the format `hhmmss`.  | Any six Unicode characters that can be encoded in UCS-2 are valid values. These values must represent times in accordance with the 24-hour clock format, specifically `hhmmss`. hh (hours): 00 to 23; mm (minutes): 00 to 59; ss (seconds): 00 to 59.  | 000000  | It is a character-like type and mostly used for input and output of times. Regarding assignments of data objects with numeric data types and calculations: The content of the time field is converted to the number of seconds since 00:00:00. | 
-| `utclong`  | 8 byte  | For storing a time stamp (i.e. a combined date/time specification). A time stamp field represents a unique time in UTC reference time (UTC: Coordinated Universal Time, which is the basis for representing worldwide time data).  | Internal 8-byte integer representation of a UTC time stamp exact to 100 nanoseconds, in ISO-8601 notation between 0001-01-01T00:00:00.0000000 and 9999-12-31T23:59:59.9999999  |  0 | Find more details, e.g. on the special initial value, [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenutclong.htm). | 
+| `utclong`  | 8 byte  | For storing a time stamp (i.e. a combined date/time specification). A time stamp field represents a unique time in UTC reference time (UTC: Coordinated Universal Time, which is the basis for representing worldwide time data).  | Internal 8-byte integer representation of a UTC time stamp exact to 100 nanoseconds, in ISO-8601 notation between 0001-01-01T00:00:00.0000000 and 9999-12-31T23:59:59.9999999  |  0 | Find more details, e.g. on the special initial value, [here](https://help.sap.com/docs/abap-cloud/abap-keyword/time-stamp-fields-with-time-stamp-type). | 
 
 
 > [!NOTE]
 > - Regarding DDIC types: When saving dates and times in a database, it is recommended that you use the `datn` and `timn` types in your implementations. These types are optimized for their corresponding functions and expressions, offering an advantage over the older `dats` and `tims` types, which require conversion to actual date and time types. If you need UTC time stamps to be stored in the database, the `utclong` DDIC type is recommended.
-> - The [DDIC data elements](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendata_element_glosry.htm) `timestamp` and `timestampl` represent time stamps in [packed numbers](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenpacked_number_glosry.htm). They are [released](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenreleased_api_glosry.htm), and they are used in several ABAP statements and classes covered in the cheat sheet.
+> - The [DDIC data elements](https://help.sap.com/docs/abap-cloud/abap-keyword/ddic-data-element) `timestamp` and `timestampl` represent time stamps in [packed numbers](https://help.sap.com/docs/abap-cloud/abap-keyword/packed-number). They are [released](https://help.sap.com/docs/abap-cloud/abap-keyword/released-api), and they are used in several ABAP statements and classes covered in the cheat sheet.
 >   - `timestamp`
 >     -  Short form; the time stamp is represented precisely to the second with no decimal places
 >     -  Format: `yyyymmddhhmmss`
@@ -70,7 +70,7 @@ The main data types for date, time, and time stamps in ABAP are as follows:
 >     -  Long form; the time stamp is represented precisely to 100 ns with seven decimal places
 >     -  Format: `yyyymmddhhmmss.sssssss` (in addition to the short form, the seven decimal places are fractions of a second)
 > -  Many code snippets in the cheat sheet include examples that utilize the [XCO library](https://help.sap.com/docs/btp/sap-business-technology-platform/xco-library?version=Cloud), which offers various options for handling dates, times, and time stamps. The cheat sheet includes a selection. Note that, in most cases, the return value of the XCO calls in the snippets is of type `string`. For more detailed information, refer to the class documentation and the [SAP Help Portal](https://help.sap.com/docs/btp/sap-business-technology-platform/xco-library?version=Cloud).
-> - In [ABAP for Cloud Development](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_for_cloud_dev_glosry.htm), do not use the date and time-related system fields such as `sy-datum`, `sy-uzeit`, `sy-timlo`, `sy-datlo`, and others, as they relate to system-specific values that are not relevant in the cloud context, in cloud systems. User-related time and date values can be retrieved using the XCO library as shown below.
+> - In [ABAP for Cloud Development](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-for-cloud-development), do not use the date and time-related system fields such as `sy-datum`, `sy-uzeit`, `sy-timlo`, `sy-datlo`, and others, as they relate to system-specific values that are not relevant in the cloud context, in cloud systems. User-related time and date values can be retrieved using the XCO library as shown below.
 
 Example: 
 
@@ -98,7 +98,7 @@ DATA ts_long TYPE timestampl VALUE '20240101082802.1700020'.
 > [!NOTE]
 > Regarding time zones: 
 > - Find more information on time zones [here (F1 for standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abensystem_user_time_zones.htm). 
-> - In case of [SAP BTP ABAP Environments](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensap_btp_abap_env_glosry.htm), the time zone is set to UTC by default. Find more information about maintaining user-specific language and regional settings in the SAP Fiori Launchpad [here](https://help.sap.com/docs/btp/sap-fiori-launchpad-for-sap-btp-abap-environment/maintaining-your-language-and-regional-settings).
+> - In case of [SAP BTP ABAP Environments](https://help.sap.com/docs/abap-cloud/abap-keyword/sap-btp-abap-environment), the time zone is set to UTC by default. Find more information about maintaining user-specific language and regional settings in the SAP Fiori Launchpad [here](https://help.sap.com/docs/btp/sap-fiori-launchpad-for-sap-btp-abap-environment/maintaining-your-language-and-regional-settings).
 > - CDS view that includes time zone information: `I_TIMEZONE`
 
 ```abap
@@ -122,7 +122,7 @@ DATA(tz_w_xco_utc) = xco_cp_time=>time_zone->utc->value.
 ## Date
 
 > [!NOTE]
-> - [AS ABAP](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenas_abap_glosry.htm) always implicitly references the Gregorian calendar. For output purposes, dates can be converted to country-specific calendars. 
+> - [AS ABAP](https://help.sap.com/docs/abap-cloud/abap-keyword/application-server-abap) always implicitly references the Gregorian calendar. For output purposes, dates can be converted to country-specific calendars. 
 > - Regarding assignments of data objects with numeric data types and calculations: Valid values are converted to the number of days since 01.01.0001.  
 
 
@@ -213,7 +213,7 @@ DATA(day_from_date) = xco_date->day.
 ### Validity of Date Fields
 
 - Before accessing date (or time) fields, ensure that the content of these fields is valid to avoid unexpected results, such as incorrect calculations.
-- The ABAP runtime framework checks the validity of these fields in various contexts, including lossless assignments and assignments to numeric fields (see [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenchar_date_time_fields_validity.htm)):
+- The ABAP runtime framework checks the validity of these fields in various contexts, including lossless assignments and assignments to numeric fields (see [here](https://help.sap.com/docs/abap-cloud/abap-keyword/validity-of-date-fields-and-time-fields)):
   - Lossless assignments: If an invalid value is encountered in a source field, an exception will be raised instead of producing the initial value. 
   - Invalid values cannot be converted to time stamps
   - Assignments to numeric fields
@@ -796,14 +796,14 @@ ENDTRY.
 - In ABAP, there are two ways in which time stamps can be handled:
   - Time stamps of type `utclong` (which is recommended)
   - Time stamps in packed numbers (DDIC types `timestamp` and `timestampl`)
-- More information: [Time Stamps](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentime_stamps.htm)
+- More information: [Time Stamps](https://help.sap.com/docs/abap-cloud/abap-keyword/time-stamps)
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ### Time Stamps of Type utclong
 #### Retrieving the Current Time Stamp
 
-More information: [`utclong_current`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenutclong_current.htm)
+More information: [`utclong_current`](https://help.sap.com/docs/abap-cloud/abap-keyword/ts-func-utclong-current)
 
 ```abap
 "Retrieving an UTC time stamp using the built-in function utclong_current
@@ -899,7 +899,7 @@ DATA(ts12) = ts11->overwrite( iv_year = '2025'
 
 #### Time Stamp Calculations with the Built-In Function utclong_add
 
-More information: [`utclong_add`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenutclong_add.htm)
+More information: [`utclong_add`](https://help.sap.com/docs/abap-cloud/abap-keyword/ts-func-utclong-add)
 
 ```abap
 "With the built-in function utclong_add, at least one parameter must be specified
@@ -1015,7 +1015,7 @@ DATA(ts_interval_high) = ts_interval->upper_bound->as( xco_cp_time=>format->iso_
 
 #### Calculating Time Stamp Differences Using the Built-In Function utclong_diff
 
-More information: [`utclong_diff`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenutclong_diff.htm)
+More information: [`utclong_diff`](https://help.sap.com/docs/abap-cloud/abap-keyword/ts-func-utclong-diff)
 
 ```abap
 DATA(ts16) = CONV utclong( '2024-01-01 05:30:00' ).
@@ -1033,7 +1033,7 @@ DATA(ts_diff2) = utclong_diff( high = ts16
 
 #### CONVERT UTCLONG: Time Stamp (utclong) -> Local Date/Time
 
-More information: [`CONVERT UTCLONG`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapconvert_utclong.htm)
+More information: [`CONVERT UTCLONG`](https://help.sap.com/docs/abap-cloud/abap-keyword/convert-utclong)
 
 ```abap
 DATA ts_utc TYPE utclong VALUE '2024-11-03 05:30:00'.
@@ -1075,7 +1075,7 @@ ENDTRY.
 
 #### CONVERT ... INTO UTCLONG: Local Date/Time -> Time Stamp (utclong)
 
-More information: [`CONVERT ... INTO UTCLONG`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapconvert_utclong.htm)
+More information: [`CONVERT ... INTO UTCLONG`](https://help.sap.com/docs/abap-cloud/abap-keyword/convert-utclong)
 
 ```abap
 DATA date2utcl TYPE d VALUE '20240101'.
@@ -1213,7 +1213,7 @@ This section deals with time stamps in packed numbers (types `timestamp` and `ti
 
 #### GET TIME STAMP: Retrieving the Current Time Stamp
 
-More information: [`GET TIME STAMP`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapget_time-stamp.htm)
+More information: [`GET TIME STAMP`](https://help.sap.com/docs/abap-cloud/abap-keyword/get-time-stamp)
 
 ```abap
 "Short form
@@ -1236,7 +1236,7 @@ GET TIME STAMP FIELD DATA(ts_inl).
 
 #### CONVERT TIME STAMP: Time Stamp in Packed Numbers -> Local Date/Time
 
-More information: [`CONVERT TIME STAMP`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapconvert_time-stamp.htm)
+More information: [`CONVERT TIME STAMP`](https://help.sap.com/docs/abap-cloud/abap-keyword/convert-time-stamp)
 
 ```abap
 GET TIME STAMP FIELD DATA(tsf). "type timestamp
@@ -1295,7 +1295,7 @@ ASSERT sy-subrc = 12.
 
 #### CONVERT ... INTO TIME STAMP: Local Date/Time -> Time Stamp in Packed Numbers
 
-More information: [`CONVERT ... INTO TIME STAMP`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapconvert_date_time-stamp.htm)
+More information: [`CONVERT ... INTO TIME STAMP`](https://help.sap.com/docs/abap-cloud/abap-keyword/convert-into-time-stamp)
 
 ```abap
 DATA date4conv TYPE d VALUE '20240101'.
@@ -1324,7 +1324,7 @@ CONVERT DATE CONV d( '20240101' )
 
 #### CL_ABAP_TSTMP: Calculating and Converting Time Stamps in Packed Numbers
 
-More information: Class documentation and [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencl_abap_tstmp.htm)
+More information: Class documentation and [here](https://help.sap.com/docs/abap-cloud/abap-keyword/system-class-for-time-stamps-in-packed-numbers)
 
 
 ```abap
@@ -1405,7 +1405,7 @@ DATA(ts_from_unix2) = utclong_add( val = CONV utclong( '1970-01-01 00:00:00' )
 
 ### Date, Time, and Time Stamps in String Templates
 
-More information: [String Processing cheat sheet](07_String_Processing.md#string-templates) and the [ABAP Keyword Documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenstring_templates.htm)
+More information: [String Processing cheat sheet](07_String_Processing.md#string-templates) and the [ABAP Keyword Documentation](https://help.sap.com/docs/abap-cloud/abap-keyword/string-exp-string-templates-string-tmpl)
 
 The following examples show dates, times, and time stamps used as embedded expressions in string templates. Formatting options are available.
 
@@ -1444,8 +1444,8 @@ tz_str = |{ utclong_current( ) TIMEZONE = 'EST' COUNTRY = 'US ' }|. "12/30/2024 
 ### Date and Time Functions in ABAP SQL and ABAP CDS
 
 > [!NOTE]
-> - Date and time functions are available for both [ABAP SQL](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_sql_date_time_functions.htm) and [ABAP CDS](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_date_time_functions_v2.htm). They have the same names. See the [overview](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenddic_date_time_functions.htm) to find out which functions are available. The followig code snippet uses ABAP SQL.
-> - The following code snippets use [typed literals](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentyped_literal_glosry.htm) to have self-contained examples. For more information, refer to the [ABAP Keyword Documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_sql_typed_literals.htm) and the [Typed Literals in ABAP SQL](/16_Data_Types_and_Objects.md#typed-literals-in-abap-sql) section of the *Data Types and Data Objects* cheat sheet.
+> - Date and time functions are available for both [ABAP SQL](https://help.sap.com/docs/abap-cloud/abap-keyword/sql-func-date-functions-and-time-functions) and [ABAP CDS](https://help.sap.com/docs/abap-cloud/abap-keyword/cds-ddl-cds-view-entity-date-functions-and-time-functions). They have the same names. See the [overview](https://help.sap.com/docs/abap-cloud/abap-keyword/ddic-date-functions-and-time-functions) to find out which functions are available. The followig code snippet uses ABAP SQL.
+> - The following code snippets use [typed literals](https://help.sap.com/docs/abap-cloud/abap-keyword/typed-literal) to have self-contained examples. For more information, refer to the [ABAP Keyword Documentation](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-sql-typed-literals) and the [Typed Literals in ABAP SQL](/16_Data_Types_and_Objects.md#typed-literals-in-abap-sql) section of the *Data Types and Data Objects* cheat sheet.
 
 ```abap
 "The following demo ABAP SQL SELECT statement selects from a
@@ -1547,7 +1547,7 @@ Find examples with classes for accessing calendar-related information in [this s
 
 ## More Information
 
-[Date and Time Processing](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendate_time_processing.htm) in the ABAP Keyword Documentation.
+[Date and Time Processing](https://help.sap.com/docs/abap-cloud/abap-keyword/date-and-time-processing) in the ABAP Keyword Documentation.
 
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>

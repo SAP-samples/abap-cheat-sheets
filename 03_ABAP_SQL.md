@@ -53,7 +53,7 @@
 
 ## Introduction
 
--   [ABAP SQL](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensql_glosry.htm) is a subset of [SQL](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensql_glosry.htm "Glossary Entry")
+-   [ABAP SQL](https://help.sap.com/docs/abap-cloud/abap-keyword/sql) is a subset of [SQL](https://help.sap.com/docs/abap-cloud/abap-keyword/sql)
     which is the standardized language for accessing databases.
 -   The main ABAP SQL keywords to read and change data are the
     following:
@@ -67,13 +67,13 @@
     | `DELETE` | Deletes rows from database tables                                         |
 
 - ABAP SQL statements use the ABAP SQL interface. This interface transforms all ABAP SQL statements that access the standard database of an AS ABAP to  platform-dependent SQL and forwards the results to the database system.
-- Generally bear in mind the [performance notes](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_sql_perfo.htm) when using
+- Generally bear in mind the [performance notes](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-sql-performance-notes) when using
     ABAP SQL. The considerations there are not relevant for this cheat sheet since
     the focus is on syntax options.
 
 > [!NOTE]
 > - The syntax options for the `SELECT` statement are extensive. Make sure that you consult the ABAP Keyword Documentation for all available options. The cheat sheet and snippets demonstrate a selection.
-> - The code examples in the cheat sheet primarily use DDIC database tables for [CRUD operations](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencrud_glosry.htm). Note that there are also CDS artifacts that allow not only reading but also creating, updating, and deleting. See [this section](#crud-operations-using-cds-artifacts).
+> - The code examples in the cheat sheet primarily use DDIC database tables for [CRUD operations](https://help.sap.com/docs/abap-cloud/abap-keyword/crud-operations). Note that there are also CDS artifacts that allow not only reading but also creating, updating, and deleting. See [this section](#crud-operations-using-cds-artifacts).
 
 
 ## Excursion: Database Tables and Views
@@ -82,39 +82,39 @@
   <summary>🟢 Click to expand for more details</summary>
 <br>
 
-This section provides bullet points on database tables and views which contain persisted data. Note that the code snippets in this cheat sheet focus on database tables as [data source](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendata_source_glosry.htm "Glossary Entry") for ABAP SQL statements.
+This section provides bullet points on database tables and views which contain persisted data. Note that the code snippets in this cheat sheet focus on database tables as [data source](https://help.sap.com/docs/abap-cloud/abap-keyword/data-source) for ABAP SQL statements.
 
-**Database tables in [AS ABAP](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenas_abap_glosry.htm "Glossary Entry") ...**
+**Database tables in [AS ABAP](https://help.sap.com/docs/abap-cloud/abap-keyword/application-server-abap) ...**
 
-- are objects of the [ABAP Dictionary (DDIC)](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_dictionary_glosry.htm "Glossary Entry"). The term *database table* describes a physical database table in the current [standard database](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenstandard_db_glosry.htm).
+- are objects of the [ABAP Dictionary (DDIC)](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-dictionary). The term *database table* describes a physical database table in the current [standard database](https://help.sap.com/docs/abap-cloud/abap-keyword/standard-database).
 - are two-dimensional matrices consisting of rows and columns.
-- contain a [table key](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentable_key_glosry.htm), i. e. a field or a combination of fields uniquely identifies every row in a table. A [primary key](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenprimary_key_glosry.htm) must exist for every database table.
-  - Note the concept of [foreign keys](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenforeign_key_glosry.htm) in which one or more columns of a database table can be primary keys of another table. See more information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenddic_database_tables_forkey.htm).
-- have a non-[nested structure](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abennested_structure_glosry.htm)
-    type. Plus, the definition of database tables consists of [technical](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenddic_database_tables_techstruc.htm) and [semantic](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenddic_database_tables_semastruc.htm) properties.
+- contain a [table key](https://help.sap.com/docs/abap-cloud/abap-keyword/table-key), i. e. a field or a combination of fields uniquely identifies every row in a table. A [primary key](https://help.sap.com/docs/abap-cloud/abap-keyword/primary-key) must exist for every database table.
+  - Note the concept of [foreign keys](https://help.sap.com/docs/abap-cloud/abap-keyword/foreign-key) in which one or more columns of a database table can be primary keys of another table. See more information [here](https://help.sap.com/docs/abap-cloud/abap-keyword/ddic-foreign-keys).
+- have a non-[nested structure](https://help.sap.com/docs/abap-cloud/abap-keyword/nested-structure)
+    type. Plus, the definition of database tables consists of [technical](https://help.sap.com/docs/abap-cloud/abap-keyword/ddic-structure-specific-technical-properties-of-database-tables) and [semantic](https://help.sap.com/docs/abap-cloud/abap-keyword/ddic-structure-specific-semantic-properties-of-database-tables) properties.
 - can be referenced as a data type and can be accessed using ABAP SQL.
 
-Find more information in the respective (sub)topics in the ABAP Keyword Documentation [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenddic_database_tables.htm).
+Find more information in the respective (sub)topics in the ABAP Keyword Documentation [here](https://help.sap.com/docs/abap-cloud/abap-keyword/ddic-database-tables).
 
 
 **Views ...**
 
 -   are further ABAP Dictionary objects for grouping columns from one or more database tables, among others.
 -   usually realize a
-    [join](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenjoin_glosry.htm "Glossary Entry")
+    [join](https://help.sap.com/docs/abap-cloud/abap-keyword/join)
     with defined [join
-    conditions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenjoin_condition_glosry.htm "Glossary Entry").
+    conditions](https://help.sap.com/docs/abap-cloud/abap-keyword/join-condition).
 -   Note:
     -   Similar to database tables, the columns of such a view form a
-        flat structure. The view's name can be used, for example, as [data types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendata_type_glosry.htm) to declare
-        [data objects](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendata_object_glosry.htm), too.
+        flat structure. The view's name can be used, for example, as [data types](https://help.sap.com/docs/abap-cloud/abap-keyword/data-type) to declare
+        [data objects](https://help.sap.com/docs/abap-cloud/abap-keyword/data-object), too.
     -   The views can be accessed by ABAP SQL, especially for reading
         purposes using `SELECT`.
 
 **"Classic"** [DDIC
 Views](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenddic_view_glosry.htm "Glossary Entry") ...
 
-- are the oldest form of views and are not available in [ABAP Cloud](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_cloud_glosry.htm).
+- are the oldest form of views and are not available in [ABAP Cloud](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-cloud).
 - can be accessed by ABAP SQL for read and write operations, however, writing is only supported if the view is created with only one database table.
 - can only be created in the [ABAP Workbench](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenabap_workbench_glosry.htm).
 
@@ -135,20 +135,20 @@ Views](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm
         data types and as a source for reading operations with ABAP SQL.
     -   To be used only if the central database of the AS ABAP is an
         [SAP HANA
-        database](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenhana_database_glosry.htm "Glossary Entry").
+        database](https://help.sap.com/docs/abap-cloud/abap-keyword/sap-hana-database).
 -   [ABAP Core Data Services (ABAP
-    CDS)](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_view_glosry.htm "Glossary Entry")
+    CDS)](https://help.sap.com/docs/abap-cloud/abap-keyword/cds-view)
     ...
     -   serve the purpose of defining semantically rich data models.
     -   have a lot more options than classic views, for example, they
-        support [annotations](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_annotation_glosry.htm). Data sources can be combined using [associations](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_association_glosry.htm), views can be defined with input parameters, and more.
+        support [annotations](https://help.sap.com/docs/abap-cloud/abap-keyword/cds-annotation). Data sources can be combined using [associations](https://help.sap.com/docs/abap-cloud/abap-keyword/cds-association), views can be defined with input parameters, and more.
     -   are used like a classic database view as structured data types
         and used as a source for reading operations with ABAP SQL (using
-        [`SELECT`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapselect.htm)).
+        [`SELECT`](https://help.sap.com/docs/abap-cloud/abap-keyword/select)).
     -   are created using [Data Definition
-        Language (DDL)](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenddl_glosry.htm "Glossary Entry")
+        Language (DDL)](https://help.sap.com/docs/abap-cloud/abap-keyword/ddl)
         in the
-        [ADT](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenadt_glosry.htm "Glossary Entry")
+        [ADT](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-development-tools-for-eclipse)
         (that is, a source code editor, in contrast to a form-based
         editor).
     -   are, in contrast to external views, supported by all database
@@ -179,13 +179,13 @@ SELECT FROM source   "What data source to read from
 
 #### Notes on Modern SELECT Statements
 
-- Especially in [Standard ABAP](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenstandard_abap_glosry.htm), in older ABAP programs, etc. you may stumble on variants of the `SELECT` syntax (i.e. differently arranged or differently specified ABAP SQL syntax) that you should no longer use (strict syntax check modes enforce the use of specific ABAP SQL syntax) and/or are not possible in [ABAP for Cloud Development](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_for_cloud_dev_glosry.htm). 
+- Especially in [Standard ABAP](https://help.sap.com/docs/abap-cloud/abap-keyword/standard-abap), in older ABAP programs, etc. you may stumble on variants of the `SELECT` syntax (i.e. differently arranged or differently specified ABAP SQL syntax) that you should no longer use (strict syntax check modes enforce the use of specific ABAP SQL syntax) and/or are not possible in [ABAP for Cloud Development](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-for-cloud-development). 
   - However, in certain cases, older syntax variants are still valid and usable. An example is the `SELECT` list, that can also be specified using the more modern `FIELDS` addition.
   - As mentioned, choose `F1` for the keywords and additions to get all the details in the ABAP Keyword Documentation.
   - Further information in the context of Standard ABAP: [Release-Dependent Syntax Check Modes (F1 docu for standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenabap_sql_strict_modes.htm).
 - To mention some examples of modern ABAP SQL statements.
   - The `INTO` clause should be placed after the other clauses. 
-  - [Host variables](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenhost_variable_glosry.htm "Glossary Entry") or [host expressions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenhost_expression_glosry.htm "Glossary Entry") are required for data objects and expressions, i. e. they must be preceded by `@` or `@( ... )`. Host variables represent data objects that are declared in ABAP programs. They are specified in an [operand position](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenoperand_position_glosry.htm) of an ABAP SQL statement. Also see the [SQL Operands](#sql-operands) section.
+  - [Host variables](https://help.sap.com/docs/abap-cloud/abap-keyword/host-variable) or [host expressions](https://help.sap.com/docs/abap-cloud/abap-keyword/host-expression) are required for data objects and expressions, i. e. they must be preceded by `@` or `@( ... )`. Host variables represent data objects that are declared in ABAP programs. They are specified in an [operand position](https://help.sap.com/docs/abap-cloud/abap-keyword/operand-position) of an ABAP SQL statement. Also see the [SQL Operands](#sql-operands) section.
   - The `SELECT` list, i. e. the fields that are specified, can also be specified following the `SELECT` keyword before the `FROM` clause - without `FIELDS`. The following two `SELECT`   statements are basically the same but differently arranged. The code snippets in the cheat sheet randomly use one syntax or the other. 
     ``` abap
     SELECT FROM dbtab
@@ -196,8 +196,8 @@ SELECT FROM source   "What data source to read from
       FROM dbtab
       ...
     ```
-  - Regarding the target into which data is read: Instead of using a variable that is (extra) declared beforehand, you can also make use of [inline declarations](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abeninline_declaration_glosry.htm "Glossary Entry"), for example `... INTO TABLE @DATA(itab).`, to comfortably create an appropriate variable in place. Note that in case of internal tables as targets, the resulting table is a standard table and has an empty key which might have an impact when further
-    processing the internal table entries. Find more information in the ABAP cheat sheet [Internal Tables](01_Internal_Tables.md). The declaration operator [`FINAL`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenfinal_inline.htm) can be used to declare immutable variables.
+  - Regarding the target into which data is read: Instead of using a variable that is (extra) declared beforehand, you can also make use of [inline declarations](https://help.sap.com/docs/abap-cloud/abap-keyword/inline-declaration), for example `... INTO TABLE @DATA(itab).`, to comfortably create an appropriate variable in place. Note that in case of internal tables as targets, the resulting table is a standard table and has an empty key which might have an impact when further
+    processing the internal table entries. Find more information in the ABAP cheat sheet [Internal Tables](01_Internal_Tables.md). The declaration operator [`FINAL`](https://help.sap.com/docs/abap-cloud/abap-keyword/final-inline-declaration-for-immutable-variables) can be used to declare immutable variables.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
@@ -213,11 +213,11 @@ SELECT FROM source   "What data source to read from
 | `SELECT * ...` <br><br> `SELECT ... FIELDS * ...` | As outlined above, the `*` character defines all columns to be read from a data source (in the order specified there).  |
 | `SELECT col1, col2, col3 ...` <br><br> `SELECT ... FIELDS col1, col2, col3 ...` | A comma-separated list of individual column names.   |
 | `SELECT data_source~col1, data_source~col2, data_source~col3 ...`  <br><br> `SELECT ... FIELDS data_source~col1, data_source~col2, data_source~col3 ...` | A comma-separated list of individual column names. Here, the name of the data source is explicitly specified and precedes the column name, separated by a tilde. |
-| `SELECT data_source~* ...` <br><br> `SELECT ... FIELDS data_source~* ...` | In this case, the name of the data source is followed by a tilde and the `*` character to specify all columns. Note that there are [special conditions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapselect_list.htm) when using this variant. |
-| `SELECT col1 AS al1, col2 AS al2, col3 AS al3 ...` <br><br> `SELECT ... FIELDS col1 AS al1, col2 AS al2, col3 AS al3 ...` | Defining alias names for individual columns of the result set with [`AS`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapselect_list.htm); make sure that you use an alias name only once here. In the statement, the alias name can only be used after an `ORDER BY` clause; as shown further down, in some cases (e. g. when using SQL expressions) the specification of an alias name is required; setting an alias name for the data source is also possible (`SELECT FROM dbtab AS alias_name ...`). See the section on joins further down. |
+| `SELECT data_source~* ...` <br><br> `SELECT ... FIELDS data_source~* ...` | In this case, the name of the data source is followed by a tilde and the `*` character to specify all columns. Note that there are [special conditions](https://help.sap.com/docs/abap-cloud/abap-keyword/select-select-list) when using this variant. |
+| `SELECT col1 AS al1, col2 AS al2, col3 AS al3 ...` <br><br> `SELECT ... FIELDS col1 AS al1, col2 AS al2, col3 AS al3 ...` | Defining alias names for individual columns of the result set with [`AS`](https://help.sap.com/docs/abap-cloud/abap-keyword/select-select-list); make sure that you use an alias name only once here. In the statement, the alias name can only be used after an `ORDER BY` clause; as shown further down, in some cases (e. g. when using SQL expressions) the specification of an alias name is required; setting an alias name for the data source is also possible (`SELECT FROM dbtab AS alias_name ...`). See the section on joins further down. |
 
 > [!NOTE]
-> - You have plenty of options regarding the specification of the columns in the `SELECT` list, among them, the outlined direct specification of the column name. SQL expressions can be specified, too. See more details [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapselect_clause_col_spec.htm) and in the sections on SQL expressions further down.
+> - You have plenty of options regarding the specification of the columns in the `SELECT` list, among them, the outlined direct specification of the column name. SQL expressions can be specified, too. See more details [here](https://help.sap.com/docs/abap-cloud/abap-keyword/select-col-spec) and in the sections on SQL expressions further down.
 
 
 ``` abap
@@ -304,11 +304,11 @@ SELECT FROM zdemo_abap_carr AS ds
 - The `FROM` clause specifies data sources from which data is read. 
 - The data sources include: 
   - DDIC database tables (which are used as data source in most of the code snippets)
-  - CDS entities such as [CDS view entities](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_v2_view_glosry.htm) and [CDS table functions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_table_function_glosry.htm) 
+  - CDS entities such as [CDS view entities](https://help.sap.com/docs/abap-cloud/abap-keyword/cds-view-entity) and [CDS table functions](https://help.sap.com/docs/abap-cloud/abap-keyword/cds-table-function) 
     - The executable example of the [CDS View Entities](15_CDS_View_Entities.md) cheat sheet covers `SELECT` statements with CDS view entities as data sources. 
   - Internal tables
     - Note that the internal table must be specified as host variable prefixed by `@`, and an alias name must be specified. 
-    - More information and code snippets: Section [SELECT Queries with Internal Tables as Data Sources](01_Internal_Tables.md#select-queries-with-internal-tables-as-data-sources) in the *Internal Tables* cheat sheet and in the [ABAP Keyword Documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapselect_itab.htm)
+    - More information and code snippets: Section [SELECT Queries with Internal Tables as Data Sources](01_Internal_Tables.md#select-queries-with-internal-tables-as-data-sources) in the *Internal Tables* cheat sheet and in the [ABAP Keyword Documentation](https://help.sap.com/docs/abap-cloud/abap-keyword/select-from-itab)
   
 
 ``` abap
@@ -435,7 +435,7 @@ SELECT SINGLE comp1, comp2, comp3
 - Only the content of columns for which there are identically named components in the target are assigned. 
 - However, if you want to read data into an existing data object and particular fields are specified in the `SELECT` list or `FIELDS` clause, and if the addition is **not** specified, you might stumble on undesired results. 
 - The target data object must contain enough components and the content of the columns are assigned to the components of the target from left to right in the order specified. The content of surplus components of the target is not changed. 
-- Plus, pay attention to [assignment rules](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenselect_into_conversion.htm). 
+- Plus, pay attention to [assignment rules](https://help.sap.com/docs/abap-cloud/abap-keyword/select-assignment-rules). 
 - Basic rule: Without `CORRESPONDING ...`, column names do not play a role but only the position. With `CORRESPONDING ...`, the position of the columns does not play a role but only the name.
 
 ```abap
@@ -480,7 +480,7 @@ SELECT * FROM dbtab
 <td> <code>NEW</code> addition: Specifying an anonymous data object as target object </td>
 <td>
 
-- Specifying an [anonymous data object](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenanonymous_data_object_glosry.htm) as target object using the addition [`NEW`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapselect_into_target.htm) 
+- Specifying an [anonymous data object](https://help.sap.com/docs/abap-cloud/abap-keyword/anonymous-data-object) as target object using the addition [`NEW`](https://help.sap.com/docs/abap-cloud/abap-keyword/select-into-target) 
 - Only to be used after `INTO` and not `APPENDING`.
 
 <br>
@@ -513,8 +513,8 @@ Here, the individual elementary data objects as target objects are specified in 
 Note:
 - The comma-separated list must have the same number of elements as columns in the result set.
 - The content of the columns in the result set is assigned to the data objects specified in the list from left to right in accordance with the order specified in the `SELECT` list.
-- Note the [assignment rules](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenselect_into_conversion.htm) also in this context.
-- More information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapinto_clause.htm).
+- Note the [assignment rules](https://help.sap.com/docs/abap-cloud/abap-keyword/select-assignment-rules) also in this context.
+- More information [here](https://help.sap.com/docs/abap-cloud/abap-keyword/select-into-appending).
 
 ``` abap
 "Elementary data objects as target data objects 
@@ -633,7 +633,7 @@ SELECT * FROM dbtab
 - A `SELECT` loop can be opened if the assignment is made to a structure and the addition `SINGLE` is not used. The content of a result set is passed sequentially to the ABAP program.
 - If the row is found, the system field `sy-subrc` is set to `0`.
 - The loop must be closed using `ENDSELECT`.
-- To terminate the loop completely, you can use the statement [`EXIT`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapexit_loop.htm).
+- To terminate the loop completely, you can use the statement [`EXIT`](https://help.sap.com/docs/abap-cloud/abap-keyword/exit-loop).
 - Note: As covered further down, when using the addition `PACKAGE SIZE` and storing the result in a table, a loop is opened, too.
 
 <br>
@@ -678,7 +678,7 @@ ENDIF.
 <td>
 
 - Cannot be used with the addition `SINGLE`.
-- See more information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapselect_clause.htm).
+- See more information [here](https://help.sap.com/docs/abap-cloud/abap-keyword/select-select-clause).
 
 <br>
 
@@ -712,7 +712,7 @@ SELECT cityfrom
 <td> <code>UP TO n ROWS</code> addition: Limiting the number of returned table rows </td>
 <td>
 
-[`UP TO n ROWS`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapselect_up_to_offset.htm)
+[`UP TO n ROWS`](https://help.sap.com/docs/abap-cloud/abap-keyword/select-up-to-offset)
 
 <br>
 
@@ -732,7 +732,7 @@ SELECT * FROM dbtab
 <td> <code>OFFSET n</code> addition: Returning only the table rows after a row with a specified count from the result set</td>
 <td>
 
-- [`OFFSET n`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapselect_up_to_offset.htm) 
+- [`OFFSET n`](https://help.sap.com/docs/abap-cloud/abap-keyword/select-up-to-offset) 
 - You can only use the addition, if an `ORDER BY` clause is specified.
 
 <br>
@@ -756,7 +756,7 @@ SELECT *
 <td>
 
 
-The addition [`PACKAGE SIZE n`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapinto_clause.htm) can be specified after `INTO TABLE` and `APPENDING TABLE`. A `SELECT` loop ist opened. After `PACKAGE SIZE`, the number of rows is specified (which can be a host variable, host expression or a literal of type `i`) denoting the number of rows to be inserted in the target object per iteration.
+The addition [`PACKAGE SIZE n`](https://help.sap.com/docs/abap-cloud/abap-keyword/select-into-appending) can be specified after `INTO TABLE` and `APPENDING TABLE`. A `SELECT` loop ist opened. After `PACKAGE SIZE`, the number of rows is specified (which can be a host variable, host expression or a literal of type `i`) denoting the number of rows to be inserted in the target object per iteration.
 
 <br>
 
@@ -778,9 +778,9 @@ ENDSELECT.
 <td> <code>INDICATORS [NOT] NULL STRUCTURE</code> addition: Specifying null indicators </td>
 <td>
 
-- The `INDICATORS ...` addition is used to specify indicators such as the [null indicator](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abennull_indicator_glosry.htm) and store information about which columns of the result set contain the null value and which do not.
+- The `INDICATORS ...` addition is used to specify indicators such as the [null indicator](https://help.sap.com/docs/abap-cloud/abap-keyword/null-indicator) and store information about which columns of the result set contain the null value and which do not.
 - In the example, an appropriate target table is defined to also store information about which columns of the result set contain the null value and which do not.
-- More syntax options are available for `INDICATORS ...`. Find more information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapselect_indicators.htm).
+- More syntax options are available for `INDICATORS ...`. Find more information [here](https://help.sap.com/docs/abap-cloud/abap-keyword/indicators).
 
 <br>
 
@@ -852,20 +852,20 @@ SELECT tab2~key_field, tab1~char2
 <td> <code>GROUP BY</code> </td>
 <td>
 
-[`GROUP BY`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapgroupby_clause.htm)
+[`GROUP BY`](https://help.sap.com/docs/abap-cloud/abap-keyword/select-group-by)
 clause: Combining groups of table rows in the result set. You
-can also use [SQL expressions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensql_expression_glosry.htm "Glossary Entry")
-here. Multiple clause elements are separated by a comma. Find more information and syntax options in the [ABAP Keyword Documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapgroupby_clause.htm).
+can also use [SQL expressions](https://help.sap.com/docs/abap-cloud/abap-keyword/sql-expression)
+here. Multiple clause elements are separated by a comma. Find more information and syntax options in the [ABAP Keyword Documentation](https://help.sap.com/docs/abap-cloud/abap-keyword/select-group-by).
 
 Note that the `GROUP BY` clause requires all columns that are
 directly specified in the `SELECT` list or specified there as an
 argument of an SQL expression to be specified. An exception to this is
 [aggregate
-functions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenaggregate_function_glosry.htm "Glossary Entry")
+functions](https://help.sap.com/docs/abap-cloud/abap-keyword/aggregate-function)
 in [aggregate
-expressions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenaggregate_expression_glosry.htm "Glossary Entry")
+expressions](https://help.sap.com/docs/abap-cloud/abap-keyword/aggregate-expression)
 (except [grouping
-functions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abengrouping_glosry.htm "Glossary Entry"))
+functions](https://help.sap.com/docs/abap-cloud/abap-keyword/grouping-function))
 as shown in the following example.
 
 In the example below, the database table rows that have the same content in column `comp1` are combined. The lowest and highest values in column `comp2` are determined for each of these groups and placed into the combined row.
@@ -887,7 +887,7 @@ SELECT FROM dbtab
 <td>
 
 
-[`HAVING`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abaphaving_clause.htm)
+[`HAVING`](https://help.sap.com/docs/abap-cloud/abap-keyword/select-having)
 clause: Limiting the number of table rows in groups in the
 result by setting conditions on these rows. The rows for which a
 logical expression is true are inserted in the target variable. Note
@@ -911,12 +911,12 @@ SELECT FROM dbtab
 <td> <code>ORDER BY</code> </td>
 <td>
 
-[`ORDER BY`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abaporderby_clause.htm)
+[`ORDER BY`](https://help.sap.com/docs/abap-cloud/abap-keyword/select-order-by)
 clause: Sorting the result set by specified columns.
 
 The following example shows the ordering of the result set based on the
-content of the primary key of the [data source](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendata_source_glosry.htm "Glossary Entry").
-You can also order by any columns and by explicitly specifying the sort order. There are more ordering options, for example, by using SQL expressions. Find more information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abaporderby_clause.htm).
+content of the primary key of the [data source](https://help.sap.com/docs/abap-cloud/abap-keyword/data-source).
+You can also order by any columns and by explicitly specifying the sort order. There are more ordering options, for example, by using SQL expressions. Find more information [here](https://help.sap.com/docs/abap-cloud/abap-keyword/select-order-by).
 
 > [!NOTE]
 >- Not specifying `ORDER BY` means that the order of entries in the result set is undefined.
@@ -941,7 +941,7 @@ SELECT FROM dbtab
 <td> <code>WHERE</code> </td>
 <td>
 
-[`WHERE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapwhere.htm) clause: Restricts the number of rows that are included in the result set using logical expressions. See further information on them in the following sections.
+[`WHERE`](https://help.sap.com/docs/abap-cloud/abap-keyword/select-where) clause: Restricts the number of rows that are included in the result set using logical expressions. See further information on them in the following sections.
  
 <br>
 
@@ -962,13 +962,13 @@ SELECT FROM dbtab
 
 ### Selecting Data by Evaluating the Content of Other Tables
 
-[`FOR ALL ENTRIES`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenwhere_all_entries.htm)
+[`FOR ALL ENTRIES`](https://help.sap.com/docs/abap-cloud/abap-keyword/select-for-all-entries)
 addition:
 - Components of an internal table can be used in the `WHERE` clause in logical expressions for comparisons with a column of the data source.
 - The logical expression is evaluated for each individual row of the internal table.
 - The result set of the `SELECT` statement is the union set of the result sets produced by the individual evaluations. Rows that occur more than once are removed from the result set automatically. The entire content of a row is respected.
 - If `FOR ALL ENTRIES` is specified, there must be at least one comparison with a column of the internal table.
-- For more information, especially restricitions and things to pay attention to (e. g. making sure that the internal table is not initial), see [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenwhere_all_entries.htm). In modern ABAP, it is advisable to use internal tables as data sources in the `SELECT` statement, for example, in `WHERE` clauses or joins, instead of using the `FOR ALL ENTRIES` addition.
+- For more information, especially restricitions and things to pay attention to (e. g. making sure that the internal table is not initial), see [here](https://help.sap.com/docs/abap-cloud/abap-keyword/select-for-all-entries). In modern ABAP, it is advisable to use internal tables as data sources in the `SELECT` statement, for example, in `WHERE` clauses or joins, instead of using the `FOR ALL ENTRIES` addition.
 
 ``` abap
 "Checking that table is not initial
@@ -983,9 +983,9 @@ IF ( 0 < lines( itab2 ) ).
 ENDIF.
 ```
 
-**Checking the result set of a subquery** with the addition [`EXISTS`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenwhere_logexp_exists.htm)
+**Checking the result set of a subquery** with the addition [`EXISTS`](https://help.sap.com/docs/abap-cloud/abap-keyword/sql-cond-exists)
 
-See possible clauses and additions of a [subquery](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensubquery_glosry.htm) in a condition in ABAP SQL [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenwhere_logexp_subquery.htm).
+See possible clauses and additions of a [subquery](https://help.sap.com/docs/abap-cloud/abap-keyword/subquery) in a condition in ABAP SQL [here](https://help.sap.com/docs/abap-cloud/abap-keyword/sql-cond-subquery-clauses).
 
 The following code snippet includes a parenthesized subquery following `EXISTS`. Data is only selected from `dbtab1` if the relational expression (`WHERE EXISTS ...`) is true, i. e. if the result set of the subquery contains at least one row. Note the components of the table that are referenced using a tilde.
 
@@ -1010,13 +1010,13 @@ SELECT comp1, comp2, comp3
 <td> Using an inner join </td>
 <td>
 
-[Inner join](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abeninner_join_glosry.htm):
+[Inner join](https://help.sap.com/docs/abap-cloud/abap-keyword/inner-join):
 - Columns of two or more data sources in a result set can be joined.
 - Result set:
   - Columns of the rows in the result set of the left side with the columns of the rows in the result set of the right side are joined into a single result set.
   - Contains all combinations of rows for whose columns the join condition is true.
 - If there are identical column names in multiple data sources, use the [column
-selector](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentable_comp_selector_glosry.htm "Glossary Entry")
+selector](https://help.sap.com/docs/abap-cloud/abap-keyword/column-selector)
 `~`.
 
 <br>
@@ -1037,12 +1037,12 @@ SELECT a~comp1, a~comp2, b~comp3, c~comp4
 <td> Using an outer join </td>
 <td>
 
-[Outer join](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenouter_join_glosry.htm):
-- Realized by either a [left outer join](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenleft_outer_join_glosry.htm) or
-a [right outer join](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenright_outer_join_glosry.htm).
+[Outer join](https://help.sap.com/docs/abap-cloud/abap-keyword/outer-join):
+- Realized by either a [left outer join](https://help.sap.com/docs/abap-cloud/abap-keyword/left-outer-join) or
+a [right outer join](https://help.sap.com/docs/abap-cloud/abap-keyword/right-outer-join).
 - Result set:
   - Same result set as the inner join.
-  - Difference: For each selected row on the left side as `LEFT OUTER JOIN` or on the right side as `RIGHT OUTER JOIN`, at least one row is created in the result set even if no rows on the other side meet the condition. The columns on the other side that do not meet the condition are filled with [null values](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abennull_value_glosry.htm).
+  - Difference: For each selected row on the left side as `LEFT OUTER JOIN` or on the right side as `RIGHT OUTER JOIN`, at least one row is created in the result set even if no rows on the other side meet the condition. The columns on the other side that do not meet the condition are filled with [null values](https://help.sap.com/docs/abap-cloud/abap-keyword/null-value).
 
 <br>
 
@@ -1062,7 +1062,7 @@ SELECT a~comp1, a~comp2, b~comp3,
 <td> Merging the result sets of multiple queries into a single result set </td>
 <td>
 
-... using the [set operator](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_set_operators_glosry.htm) [`UNION`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapunion.htm). In this case, the rows of the result set of the query after `UNION` are inserted into the result set of the query in front of `UNION`.
+... using the [set operator](https://help.sap.com/docs/abap-cloud/abap-keyword/set-operator) [`UNION`](https://help.sap.com/docs/abap-cloud/abap-keyword/union-intersect-except). In this case, the rows of the result set of the query after `UNION` are inserted into the result set of the query in front of `UNION`.
 
 <br>
 
@@ -1153,9 +1153,9 @@ SELECT carrid
 </table>
 
 > [!NOTE]
-> - There are more join variants and syntax options available. See the ABAP Keyword Documentation on [joins](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapselect_join.htm)
+> - There are more join variants and syntax options available. See the ABAP Keyword Documentation on [joins](https://help.sap.com/docs/abap-cloud/abap-keyword/select-from-join)
 for more information.
-> - There a more syntax options and contexts for `UNION`, `INTERSECT`, and `EXCEPT`. Find more information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapunion.htm).
+> - There a more syntax options and contexts for `UNION`, `INTERSECT`, and `EXCEPT`. Find more information [here](https://help.sap.com/docs/abap-cloud/abap-keyword/union-intersect-except).
 > - `MERGE` statements allow modification operations on a data source by evaluating another data source. Find more information [here](#merge-modification-operations-on-a-data-source-by-evaluating-another-data-source).
 
 
@@ -1163,7 +1163,7 @@ for more information.
 
 ### Common Table Expressions (CTE)
 
-When to use [Common Table Expressions (CTE)](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencommon_table_expression_glosry.htm):
+When to use [Common Table Expressions (CTE)](https://help.sap.com/docs/abap-cloud/abap-keyword/common-table-expression):
 
 -   Whenever you need intermediate results in a `SELECT`
     statement and especially if you need them more than once.
@@ -1172,15 +1172,15 @@ When to use [Common Table Expressions (CTE)](https://help.sap.com/doc/abapdocu_c
 How they work:
 
 -   The ABAP SQL keyword
-    [`WITH`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapwith.htm)
+    [`WITH`](https://help.sap.com/docs/abap-cloud/abap-keyword/with)
     introduces the definition of CTEs.
 -   Each CTE creates a tabular result set in a
-    [subquery](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensubquery_glosry.htm "Glossary Entry").
+    [subquery](https://help.sap.com/docs/abap-cloud/abap-keyword/subquery).
 -   The result set of such a CTE can then be used in subsequent queries
     as data source; CTEs can be considered as temporary views, which
     only exist for the duration of the database access.
 -   The CTEs (at least one) are then used in a final [main
-    query](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenmainquery_glosry.htm "Glossary Entry"), i.
+    query](https://help.sap.com/docs/abap-cloud/abap-keyword/main-query), i.
     e. a `SELECT` statement accesses the result of the
     expressions.
 
@@ -1204,8 +1204,8 @@ Setup of a statement with CTE:
 >-   Each CTE must be used at least once, either in another CTE or in the
     main query. The main query must access at least one CTE.
 >-   The result set of a CTE never has a [client
-    column](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenclient_column_glosry.htm "Glossary Entry").
->- See more information in [this topic](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapwith.htm)
+    column](https://help.sap.com/docs/abap-cloud/abap-keyword/client-column).
+>- See more information in [this topic](https://help.sap.com/docs/abap-cloud/abap-keyword/with)
 and further options and additions when using CTEs in the subtopics.
 
 Example: The result sets of both common table expressions
@@ -1244,7 +1244,7 @@ SELECT *
 
 ## SQL Conditions
 
-You can formulate conditions in ABAP SQL statements, i. e. [logical expressions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenlogical_expression_glosry.htm "Glossary Entry"), especially in the `WHERE` clause to restrict the result. Note that without a `WHERE` clause, all rows are respected for the operation.
+You can formulate conditions in ABAP SQL statements, i. e. [logical expressions](https://help.sap.com/docs/abap-cloud/abap-keyword/logical-expression), especially in the `WHERE` clause to restrict the result. Note that without a `WHERE` clause, all rows are respected for the operation.
 
 Find more details and examples in the [WHERE Conditions](31_WHERE_Conditions.md) cheat sheet.
 
@@ -1275,32 +1275,32 @@ Among the syntax options are:
 ## SQL Operands
 
 -   [SQL
-operands](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensql_operand_glosry.htm "Glossary Entry") are elementary operands in ABAP SQL statements
+operands](https://help.sap.com/docs/abap-cloud/abap-keyword/sql-operand) are elementary operands in ABAP SQL statements
 -   Can be database table or view columns, a
-    [literal](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenliteral_glosry.htm "Glossary Entry"),
+    [literal](https://help.sap.com/docs/abap-cloud/abap-keyword/literal),
     [host
-    variables](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenhost_variable_glosry.htm "Glossary Entry")
+    variables](https://help.sap.com/docs/abap-cloud/abap-keyword/host-variable)
     (i. e. global or local data objects escaped using `@`:
     `@dobj`) or [host
-    expressions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenhost_expression_glosry.htm "Glossary Entry")
+    expressions](https://help.sap.com/docs/abap-cloud/abap-keyword/host-expression)
     (`@( ... )`)
     -   Regarding literals: They are not prefixed with the escape
         character `@`. The literals can be
-        [typed](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentyped_literal_glosry.htm "Glossary Entry")
+        [typed](https://help.sap.com/docs/abap-cloud/abap-keyword/typed-literal)
         (using the type name and content within a pair of backquotes:
         <code>char\`abc\`</code>) with [built-in ABAP Dictionary
-        types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenddic_builtin_types.htm)
+        types](https://help.sap.com/docs/abap-cloud/abap-keyword/ddic-overview-of-all-built-in-dictionary-types)
         or untyped. See the [Typed Literals](#typed-literals) section further down.
     -   Regarding host expressions: Structures and internal tables are
         possible as host expressions for statements modifying the
         content of database tables as shown further down.
 -   Find more information
-    [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensql_operands.htm).
+    [here](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-sql-sql-operands-sql-elem).
 
 
 > [!NOTE]
 > Questions about when to use what, what is possible in which contexts and positions, is beyond the scope of this cheat sheet. Check the details in the
-respective topics in the ABAP Keyword Documentation. Find a general overview of important operand positions in ABAP SQL [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensql_operand_positions_oview.htm). Due to the rich variety of options, the cheat sheet covers a selection.
+respective topics in the ABAP Keyword Documentation. Find a general overview of important operand positions in ABAP SQL [here](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-sql-sql-operand-positions). Due to the rich variety of options, the cheat sheet covers a selection.
 
 
 Example demonstrating possible operands:
@@ -1350,11 +1350,11 @@ SELECT FROM zdemo_abap_flsch
     `SELECT` list as demonstrated in most of the following examples.
 - Find information on more possible positions and general information
     on SQL expressions
-    [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapsql_expr.htm)
+    [here](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-sql-sql-expressions-sql-exp)
     and the subtopics there.
 
 > [!NOTE]
-> You can [enclose SQL expressions in parentheses](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensql_exp_parentheses.htm).
+> You can [enclose SQL expressions in parentheses](https://help.sap.com/docs/abap-cloud/abap-keyword/sql-exp).
 > ```abap
 > SELECT SINGLE
 >    carrid,
@@ -1379,13 +1379,13 @@ SELECT FROM zdemo_abap_flsch
     variable or host expression).
 -   As an example, see the `SELECT` list in the example above.
 -   See more information
-    [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensql_elem.htm).
+    [here](https://help.sap.com/docs/abap-cloud/abap-keyword/sql-exp-sql-elem).
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ### Arithmetic Expressions
 
-[Arithmetic expressions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensql_arith.htm) perform arithmetic calculations using the operators `+`, `-`, `*`, `/`.
+[Arithmetic expressions](https://help.sap.com/docs/abap-cloud/abap-keyword/sql-exp-sql-arith) perform arithmetic calculations using the operators `+`, `-`, `*`, `/`.
 
 ``` abap
 SELECT SINGLE
@@ -1411,9 +1411,9 @@ INTO @DATA(arithmetic_sql_expr).
 
 ### Cast Expressions
 
-- [Cast expressions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensql_cast.htm) are used to convert the value of operands to a dedicated dictionary type.
-- Note that there are special [conversion rules](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensql_cast_rules.htm). 
-- See the possible types in the [ABAP Keyword Documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensql_cast.htm).
+- [Cast expressions](https://help.sap.com/docs/abap-cloud/abap-keyword/sql-exp-sql-cast) are used to convert the value of operands to a dedicated dictionary type.
+- Note that there are special [conversion rules](https://help.sap.com/docs/abap-cloud/abap-keyword/sql-exp-sql-cast-conversion-rules). 
+- See the possible types in the [ABAP Keyword Documentation](https://help.sap.com/docs/abap-cloud/abap-keyword/sql-exp-sql-cast).
 
 ```abap
 SELECT SINGLE
@@ -1435,7 +1435,7 @@ INTO @DATA(cast_expr).
 
 ### String Expressions
 
-[String expressions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensql_string.htm) use the operator `&&` to concatenate character strings.
+[String expressions](https://help.sap.com/docs/abap-cloud/abap-keyword/sql-exp-sql-string) use the operator `&&` to concatenate character strings.
 
 ```abap
 SELECT SINGLE
@@ -1455,8 +1455,8 @@ INTO @DATA(string_expr).
 
 ### Case Expressions
 
-- [Case expressions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensql_case.htm) carry out either a simple (comparison of the values of a dedicated operand) or complex (searched case; evaluation of multiple logical expressions) case distinction.
-- Not specifying `ELSE` means that the result is the [null value](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abennull_value_glosry.htm). The null value can be specified explicitly by the null expression `NULL`.
+- [Case expressions](https://help.sap.com/docs/abap-cloud/abap-keyword/sql-exp-sql-case) carry out either a simple (comparison of the values of a dedicated operand) or complex (searched case; evaluation of multiple logical expressions) case distinction.
+- Not specifying `ELSE` means that the result is the [null value](https://help.sap.com/docs/abap-cloud/abap-keyword/null-value). The null value can be specified explicitly by the null expression `NULL`.
 
 ```abap
 SELECT SINGLE
@@ -1493,12 +1493,12 @@ INTO @DATA(case_expr).
 
 ### Aggregate Expressions
 
--   [Aggregate expressions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapselect_aggregate.htm) consist of [aggregate functions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenaggregate_function_glosry.htm "Glossary Entry")
+-   [Aggregate expressions](https://help.sap.com/docs/abap-cloud/abap-keyword/sql-exp-sql-agg) consist of [aggregate functions](https://help.sap.com/docs/abap-cloud/abap-keyword/aggregate-function)
     and aggregate the values of multiple rows of the result set of a
-    [query](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenquery_glosry.htm "Glossary Entry")
+    [query](https://help.sap.com/docs/abap-cloud/abap-keyword/query)
     into a single value
 -   The example shows a selection. Find more information
-    [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapselect_aggregate.htm).
+    [here](https://help.sap.com/docs/abap-cloud/abap-keyword/sql-exp-sql-agg).
 
 Example:
 ``` abap
@@ -1541,17 +1541,17 @@ INTO TABLE @DATA(agg_exp).
 
 ### Window Expressions
 
-How [window expressions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenwindow_expression_glosry.htm "Glossary Entry") work:
+How [window expressions](https://help.sap.com/docs/abap-cloud/abap-keyword/window-expression) work:
 
 -   Define a subset of the result set (i. e. the
-    "[window](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenwindow_glosry.htm "Glossary Entry")")
+    "[window](https://help.sap.com/docs/abap-cloud/abap-keyword/window)")
     of a database query that implements ABAP SQL
--   Apply a [window function](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenwindow_function_glosry.htm "Glossary Entry") -
+-   Apply a [window function](https://help.sap.com/docs/abap-cloud/abap-keyword/window-function) -
     which evaluates the rows of the window and which can, for example,
     be an [aggregate
-    function](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenaggregate_function_glosry.htm "Glossary Entry")
+    function](https://help.sap.com/docs/abap-cloud/abap-keyword/aggregate-function)
     like
-    [`AVG`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensql_agg_func&sap-language=EN&sap-client=000&version=X&anchor=!ABAP_VARIANT_1@1@&tree=X)
+    [`AVG`](https://help.sap.com/docs/abap-cloud/abap-keyword/sql-agg-agg-func)
     to determine the average value - to the result set
 -   I. e. a window is constructed by the rows of the result set for
     which all the window functions have the same result; a value is then
@@ -1565,7 +1565,7 @@ Setup of a statement with window expressions:
 -   The content in the parentheses can contain the following additions:
     -   Optional `PARTITION BY`: Defines the windows using a
         comma-separated list of [SQL
-        expressions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapsql_expr.htm);
+        expressions](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-sql-sql-expressions-sql-exp);
         the window function is calculated for the rows of this window;
         note that if the addition is not specified, the window comprises
         all rows of the result set
@@ -1579,7 +1579,7 @@ Setup of a statement with window expressions:
         frame boundaries (see the example)
 
 See more information on window expressions and the syntax
-[here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapselect_over.htm).
+[here](https://help.sap.com/docs/abap-cloud/abap-keyword/sql-exp-sql-win).
 
 Examples:
 ``` abap
@@ -1639,7 +1639,7 @@ SELECT carrid, currency, fldate,
 
 ### Null Expressions
 
-The [null value](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abennull_value_glosry.htm) is represented by the `NULL` operand in ABAP SQL statements. Find more information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensql_null.htm).
+The [null value](https://help.sap.com/docs/abap-cloud/abap-keyword/null-value) is represented by the `NULL` operand in ABAP SQL statements. Find more information [here](https://help.sap.com/docs/abap-cloud/abap-keyword/sql-exp-sql-null).
 
 ```abap
 SELECT
@@ -1664,12 +1664,12 @@ INTO TABLE @DATA(null_expr).
 - Built-in SQL functions can be called in ABAP SQL.
 - The result is a value with the associated dictionary type. 
 - The arguments of the functions can cover one or more SQL expressions. 
-- For all available functions and for more information, refer to [this topic](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_sql_builtin_functions.htm) in the ABAP Keyword Documentation and the subtopics.
+- For all available functions and for more information, refer to [this topic](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-sql-built-in-functions-sql-func) in the ABAP Keyword Documentation and the subtopics.
 - The functions are also covered in other cheat sheets such as the [Built-In Functions](24_Builtin_Functions.md) cheat sheet.
 
 ### Numeric Functions
 
-[Numeric functions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensql_arith_func.htm)
+[Numeric functions](https://help.sap.com/docs/abap-cloud/abap-keyword/sql-func-numeric-functions)
 
 ``` abap
 SELECT SINGLE
@@ -1713,7 +1713,7 @@ SELECT SINGLE
 
 ### String Functions
 
-[String functions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensql_string_func.htm)
+[String functions](https://help.sap.com/docs/abap-cloud/abap-keyword/sql-func-string-functions)
 
 ``` abap
 SELECT SINGLE
@@ -1837,7 +1837,7 @@ SELECT SINGLE
 
 ### coalesce Function
 
-[coalesce](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensql_coalesce.htm)
+[coalesce](https://help.sap.com/docs/abap-cloud/abap-keyword/sql-func-coalesce-function)
 
 
 ```abap
@@ -1890,7 +1890,7 @@ SELECT tab2~key_field,
 
 ### Conversion Functions
 
-[Type conversion functions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABENSQL_TYPE_CONV_FUNC.html): 
+[Type conversion functions](https://help.sap.com/docs/abap-cloud/abap-keyword/sql-func-type-conversion-functions): 
 
 <table>
 
@@ -1918,7 +1918,7 @@ The code snippet implements the following:
 - To have a self-contained example, a demo internal table with elementary line type (byte-like type `x length 10`) is created. 
 - The table is filled with demo data. 
 - An ABAP SQL `SELECT` statement that includes the `bintohex` function retrieves data from the internal table. Note that a warning would be displayed that the `SELECT` command is executed on the database. The warning is suppressed with a pragma.
-- [Runtime Type Identification (RTTI)](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrun_time_type_identific_glosry.htm) (find more information in the Dynamic Programming cheat sheet) is used to demonstrate that the type of the `tline` (the alias name for `table_line`) is character-like. 
+- [Runtime Type Identification (RTTI)](https://help.sap.com/docs/abap-cloud/abap-keyword/runtime-type-identification) (find more information in the Dynamic Programming cheat sheet) is used to demonstrate that the type of the `tline` (the alias name for `table_line`) is character-like. 
 <br>
 
 ``` abap
@@ -2263,7 +2263,7 @@ SELECT currency_conversion( amount = table_line,
 
  <td> 
 
-Converts geometry input in the [Extended Well-Known Binary (EWKB) representation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABENDDIC_GEO_DATA.html) to a geometry object in JSON format
+Converts geometry input in the [Extended Well-Known Binary (EWKB) representation](https://help.sap.com/docs/abap-cloud/abap-keyword/ddic-geodata-types) to a geometry object in JSON format
 
 
  </td>
@@ -2289,7 +2289,7 @@ SELECT as_geo_json( some_geo_field )
 
 ### Date and Time Functions
 
-Find more information in the [ABAP Keyword Documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensql_uuid.htm). The  [Built-In Functions](24_Builtin_Functions.md) cheat sheet covers code examples.
+Find more information in the [ABAP Keyword Documentation](https://help.sap.com/docs/abap-cloud/abap-keyword/sql-func-uuid-function). The  [Built-In Functions](24_Builtin_Functions.md) cheat sheet covers code examples.
 
 ``` abap
 SELECT SINGLE
@@ -2311,7 +2311,7 @@ INTO @DATA(tab_w_date_time_func).
 
 ### UUID Function
 
-[UUID function](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensql_uuid.htm)
+[UUID function](https://help.sap.com/docs/abap-cloud/abap-keyword/sql-func-uuid-function)
 
 ``` abap
 SELECT SINGLE
@@ -2339,7 +2339,7 @@ INTO @DATA(tab_w_uuid).
 - As mentioned above, structures and internal tables from which to insert content should be specified as host variables (with `@`) or host
 expressions (with `@( ... )`).
 - The system fields `sy-subrc` (0 = single row or all rows inserted successfully, 4 = row not or not all rows inserted) and `sy-dbcnt` (number of rows that are inserted) are set.
-- More information: [`INSERT`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapinsert_dbtab.htm)
+- More information: [`INSERT`](https://help.sap.com/docs/abap-cloud/abap-keyword/insert-writable-obj)
 
 ``` abap
 "Inserting a single row into a database table
@@ -2377,7 +2377,7 @@ INSERT dbtab FROM ( SELECT ... ).
 
 - Changes the content of one or more rows of a database table specified.
 - Similar to `INSERT`, `sy-subrc` and `sy-dbcnt` are set.
-- More information: [`UPDATE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapupdate.htm)
+- More information: [`UPDATE`](https://help.sap.com/docs/abap-cloud/abap-keyword/update-writable-obj)
 
 ``` abap
 "Changing content by overwriting entire rows based on a structure
@@ -2448,7 +2448,7 @@ UPDATE dbtab FROM TABLE @ind_tab INDICATORS NOT SET STRUCTURE comp_ind.
 
 - Inserts one or more rows into a database table specified or overwrites existing ones.
 - As above, `sy-subrc` and `sy-dbcnt` are set.
-- More information: [`MODIFY`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapmodify_dbtab.htm)
+- More information: [`MODIFY`](https://help.sap.com/docs/abap-cloud/abap-keyword/modify-writable-obj)
 
 ``` abap
 "Inserting a single row into a database table or changing an existing row
@@ -2474,7 +2474,7 @@ MODIFY dbtab FROM ( SELECT ... ).
 
 - Deletes one or more rows from a database table specified.
 - As above, `sy-subrc` and `sy-dbcnt` are set.
-- More information: [`DELETE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapdelete_dbtab.htm)
+- More information: [`DELETE`](https://help.sap.com/docs/abap-cloud/abap-keyword/delete-writable-obj)
 
 ``` abap
 "Variant DELETE FROM ...: Either all rows are deleted or restricted
@@ -2504,7 +2504,7 @@ DELETE dbtab FROM TABLE @( VALUE #( ( comp1 = ... )
 
 ### Using Constructor Expressions in ABAP SQL Statements
 
-[Constructor expressions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconstructor_expression_glosry.htm) can be very handy in ABAP SQL statements. 
+[Constructor expressions](https://help.sap.com/docs/abap-cloud/abap-keyword/constructor-expression) can be very handy in ABAP SQL statements. 
 For more information about constructor expressions, see the ABAP Keyword Documentation and the [Constructor Expressions cheat sheet](05_Constructor_Expressions.md). Many additions are available. 
 The following examples show a selection. The previous code snippets already include the use of the `VALUE` operator with which structures and internal tables can be created in place.
 
@@ -3509,7 +3509,7 @@ SELECT *
 
 ## CRUD Operations Using CDS Artifacts
 
-- The code examples above primarily use DDIC database tables for [CRUD operations](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencrud_glosry.htm).
+- The code examples above primarily use DDIC database tables for [CRUD operations](https://help.sap.com/docs/abap-cloud/abap-keyword/crud-operations).
 - CDS artifacts are available that allow not only reading but also creating, updating, and deleting.
 - **Table Entities**
   - Table entities are CDS entities that define database tables on the SAP HANA database linked to AS ABAP.
@@ -3922,16 +3922,16 @@ ASSERT sy-dbcnt = 0.
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ### Typed Literals
-- [Built-in DDIC types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbuiltin_ddic_type_glosry.htm) cannot be used directly in ABAP, e.g. for typing local data objects. 
-- However, the types can be used in ABAP SQL, and also ABAP CDS, in the context of [typed literals](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentyped_literal_glosry.htm). Note that some special types cannot be used in this context.
+- [Built-in DDIC types](https://help.sap.com/docs/abap-cloud/abap-keyword/built-in-ddic-type) cannot be used directly in ABAP, e.g. for typing local data objects. 
+- However, the types can be used in ABAP SQL, and also ABAP CDS, in the context of [typed literals](https://help.sap.com/docs/abap-cloud/abap-keyword/typed-literal). Note that some special types cannot be used in this context.
 - Advantages of typed literals over untyped literals:
   - Allow type-safe use of literals
   - Eliminate the need for (implicit type) conversions and casts, which can lead to surprising or erroneous results. Also consider the conversion costs in terms of performance (typed literals are passed to the database and evaluated there without ABAP-specific type conversions).
   - For better readability (you can immediately see what type is being used)
 - More information:
-  - [Typed literals in ABAP SQL](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_sql_typed_literals.htm)
-  - [Typed literals in ABAP CDS](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_typed_literal_v2.htm)
-  - They can also be used in casts in ABAP [SQL](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensql_cast.htm) and [CDS](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_cast_expression_v2.htm).
+  - [Typed literals in ABAP SQL](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-sql-typed-literals)
+  - [Typed literals in ABAP CDS](https://help.sap.com/docs/abap-cloud/abap-keyword/cds-ddl-cds-view-entity-typed-literals)
+  - They can also be used in casts in ABAP [SQL](https://help.sap.com/docs/abap-cloud/abap-keyword/sql-exp-sql-cast) and [CDS](https://help.sap.com/docs/abap-cloud/abap-keyword/cds-ddl-cds-view-entity-cast-expr).
   
 ```abap
 "Miscellaneous typed literals in an ABAP SQL statement
@@ -3965,14 +3965,14 @@ SELECT SINGLE
 ### ABAP SQL and Client Handling
 
 > [!IMPORTANT] 
-> - ABAP SQL features implicit [client handling](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenclient_handling_glosry.htm). 
+> - ABAP SQL features implicit [client handling](https://help.sap.com/docs/abap-cloud/abap-keyword/client-handling). 
 > - While you can disable this in classic ABAP, it is not an option in ABAP Cloud, where you are limited to accessing your own client. 
 > - Unlike ABAP SQL, there is no implicit client handling in Native SQL. AMDP, which uses Native SQL, is usable in ABAP Cloud, but it is crucial to ensure that AMDP only accesses client-safe repository objects, meaning it only accesses data from your own client. For this purpose, dedicated additions are provided.
   
 **Notes on ABAP SQL:**
-- An SAP system can have multiple clients, each distinguished by a unique [client ID](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenclient_identifier_glosry.htm). 
+- An SAP system can have multiple clients, each distinguished by a unique [client ID](https://help.sap.com/docs/abap-cloud/abap-keyword/client-id). 
 - Each client can contain unique data. For instance, when you log into the system, you select a client and can only access the data within that specific client. If you log into client 000, for example, your access is restricted to the data of client 000, not any other clients.
-  - Client-dependent data is managed through a client column. So, if a database table has a client column, it contains client-dependent data. However, there are also client-independent data sources, which contain data not specific to any client. These are typically accessed by [system programs](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensystem_program_glosry.htm).
+  - Client-dependent data is managed through a client column. So, if a database table has a client column, it contains client-dependent data. However, there are also client-independent data sources, which contain data not specific to any client. These are typically accessed by [system programs](https://help.sap.com/docs/abap-cloud/abap-keyword/system-program).
 - ABAP SQL features implicit client handling, i.e. it automatically handles client selection. When you execute an ABAP SQL statement in a client, the system automatically uses the current client. There is no need to specify the client separately, as the compiler automatically manages client handling.
 - See the following example using a SELECT statement selecting from a database table.
     ```abap
@@ -3987,7 +3987,7 @@ SELECT SINGLE
 - However, in classic ABAP, not in ABAP Cloud, you can use the [`USING CLIENT` (F1 docu for Standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapselect_client.htm) addition that modifies this default behavior. It disables implicit client handling.
   - With the addition, you can specify other clients from which to retrieve data. Find more information in the ABAP Keyword Documentation.
   - You may also stumble on the `CLIENT SPECIFIED` addition. It is obsolete, only `USING CLIENT` should be used.  
-  - The following (classic ABAP only) code shows a variety of syntax options. Note that it uses a data source of the cheat sheet repository. For exploration, you may want to use another data source. You may also want to check the commands that are passed by the [ABAP SQL Interface](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_sql_interface_glosry.htm) when activating the SQL trace (transaction ST05) to explore the use of another client ID and more. 
+  - The following (classic ABAP only) code shows a variety of syntax options. Note that it uses a data source of the cheat sheet repository. For exploration, you may want to use another data source. You may also want to check the commands that are passed by the [ABAP SQL Interface](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-sql-interface) when activating the SQL trace (transaction ST05) to explore the use of another client ID and more. 
 
     ```abap
     "---- The following code is for classic ABAP only. ----
@@ -4018,7 +4018,7 @@ SELECT SINGLE
     SELECT * FROM zdemo_abap_carr USING ALL CLIENTS INTO TABLE @DATA(itab7).
     ``` 
 
-- Find more information on client handling [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_sql_client_handling.htm).
+- Find more information on client handling [here](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-sql-client-handling).
 
 **Notes on Native SQL/AMDP**
 - Unlike ABAP SQL, Native SQL does not have implicit handling, so you must explicitly pass the client. 
@@ -4029,31 +4029,31 @@ SELECT SINGLE
 - AMDP methods in ABAP Cloud must be client-safe, meaning the SQLScript code should access data only in your client. Use only artifacts that limit access to a single client or those that are client-independent.
 - Consequently, all objects in the `USING` list must be client-safe, including CDS table functions implemented as AMDP methods.
 - There are additions to cover client-safe aspects, ensuring access only to your client data.
-- Find more information about client safety in AMDP [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenamdp_client_safety.htm).
+- Find more information about client safety in AMDP [here](https://help.sap.com/docs/abap-cloud/abap-keyword/amdp-client-safety).
 
 **Notes on CDS view entities**
 - In CDS view entities, client handling is done implicitly and automatically.
 - The client dependency is determined by the data sources used. If at least one source is client-dependent, then the entire entity is client-dependent.
 - More information: 
-  - [Client Handling in CDS View Entities](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_v2_view_client_handling.htm)
-  - [Client Safety of CDS View Entities](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_v2_view_client_safety.htm)
-  - [Client Handling in CDS Table Functions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_func_client_handling.htm)
+  - [Client Handling in CDS View Entities](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-cds-client-handling-in-cds-view-entities)
+  - [Client Safety of CDS View Entities](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-cds-client-safety-of-cds-view-entities)
+  - [Client Handling in CDS Table Functions](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-cds-client-handling-in-cds-table-functions)
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ### RAP-Specific ABAP SQL Variants
 
-There are [RAP](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenarap_glosry.htm)-specific variants of ABAP SQL statements that use the `MAPPING FROM ENTITY` addition. Find more information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapmapping_from_entity.htm) and in the [ABAP for RAP: Entity Manipulation Language (ABAP EML)](08_EML_ABAP_for_RAP.md#abap-sql-statements-with-bdef-derived-types) cheat sheet. 
+There are [RAP](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-restful-application-programming-model)-specific variants of ABAP SQL statements that use the `MAPPING FROM ENTITY` addition. Find more information [here](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-sql-statements-with-mapping-from-entity) and in the [ABAP for RAP: Entity Manipulation Language (ABAP EML)](08_EML_ABAP_for_RAP.md#abap-sql-statements-with-bdef-derived-types) cheat sheet. 
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## More Information
-- [This topic](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_sql.htm) serves as the entry point for topics about ABAP SQL in the ABAP Keyword Documentation. For the full details, check the subtopics there, especially topics not covered in this cheat sheet.
+- [This topic](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-sql) serves as the entry point for topics about ABAP SQL in the ABAP Keyword Documentation. For the full details, check the subtopics there, especially topics not covered in this cheat sheet.
 - Find more topics in the ABAP Keyword Documentation such as the following: 
-  - ABAP SQL statements can contain [SQL path expressions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensql_path_expression_glosry.htm). For more information, see [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_sql_path.htm). The executable example of the CDS view entities cheat sheet includes demo SQL statements.
-  - Find [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_sql_exceptions.htm) and overview on exceptions that can occur in the context of ABAP SQL statements.
-  - As a rule, bear in mind performance aspects when using ABAP SQL statements. Find more information in the [Performance Notes](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_sql_perfo.htm). The code snippets here only focus on syntax options.
-  - You can specify hierarchy data as a data source in ABAP SQL `SELECT` statements. Find more information and examples in the [ABAP Keyword Documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenselect_hierarchy_data.htm). For working with hierarchies, see the [ABAP SQL: Working with Hierarchies cheat sheet](10_ABAP_SQL_Hierarchies.md).
+  - ABAP SQL statements can contain [SQL path expressions](https://help.sap.com/docs/abap-cloud/abap-keyword/sql-path-expression). For more information, see [here](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-sql-sql-path-expressions-sql-path). The executable example of the CDS view entities cheat sheet includes demo SQL statements.
+  - Find [here](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-sql-exceptions) and overview on exceptions that can occur in the context of ABAP SQL statements.
+  - As a rule, bear in mind performance aspects when using ABAP SQL statements. Find more information in the [Performance Notes](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-sql-performance-notes). The code snippets here only focus on syntax options.
+  - You can specify hierarchy data as a data source in ABAP SQL `SELECT` statements. Find more information and examples in the [ABAP Keyword Documentation](https://help.sap.com/docs/abap-cloud/abap-keyword/select-from-hierarchy-data). For working with hierarchies, see the [ABAP SQL: Working with Hierarchies cheat sheet](10_ABAP_SQL_Hierarchies.md).
 
 ## Executable Example
 [zcl_demo_abap_sql](./src/zcl_demo_abap_sql.clas.abap)

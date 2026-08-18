@@ -65,35 +65,35 @@ This ABAP cheat sheet provides an overview on selected syntax options and concep
 
 > [!NOTE] 
 > - The cheat sheet is supported by code snippets and an executable example. They are **not** suitable as role models for object-oriented design. Their primary focus is on the syntax and functionality. 
-> - For more details, refer to the respective topics in the ABAP Keyword Documentation. Find an overview in the topic [ABAP Objects - Overview](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_objects_oview.htm).
+> - For more details, refer to the respective topics in the ABAP Keyword Documentation. Find an overview in the topic [ABAP Objects - Overview](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-abap-objects).
 > - The [executable examples](#executable-examples) reflect several points and code snippets covered in the cheat sheet.
 
 
 ## Classes and Objects
 
 Object-oriented programming in ABAP means dealing with
-[classes](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenclass_glosry.htm "Glossary Entry")
+[classes](https://help.sap.com/docs/abap-cloud/abap-keyword/class-abenclass_glosry)
 and
-[objects](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenobject_glosry.htm "Glossary Entry").
+[objects](https://help.sap.com/docs/abap-cloud/abap-keyword/object).
 
 Objects ...
 
 -   are
-    [instances](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abeninstance_glosry.htm "Glossary Entry")
+    [instances](https://help.sap.com/docs/abap-cloud/abap-keyword/instance)
     of a
-    [type](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentype_glosry.htm "Glossary Entry").
+    [type](https://help.sap.com/docs/abap-cloud/abap-keyword/type).
     In this context, they are instances of a
-    [class](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenclass_glosry.htm "Glossary Entry").
+    [class](https://help.sap.com/docs/abap-cloud/abap-keyword/class-abenclass_glosry).
     The terms *object* and *instance* are used synonymously.
 -   exist in the [internal
-    session](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abeninternal_session_glosry.htm "Glossary Entry")
+    session](https://help.sap.com/docs/abap-cloud/abap-keyword/internal-session)
     of an [ABAP
-    program](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_program_glosry.htm "Glossary Entry").
+    program](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-program).
 
 
 Classes ...
 -   are templates for objects, i. e. they determine how
-    all instances of a class are set up. All instances are created (i.e they are [instantiated](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abeninstantiation_glosry.htm "Glossary Entry")) based on this template and, thus, have the same setup.
+    all instances of a class are set up. All instances are created (i.e they are [instantiated](https://help.sap.com/docs/abap-cloud/abap-keyword/instantiation)) based on this template and, thus, have the same setup.
     -   To give an example: If, for example, a vehicle represents a class, then the
         instances of the class `vehicle` have the same setup.
         That means they all share the same kind of components like a brand, model and color or the same functionality like the acceleration or braking distance.
@@ -102,12 +102,12 @@ Classes ...
         acceleration; another instance is a black SUV of brand B and so on. You can create an object (or instance respectively) that stands
         for an actual vehicle which you can work with. You might create any number of objects that are based on such a class - if instantiation is allowed.
 -   contain
-    [components](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencomponent_glosry.htm "Glossary Entry"):
-    -   [Attributes](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenattribute_glosry.htm "Glossary Entry")
+    [components](https://help.sap.com/docs/abap-cloud/abap-keyword/component):
+    -   [Attributes](https://help.sap.com/docs/abap-cloud/abap-keyword/attribute)
         of the objects (the data object declarations)
-    -   [Methods](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenmethod_glosry.htm "Glossary Entry")
+    -   [Methods](https://help.sap.com/docs/abap-cloud/abap-keyword/method-abenmethod_glosry)
         that determine the behavior of an object
-    -   [Events](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenevent_glosry.htm "Glossary Entry") to trigger the processing of ABAP code
+    -   [Events](https://help.sap.com/docs/abap-cloud/abap-keyword/event-abenevent_glosry) to trigger the processing of ABAP code
 
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
@@ -118,29 +118,29 @@ You can either create local or global classes:
 
 <table>
 <tr>
-    <td><a href="https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenlocal_class_glosry.htm">Local classes</a></td>
-    <td><ul><li>can be defined within an <a href="https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_program_glosry.htm">ABAP program</a> such as in include programs of global classes (e.g. the <a href="https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenccimp_glosry.htm">CCIMP include</a>, <i>Local Types</i> table in ADT) or in executable programs ("reports"; in <a href="https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenstandard_abap_glosry.htm">Standard ABAP</a> only)</li><li>can only be used in the ABAP program in which the class is defined</li></ul></td>
+    <td><a href="https://help.sap.com/docs/abap-cloud/abap-keyword/local-class">Local classes</a></td>
+    <td><ul><li>can be defined within an <a href="https://help.sap.com/docs/abap-cloud/abap-keyword/abap-program">ABAP program</a> such as in include programs of global classes (e.g. the <a href="https://help.sap.com/docs/abap-cloud/abap-keyword/ccimp-include">CCIMP include</a>, <i>Local Types</i> table in ADT) or in executable programs ("reports"; in <a href="https://help.sap.com/docs/abap-cloud/abap-keyword/standard-abap)</li><li>can only be used in the ABAP program in which the class is defined</li></ul></td>
 </tr>
 <tr>
-    <td><a href="https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenglobal_class_glosry.htm">Global
+    <td><a href="https://help.sap.com/docs/abap-cloud/abap-keyword/global-class">Global
 classes</a></td>
     <td><ul><li>are defined as
-    <a href="https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenglobal_type_glosry.htm">global types</a>, i. e. they are visible as a repository object - in contrast to local classes. As a global type, they can be used - as the name implies - globally in other ABAP programs or global classes</li><li>are declared in <a href="https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenclass_pool_glosry.htm">class pools</a> that contain a <a href="https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenccimp_glosry.htm">CCIMP include</a> and other <a href="https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abeninclude_program_glosry.htm">include programs</a></li></ul> </td>
+    <a href="https://help.sap.com/docs/abap-cloud/abap-keyword/global-type">global types</a>, i. e. they are visible as a repository object - in contrast to local classes. As a global type, they can be used - as the name implies - globally in other ABAP programs or global classes</li><li>are declared in <a href="https://help.sap.com/docs/abap-cloud/abap-keyword/class-pool-abenclass_pool_glosry">class pools</a> that contain a <a href="https://help.sap.com/docs/abap-cloud/abap-keyword/ccimp-include">CCIMP include</a> and other <a href="https://help.sap.com/docs/abap-cloud/abap-keyword/include-program">include programs</a></li></ul> </td>
 </tr>
 </table>
 
 > [!NOTE] 
 > - If a class is only used in one ABAP program, creating a local class is enough. However, if you choose to create a global class, you must bear in mind that such a class can be used everywhere. Consider the impact on the users of the global class when you change, for example, the visibility section of a component or you delete it.
-> - Apart from ADT, global classes can also be created in the ABAP Workbench (`SE80`) or with transaction `SE24` in [classic ABAP](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenclassic_abap_glosry.htm).
+> - Apart from ADT, global classes can also be created in the ABAP Workbench (`SE80`) or with transaction `SE24` in [classic ABAP](https://help.sap.com/docs/abap-cloud/abap-keyword/classic-abap).
 
 Basic structure of classes:
-- [Declaration part](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendeclaration_part_glosry.htm "Glossary Entry") that includes declarations of the class components.
-- [Implementation part](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenimplementation_part_glosry.htm "Glossary Entry") that includes method implementations.
+- [Declaration part](https://help.sap.com/docs/abap-cloud/abap-keyword/declaration-part) that includes declarations of the class components.
+- [Implementation part](https://help.sap.com/docs/abap-cloud/abap-keyword/implementation-part) that includes method implementations.
 - Both are introduced by `CLASS` and ended by `ENDCLASS`.
 
 #### Creating a Global Class
 The code snippet shows a basic skeleton of a global class. There are [further
-additions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapclass_options.htm)
+additions](https://help.sap.com/docs/abap-cloud/abap-keyword/class-class-options)
 possible for the declaration part.
 
 ``` abap
@@ -167,7 +167,7 @@ ENDCLASS.
 
 #### Creating a Local Class
 
-- You can create local classes, for example, in the [CCIMP include](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenccimp_glosry.htm) (*Local Types* tab in ADT) of a [class pool](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenclass_pool_glosry.htm). 
+- You can create local classes, for example, in the [CCIMP include](https://help.sap.com/docs/abap-cloud/abap-keyword/ccimp-include) (*Local Types* tab in ADT) of a [class pool](https://help.sap.com/docs/abap-cloud/abap-keyword/class-pool-abenclass_pool_glosry). 
 - Local classes are used in their own ABAP program. While dynamic access beyond program boundaries is possible, it is not recommended.
 - In the cheat sheet, local classes are used in several sections, particularly for self-contained examples that require multiple classes.
 
@@ -199,7 +199,7 @@ ENDCLASS.
 
 #### Additions in the Class Declaration Part
 
-This section covers a selection of additions to declare classes. They are also covered in other sections below, e.g. [Additions Related to Inheritance and Instantiation](#additions-related-to-inheritance-and-instantiation). Find more information on the additions in the [ABAP Keyword Documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapclass_options.htm). The additions assume dealing with global classes, however, many of the additions are also possible for local classes. 
+This section covers a selection of additions to declare classes. They are also covered in other sections below, e.g. [Additions Related to Inheritance and Instantiation](#additions-related-to-inheritance-and-instantiation). Find more information on the additions in the [ABAP Keyword Documentation](https://help.sap.com/docs/abap-cloud/abap-keyword/class-class-options). The additions assume dealing with global classes, however, many of the additions are also possible for local classes. 
 
 <table>
 
@@ -258,7 +258,7 @@ The class is instantiable anywhere. Note that not specifying a `CREATE ...` addi
 
  <td> 
 
-The class can only be instantiated in methods of its [subclasses](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensubclass_glosry.htm "Glossary Entry"), of the class itself, and of its [friends](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenfriend_glosry.htm "Glossary Entry").
+The class can only be instantiated in methods of its [subclasses](https://help.sap.com/docs/abap-cloud/abap-keyword/subclass), of the class itself, and of its [friends](https://help.sap.com/docs/abap-cloud/abap-keyword/friend).
 
  </td>
 </tr>
@@ -286,7 +286,7 @@ The class can only be instantiated in methods of the class itself or of its frie
 
  <td> 
 
-As the name implies, it is used to inherit from a visible [superclass](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensuperclass_glosry.htm). If the addition is not specified, the created class implicitly inherits from the predefined empty, abstract class `object` (the root object).
+As the name implies, it is used to inherit from a visible [superclass](https://help.sap.com/docs/abap-cloud/abap-keyword/superclass). If the addition is not specified, the created class implicitly inherits from the predefined empty, abstract class `object` (the root object).
 
  </td>
 </tr>
@@ -300,7 +300,7 @@ As the name implies, it is used to inherit from a visible [superclass](https://h
 
  <td> 
 
-To define [abstract](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabstract_glosry.htm) classes. These classes cannot be instantiated. They can contain both abstract methods and non-abstract methods. Abstract methods can only be implemented in [subclasses](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensubclass_glosry.htm) by redefinition. See a simple implementation example [here](#excursion-example-interface).
+To define [abstract](https://help.sap.com/docs/abap-cloud/abap-keyword/abstract) classes. These classes cannot be instantiated. They can contain both abstract methods and non-abstract methods. Abstract methods can only be implemented in [subclasses](https://help.sap.com/docs/abap-cloud/abap-keyword/subclass) by redefinition. See a simple implementation example [here](#excursion-example-interface).
 
  </td>
 </tr>
@@ -314,7 +314,7 @@ To define [abstract](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/
 
  <td> 
 
-- Used to define [friendships](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenfriend_glosry.htm) (also possible for interfaces). Friends of a class have unrestricted access to all components of that class. 
+- Used to define [friendships](https://help.sap.com/docs/abap-cloud/abap-keyword/friend) (also possible for interfaces). Friends of a class have unrestricted access to all components of that class. 
 - `GLOBAL FRIENDS`: Used in global classes (together with the `PUBLIC` addition) to grant friendship to other global classes and interfaces
 - `FRIENDS`: For local classes, e.g. local classes granting friendship to other local classes or the global class of the class pool
 - `LOCAL FRIENDS`: Used for global classes to grant friendship to local classes and interfaces in its own class pool. However, it is a dedicated statement, as shown in the [Friendship](#friendship) section. 
@@ -331,7 +331,7 @@ To define [abstract](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/
 
  <td> 
 
-For [ABAP Unit](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_unit_glosry.htm) tests. Find more information in the [ABAP Unit Tests](14_ABAP_Unit_Tests.md) cheat sheet.
+For [ABAP Unit](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-unit-abenabap_unit_glosry) tests. Find more information in the [ABAP Unit Tests](14_ABAP_Unit_Tests.md) cheat sheet.
 
  </td>
 </tr>
@@ -345,7 +345,7 @@ For [ABAP Unit](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index
 
  <td> 
 
-To define [ABAP behavior pools](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbehavior_pool_glosry.htm). Find more information in the [ABAP for RAP: Entity Manipulation Language (ABAP EML)](08_EML_ABAP_for_RAP.md) cheat sheet.
+To define [ABAP behavior pools](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-behavior-pool). Find more information in the [ABAP for RAP: Entity Manipulation Language (ABAP EML)](08_EML_ABAP_for_RAP.md) cheat sheet.
 
  </td>
 </tr>
@@ -359,7 +359,7 @@ To define [ABAP behavior pools](https://help.sap.com/doc/abapdocu_cp_index_htm/C
 
  <td> 
 
-Makes a local class known in a program before the actual class definition. It is typically used in test classes of ABAP Unit. Find more information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapclass_deferred.htm).
+Makes a local class known in a program before the actual class definition. It is typically used in test classes of ABAP Unit. Find more information [here](https://help.sap.com/docs/abap-cloud/abap-keyword/class-deferred).
 
  </td>
 </tr>
@@ -540,7 +540,7 @@ ENDCLASS.
 
 ### Visibility of Components
 
-In the class declaration part, you specify three [visibility sections](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenvisibility_section_glosry.htm "Glossary Entry") and include class components to define their visibility. These visibility sections serve the purpose of encapsulation in ABAP Objects. For example, you do not want to make certain components publicly available for all users. The visibility sections are as follows:
+In the class declaration part, you specify three [visibility sections](https://help.sap.com/docs/abap-cloud/abap-keyword/visibility-section) and include class components to define their visibility. These visibility sections serve the purpose of encapsulation in ABAP Objects. For example, you do not want to make certain components publicly available for all users. The visibility sections are as follows:
 
 <table>
 <tr>
@@ -550,7 +550,7 @@ In the class declaration part, you specify three [visibility sections](https://h
 <tr>
  <td><pre>PROTECTED SECTION.</pre></td>
     <td>Components declared in this section can be
-    accessed from within the class and <a href="https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensubclass_glosry.htm">subclasses</a> as well as <a href="https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenfriend_glosry.htm">friends</a>.</td>
+    accessed from within the class and <a href="https://help.sap.com/docs/abap-cloud/abap-keyword/subclass">subclasses</a> as well as <a href="https://help.sap.com/docs/abap-cloud/abap-keyword/friend">friends</a>.</td>
 </tr>
   <tr>
  <td><pre>PRIVATE SECTION.</pre></td>
@@ -603,9 +603,9 @@ assigned to a visibility section.
 Two
 kinds of components are to be distinguished when, for example, looking at declarations using `DATA` and `CLASS-DATA` having a preceding `CLASS-`:
 
--   [Instance components](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abeninstance_component_glosry.htm "Glossary Entry"):
+-   [Instance components](https://help.sap.com/docs/abap-cloud/abap-keyword/instance-component):
     Components that exist separately for each instance and can only be accessed in instances of a class.
--   [Static components](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenstatic_component_glosry.htm "Glossary Entry") (the declarations with `CLASS-`):
+-   [Static components](https://help.sap.com/docs/abap-cloud/abap-keyword/static-component) (the declarations with `CLASS-`):
     Components that exist only once per class. They do no not exclusively exist for specific instances. They can be addressed using the name of the class.
 
 #### Class Attributes
@@ -613,13 +613,13 @@ kinds of components are to be distinguished when, for example, looking at declar
 -   The attributes of a class (or interface) mean the data objects declared within a
     class (or interface).
 -   [Instance
-    attributes](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abeninstance_attribute_glosry.htm "Glossary Entry")
+    attributes](https://help.sap.com/docs/abap-cloud/abap-keyword/instance-attribute)
     (`DATA`): Determine the state of objects of a class. The data
     is only valid in the context of an instance. As shown further down,
     instance attributes can only be accessed via an [object reference
-    variable](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenobject_refer_variable_glosry.htm "Glossary Entry") (or [interface reference variable](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abeninterface_ref_variable_glosry.htm)).
+    variable](https://help.sap.com/docs/abap-cloud/abap-keyword/object-reference-variable) (or [interface reference variable](https://help.sap.com/docs/abap-cloud/abap-keyword/interface-reference-variable)).
 -   [Static
-    attributes](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenstatic_attribute_glosry.htm "Glossary Entry")
+    attributes](https://help.sap.com/docs/abap-cloud/abap-keyword/static-attribute)
     (`CLASS-DATA`): Their content is independent of instances of
     a class and, thus, valid for all instances.  That means that if you change such a static
     attribute, the change is visible in all instances. As shown further down,
@@ -629,11 +629,11 @@ kinds of components are to be distinguished when, for example, looking at declar
 > [!NOTE] 
 > - You can declare constant data objects that should not be
 changed using
-[`CONSTANTS`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapconstants.htm)
+[`CONSTANTS`](https://help.sap.com/docs/abap-cloud/abap-keyword/constants)
 statements. You specify the values for the constants (which are also static attributes) when you declare
 them in the declaration part of a class.
 > - The addition
-[`READ-ONLY`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapdata_options.htm)
+[`READ-ONLY`](https://help.sap.com/docs/abap-cloud/abap-keyword/data-data-options)
 can be used in the public visibility section. Effect:
 >   - Can be read from outside of the class
 >   - Cannot be changed from outside
@@ -679,23 +679,23 @@ ENDCLASS.
 #### Methods
 
 -   Are internal
-    [procedures](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenprocedure_glosry.htm "Glossary Entry")
+    [procedures](https://help.sap.com/docs/abap-cloud/abap-keyword/procedure)
     determining the behavior of the class.
 -   Can access all of the attributes of a class and, if not defined
     otherwise, change their content.
 -   Have a [parameter
-    interface](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenparameter_interface_glosry.htm "Glossary Entry")
+    interface](https://help.sap.com/docs/abap-cloud/abap-keyword/parameter-interface)
     (also known as
-    [signature](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensignature_glosry.htm "Glossary Entry"))
+    [signature](https://help.sap.com/docs/abap-cloud/abap-keyword/signature))
     with which methods can get values to work with when being called and pass values
     back to the caller (see the notes on formal and actual parameters below).
 -   [Static
-    methods](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenstatic_method_glosry.htm "Glossary Entry")
+    methods](https://help.sap.com/docs/abap-cloud/abap-keyword/static-method)
     can only access static attributes of a class and trigger static
     events. You declare them using `CLASS-METHODS` statements in
     a visibility section.
 -   [Instance
-    methods](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abeninstance_method_glosry.htm "Glossary Entry")
+    methods](https://help.sap.com/docs/abap-cloud/abap-keyword/instance-method)
     can access all of the attributes of a class and trigger all events.
     You declare them using `METHODS` statements in a visibility
     section. Note that you must create an instance of a class first before using instance methods. Called within the same class, an instance is not required.
@@ -784,30 +784,30 @@ In the simplest form, methods can have no parameter at all. Apart from that, met
 |`IMPORTING`|Defines one or more input parameters to be imported by the method.  |
 |`EXPORTING`|Defines one or more output parameters to be exported by the method.  |
 |`CHANGING`|Defines one or more input or output parameters, i. e. that can be both imported and exported.  |
-|`RETURNING`|For [functional methods](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenfunctional_method_glosry.htm "Glossary Entry"), i. e. such methods have only one `RETURNING` parameter that can be defined. As an output parameter like the `EXPORTING` parameter, `RETURNING` parameters pass back values (note that the formal parameters of returning parameters must be passed by value as covered below; the parameter must be [completely typed](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencomplete_typing_glosry.htm)). In contrast to `EXPORTING` for which multiple parameters can be specified, only one `RETURNING` parameter can be specified in a method. If you only need one output parameter, you can benefit from using a `RETURNING` parameter by shortening the method call and enabling method chaining. Another big plus is that such functional methods can, for example, be used in expressions. In case of standalone method calls, the returned value can be accessed using the addition `RECEIVING`.  |
-|`RAISING` | Used to declare the [class-based exceptions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenclass_based_exception_glosry.htm "Glossary Entry") that can be propagated from the method to the caller. It can also be specified with the addition `RESUMABLE` for [resumable exceptions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenresumable_exception_glosry.htm). Find more information in the [Exceptions and Runtime Errors](27_Exceptions.md) cheat sheet. |
+|`RETURNING`|For [functional methods](https://help.sap.com/docs/abap-cloud/abap-keyword/functional-method), i. e. such methods have only one `RETURNING` parameter that can be defined. As an output parameter like the `EXPORTING` parameter, `RETURNING` parameters pass back values (note that the formal parameters of returning parameters must be passed by value as covered below; the parameter must be [completely typed](https://help.sap.com/docs/abap-cloud/abap-keyword/complete-typing)). In contrast to `EXPORTING` for which multiple parameters can be specified, only one `RETURNING` parameter can be specified in a method. If you only need one output parameter, you can benefit from using a `RETURNING` parameter by shortening the method call and enabling method chaining. Another big plus is that such functional methods can, for example, be used in expressions. In case of standalone method calls, the returned value can be accessed using the addition `RECEIVING`.  |
+|`RAISING` | Used to declare the [class-based exceptions](https://help.sap.com/docs/abap-cloud/abap-keyword/class-based-exception) that can be propagated from the method to the caller. It can also be specified with the addition `RESUMABLE` for [resumable exceptions](https://help.sap.com/docs/abap-cloud/abap-keyword/resumable-exception). Find more information in the [Exceptions and Runtime Errors](27_Exceptions.md) cheat sheet. |
 
 
 > [!NOTE] 
 > - It is advisable to avoid specifying multiple different output parameters (exporting, returning, changing) in a signature to reduce complexity. 
-> - Find more information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapmethods_general.htm).
+> - Find more information [here](https://help.sap.com/docs/abap-cloud/abap-keyword/methods-importing-exporting-changing-raising).
 > - You may find the addition `EXCEPTIONS` especially in definitions of older classes. They are for non-class-based exceptions. This addition should not be used in ABAP for Cloud Development. See the section [Class-Based Exceptions](#class-based-exceptions), and the section [Classic Exceptions](27_Exceptions.md#classic-exceptions) in the [Exceptions and Runtime Errors](27_Exceptions.md) cheat sheet.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
 #### Formal and Actual Parameters
 
-- [Formal parameters](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenformal_parameter_glosry.htm "Glossary Entry"): You define method parameters by specifying a name with a type which can be a [generic](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abengeneric_data_type_glosry.htm "Glossary Entry") or  [complete](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencomplete_data_type_glosry.htm "Glossary Entry")
+- [Formal parameters](https://help.sap.com/docs/abap-cloud/abap-keyword/formal-parameter): You define method parameters by specifying a name with a type which can be a [generic](https://help.sap.com/docs/abap-cloud/abap-keyword/generic-data-type) or  [complete](https://help.sap.com/docs/abap-cloud/abap-keyword/complete-data-type)
     type. 
 - Examples:
   - `fp` is the formal parameter that has a complete type: `... meth IMPORTING fp TYPE string ...`
   - `gen` is the formal parameter that has a generic type: `... meth IMPORTING gen TYPE any ...`
   - Find more information about generic types also in the [Data Types and Data Objects](16_Data_Types_and_Objects.md#generic-types) cheat sheet.
 - This formal parameter includes the specification of how the value passing should happen. Parameters can be passed by ...
-  - [reference](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenpass_by_reference_glosry.htm "Glossary Entry"): `... REFERENCE(param) ...`; note that just specifying the parameter name `... param ...` - as a shorter syntax - means passing by reference by default) 
-  - [value](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenpass_by_value_glosry.htm "Glossary Entry"): `... VALUE(param) ...`
-- An [actual parameter](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenactual_parameter_glosry.htm "Glossary Entry") represents the data object whose content is passed to or copied from a formal parameter as an argument when a procedure is called. 
-- If passing by reference is used, a local data object is not created for the actual parameter. Instead, the procedure is given a [reference](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenreference_glosry.htm "Glossary Entry") to the actual parameter during the call and works with the actual parameter itself. 
+  - [reference](https://help.sap.com/docs/abap-cloud/abap-keyword/pass-by-reference): `... REFERENCE(param) ...`; note that just specifying the parameter name `... param ...` - as a shorter syntax - means passing by reference by default) 
+  - [value](https://help.sap.com/docs/abap-cloud/abap-keyword/pass-by-value): `... VALUE(param) ...`
+- An [actual parameter](https://help.sap.com/docs/abap-cloud/abap-keyword/actual-parameter) represents the data object whose content is passed to or copied from a formal parameter as an argument when a procedure is called. 
+- If passing by reference is used, a local data object is not created for the actual parameter. Instead, the procedure is given a [reference](https://help.sap.com/docs/abap-cloud/abap-keyword/reference) to the actual parameter during the call and works with the actual parameter itself. 
 - Note that parameters that are input and passed by reference cannot be modified in the procedure. However, the use of a reference is beneficial regarding the performance compared to creating a local data object.
 
 The following example (which anticipates aspects described in the following sections, such as calling methods) shows a class with a simple method demonstrating the syntax for formal parameter specifications. Complete types are used. 
@@ -867,7 +867,7 @@ ENDCLASS.
 
 #### Complete Typing of Formal Parameters
 
-Syntax for [completely](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencomplete_data_type_glosry.htm "Glossary Entry") typing a formal parameter: 
+Syntax for [completely](https://help.sap.com/docs/abap-cloud/abap-keyword/complete-data-type) typing a formal parameter: 
 - `TYPE complete_type`
 - `TYPE LINE OF complete_type`
 - `TYPE REF TO type`
@@ -1201,9 +1201,9 @@ ENDCLASS.
 #### Defining Parameters as Optional
 
 - Parameters specified after `IMPORTING` and `CHANGING` can be defined as optional using the `OPTIONAL` and `DEFAULT` additions: 
-  - [`OPTIONAL`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapmethods_parameters.htm): It is then not mandatory to pass an actual
+  - [`OPTIONAL`](https://help.sap.com/docs/abap-cloud/abap-keyword/methods-parameters): It is then not mandatory to pass an actual
     parameter. 
-  - [`DEFAULT`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapmethods_parameters.htm): Also makes the passing of an actual parameter optional. However, when using this addition, as the name implies, a default value is set.
+  - [`DEFAULT`](https://help.sap.com/docs/abap-cloud/abap-keyword/methods-parameters): Also makes the passing of an actual parameter optional. However, when using this addition, as the name implies, a default value is set.
   - In the method implementations you may want to check whether an actual parameter was passed. You can use predicate expressions using `IS SUPPLIED`. See the example further down.
 
 
@@ -1390,13 +1390,13 @@ ENDCLASS.
 
 #### Constructors
 
--   [Constructors](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconstructor_glosry.htm "Glossary Entry")
+-   [Constructors](https://help.sap.com/docs/abap-cloud/abap-keyword/constructor)
     are special methods that are usually used for setting a defined
     initial value for attributes of the class or its objects.
 -   A class has exactly one [instance
-    constructor](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abeninstance_constructor_glosry.htm "Glossary Entry")
+    constructor](https://help.sap.com/docs/abap-cloud/abap-keyword/instance-constructor)
     and one [static
-    constructor](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenstatic_constructor_glosry.htm "Glossary Entry").
+    constructor](https://help.sap.com/docs/abap-cloud/abap-keyword/static-constructor).
 -   The declaration and use of constructors is optional.
 -   Static constructor:
     - Declared using the predefined name `class_constructor` as part of a
@@ -1492,7 +1492,7 @@ ENDCLASS.
 ## Working with Objects and Components
 
 ### Declaring Object Reference Variables
-- To create an object, an [object reference variable](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenobject_refer_variable_glosry.htm "Glossary Entry") must be declared. 
+- To create an object, an [object reference variable](https://help.sap.com/docs/abap-cloud/abap-keyword/object-reference-variable) must be declared. 
 - It is also necessary for accessing objects and their components. That means objects are not directly accessed but only via references that point to
 those objects. 
 - This object reference variable contains the reference to the object - after assigning the reference to the object (see further down).
@@ -1509,26 +1509,26 @@ DATA: ref1 TYPE REF TO local_class,
 ### Creating Objects
 
 -   Using the instance operator
-    [`NEW`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconstructor_expression_new.htm),
+    [`NEW`](https://help.sap.com/docs/abap-cloud/abap-keyword/new-instance-operator),
     you can create objects of a class (and [anonymous data
-    objects](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenanonymous_data_object_glosry.htm "Glossary Entry"), too, that are not dealt with here). As a result,
-    you get a [reference variable](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenreference_variable_glosry.htm "Glossary Entry")
+    objects](https://help.sap.com/docs/abap-cloud/abap-keyword/anonymous-data-object), too, that are not dealt with here). As a result,
+    you get a [reference variable](https://help.sap.com/docs/abap-cloud/abap-keyword/reference-variable)
     that points to the created object.
 -   Regarding the type specifications before and parameters within the
     parentheses:
     - Right before the first parenthesis after `NEW`, the type, i. e. the class, must be specified. The `#` character - instead of the class name -
 means that the type (`TYPE REF TO ...`) can be derived from the context (in this case from the type of the reference variable). You can
 also omit the explicit declaration of a reference variable by declaring a new reference variable
-[inline](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendata_inline.htm),
+[inline](https://help.sap.com/docs/abap-cloud/abap-keyword/data-inline-declaration-for-variables),
 for example, using `DATA`. In this case, the name of the class must be placed after `NEW` and before the first parenthesis.
     -   No parameter specified within the parentheses: No values are
         passed to the instance constructor of an object. However, non-optional input parameters of the
         instance constructor of the instantiated class must be filled.
         No parameters are passed for a class without an explicitly declared
         instance constructor. See more information:
-        [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abennew_constructor_params_class.htm).
+        [here](https://help.sap.com/docs/abap-cloud/abap-keyword/new-classes).
 - The operator
-    basically replaces the syntax [`CREATE OBJECT`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapcreate_object.htm) you might stumble on. However, `CREATE OBJECT` statements are still required (i.e. they are the only option, `NEW` is not possible for them) for creating objects dynamically. For more information, see the [Dynamic Programming](06_Dynamic_Programming.md) cheat sheet.
+    basically replaces the syntax [`CREATE OBJECT`](https://help.sap.com/docs/abap-cloud/abap-keyword/create-object) you might stumble on. However, `CREATE OBJECT` statements are still required (i.e. they are the only option, `NEW` is not possible for them) for creating objects dynamically. For more information, see the [Dynamic Programming](06_Dynamic_Programming.md) cheat sheet.
 
 ``` abap
 "Declaring object reference variable
@@ -1557,7 +1557,7 @@ This section covers some aspects of working with reference variables. Find a cop
 
 **Assigning Reference Variables**
 
-To assign or copy reference variables, use the [assignment operator](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenassignment_operator_glosry.htm "Glossary Entry") `=`. In the example below, both object reference variables have the same type. Note the concepts of polymorphism, upcasts and downcasts when assigning reference variables covered further down. 
+To assign or copy reference variables, use the [assignment operator](https://help.sap.com/docs/abap-cloud/abap-keyword/assignment-operator-abenassignment_operator_glosry) `=`. In the example below, both object reference variables have the same type. Note the concepts of polymorphism, upcasts and downcasts when assigning reference variables covered further down. 
 
 ``` abap
 DATA: ref1 TYPE REF TO some_class,
@@ -1570,7 +1570,7 @@ ref2 = ref1.
 ```
 
 **Overwriting reference variables**: An [object
-reference](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenobject_reference_glosry.htm "Glossary Entry")
+reference](https://help.sap.com/docs/abap-cloud/abap-keyword/object-reference)
 is overwritten when a new object is created with a reference variable
 already pointing to an instance.
 ``` abap
@@ -1600,7 +1600,7 @@ ENDDO.
 ```
 
 **Clearing object references**: You can use
-[`CLEAR`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapclear.htm)
+[`CLEAR`](https://help.sap.com/docs/abap-cloud/abap-keyword/clear)
 statements to explicitly clear a reference variable.
 ```abap
 CLEAR ref.
@@ -1608,16 +1608,16 @@ CLEAR ref.
 
 > [!NOTE] 
 > Objects use up space in the memory and should therefore be
-cleared if they are no longer needed. However, the [garbage collector](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abengarbage_collector_glosry.htm "Glossary Entry") is called periodically and automatically by the [ABAP runtime framework](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_runtime_frmwk_glosry.htm "Glossary Entry") and clears all objects without any reference.
+cleared if they are no longer needed. However, the [garbage collector](https://help.sap.com/docs/abap-cloud/abap-keyword/garbage-collector) is called periodically and automatically by the [ABAP runtime framework](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-runtime-framework) and clears all objects without any reference.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ### Accessing Attributes
 - Instance attributes: Accessed using
-the [object component selector](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenobject_component_select_glosry.htm "Glossary Entry")
+the [object component selector](https://help.sap.com/docs/abap-cloud/abap-keyword/object-component-selector-abenobject_component_select_glosry)
 `->` via a reference variable.
 - Static attributes: Accessed (if the attributes are visible) using the [class component
-selector](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenclass_component_select_glosry.htm "Glossary Entry")
+selector](https://help.sap.com/docs/abap-cloud/abap-keyword/class-component-selector-abenclass_component_select_glosry)
 `=>` via the class name. Static attributes can but should not be addressed via a reference variable.
 
 ``` abap
@@ -1832,7 +1832,7 @@ within the class in which it is declared, the static method can also be
 called without `class_name=>...`.
 - Static methods can but should not be called via reference variable (<code>oref->some_static_method( ).</code>).
 - When methods are called, the (non-optional) parameters must be specified within parentheses.
-- You might also stumble on method calls with the older [`CALL METHOD`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapcall_method_static.htm)
+- You might also stumble on method calls with the older [`CALL METHOD`](https://help.sap.com/docs/abap-cloud/abap-keyword/call-method-static-method-call-obsolete)
 statements. It is recommended to use the new syntax in new developments. Note that `CALL METHOD` statements are still required in the context of [dynamic programming](06_Dynamic_Programming.md). Therefore, `CALL METHOD` statements should be reserved for dynamic method calls.
 - Find an example class demonstrating various method calls in section [Excursion: Example Class](#excursion-example-class).
 - When calling methods that declare importing and/or exporting parameters, keep the following in mind: For methods with importing parameters, you can or must (if other parameters are available and specified in the method call) precede the parameters and their assignments with `EXPORTING`. For methods with exporting parameters, you can or must use `IMPORTING` before the parameters and their assignments.
@@ -2051,7 +2051,7 @@ ENDCLASS.
 
 #### RETURN
 
-- [`RETURN`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapreturn.htm) statements immediately terminate the current processing block. Usually, the statement is intended for leaving processing blocks early. 
+- [`RETURN`](https://help.sap.com/docs/abap-cloud/abap-keyword/return) statements immediately terminate the current processing block. Usually, the statement is intended for leaving processing blocks early. 
 - To exit procedures such as methods explicitly, it is recommended to use `RETURN`. `EXIT` and `CHECK` statements might also be used for exiting procedures. However, their use inside loops is recommended. According to the [guidelines (F1 docu for standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenexit_procedure_guidl.htm), `RETURN` is the recommendation.
 - In case of functional methods, i.e. methods that have one returning parameter, the `RETURN` statement can also be specified with an expression. In doing so, the following statement
   ```abap
@@ -2146,7 +2146,7 @@ ENDCLASS.
 
 ### Self-Reference me
 
-When implementing instance methods, you can optionally make use of the implicitly available object reference variable [`me`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenme.htm) which is always available at runtime and points to the respective object itself. You can use it, for example, to refer to components of the instance of a particular class:
+When implementing instance methods, you can optionally make use of the implicitly available object reference variable [`me`](https://help.sap.com/docs/abap-cloud/abap-keyword/self-reference-me) which is always available at runtime and points to the respective object itself. You can use it, for example, to refer to components of the instance of a particular class:
 ``` abap
 ... some_method( ... ) ...
 
@@ -3001,7 +3001,7 @@ Superclasses and subclasses
 
  <td> 
 
-- Inheritance means deriving any number of new classes ([subclasses](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensubclass_glosry.htm)) from an existing class ([superclass](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensuperclass_glosry.htm)).  
+- Inheritance means deriving any number of new classes ([subclasses](https://help.sap.com/docs/abap-cloud/abap-keyword/subclass)) from an existing class ([superclass](https://help.sap.com/docs/abap-cloud/abap-keyword/superclass)).  
 - This derivation establishes a hierarchical relationship between superclasses and subclasses, forming an inheritance tree. A class can have multiple subclasses but only one direct superclass.  
 - A subclass can also be a superclass to multiple direct subclasses but still has only one direct superclass.  
 
@@ -3902,8 +3902,8 @@ The table below includes selected syntax related to inheritance in class and met
 
 > [!NOTE] 
 > - Some of the syntax options have already been mentioned previously. This is to summarize. 
-> - The code examples show local classes and interfaces declared, for example, in the [CCIMP include](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenccimp_glosry.htm) of a class pool. 
-> - The snippets provided do not represent all possible syntax combinations. For the complete picture, refer to the ABAP Keyword Documentation. Additional syntax options are available in the context of friendship (`GLOBAL FRIENDS/FRIENDS`), testing (`FOR TESTING`), [RAP](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenarap_glosry.htm) (`FOR BEHAVIOR OF`; to declare [ABAP behavior pools](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbehavior_pool_glosry.htm)), and more.
+> - The code examples show local classes and interfaces declared, for example, in the [CCIMP include](https://help.sap.com/docs/abap-cloud/abap-keyword/ccimp-include) of a class pool. 
+> - The snippets provided do not represent all possible syntax combinations. For the complete picture, refer to the ABAP Keyword Documentation. Additional syntax options are available in the context of friendship (`GLOBAL FRIENDS/FRIENDS`), testing (`FOR TESTING`), [RAP](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-restful-application-programming-model) (`FOR BEHAVIOR OF`; to declare [ABAP behavior pools](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-behavior-pool)), and more.
 > - The order of the additions can vary.
 
 
@@ -4707,7 +4707,7 @@ METHODS another_meth FINAL REDEFINITION.
 - Specified in subclasses to redefine inherited methods from superclasses.
 - The method's implementation is expected to reimplement the inherited method. However, the subclass's new implementation conceals the superclass's implementation.
 - The redefined method accesses the private components of its class, not any similarly named private components in the superclass.
-- The superclass's implementation can be called in the redefined method using the [pseudo reference](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenpseudo_reference_glosry.htm "Glossary Entry") `super->meth( ).`. Note that non-optional importing parameters must be filled.
+- The superclass's implementation can be called in the redefined method using the [pseudo reference](https://help.sap.com/docs/abap-cloud/abap-keyword/pseudo-reference) `super->meth( ).`. Note that non-optional importing parameters must be filled.
 - The redefinition is valid for subclasses until the method is redefined again.
 - The `FINAL` addition can be specified, preventing further redefinition of the method in other subclasses.
 
@@ -5425,7 +5425,7 @@ ENDCLASS.
 ## Polymorphism and Casting (Upcast/Downcast)
 
 The object orientation concept
-[polymorphism](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenpolymorphism_glosry.htm "Glossary Entry")
+[polymorphism](https://help.sap.com/docs/abap-cloud/abap-keyword/polymorphism)
 means you can address differently implemented methods belonging to different objects of different classes using one and the
 same reference variable, for example,
 object reference variables pointing to a superclass can point to objects of a subclass.
@@ -5433,13 +5433,13 @@ object reference variables pointing to a superclass can point to objects of a su
 Note the concept of static and dynamic type in this context:
 
 -   Object reference variables (and also interface reference variables) have both a
-    [static](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenstatic_type_glosry.htm "Glossary Entry")
+    [static](https://help.sap.com/docs/abap-cloud/abap-keyword/static-type)
     and a [dynamic
-    type](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendynamic_type_glosry.htm "Glossary Entry").
+    type](https://help.sap.com/docs/abap-cloud/abap-keyword/dynamic-type).
 -   When declaring an object reference variable, e. g. `DATA oref TYPE REF TO cl`, you determine the static type, i. e.
     `cl` - a class - is used to declare the reference variable that is statically defined in the code. This is the class of an object to which the reference variable points to.
 - Similarly, the dynamic type also defines the class of an object which the reference variable points to. However, the dynamic type is determined at runtime, i. e. the class of an object which the reference variable points to can change.
-- Relevant for? This differentiation enters the picture in polymorphism when a reference variable typed with reference to a subclass can always be assigned to reference variables typed with reference to one of its superclasses or their interfaces. That's what is called [upcast](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenup_cast_glosry.htm "Glossary Entry") (or widening cast). Or the assignment is done the other way round. That's what is called [downcast](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendown_cast_glosry.htm "Glossary Entry") (or narrowing cast).
+- Relevant for? This differentiation enters the picture in polymorphism when a reference variable typed with reference to a subclass can always be assigned to reference variables typed with reference to one of its superclasses or their interfaces. That's what is called [upcast](https://help.sap.com/docs/abap-cloud/abap-keyword/upcast) (or widening cast). Or the assignment is done the other way round. That's what is called [downcast](https://help.sap.com/docs/abap-cloud/abap-keyword/downcast) (or narrowing cast).
 
 > [!TIP]
 > - The following basic rule applies: The static type is always more general than or the same as the dynamic type. The other way round: The dynamic type is always more special than or equal to the static type.
@@ -5450,17 +5450,17 @@ Note the concept of static and dynamic type in this context:
 -   Regarding assignments: If it can be statically checked that an assignment is possible
     although the types are different, the assignment is done using the
     [assignment
-    operator](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenassignment_operator_glosry.htm "Glossary Entry")
+    operator](https://help.sap.com/docs/abap-cloud/abap-keyword/assignment-operator-abenassignment_operator_glosry)
     `=` that triggers an upcast automatically.
 -   Otherwise, it is a
-    [downcast](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendown_cast_glosry.htm "Glossary Entry").
+    [downcast](https://help.sap.com/docs/abap-cloud/abap-keyword/downcast).
     Here, the assignability is not checked until runtime. The downcast - in contrast to upcasts -
     must be triggered explicitly using the [casting
-    operator](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencasting_operator_glosry.htm "Glossary Entry")
-    [`CAST`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconstructor_expression_cast.htm). You might see code using the older
-    operator [`?=`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapmove_cast.htm).
+    operator](https://help.sap.com/docs/abap-cloud/abap-keyword/casting-operator)
+    [`CAST`](https://help.sap.com/docs/abap-cloud/abap-keyword/cast-casting-operator). You might see code using the older
+    operator [`?=`](https://help.sap.com/docs/abap-cloud/abap-keyword/upcast-and-downcast).
 -   See more information in the topic [Assignment Rules for Reference
-    Variables](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconversion_references.htm).
+    Variables](https://help.sap.com/docs/abap-cloud/abap-keyword/assignment-rules-for-reference-variables).
 
 As an example, assume there is an inheritance tree with `lcl_super` as the superclass and `lcl_sub` as a direct subclass. `lcl_sub2` is a direct subclass of `lcl_sub`.
 
@@ -5488,8 +5488,8 @@ does not work. A syntax error occurs saying the right-hand variable's type canno
 `CAST` (or you might see code using the older operator `?=`) to overcome this syntax error (but just the syntax error!). Note: You might also use these casting operators for the upcasts. That means `oref_super = oref_sub.` has the same effect as `oref_super = CAST #( oref_sub ).`. Using the casting operator for upcasts is usually not necessary.
 - At runtime, the assignment is checked and if the conversion does not work, you face a (catchable) exception. Even more so, the assignment `oref_sub = CAST #( oref_super ).` does not throw a syntax error but it does not work in this example either because it violates the rule mentioned above (`oref_sub` is more specific than `oref_super`).
 - To check whether such an assignment is (not) possible
-on specific classes, you can use the predicate expression [`IS [NOT] INSTANCE OF`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenlogexp_instance_of.htm)
-or the case distinction [`CASE TYPE OF`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapcase_type.htm). Carrying out an upcast before the downcast ensures that the left-hand variable's type is compatible to the right-hand variable's type.
+on specific classes, you can use the predicate expression [`IS [NOT] INSTANCE OF`](https://help.sap.com/docs/abap-cloud/abap-keyword/rel-exp-is-instance-of)
+or the case distinction [`CASE TYPE OF`](https://help.sap.com/docs/abap-cloud/abap-keyword/case-type-of). Carrying out an upcast before the downcast ensures that the left-hand variable's type is compatible to the right-hand variable's type.
 
 ``` abap
 DATA(oref_super) = NEW lcl_super( ).
@@ -6285,11 +6285,11 @@ Interfaces ...
     section of classes.
 - enhance classes by adding interface components.
 -   are possible as both
-    [local](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenlocal_interface_glosry.htm "Glossary Entry")
+    [local](https://help.sap.com/docs/abap-cloud/abap-keyword/local-interface)
     and [global
-    interfaces](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenglobal_interface_glosry.htm "Glossary Entry").
+    interfaces](https://help.sap.com/docs/abap-cloud/abap-keyword/global-interface).
 -   support
-    [polymorphism](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenpolymorphism_glosry.htm "Glossary Entry") in classes. Each class that implements an interface can implement its methods differently. [Interface reference variables](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abeninterface_ref_variable_glosry.htm "Glossary Entry") can point to objects of all classes that implement the associated interface.
+    [polymorphism](https://help.sap.com/docs/abap-cloud/abap-keyword/polymorphism) in classes. Each class that implements an interface can implement its methods differently. [Interface reference variables](https://help.sap.com/docs/abap-cloud/abap-keyword/interface-reference-variable) can point to objects of all classes that implement the associated interface.
 - can be implemented by classes of an inheritance tree. It can be any number of interfaces. However, each interface can be implemented only once in an inheritance tree.
 -   are different from classes in the following ways:
     -   They only consist of a part declaring the components without an
@@ -6332,12 +6332,12 @@ ENDINTERFACE.
 
 -   A class can implement multiple interfaces.
 -   Interfaces must be specified in the declaration part of a class using the statement
-    [`INTERFACES`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapinterfaces.htm).
+    [`INTERFACES`](https://help.sap.com/docs/abap-cloud/abap-keyword/interfaces).
 -   Since all interface components are public, you must include this statement and the interfaces in the public visibility section of a class. When an interface is implemented in a class, all interface components are added to the other components of the class in the public visibility section.
 - Classes must implement the methods of all implemented interfaces in them unless ...
   - methods are flagged as abstract or final (see next section). 
-  - methods mark their implementation as optional using the additions [`DEFAULT IGNORE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapmethods_default.htm) or [`DEFAULT FAIL`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapmethods_default.htm) (see next section).
-- Interface components can be addressed using the [interface component selector](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abeninterface_comp_selector_glosry.htm "Glossary Entry"): `... intf~comp ...`.
+  - methods mark their implementation as optional using the additions [`DEFAULT IGNORE`](https://help.sap.com/docs/abap-cloud/abap-keyword/methods-default) or [`DEFAULT FAIL`](https://help.sap.com/docs/abap-cloud/abap-keyword/methods-default) (see next section).
+- Interface components can be addressed using the [interface component selector](https://help.sap.com/docs/abap-cloud/abap-keyword/interface-component-selector-abeninterface_comp_selector_glosry): `... intf~comp ...`.
 - You can also include other interfaces in interfaces.
 
 ```abap
@@ -6409,7 +6409,7 @@ ENDCLASS.
 ### Additions Related to Interface Implementations
 
 > [!NOTE]  
-> The code examples show local classes and interfaces declared, for example, in the [CCIMP include](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenccimp_glosry.htm) of a class pool. 
+> The code examples show local classes and interfaces declared, for example, in the [CCIMP include](https://help.sap.com/docs/abap-cloud/abap-keyword/ccimp-include) of a class pool. 
 
 <table>
 
@@ -6420,7 +6420,7 @@ ENDCLASS.
 <tr>
 <td> 
 
-[`ALIASES ... FOR ...`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapaliases.htm)
+[`ALIASES ... FOR ...`](https://help.sap.com/docs/abap-cloud/abap-keyword/aliases)
 
  </td>
 
@@ -6463,7 +6463,7 @@ ENDCLASS.
 <tr>
 <td> 
 
-[`ABSTRACT METHODS`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapinterfaces_class.htm)
+[`ABSTRACT METHODS`](https://help.sap.com/docs/abap-cloud/abap-keyword/interfaces-implementation)
 
  </td>
 
@@ -6519,7 +6519,7 @@ ENDCLASS.
 <tr>
 <td> 
 
-[`ALL METHODS ABSTRACT`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapinterfaces_class.htm)
+[`ALL METHODS ABSTRACT`](https://help.sap.com/docs/abap-cloud/abap-keyword/interfaces-implementation)
 
  </td>
 
@@ -6571,7 +6571,7 @@ ENDCLASS.
 <tr>
 <td> 
 
-[`FINAL METHODS`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapinterfaces_class.htm)
+[`FINAL METHODS`](https://help.sap.com/docs/abap-cloud/abap-keyword/interfaces-implementation)
 
  </td>
 
@@ -6628,7 +6628,7 @@ ENDCLASS.
 <tr>
 <td> 
 
-[`ALL METHODS FINAL`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapinterfaces_class.htm)
+[`ALL METHODS FINAL`](https://help.sap.com/docs/abap-cloud/abap-keyword/interfaces-implementation)
 
  </td>
 
@@ -6691,7 +6691,7 @@ ENDCLASS.
 <tr>
 <td> 
 
-[`DATA VALUES`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABAPINTERFACES_CLASS.html)
+[`DATA VALUES`](https://help.sap.com/docs/abap-cloud/abap-keyword/interfaces-implementation)
 
  </td>
 
@@ -6744,7 +6744,7 @@ ENDCLASS.
 <tr>
 <td> 
 
-[`PARTIALLY IMPLEMENTED`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABAPINTERFACES_PARTIALLY.html)
+[`PARTIALLY IMPLEMENTED`](https://help.sap.com/docs/abap-cloud/abap-keyword/interfaces-partially-implemented)
 
  </td>
 
@@ -6779,7 +6779,7 @@ ENDCLASS.
 <tr>
 <td> 
 
-[`DEFAULT IGNORE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapmethods_default.htm) 
+[`DEFAULT IGNORE`](https://help.sap.com/docs/abap-cloud/abap-keyword/methods-default) 
 
 <br> (addition used in the interface definition)
 
@@ -6866,7 +6866,7 @@ ENDCLASS.
 <tr>
 <td> 
 
-[`DEFAULT FAIL`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapmethods_default.htm)
+[`DEFAULT FAIL`](https://help.sap.com/docs/abap-cloud/abap-keyword/methods-default)
 
 <br> (addition used in the interface definition)
 
@@ -7327,8 +7327,8 @@ ENDCLASS.
 ## Friendship
 
 - The concept of friendship enters the picture if your use case for your classes is to work together very closely. This is true, for example, for [unit
-tests](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenunit_test_glosry.htm "Glossary Entry") if you want to test private methods.
-- Classes can grant access to invisible components for their [friends](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenfriend_glosry.htm "Glossary Entry").
+tests](https://help.sap.com/docs/abap-cloud/abap-keyword/unit-test) if you want to test private methods.
+- Classes can grant access to invisible components for their [friends](https://help.sap.com/docs/abap-cloud/abap-keyword/friend).
 - The friends can be other classes and interfaces. In case of interfaces, friendship is granted to all classes that implement the interface.
 - Impact of friendship:
     - Access is granted to all components, regardless of the visibility section or the addition `READ-ONLY`.
@@ -7361,8 +7361,8 @@ CLASS global_class DEFINITION CREATE PUBLIC FRIENDS other_global_class ... .
 
 Expand the following collapsible section for an example class. It demonstrates granting friendship between a global class and a local class (in the CCIMP include, *Local Types* tab in ADT). In the example, friendship is granted in both ways so that the global class can access private components of the local class, and the local class can access private components of the global class.
 For more information, see the following topics: 
-- [`LOCAL FRIENDS`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapclass_local_friends.htm) 
-- [`DEFERRED`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapclass_deferred.htm)
+- [`LOCAL FRIENDS`](https://help.sap.com/docs/abap-cloud/abap-keyword/class-local-friends) 
+- [`DEFERRED`](https://help.sap.com/docs/abap-cloud/abap-keyword/class-deferred)
 
 <details>
   <summary>🟢 Click to expand for more information and example code</summary>
@@ -7498,10 +7498,10 @@ High-level steps involved:
 - Raising an event
 
 **Events**
-- [Events](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenevent_glosry.htm "Glossary Entry") can trigger the processing of [processing blocks](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenprocessing_block_glosry.htm "Glossary Entry"), meaning they can initiate the execution of event handlers (that is, other methods).
+- [Events](https://help.sap.com/docs/abap-cloud/abap-keyword/event-abenevent_glosry) can trigger the processing of [processing blocks](https://help.sap.com/docs/abap-cloud/abap-keyword/processing-block), meaning they can initiate the execution of event handlers (that is, other methods).
 - You can declare events in the visibility section of a class or interface declaration, for example:
-  - as an instance event using an [`EVENTS`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapevents.htm) statement.
-  - as a static event using [`CLASS-EVENTS`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapclass-events.htm).
+  - as an instance event using an [`EVENTS`](https://help.sap.com/docs/abap-cloud/abap-keyword/events) statement.
+  - as a static event using [`CLASS-EVENTS`](https://help.sap.com/docs/abap-cloud/abap-keyword/class-events).
 - The key difference is that instance events are bound to specific instances of classes and can only be raised by instance methods within the same class. In contrast, static events are independent of class instances and can be raised by any method in the class.
 - Parameter interface:
   - In the declaration, you can only specify output parameters (using `EXPORTING` and formal parameters specifying passing by value) for an event. When the event is raised, actual parameters are transferred to event handlers.
@@ -7522,8 +7522,8 @@ High-level steps involved:
 
 
 **Event handlers** 
-- An event is raised by a [`RAISE EVENT`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapraise_event.htm) statement in either another method or the same method.
-- Raising an event triggers the associated [event handlers](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenevent_handler_glosry.htm "Glossary Entry"), which are special methods that can handle the event.
+- An event is raised by a [`RAISE EVENT`](https://help.sap.com/docs/abap-cloud/abap-keyword/raise-event) statement in either another method or the same method.
+- Raising an event triggers the associated [event handlers](https://help.sap.com/docs/abap-cloud/abap-keyword/event-handler), which are special methods that can handle the event.
 - Typically, event handlers are called indirectly using `RAISE EVENT` rather than through direct method calls.
 - To execute an event handler when an event is raised, you must register it with a `SET HANDLER` statement.
 - Both static and instance methods can function as event handlers. The main difference is that static event handlers can be called independently of class instances.
@@ -7563,18 +7563,18 @@ High-level steps involved:
     - `ACTIVATION`: Used to (de)register event handlers; expects a single-character text field. The default value is `X` (indicating registration; so, the addition is optional for registration). A blank value means it is deregistered.
   - For static event handlers: `SET HANDLER handler1 handler2 ... [ACTIVATION act].`
     - The statement (de)registers static event handlers (not instance events).
-    - Note that the (de)registration is independent of class instances and applies globally to the current [internal session](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abeninternal_session_glosry.htm).
+    - Note that the (de)registration is independent of class instances and applies globally to the current [internal session](https://help.sap.com/docs/abap-cloud/abap-keyword/internal-session).
 - `SET HANDLER` statements set the system field `sy-subrc`. See the example.
   
 **Raising events**
 
-- Events are raised using [`RAISE EVENT`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapraise_event.htm) statements, which can only occur within methods.
+- Events are raised using [`RAISE EVENT`](https://help.sap.com/docs/abap-cloud/abap-keyword/raise-event) statements, which can only occur within methods.
 - After raising the event, all registered event handlers are executed, and the program flow continues after the statement.
 - You can use the `EXPORTING` addition (`RAISE EVENT some_event EXPORTING a = b c = d ...`) to pass actual parameters to event handlers.
 - If the formal parameter `sender` is declared for an event handler, it automatically receives a reference to the raising object when instance events are triggered. However, `sender` cannot be explicitly specified or assigned here.
   
 > [!NOTE]  
-> In RAP, special [RAP business events](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_entity_event_glosry.htm) are available. They can be raised in [ABAP behavior pools](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbehavior_pool_glosry.htm) with [RAISE ENTITY EVENT](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapraise_entity_event.htm) statements. Find more information in the [ABAP for RAP: Entity Manipulation Language (ABAP EML)](08_EML_ABAP_for_RAP.md) cheat sheet.
+> In RAP, special [RAP business events](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-business-event) are available. They can be raised in [ABAP behavior pools](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-behavior-pool) with [RAISE ENTITY EVENT](https://help.sap.com/docs/abap-cloud/abap-keyword/raise-entity-event) statements. Find more information in the [ABAP for RAP: Entity Manipulation Language (ABAP EML)](08_EML_ABAP_for_RAP.md) cheat sheet.
 
 
 Expand the following collapsible section for example code. To try it out, create a demo class named `zcl_demo_abap`. If it already exists, reuse it. Otherwise, create a new class with a different name. Paste the code into it. If you choose a different class name, update the class name in the code snippet accordingly. Note that the example includes code in the global class and the CCIMP include (Local Types tab in ADT). After activation, choose *F9* in ADT to execute the class. The example is set up to display output in the console. For more information on the example, see the inline comments.
@@ -8353,7 +8353,7 @@ Find ABAP examples of design patterns in object-oriented programming in [this AB
 
 ### Class-Based and Classic Exceptions
 
-- [Catchable exceptions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencatchable_exception_glosry.htm) are represented by exception objects of exception classes.
+- [Catchable exceptions](https://help.sap.com/docs/abap-cloud/abap-keyword/catchable-exception) are represented by exception objects of exception classes.
 - Predefined global exception classes exist, custom exception classes can be created. You can also create local exception classes.
 - Find an overview in the [Exceptions and Runtime Errors](27_Exceptions.md) cheat sheet.
 - See the following code snippet for an ABAP method that specifies the `EXCEPTIONS` addition, which should not be specified anymore for new developments, raising classic, non-class based exceptions. 
@@ -8386,9 +8386,9 @@ Find ABAP examples of design patterns in object-oriented programming in [this AB
 
 ### ABAP Unit Tests
 
-- [ABAP Unit](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_unit_glosry.htm) is a test tool integrated into the ABAP runtime framework. 
+- [ABAP Unit](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-unit-abenabap_unit_glosry) is a test tool integrated into the ABAP runtime framework. 
 - It can be used to run individual or mass tests, and to evaluate test results. 
-- In ABAP programs, individual unit tests are implemented as [test methods](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentest_method_glosry.htm) of local [test classes](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentest_class_glosry.htm). 
+- In ABAP programs, individual unit tests are implemented as [test methods](https://help.sap.com/docs/abap-cloud/abap-keyword/test-method) of local [test classes](https://help.sap.com/docs/abap-cloud/abap-keyword/test-class). 
 - Find information on ABAP Unit tests in the [ABAP Unit Tests](14_ABAP_Unit_Tests.md) cheat sheet.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
@@ -8400,10 +8400,10 @@ Find ABAP examples of design patterns in object-oriented programming in [this AB
 - ABAP Doc comments consist of one or more lines starting with `"!`.  
 - You can place these comments before declarations (e.g., in classes and methods) to document functionality, add notes, and so on.  
 - In ADT, click, for example, on class names or methods to display ABAP Doc comments (if available) in the *ABAP Element Info* tab, or choose F2 to display the information.
-- Find more information on ABAP Doc [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABENDOCCOMMENT.html).
+- Find more information on ABAP Doc [here](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-doc).
 - The following example demonstrates ABAP Doc comments, showing various commenting options, including:  
   - Using HTML tags for formatting. Only a selected set of HTML tags is supported. You can choose *CTRL + Space* in the ABAP Doc comment for input help.
-  - Special tagging and linking options. Refer to the [documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABENDOCCOMMENT.html) for more details.
+  - Special tagging and linking options. Refer to the [documentation](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-doc) for more details.
   - Special method signature specifications like `@parameter | ...` for parameters and `@raising | ...` for declared exceptions.
 
 
@@ -8575,7 +8575,7 @@ ENDLOOP.
 
 ### Escape Character
 
-- You may encounter [`!` characters](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABENNAMES_ESCAPING.html) specified before operands, particularly in signatures of [procedures](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenprocedure_glosry.htm).
+- You may encounter [`!` characters](https://help.sap.com/docs/abap-cloud/abap-keyword/escape-character-for-operands) specified before operands, particularly in signatures of [procedures](https://help.sap.com/docs/abap-cloud/abap-keyword/procedure).
 - They are used to distinguish the operand's name from ABAP words. 
 - When compiling ABAP programs, the specifications with the escape character are not considered as ABAP words. 
 - When executing the programs, the escape characters are ignored.
@@ -8962,7 +8962,7 @@ This section outlines special rules for using constructor expressions with `COND
 When using `#` for the operand type, the following rules apply for type inference:
 
 - If the operand's data type after the first `THEN` is known statically and matches the formal parameter's generic type, that data type will be used.
-- If it does not match, the type is derived from the generic type in a specific manner. For example, the type `string` is derived for `csequence` and `clike`. For more information, see [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencond_constructor_inference.htm).
+- If it does not match, the type is derived from the generic type in a specific manner. For example, the type `string` is derived for `csequence` and `clike`. For more information, see [here](https://help.sap.com/docs/abap-cloud/abap-keyword/cond-switch-type-inference-for-actual-parameters).
 
 The following example class demonstrates this behavior: 
 - Example 1: 
@@ -9111,7 +9111,7 @@ ENDCLASS.
 ## More Information
 You can check the subtopics of
 
-- [ABAP Objects - Overview](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_objects_oview.htm)
+- [ABAP Objects - Overview](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-abap-objects)
 - [Programming Guidlines - Object-Oriented Programming (F1 docu for standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenobj_oriented_gdl.htm)
   
 in the ABAP Keyword Documentation.

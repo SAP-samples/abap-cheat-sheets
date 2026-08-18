@@ -25,13 +25,13 @@
 ## Introduction
 
 -   [Constructor
-    expressions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconstructor_expression_glosry.htm "Glossary Entry")
+    expressions](https://help.sap.com/docs/abap-cloud/abap-keyword/constructor-expression)
     include a [constructor
-    operator](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconstructor_operator_glosry.htm "Glossary Entry")
+    operator](https://help.sap.com/docs/abap-cloud/abap-keyword/constructor-operator)
     followed by the specification of a [data
-    type](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendata_type_glosry.htm "Glossary Entry")
+    type](https://help.sap.com/docs/abap-cloud/abap-keyword/data-type)
     or [object
-    type](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenobject_type_glosry.htm "Glossary Entry")
+    type](https://help.sap.com/docs/abap-cloud/abap-keyword/object-type)
     (or a `#` character that stands for such a type) and
     specific parameters specified within parentheses. Example using the
     `VALUE` operator:
@@ -46,9 +46,9 @@
     explicitly before the first parenthesis or the said `#`
     character can be specified if the type can be derived implicitly
     from the [operand
-    position](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenoperand_position_glosry.htm "Glossary Entry").
+    position](https://help.sap.com/docs/abap-cloud/abap-keyword/operand-position).
     The `#` character symbolizes the [operand
-    type](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenoperand_type_glosry.htm "Glossary Entry").
+    type](https://help.sap.com/docs/abap-cloud/abap-keyword/operand-type-abenoperand_type_glosry).
     If no type can be derived from the operand position, for some
     constructor operators, the type can also be derived from the
     arguments in the parentheses.
@@ -56,19 +56,19 @@
     more readable since you can achieve the same with fewer statements.
 -   Apart from the concept of deriving types from the context, another
     concept is very handy particularly in this context: [Inline
-    declaration](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abeninline_declaration_glosry.htm "Glossary Entry").
+    declaration](https://help.sap.com/docs/abap-cloud/abap-keyword/inline-declaration).
     -   This means that you can declare a variable using
         `DATA(var)` (or an immutable variable
-        [`FINAL(var)`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenfinal_inline.htm))
+        [`FINAL(var)`](https://help.sap.com/docs/abap-cloud/abap-keyword/final-inline-declaration-for-immutable-variables))
         as an operand in the current [write
-        position](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenwrite_position_glosry.htm "Glossary Entry").
+        position](https://help.sap.com/docs/abap-cloud/abap-keyword/write-position).
         In doing so, such a variable declared inline can be given the
         appropriate type and result of the constructor expression in one
         go: ```DATA(strtable) = VALUE string_table( ( `a` ) ( `b` ) ( `c` ) ).``` or ```DATA(dec) = CONV decfloat34( '1.23' ).```.
 
 > [!TIP]
 >-  The construction of a result, i. e. a target [data
-object](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendata_object_glosry.htm "Glossary Entry"),
+object](https://help.sap.com/docs/abap-cloud/abap-keyword/data-object),
 implies that the data object is initialized. However, for some
 constructor operators, there is an addition with which the
 initialization can be avoided.
@@ -79,7 +79,7 @@ initialization can be avoided.
 ## VALUE
 
 -   Expressions with the
-    [`VALUE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconstructor_expression_value.htm)
+    [`VALUE`](https://help.sap.com/docs/abap-cloud/abap-keyword/value-value-operator)
     operator construct a result in place based on a data type.
 -   This result can be structures or internal tables. It can also be initial values for any non-generic data types.
     
@@ -91,25 +91,25 @@ initialization can be avoided.
     -   No parameter specified within the parentheses: The return value
         is set to its type-specific initial value. This is possible for
         any non-generic data types. See more information
-        [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenvalue_constructor_params_init.htm).
+        [here](https://help.sap.com/docs/abap-cloud/abap-keyword/value-initial-value-for-all-types).
     -   Structured and internal table type before the parentheses or
         `#` stands for such types: Individual components of
         structures can be specified as named arguments while each
         component of the return value can be assigned a data object that
         has the same data type as the component, or whose data type can
         be converted to this data type. See more information
-        [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenvalue_constructor_params_struc.htm).
+        [here](https://help.sap.com/docs/abap-cloud/abap-keyword/value-structures).
         To construct internal tables, you have multiple options, for
         example, you can add individual table lines using an inner pair
         of parentheses. More syntax options, for example, using the
         additions `BASE` and `FOR` are possible, too.
         See more information
-        [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenvalue_constructor_params_itab.htm).
-- As mentioned above, the concept of [inline declarations](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abeninline_declarations.htm)
+        [here](https://help.sap.com/docs/abap-cloud/abap-keyword/value-internal-tables).
+- As mentioned above, the concept of [inline declarations](https://help.sap.com/docs/abap-cloud/abap-keyword/inline-declarations)
 is very handy in this context. You can construct a new data object (for example, using `DATA(...)` or `FINAL(...)`), provide the desired type with the constructor expression and assign
 values in one go.
-- In case of [deep](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendeep_structure_glosry.htm "Glossary Entry")
-and [nested structures](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abennested_structure_glosry.htm "Glossary Entry")
+- In case of [deep](https://help.sap.com/docs/abap-cloud/abap-keyword/deep-structure)
+and [nested structures](https://help.sap.com/docs/abap-cloud/abap-keyword/nested-structure)
 or [deep tables](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abendeep_table_glosry.htm "Glossary Entry"),
 the use of `VALUE` expressions is handy, too, because you can create corresponding values in place.
 
@@ -631,11 +631,11 @@ Using data objects declared inline in various ABAP statements
 Using the inline construction of structures and internal tables, you can
 avoid the declaration of extra variables in many contexts, for example,
 ABAP statements like
-[`MODIFY`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapmodify_itab.htm)
+[`MODIFY`](https://help.sap.com/docs/abap-cloud/abap-keyword/modify-itab)
 for modifying internal tables or [ABAP
-SQL](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_sql_glosry.htm "Glossary Entry")
+SQL](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-sql-abenabap_sql_glosry)
 statements like
-[`MODIFY`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapmodify_dbtab.htm)
+[`MODIFY`](https://help.sap.com/docs/abap-cloud/abap-keyword/modify-writable-obj)
 (which is not to be confused with the ABAP statement having the same
 name) for modifying database tables.
 
@@ -734,18 +734,18 @@ DATA(it_default) = VALUE #( it[ 1 ] DEFAULT VALUE #( a = 1 b = 'abc' ) ).
 ## CORRESPONDING
 
 -   Expressions with the
-    [`CORRESPONDING`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconstructor_expr_corresponding.htm)
+    [`CORRESPONDING`](https://help.sap.com/docs/abap-cloud/abap-keyword/corresponding-component-operator)
     operator construct structures and internal tables based on a data
     type (i. e. a [table
-    type](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentable_type_glosry.htm "Glossary Entry")
+    type](https://help.sap.com/docs/abap-cloud/abap-keyword/table-type)
     or [structured
-    type](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenstructured_type_glosry.htm "Glossary Entry")).
+    type](https://help.sap.com/docs/abap-cloud/abap-keyword/structured-type)).
 -   The components or columns of the target data object are populated using
     assignments of the parameters specified within the parentheses.
 -   The assignments are made using identical names or based on [mapping
-    relationships](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencorresponding_constr_mapping.htm)
+    relationships](https://help.sap.com/docs/abap-cloud/abap-keyword/corresponding-mapping)
 -   Note: Pay attention to the [assignment and conversion
-    rules](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconversion_rules.htm)
+    rules](https://help.sap.com/docs/abap-cloud/abap-keyword/assignment-and-conversion-rules)
     to avoid errors when using the operator. Consider, for example, the
     impact of assigning the values of identically named fields having
     different types (e. g. one field is of type `c` and another
@@ -753,9 +753,9 @@ DATA(it_default) = VALUE #( it[ 1 ] DEFAULT VALUE #( a = 1 b = 'abc' ) ).
 
 The following table includes a selection of various possible additions to
 this operator. There are more variants available (also 
-[RAP](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_glosry.htm "Glossary Entry")-specific ones)
+[RAP](https://help.sap.com/docs/abap-cloud/abap-keyword/rap)-specific ones)
 that are not covered here. Find more information in [this
-topic](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconstructor_expr_corresponding.htm) of the ABAP Keyword Documentation, and example snippets in the executable example.
+topic](https://help.sap.com/docs/abap-cloud/abap-keyword/corresponding-component-operator) of the ABAP Keyword Documentation, and example snippets in the executable example.
 
 
 | Addition  | Details |
@@ -999,7 +999,7 @@ struc2 = CORRESPONDING #(
 
 > [!TIP]
 > `CORRESPONDING` operator versus
-[`MOVE-CORRESPONDING`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapmove-corresponding.htm) in the context of structures:
+[`MOVE-CORRESPONDING`](https://help.sap.com/docs/abap-cloud/abap-keyword/move-corresponding) in the context of structures:
 Although the functionality is the same, note that, as the name implies,
 constructor operators construct and - without the addition
 `BASE` - target objects are initialized. Hence, the following
@@ -1024,7 +1024,7 @@ two statements are  not the same:
   - A search is performed on all lines in the internal table `itab`. They are matched to lines in the lookup table `lookup_tab` based on specifications after `USING`.
   - The search uses a sorted table key or hash key. If the key is not unique, the first matching line is used for the result.
   - If no match is found in the lookup table `lookup_tab`, the original line from the internal table `itab` is used for the result.
-  - If a match is found, a `MOVE-CORRESPONDING` operation is implicitly performed and the line is assigned. However, the components that are used for the search are not assigned (to the identically named components) by default (see the [documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/abencorresponding_constr_using.html)).
+  - If a match is found, a `MOVE-CORRESPONDING` operation is implicitly performed and the line is assigned. However, the components that are used for the search are not assigned (to the identically named components) by default (see the [documentation](https://help.sap.com/docs/abap-cloud/abap-keyword/corresponding-lookup-table)).
   - Mapping rules specified after the optional `MAPPING` addition can modify the default assignments of identically named components.
 
 - Usage hints:
@@ -1197,36 +1197,36 @@ it6 = CORRESPONDING #( it5 FROM lookup_table USING KEY sk c = a d = b ) ##operat
 ## NEW
 
 -   Using the instance operator
-    [`NEW`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconstructor_expression_new.htm),
+    [`NEW`](https://help.sap.com/docs/abap-cloud/abap-keyword/new-instance-operator),
     you can create [anonymous data
-    objects](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenanonymous_data_object_glosry.htm "Glossary Entry")
+    objects](https://help.sap.com/docs/abap-cloud/abap-keyword/anonymous-data-object)
     or
-    [instances](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abeninstance_glosry.htm "Glossary Entry")
+    [instances](https://help.sap.com/docs/abap-cloud/abap-keyword/instance)
     of a class and also assign values to the new object. As a result,
     you get a [reference
-    variable](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenreference_variable_glosry.htm "Glossary Entry")
+    variable](https://help.sap.com/docs/abap-cloud/abap-keyword/reference-variable)
     that points to the created object. In doing so, the operator
-    basically replaces [`CREATE DATA`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapcreate_data.htm)
-    and [`CREATE OBJECT`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapcreate_object.htm).
+    basically replaces [`CREATE DATA`](https://help.sap.com/docs/abap-cloud/abap-keyword/create-data)
+    and [`CREATE OBJECT`](https://help.sap.com/docs/abap-cloud/abap-keyword/create-object).
 -   For the type specification preceding the parentheses, you can use
     -   non-generic data types which creates a [data reference
-        variable](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendata_reference_variable_glosry.htm "Glossary Entry")
+        variable](https://help.sap.com/docs/abap-cloud/abap-keyword/data-reference-variable)
         pointing to the anonymous data object.
     -   classes which creates objects of these classes. The result is an
         [object reference
-        variable](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenobject_refer_variable_glosry.htm "Glossary Entry")
+        variable](https://help.sap.com/docs/abap-cloud/abap-keyword/object-reference-variable)
         pointing to an object.
 -   Regarding the created object reference variables, you can use the
     [object component
-    selector](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenobject_component_select_glosry.htm "Glossary Entry")
+    selector](https://help.sap.com/docs/abap-cloud/abap-keyword/object-component-selector-abenobject_component_select_glosry)
     `->` in certain contexts to ...
     -   point to a class attribute: `... NEW class( ... )->attr`
     -   introduce
-        [standalone](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapcall_method_static_short.htm)
+        [standalone](https://help.sap.com/docs/abap-cloud/abap-keyword/meth-standalone-method-call)
         and
-        [functional](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapcall_method_functional.htm)
+        [functional](https://help.sap.com/docs/abap-cloud/abap-keyword/meth-functional-method-call)
         method calls, including [chained method
-        calls](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenchained_method_call_glosry.htm "Glossary Entry")
+        calls](https://help.sap.com/docs/abap-cloud/abap-keyword/chained-method-call)
         which is a big advantage because you do not need to declare an
         extra variable: `... NEW class( ... )->meth( ... ) ...`
 -   Regarding the type specifications before and parameters within the
@@ -1236,14 +1236,14 @@ it6 = CORRESPONDING #( it5 FROM lookup_table USING KEY sk c = a d = b ) ##operat
         classes, no parameter specification means that no values are
         passed to the instance constructor of an object. However, in
         case of mandatory [input
-        parameters](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abeninput_parameter_glosry.htm "Glossary Entry"),
+        parameters](https://help.sap.com/docs/abap-cloud/abap-keyword/input-parameter),
         the parameters must be specified.
     -   Single parameter specified: If the type specified before the
         parentheses is a non-generic elementary, structured, table, or a
         reference type (or such a type can be derived using
         `#`), a single data object can be specified as an
         unnamed argument. Note the [assignment
-        rules](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconversion_rules.htm)
+        rules](https://help.sap.com/docs/abap-cloud/abap-keyword/assignment-and-conversion-rules)
         regarding the value assignments within the parentheses and that
         a constructor expression itself can be specified there.
     -   Structures and internal tables specified: If the type specified
@@ -1251,17 +1251,17 @@ it6 = CORRESPONDING #( it5 FROM lookup_table USING KEY sk c = a d = b ) ##operat
         stands for it, you can specify the individual components as
         named arguments (`comp1 = 1 comp2 = 2 ...`; see more
         information
-        [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abennew_constructor_params_struct.htm)).
+        [here](https://help.sap.com/docs/abap-cloud/abap-keyword/new-structures)).
         For the construction of anonymous internal tables, multiple
         options are available. Among them, there is the use of
         `LET` and `FOR` expressions and others. See more
         details
-        [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abennew_constructor_params_itab.htm).
+        [here](https://help.sap.com/docs/abap-cloud/abap-keyword/new-internal-tables).
     -   Classes: As mentioned, non-optional input parameters of the
         instance constructor of the instantiated class must be filled.
         No parameters are passed for a class without an explicit
         instance constructor. See more information:
-        [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abennew_constructor_params_class.htm).
+        [here](https://help.sap.com/docs/abap-cloud/abap-keyword/new-classes).
 - The `NEW` operator is also covered as part of the [ABAP Object Orientation](04_ABAP_Object_Orientation.md) cheat sheet.
 
 The following examples cover: 
@@ -1365,17 +1365,17 @@ DATA(oref5) = NEW cl_b( 123 ).
 ## CONV
 
 -   The
-    [`CONV`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconstructor_expression_conv.htm)
+    [`CONV`](https://help.sap.com/docs/abap-cloud/abap-keyword/conv-conversion-operator)
     operator enforces conversions from one type to another and creates
     an appropriate result.
 -   Note that the conversion is carried out according to [conversion
-    rules](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconversion_rules.htm).
+    rules](https://help.sap.com/docs/abap-cloud/abap-keyword/assignment-and-conversion-rules).
     -   Further [special
-        rules](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconv_constructor_inference.htm)
+        rules](https://help.sap.com/docs/abap-cloud/abap-keyword/conv-type-inference-for-actual-parameters)
         apply if the constructor expression is passed to an [actual
-        parameter](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenactual_parameter_glosry.htm "Glossary Entry")
+        parameter](https://help.sap.com/docs/abap-cloud/abap-keyword/actual-parameter)
         with a generically typed [formal
-        parameter](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenformal_parameter_glosry.htm "Glossary Entry").
+        parameter](https://help.sap.com/docs/abap-cloud/abap-keyword/formal-parameter).
 -   The operator is particularly suitable for avoiding the declaration
     of helper variables.
 
@@ -1433,7 +1433,7 @@ Constructing data objects
 
 As outlined above, you can construct structures and internal
 tables using the `VALUE` operator. Using `VALUE` for
-constructing [elementary data objects](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenelementary_data_object_glosry.htm "Glossary Entry") and providing values is not possible. You can only use it to create a data object with an initial value, for example `DATA(str) = VALUE string( ).`. The `CONV` operator closes this gap. 
+constructing [elementary data objects](https://help.sap.com/docs/abap-cloud/abap-keyword/elementary-data-object) and providing values is not possible. You can only use it to create a data object with an initial value, for example `DATA(str) = VALUE string( ).`. The `CONV` operator closes this gap. 
 
 <br>
 
@@ -1474,21 +1474,21 @@ DATA(f) = `hallo`.
 ## EXACT
 
 -   The
-    [`EXACT`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconstructor_expression_exact.htm)
+    [`EXACT`](https://help.sap.com/docs/abap-cloud/abap-keyword/exact-lossless-operator)
     operator enforces either a [lossless
-    assignment](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenlossless_move.htm)
+    assignment](https://help.sap.com/docs/abap-cloud/abap-keyword/lossless-assignments)
     or a [lossless
-    calculation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenlossless_calculation.htm)
+    calculation](https://help.sap.com/docs/abap-cloud/abap-keyword/arith-exp-lossless-calculations)
     depending on the data object specified within the parentheses and
     creates an appropriate result.
 -   In case of calculations, [rules of lossless
-    assignments](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapmove_exact.htm)
+    assignments](https://help.sap.com/docs/abap-cloud/abap-keyword/lossless-assignments-rules)
     apply. In other cases, the result is created according to the
     [conversion
-    rules](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconversion_rules.htm)
+    rules](https://help.sap.com/docs/abap-cloud/abap-keyword/assignment-and-conversion-rules)
     mentioned above and an additional check is performed in accordance
     with the [rules of lossless
-    assignments](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapmove_exact.htm).
+    assignments](https://help.sap.com/docs/abap-cloud/abap-keyword/lossless-assignments-rules).
 
 
 <table>
@@ -1560,19 +1560,19 @@ ENDTRY.
 ## REF
 
 -   The
-    [`REF`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconstructor_expression_ref.htm)
+    [`REF`](https://help.sap.com/docs/abap-cloud/abap-keyword/ref-reference-operator)
     operator creates a [data reference
-    variable](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendata_reference_variable_glosry.htm "Glossary Entry")
+    variable](https://help.sap.com/docs/abap-cloud/abap-keyword/data-reference-variable)
     pointing to a specified data object.
 -   The type specified after `REF` and directly before the first
     parenthesis determines the [static
-    type](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenstatic_type_glosry.htm "Glossary Entry")
+    type](https://help.sap.com/docs/abap-cloud/abap-keyword/static-type)
     of the result.
--   The operator replaces [`GET REFERENCE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapget_reference.htm), which should not be used anymore,
+-   The operator replaces [`GET REFERENCE`](https://help.sap.com/docs/abap-cloud/abap-keyword/get-reference), which should not be used anymore,
     and is particularly useful for avoiding the declaration of helper
     variables that are only necessary, for example, to specify data
     reference variables as actual parameters.
-- The following can be specified after `REF` before the first parenthesis: A non-generic data type that satisfies the rules of [upcasts in data references](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconversion_references_data.htm), the generic type `data`, the `#` character if the type can be derived from the context.
+- The following can be specified after `REF` before the first parenthesis: A non-generic data type that satisfies the rules of [upcasts in data references](https://help.sap.com/docs/abap-cloud/abap-keyword/assignments-between-data-reference-variables), the generic type `data`, the `#` character if the type can be derived from the context.
 
 Examples:
 ``` abap
@@ -1609,16 +1609,16 @@ DATA(oref_b) = REF #( oref_a ).
 ## CAST
 
 -   Using the
-    [`CAST`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconstructor_expression_cast.htm)
+    [`CAST`](https://help.sap.com/docs/abap-cloud/abap-keyword/cast-casting-operator)
     operator, you can carry out
-    [upcasts](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenup_cast_glosry.htm "Glossary Entry")
+    [upcasts](https://help.sap.com/docs/abap-cloud/abap-keyword/upcast)
     and
-    [downcasts](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendown_cast_glosry.htm "Glossary Entry")
+    [downcasts](https://help.sap.com/docs/abap-cloud/abap-keyword/downcast)
     and create a reference variable of a static type as a result.
 -   It replaces the
-    [`?=`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapmove_cast.htm)
+    [`?=`](https://help.sap.com/docs/abap-cloud/abap-keyword/upcast-and-downcast)
     operator and enables [chained method
-    calls](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenchained_method_call_glosry.htm "Glossary Entry").
+    calls](https://help.sap.com/docs/abap-cloud/abap-keyword/chained-method-call).
 -   The operator is particularly helpful for avoiding the declaration of
     helper variables and more contexts.
 -   Similar to the `NEW` operator, constructor expressions with
@@ -1626,7 +1626,7 @@ DATA(oref_b) = REF #( oref_a ).
     `->` to point to a class or interface attribute (`... CAST class( ... )->attr`) and methods (`... CAST class( ...
     )->meth( ... )`). Method chaining, standalone and
     functional method calls are possible, too. See more information
-    [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconstructor_expression_cast.htm).
+    [here](https://help.sap.com/docs/abap-cloud/abap-keyword/cast-casting-operator).
 - Find more examples on using the `CAST` operator, up- and downcasts in the [ABAP Object Orientation](04_ABAP_Object_Orientation.md#demonstrating-upcasts-and-downcasts-using-the-rtts-inheritance-tree) cheat sheet.
 
 Examples:
@@ -1699,8 +1699,8 @@ DATA(methods) = CAST cl_abap_objectdescr(
 
 ## COND
 
-- The [`COND`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconditional_expression_cond.htm) operator is used for creating a result depending on [logical expressions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenlogical_expression_glosry.htm "Glossary Entry") 
-- It can also be used to raise [class-based exceptions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenclass_based_exception_glosry.htm "Glossary Entry") or [runtime errors](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenruntime_error_glosry.htm) with the [`THROW`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconditional_expression_result.htm) addition.
+- The [`COND`](https://help.sap.com/docs/abap-cloud/abap-keyword/cond-conditional-operator) operator is used for creating a result depending on [logical expressions](https://help.sap.com/docs/abap-cloud/abap-keyword/logical-expression) 
+- It can also be used to raise [class-based exceptions](https://help.sap.com/docs/abap-cloud/abap-keyword/class-based-exception) or [runtime errors](https://help.sap.com/docs/abap-cloud/abap-keyword/runtime-error) with the [`THROW`](https://help.sap.com/docs/abap-cloud/abap-keyword/cond-switch-result) addition.
   - Find examples on the `THROW` addition in the [Exceptions and Runtime Errors](27_Exceptions.md) cheat sheet.
 - There can be multiple logical expressions initiated by `WHEN` followed by the result specified after `THEN`. If none of the logical expressions are true, you can
     specify an `ELSE` clause at the end. If this clause is not specified, the result is the initial value of the specified or derived data type.
@@ -1824,8 +1824,8 @@ DATA(division) = COND decfloat34( WHEN int1 <> 0 AND int2 <> 0 THEN int1 / int2
 
 ## SWITCH
 
-- The [`SWITCH`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconditional_expression_switch.htm) operator is fairly similar to the `COND` operator and works in the style of [`CASE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapcase.htm) statements, i. e. it uses the value of only a single variable that is checked in the case distinction.
-- Also here, `SWITCH` can be used to raise [class-based exceptions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenclass_based_exception_glosry.htm "Glossary Entry") or [runtime errors](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenruntime_error_glosry.htm) with the [`THROW`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconditional_expression_result.htm) addition. Find examples on the `THROW` addition in the [Exceptions and Runtime Errors](27_Exceptions.md) cheat sheet.
+- The [`SWITCH`](https://help.sap.com/docs/abap-cloud/abap-keyword/switch-conditional-operator) operator is fairly similar to the `COND` operator and works in the style of [`CASE`](https://help.sap.com/docs/abap-cloud/abap-keyword/case) statements, i. e. it uses the value of only a single variable that is checked in the case distinction.
+- Also here, `SWITCH` can be used to raise [class-based exceptions](https://help.sap.com/docs/abap-cloud/abap-keyword/class-based-exception) or [runtime errors](https://help.sap.com/docs/abap-cloud/abap-keyword/runtime-error) with the [`THROW`](https://help.sap.com/docs/abap-cloud/abap-keyword/cond-switch-result) addition. Find examples on the `THROW` addition in the [Exceptions and Runtime Errors](27_Exceptions.md) cheat sheet.
 
 Examples:
 
@@ -1866,14 +1866,14 @@ ENDCASE.
 ## FILTER
 
 -   The
-    [`FILTER`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconstructor_expression_filter.htm) operator constructs an internal table according to a specified type (which can be an explicitly specified, non-generic table type or the `#` character as a symbol for the [operand type](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenoperand_type_glosry.htm) before the first parenthesis).
+    [`FILTER`](https://help.sap.com/docs/abap-cloud/abap-keyword/filter-filter-operator) operator constructs an internal table according to a specified type (which can be an explicitly specified, non-generic table type or the `#` character as a symbol for the [operand type](https://help.sap.com/docs/abap-cloud/abap-keyword/operand-type-abenoperand_type_glosry) before the first parenthesis).
 - The lines for the new internal table are taken from an
     existing internal table based on conditions specified in a `WHERE` condition. Note that the table type of the existing internal table must be convertible to the specified target type.
 -   The conditions can either be based on single values or a [filter
-    table](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconstructor_expr_filter_table.htm).
-- The source table must have at least one [sorted key](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensorted_key_glosry.htm "Glossary Entry") or a [hash key](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenhash_key_glosry.htm "Glossary Entry") for accessing. If the table does not have such a primary table key, a [secondary table key](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensecondary_table_key_glosry.htm "Glossary Entry") must be available.
+    table](https://help.sap.com/docs/abap-cloud/abap-keyword/filter-filter-table).
+- The source table must have at least one [sorted key](https://help.sap.com/docs/abap-cloud/abap-keyword/sorted-key) or a [hash key](https://help.sap.com/docs/abap-cloud/abap-keyword/hash-key) for accessing. If the table does not have such a primary table key, a [secondary table key](https://help.sap.com/docs/abap-cloud/abap-keyword/secondary-table-key) must be available.
 - Syntax options for using the table key (i.e. specifying its components):
-  - Using the [primary table key](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenprimary_table_key_glosry.htm) without the `USING KEY` addition
+  - Using the [primary table key](https://help.sap.com/docs/abap-cloud/abap-keyword/primary-table-key) without the `USING KEY` addition
   - Using the default name `primary_key` for the primary key with `USING KEY`
   - Using the secondary table key with `USING KEY`
 - Notes on the `WHERE` condition: 
@@ -1884,7 +1884,7 @@ ENDCASE.
   - Multiple comparisons can be combined using `AND`; boolean operators such as `NOT` or `OR` cannot be specified.
 - Notes on the filter table: 
   - The line types of the source and filter table need not be identical.
-  - Refer to the [documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconstructor_expr_filter_table.htm) for all syntax options. For example, depending on where `USING KEY` is specified, the table key is specified for the source or filter table for the access.
+  - Refer to the [documentation](https://help.sap.com/docs/abap-cloud/abap-keyword/filter-filter-table) for all syntax options. For example, depending on where `USING KEY` is specified, the table key is specified for the source or filter table for the access.
 - Notes on the `EXCEPT` addition: The specification of `EXCEPT` means that those lines of the table are used that do not meet the condition specified in the `WHERE` condition. Therefore, if `EXCEPT` is not specified, the lines of the table are used that meet the condition.  
 
 
@@ -2051,7 +2051,7 @@ DATA(f14) = FILTER #( fi_tab2 USING KEY sec_key EXCEPT IN filter_tab2 WHERE a = 
 
 - Define one or more variables (field symbols are also possible) as local (i.e. local to the expression) helper fields and assigns values to them.
 - In the definition, the right-hand side value is declared as if an inline declaration is used. The data type is derived accordingly. 
-- Only to be used in constructor expressions (see the syntax diagrams in the ABAP Keyword Documentation where exactly [`LET`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abaplet.htm) expressions can be specified).
+- Only to be used in constructor expressions (see the syntax diagrams in the ABAP Keyword Documentation where exactly [`LET`](https://help.sap.com/docs/abap-cloud/abap-keyword/let-exp-let-in) expressions can be specified).
 
 See the following examples to get an idea about the use:
 
@@ -2157,19 +2157,19 @@ ENDDO.
   - that perform an iteration and that are possible in specific constructor expressions (`NEW`, `VALUE`, `REDUCE`).
   - that are introduced by the iteration operator `FOR`. 
   - that can optionally be used to create lines in internal tables. 
-- `REDUCE` operator: Special reduction operator that is based on [iteration expressions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abeniteration_expression_glosry.htm "Glossary Entry"), i.e. it is mandatory to specify iteration expressions with `FOR` when using `REDUCE`.
+- `REDUCE` operator: Special reduction operator that is based on [iteration expressions](https://help.sap.com/docs/abap-cloud/abap-keyword/iteration-expression), i.e. it is mandatory to specify iteration expressions with `FOR` when using `REDUCE`.
 
 ### Iteration Expressions Using FOR
 
-- Two flavors for iterations using [`FOR`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenfor.htm):
-  - [Conditional iterations](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenfor_conditional.htm)
+- Two flavors for iterations using [`FOR`](https://help.sap.com/docs/abap-cloud/abap-keyword/for-iteration-expressions):
+  - [Conditional iterations](https://help.sap.com/docs/abap-cloud/abap-keyword/for-conditional-iteration)
     (including the ABAP words `UNTIL` and `WHILE` which
     have the semantics of the ABAP statements
-    [`DO`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapdo.htm)
+    [`DO`](https://help.sap.com/docs/abap-cloud/abap-keyword/do)
     and
-    [`WHILE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapwhile.htm))    
-  - [Table iterations](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentable_iteration_glosry.htm "Glossary Entry"): 
-    Have the semantics of [`LOOP AT`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abaploop_at_itab_variants.htm) and 
+    [`WHILE`](https://help.sap.com/docs/abap-cloud/abap-keyword/while))    
+  - [Table iterations](https://help.sap.com/docs/abap-cloud/abap-keyword/table-iteration): 
+    Have the semantics of [`LOOP AT`](https://help.sap.com/docs/abap-cloud/abap-keyword/loop-at-itab) and 
     include the addition `IN`.
 -   Where possible:
     - `REDUCE`: Mandatory `FOR` specification. The reduction result is created in the
@@ -2178,7 +2178,7 @@ ENDDO.
         looping across internal tables. New table lines are created in
         the iteration steps and inserted into a target table.
 -   The operand specified after `FOR` represents an iteration
-    variable, i. e. a [work area](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenwork_area_glosry.htm "Glossary Entry")
+    variable, i. e. a [work area](https://help.sap.com/docs/abap-cloud/abap-keyword/work-area)
     that contains the data while looping across the table.
 -   This variable is only visible within the `FOR`
     expression, i. e. it cannot be used outside of the expression.
@@ -2481,9 +2481,9 @@ DATA(it17) = VALUE itab_type( FOR y = 31 THEN y - 10 UNTIL y < 10
 ### REDUCE
 
 -   The
-    [`REDUCE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconstructor_expression_reduce.htm)
+    [`REDUCE`](https://help.sap.com/docs/abap-cloud/abap-keyword/reduce-reduction-operator)
     operator creates a result of a specified or derived type from one or
-    more [iteration expressions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abeniteration_expression_glosry.htm "Glossary Entry") with `FOR`.
+    more [iteration expressions](https://help.sap.com/docs/abap-cloud/abap-keyword/iteration-expression) with `FOR`.
 -   As covered for `FOR`, conditional iterations (reducing sets of data objects to a single data object in custom iteration steps) and table iterations (evaluation of table lines, reducing the table content to summary value) are possible. For example, the numeric values of a table column are summed up. As a result, the total number is constructed. 
 - Additions: 
   - Optional `LET` expressions (the following additions are mandatory)
@@ -2933,4 +2933,4 @@ ASSERT duplicates_sql = duplicates_value_reduce.
 
 > [!NOTE] 
 > - The steps to import and run the code are outlined [here](README.md#-getting-started-with-the-examples).
-> - [Disclaimer](./README.md#%EF%B8%8F-disclaimer)
+> - [Disclaimer](./README.md#%EF%B8%8F-disclaimer)

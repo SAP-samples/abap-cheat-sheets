@@ -82,22 +82,22 @@ RAP business objects (RAP BO)
 
 -   A RAP BO is based on a special, tree-like hierarchical structure
     of [CDS
-    entities](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_entity_glosry.htm "Glossary Entry")
+    entities](https://help.sap.com/docs/abap-cloud/abap-keyword/cds-entity)
     of a data model
 -   Such a structure of entities can consist of [parent
-    entities](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenparent_entity_glosry.htm "Glossary Entry")
+    entities](https://help.sap.com/docs/abap-cloud/abap-keyword/cds-parent-entity)
     and [child
-    entities](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenchild_entity_glosry.htm "Glossary Entry")
+    entities](https://help.sap.com/docs/abap-cloud/abap-keyword/cds-child-entity)
     that are themselves defined using [CDS
-    compositions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_composition_glosry.htm "Glossary Entry")
+    compositions](https://help.sap.com/docs/abap-cloud/abap-keyword/cds-composition)
     and [to-parent
-    associations](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abento_parent_association_glosry.htm "Glossary Entry").
+    associations](https://help.sap.com/docs/abap-cloud/abap-keyword/cds-to-parent-association).
 -   The top parent entity of a [CDS composition
-    tree](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_composition_tree_glosry.htm "Glossary Entry")
+    tree](https://help.sap.com/docs/abap-cloud/abap-keyword/cds-composition-tree)
     is the root entity that represents the business object. With a
     large composition tree, RAP BOs can be fairly complex. Or they
     can be very simple by just consisting of one root entity alone.
--   Note: There is a special syntax for the [CDS root entity](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenroot_entity_glosry.htm) of a RAP BO: [`define root view entity`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_define_root_view_v2.htm)
+-   Note: There is a special syntax for the [CDS root entity](https://help.sap.com/docs/abap-cloud/abap-keyword/cds-root-entity) of a RAP BO: [`define root view entity`](https://help.sap.com/docs/abap-cloud/abap-keyword/cds-ddl-cds-view-entity-root)
 
 
  </td>
@@ -106,47 +106,47 @@ RAP business objects (RAP BO)
 <tr>
 <td> 
 
-[RAP behavior definition](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_behavior_definition_glosry.htm "Glossary Entry") (BDEF)
+[RAP behavior definition](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-behavior-definition) (BDEF)
 
  </td>
 
  <td> 
 
 -   RAP BOs are described by the definitions specified in a special
-    [DDIC](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenddic_glosry.htm "Glossary Entry")
+    [DDIC](https://help.sap.com/docs/abap-cloud/abap-keyword/ddic)
     artifact: RAP behavior definition (BDEF)
 -   A BDEF defines the [RAP business object
-    behavior](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_bo_behavior_glosry.htm "Glossary Entry")
+    behavior](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-business-object-behavior)
     (i. e. the transactional behavior of a RAP BO)
 -   Transactional behavior means a BDEF defines [behavior
-    characteristics](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_entity_properties_glosry.htm "Glossary Entry")
+    characteristics](https://help.sap.com/docs/abap-cloud/abap-keyword/entity-behavior-characteristics)
     and [RAP BO
-    operations](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_bo_operation_glosry.htm "Glossary Entry") i.
+    operations](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-bo-operation) i.
     e. [RAP BO standard
-    operations](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_standard_operation_glosry.htm "Glossary Entry")
+    operations](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-bo-standard-operation)
     ([CRUD
-    operations](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencrud_glosry.htm "Glossary Entry")),
+    operations](https://help.sap.com/docs/abap-cloud/abap-keyword/crud-operations)),
     [non-standard
-    operations](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_nstandard_operation_glosry.htm "Glossary Entry")
+    operations](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-bo-non-standard-operation)
     like specific [RAP
-    actions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_action_glosry.htm "Glossary Entry")
+    actions](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-action-abenrap_action_glosry)
     and
-    [functions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_function_glosry.htm "Glossary Entry"),
+    [functions](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-function-abenrap_function_glosry),
     and more.
 -   There are many other things that can be included impacting the
     RAP BO behavior like [RAP feature
-    control](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_feature_control_glosry.htm "Glossary Entry"),
+    control](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-feature-control-abenrap_feature_control_glosry),
     for example, defining which data is mandatory and which is
     read-only, or
-    [determinations](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_determination_glosry.htm "Glossary Entry")
+    [determinations](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-determination-abenrap_determination_glosry)
     and
-    [validations](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_validation_glosry.htm "Glossary Entry").
+    [validations](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-validation-abenrap_validation_glosry).
 -   BDEFs use [Behavior Definition
-    Language](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbdl_glosry.htm "Glossary Entry")
+    Language](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-behavior-definition-language)
     (BDL) for the definitions. Find more information on the topic
     and various options to define the transactional behavior in
     section [BDL for Behavior
-    Definitions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbdl.htm)
+    Definitions](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-bdl-for-behavior-definitions)
     in the ABAP Keyword Documentation.
 
  </td>
@@ -163,21 +163,21 @@ Transactional buffer and implementation types
 
 -   A BDEF defines the behavior of a RAP BO and, thus, how to handle
     its data. This data is available in the [RAP transactional
-    buffer](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentransactional_buffer_glosry.htm "Glossary Entry").
+    buffer](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-transactional-buffer).
 -   It is a storage for a RAP BO's data that is used and worked on
-    during an [SAP LUW](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensap_luw_glosry.htm).
+    during an [SAP LUW](https://help.sap.com/docs/abap-cloud/abap-keyword/sap-luw-abensap_luw_glosry).
 -   This data includes [RAP BO
-    instances](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_bo_instance_glosry.htm "Glossary Entry")
+    instances](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-bo-instance)
     (i. e. concrete data sets of an entity). This is where EML
     enters the picture: EML is used, among others, to access this data in the transactional buffer.
 -   Currently, there are two kinds of RAP BOs:
-    [managed](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenmanaged_rap_bo_glosry.htm "Glossary Entry")
+    [managed](https://help.sap.com/docs/abap-cloud/abap-keyword/managed-rap-business-object)
     and [unmanaged RAP
-    BOs](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenunmanaged_rap_bo_glosry.htm "Glossary Entry").
+    BOs](https://help.sap.com/docs/abap-cloud/abap-keyword/unmanaged-rap-business-object).
 -   Managed and unmanaged are implementation types that are also
     specified in the BDEF.
 -   The implementation type determines the [RAP BO
-    provider](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_bo_provider_glosry.htm "Glossary Entry"), i.
+    provider](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-bo-provider), i.
     e. how the transactional buffer is provided and how the behavior
     of a RAP BO is implemented.
 
@@ -214,7 +214,7 @@ Managed RAP BOs
     additional implementations also in the context of managed RAP
     BOs. For example, non-standard operations or feature controls
     must be self-implemented in [ABAP behavior
-    pools](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbehavior_pool_glosry.htm "Glossary Entry")
+    pools](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-behavior-pool)
     (see the details further down).
 
  </td>
@@ -230,13 +230,13 @@ Unmanaged RAP BOs
  <td> 
 
 -   Everything must be provided by the [unmanaged RAP BO
-    provider](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenunmanaged_rap_bo_prov_glosry.htm "Glossary Entry"), i.
+    provider](https://help.sap.com/docs/abap-cloud/abap-keyword/unmanaged-rap-bo-provider), i.
     e. the transactional buffer and all RAP BO operations must be
     provided or self-implemented by developers in an ABAP behavior
     implementation
 -   Unmanaged RAP BOs are, for example, relevant for brownfield
     scenarios, i. e. in scenarios in which transactional buffers and application logic is already
-    available and should be embedded in the RAP world. Note that it is possible to have a managed RAP BO with unmanaged parts, e.g. unmanaged save or additional save. Find more information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbdl_rap_bo.htm).
+    available and should be embedded in the RAP world. Note that it is possible to have a managed RAP BO with unmanaged parts, e.g. unmanaged save or additional save. Find more information [here](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-managed-and-unmanaged-behavior-definitions).
 
  </td>
 </tr>
@@ -251,36 +251,36 @@ ABAP behavior implementation in an ABAP behavior pool (ABP)
  <td> 
 
 -   An [ABAP behavior
-    pool](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbehavior_pool_glosry.htm "Glossary Entry")
+    pool](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-behavior-pool)
     is a special [class
-    pool](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenclass_pool_glosry.htm "Glossary Entry")
+    pool](https://help.sap.com/docs/abap-cloud/abap-keyword/class-pool-abenclass_pool_glosry)
     for an ABAP behavior implementation that implements the
     unmanaged RAP BO provider based on definitions in a BDEF. The
     class pool's name is specified in the BDEF.
 -   The [global
-    class](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenglobal_class_glosry.htm "Glossary Entry")
+    class](https://help.sap.com/docs/abap-cloud/abap-keyword/global-class)
     of a behavior pool does not implement the behavior itself. It is
     empty on creation apart from the declaration and implementation part skeletons. The behavior implementation is coded in local
     [RAP handler
-    classes](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabp_handler_class_glosry.htm "Glossary Entry")
+    classes](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-handler-class)
     and a [RAP saver
-    class](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabp_saver_class_glosry.htm "Glossary Entry")
+    class](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-saver-class)
     in the [CCIMP
-    include](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenccimp_glosry.htm "Glossary Entry")
+    include](https://help.sap.com/docs/abap-cloud/abap-keyword/ccimp-include)
     of the behavior pool. These classes are called by the [RAP
     runtime
-    engine](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_runtime_engine_glosry.htm "Glossary Entry")
+    engine](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-runtime-engine)
     when the RAP BO is accessed. This is covered in more detail
     further down.
 -   Usually, saver classes are not needed in managed RAP BOs (except
-    for special variants of managed RAP BOs such as [RAP additional save](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_add_save_glosry.htm) and [RAP unmanaged save](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_unman_save_glosry.htm)). Local handler classes are usually
+    for special variants of managed RAP BOs such as [RAP additional save](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-additional-save) and [RAP unmanaged save](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-unmanaged-save)). Local handler classes are usually
     needed in managed RAP BOs if implementations are required that
     go beyond standard operations.
 -   Note: In more complex scenarios, with RAP BOs that
     consist of many entities, you can define behavior pools for
     individual entities by adding the syntax to the [`define
     behavior
-    for`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbdl_define_beh.htm)
+    for`](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-entitybehaviordefinition)
     notation. There is not a saver class for each entity but only
     one saver class for the BO as a whole. Any number of behavior
     pools can be assigned to a BDEF allowing applications a
@@ -292,10 +292,10 @@ ABAP behavior implementation in an ABAP behavior pool (ABP)
 </table>
 
 > [!NOTE]  
-> - Find more terms in the [RAP Glossary](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_glossary.htm) of the ABAP Keyword Documentation.
-> - There are more artifacts and concepts related to RAP that go way beyond the scope of this cheat sheet. For example, a RAP BO can be exposed as a [business service](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbusiness_service_glosry.htm "Glossary Entry") to be accessed from outside [AS ABAP](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenas_abap_sys_environ_glosry.htm "Glossary Entry") and consumed. A [RAP BO
-consumer](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_bo_consumer_glosry.htm "Glossary Entry")
-is either the [RAP transactional engine](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_transac_engine_glosry.htm "Glossary Entry") that handles requests from outside the AS ABAP or, from inside AS ABAP,
+> - Find more terms in the [RAP Glossary](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-glossary) of the ABAP Keyword Documentation.
+> - There are more artifacts and concepts related to RAP that go way beyond the scope of this cheat sheet. For example, a RAP BO can be exposed as a [business service](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-business-service) to be accessed from outside [AS ABAP](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenas_abap_sys_environ_glosry.htm) and consumed. A [RAP BO
+consumer](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-bo-consumer)
+is either the [RAP transactional engine](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-transactional-engine) that handles requests from outside the AS ABAP or, from inside AS ABAP,
 an ABAP program using ABAP EML (which this cheat sheet and the examples focus on).
 > - The cheat sheet and the examples focus on a minimal number of artifacts - from database table and view entity, to BDEF and ABAP behavior pool, including an ABAP class as consumer. Many other RAP-related artifacts and aspects are beyond the scope. Get a more thorough insight in the [Development guide for the ABAP RESTful Application Programming Model](https://help.sap.com/docs/ABAP_PLATFORM_NEW/fc4c71aa50014fd1b43721701471913d/289477a81eec4d4e84c0302fb6835035.html).
 > - You can create all RAP service-related repository objects from scratch using a wizard in ADT. The wizard lets you manually input your RAP BO requirements or use the Joule chat. Find more information [here](https://help.sap.com/docs/abap-cloud/abap-rap/odata-ui-service-from-scratch).
@@ -320,12 +320,12 @@ EML. Among other things, EML allows you to read or modify RAP BOs by
 accessing the RAP BO data (the RAP BO instances) in the transactional
 buffer and trigger the persistent storage or reset changes. More
 precisely, when EML statements are executed, the calling of [RAP handler
-methods](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabp_handler_method_glosry.htm "Glossary Entry")
+methods](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-handler-method)
 is triggered to access the transactional buffer of a RAP BO. As
 mentioned, for unmanaged RAP BOs or unmanaged parts of managed RAP BOs,
 the handler methods that are called are part of an ABAP behavior pool.
 
-The global class of an ABP has the addition [`FOR BEHAVIOR OF bdef`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapclass_for_behavior_of.htm)
+The global class of an ABP has the addition [`FOR BEHAVIOR OF bdef`](https://help.sap.com/docs/abap-cloud/abap-keyword/class-for-behavior-of)
 to the definition while `bdef` stands for the name of the BDEF.
 This class is (initially) empty apart from the declaration and implementation part skeleton.
 
@@ -340,16 +340,16 @@ ENDCLASS.
 The actual implementation is done in local classes in the CCIMP include (*Local Types* tab in ADT) of the behavior pool. There,
 two kinds of local classes are to be defined and implemented that are
 related to the RAP BO's runtime: one or more [handler
-classes](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabp_handler_class_glosry.htm "Glossary Entry")
+classes](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-handler-class)
 to implement the RAP BO behavior (in RAP handler methods) during the
 [RAP interaction
-phase](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_int_phase_glosry.htm "Glossary Entry")
+phase](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-interaction-phase)
 (the data reading and modification phase) and a [saver
-class](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabp_saver_class_glosry.htm "Glossary Entry")
+class](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-saver-class)
 to implement the [RAP save
-sequence](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_save_seq_glosry.htm "Glossary Entry")
+sequence](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-save-sequence)
 (in [saver
-methods](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabp_saver_method_glosry.htm "Glossary Entry")
+methods](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-saver-method)
 to save data from the transactional buffer to the database).
 
 
@@ -368,7 +368,7 @@ to save data from the transactional buffer to the database).
 -   These classes are implicitly `ABSTRACT` and `FINAL`
     since instantiating and calling only happens through the RAP runtime
     engine.
--   [ADT](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenadt_glosry.htm "Glossary Entry")
+-   [ADT](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-development-tools-for-eclipse)
     helps you create the classes and methods (and basically the ABP as
     such) when creating the BDEF. A quick fix is available that creates
     the method definitions and a skeleton of the implementations
@@ -393,7 +393,7 @@ ENDCLASS.
     useful to split the handler method into separate methods for better
     readability.
 -   See more details on the handler method definitions in the topic
-    [`METHODS, FOR`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapmethods_for_rap_behv.htm).
+    [`METHODS, FOR`](https://help.sap.com/docs/abap-cloud/abap-keyword/methods-for-rap-handler-methods).
 
 Example: Handler method definitions
 ``` abap
@@ -419,7 +419,7 @@ METHODS some_action FOR MODIFY
     well as mandatory or optional additions like `RESULT` that
     are followed by parameters.
 -   The parameters are typed with [BDEF derived
-    types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_derived_type_glosry.htm "Glossary Entry")
+    types](https://help.sap.com/docs/abap-cloud/abap-keyword/bdef-derived-type)
     that have special RAP-related components as covered further down.
 -   The parameters' names can be chosen freely. This is also true for
     the method names except for some predefined names.
@@ -431,7 +431,7 @@ METHODS some_action FOR MODIFY
     explicitly specified in the definition but implicitly used. The
     explicit specification of the `CHANGING` addition is not needed. In most cases, these are
     [RAP response
-    parameters](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_response_param_glosry.htm "Glossary Entry").
+    parameters](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-response-parameter).
     The following image shows the F2 information in ADT for the create
     handler method.
     ![RAP_handler_method_parameters](./files/rap_handler_method_parameters.png)
@@ -446,15 +446,15 @@ METHODS some_action FOR MODIFY
     -   `mapped`: Used to provide mapping information on RAP BO
         instances, for example, which key values were created for given
         content IDs (
-        [`%cid`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapderived_types_cid.htm)).
+        [`%cid`](https://help.sap.com/docs/abap-cloud/abap-keyword/cid)).
     -   `failed`: Information for identifying the data set for
         which an error occurred in a RAP operation
     -   `reported`: Used, for example, to exchange error messages for each
         entity defined in the BDEF and [not related to a specific
-        entity](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapderived_types_other.htm).
+        entity](https://help.sap.com/docs/abap-cloud/abap-keyword/other).
     -   Example: Technically, the `reported` parameter is a
         [deep
-        structure](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendeep_structure_glosry.htm "Glossary Entry")
+        structure](https://help.sap.com/docs/abap-cloud/abap-keyword/deep-structure)
         containing, for example, the messages of the root entity and
         child entities. For example, if a create operation fails for a
         RAP BO instance of the root entity, a message, information about
@@ -471,7 +471,7 @@ METHODS some_action FOR MODIFY
 ### RAP Saver Class and Saver Methods
 
 -   A RAP saver class implements the [RAP save
-    sequence](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_save_seq_glosry.htm "Glossary Entry").
+    sequence](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-save-sequence).
     A saver class is usually only available in unmanaged RAP BOs (except
     for special variants of managed RAP BOs that are not outlined here).
 -   The saver class is implicitly `ABSTRACT` and `FINAL`
@@ -483,9 +483,9 @@ METHODS some_action FOR MODIFY
 -   The saver methods consist of a set of predefined methods having
     predefined names. Some of them are mandatory to implement, some are
     optional. The
-    [`adjust_numbers`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensaver_adjust_numbers.htm)
+    [`adjust_numbers`](https://help.sap.com/docs/abap-cloud/abap-keyword/adjust-numbers-rap-saver-method)
     method is only available in [late
-    numbering](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_late_numbering_glosry.htm "Glossary Entry")
+    numbering](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-late-numbering-abenrap_late_numbering_glosry)
     scenarios.
 -   A saver class inherits from class
     `CL_ABAP_BEHAVIOR_SAVER`. The saver methods are
@@ -496,10 +496,10 @@ METHODS some_action FOR MODIFY
     must be handled via the transactional buffer when self-implementing
     the saver methods.
 -   Saver methods are called when the RAP save sequence has been triggered by a [`COMMIT
-    ENTITIES`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapcommit_entities.htm)
-    statement. Note that in natively supported RAP scenarios, for example, an SAP Fiori app using OData, the `COMMIT ENTITIES` call is performed implicitly and automatically by the [RAP runtime engine](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_runtime_engine_glosry.htm).
+    ENTITIES`](https://help.sap.com/docs/abap-cloud/abap-keyword/commit-entities)
+    statement. Note that in natively supported RAP scenarios, for example, an SAP Fiori app using OData, the `COMMIT ENTITIES` call is performed implicitly and automatically by the [RAP runtime engine](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-runtime-engine).
 -   Find more information on RAP saver methods
-    [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabp_saver_class.htm).
+    [here](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-saver-class-and-methods).
 
 Example: Definition of a RAP saver class and saver methods
 ``` abap
@@ -534,18 +534,18 @@ ENDCLASS.
 - You can optionally define auxiliary classes for ABPs using the syntax `... FOR BEHAVIOR OF bdef_name ...`. 
 - These classes are implicitly final global classes and reference a RAP business object.
 - They have enhanced access rights to RAP BOs, and ABAP EML statements with the `IN LOCAL MODE` and `PRIVILEGED` can be used. 
-- Their main function is to support implementation in an ABAP behavior pool. They achieve this by offering reusable methods and enabling developers to implement RAP behavior simultaneously. Furthermore, they can be used to provide utility methods for raising [RAP business events](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_entity_event_glosry.htm). 
+- Their main function is to support implementation in an ABAP behavior pool. They achieve this by offering reusable methods and enabling developers to implement RAP behavior simultaneously. Furthermore, they can be used to provide utility methods for raising [RAP business events](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-business-event). 
 - Note that RAP handler, saver, and event handler methods as such can only be implemented in a behavior pool, but they can delegate tasks to methods in ABP auxiliary classes. It is not recommended to completely outsource the handler and saver method implementations to auxiliary classes to prevent unnecessary overhead.
-- As a prerequisite, the ABAP auxiliary class name is specified in the BDEF using the [`auxiliary class ...` notation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABENBDL_AUXILIARY_CLASS.html). Multiple ABAP auxiliary classes can be specified. 
+- As a prerequisite, the ABAP auxiliary class name is specified in the BDEF using the [`auxiliary class ...` notation](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-auxiliary-class). Multiple ABAP auxiliary classes can be specified. 
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## BDEF Derived Types
 
-The operands of EML statements and parameters of handler and saver methods are mainly special messenger tables for passing data and receiving results or messages, i. e. the communication between a [RAP BO consumer](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_bo_consumer_glosry.htm) and the [RAP BO provider](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_bo_provider_glosry.htm) using EML consists (in most cases) of exchanging data stored in internal tables that have special ABAP types - [BDEF derived types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_derived_type_glosry.htm "Glossary Entry").
+The operands of EML statements and parameters of handler and saver methods are mainly special messenger tables for passing data and receiving results or messages, i. e. the communication between a [RAP BO consumer](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-bo-consumer) and the [RAP BO provider](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-bo-provider) using EML consists (in most cases) of exchanging data stored in internal tables that have special ABAP types - [BDEF derived types](https://help.sap.com/docs/abap-cloud/abap-keyword/bdef-derived-type).
 These types are tailor-made for RAP purposes.
 
-As the name implies, the types are derived by the [ABAP runtime framework](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_runtime_frmwk_glosry.htm "Glossary Entry")
+As the name implies, the types are derived by the [ABAP runtime framework](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-runtime-framework)
 from CDS entities and their behavior definition in the BDEF. With these special types, a type-safe access to RAP BOs is guaranteed.
 
 > [!NOTE]  
@@ -564,13 +564,13 @@ from CDS entities and their behavior definition in the BDEF. With these special 
 
     | Syntax  | Notes |
     |---|---|
-    | [`TYPE TABLE FOR`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abaptype_table_for.htm)  |  For creating internal tables with BDEF derived types. Most RAP handler method parameters use tabular BDEF derived types.  |
-    | [`TYPE STRUCTURE FOR`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abaptype_structure_for.htm)  | In many cases, structures of type `TYPE STRUCTURE FOR` serve as both the [work area](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenwork_area_glosry.htm "Glossary Entry") and the line type of the internal tables. There are also structured BDEF derived types that function as types for RAP handler method parameters. |
-    | [`TYPE RESPONSE FOR`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abaptype_response_for.htm)  | These types refer to the RAP response parameters `mapped`, `failed`, and `reported`. They are deep structures containing information for individual RAP BO entities. The components of these structures are internal tables of appropriate types with `TYPE TABLE FOR`.  |
-    | [`TYPE REQUEST FOR`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abaptype_request_for.htm)  | The types `TYPE REQUEST FOR CHANGE` and `TYPE REQUEST FOR DELETE` are relevant for importing parameters of the `save_modified` RAP saver method in the context of RAP additional and unmanaged save. These BDEF derived types are deep structures containing internal tables with RAP BO instance keys and/or data for create, update, or delete operations.  |
+    | [`TYPE TABLE FOR`](https://help.sap.com/docs/abap-cloud/abap-keyword/type-table-for)  |  For creating internal tables with BDEF derived types. Most RAP handler method parameters use tabular BDEF derived types.  |
+    | [`TYPE STRUCTURE FOR`](https://help.sap.com/docs/abap-cloud/abap-keyword/type-structure-for)  | In many cases, structures of type `TYPE STRUCTURE FOR` serve as both the [work area](https://help.sap.com/docs/abap-cloud/abap-keyword/work-area) and the line type of the internal tables. There are also structured BDEF derived types that function as types for RAP handler method parameters. |
+    | [`TYPE RESPONSE FOR`](https://help.sap.com/docs/abap-cloud/abap-keyword/type-response-for)  | These types refer to the RAP response parameters `mapped`, `failed`, and `reported`. They are deep structures containing information for individual RAP BO entities. The components of these structures are internal tables of appropriate types with `TYPE TABLE FOR`.  |
+    | [`TYPE REQUEST FOR`](https://help.sap.com/docs/abap-cloud/abap-keyword/type-request-for)  | The types `TYPE REQUEST FOR CHANGE` and `TYPE REQUEST FOR DELETE` are relevant for importing parameters of the `save_modified` RAP saver method in the context of RAP additional and unmanaged save. These BDEF derived types are deep structures containing internal tables with RAP BO instance keys and/or data for create, update, or delete operations.  |
 
 
-- Find an overview of available BDEF derived types [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrpm_derived_types.htm).
+- Find an overview of available BDEF derived types [here](https://help.sap.com/docs/abap-cloud/abap-keyword/bdef-derived-types).
 - You can use `TYPES` and `DATA` statements to declare data types and objects with BDEF derived types.
 - Both long and short forms are available to declare data types and objects. Example:
   - Create an internal table typed with a BDEF derived type for create operations in ADT: `DATA d1 TYPE TABLE FOR CREATE zdemo_abap_rap_ro_m.`
@@ -762,14 +762,14 @@ entity.
 ![BDEF_derived_types](./files/bdef_derived_types.png)
 
 Some of the `%` components are [component
-groups](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencomponent_group_glosry.htm "Glossary Entry")
+groups](https://help.sap.com/docs/abap-cloud/abap-keyword/component-group)
 summarizing groups of table columns under a single name. In doing so,
 they simplify the handling of derived types for developers. For example,
 the component group
-[`%data`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapderived_types_data.htm)
+[`%data`](https://help.sap.com/docs/abap-cloud/abap-keyword/data-abapderived_types_data)
 contains all primary key and data fields of a RAP BO entity (actually,
 by containing the keys, it also contains the component group
-[`%key`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapderived_types_key.htm)
+[`%key`](https://help.sap.com/docs/abap-cloud/abap-keyword/key)
 in the case above). The F2 information in ADT helps you find out about
 the available components in a variable. The image below shows the
 details of `%data` when clicking the *derived type*
@@ -780,17 +780,17 @@ link in the first ADT F2 information screen.
 The availability of `%` components depends on definitions in the
 BDEF. Their availability also depends on more criteria, for example, the
 scenario. For example, the component
-[`%pid`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapderived_types_pid.htm)
+[`%pid`](https://help.sap.com/docs/abap-cloud/abap-keyword/pid)
 that represents a preliminary ID for a RAP BO instance is only available
 in [late
-numbering](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_late_numbering_glosry.htm "Glossary Entry")
+numbering](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-late-numbering-abenrap_late_numbering_glosry)
 scenarios. The draft indicator
-[`%is_draft`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapderived_types_is_draft.htm)
+[`%is_draft`](https://help.sap.com/docs/abap-cloud/abap-keyword/is-draft)
 is only relevant in the context of
-[draft](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbdl_with_draft.htm).
+[draft](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-with-draft).
 
 
-The following table covers a selection of available BDEF derived type components. Find more details on the available components in section [Components of BDEF Derived Types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapderived_types_comp.htm) of the ABAP Keyword Documentation.
+The following table covers a selection of available BDEF derived type components. Find more details on the available components in section [Components of BDEF Derived Types](https://help.sap.com/docs/abap-cloud/abap-keyword/components-of-bdef-derived-types) of the ABAP Keyword Documentation.
 
 <table>
 
@@ -801,14 +801,14 @@ The following table covers a selection of available BDEF derived type components
 <tr>
 <td> 
 
-[`%cid`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapderived_types_cid.htm), 
-[`%cid_ref`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapderived_types_cid_ref.htm)
+[`%cid`](https://help.sap.com/docs/abap-cloud/abap-keyword/cid), 
+[`%cid_ref`](https://help.sap.com/docs/abap-cloud/abap-keyword/cid-ref)
 
  </td>
 
  <td> 
 
-- [`%cid`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapderived_types_cid.htm) is a string to define a content ID.
+- [`%cid`](https://help.sap.com/docs/abap-cloud/abap-keyword/cid) is a string to define a content ID.
 - Content IDs are used as a unique and preliminary identifier for
 RAP BO operations in which instances are created and especially
 in cases where the key values of RAP BO instances are not yet
@@ -820,11 +820,11 @@ requested for this RAP BO instance. Using the content ID, it is
 guaranteed that the update operation happens for the desired
 instance. For this purpose, derived types for operations like
 update or delete include the component
-[`%cid_ref`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapderived_types_cid_ref.htm)
+[`%cid_ref`](https://help.sap.com/docs/abap-cloud/abap-keyword/cid-ref)
 to refer to the content ID `%cid` as the name implies.
 -   Note: You should always fill `%cid` even if not
 needed. The specified content ID is only valid within one ABAP
-EML request. You can use the optional addition [`AUTO FILL CID`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapmodify_entity_entities_fields.htm) in EML modify operations to create `%cid` automatically. However, if you use this addition, you cannot refer to `%cid` in subsequent operations.
+EML request. You can use the optional addition [`AUTO FILL CID`](https://help.sap.com/docs/abap-cloud/abap-keyword/modify-entity-entities-field-spec) in EML modify operations to create `%cid` automatically. However, if you use this addition, you cannot refer to `%cid` in subsequent operations.
 
  </td>
 
@@ -862,7 +862,7 @@ MODIFY ENTITIES OF zdemo_abap_rap_ro_m
 <tr>
 <td> 
 
-[`%key`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapderived_types_key.htm), [`%tky`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapderived_types_tky.htm)
+[`%key`](https://help.sap.com/docs/abap-cloud/abap-keyword/key), [`%tky`](https://help.sap.com/docs/abap-cloud/abap-keyword/tky)
 
  </td>
 
@@ -927,7 +927,7 @@ MODIFY ENTITY zdemo_abap_rap_ro_m
 <tr>
 <td> 
 
-[`%control`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapderived_types_control.htm)
+[`%control`](https://help.sap.com/docs/abap-cloud/abap-keyword/control)
 
  </td>
 
@@ -983,14 +983,14 @@ MODIFY ENTITY zdemo_abap_rap_ro_m
 <tr>
 <td> 
 
-[%is_draft](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapderived_types_is_draft.htm)
+[%is_draft](https://help.sap.com/docs/abap-cloud/abap-keyword/is-draft)
 
  </td>
 
  <td> 
 
 - Represents the draft indicator
-- Used in [RAP draft handling](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABENRAP_DRAFT_HANDLING_GLOSRY.html) and indicates whether a RAP BO instance is active or not. A RAP BO instance with the draft indicator set to true represents a [RAP draft instance](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_draft_instance_glosry.htm), e.g. created by a create operation. A commit triggers the saving of the instance to a [draft table](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendraft_table_glosry.htm).
+- Used in [RAP draft handling](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-draft-handling) and indicates whether a RAP BO instance is active or not. A RAP BO instance with the draft indicator set to true represents a [RAP draft instance](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-draft-instance), e.g. created by a create operation. A commit triggers the saving of the instance to a [draft table](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-draft-table-abendraft_table_glosry).
 - Is contained in `%tky`
 - Is of type `ABP_BEHV_FLAG`
 
@@ -1023,7 +1023,7 @@ MODIFY ENTITY zdemo_abap_rap_draft_m
 <tr>
 <td> 
 
-[%target](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapderived_types_target.htm)
+[%target](https://help.sap.com/docs/abap-cloud/abap-keyword/target)
 
  </td>
 
@@ -1123,15 +1123,15 @@ Several BDEF derived types contain `%` components, which have a specific type an
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ### Secondary Table Keys of BDEF Derived Types
-- Internal tables typed with BDEF derived types (`TYPE TABLE FOR ...`) are standard tables with an empty [primary table key](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenprimary_table_key_glosry.htm) (`primary_key`). 
-- Predefined [secondary table keys](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensecondary_table_key_glosry.htm) are available for many types. 
-- These secondary table keys are always [sorted keys](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensorted_key_glosry.htm). 
+- Internal tables typed with BDEF derived types (`TYPE TABLE FOR ...`) are standard tables with an empty [primary table key](https://help.sap.com/docs/abap-cloud/abap-keyword/primary-table-key) (`primary_key`). 
+- Predefined [secondary table keys](https://help.sap.com/docs/abap-cloud/abap-keyword/secondary-table-key) are available for many types. 
+- These secondary table keys are always [sorted keys](https://help.sap.com/docs/abap-cloud/abap-keyword/sorted-key). 
 - Currently available secondary table keys (as also visible in one of the images above when using the F2 help in ADT):
   - `entity`: Includes `%key`
   - `cid`: Includes `%cid` or `%cid_ref`, and can - depending on the type - also include `%key` and `%pid`
   - `draft`: Available in draft scenarios; includes `%is_draft`; can also include `%key` and `%pid`
   - `pid`: Available in late numbering scenarios; includes `%pid`; can also include `%tmp` and `%key`
-  - The [alias name](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenalias_glosry.htm) `id` is available for either `entity`, `draft`, or `pid` depending on the context. Check the F2 information in ADT for the respective types.
+  - The [alias name](https://help.sap.com/docs/abap-cloud/abap-keyword/alias-name) `id` is available for either `entity`, `draft`, or `pid` depending on the context. Check the F2 information in ADT for the respective types.
 
 ```abap
 DATA itab_cr TYPE TABLE FOR CREATE zdemo_abap_rap_ro_m.
@@ -1169,7 +1169,7 @@ DATA(line_e) = itab_cr[ KEY entity %key = VALUE #( key_field = 1 ) ].
 
 #### RAP-Specific Additions to the CORRESPONDING Operator
 
-The [`CORRESPONDING`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconstructor_expr_corresponding.htm) operator offers RAP-specific additions for handling type mappings related to BDEF derived types and other types. For more information, see the [ABAP Keyword Documentation topic](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapeml_type_mapping.htm).
+The [`CORRESPONDING`](https://help.sap.com/docs/abap-cloud/abap-keyword/corresponding-component-operator) operator offers RAP-specific additions for handling type mappings related to BDEF derived types and other types. For more information, see the [ABAP Keyword Documentation topic](https://help.sap.com/docs/abap-cloud/abap-keyword/type-mapping-for-rap).
 
 The following additions are available:
 ```abap
@@ -1181,7 +1181,7 @@ The following additions are available:
 ```
 
 For some additions, a mapping needs to be specified in the BDEF. For more information, see the  
-[ABAP Keyword Documentation topic](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbdl_type_mapping.htm).
+[ABAP Keyword Documentation topic](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-typemapping).
 
 The following example uses a BDEF derived type from the ABAP cheat sheets. It shows additions that do not require a type mapping to be specified.  
 
@@ -1249,7 +1249,7 @@ derived_type = CORRESPONDING #( some_other_type CHANGING CONTROL ).
 
 #### ABAP SQL Statements with BDEF Derived Types
 
-The ABAP SQL statements `INSERT`, `UPDATE`, `MODIFY`, and `DELETE` offer the [`MAPPING FROM ENTITY`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapmapping_from_entity.htm) addition to handle BDEF derived types.
+The ABAP SQL statements `INSERT`, `UPDATE`, `MODIFY`, and `DELETE` offer the [`MAPPING FROM ENTITY`](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-sql-statements-with-mapping-from-entity) addition to handle BDEF derived types.
 
 ```abap
 *&---------------------------------------------------------------------*
@@ -1315,7 +1315,7 @@ DELETE zdemo_abap_rapt1 FROM @cr_der_type MAPPING FROM ENTITY.
 ```
 
 > [!NOTE]  
-> More information and ABAP statements: [Type Mapping for RAP](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapeml_type_mapping.htm)
+> More information and ABAP statements: [Type Mapping for RAP](https://help.sap.com/docs/abap-cloud/abap-keyword/type-mapping-for-rap)
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
@@ -1324,26 +1324,26 @@ DELETE zdemo_abap_rapt1 FROM @cr_der_type MAPPING FROM ENTITY.
 The focus is here on selected EML statements. These statements can be
 fairly long and various additions are possible. Find more information on
 the EML statements
-[here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abeneml.htm).
+[here](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-eml-consuming-rap-bos).
 
 ### ABAP EML Syntax for Modifying Operations
 
 The modifying operations covered include the standard operations (using
 the additions
-[`CREATE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapmodify_entity_entities_op.htm),
+[`CREATE`](https://help.sap.com/docs/abap-cloud/abap-keyword/modify-entity-entities-operations),
 [`CREATE
-BY`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapmodify_entity_entities_op.htm),
-[`UPDATE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapmodify_entity_entities_op.htm),
+BY`](https://help.sap.com/docs/abap-cloud/abap-keyword/modify-entity-entities-operations),
+[`UPDATE`](https://help.sap.com/docs/abap-cloud/abap-keyword/modify-entity-entities-operations),
 and
-[`DELETE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapmodify_entity_entities_op.htm))
+[`DELETE`](https://help.sap.com/docs/abap-cloud/abap-keyword/modify-entity-entities-operations))
 and non-standard operations (actions) using the addition
-[`EXECUTE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapmodify_entity_entities_op.htm).
+[`EXECUTE`](https://help.sap.com/docs/abap-cloud/abap-keyword/modify-entity-entities-operations).
 All EML statements for the mentioned operations begin with
-[`MODIFY`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapmodify_entity_entities.htm).
+[`MODIFY`](https://help.sap.com/docs/abap-cloud/abap-keyword/modify-entity-entities).
 The following commented code snippets demonstrate the
-[short](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapmodify_entity_short.htm)
+[short](https://help.sap.com/docs/abap-cloud/abap-keyword/modify-entity-short-form)
 and [long
-form](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapmodify_entities_long.htm)
+form](https://help.sap.com/docs/abap-cloud/abap-keyword/modify-entities-long-form)
 of EML `MODIFY` statements.
 
 > [!NOTE]
@@ -1362,9 +1362,9 @@ of EML `MODIFY` statements.
 #### Create Operation Using the Short Form of ABAP EML MODIFY Statements
 
 - The following code snippet demonstrates the creation of new instances of a RAP BO entity.
-- The [short form](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABAPMODIFY_ENTITY_SHORT.html) of the `MODIFY` statement is used.
+- The [short form](https://help.sap.com/docs/abap-cloud/abap-keyword/modify-entity-short-form) of the `MODIFY` statement is used.
 - Note that the statement has multiple (optional) additions.
-- The statement uses the [`FIELDS ( ... ) WITH`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapmodify_entity_entities_fields.htm) addition. See more details in the documentation and below.
+- The statement uses the [`FIELDS ( ... ) WITH`](https://help.sap.com/docs/abap-cloud/abap-keyword/modify-entity-entities-field-spec) addition. See more details in the documentation and below.
 - The statements, as is also valid for the following sections, can also use data objects declared and created inline.
 
 
@@ -1407,7 +1407,7 @@ MODIFY ENTITY root_ent
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
 > [!NOTE]
-> -   Addition [`FIELDS ( ... ) WITH`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapmodify_entity_entities_fields.htm):
+> -   Addition [`FIELDS ( ... ) WITH`](https://help.sap.com/docs/abap-cloud/abap-keyword/modify-entity-entities-field-spec):
     This field selection option specifies which fields are to be
     respected for the operation. The derived type, i. e. an internal
     table containing the concrete RAP BO instance values, follows
@@ -1428,7 +1428,7 @@ MODIFY ENTITY root_ent
     `reported_resp`, too. Nevertheless, especially in ABP
     implementations and depending on the context (in those methods you self-implement), you should implement
     and fill these parameters according to the [RAP BO
-    contract](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_bo_contract_glosry.htm "Glossary Entry")
+    contract](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-bo-contract)
     to meet the variety of implementation rules.
 >-  `%cid` should (or rather must) be provided even if you are not interested in its and subsequent operations do not require the reference. For an automatic provision of the `%cid` value, you can use the `AUTO FILL CID` addition in create operations.
 
@@ -1437,7 +1437,7 @@ MODIFY ENTITY root_ent
 #### Create Operation Using the Long Form of ABAP EML MODIFY Statements
 
 - The example demonstrates the long form of an ABAP EML `MODIFY` statement.
-- The example statement uses the [`FROM`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapmodify_entity_entities_fields.htm) addition instead of `FIELDS ( ... ) WITH`. See more details in the documentation and below.
+- The example statement uses the [`FROM`](https://help.sap.com/docs/abap-cloud/abap-keyword/modify-entity-entities-field-spec) addition instead of `FIELDS ( ... ) WITH`. See more details in the documentation and below.
 
 
 ``` abap
@@ -1479,15 +1479,15 @@ MODIFY ENTITIES OF root_ent
     should be used.
 >-   The addition `FIELDS ( ... ) WITH` from the previous
     snippet is basically a shortcut for the addition
-    [`FROM`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapmodify_entity_entities_fields.htm)
+    [`FROM`](https://help.sap.com/docs/abap-cloud/abap-keyword/modify-entity-entities-field-spec)
     that is used here. When using `FROM`, the values of the
     `%control` structure must be specified explicitly. 
 >-   The BDEF derived types can also be created
-    [inline](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendata_inline.htm)
+    [inline](https://help.sap.com/docs/abap-cloud/abap-keyword/data-inline-declaration-for-variables)
     as shown in the example using a [constructor
-    expression](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconstructor_expression_glosry.htm "Glossary Entry")
+    expression](https://help.sap.com/docs/abap-cloud/abap-keyword/constructor-expression)
     for the input derived type and with `DATA` or
-    [`FINAL`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenfinal_inline.htm)
+    [`FINAL`](https://help.sap.com/docs/abap-cloud/abap-keyword/final-inline-declaration-for-immutable-variables)
     for the responses.
 >-   The long form allows you to bundle several operations in one
     statement, either different operations on the same entity (for
@@ -1659,7 +1659,7 @@ MODIFY ENTITIES OF zdemo_abap_rap_ro_m
 
 - The code snippet demonstrates the dynamic form `MODIFY ENTITIES OPERATIONS ...`.
 - Using the statement, you can execute multiple modify operations for multiple RAP BOs in a single statement.
-- Find more information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABAPMODIFY_ENTITIES_OPERATIONS_DYN.html).
+- Find more information [here](https://help.sap.com/docs/abap-cloud/abap-keyword/modify-entities-operations-dynamic-form).
 
 ```abap
 DATA: op_tab           TYPE abp_behv_changes_tab,
@@ -1775,8 +1775,8 @@ MODIFY ENTITIES OPERATIONS op_tab
 
 #### Executing Actions
 
-- A RAP action is a [non-standard operation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABENRAP_NSTANDARD_OPERATION_GLOSRY.html) that modifies the state of a RAP BO entity instance.
-- Various flavors of actions are available. Find more information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABENBDL_ACTION.html).
+- A RAP action is a [non-standard operation](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-bo-non-standard-operation) that modifies the state of a RAP BO entity instance.
+- Various flavors of actions are available. Find more information [here](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-action).
 - To execute actions, use the syntax `MODIFY ... EXECUTE ...`.
 
 ``` abap
@@ -1883,7 +1883,7 @@ The following code snippet shows a deep create.
 - First, an instance is created for the root entity. 
 - Then, in the same request, instances are created for the child entity based on the root instance. 
 - In the example below, the assumption is that a composition is specified in the root view entity like `composition [1..*] of root_ent as _child` and `key_field` and `key_field_child` are the keys of the child view entity. 
-- The structured component [`%target`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapderived_types_target.htm) enters the picture here which contains the target's primary key and data fields.
+- The structured component [`%target`](https://help.sap.com/docs/abap-cloud/abap-keyword/target) enters the picture here which contains the target's primary key and data fields.
 
 ``` abap
 MODIFY ENTITIES OF root_ent
@@ -1925,10 +1925,10 @@ MODIFY ENTITIES OF root_ent
 #### Reading Operations
 
 - The following code snippet shows the long form of the EML
-[`READ`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapread_entity_entities_op.htm)
+[`READ`](https://help.sap.com/docs/abap-cloud/abap-keyword/read-entity-entities-operations)
 statement for reading instances from the root entity. 
 - In `READ` statements, the additions `FIELDS ( ... ) WITH` and `FROM` can also be used to specify the fields that you intend to
-read. Here, the addition [`ALL FIELDS WITH`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapread_entity_entities_fields.htm) is available for reading all field values.
+read. Here, the addition [`ALL FIELDS WITH`](https://help.sap.com/docs/abap-cloud/abap-keyword/read-entity-entities-field-spec) is available for reading all field values.
 - There are also short and dynamic forms of the statement.
 
 ``` abap
@@ -1947,7 +1947,7 @@ READ ENTITIES OF root_ent
 #### Read-by-Association Operations
 
 - Read-by-association operations include the optional addition
-[`LINK`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapread_entity_entities_op&sap-language=EN&sap-client=000&version=X&anchor=!ABAP_ONE_ADD@1@&tree=X) with which you can retrieve the keys of the source and target (i. e. the
+[`LINK`](https://help.sap.com/docs/abap-cloud/abap-keyword/read-entity-entities-operations) with which you can retrieve the keys of the source and target (i. e. the
 associated entity). 
 - The by-association operations work reciprocally, i. e. you can, for example, read a child instance via the parent and a
 parent instance via the child, too.
@@ -1976,7 +1976,7 @@ READ ENTITIES OF root_ent
 #### Dynamic ABAP EML READ Statements
 
 In addition to the short and long forms described above, various ABAP EML statements also have dynamic forms. 
-Taking EML read operations as an example, the following code snippet shows a dynamic EML [`READ ENTITIES`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapread_entities_operations.htm) statement. The relevant syntax element is the `OPERATIONS` addition.
+Taking EML read operations as an example, the following code snippet shows a dynamic EML [`READ ENTITIES`](https://help.sap.com/docs/abap-cloud/abap-keyword/read-entities-operations-dynamic-form) statement. The relevant syntax element is the `OPERATIONS` addition.
 The dynamic form allows the collection of read operations for multiple RAP BOs in one EML statement.
 For more information, see the ABAP keyword documentation and the comments in the snippet.
 
@@ -2128,19 +2128,19 @@ READ ENTITIES IN LOCAL MODE OPERATIONS op_tab FAILED DATA(f).
 ### COMMIT ENTITIES: Persisting to the Database
 
 -   A [`COMMIT
-    ENTITIES`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapcommit_entities.htm)
+    ENTITIES`](https://help.sap.com/docs/abap-cloud/abap-keyword/commit-entities)
     statement triggers the RAP save sequence. Without such a statement,
     the modified RAP BO instances that are available in the
     transactional buffer are not persisted to the database. In case of a natively supported RAP
     scenario (for example, when using OData), the `COMMIT
     ENTITIES` request is executed automatically.
 -   `COMMIT ENTITIES` implicitly includes [`COMMIT
-    WORK`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapcommit.htm).
+    WORK`](https://help.sap.com/docs/abap-cloud/abap-keyword/commit-work).
 -   Note: `COMMIT ENTITIES` statements cannot be used
     in behavior implementations. 
 -   There are multiple variants available for the statement as described
     in the ABAP Keyword Documentation
-    [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapcommit_entities.htm). They deal with different variants of how to handle RAP responses, among others. 
+    [here](https://help.sap.com/docs/abap-cloud/abap-keyword/commit-entities). They deal with different variants of how to handle RAP responses, among others. 
 -   `COMMIT ENTITIES` statements set the system field
     `sy-subrc`. When using `COMMIT ENTITIES`, it is not
     guaranteed that `COMMIT WORK` is carried out successfully.
@@ -2278,7 +2278,7 @@ Specifying a commit scope
 
  <td> 
 
-- Especially used in late numbering scenarios to get the final keys from the preliminary keys (using the [`CONVERT KEY`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapconvert_key.htm) addition)
+- Especially used in late numbering scenarios to get the final keys from the preliminary keys (using the [`CONVERT KEY`](https://help.sap.com/docs/abap-cloud/abap-keyword/convert-key) addition)
 - The commit scope is opened by `COMMIT ENTITIES BEGIN ...` (`...` stands for further syntax options such as the specification of `RESPONSES ...` or `RESPONSE OF ...` ), and closed by `COMMIT ENTITIES END.`.
 
 
@@ -2365,7 +2365,7 @@ ENDDO.
 
 ### ROLLBACK ENTITIES
 
-- The `ROLLBACK ENTITIES` statement rolls back all changes of the current [RAP transaction](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_luw_glosry.htm).
+- The `ROLLBACK ENTITIES` statement rolls back all changes of the current [RAP transaction](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-transaction).
 - This rollback includes the clearing of the transactional buffer (by calling the `cleanup` method) and locks.
 - Note that in unmanaged scenarios, you must implement the behavior yourself. For example, the `cleanup` method must include an appropriate implementation to clear the transactional buffer.
 - Same as for `COMMIT ENTITIES`, in natively supported RAP scenarios, such as an SAP Fiori application using OData, the `ROLLBACK ENTITIES` call is implicitly and automatically performed by the RAP runtime engine.
@@ -2412,8 +2412,8 @@ ENDDO.
 - RAP BO permissions cover aspects such as global and instance authorization, or global, instance, and static feature control.
 - Using ABAP EML `GET PERMISSIONS` statements, you can retrieve information about these permissions.
 - Like other ABAP EML statements, `GET PERMISSIONS` offers multiple (optional) additions and syntax variants. 
-- Find more information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABAPGET_PERMISSIONS.html) and in the subtopics.
-- The example code snippet uses the short form of `GET PERMISSIONS`, specifying an [only clause](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABAPGET_PERMISSIONS_ONLY_CLAUSE.html). The `ONLY GLOBAL` addition ensures the result includes only global authorization, global and static feature control.
+- Find more information [here](https://help.sap.com/docs/abap-cloud/abap-keyword/get-permissions) and in the subtopics.
+- The example code snippet uses the short form of `GET PERMISSIONS`, specifying an [only clause](https://help.sap.com/docs/abap-cloud/abap-keyword/get-permissions-only-clause). The `ONLY GLOBAL` addition ensures the result includes only global authorization, global and static feature control.
 - Unlike many other ABAP EML statements, the `GET PERMISSIONS` example statement works with a data object having a structured BDEF derived type (after `REQUEST`), not a tabular BDEF derived type.
 
 ```abap
@@ -2441,11 +2441,11 @@ GET PERMISSIONS ONLY GLOBAL ENTITY zdemo_abap_rap_ro_m
 ### SET LOCKS: Exclusively Locking Instances
 
 - To modify RAP BO instances, they must be locked first. The RAP framework automatically locks these instances for subsequent modifications by the user.
-- If the RAP BO consumer needs an [exclusive lock](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenexclusive_lock_glosry.htm) to prevent other users from modifying the same instance simultaneously, you can use the ABAP EML `SET LOCKS` statements to establish enqueue locks for RAP BO instances. This will prevent concurrent modifications.
-- The lock remains active until the [RAP transaction](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_luw_glosry.htm) concludes.
+- If the RAP BO consumer needs an [exclusive lock](https://help.sap.com/docs/abap-cloud/abap-keyword/exclusive-lock) to prevent other users from modifying the same instance simultaneously, you can use the ABAP EML `SET LOCKS` statements to establish enqueue locks for RAP BO instances. This will prevent concurrent modifications.
+- The lock remains active until the [RAP transaction](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-transaction) concludes.
 - Three statement forms are available:
   - Short form (`SET LOCKS ENTITY ...`): Locks instances of a single RAP BO entity.
-  - Long form (`SET LOCKS OF ...`): Locks instances of multiple RAP BO entities in a [CDS composition tree](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_composition_tree_glosry.htm).
+  - Long form (`SET LOCKS OF ...`): Locks instances of multiple RAP BO entities in a [CDS composition tree](https://help.sap.com/docs/abap-cloud/abap-keyword/cds-composition-tree).
   - Dynamic form (`SET LOCKS locks_tab ...`): Collects instances of multiple RAP BO entities.
 - The short and long forms require the BDEF derived type `TYPE TABLE FOR KEY OF`, which is an internal table containing instance key values. The dynamic form uses an internal table of type `ABP_BEHV_LOCKS_TAB`.
 
@@ -2627,15 +2627,15 @@ ENDCLASS.
 
 ### Raising RAP Business Events
 
-- [RAP business events](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_entity_event_glosry.htm) can be raised in ABAP behavior pools with [`RAISE ENTITY EVENT`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapraise_entity_event.htm) statements, typically in the save phase. 
+- [RAP business events](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-business-event) can be raised in ABAP behavior pools with [`RAISE ENTITY EVENT`](https://help.sap.com/docs/abap-cloud/abap-keyword/raise-entity-event) statements, typically in the save phase. 
 - The focus of the snippets is on the local consumption of RAP business events. Prerequisites:
-  - `event` specifications are available in the BDEF (e.g. `... event some_evt; ...`). For more details, refer to the [BDL documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbdl_event.htm).
-  - A [RAP event handler class](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_event_handler_class_glosry.htm) is available that is used to implement [RAP event handler methods](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_event_handler_meth_glosry.htm). 
+  - `event` specifications are available in the BDEF (e.g. `... event some_evt; ...`). For more details, refer to the [BDL documentation](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-event).
+  - A [RAP event handler class](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-event-handler-class) is available that is used to implement [RAP event handler methods](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-event-handler-method). 
     - Note that these methods are called asynchronously.
     - Similar to RAP handler and saver methods, RAP event handler methods are implemented in the CCIMP include (*Local Types* tab in ADT) of the RAP event handler class.
     - To locally consume RAP business events, a local class that inherits from `CL_ABAP_BEHAVIOR_EVENT_HANDLER` can be implemented in the CCIMP include of a RAP event handler class.
 - More information: 
-  - [ABAP for RAP Business Events](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_events.htm) in the ABAP Keyword Documentation
+  - [ABAP for RAP Business Events](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-for-rap-business-events) in the ABAP Keyword Documentation
   - [Business Events](https://help.sap.com/docs/abap-cloud/abap-rap/business-events) in the SAP Help Portal
 
 ```abap
@@ -2702,11 +2702,11 @@ ENDCLASS.
 
 ### Additions to ABAP EML Statements in ABAP Behavior Pools
 
-There are a [special additions when using EML in behavior pools](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abeneml_in_abp.htm).
+There are a [special additions when using EML in behavior pools](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-eml-providing-rap-bos).
 
 #### IN LOCAL MODE Addition
 
--   Using the [`IN LOCAL MODE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapin_local_mode.htm) addition to ABAP EML `READ` and `MODIFY` statements can be used to suppress feature controls, authorization checks, and prechecks.
+-   Using the [`IN LOCAL MODE`](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-eml-in-local-mode) addition to ABAP EML `READ` and `MODIFY` statements can be used to suppress feature controls, authorization checks, and prechecks.
 -   Consider the following use case: There is a field to display the
     booking status of a trip on a UI. In the BDEF, this field is
     specified as read-only. Hence, it cannot be modified by a user on
@@ -2757,47 +2757,47 @@ MODIFY AUGMENTING ENTITY some_bdef
 
 The following bullet points outline important aspects regarding
  keys and identifying [RAP BO
-instances](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_bo_instance_glosry.htm "Glossary Entry") in ABAP EML statements.
+instances](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-bo-instance) in ABAP EML statements.
 
 **Why is it important?**
 
 -   The [primary
-    key](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenprimary_key_glosry.htm "Glossary Entry")
-    of a [RAP BO entity instance](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_bo_entity_inst_glosry.htm "Glossary Entry")
-    is composed of one or more [key fields](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenkey_field_glosry.htm "Glossary Entry").
+    key](https://help.sap.com/docs/abap-cloud/abap-keyword/primary-key)
+    of a [RAP BO entity instance](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-bo-entity-instance)
+    is composed of one or more [key fields](https://help.sap.com/docs/abap-cloud/abap-keyword/key-field).
 -   These key fields stand for the fields that are specified with
-    `key` in the underlying [CDS view entity](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_v2_view_glosry.htm "Glossary Entry")
+    `key` in the underlying [CDS view entity](https://help.sap.com/docs/abap-cloud/abap-keyword/cds-view-entity)
     of the RAP BO.
 -   The primary key uniquely identifies each RAP BO entity instance.
--   As a general rule, after the creation of an instance including the primary key during a [RAP create operation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_create_operation_glosry.htm "Glossary Entry"), the primary key can no longer be changed. 
-    -   Note that there are different numbering concepts, such as [early](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_early_numbering_glosry.htm) and [late numbering](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenlate_numbering_glosry.htm "Glossary Entry"). In the latter concept, newly created entity instances are given their final key only shortly before saving in the database. Until then, the business logic uses a temporary key that has to be replaced.
+-   As a general rule, after the creation of an instance including the primary key during a [RAP create operation](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-create-operation), the primary key can no longer be changed. 
+    -   Note that there are different numbering concepts, such as [early](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-early-numbering-abenrap_early_numbering_glosry) and [late numbering](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-late-numbering-abenrap_late_numbering_glosry). In the latter concept, newly created entity instances are given their final key only shortly before saving in the database. Until then, the business logic uses a temporary key that has to be replaced.
 -   If a data set with a particular primary key already exists in the
     persistent database table, the saving of a RAP BO instance is rejected because of a duplicate primary key.
 
 **How can a RAP BO instance be uniquely identified?**
 
--   It can be done by using a [RAP instance identifier](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_inst_identifier_glosry.htm "Glossary Entry")
-    or [RAP content identifier](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_cont_identifier_glosry.htm "Glossary Entry")
+-   It can be done by using a [RAP instance identifier](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-instance-identifier)
+    or [RAP content identifier](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-content-identifier)
     or both of them.
 -   RAP instance identifier:
-    -   It consists of the primary key fields and all relevant [BDEF derived type](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_derived_type_glosry.htm "Glossary Entry")
+    -   It consists of the primary key fields and all relevant [BDEF derived type](https://help.sap.com/docs/abap-cloud/abap-keyword/bdef-derived-type)
         components.
     -   To ease the reference to all of these components, special
-        [component groups](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencomponent_group_glosry.htm "Glossary Entry")
+        [component groups](https://help.sap.com/docs/abap-cloud/abap-keyword/component-group)
         are available to summarize the components and make them
         addressable via one single name.
-    -   [`%key`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapderived_types_key.htm):
+    -   [`%key`](https://help.sap.com/docs/abap-cloud/abap-keyword/key):
         Contains the primary key fields of a RAP BO instance
-    -   [`%tky`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapderived_types_tky.htm):
+    -   [`%tky`](https://help.sap.com/docs/abap-cloud/abap-keyword/tky):
         Specifies the transactional key. Comprises `%key` (and,
         thus, the primary key fields of a RAP BO instance) and more
         components that are relevant to uniquely identify a RAP BO
         instance. Among them,
-        [`%pid`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapderived_types_pid.htm)
+        [`%pid`](https://help.sap.com/docs/abap-cloud/abap-keyword/pid)
         (relevant for late numbering scenarios) and the draft indicator
-        [`%is_draft`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapderived_types_is_draft.htm)
+        [`%is_draft`](https://help.sap.com/docs/abap-cloud/abap-keyword/is-draft)
         (relevant for
-        [draft](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbdl_with_draft.htm)
+        [draft](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-with-draft)
         scenarios). In non-late numbering or non-draft scenarios, these
         extra components are just blank. However, it is recommended that
         you use `%tky` in all scenarios since it simplifies a
@@ -2806,32 +2806,32 @@ instances](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?
         the inclusion of `%is_draft` can be avoided.
 -   RAP content identifier:
     -   Reflected in the component
-        [`%cid`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapderived_types_cid.htm)
+        [`%cid`](https://help.sap.com/docs/abap-cloud/abap-keyword/cid)
         which is a string of type
         `ABP_BEHV_CID` to define a content ID.
     -   Used as a unique and preliminary identifier for RAP BO instances
         in RAP create operations, especially where no primary key exists
         for the particular instance.
-    -   For newly created instances, the ID can then be used for performing further modifications, referencing to those instances using [`%cid_ref`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapderived_types_cid_ref.htm) (which has the same value as %cid), for example, in RAP operations using [`CREATE BY`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapmodify_entity_entities_op.htm), [`UPDATE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapmodify_entity_entities_op.htm)
+    -   For newly created instances, the ID can then be used for performing further modifications, referencing to those instances using [`%cid_ref`](https://help.sap.com/docs/abap-cloud/abap-keyword/cid-ref) (which has the same value as %cid), for example, in RAP operations using [`CREATE BY`](https://help.sap.com/docs/abap-cloud/abap-keyword/modify-entity-entities-operations), [`UPDATE`](https://help.sap.com/docs/abap-cloud/abap-keyword/modify-entity-entities-operations)
         and
-        [`DELETE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapmodify_entity_entities_op.htm),
+        [`DELETE`](https://help.sap.com/docs/abap-cloud/abap-keyword/modify-entity-entities-operations),
         as well as
-        [actions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbdl_action.htm)
+        [actions](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-action)
         with
-        [`EXECUTE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapmodify_entity_entities_op.htm)).
+        [`EXECUTE`](https://help.sap.com/docs/abap-cloud/abap-keyword/modify-entity-entities-operations)).
     -   In contrast to the primary key and the preliminary ID
         `%pid` for late numbering scenarios, `%cid` (and
         `%cid_ref`) are only available on a short-term basis
-        for the current ABAP EML request within the [RAP interaction phase](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_int_phase_glosry.htm "Glossary Entry") in one RAP transaction.
+        for the current ABAP EML request within the [RAP interaction phase](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-interaction-phase) in one RAP transaction.
     -   **Note:**  Specify `%cid` even if there are no further operations referring to it.
 -   Special case: Late numbering
     -   In late numbering scenarios newly created
         entity instances are given their final key only shortly before
         saving in the database, i. e. you deal with preliminary keys in
-        the RAP interaction phase and the early phase of the [RAP save sequence](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_save_seq_glosry.htm "Glossary Entry").
+        the RAP interaction phase and the early phase of the [RAP save sequence](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-save-sequence).
     -   In this case, you can use `%key` to hold the preliminary
         keys or use a preliminary ID in the dedicated component
-        [`%pid`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapderived_types_pid.htm)
+        [`%pid`](https://help.sap.com/docs/abap-cloud/abap-keyword/pid)
         which is of type `ABP_BEHV_PID` and
         only available in late numbering scenarios.
     -   Similar to above, to uniquely identify RAP BO instances in late
@@ -2840,7 +2840,7 @@ instances](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?
         `%tky` is handy because it includes both components. You
         must ensure that `%tky` in total uniquely identifies the
         instances.
-    -   **Note:** A further component group to refer to the keys is available: [`%pky`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapderived_types_pky.htm). `%pky` contains `%pid` and `%key` in late numbering scenarios. In non-late numbering scenarios, it just contains `%key`. `%pky` itself is contained in `%tky`. There are contexts, for example, particular actions, where `%tky` is not available but `%pky` is. This way, there is still the option to summarize `%pid` and `%key` in one component group in the absence of `%tky`.
+    -   **Note:** A further component group to refer to the keys is available: [`%pky`](https://help.sap.com/docs/abap-cloud/abap-keyword/pky). `%pky` contains `%pid` and `%key` in late numbering scenarios. In non-late numbering scenarios, it just contains `%key`. `%pky` itself is contained in `%tky`. There are contexts, for example, particular actions, where `%tky` is not available but `%pky` is. This way, there is still the option to summarize `%pid` and `%key` in one component group in the absence of `%tky`.
 
 **General rule**: A RAP BO instance must - where available - always be uniquely
 identifiable by its transactional key (`%tky`) for internal
@@ -2875,27 +2875,27 @@ contains all relevant components for the chosen scenario.
     in the RAP save sequence) and by whom (RAP BO consumer, behavior
     pool, or framework) the primary key values are set.
 -   When:
-    -   [Early numbering](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_early_numbering_glosry.htm "Glossary Entry"):
+    -   [Early numbering](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-early-numbering-abenrap_early_numbering_glosry):
         The final key values are assigned during a RAP create operation
         in the interaction phase.
-    -   [Late numbering](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_late_numbering_glosry.htm "Glossary Entry"):
+    -   [Late numbering](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-late-numbering-abenrap_late_numbering_glosry):
         The final key values are assigned during the RAP save sequence
         (and here only in the RAP saver method
-        [`adjust_numbers`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensaver_adjust_numbers.htm)).
+        [`adjust_numbers`](https://help.sap.com/docs/abap-cloud/abap-keyword/adjust-numbers-rap-saver-method)).
 -   By whom
-    -   [External numbering](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_ext_numbering_glosry.htm "Glossary Entry"):
+    -   [External numbering](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-external-numbering):
         Key values are provided by the RAP BO consumer. For example, in
         a create operation, the key values are specified by the RAP BO
         consumer like other non-key field values. Basically, this is the
         concept with which the snippets above are tailored.
-    -   [Internal numbering](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_int_numbering_glosry.htm "Glossary Entry"):
+    -   [Internal numbering](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-internal-numbering):
         Key values are provided by the RAP BO provider. For example, in
         a create operation, the key values are not specified in an EML
         create request by the RAP BO consumer but rather by the RAP BO
         provider. In case of a managed RAP BO, the key is automatically
         created by the framework which only works if the key is of a
         certain type (16-character byte-like
-        [UUID](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenuuid_glosry.htm "Glossary Entry")).
+        [UUID](https://help.sap.com/docs/abap-cloud/abap-keyword/uuid)).
         In case of an unmanaged RAP BO, the key values are provided in a
         dedicated handler method which must be self-implemented. Note
         that late numbering is internal by default since no further RAP
@@ -2905,14 +2905,14 @@ contains all relevant components for the chosen scenario.
 **Draft**
 
 -   The draft concept in RAP allows the content of the transactional
-    buffer to be stored in intermediate storages ([draft tables](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendraft_table_glosry.htm "Glossary Entry"))
+    buffer to be stored in intermediate storages ([draft tables](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-draft-table-abendraft_table_glosry))
     in order to allow transactions to expand over different ABAP
     sessions.
 -   Like the concepts mentioned above, a RAP BO can be draft-enabled in
     the BDEF. If enabled, the application allows data modifications and the temporary storage of modifications but does not yet persist them to the database. The users of the application can continue modifying this data later and they might even use a different device from the one where they modified the data previously.
 -   The draft indicator `%is_draft` is available for RAP BO instance identification. It is used to indicate if a RAP BO
-    instance is a [draft instance](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_draft_instance_glosry.htm "Glossary Entry")
-    or an [active instance](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_active_instance_glosry.htm "Glossary Entry").
+    instance is a [draft instance](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-draft-instance)
+    or an [active instance](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-active-instance).
     Conveniently, the component group `%tky` contains
     `%is_draft`. `%is_draft` can then be addressed via
     `%tky`.
@@ -2921,22 +2921,22 @@ contains all relevant components for the chosen scenario.
 
 #### Late Numbering and Key Identification in the Late Phase of the RAP Save Sequence
 
-- Context: RAP saver method [`adjust_numbers`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensaver_adjust_numbers.htm) in which the final key values are assigned; the preliminary keys can
+- Context: RAP saver method [`adjust_numbers`](https://help.sap.com/docs/abap-cloud/abap-keyword/adjust-numbers-rap-saver-method) in which the final key values are assigned; the preliminary keys can
     be included in `%key` or `%pid` or both of them.
 - `%pid` and the preliminary key values in `%key` are automatically assigned to the following components when
     reaching the `adjust_numbers` method:
-    - [`%tmp`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapderived_types_tmp.htm): A component that is assigned the preliminary key values
+    - [`%tmp`](https://help.sap.com/docs/abap-cloud/abap-keyword/tmp): A component that is assigned the preliminary key values
         contained in `%key`. In doing so, `%tmp` takes
         over the role that `%key` has had in the RAP interaction
         phase to hold the preliminary key values.
     - `%pid` remains as is. The component group
-        [`%pre`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapderived_types_pre.htm)
+        [`%pre`](https://help.sap.com/docs/abap-cloud/abap-keyword/pre)
         contains `%pid` and `%tmp` and, thus, all
         preliminary identifiers.
 - In the `adjust_numbers` method, the preliminary keys are
     transformed into the final keys, i. e. the preliminary keys are
     mapped to `%key` (which holds the final keys in this
-    context) in the `mapped` [response parameter](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_response_param_glosry.htm "Glossary Entry").
+    context) in the `mapped` [response parameter](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-response-parameter).
 - Depending on your use case to use either `%pid` or (the
     preliminary key values in) `%key` (which is `%tmp`
     here in this method) during the interaction phase or both of them,
@@ -2948,7 +2948,7 @@ contains all relevant components for the chosen scenario.
 
 ### Ensuring Data Consistency in a RAP Transaction
 
-The [LUW](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenluw_glosry.htm) concept, which deals with the transfer of data from one consistent state to another, applies to applications using RAP. RAP transactions are integrated with the [SAP LUW](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensap_luw_glosry.htm), which is a prerequisite for transactional consistency. RAP provides a standardized approach and rules ([RAP BO contract](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_bo_contract_glosry.htm)) for the [RAP business object (BO)](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_bo_glosry.htm) runtime to ensure that the RAP transaction is correctly implemented, data inconsistencies are avoided, and the SAP LUW is successfully completed.  
+The [LUW](https://help.sap.com/docs/abap-cloud/abap-keyword/luw) concept, which deals with the transfer of data from one consistent state to another, applies to applications using RAP. RAP transactions are integrated with the [SAP LUW](https://help.sap.com/docs/abap-cloud/abap-keyword/sap-luw-abensap_luw_glosry), which is a prerequisite for transactional consistency. RAP provides a standardized approach and rules ([RAP BO contract](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-bo-contract)) for the [RAP business object (BO)](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-business-object) runtime to ensure that the RAP transaction is correctly implemented, data inconsistencies are avoided, and the SAP LUW is successfully completed.  
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
@@ -2958,30 +2958,30 @@ A RAP transaction is divided into two phases during the runtime of a RAP BO, whi
 
 ![Phases of a RAP Transaction](files/phases_of_rap_luw.png)
 
-[RAP interaction phase](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_int_phase_glosry.htm): 
-- [RAP handler methods](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabp_handler_method_glosry.htm) are called in a [RAP handler class](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabp_handler_class_glosry.htm) that inherits from `CL_ABAP_BEHAVIOR_HANDLER`. 
-- New data, i.e. RAP BO instances, are created in the [RAP transactional buffer](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentransactional_buffer_glosry.htm), or persisted data is retrieved and inserted into the transactional buffer for further processing. 
+[RAP interaction phase](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-interaction-phase): 
+- [RAP handler methods](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-handler-method) are called in a [RAP handler class](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-handler-class) that inherits from `CL_ABAP_BEHAVIOR_HANDLER`. 
+- New data, i.e. RAP BO instances, are created in the [RAP transactional buffer](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-transactional-buffer), or persisted data is retrieved and inserted into the transactional buffer for further processing. 
 - The state of the data may become inconsistent in the transactional buffer during this phase. However, the data remains consistent in the database because changes are made only in the transactional buffer. 
 
-[RAP save sequence](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_save_seq_glosry.htm): 
+[RAP save sequence](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-save-sequence): 
 - The RAP save sequence is triggered by a `COMMIT ENTITIES` statement. In natively supported RAP scenarios, such as an SAP Fiori application using OData, the `COMMIT ENTITIES` call is implicitly and automatically performed by the RAP runtime engine. 
 - RAP saver methods are called in the RAP saver class, which inherits from the base class `CL_ABAP_BEHAVIOR_SAVER`, in a specific order. 
-- Is divided into the [RAP early save phase](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenearly_rap_save_phase_glosry.htm) (ensures that the RAP BO instances in the transactional buffer - all RAP BOs in the current RAP transaction are involved - are in a consistent state so that they can be saved to the database) and the [RAP late save phase](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenlate_rap_save_phase_glosry.htm) (to finally save data from the transactional buffer to the database). 
+- Is divided into the [RAP early save phase](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-early-save-phase) (ensures that the RAP BO instances in the transactional buffer - all RAP BOs in the current RAP transaction are involved - are in a consistent state so that they can be saved to the database) and the [RAP late save phase](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-late-save-phase) (to finally save data from the transactional buffer to the database). 
 
 (Optional:) Saver methods called in the RAP early save phase: 
-1. [`finalize`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensaver_finalize.htm): For final calculations and data changes before saving. In managed scenarios, determinations specified with `ON SAVE` are called when reaching this method. 
+1. [`finalize`](https://help.sap.com/docs/abap-cloud/abap-keyword/finalize-rap-saver-method): For final calculations and data changes before saving. In managed scenarios, determinations specified with `ON SAVE` are called when reaching this method. 
 
-2. [`check_before_save`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensaver_check_before_save.htm): For data consistency checks in the transactional buffer. In managed scenarios, validations specified with `ON SAVE` are called when this method is reached. 
+2. [`check_before_save`](https://help.sap.com/docs/abap-cloud/abap-keyword/check-before-save-rap-saver-method): For data consistency checks in the transactional buffer. In managed scenarios, validations specified with `ON SAVE` are called when this method is reached. 
  
-3. [`cleanup_finalize`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapsaver_class_cleanup_finalize.htm): If there are failures in at least one of the previous saver methods, further processing with the RAP late save phase is rejected and the transaction returns to the interaction phase. Before that, this saver method is called, allowing changes made in the finalize method to be rolled back. 
+3. [`cleanup_finalize`](https://help.sap.com/docs/abap-cloud/abap-keyword/cleanup-finalize-rap-saver-method): If there are failures in at least one of the previous saver methods, further processing with the RAP late save phase is rejected and the transaction returns to the interaction phase. Before that, this saver method is called, allowing changes made in the finalize method to be rolled back. 
 
 If there are errors in the early save phase, `sy-subrc` returns the value 4 after `COMMIT ENTITIES` statements. If the data in the transactional buffer is consistent after the early save phase, the late save phase is processed, which also means that a point of no return has been reached. Unlike the early save phase, you cannot return to the interaction phase when you reach the late save phase. Either the RAP transaction ends with a successful commit, or the changes are rolled back and a runtime error occurs. 
 
 Saver methods called in the RAP late save phase: 
-1. [`adjust_numbers`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensaver_adjust_numbers.htm): Provides RAP BO instances with their final numbers. This method is available only in late numbering scenarios. 
-2. [`save`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensaver_method_save.htm) (or [`save_modified`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abaprap_saver_meth_save_modified.htm) in managed scenarios with an unmanaged or additional save): Used to save data from the transactional buffer to the database. If there are no issues, the final database commit is triggered and an implicit `COMMIT WORK` is executed. 
+1. [`adjust_numbers`](https://help.sap.com/docs/abap-cloud/abap-keyword/adjust-numbers-rap-saver-method): Provides RAP BO instances with their final numbers. This method is available only in late numbering scenarios. 
+2. [`save`](https://help.sap.com/docs/abap-cloud/abap-keyword/save-rap-saver-method) (or [`save_modified`](https://help.sap.com/docs/abap-cloud/abap-keyword/save-modified-rap-saver-method) in managed scenarios with an unmanaged or additional save): Used to save data from the transactional buffer to the database. If there are no issues, the final database commit is triggered and an implicit `COMMIT WORK` is executed. 
    
-[`cleanup`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensaver_method_cleanup.htm) method: After a successful save, the [`cleanup`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensaver_method_cleanup.htm) method clears the transactional buffer. It completes the save sequence. 
+[`cleanup`](https://help.sap.com/docs/abap-cloud/abap-keyword/cleanup-rap-saver-method) method: After a successful save, the [`cleanup`](https://help.sap.com/docs/abap-cloud/abap-keyword/cleanup-rap-saver-method) method clears the transactional buffer. It completes the save sequence. 
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
@@ -3014,15 +3014,15 @@ The following restrictions apply to operations and/or statements in the individu
 
 |Operations/Statements|Interaction phase|Early save phase|Late save phase|Notes|
 |---|---|---|---|---| 
-|[Database commits](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendatabase_commit_glosry.htm) using [secondary connections](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensecondary_db_connection_glosry.htm) <br><br>(unrestricted ABAP language scope)| X| X| X |Secondary connections are allowed for infrastructure purposes, for example. They can be used to store data that is not part of the main transaction, such as application logs, traces, or number ranges. |
-|Database commits using the [standard connection](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenstandard_db_connection_glosry.htm) <br><br>(unrestricted ABAP language scope)| X| X| -| Database commits can be made in phases other than the late phase, for example, by calling external services or using a `WAIT` statement.| 
+|[Database commits](https://help.sap.com/docs/abap-cloud/abap-keyword/database-commit-abendatabase_commit_glosry) using [secondary connections](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abensecondary_db_connection_glosry.htm) <br><br>(unrestricted ABAP language scope)| X| X| X |Secondary connections are allowed for infrastructure purposes, for example. They can be used to store data that is not part of the main transaction, such as application logs, traces, or number ranges. |
+|Database commits using the [standard connection](https://help.sap.com/docs/abap-cloud/abap-keyword/standard-connection) <br><br>(unrestricted ABAP language scope)| X| X| -| Database commits can be made in phases other than the late phase, for example, by calling external services or using a `WAIT` statement.| 
 |[sRFC](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abensrfc_glosry.htm) (`CALL FUNCTION ... DESTINATION`), [aRFC](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenarfc_glosry.htm) (`CALL FUNCTION ... STARTING NEW TASK`) <br><br>(unrestricted ABAP language scope)| X |X |-| Allowed in phases other than the late save phase, e.g. for the purpose of parallelization within the application. It is up to the application to ensure consistency, e.g. to ensure read-only access, to handle a potential two-phase commit, or to provide a proper error handling. |
 |Database modifications |- |-| X| Only allowed in the late save phase because the data being processed is always potentially inconsistent. Database changes in other phases would result in multiple database transactions instead of one transaction, which would disrupt the SAP LUW. |
 |[Update function module](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenupdate_function_module_glosry.htm) (`CALL FUNCTION ... IN UPDATE TASK`) <br><br>(unrestricted ABAP language scope)|-| -| X |Can be used to ensure that there is only one database transaction. In addition, registering function modules for update tasks at stages other than the late save phase would interfere with RAP draft scenarios, for example, where data is stored in draft tables. There is no way to unregister function modules once they have been registered. |
 |[bgRFC](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenbgrfc_glosry.htm) (`CALL FUNCTION ... IN BACKGROUND UNIT`) <br><br>(unrestricted ABAP language scope)| -| -| X| |  
 |[tRFC](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abentrfc_2_glosry.htm), [qRFC](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenqrfc_glosry.htm) (`CALL FUNCTION ... IN BACKGROUND TASK`) <br><br>(unrestricted ABAP language scope)| -| -| - |Obsolete technologies. |
 |`PERFORM ON COMMIT`, `PERFORM ON ROLLBACK` <br><br>(unrestricted ABAP language scope)|(X) |(X) |X |Basically possible in all phases, but should be reserved for the late save. Note: The use of these statements indicates improper integration with RAP. It is especially important to check draft scenarios when calling legacy code and using these statements. Instead, ABAP EML or procedure calls that do not include a `COMMIT WORK` should be used. |
-|Transaction control `COMMIT WORK`, `ROLLBACK WORK` |X/-| X/-| X/- |When a transactional phase has been explicitly set by methods of the `CL_ABAP_TX` class (find more information [here](https://help.sap.com/docs/abap-cloud/abap-concepts/controlled-sap-luw)), the transaction owner is allowed to execute a commit or rollback statement. In the contexts of RAP (that is, where RAP is the transaction owner, for example, in handler and saver methods), local consumption of [RAP business events](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_entity_event_glosry.htm), [bgPF](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbgpf_glosry.htm), and [classified APIs](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenclassified_api_glosry.htm), commit or rollback statements are not allowed. |
+|Transaction control `COMMIT WORK`, `ROLLBACK WORK` |X/-| X/-| X/- |When a transactional phase has been explicitly set by methods of the `CL_ABAP_TX` class (find more information [here](https://help.sap.com/docs/abap-cloud/abap-concepts/controlled-sap-luw)), the transaction owner is allowed to execute a commit or rollback statement. In the contexts of RAP (that is, where RAP is the transaction owner, for example, in handler and saver methods), local consumption of [RAP business events](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-business-event), [bgPF](https://help.sap.com/docs/abap-cloud/abap-keyword/bgpf), and [classified APIs](https://help.sap.com/docs/abap-cloud/abap-keyword/classified-api), commit or rollback statements are not allowed. |
 |[Dynpro](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abendynpro_glosry.htm) processing (e.g.  `SET SCREEN`, `CALL SCREEN`, `LEAVE SCREEN`, `CALL DIALOG`, `SUPPRESS DIALOG`, `MESSAGE` without `INTO`, `WRITE`, `STOP`) <br><br>(unrestricted ABAP language scope)|- |- |- |Not allowed in ABAP behavior implementations. Results in a runtime error. |
 |Transaction processing (`CALL TRANSACTION`, `LEAVE TRANSACTION`) <br><br>(unrestricted ABAP language scope)| -| -| - |Not allowed to prevent (unwanted) integration of other LUWs. |
 |Raising an exception (`RAISE EXCEPTION`) |-| -| - |It is not allowed to leave a RAP transaction this way. |
@@ -3033,7 +3033,7 @@ The following restrictions apply to operations and/or statements in the individu
 
 ### RAP Additional and Unmanaged Save
 
-- As covered in the RAP terms section, *managed* is an implementation type that is specified in the BDEF, and which determines the [RAP BO provider](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_bo_provider_glosry.htm "Glossary Entry"), and thus,  how the transactional buffer is provided and how the behavior of a RAP BO is implemented.
+- As covered in the RAP terms section, *managed* is an implementation type that is specified in the BDEF, and which determines the [RAP BO provider](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-bo-provider), and thus,  how the transactional buffer is provided and how the behavior of a RAP BO is implemented.
 - In a managed RAP BO, the RAP framework automatically executes the save, eliminating the need for any additional logic. However, you can modify this behavior by adding or replacing the default save logic. This is not applicable to unmanaged BOs, where the save is user-defined.
 - RAP additional save 
   - This feature enhances the default save sequence by incorporating additional save logic.
@@ -3066,7 +3066,7 @@ The following restrictions apply to operations and/or statements in the individu
     - the implementation is done in the `save_modified` RAP saver method.
 
 - More information: 
-  - [ABAP Keyword Documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbdl_saving.htm)
+  - [ABAP Keyword Documentation](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-savingoptions)
   - Development guide for the ABAP RESTful Application Programming Model:
     - [Additional Save](https://help.sap.com/docs/abap-cloud/abap-rap/additional-save)
     - [Unmanaged Save](https://help.sap.com/docs/abap-cloud/abap-rap/unmanaged-save)
@@ -3080,7 +3080,7 @@ The [ABAP Unit Tests](14_ABAP_Unit_Tests.md) cheat sheet includes an example dem
 - Creating transactional buffer test doubles using the `CL_BOTD_TXBUFDBL_BO_TEST_ENV` class
 - Mocking ABAP EML APIs using the `CL_BOTD_MOCKEMLAPI_BO_TEST_ENV` class
 
-Note that there is a RAP-specific variant of the `CREATE OBJECT` statement available. [`CREATE OBJECT ... FOR TESTING.`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapcreate_object_for_testing.htm) enables the instantiation of RAP handler classes. Find more information in the [Development guide for the ABAP RESTful Application Programming Model](https://help.sap.com/docs/abap-cloud/abap-rap/test).
+Note that there is a RAP-specific variant of the `CREATE OBJECT` statement available. [`CREATE OBJECT ... FOR TESTING.`](https://help.sap.com/docs/abap-cloud/abap-keyword/create-object-for-testing) enables the instantiation of RAP handler classes. Find more information in the [Development guide for the ABAP RESTful Application Programming Model](https://help.sap.com/docs/abap-cloud/abap-rap/test).
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
@@ -3180,9 +3180,9 @@ Several RAP-related system classes and functionality are available, including (s
 ## More Information
 
 -   Section [ABAP for RAP Business
-    Objects](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_for_rap_bos.htm)
+    Objects](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-for-rap-business-objects)
     in the ABAP Keyword Documentation including EML
--   [RAP Glossary](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_glossary.htm)
+-   [RAP Glossary](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-glossary)
 -   [Development guide for the ABAP RESTful Application Programming
     Model](https://help.sap.com/docs/ABAP_PLATFORM_NEW/fc4c71aa50014fd1b43721701471913d/289477a81eec4d4e84c0302fb6835035.html)
 -   [RAP
@@ -3201,7 +3201,7 @@ This cheat sheet is supported by different executable examples demonstrating var
 - Demo RAP scenario with a managed RAP BO, external numbering: [zcl_demo_abap_rap_ext_num_m](./src/zcl_demo_abap_rap_ext_num_m.clas.abap)
 - Demo RAP scenario with an unmanaged RAP BO, external numbering: [zcl_demo_abap_rap_ext_num_u](./src/zcl_demo_abap_rap_ext_num_u.clas.abap)
 - Demo RAP scenario ("RAP calculator") with a managed, draft-enabled RAP BO, late numbering [zcl_demo_abap_rap_draft_ln_m](./src/zcl_demo_abap_rap_draft_ln_m.clas.abap)
-- Demonstrating the local consumption of [RAP business events](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_entity_event_glosry.htm) in the context of a RAP demo scenario (managed RAP BO with managed [internal numbering](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_int_numbering_glosry.htm) and [additional save](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_add_save_glosry.htm)): [zcl_demo_abap_rap_m_as](./src/zcl_demo_abap_rap_m_as.clas.abap)
+- Demonstrating the local consumption of [RAP business events](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-business-event) in the context of a RAP demo scenario (managed RAP BO with managed [internal numbering](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-internal-numbering) and [additional save](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-additional-save)): [zcl_demo_abap_rap_m_as](./src/zcl_demo_abap_rap_m_as.clas.abap)
 
 > [!NOTE]
 > - To reduce the complexity, the executable examples only focus on the technical side. ABAP classes play the role of a RAP BO consumer here.

@@ -85,14 +85,14 @@
 Internal Tables ...
 
 - are tables that temporarily store variable data (i.e. any number of table lines of a fixed structure) in the working memory in ABAP.
-- are [dynamic data objects](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendynamic_data_object_glosry.htm), i.e. all properties apart from the memory consumption are determined statically by the [data type](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendata_type_glosry.htm).
+- are [dynamic data objects](https://help.sap.com/docs/abap-cloud/abap-keyword/dynamic-data-object), i.e. all properties apart from the memory consumption are determined statically by the [data type](https://help.sap.com/docs/abap-cloud/abap-keyword/data-type).
 - consist of a variable sequence of lines of the same data type. 
-- have a [table type](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentable_type_glosry.htm) as its data type (it is a [complex data type](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencomplex_data_type_glosry.htm)), which defines the following properties: 
-  - [line type](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrow_type_glosry.htm)
-  - [table category](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentable_category_glosry.htm)
-  - [table key](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentable_key_glosry.htm)
-- are used when a variable data set of a random data type needs to be processed in a structured way, for example, storing and processing [database table](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendatabase_table_glosry.htm) content within an [ABAP program](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_program_glosry.htm).
-- allow access to individual table lines via a [table index](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentable_index_glosry.htm) or a [table key](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentable_key_glosry.htm).
+- have a [table type](https://help.sap.com/docs/abap-cloud/abap-keyword/table-type) as its data type (it is a [complex data type](https://help.sap.com/docs/abap-cloud/abap-keyword/complex-data-type)), which defines the following properties: 
+  - [line type](https://help.sap.com/docs/abap-cloud/abap-keyword/line-type)
+  - [table category](https://help.sap.com/docs/abap-cloud/abap-keyword/table-category)
+  - [table key](https://help.sap.com/docs/abap-cloud/abap-keyword/table-key)
+- are used when a variable data set of a random data type needs to be processed in a structured way, for example, storing and processing [database table](https://help.sap.com/docs/abap-cloud/abap-keyword/database-table) content within an [ABAP program](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-program).
+- allow access to individual table lines via a [table index](https://help.sap.com/docs/abap-cloud/abap-keyword/table-index) or a [table key](https://help.sap.com/docs/abap-cloud/abap-keyword/table-key).
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
@@ -105,9 +105,9 @@ Internal Tables ...
 **Line Type**
 
 - Defines how each line of the internal table is set up, i. e. it describes what columns the table has.
-- It can be any ABAP data type, e.g. an [elementary](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenelementary_data_type_glosry.htm) or complex data type as well as a [reference type](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenreference_type_glosry.htm).
-- In most cases, the line type is [structured](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenstructured_type_glosry.htm). In this case, the individual components of a line are also referred to as the columns of the internal table.
-- In a simple case, the line consists of a [flat structure](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenflat_structure_glosry.htm) with elementary data objects; however, it can also be a [deep structure](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendeep_structure_glosry.htm) whose components can be structures themselves or even internal tables.
+- It can be any ABAP data type, e.g. an [elementary](https://help.sap.com/docs/abap-cloud/abap-keyword/elementary-data-type) or complex data type as well as a [reference type](https://help.sap.com/docs/abap-cloud/abap-keyword/reference-type).
+- In most cases, the line type is [structured](https://help.sap.com/docs/abap-cloud/abap-keyword/structured-type). In this case, the individual components of a line are also referred to as the columns of the internal table.
+- In a simple case, the line consists of a [flat structure](https://help.sap.com/docs/abap-cloud/abap-keyword/flat-structure) with elementary data objects; however, it can also be a [deep structure](https://help.sap.com/docs/abap-cloud/abap-keyword/deep-structure) whose components can be structures themselves or even internal tables.
 
 **Table Category**
 
@@ -120,15 +120,15 @@ Internal Tables ...
 
 | Category | Internally managed by | Access | Primary table key | When to use | Hints |
 |---|---|---|---|---|---|
-|`STANDARD`|Primary table index (that's why these tables are called [index tables](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenindex_table_glosry.htm))|<ul><li>Table index</li><li>Table key</li></ul>|<ul><li>Always non-unique, i.e. duplicate entries are always allowed</li><li>Definition of an empty key is possible if the key is not relevant(`WITH EMPTY KEY`)</li></ul>|<ul><li>If you primarily access the table content for sequential processing or via the table index.</li><li>Response time for accessing the table using the primary key: This kind of table access is optimized only for sorted and hashed tables. For standard tables, primary key access uses a linear search across all lines. That means that large standard tables (more than 100 lines) are not ideal if the you primarily access the table using the table key.</li></ul>|<ul><li>There is no particular sort order, but the tables can be sorted using `SORT`.</li><li>Populating this kind of table: Lines are either appended at the end of the table or inserted at a specific position.</li><li>[Secondary table keys](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensecondary_table_key_glosry.htm) can be defined to make key access to standard tables more efficient.</li><li>Standard and sorted tables have the least [administration costs (F1 docu for standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenadmin_costs_dyn_mem_obj_guidl.htm).</li></ul>|
-|`SORTED`|Primary table index (that's why these tables are called [index tables](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenindex_table_glosry.htm))|<ul><li>Table index</li><li>Table key</li></ul>|<ul><li>Non-unique</li><li>Unique</li><br>... used to sort the table in ascending order.</ul>|<ul><li>Enables an optimized access to table content using table key and index.</li><li>If access via table key is the main access method, but no unique key can be defined.</li></ul>|<ul><li>Sorting is done automatically when lines are inserted or deleted. As a consequence, the table index must usually be reorganized. </li><li>The response time for accessing the table using the primary key depends logarithmically on the number of table entries, since a binary search is used.</li><li>Standard and sorted tables have the least administration costs.</li></ul>|
-|`HASHED`|Hash algorithm |<ul><li>Table key</li><li>[Secondary table index](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensecondary_table_index_glosry.htm)</li></ul>|Always unique|<ul><li>For large internal tables.</li><li>Optimized for key access. Access to table content via table key is the main access method and a unique key can be defined.</li></ul>|<ul><li>The response time for primary key access is constant and independent of the number of entries in the table.</li><li>Hashed tables have the highest administration costs.</li></ul>|
+|`STANDARD`|Primary table index (that's why these tables are called [index tables](https://help.sap.com/docs/abap-cloud/abap-keyword/index-table))|<ul><li>Table index</li><li>Table key</li></ul>|<ul><li>Always non-unique, i.e. duplicate entries are always allowed</li><li>Definition of an empty key is possible if the key is not relevant(`WITH EMPTY KEY`)</li></ul>|<ul><li>If you primarily access the table content for sequential processing or via the table index.</li><li>Response time for accessing the table using the primary key: This kind of table access is optimized only for sorted and hashed tables. For standard tables, primary key access uses a linear search across all lines. That means that large standard tables (more than 100 lines) are not ideal if the you primarily access the table using the table key.</li></ul>|<ul><li>There is no particular sort order, but the tables can be sorted using `SORT`.</li><li>Populating this kind of table: Lines are either appended at the end of the table or inserted at a specific position.</li><li>[Secondary table keys](https://help.sap.com/docs/abap-cloud/abap-keyword/secondary-table-key) can be defined to make key access to standard tables more efficient.</li><li>Standard and sorted tables have the least [administration costs (F1 docu for standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenadmin_costs_dyn_mem_obj_guidl.htm).</li></ul>|
+|`SORTED`|Primary table index (that's why these tables are called [index tables](https://help.sap.com/docs/abap-cloud/abap-keyword/index-table))|<ul><li>Table index</li><li>Table key</li></ul>|<ul><li>Non-unique</li><li>Unique</li><br>... used to sort the table in ascending order.</ul>|<ul><li>Enables an optimized access to table content using table key and index.</li><li>If access via table key is the main access method, but no unique key can be defined.</li></ul>|<ul><li>Sorting is done automatically when lines are inserted or deleted. As a consequence, the table index must usually be reorganized. </li><li>The response time for accessing the table using the primary key depends logarithmically on the number of table entries, since a binary search is used.</li><li>Standard and sorted tables have the least administration costs.</li></ul>|
+|`HASHED`|Hash algorithm |<ul><li>Table key</li><li>[Secondary table index](https://help.sap.com/docs/abap-cloud/abap-keyword/secondary-table-index)</li></ul>|Always unique|<ul><li>For large internal tables.</li><li>Optimized for key access. Access to table content via table key is the main access method and a unique key can be defined.</li></ul>|<ul><li>The response time for primary key access is constant and independent of the number of entries in the table.</li><li>Hashed tables have the highest administration costs.</li></ul>|
 
 
 
 **Key Attributes** 
 
-- There are two types of table keys: a [primary table key](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenprimary_table_key_glosry.htm) and [secondary table keys](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensecondary_table_key_glosry.htm).
+- There are two types of table keys: a [primary table key](https://help.sap.com/docs/abap-cloud/abap-keyword/primary-table-key) and [secondary table keys](https://help.sap.com/docs/abap-cloud/abap-keyword/secondary-table-key).
 - Table keys ...
   - are intended to provide an optimized access to the content of internal tables.
   - are either unique or non-unique, i.e. more than one line with the same key (duplicates) can exist in the internal table or not. Regarding the primary table key, the definition depends on the table category. For the secondary table key, the definition depends on the key type. For standard tables, the primary table key can also be defined as empty, i.e. it does not contain any key columns. Note that for standard tables, an optimized access is only possible with secondary table keys.
@@ -143,7 +143,7 @@ Internal Tables ...
      - There is no table index for a hashed key. 
 
 **Further information**
-- [Internal Tables - Overview](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenitab_oview.htm)
+- [Internal Tables - Overview](https://help.sap.com/docs/abap-cloud/abap-keyword/internal-tables)
 - [Programming guidelines: Internal Tables (F1 docu for standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenadmin_costs_dyn_mem_obj_guidl.htm)
 </details>
 
@@ -158,7 +158,7 @@ Internal Tables ...
 **Primary table key**
 
 - Each internal table has a primary table key.
-- Can be either a self-defined key or the [standard key](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenstandard_key_glosry.htm).
+- Can be either a self-defined key or the [standard key](https://help.sap.com/docs/abap-cloud/abap-keyword/standard-key).
 - The primary table key is ...
   - sorted for sorted tables. 
   - hashed for hashed tables.
@@ -171,7 +171,7 @@ Internal Tables ...
 > The key can consist of individual key fields or the entire line of the internal table. In this case, the pseudo component `table_line` can be used to denote the primary table key. For non-structured line types, this is the only way to define the key.
 
 **Standard key**
-- The [standard key](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenstandard_key_glosry.htm) is a special primary table key.
+- The [standard key](https://help.sap.com/docs/abap-cloud/abap-keyword/standard-key) is a special primary table key.
 - It can be declared either explicitly or implicitly.
 - Standard key of an internal table with a ...
    - structured line type: The primary table key consists of all fields with character-like and byte-like data types.
@@ -194,7 +194,7 @@ Internal Tables ...
     -   Implicit declaration when using the standard key if a structured
         line type does not contain non-numeric elementary components or
         if an unstructured line type is tabular. See an excursion regarding this aspect [here](#empty-standard-table-key).
-    - Note: When using an [inline declaration](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abeninline_declaration_glosry.htm "Glossary Entry") such as `... INTO TABLE @DATA(itab) ...` in `SELECT` statements, the resulting table is a standard table and has an empty key.
+    - Note: When using an [inline declaration](https://help.sap.com/docs/abap-cloud/abap-keyword/inline-declaration) such as `... INTO TABLE @DATA(itab) ...` in `SELECT` statements, the resulting table is a standard table and has an empty key.
 
 
 > [!NOTE]  
@@ -209,7 +209,7 @@ Internal Tables ...
   - are optional for all table categories.
   - can be unique/non-unique sorted keys or unique hash keys.
   - have a self-defined name. An alias name can also be specified.
-- A [secondary table index](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensecondary_table_index_glosry.htm) is created internally for each sorted secondary key. This allows index access to hashed tables via the secondary table key. In this case, `sy-tabix` is set.
+- A [secondary table index](https://help.sap.com/docs/abap-cloud/abap-keyword/secondary-table-index) is created internally for each sorted secondary key. This allows index access to hashed tables via the secondary table key. In this case, `sy-tabix` is set.
 - When accessing internal tables using the secondary table key, the key name (or the alias if specified) must be specified. They are not selected automatically. If no secondary key is specified in a processing statement, the primary key or primary table index is always used. If you want to make use of this key in ABAP statements, for example, `READ`, `LOOP AT` or `MODIFY` statements, you must specify the key explicitly using the appropriate additions, for example, `WITH ... KEY ... COMPONENTS` or `USING KEY`.
 - The table access using secondary table keys is always optimized.
 - Use cases:
@@ -239,9 +239,9 @@ Internal Tables ...
 
 ## Creating Internal Tables and Types
 
-You can declare internal tables and internal table types in [ABAP programs](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_program_glosry.htm) using the [`TYPES`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abaptypes.htm) and [`DATA`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapdata.htm) statements. The relevant syntax elements for internal tables are `TABLE OF` in combination 
-with the additions [`TYPE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapdata_simple.htm)
-or [`LIKE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapdata_referring.htm).
+You can declare internal tables and internal table types in [ABAP programs](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-program) using the [`TYPES`](https://help.sap.com/docs/abap-cloud/abap-keyword/types) and [`DATA`](https://help.sap.com/docs/abap-cloud/abap-keyword/data) statements. The relevant syntax elements for internal tables are `TABLE OF` in combination 
+with the additions [`TYPE`](https://help.sap.com/docs/abap-cloud/abap-keyword/data-type-abap-type)
+or [`LIKE`](https://help.sap.com/docs/abap-cloud/abap-keyword/data-type-like).
 
 ``` abap
 TYPES itab_type1 TYPE STANDARD TABLE OF data_type ...   "Standard table type
@@ -256,7 +256,7 @@ DATA  itab4      LIKE                   itab1 ...       "Based on an existing in
 > [!NOTE]  
 > - If the table category is not specified (`... TYPE TABLE OF ...`), it is automatically `... TYPE STANDARD TABLE OF ...`.
 > - You can also create global table types in the ABAP Dictionary. This is not covered in the cheat sheet. 
-> - Using [Runtime Type Creation (RTTC)](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrun_time_type_creation_glosry.htm "Glossary Entry"), you can define and  create new internal tables and table types as [type description objects](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentype_object_glosry.htm) at runtime. For more information, see the [Dynamic Programming](06_Dynamic_Programming.md) ABAP cheat sheet. Also find a snippet on creating internal tables dynamically by specifying the type dynamically [below](#creating-internal-tables-dynamically).
+> - Using [Runtime Type Creation (RTTC)](https://help.sap.com/docs/abap-cloud/abap-keyword/runtime-type-creation), you can define and  create new internal tables and table types as [type description objects](https://help.sap.com/docs/abap-cloud/abap-keyword/type-description-object) at runtime. For more information, see the [Dynamic Programming](06_Dynamic_Programming.md) ABAP cheat sheet. Also find a snippet on creating internal tables dynamically by specifying the type dynamically [below](#creating-internal-tables-dynamically).
 
 The following code snippets contain various internal table declarations. It is intended to demonstrate a selection of the rich variety of possible internal tables mentioned in the previous sections, e.g. in *Table Keys in Internal Tables*.
 In the examples, many of the internal tables are created using the structured type of a demo database table in the DDIC. The line type of the database table is automatically used when defining an internal table.
@@ -422,16 +422,16 @@ The following example shows the pattern and various examples of declaring intern
 
 Steps: 
 1. Define a structured data type (locally or globally). 
-   This is not necessary if you use, for example, the name of a database table or [CDS view](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_view_glosry.htm) in the internal table declaration. In these cases their line type is used automatically.
+   This is not necessary if you use, for example, the name of a database table or [CDS view](https://help.sap.com/docs/abap-cloud/abap-keyword/cds-view) in the internal table declaration. In these cases their line type is used automatically.
 2. Define an internal table type.
 3. Create the internal table, i.e. a data object that uses this type.
 
 You can also create an internal table by ...
 - combining the data object creation and table type definition in one step. 
-- using an [inline declaration](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abeninline_declaration_glosry.htm "Glossary Entry"). Such inline declarations are possible at suitable [declaration
-positions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendeclaration_positions.htm)
+- using an [inline declaration](https://help.sap.com/docs/abap-cloud/abap-keyword/inline-declaration). Such inline declarations are possible at suitable [declaration
+positions](https://help.sap.com/docs/abap-cloud/abap-keyword/declaration-positions)
 if the operand type can be fully determined, for example, using a
-`DATA` statement (or [`FINAL`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenfinal_inline.htm) for immutable variables).
+`DATA` statement (or [`FINAL`](https://help.sap.com/docs/abap-cloud/abap-keyword/final-inline-declaration-for-immutable-variables) for immutable variables).
 
 
 ``` abap
@@ -474,7 +474,7 @@ This section explores various line and table type options when declaring interna
 - Elementary line types based on elementary built-in ABAP types, locally declared elementary types, globally available elementary types such as DDIC data elements
 - Line types based on both locally declared and globally available structured types
   - Among the globally available line types are, for example, DDIC structures, database tables and CDS objects such as CDS view entities
-  - Note that internal tables can be created as [deep tables](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendeep_table_glosry.htm). That is, internal tables can contain [deep](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendeep_glosry.htm) components (references, internal tables or strings). Structures can also be components of internal tables. For more information, see the [Variants of Structures](02_Structures.md#variants-of-structures) in the *Structures* cheat sheet.
+  - Note that internal tables can be created as [deep tables](https://help.sap.com/docs/abap-cloud/abap-keyword/deep-table). That is, internal tables can contain [deep](https://help.sap.com/docs/abap-cloud/abap-keyword/deep) components (references, internal tables or strings). Structures can also be components of internal tables. For more information, see the [Variants of Structures](02_Structures.md#variants-of-structures) in the *Structures* cheat sheet.
 - Table types based on both locally declared and globally available table types
 - References
 
@@ -735,17 +735,17 @@ FINAL(itab4) = itab.
 
 > [!NOTE]  
 > - Internal tables can only be assigned to internal tables. 
-> - Internal tables can be assigned to each other if their line types are [compatible](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencompatible_glosry.htm) or [convertible](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconvertible_glosry.htm).
+> - Internal tables can be assigned to each other if their line types are [compatible](https://help.sap.com/docs/abap-cloud/abap-keyword/compatible) or [convertible](https://help.sap.com/docs/abap-cloud/abap-keyword/convertible).
 > - An assignment can trigger an uncatchable exception if, for example, the target table is assigned a duplicate of a unique primary table key or secondary table key.
-> - More information: [Conversion Rules for Internal Tables](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconversion_itab.htm)
+> - More information: [Conversion Rules for Internal Tables](https://help.sap.com/docs/abap-cloud/abap-keyword/conversion-rules-for-internal-tables)
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ### Using INSERT and APPEND Statements to Populate Internal Tables
 
 You can use the ABAP keywords
-[`INSERT`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapinsert_itab.htm)
-and [`APPEND`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapappend.htm)
+[`INSERT`](https://help.sap.com/docs/abap-cloud/abap-keyword/insert-itab)
+and [`APPEND`](https://help.sap.com/docs/abap-cloud/abap-keyword/append)
 to add lines to internal tables.
 
 <details>
@@ -914,7 +914,7 @@ As mentioned above, table lines that are constructed inline as
 arguments to the `VALUE` operator, for example, can be added to
 internal tables. In the following cases, internal tables are populated
 using constructor expressions in the context of
-[assignments](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenassignment_glosry.htm "Glossary Entry").
+[assignments](https://help.sap.com/docs/abap-cloud/abap-keyword/assignment).
 
 <table>
 <tr>
@@ -976,7 +976,7 @@ DATA str_tab_c TYPE string_table.
 <td> <code>BASE</code> addition: Adding new lines without deleting existing content </td>
 <td>
 
-When you use the above assignments to an existing internal table (`itab = ...`), the internal table is initialized and the existing content is deleted. To add new lines without deleting existing content, use the  [`BASE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenvalue_constructor_params_itab.htm) addition.
+When you use the above assignments to an existing internal table (`itab = ...`), the internal table is initialized and the existing content is deleted. To add new lines without deleting existing content, use the  [`BASE`](https://help.sap.com/docs/abap-cloud/abap-keyword/value-internal-tables) addition.
 
 <br>
 
@@ -1016,7 +1016,7 @@ itab = VALUE #( ( comp1 = a comp2 = b ...)
 <td> Iteration expressions with <code>FOR</code> </td>
 <td>
 
-Using the `VALUE` operator and iteration expressions with [`FOR`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenfor.htm), you can create content of an internal table by evaluating one or more source tables. The expressions are covered in the [Constructor Expressions](05_Constructor_Expressions.md) cheat sheet.
+Using the `VALUE` operator and iteration expressions with [`FOR`](https://help.sap.com/docs/abap-cloud/abap-keyword/for-iteration-expressions), you can create content of an internal table by evaluating one or more source tables. The expressions are covered in the [Constructor Expressions](05_Constructor_Expressions.md) cheat sheet.
 <br>
 
 ```abap
@@ -1047,9 +1047,9 @@ int_table_b = VALUE #( FOR wa_b IN int_table_a ( wa_b * 2 ) ).
 <td>
 
 ... using the
-[`CORRESPONDING`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconstructor_expr_corresponding.htm) operator. 
+[`CORRESPONDING`](https://help.sap.com/docs/abap-cloud/abap-keyword/corresponding-component-operator) operator. 
 - Note that the existing content is deleted.
-- As an alternative to the `CORRESPONDING` operator, you can use [`MOVE-CORRESPONDING`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapmove-corresponding.htm) statements. 
+- As an alternative to the `CORRESPONDING` operator, you can use [`MOVE-CORRESPONDING`](https://help.sap.com/docs/abap-cloud/abap-keyword/move-corresponding) statements. 
 - The operator is particularly useful for incompatible source and target types. Value assignments are made based on identical components in the source and target. As shown further down, you can also specify mapping rules using the `MAPPING` addition.
 - The example assumes that the line types of the source and target table are not compatible. However, if the line types are compatible, the syntax will also work.
 - Several additions are possible. They can also be combined. Check the ABAP Keyword Documentation.
@@ -1135,7 +1135,7 @@ itab = CORRESPONDING #( itab2 DISCARDING DUPLICATES ).
 <td> <code>DEEP</code>/<code>EXPANDING NESTED TABLES</code> additions: Copying data from deep internal tables </td>
 <td>
 
-- A deep internal table is a table with [deep](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendeep_glosry.htm) line type, which means the table can itself contain internal tables as components, among others.
+- A deep internal table is a table with [deep](https://help.sap.com/docs/abap-cloud/abap-keyword/deep) line type, which means the table can itself contain internal tables as components, among others.
 - The `BASE` addition does not delete the existing content. 
 - See also the alternative `MOVE-CORRESPONDING` statements that use the `EXPANDING NESTED TABLES` addition.
 
@@ -1182,19 +1182,19 @@ MOVE-CORRESPONDING itab_nested1 TO itab_nested2 EXPANDING NESTED TABLES KEEPING 
 
 To create an internal table by copying data from another internal table and 
 filtering out lines that do not meet the `WHERE` condition, you can use the [`FILTER`
-operator](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconstructor_expression_filter.htm).
+operator](https://help.sap.com/docs/abap-cloud/abap-keyword/filter-filter-operator).
 
 -   The
-    `FILTER` operator constructs an internal table according to a specified type (which can be an explicitly specified, non-generic table type or the `#` character as a symbol for the [operand type](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenoperand_type_glosry.htm) before the first parenthesis).
+    `FILTER` operator constructs an internal table according to a specified type (which can be an explicitly specified, non-generic table type or the `#` character as a symbol for the [operand type](https://help.sap.com/docs/abap-cloud/abap-keyword/operand-type-abenoperand_type_glosry) before the first parenthesis).
 - The lines for the new internal table are taken from an
     existing internal table based on conditions specified in a `WHERE` clause. Note that the table type of the existing internal table must be convertible into the specified target type.
 -   The conditions can be based on either single values or a [filter
-    table](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconstructor_expr_filter_table.htm).
+    table](https://help.sap.com/docs/abap-cloud/abap-keyword/filter-filter-table).
 - Additions:
 
 |Addition |Details |
 |---|---|
-|`USING KEY`  | Specifies the [table key](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentable_key_glosry.htm "Glossary Entry") used to evaluate the `WHERE` condition: either a [sorted key](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensorted_key_glosry.htm "Glossary Entry") or a [hash key](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenhash_key_glosry.htm "Glossary Entry"). If the internal table does not have either of these, it must have a [secondary table key](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensecondary_table_key_glosry.htm "Glossary Entry"), which must be specified after `USING KEY`.  |
+|`USING KEY`  | Specifies the [table key](https://help.sap.com/docs/abap-cloud/abap-keyword/table-key) used to evaluate the `WHERE` condition: either a [sorted key](https://help.sap.com/docs/abap-cloud/abap-keyword/sorted-key) or a [hash key](https://help.sap.com/docs/abap-cloud/abap-keyword/hash-key). If the internal table does not have either of these, it must have a [secondary table key](https://help.sap.com/docs/abap-cloud/abap-keyword/secondary-table-key), which must be specified after `USING KEY`.  |
 | `EXCEPT`   | Specifying `EXCEPT` means that those lines of the existing table are used that do not meet the condition specified in the `WHERE` clause. If `EXCEPT` is not specified, those lines of the existing table that meet the condition are used.  |
 
 Examples:
@@ -1256,7 +1256,7 @@ DATA(f11) = FILTER #( itab2 USING KEY sec_key EXCEPT IN filter_tab2 WHERE num = 
 
 #### NEW Operator
 
-Using the instance operator [`NEW`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconstructor_expression_new.htm), you can create [anonymous data objects](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenanonymous_data_object_glosry.htm "Glossary Entry"), such as anonymous internal tables. You can access the lines, components or the entire data objects by [dereferencing](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendereferencing_operat_glosry.htm). For more information, refer to the  [Dynamic Programming](06_Dynamic_Programming.md) and [Constructor Expressions](05_Constructor_Expressions.md) cheat sheets.
+Using the instance operator [`NEW`](https://help.sap.com/docs/abap-cloud/abap-keyword/new-instance-operator), you can create [anonymous data objects](https://help.sap.com/docs/abap-cloud/abap-keyword/anonymous-data-object), such as anonymous internal tables. You can access the lines, components or the entire data objects by [dereferencing](https://help.sap.com/docs/abap-cloud/abap-keyword/dereferencing-operator-abendereferencing_operat_glosry). For more information, refer to the  [Dynamic Programming](06_Dynamic_Programming.md) and [Constructor Expressions](05_Constructor_Expressions.md) cheat sheets.
 
 ```abap
 TYPES: BEGIN OF s,
@@ -1585,7 +1585,7 @@ There are three different ways to specify the line to read:
 - by table keys (only tables for which a key is defined)
 - by free key
 
-The following code snippets include [`READ TABLE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapread_table.htm) statements and [table expressions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentable_expressions.htm) to read from internal tables.
+The following code snippets include [`READ TABLE`](https://help.sap.com/docs/abap-cloud/abap-keyword/read-table-itab) statements and [table expressions](https://help.sap.com/docs/abap-cloud/abap-keyword/itab-table-expressions-table-exp) to read from internal tables.
 Note that you can also use ABAP SQL `SELECT` statements to read from internal tables. This is covered further down.
 
 ### Determining the Target Area when Reading Single Lines in READ TABLE Statements
@@ -1634,7 +1634,7 @@ Field symbol
 
  <td> 
 
-- Assigning a line to a [field symbol](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenfield_symbol_glosry.htm "Glossary Entry"),
+- Assigning a line to a [field symbol](https://help.sap.com/docs/abap-cloud/abap-keyword/field-symbol),
   for example, using an inline declaration (`... ASSIGNING FIELD-SYMBOL(<fs>) ...`). 
 - When you then access the field symbol, it means that you access the found table line. There is no actual copying of content. Therefore, modifying the field symbol means
     modifying the table line directly. 
@@ -1662,9 +1662,9 @@ Data reference variable
 
  <td> 
 
-- Reading a line into a [data reference variable](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendata_reference_variable_glosry.htm "Glossary Entry") using `REFERENCE INTO`. 
+- Reading a line into a [data reference variable](https://help.sap.com/docs/abap-cloud/abap-keyword/data-reference-variable) using `REFERENCE INTO`. 
 - In this case, no copying takes place. 
-- If you want to address the line, you must first [dereference](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendereferencing_operat_glosry.htm) the data reference. 
+- If you want to address the line, you must first [dereference](https://help.sap.com/docs/abap-cloud/abap-keyword/dereferencing-operator-abendereferencing_operat_glosry) the data reference. 
 - You cannot use the addition `TRANSPORTING`.
 
 <br>
@@ -1735,11 +1735,11 @@ READ TABLE itab INTO wa INDEX i USING KEY sec_key.
 <td>
 
 Using [table
-expressions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentable_expressions.htm),
+expressions](https://help.sap.com/docs/abap-cloud/abap-keyword/itab-table-expressions-table-exp),
 the read result is stored in a variable that can be declared inline.
 The number in the square brackets represents the index. A line that is
 not found results in an runtime error. To avoid an error, you can
-use a [`TRY ... CATCH ... ENDTRY.`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abaptry.htm) block.
+use a [`TRY ... CATCH ... ENDTRY.`](https://help.sap.com/docs/abap-cloud/abap-keyword/try) block.
 
 Find more information about syntax related to table expressions [further down](#table-expressions).
 <br>
@@ -1926,12 +1926,12 @@ line = it[ b = 2 ].
 
 When reading single lines in general, you can also address individual
 components of the line using the [component
-selector](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencomponent_selector_glosry.htm "Glossary Entry")
-`-` (or the [object component selector](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenobject_component_select_glosry.htm) `->` or the [dereferencing
-operator](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendereferencing_operat_glosry.htm "Glossary Entry")
+selector](https://help.sap.com/docs/abap-cloud/abap-keyword/component-selector)
+`-` (or the [object component selector](https://help.sap.com/docs/abap-cloud/abap-keyword/object-component-selector-abenobject_component_select_glosry) `->` or the [dereferencing
+operator](https://help.sap.com/docs/abap-cloud/abap-keyword/dereferencing-operator-abendereferencing_operat_glosry)
 `->*` in the case of data reference variables).
 
-You can also use [`ASSIGN`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapassign.htm) statements to assign components (and more) to [field symbols](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenfield_symbol_glosry.htm). See the [Example: Exploring READ TABLE Statements and Table Expressions](#example-exploring-read-table-statements-and-table-expressions) below.
+You can also use [`ASSIGN`](https://help.sap.com/docs/abap-cloud/abap-keyword/assign) statements to assign components (and more) to [field symbols](https://help.sap.com/docs/abap-cloud/abap-keyword/field-symbol). See the [Example: Exploring READ TABLE Statements and Table Expressions](#example-exploring-read-table-statements-and-table-expressions) below.
 
 ``` abap
 DATA(comp1) = it[ b = 2 ]-c.
@@ -1965,7 +1965,7 @@ DATA(comp5) = dref->*-c.
 #### System Field Setting in READ TABLE Statements
 
 - For example, for checking if a line is found (`sy-subrc`) and stored in the target area, and what the index of the line is (`sy-tabix`). 
-- Find more information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapread_table.htm)
+- Find more information [here](https://help.sap.com/docs/abap-cloud/abap-keyword/read-table-itab)
 
 ```abap
 TYPES: BEGIN OF s_demo,
@@ -2075,7 +2075,7 @@ ASSERT <fs10> IS NOT ASSIGNED.
 - If a `READ TABLE` statement can be expressed using `WITH KEY`, this approach - instead of using a `WHERE` condition - is recommended as it is more performant. A syntax warning occurs but can be suppressed with the pragma `##read_where_ok`.
 - For optimized searches with a `WHERE` condition:
   - No optimized search in standard tables without a secondary table key.
-  - For sorted and hashed keys (sorted/hashed tables, secondary table keys), the search is optimized as described [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenitab_where_optimization.htm), if specifications are transferable to a key access.
+  - For sorted and hashed keys (sorted/hashed tables, secondary table keys), the search is optimized as described [here](https://help.sap.com/docs/abap-cloud/abap-keyword/itab-optimizing-where-condition), if specifications are transferable to a key access.
 
 ```abap
 "Creating and populating demo internal tables
@@ -3786,7 +3786,7 @@ ENDCLASS.
 
 If you are interested not only in single table lines, but in the entire
 table content or in specific parts of it, you can use [`LOOP
-AT`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abaploop_at_itab.htm)
+AT`](https://help.sap.com/docs/abap-cloud/abap-keyword/loop-at-itab-basic-form)
 statements to process table lines sequentially. As above, you
 can use multiple options for target areas: work area, field
 symbol, data reference. There are multiple additions to the `LOOP AT`
@@ -3843,7 +3843,7 @@ ENDLOOP.
 ```
 
 - The order in which tables are iterated depends on the table category. 
-  - Note the [`STEP`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abaploop_at_itab_cond.htm) addition, which is also available for other ABAP statements.  
+  - Note the [`STEP`](https://help.sap.com/docs/abap-cloud/abap-keyword/loop-at-itab-cond) addition, which is also available for other ABAP statements.  
 - Index tables are looped over in ascending order by the index. 
 - Hashed tables are looped in the order in which the lines were added to the table. You can also sort the table before the loop. 
 - During the loop, the system field `sy-tabix` is set to the number of the currently processed table
@@ -3895,7 +3895,7 @@ ENDLOOP.
 
 ### Defining the Step Size and the Direction of Loop Passes
 
-Find more information in the [`STEP`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abaploop_at_itab_cond.htm) topic and in the section [`STEP` Addition](#step-addition). Note that the addition is also available for other ABAP statements.  
+Find more information in the [`STEP`](https://help.sap.com/docs/abap-cloud/abap-keyword/loop-at-itab-cond) topic and in the section [`STEP` Addition](#step-addition). Note that the addition is also available for other ABAP statements.  
 
 ``` abap
 "STEP addition for defining the step size and the direction of the loop
@@ -3929,7 +3929,7 @@ ENDLOOP.
 
 ### Iteration Expressions
 
-Iteration expressions with [`FOR`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenfor.htm) as part of certain constructor expressions allow you to create content of an internal table by evaluating one or more source tables.
+Iteration expressions with [`FOR`](https://help.sap.com/docs/abap-cloud/abap-keyword/for-iteration-expressions) as part of certain constructor expressions allow you to create content of an internal table by evaluating one or more source tables.
 
 ```abap
 TYPES ty_int_tab TYPE TABLE OF i WITH EMPTY KEY.
@@ -4238,7 +4238,7 @@ ENDLOOP.
 
 ## Modifying Internal Table Content
 
-[`MODIFY [TABLE]`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapmodify_itab.htm) statements provide multiple ways of changing the content of single and multiple table lines by specifying the table key or a table index, without first reading the lines into a target area. Apart from the statements that directly modify internal table lines, several other methods are available for changing table content. This section includes a selection of these methods.
+[`MODIFY [TABLE]`](https://help.sap.com/docs/abap-cloud/abap-keyword/modify-itab) statements provide multiple ways of changing the content of single and multiple table lines by specifying the table key or a table index, without first reading the lines into a target area. Apart from the statements that directly modify internal table lines, several other methods are available for changing table content. This section includes a selection of these methods.
 
 The following example covers these aspects:
 - `MODIFY [TABLE]` statements
@@ -4267,7 +4267,7 @@ The following example covers these aspects:
 > - Regarding `MODIFY` statements: 
 >   - The system field `sy-subrc` is set to `0` if at least one line was changed. It is set to `4` if no lines were changed.
 >   - `MODIFY` (and also `DELETE` and `INSERT`) statements can be specified with and without the `TABLE` addition. With `TABLE` means an index access. Without `TABLE` means an access via the table key.
->   - Do not confuse the ABAP statement `MODIFY` with the ABAP SQL statement [`MODIFY`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABAPMODIFY_DBTAB.html).
+>   - Do not confuse the ABAP statement `MODIFY` with the ABAP SQL statement [`MODIFY`](https://help.sap.com/docs/abap-cloud/abap-keyword/modify-writable-obj).
 
 The following code snippet shows high-level syntax patterns. Find more details and an executable example in the collapsible section below.
 
@@ -5244,7 +5244,7 @@ ENDCLASS.
 
 ## Deleting Internal Table Content
 
-You can use [`DELETE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapdelete_itab.htm) statements to delete single and multiple lines in internal tables. The following additions can be used: `USING KEY` (for specifying a table key), `FROM`/`TO` (for specifying row ranges), `STEP` (for specifying the step size), and `WHERE` (for specifying conditions).
+You can use [`DELETE`](https://help.sap.com/docs/abap-cloud/abap-keyword/delete-itab) statements to delete single and multiple lines in internal tables. The following additions can be used: `USING KEY` (for specifying a table key), `FROM`/`TO` (for specifying row ranges), `STEP` (for specifying the step size), and `WHERE` (for specifying conditions).
 
 ``` abap
 *&---------------------------------------------------------------------*
@@ -5717,9 +5717,9 @@ ENDCLASS.
 ### Deleting the Entire Internal Table Content
 
 The 
-[`CLEAR`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapclear.htm)
+[`CLEAR`](https://help.sap.com/docs/abap-cloud/abap-keyword/clear)
 and
-[`FREE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapfree_dataobject.htm)
+[`FREE`](https://help.sap.com/docs/abap-cloud/abap-keyword/free)
 statements allow you to delete the entire table content.
 
 The difference between the two is in the handling of the memory space originally allocated to the table. When a table is cleared with `CLEAR`,
@@ -5749,7 +5749,7 @@ it_ref = NEW #( ).
 
 -   Sorted tables are stored in the memory in an automatically sorted
     order, hence, they cannot be sorted explicitly with
-    [`SORT`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapsort_itab.htm).
+    [`SORT`](https://help.sap.com/docs/abap-cloud/abap-keyword/sort-itab).
 -   For standard and hashed tables, the order can be changed.
 -   When using `SORT` statements, the sort order is derived either
     by the primary table key (Note: Secondary keys
@@ -5956,7 +5956,7 @@ To group internal tables, there are additions for `LOOP AT` statements.
 - Additional syntax options like a `WHERE` condition and further grouping are also available.
 
 More information:
-- [ABAP Keyword Documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abaploop_at_itab_group_by.htm)   
+- [ABAP Keyword Documentation](https://help.sap.com/docs/abap-cloud/abap-keyword/loop-at-itab-group-by)   
 - Iteration expressions can also handle table grouping (`FOR ... IN GROUP`). For example, see the [Constructor Expressions](05_Constructor_Expressions.md) cheat sheet.
 - [Internal Tables: Grouping](11_Internal_Tables_Grouping.md) cheat sheet 
 
@@ -6161,7 +6161,7 @@ DATA(itab_constr) = VALUE ty_itab_constr( FOR GROUPS g OF fl IN fl_tab
 
 - You can use `COLLECT` statements, for example, to add the values of numeric components to the corresponding values in an internal table. 
 - It is recommended that you use it mainly for internal tables with a unique primary key, especially hashed tables.
-- Find more information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapcollect.htm)
+- Find more information [here](https://help.sap.com/docs/abap-cloud/abap-keyword/collect)
 
 ``` abap
 "This example demonstrates how to insert data from a database table
@@ -6207,17 +6207,17 @@ ASSERT seats_tab_loop_grp = seats_tab_col.
 
 This is relevant if you are not interested in the content of a table
 line, but only want to find out whether a line exists that matches to the
-index or key specifications. To do this, use a [`READ TABLE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapread_table.htm)
+index or key specifications. To do this, use a [`READ TABLE`](https://help.sap.com/docs/abap-cloud/abap-keyword/read-table-itab)
 statement with the `TRANSPORTING NO FIELDS` addition. The
 addition indicates that no actual content is to be read. If the search was
 successful and an entry exists, the system field `sy-subrc` is
 set to 0.
 
 A newer way to check the existence of a line is the [predicate
-function](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenpredicate_function_glosry.htm "Glossary Entry")
-[`line_exists( )`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenline_exists_function.htm).
+function](https://help.sap.com/docs/abap-cloud/abap-keyword/predicate-function)
+[`line_exists( )`](https://help.sap.com/docs/abap-cloud/abap-keyword/rel-exp-line-exists).
 This function expects a [table
-expression](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentable_expression_glosry.htm "Glossary Entry") as an argument.
+expression](https://help.sap.com/docs/abap-cloud/abap-keyword/table-expression) as an argument.
 See below for more on table expressions. Note that table expressions do not set system fields.
 ``` abap
 "Read using a key
@@ -6251,7 +6251,7 @@ ENDIF.
 
 If you want to find out about the index of a line in an internal table, you can also make use of the `READ TABLE` statement above. If
 the line is found, the system field `sy-tabix` is set to the number of the index. Otherwise, the built-in function
-[`line_index( )`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenline_index_function.htm) can be used. It returns the index of the found line or 0 if the line does not exist.
+[`line_index( )`](https://help.sap.com/docs/abap-cloud/abap-keyword/itab-func-line-index) can be used. It returns the index of the found line or 0 if the line does not exist.
 
 ``` abap
 DATA(itab) = VALUE string_table( ( `aaa` ) ( `bbb` ) ).
@@ -6367,7 +6367,7 @@ ENDLOOP.
 
 ### Getting Table (Type) Information at Runtime
 
-Using [Runtime Type Identification (RTTI)](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrun_time_type_identific_glosry.htm "Glossary Entry"),
+Using [Runtime Type Identification (RTTI)](https://help.sap.com/docs/abap-cloud/abap-keyword/runtime-type-identification),
 you can get type information on internal tables and table types at runtime. 
 
 For more information, see the [Dynamic Programming](06_Dynamic_Programming.md) ABAP cheat sheet.
@@ -6408,7 +6408,7 @@ DATA(applies_to_data_itab) = tdo_itab->applies_to_data( VALUE tab_type( ) ).
 ### Internal Tables as Target Data Objects in SELECT Queries
 
 Adding multiple lines from a database table to an internal table using
-[`SELECT`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapselect.htm),
+[`SELECT`](https://help.sap.com/docs/abap-cloud/abap-keyword/select),
 for example, based on a condition. In the case below, the internal table
 is created inline. 
 ``` abap
@@ -6434,8 +6434,8 @@ SELECT FROM dbtab2
 ```
 
 Combining data from multiple database tables into one internal table using an [inner
-join](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abeninner_join_glosry.htm "Glossary Entry").
-The following example uses the [`INNER JOIN`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapselect_join.htm) addition. Note that the field list includes fields from both tables. The fields are referred to using `~`.
+join](https://help.sap.com/docs/abap-cloud/abap-keyword/inner-join).
+The following example uses the [`INNER JOIN`](https://help.sap.com/docs/abap-cloud/abap-keyword/select-from-join) addition. Note that the field list includes fields from both tables. The fields are referred to using `~`.
 ``` abap
 SELECT db1~comp1, db1~comp2, db2~comp_abc, db2~comp_xyz ...
   FROM db1
@@ -6444,7 +6444,7 @@ SELECT db1~comp1, db1~comp2, db2~comp_abc, db2~comp_xyz ...
 ```
 
 Populating an internal table from a database table using
-[subqueries](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensubquery_glosry.htm "Glossary Entry").
+[subqueries](https://help.sap.com/docs/abap-cloud/abap-keyword/subquery).
 The following two examples populate an internal table from a database table. In the first example, a subquery is specified in the
 `WHERE` clause with the `NOT IN` addition. It checks whether a value matches a value in a set of values
 specified in parentheses. The second example populates an internal table depending on data in another table. A subquery with the `EXISTS` addition is specified in
@@ -6467,7 +6467,7 @@ SELECT comp1, comp2, ...
 ```
 
 Populating an internal table from a table based on the existence of data in
-another table using the [`FOR ALL ENTRIES`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenwhere_all_entries.htm) addition.
+another table using the [`FOR ALL ENTRIES`](https://help.sap.com/docs/abap-cloud/abap-keyword/select-for-all-entries) addition.
 
 > [!NOTE] 
 > Make sure that the internal table you are reading from is not initial. Therefore, it is recommended that you use a subquery as shown above: `... ( SELECT ... FROM ... WHERE ... ) ...`.
@@ -6491,17 +6491,17 @@ ENDIF.
 **General rule**: Use `SELECT` with internal tables as a data source only when SQL functionality, such as joins, exceeds ABAP statements.
 
 **Technical considerations**:
-- The [ABAP SQL in-memory engine](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_sql_inmemeng_glosry.htm) manages read access with ABAP SQL `SELECT` statements for tabular data within the memory of an [Application Server ABAP (AS ABAP)](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenas_abap_glosry.htm). The tabular data can include:
-  - Database table data (such as data from DDIC database tables or CDS entities) buffered in the [table buffer](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenas_abap_glosry.htm) within AS ABAP. Buffering ability is determined by specifications in the artifacts. If the data isn't buffered, the engine can't handle it, and the SQL statement is processed on the database.
-  - Internal tables present in the current internal session. They are treated like DDIC database tables. ABAP types are mapped to corresponding [built-in DDIC types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbuiltin_ddic_type_glosry.htm).
-- The ABAP SQL in-memory engine processes data on AS ABAP, not the database server. If a `SELECT` statement using internal tables as data sources includes elements beyond the engine's capability (for example, most subqueries aren't supported; see detailed restrictions [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABENSQL_ENGINE_RESTR.html)), the internal table content is transferred to a temporary database table before the query executes. Only components involved in the read access are transferred.
+- The [ABAP SQL in-memory engine](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-sql-in-memory-engine) manages read access with ABAP SQL `SELECT` statements for tabular data within the memory of an [Application Server ABAP (AS ABAP)](https://help.sap.com/docs/abap-cloud/abap-keyword/application-server-abap). The tabular data can include:
+  - Database table data (such as data from DDIC database tables or CDS entities) buffered in the [table buffer](https://help.sap.com/docs/abap-cloud/abap-keyword/application-server-abap) within AS ABAP. Buffering ability is determined by specifications in the artifacts. If the data isn't buffered, the engine can't handle it, and the SQL statement is processed on the database.
+  - Internal tables present in the current internal session. They are treated like DDIC database tables. ABAP types are mapped to corresponding [built-in DDIC types](https://help.sap.com/docs/abap-cloud/abap-keyword/built-in-ddic-type).
+- The ABAP SQL in-memory engine processes data on AS ABAP, not the database server. If a `SELECT` statement using internal tables as data sources includes elements beyond the engine's capability (for example, most subqueries aren't supported; see detailed restrictions [here](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-sql-in-memory-engine-restrictions)), the internal table content is transferred to a temporary database table before the query executes. Only components involved in the read access are transferred.
 - In such cases, the SQL statement runs directly on the database server, not within AS ABAP. If the compiler identifies a statement the ABAP SQL in-memory engine can't handle, a syntax warning occurs. You can suppress this warning using the pragma `##itab_db_select`.
 - Currently, queries with multiple internal tables can only proceed if the ABAP SQL in-memory engine can manage them on AS ABAP directly. Transferring more than one internal table to the database is currently not supported.
 - The result of the ABAP SQL in-memory engine processing is identical to processing the read access directly on the database.
 
 **Using internal tables as data sources in ABAP SQL SELECT statements**:
 
-- You must specify internal tables as [host variables](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenhost_variable_glosry.htm) with an `@` prefix and give them an alias.
+- You must specify internal tables as [host variables](https://help.sap.com/docs/abap-cloud/abap-keyword/host-variable) with an `@` prefix and give them an alias.
    ``` abap
    SELECT comp1, comp2, ...
       FROM @itab AS it_alias
@@ -6509,7 +6509,7 @@ ENDIF.
       INTO TABLE @DATA(itab_sel).
    ```
 - Internal tables are treated like DDIC database tables, which leads to specific behaviors such as:
-  - They are handled like [client-independent](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenclient_independent_glosry.htm) database tables, and the first table column is not automatically considered a client column. You can change this default behavior using the `DECLARE CLIENT` addition. For example, if the internal table specifies a key that is not specified at the beginning of the line type, you cannot use `SELECT` to retrieve data from the table. 
+  - They are handled like [client-independent](https://help.sap.com/docs/abap-cloud/abap-keyword/client-independent) database tables, and the first table column is not automatically considered a client column. You can change this default behavior using the `DECLARE CLIENT` addition. For example, if the internal table specifies a key that is not specified at the beginning of the line type, you cannot use `SELECT` to retrieve data from the table. 
   ```abap
   TYPES: BEGIN OF s,
           comp1 TYPE i,
@@ -6575,7 +6575,7 @@ ENDLOOP.
 
 
 **More information**:
-- [Restrictions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensql_engine_restr.htm)
+- [Restrictions](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-sql-in-memory-engine-restrictions)
 - See details on the various ABAP SQL functionalities in the ABAP Keyword Documentation and in the [ABAP SQL cheat sheet](03_ABAP_SQL.md). 
 
 The following example explores various `SELECT` queries with internal tables as data sources. To try it out, create a demo class named `zcl_demo_abap`. If it already exists, reuse it. Otherwise, create a new class with a different name. Paste the code into it. If you choose a different class name, update the class name in the code snippet accordingly. After activation, choose *F9* in ADT to execute the class. The example uses objects of the ABAP cheat sheets repository and is set up to display output in the console.
@@ -6744,18 +6744,18 @@ ENDCLASS.
 
 #### Restrictions Regarding Internal Tables as Data Sources in ABAP SQL SELECT Statements
 
-- This excursion is intended to underscore the restrictions mentioned above and in the [documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensql_engine_restr.htm) in more detail when selecting from internal tables. 
+- This excursion is intended to underscore the restrictions mentioned above and in the [documentation](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-sql-in-memory-engine-restrictions) in more detail when selecting from internal tables. 
 - Components having deep types cannot be included, for example, in the `SELECT` list or `WHERE` clause. 
 - Among the non-allowed types of internal table components are strings (as they are deep types) and `utclong`.
 - Note that only those fields are checked (and sent to the database) that are actually used (as shown in the example below). 
-- However, the type string is allowed if it is declared using the built-in dictionary type `sstring` (for example, a component typed with a [data element](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendata_element_glosry.htm) or a [CDS simple type](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_simple_type_glosry.htm) that uses `sstring`).
+- However, the type string is allowed if it is declared using the built-in dictionary type `sstring` (for example, a component typed with a [data element](https://help.sap.com/docs/abap-cloud/abap-keyword/ddic-data-element) or a [CDS simple type](https://help.sap.com/docs/abap-cloud/abap-keyword/cds-simple-type) that uses `sstring`).
 
 The following example demonstrates various `SELECT` statements. A demo internal table has a component that is typed with a CDS simple type, which can be created as follows:
 - In ADT, right-click your pacakage, and choose *New -> Other Repository Object* 
 - Insert *type* and select *Type* under *Core Data Services*.
 - Choose *Next* and provide a name (e.g. `zdemo_abap_string`) and a description.
 - Choose *Finish*.
-- Find more information on CDS simple types [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_simple_types.htm).
+- Find more information on CDS simple types [here](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-cds-simple-types).
 
 The code of the CDS simple type may look as follows: 
 
@@ -6993,7 +6993,7 @@ Secondary table keys:
   - Unique hash keys
 - Have self-defined names (in contrast to the predefined name `primary_key` for the primary table key). An alias name can be specified. Note that alias names for the primary table key are also possible.
 
-[Secondary table index](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensecondary_table_index_glosry.htm):
+[Secondary table index](https://help.sap.com/docs/abap-cloud/abap-keyword/secondary-table-index):
 - Created internally for each sorted secondary key. 
 - Allows index access to hashed tables via a sorted secondary table key. In this case, `sy-tabix` is set.
 
@@ -8311,7 +8311,7 @@ ENDCLASS.
 
 #### Table Type Definitions Using WITH[OUT] FURTHER SECONDARY KEYS
 
-The following code snippet illustrates the additions `WITH FURTHER SECONDARY KEYS` and `WITHOUT FURTHER SECONDARY KEYS` to table type definitions. In the first case, the table type may include additional secondary keys. In the second case, it cannot. Find more information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abaptypes_keydef.htm).
+The following code snippet illustrates the additions `WITH FURTHER SECONDARY KEYS` and `WITHOUT FURTHER SECONDARY KEYS` to table type definitions. In the first case, the table type may include additional secondary keys. In the second case, it cannot. Find more information [here](https://help.sap.com/docs/abap-cloud/abap-keyword/types-tabkeys).
 
 
 ```abap
@@ -8991,9 +8991,9 @@ ENDCLASS.
 ### Generic Table Types with Formal Parameters of Methods and Field Symbols
 
 
-- [Formal parameters](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenformal_parameter_glosry.htm) of methods or [field symbols](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenfield_symbol_glosry.htm) can be specified with generic types.
-- At runtime, the actual data type is copied from the assigned [actual parameter](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenactual_parameter_glosry.htm) or memory area, i.e. they receive the complete data type only when an actual parameter is passed or a memory area is assigned.
-- Among them, there are generic table types. For more information, refer to the [Data Types and Objects](16_Data_Types_and_Objects.md) cheat sheet and the [documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbuilt_in_types_generic.htm).
+- [Formal parameters](https://help.sap.com/docs/abap-cloud/abap-keyword/formal-parameter) of methods or [field symbols](https://help.sap.com/docs/abap-cloud/abap-keyword/field-symbol) can be specified with generic types.
+- At runtime, the actual data type is copied from the assigned [actual parameter](https://help.sap.com/docs/abap-cloud/abap-keyword/actual-parameter) or memory area, i.e. they receive the complete data type only when an actual parameter is passed or a memory area is assigned.
+- Among them, there are generic table types. For more information, refer to the [Data Types and Objects](16_Data_Types_and_Objects.md) cheat sheet and the [documentation](https://help.sap.com/docs/abap-cloud/abap-keyword/generic-abap-types).
 - The following example mainly demonstrates formal parameters of methods that are typed with generic table types. The method calls and the tables passed are only possible if the generic types fit. For example, you cannot pass a hashed table to a method whose importing parameter is typed with the generic type `INDEX TABLE`. Invalid method calls and table passing are commented out.
 
 ```abap
@@ -9086,7 +9086,7 @@ ENDCLASS.
 
 ### Searching and Replacing Substrings in Internal Tables with Character-Like Data Types
 
-You can use [`FIND ... IN TABLE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapfind_itab.htm) statements to search for substrings in internal tables (standard tables without secondary table keys; with character-like line type) line by line. 
+You can use [`FIND ... IN TABLE`](https://help.sap.com/docs/abap-cloud/abap-keyword/find-in-table-itab) statements to search for substrings in internal tables (standard tables without secondary table keys; with character-like line type) line by line. 
 
 ``` abap
 DATA(str_table) = VALUE string_table( ( `aZbzZ` ) ( `cdZze` ) ( `Zzzf` ) ( `ghz` ) ).
@@ -9124,7 +9124,7 @@ FIND FIRST OCCURRENCE OF `Z`
   RESPECTING CASE.
 ```
 
-Replacements in internal tables with [`REPLACE ... IN TABLE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapreplace_itab.htm):
+Replacements in internal tables with [`REPLACE ... IN TABLE`](https://help.sap.com/docs/abap-cloud/abap-keyword/replace-in-table-itab):
 
 ``` abap
 DATA(str_table_original) = VALUE string_table( ( `aZbzZ` ) ( `cdZze` ) ( `Zzzf` ) ( `ghz` ) ).
@@ -9225,14 +9225,14 @@ SELECT * FROM @inttab AS tab
 
 You can compare internal tables: 
 - Using the methods of the `CL_ABAP_DIFF` class to compare the content of two compatible index tables programmatically. 
-  - Find more information in the class documentation and in the [ABAP Keyword Documentation]([06_Dynamic_Programming.md](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencl_abap_diff.htm)). A code snippet is available in the [Released ABAP Classes](22_Released_ABAP_Classes.md) cheat sheet.
+  - Find more information in the class documentation and in the [ABAP Keyword Documentation]([06_Dynamic_Programming.md](https://help.sap.com/docs/abap-cloud/abap-keyword/itab-system-class-cl-abap-diff)). A code snippet is available in the [Released ABAP Classes](22_Released_ABAP_Classes.md) cheat sheet.
 - Using the [Table Comparison Tool](https://help.sap.com/docs/abap-cloud/abap-development-tools-user-guide/comparing-internal-tables-085ab2303ceb4478ad7958053c2ebeb3?locale=en-US&version=LATEST) in ADT.   
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ### BDEF Derived Types (ABAP EML)
 
-In the context of [ABAP RAP](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenarap_glosry.htm), the operands of [ABAP EML](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_eml_glosry.htm) statements and parameters of [RAP handler methods](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabp_handler_method_glosry.htm) and [RAP saver methods](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabp_saver_method_glosry.htm) are mainly special messenger tables for passing data and receiving results or messages: [BDEF derived types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_derived_type_glosry.htm) - special ABAP types (internal tables and structures) that are tailor-made for RAP purposes.
+In the context of [ABAP RAP](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-restful-application-programming-model), the operands of [ABAP EML](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-eml) statements and parameters of [RAP handler methods](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-handler-method) and [RAP saver methods](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-saver-method) are mainly special messenger tables for passing data and receiving results or messages: [BDEF derived types](https://help.sap.com/docs/abap-cloud/abap-keyword/bdef-derived-type) - special ABAP types (internal tables and structures) that are tailor-made for RAP purposes.
 
 ```abap
 "Example declarations
@@ -9948,7 +9948,7 @@ ENDCLASS.
 
 
 ## More Information
-Topic [Internal Tables](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenitab.htm) in the ABAP Keyword Documentation.
+Topic [Internal Tables](https://help.sap.com/docs/abap-cloud/abap-keyword/internal-tables-itab) in the ABAP Keyword Documentation.
 
 ## Executable Example
 [zcl_demo_abap_internal_tables](./src/zcl_demo_abap_internal_tables.clas.abap)

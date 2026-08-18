@@ -7,7 +7,7 @@
   - [WHERE Conditions in ABAP Statements for Processing Internal Tables](#where-conditions-in-abap-statements-for-processing-internal-tables)
     - [Executable Example](#executable-example)
 
-This cheat sheet focuses on `WHERE` conditions and explores various syntax options in ABAP statements that include `WHERE` for data filtering. This is relevant, for example, when retrieving data from a data source using ABAP SQL or when processing internal tables with ABAP statements. For all details and syntax options, refer to the [ABAP Keyword Documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABENABAP.html). Several aspects and code snippets in this cheat sheet are also available in other cheat sheets.
+This cheat sheet focuses on `WHERE` conditions and explores various syntax options in ABAP statements that include `WHERE` for data filtering. This is relevant, for example, when retrieving data from a data source using ABAP SQL or when processing internal tables with ABAP statements. For all details and syntax options, refer to the [ABAP Keyword Documentation](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-keyword-documentation). Several aspects and code snippets in this cheat sheet are also available in other cheat sheets.
 
 > [!NOTE]
 > - Most examples in the cheat sheet use internal tables as data sources for ABAP SQL `SELECT` statements to have self-contained examples. Use `SELECT` with internal tables as data sources only when SQL functionalities like joins exceed ABAP statements. For more details, refer to the [Internal Tables](01_Internal_Tables.md) cheat sheet.
@@ -17,12 +17,12 @@ This cheat sheet focuses on `WHERE` conditions and explores various syntax optio
 
 ## WHERE Conditions in ABAP SQL Statements 
 
-- Using [logical expressions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenlogical_expression_glosry.htm "Glossary Entry"), you can limit the number of rows in the result set or those to be modified in a data source.
+- Using [logical expressions](https://help.sap.com/docs/abap-cloud/abap-keyword/logical-expression), you can limit the number of rows in the result set or those to be modified in a data source.
 - A row is included in the result set or modified in the data source only if the logical expression is true.
 - Certain restrictions apply to logical expressions. For example, columns of types like `string` and `rawstring` cannot be used.
 - Regarding data retrieval, columns in the logical expressions do not need to be part of the result set.
 - You can combine multiple logical expressions using `AND` or `OR`.
-- Combining logical expressions in parentheses allows the refinement of conditions. Find more information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenwhere_logexp_andornot.htm).
+- Combining logical expressions in parentheses allows the refinement of conditions. Find more information [here](https://help.sap.com/docs/abap-cloud/abap-keyword/sql-cond-and-or-not).
 - Conditions can be specified in ABAP SQL statements in these contexts:
   - Queries with `SELECT`: `WHERE` and `HAVING` clauses
   - Modifying operations: `WHERE` clause in `UPDATE` and `DELETE` statements
@@ -362,7 +362,7 @@ SELECT animal FROM @itab AS tab
 
  <td> 
 
-Checks whether the content of an operand is (not) the initial value of its [built-in DDIC type](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbuiltin_ddic_type_glosry.htm). 
+Checks whether the content of an operand is (not) the initial value of its [built-in DDIC type](https://help.sap.com/docs/abap-cloud/abap-keyword/built-in-ddic-type). 
 
  </td>
 
@@ -456,7 +456,7 @@ SELECT id FROM @itab AS tab
 
  <td> 
 
-Checks whether each of the values of multiple operands in a parenthesized, comma-separated list on the left side of `IN` matches value tuples in the same place specified in parentheses on the right side of `IN`. Unlike the syntax option `... a [NOT] IN (b, c, ...) ...`, this syntax option allows [SQL expressions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensql_expression_glosry.htm) on the right side of `IN`. Note that a negation with `NOT` is not supported. 
+Checks whether each of the values of multiple operands in a parenthesized, comma-separated list on the left side of `IN` matches value tuples in the same place specified in parentheses on the right side of `IN`. Unlike the syntax option `... a [NOT] IN (b, c, ...) ...`, this syntax option allows [SQL expressions](https://help.sap.com/docs/abap-cloud/abap-keyword/sql-expression) on the right side of `IN`. Note that a negation with `NOT` is not supported. 
 
  </td>
 
@@ -504,7 +504,7 @@ SELECT id FROM @itab AS tab
 
  <td> 
 
-Checks whether the operand on the left side  of `IN` matches (or does not match) [ranges conditions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenranges_condition_glosry.htm) specified in a [ranges table](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenranges_table_glosry.htm). Note that the operators `CP` and `NP` are transformed into `LIKE` conditions (as a consequence, the conditions for `CP` and `NP` are case-sensitive). 
+Checks whether the operand on the left side  of `IN` matches (or does not match) [ranges conditions](https://help.sap.com/docs/abap-cloud/abap-keyword/ranges-condition) specified in a [ranges table](https://help.sap.com/docs/abap-cloud/abap-keyword/ranges-table). Note that the operators `CP` and `NP` are transformed into `LIKE` conditions (as a consequence, the conditions for `CP` and `NP` are case-sensitive). 
 
  </td>
 
@@ -564,7 +564,7 @@ SELECT id FROM @itab AS tab
 
  <td> 
 
-Checks whether the value of an operand is (not) the [null value](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abennull_value_glosry.htm). Find more information in the executable example (which also includes the `INDICATORS NULL STRUCTURE` addition to the `INTO` clause) and in the [ABAP Keyword Documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenwhere_logexp_null.htm). 
+Checks whether the value of an operand is (not) the [null value](https://help.sap.com/docs/abap-cloud/abap-keyword/null-value). Find more information in the executable example (which also includes the `INDICATORS NULL STRUCTURE` addition to the `INTO` clause) and in the [ABAP Keyword Documentation](https://help.sap.com/docs/abap-cloud/abap-keyword/sql-cond-is-null). 
 
  </td>
 
@@ -627,9 +627,9 @@ SELECT id FROM @itab AS tab
 
 > [!NOTE]
 > - Some subqueries in the syntax variants must be scalar subqueries. This means that the subquery returns a single-column result set. The `SELECT` list of the subquery must only contain a single element.
-> - See [this topic](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABAPSQL_EXPR.html) in the ABAP Keyword Documentation what can be specified as operands on the left and right side. 
+> - See [this topic](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-sql-sql-expressions-sql-exp) in the ABAP Keyword Documentation what can be specified as operands on the left and right side. 
 > - The comparisons are done on the database, so there is no type conversions in ABAP beforehand. Note that platform-dependent conversion behavior may be applied. For SAP HANA Platform-related conversion rules, see [this topic](https://help.sap.com/docs/SAP_HANA_PLATFORM/4fe29514fd584807ac9f2a04f6754767/b4b0eec1968f41a099c828a4a6c8ca0f.html).
-> - See [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/abenwhere_logexp_compare_types.html) a list of comparable types in the ABAP Dictionary.
+> - See [here](https://help.sap.com/docs/abap-cloud/abap-keyword/sql-cond-comparable-types) a list of comparable types in the ABAP Dictionary.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
@@ -646,10 +646,10 @@ SELECT id FROM @itab AS tab
   - Comparison expressions
     - Comparison operators as above (`=`, `EQ`, `<>`, `NE`, `>`, `GT`, `<`, `LT`, `>=`, `GE`, `<=`, `LE`)
     - Comparison operators for character-like data types `CO`, `CN`, `CA`, `NA`, `CS`, `NS`, `CP`, `NP` (see the [String Processing cheat sheet](07_String_Processing.md#comparison-operators-for-character-like-data-types-in-a-nutshell))
-    - [Comparison operators for byte-like data types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenlogexp_bytes.htm), e.g. `BYTE-CO` and others; and [bit patterns](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABENLOGEXP_BITMASKS.html)
+    - [Comparison operators for byte-like data types](https://help.sap.com/docs/abap-cloud/abap-keyword/rel-exp-comparison-operators-for-byte-like-data-types), e.g. `BYTE-CO` and others; and [bit patterns](https://help.sap.com/docs/abap-cloud/abap-keyword/rel-exp-comparison-operators-for-bit-patterns)
     - `[NOT] BETWEEN ... AND ...`
     - `[NOT] IN ranges_table`
-  - [Predicate expression](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenpredicate_expression_glosry.htm)
+  - [Predicate expression](https://help.sap.com/docs/abap-cloud/abap-keyword/predicate-expression)
     - `IS [NOT] INITIAL`
     - `IS [NOT] BOUND`
     - `IS [NOT] INSTANCE OF`

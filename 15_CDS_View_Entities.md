@@ -5,12 +5,12 @@
   - [More Information](#more-information)
   - [Executable Example](#executable-example)
 
-Core data services (CDS) are an infrastructure for defining and consuming semantically rich data models on the [standard database](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenstandard_db_glosry.htm) of an [AS ABAP](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenas_abap_glosry.htm).
+Core data services (CDS) are an infrastructure for defining and consuming semantically rich data models on the [standard database](https://help.sap.com/docs/abap-cloud/abap-keyword/standard-database) of an [AS ABAP](https://help.sap.com/docs/abap-cloud/abap-keyword/application-server-abap).
 
 > [!NOTE]
 > - The executable example focuses on CDS view entities and covers a selection of features.
 > - The sample CDS view entities are designed to demonstrate a selection of features with a limited number of artifacts. They are not intended to be role models for proper CDS view design. They focus on syntax options only. They are not intended to solve concrete programming tasks. You should always work out your own solution for each individual case. For more detailed information, refer to the links in the [More Information](#more-information) section.
-> - The [ABAP Dictionary](26_ABAP_Dictionary.md) cheat sheet highlights that several [CDS entities](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_entity_glosry.htm) - apart from CDS view entities - represent structured types that are usable in ABAP.
+> - The [ABAP Dictionary](26_ABAP_Dictionary.md) cheat sheet highlights that several [CDS entities](https://help.sap.com/docs/abap-cloud/abap-keyword/cds-entity) - apart from CDS view entities - represent structured types that are usable in ABAP.
 
 ## A Glimpse on the CDS Syntax
 The following links take you to the source code of the cheat sheet artifacts to get a glimpse on the syntax used. To explore the syntax in action, import the ABAP cheat sheet repository into your system. 
@@ -44,11 +44,11 @@ The following links take you to the source code of the cheat sheet artifacts to 
 ## More Information
 
 - [ABAP Data Models Guide](https://help.sap.com/docs/abap-cloud/abap-data-models/abap-data-models)
-- [ABAP Core Data Services in the ABAP Keyword Documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds.htm)
+- [ABAP Core Data Services in the ABAP Keyword Documentation](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-core-data-services-abap-cds)
 - [ABAP CDS Development Tools: User Guide](https://help.sap.com/docs/abap-cloud/abap-cds-tools-user-guide/about-abap-cds-development-tools-user-guide?version=sap_btp)
-- [ABAP CDS Feature Tables](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_language_elements.htm)
-- [ABAP CDS Glossary](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_glossary.htm)
-- [ABAP CDS - SAP Annotation Documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_annotations_ktd_docu.htm)
+- [ABAP CDS Feature Tables](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-cds-feature-tables)
+- [ABAP CDS Glossary](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-cds-glossary)
+- [ABAP CDS - SAP Annotation Documentation](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-cds-sap-annotation-documentation)
 - Blogs:
   - [Feature Matrix: Data Modeling with ABAP Core Data Services](https://blogs.sap.com/2022/10/24/feature-matrix-data-modeling-with-abap-core-data-services/)
   - [ABAP CDS Cheat Sheet: Amounts and Quantities in ABAP CDS](https://blogs.sap.com/2022/07/07/abap-cds-cheat-sheet-amounts-and-quantities-in-abap-cds/)

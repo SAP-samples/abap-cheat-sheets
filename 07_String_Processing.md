@@ -54,20 +54,20 @@
 
 ## Introduction
 
-ABAP offers plenty of options for processing [character strings](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencharacter_string_glosry.htm "Glossary Entry").
-The options include ABAP statements (e. g. [`FIND`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapfind.htm)),
-[character string expressions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenstring_expression_glosry.htm "Glossary Entry")
-([concatenations](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconcatenation_glosry.htm) and [string templates](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenstring_template_glosry.htm "Glossary Entry"))
-and built-in [string functions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenstring_function_glosry.htm "Glossary Entry")
-(e. g. [`strlen`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenlength_functions.htm)).
+ABAP offers plenty of options for processing [character strings](https://help.sap.com/docs/abap-cloud/abap-keyword/character-string).
+The options include ABAP statements (e. g. [`FIND`](https://help.sap.com/docs/abap-cloud/abap-keyword/find)),
+[character string expressions](https://help.sap.com/docs/abap-cloud/abap-keyword/character-string-expression)
+([concatenations](https://help.sap.com/docs/abap-cloud/abap-keyword/concatenation) and [string templates](https://help.sap.com/docs/abap-cloud/abap-keyword/character-string-template))
+and built-in [string functions](https://help.sap.com/docs/abap-cloud/abap-keyword/string-function)
+(e. g. [`strlen`](https://help.sap.com/docs/abap-cloud/abap-keyword/cstring-func-charlen-dbmaxlen-numofchar-strlen)).
 
 > [!NOTE]  
 >-  Compared to statements, expressions and string functions can help make your ABAP code more
     concise and straightforward. For example, you can perform string operations directly in [operand
-    position](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenoperand_position_glosry.htm "Glossary Entry"),
+    position](https://help.sap.com/docs/abap-cloud/abap-keyword/operand-position),
     allowing you to avoid temporary variables.
 >-   In ABAP statements, modification operations on strings are often performed in read/write positions, meaning that the source and target
-    fields of an operation are the same. When working with string functions, the source field is passed as an input parameter and the modified value is returned as a [return value](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenreturn_value_glosry.htm "Glossary Entry"), meaning that the function itself does not modify the source field. Of course, you can assign the function to the source field to achieve its modification.
+    fields of an operation are the same. When working with string functions, the source field is passed as an input parameter and the modified value is returned as a [return value](https://help.sap.com/docs/abap-cloud/abap-keyword/return-value), meaning that the function itself does not modify the source field. Of course, you can assign the function to the source field to achieve its modification.
 >-   In most cases, string functions provide the same functionality as the
     corresponding ABAP statements, or even more. The return value of string functions
     that return character strings is always of type `string`.
@@ -80,27 +80,27 @@ ABAP provides the following built-in data types for data objects that contain ch
 
 | Type | Details | Length | Value Range | Initial Value |
 |---|---|---|---|---|
-| `string` | For variable length character strings. [Data objects](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendata_object_glosry.htm "Glossary Entry") of this type are [dynamic data objects](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendynamic_data_object_glosry.htm "Glossary Entry"), i. e. the length of a variable can change during the execution of an ABAP program and thus it can contain character strings of different lengths. A data object of type `string` is called *text string* or, in short, just *string*. | No standard length; length is variable | Any [Unicode](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenunicode_glosry.htm) characters that can be encoded in ABAP language's code page [UCS-2](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenucs2_glosry.htm). The most common content are alphanumeric characters or special characters.  | Empty string with length 0 |
-| `c` | For fixed length character strings. Data objects of this type are [static data objects](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenstatic_data_object_glosry.htm), i. e. the length of a variable must be defined during its declaration and does not change during the execution of an ABAP program. Thus, it always contains character strings of the same length. A data object of type `c` is called *text field*.|Data objects of this type can contain a string of fixed length (between 1 and 262143 characters); standard length: 1 | Same as for `string` | A blank for each position |
+| `string` | For variable length character strings. [Data objects](https://help.sap.com/docs/abap-cloud/abap-keyword/data-object) of this type are [dynamic data objects](https://help.sap.com/docs/abap-cloud/abap-keyword/dynamic-data-object), i. e. the length of a variable can change during the execution of an ABAP program and thus it can contain character strings of different lengths. A data object of type `string` is called *text string* or, in short, just *string*. | No standard length; length is variable | Any [Unicode](https://help.sap.com/docs/abap-cloud/abap-keyword/unicode) characters that can be encoded in ABAP language's code page [UCS-2](https://help.sap.com/docs/abap-cloud/abap-keyword/ucs-2). The most common content are alphanumeric characters or special characters.  | Empty string with length 0 |
+| `c` | For fixed length character strings. Data objects of this type are [static data objects](https://help.sap.com/docs/abap-cloud/abap-keyword/static-data-object), i. e. the length of a variable must be defined during its declaration and does not change during the execution of an ABAP program. Thus, it always contains character strings of the same length. A data object of type `c` is called *text field*.|Data objects of this type can contain a string of fixed length (between 1 and 262143 characters); standard length: 1 | Same as for `string` | A blank for each position |
 
 In addition to these main data types for character strings, there are several other fixed length data types with special meanings:
 
 -	`n` for fixed length numerical character strings
-    - Data objects of this type are technically almost the same as text fields. However, the only valid characters are the digits 0 to 9. Validity is not checked for assigning values in a regular way but only for [lossless assignments](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenlossless_assignment_glosry.htm). Thus, such numeric text fields can contain invalid data, but should only be used for digits that are not intended for arithmetic calculations, such as zip codes or article numbers. The initial value for each position is 0.
+    - Data objects of this type are technically almost the same as text fields. However, the only valid characters are the digits 0 to 9. Validity is not checked for assigning values in a regular way but only for [lossless assignments](https://help.sap.com/docs/abap-cloud/abap-keyword/lossless-assignment-abenlossless_assignment_glosry). Thus, such numeric text fields can contain invalid data, but should only be used for digits that are not intended for arithmetic calculations, such as zip codes or article numbers. The initial value for each position is 0.
 -	`d` and `t` for date and time fields
     - These data types have a predefiend length of 6 and 8. Data objects of these types are used for character representations of dates and times in a predefined format. You can use them directly in date and time calculations. However, these fields can also contain invalid values.
 
-These data types are not covered further in this cheat sheet. Note that there are the [byte-like data types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbyte_like_data_typ_glosry.htm "Glossary Entry") `x` and `xstring` that are closely related to `c` and `string` but contain raw [byte strings](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbyte_string_glosry.htm).
+These data types are not covered further in this cheat sheet. Note that there are the [byte-like data types](https://help.sap.com/docs/abap-cloud/abap-keyword/byte-like-data-type) `x` and `xstring` that are closely related to `c` and `string` but contain raw [byte strings](https://help.sap.com/docs/abap-cloud/abap-keyword/byte-string).
 
 ### Differences Between Text Strings (Variable Length) and Text Fields (Fixed Length)
 - **Initial value**: The initial value of a text string is an
     empty string of length 0. The initial value of text field is represented by blanks at each position.
--   **Internal representation**: Data objects of type `c` and `string` are both [elementary data objects](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenelementary_data_object_glosry.htm "Glossary Entry").
-    However, while text fields occupy a block of memory according to their length, text strings are so-called [deep](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendeep_glosry.htm "Glossary Entry") data objects. Internally, they are managed by a [reference](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenreference_glosry.htm "Glossary Entry") that points to the actual character. This fact has restrictive consequences for the use of strings as components of structures, but can also improve the performance of assignments due to the concept of [sharing](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensharing_glosry.htm "Glossary Entry") of deep data objects.
+-   **Internal representation**: Data objects of type `c` and `string` are both [elementary data objects](https://help.sap.com/docs/abap-cloud/abap-keyword/elementary-data-object).
+    However, while text fields occupy a block of memory according to their length, text strings are so-called [deep](https://help.sap.com/docs/abap-cloud/abap-keyword/deep) data objects. Internally, they are managed by a [reference](https://help.sap.com/docs/abap-cloud/abap-keyword/reference) that points to the actual character. This fact has restrictive consequences for the use of strings as components of structures, but can also improve the performance of assignments due to the concept of [sharing](https://help.sap.com/docs/abap-cloud/abap-keyword/sharing) of deep data objects.
 - **Length**: Theoretically, a text string can use up to 2 GB (one character occupies 2 bytes).
     The maximum length of a text field is 262143 characters.
 - **Trailing blanks**: For text strings, trailing blanks are preserved in all operations. For text fields, it depends on the [operand
-    position](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenoperand_position_glosry.htm "Glossary Entry") whether trailing blanks are respected or not. In most operand positions, trailing blanks are truncated when working with text fields, even when using [text field literals](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abentext_field_literal_glosry.htm). For example, if a text field is assigned to a text string, the resulting target string will never contain trailing blanks. See the *Condensing Strings* section in this context.
+    position](https://help.sap.com/docs/abap-cloud/abap-keyword/operand-position) whether trailing blanks are respected or not. In most operand positions, trailing blanks are truncated when working with text fields, even when using [text field literals](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abentext_field_literal_glosry.htm). For example, if a text field is assigned to a text string, the resulting target string will never contain trailing blanks. See the *Condensing Strings* section in this context.
 - **Flexibility**: Text strings are more flexible than text fields
     because you can easily shorten or lengthen them without
     worrying that, for example, parts of the character string will be
@@ -117,13 +117,13 @@ is not relevant, text strings are a good choice.
 ## Declaring Character-Like Data Objects
 
 - To work with character strings, you need character-like data objects based on the character-like types mentioned above.
-- The simplest way of producing text in an ABAP program are [character literals](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencharacter_literal_glosry.htm).
+- The simplest way of producing text in an ABAP program are [character literals](https://help.sap.com/docs/abap-cloud/abap-keyword/character-literal).
 The following code snippet shows a global class implementing the interface `if_oo_adt_classrun`. 
-  - Using the `write` method, you can display output in the ADT console. In the example, two [untyped literals](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenuntyped_literal_glosry.htm) without a dedicated name ([unnamed data object](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenunnamed_data_object_glosry.htm)) are included. 
+  - Using the `write` method, you can display output in the ADT console. In the example, two [untyped literals](https://help.sap.com/docs/abap-cloud/abap-keyword/untyped-literal) without a dedicated name ([unnamed data object](https://help.sap.com/docs/abap-cloud/abap-keyword/unnamed-data-object)) are included. 
   - In the case below, the data type of the character literals are defined by the delimiters.
 - Text string literals are enclosed in backquotes (<code>\`...\`</code>) and have the data type `string`. 
 - Text field literals are enclosed in single quotes (`'...'`) and have the data type `c`. 
-- The literals can be (but should not according to the [programming guidelines on literals (F1 docu for standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenliterals_guidl.htm)) used like constants of these types in [operand positions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenoperand_position_glosry.htm). They should be only used for start values when declaring [named data objects](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abennamed_data_object_glosry.htm).
+- The literals can be (but should not according to the [programming guidelines on literals (F1 docu for standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenliterals_guidl.htm)) used like constants of these types in [operand positions](https://help.sap.com/docs/abap-cloud/abap-keyword/operand-position). They should be only used for start values when declaring [named data objects](https://help.sap.com/docs/abap-cloud/abap-keyword/named-data-object).
 
 ```abap
 CLASS zcl_demo_abap DEFINITION PUBLIC FINAL CREATE PUBLIC.
@@ -139,8 +139,8 @@ CLASS zcl_demo_abap IMPLEMENTATION.
 ENDCLASS.
 ```
 
-- [Named](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abennamed_data_object_glosry.htm) character-like data types and objects can be declared like other types and objects using [`TYPES`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abaptypes.htm), [`DATA`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapdata.htm) [`CONSTANTS`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapconstants.htm) and by referring to a character-like data type.
-- In addition, character-like data objects can be declared inline with the operators `DATA` and [`FINAL`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenfinal_inline.htm).
+- [Named](https://help.sap.com/docs/abap-cloud/abap-keyword/named-data-object) character-like data types and objects can be declared like other types and objects using [`TYPES`](https://help.sap.com/docs/abap-cloud/abap-keyword/types), [`DATA`](https://help.sap.com/docs/abap-cloud/abap-keyword/data) [`CONSTANTS`](https://help.sap.com/docs/abap-cloud/abap-keyword/constants) and by referring to a character-like data type.
+- In addition, character-like data objects can be declared inline with the operators `DATA` and [`FINAL`](https://help.sap.com/docs/abap-cloud/abap-keyword/final-inline-declaration-for-immutable-variables).
 
 Syntax examples:
 ``` abap
@@ -176,9 +176,9 @@ DATA char_no_type_len.
 ## Assigning Values
 
 - When you declare character-like data objects, you can specify start values directly with the `VALUE` addition, e.g. `DATA chars TYPE c LENGTH 3 VALUE 'abc'.`. 
-- Various ABAP statements assign values. You can do value assignments to data objects using the [assignment operator](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenassignment_operator_glosry.htm "Glossary Entry") `=`.
+- Various ABAP statements assign values. You can do value assignments to data objects using the [assignment operator](https://help.sap.com/docs/abap-cloud/abap-keyword/assignment-operator-abenassignment_operator_glosry) `=`.
 - As mentioned above, you can declare character-like data objects inline using the operators `DATA` or `FINAL`. 
-- You can use the operators at many [write positions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenwrite_position_glosry.htm "Glossary Entry"). 
+- You can use the operators at many [write positions](https://help.sap.com/docs/abap-cloud/abap-keyword/write-position). 
 - Unlike the `VALUE` addition of the declaration statements, inline declarations allow you to declare variables for the results of expressions or at other positions where character strings are returned.
 - In the case below, a variable specified in parentheses preceded by `DATA` (or `FINAL`) on the left side of the assignment operator automatically derives a data type from the operand on the right. This helps to make your
 programs leaner.
@@ -239,10 +239,10 @@ str6 = char3. "'ab' (trailing blanks are not respected due to conversion rule)
 - When assigning strings, not only data objects can be placed on the right
 side. Various expressions and strings can be concatenated using the
 [concatenation
-operator](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconcatenation_operator_glosry.htm "Glossary Entry")
+operator](https://help.sap.com/docs/abap-cloud/abap-keyword/concatenation-operator)
 `&&`. 
 - Alternatively, you can concatenate strings using [string
-templates](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenstring_template_glosry.htm "Glossary Entry"), as described in the *Concatenating Strings* section.
+templates](https://help.sap.com/docs/abap-cloud/abap-keyword/character-string-template), as described in the *Concatenating Strings* section.
 ``` abap
 str5 = str3 && ` ` && str4 && `!`. "X 1-!
 "Note the output for str4 that includes the conversion of type i to
@@ -257,14 +257,14 @@ str5 = str3 && ` ` && str4 && `!`. "X 1-!
 - Using string templates, you can construct strings very elegantly from
 literal text and - which is the primary use case - by including
 embedded ABAP
-[expressions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenexpression_glosry.htm "Glossary Entry")
+[expressions](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-expression)
 within a pair of delimiters (`|...|`) if these expressions can be converted to `string`. 
 - To embed expressions, you enclose them in curly brackets: `{ ... }`.
-- Among the expressions that can be specified in the curly brackets are data objects and [functional method calls](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenfunctional_method_call_glosry.htm) that have a [return value](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenreturn_value_glosry.htm). The expression result must be convertible to type `string`.
+- Among the expressions that can be specified in the curly brackets are data objects and [functional method calls](https://help.sap.com/docs/abap-cloud/abap-keyword/functional-method-call) that have a [return value](https://help.sap.com/docs/abap-cloud/abap-keyword/return-value). The expression result must be convertible to type `string`.
 
 > [!NOTE]  
 > - String templates form a [string
-expression](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenstring_expression_glosry.htm "Glossary Entry")
+expression](https://help.sap.com/docs/abap-cloud/abap-keyword/character-string-expression)
 that is compiled at runtime. Therefore, a string template that contains only
 literal text is treated as an expression, which has a performance impact. In such a case, it is preferable to use a text string literal with backquotes.
 > - It is possible to dynamically specify formatting options. For more information, refer to the [Dynamic Formatting Option Specifications in String Templates](/06_Dynamic_Programming.md#dynamic-formatting-option-specifications-in-string-templates) section of the *Dynamic Programming* cheat sheet.
@@ -316,7 +316,7 @@ DATA(s12) = |\\ \| \{ \}|.
 
 ### Control Characters in String Templates
 - String templates interpret certain character combinations as [control
-characters](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenstring_templates_separators.htm).
+characters](https://help.sap.com/docs/abap-cloud/abap-keyword/string-tmpl-control-characters).
 - For example, `\n` is interpreted as a newline. A new line is
 started. 
 
@@ -344,7 +344,7 @@ ASSERT cl_abap_char_utilities=>cr_lf          = |\r\n|.
 
 ### Formatting Options in String Templates
 - String templates support various formatting options.
-- The following syntax examples demonstrate a selection. For information about all options, refer to [this topic](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapcompute_string_format_options.htm) in the ABAP Keyword Documentation.
+- The following syntax examples demonstrate a selection. For information about all options, refer to [this topic](https://help.sap.com/docs/abap-cloud/abap-keyword/embd-exp-format-options) in the ABAP Keyword Documentation.
 
 ```abap
 *&---------------------------------------------------------------------*
@@ -613,12 +613,12 @@ s1 = |{ decimal_number NUMBER = ENVIRONMENT }|.
 ## Determining the Length of Strings
 
 - To determine the length of a string, you can use the string function
-[`strlen`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenlength_functions.htm).
+[`strlen`](https://help.sap.com/docs/abap-cloud/abap-keyword/cstring-func-charlen-dbmaxlen-numofchar-strlen).
 - Note that the result depends on the type of the string, i. e. the result for a data object of type `string` includes trailing blanks. A
 fixed-length string does not include them. 
 - To exclude trailing blanks in all cases, regardless of the data type, you can use the built-in
-[`numofchar`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenlength_functions.htm) function.
-- [`xstrlen`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendescriptive_functions_binary.htm) returns the number of bytes of a byte-like argument.
+[`numofchar`](https://help.sap.com/docs/abap-cloud/abap-keyword/cstring-func-charlen-dbmaxlen-numofchar-strlen) function.
+- [`xstrlen`](https://help.sap.com/docs/abap-cloud/abap-keyword/bchain-func-xstrlen) returns the number of bytes of a byte-like argument.
 
 Syntax examples:
 ``` abap
@@ -644,13 +644,13 @@ DATA(len_xstr) = xstrlen( xstr ). "24
 
 - Two or more strings can be concatenated using the concatenation operator
 `&&` and string templates. Alternatively, you can use
-[`CONCATENATE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapconcatenate.htm)
+[`CONCATENATE`](https://help.sap.com/docs/abap-cloud/abap-keyword/concatenate)
 statements. 
 - It is also possible to concatenate lines from internal tables with character-like line type
 into a string to avoid a loop. 
 - A more modern way is to use
 the string function
-[`concat_lines_of`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconcatenation_functions.htm).
+[`concat_lines_of`](https://help.sap.com/docs/abap-cloud/abap-keyword/cstring-func-concat-lines-of).
 
 Syntax examples:
 ``` abap
@@ -800,7 +800,7 @@ txt &&= concat_lines_of( table = strtab ).
 
 ### Literal Operator 
 
-The [literal operator](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenliteral_operator_glosry.htm "Glossary Entry") `&` combines [text string literals](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentext_string_literal_glosry.htm "Glossary Entry"), however, with [significant differences](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenliteral_operator.htm) to `&&`, which the code snippet addresses.
+The [literal operator](https://help.sap.com/docs/abap-cloud/abap-keyword/literal-operator-abenliteral_operator_glosry) `&` combines [text string literals](https://help.sap.com/docs/abap-cloud/abap-keyword/text-string-literal), however, with [significant differences](https://help.sap.com/docs/abap-cloud/abap-keyword/literal-operator) to `&&`, which the code snippet addresses.
 
 
 ```abap
@@ -852,7 +852,7 @@ DATA(len2) = numofchar( char_with_blanks_conc_op ).
 ## Splitting Strings
 
 - You can use
-[`SPLIT`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapsplit.htm)
+[`SPLIT`](https://help.sap.com/docs/abap-cloud/abap-keyword/split)
 statements to split strings in multiple segments. 
 - The result of the
 split can be stored in separate data objects or internal tables that
@@ -865,7 +865,7 @@ statements is useful if the number of expected segments is known.
 Otherwise, splitting into tables is a good choice.
 - If you want to get the value of a particular segment, you can use the
 string function
-[`segment`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensegment_functions.htm).
+[`segment`](https://help.sap.com/docs/abap-cloud/abap-keyword/cstring-func-segment).
 
 Syntax examples:
 ``` abap
@@ -915,13 +915,13 @@ SPLIT some_text AT ` ` INTO: DATA(str1) DATA(str2) DATA(str3) DATA(str4), TABLE 
 ### Transforming to Lowercase and Uppercase
 
 - The string functions
-[`to_lower`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencase_functions.htm)
+[`to_lower`](https://help.sap.com/docs/abap-cloud/abap-keyword/cstring-func-to-upper-to-lower-to-mixed-from-mixed)
 and
-[`to_upper`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencase_functions.htm)
+[`to_upper`](https://help.sap.com/docs/abap-cloud/abap-keyword/cstring-func-to-upper-to-lower-to-mixed-from-mixed)
 transform characters of a string to either lowercase or uppercase and
 store the result in a target variable. 
 - If you want to apply the transformation to the source directly, you can use
-[`TRANSLATE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abaptranslate.htm)
+[`TRANSLATE`](https://help.sap.com/docs/abap-cloud/abap-keyword/translate)
 statements. 
 
 Syntax examples:
@@ -947,12 +947,12 @@ s1 = to_upper( s1 ).
 
 - You can shift content within a string to a specific position on the left
 or right of a string.
-[`SHIFT`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapshift.htm)
+[`SHIFT`](https://help.sap.com/docs/abap-cloud/abap-keyword/shift)
 statements have various additions for specific use cases.
 - In a more modern way, you can use the string functions
-[`shift_left`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenshift_functions.htm)
+[`shift_left`](https://help.sap.com/docs/abap-cloud/abap-keyword/cstring-func-shift-left-shift-right)
 and
-[`shift_right`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenshift_functions.htm), which store the result in a variable. 
+[`shift_right`](https://help.sap.com/docs/abap-cloud/abap-keyword/cstring-func-shift-left-shift-right), which store the result in a variable. 
   - These functions provide additional
 functionality. The `sub` parameter can be used to specify a
 substring. All substrings in the string that match the value specified
@@ -1017,9 +1017,9 @@ s2 = shift_right( val = `abc   ` ). "'abc' (same result as above)
 ### Condensing Strings
 
 - You can use
-[`CONDENSE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapcondense.htm)
+[`CONDENSE`](https://help.sap.com/docs/abap-cloud/abap-keyword/condense)
 statements or the string function
-[`condense`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencondense_functions.htm)
+[`condense`](https://help.sap.com/docs/abap-cloud/abap-keyword/cstring-func-condense)
 to remove blanks from strings. 
 - The advantage of using the string function
 is that you can specify any character to remove, not just blanks.
@@ -1069,7 +1069,7 @@ s2 = condense( val  = `  Rock'xxx'Roller`
 ### Reversing Strings
 
 The string function
-[`reverse`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenreverse_functions.htm)
+[`reverse`](https://help.sap.com/docs/abap-cloud/abap-keyword/cstring-func-reverse)
 reverses a string:
 ``` abap
 "Result: 'abap'
@@ -1081,7 +1081,7 @@ DATA(s1) = reverse( `paba` ).
 ### Inserting Substrings into Strings
 
 - The string function
-[`insert`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abeninsert_functions.htm)
+[`insert`](https://help.sap.com/docs/abap-cloud/abap-keyword/cstring-func-insert)
 inserts a substring at any position within a given string. You can use various parameters to construct the string you want:
   - `val`: Original string.
   - `sub`: Substring.
@@ -1101,7 +1101,7 @@ s1 = insert( val = `abcghi` sub = `def` ).
 
 ### Overlaying Content
 
-You can use [`OVERLAY`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapoverlay.htm) statements to replace characters in one variable with characters in another variable that are in the same place there.
+You can use [`OVERLAY`](https://help.sap.com/docs/abap-cloud/abap-keyword/overlay) statements to replace characters in one variable with characters in another variable that are in the same place there.
 
 Syntax examples:
 ``` abap
@@ -1126,7 +1126,7 @@ OVERLAY txt1 WITH txt2 ONLY 'ab'.
 ## Accessing and Processing Substrings
 
 - The string function
-[`substring`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensubstring_functions.htm) allows you to specify the position (parameter `off`) and the length
+[`substring`](https://help.sap.com/docs/abap-cloud/abap-keyword/cstring-func-substring-substring) allows you to specify the position (parameter `off`) and the length
 (`len`) of a substring to be extracted from a given
 string (`val`). 
   - At least one of the two parameters `off`
@@ -1142,13 +1142,13 @@ exception `CX_SY_RANGE_OUT_OF_BOUNDS` is raised.
   - This syntax option even allows write access to substrings for fixed-length strings. Read access is possible for both fixed-length and variable-length strings.
   - However, this syntax can be confused with the use of tokens in the context of  dynamic programming.
 - There are other string functions available for dealing with substrings, such as 
-[`substring_after`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensubstring_functions.htm),
-[`substring_before`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensubstring_functions.htm),
-[`substring_from`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensubstring_functions.htm)
+[`substring_after`](https://help.sap.com/docs/abap-cloud/abap-keyword/cstring-func-substring-substring),
+[`substring_before`](https://help.sap.com/docs/abap-cloud/abap-keyword/cstring-func-substring-substring),
+[`substring_from`](https://help.sap.com/docs/abap-cloud/abap-keyword/cstring-func-substring-substring)
 and
-[`substring_to`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensubstring_functions.htm).
+[`substring_to`](https://help.sap.com/docs/abap-cloud/abap-keyword/cstring-func-substring-substring).
   - These functions offer more options in terms of parameters, such as the use of [PCRE regular
-expressions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenpcre_regex_glosry.htm "Glossary Entry").
+expressions](https://help.sap.com/docs/abap-cloud/abap-keyword/pcre-regular-expression).
 - As also shown further down, using the built-in function `match`, you can extract substrings matching a given pattern.
 
 Syntax examples:
@@ -1241,32 +1241,32 @@ s2 = match( val = `ABAP`
 
 - In ABAP, there are many ways to perform search and replace
 operations on strings. These include the use of [comparison
-operators](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencomp_operator_glosry.htm "Glossary Entry")
+operators](https://help.sap.com/docs/abap-cloud/abap-keyword/comparison-operator)
 or the ABAP statements
-[`FIND`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapfind.htm)
+[`FIND`](https://help.sap.com/docs/abap-cloud/abap-keyword/find)
 and
-[`REPLACE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapreplace.htm),
+[`REPLACE`](https://help.sap.com/docs/abap-cloud/abap-keyword/replace),
 or the more modern built-in string functions
-[`find`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensearch_functions.htm)
+[`find`](https://help.sap.com/docs/abap-cloud/abap-keyword/cstring-func-find-find)
 and
-[`replace`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenreplace_functions.htm),
+[`replace`](https://help.sap.com/docs/abap-cloud/abap-keyword/cstring-func-replace),
 among others, with their considerable number of additions and parameters. 
 - Many of these options support rather simple operations
 on single characters only or more complex, pattern-based
 operations on character sequences using [PCRE regular
-expressions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenpcre_regex_glosry.htm "Glossary Entry").
+expressions](https://help.sap.com/docs/abap-cloud/abap-keyword/pcre-regular-expression).
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ### Searching for Specific Characters
 
 -   You can use the [comparison
-    operators](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencomp_operator_glosry.htm "Glossary Entry")
-    [`CA`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenlogexp_strings.htm)
+    operators](https://help.sap.com/docs/abap-cloud/abap-keyword/comparison-operator)
+    [`CA`](https://help.sap.com/docs/abap-cloud/abap-keyword/rel-exp-comparison-operators-for-character-like-data-types)
     (contains any) or its negation
-    [`NA`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenlogexp_strings.htm)
+    [`NA`](https://help.sap.com/docs/abap-cloud/abap-keyword/rel-exp-comparison-operators-for-character-like-data-types)
     (contains not any) in [comparison
-    expressions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencomparison_expression_glosry.htm "Glossary Entry")
+    expressions](https://help.sap.com/docs/abap-cloud/abap-keyword/comparison-expression)
     to determine whether any character of a given character set is contained
     in a string. Such an expression is true if at least one character is
     found.
@@ -1276,9 +1276,9 @@ expressions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.ht
         `sy-fdpos` contains the length of the string.
     -   Note that offset 0 represents the very first position.
 -   The string functions
-    [`find_any_of`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensearch_functions.htm)
+    [`find_any_of`](https://help.sap.com/docs/abap-cloud/abap-keyword/cstring-func-find-find)
     and its negation
-    [`find_any_not_of`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensearch_functions.htm)
+    [`find_any_not_of`](https://help.sap.com/docs/abap-cloud/abap-keyword/cstring-func-find-find)
     return the offset of the occurrence of any character contained in a
     substring. They are special variants of the string function `find`, which is shown below.
     -   If nothing is found, the value -1 is returned.
@@ -1289,12 +1289,12 @@ expressions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.ht
         to left.
 -   If you are not interested in the position of characters, but rather how
     often they occur in a string, you can use the string function
-    [`count`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencount_functions.htm), as well as the special variants `count_any_of` and its negation `count_any_not_of`.
+    [`count`](https://help.sap.com/docs/abap-cloud/abap-keyword/cstring-func-count-count), as well as the special variants `count_any_of` and its negation `count_any_not_of`.
 -   To determine whether a string contains only a certain set of characters,
     you can use the comparison operators
-    [`CO`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenlogexp_strings.htm)
+    [`CO`](https://help.sap.com/docs/abap-cloud/abap-keyword/rel-exp-comparison-operators-for-character-like-data-types)
     (contains only) or its negation
-    [`CN`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenlogexp_strings.htm)
+    [`CN`](https://help.sap.com/docs/abap-cloud/abap-keyword/rel-exp-comparison-operators-for-character-like-data-types)
     (contains not only) in comparison expressions.
     -   For `CO`, a comparison is true if the left operand
         contains only characters that are also contained in the right
@@ -1354,7 +1354,7 @@ res = count_any_not_of( val = str sub = `Piecs ofak.` ). "0
 ### Replacing Specific Characters in Strings
 
 - You can use the string function
-[`translate`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentranslate_functions.htm)
+[`translate`](https://help.sap.com/docs/abap-cloud/abap-keyword/cstring-func-translate)
 to replace certain characters with others. 
   - The 
 `from` parameter specifies the characters to be placed in a string, and
@@ -1367,7 +1367,7 @@ replaced by the second character specified in `to`. If there is
 no equivalent in `to`, the character in `from` is
 removed from the result.
 - You can use 
-[`TRANSLATE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abaptranslate.htm)
+[`TRANSLATE`](https://help.sap.com/docs/abap-cloud/abap-keyword/translate)
 statements to perform replacements directly on the source field.
 - If you want to replace single characters or fixed sequences of characters with a specified string, you can also use `REPLACE` statements and the `replace` function.
 
@@ -1394,12 +1394,12 @@ TRANSLATE s1 USING `_.a#g+`. "...#bc.def.....+hi.
 ### Searching for Substrings in Strings
 
 -   For simple substring searches, you can use the [comparison
-    operators](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencomp_operator_glosry.htm "Glossary Entry")
-    [`CS`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenlogexp_strings.htm)
+    operators](https://help.sap.com/docs/abap-cloud/abap-keyword/comparison-operator)
+    [`CS`](https://help.sap.com/docs/abap-cloud/abap-keyword/rel-exp-comparison-operators-for-character-like-data-types)
     (contains string) or its negation
-    [`NS`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenlogexp_strings.htm)
+    [`NS`](https://help.sap.com/docs/abap-cloud/abap-keyword/rel-exp-comparison-operators-for-character-like-data-types)
     (contains no string) in [comparison
-    expressions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencomparison_expression_glosry.htm "Glossary Entry").
+    expressions](https://help.sap.com/docs/abap-cloud/abap-keyword/comparison-expression).
     The search is not case-sensitive. 
 - The system variable
     `sy-fdpos` contains the offset of the found substring. If
@@ -1422,10 +1422,10 @@ For more complex and iterative searches, you may want to use `FIND` statements o
 
 - `FIND`
   - Used to search for a character sequence.
-  - Has a rich set of additions, a selection of which is covered in this cheat sheet. See [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapfind.htm) for more information. Byte string processing is not included (there are special additions).
+  - Has a rich set of additions, a selection of which is covered in this cheat sheet. See [here](https://help.sap.com/docs/abap-cloud/abap-keyword/find) for more information. Byte string processing is not included (there are special additions).
   - Sets the system fields `sy-subrc`: 0 (search pattern found at least once) or 4 (search pattern not found).
 
-Syntax Overview (see the syntax diagram in the [ABAP Keyword Documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapfind.htm)):
+Syntax Overview (see the syntax diagram in the [ABAP Keyword Documentation](https://help.sap.com/docs/abap-cloud/abap-keyword/find)):
 
 ``` abap
 FIND 
@@ -1606,7 +1606,7 @@ FIND FIRST OCCURRENCE OF `ab` IN str_abap
 ```
 
 ### Searching for Substrings in Tables
-You can use [`FIND ... IN TABLE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapfind_itab.htm) statements to search for substrings in internal tables (standard tables without secondary table keys; with character-like line type) line by line. 
+You can use [`FIND ... IN TABLE`](https://help.sap.com/docs/abap-cloud/abap-keyword/find-in-table-itab) statements to search for substrings in internal tables (standard tables without secondary table keys; with character-like line type) line by line. 
 
 ``` abap
 DATA(str_table) = VALUE string_table( ( `aZbzZ` ) ( `cdZze` ) ( `Zzzf` ) ( `ghz` ) ).
@@ -1648,7 +1648,7 @@ FIND FIRST OCCURRENCE OF `Z`
 - Built-in search functions, such as `find`, are available for searching strings.
 - They return a return value of type i and contain multiple (optional) parameters.
 - `FIND` covers the same functionality and more with the many addition options (e.g. searching in tables).
-- For more information, see [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensearch_functions.htm)
+- For more information, see [here](https://help.sap.com/docs/abap-cloud/abap-keyword/cstring-func-find-find)
 
 Parameters of the `find` function:
 - `val`: 
@@ -1728,7 +1728,7 @@ ENDTRY.
 
 ### Replacing Substrings in Strings
 
-- [`REPLACE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapreplace.htm) and [`REPLACE ... IN TABLE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapreplace_itab.htm) statements have a similar syntax as `FIND` and `FIND ... IN TABLE` statements. Refer to the ABAP Keyword Documentation for all possible additions. The following code snippets cover a selection.
+- [`REPLACE`](https://help.sap.com/docs/abap-cloud/abap-keyword/replace) and [`REPLACE ... IN TABLE`](https://help.sap.com/docs/abap-cloud/abap-keyword/replace-in-table-itab) statements have a similar syntax as `FIND` and `FIND ... IN TABLE` statements. Refer to the ABAP Keyword Documentation for all possible additions. The following code snippets cover a selection.
 - `sy-subrc` is set: 0 (search pattern or section was replaced by the specified content, result was not truncated on the right), 2 (search pattern or section was replaced, result was truncated on the right), 4	(search pattern was not found).
 -  `REPLACE` statements can be used to directly replace strings (including substrings, which is not possible with the string function `replace` covered below).   
 
@@ -1833,7 +1833,7 @@ REPLACE FIRST OCCURRENCE OF `ap`
 
 #### Position-Based Replacements
 
-You can use [`REPLACE SECTION ... OF`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapfind_section_of.htm) statements for position-based replacements, that is, to replace a section in a string starting at a specified offset for a specified length.
+You can use [`REPLACE SECTION ... OF`](https://help.sap.com/docs/abap-cloud/abap-keyword/find-section-of) statements for position-based replacements, that is, to replace a section in a string starting at a specified offset for a specified length.
 
 ``` abap
 DATA(str_original) = `abap ABAP abap`.
@@ -1920,12 +1920,12 @@ REPLACE ALL OCCURRENCES OF `Z`
 
 ### String Function replace
 - The string function
-[`replace`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenreplace_functions.htm),
+[`replace`](https://help.sap.com/docs/abap-cloud/abap-keyword/cstring-func-replace),
 allows you to store the result of a substring replacement in a separate
 variable. 
 - What makes it especially powerful is that it
 returns a value, so it can be used at almost any [read
-positions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenread_position_glosry.htm "Glossary Entry").
+positions](https://help.sap.com/docs/abap-cloud/abap-keyword/read-position).
 - The parameters of the `replace` string functions are similar to those of the `find` function. In addition, there is the `with` parameter for the replacement. Setting `occ` to `0` means that all occurrences are respected for the replacement.
 
 Syntax examples:
@@ -1988,13 +1988,13 @@ res = replace( val = str pcre = `.\Z` with = `#` ).
 
 You can perform complex search and replace operations based on
 patterns. [PCRE regular
-expressions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenpcre_regex_glosry.htm "Glossary Entry")
+expressions](https://help.sap.com/docs/abap-cloud/abap-keyword/pcre-regular-expression)
 help you process strings effectively.
 
 > [!NOTE]  
 > Do not use [POSIX
 regular
-expressions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenposix_regex_glosry.htm "Glossary Entry")
+expressions](https://help.sap.com/docs/abap-cloud/abap-keyword/posix-regular-expression)
 anymore. They are obsolete.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
@@ -2002,12 +2002,12 @@ anymore. They are obsolete.
 ### Simple Pattern-Based Searching Using Comparison Operators
 
 For simple patterns, you can use the [comparison
-operators](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencomp_operator_glosry.htm "Glossary Entry")
-[`CP`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenlogexp_strings.htm)
+operators](https://help.sap.com/docs/abap-cloud/abap-keyword/comparison-operator)
+[`CP`](https://help.sap.com/docs/abap-cloud/abap-keyword/rel-exp-comparison-operators-for-character-like-data-types)
 (conforms to pattern) or its negation
-[`NP`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenlogexp_strings.htm)
+[`NP`](https://help.sap.com/docs/abap-cloud/abap-keyword/rel-exp-comparison-operators-for-character-like-data-types)
 (does not conform to pattern) in [comparison
-expressions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencomparison_expression_glosry.htm "Glossary Entry")
+expressions](https://help.sap.com/docs/abap-cloud/abap-keyword/comparison-expression)
 to determine whether a set of characters is contained in a string that
 matches a particular pattern. You can use the following
 special characters as patterns:
@@ -2185,7 +2185,7 @@ As also covered in the [Built-In Functions](24_Builtin_Functions.md) cheat sheet
 
 ### Checking the Similarity of Strings
 
-- [`distance`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendistance_functions.htm) returns the Levenshtein distance between two strings, which reflects their similarity.
+- [`distance`](https://help.sap.com/docs/abap-cloud/abap-keyword/cstring-func-distance) returns the Levenshtein distance between two strings, which reflects their similarity.
 - Unlike other string functions, the return value has the type `i`.
 - Optional addition `max`: Positive integer. The calculation of the Levenshtein distance will stop if the calculated value is greater than this integer.
 
@@ -2205,7 +2205,7 @@ ENDTRY.
 ```  
 
 ### Repeating Strings
-- [`repeat`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrepeat_functions.htm) returns a string that contains the content of a specified string for parameter `val` as many times as specified in the parameter `occ`.
+- [`repeat`](https://help.sap.com/docs/abap-cloud/abap-keyword/cstring-func-repeat) returns a string that contains the content of a specified string for parameter `val` as many times as specified in the parameter `occ`.
 - An empty string is returned when `occ` has the value 0 or `val` is empty.
 
 ```abap
@@ -2224,7 +2224,7 @@ ENDTRY.
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ### Returning the Smallest/Biggest of a Set of Character-Like Arguments
-- [`cmin/cmax`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencmax_cmin_functions.htm) returns a string that contains the content of the smallest or biggest of a set of character-like arguments
+- [`cmin/cmax`](https://help.sap.com/docs/abap-cloud/abap-keyword/cstring-func-cmax-cmin) returns a string that contains the content of the smallest or biggest of a set of character-like arguments
 - 'Set' means at least two arguments and a maximum of nine argeuments are passed (`valn` operators) for comparison.
 - The comparison is made from left to right, and the first different character found determines the smaller or bigger argument.
 
@@ -2244,9 +2244,9 @@ DATA(max) =  cmax( val1 = `abcdef`      "biggest argument
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ### Escaping Special Characters
-- [`escape`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenescape_functions.htm) returns a string that is provided for the `val` parameter by escaping special characters according to the specification in the `format` parameter.
+- [`escape`](https://help.sap.com/docs/abap-cloud/abap-keyword/cstring-func-escape) returns a string that is provided for the `val` parameter by escaping special characters according to the specification in the `format` parameter.
 - Suitable values for the `format` parameter (which expects a data object of type `i`) are available in the `CL_ABAP_FORMAT` class (the constants starting with `E_`).
-- Special rules apply to different contexts, such as URLS and JSON. Also note the prevention of Cross Site Scripting (XSS) attacks on web applications. For more information, refer to the [documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenescape_functions.htm).
+- Special rules apply to different contexts, such as URLS and JSON. Also note the prevention of Cross Site Scripting (XSS) attacks on web applications. For more information, refer to the [documentation](https://help.sap.com/docs/abap-cloud/abap-keyword/cstring-func-escape).
 
 ```abap
 "Context: URLs
@@ -2444,7 +2444,7 @@ As also covered in the [Released ABAP Classes](22_Released_ABAP_Classes.md) chea
     "`ABAP`
     ``` 
 
-- `XCO_CP`: The Extension Components Library (XCO) library provides [released APIs](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenreleased_api_glosry.htm) and offers various development utilities. Find more information [here](https://help.sap.com/docs/btp/sap-business-technology-platform/overview-of-xco-modules). The following code snippet demonstrates several methods of the class that deal with string processing.
+- `XCO_CP`: The Extension Components Library (XCO) library provides [released APIs](https://help.sap.com/docs/abap-cloud/abap-keyword/released-api) and offers various development utilities. Find more information [here](https://help.sap.com/docs/btp/sap-business-technology-platform/overview-of-xco-modules). The following code snippet demonstrates several methods of the class that deal with string processing.
 
     ```abap
     "--------- Extracting a substring from a string ---------
@@ -2591,7 +2591,7 @@ As also covered in the [Released ABAP Classes](22_Released_ABAP_Classes.md) chea
 
 #### Determining the Length of xstrings
 
-The built-in function [`xstrlen`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendescriptive_functions_binary.htm) returns the number of bytes of a byte-like argument.
+The built-in function [`xstrlen`](https://help.sap.com/docs/abap-cloud/abap-keyword/bchain-func-xstrlen) returns the number of bytes of a byte-like argument.
 
 ``` abap
 DATA(hi) = `Hello world`.
@@ -2778,11 +2778,11 @@ SPLIT xstr AT blank_xstr INTO TABLE DATA(xstr_tab) IN BYTE MODE.
 #### SET BIT and GET BIT Statements
 
 - Unlike the ABAP statements in the previous section, the following statements are are only for byte string processing:
-  - [`SET BIT`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABAPSET_BIT.html)
+  - [`SET BIT`](https://help.sap.com/docs/abap-cloud/abap-keyword/set-bit)
     - Syntax pattern: `SET BIT pos OF byte_string [TO value].`
     - In a byte-like data object, the bit is set to 1 by default at a specified position, or to 0 or 1 as specified after `TO`.
-    - Alternatively, you can use the built-in function [`bit-set`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABENBIT_FUNCTIONS.html).
-  - [`GET BIT`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABAPGET_BIT.html) 
+    - Alternatively, you can use the built-in function [`bit-set`](https://help.sap.com/docs/abap-cloud/abap-keyword/bchain-func-bit-set).
+  - [`GET BIT`](https://help.sap.com/docs/abap-cloud/abap-keyword/get-bit) 
     - Syntax pattern: `GET BIT pos OF byte_string INTO value.`
     - Reads a bit at a specified position in a byte string into a target data object.
 
@@ -2927,4 +2927,4 @@ ENDCLASS.
 >     - Searching and replacing
 >     - Regular expressions 
 > - The steps to import and run the code are outlined [here](README.md#-getting-started-with-the-examples).
-> - [Disclaimer](./README.md#%EF%B8%8F-disclaimer)
+> - [Disclaimer](./README.md#%EF%B8%8F-disclaimer)

@@ -13,11 +13,11 @@
   - [Executable Examples](#executable-examples)
 
 
-This ABAP cheat sheet highlights key features and syntax options of the [RAP Behavior Definition Language (BDL)](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbdl_glosry.htm) for designing [RAP behavior definitions (BDEF)](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_behavior_definition_glosry.htm).
+This ABAP cheat sheet highlights key features and syntax options of the [RAP Behavior Definition Language (BDL)](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-behavior-definition-language) for designing [RAP behavior definitions (BDEF)](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-behavior-definition).
 
 > [!NOTE]  
 > - A wide range of specification options is available. The ABAP cheat sheet illustrates a selection. It does not provide a comprehensive overview.
-> - To get the complete picture, refer to the [ABAP Keyword Documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABENBDL.html) and the [Development guide for the ABAP RESTful Application Programming Model](https://help.sap.com/docs/abap-cloud/abap-rap/abap-restful-application-programming-model).
+> - To get the complete picture, refer to the [ABAP Keyword Documentation](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-bdl-for-behavior-definitions) and the [Development guide for the ABAP RESTful Application Programming Model](https://help.sap.com/docs/abap-cloud/abap-rap/abap-restful-application-programming-model).
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
@@ -73,13 +73,13 @@ Core Data Services (CDS)
 <td> 
 
 - Core Data Services (CDS) are used to model RAP BO entities, with each RAP BO entity represented by its own CDS entity. 
-- A tree-like hierarchy of entities is typically based on one CDS root entity, the top CDS entity which represents a CDS parent for further child entities. The CDS root entities are specified with a special syntax: [`define root view entity`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_define_root_view_v2.htm). 
+- A tree-like hierarchy of entities is typically based on one CDS root entity, the top CDS entity which represents a CDS parent for further child entities. The CDS root entities are specified with a special syntax: [`define root view entity`](https://help.sap.com/docs/abap-cloud/abap-keyword/cds-ddl-cds-view-entity-root). 
 - CDS entities are linked by defining relationships through associations or compositions. A composition relationship indicates a close dependency between entities, meaning a child entity relies on its parent entity. For example, using sales orders as example context. A sales order item (assumingly a child entity within a sales order BO) cannot exist without the corresponding sales order. If the sales order is deleted, the associated sales order item has to be deleted as well, along with any other related sales order items. This contrasts with association relationships, where parent and child entity data can exist independently.
 - Find more information in the [ABAP Data Models guide](https://help.sap.com/docs/abap-cloud/abap-data-models/abap-data-models).
 
 > [!NOTE]  
-> - A related repository object is [CDS access control](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_access_control_glosry.htm). Here, you can define access rules for the involved CDS entities. In a RAP BO setup, CDS access control typically manages read access, while modification authorization (using authorization objects) is handled in behavior implementations.
-> - [CDS annotations](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_annotation_glosry.htm) represent metadata that can be added, for example, to control UI rendering and layout. You can add these annotations to the CDS entity's source code directly or outsource them to [CDS metadata extensions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_metadata_extension_glosry.htm), a further repository object. Find more information on CDS annotations [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABENCDS_ANNOTATIONS.html).
+> - A related repository object is [CDS access control](https://help.sap.com/docs/abap-cloud/abap-keyword/cds-access-control). Here, you can define access rules for the involved CDS entities. In a RAP BO setup, CDS access control typically manages read access, while modification authorization (using authorization objects) is handled in behavior implementations.
+> - [CDS annotations](https://help.sap.com/docs/abap-cloud/abap-keyword/cds-annotation) represent metadata that can be added, for example, to control UI rendering and layout. You can add these annotations to the CDS entity's source code directly or outsource them to [CDS metadata extensions](https://help.sap.com/docs/abap-cloud/abap-keyword/cds-metadata-extension), a further repository object. Find more information on CDS annotations [here](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-cds-annotations).
 
  </td>
 </tr>
@@ -104,7 +104,7 @@ RAP behavior definition (BDEF)
 - Defines the behavior of a RAP BO and all its entities.  
 - Behavior includes operations (such as create, update, delete, and others) and characteristics (which fields are read-only or mandatory, and so on).  
 - Typically, the BDEF shares the same name as the root view entity to which it refers.  
-- BDEFs use [RAP Behavior Definition Language (BDL)](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbdl_glosry.htm) for the definitions.
+- BDEFs use [RAP Behavior Definition Language (BDL)](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-behavior-definition-language) for the definitions.
 
  </td>
 </tr>
@@ -118,8 +118,8 @@ ABAP behavior pool (ABP)
 
 <td> 
 
-- Special [class pool](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenclass_pool_glosry.htm), typically prefixed with `*BP`, that implements the behavior and contains the actual business logic.
-- The actual implementation occurs in the [CCIMP include](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenccimp_glosry.htm) (_Local Types_ tab in ADT).
+- Special [class pool](https://help.sap.com/docs/abap-cloud/abap-keyword/class-pool-abenclass_pool_glosry), typically prefixed with `*BP`, that implements the behavior and contains the actual business logic.
+- The actual implementation occurs in the [CCIMP include](https://help.sap.com/docs/abap-cloud/abap-keyword/ccimp-include) (_Local Types_ tab in ADT).
 
  </td>
 </tr>
@@ -143,12 +143,12 @@ ABAP behavior pool
 
 <td> 
 
-- Projections introduce an optional layer (a [RAP projection business object](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_projection_bo_glosry.htm)) that enables you to adapt the RAP BO's data model and functionality to tailor specific services for different [RAP BO consumers](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_bo_consumer_glosry.htm), such as UIs or APIs. For example, target group A may access a UI with the full functionality, while target group B may use a UI with certain disabled functionalities, such as delete operations. 
+- Projections introduce an optional layer (a [RAP projection business object](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-projection-business-object)) that enables you to adapt the RAP BO's data model and functionality to tailor specific services for different [RAP BO consumers](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-bo-consumer), such as UIs or APIs. For example, target group A may access a UI with the full functionality, while target group B may use a UI with certain disabled functionalities, such as delete operations. 
 - Projections involve creating artifacts like:
-  - [CDS projection view](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_projection_view_glosry.htm): Represents a special CDS view entity that is based on another CDS view entity. CDS projection views adapt a CDS data model for service-specific use cases. For a projection BO, the root entity must be a CDS projection view. 
-  - [RAP projection behavior definition](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_proj_bdef_glosry.htm): Created for the CDS projection view. Indicates that a base BDEF is projected. A projection BDEF builds on the base BDEF, reusing its operations and characteristics or limiting them to enable only a subset. Typical syntax elements are `use ...`, for example, `use create;`, `use update;`, `use action act;`, and so on.
-  - A separate [ABAP behavior pool](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbehavior_pool_glosry.htm) for the RAP projection BDEF, if required.
-- Find more information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABENBDL_PROJECTION_BO.html).
+  - [CDS projection view](https://help.sap.com/docs/abap-cloud/abap-keyword/cds-projection-view): Represents a special CDS view entity that is based on another CDS view entity. CDS projection views adapt a CDS data model for service-specific use cases. For a projection BO, the root entity must be a CDS projection view. 
+  - [RAP projection behavior definition](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-projection-behavior-definition): Created for the CDS projection view. Indicates that a base BDEF is projected. A projection BDEF builds on the base BDEF, reusing its operations and characteristics or limiting them to enable only a subset. Typical syntax elements are `use ...`, for example, `use create;`, `use update;`, `use action act;`, and so on.
+  - A separate [ABAP behavior pool](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-behavior-pool) for the RAP projection BDEF, if required.
+- Find more information [here](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-projection-behavior-definitions).
 
 
  </td>
@@ -185,7 +185,7 @@ Service binding
 
 <td> 
 
-Binds a service definition to a communication protocol and publishes it as a business service of [AS ABAP](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenas_abap_glosry.htm) (for example, a UI or [OData](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenodata_glosry.htm) serivce).
+Binds a service definition to a communication protocol and publishes it as a business service of [AS ABAP](https://help.sap.com/docs/abap-cloud/abap-keyword/application-server-abap) (for example, a UI or [OData](https://help.sap.com/docs/abap-cloud/abap-keyword/odata-abenodata_glosry) serivce).
 
  </td>
 </tr>
@@ -263,7 +263,7 @@ late numbering
 
 > [!NOTE] 
 > - The syntax covered is not comprehensive and only provides a high-level overview. For example, it does not cover options related to interface, projection, abstract behavior definitions, or syntax related to BDEF extensions. 
-> - For the complete picture, refer to the subtopics in the [ABAP Keyword Documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABENBDL.html).
+> - For the complete picture, refer to the subtopics in the [ABAP Keyword Documentation](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-bdl-for-behavior-definitions).
 
 
 
@@ -293,7 +293,7 @@ managed implementation
 
 <td> 
 
-- _Managed_ and _unmanaged_ refer to two implementation types of RAP BOs. The key distinction lies in how the BO's transactional behavior and [transactional buffer](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentransactional_buffer_glosry.htm) are provisioned.
+- _Managed_ and _unmanaged_ refer to two implementation types of RAP BOs. The key distinction lies in how the BO's transactional behavior and [transactional buffer](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-transactional-buffer) are provisioned.
 - The managed implementation is typically used for greenfield scenarios, where app development starts from scratch without any existing business logic.
 - In a managed RAP BO, standard operations (CRUD) function out of the box, allowing applications to use them without custom development. This includes both the provisioning and handling of the transactional buffer, as well as save handling (except for the saving options for managed RAP BOs noted below).
 - Essentially, you only need to specify `create`, `update`, and `delete` in the BDEF, and the managed RAP BO will automatically support transactional processing (syntax for enabling read operations is not available; read operations work out of the box as well). Additional business logic, such as authorization, actions, validations, and determinations, and more, can be implemented in the ABAP behavior pool.
@@ -448,7 +448,7 @@ auxiliary class zcl_some_class;
 </table>
 
 > [!NOTE] 
-> More syntax options are available in the BDEF header, including enabling BDEF extensions, privileged mode, defining authorization contexts, cross-BO transactional handling, and more. Find more information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABENBDL_BDEF_HEADER.html).
+> More syntax options are available in the BDEF header, including enabling BDEF extensions, privileged mode, defining authorization contexts, cross-BO transactional handling, and more. Find more information [here](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-behaviordefinitionheader).
 
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
@@ -481,7 +481,7 @@ define behavior for some_entity alias root
 - A BDEF can include one or more entity behavior definitions that begin with `define behavior for`. Each definition corresponds to a different entity of the business object.
 - You must specify an entity behavior definition for the root entity. Defining behaviors for child entities is optional.
 - Syntax options: 
-  - `alias some_name`: This optional alias allows for a clearer, more descriptive name. The alias is visible in the handler methods of the ABP and the [BDEF derived types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_derived_type_glosry.htm).
+  - `alias some_name`: This optional alias allows for a clearer, more descriptive name. The alias is visible in the handler methods of the ABP and the [BDEF derived types](https://help.sap.com/docs/abap-cloud/abap-keyword/bdef-derived-type).
   - `external some_external_name`: This option specifies an alias for external use, which is exposed in the OData metadata.
   - `implementation in class ... unique`: Instead of specifying the ABAP behavior pool in the BDEF header, you can also specify it here for implementing the behavior of the referenced RAP BO entity. The previously mentioned additions for additional and unmanaged save are also applicable here.
 
@@ -525,7 +525,7 @@ draft table some_draft_table
 <td> 
 
 - `persistent table`  
-  - Specifies the [DDIC database table](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenddic_db_table_glosry.htm) (or [CDS table entity](https://help.sap.com/docs/abap-cloud/abap-rap/using-table-entities-as-active-persistence)) for storing RAP BO data.  
+  - Specifies the [DDIC database table](https://help.sap.com/docs/abap-cloud/abap-keyword/ddic-database-table) (or [CDS table entity](https://help.sap.com/docs/abap-cloud/abap-rap/using-table-entities-as-active-persistence)) for storing RAP BO data.  
   - Can only be specified for managed RAP BOs.  
   - Note that the transactional buffer serves as temporary storage for RAP BO instance data processed during a RAP transaction. For reads and modifications of persisted data, the data is loaded into the transactional buffer. At the end of a RAP transaction, changes in the buffer are either committed to the persistent table or rolled back.  
 - `draft table`  
@@ -563,7 +563,7 @@ lock dependent by _Assoc
 
 - Concurrency control manages concurrent access to the same data by different users. Two approaches to consider in RAP are:
   - Optimistic concurrency control: This approach allows multiple users to access data while avoiding inconsistencies caused by unintentional changes to already modified data. In RAP, the ETag field in the RAP behavior definition ensures this.
-  - Pessimistic concurrency control: This approach involves [exclusive locking](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenexclusive_lock_glosry.htm) of data sets, preventing simultaneous modification by more than one user.
+  - Pessimistic concurrency control: This approach involves [exclusive locking](https://help.sap.com/docs/abap-cloud/abap-keyword/exclusive-lock) of data sets, preventing simultaneous modification by more than one user.
 - Entity tag (ETag, `etag ...`) for optimistic concurrency control:
   - The ETag field specification is optional for each entity of the RAP BO. The `dependent` specification indicates that the ETag field of another entity is used for optimistic concurrency control.
   - This field logs modifications of an instance, using a timestamp or another unique identification value. It is particularly relevant when consuming RAP BOs via OData. For a modify operation to be accepted, the OData client must send an ETag value with each modify operation, which is compared to the stored ETag value to allow modification only when the values match.
@@ -602,10 +602,10 @@ late numbering
 <td> 
 
 - The concept of numbering in RAP is about assigning values to primary key fields.
-- There are multiple options for handling the numbering of primary key fields, depending on when (early in the [RAP interaction phase](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_int_phase_glosry.htm) or late in the [RAP save sequence](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_save_seq_glosry.htm)) and by whom (RAP BO consumer, ABAP behavior pool, or framework).
+- There are multiple options for handling the numbering of primary key fields, depending on when (early in the [RAP interaction phase](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-interaction-phase) or late in the [RAP save sequence](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-save-sequence)) and by whom (RAP BO consumer, ABAP behavior pool, or framework).
 - When: 
   - Early numbering: Final key values are assigned during a RAP create operation in the interaction phase.
-  - Late numbering: Final key values are assigned during the RAP save sequence, specifically in the [RAP saver method](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabp_saver_method_glosry.htm) `adjust_numbers`.
+  - Late numbering: Final key values are assigned during the RAP save sequence, specifically in the [RAP saver method](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-saver-method) `adjust_numbers`.
 - By whom:
   - External numbering: Key values come from the RAP BO consumer. For example, during a create operation, the RAP BO consumer specifies the key values just like other non-key field values.
   - Internal numbering: Key values are provided by the RAP BO provider. For example, in a create operation, the RAP BO consumer does not specify the key values in an EML create request. Instead, the RAP BO provider provides the keys.
@@ -615,7 +615,7 @@ late numbering
     - Key fields should not be marked as read-only for create operations. It is advisable to define key fields with specific characteristics such as `... mandatory:create, readonly:update ...`.
   - Managed internal early numbering: 
     - The framework automatically creates the key without any custom development needed in the ABP. 
-    - As a prerequisite, a [UUID](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenuuid_glosry.htm) scenario is in place, where the key is a 16-character byte-like type, which can hold UUID values. 
+    - As a prerequisite, a [UUID](https://help.sap.com/docs/abap-cloud/abap-keyword/uuid) scenario is in place, where the key is a 16-character byte-like type, which can hold UUID values. 
     - Typically, the key has the field-specific characteristics `readonly` in the BDEF, along with `numbering:managed`.
   - Unmanaged internal early numbering:
     - In unmanaged RAP BOs, key values are provided in create operation implementations (that is, the `create` method). Note that `early numbering` is only applicable for unmanaged, draft-enabled RAP BOs.
@@ -683,7 +683,7 @@ authorization dependent by _Assoc ...
 </table>
 
 > [!NOTE]  
-> Further syntax options are available such as for RAP change documents ([`changedocuments`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABENBDL_CHANGE_DOCUMENTS.html)). 
+> Further syntax options are available such as for RAP change documents ([`changedocuments`](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-changedocuments)). 
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
@@ -800,7 +800,7 @@ delete ( authorization : update );
   - `precheck`: Enables precheck.
   - `authorization : none`: Excludes operations from authorization checks.
   - `authorization : update`: Delegates authorization control to the update operation's authorization check implementation. This applies only to delete operations.
-  - `{default function ...}`: Defines a [RAP default values function](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_bo_defaulting_glosry.htm) for the create operation only, which sets default field values on the user interface.
+  - `{default function ...}`: Defines a [RAP default values function](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-default-values-function) for the create operation only, which sets default field values on the user interface.
 
 > [!NOTE] 
 > - The read operation is always implicitly enabled for each entity listed in a BDEF and cannot be explicitly declared (there is no `read` syntax).
@@ -872,7 +872,7 @@ save(...) action act21;
     - Defines an input parameter for actions. 
     - The input parameter can be flat or deep (using the specifications `deep` and `deep table`).
     - For flat parameters, `SOME_ENTITY` represents a CDS abstract entity or a DDIC type.
-    - For deep parameters (structures or tables), `SOME_ENTITY` represents an [abstract BDEF](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_abstract_bdef_glosry.htm) defined with `with hierarchy`.
+    - For deep parameters (structures or tables), `SOME_ENTITY` represents an [abstract BDEF](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-abstract-behavior-definition) defined with `with hierarchy`.
   - `... result ...`: 
     - Defines an output parameter for actions.
     - Used to store the result. When specified, the handler method in the ABP includes the `RESULT` addition in the signature.
@@ -881,7 +881,7 @@ save(...) action act21;
       - `[...]`: Defines the cardinality of the output parameter. Examples: `[0..1]`, `[1]`, `[0..*]`, `[1..*]`.
       - `$self`: Indicates that the result type matches the entity type.
       - `entity some_entity`: Specifies that the result type corresponds to another CDS view entity.
-  - `default function`: Defines a [RAP default values function](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_bo_defaulting_glosry.htm) for the action, which defaults input parameter values. As a prerequisite, the action must specify an input parameter.    
+  - `default function`: Defines a [RAP default values function](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-default-values-function) for the action, which defaults input parameter values. As a prerequisite, the action must specify an input parameter.    
   - `factory`: Defines a factory action 
     - Used to create RAP BO instances (including child entities).
     - Can be either instance-bound (for copying specific field values from an instance) or static (for creating instances with predefined default values).
@@ -922,7 +922,7 @@ function func3 parameter SOME_ENTITY result [1] $self;
 
 - Functions are self-implemented in dedicated handler methods, designed for non-standard operations that return information, such as calculations or read operations, without locking or modifying data.
 - You can also define static, internal, repeatable, and default functions, specify external names and input parameters.
-- It is possible to define [RAP key functions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_key_function_glosry.htm), which accept values of an alternative key as input and return matching entity instances. These functions are commonly used in [cross-BO association](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencds_cross_bo_assoc_glosry.htm) contexts. Find more information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABENBDL_KEYFUNCTION.html).
+- It is possible to define [RAP key functions](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-key-function-abenrap_key_function_glosry), which accept values of an alternative key as input and return matching entity instances. These functions are commonly used in [cross-BO association](https://help.sap.com/docs/abap-cloud/abap-keyword/cross-bo-association) contexts. Find more information [here](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-key-function).
 - Specifying an output parameter is mandatory. Refer to the actions section for details on specification options, including cardinality.
 
  </td>
@@ -952,7 +952,7 @@ association _Assoc
 ```
 
 > [!NOTE]  
-> Numerous syntax options are available in that context. Find more information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABENBDL_ASSOCIATION.html).
+> Numerous syntax options are available in that context. Find more information [here](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-operations-for-associations).
 
  </td>
 
@@ -962,8 +962,8 @@ association _Assoc
 - The syntax allows operations along association paths and impacts association targets. You can enable both standard operations (such as create-by-association and read-by-association) and non-standard operations (such as link and unlink actions or inverse functions) for associations.
 - As a prerequisite, you must define behavior for the association target using `define behavior ...`.
 - Read-by-association operations are automatically enabled when you specify the association, for example, using `association _Assoc;`.
-- The statement `association _Assoc { create; }` enables create-by-association as well as read-by-association operations. Note that `create` can be enhanced with additional specifications, such as precheck, feature control, authorization, and more. Find more information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABENBDL_ASSOC_STAND_OPS.html).
-- The supported [non-standard operations for associations](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABENBDL_ASSOC_NONSTAND_OPS.html) include:
+- The statement `association _Assoc { create; }` enables create-by-association as well as read-by-association operations. Note that `create` can be enhanced with additional specifications, such as precheck, feature control, authorization, and more. Find more information [here](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-standardoperationsforassoc).
+- The supported [non-standard operations for associations](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-nonstandardoperationsforassoc) include:
   - Link action: Associates RAP BO instances with other instances using foreign key settings.
   - Unlink action: Disconnects two associated RAP BO instances by removing the value of the foreign key field.
   - Inverse Function: Receives the values of the foreign key fields from the association target instances as input and provides the corresponding association source instances as output. Explicit output parameters are optional.
@@ -1006,7 +1006,7 @@ draft determine action Prepare
   - `Discard`: Deletes draft instances from the draft database table.
   - `Resume`: Is automatically executed whenever a draft instance, whose exclusive lock has expired, is modified. It re-establishes the lock for the corresponding entity instance in the active database table.
   - `draft determine action Prepare`: Executes the determinations and validations (only those specified with `on save`) assigned to it in the behavior definition. `draft determine action Prepare;` denotes that it is possible not to define any determinations or validations.
-- Find more information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABENBDL_DRAFT_ACTION.html).
+- Find more information [here](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-draft-action).
 
 
  </td>
@@ -1139,7 +1139,7 @@ event evt5 for side effects;
 - RAP business events are typically triggered in ABPs during the RAP late save, using the ABAP EML statement `RAISE ENTITY EVENT`. For managed RAP BOs, it is advisable to define the BO with `with additional save` and raise business events in the `save_modified` method.
 - Special types of RAP business events: 
   - RAP derived events (`managed event`): These events are defined in relation to an existing RAP business event, allowing for a redefined payload. They are automatically raised when the referenced event is triggered.
-  - RAP business events for side effects (`... for side effects`): These events are used solely for an [RAP event-driven side effect](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_event_sideef_glosry.htm), meaning a RAP side effect is initiated by this business event.
+  - RAP business events for side effects (`... for side effects`): These events are used solely for an [RAP event-driven side effect](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-event-driven-side-effect), meaning a RAP side effect is initiated by this business event.
 - Note that once a RAP business event is created and raised, you must define an event binding to map the event to an event type.
 
  </td>
@@ -1235,7 +1235,7 @@ mapping for demo_dbtab_root
 
 - `mapping for` maps data types defined in CDS for a RAP business object to non-matching types. For example, it is used in behavior definitions to connect database field names to CDS element names.
 - If the field names in the DDIC structure and the current data model are identical, no mapping is needed. Otherwise, it is mandatory and will trigger a syntax check warning. In particular, for a managed RAP BO, the field names in the RAP persistent table must align with the corresponding RAP BO entity names. If they do not match, a type mapping is necessary to avoid a syntax check warning.
-- Syntax variants are available including `control` and `corresponding`. Find more information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABENBDL_TYPE_MAPPING.html).
+- Syntax variants are available including `control` and `corresponding`. Find more information [here](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-typemapping).
 
  </td>
 </tr>
@@ -1250,9 +1250,9 @@ mapping for demo_dbtab_root
 
 - [Development guide for the ABAP RESTful Application Programming Model](https://help.sap.com/docs/abap-cloud/abap-rap/abap-restful-application-programming-model)
 - ABAP Keyword Documentation:
-  - [RAP BDL](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABENBDL.html)
-  - [Feature Tables](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABENRAP_FEATURE_TABLE.html)
-  - [CDS annotations](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABENCDS_ANNOTATIONS.html)
+  - [RAP BDL](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-bdl-for-behavior-definitions)
+  - [Feature Tables](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-bdl-feature-tables)
+  - [CDS annotations](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-cds-annotations)
 - [ABAP Data Models guide](https://help.sap.com/docs/abap-cloud/abap-data-models/abap-data-models)
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>

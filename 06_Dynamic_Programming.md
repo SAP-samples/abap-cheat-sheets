@@ -62,9 +62,9 @@
 
 ## Introduction
 
-- [ABAP programs](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_program_glosry.htm) can include both dynamic and static parts.
-- Consider a [data object](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendata_object_glosry.htm "Glossary Entry") in your program:
-    - It can be declared as a [static data object](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenstatic_data_object_glosry.htm), i. e. you provide all attributes by specifying the [data type](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendata_type_glosry.htm) and more statically in the code.
+- [ABAP programs](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-program) can include both dynamic and static parts.
+- Consider a [data object](https://help.sap.com/docs/abap-cloud/abap-keyword/data-object) in your program:
+    - It can be declared as a [static data object](https://help.sap.com/docs/abap-cloud/abap-keyword/static-data-object), i. e. you provide all attributes by specifying the [data type](https://help.sap.com/docs/abap-cloud/abap-keyword/data-type) and more statically in the code.
 
         ```abap
         "Internal table declaration
@@ -84,12 +84,12 @@
           INTO TABLE @DATA(some_itab).
         ```
 
-- Further aspects of dynamic programming in ABAP enter the picture if you want to determine information about data types and data objects at runtime ([RTTI](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrun_time_type_identific_glosry.htm)) or even create them ([RTTC](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrun_time_type_creation_glosry.htm)).
+- Further aspects of dynamic programming in ABAP enter the picture if you want to determine information about data types and data objects at runtime ([RTTI](https://help.sap.com/docs/abap-cloud/abap-keyword/runtime-type-identification)) or even create them ([RTTC](https://help.sap.com/docs/abap-cloud/abap-keyword/runtime-type-creation)).
 
 - In general, dynamic programming also comes with some downsides. For example:
   - The ABAP compiler cannot check the dynamic programming feature like the `SELECT` statement mentioned above. There is no syntax warning or suchlike. 
   - The checks are performed only at runtime, which has an impact on the performance. 
-  - The testing of [procedures](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenprocedure_glosry.htm "Glossary Entry") that include dynamic programming features may be difficult.
+  - The testing of [procedures](https://help.sap.com/docs/abap-cloud/abap-keyword/procedure) that include dynamic programming features may be difficult.
   - ⚠️ Dynamic programming techniques can pose significant security risks if not used correctly. You should thoroughly check or escape any dynamic content received from external sources before using it in dynamic statements. You can achieve this using the system class `CL_ABAP_DYN_PRG` or the built-in `escape` function.
 
 
@@ -97,8 +97,8 @@
 
 ## Excursion: Field Symbols and Data References
 
-[Field symbols](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenfield_symbol_glosry.htm "Glossary Entry")
-and [data references](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendata_reference_glosry.htm "Glossary Entry") are supporting elements for dynamic programming.
+[Field symbols](https://help.sap.com/docs/abap-cloud/abap-keyword/field-symbol)
+and [data references](https://help.sap.com/docs/abap-cloud/abap-keyword/data-reference) are supporting elements for dynamic programming.
 
 ### Field Symbols
 
@@ -106,11 +106,11 @@ Field symbols ...
 
 - are symbolic names for almost any data object or parts of existing data objects.
 - can be assigned actual memory areas at program runtime (using `ASSIGN`). Note that you can only work with the field symbols if indeed they have been assigned before.
-- can be used as placeholders for a data object at an [operand position](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenoperand_position_glosry.htm).
-   - Consider there is a data object in your program. A field symbol is also available that is assigned the memory area of this data object. Accessing a field symbol is like accessing the [named data object](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abennamed_data_object_glosry.htm) or part of the object itself.
-- do not reserve physical space in the [data area](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendata_area_glosry.htm) of a program like a data object. Instead, they work as dynamic identifiers of a memory area in which a specific data object or part of an object is located.
-- can be typed either with [generic data types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abengeneric_data_type_glosry.htm "Glossary Entry") or [complete data types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencomplete_data_type_glosry.htm "Glossary Entry"). 
-- are declared using the statement [`FIELD-SYMBOLS`](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapfield-symbols.htm) or the [declaration operator](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendeclaration_operator_glosry.htm) [`FIELD-SYMBOL`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenfield-symbol_inline.htm). Their names must be included between angle brackets.
+- can be used as placeholders for a data object at an [operand position](https://help.sap.com/docs/abap-cloud/abap-keyword/operand-position).
+   - Consider there is a data object in your program. A field symbol is also available that is assigned the memory area of this data object. Accessing a field symbol is like accessing the [named data object](https://help.sap.com/docs/abap-cloud/abap-keyword/named-data-object) or part of the object itself.
+- do not reserve physical space in the [data area](https://help.sap.com/docs/abap-cloud/abap-keyword/data-area) of a program like a data object. Instead, they work as dynamic identifiers of a memory area in which a specific data object or part of an object is located.
+- can be typed either with [generic data types](https://help.sap.com/docs/abap-cloud/abap-keyword/generic-data-type) or [complete data types](https://help.sap.com/docs/abap-cloud/abap-keyword/complete-data-type). 
+- are declared using the statement [`FIELD-SYMBOLS`](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapfield-symbols.htm) or the [declaration operator](https://help.sap.com/docs/abap-cloud/abap-keyword/declaration-operator) [`FIELD-SYMBOL`](https://help.sap.com/docs/abap-cloud/abap-keyword/field-symbol-inline-declaration-for-field-symbols). Their names must be included between angle brackets.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
@@ -152,21 +152,21 @@ ENDLOOP.
 >-   There are plenty of options for generic ABAP types. A prominent one
     is `data` that stands for any data type. See more information in the
     topic [Generic ABAP
-    Types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbuilt_in_types_generic.htm) and in a code snippet below.
+    Types](https://help.sap.com/docs/abap-cloud/abap-keyword/generic-abap-types) and in a code snippet below.
 >-   Field symbols cannot be declared in the declaration part of
-    [classes](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenclass_glosry.htm "Glossary Entry")
+    [classes](https://help.sap.com/docs/abap-cloud/abap-keyword/class-abenclass_glosry)
     and
-    [interfaces](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenoo_intf_glosry.htm "Glossary Entry").
+    [interfaces](https://help.sap.com/docs/abap-cloud/abap-keyword/interface-abap-objects).
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
 #### Assigning Data Objects
 
-[`ASSIGN`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapassign.htm)
+[`ASSIGN`](https://help.sap.com/docs/abap-cloud/abap-keyword/assign)
 statements assign the memory area of a data object to a field symbol.
 Once the memory area is assigned, you can work with the content.
 
-The table below includes a selection of `ASSIGN` statements, primarily featuring static assignments. More additions are covered further down. For more information, see the [ABAP Keyword Documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABENSET_FIELD_SYMBOLS.html).
+The table below includes a selection of `ASSIGN` statements, primarily featuring static assignments. More additions are covered further down. For more information, see the [ABAP Keyword Documentation](https://help.sap.com/docs/abap-cloud/abap-keyword/assigning-field-symbols).
 
 > [!NOTE] 
 > In the event of an unsuccessful static assignment, `sy-subrc` remains unchanged (with exceptions), and no memory area is allocated to the field symbol. After the statement, the field symbol is unassigned. The addition `ELSE UNASSIGN`, although it cannot be explicitly specified in static assignments, is used implicitly.
@@ -181,7 +181,7 @@ The table below includes a selection of `ASSIGN` statements, primarily featuring
 <tr>
 <td> 
 
-Assigning memory area to an existing field symbol with [complete data type](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencomplete_data_type_glosry.htm)
+Assigning memory area to an existing field symbol with [complete data type](https://help.sap.com/docs/abap-cloud/abap-keyword/complete-data-type)
 
  </td>
 
@@ -211,7 +211,7 @@ ASSIGN tab_a TO <fs_tab_a>.
 <tr>
 <td> 
 
-Assigning memory area to an existing field symbol with [generic data type](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abengeneric_data_type_glosry.htm)
+Assigning memory area to an existing field symbol with [generic data type](https://help.sap.com/docs/abap-cloud/abap-keyword/generic-data-type)
 
  </td>
 
@@ -322,7 +322,7 @@ Offset and length specifications
 
  <td> 
 
-Find more information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABAPASSIGN_MEM_AREA_STATIC_DOBJ.html).
+Find more information [here](https://help.sap.com/docs/abap-cloud/abap-keyword/assign-static-dobj).
 
 <br>
 
@@ -390,7 +390,7 @@ ENDDO.
 
  <td> 
 
-Find more information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapassign_casting.htm).
+Find more information [here](https://help.sap.com/docs/abap-cloud/abap-keyword/assign-casting-spec).
 
 <br>
 
@@ -723,20 +723,20 @@ ASSIGN s-oref TO <object>.
 
 ### Data References
 
-[Data references](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendata_reference_glosry.htm "Glossary Entry")
+[Data references](https://help.sap.com/docs/abap-cloud/abap-keyword/data-reference)
 ...
 
 -   are references that point to any data object or to their parts (for example, components, lines of internal tables).
--   are contained in [data reference variables](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendata_reference_variable_glosry.htm "Glossary Entry")
+-   are contained in [data reference variables](https://help.sap.com/docs/abap-cloud/abap-keyword/data-reference-variable)
     in ABAP programs.
 
-[Data reference variables](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendata_reference_variable_glosry.htm "Glossary Entry")
+[Data reference variables](https://help.sap.com/docs/abap-cloud/abap-keyword/data-reference-variable)
 ...
 
 - are data objects that contain a reference.
 - are "opaque", i. e. the contained references cannot be accessed directly. To access the content, these variables must be dereferenced first.
-- are [deep](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendeep_glosry.htm "Glossary Entry") data objects like strings and   internal tables.
-- are typed with the addition [`REF TO`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abaptypes_references.htm) followed by a [static type](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenstatic_type_glosry.htm). Note the [dynamic type](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendynamic_type_glosry.htm) in this context: The dynamic type of such a variable is the data type to which it actually points. This concept is particularly relevant in the context of assignments (see the assignment rules [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconversion_references.htm)).
+- are [deep](https://help.sap.com/docs/abap-cloud/abap-keyword/deep) data objects like strings and   internal tables.
+- are typed with the addition [`REF TO`](https://help.sap.com/docs/abap-cloud/abap-keyword/types-ref-to) followed by a [static type](https://help.sap.com/docs/abap-cloud/abap-keyword/static-type). Note the [dynamic type](https://help.sap.com/docs/abap-cloud/abap-keyword/dynamic-type) in this context: The dynamic type of such a variable is the data type to which it actually points. This concept is particularly relevant in the context of assignments (see the assignment rules [here](https://help.sap.com/docs/abap-cloud/abap-keyword/assignment-rules-for-reference-variables)).
 - can be typed with a complete or generic type. However, only `data` can be used as generic type.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
@@ -767,7 +767,7 @@ See also the cheat sheet [Data Types and Data Objects](16_Data_Types_and_Objects
 
 #### Assigning References to Existing Data Objects
 
-Assigning references to existing data objects [reference operator](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenreference_operator_glosry.htm "Glossary Entry")
+Assigning references to existing data objects [reference operator](https://help.sap.com/docs/abap-cloud/abap-keyword/reference-operator)
 `REF`.
 ``` abap
 "Declaring a data object
@@ -811,12 +811,12 @@ DATA(ref4) = REF some_type( ... ).
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
 #### Creating New Data Objects at Runtime (Anonymous Data Objects) 
-[Anonymous data objects](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenanonymous_data_object_glosry.htm "Glossary Entry") ...
+[Anonymous data objects](https://help.sap.com/docs/abap-cloud/abap-keyword/anonymous-data-object) ...
 - are dynamically created at runtime. 
 - are relevant if the data type is only known when the program is executed.
 - cannot be addressed by a name ("anonymous"). 
 - expect a data reference variable when declared. The content of an anonymous data object can only be accessed using dereferenced variables as shown below or field symbols.
-- can be created using the statement [`CREATE DATA`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapcreate_data.htm), the instance operator [`NEW`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconstructor_expression_new.htm), or the addition [`NEW`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapselect_into_target.htm) of the `INTO` clause in a `SELECT` statement. 
+- can be created using the statement [`CREATE DATA`](https://help.sap.com/docs/abap-cloud/abap-keyword/create-data), the instance operator [`NEW`](https://help.sap.com/docs/abap-cloud/abap-keyword/new-instance-operator), or the addition [`NEW`](https://help.sap.com/docs/abap-cloud/abap-keyword/select-into-target) of the `INTO` clause in a `SELECT` statement. 
 
 > [!NOTE] 
 > The following snippet covers statically defined types. Data objects can also be created with `CREATE DATA` dynamically using dynamic type definitions (the type name is specified within a pair of parentheses) and type description objects ([`TYPE HANDLE` addition](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapcreate_data_handle.htm)) as shown further down. 
@@ -898,15 +898,15 @@ SELECT SINGLE *
 
 #### Excursion with Object Reference Variables: Creating Objects as Instances of Classes and CREATE OBJECT Statements
 
-- To create an object, a [reference variable](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenreference_variable_glosry.htm "Glossary Entry")
+- To create an object, a [reference variable](https://help.sap.com/docs/abap-cloud/abap-keyword/reference-variable)
 must be declared.
-- Such an [object reference variable](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenobject_refer_variable_glosry.htm "Glossary Entry")
+- Such an [object reference variable](https://help.sap.com/docs/abap-cloud/abap-keyword/object-reference-variable)
 is required to access objects and their components. That means objects are not directly accessed but only via references that point to those objects. This object reference variable contains the reference to the object - after assigning the reference to the object.
-- Using [`CREATE OBJECT`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapcreate_object.htm) statements, you can create an object as an instance of a class and assign the reference to the object to an [object reference variable](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenobject_refer_variable_glosry.htm). 
-- The instance operator [`NEW`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconstructor_expression_new.htm) basically replaces `CREATE OBJECT` statements. 
+- Using [`CREATE OBJECT`](https://help.sap.com/docs/abap-cloud/abap-keyword/create-object) statements, you can create an object as an instance of a class and assign the reference to the object to an [object reference variable](https://help.sap.com/docs/abap-cloud/abap-keyword/object-reference-variable). 
+- The instance operator [`NEW`](https://help.sap.com/docs/abap-cloud/abap-keyword/new-instance-operator) basically replaces `CREATE OBJECT` statements. 
 - However, `CREATE OBJECT` statements are still required and they are the only option for creating objects dynamically (`NEW` is not possible in that context) as shown further down.
-- In the example, note the built-in generic ABAP type `object` (`TYPE REF TO object`) that is used for the generic typing of object references. It is for any object type. `object` stands for the root class of the inheritance hierarchy. More information: [Generic ABAP Types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbuilt_in_types_generic.htm)
-- Find more information in the [ABAP Keyword Documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapcreate_object.htm) and the [ABAP Object Orientation](04_ABAP_Object_Orientation.md) cheat sheet
+- In the example, note the built-in generic ABAP type `object` (`TYPE REF TO object`) that is used for the generic typing of object references. It is for any object type. `object` stands for the root class of the inheritance hierarchy. More information: [Generic ABAP Types](https://help.sap.com/docs/abap-cloud/abap-keyword/generic-abap-types)
+- Find more information in the [ABAP Keyword Documentation](https://help.sap.com/docs/abap-cloud/abap-keyword/create-object) and the [ABAP Object Orientation](04_ABAP_Object_Orientation.md) cheat sheet
 
 ```abap
 DATA oref_a TYPE REF TO zcl_demo_abap.
@@ -936,16 +936,16 @@ reference variables must be compatible. As a result of an assignment, both the t
 
 Excursion: Static vs. dynamic type, upcasts and downcasts
 - Data reference variables have ...
-  - a [static type](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenstatic_type_glosry.htm "Glossary Entry"). This is the type you specify when declaring the variable, i. e. `i` is the static type in this example: `DATA ref TYPE REF TO i.`. The static type can also be a generic data type: `DATA ref TYPE REF TO data.`.
-  - a [dynamic type](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendynamic_type_glosry.htm "Glossary Entry"), the type of a (data) object to which the reference variable actually points to at runtime.
+  - a [static type](https://help.sap.com/docs/abap-cloud/abap-keyword/static-type). This is the type you specify when declaring the variable, i. e. `i` is the static type in this example: `DATA ref TYPE REF TO i.`. The static type can also be a generic data type: `DATA ref TYPE REF TO data.`.
+  - a [dynamic type](https://help.sap.com/docs/abap-cloud/abap-keyword/dynamic-type), the type of a (data) object to which the reference variable actually points to at runtime.
 - For an assignment to work, the differentiation is particularly relevant since the following basic rule applies: The static type of the target reference variable must be more general than or the same as the dynamic type of the source reference variable.
 
-- This is where the concept of [upcast](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenup_cast_glosry.htm "Glossary Entry") and [downcast](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendown_cast_glosry.htm "Glossary Entry") enters the picture.
-  - This concept originates from the idea of moving up or down in an [inheritance tree](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abeninheritance_tree_glosry.htm). In an assignment between reference variables, the target variable inherits the dynamic type of the source variable.
-  - **Upcast**: If the static type of the target variables is **less specific or the same** as the static type of the source variable, an assignment is possible. This includes, for example, assignments with the [assignment operator](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenassignment_operator_glosry.htm) `=`.
+- This is where the concept of [upcast](https://help.sap.com/docs/abap-cloud/abap-keyword/upcast) and [downcast](https://help.sap.com/docs/abap-cloud/abap-keyword/downcast) enters the picture.
+  - This concept originates from the idea of moving up or down in an [inheritance tree](https://help.sap.com/docs/abap-cloud/abap-keyword/inheritance-tree). In an assignment between reference variables, the target variable inherits the dynamic type of the source variable.
+  - **Upcast**: If the static type of the target variables is **less specific or the same** as the static type of the source variable, an assignment is possible. This includes, for example, assignments with the [assignment operator](https://help.sap.com/docs/abap-cloud/abap-keyword/assignment-operator-abenassignment_operator_glosry) `=`.
   - **Downcast**: If the static type of the target variable is **more specific** than the static type of the source variable, a check must be made at runtime before the assignment is done. If you indeed want to trigger such a downcast, you must do it explicitly in your code. You can do this, for example, using the
-  [constructor operator](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconstructor_operator_glosry.htm "Glossary Entry")
-[`CAST`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconstructor_expression_cast.htm). In older code, you may see the use of the [`?=`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapmove_cast.htm) operator.
+  [constructor operator](https://help.sap.com/docs/abap-cloud/abap-keyword/constructor-operator)
+[`CAST`](https://help.sap.com/docs/abap-cloud/abap-keyword/cast-casting-operator). In older code, you may see the use of the [`?=`](https://help.sap.com/docs/abap-cloud/abap-keyword/upcast-and-downcast) operator.
   - In contrast to a downcast, an upcast does not have to be done explicitly. However, you can - but need not - use the mentioned operators for upcasts, too.
 
 The code snippet below demonstrates upcasts and downcasts with data reference variables, but also object reference variables to visualize moving up and down an inheritance tree. The examples in the code snippet use object reference variables to illustrate the class hierarchy of the [Runtime Type Services (RTTS)](#runtime-type-services-rtts), which is covered in more detail further down. You can find the hierarchy tree of the classes [here](#runtime-type-services-rtts).
@@ -1213,7 +1213,7 @@ ref4 = CAST #( ref3 ).
 #### Addressing Data References
 
 Before addressing the content of data objects a data reference points to, you must dereference data reference variables. Use the
-[dereferencing operator](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendereferencing_operat_glosry.htm "Glossary Entry")
+[dereferencing operator](https://help.sap.com/docs/abap-cloud/abap-keyword/dereferencing-operator-abendereferencing_operat_glosry)
 `->*`. When dereferencing a data reference variable that has a structured data type, you can use the component selector `->` to address individual components.
 
 
@@ -1266,7 +1266,7 @@ CLEAR ref_carr.
 
 #### Checking if Data Reference Variables Can Be Dereferenced
 
-To check if dereferencing works, you can use a logical expression with [`IS [NOT] BOUND`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenlogexp_bound.htm).
+To check if dereferencing works, you can use a logical expression with [`IS [NOT] BOUND`](https://help.sap.com/docs/abap-cloud/abap-keyword/rel-exp-is-bound).
 
 ```abap
 DATA(ref_carr) = NEW zdemo_abap_carr( carrid = 'LH' carrname = 'Lufthansa' ).
@@ -1977,7 +1977,7 @@ ENDDO.
 
 - As shown above, you create anonymous data objects using `CREATE DATA` statements and assign the reference to the data object to a reference variable. 
 - You can dynamically specify the type name in parentheses. 
-- In addition to character-like data objects (such as literals and variables) for the type name specified in the parentheses, you can also use [absolute type names](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabsolute_typename_glosry.htm). 
+- In addition to character-like data objects (such as literals and variables) for the type name specified in the parentheses, you can also use [absolute type names](https://help.sap.com/docs/abap-cloud/abap-keyword/absolute-type-name). 
 - You can also use type description objects and the [`TYPE HANDLE` addition](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapcreate_data_handle.htm) to create anonymous data objects dynamically. For this and the absolute names, find more information below in the section about RTTS.
 
 ``` abap
@@ -2114,7 +2114,7 @@ CREATE DATA dref TYPE HANDLE tdo_elem.
 
 ### Creating Instances of Classes by Specifying the Type Dynamically
 
-- [`CREATE OBJECT`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapcreate_object_explicit.htm) statements can be used to create instances of classes by specifying the type dynamically.
+- [`CREATE OBJECT`](https://help.sap.com/docs/abap-cloud/abap-keyword/create-object-type) statements can be used to create instances of classes by specifying the type dynamically.
 - It assigns the reference to the object to an object reference variable.
 - The `NEW` operator cannot be used to create instances of classes by specifying the type dynamically.
 
@@ -3700,7 +3700,7 @@ The following simplified example highlights several things in the context of a d
 - Creating instances of classes dynamically, using generic types
 - The concepts of static vs. dynamic type, upcast vs. downcast
 - Dynamic ABAP does the same as static ABAP, but with dynamic ABAP, errors may not be discovered until runtime.
-- Type compliance (see the [General Rules for Typing](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentyping_check_general.htm))
+- Type compliance (see the [General Rules for Typing](https://help.sap.com/docs/abap-cloud/abap-keyword/general-rules-for-typing))
 
 ```abap
 CLASS zcl_demo_test DEFINITION
@@ -3902,8 +3902,8 @@ CALL FUNCTION func_name PARAMETER-TABLE ptab.
 
 ### Dynamic ABAP EML Statements
 
-- In the context of [RAP](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_rap_glosry.htm), [ABAP EML](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_eml_glosry.htm) statements are available with dynamic forms. 
-- For more information, refer to the [ABAP EML](08_EML_ABAP_for_RAP.md#dynamic-forms-of-eml-statements) cheat sheet and the [ABAP Keyword Documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abeneml.htm).
+- In the context of [RAP](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-rap), [ABAP EML](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-eml) statements are available with dynamic forms. 
+- For more information, refer to the [ABAP EML](08_EML_ABAP_for_RAP.md#dynamic-forms-of-eml-statements) cheat sheet and the [ABAP Keyword Documentation](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-eml-consuming-rap-bos).
 
 <br>
 
@@ -4166,7 +4166,7 @@ ASSERT tab2 = tab.
 ### Dynamic Formatting Option Specifications in String Templates
 
 - The following code snippet demonstrates a small selection of dynamic formatting option specifications in string templates.
-- For more details and a complete list of options, refer to the [ABAP Keyword Documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/abapcompute_string_format_options.htm), especially regarding the expected and supported input (attributes of the `CL_ABAP_FORMAT` class). 
+- For more details and a complete list of options, refer to the [ABAP Keyword Documentation](https://help.sap.com/docs/abap-cloud/abap-keyword/embd-exp-format-options), especially regarding the expected and supported input (attributes of the `CL_ABAP_FORMAT` class). 
 - General information on string templates can also be found there and in the [String Processing](07_String_Processing.md#string-templates) cheat sheet. 
 
 <br> 
@@ -4206,7 +4206,7 @@ DATA(s6) = |{ some_string CASE = int_tab[ 1 ] }|. "AbAp
 ### Dynamic Parameter List in EXPORT and IMPORT Statements
 
 - Used in the context of exporting and importing data clusters
-- Find more information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABENDATA_CLUSTER.html) and an executable example, including the code snippet below, in the [Working with XML and JSON in ABAP](21_XML_JSON.md) cheat sheet.
+- Find more information [here](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-data-cluster) and an executable example, including the code snippet below, in the [Working with XML and JSON in ABAP](21_XML_JSON.md) cheat sheet.
 
 <br> 
 
@@ -4736,13 +4736,13 @@ ENDCLASS.
 
 ## Runtime Type Services (RTTS)
 
-[RTTS](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrun_time_type_services_glosry.htm "Glossary Entry")
-represent a hierarchy of [type description classes](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentype_class_glosry.htm "Glossary Entry")
+[RTTS](https://help.sap.com/docs/abap-cloud/abap-keyword/runtime-type-services)
+represent a hierarchy of [type description classes](https://help.sap.com/docs/abap-cloud/abap-keyword/type-description-class)
 containing methods for 
 -   getting type information on data objects, data types or
-    [instances](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abeninstance_glosry.htm "Glossary Entry")
-    at runtime ([Runtime Type Identification (RTTI)](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrun_time_type_identific_glosry.htm "Glossary Entry")).
--   defining and creating new data types as [type description objects](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentype_object_glosry.htm) at runtime ([Runtime Type Creation (RTTC)](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrun_time_type_creation_glosry.htm "Glossary Entry")).
+    [instances](https://help.sap.com/docs/abap-cloud/abap-keyword/instance)
+    at runtime ([Runtime Type Identification (RTTI)](https://help.sap.com/docs/abap-cloud/abap-keyword/runtime-type-identification)).
+-   defining and creating new data types as [type description objects](https://help.sap.com/docs/abap-cloud/abap-keyword/type-description-object) at runtime ([Runtime Type Creation (RTTC)](https://help.sap.com/docs/abap-cloud/abap-keyword/runtime-type-creation)).
 
 The hierarchy of type description classes is as follows.
 
@@ -4767,19 +4767,19 @@ CL_ABAP_TYPEDESCR
      |--CL_ABAP_INTFDESCR
 </pre>
 So, the
-[superclass](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensuperclass_glosry.htm "Glossary Entry")
+[superclass](https://help.sap.com/docs/abap-cloud/abap-keyword/superclass)
 `CL_ABAP_TYPEDESCR` has multiple
-[subclasses](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensubclass_glosry.htm "Glossary Entry"),
+[subclasses](https://help.sap.com/docs/abap-cloud/abap-keyword/subclass),
 for example, to deal with each kind of type.
 Working with this inheritance tree means making use of
 [casts](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abencast_glosry.htm "Glossary Entry"),
 especially
-[downcasts](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abendown_cast_glosry.htm "Glossary Entry") when retrieving information at runtime.
+[downcasts](https://help.sap.com/docs/abap-cloud/abap-keyword/downcast) when retrieving information at runtime.
 Detailing out all the possibilities for the information retrieval and
 type creation is beyond scope. Check the information, options and
 various methods that can be used in the class documentation, e. g. using
 F2 help information in
-[ADT](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenadt_glosry.htm "Glossary Entry"),
+[ADT](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-development-tools-for-eclipse),
 for more details.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
@@ -5629,7 +5629,7 @@ Notes:
 - The `*_ref` methods return objects of the dynamic type. 
 - In the bigger example of the demo class (the first `LOOP` statement), type names are not used, but rather objects. First, an attempt is made to get a type description object using the `describe_by_object_ref` method to obtain an instance of `cl_abap_objectdescr`. If this fails, it means it is an instance of `cl_abap_datadescr`, which is the next subclass in the hierarchy. It can be retrieved using the `describe_by_data` method. `describe_by_name` is used in the smaller example in the demo class (the second `LOOP` statement). 
 - The `describe_by_data` method also works for references, including object/interface reference variables. In these cases, the returned object points to `cl_abap_refdescr`. The `get_referenced_type` method can then be used to obtain more details about the actual reference. 
-- The example also demonstrates the dynamic creation of data objects using the retrieved type description objects and the `HANDLE` addition to the `CREATE DATA` statement. It also shows dynamic creations using the dynamic specification of the type and the absolute name. The latter is also possible with the `CREATE OBJECT` statement to create objects dynamically. In ABAP for Cloud Development, absolute names having the pattern `\TYPE=%_...` (an internal technical name that is available for [bound data types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbound_data_type_glosry.htm)) cannot be used for the dynamic creation. 
+- The example also demonstrates the dynamic creation of data objects using the retrieved type description objects and the `HANDLE` addition to the `CREATE DATA` statement. It also shows dynamic creations using the dynamic specification of the type and the absolute name. The latter is also possible with the `CREATE OBJECT` statement to create objects dynamically. In ABAP for Cloud Development, absolute names having the pattern `\TYPE=%_...` (an internal technical name that is available for [bound data types](https://help.sap.com/docs/abap-cloud/abap-keyword/bound-data-type)) cannot be used for the dynamic creation. 
 - To visualize the retrieved information, many values are added to a string table. Note that this example is tailored to cover all subclasses of the RTTI hierarchy, but it does not explore all available options for information retrieval. 
 - The example uses artifacts from the ABAP cheat sheet repository.
 
@@ -6371,7 +6371,7 @@ ENDCLASS.
 
 #### Excursion: Inline Declaration, CAST Operator, Method Chaining
 
-As shown in the example above, you can use [inline declarations](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abeninline_declaration_glosry.htm "Glossary Entry"), the [`CAST`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconstructor_expression_cast.htm) operator for casting, and [method chaining](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenmethod_chaining_glosry.htm "Glossary Entry") to write more concise code and avoid declaring helper variables. However, also consider the code's debuggability, maintainability, and readability.
+As shown in the example above, you can use [inline declarations](https://help.sap.com/docs/abap-cloud/abap-keyword/inline-declaration), the [`CAST`](https://help.sap.com/docs/abap-cloud/abap-keyword/cast-casting-operator) operator for casting, and [method chaining](https://help.sap.com/docs/abap-cloud/abap-keyword/method-chaining-abenmethod_chaining_glosry) to write more concise code and avoid declaring helper variables. However, also consider the code's debuggability, maintainability, and readability.
 
 
 ```abap
@@ -6400,11 +6400,11 @@ ASSERT f = g.
 
 #### Absolute Names
 
-As mentioned earlier about type name specifications for statements such as `CREATE DATA` and `CREATE OBJECT`, and as shown in the previous example, in addition to character-like data objects for the type name (the [relative type name](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrelative_type_name_glosry.htm)) specified in the parentheses, you can also use [absolute type names](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabsolute_typename_glosry.htm).
+As mentioned earlier about type name specifications for statements such as `CREATE DATA` and `CREATE OBJECT`, and as shown in the previous example, in addition to character-like data objects for the type name (the [relative type name](https://help.sap.com/docs/abap-cloud/abap-keyword/relative-type-name)) specified in the parentheses, you can also use [absolute type names](https://help.sap.com/docs/abap-cloud/abap-keyword/absolute-type-name).
 
 
 > [!NOTE]  
-> In [ABAP for Cloud Development](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_for_cloud_dev_glosry.htm), absolute names having the pattern `\TYPE=%_...` (an internal technical name that is available for [bound data types](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbound_data_type_glosry.htm); bound data types do not have a relative name) cannot be used for the dynamic creation. 
+> In [ABAP for Cloud Development](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-for-cloud-development), absolute names having the pattern `\TYPE=%_...` (an internal technical name that is available for [bound data types](https://help.sap.com/docs/abap-cloud/abap-keyword/bound-data-type); bound data types do not have a relative name) cannot be used for the dynamic creation. 
 
 
 ```abap
@@ -8696,7 +8696,7 @@ ENDLOOP.
 
 #### Getting Type Description Objects
 
-[Type description objects](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentype_object_glosry.htm):
+[Type description objects](https://help.sap.com/docs/abap-cloud/abap-keyword/type-description-object):
 
 - They are instances of type description classes. See the hierarchy of type description classes above. 
 - As already shown in several code snippets above, you can use the static methods of these type description classes to create type description objects. 
@@ -10561,4 +10561,4 @@ It is recommended that you consult the [Dynamic Programming Techniques (F1 docu 
 >     - Dynamic ABAP syntax components
 >     - Runtime type services (RTTS), i. e. runtime type identification (RTTI) and runtime type creation (RTTC)
 > - The steps to import and run the code are outlined [here](README.md#-getting-started-with-the-examples).
-> - [Disclaimer](./README.md#%EF%B8%8F-disclaimer)
+> - [Disclaimer](./README.md#%EF%B8%8F-disclaimer)

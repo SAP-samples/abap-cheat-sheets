@@ -30,17 +30,17 @@ Built-in functions are also available in ABAP SQL and ABAP CDS.
 
 > [!NOTE]
 > - For more detailed information, refer to the topics linked in the [More Information](#more-information) section.
-> - Avoid naming your methods the same as built-in functions within classes. Otherwise, the methods will "[hide](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbuilt_in_functions_hiding.htm)" the built-in functions.
+> - Avoid naming your methods the same as built-in functions within classes. Otherwise, the methods will "[hide](https://help.sap.com/docs/abap-cloud/abap-keyword/built-in-functions-hiding-by-methods)" the built-in functions.
 > - The examples in the ABAP cheat sheet are not comprehensive in terms of functions covered, syntax options and parameters used. Always refer to the ABAP Keyword Documentation for more details.
 > - [Disclaimer](./README.md#%EF%B8%8F-disclaimer)
 
 ## Logical Functions 
 
 > [!NOTE]
-> - Logical functions in ABAP return a [truth value](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentruth_value_glosry.htm), either true or false. They are primarily used in [logical expressions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenlogexp.htm), for example, in control statements like `IF ... ELSE ... ENDIF`, and other statements that involve conditions. 
-> - Note that ABAP does not have a Boolean data type for truth values, nor does it support [Boolean data objects](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenboolean_data_object_glosry.htm). Instead, the `xsdbool` function can be used to represent truth values in various situations where the `abap_bool` type from the `abap` type pool, i.e. the values `abap_true` ('X') and `abap_false` (''), is expected. 
+> - Logical functions in ABAP return a [truth value](https://help.sap.com/docs/abap-cloud/abap-keyword/truth-value), either true or false. They are primarily used in [logical expressions](https://help.sap.com/docs/abap-cloud/abap-keyword/logical-expressions-log-exp), for example, in control statements like `IF ... ELSE ... ENDIF`, and other statements that involve conditions. 
+> - Note that ABAP does not have a Boolean data type for truth values, nor does it support [Boolean data objects](https://help.sap.com/docs/abap-cloud/abap-keyword/boolean-data-object). Instead, the `xsdbool` function can be used to represent truth values in various situations where the `abap_bool` type from the `abap` type pool, i.e. the values `abap_true` ('X') and `abap_false` (''), is expected. 
 > - Many of the examples in this section utilize the `xsdbool` function to visualize the truth value, rather than using `IF` control structures, for example.
-> - For more information, see [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenlogic_functions.htm).
+> - For more information, see [here](https://help.sap.com/docs/abap-cloud/abap-keyword/logical-functions).
 
 
 <table>
@@ -427,7 +427,7 @@ DATA(tangent) = tan( '90' ).
 <tr>
 <td> <code>round</code><br><code>rescale</code> </td>
 <td>
-Rounding functions expect a decimal floating point number as argument. The return value is of type <code>decfloat34</code>. The functions can be used to round to decimal places and <a href="https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenprecision_glosry.htm">precisions</a>. In addition, rounding rules can be specified. For more details, refer to the ABAP Keyword Documentation.
+Rounding functions expect a decimal floating point number as argument. The return value is of type <code>decfloat34</code>. The functions can be used to round to decimal places and <a href="https://help.sap.com/docs/abap-cloud/abap-keyword/precision">precisions</a>. In addition, rounding rules can be specified. For more details, refer to the ABAP Keyword Documentation.
 <br><br>
 
 ``` abap
@@ -468,7 +468,7 @@ DATA(rescale4) = rescale( val = CONV decfloat34( '1234.56789' ) prec = 10 ).
 <td> <code>factorial</code><br><code>binomial</code> </td>
 <td>
 
-<code>factorial</code> calculates the factorial of positive integers. <code>binomial</code> computes the binomial coefficient. Find more information [here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/ABENFACTORIAL_BINOMIAL_FUNCTIONS.html).
+<code>factorial</code> calculates the factorial of positive integers. <code>binomial</code> computes the binomial coefficient. Find more information [here](https://help.sap.com/docs/abap-cloud/abap-keyword/num-func-factorial-binomial).
 
 <br>
 
@@ -1391,9 +1391,9 @@ DATA(line_index7) = line_index( itab_str[ table_line = `zzz` ] ).
 ## Built-In Functions for ABAP CDS and ABAP SQL
 
 > [!NOTE]
-> - The examples only demonstrate ABAP SQL statements. Refer to the [ABAP Keyword Documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenddic_builtin_functions.htm) for the complete picture.
+> - The examples only demonstrate ABAP SQL statements. Refer to the [ABAP Keyword Documentation](https://help.sap.com/docs/abap-cloud/abap-keyword/ddic-built-in-functions) for the complete picture.
 > - As with the previous examples, the following examples showcase a variety of available functions.
-> - The examples use [typed literals](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentyped_literal_glosry.htm) to ensure appropriate types are used and to provide self-contained examples.
+> - The examples use [typed literals](https://help.sap.com/docs/abap-cloud/abap-keyword/typed-literal) to ensure appropriate types are used and to provide self-contained examples.
 
 ### Functions for Numeric Values
 
@@ -1796,9 +1796,9 @@ SELECT tab2~key_field,
 
 ## More Information
 
-- [Built-in functions in ABAP](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbuilt_in_functions.htm)
-  - [Overview of functions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbuilt_in_functions_overview.htm)
-- [Built-in functions that can be used by ABAP CDS and ABAP SQL](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenddic_builtin_functions.htm)
+- [Built-in functions in ABAP](https://help.sap.com/docs/abap-cloud/abap-keyword/built-in-functions)
+  - [Overview of functions](https://help.sap.com/docs/abap-cloud/abap-keyword/built-in-functions-overview)
+- [Built-in functions that can be used by ABAP CDS and ABAP SQL](https://help.sap.com/docs/abap-cloud/abap-keyword/ddic-built-in-functions)
 
 ## Executable Example
 
@@ -1807,4 +1807,4 @@ SELECT tab2~key_field,
 
 > [!NOTE]
 > - The steps to import and run the code are outlined [here](README.md#-getting-started-with-the-examples).
-> - [Disclaimer](./README.md#%EF%B8%8F-disclaimer)
+> - [Disclaimer](./README.md#%EF%B8%8F-disclaimer)

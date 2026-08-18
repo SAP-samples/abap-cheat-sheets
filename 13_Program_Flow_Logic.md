@@ -30,16 +30,16 @@
 
 
 This cheat sheet gathers information on program flow logic. Find more details
-[here](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_flow_logic.htm)
+[here](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-program-flow-logic)
 in the ABAP Keyword Documentation.
 
 ## Introduction
 
-In ABAP, the flow of a program is controlled by [control structures](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencontrol_structure_glosry.htm), [procedure](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenprocedure_glosry.htm) calls and the raising or handling of [exceptions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenexception_glosry.htm).
+In ABAP, the flow of a program is controlled by [control structures](https://help.sap.com/docs/abap-cloud/abap-keyword/control-structure), [procedure](https://help.sap.com/docs/abap-cloud/abap-keyword/procedure) calls and the raising or handling of [exceptions](https://help.sap.com/docs/abap-cloud/abap-keyword/exception).
 
-Using control structures as an example, you can determine the conditions for further processing of code, for example, if at all or how often a statement block should be executed. Control structures - as, for example, realized by an `IF ... ELSEIF ... ELSE ... ENDIF.` statement - can include multiple [statement blocks](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenstatement_block_glosry.htm) that are executed depending on conditions.
+Using control structures as an example, you can determine the conditions for further processing of code, for example, if at all or how often a statement block should be executed. Control structures - as, for example, realized by an `IF ... ELSEIF ... ELSE ... ENDIF.` statement - can include multiple [statement blocks](https://help.sap.com/docs/abap-cloud/abap-keyword/statement-block) that are executed depending on conditions.
 
-In a very simple form, such an [`IF`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapif.htm) statement might look as follows:
+In a very simple form, such an [`IF`](https://help.sap.com/docs/abap-cloud/abap-keyword/if) statement might look as follows:
 
 ```abap
 DATA(num) = 1 + 1.
@@ -59,10 +59,10 @@ ENDIF.
 
 ## Expressions and Functions for Conditions
 
-- Control structures are executed depending on conditions as specified above: `... num = 2 ...` - a [logical expression](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenlogical_expression_glosry.htm).
-- Control structures are generally controlled by logical expressions that define conditions for [operands](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenoperand_glosry.htm).
+- Control structures are executed depending on conditions as specified above: `... num = 2 ...` - a [logical expression](https://help.sap.com/docs/abap-cloud/abap-keyword/logical-expression).
+- Control structures are generally controlled by logical expressions that define conditions for [operands](https://help.sap.com/docs/abap-cloud/abap-keyword/operand).
 - The result of such an expression is either true or false.
-- Logical expressions are either single [relational expressions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrelational_expression_glosry.htm) or expressions combined from one or more logical expressions with Boolean operators like `NOT`, `AND` and `OR`.
+- Logical expressions are either single [relational expressions](https://help.sap.com/docs/abap-cloud/abap-keyword/relational-expression) or expressions combined from one or more logical expressions with Boolean operators like `NOT`, `AND` and `OR`.
 
 ```abap
 "Single relational expression
@@ -85,8 +85,8 @@ IF ( num = 1 AND flag = 'X' ) OR ( num = 2 AND flag = 'X' ).
 ENDIF.
 ```
 
-- The components of such relational expressions can be [comparisons](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencomparison_glosry.htm) or [predicates](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenpredicate_glosry.htm). Note that for [comparison expressions](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abencomparison_expression_glosry.htm),
-the comparisons are carried out according to [comparison rules](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenlogexp_rules.htm).
+- The components of such relational expressions can be [comparisons](https://help.sap.com/docs/abap-cloud/abap-keyword/comparison) or [predicates](https://help.sap.com/docs/abap-cloud/abap-keyword/predicate). Note that for [comparison expressions](https://help.sap.com/docs/abap-cloud/abap-keyword/comparison-expression),
+the comparisons are carried out according to [comparison rules](https://help.sap.com/docs/abap-cloud/abap-keyword/rel-exp-comparison-rules).
 
 The following code snippet shows a selection of possible expressions and operands of such expressions using a big `IF` statement. Certainly, such a huge statement is far from ideal. Here, the intention is to just cover many syntax options in one go for demonstration purposes. For more information on built-in functions, you can refer to the [Built-In Functions](24_Builtin_Functions.md) cheat sheet.
 
@@ -251,7 +251,7 @@ ENDIF.
 
 ### `IF` Statements
 
-- As already shown above, `IF` statements define statement blocks that can be included in [branches](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbranch_glosry.htm).
+- As already shown above, `IF` statements define statement blocks that can be included in [branches](https://help.sap.com/docs/abap-cloud/abap-keyword/branch).
 - The statement blocks are executed depending on conditions.
 - A maximum of one statement block is executed.
 - The check is carried out from top to bottom. The statement block after the first logical expression that is true is executed.
@@ -322,7 +322,7 @@ ENDIF.
 
 #### Excursion: `COND` Operator
 
-- The conditional operator [`COND`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconditional_expression_cond.htm) can also be used to implement branches in operand positions that are based on logical expressions.
+- The conditional operator [`COND`](https://help.sap.com/docs/abap-cloud/abap-keyword/cond-conditional-operator) can also be used to implement branches in operand positions that are based on logical expressions.
 - Such conditional expressions have a result that is dependent on the logical expressions.
 - The result's data type is specified after `COND` right before the first parenthesis. It can also be the `#` character as a symbol for the operand type if the type can be derived from the context. 
 - All operands specified after `THEN` must be convertible to the result's data type.
@@ -345,7 +345,7 @@ greetings_cond = COND #( WHEN current_utc_time_cond BETWEEN '050000' AND '115959
 
 ### `CASE`: Case Distinctions
 
-- [`CASE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapcase.htm) statements are used for case distinctions.
+- [`CASE`](https://help.sap.com/docs/abap-cloud/abap-keyword/case) statements are used for case distinctions.
 - Such statements can also contain multiple statement blocks of which a maximum of one is executed depending on the value of the operand specified after `CASE`.
 - The check is carried out from top to bottom. If the content of an operand specified after `WHEN` matches the content specified after `CASE`, the statement block is executed. Constant values should be specified as operands.
 - The `WHEN` statement can include more than one operand using the syntax `WHEN op1 OR op2 OR op3 ...`.
@@ -376,7 +376,7 @@ ENDCASE.
 
 #### Control Structures Using CASE TYPE OF 
 
-Special control structure introduced by [`CASE TYPE OF`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapcase_type.htm): Checks the type of object reference variables. An object reference variable with the static type of a class or an interface must be specified after `CASE TYPE OF`.
+Special control structure introduced by [`CASE TYPE OF`](https://help.sap.com/docs/abap-cloud/abap-keyword/case-type-of): Checks the type of object reference variables. An object reference variable with the static type of a class or an interface must be specified after `CASE TYPE OF`.
 
 ```abap
 "The example shows the retrieval of type information at runtime (RTTI).
@@ -406,7 +406,7 @@ ENDCASE.
 
 #### Excursion: `SWITCH` Operator
 
-The conditional operator [`SWITCH`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenconditional_expression_switch.htm) can also be used to make case distinctions in operand positions. As mentioned above for `COND`, a result is constructed. The same criteria apply for `SWITCH` as for `COND` regarding the type. See also the ABAP Keyword Documentation and the [Constructor Expressions](05_Constructor_Expressions.md) cheat sheet for more information and examples.
+The conditional operator [`SWITCH`](https://help.sap.com/docs/abap-cloud/abap-keyword/switch-conditional-operator) can also be used to make case distinctions in operand positions. As mentioned above for `COND`, a result is constructed. The same criteria apply for `SWITCH` as for `COND` regarding the type. See also the ABAP Keyword Documentation and the [Constructor Expressions](05_Constructor_Expressions.md) cheat sheet for more information and examples.
 
 
 ```abap
@@ -459,9 +459,9 @@ The following ABAP keywords are available for interrupting and exiting loops:
 
 | Keyword  | Syntax  | Details  |
 |---|---|---|
-| [`CONTINUE`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapcontinue.htm)  | `CONTINUE.`  | The current loop pass is terminated immediately and the program flow is continued with the next loop pass. |
-| [`CHECK`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapcheck_loop.htm)  | `CHECK log_exp.`  | Conditional termination. If the logical expression `log_exp` is false, the current loop pass is terminated immediately and the program flow is continued with the next loop pass. |
-| [`EXIT`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapexit_loop.htm)  | `EXIT.`  | The loop is terminated completely. The program flow resumes after the closing statement of the loop.  |
+| [`CONTINUE`](https://help.sap.com/docs/abap-cloud/abap-keyword/continue)  | `CONTINUE.`  | The current loop pass is terminated immediately and the program flow is continued with the next loop pass. |
+| [`CHECK`](https://help.sap.com/docs/abap-cloud/abap-keyword/check-loop)  | `CHECK log_exp.`  | Conditional termination. If the logical expression `log_exp` is false, the current loop pass is terminated immediately and the program flow is continued with the next loop pass. |
+| [`EXIT`](https://help.sap.com/docs/abap-cloud/abap-keyword/exit-loop)  | `EXIT.`  | The loop is terminated completely. The program flow resumes after the closing statement of the loop.  |
 
 ```abap
 *&---------------------------------------------------------------------*
@@ -521,7 +521,7 @@ ENDDO.
 
 
 > [!NOTE]
-> - [`RETURN`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapreturn.htm) statements immediately terminate the current processing block. However, according to the [guidelines (F1 docu for standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenexit_procedure_guidl.htm), `RETURN` should only be used to exit procedures like methods.
+> - [`RETURN`](https://help.sap.com/docs/abap-cloud/abap-keyword/return) statements immediately terminate the current processing block. However, according to the [guidelines (F1 docu for standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenexit_procedure_guidl.htm), `RETURN` should only be used to exit procedures like methods.
 > - `EXIT` and `CHECK` might also be used for exiting procedures. However, their use inside loops is recommended.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
@@ -575,24 +575,24 @@ ENDWHILE.
 #### Loops Across Tables
 Further keywords for defining loops are as follows. They are not dealt with here since they are covered in other ABAP cheat sheets.
 
-- [`LOOP ... ENDLOOP`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abaploop_at_itab.htm) statements are meant for loops across internal tables. See also the cheat sheet on internal tables.
+- [`LOOP ... ENDLOOP`](https://help.sap.com/docs/abap-cloud/abap-keyword/loop-at-itab-basic-form) statements are meant for loops across internal tables. See also the cheat sheet on internal tables.
   - In contrast to the loops above, the system field `sy-index` is not set. Instead, the system field `sy-tabix` is set and which contains the table index of the current table line in the loop pass.
 - `FOR` loops: You can also realize loops using iteration expressions with `VALUE` and `REDUCE`. For more information, refer to the [Constructor Expressions](05_Constructor_Expressions.md) cheat sheet.
-- [`SELECT ... ENDSELECT`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapselect.htm) statements loop across the result set of a data source access. See also the cheat sheet on ABAP SQL.
+- [`SELECT ... ENDSELECT`](https://help.sap.com/docs/abap-cloud/abap-keyword/select) statements loop across the result set of a data source access. See also the cheat sheet on ABAP SQL.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## Calling Procedures
 
-[Procedures](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenprocedure_glosry.htm) can be explicitly called within an [ABAP program](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_program_glosry.htm), thereby influencing the program flow logic.
+[Procedures](https://help.sap.com/docs/abap-cloud/abap-keyword/procedure) can be explicitly called within an [ABAP program](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-program), thereby influencing the program flow logic.
 
 ### Methods of Classes
 
-In modern ABAP programs, classes and methods are the way to go for modularization purposes (instead of [function modules](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenfunction_module_glosry.htm) and [subroutines](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensubroutine_glosry.htm) in most cases; the latter is only available in Standard ABAP).
+In modern ABAP programs, classes and methods are the way to go for modularization purposes (instead of [function modules](https://help.sap.com/docs/abap-cloud/abap-keyword/function-module) and [subroutines](https://help.sap.com/docs/abap-cloud/abap-keyword/subroutine) in most cases; the latter is only available in Standard ABAP).
 Note that methods and calling methods are described in the context of the [ABAP Object Orientation cheat sheet](04_ABAP_Object_Orientation.md). Find more information and examples there.
 
 > [!NOTE]  
-> Find information on [events](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenevent_glosry.htm) in the [ABAP Object Orientation](04_ABAP_Object_Orientation.md#events) cheat sheet.
+> Find information on [events](https://help.sap.com/docs/abap-cloud/abap-keyword/event-abenevent_glosry) in the [ABAP Object Orientation](04_ABAP_Object_Orientation.md#events) cheat sheet.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
@@ -600,7 +600,7 @@ Note that methods and calling methods are described in the context of the [ABAP 
 ### Function Modules
 
 > [!NOTE]
-> In [ABAP for Cloud Development](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_for_cloud_dev_glosry.htm), function modules can technically be used, but they are not recommended for new implementations. Many features available in standard ABAP, such as various includes, are not compatible with ABAP for Cloud Development (for example, [dynpro](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abendynpro_glosry.htm)-related functionality).
+> In [ABAP for Cloud Development](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-for-cloud-development), function modules can technically be used, but they are not recommended for new implementations. Many features available in standard ABAP, such as various includes, are not compatible with ABAP for Cloud Development (for example, [dynpro](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abendynpro_glosry.htm)-related functionality).
 
 Function modules ... 
 - are reusable cross-program procedures (i.e. processing blocks callable via an ABAP statement).
@@ -612,7 +612,7 @@ Function modules ...
     ...
   ENDFUNCTION.
   ```
-- have a parameter interface that's similar to ABAP classes. Note: In ADT, the parameter interface of a function module is defined in ABAP pseudo syntax. These statements are not compiled like genuine ABAP statements and are not subject to the regular ABAP syntax checks. Find more information on the parameter interface in the [ABAP Keyword Documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenfunction.htm). 
+- have a parameter interface that's similar to ABAP classes. Note: In ADT, the parameter interface of a function module is defined in ABAP pseudo syntax. These statements are not compiled like genuine ABAP statements and are not subject to the regular ABAP syntax checks. Find more information on the parameter interface in the [ABAP Keyword Documentation](https://help.sap.com/docs/abap-cloud/abap-keyword/function-module-interface). 
 - are called using `CALL FUNCTION` statements.
 
 Function pools ...
@@ -939,7 +939,7 @@ ENDCLASS.
 
 ## Interrupting the Program Execution with WAIT UP TO Statements 
 
-Using [`WAIT UP TO`](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abapwait_up_to.htm) statements, you can interrupt the program execution by a specified number of seconds.
+Using [`WAIT UP TO`](https://help.sap.com/docs/abap-cloud/abap-keyword/wait-up-to) statements, you can interrupt the program execution by a specified number of seconds.
 
 ```abap
 "First retrieval of the current time stamp

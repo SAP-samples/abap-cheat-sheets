@@ -31,7 +31,7 @@ Consider the following example of transactional consistency:
 
 > [!NOTE]
 > - This cheat sheet focuses on [classic ABAP](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenclassic_abap_glosry.htm) and the unrestricted ABAP language version [Standard ABAP](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenstandard_abap_glosry.htm). Hence, the links in this cheat sheet open topics in the ABAP Keyword Documentation for [Standard ABAP](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenstandard_abap_glosry.htm).
-> - The SAP LUW concept is also relevant to ABAP Cloud. The [ABAP RESTful Application Programming Model (RAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenarap_glosry.htm) is the transactional programming model for [ABAP Cloud](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_cloud_glosry.htm). It comes with a well-defined transactional model and follows the rules of the SAP LUW. Find out more in this [blog](https://blogs.sap.com/2022/12/05/the-sap-luw-in-abap-cloud/).
+> - The SAP LUW concept is also relevant to ABAP Cloud. The [ABAP RESTful Application Programming Model (RAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenarap_glosry.htm) is the transactional programming model for [ABAP Cloud](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-cloud). It comes with a well-defined transactional model and follows the rules of the SAP LUW. Find out more in this [blog](https://blogs.sap.com/2022/12/05/the-sap-luw-in-abap-cloud/).
 
 ## Terms
 
@@ -258,7 +258,7 @@ The following concepts are related to the SAP LUW to ensure transactional consis
 - Since ABAP SQL statements do not trigger any [authorization checks](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenauthorization_check_glosry.htm) in the database system, this is even more important. Database tables may be accessed without restriction using these statements. Conversely, not all users in a system are authorized to access all data available to ABAP SQL statements.
 - Thus, it is up to the programmer to ensure that each user who can call the program is authorized to access the data it handles.
 - More information: 
-  - [Authorizations](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbc_authority_check.htm)
+  - [Authorizations](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-authorizations)
   - [`AUTHORITY-CHECK`](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapauthority-check.htm)
 
 
@@ -300,27 +300,27 @@ There are RAP-specific [ABAP EML](https://help.sap.com/doc/abapdocu_latest_index
 
 ## Controlled SAP LUW
 
-- The *controlled SAP LUW* is an enhancement to the SAP LUW concept, available in both [ABAP Cloud](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabap_cloud_glosry.htm) and [classic ABAP](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenclassic_abap_glosry.htm). 
-- It introduces a check mechanism to detect violations of [transactional contracts](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentransactional_contract_glosry.htm) to guarantee transactional consistency. 
-- Such contracts specify which ABAP statements and operations are allowed and which are not allowed in a [transactional phase](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abentr_phase_glosry.htm). 
+- The *controlled SAP LUW* is an enhancement to the SAP LUW concept, available in both [ABAP Cloud](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-cloud) and [classic ABAP](https://help.sap.com/docs/abap-cloud/abap-keyword/classic-abap). 
+- It introduces a check mechanism to detect violations of [transactional contracts](https://help.sap.com/docs/abap-cloud/abap-keyword/transactional-contract) to guarantee transactional consistency. 
+- Such contracts specify which ABAP statements and operations are allowed and which are not allowed in a [transactional phase](https://help.sap.com/docs/abap-cloud/abap-keyword/transactional-phase). 
 - In this way, applications can be made more robust and the SAP LUW can be made more tangible.
 - Violations that are detected result in a runtime error (or are logged).
 - There are mainly two transactional phases: *modify* and *save*.
 - In RAP, these two phases are set implicitly, and they are subdivided as follows (see more information in the EML cheat sheet and the RAP guide): 
   - *modify* 
-    - [RAP interaction phase](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_int_phase_glosry.htm)
-    - [RAP early save phase](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenearly_rap_save_phase_glosry.htm)
+    - [RAP interaction phase](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-interaction-phase)
+    - [RAP early save phase](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-early-save-phase)
   - *save*
-    - [RAP late save phase](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenlate_rap_save_phase_glosry.htm)
+    - [RAP late save phase](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-late-save-phase)
 - Using the static methods `modify` and `save` of the `CL_ABAP_TX` class, you can activate the transactional phases explicitly. 
-- The controlled SAP LUW is automatically and implicitly supported by newer ABAP concepts such as RAP (i.e. the transactional phases are implicitly active when RAP handler methods are called), [background Processing Framework (bgPF)](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenbgpf_glosry.htm), and local consumption of [RAP business events](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_entity_event_glosry.htm).
-- Furthermore, transactional contracts define where (i. e. in which transactional phase) a [classified API](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenclassified_api_glosry.htm), such as a method of a class, can be used. The classifications start with `IF_ABAP_TX_...`, for example, `IF_ABAP_TX_SAVE`, and are, in the case of methods, typcially included as types in the local types of the class ([CCDEF include](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenccdef_glosry.htm), *Class-Relevant Local Types* tab in ADT). The classifications detail out and restrict the scope of use, so as not to use a classified API in phases where not allowed. Follow the links below for more information.
+- The controlled SAP LUW is automatically and implicitly supported by newer ABAP concepts such as RAP (i.e. the transactional phases are implicitly active when RAP handler methods are called), [background Processing Framework (bgPF)](https://help.sap.com/docs/abap-cloud/abap-keyword/bgpf), and local consumption of [RAP business events](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-business-event).
+- Furthermore, transactional contracts define where (i. e. in which transactional phase) a [classified API](https://help.sap.com/docs/abap-cloud/abap-keyword/classified-api), such as a method of a class, can be used. The classifications start with `IF_ABAP_TX_...`, for example, `IF_ABAP_TX_SAVE`, and are, in the case of methods, typcially included as types in the local types of the class ([CCDEF include](https://help.sap.com/docs/abap-cloud/abap-keyword/ccdef-include), *Class-Relevant Local Types* tab in ADT). The classifications detail out and restrict the scope of use, so as not to use a classified API in phases where not allowed. Follow the links below for more information.
   - Example of a classified API: Open the class `CL_BCS_MAIL_MESSAGE` (which is used for sending emails). In ADT, go to the *Class-Relevant Local Types* tab, and find classifications for methods, for example, the `send_async` method. Calling this method in the *modify* transactional phase results in a violation. You can also get information about the transactional contract using the F2 information in ADT. In the case of the method mentioned, choose F2 on `send_async` (`... cl_bcs_mail_message=>create_instance( ... )->send_async( ). ...`) to view the transactional contract information.
 - Regarding the concrete restrictions and for more information, follow the links. 
 - Examples for violations, such as database modifications. They are only allowed in the *save* transactional phase because the data being processed in the *modify* phase may be inconsistent: 
   - Database modification (e.g. `MODIFY dbtab FROM @row.`) performed when the *modify* transactional phase is active.
-  - Database modifcation in a [RAP handler method](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenabp_handler_method_glosry.htm) implementation. Here, the *modify* transactional phase is active by default.  
-  - Database modifcation in a [RAP event handler method](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abenrap_event_handler_meth_glosry.htm) implementation when the *save* transactional phase has not been activated explicitly. Note: When RAP event handler methods are called, they are started in the *modify* transactional phase. Modifying a database right away there, without the activation of the *save* phase, means a violation.
+  - Database modifcation in a [RAP handler method](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-handler-method) implementation. Here, the *modify* transactional phase is active by default.  
+  - Database modifcation in a [RAP event handler method](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-event-handler-method) implementation when the *save* transactional phase has not been activated explicitly. Note: When RAP event handler methods are called, they are started in the *modify* transactional phase. Modifying a database right away there, without the activation of the *save* phase, means a violation.
   - Calling a classified API in a phase where not allowed, such as `... cl_bcs_mail_message=>create_instance( ... )->send_async( ). ...` (classified with `IF_ABAP_TX_SAVE`) in the *modify* transactional phase.
 - More information:
   - [Controlled SAP LUW](https://help.sap.com/docs/abap-cloud/abap-concepts/controlled-sap-luw) in the SAP Help Portal
@@ -371,7 +371,7 @@ MODIFY zdemo_abap_carr FROM TABLE @( VALUE #(
 
 ## More Information
 - [The RAP Transactional Model and the SAP LUW](https://help.sap.com/docs/SAP_S4HANA_CLOUD/e5522a8a7b174979913c99268bc03f1a/ccda1094b0f845e28b88f9f50a68dfc4.html) (Development guide for the ABAP RESTful Application Programming Model)
-- [SAP LUW in the ABAP Keyword Documentation](https://help.sap.com/doc/abapdocu_cp_index_htm/CLOUD/en-US/index.htm?file=abensap_luw.htm)
+- [SAP LUW in the ABAP Keyword Documentation](https://help.sap.com/docs/abap-cloud/abap-keyword/sap-luw)
 - [Controlled SAP LUW](https://help.sap.com/docs/abap-cloud/abap-concepts/controlled-sap-luw) as an enhancement of the SAP LUW concept
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
@@ -455,4 +455,4 @@ The log shows the value 1 for the transaction state after the update task is exe
   - Before the commit is triggered (in the last PAI), the transaction state shows the value 0 for all retrieved transaction states.
   - The work process information may change due to the fact that database commits are triggered when completing a dialog step. So you might expect different numbers there, but not necessarily. The new free work process can also be the same as the one before it was freed. However, there will be no different work process information for the update. The numbers will be the same because the update is performed in a single work process.
   - Before calling the program that displays database entries and the log, the SAP LUW key is the same throughout the transaction. It does not change until a new SAP LUW is opened. See and compare the last entry for the SAP LUW key in the log that is retrieved for the program submitted.
-</details>
+</details>
