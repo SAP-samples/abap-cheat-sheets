@@ -31,6 +31,37 @@ This ABAP cheat sheet summarizes the release news from the ABAP Keyword Document
 
 ## ABAP for Cloud Development Documentation Release News
 
+
+<details>
+  <summary>🟢 Release 920 (2608)</summary>
+  <!-- -->
+<br>
+  <table>
+        <tr>
+            <th>Tag</th>
+            <th>Title</th>
+            <th>Details</th>
+        </tr>
+<tr>
+            <td rowspan="1">ABAP_CDS</td>
+            <td>External Entities: Default Values</td>
+            <td>The keyword DEFAULT is supported for elements in CDS external entities. It specifies a default value for an element, which is returned when there is no matching element name in the remote data source.</td>
+        </tr>
+<tr>
+            <td rowspan="1">TRANSFORMATIONS</td>
+            <td>New Options for CALL TRANSFORMATION Statements</td>
+            <td>New options are now available for CALL TRANSFORMATION statements. You can use name_handling to manage camel case elements and attribute names, and name_escaping to escape the names of elements and attributes.</td>
+        </tr>
+<tr>
+            <td rowspan="1">TYPES</td>
+            <td>Typing Generic Structures</td>
+            <td>The syntax TYPE ANY STRUCTURE enables the creation of fully generic structured types, while TYPE ANY STRUCTURE CONTAINING allows for the creation of partially generic structured types.</td>
+        </tr>
+  </table>
+</details>  
+<br>
+
+
 <details>
   <summary>🟢 Release 919 (2605)</summary>
   <!-- -->

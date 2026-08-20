@@ -349,9 +349,12 @@ FIELD-SYMBOLS:
   <xsequence>      TYPE xsequence, "Byte-like (x, xstring)
 
   "Numeric types
-  <decfloat>       TYPE decfloat, "decfloat16, decfloat34
+  <decfloat>       TYPE decfloat, "decfloat16, decfloat34)
   <numeric>        TYPE numeric,  "Numeric ((b, s), i, int8, p, decfloat16, decfloat34, f)
   <p>              TYPE p,        "Packed number (generic length and number of decimal places)
+
+  "Structured types
+  <any_structure> TYPE ANY STRUCTURE,  "Structure with any structured type
 
   "Internal table types
   <any_table>      TYPE ANY TABLE,      "Internal table with any table type
@@ -362,8 +365,10 @@ FIELD-SYMBOLS:
   <table>          TYPE table,          "Standard table
 
   "Other types
-  <simple>         TYPE simple. "Elementary data type including enumerated types and
-                                "structured types with exclusively character-like flat components  
+  <simple>         TYPE simple, "Elementary data type including enumerated types and
+                                "structured types with exclusively character-like flat components
+  <object>         TYPE REF TO object. "object can only be specified after REF TO; can point to any object
+                                       "The types REF TO object and REF TO data are considered complete types.
 
 "Data objects to work with
 DATA: BEGIN OF s,
@@ -383,6 +388,7 @@ DATA: BEGIN OF s,
         xl1       TYPE x LENGTH 1,
         xstr      TYPE xstring,
         structure TYPE zdemo_abap_carr, "character-like flat structure
+        oref      TYPE REF TO object,
       END OF s.
 
 "The following static ASSIGN statements demonstrate various assignments
@@ -439,6 +445,14 @@ ASSIGN s-dec34 TO <decfloat>.
 ASSIGN s-pl4d2 TO <p>.
 "ASSIGN s-dec34 TO <p>.
 
+"----- Structured types -----
+ASSIGN s TO <any_structure>.
+ASSIGN s-structure TO <any_structure>.
+"ASSIGN s-str TO <any_structure>.
+"ASSIGN s-tab_std TO <any_structure>.
+"The demo table does not have a structured line type.
+"ASSIGN s-tab_std[ 1 ] TO <any_structure>.
+
 "----- Internal table types -----
 ASSIGN s-tab_std TO <any_table>.
 ASSIGN s-tab_so TO <any_table>.
@@ -471,7 +485,14 @@ ASSIGN s-date TO <simple>.
 ASSIGN s-structure TO <simple>.
 ASSIGN s-xl1 TO <simple>.
 "ASSIGN s-tab_ha TO <simple>.
+
+s-oref = NEW cl_system_uuid( ).
+ASSIGN s-oref TO <object>.
 ```
+
+> [!NOTE] 
+> `ANY STRUCTURE` is the built-in generic ABAP type for fully generic structured types. You can create partially generic structured types using the [`CONTAINING`](https://help.sap.com/docs/abap-cloud/abap-keyword/types-any-structure-containing) addition. Find more information in the [Structures](02_Structures.md#generic-structured-types) cheat sheet. 
+
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
@@ -3391,4 +3412,4 @@ UPDATE dbtab FROM TABLE @ind_tab INDICATORS NOT SET STRUCTURE comp_ind.
 > - [Disclaimer](./README.md#%EF%B8%8F-disclaimer)
 
 
-
+

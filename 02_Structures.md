@@ -25,6 +25,9 @@
     - [Structures in ABAP SQL Statements](#structures-in-abap-sql-statements)
     - [Structures in Statements for Processing Internal Tables](#structures-in-statements-for-processing-internal-tables)
   - [Including Structures](#including-structures)
+  - [Generic Structured Types](#generic-structured-types)
+    - [Fully Generic Structured Types](#fully-generic-structured-types)
+    - [User-Defined Partially Generic Structured Types](#user-defined-partially-generic-structured-types)
   - [Excursions](#excursions)
     - [sy Structure](#sy-structure)
     - [Getting Structured Type Information and Creating Structures at Runtime](#getting-structured-type-information-and-creating-structures-at-runtime)
@@ -1134,6 +1137,789 @@ DATA(component_names) = VALUE string_table( FOR wa IN CAST cl_abap_structdescr(
 ```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
+
+
+## Generic Structured Types
+
+### Fully Generic Structured Types
+
+- [`ANY STRUCTURE`](https://help.sap.com/docs/abap-cloud/abap-keyword/type-any-structure) is a built-in [generic ABAP type](https://help.sap.com/docs/abap-cloud/abap-keyword/generic-abap-type) for fully generic structured types, similar to the `ANY TABLE` type for generic internal tables.
+- It can be used to define [formal parameters](https://help.sap.com/docs/abap-cloud/abap-keyword/formal-parameter) and [field symbols](https://help.sap.com/docs/abap-cloud/abap-keyword/field-symbol).
+- When defined, any structure can be assigned to field symbols and passed as [actual parameters](https://help.sap.com/docs/abap-cloud/abap-keyword/actual-parameter) to formal parameters in procedure calls.
+- Criteria for typing formal parameters with `TYPE ANY STRUCTURE` include:
+  - Any optional parameter must have a default value specified.
+  - You can specify importing and changing parameters with fully generic structured types if they are mandatory or defined as default by specifying a default structure.
+  - The typing is not allowed for exporting and returning parameters, as well as for [AMDP procedures](https://help.sap.com/docs/abap-cloud/abap-keyword/amdp-procedure).
+
+The code snippet demonstrates that structures of any type can be assigned to a field symbol typed with `ANY STRUCTURE`.
+
+
+```abap
+FIELD-SYMBOLS <struc> TYPE ANY STRUCTURE.
+
+TYPES: BEGIN OF ty_flat,
+         comp1 TYPE c LENGTH 3,
+         comp2 TYPE i,
+         comp3 TYPE n LENGTH 5,
+       END OF ty_flat,
+       BEGIN OF ty_nested,
+         comp1 TYPE c LENGTH 10,
+         comp2 TYPE ty_flat,
+       END OF ty_nested,
+       BEGIN OF ty_deep,
+         comp1 TYPE string,
+         comp2 TYPE REF TO i,
+         comp3 TYPE ty_nested,
+         comp4 TYPE string_table,
+       END OF ty_deep.
+
+TYPES BEGIN OF ty_include.
+INCLUDE TYPE ty_flat AS a.
+INCLUDE TYPE ty_nested AS b RENAMING WITH SUFFIX _n.
+TYPES END OF ty_include.
+
+DATA: struc_flat    TYPE ty_flat,
+      struc_nested  TYPE ty_nested,
+      struc_deep    TYPE ty_deep,
+      struc_include TYPE ty_include.
+
+ASSIGN struc_flat TO <struc>.
+ASSIGN struc_nested TO <struc>.
+ASSIGN struc_deep TO <struc>.
+ASSIGN struc_include TO <struc>.
+```
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+
+### User-Defined Partially Generic Structured Types
+
+- Using [`ANY STRUCTURE CONTAINING component_list`](https://help.sap.com/docs/abap-cloud/abap-keyword/types-any-structure-containing), you can create partially generic structured types.  
+- "Partially" means these types impose constraints by predefining a set of components (`component_list`) following the `CONTAINING` addition. These components must be included as part of the structure, while other components may vary.  
+- `component_list` is not comma-separated and can consist of one or more components. The components can be either generic or non-generic.  
+- The syntax can be used to create local types with `TYPES` statements. Unlike the fully generic type `ANY STRUCTURE`, `ANY STRUCTURE CONTAINING component_list` cannot be used to declare field symbols and formal parameters directly. Instead, the locally declared types must be used.  
+- Rules:  
+  - When assigning non-generic structures to partially generic structures, the order of components in the partially generic structure is irrelevant.  
+  - The components of the non-generic structure must match the components of the generic structured type, meaning the component names must be identical, and their types must be compatible.  
+  - The non-generic structure can include more components than those specified in the partially generic type.  
+  - Two partially generic structured types are compatible if their constraints in the component list do not contradict in terms of component names and types.  
+  - Strict compatibility checks apply to components with elementary types, particularly concerning dictionary types. See [here](https://help.sap.com/docs/abap-cloud/abap-keyword/mapping-of-dictionary-to-abap-types).  
+
+The following example demonstrates the local creation of partially generic structured types, which are used to define field symbols. The example highlights the following aspects:  
+- Various possible and impossible assignments of non-generic structures to field symbols typed with partially generic structured types  
+- Strict compatibility checks enforced for elementary dictionary types  
+- Include structure  
+
+```abap
+"Non-generic structured types
+TYPES: BEGIN OF ts_1,
+         comp1 TYPE i,
+         comp2 TYPE i,
+       END OF ts_1,
+       BEGIN OF ts_2,
+         comp2 TYPE i,
+         comp1 TYPE i,
+       END OF ts_2,
+       BEGIN OF ts_3,
+         comp1 TYPE i,
+         comp2 TYPE i,
+         comp3 TYPE i,
+         comp4 TYPE i,
+         comp5 TYPE i,
+       END OF ts_3,
+       BEGIN OF ts_4,
+         comp1 TYPE i,
+         comp2 TYPE int8,
+       END OF ts_4.
+
+DATA: struc_1 TYPE ts_1,
+      struc_2 TYPE ts_2,
+      struc_3 TYPE ts_3,
+      struc_4 TYPE ts_4.
+
+"Locally declared partially generic structured types
+TYPES: ts_gen_1 TYPE ANY STRUCTURE CONTAINING comp1 TYPE i
+                                              comp2 TYPE i,
+       ts_gen_2 TYPE ANY STRUCTURE CONTAINING comp2 TYPE i
+                                              comp3 TYPE i.
+
+FIELD-SYMBOLS <gs_1> TYPE ts_gen_1.
+FIELD-SYMBOLS <gs_2> TYPE ts_gen_2.
+
+*&---------------------------------------------------------------------*
+*& Various assignments with partially generic structured types
+*&---------------------------------------------------------------------*
+
+"Identical component list with compatible types
+ASSIGN struc_1 TO <gs_1>.
+
+"Component list matches, but different order
+ASSIGN struc_2 TO <gs_1>.
+
+"Component list of partially generic structure matches,
+"assigned structure contains additional components
+ASSIGN struc_3 TO <gs_1>.
+
+"--- ERROR ---
+"Component names match, but there is a type incompatibility;
+"no assignment possible
+"ASSIGN struc_4 TO <gs_1>.
+
+"--- ERROR ---
+"Not matching component list; no assignment possible
+"ASSIGN struc_1 TO <gs_2>.
+
+"--- ERROR ---
+"Not matching component list; no assignment possible
+"ASSIGN struc_2 TO <gs_2>.
+
+"Component list of partially generic structure matches,
+"assigned structure contains additional components
+ASSIGN struc_3 TO <gs_2>.
+
+"--- ERROR ---
+"Not matching component list; no assignment possible
+"ASSIGN struc_4 TO <gs_2>.
+
+*&---------------------------------------------------------------------*
+*& Strict compatibility checks enforced for elementary dictionary types
+*&---------------------------------------------------------------------*
+
+"Strict checks regarding elementary dictionary types
+"The example uses the dictionary types timn/tims.
+TYPES: BEGIN OF ts_time,
+         time TYPE t,
+       END OF ts_time.
+DATA struc_time TYPE ts_time.
+
+"Creating local timn/tims types
+"The SELECT statements are just used to have a self-contained
+"example to have a type to refer to.
+SELECT SINGLE
+  FROM i_timezone
+  FIELDS tims`123456` AS tims
+  INTO @data(tims).
+
+SELECT SINGLE
+  FROM i_timezone
+  FIELDS timn`123456` AS timn
+  INTO @data(timn).
+
+TYPES ty_tims like tims.
+TYPES ty_timn like timn.
+
+TYPES ts_gen_tims TYPE ANY STRUCTURE
+  CONTAINING time type ty_tims.
+FIELD-SYMBOLS <gs_tims> TYPE ts_gen_tims.
+
+ASSIGN struc_time TO <gs_tims>.
+
+TYPES ts_gen_timn TYPE ANY STRUCTURE
+  CONTAINING time TYPE ty_timn.
+FIELD-SYMBOLS <gs_timn> TYPE ts_gen_timn.
+
+"--- ERROR ---
+"No assignment possible due to type incompatibility
+"ASSIGN struc_time TO <gs_timn>.
+
+*&---------------------------------------------------------------------*
+*& Example with include structure
+*&---------------------------------------------------------------------*
+
+TYPES: BEGIN OF ts_5,
+         comp1 TYPE i,
+       END OF ts_5,
+       BEGIN OF ts_6.
+       INCLUDE TYPE ts_5 AS substruct.
+TYPES: comp2 TYPE i,
+       comp3 TYPE i,
+       END OF ts_6.
+
+DATA struc_incl TYPE ts_6.
+
+"comp1 can be accessed both by comp1 and substruct-comp1
+struc_incl-comp1 = 1.
+struc_incl-substruct-comp1 = 1.
+struc_incl-comp2 = 2.
+struc_incl-comp3 = 3.
+
+TYPES ty_gts_5 TYPE ANY STRUCTURE CONTAINING substruct TYPE ts_5
+                                            comp2 TYPE i.
+
+FIELD-SYMBOLS <fts_5> TYPE ty_gts_5.
+ASSIGN struc_incl TO <fts_5>.
+
+"The structure is also compatible with the following generic
+"structured type, as there is no special handling for component
+"aliases, and it meets the constraints set by the generic structure,
+"even though comp1 in the example is essentially specified twice.
+TYPES ty_gts_6 TYPE ANY STRUCTURE CONTAINING substruct TYPE ts_5
+                                             comp1 TYPE i.
+
+FIELD-SYMBOLS <fts_6> TYPE ty_gts_6.
+ASSIGN struc_incl TO <fts_6>.
+```
+
+
+Expand the following collapsible section for example code. To try it out, create a demo class named `zcl_demo_abap`, or reuse it if it already exists. Paste the code into it. If you choose a different class name, update the class name in the code snippet accordingly. After activation, choose *F9* in ADT to execute the class. The example is set up to display output in the console. To explore the entire example, you have imported the ABAP cheat sheet GitHub repository since it uses some of its artifacts.
+
+The following example contexts are included:
+- Assigning non-generic structures to field symbols typed with partially generic structured types using `ASSIGN` statements, highlighting component definitions.
+- Structure assignments that emphasize position-based and name-based movements.
+- Structure assignments that emphasize enforced strict checks regarding elementary dictionary types.
+- Assigning non-generic structures with included structures to partially generic structures.
+- Using internal tables with a line type of partially generic structured type.
+- Implementing an algorithm in three ways, emphasizing the benefits of using generic structured types: Processing a BDEF derived type with a static, dynamic, and generic implementation. 
+  - In each method, content from an internal table typed with a BDEF derived type is processed, returning only instances where the `%control` structure is not initial. Additionally, `%cid_ref` values are extracted and returned.
+  - Different tables of type `TABLE FOR UPDATE` and `TABLE FOR DELETE` are created as demo input for the methods.
+  - The method with static implementation is only valid for one specific type, with the importing parameter `request_static` typed as a specific BDEF derived type. This method can process only one demo table.
+  - The method with the dynamic implementation includes the importing parameter `request_dynamic`. It is typed as `any table`, accepting all types of tables. The method also includes a generic `WHERE` clause to be passed. In the example, the demo `WHERE` clause checks for non-initial `%control` components (`%control is not initial`). The demo tables of type `TABLE FOR UPDATE` can be processed in the example since these types include `%control`. However, any other tables can be passed, too. An internal table typed with `TABLE FOR DELETE` is passed, but it raises an exception as it cannot be processed (it has no `%control` component). The same applies to a demo string table passed.
+  - The generic method features an importing parameter `request_generic`, based on a partially generic structure type declared with `ANY STRUCTURE CONTAINING`. The constraint is: The structure must have `%cid_ref` and `%control` components. The example defines `%control` with the fully generic structure typed `ANY STRUCTURE`, allowing it to accept all kinds of `%control` structures of BDEF derived types. This typing guarantees type safety, ensuring that all BDEF derived types with `%cid_ref` and `%control` components are accepted. Other tables, such as the demo table typed with `TABLE FOR DELETE` and the string table, cannot be passed.
+
+<details>
+  <summary>🟢 Click to expand for example code</summary>
+  <!-- -->
+
+<br>
+
+```abap
+CLASS zcl_demo_abap DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC .
+
+  PUBLIC SECTION.
+    INTERFACES if_oo_adt_classrun.
+    METHODS constructor.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+    TYPES: BEGIN OF ts_1,
+             comp1 TYPE i,
+             comp2 TYPE i,
+           END OF ts_1,
+           BEGIN OF ts_2,
+             comp2 TYPE i,
+             comp1 TYPE i,
+           END OF ts_2,
+           BEGIN OF ts_3,
+             comp1 TYPE i,
+             comp2 TYPE i,
+             comp3 TYPE i,
+             comp4 TYPE i,
+             comp5 TYPE i,
+           END OF ts_3,
+           BEGIN OF ts_4,
+             comp1 TYPE i,
+             comp2 TYPE int8,
+           END OF ts_4,
+           gen_struc   TYPE ANY STRUCTURE CONTAINING %cid_ref TYPE abp_behv_cid
+                                                     %control TYPE ANY STRUCTURE,
+           request_tab TYPE INDEX TABLE OF gen_struc WITH FURTHER SECONDARY KEYS,
+           cid_ref_tab TYPE SORTED TABLE OF abp_behv_cid WITH UNIQUE KEY table_line,
+           der_update1 TYPE TABLE FOR UPDATE zdemo_abap_rap_draft_m,
+           der_update2 TYPE TABLE FOR UPDATE zdemo_abap_rap_ro_m,
+           der_update3 TYPE TABLE FOR UPDATE zdemo_abap_rap_ro_u,
+           der_delete  TYPE TABLE FOR DELETE zdemo_abap_rap_ro_m.
+
+    DATA: struc_1 TYPE ts_1,
+          struc_2 TYPE ts_2,
+          struc_3 TYPE ts_3,
+          struc_4 TYPE ts_4,
+          update1 TYPE der_update1,
+          update2 TYPE der_update2,
+          update3 TYPE der_update3,
+          delete  TYPE der_delete.
+
+    METHODS: assignments IMPORTING out TYPE REF TO if_oo_adt_classrun_out,
+      move IMPORTING out TYPE REF TO if_oo_adt_classrun_out,
+      assignments_ddic_types IMPORTING out TYPE REF TO if_oo_adt_classrun_out,
+      include_structures IMPORTING out TYPE REF TO if_oo_adt_classrun_out,
+      itabs_generic_struc_type IMPORTING out TYPE REF TO if_oo_adt_classrun_out,
+      static_implementation IMPORTING out            TYPE REF TO if_oo_adt_classrun_out
+                                      request_static TYPE der_update1
+                            EXPORTING cid_ref_tab    TYPE cid_ref_tab
+                            RETURNING VALUE(result)  TYPE REF TO data,
+      dynamic_implementation IMPORTING out                     TYPE REF TO if_oo_adt_classrun_out
+                                       request_dynamic         TYPE ANY TABLE
+                                       VALUE(dyn_where_clause) TYPE string
+                             EXPORTING cid_ref_tab             TYPE cid_ref_tab
+                             RETURNING VALUE(result)           TYPE REF TO data,
+      generic_implementation IMPORTING out             TYPE REF TO if_oo_adt_classrun_out
+                                       request_generic TYPE request_tab
+                             EXPORTING cid_ref_tab     TYPE cid_ref_tab
+                             RETURNING VALUE(result)   TYPE REF TO data,
+      populate_structures.
+ENDCLASS.
+
+
+CLASS zcl_demo_abap IMPLEMENTATION.
+  METHOD if_oo_adt_classrun~main.
+
+    out->write( |\n| ).
+    out->write( `*********** assignments ***********` ).
+    out->write( |\n| ).
+    assignments( out ).
+    out->write( |\n| ).
+    out->write( `*********** assignments_ddic_types ***********` ).
+    out->write( |\n| ).
+    assignments_ddic_types( out ).
+    out->write( |\n| ).
+    out->write( `*********** move ***********` ).
+    out->write( |\n| ).
+    move( out ).
+    out->write( |\n| ).
+    out->write( `*********** include_structures ***********` ).
+    out->write( |\n| ).
+    include_structures( out ).
+    out->write( |\n| ).
+    out->write( `*********** itabs_generic_struc_type ***********` ).
+    out->write( |\n| ).
+    itabs_generic_struc_type( out ).
+    out->write( |\n| ).
+    out->write( `*********** static_implementation ***********` ).
+    out->write( |\n| ).
+    static_implementation( out = out
+                           request_static = update1 ).
+    "The following data objects cannot be passed with this approach.
+    "static_implementation( out = out request_static = update2 ).
+    "static_implementation( out = out request_static = update3 ).
+    "static_implementation( out = out request_static = delete ).
+
+    out->write( |\n| ).
+    out->write( `*********** dynamic_implementation ***********` ).
+    out->write( |\n| ).
+
+    DATA(dyn_where_clause) = `%control is not initial`.
+
+    dynamic_implementation( out = out
+                            request_dynamic = update1
+                            dyn_where_clause = dyn_where_clause ).
+
+    out->write( |\n| ).
+
+    dynamic_implementation( out = out
+                            request_dynamic = update2
+                            dyn_where_clause = dyn_where_clause ).
+
+    out->write( |\n| ).
+
+    dynamic_implementation( out = out
+                            request_dynamic = update3
+                            dyn_where_clause = dyn_where_clause ).
+
+    out->write( |\n| ).
+
+    "The following example passes a BDEF derived type. However, it does
+    "not contain the %control component, so the WHERE clause will not be met.
+    dynamic_implementation( out = out
+                            request_dynamic = delete
+                            dyn_where_clause = dyn_where_clause ).
+
+    out->write( |\n| ).
+
+    "The following nonsense example method call passes a string table that
+    "cannot be processed.
+    DATA(str_tab) = VALUE string_table( ( `abc` ) ( `def` ) ).
+
+    dynamic_implementation( out = out
+                            request_dynamic = str_tab
+                            dyn_where_clause = dyn_where_clause ).
+
+    out->write( |\n| ).
+    out->write( `*********** generic_implementation ***********` ).
+    out->write( |\n| ).
+    generic_implementation( out = out
+                            request_generic = update1 ).
+    out->write( |\n| ).
+    generic_implementation( out = out
+                            request_generic = update2 ).
+    out->write( |\n| ).
+    generic_implementation( out = out
+                            request_generic = update3 ).
+    "The following data objects cannot be passed with this approach.
+    "generic_implementation( out = out request_generic = str_tab ).
+    "generic_implementation( out = out request_generic = delete ).
+
+  ENDMETHOD.
+
+  METHOD assignments.
+
+    populate_structures( ).
+
+    TYPES: ts_gen_1 TYPE ANY STRUCTURE CONTAINING comp1 TYPE i
+                                                  comp2 TYPE i,
+           ts_gen_2 TYPE ANY STRUCTURE CONTAINING comp2 TYPE i
+                                                  comp3 TYPE i.
+
+    FIELD-SYMBOLS <gs_1> TYPE ts_gen_1.
+    FIELD-SYMBOLS <gs_2> TYPE ts_gen_2.
+
+    "Identical component list with compatible types
+    ASSIGN struc_1 TO <gs_1>.
+
+    out->write( data = <gs_1> name = `<gs_1>` ).
+
+    "Component list matches, but different order
+    ASSIGN struc_2 TO <gs_1>.
+
+    out->write( data = <gs_1> name = `<gs_1>` ).
+
+    "Component list of partially generic structure matches,
+    "assigned structure contains additional components
+    ASSIGN struc_3 TO <gs_1>.
+
+    out->write( data = <gs_1> name = `<gs_1>` ).
+
+    "Component names match, but there is a type incompatibility;
+    "no assignment possible
+    "ASSIGN struc_4 TO <gs_1>.
+
+    "Not matching component list; no assignment possible
+    "ASSIGN struc_1 TO <gs_2>.
+
+    "Not matching component list; no assignment possible
+    "ASSIGN struc_2 TO <gs_2>.
+
+    "Component list of partially generic structure matches,
+    "assigned structure contains additional components
+    ASSIGN struc_3 TO <gs_2>.
+
+    out->write( data = <gs_2> name = `<gs_2>` ).
+
+    "Not matching component list; no assignment possible
+    "ASSIGN struc_4 TO <gs_2>.
+
+  ENDMETHOD.
+
+  METHOD move.
+
+    populate_structures( ).
+
+    out->write( data = struc_2 name = `struc_2` ).
+
+    "Position-based movement
+    struc_2 = struc_1.
+    ASSERT struc_2-comp1 <> 3.
+    ASSERT struc_2-comp2 <> 4.
+
+    out->write( data = struc_2 name = `struc_2` ).
+
+    FIELD-SYMBOLS <s1> TYPE data.
+    FIELD-SYMBOLS <s2> TYPE data.
+    ASSIGN struc_1 TO <s1>.
+    ASSIGN struc_2 TO <s2>.
+
+    out->write( data = <s1> name = `<s1>` ).
+    out->write( data = <s2> name = `<s2>` ).
+
+    <s2> = <s1>.
+
+    out->write( data = <s1> name = `<s1>` ).
+    out->write( data = <s2> name = `<s2>` ).
+
+    TYPES ts_gen TYPE ANY STRUCTURE CONTAINING comp1 TYPE i.
+    FIELD-SYMBOLS <s4> TYPE ts_gen.
+    ASSIGN struc_1 TO <s4>.
+
+    out->write( data = <s4> name = `<s4>` ).
+
+    struc_2 = <s4>.
+
+    out->write( data = struc_2 name = `struc_2` ).
+
+    "Corresponding move
+    populate_structures( ).
+
+    ASSIGN struc_1 TO <s4>.
+
+    MOVE-CORRESPONDING <s4> TO struc_2.
+
+    out->write( data = struc_2 name = `struc_2` ).
+
+    populate_structures( ).
+
+    ASSIGN struc_1 TO <s4>.
+
+    struc_2 = CORRESPONDING #( <s4> ).
+
+    out->write( data = struc_2 name = `struc_2` ).
+  ENDMETHOD.
+
+  METHOD assignments_ddic_types.
+
+    "Strict checks regarding elementary dictionary types
+    "The example uses the dictionary types timn/tims.
+    TYPES: BEGIN OF ts_time,
+             time TYPE t,
+           END OF ts_time.
+    DATA(struc_time) = VALUE ts_time( time = CONV t( '123456' ) ).
+
+    "Creating local timn/tims types
+    "The nonsense SELECT statements with the typed literals are just
+    "used to have a self-contained example for a type to refer to.
+    SELECT SINGLE
+      FROM i_timezone
+      FIELDS tims`123456` AS tims
+      INTO @DATA(tims).
+
+    SELECT SINGLE
+      FROM i_timezone
+      FIELDS timn`123456` AS timn
+      INTO @DATA(timn).
+
+    TYPES ty_tims LIKE tims.
+    TYPES ty_timn LIKE timn.
+
+    TYPES ts_gen_tims TYPE ANY STRUCTURE
+      CONTAINING time TYPE ty_tims.
+    FIELD-SYMBOLS <gs_tims> TYPE ts_gen_tims.
+
+    ASSIGN struc_time TO <gs_tims>.
+
+    out->write( data = <gs_tims> name = `<gs_tims>` ).
+
+    TYPES ts_gen_timn TYPE ANY STRUCTURE
+      CONTAINING time TYPE ty_timn.
+    FIELD-SYMBOLS <gs_timn> TYPE ts_gen_timn.
+
+    "--- ERROR ---
+    "No assignment possible due to type incompatibility
+    "ASSIGN struc_time TO <gs_timn>.
+
+  ENDMETHOD.
+
+  METHOD populate_structures.
+    struc_1 = VALUE #( comp1 = 1 comp2 = 2 ).
+    struc_2 = VALUE #( comp2 = 3 comp1 = 4 ).
+    struc_3 = VALUE #( comp1 = 5 comp2 = 6 comp3 = 7
+                       comp4 = 8 comp5 = 9 ).
+    struc_4 = VALUE #( comp1 = 10 comp2 = 11 ).
+  ENDMETHOD.
+
+  METHOD include_structures.
+
+    TYPES: BEGIN OF s1,
+             comp1 TYPE i,
+           END OF s1,
+           BEGIN OF s2.
+             INCLUDE TYPE s1 AS substruc.
+    TYPES: comp2 TYPE i,
+             comp3 TYPE i,
+           END OF s2.
+
+    TYPES t_gs1 TYPE ANY STRUCTURE CONTAINING substruc TYPE s1
+                                              comp2 TYPE i.
+
+    DATA(struct_1) = VALUE s2( substruc-comp1 = 1
+                               comp2 = 2
+                               comp3 = 3 ).
+
+    FIELD-SYMBOLS <fs1> TYPE t_gs1.
+
+    ASSIGN struct_1 TO <fs1>.
+
+    out->write( data = <fs1> name = `<fs1>` ).
+
+    TYPES: BEGIN OF s3.
+             INCLUDE TYPE s1 AS substruc RENAMING WITH SUFFIX _sub.
+    TYPES:   comp2 TYPE i,
+             comp3 TYPE i,
+           END OF s3.
+
+    DATA(struct_2) = VALUE s3( substruc-comp1 = 4
+                               comp2 = 5
+                               comp3 = 6 ).
+
+    "Not compatible due to renaming with suffix
+    "ASSIGN struct_3 TO <fs1>.
+
+    TYPES t_gs2 TYPE ANY STRUCTURE CONTAINING comp2 TYPE i
+                                              comp1_sub TYPE i.
+
+    FIELD-SYMBOLS <fs2> TYPE t_gs2.
+
+    ASSIGN struct_2 TO <fs2>.
+
+    out->write( data = <fs2> name = `<fs2>` ).
+
+    TYPES t_gs3 TYPE ANY STRUCTURE CONTAINING comp2 TYPE i
+                                              substruc TYPE s1.
+
+    FIELD-SYMBOLS <fs3> TYPE t_gs2.
+
+    ASSIGN struct_2 TO <fs3>.
+
+    out->write( data = <fs3> name = `<fs3>` ).
+  ENDMETHOD.
+
+  METHOD itabs_generic_struc_type.
+
+    TYPES: BEGIN OF ts_5,
+             comp_a TYPE i,
+             comp_b TYPE c LENGTH 10,
+             comp_c TYPE decfloat34,
+             comp_d TYPE string,
+           END OF ts_5,
+           tab_type1 TYPE TABLE OF ts_5 WITH EMPTY KEY.
+
+    TYPES: c10         TYPE c LENGTH 10,
+           t_gs4       TYPE ANY STRUCTURE CONTAINING comp_b TYPE c10
+                                               comp_c TYPE decfloat34
+                                               comp_a TYPE i,
+           tab_type_gs TYPE TABLE OF t_gs4 WITH EMPTY KEY.
+
+    FIELD-SYMBOLS <tgs> TYPE tab_type_gs.
+
+    DATA(itab1) = VALUE tab_type1(
+    ( comp_a = 1 comp_b = 'a'
+      comp_c = CONV decfloat34( '1.1' ) comp_d = `hello` )
+    ( comp_a = 2 comp_b = 'b'
+      comp_c = CONV decfloat34( '2.2' ) comp_d = `world` )
+    ( comp_a = 3 comp_b = 'c'
+      comp_c = CONV decfloat34( '3.3' ) comp_d = `ABAP` ) ).
+
+    ASSIGN itab1 TO <tgs>.
+
+    out->write( <tgs> ).
+
+    TYPES: BEGIN OF ts_6,
+             comp_a TYPE i,
+             comp_b TYPE c LENGTH 10,
+           END OF ts_6,
+           tab_type2 TYPE TABLE OF ts_6 WITH EMPTY KEY.
+
+    DATA(itab2) = VALUE tab_type2( ( comp_a = 4 comp_b = 'd' )
+                                   ( comp_a = 5 comp_b = 'e' ) ).
+
+    <tgs> = CORRESPONDING #( BASE ( <tgs> ) itab2 ).
+
+    out->write( data = <tgs> name = `<tgs>` ).
+
+    struc_1 = VALUE #( comp1 = 6 comp2 = 7 ).
+    DATA itab3 LIKE TABLE OF struc_1 WITH EMPTY KEY.
+    APPEND struc_1 TO itab3.
+
+    <tgs> = CORRESPONDING #( BASE ( <tgs> )
+      itab3 MAPPING comp_a = comp1 comp_b = comp2 ).
+
+    out->write( data = <tgs> name = `<tgs>` ).
+
+    LOOP AT <tgs> ASSIGNING FIELD-SYMBOL(<wa>).
+      <wa>-comp_b = to_upper( <wa>-comp_b ).
+      ASSIGN <wa>-('comp_d') TO FIELD-SYMBOL(<comp>).
+      <comp> = to_upper( <comp> ).
+    ENDLOOP.
+
+    SORT <tgs> BY comp_a DESCENDING.
+
+    out->write( data = <tgs> name = `<tgs>` ).
+
+    READ TABLE <tgs> ASSIGNING FIELD-SYMBOL(<line>)
+      WITH KEY comp_b = 'C'.
+
+    IF <line> IS ASSIGNED.
+      out->write( data = <line> name = `<line>` ).
+    ENDIF.
+
+    DATA(ref) = REF #( <tgs>[ 5 ] OPTIONAL ).
+
+    out->write( data = ref->* name = `ref->*` ).
+  ENDMETHOD.
+
+  METHOD dynamic_implementation.
+
+    CREATE DATA result LIKE request_dynamic.
+
+    dyn_where_clause = cl_abap_dyn_prg=>escape_quotes( dyn_where_clause ).
+
+    TRY.
+        LOOP AT request_dynamic ASSIGNING FIELD-SYMBOL(<instance>)
+         WHERE (dyn_where_clause).
+
+          INSERT <instance> INTO TABLE result->*.
+          INSERT <instance>-('%cid_ref') INTO TABLE cid_ref_tab.
+
+        ENDLOOP.
+
+        out->write( data = result->* name = `result->*` ).
+        out->write( data = cid_ref_tab name = `cid_ref_tab` ).
+      CATCH cx_sy_itab_dyn_loop INTO DATA(error).
+        out->write( |Error: { error->get_text( ) }| ).
+    ENDTRY.
+
+  ENDMETHOD.
+
+  METHOD generic_implementation.
+    CREATE DATA result LIKE request_generic.
+
+    LOOP AT request_generic ASSIGNING FIELD-SYMBOL(<instance>)
+      WHERE %control IS NOT INITIAL.
+
+      INSERT <instance> INTO TABLE result->*.
+      INSERT <instance>-%cid_ref INTO TABLE cid_ref_tab.
+
+    ENDLOOP.
+
+    out->write( data = result->* name = `result->*` ).
+    out->write( data = cid_ref_tab name = `cid_ref_tab` ).
+  ENDMETHOD.
+
+  METHOD static_implementation.
+    CREATE DATA result LIKE request_static.
+
+    LOOP AT request_static ASSIGNING FIELD-SYMBOL(<instance>)
+      WHERE %control IS NOT INITIAL.
+
+      INSERT <instance> INTO TABLE result->*.
+      INSERT <instance>-%cid_ref INTO TABLE cid_ref_tab.
+
+    ENDLOOP.
+
+    out->write( data = result->* name = `result->*` ).
+    out->write( data = cid_ref_tab name = `cid_ref_tab` ).
+  ENDMETHOD.
+
+  METHOD constructor.
+
+    update1 = VALUE #(
+      ( %cid_ref = `cid1` %control-num1 = if_abap_behv=>mk-on )
+      ( %cid_ref = `cid2` %control-num1 = if_abap_behv=>mk-on )
+      ( %cid_ref = `cid3` %control-num1 = if_abap_behv=>mk-on )
+      ( %cid_ref = `cid4` %control-num1 = if_abap_behv=>mk-on )
+      ( %cid_ref = `cid5` )
+      ( %cid_ref = `cid6` ) ).
+
+    update2 = VALUE #(
+      ( %cid_ref = `cid7` %control-field1 = if_abap_behv=>mk-on )
+      ( %cid_ref = `cid8` %control-field1 = if_abap_behv=>mk-on )
+      ( %cid_ref = `cid9` %control-field1 = if_abap_behv=>mk-on )
+      ( %cid_ref = `cid10` %control-field1 = if_abap_behv=>mk-on )
+      ( %cid_ref = `cid11` )
+      ( %cid_ref = `cid12` ) ).
+
+    update3 = VALUE #(
+      ( %cid_ref = `cid13` %control-field1 = if_abap_behv=>mk-on )
+      ( %cid_ref = `cid14` %control-field1 = if_abap_behv=>mk-on )
+      ( %cid_ref = `cid15` %control-field1 = if_abap_behv=>mk-on )
+      ( %cid_ref = `cid16` %control-field1 = if_abap_behv=>mk-on )
+      ( %cid_ref = `cid17` )
+      ( %cid_ref = `cid18` ) ).
+
+    delete = VALUE #(
+      ( %cid_ref = `cid19` )
+      ( %cid_ref = `cid20` )
+      ( %cid_ref = `cid21` )
+      ( %cid_ref = `cid22` ) ).
+
+  ENDMETHOD.
+ENDCLASS.
+```
+
+
+</details>  
+
+<p align="right"><a href="#top">⬆️ back to top</a></p> 
+
 
 ## Excursions
 
