@@ -590,6 +590,9 @@ FIELD-SYMBOLS:
   <numeric>        TYPE numeric,  "Numeric ((b, s), i, int8, p, decfloat16, decfloat34, f)
   <p>              TYPE p,        "Packed number (generic length and number of decimal places)
 
+  "Structured types
+  <any_structure> TYPE ANY STRUCTURE,  "Structure with any structured type
+
   "Internal table types
   <any_table>      TYPE ANY TABLE,      "Internal table with any table type
   <hashed_table>   TYPE HASHED TABLE,
@@ -679,6 +682,14 @@ ASSIGN s-dec34 TO <decfloat>.
 ASSIGN s-pl4d2 TO <p>.
 "ASSIGN s-dec34 TO <p>.
 
+"----- Structured types -----
+ASSIGN s TO <any_structure>.
+ASSIGN s-structure TO <any_structure>.
+"ASSIGN s-str TO <any_structure>.
+"ASSIGN s-tab_std TO <any_structure>.
+"The demo table does not have a structured line type.
+"ASSIGN s-tab_std[ 1 ] TO <any_structure>.
+
 "----- Internal table types -----
 ASSIGN s-tab_std TO <any_table>.
 ASSIGN s-tab_so TO <any_table>.
@@ -717,7 +728,8 @@ ASSIGN s-oref TO <object>.
 ```
 
 > [!NOTE] 
-> After `TYPE REF TO`, the only generic types you can specify are `data` for fully generic data reference variables and `object` for fully generic object reference variables.
+> - After `TYPE REF TO`, the only generic types you can specify are `data` for fully generic data reference variables and `object` for fully generic object reference variables.
+> - `ANY STRUCTURE` is the built-in generic ABAP type for fully generic structured types. You can create partially generic structured types using the [`CONTAINING`](https://help.sap.com/docs/abap-cloud/abap-keyword/types-any-structure-containing) addition. Find more information in the [Structures](02_Structures.md#generic-structured-types) cheat sheet. 
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
@@ -10561,4 +10573,4 @@ It is recommended that you consult the [Dynamic Programming Techniques (F1 docu 
 >     - Dynamic ABAP syntax components
 >     - Runtime type services (RTTS), i. e. runtime type identification (RTTI) and runtime type creation (RTTC)
 > - The steps to import and run the code are outlined [here](README.md#-getting-started-with-the-examples).
-> - [Disclaimer](./README.md#%EF%B8%8F-disclaimer)
+> - [Disclaimer](./README.md#%EF%B8%8F-disclaimer)
