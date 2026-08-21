@@ -77,7 +77,7 @@ Exception classes ...
   ```
 
 > [!NOTE]
-> - Non-class-based exceptions are obsolete and should no longer be used in new developments. See the [guidelines (F1 docu for standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenclass_exception_guidl.htm).
+> - Non-class-based exceptions are obsolete and should no longer be used in new developments. See the [guidelines (F1 docu for standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abenclass_exception_guidl.html).
 > -  Unhandled exceptions raised by the ABAP runtime environment trigger a corresponding runtime error. For example, the exception class `CX_SY_ZERODIVIDE` causes the runtime error `COMPUTE_INT_ZERODIVIDE`. For self-defined exception classes, unhandled exceptions generally trigger the runtime error `UNCAUGHT_EXCEPTION`.
 
 
@@ -115,7 +115,7 @@ Notes on the superclasses of exception classes:
  <td> 
 
 - Users must handle exceptions.
-- Exceptions that may occur in procedures should be handled locally within the implementation or explicitly declared in the [procedure interface](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenparameter_interface_glosry.htm) so callers know what errors to expect.
+- Exceptions that may occur in procedures should be handled locally within the implementation or explicitly declared in the [procedure interface](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abenparameter_interface_glosry.html) so callers know what errors to expect.
 - Exception classes of type `CX_STATIC_CHECK` enforce this by performing a static check at compile time. Procedure users must handle the exception locally in a `TRY` control structure or declare it in their procedure interface to propagate the exception. If not, a warning is produced.
 
 Example:
@@ -231,7 +231,7 @@ Example:
 </table>
 
 > [!NOTE]
-> - Basic rule: [Use a suitable exception category (F1 docu for standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenexception_category_guidl.htm).
+> - Basic rule: [Use a suitable exception category (F1 docu for standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abenexception_category_guidl.html).
 > - Directly deriving from `CX_ROOT` is not possible.
 > - As covered in the following sections, exception classes have specific components so that exceptions can be evaluated. 
 
@@ -866,7 +866,7 @@ ENDCLASS.
 
 ## Using Messages as Exception Texts
 
-- Each exception has an [exception text](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenexception_text_glosry.htm) that describes the error and can be retrieved as outlined above. This helps you analyze the error. Imagine using exceptions in user interfaces; if a user encounters an error, the exception texts may be displayed on the UI.
+- Each exception has an [exception text](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abenexception_text_glosry.html) that describes the error and can be retrieved as outlined above. This helps you analyze the error. Imagine using exceptions in user interfaces; if a user encounters an error, the exception texts may be displayed on the UI.
 - Typically, messages are texts organized in message classes and accessed using the `MESSAGE` statement. In [classic ABAP](https://help.sap.com/docs/abap-cloud/abap-keyword/classic-abap), these statements are relevant for classic UIs, which are not supported in [ABAP Cloud](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-cloud). However, messages can also be used as exception texts for exception classes.
 - In ABAP for Cloud Development, you can define exception texts using message classes to describe raised exceptions.
 - Message classes group messages by an identifier.
@@ -1460,7 +1460,7 @@ ABAP contract checks include ...
   - More information:     
     - [Development guide for the ABAP RESTful Application Programming Model, section RAP Business Object Contract (SAP Help Portal)](https://help.sap.com/docs/ABAP_Cloud/f055b8bf582d4f34b91da667bc1fcce6/3a402c5cf6a74bc1a1de080b2a7c6978.html)
     - [RAP Implementation Rules (ABAP Keyword Documentation)](https://help.sap.com/docs/abap-cloud/abap-keyword/rap-implementation-rules)
-    - [Restrictions in RAP Handler and Saver Methods (ABAP Keyword Documentation)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapinvalid_stmts_in_rap_methods.htm)
+    - [Restrictions in RAP Handler and Saver Methods (ABAP Keyword Documentation)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abapinvalid_stmts_in_rap_methods.html)
 
     Example: 
     - Violation: Missing `%cid`

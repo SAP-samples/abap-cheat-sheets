@@ -2052,7 +2052,7 @@ ENDCLASS.
 #### RETURN
 
 - [`RETURN`](https://help.sap.com/docs/abap-cloud/abap-keyword/return) statements immediately terminate the current processing block. Usually, the statement is intended for leaving processing blocks early. 
-- To exit procedures such as methods explicitly, it is recommended to use `RETURN`. `EXIT` and `CHECK` statements might also be used for exiting procedures. However, their use inside loops is recommended. According to the [guidelines (F1 docu for standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenexit_procedure_guidl.htm), `RETURN` is the recommendation.
+- To exit procedures such as methods explicitly, it is recommended to use `RETURN`. `EXIT` and `CHECK` statements might also be used for exiting procedures. However, their use inside loops is recommended. According to the [guidelines (F1 docu for standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abenexit_procedure_guidl.html), `RETURN` is the recommendation.
 - In case of functional methods, i.e. methods that have one returning parameter, the `RETURN` statement can also be specified with an expression. In doing so, the following statement
   ```abap
   res = some_expr.
@@ -9112,7 +9112,7 @@ ENDCLASS.
 You can check the subtopics of
 
 - [ABAP Objects - Overview](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-abap-objects)
-- [Programming Guidlines - Object-Oriented Programming (F1 docu for standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenobj_oriented_gdl.htm)
+- [Programming Guidlines - Object-Oriented Programming (F1 docu for standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abenobj_oriented_gdl.html)
   
 in the ABAP Keyword Documentation.
 

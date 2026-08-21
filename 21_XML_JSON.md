@@ -51,7 +51,7 @@ This cheat sheet provides a high-level overview of working with XML and JSON in 
 - Advantages: Easy access to the individual parts of an XML document possible, DTDs (Document Type Definitions) are possible
 - Disadvantages: High memory consumption of the DOM (if the complete DOM is created)
 
-The following code snippets demonstrate a selection of iXML methods for handling XML data. Note that the snippets use classes available for [ABAP for Cloud Development](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-for-cloud-development). Find documentation on the classes for [classic ABAP](https://help.sap.com/docs/abap-cloud/abap-keyword/classic-abap) [here (F1 documentation for Standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenabap_ixml_lib.htm).
+The following code snippets demonstrate a selection of iXML methods for handling XML data. Note that the snippets use classes available for [ABAP for Cloud Development](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-for-cloud-development). Find documentation on the classes for [classic ABAP](https://help.sap.com/docs/abap-cloud/abap-keyword/classic-abap) [here (F1 documentation for Standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abenabap_ixml_lib.html).
 
 Creating XML data using iXML:
 
@@ -2116,7 +2116,7 @@ ENDCLASS.
 - [ABAP and XML (main topic in the ABAP Keyword Documentation)](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-and-xml)
 - [sXML](https://help.sap.com/docs/abap-cloud/abap-keyword/sxml-library)
 - [iXML Library for ABAP Cloud](https://help.sap.com/docs/abap-cloud/abap-keyword/ixml-library-for-abap-cloud)
-  - [iXML Library Classic (F1 documentation for Standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenabap_ixml_lib.htm)
+  - [iXML Library Classic (F1 documentation for Standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abenabap_ixml_lib.html)
 - [XSLT](https://help.sap.com/docs/abap-cloud/abap-keyword/xsl-transformations)
 - [SAP XSLT Processor Reference](https://help.sap.com/docs/ABAP_PLATFORM_NEW/31bfc625c2674acdb9aa7547b62db9cc/3cb7463c32a3fe13e10000000a114084.html)
 - [ST](https://help.sap.com/docs/abap-cloud/abap-keyword/simple-transformations-st)

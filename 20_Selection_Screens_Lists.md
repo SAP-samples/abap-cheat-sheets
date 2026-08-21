@@ -31,44 +31,44 @@
 ## Introduction
 
 > [!NOTE]
->  The content of this cheat sheet and the executable examples are only relevant to [classic ABAP](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenclassic_abap_glosry.htm).
+>  The content of this cheat sheet and the executable examples are only relevant to [classic ABAP](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abenclassic_abap_glosry.html).
 
-[Selection screens](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenselection_screen_glosry.htm) and [classic lists](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenclassic_list_glosry.htm) are among the classic ABAP user interfaces. They are integrated into the ABAP language itself, which means that special ABAP statements are available to create and handle them.
+[Selection screens](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abenselection_screen_glosry.html) and [classic lists](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abenclassic_list_glosry.html) are among the classic ABAP user interfaces. They are integrated into the ABAP language itself, which means that special ABAP statements are available to create and handle them.
 
 This cheat sheet provides a high-level overview of selection screens and classic lists, focusing on a selection of related statements, supported by executable examples to explore the syntax in action. It includes an excursion into the SAP List Viewer (ALV).
 
-For more detailed information and syntax options, see the topics [Selection Screens](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenselection_screen.htm) and [Classic Lists](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenabap_dynpro_list.htm) in the ABAP Keyword Documentation.
+For more detailed information and syntax options, see the topics [Selection Screens](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abenselection_screen.html) and [Classic Lists](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abenabap_dynpro_list.html) in the ABAP Keyword Documentation.
 
 > [!NOTE]
 > - Although they are considered outdated for application programs, you will still find classic ABAP UIs frequently in classic ABAP.
-> - Classic ABAP UIs cannot be created in [ABAP Cloud](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenabap_cloud_glosry.htm).
+> - Classic ABAP UIs cannot be created in [ABAP Cloud](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abenabap_cloud_glosry.html).
 > - This cheat sheet ...
 >   - is not intended to encourage you to start creating classic ABAP UIs for programming new applications.  
 >   - does not cover all facets, techniques, and syntax options (there's a rich variety of keywords and additions) in great detail. 
 >   - is intended to cover a selection of related syntax that you may encounter in older ABAP code. If you need more information, always consult the ABAP Keyword Documentation.
-> - Links to the ABAP Keyword Documentation in this cheat sheet refer to the documentation for [Standard ABAP](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenstandard_abap_glosry.htm) (latest version).
+> - Links to the ABAP Keyword Documentation in this cheat sheet refer to the documentation for [Standard ABAP](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abenstandard_abap_glosry.html) (latest version).
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ### Selection Screens
 
-- Are special [dynpros](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abendynpro_glosry.htm) in [executable programs](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenexecutable_program_glosry.htm) (*"reports"*; they're also possible in [function groups](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenfunction_group_glosry.htm) and [module pools](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenmodul_pool_glosry.htm), but the focus here is on executable programs).
+- Are special [dynpros](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abendynpro_glosry.html) in [executable programs](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abenexecutable_program_glosry.html) (*"reports"*; they're also possible in [function groups](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abenfunction_group_glosry.html) and [module pools](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abenmodul_pool_glosry.html), but the focus here is on executable programs).
 - Used for data entry in an executable program, i.e. they allow users to ...
   - enter parameters (for entering single values).
   - provide selection criteria (complex selection options for value lists and value ranges) that can be used to supply an executable program with values to work with.
 - Can be created using special ABAP statements in the global declaration part of executable programs 
-- Are processed by the ABAP runtime framework, which triggers [selection screen events](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenselection_screen_event_glosry.htm) ([see further down](#event-blocks)).
+- Are processed by the ABAP runtime framework, which triggers [selection screen events](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abenselection_screen_event_glosry.html) ([see further down](#event-blocks)).
 - When you create a selection screen and run an ABAP program, the dynpros are generated automatically. These generated dynpros cannot be edited directly.
 - Further ways in which selections screens are different from *regular* dynpros:
-  - Unlike dynpros, you can create selection screens without using the [screen painter](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenscreen_painter_glosry.htm) tool. The [ABAP Editor](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenabap_editor_glosry.htm) is the only tool you use to define a selection screen (using ABAP statements).
+  - Unlike dynpros, you can create selection screens without using the [screen painter](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abenscreen_painter_glosry.html) tool. The [ABAP Editor](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abenabap_editor_glosry.html) is the only tool you use to define a selection screen (using ABAP statements).
   - They have a more limited set of features, for example, the layout of selection screens is more restricted. However, selection screens offer various types of input fields, which can also be expressed as checkboxes or radio buttons, and which can be grouped and labeled.
   - Modification options are limited. For example, you can only use some predefined function codes.
-  - You cannot define [dialog modules](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abendialog_module_glosry.htm) in the ABAP program.
+  - You cannot define [dialog modules](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abendialog_module_glosry.html) in the ABAP program.
 - There are two types of selection screens: 
-  - [Standalone selection screens](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenstand-alone_sel_screen_glosry.htm)
+  - [Standalone selection screens](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abenstand-alone_sel_screen_glosry.html)
     - Defined between the statements `SELECTION-SCREEN BEGIN OF SCREEN` and `SELECTION-SCREEN END OF SCREEN`
     - Can be defined in all programs that can contain dynpros
-  - [Standard selection screens](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenstandard_selscreen_glosry.htm)    
+  - [Standard selection screens](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abenstandard_selscreen_glosry.html)    
     - Each executable program (and only there) contains a standard selection screen with the dynpro number 1000. Note: If you create a standalone selection screen, you cannot use dynpro number 1000.
     - The screen elements on the standard selection screen are defined by all `PARAMETERS`, `SELECT-OPTIONS`, and `SELECTION-SCREEN` statements that are defined outside of the statements mentioned above for creating standalone selection screens.
   
@@ -77,8 +77,8 @@ For more detailed information and syntax options, see the topics [Selection Scre
 ### Classic Lists
 - Used to output data in a structured and formatted way.
 - This output can be ...
-  - created in the so-called [list buffer](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenlist_buffer_glosry.htm), a memory area for storing [screen lists](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenscreen_list_glosry.htm), i.e. a list that is displayed on a predefined list dynpro (list dynpro that is accessed implicitly when a program is executed; note: this dynpro is not part of the executed program). 
-  - sent to the [SAP spool system](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abensap_spool_system_glosry.htm) as a spool list (i.e. a list that is not stored as a screen list but is intended for printing or archiving; the focus of this cheat sheet is on screen lists).
+  - created in the so-called [list buffer](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abenlist_buffer_glosry.html), a memory area for storing [screen lists](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abenscreen_list_glosry.html), i.e. a list that is displayed on a predefined list dynpro (list dynpro that is accessed implicitly when a program is executed; note: this dynpro is not part of the executed program). 
+  - sent to the [SAP spool system](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abensap_spool_system_glosry.html) as a spool list (i.e. a list that is not stored as a screen list but is intended for printing or archiving; the focus of this cheat sheet is on screen lists).
 - Typical flow of executable programs that include selection screens and content to be displayed on the list dynpro:
   - Programs are executed using the *Execute* button (F8).
   - Selection screens are displayed, users usually make entries for whatever purpose, which are further processed in the program.  
@@ -87,16 +87,16 @@ For more detailed information and syntax options, see the topics [Selection Scre
 - More modern alternatives for classic lists are available, such as the classes of the SAP List Viewer (ALV), for example `CL_SALV_TABLE`.
 
 > [!NOTE]
-> The program is grouped into so-called [event blocks](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenevent_block_glosry.htm), which can contain implementations for various events (e.g. a [selection screen event](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenselection_screen_event_glosry.htm) when a user selects a radio button, or a [list event](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenlist_event_glosry.htm) when a user double-clicks a line in the list). These event blocks are introduced by special ABAP statements. When a particular event is triggered, the corresponding event block is called and the appropriate code can be implemented there to react to the user action. See more information [here](#event-blocks).
+> The program is grouped into so-called [event blocks](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abenevent_block_glosry.html), which can contain implementations for various events (e.g. a [selection screen event](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abenselection_screen_event_glosry.html) when a user selects a radio button, or a [list event](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abenlist_event_glosry.html) when a user double-clicks a line in the list). These event blocks are introduced by special ABAP statements. When a particular event is triggered, the corresponding event block is called and the appropriate code can be implemented there to react to the user action. See more information [here](#event-blocks).
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## ABAP Statements for Selection Screens
 
 Selection screens can be created by using special ABAP statements in the global declaration part of executable programs: 
-- [`PARAMETERS`](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapparameters.htm)
-- [`SELECT-OPTIONS`](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapselect-options.htm)
-- [`SELECTION-SCREEN`](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapselection-screen.htm)
+- [`PARAMETERS`](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abapparameters.html)
+- [`SELECT-OPTIONS`](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abapselect-options.html)
+- [`SELECTION-SCREEN`](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abapselection-screen.html)
 
 ### PARAMETERS
 
@@ -198,7 +198,7 @@ Parameters using ABAP Dicitionary input helps
 
 - When referring to data types from the ABAP Dictionary, all screen-relevant properties of that type are adopted.
 - If the referred type includes input help functionality, a callable field help is automatically created.
-- The input helps inlcude search helps, check tables, fixed values and calendar/clock helps. Find more information [here](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenabap_dynpros_value_help_auto.htm).
+- The input helps inlcude search helps, check tables, fixed values and calendar/clock helps. Find more information [here](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abenabap_dynpros_value_help_auto.html).
 - Note that there is no automatic value check. For that, use the `VALUE CHECK` addition.
 - The code snippet includes input helps from a DDIC structure of an ABAP Keyword Documentation example.
 
@@ -324,7 +324,7 @@ Additions `DEFAULT`, `LOWER CASE`, `MATCHCODE OBJECT`, `MEMORY ID`, `VALUE CHECK
 - `DEFAULT`: Defines a start value (can also be a data object instead of a literal)
 - `LOWER CASE`: Prevents the effect of capitalizing the entry made when the content is transported to the data object
 - `MATCHCODE OBJECT`: Links an input field with a DDIC search help
-- `MEMORY ID`: Links an input field with an SPA/GPA parameter in the user memory, i.e. data objects in the user memory accessible by ABAP programs. When calling the selection screen, the input field receives the SPA/GPA parameter value if the `PARAMETERS`'s data object is initial after processing of the `AT SELECTION-SCREEN OUTPUT` event block. The SPA/GPA parameters are set using [`SET PARAMETER`](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapset_parameter.htm) and read using [`GET PARAMETER`](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapget_parameter.htm) statements. See the names of the parameters in the `TPARA` database table.
+- `MEMORY ID`: Links an input field with an SPA/GPA parameter in the user memory, i.e. data objects in the user memory accessible by ABAP programs. When calling the selection screen, the input field receives the SPA/GPA parameter value if the `PARAMETERS`'s data object is initial after processing of the `AT SELECTION-SCREEN OUTPUT` event block. The SPA/GPA parameters are set using [`SET PARAMETER`](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abapset_parameter.html) and read using [`GET PARAMETER`](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abapget_parameter.html) statements. See the names of the parameters in the `TPARA` database table.
 - `VALUE CHECK`: Checks input against fixed values defined for the domain of a data type. It can only be used for DDIC data types. Checks are also available for data types being components of foreign key tables. It is recommended to specify the `VALUE CHECK` addition with the `OBLIGATORY` addition as the check is also applied in case of empty input fields.
 
  </td>
@@ -553,7 +553,7 @@ Addition `USER-COMMAND`
 
 - You can assign function codes to selection parameters using the `USER-COMMAND` addition.
 - The addition is supported by `PARAMETERS` statements specifying the `AS CHECKBOX`, `RADIOBUTTON GROUP` and `AS LISTBOX VISIBLE LENGTH` additions.
-- As a prerequisite, you must specify a [`TABLES`](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abaptables.htm) statement to declare an [interface work area](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abeninterface_work_area_glosry.htm) of the `sscrfields` DDIC structure.
+- As a prerequisite, you must specify a [`TABLES`](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abaptables.html) statement to declare an [interface work area](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abeninterface_work_area_glosry.html) of the `sscrfields` DDIC structure.
 - On user selection (e.g. a checkbox or radio button is selected), the `AT SELECTION-SCREEN` event is raised, and the function code is passed to the `ucomm` component of `sscrfields`. For evaluation purposes, evaluate `sscrfields-ucomm` instead of `sy-ucomm` as it is not guaranteed that the latter is always passed the correct value during selection screen processing.
 
  </td>
@@ -634,7 +634,7 @@ Addition `MODIF ID`
  <td> 
 
 - The `PARAMETERS` statement can be specified with the `MODIF ID` addition to assign a screen element of a selection screen to a modification group, which represents a group of multiple screen elements of a dynpro having a three-character ID. This ID is used to modify the display properties of all those elements specifying the ID before they are actually displayed. For that purpose, you can use the `MODIFY SCREEN` statement. The ID is assigned to the `screen-group1` component that can be evaluated. 
-- Find more information [here](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenmodification_group_glosry.htm).
+- Find more information [here](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abenmodification_group_glosry.html).
 
  </td>
 
@@ -706,7 +706,7 @@ Replacing the technical name displayed on the screen
 
  <td> 
 
-- The parameter name is a technical name. You probably do not want to display technical names on the user interface. You can define proper names ([text elements](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abentext_element_glosry.htm)) in the ABAP Editor, e.g. for translation purposes.
+- The parameter name is a technical name. You probably do not want to display technical names on the user interface. You can define proper names ([text elements](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abentext_element_glosry.html)) in the ABAP Editor, e.g. for translation purposes.
 - For the example code snippet, proceed as follows: 
   - In ADT, make a right-click inside your demo report you copied the code to. Choose *Open Others -> Text Elements*.
   - At the bottom of the opened window, select the *Selection Texts* tab.
@@ -752,12 +752,12 @@ START-OF-SELECTION.
 
 - Declares selection criteria for a data object
 - Unlike the `PARAMETERS` statement, which specifies a single value for a variable, the `SELECT-OPTIONS` statement allows you to specify complex criteria, such as a value range or a list of single values, to include or exclude values, that can be evaluated.
-- The selection criteria are assigned to a [selection table](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenselection_table_glosry.htm):
+- The selection criteria are assigned to a [selection table](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abenselection_table_glosry.html):
   - Such a table contains four columns - `LOW`, `HIGH`, `OPTION`, `SIGN` - for determining range conditions. Each line of such a table represents a condition. 
   - Typically, the content of the selection table can be evaluated in `SELECT` statements using the `IN` operator in the `WHERE` clause.
   - If the selection table is empty, all lines are respected.
-  - Selection tables have the same layout as [ranges table](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenranges_table_glosry.htm) that can be created using the syntax `TYPE RANGE OF`. 
-  - For historical reasons, the selection table is a table with [header line](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenheader_line_glosry.htm). Therefore, if you want to address the table content (beyond the use in a `SELECT ... WHERE ... IN ...` statement), use the syntax `a[]`.
+  - Selection tables have the same layout as [ranges table](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abenranges_table_glosry.html) that can be created using the syntax `TYPE RANGE OF`. 
+  - For historical reasons, the selection table is a table with [header line](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abenheader_line_glosry.html). Therefore, if you want to address the table content (beyond the use in a `SELECT ... WHERE ... IN ...` statement), use the syntax `a[]`.
 - Multiple additions are available, and combinations of them are possible.
 
 
@@ -1520,7 +1520,7 @@ Creating horizontal lines<br><br>
   - `/` creates the line a new line; cannot be specified if multiple elements are specified in a line
 - If no formatting options are specified, a line is created that goes accross the whole screen below the lines that are already filled.
 - The addition `MODIF ID` is supported. 
-- Find more details [here](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapselection-screen_uline.htm).
+- Find more details [here](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abapselection-screen_uline.html).
   
 
  </td>
@@ -1675,7 +1675,7 @@ Specifying multiple elements in one line and their position in the line<br><br>
 - Places all `PARAMETERS`, `SELECT-OPTIONS` and `SELECTION-SCREEN` statements in one line without spaces
 - The statement `SELECTION-SCREEN POSITION` can only be specified in the statement block. The position can be specified as number (1-83) or using the additions `POS_LOW` and `POS_HIGH`. The statement relates to positioning the following statement.
 - Note that if there are positioning conflicts, the selection screen cannot be created.
-- In the statement block, certain restrictions apply. See [here](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapselection-screen_line.htm).
+- In the statement block, certain restrictions apply. See [here](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abapselection-screen_line.html).
 
  </td>
 
@@ -1990,7 +1990,7 @@ Defining tabstrips<br><br>
   - `USER-COMMAND`: To assign a function code. See above.
   - `DEFAULT [PROGRAM ...] SCREEN`: 
     - The tab titles must be assigned a subscreen dynpro.
-    - For the tabstrip areas, structures are implicitly created having the specified name. They have 3 components: `prog`, `dynnr` and `activetab`. Not specifying `DEFAULT ...` means the values must be passed before the selection screen is sent. Find [here](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapselection-screen_tabbed.htm) more information.
+    - For the tabstrip areas, structures are implicitly created having the specified name. They have 3 components: `prog`, `dynnr` and `activetab`. Not specifying `DEFAULT ...` means the values must be passed before the selection screen is sent. Find [here](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abapselection-screen_tabbed.html) more information.
   - `MODIF ID`: See above
 
 
@@ -2088,7 +2088,7 @@ START-OF-SELECTION.
   - `SELECTION-SCREEN INCLUDE COMMENT`
   - `SELECTION-SCREEN INCLUDE PUSHBUTTON`
   - `SELECTION-SCREEN INCLUDE BLOCKS` 
-- Find more information in the subtopics [here](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapselection-screen_include.htm).
+- Find more information in the subtopics [here](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abapselection-screen_include.html).
 
 
 The following code snippet, copyable to a demo program and executable using F8, implements the following:
@@ -2164,7 +2164,7 @@ START-OF-SELECTION.
 
 ### Calling Selection Screens
 
-- There are several ways of how to call selection screens (see [here](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenselection_screen_call.htm)), among them [`CALL SELECTION-SCREEN`](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapcall_selection_screen.htm) statements. 
+- There are several ways of how to call selection screens (see [here](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abenselection_screen_call.html)), among them [`CALL SELECTION-SCREEN`](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abapcall_selection_screen.html) statements. 
 - These statements call selection screens by specifying the dynpro number. 
 - Any selection screen of the main program (and only from there; including 1000) can be called.
 
@@ -2186,10 +2186,10 @@ CALL SELECTION-SCREEN 9345 STARTING AT a b ENDING AT c d.
 
 ## Excursion: SUBMIT Statements
 
-- [`SUBMIT`](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapsubmit.htm) statements call executable programs and, therefore, selection screens.
+- [`SUBMIT`](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abapsubmit.html) statements call executable programs and, therefore, selection screens.
 - In general, every executable program is started implicitly with `SUBMIT`.
 - Selection screens can be considered a parameter interface if the program containing them is executed using `SUBMIT`.
-- Note that when using `SUBMIT`, an authorization check for the [authorization group](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenauthorization_group_glosry.htm) is performed using the `S_PROGRAM` authorization object.
+- Note that when using `SUBMIT`, an authorization check for the [authorization group](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abenauthorization_group_glosry.html) is performed using the `S_PROGRAM` authorization object.
 
 The following table includes a selection of additions and code snippets. Two programs use the demo names `zdemo_abap_report` for the calling program and `zdemo_abap_report_submit` for the called program.
 
@@ -2210,7 +2210,7 @@ Calling a program, ending the current program
 
 - The program name is specified directly.
 - If the program does not exist, a runtime error occurs.
-- Without the `AND RETURN` addition, the current [SAP LUW](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abensap_luw_glosry.htm) is terminated.
+- Without the `AND RETURN` addition, the current [SAP LUW](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abensap_luw_glosry.html) is terminated.
 
 
  </td>
@@ -2222,7 +2222,7 @@ The following code snippets, copyable to demo programs and executable using F8 (
 - One statement specifies the `AND RETURN` addition, the others do not.
 - Regarding the third radiobutton: 
   - The example is implemented to demonstrate the program interruption triggered by the `AND RETURN` addition. In the calling program, the SAP LUW key is retrieved using a system class before and after the `SUBMIT` statement. Both values are the same, demonstrating that the SAP LUW has been kept and is still the same. However, the called program has its own SAP LUW. The code of the called program also includes the retrieval of the SAP LUW key. This value differs from the SAP LUW key of the calling program, thus, showing that two different SAP LUWs have been started.
-  - As there is no "returning parameter-like" functionality when returning to the calling program, the called program uses an `EXPORT ... TO MEMORY ID` statement to store the SAP LUW key value in the ABAP memory. For display and demonstration, the calling program retrieves this stored content with an `IMPORT ... TO MEMORY ID` statement. It then writes the content to a list using a `WRITE` statement. Find more information and criteria for the use [here](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abendata_cluster.htm).
+  - As there is no "returning parameter-like" functionality when returning to the calling program, the called program uses an `EXPORT ... TO MEMORY ID` statement to store the SAP LUW key value in the ABAP memory. For display and demonstration, the calling program retrieves this stored content with an `IMPORT ... TO MEMORY ID` statement. It then writes the content to a list using a `WRITE` statement. Find more information and criteria for the use [here](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abendata_cluster.html).
 
 
 `zdemo_abap_report`
@@ -2297,8 +2297,8 @@ Addition `AND RETURN`
  <td> 
 
 - The calling program is interrupted. 
-- With the `AND RETURN` addition, the called program starts in a new [internal session](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abeninternal_session_glosry.htm) and has its own [SAP LUW](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abensap_luw_glosry.htm). The current internal session and [SAP LUW](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abensap_luw_glosry.htm) is kept. When the called program is ended, the execution of the calling program continues.
-- Find [here](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapsubmit.htm) more information regarding the impact of the involved SAP LUWs. 
+- With the `AND RETURN` addition, the called program starts in a new [internal session](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abeninternal_session_glosry.html) and has its own [SAP LUW](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abensap_luw_glosry.html). The current internal session and [SAP LUW](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abensap_luw_glosry.html) is kept. When the called program is ended, the execution of the calling program continues.
+- Find [here](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abapsubmit.html) more information regarding the impact of the involved SAP LUWs. 
 
  </td>
 
@@ -2321,7 +2321,7 @@ Dynamically calling a program
 - A parenthesized flat character-like data object (literal, constannt or variable) is specified.
 - The name must be specified in uppercase.
 - Note the security risks and consequences a program submitted from outside can cause. You can use the class `CL_ABAP_DYN_PRG` to tackle security risks.
-- As there is no "returning parameter-like" functionality when returning to the calling program, the called program uses an `EXPORT ... TO MEMORY ID` statement to store parameter values in a string table within the ABAP memory. For display and demonstration, the calling program retrieves this stored content with an `IMPORT ... TO MEMORY ID` statement. It then writes the content to a list using `WRITE` statements. Find more information and criteria for the use [here](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abendata_cluster.htm).
+- As there is no "returning parameter-like" functionality when returning to the calling program, the called program uses an `EXPORT ... TO MEMORY ID` statement to store parameter values in a string table within the ABAP memory. For display and demonstration, the calling program retrieves this stored content with an `IMPORT ... TO MEMORY ID` statement. It then writes the content to a list using `WRITE` statements. Find more information and criteria for the use [here](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abendata_cluster.html).
 
  </td>
 
@@ -2427,7 +2427,7 @@ The following code snippets, copyable to demo programs and executable using F8 (
 - Using radio buttons in the calling program, you can determine which `SUBMIT` statement to execute. 
 - All statements use the `AND RETURN` addition.
 - Some statements anticipate the `WITH` addition with which you can pass values for parameters and selection criteria.
-- As there is no "returning parameter-like" functionality when returning to the calling program, the called program uses an `EXPORT ... TO MEMORY ID` statement to store parameter values in a string table within the ABAP memory. For display and demonstration, the calling program retrieves this stored content with an `IMPORT ... TO MEMORY ID` statement. It then writes the content to a list using `WRITE` statements. Find more information and criteria for the use [here](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abendata_cluster.htm).
+- As there is no "returning parameter-like" functionality when returning to the calling program, the called program uses an `EXPORT ... TO MEMORY ID` statement to store parameter values in a string table within the ABAP memory. For display and demonstration, the calling program retrieves this stored content with an `IMPORT ... TO MEMORY ID` statement. It then writes the content to a list using `WRITE` statements. Find more information and criteria for the use [here](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abendata_cluster.html).
 
 
 `zdemo_abap_report`
@@ -2529,9 +2529,9 @@ Additions `WITH SELECTION-TABLE`, `WITH ...`
 
 - `WITH SELECTION-TABLE`: Passes values specified in an internal of a special line type (`RSPARAMS`, `RSPARAMSL_255`, without secondary table keys). The line type has specific component, among them: `selname` (parameter name in uppercase), `kind` (`P` for parameters, `S` for selection criteria), `sign`/`option`/`low`/`high` (ranges table components; note that for parameters, the value must be specified for `low`) 
 - `WITH ...` : Supplying individual values
-- More additions are available. Find more information [here](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapsubmit_selscreen_parameters.htm):
-  - `WITH FREE SELECTIONS`: For dynamic selections of selection screens of [logical databases](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenlogical_data_base_glosry.htm)
-  - `USING SELECTION-SET`: Passes values of a [selection screen variant](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenvariant_glosry.htm) 
+- More additions are available. Find more information [here](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abapsubmit_selscreen_parameters.html):
+  - `WITH FREE SELECTIONS`: For dynamic selections of selection screens of [logical databases](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abenlogical_data_base_glosry.html)
+  - `USING SELECTION-SET`: Passes values of a [selection screen variant](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abenvariant_glosry.html) 
   - `USING SELECTION-SETS OF PROGRAM`: Passes values of a selection screen variant of a particular program
 
  </td>
@@ -2541,7 +2541,7 @@ Additions `WITH SELECTION-TABLE`, `WITH ...`
 The following code snippets, copyable to demo programs and executable using F8 (execute program `zdemo_abap_report`), implements the following:
 - Using radio buttons in the calling program, you can determine which `SUBMIT` statement to execute. 
 - The `SUBMIT` statements do not specify the `VIA SELECTION-SCREEN` addition on purpose. Parameter values and selection criteria are predefined in the calling program and then used by the `SUBMIT` statements.
-- As there is no "returning parameter-like" functionality when returning to the calling program, the called program uses an `EXPORT ... TO MEMORY ID` statement to store parameter values in a string table within the ABAP memory. For display and demonstration, the calling program retrieves this stored content with an `IMPORT ... TO MEMORY ID` statement. It then writes the content to a list using `WRITE` statements. Find more information and criteria for the use [here](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abendata_cluster.htm).
+- As there is no "returning parameter-like" functionality when returning to the calling program, the called program uses an `EXPORT ... TO MEMORY ID` statement to store parameter values in a string table within the ABAP memory. For display and demonstration, the calling program retrieves this stored content with an `IMPORT ... TO MEMORY ID` statement. It then writes the content to a list using `WRITE` statements. Find more information and criteria for the use [here](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abendata_cluster.html).
 
 
 `zdemo_abap_report`
@@ -2693,15 +2693,15 @@ Addition `EXPORTING LIST TO MEMORY`
 
  <td> 
 
-- After a program has been called, the output statements of that program write to the [basic list](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenbasic_list_glosry.htm).
-- If this addition is used, the output list is stored in the [ABAP memory](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenabap_memory_glosry.htm) in an internal table of type `abaplist`. If it is not used, the list of the called program is displayed. That's why the examples above do not use `WRITE` statements in the called program.
+- After a program has been called, the output statements of that program write to the [basic list](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abenbasic_list_glosry.html).
+- If this addition is used, the output list is stored in the [ABAP memory](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abenabap_memory_glosry.html) in an internal table of type `abaplist`. If it is not used, the list of the called program is displayed. That's why the examples above do not use `WRITE` statements in the called program.
 - The addition must be used with `AND RETURN`.
 - You can access the stored list in the calling program using these function modules: 
   - `LIST_FROM_MEMORY`: Retrieves the list from the ABAP memory in an internal table of type `abaplist`
   - `WRITE_LIST`: Writes the content of the table (of type `abaplist`) to the current list
-  - `DISPLAY_LIST`: Displays the content the content of the table (of type `abaplist`) in a separate [list dynpro](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenlist_dynpro_glosry.htm)
+  - `DISPLAY_LIST`: Displays the content the content of the table (of type `abaplist`) in a separate [list dynpro](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abenlist_dynpro_glosry.html)
   - `LIST_TO_ASCI`: Converts the content the content of the table (of type `abaplist`) to ASCII representation
-- Find more information in the [ABAP Keyword Documentation](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapsubmit_list_options.htm). More additions are available to handle lists:
+- Find more information in the [ABAP Keyword Documentation](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abapsubmit_list_options.html). More additions are available to handle lists:
   - `TO SAP-SPOOL`: Sends the output list to the SAP spool system as spool list
   - `LINE-SIZE`: Defines the line width of the basic list
   - `LINE-COUNT`: Defines the page length the basic list
@@ -2863,7 +2863,7 @@ Addition `VIA JOB ... NUMBER ...`
 
 - Must be used with `AND RETURN`
 - Background jobs can be created programmatically using function modules. The example uses some of them, e.g. for creating, completing, and analyzing background jobs.
-- See the documentation for the [details](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapsubmit_via_job.htm).
+- See the documentation for the [details](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abapsubmit_via_job.html).
 
  </td>
 
@@ -3054,9 +3054,9 @@ START-OF-SELECTION.
 
 ### Creating Lists with WRITE Statements
 
-- Lists consist of consecutive list lines that are filled one after the other using the statement [`WRITE`](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapwrite-.htm).
+- Lists consist of consecutive list lines that are filled one after the other using the statement [`WRITE`](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abapwrite-.html).
 - This way, you can output mostly flat data objects and strings/xstrings, types converted to a character-like value (i.e. no internal table content or structures directly).
-- Each time a data object is output, an output length is defined, either implicitly or explicitly (see [here](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenwrite_output_length.htm)).
+- Each time a data object is output, an output length is defined, either implicitly or explicitly (see [here](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abenwrite_output_length.html)).
 - The following snippets show a selection of additions to `WRITE` statements, covering positioning, creating special list elements, and formatting options.
 
 
@@ -3177,7 +3177,7 @@ Additions `/`, `AT ... position(length|*|**)`
   - `AT` can be omitted if the position and length are specified as numeric literals.
   - The position should not be greater than the list width; otherwise, there is not output. A value less than 1 is ignored.
   - The length value should also be between 1 and the list width.
-  - The length specifications `*` and `**` have characteristics specific to data types that are output. They are particularly useful for ensuring that all characters are output (`*`: minimum output: `**`: maximum output). Find information in the [documentation](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenarithmetic_expression_glosry.htm) and [here](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenwrite_output_length.htm) regarding the output length. 
+  - The length specifications `*` and `**` have characteristics specific to data types that are output. They are particularly useful for ensuring that all characters are output (`*`: minimum output: `**`: maximum output). Find information in the [documentation](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abenarithmetic_expression_glosry.html) and [here](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abenwrite_output_length.html) regarding the output length. 
 - `WRITE /.` works like `SKIP.`.
 
  </td>
@@ -3558,7 +3558,7 @@ Formatting options
 
 - Various additions are available to format output. 
 - For example, they deal with aligning content, currency, unit, date and time-related formatting, among others. 
-- Find more information in the ABAP Keyword Documentation [here](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapwrite_int_options.htm) and [here](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapwrite_ext_options.htm). See also the [`FORMAT`](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapformat.htm) statement.
+- Find more information in the ABAP Keyword Documentation [here](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abapwrite_int_options.html) and [here](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abapwrite_ext_options.html). See also the [`FORMAT`](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abapformat.html) statement.
 
  </td>
 
@@ -3627,7 +3627,7 @@ WRITE / 'COLOR 7 INVERSE ON' COLOR 7 INVERSE ON.
 
 ### Formatting Output Using FORMAT Statements
 
-- [`FORMAT`](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapformat.htm) statements can be used to apply formattings to output statements.
+- [`FORMAT`](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abapformat.html) statements can be used to apply formattings to output statements.
 - The formats are valid until reverted by a new `FORMAT` statement, using the additions `OFF` or `RESET`.
 - Note that the additions for `FORMAT` are also available for `WRITE` statements and can be applied individually. See the ABAP Keyword Documentation for all details.
 
@@ -3808,7 +3808,7 @@ This addition sets all formatting settings for which the corresponding addition 
 <td> 
 
 In the following example, all settings are reset without specifying concrete additions (e.g. `INVERSE OFF`). Note the effects of such a statement (e.g. `INTENSIFIED`
-is `ON` by default at program start. Now it is set to `OFF`. See the [ABAP Keyword Documentation](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapformat.htm) for more information. 
+is `ON` by default at program start. Now it is set to `OFF`. See the [ABAP Keyword Documentation](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abapformat.html) for more information. 
 
 
 ``` abap
@@ -3999,7 +3999,7 @@ Storing the content of a flat variable together with the current list line<br><b
  <td> 
 
 - You can read the stored content again during a list event.
-- Find more information [here](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abaphide.htm).
+- Find more information [here](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abaphide.html).
 
  </td>
 
@@ -4059,7 +4059,7 @@ Creating a page break<br><br>
 - The following example creates multiple lines in a loop. 
 - Additions to `REPORT` are used to cater for the example demonstration with a small page length: 
   - `NO STANDARD PAGE HEADING` suppresses the output of the standard page header in the basic list
-  - `LINE-COUNT` determines the page length. The number of lines in parentheses stands for the number of lines in the page footer. The footer can be defined in the `END-OF-PAGE` block. Find more information [here](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapreport_list_options.htm).
+  - `LINE-COUNT` determines the page length. The number of lines in parentheses stands for the number of lines in the page footer. The footer can be defined in the `END-OF-PAGE` block. Find more information [here](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abapreport_list_options.html).
 - Due to the `RESERVE` statement, page breaks are created as there is not enough space left on the page. The loop writes 4 sample texts to the list and can be considered a line block. They should not be separated by page breaks.
 - You can try and comment out the line with the `RESERVE` statement to check out the difference.
 
@@ -4091,7 +4091,7 @@ Positioning the list cursor in the first position of the first line of a logical
  <td> 
 
 - Such a logical unit can be a line block determined using `RESERVE`
-- Find more information [here](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapback.htm).
+- Find more information [here](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abapback.html).
 
  </td>
 
@@ -4144,8 +4144,8 @@ WRITE AT int_for_back '   <- This should be number 1.'.
 
 ### Processing Lists in List Buffers
 
-- ABAP statements are available that allow lists to be processed that have already been saved as [screen lists](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenscreen_list_glosry.htm) in the [list buffer](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenlist_buffer_glosry.htm).
-- The following selection covers `READ [CURRENT] LINE` and `MODIFY [CURRENT] LINE`.
+- ABAP statements are available that allow lists to be processed that have already been saved as [screen lists](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abenscreen_list_glosry.html) in the [list buffer](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abenlist_buffer_glosry.html).
+- The following table covers a selection.
 
 
 <table>
@@ -4170,7 +4170,7 @@ Reading content of lines<br><br>
 - Specifying the line with additions: 
   - `READ LINE` and a concrete line
   - `READ CURRENT LINE` to read the current line
-- More additions are available regarding the list level and assigning the output of individual data objects to target fields. Find more information in the [ABAP Keyword Documentation](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapread_line.htm).
+- More additions are available regarding the list level and assigning the output of individual data objects to target fields. Find more information in the [ABAP Keyword Documentation](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abapread_line.html).
 
  </td>
 
@@ -4321,7 +4321,7 @@ Overwriting line content and format<br><br>
 
 - Overwrites a line stored in the list buffer with the content of the `sy-lisel` system field
 - Allows additional modifications such as changing the value and format.
-- Find more information [here](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapmodify_line.htm).
+- Find more information [here](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abapmodify_line.html).
 
  </td>
 
@@ -4389,18 +4389,442 @@ AT LINE-SELECTION.
  </td>
 </tr>
 
+<tr>
+<td> 
+
+Retrieving field name of cursor position<br><br>
+`GET CURSOR FIELD`
+
+ </td>
+
+ <td> 
+
+- Returns the name of the output field where the cursor is positioned after a user action in the currently displayed list.
+- You can specify additions such as `FIELD` along with a global data object. 
+- The `VALUE` addition assigns the content of the clicked field to a variable. 
+- The `LENGTH` addition assigns the line number of the list to a variable. 
+- `OFFSET` (with additional specification options) assigns the cursor position to a variable.
+- Find more information [here](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/ABAPGET_CURSOR_LIST.html).
+
+ </td>
+
+<td> 
+
+
+The following example demonstrates `GET CURSOR` statements:
+- It displays a list of ABAP cheat sheet information.  
+- The example uses `HIDE` statements to store records' data and is set up so that double-clicking (or choosing F2) produces specific effects.  
+- When the `AT LINE-SELECTION` event is triggered by double-clicking (or F2), the program uses `GET CURSOR FIELD` (and, if a concrete field was not chosen, `GET CURSOR LINE`) to determine which data field (or line) was clicked, capturing details such as the field name, field value, line number, and offset. To explore the effect of not selecting a specific field, position the cursor, for example, in the space between the ID and Title values and double-click (or press F2). 
+- This information is output using `MESSAGE` statements.  
+- Based on the extracted field name, a `CASE` statement determines the next action: If the clicked field corresponds to the cheat sheet's ID, title, or description, the field's text is copied to the clipboard. If the URL field is clicked, the program attempts to open the URL in the default web browser.  
+
+
+```abap
+PROGRAM.
+
+*&---------------------------------------------------------------------*
+*& Data Declarations
+*&---------------------------------------------------------------------*
+
+"Data objects to hold the cursor information
+DATA: field_name  TYPE c LENGTH 30,
+      field_value TYPE c LENGTH 100,
+      line_number TYPE i,
+      offset      TYPE i, "Column number
+      length      TYPE i.
+
+TYPES: BEGIN OF ty_cheat_sheets,
+         id          TYPE n LENGTH 2,
+         title       TYPE c LENGTH 35,
+         description TYPE c LENGTH 80,
+         url         TYPE c LENGTH 100,
+       END OF ty_cheat_sheets.
+
+"Work area for a single cheat sheet record as a global variable
+"to cater for the hide area
+DATA cheat_sheet TYPE ty_cheat_sheets.
+
+"Internal table to hold cheat sheet records
+DATA it_cheat_sheets TYPE SORTED TABLE OF ty_cheat_sheets WITH UNIQUE KEY id.
+
+"Data objects for clipboard export
+TYPES c255 TYPE c LENGTH 255.
+DATA: clipboard TYPE TABLE OF c255 WITH EMPTY KEY,
+      rc        TYPE i.
+
+*&---------------------------------------------------------------------*
+*& START-OF-SELECTION event block
+*&---------------------------------------------------------------------*
+
+START-OF-SELECTION.
+  "Populating the internal table with ABAP cheat sheet information
+  it_cheat_sheets = VALUE #(
+    ( id = 01 title = 'Internal Tables'
+      description = 'Creating, filling, reading from, sorting, modifying internal tables'
+      url = 'https://github.com/SAP-samples/abap-cheat-sheets/blob/main/01_Internal_Tables.md' )
+    ( id = 02 title = 'Structures'
+      description = 'Some basics when working with structures'
+      url = 'https://github.com/SAP-samples/abap-cheat-sheets/blob/main/02_Structures.md' )
+    ( id = 03 title = 'ABAP SQL'
+      description = 'Processing persisted data with ABAP SQL statements'
+      url = 'https://github.com/SAP-samples/abap-cheat-sheets/blob/main/03_ABAP_SQL.md' )
+    ( id = 04 title = 'ABAP Object Orientation'
+      description = 'Working with objects, components, inheritance, interfaces, and more'
+      url = 'https://github.com/SAP-samples/abap-cheat-sheets/blob/main/04_ABAP_Object_Orientation.md' )
+    ( id = 05 title = 'Constructor Expressions'
+      description = 'Constructor expressions with operators such as VALUE, CORRESPONDING, and more'
+      url = 'https://github.com/SAP-samples/abap-cheat-sheets/blob/main/05_Constructor_Expressions.md' )
+    ( id = 06 title = 'Dynamic Programming'
+      description = 'Overview of dynamic programming techniques'
+      url = 'https://github.com/SAP-samples/abap-cheat-sheets/blob/main/06_Dynamic_Programming.md' )
+    ( id = 07 title = 'String Processing'
+      description = 'Overview of processing character strings in ABAP'
+      url = 'https://github.com/SAP-samples/abap-cheat-sheets/blob/main/07_String_Processing.md' )
+    ( id = 08 title = 'Entity Manipulation Language (EML)'
+      description = 'Entity Manipulation Language for accessing RAP business objects'
+      url = 'https://github.com/SAP-samples/abap-cheat-sheets/blob/main/08_EML_ABAP_for_RAP.md' )
+    ( id = 09 title = 'Bits and Bytes'
+      description = 'Handling bits, bytes and byte strings in ABAP'
+      url = 'https://github.com/SAP-samples/abap-cheat-sheets/blob/main/09_Bits_and_Bytes.md' )
+    ( id = 10 title = 'ABAP SQL Hierarchies'
+      description = 'Working with Hierarchical Data'
+      url = 'https://github.com/SAP-samples/abap-cheat-sheets/blob/main/10_ABAP_SQL_Hierarchies.md' )
+    ( id = 11 title = 'Internal Tables: Grouping'
+      description = 'Grouping lines of internal tables'
+      url = 'https://github.com/SAP-samples/abap-cheat-sheets/blob/main/11_Internal_Tables_Grouping.md' )
+    ( id = 12 title = 'AMDP'
+      description = 'Overview of ABAP Managed Database Procedures'
+      url = 'https://github.com/SAP-samples/abap-cheat-sheets/blob/main/12_AMDP.md' )
+    ( id = 13 title = 'Program Flow Logic'
+      description = 'Controlling program flow in ABAP'
+      url = 'https://github.com/SAP-samples/abap-cheat-sheets/blob/main/13_Program_Flow_Logic.md' )
+    ( id = 14 title = 'ABAP Unit Tests'
+      description = 'Basic information about unit testing in ABAP'
+      url = 'https://github.com/SAP-samples/abap-cheat-sheets/blob/main/14_ABAP_Unit_Tests.md' )
+    ( id = 15 title = 'CDS View Entities'
+      description = 'References and information on ABAP CDS'
+      url = 'https://github.com/SAP-samples/abap-cheat-sheets/blob/main/15_CDS_View_Entities.md' )
+    ( id = 16 title = 'Data Types and Objects'
+      description = 'Basic information about data types and data objects in ABAP'
+      url = 'https://github.com/SAP-samples/abap-cheat-sheets/blob/main/16_Data_Types_and_Objects.md' )
+    ( id = 17 title = 'SAP LUW'
+      description = 'Overview of the SAP LUW concept'
+      url = 'https://github.com/SAP-samples/abap-cheat-sheets/blob/main/17_SAP_LUW.md' )
+    ( id = 18 title = 'Dynpro'
+      description = 'Basic information on classic dynpro programming'
+      url = 'https://github.com/SAP-samples/abap-cheat-sheets/blob/main/18_Dynpro.md' )
+    ( id = 19 title = 'ABAP for Cloud Development'
+      description = 'Introduction on ABAP for Cloud Development'
+      url = 'https://github.com/SAP-samples/abap-cheat-sheets/blob/main/19_ABAP_for_Cloud_Development.md' )
+    ( id = 20 title = 'Selection Screens and Lists'
+      description = 'Overview of selection screens and classic lists'
+      url = 'https://github.com/SAP-samples/abap-cheat-sheets/blob/main/20_Selection_Screens_Lists.md' )
+    ( id = 21 title = 'Working with XML and JSON'
+      description = 'Processing XML and JSON data in ABAP.'
+      url = 'https://github.com/SAP-samples/abap-cheat-sheets/blob/main/21_XML_JSON.md' )
+    ( id = 22 title = 'Released ABAP Classes'
+      description = 'Overview of released ABAP classes available in ABAP for Cloud Development.'
+      url = 'https://github.com/SAP-samples/abap-cheat-sheets/blob/main/22_Released_ABAP_Classes.md' )
+    ( id = 23 title = 'Date, Time, and Time Stamp'
+      description = 'Handling date, time and time stamp values in ABAP'
+      url = 'https://github.com/SAP-samples/abap-cheat-sheets/blob/main/23_Date_and_Time.md' )
+    ( id = 24 title = 'Built-in Functions'
+      description = 'Overview of built-in functions in ABAP'
+      url = 'https://github.com/SAP-samples/abap-cheat-sheets/blob/main/24_Builtin_Functions.md' )
+    ( id = 25 title = 'Authorization Checks'
+      description = 'Performing authorization checks with AUTHORITY-CHECK statements and ABAP CDS.'
+      url = 'https://github.com/SAP-samples/abap-cheat-sheets/blob/main/25_Authorization_Checks.md' )
+    ( id = 26 title = 'ABAP Dictionary (DDIC)'
+      description = 'Repository objects in the ABAP Dictionary that represent global types'
+      url = 'https://github.com/SAP-samples/abap-cheat-sheets/blob/main/26_ABAP_Dictionary.md' )
+    ( id = 27 title = 'Exceptions and Runtime Errors'
+      description = 'Overview of exceptions and runtime errors'
+      url = 'https://github.com/SAP-samples/abap-cheat-sheets/blob/main/27_Exceptions.md' )
+    ( id = 28 title = 'Regular Expressions'
+      description = 'Common regular expressions and their use in ABAP'
+      url = 'https://github.com/SAP-samples/abap-cheat-sheets/blob/main/28_Regular_Expressions.md' )
+    ( id = 29 title = 'Numeric Operations'
+      description = 'Explores various aspects of numeric operations and calculations in ABAP'
+      url = 'https://github.com/SAP-samples/abap-cheat-sheets/blob/main/29_Numeric_Operations.md' )
+    ( id = 30 title = 'Generative AI'
+      description = 'References on information about Generative AI in ABAP Cloud'
+      url = 'https://github.com/SAP-samples/abap-cheat-sheets/blob/main/30_Generative_AI.md' )
+    ( id = 31 title = 'WHERE Conditions'
+      description = 'Syntax options in ABAP statements that include WHERE for data filtering'
+      url = 'https://github.com/SAP-samples/abap-cheat-sheets/blob/main/31_WHERE_Conditions.md' )
+    ( id = 32 title = 'Performance Notes'
+      description = 'Selection of performance-related topics in ABAP'
+      url = 'https://github.com/SAP-samples/abap-cheat-sheets/blob/main/32_Performance_Notes.md' )
+    ( id = 33 title = 'ABAP Release News'
+      description = 'Overview of ABAP language features per release.'
+      url = 'https://github.com/SAP-samples/abap-cheat-sheets/blob/main/33_ABAP_Release_News.md' )
+    ( id = 34 title = 'OO Design Patterns'
+      description = 'Common object-oriented design patterns implemented in simplified ABAP examples'
+      url = 'https://github.com/SAP-samples/abap-cheat-sheets/blob/main/34_OO_Design_Patterns.md' )
+    ( id = 35 title = 'BAdIs'
+      description = 'Overview of BAdI-related ABAP statements'
+      url = 'https://github.com/SAP-samples/abap-cheat-sheets/blob/main/35_BAdIs.md' )
+    ( id = 36 title = 'RAP Behavior Definition Language'
+      description = 'Syntax options of the BDL for designing RAP behavior definitions (BDEF)'
+      url = 'https://github.com/SAP-samples/abap-cheat-sheets/blob/main/36_RAP_Behavior_Definition_Language.md' )
+    ( id = 37 title = 'Logical Expressions and Functions'
+      description = 'Logical expressions/functions used to process data based on specific conditions'
+      url = 'https://github.com/SAP-samples/abap-cheat-sheets/blob/main/37_Logical_Expressions_and_Functions.md' )
+  ).
+
+  "Writing the header of the list
+  WRITE: / 'ID',
+         5 'Title',
+         40 'Description',
+         120 'URL'.
+  ULINE.
+
+  LOOP AT it_cheat_sheets INTO cheat_sheet.
+    "Writing the content of the table line by line
+    WRITE: / cheat_sheet-id,
+           5 cheat_sheet-title,
+           40 cheat_sheet-description,
+           120 cheat_sheet-url.
+
+    "The HIDE statement stores the entire content of the work area
+    "in a special area in the list buffer, the hide area, which is
+    "associated with the current list line.
+    "When you then double-click a line (or choose F2), the work area
+    "content is restored from the hide area, accessible via the same
+    "work area variable.
+    HIDE cheat_sheet.
+
+  ENDLOOP.
+
+*&---------------------------------------------------------------------*
+*& AT LINE-SELECTION event block
+*&
+*& This event block is triggered on double-clicking (or choosing F2)
+*& on a list line. Due to the earlier HIDE statement, the cheat_sheet
+*& work area holds the data of the selected line.
+*&---------------------------------------------------------------------*
+AT LINE-SELECTION.
+
+  "GET CURSOR FIELD statement that stores various pieces of information
+  "in data objects. MESSAGE statements display the information for
+  "exploration. To keep the amount of text low, some lengthy strings
+  "are cut.
+  GET CURSOR FIELD  field_name
+             VALUE  field_value
+             LINE   line_number
+             OFFSET offset.
+
+  IF sy-subrc = 0.
+    MESSAGE |field_name: '{ field_name }'| &&
+            | / field_value: '{ field_value }'| &&
+            | / line_number: '{ line_number }'| &&
+            | / offset: '{ offset }'| &&
+            | / Hide area content: { cheat_sheet-id }, | &&
+            |{ COND #( WHEN strlen( cheat_sheet-title ) <= 20 THEN cheat_sheet-title ELSE cheat_sheet-title(20) && `...` ) }, | &&
+            |{ COND #( WHEN strlen( cheat_sheet-description ) <= 20 THEN cheat_sheet-description ELSE cheat_sheet-description(20) && `...` ) }, | &&
+            |{ COND #( WHEN strlen( cheat_sheet-url ) <= 20 THEN cheat_sheet-url ELSE `...` && substring( val = cheat_sheet-url
+                                                                                                          off = strlen( cheat_sheet-url ) - 20
+                                                                                                          len = 20 ) ) }|
+       TYPE 'I'.
+
+  ELSE.
+    "When you click somewhere on the list that is not a field, GET CURSOR FIELD returns
+    "4 for sy-subrc.
+    "In that case, the example includes the execution of a GET CURSOR LINE statement to
+    "get information such as the line number that was clicked.
+    MESSAGE `The cursor was not positioned on a concrete data field. A GET CURSOR LINE ` &&
+            `statement is about to be executed.` TYPE 'I'.
+
+    GET CURSOR LINE   line_number
+               LENGTH length
+               OFFSET offset.
+
+    IF sy-subrc = 0.
+      MESSAGE
+        |line_number: '{ line_number }'| &&
+        | / length: '{ length }'| &&
+        | / offset: '{ offset }'|
+        TYPE 'I'.
+    ELSE.
+      MESSAGE |Error. sy-subrc = { sy-subrc }| TYPE 'I'.
+    ENDIF.
+  ENDIF.
+
+  "The following code demonstrates to use the information obtained from the
+  "GET CURSOR FIELD statement to perform different actions based on which column
+  "was chosen. It uses a CASE statement to handle different field names and execute
+  "corresponding logic, such as copying text to the clipboard or opening a URL in
+  "the default browser.
+  CASE field_name.
+    WHEN 'CHEAT_SHEET-ID' OR 'CHEAT_SHEET-TITLE' OR 'CHEAT_SHEET-DESCRIPTION'.
+      APPEND field_value TO clipboard.
+
+      cl_gui_frontend_services=>clipboard_export(
+        IMPORTING data                 = clipboard
+        CHANGING  rc                   = rc
+        EXCEPTIONS cntl_error           = 1
+                   error_no_gui         = 2
+                   not_supported_by_gui = 3
+                   no_authority         = 4
+                   OTHERS               = 5 ).
+
+      IF sy-subrc = 0.
+        MESSAGE 'Copied to clipboard' TYPE 'S'.
+      ELSE.
+        MESSAGE |Not copied to clipboard, sy-subrc = { sy-subrc }|  TYPE 'E'.
+      ENDIF.
+
+    WHEN 'CHEAT_SHEET-URL'.
+      TRY.
+
+          CALL FUNCTION 'CALL_BROWSER'
+            EXPORTING
+              url                    = field_value
+            EXCEPTIONS
+              frontend_not_supported = 1
+              frontend_error         = 2
+              prog_not_found         = 3
+              no_batch               = 4
+              unspecified_error      = 5
+              OTHERS                 = 6.
+
+          IF sy-subrc <> 0.
+            MESSAGE |Browser not opened, sy-subrc = { sy-subrc }| TYPE 'E'.
+          ENDIF.
+        CATCH cx_root.
+          MESSAGE 'Browser not opened' TYPE 'E'.
+      ENDTRY.
+  ENDCASE.
+
+  "Initializing global data objects
+  CLEAR: field_name,
+         field_value,
+         line_number,
+         offset,
+         length,
+         clipboard,
+         rc.
+```
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+Retrieving line number of cursor position<br><br>
+`GET CURSOR LINE`
+
+ </td>
+
+ <td> 
+
+- Returns the line number of the list where the cursor is located after a user action.
+- `VALUE`, `LENGTH`, and `OFFSET` additions are available.
+- Find more information [here](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/ABAPGET_CURSOR_LIST.html).
+
+ </td>
+
+<td> 
+
+See the example in the `GET CURSOR FIELD` section.
+
+ </td>
+</tr>
+
+<tr>
+<td> 
+
+Setting the cursor<br><br>
+`SET CURSOR`
+
+ </td>
+
+ <td> 
+
+- Sets the cursor in lists.
+- Additions such as `FIELD` or `LINE` can be specified.
+- Find more information [here](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abapset_cursor_list.html).
+
+ </td>
+
+<td> 
+
+The following example demonstrates `SET CURSOR` statements:
+- It defines three radio buttons that allow you to choose one of three modes. 
+- It declares three input fields: `inp1`, `inp2`, and `inp3`.
+- When you execute the program, it displays the three input fields. Depending on the selected radio button, the program executes `SET CURSOR` statements to position the cursor in either `inp2` or `inp3`. One mode skips `SET CURSOR`, leaving the cursor in `inp1` by default.
+- The `AT LINE-SELECTION` event triggers on a double-click (or F2). When you click an input field, a `SET CURSOR` statement is executed, positioning the cursor in another input field. The current field and line of the cursor are determined using a `GET CURSOR` statement.
+
+```abap
+PROGRAM.
+
+PARAMETERS: wo_set   RADIOBUTTON GROUP rbg1 DEFAULT 'X',
+            wsetinp2 RADIOBUTTON GROUP rbg1,
+            wsetinp3 RADIOBUTTON GROUP rbg1.
+
+DATA: inp1        TYPE c LENGTH 10,
+      inp2        TYPE c LENGTH 10,
+      inp3        TYPE c LENGTH 10,
+      field_name  TYPE c LENGTH 30,
+      line_number TYPE i.
+
+START-OF-SELECTION.
+
+  SET BLANK LINES ON.
+
+  CASE 'X'.
+    WHEN wo_set.
+
+      WRITE: / inp1 INPUT, inp2 INPUT, inp3 INPUT.
+
+    WHEN wsetinp2.
+
+      WRITE: / inp1 INPUT, inp2 INPUT, inp3 INPUT.
+      SET CURSOR FIELD 'inp2' LINE sy-linno.
+
+    WHEN wsetinp3.
+
+      WRITE: / inp1 INPUT, inp2 INPUT, inp3 INPUT.
+      SET CURSOR FIELD 'inp3' LINE sy-linno.
+
+  ENDCASE.
+
+AT LINE-SELECTION.
+
+  GET CURSOR FIELD field_name
+             LINE  line_number.
+
+  IF sy-subrc = 0.
+    CASE field_name.
+      WHEN 'INP1'.
+        SET CURSOR FIELD 'inp2' LINE line_number.
+      WHEN 'INP2'.
+        SET CURSOR FIELD 'inp3' LINE line_number.
+      WHEN 'INP3'.
+        SET CURSOR FIELD 'inp1' LINE line_number.
+    ENDCASE.
+  ELSE.
+    MESSAGE 'Select an input field to set the cursor.' TYPE 'I'.
+  ENDIF.
+```
+
+ </td>
+</tr>
+
 </table>
 
 
 > [!NOTE]
-> - [Relevant sy components in the context of lists](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenlist_systemfields.htm)
+> - [Relevant sy components in the context of lists](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abenlist_systemfields.html)
 > - You can interact with a list by double-clicking a line (or pressing F2; the default `PICK` function code raises the `AT LINE-SELECTION` event). Other function codes usually trigger the `AT USER-COMMAND` event. See the event blocks below. In your ABAP program, you can react to the user action by implementing the individual event blocks. Regarding the function code, you can use the `sy-ucomm` system field for evaluation (unlike dynpros, there's no `OK_CODE` field to be filled).
+> - Note the dynpro-related variants of [`GET CURSOR`](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/ABAPGET_CURSOR_DYNPRO.html) and [`SET CURSOR`](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/ABAPSET_CURSOR_DYNPRO.html).
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## Event Blocks
 
-- Event blocks are introduced by an [event keyword](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenevent_keyword_glosry.htm). 
+- Event blocks are introduced by an [event keyword](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abenevent_keyword_glosry.html). 
 - Ended by the next processing block (there's no closing statement).
 - Should not contain separate declarations, i.e. you should put all data object declarations in the global declaration part (except for `AT SELECTION-SCREEN ...`)
 - It is recommended that you use ABAP Objects and methods consistently for data encapsulation
@@ -4630,11 +5054,11 @@ List events
 
 - Are triggered during the list creation and after certain user actions on a displayed list.
 - During list creation: 
-  - `TOP-OF-PAGE` <br>For definining page headers; called when a [basic list](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenbasic_list_glosry.htm) is created and when a new page begins (`... DURING LINE-SELECTION` is called when [details lists](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abendetails_list_glosry.htm) are created)
+  - `TOP-OF-PAGE` <br>For definining page headers; called when a [basic list](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abenbasic_list_glosry.html) is created and when a new page begins (`... DURING LINE-SELECTION` is called when [details lists](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abendetails_list_glosry.html) are created)
   - `END-OF-PAGE` <br>For definining page footers; called when the end of a page is reached, for example, when the specified number of lines in the `LINE-COUNT` addition (e.g. `PROGRAM LINE-COUNT 20(3).`) has been reached
 - After user actions: 
   - `AT LINE-SELECTION` <br>Called when a screen list is displayed, the screen cursor is on a list line and a function is selected using the function code `PICK`; when specified, the function key F2 is enabled and, therefore, double click functionality; F2 and a double click are linked with the function code `PICK`.
-  - [`AT USER-COMMAND`](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapat_user-command.htm) <br>Called when a function with a user-defined function code is selected when a screen list is displayed; the function codes can be evaluated using `sy-ucomm`; you can set a list event programmatically using [`SET USER-COMMAND`](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapset_user-command.htm).
+  - [`AT USER-COMMAND`](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abapat_user-command.html) <br>Called when a function with a user-defined function code is selected when a screen list is displayed; the function codes can be evaluated using `sy-ucomm`; you can set a list event programmatically using [`SET USER-COMMAND`](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abapset_user-command.html).
 
  </td>
 
@@ -5203,8 +5627,8 @@ ENDTRY.
 
 ## More Information
 - ABAP Keyword Documentation:
-  - [Selection Screens](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenselection_screen.htm) 
-  - [Classic Lists](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenabap_dynpro_list.htm)
+  - [Selection Screens](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abenselection_screen.html) 
+  - [Classic Lists](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abenabap_dynpro_list.html)
 - ALV:
   - [SAP List Viewer (ALV)](https://help.sap.com/docs/SAP_NETWEAVER_731_BW_ABAP/b1c834a22d05483b8a75710743b5ff26/4ec38f8788d22b90e10000000a42189d.html?locale=en-US) on the SAP Help Portal
   - Find more demonstration examples in package `SALV` and its subpackages.

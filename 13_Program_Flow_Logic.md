@@ -521,7 +521,7 @@ ENDDO.
 
 
 > [!NOTE]
-> - [`RETURN`](https://help.sap.com/docs/abap-cloud/abap-keyword/return) statements immediately terminate the current processing block. However, according to the [guidelines (F1 docu for standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenexit_procedure_guidl.htm), `RETURN` should only be used to exit procedures like methods.
+> - [`RETURN`](https://help.sap.com/docs/abap-cloud/abap-keyword/return) statements immediately terminate the current processing block. However, according to the [guidelines (F1 docu for standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abenexit_procedure_guidl.html), `RETURN` should only be used to exit procedures like methods.
 > - `EXIT` and `CHECK` might also be used for exiting procedures. However, their use inside loops is recommended.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
@@ -600,7 +600,7 @@ Note that methods and calling methods are described in the context of the [ABAP 
 ### Function Modules
 
 > [!NOTE]
-> In [ABAP for Cloud Development](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-for-cloud-development), function modules can technically be used, but they are not recommended for new implementations. Many features available in standard ABAP, such as various includes, are not compatible with ABAP for Cloud Development (for example, [dynpro](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abendynpro_glosry.htm)-related functionality).
+> In [ABAP for Cloud Development](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-for-cloud-development), function modules can technically be used, but they are not recommended for new implementations. Many features available in standard ABAP, such as various includes, are not compatible with ABAP for Cloud Development (for example, [dynpro](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abendynpro_glosry.html)-related functionality).
 
 Function modules ... 
 - are reusable cross-program procedures (i.e. processing blocks callable via an ABAP statement).
@@ -852,22 +852,22 @@ ENDCLASS.
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
 #### Special Function Modules in Standard ABAP
-Special function modules exist in [Standard ABAP](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenstandard_abap_glosry.htm) (and not in ABAP for Cloud Development), and for which special properties are specified in the [Function Builder](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenfunction_builder_glosry.htm):
+Special function modules exist in [Standard ABAP](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abenstandard_abap_glosry.html) (and not in ABAP for Cloud Development), and for which special properties are specified in the [Function Builder](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abenfunction_builder_glosry.html):
 
 - Update function modules: 
   - Typically contain modifying database accesses and can be used to register for later execution
   - Are called with `CALL FUNCTION ... IN UPDATE TASK`
-  - Find more information [here](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapcall_function_update.htm) (note that the links in this section refer to the ABAP Keyword Documentation for Standard ABAP) and in the SAP LUW cheat sheet
+  - Find more information [here](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abapcall_function_update.html) (note that the links in this section refer to the ABAP Keyword Documentation for Standard ABAP) and in the SAP LUW cheat sheet
 - Remote function calls (RFC):
-  - Remote-enabled function modules are called using the [RFC interface](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenrfc_interface_glosry.htm)
-  - You can make these calls within the same system or a different one, determined by an [RFC destination](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenrfc_dest_glosry.htm). Find more information [here](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenrfc.htm)
+  - Remote-enabled function modules are called using the [RFC interface](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abenrfc_interface_glosry.html)
+  - You can make these calls within the same system or a different one, determined by an [RFC destination](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abenrfc_dest_glosry.html). Find more information [here](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abenrfc.html)
   - The calls can be ...
-    - synchronous ([sRFC](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abensrfc_glosry.htm)): The calling program waits for the remote function to finish processing; called using `CALL FUNCTION ... DESTINATION` 
-    - asynchronous ([aRFC](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenarfc_glosry.htm)): A remote function call that proceeds without waiting for the remotely called function to finish processing; called using `CALL FUNCTION ... STARTING NEW TASK`      
+    - synchronous ([sRFC](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abensrfc_glosry.html)): The calling program waits for the remote function to finish processing; called using `CALL FUNCTION ... DESTINATION` 
+    - asynchronous ([aRFC](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abenarfc_glosry.html)): A remote function call that proceeds without waiting for the remotely called function to finish processing; called using `CALL FUNCTION ... STARTING NEW TASK`      
     - transactional 
-      - transactional calls ([tRFC](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abentrfc_2_glosry.htm)) are related to the concept of the SAP LUW. tRFC is considered obsolete.
-      - Successor technology: Background RFC ([bgRFC](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenbgrfc_glosry.htm)), executed with the statement `CALL FUNCTION ... IN BACKGROUND UNIT`. Find more information [here](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapcall_function_background_unit.htm).
-      - The newer background Processing Framework ([bgPF](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenbgpf_glosry.htm)) encapsulates bgRFC to execute time-consuming methods asynchronously. Find more information [here](https://help.sap.com/docs/abap-cloud/abap-concepts/background-processing-framework).
+      - transactional calls ([tRFC](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abentrfc_2_glosry.html)) are related to the concept of the SAP LUW. tRFC is considered obsolete.
+      - Successor technology: Background RFC ([bgRFC](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abenbgrfc_glosry.html)), executed with the statement `CALL FUNCTION ... IN BACKGROUND UNIT`. Find more information [here](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abapcall_function_background_unit.html).
+      - The newer background Processing Framework ([bgPF](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abenbgpf_glosry.html)) encapsulates bgRFC to execute time-consuming methods asynchronously. Find more information [here](https://help.sap.com/docs/abap-cloud/abap-concepts/background-processing-framework).
  
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
@@ -876,7 +876,7 @@ Special function modules exist in [Standard ABAP](https://help.sap.com/doc/abapd
 - Obsolete procedures you may find in older ABAP programs. Before ABAP Objects was introduced, subroutines were mainly used for local modularization.
 - They are implemented between the statements `FORM` and `ENDFORM`.
 - Called using `PERFORM` statements
-- Find more information [here](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenabap_subroutines.htm). The [SAP LUW cheat sheet example](17_SAP_LUW.md) also uses subroutines in the context of an SAP LUW (these subroutines are called using `PERFORM ... ON COMMIT` and `... ROLLBACK`).
+- Find more information [here](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abenabap_subroutines.html). The [SAP LUW cheat sheet example](17_SAP_LUW.md) also uses subroutines in the context of an SAP LUW (these subroutines are called using `PERFORM ... ON COMMIT` and `... ROLLBACK`).
 
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>

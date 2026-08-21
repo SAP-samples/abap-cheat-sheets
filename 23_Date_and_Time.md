@@ -97,7 +97,7 @@ DATA ts_long TYPE timestampl VALUE '20240101082802.1700020'.
 
 > [!NOTE]
 > Regarding time zones: 
-> - Find more information on time zones [here (F1 for standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abensystem_user_time_zones.htm). 
+> - Find more information on time zones [here (F1 for standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abensystem_user_time_zones.html). 
 > - In case of [SAP BTP ABAP Environments](https://help.sap.com/docs/abap-cloud/abap-keyword/sap-btp-abap-environment), the time zone is set to UTC by default. Find more information about maintaining user-specific language and regional settings in the SAP Fiori Launchpad [here](https://help.sap.com/docs/btp/sap-fiori-launchpad-for-sap-btp-abap-environment/maintaining-your-language-and-regional-settings).
 > - CDS view that includes time zone information: `I_TIMEZONE`
 
