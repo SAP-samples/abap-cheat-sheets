@@ -727,7 +727,7 @@ ENDCLASS.
 <li>Operations that are not allowed in a transactional phase are detected, resulting in a runtime error in certain contexts (or the violations are logged). 
 For example, database modifications are only allowed in the save transactional phase because the data being processed in the modify phase may be inconsistent. Therefore, a database modification in the modify phase can disrupt the SAP LUW.</li>
 <li>For more information, refer to the chapter <a href="https://help.sap.com/docs/abap-cloud/abap-concepts/controlled-sap-luw">Controlled SAP LUW</a>.</li>
-<li>See the restrictions in the ABAP Keyword Documentation: <a href="https://help.sap.com/docs/abap-cloud/abap-keyword/restrictions-in-transactional-phases">ABAP for Cloud Development</a> / <a href="https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapinvalid_stmts_in_tx.htm">Standard ABAP</a>.</li>
+<li>See the restrictions in the ABAP Keyword Documentation: <a href="https://help.sap.com/docs/abap-cloud/abap-keyword/restrictions-in-transactional-phases">ABAP for Cloud Development</a> / <a href="https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abapinvalid_stmts_in_tx.html">Standard ABAP</a>.</li>
 </ul>
 <br>
 

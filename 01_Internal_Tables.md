@@ -120,7 +120,7 @@ Internal Tables ...
 
 | Category | Internally managed by | Access | Primary table key | When to use | Hints |
 |---|---|---|---|---|---|
-|`STANDARD`|Primary table index (that's why these tables are called [index tables](https://help.sap.com/docs/abap-cloud/abap-keyword/index-table))|<ul><li>Table index</li><li>Table key</li></ul>|<ul><li>Always non-unique, i.e. duplicate entries are always allowed</li><li>Definition of an empty key is possible if the key is not relevant(`WITH EMPTY KEY`)</li></ul>|<ul><li>If you primarily access the table content for sequential processing or via the table index.</li><li>Response time for accessing the table using the primary key: This kind of table access is optimized only for sorted and hashed tables. For standard tables, primary key access uses a linear search across all lines. That means that large standard tables (more than 100 lines) are not ideal if the you primarily access the table using the table key.</li></ul>|<ul><li>There is no particular sort order, but the tables can be sorted using `SORT`.</li><li>Populating this kind of table: Lines are either appended at the end of the table or inserted at a specific position.</li><li>[Secondary table keys](https://help.sap.com/docs/abap-cloud/abap-keyword/secondary-table-key) can be defined to make key access to standard tables more efficient.</li><li>Standard and sorted tables have the least [administration costs (F1 docu for standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenadmin_costs_dyn_mem_obj_guidl.htm).</li></ul>|
+|`STANDARD`|Primary table index (that's why these tables are called [index tables](https://help.sap.com/docs/abap-cloud/abap-keyword/index-table))|<ul><li>Table index</li><li>Table key</li></ul>|<ul><li>Always non-unique, i.e. duplicate entries are always allowed</li><li>Definition of an empty key is possible if the key is not relevant(`WITH EMPTY KEY`)</li></ul>|<ul><li>If you primarily access the table content for sequential processing or via the table index.</li><li>Response time for accessing the table using the primary key: This kind of table access is optimized only for sorted and hashed tables. For standard tables, primary key access uses a linear search across all lines. That means that large standard tables (more than 100 lines) are not ideal if the you primarily access the table using the table key.</li></ul>|<ul><li>There is no particular sort order, but the tables can be sorted using `SORT`.</li><li>Populating this kind of table: Lines are either appended at the end of the table or inserted at a specific position.</li><li>[Secondary table keys](https://help.sap.com/docs/abap-cloud/abap-keyword/secondary-table-key) can be defined to make key access to standard tables more efficient.</li><li>Standard and sorted tables have the least [administration costs (F1 docu for standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abenadmin_costs_dyn_mem_obj_guidl.html).</li></ul>|
 |`SORTED`|Primary table index (that's why these tables are called [index tables](https://help.sap.com/docs/abap-cloud/abap-keyword/index-table))|<ul><li>Table index</li><li>Table key</li></ul>|<ul><li>Non-unique</li><li>Unique</li><br>... used to sort the table in ascending order.</ul>|<ul><li>Enables an optimized access to table content using table key and index.</li><li>If access via table key is the main access method, but no unique key can be defined.</li></ul>|<ul><li>Sorting is done automatically when lines are inserted or deleted. As a consequence, the table index must usually be reorganized. </li><li>The response time for accessing the table using the primary key depends logarithmically on the number of table entries, since a binary search is used.</li><li>Standard and sorted tables have the least administration costs.</li></ul>|
 |`HASHED`|Hash algorithm |<ul><li>Table key</li><li>[Secondary table index](https://help.sap.com/docs/abap-cloud/abap-keyword/secondary-table-index)</li></ul>|Always unique|<ul><li>For large internal tables.</li><li>Optimized for key access. Access to table content via table key is the main access method and a unique key can be defined.</li></ul>|<ul><li>The response time for primary key access is constant and independent of the number of entries in the table.</li><li>Hashed tables have the highest administration costs.</li></ul>|
 
@@ -144,7 +144,7 @@ Internal Tables ...
 
 **Further information**
 - [Internal Tables - Overview](https://help.sap.com/docs/abap-cloud/abap-keyword/internal-tables)
-- [Programming guidelines: Internal Tables (F1 docu for standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenadmin_costs_dyn_mem_obj_guidl.htm)
+- [Programming guidelines: Internal Tables (F1 docu for standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abenadmin_costs_dyn_mem_obj_guidl.html)
 </details>
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
@@ -226,7 +226,7 @@ Internal Tables ...
    - Unique secondary table keys are immediately updated, whereas non-unique secondary table keys are not (only when the table is accessed using the key).
    - The use of secondary table keys should be reserved for cases where the benefits outweigh the extra costs. So, it may not be advisable to use secondary table keys for very small tables or if you very often change the content of the table.
 - For more details, see the programming guidelines for secondary keys: [Secondary
-    Key (F1 docu for standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abensecondary_key_guidl.htm "Guideline").
+    Key (F1 docu for standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abensecondary_key_guidl.htm "Guideline").
 
 > [!NOTE]  
 > - See examples of internal table declarations using the table keys mentioned above in the following section.
@@ -462,7 +462,7 @@ DATA it25 TYPE TABLE OF ls_loc WITH NON-UNIQUE KEY key_field.
 "Internal table based on an already existing internal table using LIKE.
 DATA it26 LIKE it25.
 "In the following example, an internal table is created containing internal tables
-"of the type of itab_a6.
+"of the type of it25.
 DATA it27 LIKE TABLE OF it25.
 ```
 
@@ -525,9 +525,10 @@ DATA it_elem_8 TYPE TABLE OF timestampl WITH EMPTY KEY.
 "Elementary type declared in an interface
 DATA it_elem_9 TYPE TABLE OF zdemo_abap_get_data_itf=>occ_rate WITH EMPTY KEY.
 
-"Note the syntax options when referring to components. In the following
-"example, a database table field is referred to using the database table name,
-"the component selector and the name of a field having an elementary data type.
+"Note the syntax options when referring to components of local or global structures. 
+"In the following example, a database table field is referred to using the database 
+"table name, the component selector and the name of a field having an elementary data 
+"type.
 DATA it_elem_10 TYPE TABLE OF zdemo_abap_fli-carrid WITH EMPTY KEY.
 "CDS view entity component
 DATA it_elem_11 TYPE TABLE OF zdemo_abap_carr_ve-url WITH EMPTY KEY.
@@ -1687,7 +1688,7 @@ READ TABLE itab REFERENCE INTO DATA(dref_inl) ...
 functionality, your use case, the
 performance or readability of the code may play a role. For more information, see 
 the programming guidelines for the [target
-area (F1 docu for standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abentable_output_guidl.htm "Guideline").
+area (F1 docu for standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abentable_output_guidl.htm "Guideline").
 A use case for `INTO dobj` is when the table should
 not be changed using the copied table line. However, copying comes
 at a performance cost. Imagine that your table contains many columns or
@@ -7102,7 +7103,7 @@ Additional notes
 - Unique secondary table keys update immediately, while non-unique secondary table keys only update when the table is accessed using the key.
 - For hash keys, additional hashing administration and a separate secondary table index for each sorted key are necessary.
 - Reserve the use of secondary table keys for situations where their benefits exceed the associated costs. It is generally not advisable to use secondary table keys for very small tables or if you frequently change the table's content.
-- For more details, see the programming guidelines for secondary keys: [Secondary Key Guideline (F1 docu for standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abensecondary_key_guidl.htm).
+- For more details, see the programming guidelines for secondary keys: [Secondary Key Guideline (F1 docu for standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abensecondary_key_guidl.html).
 - Write protection for key fields of a secondary table key applies only when the secondary table key is used within a `LOOP` or `MODIFY` statement. Otherwise, the secondary table key fields are not write-protected.
 
  </td>

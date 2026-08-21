@@ -112,22 +112,22 @@ Find more information in the respective (sub)topics in the ABAP Keyword Document
         purposes using `SELECT`.
 
 **"Classic"** [DDIC
-Views](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenddic_view_glosry.htm "Glossary Entry") ...
+Views](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abenddic_view_glosry.htm "Glossary Entry") ...
 
 - are the oldest form of views and are not available in [ABAP Cloud](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-cloud).
 - can be accessed by ABAP SQL for read and write operations, however, writing is only supported if the view is created with only one database table.
-- can only be created in the [ABAP Workbench](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenabap_workbench_glosry.htm).
+- can only be created in the [ABAP Workbench](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abenabap_workbench_glosry.html).
 
 **"Modern" Views (since release 7.40)**
 
 -   [External
-    views](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenexternal_view_glosry.htm "Glossary Entry")
+    views](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abenexternal_view_glosry.htm "Glossary Entry")
     as proxies for [SAP HANA
-    views](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenhana_view_glosry.htm "Glossary Entry")
+    views](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abenhana_view_glosry.htm "Glossary Entry")
     (attribute view, analytic view, calculation view)
     -   SAP HANA Views are entities of the SAP HANA database that are
         defined using the [SAP HANA
-        Studio](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenhana_studio_glosry.htm "Glossary Entry").
+        Studio](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abenhana_studio_glosry.htm "Glossary Entry").
     -   They are based on HANA-specific data types.
     -   Using external views of the ABAP dictionary, you can make those
         SAP HANA views "known" to the ABAP program. In doing so, the
@@ -182,7 +182,7 @@ SELECT FROM source   "What data source to read from
 - Especially in [Standard ABAP](https://help.sap.com/docs/abap-cloud/abap-keyword/standard-abap), in older ABAP programs, etc. you may stumble on variants of the `SELECT` syntax (i.e. differently arranged or differently specified ABAP SQL syntax) that you should no longer use (strict syntax check modes enforce the use of specific ABAP SQL syntax) and/or are not possible in [ABAP for Cloud Development](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-for-cloud-development). 
   - However, in certain cases, older syntax variants are still valid and usable. An example is the `SELECT` list, that can also be specified using the more modern `FIELDS` addition.
   - As mentioned, choose `F1` for the keywords and additions to get all the details in the ABAP Keyword Documentation.
-  - Further information in the context of Standard ABAP: [Release-Dependent Syntax Check Modes (F1 docu for standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenabap_sql_strict_modes.htm).
+  - Further information in the context of Standard ABAP: [Release-Dependent Syntax Check Modes (F1 docu for standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abenabap_sql_strict_modes.html).
 - To mention some examples of modern ABAP SQL statements.
   - The `INTO` clause should be placed after the other clauses. 
   - [Host variables](https://help.sap.com/docs/abap-cloud/abap-keyword/host-variable) or [host expressions](https://help.sap.com/docs/abap-cloud/abap-keyword/host-expression) are required for data objects and expressions, i. e. they must be preceded by `@` or `@( ... )`. Host variables represent data objects that are declared in ABAP programs. They are specified in an [operand position](https://help.sap.com/docs/abap-cloud/abap-keyword/operand-position) of an ABAP SQL statement. Also see the [SQL Operands](#sql-operands) section.
@@ -3984,7 +3984,7 @@ SELECT SINGLE
     "SELECT * FROM zdemo_abap_carr WHERE mandt = '123' INTO TABLE @DATA(itab2).
     ```  
 
-- However, in classic ABAP, not in ABAP Cloud, you can use the [`USING CLIENT` (F1 docu for Standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapselect_client.htm) addition that modifies this default behavior. It disables implicit client handling.
+- However, in classic ABAP, not in ABAP Cloud, you can use the [`USING CLIENT` (F1 docu for Standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abapselect_client.html) addition that modifies this default behavior. It disables implicit client handling.
   - With the addition, you can specify other clients from which to retrieve data. Find more information in the ABAP Keyword Documentation.
   - You may also stumble on the `CLIENT SPECIFIED` addition. It is obsolete, only `USING CLIENT` should be used.  
   - The following (classic ABAP only) code shows a variety of syntax options. Note that it uses a data source of the cheat sheet repository. For exploration, you may want to use another data source. You may also want to check the commands that are passed by the [ABAP SQL Interface](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-sql-interface) when activating the SQL trace (transaction ST05) to explore the use of another client ID and more. 

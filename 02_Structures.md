@@ -77,7 +77,7 @@ TYPES ty_struc_from_cds_ve TYPE zdemo_abap_fli.
 
 > [!NOTE] 
 > - This cheat sheet focuses on locally defined structures and structured types.
-> - Classic [DDIC views](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenddic_view_glosry.htm) are not available in [ABAP Cloud](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-cloud). They can only be used as structured types in [classic ABAP](https://help.sap.com/docs/abap-cloud/abap-keyword/classic-abap).
+> - Classic [DDIC views](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abenddic_view_glosry.html) are not available in [ABAP Cloud](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-cloud). They can only be used as structured types in [classic ABAP](https://help.sap.com/docs/abap-cloud/abap-keyword/classic-abap).
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
@@ -1934,7 +1934,7 @@ ENDCLASS.
   - `sy-tabix`: Row index of internal tables
   - `sy-index`: Loop pass index
 - These ones and others can be used in [ABAP for Cloud Development](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-for-cloud-development). However, most of the fields should not be used in ABAP for Cloud Development (indicated by a syntax warning) because they refer to [Standard ABAP](https://help.sap.com/docs/abap-cloud/abap-keyword/standard-abap) contexts (e.g. classic dynpros and lists), or their values are not relevant in a cloud context. 
-- More information about the purpose of the individual components is available at [ABAP System Fields (F1 documentation for Standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abensystem_fields.htm).
+- More information about the purpose of the individual components is available at [ABAP System Fields (F1 documentation for Standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abensystem_fields.html).
 
 
 The following example demonstrates a selection of ABAP system fields. It uses artifacts from the ABAP cheat sheet repository. Note the comments in the code because a syntax warning will be displayed when inserting the code in a demo class that uses ABAP for Cloud Development. It is meant to emphasize that multiple system fields should not be used in ABAP for Cloud Development.  

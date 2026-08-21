@@ -110,7 +110,7 @@ Field symbols ...
    - Consider there is a data object in your program. A field symbol is also available that is assigned the memory area of this data object. Accessing a field symbol is like accessing the [named data object](https://help.sap.com/docs/abap-cloud/abap-keyword/named-data-object) or part of the object itself.
 - do not reserve physical space in the [data area](https://help.sap.com/docs/abap-cloud/abap-keyword/data-area) of a program like a data object. Instead, they work as dynamic identifiers of a memory area in which a specific data object or part of an object is located.
 - can be typed either with [generic data types](https://help.sap.com/docs/abap-cloud/abap-keyword/generic-data-type) or [complete data types](https://help.sap.com/docs/abap-cloud/abap-keyword/complete-data-type). 
-- are declared using the statement [`FIELD-SYMBOLS`](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapfield-symbols.htm) or the [declaration operator](https://help.sap.com/docs/abap-cloud/abap-keyword/declaration-operator) [`FIELD-SYMBOL`](https://help.sap.com/docs/abap-cloud/abap-keyword/field-symbol-inline-declaration-for-field-symbols). Their names must be included between angle brackets.
+- are declared using the statement [`FIELD-SYMBOLS`](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abapfield-symbols.html) or the [declaration operator](https://help.sap.com/docs/abap-cloud/abap-keyword/declaration-operator) [`FIELD-SYMBOL`](https://help.sap.com/docs/abap-cloud/abap-keyword/field-symbol-inline-declaration-for-field-symbols). Their names must be included between angle brackets.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
@@ -831,7 +831,7 @@ DATA(ref4) = REF some_type( ... ).
 - can be created using the statement [`CREATE DATA`](https://help.sap.com/docs/abap-cloud/abap-keyword/create-data), the instance operator [`NEW`](https://help.sap.com/docs/abap-cloud/abap-keyword/new-instance-operator), or the addition [`NEW`](https://help.sap.com/docs/abap-cloud/abap-keyword/select-into-target) of the `INTO` clause in a `SELECT` statement. 
 
 > [!NOTE] 
-> The following snippet covers statically defined types. Data objects can also be created with `CREATE DATA` dynamically using dynamic type definitions (the type name is specified within a pair of parentheses) and type description objects ([`TYPE HANDLE` addition](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapcreate_data_handle.htm)) as shown further down. 
+> The following snippet covers statically defined types. Data objects can also be created with `CREATE DATA` dynamically using dynamic type definitions (the type name is specified within a pair of parentheses) and type description objects ([`TYPE HANDLE` addition](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abapcreate_data_handle.html)) as shown further down. 
 
 ```abap
 "CREATE DATA statements
@@ -870,6 +870,21 @@ CREATE DATA dref_2 TYPE zdemo_abap_carr.
 "Creating reference variable
 CREATE DATA dref_2 TYPE REF TO itab.
 
+"Excursion: CREATE DATA with reference to an object type
+CREATE DATA dref_2 TYPE REF TO zcl_demo_abap_objects.
+DATA(oref) = NEW zcl_demo_abap_objects( ).
+dref_2->* = oref.
+"Methods cannot be called using data reference variables.
+"dref_2->hallo_instance_method( ).
+"Using a cast expression and dereferencing the referenced object reference
+CAST zcl_demo_abap_objects( dref_2->* )->hallo_instance_method( ).
+"Accessing further components
+DATA(cast_oref_a) = CAST zcl_demo_abap_objects( dref_2->* ).
+DATA(str_a) = cast_oref_a->string.
+DATA(str_b) = cast_oref_a->another_string.
+cast_oref_a->me_ref_meth( IMPORTING e1 = DATA(str_c) e2 = DATA(str_d) ).
+DATA(res_a) = cast_oref_a->triple( 2 ).
+
 "NEW operator
 "- Works like CREATE DATA dref TYPE type statements and can 
 "  be used in general expression positions.
@@ -887,6 +902,20 @@ dref_3 = NEW #( 123 ).
 dref_3 = NEW i( 456 ).
 dref_4 = NEW zdemo_abap_carr( ). "not assigning any values
 dref_4 = NEW string( `hi` ).
+
+"Excursion regarding references to an object type (similar to above)
+"It is not possible to assing an object to a variable of type 
+"REF TO data directly.
+"dref_4 = NEW zcl_demo_abap_objects( ).
+"Using a reference type to an object type
+TYPES ref TYPE REF TO zcl_demo_abap_objects.
+dref_4 = NEW ref( NEW #( ) ).
+"Methods cannot be called using data reference variables.
+"dref_4->hallo_instance_method( ).
+"Casting
+CAST zcl_demo_abap_objects( dref_4->* )->hallo_instance_method( ).
+DATA(cast_oref2_b) = CAST zcl_demo_abap_objects( dref_4->* ).
+DATA(str_e) = cast_oref2_b->string.
 
 "Creating anonymous data objects inline
 "In doing so, you can omit a prior declaration of a variable.
@@ -1465,7 +1494,7 @@ it_ref = VALUE #( ( NEW i( 3 ) ) "Elementary type
 or a data reference variable? It depends on your use case. However, data
 reference variables are more powerful as far as their usage options are
 concerned, and they better fit into the modern (object-oriented) ABAP
-world. Recommended read: [Accessing Data Objects Dynamically (F1 docu for standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abendyn_access_data_obj_guidl.htm "Guideline").
+world. Recommended read: [Accessing Data Objects Dynamically (F1 docu for standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abendyn_access_data_obj_guidl.htm "Guideline").
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
@@ -1990,7 +2019,7 @@ ENDDO.
 - As shown above, you create anonymous data objects using `CREATE DATA` statements and assign the reference to the data object to a reference variable. 
 - You can dynamically specify the type name in parentheses. 
 - In addition to character-like data objects (such as literals and variables) for the type name specified in the parentheses, you can also use [absolute type names](https://help.sap.com/docs/abap-cloud/abap-keyword/absolute-type-name). 
-- You can also use type description objects and the [`TYPE HANDLE` addition](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapcreate_data_handle.htm) to create anonymous data objects dynamically. For this and the absolute names, find more information below in the section about RTTS.
+- You can also use type description objects and the [`TYPE HANDLE` addition](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abapcreate_data_handle.html) to create anonymous data objects dynamically. For this and the absolute names, find more information below in the section about RTTS.
 
 ``` abap
 *&---------------------------------------------------------------------*
@@ -2120,6 +2149,25 @@ CREATE DATA dref TYPE (absolute_name).
 "Getting a type description object. Find more information about RTTI below.
 DATA(tdo_elem) = cl_abap_elemdescr=>get_c( 4 ). "type c length 4
 CREATE DATA dref TYPE HANDLE tdo_elem.
+
+*&---------------------------------------------------------------------*
+*& Data creation error
+*&---------------------------------------------------------------------*
+
+"Data creation errors occur, for example, if an unkown type is used ...
+
+TRY.
+    CREATE DATA dref TYPE ('DOES_NOT_EXIST').
+  CATCH cx_sy_create_data_error.
+ENDTRY.
+
+"... or an object type. This only works with TYPE REF TO 
+TRY.
+    CREATE DATA dref TYPE ('ZCL_DEMO_ABAP_DYNAMIC_PROG').
+  CATCH cx_sy_create_data_error.
+ENDTRY.
+
+CREATE DATA dref TYPE REF TO ('ZCL_DEMO_ABAP_DYNAMIC_PROG').
 ```
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
@@ -3318,7 +3366,7 @@ CLASS zcl_demo_abap IMPLEMENTATION.
       RECEIVING
         text2 = str2.
 
-    "Instance method defining importing, exporting and changing parameters
+    "Instance method defining importing parameters and RAISING
     TRY.
         CALL METHOD oref->('IN_METH8')
           EXPORTING
@@ -4342,7 +4390,7 @@ Dynamic programming techniques can present a security risk, particularly when th
 
 It is crucial to perform checks and handle dynamic programming techniques cautiously when including external content. You can use the `CL_ABAP_DYN_PRG` class. If escaping is necessary, you can also and additionally use the built-in function `escape` (which is recommended). The following example illustrates a selection and highlights various aspects. 
 
-For more details, refer to the ABAP Keyword Documentation [here (Standard ABAP documentation)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abendynamic_programming_scrty.htm).
+For more details, refer to the ABAP Keyword Documentation [here (Standard ABAP documentation)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abendynamic_programming_scrty.html).
 
 To try the example out, create a demo class named `zcl_demo_abap`. If it already exists, reuse it. Otherwise, create a new class with a different name. Paste the code into it. If you choose a different class name, update the class name in the code snippet accordingly. After activation, choose *F9* in ADT to execute the class. The example uses  objects of the ABAP cheat sheets repository and is set up to display output in the console.
 It covers the following aspects: 
@@ -4784,7 +4832,7 @@ So, the
 [subclasses](https://help.sap.com/docs/abap-cloud/abap-keyword/subclass),
 for example, to deal with each kind of type.
 Working with this inheritance tree means making use of
-[casts](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abencast_glosry.htm "Glossary Entry"),
+[casts](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abencast_glosry.htm "Glossary Entry"),
 especially
 [downcasts](https://help.sap.com/docs/abap-cloud/abap-keyword/downcast) when retrieving information at runtime.
 Detailing out all the possibilities for the information retrieval and
@@ -8717,7 +8765,7 @@ ENDLOOP.
 - Type description objects are basically available for all types.
 - `CREATE DATA` and `ASSIGN` statements include the `HANDLE` addition after which you can specify references to type description objects so as to create or assign data objects dynamically.
   - The focus here is on creating anonymous data objects dynamically using `CREATE DATA` statements. Apart from using type description objects and the `HANDLE` addition, you can - as shown above - perform a dynamic creation of data objects using a type name specified dynamically (`CREATE DATA dref TYPE (some_type).`).
-  - After the [`HANDLE`](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapcreate_data_handle.htm) addition, a reference variable of the static type of class `CL_ABAP_DATADESCR` or its subclasses that points to a type description object are expected.
+  - After the [`HANDLE`](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abapcreate_data_handle.html) addition, a reference variable of the static type of class `CL_ABAP_DATADESCR` or its subclasses that points to a type description object are expected.
 
 The following examples show snippets that have already been covered in several sections above. 
 They use the following methods to get type description objects: 
@@ -9558,17 +9606,17 @@ ASSERT applies_to_dobj = abap_true.
 
 ## Excursion: Dynamic Program Development in Standard ABAP 
 
-- [Standard ABAP](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenstandard_abap_glosry.htm) includes language elements that allow for the dynamic creation and maintenance of program source code.
+- [Standard ABAP](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abenstandard_abap_glosry.html) includes language elements that allow for the dynamic creation and maintenance of program source code.
 - Creating executable code using dynamic programming techniques can be risky, especially when source code is determined at runtime or involves external data or user input. Therefore, these techniques should be used only in exceptional cases and require thorough validation and checks.
-- In [ABAP for Cloud Development](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenabap_for_cloud_dev_glosry.htm), you can access and modify source code using classes available in the XCO library. Refer to the [Released ABAP Classes](22_Released_ABAP_Classes.md) ABAP cheat sheet for examples.
+- In [ABAP for Cloud Development](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abenabap_for_cloud_dev_glosry.html), you can access and modify source code using classes available in the XCO library. Refer to the [Released ABAP Classes](22_Released_ABAP_Classes.md) ABAP cheat sheet for examples.
 
 
 > [!CAUTION]
 > - Dynamic programming techniques can pose serious security risks if used improperly. Always carefully check any dynamic content from external sources before incorporating it into dynamic statements. Prevent the injection of harmful ABAP code into programs, especially when using `GENERATE SUBROUTINE POOL` and `INSERT REPORT` statements, as they can create executable ABAP code.
 > - When using ABAP statements to manipulate source code, apply them cautiously. These statements do not include inherent authorization checks, so developers must implement these checks. For example, use appropriate `AUTHORITY-CHECK` statements. Potential checks include verifying the current user's development authorization or determining if the current system is a development or production environment.
 > - Find more information (note that the links refer to Standard ABAP) about:
->   - [Dynamic program development](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenabap_language_dynamic.htm) and [security](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abengeneric_prog_scrty.htm) in the ABAP Keyword Documentation.
->   - the ABAP authorization concept in the [ABAP Keyword Documentation](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenbc_authority_check.htm) and in the [SAP Help Portal](https://help.sap.com/docs/ABAP_PLATFORM_NEW/ad77b44570314f6d8c3a8a807273084c/4f4decf806b02892e10000000a42189b.html?locale=en-US).
+>   - [Dynamic program development](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abenabap_language_dynamic.html) and [security](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abengeneric_prog_scrty.html) in the ABAP Keyword Documentation.
+>   - the ABAP authorization concept in the [ABAP Keyword Documentation](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abenbc_authority_check.html) and in the [SAP Help Portal](https://help.sap.com/docs/ABAP_PLATFORM_NEW/ad77b44570314f6d8c3a8a807273084c/4f4decf806b02892e10000000a42189b.html?locale=en-US).
 > - The code examples are primarily intended to visualize the syntax and semantics of ABAP statements. They are not best practices or recommended implementations and are not meant to solve concrete programming tasks. Refer to the repository's [disclaimer](./README.md#%EF%B8%8F-disclaimer).
 
 <br>
@@ -9597,9 +9645,9 @@ ASSERT applies_to_dobj = abap_true.
 - Performs a syntax check for source code in internal tables.
 - For examples like `GENERATE SUBROUTINE POOL`, the syntax check occurs when these statements are executed.
 - Use the `PROGRAM` and `DIRECTORY ENTRY` options (with the specified data object matching the `TRDIR` database table structure) to set properties for the syntax check. At least one must be specified.
-- Find more information [here](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapsyntax-check_for_itab.htm).
+- Find more information [here](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abapsyntax-check_for_itab.html).
 
-The example executable program includes several `SYNTAX-CHECK` statements. The examples include a syntax check with and without error found. Plus, an example represents a demo implementation to check ABAP for Cloud Development readiness. To check out the code - ⚠️ you are aware of the security risks associated with dynamic programming techniques - you can create a demo executable program called `ZDEMO_ABAP_REPORT_DYNAMIC_PROG` in your sandbox environment and choose `F8` to execute it. The example is designed to write the content of data objects to a [classic list](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenclassic_list_glosry.htm) using `WRITE` statements.
+The example executable program includes several `SYNTAX-CHECK` statements. The examples include a syntax check with and without error found. Plus, an example represents a demo implementation to check ABAP for Cloud Development readiness. To check out the code - ⚠️ you are aware of the security risks associated with dynamic programming techniques - you can create a demo executable program called `ZDEMO_ABAP_REPORT_DYNAMIC_PROG` in your sandbox environment and choose `F8` to execute it. The example is designed to write the content of data objects to a [classic list](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abenclassic_list_glosry.html) using `WRITE` statements.
 
 <details>
   <summary>🟢 Click to expand for example code</summary>
@@ -9838,7 +9886,7 @@ START-OF-SELECTION.
 - Reads the active source code of an ABAP program into an internal table.
 - The internal table's line type must be long enough to fit the longest code line.
 
-The example executable program includes several `READ REPORT` statements to read the source code of executable programs, classes and method implementations. To check out the code, you can create a demo executable program called `ZDEMO_ABAP_REPORT_DYNAMIC_PROG` in your sandbox environment and choose `F8` to execute it. The example is designed to write the content of data objects to a [classic list](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenclassic_list_glosry.htm) using `WRITE` statements.
+The example executable program includes several `READ REPORT` statements to read the source code of executable programs, classes and method implementations. To check out the code, you can create a demo executable program called `ZDEMO_ABAP_REPORT_DYNAMIC_PROG` in your sandbox environment and choose `F8` to execute it. The example is designed to write the content of data objects to a [classic list](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abenclassic_list_glosry.html) using `WRITE` statements.
 
 <details>
   <summary>🟢 Click to expand for example code</summary>
@@ -10015,14 +10063,14 @@ ENDLOOP.
 
  <td> 
 
-- Generates temporary [subroutine pools](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abensubroutine_pool_glosry.htm).
+- Generates temporary [subroutine pools](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abensubroutine_pool_glosry.html).
 - Takes source code for the subroutine pool from an internal table.
   - Internal table properties: Must have a character-like line type with a maximum of 255 characters per line, no secondary table keys, and must include a statement to initiate a program (e.g., `PROGRAM.`).
   - If the internal table code contains a syntax error, the subroutine pool is not generated. Specify additions for error handling (e.g., `MESSAGE` or `WORD`) to analyze syntax and generation errors.
 - After `NAME`, specify a character-like variable or declare a data object inline (e.g., using `DATA(var)`).
 - Note that subroutines are considered outdated for modularization. You might use a single subroutine with a local class.
 
-The example executable program includes several `GENERATE SUBROUTINE POOL` statements. To check out the code - ⚠️ you are aware of the security risks associated with dynamic programming techniques - you can create a demo executable program called `ZDEMO_ABAP_REPORT_DYNAMIC_PROG` in your sandbox environment and choose `F8` to execute it. The example is designed to write the content of data objects to a [classic list](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenclassic_list_glosry.htm) using `WRITE` statements.
+The example executable program includes several `GENERATE SUBROUTINE POOL` statements. To check out the code - ⚠️ you are aware of the security risks associated with dynamic programming techniques - you can create a demo executable program called `ZDEMO_ABAP_REPORT_DYNAMIC_PROG` in your sandbox environment and choose `F8` to execute it. The example is designed to write the content of data objects to a [classic list](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abenclassic_list_glosry.html) using `WRITE` statements.
 
 <details>
   <summary>🟢 Click to expand for example code</summary>
@@ -10233,7 +10281,7 @@ ENDIF.
 - Passes source code contained in an internal table to a specified ABAP program.
 - If the program exists, its source code is overwritten; otherwise, a new program is created with the specified name but is not assigned to a package. In this case, you must create an object directory entry.
 - Various additions are available to determine program properties.
-- Find more information in the [ABAP Keyword Documentation](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abapinsert_report.htm).
+- Find more information in the [ABAP Keyword Documentation](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abapinsert_report.html).
 
 
 > [!CAUTION]
@@ -10247,9 +10295,9 @@ ENDIF.
 >   - Conduct custom code scans to detect prohibited patterns, like forbidden statements in dynamically created source code.
 >   - Although not related to a checking mechanism, consider storing and backing up source code before making any overwrites.
 > - A thorough understanding of program structures, names, and include programs is essential when using the statement.
-> - For general information, check the [Security Notes](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenabap_security.htm) in the ABAP Keyword Documentation.
+> - For general information, check the [Security Notes](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abenabap_security.html) in the ABAP Keyword Documentation.
 
-The following example programs use `INSERT REPORT` statements. To check out the code - ⚠️ you are aware of the security risks associated with dynamic programming techniques - create a demo executable program named `ZDEMO_ABAP_REPORT_DYNAMIC_PROG` in your sandbox environment if you have not done so. The example modifies source code and is configured to write data object content to a [classic list](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenclassic_list_glosry.htm) using `WRITE` statements. To run the program, choose `F8`. The `CL_DEMO_OUTPUT` class displays the output of the original source code as a backup. Close the output window. The list will then be displayed with content output using the `WRITE` statements. *Example 1* is similar to *Example 2*, but *Example 2* includes demo implementations regarding considerations for potential authorization and security checks. Make sure that you devise your own solutions for your specific use cases.
+The following example programs use `INSERT REPORT` statements. To check out the code - ⚠️ you are aware of the security risks associated with dynamic programming techniques - create a demo executable program named `ZDEMO_ABAP_REPORT_DYNAMIC_PROG` in your sandbox environment if you have not done so. The example modifies source code and is configured to write data object content to a [classic list](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abenclassic_list_glosry.html) using `WRITE` statements. To run the program, choose `F8`. The `CL_DEMO_OUTPUT` class displays the output of the original source code as a backup. Close the output window. The list will then be displayed with content output using the `WRITE` statements. *Example 1* is similar to *Example 2*, but *Example 2* includes demo implementations regarding considerations for potential authorization and security checks. Make sure that you devise your own solutions for your specific use cases.
 
 <details>
   <summary>🟢 Example 1</summary>
@@ -10559,7 +10607,7 @@ ENDIF.
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ## More Information
-It is recommended that you consult the [Dynamic Programming Techniques (F1 docu for standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abendynamic_prog_technique_gdl.htm) section in the ABAP Keyword Documentation since it provides important aspects that should be considered when dealing with dynamic programming in general (e. g. security aspects or runtime error prevention).
+It is recommended that you consult the [Dynamic Programming Techniques (F1 docu for standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abendynamic_prog_technique_gdl.html) section in the ABAP Keyword Documentation since it provides important aspects that should be considered when dealing with dynamic programming in general (e. g. security aspects or runtime error prevention).
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 

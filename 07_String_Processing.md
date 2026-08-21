@@ -100,7 +100,7 @@ These data types are not covered further in this cheat sheet. Note that there ar
 - **Length**: Theoretically, a text string can use up to 2 GB (one character occupies 2 bytes).
     The maximum length of a text field is 262143 characters.
 - **Trailing blanks**: For text strings, trailing blanks are preserved in all operations. For text fields, it depends on the [operand
-    position](https://help.sap.com/docs/abap-cloud/abap-keyword/operand-position) whether trailing blanks are respected or not. In most operand positions, trailing blanks are truncated when working with text fields, even when using [text field literals](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abentext_field_literal_glosry.htm). For example, if a text field is assigned to a text string, the resulting target string will never contain trailing blanks. See the *Condensing Strings* section in this context.
+    position](https://help.sap.com/docs/abap-cloud/abap-keyword/operand-position) whether trailing blanks are respected or not. In most operand positions, trailing blanks are truncated when working with text fields, even when using [text field literals](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abentext_field_literal_glosry.html). For example, if a text field is assigned to a text string, the resulting target string will never contain trailing blanks. See the *Condensing Strings* section in this context.
 - **Flexibility**: Text strings are more flexible than text fields
     because you can easily shorten or lengthen them without
     worrying that, for example, parts of the character string will be
@@ -123,7 +123,7 @@ The following code snippet shows a global class implementing the interface `if_o
   - In the case below, the data type of the character literals are defined by the delimiters.
 - Text string literals are enclosed in backquotes (<code>\`...\`</code>) and have the data type `string`. 
 - Text field literals are enclosed in single quotes (`'...'`) and have the data type `c`. 
-- The literals can be (but should not according to the [programming guidelines on literals (F1 docu for standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenliterals_guidl.htm)) used like constants of these types in [operand positions](https://help.sap.com/docs/abap-cloud/abap-keyword/operand-position). They should be only used for start values when declaring [named data objects](https://help.sap.com/docs/abap-cloud/abap-keyword/named-data-object).
+- The literals can be (but should not according to the [programming guidelines on literals (F1 docu for standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abenliterals_guidl.html)) used like constants of these types in [operand positions](https://help.sap.com/docs/abap-cloud/abap-keyword/operand-position). They should be only used for start values when declaring [named data objects](https://help.sap.com/docs/abap-cloud/abap-keyword/named-data-object).
 
 ```abap
 CLASS zcl_demo_abap DEFINITION PUBLIC FINAL CREATE PUBLIC.
@@ -2927,4 +2927,4 @@ ENDCLASS.
 >     - Searching and replacing
 >     - Regular expressions 
 > - The steps to import and run the code are outlined [here](README.md#-getting-started-with-the-examples).
-> - [Disclaimer](./README.md#%EF%B8%8F-disclaimer)
+> - [Disclaimer](./README.md#%EF%B8%8F-disclaimer)

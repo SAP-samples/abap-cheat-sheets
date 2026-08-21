@@ -110,7 +110,7 @@ is very handy in this context. You can construct a new data object (for example,
 values in one go.
 - In case of [deep](https://help.sap.com/docs/abap-cloud/abap-keyword/deep-structure)
 and [nested structures](https://help.sap.com/docs/abap-cloud/abap-keyword/nested-structure)
-or [deep tables](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abendeep_table_glosry.htm "Glossary Entry"),
+or [deep tables](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abendeep_table_glosry.htm "Glossary Entry"),
 the use of `VALUE` expressions is handy, too, because you can create corresponding values in place.
 
 The following table illustrates a variety of syntax options and aspects regarding the `VALUE` operator. 
@@ -2933,4 +2933,4 @@ ASSERT duplicates_sql = duplicates_value_reduce.
 
 > [!NOTE] 
 > - The steps to import and run the code are outlined [here](README.md#-getting-started-with-the-examples).
-> - [Disclaimer](./README.md#%EF%B8%8F-disclaimer)
+> - [Disclaimer](./README.md#%EF%B8%8F-disclaimer)

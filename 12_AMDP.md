@@ -223,7 +223,7 @@ ENDMETHOD.
 
 Note:
 
--   In [ABAP for Cloud Development](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenabap_for_sap_cloud_glosry.htm) (i.e. the [restricted ABAP language version](https://help.sap.com/docs/abap-cloud/abap-keyword/restricted-abap-language-version)
+-   In [ABAP for Cloud Development](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abenabap_for_sap_cloud_glosry.html) (i.e. the [restricted ABAP language version](https://help.sap.com/docs/abap-cloud/abap-keyword/restricted-abap-language-version)
     scope), only reads are allowed. Hence, the addition `OPTIONS READ-ONLY` is mandatory. Furthermore, you must make sure
     that the database objects that are specified after `USING` are accessible.
 -   Generally, in [Standard ABAP](https://help.sap.com/docs/abap-cloud/abap-keyword/standard-abap) (i.e. the [unrestricted ABAP language
@@ -845,7 +845,7 @@ To ensure client safety, the following prerequisites must be met.
 ## More Information 
 
 - AMDP in ABAP for Cloud Development: [ABAP Keyword Documentation (ABAP for Cloud Development)](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-managed-database-procedures-amdp)
-- AMDP in Standard ABAP: [ABAP Keyword Documentation (Standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenamdp.htm)
+- AMDP in Standard ABAP: [ABAP Keyword Documentation (Standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abenamdp.html)
     > [!TIP]
     > Checking if AMDP is supported in classic ABAP: 
     >    ```abap

@@ -57,7 +57,7 @@ modern features. All you have to do, is to understand some concepts and
 learn some additional syntax and then you can start right away.
 
 > [!NOTE]
-> The examples in this cheat sheet are only relevant for [standard ABAP](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/index.htm?file=abenstandard_abap_glosry.htm), i. e. the unrestricted ABAP language scope. Find the artifacts used in the code snippets in your on-premise ABAP system.
+> The examples in this cheat sheet are only relevant for [standard ABAP](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abenstandard_abap_glosry.html), i. e. the unrestricted ABAP language scope. Find the artifacts used in the code snippets in your on-premise ABAP system.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
@@ -721,4 +721,4 @@ can check that the calculated values are correct.
 
 
 ## More Information
-For the complete reference documentation about SQL hierarchies, see [`SELECT, FROM hierarchy_data`](https://help.sap.com/docs/abap-cloud/abap-keyword/select-from-hierarchy-data).
+For the complete reference documentation about SQL hierarchies, see [`SELECT, FROM hierarchy_data`](https://help.sap.com/docs/abap-cloud/abap-keyword/select-from-hierarchy-data).
