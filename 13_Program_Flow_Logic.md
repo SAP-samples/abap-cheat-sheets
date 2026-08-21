@@ -873,10 +873,624 @@ Special function modules exist in [Standard ABAP](https://help.sap.com/doc/abapd
 
 ### Subroutines in Standard ABAP
 
-- Obsolete procedures you may find in older ABAP programs. Before ABAP Objects was introduced, subroutines were mainly used for local modularization.
-- They are implemented between the statements `FORM` and `ENDFORM`.
-- Called using `PERFORM` statements
+- Subroutines are **obsolete** procedures you may find in older ABAP programs.
+- They can be defined in any ABAP program, type pool, class pool, or interface pool.  
+- Logic is implemented between the `FORM` and `ENDFORM` statements.  
+- A subroutine is declared when it is implemented.  
+- It has a special parameter interface, including formal parameters specified after `USING` and `CHANGING`. These formal parameters are positional, meaning actual arguments are passed based on their position in the calling statement.  
+- You call them using `PERFORM` statement (as well as subroutines in other programs).  
 - Find more information [here](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abenabap_subroutines.html). The [SAP LUW cheat sheet example](17_SAP_LUW.md) also uses subroutines in the context of an SAP LUW (these subroutines are called using `PERFORM ... ON COMMIT` and `... ROLLBACK`).
+
+
+Expand the following collapsible sections for example code. To try the examples out, create a demo program and paste the code into it. After activation, choose *F8* to execute the program. The only purpose is to give an idea of the functionality.
+
+
+<details>
+  <summary>🟢 Example 1 (Syntax options for creating and calling subroutines)</summary>
+  <!-- -->
+
+<br>
+
+
+The following demo program illustrates various syntax options for creating and calling subroutines, including:  
+- `FORM` and `ENDFORM` statements: Creating subroutines without parameters, with parameters specified after `USING`, and with parameters specified after both `USING` and `CHANGING`.  
+- `PERFORM` statements: Calling subroutines (with and without parameters), using the `IN PROGRAM` addition (the program uses a potentially non-existing program and the current program via `sy-repid`), and the `IF FOUND` additions, as well as dynamic specifications and selecting a subroutine from the list of subroutines in the current program.  
+
+<br>
+
+```abap
+PROGRAM.
+
+DATA number1 TYPE i VALUE 10.
+DATA number2 TYPE i VALUE 20.
+DATA number3 TYPE i VALUE 30.
+DATA result TYPE i VALUE 30.
+DATA prog LIKE sy-repid VALUE sy-repid.
+
+START-OF-SELECTION.
+
+  PERFORM subroutine1.
+
+  PERFORM subroutine2 USING number1
+                            number2
+                            number3.
+
+  PERFORM subroutine3 USING number1
+                            number2
+                      CHANGING result.
+
+  "IF FOUND: Preventing an exception if the subroutine is
+  "not found in the program.
+  PERFORM subroutine4 IN PROGRAM demo_abap_report IF FOUND.
+
+  "Without IF FOUND, using a TRY control structure to catch the exception
+  "if the subroutine is not found in the program.
+  TRY.
+      PERFORM subroutine4 IN PROGRAM demo_abap_report.
+    CATCH cx_sy_program_not_found INTO DATA(error).
+      WRITE / error->get_text( ).
+      SKIP.
+  ENDTRY.
+
+  PERFORM subroutine4 IN PROGRAM (prog).
+  PERFORM ('SUBROUTINE4') IN PROGRAM (prog).
+
+  PERFORM subroutine5 USING prog.
+  PERFORM subroutine5 IN PROGRAM demo_abap_report IF FOUND USING prog.
+  PERFORM subroutine5 IN PROGRAM (prog) USING prog.
+  PERFORM ('SUBROUTINE5') IN PROGRAM (prog) USING prog.
+
+  "Selecting a subroutine from a list of subroutines of the current program
+  "It is only possible to specify subroutines without parameter list.
+  PERFORM 1 OF subroutine1 subroutine4.
+  PERFORM 2 OF subroutine1 subroutine4.
+
+  DO.
+    TRY.
+        PERFORM sy-index OF subroutine1 subroutine4.
+      CATCH cx_sy_dyn_call_illegal_form INTO DATA(err).
+        WRITE / err->get_text( ).
+        EXIT.
+    ENDTRY.
+  ENDDO.
+
+*&---------------------------------------------------------------------*
+*& Subroutines
+*&---------------------------------------------------------------------*
+
+FORM subroutine1.
+  WRITE / |subroutine1 called at { utclong_current( ) }|.
+  SKIP.
+ENDFORM.
+
+FORM subroutine2
+  USING number1 TYPE i
+        number2 TYPE i
+        number3 TYPE i.
+  WRITE / |subroutine2 called at { utclong_current( ) }|.
+  WRITE / |number1 = '{ number1 }', number2 = '{ number2 }', number1 = '{ number3 }'|.
+  SKIP.
+ENDFORM.
+
+FORM subroutine3
+  USING    number1 TYPE i
+           number2 TYPE i
+  CHANGING result  TYPE i.
+  WRITE / |subroutine3 called at { utclong_current( ) }|.
+  result = number1 + number2.
+  WRITE / |{ number1 } + { number2 } = { result }|.
+  SKIP.
+ENDFORM.
+
+FORM subroutine4.
+  WRITE / |subroutine4 called at { utclong_current( ) }|.
+  SKIP.
+ENDFORM.
+
+FORM subroutine5
+USING prog LIKE sy-repid.
+  WRITE / |subroutine5 of program { prog } called at { utclong_current( ) }|.
+  SKIP.
+ENDFORM.
+```
+
+
+</details>  
+
+<br>
+
+<details>
+  <summary>🟢 Example 2 (Calculator example using various forms)</summary>
+  <!-- -->
+
+<br>
+
+The following demo program illustrates the use of obsolete subroutines and related syntax in the context of a basic calculator: 
+- It allows users to perform standard arithmetic operations (addition, subtraction, multiplication, and division) on two input numbers. 
+- The program tracks and displays a history of all calculations and maintains statistics for each operation type. 
+- Users can use the result of the previous calculation as the first input for a new operation.
+  - This is enabled by storing data in the ABAP memory so that it can be reused between runs of the report. For that purpose, `IMPORT` and `EXPORT` statement are included.
+- The calculation history can appear as either a classic list or an ALV grid. You can also select the option to clear the calculation history.
+
+<br>
+
+```abap
+PROGRAM.
+
+*&---------------------------------------------------------------------*
+*& Program-global types and data objects
+*&---------------------------------------------------------------------*
+DATA:
+  operator          TYPE c LENGTH 1,
+  result            TYPE decfloat34,
+  last_result       TYPE decfloat34,
+  calculation_count TYPE i,
+  additions         TYPE i,
+  subtractions      TYPE i,
+  multiplications   TYPE i,
+  divisions         TYPE i,
+  alv               TYPE REF TO cl_salv_table,
+  operators         TYPE vrm_values.
+
+"Calculation history
+TYPES:
+  BEGIN OF history,
+    calculation_no TYPE i,
+    number1        TYPE decfloat34,
+    operator       TYPE c LENGTH 1,
+    number2        TYPE decfloat34,
+    result         TYPE decfloat34,
+    calculation    TYPE string,
+    date           TYPE sy-datum,
+    time           TYPE sy-uzeit,
+  END OF history.
+
+DATA history TYPE STANDARD TABLE OF history WITH EMPTY KEY.
+
+*&---------------------------------------------------------------------*
+*& Selection screen
+*&---------------------------------------------------------------------*
+
+SELECTION-SCREEN BEGIN OF BLOCK calculator WITH FRAME TITLE title1.
+  SELECTION-SCREEN BEGIN OF LINE.
+    SELECTION-SCREEN COMMENT 1(20) cnum1.
+    PARAMETERS number1 TYPE decfloat34.
+  SELECTION-SCREEN END OF LINE.
+  SELECTION-SCREEN SKIP.
+  SELECTION-SCREEN BEGIN OF LINE.
+    SELECTION-SCREEN COMMENT 1(20) cop.
+    PARAMETERS op TYPE c LENGTH 1 AS LISTBOX VISIBLE LENGTH 20.
+  SELECTION-SCREEN END OF LINE.
+  SELECTION-SCREEN SKIP.
+  SELECTION-SCREEN BEGIN OF LINE.
+    SELECTION-SCREEN COMMENT 1(20) cnum2.
+    PARAMETERS number2 TYPE decfloat34.
+  SELECTION-SCREEN END OF LINE.
+SELECTION-SCREEN END OF BLOCK calculator.
+SELECTION-SCREEN BEGIN OF BLOCK options WITH FRAME TITLE title2.
+  SELECTION-SCREEN BEGIN OF LINE.
+    PARAMETERS use_last TYPE abap_boolean AS CHECKBOX DEFAULT abap_false.
+    SELECTION-SCREEN COMMENT 4(55) cuselast.
+  SELECTION-SCREEN END OF LINE.
+  SELECTION-SCREEN BEGIN OF LINE.
+    PARAMETERS use_alv TYPE abap_boolean AS CHECKBOX DEFAULT abap_false.
+    SELECTION-SCREEN COMMENT 4(55) cusealv.
+  SELECTION-SCREEN END OF LINE.
+  SELECTION-SCREEN BEGIN OF LINE.
+    PARAMETERS clearhis TYPE abap_boolean AS CHECKBOX DEFAULT abap_false.
+    SELECTION-SCREEN COMMENT 4(55) cclrhis.
+  SELECTION-SCREEN END OF LINE.
+SELECTION-SCREEN END OF BLOCK options.
+
+*&---------------------------------------------------------------------*
+*& INITIALIZATION event block
+*&---------------------------------------------------------------------*
+
+INITIALIZATION.
+  "Selection screen texts
+  title1   = 'Calculator'.
+  title2   = 'Options'.
+  cnum1    = 'First number'.
+  cop      = 'Operator'.
+  cnum2    = 'Second number'.
+  cuselast = 'Use last result as Number 1'.
+  cusealv  = 'Display history as ALV grid'.
+  cclrhis  = 'Clear calculation history'.
+
+  operators = VALUE #(
+      ( key = '+' text = '+' )
+      ( key = '-' text = '-' )
+      ( key = '*' text = '*' )
+      ( key = '/' text = '/' )
+    ).
+  CALL FUNCTION 'VRM_SET_VALUES'
+    EXPORTING
+      id     = 'OP'
+      values = operators.
+
+*&---------------------------------------------------------------------*
+*& AT SELECTION-SCREEN OUTPUT event block
+*&---------------------------------------------------------------------*
+
+AT SELECTION-SCREEN OUTPUT.
+
+  "The example includes the functionality to store the last result
+  "of a calculation and other information. This data is stored in the
+  "ABAP memory so that they can be reused between runs of the report.
+  "When the 'use_last' checkbox is selected, returning to the selection
+  "screen initializes the operator and number 2, and number 1 is
+  "initialized with the last result.
+  IMPORT
+    last_result       = last_result
+    calculation_count = calculation_count
+    additions         = additions
+    subtractions      = subtractions
+    multiplications   = multiplications
+    divisions         = divisions
+    history           = history
+    FROM MEMORY ID 'DEMO_MEM_ID'.
+
+  IF sy-subrc = 0.
+    IF calculation_count > 0 AND use_last = abap_true.
+      number1 = last_result.
+      CLEAR: op, number2.
+    ELSE.
+      CLEAR: op, number1, number2.
+    ENDIF.
+  ENDIF.
+
+*&---------------------------------------------------------------------*
+*& AT SELECTION-SCREEN event block
+*&---------------------------------------------------------------------*
+
+AT SELECTION-SCREEN.
+
+  IF op IS INITIAL.
+    MESSAGE 'Please select an operator.' TYPE 'E'.
+  ENDIF.
+
+  IF op = '/' AND number2 = 0.
+    MESSAGE 'Division by zero is not allowed.' TYPE 'E'.
+  ENDIF.
+
+*&---------------------------------------------------------------------*
+*& START-OF-SELECTION event block
+*&---------------------------------------------------------------------*
+
+START-OF-SELECTION.
+
+  PERFORM get_data.
+  PERFORM clear_history.
+  PERFORM calculate USING number1
+                          number2
+                    CHANGING result.
+  PERFORM save_history USING number1
+                             number2
+                             result.
+  PERFORM save_state.
+
+  "The example includes the functionality to display the calculation
+  "history in an ALV grid if the 'use_alv' checkbox is selected.
+  "Otherwise, a classic list output is used to display the history
+  "and statistics.
+  IF use_alv = abap_true.
+    PERFORM display_history_alv.
+  ELSE.
+    PERFORM display_result.
+    PERFORM display_history.
+    PERFORM display_statistics.
+  ENDIF.
+
+*&---------------------------------------------------------------------*
+*& Subroutine get_data
+*&---------------------------------------------------------------------*
+
+FORM get_data.
+  operator = op.
+ENDFORM.
+
+*&---------------------------------------------------------------------*
+*& Subroutine save_state
+*&---------------------------------------------------------------------*
+
+"Persists the complete calculator state (history and statistics)
+"in the ABAP memory so that it is available with the next program runs.
+
+FORM save_state.
+  EXPORT
+    last_result       = last_result
+    calculation_count = calculation_count
+    additions         = additions
+    subtractions      = subtractions
+    multiplications   = multiplications
+    divisions         = divisions
+    history           = history
+    TO MEMORY ID 'DEMO_MEM_ID'.
+ENDFORM.
+
+*&---------------------------------------------------------------------*
+*& Subroutine clear_history
+*&---------------------------------------------------------------------*
+
+FORM clear_history.
+  IF clearhis = abap_true.
+    CLEAR: history,
+          calculation_count,
+          additions,
+          subtractions,
+          multiplications,
+          divisions,
+          last_result,
+          alv.
+    clearhis = abap_false.
+
+    "Clearing the stored data
+    FREE MEMORY ID 'DEMO_MEM_ID'.
+  ENDIF.
+ENDFORM.
+
+*&---------------------------------------------------------------------*
+*& Subroutine calculate
+*&---------------------------------------------------------------------*
+
+"Perfoms the calculation based on the selected operator and input numbers.
+FORM calculate
+  USING    number1 TYPE decfloat34
+           number2 TYPE decfloat34
+  CHANGING result  TYPE decfloat34.
+  CLEAR result.
+  TRY.
+      CASE operator.
+        WHEN '+'.
+          result = number1 + number2.
+          additions += 1.
+        WHEN '-'.
+          result = number1 - number2.
+          subtractions += 1.
+        WHEN '*'.
+          result = number1 * number2.
+          multiplications += 1.
+        WHEN '/'.
+          result = number1 / number2.
+          divisions += 1.
+        WHEN OTHERS.
+          MESSAGE 'Invalid operator.' TYPE 'E'.
+      ENDCASE.
+    CATCH cx_sy_arithmetic_error INTO DATA(error).
+      MESSAGE error->get_text( ) TYPE 'E'.
+  ENDTRY.
+  last_result = result.
+  calculation_count += 1.
+ENDFORM.
+
+*&---------------------------------------------------------------------*
+*& Subroutine save_history
+*&---------------------------------------------------------------------*
+
+FORM save_history
+  USING number1 TYPE decfloat34
+        number2 TYPE decfloat34
+        result  TYPE decfloat34.
+
+  DATA(calculation) = |{ number1 } { operator } { number2 } = { result }|.
+
+  APPEND VALUE #( calculation_no = calculation_count
+                  number1        = number1
+                  operator       = operator
+                  number2        = number2
+                  result         = result
+                  calculation    = calculation
+                  date           = sy-datum
+                  time           = sy-uzeit ) TO history.
+ENDFORM.
+
+*&---------------------------------------------------------------------*
+*& Subroutine display_result
+*&---------------------------------------------------------------------*
+
+"Used to display the result of the calculation in a classic list
+FORM display_result.
+  DATA(calculation) = |{ number1 } { operator } { number2 } = { result }|.
+
+  "Input
+  FORMAT COLOR COL_NORMAL.
+  WRITE: / |  Number 1    : { number1 }|.
+  WRITE: / |  Operator    : { operator }|.
+  WRITE: / |  Number 2    : { number2 }|.
+  FORMAT RESET.
+
+  "Result
+  WRITE: /.
+  FORMAT COLOR COL_POSITIVE INTENSIFIED ON.
+  WRITE: / |  RESULT      : { result }|.
+  FORMAT RESET.
+
+  IF use_last = abap_true.
+    WRITE: /.
+    WRITE: / '  The result will be available as Number 1 value when going back.'.
+  ENDIF.
+  WRITE: /.
+ENDFORM.
+
+*&---------------------------------------------------------------------*
+*& Subroutine display_history
+*&---------------------------------------------------------------------*
+
+"Used to display the history in a classic list output
+FORM display_history.
+  WRITE: /.
+  FORMAT COLOR COL_HEADING INTENSIFIED.
+  WRITE: / '  Calculation History'.
+  WRITE: / '  ==================='.
+  FORMAT RESET.
+  WRITE: /.
+  IF history IS INITIAL.
+    FORMAT COLOR COL_NEGATIVE INTENSIFIED.
+    WRITE: / '  No calculations available.'.
+    FORMAT RESET.
+    RETURN.
+  ENDIF.
+
+  "Table heading for the history
+  WRITE:
+      /(5) 'No.',
+        8    'Date',
+        20   'Time',
+        32   'Calculation'.
+  WRITE: / repeat( val = '-' occ = 80 ).
+
+  "Displaying the history table content
+  LOOP AT history INTO DATA(history_line).
+    IF history_line-calculation_no = calculation_count.
+      FORMAT COLOR COL_POSITIVE INTENSIFIED ON.
+    ELSE.
+      FORMAT COLOR COL_NORMAL.
+    ENDIF.
+
+    "Truncating the calculation if it would run past the screen.
+    "The calculation starts at column 32, so the available width is
+    "the list line size (sy-linsz) minus the leading columns. A
+    "too-long calculation is cut and the last 3 characters are
+    "replaced by 3 dots to indicate the truncation.
+    DATA(available) = sy-linsz - 31.
+    DATA(calculation) = history_line-calculation.
+    IF available > 3 AND strlen( calculation ) > available.
+      calculation = |{ substring( val = calculation
+                                  len = available - 3 ) }...|.
+    ENDIF.
+    WRITE: /(5) history_line-calculation_no,
+            8    history_line-date,
+            20   history_line-time,
+            32   calculation.
+    FORMAT RESET.
+  ENDLOOP.
+  WRITE: / repeat( val = '-' occ = 80 ).
+ENDFORM.
+
+*&---------------------------------------------------------------------*
+*& Subroutine display_history_alv
+*&---------------------------------------------------------------------*
+
+"Used to display the history in an ALV grid output
+FORM display_history_alv.
+  IF history IS INITIAL.
+    RETURN.
+  ENDIF.
+  PERFORM setup_alv.
+  alv->display( ).
+ENDFORM.
+
+*&---------------------------------------------------------------------*
+*& Subroutine setup_alv
+*&---------------------------------------------------------------------*
+
+"Used to set up the ALV grid output for the history display.
+"The ALV object is created and configured only once.
+FORM setup_alv.
+  IF alv IS BOUND.
+    RETURN.
+  ENDIF.
+  TRY.
+      cl_salv_table=>factory(
+              IMPORTING
+                r_salv_table = alv
+              CHANGING
+                t_table      = history
+            ).
+
+      "Using standard ALV functions
+      DATA(functions) = alv->get_functions( ).
+      functions->set_all( abap_true ).
+
+      "Column setup
+      DATA(columns) = alv->get_columns( ).
+      DATA(column) = columns->get_column( 'CALCULATION_NO' ).
+      column->set_short_text( 'No.' ).
+      column->set_medium_text( 'Calculation' ).
+      column->set_long_text(  'Calculation Number' ).
+
+      column = columns->get_column( 'NUMBER1' ).
+      column->set_short_text( 'Number 1' ).
+      column->set_medium_text( 'First Number' ).
+      column->set_long_text(  'First Number' ).
+
+      column = columns->get_column( 'OPERATOR' ).
+      column->set_short_text( 'Op.' ).
+      column->set_medium_text( 'Operator' ).
+      column->set_long_text(  'Arithmetic Operator' ).
+
+      column = columns->get_column( 'NUMBER2' ).
+      column->set_short_text( 'Number 2' ).
+      column->set_medium_text( 'Second Number' ).
+      column->set_long_text(  'Second Number' ).
+
+      column = columns->get_column( 'RESULT' ).
+      column->set_short_text( 'Result' ).
+      column->set_medium_text( 'Result' ).
+      column->set_long_text(  'Calculation Result' ).
+
+      column = columns->get_column( 'CALCULATION' ).
+      column->set_technical( abap_true ).
+
+      column = columns->get_column( 'DATE' ).
+      column->set_short_text( 'Date' ).
+      column->set_medium_text( 'Date' ).
+      column->set_long_text(  'Calculation Date' ).
+
+      column = columns->get_column( 'TIME' ).
+      column->set_short_text( 'Time' ).
+      column->set_medium_text( 'Time' ).
+      column->set_long_text(  'Calculation Time' ).
+
+      "Optimize columns
+      columns->set_optimize( abap_true ).
+
+      "Sort descending by calculation number so that the latest
+      "result is displayed first.
+      DATA(sorts) = alv->get_sorts( ).
+      sorts->add_sort( columnname = 'CALCULATION_NO'
+                       sequence   = if_salv_c_sort=>sort_down ).
+
+      "Display settings
+      DATA(display_settings) = alv->get_display_settings( ).
+      display_settings->set_list_header( |Calculation History - { calculation_count } calculations| ).
+    CATCH cx_root INTO DATA(error).
+      MESSAGE error->get_text( ) TYPE 'E'.
+  ENDTRY.
+ENDFORM.
+
+*&---------------------------------------------------------------------*
+*& Subroutine display_statistics
+*&---------------------------------------------------------------------*
+
+"Used to display the statistics in a classic list output
+FORM display_statistics.
+  WRITE: /.
+  FORMAT COLOR COL_HEADING INTENSIFIED.
+  WRITE: / '  Calculation Statistics'.
+  WRITE: / '  ======================'.
+  FORMAT RESET.
+  WRITE: /.
+  FORMAT COLOR COL_NORMAL.
+  WRITE: / '  Total calculations :', |{ calculation_count }|.
+  WRITE: / |  Additions          : { additions }  ( { COND decfloat34( WHEN calculation_count > 0
+                                                                       THEN CONV decfloat34( additions * 100 ) / calculation_count
+                                                                       ELSE 0 ) DECIMALS = 1 }% )|.
+  WRITE: / |  Subtractions       : { subtractions }  ( { COND decfloat34( WHEN calculation_count > 0
+                                                                          THEN CONV decfloat34( subtractions * 100 ) / calculation_count
+                                                                          ELSE 0 ) DECIMALS = 1 }% )|.
+  WRITE: / |  Multiplications    : { multiplications }  ( { COND decfloat34( WHEN calculation_count > 0
+                                                                             THEN CONV decfloat34( multiplications * 100 ) / calculation_count
+                                                                             ELSE 0 ) DECIMALS = 1 }% )|.
+  WRITE: / |  Divisions          : { divisions }  ( { COND decfloat34( WHEN calculation_count > 0
+                                                                       THEN CONV decfloat34( divisions * 100 ) / calculation_count
+                                                                       ELSE 0 ) DECIMALS = 1 }% )|.
+  FORMAT RESET.
+  WRITE: /.
+ENDFORM.
+```
+
+</details>  
 
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
