@@ -680,7 +680,7 @@ DO 2 TIMES.
 
         CLEANUP INTO cleanup_b.
           APPEND `#### Executing CLEANUP block ####` TO info_tab_b.
-          "USing RTTI to find out the absolute name of the class of the raised execption
+          "Using RTTI to find out the absolute name of the class of the raised execption
           DATA(cl_name) = cl_abap_classdescr=>get_class_name( p_object = cleanup_b ).
           APPEND cl_name TO info_tab_b.
           APPEND `d` TO strtab_b.

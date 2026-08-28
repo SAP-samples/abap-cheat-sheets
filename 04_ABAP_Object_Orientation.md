@@ -987,26 +987,32 @@ CLASS zcl_demo_abap DEFINITION
   PUBLIC SECTION.
     INTERFACES if_oo_adt_classrun.
 
+    "Partially generic structured type
+    TYPES ty_struc_part_gen TYPE ANY STRUCTURE CONTAINING comp1 TYPE i
+                                                          comp2 TYPE string.
+
     "Example method demonstrating the generic typing of formal parameters
     METHODS: meth IMPORTING
                     "Any data type
                     i_data           TYPE data
                     i_any            TYPE any
 
-                    "Character-like types
+                    "Elementary types
                     i_c              TYPE c         "Text field with a generic length
                     i_clike          TYPE clike     "Character-like (c, n, string, d, t, and character-like flat structures)
                     i_csequence      TYPE csequence "Text-like (c, string)
                     i_n              TYPE n         "Numeric text with generic length
                     i_x              TYPE x         "Byte field with generic length
                     i_xsequence      TYPE xsequence "Byte-like (x, xstring)
-
-                    "Numeric types
                     i_decfloat       TYPE decfloat "decfloat16 decfloat34
                     i_numeric        TYPE numeric  "Numeric (i, int8, p, decfloat16, decfloat34, f, (b, s))
                     i_p              TYPE p        "Packed number (generic length and number of decimal places)
 
-                    "Internal table types
+                    "Structured types
+                    i_any_struc      TYPE ANY STRUCTURE  "Fully generic structure
+                    i_part_gen_struc TYPE ty_struc_part_gen "Partially generic structure
+
+                    "Table types
                     i_any_table      TYPE ANY TABLE      "Internal table with any table type
                     i_hashed_table   TYPE HASHED TABLE
                     i_index_table    TYPE INDEX TABLE
@@ -1016,7 +1022,7 @@ CLASS zcl_demo_abap DEFINITION
 
                     "Other types
                     i_simple         TYPE simple "Elementary data type including enumerated types and
-                    "structured types with exclusively character-like flat components
+                                                 "structured types with exclusively character-like flat components
                   .
   PROTECTED SECTION.
   PRIVATE SECTION.
@@ -1049,6 +1055,28 @@ CLASS zcl_demo_abap IMPLEMENTATION.
             structure TYPE zdemo_abap_carr, "character-like flat structure
           END OF s.
 
+    "Data objects to demonstrate the partially generic structured type
+    		DATA: BEGIN OF s_demo1,
+    						comp1 TYPE i,
+    						comp2 TYPE string,
+    					END OF s_demo1.
+
+    DATA: BEGIN OF s_demo2,
+            comp1 TYPE i,
+            comp2 TYPE string,
+            comp3 TYPE c LENGTH 5,
+          END OF s_demo2.
+
+    DATA: BEGIN OF s_demo3,
+            comp2 TYPE i,
+            comp3 TYPE string,
+          END OF s_demo3.
+
+    DATA: BEGIN OF s_demo4,
+            comp1 TYPE i,
+            comp2 TYPE c LENGTH 5,
+          END OF s_demo4.
+
     "The following method call specifies various actual parameters for the
     "generic formal parameters.
     "Note the comments for allowed and not allowed example assignments of
@@ -1066,7 +1094,7 @@ CLASS zcl_demo_abap IMPLEMENTATION.
       "i_any = s-tab_std
       "i_any = s-xstr
 
-      "------------- Character-like types -------------
+      "------------- Elementary types -------------
       "--- c: Allowed (examples) ---
       i_c = s-c3
       "i_c = s-c10
@@ -1137,6 +1165,29 @@ CLASS zcl_demo_abap IMPLEMENTATION.
       "i_p = s-dec16
       "i_p = s-dec34
 
+      "------------- Structured types -------------
+      "--- any structure: Allowed ---
+      "Fully generic structure: Any structure can be assigned
+      i_any_struc = s
+      "i_any_struc = s-structure
+      "i_any_struc = s_demo1
+      "i_any_struc = s_demo2
+      "i_any_struc = s_demo3
+      "i_any_struc = s_demo4
+       "--- any structure: Not allowed (examples) ---
+      "i_any_struc = s-n4
+      "i_any_struc = s-tab_std
+
+      "--- Partially generic structure: Allowed ---
+      i_part_gen_struc = s_demo1
+      "i_part_gen_struc = s_demo2
+      "--- Partially generic structure: Not allowed (examples) ---
+      "i_part_gen_struc = s_demo3
+      "i_part_gen_struc = s_demo4
+      "i_part_gen_struc = s
+      "i_part_gen_struc = s-structure
+
+      "------------- Table types -------------
       "--- any table: Allowed ---
       i_any_table = s-tab_std
       "i_any_table = s-tab_ha
@@ -1172,6 +1223,8 @@ CLASS zcl_demo_abap IMPLEMENTATION.
       "i_table = s-tab_so
       "i_table = s-tab_ha
 
+      "------------- Other types -------------
+
      "--- simple: Allowed (examples) ---
       i_simple = s-structure
       "i_simple = s-c3
@@ -1183,8 +1236,13 @@ CLASS zcl_demo_abap IMPLEMENTATION.
       "--- simple: Not allowed (examples) ---
       "i_simple = s-tab_ha
       "i_simple = s-tab_so
+      "i_simple = s_demo1
+      "i_simple = s_demo2
+      "i_simple = s_demo3
+      "i_simple = s_demo4
+      "i_simple = s
 
-       ).
+     ).
 
   ENDMETHOD.
 
