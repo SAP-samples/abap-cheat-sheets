@@ -23,7 +23,7 @@
       - [Function Module Example](#function-module-example)
       - [Special Function Modules in Standard ABAP](#special-function-modules-in-standard-abap)
     - [Subroutines in Standard ABAP](#subroutines-in-standard-abap)
-    - [Excursion: RETURN](#excursion-return)
+    - [Exiting Procedures and Returning Values with RETURN](#exiting-procedures-and-returning-values-with-return)
   - [Interrupting the Program Execution with WAIT UP TO Statements](#interrupting-the-program-execution-with-wait-up-to-statements)
   - [Exceptions and Runtime Errors](#exceptions-and-runtime-errors)
   - [Executable Example](#executable-example)
@@ -252,7 +252,7 @@ ENDIF.
 ### `IF` Statements
 
 - As already shown above, `IF` statements define statement blocks that can be included in [branches](https://help.sap.com/docs/abap-cloud/abap-keyword/branch).
-- The statement blocks are executed depending on conditions.
+- The statement blocks are executed depending on conditions (i.e. logical expressions; find more information in the [Logical Expressions and Functions](37_Logical_Expressions_and_Functions.md) cheat sheet).
 - A maximum of one statement block is executed.
 - The check is carried out from top to bottom. The statement block after the first logical expression that is true is executed.
 - If none of the logical expressions are true, the statement block after the `ELSE` statement is executed.
@@ -536,7 +536,7 @@ ENDDO.
 ```abap
 DATA int_itab TYPE TABLE OF i WITH EMPTY KEY.
 
-WHILE lines( int_itab ) = 5.
+WHILE lines( int_itab ) < 5.
   int_itab = VALUE #( BASE int_itab ( sy-index ) ).
 ENDWHILE.
 
@@ -639,7 +639,7 @@ CALL FUNCTION func params.
 
 Example function module calls with parameter passing and exception handling: 
 ```abap
-"Handling non-class-based exception
+"Handling non-class-based exception when they are defined using EXCEPTIONS
 DATA it TYPE some_table_type.
 CALL FUNCTION 'SOME_FUNCTION_MODULE_A'
   EXPORTING
@@ -653,7 +653,7 @@ IF sy-subrc <> 0.
    ...
 ENDIF.
 
-"Handling class-based exception
+"Handling class-based exception when they are defined using RAISING
 TRY.
     CALL FUNCTION 'SOME_FUNCTION_MODULE_B'
       EXPORTING
@@ -867,22 +867,22 @@ Special function modules exist in [Standard ABAP](https://help.sap.com/doc/abapd
     - transactional 
       - transactional calls ([tRFC](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abentrfc_2_glosry.html)) are related to the concept of the SAP LUW. tRFC is considered obsolete.
       - Successor technology: Background RFC ([bgRFC](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abenbgrfc_glosry.html)), executed with the statement `CALL FUNCTION ... IN BACKGROUND UNIT`. Find more information [here](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abapcall_function_background_unit.html).
-      - The newer background Processing Framework ([bgPF](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abenbgpf_glosry.html)) encapsulates bgRFC to execute time-consuming methods asynchronously. Find more information [here](https://help.sap.com/docs/abap-cloud/abap-concepts/background-processing-framework).
+      - The newer background Processing Framework ([bgPF](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abenbgpf_glosry.html)) encapsulates bgRFC to execute time-consuming methods asynchronously. Find more information [here](https://help.sap.com/docs/abap-cloud/abap-concepts/background-processing-framework) and examples in the [Released ABAP Classes](22_Released_ABAP_Classes.md) cheat sheet.
  
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ### Subroutines in Standard ABAP
 
-- Subroutines are **obsolete** procedures you may find in older ABAP programs.
+- Subroutines are **obsolete** procedures. For new developments, classes should be used. In ABAP for Cloud Development, they are not usable.
 - They can be defined in any ABAP program, type pool, class pool, or interface pool.  
 - Logic is implemented between the `FORM` and `ENDFORM` statements.  
 - A subroutine is declared when it is implemented.  
 - It has a special parameter interface, including formal parameters specified after `USING` and `CHANGING`. These formal parameters are positional, meaning actual arguments are passed based on their position in the calling statement.  
-- You call them using `PERFORM` statement (as well as subroutines in other programs).  
+- You call them (as well as subroutines in other programs) using `PERFORM` statements.  
 - Find more information [here](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abenabap_subroutines.html). The [SAP LUW cheat sheet example](17_SAP_LUW.md) also uses subroutines in the context of an SAP LUW (these subroutines are called using `PERFORM ... ON COMMIT` and `... ROLLBACK`).
 
 
-Expand the following collapsible sections for example code. To try the examples out, create a demo program and paste the code into it. After activation, choose *F8* to execute the program. The only purpose is to give an idea of the functionality.
+Expand the following collapsible sections for example code. To try the examples out, create a demo program and paste the code into it. After activation, choose *F8* to execute the program. The purpose is to give an idea of the functionality.
 
 
 <details>
@@ -904,92 +904,362 @@ PROGRAM.
 DATA number1 TYPE i VALUE 10.
 DATA number2 TYPE i VALUE 20.
 DATA number3 TYPE i VALUE 30.
-DATA result TYPE i VALUE 30.
+DATA number4 TYPE i.
+DATA number5 TYPE i.
+DATA flag TYPE abap_boolean.
+DATA text TYPE string.
 DATA prog LIKE sy-repid VALUE sy-repid.
+DATA subr TYPE string VALUE `SUBR_NO_PARAMS_A`.
+DATA error TYPE REF TO cx_root.
 
 START-OF-SELECTION.
 
-  PERFORM subroutine1.
+*&---------------------------------------------------------------------*
+*& Subroutine calls
+*&---------------------------------------------------------------------*
 
-  PERFORM subroutine2 USING number1
-                            number2
-                            number3.
+  "Syntax variants of the PERFORM statement
 
-  PERFORM subroutine3 USING number1
-                            number2
-                      CHANGING result.
+  WRITE / `********************** 1) **********************`.
+  SKIP.
 
-  "IF FOUND: Preventing an exception if the subroutine is
-  "not found in the program.
-  PERFORM subroutine4 IN PROGRAM demo_abap_report IF FOUND.
+  "The following PERFORM statements call a subroutine without parameters.
 
-  "Without IF FOUND, using a TRY control structure to catch the exception
-  "if the subroutine is not found in the program.
+  "Directly specifying the subroutine name.
+  PERFORM subr_no_params_a.
+
+  "IN PROGRAM addition: External subroutine call, specifying the subroutine
+  "name and the program name.
+  "If the program or the subroutine is not found, a catchable exception is raised.
   TRY.
-      PERFORM subroutine4 IN PROGRAM demo_abap_report.
-    CATCH cx_sy_program_not_found INTO DATA(error).
+      PERFORM subr_no_params_a IN PROGRAM demo_abap_report.
+    CATCH cx_sy_program_not_found INTO error.
       WRITE / error->get_text( ).
       SKIP.
   ENDTRY.
 
-  PERFORM subroutine4 IN PROGRAM (prog).
-  PERFORM ('SUBROUTINE4') IN PROGRAM (prog).
+  "IF FOUND addition: Preventing the catchable exception if the subroutine or
+  "program is not found
+  PERFORM subr_no_params_a IN PROGRAM demo_abap_report IF FOUND.
 
-  PERFORM subroutine5 USING prog.
-  PERFORM subroutine5 IN PROGRAM demo_abap_report IF FOUND USING prog.
-  PERFORM subroutine5 IN PROGRAM (prog) USING prog.
-  PERFORM ('SUBROUTINE5') IN PROGRAM (prog) USING prog.
+**********************************************************************
 
-  "Selecting a subroutine from a list of subroutines of the current program
+  WRITE / `********************** 2) **********************`.
+  SKIP.
+
+  "2) Dynamic subroutine calls with IN PROGRAM
+  "Note that the IF FOUND addition is optional.
+  "The program and subroutine names can be specified as a literal or as a variable.
+  "Variations are possible such as specifying the subroutine name dynamically and
+  "the program name directly, or vice versa.
+  PERFORM subr_no_params_a IN PROGRAM ('DEMO_ABAP_REPORT') IF FOUND.
+  PERFORM subr_no_params_a IN PROGRAM demo_abap_report IF FOUND.
+  PERFORM subr_no_params_a IN PROGRAM (prog) IF FOUND.
+  PERFORM ('SUBR_NO_PARAMS_A') IN PROGRAM (prog) IF FOUND.
+
+  PERFORM ('SUBR_NO_PARAMS_A') IN PROGRAM (prog) IF FOUND.
+  PERFORM (subr) IN PROGRAM (prog) IF FOUND.
+
+  "Note case-sensitivity of the subroutine name.
+  TRY.
+      PERFORM subr_does_not_exist IN PROGRAM (prog).
+    CATCH cx_sy_dyn_call_illegal_form INTO error.
+      WRITE / error->get_text( ).
+      SKIP.
+  ENDTRY.
+
+  "Non-existent subroutine name directly specified
+  TRY.
+      PERFORM subr_does_not_exist IN PROGRAM (prog).
+    CATCH cx_sy_dyn_call_illegal_form INTO error.
+      WRITE / error->get_text( ).
+      SKIP.
+  ENDTRY.
+
+**********************************************************************
+
+  WRITE / `********************** 3) **********************`.
+  SKIP.
+
+  "3) Selecting a subroutine from a list of subroutines of the current program
   "It is only possible to specify subroutines without parameter list.
-  PERFORM 1 OF subroutine1 subroutine4.
-  PERFORM 2 OF subroutine1 subroutine4.
+  "The IN PROGRAM and IF FOUND additions cannot be specified.
+  PERFORM 1 OF subr_no_params_a subr_no_params_b.
+  PERFORM 2 OF subr_no_params_a subr_no_params_b.
 
   DO.
     TRY.
-        PERFORM sy-index OF subroutine1 subroutine4.
+        PERFORM sy-index OF subr_no_params_a subr_no_params_b.
       CATCH cx_sy_dyn_call_illegal_form INTO DATA(err).
         WRITE / err->get_text( ).
+        SKIP.
         EXIT.
     ENDTRY.
   ENDDO.
+
+**********************************************************************
+
+  WRITE / `********************** 4) **********************`.
+  SKIP.
+
+  "4) Subroutines with parameters
+  "The examples cover the additions USING and CHANGING.
+  "The additions are also reflected in the subroutine definition.
+  "Assignment of parameters is done by position, not by name.
+  "If both USING and CHANGING are specified, the USING parameters must be specified first.
+
+  "Subroutine with only USING parameters.
+  "All of the parameters are passed by reference.
+  number1 = 1.
+  number2 = 10.
+  number3 = 100.
+
+  PERFORM subr_using USING number1
+                           number2
+                           number3.
+
+  "Subroutine with USING and CHANGING parameters.
+  number1 = 1.
+  number2 = 10.
+  number3 = 100.
+
+  PERFORM subr_using_change USING number1
+                                  number2
+                            CHANGING number3.
+
+  WRITE / |number3 = "{ number3 }"|.
+  SKIP.
+
+  "Subroutine with USING parameter and defining RAISING
+  DO 3 TIMES.
+    CASE sy-index.
+      	WHEN 1.
+        		number1 = 10.
+        		number2 = 2.
+      	WHEN 2.
+        		number1 = 10.
+        		number2 = 0.
+      	WHEN 3.
+        		number1 = 0.
+        		number2 = 0.
+    ENDCASE.
+
+    TRY.
+        PERFORM subr_using_raising USING number1
+                                         number2.
+      CATCH cx_sy_zerodivide INTO error.
+        		WRITE / error->get_text( ).		
+    		ENDTRY.
+    		SKIP.
+  ENDDO.
+
+  "The following example subroutine demonstrates various parameter definitions
+  "Both USING and CHANGING additions, as well as RAISING are defined.
+  "The parameters passed to the subroutine are passed by value and by reference,
+  "respectively. Note that a parameter without explicit typing is implicitly typed
+  "with the fully generic type 'any'.
+
+  number1 = 1.
+  number2 = 10.
+  number3 = 100.
+  number4 = 1000.
+  flag = abap_false.
+  "Passing by reference: number1, number3, error, text
+  "Passing by value: number2, number4
+  PERFORM subr_pass_by_val_ref USING number1 number2 error
+                               CHANGING number3 number4 text.
+
+  WRITE / `--- Values after subroutine call ---`.
+  WRITE / |number1 after subroutine call = "{ number1 }"|.
+  WRITE / |number2 after subroutine call = "{ number2 }"|.
+  WRITE / |text = "{ text }"|.
+  WRITE / |number4 = "{ number4 }"|.
+  SKIP.
+
+  "Demonstrating that the actual parameter of a CHANGING parameters passed by value
+  "is not changed when the subroutine is ended by an exception.
+  number1 = 1.
+  number2 = 10.
+  number3 = 100.
+  number4 = 1000.
+  flag = abap_true.
+  TRY.
+      PERFORM subr_pass_by_val_ref USING number1 number2 error
+                                   CHANGING number3 number4 text.
+    CATCH cx_sy_zerodivide.
+  ENDTRY.
+  WRITE / `--- Values after subroutine call ---`.
+  WRITE / |number1 after subroutine call = "{ number1 }"|.
+  WRITE / |number2 after subroutine call = "{ number2 }"|.
+  WRITE / |text = "{ text }"|.
+  WRITE / |number4 = "{ number4 }"|.
+  SKIP.
+
+  "The following example subroutine calls illustrate that it is advisable to specify
+  "the additions USING and CHANGING in the PERFORM statement according to the subroutine
+  "definition for program documentation purposes.
+  "Although the syntax does not show any errors for all statements, only the fourth statement
+  "is recommended because it is the only one that documents the interface of the called subroutine.
+  number1 = 1.
+  number2 = 10.
+  number3 = 100.
+  number4 = 1000.
+
+  PERFORM subr_call_demo USING number1 number2 number3 number4.
+  PERFORM subr_call_demo CHANGING number1 number2 number3 number4.
+  PERFORM subr_call_demo USING number1 CHANGING number2 number3 number4.
+  "The following statement is a valid call according to the subroutine definition,
+  "documenting the interface of the called subroutine.
+  PERFORM subr_call_demo USING number1 number2 CHANGING number3 number4.
+  PERFORM subr_call_demo USING number1 number2 number3 CHANGING number4.
+
+**********************************************************************
+**********************************************************************
+**********************************************************************
 
 *&---------------------------------------------------------------------*
 *& Subroutines
 *&---------------------------------------------------------------------*
 
-FORM subroutine1.
-  WRITE / |subroutine1 called at { utclong_current( ) }|.
+  "Notes:
+  "- The additions in FORM statements define the formal parameters.
+  "- Class-based exceptions can also be specified.
+  "- Within FORM ... ENDFORM., local data types and objects can be declared.
+  "  Global data types and objects can be used within.
+  "- Actual parameters passed to formal parameters of USING and CHANGING can
+  "  be passed by value or reference.
+  "- Passing by reference: Any changes made to the formal parameter also change
+  "    the value of the actual parameter. Used in combination with USING, actual
+  "    parameters passed by reference should not be changed in the subroutine.
+  "    For this purpose, CHANGING should be used.
+  "  - Pass by value: A local data object with the same data type is created. Any
+  "    changes made to the formal parameter do not directly change the value of the
+  "    actual parameter.
+
+FORM subr_no_params_a.
+  WRITE / |subr_no_params_a called at { utclong_current( ) }|.
   SKIP.
 ENDFORM.
 
-FORM subroutine2
-  USING number1 TYPE i
-        number2 TYPE i
-        number3 TYPE i.
-  WRITE / |subroutine2 called at { utclong_current( ) }|.
-  WRITE / |number1 = '{ number1 }', number2 = '{ number2 }', number1 = '{ number3 }'|.
+FORM subr_no_params_b.
+  WRITE / |subr_no_params_b called at { utclong_current( ) }|.
   SKIP.
 ENDFORM.
 
-FORM subroutine3
-  USING    number1 TYPE i
-           number2 TYPE i
+FORM subr_call_demo USING num1 TYPE i
+                          num2 TYPE i
+          CHANGING VALUE(num3) TYPE i
+                   VALUE(num4) TYPE i.
+
+  num4 = num1.
+  num3 = num2.
+
+  WRITE / |subr_call_demo called at { utclong_current( ) }|.
+ENDFORM.
+
+"Subroutines demonstrating the USING and CHANGING additions. The parameters passed to the
+"subroutines are passed by reference.
+FORM subr_using
+  USING num1 TYPE i
+        num2 TYPE i
+        num3 TYPE i.
+  WRITE / |subr_using called at { utclong_current( ) }|.
+  WRITE / |num1 = '{ num1 }', num2 = '{ num2 }', num1 = '{ num3 }'|.
+  SKIP.
+ENDFORM.
+
+FORM subr_using_change
+  USING    num1 TYPE i
+           num2 TYPE i
   CHANGING result  TYPE i.
-  WRITE / |subroutine3 called at { utclong_current( ) }|.
-  result = number1 + number2.
-  WRITE / |{ number1 } + { number2 } = { result }|.
+  WRITE / |subr_using_change called at { utclong_current( ) }|.
+  result = num1 + num2.
+  WRITE / |{ num1 } + { num2 } = { result }|.
   SKIP.
 ENDFORM.
 
-FORM subroutine4.
-  WRITE / |subroutine4 called at { utclong_current( ) }|.
-  SKIP.
+FORM subr_using_raising
+  USING num1 TYPE i
+        num2 TYPE i
+  RAISING cx_sy_zerodivide.
+  WRITE / |subr_using_raising of program { prog } called at { utclong_current( ) }|.
+
+  IF num1 = 0 AND num2 = 0. "ABAP 'allows' zero division
+    RAISE EXCEPTION TYPE cx_sy_zerodivide.
+  ELSE.
+    WRITE / |{ num1 } / { num2 } = { num1 / num2 }|.
+  ENDIF.	
 ENDFORM.
 
-FORM subroutine5
-USING prog LIKE sy-repid.
-  WRITE / |subroutine5 of program { prog } called at { utclong_current( ) }|.
+
+"The following subroutine demonstrates the use of both USING and CHANGING additions
+"in a single subroutine definition. The parameters passed to the subroutine are passed
+"by value and by reference, respectively. Note that a parameter without explicit typing is
+"implicitly typed with the fully generic type 'any'.
+
+FORM subr_pass_by_val_ref
+  USING using_pass_by_ref_num TYPE i
+        VALUE(using_pass_by_value_num) TYPE i
+        using_param
+  CHANGING changing_pass_by_ref_num TYPE i
+           VALUE(changing_pass_by_value_num) TYPE i
+           changing_param
+  RAISING cx_sy_zerodivide.
+  WRITE / |subr_pass_by_val_ref called at { utclong_current( ) }|.
+
+  "Using the value of the parameter in read position
+  DATA(num1) = using_pass_by_value_num + 1.
+  WRITE / |num1 = "{ num1 }"|.
+  "Actual parameters passed by value can be changed in the subroutine.
+  "A change to the parameter in the subroutine does not change the actual value.
+  "Even after the subroutine has ended, the actual parameter retains its
+  "original value.
+  using_pass_by_value_num += 2.
+  WRITE / |Value of using_pass_by_value_num changed in subroutine (number2) = "{ using_pass_by_value_num }"|.
+
+  "Using the value of the parameter in read position
+  DATA(num2) = using_pass_by_ref_num + 3.
+  WRITE / |num2 = "{ num2 }"|.
+  "Actual parameters passed by reference specified with USING should not be changed in the subroutine.
+  "A syntax warning is displayed if CHANGING parameters are specified at the same time
+  "for the subroutine.
+  "using_pass_by_ref_num += 4.
+
+  "The following assignment circumvents the syntax warning, and changes the value.
+  "The demonstration purpose is that a change does not change the value of the actual
+  "parameter. Even after the subroutine has ended, the actual parameter retains its
+  "original value.
+  ASSIGN using_pass_by_ref_num TO FIELD-SYMBOL(<fs>).
+  <fs> += 5.
+  WRITE / |Value of using_pass_by_ref_num changed in subroutine (number1) = "{ using_pass_by_ref_num }"|.
+
+
+  "using_param is implicitly typed with the fully generic type 'any'.
+  "The data type of the actual parameter is determined at runtime.
+  DATA(type_info) = cl_abap_typedescr=>describe_by_data( using_param ).
+  changing_param = SWITCH string( type_info->kind WHEN cl_abap_typedescr=>kind_elem THEN `elementary`
+                                                    WHEN cl_abap_typedescr=>kind_class THEN `class`
+                                                    WHEN cl_abap_typedescr=>kind_intf THEN `interface`
+																										WHEN cl_abap_typedescr=>kind_ref THEN `reference`
+																										WHEN cl_abap_typedescr=>kind_struct THEN `structure`
+																										WHEN cl_abap_typedescr=>kind_table THEN `table`
+																										ELSE `unknown` ).
+
+  "Changing parameters passed by reference
+  changing_pass_by_ref_num = 987.
+  WRITE / |changing_pass_by_ref_num = "{ changing_pass_by_ref_num }"|.
+
+  "Changing parameters passed by value
+  "When ending the subroutine with ENDFORM, RETURN, CHECK, or EXIT, the
+  "value of the formal parameter is assigned to the actual parameter.
+  "However, if the subroutine is ended by a message or an exception,
+  "the actual parameter is not changed.
+  changing_pass_by_value_num = 123.
+  WRITE / |changing_pass_by_value_num = "{ changing_pass_by_value_num }"|.
+  IF flag = abap_true.
+    SKIP.
+    RAISE EXCEPTION TYPE cx_sy_zerodivide.
+  ENDIF.
   SKIP.
 ENDFORM.
 ```
@@ -1000,7 +1270,7 @@ ENDFORM.
 <br>
 
 <details>
-  <summary>🟢 Example 2 (Calculator example using various forms)</summary>
+  <summary>🟢 Example 2 (Calculator example using various subroutines)</summary>
   <!-- -->
 
 <br>
@@ -1495,7 +1765,7 @@ ENDFORM.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-### Excursion: RETURN
+### Exiting Procedures and Returning Values with RETURN
 
 Regarding the exiting of procedures, note the hint mentioned above. The use of `RETURN` is recommended.
 

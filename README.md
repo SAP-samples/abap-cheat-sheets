@@ -27,7 +27,7 @@
 
 ABAP cheat sheets[^1] ...
 - provide a **collection of information on selected ABAP topics** in a nutshell for your reference.
-- focus on **ABAP syntax** in the restricted ABAP language version [ABAP for Cloud Development](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-for-cloud-development), particularly in the [SAP BTP ABAP Environment](https://help.sap.com/docs/abap-cloud/abap-keyword/sap-btp-abap-environment).
+- focus on **ABAP syntax** in the restricted ABAP language version [ABAP for Cloud Development](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-for-cloud-development).
 - include **code snippets**.
 - are supported by easy-to-consume **demonstration examples** that you can import into your system using [abapGit](https://abapgit.org/) to run and check out ABAP syntax in action in simple contexts:
   |  Branch | Environment | ABAP language version | Notes |
@@ -38,15 +38,17 @@ ABAP cheat sheets[^1] ...
   | [unit_tests](https://github.com/SAP-samples/abap-cheat-sheets/tree/unit_tests) | [SAP BTP ABAP Environment](https://help.sap.com/docs/abap-cloud/abap-keyword/sap-btp-abap-environment) | [ABAP for Cloud Development](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-for-cloud-development) | Features a selection of simplified ABAP Unit test scenarios across various contexts in a separate branch; see the [ABAP Unit Tests](14_ABAP_Unit_Tests.md) cheat sheet |
   | [oo_patterns](https://github.com/SAP-samples/abap-cheat-sheets/tree/oo_patterns) | [SAP BTP ABAP Environment](https://help.sap.com/docs/abap-cloud/abap-keyword/sap-btp-abap-environment) | [ABAP for Cloud Development](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-for-cloud-development) | Contains example classes to illustrate object-oriented design patterns in a separate branch; see the [ABAP Examples Using Object-Oriented Design Patterns](34_OO_Design_Patterns.md) cheat sheet |
 
-- are enriched by links to glossary entries and chapters of the **ABAP Keyword Documentation** (the *F1 help*) and more for you to deep dive into the respective ABAP topics and get more comprehensive information.
 
 <br>
 
 > [!IMPORTANT] 
-> - Unless otherwise stated in the cheat sheets, the content of this repository is relevant for these ABAP language versions, with a focus on ABAP for Cloud Development, particularly in the SAP BTP ABAP Environment ⚠️:
->   - <b>[ABAP for Cloud Development](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abenabap_for_sap_cloud_glosry.html)</b> <br>Restricted ABAP language scope for [ABAP Cloud](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-cloud) <br>🔗 [Online version of the ABAP Keyword Documentation](https://help.sap.com/docs/abap-cloud/abaphttps://help.sap.com/docs/abap-cloud/abap-keyword/abap-keyword-documentation-keyword/abap-cloud)
->   - <b>[Standard ABAP](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abenstandard_abap_glosry.html)</b> <br>Unrestricted ABAP language scope, for example, for [classic ABAP](https://help.sap.com/docs/abap-cloud/abap-keyword/classic-abap) <br>🔗 [Online version of the ABAP Keyword Documentation (latest version)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abenabap.html)
-> - The ABAP cheat sheet documents and examples mainly highlight and explore ABAP syntax options. Most executable examples, code snippets, names of data objects, classes, methods, and interfaces are non-semantic. The code examples do not claim to illustrate best practices. They are simply meant to illustrate ABAP statements and additions to give an idea of their functionality.
+> - Unless otherwise stated in the ABAP cheat sheets, this repository focuses on [ABAP for Cloud Development](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-for-cloud-development) (restricted ABAP language scope for [ABAP Cloud](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-cloud)), particularly in the [SAP BTP ABAP Environment](https://help.sap.com/docs/abap-cloud/abap-keyword/sap-btp-abap-environment) with the latest available ABAP release. ⚠️ If you are not using the SAP BTP ABAP Environment, be aware that some cheat sheets may describe syntax reflecting newer features that may not be available in your ABAP system. For example, if you are in a classic ABAP environment with release 816, newer syntax like generic structured types typed with `ANY STRUCTURE` is not available (it is available as of 920/2608). For more information, refer to the release news. In addition, several ABAP cheat sheets contain excursions into [Standard ABAP](https://help.sap.com/docs/abap-cloud/abap-keyword/standard-abap) (unrestricted ABAP language scope for [classic ABAP](https://help.sap.com/docs/abap-cloud/abap-keyword/classic-abap)) features.
+> - The ABAP cheat sheet documents, embedded code snippets, and executable examples primarily highlight and explore ABAP syntax options. They:
+> 	- Aim to demonstrate the functionality of keywords and additions in action 
+> 	- Aim to quickly get an idea about the functionality, supported simplified examples to reduce complexity
+>   - Do not claim to solve concrete programming tasks. Make sure that you devise your own solutions for your programming tasks.
+>   - Do not include meaningful, semantic, or real-world use cases.
+>   - Do not claim to reflect best practice implementations. Most executable examples, code snippets, names of data objects, classes, methods, and interfaces are non-semantic.
 
 <br>
 
@@ -271,7 +273,7 @@ Use the standalone version of the abapGit report to import the demo examples of 
     - [Version 7.51](https://help.sap.com/doc/abapdocu_751_index_htm/7.51/en-US/index.html)
     - [Version 7.50](https://help.sap.com/doc/abapdocu_750_index_htm/7.50/en-US/index.html)  
   - **ABAP for Cloud Development**: Restricted ABAP language scope → [Online version of the documentation](https://help.sap.com/docs/abap-cloud/abaphttps://help.sap.com/docs/abap-cloud/abap-keyword/abap-keyword-documentation-keyword/abap-cloud)
-- For demonstration examples of the ABAP Keyword Documentation, see the `SABAPDEMOS` package. This package contains all the examples used in the ABAP Keyword Documentation. For the context, find the example description in the context of the individual topic of the ABAP keyword documentation. 
+
 
 <br>
 

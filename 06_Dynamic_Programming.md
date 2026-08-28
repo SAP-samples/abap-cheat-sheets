@@ -4,7 +4,7 @@
 
 - [Dynamic Programming](#dynamic-programming)
   - [Introduction](#introduction)
-  - [Excursion: Field Symbols and Data References](#excursion-field-symbols-and-data-references)
+  - [Field Symbols and Data References](#field-symbols-and-data-references)
     - [Field Symbols](#field-symbols)
       - [Declaring Field Symbols](#declaring-field-symbols)
       - [Assigning Data Objects](#assigning-data-objects)
@@ -56,7 +56,9 @@
       - [Creating Structured Types and Data Objects Dynamically](#creating-structured-types-and-data-objects-dynamically)
       - [Creating Table Types and Internal Tables Dynamically](#creating-table-types-and-internal-tables-dynamically)
       - [Creating Reference Types and Data Reference Variables Dynamically](#creating-reference-types-and-data-reference-variables-dynamically)
-  - [Excursion: Dynamic Program Development in Standard ABAP](#excursion-dynamic-program-development-in-standard-abap)
+  - [Excursions](#excursions)
+    - [Dynamic Program Development in Standard ABAP](#dynamic-program-development-in-standard-abap)
+    - [Determining Properties of Data Objects with DESCRIBE Statements in Standard ABAP](#determining-properties-of-data-objects-with-describe-statements-in-standard-abap)
   - [More Information](#more-information)
   - [Executable Example](#executable-example)
 
@@ -95,7 +97,7 @@
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-## Excursion: Field Symbols and Data References
+## Field Symbols and Data References
 
 [Field symbols](https://help.sap.com/docs/abap-cloud/abap-keyword/field-symbol)
 and [data references](https://help.sap.com/docs/abap-cloud/abap-keyword/data-reference) are supporting elements for dynamic programming.
@@ -779,7 +781,7 @@ See also the cheat sheet [Data Types and Data Objects](16_Data_Types_and_Objects
 
 #### Assigning References to Existing Data Objects
 
-Assigning references to existing data objects [reference operator](https://help.sap.com/docs/abap-cloud/abap-keyword/reference-operator)
+Assigning references to existing data objects with the [reference operator](https://help.sap.com/docs/abap-cloud/abap-keyword/reference-operator)
 `REF`.
 ``` abap
 "Declaring a data object
@@ -9604,7 +9606,9 @@ ASSERT applies_to_dobj = abap_true.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-## Excursion: Dynamic Program Development in Standard ABAP 
+## Excursions
+
+### Dynamic Program Development in Standard ABAP 
 
 - [Standard ABAP](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abenstandard_abap_glosry.html) includes language elements that allow for the dynamic creation and maintenance of program source code.
 - Creating executable code using dynamic programming techniques can be risky, especially when source code is determined at runtime or involves external data or user input. Therefore, these techniques should be used only in exceptional cases and require thorough validation and checks.
@@ -10605,6 +10609,279 @@ ENDIF.
 
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
+
+### Determining Properties of Data Objects with DESCRIBE Statements in Standard ABAP
+
+> [!NOTE]  
+> - `DESCRIBE` statements are valid only for Standard ABAP and cannot be used in ABAP for Cloud Development.  
+> - `DESCRIBE` statements provide specific information. To obtain more detailed information, you can use the RTTS type description classes for property determination, which allow you to identify all data object properties of various data types. They are described [here](#runtime-type-services-rtts). 
+> - Find more information in the [ABAP Keyword Documentation (Standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/ABAPDESCRIBE.html).
+
+Expand the following collapsible section for example code that demonstrates a selection. To try it out, you can create a demo program, paste the code into it and execute it. The example is set up to display output using the `cl_demo_output` class. Note the comments in the code. For the constant values of the different types, see the [Constants of Type Description Classes](#constants-of-type-description-classes) section.
+
+
+<details>
+  <summary>🟢 Click to expand for example code</summary>
+  <!-- -->
+
+<br>
+
+```abap
+PROGRAM.
+
+"- DESCRIBE FIELD ... statements are used to determine field properties.
+"- They are primarily used on data objects of elementary data types. Only elementary
+"  properties can be determined for structures or deep data types (strings, internal tables, reference variables).
+"- Various (optional) additions can be specified.
+
+"------------------- 1) Elementary types -------------------
+DATA:
+  "Character-like types
+  c5       TYPE c LENGTH 5 VALUE 'test',
+  n5       TYPE n LENGTH 5 VALUE '12345',
+  str      TYPE string VALUE 'test',
+  "Numeric types
+  num_int  TYPE i VALUE 42,
+  b_int1   TYPE int1 VALUE 1,
+  	s_int2   TYPE int2 VALUE 2,
+  num_int8 TYPE int8 VALUE 5,
+  pl8d2    TYPE p LENGTH 8 DECIMALS 2  VALUE '456789012.34-',
+  float    TYPE f VALUE '3.14',
+  dec16    TYPE decfloat16 VALUE '1.123456789012345',
+  dec34    TYPE decfloat34 VALUE '1.123456789012345678901234567890123',
+  "Bype-like type
+  x2       TYPE x LENGTH 2 VALUE 'FF',
+  xstr     TYPE xstring VALUE `FF`,
+  "Date/time types
+  dat      TYPE d VALUE '20270101',
+  tim      TYPE t VALUE '123456',
+  utc      TYPE utclong VALUE '2027-01-01T12:34:56,7890'.
+
+DATA ref_tab TYPE TABLE OF REF TO data.
+
+ref_tab = VALUE #( ( REF #( c5 ) )
+                ( REF #( n5 ) )
+                ( REF #( str ) )
+                ( REF #( num_int ) )
+                ( REF #( b_int1 ) )
+                ( REF #( s_int2 ) )
+                ( REF #( num_int8 ) )
+                ( REF #( pl8d2 ) )
+                ( REF #( float ) )
+                ( REF #( dec16 ) )
+                ( REF #( dec34 ) )
+                ( REF #( x2 ) )
+                ( REF #( xstr ) )
+                ( REF #( dat ) )
+                ( REF #( tim ) )
+                ( REF #( utc ) ) ).
+
+DATA type_info1 TYPE string_table.
+
+LOOP AT ref_tab ASSIGNING FIELD-SYMBOL(<fs>).
+
+  DESCRIBE FIELD <fs>->*
+    TYPE DATA(typ)
+    LENGTH DATA(byte_len) IN BYTE MODE
+    OUTPUT-LENGTH DATA(outlen).
+
+  APPEND |{ sy-tabix } / typ = "{ typ }" / byte_len = "{ byte_len }" / outlen = "{ outlen }"| TO type_info1 ASSIGNING FIELD-SYMBOL(<l>).
+
+  "The IN CHARACTER MODE addition can be specified for character-like data types.
+  IF typ = cl_abap_typedescr=>typekind_char
+  OR typ = cl_abap_typedescr=>typekind_num
+  OR typ = cl_abap_typedescr=>typekind_date
+  OR typ = cl_abap_typedescr=>typekind_time.
+
+    DESCRIBE FIELD <fs>->*
+      LENGTH DATA(c_len) IN CHARACTER MODE.
+
+    <l> &&= | / c_len = "{ c_len }"|.
+  ENDIF.
+
+  "The DECIMALS addition is only relevant for type p.
+  IF typ = cl_abap_typedescr=>typekind_packed.
+
+    DESCRIBE FIELD <fs>->*
+        DECIMALS DATA(dec).
+    <l> &&= | / dec = "{ dec }"|.
+  ENDIF.
+
+ENDLOOP.
+
+"------------------- 2) Structured types -------------------
+
+DATA: BEGIN OF struc1,
+        a TYPE c LENGTH 5,
+        b TYPE string,
+        c TYPE i,
+        d TYPE decfloat34,
+      END OF struc1.
+
+DATA: BEGIN OF struc2,
+        e TYPE n LENGTH 3,
+        f TYPE f,
+        BEGIN OF struc3,
+          g TYPE x LENGTH 2,
+          h TYPE decfloat16,
+        END OF struc3,
+      END OF struc2.
+
+DESCRIBE FIELD: struc1        TYPE DATA(styp1) COMPONENTS DATA(scomp1) LENGTH DATA(sbyte_len1) IN BYTE MODE OUTPUT-LENGTH DATA(soutlen1),
+                struc2        TYPE DATA(styp2) COMPONENTS DATA(scomp2) LENGTH DATA(sbyte_len2) IN BYTE MODE OUTPUT-LENGTH DATA(soutlen2),
+                struc2-struc3 TYPE DATA(styp3) COMPONENTS DATA(scomp3) LENGTH DATA(sbyte_len3) IN BYTE MODE OUTPUT-LENGTH DATA(soutlen3).
+
+DATA type_info2 TYPE string_table.
+
+type_info2 = VALUE #( ( |1 / typ = "{ styp1 }" / scomp1 = "{ scomp1 }" / byte_len = "{ sbyte_len1 }" / soutlen1 = "{ soutlen1 }"| )
+									    ( |2 / typ = "{ styp2 }" / scomp2 = "{ scomp2 }" / byte_len = "{ sbyte_len2 }" / soutlen2 = "{ soutlen2 }"| )
+									    ( |3 / typ = "{ styp3 }" / scomp3 = "{ scomp3 }" / byte_len = "{ sbyte_len3 }" / soutlen3 = "{ soutlen3 }"| ) ).
+
+"------------------- 3) Deep types -------------------
+
+DATA string TYPE string.
+DATA xstring TYPE xstring.
+DATA itab LIKE TABLE OF struc1 WITH EMPTY KEY.
+DATA(ref) = NEW i( 1 ).
+
+"Note: With deep types, eight bytes are determined for each reference involved.
+DESCRIBE FIELD: string  TYPE DATA(dtyp1) LENGTH DATA(dbyte_len1) IN BYTE MODE,
+                xstring TYPE DATA(dtyp2) LENGTH DATA(dbyte_len2) IN BYTE MODE,
+                itab    TYPE DATA(dtyp3) LENGTH DATA(dbyte_len3) IN BYTE MODE,
+                ref     TYPE DATA(dtyp4) LENGTH DATA(dbyte_len4) IN BYTE MODE.
+
+DATA type_info3 TYPE string_table.
+
+type_info3 = VALUE #( ( |1 / typ = "{ dtyp1 }" / byte_len = "{ dbyte_len1 }"| )
+									    ( |2 / typ = "{ dtyp2 }" / byte_len = "{ dbyte_len2 }"| )
+									    ( |3 / typ = "{ dtyp3 }" / byte_len = "{ dbyte_len3 }"| )
+									    ( |4 / typ = "{ dtyp4 }" / byte_len = "{ dbyte_len4 }"| ) ).
+
+"------------------- 4) Data object determined by DDIC data element -------------------
+
+"HELP-ID addition
+"- If the type of the data object is determined by a DDIC data element, the type name after
+"  TYPE is stored, otherwise, it is initial
+"- The name stored can be used to retrieve, for example, input help from the DDIC
+
+"Example description:
+"- For the example, three data objects are added to an internal table which is iterated.
+"- In the loop, the data object is described using DESCRIBE FIELD, including the HELP-ID addition.
+"- Two of the three types are determined by a DDIC data element, and input help is assigned to the
+"  components in the ABAP Dictionary. The first data object is of the built-in ABAP type i.
+"- The values retrieved by the DESCRIBE FIELD statement with the HELP_ID addition can, for example,
+"  be used to call the input help using the function module F4IF_FIELD_VALUE_REQUEST.
+"- To explore it, you can uncomment the code and execute the program with F8.
+
+DATA: num        TYPE i,
+      carrier_id TYPE spfli-carrid,
+      conn_id    TYPE demof4help-connid.
+
+DATA: struc   TYPE dfies-tabname,
+      comp    TYPE dfies-fieldname,
+      tab     LIKE TABLE OF ddshretval,
+      tab_all LIKE TABLE OF ddshretval.
+
+ref_tab = VALUE #( ( REF #( num ) )
+								   ( REF #( carrier_id ) )
+								   ( REF #( conn_id ) ) ).
+
+DATA type_info4 TYPE string_table.
+
+LOOP AT ref_tab ASSIGNING <fs>.
+
+  DESCRIBE FIELD <fs>->*
+    TYPE DATA(htyp)
+    HELP-ID DATA(hlp).
+
+*  IF hlp IS NOT INITIAL.
+*    SPLIT hlp AT '-' INTO struc comp.
+*
+*    CALL FUNCTION 'F4IF_FIELD_VALUE_REQUEST'
+*      EXPORTING
+*        tabname           = struc
+*        fieldname         = comp
+*      TABLES
+*        return_tab        = tab
+*      EXCEPTIONS
+*        field_not_found   = 1
+*        no_help_for_field = 2
+*        inconsistent_help = 3
+*        no_values_found   = 4
+*        OTHERS            = 5.
+*
+*    IF sy-subrc = 0.
+*      APPEND LINES OF tab TO tab_all.
+*      CLEAR tab.
+*    ENDIF.
+*  ENDIF.
+
+  APPEND |{ sy-tabix } / htyp = "{ htyp }" / hlp = "{ hlp }"| TO type_info4.
+
+ENDLOOP.
+
+"------------------- 5) DESCRIBE TABLE statements -------------------
+
+TYPES: BEGIN OF s,
+         comp1 TYPE c LENGTH 5,
+         comp2 TYPE string,
+         comp3 TYPE i,
+         comp4 TYPE n LENGTH 4,
+       END OF s.
+
+DATA tab_std TYPE TABLE OF s WITH EMPTY KEY.
+DATA tab_so TYPE SORTED TABLE OF s WITH UNIQUE KEY comp1.
+DATA tab_ha TYPE HASHED TABLE OF s WITH UNIQUE KEY comp1.
+
+tab_std = VALUE #( ( comp1 = 'test1' comp2 = `test2` comp3 = 1 comp4 = '1234' )
+	      					 ( comp1 = 'test3' comp2 = `test4` comp3 = 2 comp4 = '5678' )
+	      					 ( comp1 = 'test5' comp2 = `test6` comp3 = 3 comp4 = '9012' )
+	      					 ( comp1 = 'test6' comp2 = `test7` comp3 = 4 comp4 = '3456' )
+	      					 ( comp1 = 'test8' comp2 = `test9` comp3 = 5 comp4 = '7890' ) ).
+	      						
+tab_so = tab_std.
+DELETE tab_so WHERE comp1 = 'test1'.
+tab_ha = tab_so.
+DELETE tab_ha WHERE comp1 = 'test3'.			
+DATA type_info5 TYPE string_table.
+
+ref_tab = VALUE #( ( REF #( tab_std ) )
+								   ( REF #( tab_so ) )
+								   ( REF #( tab_ha ) ) ).
+
+FIELD-SYMBOLS <tab> TYPE ANY TABLE.
+
+LOOP AT ref_tab ASSIGNING <fs>.
+  ASSIGN <fs>->* TO <tab>.
+
+  	DESCRIBE TABLE <tab>
+  		KIND DATA(tabkind)
+  		LINES DATA(tablines).
+
+  "Current number of table lines
+  DATA(sytfill) = sy-tfill.
+  "Length of a table line in bytes
+  DATA(sytleng) = sy-tleng.
+
+  	APPEND |{ sy-tabix } / tabkind = "{ tabkind }" / tablines = "{ tablines }" / sytfill = "{ sytfill }" / sytleng = "{ sytleng }"| TO type_info5.
+ENDLOOP.
+
+**********************************************************************
+
+cl_demo_output=>write( type_info1 ).
+cl_demo_output=>write( type_info2 ).
+cl_demo_output=>write( type_info3 ).
+cl_demo_output=>write( type_info4 ).
+*cl_demo_output=>write( tab_all ).
+cl_demo_output=>write( type_info5 ).
+cl_demo_output=>display( ).
+```
+
+</details>  
+
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
 
 ## More Information
 It is recommended that you consult the [Dynamic Programming Techniques (F1 docu for standard ABAP)](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abendynamic_prog_technique_gdl.html) section in the ABAP Keyword Documentation since it provides important aspects that should be considered when dealing with dynamic programming in general (e. g. security aspects or runtime error prevention).

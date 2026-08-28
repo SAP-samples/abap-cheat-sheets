@@ -349,7 +349,7 @@ FIELD-SYMBOLS:
   <xsequence>      TYPE xsequence, "Byte-like (x, xstring)
 
   "Numeric types
-  <decfloat>       TYPE decfloat, "decfloat16, decfloat34)
+  <decfloat>       TYPE decfloat, "decfloat16, decfloat34
   <numeric>        TYPE numeric,  "Numeric ((b, s), i, int8, p, decfloat16, decfloat34, f)
   <p>              TYPE p,        "Packed number (generic length and number of decimal places)
 

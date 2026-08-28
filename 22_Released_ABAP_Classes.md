@@ -60,7 +60,7 @@ This ABAP cheat sheet contains a selection of [released](https://help.sap.com/do
 > - The cheat sheet is not a comprehensive overview, and the code snippets do not claim to be comprehensive as far as options, methods, or parameters are concerned. It is intended to give you a rough overview, for you to get an idea. It is an invitation to a more in-depth exploration.
 > - For more information and where available, refer to the class documentation (for example, choose F2 when the cursor is on the class name in ADT), the ABAP Keyword Documentation, and the SAP Help Portal documentation.
 > - You might find that different classes can achieve similar or the same results, especially with the Extension Components Library (XCO), a general-purpose development library designed specifically for ABAP for Cloud Development. Choose the classes that best meet your needs.
-> - For XCO classes, the cheat sheet covers released XCO APIs. In [Standard ABAP](https://help.sap.com/docs/abap-cloud/abap-keyword/standard-abap), XCO APIs are also available that do not have `CP` in the class name. These classes are not covered here.
+> - For XCO classes, the cheat sheet covers released XCO APIs. In [Standard ABAP](https://help.sap.com/docs/abap-cloud/abap-keyword/standard-abap), XCO APIs are also available (often, they do not have `CP` in the class name). These classes are not covered here.
 > - [Disclaimer](./README.md#%EF%B8%8F-disclaimer)
 
 ## Excursions
@@ -1421,7 +1421,7 @@ DATA(conv_string) = cl_abap_conv_codepage=>create_in( )->convert( conv_xstring )
 </td>
 </tr>
 <tr>
-<td> <code>XCO_CP</code> </td>
+<td> <code>XCO_CP (String conversion)</code> </td>
 <td> 
 Converting strings to xstrings using a codepage using the XCO Library
 <br><br>
@@ -1438,7 +1438,7 @@ DATA(str) = xco_cp=>xstring( xstr )->as_string( xco_cp_character=>code_page->utf
 </tr>
 
 <tr>
-<td> <code>XCO_CP</code> </td>
+<td> <code>XCO_CP (Base64 decoding/encoding)</code> </td>
 <td> 
 Base64 decoding/encoding using XCO
 <br><br>
@@ -2841,9 +2841,9 @@ DATA table_json_to_abap TYPE string_table.
 ## ABAP Repository Object Information 
 
 > [!IMPORTANT] 
-> - Note that the _XCO CP Edition_ (many of the released XCO APIs include _CP_ in the class name) features released classes specifically designed for cloud usage, particularly in the SAP BTP ABAP Environment. 
+> - Note that the _XCO CP Edition_ (many of the released XCO APIs often include _CP_ in the class name) features released classes specifically designed for cloud usage, particularly in the SAP BTP ABAP Environment. 
 > - While these classes can theoretically be used in other system environments, there is no guarantee of API functionality. This is especially true for the classes in this section that provide information about repository objects. Only SAP- and customer-released repository objects are supported. Find more information [here](https://help.sap.com/docs/btp/sap-business-technology-platform/abap-repository).
-> - The following two example snippets use the XCO APIs `xco_cp_abap_repository` and `xco_abap_repository` (without _CP_, applicable in Standard ABAP). The assumption is that you have access to a system that supports classic ABAP, the `xco_abap_repository` API is available, and you have imported the ABAP cheat sheet repository (or you might use another custom database table). You can use the following to visualize the aforementioned disclaimer. In a class flagged for ABAP for Cloud Development, the following snippet is usable, in principle. However, you may find that it does not verify the existence of the demo database table (as it is not released). If you have imported the ABAP cheat sheet repository into an SAP BTP ABAP Environment, the snippet will return true there.
+> - The following two example snippets use the XCO APIs `xco_cp_abap_repository` and `xco_abap_repository` (without _CP_, applicable in Standard ABAP). The assumption is that you have access to a system that supports classic ABAP, the `xco_abap_repository` API is available, and you have imported the ABAP cheat sheet repository (or you might use another custom database table). You can use the following to visualize the aforementioned disclaimer. In a class flagged for ABAP for Cloud Development (or Standard ABAP), the snippet with `xco_cp_abap_repository` is usable, in principle. However, you may find that it does not verify the existence of the demo database table (as the table is not released). If you have imported the ABAP cheat sheet repository into an SAP BTP ABAP Environment, the snippet will return true there.
 >   ```
 >   "xco_cp_abap_repository
 >   DATA(tabl) = xco_cp_abap_repository=>object->tabl->database_table->for( 'ZDEMO_ABAP_CARR' ).
