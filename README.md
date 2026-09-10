@@ -44,11 +44,11 @@ ABAP cheat sheets[^1] ...
 > [!IMPORTANT] 
 > - Unless otherwise stated in the ABAP cheat sheets, this repository focuses on [ABAP for Cloud Development](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-for-cloud-development) (restricted ABAP language scope for [ABAP Cloud](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-cloud)), particularly in the [SAP BTP ABAP Environment](https://help.sap.com/docs/abap-cloud/abap-keyword/sap-btp-abap-environment) with the latest available ABAP release. ⚠️ If you are not using the SAP BTP ABAP Environment, be aware that some cheat sheets may describe syntax reflecting newer features that may not be available in your ABAP system. For example, if you are in a classic ABAP environment with release 816, newer syntax like generic structured types typed with `ANY STRUCTURE` is not available (it is available as of 920/2608). For more information, refer to the release news. In addition, several ABAP cheat sheets contain excursions into [Standard ABAP](https://help.sap.com/docs/abap-cloud/abap-keyword/standard-abap) (unrestricted ABAP language scope for [classic ABAP](https://help.sap.com/docs/abap-cloud/abap-keyword/classic-abap)) features.
 > - The ABAP cheat sheet documents, embedded code snippets, and executable examples primarily highlight and explore ABAP syntax options. They:
-> 	- Aim to demonstrate the functionality of keywords and additions in action 
-> 	- Aim to quickly get an idea about the functionality, supported simplified examples to reduce complexity
->   - Do not claim to solve concrete programming tasks. Make sure that you devise your own solutions for your programming tasks.
->   - Do not include meaningful, semantic, or real-world use cases.
->   - Do not claim to reflect best practice implementations. Most executable examples, code snippets, names of data objects, classes, methods, and interfaces are non-semantic.
+>  - Aim to demonstrate the functionality of keywords and additions in action.
+>  - Aim to provide a quick overview of functionality, supported by simplified examples to reduce complexity.
+>  - Do not aim to solve specific programming tasks. Ensure you develop your own solutions for your programming tasks.
+>  - Do not include semantic or real-world example use cases. Most executable examples, code snippets, and names of data objects, classes, methods, and interfaces are non-semantic.
+>  - Do not claim to reflect best practice implementations. 
 
 <br>
 
@@ -59,7 +59,7 @@ ABAP cheat sheets[^1] ...
 >- The cheat sheets provide links to glossary entries and topics in the ABAP Keyword Documentation. Note that unlike the classic ABAP-only cheat sheets, in most cases these links refer to ABAP for Cloud Development.
 >- [Here](https://help.sap.com/docs/abap-cloud/abaphttps://help.sap.com/docs/abap-cloud/abap-keyword/abap-keyword-documentation-keyword/abap-cloud?file=abenrestricted_abap_elements.html) is an overview of the different ABAP language elements in the different ABAP versions, i.e. what is allowed in ABAP for Cloud Development and what is not. See also the released APIs [here](https://help.sap.com/docs/abap-cloud/abaphttps://help.sap.com/docs/abap-cloud/abap-keyword/abap-keyword-documentation-keyword/abap-cloud?file=abenreleased_apis.html).
 >- In order to have all ABAP cheat sheet documents in one place, the *main* branch (for examples to be imported into the SAP BTP ABAP environment) also contains the ABAP cheat sheet documents that are only relevant for [Standard ABAP](https://help.sap.com/docs/abap-cloud/abaphttps://help.sap.com/docs/abap-cloud/abap-keyword/abap-keyword-documentation-keyword/abap-cloud?file=abenstandard_abap_glosry.html). 
->- The example classes contained in the branches for classic ABAP mostly use syntax that is also available in ABAP for Cloud Development. Only the  `TEST_ABAP_CHEAT_SHEETS_CLASSIC` subpackage contains syntax relevant to Standard ABAP and that is not available in ABAP for Cloud Development, such as dynpro-related ABAP keywords.
+>- The example classes contained in the branches for classic ABAP mostly use syntax that is also available in ABAP for Cloud Development. Only the  `TEST_ABAP_CHEAT_SHEETS_CLS` subpackage contains syntax relevant to Standard ABAP and that is not available in ABAP for Cloud Development, such as dynpro-related ABAP keywords.
 >- The code snippets in the ABAP cheat sheet documents and the executable examples include many comments. While it is generally not recommended to overuse comments in your code, they are used here to explain and provide context directly with ABAP statements. In many cases, they illustrate the results of ABAP statements.
 >- Many ABAP statements allow additions in various orders, and these orders are not always fixed.
 
