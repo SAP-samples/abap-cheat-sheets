@@ -5,6 +5,7 @@
 - [ABAP for Cloud Development](#abap-for-cloud-development)
   - [Terms](#terms)
   - [Excursions](#excursions)
+  - [Finding Released APIs](#finding-released-apis)
   - [More Information](#more-information)
   - [Executable Example](#executable-example)
 
@@ -48,7 +49,7 @@ It provides references to more detailed information on the topic.
 
 1) If available to you, you have accessed an SAP BTP ABAP environment using ADT.
 
-    Access to SAP-provided repository objects is restricted to objects that have been released for ABAP for Cloud Development (released APIs). You can find the released repository objects in the *Project Explorer* view in ADT under *Released Objects*:
+    Access to SAP-provided repository objects is restricted to objects that have been released for ABAP for Cloud Development (released APIs). You can find the released repository objects in the *Project Explorer* view in ADT under *Released Objects* (find more information on released APIs in the [Finding Released APIs](#finding-released-apis) section):
 
     ![Released APIs](./files/released_APIs.png)
 
@@ -250,7 +251,27 @@ It provides references to more detailed information on the topic.
               dist =  cl_abap_prob_distribution=>get_uniform_int_distribution( range = myrange ) ).
       ```
 
+<p align="right"><a href="#top">⬆️ back to top</a></p>
 
+## Finding Released APIs
+
+- Using ABAP Development Tools for Eclipse (ADT) using ABAP repository trees, e.g. Released Objects. Find more information [here](https://help.sap.com/docs/ABAP_PLATFORM_NEW/c238d694b825421f940829321ffa326a/3f232ac7cecc4d9891ff512462240223.html).
+
+- Using SAP Business Accelerator Hub: 
+  - [SAP S/4HANA Cloud Public Edition](https://api.sap.com/products/SAPS4HANACloud/overview)
+  - [SAP S/4HANA Cloud Private Edition](https://api.sap.com/products/SAPS4HANACloudPrivateEdition/overview)
+  - [SAP S/4HANA](https://api.sap.com/products/SAPS4HANA/overview)
+
+- Using ABAP Test Cockpit (ATC) with the Cloudification Repository on GitHub
+  - [Cloudification Repository](https://github.com/SAP/abap-atc-cr-cv-s4hc/blob/main/README.md)
+
+- Using the Cloudification Repository Viewer
+  - [Cloudification Repository Viewer](https://sap.github.io/abap-atc-cr-cv-s4hc/)
+
+- Requesting the release of new SAP APIs in SAP S/4HANA Cloud
+  - [SAP Customer Influence: Public Cloud Edition](https://influence.sap.com/sap/ino/#campaign/2759) 
+  - [Public Cloud Edition - APIs for Integration](https://influence.sap.com/sap/ino/#/campaign/1175)
+  - [What’s New](https://help.sap.com/S4_CE_CHANGES_EXT_OBJ)
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 

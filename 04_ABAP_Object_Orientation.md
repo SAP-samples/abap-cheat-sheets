@@ -119,7 +119,7 @@ You can either create local or global classes:
 <table>
 <tr>
     <td><a href="https://help.sap.com/docs/abap-cloud/abap-keyword/local-class">Local classes</a></td>
-    <td><ul><li>can be defined within an <a href="https://help.sap.com/docs/abap-cloud/abap-keyword/abap-program">ABAP program</a> such as in include programs of global classes (e.g. the <a href="https://help.sap.com/docs/abap-cloud/abap-keyword/ccimp-include">CCIMP include</a>, <i>Local Types</i> table in ADT) or in executable programs ("reports"; in <a href="https://help.sap.com/docs/abap-cloud/abap-keyword/standard-abap)</li><li>can only be used in the ABAP program in which the class is defined</li></ul></td>
+    <td><ul><li>can be defined within an <a href="https://help.sap.com/docs/abap-cloud/abap-keyword/abap-program">ABAP program</a> such as in include programs of global classes (e.g. the <a href="https://help.sap.com/docs/abap-cloud/abap-keyword/ccimp-include">CCIMP include</a>, <i>Local Types</i> table in ADT) or in executable programs ("reports"; in <a href="https://help.sap.com/docs/abap-cloud/abap-keyword/standard-abap">Standard ABAP</a> only)</li><li>can only be used in the ABAP program in which the class is defined</li></ul></td>
 </tr>
 <tr>
     <td><a href="https://help.sap.com/docs/abap-cloud/abap-keyword/global-class">Global
@@ -1056,10 +1056,10 @@ CLASS zcl_demo_abap IMPLEMENTATION.
           END OF s.
 
     "Data objects to demonstrate the partially generic structured type
-    		DATA: BEGIN OF s_demo1,
-    						comp1 TYPE i,
-    						comp2 TYPE string,
-    					END OF s_demo1.
+    DATA: BEGIN OF s_demo1,
+            comp1 TYPE i,
+            comp2 TYPE string,
+          END OF s_demo1.
 
     DATA: BEGIN OF s_demo2,
             comp1 TYPE i,

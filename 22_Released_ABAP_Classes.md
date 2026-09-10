@@ -83,6 +83,10 @@ SELECT ReleasedObjectType, ReleasedObjectName, ReleaseState
   INTO TABLE @DATA(released_classes).
 ```
 
+> [!TIP]
+> Find more resources on information retrieval for released APIs in the [Finding Released APIs](19_ABAP_for_Cloud_Development.md#finding-released-apis) section of the [ABAP for Cloud Development](19_ABAP_for_Cloud_Development.md) cheat sheet.
+
+
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
 ### Cloud Development Successors
@@ -722,7 +726,7 @@ ENDCLASS.
 <td> <code>CL_ABAP_TX</code> </td>
 <td>
 <ul>
-<li>Explicitly setting <a href="https://help.sap.com/docs/abap-cloud/abap-keyword/transactional-phase) to enable transactional consistency checks with the <a href="https://help.sap.com/docs/abap-cloud/abap-keyword/controlled-sap-luw-abencontrolled_sap_luw_glosry)</li>
+<li>Explicitly setting <a href="https://help.sap.com/docs/abap-cloud/abap-keyword/transactional-phase">transactional phases</a> (the modify and save transactional phase) to enable transactional consistency checks with the <a href="https://help.sap.com/docs/abap-cloud/abap-keyword/controlled-sap-luw-abencontrolled_sap_luw_glosry">controlled SAP LUW</a> (which is an extension of the SAP LUW concept)</li>
 <li>The controlled SAP LUW is automatically and implicitly supported by newer ABAP concepts such as RAP, i.e. the transactional phases are implicitly active when RAP handler methods are called.</li>
 <li>Operations that are not allowed in a transactional phase are detected, resulting in a runtime error in certain contexts (or the violations are logged). 
 For example, database modifications are only allowed in the save transactional phase because the data being processed in the modify phase may be inconsistent. Therefore, a database modification in the modify phase can disrupt the SAP LUW.</li>
@@ -3673,7 +3677,8 @@ DATA(sub_acc_id) = ten->get_subaccount_id( )->as_string( ).
 <td> <code>CX_*</code> </td>
 <td>
 
-Exception classes are special classes, usually starting with the name <code>CX_*</code>, that serve as the basis for <a href="https://help.sap.com/docs/abap-cloud/abap-keyword/catchable-exception) cheat sheet. 
+Exception classes are special classes, usually starting with the name <code>CX_*</code>, that serve as the basis for <a href="https://help.sap.com/docs/abap-cloud/abap-keyword/catchable-exception">catchable exceptions</a>. When an exception is raised, an object of such an exception class is created. There are several predefined exception classes. Find more information in the [Exceptions and Runtime Errors](27_Exceptions.md) cheat sheet. 
+ cheat sheet. 
 
 <br>
 

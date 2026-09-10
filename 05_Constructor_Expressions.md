@@ -72,7 +72,7 @@ object](https://help.sap.com/docs/abap-cloud/abap-keyword/data-object),
 implies that the data object is initialized. However, for some
 constructor operators, there is an addition with which the
 initialization can be avoided.
->- As is true for many of the following syntax options, you can do a lot with constructor expressions, often with fewer lines (than older syntax equivalents) of code in a very elegant way. However, keep in mind the readability, maintainability, and debuggability of your code. For example, you can use iteration expressions instead of `LOOP` statements. The expressions are handy and more concise, but may be harder to read and they cannot be debugged.
+>- As is true for many of the following syntax options, you can do a lot with constructor expressions, often with fewer lines of code (than older syntax equivalents) in a very elegant way. However, keep in mind the readability, maintainability, and debuggability of your code. For example, you can use iteration expressions instead of `LOOP` statements. The expressions are handy and more concise, but may be harder to read and they cannot be debugged.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
@@ -238,8 +238,8 @@ itab4 = VALUE #( ( ) ( a = 1 b = 'aaa' ) ).
 "values, however, an empty VALUE expression can be used to create elementary
 "data objects with type-specific initial values.
 DATA(int) = VALUE i( ).
-DATA int2 TYPE i.
-int2 = VALUE #( ).
+DATA another_int TYPE i.
+another_int = VALUE #( ).
 DATA(xstr) = VALUE xstring( ).
 ``` 
 
