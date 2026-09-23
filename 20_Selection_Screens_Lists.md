@@ -787,7 +787,7 @@ Addition `FOR`
 - Determines the `low` and `high` columns in the selection table.
 - Besides a statically defined data object from the program or public attributes of global classes, you can also dynamically specify a DDIC data type within parentheses.
 - Note:
-  - Without the addition `NO_DISPLAY`, the data types must be elementary and flat (except type `f` and enumerated types).
+  - Without the addition `NO-DISPLAY`, the data types must be elementary and flat (except type `f` and enumerated types).
   - When you specify a reference to a DDIC type, its screen-related properties are used.
   - In case of the dynamic specification, the columns in the selection table are created using type `c` length 45. A constant or variable containing the name of component of a flat structure from the DDIC can be specified. Literals are not evaluated.
 
