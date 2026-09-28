@@ -9769,7 +9769,7 @@ CLEAR text.
 
 ### Empty Standard Table Key
 
-- As outlined previously, it is recommended to always specify the primary table key explicitly. Using the standard key as the primary table key by mistake can lead to unexpected behavior when processing the table.
+- It is recommended to always specify the primary table key explicitly. Using the standard key as the primary table key by mistake can lead to unexpected behavior when processing the table.
 - In an internal table declaration like `DATA itab TYPE TABLE OF zdemo_abap_flsch.`, if an explicit table key is not specified, the standard table key is used by default. 
 - In this case, all character and byte-like fields comprise the primary table key. This can lead to performance issues during key accesses, and it may also result in unintentionally working with an internal table that has an empty primary table key, especially when standard tables have a structured line type with all numeric components.
 - The following example illustrates these aspects:

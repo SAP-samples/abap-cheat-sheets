@@ -3165,7 +3165,7 @@ Components specified in superclasses
 - Subclasses inherit and therefore adopt all components, such as attributes or methods, from superclasses.
 - Subclasses can use these components and add new ones.
 - Subclasses know about superclass components, but superclasses do not know about subclass components, unless a friendship relationgship is defined (see further down). Generally, superclasses are unaware of their subclasses.
-- By adding new components - and redefining methods, as covered below - subclasses become more specific, while superclasses remain more generic. This distinction is important for polymorphism and casting as outlined below.
+- By adding new components - and redefining methods, as covered below - subclasses become more specific, while superclasses remain more generic. This distinction is important for polymorphism and casting.
 - If a subclass has no additional components, it contains only the components of the superclass, except for those in the private visibility section (unless friendship is granted).
 - Changes or additions to attributes in subclasses are not visible to superclasses, making these changes relevant only to the subclass and its subclasses.
 

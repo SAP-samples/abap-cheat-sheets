@@ -67,7 +67,7 @@ This ABAP cheat sheet contains a selection of [released](https://help.sap.com/do
 
 ### Classes Available in ABAP for Cloud Development
 
-If available to you, you have accessed an [SAP BTP ABAP Environment](https://help.sap.com/docs/abap-cloud/abap-keyword/sap-btp-abap-environment) using the [ABAP development tools for Eclipse (ADT)](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-development-tools-for-eclipse).
+If available to you, you have accessed an SAP Business AI Platform, ABAP environment using the [ABAP development tools for Eclipse (ADT)](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-development-tools-for-eclipse).
 Access to SAP-provided repository objects is restricted to objects that have been released for [ABAP for Cloud Development](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-for-cloud-development) ([released APIs](https://help.sap.com/docs/abap-cloud/abap-keyword/released-api)). You can find the released repository objects in the *Project Explorer* view in ADT under *Released Objects*. The classes are located in the *Source Code Library* folder:
 
 ![Released APIs](./files/released_APIs.png)
@@ -2845,9 +2845,9 @@ DATA table_json_to_abap TYPE string_table.
 ## ABAP Repository Object Information 
 
 > [!IMPORTANT] 
-> - Note that the _XCO CP Edition_ (many of the released XCO APIs often include _CP_ in the class name) features released classes specifically designed for cloud usage, particularly in the SAP BTP ABAP Environment. 
+> - Note that the _XCO CP Edition_ (many of the released XCO APIs often include _CP_ in the class name) features released classes specifically designed for cloud usage, particularly in the _SAP Business AI Platform, ABAP environment_. 
 > - While these classes can theoretically be used in other system environments, there is no guarantee of API functionality. This is especially true for the classes in this section that provide information about repository objects. Only SAP- and customer-released repository objects are supported. Find more information [here](https://help.sap.com/docs/btp/sap-business-technology-platform/abap-repository).
-> - The following two example snippets use the XCO APIs `xco_cp_abap_repository` and `xco_abap_repository` (without _CP_, applicable in Standard ABAP). The assumption is that you have access to a system that supports classic ABAP, the `xco_abap_repository` API is available, and you have imported the ABAP cheat sheet repository (or you might use another custom database table). You can use the following to visualize the aforementioned disclaimer. In a class flagged for ABAP for Cloud Development (or Standard ABAP), the snippet with `xco_cp_abap_repository` is usable, in principle. However, you may find that it does not verify the existence of the demo database table (as the table is not released). If you have imported the ABAP cheat sheet repository into an SAP BTP ABAP Environment, the snippet will return true there.
+> - The following two example snippets use the XCO APIs `xco_cp_abap_repository` and `xco_abap_repository` (without _CP_, applicable in Standard ABAP). The assumption is that you have access to a system that supports classic ABAP, the `xco_abap_repository` API is available, and you have imported the ABAP cheat sheet repository (or you might use another custom database table). You can use the following to visualize the aforementioned disclaimer. In a class flagged for ABAP for Cloud Development (or Standard ABAP), the snippet with `xco_cp_abap_repository` is usable, in principle. However, you may find that it does not verify the existence of the demo database table (as the table is not released). If you have imported the ABAP cheat sheet repository into an _SAP Business AI Platform, ABAP environment_, the snippet will return true there.
 >   ```
 >   "xco_cp_abap_repository
 >   DATA(tabl) = xco_cp_abap_repository=>object->tabl->database_table->for( 'ZDEMO_ABAP_CARR' ).
@@ -4495,7 +4495,7 @@ To check out examples in demo classes, expand the collapsible sections below.
 > - The example uses the <code>create_by_url</code> method, which is only suitable for public services or testing purposes. No authentication is required for the APIs used.
 > - Note the <a href="README.md#%EF%B8%8F-disclaimer">Disclaimer</a>.</li>
 > - For more information, more meaningful examples, and tutorials that deal with the classes and methods, see the following links:
->   - <a href="https://developers.sap.com/tutorials/abap-environment-external-api.html">Call an External API and Parse the Response in SAP BTP ABAP Environment</a>
+>   - <a href="https://developers.sap.com/tutorials/abap-environment-external-api.html">Call an External API and Parse the Response in _SAP Business AI Platform, ABAP environment_</a>
 >   - <a href="https://community.sap.com/t5/technology-blogs-by-sap/how-to-call-a-remote-odata-service-from-the-trial-version-of-sap-cloud/ba-p/13411535">How to call a remote OData service from the trial version of SAP Cloud Platform ABAP environment</a>
 > - The example is generally about calling external APIs and parsing the HTTP responses. It retrieves the Markdown files of the ABAP cheat sheet documents contained in the ABAP cheat sheet GitHub repository.  
 > - Before using the GitHub APIs, make sure that you have consulted the following documentation: <a href="https://docs.github.com/en">GitHub Docs</a>, <a href="https://docs.github.com/en/enterprise-cloud@latest/rest/markdown/markdown?apiVersion=2022-11-28#render-a-markdown-document">Render a Markdown document</a>, <a href="https://docs.github.com/en/rest/using-the-rest-api/rate-limits-for-the-rest-api?apiVersion=2022-11-28">Rate limits for the REST API</a>
@@ -4744,7 +4744,7 @@ Expand the following collapsible sections for further information and example co
 
 The following example demonstrates a selection of methods and includes the following steps:
 
-- Importing existing XLSX content into your SAP BTP ABAP Environment system (not related to the XCO library; just to have content to work with in the self-contained example below)
+- Importing existing XLSX content into your _SAP Business AI Platform, ABAP environment_ system (not related to the XCO library; just to have content to work with in the self-contained example below)
   - This is a simplified, nonsemantic, and explorative RAP example (not delving into RAP as such; just using various ABAP repository objects related to RAP) solely for importing XLSX content to work with in the example.   
   - The import is done using an automatically created SAP Fiori Elements app preview, which provides a simple UI for uploading local XLSX content.
   - The repository objects are automatically created in ADT when walking through a wizard. Refer to the prerequisite steps for details.
@@ -4758,7 +4758,7 @@ The following example demonstrates a selection of methods and includes the follo
 > - IDE actions represent a simple way of file import. Find more information in section [Excursion: Exploring Demo Display Class Using IDE Actions](#excursion-exploring-demo-display-class-using-ide-actions).
 
 
-**Prerequisite Steps for the XLSX Content Import into the SAP BTP ABAP Environment**
+**Prerequisite Steps for the XLSX Content Import into the _SAP Business AI Platform, ABAP environment_**
 
 The XLSX XCO module works with XLSX content in the form of an xstring. The following example assumes that you have XLSX content available as xstring. To try out the example, you can proceed as follows: 
 
@@ -7179,7 +7179,7 @@ This demo IDE action lets you upload and process files, as well as download them
 **Setup Steps**
 
 1. Create IDE action
-   - Access your demo package in ADT in your SAP BTP ABAP Environment.
+   - Access your demo package in ADT in your _SAP Business AI Platform, ABAP environment_.
    - Create a new repository object e.g. by right-clicking the package and choosing *New -> Other ABAP Repository Object -> Filter for IDE Action*.
    - Action creation: 
      - Name: *ZDEMO_ABAP_FILE_IMPORT_EXPORT*
@@ -8120,7 +8120,7 @@ This demo IDE action runs classes and displays the content of data objects in an
 
 **Steps**
 
-- Access your demo package in ADT in your SAP BTP ABAP Environment.
+- Access your demo package in ADT in your _SAP Business AI Platform, ABAP environment_.
 - Create a new repository object e.g. by right-clicking the package and choosing *New -> Other ABAP Repository Object -> Filter for IDE Action*.
 - Action creation: 
   - Name: *ZDEMO_ABAP_IDE_ACTION_OUTPUT*
@@ -8600,7 +8600,7 @@ ENDCLASS.
 
 **Steps**
  
-- Access your demo package in ADT in your SAP BTP ABAP Environment.
+- Access your demo package in ADT in your _SAP Business AI Platform, ABAP environment_.
 - Create a new repository object by, e.g. right-clicking the package and choosing *New -> Other ABAP Repository Object -> Filter for IDE Action*.
 - Action creation: 
   - Name: *ZDEMO_ABAP_IDE_ACTION_M_RUN*
@@ -9442,7 +9442,7 @@ ENDCLASS.
 
 **Steps**
 
-- Access your demo package in ADT in your SAP BTP ABAP Environment.
+- Access your demo package in ADT in your _SAP Business AI Platform, ABAP environment_.
 - Create a new repository object by, e.g. right-clicking the package and choosing *New -> Other ABAP Repository Object -> Filter for IDE Action*.
 - Action creation: 
   - Name: *ZDEMO_ABAP_IDE_ACTION_IMPORT*

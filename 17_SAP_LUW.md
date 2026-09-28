@@ -384,7 +384,7 @@ After the import of the repository, proceed as follows:
 - Run the program by choosing `F8`.
 
 > [!NOTE]
-> - The examples in the *main* branch of the ABAP cheat sheet repository are designed to be imported into the SAP BTP ABAP Environment. For Standard ABAP, you can find examples (such as `zdemo_abap_sap_luw`) in the other branches of the repository. 
+> - The examples in the *main* branch of the ABAP cheat sheet repository are designed to be imported into the _SAP Business AI Platform, ABAP environment_. For Standard ABAP, you can find examples (such as `zdemo_abap_sap_luw`) in the other branches of the repository. 
 > - The executable example ...
 >   - demonstrates the SAP LUW using classic dynpros to provide a self-contained and simple example that highlights the considerations regarding implicit database commits, without putting the spotlight on dynpros. Note that classic dynpros are outdated for application programs. New developments should use web-based UIs, such as SAP Fiori UIs. 
 >   - covers the following topics in simple contexts:

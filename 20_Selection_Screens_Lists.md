@@ -711,7 +711,7 @@ Replacing the technical name displayed on the screen
   - In ADT, make a right-click inside your demo report you copied the code to. Choose *Open Others -> Text Elements*.
   - At the bottom of the opened window, select the *Selection Texts* tab.
   - Insert `PARAM=Enter some text` and activate. Leave the *number* parameter unchanged. 
-  - You can also use `SELECTION-SCREEN` statements such as the `... COMMENT ...` statement, as outlined below, and assign a text value to the screen comment.
+  - You can also use `SELECTION-SCREEN` statements such as the `... COMMENT ...` statement (see below) and assign a text value to the screen comment.
   - When you execute the program, you will see the technical names replaced by *Enter some text* and *Enter a number*.
 
  </td>
@@ -787,7 +787,7 @@ Addition `FOR`
 - Determines the `low` and `high` columns in the selection table.
 - Besides a statically defined data object from the program or public attributes of global classes, you can also dynamically specify a DDIC data type within parentheses.
 - Note:
-  - Without the addition `NO_DISPLAY`, the data types must be elementary and flat (except type `f` and enumerated types).
+  - Without the addition `NO-DISPLAY`, the data types must be elementary and flat (except type `f` and enumerated types).
   - When you specify a reference to a DDIC type, its screen-related properties are used.
   - In case of the dynamic specification, the columns in the selection table are created using type `c` length 45. A constant or variable containing the name of component of a flat structure from the DDIC can be specified. Literals are not evaluated.
 
@@ -1758,7 +1758,7 @@ Creating pushbuttons<br><br>
 
 - Typically, pushbuttons are used to modify the selection screen, not to control the program (e.g. to exit the program).
 - Additions: 
-  - Position-related additions as outlined above
+  - Position-related additions (see above)
   - `USER-COMMAND`: Used to assign a function code. The pushbutton is enabled by implementing a `TABLES sscrfields.` statement. In doing so, an interface work area is created. When a pushbutton is clicked, the `AT SELECTION-SCREEN` event is raised, and the function code can be evaluated using `sscrfields-ucomm` (do not use `sy-ucomm`).
   - `VISIBLE LENGTH`: Defines the visible length of the pushbutton
   - `MODIF ID`: See above
@@ -3079,7 +3079,7 @@ Writing content
 - You can write flat data objects (including flat structures with character-like components), data objects of type `string` and `xstring` and enumerated types.
 - Also writable: result of function calls, string expressions and method calls
 - Writing expressions in string templates: They are useful for writing embedded arithmetic or bit expressions as these cannot be specified directly. Note that control characters such as `\n` for new lines are ignored.
-- Positioning options are avaialble - as outlined below - for the `WRITE` statement. Among them is `/` that places the output in the next line. Not specifying it means the output is written in the same line.
+- Positioning options are avaialble (see below) for the `WRITE` statement. Among them is `/` that places the output in the next line. Not specifying it means the output is written in the same line.
 
  </td>
 
@@ -5648,7 +5648,7 @@ After the import of the repository, proceed as follows:
 - Run the program by choosing `F8`.
 
 > [!NOTE]
-> - The examples in the *main* branch of the ABAP cheat sheet repository are designed to be imported into the SAP BTP ABAP Environment. For Standard ABAP, you can find examples (such as `ZDEMO_ABAP_SELSCR_LISTS_INTRO`) in the other branches of the repository. 
+> - The examples in the *main* branch of the ABAP cheat sheet repository are designed to be imported into the _SAP Business AI Platform, ABAP environment_. For Standard ABAP, you can find examples (such as `ZDEMO_ABAP_SELSCR_LISTS_INTRO`) in the other branches of the repository. 
 > - The executable examples ...
 >   - do not claim to include meaningful selection screens and lists.
 >   - are not intended to be role models for proper selection screen and list design.   

@@ -140,7 +140,7 @@ They can be ...
 
 **Example: DDIC Data Elements/Domains**
 
-- You have accessed your SAP BTP ABAP Environment in ADT.
+- You have accessed your _SAP Business AI Platform, ABAP environment_ in ADT.
 - Create a data element based on a built-in dicitionary type
   - In your target package, choose *New -> Other ABAP Repository Object*.
   - Filter for *data element* and choose *Next* and walk through the wizard. 
@@ -216,7 +216,7 @@ DATA char10_dtel_ref TYPE zdemo_abap_dtel_ref.
 **Example: DDIC Structures**
 
 The following example creates two DDIC structures exploring several options: 
-- You have accessed your SAP BTP ABAP Environment in ADT.
+- You have accessed your _SAP Business AI Platform, ABAP environment_ in ADT.
 - Create a flat DDIC structure 
   - In your target package, choose *New -> Other ABAP Repository Object*.
   - Filter for *structure* and choose *Next* and walk through the wizard. 
@@ -297,7 +297,7 @@ The following example creates two DDIC structures exploring several options:
 **Example: DDIC Table Type**
 
 The following example creates three DDIC table types exploring several options: 
-- You have accessed your SAP BTP ABAP Environment in ADT.
+- You have accessed your _SAP Business AI Platform, ABAP environment_ in ADT.
 - Create a table type with elementary line type, no explicit key specification
   - In your target package, choose *New -> Other ABAP Repository Object*.
   - Filter for *table type* and choose *Next* and walk through the wizard. 
@@ -457,7 +457,7 @@ The following example creates three DDIC table types exploring several options:
 **Example: DDIC Database Tables**
 
 The following example creates two DDIC database tables exploring several options: 
-- You have accessed your SAP BTP ABAP Environment in ADT.
+- You have accessed your _SAP Business AI Platform, ABAP environment_ in ADT.
 - Create DDIC database tables 
   - In your target package, choose *New -> Other ABAP Repository Object*.
   - Filter for *database table* and choose *Next* and walk through the wizard. 
@@ -544,7 +544,7 @@ CDS built-in types...
 **Example: CDS Simple Types**
 
 The following example creates CDS simple types: 
-- You have accessed your SAP BTP ABAP Environment in ADT.
+- You have accessed your _SAP Business AI Platform, ABAP environment_ in ADT.
 - Create a CDS simple type based on a CDS built-in type
   - In your target package, choose *New -> Other ABAP Repository Object*.
   - Filter for *type* (under Core Data Services) and choose *Next* and walk through the wizard. 
@@ -615,7 +615,7 @@ DATA(applies_to_data_cds_st) = tdo_cds_simple_type->applies_to_data( CONV c5( 'a
 **Example: CDS Enumerated Types**
 
 The following example creates a CDS enumerated type: 
-- You have accessed your SAP BTP ABAP Environment in ADT.
+- You have accessed your _SAP Business AI Platform, ABAP environment_ in ADT.
 - Create a CDS enumerated type
   - In your target package, choose *New -> Other ABAP Repository Object*.
   - Filter for *type* (under Core Data Services) and choose *Next* and walk through the wizard. 
@@ -729,7 +729,7 @@ SELECT * FROM zdemo_abap_table_function INTO TABLE @itab_cds_tabfunc.
 
 ### Finding Released Repository Objects in the System
 
-In an SAP BTP ABAP environment and using ADT, you can find released repository objects in the *Project Explorer* view under *Released Objects*:
+In an _SAP Business AI Platform, ABAP environment_ and using ADT, you can find released repository objects in the *Project Explorer* view under *Released Objects*:
 
 ![Released APIs](./files/released_APIs.png)
 
@@ -1234,4 +1234,4 @@ ENDCLASS.
 ```
 
 </details>  
-
+

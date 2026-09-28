@@ -1431,7 +1431,7 @@ Constructing data objects
 
  <td> 
 
-As outlined above, you can construct structures and internal
+You can construct structures and internal
 tables using the `VALUE` operator. Using `VALUE` for
 constructing [elementary data objects](https://help.sap.com/docs/abap-cloud/abap-keyword/elementary-data-object) and providing values is not possible. You can only use it to create a data object with an initial value, for example `DATA(str) = VALUE string( ).`. The `CONV` operator closes this gap. 
 
