@@ -402,7 +402,7 @@ Examples of string-related contexts:
 
 ## Executable Example
 
-To try the example out, create a demo class named `zcl_demo_abap` in the SAP BTP ABAP Environment and paste the code into it. The example also includes a local class in the CCIMP include (Local Types tab in ADT). 
+To try the example out, create a demo class named `zcl_demo_abap` in the _SAP Business AI Platform, ABAP environment_ and paste the code into it. The example also includes a local class in the CCIMP include (Local Types tab in ADT). 
 After activation, choose F9 in ADT to execute the class. The example is set up to display output in the console. The class execution may take a while to complete.
 
 The simplified example is set up as follows: 
@@ -2528,4 +2528,4 @@ ENDCLASS.
 
 </details> 
 
-<p align="right"><a href="#top">⬆️ back to top</a></p>
+<p align="right"><a href="#top">⬆️ back to top</a></p>

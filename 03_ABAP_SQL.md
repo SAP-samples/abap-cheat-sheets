@@ -65,6 +65,7 @@
     | `UPDATE` | Changes the content of rows of database tables                            |
     | `MODIFY` | Inserts rows into database tables or changes the content of existing rows |
     | `DELETE` | Deletes rows from database tables                                         |
+    | `MERGE`  | Modifies data sources by evaluating another data source                   |    
 
 - ABAP SQL statements use the ABAP SQL interface. This interface transforms all ABAP SQL statements that access the standard database of an AS ABAP to  platform-dependent SQL and forwards the results to the database system.
 - Generally bear in mind the [performance notes](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-sql-performance-notes) when using
@@ -196,8 +197,9 @@ SELECT FROM source   "What data source to read from
       FROM dbtab
       ...
     ```
-  - Regarding the target into which data is read: Instead of using a variable that is (extra) declared beforehand, you can also make use of [inline declarations](https://help.sap.com/docs/abap-cloud/abap-keyword/inline-declaration), for example `... INTO TABLE @DATA(itab).`, to comfortably create an appropriate variable in place. Note that in case of internal tables as targets, the resulting table is a standard table and has an empty key which might have an impact when further
-    processing the internal table entries. Find more information in the ABAP cheat sheet [Internal Tables](01_Internal_Tables.md). The declaration operator [`FINAL`](https://help.sap.com/docs/abap-cloud/abap-keyword/final-inline-declaration-for-immutable-variables) can be used to declare immutable variables.
+  - Regarding the target into which data is read: 
+    - Instead of using a variable that is (extra) declared beforehand, you can also make use of [inline declarations](https://help.sap.com/docs/abap-cloud/abap-keyword/inline-declaration), for example `... INTO TABLE @DATA(itab).`, to comfortably create an appropriate variable in place. Note that in case of internal tables as targets, the resulting table is a standard table and has an empty key which might have an impact when further processing the internal table entries. Find more information in the ABAP cheat sheet [Internal Tables](01_Internal_Tables.md). The declaration operator [`FINAL`](https://help.sap.com/docs/abap-cloud/abap-keyword/final-inline-declaration-for-immutable-variables) can be used to declare immutable variables. 
+    - You can use the addition [`NEW`](https://help.sap.com/docs/abap-cloud/abap-keyword/select-into-target) to specify an [anonymous data object](https://help.sap.com/docs/abap-cloud/abap-keyword/anonymous-data-object) (which can also be specified inline) as target object: `SELECT ... INTO NEW @DATA(dref) ...`, `SELECT ... INTO TABLE NEW @DATA(dref) ...`.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
@@ -210,7 +212,7 @@ SELECT FROM source   "What data source to read from
 
 | Syntax   |      Notes      |
 |----------|-------------|
-| `SELECT * ...` <br><br> `SELECT ... FIELDS * ...` | As outlined above, the `*` character defines all columns to be read from a data source (in the order specified there).  |
+| `SELECT * ...` <br><br> `SELECT ... FIELDS * ...` | The `*` character defines all columns to be read from a data source (in the order specified there).  |
 | `SELECT col1, col2, col3 ...` <br><br> `SELECT ... FIELDS col1, col2, col3 ...` | A comma-separated list of individual column names.   |
 | `SELECT data_source~col1, data_source~col2, data_source~col3 ...`  <br><br> `SELECT ... FIELDS data_source~col1, data_source~col2, data_source~col3 ...` | A comma-separated list of individual column names. Here, the name of the data source is explicitly specified and precedes the column name, separated by a tilde. |
 | `SELECT data_source~* ...` <br><br> `SELECT ... FIELDS data_source~* ...` | In this case, the name of the data source is followed by a tilde and the `*` character to specify all columns. Note that there are [special conditions](https://help.sap.com/docs/abap-cloud/abap-keyword/select-select-list) when using this variant. |
@@ -941,7 +943,7 @@ SELECT FROM dbtab
 <td> <code>WHERE</code> </td>
 <td>
 
-[`WHERE`](https://help.sap.com/docs/abap-cloud/abap-keyword/select-where) clause: Restricts the number of rows that are included in the result set using logical expressions. See further information on them in the following sections.
+[`WHERE`](https://help.sap.com/docs/abap-cloud/abap-keyword/select-where) clause: Restricts the number of rows that are included in the result set using logical expressions. See further information on them in the following sections and in the [WHERE Conditions in ABAP Statements](31_WHERE_Conditions.md) cheat sheet.
  
 <br>
 
@@ -1571,7 +1573,7 @@ Setup of a statement with window expressions:
         all rows of the result set
     -   Optional `ORDER BY`: Introduces both an order (you can
         use `ASCENDING` and `DESCENDING`) and a frame
-        (as outlined below) within the current window, which further
+        (see below) within the current window, which further
         restricts the rows for which the window function is calculated
     -   A window frame, which stands for a subset of rows inside a
         window, can optionally be defined if `ORDER BY` is

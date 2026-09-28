@@ -333,7 +333,7 @@ ASSERT conv_enum_comp = 1.
 
 Using the instance operator [`NEW`](https://help.sap.com/docs/abap-cloud/abap-keyword/new-instance-operator) and [`CREATE DATA`](https://help.sap.com/docs/abap-cloud/abap-keyword/create-data) statements, you can create [anonymous data objects](https://help.sap.com/docs/abap-cloud/abap-keyword/anonymous-data-object), such as anonymous structures. 
 The `NEW` addition of the `INTO` clause of an ABAP SQL `SELECT` statement also creates an anonymous data object. 
-As outlined below, you can access the components or the entire data objects by [dereferencing](https://help.sap.com/docs/abap-cloud/abap-keyword/dereferencing-operator-abendereferencing_operat_glosry). 
+You can access the components or the entire data objects by [dereferencing](https://help.sap.com/docs/abap-cloud/abap-keyword/dereferencing-operator-abendereferencing_operat_glosry). 
 For more information, refer to the [Dynamic Programming](06_Dynamic_Programming.md) and [Constructor Expressions](05_Constructor_Expressions.md) cheat sheets.
 
 ```abap

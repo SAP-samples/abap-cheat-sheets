@@ -32,23 +32,23 @@ ABAP cheat sheets[^1] ...
 - are supported by easy-to-consume **demonstration examples** that you can import into your system using [abapGit](https://abapgit.org/) to run and check out ABAP syntax in action in simple contexts:
   |  Branch | Environment | ABAP language version | Notes |
   | -------- | ------- | ------- | ------- |
-  |  [main](https://github.com/SAP-samples/abap-cheat-sheets/tree/main) |  [SAP BTP ABAP Environment](https://help.sap.com/docs/abap-cloud/abap-keyword/sap-btp-abap-environment) | [ABAP for Cloud Development](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-for-cloud-development) | Contains the main examples of the ABAP cheat sheet repository |
-  | [rap](https://github.com/SAP-samples/abap-cheat-sheets/tree/rap) | [SAP BTP ABAP Environment](https://help.sap.com/docs/abap-cloud/abap-keyword/sap-btp-abap-environment) | [ABAP for Cloud Development](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-for-cloud-development) | Features a selection of simplified, non-semantic demo RAP BOs designed to illustrate various RAP-related features, syntax, and concepts. Find more information [here](https://github.com/SAP-samples/abap-cheat-sheets/blob/rap/README.md). The examples are related to the [RAP BDL](36_RAP_Behavior_Definition_Language.md) and [ABAP EML](08_EML_ABAP_for_RAP.md) cheat sheets. |  
+  |  [main](https://github.com/SAP-samples/abap-cheat-sheets/tree/main) |  SAP Business AI Platform, ABAP environment | [ABAP for Cloud Development](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-for-cloud-development) | Contains the main examples of the ABAP cheat sheet repository |
+  | [rap](https://github.com/SAP-samples/abap-cheat-sheets/tree/rap) | SAP Business AI Platform, ABAP environment | [ABAP for Cloud Development](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-for-cloud-development) | Features a selection of simplified, non-semantic demo RAP BOs designed to illustrate various RAP-related features, syntax, and concepts. Find more information [here](https://github.com/SAP-samples/abap-cheat-sheets/blob/rap/README.md). The examples are related to the [RAP BDL](36_RAP_Behavior_Definition_Language.md) and [ABAP EML](08_EML_ABAP_for_RAP.md) cheat sheets. |  
   | [v755](https://github.com/SAP-samples/abap-cheat-sheets/tree/v755), [v756](https://github.com/SAP-samples/abap-cheat-sheets/tree/v756), [v757](https://github.com/SAP-samples/abap-cheat-sheets/tree/v757), [v758](https://github.com/SAP-samples/abap-cheat-sheets/tree/v758), [v816](https://github.com/SAP-samples/abap-cheat-sheets/tree/v816)  | System that supports [classic ABAP](https://help.sap.com/docs/abap-cloud/abap-keyword/classic-abap) (the branch names indicate the ABAP release version) | [Standard ABAP](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abenstandard_abap_glosry.html)  | Contains many of the main examples and includes examples for classic ABAP only topics such as dynpro  |
-  | [unit_tests](https://github.com/SAP-samples/abap-cheat-sheets/tree/unit_tests) | [SAP BTP ABAP Environment](https://help.sap.com/docs/abap-cloud/abap-keyword/sap-btp-abap-environment) | [ABAP for Cloud Development](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-for-cloud-development) | Features a selection of simplified ABAP Unit test scenarios across various contexts in a separate branch; see the [ABAP Unit Tests](14_ABAP_Unit_Tests.md) cheat sheet |
-  | [oo_patterns](https://github.com/SAP-samples/abap-cheat-sheets/tree/oo_patterns) | [SAP BTP ABAP Environment](https://help.sap.com/docs/abap-cloud/abap-keyword/sap-btp-abap-environment) | [ABAP for Cloud Development](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-for-cloud-development) | Contains example classes to illustrate object-oriented design patterns in a separate branch; see the [ABAP Examples Using Object-Oriented Design Patterns](34_OO_Design_Patterns.md) cheat sheet |
+  | [unit_tests](https://github.com/SAP-samples/abap-cheat-sheets/tree/unit_tests) | SAP Business AI Platform, ABAP environment | [ABAP for Cloud Development](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-for-cloud-development) | Features a selection of simplified ABAP Unit test scenarios across various contexts in a separate branch; see the [ABAP Unit Tests](14_ABAP_Unit_Tests.md) cheat sheet |
+  | [oo_patterns](https://github.com/SAP-samples/abap-cheat-sheets/tree/oo_patterns) | SAP Business AI Platform, ABAP environment | [ABAP for Cloud Development](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-for-cloud-development) | Contains example classes to illustrate object-oriented design patterns in a separate branch; see the [ABAP Examples Using Object-Oriented Design Patterns](34_OO_Design_Patterns.md) cheat sheet |
 
 
 <br>
 
 > [!IMPORTANT] 
-> - Unless otherwise stated in the ABAP cheat sheets, this repository focuses on [ABAP for Cloud Development](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-for-cloud-development) (restricted ABAP language scope for [ABAP Cloud](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-cloud)), particularly in the [SAP BTP ABAP Environment](https://help.sap.com/docs/abap-cloud/abap-keyword/sap-btp-abap-environment) with the latest available ABAP release. ⚠️ If you are not using the SAP BTP ABAP Environment, be aware that some cheat sheets may describe syntax reflecting newer features that may not be available in your ABAP system. For example, if you are in a classic ABAP environment with release 816, newer syntax like generic structured types typed with `ANY STRUCTURE` is not available (it is available as of 920/2608). For more information, refer to the release news. In addition, several ABAP cheat sheets contain excursions into [Standard ABAP](https://help.sap.com/docs/abap-cloud/abap-keyword/standard-abap) (unrestricted ABAP language scope for [classic ABAP](https://help.sap.com/docs/abap-cloud/abap-keyword/classic-abap)) features.
+> - Unless otherwise stated in the ABAP cheat sheets, this repository focuses on [ABAP for Cloud Development](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-for-cloud-development) (restricted ABAP language scope for [ABAP Cloud](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-cloud)), particularly in the SAP Business AI Platform, ABAP environment with the latest available ABAP release. ⚠️ If you are not using the _SAP Business AI Platform, ABAP environment_, be aware that some cheat sheets may describe syntax reflecting newer features that may not be available in your ABAP system. For example, if you are in a classic ABAP environment with release 816, newer syntax like generic structured types typed with `ANY STRUCTURE` is not available (it is available as of 920/2608). For more information, refer to the release news. In addition, several ABAP cheat sheets contain excursions into [Standard ABAP](https://help.sap.com/docs/abap-cloud/abap-keyword/standard-abap) (unrestricted ABAP language scope for [classic ABAP](https://help.sap.com/docs/abap-cloud/abap-keyword/classic-abap)) features.
 > - The ABAP cheat sheet documents, embedded code snippets, and executable examples primarily highlight and explore ABAP syntax options. They:
->  - Aim to demonstrate the functionality of keywords and additions in action.
->  - Aim to provide a quick overview of functionality, supported by simplified examples to reduce complexity.
->  - Do not aim to solve specific programming tasks. Ensure you develop your own solutions for your programming tasks.
->  - Do not include semantic or real-world example use cases. Most executable examples, code snippets, and names of data objects, classes, methods, and interfaces are non-semantic.
->  - Do not claim to reflect best practice implementations. 
+>    - Aim to demonstrate the functionality of keywords and additions in action.
+>    - Aim to provide a quick overview of functionality, supported by simplified examples to reduce complexity.
+>    - Do not aim to solve specific programming tasks. Ensure you develop your own solutions for your programming tasks.
+>    - Do not include semantic or real-world example use cases. Most executable examples, code snippets, and names of data objects, classes, methods, and interfaces are non-semantic.
+>    - Do not claim to reflect best practice implementations. 
 
 <br>
 
@@ -58,7 +58,7 @@ ABAP cheat sheets[^1] ...
 >- Check the [Known Issues](#-known-issues) and [Disclaimer](#%EF%B8%8F-disclaimer).
 >- The cheat sheets provide links to glossary entries and topics in the ABAP Keyword Documentation. Note that unlike the classic ABAP-only cheat sheets, in most cases these links refer to ABAP for Cloud Development.
 >- [Here](https://help.sap.com/docs/abap-cloud/abaphttps://help.sap.com/docs/abap-cloud/abap-keyword/abap-keyword-documentation-keyword/abap-cloud?file=abenrestricted_abap_elements.html) is an overview of the different ABAP language elements in the different ABAP versions, i.e. what is allowed in ABAP for Cloud Development and what is not. See also the released APIs [here](https://help.sap.com/docs/abap-cloud/abaphttps://help.sap.com/docs/abap-cloud/abap-keyword/abap-keyword-documentation-keyword/abap-cloud?file=abenreleased_apis.html).
->- In order to have all ABAP cheat sheet documents in one place, the *main* branch (for examples to be imported into the SAP BTP ABAP environment) also contains the ABAP cheat sheet documents that are only relevant for [Standard ABAP](https://help.sap.com/docs/abap-cloud/abaphttps://help.sap.com/docs/abap-cloud/abap-keyword/abap-keyword-documentation-keyword/abap-cloud?file=abenstandard_abap_glosry.html). 
+>- In order to have all ABAP cheat sheet documents in one place, the *main* branch (for examples to be imported into the _SAP Business AI Platform, ABAP environment_) also contains the ABAP cheat sheet documents that are only relevant for [Standard ABAP](https://help.sap.com/docs/abap-cloud/abaphttps://help.sap.com/docs/abap-cloud/abap-keyword/abap-keyword-documentation-keyword/abap-cloud?file=abenstandard_abap_glosry.html). 
 >- The example classes contained in the branches for classic ABAP mostly use syntax that is also available in ABAP for Cloud Development. Only the  `TEST_ABAP_CHEAT_SHEETS_CLS` subpackage contains syntax relevant to Standard ABAP and that is not available in ABAP for Cloud Development, such as dynpro-related ABAP keywords.
 >- The code snippets in the ABAP cheat sheet documents and the executable examples include many comments. While it is generally not recommended to overuse comments in your code, they are used here to explain and provide context directly with ABAP statements. In many cases, they illustrate the results of ABAP statements.
 >- Many ABAP statements allow additions in various orders, and these orders are not always fixed.
@@ -70,7 +70,7 @@ ABAP cheat sheets[^1] ...
 ## 🏗️ How to Use
 
 1. **ABAP syntax info**: Get info in a nutshell on ABAP syntax and concepts related to various ABAP topics in the [ABAP cheat sheets](#-abap-cheat-sheets-overview).
-2. **Demo examples**: Import the ABAP development objects of this repository (Note: *main* branch for the SAP BTP ABAP environment only) into your system using [abapGit](https://abapgit.org/) as described [here](#-getting-started-with-the-examples) and run the demo classes by choosing *F9* in the [ABAP development tools for Eclipse (ADT)](https://tools.eu1.hana.ondemand.com/) for checking out the ABAP syntax in action.
+2. **Demo examples**: Import the ABAP development objects of this repository (Note: *main* branch for the _SAP Business AI Platform, ABAP environment_ only) into your system using [abapGit](https://abapgit.org/) as described [here](#-getting-started-with-the-examples) and run the demo classes by choosing *F9* in the [ABAP development tools for Eclipse (ADT)](https://tools.eu1.hana.ondemand.com/) for checking out the ABAP syntax in action.
 
 <br>
 
@@ -121,7 +121,7 @@ ABAP cheat sheets[^1] ...
 
 ## 🎬 Getting Started with the Examples
 
-The main focus of the ABAP cheat sheets is ABAP for Cloud Development. The examples in the *main* branch of the repository are designed to be imported into the SAP BTP ABAP environment.
+The main focus of the ABAP cheat sheets is ABAP for Cloud Development. The examples in the *main* branch of the repository are designed to be imported into the _SAP Business AI Platform, ABAP environment_.
 For Standard ABAP, you can find examples in the other branches of the repository (note that except for specific examples, the example code there uses syntax that is also availabe in ABAP for Cloud Development) that you can import into your sandbox SAP system. Just select the appropriate version (*v757* stands for ABAP version 7.57). Check the information in the following collapsible sections for your system environment and perform the required steps.
 
 <details>
@@ -138,14 +138,14 @@ For Standard ABAP, you can find examples in the other branches of the repository
 </details>
 
 <details>
-  <summary>🟢 2a) SAP BTP ABAP environment</summary>
+  <summary>🟢 2a) _SAP Business AI Platform, ABAP environment_</summary>
   <br>
 
 **Prerequisites**
-- [x] You have access to an SAP BTP ABAP Environment instance (see [here](https://blogs.sap.com/2018/09/04/sap-cloud-platform-abap-environment) for additional information).
+- [x] You have access to an _SAP Business AI Platform, ABAP environment_ instance (see [here](https://blogs.sap.com/2018/09/04/sap-cloud-platform-abap-environment) for additional information).
 - [x] You have downloaded and installed the ABAP development tools for Eclipse (ADT). Make sure that you are using the latest version, as indicated on the [installation page](https://tools.hana.ondemand.com/#abap).
 - [x] Before importing the code, you have performed a system-wide search for classes named `ZCL_DEMO_ABAP*`, for example, so that you do not run into errors when you try to import the code. If someone has already imported the content into the system, you can simply check out that imported version and proceed to the step *3) Run the code*.
-- [x] You have created an ABAP cloud project in ADT that allows you to access your SAP BTP ABAP Environment instance (see [here](https://help.sap.com/viewer/5371047f1273405bb46725a417f95433/Cloud/en-US/99cc54393e4c4e77a5b7f05567d4d14c.html) for more information). Your login language is English.
+- [x] You have created an ABAP cloud project in ADT that allows you to access your _SAP Business AI Platform, ABAP environment_ instance (see [here](https://help.sap.com/viewer/5371047f1273405bb46725a417f95433/Cloud/en-US/99cc54393e4c4e77a5b7f05567d4d14c.html) for more information). Your login language is English.
 - [x] You have installed the [abapGit](https://github.com/abapGit/eclipse.abapgit.org) plug-in for ADT from the [update site](http://eclipse.abapgit.org/updatesite/).
 
 
@@ -211,7 +211,7 @@ Use the standalone version of the abapGit report to import the demo examples of 
       ```
 
    - ***Package***: Your demo package, for example, *TEST_ABAP_CHEAT_SHEETS*
-   - ***Branch***: Choose the button with the 3 dots to the right of the input field. In the pop-up window, select the appropriate branch, e.g. *v757* if your ABAP release is 7.57, and choose the *Continue* (✔️) button. **Note**: The examples in the *main* branch are designed to be imported into the SAP BTP ABAP environment only. 
+   - ***Branch***: Choose the button with the 3 dots to the right of the input field. In the pop-up window, select the appropriate branch, e.g. *v757* if your ABAP release is 7.57, and choose the *Continue* (✔️) button. **Note**: The examples in the *main* branch are designed to be imported into the _SAP Business AI Platform, ABAP environment_ only. 
    - ***Folder Logic***: *Full*
 6. Choose *Create Online Repo*.
 7. The *Repository* screen displays the available ABAP artifacts to be imported into your ABAP system.
@@ -250,7 +250,7 @@ Use the standalone version of the abapGit report to import the demo examples of 
 
 ## ⚡ Known Issues
 - Regarding possible code check warnings, e.g. for the many strings in the code, not using an `ORDER BY` clause, or messages regarding using `SELECT *`, the code deliberately avoids [pragmas](https://help.sap.com/docs/abap-cloud/abaphttps://help.sap.com/docs/abap-cloud/abap-keyword/abap-keyword-documentation-keyword/abap-cloud?file=abenpragma_glosry.html) and [pseudo comments](https://help.sap.com/docs/abap-cloud/abaphttps://help.sap.com/docs/abap-cloud/abap-keyword/abap-keyword-documentation-keyword/abap-cloud?file=abenpseudo_comment_glosry.html) in order to focus on the available ABAP syntax. See also the [Disclaimer](#%EF%B8%8F-disclaimer).
-- Importing the `main` branch (and other branches of the GitHub repository) in a system other than the SAP BTP ABAP Environment may cause errors in various cases. This may also be true when checking out various code snippets and example classes available in the ABAP cheat sheet documents. ABAP keywords, additions, and syntax options may not yet be available in the ABAP release. You can check the ABAP Release News in the ABAP Keyword Documentation. Also note the *General Info* in the [Getting Started with the Examples](#-getting-started-with-the-examples) section.
+- Importing the `main` branch (and other branches of the GitHub repository) in a system other than the _SAP Business AI Platform, ABAP environment_ may cause errors in various cases. This may also be true when checking out various code snippets and example classes available in the ABAP cheat sheet documents. ABAP keywords, additions, and syntax options may not yet be available in the ABAP release. You can check the ABAP Release News in the ABAP Keyword Documentation. Also note the *General Info* in the [Getting Started with the Examples](#-getting-started-with-the-examples) section.
 - If you encounter import problems with the XSLT/ST objects, try to manually paste the code from the 3 `...source.xml` files ([zdemo_abap_st_carrhtml](./src/zdemo_abap_st_carrhtml.xslt.source.xml), [zdemo_abap_st_strhtml](./src/zdemo_abap_st_strhtml.xslt.source.xml), [zdemo_abap_xslt_fl](./src/zdemo_abap_xslt_fl.xslt.source.xml)) into the improperly imported objects and activate all inactive objects.
 
 <br>

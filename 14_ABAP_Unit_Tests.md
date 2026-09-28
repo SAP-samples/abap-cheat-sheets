@@ -918,12 +918,12 @@ Authorization object `ZAUTH_OB`
 
  <td> 
 
-- **Note**: The examples are designed for the SAP BTP ABAP Environment. If you are using an on-premise environment and want to skip creating the demo authorization object and the steps to add a role to your user, you can replace the literal with the demo authorization object in the example class code with `S_DEVELOP` and omit the following (SAP BTP ABAP Environment-related) steps.
+- **Note**: The examples are designed for the _SAP Business AI Platform, ABAP environment_. If you are using an on-premise environment and want to skip creating the demo authorization object and the steps to add a role to your user, you can replace the literal with the demo authorization object in the example class code with `S_DEVELOP` and omit the following (_SAP Business AI Platform, ABAP environment_-related) steps.
 - Details regarding the demo authorization object and steps:
   - Object class: CPAE
   - Authorization field ACTVT should be available.
   - Permitted activities: 01 (create or generate), 02 (change), 03 (display), 06 (delete).
-  - Note that the examples are designed for the SAP BTP ABAP Environment. If you want to test the examples with authority checks, follow the additional steps. Refer to the implementation details in the [Authorization Checks](25_Authorization_Checks.md) cheat sheet, section [Executable Example (SAP BTP ABAP Environment)](25_Authorization_Checks.md#executable-example-sap-btp-abap-environment). 
+  - Note that the examples are designed for the _SAP Business AI Platform, ABAP environment_. If you want to test the examples with authority checks, follow the additional steps. Refer to the implementation details in the [Authorization Checks](25_Authorization_Checks.md) cheat sheet, section [Executable Example (_SAP Business AI Platform, ABAP environment_)](25_Authorization_Checks.md#executable-example-sap-btp-abap-environment). 
   - High-level steps: 
     - Create an IAM app, for example, `ZDEMO_AUTH_IAM`. Use External app as the application type. In the Authorization tab, add the demo object and select ACTVT. After adding it, select all field values for ACTVT, such as create, change, etc. Publish it locally.
     - Create a business catalog, for example, `ZDEMO_BUSINESS_CATALOG`. In the Apps tab, add `ZDEMO_AUTH_IAM_EXT`. Publish it locally.
@@ -3060,7 +3060,7 @@ ENDCLASS.
     - A method executes `AUTHORITY-CHECK` for the demo object `ZAUTH_OB` and returns `abap_true` when `sy-subrc = 0`.
 - **Test class**: 
     - Defines a local test class that uses an API for authorization checks.
-    - Note that the API only restricts the authorizations of the user running the test and does not grant additional authorizations. To follow the example fully, complete the prerequisite steps, create the demo authorization object, and assign a business role to your user (along with any necessary steps in the SAP BTP ABAP Environment). In an on-premise environment, you could replace the demo authorization object in the code with `S_DEVELOP`, for example.
+    - Note that the API only restricts the authorizations of the user running the test and does not grant additional authorizations. To follow the example fully, complete the prerequisite steps, create the demo authorization object, and assign a business role to your user (along with any necessary steps in the _SAP Business AI Platform, ABAP environment_). In an on-premise environment, you could replace the demo authorization object in the code with `S_DEVELOP`, for example.
     - Configures different authorization sets, executes `call_authority_check`, and verifies expected outcomes for each action.
     - The demo authorization object assumes your user has the `create`, `change`, `display`, and `delete` authorizations. Therefore, the unrestricted test methods should return true for the authorization check. Some test methods are designed to restrict certain authorizations (only `change` and `display`). For example, even though deletion is actually authorized, the restriction setting using the API will indicate that deletion is not permitted.
     - Asserts both positive and negative authorization cases and covers execution log behavior.

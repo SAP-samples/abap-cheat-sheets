@@ -62,7 +62,7 @@ in the ABAP Keyword Documentation.
 -   AMDP procedures and functions are part of a dedicated [AMDP
     class](https://help.sap.com/docs/abap-cloud/abap-keyword/amdp-class)
     and declared and implemented as part of a method. The classes and
-    methods have certain characteristics as outlined further down.
+    methods have certain characteristics (see further down).
 -   The AMDP framework replicates the procedure or function to the
     database system, i. e. despite the fact that the programming happens
     in an AMDP class (which is an [ABAP

@@ -866,7 +866,7 @@ ENDCLASS.
 
 ## Using Messages as Exception Texts
 
-- Each exception has an [exception text](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abenexception_text_glosry.html) that describes the error and can be retrieved as outlined above. This helps you analyze the error. Imagine using exceptions in user interfaces; if a user encounters an error, the exception texts may be displayed on the UI.
+- Each exception has an [exception text](https://help.sap.com/doc/abapdocu_latest_index_htm/latest/en-US/abenexception_text_glosry.html) that describes the error and can be retrieved. This helps you analyze the error. Imagine using exceptions in user interfaces; if a user encounters an error, the exception texts may be displayed on the UI.
 - Typically, messages are texts organized in message classes and accessed using the `MESSAGE` statement. In [classic ABAP](https://help.sap.com/docs/abap-cloud/abap-keyword/classic-abap), these statements are relevant for classic UIs, which are not supported in [ABAP Cloud](https://help.sap.com/docs/abap-cloud/abap-keyword/abap-cloud). However, messages can also be used as exception texts for exception classes.
 - In ABAP for Cloud Development, you can define exception texts using message classes to describe raised exceptions.
 - Message classes group messages by an identifier.
@@ -1466,7 +1466,7 @@ ABAP contract checks include ...
     - Violation: Missing `%cid`
     - `%cid` should always be filled in RAP creation requests
     - You can try out the following:
-      - You are in your SAP BTP ABAP environment.
+      - You are in your _SAP Business AI Platform, ABAP environment_.
       - Provided that you have imported the ABAP cheat sheet repository, you can add the following ABAP EML create request in a class that implements the classrun (`if_oo_adt_classrun`).
       - The `%cid` specification in the code snippet is intentionally commented out, so `%cid` is not specified.
       - Run the class. 

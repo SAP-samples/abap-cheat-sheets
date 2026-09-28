@@ -47,7 +47,7 @@ It provides references to more detailed information on the topic.
   
 ## Excursions
 
-1) If available to you, you have accessed an SAP BTP ABAP environment using ADT.
+1) If available to you, you have accessed an _SAP Business AI Platform, ABAP environment_ using ADT.
 
     Access to SAP-provided repository objects is restricted to objects that have been released for ABAP for Cloud Development (released APIs). You can find the released repository objects in the *Project Explorer* view in ADT under *Released Objects* (find more information on released APIs in the [Finding Released APIs](#finding-released-apis) section):
 

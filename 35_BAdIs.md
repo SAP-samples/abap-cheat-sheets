@@ -66,7 +66,7 @@ This section provides high-level walkthrough examples to illustrate simplified B
 > - The demo BAdIs outlined here are simplified and non-semantic, intended solely for [exploration, experimentation, and demonstration](./README.md#%EF%B8%8F-disclaimer). They represent self-contained examples on which the BAdI-related ABAP statements are illustrated in the cheat sheet.  
 > - As a prerequisite for walking through the creation steps, you have: 
 >   - Opened ADT.
->   - Logged in to your SAP BTP ABAP Environment.
+>   - Logged in to your _SAP Business AI Platform, ABAP environment_.
 >   - Created a package for demo content.
 > - The procedure description includes the creation of demo repository objects step by step . You can also create objects separately and add them to the appropriate fields on the maintenance screens in ADT.
 > - When enhancing existing functionality, you need to know about the existing BAdI and proceed with creating custom implementations.

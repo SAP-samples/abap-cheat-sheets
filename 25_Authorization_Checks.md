@@ -7,7 +7,7 @@
   - [Terms](#terms)
   - [Explicit Authorization Checks Using AUTHORITY-CHECK Statements](#explicit-authorization-checks-using-authority-check-statements)
   - [Implicit Authorization Checks Using CDS Access Control for Read Accesses](#implicit-authorization-checks-using-cds-access-control-for-read-accesses)
-  - [Executable Example (SAP BTP ABAP Environment)](#executable-example-sap-btp-abap-environment)
+  - [Executable Example (_SAP Business AI Platform, ABAP environment_)](#executable-example-sap-btp-abap-environment)
     - [Implementation Steps](#implementation-steps)
     - [Example Class](#example-class)
   - [Excursion: Authorization Control in RAP](#excursion-authorization-control-in-rap)
@@ -16,7 +16,7 @@
 
 This cheat sheet ... 
 - provides a high-level overview on authorization checks in ABAP, supported by an executable example to explore the authorization checks in action. 
-- focuses on the SAP BTP ABAP Environment. Therefore, the procedure of assigning authorizations is different from, for example, [classic ABAP](https://help.sap.com/docs/abap-cloud/abap-keyword/classic-abap).
+- focuses on the _SAP Business AI Platform, ABAP environment_. Therefore, the procedure of assigning authorizations is different from, for example, [classic ABAP](https://help.sap.com/docs/abap-cloud/abap-keyword/classic-abap).
 - is meant to give an idea about the topic. Make sure that you consult the documentation for more details and the complete picture.
 
 ## Introduction
@@ -114,7 +114,7 @@ The following topic covers authorization-related terms and provides you with the
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-## Executable Example (SAP BTP ABAP Environment)
+## Executable Example (_SAP Business AI Platform, ABAP environment_)
 
 > [!NOTE]
 > - The example is intentionally simplified and nonsemantic, designed to explore basic authorization checks.
@@ -137,7 +137,7 @@ Expand the following collapsible section for the implementation steps required f
 
 <br>
 
-- You have accessed your SAP BTP ABAP Environment in ADT.
+- You have accessed your _SAP Business AI Platform, ABAP environment_ in ADT.
 - Create an authorization field
   - In your target package, choose *New -> Other ABAP Repository Object*.
   - Filter for *Authorization Field* and choose *Next* and walk through the wizard. 
