@@ -4,7 +4,7 @@
 
 - [Data Types and Data Objects](#data-types-and-data-objects)
   - [Introduction](#introduction)
-  - [Data Types and Objects: Definition](#data-types-and-objects-definition)
+  - [Data Types and Data Objects: Definition](#data-types-and-data-objects-definition)
   - [ABAP Data Types](#abap-data-types)
     - [Elementary Data Types](#elementary-data-types)
     - [Complex Data Types](#complex-data-types)
@@ -24,11 +24,11 @@
   - [ABAP Enumerated Types and Objects](#abap-enumerated-types-and-objects)
   - [Notes in a Nutshell](#notes-in-a-nutshell)
     - [Type Conversions, Compatibility and Assignments](#type-conversions-compatibility-and-assignments)
-    - [Terms Related to Data Types and Objects](#terms-related-to-data-types-and-objects)
-    - [Additions for Creating Data Types and Objects](#additions-for-creating-data-types-and-objects)
+    - [Terms Related to Data Types and Data Objects](#terms-related-to-data-types-and-data-objects)
+    - [Additions for Creating Data Types and Data Objects](#additions-for-creating-data-types-and-data-objects)
     - [Declaration Context of Data Types](#declaration-context-of-data-types)
   - [Excursions](#excursions)
-    - [Getting Type Information and Creating Types/Data Objects at Runtime](#getting-type-information-and-creating-typesdata-objects-at-runtime)
+    - [Getting Type Information, Creating Types and Data Objects at Runtime](#getting-type-information-creating-types-and-data-objects-at-runtime)
     - [Ranges Tables](#ranges-tables)
     - [Typed Literals in ABAP SQL](#typed-literals-in-abap-sql)
     - [Non-Admissible Values of Literals](#non-admissible-values-of-literals)
@@ -40,7 +40,7 @@
 Since data types and data objects are closely related, this cheat sheet covers both topics. 
 Note that the topics covered here are also partly covered in other ABAP cheat sheets. The purpose of this cheat sheet is to summarize the basics.
 
-## Data Types and Objects: Definition
+## Data Types and Data Objects: Definition
 
 Data types
 - Define technical properties of all data objects that have these data types, such as the maximum length of a [text field](https://help.sap.com/docs/abap-cloud/abap-keyword/text-field). 
@@ -2221,7 +2221,7 @@ ENDCLASS.
 ## ABAP Enumerated Types and Objects
 - ABAP supports the concept of enumerations. 
 - Enumerations are a mixture of types and constants.
-- An [enumerated type](https://help.sap.com/docs/abap-cloud/abap-keyword/enumerated-type) specifies a value set in addition to the actual type properties. 
+- An [enumerated type](https://help.sap.com/docs/abap-cloud/abap-keyword/enumerated-type) - which is considered an elementary type - specifies a value set in addition to the actual type properties. 
 - [Enumerated objects](https://help.sap.com/docs/abap-cloud/abap-keyword/enumerated-object) - data objects with an enumerated type - are mainly used to check allowed values. This usually restricts the actual parameters passed to methods to the enumerated values defined in the class. [Enumerated variables](https://help.sap.com/docs/abap-cloud/abap-keyword/enumerated-variable) are variable enumerated objects. They can only contain the associated enumerated values. 
 - [CDS enumerated types](https://help.sap.com/docs/abap-cloud/abap-keyword/cds-enumerated-type) are also available. Find more information in the [ABAP Dictionary (DDIC)](26_ABAP_Dictionary.md) cheat sheet.
 
@@ -2386,7 +2386,7 @@ DATA itab_str    TYPE string_table.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-### Terms Related to Data Types and Objects
+### Terms Related to Data Types and Data Objects
 
 <table>
 
@@ -2746,7 +2746,7 @@ DATA itab_str    TYPE string_table.
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
-### Additions for Creating Data Types and Objects
+### Additions for Creating Data Types and Data Objects
 
 The following table shows a selection of additions for creating data types and objects. The examples randomly show `DATA` or `TYPES` statements.
 
@@ -3256,7 +3256,7 @@ The declaration context of data types (and objects) determines the validity and 
 
 ## Excursions
 
-### Getting Type Information and Creating Types/Data Objects at Runtime
+### Getting Type Information, Creating Types and Data Objects at Runtime
 
 Using [Runtime Type Services (RTTS)](https://help.sap.com/docs/abap-cloud/abap-keyword/runtime-type-services)
 you can ...

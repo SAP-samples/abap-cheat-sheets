@@ -12,8 +12,8 @@
     - [Specifying the FROM Clause](#specifying-the-from-clause)
     - [Specifying the Target and Related Additions](#specifying-the-target-and-related-additions)
     - [Specifying Clauses to Order, Group and Set Conditions for the Result Set](#specifying-clauses-to-order-group-and-set-conditions-for-the-result-set)
-    - [Selecting Data by Evaluating the Content of Other Tables](#selecting-data-by-evaluating-the-content-of-other-tables)
     - [Combining Data of Multiple Data Sources](#combining-data-of-multiple-data-sources)
+    - [Selecting Data From a Source by Evaluating the Content of an Internal Table](#selecting-data-from-a-source-by-evaluating-the-content-of-an-internal-table)
     - [Common Table Expressions (CTE)](#common-table-expressions-cte)
   - [SQL Conditions](#sql-conditions)
   - [SQL Operands](#sql-operands)
@@ -955,41 +955,7 @@ SELECT FROM dbtab
   INTO ...
 ```
 
-</td>
-</tr>
-
-</table>
-
-<p align="right"><a href="#top">⬆️ back to top</a></p>
-
-### Selecting Data by Evaluating the Content of Other Tables
-
-[`FOR ALL ENTRIES`](https://help.sap.com/docs/abap-cloud/abap-keyword/select-for-all-entries)
-addition:
-- Components of an internal table can be used in the `WHERE` clause in logical expressions for comparisons with a column of the data source.
-- The logical expression is evaluated for each individual row of the internal table.
-- The result set of the `SELECT` statement is the union set of the result sets produced by the individual evaluations. Rows that occur more than once are removed from the result set automatically. The entire content of a row is respected.
-- If `FOR ALL ENTRIES` is specified, there must be at least one comparison with a column of the internal table.
-- For more information, especially restricitions and things to pay attention to (e. g. making sure that the internal table is not initial), see [here](https://help.sap.com/docs/abap-cloud/abap-keyword/select-for-all-entries). In modern ABAP, it is advisable to use internal tables as data sources in the `SELECT` statement, for example, in `WHERE` clauses or joins, instead of using the `FOR ALL ENTRIES` addition.
-
-``` abap
-"Checking that table is not initial
-IF ( 0 < lines( itab2 ) ).
-
-  SELECT comp1, comp2, comp3
-    FROM dbtab
-    FOR ALL ENTRIES IN @itab2      "Host variable before internal table
-    WHERE comp1 = @itab2-comp1 ... "Relational expression on the right side of a comparison
-    INTO TABLE @itab1
-
-ENDIF.
-```
-
-**Checking the result set of a subquery** with the addition [`EXISTS`](https://help.sap.com/docs/abap-cloud/abap-keyword/sql-cond-exists)
-
-See possible clauses and additions of a [subquery](https://help.sap.com/docs/abap-cloud/abap-keyword/subquery) in a condition in ABAP SQL [here](https://help.sap.com/docs/abap-cloud/abap-keyword/sql-cond-subquery-clauses).
-
-The following code snippet includes a parenthesized subquery following `EXISTS`. Data is only selected from `dbtab1` if the relational expression (`WHERE EXISTS ...`) is true, i. e. if the result set of the subquery contains at least one row. Note the components of the table that are referenced using a tilde.
+There are plenty of options to specify the `WHERE` clause (outlined in the [WHERE Conditions in ABAP Statements](31_WHERE_Conditions.md) cheat sheet). Among them is checking the result set of subqueries such as with the addition [`EXISTS`](https://help.sap.com/docs/abap-cloud/abap-keyword/sql-cond-exists). The following code snippet includes a parenthesized subquery following `EXISTS`. Data is only selected from `dbtab1` if the relational expression (`WHERE EXISTS ...`) is true, i. e. if the result set of the subquery contains at least one row. Note the components of the table that are referenced using a tilde.
 
 ``` abap
 SELECT comp1, comp2, comp3
@@ -999,6 +965,13 @@ SELECT comp1, comp2, comp3
       WHERE comp1 = tab1~comp1 AND comp2 = tab1~comp2 )
   INTO ...
 ```
+
+
+
+</td>
+</tr>
+
+</table>
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
@@ -1162,6 +1135,47 @@ for more information.
 
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
+
+### Selecting Data From a Source by Evaluating the Content of an Internal Table
+
+To select a set of records based on values from an internal table, you can use `SELECT` statements with joins, such as inner joins. You may encounter `SELECT` statements with the [`FOR ALL ENTRIES`](https://help.sap.com/docs/abap-cloud/abap-keyword/select-for-all-entries) addition in (older) code for these operations. Note that this addition is considered deprecated. `SELECT` statements that use `FOR ALL ENTRIES` have restrictions and pitfalls, including the absence of SQL features such as expressions, `GROUP BY`, and `ORDER BY` (only ordering by primary key columns is permitted). Additionally, the result set has implicit `DISTINCT` semantics (duplicate rows are automatically removed, which can obscure data issues). Most notably, it has specific behavior when the internal table is empty: the entire `WHERE` condition is ignored, and the statement returns every row from the database table (with duplicates removed). This behavior is counterintuitive and often leads to unintended full-table reads. So, every use of `FOR ALL ENTRIES` typically requires an explicit check for emptiness on the internal table before the `SELECT` statement, increasing implementation complexity and maintenance burden.
+Therefore, it is advisable to use modern ABAP SQL alternatives that incorporate internal tables as sources in `SELECT` statements.
+
+So, instead of using a statement with `FOR ALL ENTRIES` as follows, ...
+
+```abap
+SELECT * 
+       FROM zdemo_abap_fli
+       WHERE seatsmax < 300
+       INTO TABLE @DATA(cond_tab).
+
+ IF ( 0 < lines( cond_tab ) ).
+    SELECT carrid, connid, cityfrom, cityto
+           FROM zdemo_abap_flsch
+           FOR ALL ENTRIES IN @cond_tab
+           WHERE carrid = @cond_tab-carrid
+           AND connid = @cond_tab-connid
+           INTO TABLE @DATA(itab_forall).
+ENDIF.
+```
+
+... using an inner join with an internal table:
+
+```abap
+SELECT DISTINCT schedule~carrid,
+                schedule~connid,
+                schedule~cityfrom,
+                schedule~cityto
+       FROM zdemo_abap_flsch AS schedule
+       INNER JOIN @cond_tab AS condition
+       ON  schedule~carrid = condition~carrid
+       AND schedule~connid = condition~connid
+       INTO TABLE @DATA(itab_join).
+```
+
+<p align="right"><a href="#top">⬆️ back to top</a></p>
+
+
 
 ### Common Table Expressions (CTE)
 
@@ -2336,11 +2350,12 @@ INTO @DATA(tab_w_uuid).
 
 ### INSERT
 
-- Inserts one or more rows into a database table specified.
+- Inserts one or more rows into a target (such as a database table) specified.
 - The rows to be inserted are taken from a structure, an internal table, or the result set of an embedded subquery.
 - As mentioned above, structures and internal tables from which to insert content should be specified as host variables (with `@`) or host
 expressions (with `@( ... )`).
 - The system fields `sy-subrc` (0 = single row or all rows inserted successfully, 4 = row not or not all rows inserted) and `sy-dbcnt` (number of rows that are inserted) are set.
+- Note that a runtime error occurs if you try to insert a duplicate row into the target. Using the `ACCEPTING DUPLICATE KEYS` addition avoids the runtime error, and all lines that would produce duplicate entries in the database table regarding the keys are discarded. 
 - More information: [`INSERT`](https://help.sap.com/docs/abap-cloud/abap-keyword/insert-writable-obj)
 
 ``` abap

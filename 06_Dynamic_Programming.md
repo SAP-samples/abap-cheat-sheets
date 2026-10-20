@@ -4176,11 +4176,18 @@ DATA(tab) = VALUE t_type( ( char = 'aaa' int = 1 )
                           ( char = 'bbb' int = 2 )
                           ( char = 'ccc' int = 3 ) ).
 
-"1. Dynamic specification of the transformation
-"   If the transformation does not exist, an exception is raised.
-"   The example specifies an ABAP data object (an internal table), which is
-"   trasnformed to asXML. The result is of type xstring.
-"   'itab' stands for the name of the XML element.
+*&---------------------------------------------------------------------*
+*& XML transformation
+*&---------------------------------------------------------------------*
+
+*&---------------------------------------------------------------------*
+*& Dynamic specification of the transformation
+*&---------------------------------------------------------------------*
+
+"If the transformation does not exist, an exception is raised.
+"The example specifies an ABAP data object (an internal table), which is
+"trasnformed to asXML. The result is of type xstring.
+"'itab' stands for the name of the XML element.
 TRY.
     CALL TRANSFORMATION ('ID') SOURCE itab = tab
                                RESULT XML DATA(xml_tab).
@@ -4189,10 +4196,13 @@ ENDTRY.
 
 DATA(xml1) = cl_abap_conv_codepage=>create_in( )->convert( xml_tab ).
 
-"2. Dynamic specification of ABAP data objects as source
-"   The specification is done using an internal table of type abap_trans_srcbind_tab.
-"   As above, the transformation is specified dynamically. Also here, the example specifies an an
-"   internal table, which is transformed to asXML.
+*&---------------------------------------------------------------------*
+*& Dynamic specification of ABAP data objects as source
+*&---------------------------------------------------------------------*
+
+"The specification is done using an internal table of type abap_trans_srcbind_tab.
+"As above, the transformation is specified dynamically. Also here, the example specifies an an
+"internal table, which is transformed to asXML.
 
 DATA t_name TYPE string VALUE `ID`.
 
@@ -4204,9 +4214,12 @@ DATA(xml2) = cl_abap_conv_codepage=>create_in( )->convert( xml_tab2 ).
 
 ASSERT xml2 = xml1.
 
-"3. Dynamic specification of ABAP data objects as result
-"   The specification is done using an internal table of type abap_trans_resbind_tab.
-"   The example transforms to ABAP data. The transformation is also specified dynamically.
+*&---------------------------------------------------------------------*
+*& Dynamic specification of ABAP data objects as result
+*&---------------------------------------------------------------------*
+
+"The specification is done using an internal table of type abap_trans_resbind_tab.
+"The example transforms to ABAP data. The transformation is also specified dynamically.
 
 DATA tab2 LIKE tab.
 DATA(restab) = VALUE abap_trans_resbind_tab( ( name = 'ITAB' value = REF #( tab2 ) ) ).
@@ -4216,7 +4229,44 @@ CALL TRANSFORMATION ('ID') SOURCE XML xml_tab
 
 ASSERT tab2 = tab.
 
-"4. Example with all syntax elements specified dynamically
+*&---------------------------------------------------------------------*
+*& Example with all syntax elements specified dynamically
+*&---------------------------------------------------------------------*
+
+CALL TRANSFORMATION ('ID') SOURCE (srctab)
+                           RESULT (restab).
+
+ASSERT tab2 = tab.
+
+*&---------------------------------------------------------------------*
+*& JSON transformation
+*&---------------------------------------------------------------------*
+
+"The example code snippets show the same as above, but with JSON instead of XML.
+
+TRY.
+    CALL TRANSFORMATION ('ID') SOURCE itab = tab
+                               RESULT JSON DATA(json_tab).
+  CATCH cx_invalid_transformation.
+ENDTRY.
+
+DATA(json1) = cl_abap_conv_codepage=>create_in( )->convert( json_tab ).
+
+srctab = VALUE abap_trans_srcbind_tab( ( name = 'ITAB' value = REF #( tab ) ) ).
+CALL TRANSFORMATION (t_name) SOURCE (srctab)
+                             RESULT JSON DATA(json_tab2).
+
+DATA(json2) = cl_abap_conv_codepage=>create_in( )->convert( json_tab2 ).
+
+ASSERT json2 = json1.
+
+restab = VALUE abap_trans_resbind_tab( ( name = 'ITAB' value = REF #( tab2 ) ) ).
+
+CALL TRANSFORMATION ('ID') SOURCE JSON json_tab
+                           RESULT (restab).
+
+ASSERT tab2 = tab.
+
 CALL TRANSFORMATION ('ID') SOURCE (srctab)
                            RESULT (restab).
 

@@ -1860,7 +1860,7 @@ SELECTION-SCREEN BEGIN OF BLOCK block2 WITH FRAME.
 SELECTION-SCREEN END OF BLOCK block2.
 
 *&---------------------------------------------------------------------*
-*& WITH FRAME WITH TITLE
+*& WITH FRAME TITLE
 *&---------------------------------------------------------------------*
 
 SELECTION-SCREEN BEGIN OF BLOCK block3 WITH FRAME TITLE titl.
