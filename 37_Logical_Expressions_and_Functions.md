@@ -362,7 +362,7 @@ ASSERT REDUCE string( INIT string = ``
                       FOR <line> IN result_tab
                       NEXT string &&= <line> && `|` ) = `1|2|3|4|5|6|7|8|9|10|`.
 
-"Value range: Lower than 5 + greater than or equal to 25
+"Value range: Lower than 5 + greater than or equal to 15
 rangestab = VALUE #( ( sign = 'I' option = 'LT' low = 5 )
                      ( sign = 'I' option = 'GE' low = 15  ) ).
 

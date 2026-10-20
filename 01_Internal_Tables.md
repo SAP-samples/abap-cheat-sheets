@@ -3028,7 +3028,7 @@ ENDCLASS.
 
 ## Accessing Single Table Lines via Table Expressions
 
-The previous sections also covered table expressions. This section provides a summary of their use.
+This section - previous sections also covered them - provides a summary of the use of table expressions.
 
 - Table expressions typically use the name of an internal table followed by square brackets with content `[ ... ]`, specifying a table line.
 - They allow read and write access to internal tables at various positions.
@@ -3037,8 +3037,8 @@ The previous sections also covered table expressions. This section provides a su
 - After the brackets, you can specify chaining (component and object component selectors or additional square brackets). Without chaining, the entire line is respected.
 - Note that not found lines raise the catchable exception `CX_SY_ITAB_LINE_NOT_FOUND`.
 
-The following table demonstrates a selection of subjects where table expressions are applicable.
-
+The following table demonstrates a selection of subjects where table expressions are applicable. Note that the demo tables from the first table line are relevant for most of the code snippets in this section.
+Find the entire example in an expandable section below.
 
 <table>
 <tr>
@@ -3059,50 +3059,78 @@ The following table demonstrates a selection of subjects where table expressions
 
 ``` abap
 "Creating and populating demo internal tables
-"Note: These demo tables are relevant for most of the code snippets
-"in this section.
 TYPES: BEGIN OF s_demo,
-          comp1 TYPE i,
-          comp2 TYPE i,
-          comp3 TYPE i,
-          comp4 TYPE c LENGTH 3,
-        END OF s_demo,
-        ttyp        TYPE SORTED TABLE OF s_demo WITH UNIQUE KEY comp1 WITH NON-UNIQUE SORTED KEY sk COMPONENTS comp2 comp3,
-        ttyp_hashed TYPE HASHED TABLE OF s_demo WITH UNIQUE KEY comp1 WITH NON-UNIQUE SORTED KEY sk COMPONENTS comp2 comp3,
-        ttyp2       TYPE SORTED TABLE OF s_demo WITH UNIQUE KEY comp1 comp2 WITH NON-UNIQUE SORTED KEY sk COMPONENTS comp3.
+         comp1 TYPE i,
+         comp2 TYPE i,
+         comp3 TYPE i,
+         comp4 TYPE c LENGTH 3,
+       END OF s_demo,
+       "Naming 'logic': pr1c = primary key with 1 component, sk2c = secondary key with 2 components
+       tt_so_pr1c_so_sk2c       TYPE SORTED TABLE OF s_demo WITH UNIQUE KEY comp1 WITH NON-UNIQUE SORTED KEY sk COMPONENTS comp2 comp3,
+       tt_so_pr2c_so_sk1c       TYPE SORTED TABLE OF s_demo WITH UNIQUE KEY comp1 comp2 WITH NON-UNIQUE SORTED KEY sk COMPONENTS comp3,
+       tt_ha_pr1c_so_sk2c       TYPE HASHED TABLE OF s_demo WITH UNIQUE KEY comp1 WITH NON-UNIQUE SORTED KEY sk COMPONENTS comp2 comp3,
+       tt_ha_pr2c_ha_sk1c       TYPE HASHED TABLE OF s_demo WITH UNIQUE KEY comp1 comp2 WITH UNIQUE HASHED KEY sk COMPONENTS comp3,
+       tt_so_pr1c_ha_sk2c_alias TYPE SORTED TABLE OF s_demo WITH UNIQUE KEY comp1 WITH UNIQUE HASHED KEY secondary_key ALIAS sec_key COMPONENTS comp2 comp3,
+       tt_std_pr1c_so_sk2c      TYPE STANDARD TABLE OF s_demo WITH NON-UNIQUE KEY comp1 WITH NON-UNIQUE SORTED KEY sk COMPONENTS comp2 comp3.
 
-DATA(itab) = VALUE ttyp( ( comp1 = 1 comp2 = 30 comp3 = 31 comp4 = 'aaa' )
-                         ( comp1 = 2 comp2 = 20 comp3 = 21 comp4 = 'bbb' )
-                         ( comp1 = 3 comp2 = 10 comp3 = 11 comp4 = 'ccc' ) ).
+DATA(it_so_pr1c_so_sk2c) = VALUE tt_so_pr1c_so_sk2c( ( comp1 = 1 comp2 = 2 comp3 = 3 comp4 = 'aaa' )
+                                                     ( comp1 = 4 comp2 = 5 comp3 = 6 comp4 = 'bbb' )
+                                                     ( comp1 = 7 comp2 = 8 comp3 = 9 comp4 = 'ccc' ) ).
 
-DATA itab_hashed TYPE ttyp_hashed.
-itab_hashed = itab.
-DATA itab_so TYPE ttyp2.
-itab_so = itab.
+DATA it_so_pr2c_so_sk1c TYPE tt_so_pr2c_so_sk1c.
+it_so_pr2c_so_sk1c = it_so_pr1c_so_sk2c.
+DATA it_ha_pr1c_so_sk2c TYPE tt_ha_pr1c_so_sk2c.
+it_ha_pr1c_so_sk2c = it_so_pr1c_so_sk2c.
+DATA it_ha_pr2c_ha_sk1c TYPE tt_ha_pr2c_ha_sk1c.
+it_ha_pr2c_ha_sk1c = it_so_pr1c_so_sk2c.
+DATA it_so_pr1c_ha_sk2c_alias TYPE tt_so_pr1c_ha_sk2c_alias.
+it_so_pr1c_ha_sk2c_alias = it_so_pr1c_so_sk2c.
+DATA it_std_pr1c_so_sk2c TYPE tt_std_pr1c_so_sk2c.
+it_std_pr1c_so_sk2c = it_so_pr1c_so_sk2c.
 
 DATA line TYPE s_demo.
 
-"Reading table line by index
-"Just specifying the index number means referring to the primary table index.
+*&---------------------------------------------------------------------*
+*& Reading table line by index, using the primary table index
+*&---------------------------------------------------------------------*
+
+"Just specifying the index number means referring to the primary table index by default.
 "In this case, the internal table must be an index table.
 
-"In the example, the entire table line is assigned to a variable
-line = itab[ 2 ].
+"In the example, the entire table line is assigned to a variable.
+"The following examples cover sorted tables (= index tables).
+line = it_so_pr1c_so_sk2c[ 1 ].
+line = it_so_pr2c_so_sk1c[ 2 ].
 
-"KEY ... INDEX ... additions
-"For reading a line according to a table index.
-"The following example has the same effect as above. Here, the default
-"name of the primary key is specified explicitly.
-line = itab[ KEY primary_key INDEX 2 ].
+"Using such a specification with a hashed table is not possible, as hashed tables do not
+"have a primary table index.
+"line = it_ha_pr1c_so_sk2c[ 3 ].
 
-"Secondary table key specified, using secondary table index
-line = itab[ KEY sk INDEX 1 ].
+*&---------------------------------------------------------------------*
+*& Reading table line by index, explicitly specifiying the table index
+*&
+*& KEY ... INDEX ... addition
+*&---------------------------------------------------------------------*
 
-"This syntax is not possible for hashed tables.
-"DATA(line_hashed_tab1) = itab_hashed[ 2 ].
-"DATA(line_hashed_tab2) = itab_hashed[ KEY primary_key INDEX 2 ].
-"Secondary table index access is possible for hashed tables
-DATA(line_hashed_tab3) = itab_hashed[ KEY sk INDEX 2 ].
+"Using the KEY ... INDEX ... addition, you can specify the:
+"- primary table index explicitly (note: the primary table index is the default index)
+"- secondary table index by specifying the name of the secondary table key.
+
+"Using the primary table index explicitly
+"The following example has the same effect ...
+line = it_so_pr1c_so_sk2c[ KEY primary_key INDEX 1 ].
+"... as this example, which uses the default primary table index.
+line = it_so_pr1c_so_sk2c[ 1 ].
+
+"Using a secondary table index explicitly
+line = it_so_pr1c_so_sk2c[ KEY sk INDEX 1 ].
+
+"If sorted secondary table keys are specified for hashed tables, index access is possible
+"for hashed tables via the secondary table index.
+line = it_ha_pr1c_so_sk2c[ KEY sk INDEX 1 ].
+
+"No index access is possible for hashed secondary table keys, as there is no index.
+"line = it_ha_pr2c_ha_sk1c[ KEY sk INDEX 1 ].
 ``` 
 
 </td>
@@ -3134,80 +3162,100 @@ DATA(line_hashed_tab3) = itab_hashed[ KEY sk INDEX 2 ].
 
 ``` abap
 *&---------------------------------------------------------------------*
+*& Reading table line by table keys
+*&---------------------------------------------------------------------*
+
+*&---------------------------------------------------------------------*
 *& TABLE KEY addition
 *&---------------------------------------------------------------------*
 
-"Explicitly specifying the primary table key
-line = itab[ TABLE KEY primary_key COMPONENTS comp1 = 1 ].
+"Using the TABLE KEY addition, the full table key, i.e. all components of the key (primary table key or
+"secondary table key) must be specified.
+"No other components can be specified.
 
-"The following statement is not possible as no other components can be specified.
-
-"line = itab[ TABLE KEY primary_key COMPONENTS comp1 = 1 comp2 = 30 ].
-
-"The addition COMPONENTS is optional; the following example is the same as above
-line = itab[ TABLE KEY primary_key comp1 = 1 ].
-
-"Specifying a secondary table key
-line = itab[ TABLE KEY sk COMPONENTS comp2 = 20 comp3 = 21 ].
-
+"Explicitly specifying the full primary table key
+line = it_so_pr1c_so_sk2c[ TABLE KEY primary_key comp1 = 1 ].
 "Optional COMPONENTS addition
-line = itab[ TABLE KEY sk comp2 = 20 comp3 = 21 ].
+line = it_ha_pr2c_ha_sk1c[ TABLE KEY primary_key COMPONENTS comp1 = 1 comp2 = 2 ].
 
-"Fully specifying the table key components is required with TABLE KEY. So, the
-"following statement is not possible.
+"Explicitly specifying the full secondary table key
+line = it_so_pr1c_so_sk2c[ TABLE KEY sk comp2 = 2 comp3 = 3 ].
+line = it_ha_pr2c_ha_sk1c[ TABLE KEY sk COMPONENTS comp3 = 3 ].
+line = it_so_pr1c_ha_sk2c_alias[ TABLE KEY secondary_key COMPONENTS comp2 = 2 comp3 = 3 ].
+"Specifying the alias name
+line = it_so_pr1c_ha_sk2c_alias[ TABLE KEY sec_key COMPONENTS comp2 = 2 comp3 = 3 ].
 
-"line = itab[ TABLE KEY sk comp2 = 20 ].
+"No other components can be specified with TABLE KEY. So, the following statement is not possible.
+"line = it_so_pr1c_so_sk2c[ TABLE KEY primary_key comp1 = 1 comp2 = 2 ].
+"line = it_so_pr1c_ha_sk2c_alias[ TABLE KEY sec_key COMPONENTS comp2 = 2 comp3 = 3 comp4 = 'aaa' ].
 
 *&---------------------------------------------------------------------*
 *& KEY addition
 *&---------------------------------------------------------------------*
 
-"Using KEY and specifying all key components work like specifying TABLE KEY
-line = itab[ KEY primary_key COMPONENTS comp1 = 1 ].
-line = itab[ KEY primary_key comp1 = 1 ].
-line = itab[ KEY sk COMPONENTS comp2 = 20 comp3 = 21 ].
-line = itab[ KEY sk comp2 = 20 comp3 = 21 ].
+"Using KEY and specifying all key components (without any other components) work like specifying TABLE KEY
+"Primary table key
+line = it_so_pr1c_so_sk2c[ KEY primary_key comp1 = 1 ].
+line = it_ha_pr2c_ha_sk1c[ KEY primary_key COMPONENTS comp1 = 1 comp2 = 2 ].
+"Secondary table key
+line = it_so_pr1c_so_sk2c[ KEY sk comp2 = 2 comp3 = 3 ].
+line = it_ha_pr2c_ha_sk1c[ KEY sk COMPONENTS comp3 = 3 ].
+line = it_so_pr1c_ha_sk2c_alias[ KEY secondary_key COMPONENTS comp2 = 2 comp3 = 3 ].
+line = it_so_pr1c_ha_sk2c_alias[ KEY sec_key COMPONENTS comp2 = 2 comp3 = 3 ].
 
-"Unlike TABLE KEY, KEY does not enforce all key components to be specified
-line = itab[ KEY sk comp2 = 20 ].
+"Unlike TABLE KEY, KEY does not enforce all sorted table key components to be specified + additional
+"components can be specified forming a free key specification (see below; also possible for hashed table keys and KEY).
+"However, it is required that the left initial part of the sorted table key is specified.
+"Otherwise, the statement is not possible. Hashed keys must be fully specified, otherwise
+"the statement is not possible.
 
-"In case of sorted and secondary table keys, other components not being part
-"of the key can be specified
-line = itab[ KEY primary_key comp1 = 1 comp4 = 'aaa' ].
-line = itab[ KEY sk comp2 = 20 comp4 = 'bbb' ].
+"Primary sorted table key
+"Key specification includes the left initial part of the sorted primary table key
+line = it_so_pr2c_so_sk1c[ KEY primary_key comp1 = 1 ].
 
-"The following statements are not possible. The initial, left part of
-"the key must be specified. In the example case, it is comp2.
+"Key specification includes a part of the sorted primary table key, but not the left initial part;
+"statement not possible
+"line = it_so_pr2c_so_sk1c[ KEY primary_key comp2 = 2 ].
 
-"line = itab[ KEY sk comp3 = 21 comp4 = 'bbb' ].
-"line = itab[ KEY sk comp4 = 'bbb' ].
+"Secondary sorted table key
+"Key specification includes the left initial part of the sorted secondary primary table key
+line = it_so_pr1c_so_sk2c[ KEY sk comp2 = 2 ].
+"Not possible, as the left initial part of the sorted secondary table key is not specified
+"line = it_so_pr1c_so_sk2c[ KEY sk comp3 = 3 ].
 
-"The following statement triggers a syntax warning because the initial
-"part of a table key is specified, but the key name is not specified.
-"In this case, the search is not optimized as the component is not
-"part of the primary table key of the sorted table. You may optimize
-"it by specifying the key.
+"(See more examples below) Free key specifications that include the KEY addition and the ...
+"... full hashed primary table key
+line = it_ha_pr2c_ha_sk1c[ KEY primary_key comp1 = 1 comp2 = 2 comp4 = 'aaa' ].
+"... full sorted primary table key
+line = it_so_pr1c_so_sk2c[ KEY sk comp2 = 2 comp3 = 3 comp4 = 'aaa' ].
+"... left-initial part of the sorted primary table key
+line = it_so_pr1c_so_sk2c[ KEY sk comp2 = 2 comp4 = 'aaa' ].
+"... full hashed secondary table key
+line = it_so_pr1c_ha_sk2c_alias[ KEY secondary_key comp2 = 2 comp3 = 3 comp4 = 'aaa' ].
+"... full sorted secondary table key
+line = it_so_pr1c_so_sk2c[ KEY sk comp2 = 2 comp3 = 3 comp4 = 'aaa' ].
+"... left-initial part of the sorted secondary table key
+line = it_so_pr1c_so_sk2c[ KEY sk comp2 = 2 comp4 = 'aaa' ].
 
-"line = itab[ comp2 = 10 ].
-
-"The syntax warning can be suppressed by a pragma.
-line = itab[ comp2 = 10 ] ##primkey[sk].
-
-"Specifying the key name
-line = itab[ KEY sk comp2 = 10 ].
+"Not possible
+"Incomplete hashed secondary table key
+"line = it_so_pr1c_ha_sk2c_alias[ KEY secondary_key comp2 = 2 comp4 = 'aaa' ].
+"Incomplete, not left-aligned sorted secondary table key
+"line = it_so_pr1c_so_sk2c[ KEY sk comp3 = 3 comp4 = 'aaa' ].
 
 *&---------------------------------------------------------------------*
 *& No TABLE KEY/KEY additions
 *&---------------------------------------------------------------------*
 
-"Specifying a free key search, but including all components of the primary
-"table key
-"For a sorted table as in the example, the search is fully optimized.
-line = itab[ comp1 = 1 ].
-
-"Partly optimized (only a part of the primary table key of the sorted
-"example table is specified)
-line = itab_so[ comp1 = 1 ].
+"Component specifications without any TABLE KEY/KEY addition and that overlap with ...
+"... some components of the sorted primary table key (optimized search)
+line = it_so_pr2c_so_sk1c[ comp1 = 1 ].
+"... all components of the sorted primary table key (optimized search)
+line = it_so_pr2c_so_sk1c[ comp1 = 1 comp2 = 2 ].
+"... with all components of the hashed primary table key (optimized search)
+line = it_ha_pr2c_ha_sk1c[ comp1 = 1 comp2 = 2 ].
+"... with some components of the hashed primary table key (no optimization)
+line = it_ha_pr2c_ha_sk1c[ comp1 = 1 ].
 ``` 
 
 </td>
@@ -3218,17 +3266,145 @@ line = itab_so[ comp1 = 1 ].
 <td> Reading table lines using free keys </td>
 <td>
 
-- Free keys are specified without any `... KEY ...` addition. This corresponds to `WITH KEY` specifications in `READ TABLE` statements.
-- However, in case of sorted and hashed tables, an optimized search is performed when some or all of the key components are specified as free keys (without any `... KEY ...` addition).
-- Note that binary searches cannot be enforced with table expressions (unlike `READ TABLE` statements).
+- Free keys can be specified with and without the `KEY` addition. This corresponds to `WITH KEY` specifications in `READ TABLE` statements.
+- Without `KEY`:
+  - When free key specifications overlap with some or all components of the primary table key, optimized search can be enabled.   
+  - Standard tables are searched linearly. Note that binary searches cannot be enforced with table expressions (unlike `READ TABLE` statements).
+  - Sorted tables are searched binarily when the search key covers:
+    - the left initial part of the primary table key or
+    - the full primary table key.
+    Otherwise, the search is linear.
+  - Hashed tables are searched in an optimized way using the hash algorithm when the search key covers the full primary table key. Otherwise, the search is linear.  
+- With `KEY`:
+  - When explicitly specifying a table key, optimized search is performed for primary and secondary table keys with the criteria mentioned above. The criteria apply to sorted and hashed primary and secondary table keys.
+  - Differences to the `TABLE KEY` addition: `KEY` does not enforce all sorted table key components to be specified, and additional components can be specified forming a free key specification (the latter is also possible for hashed table keys). However, it is required that the left initial part of the sorted table key is specified. Otherwise, the statement is not possible. Hashed keys must be fully specified, otherwise the statement is not possible.  Just using `KEY` and specifying all key components following the key name works like specifying `TABLE KEY`. 
 
 <br>
 
 ``` abap
-"The search is and cannot be optimized as the component is not part of 
-"the primary table key of the table. Plus, no appropriate 
-"secondary table key can be applied.
-line = itab[ comp4 = 'ccc' ].
+*&---------------------------------------------------------------------*
+*& Free key specified with KEY
+*&---------------------------------------------------------------------*
+
+"Free key specification includes left initial part of the sorted primary table key
+line = it_so_pr2c_so_sk1c[ KEY primary_key comp1 = 1 comp4 = 'aaa' ].
+
+"Free key specification includes part of the sorted primary table key, but not the left initial part;
+"statement not possible
+"line = it_so_pr2c_so_sk1c[ KEY primary_key comp2 = 2 comp4 = 'aaa' ].
+
+"Free key specification includes the full sorted primary table key
+line = it_so_pr2c_so_sk1c[ KEY primary_key comp1 = 1 comp2 = 2 comp4 = 'aaa' ].
+
+"Free key specification includes the full hashed primary table key
+"In case of hashed primary table keys, the full key must be specified, otherwise the statement is not possible.
+line = it_ha_pr2c_ha_sk1c[ KEY primary_key comp1 = 1 comp2 = 2 comp4 = 'aaa' ].
+"Specifying only parts of the hashed primary table key is not possible
+"line = it_ha_pr2c_ha_sk1c[ KEY primary_key comp1 = 1 comp4 = 'aaa' ].
+"line = it_ha_pr2c_ha_sk1c[ KEY primary_key comp2 = 2 comp4 = 'aaa' ].
+
+"Free key specification includes the left initial part of a sorted secondary table key
+"Note: Specifying the COMPONENTS addition is optional (as is true for the previous examples, too).
+line = it_ha_pr1c_so_sk2c[ KEY sk COMPONENTS comp2 = 2 comp4 = 'aaa' ].
+line = it_ha_pr1c_so_sk2c[ KEY sk comp2 = 2 comp4 = 'aaa' ].
+
+"Free key specification includes the full hashed secondary table key
+line = it_ha_pr2c_ha_sk1c[ KEY sk comp3 = 3 comp4 = 'aaa' ].
+line = it_so_pr1c_ha_sk2c_alias[ KEY secondary_key comp2 = 2 comp3 = 3 comp4 = 'aaa' ].
+"Free key specification includes the full hashed secondary table key, specifying the alias name of the secondary table key
+line = it_so_pr1c_ha_sk2c_alias[ KEY sec_key comp2 = 2 comp3 = 3 comp4 = 'aaa' ].
+"Not including the full hashed secondary table key is not possible
+"line = it_so_pr1c_ha_sk2c_alias[ KEY sec_key comp2 = 2 comp4 = 'aaa' ].
+
+*&---------------------------------------------------------------------*
+*& Free key specified without KEY
+*&---------------------------------------------------------------------*
+
+"Free key specifications do not include any components of the primary or secondary table key
+"Therefore, the search is not optimized.
+line = it_so_pr1c_so_sk2c[ comp4 = 'ccc' ].
+line = it_so_pr2c_so_sk1c[ comp4 = 'ccc' ].
+
+"Free key specifications overlapping with some or all of the primary table key, enabling an optimized search.
+"Note the general rule regarding search optimization and (implicitly) referencing the primary table key:
+"- Standard tables are searched linearly.
+"- Sorted tables are searched binarily when the search key covers:
+"  - the left initial part of the primary table key or
+"  - the full primary table key.
+"  Otherwise, the search is linear.
+"- Hashed tables are searched in an optimized way using the hash algorithm when the search key covers
+"  the full primary table key. Otherwise, the search is linear.
+
+"Overlap with some components of the sorted primary table key (optimized search)
+line = it_so_pr2c_so_sk1c[ comp1 = 1 comp4 = 'aaa' ].
+line = it_so_pr2c_so_sk1c[ comp1 = 1 ].
+"Overlap with all components of the sorted primary table key (optimized search)
+line = it_so_pr2c_so_sk1c[ comp1 = 1 comp2 = 2 ].
+line = it_so_pr2c_so_sk1c[ comp1 = 1 comp2 = 2 comp4 = 'aaa' ].
+"Overlap with all components of the hashed primary table key (optimized search)
+line = it_ha_pr2c_ha_sk1c[ comp1 = 1 comp2 = 2 ].
+line = it_ha_pr2c_ha_sk1c[ comp1 = 1 comp2 = 2 comp4 = 'aaa' ].
+"Overlap with some components of the hashed primary table key (no optimization)
+line = it_ha_pr2c_ha_sk1c[ comp1 = 1 ].
+line = it_ha_pr2c_ha_sk1c[ comp1 = 1 comp4 = 'aaa' ].
+
+"Note that syntax warnings can occur
+"The following examples show free key specifications that include secondary table key components, but without
+"the KEY addition.
+"In such cases, the search is not optimized. You may optimize it by specifying the key, or suppress the
+"warning using a pragma.
+
+"Overlap with some components of the sorted secondary table key (no optimization)
+line = it_ha_pr1c_so_sk2c[ comp2 = 2 ].
+line = it_ha_pr1c_so_sk2c[ comp2 = 2 comp4 = 'aaa' ].
+"Overlap with all components of the sorted secondary table key (no optimization)
+line = it_ha_pr1c_so_sk2c[ comp2 = 2 comp3 = 3 ].
+line = it_ha_pr1c_so_sk2c[ comp2 = 2 comp3 = 3 comp4 = 'aaa' ].
+"In case of hashed secondary table keys, a warning is issued if the key is fully specified. If only
+"a part of the key is specified, no warning is issued.
+"Overlap with all components of the hashed secondary table key (no optimization)
+line = it_so_pr1c_ha_sk2c_alias[ comp2 = 2 comp3 = 3 ].
+line = it_so_pr1c_ha_sk2c_alias[ comp2 = 2 comp3 = 3 comp4 = 'aaa' ].
+"Overlap with some components of the hashed secondary table key (no optimization, no warning)
+line = it_so_pr1c_ha_sk2c_alias[ comp2 = 2 ].
+line = it_so_pr1c_ha_sk2c_alias[ comp3 = 3 ].
+
+"Suppressing the warning using a pragma
+line = it_ha_pr1c_so_sk2c[ comp2 = 2 ] ##PRIMKEY[SK].
+line = it_ha_pr1c_so_sk2c[ comp2 = 2 comp4 = 'aaa' ] ##PRIMKEY[SK].
+line = it_ha_pr1c_so_sk2c[ comp2 = 2 comp3 = 3 ] ##PRIMKEY[SK].
+line = it_ha_pr1c_so_sk2c[ comp2 = 2 comp3 = 3 comp4 = 'aaa' ] ##PRIMKEY[SK].
+line = it_so_pr1c_ha_sk2c_alias[ comp2 = 2 comp3 = 3 ] ##PRIMKEY[SECONDARY_KEY].
+line = it_so_pr1c_ha_sk2c_alias[ comp2 = 2 comp3 = 3 comp4 = 'aaa' ] ##PRIMKEY[SECONDARY_KEY].
+
+"In the following example, a component of the secondary table key is specified, but it is
+"not the left initial part of the secondary table key. A warning is not issued.
+line = it_so_pr1c_so_sk2c[ comp3 = 3 comp4 = 'aaa' ].
+
+*&---------------------------------------------------------------------*
+*& Differences to the TABLE KEY addition
+*&---------------------------------------------------------------------*
+
+"Key components of the primary table key are fully specified
+line = it_so_pr1c_so_sk2c[ TABLE KEY primary_key comp1 = 1 ].
+"Including the optional COMPONENTS addition
+line = it_so_pr2c_so_sk1c[ TABLE KEY primary_key COMPONENTS comp1 = 1 comp2 = 2 ].
+"Key components of the secondary table key are fully specified
+line = it_so_pr1c_so_sk2c[ TABLE KEY sk comp2 = 2 comp3 = 3 ].
+line = it_so_pr2c_so_sk1c[ TABLE KEY sk COMPONENTS comp3 = 3 ].
+
+"The following examples are not possible, as the key components of the primary table key are not fully specified and/or a free
+"key component is specified.
+"Left-initial part of the primary table key is specified, but not fully specified
+"line = it_so_pr2c_so_sk1c[ TABLE KEY primary_key COMPONENTS comp1 = 1 ].
+"Left-initial part of the secondary table key is specified, but not fully specified
+"line = it_ha_pr2c_ha_sk1c[ TABLE KEY sk COMPONENTS comp2 = 2 ].
+"Part of the secondary table key is specified, but not fully specified (without optional COMPONENTS addition)
+"line = it_ha_pr2c_ha_sk1c[ TABLE KEY sk comp3 = 3 ].
+"Fully specified primary table key is specified, but also a free key component is specified
+"line = it_so_pr2c_so_sk1c[ TABLE KEY primary_key COMPONENTS comp1 = 1 comp2 = 2 comp4 = 'aaa' ].
+"Fully specified secondary table key is specified, but also a free key component is specified (without optional COMPONENTS addition)
+"line = it_ha_pr2c_ha_sk1c[ TABLE KEY sk COMPONENTS comp2 = 2 comp3 = 3 comp4 = 'aaa' ].
 ``` 
 
 </td>
@@ -3236,24 +3412,29 @@ line = itab[ comp4 = 'ccc' ].
 
 
 <tr>
-<td> Using the read result in various positions </td>
+<td> Table expressions in read positions </td>
 <td>
 
-This is to emphasize that table expressions can be used in various read positions. The snippet shows a few examples. Check the notes in the ABAP Keyword Documentation topics about the use. 
+This is to emphasize that table expressions can be used in various read positions. The snippet shows a few examples where the read result (i.e. the entire table line content) is considered. Check the notes in the ABAP Keyword Documentation topics about the use. 
 
 <br>
 
 ``` abap
-DATA(first_line) = itab[ 1 ].
+*&---------------------------------------------------------------------*
+*& Table expressions in read positions
+*&---------------------------------------------------------------------*
+
+"Table expression in a read position. Here, it is on the right side of an assignment statement.
+DATA(first_line) = it_so_pr1c_so_sk2c[ 1 ].
 
 "Using table expressions as arguments of built-in functions
-IF line_exists( itab[ 1 ] ).
-    ...
+IF line_exists( it_so_pr1c_so_sk2c[ 5 ] ).
+  ... "line found
 ELSE.
-    ...
+  ... "line not found
 ENDIF.
 
-ASSERT line_index( itab[ comp4 = 'ccc' ] ) = 3.
+ASSERT line_index( it_so_pr1c_so_sk2c[ comp4 = 'ccc' ] ) = 3.
 ``` 
 
 </td>
@@ -3265,8 +3446,12 @@ ASSERT line_index( itab[ comp4 = 'ccc' ] ) = 3.
 <td>
 
 ``` abap
+*&---------------------------------------------------------------------*
+*& Assigning table lines to a field symbol
+*&---------------------------------------------------------------------*
+
 "Works like READ TABLE ... ASSIGNING ...
-ASSIGN itab[ 2 ] TO FIELD-SYMBOL(<line>).
+ASSIGN it_so_pr1c_so_sk2c[ comp4 = 'bbb' ] TO FIELD-SYMBOL(<line>).
 "Note: Table expressions do not set the sy-tabix
 "value, except when used with ASSIGN.
 ASSERT sy-tabix = 2.
@@ -3287,49 +3472,42 @@ ASSERT sy-tabix = 2.
 <br>
 
 ``` abap
-TYPES: BEGIN OF s_demo,
-         comp1 TYPE i,
-         comp2 TYPE i,
-       END OF s_demo,
-       tab_type_sorted TYPE SORTED TABLE OF s_demo WITH UNIQUE KEY comp1,
-       tab_type_std    TYPE STANDARD TABLE OF s_demo WITH NON-UNIQUE KEY comp1,
-       tab_type_hashed TYPE HASHED TABLE OF s_demo WITH UNIQUE KEY comp1.
+*&---------------------------------------------------------------------*
+*& Assigning table lines to a field symbol and setting sy components
+*&---------------------------------------------------------------------*
 
-DATA(itab_sorted) = VALUE tab_type_sorted( ( comp1 = 1 comp2 = 11 )
-                                           ( comp1 = 2 comp2 = 22 )
-                                           ( comp1 = 3 comp2 = 33 ) ).
-
-DATA itab_std TYPE tab_type_std.
-itab_std = itab_sorted.
-DATA itab_hashed TYPE tab_type_hashed.
-itab_hashed = itab_sorted.
-
-ASSIGN itab_std[ KEY primary_key COMPONENTS comp1 = 1 ] TO FIELD-SYMBOL(<fs1>).
+"Standard table
+ASSIGN it_std_pr1c_so_sk2c[ KEY primary_key COMPONENTS comp1 = 1 ] TO FIELD-SYMBOL(<fs1>).
 ASSERT sy-subrc = 0.
 ASSERT sy-tabix = 1.
 ASSERT <fs1> IS ASSIGNED.
 
-ASSIGN itab_sorted[ KEY primary_key COMPONENTS comp1 = 1 ] TO FIELD-SYMBOL(<fs2>).
+"Sorted table
+ASSIGN it_so_pr1c_so_sk2c[ KEY primary_key COMPONENTS comp1 = 1 ] TO FIELD-SYMBOL(<fs2>).
 ASSERT sy-subrc = 0.
 ASSERT sy-tabix = 1.
 ASSERT <fs2> IS ASSIGNED.
 
-ASSIGN itab_hashed[ KEY primary_key COMPONENTS comp1 = 1 ] TO FIELD-SYMBOL(<fs3>).
+"Hashed table
+ASSIGN it_ha_pr1c_so_sk2c[ KEY primary_key COMPONENTS comp1 = 1 ] TO FIELD-SYMBOL(<fs3>).
 ASSERT sy-subrc = 0.
 ASSERT sy-tabix = 0.
 ASSERT <fs3> IS ASSIGNED.
 
-ASSIGN itab_std[ KEY primary_key COMPONENTS comp1 = 10 ] TO FIELD-SYMBOL(<fs4>).
+"Standard table
+ASSIGN it_std_pr1c_so_sk2c[ KEY primary_key COMPONENTS comp1 = 100 ] TO FIELD-SYMBOL(<fs4>).
 ASSERT sy-subrc = 4.
 ASSERT sy-tabix = 0.
 ASSERT <fs4> IS NOT ASSIGNED.
 
-ASSIGN itab_sorted[ KEY primary_key COMPONENTS comp1 = 10 ] TO FIELD-SYMBOL(<fs5>).
+"Sorted table
+ASSIGN it_so_pr1c_so_sk2c[ KEY primary_key COMPONENTS comp1 = 100 ] TO FIELD-SYMBOL(<fs5>).
 ASSERT sy-subrc = 8.
 ASSERT sy-tabix = 4.
 ASSERT <fs5> IS NOT ASSIGNED.
 
-ASSIGN itab_hashed[ KEY primary_key COMPONENTS comp1 = 10 ] TO FIELD-SYMBOL(<fs6>).
+"Hashed table
+ASSIGN it_ha_pr1c_so_sk2c[ KEY primary_key COMPONENTS comp1 = 100 ] TO FIELD-SYMBOL(<fs6>).
 ASSERT sy-subrc = 4.
 ASSERT sy-tabix = 0.
 ASSERT <fs6> IS NOT ASSIGNED.
@@ -3345,9 +3523,20 @@ ASSERT <fs6> IS NOT ASSIGNED.
 
 
 ``` abap
-DATA ref TYPE REF TO data.
-ref = NEW s_demo(  ).
-ref->* = itab[ 1 ].
+*&---------------------------------------------------------------------*
+*& Data reference variables pointing to a table line
+*&---------------------------------------------------------------------*
+
+DATA dref1 TYPE REF TO data.
+dref1 = NEW s_demo(  ).
+dref1->* = it_std_pr1c_so_sk2c[ 1 ].
+
+DATA(dref2) = NEW s_demo( it_std_pr1c_so_sk2c[ 1 ] ).
+
+"Specifying table expressions as operands in constructor expressions with VALUE and REF
+line = VALUE #( it_std_pr1c_so_sk2c[ 1 ] ).
+"Works like READ TABLE ... REFERENCE INTO ...
+DATA(dref3) = REF #( it_std_pr1c_so_sk2c[ 1 ] ).
 ``` 
 
 </td>
@@ -3359,9 +3548,15 @@ ref->* = itab[ 1 ].
 
 
 ``` abap
-line = VALUE #( itab[ 2 ] ).
-"Works like READ TABLE ... REFERENCE INTO ...
-DATA(line_ref) = REF #( itab[ 3 ] ).
+*&---------------------------------------------------------------------*
+*& Specifying table expressions as operands in constructor expressions
+*& VALUE and REF
+*&---------------------------------------------------------------------*
+
+line = VALUE #( it_std_pr1c_so_sk2c[ 2 ] ).
+
+"The following example works like READ TABLE ... REFERENCE INTO ...
+DATA(line_ref) = REF #( it_std_pr1c_so_sk2c[ 3 ] ).
 ``` 
 
 </td>
@@ -3380,16 +3575,28 @@ DATA(line_ref) = REF #( itab[ 3 ] ).
 <br>
 
 ``` abap
+*&---------------------------------------------------------------------*
+*& Specifying a default value for lines that are not found or marking
+*& as optional to avoid an exception
+*&---------------------------------------------------------------------*
+
 "Accessing a non-existent table line raises a catchable exception
 TRY.
-    line = itab[ 4 ].
-    CATCH cx_sy_itab_line_not_found.
+    line = it_std_pr1c_so_sk2c[ 4 ].
+  CATCH cx_sy_itab_line_not_found INTO DATA(error).
+    ...
 ENDTRY.
+ASSERT error IS NOT INITIAL.
 
-line = VALUE #( itab[ 4 ] OPTIONAL ).
+"When using the OPTIONAL addition in the context of VALUE constructor expressions, the exception
+"is not raised and the type-specific initial value is assigned to the variable.
+line = VALUE #( it_std_pr1c_so_sk2c[ 4 ] OPTIONAL ).
 
-line = VALUE #( itab[ 5 ] DEFAULT itab[ 1 ]  ).
-line = VALUE #( itab[ 6 ] DEFAULT VALUE #( ) ).
+"DEFAULT addition can be used to specify a default value for lines that are not found.
+"The default value is assigned to the variable.
+line = VALUE #( it_std_pr1c_so_sk2c[ 5 ] DEFAULT it_std_pr1c_so_sk2c[ 1 ] ).
+line = VALUE #( it_std_pr1c_so_sk2c[ 6 ] DEFAULT VALUE #( comp1 = 123 ) ).
+line = VALUE #( it_std_pr1c_so_sk2c[ 7 ] DEFAULT VALUE #( ) ).
 ``` 
 
 </td>
@@ -3405,14 +3612,19 @@ The previous examples use concrete internal table names specified before the squ
 <br>
 
 ``` abap
-ASSIGN itab TO FIELD-SYMBOL(<tab>).
+*&---------------------------------------------------------------------*
+*& Field symbols and dereferenced data references specified before the
+*& square brackets
+*&---------------------------------------------------------------------*
+
+ASSIGN it_std_pr1c_so_sk2c TO FIELD-SYMBOL(<tab>).
 line = <tab>[ 1 ].
 
-DATA dref TYPE REF TO ttyp.
-dref = NEW #(  ).
+DATA dref_tab TYPE REF TO tt_std_pr1c_so_sk2c.
+dref_tab = NEW #(  ).
 
-dref->* = itab.
-line = dref->*[ 2 ].
+dref_tab->* = it_std_pr1c_so_sk2c.
+line = dref_tab->*[ 2 ].
 ``` 
 
 </td>
@@ -3427,21 +3639,25 @@ Using table expressions, you can read entire lines individually. This is just to
 <br>
 
 ``` abap
+*&---------------------------------------------------------------------*
+*& Reading multiple lines
+*&---------------------------------------------------------------------*
+
 "Instead of something like this ...
 DO.
-    ASSIGN itab[ sy-index ] TO FIELD-SYMBOL(<fs>).
-    IF sy-subrc = 0.
-     ...
-     "<fs>-comp1 = ...
-    ELSE.
-     EXIT.
-    ENDIF.
+  ASSIGN it_std_pr1c_so_sk2c[ sy-index ] TO FIELD-SYMBOL(<fs>).
+  IF sy-subrc = 0.
+    ...
+    "<fs>-comp1 = ...
+  ELSE.
+    EXIT.
+  ENDIF.
 ENDDO.
 
 "... a LOOP statement, for example.
-LOOP AT itab ASSIGNING <fs>.
-    ...
-    "<fs>-comp1 = ...
+LOOP AT it_std_pr1c_so_sk2c ASSIGNING FIELD-SYMBOL(<l>).
+  ...
+  "<fs>-comp1 = ...
 ENDLOOP.
 ``` 
 
@@ -3454,17 +3670,20 @@ ENDLOOP.
 
 
 ``` abap
-"Reading individual components of table lines using chainings after the
-"closing square bracket
+*&---------------------------------------------------------------------*
+*& Reading individual components of table lines
+*&---------------------------------------------------------------------*
 
 "Read component via line read using ...
 "... index
-DATA(compa) = itab[ 1 ]-comp1.
+DATA(compa) = it_std_pr1c_so_sk2c[ 1 ]-comp1.
 "... table key
-DATA(compb) = itab[ TABLE KEY primary_key comp1 = 1 ]-comp2.
-DATA(compc) = itab[ TABLE KEY sk comp2 = 30 comp3 = 31 ]-comp1.
+DATA(compb) = it_std_pr1c_so_sk2c[ TABLE KEY primary_key comp1 = 1 ]-comp2.
+DATA(compc) = it_std_pr1c_so_sk2c[ TABLE KEY sk comp2 = 2 comp3 = 3 ]-comp1.
+DATA(compd) = it_std_pr1c_so_sk2c[ KEY sk comp2 = 2 comp3 = 3 ]-comp1.
 "... free key
-DATA(compd) = itab[ comp4 = 'ccc' ]-comp1.
+DATA(compe) = it_std_pr1c_so_sk2c[ KEY sk comp2 = 2 comp4 = 'aaa' ]-comp1.
+DATA(compf) = it_std_pr1c_so_sk2c[ comp4 = 'ccc' ]-comp1.
 ``` 
 
 </td>
@@ -3480,36 +3699,39 @@ DATA(compd) = itab[ comp4 = 'ccc' ]-comp1.
 <br>
 
 ``` abap
-"Creating deep internal table
+*&---------------------------------------------------------------------*
+*& Chaining table expressions in the context of nested internal tables
+*&---------------------------------------------------------------------*
+
+"Creating a deep internal table
 TYPES: BEGIN OF s_sub,
-            comp1 TYPE i,
-            comp2 TYPE i,
-        END OF s_sub,
-        tab_type_sub TYPE TABLE OF s_sub WITH EMPTY KEY,
-        BEGIN OF s,
-            compa TYPE i,
-            compb TYPE TABLE OF tab_type_sub WITH EMPTY KEY,
-        END OF s,
-        tab_type TYPE TABLE OF s WITH EMPTY KEY.
+         comp1 TYPE i,
+         comp2 TYPE i,
+       END OF s_sub,
+       tab_type_sub TYPE TABLE OF s_sub WITH EMPTY KEY,
+       BEGIN OF s,
+         compa TYPE i,
+         compb TYPE TABLE OF tab_type_sub WITH EMPTY KEY,
+       END OF s,
+       tab_type TYPE TABLE OF s WITH EMPTY KEY.
 
 "Expressions helpful when populating
 DATA(deep_tab) = VALUE tab_type( ( compa = 1
                                    compb = VALUE #( ( VALUE #( ( comp1 = 3 comp2 = 4 ) ( comp1 = 5 comp2 = 6 ) ) )
                                                     ( VALUE #( ( comp1 = 7 comp2 = 8 ) ( comp1 = 9 comp2 = 10 ) ) ) ) )
-                                    ( compa = 2
-                                      compb = VALUE #( ( VALUE #( ( comp1 = 11 comp2 = 12 ) ( comp1 = 13 comp2 = 14 ) ) )
-                                                       ( VALUE #( ( comp1 = 15 comp2 = 16 ) ( comp1 = 17 comp2 = 18 ) ) ) ) ) ).
+                                 ( compa = 2
+                                   compb = VALUE #( ( VALUE #( ( comp1 = 11 comp2 = 12 ) ( comp1 = 13 comp2 = 14 ) ) )
+                                                    ( VALUE #( ( comp1 = 15 comp2 = 16 ) ( comp1 = 17 comp2 = 18 ) ) ) ) ) ).
 
 
-
+"A statement with chained table expressions ...
 DATA(num1) = deep_tab[ 2 ]-compb[ 1 ][ 2 ]-comp2.
 ASSERT num1 = 14.
 
-"A statement such as the previous one instead of, for example, multiple statements as follows.
-READ TABLE deep_tab INDEX 2 INTO DATA(wa1).
-READ TABLE wa1-compb INDEX 1 INTO DATA(wa2).
+"... instead of, for example, multiple statements as follows.
+READ TABLE deep_tab INTO DATA(wa1) INDEX 2.
+READ TABLE wa1-compb INTO DATA(wa2) INDEX 1.
 READ TABLE wa2 INTO DATA(wa3) INDEX 2.
-
 DATA(num2) = wa3-comp2.
 
 ASSERT num2 = num1.
@@ -3524,11 +3746,16 @@ ASSERT num2 = num1.
 
 
 ``` abap
+*&---------------------------------------------------------------------*
+*& Table expression result having a reference type enabling chainings
+*& with the object component selector
+*&---------------------------------------------------------------------*
+
 DATA itab_ref TYPE TABLE OF REF TO s_demo WITH EMPTY KEY.
 itab_ref = VALUE #( ( NEW s_demo( comp1 = 1 comp2 = 30 comp3 = 31 comp4 = 'aaa' ) ) ).
 
 "Reading entire line by dereferencing
-DATA(deref_line) = itab_ref[ 1 ]->*.
+DATA(dref_line) = itab_ref[ 1 ]->*.
 "Reading component by dereferencing
 DATA(dref_compa) = itab_ref[ 1 ]->comp3.
 "The following syntax is also possible (dereferencing operator followed
@@ -3548,16 +3775,17 @@ Note that you cannot perform writes on entire lines in the context of key tables
 <br>
 
 ``` abap
-"The demo table is a key table. Therefore, writes on entire lines produce runtime errors.
-"itab[ 3 ] = VALUE #( ).
+*&---------------------------------------------------------------------*
+*& Table expressions in write positions: Writes on the entire line
+*&---------------------------------------------------------------------*
 
-"Creating a standard table
-DATA itab_std TYPE TABLE OF s_demo WITH NON-UNIQUE KEY comp1 WITH NON-UNIQUE SORTED KEY sk COMPONENTS comp2 comp3.
-itab_std = itab.
+"The demo tables are key tables. Therefore, writes on entire lines produce runtime errors.
+"it_so_pr1c_so_sk2c[ 3 ] = VALUE #( ).
+"it_ha_pr1c_so_sk2c[ comp4 = 'aaa' ] = VALUE #( ).
 
-"Here, writes on entire lines are allowed.
-itab_std[ 3 ] = VALUE #( comp1 = 123 comp4 = 'zzz' ).
-CLEAR itab_std[ 3 ].
+"In case of standard tables, writes on entire lines are allowed.
+it_std_pr1c_so_sk2c[ 1 ] = VALUE #( comp1 = 456 comp4 = 'zzz' ).
+CLEAR it_std_pr1c_so_sk2c[ 3 ].
 ``` 
 
 </td>
@@ -3569,14 +3797,20 @@ CLEAR itab_std[ 3 ].
 
 
 ``` abap
-itab[ 3 ]-comp4 = 'yyy'.
+*&---------------------------------------------------------------------*
+*& Table expressions in write positions: Writes on individual components
+*&---------------------------------------------------------------------*
+
+it_so_pr1c_so_sk2c[ 3 ]-comp4 = 'yyy'.
+it_std_pr1c_so_sk2c[ 2 ]-comp4 = 'zzz'.
 itab_ref[ 1 ]->comp3 = 123.
+
 "No key value change allowed in key tables
 "The following statement causes a runtime error.
-"itab[ 1 ]-comp1 = 987.
+"it_so_pr1c_so_sk2c[ 1 ]-comp1 = 987.
 
 "Key value change allowed for standard tables.
-itab_std[ 3 ]-comp1 = 456.
+it_std_pr1c_so_sk2c[ 1 ]-comp1 = 456.
 ``` 
 
 </td>
@@ -3591,19 +3825,28 @@ For more information about dynamic programming, refer to the [Dynamic Programmin
 <br>
 
 ``` abap
-"Dynamic key and component specifications
-line = itab[ KEY ('PRIMARY_KEY') COMPONENTS comp1 = 1 ].
-line = itab[ KEY ('PRIMARY_KEY') comp1 = 1 ].
-line = itab[ KEY ('SK') COMPONENTS comp2 = 20 comp3 = 21 ].
-line = itab[ KEY ('SK') comp2 = 20 comp3 = 21 ].
+*&---------------------------------------------------------------------*
+*& Dynamic key and component name specifications
+*&---------------------------------------------------------------------*
 
-line = itab[ KEY ('PRIMARY_KEY') ('COMP1') = 1 ].
-line = itab[ KEY ('SK') ('COMP2') = 20 ('COMP3') = 21 ].
+"Dynamic key and component specifications
+line = it_so_pr1c_ha_sk2c_alias[ KEY ('PRIMARY_KEY') COMPONENTS comp1 = 1 ].
+line = it_so_pr1c_ha_sk2c_alias[ KEY ('PRIMARY_KEY') comp1 = 1 ].
+line = it_so_pr1c_ha_sk2c_alias[ KEY ('SECONDARY_KEY') COMPONENTS comp2 = 2 comp3 = 3 ].
+line = it_so_pr1c_ha_sk2c_alias[ KEY ('SEC_KEY') comp2 = 2 comp3 = 3 ].
+
+line = it_so_pr1c_ha_sk2c_alias[ KEY ('PRIMARY_KEY') ('COMP1') = 1 ].
+line = it_so_pr1c_ha_sk2c_alias[ KEY ('SEC_KEY') ('COMP2') = 2 ('COMP3') = 3 ].
+
+"Note: Illegal key names trigger a runtime error
+"line = it_so_pr1c_ha_sk2c_alias[ KEY ('ABC') ('COMP2') = 2 ('COMP3') = 3 ].
+"Illegal component names
+"line = it_so_pr1c_ha_sk2c_alias[ KEY ('SEC_KEY') ('COMPX') = 2 ('COMPY') = 3 ].
 
 DATA(key_name) = 'PRIMARY_KEY'.
 DATA(comp_name) = 'COMP1'.
-line = itab[ KEY (key_name) (comp_name) = 1 ].
-line = itab[ KEY primary_key (comp_name) = 1 ].
+line = it_so_pr1c_ha_sk2c_alias[ KEY (key_name) (comp_name) = 1 ].
+line = it_so_pr1c_ha_sk2c_alias[ KEY primary_key (comp_name) = 1 ].
 ``` 
 
 </td>
@@ -3780,6 +4023,577 @@ ENDCLASS.
 
 
 </table>
+
+
+<details>
+  <summary>🟢 Click to expand for the table expression demo code snippets</summary>
+  <!-- -->
+
+``` abap
+TYPES: BEGIN OF s_demo,
+         comp1 TYPE i,
+         comp2 TYPE i,
+         comp3 TYPE i,
+         comp4 TYPE c LENGTH 3,
+       END OF s_demo,
+       "Naming 'logic': pr1c = primary key with 1 component, sk2c = secondary key with 2 components
+       tt_so_pr1c_so_sk2c       TYPE SORTED TABLE OF s_demo WITH UNIQUE KEY comp1 WITH NON-UNIQUE SORTED KEY sk COMPONENTS comp2 comp3,
+       tt_so_pr2c_so_sk1c       TYPE SORTED TABLE OF s_demo WITH UNIQUE KEY comp1 comp2 WITH NON-UNIQUE SORTED KEY sk COMPONENTS comp3,
+       tt_ha_pr1c_so_sk2c       TYPE HASHED TABLE OF s_demo WITH UNIQUE KEY comp1 WITH NON-UNIQUE SORTED KEY sk COMPONENTS comp2 comp3,
+       tt_ha_pr2c_ha_sk1c       TYPE HASHED TABLE OF s_demo WITH UNIQUE KEY comp1 comp2 WITH UNIQUE HASHED KEY sk COMPONENTS comp3,
+       tt_so_pr1c_ha_sk2c_alias TYPE SORTED TABLE OF s_demo WITH UNIQUE KEY comp1 WITH UNIQUE HASHED KEY secondary_key ALIAS sec_key COMPONENTS comp2 comp3,
+       tt_std_pr1c_so_sk2c      TYPE STANDARD TABLE OF s_demo WITH NON-UNIQUE KEY comp1 WITH NON-UNIQUE SORTED KEY sk COMPONENTS comp2 comp3.
+
+DATA(it_so_pr1c_so_sk2c) = VALUE tt_so_pr1c_so_sk2c( ( comp1 = 1 comp2 = 2 comp3 = 3 comp4 = 'aaa' )
+                                                     ( comp1 = 4 comp2 = 5 comp3 = 6 comp4 = 'bbb' )
+                                                     ( comp1 = 7 comp2 = 8 comp3 = 9 comp4 = 'ccc' ) ).
+
+DATA it_so_pr2c_so_sk1c TYPE tt_so_pr2c_so_sk1c.
+it_so_pr2c_so_sk1c = it_so_pr1c_so_sk2c.
+DATA it_ha_pr1c_so_sk2c TYPE tt_ha_pr1c_so_sk2c.
+it_ha_pr1c_so_sk2c = it_so_pr1c_so_sk2c.
+DATA it_ha_pr2c_ha_sk1c TYPE tt_ha_pr2c_ha_sk1c.
+it_ha_pr2c_ha_sk1c = it_so_pr1c_so_sk2c.
+DATA it_so_pr1c_ha_sk2c_alias TYPE tt_so_pr1c_ha_sk2c_alias.
+it_so_pr1c_ha_sk2c_alias = it_so_pr1c_so_sk2c.
+DATA it_std_pr1c_so_sk2c TYPE tt_std_pr1c_so_sk2c.
+it_std_pr1c_so_sk2c = it_so_pr1c_so_sk2c.
+
+DATA line TYPE s_demo.
+
+*&---------------------------------------------------------------------*
+*& Reading table line by index, using the primary table index
+*&---------------------------------------------------------------------*
+
+"Just specifying the index number means referring to the primary table index by default.
+"In this case, the internal table must be an index table.
+
+"In the example, the entire table line is assigned to a variable.
+"The following examples cover sorted tables (= index tables).
+line = it_so_pr1c_so_sk2c[ 1 ].
+line = it_so_pr2c_so_sk1c[ 2 ].
+
+"Using such a specification with a hashed table is not possible, as hashed tables do not
+"have a primary table index.
+"line = it_ha_pr1c_so_sk2c[ 3 ].
+
+*&---------------------------------------------------------------------*
+*& Reading table line by index, explicitly specifiying the table index
+*&
+*& KEY ... INDEX ... addition
+*&---------------------------------------------------------------------*
+
+"Using the KEY ... INDEX ... addition, you can specify the:
+"- primary table index explicitly (note: the primary table index is the default index)
+"- secondary table index by specifying the name of the secondary table key.
+
+"Using the primary table index explicitly
+"The following example has the same effect ...
+line = it_so_pr1c_so_sk2c[ KEY primary_key INDEX 1 ].
+"... as this example, which uses the default primary table index.
+line = it_so_pr1c_so_sk2c[ 1 ].
+
+"Using a secondary table index explicitly
+line = it_so_pr1c_so_sk2c[ KEY sk INDEX 1 ].
+
+"If sorted secondary table keys are specified for hashed tables, index access is possible
+"for hashed tables via the secondary table index.
+line = it_ha_pr1c_so_sk2c[ KEY sk INDEX 1 ].
+
+"No index access is possible for hashed secondary table keys, as there is no index.
+"line = it_ha_pr2c_ha_sk1c[ KEY sk INDEX 1 ].
+
+*&---------------------------------------------------------------------*
+*& Reading table line by table keys
+*&---------------------------------------------------------------------*
+
+*&---------------------------------------------------------------------*
+*& TABLE KEY addition
+*&---------------------------------------------------------------------*
+
+"Using the TABLE KEY addition, the full table key, i.e. all components of the key (primary table key or
+"secondary table key) must be specified.
+"No other components can be specified.
+
+"Explicitly specifying the full primary table key
+line = it_so_pr1c_so_sk2c[ TABLE KEY primary_key comp1 = 1 ].
+"Optional COMPONENTS addition
+line = it_ha_pr2c_ha_sk1c[ TABLE KEY primary_key COMPONENTS comp1 = 1 comp2 = 2 ].
+
+"Explicitly specifying the full secondary table key
+line = it_so_pr1c_so_sk2c[ TABLE KEY sk comp2 = 2 comp3 = 3 ].
+line = it_ha_pr2c_ha_sk1c[ TABLE KEY sk COMPONENTS comp3 = 3 ].
+line = it_so_pr1c_ha_sk2c_alias[ TABLE KEY secondary_key COMPONENTS comp2 = 2 comp3 = 3 ].
+"Specifying the alias name
+line = it_so_pr1c_ha_sk2c_alias[ TABLE KEY sec_key COMPONENTS comp2 = 2 comp3 = 3 ].
+
+"No other components can be specified with TABLE KEY. So, the following statement is not possible.
+"line = it_so_pr1c_so_sk2c[ TABLE KEY primary_key comp1 = 1 comp2 = 2 ].
+"line = it_so_pr1c_ha_sk2c_alias[ TABLE KEY sec_key COMPONENTS comp2 = 2 comp3 = 3 comp4 = 'aaa' ].
+
+*&---------------------------------------------------------------------*
+*& KEY addition
+*&---------------------------------------------------------------------*
+
+"Using KEY and specifying all key components (without any other components) work like specifying TABLE KEY
+"Primary table key
+line = it_so_pr1c_so_sk2c[ KEY primary_key comp1 = 1 ].
+line = it_ha_pr2c_ha_sk1c[ KEY primary_key COMPONENTS comp1 = 1 comp2 = 2 ].
+"Secondary table key
+line = it_so_pr1c_so_sk2c[ KEY sk comp2 = 2 comp3 = 3 ].
+line = it_ha_pr2c_ha_sk1c[ KEY sk COMPONENTS comp3 = 3 ].
+line = it_so_pr1c_ha_sk2c_alias[ KEY secondary_key COMPONENTS comp2 = 2 comp3 = 3 ].
+line = it_so_pr1c_ha_sk2c_alias[ KEY sec_key COMPONENTS comp2 = 2 comp3 = 3 ].
+
+"Unlike TABLE KEY, KEY does not enforce all sorted table key components to be specified + additional
+"components can be specified forming a free key specification (see below; also possible for hashed table keys and KEY).
+"However, it is required that the left initial part of the sorted table key is specified.
+"Otherwise, the statement is not possible. Hashed keys must be fully specified, otherwise
+"the statement is not possible.
+
+"Primary sorted table key
+"Key specification includes the left initial part of the sorted primary table key
+line = it_so_pr2c_so_sk1c[ KEY primary_key comp1 = 1 ].
+
+"Key specification includes a part of the sorted primary table key, but not the left initial part;
+"statement not possible
+"line = it_so_pr2c_so_sk1c[ KEY primary_key comp2 = 2 ].
+
+"Secondary sorted table key
+"Key specification includes the left initial part of the sorted secondary primary table key
+line = it_so_pr1c_so_sk2c[ KEY sk comp2 = 2 ].
+"Not possible, as the left initial part of the sorted secondary table key is not specified
+"line = it_so_pr1c_so_sk2c[ KEY sk comp3 = 3 ].
+
+"(See more examples below) Free key specifications that include the KEY addition and the ...
+"... full hashed primary table key
+line = it_ha_pr2c_ha_sk1c[ KEY primary_key comp1 = 1 comp2 = 2 comp4 = 'aaa' ].
+"... full sorted primary table key
+line = it_so_pr1c_so_sk2c[ KEY sk comp2 = 2 comp3 = 3 comp4 = 'aaa' ].
+"... left-initial part of the sorted primary table key
+line = it_so_pr1c_so_sk2c[ KEY sk comp2 = 2 comp4 = 'aaa' ].
+"... full hashed secondary table key
+line = it_so_pr1c_ha_sk2c_alias[ KEY secondary_key comp2 = 2 comp3 = 3 comp4 = 'aaa' ].
+"... full sorted secondary table key
+line = it_so_pr1c_so_sk2c[ KEY sk comp2 = 2 comp3 = 3 comp4 = 'aaa' ].
+"... left-initial part of the sorted secondary table key
+line = it_so_pr1c_so_sk2c[ KEY sk comp2 = 2 comp4 = 'aaa' ].
+
+"Not possible
+"Incomplete hashed secondary table key
+"line = it_so_pr1c_ha_sk2c_alias[ KEY secondary_key comp2 = 2 comp4 = 'aaa' ].
+"Incomplete, not left-aligned sorted secondary table key
+"line = it_so_pr1c_so_sk2c[ KEY sk comp3 = 3 comp4 = 'aaa' ].
+
+*&---------------------------------------------------------------------*
+*& No TABLE KEY/KEY additions
+*&---------------------------------------------------------------------*
+
+"Component specifications without any TABLE KEY/KEY addition and that overlap with ...
+"... some components of the sorted primary table key (optimized search)
+line = it_so_pr2c_so_sk1c[ comp1 = 1 ].
+"... all components of the sorted primary table key (optimized search)
+line = it_so_pr2c_so_sk1c[ comp1 = 1 comp2 = 2 ].
+"... with all components of the hashed primary table key (optimized search)
+line = it_ha_pr2c_ha_sk1c[ comp1 = 1 comp2 = 2 ].
+"... with some components of the hashed primary table key (no optimization)
+line = it_ha_pr2c_ha_sk1c[ comp1 = 1 ].
+
+*&---------------------------------------------------------------------*
+*& Free key specified with KEY
+*&---------------------------------------------------------------------*
+
+"Free key specification includes left initial part of the sorted primary table key
+line = it_so_pr2c_so_sk1c[ KEY primary_key comp1 = 1 comp4 = 'aaa' ].
+
+"Free key specification includes part of the sorted primary table key, but not the left initial part;
+"statement not possible
+"line = it_so_pr2c_so_sk1c[ KEY primary_key comp2 = 2 comp4 = 'aaa' ].
+
+"Free key specification includes the full sorted primary table key
+line = it_so_pr2c_so_sk1c[ KEY primary_key comp1 = 1 comp2 = 2 comp4 = 'aaa' ].
+
+"Free key specification includes the full hashed primary table key
+"In case of hashed primary table keys, the full key must be specified, otherwise the statement is not possible.
+line = it_ha_pr2c_ha_sk1c[ KEY primary_key comp1 = 1 comp2 = 2 comp4 = 'aaa' ].
+"Specifying only parts of the hashed primary table key is not possible
+"line = it_ha_pr2c_ha_sk1c[ KEY primary_key comp1 = 1 comp4 = 'aaa' ].
+"line = it_ha_pr2c_ha_sk1c[ KEY primary_key comp2 = 2 comp4 = 'aaa' ].
+
+"Free key specification includes the left initial part of a sorted secondary table key
+"Note: Specifying the COMPONENTS addition is optional (as is true for the previous examples, too).
+line = it_ha_pr1c_so_sk2c[ KEY sk COMPONENTS comp2 = 2 comp4 = 'aaa' ].
+line = it_ha_pr1c_so_sk2c[ KEY sk comp2 = 2 comp4 = 'aaa' ].
+
+"Free key specification includes the full hashed secondary table key
+line = it_ha_pr2c_ha_sk1c[ KEY sk comp3 = 3 comp4 = 'aaa' ].
+line = it_so_pr1c_ha_sk2c_alias[ KEY secondary_key comp2 = 2 comp3 = 3 comp4 = 'aaa' ].
+"Free key specification includes the full hashed secondary table key, specifying the alias name of the secondary table key
+line = it_so_pr1c_ha_sk2c_alias[ KEY sec_key comp2 = 2 comp3 = 3 comp4 = 'aaa' ].
+"Not including the full hashed secondary table key is not possible
+"line = it_so_pr1c_ha_sk2c_alias[ KEY sec_key comp2 = 2 comp4 = 'aaa' ].
+
+*&---------------------------------------------------------------------*
+*& Free key specified without KEY
+*&---------------------------------------------------------------------*
+
+"Free key specifications do not include any components of the primary or secondary table key
+"Therefore, the search is not optimized.
+line = it_so_pr1c_so_sk2c[ comp4 = 'ccc' ].
+line = it_so_pr2c_so_sk1c[ comp4 = 'ccc' ].
+
+"Free key specifications overlapping with some or all of the primary table key, enabling an optimized search.
+"Note the general rule regarding search optimization and (implicitly) referencing the primary table key:
+"- Standard tables are searched linearly.
+"- Sorted tables are searched binarily when the search key covers:
+"  - the left initial part of the primary table key or
+"  - the full primary table key.
+"  Otherwise, the search is linear.
+"- Hashed tables are searched in an optimized way using the hash algorithm when the search key covers
+"  the full primary table key. Otherwise, the search is linear.
+
+"Overlap with some components of the sorted primary table key (optimized search)
+line = it_so_pr2c_so_sk1c[ comp1 = 1 comp4 = 'aaa' ].
+line = it_so_pr2c_so_sk1c[ comp1 = 1 ].
+"Overlap with all components of the sorted primary table key (optimized search)
+line = it_so_pr2c_so_sk1c[ comp1 = 1 comp2 = 2 ].
+line = it_so_pr2c_so_sk1c[ comp1 = 1 comp2 = 2 comp4 = 'aaa' ].
+"Overlap with all components of the hashed primary table key (optimized search)
+line = it_ha_pr2c_ha_sk1c[ comp1 = 1 comp2 = 2 ].
+line = it_ha_pr2c_ha_sk1c[ comp1 = 1 comp2 = 2 comp4 = 'aaa' ].
+"Overlap with some components of the hashed primary table key (no optimization)
+line = it_ha_pr2c_ha_sk1c[ comp1 = 1 ].
+line = it_ha_pr2c_ha_sk1c[ comp1 = 1 comp4 = 'aaa' ].
+
+"Note that syntax warnings can occur
+"The following examples show free key specifications that include secondary table key components, but without
+"the KEY addition.
+"In such cases, the search is not optimized. You may optimize it by specifying the key, or suppress the
+"warning using a pragma.
+
+"Overlap with some components of the sorted secondary table key (no optimization)
+line = it_ha_pr1c_so_sk2c[ comp2 = 2 ].
+line = it_ha_pr1c_so_sk2c[ comp2 = 2 comp4 = 'aaa' ].
+"Overlap with all components of the sorted secondary table key (no optimization)
+line = it_ha_pr1c_so_sk2c[ comp2 = 2 comp3 = 3 ].
+line = it_ha_pr1c_so_sk2c[ comp2 = 2 comp3 = 3 comp4 = 'aaa' ].
+"In case of hashed secondary table keys, a warning is issued if the key is fully specified. If only
+"a part of the key is specified, no warning is issued.
+"Overlap with all components of the hashed secondary table key (no optimization)
+line = it_so_pr1c_ha_sk2c_alias[ comp2 = 2 comp3 = 3 ].
+line = it_so_pr1c_ha_sk2c_alias[ comp2 = 2 comp3 = 3 comp4 = 'aaa' ].
+"Overlap with some components of the hashed secondary table key (no optimization, no warning)
+line = it_so_pr1c_ha_sk2c_alias[ comp2 = 2 ].
+line = it_so_pr1c_ha_sk2c_alias[ comp3 = 3 ].
+
+"Suppressing the warning using a pragma
+line = it_ha_pr1c_so_sk2c[ comp2 = 2 ] ##PRIMKEY[SK].
+line = it_ha_pr1c_so_sk2c[ comp2 = 2 comp4 = 'aaa' ] ##PRIMKEY[SK].
+line = it_ha_pr1c_so_sk2c[ comp2 = 2 comp3 = 3 ] ##PRIMKEY[SK].
+line = it_ha_pr1c_so_sk2c[ comp2 = 2 comp3 = 3 comp4 = 'aaa' ] ##PRIMKEY[SK].
+line = it_so_pr1c_ha_sk2c_alias[ comp2 = 2 comp3 = 3 ] ##PRIMKEY[SECONDARY_KEY].
+line = it_so_pr1c_ha_sk2c_alias[ comp2 = 2 comp3 = 3 comp4 = 'aaa' ] ##PRIMKEY[SECONDARY_KEY].
+
+"In the following example, a component of the secondary table key is specified, but it is
+"not the left initial part of the secondary table key. A warning is not issued.
+line = it_so_pr1c_so_sk2c[ comp3 = 3 comp4 = 'aaa' ].
+
+*&---------------------------------------------------------------------*
+*& Differences to the TABLE KEY addition
+*&---------------------------------------------------------------------*
+
+"Key components of the primary table key are fully specified
+line = it_so_pr1c_so_sk2c[ TABLE KEY primary_key comp1 = 1 ].
+"Including the optional COMPONENTS addition
+line = it_so_pr2c_so_sk1c[ TABLE KEY primary_key COMPONENTS comp1 = 1 comp2 = 2 ].
+"Key components of the secondary table key are fully specified
+line = it_so_pr1c_so_sk2c[ TABLE KEY sk comp2 = 2 comp3 = 3 ].
+line = it_so_pr2c_so_sk1c[ TABLE KEY sk COMPONENTS comp3 = 3 ].
+
+"The following examples are not possible, as the key components of the primary table key are not fully specified and/or a free
+"key component is specified.
+"Left-initial part of the primary table key is specified, but not fully specified
+"line = it_so_pr2c_so_sk1c[ TABLE KEY primary_key COMPONENTS comp1 = 1 ].
+"Left-initial part of the secondary table key is specified, but not fully specified
+"line = it_ha_pr2c_ha_sk1c[ TABLE KEY sk COMPONENTS comp2 = 2 ].
+"Part of the secondary table key is specified, but not fully specified (without optional COMPONENTS addition)
+"line = it_ha_pr2c_ha_sk1c[ TABLE KEY sk comp3 = 3 ].
+"Fully specified primary table key is specified, but also a free key component is specified
+"line = it_so_pr2c_so_sk1c[ TABLE KEY primary_key COMPONENTS comp1 = 1 comp2 = 2 comp4 = 'aaa' ].
+"Fully specified secondary table key is specified, but also a free key component is specified (without optional COMPONENTS addition)
+"line = it_ha_pr2c_ha_sk1c[ TABLE KEY sk COMPONENTS comp2 = 2 comp3 = 3 comp4 = 'aaa' ].
+
+*&---------------------------------------------------------------------*
+*& Table expressions in read positions
+*&---------------------------------------------------------------------*
+
+"Table expression in a read position. Here, it is on the right side of an assignment statement.
+DATA(first_line) = it_so_pr1c_so_sk2c[ 1 ].
+
+"Using table expressions as arguments of built-in functions
+IF line_exists( it_so_pr1c_so_sk2c[ 5 ] ).
+  ... "line found
+ELSE.
+  ... "line not found
+ENDIF.
+
+ASSERT line_index( it_so_pr1c_so_sk2c[ comp4 = 'ccc' ] ) = 3.
+
+*&---------------------------------------------------------------------*
+*& Assigning table lines to a field symbol
+*&---------------------------------------------------------------------*
+
+"Works like READ TABLE ... ASSIGNING ...
+ASSIGN it_so_pr1c_so_sk2c[ comp4 = 'bbb' ] TO FIELD-SYMBOL(<line>).
+"Note: Table expressions do not set the sy-tabix
+"value, except when used with ASSIGN.
+ASSERT sy-tabix = 2.
+
+*&---------------------------------------------------------------------*
+*& Assigning table lines to a field symbol and setting sy components
+*&---------------------------------------------------------------------*
+
+"Standard table
+ASSIGN it_std_pr1c_so_sk2c[ KEY primary_key COMPONENTS comp1 = 1 ] TO FIELD-SYMBOL(<fs1>).
+ASSERT sy-subrc = 0.
+ASSERT sy-tabix = 1.
+ASSERT <fs1> IS ASSIGNED.
+
+"Sorted table
+ASSIGN it_so_pr1c_so_sk2c[ KEY primary_key COMPONENTS comp1 = 1 ] TO FIELD-SYMBOL(<fs2>).
+ASSERT sy-subrc = 0.
+ASSERT sy-tabix = 1.
+ASSERT <fs2> IS ASSIGNED.
+
+"Hashed table
+ASSIGN it_ha_pr1c_so_sk2c[ KEY primary_key COMPONENTS comp1 = 1 ] TO FIELD-SYMBOL(<fs3>).
+ASSERT sy-subrc = 0.
+ASSERT sy-tabix = 0.
+ASSERT <fs3> IS ASSIGNED.
+
+"Standard table
+ASSIGN it_std_pr1c_so_sk2c[ KEY primary_key COMPONENTS comp1 = 100 ] TO FIELD-SYMBOL(<fs4>).
+ASSERT sy-subrc = 4.
+ASSERT sy-tabix = 0.
+ASSERT <fs4> IS NOT ASSIGNED.
+
+"Sorted table
+ASSIGN it_so_pr1c_so_sk2c[ KEY primary_key COMPONENTS comp1 = 100 ] TO FIELD-SYMBOL(<fs5>).
+ASSERT sy-subrc = 8.
+ASSERT sy-tabix = 4.
+ASSERT <fs5> IS NOT ASSIGNED.
+
+"Hashed table
+ASSIGN it_ha_pr1c_so_sk2c[ KEY primary_key COMPONENTS comp1 = 100 ] TO FIELD-SYMBOL(<fs6>).
+ASSERT sy-subrc = 4.
+ASSERT sy-tabix = 0.
+ASSERT <fs6> IS NOT ASSIGNED.
+
+*&---------------------------------------------------------------------*
+*& Data reference variables pointing to a table line
+*&---------------------------------------------------------------------*
+
+DATA dref1 TYPE REF TO data.
+dref1 = NEW s_demo(  ).
+dref1->* = it_std_pr1c_so_sk2c[ 1 ].
+
+DATA(dref2) = NEW s_demo( it_std_pr1c_so_sk2c[ 1 ] ).
+
+"Specifying table expressions as operands in constructor expressions with VALUE and REF
+line = VALUE #( it_std_pr1c_so_sk2c[ 1 ] ).
+"Works like READ TABLE ... REFERENCE INTO ...
+DATA(dref3) = REF #( it_std_pr1c_so_sk2c[ 1 ] ).
+
+*&---------------------------------------------------------------------*
+*& Specifying table expressions as operands in constructor expressions
+*& VALUE and REF
+*&---------------------------------------------------------------------*
+
+line = VALUE #( it_std_pr1c_so_sk2c[ 2 ] ).
+
+"The following example works like READ TABLE ... REFERENCE INTO ...
+DATA(line_ref) = REF #( it_std_pr1c_so_sk2c[ 3 ] ).
+
+*&---------------------------------------------------------------------*
+*& Specifying a default value for lines that are not found or marking
+*& as optional to avoid an exception
+*&---------------------------------------------------------------------*
+
+"Accessing a non-existent table line raises a catchable exception
+TRY.
+    line = it_std_pr1c_so_sk2c[ 4 ].
+  CATCH cx_sy_itab_line_not_found INTO DATA(error).
+    ...
+ENDTRY.
+ASSERT error IS NOT INITIAL.
+
+"When using the OPTIONAL addition in the context of VALUE constructor expressions, the exception
+"is not raised and the type-specific initial value is assigned to the variable.
+line = VALUE #( it_std_pr1c_so_sk2c[ 4 ] OPTIONAL ).
+
+"DEFAULT addition can be used to specify a default value for lines that are not found.
+"The default value is assigned to the variable.
+line = VALUE #( it_std_pr1c_so_sk2c[ 5 ] DEFAULT it_std_pr1c_so_sk2c[ 1 ] ).
+line = VALUE #( it_std_pr1c_so_sk2c[ 6 ] DEFAULT VALUE #( comp1 = 123 ) ).
+line = VALUE #( it_std_pr1c_so_sk2c[ 7 ] DEFAULT VALUE #( ) ).
+
+*&---------------------------------------------------------------------*
+*& Field symbols and dereferenced data references specified before the
+*& square brackets
+*&---------------------------------------------------------------------*
+
+ASSIGN it_std_pr1c_so_sk2c TO FIELD-SYMBOL(<tab>).
+line = <tab>[ 1 ].
+
+DATA dref_tab TYPE REF TO tt_std_pr1c_so_sk2c.
+dref_tab = NEW #(  ).
+
+dref_tab->* = it_std_pr1c_so_sk2c.
+line = dref_tab->*[ 2 ].
+
+*&---------------------------------------------------------------------*
+*& Reading multiple lines
+*&---------------------------------------------------------------------*
+
+"Instead of something like this ...
+DO.
+  ASSIGN it_std_pr1c_so_sk2c[ sy-index ] TO FIELD-SYMBOL(<fs>).
+  IF sy-subrc = 0.
+    ...
+    "<fs>-comp1 = ...
+  ELSE.
+    EXIT.
+  ENDIF.
+ENDDO.
+
+"... a LOOP statement, for example.
+LOOP AT it_std_pr1c_so_sk2c ASSIGNING FIELD-SYMBOL(<l>).
+  ...
+  "<fs>-comp1 = ...
+ENDLOOP.
+
+*&---------------------------------------------------------------------*
+*& Reading individual components of table lines
+*&---------------------------------------------------------------------*
+
+"Read component via line read using ...
+"... index
+DATA(compa) = it_std_pr1c_so_sk2c[ 1 ]-comp1.
+"... table key
+DATA(compb) = it_std_pr1c_so_sk2c[ TABLE KEY primary_key comp1 = 1 ]-comp2.
+DATA(compc) = it_std_pr1c_so_sk2c[ TABLE KEY sk comp2 = 2 comp3 = 3 ]-comp1.
+DATA(compd) = it_std_pr1c_so_sk2c[ KEY sk comp2 = 2 comp3 = 3 ]-comp1.
+"... free key
+DATA(compe) = it_std_pr1c_so_sk2c[ KEY sk comp2 = 2 comp4 = 'aaa' ]-comp1.
+DATA(compf) = it_std_pr1c_so_sk2c[ comp4 = 'ccc' ]-comp1.
+
+*&---------------------------------------------------------------------*
+*& Chaining table expressions in the context of nested internal tables
+*&---------------------------------------------------------------------*
+
+"Creating a deep internal table
+TYPES: BEGIN OF s_sub,
+         comp1 TYPE i,
+         comp2 TYPE i,
+       END OF s_sub,
+       tab_type_sub TYPE TABLE OF s_sub WITH EMPTY KEY,
+       BEGIN OF s,
+         compa TYPE i,
+         compb TYPE TABLE OF tab_type_sub WITH EMPTY KEY,
+       END OF s,
+       tab_type TYPE TABLE OF s WITH EMPTY KEY.
+
+"Expressions helpful when populating
+DATA(deep_tab) = VALUE tab_type( ( compa = 1
+                                   compb = VALUE #( ( VALUE #( ( comp1 = 3 comp2 = 4 ) ( comp1 = 5 comp2 = 6 ) ) )
+                                                    ( VALUE #( ( comp1 = 7 comp2 = 8 ) ( comp1 = 9 comp2 = 10 ) ) ) ) )
+                                 ( compa = 2
+                                   compb = VALUE #( ( VALUE #( ( comp1 = 11 comp2 = 12 ) ( comp1 = 13 comp2 = 14 ) ) )
+                                                    ( VALUE #( ( comp1 = 15 comp2 = 16 ) ( comp1 = 17 comp2 = 18 ) ) ) ) ) ).
+
+
+"A statement with chained table expressions ...
+DATA(num1) = deep_tab[ 2 ]-compb[ 1 ][ 2 ]-comp2.
+ASSERT num1 = 14.
+
+"... instead of, for example, multiple statements as follows.
+READ TABLE deep_tab INTO DATA(wa1) INDEX 2.
+READ TABLE wa1-compb INTO DATA(wa2) INDEX 1.
+READ TABLE wa2 INTO DATA(wa3) INDEX 2.
+DATA(num2) = wa3-comp2.
+
+ASSERT num2 = num1.
+
+*&---------------------------------------------------------------------*
+*& Table expression result having a reference type enabling chainings
+*& with the object component selector
+*&---------------------------------------------------------------------*
+
+DATA itab_ref TYPE TABLE OF REF TO s_demo WITH EMPTY KEY.
+itab_ref = VALUE #( ( NEW s_demo( comp1 = 1 comp2 = 30 comp3 = 31 comp4 = 'aaa' ) ) ).
+
+"Reading entire line by dereferencing
+DATA(dref_line) = itab_ref[ 1 ]->*.
+"Reading component by dereferencing
+DATA(dref_compa) = itab_ref[ 1 ]->comp3.
+"The following syntax is also possible (dereferencing operator followed
+"by the component selector).
+DATA(dref_compb) = itab_ref[ 1 ]->*-comp4.
+
+*&---------------------------------------------------------------------*
+*& Table expressions in write positions: Writes on the entire line
+*&---------------------------------------------------------------------*
+
+"The demo tables are key tables. Therefore, writes on entire lines produce runtime errors.
+"it_so_pr1c_so_sk2c[ 3 ] = VALUE #( ).
+"it_ha_pr1c_so_sk2c[ comp4 = 'aaa' ] = VALUE #( ).
+
+"In case of standard tables, writes on entire lines are allowed.
+it_std_pr1c_so_sk2c[ 1 ] = VALUE #( comp1 = 456 comp4 = 'zzz' ).
+CLEAR it_std_pr1c_so_sk2c[ 3 ].
+
+*&---------------------------------------------------------------------*
+*& Table expressions in write positions: Writes on individual components
+*&---------------------------------------------------------------------*
+
+it_so_pr1c_so_sk2c[ 3 ]-comp4 = 'yyy'.
+it_std_pr1c_so_sk2c[ 2 ]-comp4 = 'zzz'.
+itab_ref[ 1 ]->comp3 = 123.
+
+"No key value change allowed in key tables
+"The following statement causes a runtime error.
+"it_so_pr1c_so_sk2c[ 1 ]-comp1 = 987.
+
+"Key value change allowed for standard tables.
+it_std_pr1c_so_sk2c[ 1 ]-comp1 = 456.
+
+*&---------------------------------------------------------------------*
+*& Dynamic key and component name specifications
+*&---------------------------------------------------------------------*
+
+"Dynamic key and component specifications
+line = it_so_pr1c_ha_sk2c_alias[ KEY ('PRIMARY_KEY') COMPONENTS comp1 = 1 ].
+line = it_so_pr1c_ha_sk2c_alias[ KEY ('PRIMARY_KEY') comp1 = 1 ].
+line = it_so_pr1c_ha_sk2c_alias[ KEY ('SECONDARY_KEY') COMPONENTS comp2 = 2 comp3 = 3 ].
+line = it_so_pr1c_ha_sk2c_alias[ KEY ('SEC_KEY') comp2 = 2 comp3 = 3 ].
+
+line = it_so_pr1c_ha_sk2c_alias[ KEY ('PRIMARY_KEY') ('COMP1') = 1 ].
+line = it_so_pr1c_ha_sk2c_alias[ KEY ('SEC_KEY') ('COMP2') = 2 ('COMP3') = 3 ].
+
+"Note: Illegal key names trigger a runtime error
+"line = it_so_pr1c_ha_sk2c_alias[ KEY ('ABC') ('COMP2') = 2 ('COMP3') = 3 ].
+"Illegal component names
+"line = it_so_pr1c_ha_sk2c_alias[ KEY ('SEC_KEY') ('COMPX') = 2 ('COMPY') = 3 ].
+
+DATA(key_name) = 'PRIMARY_KEY'.
+DATA(comp_name) = 'COMP1'.
+line = it_so_pr1c_ha_sk2c_alias[ KEY (key_name) (comp_name) = 1 ].
+line = it_so_pr1c_ha_sk2c_alias[ KEY primary_key (comp_name) = 1 ].
+``` 
+
+
+</details>  
+
 
 <p align="right"><a href="#top">⬆️ back to top</a></p>
 
@@ -6521,7 +7335,7 @@ ENDIF.
   "SELECT SINGLE * FROM @itab AS tab INTO @DATA(line).
   ```
   - You cannot use deep and nested components of internal tables in `SELECT` statements.
-  - The type string is supported only if declared as a reference to the built-in dictionary type `sstring`.
+  - The type `string` is supported only if declared as a reference to the built-in dictionary type `sstring`.
 - A key advantage of using `SELECT` statements with internal tables as data sources is the access to ABAP SQL's extensive functionalities, like aggregate expressions.
 - They can serve as an alternative to the `READ TABLE` or `LOOP AT` statements if the ABAP SQL in-memory engine can process the data without requiring a database transfer.
 - Note the general rule: You should use `SELECT` with internal tables as a data source only when SQL functionality exceeds that of ABAP statements, such as in joins. For tasks achievable with ABAP statements, it is preferable to use them as they are optimized for internal tables and offer better performance.
@@ -8650,7 +9464,7 @@ CLASS zcl_demo_abap IMPLEMENTATION.
                       comp5 = sy-index comp6 = sy-index comp7 = sy-index  ) INTO TABLE base_tab.
     ENDDO.
 
-    "Initially populating an info table, which as output in the console after calling all
+    "Initially populating an info table, which is output in the console after calling all
     "methods and assigning the average runtime value.
     t_table_info = VALUE #(
    ( method_name = `std_01_index`
